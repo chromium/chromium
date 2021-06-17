@@ -7,7 +7,7 @@
 // #import {FileFilter} from './directory_contents.m.js';
 // #import {DirectoryModel} from './directory_model.m.js';
 // #import {AlertDialog, ConfirmDialog} from 'chrome://resources/js/cr/ui/dialogs.m.js';
-// #import {ListContainer} from './ui/list_container.m.js';
+// #import {ListContainer} from './ui/list_container.js';
 // #import {util, strf} from '../../common/js/util.m.js';
 // #import {assert} from 'chrome://resources/js/assert.m.js';
 // clang-format off

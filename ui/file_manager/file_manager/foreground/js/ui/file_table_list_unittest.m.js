@@ -14,9 +14,9 @@ import {MetadataModel} from '../metadata/metadata_model.m.js';
 import {MockMetadataModel} from '../metadata/mock_metadata.m.js';
 
 import {A11yAnnounce} from './a11y_announce.m.js';
-import {FileListSelectionModel} from './file_list_selection_model.m.js';
-import {FileTable} from './file_table.m.js';
-import {FileTableList} from './file_table_list.m.js';
+import {FileListSelectionModel} from './file_list_selection_model.js';
+import {FileTable} from './file_table.js';
+import {FileTableList} from './file_table_list.js';
 
 /** @type {!MockVolumeManager} */
 let volumeManager;

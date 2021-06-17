@@ -2,21 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {FileGrid} from './file_grid.m.js';
-// #import {FileTable} from './file_table.m.js';
-// #import {ListThumbnailLoader} from '../list_thumbnail_loader.m.js';
-// #import {List} from 'chrome://resources/js/cr/ui/list.m.js';
-// #import {ListSingleSelectionModel} from 'chrome://resources/js/cr/ui/list_single_selection_model.m.js';
-// #import {FileListModel} from '../file_list_model.m.js';
-// #import {ListItem} from 'chrome://resources/js/cr/ui/list_item.m.js';
-// #import {DialogType} from '../dialog_type.m.js';
-// #import {ListSelectionModel} from 'chrome://resources/js/cr/ui/list_selection_model.m.js';
-// #import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
-// #import {util} from '../../../common/js/util.m.js';
-// #import {assert, assertInstanceof, assertNotReached} from 'chrome://resources/js/assert.m.js';
-// #import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
-// clang-format on
+import {assert, assertInstanceof, assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
+import {List} from 'chrome://resources/js/cr/ui/list.m.js';
+import {ListItem} from 'chrome://resources/js/cr/ui/list_item.m.js';
+import {ListSelectionModel} from 'chrome://resources/js/cr/ui/list_selection_model.m.js';
+import {ListSingleSelectionModel} from 'chrome://resources/js/cr/ui/list_single_selection_model.m.js';
+import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
+
+import {util} from '../../../common/js/util.m.js';
+import {DialogType} from '../dialog_type.m.js';
+import {FileListModel} from '../file_list_model.m.js';
+import {ListThumbnailLoader} from '../list_thumbnail_loader.m.js';
+
+import {FileGrid} from './file_grid.js';
+import {FileTable} from './file_table.js';
 
 class TextSearchState {
   constructor() {
@@ -31,7 +31,7 @@ class TextSearchState {
 /**
  * List container for the file table and the grid view.
  */
-/* #export */ class ListContainer {
+export class ListContainer {
   /**
    * @param {!HTMLElement} element Element of the container.
    * @param {!FileTable} table File table.
@@ -94,7 +94,7 @@ class TextSearchState {
     this.listThumbnailLoader = null;
 
     /**
-     * @type {cr.ui.ListSelectionModel|cr.ui.ListSingleSelectionModel}
+     * @type {ListSelectionModel|ListSingleSelectionModel}
      */
     this.selectionModel = null;
 
@@ -106,11 +106,11 @@ class TextSearchState {
 
     /**
      * Selection model which is used as a placefolder in inactive file list.
-     * @type {!cr.ui.ListSelectionModel}
+     * @type {!ListSelectionModel}
      * @const
      * @private
      */
-    this.emptySelectionModel_ = new cr.ui.ListSelectionModel();
+    this.emptySelectionModel_ = new ListSelectionModel();
 
     /**
      * @type {!TextSearchState}
@@ -183,7 +183,7 @@ class TextSearchState {
   }
 
   /**
-   * @return {!cr.ui.List}
+   * @return {!List}
    */
   get currentList() {
     switch (this.currentListType) {
@@ -273,13 +273,13 @@ class TextSearchState {
   /**
    * Finds list item element from the ancestor node.
    * @param {!HTMLElement} node
-   * @return {cr.ui.ListItem}
+   * @return {ListItem}
    */
   findListItemForNode(node) {
     const item = this.currentList.getListItemAncestor(node);
     // TODO(serya): list should check that.
     return item && this.currentList.isItem(item) ?
-        assertInstanceof(item, cr.ui.ListItem) :
+        assertInstanceof(item, ListItem) :
         null;
   }
 
@@ -377,7 +377,7 @@ class TextSearchState {
     this.textSearchState.date = now;
 
     if (this.textSearchState.text) {
-      cr.dispatchSimpleEvent(this.element, ListContainer.EventType.TEXT_SEARCH);
+      dispatchSimpleEvent(this.element, ListContainer.EventType.TEXT_SEARCH);
     }
   }
 

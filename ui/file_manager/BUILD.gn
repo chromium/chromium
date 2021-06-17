@@ -140,6 +140,19 @@ preprocess_if_expr("preprocess_static") {
     "file_manager/foreground/elements/xf_button.js",
     "file_manager/foreground/elements/files_spinner.js",
 
+    # Files app UI:
+    "file_manager/foreground/js/ui/table/table_header.js",
+    "file_manager/foreground/js/ui/table/table_column_model.js",
+    "file_manager/foreground/js/ui/table/table_column.js",
+    "file_manager/foreground/js/ui/table/table_list.js",
+    "file_manager/foreground/js/ui/table/table_splitter.js",
+    "file_manager/foreground/js/ui/table/table.js",
+    "file_manager/foreground/js/ui/file_table_list.js",
+    "file_manager/foreground/js/ui/file_list_selection_model.js",
+    "file_manager/foreground/js/ui/file_grid.js",
+    "file_manager/foreground/js/ui/file_table.js",
+    "file_manager/foreground/js/ui/list_container.js",
+
     # Image Loader:
     "image_loader/background.m.js",
     "image_loader/cache.js",
@@ -324,31 +337,20 @@ preprocess_if_expr("preprocess_generated") {
     "file_manager/foreground/js/ui/import_crostini_image_dialog.m.js",
     "file_manager/foreground/js/ui/install_linux_package_dialog.m.js",
     "file_manager/foreground/js/ui/empty_folder.m.js",
-    "file_manager/foreground/js/ui/file_grid.m.js",
-    "file_manager/foreground/js/ui/file_list_selection_model.m.js",
     "file_manager/foreground/js/ui/file_manager_dialog_base.m.js",
     "file_manager/foreground/js/ui/file_manager_ui.m.js",
     "file_manager/foreground/js/ui/file_metadata_formatter.m.js",
-    "file_manager/foreground/js/ui/file_table.m.js",
-    "file_manager/foreground/js/ui/file_table_list.m.js",
     "file_manager/foreground/js/ui/file_tap_handler.m.js",
     "file_manager/foreground/js/ui/files_alert_dialog.m.js",
     "file_manager/foreground/js/ui/files_confirm_dialog.m.js",
     "file_manager/foreground/js/ui/files_menu.m.js",
     "file_manager/foreground/js/ui/gear_menu.m.js",
-    "file_manager/foreground/js/ui/list_container.m.js",
     "file_manager/foreground/js/ui/location_line.m.js",
     "file_manager/foreground/js/ui/multi_menu.m.js",
     "file_manager/foreground/js/ui/multi_menu_button.m.js",
     "file_manager/foreground/js/ui/progress_center_panel.m.js",
     "file_manager/foreground/js/ui/providers_menu.m.js",
     "file_manager/foreground/js/ui/search_box.m.js",
-    "file_manager/foreground/js/ui/table/table.m.js",
-    "file_manager/foreground/js/ui/table/table_column.m.js",
-    "file_manager/foreground/js/ui/table/table_column_model.m.js",
-    "file_manager/foreground/js/ui/table/table_header.m.js",
-    "file_manager/foreground/js/ui/table/table_list.m.js",
-    "file_manager/foreground/js/ui/table/table_splitter.m.js",
 
     # Metadata:
     "file_manager/foreground/js/metadata/byte_reader.m.js",
@@ -385,7 +387,6 @@ preprocess_if_expr("preprocess_generated") {
     "//ui/file_manager/file_manager/foreground/js:modulize",
     "//ui/file_manager/file_manager/foreground/js/metadata:modulize",
     "//ui/file_manager/file_manager/foreground/js/ui:modulize",
-    "//ui/file_manager/file_manager/foreground/js/ui/table:modulize",
   ]
 }
 

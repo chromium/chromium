@@ -9,11 +9,11 @@
 // #import {FilesQuickView} from '../elements/files_quick_view.js';
 // #import {VolumeManager} from '../../externs/volume_manager.m.js';
 // #import {MetadataBoxController} from './metadata_box_controller.m.js';
-// #import {FileListSelectionModel} from './ui/file_list_selection_model.m.js';
+// #import {FileListSelectionModel} from './ui/file_list_selection_model.js';
 // #import {TaskController} from './task_controller.m.js';
 // #import {QuickViewModel} from './quick_view_model.m.js';
 // #import {MultiMenuButton} from './ui/multi_menu_button.m.js';
-// #import {ListContainer} from './ui/list_container.m.js';
+// #import {ListContainer} from './ui/list_container.js';
 // #import {MetadataModel} from './metadata/metadata_model.m.js';
 // #import {CommandHandlerDeps} from '../../externs/command_handler_deps.m.js';
 // #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';

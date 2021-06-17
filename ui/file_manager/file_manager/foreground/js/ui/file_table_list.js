@@ -2,28 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * @fileoverview
- * @suppress {uselessCode} Temporary suppress because of the line exporting.
- */
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {isMac} from 'chrome://resources/js/cr.m.js';
+import {List} from 'chrome://resources/js/cr/ui/list.m.js';
+import {ListItem} from 'chrome://resources/js/cr/ui/list_item.m.js';
+import {ListSelectionController} from 'chrome://resources/js/cr/ui/list_selection_controller.m.js';
+import {ListSelectionModel} from 'chrome://resources/js/cr/ui/list_selection_model.m.js';
 
-// clang-format off
-// #import {A11yAnnounce} from './a11y_announce.m.js';
-// #import {FileListSelectionModel, FileListSingleSelectionModel} from './file_list_selection_model.m.js';
-// #import {EntryLocation} from '../../../externs/entry_location.m.js';
-// #import {MetadataModel} from '../metadata/metadata_model.m.js';
-// #import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.m.js';
-// #import {ListItem} from 'chrome://resources/js/cr/ui/list_item.m.js';
-// #import {ListSelectionModel} from 'chrome://resources/js/cr/ui/list_selection_model.m.js';
-// #import {TableList} from './table/table_list.m.js';
-// #import {FileTapHandler} from './file_tap_handler.m.js';
-// #import {List} from 'chrome://resources/js/cr/ui/list.m.js';
-// #import {FileType} from '../../../common/js/file_type.m.js';
-// #import {util, str, strf} from '../../../common/js/util.m.js';
-// #import {ListSelectionController} from 'chrome://resources/js/cr/ui/list_selection_controller.m.js';
-// #import {isMac} from 'chrome://resources/js/cr.m.js';
-// #import {assert} from 'chrome://resources/js/assert.m.js';
-// clang-format on
+import {FileType} from '../../../common/js/file_type.m.js';
+import {str, strf, util} from '../../../common/js/util.m.js';
+import {EntryLocation} from '../../../externs/entry_location.m.js';
+import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.m.js';
+import {MetadataModel} from '../metadata/metadata_model.m.js';
+
+import {A11yAnnounce} from './a11y_announce.m.js';
+import {FileListSelectionModel, FileListSingleSelectionModel} from './file_list_selection_model.js';
+import {FileTapHandler} from './file_tap_handler.m.js';
+import {TableList} from './table/table_list.js';
 
 /**
  * Namespace for utility functions.
@@ -33,7 +28,7 @@ const filelist = {};
 /**
  * File table list.
  */
-/* #export */ class FileTableList extends cr.ui.table.TableList {
+export class FileTableList extends TableList {
   constructor() {
     // To silence closure compiler.
     super();
@@ -98,7 +93,7 @@ const filelist = {};
 
 /**
  * Decorates TableList as FileTableList.
- * @param {!cr.ui.table.TableList} self A tabel list element.
+ * @param {!TableList} self A table list element.
  */
 FileTableList.decorate = self => {
   self.__proto__ = FileTableList.prototype;
@@ -110,9 +105,9 @@ FileTableList.decorate = self => {
 /**
  * Selection controller for the file table list.
  */
-class FileListSelectionController extends cr.ui.ListSelectionController {
+class FileListSelectionController extends ListSelectionController {
   /**
-   * @param {!cr.ui.ListSelectionModel} selectionModel The selection model to
+   * @param {!ListSelectionModel} selectionModel The selection model to
    *     interact with.
    * @param {!FileTableList} tableList
    */
@@ -155,7 +150,7 @@ class FileListSelectionController extends cr.ui.ListSelectionController {
 
 /**
  * Common item decoration for table's and grid's items.
- * @param {cr.ui.ListItem} li List item.
+ * @param {ListItem} li List item.
  * @param {Entry|FilesAppEntry} entry The entry.
  * @param {!MetadataModel} metadataModel Cache to
  *     retrieve metadada.
@@ -178,7 +173,7 @@ filelist.decorateListItem = (li, entry, metadataModel) => {
 
   Object.defineProperty(li, 'selected', {
     /**
-     * @this {cr.ui.ListItem}
+     * @this {ListItem}
      * @return {boolean} True if the list item is selected.
      */
     get: function() {
@@ -186,7 +181,7 @@ filelist.decorateListItem = (li, entry, metadataModel) => {
     },
 
     /**
-     * @this {cr.ui.ListItem}
+     * @this {ListItem}
      */
     set: function(v) {
       if (v) {
@@ -248,7 +243,7 @@ filelist.renderPinned = (doc) => {
 
 /**
  * Updates grid item or table row for the externalProps.
- * @param {cr.ui.ListItem} li List item.
+ * @param {ListItem} li List item.
  * @param {Object} externalProps Metadata.
  */
 filelist.updateListItemExternalProps = (li, externalProps, isTeamDriveRoot) => {
@@ -289,7 +284,7 @@ filelist.updateListItemExternalProps = (li, externalProps, isTeamDriveRoot) => {
  * @param {!FileTapHandler.TapEvent} eventType
  * @return True if conducted any action. False when if did nothing special for
  *     tap.
- * @this {cr.ui.ListSelectionController} either FileListSelectionController or
+ * @this {ListSelectionController} either FileListSelectionController or
  *     FileGridSelectionController.
  */
 filelist.handleTap = function(e, index, eventType) {
@@ -396,7 +391,7 @@ filelist.handleTap = function(e, index, eventType) {
  * Handles mouseup/mousedown events on file list to change the selection state.
  *
  * Basically the content of this function is identical to
- * cr.ui.ListSelectionController's handlePointerDownUp(), but following
+ * ListSelectionController's handlePointerDownUp(), but following
  * handlings are inserted to control the check-select mode.
  *
  * 1) When checkmark area is clicked, toggle item selection and enable the
@@ -407,7 +402,7 @@ filelist.handleTap = function(e, index, eventType) {
  * @param {!Event} e The browser mouse event.
  * @param {number} index The index that was under the mouse pointer, -1 if
  *     none.
- * @this {cr.ui.ListSelectionController} either FileListSelectionController or
+ * @this {ListSelectionController} either FileListSelectionController or
  *     FileGridSelectionController.
  */
 filelist.handlePointerDownUp = function(e, index) {
@@ -511,14 +506,14 @@ filelist.handlePointerDownUp = function(e, index) {
  * Handles key events on file list to change the selection state.
  *
  * Basically the content of this function is identical to
- * cr.ui.ListSelectionController's handleKeyDown(), but following handlings is
+ * ListSelectionController's handleKeyDown(), but following handlings is
  * inserted to control the check-select mode.
  *
  * 1) When pressing direction key results in a single selection, the
  *    check-select mode should be terminated.
  *
  * @param {Event} e The keydown event.
- * @this {cr.ui.ListSelectionController} either FileListSelectionController or
+ * @this {ListSelectionController} either FileListSelectionController or
  *     FileGridSelectionController.
  */
 filelist.handleKeyDown = function(e) {
@@ -556,7 +551,7 @@ filelist.handleKeyDown = function(e) {
   // keyboard layout.
   const pressedKeyA = e.keyCode === 65 || e.key === 'a';
   if (sm.multiple && pressedKeyA &&
-      (cr.isMac && e.metaKey || !cr.isMac && e.ctrlKey)) {
+      (isMac && e.metaKey || !isMac && e.ctrlKey)) {
     this.filesView.a11y.speakA11yMessage(str('SELECTION_ALL_ENTRIES'));
     sm.setCheckSelectMode(true);
     sm.selectAll();
@@ -692,7 +687,7 @@ filelist.handleKeyDown = function(e) {
  */
 filelist.focusParentList = event => {
   let element = event.target;
-  while (element && !(element instanceof cr.ui.List)) {
+  while (element && !(element instanceof List)) {
     element = element.parentElement;
   }
   if (element) {
@@ -700,5 +695,4 @@ filelist.focusParentList = event => {
   }
 };
 
-// eslint-disable-next-line semi,no-extra-semi
-/* #export */ {filelist};
+export {filelist};

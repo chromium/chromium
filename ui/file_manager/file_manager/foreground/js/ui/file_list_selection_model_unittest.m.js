@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assertArrayEquals, assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
-import {FileListSelectionModel} from './file_list_selection_model.m.js';
+import {FileListSelectionModel} from './file_list_selection_model.js';
 
 /** @type {!FileListSelectionModel} */
 let selectionModel;

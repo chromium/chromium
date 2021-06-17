@@ -4,8 +4,8 @@
 
 // clang-format off
 // #import {VolumeManager} from '../../../externs/volume_manager.m.js';
-// #import {FileGrid} from './file_grid.m.js';
-// #import {FileTable} from './file_table.m.js';
+// #import {FileGrid} from './file_grid.js';
+// #import {FileTable} from './file_table.js';
 // #import {FilesToast} from '../../elements/files_toast.js';
 // #import {Banners} from './banners.m.js';
 // #import {DirectoryTree} from './directory_tree.m.js';
@@ -26,7 +26,7 @@
 // #import {DialogType} from '../dialog_type.m.js';
 // #import {contextMenuHandler} from 'chrome://resources/js/cr/ui/context_menu_handler.m.js';
 // #import {LocationLine} from './location_line.m.js';
-// #import {ListContainer} from './list_container.m.js';
+// #import {ListContainer} from './list_container.js';
 // #import {AllowedPaths} from '../../../common/js/volume_manager_types.m.js';
 // #import {ActionsSubmenu} from './actions_submenu.m.js';
 // #import {ProvidersMenu} from './providers_menu.m.js';

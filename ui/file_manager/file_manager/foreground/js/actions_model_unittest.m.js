@@ -19,7 +19,7 @@ import {FolderShortcutsDataModel} from './folder_shortcuts_data_model.m.js';
 import {MockMetadataModel} from './metadata/mock_metadata.m.js';
 import {ActionModelUI} from './ui/action_model_ui.m.js';
 import {FilesAlertDialog} from './ui/files_alert_dialog.m.js';
-import {ListContainer} from './ui/list_container.m.js';
+import {ListContainer} from './ui/list_container.js';
 
 /**
  * @type {!MockVolumeManager}

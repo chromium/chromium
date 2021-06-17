@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {ListSingleSelectionModel} from 'chrome://resources/js/cr/ui/list_single_selection_model.m.js';
-// #import {ListSelectionModel} from 'chrome://resources/js/cr/ui/list_selection_model.m.js';
-// clang-format on
+import {ListSelectionModel} from 'chrome://resources/js/cr/ui/list_selection_model.m.js';
+import {ListSingleSelectionModel} from 'chrome://resources/js/cr/ui/list_single_selection_model.m.js';
 
-/* #export */ class FileListSelectionModel extends cr.ui.ListSelectionModel {
+export class FileListSelectionModel extends ListSelectionModel {
   /** @param {number=} opt_length The number items in the selection. */
   constructor(opt_length) {
     super(opt_length);
@@ -97,8 +95,7 @@
   }
 }
 
-/* #export */ class FileListSingleSelectionModel extends
-    cr.ui.ListSingleSelectionModel {
+export class FileListSingleSelectionModel extends ListSingleSelectionModel {
   /**
    * Updates the check-select mode.
    * @param {boolean} enabled True if check-select mode should be enabled.

@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
-import {FileTableColumnModel} from './file_table.m.js';
-import {TableColumn} from './table/table_column.m.js';
+import {FileTableColumnModel} from './file_table.js';
+import {TableColumn} from './table/table_column.js';
 
 /** @type {!FileTableColumnModel} */
 let model;

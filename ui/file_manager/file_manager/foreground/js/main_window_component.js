@@ -15,7 +15,7 @@
 // #import {metrics} from '../../common/js/metrics.m.js';
 // #import {DialogType} from './dialog_type.m.js';
 // #import {FileTapHandler} from './ui/file_tap_handler.m.js';
-// #import {ListContainer} from './ui/list_container.m.js';
+// #import {ListContainer} from './ui/list_container.js';
 // #import {AppStateController} from './app_state_controller.m.js';
 // #import {DirectoryChangeEvent} from '../../externs/directory_change_event.m.js';
 // clang-format on

@@ -3,13 +3,13 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {FileListSelectionModel} from './ui/file_list_selection_model.m.js';
+// #import {FileListSelectionModel} from './ui/file_list_selection_model.js';
 // #import {A11yAnnounce} from './ui/a11y_announce.m.js';
 // #import {VolumeManager} from '../../externs/volume_manager.m.js';
 // #import {FileOperationManager} from '../../externs/background/file_operation_manager.m.js';
 // #import {DirectoryModel} from './directory_model.m.js';
 // #import {LocationLine} from './ui/location_line.m.js';
-// #import {ListContainer} from './ui/list_container.m.js';
+// #import {ListContainer} from './ui/list_container.js';
 // #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
 // #import {util, str, strf} from '../../common/js/util.m.js';
 // #import {FileSelectionHandler} from './file_selection.m.js';

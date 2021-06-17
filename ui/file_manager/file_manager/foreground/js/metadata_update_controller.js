@@ -5,7 +5,7 @@
 // #import {FileMetadataFormatter} from './ui/file_metadata_formatter.m.js';
 // #import {MetadataModel} from './metadata/metadata_model.m.js';
 // #import {DirectoryModel} from './directory_model.m.js';
-// #import {ListContainer} from './ui/list_container.m.js';
+// #import {ListContainer} from './ui/list_container.js';
 // #import {util} from '../../common/js/util.m.js';
 
 /**

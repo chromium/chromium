@@ -4,7 +4,7 @@
 
 // #import {FileSelectionHandler} from './file_selection.m.js';
 // #import {SpinnerController} from './spinner_controller.m.js';
-// #import {ListContainer} from './ui/list_container.m.js';
+// #import {ListContainer} from './ui/list_container.js';
 // #import {DirectoryModel} from './directory_model.m.js';
 // #import {CommandHandler} from './file_manager_commands.m.js';
 

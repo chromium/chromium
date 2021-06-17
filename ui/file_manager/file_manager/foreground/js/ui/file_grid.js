@@ -2,28 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {A11yAnnounce} from './a11y_announce.m.js';
-// #import {ListSelectionModel} from 'chrome://resources/js/cr/ui/list_selection_model.m.js';
-// #import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.m.js';
-// #import {importerHistoryInterfaces} from '../../../externs/background/import_history.m.js';
-// #import {VolumeManager} from '../../../externs/volume_manager.m.js';
-// #import {ListThumbnailLoader} from '../list_thumbnail_loader.m.js';
-// #import {MetadataModel} from '../metadata/metadata_model.m.js';
-// #import {FileTapHandler} from './file_tap_handler.m.js';
-// #import {ListItem} from 'chrome://resources/js/cr/ui/list_item.m.js';
-// #import {DragSelector} from './drag_selector.m.js';
-// #import {FileType} from '../../../common/js/file_type.m.js';
-// #import {importer} from '../../../common/js/importer_common.m.js';
-// #import {filelist} from './file_table_list.m.js';
-// #import {assert, assertInstanceof} from 'chrome://resources/js/assert.m.js';
-// #import {util, str} from '../../../common/js/util.m.js';
-// #import {isRTL} from 'chrome://resources/js/util.m.js';
-// #import {AsyncUtil} from '../../../common/js/async_util.m.js';
-// #import {List} from 'chrome://resources/js/cr/ui/list.m.js';
-// #import {Grid, GridSelectionController} from 'chrome://resources/js/cr/ui/grid.m.js';
-// #import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
-// clang-format on
+import {assert, assertInstanceof} from 'chrome://resources/js/assert.m.js';
+import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
+import {Grid, GridSelectionController} from 'chrome://resources/js/cr/ui/grid.m.js';
+import {List} from 'chrome://resources/js/cr/ui/list.m.js';
+import {ListItem} from 'chrome://resources/js/cr/ui/list_item.m.js';
+import {ListSelectionModel} from 'chrome://resources/js/cr/ui/list_selection_model.m.js';
+import {isRTL} from 'chrome://resources/js/util.m.js';
+
+import {AsyncUtil} from '../../../common/js/async_util.m.js';
+import {FileType} from '../../../common/js/file_type.m.js';
+import {importer} from '../../../common/js/importer_common.m.js';
+import {str, util} from '../../../common/js/util.m.js';
+import {importerHistoryInterfaces} from '../../../externs/background/import_history.m.js';
+import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.m.js';
+import {VolumeManager} from '../../../externs/volume_manager.m.js';
+import {ListThumbnailLoader} from '../list_thumbnail_loader.m.js';
+import {MetadataModel} from '../metadata/metadata_model.m.js';
+
+import {A11yAnnounce} from './a11y_announce.m.js';
+import {DragSelector} from './drag_selector.m.js';
+import {filelist} from './file_table_list.js';
+import {FileTapHandler} from './file_tap_handler.m.js';
 
 /**
  * FileGrid constructor.
@@ -31,7 +31,7 @@
  * Represents grid for the Grid View in the File Manager.
  */
 
-/* #export */ class FileGrid extends cr.ui.Grid {
+export class FileGrid extends Grid {
   constructor() {
     super();
 
@@ -48,13 +48,13 @@
     this.endIndex_ = 0;
 
     /**
-     * Inherited from cr.ui.Grid <- cr.ui.List
+     * Inherited from Grid <- List
      * @private {?Element}
      * */
     this.beforeFiller_ = null;
 
     /**
-     * Inherited from cr.ui.Grid <- cr.ui.List
+     * Inherited from Grid <- List
      * @private {?Element}
      * */
     this.afterFiller_ = null;
@@ -101,10 +101,10 @@
 
   get dataModel() {
     if (!this.dataModelDescriptor_) {
-      // We get the property descriptor for dataModel from cr.ui.List, because
-      // cr.ui.Grid doesn't have its own descriptor.
+      // We get the property descriptor for dataModel from List, because
+      // Grid doesn't have its own descriptor.
       this.dataModelDescriptor_ =
-          Object.getOwnPropertyDescriptor(cr.ui.List.prototype, 'dataModel');
+          Object.getOwnPropertyDescriptor(List.prototype, 'dataModel');
     }
     return this.dataModelDescriptor_.get.call(this);
   }
@@ -131,8 +131,8 @@
    * @param {!A11yAnnounce} a11y
    */
   static decorate(element, metadataModel, volumeManager, historyLoader, a11y) {
-    if (cr.ui.Grid.decorate) {
-      cr.ui.Grid.decorate(element);
+    if (Grid.decorate) {
+      Grid.decorate(element);
     }
     const self = /** @type {!FileGrid} */ (element);
     self.__proto__ = FileGrid.prototype;
@@ -264,7 +264,7 @@
    * @override
    */
   mergeItems(beginIndex, endIndex) {
-    cr.ui.List.prototype.mergeItems.call(this, beginIndex, endIndex);
+    List.prototype.mergeItems.call(this, beginIndex, endIndex);
 
     const afterFiller = this.afterFiller_;
     const columns = this.columns;
@@ -637,12 +637,12 @@
     this.columns = 0;
     this.redraw();
     this.endBatchUpdates();
-    cr.dispatchSimpleEvent(this, 'relayout');
+    dispatchSimpleEvent(this, 'relayout');
   }
 
   /**
    * Decorates thumbnail.
-   * @param {cr.ui.ListItem} li List item.
+   * @param {ListItem} li List item.
    * @param {!Entry} entry Entry to render a thumbnail for.
    * @private
    */
@@ -994,7 +994,7 @@
  */
 FileGrid.GridSize = 180;  // px
 
-FileGrid.Item = class extends cr.ui.ListItem {
+FileGrid.Item = class extends ListItem {
   constructor() {
     super();
     throw new Error('Use FileGrid.Item.decorate');
@@ -1008,7 +1008,7 @@ FileGrid.Item = class extends cr.ui.ListItem {
   }
 
   set label(newLabel) {
-    // no-op setter. cr.ui.List calls this setter but Files app doesn't need it.
+    // no-op setter. List calls this setter but Files app doesn't need it.
   }
 
   /**
@@ -1030,12 +1030,11 @@ FileGrid.Item = class extends cr.ui.ListItem {
 /**
  * Selection controller for the file grid.
  */
-/* #export */ class FileGridSelectionController extends
-    cr.ui.GridSelectionController {
+export class FileGridSelectionController extends GridSelectionController {
   /**
-   * @param {!cr.ui.ListSelectionModel} selectionModel The selection model to
+   * @param {!ListSelectionModel} selectionModel The selection model to
    *     interact with.
-   * @param {!cr.ui.Grid} grid The grid to interact with.
+   * @param {!Grid} grid The grid to interact with.
    */
   constructor(selectionModel, grid) {
     super(selectionModel, grid);

@@ -2,40 +2,40 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {A11yAnnounce} from './a11y_announce.m.js';
-// #import {FileListSelectionModel, FileListSingleSelectionModel} from './file_list_selection_model.m.js';
-// #import {EntryLocation} from '../../../externs/entry_location.m.js';
-// #import {ListItem} from 'chrome://resources/js/cr/ui/list_item.m.js';
-// #import {ListSelectionModel} from 'chrome://resources/js/cr/ui/list_selection_model.m.js';
-// #import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.m.js';
-// #import {List} from 'chrome://resources/js/cr/ui/list.m.js';
-// #import {VolumeManager} from '../../../externs/volume_manager.m.js';
-// #import {importerHistoryInterfaces} from '../../../externs/background/import_history.m.js';
-// #import {MetadataModel} from '../metadata/metadata_model.m.js';
-// #import {ListThumbnailLoader} from '../list_thumbnail_loader.m.js';
-// #import {TableColumn} from './table/table_column.m.js';
-// #import {TableColumnModel} from './table/table_column_model.m.js';
-// #import {TableList} from './table/table_list.m.js';
-// #import {Table} from './table/table.m.js';
-// #import {FileMetadataFormatter} from './file_metadata_formatter.m.js';
-// #import {FileTableList, filelist} from './file_table_list.m.js';
-// #import {FileListModel} from '../file_list_model.m.js';
-// #import {importer} from '../../../common/js/importer_common.m.js';
-// #import {FileType} from '../../../common/js/file_type.m.js';
-// #import {DragSelector} from './drag_selector.m.js';
-// #import {assert, assertInstanceof} from 'chrome://resources/js/assert.m.js';
-// #import {AsyncUtil} from '../../../common/js/async_util.m.js';
-// #import {util, str, strf} from '../../../common/js/util.m.js';
-// #import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
-// clang-format on
+import {assert, assertInstanceof} from 'chrome://resources/js/assert.m.js';
+import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
+import {List} from 'chrome://resources/js/cr/ui/list.m.js';
+import {ListItem} from 'chrome://resources/js/cr/ui/list_item.m.js';
+import {ListSelectionModel} from 'chrome://resources/js/cr/ui/list_selection_model.m.js';
+
+import {AsyncUtil} from '../../../common/js/async_util.m.js';
+import {FileType} from '../../../common/js/file_type.m.js';
+import {importer} from '../../../common/js/importer_common.m.js';
+import {str, strf, util} from '../../../common/js/util.m.js';
+import {importerHistoryInterfaces} from '../../../externs/background/import_history.m.js';
+import {EntryLocation} from '../../../externs/entry_location.m.js';
+import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.m.js';
+import {VolumeManager} from '../../../externs/volume_manager.m.js';
+import {FileListModel} from '../file_list_model.m.js';
+import {ListThumbnailLoader} from '../list_thumbnail_loader.m.js';
+import {MetadataModel} from '../metadata/metadata_model.m.js';
+
+import {A11yAnnounce} from './a11y_announce.m.js';
+import {DragSelector} from './drag_selector.m.js';
+import {FileListSelectionModel, FileListSingleSelectionModel} from './file_list_selection_model.js';
+import {FileMetadataFormatter} from './file_metadata_formatter.m.js';
+import {filelist, FileTableList} from './file_table_list.js';
+import {Table} from './table/table.js';
+import {TableColumn} from './table/table_column.js';
+import {TableColumnModel} from './table/table_column_model.js';
+import {TableList} from './table/table_list.js';
 
 /**
  * Custom column model for advanced auto-resizing.
  */
-/* #export */ class FileTableColumnModel extends cr.ui.table.TableColumnModel {
+export class FileTableColumnModel extends TableColumnModel {
   /**
-   * @param {!Array<cr.ui.table.TableColumn>} tableColumns Table columns.
+   * @param {!Array<TableColumn>} tableColumns Table columns.
    */
   constructor(tableColumns) {
     super(tableColumns);
@@ -146,7 +146,7 @@
     this.applyColumnPositions_(this.snapshot_.newPos);
 
     // Notify about resizing
-    cr.dispatchSimpleEvent(this, 'resize');
+    dispatchSimpleEvent(this, 'resize');
   }
 
   /**
@@ -267,13 +267,13 @@
  * Customize the column header to decorate with a11y attributes that announces
  * the sorting used when clicked.
  *
- * @this {cr.ui.table.TableColumn} Bound by cr.ui.table.TableHeader before
+ * @this {TableColumn} Bound by TableHeader before
  * calling.
  * @param {Element} table Table being rendered.
  * @return {Element}
  */
-/* #export */ function renderHeader_(table) {
-  const column = /** @type {cr.ui.table.TableColumn} */ (this);
+export function renderHeader_(table) {
+  const column = /** @type {TableColumn} */ (this);
   const container = table.ownerDocument.createElement('div');
   container.classList.add('table-label-container');
 
@@ -320,7 +320,7 @@ FileTableColumnModel.MIN_WIDTH_ = 40;
  */
 FileTableColumnModel.ColumnSnapshot = class {
   /**
-   * @param {!Array<!cr.ui.table.TableColumn>} columns
+   * @param {!Array<!TableColumn>} columns
    */
   constructor(columns) {
     /** @private {!Array<number>} */
@@ -374,7 +374,7 @@ FileTableColumnModel.ColumnSnapshot = class {
 /**
  * File list Table View.
  */
-/* #export */ class FileTable extends cr.ui.Table {
+export class FileTable extends Table {
   constructor() {
     super();
 
@@ -435,7 +435,7 @@ FileTableColumnModel.ColumnSnapshot = class {
    */
   static decorate(
       self, metadataModel, volumeManager, historyLoader, a11y, fullPage) {
-    cr.ui.Table.decorate(self);
+    Table.decorate(self);
     self.__proto__ = FileTable.prototype;
     FileTableList.decorate(self.list);
     self.list.setOnMergeItems(self.updateHighPriorityRange_.bind(self));
@@ -478,29 +478,29 @@ FileTableColumnModel.ColumnSnapshot = class {
     /** @private {boolean} */
     self.useModificationByMeTime_ = false;
 
-    const nameColumn = new cr.ui.table.TableColumn(
-        'name', str('NAME_COLUMN_LABEL'), fullPage ? 386 : 324);
+    const nameColumn =
+        new TableColumn('name', str('NAME_COLUMN_LABEL'), fullPage ? 386 : 324);
     nameColumn.renderFunction = self.renderName_.bind(self);
     nameColumn.headerRenderFunction = renderHeader_;
 
-    const sizeColumn = new cr.ui.table.TableColumn(
-        'size', str('SIZE_COLUMN_LABEL'), 110, true);
+    const sizeColumn =
+        new TableColumn('size', str('SIZE_COLUMN_LABEL'), 110, true);
     sizeColumn.renderFunction = self.renderSize_.bind(self);
     sizeColumn.defaultOrder = 'desc';
     sizeColumn.headerRenderFunction = renderHeader_;
 
-    const statusColumn = new cr.ui.table.TableColumn(
-        'status', str('STATUS_COLUMN_LABEL'), 60, true);
+    const statusColumn =
+        new TableColumn('status', str('STATUS_COLUMN_LABEL'), 60, true);
     statusColumn.renderFunction = self.renderStatus_.bind(self);
     statusColumn.visible = self.importStatusVisible_;
     statusColumn.headerRenderFunction = renderHeader_;
 
-    const typeColumn = new cr.ui.table.TableColumn(
-        'type', str('TYPE_COLUMN_LABEL'), fullPage ? 110 : 110);
+    const typeColumn =
+        new TableColumn('type', str('TYPE_COLUMN_LABEL'), fullPage ? 110 : 110);
     typeColumn.renderFunction = self.renderType_.bind(self);
     typeColumn.headerRenderFunction = renderHeader_;
 
-    const modTimeColumn = new cr.ui.table.TableColumn(
+    const modTimeColumn = new TableColumn(
         'modificationTime', str('DATE_COLUMN_LABEL'), fullPage ? 150 : 210);
     modTimeColumn.renderFunction = self.renderDate_.bind(self);
     modTimeColumn.defaultOrder = 'desc';
@@ -515,7 +515,7 @@ FileTableColumnModel.ColumnSnapshot = class {
 
     self.formatter_ = new FileMetadataFormatter();
 
-    const selfAsTable = /** @type {!cr.ui.Table} */ (self);
+    const selfAsTable = /** @type {!Table} */ (self);
     selfAsTable.setRenderFunction(
         self.renderTableRow_.bind(self, selfAsTable.getRenderFunction()));
 
@@ -548,7 +548,7 @@ FileTableColumnModel.ColumnSnapshot = class {
      * @param {number=} opt_width Width of the coordinate.
      * @param {number=} opt_height Height of the coordinate.
      * @return {Array<number>} Index list of hit elements.
-     * @this {cr.ui.List}
+     * @this {List}
      */
     self.list.getHitElements = function(x, y, opt_width, opt_height) {
       const currentSelection = [];
@@ -829,11 +829,11 @@ FileTableColumnModel.ColumnSnapshot = class {
   /**
    * Render the Name column of the detail table.
    *
-   * Invoked by cr.ui.Table when a file needs to be rendered.
+   * Invoked by Table when a file needs to be rendered.
    *
    * @param {!Entry} entry The Entry object to render.
    * @param {string} columnId The id of the column to be rendered.
-   * @param {cr.ui.Table} table The table doing the rendering.
+   * @param {Table} table The table doing the rendering.
    * @return {!HTMLDivElement} Created element.
    * @private
    */
@@ -889,7 +889,7 @@ FileTableColumnModel.ColumnSnapshot = class {
    *
    * @param {Entry} entry The Entry object to render.
    * @param {string} columnId The id of the column to be rendered.
-   * @param {cr.ui.Table} table The table doing the rendering.
+   * @param {Table} table The table doing the rendering.
    * @return {!HTMLDivElement} Created element.
    * @private
    */
@@ -922,7 +922,7 @@ FileTableColumnModel.ColumnSnapshot = class {
    *
    * @param {Entry} entry The Entry object to render.
    * @param {string} columnId The id of the column to be rendered.
-   * @param {cr.ui.Table} table The table doing the rendering.
+   * @param {Table} table The table doing the rendering.
    * @return {!HTMLDivElement} Created element.
    * @private
    */
@@ -999,7 +999,7 @@ FileTableColumnModel.ColumnSnapshot = class {
    *
    * @param {Entry} entry The Entry object to render.
    * @param {string} columnId The id of the column to be rendered.
-   * @param {cr.ui.Table} table The table doing the rendering.
+   * @param {Table} table The table doing the rendering.
    * @return {!HTMLDivElement} Created element.
    * @private
    */
@@ -1021,7 +1021,7 @@ FileTableColumnModel.ColumnSnapshot = class {
    *
    * @param {Entry} entry The Entry object to render.
    * @param {string} columnId The id of the column to be rendered.
-   * @param {cr.ui.Table} table The table doing the rendering.
+   * @param {Table} table The table doing the rendering.
    * @return {HTMLDivElement} Created element.
    * @private
    */
@@ -1113,7 +1113,7 @@ FileTableColumnModel.ColumnSnapshot = class {
 
   /**
    * Renders table row.
-   * @param {function(Entry, cr.ui.Table)} baseRenderFunction Base renderer.
+   * @param {function(Entry, Table)} baseRenderFunction Base renderer.
    * @param {Entry} entry Corresponding entry.
    * @return {HTMLLIElement} Created element.
    * @private
@@ -1214,11 +1214,11 @@ FileTableColumnModel.ColumnSnapshot = class {
       this.normalizeColumns();
     }
     this.redraw();
-    cr.dispatchSimpleEvent(this.list, 'relayout');
+    dispatchSimpleEvent(this.list, 'relayout');
   }
 }
 
 /**
- * Inherits from cr.ui.Table.
+ * Inherits from Table.
  */
-FileTable.prototype.__proto__ = cr.ui.Table.prototype;
+FileTable.prototype.__proto__ = Table.prototype;

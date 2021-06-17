@@ -11,7 +11,7 @@
 // #import {FileOperationManager} from '../../externs/background/file_operation_manager.m.js';
 // #import {VolumeManager} from '../../externs/volume_manager.m.js';
 // #import {MetadataModel} from './metadata/metadata_model.m.js';
-// #import {FileListSingleSelectionModel, FileListSelectionModel} from './ui/file_list_selection_model.m.js';
+// #import {FileListSingleSelectionModel, FileListSelectionModel} from './ui/file_list_selection_model.js';
 // #import {FileWatcher} from './file_watcher.m.js';
 // #import {FileListModel} from './file_list_model.m.js';
 // #import {FileListContext, DirectoryContents, DirectoryContentScanner, RecentContentScanner, CrostiniMounter, DriveSearchContentScanner, LocalSearchContentScanner, MediaViewContentScanner, DriveMetadataSearchContentScanner, ContentScanner, FileFilter} from './directory_contents.m.js';
