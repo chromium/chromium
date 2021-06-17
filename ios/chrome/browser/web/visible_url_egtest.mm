@@ -10,6 +10,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/version_info/version_info.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
+#include "ios/chrome/browser/web/features.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -115,6 +116,17 @@ class PausableResponseProvider : public HtmlResponseProvider {
 @end
 
 @implementation VisibleURLTestCase
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+  // TOOD(crbug.com/1221250): Re-enable this test when iOS 15 native session
+  // restore is fixed. Many of the assumptions made in VisibuleURLTestCase may
+  // not be correct with native session restore.
+  if (@available(iOS 15, *)) {
+    config.features_disabled.push_back(web::kRestoreSessionFromCache);
+  }
+  return config;
+}
 
 - (void)setUp {
   [super setUp];

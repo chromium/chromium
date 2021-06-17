@@ -4,6 +4,7 @@
 
 #include "base/bind.h"
 #include "components/strings/grit/components_strings.h"
+#include "ios/chrome/browser/web/features.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
@@ -31,6 +32,14 @@
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.relaunch_policy = NoForceRelaunchAndResetState;
+  if ([self isRunningTest:@selector(testBadSSLInSessionRestore)]) {
+    // TOOD(crbug.com/1221250): Re-enable this test when iOS 15 native session
+    // restore is fixed. The issue is likely that -URLNeedsUserAgentType does
+    // not allow restoring user agent types for file://error_page_loaded.html.
+    if (@available(iOS 15, *)) {
+      config.features_disabled.push_back(web::kRestoreSessionFromCache);
+    }
+  }
   return config;
 }
 

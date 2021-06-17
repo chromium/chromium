@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/features.h"
+#include "ios/chrome/browser/web/features.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
@@ -67,6 +68,13 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   if ([self isRunningTest:@selector(testRestoreErrorPage)]) {
     config.features_disabled.push_back(kEnableCloseAllTabsConfirmation);
     config.features_enabled.push_back(web::features::kUseJSForErrorPage);
+    // TOOD(crbug.com/1221250): Re-enable this test when iOS 15 native session
+    // restore is fixed. The issue is likely that
+    // -triggerRestoreViaTabGridRemoveAllUndo does not clear the cache to force
+    // a reload.
+    if (@available(iOS 15, *)) {
+      config.features_disabled.push_back(web::kRestoreSessionFromCache);
+    }
   } else {
     config.features_enabled.push_back(kEnableCloseAllTabsConfirmation);
   }
