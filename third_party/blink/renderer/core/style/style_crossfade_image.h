@@ -33,8 +33,7 @@ class StyleCrossfadeImage final : public StyleImage,
   bool ErrorOccurred() const override;
   bool IsAccessAllowed(String&) const override;
 
-  FloatSize ImageSize(const Document&,
-                      float multiplier,
+  FloatSize ImageSize(float multiplier,
                       const FloatSize& default_object_size,
                       RespectImageOrientationEnum) const override;
 

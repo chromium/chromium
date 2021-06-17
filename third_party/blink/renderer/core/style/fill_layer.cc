@@ -394,7 +394,7 @@ bool FillLayer::ImageIsOpaque(const Document& document,
   // checking for IsEmpty.
   return image_->KnownToBeOpaque(document, style) &&
          !image_
-              ->ImageSize(document, style.EffectiveZoom(), FloatSize(),
+              ->ImageSize(style.EffectiveZoom(), FloatSize(),
                           kRespectImageOrientation)
               .IsEmpty();
 }

@@ -74,10 +74,9 @@ LayoutSize LayoutListMarker::ImageBulletSize() const {
   // marker pseudoclass to allow control over the width and height of the
   // marker box.
   float bullet_width = font_data->GetFontMetrics().Ascent() / 2.0f;
-  return RoundedLayoutSize(
-      image_->ImageSize(GetDocument(), StyleRef().EffectiveZoom(),
-                        FloatSize(bullet_width, bullet_width),
-                        LayoutObject::ShouldRespectImageOrientation(this)));
+  return RoundedLayoutSize(image_->ImageSize(
+      StyleRef().EffectiveZoom(), FloatSize(bullet_width, bullet_width),
+      LayoutObject::ShouldRespectImageOrientation(this)));
 }
 
 void LayoutListMarker::ListStyleTypeChanged() {

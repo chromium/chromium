@@ -83,7 +83,7 @@ FloatSize LayoutImageResourceStyleImage::ImageSizeWithDefaultSize(
     float multiplier,
     const FloatSize& default_size) const {
   return style_image_->ImageSize(
-      layout_object_->GetDocument(), multiplier, default_size,
+      multiplier, default_size,
       LayoutObject::ShouldRespectImageOrientation(layout_object_));
 }
 

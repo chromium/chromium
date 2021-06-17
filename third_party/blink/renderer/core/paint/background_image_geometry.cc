@@ -692,8 +692,7 @@ void BackgroundImageGeometry::CalculateFillTileSize(
                                            ? snapped_positioning_area_size
                                            : unsnapped_positioning_area_size;
   PhysicalSize image_intrinsic_size = PhysicalSize::FromFloatSizeFloor(
-      image->ImageSize(positioning_box_->GetDocument(),
-                       positioning_box_->StyleRef().EffectiveZoom(),
+      image->ImageSize(positioning_box_->StyleRef().EffectiveZoom(),
                        FloatSize(positioning_area_size),
                        LayoutObject::ShouldRespectImageOrientation(box_)));
   switch (type) {

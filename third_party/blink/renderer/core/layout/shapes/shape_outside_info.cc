@@ -189,7 +189,7 @@ std::unique_ptr<Shape> ShapeOutsideInfo::CreateShapeForImage(
           LayoutObject::ShouldRespectImageOrientation(layout_box_));
 
   const LayoutSize& image_size = RoundedLayoutSize(style_image->ImageSize(
-      layout_box_->GetDocument(), layout_box_->StyleRef().EffectiveZoom(),
+      layout_box_->StyleRef().EffectiveZoom(),
       FloatSize(reference_box_logical_size_), respect_orientation));
 
   const LayoutRect& margin_rect =
