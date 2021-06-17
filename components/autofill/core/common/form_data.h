@@ -83,6 +83,7 @@ struct FormData {
   // The URL (minus query parameters and fragment) containing the form.
   GURL url;
   // The full URL, including query parameters and fragment.
+  // This value should be set only for password forms.
   GURL full_url;
   // The action target of the form.
   GURL action;

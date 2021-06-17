@@ -562,6 +562,7 @@ class FormStructure {
   GURL source_url_;
 
   // The full source URL including query parameters and fragment identifiers.
+  // This value should be set only for password forms.
   GURL full_source_url_;
 
   // The target URL.
