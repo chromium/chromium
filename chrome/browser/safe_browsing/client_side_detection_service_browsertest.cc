@@ -47,10 +47,6 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionServiceBrowserTest,
 
   base::RunLoop run_loop;
 
-  // Ensure that IPCs to set the model have propagated, otherwise they may
-  // interrupt classification.
-  content::RunAllTasksUntilIdle();
-
   content::RenderFrameHost* rfh =
       browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame();
   mojo::Remote<mojom::PhishingDetector> phishing_detector;

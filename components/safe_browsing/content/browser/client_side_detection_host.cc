@@ -366,13 +366,6 @@ ClientSideDetectionHost::ClientSideDetectionHost(
   // be null if safe browsing service is not available in the embedder.
   ui_manager_ = delegate_->GetSafeBrowsingUIManager();
   database_manager_ = delegate_->GetSafeBrowsingDBManager();
-
-  // We want to accurately track all active RenderFrameHosts, so make sure we
-  // know about any pre-existings ones.
-  for (content::RenderFrameHost* frame : web_contents()->GetAllFrames()) {
-    if (frame->IsRenderFrameCreated())
-      RenderFrameCreated(frame);
-  }
 }
 
 ClientSideDetectionHost::~ClientSideDetectionHost() {
@@ -420,17 +413,16 @@ void ClientSideDetectionHost::DidFinishNavigation(
   classification_request_->Start();
 }
 
-void ClientSideDetectionHost::SetPhishingModel(
-    const mojo::Remote<mojom::PhishingDetector>& phishing_detector) {
+void ClientSideDetectionHost::SetPhishingModel() {
   switch (csd_service_->GetModelType()) {
     case CSDModelType::kNone:
     case CSDModelType::kProtobuf:
-      phishing_detector->SetPhishingModel(
+      phishing_detector_->SetPhishingModel(
           csd_service_->GetModelStr(),
           csd_service_->GetVisualTfLiteModel().Duplicate());
       return;
     case CSDModelType::kFlatbuffer:
-      phishing_detector->SetPhishingFlatBufferModel(
+      phishing_detector_->SetPhishingFlatBufferModel(
           csd_service_->GetModelSharedMemoryRegion(),
           csd_service_->GetVisualTfLiteModel().Duplicate());
       return;
@@ -442,8 +434,14 @@ void ClientSideDetectionHost::SendModelToRenderFrame() {
   if (!web_contents() || web_contents() != tab_ || !csd_service_)
     return;
 
-  for (const auto& frame_and_remote : phishing_detectors_) {
-    SetPhishingModel(frame_and_remote.second);
+  for (content::RenderFrameHost* frame : web_contents()->GetAllFrames()) {
+    if (!frame->IsRenderFrameCreated())
+      continue;  // We'd send to this frame on RenderFrameCreated().
+    if (phishing_detector_)
+      phishing_detector_.reset();
+    frame->GetRemoteInterfaces()->GetInterface(
+        phishing_detector_.BindNewPipeAndPassReceiver());
+    SetPhishingModel();
   }
 }
 
@@ -458,19 +456,11 @@ void ClientSideDetectionHost::WebContentsDestroyed() {
 
 void ClientSideDetectionHost::RenderFrameCreated(
     content::RenderFrameHost* render_frame_host) {
-  mojo::Remote<mojom::PhishingDetector> new_detector;
+  if (phishing_detector_)
+    phishing_detector_.reset();
   render_frame_host->GetRemoteInterfaces()->GetInterface(
-      new_detector.BindNewPipeAndPassReceiver());
-  new_detector.set_disconnect_handler(
-      base::BindOnce(&ClientSideDetectionHost::RenderFrameDeleted,
-                     weak_factory_.GetWeakPtr(), render_frame_host));
-  phishing_detectors_[render_frame_host] = std::move(new_detector);
-  SetPhishingModel(phishing_detectors_[render_frame_host]);
-}
-
-void ClientSideDetectionHost::RenderFrameDeleted(
-    content::RenderFrameHost* render_frame_host) {
-  phishing_detectors_.erase(render_frame_host);
+      phishing_detector_.BindNewPipeAndPassReceiver());
+  SetPhishingModel();
 }
 
 void ClientSideDetectionHost::OnPhishingPreClassificationDone(
@@ -478,24 +468,14 @@ void ClientSideDetectionHost::OnPhishingPreClassificationDone(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (should_classify) {
     content::RenderFrameHost* rfh = web_contents()->GetMainFrame();
-    auto it = phishing_detectors_.find(rfh);
-    bool remote_valid =
-        (it != phishing_detectors_.end() && it->second.is_connected());
-
-    base::UmaHistogramBoolean("SBClientPhishing.MainFrameRemoteExists",
-                              it != phishing_detectors_.end());
-    if (it != phishing_detectors_.end()) {
-      base::UmaHistogramBoolean("SBClientPhishing.MainFrameRemoteConnected",
-                                it->second.is_connected());
-    }
-
-    if (remote_valid) {
-      phishing_detection_start_time_ = tick_clock_->NowTicks();
-      it->second->StartPhishingDetection(
-          current_url_,
-          base::BindOnce(&ClientSideDetectionHost::PhishingDetectionDone,
-                         weak_factory_.GetWeakPtr()));
-    }
+    phishing_detector_.reset();
+    rfh->GetRemoteInterfaces()->GetInterface(
+        phishing_detector_.BindNewPipeAndPassReceiver());
+    phishing_detection_start_time_ = tick_clock_->NowTicks();
+    phishing_detector_->StartPhishingDetection(
+        current_url_,
+        base::BindOnce(&ClientSideDetectionHost::PhishingDetectionDone,
+                       weak_factory_.GetWeakPtr()));
   }
 }
 
