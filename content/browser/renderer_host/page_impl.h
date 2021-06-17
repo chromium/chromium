@@ -28,6 +28,7 @@ class PageImpl : public Page {
 
   // Page implementation.
   const GURL& GetManifestURL() override;
+  void GetManifest(GetManifestCallback callback) override;
 
   RenderFrameHostImpl* main_document() { return &main_document_; }
 

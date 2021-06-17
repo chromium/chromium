@@ -22,6 +22,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/manifest_icon_downloader.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_features.h"
@@ -624,7 +625,9 @@ void InstallableManager::FetchManifest() {
   content::WebContents* web_contents = GetWebContents();
   DCHECK(web_contents);
 
-  web_contents->GetManifest(base::BindOnce(
+  // This uses DidFinishNavigation to abort when the primary page changes.
+  // Therefore this should always be the correct page.
+  web_contents->GetMainFrame()->GetPage().GetManifest(base::BindOnce(
       &InstallableManager::OnDidGetManifest, weak_factory_.GetWeakPtr()));
 }
 

@@ -18,6 +18,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/manifest_icon_downloader.h"
+#include "content/public/browser/page.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/manifest/manifest_icon_selector.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -150,7 +151,7 @@ void PaymentAppInfoFetcher::SelfDeleteFetcher::Start(
     web_contents_helper_ =
         std::make_unique<WebContentsHelper>(top_level_web_content);
 
-    top_level_web_content->GetManifest(
+    top_level_render_frame_host->GetPage().GetManifest(
         base::BindOnce(&PaymentAppInfoFetcher::SelfDeleteFetcher::
                            FetchPaymentAppManifestCallback,
                        weak_ptr_factory_.GetWeakPtr()));

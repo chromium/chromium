@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/page_impl.h"
 
+#include "content/browser/manifest/manifest_manager_host.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 
 namespace content {
@@ -14,6 +15,12 @@ PageImpl::~PageImpl() = default;
 
 const GURL& PageImpl::GetManifestURL() {
   return manifest_url_;
+}
+
+void PageImpl::GetManifest(GetManifestCallback callback) {
+  ManifestManagerHost* manifest_manager_host =
+      ManifestManagerHost::GetOrCreateForCurrentDocument(&main_document_);
+  manifest_manager_host->GetManifest(std::move(callback));
 }
 
 }  // namespace content

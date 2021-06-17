@@ -11,6 +11,7 @@
 #include "base/test/bind.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -191,7 +192,8 @@ IN_PROC_BROWSER_TEST_F(AcceptHeaderTest, Check) {
   // Ensure that if an Accept header is already set, it is not overwritten.
   EXPECT_EQ("custom/type", GetFor("/xhr_with_accept_header"));
 
-  shell()->web_contents()->GetManifest(base::DoNothing());
+  shell()->web_contents()->GetMainFrame()->GetPage().GetManifest(
+      base::DoNothing());
 
   // ResourceType::kSubResource
   EXPECT_EQ("*/*", GetFor("/manifest"));

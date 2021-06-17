@@ -5,8 +5,13 @@
 #ifndef CONTENT_PUBLIC_BROWSER_PAGE_H_
 #define CONTENT_PUBLIC_BROWSER_PAGE_H_
 
+#include "base/callback.h"
 #include "content/common/content_export.h"
 #include "url/gurl.h"
+
+namespace blink {
+struct Manifest;
+}  // namespace blink
 
 namespace content {
 
@@ -54,6 +59,15 @@ class CONTENT_EXPORT Page {
   // The GURL for the page's web application manifest.
   // See https://w3c.github.io/manifest/#web-application-manifest
   virtual const GURL& GetManifestURL() = 0;
+
+  // The callback invoked when the renderer responds to a request for the main
+  // frame document's manifest. The url will be empty if the document specifies
+  // no manifest, and the manifest will be empty if any other failures occurred.
+  using GetManifestCallback =
+      base::OnceCallback<void(const GURL&, const blink::Manifest&)>;
+
+  // Requests the manifest URL and the Manifest of the main frame's document.
+  virtual void GetManifest(GetManifestCallback callback) = 0;
 
  private:
   // This interface should only be implemented inside content.

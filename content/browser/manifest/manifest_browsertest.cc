@@ -15,6 +15,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
@@ -92,8 +93,9 @@ class ManifestBrowserTest : public ContentBrowserTest,
   }
 
   void GetManifestAndWait() {
-    shell()->web_contents()->GetManifest(base::BindOnce(
-        &ManifestBrowserTest::OnGetManifest, base::Unretained(this)));
+    shell()->web_contents()->GetMainFrame()->GetPage().GetManifest(
+        base::BindOnce(&ManifestBrowserTest::OnGetManifest,
+                       base::Unretained(this)));
 
     message_loop_runner_ = new MessageLoopRunner();
     message_loop_runner_->Run();

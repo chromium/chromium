@@ -39,6 +39,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/storage_partition.h"
@@ -515,8 +516,13 @@ class ChromeServiceWorkerLinkFetchTest : public ChromeServiceWorkerFetchTest {
 
   std::string GetManifestAndIssuedRequests() {
     base::RunLoop run_loop;
-    browser()->tab_strip_model()->GetActiveWebContents()->GetManifest(
-        base::BindOnce(&ManifestCallbackAndRun, run_loop.QuitClosure()));
+    browser()
+        ->tab_strip_model()
+        ->GetActiveWebContents()
+        ->GetMainFrame()
+        ->GetPage()
+        .GetManifest(
+            base::BindOnce(&ManifestCallbackAndRun, run_loop.QuitClosure()));
     run_loop.Run();
     return ExecuteScriptAndExtractString(
         "if (issuedRequests.length != 0) reportRequests();"

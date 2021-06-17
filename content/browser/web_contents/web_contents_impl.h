@@ -533,7 +533,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
             blink::mojom::FindOptionsPtr options) override;
   void StopFinding(StopFindAction action) override;
   bool WasEverAudible() override;
-  void GetManifest(GetManifestCallback callback) override;
   bool IsFullscreen() override;
   bool ShouldShowStaleContentOnEviction() override;
   void ExitFullscreen(bool will_cause_resize) override;

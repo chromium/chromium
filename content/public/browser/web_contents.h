@@ -55,7 +55,6 @@ namespace blink {
 namespace web_pref {
 struct WebPreferences;
 }
-struct Manifest;
 struct UserAgentOverride;
 struct RendererPreferences;
 }  // namespace blink
@@ -1052,15 +1051,6 @@ class WebContents : public PageNavigator,
   // Returns true if audio has been audible from the WebContents since the last
   // navigation.
   virtual bool WasEverAudible() = 0;
-
-  // The callback invoked when the renderer responds to a request for the main
-  // frame document's manifest. The url will be empty if the document specifies
-  // no manifest, and the manifest will be empty if any other failures occurred.
-  using GetManifestCallback =
-      base::OnceCallback<void(const GURL&, const blink::Manifest&)>;
-
-  // Requests the manifest URL and the Manifest of the main frame's document.
-  virtual void GetManifest(GetManifestCallback callback) = 0;
 
   // Returns whether the renderer is in fullscreen mode.
   virtual bool IsFullscreen() = 0;

@@ -18,6 +18,10 @@
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
 #include "url/gurl.h"
 
+namespace blink {
+struct Manifest;
+}  // namespace blink
+
 namespace favicon {
 
 class CoreFaviconService;
