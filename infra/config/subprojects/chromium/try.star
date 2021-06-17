@@ -1249,9 +1249,7 @@ try_.chromium_linux_builder(
     main_list_view = "try",
     use_clang_coverage = True,
     coverage_test_types = ["unit", "overall"],
-    tryjob = try_.job(
-        enable_for_quick_run = True,
-    ),
+    tryjob = try_.job(),
 )
 
 try_.chromium_linux_builder(
@@ -1542,9 +1540,7 @@ try_.chromium_mac_builder(
     goma_jobs = goma.jobs.J150,
     main_list_view = "try",
     os = os.MAC_DEFAULT,
-    tryjob = try_.job(
-        enable_for_quick_run = True,
-    ),
+    tryjob = try_.job(),
 )
 
 try_.chromium_mac_builder(
@@ -1839,9 +1835,7 @@ try_.chromium_win_builder(
     use_clang_coverage = True,
     coverage_test_types = ["unit", "overall"],
     main_list_view = "try",
-    tryjob = try_.job(
-        enable_for_quick_run = True,
-    ),
+    tryjob = try_.job(),
 )
 
 try_.chromium_win_builder(
