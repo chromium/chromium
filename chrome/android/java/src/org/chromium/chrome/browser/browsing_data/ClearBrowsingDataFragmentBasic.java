@@ -36,8 +36,6 @@ import java.util.List;
  * explanatory text.
  */
 public class ClearBrowsingDataFragmentBasic extends ClearBrowsingDataFragment {
-    private static final String SEARCH_ENGINE_NAME_GOOGLE = "Google";
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,37 +78,63 @@ public class ClearBrowsingDataFragmentBasic extends ClearBrowsingDataFragment {
         super.onCreatePreferences(savedInstanceState, rootKey);
         IdentityManager identityManager = IdentityServicesProvider.get().getIdentityManager(
                 Profile.getLastUsedRegularProfile());
-        Preference searchHistoryTextPref =
-                findPreference(ClearBrowsingDataFragment.PREF_SEARCH_HISTORY_TEXT);
+        Preference googleDataTextPref =
+                findPreference(ClearBrowsingDataFragment.PREF_GOOGLE_DATA_TEXT);
+        Preference nonGoogleSearchHistoryTextPref =
+                findPreference(ClearBrowsingDataFragment.PREF_SEARCH_HISTORY_NON_GOOGLE_TEXT);
         TemplateUrlService templateUrlService = TemplateUrlServiceFactory.get();
         TemplateUrl defaultSearchEngine = templateUrlService.getDefaultSearchEngineTemplateUrl();
+        boolean isDefaultSearchEngineGoogle = templateUrlService.isDefaultSearchEngineGoogle();
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SEARCH_HISTORY_LINK)) {
-            if (defaultSearchEngine == null) {
-                // Remove the search history text when DSE is disabled.
-                deleteSearchHistoryTextIfExists();
-            } else if (!defaultSearchEngine.getIsPrepopulated()
-                    || !defaultSearchEngine.getShortName().equals(SEARCH_ENGINE_NAME_GOOGLE)) {
-                // Non-Google DSE is selected. Update the text to refer to that DSE.
-                searchHistoryTextPref.setSummary(
-                        getContext().getString(R.string.clear_search_history_non_google_dse,
-                                defaultSearchEngine.getShortName()));
-            } else if (identityManager.hasPrimaryAccount() && searchHistoryTextPref != null) {
-                // Google DSE, signed in; build the text with links to My Activity.
-                searchHistoryTextPref.setSummary(buildGoogleSearchHistoryText());
-            } else {
-                // Google DSE, not signed-in; remove the text.
-                deleteSearchHistoryTextIfExists();
-            }
+        // Google-related links to delete search history and other browsing activity.
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SEARCH_HISTORY_LINK)
+                || defaultSearchEngine == null || !identityManager.hasPrimaryAccount()) {
+            // One of three cases:
+            // 1. The feature is disabled.
+            // 2. The default search engine is disabled.
+            // 3. The user is not signed into Chrome.
+            // In all those cases, delete the link to clear Google data using MyActivity.
+            deleteGoogleDataTextIfExists();
+        } else if (isDefaultSearchEngineGoogle) {
+            // Signed-in and the DSE is Google. Build the text with two links.
+            googleDataTextPref.setSummary(buildGoogleSearchHistoryText());
         } else {
-            // Remove the search history text when the flag is disabled.
-            deleteSearchHistoryTextIfExists();
+            // Signed-in and non-Google DSE. Build the text with the MyActivity link only.
+            googleDataTextPref.setSummary(buildGoogleMyActivityText());
+        }
+
+        // Text for search history if DSE is not Google.
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SEARCH_HISTORY_LINK)
+                || defaultSearchEngine == null || isDefaultSearchEngineGoogle) {
+            // One of three cases:
+            // 1. The feature is disabled.
+            // 2. The default search engine is disabled.
+            // 3. The default search engine is Google.
+            // In all those cases, delete the link to clear non-Google search history.
+            deleteNonGoogleSearchHistoryTextIfExists();
+        } else if (defaultSearchEngine.getIsPrepopulated()) {
+            // Prepopulated non-Google DSE. Use its name in the text.
+            nonGoogleSearchHistoryTextPref.setSummary(
+                    getContext().getString(R.string.clear_search_history_non_google_dse,
+                            defaultSearchEngine.getShortName()));
+        } else {
+            // Unknown non-Google DSE. Use generic text.
+            nonGoogleSearchHistoryTextPref.setSummary(
+                    R.string.clear_search_history_non_google_dse_unknown);
         }
     }
 
-    private void deleteSearchHistoryTextIfExists() {
+    private void deleteGoogleDataTextIfExists() {
+        Preference googleDataTextPref =
+                findPreference(ClearBrowsingDataFragment.PREF_GOOGLE_DATA_TEXT);
+        if (googleDataTextPref != null) {
+            getPreferenceScreen().removePreference(googleDataTextPref);
+        }
+    }
+
+    private void deleteNonGoogleSearchHistoryTextIfExists() {
         Preference searchHistoryTextPref =
-                findPreference(ClearBrowsingDataFragment.PREF_SEARCH_HISTORY_TEXT);
+                findPreference(ClearBrowsingDataFragment.PREF_SEARCH_HISTORY_NON_GOOGLE_TEXT);
         if (searchHistoryTextPref != null) {
             getPreferenceScreen().removePreference(searchHistoryTextPref);
         }
@@ -127,6 +151,17 @@ public class ClearBrowsingDataFragmentBasic extends ClearBrowsingDataFragment {
                                                     TabLaunchType.FROM_CHROME_UI);
                                 })),
                 new SpanInfo("<link2>", "</link2>",
+                        new NoUnderlineClickableSpan(getContext().getResources(), (widget) -> {
+                            new TabDelegate(false /* incognito */)
+                                    .launchUrl(UrlConstants.MY_ACTIVITY_URL_IN_CBD,
+                                            TabLaunchType.FROM_CHROME_UI);
+                        })));
+    }
+
+    private SpannableString buildGoogleMyActivityText() {
+        return SpanApplier.applySpans(
+                getContext().getString(R.string.clear_search_history_link_other_forms),
+                new SpanInfo("<link1>", "</link1>",
                         new NoUnderlineClickableSpan(getContext().getResources(), (widget) -> {
                             new TabDelegate(false /* incognito */)
                                     .launchUrl(UrlConstants.MY_ACTIVITY_URL_IN_CBD,

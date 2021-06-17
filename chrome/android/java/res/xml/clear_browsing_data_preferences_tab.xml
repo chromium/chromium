@@ -46,6 +46,9 @@
         android:title="@string/prefs_site_settings" />
 
     <org.chromium.components.browser_ui.settings.TextMessagePreference
-        android:key="clear_search_history_text"
+        android:key="clear_google_data_text"
         android:summary="@string/clear_search_history_link" />
+
+    <org.chromium.components.browser_ui.settings.TextMessagePreference
+        android:key="clear_search_history_non_google_text" />
 </PreferenceScreen>

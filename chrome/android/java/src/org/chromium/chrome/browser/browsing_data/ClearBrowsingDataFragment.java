@@ -161,7 +161,9 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     static final String PREF_TIME_RANGE = "time_period_spinner";
 
-    static final String PREF_SEARCH_HISTORY_TEXT = "clear_search_history_text";
+    static final String PREF_GOOGLE_DATA_TEXT = "clear_google_data_text";
+    static final String PREF_SEARCH_HISTORY_NON_GOOGLE_TEXT =
+            "clear_search_history_non_google_text";
 
     /** The "Clear" button preference. */
     @VisibleForTesting
