@@ -4,17 +4,24 @@
 
 #include "components/optimization_guide/core/bert_model_executor.h"
 
+#include "base/trace_event/trace_event.h"
+#include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/core/tflite_op_resolver.h"
 #include "third_party/tflite-support/src/tensorflow_lite_support/cc/task/text/nlclassifier/bert_nl_classifier.h"
 
 namespace optimization_guide {
 
-BertModelExecutor::BertModelExecutor() = default;
+BertModelExecutor::BertModelExecutor(
+    proto::OptimizationTarget optimization_target)
+    : optimization_target_(optimization_target) {}
 BertModelExecutor::~BertModelExecutor() = default;
 
 absl::optional<std::vector<tflite::task::core::Category>>
 BertModelExecutor::Execute(ModelExecutionTask* execution_task,
                            const std::string& input) {
+  TRACE_EVENT2("browser", "BertModelExecutor::Execute", "optimization_target",
+               GetStringNameForOptimizationTarget(optimization_target_),
+               "input_length", input.size());
   return static_cast<tflite::task::text::nlclassifier::BertNLClassifier*>(
              execution_task)
       ->Classify(input);
@@ -39,11 +46,12 @@ BertModelExecutorHandle::BertModelExecutorHandle(
     proto::OptimizationTarget optimization_target,
     const absl::optional<proto::Any>& model_metadata)
     : ModelHandler<std::vector<tflite::task::core::Category>,
-                   const std::string&>(model_provider,
-                                       background_task_runner,
-                                       std::make_unique<BertModelExecutor>(),
-                                       optimization_target,
-                                       model_metadata) {}
+                   const std::string&>(
+          model_provider,
+          background_task_runner,
+          std::make_unique<BertModelExecutor>(optimization_target),
+          optimization_target,
+          model_metadata) {}
 
 BertModelExecutorHandle::~BertModelExecutorHandle() = default;
 

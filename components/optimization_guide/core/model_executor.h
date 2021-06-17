@@ -14,6 +14,7 @@
 #include "base/sequence_checker.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
@@ -160,7 +161,14 @@ class ModelExecutor {
     last_execution_time_ = base::TimeTicks::Now();
 
     DCHECK(loaded_model_);
-    absl::optional<OutputType> output = Execute(loaded_model_.get(), args...);
+    absl::optional<OutputType> output;
+    {
+      TRACE_EVENT1("browser", "OptGuideModelExecutor::Execute",
+                   "OptimizationTarget",
+                   optimization_guide::GetStringNameForOptimizationTarget(
+                       optimization_target_));
+      output = Execute(loaded_model_.get(), args...);
+    }
 
     DCHECK(ui_callback_on_complete);
     reply_task_runner_->PostTask(
@@ -199,6 +207,10 @@ class ModelExecutor {
 
  private:
   void ResetLoadedModel() {
+    TRACE_EVENT1("browser", "OptGuideModelExecutor::ResetLoadedModel",
+                 "OptimizationTarget",
+                 optimization_guide::GetStringNameForOptimizationTarget(
+                     optimization_target_));
     DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -209,6 +221,10 @@ class ModelExecutor {
   // A true return value indicates the model was loaded successfully, false
   // otherwise.
   bool LoadModelFile() {
+    TRACE_EVENT1("browser", "OptGuideModelExecutor::LoadModelFile",
+                 "OptimizationTarget",
+                 optimization_guide::GetStringNameForOptimizationTarget(
+                     optimization_target_));
     DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
