@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {FileManagerUI} from './ui/file_manager_ui.m.js';
+// #import {FileManagerUI} from './ui/file_manager_ui.js';
 // #import {DriveSyncHandler} from '../../externs/background/drive_sync_handler.m.js';
 // #import {FolderShortcutsDataModel} from './folder_shortcuts_data_model.m.js';
 // #import {DirectoryModel} from './directory_model.m.js';

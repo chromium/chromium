@@ -50,7 +50,7 @@ js_library("command_handler_deps.m") {
     "//ui/file_manager/file_manager/foreground/js:task_controller.m",
     "//ui/file_manager/file_manager/foreground/js/metadata:metadata_model.m",
     "//ui/file_manager/file_manager/foreground/js/ui:directory_tree.m",
-    "//ui/file_manager/file_manager/foreground/js/ui:file_manager_ui.m",
+    "//ui/file_manager/file_manager/foreground/js/ui:file_manager_ui",
   ]
 
   extra_deps = [ ":modulize" ]

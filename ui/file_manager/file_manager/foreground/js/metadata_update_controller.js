@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #import {FileMetadataFormatter} from './ui/file_metadata_formatter.m.js';
+// #import {FileMetadataFormatter} from './ui/file_metadata_formatter.js';
 // #import {MetadataModel} from './metadata/metadata_model.m.js';
 // #import {DirectoryModel} from './directory_model.m.js';
 // #import {ListContainer} from './ui/list_container.js';

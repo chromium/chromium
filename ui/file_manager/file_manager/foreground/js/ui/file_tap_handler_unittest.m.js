@@ -4,7 +4,7 @@
 
 import {assertEquals} from 'chrome://test/chai_assert.js';
 import {reportPromise} from '../../../common/js/test_error_reporting.m.js';
-import {FileTapHandler} from './file_tap_handler.m.js';
+import {FileTapHandler} from './file_tap_handler.js';
 
 /** @type {!FileTapHandler} handler the handler. */
 let handler;

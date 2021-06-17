@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #import {FileManagerUI} from './ui/file_manager_ui.m.js';
+// #import {FileManagerUI} from './ui/file_manager_ui.js';
 // #import {DirectoryModel} from './directory_model.m.js';
 // #import {DialogType} from './dialog_type.m.js';
 // #import {util} from '../../common/js/util.m.js';

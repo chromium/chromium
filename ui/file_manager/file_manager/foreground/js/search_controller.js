@@ -5,13 +5,13 @@
 // clang-format off
 // #import {EntryLocation} from '../../externs/entry_location.m.js';
 // #import {VolumeManager} from '../../externs/volume_manager.m.js';
-// #import {FileManagerUI} from './ui/file_manager_ui.m.js';
+// #import {FileManagerUI} from './ui/file_manager_ui.js';
 // #import {TaskController} from './task_controller.m.js';
 // #import {DirectoryModel} from './directory_model.m.js';
-// #import {LocationLine} from './ui/location_line.m.js';
+// #import {LocationLine} from './ui/location_line.js';
 // #import {str, strf} from '../../common/js/util.m.js';
 // #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
-// #import {SearchBox} from './ui/search_box.m.js';
+// #import {SearchBox} from './ui/search_box.js';
 // clang-format on
 
 /**

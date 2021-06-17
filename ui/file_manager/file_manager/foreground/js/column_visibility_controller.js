@@ -5,7 +5,7 @@
 // clang-format off
 // #import {VolumeManager} from '../../externs/volume_manager.m.js';
 // #import {DirectoryModel} from './directory_model.m.js';
-// #import {FileManagerUI} from './ui/file_manager_ui.m.js';
+// #import {FileManagerUI} from './ui/file_manager_ui.js';
 // #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
 // #import {importer} from '../../common/js/importer_common.m.js';
 // clang-format on

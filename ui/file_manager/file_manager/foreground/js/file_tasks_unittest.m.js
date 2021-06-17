@@ -23,7 +23,7 @@ import {FileTransferController} from './file_transfer_controller.m.js';
 import {MetadataModel} from './metadata/metadata_model.m.js';
 import {NamingController} from './naming_controller.m.js';
 import {TaskHistory} from './task_history.m.js';
-import {FileManagerUI} from './ui/file_manager_ui.m.js';
+import {FileManagerUI} from './ui/file_manager_ui.js';
 
 /**
  * Utility function that appends value under a given name in the store.

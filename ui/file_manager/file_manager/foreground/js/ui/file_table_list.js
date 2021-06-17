@@ -15,9 +15,9 @@ import {EntryLocation} from '../../../externs/entry_location.m.js';
 import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.m.js';
 import {MetadataModel} from '../metadata/metadata_model.m.js';
 
-import {A11yAnnounce} from './a11y_announce.m.js';
+import {A11yAnnounce} from './a11y_announce.js';
 import {FileListSelectionModel, FileListSingleSelectionModel} from './file_list_selection_model.js';
-import {FileTapHandler} from './file_tap_handler.m.js';
+import {FileTapHandler} from './file_tap_handler.js';
 import {TableList} from './table/table_list.js';
 
 /**

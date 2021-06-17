@@ -8,7 +8,7 @@
 // #import {Crostini} from './background/crostini.m.js';
 // #import {MetadataModel} from '../foreground/js/metadata/metadata_model.m.js';
 // #import {VolumeManager} from './volume_manager.m.js';
-// #import {FileManagerUI} from '../foreground/js/ui/file_manager_ui.m.js';
+// #import {FileManagerUI} from '../foreground/js/ui/file_manager_ui.js';
 // #import {TaskController} from '../foreground/js/task_controller.m.js';
 // #import {SpinnerController} from '../foreground/js/spinner_controller.m.js';
 // #import {ProvidersModel} from '../foreground/js/providers_model.m.js';

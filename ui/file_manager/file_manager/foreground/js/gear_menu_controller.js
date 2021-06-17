@@ -6,9 +6,9 @@
 // #import {ProvidersModel} from './providers_model.m.js';
 // #import {CommandHandler} from './file_manager_commands.m.js';
 // #import {DirectoryModel} from './directory_model.m.js';
-// #import {ProvidersMenu} from './ui/providers_menu.m.js';
-// #import {GearMenu} from './ui/gear_menu.m.js';
-// #import {MultiMenuButton} from './ui/multi_menu_button.m.js';
+// #import {ProvidersMenu} from './ui/providers_menu.js';
+// #import {GearMenu} from './ui/gear_menu.js';
+// #import {MultiMenuButton} from './ui/multi_menu_button.js';
 // #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
 // #import {DirectoryChangeEvent} from '../../externs/directory_change_event.m.js';
 // #import {str, util} from '../../common/js/util.m.js';

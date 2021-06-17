@@ -4,7 +4,7 @@
 
 // #import {MetadataItem} from './metadata/metadata_item.m.js';
 // #import {VolumeManager} from '../../externs/volume_manager.m.js';
-// #import {FileMetadataFormatter} from './ui/file_metadata_formatter.m.js';
+// #import {FileMetadataFormatter} from './ui/file_metadata_formatter.js';
 // #import {QuickViewModel} from './quick_view_model.m.js';
 // #import {MetadataModel} from './metadata/metadata_model.m.js';
 // #import {PathComponent} from './path_component.m.js';

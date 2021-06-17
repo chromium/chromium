@@ -4,7 +4,7 @@
 
 // #import {FileListModel} from './file_list_model.m.js';
 // #import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
-// #import {MultiMenuButton} from './ui/multi_menu_button.m.js';
+// #import {MultiMenuButton} from './ui/multi_menu_button.js';
 // #import '../elements/files_toggle_ripple.js';
 
 /* #export */ class SortMenuController {

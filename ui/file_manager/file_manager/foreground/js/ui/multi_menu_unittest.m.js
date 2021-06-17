@@ -11,7 +11,7 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://test/chai_assert.j
 
 import {util} from '../../../common/js/util.m.js';
 
-import {MultiMenuButton} from './multi_menu_button.m.js';
+import {MultiMenuButton} from './multi_menu_button.js';
 
 /** @type {MultiMenuButton} */
 let menubutton;

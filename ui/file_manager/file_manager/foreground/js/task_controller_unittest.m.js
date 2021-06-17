@@ -25,7 +25,7 @@ import {MockMetadataModel} from './metadata/mock_metadata.m.js';
 import {MetadataUpdateController} from './metadata_update_controller.m.js';
 import {NamingController} from './naming_controller.m.js';
 import {TaskController} from './task_controller.m.js';
-import {FileManagerUI} from './ui/file_manager_ui.m.js';
+import {FileManagerUI} from './ui/file_manager_ui.js';
 
 /**
  * Mock metrics.

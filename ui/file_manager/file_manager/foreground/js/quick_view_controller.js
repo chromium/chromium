@@ -12,7 +12,7 @@
 // #import {FileListSelectionModel} from './ui/file_list_selection_model.js';
 // #import {TaskController} from './task_controller.m.js';
 // #import {QuickViewModel} from './quick_view_model.m.js';
-// #import {MultiMenuButton} from './ui/multi_menu_button.m.js';
+// #import {MultiMenuButton} from './ui/multi_menu_button.js';
 // #import {ListContainer} from './ui/list_container.js';
 // #import {MetadataModel} from './metadata/metadata_model.m.js';
 // #import {CommandHandlerDeps} from '../../externs/command_handler_deps.m.js';

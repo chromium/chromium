@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert.m.js';
 
 /**
  * Processes touch events and calls back to the class user when tap events
@@ -12,7 +12,7 @@
  * will suppress browser mouse event generation, or 2) not handle the event
  * to let it be handled by mouse event handlers.
  */
-/* #export */ class FileTapHandler {
+export class FileTapHandler {
   constructor() {
     /**
      * Whether the pointer is currently down and at the same place as the

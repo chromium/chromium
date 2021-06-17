@@ -2,56 +2,57 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {VolumeManager} from '../../../externs/volume_manager.m.js';
-// #import {FileGrid} from './file_grid.js';
-// #import {FileTable} from './file_table.js';
-// #import {FilesToast} from '../../elements/files_toast.js';
-// #import {Banners} from './banners.m.js';
-// #import {DirectoryTree} from './directory_tree.m.js';
-// #import {FilesPasswordDialog} from '../../elements/files_password_dialog.js';
-// #import {LaunchParam} from '../launch_param.m.js';
-// #import {ProvidersModel} from '../providers_model.m.js';
-// #import {A11yAnnounce} from './a11y_announce.m.js';
-// #import {ActionModelUI} from './action_model_ui.m.js';
-// #import {ImportCrostiniImageDialog} from './import_crostini_image_dialog.m.js';
-// #import {DialogFooter} from './dialog_footer.m.js';
-// #import {InstallLinuxPackageDialog} from './install_linux_package_dialog.m.js';
-// #import {Splitter} from 'chrome://resources/js/cr/ui/splitter.js';
-// #import {FilesMenuItem} from './files_menu.m.js';
-// #import {decorate, define as crUiDefine} from 'chrome://resources/js/cr/ui.m.js';
-// #import {MenuItem} from 'chrome://resources/js/cr/ui/menu_item.m.js';
-// #import {FilesTooltip} from '../../elements/files_tooltip.js';
-// #import {assertInstanceof} from 'chrome://resources/js/assert.m.js';
-// #import {DialogType} from '../dialog_type.m.js';
-// #import {contextMenuHandler} from 'chrome://resources/js/cr/ui/context_menu_handler.m.js';
-// #import {LocationLine} from './location_line.m.js';
-// #import {ListContainer} from './list_container.js';
-// #import {AllowedPaths} from '../../../common/js/volume_manager_types.m.js';
-// #import {ActionsSubmenu} from './actions_submenu.m.js';
-// #import {ProvidersMenu} from './providers_menu.m.js';
-// #import {ComboButton} from './combobutton.m.js';
-// #import {MultiMenu} from './multi_menu.m.js';
-// #import {ProgressCenterPanel} from './progress_center_panel.m.js';
-// #import {GearMenu} from './gear_menu.m.js';
-// #import {MultiMenuButton} from './multi_menu_button.m.js';
-// #import {EmptyFolder} from './empty_folder.m.js';
-// #import {SearchBox} from './search_box.m.js';
-// #import {Menu} from 'chrome://resources/js/cr/ui/menu.m.js';
-// #import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
-// #import {FilesConfirmDialog} from './files_confirm_dialog.m.js';
-// #import {FilesAlertDialog} from './files_alert_dialog.m.js';
-// #import {str, util, strf} from '../../../common/js/util.m.js';
-// #import {BaseDialog} from 'chrome://resources/js/cr/ui/dialogs.m.js';
-// #import {DefaultTaskDialog} from './default_task_dialog.m.js';
-// clang-format on
+import {assertInstanceof} from 'chrome://resources/js/assert.m.js';
+import {decorate, define as crUiDefine} from 'chrome://resources/js/cr/ui.m.js';
+import {contextMenuHandler} from 'chrome://resources/js/cr/ui/context_menu_handler.m.js';
+import {BaseDialog} from 'chrome://resources/js/cr/ui/dialogs.m.js';
+import {Menu} from 'chrome://resources/js/cr/ui/menu.m.js';
+import {MenuItem} from 'chrome://resources/js/cr/ui/menu_item.m.js';
+import {Splitter} from 'chrome://resources/js/cr/ui/splitter.js';
+import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
+
+import {str, strf, util} from '../../../common/js/util.m.js';
+import {AllowedPaths} from '../../../common/js/volume_manager_types.m.js';
+import {VolumeManager} from '../../../externs/volume_manager.m.js';
+import {FilesPasswordDialog} from '../../elements/files_password_dialog.js';
+import {FilesToast} from '../../elements/files_toast.js';
+import {FilesTooltip} from '../../elements/files_tooltip.js';
+import {DialogType} from '../dialog_type.m.js';
+import {LaunchParam} from '../launch_param.m.js';
+import {ProvidersModel} from '../providers_model.m.js';
+
+import {A11yAnnounce} from './a11y_announce.js';
+import {ActionModelUI} from './action_model_ui.js';
+import {ActionsSubmenu} from './actions_submenu.js';
+import {Banners} from './banners.m.js';
+import {ComboButton} from './combobutton.m.js';
+import {DefaultTaskDialog} from './default_task_dialog.m.js';
+import {DialogFooter} from './dialog_footer.m.js';
+import {DirectoryTree} from './directory_tree.m.js';
+import {EmptyFolder} from './empty_folder.m.js';
+import {FileGrid} from './file_grid.js';
+import {FileTable} from './file_table.js';
+import {FilesAlertDialog} from './files_alert_dialog.m.js';
+import {FilesConfirmDialog} from './files_confirm_dialog.m.js';
+import {FilesMenuItem} from './files_menu.js';
+import {GearMenu} from './gear_menu.js';
+import {ImportCrostiniImageDialog} from './import_crostini_image_dialog.m.js';
+import {InstallLinuxPackageDialog} from './install_linux_package_dialog.m.js';
+import {ListContainer} from './list_container.js';
+import {LocationLine} from './location_line.js';
+import {MultiMenu} from './multi_menu.js';
+import {MultiMenuButton} from './multi_menu_button.js';
+import {ProgressCenterPanel} from './progress_center_panel.js';
+import {ProvidersMenu} from './providers_menu.js';
+import {SearchBox} from './search_box.js';
+
 
 /**
  * The root of the file manager's view managing the DOM of the Files app.
  * @implements {ActionModelUI}
  * @implements {A11yAnnounce}
  */
-/* #export */ class FileManagerUI {
+export class FileManagerUI {
   /**
    * @param {!ProvidersModel} providersModel Model for providers.
    * @param {!HTMLElement} element Top level element of the Files app.
@@ -60,8 +61,8 @@
   constructor(providersModel, element, launchParam) {
     // Initialize the dialog label. This should be done before constructing
     // dialog instances.
-    cr.ui.dialogs.BaseDialog.OK_LABEL = str('OK_LABEL');
-    cr.ui.dialogs.BaseDialog.CANCEL_LABEL = str('CANCEL_LABEL');
+    BaseDialog.OK_LABEL = str('OK_LABEL');
+    BaseDialog.CANCEL_LABEL = str('CANCEL_LABEL');
 
     /**
      * Top level element of the Files app.
@@ -77,7 +78,7 @@
     this.dialogType_ = launchParam.type;
 
     /**
-     * <hr> elements in cr.ui.Menu.
+     * <hr> elements in Menu.
      * This is a workaround for crbug.com/689255. This member variable is just
      * for keeping explicit reference to decorated <hr>s to prevent GC from
      * collecting <hr> wrappers, and not used anywhere.
@@ -127,26 +128,26 @@
 
     /**
      * Default task picker.
-     * @type {!cr.filebrowser.DefaultTaskDialog}
+     * @type {!DefaultTaskDialog}
      * @const
      */
-    this.defaultTaskPicker = new cr.filebrowser.DefaultTaskDialog(this.element);
+    this.defaultTaskPicker = new DefaultTaskDialog(this.element);
 
     /**
      * Dialog for installing .deb files
-     * @type {!cr.filebrowser.InstallLinuxPackageDialog}
+     * @type {!InstallLinuxPackageDialog}
      * @const
      */
     this.installLinuxPackageDialog =
-        new cr.filebrowser.InstallLinuxPackageDialog(this.element);
+        new InstallLinuxPackageDialog(this.element);
 
     /**
      * Dialog for import Crostini Image Files (.tini)
-     * @type {!cr.filebrowser.ImportCrostiniImageDialog}
+     * @type {!ImportCrostiniImageDialog}
      * @const
      */
     this.importCrostiniImageDialog =
-        new cr.filebrowser.ImportCrostiniImageDialog(this.element);
+        new ImportCrostiniImageDialog(this.element);
 
     /**
      * Dialog for formatting
@@ -172,11 +173,11 @@
 
     /**
      * Context menu for texts.
-     * @type {!cr.ui.Menu}
+     * @type {!Menu}
      * @const
      */
     this.textContextMenu =
-        util.queryDecoratedElement('#text-context-menu', cr.ui.Menu);
+        util.queryDecoratedElement('#text-context-menu', Menu);
 
     /**
      * Location line.
@@ -234,11 +235,11 @@
 
     /**
      * The button to sort the file list.
-     * @type {!cr.ui.MultiMenuButton}
+     * @type {!MultiMenuButton}
      * @const
      */
     this.sortButton =
-        util.queryDecoratedElement('#sort-button', cr.ui.MultiMenuButton);
+        util.queryDecoratedElement('#sort-button', MultiMenuButton);
 
     /**
      * Ripple effect of sort button.
@@ -251,11 +252,11 @@
 
     /**
      * The button to open gear menu.
-     * @type {!cr.ui.MultiMenuButton}
+     * @type {!MultiMenuButton}
      * @const
      */
     this.gearButton =
-        util.queryDecoratedElement('#gear-button', cr.ui.MultiMenuButton);
+        util.queryDecoratedElement('#gear-button', MultiMenuButton);
 
     /**
      * Ripple effect of gear button.
@@ -274,11 +275,11 @@
 
     /**
      * The button to open context menu in the check-select mode.
-     * @type {!cr.ui.MultiMenuButton}
+     * @type {!MultiMenuButton}
      * @const
      */
-    this.selectionMenuButton = util.queryDecoratedElement(
-        '#selection-menu-button', cr.ui.MultiMenuButton);
+    this.selectionMenuButton =
+        util.queryDecoratedElement('#selection-menu-button', MultiMenuButton);
 
     /**
      * Directory tree.
@@ -314,11 +315,11 @@
         queryRequiredElement('#format-panel > .error', this.element);
 
     /**
-     * @type {!cr.ui.MultiMenu}
+     * @type {!MultiMenu}
      * @const
      */
     this.fileContextMenu =
-        util.queryDecoratedElement('#file-context-menu', cr.ui.MultiMenu);
+        util.queryDecoratedElement('#file-context-menu', MultiMenu);
 
     /**
      * @public {!HTMLMenuItemElement}
@@ -329,33 +330,32 @@
         (queryRequiredElement('#default-task-menu-item', this.fileContextMenu));
 
     /**
-     * @public @const {!cr.ui.MenuItem}
+     * @public @const {!MenuItem}
      */
-    this.tasksSeparator = /** @type {!cr.ui.MenuItem} */
+    this.tasksSeparator = /** @type {!MenuItem} */
         (queryRequiredElement('#tasks-separator', this.fileContextMenu));
 
     /**
      * The combo button to specify the task.
-     * @type {!cr.ui.ComboButton}
+     * @type {!ComboButton}
      * @const
      */
-    this.taskMenuButton =
-        util.queryDecoratedElement('#tasks', cr.ui.ComboButton);
+    this.taskMenuButton = util.queryDecoratedElement('#tasks', ComboButton);
     this.taskMenuButton.showMenu = function(shouldSetFocus) {
       // Prevent the empty menu from opening.
       if (!this.menu.length) {
         return;
       }
-      cr.ui.ComboButton.prototype.showMenu.call(this, shouldSetFocus);
+      ComboButton.prototype.showMenu.call(this, shouldSetFocus);
     };
 
     /**
      * The menu button for share options
-     * @type {!cr.ui.MultiMenuButton}
+     * @type {!MultiMenuButton}
      * @const
      */
     this.shareMenuButton =
-        util.queryDecoratedElement('#share-menu-button', cr.ui.MultiMenuButton);
+        util.queryDecoratedElement('#share-menu-button', MultiMenuButton);
     const shareMenuButtonToggleRipple =
         /** @type {!FilesToggleRippleElement} */ (
             queryRequiredElement('files-toggle-ripple', this.shareMenuButton));
@@ -367,11 +367,10 @@
     });
 
     /**
-     * @type {!cr.ui.Menu}
+     * @type {!Menu}
      * @const
      */
-    this.shareSubMenu =
-        util.queryDecoratedElement('#share-sub-menu', cr.ui.Menu);
+    this.shareSubMenu = util.queryDecoratedElement('#share-sub-menu', Menu);
     this.shareMenuButton.overflow = this.shareSubMenu;
 
     /**
@@ -393,8 +392,7 @@
      * @const
      */
     this.providersMenu = new ProvidersMenu(
-        providersModel,
-        util.queryDecoratedElement('#providers-menu', cr.ui.Menu));
+        providersModel, util.queryDecoratedElement('#providers-menu', Menu));
 
     /**
      * @public {!ActionsSubmenu}
@@ -498,9 +496,9 @@
         queryRequiredElement('#navigation-list-splitter', this.element));
 
     // Init context menus.
-    cr.ui.contextMenuHandler.setContextMenu(grid, this.fileContextMenu);
-    cr.ui.contextMenuHandler.setContextMenu(table.list, this.fileContextMenu);
-    cr.ui.contextMenuHandler.setContextMenu(
+    contextMenuHandler.setContextMenu(grid, this.fileContextMenu);
+    contextMenuHandler.setContextMenu(table.list, this.fileContextMenu);
+    contextMenuHandler.setContextMenu(
         queryRequiredElement('.drive-welcome.page'), this.fileContextMenu);
 
     // Add window resize handler.
@@ -570,11 +568,11 @@
 
     // Set up the context menu for the volume/shortcut items in directory tree.
     this.directoryTree.contextMenuForRootItems =
-        util.queryDecoratedElement('#roots-context-menu', cr.ui.Menu);
+        util.queryDecoratedElement('#roots-context-menu', Menu);
     this.directoryTree.contextMenuForSubitems =
-        util.queryDecoratedElement('#directory-tree-context-menu', cr.ui.Menu);
+        util.queryDecoratedElement('#directory-tree-context-menu', Menu);
     this.directoryTree.disabledContextMenu =
-        util.queryDecoratedElement('#disabled-context-menu', cr.ui.Menu);
+        util.queryDecoratedElement('#disabled-context-menu', Menu);
   }
 
   /**
@@ -599,7 +597,7 @@
 
   /**
    * Initialize files menu items. This method must be called after all files
-   * menu items are decorated as cr.ui.MenuItem.
+   * menu items are decorated as MenuItem.
    */
   decorateFilesMenuItems() {
     const filesMenuItems =
@@ -607,8 +605,8 @@
 
     for (let i = 0; i < filesMenuItems.length; i++) {
       const filesMenuItem = filesMenuItems[i];
-      assertInstanceof(filesMenuItem, cr.ui.MenuItem);
-      cr.ui.decorate(filesMenuItem, cr.ui.FilesMenuItem);
+      assertInstanceof(filesMenuItem, MenuItem);
+      decorate(filesMenuItem, FilesMenuItem);
     }
   }
 
@@ -711,8 +709,8 @@
    */
   decorateSplitter_(splitterElement, opt_resizeNextElement) {
     const self = this;
-    const FileSplitter = cr.ui.Splitter;
-    const customSplitter = cr.ui.define('div');
+    const FileSplitter = Splitter;
+    const customSplitter = crUiDefine('div');
 
     customSplitter.prototype = {
       __proto__: FileSplitter.prototype,

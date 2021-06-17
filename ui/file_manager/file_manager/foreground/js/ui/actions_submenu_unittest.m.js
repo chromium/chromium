@@ -9,7 +9,7 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://test/chai_assert.j
 import {util} from '../../../common/js/util.m.js';
 import {MockActionModel, MockActionsModel} from '../mock_actions_model.m.js';
 
-import {ActionsSubmenu} from './actions_submenu.m.js';
+import {ActionsSubmenu} from './actions_submenu.js';
 
 let menu = null;
 let submenu = null;

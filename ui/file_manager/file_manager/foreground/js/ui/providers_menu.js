@@ -2,20 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #import {Menu} from 'chrome://resources/js/cr/ui/menu.m.js';
-// #import {ProvidersModel} from '../providers_model.m.js';
-// #import {util} from '../../../common/js/util.m.js';
-// #import {FilesMenuItem} from './files_menu.m.js';
-// #import {decorate} from 'chrome://resources/js/cr/ui.m.js';
-// #import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {decorate} from 'chrome://resources/js/cr/ui.m.js';
+import {Menu} from 'chrome://resources/js/cr/ui/menu.m.js';
+
+import {util} from '../../../common/js/util.m.js';
+import {ProvidersModel} from '../providers_model.m.js';
+
+import {FilesMenuItem} from './files_menu.js';
 
 /**
  * Fills out the menu for mounting or installing new providers.
  */
-/* #export */ class ProvidersMenu {
+export class ProvidersMenu {
   /**
    * @param {!ProvidersModel} model
-   * @param {!cr.ui.Menu} menu
+   * @param {!Menu} menu
    */
   constructor(model, menu) {
     /**
@@ -25,7 +27,7 @@
     this.model_ = model;
 
     /**
-     * @private {!cr.ui.Menu}
+     * @private {!Menu}
      * @const
      */
     this.menu_ = menu;
@@ -43,13 +45,13 @@
   }
 
   /**
-   * @return {!cr.ui.FilesMenuItem}
+   * @return {!FilesMenuItem}
    * @private
    */
   addMenuItem_() {
     const menuItem = this.menu_.addMenuItem({});
-    cr.ui.decorate(/** @type {!Element} */ (menuItem), cr.ui.FilesMenuItem);
-    return /** @type {!cr.ui.FilesMenuItem} */ (menuItem);
+    decorate(/** @type {!Element} */ (menuItem), FilesMenuItem);
+    return /** @type {!FilesMenuItem} */ (menuItem);
   }
 
   /**
