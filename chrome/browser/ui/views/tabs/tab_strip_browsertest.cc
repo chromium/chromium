@@ -39,8 +39,7 @@ class TabStripBrowsertest : public InProcessBrowserTest {
   void AppendTab() { chrome::AddTabAt(browser(), GURL(), -1, true); }
 
   tab_groups::TabGroupId AddTabToNewGroup(int tab_index) {
-    tab_strip_model()->AddToNewGroup({tab_index});
-    return tab_strip_model()->GetTabGroupForTab(tab_index).value();
+    return tab_strip_model()->AddToNewGroup({tab_index});
   }
 
   void AddTabToExistingGroup(int tab_index, tab_groups::TabGroupId group) {
