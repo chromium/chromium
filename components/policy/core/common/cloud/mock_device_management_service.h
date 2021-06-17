@@ -29,13 +29,13 @@ class MockDeviceManagementServiceConfiguration
       const std::string& server_url);
   ~MockDeviceManagementServiceConfiguration() override;
 
-  std::string GetDMServerUrl() override;
-  std::string GetAgentParameter() override;
-  std::string GetPlatformParameter() override;
-  std::string GetRealtimeReportingServerUrl() override;
-  std::string GetEncryptedReportingServerUrl() override;
+  std::string GetDMServerUrl() const override;
+  std::string GetAgentParameter() const override;
+  std::string GetPlatformParameter() const override;
+  std::string GetRealtimeReportingServerUrl() const override;
+  std::string GetEncryptedReportingServerUrl() const override;
   std::string GetReportingConnectorServerUrl(
-      content::BrowserContext* context) override;
+      content::BrowserContext* context) const override;
 
  private:
   const std::string server_url_;

@@ -31,17 +31,18 @@ DeviceManagementServiceConfigurationIOS::
 DeviceManagementServiceConfigurationIOS::
     ~DeviceManagementServiceConfigurationIOS() = default;
 
-std::string DeviceManagementServiceConfigurationIOS::GetDMServerUrl() {
+std::string DeviceManagementServiceConfigurationIOS::GetDMServerUrl() const {
   return dm_server_url_;
 }
 
-std::string DeviceManagementServiceConfigurationIOS::GetAgentParameter() {
+std::string DeviceManagementServiceConfigurationIOS::GetAgentParameter() const {
   return base::StringPrintf("%s %s(%s)", version_info::GetProductName().c_str(),
                             version_info::GetVersionNumber().c_str(),
                             version_info::GetLastChange().c_str());
 }
 
-std::string DeviceManagementServiceConfigurationIOS::GetPlatformParameter() {
+std::string DeviceManagementServiceConfigurationIOS::GetPlatformParameter()
+    const {
   std::string os_name = base::SysInfo::OperatingSystemName();
   std::string os_hardware = base::SysInfo::OperatingSystemArchitecture();
 
@@ -60,18 +61,19 @@ std::string DeviceManagementServiceConfigurationIOS::GetPlatformParameter() {
 }
 
 std::string
-DeviceManagementServiceConfigurationIOS::GetRealtimeReportingServerUrl() {
+DeviceManagementServiceConfigurationIOS::GetRealtimeReportingServerUrl() const {
   return realtime_reporting_server_url_;
 }
 
 std::string
-DeviceManagementServiceConfigurationIOS::GetEncryptedReportingServerUrl() {
+DeviceManagementServiceConfigurationIOS::GetEncryptedReportingServerUrl()
+    const {
   return encrypted_reporting_server_url_;
 }
 
 std::string
 DeviceManagementServiceConfigurationIOS::GetReportingConnectorServerUrl(
-    content::BrowserContext* context) {
+    content::BrowserContext* context) const {
   return std::string();
 }
 

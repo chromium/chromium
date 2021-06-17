@@ -45,31 +45,35 @@ MockDeviceManagementServiceConfiguration::
 MockDeviceManagementServiceConfiguration::
     ~MockDeviceManagementServiceConfiguration() = default;
 
-std::string MockDeviceManagementServiceConfiguration::GetDMServerUrl() {
+std::string MockDeviceManagementServiceConfiguration::GetDMServerUrl() const {
   return server_url_;
 }
 
-std::string MockDeviceManagementServiceConfiguration::GetAgentParameter() {
+std::string MockDeviceManagementServiceConfiguration::GetAgentParameter()
+    const {
   return kUserAgent;
 }
 
-std::string MockDeviceManagementServiceConfiguration::GetPlatformParameter() {
+std::string MockDeviceManagementServiceConfiguration::GetPlatformParameter()
+    const {
   return kPlatform;
 }
 
 std::string
-MockDeviceManagementServiceConfiguration::GetRealtimeReportingServerUrl() {
+MockDeviceManagementServiceConfiguration::GetRealtimeReportingServerUrl()
+    const {
   return server_url_;
 }
 
 std::string
-MockDeviceManagementServiceConfiguration::GetEncryptedReportingServerUrl() {
+MockDeviceManagementServiceConfiguration::GetEncryptedReportingServerUrl()
+    const {
   return server_url_;
 }
 
 std::string
 MockDeviceManagementServiceConfiguration::GetReportingConnectorServerUrl(
-    content::BrowserContext* context) {
+    content::BrowserContext* context) const {
   return server_url_;
 }
 

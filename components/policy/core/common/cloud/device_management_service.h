@@ -103,24 +103,24 @@ class POLICY_EXPORT DeviceManagementService {
     virtual ~Configuration() {}
 
     // Server at which to contact the service (DMServer).
-    virtual std::string GetDMServerUrl() = 0;
+    virtual std::string GetDMServerUrl() const = 0;
 
     // Agent reported in the "agent" query parameter.
-    virtual std::string GetAgentParameter() = 0;
+    virtual std::string GetAgentParameter() const = 0;
 
     // The platform reported in the "platform" query parameter.
-    virtual std::string GetPlatformParameter() = 0;
+    virtual std::string GetPlatformParameter() const = 0;
 
     // Server at which to contact the real time reporting service.
-    virtual std::string GetRealtimeReportingServerUrl() = 0;
+    virtual std::string GetRealtimeReportingServerUrl() const = 0;
 
     // Server endpoint for encrypted events.
-    virtual std::string GetEncryptedReportingServerUrl() = 0;
+    virtual std::string GetEncryptedReportingServerUrl() const = 0;
 
     // Server at which to contact the real time reporting service for
     // enterprise connectors.
     virtual std::string GetReportingConnectorServerUrl(
-        content::BrowserContext* context) = 0;
+        content::BrowserContext* context) const = 0;
   };
 
   // A DeviceManagementService job manages network requests to the device
@@ -295,7 +295,7 @@ class POLICY_EXPORT DeviceManagementService {
   // Makes the service stop all requests.
   void Shutdown();
 
-  Configuration* configuration() { return configuration_.get(); }
+  const Configuration* configuration() const { return configuration_.get(); }
 
   // Sets the retry delay to a shorter time to prevent browser tests from
   // timing out.

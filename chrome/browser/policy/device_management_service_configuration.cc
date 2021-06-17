@@ -38,18 +38,18 @@ DeviceManagementServiceConfiguration::DeviceManagementServiceConfiguration(
 DeviceManagementServiceConfiguration::~DeviceManagementServiceConfiguration() {
 }
 
-std::string DeviceManagementServiceConfiguration::GetDMServerUrl() {
+std::string DeviceManagementServiceConfiguration::GetDMServerUrl() const {
   return dm_server_url_;
 }
 
-std::string DeviceManagementServiceConfiguration::GetAgentParameter() {
+std::string DeviceManagementServiceConfiguration::GetAgentParameter() const {
   return base::StringPrintf("%s %s(%s)",
                             version_info::GetProductName().c_str(),
                             version_info::GetVersionNumber().c_str(),
                             version_info::GetLastChange().c_str());
 }
 
-std::string DeviceManagementServiceConfiguration::GetPlatformParameter() {
+std::string DeviceManagementServiceConfiguration::GetPlatformParameter() const {
   std::string os_name = base::SysInfo::OperatingSystemName();
   std::string os_hardware = base::SysInfo::OperatingSystemArchitecture();
 
@@ -85,18 +85,18 @@ std::string DeviceManagementServiceConfiguration::GetPlatformParameter() {
 }
 
 std::string
-DeviceManagementServiceConfiguration::GetRealtimeReportingServerUrl() {
+DeviceManagementServiceConfiguration::GetRealtimeReportingServerUrl() const {
   return realtime_reporting_server_url_;
 }
 
 std::string
-DeviceManagementServiceConfiguration::GetEncryptedReportingServerUrl() {
+DeviceManagementServiceConfiguration::GetEncryptedReportingServerUrl() const {
   return encrypted_reporting_server_url_;
 }
 
 std::string
 DeviceManagementServiceConfiguration::GetReportingConnectorServerUrl(
-    content::BrowserContext* context) {
+    content::BrowserContext* context) const {
 #if defined(OS_WIN) || defined(OS_MAC) || \
     ((defined(OS_LINUX) || defined(OS_CHROMEOS)) && !defined(OS_ANDROID))
   auto* service =
