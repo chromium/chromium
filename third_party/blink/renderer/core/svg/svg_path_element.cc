@@ -81,6 +81,7 @@ SVGPointTearOff* SVGPathElement::getPointAtLength(
   GetDocument().UpdateStyleAndLayoutForNode(this,
                                             DocumentUpdateReason::kJavaScript);
 
+  EnsureComputedStyle();
   const SVGPathByteStream& byte_stream = PathByteStream();
   if (byte_stream.IsEmpty()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
