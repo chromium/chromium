@@ -1,3 +1,4 @@
+#!/usr/bin/env vpython3
 # Copyright 2020 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -61,7 +62,7 @@ class CreateTestExpectationMapUnittest(fake_filesystem_unittest.TestCase):
 
   def testExpectationFile(self):
     """Tests reading expectations from an expectation file."""
-    with tempfile.NamedTemporaryFile(delete=False) as f:
+    with tempfile.NamedTemporaryFile(delete=False, mode='w') as f:
       filename = f.name
       f.write(FAKE_EXPECTATION_FILE_CONTENTS)
     expectation_map = expectations.CreateTestExpectationMap(filename, None)
@@ -1180,7 +1181,7 @@ class ModifySemiStaleExpectationsUnittest(fake_filesystem_unittest.TestCase):
     self._input_mock = self._input_patcher.start()
     self.addCleanup(self._input_patcher.stop)
 
-    with tempfile.NamedTemporaryFile(delete=False) as f:
+    with tempfile.NamedTemporaryFile(delete=False, mode='w') as f:
       f.write(FAKE_EXPECTATION_FILE_CONTENTS)
       self.filename = f.name
 

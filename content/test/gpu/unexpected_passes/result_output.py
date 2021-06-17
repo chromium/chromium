@@ -13,6 +13,8 @@ import logging
 import sys
 import tempfile
 
+import six
+
 from unexpected_passes import data_types
 
 FULL_PASS = 'Fully passed in the following'
@@ -261,10 +263,10 @@ def _RecursivePrintToFile(element, depth, file_handle):
   """
   if element is None:
     element = str(element)
-  if isinstance(element, str) or isinstance(element, unicode):
+  if isinstance(element, six.string_types):
     file_handle.write(('  ' * depth) + element + '\n')
   elif isinstance(element, dict):
-    for k, v in element.iteritems():
+    for k, v in element.items():
       _RecursivePrintToFile(k, depth, file_handle)
       _RecursivePrintToFile(v, depth + 1, file_handle)
   elif isinstance(element, list):
@@ -286,10 +288,10 @@ def _RecursiveHtmlToFile(element, file_handle):
     element: A dict, list, or str/unicode to output.
     file_handle: An open file-like object to output to.
   """
-  if isinstance(element, str) or isinstance(element, unicode):
+  if isinstance(element, six.string_types):
     file_handle.write('<p>%s</p>\n' % _LinkifyString(element))
   elif isinstance(element, dict):
-    for k, v in element.iteritems():
+    for k, v in element.items():
       html_class = 'collapsible_group'
       # This allows us to later (in JavaScript) recursively highlight sections
       # that are likely of interest to the user, i.e. whose expectations can be
@@ -361,20 +363,20 @@ def _ConvertTestExpectationMapToStringDict(test_expectation_map):
   # However, we need to reset state in different loops, and the alternative of
   # keeping all the state outside the loop and resetting under certain
   # conditions ends up being less readable than just using nested loops.
-  for test_name, expectation_map in test_expectation_map.iteritems():
+  for test_name, expectation_map in test_expectation_map.items():
     output_dict[test_name] = {}
 
-    for expectation, builder_map in expectation_map.iteritems():
+    for expectation, builder_map in expectation_map.items():
       expectation_str = _FormatExpectation(expectation)
       output_dict[test_name][expectation_str] = {}
 
-      for builder_name, step_map in builder_map.iteritems():
+      for builder_name, step_map in builder_map.items():
         output_dict[test_name][expectation_str][builder_name] = {}
         fully_passed = []
         partially_passed = {}
         never_passed = []
 
-        for step_name, stats in step_map.iteritems():
+        for step_name, stats in step_map.items():
           if stats.did_fully_pass:
             fully_passed.append(AddStatsToStr(step_name, stats))
           elif stats.did_never_pass:
@@ -389,7 +391,7 @@ def _ConvertTestExpectationMapToStringDict(test_expectation_map):
           output_builder_map[FULL_PASS] = fully_passed
         if partially_passed:
           output_builder_map[PARTIAL_PASS] = {}
-          for step_name, stats in partially_passed.iteritems():
+          for step_name, stats in partially_passed.items():
             s = AddStatsToStr(step_name, stats)
             output_builder_map[PARTIAL_PASS][s] = list(stats.failure_links)
         if never_passed:
@@ -423,7 +425,7 @@ def _ConvertUnmatchedResultsToStringDict(unmatched_results):
     }
   """
   output_dict = {}
-  for builder, results in unmatched_results.iteritems():
+  for builder, results in unmatched_results.items():
     for r in results:
       builder_map = output_dict.setdefault(r.test, {})
       step_map = builder_map.setdefault(builder, {})

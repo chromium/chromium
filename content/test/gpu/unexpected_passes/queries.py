@@ -576,8 +576,8 @@ class _SplitQueryTestFilter(_BaseQueryTestFilter):
   def SplitFilter(self):
     def _SplitListInHalf(l):
       assert len(l) > 1
-      front = l[:len(l) / 2]
-      back = l[len(l) / 2:]
+      front = l[:len(l) // 2]
+      back = l[len(l) // 2:]
       return front, back
 
     tmp_test_id_lists = []
@@ -620,8 +620,8 @@ def _GenerateBigQueryCommand(project, parameters):
       '--use_legacy_sql=false',
   ]
 
-  for parameter_type, parameter_pairs in parameters.iteritems():
-    for k, v in parameter_pairs.iteritems():
+  for parameter_type, parameter_pairs in parameters.items():
+    for k, v in parameter_pairs.items():
       cmd.append('--parameter=%s:%s:%s' % (k, parameter_type, v))
   return cmd
 

@@ -1,3 +1,4 @@
+#!/usr/bin/env vpython3
 # Copyright 2020 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -5,6 +6,7 @@
 from __future__ import print_function
 
 import itertools
+import sys
 import tempfile
 import unittest
 
@@ -71,12 +73,14 @@ class ConvertUnmatchedResultsToStringDictUnittest(unittest.TestCase):
                               'build_id')
         ],
     }
+    # TODO(crbug.com/1198237): Hard-code the tag string once only Python 3 is
+    # supported.
     expected_output = {
         'foo': {
             'builder': {
                 'step_name': [
                     'Got "Failure" on http://ci.chromium.org/b/build_id with '
-                    'tags [win intel]',
+                    'tags [%s]' % ' '.join(set(['win', 'intel'])),
                 ]
             }
         }
@@ -130,49 +134,92 @@ class ConvertTestExpectationMapToStringDictUnittest(unittest.TestCase):
             }),
         }),
     })
-    expected_ouput = {
-        'foo': {
-            '"RetryOnFailure" expectation on "win intel"': {
-                'builder': {
-                    'Fully passed in the following': [
-                        'all_pass (2/2)',
-                    ],
-                    'Never passed in the following': [
-                        'all_fail (0/2)',
-                    ],
-                    'Partially passed in the following': {
-                        'some_pass (1/2)': [
-                            data_types.BuildLinkFromBuildId('build_id0'),
-                        ],
-                    },
-                },
-            },
-            '"RetryOnFailure" expectation on "intel linux"': {
-                'builder': {
-                    'Fully passed in the following': [
-                        'all_pass (2/2)',
-                    ],
-                },
-            },
-            '"RetryOnFailure" expectation on "mac intel"': {
-                'builder': {
-                    'Never passed in the following': [
-                        'all_fail (0/2)',
-                    ],
-                },
-            },
-        },
-    }
+    # TODO(crbug.com/1198237): Remove the Python 2 version once we are fully
+    # switched to Python 3.
+    if sys.version_info[0] == 2:
+      expected_output = {
+          'foo': {
+              '"RetryOnFailure" expectation on "win intel"': {
+                  'builder': {
+                      'Fully passed in the following': [
+                          'all_pass (2/2)',
+                      ],
+                      'Never passed in the following': [
+                          'all_fail (0/2)',
+                      ],
+                      'Partially passed in the following': {
+                          'some_pass (1/2)': [
+                              data_types.BuildLinkFromBuildId('build_id0'),
+                          ],
+                      },
+                  },
+              },
+              '"RetryOnFailure" expectation on "intel linux"': {
+                  'builder': {
+                      'Fully passed in the following': [
+                          'all_pass (2/2)',
+                      ],
+                  },
+              },
+              '"RetryOnFailure" expectation on "mac intel"': {
+                  'builder': {
+                      'Never passed in the following': [
+                          'all_fail (0/2)',
+                      ],
+                  },
+              },
+          },
+      }
+    else:
+      # Set ordering does not appear to be stable between test runs, as we can
+      # get either order of tags. So, generate them now instead of hard coding
+      # them.
+      linux_tags = ' '.join(set(['linux', 'intel']))
+      win_tags = ' '.join(set(['win', 'intel']))
+      mac_tags = ' '.join(set(['mac', 'intel']))
+      expected_output = {
+          'foo': {
+              '"RetryOnFailure" expectation on "%s"' % linux_tags: {
+                  'builder': {
+                      'Fully passed in the following': [
+                          'all_pass (2/2)',
+                      ],
+                  },
+              },
+              '"RetryOnFailure" expectation on "%s"' % win_tags: {
+                  'builder': {
+                      'Fully passed in the following': [
+                          'all_pass (2/2)',
+                      ],
+                      'Partially passed in the following': {
+                          'some_pass (1/2)': [
+                              data_types.BuildLinkFromBuildId('build_id0'),
+                          ],
+                      },
+                      'Never passed in the following': [
+                          'all_fail (0/2)',
+                      ],
+                  },
+              },
+              '"RetryOnFailure" expectation on "%s"' % mac_tags: {
+                  'builder': {
+                      'Never passed in the following': [
+                          'all_fail (0/2)',
+                      ],
+                  },
+              },
+          },
+      }
 
     str_dict = result_output._ConvertTestExpectationMapToStringDict(
         expectation_map)
-    self.assertEqual(str_dict, expected_ouput)
+    self.assertEqual(str_dict, expected_output)
 
 
 class HtmlToFileUnittest(fake_filesystem_unittest.TestCase):
   def setUp(self):
     self.setUpPyfakefs()
-    self._file_handle = tempfile.NamedTemporaryFile(delete=False)
+    self._file_handle = tempfile.NamedTemporaryFile(delete=False, mode='w')
     self._filepath = self._file_handle.name
 
   def testLinkifyString(self):
@@ -211,7 +258,10 @@ class HtmlToFileUnittest(fake_filesystem_unittest.TestCase):
     result_output._RecursiveHtmlToFile(expectation_map, self._file_handle)
     self._file_handle.close()
     # pylint: disable=line-too-long
-    expected_output = """\
+    # TODO(crbug.com/1198237): Remove the Python 2 version once we've fully
+    # switched to Python 3.
+    if sys.version_info[0] == 2:
+      expected_output = """\
 <button type="button" class="collapsible_group">foo</button>
 <div class="content">
   <button type="button" class="collapsible_group">"RetryOnFailure" expectation on "win intel"</button>
@@ -225,6 +275,33 @@ class HtmlToFileUnittest(fake_filesystem_unittest.TestCase):
       <button type="button" class="highlighted_collapsible_group">Fully passed in the following</button>
       <div class="content">
         <p>all_pass (2/2)</p>
+      </div>
+      <button type="button" class="collapsible_group">Partially passed in the following</button>
+      <div class="content">
+        <button type="button" class="collapsible_group">some_pass (1/2)</button>
+        <div class="content">
+          <p><a href="http://ci.chromium.org/b/build_id0">http://ci.chromium.org/b/build_id0</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+"""
+    else:
+      expected_output = """\
+<button type="button" class="collapsible_group">foo</button>
+<div class="content">
+  <button type="button" class="collapsible_group">"RetryOnFailure" expectation on "win intel"</button>
+  <div class="content">
+    <button type="button" class="collapsible_group">builder</button>
+    <div class="content">
+      <button type="button" class="highlighted_collapsible_group">Fully passed in the following</button>
+      <div class="content">
+        <p>all_pass (2/2)</p>
+      </div>
+      <button type="button" class="collapsible_group">Never passed in the following</button>
+      <div class="content">
+        <p>all_fail (0/2)</p>
       </div>
       <button type="button" class="collapsible_group">Partially passed in the following</button>
       <div class="content">
@@ -296,7 +373,7 @@ class HtmlToFileUnittest(fake_filesystem_unittest.TestCase):
 class PrintToFileUnittest(fake_filesystem_unittest.TestCase):
   def setUp(self):
     self.setUpPyfakefs()
-    self._file_handle = tempfile.NamedTemporaryFile(delete=False)
+    self._file_handle = tempfile.NamedTemporaryFile(delete=False, mode='w')
     self._filepath = self._file_handle.name
 
   def testRecursivePrintToFileExpectationMap(self):
@@ -322,7 +399,11 @@ class PrintToFileUnittest(fake_filesystem_unittest.TestCase):
     }
     result_output._RecursivePrintToFile(expectation_map, 0, self._file_handle)
     self._file_handle.close()
-    expected_output = """\
+
+    # TODO(crbug.com/1198237): Keep the Python 3 version once we are fully
+    # switched.
+    if sys.version_info[0] == 2:
+      expected_output = """\
 foo
   "RetryOnFailure" expectation on "win intel"
     builder
@@ -330,6 +411,19 @@ foo
         all_fail (0/2)
       Fully passed in the following
         all_pass (2/2)
+      Partially passed in the following
+        some_pass (1/2)
+          http://ci.chromium.org/b/build_id0
+"""
+    else:
+      expected_output = """\
+foo
+  "RetryOnFailure" expectation on "win intel"
+    builder
+      Fully passed in the following
+        all_pass (2/2)
+      Never passed in the following
+        all_fail (0/2)
       Partially passed in the following
         some_pass (1/2)
           http://ci.chromium.org/b/build_id0
@@ -381,7 +475,7 @@ foo
 class OutputResultsUnittest(fake_filesystem_unittest.TestCase):
   def setUp(self):
     self.setUpPyfakefs()
-    self._file_handle = tempfile.NamedTemporaryFile(delete=False)
+    self._file_handle = tempfile.NamedTemporaryFile(delete=False, mode='w')
     self._filepath = self._file_handle.name
 
   def testOutputResultsUnsupportedFormat(self):
@@ -466,7 +560,7 @@ class OutputResultsUnittest(fake_filesystem_unittest.TestCase):
 class OutputAffectedUrlsUnittest(fake_filesystem_unittest.TestCase):
   def setUp(self):
     self.setUpPyfakefs()
-    self._file_handle = tempfile.NamedTemporaryFile(delete=False)
+    self._file_handle = tempfile.NamedTemporaryFile(delete=False, mode='w')
     self._filepath = self._file_handle.name
 
   def testOutput(self):
@@ -494,7 +588,7 @@ class OutputAffectedUrlsUnittest(fake_filesystem_unittest.TestCase):
 class OutputUrlsForClDescriptionUnittest(fake_filesystem_unittest.TestCase):
   def setUp(self):
     self.setUpPyfakefs()
-    self._file_handle = tempfile.NamedTemporaryFile(delete=False)
+    self._file_handle = tempfile.NamedTemporaryFile(delete=False, mode='w')
     self._filepath = self._file_handle.name
 
   def testSingleLine(self):

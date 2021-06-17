@@ -88,13 +88,13 @@ def FilterOutUnusedExpectations(test_expectation_map):
     if not builder_map:
       unused_expectations.append(expectation)
   for unused in unused_expectations:
-    for _, expectation_map in test_expectation_map.iteritems():
+    for _, expectation_map in test_expectation_map.items():
       if unused in expectation_map:
         del expectation_map[unused]
   logging.debug('Found %d unused expectations', len(unused_expectations))
 
   empty_tests = []
-  for test_name, expectation_map in test_expectation_map.iteritems():
+  for test_name, expectation_map in test_expectation_map.items():
     if not expectation_map:
       empty_tests.append(test_name)
   for empty in empty_tests:
@@ -132,8 +132,8 @@ def SplitExpectationsByStaleness(test_expectation_map):
   # However, we need to reset state in different loops, and the alternative of
   # keeping all the state outside the loop and resetting under certain
   # conditions ends up being less readable than just using nested loops.
-  for test_name, expectation_map in test_expectation_map.iteritems():
-    for expectation, builder_map in expectation_map.iteritems():
+  for test_name, expectation_map in test_expectation_map.items():
+    for expectation, builder_map in expectation_map.items():
       # A temporary map to hold data so we can later determine whether an
       # expectation is stale, semi-stale, or active.
       tmp_map = {
@@ -144,7 +144,7 @@ def SplitExpectationsByStaleness(test_expectation_map):
 
       split_stats_map = builder_map.SplitBuildStatsByPass()
       for builder_name, (fully_passed, never_passed,
-                         partially_passed) in split_stats_map.iteritems():
+                         partially_passed) in split_stats_map.items():
         if fully_passed:
           tmp_map[FULL_PASS][builder_name] = fully_passed
         if never_passed:
@@ -154,7 +154,7 @@ def SplitExpectationsByStaleness(test_expectation_map):
 
       def _CopyPassesIntoBuilderMap(builder_map, pass_types):
         for pt in pass_types:
-          for builder, steps in tmp_map[pt].iteritems():
+          for builder, steps in tmp_map[pt].items():
             builder_map.setdefault(builder,
                                    data_types.StepBuildStatsMap()).update(steps)
 
@@ -485,7 +485,7 @@ def MergeExpectationMaps(base_map, merge_map, reference_map=None):
   # expectation/builder/step combination. Use the reference map to determine
   # if a particular BuildStats has already been updated or not.
   reference_map = reference_map or copy.deepcopy(base_map)
-  for key, value in merge_map.iteritems():
+  for key, value in merge_map.items():
     if key not in base_map:
       base_map[key] = value
     else:
