@@ -900,6 +900,9 @@ NGInlineLayoutStateStack::ApplyBaselineShift(NGInlineBoxState* box,
             2);
         break;
     }
+    baseline_shift += ComputeAlignmentBaselineShift(
+        parent_box.font->PrimaryFont()->GetFontMetrics(), baseline_type,
+        style.AlignmentBaseline());
     if (!box->metrics.IsEmpty())
       box->metrics.Move(baseline_shift);
     line_box->MoveInBlockDirection(baseline_shift, box->fragment_start,
@@ -960,6 +963,51 @@ NGInlineLayoutStateStack::ApplyBaselineShift(NGInlineBoxState* box,
   line_box->MoveInBlockDirection(baseline_shift, box->fragment_start,
                                  fragment_end);
   return kPositionNotPending;
+}
+
+// static
+LayoutUnit NGInlineLayoutStateStack::ComputeAlignmentBaselineShift(
+    const FontMetrics& metrics,
+    FontBaseline baseline_type,
+    EAlignmentBaseline alignment_baseline) {
+  FontBaseline alignment_type = baseline_type;
+  switch (alignment_baseline) {
+    case EAlignmentBaseline::kAuto:
+    case EAlignmentBaseline::kBaseline:
+      break;
+    case EAlignmentBaseline::kBeforeEdge:
+    case EAlignmentBaseline::kTextBeforeEdge:
+      alignment_type = FontBaseline::kTextOverBaseline;
+      break;
+    case EAlignmentBaseline::kMiddle:
+      alignment_type = FontBaseline::kXMiddleBaseline;
+      break;
+    case EAlignmentBaseline::kCentral:
+      alignment_type = FontBaseline::kCentralBaseline;
+      break;
+    case EAlignmentBaseline::kAfterEdge:
+    case EAlignmentBaseline::kTextAfterEdge:
+      alignment_type = FontBaseline::kTextUnderBaseline;
+      break;
+    case EAlignmentBaseline::kIdeographic:
+      alignment_type = FontBaseline::kIdeographicUnderBaseline;
+      break;
+    case EAlignmentBaseline::kAlphabetic:
+      alignment_type = FontBaseline::kAlphabeticBaseline;
+      break;
+    case EAlignmentBaseline::kHanging:
+      alignment_type = FontBaseline::kHangingBaseline;
+      break;
+    case EAlignmentBaseline::kMathematical:
+      alignment_type = FontBaseline::kMathBaseline;
+      break;
+  }
+
+  if (baseline_type == alignment_type)
+    return LayoutUnit(0);
+
+  return metrics.FixedAscent(baseline_type) -
+         metrics.FixedAscent(alignment_type);
 }
 
 FontHeight NGInlineLayoutStateStack::MetricsForTopAndBottomAlign(

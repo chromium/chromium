@@ -234,6 +234,13 @@ class CORE_EXPORT NGInlineLayoutStateStack {
                                      NGLogicalLineItems*,
                                      FontBaseline);
 
+  // Computes the difference between the 'dominant-baseline' and the
+  // 'alignment-baseline'.
+  static LayoutUnit ComputeAlignmentBaselineShift(
+      const FontMetrics& metrics,
+      FontBaseline baseline_type,
+      EAlignmentBaseline alignment_type);
+
   // Compute the metrics for when 'vertical-align' is 'top' and 'bottom' from
   // |pending_descendants|.
   FontHeight MetricsForTopAndBottomAlign(const NGInlineBoxState&,
