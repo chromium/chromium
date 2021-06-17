@@ -21,12 +21,10 @@
 
 #if BUILDFLAG(ENABLE_WIDEVINE)
 #include "third_party/widevine/cdm/widevine_cdm_common.h"  // nogncheck
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || \
-    BUILDFLAG(ENABLE_MEDIA_FOUNDATION_WIDEVINE_CDM)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_WIN)
 #include "base/native_library.h"
 #include "chrome/common/chrome_paths.h"
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) ||
-        // BUILDFLAG(ENABLE_MEDIA_FOUNDATION_WIDEVINE_CDM)
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_WIN)
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #include "base/no_destructor.h"
 #include "components/cdm/common/cdm_manifest.h"
@@ -267,26 +265,28 @@ void AddHardwareSecureWidevine(std::vector<content::CdmInfo>* cdms) {
 
   cdms->push_back(content::CdmInfo(
       kWidevineKeySystem, Robustness::kHardwareSecure, std::move(capability)));
-#elif BUILDFLAG(ENABLE_MEDIA_FOUNDATION_WIDEVINE_CDM)
-  // TODO(hmchen): Remove this after the Windows CDM is component updated.
-  base::FilePath install_dir;
-  if (!base::PathService::Get(chrome::DIR_BUNDLED_WIDEVINE_CDM, &install_dir))
-    return;
+#elif defined(OS_WIN)
+  // TODO(alstonge): Remove this after the Windows CDM is component updated.
+  if (base::FeatureList::IsEnabled(media::kHardwareSecureDecryption)) {
+    base::FilePath install_dir;
+    if (!base::PathService::Get(chrome::DIR_BUNDLED_WIDEVINE_CDM, &install_dir))
+      return;
 
-  auto widevine_cdm_path = install_dir.AppendASCII(
-      base::GetNativeLibraryName(kMediaFoundationWidevineCdmLibraryName));
-  if (!base::PathExists(widevine_cdm_path))
-    return;
+    auto widevine_cdm_path = install_dir.AppendASCII(
+        base::GetNativeLibraryName(kMediaFoundationWidevineCdmLibraryName));
+    if (!base::PathExists(widevine_cdm_path))
+      return;
 
-  // Register Widevine hardware secure support for lazy initialization.
-  // TODO(xhwang): Get the version from the DLL.
-  VLOG(1) << "Registering " << kMediaFoundationWidevineCdmDisplayName;
-  cdms->push_back(content::CdmInfo(
-      kWidevineKeySystem, Robustness::kHardwareSecure, absl::nullopt,
-      /*supports_sub_key_systems=*/false,
-      kMediaFoundationWidevineCdmDisplayName, kMediaFoundationWidevineCdmGuid,
-      base::Version(), widevine_cdm_path,
-      /*file_system_id=*/""));
+    // Register Widevine hardware secure support for lazy initialization.
+    // TODO(xhwang): Get the version from the DLL.
+    VLOG(1) << "Registering " << kMediaFoundationWidevineCdmDisplayName;
+    cdms->push_back(content::CdmInfo(
+        kWidevineKeySystem, Robustness::kHardwareSecure, absl::nullopt,
+        /*supports_sub_key_systems=*/false,
+        kMediaFoundationWidevineCdmDisplayName, kMediaFoundationWidevineCdmGuid,
+        base::Version(), widevine_cdm_path,
+        /*file_system_id=*/""));
+  }
 #endif  // BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
 }
 

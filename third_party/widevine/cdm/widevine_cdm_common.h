@@ -6,7 +6,7 @@
 #define WIDEVINE_CDM_WIDEVINE_CDM_COMMON_H_
 
 #include "base/token.h"
-#include "third_party/widevine/cdm/buildflags.h"
+#include "build/build_config.h"
 
 // Default constants common to all Widevine CDMs.
 
@@ -37,12 +37,12 @@ const base::Token kWidevineCdmGuid{0x05d908e5dcca9960ull,
 const char kWidevineCdmFileSystemId[] = "application_x-ppapi-widevine-cdm";
 
 // Constants specific to Windows MediaFoundation-based Widevine CDM library.
-#if BUILDFLAG(ENABLE_MEDIA_FOUNDATION_WIDEVINE_CDM)
+#if defined(OS_WIN)
 const char kMediaFoundationWidevineCdmLibraryName[] = "Google.Widevine.CDM";
 const char kMediaFoundationWidevineCdmDisplayName[] =
     "Google Widevine Windows CDM";
 const base::Token kMediaFoundationWidevineCdmGuid{0x8e73dec793bf5adcull,
                                                   0x27e572c9a1fd930eull};
-#endif
+#endif  // defined(OS_WIN)
 
 #endif  // WIDEVINE_CDM_WIDEVINE_CDM_COMMON_H_
