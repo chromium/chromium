@@ -16,6 +16,7 @@
 #include "base/callback.h"
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
@@ -533,6 +534,11 @@ void PdfViewPluginBase::EnableAccessibility() {
 void PdfViewPluginBase::HandleAccessibilityAction(
     const AccessibilityActionData& action_data) {
   engine_->HandleAccessibilityAction(action_data);
+}
+
+bool PdfViewPluginBase::UnsupportedFeatureIsReportedForTesting(
+    const std::string& feature) const {
+  return base::Contains(unsupported_features_reported_, feature);
 }
 
 void PdfViewPluginBase::InitializeEngine(std::unique_ptr<PDFiumEngine> engine) {

@@ -112,6 +112,12 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // Handle invoked accessibility actions.
   void HandleAccessibilityAction(const AccessibilityActionData& action_data);
 
+  bool UnsupportedFeatureIsReportedForTesting(const std::string& feature) const;
+
+  bool GetNotifiedBrowserAboutUnsupportedFeatureForTesting() const {
+    return notified_browser_about_unsupported_feature_;
+  }
+
  protected:
   // Do not save files with over 100 MB. This cap should be kept in sync with
   // and is also enforced in chrome/browser/resources/pdf/pdf_viewer.js.
