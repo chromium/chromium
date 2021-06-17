@@ -479,8 +479,7 @@ const HttpResponseInfo* HttpCache::Transaction::GetResponseInfo() const {
         << "These must be in sync via SetResponse and SetAuthResponse.";
     return &auth_response_;
   }
-  DCHECK_EQ(cache_entry_status_, response_.cache_entry_status)
-      << "These must be in sync via SetResponse and SetAuthResponse.";
+  // TODO(https://crbug.com/1219402): This should check in `response_`
   return &response_;
 }
 
@@ -2091,7 +2090,8 @@ int HttpCache::Transaction::DoHeadersPhaseCannotProceed(int result) {
   entry_ = nullptr;
   new_entry_ = nullptr;
 
-  SetResponse(HttpResponseInfo());
+  // TODO(https://crbug.com/1219402): This should probably clear `response_`,
+  // too, once things are fixed so it's safe to do so.
 
   // Bypass the cache for timeout scenario.
   if (result == ERR_CACHE_LOCK_TIMEOUT)
