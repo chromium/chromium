@@ -44,7 +44,8 @@ class CommerceHintAgent
 
   void ExtractProducts();
   void OnProductsExtracted(std::unique_ptr<base::Value> result);
-  static std::string ExtractButtonText(const blink::WebFormElement& form);
+  static const std::vector<std::string> ExtractButtonTexts(
+      const blink::WebFormElement& form);
 
  private:
   GURL starting_url_;
