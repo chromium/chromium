@@ -92,4 +92,13 @@ TEST_F(CrostiniStartupStatusTest, TestVerbose) {
                                       crostini::CrostiniResult::SUCCESS, 1);
 }
 
+TEST_F(CrostiniStartupStatusTest,
+       TestNoOutOfBoundsAccessWhenRestartBeforeStageStart) {
+  // Repro case for crbug/1214039.
+  auto* startup_status = NewStartupStatus(true);
+  startup_status->OnCrostiniRestarted(crostini::CrostiniResult::SUCCESS);
+
+  ASSERT_EQ(output_.size(), 2u);
+}
+
 }  // namespace extensions
