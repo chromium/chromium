@@ -4,8 +4,9 @@
 
 package org.chromium.chrome.browser.ui.android.webid;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -14,28 +15,41 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties.ACCOUNT;
+import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties.FAVICON_OR_FALLBACK;
+import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties.ON_CLICK_LISTENER;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.FORMATTED_URL;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.SINGLE_ACCOUNT;
+
+import android.graphics.Bitmap;
+
+import androidx.annotation.Px;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties.FaviconOrFallback;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ItemType;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.favicon.IconType;
+import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.components.url_formatter.UrlFormatterJni;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * Controller tests verify that the Account Selection delegate modifies the model if the API is used
@@ -54,6 +68,7 @@ public class AccountSelectionControllerTest {
             new Account("Bob", "*****", "Bob", "", TEST_PROFILE_PIC, TEST_SUBDOMAIN_URL);
     private static final Account CARL =
             new Account("Carl", "G3h3!m", "Carl Test", ":)", TEST_PROFILE_PIC, TEST_URL);
+    private static final @Px int DESIRED_FAVICON_SIZE = 64;
 
     @Rule
     public JniMocker mJniMocker = new JniMocker();
@@ -62,7 +77,13 @@ public class AccountSelectionControllerTest {
     @Mock
     private AccountSelectionComponent.Delegate mMockDelegate;
     @Mock
+    private LargeIconBridge mMockIconBridge;
+    @Mock
     private BottomSheetController mMockBottomSheetController;
+
+    // Can't be local, as it has to be initialized by initMocks.
+    @Captor
+    private ArgumentCaptor<LargeIconBridge.LargeIconCallback> mCallbackArgumentCaptor;
 
     private AccountSelectionMediator mMediator;
     private final ModelList mSheetItems = new ModelList();
@@ -77,28 +98,101 @@ public class AccountSelectionControllerTest {
                      anyString(), eq(SchemeDisplay.OMIT_HTTP_AND_HTTPS)))
                 .then(inv -> formatForSecurityDisplay(inv.getArgument(0)));
 
-        mMediator = new AccountSelectionMediator(
-                mMockDelegate, mSheetItems, mMockBottomSheetController, null);
+        mMediator = new AccountSelectionMediator(mMockDelegate, mSheetItems,
+                mMockBottomSheetController, null, mMockIconBridge, DESIRED_FAVICON_SIZE);
     }
 
     @Test
     public void testShowAccountsCreatesHeader() {
         mMediator.showAccounts(TEST_URL, Arrays.asList(ANA, BOB));
-        assertThat("Incorrect header type", mSheetItems.get(0).type, is(ItemType.HEADER));
-        assertThat("Incorrect header multiple accounts",
-                mSheetItems.get(0).model.get(SINGLE_ACCOUNT), is(false));
-        assertThat("Incorrect header url", mSheetItems.get(0).model.get(FORMATTED_URL),
-                is(formatForSecurityDisplay(TEST_URL)));
+        assertEquals("Incorrect header type", ItemType.HEADER, mSheetItems.get(0).type);
+        assertEquals("Incorrect header multiple accounts", false,
+                mSheetItems.get(0).model.get(SINGLE_ACCOUNT));
+        assertEquals("Incorrect header url", formatForSecurityDisplay(TEST_URL),
+                mSheetItems.get(0).model.get(FORMATTED_URL));
     }
 
     @Test
     public void testShowAccountWithSingleEntryCreatesHeader() {
         mMediator.showAccounts(TEST_URL, Arrays.asList(ANA));
-        assertThat("Incorrect header type", mSheetItems.get(0).type, is(ItemType.HEADER));
-        assertThat("Incorrect header single account", mSheetItems.get(0).model.get(SINGLE_ACCOUNT),
-                is(true));
-        assertThat("Incorrect header url", mSheetItems.get(0).model.get(FORMATTED_URL),
-                is(formatForSecurityDisplay(TEST_URL)));
+        assertEquals("Incorrect header type", ItemType.HEADER, mSheetItems.get(0).type);
+        assertEquals("Incorrect header single account", true,
+                mSheetItems.get(0).model.get(SINGLE_ACCOUNT));
+        assertEquals("Incorrect header url", formatForSecurityDisplay(TEST_URL),
+                mSheetItems.get(0).model.get(FORMATTED_URL));
+    }
+
+    @Test
+    public void testShowAccountsSetsAccountListAndRequestsFavicons() {
+        mMediator.showAccounts(TEST_URL, Arrays.asList(ANA, CARL, BOB));
+        assertEquals(
+                "Incorrect item sheet count", 4, mSheetItems.size()); // Header + three Accounts
+        assertEquals("Incorrect type", ItemType.ACCOUNT, mSheetItems.get(1).type);
+        assertEquals("Incorrect account", ANA, mSheetItems.get(1).model.get(ACCOUNT));
+        assertNull(mSheetItems.get(1).model.get(FAVICON_OR_FALLBACK));
+        assertEquals("Incorrect type", ItemType.ACCOUNT, mSheetItems.get(2).type);
+        assertEquals("Incorrect account", CARL, mSheetItems.get(2).model.get(ACCOUNT));
+        assertNull(mSheetItems.get(2).model.get(FAVICON_OR_FALLBACK));
+        assertEquals("Incorrect type", ItemType.ACCOUNT, mSheetItems.get(3).type);
+        assertEquals("Incorrect account", BOB, mSheetItems.get(3).model.get(ACCOUNT));
+        assertNull(mSheetItems.get(3).model.get(FAVICON_OR_FALLBACK));
+
+        verify(mMockIconBridge)
+                .getLargeIconForStringUrl(eq(CARL.getOriginUrl()), eq(DESIRED_FAVICON_SIZE), any());
+        verify(mMockIconBridge)
+                .getLargeIconForStringUrl(eq(ANA.getOriginUrl()), eq(DESIRED_FAVICON_SIZE), any());
+        verify(mMockIconBridge)
+                .getLargeIconForStringUrl(eq(BOB.getOriginUrl()), eq(DESIRED_FAVICON_SIZE), any());
+    }
+
+    @Test
+    public void testFetchFaviconUpdatesModel() {
+        mMediator.showAccounts(TEST_URL, Collections.singletonList(CARL));
+        assertEquals("Incorrect item sheet count", 3,
+                mSheetItems.size()); // Header + Account + Continue Button
+        assertEquals("Incorrect type", ItemType.ACCOUNT, mSheetItems.get(1).type);
+        assertEquals("Incorrect account", CARL, mSheetItems.get(1).model.get(ACCOUNT));
+        assertNull(mSheetItems.get(1).model.get(FAVICON_OR_FALLBACK));
+
+        // ANA and CARL both have TEST_URL as their origin URL
+        verify(mMockIconBridge)
+                .getLargeIconForStringUrl(
+                        eq(TEST_URL), eq(DESIRED_FAVICON_SIZE), mCallbackArgumentCaptor.capture());
+        LargeIconBridge.LargeIconCallback callback = mCallbackArgumentCaptor.getValue();
+        Bitmap bitmap = Bitmap.createBitmap(
+                DESIRED_FAVICON_SIZE, DESIRED_FAVICON_SIZE, Bitmap.Config.ARGB_8888);
+        callback.onLargeIconAvailable(bitmap, 333, true, IconType.FAVICON);
+        FaviconOrFallback iconData = mSheetItems.get(1).model.get(FAVICON_OR_FALLBACK);
+        assertEquals("incorrect favicon bitmap", bitmap, iconData.mIcon);
+        assertEquals("incorrect favicon url", TEST_URL, iconData.mUrl);
+        assertEquals("incorrect favicon size", DESIRED_FAVICON_SIZE, iconData.mIconSize);
+        assertEquals("incorrect favicon fallback color", 333, iconData.mFallbackColor);
+    }
+
+    @Test
+    public void testShowAccountsFormatPslOrigins() {
+        mMediator.showAccounts(TEST_URL, Arrays.asList(ANA, BOB));
+        assertEquals("Incorrect item sheet count", 3, mSheetItems.size()); // Header + two Accounts
+        assertEquals("Incorrect item type", ItemType.ACCOUNT, mSheetItems.get(1).type);
+        assertEquals("Incorrect item type", ItemType.ACCOUNT, mSheetItems.get(2).type);
+    }
+
+    @Test
+    public void testClearsAccountListWhenShowingAgain() {
+        mMediator.showAccounts(TEST_URL, Collections.singletonList(ANA));
+        assertEquals("Incorrect item sheet count", 3,
+                mSheetItems.size()); // Header + Account + Continue Button
+        assertEquals("Incorrect item type", ItemType.ACCOUNT, mSheetItems.get(1).type);
+        assertEquals("Incorrect account", ANA, mSheetItems.get(1).model.get(ACCOUNT));
+        assertNull(mSheetItems.get(1).model.get(FAVICON_OR_FALLBACK));
+
+        // Showing the sheet a second time should replace all changed accounts.
+        mMediator.showAccounts(TEST_URL, Collections.singletonList(BOB));
+        assertEquals("Incorrect item sheet count", 3,
+                mSheetItems.size()); // Header + Account + Continue Button
+        assertEquals("Incorrect item type", ItemType.ACCOUNT, mSheetItems.get(1).type);
+        assertEquals("Incorrect account", BOB, mSheetItems.get(1).model.get(ACCOUNT));
+        assertNull(mSheetItems.get(1).model.get(FAVICON_OR_FALLBACK));
     }
 
     @Test
@@ -107,7 +201,31 @@ public class AccountSelectionControllerTest {
         mMediator.showAccounts(TEST_URL, Arrays.asList(ANA, CARL, BOB));
         verify(mMockBottomSheetController, times(1)).requestShowContent(eq(null), eq(true));
 
-        assertThat("Incorrect visibility", mMediator.isVisible(), is(true));
+        assertEquals("Incorrectly hidden", true, mMediator.isVisible());
+    }
+
+    @Test
+    public void testCallsCallbackAndHidesOnSelectingItemDoesNotRecordIndexForSingleAccount() {
+        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
+        mMediator.showAccounts(TEST_URL, Arrays.asList(ANA));
+        assertEquals("Incorrectly hidden", true, mMediator.isVisible());
+        assertNotNull(mSheetItems.get(1).model.get(ON_CLICK_LISTENER));
+
+        mSheetItems.get(1).model.get(ON_CLICK_LISTENER).onResult(ANA);
+        verify(mMockDelegate).onAccountSelected(ANA);
+        assertEquals("Incorrectly visible", false, mMediator.isVisible());
+    }
+
+    @Test
+    public void testCallsCallbackAndHidesOnSelectingItem() {
+        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
+        mMediator.showAccounts(TEST_URL, Arrays.asList(ANA, CARL));
+        assertEquals("Incorrectly hidden", true, mMediator.isVisible());
+        assertNotNull(mSheetItems.get(1).model.get(ON_CLICK_LISTENER));
+
+        mSheetItems.get(1).model.get(ON_CLICK_LISTENER).onResult(CARL);
+        verify(mMockDelegate).onAccountSelected(CARL);
+        assertEquals("Incorrectly visible", false, mMediator.isVisible());
     }
 
     @Test
@@ -116,7 +234,7 @@ public class AccountSelectionControllerTest {
         mMediator.showAccounts(TEST_URL, Arrays.asList(ANA, BOB));
         mMediator.onDismissed(BottomSheetController.StateChangeReason.BACK_PRESS);
         verify(mMockDelegate).onDismissed();
-        assertThat("Incorrect visibility", mMediator.isVisible(), is(false));
+        assertEquals("Incorrectly visible", false, mMediator.isVisible());
     }
 
     @Test
@@ -125,7 +243,7 @@ public class AccountSelectionControllerTest {
         mMediator.showAccounts(TEST_URL, Arrays.asList(ANA, BOB));
         mMediator.onAccountSelected(ANA);
         verify(mMockDelegate).onAccountSelected(ANA);
-        assertThat("Incorrect visibility", mMediator.isVisible(), is(false));
+        assertEquals("Incorrectly visible", false, mMediator.isVisible());
     }
 
     /**

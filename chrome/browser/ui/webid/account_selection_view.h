@@ -37,9 +37,10 @@ class AccountSelectionView {
   virtual ~AccountSelectionView() = default;
 
   // Instructs the view to show the provided |accounts| to the user.
-  // |rp_url| is the current origin and |idp_url| is the IdP origin.
-  // After user interaction either OnAccountSelected() or OnDismiss() gets
-  // invoked.
+  // |rp_url| is the relying party's url which is normally the current page's
+  // url, and |idp_url| is the identity provider's url that is providing
+  // the accounts. After user interaction either OnAccountSelected() or
+  // OnDismiss() gets invoked.
   virtual void Show(const GURL& rp_url,
                     const GURL& idp_url,
                     base::span<const Account> accounts) = 0;

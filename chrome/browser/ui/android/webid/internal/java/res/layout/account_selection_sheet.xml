@@ -11,30 +11,28 @@
     android:layout_width="match_parent"
     android:orientation="vertical">
 
-    <!-- Please update R.dimens.account_selection_sheet_height_single_account
-         when modifying the margins. -->
     <ImageView
         android:id="@+id/drag_handlebar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginEnd="@dimen/account_selection_sheet_margin"
-        android:layout_marginStart="@dimen/account_selection_sheet_margin"
-        android:layout_marginTop="6dp"
-        android:layout_marginBottom="6dp"
+        android:minHeight="@dimen/account_selection_sheet_handlebar_height"
+        android:layout_marginEnd="@dimen/account_selection_sheet_horizontal_margin"
+        android:layout_marginStart="@dimen/account_selection_sheet_horizontal_margin"
+        android:layout_marginTop="@dimen/account_selection_sheet_handlebar_margin"
+        android:layout_marginBottom="@dimen/account_selection_sheet_handlebar_margin"
         android:importantForAccessibility="no"
         app:srcCompat="@drawable/drag_handlebar" />
 
-    <!-- Please update R.dimens.account_selection_sheet_height_second_account
-         when modifying paddingBottom. -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/sheet_item_list"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:layout_marginEnd="@dimen/account_selection_sheet_margin"
-        android:layout_marginStart="@dimen/account_selection_sheet_margin"
+        android:layout_marginEnd="@dimen/account_selection_sheet_horizontal_margin"
+        android:layout_marginStart="@dimen/account_selection_sheet_horizontal_margin"
         android:clipToPadding="false"
-        android:paddingBottom="8dp"
-        android:divider="@null"/>
+        android:paddingBottom="@dimen/account_selection_sheet_item_padding_bottom"
+        android:divider="@null"
+        tools:listitem="@layout/account_selection_account_item"/>
 </LinearLayout>

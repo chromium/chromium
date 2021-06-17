@@ -91,7 +91,7 @@ public class AccountSelectionIntegrationTest {
     public void testBackDismissesAndCallsCallback() {
         runOnUiThreadBlocking(
                 () -> { mAccountSelection.showAccounts(EXAMPLE_URL, Arrays.asList(ANA, BOB)); });
-        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
+        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
 
         Espresso.pressBack();
 

@@ -26,14 +26,38 @@ logic from representation:
    and is mostly called by a view binder to set mutable properties.
 
 
+A typical request to the Account Selection component API that intends to change
+the visible appearance involves all component parts. For example if the API
+caller requests to show new accounts:
+
+1. The API caller asks the controller to show a set of `accounts`.
+    1. The controller prepares the `accounts` for display.
+    2. The controller writes the prepared accounts into the [model](#Model).
+2. The MCP picks up model changes.
+    1. The MCP identifies that the `SHEET_ITEMS` property was changed.
+    2. The MCP uses a ViewBinder to bind each changed account to the
+       corresponding view (e.g. a TextView inside a RecyclerView).
+3. The view renders the changed account list.
+    1. The view may apply style, and event handlers for click events.
+
+
 ## Model
 
 The model holds state and event listeners connected to the view. An MCP
 automatically notifies listener about any change made to a property. To automate
 this Observer structure, the model is a `ListModel` as defined in
-`//src/ui/android/java/src/org/chromium/ui/modelutil/`.
+`//src/ui/android/java/src/org/chromium/ui/modelutil/`. The items in this model
+are themselves of type `PropertyModel`. The properties for these are located in
+the static `AccountSelectionProperties` class.
 
-TODO(majidvp): Explain the type of items in the list once they are added.
+The items in the list can be of three types:
+
+ * **HEADER**: There is only one of these and it represents the header of the
+   view. Contains whether this is for a single or multiple accounts, and the URL
+   for the RP.
+ * **ACCOUNT**: One for each account. It contains the account data, favicon, and
+   a click listener.
+ * **CONTINUE_BUTTON**: There is only one when we want to show a confirm button.
 
 ## Controller
 

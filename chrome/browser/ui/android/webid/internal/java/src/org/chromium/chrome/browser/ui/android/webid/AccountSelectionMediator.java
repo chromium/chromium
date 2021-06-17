@@ -4,18 +4,21 @@
 
 package org.chromium.chrome.browser.ui.android.webid;
 
-import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.FORMATTED_URL;
-import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.SINGLE_ACCOUNT;
-
+import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties;
+import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ContinueButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties;
+import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ItemType;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
+import org.chromium.components.favicon.LargeIconBridge;
+import org.chromium.components.favicon.LargeIconBridge.LargeIconCallback;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -32,17 +35,22 @@ class AccountSelectionMediator {
     private boolean mVisible;
     private final AccountSelectionComponent.Delegate mDelegate;
     private final ModelList mSheetItems;
+    private final LargeIconBridge mLargeIconBridge;
+    private final @Px int mDesiredIconSize;
 
     private final BottomSheetController mBottomSheetController;
     private final BottomSheetContent mBottomSheetContent;
     private final BottomSheetObserver mBottomSheetObserver;
 
     AccountSelectionMediator(AccountSelectionComponent.Delegate delegate, ModelList sheetItems,
-            BottomSheetController bottomSheetController, BottomSheetContent bottomSheetContent) {
+            BottomSheetController bottomSheetController, BottomSheetContent bottomSheetContent,
+            LargeIconBridge largeIconBridge, @Px int desiredIconSize) {
         assert delegate != null;
         mVisible = false;
         mDelegate = delegate;
         mSheetItems = sheetItems;
+        mLargeIconBridge = largeIconBridge;
+        mDesiredIconSize = desiredIconSize;
         mBottomSheetController = bottomSheetController;
         mBottomSheetContent = bottomSheetContent;
 
@@ -66,14 +74,26 @@ class AccountSelectionMediator {
 
         // We remove the HTTPS from URL since it is the only protocol that is
         // allowed with WebID.
-        mSheetItems.add(new ListItem(AccountSelectionProperties.ItemType.HEADER,
+        mSheetItems.add(new ListItem(ItemType.HEADER,
                 new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
-                        .with(SINGLE_ACCOUNT, accounts.size() == 1)
-                        .with(FORMATTED_URL,
+                        .with(HeaderProperties.SINGLE_ACCOUNT, accounts.size() == 1)
+                        .with(HeaderProperties.FORMATTED_URL,
                                 UrlFormatter.formatUrlForSecurityDisplay(
                                         url, SchemeDisplay.OMIT_HTTP_AND_HTTPS))
                         .build()));
-        // TODO(majidvp): Add accounts to the sheet items.
+
+        for (Account account : accounts) {
+            final PropertyModel model = createAccountItem(account);
+            mSheetItems.add(new ListItem(ItemType.ACCOUNT, model));
+            requestIconOrFallbackImage(model);
+
+            // If there is only a single account we need to show the continue button.
+            if (accounts.size() == 1) {
+                final PropertyModel continueBtnModel = createContinueBtnItem(account);
+                mSheetItems.add(new ListItem(ItemType.CONTINUE_BUTTON, continueBtnModel));
+            }
+        }
+
         showContent();
     }
 
@@ -100,6 +120,17 @@ class AccountSelectionMediator {
         mBottomSheetController.hideContent(mBottomSheetContent, true);
     }
 
+    private void requestIconOrFallbackImage(PropertyModel accountModel) {
+        Account account = accountModel.get(AccountProperties.ACCOUNT);
+        final String iconOrigin = account.getOriginUrl();
+        final LargeIconCallback setIcon = (icon, fallbackColor, hasDefaultColor, type) -> {
+            accountModel.set(AccountProperties.FAVICON_OR_FALLBACK,
+                    new AccountProperties.FaviconOrFallback(
+                            iconOrigin, icon, fallbackColor, mDesiredIconSize));
+        };
+        mLargeIconBridge.getLargeIconForStringUrl(iconOrigin, mDesiredIconSize, setIcon);
+    }
+
     boolean isVisible() {
         return mVisible;
     }
@@ -112,5 +143,19 @@ class AccountSelectionMediator {
     void onDismissed(@StateChangeReason int reason) {
         hideContent();
         mDelegate.onDismissed();
+    }
+
+    private PropertyModel createAccountItem(Account account) {
+        return new PropertyModel.Builder(AccountProperties.ALL_KEYS)
+                .with(AccountProperties.ACCOUNT, account)
+                .with(AccountProperties.ON_CLICK_LISTENER, this::onAccountSelected)
+                .build();
+    }
+
+    private PropertyModel createContinueBtnItem(Account account) {
+        return new PropertyModel.Builder(ContinueButtonProperties.ALL_KEYS)
+                .with(ContinueButtonProperties.ACCOUNT, account)
+                .with(ContinueButtonProperties.ON_CLICK_LISTENER, this::onAccountSelected)
+                .build();
     }
 }

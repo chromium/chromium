@@ -4,14 +4,19 @@
      found in the LICENSE file. -->
 
 <resources>
-    <dimen name="account_selection_sheet_margin">16dp</dimen>
+  <dimen name="account_selection_sheet_horizontal_margin">16dp</dimen>
 
-    <!-- Below are the different Half-state peeking heights. The height is the
-         sum of all components. It varies depending on the suggestion count. The
-         base height is 298dp:
-         Bottom sheet shadows and padding (18dp)
-         + Handlebar (16dp)
-         + Title size and margin (48+16dp) -->
-    <dimen name="account_selection_sheet_height_single_account">98dp</dimen>
+  <dimen name="account_selection_sheet_handlebar_height">4dp</dimen>
+  <dimen name="account_selection_sheet_handlebar_margin">6dp</dimen>
 
+  <dimen name="account_selection_sheet_title_height">48dp</dimen>
+  <dimen name="account_selection_sheet_title_margin_bottom">16dp</dimen>
+
+  <dimen name="account_selection_sheet_item_padding_bottom">8dp</dimen>
+
+  <dimen name="account_selection_favicon_size">24dp</dimen>
+  <dimen name="account_selection_sheet_account_text_height">20dp</dimen>
+  <dimen name="account_selection_sheet_account_margin">6dp</dimen>
+
+  <dimen name="account_selection_sheet_button_margin">2dp</dimen>
 </resources>

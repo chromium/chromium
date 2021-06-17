@@ -19,16 +19,13 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 public class AccountSelectionBottomSheetContent implements BottomSheetContent {
     private final View mContentView;
     private final Supplier<Integer> mScrollOffsetSupplier;
-    private final Supplier<Float> mHalfHeightRatioSupplier;
 
     /**
      * Constructs the AccountSelection bottom sheet view.
      */
-    AccountSelectionBottomSheetContent(View contentView, Supplier<Integer> scrollOffsetSupplier,
-            Supplier<Float> halfHeightRatioSupplier) {
+    AccountSelectionBottomSheetContent(View contentView, Supplier<Integer> scrollOffsetSupplier) {
         mContentView = contentView;
         mScrollOffsetSupplier = scrollOffsetSupplier;
-        mHalfHeightRatioSupplier = halfHeightRatioSupplier;
     }
 
     @Override
@@ -77,8 +74,8 @@ public class AccountSelectionBottomSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public float getHalfHeightRatio() {
-        return mHalfHeightRatioSupplier.get();
+    public float getFullHeightRatio() {
+        return HeightMode.WRAP_CONTENT;
     }
 
     @Override

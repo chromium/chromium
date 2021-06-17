@@ -5,18 +5,18 @@
 package org.chromium.chrome.browser.ui.android.webid;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
-import androidx.annotation.Px;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
@@ -27,11 +27,10 @@ import java.util.List;
  * user select an account.
  */
 public class AccountSelectionCoordinator implements AccountSelectionComponent {
-    private AccountSelectionMediator mMediator;
-
     private Context mContext;
     private BottomSheetController mBottomSheetController;
     private AccountSelectionBottomSheetContent mBottomSheetContent;
+    private AccountSelectionMediator mMediator;
     private RecyclerView mSheetItemListView;
 
     @Override
@@ -46,11 +45,16 @@ public class AccountSelectionCoordinator implements AccountSelectionComponent {
         mSheetItemListView = contentView.findViewById(R.id.sheet_item_list);
 
         // Setup the bottom sheet content view.
-        mBottomSheetContent = new AccountSelectionBottomSheetContent(contentView,
-                mSheetItemListView::computeVerticalScrollOffset, this::computeHalfHeightRatio);
+        mBottomSheetContent = new AccountSelectionBottomSheetContent(
+                contentView, mSheetItemListView::computeVerticalScrollOffset);
 
-        mMediator = new AccountSelectionMediator(
-                delegate, sheetItems, mBottomSheetController, mBottomSheetContent);
+        // TODO(majidvp): This is currently using the regular profile which is incorrect if the
+        // API is being used in an incognito tabs. We should instead use the profile associated
+        // with the RP's web contents. https://crbug.com/1199088
+        mMediator = new AccountSelectionMediator(delegate, sheetItems, mBottomSheetController,
+                mBottomSheetContent, new LargeIconBridge(Profile.getLastUsedRegularProfile()),
+                context.getResources().getDimensionPixelSize(
+                        R.dimen.account_selection_favicon_size));
     }
 
     static View setupContentView(Context context, ModelList sheetItems) {
@@ -66,6 +70,12 @@ public class AccountSelectionCoordinator implements AccountSelectionComponent {
         adapter.registerType(AccountSelectionProperties.ItemType.HEADER,
                 AccountSelectionCoordinator::buildHeaderView,
                 AccountSelectionViewBinder::bindHeaderView);
+        adapter.registerType(AccountSelectionProperties.ItemType.ACCOUNT,
+                AccountSelectionCoordinator::buildAccountView,
+                AccountSelectionViewBinder::bindAccountView);
+        adapter.registerType(AccountSelectionProperties.ItemType.CONTINUE_BUTTON,
+                AccountSelectionCoordinator::buildContinueButtonView,
+                AccountSelectionViewBinder::bindContinueButtonView);
         sheetItemListView.setAdapter(adapter);
 
         return contentView;
@@ -76,22 +86,18 @@ public class AccountSelectionCoordinator implements AccountSelectionComponent {
                 .inflate(R.layout.account_selection_header_item, parent, false);
     }
 
+    static View buildAccountView(ViewGroup parent) {
+        return LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.account_selection_account_item, parent, false);
+    }
+
+    static View buildContinueButtonView(ViewGroup parent) {
+        return LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.account_selection_continue_button, parent, false);
+    }
+
     @Override
     public void showAccounts(String url, List<Account> accounts) {
         mMediator.showAccounts(url, accounts);
-    }
-
-    public float computeHalfHeightRatio() {
-        return Math.min(getDesiredSheetHeight(), mBottomSheetController.getContainerHeight())
-                / (float) mBottomSheetController.getContainerHeight();
-    }
-
-    private @Px int getDesiredSheetHeight() {
-        Resources resources = mContext.getResources();
-        @Px
-        int totalHeight = resources.getDimensionPixelSize(
-                R.dimen.account_selection_sheet_height_single_account);
-
-        return totalHeight;
     }
 }
