@@ -655,11 +655,8 @@ FloatRect ShapeResultView::ComputeInkBounds() const {
 
 void ShapeResultView::ExpandRangeToIncludePartialGlyphs(unsigned* from,
                                                         unsigned* to) const {
-  unsigned accumulated_offset = char_index_offset_;
-  for (const auto& part : Parts()) {
-    part.ExpandRangeToIncludePartialGlyphs(accumulated_offset, from, to);
-    accumulated_offset += part.NumCharacters();
-  }
+  for (const auto& part : Parts())
+    part.ExpandRangeToIncludePartialGlyphs(char_index_offset_, from, to);
 }
 
 }  // namespace blink

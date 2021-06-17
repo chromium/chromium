@@ -31,6 +31,22 @@ class ShapeResultViewTest : public testing::Test {
   Font font;
 };
 
+// http://crbug.com/1221008
+TEST_F(ShapeResultViewTest,
+       ExpandRangeToIncludePartialGlyphsWithCombiningCharacter) {
+  String string(u"abc\u0E35\u0E35\u0E35\u0E35");
+  HarfBuzzShaper shaper(string);
+  scoped_refptr<const ShapeResult> result =
+      shaper.Shape(&font, TextDirection::kLtr);
+  scoped_refptr<const ShapeResultView> view = ShapeResultView::Create(
+      result.get(), result->StartIndex(), result->EndIndex());
+  unsigned from = 0;
+  unsigned end = string.length();
+  view->ExpandRangeToIncludePartialGlyphs(&from, &end);
+  EXPECT_EQ(0u, from);
+  EXPECT_EQ(string.length(), end);
+}
+
 TEST_F(ShapeResultViewTest, LatinSingleView) {
   String string =
       To16Bit("Test run with multiple words and breaking opportunities.", 56);
