@@ -26,8 +26,8 @@ class CrostiniForceCloseView : public views::BubbleDialogDelegateView {
 
   // Show the "would you like to force-close |app_name|?" dialog, which invokes
   // the |force_close_callback_| if the user chooses to force close. Returns the
-  // widget for the force-close dialog. The |cloasble_widget| is used to decide
-  // where to draw the dialog.
+  // widget for the force-close dialog. The |closable_widget| will be used as
+  // the parent window for the dialog.
   static views::Widget* Show(const std::string& app_name,
                              views::Widget* closable_widget,
                              base::OnceClosure force_close_callback);
@@ -35,8 +35,8 @@ class CrostiniForceCloseView : public views::BubbleDialogDelegateView {
   // Similar to the above, but allowing direct use of the native view/window
   // which we need to decide how to place the dialog.
   static views::Widget* Show(const std::string& app_name,
-                             gfx::NativeWindow closable_window,
-                             gfx::NativeView closable_view,
+                             gfx::NativeWindow context,
+                             gfx::NativeView parent,
                              base::OnceClosure force_close_callback);
 
  private:

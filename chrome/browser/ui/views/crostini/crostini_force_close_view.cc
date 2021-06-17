@@ -39,13 +39,13 @@ views::Widget* CrostiniForceCloseView::Show(
 
 views::Widget* CrostiniForceCloseView::Show(
     const std::string& app_name,
-    gfx::NativeWindow closable_window,
-    gfx::NativeView closable_view,
+    gfx::NativeWindow context,
+    gfx::NativeView parent,
     base::OnceClosure force_close_callback) {
   views::Widget* dialog_widget = views::DialogDelegate::CreateDialogWidget(
       new CrostiniForceCloseView(base::UTF8ToUTF16(app_name),
                                  std::move(force_close_callback)),
-      closable_window, closable_view);
+      context, parent);
   dialog_widget->Show();
   return dialog_widget;
 }
