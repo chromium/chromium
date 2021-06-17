@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_video_chunk_init.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -46,6 +47,27 @@ absl::optional<uint64_t> EncodedVideoChunk::duration() const {
   if (!duration_.has_value())
     return absl::nullopt;
   return duration_->InMicroseconds();
+}
+
+uint64_t EncodedVideoChunk::byteLength() const {
+  return buffer_->ByteLength();
+}
+
+void EncodedVideoChunk::copyTo(const V8BufferSource* destination,
+                               ExceptionState& exception_state) {
+  // Validate destination buffer.
+  DOMArrayPiece dest_wrapper(destination);
+  if (dest_wrapper.IsDetached()) {
+    exception_state.ThrowTypeError("destination is detached.");
+    return;
+  }
+  if (dest_wrapper.ByteLength() < buffer_->ByteLength()) {
+    exception_state.ThrowTypeError("destination is not large enough.");
+    return;
+  }
+
+  // Copy data.
+  memcpy(dest_wrapper.Bytes(), buffer_->Data(), buffer_->ByteLength());
 }
 
 DOMArrayBuffer* EncodedVideoChunk::data() const {

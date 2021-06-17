@@ -269,10 +269,8 @@ promise_test(async t => {
   decoder.configure(CONFIG);
 
   // Ensure type value is verified.
-  let chunk = new EncodedVideoChunk(
-      {type: 'key', timestamp: 1, duration: 1, data: CHUNKS[1].data});
-
-  assert_throws_dom('DataError', () => decoder.decode(chunk, 'decode'));
+  assert_equals(CHUNKS[1].type, 'delta');
+  assert_throws_dom('DataError', () => decoder.decode(CHUNKS[1], 'decode'));
 }, 'Decode a non key frame first fails');
 
 promise_test(async t => {

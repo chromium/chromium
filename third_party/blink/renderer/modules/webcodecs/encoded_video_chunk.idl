@@ -16,5 +16,8 @@ enum EncodedVideoChunkType {
   // TODO: Add frame dependency information
   readonly attribute long long timestamp;  // microseconds
   readonly attribute unsigned long long? duration;  // microseconds
-  readonly attribute ArrayBuffer data;
+  readonly attribute unsigned long byteLength;
+
+  [RaisesException]
+  void copyTo([AllowShared] BufferSource destination);
 };

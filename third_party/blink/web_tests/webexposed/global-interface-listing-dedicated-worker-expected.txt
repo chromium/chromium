@@ -408,17 +408,19 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method constructor
 [Worker] interface EncodedAudioChunk
 [Worker]     attribute @@toStringTag
-[Worker]     getter data
+[Worker]     getter byteLength
 [Worker]     getter timestamp
 [Worker]     getter type
 [Worker]     method constructor
+[Worker]     method copyTo
 [Worker] interface EncodedVideoChunk
 [Worker]     attribute @@toStringTag
-[Worker]     getter data
+[Worker]     getter byteLength
 [Worker]     getter duration
 [Worker]     getter timestamp
 [Worker]     getter type
 [Worker]     method constructor
+[Worker]     method copyTo
 [Worker] interface ErrorEvent : Event
 [Worker]     attribute @@toStringTag
 [Worker]     getter colno

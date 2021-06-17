@@ -73,7 +73,7 @@ promise_test(async t => {
   assert_greater_than_equal(outputs.length, data_count);
   assert_equals(outputs[0].timestamp, 0, "first chunk timestamp");
   for (chunk of outputs) {
-    assert_greater_than(chunk.data.byteLength, 0);
+    assert_greater_than(chunk.byteLength, 0);
     assert_greater_than_equal(timestamp_us, chunk.timestamp);
   }
 }, 'Simple audio encoding');
@@ -114,7 +114,7 @@ promise_test(async t => {
   assert_greater_than_equal(outputs.length, 1);
   assert_equals(outputs[0].timestamp, -10000, 'first chunk timestamp');
   for (chunk of outputs) {
-    assert_greater_than(chunk.data.byteLength, 0);
+    assert_greater_than(chunk.byteLength, 0);
     assert_greater_than_equal(chunk.timestamp, timestamp_us);
   }
 }, 'Encode audio with negative timestamp');

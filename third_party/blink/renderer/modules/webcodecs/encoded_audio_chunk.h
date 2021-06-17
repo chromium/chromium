@@ -5,14 +5,17 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBCODECS_ENCODED_AUDIO_CHUNK_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBCODECS_ENCODED_AUDIO_CHUNK_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 
 namespace blink {
 
 class DOMArrayBuffer;
 class EncodedAudioChunkInit;
+class ExceptionState;
 
 class MODULES_EXPORT EncodedAudioChunk final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -27,6 +30,10 @@ class MODULES_EXPORT EncodedAudioChunk final : public ScriptWrappable {
   // encoded_audio_chunk.idl implementation.
   String type() const;
   int64_t timestamp() const;
+  uint64_t byteLength() const;
+  void copyTo(const V8BufferSource* destination,
+              ExceptionState& exception_state);
+
   DOMArrayBuffer* data() const;
 
   void Trace(Visitor* visitor) const override {

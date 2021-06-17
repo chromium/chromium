@@ -14,7 +14,7 @@ enum EncodedAudioChunkType {
   constructor(EncodedAudioChunkInit init);
   readonly attribute EncodedAudioChunkType type;
   readonly attribute long long timestamp;  // microseconds
-  readonly attribute ArrayBuffer data;
-
-  // TODO(chcunningham): Duration? Or better yet, should we have a unified audio/video "chunk"?
+  readonly attribute unsigned long byteLength;
+  [RaisesException]
+  void copyTo([AllowShared] BufferSource destination);
 };

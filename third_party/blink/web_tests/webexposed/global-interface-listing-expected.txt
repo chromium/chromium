@@ -2479,17 +2479,19 @@ interface ElementInternals
     setter role
 interface EncodedAudioChunk
     attribute @@toStringTag
-    getter data
+    getter byteLength
     getter timestamp
     getter type
     method constructor
+    method copyTo
 interface EncodedVideoChunk
     attribute @@toStringTag
-    getter data
+    getter byteLength
     getter duration
     getter timestamp
     getter type
     method constructor
+    method copyTo
 interface ErrorEvent : Event
     attribute @@toStringTag
     getter colno

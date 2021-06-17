@@ -208,3 +208,9 @@ function testCanvas(ctx, width, height, expected_pixel, imageSetting, assert_com
     assert_compares(colorData[i + 3], expected_pixel[3]);
   }
 }
+
+function makeDetachedArrayBuffer() {
+  let buffer = new Uint8Array();
+  new MessageChannel().port1.postMessage(buffer, [buffer]);
+  return buffer;
+}

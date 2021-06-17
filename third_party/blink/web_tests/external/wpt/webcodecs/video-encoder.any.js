@@ -325,5 +325,5 @@ promise_test(async t => {
   encoder.close();
   assert_equals(output_chunks.length, 1);
   assert_equals(output_chunks[0].timestamp, -10000, "first chunk timestamp");
-  assert_greater_than(output_chunks[0].data.byteLength, 0);
+  assert_greater_than(output_chunks[0].byteLength, 0);
 }, 'Encode video with negative timestamp');

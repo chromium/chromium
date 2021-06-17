@@ -39,6 +39,27 @@ int64_t EncodedAudioChunk::timestamp() const {
   return timestamp_.InMicroseconds();
 }
 
+uint64_t EncodedAudioChunk::byteLength() const {
+  return buffer_->ByteLength();
+}
+
+void EncodedAudioChunk::copyTo(const V8BufferSource* destination,
+                               ExceptionState& exception_state) {
+  // Validate destination buffer.
+  DOMArrayPiece dest_wrapper(destination);
+  if (dest_wrapper.IsDetached()) {
+    exception_state.ThrowTypeError("destination is detached.");
+    return;
+  }
+  if (dest_wrapper.ByteLength() < buffer_->ByteLength()) {
+    exception_state.ThrowTypeError("destination is not large enough.");
+    return;
+  }
+
+  // Copy data.
+  memcpy(dest_wrapper.Bytes(), buffer_->Data(), buffer_->ByteLength());
+}
+
 DOMArrayBuffer* EncodedAudioChunk::data() const {
   return buffer_;
 }
