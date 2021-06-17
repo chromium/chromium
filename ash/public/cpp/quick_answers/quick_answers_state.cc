@@ -79,9 +79,24 @@ void QuickAnswersState::RegisterPrefChanges(PrefService* pref_service) {
       chromeos::quick_answers::prefs::kQuickAnswersConsented,
       base::BindRepeating(&QuickAnswersState::UpdateUserConsented,
                           base::Unretained(this)));
+  pref_change_registrar_->Add(
+      chromeos::quick_answers::prefs::kQuickAnswersDefinitionEnabled,
+      base::BindRepeating(&QuickAnswersState::UpdateDefinitionEnabled,
+                          base::Unretained(this)));
+  pref_change_registrar_->Add(
+      chromeos::quick_answers::prefs::kQuickAnswersTranslationEnabled,
+      base::BindRepeating(&QuickAnswersState::UpdateTranslationEnabled,
+                          base::Unretained(this)));
+  pref_change_registrar_->Add(
+      chromeos::quick_answers::prefs::kQuickAnswersUnitConverstionEnabled,
+      base::BindRepeating(&QuickAnswersState::UpdateUnitConverstionEnabled,
+                          base::Unretained(this)));
 
   UpdateSettingsEnabled();
   UpdateUserConsented();
+  UpdateDefinitionEnabled();
+  UpdateTranslationEnabled();
+  UpdateUnitConverstionEnabled();
 
   prefs_initialized_ = true;
 }
@@ -129,6 +144,33 @@ void QuickAnswersState::UpdateUserConsented() {
     return;
   }
   user_consented_ = user_consented;
+}
+
+void QuickAnswersState::UpdateDefinitionEnabled() {
+  auto definition_enabled = pref_change_registrar_->prefs()->GetBoolean(
+      chromeos::quick_answers::prefs::kQuickAnswersDefinitionEnabled);
+  if (definition_enabled_ == definition_enabled) {
+    return;
+  }
+  definition_enabled_ = definition_enabled;
+}
+
+void QuickAnswersState::UpdateTranslationEnabled() {
+  auto translation_enabled = pref_change_registrar_->prefs()->GetBoolean(
+      chromeos::quick_answers::prefs::kQuickAnswersTranslationEnabled);
+  if (translation_enabled_ == translation_enabled) {
+    return;
+  }
+  translation_enabled_ = translation_enabled;
+}
+
+void QuickAnswersState::UpdateUnitConverstionEnabled() {
+  auto unit_conversion_enabled = pref_change_registrar_->prefs()->GetBoolean(
+      chromeos::quick_answers::prefs::kQuickAnswersUnitConverstionEnabled);
+  if (unit_conversion_enabled_ == unit_conversion_enabled) {
+    return;
+  }
+  unit_conversion_enabled_ = unit_conversion_enabled;
 }
 
 void QuickAnswersState::UpdateEligibility() {

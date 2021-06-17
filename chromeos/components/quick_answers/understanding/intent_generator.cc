@@ -7,6 +7,7 @@
 #include <map>
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/quick_answers/quick_answers_state.h"
 #include "base/i18n/case_conversion.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_split.h"
@@ -193,6 +194,17 @@ void IntentGenerator::AnnotationCallback(
     auto intent_type_map = GetIntentTypeMap();
     auto it = intent_type_map.find(type);
     if (it != intent_type_map.end()) {
+      if (features::IsQuickAnswersV2Enabled()) {
+        // Skip the entity if the corresponding intent type is disabled.
+        if ((it->second == IntentType::kDictionary &&
+             !ash::QuickAnswersState::Get()->definition_enabled()) ||
+            (it->second == IntentType::kUnit &&
+             !ash::QuickAnswersState::Get()->unit_conversion_enabled())) {
+          // Fallback to language detection for generating translation intent.
+          MaybeGenerateTranslationIntent(request);
+          return;
+        }
+      }
       // Skip the entity for definition annonation.
       if (it->second == IntentType::kDictionary &&
           ShouldSkipDefinition(request.selected_text)) {
@@ -213,6 +225,13 @@ void IntentGenerator::AnnotationCallback(
 void IntentGenerator::MaybeGenerateTranslationIntent(
     const QuickAnswersRequest& request) {
   DCHECK(complete_callback_);
+
+  if (features::IsQuickAnswersV2Enabled() &&
+      !ash::QuickAnswersState::Get()->translation_enabled()) {
+    std::move(complete_callback_)
+        .Run(IntentInfo(request.selected_text, IntentType::kUnknown));
+    return;
+  }
 
   if (!features::IsQuickAnswersTranslationEnabled()) {
     std::move(complete_callback_)
