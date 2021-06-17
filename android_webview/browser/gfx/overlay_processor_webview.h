@@ -6,11 +6,16 @@
 #define ANDROID_WEBVIEW_BROWSER_GFX_OVERLAY_PROCESSOR_WEBVIEW_H_
 
 #include "android_webview/browser/gfx/display_scheduler_webview.h"
+#include "base/memory/weak_ptr.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/threading/thread_checker.h"
 #include "components/viz/common/quads/compositor_frame.h"
-#include "components/viz/service/display/display_resource_provider.h"
+#include "components/viz/common/surfaces/frame_sink_id.h"
+#include "components/viz/service/display/display_resource_provider_skia.h"
 #include "components/viz/service/display/overlay_processor_interface.h"
 #include "components/viz/service/display/overlay_processor_surface_control.h"
+#include "gpu/command_buffer/common/mailbox.h"
+#include "gpu/command_buffer/common/sync_token.h"
 #include "ui/gfx/android/android_surface_control_compat.h"
 
 namespace gpu {
@@ -54,17 +59,46 @@ class OverlayProcessorWebView : public viz::OverlayProcessorSurfaceControl {
  private:
   class Manager;
 
+  struct Overlay {
+    Overlay(uint64_t id, viz::ResourceId resource_id, int child_id);
+    Overlay(const Overlay&);
+    ~Overlay();
+
+    uint64_t id;
+    gpu::SyncToken create_sync_token;
+    viz::ResourceId resource_id;
+    int child_id;
+    viz::SurfaceId surface_id;
+  };
+
+  struct LockResult {
+    gpu::SyncToken sync_token;
+    base::ScopedClosureRunner unlock_cb;
+    gpu::Mailbox mailbox;
+  };
+
+  LockResult LockResource(Overlay& overlay);
+  void ReturnResource(viz::ResourceId resource_id);
+
   void CreateManagerOnRT(
       gpu::DisplayCompositorMemoryAndTaskControllerOnGpu* controller_on_gpu,
       gpu::CommandBufferId command_buffer_id,
       gpu::SequenceId sequence_id,
       base::WaitableEvent* event);
 
+  using OverlayResourceLock =
+      viz::DisplayResourceProviderSkia::ScopedExclusiveReadLockSharedImage;
+
+  base::flat_map<viz::FrameSinkId, Overlay> overlays_;
+  uint64_t next_overlay_id_ = 1;
+  std::multimap<viz::ResourceId, OverlayResourceLock> locked_resources_;
+
   // Overlay candidates for the current frame.
   viz::OverlayCandidateList overlay_candidates_;
 
   // Command buffer id for SyncTokens on RenderThread sequence.
   const gpu::CommandBufferId command_buffer_id_;
+  uint64_t sync_fence_release_ = 0;
 
   gpu::GpuTaskSchedulerHelper* render_thread_sequence_;
   std::unique_ptr<gpu::SingleTaskSequence> gpu_thread_sequence_;
@@ -74,6 +108,9 @@ class OverlayProcessorWebView : public viz::OverlayProcessorSurfaceControl {
   scoped_refptr<Manager> manager_;
 
   bool overlays_enabled_by_hwui_ = false;
+
+  THREAD_CHECKER(thread_checker_);
+  base::WeakPtrFactory<OverlayProcessorWebView> weak_ptr_factory_{this};
 };
 
 }  // namespace android_webview

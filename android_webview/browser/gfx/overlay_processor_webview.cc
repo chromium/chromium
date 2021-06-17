@@ -6,15 +6,21 @@
 
 #include "android_webview/browser/gfx/gpu_service_webview.h"
 #include "android_webview/browser/gfx/viz_compositor_thread_runner_webview.h"
+#include "base/android/scoped_hardware_buffer_fence_sync.h"
+#include "base/bind_post_task.h"
 #include "base/callback_helpers.h"
 #include "base/memory/ref_counted.h"
+#include "base/threading/thread_checker.h"
 #include "components/viz/service/display/display_compositor_memory_and_task_controller.h"
 #include "components/viz/service/gl/gpu_service_impl.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
+#include "gpu/command_buffer/service/shared_image_manager.h"
+#include "gpu/command_buffer/service/shared_image_representation.h"
 #include "gpu/ipc/display_compositor_memory_and_task_controller_on_gpu.h"
 #include "gpu/ipc/scheduler_sequence.h"
 #include "gpu/ipc/single_task_sequence.h"
 #include "ui/gfx/android/android_surface_control_compat.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 
 namespace android_webview {
 namespace {
@@ -33,8 +39,77 @@ scoped_refptr<gpu::SyncPointClientState> CreateSyncPointClientState(
 
 }  // namespace
 
+// Manages ASurfaceControl life-cycle and handles ASurfaceTransactions. Created
+// on Android RenderThread, but both used on both Android RenderThread and GPU
+// Main thread, so can be destroyed on one of them.
 class OverlayProcessorWebView::Manager
     : public base::RefCountedThreadSafe<OverlayProcessorWebView::Manager> {
+ private:
+  class Resource {
+   public:
+    Resource(gpu::SharedImageManager* shared_image_manager,
+             gpu::MemoryTypeTracker* memory_tracker,
+             const gpu::Mailbox& mailbox,
+             base::ScopedClosureRunner return_resource)
+        : return_resource(std::move(return_resource)) {
+      representation_ =
+          shared_image_manager->ProduceOverlay(mailbox, memory_tracker);
+      if (!representation_)
+        return;
+
+      read_access_ = representation_->BeginScopedReadAccess(false);
+      std::vector<gfx::GpuFence> acquire_fences =
+          read_access_->TakeAcquireFences();
+      if (!acquire_fences.empty()) {
+        DCHECK_EQ(acquire_fences.size(), 1u);
+        begin_read_fence_ = std::move(
+            acquire_fences.front().GetGpuFenceHandle().Clone().owned_fd);
+      }
+    }
+
+    ~Resource() {
+      DCHECK(!read_access_)
+          << "Return() or ReturnUnused() must be called before dtor";
+      DCHECK(!representation_);
+    }
+
+    Resource(Resource&&) = default;
+    Resource& operator=(Resource&&) = default;
+
+    Resource(const Resource&) = delete;
+    Resource& operator=(const Resource&) = delete;
+
+    void Return(base::ScopedFD end_read_fence) {
+      gfx::GpuFenceHandle fence_handle;
+      fence_handle.owned_fd = std::move(end_read_fence);
+      read_access_->SetReleaseFence(std::move(fence_handle));
+      read_access_.reset();
+      representation_.reset();
+    }
+
+    void ReturnUnused() {
+      read_access_.reset();
+      representation_.reset();
+      begin_read_fence_.reset();
+    }
+
+    base::ScopedFD TakeBeginReadFence() { return std::move(begin_read_fence_); }
+
+    AHardwareBuffer* GetAHardwareBuffer() {
+      DCHECK(representation_);
+      DCHECK(read_access_);
+
+      return read_access_->GetAHardwareBuffer();
+    }
+
+   private:
+    base::ScopedClosureRunner return_resource;
+    std::unique_ptr<gpu::SharedImageRepresentationOverlay> representation_;
+    std::unique_ptr<gpu::SharedImageRepresentationOverlay::ScopedReadAccess>
+        read_access_;
+    base::ScopedFD begin_read_fence_;
+  };
+
  public:
   Manager(gpu::MemoryTracker* memory_tracker,
           gpu::CommandBufferId command_buffer_id,
@@ -44,7 +119,9 @@ class OverlayProcessorWebView::Manager
         memory_tracker_(
             std::make_unique<gpu::MemoryTypeTracker>(memory_tracker)),
         sync_point_client_state_(
-            CreateSyncPointClientState(command_buffer_id, sequence_id)) {}
+            CreateSyncPointClientState(command_buffer_id, sequence_id)) {
+    DETACH_FROM_THREAD(gpu_thread_checker_);
+  }
 
   void SetGpuService(viz::GpuServiceImpl* gpu_service) {
     DCHECK_CALLED_ON_VALID_THREAD(render_thread_checker_);
@@ -53,11 +130,214 @@ class OverlayProcessorWebView::Manager
     gpu_task_runner_ = gpu_service->main_runner();
   }
 
+  // Create SurfaceControl for |overlay_id| and set it up.
+  void CreateOverlay(uint64_t overlay_id,
+                     const viz::OverlayCandidate& candidate,
+                     base::ScopedClosureRunner return_resource,
+                     uint64_t sync_fence_release) {
+    DCHECK_CALLED_ON_VALID_THREAD(render_thread_checker_);
+    TRACE_EVENT1("gpu,benchmark,android_webview",
+                 "OverlayProcessorWebview::Manager::CreateOverlay",
+                 "overlay_id", overlay_id);
+
+    auto& transaction = GetHWUITransaction();
+    std::unique_ptr<Resource> resource =
+        CreateResource(candidate.mailbox, std::move(return_resource));
+
+    {
+      base::AutoLock lock(lock_);
+
+      bool inserted;
+      base::flat_map<uint64_t, OverlaySurface>::iterator it;
+      std::tie(it, inserted) =
+          overlay_surfaces_.emplace(overlay_id, GetParentSurface());
+      DCHECK(inserted);
+      auto& overlay_surface = it->second;
+
+      UpdateGeometryInTransaction(transaction, *overlay_surface.surface,
+                                  candidate);
+      UpdateBufferInTransaction(transaction, *overlay_surface.surface,
+                                resource.get());
+      overlay_surface.buffer_update_pending = true;
+    }
+
+    DCHECK(!pending_resource_update_.contains(overlay_id));
+    pending_resource_update_[overlay_id] = std::move(resource);
+
+    sync_point_client_state_->ReleaseFenceSync(sync_fence_release);
+  }
+
+  // Update geometry of SurfaceControl for |overlay_id|.
+  void UpdateOverlayGeometry(uint64_t overlay_id,
+                             const viz::OverlayCandidate& candidate) {
+    DCHECK_CALLED_ON_VALID_THREAD(render_thread_checker_);
+    TRACE_EVENT1("gpu,benchmark,android_webview",
+                 "OverlayProcessorWebview::Manager::UpdateOverlayGeometry",
+                 "overlay_id", overlay_id);
+
+    auto& transaction = GetHWUITransaction();
+
+    base::AutoLock lock(lock_);
+    auto& overlay_surface = GetOverlaySurfaceLocked(overlay_id);
+
+    UpdateGeometryInTransaction(transaction, *overlay_surface.surface,
+                                candidate);
+  }
+
+  // Update buffer in SurfaceControl for |overlay_id|. Called on GPU Main
+  // Thread.
+  void UpdateOverlayBuffer(uint64_t overlay_id,
+                           gpu::Mailbox mailbox,
+                           base::ScopedClosureRunner return_resource) {
+    DCHECK_CALLED_ON_VALID_THREAD(gpu_thread_checker_);
+    TRACE_EVENT1("gpu,benchmark,android_webview",
+                 "OverlayProcessorWebview::Manager::UpdateOverlayBuffer",
+                 "overlay_id", overlay_id);
+
+    base::AutoLock lock(lock_);
+    auto& overlay_surface = GetOverlaySurfaceLocked(overlay_id);
+
+    // If we're going to remove this overlay, there is no point in updating
+    // buffer anymore. Resource will be unlocked by |return_resource| getting
+    // out of scope.
+    if (overlay_surface.pending_remove) {
+      return;
+    }
+
+    std::unique_ptr<Resource> resource =
+        CreateResource(mailbox, std::move(return_resource));
+
+    // If there is already transaction with buffer update in-flight, store this
+    // one. This will return any previous stored resource if any.
+    if (overlay_surface.buffer_update_pending) {
+      overlay_surface.SetPendingResource(std::move(resource));
+      return;
+    }
+
+    SubmitTransactionWithBufferLocked(overlay_id, overlay_surface,
+                                      std::move(resource));
+  }
+
+  // Initiate removal of SurfaceControl for |overlay_id|. Removal done in next
+  // steps:
+  // Unparent SurfaceControl, this happens synchronously with HWUI draw.
+  // Set buffer to nullptr, to get current_buffer back with a fence.
+  // Free SurfaceControl.
+  void RemoveOverlay(uint64_t overlay_id) {
+    DCHECK_CALLED_ON_VALID_THREAD(render_thread_checker_);
+    TRACE_EVENT1("gpu,benchmark,android_webview",
+                 "OverlayProcessorWebview::Manager::RemoveOverlay",
+                 "overlay_id", overlay_id);
+
+    auto& transaction = GetHWUITransaction();
+    {
+      base::AutoLock lock(lock_);
+      auto& overlay_surface = GetOverlaySurfaceLocked(overlay_id);
+      transaction.SetParent(*overlay_surface.surface, nullptr);
+    }
+
+    pending_removals_.insert(overlay_id);
+  }
+
+  void OnUpdateBufferTransactionAck(
+      uint64_t overlay_id,
+      std::unique_ptr<Resource> resource,
+      gfx::SurfaceControl::TransactionStats transaction_stats) {
+    DCHECK_CALLED_ON_VALID_THREAD(gpu_thread_checker_);
+    TRACE_EVENT2(
+        "gpu,benchmark,android_webview",
+        "OverlayProcessorWebview::Manager::OnUpdateBufferTransactionAck",
+        "overlay_id", overlay_id, "has_resource", !!resource);
+
+    base::AutoLock lock(lock_);
+    auto& overlay_surface = GetOverlaySurfaceLocked(overlay_id);
+
+    DCHECK_EQ(transaction_stats.surface_stats.size(), 1u);
+    DCHECK_EQ(transaction_stats.surface_stats.front().surface,
+              overlay_surface.surface->surface());
+
+    bool empty_buffer = !resource;
+    overlay_surface.SetResource(
+        std::move(resource),
+        std::move(transaction_stats.surface_stats.front().fence));
+
+    if (overlay_surface.pending_resource) {
+      DCHECK(!overlay_surface.pending_remove);
+      SubmitTransactionWithBufferLocked(
+          overlay_id, overlay_surface,
+          std::move(overlay_surface.pending_resource));
+    }
+
+    if (overlay_surface.pending_remove) {
+      // If there is no resource, we can free our surface.
+      if (empty_buffer) {
+        overlay_surface.surface.reset();
+        overlay_surfaces_.erase(overlay_id);
+      } else {
+        // This means there was buffer transaction in flight when surface was
+        // hidden, we need to set buffer to nullptr, to free current one before
+        // we can free the surface.
+        SubmitTransactionWithBufferLocked(overlay_id, overlay_surface, nullptr);
+      }
+    }
+  }
+
+  void OnHWUITransactionAck(
+      base::flat_map<uint64_t, std::unique_ptr<Resource>> resource_updates,
+      base::flat_set<uint64_t> removes,
+      gfx::SurfaceControl::TransactionStats transaction_stats) {
+    DCHECK_CALLED_ON_VALID_THREAD(gpu_thread_checker_);
+    TRACE_EVENT0("gpu,benchmark,android_webview",
+                 "OverlayProcessorWebview::Manager::OnHWUITransactionAck");
+
+    base::AutoLock lock(lock_);
+
+    for (auto& update : resource_updates) {
+      auto& overlay_surface = GetOverlaySurfaceLocked(update.first);
+
+      base::ScopedFD fence;
+      for (auto& stat : transaction_stats.surface_stats) {
+        if (stat.surface == overlay_surface.surface->surface()) {
+          DCHECK(!fence.is_valid());
+          fence = std::move(stat.fence);
+        }
+      }
+
+      overlay_surface.SetResource(std::move(update.second), std::move(fence));
+      if (overlay_surface.pending_resource) {
+        SubmitTransactionWithBufferLocked(
+            update.first, overlay_surface,
+            std::move(overlay_surface.pending_resource));
+      }
+    }
+
+    for (auto& overlay_id : removes) {
+      auto& overlay_surface = GetOverlaySurfaceLocked(overlay_id);
+      overlay_surface.pending_remove = true;
+
+      if (overlay_surface.pending_resource) {
+        overlay_surface.pending_resource->ReturnUnused();
+        overlay_surface.pending_resource.reset();
+      }
+      if (!overlay_surface.buffer_update_pending) {
+        SubmitTransactionWithBufferLocked(overlay_id, overlay_surface, nullptr);
+      }
+    }
+  }
+
   absl::optional<gfx::SurfaceControl::Transaction> TakeHWUITransaction() {
     DCHECK_CALLED_ON_VALID_THREAD(render_thread_checker_);
 
     absl::optional<gfx::SurfaceControl::Transaction> result;
     if (hwui_transaction_) {
+      DCHECK(gpu_task_runner_);
+      if (!pending_resource_update_.empty() || !pending_removals_.empty()) {
+        auto cb = base::BindOnce(&Manager::OnHWUITransactionAck, this,
+                                 std::move(pending_resource_update_),
+                                 std::move(pending_removals_));
+        hwui_transaction_->SetOnCompleteCb(std::move(cb), gpu_task_runner_);
+      }
+
       result.swap(hwui_transaction_);
     }
     return result;
@@ -66,6 +346,57 @@ class OverlayProcessorWebView::Manager
  private:
   friend class OverlayProcessorWebView::ScopedSurfaceControlAvailable;
   friend class base::RefCountedThreadSafe<Manager>;
+
+  // Class that holds SurfaceControl and associated resources.
+  class OverlaySurface {
+   public:
+    OverlaySurface(const gfx::SurfaceControl::Surface& parent)
+        : surface(base::MakeRefCounted<gfx::SurfaceControl::Surface>(
+              parent,
+              "webview_overlay")) {}
+    OverlaySurface(OverlaySurface&& other) = default;
+    OverlaySurface& operator=(OverlaySurface&& other) = default;
+    ~OverlaySurface() {
+      DCHECK(!surface);
+      DCHECK(!current_resource);
+    }
+
+    void SetResource(std::unique_ptr<Resource> resource,
+                     base::ScopedFD end_read_fence) {
+      if (current_resource) {
+        current_resource->Return(std::move(end_read_fence));
+      }
+      current_resource = std::move(resource);
+
+      DCHECK(buffer_update_pending);
+      buffer_update_pending = false;
+    }
+
+    void SetPendingResource(std::unique_ptr<Resource> resource) {
+      DCHECK(buffer_update_pending);
+      if (pending_resource) {
+        pending_resource->ReturnUnused();
+      }
+      pending_resource = std::move(resource);
+    }
+
+    // Set when we're in process of removing this overlay.
+    bool pending_remove = false;
+
+    // This is true when there is SurfaceControl transaction that affects buffer
+    // of this overlay is in-flight.
+    bool buffer_update_pending = false;
+
+    // Resource that is currently latched by SurfaceControl
+    std::unique_ptr<Resource> current_resource;
+
+    // Resource that we want to send to SurfaceControl, but there was another
+    // transaction with buffer update in-flight.
+    std::unique_ptr<Resource> pending_resource;
+
+    // SurfaceControl for this overlay.
+    scoped_refptr<gfx::SurfaceControl::Surface> surface;
+  };
 
   ~Manager() {
     DCHECK(!hwui_transaction_);
@@ -90,6 +421,69 @@ class OverlayProcessorWebView::Manager
     return *parent_surface_;
   }
 
+  OverlaySurface& GetOverlaySurfaceLocked(uint64_t id) {
+    lock_.AssertAcquired();
+    auto surface = overlay_surfaces_.find(id);
+    DCHECK(surface != overlay_surfaces_.end());
+    return surface->second;
+  }
+
+  std::unique_ptr<Resource> CreateResource(
+      const gpu::Mailbox& mailbox,
+      base::ScopedClosureRunner return_resource) {
+    if (mailbox.IsZero())
+      return nullptr;
+    return std::make_unique<Resource>(shared_image_manager_,
+                                      memory_tracker_.get(), mailbox,
+                                      std::move(return_resource));
+  }
+
+  static void UpdateGeometryInTransaction(
+      gfx::SurfaceControl::Transaction& transaction,
+      gfx::SurfaceControl::Surface& surface,
+      const viz::OverlayCandidate& candidate) {
+    gfx::Rect src = gfx::Rect(candidate.resource_size_in_pixels);
+    gfx::Rect dst = gfx::ToEnclosedRect(candidate.display_rect);
+
+    transaction.SetGeometry(surface, src, dst, candidate.transform);
+  }
+
+  static void UpdateBufferInTransaction(
+      gfx::SurfaceControl::Transaction& transaction,
+      gfx::SurfaceControl::Surface& surface,
+      Resource* resource) {
+    TRACE_EVENT1("gpu,benchmark,android_webview",
+                 "OverlayProcessorWebview::Manager::UpdateBufferInTransaction",
+                 "has_resource", !!resource);
+    if (resource) {
+      transaction.SetBuffer(surface, resource->GetAHardwareBuffer(),
+                            resource->TakeBeginReadFence());
+    } else {
+      transaction.SetBuffer(surface, nullptr, base::ScopedFD());
+    }
+  }
+
+  void SubmitTransactionWithBufferLocked(uint64_t overlay_id,
+                                         OverlaySurface& overlay_surface,
+                                         std::unique_ptr<Resource> resource) {
+    lock_.AssertAcquired();
+    DCHECK(!overlay_surface.buffer_update_pending);
+    DCHECK(gpu_task_runner_);
+    overlay_surface.buffer_update_pending = true;
+
+    gfx::SurfaceControl::Transaction transaction;
+    UpdateBufferInTransaction(transaction, *overlay_surface.surface,
+                              resource.get());
+
+    auto cb = base::BindOnce(&Manager::OnUpdateBufferTransactionAck, this,
+                             overlay_id, std::move(resource));
+    transaction.SetOnCompleteCb(std::move(cb), gpu_task_runner_);
+    transaction.Apply();
+  }
+
+  base::Lock lock_;
+
+  // These can be accessed on any thread, but only initialized in ctor.
   gpu::SharedImageManager* const shared_image_manager_;
   std::unique_ptr<gpu::MemoryTypeTracker> memory_tracker_;
 
@@ -99,12 +493,20 @@ class OverlayProcessorWebView::Manager
   // SyncPointClientState for render thread sequence.
   scoped_refptr<gpu::SyncPointClientState> sync_point_client_state_;
 
+  // Can be accessed on both threads.
+  base::flat_map<uint64_t, OverlaySurface> overlay_surfaces_ GUARDED_BY(lock_);
+
+  // Pending updates for the current hwui transaction.
+  base::flat_map<uint64_t, std::unique_ptr<Resource>> pending_resource_update_;
+  base::flat_set<uint64_t> pending_removals_;
+
   scoped_refptr<gfx::SurfaceControl::Surface> parent_surface_;
   absl::optional<gfx::SurfaceControl::Transaction> hwui_transaction_;
 
   GetSurfaceControlFn get_surface_control_ = nullptr;
 
   THREAD_CHECKER(render_thread_checker_);
+  THREAD_CHECKER(gpu_thread_checker_);
 };
 
 OverlayProcessorWebView::OverlayProcessorWebView(
@@ -200,7 +602,107 @@ void OverlayProcessorWebView::ScheduleOverlays(
   DCHECK(!resource_provider_ || resource_provider_ == resource_provider_);
   resource_provider_ = resource_provider;
 
-  DCHECK(overlay_candidates_.empty());
+  DCHECK(gpu_thread_sequence_ || overlay_candidates_.empty());
+
+  base::flat_set<viz::FrameSinkId> seen;
+  for (auto& candidate : overlay_candidates_) {
+    viz::SurfaceId surface_id =
+        resource_provider->GetSurfaceId(candidate.resource_id);
+
+    viz::FrameSinkId sink_id = surface_id.frame_sink_id();
+    seen.insert(sink_id);
+
+    auto overlay = overlays_.find(sink_id);
+    if (overlay != overlays_.end()) {
+      // Need to update only geometry.
+      render_thread_sequence_->ScheduleGpuTask(
+          base::BindOnce(&Manager::UpdateOverlayGeometry,
+                         base::Unretained(manager_.get()), overlay->second.id,
+                         candidate),
+          std::vector<gpu::SyncToken>());
+
+      // TODO(vasilyt): This needs to be when we process compositor frame.
+      if (candidate.resource_id != overlay->second.resource_id) {
+        overlay->second.resource_id = candidate.resource_id;
+        auto result = LockResource(overlay->second);
+        gpu_thread_sequence_->ScheduleTask(
+            base::BindOnce(&Manager::UpdateOverlayBuffer, manager_.get(),
+                           overlay->second.id, result.mailbox,
+                           std::move(result.unlock_cb)),
+            {result.sync_token, overlay->second.create_sync_token});
+      }
+    } else {
+      overlay =
+          overlays_
+              .insert(std::make_pair(
+                  sink_id, Overlay(next_overlay_id_++, candidate.resource_id,
+                                   resource_provider_->GetChildId(
+                                       candidate.resource_id))))
+              .first;
+
+      overlay->second.surface_id = surface_id;
+      overlay->second.create_sync_token =
+          gpu::SyncToken(kOverlayProcessorNamespace, command_buffer_id_,
+                         ++sync_fence_release_);
+
+      auto result = LockResource(overlay->second);
+      candidate.mailbox = result.mailbox;
+
+      render_thread_sequence_->ScheduleGpuTask(
+          base::BindOnce(&Manager::CreateOverlay,
+                         base::Unretained(manager_.get()), overlay->second.id,
+                         candidate, std::move(result.unlock_cb),
+                         overlay->second.create_sync_token.release_count()),
+          {result.sync_token});
+    }
+  }
+
+  for (auto it = overlays_.begin(); it != overlays_.end();) {
+    if (!seen.contains(it->first)) {
+      render_thread_sequence_->ScheduleGpuTask(
+          base::BindOnce(&Manager::RemoveOverlay,
+                         base::Unretained(manager_.get()), it->second.id),
+          std::vector<gpu::SyncToken>());
+      it = overlays_.erase(it);
+    } else {
+      ++it;
+    }
+  }
+}
+
+OverlayProcessorWebView::LockResult OverlayProcessorWebView::LockResource(
+    Overlay& overlay) {
+  LockResult result{};
+  auto resource_id = overlay.resource_id;
+
+  OverlayResourceLock lock = OverlayResourceLock(
+      static_cast<viz::DisplayResourceProviderSkia*>(resource_provider_),
+      resource_id);
+  result.sync_token = lock.sync_token();
+  result.mailbox = lock.mailbox();
+
+  locked_resources_.insert(std::make_pair(resource_id, std::move(lock)));
+
+  auto return_cb = base::BindOnce(&OverlayProcessorWebView::ReturnResource,
+                                  weak_ptr_factory_.GetWeakPtr(), resource_id);
+  auto return_cb_on_thread = base::BindPostTask(
+      base::ThreadTaskRunnerHandle::Get(), std::move(return_cb));
+
+  result.unlock_cb = base::ScopedClosureRunner(std::move(return_cb_on_thread));
+  return result;
+}
+
+void OverlayProcessorWebView::ReturnResource(viz::ResourceId resource_id) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  // |locked_resources_| is multimap and can contain multiple locks of the same
+  // resource_id. There is no difference between locks at this point, they all
+  // just keeping resource locked so it's safe to remove any of them when
+  // OverlayManager return resources. When we delete last lock resource will be
+  // return to the client.
+  auto it = locked_resources_.find(resource_id);
+  DCHECK(it != locked_resources_.end());
+  locked_resources_.erase(it);
 }
 
 OverlayProcessorWebView::ScopedSurfaceControlAvailable::
@@ -216,5 +718,15 @@ OverlayProcessorWebView::ScopedSurfaceControlAvailable::
     ~ScopedSurfaceControlAvailable() {
   processor_->manager_->get_surface_control_ = nullptr;
 }
+
+OverlayProcessorWebView::Overlay::Overlay(uint64_t id,
+
+                                          viz::ResourceId resource_id,
+                                          int child_id)
+    : id(id), resource_id(resource_id), child_id(child_id) {}
+
+OverlayProcessorWebView::Overlay::Overlay(const Overlay&) = default;
+
+OverlayProcessorWebView::Overlay::~Overlay() = default;
 
 }  // namespace android_webview
