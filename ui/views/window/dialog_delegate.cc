@@ -460,7 +460,6 @@ void DialogDelegate::OnWidgetInitialized() {
 // DialogDelegateView:
 
 DialogDelegateView::DialogDelegateView() {
-  set_owned_by_client();
   SetOwnedByWidget(true);
   UMA_HISTOGRAM_BOOLEAN("Dialog.DialogDelegateView.Create", true);
 }

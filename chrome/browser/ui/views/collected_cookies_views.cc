@@ -32,6 +32,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_user_data.h"
 #include "net/cookies/canonical_cookie.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -50,6 +51,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/view_tracker.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -117,6 +119,51 @@ std::unique_ptr<CookiesTreeModel> CreateCookiesTreeModel(
 }
 
 }  // namespace
+
+class CollectedCookiesViews::WebContentsUserData
+    : public content::WebContentsUserData<
+          CollectedCookiesViews::WebContentsUserData> {
+ public:
+  ~WebContentsUserData() override {
+    if (!tracker_.view())
+      return;  // Dialog already destroyed.
+    // Destroyed while the Widget is still alive, close immediately.
+    tracker_.view()->GetWidget()->CloseNow();
+  }
+
+  static CollectedCookiesViews* GetDialog(content::WebContents* web_contents) {
+    WebContentsUserData* handle = static_cast<WebContentsUserData*>(
+        web_contents->GetUserData(UserDataKey()));
+    if (!handle)
+      return nullptr;
+    return handle->GetCollectedCookiesViews();
+  }
+
+  static void Create(content::WebContents* web_contents) {
+    CollectedCookiesViews::WebContentsUserData::CreateForWebContents(
+        web_contents);
+  }
+
+ private:
+  friend class content::WebContentsUserData<WebContentsUserData>;
+
+  explicit WebContentsUserData(content::WebContents* web_contents) {
+    // Owned by its Widget
+    CollectedCookiesViews* const dialog =
+        new CollectedCookiesViews(web_contents);
+    tracker_.SetView(dialog);
+  }
+
+  CollectedCookiesViews* GetCollectedCookiesViews() {
+    return static_cast<CollectedCookiesViews*>(tracker_.view());
+  }
+
+  views::ViewTracker tracker_;
+
+  WEB_CONTENTS_USER_DATA_KEY_DECL();
+};
+
+WEB_CONTENTS_USER_DATA_KEY_IMPL(CollectedCookiesViews::WebContentsUserData)
 
 // This DrawingProvider allows TreeModelNodes to be annotated with auxiliary
 // text. Annotated nodes will be drawn in a lighter color than normal to
@@ -244,13 +291,8 @@ END_METADATA
 // CollectedCookiesViews, public:
 
 CollectedCookiesViews::~CollectedCookiesViews() {
-  if (!destroying_) {
-    // The owning WebContents is being destroyed before the Widget. Close the
-    // widget pronto.
-    destroying_ = true;
-    GetWidget()->CloseNow();
-  }
-
+  web_contents_->RemoveUserData(
+      CollectedCookiesViews::WebContentsUserData::UserDataKey());
   allowed_cookies_tree_->SetModel(nullptr);
   blocked_cookies_tree_->SetModel(nullptr);
 }
@@ -258,9 +300,10 @@ CollectedCookiesViews::~CollectedCookiesViews() {
 // static
 void CollectedCookiesViews::CreateAndShowForWebContents(
     content::WebContents* web_contents) {
-  CollectedCookiesViews* instance = FromWebContents(web_contents);
+  CollectedCookiesViews* instance =
+      CollectedCookiesViews::WebContentsUserData::GetDialog(web_contents);
   if (!instance) {
-    CreateForWebContents(web_contents);
+    CollectedCookiesViews::WebContentsUserData::Create(web_contents);
     return;
   }
 
@@ -276,6 +319,11 @@ void CollectedCookiesViews::CreateAndShowForWebContents(
       web_modal::WebContentsModalDialogManager::FromWebContents(web_contents);
   CHECK(dialog_manager->IsDialogActive());
   dialog_manager->FocusTopmostDialog();
+}
+
+CollectedCookiesViews* CollectedCookiesViews::GetDialogForTesting(
+    content::WebContents* web_contents) {
+  return CollectedCookiesViews::WebContentsUserData::GetDialog(web_contents);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -383,15 +431,6 @@ void CollectedCookiesViews::OnDialogClosed() {
   if (status_changed_ && !web_contents_->IsBeingDestroyed()) {
     CollectedCookiesInfoBarDelegate::Create(
         infobars::ContentInfoBarManager::FromWebContents(web_contents_));
-  }
-}
-
-void CollectedCookiesViews::DeleteDelegate() {
-  if (!destroying_) {
-    // The associated Widget is being destroyed before the owning WebContents.
-    // Tell the owner to delete |this|.
-    destroying_ = true;
-    web_contents_->RemoveUserData(UserDataKey());
   }
 }
 
@@ -654,8 +693,6 @@ void CollectedCookiesViews::AddContentException(views::TreeView* tree_view,
                          GetAnnotationTextForSetting(setting));
   tree_view->SchedulePaint();
 }
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(CollectedCookiesViews)
 
 BEGIN_METADATA(CollectedCookiesViews, views::DialogDelegateView)
 END_METADATA

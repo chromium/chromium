@@ -35,12 +35,11 @@ class CollectedCookiesViewsTest : public InProcessBrowserTest {
     // Spawn a cookies dialog.
     auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
     CollectedCookiesViews::CreateAndShowForWebContents(web_contents);
-    cookies_dialog_ = static_cast<CollectedCookiesViews*>(
-        web_contents->GetUserData(CollectedCookiesViews::UserDataKey()));
+    cookies_dialog_ = CollectedCookiesViews::GetDialogForTesting(web_contents);
   }
 
   // Closing dialog with modified data will shows infobar.
-  void SetDialogChanged() { cookies_dialog_->status_changed_ = true; }
+  void SetDialogChanged() { cookies_dialog_->set_status_changed_for_testing(); }
 
   void CloseCookiesDialog() { cookies_dialog_->GetWidget()->Close(); }
 

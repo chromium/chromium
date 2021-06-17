@@ -10,7 +10,6 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "components/content_settings/core/common/content_settings.h"
-#include "content/public/browser/web_contents_user_data.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/tabbed_pane/tabbed_pane_listener.h"
 #include "ui/views/controls/tree/tree_view_controller.h"
@@ -37,11 +36,9 @@ class TreeView;
 // cookies of the current tab contents. To display the dialog, invoke
 // ShowCollectedCookiesDialog() on the delegate of the WebContents's
 // content settings tab helper.
-class CollectedCookiesViews
-    : public views::DialogDelegateView,
-      public views::TabbedPaneListener,
-      public views::TreeViewController,
-      public content::WebContentsUserData<CollectedCookiesViews> {
+class CollectedCookiesViews : public views::DialogDelegateView,
+                              public views::TabbedPaneListener,
+                              public views::TreeViewController {
  public:
   METADATA_HEADER(CollectedCookiesViews);
   CollectedCookiesViews(const CollectedCookiesViews&) = delete;
@@ -50,6 +47,11 @@ class CollectedCookiesViews
 
   // Use BrowserWindow::ShowCollectedCookiesDialog to show.
   static void CreateAndShowForWebContents(content::WebContents* web_contents);
+
+  static CollectedCookiesViews* GetDialogForTesting(
+      content::WebContents* web_contents);
+
+  void set_status_changed_for_testing() { status_changed_ = true; }
 
   // views::TabbedPaneListener:
   void TabSelectedAt(int index) override;
@@ -61,15 +63,11 @@ class CollectedCookiesViews
   gfx::Size GetMinimumSize() const override;
 
  private:
-  friend class CollectedCookiesViewsTest;
-  friend class content::WebContentsUserData<CollectedCookiesViews>;
+  class WebContentsUserData;
 
   explicit CollectedCookiesViews(content::WebContents* web_contents);
 
   void OnDialogClosed();
-
-  // DialogDelegateView:
-  void DeleteDelegate() override;
 
   std::unique_ptr<views::View> CreateAllowedPane();
   std::unique_ptr<views::View> CreateBlockedPane();
@@ -120,14 +118,6 @@ class CollectedCookiesViews
   views::View* blocked_buttons_pane_ = nullptr;
 
   bool status_changed_ = false;
-
-  // This bit is set to true when the widget is shutting down or when |this|'s
-  // destructor has been called. Either the Widget or the WebContents may be the
-  // first to shut down, and this prevents double-destruction of this or
-  // double-closing of the widget.
-  bool destroying_ = false;
-
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_COLLECTED_COOKIES_VIEWS_H_
