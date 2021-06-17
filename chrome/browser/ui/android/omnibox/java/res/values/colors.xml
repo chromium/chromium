@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2021 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Please see src/ui/android/java/res/values/colors.xml for the shared common colors. -->
+
+    <!-- Omnibox Suggestion colors -->
+    <color name="suggestion_url_dark_modern">@color/default_text_color_link</color>
+    <color name="suggestion_url_light_modern">@color/modern_blue_300</color>
+    <color name="answers_description_text_negative">@color/default_red</color>
+    <color name="answers_description_text_positive">@color/default_green</color>
+
+    <!-- LocationBar colors -->
+    <color name="locationbar_dark_hint_text">@color/search_box_hint</color>
+    <color name="locationbar_light_hint_text">@color/white_alpha_70</color>
+    <color name="locationbar_status_offline_color">@color/modern_grey_900</color>
+    <color name="locationbar_status_offline_color_light">@android:color/white</color>
+    <color name="locationbar_status_preview_color">@color/modern_blue_600</color>
+    <color name="locationbar_status_preview_color_light">@color/modern_blue_300</color>
+    <color name="omnibox_focused_fading_background_color">@color/black_alpha_65</color>
+    <color name="omnibox_focused_fading_background_color_light">@color/white_alpha_65</color>
+
+</resources>

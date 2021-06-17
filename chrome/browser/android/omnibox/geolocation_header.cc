@@ -6,9 +6,9 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "chrome/android/chrome_jni_headers/GeolocationHeader_jni.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_android.h"
+#include "chrome/browser/ui/android/omnibox/jni_headers/GeolocationHeader_jni.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 

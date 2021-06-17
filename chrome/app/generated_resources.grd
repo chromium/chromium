@@ -5441,11 +5441,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_OMNIBOX_REMOVE_SUGGESTION_BUBBLE_DESCRIPTION" desc="The description of a bubble to delete an omnibox suggestion.">
         This page will also be removed from your history and <ph name="SEARCH_ENGINE">$1<ex>Google</ex></ph> activity.
       </message>
-      <if expr="is_android">
-      <message name="IDS_OMNIBOX_CONFIRM_DELETE_FROM_CLIPBOARD" desc="A message within a modal dialog that confirms the user wants to delete a clipboard suggestion from the list dropdown in the omnibox." formatter_data="android_java">
-        Remove suggestion from clipboard?
-      </message>
-      </if>
       <if expr="use_titlecase">
         <message name="IDS_CONTEXT_MENU_SHOW_FULL_URLS" desc="In Title Case: The text label of the omnibox context menu option to show full URLs">
           Always Show Full URLs

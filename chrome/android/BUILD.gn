@@ -208,6 +208,7 @@ android_resources("chrome_app_java_resources") {
     "//chrome/browser/tab:java_resources",
     "//chrome/browser/ui/android/appmenu:java_resources",
     "//chrome/browser/ui/android/favicon:java_resources",
+    "//chrome/browser/ui/android/omnibox:java_resources",
     "//chrome/browser/ui/android/strings:ui_strings_grd",
     "//chrome/browser/ui/android/theme:java_resources",
     "//chrome/browser/ui/android/toolbar:java_resources",
@@ -283,7 +284,6 @@ android_library("chrome_java") {
     ":chrome_app_java_resources",
     ":chrome_public_android_manifest",
     ":chrome_public_apk_template_resources",
-    ":partner_location_descriptor_proto_java",
     ":update_proto_java",
     ":usage_stats_proto_java",
     "$google_play_services_package:google_play_services_auth_base_java",
@@ -761,6 +761,7 @@ group("jni_headers") {
     "//chrome/browser/tab:jni_headers",
     "//chrome/browser/touch_to_fill/android:jni_headers",
     "//chrome/browser/ui/android/favicon:jni_headers",
+    "//chrome/browser/ui/android/omnibox:jni_headers",
     "//chrome/browser/ui/android/toolbar:jni_headers",
     "//chrome/browser/ui/android/webid:jni_headers",
     "//chrome/browser/ui/messages/android:jni_headers",
@@ -816,11 +817,6 @@ java_cpp_enum("sync_user_settings_enums_java") {
   sources = [ "//components/sync/driver/sync_user_settings.h" ]
 }
 
-proto_java_library("partner_location_descriptor_proto_java") {
-  proto_path = "java/src/org/chromium/chrome/browser/omnibox/geo"
-  sources = [ "$proto_path/partner_location_descriptor.proto" ]
-}
-
 proto_java_library("update_proto_java") {
   proto_path = "java/src/org/chromium/chrome/browser/omaha/metrics"
   sources = [ "$proto_path/update_success_tracking.proto" ]
@@ -865,7 +861,6 @@ junit_binary("chrome_junit_tests") {
     ":chrome_app_java_resources",
     ":chrome_java",
     ":chrome_public_android_manifest",
-    ":partner_location_descriptor_proto_java",
     "$google_play_services_package:google_play_services_base_java",
     "$google_play_services_package:google_play_services_basement_java",
     "$google_play_services_package:google_play_services_cast_framework_java",
@@ -967,6 +962,7 @@ junit_binary("chrome_junit_tests") {
     "//chrome/browser/ui/android/native_page:junit",
     "//chrome/browser/ui/android/night_mode:java",
     "//chrome/browser/ui/android/omnibox:java",
+    "//chrome/browser/ui/android/omnibox:junit",
     "//chrome/browser/ui/android/theme:java",
     "//chrome/browser/ui/android/toolbar:java",
     "//chrome/browser/ui/android/toolbar:junit",
@@ -1165,7 +1161,6 @@ android_library("chrome_test_java") {
     ":chrome_app_java_resources",
     ":chrome_test_util_java",
     ":chrome_test_util_jni",
-    ":partner_location_descriptor_proto_java",
     "$google_play_services_package:google_play_services_base_java",
     "$google_play_services_package:google_play_services_basement_java",
     "$google_play_services_package:google_play_services_cast_framework_java",
@@ -3601,12 +3596,6 @@ generate_jni("chrome_jni_headers") {
     "java/src/org/chromium/chrome/browser/offlinepages/prefetch/PrefetchBackgroundTask.java",
     "java/src/org/chromium/chrome/browser/offlinepages/prefetch/PrefetchBackgroundTaskScheduler.java",
     "java/src/org/chromium/chrome/browser/omaha/notification/UpdateNotificationServiceBridge.java",
-    "java/src/org/chromium/chrome/browser/omnibox/ChromeAutocompleteProviderClient.java",
-    "java/src/org/chromium/chrome/browser/omnibox/ChromeAutocompleteSchemeClassifier.java",
-    "java/src/org/chromium/chrome/browser/omnibox/OmniboxPrerender.java",
-    "java/src/org/chromium/chrome/browser/omnibox/OmniboxViewUtil.java",
-    "java/src/org/chromium/chrome/browser/omnibox/geo/GeolocationHeader.java",
-    "java/src/org/chromium/chrome/browser/omnibox/suggestions/AutocompleteController.java",
     "java/src/org/chromium/chrome/browser/partnerbookmarks/PartnerBookmarksReader.java",
     "java/src/org/chromium/chrome/browser/partnercustomizations/PartnerBrowserCustomizations.java",
     "java/src/org/chromium/chrome/browser/password_manager/AccountChooserDialog.java",

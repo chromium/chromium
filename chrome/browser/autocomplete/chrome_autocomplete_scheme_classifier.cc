@@ -6,9 +6,6 @@
 
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
-#if defined(OS_ANDROID)
-#include "chrome/android/chrome_jni_headers/ChromeAutocompleteSchemeClassifier_jni.h"
-#endif
 #include "chrome/browser/custom_handlers/protocol_handler_registry.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
@@ -16,6 +13,9 @@
 #include "chrome/browser/profiles/profile_android.h"
 #endif
 #include "chrome/browser/profiles/profile_io_data.h"
+#if defined(OS_ANDROID)
+#include "chrome/browser/ui/android/omnibox/jni_headers/ChromeAutocompleteSchemeClassifier_jni.h"
+#endif
 #include "content/public/common/url_constants.h"
 #include "url/url_util.h"
 
