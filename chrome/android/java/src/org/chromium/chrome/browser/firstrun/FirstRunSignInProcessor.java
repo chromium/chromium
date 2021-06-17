@@ -8,6 +8,7 @@ import android.accounts.Account;
 import android.app.Activity;
 import android.text.TextUtils;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.SyncFirstSetupCompleteSource;
@@ -70,17 +71,22 @@ public final class FirstRunSignInProcessor {
             return;
         }
 
-        // TODO(https://crbug.com/795292): Move this to SigninFirstRunFragment.
-        Account account = AccountUtils.findAccountByName(
-                AccountManagerFacadeProvider.getInstance().tryGetGoogleAccounts(), accountName);
-        if (account == null) {
-            setFirstRunFlowSignInComplete(true);
-            return;
-        }
+        // TODO(https://crbug.com/795292): Move this to SyncConsentFirstRunFragment.
+        AccountManagerFacadeProvider.getInstance().getAccounts().then(accounts -> {
+            Account account = AccountUtils.findAccountByName(accounts, accountName);
+            if (account == null) {
+                setFirstRunFlowSignInComplete(true);
+            } else {
+                signinAndEnableSync(account, activity);
+            }
+        });
+    }
 
+    private static void signinAndEnableSync(@NonNull Account account, Activity activity) {
         final boolean setUp = getFirstRunFlowSignInSetup();
-        signinManager.signinAndEnableSync(
-                SigninAccessPoint.START_PAGE, account, new SignInCallback() {
+        IdentityServicesProvider.get()
+                .getSigninManager(Profile.getLastUsedRegularProfile())
+                .signinAndEnableSync(SigninAccessPoint.START_PAGE, account, new SignInCallback() {
                     @Override
                     public void onSignInComplete() {
                         UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(
