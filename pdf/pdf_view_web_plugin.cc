@@ -480,9 +480,6 @@ pp::Instance* PdfViewWebPlugin::GetPluginInstance() {
   return nullptr;
 }
 
-void PdfViewWebPlugin::DocumentHasUnsupportedFeature(
-    const std::string& feature) {}
-
 bool PdfViewWebPlugin::IsPrintPreview() {
   return false;
 }
@@ -656,6 +653,11 @@ void PdfViewWebPlugin::DidStopLoading() {
 
 void PdfViewWebPlugin::OnPrintPreviewLoaded() {
   NOTIMPLEMENTED();
+}
+
+void PdfViewWebPlugin::NotifyUnsupportedFeature() {
+  DCHECK(full_frame());
+  GetPdfService()->HasUnsupportedFeature();
 }
 
 void PdfViewWebPlugin::UserMetricsRecordAction(const std::string& action) {

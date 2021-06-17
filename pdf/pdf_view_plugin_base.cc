@@ -17,6 +17,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/i18n/time_formatting.h"
@@ -312,6 +313,22 @@ void PdfViewPluginBase::DocumentLoadFailed() {
   DidStopLoading();
 
   paint_manager_.InvalidateRect(gfx::Rect(plugin_rect_.size()));
+}
+
+void PdfViewPluginBase::DocumentHasUnsupportedFeature(
+    const std::string& feature) {
+  DCHECK(!feature.empty());
+  const std::string metric = "PDF_Unsupported_" + feature;
+  if (!unsupported_features_reported_.count(metric)) {
+    unsupported_features_reported_.insert(metric);
+    UserMetricsRecordAction(metric);
+  }
+
+  if (!full_frame() || notified_browser_about_unsupported_feature_)
+    return;
+
+  NotifyUnsupportedFeature();
+  notified_browser_about_unsupported_feature_ = true;
 }
 
 void PdfViewPluginBase::DocumentLoadProgress(uint32_t available,

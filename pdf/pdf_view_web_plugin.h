@@ -148,7 +148,6 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
                                                const char16_t* term,
                                                bool case_sensitive) override;
   pp::Instance* GetPluginInstance() override;
-  void DocumentHasUnsupportedFeature(const std::string& feature) override;
   bool IsPrintPreview() override;
   void SelectionChanged(const gfx::Rect& left, const gfx::Rect& right) override;
   void SetSelectedText(const std::string& selected_text) override;
@@ -205,6 +204,7 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   void DidStartLoading() override;
   void DidStopLoading() override;
   void OnPrintPreviewLoaded() override;
+  void NotifyUnsupportedFeature() override;
   void UserMetricsRecordAction(const std::string& action) override;
 
  private:

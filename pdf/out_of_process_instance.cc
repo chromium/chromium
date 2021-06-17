@@ -1102,27 +1102,6 @@ pp::Instance* OutOfProcessInstance::GetPluginInstance() {
   return this;
 }
 
-void OutOfProcessInstance::DocumentHasUnsupportedFeature(
-    const std::string& feature) {
-  DCHECK(!feature.empty());
-  std::string metric("PDF_Unsupported_");
-  metric += feature;
-  if (!unsupported_features_reported_.count(metric)) {
-    unsupported_features_reported_.insert(metric);
-    UserMetricsRecordAction(metric);
-  }
-
-  // Since we use an info bar, only do this for full frame plugins..
-  if (!full_frame())
-    return;
-
-  if (told_browser_about_unsupported_feature_)
-    return;
-  told_browser_about_unsupported_feature_ = true;
-
-  pp::PDF::HasUnsupportedFeature(this);
-}
-
 void OutOfProcessInstance::ResetRecentlySentFindUpdate(int32_t /* unused */) {
   recently_sent_find_update_ = false;
 }
@@ -1313,6 +1292,11 @@ void OutOfProcessInstance::OnPrintPreviewLoaded() {
 
 void OutOfProcessInstance::SetContentRestrictions(int content_restrictions) {
   pp::PDF::SetContentRestriction(this, content_restrictions);
+}
+
+void OutOfProcessInstance::NotifyUnsupportedFeature() {
+  DCHECK(full_frame());
+  pp::PDF::HasUnsupportedFeature(this);
 }
 
 void OutOfProcessInstance::UserMetricsRecordAction(const std::string& action) {

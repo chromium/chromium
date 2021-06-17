@@ -9,7 +9,6 @@
 #include <string.h>
 
 #include <memory>
-#include <set>
 #include <string>
 #include <utility>
 #include <vector>
@@ -111,7 +110,6 @@ class OutOfProcessInstance : public PdfViewPluginBase,
                                                const char16_t* term,
                                                bool case_sensitive) override;
   pp::Instance* GetPluginInstance() override;
-  void DocumentHasUnsupportedFeature(const std::string& feature) override;
   bool IsPrintPreview() override;
   void SelectionChanged(const gfx::Rect& left, const gfx::Rect& right) override;
   void SetSelectedText(const std::string& selected_text) override;
@@ -156,6 +154,7 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   void DidStartLoading() override;
   void DidStopLoading() override;
   void OnPrintPreviewLoaded() override;
+  void NotifyUnsupportedFeature() override;
   void UserMetricsRecordAction(const std::string& action) override;
 
  private:
@@ -205,14 +204,6 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   std::unique_ptr<UrlLoader> form_loader_;
 
   DocumentLoadState preview_document_load_state_ = DocumentLoadState::kComplete;
-
-  // Used so that we only tell the browser once about an unsupported feature, to
-  // avoid the infobar going up more than once.
-  bool told_browser_about_unsupported_feature_ = false;
-
-  // Keeps track of which unsupported features we reported, so we avoid spamming
-  // the stats if a feature shows up many times per document.
-  std::set<std::string> unsupported_features_reported_;
 
   // True if the plugin is loaded in print preview, otherwise false.
   bool is_print_preview_ = false;
