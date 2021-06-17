@@ -273,17 +273,6 @@ void SetReferrer(
   request.SetReferrerPolicy(generated_referrer.referrer_policy);
 }
 
-void PopulateAndAddResourceTimingInfo(Resource* resource,
-                                      scoped_refptr<ResourceTimingInfo> info,
-                                      base::TimeTicks response_end) {
-  info->SetInitialURL(
-      resource->GetResourceRequest().GetRedirectInfo().has_value()
-          ? resource->GetResourceRequest().GetRedirectInfo()->original_url
-          : resource->GetResourceRequest().Url());
-  info->SetFinalResponse(resource->GetResponse());
-  info->SetLoadResponseEnd(response_end);
-}
-
 }  // namespace
 
 ResourceFetcherInit::ResourceFetcherInit(
@@ -2260,6 +2249,30 @@ mojom::blink::BlobRegistry* ResourceFetcher::GetBlobRegistry() {
 
 FrameOrWorkerScheduler* ResourceFetcher::GetFrameOrWorkerScheduler() {
   return frame_or_worker_scheduler_.get();
+}
+
+void ResourceFetcher::PopulateAndAddResourceTimingInfo(
+    Resource* resource,
+    scoped_refptr<ResourceTimingInfo> info,
+    base::TimeTicks response_end) {
+  const KURL& initial_url =
+      resource->GetResourceRequest().GetRedirectInfo().has_value()
+          ? resource->GetResourceRequest().GetRedirectInfo()->original_url
+          : resource->GetResourceRequest().Url();
+
+  auto it = early_hints_preloaded_resources_.find(initial_url);
+  if (it != early_hints_preloaded_resources_.end()) {
+    early_hints_preloaded_resources_.erase(it);
+    const ResourceResponse& response = resource->GetResponse();
+    if (response.WasCached() && (!response.WasFetchedViaServiceWorker() ||
+                                 response.IsServiceWorkerPassThrough())) {
+      info->SetInitiatorType("early-hints");
+    }
+  }
+
+  info->SetInitialURL(initial_url);
+  info->SetFinalResponse(resource->GetResponse());
+  info->SetLoadResponseEnd(response_end);
 }
 
 void ResourceFetcher::Trace(Visitor* visitor) const {

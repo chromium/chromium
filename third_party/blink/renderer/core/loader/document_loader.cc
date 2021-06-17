@@ -314,6 +314,7 @@ struct SameSizeAsDocumentLoader
   WebVector<WebHistoryItem> app_history_back_entries;
   WebVector<WebHistoryItem> app_history_forward_entries;
   mojo::Remote<blink::mojom::CodeCacheHost> code_cache_host;
+  HashSet<KURL> early_hints_preloaded_resources_;
 };
 
 // Asserts size of DocumentLoader, so that whenever a new attribute is added to
@@ -478,6 +479,9 @@ DocumentLoader::DocumentLoader(
   if (commit_reason_ != CommitReason::kInitialization)
     redirect_chain_.push_back(url_);
 
+  for (const auto& resource : params_->early_hints_preloaded_resources)
+    early_hints_preloaded_resources_.insert(resource);
+
   if (IsBackForwardLoadType(params_->frame_load_type))
     DCHECK(history_item_);
 }
@@ -548,6 +552,8 @@ DocumentLoader::CreateWebNavigationParamsToCloneDocument() {
       CopyInitiatorOriginTrials(initiator_origin_trial_features_);
   params->force_enabled_origin_trials =
       CopyForceEnabledOriginTrials(force_enabled_origin_trials_);
+  for (const auto& resource : early_hints_preloaded_resources_)
+    params->early_hints_preloaded_resources.push_back(resource);
   return params;
 }
 
@@ -2674,6 +2680,10 @@ void DocumentLoader::NotifyPrerenderingDocumentActivated(
   DCHECK(is_prerendering_);
   is_prerendering_ = false;
   GetTiming().MarkActivationStart(activation_start);
+}
+
+HashSet<KURL> DocumentLoader::GetEarlyHintsPreloadedResources() {
+  return early_hints_preloaded_resources_;
 }
 
 ContentSecurityPolicy* DocumentLoader::CreateCSP() {
