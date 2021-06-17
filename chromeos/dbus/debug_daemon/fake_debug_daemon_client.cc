@@ -311,4 +311,14 @@ void FakeDebugDaemonClient::KernelFeatureEnable(
   // Defined by test.
 }
 
+void FakeDebugDaemonClient::AddObserver(Observer* observer) {
+  DCHECK(observer);
+  observers_.AddObserver(observer);
+}
+
+void FakeDebugDaemonClient::RemoveObserver(Observer* observer) {
+  DCHECK(observer);
+  observers_.RemoveObserver(observer);
+}
+
 }  // namespace chromeos

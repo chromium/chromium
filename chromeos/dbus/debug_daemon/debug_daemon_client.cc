@@ -24,6 +24,7 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/no_destructor.h"
+#include "base/observer_list.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -648,11 +649,39 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
+  // DebugDaemonClient Observer overrides.
+  void AddObserver(Observer* observer) override {
+    DCHECK(observer);
+    observers_.AddObserver(observer);
+  }
+
+  void RemoveObserver(Observer* observer) override {
+    DCHECK(observer);
+    observers_.RemoveObserver(observer);
+  }
+
  protected:
   void Init(dbus::Bus* bus) override {
     debugdaemon_proxy_ =
         bus->GetObjectProxy(debugd::kDebugdServiceName,
                             dbus::ObjectPath(debugd::kDebugdServicePath));
+
+    // Listen to D-Bus signals emitted by debugd.
+    auto on_connected_callback =
+        base::BindRepeating(&DebugDaemonClientImpl::SignalConnected,
+                            weak_ptr_factory_.GetWeakPtr());
+    debugdaemon_proxy_->ConnectToSignal(
+        debugd::kDebugdInterface, debugd::kPacketCaptureStartSignal,
+        base::BindRepeating(
+            &DebugDaemonClientImpl::PacketCaptureStartSignalReceived,
+            weak_ptr_factory_.GetWeakPtr()),
+        on_connected_callback);
+    debugdaemon_proxy_->ConnectToSignal(
+        debugd::kDebugdInterface, debugd::kPacketCaptureStopSignal,
+        base::BindRepeating(
+            &DebugDaemonClientImpl::PacketCaptureStopSignalReceived,
+            weak_ptr_factory_.GetWeakPtr()),
+        on_connected_callback);
   }
 
  private:
@@ -1028,10 +1057,29 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
     std::move(callback).Run(std::move(flags));
   }
 
+  // Called when a D-Bus signal is initially connected.
+  void SignalConnected(const std::string& interface_name,
+                       const std::string& signal_name,
+                       bool success) {
+    if (!success)
+      LOG(ERROR) << "Failed to connect to signal " << signal_name << ".";
+  }
+
+  void PacketCaptureStartSignalReceived(dbus::Signal* signal) {
+    for (auto& observer : observers_)
+      observer.OnPacketCaptureStarted();
+  }
+
+  void PacketCaptureStopSignalReceived(dbus::Signal* signal) {
+    for (auto& observer : observers_)
+      observer.OnPacketCaptureStopped();
+  }
+
   dbus::ObjectProxy* debugdaemon_proxy_;
   std::unique_ptr<PipeReader> pipe_reader_;
   StopAgentTracingCallback callback_;
   scoped_refptr<base::TaskRunner> stop_agent_tracing_task_runner_;
+  base::ObserverList<Observer> observers_;
   base::WeakPtrFactory<DebugDaemonClientImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DebugDaemonClientImpl);

@@ -15,6 +15,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/observer_list.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
 #include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
 
@@ -104,6 +105,9 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) FakeDebugDaemonClient
   void KernelFeatureEnable(const std::string& name,
                            KernelFeatureEnableCallback callback) override;
 
+  void AddObserver(Observer* observer) override;
+  void RemoveObserver(Observer* observer) override;
+
   // Sets debugging features mask for testing.
   virtual void SetDebuggingFeaturesStatus(int features_mask);
 
@@ -126,6 +130,7 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) FakeDebugDaemonClient
   std::set<std::string> printers_;
   std::string scheduler_configuration_name_;
   std::set<std::string> u2f_flags_;
+  base::ObserverList<Observer> observers_;
 
   DISALLOW_COPY_AND_ASSIGN(FakeDebugDaemonClient);
 };

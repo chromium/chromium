@@ -17,6 +17,7 @@
 #include "base/files/file.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/observer_list_types.h"
 #include "base/task_runner.h"
 #include "base/trace_event/tracing_agent.h"
 #include "chromeos/dbus/dbus_client.h"
@@ -41,6 +42,20 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) DebugDaemonClient
       public base::trace_event::TracingAgent {
  public:
   ~DebugDaemonClient() override;
+
+  // Observes the signals that are received from D-Bus.
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called when a PacketCaptureStart signal is received through D-Bus.
+    virtual void OnPacketCaptureStarted() {}
+
+    // Called when a PacketCaptureStop signal is received through D-Bus.
+    virtual void OnPacketCaptureStopped() {}
+  };
+
+  // Adds and removes the observer.
+  virtual void AddObserver(Observer* observer) = 0;
+  virtual void RemoveObserver(Observer* observer) = 0;
 
   // Requests to store debug logs into |file_descriptor| and calls |callback|
   // when completed. Debug logs will be stored in the .tgz if
