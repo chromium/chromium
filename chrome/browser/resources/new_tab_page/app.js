@@ -209,6 +209,13 @@ class AppElement extends mixinBehaviors
       },
 
       /** @private */
+      modulesRedesignedEnabled_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('modulesRedesignedEnabled'),
+        reflectToAttribute: true,
+      },
+
+      /** @private */
       middleSlotPromoLoaded_: {
         type: Boolean,
         value: false,

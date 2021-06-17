@@ -4,6 +4,7 @@
     --ntp-theme-text-shadow: none;
     --ntp-one-google-bar-height: 56px;
     --ntp-search-box-width: 337px;
+    --ntp-module-width: var(--ntp-search-box-width);
   }
 
   @media (min-width: 560px) {
@@ -22,6 +23,10 @@
     :host {
       --ntp-theme-text-color: white;
     }
+  }
+
+  :host([modules-redesigned-enabled_]) {
+    --ntp-module-width: 361px;
   }
 
   :host([show-background-image_]) {
@@ -55,10 +60,14 @@
     margin-bottom: 16px;
   }
 
-  ntp-realbox,
-  ntp-modules {
+  ntp-realbox {
     flex-shrink: 0;
     width: var(--ntp-search-box-width);
+  }
+
+  ntp-modules {
+    flex-shrink: 0;
+    width: var(--ntp-module-width);
   }
 
   ntp-middle-slot-promo {
