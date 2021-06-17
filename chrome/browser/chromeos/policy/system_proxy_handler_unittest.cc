@@ -150,7 +150,7 @@ TEST_F(SystemProxyHandlerTest, ShutDownDaemon) {
   // Enable system-proxy.
   SetPolicy(true /* system_proxy_enabled */, "" /* system_services_username */,
             "" /* system_services_password */);
-  EXPECT_EQ(++expected_shutdown_calls,
+  EXPECT_EQ(expected_shutdown_calls,
             client_test_interface()->GetShutDownCallCount());
 
   // Disable system-proxy via policy and expect a shut-down request to be

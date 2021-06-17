@@ -136,13 +136,12 @@ SystemProxyManager::SystemProxyManager(PrefService* local_state) {
                                         /*password=*/"",
                                         /*force_send=*/true);
   }
-
-  if (system_proxy_state_ == SystemProxyState::kDisabled) {
-    SendShutDownRequest(system_proxy::TrafficOrigin::ALL);
-  }
 }
 
 SystemProxyManager::~SystemProxyManager() {
+  if (IsEnabled()) {
+    SendShutDownRequest(system_proxy::TrafficOrigin::ALL);
+  }
   DCHECK(NetworkHandler::IsInitialized());
   NetworkHandler::Get()->network_state_handler()->RemoveObserver(this,
                                                                  FROM_HERE);
@@ -352,9 +351,10 @@ void SystemProxyManager::SendUserAuthenticationCredentials(
   user_credentials.set_password(password);
 
   system_proxy::SetAuthenticationDetailsRequest request;
-  request.set_traffic_type(IsArcEnabled()
-                               ? system_proxy::TrafficOrigin::ALL
-                               : system_proxy::TrafficOrigin::SYSTEM);
+  request.set_traffic_type(
+      IsArcEnabled() && system_proxy_state_ == SystemProxyState::kEnabledForAll
+          ? system_proxy::TrafficOrigin::ALL
+          : system_proxy::TrafficOrigin::SYSTEM);
   *request.mutable_credentials() = user_credentials;
   *request.mutable_protection_space() = protection_space;
 
@@ -401,9 +401,10 @@ void SystemProxyManager::SendKerberosAuthenticationDetails() {
   }
 
   system_proxy::SetAuthenticationDetailsRequest request;
-  request.set_traffic_type(IsArcEnabled()
-                               ? system_proxy::TrafficOrigin::ALL
-                               : system_proxy::TrafficOrigin::SYSTEM);
+  request.set_traffic_type(
+      IsArcEnabled() && system_proxy_state_ == SystemProxyState::kEnabledForAll
+          ? system_proxy::TrafficOrigin::ALL
+          : system_proxy::TrafficOrigin::SYSTEM);
   request.set_kerberos_enabled(
       local_state_->GetBoolean(prefs::kKerberosEnabled));
   if (primary_profile_) {

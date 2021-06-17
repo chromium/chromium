@@ -294,7 +294,7 @@ TEST_F(SystemProxyManagerTest, UserCredentialsRequestedFromNetworkService) {
 TEST_F(SystemProxyManagerTest, EnableArcWorker) {
   int expected_set_auth_details_call_count = 0;
   int expected_shutdown_calls = 0;
-  EXPECT_EQ(++expected_shutdown_calls,
+  EXPECT_EQ(expected_shutdown_calls,
             client_test_interface()->GetShutDownCallCount());
 
   SetPolicy(true /* system_proxy_enabled */, "" /* system_services_username */,
