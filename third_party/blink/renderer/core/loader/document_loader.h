@@ -361,8 +361,6 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   void OnCodeCacheHostClosed();
   static void DisableCodeCacheForTesting();
 
-  HashSet<KURL> GetEarlyHintsPreloadedResources();
-
  protected:
   Vector<KURL> redirect_chain_;
 
@@ -642,8 +640,6 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   // This is the interface that handles generated code cache
   // requests to fetch code cache when loading resources.
   mojo::Remote<blink::mojom::CodeCacheHost> code_cache_host_;
-
-  HashSet<KURL> early_hints_preloaded_resources_;
 };
 
 DECLARE_WEAK_IDENTIFIER_MAP(DocumentLoader);

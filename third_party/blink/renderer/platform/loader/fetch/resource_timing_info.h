@@ -62,7 +62,6 @@ class PLATFORM_EXPORT ResourceTimingInfo
 
   base::TimeTicks InitialTime() const { return initial_time_; }
 
-  void SetInitiatorType(const AtomicString& type) { type_ = type; }
   const AtomicString& InitiatorType() const { return type_; }
 
   void SetLoadResponseEnd(base::TimeTicks time) { load_response_end_ = time; }

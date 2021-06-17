@@ -257,8 +257,6 @@ ResourceFetcher* FrameFetchContext::CreateFetcherForCommittedDocument(
   fetcher->SetImagesEnabled(frame->GetSettings()->GetImagesEnabled());
   fetcher->SetAutoLoadImages(
       frame->GetSettings()->GetLoadsImagesAutomatically());
-  fetcher->SetEarlyHintsPreloadedResources(
-      loader.GetEarlyHintsPreloadedResources());
   return fetcher;
 }
 
