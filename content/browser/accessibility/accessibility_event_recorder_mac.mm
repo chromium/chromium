@@ -61,24 +61,31 @@ AccessibilityEventRecorderMac::AccessibilityEventRecorderMac(
     LOG(FATAL) << "Failed to create AXUIElement for application.";
 
   // Add the notifications we care about to the observer.
-  AddNotification(@"AXAutocorrectionOccurred");
-  AddNotification(@"AXExpandedChanged");
-  AddNotification(@"AXInvalidStatusChanged");
-  AddNotification(@"AXLiveRegionChanged");
-  AddNotification(@"AXLiveRegionCreated");
-  AddNotification(@"AXLoadComplete");
-  AddNotification(@"AXMenuItemSelected");
-  AddNotification(@"AXRowCollapsed");
-  AddNotification(@"AXRowExpanded");
-  AddNotification((NSString*)kAXMenuClosedNotification);
-  AddNotification((NSString*)kAXMenuOpenedNotification);
-  AddNotification(NSAccessibilityFocusedUIElementChangedNotification);
-  AddNotification(NSAccessibilityRowCollapsedNotification);
-  AddNotification(NSAccessibilityRowCountChangedNotification);
-  AddNotification(NSAccessibilitySelectedChildrenChangedNotification);
-  AddNotification(NSAccessibilitySelectedRowsChangedNotification);
-  AddNotification(NSAccessibilitySelectedTextChangedNotification);
-  AddNotification(NSAccessibilityValueChangedNotification);
+  static NSArray* notifications = [@[
+    @"AXAutocorrectionOccurred",
+    @"AXExpandedChanged",
+    @"AXInvalidStatusChanged",
+    @"AXLiveRegionChanged",
+    @"AXLiveRegionCreated",
+    @"AXLoadComplete",
+    @"AXMenuItemSelected",
+    @"AXRowCollapsed",
+    @"AXRowExpanded",
+    (NSString*)kAXMenuClosedNotification,
+    (NSString*)kAXMenuOpenedNotification,
+    NSAccessibilityFocusedUIElementChangedNotification,
+    NSAccessibilityRowCollapsedNotification,
+    NSAccessibilityRowCountChangedNotification,
+    NSAccessibilitySelectedChildrenChangedNotification,
+    NSAccessibilitySelectedRowsChangedNotification,
+    NSAccessibilitySelectedTextChangedNotification,
+    NSAccessibilityTitleChangedNotification,
+    NSAccessibilityValueChangedNotification,
+  ] retain];
+
+  for (NSString* notification : notifications) {
+    AddNotification(notification);
+  }
 
   // Add the observer to the current message loop.
   observer_run_loop_source_ = AXObserverGetRunLoopSource(observer_ref_.get());

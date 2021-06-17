@@ -357,6 +357,9 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
         return;
       }
       break;
+    case ui::AXEventGenerator::Event::NAME_CHANGED:
+      mac_notification = NSAccessibilityTitleChangedNotification;
+      break;
 
     // Currently unused events on this platform.
     case ui::AXEventGenerator::Event::ACCESS_KEY_CHANGED:
@@ -393,7 +396,6 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
     case ui::AXEventGenerator::Event::LOAD_START:
     case ui::AXEventGenerator::Event::MULTILINE_STATE_CHANGED:
     case ui::AXEventGenerator::Event::MULTISELECTABLE_STATE_CHANGED:
-    case ui::AXEventGenerator::Event::NAME_CHANGED:
     case ui::AXEventGenerator::Event::OBJECT_ATTRIBUTE_CHANGED:
     case ui::AXEventGenerator::Event::OTHER_ATTRIBUTE_CHANGED:
     case ui::AXEventGenerator::Event::PARENT_CHANGED:
