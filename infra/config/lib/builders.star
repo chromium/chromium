@@ -35,6 +35,7 @@ load("./branches.star", "branches")
 
 # The cpu constants to be used with the builder function
 cpu = struct(
+    ARM64 = "arm64",
     X86 = "x86",
     X86_64 = "x86-64",
 )
