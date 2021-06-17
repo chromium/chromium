@@ -21,17 +21,17 @@ _NON_BRANCHED_TESTERS = {
     # This tester is triggered by 'Mac Builder', but it is an FYI builder and
     # not mirrored by any branched try builders, so we do not need to run it on
     # the branches
-    "mac-osxbeta-rel": branches.STANDARD_MILESTONE,
+    "mac-osxbeta-rel": branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
 
     # This tester is also triggered by 'Mac Builder', but we don't have enough
     # capacity on Mac 11 to run this on the branches yet.
     # TODO(crbug.com/1206401): Restore this when we do have capacity.
-    "Mac11 Tests": branches.STANDARD_MILESTONE,
+    "Mac11 Tests": branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
 
     # This tester is triggered by 'mac-arm64-rel', but it is an FYI builder and
     # not mirrored by any branched try builders and we have limited test
     # capacity, so we do not need to run it on the branches
-    "mac-arm64-rel-tests": branches.STANDARD_MILESTONE,
+    "mac-arm64-rel-tests": branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
 
     # These Android testers are triggered by 'Android arm Builder (dbg)', but we
     # don't have sufficient capacity of devices with older Android versions, so
