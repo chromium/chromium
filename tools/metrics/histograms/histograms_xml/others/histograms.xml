@@ -18725,6 +18725,9 @@ regressions. -->
 
 <histogram name="WebApp.Shortcuts.Deletion.Success" enum="BooleanSuccess"
     expires_after="M93">
+  <obsolete>
+    Removed on M93. Not needed anymore.
+  </obsolete>
   <owner>phillis@chromium.org</owner>
   <owner>dmurph@chromium.org</owner>
   <owner>sunggch@microsoft.com</owner>

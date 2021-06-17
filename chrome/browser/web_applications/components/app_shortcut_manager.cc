@@ -27,10 +27,6 @@ namespace {
 constexpr const char* kCreationResultMetric =
     "WebApp.Shortcuts.Creation.Result";
 
-// UMA metric name for shortcuts deletion result.
-constexpr const char* kDeletionResultMetric =
-    "WebApp.Shortcuts.Deletion.Success";
-
 // Result of shortcuts creation process.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -199,7 +195,6 @@ void AppShortcutManager::OnShortcutsDeleted(const AppId& app_id,
                                             DeleteShortcutsCallback callback,
                                             bool success) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  UMA_HISTOGRAM_BOOLEAN(kDeletionResultMetric, success);
 
   std::move(callback).Run(success);
 }
