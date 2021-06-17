@@ -402,42 +402,6 @@ class PausableResponseProvider : public HtmlResponseProvider {
       assertWithMatcher:grey_notNil()];
 }
 
-// Tests that visible URL is always the same as last committed URL during go
-// back navigation initiated with pending renderer-initiated navigation in
-// progress.
-- (void)testBackNavigationWithPendingRendererInitiatedNavigation {
-  // Purge web view caches and pause the server to make sure that tests can
-  // verify omnibox state before server starts responding.
-  [ChromeEarlGrey purgeCachedWebViewPages];
-  [ChromeEarlGrey waitForWebStateContainingText:kTestPage2];
-  {
-    // Pauses response server and disables EG synchronization.
-    // Pending navigation will not complete until server is unpaused.
-    ScopedSynchronizationDisabler disabler;
-    [self setServerPaused:YES];
-
-    // Start renderer initiated navigation.
-    [ChromeEarlGrey
-        tapWebStateElementWithID:base::SysUTF8ToNSString(kPage3Link)];
-
-    // Do not wait until renderer-initiated navigation is finished, tap the back
-    // button in the toolbar and verify that URL2 (committed URL) is displayed
-    // even though URL1 is a pending URL.
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::BackButton()]
-        performAction:grey_tap()];
-    // TODO(crbug.com/724560): Re-evaluate if necessary to check receiving URL1
-    // request here.
-    [[EarlGrey selectElementWithMatcher:OmniboxText(_testURL2.GetContent())]
-        assertWithMatcher:grey_notNil()];
-
-    // Make server respond so URL1 becomes committed.
-    [self setServerPaused:NO];
-  }
-  [ChromeEarlGrey waitForWebStateContainingText:kTestPage1];
-  [[EarlGrey selectElementWithMatcher:OmniboxText(_testURL1.GetContent())]
-      assertWithMatcher:grey_notNil()];
-}
-
 // Tests that visible URL is always the same as last committed URL if user
 // issues 2 go forward commands to WebUI page (crbug.com/711465).
 - (void)testDoubleForwardNavigationToWebUIPage {
