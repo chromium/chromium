@@ -4,20 +4,33 @@
 
 package org.chromium.android_webview.services;
 
+import android.annotation.SuppressLint;
 import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.os.Binder;
+import android.os.Build;
 import android.os.IBinder;
 import android.os.Process;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.android_webview.common.SafeModeController;
 import org.chromium.android_webview.common.services.ISafeModeService;
+import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.compat.ApiHelperForP;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.annotation.concurrent.GuardedBy;
@@ -32,6 +45,109 @@ public final class SafeModeService extends Service {
     private static final String TAG = "WebViewSafeMode";
 
     private static final Object sLock = new Object();
+
+    /**
+     * Helper class for statically defining a trusted package's identity and verifying this at
+     * runtime.
+     */
+    @VisibleForTesting
+    public static class TrustedPackage {
+        private String mPackageName;
+        private byte[] mReleaseCertHash;
+        private byte[] mDebugCertHash;
+
+        /**
+         * Represents the identity of a package trusted by this service.
+         *
+         * @param packageName The package name of the trusted caller.
+         * @param releaseCertHash The SHA256 hash of the caller's <b>release</b> (production)
+         *     certificate. This is honored on any type of Android build. This value is required. If
+         *     the trusted caller
+         * @param debugCertHash This is similar to {@code releaseCertHash}, but for the <b>debug</b>
+         *         (development)
+         *     certificate. This is honored on userdebug/eng Android images but not on user Android
+         *     builds. If the caller always uses the same signing certificate, this parameter should
+         *     be {@code null} and the certificate hash should be passed into {@code
+         *     releaseCertHash} instead.
+         */
+        public TrustedPackage(@NonNull String packageName, @NonNull byte[] releaseCertHash,
+                @Nullable byte[] debugCertHash) {
+            mPackageName = packageName;
+            mReleaseCertHash = releaseCertHash;
+            mDebugCertHash = debugCertHash;
+        }
+
+        // Whether or not this is a debug build. This can be mocked in tests.
+        protected boolean isDebugAndroid() {
+            return BuildInfo.isDebugAndroid();
+        }
+
+        public boolean verify(String packageName) {
+            if (!mPackageName.equals(packageName)) return false;
+
+            return hasSigningCertificate(packageName, mReleaseCertHash)
+                    || (isDebugAndroid() && hasSigningCertificate(packageName, mDebugCertHash));
+        }
+
+        @SuppressLint("PackageManagerGetSignatures")
+        // https://stackoverflow.com/questions/39192844/android-studio-warning-when-using-packagemanager-get-signatures
+        private static boolean hasSigningCertificate(
+                @NonNull String packageName, @Nullable byte[] expectedCertHash) {
+            if (expectedCertHash == null) {
+                return false;
+            }
+            final Context context = ContextUtils.getApplicationContext();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                return ApiHelperForP.hasSigningCertificate(context.getPackageManager(), packageName,
+                        expectedCertHash, PackageManager.CERT_INPUT_SHA256);
+            }
+            try {
+                PackageInfo info = context.getPackageManager().getPackageInfo(
+                        packageName, PackageManager.GET_SIGNATURES);
+                Signature[] signatures = info.signatures;
+                if (info.signatures == null) {
+                    return false;
+                }
+                for (Signature signature : info.signatures) {
+                    if (Arrays.equals(expectedCertHash, sha256Hash(signature))) {
+                        return true;
+                    }
+                }
+                return false; // no matches
+            } catch (PackageManager.NameNotFoundException e) {
+                return false;
+            }
+        }
+
+        @Nullable
+        private static byte[] sha256Hash(@Nullable Signature signature) {
+            if (signature == null) return null;
+            try {
+                return MessageDigest.getInstance("SHA256").digest(signature.toByteArray());
+            } catch (NoSuchAlgorithmException e) {
+                // This shouldn't happen.
+                return null;
+            }
+        }
+    }
+
+    private static final TrustedPackage[] sTrustedPackages = {
+            new TrustedPackage("com.android.vending",
+                    new byte[] {(byte) 0xf0, (byte) 0xfd, (byte) 0x6c, (byte) 0x5b, (byte) 0x41,
+                            (byte) 0x0f, (byte) 0x25, (byte) 0xcb, (byte) 0x25, (byte) 0xc3,
+                            (byte) 0xb5, (byte) 0x33, (byte) 0x46, (byte) 0xc8, (byte) 0x97,
+                            (byte) 0x2f, (byte) 0xae, (byte) 0x30, (byte) 0xf8, (byte) 0xee,
+                            (byte) 0x74, (byte) 0x11, (byte) 0xdf, (byte) 0x91, (byte) 0x04,
+                            (byte) 0x80, (byte) 0xad, (byte) 0x6b, (byte) 0x2d, (byte) 0x60,
+                            (byte) 0xdb, (byte) 0x83},
+                    new byte[] {(byte) 0x19, (byte) 0x75, (byte) 0xb2, (byte) 0xf1, (byte) 0x71,
+                            (byte) 0x77, (byte) 0xbc, (byte) 0x89, (byte) 0xa5, (byte) 0xdf,
+                            (byte) 0xf3, (byte) 0x1f, (byte) 0x9e, (byte) 0x64, (byte) 0xa6,
+                            (byte) 0xca, (byte) 0xe2, (byte) 0x81, (byte) 0xa5, (byte) 0x3d,
+                            (byte) 0xc1, (byte) 0xd1, (byte) 0xd5, (byte) 0x9b, (byte) 0x1d,
+                            (byte) 0x14, (byte) 0x7f, (byte) 0xe1, (byte) 0xc8, (byte) 0x2a,
+                            (byte) 0xfa, (byte) 0x00}),
+    };
 
     private boolean isCallerTrusted() {
         final Context context = ContextUtils.getApplicationContext();
@@ -52,7 +168,18 @@ public final class SafeModeService extends Service {
             return true;
         }
 
-        // TODO(ntfschr): add actual trusted services once SafeMode is ready for production.
+        // We trust the caller if any package name in the UID matches any of the TrustedPackages in
+        // our allowlist, since all packages in the same UID must be signed by the same certificate
+        // set. In practice, we only expect a single package per UID because `android:sharedUserId`
+        // is deprecated.
+        for (String packageName : packagesInUid) {
+            for (TrustedPackage trustedPackage : sTrustedPackages) {
+                if (trustedPackage.verify(packageName)) {
+                    return true;
+                }
+            }
+        }
+
         return false;
     }
 
