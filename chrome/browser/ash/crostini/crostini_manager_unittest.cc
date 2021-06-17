@@ -808,6 +808,8 @@ TEST_F(CrostiniManagerRestartTest, RestartSuccess) {
   ExpectRestarterUmaCount(1);
   histogram_tester_.ExpectTotalCount(
       "Crostini.RestarterTimeInState.StartTerminaVm", 1);
+  histogram_tester_.ExpectBucketCount(
+      "Crostini.SetUpLxdContainerUser.UnknownResult", false, 1);
 }
 
 TEST_F(CrostiniManagerRestartTest, UncleanRestartReportsMetricToUncleanBucket) {

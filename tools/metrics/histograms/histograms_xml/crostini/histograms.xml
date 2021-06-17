@@ -401,6 +401,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Crostini.SetUpLxdContainerUser.UnknownResult"
+    enum="BooleanYesNo" expires_after="2021-12-31">
+  <owner>davidmunro@google.com</owner>
+  <owner>clumptini@google.com</owner>
+  <summary>
+    Yes if we got an unknown result for the SetUpLxdContainerUser step, No
+    otherwise. Recorded by CrostiniManager after getting the result for the the
+    SetUpLxdContainerUser step so we can check if our hypothesis to the root
+    cause of crbug/1216305 is correct, and to measure how widespread it is.
+  </summary>
+</histogram>
+
 <histogram name="Crostini.SetupResult" enum="CrostiniSetupResult"
     expires_after="2022-01-06">
   <owner>clumptini@google.com</owner>

@@ -53,6 +53,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/dbus/anomaly_detector_client.h"
+#include "chromeos/dbus/cicerone/cicerone_service.pb.h"
 #include "chromeos/dbus/concierge/concierge_client.h"
 #include "chromeos/dbus/cros_disks_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
@@ -2843,16 +2844,51 @@ void CrostiniManager::OnSetUpLxdContainerUser(
     return;
   }
 
-  if (response->status() !=
-          vm_tools::cicerone::SetUpLxdContainerUserResponse::SUCCESS &&
-      response->status() !=
-          vm_tools::cicerone::SetUpLxdContainerUserResponse::EXISTS) {
-    LOG(ERROR) << "Failed to set up container user: "
-               << response->failure_reason();
-    std::move(callback).Run(/*success=*/false);
-    return;
+  switch (response->status()) {
+    case vm_tools::cicerone::SetUpLxdContainerUserResponse::UNKNOWN:
+      // If we hit this then we don't know if users are set up or not; a
+      // possible cause is we weren't able to read the /etc/passwd file.
+      // We're in one of the following cases:
+      // - Users are already set up but hit a transient error reading the file
+      //   e.g. crbug/1216305. This would be a no-op so safe to continue.
+      // - The container is in a bad state e.g. file is missing entirely.
+      //   Once we start the container (next step) the system will try to repair
+      //   this. It won't recover enough for restart to succeed, but it will
+      //   give us a valid passwd file so that next launch we'll set up users
+      //   and all will be good again. If we errored out here then we'd never
+      //   repair the file and the container is borked for good.
+      // - Lastly and least likely, it could be a transient issue but users
+      //   aren't set up correctly. The container will either fail to start,
+      //   or start but won't completely work (e.g. maybe adb sideloading will
+      //   fail). Either way, restarting the container should get them back into
+      //   a good state.
+      // Note that if the user's account is missing then garcon won't start,
+      // which combined with crbug/1197416 means launch will hang forever (well,
+      // it's a 5 day timeout so not forever but may as well be). They would
+      // have to be incredibly unlucky and restarting will fix things so that's
+      // acceptable.
+      base::UmaHistogramBoolean("Crostini.SetUpLxdContainerUser.UnknownResult",
+                                true);
+      LOG(ERROR) << "Failed to set up container user: "
+                 << response->failure_reason();
+      std::move(callback).Run(/*success=*/true);
+      break;
+    case vm_tools::cicerone::SetUpLxdContainerUserResponse::SUCCESS:
+    case vm_tools::cicerone::SetUpLxdContainerUserResponse::EXISTS:
+      base::UmaHistogramBoolean("Crostini.SetUpLxdContainerUser.UnknownResult",
+                                false);
+      std::move(callback).Run(/*success=*/true);
+      break;
+    case vm_tools::cicerone::SetUpLxdContainerUserResponse::FAILED:
+      LOG(ERROR) << "Failed to set up container user: "
+                 << response->failure_reason();
+      base::UmaHistogramBoolean("Crostini.SetUpLxdContainerUser.UnknownResult",
+                                false);
+      std::move(callback).Run(/*success=*/false);
+      break;
+    default:
+      NOTREACHED();
   }
-  std::move(callback).Run(/*success=*/true);
 }
 
 void CrostiniManager::OnLxdContainerCreated(
