@@ -7,6 +7,8 @@ package org.chromium.android_webview.common;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.net.Uri;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
@@ -25,6 +27,9 @@ import java.util.Set;
 public class SafeModeController {
     public static final String SAFE_MODE_STATE_COMPONENT =
             "org.chromium.android_webview.SafeModeState";
+    public static final String URI_AUTHORITY_SUFFIX = ".SafeModeContentProvider";
+    public static final String SAFE_MODE_ACTIONS_URI_PATH = "/safe-mode-actions";
+    public static final String ACTIONS_COLUMN = "actions";
 
     private static final String TAG = "WebViewSafeMode";
 
@@ -67,6 +72,33 @@ public class SafeModeController {
     @VisibleForTesting
     public void unregisterActionsForTesting() {
         mRegisteredActions = null;
+    }
+
+    /**
+     * Queries SafeModeContentProvider for the set of actions which should be applied. Returns the
+     * empty set if SafeMode is disabled. This should only be called from embedded WebView contexts.
+     */
+    public Set<String> queryActions(String webViewPackageName) {
+        Set<String> actions = new HashSet<>();
+
+        Uri uri = new Uri.Builder()
+                          .scheme("content")
+                          .authority(webViewPackageName + URI_AUTHORITY_SUFFIX)
+                          .path(SAFE_MODE_ACTIONS_URI_PATH)
+                          .build();
+
+        final Context appContext = ContextUtils.getApplicationContext();
+        try (Cursor cursor = appContext.getContentResolver().query(uri, /* projection */ null,
+                     /* selection */ null, /* selectionArgs */ null, /* sortOrder */ null)) {
+            assert cursor != null : "ContentProvider doesn't support querying '" + uri + "'";
+            int actionIdColumnIndex = cursor.getColumnIndexOrThrow(ACTIONS_COLUMN);
+            while (cursor.moveToNext()) {
+                actions.add(cursor.getString(actionIdColumnIndex));
+            }
+        }
+
+        Log.i(TAG, "Received SafeModeActions: %s", actions);
+        return actions;
     }
 
     /**

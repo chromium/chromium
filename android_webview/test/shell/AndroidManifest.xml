@@ -111,6 +111,9 @@
     <!-- End of Developer UI related components -->
     <!-- Components for SafeMode, make sure that any changes in these components reflect
          the corresponding original components in nonembedded/java/AndroidManifest.xml -->
+    <provider android:name="org.chromium.android_webview.services.SafeModeContentProvider"
+              android:exported="true"
+              android:authorities="org.chromium.android_webview.shell.SafeModeContentProvider"/>
     <service android:name="org.chromium.android_webview.services.SafeModeService"
                          android:exported="true" />
     <activity-alias android:name="org.chromium.android_webview.SafeModeState"

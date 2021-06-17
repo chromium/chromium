@@ -9,6 +9,7 @@ import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
@@ -31,7 +32,10 @@ import org.chromium.base.compat.ApiHelperForP;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import javax.annotation.concurrent.GuardedBy;
 
@@ -149,6 +153,26 @@ public final class SafeModeService extends Service {
                             (byte) 0xfa, (byte) 0x00}),
     };
 
+    // Auto-disable SafeMode after 30 days.
+    @VisibleForTesting
+    public static final long SAFE_MODE_ENABLED_TIME_LIMIT_MS = TimeUnit.DAYS.toMillis(30);
+
+    /**
+     * A mockable clock. Returns the current time in ms since the unix epoch. For reference, the
+     * default implementation is {@code System.currentTimeMillis()}.
+     */
+    @VisibleForTesting
+    public interface Clock {
+        long currentTimeMillis();
+    }
+
+    @GuardedBy("sLock")
+    private static Clock sClock = System::currentTimeMillis;
+
+    private static final String SHARED_PREFS_FILE = "webview_safemode_prefs";
+
+    private static final String LAST_MODIFIED_TIME_KEY = "LAST_MODIFIED_TIME";
+
     private boolean isCallerTrusted() {
         final Context context = ContextUtils.getApplicationContext();
         PackageManager pm = context.getPackageManager();
@@ -191,7 +215,7 @@ public final class SafeModeService extends Service {
             }
 
             synchronized (sLock) {
-                SafeModeService.this.setSafeMode(actions);
+                SafeModeService.setSafeMode(actions);
             }
         }
     };
@@ -201,21 +225,83 @@ public final class SafeModeService extends Service {
         return mBinder;
     }
 
+    private static SharedPreferences getSharedPreferences() {
+        final Context context = ContextUtils.getApplicationContext();
+        return context.getSharedPreferences(SHARED_PREFS_FILE, Context.MODE_PRIVATE);
+    }
+
     /**
      * Sets the SafeMode config. This includes persisting the set of actions, toggling component
      * state, etc.
      */
     @GuardedBy("sLock")
-    private void setSafeMode(List<String> actions) {
-        // TODO(ntfschr): persist the list of actions once we figure out the right representation on
-        // disk.
-        ComponentName safeModeComponent =
-                new ComponentName(this, SafeModeController.SAFE_MODE_STATE_COMPONENT);
+    private static void setSafeMode(List<String> actions) {
+        boolean enableSafeMode = actions != null && !actions.isEmpty();
 
-        int newState = actions == null || actions.isEmpty()
-                ? PackageManager.COMPONENT_ENABLED_STATE_DEFAULT
-                : PackageManager.COMPONENT_ENABLED_STATE_ENABLED;
-        getPackageManager().setComponentEnabledSetting(
+        SharedPreferences.Editor editor = getSharedPreferences().edit();
+        if (enableSafeMode) {
+            long currentTime = sClock.currentTimeMillis();
+            editor.putLong(LAST_MODIFIED_TIME_KEY, currentTime);
+
+            // TODO(ntfschr): persist the list of actions once we figure out the right
+            // representation on disk.
+        } else {
+            editor.clear();
+        }
+
+        // Ignore errors, since there's no way to recover. Commit changes async to avoid
+        // blocking the service.
+        editor.apply();
+
+        final Context context = ContextUtils.getApplicationContext();
+        ComponentName safeModeComponent =
+                new ComponentName(context, SafeModeController.SAFE_MODE_STATE_COMPONENT);
+
+        int newState = enableSafeMode ? PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+                                      : PackageManager.COMPONENT_ENABLED_STATE_DEFAULT;
+        context.getPackageManager().setComponentEnabledSetting(
                 safeModeComponent, newState, PackageManager.DONT_KILL_APP);
+    }
+
+    @GuardedBy("sLock")
+    private static boolean shouldAutoDisableSafeMode() {
+        long lastModifiedTime = getSharedPreferences().getLong(LAST_MODIFIED_TIME_KEY, 0L);
+        long currentTime = sClock.currentTimeMillis();
+        long timeSinceLastSafeModeConfig = currentTime - lastModifiedTime;
+        return timeSinceLastSafeModeConfig >= SAFE_MODE_ENABLED_TIME_LIMIT_MS;
+    }
+
+    @VisibleForTesting
+    public static void setClockForTesting(Clock clock) {
+        synchronized (sLock) {
+            sClock = clock;
+        }
+    }
+
+    // This must match the constant in VariationsSeedSafeModeAction.java
+    private static final String VARIATIONS_SAFEMODEACTION_ID = "delete_variations_seed";
+
+    public static Set<String> getSafeModeConfig() {
+        synchronized (sLock) {
+            final Context context = ContextUtils.getApplicationContext();
+            if (!SafeModeController.getInstance().isSafeModeEnabled(context.getPackageName())) {
+                return new HashSet<>();
+            }
+            if (shouldAutoDisableSafeMode()) {
+                setSafeMode(Arrays.asList());
+                return new HashSet<>();
+            }
+            // TODO(ntfschr): fetch the list of actions from disk once we figure out the right
+            // representation on disk. At that point, we can delete the VARIATIONS_SAFEMODEACTION_ID
+            // constant in this class since there's no more benefit to hardcoding actions.
+            return new HashSet<>(Arrays.asList(VARIATIONS_SAFEMODEACTION_ID));
+        }
+    }
+
+    @VisibleForTesting
+    public static void clearSharedPrefsForTesting() {
+        synchronized (sLock) {
+            getSharedPreferences().edit().clear().apply();
+        }
     }
 }
