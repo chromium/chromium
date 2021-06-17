@@ -14,7 +14,7 @@
 #endif
 
 #if defined(OS_WIN)
-#include <windows.h>
+#include "base/win/windows_types.h"
 #endif
 
 // Barebones TLS implementation for use in PartitionAlloc. This doesn't use the
