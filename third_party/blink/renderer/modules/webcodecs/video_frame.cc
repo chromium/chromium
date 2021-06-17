@@ -254,17 +254,16 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
   constexpr char kAlphaKeep[] = "keep";
 
   // Special case <video> and VideoFrame to directly use the underlying frame.
-  if (
-      source->IsVideoFrame() || source->IsHTMLVideoElement()
-  ) {
+  if (source->IsVideoFrame() || source->IsHTMLVideoElement()) {
     scoped_refptr<media::VideoFrame> source_frame;
     switch (source->GetContentType()) {
       case V8CanvasImageSource::ContentType::kVideoFrame:
-        if (!init || (!init->hasTimestamp() && !init->hasDuration() &&
-                      init->alpha() == kAlphaKeep)) {
+        source_frame = source->GetAsVideoFrame()->frame();
+        if (!init->hasTimestamp() && !init->hasDuration() &&
+            (init->alpha() == kAlphaKeep ||
+             media::IsOpaque(source_frame->format()))) {
           return source->GetAsVideoFrame()->clone(exception_state);
         }
-        source_frame = source->GetAsVideoFrame()->frame();
         break;
       case V8CanvasImageSource::ContentType::kHTMLVideoElement:
         if (auto* wmp = source->GetAsHTMLVideoElement()->GetWebMediaPlayer())
@@ -280,12 +279,12 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
       return nullptr;
     }
 
-    const bool force_opaque = init && init->alpha() == kAlphaDiscard &&
+    const bool force_opaque = init->alpha() == kAlphaDiscard &&
                               !media::IsOpaque(source_frame->format());
 
     // We can't modify the timestamp or duration directly since there may be
     // other owners accessing these fields concurrently.
-    if (init && (init->hasTimestamp() || init->hasDuration() || force_opaque)) {
+    if (init->hasTimestamp() || init->hasDuration() || force_opaque) {
       const auto wrapped_format =
           force_opaque ? ToOpaqueMediaPixelFormat(source_frame->format())
                        : source_frame->format();
@@ -359,22 +358,24 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
   const gfx::Size natural_size = coded_size;
 
   scoped_refptr<media::VideoFrame> frame;
-  if (sk_image->isTextureBacked()) {
+  if (sk_image->isTextureBacked() &&
+      (sk_image->isOpaque() || init->alpha() == kAlphaDiscard)) {
+    // TODO(crbug.com/1220822): Avoid readback and just use the mailbox once
+    // VideoFrame can reliably have flipY textures. We can also use the mailbox
+    // path immediately when flipY isn't required.
     YUVReadbackContext result;
     result.coded_size = coded_size;
     result.visible_rect = visible_rect;
     result.natural_size = natural_size;
     result.timestamp = timestamp;
 
-    // TODO(crbug.com/1138681): This is currently wrong for alpha == keep, but
-    // we're removing readback for this flow, so it's fine for now.
-
     // While this function indicates it's asynchronous, the flushAndSubmit()
-    // call below ensures it completes synchronously.
+    // call ensures it completes synchronously.
     sk_image->asyncRescaleAndReadPixelsYUV420(
         kRec709_SkYUVColorSpace, sk_color_space, sk_image_info.bounds(),
         sk_image_info.dimensions(), SkImage::RescaleGamma::kSrc,
         SkImage::RescaleMode::kRepeatedCubic, &OnYUVReadbackDone, &result);
+
     GrDirectContext* gr_context = image->ContextProvider()->GetGrContext();
     DCHECK(gr_context);
     gr_context->flushAndSubmit(/*syncCpu=*/true);
@@ -387,13 +388,16 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
 
     frame = std::move(result.frame);
     frame->set_color_space(gfx::ColorSpace::CreateREC709());
-    if (init && init->hasDuration()) {
+    if (init->hasDuration()) {
       frame->metadata().frame_duration =
           base::TimeDelta::FromMicroseconds(init->duration());
     }
     return MakeGarbageCollected<VideoFrame>(
         std::move(frame), ExecutionContext::From(script_state));
   }
+
+  if (sk_image->isTextureBacked())
+    sk_image = sk_image->makeRasterImage();
 
   const bool force_opaque =
       init && init->alpha() == kAlphaDiscard && !sk_image->isOpaque();
@@ -405,8 +409,9 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
                                       "Failed to create video frame");
     return nullptr;
   }
+
   frame->set_color_space(gfx_color_space);
-  if (init && init->hasDuration()) {
+  if (init->hasDuration()) {
     frame->metadata().frame_duration =
         base::TimeDelta::FromMicroseconds(init->duration());
   }
