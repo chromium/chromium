@@ -27,7 +27,7 @@
         android:gravity="center">
 
       <TextView
-          android:id="@+id/native_language_name"
+          android:id="@+id/primary_language_name"
           android:layout_width="match_parent"
           android:layout_height="match_parent"
           android:textAppearance="@style/TextAppearance.TextLarge.Primary"
@@ -35,7 +35,7 @@
           android:singleLine="true" />
 
       <TextView
-          android:id="@+id/display_language_name"
+          android:id="@+id/secondary_language_name"
           android:layout_width="match_parent"
           android:layout_height="match_parent"
           android:textAppearance="@style/TextAppearance.TextMedium.Secondary"

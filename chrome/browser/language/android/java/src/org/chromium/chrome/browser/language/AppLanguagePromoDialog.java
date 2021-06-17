@@ -187,14 +187,15 @@ public class AppLanguagePromoDialog {
      */
     private class AppLanguagePromptRowViewHolder
             extends RecyclerView.ViewHolder implements View.OnClickListener {
-        private TextView mDisplayNameTextView;
-        private TextView mNativeNameTextView;
+        private TextView mPrimaryNameTextView;
+        private TextView mSecondaryNameTextView;
         private RadioButton mRadioButton;
 
         AppLanguagePromptRowViewHolder(View view) {
             super(view);
-            mDisplayNameTextView = ((TextView) itemView.findViewById(R.id.display_language_name));
-            mNativeNameTextView = ((TextView) itemView.findViewById(R.id.native_language_name));
+            mPrimaryNameTextView = ((TextView) itemView.findViewById(R.id.primary_language_name));
+            mSecondaryNameTextView =
+                    ((TextView) itemView.findViewById(R.id.secondary_language_name));
             mRadioButton =
                     ((RadioButton) itemView.findViewById(R.id.app_language_prompt_radiobutton));
 
@@ -210,8 +211,14 @@ public class AppLanguagePromoDialog {
 
         public void bindViewHolder(LanguageItem languageItem, boolean checked) {
             mRadioButton.setChecked(checked);
-            mDisplayNameTextView.setText(languageItem.getDisplayName());
-            mNativeNameTextView.setText(languageItem.getNativeDisplayName());
+            if (languageItem.isSystemDefault()) {
+                // For the system default locale the display name should be the primary TextView.
+                mPrimaryNameTextView.setText(languageItem.getDisplayName());
+                mSecondaryNameTextView.setText(languageItem.getNativeDisplayName());
+            } else {
+                mPrimaryNameTextView.setText(languageItem.getNativeDisplayName());
+                mSecondaryNameTextView.setText(languageItem.getDisplayName());
+            }
         }
     }
 
