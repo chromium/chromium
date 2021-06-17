@@ -1117,7 +1117,7 @@ const DeviceCapabilities kDrawciaStylusGarage = {
 //   DEVICE_IP=<your device IP>
 //   cd ui/events/ozone/evdev/
 //   scp capture_device_capabilities.py "root@${DEVICE_IP}:/tmp/"
-//   ssh "root@${DEVICE_IP}" /tmp/capture_device_capabilities.py
+//   ssh "root@${DEVICE_IP}" python /tmp/capture_device_capabilities.py
 
 bool CapabilitiesToDeviceInfo(const DeviceCapabilities& capabilities,
                               EventDeviceInfo* devinfo) {
