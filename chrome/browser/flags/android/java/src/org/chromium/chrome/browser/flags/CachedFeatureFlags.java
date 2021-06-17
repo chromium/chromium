@@ -9,7 +9,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.FieldTrialList;
 import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.CheckDiscard;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -124,12 +123,9 @@ public class CachedFeatureFlags {
         }
     };
 
-    private static Map<String, Boolean> sBoolValuesReturned = new HashMap<>();
-    private static Map<String, String> sStringValuesReturned = new HashMap<>();
-    private static Map<String, Integer> sIntValuesReturned = new HashMap<>();
-    private static Map<String, Double> sDoubleValuesReturned = new HashMap<>();
-    @CheckDiscard("Validation is performed in tests and in debug builds.")
-    private static Map<String, String> sOverridesTestFeatures;
+    private static ValuesReturned sValuesReturned = new ValuesReturned();
+    private static ValuesOverridden sValuesOverridden = new ValuesOverridden();
+
     private static String sReachedCodeProfilerTrialGroup;
 
     /**
@@ -159,7 +155,7 @@ public class CachedFeatureFlags {
 
         String preferenceName = getPrefForFeatureFlag(featureName);
 
-        Boolean flag = sBoolValuesReturned.get(preferenceName);
+        Boolean flag = sValuesReturned.boolMap().get(preferenceName);
         if (flag != null) {
             return flag;
         }
@@ -170,7 +166,7 @@ public class CachedFeatureFlags {
         } else {
             flag = sDefaults.get(featureName);
         }
-        sBoolValuesReturned.put(preferenceName, flag);
+        sValuesReturned.boolMap().put(preferenceName, flag);
         return flag;
     }
 
@@ -194,7 +190,7 @@ public class CachedFeatureFlags {
      */
     public static void setForTesting(String featureName, @Nullable Boolean value) {
         String preferenceName = getPrefForFeatureFlag(featureName);
-        sBoolValuesReturned.put(preferenceName, value);
+        sValuesReturned.boolMap().put(preferenceName, value);
     }
 
     /**
@@ -204,11 +200,7 @@ public class CachedFeatureFlags {
     public static void setFeaturesForTesting(Map<String, Boolean> features) {
         assert features != null;
 
-        // Do not overwrite if there are already existing overridden features in
-        // sOverridesTestFeatures.
-        if (sOverridesTestFeatures == null) {
-            sOverridesTestFeatures = new HashMap<>();
-        }
+        sValuesOverridden.enableOverrides();
 
         for (Map.Entry<String, Boolean> entry : features.entrySet()) {
             String key = entry.getKey();
@@ -219,15 +211,6 @@ public class CachedFeatureFlags {
 
             setForTesting(key, entry.getValue());
         }
-    }
-
-    @VisibleForTesting
-    public static void setOverrideTestValue(String preferenceKey, String overrideValue) {
-        if (sOverridesTestFeatures == null) {
-            sOverridesTestFeatures = new HashMap<>();
-        }
-
-        sOverridesTestFeatures.put(preferenceKey, overrideValue);
     }
 
     /**
@@ -334,69 +317,53 @@ public class CachedFeatureFlags {
     }
 
     static boolean getConsistentBooleanValue(String preferenceName, boolean defaultValue) {
-        if (sOverridesTestFeatures != null) {
-            String value = sOverridesTestFeatures.get(preferenceName);
-            if (value != null) {
-                return Boolean.valueOf(value);
-            }
-            return defaultValue;
+        if (sValuesOverridden.isEnabled()) {
+            return sValuesOverridden.getBool(preferenceName, defaultValue);
         }
 
-        Boolean flag = sBoolValuesReturned.get(preferenceName);
+        Boolean flag = sValuesReturned.boolMap().get(preferenceName);
         if (flag == null) {
             flag = SharedPreferencesManager.getInstance().readBoolean(preferenceName, defaultValue);
-            sBoolValuesReturned.put(preferenceName, flag);
+            sValuesReturned.boolMap().put(preferenceName, flag);
         }
         return flag;
     }
 
     static String getConsistentStringValue(String preferenceName, String defaultValue) {
-        if (sOverridesTestFeatures != null) {
-            String stringValue = sOverridesTestFeatures.get(preferenceName);
-            if (stringValue != null) {
-                return stringValue;
-            }
-            return defaultValue;
+        if (sValuesOverridden.isEnabled()) {
+            return sValuesOverridden.getString(preferenceName, defaultValue);
         }
 
-        String value = sStringValuesReturned.get(preferenceName);
+        String value = sValuesReturned.stringMap().get(preferenceName);
         if (value == null) {
             value = SharedPreferencesManager.getInstance().readString(preferenceName, defaultValue);
-            sStringValuesReturned.put(preferenceName, value);
+            sValuesReturned.stringMap().put(preferenceName, value);
         }
         return value;
     }
 
     static int getConsistentIntValue(String preferenceName, int defaultValue) {
-        if (sOverridesTestFeatures != null) {
-            String stringValue = sOverridesTestFeatures.get(preferenceName);
-            if (stringValue != null) {
-                return Integer.valueOf(stringValue);
-            }
-            return defaultValue;
+        if (sValuesOverridden.isEnabled()) {
+            return sValuesOverridden.getInt(preferenceName, defaultValue);
         }
 
-        Integer value = sIntValuesReturned.get(preferenceName);
+        Integer value = sValuesReturned.intMap().get(preferenceName);
         if (value == null) {
             value = SharedPreferencesManager.getInstance().readInt(preferenceName, defaultValue);
-            sIntValuesReturned.put(preferenceName, value);
+            sValuesReturned.intMap().put(preferenceName, value);
         }
         return value;
     }
 
     static double getConsistentDoubleValue(String preferenceName, double defaultValue) {
-        if (sOverridesTestFeatures != null) {
-            String stringValue = sOverridesTestFeatures.get(preferenceName);
-            if (stringValue != null) {
-                return Double.valueOf(stringValue);
-            }
-            return defaultValue;
+        if (sValuesOverridden.isEnabled()) {
+            return sValuesOverridden.getDouble(preferenceName, defaultValue);
         }
 
-        Double value = sDoubleValuesReturned.get(preferenceName);
+        Double value = sValuesReturned.doubleMap().get(preferenceName);
         if (value == null) {
             value = SharedPreferencesManager.getInstance().readDouble(preferenceName, defaultValue);
-            sDoubleValuesReturned.put(preferenceName, value);
+            sValuesReturned.doubleMap().put(preferenceName, value);
         }
         return value;
     }
@@ -412,13 +379,13 @@ public class CachedFeatureFlags {
 
     @VisibleForTesting
     public static void resetFlagsForTesting() {
-        sBoolValuesReturned.clear();
-        sStringValuesReturned.clear();
-        sIntValuesReturned.clear();
-        sDoubleValuesReturned.clear();
-        if (sOverridesTestFeatures != null) {
-            sOverridesTestFeatures.clear();
-        }
+        sValuesReturned.clear();
+        sValuesOverridden.clear();
+    }
+
+    @VisibleForTesting
+    static void setOverrideTestValue(String preferenceKey, String overrideValue) {
+        sValuesOverridden.setOverrideTestValue(preferenceKey, overrideValue);
     }
 
     @VisibleForTesting
