@@ -499,10 +499,17 @@ public class LibraryLoader {
     }
 
     /**
+     * Checks whether the native library is fully loaded.
+     */
+    public boolean isLoaded() {
+        return mLoadState == LoadState.LOADED;
+    }
+
+    /**
      * Checks whether the native library is fully loaded and initialized.
      */
     public boolean isInitialized() {
-        return mInitialized && mLoadState == LoadState.LOADED;
+        return mInitialized && isLoaded();
     }
 
     /**

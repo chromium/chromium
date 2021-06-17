@@ -54,7 +54,7 @@ public class AwComponentUpdateService extends JobService {
 
         // TODO(http://crbug.com/1179297) look at doing this in a task on a background thread
         // instead of the main thread.
-        if (WebViewApkApplication.initializeNative()) {
+        if (WebViewApkApplication.ensureNativeLoaded()) {
             setUnexpectedExit(true);
             final long startTime = SystemClock.uptimeMillis();
             // TODO(crbug.com/1171817) Once we can log UMA from native, remove the count parameter.

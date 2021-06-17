@@ -48,7 +48,7 @@ public class LicenseContentProvider
     @Override
     public void writeDataToPipe(
             ParcelFileDescriptor output, Uri uri, String mimeType, Bundle opts, String filename) {
-        if (WebViewApkApplication.initializeNative()) {
+        if (WebViewApkApplication.ensureNativeLoaded()) {
             CreditUtilsJni.get().writeCreditsHtml(output.detachFd());
         } else {
             // Missing native library means we're the webview stub and licenses are stored as an
