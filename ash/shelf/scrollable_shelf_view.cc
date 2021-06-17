@@ -1889,8 +1889,14 @@ std::pair<int, int> ScrollableShelfView::CalculateTappableIconIndices(
   } else {
     DCHECK_EQ(layout_strategy, kShowLeftArrowButton);
     last_visible_view_index = visible_views_indices.size() - 1;
+
+    // In fuzz tests, `visible_size` may be smaller than
+    // `space_needed_for_button` although it never happens on real devices.
     first_visible_view_index =
-        last_visible_view_index - visible_size / space_needed_for_button + 1;
+        visible_size >= space_needed_for_button
+            ? last_visible_view_index - visible_size / space_needed_for_button +
+                  1
+            : last_visible_view_index;
   }
 
   DCHECK_GE(first_visible_view_index, 0);
