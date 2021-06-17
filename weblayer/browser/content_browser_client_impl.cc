@@ -714,7 +714,7 @@ bool ContentBrowserClientImpl::CanCreateWindow(
   }
 
   GURL popup_url(target_url);
-  web_contents->GetMainFrame()->GetProcess()->FilterURL(false, &popup_url);
+  opener->GetProcess()->FilterURL(false, &popup_url);
   // Use ui::PAGE_TRANSITION_LINK to match the similar logic in //chrome.
   content::OpenURLParams params(popup_url, referrer, disposition,
                                 ui::PAGE_TRANSITION_LINK,
