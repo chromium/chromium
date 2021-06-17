@@ -3468,9 +3468,7 @@ void NavigationRequest::OnServiceWorkerAccessed(
 network::mojom::WebSandboxFlags NavigationRequest::SandboxFlagsToCommit() {
   DCHECK_GE(state_, WILL_PROCESS_RESPONSE);
   DCHECK(!IsSameDocument());
-  DCHECK(!IsServedFromBackForwardCache());
-  // TODO(https://crbug.com/1181763): Figure out what to do with SandboxFlags in
-  // the Prerender case
+  DCHECK(!IsPageActivation());
   return sandbox_flags_to_commit_.value();
 }
 

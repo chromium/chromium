@@ -329,10 +329,9 @@ ExtensionNavigationThrottle::WillRedirectRequest() {
 
 content::NavigationThrottle::ThrottleCheckResult
 ExtensionNavigationThrottle::WillProcessResponse() {
-  if (navigation_handle()->IsServedFromBackForwardCache() ||
-      (navigation_handle()->SandboxFlagsToCommit() &
+  if ((navigation_handle()->SandboxFlagsToCommit() &
        network::mojom::WebSandboxFlags::kPlugins) ==
-          network::mojom::WebSandboxFlags::kNone) {
+      network::mojom::WebSandboxFlags::kNone) {
     return PROCEED;
   }
 
