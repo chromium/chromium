@@ -426,14 +426,6 @@ void AppsSection::AddPluginVmLoadTimeData(
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_PATHS_INSTRUCTIONS_LOCATE,
           base::UTF8ToUTF16(plugin_vm::kChromeOSBaseDirectoryDisplayText)));
-  html_source->AddBoolean(
-      "showPluginVmCameraPermissions",
-      base::FeatureList::IsEnabled(
-          chromeos::features::kPluginVmShowCameraPermissions));
-  html_source->AddBoolean(
-      "showPluginVmMicrophonePermissions",
-      base::FeatureList::IsEnabled(
-          chromeos::features::kPluginVmShowMicrophonePermissions));
 }
 
 void AppsSection::UpdateAndroidSearchTags() {

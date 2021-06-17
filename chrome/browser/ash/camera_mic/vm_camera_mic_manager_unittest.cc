@@ -8,11 +8,9 @@
 #include <memory>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/vm_camera_mic_constants.h"
 #include "base/bind.h"
 #include "base/containers/flat_map.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/users/mock_user_manager.h"
 #include "chrome/browser/notifications/notification_display_service.h"
@@ -127,8 +125,6 @@ class VmCameraMicManagerTest : public testing::Test {
         testing_profile_.GetProfileUserName(), "id"));
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
         std::move(mock_user_manager));
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kVmCameraMicIndicatorsAndNotifications);
 
     // Inject a fake notification display service.
     fake_display_service_ = static_cast<FakeNotificationDisplayService*>(
@@ -189,7 +185,6 @@ class VmCameraMicManagerTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestingProfile testing_profile_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 
   FakeNotificationDisplayService* fake_display_service_;
   std::unique_ptr<VmCameraMicManager> vm_camera_mic_manager_;

@@ -16,28 +16,6 @@ Polymer({
      */
     app_: Object,
 
-    /**
-     * Whether the camera permissions should be shown.
-     * @private {boolean}
-     */
-    showCameraPermissions_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('showPluginVmCameraPermissions');
-      },
-    },
-
-    /**
-     * Whether the microphone permissions should be shown.
-     * @private {boolean}
-     */
-    showMicrophonePermissions_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('showPluginVmMicrophonePermissions');
-      },
-    },
-
     /** @private {boolean} */
     showDialog_: {
       type: Boolean,

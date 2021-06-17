@@ -333,16 +333,12 @@ void VmPermissionServiceProvider::UpdatePluginVmPermissions(VmInfo* vm) {
   }
 
   const PrefService* prefs = profile->GetPrefs();
-  if (base::FeatureList::IsEnabled(
-          chromeos::features::kPluginVmShowCameraPermissions) &&
-      prefs->GetBoolean(prefs::kVideoCaptureAllowed)) {
+  if (prefs->GetBoolean(prefs::kVideoCaptureAllowed)) {
     vm->permission_to_enabled_map[VmInfo::PermissionCamera] =
         prefs->GetBoolean(plugin_vm::prefs::kPluginVmCameraAllowed);
   }
 
-  if (base::FeatureList::IsEnabled(
-          chromeos::features::kPluginVmShowMicrophonePermissions) &&
-      prefs->GetBoolean(prefs::kAudioCaptureAllowed)) {
+  if (prefs->GetBoolean(prefs::kAudioCaptureAllowed)) {
     vm->permission_to_enabled_map[VmInfo::PermissionMicrophone] =
         prefs->GetBoolean(plugin_vm::prefs::kPluginVmMicAllowed);
   }

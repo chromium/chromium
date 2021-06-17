@@ -4287,16 +4287,6 @@
     "expiry_milestone": 96
   },
   {
-    "name": "pluginvm-show-camera-permissions",
-    "owners": [ "danielng@google.com", "lxj@google.com" ],
-    "expiry_milestone": 93
-  },
-  {
-    "name": "pluginvm-show-microphone-permissions",
-    "owners": [ "dtor", "lxj@google.com" ],
-    "expiry_milestone": 93
-  },
-  {
     "name": "post-quantum-cecpq2",
     "owners": [ "agl" ],
     "expiry_milestone": 100
@@ -5325,11 +5315,6 @@
   {
     "name": "video-tutorials-instant-fetch",
     "owners": [ "shaktisahu"],
-    "expiry_milestone": 93
-  },
-  {
-    "name": "vm-camera-mic-indicators-and-notifications",
-    "owners": [ "lxj", "joelhockey", "timloh" ],
     "expiry_milestone": 93
   },
   {

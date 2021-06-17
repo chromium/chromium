@@ -233,10 +233,6 @@ class VmCameraMicManager::VmInfo : public message_center::NotificationObserver {
 
   void OpenNotification(NotificationType type) const {
     DCHECK_NE(type, kNoNotification);
-    if (!base::FeatureList::IsEnabled(
-            features::kVmCameraMicIndicatorsAndNotifications)) {
-      return;
-    }
 
     const gfx::VectorIcon* source_icon = nullptr;
     int message_id;
@@ -286,10 +282,7 @@ class VmCameraMicManager::VmInfo : public message_center::NotificationObserver {
 
   void CloseNotification(NotificationType type) const {
     DCHECK_NE(type, kNoNotification);
-    if (!base::FeatureList::IsEnabled(
-            features::kVmCameraMicIndicatorsAndNotifications)) {
-      return;
-    }
+
     NotificationDisplayService::GetForProfile(profile_)->Close(
         NotificationHandler::Type::TRANSIENT,
         GetNotificationId(vm_type_, type));

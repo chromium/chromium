@@ -276,10 +276,6 @@ extern const base::Feature kPinSetupForManagedUsers;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kPipRoundedCorners;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kPluginVmFullscreen;
 COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const base::Feature kPluginVmShowCameraPermissions;
-COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const base::Feature kPluginVmShowMicrophonePermissions;
-COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kPreferConstantFrameRate;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kProjector;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kProjectorFeaturePod;
@@ -358,8 +354,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kVirtualKeyboardBorderedKey;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kVirtualKeyboardMultipaste;
-COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const base::Feature kVmCameraMicIndicatorsAndNotifications;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kVmStatusPage;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kWakeOnWifiAllowed;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kWallpaperWebUI;

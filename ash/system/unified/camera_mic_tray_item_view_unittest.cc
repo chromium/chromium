@@ -7,11 +7,9 @@
 #include <memory>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/media_controller.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/test/ash_test_base.h"
-#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -24,8 +22,6 @@ using Type = CameraMicTrayItemView::Type;
 class BaseCameraMicTrayItemViewTest : public AshTestBase {
  public:
   void SetUpWithType(Type type) {
-    scoped_feature_list_.InitAndEnableFeature(
-        chromeos::features::kVmCameraMicIndicatorsAndNotifications);
     AshTestBase::SetUp();
 
     camera_mic_tray_item_view_ =
@@ -42,7 +38,6 @@ class BaseCameraMicTrayItemViewTest : public AshTestBase {
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<CameraMicTrayItemView> camera_mic_tray_item_view_;
 };
 

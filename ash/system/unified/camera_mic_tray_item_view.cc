@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <string>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/media_controller.h"
 #include "ash/public/cpp/vm_camera_mic_constants.h"
 #include "ash/session/session_controller_impl.h"
@@ -82,9 +81,7 @@ const char* CameraMicTrayItemView::GetClassName() const {
 void CameraMicTrayItemView::Update() {
   // Hide for non-primary session because we only show the indicators for VMs
   // for now, and VMs support only the primary session.
-  SetVisible(active_ && is_primary_session_ &&
-             base::FeatureList::IsEnabled(
-                 chromeos::features::kVmCameraMicIndicatorsAndNotifications));
+  SetVisible(active_ && is_primary_session_);
 }
 
 std::u16string CameraMicTrayItemView::GetAccessibleNameString() const {

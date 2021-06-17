@@ -2539,12 +2539,6 @@ extern const char kEnableQuickAnswersV2Description[];
 extern const char kPluginVmFullscreenName[];
 extern const char kPluginVmFullscreenDescription[];
 
-extern const char kPluginVmShowCameraPermissionsName[];
-extern const char kPluginVmShowCameraPermissionsDescription[];
-
-extern const char kPluginVmShowMicrophonePermissionsName[];
-extern const char kPluginVmShowMicrophonePermissionsDescription[];
-
 extern const char kTrimOnFreezeName[];
 extern const char kTrimOnFreezeDescription[];
 
@@ -2861,9 +2855,6 @@ extern const char kVirtualKeyboardDisabledDescription[];
 
 extern const char kVirtualKeyboardMultipasteName[];
 extern const char kVirtualKeyboardMultipasteDescription[];
-
-extern const char kVmCameraMicIndicatorsAndNotificationsName[];
-extern const char kVmCameraMicIndicatorsAndNotificationsDescription[];
 
 extern const char kVmStatusPageName[];
 extern const char kVmStatusPageDescription[];

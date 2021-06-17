@@ -4881,16 +4881,6 @@ const char kPluginVmFullscreenName[] = "Plugin VM Fullscreen";
 const char kPluginVmFullscreenDescription[] =
     "Hides shelf in immersive mode and allows esc hold to exit.";
 
-const char kPluginVmShowCameraPermissionsName[] =
-    "Show Plugin VM camera permissions";
-const char kPluginVmShowCameraPermissionsDescription[] =
-    "Displays camera permissions for Plugin VM in the app settings.";
-
-const char kPluginVmShowMicrophonePermissionsName[] =
-    "Show Plugin VM microphone permissions";
-const char kPluginVmShowMicrophonePermissionsDescription[] =
-    "Displays microphone permissions for Plugin VM in the app settings.";
-
 const char kTetherName[] = "Instant Tethering";
 const char kTetherDescription[] =
     "Enables Instant Tethering. Instant Tethering allows your nearby Google "
@@ -4944,11 +4934,6 @@ const char kVirtualKeyboardDisabledDescription[] =
 const char kVirtualKeyboardMultipasteName[] = "Virtual Keyboard MultiPaste";
 const char kVirtualKeyboardMultipasteDescription[] =
     "Show virtual keyboard with multipaste UI";
-
-const char kVmCameraMicIndicatorsAndNotificationsName[] =
-    "VM camera/mic indicators/notifications";
-const char kVmCameraMicIndicatorsAndNotificationsDescription[] =
-    "Show VM camera/mic indicators/notifications";
 
 const char kVmStatusPageName[] = "VM status page";
 const char kVmStatusPageDescription[] = "Enable VM status page";

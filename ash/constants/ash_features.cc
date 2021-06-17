@@ -734,16 +734,6 @@ const base::Feature kPipRoundedCorners{"PipRoundedCorners",
 const base::Feature kPluginVmFullscreen{"PluginVmFullscreen",
                                         base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Controls whether the camera permissions should be shown in the Plugin
-// VM app settings.
-const base::Feature kPluginVmShowCameraPermissions{
-    "PluginVmShowCameraPermissions", base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Controls whether the microphone permissions should be shown in the Plugin
-// VM app settings.
-const base::Feature kPluginVmShowMicrophonePermissions{
-    "PluginVmShowMicrophonePermissions", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables or disables the preference of using constant frame rate for camera
 // when streaming.
 const base::Feature kPreferConstantFrameRate{"PreferConstantFrameRate",
@@ -959,10 +949,6 @@ const base::Feature kVirtualKeyboardBorderedKey{
 // Enable or disable multipaste feature for virtual keyboard on Chrome OS.
 const base::Feature kVirtualKeyboardMultipaste{
     "VirtualKeyboardMultipaste", base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Enable or disable the camera/mic indicators/notifications for VMs.
-const base::Feature kVmCameraMicIndicatorsAndNotifications{
-    "VmCameraMicIndicatorsAndNotifications", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enable or disable the chrome://vm page
 const base::Feature kVmStatusPage{"VmStatusPage",
