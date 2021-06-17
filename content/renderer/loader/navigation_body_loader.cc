@@ -221,8 +221,7 @@ void NavigationBodyLoader::StartLoadingBody(
       std::move(response_head_), blink::PreviewsTypes::PREVIEWS_OFF);
 
   if (code_cache_host) {
-    code_cache_loader_ =
-        blink::WebCodeCacheLoader::CreateForFrame(code_cache_host);
+    code_cache_loader_ = blink::WebCodeCacheLoader::Create(code_cache_host);
     code_cache_loader_->FetchFromCodeCache(
         blink::mojom::CodeCacheType::kJavascript, original_url_,
         base::BindOnce(&NavigationBodyLoader::CodeCacheReceived,

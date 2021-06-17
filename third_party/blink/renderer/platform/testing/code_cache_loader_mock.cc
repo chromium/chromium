@@ -6,14 +6,6 @@
 
 namespace blink {
 
-void CodeCacheLoaderMock::FetchFromCodeCacheSynchronously(
-    const WebURL& url,
-    base::Time* response_time_out,
-    mojo_base::BigBuffer* buffer_out) {
-  *response_time_out = base::Time();
-  *buffer_out = mojo_base::BigBuffer();
-}
-
 void CodeCacheLoaderMock::FetchFromCodeCache(
     blink::mojom::CodeCacheType cache_type,
     const WebURL& url,

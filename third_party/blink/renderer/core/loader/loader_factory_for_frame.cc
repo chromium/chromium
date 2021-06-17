@@ -143,7 +143,7 @@ LoaderFactoryForFrame::CreateCodeCacheLoader() {
   if (document_loader_->GetCodeCacheHost() == nullptr) {
     return nullptr;
   }
-  return blink::WebCodeCacheLoader::CreateForFrame(
+  return blink::WebCodeCacheLoader::Create(
       document_loader_->GetCodeCacheHost());
 }
 

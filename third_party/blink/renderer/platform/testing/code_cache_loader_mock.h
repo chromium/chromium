@@ -20,10 +20,6 @@ class CodeCacheLoaderMock : public WebCodeCacheLoader {
   ~CodeCacheLoaderMock() override = default;
 
   // CodeCacheLoader methods:
-  void FetchFromCodeCacheSynchronously(
-      const WebURL& url,
-      base::Time* response_time_out,
-      mojo_base::BigBuffer* buffer_out) override;
   void FetchFromCodeCache(
       blink::mojom::CodeCacheType cache_type,
       const WebURL& url,

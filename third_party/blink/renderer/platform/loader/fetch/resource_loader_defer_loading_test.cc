@@ -39,10 +39,6 @@ class TestCodeCacheLoader : public WebCodeCacheLoader {
   ~TestCodeCacheLoader() override = default;
 
   // WebCodeCacheLoader methods:
-  void FetchFromCodeCacheSynchronously(
-      const WebURL& url,
-      base::Time* response_time_out,
-      mojo_base::BigBuffer* buffer_out) override {}
   void FetchFromCodeCache(
       blink::mojom::CodeCacheType cache_type,
       const WebURL& url,
