@@ -319,10 +319,9 @@ void PdfViewPluginBase::DocumentHasUnsupportedFeature(
     const std::string& feature) {
   DCHECK(!feature.empty());
   const std::string metric = "PDF_Unsupported_" + feature;
-  if (!unsupported_features_reported_.count(metric)) {
-    unsupported_features_reported_.insert(metric);
+  bool inserted = unsupported_features_reported_.insert(metric).second;
+  if (inserted)
     UserMetricsRecordAction(metric);
-  }
 
   if (!full_frame() || notified_browser_about_unsupported_feature_)
     return;
