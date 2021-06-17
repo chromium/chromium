@@ -5,7 +5,7 @@ QR saves roughly 50% CPU time in exchange for at most a 5% chance of false
 negative.
 
 QR uses a novel regression test selection
-[technique](../testing/regression-test-selection.md) that is more granular than
+[technique](./testing/regression-test-selection.md) that is more granular than
 the conventional build dependency graph technique (see link for more info).
 
 QR may be the home for other aggressive CQ speed improvements in the future.
