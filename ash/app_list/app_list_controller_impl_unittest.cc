@@ -504,9 +504,8 @@ TEST_F(AppListControllerImplTest, MAYBE_CloseNotificationWithAppListShown) {
 // Verifiy that when showing the launcher, the virtual keyboard dismissed before
 // will not show automatically due to the feature called "transient blur" (see
 // https://crbug.com/1057320).
-// Disabled for flaky timeouts. https://crbug.com/1213226
 TEST_F(AppListControllerImplTest,
-       DISABLED_TransientBlurIsNotTriggeredWhenShowingLauncher) {
+       TransientBlurIsNotTriggeredWhenShowingLauncher) {
   // Enable animation.
   ui::ScopedAnimationDurationScaleMode non_zero_duration(
       ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
@@ -540,12 +539,10 @@ TEST_F(AppListControllerImplTest,
   // Tap at the textfield in |window1|. The virtual keyboard should be visible.
   const gfx::Point tap_point = text_field_p->GetBoundsInScreen().CenterPoint();
   GetEventGenerator()->GestureTapAt(tap_point);
-  base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(keyboard::WaitUntilShown());
 
   // Tap at the center of |window2| to hide the virtual keyboard.
   GetEventGenerator()->GestureTapAt(window2->GetBoundsInScreen().CenterPoint());
-  base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(keyboard::WaitUntilHidden());
 
   // Press the home button to show the launcher. Wait for the animation of
