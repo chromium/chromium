@@ -68,7 +68,7 @@ public class FirstRunUtils {
      * Sets the EULA/Terms of Services state as "ACCEPTED".
      * @param allowCrashUpload True if the user allows to upload crash dumps and collect stats.
      */
-    public static void acceptTermsOfService(boolean allowCrashUpload) {
+    static void acceptTermsOfService(boolean allowCrashUpload) {
         UmaSessionStats.changeMetricsReportingConsent(allowCrashUpload);
         SharedPreferencesManager.getInstance().writeBoolean(
                 ChromePreferenceKeys.FIRST_RUN_CACHED_TOS_ACCEPTED, true);
@@ -118,6 +118,7 @@ public class FirstRunUtils {
     /**
      * Sets the preference that signals when the user has accepted the EULA.
      */
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public static void setEulaAccepted() {
         FirstRunUtilsJni.get().setEulaAccepted();
     }
@@ -137,7 +138,7 @@ public class FirstRunUtils {
      *
      * @return The number of ms delay before exiting FRE with policy.
      */
-    public static int getSkipTosExitDelayMs() {
+    static int getSkipTosExitDelayMs() {
         if (sDisableDelayOnExitFreForTest) return 0;
 
         int durationMs = DEFAULT_SKIP_TOS_EXIT_DELAY_MS;

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.firstrun;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 
@@ -15,6 +17,7 @@ public class FirstRunStatus {
     private static boolean sFirstRunTriggered;
 
     /** @param triggered whether the first run flow is triggered in the current browser session. */
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public static void setFirstRunTriggered(boolean triggered) {
         sFirstRunTriggered = triggered;
     }
@@ -28,6 +31,7 @@ public class FirstRunStatus {
      * Sets the "main First Run Experience flow complete" preference.
      * @param isComplete Whether the main First Run Experience flow is complete
      */
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public static void setFirstRunFlowComplete(boolean isComplete) {
         SharedPreferencesManager.getInstance().writeBoolean(
                 ChromePreferenceKeys.FIRST_RUN_FLOW_COMPLETE, isComplete);
@@ -47,6 +51,7 @@ public class FirstRunStatus {
      * Sets the preference to skip the welcome page from the main First Run Experience.
      * @param isSkip Whether the welcome page should be skipped.
      */
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public static void setSkipWelcomePage(boolean isSkip) {
         SharedPreferencesManager.getInstance().writeBoolean(
                 ChromePreferenceKeys.FIRST_RUN_SKIP_WELCOME_PAGE, isSkip);
@@ -64,6 +69,7 @@ public class FirstRunStatus {
      * Sets the "lightweight First Run Experience flow complete" preference.
      * @param isComplete Whether the lightweight First Run Experience flow is complete
      */
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public static void setLightweightFirstRunFlowComplete(boolean isComplete) {
         SharedPreferencesManager.getInstance().writeBoolean(
                 ChromePreferenceKeys.FIRST_RUN_LIGHTWEIGHT_FLOW_COMPLETE, isComplete);
@@ -87,6 +93,7 @@ public class FirstRunStatus {
      *
      * @param isSkipped Whether the lightweight First Run Experience flow is skipped by policy.
      */
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public static void setFirstRunSkippedByPolicy(boolean isSkipped) {
         SharedPreferencesManager.getInstance().writeBoolean(
                 ChromePreferenceKeys.FIRST_RUN_SKIPPED_BY_POLICY, isSkipped);
