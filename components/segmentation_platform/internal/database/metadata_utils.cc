@@ -5,16 +5,10 @@
 #include "components/segmentation_platform/internal/database/metadata_utils.h"
 
 #include "base/notreached.h"
+#include "components/segmentation_platform/internal/segmentation_platform_features.h"
 
 namespace segmentation_platform {
 namespace metadata_utils {
-namespace {
-// Used to determine if the model was executed too recently to run again.
-// TODO(shaktisahu): Make this finch configurable.
-constexpr base::TimeDelta kFreshResultsDurationThreshold =
-    base::TimeDelta::FromHours(24);
-
-}  // namespace
 
 ValidationResult ValidateSegmentInfo(const proto::SegmentInfo& segment_info) {
   if (!segment_info.has_segment_id())
@@ -59,7 +53,7 @@ bool HasFreshResults(const proto::SegmentInfo& segment_info) {
           segment_info.prediction_result().timestamp_us()));
 
   return base::Time::Now() - last_result_timestamp <
-         kFreshResultsDurationThreshold;
+         features::GetMinDelayForModelRerun();
 }
 
 base::TimeDelta GetTimeUnit(

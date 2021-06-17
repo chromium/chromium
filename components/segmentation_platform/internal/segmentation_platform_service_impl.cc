@@ -4,10 +4,19 @@
 
 #include "components/segmentation_platform/internal/segmentation_platform_service_impl.h"
 
+#include "components/prefs/pref_registry_simple.h"
+#include "components/segmentation_platform/internal/constants.h"
+
 namespace segmentation_platform {
 
 SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl() = default;
 
 SegmentationPlatformServiceImpl::~SegmentationPlatformServiceImpl() = default;
+
+// static
+void SegmentationPlatformService::RegisterProfilePrefs(
+    PrefRegistrySimple* registry) {
+  registry->RegisterDictionaryPref(kSegmentationResultPref);
+}
 
 }  // namespace segmentation_platform

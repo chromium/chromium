@@ -8,6 +8,7 @@
 
 #include "base/metrics/metrics_hashes.h"
 #include "components/optimization_guide/proto/models.pb.h"
+#include "components/segmentation_platform/internal/constants.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -112,14 +113,15 @@ void TestSegmentInfoDatabase::AddPredictionResult(OptimizationTarget segment_id,
       timestamp.ToDeltaSinceWindowsEpoch().InMicroseconds());
 }
 
-void TestSegmentInfoDatabase::AddDiscreteMapping(OptimizationTarget segment_id,
-                                                 float mappings[][2],
-                                                 int num_pairs) {
+void TestSegmentInfoDatabase::AddDiscreteMapping(
+    OptimizationTarget segment_id,
+    float mappings[][2],
+    int num_pairs,
+    const std::string& discrete_mapping_key) {
   proto::SegmentInfo* info = FindOrCreateSegment(segment_id);
   auto* discrete_mappings_map =
       info->mutable_model_metadata()->mutable_discrete_mappings();
-  auto& discrete_mappings =
-      (*discrete_mappings_map)[kSegmentationDiscreteMappingKey];
+  auto& discrete_mappings = (*discrete_mappings_map)[discrete_mapping_key];
   for (int i = 0; i < num_pairs; i++) {
     auto* pair = mappings[i];
     auto* entry = discrete_mappings.add_entries();
