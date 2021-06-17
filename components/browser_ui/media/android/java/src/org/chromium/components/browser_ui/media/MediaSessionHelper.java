@@ -10,6 +10,7 @@ import android.graphics.Bitmap;
 import android.media.AudioManager;
 import android.os.Build;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
@@ -212,6 +213,7 @@ public class MediaSessionHelper implements MediaImageCallback {
 
                 mCurrentMetadata = getMetadata();
                 mCurrentMediaImage = getCachedNotificationImage();
+                rebaseMediaPosition(isPaused);
                 mNotificationInfoBuilder =
                         mDelegate.createMediaNotificationInfoBuilder()
                                 .setMetadata(mCurrentMetadata)
@@ -266,6 +268,26 @@ public class MediaSessionHelper implements MediaImageCallback {
             public void mediaSessionPositionChanged(@Nullable MediaPosition position) {
                 mMediaPosition = position;
                 updateNotificationPosition();
+            }
+
+            /**
+             * Adjust `mMediaPosition` so that it's unambiguous about what the current media time
+             * is.  Otherwise, when transitioning into the paused state, the platform won't know to
+             * adjust the time from the `getLastUpdatedTime()`.  This is especially bad since the
+             * playback rate in the MediaPosition and `isPaused` don't always agree immediately;
+             * we can find out about `isPaused` before being told of the final, playback rate = 0,
+             * MediaPosition.  To avoid this, we adjust the MediaPosition based on its current
+             * playback rate, and update the playback rate to zero so that it's unambiguous.
+             */
+            private void rebaseMediaPosition(boolean isPaused) {
+                if (mMediaPosition == null) return;
+
+                long now = SystemClock.elapsedRealtime();
+                long rebased_position = mMediaPosition.getPosition()
+                        + (long) ((now - mMediaPosition.getLastUpdatedTime())
+                                * mMediaPosition.getPlaybackRate());
+                mMediaPosition = new MediaPosition(mMediaPosition.getDuration(), rebased_position,
+                        isPaused ? 0 : mMediaPosition.getPlaybackRate(), now);
             }
         };
     }
