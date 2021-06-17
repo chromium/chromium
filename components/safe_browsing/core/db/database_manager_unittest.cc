@@ -71,7 +71,9 @@ class SafeBrowsingDatabaseManagerTest : public testing::Test {
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_);
 
-    db_manager_ = new TestSafeBrowsingDatabaseManager();
+    db_manager_ = new TestSafeBrowsingDatabaseManager(
+        base::ThreadTaskRunnerHandle::Get(),
+        base::ThreadTaskRunnerHandle::Get());
     db_manager_->StartOnIOThread(test_shared_loader_factory_,
                                  GetTestV4ProtocolConfig());
   }

@@ -5,9 +5,14 @@
 #include "chrome/browser/permissions/crowd_deny_fake_safe_browsing_database_manager.h"
 
 #include "components/safe_browsing/core/db/database_manager.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 
 CrowdDenyFakeSafeBrowsingDatabaseManager::
-    CrowdDenyFakeSafeBrowsingDatabaseManager() = default;
+    CrowdDenyFakeSafeBrowsingDatabaseManager()
+    : safe_browsing::TestSafeBrowsingDatabaseManager(
+          content::GetUIThreadTaskRunner({}),
+          content::GetIOThreadTaskRunner({})) {}
 
 void CrowdDenyFakeSafeBrowsingDatabaseManager::SetSimulatedMetadataForUrl(
     const GURL& url,

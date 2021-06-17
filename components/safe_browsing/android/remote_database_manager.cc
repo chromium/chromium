@@ -17,6 +17,7 @@
 #include "components/safe_browsing/core/db/v4_get_hash_protocol_manager.h"
 #include "components/safe_browsing/core/db/v4_protocol_manager_util.h"
 #include "components/variations/variations_associated_data.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -95,7 +96,9 @@ void RemoteSafeBrowsingDatabaseManager::ClientRequest::OnRequestDone(
 //
 
 // TODO(nparker): Add more tests for this class
-RemoteSafeBrowsingDatabaseManager::RemoteSafeBrowsingDatabaseManager() {
+RemoteSafeBrowsingDatabaseManager::RemoteSafeBrowsingDatabaseManager()
+    : SafeBrowsingDatabaseManager(content::GetUIThreadTaskRunner({}),
+                                  content::GetIOThreadTaskRunner({})) {
   // Avoid memory allocations growing the underlying vector. Although this
   // usually wastes a bit of memory, it will still be less than the default
   // vector allocation strategy.

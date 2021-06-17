@@ -18,11 +18,16 @@
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "components/safe_browsing/core/db/util.h"
 #include "components/safe_browsing/core/db/v4_protocol_manager_util.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 
 namespace extensions {
 
 FakeSafeBrowsingDatabaseManager::FakeSafeBrowsingDatabaseManager(bool enabled)
-    : enabled_(enabled) {}
+    : safe_browsing::TestSafeBrowsingDatabaseManager(
+          content::GetUIThreadTaskRunner({}),
+          content::GetIOThreadTaskRunner({})),
+      enabled_(enabled) {}
 
 FakeSafeBrowsingDatabaseManager::~FakeSafeBrowsingDatabaseManager() {
 }

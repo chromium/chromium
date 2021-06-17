@@ -4,11 +4,14 @@
 
 #include "components/safe_browsing/core/db/fake_database_manager.h"
 
-#include "components/safe_browsing/core/common/thread_utils.h"
-
 namespace safe_browsing {
 
-FakeSafeBrowsingDatabaseManager::FakeSafeBrowsingDatabaseManager() = default;
+FakeSafeBrowsingDatabaseManager::FakeSafeBrowsingDatabaseManager(
+    scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
+    scoped_refptr<base::SequencedTaskRunner> io_task_runner)
+    : TestSafeBrowsingDatabaseManager(std::move(ui_task_runner),
+                                      std::move(io_task_runner)) {}
+
 FakeSafeBrowsingDatabaseManager::~FakeSafeBrowsingDatabaseManager() = default;
 
 void FakeSafeBrowsingDatabaseManager::AddDangerousUrl(
@@ -43,11 +46,10 @@ bool FakeSafeBrowsingDatabaseManager::CheckBrowseUrl(
   if (result_threat_type == SB_THREAT_TYPE_SAFE)
     return true;
 
-  GetTaskRunner(ThreadID::IO)
-      ->PostTask(
-          FROM_HERE,
-          base::BindOnce(&FakeSafeBrowsingDatabaseManager::CheckBrowseURLAsync,
-                         url, result_threat_type, client));
+  io_task_runner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&FakeSafeBrowsingDatabaseManager::CheckBrowseURLAsync, url,
+                     result_threat_type, client));
   return false;
 }
 

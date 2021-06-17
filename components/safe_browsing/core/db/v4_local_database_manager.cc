@@ -24,7 +24,6 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "components/safe_browsing/core/common/thread_utils.h"
 #include "components/safe_browsing/core/db/v4_protocol_manager_util.h"
 #include "crypto/sha2.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -322,9 +321,12 @@ const V4LocalDatabaseManager*
 // static
 scoped_refptr<V4LocalDatabaseManager> V4LocalDatabaseManager::Create(
     const base::FilePath& base_path,
+    scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
+    scoped_refptr<base::SequencedTaskRunner> io_task_runner,
     ExtendedReportingLevelCallback extended_reporting_level_callback) {
   return base::WrapRefCounted(new V4LocalDatabaseManager(
-      base_path, extended_reporting_level_callback, nullptr));
+      base_path, extended_reporting_level_callback, std::move(ui_task_runner),
+      std::move(io_task_runner), nullptr));
 }
 
 void V4LocalDatabaseManager::CollectDatabaseManagerInfo(
@@ -347,8 +349,12 @@ void V4LocalDatabaseManager::CollectDatabaseManagerInfo(
 V4LocalDatabaseManager::V4LocalDatabaseManager(
     const base::FilePath& base_path,
     ExtendedReportingLevelCallback extended_reporting_level_callback,
+    scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
+    scoped_refptr<base::SequencedTaskRunner> io_task_runner,
     scoped_refptr<base::SequencedTaskRunner> task_runner_for_tests)
-    : base_path_(base_path),
+    : SafeBrowsingDatabaseManager(std::move(ui_task_runner),
+                                  std::move(io_task_runner)),
+      base_path_(base_path),
       extended_reporting_level_callback_(extended_reporting_level_callback),
       list_infos_(GetListInfos()),
       task_runner_(task_runner_for_tests
@@ -356,7 +362,7 @@ V4LocalDatabaseManager::V4LocalDatabaseManager(
                        : base::ThreadPool::CreateSequencedTaskRunner(
                              {base::MayBlock(),
                               base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {
-  DCHECK(CurrentlyOnThread(ThreadID::UI));
+  DCHECK(this->ui_task_runner()->RunsTasksInCurrentSequence());
 
   task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&RenameOldStoreFiles, list_infos_, base_path_));
@@ -374,7 +380,7 @@ V4LocalDatabaseManager::~V4LocalDatabaseManager() {
 //
 
 void V4LocalDatabaseManager::CancelCheck(Client* client) {
-  DCHECK(CurrentlyOnThread(ThreadID::IO));
+  DCHECK(io_task_runner()->RunsTasksInCurrentSequence());
   DCHECK(enabled_);
 
   auto pending_it = std::find_if(
@@ -412,7 +418,7 @@ bool V4LocalDatabaseManager::ChecksAreAlwaysAsync() const {
 bool V4LocalDatabaseManager::CheckBrowseUrl(const GURL& url,
                                             const SBThreatTypeSet& threat_types,
                                             Client* client) {
-  DCHECK(CurrentlyOnThread(ThreadID::IO));
+  DCHECK(io_task_runner()->RunsTasksInCurrentSequence());
   DCHECK(!threat_types.empty());
   DCHECK(SBThreatTypeSetIsValidForCheckBrowseUrl(threat_types));
 
@@ -436,7 +442,7 @@ bool V4LocalDatabaseManager::CheckBrowseUrl(const GURL& url,
 bool V4LocalDatabaseManager::CheckDownloadUrl(
     const std::vector<GURL>& url_chain,
     Client* client) {
-  DCHECK(CurrentlyOnThread(ThreadID::IO));
+  DCHECK(io_task_runner()->RunsTasksInCurrentSequence());
 
   if (!enabled_ || url_chain.empty()) {
     return true;
@@ -452,7 +458,7 @@ bool V4LocalDatabaseManager::CheckDownloadUrl(
 bool V4LocalDatabaseManager::CheckExtensionIDs(
     const std::set<FullHash>& extension_ids,
     Client* client) {
-  DCHECK(CurrentlyOnThread(ThreadID::IO));
+  DCHECK(io_task_runner()->RunsTasksInCurrentSequence());
 
   if (!enabled_) {
     return true;
@@ -466,7 +472,7 @@ bool V4LocalDatabaseManager::CheckExtensionIDs(
 }
 
 bool V4LocalDatabaseManager::CheckResourceUrl(const GURL& url, Client* client) {
-  DCHECK(CurrentlyOnThread(ThreadID::IO));
+  DCHECK(io_task_runner()->RunsTasksInCurrentSequence());
 
   StoresToCheck stores_to_check({GetChromeUrlClientIncidentId()});
 
@@ -489,7 +495,7 @@ bool V4LocalDatabaseManager::CheckResourceUrl(const GURL& url, Client* client) {
 AsyncMatch V4LocalDatabaseManager::CheckUrlForHighConfidenceAllowlist(
     const GURL& url,
     Client* client) {
-  DCHECK(CurrentlyOnThread(ThreadID::IO));
+  DCHECK(io_task_runner()->RunsTasksInCurrentSequence());
 
   StoresToCheck stores_to_check({GetUrlHighConfidenceAllowlistId()});
   bool all_stores_available = AreAllStoresAvailableNow(stores_to_check);
@@ -522,7 +528,7 @@ AsyncMatch V4LocalDatabaseManager::CheckUrlForHighConfidenceAllowlist(
 
 bool V4LocalDatabaseManager::CheckUrlForSubresourceFilter(const GURL& url,
                                                           Client* client) {
-  DCHECK(CurrentlyOnThread(ThreadID::IO));
+  DCHECK(io_task_runner()->RunsTasksInCurrentSequence());
 
   StoresToCheck stores_to_check(
       {GetUrlSocEngId(), GetUrlSubresourceFilterId()});
@@ -539,7 +545,7 @@ bool V4LocalDatabaseManager::CheckUrlForSubresourceFilter(const GURL& url,
 
 AsyncMatch V4LocalDatabaseManager::CheckCsdAllowlistUrl(const GURL& url,
                                                         Client* client) {
-  DCHECK(CurrentlyOnThread(ThreadID::IO));
+  DCHECK(io_task_runner()->RunsTasksInCurrentSequence());
 
   StoresToCheck stores_to_check({GetUrlCsdAllowlistId()});
   // If any artificial matches are present, consider the allowlist as ready.
@@ -566,7 +572,7 @@ AsyncMatch V4LocalDatabaseManager::CheckCsdAllowlistUrl(const GURL& url,
 
 bool V4LocalDatabaseManager::MatchDownloadAllowlistString(
     const std::string& str) {
-  DCHECK(CurrentlyOnThread(ThreadID::IO));
+  DCHECK(io_task_runner()->RunsTasksInCurrentSequence());
 
   StoresToCheck stores_to_check({GetCertCsdDownloadAllowlistId()});
   if (!AreAllStoresAvailableNow(stores_to_check)) {
@@ -580,7 +586,7 @@ bool V4LocalDatabaseManager::MatchDownloadAllowlistString(
 }
 
 bool V4LocalDatabaseManager::MatchDownloadAllowlistUrl(const GURL& url) {
-  DCHECK(CurrentlyOnThread(ThreadID::IO));
+  DCHECK(io_task_runner()->RunsTasksInCurrentSequence());
 
   StoresToCheck stores_to_check({GetUrlCsdDownloadAllowlistId()});
 
@@ -594,7 +600,7 @@ bool V4LocalDatabaseManager::MatchDownloadAllowlistUrl(const GURL& url) {
 }
 
 bool V4LocalDatabaseManager::MatchMalwareIP(const std::string& ip_address) {
-  DCHECK(CurrentlyOnThread(ThreadID::IO));
+  DCHECK(io_task_runner()->RunsTasksInCurrentSequence());
   if (!enabled_ || !v4_database_) {
     return false;
   }
@@ -638,7 +644,7 @@ void V4LocalDatabaseManager::StartOnIOThread(
 }
 
 void V4LocalDatabaseManager::StopOnIOThread(bool shutdown) {
-  DCHECK(CurrentlyOnThread(ThreadID::IO));
+  DCHECK(io_task_runner()->RunsTasksInCurrentSequence());
 
   enabled_ = false;
 
@@ -668,7 +674,7 @@ void V4LocalDatabaseManager::StopOnIOThread(bool shutdown) {
 
 void V4LocalDatabaseManager::DatabaseReadyForChecks(
     std::unique_ptr<V4Database> v4_database) {
-  DCHECK(CurrentlyOnThread(ThreadID::IO));
+  DCHECK(io_task_runner()->RunsTasksInCurrentSequence());
 
   // The following check is needed because it is possible that by the time the
   // database is ready, StopOnIOThread has been called.
@@ -713,12 +719,10 @@ void V4LocalDatabaseManager::DatabaseUpdated() {
     v4_database_->RecordFileSizeHistograms();
     UpdateListClientStates(GetStoreStateMap());
 
-    GetTaskRunner(ThreadID::UI)
-        ->PostTask(
-            FROM_HERE,
-            base::BindOnce(
-                &SafeBrowsingDatabaseManager::NotifyDatabaseUpdateFinished,
-                this));
+    ui_task_runner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &SafeBrowsingDatabaseManager::NotifyDatabaseUpdateFinished, this));
   }
 }
 
@@ -745,7 +749,7 @@ void V4LocalDatabaseManager::GetArtificialPrefixMatches(
 
 bool V4LocalDatabaseManager::GetPrefixMatches(
     const std::unique_ptr<PendingCheck>& check) {
-  DCHECK(CurrentlyOnThread(ThreadID::IO));
+  DCHECK(io_task_runner()->RunsTasksInCurrentSequence());
   DCHECK(enabled_);
 
   check->full_hash_to_store_and_hash_prefixes.clear();
@@ -881,7 +885,7 @@ void V4LocalDatabaseManager::PopulateArtificialDatabase() {
 
 void V4LocalDatabaseManager::ScheduleFullHashCheck(
     std::unique_ptr<PendingCheck> check) {
-  DCHECK(CurrentlyOnThread(ThreadID::IO));
+  DCHECK(io_task_runner()->RunsTasksInCurrentSequence());
 
   // Add check to pending_checks_ before scheduling PerformFullHashCheck so that
   // even if the client calls CancelCheck before PerformFullHashCheck gets
@@ -901,25 +905,23 @@ void V4LocalDatabaseManager::ScheduleFullHashCheck(
         full_hash_infos.emplace_back(entry.first, list_id, next);
       }
     }
-    GetTaskRunner(ThreadID::IO)
-        ->PostTask(FROM_HERE,
-                   base::BindOnce(&V4LocalDatabaseManager::OnFullHashResponse,
+    io_task_runner()->PostTask(
+        FROM_HERE, base::BindOnce(&V4LocalDatabaseManager::OnFullHashResponse,
                                   weak_factory_.GetWeakPtr(), std::move(check),
                                   full_hash_infos));
   } else {
     // Post on the IO thread to enforce async behavior.
-    GetTaskRunner(ThreadID::IO)
-        ->PostTask(
-            FROM_HERE,
-            base::BindOnce(&V4LocalDatabaseManager::PerformFullHashCheck,
-                           weak_factory_.GetWeakPtr(), std::move(check)));
+    io_task_runner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&V4LocalDatabaseManager::PerformFullHashCheck,
+                       weak_factory_.GetWeakPtr(), std::move(check)));
   }
 }
 
 bool V4LocalDatabaseManager::HandleHashSynchronously(
     const FullHash& hash,
     const StoresToCheck& stores_to_check) {
-  DCHECK(CurrentlyOnThread(ThreadID::IO));
+  DCHECK(io_task_runner()->RunsTasksInCurrentSequence());
 
   std::set<FullHash> hashes{hash};
   std::unique_ptr<PendingCheck> check = std::make_unique<PendingCheck>(
@@ -931,7 +933,7 @@ bool V4LocalDatabaseManager::HandleHashSynchronously(
 bool V4LocalDatabaseManager::HandleUrlSynchronously(
     const GURL& url,
     const StoresToCheck& stores_to_check) {
-  DCHECK(CurrentlyOnThread(ThreadID::IO));
+  DCHECK(io_task_runner()->RunsTasksInCurrentSequence());
 
   std::unique_ptr<PendingCheck> check = std::make_unique<PendingCheck>(
       nullptr, ClientCallbackType::CHECK_OTHER, stores_to_check,
@@ -943,7 +945,7 @@ bool V4LocalDatabaseManager::HandleUrlSynchronously(
 void V4LocalDatabaseManager::OnFullHashResponse(
     std::unique_ptr<PendingCheck> check,
     const std::vector<FullHashInfo>& full_hash_infos) {
-  DCHECK(CurrentlyOnThread(ThreadID::IO));
+  DCHECK(io_task_runner()->RunsTasksInCurrentSequence());
 
   if (!enabled_) {
     DCHECK(pending_checks_.empty());
@@ -967,7 +969,7 @@ void V4LocalDatabaseManager::OnFullHashResponse(
 
 void V4LocalDatabaseManager::PerformFullHashCheck(
     std::unique_ptr<PendingCheck> check) {
-  DCHECK(CurrentlyOnThread(ThreadID::IO));
+  DCHECK(io_task_runner()->RunsTasksInCurrentSequence());
 
   DCHECK(enabled_);
   DCHECK(!check->full_hash_to_store_and_hash_prefixes.empty());
@@ -981,7 +983,7 @@ void V4LocalDatabaseManager::PerformFullHashCheck(
 }
 
 void V4LocalDatabaseManager::ProcessQueuedChecks() {
-  DCHECK(CurrentlyOnThread(ThreadID::IO));
+  DCHECK(io_task_runner()->RunsTasksInCurrentSequence());
 
   // Steal the queue to protect against reentrant CancelCheck() calls.
   QueuedChecks checks;
@@ -998,7 +1000,7 @@ void V4LocalDatabaseManager::ProcessQueuedChecks() {
 }
 
 void V4LocalDatabaseManager::RespondSafeToQueuedChecks() {
-  DCHECK(CurrentlyOnThread(ThreadID::IO));
+  DCHECK(io_task_runner()->RunsTasksInCurrentSequence());
 
   // Steal the queue to protect against reentrant CancelCheck() calls.
   QueuedChecks checks;
@@ -1073,7 +1075,7 @@ void V4LocalDatabaseManager::RespondToClient(
 void V4LocalDatabaseManager::SetupDatabase() {
   DCHECK(!base_path_.empty());
   DCHECK(!list_infos_.empty());
-  DCHECK(CurrentlyOnThread(ThreadID::IO));
+  DCHECK(io_task_runner()->RunsTasksInCurrentSequence());
 
   // Do not create the database on the IO thread since this may be an expensive
   // operation. Instead, do that on the task_runner and when the new database
@@ -1099,7 +1101,7 @@ void V4LocalDatabaseManager::SetupUpdateProtocolManager(
 
 void V4LocalDatabaseManager::UpdateRequestCompleted(
     std::unique_ptr<ParsedServerResponse> parsed_server_response) {
-  DCHECK(CurrentlyOnThread(ThreadID::IO));
+  DCHECK(io_task_runner()->RunsTasksInCurrentSequence());
   v4_database_->ApplyUpdate(std::move(parsed_server_response),
                             db_updated_callback_);
 }

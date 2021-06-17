@@ -13,6 +13,12 @@
 
 namespace safe_browsing {
 
+TestSafeBrowsingDatabaseManager::TestSafeBrowsingDatabaseManager(
+    scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
+    scoped_refptr<base::SequencedTaskRunner> io_task_runner)
+    : SafeBrowsingDatabaseManager(std::move(ui_task_runner),
+                                  std::move(io_task_runner)) {}
+
 void TestSafeBrowsingDatabaseManager::CancelCheck(Client* client) {
   NOTIMPLEMENTED();
 }

@@ -35,6 +35,8 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
   // allows it; nullptr otherwise.
   static scoped_refptr<V4LocalDatabaseManager> Create(
       const base::FilePath& base_path,
+      scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
+      scoped_refptr<base::SequencedTaskRunner> io_task_runner,
       ExtendedReportingLevelCallback extended_reporting_level_callback);
 
   // Populates the protobuf with the database data.
@@ -102,6 +104,8 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
   V4LocalDatabaseManager(
       const base::FilePath& base_path,
       ExtendedReportingLevelCallback extended_reporting_level_callback,
+      scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
+      scoped_refptr<base::SequencedTaskRunner> io_task_runner,
       scoped_refptr<base::SequencedTaskRunner> task_runner_for_tests);
 
   ~V4LocalDatabaseManager() override;

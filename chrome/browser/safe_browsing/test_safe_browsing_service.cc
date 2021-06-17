@@ -12,6 +12,8 @@
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/core/db/database_manager.h"
 #include "components/safe_browsing/core/db/test_database_manager.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 
 namespace safe_browsing {
 
@@ -114,7 +116,8 @@ bool TestSafeBrowsingService::CanCreateIncidentReportingService() {
 SafeBrowsingDatabaseManager* TestSafeBrowsingService::CreateDatabaseManager() {
   DCHECK(!use_v4_local_db_manager_);
 #if BUILDFLAG(FULL_SAFE_BROWSING)
-  return new TestSafeBrowsingDatabaseManager();
+  return new TestSafeBrowsingDatabaseManager(
+      content::GetUIThreadTaskRunner({}), content::GetIOThreadTaskRunner({}));
 #else
   NOTIMPLEMENTED();
   return nullptr;

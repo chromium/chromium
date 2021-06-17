@@ -37,7 +37,9 @@ MATCHER_P(IsSameThreatSource, threatSource, "") {
 
 class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
  public:
-  MockSafeBrowsingDatabaseManager() = default;
+  MockSafeBrowsingDatabaseManager()
+      : TestSafeBrowsingDatabaseManager(base::ThreadTaskRunnerHandle::Get(),
+                                        base::ThreadTaskRunnerHandle::Get()) {}
   // SafeBrowsingDatabaseManager implementation.
   // Checks the threat type of |gurl| previously set by |SetThreatTypeForUrl|.
   // It crashes if the threat type of |gurl| is not set in advance.

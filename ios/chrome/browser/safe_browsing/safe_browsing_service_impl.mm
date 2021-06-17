@@ -54,7 +54,10 @@ void SafeBrowsingServiceImpl::Initialize(PrefService* prefs,
   base::FilePath safe_browsing_data_path =
       user_data_path.Append(safe_browsing::kSafeBrowsingBaseFilename);
   safe_browsing_db_manager_ = safe_browsing::V4LocalDatabaseManager::Create(
-      safe_browsing_data_path, safe_browsing::ExtendedReportingLevelCallback());
+      safe_browsing_data_path,
+      base::CreateSingleThreadTaskRunner({web::WebThread::UI}),
+      base::CreateSingleThreadTaskRunner({web::WebThread::IO}),
+      safe_browsing::ExtendedReportingLevelCallback());
 
   url_checker_delegate_ =
       base::MakeRefCounted<UrlCheckerDelegateImpl>(safe_browsing_db_manager_);

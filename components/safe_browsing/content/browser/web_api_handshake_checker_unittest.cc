@@ -9,6 +9,8 @@
 #include "components/safe_browsing/core/browser/url_checker_delegate.h"
 #include "components/safe_browsing/core/db/fake_database_manager.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -77,7 +79,8 @@ class FakeUrlCheckerDelegate : public UrlCheckerDelegate {
 class WebApiHandshakeCheckerTest : public testing::Test {
  protected:
   void SetUp() override {
-    database_manager_ = base::MakeRefCounted<FakeSafeBrowsingDatabaseManager>();
+    database_manager_ = base::MakeRefCounted<FakeSafeBrowsingDatabaseManager>(
+        content::GetUIThreadTaskRunner({}), content::GetIOThreadTaskRunner({}));
     delegate_ = base::MakeRefCounted<FakeUrlCheckerDelegate>(database_manager_);
     handshake_checker_ = std::make_unique<WebApiHandshakeChecker>(
         base::BindOnce(&WebApiHandshakeCheckerTest::GetDelegate,

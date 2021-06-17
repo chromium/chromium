@@ -29,7 +29,9 @@ using MockBoolCallback = testing::StrictMock<base::MockCallback<BoolCallback>>;
 namespace {
 class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
  public:
-  MockSafeBrowsingDatabaseManager() {}
+  MockSafeBrowsingDatabaseManager()
+      : TestSafeBrowsingDatabaseManager(base::ThreadTaskRunnerHandle::Get(),
+                                        base::ThreadTaskRunnerHandle::Get()) {}
 
   MOCK_METHOD1(CancelCheck, void(SafeBrowsingDatabaseManager::Client*));
 

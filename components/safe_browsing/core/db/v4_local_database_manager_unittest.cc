@@ -311,6 +311,8 @@ class FakeV4LocalDatabaseManager : public V4LocalDatabaseManager {
       scoped_refptr<base::SequencedTaskRunner> task_runner)
       : V4LocalDatabaseManager(base_path,
                                extended_reporting_level_callback,
+                               base::ThreadTaskRunnerHandle::Get(),
+                               base::ThreadTaskRunnerHandle::Get(),
                                task_runner),
         perform_full_hash_check_called_(false) {}
 
@@ -355,7 +357,9 @@ class V4LocalDatabaseManagerTest : public PlatformTest {
 
     v4_local_database_manager_ =
         base::WrapRefCounted(new V4LocalDatabaseManager(
-            base_dir_.GetPath(), erl_callback_, task_runner_));
+            base_dir_.GetPath(), erl_callback_,
+            base::ThreadTaskRunnerHandle::Get(),
+            base::ThreadTaskRunnerHandle::Get(), task_runner_));
 
     StartLocalDatabaseManager();
   }
@@ -414,7 +418,9 @@ class V4LocalDatabaseManagerTest : public PlatformTest {
     StopLocalDatabaseManager();
     v4_local_database_manager_ =
         base::WrapRefCounted(new V4LocalDatabaseManager(
-            base_dir_.GetPath(), erl_callback_, task_runner_));
+            base_dir_.GetPath(), erl_callback_,
+            base::ThreadTaskRunnerHandle::Get(),
+            base::ThreadTaskRunnerHandle::Get(), task_runner_));
     StartLocalDatabaseManager();
   }
 
