@@ -23,6 +23,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
@@ -32,6 +33,7 @@
 #include "ui/gfx/skia_util.h"
 #include "ui/gfx/text_utils.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/ax_virtual_view.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/focus_ring.h"
@@ -317,9 +319,15 @@ void TableView::ToggleSortOrder(int visible_column_index) {
     if (sort[0].ascending == column.initial_sort_is_ascending) {
       // First toggle inverts the order.
       sort[0].ascending = !sort[0].ascending;
+      GetViewAccessibility().AnnounceText(l10n_util::GetStringFUTF16(
+          sort[0].ascending ? IDS_APP_TABLE_COLUMN_SORTED_ASC_ACCNAME
+                            : IDS_APP_TABLE_COLUMN_SORTED_DESC_ACCNAME,
+          column.title));
     } else {
       // Second toggle clears the sort.
       sort.clear();
+      GetViewAccessibility().AnnounceText(l10n_util::GetStringFUTF16(
+          IDS_APP_TABLE_COLUMN_NOT_SORTED_ACCNAME, column.title));
     }
   } else {
     SortDescriptor descriptor(column.id, column.initial_sort_is_ascending);
@@ -327,6 +335,10 @@ void TableView::ToggleSortOrder(int visible_column_index) {
     // Only persist two sort descriptors.
     if (sort.size() > 2)
       sort.resize(2);
+    GetViewAccessibility().AnnounceText(l10n_util::GetStringFUTF16(
+        sort[0].ascending ? IDS_APP_TABLE_COLUMN_SORTED_ASC_ACCNAME
+                          : IDS_APP_TABLE_COLUMN_SORTED_DESC_ACCNAME,
+        column.title));
   }
   SetSortDescriptors(sort);
 }

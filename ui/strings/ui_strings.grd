@@ -593,6 +593,17 @@ need to be translated for each locale.-->
         Scroll Down
       </message>
 
+      <!-- TableView accessible strings -->
+      <message name="IDS_APP_TABLE_COLUMN_NOT_SORTED_ACCNAME" desc="The text to be announced when specified column becomes unsorted.">
+        Column <ph name="COLUMN_NAME">$1<ex>Column Name</ex></ph> unsorted.
+      </message>
+      <message name="IDS_APP_TABLE_COLUMN_SORTED_ASC_ACCNAME" desc="The text to be announced when specified column is sorted in ascending order.">
+        Column <ph name="COLUMN_NAME">$1<ex>Column Name</ex></ph> sorted in ascending order.
+      </message>
+      <message name="IDS_APP_TABLE_COLUMN_SORTED_DESC_ACCNAME" desc="The text to be announced when specified column is sorted in descending order.">
+        Column <ph name="COLUMN_NAME">$1<ex>Column Name</ex></ph> sorted in descending order.
+      </message>
+
       <!-- Textfield context menu item labels. -->
       <message name="IDS_APP_UNDO" desc="The text label of the Undo menu item">
         &amp;Undo
