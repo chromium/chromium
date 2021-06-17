@@ -56,20 +56,19 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
     private EmptyTabObserver mDataReductionProxyContextMenuTabObserver;
     private final Supplier<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
     private final Runnable mContextMenuCopyLinkObserver;
-    private final Supplier<SnackbarManager> mSnackbarManagerSupplier;
+    private final Supplier<SnackbarManager> mSnackbarManager;
 
     /**
      * Builds a {@link TabContextMenuItemDelegate} instance.
      */
     public TabContextMenuItemDelegate(Tab tab, TabModelSelector tabModelSelector,
             Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
-            Runnable contextMenuCopyLinkObserver,
-            Supplier<SnackbarManager> snackbarManagerSupplier) {
+            Runnable contextMenuCopyLinkObserver, Supplier<SnackbarManager> snackbarManager) {
         mTab = (TabImpl) tab;
         mTabModelSelector = tabModelSelector;
         mEphemeralTabCoordinatorSupplier = ephemeralTabCoordinatorSupplier;
         mContextMenuCopyLinkObserver = contextMenuCopyLinkObserver;
-        mSnackbarManagerSupplier = snackbarManagerSupplier;
+        mSnackbarManager = snackbarManager;
 
         mDataReductionProxyContextMenuTabObserver = new EmptyTabObserver() {
             @Override
@@ -287,7 +286,7 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
         bookmarkModel.finishLoadingBookmarkModel(() -> {
             // Add to reading list.
             BookmarkUtils.addToReadingList(
-                    url, title, mSnackbarManagerSupplier.get(), bookmarkModel, mTab.getContext());
+                    url, title, mSnackbarManager.get(), bookmarkModel, mTab.getContext());
             TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile())
                     .notifyEvent(EventConstants.READ_LATER_CONTEXT_MENU_TAPPED);
             bookmarkModel.destroy();

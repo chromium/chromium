@@ -14,7 +14,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.SysUtils;
 import org.chromium.base.TraceEvent;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.ServiceTabLauncher;
@@ -83,15 +82,15 @@ public class ChromeTabCreator extends TabCreator {
     @Nullable
     private final OverviewNTPCreator mOverviewNTPCreator;
     private final AsyncTabParamsManager mAsyncTabParamsManager;
-    private final ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
-    private final ObservableSupplier<CompositorViewHolder> mCompositorViewHolderSupplier;
+    private final Supplier<TabModelSelector> mTabModelSelectorSupplier;
+    private final Supplier<CompositorViewHolder> mCompositorViewHolderSupplier;
 
     public ChromeTabCreator(Activity activity, WindowAndroid nativeWindow,
             StartupTabPreloader startupTabPreloader,
             Supplier<TabDelegateFactory> tabDelegateFactory, boolean incognito,
             OverviewNTPCreator overviewNTPCreator, AsyncTabParamsManager asyncTabParamsManager,
-            ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
-            ObservableSupplier<CompositorViewHolder> compositorViewHolderSupplier) {
+            Supplier<TabModelSelector> tabModelSelectorSupplier,
+            Supplier<CompositorViewHolder> compositorViewHolderSupplier) {
         mActivity = activity;
         mStartupTabPreloader = startupTabPreloader;
         mNativeWindow = nativeWindow;

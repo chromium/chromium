@@ -14,17 +14,18 @@ import android.view.Window;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.browser.trusted.sharing.ShareTarget;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ActivityTabProvider;
+import org.chromium.chrome.browser.ActivityUtils;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.ServiceTabLauncher;
 import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.WebContentsFactory;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingDelegateFactory;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
@@ -55,6 +56,7 @@ import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tabmodel.AsyncTabParams;
 import org.chromium.chrome.browser.tabmodel.AsyncTabParamsManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelInitializer;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
 import org.chromium.chrome.browser.tabmodel.TabReparentingParams;
@@ -63,6 +65,7 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.Referrer;
 import org.chromium.network.mojom.ReferrerPolicy;
+import org.chromium.ui.base.ActivityWindowAndroid;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -91,7 +94,7 @@ public class CustomTabActivityTabController implements InflationObserver {
     }
 
     private final Lazy<CustomTabDelegateFactory> mCustomTabDelegateFactory;
-    private final ChromeActivity<?> mActivity;
+    private final AppCompatActivity mActivity;
     private final CustomTabsConnection mConnection;
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
     private final TabObserverRegistrar mTabObserverRegistrar;
@@ -109,13 +112,15 @@ public class CustomTabActivityTabController implements InflationObserver {
     private final Lazy<CustomTabIncognitoManager> mCustomTabIncognitoManager;
     private final Lazy<AsyncTabParamsManager> mAsyncTabParamsManager;
     private final Supplier<Bundle> mSavedInstanceStateSupplier;
+    private final ActivityWindowAndroid mWindowAndroid;
+    private final TabModelInitializer mTabModelInitializer;
 
     @Nullable
     private final CustomTabsSessionToken mSession;
     private final Intent mIntent;
 
     @Inject
-    public CustomTabActivityTabController(ChromeActivity<?> activity,
+    public CustomTabActivityTabController(AppCompatActivity activity,
             Lazy<CustomTabDelegateFactory> customTabDelegateFactory,
             CustomTabsConnection connection, BrowserServicesIntentDataProvider intentDataProvider,
             ActivityTabProvider activityTabProvider, TabObserverRegistrar tabObserverRegistrar,
@@ -128,7 +133,8 @@ public class CustomTabActivityTabController implements InflationObserver {
             ReparentingTaskProvider reparentingTaskProvider,
             Lazy<CustomTabIncognitoManager> customTabIncognitoManager,
             Lazy<AsyncTabParamsManager> asyncTabParamsManager,
-            @Named(SAVED_INSTANCE_SUPPLIER) Supplier<Bundle> savedInstanceStateSupplier) {
+            @Named(SAVED_INSTANCE_SUPPLIER) Supplier<Bundle> savedInstanceStateSupplier,
+            ActivityWindowAndroid windowAndroid, TabModelInitializer tabModelInitializer) {
         mCustomTabDelegateFactory = customTabDelegateFactory;
         mActivity = activity;
         mConnection = connection;
@@ -148,6 +154,8 @@ public class CustomTabActivityTabController implements InflationObserver {
         mCustomTabIncognitoManager = customTabIncognitoManager;
         mAsyncTabParamsManager = asyncTabParamsManager;
         mSavedInstanceStateSupplier = savedInstanceStateSupplier;
+        mWindowAndroid = windowAndroid;
+        mTabModelInitializer = tabModelInitializer;
 
         mSession = mIntentDataProvider.getSession();
         mIntent = mIntentDataProvider.getIntent();
@@ -212,7 +220,7 @@ public class CustomTabActivityTabController implements InflationObserver {
         mActivity.supportRequestWindowFeature(Window.FEATURE_ACTION_MODE_OVERLAY);
 
         if (mSavedInstanceStateSupplier.get() == null && mConnection.hasWarmUpBeenFinished()) {
-            mTabFactory.initializeTabModels();
+            mTabModelInitializer.initializeTabModels();
 
             // Hidden tabs shouldn't be used in incognito, since they are always created with
             // regular profile.
@@ -351,7 +359,7 @@ public class CustomTabActivityTabController implements InflationObserver {
                     (TabReparentingParams) mAsyncTabParamsManager.get().remove(tab.getId());
             mReparentingTaskProvider.get(tab).finish(
                     ReparentingDelegateFactory.createReparentingTaskDelegate(
-                            mCompositorViewHolder.get(), mActivity.getWindowAndroid(),
+                            mCompositorViewHolder.get(), mWindowAndroid,
                             mCustomTabDelegateFactory.get()),
                     (params == null ? null : params.getFinalizeCallback()));
         }
@@ -503,7 +511,8 @@ public class CustomTabActivityTabController implements InflationObserver {
                 // Blink has rendered the page by this point, but we need to wait for the compositor
                 // frame swap to avoid flash of white content.
                 mCompositorViewHolder.get().getCompositorView().surfaceRedrawNeededAsync(() -> {
-                    if (!tab.isInitialized() || mActivity.isActivityFinishingOrDestroyed()) {
+                    if (!tab.isInitialized()
+                            || ActivityUtils.isActivityFinishingOrDestroyed(mActivity)) {
                         return;
                     }
                     tab.getView().setBackgroundResource(0);

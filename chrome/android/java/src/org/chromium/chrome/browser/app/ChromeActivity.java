@@ -163,6 +163,7 @@ import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManagerSupplier;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelInitializer;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorProfileSupplier;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
@@ -247,7 +248,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         implements TabCreatorManager, PolicyChangeListener, ContextualSearchTabPromotionDelegate,
                    SnackbarManageable, SceneChangeObserver,
                    StatusBarColorController.StatusBarColorProvider, AppMenuDelegate, AppMenuBlocker,
-                   MenuOrKeyboardActionController, CompositorViewHolder.Initializer {
+                   MenuOrKeyboardActionController, CompositorViewHolder.Initializer,
+                   TabModelInitializer {
     private C mComponent;
 
     /** Used to access the {@link ShareDelegate} from {@link WindowAndroid}. */
@@ -488,7 +490,9 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                         /* CompositorViewHolder.Initializer */ this,
                         /* ChromeActivityNativeDelegate */ this, getModalDialogManagerSupplier(),
                         getBrowserControlsManager(), this::getSavedInstanceState,
-                        mManualFillingComponentSupplier.get().getBottomInsetSupplier())
+                        mManualFillingComponentSupplier.get().getBottomInsetSupplier(),
+                        getShareDelegateSupplier(), /* tabModelInitializer= */ this,
+                        getActivityType())
                 : overridenCommonsFactory.create(this, mRootUiCoordinator::getBottomSheetController,
                         getTabModelSelectorSupplier(), getBrowserControlsManager(),
                         getBrowserControlsManager(), getBrowserControlsManager(),
@@ -502,7 +506,9 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                         /* CompositorViewHolder.Initializer */ this,
                         /* ChromeActivityNativeDelegate */ this, getModalDialogManagerSupplier(),
                         getBrowserControlsManager(), this::getSavedInstanceState,
-                        mManualFillingComponentSupplier.get().getBottomInsetSupplier());
+                        mManualFillingComponentSupplier.get().getBottomInsetSupplier(),
+                        getShareDelegateSupplier(), /* tabModelInitializer= */ this,
+                        getActivityType());
 
         return createComponent(commonsModule);
     }
@@ -729,11 +735,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         return true;
     }
 
-    /**
-     * Initialize the {@link TabModelSelector}, {@link TabModel}s, and
-     * {@link TabCreator} needed by
-     * this activity.
-     */
+    @Override
     public final void initializeTabModels() {
         if (mTabModelOrchestrator.areTabModelsInitialized()) return;
 

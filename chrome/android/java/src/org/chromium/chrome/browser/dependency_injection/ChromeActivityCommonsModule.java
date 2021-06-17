@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.dependency_injection;
 
 import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.ACTIVITY_CONTEXT;
+import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.ACTIVITY_TYPE;
 import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.DECOR_VIEW;
 import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.IS_PROMOTABLE_TO_TAB_BOOLEAN;
 import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.SAVED_INSTANCE_SUPPLIER;
@@ -14,6 +15,8 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.View;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
@@ -25,13 +28,16 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityMan
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
+import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.init.ChromeActivityNativeDelegate;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.metrics.ActivityTabStartupMetricsTracker;
+import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
+import org.chromium.chrome.browser.tabmodel.TabModelInitializer;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
@@ -80,7 +86,10 @@ public class ChromeActivityCommonsModule {
     private final ChromeActivityNativeDelegate mChromeActivityNativeDelegate;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final Supplier<Bundle> mSavedInstanceStateSupplier;
-    private final ObservableSupplier<Integer> mmAutofillUiBottomInsetSupplier;
+    private final ObservableSupplier<Integer> mAutofillUiBottomInsetSupplier;
+    private final Supplier<ShareDelegate> mShareDelegateSupplier;
+    private final TabModelInitializer mTabModelInitializer;
+    private final @ActivityType int mActivityType;
 
     /** See {@link ModuleFactoryOverrides} */
     public interface Factory {
@@ -108,7 +117,9 @@ public class ChromeActivityCommonsModule {
                 Supplier<ModalDialogManager> modalDialogManagerSupplier,
                 BrowserControlsStateProvider browserControlsStateProvider,
                 Supplier<Bundle> savedInstanceStateSupplier,
-                ObservableSupplier<Integer> autofillUiBottomInsetSupplier);
+                ObservableSupplier<Integer> autofillUiBottomInsetSupplier,
+                Supplier<ShareDelegate> shareDelegateSupplier,
+                TabModelInitializer tabModelInitializer, @ActivityType int activityType);
     }
 
     public ChromeActivityCommonsModule(ChromeActivity activity,
@@ -135,7 +146,9 @@ public class ChromeActivityCommonsModule {
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
             BrowserControlsStateProvider browserControlsStateProvider,
             Supplier<Bundle> savedInstanceStateSupplier,
-            ObservableSupplier<Integer> autofillUiBottomInsetSupplier) {
+            ObservableSupplier<Integer> autofillUiBottomInsetSupplier,
+            Supplier<ShareDelegate> shareDelegateSupplier, TabModelInitializer tabModelInitializer,
+            @ActivityType int activityType) {
         mActivity = activity;
         mBottomSheetControllerSupplier = bottomSheetControllerSupplier;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
@@ -163,7 +176,10 @@ public class ChromeActivityCommonsModule {
         mChromeActivityNativeDelegate = chromeActivityNativeDelegate;
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mSavedInstanceStateSupplier = savedInstanceStateSupplier;
-        mmAutofillUiBottomInsetSupplier = autofillUiBottomInsetSupplier;
+        mAutofillUiBottomInsetSupplier = autofillUiBottomInsetSupplier;
+        mShareDelegateSupplier = shareDelegateSupplier;
+        mTabModelInitializer = tabModelInitializer;
+        mActivityType = activityType;
     }
 
     @Provides
@@ -226,6 +242,11 @@ public class ChromeActivityCommonsModule {
 
     @Provides
     public Activity provideActivity() {
+        return mActivity;
+    }
+
+    @Provides
+    public AppCompatActivity provideAppCompatActivity() {
         return mActivity;
     }
 
@@ -344,6 +365,22 @@ public class ChromeActivityCommonsModule {
 
     @Provides
     public ObservableSupplier<Integer> provideAutofillUiBottomInsetSupplier() {
-        return mmAutofillUiBottomInsetSupplier;
+        return mAutofillUiBottomInsetSupplier;
+    }
+
+    @Provides
+    public Supplier<ShareDelegate> provideShareDelegateSupplier() {
+        return mShareDelegateSupplier;
+    }
+
+    @Provides
+    public TabModelInitializer provideTabModelInitializer() {
+        return mTabModelInitializer;
+    }
+
+    @Provides
+    @Named(ACTIVITY_TYPE)
+    public @ActivityType int provideActivityType() {
+        return mActivityType;
     }
 }

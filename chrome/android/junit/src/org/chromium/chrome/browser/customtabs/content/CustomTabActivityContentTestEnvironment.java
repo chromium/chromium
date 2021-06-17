@@ -57,6 +57,7 @@ import org.chromium.chrome.browser.tabmodel.AsyncTabCreationParams;
 import org.chromium.chrome.browser.tabmodel.AsyncTabParamsManager;
 import org.chromium.chrome.browser.tabmodel.AsyncTabParamsManagerFactory;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelInitializer;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -104,6 +105,7 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
     @Mock public FullscreenManager fullscreenManager;
     @Mock public StartupTabPreloader startupTabPreloader;
     @Mock public CustomTabIncognitoManager customTabIncognitoManager;
+    @Mock public TabModelInitializer tabModelInitializer;
     // clang-format on
     public AsyncTabParamsManager realAsyncTabParamsManager =
             AsyncTabParamsManagerFactory.createAsyncTabParamsManager();
@@ -165,7 +167,8 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
                 tabPersistencePolicy, tabFactory, () -> customTabObserver, webContentsFactory,
                 navigationEventObserver, tabProvider, startupTabPreloader, reparentingTaskProvider,
                 () -> customTabIncognitoManager, () -> realAsyncTabParamsManager,
-                () -> activity.getSavedInstanceState());
+                () -> activity.getSavedInstanceState(), activity.getWindowAndroid(),
+                tabModelInitializer);
     }
     // clang-format on
 

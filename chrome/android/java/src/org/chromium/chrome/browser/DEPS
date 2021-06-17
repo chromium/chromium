@@ -32,15 +32,6 @@ specific_include_rules = {
   "BaseCustomTabRootUiCoordinator\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
-  "CustomTabDelegateFactory\.java": [
-    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
-  ],
-  "CustomTabActivityTabController\.java": [
-    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
-  ],
-  "CustomTabActivityTabFactory\.java": [
-    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
-  ],
   "ChromeActivityCommonsModule\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
@@ -120,9 +111,6 @@ specific_include_rules = {
     "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
   ],
   "ContextualSearchQuickActionControl\.java": [
-    "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
-  ],
-  "CustomTabDelegateFactory\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
   ],
   "DownloadInfoBarController\.java": [
