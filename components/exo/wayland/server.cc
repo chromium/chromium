@@ -43,6 +43,7 @@
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/stringprintf.h"
 #include "build/chromeos_buildflags.h"
+#include "components/exo/buildflags.h"
 #include "components/exo/display.h"
 #include "components/exo/wayland/serial_tracker.h"
 #include "components/exo/wayland/wayland_display_output.h"
@@ -83,6 +84,11 @@
 #include "components/exo/wayland/zwp_text_input_manager.h"
 #include "components/exo/wayland/zxdg_decoration_manager.h"
 #include "components/exo/wayland/zxdg_shell.h"
+
+#if BUILDFLAG(ENABLE_WESTON_TEST)
+#include <weston-test-server-protocol.h>
+#include "components/exo/wayland/weston_test.h"
+#endif
 #endif
 
 #if defined(USE_OZONE)
@@ -227,6 +233,11 @@ Server::Server(Display* display) : display_(display) {
                    display_, bind_zxdg_decoration_manager);
   wl_global_create(wl_display_.get(), &zcr_extended_drag_v1_interface, 1,
                    display_, bind_extended_drag);
+
+#if BUILDFLAG(ENABLE_WESTON_TEST)
+  wl_global_create(wl_display_.get(), &weston_test_interface,
+                   kWestonTestVersion, display_, bind_weston_test);
+#endif
 
   zcr_keyboard_extension_data_ =
       std::make_unique<WaylandKeyboardExtension>(serial_tracker_.get());

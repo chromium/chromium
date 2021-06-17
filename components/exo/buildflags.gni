@@ -1,0 +1,9 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+declare_args() {
+  # If true, enables weston-test. This is a test-only wayland extension that
+  # enables things like event injection.
+  enable_weston_test = false
+}

@@ -5,6 +5,7 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
+import("//components/exo/buildflags.gni")
 import("//gpu/vulkan/features.gni")
 import("//testing/test.gni")
 import("//ui/base/ui_features.gni")
@@ -66,6 +67,7 @@ source_set("wayland") {
     "//base",
     "//build:chromeos_buildflags",
     "//components/exo",
+    "//components/exo:buildflags",
     "//components/exo/wayland/protocol:aura_shell_protocol",
     "//device/gamepad",
     "//services/viz/privileged/mojom/compositing",
@@ -186,6 +188,14 @@ source_set("wayland") {
     ]
 
     deps += [ "//ui/base/cursor/mojom:cursor_type" ]
+
+    if (enable_weston_test) {
+      deps += [ "//third_party/wayland-protocols:weston_test" ]
+      sources += [
+        "weston_test.cc",
+        "weston_test.h",
+      ]
+    }
   }
 }
 
