@@ -212,12 +212,14 @@ class CONTENT_EXPORT NavigationRequest
           prefetched_signed_exchange_cache,
       std::unique_ptr<WebBundleHandleTracker> web_bundle_handle_tracker);
 
-  // Creates a request at commit time. This should only be used for
-  // renderer-initiated same-document navigations, and navigations whose
-  // original NavigationRequest has been destroyed by race-conditions.
+  // Creates a NavigationRequest for synchronous navigation that have committed
+  // in the renderer process. Those are:
+  // - same-document renderer-initiated navigations.
+  // - synchronous about:blank navigations.
+  //
   // TODO(clamy): Eventually, this should only be called for same-document
   // renderer-initiated navigations.
-  static std::unique_ptr<NavigationRequest> CreateForCommit(
+  static std::unique_ptr<NavigationRequest> CreateForSynchronousRendererCommit(
       FrameTreeNode* frame_tree_node,
       RenderFrameHostImpl* render_frame_host,
       bool is_same_document,

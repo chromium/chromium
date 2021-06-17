@@ -7517,7 +7517,7 @@ void RenderFrameHostImpl::CommitNavigation(
     // need to check the relevant FrameTree to know the precise prerendering
     // state to update commit_params.is_prerendering here.
     // Current design doesn't capture the cases NavigationRequest is created via
-    // CreateRendererInitiated or CreateForCommit.
+    // CreateRendererInitiated or CreateForSynchronousRendererCommit.
     SendCommitNavigation(
         navigation_client, navigation_request, std::move(common_params),
         std::move(commit_params), std::move(head), std::move(response_body),
@@ -9060,7 +9060,7 @@ bool IsInitialEmptyCommit(const GURL& url, bool has_committed_real_load) {
 }
 
 std::unique_ptr<NavigationRequest>
-RenderFrameHostImpl::CreateNavigationRequestForCommit(
+RenderFrameHostImpl::CreateNavigationRequestForSynchronousRendererCommit(
     const GURL& url,
     const url::Origin& origin,
     blink::mojom::ReferrerPtr referrer,
@@ -9134,7 +9134,7 @@ RenderFrameHostImpl::CreateNavigationRequestForCommit(
   // last committed navigation.
   bool is_overriding_user_agent = is_same_document && is_overriding_user_agent_;
 
-  return NavigationRequest::CreateForCommit(
+  return NavigationRequest::CreateForSynchronousRendererCommit(
       frame_tree_node_, this, is_same_document, url, origin, isolation_info,
       std::move(referrer), transition, should_replace_current_entry, method,
       gesture, is_overriding_user_agent, redirects, original_request_url,
@@ -9538,7 +9538,7 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
   // context creation.
   // 2) This was a renderer-initiated same-document navigation.
   // In these cases, we will create a NavigationRequest by calling
-  // CreateNavigationRequestForCommit() further down.
+  // CreateNavigationRequestForSynchronousRendererCommit() further down.
   // TODO(https://crbug.com/1131832): Make these navigation go through a
   // separate path that does not send
   // FrameHostMsg_DidCommitProvisionalLoad_Params at all.
@@ -9609,7 +9609,7 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
 
     // TODO(https://crbug.com/1131832): Do not use |params| to get the values,
     // depend on values known at commit time instead.
-    navigation_request = CreateNavigationRequestForCommit(
+    navigation_request = CreateNavigationRequestForSynchronousRendererCommit(
         params->url, params->origin, params->referrer.Clone(),
         params->transition, params->should_replace_current_entry,
         params->gesture, redirects, params->url, is_same_document_navigation,

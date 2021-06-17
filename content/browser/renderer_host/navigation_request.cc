@@ -1006,7 +1006,8 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
 }
 
 // static
-std::unique_ptr<NavigationRequest> NavigationRequest::CreateForCommit(
+std::unique_ptr<NavigationRequest>
+NavigationRequest::CreateForSynchronousRendererCommit(
     FrameTreeNode* frame_tree_node,
     RenderFrameHostImpl* render_frame_host,
     bool is_same_document,

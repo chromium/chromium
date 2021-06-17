@@ -2593,9 +2593,15 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // happen before it fires (to avoid flakiness).
   void DisableUnloadTimerForTesting();
 
-  // Creates a NavigationRequest to use for commit. This should only be used
-  // when no appropriate NavigationRequest has been found.
-  std::unique_ptr<NavigationRequest> CreateNavigationRequestForCommit(
+  // Creates a NavigationRequest for synchronous navigation that have committed
+  // in the renderer process. Those are:
+  // - same-document renderer-initiated navigations.
+  // - synchronous about:blank navigations.
+  //
+  // TODO(clamy): Eventually, this should only be called for same-document
+  // renderer-initiated navigations.
+  std::unique_ptr<NavigationRequest>
+  CreateNavigationRequestForSynchronousRendererCommit(
       const GURL& url,
       const url::Origin& origin,
       blink::mojom::ReferrerPtr referrer,
