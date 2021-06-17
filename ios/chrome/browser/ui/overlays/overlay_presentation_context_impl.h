@@ -9,6 +9,8 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
+#import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/browser_observer.h"
 #include "ios/chrome/browser/overlays/public/overlay_modality.h"
 #import "ios/chrome/browser/overlays/public/overlay_presentation_context.h"
@@ -161,6 +163,9 @@ class OverlayPresentationContextImpl : public OverlayPresentationContext {
     OverlayPresenter* presenter_ = nullptr;
     // OverlayPresentationContextImpl reference.
     OverlayPresentationContextImpl* presentation_context_ = nullptr;
+    // Scoped observation.
+    base::ScopedObservation<Browser, BrowserObserver> browser_observation_{
+        this};
   };
 
   // Helper object that listens for UI dismissal events.

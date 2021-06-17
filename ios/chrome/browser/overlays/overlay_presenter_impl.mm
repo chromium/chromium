@@ -6,7 +6,6 @@
 
 #include "base/check_op.h"
 #include "base/memory/ptr_util.h"
-#import "ios/chrome/browser/main/browser.h"
 #include "ios/chrome/browser/overlays/public/overlay_callback_manager.h"
 #import "ios/chrome/browser/overlays/public/overlay_presentation_context.h"
 #import "ios/chrome/browser/overlays/public/overlay_presenter_observer.h"
@@ -52,10 +51,8 @@ OverlayPresenterImpl* OverlayPresenterImpl::Container::PresenterForModality(
 
 OverlayPresenterImpl::OverlayPresenterImpl(Browser* browser,
                                            OverlayModality modality)
-    : modality_(modality),
-      web_state_list_(browser->GetWebStateList()),
-      weak_factory_(this) {
-  browser->AddObserver(this);
+    : modality_(modality), web_state_list_(browser->GetWebStateList()) {
+  browser_observation_.Observe(browser);
   DCHECK(web_state_list_);
   web_state_list_->AddObserver(this);
   for (int i = 0; i < web_state_list_->count(); ++i) {
@@ -399,7 +396,7 @@ void OverlayPresenterImpl::BrowserDestroyed(Browser* browser) {
   web_state_list_->RemoveObserver(this);
   web_state_list_ = nullptr;
   removed_request_awaiting_dismissal_ = nullptr;
-  browser->RemoveObserver(this);
+  browser_observation_.Reset();
 }
 
 #pragma mark OverlayRequestQueueImpl::Delegate
