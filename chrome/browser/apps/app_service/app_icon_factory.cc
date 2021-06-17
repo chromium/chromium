@@ -1334,6 +1334,25 @@ gfx::ImageSkia ConvertSquareBitmapsToImageSkia(
     const std::map<SquareSizePx, SkBitmap>& icon_bitmaps,
     IconEffects icon_effects,
     int size_hint_in_dip) {
+  auto image_skia =
+      ConvertIconBitmapsToImageSkia(icon_bitmaps, size_hint_in_dip);
+
+  if (image_skia.isNull()) {
+    return gfx::ImageSkia{};
+  }
+
+  if ((icon_effects & IconEffects::kCrOsStandardMask) &&
+      (icon_effects & IconEffects::kCrOsStandardBackground)) {
+    image_skia = apps::ApplyBackgroundAndMask(image_skia);
+  }
+  return image_skia;
+}
+
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+gfx::ImageSkia ConvertIconBitmapsToImageSkia(
+    const std::map<SquareSizePx, SkBitmap>& icon_bitmaps,
+    int size_hint_in_dip) {
   if (icon_bitmaps.empty()) {
     return gfx::ImageSkia{};
   }
@@ -1376,14 +1395,9 @@ gfx::ImageSkia ConvertSquareBitmapsToImageSkia(
   }
 
   image_skia.EnsureRepsForSupportedScales();
-  if ((icon_effects & IconEffects::kCrOsStandardMask) &&
-      (icon_effects & IconEffects::kCrOsStandardBackground)) {
-    image_skia = apps::ApplyBackgroundAndMask(image_skia);
-  }
+
   return image_skia;
 }
-
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void ApplyIconEffects(IconEffects icon_effects,
                       int size_hint_in_dip,

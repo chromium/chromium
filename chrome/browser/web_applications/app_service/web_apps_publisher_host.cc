@@ -4,11 +4,16 @@
 
 #include "chrome/browser/web_applications/app_service/web_apps_publisher_host.h"
 
+#include <utility>
+
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/one_shot_event.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/app_icon_factory.h"
+#include "chrome/browser/apps/app_service/menu_item_constants.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/components/app_icon_manager.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -166,6 +171,70 @@ void WebAppsPublisherHost::OpenNativeSettings(const std::string& app_id) {
 void WebAppsPublisherHost::SetWindowMode(const std::string& app_id,
                                          apps::mojom::WindowMode window_mode) {
   return publisher_helper().SetWindowMode(app_id, window_mode);
+}
+
+void WebAppsPublisherHost::GetMenuModel(const std::string& app_id,
+                                        GetMenuModelCallback callback) {
+  const WebApp* web_app = GetWebApp(app_id);
+  auto menu_items = crosapi::mojom::MenuItems::New();
+  if (!web_app) {
+    std::move(callback).Run(std::move(menu_items));
+    return;
+  }
+
+  // Read shortcuts menu item icons from disk, if any.
+  if (!web_app->shortcuts_menu_item_infos().empty()) {
+    provider_->icon_manager().ReadAllShortcutsMenuIcons(
+        app_id, base::BindOnce(&WebAppsPublisherHost::OnShortcutsMenuIconsRead,
+                               weak_ptr_factory_.GetWeakPtr(), app_id,
+                               std::move(menu_items), std::move(callback)));
+  } else {
+    std::move(callback).Run(std::move(menu_items));
+  }
+}
+
+void WebAppsPublisherHost::OnShortcutsMenuIconsRead(
+    const std::string& app_id,
+    crosapi::mojom::MenuItemsPtr menu_items,
+    GetMenuModelCallback callback,
+    ShortcutsMenuIconBitmaps shortcuts_menu_icon_bitmaps) {
+  const WebApp* web_app = GetWebApp(app_id);
+  if (!web_app) {
+    std::move(callback).Run(crosapi::mojom::MenuItems::New());
+    return;
+  }
+
+  size_t menu_item_index = 0;
+
+  for (const WebApplicationShortcutsMenuItemInfo& menu_item_info :
+       web_app->shortcuts_menu_item_infos()) {
+    const std::map<SquareSizePx, SkBitmap>* menu_item_icon_bitmaps = nullptr;
+    if (menu_item_index < shortcuts_menu_icon_bitmaps.size()) {
+      // We prefer |MASKABLE| icons, but fall back to icons with purpose |ANY|.
+      menu_item_icon_bitmaps =
+          &shortcuts_menu_icon_bitmaps[menu_item_index].maskable;
+      if (menu_item_icon_bitmaps->empty()) {
+        menu_item_icon_bitmaps =
+            &shortcuts_menu_icon_bitmaps[menu_item_index].any;
+      }
+    }
+
+    gfx::ImageSkia icon;
+    if (menu_item_icon_bitmaps) {
+      icon = apps::ConvertIconBitmapsToImageSkia(
+          *menu_item_icon_bitmaps,
+          /*size_hint_in_dip=*/apps::kAppShortcutIconSizeDip);
+    }
+
+    auto menu_item = crosapi::mojom::MenuItem::New();
+    menu_item->label = base::UTF16ToUTF8(menu_item_info.name);
+    menu_item->image = icon;
+    menu_items->items.push_back(std::move(menu_item));
+
+    ++menu_item_index;
+  }
+
+  std::move(callback).Run(std::move(menu_items));
 }
 
 void WebAppsPublisherHost::OnWebAppInstalled(const AppId& app_id) {

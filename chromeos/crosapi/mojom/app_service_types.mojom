@@ -240,3 +240,17 @@ struct IconValue {
   // Whether this icon data is a placeholder icon.
   bool is_placeholder_icon;
 };
+
+// MenuItems are used to populate context menus.
+[Stable]
+struct MenuItems {
+  array<MenuItem> items@0;
+};
+
+// The context menu model for each app. For web apps currently it's the info
+// for shortcut items.
+[Stable]
+struct MenuItem {
+  string label@0;                      // The string label, may be empty.
+  gfx.mojom.ImageSkia? image@1;        // The image icon, may be null.
+};

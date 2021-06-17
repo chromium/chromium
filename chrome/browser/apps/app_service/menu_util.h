@@ -97,10 +97,6 @@ apps::mojom::MenuType MenuTypeFromString(base::StringPiece menu_type);
 // Returns the browser menu items for the given |menu_type|.
 mojom::MenuItemsPtr CreateBrowserMenuItems(mojom::MenuType menu_type,
                                            const Profile* profile);
-
-// A size of square shortcut menu item icons in the context menu.
-constexpr int kAppShortcutIconSizeDip = 32;
-
 }  // namespace apps
 
 #endif  // CHROME_BROWSER_APPS_APP_SERVICE_MENU_UTIL_H_

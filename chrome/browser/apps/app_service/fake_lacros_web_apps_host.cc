@@ -102,4 +102,9 @@ void FakeLacrosWebAppsHost::UnpauseApp(const std::string& app_id) {
   NOTIMPLEMENTED();
 }
 
+void FakeLacrosWebAppsHost::GetMenuModel(const std::string& app_id,
+                                         GetMenuModelCallback callback) {
+  NOTIMPLEMENTED();
+}
+
 }  // namespace apps

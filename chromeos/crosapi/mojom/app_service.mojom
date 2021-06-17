@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 4
+// Next MinVersion: 5
 
 module crosapi.mojom;
 
@@ -60,4 +60,10 @@ interface AppController {
   // the next time.
   [MinVersion=3]
   UnpauseApp@3(string app_id);
+
+  // Returns the context menu items for an app with |app_id| to show in app
+  // list and shelf. This interface only returns menu items that needs to be
+  // populated in lacros-chrome (e.g. app-specific shortcuts).
+  [MinVersion=4]
+  GetMenuModel@4(string app_id) => (MenuItems menu_items);
 };

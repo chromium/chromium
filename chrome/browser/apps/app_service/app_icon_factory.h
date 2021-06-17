@@ -119,6 +119,10 @@ gfx::ImageSkia ConvertSquareBitmapsToImageSkia(
     int size_hint_in_dip);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+gfx::ImageSkia ConvertIconBitmapsToImageSkia(
+    const std::map<SquareSizePx, SkBitmap>& icon_bitmaps,
+    int size_hint_in_dip);
+
 // Modifies |iv| to apply icon post-processing effects like badging and
 // desaturation to gray.
 void ApplyIconEffects(IconEffects icon_effects,

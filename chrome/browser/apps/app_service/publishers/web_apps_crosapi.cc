@@ -16,6 +16,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/services/app_service/public/cpp/instance_registry.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "extensions/common/constants.h"
 
@@ -43,7 +44,7 @@ std::vector<apps::mojom::CapabilityAccessPtr> CloneCapabilityAccesses(
 
 namespace apps {
 
-WebAppsCrosapi::WebAppsCrosapi(Profile* profile) {
+WebAppsCrosapi::WebAppsCrosapi(Profile* profile) : profile_(profile) {
   // This object may be created when the flag is on or off, but only register
   // the publisher if the flag is on.
   if (base::FeatureList::IsEnabled(features::kWebAppsCrosapi)) {
@@ -111,14 +112,95 @@ void WebAppsCrosapi::GetMenuModel(const std::string& app_id,
                                   apps::mojom::MenuType menu_type,
                                   int64_t display_id,
                                   GetMenuModelCallback callback) {
-  // TODO(crbug.com/1194709): Check if the app is installed.
+  bool is_system_web_app = false;
+  bool can_use_uninstall = true;
+  apps::mojom::WindowMode display_mode;
+  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
 
-  // TODO(crbug.com/1194709): Add menu items, based on
-  // WebAppsChromeOs::GetMenuModel().
+  proxy->AppRegistryCache().ForOneApp(
+      app_id, [&is_system_web_app, &can_use_uninstall,
+               &display_mode](const apps::AppUpdate& update) {
+        if (update.InstallSource() == apps::mojom::InstallSource::kSystem) {
+          is_system_web_app = true;
+          can_use_uninstall = false;
+        } else if (update.InstallSource() ==
+                   apps::mojom::InstallSource::kPolicy) {
+          can_use_uninstall = false;
+        }
+        display_mode = update.WindowMode();
+      });
+
   apps::mojom::MenuItemsPtr menu_items = apps::mojom::MenuItems::New();
 
-  // TODO(crbug.com/1194709): Check if the user can uninstall the web app.
-  AddCommandItem(ash::UNINSTALL, IDS_APP_LIST_UNINSTALL_ITEM, &menu_items);
+  if (!is_system_web_app) {
+    apps::CreateOpenNewSubmenu(menu_type,
+                               display_mode == apps::mojom::WindowMode::kBrowser
+                                   ? IDS_APP_LIST_CONTEXT_MENU_NEW_TAB
+                                   : IDS_APP_LIST_CONTEXT_MENU_NEW_WINDOW,
+                               &menu_items);
+  }
+
+  if (menu_type == apps::mojom::MenuType::kShelf &&
+      !proxy->InstanceRegistry().GetWindows(app_id).empty()) {
+    apps::AddCommandItem(ash::MENU_CLOSE, IDS_SHELF_CONTEXT_MENU_CLOSE,
+                         &menu_items);
+  }
+
+  if (can_use_uninstall) {
+    apps::AddCommandItem(ash::UNINSTALL, IDS_APP_LIST_UNINSTALL_ITEM,
+                         &menu_items);
+  }
+
+  if (!is_system_web_app) {
+    apps::AddCommandItem(ash::SHOW_APP_INFO, IDS_APP_CONTEXT_MENU_SHOW_INFO,
+                         &menu_items);
+  }
+  if (base::FeatureList::IsEnabled(
+          features::kDesktopPWAsAppIconShortcutsMenuUI)) {
+    controller_->GetMenuModel(
+        app_id, base::BindOnce(&WebAppsCrosapi::OnGetMenuModelFromCrosapi,
+                               weak_factory_.GetWeakPtr(), app_id, menu_type,
+                               std::move(menu_items), std::move(callback)));
+  } else {
+    std::move(callback).Run(std::move(menu_items));
+  }
+}
+
+void WebAppsCrosapi::OnGetMenuModelFromCrosapi(
+    const std::string& app_id,
+    apps::mojom::MenuType menu_type,
+    apps::mojom::MenuItemsPtr menu_items,
+    GetMenuModelCallback callback,
+    crosapi::mojom::MenuItemsPtr crosapi_menu_items) {
+  if (crosapi_menu_items->items.empty()) {
+    std::move(callback).Run(std::move(menu_items));
+    return;
+  }
+
+  auto separator_type = ui::DOUBLE_SEPARATOR;
+
+  for (int item_index = 0; item_index < crosapi_menu_items->items.size();
+       item_index++) {
+    const auto& crosapi_menu_item = crosapi_menu_items->items[item_index];
+    apps::AddSeparator(std::exchange(separator_type, ui::PADDED_SEPARATOR),
+                       &menu_items);
+
+    // Uses integer |command_id| to store menu item index.
+    const int command_id = ash::LAUNCH_APP_SHORTCUT_FIRST + item_index;
+    // Passes menu_type argument as shortcut_id to use it in
+    // ExecuteContextMenuCommand().
+    std::string shortcut_id{apps::MenuTypeToString(menu_type)};
+
+    auto& icon_image = crosapi_menu_item->image;
+
+    if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)) {
+      icon_image = apps::ApplyBackgroundAndMask(icon_image);
+    }
+
+    apps::AddShortcutCommandItem(command_id, shortcut_id,
+                                 crosapi_menu_item->label, icon_image,
+                                 &menu_items);
+  }
 
   std::move(callback).Run(std::move(menu_items));
 }

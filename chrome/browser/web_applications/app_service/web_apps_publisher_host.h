@@ -106,6 +106,8 @@ class WebAppsPublisherHost : public crosapi::mojom::AppController,
                  bool report_abuse) override;
   void PauseApp(const std::string& app_id) override;
   void UnpauseApp(const std::string& app_id) override;
+  void GetMenuModel(const std::string& app_id,
+                    GetMenuModelCallback callback) override;
 
   // WebAppPublisherHelper::Delegate:
   void PublishWebApps(std::vector<apps::mojom::AppPtr> apps) override;
@@ -135,6 +137,12 @@ class WebAppsPublisherHost : public crosapi::mojom::AppController,
   void ModifyCapabilityAccess(const std::string& app_id,
                               absl::optional<bool> accessing_camera,
                               absl::optional<bool> accessing_microphone);
+
+  void OnShortcutsMenuIconsRead(
+      const std::string& app_id,
+      crosapi::mojom::MenuItemsPtr menu_items,
+      GetMenuModelCallback callback,
+      ShortcutsMenuIconBitmaps shortcuts_menu_icon_bitmaps);
 
   Profile* const profile_;
   WebAppProvider* const provider_;
