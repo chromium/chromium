@@ -486,4 +486,32 @@ TEST(StringViewTest, DeprecatedEqualIgnoringCase) {
   EXPECT_TRUE(DeprecatedEqualIgnoringCase(kLigatureFFIAndSSSS, kFFIAndSharpSs));
 }
 
+TEST(StringViewTest, NextCodePointOffset) {
+  StringView view8(kChars8);
+  EXPECT_EQ(1u, view8.NextCodePointOffset(0));
+  EXPECT_EQ(2u, view8.NextCodePointOffset(1));
+  EXPECT_EQ(5u, view8.NextCodePointOffset(4));
+
+  StringView view16(u"A\U0001F197X\U0001F232");
+  ASSERT_EQ(6u, view16.length());
+  EXPECT_EQ(1u, view16.NextCodePointOffset(0));
+  EXPECT_EQ(3u, view16.NextCodePointOffset(1));
+  EXPECT_EQ(3u, view16.NextCodePointOffset(2));
+  EXPECT_EQ(4u, view16.NextCodePointOffset(3));
+  EXPECT_EQ(6u, view16.NextCodePointOffset(4));
+
+  const UChar kLead = 0xD800;
+  StringView broken1(&kLead, 1);
+  EXPECT_EQ(1u, broken1.NextCodePointOffset(0));
+
+  const UChar kLeadAndNotTrail[] = {0xD800, 0x20, 0};
+  StringView broken2(kLeadAndNotTrail);
+  EXPECT_EQ(1u, broken2.NextCodePointOffset(0));
+  EXPECT_EQ(2u, broken2.NextCodePointOffset(1));
+
+  const UChar kTrail = 0xDC00;
+  StringView broken3(&kTrail, 1);
+  EXPECT_EQ(1u, broken3.NextCodePointOffset(0));
+}
+
 }  // namespace WTF

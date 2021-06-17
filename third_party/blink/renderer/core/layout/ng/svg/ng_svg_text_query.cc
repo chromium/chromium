@@ -16,18 +16,10 @@ namespace blink {
 
 namespace {
 
-unsigned NextCodePointOffset(StringView string, unsigned offset) {
-  ++offset;
-  if (offset < string.length() && U16_IS_LEAD(string[offset - 1]) &&
-      U16_IS_TRAIL(string[offset]))
-    ++offset;
-  return offset;
-}
-
 unsigned CodePointLength(StringView string) {
   unsigned count = 0;
   for (unsigned text_offset = 0; text_offset < string.length();
-       text_offset = NextCodePointOffset(string, text_offset)) {
+       text_offset = string.NextCodePointOffset(text_offset)) {
     ++count;
   }
   return count;

@@ -366,10 +366,7 @@ void NGSvgTextLayoutAttributesBuilder::Build(
         resolved_.push_back(std::make_pair(addressable_index, data));
       ++addressable_index;
       attr_stack.Advance();
-      i += i + 1 < item.Length() && U16_IS_LEAD(item_string[i]) &&
-                   U16_IS_TRAIL(item_string[i + 1])
-               ? 2
-               : 1;
+      i = item_string.NextCodePointOffset(i);
     }
   }
   if (text_length_stack.size() > 0u) {

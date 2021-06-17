@@ -59,14 +59,6 @@ class ResolvedIterator final {
   unsigned index_ = 0u;
 };
 
-unsigned NextCodePointOffset(StringView string, unsigned offset) {
-  ++offset;
-  if (offset < string.length() && U16_IS_LEAD(string[offset - 1]) &&
-      U16_IS_TRAIL(string[offset]))
-    ++offset;
-  return offset;
-}
-
 }  // anonymous namespace
 
 // See https://svgwg.org/svg2-draft/text.html#TextLayoutAlgorithm
@@ -244,9 +236,9 @@ void NGSvgTextLayoutAlgorithm::SetFlags(
                            item.TextLength());
     // 2.2. Set middle to true if the character at index i is the second or
     // later character that corresponds to a typographic character.
-    for (unsigned text_offset = NextCodePointOffset(item_string, 0);
+    for (unsigned text_offset = item_string.NextCodePointOffset(0);
          text_offset < item_string.length();
-         text_offset = NextCodePointOffset(item_string, text_offset)) {
+         text_offset = item_string.NextCodePointOffset(text_offset)) {
       SvgPerCharacterInfo middle_info;
       middle_info.middle = true;
       middle_info.item_index = info.item_index;

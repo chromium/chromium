@@ -1073,6 +1073,7 @@ const SvgTextChunkOffsets* NGInlineNode::FindSvgTextChunks(
   unsigned last_addressable = 0;
   // Index in a UTF-16 sequence for last_addressable.
   unsigned text_content_offset = 0;
+  StringView ifc_text_view(ifc_text_content);
   for (const auto& char_data : data.svg_node_data_->character_data_list) {
     if (!char_data.second.anchored_chunk)
       continue;
@@ -1081,11 +1082,8 @@ const SvgTextChunkOffsets* NGInlineNode::FindSvgTextChunks(
       continue;
     while (last_addressable < addressable_offset) {
       ++last_addressable;
-      ++text_content_offset;
-      if (text_content_offset < ifc_text_content.length() &&
-          U16_IS_LEAD(ifc_text_content[text_content_offset - 1]) &&
-          U16_IS_TRAIL(ifc_text_content[text_content_offset]))
-        ++text_content_offset;
+      text_content_offset =
+          ifc_text_view.NextCodePointOffset(text_content_offset);
     }
     const auto* unit = mapping->GetLastMappingUnit(text_content_offset);
     auto result = data.svg_node_data_->chunk_offsets.insert(

@@ -135,4 +135,15 @@ StringView StringView::LowerASCIIMaybeUsingBuffer(
                           StackStringViewAllocator(buffer));
 }
 
+unsigned StringView::NextCodePointOffset(unsigned i) const {
+  SECURITY_DCHECK(i < length());
+  if (Is8Bit())
+    return i + 1;
+  const UChar* str = Characters16() + i;
+  ++i;
+  if (i < length() && U16_IS_LEAD(*str++) && U16_IS_TRAIL(*str))
+    ++i;
+  return i;
+}
+
 }  // namespace WTF

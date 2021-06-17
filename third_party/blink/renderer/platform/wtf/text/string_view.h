@@ -193,6 +193,10 @@ class WTF_EXPORT StringView {
     return codepoint;
   }
 
+  // Returns i+2 if a pair of [i] and [i+1] is a valid surrogate pair.
+  // Returns i+1 otherwise.
+  unsigned NextCodePointOffset(unsigned i) const;
+
   const void* Bytes() const { return bytes_; }
 
   // This is not named impl() like String because it has different semantics.
