@@ -97,10 +97,6 @@ class MediaRouterDesktop : public MediaRouterMojoImpl {
   DualMediaSinkService* media_sink_service_;
   base::CallbackListSubscription media_sink_service_subscription_;
 
-  // A flag to ensure that we record the provider version once, during the
-  // initial event page wakeup attempt.
-  bool provider_version_was_recorded_ = false;
-
   // A status object that keeps track of sinks discovered by media sink
   // services.
   MediaSinkServiceStatus media_sink_service_status_;

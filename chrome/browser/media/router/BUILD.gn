@@ -266,7 +266,6 @@ source_set("unittests") {
       "discovery/media_sink_discovery_metrics_unittest.cc",
       "media_router_feature_unittest.cc",
       "mojo/media_router_mojo_impl_unittest.cc",
-      "mojo/media_router_mojo_metrics_unittest.cc",
       "mojo/media_sink_service_status_unittest.cc",
       "providers/cast/app_activity_unittest.cc",
       "providers/cast/cast_activity_manager_unittest.cc",

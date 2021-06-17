@@ -5361,7 +5361,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MediaRouter.Provider.Version" enum="MediaRouteProviderVersion"
-    expires_after="2022-02-01">
+    expires_after="M93">
+  <obsolete>
+    Removed in M93.
+  </obsolete>
   <owner>mfoltz@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -5371,7 +5374,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MediaRouter.Provider.WakeReason"
-    enum="MediaRouteProviderWakeReason" expires_after="2022-02-01">
+    enum="MediaRouteProviderWakeReason" expires_after="M93">
+  <obsolete>
+    Removed in M93.
+  </obsolete>
   <owner>mfoltz@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -5380,7 +5386,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MediaRouter.Provider.Wakeup" enum="MediaRouteProviderWakeup"
-    expires_after="2022-02-01">
+    expires_after="M93">
+  <obsolete>
+    Removed in M93.
+  </obsolete>
   <owner>mfoltz@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
