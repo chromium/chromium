@@ -196,7 +196,7 @@ enum ArcClipboardDragDropEvent {
   kImageDragDropFromArc = 7,
 };
 
-// Next method ID: 10
+// Next method ID: 11
 interface MetricsHost {
   // Reports boot progress events from ARC instance.
   ReportBootProgress@0(array<BootProgressEvent> events,
@@ -229,6 +229,12 @@ interface MetricsHost {
 
   // Reports ANR event.
   [MinVersion=9] ReportAnr@10(Anr anr);
+
+  // Reports System Health upgrade processing time and if any packages were
+  // deleted during the upgrade.
+  [MinVersion=10] ReportArcSystemHealthUpgrade@11(
+    mojo_base.mojom.TimeDelta duration,
+    bool packages_deleted);
 };
 
 // Next method ID: 3

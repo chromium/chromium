@@ -108,6 +108,8 @@ class ArcMetricsService : public KeyedService,
   void ReportArcCorePriAbiMigFailedTries(uint32_t failed_attempts) override;
   void ReportArcCorePriAbiMigDowngradeDelay(base::TimeDelta delay) override;
   void ReportArcCorePriAbiMigBootTime(base::TimeDelta duration) override;
+  void ReportArcSystemHealthUpgrade(base::TimeDelta duration,
+                                    bool packages_deleted) override;
   void ReportClipboardDragDropEvent(
       mojom::ArcClipboardDragDropEvent event_type) override;
   void ReportAnr(mojom::AnrPtr anr) override;

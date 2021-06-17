@@ -397,6 +397,16 @@ void ArcMetricsService::ReportArcCorePriAbiMigBootTime(
                      weak_ptr_factory_.GetWeakPtr(), durationTicks));
 }
 
+void ArcMetricsService::ReportArcSystemHealthUpgrade(base::TimeDelta duration,
+                                                     bool packages_deleted) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  base::UmaHistogramCustomTimes("Arc.SystemHealth.Upgrade.TimeDelta", duration,
+                                kUmaMinTime, kUmaMaxTime, kUmaNumBuckets);
+
+  base::UmaHistogramBoolean("Arc.SystemHealth.Upgrade.PackagesDeleted",
+                            packages_deleted);
+}
+
 void ArcMetricsService::ReportClipboardDragDropEvent(
     mojom::ArcClipboardDragDropEvent event_type) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
