@@ -146,12 +146,12 @@ void AXTreeSourceFlutter::NotifyAccessibilityEvent(
     }
   }
 
+  tree_map_.clear();
+  cached_computed_bounds_.clear();
   if (event_data->node_data_size() > 0) {
-    // Unless there are new nodes, don't clear previous maps so we
+    // Unless there are new nodes, don't clear previous parent map so we
     // can detect reparenting above.
-    tree_map_.clear();
     parent_map_.clear();
-    cached_computed_bounds_.clear();
   }
 
   window_id_ = event_data->window_id();
