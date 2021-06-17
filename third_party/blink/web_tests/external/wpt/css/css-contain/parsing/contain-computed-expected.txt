@@ -1,0 +1,17 @@
+This is a testharness.js-based test.
+PASS Property contain value 'none'
+PASS Property contain value 'strict'
+PASS Property contain value 'content'
+PASS Property contain value 'size'
+PASS Property contain value 'layout'
+PASS Property contain value 'style'
+PASS Property contain value 'paint'
+PASS Property contain value 'size layout'
+PASS Property contain value 'style paint'
+PASS Property contain value 'layout style paint'
+FAIL Property contain value 'size layout style paint' assert_equals: expected "strict" but got "size layout style paint"
+FAIL Property contain value 'size layout paint' assert_equals: expected "size layout paint" but got "strict"
+FAIL Property contain value 'layout paint style' assert_equals: expected "content" but got "layout style paint"
+FAIL Property contain value 'layout paint' assert_equals: expected "layout paint" but got "content"
+Harness: the test ran to completion.
+
