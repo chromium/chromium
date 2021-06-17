@@ -4,13 +4,22 @@
 
 assert(is_chromeos, "Quick Pair protocols (e.g. Fast Pair) are CrOS only")
 
+static_library("feature_status_tracker") {
+  sources = [
+    "base_enabled_provider.cc",
+    "base_enabled_provider.h",
+  ]
+
+  deps = [ "//base" ]
+}
+
 source_set("unit_tests") {
   testonly = true
+  sources = [ "base_enabled_provider_unittest.cc" ]
 
   deps = [
+    ":feature_status_tracker",
     "//base/test:test_support",
-    "//chromeos/components/quick_pair/common:unit_tests",
-    "//chromeos/components/quick_pair/feature_status_tracker:unit_tests",
     "//testing/gtest",
   ]
 }

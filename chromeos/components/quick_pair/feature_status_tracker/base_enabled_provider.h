@@ -1,0 +1,43 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROMEOS_COMPONENTS_QUICK_PAIR_FEATURE_STATUS_TRACKER_BASE_ENABLED_PROVIDER_H_
+#define CHROMEOS_COMPONENTS_QUICK_PAIR_FEATURE_STATUS_TRACKER_BASE_ENABLED_PROVIDER_H_
+
+#include "base/callback.h"
+
+namespace chromeos {
+namespace quick_pair {
+
+// Common Base class to expose whether or not a feature is enabled.
+// Provides a |is_enabled()| method and a callback pattern to observe changes.
+//
+// Subclasses can focus on implementing the logic to determine the state of
+// |is_enabled()|, and this base class provides common functionality for
+// querying and observing that state.
+//
+// Example subclass: BluetoothEnabledProvider - Changes |is_enabled()| based on
+// the Bluetooth state on the device.
+class BaseEnabledProvider {
+ public:
+  BaseEnabledProvider();
+  BaseEnabledProvider(const BaseEnabledProvider&) = delete;
+  BaseEnabledProvider& operator=(const BaseEnabledProvider&) = delete;
+  virtual ~BaseEnabledProvider();
+
+  virtual bool is_enabled();
+  void SetCallback(base::RepeatingCallback<void(bool)> callback);
+
+ protected:
+  void SetEnabledAndInvokeCallback(bool new_value);
+
+ private:
+  bool is_enabled_;
+  base::RepeatingCallback<void(bool)> callback_;
+};
+
+}  // namespace quick_pair
+}  // namespace chromeos
+
+#endif  // CHROMEOS_COMPONENTS_QUICK_PAIR_FEATURE_STATUS_TRACKER_BASE_ENABLED_PROVIDER_H_
