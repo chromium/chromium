@@ -8,7 +8,6 @@
 #include <IOKit/IOKitLib.h>
 
 #include <map>
-#include <string>
 #include <utility>
 
 #include "base/mac/scoped_ionotificationportref.h"

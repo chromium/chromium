@@ -6,7 +6,6 @@
 #define SERVICES_NETWORK_NETWORK_CHANGE_MANAGER_H_
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/component_export.h"

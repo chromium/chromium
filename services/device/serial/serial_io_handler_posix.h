@@ -6,7 +6,6 @@
 #define SERVICES_DEVICE_SERIAL_SERIAL_IO_HANDLER_POSIX_H_
 
 #include <memory>
-#include <string>
 
 #include "base/files/file_descriptor_watcher_posix.h"
 #include "base/macros.h"

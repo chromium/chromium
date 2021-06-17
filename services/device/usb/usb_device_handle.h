@@ -9,7 +9,6 @@
 #include <stdint.h>
 
 #include <map>
-#include <string>
 #include <vector>
 
 #include "base/callback_forward.h"

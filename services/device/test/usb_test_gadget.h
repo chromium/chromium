@@ -6,7 +6,6 @@
 #define SERVICES_DEVICE_TEST_USB_TEST_GADGET_H_
 
 #include <memory>
-#include <string>
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"

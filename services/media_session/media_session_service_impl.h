@@ -6,7 +6,6 @@
 #define SERVICES_MEDIA_SESSION_MEDIA_SESSION_SERVICE_IMPL_H_
 
 #include <memory>
-#include <string>
 
 #include "base/macros.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

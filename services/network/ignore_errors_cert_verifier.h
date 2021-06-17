@@ -6,7 +6,6 @@
 #define SERVICES_NETWORK_IGNORE_ERRORS_CERT_VERIFIER_H_
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/command_line.h"

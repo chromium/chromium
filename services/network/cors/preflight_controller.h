@@ -6,7 +6,6 @@
 #define SERVICES_NETWORK_CORS_PREFLIGHT_CONTROLLER_H_
 
 #include <memory>
-#include <string>
 
 #include "base/callback.h"
 #include "base/component_export.h"

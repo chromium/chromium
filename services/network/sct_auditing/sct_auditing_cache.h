@@ -6,7 +6,6 @@
 #define SERVICES_NETWORK_SCT_AUDITING_SCT_AUDITING_CACHE_H_
 
 #include <map>
-#include <string>
 #include <vector>
 
 #include "base/component_export.h"

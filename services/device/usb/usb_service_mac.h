@@ -9,7 +9,6 @@
 #include <IOKit/IOKitLib.h>
 #include <IOKit/usb/IOUSBLib.h>
 
-#include <string>
 #include <unordered_map>
 
 #include "base/mac/foundation_util.h"

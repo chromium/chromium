@@ -6,7 +6,6 @@
 #define SERVICES_AUDIO_SERVICE_H_
 
 #include <memory>
-#include <string>
 
 #include "base/macros.h"
 #include "base/threading/thread_checker.h"
