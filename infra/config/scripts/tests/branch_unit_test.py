@@ -61,10 +61,11 @@ class BranchUnitTest(unittest.TestCase):
             {
                 "project": "chromium-mMM",
                 "project_title": "Chromium MMM",
-                "is_main": false,
-                "is_lts_branch": false,
                 "ref": "refs/branch-heads/BBBB",
-                "chrome_project": "chrome-mMM"
+                "chrome_project": "chrome-mMM",
+                "branch_types": [
+                    "standard"
+                ]
             }
             """))
 
@@ -81,50 +82,50 @@ class BranchUnitTest(unittest.TestCase):
     self.assertIn("invalid choice: 'foo'", str(caught.exception))
 
   def test_set_type_parse_args(self):
-    args = branch.parse_args(['set-type', '--type', 'lts'])
-    self.assertEqual(args.type, 'lts')
+    args = branch.parse_args(
+        ['set-type', '--type', 'desktop-extended-stable', '--type', 'cros-lts'])
+    self.assertEqual(args.type, ['desktop-extended-stable', 'cros-lts'])
 
-  def test_set_type_standard(self):
+  def test_set_type(self):
     input = textwrap.dedent("""\
         {
             "project": "chromium-mMM",
             "project_title": "Chromium MMM",
-            "is_main": true,
-            "is_lts_branch": true,
             "ref": "refs/branch-heads/AAAA"
         }""")
-    output = branch.set_type(input, 'standard')
+    output = branch.set_type(input, ['desktop-extended-stable', 'cros-lts'])
     self.assertEqual(
         output,
         textwrap.dedent("""\
             {
                 "project": "chromium-mMM",
                 "project_title": "Chromium MMM",
-                "is_main": false,
-                "is_lts_branch": false,
-                "ref": "refs/branch-heads/AAAA"
+                "ref": "refs/branch-heads/AAAA",
+                "branch_types": [
+                    "desktop-extended-stable",
+                    "cros-lts"
+                ]
             }
             """))
 
-  def test_set_type_lts(self):
+  def test_set_type_mapped(self):
     input = textwrap.dedent("""\
         {
             "project": "chromium-mMM",
             "project_title": "Chromium MMM",
-            "is_main": true,
-            "is_lts_branch": false,
             "ref": "refs/branch-heads/AAAA"
         }""")
-    output = branch.set_type(input, 'lts')
+    output = branch.set_type(input, ['lts'])
     self.assertEqual(
         output,
         textwrap.dedent("""\
             {
                 "project": "chromium-mMM",
                 "project_title": "Chromium MMM",
-                "is_main": false,
-                "is_lts_branch": true,
-                "ref": "refs/branch-heads/AAAA"
+                "ref": "refs/branch-heads/AAAA",
+                "branch_types": [
+                    "cros-lts"
+                ]
             }
             """))
 

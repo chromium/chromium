@@ -53,7 +53,8 @@ def parse_args(args=None, *, parser_type=None):
   set_type_parser.add_argument(
       '--type',
       required=True,
-      choices=BRANCH_TYPE_SETTINGS.keys(),
+      choices=BRANCH_TYPES,
+      action='append',
       help='The type of the branch to change the project config to')
 
   args = parser.parse_args(args)
@@ -65,10 +66,9 @@ def initial_settings(milestone, branch):
   settings = dict(
       project=f'chromium-m{milestone}',
       project_title=f'Chromium M{milestone}',
-      is_main=False,
-      is_lts_branch=False,
       ref=f'refs/branch-heads/{branch}',
       chrome_project=f'chrome-m{milestone}',
+      branch_types=['standard'],
   )
 
   return json.dumps(settings, indent=4) + '\n'
@@ -80,25 +80,22 @@ def initialize_cmd(args):
     f.write(settings)
 
 
-BRANCH_TYPE_SETTINGS = {
-    'standard': {
-        'is_main': False,
-        'is_lts_branch': False
-    },
-    'lts': {
-        'is_main': False,
-        'is_lts_branch': True
-    },
+BRANCH_TYPES = ('standard', 'desktop-extended-stable', 'cros-lts', 'lts')
+
+# TODO(gbeaty) Remove this once buildbucket picks up property change for
+# branch-config-verifier
+BRANCH_TYPE_MAPPING = {
+    'lts': 'cros-lts',
 }
 
 
-def set_type(settings_json, branch_type):
-  assert branch_type in BRANCH_TYPE_SETTINGS, (
-      'Unknown branch_type {!r}'.format(branch_type))
+def set_type(settings_json, branch_types):
+  for t in branch_types:
+    assert t in BRANCH_TYPES, 'Unknown branch_type {!r}'.format(t)
 
   settings = json.loads(settings_json)
-  branch_settings = BRANCH_TYPE_SETTINGS[branch_type]
-  settings.update(branch_settings)
+  branch_types = [BRANCH_TYPE_MAPPING.get(t, t) for t in branch_types]
+  settings.update(branch_types=branch_types)
   return json.dumps(settings, indent=4) + '\n'
 
 

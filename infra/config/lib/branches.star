@@ -15,16 +15,22 @@ the category of the branch:
     [`settings.is_main`]
 * STANDARD_BRANCHES - The resource is defined only for the beta and stable
     branches.
-    [`not settings.is_main and not settings.is_lts_branch`]
-* LTS_BRANCHES - The resource is defined only for the long-term support branches
+    [`branch_type.STANDARD in settings.branch_types`]
+* DESKTOP_EXTENDED_STABLE_BRANCHES - The resource is defined only for the
+    desktop extended stable branch.
+    [`branch_type.DESKTOP_EXTENDED_STABLE in settings.branch_types`]
+* CROS_LTS_BRANCHES - The resource is defined only for the long-term support branches
     (LTC and LTR).
-    [`not settings.is_main and settings.is_lts_branch`]
+    [`branch_type.CROS_LTS in settings.branch_types`]
 
 The `branch_selector` argument can also be one of the following constants
 composing multiple categories:
 * STANDARD_MILESTONE - The resource is defined for a branch as it moves through
-    the standad release channels: trunk -> beta -> stable.
-* LTS_MILESTONE - The resource is defined for a branch as it move through the
+    the standard release channels: trunk -> beta -> stable.
+* DESKTOP_EXTENDED_STABLE_MILESTONE - The resource is defined for a branch as it
+    moves through the desktop extended stable release channels:
+    trunk -> beta -> stable -> desktop extended stable
+* CROS_LTS_MILESTONE - The resource is defined for a branch as it move through the
     long-term suport release channels: trunk -> beta -> stable -> LTC -> LTR.
 * ALL_BRANCHES - The resource is defined for all branches and main/trunk.
 * NOT_MAIN - The resource is defined for all branches, but not for main/trunk.
@@ -39,16 +45,17 @@ also accessible via the `branches` struct:
 * exec - Allows for conditionally executing starlark modules.
 """
 
-load("//project.star", "settings")
+load("//project.star", "branch_type", "settings")
 
 def _branch_selector(tag):
     return struct(__branch_selector__ = tag)
 
 MAIN = _branch_selector("MAIN")
 STANDARD_BRANCHES = _branch_selector("STANDARD_BRANCHES")
-LTS_BRANCHES = _branch_selector("LTS_BRANCHES")
+DESKTOP_EXTENDED_STABLE_BRANCHES = _branch_selector("DESKTOP_EXTENDED_STABLE_BRANCHES")
+CROS_LTS_BRANCHES = _branch_selector("CROS_LTS_BRANCHES")
 
-_BRANCH_SELECTORS = (MAIN, STANDARD_BRANCHES, LTS_BRANCHES)
+_BRANCH_SELECTORS = (MAIN, STANDARD_BRANCHES, DESKTOP_EXTENDED_STABLE_BRANCHES, CROS_LTS_BRANCHES)
 
 def _matches(branch_selector):
     """Returns whether `branch_selector` matches the project settings."""
@@ -61,10 +68,13 @@ def _matches(branch_selector):
             if settings.is_main:
                 return True
         elif b == STANDARD_BRANCHES:
-            if not settings.is_main and not settings.is_lts_branch:
+            if branch_type.STANDARD in settings.branch_types:
                 return True
-        elif b == LTS_BRANCHES:
-            if settings.is_lts_branch:
+        elif b == DESKTOP_EXTENDED_STABLE_BRANCHES:
+            if branch_type.DESKTOP_EXTENDED_STABLE in settings.branch_types:
+                return True
+        elif b == CROS_LTS_BRANCHES:
+            if branch_type.CROS_LTS in settings.branch_types:
                 return True
         else:
             fail("elements of branch_selectors must be one of {}, got {!r}"
@@ -98,11 +108,13 @@ branches = struct(
     # Basic branch selectors
     MAIN = MAIN,
     STANDARD_BRANCHES = STANDARD_BRANCHES,
-    LTS_BRANCHES = LTS_BRANCHES,
+    DESKTOP_EXTENDED_STABLE_BRANCHES = DESKTOP_EXTENDED_STABLE_BRANCHES,
+    CROS_LTS_BRANCHES = CROS_LTS_BRANCHES,
 
     # Branch selectors for tracking milestones through release channels
     STANDARD_MILESTONE = [MAIN, STANDARD_BRANCHES],
-    LTS_MILESTONE = [MAIN, STANDARD_BRANCHES, LTS_BRANCHES],
+    DESKTOP_EXTENDED_STABLE_MILESTONE = [MAIN, STANDARD_BRANCHES, DESKTOP_EXTENDED_STABLE_BRANCHES],
+    CROS_LTS_MILESTONE = [MAIN, STANDARD_BRANCHES, CROS_LTS_BRANCHES],
 
     # Branch selectors to apply widely to branches
     ALL_BRANCHES = _BRANCH_SELECTORS,

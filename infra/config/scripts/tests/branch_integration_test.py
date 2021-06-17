@@ -51,10 +51,11 @@ class BranchIntegrationTest(unittest.TestCase):
         {
             "project": "chromium-mXX",
             "project_title": "Chromium MXX",
-            "is_main": false,
-            "is_lts_branch": false,
             "ref": "refs/branch-heads/YYYY",
-            "chrome_project": "chrome-mXX"
+            "chrome_project": "chrome-mXX",
+            "branch_types": [
+                "standard"
+            ]
         }
         """))
 
@@ -73,13 +74,11 @@ class BranchIntegrationTest(unittest.TestCase):
       settings = {
           "project": "chromium-mXX",
           "project_title": "Chromium MXX",
-          "is_main": True,
-          "is_lts_branch": False,
           "ref": "refs/branch-heads/YYYY"
       }
       json.dump(settings, f)
 
-    result = self._execute_branch_py(['set-type', '--type', 'lts'])
+    result = self._execute_branch_py(['set-type', '--type', 'cros-lts'])
     self.assertEqual(result.returncode, 0,
                      (f'subprocess failed\n***COMMAND***\n{result.args}\n'
                       f'***STDERR***\n{result.stderr}\n'))
@@ -92,9 +91,10 @@ class BranchIntegrationTest(unittest.TestCase):
             {
                 "project": "chromium-mXX",
                 "project_title": "Chromium MXX",
-                "is_main": false,
-                "is_lts_branch": true,
-                "ref": "refs/branch-heads/YYYY"
+                "ref": "refs/branch-heads/YYYY",
+                "branch_types": [
+                    "cros-lts"
+                ]
             }
             """))
 
