@@ -505,11 +505,15 @@ SharedImageBackingFactoryGLTexture::CreateSharedImageInternal(
   // reported immediately after allocation/upload and before other GL
   // operations.
   if (use_buffer) {
+    auto buffer_usage = gfx::BufferUsage::SCANOUT;
+    if (usage & SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE)
+      buffer_usage = gfx::BufferUsage::SCANOUT_FRONT_RENDERING;
+
     {
       gl::ScopedProgressReporter scoped_progress_reporter(progress_reporter_);
       image = image_factory_->CreateAnonymousImage(
-          size, format_info.buffer_format, gfx::BufferUsage::SCANOUT,
-          surface_handle, &is_cleared);
+          size, format_info.buffer_format, buffer_usage, surface_handle,
+          &is_cleared);
     }
     // Scanout images have different constraints than GL images and might fail
     // to allocate even if GL images can be created.

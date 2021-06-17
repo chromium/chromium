@@ -1733,15 +1733,22 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
       // the non-GMB CreateSharedImage with gpu::SHARED_IMAGE_USAGE_SCANOUT in
       // order to allocate the GMB service-side and avoid a synchronous
       // round-trip to the browser process here.
+      gfx::BufferUsage buffer_usage = gfx::BufferUsage::SCANOUT;
+      uint32_t additional_usage_flags = gpu::SHARED_IMAGE_USAGE_SCANOUT;
+      if (low_latency_enabled()) {
+        buffer_usage = gfx::BufferUsage::SCANOUT_FRONT_RENDERING;
+        additional_usage_flags = gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
+      }
+
       gpu_memory_buffer = gpu_memory_buffer_manager->CreateGpuMemoryBuffer(
-          gfx::Size(size), buffer_format, gfx::BufferUsage::SCANOUT,
-          gpu::kNullSurfaceHandle, nullptr);
+          gfx::Size(size), buffer_format, buffer_usage, gpu::kNullSurfaceHandle,
+          nullptr);
 
       if (gpu_memory_buffer) {
         back_buffer_mailbox = sii->CreateSharedImage(
             gpu_memory_buffer.get(), gpu_memory_buffer_manager,
             storage_color_space_, origin, kPremul_SkAlphaType,
-            usage | gpu::SHARED_IMAGE_USAGE_SCANOUT);
+            usage | additional_usage_flags);
       }
     }
 

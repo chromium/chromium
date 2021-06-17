@@ -285,6 +285,12 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
 
   bool UsingSwapChain() const { return using_swap_chain_; }
 
+  // Keep track of low latency buffer status.
+  bool low_latency_enabled() const { return low_latency_enabled_; }
+  void set_low_latency_enabled(bool low_latency_enabled) {
+    low_latency_enabled_ = low_latency_enabled;
+  }
+
   // This class helps implement correct semantics for BlitFramebuffer
   // when the DrawingBuffer is using a CHROMIUM image for its backing
   // store and RGB emulation is in use (basically, macOS only).
@@ -563,6 +569,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   const bool premultiplied_alpha_;
   Platform::GraphicsInfo graphics_info_;
   const bool using_swap_chain_;
+  bool low_latency_enabled_ = false;
   bool has_implicit_stencil_buffer_ = false;
 
   // The texture target (2D or RECTANGLE) for our allocations.
