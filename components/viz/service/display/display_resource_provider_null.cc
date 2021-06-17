@@ -4,6 +4,7 @@
 
 #include "components/viz/service/display/display_resource_provider_null.h"
 
+#include <utility>
 #include <vector>
 
 namespace viz {

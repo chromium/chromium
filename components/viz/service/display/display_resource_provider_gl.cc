@@ -4,6 +4,7 @@
 
 #include "components/viz/service/display/display_resource_provider_gl.h"
 
+#include <utility>
 #include <vector>
 
 #include "base/dcheck_is_on.h"

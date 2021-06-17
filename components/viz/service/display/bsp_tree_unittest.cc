@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <utility>
 
 #include "base/containers/circular_deque.h"
 #include "base/cxx17_backports.h"
