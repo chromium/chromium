@@ -575,9 +575,8 @@ def Load(filename):
   Python dictionary in a format that the JSON schema compiler expects to see.
   '''
 
-  f = open(filename, 'r')
-  contents = f.read()
-  f.close()
+  with open(filename, 'rb') as handle:
+    contents = handle.read().decode('utf-8')
 
   return Process(contents, filename)
 
