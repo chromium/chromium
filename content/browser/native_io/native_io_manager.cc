@@ -13,20 +13,20 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
+#include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "content/browser/native_io/native_io_host.h"
 #include "content/browser/native_io/native_io_quota_client.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
-#include "storage/browser/quota/quota_client.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/quota/special_storage_policy.h"
 #include "storage/common/database/database_identifier.h"
 #include "third_party/blink/public/common/native_io/native_io_utils.h"
 #include "third_party/blink/public/mojom/native_io/native_io.mojom.h"
-#include "third_party/blink/public/mojom/quota/quota_types.mojom-shared.h"
+#include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 #include "url/origin.h"
 
 namespace content {
@@ -178,7 +178,7 @@ void NativeIOManager::MaybeDeleteHost(NativeIOHost* host) {
 }
 
 void NativeIOManager::OnDeleteOriginDataCompleted(
-    storage::QuotaClient::DeleteOriginDataCallback callback,
+    storage::mojom::QuotaClient::DeleteOriginDataCallback callback,
     base::File::Error result,
     NativeIOHost* host) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -191,7 +191,7 @@ void NativeIOManager::OnDeleteOriginDataCompleted(
 
 void NativeIOManager::DeleteOriginData(
     const url::Origin& origin,
-    storage::QuotaClient::DeleteOriginDataCallback callback) {
+    storage::mojom::QuotaClient::DeleteOriginDataCallback callback) {
   auto it = hosts_.find(origin);
   if (it == hosts_.end()) {
     // TODO(rstz): Consider turning these checks into DCHECKS when NativeIO is
@@ -234,7 +234,7 @@ void NativeIOManager::DeleteOriginData(
 
 void NativeIOManager::GetOriginsForType(
     blink::mojom::StorageType type,
-    storage::QuotaClient::GetOriginsForTypeCallback callback) {
+    storage::mojom::QuotaClient::GetOriginsForTypeCallback callback) {
   if (type != blink::mojom::StorageType::kTemporary) {
     std::move(callback).Run({});
     return;
@@ -260,7 +260,7 @@ void NativeIOManager::GetOriginsForType(
 void NativeIOManager::GetOriginsForHost(
     blink::mojom::StorageType type,
     const std::string& host,
-    storage::QuotaClient::GetOriginsForHostCallback callback) {
+    storage::mojom::QuotaClient::GetOriginsForHostCallback callback) {
   if (type != blink::mojom::StorageType::kTemporary) {
     std::move(callback).Run({});
     return;
@@ -289,7 +289,7 @@ void NativeIOManager::GetOriginsForHost(
 void NativeIOManager::GetOriginUsage(
     const url::Origin& origin,
     blink::mojom::StorageType type,
-    storage::QuotaClient::GetOriginUsageCallback callback) {
+    storage::mojom::QuotaClient::GetOriginUsageCallback callback) {
   if (type != blink::mojom::StorageType::kTemporary) {
     std::move(callback).Run(0);
     return;
@@ -337,13 +337,13 @@ void NativeIOManager::GetOriginUsageMap(
 }
 
 void NativeIOManager::DidGetOriginsForType(
-    storage::QuotaClient::GetOriginsForTypeCallback callback,
+    storage::mojom::QuotaClient::GetOriginsForTypeCallback callback,
     std::vector<url::Origin> origins) {
   std::move(callback).Run(origins);
 }
 
 void NativeIOManager::DidGetOriginsForHost(
-    storage::QuotaClient::GetOriginsForTypeCallback callback,
+    storage::mojom::QuotaClient::GetOriginsForTypeCallback callback,
     const std::string& host,
     std::vector<url::Origin> origins) {
   std::vector<url::Origin> out_origins;
@@ -355,7 +355,7 @@ void NativeIOManager::DidGetOriginsForHost(
 }
 
 void NativeIOManager::DidGetOriginUsage(
-    storage::QuotaClient::GetOriginUsageCallback callback,
+    storage::mojom::QuotaClient::GetOriginUsageCallback callback,
     int64_t usage) {
   std::move(callback).Run(usage);
 }

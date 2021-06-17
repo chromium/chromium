@@ -21,6 +21,7 @@
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/quota/special_storage_policy.h"
 #include "third_party/blink/public/mojom/native_io/native_io.mojom-forward.h"
+#include "third_party/blink/public/mojom/quota/quota_types.mojom-forward.h"
 #include "url/origin.h"
 
 namespace content {
@@ -67,27 +68,28 @@ class CONTENT_EXPORT NativeIOManager {
   // Removes an origin's data and closes any open files.
   void DeleteOriginData(
       const url::Origin& origin,
-      storage::QuotaClient::DeleteOriginDataCallback callback);
+      storage::mojom::QuotaClient::DeleteOriginDataCallback callback);
 
   // Computes all origins with data for a given type.
   void GetOriginsForType(
       blink::mojom::StorageType type,
-      storage::QuotaClient::GetOriginsForTypeCallback callback);
+      storage::mojom::QuotaClient::GetOriginsForTypeCallback callback);
 
   // Computes all origins with data for a given hostname.
   void GetOriginsForHost(
       blink::mojom::StorageType type,
       const std::string& host,
-      storage::QuotaClient::GetOriginsForHostCallback callback);
+      storage::mojom::QuotaClient::GetOriginsForHostCallback callback);
 
   // Computes the amount of bytes for the given origin.
   //
   // This method walks the origin's entire directory and is therefore not
   // particularly speedy.
   // TODO(rstz): Consider a caching mechanism to improve performance.
-  void GetOriginUsage(const url::Origin& origin,
-                      blink::mojom::StorageType type,
-                      storage::QuotaClient::GetOriginUsageCallback callback);
+  void GetOriginUsage(
+      const url::Origin& origin,
+      blink::mojom::StorageType type,
+      storage::mojom::QuotaClient::GetOriginUsageCallback callback);
 
   // Computes the amount of bytes for all origins.
   //
@@ -121,7 +123,7 @@ class CONTENT_EXPORT NativeIOManager {
   //
   // `host` must be owned by this manager.
   void OnDeleteOriginDataCompleted(
-      storage::QuotaClient::DeleteOriginDataCallback callback,
+      storage::mojom::QuotaClient::DeleteOriginDataCallback callback,
       base::File::Error result,
       NativeIOHost* host);
 
@@ -139,18 +141,19 @@ class CONTENT_EXPORT NativeIOManager {
 
   // Called after the I/O part of GetOriginsForType() completed.
   void DidGetOriginsForType(
-      storage::QuotaClient::GetOriginsForTypeCallback callback,
+      storage::mojom::QuotaClient::GetOriginsForTypeCallback callback,
       std::vector<url::Origin> origins);
 
   // Called after the I/O part of GetOriginsForHost() completed.
   void DidGetOriginsForHost(
-      storage::QuotaClient::GetOriginsForTypeCallback callback,
+      storage::mojom::QuotaClient::GetOriginsForTypeCallback callback,
       const std::string& host,
       std::vector<url::Origin> origins);
 
   // Called after the I/O part of GetOriginUsage() completed.
-  void DidGetOriginUsage(storage::QuotaClient::GetOriginUsageCallback callback,
-                         int64_t usage);
+  void DidGetOriginUsage(
+      storage::mojom::QuotaClient::GetOriginUsageCallback callback,
+      int64_t usage);
 
   // Called after the I/O part of GetOriginUsageMap() completed.
   void DidGetOriginUsageMap(
