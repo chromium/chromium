@@ -4633,18 +4633,6 @@
       },
     },
 
-    'process_host_on_ui_gtests': {
-      'process_host_on_ui_content_browsertests': {
-        'args': [
-          '--enable-features=ProcessHostOnUI',
-        ],
-        'swarming': {
-          'shards': 10,
-        },
-        'test': 'content_browsertests',
-      },
-    },
-
     # TODO(dpranke): These are run on the p/chromium waterfall; they should
     # probably be run on other builders, and we should get rid of the p/chromium
     # waterfall.
@@ -5774,7 +5762,6 @@
       'linux_specific_xr_gtests',
       'non_android_and_cast_and_chromeos_chromium_gtests',
       'non_android_chromium_gtests',
-      'process_host_on_ui_gtests',
       'vr_platform_specific_chromium_gtests',
       'weblayer_gtests',
     ],
