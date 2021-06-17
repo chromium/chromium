@@ -56,8 +56,8 @@ class MediaCodecBridgeBuilder {
     }
 
     @CalledByNative
-    static MediaCodecBridge createVideoEncoder(String mime, int width, int height, int bitRate,
-            int frameRate, int iFrameInterval, int colorFormat) {
+    static MediaCodecBridge createVideoEncoder(String mime, int width, int height, int bitrateMode,
+            int bitRate, int frameRate, int iFrameInterval, int colorFormat) {
         CodecCreationInfo info = new CodecCreationInfo();
         try {
             Log.i(TAG, "create MediaCodec video encoder, mime %s", mime);
@@ -74,7 +74,8 @@ class MediaCodecBridgeBuilder {
                 ? new MediaCodecEncoder(info.mediaCodec, info.bitrateAdjuster)
                 : new MediaCodecBridge(info.mediaCodec, info.bitrateAdjuster, false);
         MediaFormat format = MediaFormatBuilder.createVideoEncoderFormat(mime, width, height,
-                bitRate, BitrateAdjuster.getInitialFrameRate(info.bitrateAdjuster, frameRate),
+                bitrateMode, bitRate,
+                BitrateAdjuster.getInitialFrameRate(info.bitrateAdjuster, frameRate),
                 iFrameInterval, colorFormat, info.supportsAdaptivePlayback);
 
         if (!bridge.configureVideo(format, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE)) {

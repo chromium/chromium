@@ -49,6 +49,8 @@ enum {
   kBufferFlagSyncFrame = 1,    // BUFFER_FLAG_SYNC_FRAME
   kBufferFlagEndOfStream = 4,  // BUFFER_FLAG_END_OF_STREAM
   kConfigureFlagEncode = 1,    // CONFIGURE_FLAG_ENCODE
+  kBitrateModeCBR = 2,         // BITRATE_MODE_CBR
+  kBitrateModeVBR = 1,         // BITRATE_MODE_VBR
 };
 
 using CodecSpecificData = std::vector<uint8_t>;
@@ -260,8 +262,8 @@ std::unique_ptr<MediaCodecBridge> MediaCodecBridgeImpl::CreateVideoEncoder(
   ScopedJavaLocalRef<jstring> j_mime = ConvertUTF8ToJavaString(env, mime);
   ScopedJavaGlobalRef<jobject> j_bridge(
       Java_MediaCodecBridgeBuilder_createVideoEncoder(
-          env, j_mime, size.width(), size.height(), bit_rate, frame_rate,
-          i_frame_interval, color_format));
+          env, j_mime, size.width(), size.height(), kBitrateModeCBR, bit_rate,
+          frame_rate, i_frame_interval, color_format));
 
   if (j_bridge.is_null())
     return nullptr;
