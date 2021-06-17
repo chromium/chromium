@@ -917,6 +917,22 @@
             ]
         }
     ],
+    "AutofillAssistantInCCTTriggeringLaunch": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillAssistantInCctTriggering",
+                        "AutofillAssistantUrlHeuristics"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillConcurrentExperiments": [
         {
             "platforms": [
