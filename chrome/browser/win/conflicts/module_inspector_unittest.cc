@@ -20,9 +20,39 @@
 #include "chrome/services/util_win/util_win_impl.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
+
+class CrashingUtilWinImpl : public chrome::mojom::UtilWin {
+ public:
+  explicit CrashingUtilWinImpl(
+      mojo::PendingReceiver<chrome::mojom::UtilWin> receiver)
+      : receiver_(this, std::move(receiver)) {}
+  ~CrashingUtilWinImpl() override = default;
+
+ private:
+  // chrome::mojom::UtilWin:
+  void IsPinnedToTaskbar(IsPinnedToTaskbarCallback callback) override {}
+  void CallExecuteSelectFile(ui::SelectFileDialog::Type type,
+                             uint32_t owner,
+                             const std::u16string& title,
+                             const base::FilePath& default_path,
+                             const std::vector<ui::FileFilterSpec>& filter,
+                             int32_t file_type_index,
+                             const std::u16string& default_extension,
+                             CallExecuteSelectFileCallback callback) override {}
+  void InspectModule(const base::FilePath& module_path,
+                     InspectModuleCallback callback) override {
+    // Reset the mojo connection to simulate the utility process crashing.
+    receiver_.reset();
+  }
+  void GetAntiVirusProducts(bool report_full_names,
+                            GetAntiVirusProductsCallback callback) override {}
+  void RecordProcessorMetrics(
+      RecordProcessorMetricsCallback callback) override {}
+
+  mojo::Receiver<chrome::mojom::UtilWin> receiver_;
+};
 
 base::FilePath GetKernel32DllFilePath() {
   std::unique_ptr<base::Environment> env = base::Environment::Create();
@@ -58,12 +88,18 @@ class ModuleInspectorTest : public testing::Test {
     auto module_inspector =
         std::make_unique<ModuleInspector>(base::BindRepeating(
             &ModuleInspectorTest::OnModuleInspected, base::Unretained(this)));
+    module_inspector->SetUtilWinFactoryCallbackForTesting(base::BindRepeating(
+        &ModuleInspectorTest::CreateUtilWinService, base::Unretained(this)));
+    return module_inspector;
+  }
 
-    // Set up the test remote UtilWin implementation.
-    mojo::PendingRemote<chrome::mojom::UtilWin> remote;
-    util_win_impl_.emplace(remote.InitWithNewPipeAndPassReceiver());
-    module_inspector->SetRemoteUtilWinForTesting(std::move(remote));
-
+  std::unique_ptr<ModuleInspector> CreateModuleInspectorWithCrashingUtilWin() {
+    auto module_inspector =
+        std::make_unique<ModuleInspector>(base::BindRepeating(
+            &ModuleInspectorTest::OnModuleInspected, base::Unretained(this)));
+    module_inspector->SetUtilWinFactoryCallbackForTesting(
+        base::BindRepeating(&ModuleInspectorTest::CreateCrashingUtilWinService,
+                            base::Unretained(this)));
     return module_inspector;
   }
 
@@ -92,10 +128,28 @@ class ModuleInspectorTest : public testing::Test {
   // Must be before the ModuleInspector.
   content::BrowserTaskEnvironment task_environment_;
 
-  // Holds a working UtilWin service implementation.
-  absl::optional<UtilWinImpl> util_win_impl_;
+  // Holds a test UtilWin service implementation.
+  std::unique_ptr<chrome::mojom::UtilWin> util_win_impl_;
 
  private:
+  mojo::Remote<chrome::mojom::UtilWin> CreateUtilWinService() {
+    mojo::Remote<chrome::mojom::UtilWin> remote;
+
+    util_win_impl_ =
+        std::make_unique<UtilWinImpl>(remote.BindNewPipeAndPassReceiver());
+
+    return remote;
+  }
+
+  mojo::Remote<chrome::mojom::UtilWin> CreateCrashingUtilWinService() {
+    mojo::Remote<chrome::mojom::UtilWin> remote;
+
+    util_win_impl_ = std::make_unique<CrashingUtilWinImpl>(
+        remote.BindNewPipeAndPassReceiver());
+
+    return remote;
+  }
+
   std::vector<ModuleInspectionResult> inspected_modules_;
 
   DISALLOW_COPY_AND_ASSIGN(ModuleInspectorTest);
@@ -112,6 +166,7 @@ TEST_F(ModuleInspectorTest, OneModule) {
 
   ASSERT_EQ(1u, inspected_modules().size());
 }
+
 TEST_F(ModuleInspectorTest, MultipleModules) {
   ModuleInfoKey kTestCases[] = {
       {base::FilePath(), 0, 0}, {base::FilePath(), 0, 0},
@@ -235,4 +290,22 @@ TEST_F(ModuleInspectorTest, InspectionResultsCache_TimerExpired) {
   auto inspection_result =
       GetInspectionResultFromCache(module_key, &inspection_results_cache);
   EXPECT_TRUE(inspection_result);
+}
+
+TEST_F(ModuleInspectorTest, MojoConnectionError) {
+  auto module_inspector = CreateModuleInspectorWithCrashingUtilWin();
+  EXPECT_NE(0,
+            module_inspector->get_connection_error_retry_count_for_testing());
+
+  module_inspector->AddModule({GetKernel32DllFilePath(), 0, 0});
+
+  // This will repeatedly try to inspect the module, get a connection error and
+  // restart the UtilWin service until the retry limit is hit.
+  RunUntilIdle();
+
+  EXPECT_EQ(0,
+            module_inspector->get_connection_error_retry_count_for_testing());
+
+  // No modules were inspected.
+  EXPECT_EQ(0u, inspected_modules().size());
 }
