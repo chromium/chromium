@@ -6,12 +6,12 @@ package org.chromium.chrome.browser.language;
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -23,8 +23,15 @@ import java.util.List;
  * Tests for the AppLocalUtils class.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Batch(Batch.UNIT_TESTS)
 public class AppLocaleUtilsTest {
+    // Reset the application override language after each test.
+    @After
+    public void tearDown() {
+        SharedPreferencesManager.getInstance().writeString(
+                ChromePreferenceKeys.APPLICATION_OVERRIDE_LANGUAGE, null);
+    }
+
     // Test getAppLanguagePref.
     @Test
     @SmallTest
