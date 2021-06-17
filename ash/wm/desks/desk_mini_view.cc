@@ -426,10 +426,6 @@ bool DeskMiniView::IsPointOnMiniView(const gfx::Point& screen_location) const {
   return HitTestPoint(point_in_view);
 }
 
-bool DeskMiniView::IsDeskNameViewVisibleForTesting() const {
-  return desk_name_view_->GetVisible();
-}
-
 void DeskMiniView::OnCloseButtonPressed() {
   auto* controller = DesksController::Get();
   if (!controller->CanRemoveDesks())

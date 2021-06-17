@@ -1,0 +1,60 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef ASH_WM_DESKS_DESKS_TEST_API_H_
+#define ASH_WM_DESKS_DESKS_TEST_API_H_
+
+#include <vector>
+
+#include "base/time/clock.h"
+#include "third_party/skia/include/core/SkColor.h"
+
+namespace views {
+class ScrollView;
+}  // namespace views
+
+namespace ash {
+
+class Desk;
+class DeskMiniView;
+class PersistentDesksBarContextMenu;
+class PersistentDesksBarDeskButton;
+class ScrollArrowButton;
+
+// Helper class used by tests to access desks' internal elements. Including
+// elements of multiple different objects of desks. E.g, DesksBarView, Desk,
+// PersistentDesksBarView.
+class DesksTestApi {
+ public:
+  DesksTestApi();
+  DesksTestApi(const DesksTestApi&) = delete;
+  DesksTestApi& operator=(const DesksTestApi&) = delete;
+  ~DesksTestApi();
+
+  // Getters for elements inside the desks.
+  ScrollArrowButton* GetDesksBarLeftScrollButton() const;
+  ScrollArrowButton* GetDesksBarRightScrollButton() const;
+  views::ScrollView* GetDesksBarScrollView() const;
+  const DeskMiniView* GetDesksBarDragView() const;
+  PersistentDesksBarContextMenu* GetDesksBarContextMenu() const;
+  SkColor GetNewDeskButtonBackgroundColor() const;
+  PersistentDesksBarContextMenu* GetPersistentDesksBarContextMenu() const;
+  const std::vector<PersistentDesksBarDeskButton*>
+  GetPersistentDesksBarDeskButtons() const;
+
+  bool IsDesksBarLeftGradientVisible() const;
+  bool IsDesksBarRightGradientVisible() const;
+
+  // Overrides the `override_clock_` of `desk` with `test_clock` for mocking
+  // time in tests.
+  void OverrideDeskClock(Desk* desk, base::Clock* test_clock);
+
+  // Resets `first_day_visited_` and `last_day_visited_` of `desk` for testing
+  // to the current date.
+  void ResetDeskVisitedMetrics(Desk* desk);
+};
+
+}  // namespace ash
+
+#endif  // ASH_WM_DESKS_DESKS_TEST_API_H_

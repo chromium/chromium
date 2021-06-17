@@ -37,10 +37,11 @@
 #include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_restore_util.h"
+#include "ash/wm/desks/desks_test_api.h"
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/expanded_state_new_desk_button.h"
-#include "ash/wm/desks/persistent_desks_bar_circular_button.h"
+#include "ash/wm/desks/persistent_desks_bar_button.h"
 #include "ash/wm/desks/persistent_desks_bar_context_menu.h"
 #include "ash/wm/desks/persistent_desks_bar_controller.h"
 #include "ash/wm/desks/persistent_desks_bar_view.h"
@@ -351,6 +352,7 @@ class DesksTest : public AshTestBase,
   void SetUp() override {
     AshTestBase::SetUp();
     SetVirtualKeyboardEnabled(true);
+    desks_test_api_ = std::make_unique<DesksTestApi>();
   }
 
   void SendKey(ui::KeyboardCode key_code, int flags = 0) {
@@ -359,7 +361,11 @@ class DesksTest : public AshTestBase,
     generator->ReleaseKey(key_code, flags);
   }
 
+  DesksTestApi* desks_test_api() { return desks_test_api_.get(); }
+
  private:
+  std::unique_ptr<DesksTestApi> desks_test_api_;
+
   DISALLOW_COPY_AND_ASSIGN(DesksTest);
 };
 
@@ -1721,9 +1727,11 @@ TEST_F(DesksTest, ConsecutiveDailyVisitsMetric) {
   base::SimpleTestClock test_clock;
 
   auto create_new_desk_with_mocked_time =
-      [](DesksController* desks_controller, base::SimpleTestClock* test_clock) {
+      [this](DesksController* desks_controller,
+             base::SimpleTestClock* test_clock) {
         NewDesk();
-        desks_controller->desks().back()->OverrideClockForTesting(test_clock);
+        desks_test_api()->OverrideDeskClock(
+            desks_controller->desks().back().get(), test_clock);
       };
 
   // Set the time to 00:00:00 local time the next day, override the current
@@ -1731,8 +1739,9 @@ TEST_F(DesksTest, ConsecutiveDailyVisitsMetric) {
   test_clock.SetNow(base::Time::Now().LocalMidnight());
   test_clock.Advance(base::TimeDelta::FromHours(1));
   auto* active_desk = desks_controller->active_desk();
-  const_cast<Desk*>(active_desk)->OverrideClockForTesting(&test_clock);
-  const_cast<Desk*>(active_desk)->ResetVisitedMetricsForTesting();
+  desks_test_api()->OverrideDeskClock(const_cast<Desk*>(active_desk),
+                                      &test_clock);
+  desks_test_api()->ResetDeskVisitedMetrics(const_cast<Desk*>(active_desk));
   EXPECT_EQ(
       0u,
       histogram_tester.GetAllSamples(kConsecutiveDailyVisitsHistogram).size());
@@ -1809,16 +1818,14 @@ TEST_F(DesksTest, NewDeskButtonStateAndColor) {
   const SkColor disabled_background_color =
       AshColorProvider::GetDisabledColor(background_color);
   EXPECT_TRUE(new_desk_button->GetEnabled());
-  EXPECT_EQ(background_color, desks_bar_view->expanded_state_new_desk_button()
-                                  ->new_desk_button()
-                                  ->GetBackgroundColorForTesting());
+  EXPECT_EQ(background_color,
+            desks_test_api()->GetNewDeskButtonBackgroundColor());
 
   auto* event_generator = GetEventGenerator();
   ClickOnView(new_desk_button, event_generator);
   EXPECT_TRUE(new_desk_button->GetEnabled());
-  EXPECT_EQ(background_color, desks_bar_view->expanded_state_new_desk_button()
-                                  ->new_desk_button()
-                                  ->GetBackgroundColorForTesting());
+  EXPECT_EQ(background_color,
+            desks_test_api()->GetNewDeskButtonBackgroundColor());
 
   // Tests that adding desks until we reach the desks limit should change the
   // state and color of the new desk button.
@@ -1830,9 +1837,7 @@ TEST_F(DesksTest, NewDeskButtonStateAndColor) {
   }
   EXPECT_FALSE(new_desk_button->GetEnabled());
   EXPECT_EQ(disabled_background_color,
-            desks_bar_view->expanded_state_new_desk_button()
-                ->new_desk_button()
-                ->GetBackgroundColorForTesting());
+            desks_test_api()->GetNewDeskButtonBackgroundColor());
 }
 
 class DesksWithMultiDisplayOverview : public AshTestBase {
@@ -4332,28 +4337,29 @@ TEST_F(DesksTest, ScrollButtonsVisibility) {
   // Left scroll button should be hidden and right scroll button should be
   // visible while at the start position.
   event_generator->MoveMouseWheel(x_scroll_delta, 0);
-  EXPECT_FALSE(desks_bar->GetLeftScrollButtonForTesting()->GetVisible());
-  EXPECT_TRUE(desks_bar->GetRightScrollButtonForTesting()->GetVisible());
+  EXPECT_FALSE(desks_test_api()->GetDesksBarLeftScrollButton()->GetVisible());
+  EXPECT_TRUE(desks_test_api()->GetDesksBarRightScrollButton()->GetVisible());
 
   // Click the right scroll button should scroll to the next page. And left and
   // right scroll buttons should both be visible while at the middle position.
-  ClickOnView(desks_bar->GetRightScrollButtonForTesting(), event_generator);
-  EXPECT_TRUE(desks_bar->GetLeftScrollButtonForTesting()->GetVisible());
-  EXPECT_TRUE(desks_bar->GetRightScrollButtonForTesting()->GetVisible());
+  ClickOnView(desks_test_api()->GetDesksBarRightScrollButton(),
+              event_generator);
+  EXPECT_TRUE(desks_test_api()->GetDesksBarLeftScrollButton()->GetVisible());
+  EXPECT_TRUE(desks_test_api()->GetDesksBarRightScrollButton()->GetVisible());
 
   // Click the left scroll button should scroll to the previous page. In this
   // case, it will scroll back to the start position and left scroll button
   // should be hidden and right scroll button should be visible.
-  ClickOnView(desks_bar->GetLeftScrollButtonForTesting(), event_generator);
-  EXPECT_FALSE(desks_bar->GetLeftScrollButtonForTesting()->GetVisible());
-  EXPECT_TRUE(desks_bar->GetRightScrollButtonForTesting()->GetVisible());
+  ClickOnView(desks_test_api()->GetDesksBarLeftScrollButton(), event_generator);
+  EXPECT_FALSE(desks_test_api()->GetDesksBarLeftScrollButton()->GetVisible());
+  EXPECT_TRUE(desks_test_api()->GetDesksBarRightScrollButton()->GetVisible());
 
   // Left scroll button should be visible and right scroll button should be
   // hidden while at the end position.
   event_generator->MoveMouseTo(desks_bar->GetBoundsInScreen().CenterPoint());
   event_generator->MoveMouseWheel(-x_scroll_delta, 0);
-  EXPECT_TRUE(desks_bar->GetLeftScrollButtonForTesting()->GetVisible());
-  EXPECT_FALSE(desks_bar->GetRightScrollButtonForTesting()->GetVisible());
+  EXPECT_TRUE(desks_test_api()->GetDesksBarLeftScrollButton()->GetVisible());
+  EXPECT_FALSE(desks_test_api()->GetDesksBarRightScrollButton()->GetVisible());
 }
 
 TEST_F(DesksTest, GradientsVisibility) {
@@ -4368,16 +4374,16 @@ TEST_F(DesksTest, GradientsVisibility) {
   auto* desks_bar =
       GetOverviewGridForRoot(Shell::GetPrimaryRootWindow())->desks_bar_view();
 
-  auto* left_button = desks_bar->GetLeftScrollButtonForTesting();
-  auto* right_button = desks_bar->GetRightScrollButtonForTesting();
+  auto* left_button = desks_test_api()->GetDesksBarLeftScrollButton();
+  auto* right_button = desks_test_api()->GetDesksBarRightScrollButton();
 
   // Only right graident is visible while at the first page.
-  auto* scroll_view = desks_bar->GetScrollViewForTesting();
+  auto* scroll_view = desks_test_api()->GetDesksBarScrollView();
   EXPECT_EQ(0, scroll_view->GetVisibleRect().x());
   EXPECT_FALSE(left_button->GetVisible());
-  EXPECT_FALSE(desks_bar->IsLeftGradientVisibleForTesting());
+  EXPECT_FALSE(desks_test_api()->IsDesksBarLeftGradientVisible());
   EXPECT_TRUE(right_button->GetVisible());
-  EXPECT_TRUE(desks_bar->IsRightGradientVisibleForTesting());
+  EXPECT_TRUE(desks_test_api()->IsDesksBarRightGradientVisible());
 
   // Both left and right gradients should be visible while during scroll.
   const gfx::Point center_point = desks_bar->bounds().CenterPoint();
@@ -4391,9 +4397,9 @@ TEST_F(DesksTest, GradientsVisibility) {
   scroll_view->OnGestureEvent(&scroll_update);
   EXPECT_TRUE(scroll_view->is_scrolling());
   EXPECT_TRUE(left_button->GetVisible());
-  EXPECT_TRUE(desks_bar->IsLeftGradientVisibleForTesting());
+  EXPECT_TRUE(desks_test_api()->IsDesksBarLeftGradientVisible());
   EXPECT_TRUE(right_button->GetVisible());
-  EXPECT_TRUE(desks_bar->IsRightGradientVisibleForTesting());
+  EXPECT_TRUE(desks_test_api()->IsDesksBarRightGradientVisible());
 
   // The gradient should be hidden if the corresponding scroll button is
   // invisible even though it is during scroll.
@@ -4404,9 +4410,9 @@ TEST_F(DesksTest, GradientsVisibility) {
   scroll_view->OnGestureEvent(&second_scroll_update);
   EXPECT_TRUE(scroll_view->is_scrolling());
   EXPECT_FALSE(left_button->GetVisible());
-  EXPECT_FALSE(desks_bar->IsLeftGradientVisibleForTesting());
+  EXPECT_FALSE(desks_test_api()->IsDesksBarLeftGradientVisible());
   EXPECT_TRUE(right_button->GetVisible());
-  EXPECT_TRUE(desks_bar->IsRightGradientVisibleForTesting());
+  EXPECT_TRUE(desks_test_api()->IsDesksBarRightGradientVisible());
 
   ui::GestureEvent scroll_end(
       center_point.x(), center_point.y(), ui::EF_NONE, base::TimeTicks::Now(),
@@ -4414,18 +4420,18 @@ TEST_F(DesksTest, GradientsVisibility) {
   scroll_view->OnGestureEvent(&scroll_end);
   EXPECT_FALSE(scroll_view->is_scrolling());
   EXPECT_FALSE(left_button->GetVisible());
-  EXPECT_FALSE(desks_bar->IsLeftGradientVisibleForTesting());
+  EXPECT_FALSE(desks_test_api()->IsDesksBarLeftGradientVisible());
   EXPECT_TRUE(right_button->GetVisible());
-  EXPECT_TRUE(desks_bar->IsRightGradientVisibleForTesting());
+  EXPECT_TRUE(desks_test_api()->IsDesksBarRightGradientVisible());
 
   // Only right gradient should be shown at the middle page when it is not
   // during scroll even though the left scroll button is visible.
   auto* event_generator = GetEventGenerator();
   ClickOnView(right_button, event_generator);
   EXPECT_TRUE(left_button->GetVisible());
-  EXPECT_FALSE(desks_bar->IsLeftGradientVisibleForTesting());
+  EXPECT_FALSE(desks_test_api()->IsDesksBarLeftGradientVisible());
   EXPECT_TRUE(right_button->GetVisible());
-  EXPECT_TRUE(desks_bar->IsRightGradientVisibleForTesting());
+  EXPECT_TRUE(desks_test_api()->IsDesksBarRightGradientVisible());
 
   // Only the left gradient should be shown at the last page.
   while (right_button->GetVisible())
@@ -4434,9 +4440,9 @@ TEST_F(DesksTest, GradientsVisibility) {
   EXPECT_EQ(scroll_view->contents()->bounds().width() - scroll_view->width(),
             scroll_view->GetVisibleRect().x());
   EXPECT_TRUE(left_button->GetVisible());
-  EXPECT_TRUE(desks_bar->IsLeftGradientVisibleForTesting());
+  EXPECT_TRUE(desks_test_api()->IsDesksBarLeftGradientVisible());
   EXPECT_FALSE(right_button->GetVisible());
-  EXPECT_FALSE(desks_bar->IsRightGradientVisibleForTesting());
+  EXPECT_FALSE(desks_test_api()->IsDesksBarRightGradientVisible());
 }
 
 // Tests the behavior when long press on the scroll buttons.
@@ -4455,7 +4461,7 @@ TEST_F(DesksTest, ContinueScrollBar) {
   auto* desks_bar =
       GetOverviewGridForRoot(Shell::GetPrimaryRootWindow())->desks_bar_view();
 
-  views::ScrollView* scroll_view = desks_bar->GetScrollViewForTesting();
+  views::ScrollView* scroll_view = desks_test_api()->GetDesksBarScrollView();
   const int page_size = scroll_view->width();
   const auto mini_views = desks_bar->mini_views();
   const int mini_view_width = mini_views[0]->bounds().width();
@@ -4466,8 +4472,10 @@ TEST_F(DesksTest, ContinueScrollBar) {
     desks_in_one_page++;
 
   int current_index = 0;
-  ScrollArrowButton* left_button = desks_bar->GetLeftScrollButtonForTesting();
-  ScrollArrowButton* right_button = desks_bar->GetRightScrollButtonForTesting();
+  ScrollArrowButton* left_button =
+      desks_test_api()->GetDesksBarLeftScrollButton();
+  ScrollArrowButton* right_button =
+      desks_test_api()->GetDesksBarRightScrollButton();
 
   // At first, left scroll button is hidden and right scroll button is visible.
   EXPECT_FALSE(left_button->GetVisible());
@@ -4548,8 +4556,9 @@ TEST_F(DesksTest, FocusedMiniViewIsVisible) {
   for (size_t i = 0; i < desks_util::kMaxNumberOfDesks; i++) {
     // Move the focus to mini view.
     SendKey(ui::VKEY_TAB);
-    EXPECT_TRUE(desks_bar->GetScrollViewForTesting()->GetVisibleRect().Contains(
-        mini_views[i]->bounds()));
+    EXPECT_TRUE(
+        desks_test_api()->GetDesksBarScrollView()->GetVisibleRect().Contains(
+            mini_views[i]->bounds()));
     // Move the focus to the mini view's associated name view.
     SendKey(ui::VKEY_TAB);
   }
@@ -4560,8 +4569,9 @@ TEST_F(DesksTest, FocusedMiniViewIsVisible) {
     SendKey(ui::VKEY_LEFT);
     // Move the focus to previous mini view's name view.
     SendKey(ui::VKEY_LEFT);
-    EXPECT_TRUE(desks_bar->GetScrollViewForTesting()->GetVisibleRect().Contains(
-        mini_views[i - 1]->bounds()));
+    EXPECT_TRUE(
+        desks_test_api()->GetDesksBarScrollView()->GetVisibleRect().Contains(
+            mini_views[i - 1]->bounds()));
   }
 }
 
@@ -5328,7 +5338,7 @@ TEST_F(DesksTest, ScrollBarByDraggedDesk) {
   auto* desks_bar =
       GetOverviewGridForRoot(Shell::GetPrimaryRootWindow())->desks_bar_view();
 
-  views::ScrollView* scroll_view = desks_bar->GetScrollViewForTesting();
+  views::ScrollView* scroll_view = desks_test_api()->GetDesksBarScrollView();
   const int page_size = scroll_view->width();
   auto mini_views = desks_bar->mini_views();
   const int mini_view_width = mini_views[0]->bounds().width();
@@ -5339,8 +5349,10 @@ TEST_F(DesksTest, ScrollBarByDraggedDesk) {
     desks_in_one_page++;
 
   int current_index = 0;
-  ScrollArrowButton* left_button = desks_bar->GetLeftScrollButtonForTesting();
-  ScrollArrowButton* right_button = desks_bar->GetRightScrollButtonForTesting();
+  ScrollArrowButton* left_button =
+      desks_test_api()->GetDesksBarLeftScrollButton();
+  ScrollArrowButton* right_button =
+      desks_test_api()->GetDesksBarRightScrollButton();
 
   // At first, left scroll button is hidden and right scroll button is visible.
   EXPECT_FALSE(left_button->GetVisible());
@@ -5475,7 +5487,7 @@ TEST_F(DesksTest, DragNewDeskWhileSnappingBack) {
 
   // Drag the second desk away from the desk bar.
   StartDragDeskPreview(mini_view_2, event_generator);
-  EXPECT_EQ(desks_bar_view->GetDragDeskMiniViewForTesting(), mini_view_2);
+  EXPECT_EQ(desks_test_api()->GetDesksBarDragView(), mini_view_2);
 
   event_generator->MoveMouseBy(0, desks_bar_view->height());
 
@@ -5484,9 +5496,9 @@ TEST_F(DesksTest, DragNewDeskWhileSnappingBack) {
 
   // Drop the desk and drag first desk.
   event_generator->ReleaseLeftButton();
-  EXPECT_EQ(desks_bar_view->GetDragDeskMiniViewForTesting(), mini_view_2);
+  EXPECT_EQ(desks_test_api()->GetDesksBarDragView(), mini_view_2);
   StartDragDeskPreview(mini_view_1, event_generator);
-  EXPECT_EQ(desks_bar_view->GetDragDeskMiniViewForTesting(), mini_view_1);
+  EXPECT_EQ(desks_test_api()->GetDesksBarDragView(), mini_view_1);
 }
 
 // Tests that the right desk containers are visible when switching between desks
@@ -5713,7 +5725,7 @@ TEST_F(DesksMockTimeTest, WeeklyActiveDesks) {
                                      number_of_one_bucket_entries + 1);
 }
 
-class PersistentDesksBarTest : public AshTestBase {
+class PersistentDesksBarTest : public DesksTest {
  public:
   PersistentDesksBarTest() {
     scoped_feature_list_.InitAndEnableFeature(features::kBentoBar);
@@ -5801,8 +5813,6 @@ TEST_F(PersistentDesksBarTest, OverviewMode) {
   auto* shell = Shell::Get();
   auto* desks_controller = DesksController::Get();
   ASSERT_EQ(1u, desks_controller->desks().size());
-  auto* bar_controller = shell->persistent_desks_bar_controller();
-  ASSERT_TRUE(bar_controller);
 
   NewDesk();
   EXPECT_TRUE(GetBarWidget());
@@ -5830,10 +5840,9 @@ TEST_F(PersistentDesksBarTest, OverviewMode) {
   EXPECT_EQ(2u, desks_controller->desks().size());
   desks_controller->desks()[1].get()->SetName(u"test", /*set_by_user=*/true);
   overview_controller->EndOverview();
-  auto desk_buttons_text = bar_controller->persistent_desks_bar_view()
-                               ->GetDeskButtonsTextForTesting();
-  for (size_t i = 0; i < desk_buttons_text.size(); i++)
-    EXPECT_EQ(desk_buttons_text[i], desks_controller->desks()[i]->name());
+  auto desk_buttons = desks_test_api()->GetPersistentDesksBarDeskButtons();
+  for (size_t i = 0; i < desk_buttons.size(); i++)
+    EXPECT_EQ(desk_buttons[i]->GetText(), desks_controller->desks()[i]->name());
 
   // The desk buttons should have the same order as the desks after reordering.
   auto* event_generator = GetEventGenerator();
@@ -5848,10 +5857,28 @@ TEST_F(PersistentDesksBarTest, OverviewMode) {
   event_generator->ReleaseLeftButton();
   EXPECT_EQ(u"test", desks_controller->desks()[0]->name());
   overview_controller->EndOverview();
-  desk_buttons_text = bar_controller->persistent_desks_bar_view()
-                          ->GetDeskButtonsTextForTesting();
-  for (size_t i = 0; i < desk_buttons_text.size(); i++)
-    EXPECT_EQ(desk_buttons_text[i], desks_controller->desks()[i]->name());
+  desk_buttons = desks_test_api()->GetPersistentDesksBarDeskButtons();
+  for (size_t i = 0; i < desk_buttons.size(); i++)
+    EXPECT_EQ(desk_buttons[i]->GetText(), desks_controller->desks()[i]->name());
+}
+
+// Tests the desk activation changes after clicking the desk button in the bar.
+TEST_F(PersistentDesksBarTest, DeskActivation) {
+  NewDesk();
+  auto* desks_controller = DesksController::Get();
+  EXPECT_EQ(2u, desks_controller->desks().size());
+  EXPECT_TRUE(GetBarWidget());
+  EXPECT_EQ(desks_controller->desks()[0].get(),
+            desks_controller->active_desk());
+
+  // Should activate `Desk 2` after clicking the corresponding desk button.
+  DeskSwitchAnimationWaiter waiter;
+  ClickOnView(desks_test_api()->GetPersistentDesksBarDeskButtons()[1],
+              GetEventGenerator());
+  waiter.Wait();
+  EXPECT_TRUE(GetBarWidget());
+  EXPECT_EQ(desks_controller->desks()[1].get(),
+            desks_controller->active_desk());
 }
 
 TEST_F(PersistentDesksBarTest, LeavingOrEnteringTabletModeWithOverviewModeOn) {
@@ -5878,13 +5905,9 @@ TEST_F(PersistentDesksBarTest, ShowOrHideBarThroughContextMenu) {
   EXPECT_EQ(2u, DesksController::Get()->desks().size());
   EXPECT_TRUE(GetBarWidget());
 
-  auto* shell = Shell::Get();
   // The bar should be destroyed after it is set to hide.
   PersistentDesksBarContextMenu* context_menu =
-      shell->persistent_desks_bar_controller()
-          ->persistent_desks_bar_view()
-          ->GetVerticalDotsButtonForTesting()
-          ->GetContextMenuForTesting();
+      desks_test_api()->GetPersistentDesksBarContextMenu();
   context_menu->ExecuteCommand(
       static_cast<int>(
           PersistentDesksBarContextMenu::CommandId::kShowOrHideBar),
@@ -5893,7 +5916,7 @@ TEST_F(PersistentDesksBarTest, ShowOrHideBarThroughContextMenu) {
 
   // With the bar being set to hide, it should not be created after exiting
   // overview mode with more than one desk.
-  auto* overview_controller = shell->overview_controller();
+  auto* overview_controller = Shell::Get()->overview_controller();
   overview_controller->StartOverview();
   overview_controller->EndOverview();
   EXPECT_FALSE(GetBarWidget());
@@ -5901,10 +5924,7 @@ TEST_F(PersistentDesksBarTest, ShowOrHideBarThroughContextMenu) {
   // With the bar being set to show, it should be created after exiting overview
   // mode with more than one desk.
   overview_controller->StartOverview();
-  context_menu = GetOverviewGridForRoot(Shell::GetPrimaryRootWindow())
-                     ->desks_bar_view()
-                     ->GetVerticalDotsButtonForTesting()
-                     ->GetContextMenuForTesting();
+  context_menu = desks_test_api()->GetDesksBarContextMenu();
   context_menu->ExecuteCommand(
       static_cast<int>(
           PersistentDesksBarContextMenu::CommandId::kShowOrHideBar),

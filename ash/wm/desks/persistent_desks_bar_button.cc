@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/wm/desks/persistent_desks_bar_circular_button.h"
+#include "ash/wm/desks/persistent_desks_bar_button.h"
 
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/tray_popup_utils.h"
+#include "ash/wm/desks/desk.h"
+#include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/persistent_desks_bar_context_menu.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ui/compositor/layer.h"
@@ -19,6 +21,34 @@ namespace ash {
 namespace {
 constexpr int kCircularButtonSize = 32;
 }  // namespace
+
+// -----------------------------------------------------------------------------
+// PersistentDesksBarDeskButton:
+
+PersistentDesksBarDeskButton::PersistentDesksBarDeskButton(const Desk* desk)
+    : DeskButtonBase(desk->name()), desk_(desk) {
+  // Only paint the background of the active desk's button.
+  SetShouldPaintBackground(desk_ == DesksController::Get()->active_desk());
+}
+
+void PersistentDesksBarDeskButton::OnButtonPressed() {
+  DesksController::Get()->ActivateDesk(desk_,
+                                       DesksSwitchSource::kPersistentDesksBar);
+}
+
+void PersistentDesksBarDeskButton::OnThemeChanged() {
+  DeskButtonBase::OnThemeChanged();
+  SetEnabledTextColors(AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorPrimary));
+}
+
+void PersistentDesksBarDeskButton::OnMouseEntered(const ui::MouseEvent& event) {
+  SetShouldPaintBackground(true);
+}
+
+void PersistentDesksBarDeskButton::OnMouseExited(const ui::MouseEvent& event) {
+  SetShouldPaintBackground(desk_ == DesksController::Get()->active_desk());
+}
 
 // -----------------------------------------------------------------------------
 // PersistentDesksBarCircularButton:

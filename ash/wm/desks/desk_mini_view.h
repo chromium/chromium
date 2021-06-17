@@ -121,8 +121,6 @@ class ASH_EXPORT DeskMiniView
 
   bool IsPointOnMiniView(const gfx::Point& screen_location) const;
 
-  bool IsDeskNameViewVisibleForTesting() const;
-
  private:
   void OnCloseButtonPressed();
 

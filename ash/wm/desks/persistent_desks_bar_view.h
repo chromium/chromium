@@ -31,13 +31,9 @@ class ASH_EXPORT PersistentDesksBarView : public views::View {
   // the background of the desk button for current active desk be painted.
   void RefreshDeskButtons();
 
-  const std::vector<std::u16string> GetDeskButtonsTextForTesting() const;
-  const PersistentDesksBarVerticalDotsButton* GetVerticalDotsButtonForTesting()
-      const {
-    return vertical_dots_button_;
-  }
-
  private:
+  friend class DesksTestApi;
+
   // views::View:
   void Layout() override;
   void OnThemeChanged() override;

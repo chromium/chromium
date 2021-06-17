@@ -599,17 +599,6 @@ int Desk::GetDaysFromLocalEpoch() const {
   return (now - GetLocalEpoch()).InDays();
 }
 
-void Desk::OverrideClockForTesting(base::Clock* test_clock) {
-  DCHECK(!override_clock_);
-  override_clock_ = test_clock;
-}
-
-void Desk::ResetVisitedMetricsForTesting() {
-  const int current_date = GetDaysFromLocalEpoch();
-  first_day_visited_ = current_date;
-  last_day_visited_ = current_date;
-}
-
 void Desk::MoveWindowToDeskInternal(aura::Window* window,
                                     Desk* target_desk,
                                     aura::Window* target_root) {

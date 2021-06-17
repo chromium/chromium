@@ -2,15 +2,38 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WM_DESKS_PERSISTENT_DESKS_BAR_CIRCULAR_BUTTON_H_
-#define ASH_WM_DESKS_PERSISTENT_DESKS_BAR_CIRCULAR_BUTTON_H_
+#ifndef ASH_WM_DESKS_PERSISTENT_DESKS_BAR_BUTTON_H_
+#define ASH_WM_DESKS_PERSISTENT_DESKS_BAR_BUTTON_H_
 
+#include "ash/wm/desks/zero_state_button.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/controls/button/image_button.h"
 
 namespace ash {
 
+class Desk;
 class PersistentDesksBarContextMenu;
+
+// The button with the desk's name inside the PersistentDesksBarView.
+class PersistentDesksBarDeskButton : public DeskButtonBase {
+ public:
+  explicit PersistentDesksBarDeskButton(const Desk* desk);
+  PersistentDesksBarDeskButton(const PersistentDesksBarDeskButton&) = delete;
+  PersistentDesksBarDeskButton& operator=(const PersistentDesksBarDeskButton) =
+      delete;
+  ~PersistentDesksBarDeskButton() override = default;
+
+  const Desk* desk() const { return desk_; }
+
+ private:
+  // DeskButtonBase:
+  void OnButtonPressed() override;
+  void OnThemeChanged() override;
+  void OnMouseEntered(const ui::MouseEvent& event) override;
+  void OnMouseExited(const ui::MouseEvent& event) override;
+
+  const Desk* desk_;
+};
 
 // The base class of the circular buttons inside the persistent desks bar.
 // Including PersistentDesksBarVerticalDotsButton and
@@ -48,11 +71,9 @@ class PersistentDesksBarVerticalDotsButton
       const PersistentDesksBarVerticalDotsButton&);
   ~PersistentDesksBarVerticalDotsButton() override;
 
-  PersistentDesksBarContextMenu* GetContextMenuForTesting() const {
-    return context_menu_.get();
-  }
-
  private:
+  friend class DesksTestApi;
+
   // PersistentDesksBarCircularButton:
   void OnButtonPressed() override;
 
@@ -81,4 +102,4 @@ class PersistentDesksBarOverviewButton
 
 }  // namespace ash
 
-#endif  // ASH_WM_DESKS_PERSISTENT_DESKS_BAR_CIRCULAR_BUTTON_H_
+#endif  // ASH_WM_DESKS_PERSISTENT_DESKS_BAR_BUTTON_H_

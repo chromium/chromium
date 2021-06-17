@@ -168,26 +168,9 @@ class ASH_EXPORT DesksBarView : public views::View,
   // scrolls the bar to make sure it can always be seen.
   void ScrollToShowMiniViewIfNecessary(const DeskMiniView* mini_view);
 
-  ScrollArrowButton* GetLeftScrollButtonForTesting() const {
-    return left_scroll_button_;
-  }
-  ScrollArrowButton* GetRightScrollButtonForTesting() const {
-    return right_scroll_button_;
-  }
-  views::ScrollView* GetScrollViewForTesting() const { return scroll_view_; }
-  const DeskMiniView* GetDragDeskMiniViewForTesting() const {
-    return drag_view_;
-  }
-  const PersistentDesksBarVerticalDotsButton* GetVerticalDotsButtonForTesting()
-      const {
-    return vertical_dots_button_;
-  }
-
-  bool IsLeftGradientVisibleForTesting() const;
-  bool IsRightGradientVisibleForTesting() const;
-
  private:
   friend class DesksBarScrollViewLayout;
+  friend class DesksTestApi;
 
   // Determine the new index of the dragged desk at the position of
   // |location_in_screen|.

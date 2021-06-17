@@ -22,7 +22,7 @@
 #include "ash/wm/desks/desk_preview_view.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/expanded_state_new_desk_button.h"
-#include "ash/wm/desks/persistent_desks_bar_circular_button.h"
+#include "ash/wm/desks/persistent_desks_bar_button.h"
 #include "ash/wm/desks/scroll_arrow_button.h"
 #include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -844,14 +844,6 @@ void DesksBarView::ScrollToShowMiniViewIfNecessary(
   } else if (beyond_right) {
     scroll_view_->ScrollToPosition(scroll_bar, mini_view_bounds.x());
   }
-}
-
-bool DesksBarView::IsLeftGradientVisibleForTesting() const {
-  return !gradient_layer_delegate_->start_fade_zone_bounds().IsEmpty();
-}
-
-bool DesksBarView::IsRightGradientVisibleForTesting() const {
-  return !gradient_layer_delegate_->end_fade_zone_bounds().IsEmpty();
 }
 
 int DesksBarView::DetermineMoveIndex(int location_screen_x) const {

@@ -176,15 +176,9 @@ class ASH_EXPORT Desk {
   // since it is a well-known date in the past.
   int GetDaysFromLocalEpoch() const;
 
-  // Overrides the |override_clock_| with |test_clock| for mocking time in
-  // tests.
-  void OverrideClockForTesting(base::Clock* test_clock);
-
-  // Resets |first_day_visited_| and |last_day_visited_| for testing to the
-  // current date.
-  void ResetVisitedMetricsForTesting();
-
  private:
+  friend class DesksTestApi;
+
   void MoveWindowToDeskInternal(aura::Window* window,
                                 Desk* target_desk,
                                 aura::Window* target_root);

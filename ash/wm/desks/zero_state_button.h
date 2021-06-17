@@ -49,8 +49,6 @@ class ASH_EXPORT DeskButtonBase
   // may or may not have the background.
   void SetShouldPaintBackground(bool should_paint_background);
 
-  SkColor GetBackgroundColorForTesting() const { return background_color_; }
-
  protected:
   virtual void OnButtonPressed() = 0;
 
@@ -68,6 +66,8 @@ class ASH_EXPORT DeskButtonBase
   bool paint_contents_only_ = false;
 
  private:
+  friend class DesksTestApi;
+
   void UpdateBorderState();
 
   // Owned by this View via `View::border_`. This is just a convenient pointer

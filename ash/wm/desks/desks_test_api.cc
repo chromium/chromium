@@ -1,0 +1,106 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "ash/wm/desks/desks_test_api.h"
+
+#include "ash/shelf/gradient_layer_delegate.h"
+#include "ash/shell.h"
+#include "ash/wm/desks/desk.h"
+#include "ash/wm/desks/desks_bar_view.h"
+#include "ash/wm/desks/expanded_state_new_desk_button.h"
+#include "ash/wm/desks/persistent_desks_bar_button.h"
+#include "ash/wm/desks/persistent_desks_bar_context_menu.h"
+#include "ash/wm/desks/persistent_desks_bar_controller.h"
+#include "ash/wm/desks/persistent_desks_bar_view.h"
+#include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_grid.h"
+
+namespace ash {
+
+namespace {
+
+const DesksBarView* GetDesksBarView() {
+  auto* root_window = Shell::GetPrimaryRootWindow();
+  auto* overview_controller = Shell::Get()->overview_controller();
+  DCHECK(overview_controller->InOverviewSession());
+  return overview_controller->overview_session()
+      ->GetGridWithRootWindow(root_window)
+      ->desks_bar_view();
+}
+
+const PersistentDesksBarView* GetPersistentDesksBarView() {
+  auto* persistent_desks_bar_controller =
+      Shell::Get()->persistent_desks_bar_controller();
+  DCHECK(persistent_desks_bar_controller);
+  return persistent_desks_bar_controller->persistent_desks_bar_view();
+}
+
+}  // namespace
+
+DesksTestApi::DesksTestApi() = default;
+
+DesksTestApi::~DesksTestApi() = default;
+
+ScrollArrowButton* DesksTestApi::GetDesksBarLeftScrollButton() const {
+  return GetDesksBarView()->left_scroll_button_;
+}
+
+ScrollArrowButton* DesksTestApi::GetDesksBarRightScrollButton() const {
+  return GetDesksBarView()->right_scroll_button_;
+}
+
+views::ScrollView* DesksTestApi::GetDesksBarScrollView() const {
+  return GetDesksBarView()->scroll_view_;
+}
+
+const DeskMiniView* DesksTestApi::GetDesksBarDragView() const {
+  return GetDesksBarView()->drag_view_;
+}
+
+PersistentDesksBarContextMenu* DesksTestApi::GetDesksBarContextMenu() const {
+  return GetDesksBarView()->vertical_dots_button_->context_menu_.get();
+}
+
+SkColor DesksTestApi::GetNewDeskButtonBackgroundColor() const {
+  return GetDesksBarView()
+      ->expanded_state_new_desk_button()
+      ->new_desk_button()
+      ->background_color_;
+}
+
+PersistentDesksBarContextMenu* DesksTestApi::GetPersistentDesksBarContextMenu()
+    const {
+  return GetPersistentDesksBarView()
+      ->vertical_dots_button_->context_menu_.get();
+}
+
+const std::vector<PersistentDesksBarDeskButton*>
+DesksTestApi::GetPersistentDesksBarDeskButtons() const {
+  return GetPersistentDesksBarView()->desk_buttons_;
+}
+
+bool DesksTestApi::IsDesksBarLeftGradientVisible() const {
+  return !GetDesksBarView()
+              ->gradient_layer_delegate_->start_fade_zone_bounds()
+              .IsEmpty();
+}
+
+bool DesksTestApi::IsDesksBarRightGradientVisible() const {
+  return !GetDesksBarView()
+              ->gradient_layer_delegate_->end_fade_zone_bounds()
+              .IsEmpty();
+}
+
+void DesksTestApi::OverrideDeskClock(Desk* desk, base::Clock* test_clock) {
+  DCHECK(!desk->override_clock_);
+  desk->override_clock_ = test_clock;
+}
+
+void DesksTestApi::ResetDeskVisitedMetrics(Desk* desk) {
+  const int current_date = desk->GetDaysFromLocalEpoch();
+  desk->first_day_visited_ = current_date;
+  desk->last_day_visited_ = current_date;
+}
+
+}  // namespace ash
