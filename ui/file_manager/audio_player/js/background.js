@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {SingletonAppWindowWrapper} from '../../file_manager/background/js/app_window_wrapper.m.js';
-import {BackgroundBaseImpl} from '../../file_manager/background/js/background_base.m.js';
+import {SingletonAppWindowWrapper} from '../../file_manager/background/js/app_window_wrapper.js';
+import {BackgroundBaseImpl} from '../../file_manager/background/js/background_base.js';
 import {FileType} from '../../file_manager/common/js/file_type.m.js';
 import {util} from '../../file_manager/common/js/util.m.js';
 

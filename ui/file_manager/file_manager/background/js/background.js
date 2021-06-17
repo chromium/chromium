@@ -19,7 +19,7 @@ import {ProgressCenter} from '../../externs/background/progress_center.m.js';
 import {VolumeInfo} from '../../externs/volume_info.m.js';
 import {VolumeManager} from '../../externs/volume_manager.m.js';
 
-import {BackgroundBaseImpl} from './background_base.m.js';
+import {BackgroundBaseImpl} from './background_base.js';
 import {CrostiniImpl} from './crostini.js';
 import {DeviceHandler} from './device_handler.js';
 import {DriveSyncHandlerImpl} from './drive_sync_handler.js';
@@ -28,12 +28,12 @@ import {FileOperationHandler} from './file_operation_handler.js';
 import {FileOperationManagerImpl} from './file_operation_manager.js';
 import {fileOperationUtil} from './file_operation_util.js';
 import {importerHistory} from './import_history.js';
-import {FILES_ID_PATTERN, launcher, LaunchType, nextFileManagerWindowID} from './launcher.m.js';
+import {FILES_ID_PATTERN, launcher, LaunchType, nextFileManagerWindowID} from './launcher.js';
 import {mediaImport} from './media_import_handler.js';
 import {mediaScanner} from './media_scanner.js';
-import {MountMetrics} from './mount_metrics.m.js';
+import {MountMetrics} from './mount_metrics.js';
 import {ProgressCenterImpl} from './progress_center.js';
-import {volumeManagerFactory} from './volume_manager_factory.m.js';
+import {volumeManagerFactory} from './volume_manager_factory.js';
 
 /**
  * Root class of the background page.

@@ -14,8 +14,8 @@ import './crt0.js';
  */
 import {BrowserProxy} from './browser_proxy.js'
 import {ScriptLoader} from './script_loader.js'
-import {VolumeManagerImpl} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/background/js/volume_manager_impl.m.js';
-import 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/background/js/metrics_start.m.js';
+import {VolumeManagerImpl} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/background/js/volume_manager_impl.js';
+import 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/background/js/metrics_start.js';
 import {background} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/background/js/background.js';
 import './test_util_swa.js';
 

@@ -8,7 +8,7 @@ import {importer} from '../../common/js/importer_common.m.js';
 import {reportPromise} from '../../common/js/test_error_reporting.m.js';
 import {taskQueueInterfaces} from '../../externs/background/task_queue.m.js';
 
-import {taskQueue} from './task_queue.m.js';
+import {taskQueue} from './task_queue.js';
 
 /** @type {!taskQueueInterfaces.TaskQueue} */
 let queue;

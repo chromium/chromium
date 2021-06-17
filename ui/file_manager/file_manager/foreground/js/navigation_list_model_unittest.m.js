@@ -6,7 +6,7 @@
 import {assertEquals, assertTrue} from 'chrome://test/chai_assert.js';
 
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
-import {VolumeInfoImpl} from '../../background/js/volume_info_impl.m.js';
+import {VolumeInfoImpl} from '../../background/js/volume_info_impl.js';
 import { EntryList,FakeEntryImpl} from '../../common/js/files_app_entry_types.m.js';
 import {MockCommandLinePrivate} from '../../common/js/mock_chrome.m.js';
 import { MockFileEntry,MockFileSystem} from '../../common/js/mock_entry.m.js';

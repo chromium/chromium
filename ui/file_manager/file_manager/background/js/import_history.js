@@ -13,7 +13,7 @@ import {importer} from '../../common/js/importer_common.m.js';
 import {util} from '../../common/js/util.m.js';
 import {importerHistoryInterfaces} from '../../externs/background/import_history.m.js';
 
-import {metadataProxy} from './metadata_proxy.m.js';
+import {metadataProxy} from './metadata_proxy.js';
 
 // Namespace
 // eslint-disable-next-line no-var

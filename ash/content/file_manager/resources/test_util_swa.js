@@ -8,7 +8,7 @@
 // directly load the Files.app's test_util_base.js due to its dependencies on
 // Chrome APIs not available in SWAs.
 
-import {test} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/background/js/test_util.m.js';
+import {test} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/background/js/test_util.js';
 import {ScriptLoader} from './script_loader.js'
 
 delete test.util.registerRemoteTestUtils;

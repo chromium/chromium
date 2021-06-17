@@ -19,7 +19,7 @@ import {ProgressCenter} from '../../externs/background/progress_center.m.js';
 import {taskQueueInterfaces} from '../../externs/background/task_queue.m.js';
 
 import {fileOperationUtil} from './file_operation_util.js';
-import {taskQueue} from './task_queue.m.js';
+import {taskQueue} from './task_queue.js';
 
 
 // Namespace

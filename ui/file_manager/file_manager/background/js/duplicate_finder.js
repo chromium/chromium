@@ -16,7 +16,7 @@ import {importerHistoryInterfaces} from '../../externs/background/import_history
 import {VolumeManager} from '../../externs/volume_manager.m.js';
 
 import {importerHistory} from './import_history.js';
-import {volumeManagerFactory} from './volume_manager_factory.m.js';
+import {volumeManagerFactory} from './volume_manager_factory.js';
 
 // eslint-disable-next-line no-var
 var duplicateFinder = {};

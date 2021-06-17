@@ -9,7 +9,7 @@
 // #import {VolumeManager, ExternallyUnmountedEvent} from '../../externs/volume_manager.m.js';
 // #import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.m.js';
 // #import {EntryLocation} from '../../externs/entry_location.m.js';
-// #import * as wrappedVolumeManagerCommon from './volume_manager_types.m.js'; const {VolumeManagerCommon, AllowedPaths} = wrappedVolumeManagerCommon;
+// #import {VolumeManagerCommon, AllowedPaths} from './volume_manager_types.m.js';
 // #import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
 // #import {ArrayDataModel} from 'chrome://resources/js/cr/ui/array_data_model.m.js';
 // #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
@@ -140,6 +140,9 @@
    * @return {boolean}
    */
   isAllowedVolume_(volumeInfo) {
+    if (!volumeInfo.volumeType) {
+      return false;
+    }
     if (!this.isAllowedVolumeType_(volumeInfo.volumeType)) {
       return false;
     }

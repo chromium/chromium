@@ -10,10 +10,10 @@ import {MockDirectoryEntry, MockFileEntry, MockFileSystem} from '../../common/js
 import {assertRejected, reportPromise} from '../../common/js/test_error_reporting.m.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
 
-import {VolumeInfoImpl} from './volume_info_impl.m.js';
-import {volumeManagerFactory} from './volume_manager_factory.m.js';
-import {VolumeManagerImpl} from './volume_manager_impl.m.js';
-import {volumeManagerUtil} from './volume_manager_util.m.js';
+import {VolumeInfoImpl} from './volume_info_impl.js';
+import {volumeManagerFactory} from './volume_manager_factory.js';
+import {VolumeManagerImpl} from './volume_manager_impl.js';
+import {volumeManagerUtil} from './volume_manager_util.js';
 
 let mockChrome;
 let createVolumeInfoOriginal;

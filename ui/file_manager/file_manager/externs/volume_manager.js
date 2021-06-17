@@ -7,7 +7,7 @@
 // #import {VolumeInfo} from './volume_info.m.js';
 // #import {VolumeInfoList} from './volume_info_list.m.js';
 // #import {FilesAppEntry, FilesAppDirEntry} from './files_app_entry_interfaces.m.js';
-// #import * as wrappedVolumeManagerCommon from '../common/js/volume_manager_types.m.js'; const {VolumeManagerCommon} = wrappedVolumeManagerCommon;
+// #import {VolumeManagerCommon} from '../common/js/volume_manager_types.m.js';
 // clang-format on
 
 /**
@@ -71,7 +71,7 @@
    * Obtains volume information of the current profile.
    *
    * @param {VolumeManagerCommon.VolumeType} volumeType Volume type.
-   * @return {VolumeInfo} Volume info.
+   * @return {?VolumeInfo} Volume info.
    */
   getCurrentProfileVolumeInfo(volumeType) {}
 

@@ -8,7 +8,7 @@ import {importer} from '../../common/js/importer_common.m.js';
 import {mediaScannerInterfaces} from '../../externs/background/media_scanner.m.js';
 
 import {fileOperationUtil} from './file_operation_util.js';
-import {metadataProxy} from './metadata_proxy.m.js';
+import {metadataProxy} from './metadata_proxy.js';
 
 // Namespace
 export const mediaScanner = {};

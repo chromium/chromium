@@ -2,15 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * @fileoverview
- * @suppress {uselessCode} Temporary suppress because of the line exporting.
- */
-
-// clang-format off
-// #import {importer} from '../../common/js/importer_common.m.js';
-// #import {taskQueueInterfaces} from '../../externs/background/task_queue.m.js';
-// clang-format on
+import {importer} from '../../common/js/importer_common.m.js';
+import {taskQueueInterfaces} from '../../externs/background/task_queue.m.js';
 
 // Namespace
 const taskQueue = {};
@@ -203,5 +196,4 @@ taskQueue.BaseTaskImpl = class {
   }
 };
 
-// eslint-disable-next-line semi,no-extra-semi
-/* #export */ {taskQueue};
+export {taskQueue};

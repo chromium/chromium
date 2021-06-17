@@ -2,18 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * @fileoverview
- * @suppress {uselessCode} Temporary suppress because of the line exporting.
- */
+import {str, util} from '../../common/js/util.m.js';
+import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
+import {VolumeInfo} from '../../externs/volume_info.m.js';
 
-// clang-format off
-// #import {VolumeInfoImpl} from './volume_info_impl.m.js';
-// #import * as wrappedVolumeManagerCommon from '../../common/js/volume_manager_types.m.js'; const {VolumeManagerCommon} = wrappedVolumeManagerCommon;
-// #import * as wrappedUtil from '../../common/js/util.m.js'; const {util} = wrappedUtil;
-// #import {str} from '../../common/js/util.m.js';
-// #import {VolumeInfo} from '../../externs/volume_info.m.js';
-// clang-format on
+import {VolumeInfoImpl} from './volume_info_impl.js';
 
 /**
  * Utilities for volume manager implementation.
@@ -270,5 +263,4 @@ volumeManagerUtil.createVolumeInfo = volumeMetadata => {
           });
 };
 
-// eslint-disable-next-line semi,no-extra-semi
-/* #export */ {volumeManagerUtil};
+export {volumeManagerUtil};

@@ -13,7 +13,7 @@ import {ProgressCenter} from '../../externs/background/progress_center.m.js';
 import {DriveDialogControllerInterface} from '../../externs/drive_dialog_controller.m.js';
 
 import {fileOperationUtil} from './file_operation_util.js';
-import {launcher, LaunchType} from './launcher.m.js';
+import {launcher, LaunchType} from './launcher.js';
 
 /**
  * Handler of the background page for the Drive sync events.

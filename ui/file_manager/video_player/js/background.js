@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AppWindowWrapper} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/background/js/app_window_wrapper.m.js';
-import {BackgroundBaseImpl} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/background/js/background_base.m.js';
+import {AppWindowWrapper} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/background/js/app_window_wrapper.js';
+import {BackgroundBaseImpl} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/background/js/background_base.js';
 import {util} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/common/js/util.m.js';
 import {BackgroundBase} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/externs/background/background_base.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';

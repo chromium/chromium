@@ -8,7 +8,7 @@ import {assertEquals} from 'chrome://test/chai_assert.js';
 import {MockFileSystem} from '../../common/js/mock_entry.m.js';
 import {reportPromise} from '../../common/js/test_error_reporting.m.js';
 
-import {metadataProxy} from './metadata_proxy.m.js';
+import {metadataProxy} from './metadata_proxy.js';
 
 // clang-format on
 

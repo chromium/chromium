@@ -55,8 +55,8 @@ js_type_check("closure_compile_jsmodules") {
 
 js_library("background") {
   deps = [
-    "//ui/file_manager/file_manager/background/js:app_window_wrapper.m",
-    "//ui/file_manager/file_manager/background/js:background_base.m",
+    "//ui/file_manager/file_manager/background/js:app_window_wrapper",
+    "//ui/file_manager/file_manager/background/js:background_base",
     "//ui/file_manager/file_manager/common/js:util.m",
     "//ui/file_manager/file_manager/externs/background:background_base.m",
     "//ui/webui/resources/js:assert.m",
@@ -69,7 +69,7 @@ js_library("error_util") {
 js_library("test_util") {
   deps = [
     ":background",
-    "//ui/file_manager/file_manager/background/js:test_util_base.m",
+    "//ui/file_manager/file_manager/background/js:test_util_base",
   ]
 }
 

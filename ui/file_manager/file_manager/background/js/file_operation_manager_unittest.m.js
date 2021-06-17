@@ -16,7 +16,7 @@ import {EntryLocation} from '../../externs/entry_location.m.js';
 
 import {FileOperationManagerImpl} from './file_operation_manager.js';
 import {fileOperationUtil} from './file_operation_util.js';
-import {volumeManagerFactory} from './volume_manager_factory.m.js';
+import {volumeManagerFactory} from './volume_manager_factory.js';
 
 // clang-format on
 

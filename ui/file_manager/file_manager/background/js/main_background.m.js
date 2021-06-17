@@ -7,8 +7,8 @@
  * background_scripts.js.
  */
 
-import './metrics_start.m.js';
+import './metrics_start.js';
 import '../../common/js/error_counter.m.js';
 
 import './background.js';
-import './test_util.m.js';
+import './test_util.js';

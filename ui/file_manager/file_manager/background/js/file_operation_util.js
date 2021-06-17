@@ -15,7 +15,7 @@ import {FileOperationError, FileOperationProgressEvent} from '../../common/js/fi
 import {TrashEntry} from '../../common/js/trash.js';
 import {util} from '../../common/js/util.m.js';
 
-import {metadataProxy} from './metadata_proxy.m.js';
+import {metadataProxy} from './metadata_proxy.js';
 
 /**
  * Utilities for file operations.

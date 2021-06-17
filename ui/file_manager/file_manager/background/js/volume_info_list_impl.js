@@ -2,24 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {VolumeInfo} from '../../externs/volume_info.m.js';
-// #import {VolumeInfoList} from '../../externs/volume_info_list.m.js';
-// #import {ArrayDataModel} from 'chrome://resources/js/cr/ui/array_data_model.m.js';
-// clang-format on
+import {ArrayDataModel} from 'chrome://resources/js/cr/ui/array_data_model.m.js';
+
+import {VolumeInfo} from '../../externs/volume_info.m.js';
+import {VolumeInfoList} from '../../externs/volume_info_list.m.js';
 
 /**
  * The container of the VolumeInfo for each mounted volume.
  * @final
  * @implements {VolumeInfoList}
  */
-/* #export */ class VolumeInfoListImpl {
+export class VolumeInfoListImpl {
   constructor() {
     /**
      * Holds VolumeInfo instances.
-     * @private @const {cr.ui.ArrayDataModel}
+     * @private @const {ArrayDataModel}
      */
-    this.model_ = new cr.ui.ArrayDataModel([]);
+    this.model_ = new ArrayDataModel([]);
     Object.freeze(this);
   }
 

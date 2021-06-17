@@ -75,8 +75,8 @@ js_library("audio_player") {
 
 js_library("background") {
   deps = [
-    "//ui/file_manager/file_manager/background/js:app_window_wrapper.m",
-    "//ui/file_manager/file_manager/background/js:background_base.m",
+    "//ui/file_manager/file_manager/background/js:app_window_wrapper",
+    "//ui/file_manager/file_manager/background/js:background_base",
     "//ui/file_manager/file_manager/common/js:file_type.m",
     "//ui/file_manager/file_manager/common/js:util.m",
   ]
@@ -92,7 +92,7 @@ js_library("metadata_worker") {
 js_library("test_util") {
   deps = [
     ":background",
-    "//ui/file_manager/file_manager/background/js:test_util_base.m",
+    "//ui/file_manager/file_manager/background/js:test_util_base",
   ]
 }
 

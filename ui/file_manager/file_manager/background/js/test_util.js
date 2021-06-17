@@ -2,16 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {background} from './background.js';
-// #import {test} from './test_util_base.m.js';
-// #import {launcher} from './launcher.m.js';
-// #import {util} from '../../common/js/util.m.js';
-// #import {ProgressCenterItem} from '../../common/js/progress_center_common.m.js';
-// clang-format on
+import {ProgressCenterItem} from '../../common/js/progress_center_common.m.js';
+import {util} from '../../common/js/util.m.js';
 
-// eslint-disable-next-line semi,no-extra-semi
-/* #export */ {test};
+import {background} from './background.js';
+import {launcher} from './launcher.js';
+import {test} from './test_util_base.js';
+
+export {test};
 
 /**
  * Opens the main Files app's window and waits until it is ready.

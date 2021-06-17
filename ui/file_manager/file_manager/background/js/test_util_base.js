@@ -2,17 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * @fileoverview
- * @suppress {uselessCode} Temporary suppress because of the line exporting.
- */
+import {assert} from 'chrome://resources/js/assert.m.js';
 
-// clang-format off
-// #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
-// #import {util} from '../../common/js/util.m.js';
-// #import {metrics} from '../../common/js/metrics.m.js';
-// #import {assert} from 'chrome://resources/js/assert.m.js';
-// clang-format on
+import {metrics} from '../../common/js/metrics.m.js';
+import {util} from '../../common/js/util.m.js';
+import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
 
 /**
  * Namespace for test related things.
@@ -116,5 +110,4 @@ test.util.registerRemoteTestUtils = (path) => {
       });
 };
 
-// eslint-disable-next-line semi,no-extra-semi
-/* #export */ {test};
+export {test};

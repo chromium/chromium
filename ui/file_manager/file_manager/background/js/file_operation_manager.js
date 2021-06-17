@@ -15,9 +15,9 @@ import {FakeEntry} from '../../externs/files_app_entry_interfaces.m.js';
 import {VolumeManager} from '../../externs/volume_manager.m.js';
 
 import {fileOperationUtil} from './file_operation_util.js';
-import {metadataProxy} from './metadata_proxy.m.js';
+import {metadataProxy} from './metadata_proxy.js';
 import {Trash} from './trash.js';
-import {volumeManagerFactory} from './volume_manager_factory.m.js';
+import {volumeManagerFactory} from './volume_manager_factory.js';
 
 /**
  * FileOperationManagerImpl: implementation of {FileOperationManager}.
