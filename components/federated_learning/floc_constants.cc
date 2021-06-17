@@ -18,6 +18,8 @@ static_assert(kMaxNumberOfBitsInFloc > 0 &&
 
 const char kFlocIdValuePrefKey[] = "federated_learning.floc_id.value";
 
+const char kFlocIdStatusPrefKey[] = "federated_learning.floc_id.status";
+
 const char kFlocIdHistoryBeginTimePrefKey[] =
     "federated_learning.floc_id.history_begin_time";
 

@@ -15,6 +15,7 @@ extern const uint8_t kMaxNumberOfBitsInFloc;
 // For the preferences storage
 // ---------------------------
 extern const char kFlocIdValuePrefKey[];
+extern const char kFlocIdStatusPrefKey[];
 extern const char kFlocIdHistoryBeginTimePrefKey[];
 extern const char kFlocIdHistoryEndTimePrefKey[];
 extern const char kFlocIdFinchConfigVersionPrefKey[];

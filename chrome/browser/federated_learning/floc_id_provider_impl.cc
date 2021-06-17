@@ -109,14 +109,23 @@ FlocIdProviderImpl::FlocIdProviderImpl(
   StartupComputeDecision decision = GetStartupComputeDecision(
       floc_id_, privacy_sandbox_settings->FlocDataAccessibleSince());
 
-  // If the previous floc has expired, invalidate it; otherwise, keep using the
-  // previous floc though it may already be invalid.
-  if (decision.invalidate_existing_floc)
-    floc_id_.InvalidateIdAndSaveToPrefs(prefs_);
+  // Invalidate the expired floc and/or assign a better invalid reason.
+  if (decision.invalidate_existing_floc) {
+    // We only switch from one invalid status to another invalid status when
+    // the next cohort computation becomes ready to run (i.e.
+    // kInvalidWaitingToStart).
+    FlocId::Status maybe_new_status =
+        decision.next_compute_delay.has_value()
+            ? (floc_id_.status() == FlocId::Status::kValid)
+                  ? FlocId::Status::kInvalidReset
+                  : floc_id_.status()
+            : FlocId::Status::kInvalidWaitingToStart;
+
+    floc_id_.UpdateStatusAndSaveToPrefs(prefs_, maybe_new_status);
+  }
 
   // Schedule the next floc computation if a delay is needed; otherwise, the
-  // next computation will occur immediately, or as soon as the sorting-lsh file
-  // is loaded when the sorting-lsh feature is enabled.
+  // next computation will occur as soon as the sorting-lsh file is loaded.
   if (decision.next_compute_delay.has_value())
     ScheduleFlocComputation(decision.next_compute_delay.value());
 
@@ -240,7 +249,7 @@ void FlocIdProviderImpl::OnFlocDataAccessibleSinceUpdated(
   // the begin time of the history used to compute the current floc.
   if (privacy_sandbox_settings_->FlocDataAccessibleSince() >
       floc_id_.history_begin_time()) {
-    floc_id_.InvalidateIdAndSaveToPrefs(prefs_);
+    floc_id_.UpdateStatusAndSaveToPrefs(prefs_, FlocId::Status::kInvalidReset);
   }
 }
 
@@ -272,9 +281,11 @@ void FlocIdProviderImpl::OnURLsDeleted(
   // We log the invalidation event although it's technically not a recompute.
   // It'd give us a better idea how often the floc is invalidated due to
   // history-delete.
-  LogFlocComputedEvent(ComputeFlocResult());
+  LogFlocComputedEvent(
+      ComputeFlocResult(FlocId::Status::kInvalidHistoryDeleted));
 
-  floc_id_.InvalidateIdAndSaveToPrefs(prefs_);
+  floc_id_.UpdateStatusAndSaveToPrefs(prefs_,
+                                      FlocId::Status::kInvalidHistoryDeleted);
 }
 
 void FlocIdProviderImpl::OnSortingLshClustersFileReady() {
@@ -314,7 +325,8 @@ void FlocIdProviderImpl::OnCheckCanComputeFlocCompleted(
     ComputeFlocCompletedCallback callback,
     bool can_compute_floc) {
   if (!can_compute_floc) {
-    std::move(callback).Run(ComputeFlocResult());
+    std::move(callback).Run(
+        ComputeFlocResult(FlocId::Status::kInvalidDisallowedByUserSettings));
     return;
   }
 
@@ -369,7 +381,8 @@ void FlocIdProviderImpl::OnGetRecentlyVisitedURLsCompleted(
 
   if (domains.size() <
       static_cast<size_t>(kFlocIdMinimumHistoryDomainSizeRequired.Get())) {
-    std::move(callback).Run(ComputeFlocResult());
+    std::move(callback).Run(ComputeFlocResult(
+        FlocId::Status::kInvalidNotEnoughElgibleHistoryDomains));
     return;
   }
 
@@ -393,13 +406,15 @@ void FlocIdProviderImpl::DidApplySortingLshPostProcessing(
     absl::optional<uint64_t> final_hash,
     base::Version version) {
   if (!final_hash) {
-    std::move(callback).Run(ComputeFlocResult(sim_hash, FlocId()));
+    std::move(callback).Run(ComputeFlocResult(
+        sim_hash, FlocId::CreateInvalid(FlocId::Status::kInvalidBlocked)));
     return;
   }
 
   std::move(callback).Run(ComputeFlocResult(
-      sim_hash, FlocId(final_hash.value(), history_begin_time, history_end_time,
-                       version.components().front())));
+      sim_hash,
+      FlocId::CreateValid(final_hash.value(), history_begin_time,
+                          history_end_time, version.components().front())));
 }
 
 void FlocIdProviderImpl::ScheduleFlocComputation(base::TimeDelta delay) {

@@ -19,6 +19,7 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/federated_learning/features/features.h"
+#include "components/federated_learning/floc_constants.h"
 #include "components/history/core/browser/history_database_params.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/test_history_database.h"
@@ -160,11 +161,12 @@ class MockFlocIdProvider : public FlocIdProviderImpl {
   // execution and let it yield to other tasks posted to the same task runner.
   bool should_pause_before_compute_floc_completed_ = false;
   bool paused_ = false;
-  ComputeFlocResult paused_result_;
+  ComputeFlocResult paused_result_{FlocId::Status::kInvalidWaitingToStart};
 
   size_t compute_floc_completed_count_ = 0u;
   size_t log_event_count_ = 0u;
-  ComputeFlocResult last_log_event_result_;
+  ComputeFlocResult last_log_event_result_{
+      FlocId::Status::kInvalidWaitingToStart};
 };
 
 }  // namespace
@@ -173,13 +175,14 @@ class MockFlocIdProvider : public FlocIdProviderImpl {
 // compute_time.
 class FlocIdTester {
  public:
-  static FlocId Create(absl::optional<uint64_t> id,
+  static FlocId Create(uint64_t id,
+                       FlocId::Status status,
                        base::Time history_begin_time,
                        base::Time history_end_time,
                        uint32_t finch_config_version,
                        uint32_t sorting_lsh_version,
                        base::Time compute_time) {
-    return FlocId(id, history_begin_time, history_end_time,
+    return FlocId(id, status, history_begin_time, history_end_time,
                   finch_config_version, sorting_lsh_version, compute_time);
   }
 };
@@ -389,6 +392,8 @@ TEST_F(FlocIdProviderUnitTest, DefaultSetup_BelowMinimumHistoryDomainSize) {
   EXPECT_EQ(1u, floc_id_provider_->compute_floc_completed_count());
   EXPECT_EQ(1u, floc_id_provider_->log_event_count());
   EXPECT_FALSE(floc_id().IsValid());
+  EXPECT_EQ(FlocId::Status::kInvalidNotEnoughElgibleHistoryDomains,
+            floc_id().status());
 }
 
 TEST_F(FlocIdProviderUnitTest, DefaultSetup_MinimumHistoryDomainSize) {
@@ -406,8 +411,9 @@ TEST_F(FlocIdProviderUnitTest, DefaultSetup_MinimumHistoryDomainSize) {
   // Expect that the 1st computation has completed with the expected floc.
   EXPECT_EQ(1u, floc_id_provider_->compute_floc_completed_count());
   EXPECT_EQ(1u, floc_id_provider_->log_event_count());
-  EXPECT_EQ(FlocId(FlocId::SimHashHistory({"foo.com", "bar.com", "baz.com"}),
-                   kSevenDaysBeforeStart, kSevenDaysBeforeStart, 2),
+  EXPECT_EQ(FlocId::CreateValid(
+                FlocId::SimHashHistory({"foo.com", "bar.com", "baz.com"}),
+                kSevenDaysBeforeStart, kSevenDaysBeforeStart, 2),
             floc_id());
 }
 
@@ -426,8 +432,9 @@ TEST_F(FlocIdProviderUnitTest, DefaultSetup_ScheduledUpdateInterval) {
   // Expect that the 1st computation has completed.
   EXPECT_EQ(1u, floc_id_provider_->compute_floc_completed_count());
   EXPECT_EQ(1u, floc_id_provider_->log_event_count());
-  EXPECT_EQ(FlocId(FlocId::SimHashHistory({"foo.com", "bar.com", "baz.com"}),
-                   kSevenDaysBeforeStart, kSevenDaysBeforeStart, 2),
+  EXPECT_EQ(FlocId::CreateValid(
+                FlocId::SimHashHistory({"foo.com", "bar.com", "baz.com"}),
+                kSevenDaysBeforeStart, kSevenDaysBeforeStart, 2),
             floc_id());
   EXPECT_FALSE(floc_computation_in_progress());
   EXPECT_TRUE(floc_computation_scheduled());
@@ -455,8 +462,9 @@ TEST_F(FlocIdProviderUnitTest, DefaultSetup_ScheduledUpdateInterval) {
   EXPECT_EQ(2u, floc_id_provider_->compute_floc_completed_count());
   EXPECT_EQ(2u, floc_id_provider_->log_event_count());
 
-  EXPECT_EQ(FlocId(FlocId::SimHashHistory({"bar.com", "baz.com", "qux.com"}),
-                   kSixDaysAfterStart, kSixDaysAfterStart, 2),
+  EXPECT_EQ(FlocId::CreateValid(
+                FlocId::SimHashHistory({"bar.com", "baz.com", "qux.com"}),
+                kSixDaysAfterStart, kSixDaysAfterStart, 2),
             floc_id());
 }
 
@@ -485,8 +493,9 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest, QualifiedInitialHistory) {
   // Expect that the 1st computation has completed.
   EXPECT_EQ(1u, floc_id_provider_->compute_floc_completed_count());
   EXPECT_EQ(1u, floc_id_provider_->log_event_count());
-  EXPECT_EQ(FlocId(FlocId::SimHashHistory({"foo.com"}), kTime, kTime, 2),
-            floc_id());
+  EXPECT_EQ(
+      FlocId::CreateValid(FlocId::SimHashHistory({"foo.com"}), kTime, kTime, 2),
+      floc_id());
   EXPECT_TRUE(floc_id_provider_->last_log_event_result().sim_hash_computed);
   EXPECT_EQ(FlocId::SimHashHistory({"foo.com"}),
             floc_id_provider_->last_log_event_result().sim_hash);
@@ -502,6 +511,8 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest, QualifiedInitialHistory) {
   EXPECT_EQ(2u, floc_id_provider_->compute_floc_completed_count());
   EXPECT_EQ(2u, floc_id_provider_->log_event_count());
   EXPECT_FALSE(floc_id().IsValid());
+  EXPECT_EQ(FlocId::Status::kInvalidNotEnoughElgibleHistoryDomains,
+            floc_id().status());
 }
 
 TEST_F(FlocIdProviderSimpleFeatureParamUnitTest, UnqualifiedInitialHistory) {
@@ -536,8 +547,9 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest, UnqualifiedInitialHistory) {
   EXPECT_EQ(2u, floc_id_provider_->compute_floc_completed_count());
   EXPECT_EQ(2u, floc_id_provider_->log_event_count());
 
-  EXPECT_EQ(FlocId(FlocId::SimHashHistory({"foo.com"}), kTime, kTime, 2),
-            floc_id());
+  EXPECT_EQ(
+      FlocId::CreateValid(FlocId::SimHashHistory({"foo.com"}), kTime, kTime, 2),
+      floc_id());
 }
 
 TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
@@ -566,8 +578,8 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
   EXPECT_TRUE(floc_computation_scheduled());
 
   // Expected that floc is calculated from only "bar.com".
-  EXPECT_EQ(FlocId(FlocId::SimHashHistory({"bar.com"}), kSixDaysBeforeStart,
-                   kSixDaysBeforeStart, 2),
+  EXPECT_EQ(FlocId::CreateValid(FlocId::SimHashHistory({"bar.com"}),
+                                kSixDaysBeforeStart, kSixDaysBeforeStart, 2),
             floc_id());
 }
 
@@ -582,8 +594,8 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
       kStartTime - base::TimeDelta::FromHours(12);
 
   FlocId floc_id_in_prefs_before_start =
-      FlocIdTester::Create(123, kSevenDaysBeforeStart, kSixDaysBeforeStart, 1,
-                           0, kTwelveHoursBeforeStart);
+      FlocIdTester::Create(123, FlocId::Status::kValid, kSevenDaysBeforeStart,
+                           kSixDaysBeforeStart, 1, 0, kTwelveHoursBeforeStart);
   floc_id_in_prefs_before_start.SaveToPrefs(&prefs_);
 
   prefs_.SetTime(prefs::kPrivacySandboxFlocDataAccessibleSince,
@@ -602,6 +614,9 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
 
   EXPECT_FALSE(floc_id().IsValid());
   EXPECT_FALSE(FlocId::ReadFromPrefs(&prefs_).IsValid());
+  EXPECT_EQ(FlocId::Status::kInvalidReset, floc_id().status());
+  EXPECT_EQ(FlocId::Status::kInvalidReset,
+            FlocId::ReadFromPrefs(&prefs_).status());
 
   // Fast forward by 12 hours. This should trigger a scheduled update.
   task_environment_.FastForwardBy(base::TimeDelta::FromHours(12));
@@ -612,8 +627,9 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
   EXPECT_FALSE(floc_computation_in_progress());
   EXPECT_TRUE(floc_computation_scheduled());
 
-  EXPECT_EQ(floc_id(), FlocId(FlocId::SimHashHistory({"bar.com"}),
-                              kSixDaysBeforeStart, kSixDaysBeforeStart, 2));
+  EXPECT_EQ(floc_id(),
+            FlocId::CreateValid(FlocId::SimHashHistory({"bar.com"}),
+                                kSixDaysBeforeStart, kSixDaysBeforeStart, 2));
   EXPECT_EQ(floc_id(), FlocId::ReadFromPrefs(&prefs_));
 }
 
@@ -636,8 +652,8 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
   // Expect that the 1st computation has completed.
   EXPECT_EQ(1u, floc_id_provider_->compute_floc_completed_count());
   EXPECT_EQ(1u, floc_id_provider_->log_event_count());
-  EXPECT_EQ(FlocId(FlocId::SimHashHistory({"foo.com", "bar.com"}),
-                   kSevenDaysBeforeStart, kSixDaysBeforeStart, 2),
+  EXPECT_EQ(FlocId::CreateValid(FlocId::SimHashHistory({"foo.com", "bar.com"}),
+                                kSevenDaysBeforeStart, kSixDaysBeforeStart, 2),
             floc_id());
 
   // Advance the clock by 12 hours. Expect no more computation.
@@ -654,6 +670,7 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
   EXPECT_EQ(1u, floc_id_provider_->compute_floc_completed_count());
   EXPECT_EQ(2u, floc_id_provider_->log_event_count());
   EXPECT_FALSE(floc_id().IsValid());
+  EXPECT_EQ(FlocId::Status::kInvalidHistoryDeleted, floc_id().status());
 
   // Advance the clock by 12 hours. Expect one more computation, which implies
   // the timer didn't get reset due to the history invalidation. Expect that
@@ -661,8 +678,8 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
   task_environment_.FastForwardBy(base::TimeDelta::FromHours(12));
   EXPECT_EQ(2u, floc_id_provider_->compute_floc_completed_count());
   EXPECT_EQ(3u, floc_id_provider_->log_event_count());
-  EXPECT_EQ(FlocId(FlocId::SimHashHistory({"bar.com"}), kSixDaysBeforeStart,
-                   kSixDaysBeforeStart, 2),
+  EXPECT_EQ(FlocId::CreateValid(FlocId::SimHashHistory({"bar.com"}),
+                                kSixDaysBeforeStart, kSixDaysBeforeStart, 2),
             floc_id());
 }
 
@@ -679,8 +696,9 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest, ScheduledUpdateSameFloc) {
   // Expect that the 1st computation has completed.
   EXPECT_EQ(1u, floc_id_provider_->compute_floc_completed_count());
   EXPECT_EQ(1u, floc_id_provider_->log_event_count());
-  EXPECT_EQ(FlocId(FlocId::SimHashHistory({"foo.com"}), kTime, kTime, 2),
-            floc_id());
+  EXPECT_EQ(
+      FlocId::CreateValid(FlocId::SimHashHistory({"foo.com"}), kTime, kTime, 2),
+      floc_id());
 
   // Advance the clock by 1 day. Expect one more computation, but the floc
   // didn't change.
@@ -688,8 +706,9 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest, ScheduledUpdateSameFloc) {
 
   EXPECT_EQ(2u, floc_id_provider_->compute_floc_completed_count());
   EXPECT_EQ(2u, floc_id_provider_->log_event_count());
-  EXPECT_EQ(FlocId(FlocId::SimHashHistory({"foo.com"}), kTime, kTime, 2),
-            floc_id());
+  EXPECT_EQ(
+      FlocId::CreateValid(FlocId::SimHashHistory({"foo.com"}), kTime, kTime, 2),
+      floc_id());
 }
 
 TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
@@ -719,6 +738,24 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
 }
 
 TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
+       FlocComputationDisallowedByUserSettings) {
+  fake_cookie_settings_->set_should_block_third_party_cookies(true);
+
+  // Initializing the floc provider and sorting-lsh service should trigger the
+  // 1st floc computation.
+  InitializeFlocIdProviderAndSortingLsh(base::Version("2.0.0"));
+  task_environment_.RunUntilIdle();
+
+  // Expect that the 1st computation has completed with an invalid floc, due
+  // to insufficient history domains.
+  EXPECT_EQ(1u, floc_id_provider_->compute_floc_completed_count());
+  EXPECT_EQ(1u, floc_id_provider_->log_event_count());
+  EXPECT_FALSE(floc_id().IsValid());
+  EXPECT_EQ(FlocId::Status::kInvalidDisallowedByUserSettings,
+            floc_id().status());
+}
+
+TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
        OnFlocDataAccessibleSinceUpdated_TimeRangeNotFullyCovered) {
   InitializeFlocIdProviderAndSortingLsh(base::Version("2.0.0"));
   task_environment_.RunUntilIdle();
@@ -726,12 +763,13 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
   const base::Time kTime1 = base::Time::FromTimeT(1);
   const base::Time kTime2 = base::Time::FromTimeT(2);
 
-  set_floc_id(FlocId(123, kTime1, kTime2, 2));
+  set_floc_id(FlocId::CreateValid(123, kTime1, kTime2, 2));
 
   prefs_.SetTime(prefs::kPrivacySandboxFlocDataAccessibleSince, kTime2);
   OnFlocDataAccessibleSinceUpdated(/*reset_compute_timer=*/false);
 
   EXPECT_FALSE(floc_id().IsValid());
+  EXPECT_EQ(FlocId::Status::kInvalidReset, floc_id().status());
 }
 
 TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
@@ -742,7 +780,7 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
   const base::Time kTime1 = base::Time::FromTimeT(1);
   const base::Time kTime2 = base::Time::FromTimeT(2);
 
-  set_floc_id(FlocId(123, kTime1, kTime2, 2));
+  set_floc_id(FlocId::CreateValid(123, kTime1, kTime2, 2));
 
   prefs_.SetTime(prefs::kPrivacySandboxFlocDataAccessibleSince, kTime1);
   OnFlocDataAccessibleSinceUpdated(/*reset_compute_timer=*/false);
@@ -800,11 +838,12 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest, HistoryDelete_AllHistory) {
   const base::Time kTime1 = base::Time::FromTimeT(1);
   const base::Time kTime2 = base::Time::FromTimeT(2);
 
-  set_floc_id(FlocId(123, kTime1, kTime2, 2));
+  set_floc_id(FlocId::CreateValid(123, kTime1, kTime2, 2));
 
   OnURLsDeleted(history_service_.get(), history::DeletionInfo::ForAllHistory());
 
   EXPECT_FALSE(floc_id().IsValid());
+  EXPECT_EQ(FlocId::Status::kInvalidHistoryDeleted, floc_id().status());
 
   // Check the logged event for history-delete.
   EXPECT_FALSE(floc_id_provider_->last_log_event_result().sim_hash_computed);
@@ -831,8 +870,8 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
   history::QueryResults query_results;
   query_results.SetURLResults({url_result});
 
-  const FlocId expected_floc =
-      FlocId(FlocId::SimHashHistory({"a.test"}), kTime1, kTime2, 2);
+  const FlocId expected_floc = FlocId::CreateValid(
+      FlocId::SimHashHistory({"a.test"}), kTime1, kTime2, 2);
 
   set_floc_id(expected_floc);
 
@@ -853,8 +892,8 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
   const base::Time kTime3 = base::Time::FromTimeT(3);
   const base::Time kTime4 = base::Time::FromTimeT(4);
 
-  const FlocId expected_floc =
-      FlocId(FlocId::SimHashHistory({"a.test"}), kTime1, kTime2, 2);
+  const FlocId expected_floc = FlocId::CreateValid(
+      FlocId::SimHashHistory({"a.test"}), kTime1, kTime2, 2);
 
   set_floc_id(expected_floc);
 
@@ -876,8 +915,8 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
   const base::Time kTime2 = base::Time::FromTimeT(2);
   const base::Time kTime3 = base::Time::FromTimeT(3);
 
-  const FlocId expected_floc =
-      FlocId(FlocId::SimHashHistory({"a.test"}), kTime1, kTime2, 2);
+  const FlocId expected_floc = FlocId::CreateValid(
+      FlocId::SimHashHistory({"a.test"}), kTime1, kTime2, 2);
 
   set_floc_id(expected_floc);
 
@@ -888,6 +927,7 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
   OnURLsDeleted(history_service_.get(), deletion_info);
 
   EXPECT_FALSE(floc_id().IsValid());
+  EXPECT_EQ(FlocId::Status::kInvalidHistoryDeleted, floc_id().status());
 }
 
 TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
@@ -898,8 +938,8 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
   const base::Time kTime1 = base::Time::FromTimeT(1);
   const base::Time kTime2 = base::Time::FromTimeT(2);
 
-  const FlocId expected_floc =
-      FlocId(FlocId::SimHashHistory({"a.test"}), kTime1, kTime2, 2);
+  const FlocId expected_floc = FlocId::CreateValid(
+      FlocId::SimHashHistory({"a.test"}), kTime1, kTime2, 2);
 
   set_floc_id(expected_floc);
 
@@ -910,6 +950,7 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
   OnURLsDeleted(history_service_.get(), deletion_info);
 
   EXPECT_FALSE(floc_id().IsValid());
+  EXPECT_EQ(FlocId::Status::kInvalidHistoryDeleted, floc_id().status());
 }
 
 TEST_F(FlocIdProviderSimpleFeatureParamUnitTest, FlocIneligibleHistoryEntries) {
@@ -926,6 +967,8 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest, FlocIneligibleHistoryEntries) {
   OnGetRecentlyVisitedURLsCompleted(std::move(query_results));
 
   EXPECT_FALSE(floc_id().IsValid());
+  EXPECT_EQ(FlocId::Status::kInvalidNotEnoughElgibleHistoryDomains,
+            floc_id().status());
 }
 
 TEST_F(FlocIdProviderSimpleFeatureParamUnitTest, MultipleHistoryEntries) {
@@ -958,9 +1001,9 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest, MultipleHistoryEntries) {
 
   OnGetRecentlyVisitedURLsCompleted(std::move(query_results));
 
-  EXPECT_EQ(
-      FlocId(FlocId::SimHashHistory({"a.test", "b.test"}), kTime1, kTime2, 2),
-      floc_id());
+  EXPECT_EQ(FlocId::CreateValid(FlocId::SimHashHistory({"a.test", "b.test"}),
+                                kTime1, kTime2, 2),
+            floc_id());
 }
 
 TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
@@ -984,7 +1027,8 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
 
   InitializeFlocIdProviderAndSortingLsh(base::Version("2.0.0"));
 
-  floc_id_provider_->OnComputeFlocCompleted(ComputeFlocResult());
+  floc_id_provider_->OnComputeFlocCompleted(ComputeFlocResult(
+      FlocId::Status::kInvalidNotEnoughElgibleHistoryDomains));
   floc_id_provider_->MaybeRecordFlocToUkm(1);
 
   // Expect an event with a missing metric, meaning the floc id is invalid.
@@ -1002,9 +1046,10 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
   InitializeFlocIdProviderAndSortingLsh(base::Version("2.0.0"));
 
   floc_id_provider_->OnComputeFlocCompleted(ComputeFlocResult(
-      /*sim_hash=*/123, FlocIdTester::Create(123, base::Time::FromTimeT(4),
-                                             base::Time::FromTimeT(5), 6, 7,
-                                             base::Time::FromTimeT(8))));
+      /*sim_hash=*/123,
+      FlocIdTester::Create(123, FlocId::Status::kValid,
+                           base::Time::FromTimeT(4), base::Time::FromTimeT(5),
+                           6, 7, base::Time::FromTimeT(8))));
   floc_id_provider_->MaybeRecordFlocToUkm(1);
 
   // Expect an event with a metric having the expected floc value.
@@ -1023,9 +1068,10 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
   InitializeFlocIdProviderAndSortingLsh(base::Version("2.0.0"));
 
   floc_id_provider_->OnComputeFlocCompleted(ComputeFlocResult(
-      /*sim_hash=*/123, FlocIdTester::Create(123, base::Time::FromTimeT(4),
-                                             base::Time::FromTimeT(5), 6, 7,
-                                             base::Time::FromTimeT(8))));
+      /*sim_hash=*/123,
+      FlocIdTester::Create(123, FlocId::Status::kValid,
+                           base::Time::FromTimeT(4), base::Time::FromTimeT(5),
+                           6, 7, base::Time::FromTimeT(8))));
   floc_id_provider_->MaybeRecordFlocToUkm(1);
 
   auto entries =
@@ -1042,9 +1088,10 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
   // Trigger a new floc computation completion.
   set_floc_computation_in_progress(true);
   floc_id_provider_->OnComputeFlocCompleted(ComputeFlocResult(
-      /*sim_hash=*/456, FlocIdTester::Create(456, base::Time::FromTimeT(4),
-                                             base::Time::FromTimeT(5), 6, 7,
-                                             base::Time::FromTimeT(8))));
+      /*sim_hash=*/456,
+      FlocIdTester::Create(456, FlocId::Status::kValid,
+                           base::Time::FromTimeT(4), base::Time::FromTimeT(5),
+                           6, 7, base::Time::FromTimeT(8))));
   floc_id_provider_->MaybeRecordFlocToUkm(1);
 
   // The new recording attempt should have succeeded.
@@ -1062,7 +1109,7 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
   task_environment_.RunUntilIdle();
 
   const base::Time kTime = base::Time::Now() - base::TimeDelta::FromDays(1);
-  const FlocId expected_floc = FlocId(123, kTime, kTime, 999);
+  const FlocId expected_floc = FlocId::CreateValid(123, kTime, kTime, 999);
 
   set_floc_id(expected_floc);
 
@@ -1080,7 +1127,7 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
 
   const base::Time kTime = base::Time::Now() - base::TimeDelta::FromDays(1);
 
-  set_floc_id(FlocId(123, kTime, kTime, 999));
+  set_floc_id(FlocId::CreateValid(123, kTime, kTime, 999));
 
   EXPECT_EQ(blink::mojom::InterestCohort::New(),
             floc_id_provider_->GetInterestCohortForJsApi(
@@ -1096,7 +1143,7 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
 
   const base::Time kTime = base::Time::Now() - base::TimeDelta::FromDays(1);
 
-  set_floc_id(FlocId(123, kTime, kTime, 999));
+  set_floc_id(FlocId::CreateValid(123, kTime, kTime, 999));
 
   EXPECT_EQ(blink::mojom::InterestCohort::New(),
             floc_id_provider_->GetInterestCohortForJsApi(
@@ -1136,8 +1183,9 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
   EXPECT_EQ(1u, floc_id_provider_->compute_floc_completed_count());
   EXPECT_EQ(1u, floc_id_provider_->log_event_count());
   EXPECT_TRUE(floc_id().IsValid());
-  EXPECT_EQ(FlocId(FlocId::SimHashHistory({"foo.com", "bar.com", "baz.com"}),
-                   kSevenDaysBeforeStart, kFiveDaysBeforeStart, 999),
+  EXPECT_EQ(FlocId::CreateValid(
+                FlocId::SimHashHistory({"foo.com", "bar.com", "baz.com"}),
+                kSevenDaysBeforeStart, kFiveDaysBeforeStart, 999),
             floc_id());
 
   base::Time time_before_advancing = base::Time::Now();
@@ -1153,11 +1201,11 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
   EXPECT_FALSE(need_recompute());
   EXPECT_EQ(FlocIdTester::Create(
                 FlocId::SimHashHistory({"foo.com", "bar.com", "baz.com"}),
-                kSevenDaysBeforeStart, kFiveDaysBeforeStart, 1, 999,
-                time_before_advancing),
+                FlocId::Status::kValid, kSevenDaysBeforeStart,
+                kFiveDaysBeforeStart, 1, 999, time_before_advancing),
             floc_id());
-  EXPECT_EQ(FlocId(FlocId::SimHashHistory({"bar.com", "baz.com"}),
-                   kSixDaysBeforeStart, kFiveDaysBeforeStart, 999),
+  EXPECT_EQ(FlocId::CreateValid(FlocId::SimHashHistory({"bar.com", "baz.com"}),
+                                kSixDaysBeforeStart, kFiveDaysBeforeStart, 999),
             floc_id_provider_->paused_result().floc_id);
 
   // Expire the "bar.com" history entry right before the floc computation
@@ -1183,9 +1231,10 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
 
   // The final floc should be derived from "baz.com".
   EXPECT_TRUE(floc_id().IsValid());
-  EXPECT_EQ(FlocId(FlocId::SimHashHistory({"baz.com"}), kFiveDaysBeforeStart,
-                   kFiveDaysBeforeStart, 999),
-            floc_id());
+  EXPECT_EQ(
+      FlocId::CreateValid(FlocId::SimHashHistory({"baz.com"}),
+                          kFiveDaysBeforeStart, kFiveDaysBeforeStart, 999),
+      floc_id());
 }
 
 TEST_F(FlocIdProviderSimpleFeatureParamUnitTest, NonDefaultSortingLshMapping) {
@@ -1203,7 +1252,7 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest, NonDefaultSortingLshMapping) {
 
   task_environment_.RunUntilIdle();
 
-  EXPECT_EQ(FlocId(2, kTime, kTime, 99), floc_id());
+  EXPECT_EQ(FlocId::CreateValid(2, kTime, kTime, 99), floc_id());
 }
 
 TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
@@ -1221,6 +1270,7 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
   task_environment_.RunUntilIdle();
 
   EXPECT_FALSE(floc_id().IsValid());
+  EXPECT_EQ(FlocId::Status::kInvalidBlocked, floc_id().status());
 }
 
 TEST_F(FlocIdProviderSimpleFeatureParamUnitTest, MultipleSortingLshUpdate) {
@@ -1236,7 +1286,8 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest, MultipleSortingLshUpdate) {
   // Expect a computation. The floc should be equal to the sim-hash.
   EXPECT_EQ(1u, floc_id_provider_->compute_floc_completed_count());
   EXPECT_EQ(1u, floc_id_provider_->log_event_count());
-  EXPECT_EQ(FlocId(FlocId::SimHashHistory({"foo.com"}), kTime, kTime, 99),
+  EXPECT_EQ(FlocId::CreateValid(FlocId::SimHashHistory({"foo.com"}), kTime,
+                                kTime, 99),
             floc_id());
 
   // Configure the |sorting_lsh_service_| to block any input sim-hash.
@@ -1257,6 +1308,7 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest, MultipleSortingLshUpdate) {
             FlocId::SimHashHistory({"foo.com"}));
   EXPECT_FALSE(floc_id_provider_->last_log_event_result().floc_id.IsValid());
   EXPECT_FALSE(floc_id().IsValid());
+  EXPECT_EQ(FlocId::Status::kInvalidBlocked, floc_id().status());
 
   // Configure the |sorting_lsh_service_| to map sim-hash to 6789.
   sorting_lsh_service_->ConfigureSortingLsh(
@@ -1271,7 +1323,7 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest, MultipleSortingLshUpdate) {
   // Expect one more computation. The floc should be equal to 6789.
   EXPECT_EQ(3u, floc_id_provider_->compute_floc_completed_count());
   EXPECT_EQ(3u, floc_id_provider_->log_event_count());
-  EXPECT_EQ(FlocId(6789, kTime, kTime, 999), floc_id());
+  EXPECT_EQ(FlocId::CreateValid(6789, kTime, kTime, 999), floc_id());
 }
 
 TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
@@ -1286,8 +1338,8 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
       kStartTime - base::TimeDelta::FromHours(12);
 
   FlocId floc_id_in_prefs_before_start =
-      FlocIdTester::Create(123, kFourDaysBeforeStart, kThreeDaysBeforeStart, 1,
-                           999, kLastComputeTime);
+      FlocIdTester::Create(123, FlocId::Status::kValid, kFourDaysBeforeStart,
+                           kThreeDaysBeforeStart, 1, 999, kLastComputeTime);
   floc_id_in_prefs_before_start.SaveToPrefs(&prefs_);
 
   AddHistoryEntriesForDomains({"domain1.com"}, kFourDaysBeforeStart);
@@ -1319,8 +1371,9 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
   // Expect a completed computation and an update to the local prefs.
   EXPECT_EQ(1u, floc_id_provider_->compute_floc_completed_count());
   EXPECT_EQ(floc_id(),
-            FlocId(FlocId::SimHashHistory({"domain1.com", "domain2.com"}),
-                   kFourDaysBeforeStart, kThreeDaysBeforeStart, 99));
+            FlocId::CreateValid(
+                FlocId::SimHashHistory({"domain1.com", "domain2.com"}),
+                kFourDaysBeforeStart, kThreeDaysBeforeStart, 99));
 
   EXPECT_EQ(floc_id(), FlocId::ReadFromPrefs(&prefs_));
 }
@@ -1337,8 +1390,8 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
       kStartTime - base::TimeDelta::FromHours(12);
 
   FlocId floc_id_in_prefs_before_start =
-      FlocIdTester::Create(123, kFourDaysBeforeStart, kThreeDaysBeforeStart, 1,
-                           999, kLastComputeTime);
+      FlocIdTester::Create(123, FlocId::Status::kValid, kFourDaysBeforeStart,
+                           kThreeDaysBeforeStart, 1, 999, kLastComputeTime);
   floc_id_in_prefs_before_start.SaveToPrefs(&prefs_);
 
   AddHistoryEntriesForDomains({"domain1.com"}, kFourDaysBeforeStart);
@@ -1362,9 +1415,11 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
   // changed.
   EXPECT_EQ(0u, floc_id_provider_->compute_floc_completed_count());
   EXPECT_FALSE(floc_id().IsValid());
+  EXPECT_EQ(FlocId::Status::kInvalidHistoryDeleted, floc_id().status());
 
   FlocId floc_id_in_prefs = FlocId::ReadFromPrefs(&prefs_);
   EXPECT_FALSE(floc_id_in_prefs.IsValid());
+  EXPECT_EQ(FlocId::Status::kInvalidHistoryDeleted, floc_id_in_prefs.status());
   EXPECT_EQ(kLastComputeTime, floc_id_in_prefs.compute_time());
 }
 
@@ -1382,7 +1437,7 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
       kStartTime - base::TimeDelta::FromHours(25);
 
   FlocId floc_id_in_prefs_before_start =
-      FlocIdTester::Create(123, kTwentyDaysBeforeStart,
+      FlocIdTester::Create(123, FlocId::Status::kValid, kTwentyDaysBeforeStart,
                            kNineteenDaysBeforeStart, 1, 888, kLastComputeTime);
   floc_id_in_prefs_before_start.SaveToPrefs(&prefs_);
 
@@ -1393,9 +1448,9 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
   // Start of session.
   InitializeFlocIdProvider();
 
-  FlocId initial_invalid_floc_id =
-      FlocIdTester::Create(absl::nullopt, kTwentyDaysBeforeStart,
-                           kNineteenDaysBeforeStart, 1, 888, kLastComputeTime);
+  FlocId initial_invalid_floc_id = FlocIdTester::Create(
+      123, FlocId::Status::kInvalidWaitingToStart, kTwentyDaysBeforeStart,
+      kNineteenDaysBeforeStart, 1, 888, kLastComputeTime);
 
   // Initially the floc is invalidated as the last floc has expired, but other
   // fields remains unchanged. The invalidation is also written to the prefs.
@@ -1414,8 +1469,9 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
 
   // Expect a completed computation and an update to the local prefs.
   EXPECT_EQ(1u, floc_id_provider_->compute_floc_completed_count());
-  EXPECT_EQ(floc_id(), FlocId(FlocId::SimHashHistory({"foo.com"}),
-                              kTwoDaysBeforeStart, kTwoDaysBeforeStart, 99));
+  EXPECT_EQ(floc_id(),
+            FlocId::CreateValid(FlocId::SimHashHistory({"foo.com"}),
+                                kTwoDaysBeforeStart, kTwoDaysBeforeStart, 99));
   EXPECT_EQ(floc_id(), FlocId::ReadFromPrefs(&prefs_));
 }
 
@@ -1434,8 +1490,8 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
   // Configure the last compute time to be 1 day after the start time, that
   // emulates the situation when the machine time has changed.
   FlocId floc_id_in_prefs_before_start =
-      FlocIdTester::Create(123, kFourDaysBeforeStart, kThreeDaysBeforeStart, 1,
-                           999, kLastComputeTime);
+      FlocIdTester::Create(123, FlocId::Status::kValid, kFourDaysBeforeStart,
+                           kThreeDaysBeforeStart, 1, 999, kLastComputeTime);
   floc_id_in_prefs_before_start.SaveToPrefs(&prefs_);
 
   AddHistoryEntriesForDomains({"foo.com"}, kTwoDaysBeforeStart);
@@ -1443,9 +1499,9 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
   // Start of session.
   InitializeFlocIdProvider();
 
-  FlocId initial_invalid_floc_id =
-      FlocIdTester::Create(absl::nullopt, kFourDaysBeforeStart,
-                           kThreeDaysBeforeStart, 1, 999, kLastComputeTime);
+  FlocId initial_invalid_floc_id = FlocIdTester::Create(
+      123, FlocId::Status::kInvalidWaitingToStart, kFourDaysBeforeStart,
+      kThreeDaysBeforeStart, 1, 999, kLastComputeTime);
 
   // Initially the floc is invalidated as the "presumed next computation delay"
   // >= "2 x the scheduled update interval", implying the machine time has
@@ -1470,8 +1526,9 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
 
   // Expect a completed computation and an update to the local prefs.
   EXPECT_EQ(1u, floc_id_provider_->compute_floc_completed_count());
-  EXPECT_EQ(floc_id(), FlocId(FlocId::SimHashHistory({"foo.com"}),
-                              kTwoDaysBeforeStart, kTwoDaysBeforeStart, 99));
+  EXPECT_EQ(floc_id(),
+            FlocId::CreateValid(FlocId::SimHashHistory({"foo.com"}),
+                                kTwoDaysBeforeStart, kTwoDaysBeforeStart, 99));
   EXPECT_EQ(floc_id(), FlocId::ReadFromPrefs(&prefs_));
 }
 
@@ -1491,8 +1548,8 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
   // Configure a floc with version finch_config_version 0, that is different
   // from the current version 1.
   FlocId floc_id_in_prefs_before_start =
-      FlocIdTester::Create(123, kFourDaysBeforeStart, kThreeDaysBeforeStart, 0,
-                           999, kLastComputeTime);
+      FlocIdTester::Create(123, FlocId::Status::kValid, kFourDaysBeforeStart,
+                           kThreeDaysBeforeStart, 0, 999, kLastComputeTime);
   floc_id_in_prefs_before_start.SaveToPrefs(&prefs_);
 
   AddHistoryEntriesForDomains({"foo.com"}, kTwoDaysBeforeStart);
@@ -1500,9 +1557,9 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
   // Start of session.
   InitializeFlocIdProvider();
 
-  FlocId initial_invalid_floc_id =
-      FlocIdTester::Create(absl::nullopt, kFourDaysBeforeStart,
-                           kThreeDaysBeforeStart, 0, 999, kLastComputeTime);
+  FlocId initial_invalid_floc_id = FlocIdTester::Create(
+      123, FlocId::Status::kInvalidWaitingToStart, kFourDaysBeforeStart,
+      kThreeDaysBeforeStart, 0, 999, kLastComputeTime);
 
   // Initially the floc is invalidated as the version mismatches, but other
   // fields remains unchanged. The invalidation is also written to the prefs.
@@ -1525,9 +1582,46 @@ TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
 
   // Expect a completed computation and an update to the local prefs.
   EXPECT_EQ(1u, floc_id_provider_->compute_floc_completed_count());
-  EXPECT_EQ(floc_id(), FlocId(FlocId::SimHashHistory({"foo.com"}),
-                              kTwoDaysBeforeStart, kTwoDaysBeforeStart, 99));
+  EXPECT_EQ(floc_id(),
+            FlocId::CreateValid(FlocId::SimHashHistory({"foo.com"}),
+                                kTwoDaysBeforeStart, kTwoDaysBeforeStart, 99));
   EXPECT_EQ(floc_id(), FlocId::ReadFromPrefs(&prefs_));
+}
+
+// This setup is possible after the floc status prefs is just introduced, where
+// the previous invalid reason is unknown.
+TEST_F(FlocIdProviderSimpleFeatureParamUnitTest,
+       UnexpiredComputeTimeAndNoStatusPrefs) {
+  const base::Time kStartTime = base::Time::Now();
+  const base::Time kFourDaysBeforeStart =
+      kStartTime - base::TimeDelta::FromDays(4);
+  const base::Time kThreeDaysBeforeStart =
+      kStartTime - base::TimeDelta::FromDays(3);
+  const base::Time kLastComputeTime =
+      kStartTime - base::TimeDelta::FromHours(12);
+
+  FlocId floc_id_in_prefs_before_start = FlocIdTester::Create(
+      0, FlocId::Status::kInvalidNoStatusPrefs, kFourDaysBeforeStart,
+      kThreeDaysBeforeStart, 1, 999, kLastComputeTime);
+
+  prefs_.SetTime(kFlocIdHistoryBeginTimePrefKey, kFourDaysBeforeStart);
+  prefs_.SetTime(kFlocIdHistoryEndTimePrefKey, kThreeDaysBeforeStart);
+  prefs_.SetUint64(kFlocIdFinchConfigVersionPrefKey, 1);
+  prefs_.SetUint64(kFlocIdSortingLshVersionPrefKey, 999);
+  prefs_.SetTime(kFlocIdComputeTimePrefKey, kLastComputeTime);
+
+  // Initializing the floc provider and sorting-lsh service should not trigger
+  // the 1st floc computation as the floc compute time is unexpired. The floc
+  // status should also stay the same.
+  InitializeFlocIdProviderAndSortingLsh(base::Version("999.0.0"));
+
+  EXPECT_EQ(floc_id(), floc_id_in_prefs_before_start);
+  EXPECT_FALSE(prefs_.HasPrefPath(kFlocIdStatusPrefKey));
+  EXPECT_FALSE(floc_computation_in_progress());
+  EXPECT_TRUE(floc_computation_scheduled());
+  EXPECT_EQ(kLastComputeTime + base::TimeDelta::FromDays(1),
+            floc_id_provider_->GetApproximateNextComputeTime());
+  EXPECT_EQ(0u, floc_id_provider_->compute_floc_completed_count());
 }
 
 }  // namespace federated_learning

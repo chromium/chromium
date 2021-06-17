@@ -89,8 +89,9 @@ class PrivacySandboxHandlerTest : public testing::Test {
 };
 
 TEST_F(PrivacySandboxHandlerTest, GetFlocId) {
-  federated_learning::FlocId floc_id(123456, base::Time(), base::Time::Now(),
-                                     /*sorting_lsh_version=*/0);
+  federated_learning::FlocId floc_id = federated_learning::FlocId::CreateValid(
+      123456, base::Time(), base::Time::Now(),
+      /*sorting_lsh_version=*/0);
   floc_id.SaveToPrefs(profile()->GetTestingPrefService());
 
   base::ListValue args;
@@ -105,8 +106,9 @@ TEST_F(PrivacySandboxHandlerTest, GetFlocId) {
 }
 
 TEST_F(PrivacySandboxHandlerTest, ResetFlocId) {
-  federated_learning::FlocId floc_id(123456, base::Time(), base::Time::Now(),
-                                     /*sorting_lsh_version=*/0);
+  federated_learning::FlocId floc_id = federated_learning::FlocId::CreateValid(
+      123456, base::Time(), base::Time::Now(),
+      /*sorting_lsh_version=*/0);
   floc_id.SaveToPrefs(profile()->GetTestingPrefService());
 
   // Observers of the PrivacySandboxSettings service should be informed that

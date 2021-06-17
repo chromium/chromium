@@ -26,20 +26,48 @@ namespace federated_learning {
 // https://github.com/jkarlin/floc/blob/master/README.md
 class FlocId {
  public:
+  enum class Status {
+    kValid = 0,
+
+    // The default invalid reason that a fresh profile comes with. An
+    // outstanding cohort can also have this state after a prefs update where
+    // the previous reason is unknown or ambiguous.
+    kInvalidNoStatusPrefs = 1,
+
+    // The cohort computation is ready to run, but is waiting for other signals
+    // to start (e.g. sorting-lsh file is ready).
+    kInvalidWaitingToStart = 2,
+
+    kInvalidDisallowedByUserSettings = 3,
+    kInvalidNotEnoughElgibleHistoryDomains = 4,
+
+    // Set if the sorting-lsh process returns an empty hash value. This often
+    // implies that the cohort is blocked, but in principle can also be due to
+    // file sanitization errors.
+    // TODO(yaoxia): consider distinguishing between the underlying reasons.
+    kInvalidBlocked = 5,
+
+    kInvalidHistoryDeleted = 6,
+
+    // This reason is set when the user deletes cookies or resets cohort through
+    // a dedicated FLoC settings page until it's time to calculate at the next
+    // epoch.
+    kInvalidReset = 7,
+  };
+
   static uint64_t SimHashHistory(
       const std::unordered_set<std::string>& domains);
 
-  // Create a newly computed but invalid floc (which implies permission errors,
-  // insufficient eligible history, or blocked floc). The
-  // |finch_config_version_| and the |compute_time_| will be set to the current.
-  FlocId();
+  // Create an invalid floc. The `finch_config_version_` and the `compute_time_`
+  // will be set to the current.
+  static FlocId CreateInvalid(Status status);
 
-  // Create a newly computed and valid floc. The |finch_config_version_| and
-  // the |compute_time_| will be set to the current.
-  explicit FlocId(uint64_t id,
-                  base::Time history_begin_time,
-                  base::Time history_end_time,
-                  uint32_t sorting_lsh_version);
+  // Create a newly computed and valid floc. The `finch_config_version_` and
+  // the `compute_time_` will be set to the current.
+  static FlocId CreateValid(uint64_t id,
+                            base::Time history_begin_time,
+                            base::Time history_end_time,
+                            uint32_t sorting_lsh_version);
 
   FlocId(const FlocId& id);
   ~FlocId();
@@ -49,7 +77,7 @@ class FlocId {
   bool operator==(const FlocId& other) const;
   bool operator!=(const FlocId& other) const;
 
-  // True if the |id_| is successfully computed and hasn't been invalidated
+  // True if the floc is successfully computed and hasn't been invalidated
   // since the last computation. Note that an invalid FlocId still often has a
   // legitimate compute time and finch config version, unless it's read from a
   // fresh profile prefs.
@@ -58,11 +86,13 @@ class FlocId {
   // Get the blink::mojom::InterestCohort representation of this floc, with
   // interest_cohort.id being "<id>" and interest_cohort.version being
   // "chrome.<finch_config_version>.<sorting_lsh_version>". This is the format
-  // to be exposed to the JS API. Precondition: |id_| must be valid.
+  // to be exposed to the JS API. Precondition: the floc must be valid.
   blink::mojom::InterestCohortPtr ToInterestCohortForJsApi() const;
 
-  // Returns the internal uint64_t number. Precondition: |id_| must be valid.
+  // Returns the internal uint64_t number. Precondition: the floc must be valid.
   uint64_t ToUint64() const;
+
+  Status status() const { return status_; }
 
   base::Time history_begin_time() const { return history_begin_time_; }
 
@@ -79,12 +109,11 @@ class FlocId {
   void SaveToPrefs(PrefService* prefs);
   static FlocId ReadFromPrefs(PrefService* prefs);
 
-  // Reset |id_| and clear the prefs corresponding to the id. This assumes the
-  // current floc is already in sync with the prefs and we don't need to save
-  // other unaffected field.
-  void InvalidateIdAndSaveToPrefs(PrefService* prefs);
+  // Update `status_` and the corresponding prefs entry. This can be used to
+  // invalidate the floc or to assign a new invalid reason.
+  void UpdateStatusAndSaveToPrefs(PrefService* prefs, Status status);
 
-  // Resets |compute_time_| to provided |compute_time| and saves it to prefs.
+  // Resets `compute_time_` to provided `compute_time` and saves it to prefs.
   // This should at least be called if the floc compute timer is reset, to
   // ensure that the compute cycle continues at the expected frequency.
   void ResetComputeTimeAndSaveToPrefs(base::Time compute_time,
@@ -95,14 +124,17 @@ class FlocId {
 
   // Create a floc with stated params. This will only be used to create a floc
   // read from prefs.
-  explicit FlocId(absl::optional<uint64_t> id,
+  explicit FlocId(uint64_t id,
+                  Status status,
                   base::Time history_begin_time,
                   base::Time history_end_time,
                   uint32_t finch_config_version,
                   uint32_t sorting_lsh_version,
                   base::Time compute_time);
 
-  absl::optional<uint64_t> id_;
+  uint64_t id_ = 0;
+
+  Status status_;
 
   // The time range of the actual history used to compute the floc. This should
   // always be within the time range of each history query.
@@ -117,7 +149,8 @@ class FlocId {
   uint32_t sorting_lsh_version_ = 0;
 
   // The time when the floc was computed. compute_time_.is_null() means the
-  // floc has never been computed before, and implies |id_| is also invalid.
+  // floc has never been computed before, and implies that the floc is also
+  // invalid.
   base::Time compute_time_;
 };
 

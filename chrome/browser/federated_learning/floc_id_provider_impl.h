@@ -59,7 +59,8 @@ class FlocIdProviderImpl : public FlocIdProvider,
                            public history::HistoryServiceObserver {
  public:
   struct ComputeFlocResult {
-    ComputeFlocResult() = default;
+    explicit ComputeFlocResult(FlocId::Status status)
+        : floc_id(FlocId::CreateInvalid(status)) {}
 
     ComputeFlocResult(uint64_t sim_hash, const FlocId& floc_id)
         : sim_hash_computed(true), sim_hash(sim_hash), floc_id(floc_id) {}

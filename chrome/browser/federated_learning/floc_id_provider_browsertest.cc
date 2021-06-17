@@ -514,6 +514,7 @@ IN_PROC_BROWSER_TEST_F(FlocIdProviderSortingLshUninitializedBrowserTest,
 
   // Expect that the final id is invalid because it was blocked.
   EXPECT_FALSE(GetFlocId().IsValid());
+  EXPECT_EQ(FlocId::Status::kInvalidBlocked, GetFlocId().status());
 
   EXPECT_EQ(1u, floc_event_logger_->NumberOfLogAttemptsQueued());
   floc_event_logger_->HandleLastRequest();
@@ -537,6 +538,7 @@ IN_PROC_BROWSER_TEST_F(FlocIdProviderSortingLshUninitializedBrowserTest,
   // Expect that the final id is invalid due to unexpected sorting-lsh file
   // format.
   EXPECT_FALSE(GetFlocId().IsValid());
+  EXPECT_EQ(FlocId::Status::kInvalidBlocked, GetFlocId().status());
 
   EXPECT_EQ(1u, floc_event_logger_->NumberOfLogAttemptsQueued());
   floc_event_logger_->HandleLastRequest();
@@ -621,6 +623,7 @@ IN_PROC_BROWSER_TEST_F(FlocIdProviderSortingLshInitializedBrowserTest,
 
   // The floc has been invalidated. Expect no additional event logging.
   EXPECT_FALSE(GetFlocId().IsValid());
+  EXPECT_EQ(FlocId::Status::kInvalidReset, GetFlocId().status());
   EXPECT_EQ(1u, floc_event_logger_->NumberOfLogAttemptsQueued());
 }
 
