@@ -4,7 +4,11 @@
 
 import("//chrome/common/features.gni")
 import("//tools/grit/grit_rule.gni")
+import("//tools/polymer/html_to_js.gni")
+import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
+
+tsc_folder = "tsc"
 
 grit("resources") {
   defines = chrome_grit_defines
@@ -26,6 +30,30 @@ grit("resources") {
 generate_grd("build_grd") {
   grd_prefix = "whats_new"
   out_grd = "$target_gen_dir/resources.grd"
+  deps = [ ":build_ts" ]
+  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
   input_files = [ "whats_new.html" ]
   input_files_base_dir = rebase_path(".", "//")
+}
+
+html_to_js("web_components") {
+  js_files = [
+    "whats_new_app.ts",
+    "whats_new_error_page.ts",
+  ]
+}
+
+ts_library("build_ts") {
+  root_dir = target_gen_dir
+  out_dir = "$target_gen_dir/$tsc_folder"
+  tsconfig_base = "tsconfig_base.json"
+  in_files = [
+    "whats_new_app.ts",
+    "whats_new_error_page.ts",
+  ]
+  deps = [
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources:library",
+  ]
+  extra_deps = [ ":web_components" ]
 }

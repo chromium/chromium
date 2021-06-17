@@ -329,6 +329,11 @@ are declared in tools/grit/grit_rule.gni.
         <part file="welcome_strings.grdp" />
       </if>
 
+      <!-- What's New strings -->
+      <if expr="not is_android">
+        <part file="whats_new_strings.grdp" />
+      </if>
+
       <!-- Printing specific strings -->
       <if expr="enable_printing">
         <part file="printing_strings.grdp" />

@@ -1,0 +1,55 @@
+<style include="cr-shared-style">
+  :host {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+  }
+
+  h1 {
+    font-size: 24px;
+    font-weight: 500;
+    line-height: 16px;
+    margin: 0 0 20px;
+  }
+
+  h2 {
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 16px;
+    margin: 0;
+  }
+
+  #crashedIcon {
+    -webkit-mask:
+      url(chrome://theme/IDR_ERROR_NETWORK_GENERIC)
+      center/contain no-repeat;
+    background-color: currentColor;
+    height: 100%;
+    width: 100%;
+  }
+
+  #faviconContainer {
+    height: 72px;
+    margin-bottom: 50px;
+    margin-top: 50px;
+    width: 72px;
+  }
+
+  #wrapper {
+    align-items: flex-start;
+    display: flex;
+    flex-direction: column;
+  }
+
+  cr-button {
+    margin-top: 18px;
+  }
+</style>
+<div id="wrapper">
+  <div id="faviconContainer" aria-hidden="true">
+    <div id="crashedIcon"></div>
+  </div>
+  <h1>$i18n{pageCantBeReached}</h1>
+  <h2>$i18n{reloadOrTryAgain}</h2>
+  <cr-button class="action-button">$i18n{reloadButton}</cr-button>
+</div>
