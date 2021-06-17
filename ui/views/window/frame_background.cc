@@ -47,7 +47,8 @@ void FrameBackground::PaintRestored(gfx::Canvas* canvas,
   PaintMaximized(canvas, view);
 
   // Fill the frame borders with the frame color before drawing the edge images.
-  FillFrameBorders(canvas, view);
+  FillFrameBorders(canvas, view, left_edge_->width(), right_edge_->width(),
+                   bottom_edge_->height());
 
   // Draw the top corners and edge, scaling the corner images down if they
   // are too big and relative to the vertical space available.
@@ -97,35 +98,45 @@ void FrameBackground::PaintRestored(gfx::Canvas* canvas,
 
 void FrameBackground::PaintMaximized(gfx::Canvas* canvas,
                                      const View* view) const {
+  PaintMaximized(canvas, view->GetNativeTheme(), view->x(), view->y(),
+                 view->width());
+}
+
+void FrameBackground::PaintMaximized(gfx::Canvas* canvas,
+                                     const ui::NativeTheme* native_theme,
+                                     int x,
+                                     int y,
+                                     int width) const {
 // Fill the top with the frame color first so we have a constant background
 // for areas not covered by the theme image.
 #if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && \
     BUILDFLAG(ENABLE_DESKTOP_AURA)
-  auto* native_theme = view->GetNativeTheme();
   ui::NativeTheme::ExtraParams params;
   params.frame_top_area.use_custom_frame = use_custom_frame_;
   params.frame_top_area.is_active = is_active_;
   params.frame_top_area.default_background_color = frame_color_;
   native_theme->Paint(canvas->sk_canvas(), ui::NativeTheme::kFrameTopArea,
                       ui::NativeTheme::kNormal,
-                      gfx::Rect(0, 0, view->width(), top_area_height_), params);
+                      gfx::Rect(x, y, width, top_area_height_), params);
 #else
-  canvas->FillRect(gfx::Rect(0, 0, view->width(), top_area_height_),
-                   frame_color_);
+  canvas->FillRect(gfx::Rect(x, y, width, top_area_height_), frame_color_);
 #endif
 
   // Draw the theme frame and overlay, if available.
   if (!theme_image_.isNull()) {
-    canvas->TileImageInt(theme_image_, 0, theme_image_y_inset_, 0, 0,
-                         view->width(), top_area_height_, 1.0f,
-                         SkTileMode::kRepeat, SkTileMode::kMirror);
+    canvas->TileImageInt(theme_image_, 0, theme_image_y_inset_, x, y, width,
+                         top_area_height_, 1.0f, SkTileMode::kRepeat,
+                         SkTileMode::kMirror);
   }
   if (!theme_overlay_image_.isNull())
-    canvas->DrawImageInt(theme_overlay_image_, 0, -maximized_top_inset_);
+    canvas->DrawImageInt(theme_overlay_image_, x, y - maximized_top_inset_);
 }
 
 void FrameBackground::FillFrameBorders(gfx::Canvas* canvas,
-                                       const View* view) const {
+                                       const View* view,
+                                       int left_edge_width,
+                                       int right_edge_width,
+                                       int bottom_edge_height) const {
   // If the window is very short, we don't need to fill any borders.
   int remaining_height = view->height() - top_area_height_;
   if (remaining_height <= 0)
@@ -133,22 +144,21 @@ void FrameBackground::FillFrameBorders(gfx::Canvas* canvas,
 
   // Fill down the sides.
   canvas->FillRect(
-      gfx::Rect(0, top_area_height_, left_edge_->width(), remaining_height),
+      gfx::Rect(0, top_area_height_, left_edge_width, remaining_height),
       frame_color_);
-  canvas->FillRect(
-      gfx::Rect(view->width() - right_edge_->width(), top_area_height_,
-                right_edge_->width(), remaining_height),
-      frame_color_);
+  canvas->FillRect(gfx::Rect(view->width() - right_edge_width, top_area_height_,
+                             right_edge_width, remaining_height),
+                   frame_color_);
 
   // If the window is very narrow, we're done.
-  int center_width = view->width() - left_edge_->width() - right_edge_->width();
+  int center_width = view->width() - left_edge_width - right_edge_width;
   if (center_width <= 0)
     return;
 
   // Fill the bottom area.
   canvas->FillRect(
-      gfx::Rect(left_edge_->width(), view->height() - bottom_edge_->height(),
-                center_width, bottom_edge_->height()),
+      gfx::Rect(left_edge_width, view->height() - bottom_edge_height,
+                center_width, bottom_edge_height),
       frame_color_);
 }
 

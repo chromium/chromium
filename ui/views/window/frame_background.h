@@ -14,6 +14,10 @@ namespace gfx {
 class Canvas;
 }
 
+namespace ui {
+class NativeTheme;
+}
+
 namespace views {
 
 class View;
@@ -80,10 +84,20 @@ class VIEWS_EXPORT FrameBackground {
   // window edges.
   void PaintMaximized(gfx::Canvas* canvas, const View* view) const;
 
- private:
-  // Fills the frame side and bottom borders with the frame color.
-  void FillFrameBorders(gfx::Canvas* canvas, const View* view) const;
+  void PaintMaximized(gfx::Canvas* canvas,
+                      const ui::NativeTheme* native_theme,
+                      int x,
+                      int y,
+                      int width) const;
 
+  // Fills the frame side and bottom borders with the frame color.
+  void FillFrameBorders(gfx::Canvas* canvas,
+                        const View* view,
+                        int left_edge_width,
+                        int right_edge_width,
+                        int bottom_edge_height) const;
+
+ private:
   SkColor frame_color_ = 0;
   bool use_custom_frame_ = true;
   bool is_active_ = true;
