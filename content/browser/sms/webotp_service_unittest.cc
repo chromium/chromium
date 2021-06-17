@@ -187,6 +187,109 @@ class WebOTPServiceTest : public RenderViewHostTestHarness {
     EXPECT_TRUE(ukm_recorder()->GetEntriesByName(Entry::kEntryName).empty());
   }
 
+  void RecordFailureOutcomeWithTimerActivation(
+      FailureType failure_type,
+      blink::WebOTPServiceOutcome expected_outcome) {
+    GURL url = GURL(kTestUrl);
+    NavigateAndCommit(url);
+
+    Service service(web_contents());
+
+    base::RunLoop ukm_loop;
+    ukm_recorder()->SetOnAddEntryCallback(Entry::kEntryName,
+                                          ukm_loop.QuitClosure());
+
+    EXPECT_CALL(*service.provider(), Retrieve(_, _)).WillOnce(Invoke([&]() {
+      service.NotifyFailure(failure_type);
+      // Triggers the timer immediately to emulate the timeout behavior.
+      service.ActivateTimer();
+    }));
+
+    service.MakeRequest(base::DoNothing());
+
+    ukm_loop.Run();
+
+    ExpectOutcomeUKM(url, expected_outcome);
+    ASSERT_FALSE(service.fetcher()->HasSubscribers());
+  }
+
+  void NotRecordFailureOutcomeWithoutTimerActivation(FailureType failure_type) {
+    GURL url = GURL(kTestUrl);
+    NavigateAndCommit(url);
+
+    Service service(web_contents());
+
+    base::RunLoop loop;
+    EXPECT_CALL(*service.provider(), Retrieve(_, _)).WillOnce(Invoke([&]() {
+      service.NotifyFailure(failure_type);
+      loop.Quit();
+    }));
+
+    service.MakeRequest(base::DoNothing());
+
+    loop.Run();
+    ExpectNoOutcomeUKM();
+    ASSERT_FALSE(service.fetcher()->HasSubscribers());
+  }
+
+  void RecordFailureOutcomeUponPreviousRequestCancelled(
+      FailureType failure_type,
+      blink::WebOTPServiceOutcome expected_outcome) {
+    GURL url = GURL(kTestUrl);
+    NavigateAndCommit(url);
+
+    Service service(web_contents());
+
+    base::RunLoop loop;
+    EXPECT_CALL(*service.provider(), Retrieve(_, _)).WillOnce(Invoke([&]() {
+      service.NotifyFailure(failure_type);
+      loop.Quit();
+    }));
+
+    service.MakeRequest(base::DoNothing());
+
+    loop.Run();
+
+    ::testing::Mock::VerifyAndClear(&service);
+    base::RunLoop loop2;
+
+    EXPECT_CALL(*service.provider(), Retrieve(_, _)).WillOnce(Invoke([&]() {
+      loop2.Quit();
+    }));
+
+    // The second request to the same service cancels the previous outstanding
+    // request.
+    service.MakeRequest(base::DoNothing());
+
+    loop2.Run();
+
+    ExpectOutcomeUKM(url, expected_outcome);
+  }
+
+  void RecordFailureOutcomeUponDestruction(
+      FailureType failure_type,
+      blink::WebOTPServiceOutcome expected_outcome) {
+    GURL url = GURL(kTestUrl);
+    NavigateAndCommit(url);
+    {
+      Service service(web_contents());
+
+      base::RunLoop loop;
+      EXPECT_CALL(*service.provider(), Retrieve(_, _)).WillOnce(Invoke([&]() {
+        service.NotifyFailure(failure_type);
+        loop.Quit();
+      }));
+
+      service.MakeRequest(base::DoNothing());
+
+      loop.Run();
+    }
+    // |service| going out of scope means that the outstanding request would be
+    // considered failed with |kUnhandledRequest|.
+
+    ExpectOutcomeUKM(url, expected_outcome);
+  }
+
  private:
   base::HistogramTester histogram_tester_;
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
@@ -872,92 +975,48 @@ TEST_F(WebOTPServiceTest, RecordMetricsForExistingPage) {
 }
 
 TEST_F(WebOTPServiceTest, RecordTimeoutAsOutcomeWithTimerActivation) {
-  GURL url = GURL(kTestUrl);
-  NavigateAndCommit(url);
-
-  ServiceWithPrompt service(web_contents());
-
-  base::RunLoop ukm_loop;
-  ukm_recorder()->SetOnAddEntryCallback(Entry::kEntryName,
-                                        ukm_loop.QuitClosure());
-
-  EXPECT_CALL(*service.provider(), Retrieve(_, _))
-      .WillOnce(Invoke([&service]() {
-        service.NotifyFailure(FailureType::kPromptTimeout);
-        service.ActivateTimer();
-      }));
-
-  service.MakeRequest(base::DoNothing());
-
-  ukm_loop.Run();
-
-  ExpectOutcomeUKM(url, blink::WebOTPServiceOutcome::kTimeout);
-  ASSERT_FALSE(service.fetcher()->HasSubscribers());
+  RecordFailureOutcomeWithTimerActivation(
+      FailureType::kPromptTimeout, blink::WebOTPServiceOutcome::kTimeout);
 }
 
 TEST_F(WebOTPServiceTest, NotRecordTimeoutAsOutcomeWithoutTimerActivation) {
-  GURL url = GURL(kTestUrl);
-  NavigateAndCommit(url);
+  NotRecordFailureOutcomeWithoutTimerActivation(FailureType::kPromptTimeout);
+}
 
-  ServiceWithPrompt service(web_contents());
+TEST_F(WebOTPServiceTest, RecordTimeoutAsOutcomeUponPreviousRequestCancelled) {
+  RecordFailureOutcomeUponPreviousRequestCancelled(
+      FailureType::kPromptTimeout, blink::WebOTPServiceOutcome::kTimeout);
+}
 
-  base::RunLoop loop;
-  EXPECT_CALL(*service.provider(), Retrieve(_, _)).WillOnce(Invoke([&]() {
-    service.NotifyFailure(FailureType::kPromptTimeout);
-    loop.Quit();
-  }));
-
-  service.MakeRequest(base::DoNothing());
-
-  loop.Run();
-  ExpectNoOutcomeUKM();
-  ASSERT_FALSE(service.fetcher()->HasSubscribers());
+TEST_F(WebOTPServiceTest, RecordTimeoutAsOutcomeUponDestruction) {
+  RecordFailureOutcomeUponDestruction(FailureType::kPromptTimeout,
+                                      blink::WebOTPServiceOutcome::kTimeout);
 }
 
 TEST_F(WebOTPServiceTest, RecordUserCancelledAsOutcome) {
-  GURL url = GURL(kTestUrl);
-  NavigateAndCommit(url);
-
-  ServiceWithPrompt service(web_contents());
-
-  base::RunLoop ukm_loop;
-  ukm_recorder()->SetOnAddEntryCallback(Entry::kEntryName,
-                                        ukm_loop.QuitClosure());
-
-  EXPECT_CALL(*service.provider(), Retrieve(_, _))
-      .WillOnce(Invoke([&service]() {
-        service.NotifyFailure(FailureType::kPromptCancelled);
-        service.ActivateTimer();
-      }));
-
-  service.MakeRequest(base::DoNothing());
-
-  ukm_loop.Run();
-
-  ExpectOutcomeUKM(url, blink::WebOTPServiceOutcome::kUserCancelled);
+  RecordFailureOutcomeWithTimerActivation(
+      FailureType::kPromptCancelled,
+      blink::WebOTPServiceOutcome::kUserCancelled);
   ExpectTimingUKM("TimeUserCancelMs");
   histogram_tester().ExpectTotalCount("Blink.Sms.Receive.TimeUserCancel", 1);
-  ASSERT_FALSE(service.fetcher()->HasSubscribers());
 }
 
 TEST_F(WebOTPServiceTest,
        NotRecordUserCancelledAsOutcomeWithoutTimerActivation) {
-  GURL url = GURL(kTestUrl);
-  NavigateAndCommit(url);
+  NotRecordFailureOutcomeWithoutTimerActivation(FailureType::kPromptCancelled);
+}
 
-  ServiceWithPrompt service(web_contents());
+TEST_F(WebOTPServiceTest,
+       RecordUserCancelledAsOutcomeUponPreviousRequestCancelled) {
+  RecordFailureOutcomeUponPreviousRequestCancelled(
+      FailureType::kPromptCancelled,
+      blink::WebOTPServiceOutcome::kUserCancelled);
+}
 
-  base::RunLoop loop;
-  EXPECT_CALL(*service.provider(), Retrieve(_, _)).WillOnce(Invoke([&]() {
-    service.NotifyFailure(FailureType::kPromptCancelled);
-    loop.Quit();
-  }));
-
-  service.MakeRequest(base::DoNothing());
-
-  loop.Run();
-  ExpectNoOutcomeUKM();
-  ASSERT_FALSE(service.fetcher()->HasSubscribers());
+TEST_F(WebOTPServiceTest, RecordUserCancelledAsOutcomeUponDestruction) {
+  RecordFailureOutcomeUponDestruction(
+      FailureType::kPromptCancelled,
+      blink::WebOTPServiceOutcome::kUserCancelled);
 }
 
 TEST_F(WebOTPServiceTest, RecordUserDismissPrompt) {
@@ -1121,6 +1180,36 @@ TEST_F(WebOTPServiceTest, RecordWebContentsVisibilityForUserConsentAPI) {
   histogram_tester.ExpectBucketCount("Blink.Sms.WebContentsVisibleOnReceive", 0,
                                      1);
   histogram_tester.ExpectTotalCount("Blink.Sms.WebContentsVisibleOnReceive", 2);
+}
+
+TEST_F(WebOTPServiceTest, RecordCancelledAsOutcome) {
+  GURL url = GURL(kTestUrl);
+  NavigateAndCommit(url);
+
+  ServiceWithPrompt service(web_contents());
+
+  base::RunLoop sms1_loop, sms2_loop;
+  base::RunLoop ukm_loop;
+  ukm_recorder()->SetOnAddEntryCallback(Entry::kEntryName,
+                                        ukm_loop.QuitClosure());
+
+  EXPECT_CALL(*service.provider(), Retrieve(_, _))
+      .WillOnce(Return())
+      .WillOnce(Invoke([&sms2_loop]() { sms2_loop.Quit(); }));
+
+  service.MakeRequest(BindLambdaForTesting(
+      [&sms1_loop](SmsStatus status, const optional<string>& otp) {
+        sms1_loop.Quit();
+      }));
+
+  // The 2nd request will cancel the 1st one.
+  service.MakeRequest(base::DoNothing());
+
+  sms1_loop.Run();
+  sms2_loop.Run();
+  ukm_loop.Run();
+
+  ExpectOutcomeUKM(url, blink::WebOTPServiceOutcome::kCancelled);
 }
 
 }  // namespace content
