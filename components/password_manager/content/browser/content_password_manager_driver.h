@@ -122,16 +122,6 @@ class ContentPasswordManagerDriver
                              int32_t result) override;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(ContentPasswordManagerDriverTest,
-                           SetFrameAndFormMetaDataOfForm);
-  // Sets parameters of |form| that can be extracted from |render_frame_host_|.
-  //
-  // These functions must be called for every FormData received from the
-  // renderer.
-  void SetFrameAndFormMetaData(autofill::FormData& form) const;
-  autofill::FormData GetFormWithFrameAndFormMetaData(
-      autofill::FormData form) const WARN_UNUSED_RESULT;
-
   const mojo::AssociatedRemote<autofill::mojom::AutofillAgent>&
   GetAutofillAgent();
 
