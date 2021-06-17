@@ -236,27 +236,36 @@ struct ShapeResult::RunInfo : public RefCounted<ShapeResult::RunInfo> {
   }
 
   void ExpandRangeToIncludePartialGlyphs(int offset, int* from, int* to) const {
-    int start = IsLtr() ? offset : (offset + num_characters_);
     int end = offset + num_characters_;
+    int start;
 
-    for (unsigned i = 0; i < glyph_data_.size(); ++i) {
-      int index = offset + glyph_data_[i].character_index;
-      if (start == index)
-        continue;
-
-      if (IsLtr())
+    if (IsLtr()) {
+      start = offset + num_characters_;
+      for (unsigned i = 0; i < glyph_data_.size(); ++i) {
+        int index = offset + glyph_data_[i].character_index;
+        if (start == index)
+          continue;
         end = index;
-
-      if (end > *from && start < *to) {
-        *from = std::min(*from, start);
-        *to = std::max(*to, end);
-      }
-
-      if (IsLtr())
+        if (end > *from && start < *to) {
+          *from = std::min(*from, start);
+          *to = std::max(*to, end);
+        }
         end = offset + num_characters_;
-      else
+        start = index;
+      }
+    } else {
+      start = offset + num_characters_;
+      for (unsigned i = 0; i < glyph_data_.size(); ++i) {
+        int index = offset + glyph_data_[i].character_index;
+        if (start == index)
+          continue;
+        if (end > *from && start < *to) {
+          *from = std::min(*from, start);
+          *to = std::max(*to, end);
+        }
         end = start;
-      start = index;
+        start = index;
+      }
     }
 
     if (end > *from && start < *to) {
