@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_EXAMPLES_RADIO_BUTTON_EXAMPLE_H_
 #define UI_VIEWS_EXAMPLES_RADIO_BUTTON_EXAMPLE_H_
 
-#include <string>
 #include <vector>
 
 #include "base/macros.h"

@@ -7,8 +7,6 @@
 
 #include <stdint.h>
 
-#include <string>
-
 #include "base/macros.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/event.h"

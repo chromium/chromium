@@ -5,7 +5,6 @@
 #ifndef UI_SHELL_DIALOGS_SELECTED_FILE_INFO_H_
 #define UI_SHELL_DIALOGS_SELECTED_FILE_INFO_H_
 
-#include <string>
 #include <vector>
 
 #include "base/files/file_path.h"

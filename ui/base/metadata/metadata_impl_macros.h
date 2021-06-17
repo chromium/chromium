@@ -6,7 +6,6 @@
 #define UI_BASE_METADATA_METADATA_IMPL_MACROS_H_
 
 #include <memory>
-#include <string>
 #include <utility>
 
 #include "ui/base/metadata/metadata_cache.h"

@@ -6,7 +6,6 @@
 #define UI_VIEWS_CONTROLS_NATIVE_NATIVE_VIEW_HOST_H_
 
 #include <memory>
-#include <string>
 
 #include "base/macros.h"
 #include "ui/gfx/native_widget_types.h"

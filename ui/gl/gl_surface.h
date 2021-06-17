@@ -5,7 +5,6 @@
 #ifndef UI_GL_GL_SURFACE_H_
 #define UI_GL_GL_SURFACE_H_
 
-#include <string>
 #include <vector>
 
 #include "base/callback.h"

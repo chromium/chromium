@@ -7,8 +7,6 @@
 
 #include <windows.h>
 
-#include <string>
-
 #include "base/component_export.h"
 #include "ui/base/ime/win/input_method_win_base.h"
 

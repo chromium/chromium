@@ -6,7 +6,6 @@
 #define UI_BASE_POINTER_TOUCH_UI_CONTROLLER_H_
 
 #include <memory>
-#include <string>
 
 #include "base/callback_list.h"
 #include "base/component_export.h"

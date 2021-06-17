@@ -6,7 +6,6 @@
 #define UI_VIEWS_CONTROLS_SCROLL_VIEW_H_
 
 #include <memory>
-#include <string>
 #include <utility>
 
 #include "base/compiler_specific.h"
