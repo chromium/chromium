@@ -57,7 +57,6 @@
 #include "third_party/blink/renderer/core/layout/line/glyph_overflow.h"
 #include "third_party/blink/renderer/core/layout/line/inline_text_box.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_combine.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_abstract_inline_text_box.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_item.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
@@ -2785,11 +2784,6 @@ const DisplayItemClient* LayoutText::GetSelectionDisplayItemClient() const {
   NOT_DESTROYED();
   if (UNLIKELY(!IsInLayoutNGInlineFormattingContext()))
     return nullptr;
-  // When |this| is in text-combine box, we should use text-combine box as
-  // display client item to paint caret with affine transform.
-  const auto* const text_combine = DynamicTo<LayoutNGTextCombine>(Parent());
-  if (UNLIKELY(text_combine) && text_combine->NeedsAffineTransformInPaint())
-    return text_combine;
   if (!IsSelected())
     return nullptr;
   if (const auto* client = GetSelectionDisplayItemClientMap().at(this))
