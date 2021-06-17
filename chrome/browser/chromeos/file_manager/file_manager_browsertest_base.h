@@ -32,6 +32,10 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+namespace ui {
+class KeyEvent;
+}  // namespace ui
+
 namespace file_manager {
 
 enum GuestMode { NOT_IN_GUEST_MODE, IN_GUEST_MODE, IN_INCOGNITO };
@@ -179,11 +183,17 @@ class FileManagerBrowserTestBase : public content::DevToolsAgentHostObserver,
   // Called during tablet mode test setup to enable the Ash virtual keyboard.
   void EnableVirtualKeyboard();
 
-  // Called during tests to determine if SMB file shares is enabled.
-  bool IsSmbEnabled() const;
+  // Returns the WebContents associated the last open window of the
+  // File Manager app.
+  content::WebContents* GetLastOpenWindowWebContents();
 
-  web_app::AppId files_app_swa_id_;
-  content::WebContents* files_app_web_contents_ = nullptr;
+  // Tries to dispatch a key event via aura::WindowTreeHost. Returns true, if
+  // successful, false otherwise.
+  bool PostKeyEvent(ui::KeyEvent* key_event);
+
+  // A list of pairs <id, WebContents*> for all launched SWA apps. The active
+  // app is always at the end of the vector.
+  std::vector<std::pair<std::string, content::WebContents*>> swa_list_;
 
   std::unique_ptr<base::test::ScopedFeatureList> feature_list_;
   crostini::FakeCrostiniFeatures crostini_features_;

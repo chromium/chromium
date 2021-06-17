@@ -63,6 +63,9 @@
 #include "chrome/browser/sync_file_system/mock_remote_file_sync_service.h"
 #include "chrome/browser/sync_file_system/sync_file_system_service_factory.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/extensions/extension_dialog.h"
 #include "chrome/browser/ui/views/select_file_dialog_extension.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
@@ -1920,8 +1923,8 @@ void FileManagerBrowserTestBase::SetUpOnMainThread() {
 }
 
 void FileManagerBrowserTestBase::TearDownOnMainThread() {
-  if (files_app_web_contents_) {
-    files_app_web_contents_->Close();
+  for (const auto& p : swa_list_) {
+    p.second->Close();
   }
 
   file_tasks_observer_.reset();
@@ -2089,10 +2092,9 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
         observer.web_contents(), "test.swaLoadTestUtils()", &result));
     ASSERT_TRUE(result);
-    files_app_swa_id_ = base::StrCat({baseURL, launchDir});
-    files_app_web_contents_ = observer.web_contents();
-
-    *output = files_app_swa_id_;
+    const std::string app_id = base::StrCat({baseURL, launchDir});
+    swa_list_.push_back(std::make_pair(app_id, observer.web_contents()));
+    *output = app_id;
     return;
   }
 
@@ -2106,11 +2108,13 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     std::string data;
     ASSERT_TRUE(value.GetString("data", &data));
     // FIXME: determine WebContents based on |appId| from |value|. Currently we
-    // only launch one window so this works. Once muliple winows are enabled for
-    // SWAs, this code needs to map |appId| to specific SWA's WebContents.
+    // only launch one window so this works. Once multiple windows are enabled
+    // for SWAs, this code needs to map |appId| to specific SWA's WebContents.
+    content::WebContents* web_contents = GetLastOpenWindowWebContents();
+    CHECK(web_contents);
     CHECK(ExecuteScriptAndExtractString(
-        files_app_web_contents_,
-        base::StrCat({"test.swaTestMessageListener(", data, ")"}), output));
+        web_contents, base::StrCat({"test.swaTestMessageListener(", data, ")"}),
+        output));
     return;
   }
 #endif
@@ -2515,16 +2519,7 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
 
   if (name == "dispatchNativeMediaKey") {
     ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_MEDIA_PLAY_PAUSE, 0);
-
-    // Try to dispatch the event close-to-native without pulling in too many
-    // dependencies (i.e. X11/Ozone/Wayland/Mus). aura::WindowTreeHost is pretty
-    // high up in the dispatch stack, but we might need event_injector.mojom
-    // for a more realistic Mus dispatch.
-    const auto& app_windows =
-        extensions::AppWindowRegistry::Get(profile())->app_windows();
-    ASSERT_FALSE(app_windows.empty());
-    app_windows.front()->GetNativeWindow()->GetHost()->DispatchKeyEventPostIME(
-        &key_event);
+    ASSERT_TRUE(PostKeyEvent(&key_event));
     *output = "mediaKeyDispatched";
     return;
   }
@@ -2538,23 +2533,7 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
 
     int flag = shift ? ui::EF_SHIFT_DOWN : 0;
     ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_TAB, flag);
-    // Try to dispatch the event close-to-native without pulling in too many
-    // dependencies (i.e. X11/Ozone/Wayland/Mus). aura::WindowTreeHost is pretty
-    // high up in the dispatch stack, but we might need event_injector.mojom
-    // for a more realistic Mus dispatch.
-    const auto& app_windows =
-        extensions::AppWindowRegistry::Get(profile())->app_windows();
-    aura::WindowTreeHost* host = nullptr;
-    if (app_windows.empty()) {
-      ASSERT_TRUE(select_factory_);
-      views::Widget* widget = select_factory_->GetLastWidget();
-      ASSERT_TRUE(widget);
-      host = widget->GetNativeWindow()->GetHost();
-    } else {
-      host = app_windows.front()->GetNativeWindow()->GetHost();
-    }
-    ASSERT_TRUE(host);
-    host->DispatchKeyEventPostIME(&key_event);
+    ASSERT_TRUE(PostKeyEvent(&key_event));
     *output = "tabKeyDispatched";
     return;
   }
@@ -2565,11 +2544,9 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     ASSERT_TRUE(value.GetInteger("clickX", &click_x));
     ASSERT_TRUE(value.GetInteger("clickY", &click_y));
 
-    const auto& app_windows =
-        extensions::AppWindowRegistry::Get(profile())->app_windows();
-    auto* last_window = app_windows.front();
-
-    SimulateMouseClickAt(last_window->web_contents(), 0 /* modifiers */,
+    content::WebContents* web_contents = GetLastOpenWindowWebContents();
+    CHECK(web_contents);
+    SimulateMouseClickAt(web_contents, 0 /* modifiers */,
                          blink::WebMouseEvent::Button::kLeft,
                          gfx::Point(click_x, click_y));
     return;
@@ -2830,6 +2807,60 @@ base::FilePath FileManagerBrowserTestBase::MaybeMountCrostini(
 
 void FileManagerBrowserTestBase::EnableVirtualKeyboard() {
   ash::ShellTestApi().EnableVirtualKeyboard();
+}
+
+content::WebContents*
+FileManagerBrowserTestBase::GetLastOpenWindowWebContents() {
+  const Options& options = GetOptions();
+  if (options.files_swa) {
+    if (!swa_list_.empty()) {
+      return swa_list_.back().second;
+    }
+  }
+  // Assuming legacy Chrome App.
+  const auto& app_windows =
+      extensions::AppWindowRegistry::Get(profile())->app_windows();
+  if (!app_windows.empty()) {
+    return app_windows.front()->web_contents();
+  }
+  LOG(WARNING) << "Failed to retrieve WebContents in mode "
+               << (options.files_swa ? "swa" : "legacy");
+  return nullptr;
+}
+
+bool FileManagerBrowserTestBase::PostKeyEvent(ui::KeyEvent* key_event) {
+  gfx::NativeWindow native_window = nullptr;
+
+  content::WebContents* web_contents = GetLastOpenWindowWebContents();
+  if (web_contents) {
+    const Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+    if (browser) {
+      BrowserWindow* window = browser->window();
+      if (window) {
+        native_window = window->GetNativeWindow();
+      }
+    }
+  }
+  if (!native_window) {
+    const auto& app_windows =
+        extensions::AppWindowRegistry::Get(profile())->app_windows();
+    if (app_windows.empty()) {
+      // Try to get the save as/open with dialog.
+      if (select_factory_) {
+        views::Widget* widget = select_factory_->GetLastWidget();
+        if (widget) {
+          native_window = widget->GetNativeWindow();
+        }
+      }
+    } else {
+      native_window = app_windows.front()->GetNativeWindow();
+    }
+  }
+  if (native_window) {
+    native_window->GetHost()->DispatchKeyEventPostIME(key_event);
+    return true;
+  }
+  return false;
 }
 
 }  // namespace file_manager

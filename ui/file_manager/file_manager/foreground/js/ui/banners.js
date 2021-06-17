@@ -299,10 +299,11 @@ const PHOTOS_WELCOME_COUNTER_LIMIT = 3;
     this.photosWelcomeCounter_ = value;
     const values = {};
     values[PHOTOS_WELCOME_COUNTER_KEY] = value;
-    xfm.storage.local.set(values);
+    chrome.storage.local.set(values);
   }
 
   /**
+   * chrome.storage.onChanged event handler.
    * xfm.storage.onChanged event handler.
    * @param {Object<Object>} changes Changes values.
    * @param {string} areaName "local" or "sync".
