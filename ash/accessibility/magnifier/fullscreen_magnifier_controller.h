@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_ACCESSIBILITY_MAGNIFIER_FULL_SCREEN_MAGNIFIER_CONTROLLER_H_
-#define ASH_ACCESSIBILITY_MAGNIFIER_FULL_SCREEN_MAGNIFIER_CONTROLLER_H_
+#ifndef ASH_ACCESSIBILITY_MAGNIFIER_FULLSCREEN_MAGNIFIER_CONTROLLER_H_
+#define ASH_ACCESSIBILITY_MAGNIFIER_FULLSCREEN_MAGNIFIER_CONTROLLER_H_
 
 #include <map>
 #include <memory>
@@ -37,15 +37,15 @@ class GestureProviderAura;
 
 namespace ash {
 
-// FullScreenMagnifierController implements GestureConsumer as it has its own
+// FullscreenMagnifierController implements GestureConsumer as it has its own
 // GestureProvider to recognize gestures with screen coordinates of touches.
 // Logical coordinates of touches cannot be used as they are changed with
 // viewport change: scroll, zoom.
-// FullScreenMagnifierController implements EventRewriter to see and rewrite
+// FullscreenMagnifierController implements EventRewriter to see and rewrite
 // touch events. Once the controller detects two fingers pinch or scroll, it
 // starts consuming all touch events not to confuse an app or a browser on the
 // screen. It needs to rewrite events to dispatch touch cancel events.
-class ASH_EXPORT FullScreenMagnifierController
+class ASH_EXPORT FullscreenMagnifierController
     : public ui::EventHandler,
       public ui::ImplicitAnimationObserver,
       public aura::WindowObserver,
@@ -62,8 +62,8 @@ class ASH_EXPORT FullScreenMagnifierController
     SCROLL_DOWN
   };
 
-  FullScreenMagnifierController();
-  ~FullScreenMagnifierController() override;
+  FullscreenMagnifierController();
+  ~FullscreenMagnifierController() override;
 
   void set_mouse_following_mode(
       MagnifierMouseFollowingMode mouse_following_mode) {
@@ -306,7 +306,7 @@ class ASH_EXPORT FullScreenMagnifierController
 
   ScrollDirection scroll_direction_ = SCROLL_NONE;
 
-  // If true, FullScreenMagnifierController consumes all touch events.
+  // If true, FullscreenMagnifierController consumes all touch events.
   bool consume_touch_event_ = false;
 
   // Number of touch points on the screen.
@@ -321,7 +321,7 @@ class ASH_EXPORT FullScreenMagnifierController
   std::unique_ptr<GestureProviderClient> gesture_provider_client_;
 
   // MagnificationCotroller owns its GestureProvider to detect gestures with
-  // screen coordinates of touch events. As FullScreenMagnifierController
+  // screen coordinates of touch events. As FullscreenMagnifierController
   // changes zoom level and moves viewport, logical coordinates of touches
   // cannot be used for gesture detection as they are changed if the controller
   // reacts to gestures.
@@ -345,9 +345,9 @@ class ASH_EXPORT FullScreenMagnifierController
   // few milliseconds after the last move magnifier to rect call.
   base::TimeTicks last_move_magnifier_to_rect_;
 
-  DISALLOW_COPY_AND_ASSIGN(FullScreenMagnifierController);
+  DISALLOW_COPY_AND_ASSIGN(FullscreenMagnifierController);
 };
 
 }  // namespace ash
 
-#endif  // ASH_ACCESSIBILITY_MAGNIFIER_FULL_SCREEN_MAGNIFIER_CONTROLLER_H_
+#endif  // ASH_ACCESSIBILITY_MAGNIFIER_FULLSCREEN_MAGNIFIER_CONTROLLER_H_

@@ -13,7 +13,7 @@
 #include "ash/accelerators/debug_commands.h"
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
-#include "ash/accessibility/magnifier/full_screen_magnifier_controller.h"
+#include "ash/accessibility/magnifier/fullscreen_magnifier_controller.h"
 #include "ash/accessibility/ui/accessibility_confirmation_dialog.h"
 #include "ash/ambient/ambient_controller.h"
 #include "ash/app_list/app_list_controller_impl.h"
@@ -1475,7 +1475,7 @@ void SetFullscreenMagnifierEnabled(bool enabled) {
   shell->accessibility_controller()->fullscreen_magnifier().SetEnabled(enabled);
 
   RemoveStickyNotitification(kFullscreenMagnifierToggleAccelNotificationId);
-  if (shell->full_screen_magnifier_controller()->IsEnabled()) {
+  if (shell->fullscreen_magnifier_controller()->IsEnabled()) {
     CreateAndShowStickyNotification(
         IDS_FULLSCREEN_MAGNIFIER_ACCEL_TITLE,
         IDS_FULLSCREEN_MAGNIFIER_ACCEL_MSG,
@@ -1557,13 +1557,13 @@ void HandleToggleFullscreenMagnifier() {
   if (!is_shortcut_enabled) {
     NotifyAccessibilityFeatureDisabledByAdmin(
         IDS_ASH_FULLSCREEN_MAGNIFIER_SHORTCUT_DISABLED,
-        shell->full_screen_magnifier_controller()->IsEnabled(),
+        shell->fullscreen_magnifier_controller()->IsEnabled(),
         kFullscreenMagnifierToggleAccelNotificationId);
     return;
   }
 
-  FullScreenMagnifierController* magnification_controller =
-      shell->full_screen_magnifier_controller();
+  FullscreenMagnifierController* magnification_controller =
+      shell->fullscreen_magnifier_controller();
   AccessibilityControllerImpl* accessibility_controller =
       shell->accessibility_controller();
 
@@ -1670,14 +1670,14 @@ void HandleVolumeUp() {
 }
 
 bool CanHandleActiveMagnifierZoom() {
-  return Shell::Get()->full_screen_magnifier_controller()->IsEnabled() ||
+  return Shell::Get()->fullscreen_magnifier_controller()->IsEnabled() ||
          Shell::Get()->docked_magnifier_controller()->GetEnabled();
 }
 
 // Change the scale of the active magnifier.
 void HandleActiveMagnifierZoom(int delta_index) {
-  if (Shell::Get()->full_screen_magnifier_controller()->IsEnabled()) {
-    Shell::Get()->full_screen_magnifier_controller()->StepToNextScaleValue(
+  if (Shell::Get()->fullscreen_magnifier_controller()->IsEnabled()) {
+    Shell::Get()->fullscreen_magnifier_controller()->StepToNextScaleValue(
         delta_index);
     return;
   }

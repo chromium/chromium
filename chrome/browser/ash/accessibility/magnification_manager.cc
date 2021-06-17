@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
-#include "ash/accessibility/magnifier/full_screen_magnifier_controller.h"
+#include "ash/accessibility/magnifier/fullscreen_magnifier_controller.h"
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/shell.h"
 #include "base/bind.h"
@@ -105,7 +105,7 @@ void MagnificationManager::HandleMoveMagnifierToRectIfEnabled(
     const gfx::Rect& rect) {
   // Fullscreen magnifier and docked magnifier are mutually exclusive.
   if (fullscreen_magnifier_enabled_) {
-    Shell::Get()->full_screen_magnifier_controller()->HandleMoveMagnifierToRect(
+    Shell::Get()->fullscreen_magnifier_controller()->HandleMoveMagnifierToRect(
         rect);
     return;
   }
@@ -231,7 +231,7 @@ void MagnificationManager::SetMagnifierEnabledInternal(bool enabled) {
 
   fullscreen_magnifier_enabled_ = enabled;
 
-  Shell::Get()->full_screen_magnifier_controller()->SetEnabled(enabled);
+  Shell::Get()->fullscreen_magnifier_controller()->SetEnabled(enabled);
 }
 
 void MagnificationManager::SetMagnifierKeepFocusCenteredInternal(
@@ -241,7 +241,7 @@ void MagnificationManager::SetMagnifierKeepFocusCenteredInternal(
 
   keep_focus_centered_ = keep_focus_centered;
 
-  Shell::Get()->full_screen_magnifier_controller()->SetKeepFocusCentered(
+  Shell::Get()->fullscreen_magnifier_controller()->SetKeepFocusCentered(
       keep_focus_centered_);
 }
 
@@ -251,13 +251,13 @@ void MagnificationManager::SetMagnifierScaleInternal(double scale) {
 
   scale_ = scale;
 
-  Shell::Get()->full_screen_magnifier_controller()->SetScale(
+  Shell::Get()->fullscreen_magnifier_controller()->SetScale(
       scale_, false /* animate */);
 }
 
 void MagnificationManager::SetMagnifierMouseFollowingModeInternal(
     MagnifierMouseFollowingMode mouse_following_mode) {
-  Shell::Get()->full_screen_magnifier_controller()->set_mouse_following_mode(
+  Shell::Get()->fullscreen_magnifier_controller()->set_mouse_following_mode(
       mouse_following_mode);
 }
 

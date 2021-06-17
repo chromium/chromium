@@ -5,7 +5,7 @@
 #include "ash/events/accessibility_event_rewriter.h"
 
 #include "ash/accessibility/accessibility_controller_impl.h"
-#include "ash/accessibility/magnifier/full_screen_magnifier_controller.h"
+#include "ash/accessibility/magnifier/fullscreen_magnifier_controller.h"
 #include "ash/accessibility/switch_access/point_scan_controller.h"
 #include "ash/constants/ash_constants.h"
 #include "ash/keyboard/keyboard_util.h"
@@ -253,26 +253,26 @@ bool AccessibilityEventRewriter::RewriteEventForMagnifier(
 
 void AccessibilityEventRewriter::OnMagnifierKeyPressed(
     const ui::KeyEvent* event) {
-  FullScreenMagnifierController* controller =
-      Shell::Get()->full_screen_magnifier_controller();
+  FullscreenMagnifierController* controller =
+      Shell::Get()->fullscreen_magnifier_controller();
   switch (event->key_code()) {
     case ui::VKEY_UP:
-      controller->SetScrollDirection(FullScreenMagnifierController::SCROLL_UP);
+      controller->SetScrollDirection(FullscreenMagnifierController::SCROLL_UP);
       delegate_->SendMagnifierCommand(MagnifierCommand::kMoveUp);
       break;
     case ui::VKEY_DOWN:
       controller->SetScrollDirection(
-          FullScreenMagnifierController::SCROLL_DOWN);
+          FullscreenMagnifierController::SCROLL_DOWN);
       delegate_->SendMagnifierCommand(MagnifierCommand::kMoveDown);
       break;
     case ui::VKEY_LEFT:
       controller->SetScrollDirection(
-          FullScreenMagnifierController::SCROLL_LEFT);
+          FullscreenMagnifierController::SCROLL_LEFT);
       delegate_->SendMagnifierCommand(MagnifierCommand::kMoveLeft);
       break;
     case ui::VKEY_RIGHT:
       controller->SetScrollDirection(
-          FullScreenMagnifierController::SCROLL_RIGHT);
+          FullscreenMagnifierController::SCROLL_RIGHT);
       delegate_->SendMagnifierCommand(MagnifierCommand::kMoveRight);
       break;
     default:
@@ -282,9 +282,9 @@ void AccessibilityEventRewriter::OnMagnifierKeyPressed(
 
 void AccessibilityEventRewriter::OnMagnifierKeyReleased(
     const ui::KeyEvent* event) {
-  FullScreenMagnifierController* controller =
-      Shell::Get()->full_screen_magnifier_controller();
-  controller->SetScrollDirection(FullScreenMagnifierController::SCROLL_NONE);
+  FullscreenMagnifierController* controller =
+      Shell::Get()->fullscreen_magnifier_controller();
+  controller->SetScrollDirection(FullscreenMagnifierController::SCROLL_NONE);
   delegate_->SendMagnifierCommand(MagnifierCommand::kMoveStop);
 }
 
@@ -292,7 +292,7 @@ void AccessibilityEventRewriter::MaybeSendMouseEvent(const ui::Event& event) {
   // Mouse moves are the only pertinent event for accessibility component
   // extensions.
   if (send_mouse_events_ && event.type() == ui::ET_MOUSE_MOVED &&
-      (Shell::Get()->full_screen_magnifier_controller()->IsEnabled() ||
+      (Shell::Get()->fullscreen_magnifier_controller()->IsEnabled() ||
        Shell::Get()->accessibility_controller()->spoken_feedback().enabled())) {
     delegate_->DispatchMouseEvent(ui::Event::Clone(event));
   }

@@ -4,7 +4,7 @@
 
 #include "ash/accessibility/magnifier/partial_magnifier_controller.h"
 
-#include "ash/accessibility/magnifier/full_screen_magnifier_controller.h"
+#include "ash/accessibility/magnifier/fullscreen_magnifier_controller.h"
 #include "ash/accessibility/magnifier/magnifier_glass.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"

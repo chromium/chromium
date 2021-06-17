@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "ash/accessibility/magnifier/full_screen_magnifier_controller.h"
+#include "ash/accessibility/magnifier/fullscreen_magnifier_controller.h"
 #include "ash/display/display_util.h"
 #include "ash/display/mirror_window_test_api.h"
 #include "ash/host/root_window_transformer.h"
@@ -165,8 +165,8 @@ class UnfiedRootWindowTransformersTest : public RootWindowTransformersTest {
 }  // namespace
 
 TEST_F(RootWindowTransformersTest, RotateAndMagnify) {
-  FullScreenMagnifierController* magnifier =
-      Shell::Get()->full_screen_magnifier_controller();
+  FullscreenMagnifierController* magnifier =
+      Shell::Get()->fullscreen_magnifier_controller();
 
   TestEventHandler event_handler;
   Shell::Get()->AddPreTargetHandler(&event_handler);
@@ -278,8 +278,8 @@ TEST_F(RootWindowTransformersTest, ScaleAndMagnify) {
   display::test::DisplayManagerTestApi display_manager_test(display_manager());
   display::Display display2 = display_manager_test.GetSecondaryDisplay();
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
-  FullScreenMagnifierController* magnifier =
-      Shell::Get()->full_screen_magnifier_controller();
+  FullscreenMagnifierController* magnifier =
+      Shell::Get()->fullscreen_magnifier_controller();
 
   magnifier->SetEnabled(true);
   EXPECT_EQ(2.0f, magnifier->GetScale());
@@ -319,8 +319,8 @@ TEST_F(RootWindowTransformersTest, TouchScaleAndMagnify) {
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
   aura::Window* root_window = root_windows[0];
   ui::test::EventGenerator generator(root_window);
-  FullScreenMagnifierController* magnifier =
-      Shell::Get()->full_screen_magnifier_controller();
+  FullscreenMagnifierController* magnifier =
+      Shell::Get()->fullscreen_magnifier_controller();
 
   magnifier->SetEnabled(true);
   EXPECT_FLOAT_EQ(2.0f, magnifier->GetScale());
@@ -349,8 +349,8 @@ TEST_F(RootWindowTransformersTest, TouchScaleAndMagnify) {
 TEST_F(RootWindowTransformersTest, ConvertHostToRootCoords) {
   TestEventHandler event_handler;
   Shell::Get()->AddPreTargetHandler(&event_handler);
-  FullScreenMagnifierController* magnifier =
-      Shell::Get()->full_screen_magnifier_controller();
+  FullscreenMagnifierController* magnifier =
+      Shell::Get()->fullscreen_magnifier_controller();
 
   // Test 1
   UpdateDisplay("600x400*2/r@0.8");

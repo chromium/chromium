@@ -20,7 +20,7 @@
 #include "ash/accessibility/autoclick/autoclick_controller.h"
 #include "ash/accessibility/chromevox/key_accessibility_enabler.h"
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
-#include "ash/accessibility/magnifier/full_screen_magnifier_controller.h"
+#include "ash/accessibility/magnifier/fullscreen_magnifier_controller.h"
 #include "ash/accessibility/magnifier/partial_magnifier_controller.h"
 #include "ash/accessibility/sticky_keys/sticky_keys_controller.h"
 #include "ash/accessibility/ui/accessibility_focus_ring_controller_impl.h"
@@ -756,7 +756,7 @@ Shell::~Shell() {
   // delete them before invalidating the instance.
   // Alphabetical. TODO(oshima): sort.
   autoclick_controller_.reset();
-  full_screen_magnifier_controller_.reset();
+  fullscreen_magnifier_controller_.reset();
   tooltip_controller_.reset();
   event_client_.reset();
   toplevel_window_event_handler_.reset();
@@ -1146,8 +1146,8 @@ void Shell::Init(
       std::make_unique<PartialMagnifierController>();
   highlighter_controller_ = std::make_unique<HighlighterController>();
 
-  full_screen_magnifier_controller_ =
-      std::make_unique<FullScreenMagnifierController>();
+  fullscreen_magnifier_controller_ =
+      std::make_unique<FullscreenMagnifierController>();
   mru_window_tracker_ = std::make_unique<MruWindowTracker>();
   assistant_controller_ = std::make_unique<AssistantControllerImpl>();
   if (chromeos::features::IsQuickAnswersEnabled()) {

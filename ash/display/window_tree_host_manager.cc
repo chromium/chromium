@@ -10,7 +10,7 @@
 #include <memory>
 #include <utility>
 
-#include "ash/accessibility/magnifier/full_screen_magnifier_controller.h"
+#include "ash/accessibility/magnifier/fullscreen_magnifier_controller.h"
 #include "ash/accessibility/magnifier/partial_magnifier_controller.h"
 #include "ash/display/cursor_window_controller.h"
 #include "ash/display/mirror_window_controller.h"
@@ -536,7 +536,7 @@ void WindowTreeHostManager::OnDisplayAdded(const display::Display& display) {
 
     // Magnifier controllers keep pointers to the current root window.
     // Update them here to avoid accessing them later.
-    Shell::Get()->full_screen_magnifier_controller()->SwitchTargetRootWindow(
+    Shell::Get()->fullscreen_magnifier_controller()->SwitchTargetRootWindow(
         ash_host->AsWindowTreeHost()->window(), false);
     Shell::Get()
         ->partial_magnifier_controller()

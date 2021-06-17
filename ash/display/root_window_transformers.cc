@@ -6,7 +6,7 @@
 
 #include <cmath>
 
-#include "ash/accessibility/magnifier/full_screen_magnifier_controller.h"
+#include "ash/accessibility/magnifier/fullscreen_magnifier_controller.h"
 #include "ash/host/root_window_transformer.h"
 #include "ash/shell.h"
 #include "ash/utility/transformer_util.h"
@@ -105,8 +105,8 @@ class AshRootWindowTransformer : public RootWindowTransformer {
     transform_ = insets_and_rotation_transform;
     insets_and_scale_transform_ = CreateReverseRotatedInsetsTransform(
         display.panel_rotation(), host_insets_, display.device_scale_factor());
-    FullScreenMagnifierController* magnifier =
-        Shell::Get()->full_screen_magnifier_controller();
+    FullscreenMagnifierController* magnifier =
+        Shell::Get()->fullscreen_magnifier_controller();
     if (magnifier) {
       gfx::Transform magnifier_scale = magnifier->GetMagnifierTransform();
       transform_ *= magnifier_scale;

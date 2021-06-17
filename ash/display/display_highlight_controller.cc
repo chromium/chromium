@@ -4,7 +4,7 @@
 
 #include "ash/display/display_highlight_controller.h"
 
-#include "ash/accessibility/magnifier/full_screen_magnifier_controller.h"
+#include "ash/accessibility/magnifier/fullscreen_magnifier_controller.h"
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/session/session_controller_impl.h"
@@ -59,12 +59,12 @@ std::unique_ptr<views::Widget> CreateHighlightWidget(
   window->SetId(kShellWindowId_DisplayIdentificationHighlightWindow);
   ::wm::SetWindowVisibilityAnimationTransition(window, ::wm::ANIMATE_NONE);
 
-  FullScreenMagnifierController* magnification_controller =
-      Shell::Get()->full_screen_magnifier_controller();
+  FullscreenMagnifierController* magnification_controller =
+      Shell::Get()->fullscreen_magnifier_controller();
 
   // Forces a redraw of full-screen magnification in order to reverse
   // magnification on display highlight window performed in
-  // FullScreenMagnifierController::ReDraw(). If redraw is not forced, then the
+  // FullscreenMagnifierController::ReDraw(). If redraw is not forced, then the
   // highlight may not show up around the edges of the display properly until
   // the next redraw.
   if (magnification_controller->IsEnabled()) {
