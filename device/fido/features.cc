@@ -33,8 +33,17 @@ extern const base::Feature kWebAuthCableServerLink {
 #endif
 };
 
-extern const base::Feature kWebAuthCableSecondFactor{
-    "WebAuthenticationCableSecondFactor", base::FEATURE_DISABLED_BY_DEFAULT};
+extern const base::Feature kWebAuthCableSecondFactor {
+  "WebAuthenticationCableSecondFactor",
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || defined(OS_LINUX) || defined(OS_ANDROID)
+      // This is default-disabled on Android because it involves changes that
+      // alter the interaction with the Sync service and thus needs to be rolled
+      // out gradually.
+      base::FEATURE_DISABLED_BY_DEFAULT
+#else
+      base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+};
 
 extern const base::Feature kWebAuthPhoneSupport{
     "WebAuthenticationPhoneSupport", base::FEATURE_DISABLED_BY_DEFAULT};
