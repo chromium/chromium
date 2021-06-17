@@ -460,6 +460,12 @@ void GPUQueue::copyExternalImageToTexture(GPUImageCopyExternalImage* copyImage,
     return;
   }
 
+  if (destination->texture()->Dimension() != WGPUTextureDimension_2D) {
+    GetProcs().deviceInjectError(device_->GetHandle(), WGPUErrorType_Validation,
+                                 "Dst gpu texture must be 2d.");
+    return;
+  }
+
   WGPUTextureUsage dst_texture_usage = destination->texture()->Usage();
 
   if ((dst_texture_usage & WGPUTextureUsage_RenderAttachment) !=

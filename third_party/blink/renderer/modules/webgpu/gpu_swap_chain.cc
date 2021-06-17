@@ -232,8 +232,9 @@ GPUTexture* GPUSwapChain::getCurrentTexture() {
   IntSize texture_size = size_.Width() >= 0 ? size_ : context_->CanvasSize();
   WGPUTexture dawn_client_texture = swap_buffers_->GetNewTexture(texture_size);
   DCHECK(dawn_client_texture);
-  texture_ = MakeGarbageCollected<GPUTexture>(device_, dawn_client_texture,
-                                              format_, usage_);
+  // SwapChain buffer are 2d.
+  texture_ = MakeGarbageCollected<GPUTexture>(
+      device_, dawn_client_texture, WGPUTextureDimension_2D, format_, usage_);
   return texture_;
 }
 

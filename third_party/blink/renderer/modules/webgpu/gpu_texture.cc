@@ -115,7 +115,8 @@ GPUTexture* GPUTexture::Create(GPUDevice* device,
   GPUTexture* texture = MakeGarbageCollected<GPUTexture>(
       device,
       device->GetProcs().deviceCreateTexture(device->GetHandle(), &dawn_desc),
-      dawn_desc.format, static_cast<WGPUTextureUsage>(dawn_desc.usage));
+      dawn_desc.dimension, dawn_desc.format,
+      static_cast<WGPUTextureUsage>(dawn_desc.usage));
   if (webgpu_desc->hasLabel())
     texture->setLabel(webgpu_desc->label());
   return texture;
@@ -311,9 +312,11 @@ GPUTexture* GPUTexture::FromCanvas(GPUDevice* device,
 
 GPUTexture::GPUTexture(GPUDevice* device,
                        WGPUTexture texture,
+                       WGPUTextureDimension dimension,
                        WGPUTextureFormat format,
                        WGPUTextureUsage usage)
     : DawnObject<WGPUTexture>(device, texture),
+      dimension_(dimension),
       format_(format),
       usage_(usage) {}
 
@@ -324,7 +327,10 @@ GPUTexture::GPUTexture(GPUDevice* device,
     : DawnObject<WGPUTexture>(device, mailbox_texture->GetTexture()),
       format_(format),
       usage_(usage),
-      mailbox_texture_(std::move(mailbox_texture)) {}
+      mailbox_texture_(std::move(mailbox_texture)) {
+  // Mailbox textures are all 2d texture.
+  dimension_ = WGPUTextureDimension_2D;
+}
 
 GPUTextureView* GPUTexture::createView(
     const GPUTextureViewDescriptor* webgpu_desc) {
