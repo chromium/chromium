@@ -511,6 +511,8 @@ static_library("test_support") {
     sources += [
       "../browser/autofill/autofill_uitest_util.cc",
       "../browser/autofill/autofill_uitest_util.h",
+      "../browser/password_manager/password_manager_uitest_util.cc",
+      "../browser/password_manager/password_manager_uitest_util.h",
       "../browser/ui/chooser_bubble_testapi.h",
       "../browser/ui/views/chooser_bubble_testapi_views.cc",
       "../browser/ui/views/desktop_capture/desktop_media_picker_views_test_api.cc",

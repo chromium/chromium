@@ -164,6 +164,7 @@ class TestRecipeReplayChromeFeatureActionExecutor {
   virtual bool SavePassword();
   virtual bool UpdatePassword();
   virtual bool WaitForSaveFallback();
+  virtual bool IsChromeShowingPasswordGenerationPrompt();
   virtual bool HasChromeShownSavePasswordPrompt();
   virtual bool HasChromeStoredCredential(const std::string& origin,
                                          const std::string& username,
@@ -281,6 +282,8 @@ class TestRecipeReplayer {
   bool ExecuteTypePasswordAction(const base::DictionaryValue& action);
   bool ExecuteUpdatePasswordAction(const base::DictionaryValue& action);
   bool ExecuteValidateFieldValueAction(const base::DictionaryValue& action);
+  bool ExecuteValidatePasswordGenerationPromptAction(
+      const base::DictionaryValue& action);
   bool ExecuteValidateNoSavePasswordPromptAction(
       const base::DictionaryValue& action);
   bool ExecuteValidateSaveFallbackAction(const base::DictionaryValue& action);
@@ -300,6 +303,10 @@ class TestRecipeReplayer {
                                     bool set_focus = false,
                                     bool relaxed_visibility = false,
                                     bool ignore_failure = false);
+  void ValidatePasswordGenerationPromptState(
+      const content::ToRenderFrameHost& frame,
+      const std::string& element_xpath,
+      bool expect_to_be_shown);
   bool WaitForElementToBeReady(const std::string& xpath,
                                const int visibility_enum_val,
                                content::RenderFrameHost* frame,

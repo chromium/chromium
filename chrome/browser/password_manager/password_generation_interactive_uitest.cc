@@ -10,6 +10,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_manager_interactive_test_base.h"
+#include "chrome/browser/password_manager/password_manager_uitest_util.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -35,72 +36,6 @@
 
 namespace {
 
-class TestPopupObserver : public PasswordGenerationPopupObserver {
- public:
-  enum class GenerationPopup {
-    kShown,
-    kHidden,
-  };
-
-  TestPopupObserver() = default;
-  ~TestPopupObserver() = default;
-
-  void OnPopupShown(
-      PasswordGenerationPopupController::GenerationUIState state) override {
-    popup_showing_ = GenerationPopup::kShown;
-    state_ = state;
-    MaybeQuitRunLoop();
-  }
-
-  void OnPopupHidden() override {
-    popup_showing_ = GenerationPopup::kHidden;
-    MaybeQuitRunLoop();
-  }
-
-  bool popup_showing() const {
-    return popup_showing_ == GenerationPopup::kShown;
-  }
-  PasswordGenerationPopupController::GenerationUIState state() const {
-    return state_;
-  }
-
-  // Waits until the popup is in specified status.
-  void WaitForStatus(GenerationPopup status) {
-    if (status == popup_showing_)
-      return;
-    SCOPED_TRACE(::testing::Message()
-                 << "WaitForStatus " << static_cast<int>(status));
-    base::RunLoop run_loop;
-    run_loop_ = &run_loop;
-    run_loop_->Run();
-    EXPECT_EQ(popup_showing_, status);
-  }
-
-  // Waits until the popup is either shown or hidden.
-  void WaitForStatusChange() {
-    SCOPED_TRACE(::testing::Message() << "WaitForStatusChange");
-    base::RunLoop run_loop;
-    run_loop_ = &run_loop;
-    run_loop_->Run();
-  }
-
- private:
-  void MaybeQuitRunLoop() {
-    if (run_loop_) {
-      run_loop_->Quit();
-      run_loop_ = nullptr;
-    }
-  }
-
-  // The loop to be stopped after the popup state change.
-  base::RunLoop* run_loop_ = nullptr;
-  GenerationPopup popup_showing_ = GenerationPopup::kHidden;
-  PasswordGenerationPopupController::GenerationUIState state_ =
-      PasswordGenerationPopupController::kOfferGeneration;
-
-  DISALLOW_COPY_AND_ASSIGN(TestPopupObserver);
-};
-
 enum ReturnCodes {  // Possible results of the JavaScript code.
   RETURN_CODE_OK,
   RETURN_CODE_NO_ELEMENT,
@@ -122,8 +57,7 @@ class PasswordGenerationInteractiveTest
     ChromePasswordManagerClient* client =
         ChromePasswordManagerClient::FromWebContents(WebContents());
     client->SetTestObserver(&observer_);
-    // The base class should enable password generation.
-    ASSERT_TRUE(client->GetPasswordFeatureManager()->IsGenerationEnabled());
+
     password_manager::PasswordFormManager::
         set_wait_for_server_predictions_for_filling(false);
 
@@ -205,7 +139,7 @@ class PasswordGenerationInteractiveTest
                PasswordGenerationPopupController::kEditGeneratedPassword;
   }
 
-  void WaitForStatus(TestPopupObserver::GenerationPopup status) {
+  void WaitForStatus(TestGenerationPopupObserver::GenerationPopup status) {
     observer_.WaitForStatus(status);
   }
 
@@ -217,7 +151,7 @@ class PasswordGenerationInteractiveTest
   }
 
  private:
-  TestPopupObserver observer_;
+  TestGenerationPopupObserver observer_;
 };
 
 IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
@@ -285,7 +219,7 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
   // The same flow happens when user generates a password from the context menu.
   password_manager_util::UserTriggeredManualGenerationFromContextMenu(
       ChromePasswordManagerClient::FromWebContents(WebContents()));
-  WaitForStatus(TestPopupObserver::GenerationPopup::kShown);
+  WaitForStatus(TestGenerationPopupObserver::GenerationPopup::kShown);
   EXPECT_TRUE(GenerationPopupShowing());
   SendKeyToPopup(ui::VKEY_DOWN);
   SendKeyToPopup(ui::VKEY_RETURN);
@@ -299,7 +233,7 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
 
   // Delete the password. The generation prompt should not be visible.
   SimulateUserDeletingFieldContent("password_field");
-  WaitForStatus(TestPopupObserver::GenerationPopup::kHidden);
+  WaitForStatus(TestGenerationPopupObserver::GenerationPopup::kHidden);
   EXPECT_FALSE(EditingPopupShowing());
   EXPECT_FALSE(GenerationPopupShowing());
 }
@@ -312,7 +246,7 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
   FocusUsernameField();
 
   // Popup is dismissed.
-  WaitForStatus(TestPopupObserver::GenerationPopup::kHidden);
+  WaitForStatus(TestGenerationPopupObserver::GenerationPopup::kHidden);
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
@@ -373,7 +307,7 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
   // Tap in the middle of the field.
   content::SimulateTapAt(WebContents(),
                          gfx::Point(static_cast<int>(x), static_cast<int>(y)));
-  WaitForStatus(TestPopupObserver::GenerationPopup::kShown);
+  WaitForStatus(TestGenerationPopupObserver::GenerationPopup::kShown);
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
@@ -396,7 +330,7 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
   content::SimulateMouseClickAt(
       WebContents(), 0, blink::WebMouseEvent::Button::kLeft,
       gfx::Point(static_cast<int>(x), static_cast<int>(y)));
-  WaitForStatus(TestPopupObserver::GenerationPopup::kShown);
+  WaitForStatus(TestGenerationPopupObserver::GenerationPopup::kShown);
 }
 
 // https://crbug.com/791389
