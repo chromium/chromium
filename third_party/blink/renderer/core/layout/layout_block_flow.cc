@@ -4489,7 +4489,7 @@ void LayoutBlockFlow::CreateOrDestroyMultiColumnFlowThreadIfNeeded(
   // We don't allow custom layout and multicol on the same object. This is
   // similar to not allowing it for flexbox, grids and tables (although those
   // don't create LayoutBlockFlow, so we don't need to check for those here).
-  if (IsLayoutNGCustom())
+  if (StyleRef().IsDisplayLayoutCustomBox())
     return;
 
   // MathML layout objects don't support multicol.
