@@ -40,7 +40,7 @@ CreateWebAppInfoForOSSettingsSystemWebApp() {
 OSSettingsSystemAppDelegate::OSSettingsSystemAppDelegate(Profile* profile)
     : web_app::SystemWebAppDelegate(web_app::SystemAppType::SETTINGS,
                                     "OSSettings",
-                                    GURL(chrome::kChromeUIOSSettingsURL),
+                                    GURL(chrome::kChromeUISettingsURL),
                                     profile) {}
 
 std::unique_ptr<WebApplicationInfo> OSSettingsSystemAppDelegate::GetWebAppInfo()

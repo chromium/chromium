@@ -293,11 +293,6 @@ void SystemWebAppManager::Start() {
       // origin trial names. Ideally, construct them from some static const
       // char*.
     }
-
-    // App's install_url and start_url should share the same origin.
-    DCHECK(url::IsSameOriginWith(
-        type_and_app_info.second->GetInstallUrl(),
-        type_and_app_info.second->GetWebAppInfo()->start_url));
   }
 #endif  // DCHECK_IS_ON()
 
