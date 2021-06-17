@@ -12,6 +12,7 @@
 #include <limits>
 #include <ostream>
 
+#include "base/bits.h"
 #include "base/check_op.h"
 #include "base/cxx17_backports.h"
 #include "sandbox/linux/bpf_dsl/bpf_dsl.h"
@@ -50,11 +51,6 @@ const int kSyscallsRequiredForUnsafeTraps[] = {
     __NR_sigreturn,
 #endif
 };
-
-bool HasExactlyOneBit(uint64_t x) {
-  // Common trick; e.g., see http://stackoverflow.com/a/108329.
-  return x != 0 && (x & (x - 1)) == 0;
-}
 
 ResultExpr DefaultPanic(const char* error) {
   return Kill();
@@ -404,7 +400,7 @@ CodeGen::Node PolicyCompiler::MaskedEqualHalf(int argno,
   // For (arg & x) == x where x is a single-bit value, emit:
   //   LDW  [idx]
   //   JSET mask, passed, failed
-  if (mask == value && HasExactlyOneBit(mask)) {
+  if (mask == value && base::bits::IsPowerOfTwo(mask)) {
     return gen_.MakeInstruction(
         BPF_LD + BPF_W + BPF_ABS,
         idx,
