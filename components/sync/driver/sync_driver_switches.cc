@@ -67,6 +67,8 @@ const base::FeatureParam<base::TimeDelta> kSyncPolicyLoadTimeout{
     &kSyncRequiresPoliciesLoaded, "SyncPolicyLoadTimeout",
     base::TimeDelta::FromSeconds(10)};
 
+// Keep this entry in sync with the equivalent name in
+// ChromeFeatureList.java.
 const base::Feature kSyncTrustedVaultPassphraseRecovery{
     "SyncTrustedVaultPassphraseRecovery", base::FEATURE_DISABLED_BY_DEFAULT};
 

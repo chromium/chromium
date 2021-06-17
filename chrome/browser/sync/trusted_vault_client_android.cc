@@ -104,6 +104,12 @@ void TrustedVaultClientAndroid::NotifyKeysChanged(JNIEnv* env) {
   }
 }
 
+void TrustedVaultClientAndroid::NotifyRecoverabilityChanged(JNIEnv* env) {
+  for (Observer& observer : observer_list_) {
+    observer.OnTrustedVaultRecoverabilityChanged();
+  }
+}
+
 void TrustedVaultClientAndroid::AddObserver(Observer* observer) {
   observer_list_.AddObserver(observer);
 }
@@ -183,9 +189,8 @@ void TrustedVaultClientAndroid::AddTrustedRecoveryMethod(
     const std::vector<uint8_t>& public_key,
     int method_type_hint,
     base::OnceClosure cb) {
-  // TODO(crbug.com/1100279): Needs implementation.
-  NOTIMPLEMENTED();
-  std::move(cb).Run();
+  // Not invoked on Android.
+  NOTREACHED();
 }
 
 TrustedVaultClientAndroid::RequestId

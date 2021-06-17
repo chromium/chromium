@@ -47,6 +47,9 @@
         <activity android:name="org.chromium.chrome.browser.sync.SyncTestRule$DummyKeyRetrievalActivity"
             android:exported="true"/>
 
+        <activity android:name="org.chromium.chrome.browser.sync.SyncTestRule$DummyRecoverabilityDegradedFixActivity"
+            android:exported="true"/>
+
         <activity android:name="org.chromium.chrome.browser.browserservices.TestTrustedWebActivityService"
             android:exported="true"/>
 

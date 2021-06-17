@@ -167,6 +167,18 @@ public class TrustedVaultClient {
     }
 
     /**
+     * Notifies all registered native clients (in practice, exactly one) that the recoverability
+     * state in the backend may have changed, meaning that the value retuned by
+     * getIsRecoverabilityDegraded() may have changed.
+     */
+    public void notifyRecoverabilityChanged() {
+        for (long nativeTrustedVaultClientAndroid : mNativeTrustedVaultClientAndroidSet) {
+            TrustedVaultClientJni.get().notifyRecoverabilityChanged(
+                    nativeTrustedVaultClientAndroid);
+        }
+    }
+
+    /**
      * Creates an intent that launches an activity that triggers the degraded recoverability UI.
      *
      * @param accountInfo Account representing the user.
@@ -307,5 +319,6 @@ public class TrustedVaultClient {
         void getIsRecoverabilityDegradedCompleted(
                 long nativeTrustedVaultClientAndroid, int requestId, boolean result);
         void notifyKeysChanged(long nativeTrustedVaultClientAndroid);
+        void notifyRecoverabilityChanged(long nativeTrustedVaultClientAndroid);
     }
 }

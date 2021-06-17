@@ -79,18 +79,38 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
     };
 
     /**
+     * Simple activity that mimics a trusted vault degraded recoverability fix flow that succeeds
+     * immediately.
+     */
+    public static class DummyRecoverabilityDegradedFixActivity extends Activity {
+        @Override
+        protected void onCreate(@Nullable Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            setResult(RESULT_OK);
+            FakeTrustedVaultClientBackend.get().setRecoverabilityDegraded(false);
+            finish();
+        }
+    };
+
+    /**
      * A fake implementation of TrustedVaultClient.Backend. Allows to specify keys to be fetched.
      * Keys aren't populated through fetchKeys() unless startPopulateKeys() is called.
      * startPopulateKeys() is called by DummyKeyRetrievalActivity before its completion to mimic
      * real TrustedVaultClient.Backend implementation.
+     *
+     * Similarly, recoverability-degraded logic is implemented with a dummy activity. Tests can
+     * choose to enter this state via invoking setRecoverabilityDegraded(true), and the state can be
+     * resolved with DummyRecoverabilityDegradedFixActivity.
      */
     public static class FakeTrustedVaultClientBackend implements TrustedVaultClient.Backend {
         private static FakeTrustedVaultClientBackend sInstance;
         private boolean mPopulateKeys;
+        private boolean mRecoverabilityDegraded;
         private @Nullable List<byte[]> mKeys;
 
         public FakeTrustedVaultClientBackend() {
             mPopulateKeys = false;
+            mRecoverabilityDegraded = false;
         }
 
         public static FakeTrustedVaultClientBackend get() {
@@ -121,12 +141,35 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
             return Promise.rejected();
         }
 
+        @Override
+        public Promise<Boolean> getIsRecoverabilityDegraded(CoreAccountInfo accountInfo) {
+            return Promise.fulfilled(mRecoverabilityDegraded);
+        }
+
+        @Override
+        public Promise<PendingIntent> createRecoverabilityDegradedIntent(
+                CoreAccountInfo accountInfo) {
+            Context context = InstrumentationRegistry.getContext();
+            Intent intent = new Intent(context, DummyRecoverabilityDegradedFixActivity.class);
+            return Promise.fulfilled(PendingIntent.getActivity(context, 0 /* requestCode */, intent,
+                    IntentUtils.getPendingIntentMutabilityFlag(false)));
+        }
+
+        @Override
+        public Promise<PendingIntent> createOptInIntent(CoreAccountInfo accountInfo) {
+            return Promise.rejected();
+        }
+
         public void setKeys(List<byte[]> keys) {
             mKeys = Collections.unmodifiableList(keys);
         }
 
         public void startPopulateKeys() {
             mPopulateKeys = true;
+        }
+
+        public void setRecoverabilityDegraded(boolean degraded) {
+            mRecoverabilityDegraded = degraded;
         }
     }
 

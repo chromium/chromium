@@ -110,6 +110,16 @@ public final class SyncTestUtil {
     }
 
     /**
+     * Waits for sync being in the desired value for isTrustedVaultRecoverabilityDegraded().
+     */
+    public static void waitForTrustedVaultRecoverabilityDegraded(boolean desiredValue) {
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(SyncService.get().isTrustedVaultRecoverabilityDegraded(),
+                    Matchers.is(desiredValue));
+        }, TIMEOUT_MS, INTERVAL_MS);
+    }
+
+    /**
      * Triggers a sync cycle.
      */
     public static void triggerSync() {

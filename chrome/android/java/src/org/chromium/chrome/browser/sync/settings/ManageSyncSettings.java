@@ -645,7 +645,7 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
             TrustedVaultClient.get().notifyKeysChanged();
         }
         if (requestCode == REQUEST_CODE_TRUSTED_VAULT_RECOVERABILITY_DEGRADED) {
-            // TODO(crbug.com/1100279): Broadcast completion via TrustedVaultClient.
+            TrustedVaultClient.get().notifyRecoverabilityChanged();
         }
     }
 

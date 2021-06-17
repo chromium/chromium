@@ -312,6 +312,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &switches::kWipeDataOnChildAccountSignin,
     &switches::kDecoupleSyncFromAndroidMasterSync,
     &switches::kMinorModeSupport,
+    &switches::kSyncTrustedVaultPassphraseRecovery,
     &switches::kSyncUseSessionsUnregisterDelay,
     &subresource_filter::kSafeBrowsingSubresourceFilter,
     &video_tutorials::features::kVideoTutorials,

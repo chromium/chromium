@@ -55,6 +55,10 @@ class TrustedVaultClientAndroid : public syncer::TrustedVaultClient {
   // Called from Java to notify that the keys in the vault may have changed.
   void NotifyKeysChanged(JNIEnv* env);
 
+  // Called from Java to notify that the recoverability of the vault may have
+  // changed.
+  void NotifyRecoverabilityChanged(JNIEnv* env);
+
   // TrustedVaultClient implementation.
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;

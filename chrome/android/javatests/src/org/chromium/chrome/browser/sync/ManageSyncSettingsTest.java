@@ -36,6 +36,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
@@ -46,6 +47,7 @@ import org.chromium.chrome.browser.sync.ui.PassphraseTypeDialogFragment;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
+import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.sync.ModelType;
@@ -516,12 +518,13 @@ public class ManageSyncSettingsTest {
     public void testTrustedVaultKeyRetrieval() {
         final byte[] trustedVaultKey = new byte[] {1, 2, 3, 4};
 
+        mSyncTestRule.getFakeServerHelper().setTrustedVaultNigori(trustedVaultKey);
+
         // Keys won't be populated by FakeTrustedVaultClientBackend unless corresponding key
         // retrieval activity is about to be completed.
         SyncTestRule.FakeTrustedVaultClientBackend.get().setKeys(
                 Collections.singletonList(trustedVaultKey));
 
-        mSyncTestRule.getFakeServerHelper().setTrustedVaultNigori(trustedVaultKey);
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
 
         // Initially FakeTrustedVaultClientBackend doesn't provide any keys, so PSS should remain
@@ -537,6 +540,44 @@ public class ManageSyncSettingsTest {
 
         // Native client should fetch new keys and get out of TrustedVaultKeyRequired state.
         SyncTestUtil.waitForTrustedVaultKeyRequired(false);
+    }
+
+    /**
+     * Test the trusted vault recoverability fix flow, which involves launching an intent and
+     * finally calling TrustedVaultClient.notifyRecoverabilityChanged().
+     */
+    @Test
+    @LargeTest
+    @Feature({"Sync"})
+    @Features.EnableFeatures(ChromeFeatureList.SYNC_TRUSTED_VAULT_PASSPHRASE_RECOVERY)
+    public void testTrustedVaultRecoverabilityFix() {
+        final byte[] trustedVaultKey = new byte[] {1, 2, 3, 4};
+
+        mSyncTestRule.getFakeServerHelper().setTrustedVaultNigori(trustedVaultKey);
+
+        // Mimic retrieval having completed earlier.
+        SyncTestRule.FakeTrustedVaultClientBackend.get().setKeys(
+                Collections.singletonList(trustedVaultKey));
+        SyncTestRule.FakeTrustedVaultClientBackend.get().startPopulateKeys();
+
+        SyncTestRule.FakeTrustedVaultClientBackend.get().setRecoverabilityDegraded(true);
+
+        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
+
+        // Initially recoverability should be reported as degraded.
+        SyncTestUtil.waitForTrustedVaultRecoverabilityDegraded(true);
+
+        // Mimic the user tapping on the error card's button. This should start
+        // DummyRecoverabilityDegradedFixActivity and notify native client that recoverability has
+        // changed. Right before DummyRecoverabilityDegradedFixActivity completion
+        // FakeTrustedVaultClientBackend will exit the recoverability degraded state.
+        final ManageSyncSettings fragment = startManageSyncPreferences();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { fragment.onSyncErrorCardPrimaryButtonClicked(); });
+
+        // Native client should fetch the new recoverability state and get out of the
+        // degraded-recoverability state.
+        SyncTestUtil.waitForTrustedVaultRecoverabilityDegraded(false);
     }
 
     @Test
