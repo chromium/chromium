@@ -204,20 +204,20 @@ void ScreenAsh::RemoveObserver(display::DisplayObserver* observer) {
 }
 
 // static
-display::DisplayManager* ScreenAsh::CreateDisplayManager() {
-  std::unique_ptr<ScreenAsh> screen(new ScreenAsh);
+std::unique_ptr<display::DisplayManager> ScreenAsh::CreateDisplayManager() {
+  auto screen = std::make_unique<ScreenAsh>();
 
   display::Screen* current = display::Screen::GetScreen();
   // If there is no native, or the native was for shutdown,
   // use ash's screen.
   if (!current || current == screen_for_shutdown)
     display::Screen::SetScreenInstance(screen.get());
-  display::DisplayManager* manager =
-      new display::DisplayManager(std::move(screen));
+  auto manager = std::make_unique<display::DisplayManager>(std::move(screen));
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kAshEnableTabletMode)) {
     manager->set_internal_display_has_accelerometer(true);
   }
+
   return manager;
 }
 

@@ -6,6 +6,7 @@
 #define ASH_DISPLAY_SCREEN_ASH_H_
 
 #include <stdint.h>
+#include <memory>
 
 #include "ash/ash_export.h"
 #include "base/macros.h"
@@ -49,7 +50,7 @@ class ASH_EXPORT ScreenAsh : public display::Screen {
   void RemoveObserver(display::DisplayObserver* observer) override;
 
   // CreateDisplayManager with a ScreenAsh instance.
-  static display::DisplayManager* CreateDisplayManager();
+  static std::unique_ptr<display::DisplayManager> CreateDisplayManager();
 
   // Create a screen instance to be used during shutdown.
   static void CreateScreenForShutdown();

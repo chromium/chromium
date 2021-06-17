@@ -563,7 +563,7 @@ Shell::Shell(std::unique_ptr<ShellDelegate> shell_delegate)
 
   login_screen_controller_ =
       std::make_unique<LoginScreenController>(system_tray_notifier_.get());
-  display_manager_.reset(ScreenAsh::CreateDisplayManager());
+  display_manager_ = ScreenAsh::CreateDisplayManager();
   window_tree_host_manager_ = std::make_unique<WindowTreeHostManager>();
   user_metrics_recorder_ = std::make_unique<UserMetricsRecorder>();
   keyboard_controller_ =
