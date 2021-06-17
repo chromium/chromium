@@ -285,6 +285,7 @@
 <translation id="1919345977826869612">विज्ञापनहरू</translation>
 <translation id="1919367280705858090">निर्दिष्ट त्रुटिसम्बन्धी सन्देशमार्फत मद्दत प्राप्त गर्नुहोस्।</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{कुनै पनि होइन}=1{१ साइट}other{# साइटहरू}}</translation>
+<translation id="1924727005275031552">नयाँ</translation>
 <translation id="1945968466830820669">तपाईं आफ्नो सङ्गठनको खातामाथिको पहुँच गुमाउन सक्नुहुन्छ वा तपाईंको पहिचान चोरी हुन सक्छ। Chromium तपाईंलाई आफ्नो पासवर्ड अहिले नै परिवर्तन गर्न सिफारिस गर्छ।</translation>
 <translation id="1947454675006758438">सिरानको दायाँपट्टि स्टिच</translation>
 <translation id="1958218078413065209">तपाईंले ल्याउनुभएको अधिकतम अङ्क <ph name="SCORE" /> हो।</translation>
@@ -398,6 +399,7 @@
 <translation id="2359347814217202136">{NUM_DAYS,plural, =0{एक दिनभन्दा कम समयमै}=1{एक दिनभित्र}other{{NUM_DAYS} दिनभित्र}}</translation>
 <translation id="2359629602545592467">बहु मुद्राहरू</translation>
 <translation id="2359808026110333948">जारी राख्नुहोस्</translation>
+<translation id="2359961752320758691">तपाईंको भर्चुअल कार्ड नम्बर अटोफिल गरिएको छ।</translation>
 <translation id="2367567093518048410">चरण</translation>
 <translation id="2372464001869762664">तपाईंले पुष्टि गरिसकेपछि तपाईंको Google खातामा रहेका कार्डसम्बन्धी विवरणहरू यो साइटसँग सेयर गरिने छन्। तपाईं आफ्नो Plex खातासम्बन्धी विवरणहरूमा गई CVC हेर्न सक्नुहुन्छ।</translation>
 <translation id="2380886658946992094">Legal</translation>
@@ -408,6 +410,7 @@
 <translation id="239429038616798445">ढुवानीको यो विधि उपलब्ध छैन। फरक विधि चयन गर्ने प्रयास गर्नुहोस्।</translation>
 <translation id="2396249848217231973">मेटाइलाई &amp;पूर्ववत गर्नुहोस्</translation>
 <translation id="2410754574180102685">Government-Legal</translation>
+<translation id="2413155254802890957">पुरानो</translation>
 <translation id="2413528052993050574">यो सर्भरले यो <ph name="DOMAIN" /> को भनि प्रमाणित गर्न सकेन; यसको सुरक्षा प्रमाणपत्रलाई रद्द गरिएको हुन सक्छ। यो कुनै एउटा मिसकन्फिगरेसन वा कुनै आक्रमणकारीले तपाईंको जडानमा गरेको हस्तक्षेपको कारणले गर्दा भएको हुन सक्छ।</translation>
 <translation id="2414886740292270097">अँध्यारो</translation>
 <translation id="2438874542388153331">दायाँतिर चार प्वाल</translation>
@@ -917,6 +920,7 @@
 <translation id="4302514097724775343">प्ले गर्न dino मा ट्याप गर्नुहोस्</translation>
 <translation id="4302965934281694568">Chou3 (Envelope)</translation>
 <translation id="4305666528087210886">तपाईंको फाइल हेर्न र प्रयोग गर्न सकिएन</translation>
+<translation id="4306529830550717874">ठेगाना सेभ गर्ने हो?</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">रोक लगाउनुहोस् (डिफल्ट मान)</translation>
 <translation id="4314815835985389558">सिंक व्यवस्थापन गर्नुहोस्</translation>
@@ -1405,6 +1409,7 @@
 <translation id="610911394827799129">तपाईंको Google खाताको <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> मा ब्राउजिङ इतिहासका अन्य ढाँचाहरू रहेका हुनसक्छन्।</translation>
 <translation id="6116338172782435947">क्लिपबोर्डमा प्रतिलिपि गरिएका पाठ र फोटो हेर्नुहोस्</translation>
 <translation id="6120179357481664955">आफ्नो UPI ID सम्झने हो?</translation>
+<translation id="6123290840358279103">भर्चुअल कार्ड हेर्नुहोस्</translation>
 <translation id="6124432979022149706">Chrome Enterprise का कनेक्टरहरू</translation>
 <translation id="6146055958333702838">तपाइँले प्रयोग गरिेहेको कुनै पनि केबुलहरू जाँच्नुहोस् र कुनै पनि राउटरहरू, मोडेमहरू, वा अन्य 
         नेटवर्क यन्त्रहरू रिबुट गर्नुहोस्।</translation>
@@ -1686,6 +1691,7 @@
 <translation id="7300012071106347854">कोबाल्ट निलो</translation>
 <translation id="7302712225291570345">"<ph name="TEXT" />"</translation>
 <translation id="7304030187361489308">उच्च</translation>
+<translation id="7305756307268530424">सुस्त गतिमा सुरु गर्नुहोस्</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">जडानसम्बन्धी मद्दत</translation>
 <translation id="7323804146520582233">"<ph name="SECTION" />" खण्ड लुकाइयोस्</translation>
@@ -1764,6 +1770,7 @@
 <translation id="7548892272833184391">जडानसम्बन्धी त्रुटिहरू ठिक गर्नुहोस्</translation>
 <translation id="7549584377607005141">यो वेबपृष्ठ ठीकसँग प्रदर्शित हुनको लागि यस वेबपृष्ठलाई तपाइँले पहिले प्रविष्ट गर्नुभएको लगत आवश्यक छ। तपाइँले यो लगत फेरि पठाउन सक्नुहुन्छ, तर यसो गर्नाले यस पृष्ठले पहिले प्रददर्शन गरेको कुनै पनि कार्य तपाइँले फेरि गर्नुहुनेछ।</translation>
 <translation id="7550637293666041147">तपाईंको डिभाइसको युजरनेम र Chrome को युजरनेम</translation>
+<translation id="755279583747225797">ट्रायल सक्रिय छ</translation>
 <translation id="7552846755917812628">निम्न सुझावहरूको पालना गरी हेर्नुहोस्:</translation>
 <translation id="7554475479213504905">जे भए पनि पुनः लोड गर्नुहोस् र देखाउनुहोस्</translation>
 <translation id="7554791636758816595">नयाँ ट्याब</translation>
@@ -1859,6 +1866,7 @@
 <translation id="7894280532028510793">हिज्जे सही छ भने <ph name="BEGIN_LINK" />'नेटवर्कका डाइगोन्स्टिक्स' चलाएर हेर्नुहोस्<ph name="END_LINK" />।</translation>
 <translation id="7904208859782148177">C3 (Envelope)</translation>
 <translation id="7931318309563332511">अज्ञात</translation>
+<translation id="793209273132572360">ठेगाना परिवर्तन गर्ने हो?</translation>
 <translation id="7932579305932748336">कोट</translation>
 <translation id="79338296614623784">मान्य फोन नम्बर प्रविष्टि गर्नुहोस्</translation>
 <translation id="7934052535022478634">भुक्तानी गर्ने कार्य पूरा भयो</translation>

@@ -85,7 +85,7 @@
 <translation id="1555130319947370107">أزرق</translation>
 <translation id="1570871743947603115">تبديل البلوتوث. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">الوصول إلى جميع أنشطتك في جلسة واحدة</translation>
-<translation id="159255010947577753">أداة تحديد</translation>
+<translation id="159255010947577753">أداة التحديد</translation>
 <translation id="1611993646327628135">مُفعَّل</translation>
 <translation id="1615402009686901181">تحظر سياسة المشرف إمكانية تصوير الشاشة عند عرض محتوى سري.</translation>
 <translation id="1632985212731562677">يمكن إيقاف ميزة "الوصول عبر مفتاح التحويل" في "الإعدادات" &gt; "أدوات تمكين الوصول".</translation>
@@ -457,7 +457,7 @@
 <translation id="4570957409596482333">زر "الاختيار والاستماع"</translation>
 <translation id="4577274620589681794">انتهى الوقت · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">عرض المعاينات</translation>
-<translation id="4578196883126898996">الميكروفون متوقّف، عليك تفعيل زر ميكروفون جهازك.</translation>
+<translation id="4578196883126898996">الميكروفون غير مفعّل، عليك تفعيل زر ميكروفون جهازك.</translation>
 <translation id="4578906031062871102">تم فتح قائمة الإعدادات.</translation>
 <translation id="4581047786858252841">الميكروفون مفعّل.</translation>
 <translation id="4585337515783392668">إيقاف الإرسال إلى مستلم غير معروف</translation>
