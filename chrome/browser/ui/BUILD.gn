@@ -1976,6 +1976,8 @@ static_library("ui") {
       "ash/crosapi_new_window_delegate.h",
       "ash/default_pinned_apps.cc",
       "ash/default_pinned_apps.h",
+      "ash/desks_client.cc",
+      "ash/desks_client.h",
       "ash/holding_space/holding_space_client_impl.cc",
       "ash/holding_space/holding_space_client_impl.h",
       "ash/holding_space/holding_space_downloads_delegate.cc",

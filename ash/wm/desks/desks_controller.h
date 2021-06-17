@@ -238,6 +238,8 @@ class ASH_EXPORT DesksController : public DesksHelper,
   std::u16string GetDeskName(int index) const override;
   int GetNumberOfDesks() const override;
   void SendToDeskAtIndex(aura::Window* window, int desk_index) override;
+  std::unique_ptr<DeskTemplate> CaptureActiveDeskAsTemplate(
+      const base::FilePath& profile_path) override;
 
   // Updates the default names (e.g. "Desk 1", "Desk 2", ... etc.) given to the
   // desks. This is called when desks are added, removed or reordered to update

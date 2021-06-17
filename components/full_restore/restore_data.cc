@@ -116,7 +116,7 @@ void RestoreData::ModifyWindowId(const std::string& app_id,
 void RestoreData::ModifyWindowInfo(const std::string& app_id,
                                    int32_t window_id,
                                    const WindowInfo& window_info) {
-  auto* app_restore_data = GetAppRestoreData(app_id, window_id);
+  auto* app_restore_data = GetAppRestoreDataMutable(app_id, window_id);
   if (app_restore_data)
     app_restore_data->ModifyWindowInfo(window_info);
 }
@@ -125,7 +125,7 @@ void RestoreData::ModifyThemeColor(const std::string& app_id,
                                    int32_t window_id,
                                    uint32_t primary_color,
                                    uint32_t status_bar_color) {
-  auto* app_restore_data = GetAppRestoreData(app_id, window_id);
+  auto* app_restore_data = GetAppRestoreDataMutable(app_id, window_id);
   if (app_restore_data)
     app_restore_data->ModifyThemeColor(primary_color, status_bar_color);
 }
@@ -158,7 +158,7 @@ void RestoreData::RemoveAppRestoreData(const std::string& app_id,
 }
 
 void RestoreData::RemoveWindowInfo(const std::string& app_id, int window_id) {
-  auto* app_restore_data = GetAppRestoreData(app_id, window_id);
+  auto* app_restore_data = GetAppRestoreDataMutable(app_id, window_id);
   if (app_restore_data)
     app_restore_data->ClearWindowInfo();
 }
@@ -208,8 +208,8 @@ int32_t RestoreData::FetchRestoreWindowId(const std::string& app_id) {
   return window_id;
 }
 
-AppRestoreData* RestoreData::GetAppRestoreData(const std::string& app_id,
-                                               int window_id) {
+const AppRestoreData* RestoreData::GetAppRestoreData(const std::string& app_id,
+                                                     int window_id) const {
   auto it = app_id_to_launch_list_.find(app_id);
   if (it == app_id_to_launch_list_.end())
     return nullptr;
@@ -219,6 +219,11 @@ AppRestoreData* RestoreData::GetAppRestoreData(const std::string& app_id,
     return nullptr;
 
   return data_it->second.get();
+}
+
+AppRestoreData* RestoreData::GetAppRestoreDataMutable(const std::string& app_id,
+                                                      int window_id) {
+  return const_cast<AppRestoreData*>(GetAppRestoreData(app_id, window_id));
 }
 
 }  // namespace full_restore

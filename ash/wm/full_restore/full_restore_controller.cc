@@ -15,6 +15,7 @@
 #include "ash/shell.h"
 #include "ash/wm/container_finder.h"
 #include "ash/wm/desks/desks_util.h"
+#include "ash/wm/full_restore/full_restore_util.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_positioning_utils.h"
@@ -432,80 +433,20 @@ void FullRestoreController::SaveWindowImpl(
     return;
   }
 
-  int window_activation_index;
-  if (activation_index) {
-    window_activation_index = *activation_index;
-  } else {
-    auto mru_windows =
+  aura::Window::Windows mru_windows;
+  // We only need |mru_windows| if |activation_index| is nullopt as
+  // |mru_windows| will be used to calculated the window's activation index when
+  // it's not provided by |activation_index|.
+  if (!activation_index.has_value()) {
+    mru_windows =
         Shell::Get()->mru_window_tracker()->BuildMruWindowList(kAllDesks);
-    auto it = std::find(mru_windows.begin(), mru_windows.end(), window);
-    if (it != mru_windows.end())
-      window_activation_index = it - mru_windows.begin();
   }
-
-  full_restore::WindowInfo window_info;
-  window_info.activation_index = window_activation_index;
-  window_info.window = window;
-  window_info.desk_id = window->GetProperty(aura::client::kWindowWorkspaceKey);
-  if (window->GetProperty(aura::client::kVisibleOnAllWorkspacesKey)) {
-    // Only save |visible_on_all_workspaces| field if it's true to reduce file
-    // storage size.
-    window_info.visible_on_all_workspaces = true;
-  }
-
-  // If override bounds and window state are available (in tablet mode), save
-  // those bounds.
-  gfx::Rect* override_bounds = window->GetProperty(kRestoreBoundsOverrideKey);
-  if (override_bounds) {
-    window_info.current_bounds = *override_bounds;
-    // Snapped state can be restored from tablet onto clamshell, so we do not
-    // use the restore override state here.
-    window_info.window_state_type =
-        window_state->IsSnapped()
-            ? window_state->GetStateType()
-            : window->GetProperty(kRestoreWindowStateTypeOverrideKey);
-  } else {
-    // If there are restore bounds, use those as current bounds. On restore, for
-    // states with restore bounds (maximized, minimized, snapped, etc), they
-    // will take the current bounds as their restore bounds and have the current
-    // bounds determined by the system.
-    window_info.current_bounds = window_state->HasRestoreBounds()
-                                     ? window_state->GetRestoreBoundsInScreen()
-                                     : window->GetBoundsInScreen();
-    // Full restore does not support restoring fullscreen windows. If a window
-    // is fullscreen save the pre-fullscreen window state instead.
-    window_info.window_state_type =
-        window_state->IsFullscreen()
-            ? chromeos::ToWindowStateType(
-                  window->GetProperty(aura::client::kPreFullscreenShowStateKey))
-            : window_state->GetStateType();
-  }
-
-  // Populate the pre minimized show state field if the window is minimized.
-  if (window_state->IsMinimized()) {
-    window_info.pre_minimized_show_state_type =
-        window->GetProperty(aura::client::kPreMinimizedShowStateKey);
-  }
-
-  window_info.display_id =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window).id();
-
-  // Save window size restriction of ARC app window.
-  if (IsArcWindow(window)) {
-    views::Widget* widget = views::Widget::GetWidgetForNativeWindow(window);
-    if (widget) {
-      auto extra = full_restore::WindowInfo::ArcExtraInfo();
-      extra.maximum_size = widget->GetMaximumSize();
-      extra.minimum_size = widget->GetMinimumSize();
-      extra.title = window->GetTitle();
-      window_info.arc_extra_info = extra;
-    }
-  }
-
-  full_restore::SaveWindowInfo(window_info);
+  std::unique_ptr<full_restore::WindowInfo> window_info =
+      BuildWindowInfo(window, activation_index, mru_windows);
+  full_restore::SaveWindowInfo(*window_info);
 
   if (g_save_window_callback_for_testing)
-    g_save_window_callback_for_testing.Run(window_info);
+    g_save_window_callback_for_testing.Run(*window_info);
 }
 
 void FullRestoreController::RestoreStateTypeAndClearLaunchedKey(

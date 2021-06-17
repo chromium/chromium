@@ -266,6 +266,21 @@ base::FilePath ChromeShellDelegate::GetPrimaryUserDownloadsFolder() const {
   return base::FilePath();
 }
 
+std::vector<GURL> ChromeShellDelegate::GetURLsIfApplicable(
+    aura::Window* window) {
+  BrowserView* browser_view =
+      BrowserView::GetBrowserViewForNativeWindow(window);
+  if (!browser_view)
+    return std::vector<GURL>();
+
+  TabStripModel* tab_strip_model = browser_view->browser()->tab_strip_model();
+  std::vector<GURL> urls;
+  for (int i = 0; i < tab_strip_model->count(); ++i)
+    urls.push_back(tab_strip_model->GetWebContentsAt(i)->GetLastCommittedURL());
+
+  return urls;
+}
+
 // static
 void ChromeShellDelegate::SetDisableLoggingRedirectForTesting(bool value) {
   disable_logging_redirect_for_testing = value;

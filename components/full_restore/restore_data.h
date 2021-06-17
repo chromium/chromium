@@ -167,6 +167,9 @@ class COMPONENT_EXPORT(FULL_RESTORE) RestoreData {
   // FetchRestoreWindowId('bb') return 0.
   int32_t FetchRestoreWindowId(const std::string& app_id);
 
+  const AppRestoreData* GetAppRestoreData(const std::string& app_id,
+                                          int window_id) const;
+
   const AppIdToLaunchList& app_id_to_launch_list() const {
     return app_id_to_launch_list_;
   }
@@ -174,7 +177,8 @@ class COMPONENT_EXPORT(FULL_RESTORE) RestoreData {
  private:
   // Returns the pointer to AppRestoreData for the given |app_id| and
   // |window_id|. Returns null if there is no AppRestoreData.
-  AppRestoreData* GetAppRestoreData(const std::string& app_id, int window_id);
+  AppRestoreData* GetAppRestoreDataMutable(const std::string& app_id,
+                                           int window_id);
 
   AppIdToLaunchList app_id_to_launch_list_;
 

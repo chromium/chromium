@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "ash/ash_export.h"
 #include "base/callback.h"
@@ -17,6 +18,7 @@
 #include "services/device/public/mojom/fingerprint.mojom-forward.h"
 #include "services/media_session/public/cpp/media_session_service.h"
 #include "ui/gfx/native_widget_types.h"
+#include "url/gurl.h"
 
 namespace aura {
 class Window;
@@ -120,9 +122,13 @@ class ASH_EXPORT ShellDelegate {
   // Returns true if Chrome was started with --disable-logging-redirect option.
   virtual bool IsLoggingRedirectDisabled() const = 0;
 
-  // Returns empty path is user session has not started yet, or path to the
+  // Returns empty path if user session has not started yet, or path to the
   // primary user Downloads folder if user has already logged in.
   virtual base::FilePath GetPrimaryUserDownloadsFolder() const = 0;
+
+  // Returns the list of URLs that open in the tabs of |window| if the given
+  // given |window| contains a browser frame, otherwise returns an empty list.
+  virtual std::vector<GURL> GetURLsIfApplicable(aura::Window* window) = 0;
 };
 
 }  // namespace ash

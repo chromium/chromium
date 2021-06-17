@@ -8,6 +8,7 @@
 #include <string>
 
 #include "ash/public/cpp/ash_public_export.h"
+#include "base/files/file_path.h"
 #include "base/macros.h"
 #include "components/full_restore/restore_data.h"
 
@@ -72,6 +73,11 @@ class ASH_PUBLIC_EXPORT DesksHelper {
   // Sends |window| to desk at |desk_index|. Does nothing if the desk at
   // |desk_index| is the active desk. |desk_index| must be valid.
   virtual void SendToDeskAtIndex(aura::Window* window, int desk_index) = 0;
+
+  // Captures the active desk and returns it as a desk template containing
+  // necessary information that can be used to create a same desk.
+  virtual std::unique_ptr<DeskTemplate> CaptureActiveDeskAsTemplate(
+      const base::FilePath& profile_path) = 0;
 
  protected:
   DesksHelper();

@@ -28,6 +28,7 @@ class AmbientClientImpl;
 class AppListClientImpl;
 class AshShellInit;
 class CastConfigControllerMediaRouter;
+class DesksClient;
 class ImeControllerClient;
 class InSessionAuthDialogClient;
 class LoginScreenClientImpl;
@@ -115,6 +116,7 @@ class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
   std::unique_ptr<MicrophoneMuteNotificationDelegateImpl>
       microphone_mute_notification_delegate_;
   std::unique_ptr<policy::DisplaySettingsHandler> display_settings_handler_;
+  std::unique_ptr<DesksClient> desks_client_;
 
   // Initialized in PostBrowserStart in all configs:
   std::unique_ptr<MobileDataNotifications> mobile_data_notifications_;

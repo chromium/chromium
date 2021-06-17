@@ -94,4 +94,8 @@ base::FilePath TestShellDelegate::GetPrimaryUserDownloadsFolder() const {
   return base::FilePath();
 }
 
+std::vector<GURL> TestShellDelegate::GetURLsIfApplicable(aura::Window* window) {
+  return std::vector<GURL>();
+}
+
 }  // namespace ash

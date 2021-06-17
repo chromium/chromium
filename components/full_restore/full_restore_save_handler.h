@@ -25,7 +25,7 @@
 namespace base {
 class FilePath;
 class SequencedTaskRunner;
-}
+}  // namespace base
 
 namespace full_restore {
 
@@ -133,6 +133,10 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreSaveHandler
 
   // Generates the ARC session id (0 - 1,000,000,000) for ARC apps.
   int32_t GetArcSessionId();
+
+  // Returns the RestoreData that associates with |profile_path|. Returns
+  // nullptr if there is no such RestoreData.
+  const RestoreData* GetRestoreData(const base::FilePath& profile_path);
 
   base::OneShotTimer* GetTimerForTesting() { return &save_timer_; }
 
