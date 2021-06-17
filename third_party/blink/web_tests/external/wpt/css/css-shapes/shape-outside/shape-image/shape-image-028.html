@@ -8,17 +8,17 @@
     float: left;
     width: 200px;
     height: 200px;
-    shape-outside: url("/css/support/blue-100.png?pipe=trickle(d1)");
+    shape-outside: url("support/left-half-rectangle.png?pipe=trickle(d1)");
   }
 </style>
 <p>
   Verify that an image valued shape-outside layout is updated after the image has
   been loaded. This test checks that the left edge of the "Hello World" text span
   is defined by the 200px wide float before shape-outside image has been loaded and
-  by the 100px wide image after it has been loaded.
+  by the 100px wide image segment after it has been loaded.
 </p>
 <div id="container">
-  <div id="shape"></div><span id="text">Hello World</span>
+  <img src="support/left-half-rectangle.png" id="shape"><span id="text">Hello World</span>
 </div>
 <script>
   function elementRect(elementId) {
