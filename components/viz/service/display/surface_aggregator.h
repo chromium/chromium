@@ -110,9 +110,9 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
   // Get resolved frame data for the resolved surfaces active frame. Returns
   // null if there is no matching surface or the surface doesn't have an active
   // CompositorFrame.
-  ResolvedFrameData* GetResolvedFrame(const SurfaceRange& range);
-  ResolvedFrameData* GetResolvedFrame(const SurfaceId& surface_id);
-  ResolvedFrameData* GetResolvedFrame(Surface* surface);
+  const ResolvedFrameData* GetResolvedFrame(const SurfaceRange& range);
+  const ResolvedFrameData* GetResolvedFrame(const SurfaceId& surface_id);
+  const ResolvedFrameData* GetResolvedFrame(Surface* surface);
 
   absl::optional<gfx::Rect> CalculateClipRect(
       const absl::optional<gfx::Rect>& surface_clip,
@@ -129,7 +129,7 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
                          bool* damage_rect_in_quad_space_valid,
                          const MaskFilterInfoExt& mask_filter_info_pair);
 
-  void EmitSurfaceContent(ResolvedFrameData& resolved_frame,
+  void EmitSurfaceContent(const ResolvedFrameData& resolved_frame,
                           float parent_device_scale_factor,
                           const SurfaceDrawQuad* surface_quad,
                           const gfx::Transform& target_transform,
@@ -211,8 +211,8 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
   //    ancestor render pass with a pixel-moving foreground filter.
   //  - |result| is the result of a prewalk of the surface that contains the
   //    render pass.
-  gfx::Rect PrewalkRenderPass(ResolvedFrameData& resolved_frame,
-                              ResolvedPassData& resolved_pass,
+  gfx::Rect PrewalkRenderPass(const ResolvedFrameData& resolved_frame,
+                              const ResolvedPassData& resolved_pass,
                               bool will_draw,
                               const gfx::Rect& damage_from_parent,
                               const gfx::Transform& target_to_root_transform,
@@ -222,7 +222,7 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
   // Walk the Surface tree from |resolved_frame|. Validate the resources of the
   // current surface and its descendants, check if there are any copy requests,
   // and return the combined damage rect.
-  gfx::Rect PrewalkSurface(ResolvedFrameData& resolved_frame,
+  gfx::Rect PrewalkSurface(const ResolvedFrameData& resolved_frame,
                            bool in_moved_pixel_rp,
                            AggregatedRenderPassId parent_pass,
                            bool will_draw,
@@ -236,7 +236,7 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
   void ProcessResolvedFrame(ResolvedFrameData& resolved_frame);
 
   void CopyUndrawnSurfaces(PrewalkResult* prewalk);
-  void CopyPasses(ResolvedFrameData& resolved_frame,
+  void CopyPasses(const ResolvedFrameData& resolved_frame,
                   const CompositorFrame& frame);
   void AddColorConversionPass();
   void AddDisplayTransformPass();

@@ -117,8 +117,8 @@ size_t ResolvedFrameData::RenderPassCount() const {
   return resolved_passes_.size();
 }
 
-ResolvedPassData& ResolvedFrameData::GetRenderPassDataById(
-    CompositorRenderPassId render_pass_id) {
+const ResolvedPassData& ResolvedFrameData::GetRenderPassDataById(
+    CompositorRenderPassId render_pass_id) const {
   DCHECK(valid_);
 
   // TODO(kylechar): We need to validate that RenderPassDrawQuads only refer to
@@ -128,12 +128,13 @@ ResolvedPassData& ResolvedFrameData::GetRenderPassDataById(
   return *iter->second;
 }
 
-ResolvedPassData& ResolvedFrameData::GetRenderPassDataByIndex(size_t index) {
+const ResolvedPassData& ResolvedFrameData::GetRenderPassDataByIndex(
+    size_t index) const {
   DCHECK(valid_);
   return resolved_passes_[index];
 }
 
-ResolvedPassData& ResolvedFrameData::GetRootRenderPassData() {
+const ResolvedPassData& ResolvedFrameData::GetRootRenderPassData() const {
   DCHECK(valid_);
   return resolved_passes_.back();
 }

@@ -428,7 +428,7 @@ bool SurfaceAggregator::CanPotentiallyMergePass(
          sqs->de_jelly_delta_y == 0;
 }
 
-ResolvedFrameData* SurfaceAggregator::GetResolvedFrame(
+const ResolvedFrameData* SurfaceAggregator::GetResolvedFrame(
     const SurfaceRange& range) {
   // Find latest in flight surface and cache that result for the duration of
   // this aggregation, then find ResolvedFrameData for that surface.
@@ -442,12 +442,12 @@ ResolvedFrameData* SurfaceAggregator::GetResolvedFrame(
   return GetResolvedFrame(iter->second);
 }
 
-ResolvedFrameData* SurfaceAggregator::GetResolvedFrame(
+const ResolvedFrameData* SurfaceAggregator::GetResolvedFrame(
     const SurfaceId& surface_id) {
   return GetResolvedFrame(manager_->GetSurfaceForId(surface_id));
 }
 
-ResolvedFrameData* SurfaceAggregator::GetResolvedFrame(Surface* surface) {
+const ResolvedFrameData* SurfaceAggregator::GetResolvedFrame(Surface* surface) {
   if (!surface || !surface->HasActiveFrame()) {
     // If there is no resolved surface or the surface has no active frame there
     // is no resolved frame data to return.
@@ -503,7 +503,7 @@ void SurfaceAggregator::HandleSurfaceQuad(
     bool* damage_rect_in_quad_space_valid,
     const MaskFilterInfoExt& mask_filter_info) {
   SurfaceId primary_surface_id = surface_quad->surface_range.end();
-  ResolvedFrameData* resolved_frame =
+  const ResolvedFrameData* resolved_frame =
       GetResolvedFrame(surface_quad->surface_range);
 
   // If a new surface is going to be emitted, add the surface_quad rect to
@@ -556,7 +556,7 @@ void SurfaceAggregator::HandleSurfaceQuad(
 }
 
 void SurfaceAggregator::EmitSurfaceContent(
-    ResolvedFrameData& resolved_frame,
+    const ResolvedFrameData& resolved_frame,
     float parent_device_scale_factor,
     const SurfaceDrawQuad* surface_quad,
     const gfx::Transform& target_transform,
@@ -1237,7 +1237,7 @@ void SurfaceAggregator::CopyQuadsToPass(
   }
 }
 
-void SurfaceAggregator::CopyPasses(ResolvedFrameData& resolved_frame,
+void SurfaceAggregator::CopyPasses(const ResolvedFrameData& resolved_frame,
                                    const CompositorFrame& frame) {
   Surface* surface = resolved_frame.surface();
 
@@ -1359,8 +1359,8 @@ void SurfaceAggregator::ProcessAddedAndRemovedSurfaces() {
 }
 
 gfx::Rect SurfaceAggregator::PrewalkRenderPass(
-    ResolvedFrameData& resolved_frame,
-    ResolvedPassData& resolved_pass,
+    const ResolvedFrameData& resolved_frame,
+    const ResolvedPassData& resolved_pass,
     bool will_draw,
     const gfx::Rect& damage_from_parent,
     const gfx::Transform& target_to_root_transform,
@@ -1413,7 +1413,7 @@ gfx::Rect SurfaceAggregator::PrewalkRenderPass(
     gfx::Rect quad_damage_rect;
     if (quad->material == DrawQuad::Material::kSurfaceContent) {
       const auto* surface_quad = SurfaceDrawQuad::MaterialCast(quad);
-      ResolvedFrameData* child_resolved_frame =
+      const ResolvedFrameData* child_resolved_frame =
           GetResolvedFrame(surface_quad->surface_range);
 
       // If the primary surface is not available then we assume the damage is
@@ -1478,7 +1478,7 @@ gfx::Rect SurfaceAggregator::PrewalkRenderPass(
 
       CompositorRenderPassId child_pass_id = render_pass_quad->render_pass_id;
 
-      ResolvedPassData& child_resolved_pass =
+      const ResolvedPassData& child_resolved_pass =
           resolved_frame.GetRenderPassDataById(child_pass_id);
       const CompositorRenderPass& child_render_pass =
           *child_resolved_pass.render_pass;
@@ -1624,7 +1624,7 @@ bool SurfaceAggregator::CheckFrameSinksChanged(const Surface* surface) {
 }
 
 gfx::Rect SurfaceAggregator::PrewalkSurface(
-    ResolvedFrameData& resolved_frame,
+    const ResolvedFrameData& resolved_frame,
     bool in_moved_pixel_rp,
     AggregatedRenderPassId parent_pass_id,
     bool will_draw,
@@ -1707,7 +1707,7 @@ gfx::Rect SurfaceAggregator::PrewalkSurface(
   for (const SurfaceId& surface_id : surface->active_referenced_surfaces()) {
     if (!contained_surfaces_.count(surface_id)) {
       result->undrawn_surfaces.insert(surface_id);
-      ResolvedFrameData* undrawn_surface = GetResolvedFrame(surface_id);
+      const ResolvedFrameData* undrawn_surface = GetResolvedFrame(surface_id);
       if (undrawn_surface) {
         PrewalkSurface(*undrawn_surface, false, AggregatedRenderPassId(),
                        /*will_draw=*/false, gfx::Rect(), result);
@@ -1746,7 +1746,7 @@ void SurfaceAggregator::CopyUndrawnSurfaces(PrewalkResult* prewalk_result) {
 
   for (size_t i = 0; i < surfaces_to_copy.size(); i++) {
     SurfaceId surface_id = surfaces_to_copy[i];
-    ResolvedFrameData* resolved_frame = GetResolvedFrame(surface_id);
+    const ResolvedFrameData* resolved_frame = GetResolvedFrame(surface_id);
     if (!resolved_frame)
       continue;
 
@@ -1870,7 +1870,7 @@ AggregatedFrame SurfaceAggregator::Aggregate(
   PrewalkResult prewalk_result;
   // Get the resolved frame for the root surface after `prewalk_timer` is
   // started so the work is counted in the same histograms as before.
-  ResolvedFrameData& resolved_frame = *GetResolvedFrame(surface);
+  const ResolvedFrameData& resolved_frame = *GetResolvedFrame(surface);
   gfx::Rect surfaces_damage_rect = PrewalkSurface(
       resolved_frame, /*in_moved_pixel_rp=*/false,
       /*parent_pass=*/AggregatedRenderPassId(),

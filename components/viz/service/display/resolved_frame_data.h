@@ -49,7 +49,7 @@ class VIZ_SERVICE_EXPORT ResolvedFrameData {
   ResolvedFrameData& operator=(ResolvedFrameData&& other) = delete;
 
   const SurfaceId& surface_id() const { return surface_id_; }
-  Surface* surface() { return surface_; }
+  Surface* surface() const { return surface_; }
   bool is_valid() const { return valid_; }
   uint64_t frame_index() const { return frame_index_; }
 
@@ -79,10 +79,10 @@ class VIZ_SERVICE_EXPORT ResolvedFrameData {
   // RenderPassData accessors. These should only be used if is_valid() returns
   // true.
   size_t RenderPassCount() const;
-  ResolvedPassData& GetRenderPassDataById(
-      CompositorRenderPassId render_pass_id);
-  ResolvedPassData& GetRenderPassDataByIndex(size_t index);
-  ResolvedPassData& GetRootRenderPassData();
+  const ResolvedPassData& GetRenderPassDataById(
+      CompositorRenderPassId render_pass_id) const;
+  const ResolvedPassData& GetRenderPassDataByIndex(size_t index) const;
+  const ResolvedPassData& GetRootRenderPassData() const;
 
   // Marks this as used and returns true if this was the first time MarkAsUsed()
   // was called since last reset.

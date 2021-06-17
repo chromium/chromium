@@ -100,7 +100,7 @@ TEST_F(ResolvedFrameDataTest, UpdateActiveFrame) {
 
   // Looking up ResolvedPassData by CompositorRenderPassId should work.
   for (auto& render_pass : surface->GetActiveFrame().render_pass_list) {
-    ResolvedPassData& resolved_pass =
+    const ResolvedPassData& resolved_pass =
         resolved_frame.GetRenderPassDataById(render_pass->id);
     EXPECT_EQ(resolved_pass.render_pass, render_pass.get());
   }
