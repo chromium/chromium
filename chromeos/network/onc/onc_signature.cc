@@ -157,6 +157,21 @@ const OncFieldSignature openvpn_fields[] = {
     {::onc::openvpn::kVerifyX509, &kVerifyX509Signature},
     {nullptr}};
 
+const OncFieldSignature wireguard_fields[] = {
+    {::onc::kRecommended, &kRecommendedSignature},
+    {::onc::wireguard::kPrivateKey, &kStringSignature},
+    {::onc::wireguard::kPublicKey, &kStringSignature},
+    {::onc::wireguard::kPeers, &kWireGuardPeerListSignature},
+    {nullptr}};
+
+const OncFieldSignature wireguard_peer_fields[] = {
+    {::onc::wireguard::kPublicKey, &kStringSignature},
+    {::onc::wireguard::kPresharedKey, &kStringSignature},
+    {::onc::wireguard::kAllowedIPs, &kStringSignature},
+    {::onc::wireguard::kEndpoint, &kStringSignature},
+    {::onc::wireguard::kPersistentKeepalive, &kStringSignature},
+    {nullptr}};
+
 const OncFieldSignature third_party_vpn_fields[] = {
     {::onc::kRecommended, &kRecommendedSignature},
     {::onc::third_party_vpn::kExtensionID, &kStringSignature},
@@ -179,6 +194,7 @@ const OncFieldSignature vpn_fields[] = {
     {::onc::vpn::kIPsec, &kIPsecSignature},
     {::onc::vpn::kL2TP, &kL2TPSignature},
     {::onc::vpn::kOpenVPN, &kOpenVPNSignature},
+    {::onc::vpn::kWireGuard, &kWireGuardSignature},
     {::onc::vpn::kThirdPartyVpn, &kThirdPartyVPNSignature},
     {::onc::vpn::kArcVpn, &kARCVPNSignature},
     {::onc::vpn::kType, &kStringSignature},
@@ -430,6 +446,12 @@ const OncValueSignature kL2TPSignature = {base::Value::Type::DICTIONARY,
                                           l2tp_fields, nullptr};
 const OncValueSignature kOpenVPNSignature = {base::Value::Type::DICTIONARY,
                                              openvpn_fields, nullptr};
+const OncValueSignature kWireGuardSignature = {base::Value::Type::DICTIONARY,
+                                               wireguard_fields, nullptr};
+const OncValueSignature kWireGuardPeerSignature = {
+    base::Value::Type::DICTIONARY, wireguard_peer_fields, nullptr};
+const OncValueSignature kWireGuardPeerListSignature = {
+    base::Value::Type::LIST, nullptr, &kWireGuardPeerSignature};
 const OncValueSignature kThirdPartyVPNSignature = {
     base::Value::Type::DICTIONARY, third_party_vpn_fields, nullptr};
 const OncValueSignature kARCVPNSignature = {base::Value::Type::DICTIONARY,
@@ -529,6 +551,8 @@ const CredentialEntry credentials[] = {
     {&kL2TPSignature, ::onc::vpn::kPassword},
     {&kOpenVPNSignature, ::onc::vpn::kPassword},
     {&kOpenVPNSignature, ::onc::openvpn::kTLSAuthContents},
+    {&kWireGuardSignature, ::onc::wireguard::kPrivateKey},
+    {&kWireGuardPeerSignature, ::onc::wireguard::kPresharedKey},
     {&kWiFiSignature, ::onc::wifi::kPassphrase},
     {&kCellularApnSignature, ::onc::cellular_apn::kPassword},
     // While not really a credential, PKCS12 blobs may contain unencrypted

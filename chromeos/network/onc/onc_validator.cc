@@ -144,6 +144,8 @@ std::unique_ptr<base::DictionaryValue> Validator::MapObject(
       valid = ValidateIPsec(repaired.get());
     } else if (&signature == &kOpenVPNSignature) {
       valid = ValidateOpenVPN(repaired.get());
+    } else if (&signature == &kWireGuardSignature) {
+      valid = ValidateWireGuard(repaired.get());
     } else if (&signature == &kThirdPartyVPNSignature) {
       valid = ValidateThirdPartyVPN(repaired.get());
     } else if (&signature == &kARCVPNSignature) {
@@ -849,6 +851,8 @@ bool Validator::ValidateVPN(base::DictionaryValue* result) {
   } else if (type == ::onc::vpn::kTypeL2TP_IPsec) {
     all_required_exist &= RequireField(*result, ::onc::vpn::kIPsec) &&
                           RequireField(*result, ::onc::vpn::kL2TP);
+  } else if (type == ::onc::vpn::kWireGuard) {
+    all_required_exist &= RequireField(*result, ::onc::vpn::kWireGuard);
   } else if (type == ::onc::vpn::kThirdPartyVpn) {
     all_required_exist &= RequireField(*result, ::onc::vpn::kThirdPartyVpn);
   } else if (type == ::onc::vpn::kArcVpn) {
@@ -974,6 +978,29 @@ bool Validator::ValidateOpenVPN(base::DictionaryValue* result) {
   bool all_required_exist =
       RequireField(*result, ::onc::client_cert::kClientCertType);
 
+  return !error_on_missing_field_ || all_required_exist;
+}
+
+bool Validator::ValidateWireGuard(base::DictionaryValue* result) {
+  const base::Value* peers = result->FindKey(::onc::wireguard::kPeers);
+  std::ostringstream msg;
+  if (!peers->is_list()) {
+    msg << "A " << ::onc::wireguard::kPeers
+        << " list is required but not present.";
+    AddValidationIssue(true /* is_error */, msg.str());
+    return false;
+  }
+  for (const base::Value& p : peers->GetList()) {
+    if (!p.FindKey(::onc::wireguard::kPublicKey)) {
+      msg << ::onc::wireguard::kPublicKey
+          << " field is required for each peer.";
+      AddValidationIssue(true /* is_error */, msg.str());
+      return false;
+    }
+  }
+
+  const bool all_required_exist =
+      RequireField(*result, ::onc::wireguard::kEndpoint);
   return !error_on_missing_field_ || all_required_exist;
 }
 

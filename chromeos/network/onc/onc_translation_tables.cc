@@ -117,6 +117,21 @@ const FieldTranslationEntry openvpn_fields[] = {
     {::onc::openvpn::kVerifyHash, shill::kOpenVPNVerifyHashProperty},
     {nullptr}};
 
+const FieldTranslationEntry wireguard_fields[] = {
+    {::onc::wireguard::kPublicKey, shill::kWireGuardPublicKey},
+    {::onc::wireguard::kPrivateKey, shill::kWireGuardPrivateKey},
+    {::onc::wireguard::kPeers, shill::kWireGuardPeers},
+    {nullptr}};
+
+const FieldTranslationEntry wireguard_peer_fields[] = {
+    {::onc::wireguard::kPublicKey, shill::kWireGuardPeerPublicKey},
+    {::onc::wireguard::kPresharedKey, shill::kWireGuardPeerPresharedKey},
+    {::onc::wireguard::kEndpoint, shill::kWireGuardPeerEndpoint},
+    {::onc::wireguard::kAllowedIPs, shill::kWireGuardPeerAllowedIPs},
+    {::onc::wireguard::kPersistentKeepalive,
+     shill::kWireGuardPeerPersistentKeepalive},
+    {nullptr}};
+
 const FieldTranslationEntry arc_vpn_fields[] = {
     {::onc::arc_vpn::kTunnelChrome, shill::kArcVpnTunnelChromeProperty},
     {nullptr}};
@@ -271,6 +286,8 @@ const OncValueTranslationEntry onc_value_translation_table[] = {
     {&kL2TPSignature, l2tp_fields},
     {&kXAUTHSignature, xauth_fields},
     {&kOpenVPNSignature, openvpn_fields},
+    {&kWireGuardSignature, wireguard_fields},
+    {&kWireGuardPeerSignature, wireguard_peer_fields},
     {&kARCVPNSignature, arc_vpn_fields},
     {&kVerifyX509Signature, verify_x509_fields},
     {&kVPNSignature, vpn_fields},

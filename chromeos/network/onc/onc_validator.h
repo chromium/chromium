@@ -199,6 +199,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) Validator : public Mapper {
   bool ValidateVPN(base::DictionaryValue* result);
   bool ValidateIPsec(base::DictionaryValue* result);
   bool ValidateOpenVPN(base::DictionaryValue* result);
+  bool ValidateWireGuard(base::DictionaryValue* result);
   bool ValidateThirdPartyVPN(base::DictionaryValue* result);
   bool ValidateARCVPN(base::DictionaryValue* result);
   bool ValidateVerifyX509(base::DictionaryValue* result);

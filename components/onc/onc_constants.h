@@ -431,6 +431,17 @@ ONC_EXPORT extern const char kVerifyHash[];
 ONC_EXPORT extern const char kVerifyX509[];
 }  // namespace openvpn
 
+namespace wireguard {
+ONC_EXPORT extern const char kAddress[];
+ONC_EXPORT extern const char kAllowedIPs[];
+ONC_EXPORT extern const char kEndpoint[];
+ONC_EXPORT extern const char kPeers[];
+ONC_EXPORT extern const char kPersistentKeepalive[];
+ONC_EXPORT extern const char kPresharedKey[];
+ONC_EXPORT extern const char kPrivateKey[];
+ONC_EXPORT extern const char kPublicKey[];
+}  // namespace wireguard
+
 namespace openvpn_compression_algorithm {
 ONC_EXPORT extern const char kFramingOnly[];
 ONC_EXPORT extern const char kLz4[];

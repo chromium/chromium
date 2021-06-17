@@ -434,6 +434,16 @@ const char kPassword[] = "Password";
 const char kPasswordAndOTP[] = "PasswordAndOTP";
 }  // openvpn_user_auth_type
 
+namespace wireguard {
+const char kAllowedIPs[] = "AllowedIPs";
+const char kEndpoint[] = "Endpoint";
+const char kPeers[] = "Peers";
+const char kPersistentKeepalive[] = "PersistentKeepalive";
+const char kPresharedKey[] = "PresharedKey";
+const char kPrivateKey[] = "PrivateKey";
+const char kPublicKey[] = "PublicKey";
+}  // namespace wireguard
+
 namespace third_party_vpn {
 const char kExtensionID[] = "ExtensionID";
 const char kProviderName[] = "ProviderName";

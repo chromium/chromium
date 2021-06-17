@@ -231,7 +231,9 @@ Field **NetworkConfigurations** is an array of
         * *DHCP*
         * *Static*
     * Determines whether the IP Address configuration is statically configured,
-      see **StaticIPConfig**, or automatically configured using DHCP.
+      see **StaticIPConfig**, or automatically configured. Note that *DHCP*
+      here includes the case of configuring through other dynamic IP allocating
+      protocols (e.g. SLAAC) as well.
 
 * **Metered**
     * (optional, defaults to "false") - **boolean**
@@ -246,7 +248,9 @@ Field **NetworkConfigurations** is an array of
         * *DHCP*
         * *Static*
     * Determines whether the NameServers configuration is statically configured,
-      see **StaticIPConfig**, or automatically configured using DHCP.
+      see **StaticIPConfig**, or automatically configured. Note that *DHCP*
+      here includes the case of configuration through other dynamic nameserver
+      configuring protocols (e.g. IPv6 RDNSS option) as well.
 
 * **IPConfigs**
     * (optional for connected networks, read-only) -
@@ -1029,6 +1033,48 @@ L2TP over IPsec with pre-shared key:
         * *subject*
       See OpenVPN's documentation for "--verify-x509-name" for the meaning of
       each value. Defaults to OpenVPN's default if not specified.
+
+## WireGuard connections and types
+
+**VPN.Type** must be *WireGuard*.
+
+### WireGuard type
+
+* **PrivateKey**
+    * (optional) - **string**
+    * The base64 private key of the wireguard client peer. If not set, a random
+      one will be generated.
+
+* **Peers**
+    * (required) - **array of** [WireGuardPeer](#WireGuard-peer-type)
+    * The list of remote peers.
+
+### WireGuardPeer type
+
+* **PublicKey**
+    * (required) - **string**
+    * The base64 public key of the remote peer.
+
+* **PresharedKey**
+    * (optional) - **string**
+    * A base64 preshared key between client and remote peer for an additional
+      layer of symmetric-key cryptography.
+
+* **AllowedIPs**
+    * (required) - **string**
+    * A comma-separated list of IPv4 prefixes which controls the allowed
+      incoming traffic and set outgoing route for this peer.
+
+* **Endpoint**
+    * (required) - **string**
+    * The physical IP or hostname and port of the peer, separated by a colon.
+
+* **PersistentKeepalive**
+    * (optional, default to *0*) - **integer**
+    * A second interval between 1 and 65535 inclusive, of how often an
+      authenticated empty packet will be sent to the peer for the purpose of
+      keeping a stateful firewall or NAT mapping valid persistently. Set to *0*
+      will disable this feature.
 
 ## Third-party VPN provider based connections and types
 

@@ -60,6 +60,12 @@ extern const OncValueSignature kXAUTHSignature;
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
 extern const OncValueSignature kOpenVPNSignature;
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
+extern const OncValueSignature kWireGuardSignature;
+COMPONENT_EXPORT(CHROMEOS_NETWORK)
+extern const OncValueSignature kWireGuardPeerSignature;
+COMPONENT_EXPORT(CHROMEOS_NETWORK)
+extern const OncValueSignature kWireGuardPeerListSignature;
+COMPONENT_EXPORT(CHROMEOS_NETWORK)
 extern const OncValueSignature kThirdPartyVPNSignature;
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
 extern const OncValueSignature kARCVPNSignature;
