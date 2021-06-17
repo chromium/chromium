@@ -986,6 +986,40 @@ void X11Window::SetOpacity(float opacity) {
   }
 }
 
+bool X11Window::CanSetDecorationInsets() const {
+  return ui::WmSupportsHint(x11::GetAtom("_GTK_FRAME_EXTENTS"));
+}
+
+void X11Window::SetDecorationInsets(gfx::Insets insets_px) {
+  std::vector<uint32_t> extents{insets_px.left(), insets_px.right(),
+                                insets_px.top(), insets_px.bottom()};
+  x11::SetArrayProperty(xwindow_, x11::GetAtom("_GTK_FRAME_EXTENTS"),
+                        x11::Atom::CARDINAL, extents);
+}
+
+void X11Window::SetOpaqueRegion(std::vector<gfx::Rect> region_px) {
+  std::vector<uint32_t> value;
+  for (const auto& rect : region_px) {
+    value.push_back(rect.x());
+    value.push_back(rect.y());
+    value.push_back(rect.width());
+    value.push_back(rect.height());
+  }
+  x11::SetArrayProperty(xwindow_, x11::GetAtom("_NET_WM_OPAQUE_REGION"),
+                        x11::Atom::CARDINAL, value);
+}
+
+void X11Window::SetInputRegion(gfx::Rect region_px) {
+  connection_->shape().Rectangles(x11::Shape::RectanglesRequest{
+      .operation = x11::Shape::So::Set,
+      .destination_kind = x11::Shape::Sk::Input,
+      .ordering = x11::ClipOrdering::YXBanded,
+      .destination_window = xwindow_,
+      .rectangles = {{region_px.x(), region_px.y(), region_px.width(),
+                      region_px.height()}},
+  });
+}
+
 std::string X11Window::GetWorkspace() const {
   absl::optional<int> workspace_id = workspace_;
   return workspace_id.has_value() ? base::NumberToString(workspace_id.value())

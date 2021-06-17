@@ -58,6 +58,10 @@ class WaylandToplevelWindow : public WaylandWindow,
   void SetUseNativeFrame(bool use_native_frame) override;
   bool ShouldUseNativeFrame() const override;
   bool ShouldUpdateWindowShape() const override;
+  bool CanSetDecorationInsets() const override;
+  void SetDecorationInsets(gfx::Insets insets_px) override;
+  void SetOpaqueRegion(std::vector<gfx::Rect> region_px) override;
+  void SetInputRegion(gfx::Rect region_px) override;
 
   // WaylandWindow overrides:
   absl::optional<std::vector<gfx::Rect>> GetWindowShape() const override;

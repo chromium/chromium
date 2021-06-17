@@ -245,6 +245,28 @@ bool WaylandToplevelWindow::ShouldUpdateWindowShape() const {
   return true;
 }
 
+bool WaylandToplevelWindow::CanSetDecorationInsets() const {
+  // TODO(https://crbug.com/811515): Return true if
+  // xdg_surface::set_window_geometry is available.
+  NOTIMPLEMENTED();
+  return false;
+}
+
+void WaylandToplevelWindow::SetDecorationInsets(gfx::Insets insets_px) {
+  // TODO(https://crbug.com/811515): Use xdg_surface::set_window_geometry.
+  NOTIMPLEMENTED();
+}
+
+void WaylandToplevelWindow::SetOpaqueRegion(std::vector<gfx::Rect> region_px) {
+  // TODO(https://crbug.com/811515): Use wl_surface::set_opaque_region.
+  NOTIMPLEMENTED();
+}
+
+void WaylandToplevelWindow::SetInputRegion(gfx::Rect region_px) {
+  // TODO(https://crbug.com/811515): Use wl_surface::set_input_region.
+  NOTIMPLEMENTED();
+}
+
 absl::optional<std::vector<gfx::Rect>> WaylandToplevelWindow::GetWindowShape()
     const {
   return window_shape_in_dips_;

@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/component_export.h"
 #include "ui/base/class_property.h"
@@ -19,6 +20,7 @@ class scoped_refptr;
 
 namespace gfx {
 class ImageSkia;
+class Insets;
 class Point;
 class Rect;
 class SizeF;
@@ -157,6 +159,25 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindow
   // otherwise false when platform window or specific frame views updates the
   // window shape.
   virtual bool ShouldUpdateWindowShape() const;
+
+  // Returns true if the WM supports setting the frame extents for client side
+  // decorations.  This typically requires a compositor and an extension for
+  // specifying the decoration insets.
+  virtual bool CanSetDecorationInsets() const;
+
+  // Lets the WM know which portion of the window is the frame decoration.  The
+  // WM may use this to eg. snap windows to each other starting where the window
+  // begins rather than starting where the shadow begins.
+  virtual void SetDecorationInsets(gfx::Insets insets_px);
+
+  // Sets a hint for the compositor so it can avoid unnecessarily redrawing
+  // occluded portions of windows.
+  virtual void SetOpaqueRegion(std::vector<gfx::Rect> region_px);
+
+  // Sets the clickable region of a window.  This is useful for trimming down a
+  // potentially large (24px) hit area for window resizing on the window shadow
+  // to a more reasonable (10px) area.
+  virtual void SetInputRegion(gfx::Rect region_px);
 };
 
 }  // namespace ui
