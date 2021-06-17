@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.autofill_assistant.proto.ChipType;
 import org.chromium.chrome.browser.autofill_assistant.proto.ClientIdProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ElementConditionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.JsClickProto;
+import org.chromium.chrome.browser.autofill_assistant.proto.KeyEvent;
 import org.chromium.chrome.browser.autofill_assistant.proto.KeyboardValueFillStrategy;
 import org.chromium.chrome.browser.autofill_assistant.proto.ProcessedActionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ProcessedActionStatusProto;
@@ -44,12 +45,14 @@ import org.chromium.chrome.browser.autofill_assistant.proto.PromptProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.PromptProto.Choice;
 import org.chromium.chrome.browser.autofill_assistant.proto.ReleaseElementsProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ScrollIntoViewProto;
+import org.chromium.chrome.browser.autofill_assistant.proto.SelectFieldValueProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SelectOptionElementProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SelectOptionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SelectorProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SelectorProto.Filter;
 import org.chromium.chrome.browser.autofill_assistant.proto.SendChangeEventProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SendClickEventProto;
+import org.chromium.chrome.browser.autofill_assistant.proto.SendKeyEventProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SendKeystrokeEventsProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SendTapEventProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SetElementAttributeProto;
@@ -204,10 +207,10 @@ public class AutofillAssistantInputActionIntegrationTest {
         ArrayList<ActionProto> list = new ArrayList<>();
 
         SelectorProto element_set_value =
-                (SelectorProto) SelectorProto.newBuilder()
+                SelectorProto.newBuilder()
                         .addFilters(Filter.newBuilder().setCssSelector("#input1"))
                         .build();
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setSetFormValue(
                                  SetFormFieldValueProto.newBuilder()
                                          .setElement(element_set_value)
@@ -216,7 +219,7 @@ public class AutofillAssistantInputActionIntegrationTest {
                                                  KeyboardValueFillStrategy
                                                          .SIMULATE_KEY_PRESSES_SELECT_VALUE))
                          .build());
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder()
                                             .setMessage("Set value")
                                             .addChoices(Choice.newBuilder()))
@@ -583,34 +586,34 @@ public class AutofillAssistantInputActionIntegrationTest {
                                         .addFilters(Filter.newBuilder().setCssSelector("#input1"))
                                         .build();
         ClientIdProto clientId = ClientIdProto.newBuilder().setIdentifier("e").build();
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setWaitForDom(
                                  WaitForDomProto.newBuilder().setTimeoutMs(1000).setWaitCondition(
                                          ElementConditionProto.newBuilder()
                                                  .setMatch(element)
                                                  .setClientId(clientId)))
                          .build());
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setWaitForDocumentToBecomeInteractive(
                                  WaitForDocumentToBecomeInteractiveProto.newBuilder()
                                          .setClientId(clientId)
                                          .setTimeoutInMs(1000))
                          .build());
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setWaitForElementToBecomeStable(
                                  WaitForElementToBecomeStableProto.newBuilder()
                                          .setClientId(clientId)
                                          .setStableCheckMaxRounds(10)
                                          .setStableCheckIntervalMs(200))
                          .build());
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setScrollIntoView(ScrollIntoViewProto.newBuilder().setClientId(clientId))
                          .build());
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setCheckElementIsOnTop(
                                  CheckElementIsOnTopProto.newBuilder().setClientId(clientId))
                          .build());
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setSetElementAttribute(
                                  SetElementAttributeProto.newBuilder()
                                          .setClientId(clientId)
@@ -618,24 +621,24 @@ public class AutofillAssistantInputActionIntegrationTest {
                                          .setValue(TextValue.newBuilder().setText("")))
                          .build());
         list.add(
-                (ActionProto) ActionProto.newBuilder()
+                ActionProto.newBuilder()
                         .setSendChangeEvent(SendChangeEventProto.newBuilder().setClientId(clientId))
                         .build());
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setSendClickEvent(SendClickEventProto.newBuilder().setClientId(clientId))
                          .build());
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setSendKeystrokeEvents(
                                  SendKeystrokeEventsProto.newBuilder()
                                          .setClientId(clientId)
                                          .setDelayInMs(0)
                                          .setValue(TextValue.newBuilder().setText("Value")))
                          .build());
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setReleaseElements(
                                  ReleaseElementsProto.newBuilder().addClientIds(clientId))
                          .build());
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder().setMessage("Done").addChoices(
                                  Choice.newBuilder()))
                          .build());
@@ -648,6 +651,53 @@ public class AutofillAssistantInputActionIntegrationTest {
 
         waitUntilViewMatchesCondition(withText("Done"), isCompletelyDisplayed());
         assertThat(getElementValue(mTestRule.getWebContents(), "input1"), is("Value"));
+    }
+
+    @Test
+    @MediumTest
+    public void clearTextWithMiniActions() throws Exception {
+        ArrayList<ActionProto> list = new ArrayList<>();
+
+        SelectorProto element = SelectorProto.newBuilder()
+                                        .addFilters(Filter.newBuilder().setCssSelector("#input1"))
+                                        .build();
+        ClientIdProto clientId = ClientIdProto.newBuilder().setIdentifier("e").build();
+        list.add(ActionProto.newBuilder()
+                         .setWaitForDom(
+                                 WaitForDomProto.newBuilder().setTimeoutMs(1000).setWaitCondition(
+                                         ElementConditionProto.newBuilder()
+                                                 .setMatch(element)
+                                                 .setClientId(clientId)))
+                         .build());
+        list.add(ActionProto.newBuilder()
+                         .setSelectFieldValue(
+                                 SelectFieldValueProto.newBuilder().setClientId(clientId))
+                         .build());
+        list.add(ActionProto.newBuilder()
+                         .setSendKeyEvent(
+                                 SendKeyEventProto.newBuilder().setClientId(clientId).setKeyEvent(
+                                         KeyEvent.newBuilder()
+                                                 .addCommand("SelectAll")
+                                                 .addCommand("DeleteBackward")
+                                                 .setKey("Backspace")))
+                         .build());
+        list.add(ActionProto.newBuilder()
+                         .setReleaseElements(
+                                 ReleaseElementsProto.newBuilder().addClientIds(clientId))
+                         .build());
+        list.add(ActionProto.newBuilder()
+                         .setPrompt(PromptProto.newBuilder().setMessage("Done").addChoices(
+                                 Choice.newBuilder()))
+                         .build());
+
+        AutofillAssistantTestScript script = new AutofillAssistantTestScript(TEST_SCRIPT, list);
+
+        assertThat(getElementValue(mTestRule.getWebContents(), "input1"), is("helloworld1"));
+
+        runScript(script);
+
+        waitUntilViewMatchesCondition(withText("Done"), isCompletelyDisplayed());
+        assertThat(getElementValue(mTestRule.getWebContents(), "input1"), is(""));
     }
 
     @Test
