@@ -45,27 +45,31 @@ WebApkManager::WebApkManager(Profile* profile)
 WebApkManager::~WebApkManager() = default;
 
 void WebApkManager::OnAppUpdate(const AppUpdate& update) {
-  // TODO(crbug.com/119433): Install WebAPKs for existing apps which become
-  // eligible, and update existing WebAPKs when app metadata changes.
   if (!initialized_) {
     return;
   }
 
-  // Install new WebAPKs when an eligible app is installed. Note that it
-  // generally shouldn't be possible to have an existing WebAPK installed when
-  // the app is newly Ready, but we include the check for completeness' sake.
-  if (update.ReadinessChanged() &&
-      update.Readiness() == apps::mojom::Readiness::kReady &&
-      IsAppEligibleForWebApk(update) &&
-      !webapk_prefs::GetWebApkPackageName(profile_, update.AppId())) {
-    QueueInstall(update.AppId());
-  }
-
-  // Uninstall WebAPKs when the app becomes no longer eligible (which includes
-  // when the app is uninstalled).
-  if (webapk_prefs::GetWebApkPackageName(profile_, update.AppId()) &&
-      !IsAppEligibleForWebApk(update)) {
-    QueueUninstall(update.AppId());
+  if (IsAppEligibleForWebApk(update)) {
+    if (webapk_prefs::GetWebApkPackageName(profile_, update.AppId())) {
+      // Existing WebAPK.
+      // Update if there are app metadata changes.
+      if (update.ShortNameChanged() || update.NameChanged() ||
+          update.IconKeyChanged() || update.IntentFiltersChanged()) {
+        QueueInstall(update.AppId());
+      }
+    } else {  // New WebAPK.
+      // Install if it is eligible for installation.
+      if (update.ReadinessChanged() &&
+          update.Readiness() == apps::mojom::Readiness::kReady) {
+        QueueInstall(update.AppId());
+      }
+    }
+  } else {  // !IsAppEligibleForWebApk(update)
+    // Uninstall WebAPKs when the app becomes no longer eligible (which includes
+    // when the app is uninstalled).
+    if (webapk_prefs::GetWebApkPackageName(profile_, update.AppId())) {
+      QueueUninstall(update.AppId());
+    }
   }
 }
 
@@ -163,6 +167,8 @@ bool WebApkManager::IsAppEligibleForWebApk(const AppUpdate& app) {
   return true;
 }
 
+// Queues |app_id| for install or update. |install_queue_| installs new WebAPKs
+// and updates existing ones.
 void WebApkManager::QueueInstall(const std::string& app_id) {
   install_queue_->Install(app_id);
 }

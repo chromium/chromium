@@ -24,6 +24,9 @@ class FakeWebApkInstance : public mojom::WebApkInstance {
                      const std::string& token,
                      InstallWebApkCallback callback) override;
 
+  void GetWebApkInfo(const std::string& package_name,
+                     GetWebApkInfoCallback callback) override;
+
   const std::vector<std::string>& handled_packages() {
     return handled_packages_;
   }

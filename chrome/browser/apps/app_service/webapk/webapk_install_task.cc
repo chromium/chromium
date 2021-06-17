@@ -96,10 +96,96 @@ GURL GetServerUrl() {
   return GURL(server_url);
 }
 
+bool DoesShareTargetDiffer(webapk::WebAppManifest manifest,
+                           arc::mojom::WebShareTargetInfoPtr share_info) {
+  if (!share_info) {
+    // There's no |share_info| in the current WebAPK, which means that a share
+    // target was added.
+    return true;
+  }
+
+  // There is only one share target added.
+  auto share_target = manifest.share_targets(0);
+  DCHECK_EQ(manifest.share_targets_size(), 1);
+
+  if (share_target.action() != share_info->action ||
+      share_target.method() != share_info->method ||
+      share_target.enctype() != share_info->enctype) {
+    return true;
+  }
+
+  auto share_param = share_target.params();
+  if (share_param.title() != share_info->param_title ||
+      share_param.text() != share_info->param_text ||
+      share_param.url() != share_info->param_url) {
+    return true;
+  }
+
+  // Compare share files.
+  if (share_param.files_size() != share_info->file_names.size()) {
+    return true;
+  }
+
+  for (int i = 0; i < share_param.files_size(); i++) {
+    if (share_param.files(i).name() != share_info->file_names[i]) {
+      return true;
+    }
+
+    if (share_param.files(i).accept_size() !=
+        share_info->file_accepts[i].size()) {
+      return true;
+    }
+
+    for (int j = 0; j < share_param.files(i).accept_size(); j++) {
+      if (share_param.files(i).accept(j) != share_info->file_accepts[i][j]) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
+void AddUpdateParams(webapk::WebApk* webapk,
+                     arc::mojom::WebApkInfoPtr web_apk_info) {
+  webapk->set_version(web_apk_info->apk_version);
+  // The |manifest_url| is used as a key on Android, so the |manifest_url| sent
+  // to the server to query a particular app should always be the same.
+  webapk->set_manifest_url(web_apk_info->manifest_url);
+
+  auto manifest = webapk->manifest();
+  if (manifest.short_name() != web_apk_info->name) {
+    webapk->add_update_reasons(webapk::WebApk::SHORT_NAME_DIFFERS);
+  }
+
+  if (manifest.start_url() != web_apk_info->start_url) {
+    webapk->add_update_reasons(webapk::WebApk::START_URL_DIFFERS);
+  }
+
+  // There is only one scope added to the scopes list.
+  DCHECK_EQ(manifest.scopes_size(), 1);
+  if (manifest.scopes(0) != web_apk_info->scope) {
+    webapk->add_update_reasons(webapk::WebApk::SCOPE_DIFFERS);
+  }
+
+  // There is only one icon added to the icon list.
+  DCHECK_EQ(manifest.icons_size(), 1);
+  if (manifest.icons(0).hash() != web_apk_info->icon_hash) {
+    webapk->add_update_reasons(webapk::WebApk::PRIMARY_ICON_HASH_DIFFERS);
+  }
+
+  // Check differences in share target
+  if (DoesShareTargetDiffer(manifest, std::move(web_apk_info->share_info))) {
+    webapk->add_update_reasons(webapk::WebApk::WEB_SHARE_TARGET_DIFFERS);
+  }
+}
+
 // Attaches icon PNG data and hash to an existing icon entry, and then
 // serializes and returns the entire proto. Should be called on a worker thread.
-std::string AddIconDataAndSerializeProto(std::unique_ptr<webapk::WebApk> webapk,
-                                         std::vector<uint8_t> icon_data) {
+absl::optional<std::string> AddIconDataAndSerializeProto(
+    std::unique_ptr<webapk::WebApk> webapk,
+    std::vector<uint8_t> icon_data,
+    arc::mojom::WebApkInfoPtr web_apk_info) {
   base::AssertLongCPUWorkAllowed();
   DCHECK_EQ(webapk->manifest().icons_size(), 1);
 
@@ -109,6 +195,15 @@ std::string AddIconDataAndSerializeProto(std::unique_ptr<webapk::WebApk> webapk,
   uint64_t icon_hash =
       MurmurHash64A(icon_data.data(), icon_data.size(), kMurmur2HashSeed);
   icon->set_hash(base::NumberToString(icon_hash));
+
+  if (web_apk_info) {
+    AddUpdateParams(webapk.get(), std::move(web_apk_info));
+    // If we don't have an update reason here, return before we query the server
+    // as there is no reason to update.
+    if (webapk->update_reasons_size() == 0) {
+      return absl::nullopt;
+    }
+  }
 
   std::string serialized_proto;
   webapk->SerializeToString(&serialized_proto);
@@ -131,6 +226,7 @@ std::string GetArcAbi(const arc::ArcFeatures& arc_features) {
 
 namespace apps {
 
+// Installs or updates a WebAPK.
 WebApkInstallTask::WebApkInstallTask(Profile* profile,
                                      const std::string& app_id)
     : profile_(profile),
@@ -158,7 +254,59 @@ void WebApkInstallTask::Start(ResultCallback callback) {
   webapk->set_manifest_url(registrar.GetAppManifestUrl(app_id_).spec());
   webapk->set_requester_application_package(kRequesterPackageName);
   webapk->set_requester_application_version(version_info::GetVersionNumber());
-  webapk->add_update_reasons(webapk::WebApk::NONE);
+
+  LoadWebApkInfo(std::move(webapk), std::move(callback));
+}
+
+void WebApkInstallTask::LoadWebApkInfo(std::unique_ptr<webapk::WebApk> webapk,
+                                       ResultCallback callback) {
+  // If a package_name exists in webapk_prefs, this WebAPK is already installed,
+  // so we need to perform an update.
+  absl::optional<std::string> package_name =
+      webapk_prefs::GetWebApkPackageName(profile_, app_id_);
+
+  if (!package_name && !package_name.has_value()) {
+    // This is a new install, continue with the installation process.
+    webapk->add_update_reasons(webapk::WebApk::NONE);
+    arc::ArcFeaturesParser::GetArcFeatures(base::BindOnce(
+        &WebApkInstallTask::OnArcFeaturesLoaded, weak_ptr_factory_.GetWeakPtr(),
+        std::move(webapk), std::move(callback)));
+    return;
+  }
+
+  webapk->set_package_name(package_name.value());
+
+  // This is an update request, so get details of the existing WebAPK from
+  // ARC++.
+  auto* arc_service_manager = arc::ArcServiceManager::Get();
+  DCHECK(arc_service_manager);
+  auto* instance = ARC_GET_INSTANCE_FOR_METHOD(
+      arc_service_manager->arc_bridge_service()->webapk(), GetWebApkInfo);
+
+  if (!instance) {
+    LOG(ERROR) << "WebApkInstance is not ready";
+    std::move(callback).Run(false);
+    return;
+  }
+
+  instance->GetWebApkInfo(
+      package_name.value(),
+      base::BindOnce(&WebApkInstallTask::OnWebApkInfoLoaded,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(webapk),
+                     std::move(callback)));
+}
+
+void WebApkInstallTask::OnWebApkInfoLoaded(
+    std::unique_ptr<webapk::WebApk> webapk,
+    ResultCallback callback,
+    arc::mojom::WebApkInfoPtr result) {
+  if (!result) {
+    LOG(ERROR) << "Could not load WebApkInfo";
+    std::move(callback).Run(false);
+    return;
+  }
+
+  web_apk_info_ = std::move(result);
 
   arc::ArcFeaturesParser::GetArcFeatures(base::BindOnce(
       &WebApkInstallTask::OnArcFeaturesLoaded, weak_ptr_factory_.GetWeakPtr(),
@@ -261,13 +409,17 @@ void WebApkInstallTask::OnLoadedIcon(std::unique_ptr<webapk::WebApk> webapk,
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT},
       base::BindOnce(AddIconDataAndSerializeProto, std::move(webapk),
-                     std::move(data)),
+                     std::move(data), std::move(web_apk_info_)),
       base::BindOnce(&WebApkInstallTask::OnProtoSerialized,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void WebApkInstallTask::OnProtoSerialized(ResultCallback callback,
-                                          std::string serialized_proto) {
+void WebApkInstallTask::OnProtoSerialized(
+    ResultCallback callback,
+    absl::optional<std::string> serialized_proto) {
+  if (!serialized_proto && !serialized_proto.has_value()) {
+    std::move(callback).Run(false);
+  }
   GURL server_url = GetServerUrl();
 
   // TODO(crbug.com/1198433): Add timeout.
@@ -282,7 +434,7 @@ void WebApkInstallTask::OnProtoSerialized(ResultCallback callback,
 
   url_loader_ = network::SimpleURLLoader::Create(std::move(request),
                                                  kWebApksTrafficAnnotation);
-  url_loader_->AttachStringForUpload(std::move(serialized_proto),
+  url_loader_->AttachStringForUpload(std::move(serialized_proto.value()),
                                      kProtoMimeType);
   url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory,

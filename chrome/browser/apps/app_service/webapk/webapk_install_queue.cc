@@ -19,6 +19,7 @@
 
 namespace apps {
 
+// Queue of WebApks to be installed or updated.
 WebApkInstallQueue::WebApkInstallQueue(Profile* profile)
     : profile_(profile), connection_ready_(false) {
   arc::ArcServiceManager* arc_service_manager = arc::ArcServiceManager::Get();
