@@ -5941,6 +5941,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_READ_LATER_MENU_EMPTY_STATE_SUBHEADER" desc="Subheader for the read later menu when there are no unread or read entries.">
         To save a page for later, click the Bookmark icon
       </message>
+      <message name="IDS_READ_LATER_ADD_CURRENT_TAB" desc="Label for button to add the current tab to Read later">
+        Add current tab
+      </message>
 
       <!--Tooltip strings-->
       <message name="IDS_TOOLTIP_BACK" desc="The tooltip for back button">

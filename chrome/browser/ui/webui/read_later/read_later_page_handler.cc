@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/read_later/reading_list_model_factory.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -104,6 +105,14 @@ void ReadLaterPageHandler::OpenURL(const GURL& url, bool mark_as_read) {
 
 void ReadLaterPageHandler::UpdateReadStatus(const GURL& url, bool read) {
   reading_list_model_->SetReadStatus(url, read);
+}
+
+void ReadLaterPageHandler::AddCurrentTab() {
+  Browser* browser = chrome::FindLastActive();
+  if (!browser)
+    return;
+
+  chrome::MoveCurrentTabToReadLater(browser);
 }
 
 void ReadLaterPageHandler::RemoveEntry(const GURL& url) {

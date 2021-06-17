@@ -43,6 +43,9 @@ interface PageHandler {
   // Updates a read later entry's read status.
   UpdateReadStatus(url.mojom.Url url, bool read);
 
+  // Adds the current tab to the reading list.
+  AddCurrentTab();
+
   // Removes a read later entry.
   RemoveEntry(url.mojom.Url url);
 

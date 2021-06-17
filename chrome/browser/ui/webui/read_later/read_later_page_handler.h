@@ -45,6 +45,7 @@ class ReadLaterPageHandler : public read_later::mojom::PageHandler,
   void GetReadLaterEntries(GetReadLaterEntriesCallback callback) override;
   void OpenURL(const GURL& url, bool mark_as_read) override;
   void UpdateReadStatus(const GURL& url, bool read) override;
+  void AddCurrentTab() override;
   void RemoveEntry(const GURL& url) override;
   void ShowUI() override;
   void CloseUI() override;

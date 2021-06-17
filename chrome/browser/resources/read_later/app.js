@@ -153,6 +153,11 @@ export class ReadLaterAppElement extends PolymerElement {
     return this.unreadItems_.length === 0 && this.readItems_.length === 0;
   }
 
+  /** @private */
+  onAddButtonClick_() {
+    this.apiProxy_.addCurrentTab();
+  }
+
   /**
    * @param {!Event} e
    * @private

@@ -19,6 +19,43 @@
     max-height: none;
   }
 
+  #addButton {
+    display: none;
+  }
+
+  :host([side-panel]) #addButton {
+    border: solid 1px var(--google-grey-refresh-300);
+    border-radius: 4px;
+    color: var(--google-blue-600);
+    display: flex;
+    font-weight: 500;
+    margin: 4px 16px 0 16px;
+    padding: 8px 16px;
+    text-align: center;
+    transition: background-color 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  :host([side-panel]) #addButton:hover {
+    background: rgba(var(--google-blue-600-rgb), .04);
+    border-color: var(--google-blue-refresh-100);
+    cursor: pointer;
+  }
+
+  :host([side-panel]) #addButtonIcon {
+    -webkit-mask-image: url(chrome://resources/images/add.svg);
+    -webkit-mask-size: contain;
+    align-items: center;
+    background-color: currentColor;
+    height: 16px;
+    margin-inline-end: 5px;
+    margin-inline-start: auto;
+    width: 16px;
+  }
+
+  :host([side-panel]) #addButtonText {
+    margin-inline-end: auto;
+  }
+
   #header {
     align-items: center;
     color: var(--cr-primary-text-color);
@@ -98,6 +135,10 @@
       iron-icon="cr:close" noink="[[!buttonRipples]]" no-ripple-on-focus
       on-click="onCloseClick_" title="$i18n{tooltipClose}">
   </cr-icon-button>
+</div>
+<div id="addButton" role="button" on-click="onAddButtonClick_">
+  <div id="addButtonIcon" aria-hidden="true"></div>
+  <div id="addButtonText">$i18n{addCurrentTab}</div>
 </div>
 <div id="readLaterList">
   <iron-selector id="selector" on-keydown="onItemKeyDown_"

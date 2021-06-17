@@ -14,6 +14,7 @@ export class TestReadLaterApiProxy extends TestBrowserProxy {
       'getReadLaterEntries',
       'openURL',
       'updateReadStatus',
+      'addCurrentTab',
       'removeEntry',
       'showUI',
       'closeUI',
@@ -40,6 +41,11 @@ export class TestReadLaterApiProxy extends TestBrowserProxy {
   /** @override */
   updateReadStatus(url, read) {
     this.methodCalled('updateReadStatus', [url, read]);
+  }
+
+  /** @override */
+  addCurrentTab() {
+    this.methodCalled('addCurrentTab');
   }
 
   /** @override */

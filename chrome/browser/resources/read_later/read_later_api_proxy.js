@@ -28,6 +28,8 @@ export class ReadLaterApiProxy {
    */
   updateReadStatus(url, read) {}
 
+  addCurrentTab() {}
+
   /** @param {!url.mojom.Url} url */
   removeEntry(url) {}
 
@@ -67,6 +69,11 @@ export class ReadLaterApiProxyImpl {
   /** @override */
   updateReadStatus(url, read) {
     this.handler.updateReadStatus(url, read);
+  }
+
+  /** @override */
+  addCurrentTab() {
+    this.handler.addCurrentTab();
   }
 
   /** @override */
