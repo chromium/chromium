@@ -11,16 +11,20 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/search/task_module/task_module_service.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/search/ntp_features.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "content/public/test/browser_task_environment.h"
+#include "net/base/url_util.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "services/network/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -456,6 +460,91 @@ TEST_F(TaskModuleServiceTest, DismissTasks) {
   EXPECT_EQ("task 1 name", result5->name);
 
   ASSERT_EQ(5, histogram_tester_.GetBucketCount(
+                   "NewTabPage.Modules.DataRequest",
+                   base::PersistentHash("shopping_tasks")));
+}
+
+// Verifies caching param is added if requested.
+TEST_F(TaskModuleServiceTest, CachingParam) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{ntp_features::kNtpShoppingTasksModule,
+        {{ntp_features::kNtpShoppingTasksModuleCacheMaxAgeSParam, "123"}}}},
+      {});
+
+  service_->GetPrimaryTask(task_module::mojom::TaskModuleType::kShopping,
+                           TaskModuleService::TaskModuleCallback());
+  base::RunLoop().RunUntilIdle();
+
+  GURL url = test_url_loader_factory_.pending_requests()->at(0).request.url;
+  std::string async_param;
+  net::GetValueForKeyInQuery(url, "async", &async_param);
+  EXPECT_EQ("cache_max_age_s:123", async_param);
+}
+
+// Verifies no caching param is added if not requested.
+TEST_F(TaskModuleServiceTest, NoCachingParam) {
+  service_->GetPrimaryTask(task_module::mojom::TaskModuleType::kShopping,
+                           TaskModuleService::TaskModuleCallback());
+  base::RunLoop().RunUntilIdle();
+
+  GURL url = test_url_loader_factory_.pending_requests()->at(0).request.url;
+  std::string async_param;
+  net::GetValueForKeyInQuery(url, "async", &async_param);
+  EXPECT_EQ("", async_param);
+}
+
+// Verifies that no data request is logged if load comes from cache.
+TEST_F(TaskModuleServiceTest, NoLogIfCached) {
+  network::URLLoaderCompletionStatus status;
+  status.exists_in_cache = true;
+  test_url_loader_factory_.AddResponse(
+      GURL("https://www.google.com/async/newtab_shopping_tasks?hl=en-US"),
+      network::CreateURLResponseHead(net::HTTP_OK),
+      R"()]}'
+{
+  "update": {
+    "shopping_tasks": [
+      {
+        "title": "hello world",
+        "task_name": "hello world",
+        "products": [
+          {
+            "name": "foo",
+            "image_url": "https://foo.com",
+            "price": "$500",
+            "viewed_timestamp": {
+              "seconds": 123
+            },
+            "target_url": "https://google.com/foo"
+          }
+        ],
+        "related_searches": [
+          {
+            "text": "baz",
+            "target_url": "https://google.com/baz"
+          }
+        ]
+      }
+    ]
+  }
+})",
+      status);
+
+  bool received_response = false;
+  base::MockCallback<TaskModuleService::TaskModuleCallback> callback;
+  EXPECT_CALL(callback, Run(testing::_))
+      .Times(1)
+      .WillOnce(testing::Invoke(
+          [&received_response](task_module::mojom::TaskPtr arg) {
+            received_response = static_cast<bool>(arg);
+          }));
+  service_->GetPrimaryTask(task_module::mojom::TaskModuleType::kShopping,
+                           callback.Get());
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(received_response);
+  EXPECT_EQ(0, histogram_tester_.GetBucketCount(
                    "NewTabPage.Modules.DataRequest",
                    base::PersistentHash("shopping_tasks")));
 }

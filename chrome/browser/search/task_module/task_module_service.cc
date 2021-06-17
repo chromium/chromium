@@ -8,6 +8,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/stl_util.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
@@ -59,6 +60,16 @@ const char* GetDataParam(task_module::mojom::TaskModuleType task_module_type) {
   }
 }
 
+const char* GetCacheMaxAgeSParam(
+    task_module::mojom::TaskModuleType task_module_type) {
+  switch (task_module_type) {
+    case task_module::mojom::TaskModuleType::kRecipe:
+      return ntp_features::kNtpRecipeTasksModuleCacheMaxAgeSParam;
+    case task_module::mojom::TaskModuleType::kShopping:
+      return ntp_features::kNtpShoppingTasksModuleCacheMaxAgeSParam;
+  }
+}
+
 GURL GetApiUrl(task_module::mojom::TaskModuleType task_module_type,
                const std::string& application_locale) {
   GURL google_base_url = google_util::CommandLineGoogleBaseURL();
@@ -72,6 +83,12 @@ GURL GetApiUrl(task_module::mojom::TaskModuleType task_module_type,
                                              GetDataParam(task_module_type)) ==
       "fake") {
     url = google_util::AppendToAsyncQueryParam(url, "fake_data", "1");
+  }
+  int cache_max_age_s = base::GetFieldTrialParamByFeatureAsInt(
+      GetFeature(task_module_type), GetCacheMaxAgeSParam(task_module_type), 0);
+  if (cache_max_age_s > 0) {
+    url = google_util::AppendToAsyncQueryParam(
+        url, "cache_max_age_s", base::NumberToString(cache_max_age_s));
   }
   return url;
 }
@@ -235,8 +252,6 @@ void TaskModuleService::GetPrimaryTask(
                      weak_ptr_factory_.GetWeakPtr(), task_module_type,
                      loaders_.back().get(), std::move(callback)),
       network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
-  base::UmaHistogramSparse("NewTabPage.Modules.DataRequest",
-                           base::PersistentHash(GetTasksKey(task_module_type)));
 }
 
 void TaskModuleService::DismissTask(
@@ -263,9 +278,16 @@ void TaskModuleService::OnDataLoaded(
     TaskModuleCallback callback,
     std::unique_ptr<std::string> response) {
   auto net_error = loader->NetError();
+  bool loaded_from_cache = loader->LoadedFromCache();
   base::EraseIf(loaders_, [loader](const auto& target) {
     return loader == target.get();
   });
+
+  if (!loaded_from_cache) {
+    base::UmaHistogramSparse(
+        "NewTabPage.Modules.DataRequest",
+        base::PersistentHash(GetTasksKey(task_module_type)));
+  }
 
   if (net_error != net::OK || !response) {
     std::move(callback).Run(nullptr);

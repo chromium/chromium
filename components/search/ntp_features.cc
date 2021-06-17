@@ -108,6 +108,10 @@ const char kNtpModulesLoadTimeoutMillisecondsParam[] =
 const char kNtpShoppingTasksModuleDataParam[] =
     "NtpShoppingTasksModuleDataParam";
 const char kNtpRecipeTasksModuleDataParam[] = "NtpRecipeTasksModuleDataParam";
+const char kNtpShoppingTasksModuleCacheMaxAgeSParam[] =
+    "NtpShoppingTasksModuleCacheMaxAgeSParam";
+const char kNtpRecipeTasksModuleCacheMaxAgeSParam[] =
+    "NtpRecipeTasksModuleCacheMaxAgeSParam";
 const char kNtpChromeCartModuleDataParam[] = "NtpChromeCartModuleDataParam";
 const char kNtpChromeCartModuleAbandonedCartDiscountParam[] =
     "NtpChromeCartModuleAbandonedCartDiscountParam";

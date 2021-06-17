@@ -46,6 +46,12 @@ extern const char kNtpModulesLoadTimeoutMillisecondsParam[];
 extern const char kNtpShoppingTasksModuleDataParam[];
 // Parameter determining the type of recipe data to request.
 extern const char kNtpRecipeTasksModuleDataParam[];
+// Parameter determining the max age in seconds of the cache for shopping tasks
+// data.
+extern const char kNtpShoppingTasksModuleCacheMaxAgeSParam[];
+// Parameter determining the max age in seconds of the cache for recipe tasks
+// data.
+extern const char kNtpRecipeTasksModuleCacheMaxAgeSParam[];
 // Parameter determining the type of cart data used to render module.
 extern const char kNtpChromeCartModuleDataParam[];
 // Parameter for enabling the abandoned cart discount.
