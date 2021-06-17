@@ -117,9 +117,10 @@ extern const base::FeatureParam<bool> kTabSearchMoveActiveTabToBottom;
 extern const base::FeatureParam<int>
     kTabSearchRecentlyClosedDefaultItemDisplayCount;
 
-// Maximum number of recently closed entries to send in the profile data
-// payload.
-extern const base::FeatureParam<int> kTabSearchRecentlyClosedMaxEntries;
+// A threshold of recently closed tabs after which to stop adding recently
+// closed item data to the profile data payload should the minimum display
+// count have been met.
+extern const base::FeatureParam<int> kTabSearchRecentlyClosedTabCountThreshold;
 
 // Determines how screenshots of the toolbar uses Software or Hardware drawing.
 // Works on Android 10+.

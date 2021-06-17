@@ -46,6 +46,9 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
       {"a11yOpenTab", IDS_TAB_SEARCH_A11Y_OPEN_TAB},
       {"a11yRecentlyClosedTab", IDS_TAB_SEARCH_A11Y_RECENTLY_CLOSED_TAB},
       {"openTabs", IDS_TAB_SEARCH_OPEN_TABS},
+      {"oneTab", IDS_TAB_SEARCH_ONE_TAB},
+      {"tabCount", IDS_TAB_SEARCH_TAB_COUNT},
+      {"recentlyClosed", IDS_TAB_SEARCH_RECENTLY_CLOSED},
       {"recentlyClosedTabs", IDS_TAB_SEARCH_RECENTLY_CLOSED_TABS},
   };
   source->AddLocalizedStrings(kStrings);

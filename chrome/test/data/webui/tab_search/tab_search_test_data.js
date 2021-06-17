@@ -91,7 +91,12 @@ export const SAMPLE_RECENTLY_CLOSED_DATA = [
 
 /** @return {!Array} */
 export function sampleData() {
-  return {windows: SAMPLE_WINDOW_DATA, recentlyClosedTabs: [], tabGroups: []};
+  return {
+    windows: SAMPLE_WINDOW_DATA,
+    recentlyClosedTabs: [],
+    tabGroups: [],
+    recentlyClosedTabGroups: [],
+  };
 }
 
 /**
@@ -140,6 +145,7 @@ export function generateSampleDataFromSiteNames(siteNames) {
     }],
     recentlyClosedTabs: [],
     tabGroups: [],
+    recentlyClosedTabGroups: [],
   };
 }
 

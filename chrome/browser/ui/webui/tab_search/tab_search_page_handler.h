@@ -50,7 +50,7 @@ class TabSearchPageHandler : public tab_search::mojom::PageHandler,
   void GetProfileData(GetProfileDataCallback callback) override;
   void SwitchToTab(
       tab_search::mojom::SwitchToTabInfoPtr switch_to_tab_info) override;
-  void OpenRecentlyClosedTab(int32_t tab_id) override;
+  void OpenRecentlyClosedEntry(int32_t session_id) override;
   void ShowUI() override;
   // TODO(tluk): Remove this once all uses of the CloseUI() interface are
   // removed from the Tab Search WebUI code.
@@ -87,10 +87,14 @@ class TabSearchPageHandler : public tab_search::mojom::PageHandler,
 
   tab_search::mojom::ProfileDataPtr CreateProfileData();
 
-  // Adds recently closed tabs in a flattened list.
-  void AddRecentlyClosedTabs(
+  // Adds recently closed tabs and tab groups.
+  void AddRecentlyClosedEntries(
       std::vector<tab_search::mojom::RecentlyClosedTabPtr>&
           recently_closed_tabs,
+      std::vector<tab_search::mojom::RecentlyClosedTabGroupPtr>&
+          recently_closed_tab_groups,
+      std::set<tab_groups::TabGroupId>& tab_group_ids,
+      std::vector<tab_search::mojom::TabGroupPtr>& tab_groups,
       std::set<std::string>& tab_urls);
 
   // Tries to add a single recently closed tab to a flattened list. Returns
@@ -100,7 +104,7 @@ class TabSearchPageHandler : public tab_search::mojom::PageHandler,
           recently_closed_tabs,
       sessions::TabRestoreService::Tab* tab,
       std::set<std::string>& tab_urls,
-      size_t max_tab_count);
+      int32_t session_id);
 
   tab_search::mojom::TabPtr GetTab(TabStripModel* tab_strip_model,
                                    content::WebContents* contents,

@@ -21,7 +21,7 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 import {fuzzySearch} from './fuzzy_search.js';
 import {InfiniteList, NO_SELECTION, selectorNavigationKeys} from './infinite_list.js';
 import {ariaLabel, TabData, TabItemType, tokenToString} from './tab_data.js';
-import {Tab, TabGroup, Window} from './tab_search.mojom-webui.js';
+import {RecentlyClosedTab, Tab, TabGroup, Window} from './tab_search.mojom-webui.js';
 import {TabSearchApiProxy, TabSearchApiProxyImpl} from './tab_search_api_proxy.js';
 import {TitleItem} from './title_item.js';
 
@@ -375,7 +375,7 @@ export class TabSearchAppElement extends PolymerElement {
     if (type === TabItemType.OPEN) {
       this.apiProxy_.switchToTab({tabId}, !!this.searchText_, tabIndex);
     } else {
-      this.apiProxy_.openRecentlyClosedTab(tabId);
+      this.apiProxy_.openRecentlyClosedEntry(tabId);
     }
   }
 
@@ -414,7 +414,7 @@ export class TabSearchAppElement extends PolymerElement {
 
   /**
    * @param {!Array<!Window>} newOpenWindows
-   * @param {!Array<!Tab>} recentlyClosedTabs
+   * @param {!Array<!RecentlyClosedTab>} recentlyClosedTabs
    * @param {!Array<!TabGroup>} tabGroups
    * @private
    */
@@ -567,7 +567,7 @@ export class TabSearchAppElement extends PolymerElement {
   }
 
   /**
-   * @param {!Tab} tab
+   * @param {!Tab|!RecentlyClosedTab} tab
    * @param {boolean} inActiveWindow
    * @param {!TabItemType} type
    * @param {!Map<string, !TabGroup>} tabGroupsMap
@@ -629,11 +629,6 @@ export class TabSearchAppElement extends PolymerElement {
         filteredRecentlyClosedTabs.slice(
             0, this.recentlyClosedDefaultItemDisplayCount_);
     this.searchResultText_ = this.getA11ySearchResultText_();
-  }
-
-  /** @return {!Tab} */
-  getSelectedTab_() {
-    return this.filteredOpenTabs_[this.getSelectedIndex()].tab;
   }
 
   /** @return {string} */

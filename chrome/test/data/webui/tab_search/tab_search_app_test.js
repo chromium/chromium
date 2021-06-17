@@ -42,6 +42,8 @@ suite('TabSearchAppTest', () => {
    * @param {Object=} loadTimeOverriddenData
    */
   async function setupTest(sampleData, loadTimeOverriddenData) {
+    // TODO(romanarora): Leverage ProfileDataSpec to initialize undefined
+    // array fields in sampleData to empty arrays.
     testProxy = new TestTabSearchApiProxy();
     testProxy.setProfileData(sampleData);
     TabSearchApiProxyImpl.instance_ = testProxy;
@@ -66,6 +68,7 @@ suite('TabSearchAppTest', () => {
       windows: SAMPLE_WINDOW_DATA,
       recentlyClosedTabs: SAMPLE_RECENTLY_CLOSED_DATA,
       tabGroups: [],
+      recentlyClosedTabGroups: [],
     });
     tabSearchApp.shadowRoot.querySelector('#tabsList')
         .ensureAllDomItemsAvailable();
@@ -84,6 +87,7 @@ suite('TabSearchAppTest', () => {
           recentlyClosedTabs: generateSampleTabsFromSiteNames(
               ['RecentlyClosedTab1', 'RecentlyClosedTab2'], false),
           tabGroups: [],
+          recentlyClosedTabGroups: [],
         },
         {recentlyClosedDefaultItemDisplayCount: 1});
 
@@ -101,6 +105,7 @@ suite('TabSearchAppTest', () => {
       windows: SAMPLE_WINDOW_DATA,
       recentlyClosedTabs: SAMPLE_RECENTLY_CLOSED_DATA,
       tabGroups: [],
+      recentlyClosedTabGroups: [],
     });
     const searchField = /** @type {!TabSearchSearchField} */
         (tabSearchApp.shadowRoot.querySelector('#searchField'));
@@ -135,7 +140,8 @@ suite('TabSearchAppTest', () => {
     await setupTest({
       windows: [{active: true, tabs: [tabData]}],
       recentlyClosedTabs: [],
-      tabGroups: []
+      tabGroups: [],
+      recentlyClosedTabGroups: [],
     });
 
     const tabSearchItem = /** @type {!HTMLElement} */
@@ -177,13 +183,14 @@ suite('TabSearchAppTest', () => {
       }],
       recentlyClosedTabs: [tabData],
       tabGroups: [],
+      recentlyClosedTabGroups: [],
     });
 
     let tabSearchItem = /** @type {!HTMLElement} */
         (tabSearchApp.shadowRoot.querySelector('#tabsList')
              .querySelector('tab-search-item[id="100"]'));
     tabSearchItem.click();
-    const tabId = await testProxy.whenCalled('openRecentlyClosedTab');
+    const tabId = await testProxy.whenCalled('openRecentlyClosedEntry');
     assertEquals(tabData.tabId, tabId);
   });
 
@@ -191,7 +198,8 @@ suite('TabSearchAppTest', () => {
     await setupTest({
       windows: [{active: true, tabs: []}],
       recentlyClosedTabs: [],
-      tabGroups: []
+      tabGroups: [],
+      recentlyClosedTabGroups: [],
     });
 
     const searchField = /** @type {!TabSearchSearchField} */
@@ -274,8 +282,12 @@ suite('TabSearchAppTest', () => {
   test('refresh on tabs changed', async () => {
     await setupTest(sampleData());
     verifyTabIds(queryRows(), [1, 5, 6, 2, 3, 4]);
-    testProxy.getCallbackRouterRemote().tabsChanged(
-        {windows: [], recentlyClosedTabs: [], tabGroups: []});
+    testProxy.getCallbackRouterRemote().tabsChanged({
+      windows: [],
+      recentlyClosedTabs: [],
+      tabGroups: [],
+      recentlyClosedTabGroups: []
+    });
     await flushTasks();
     verifyTabIds(queryRows(), []);
     assertEquals(-1, tabSearchApp.getSelectedIndex());
@@ -293,7 +305,8 @@ suite('TabSearchAppTest', () => {
     testProxy.getCallbackRouterRemote().tabsChanged({
       windows: [testData.windows[0]],
       recentlyClosedTabs: [],
-      tabGroups: []
+      tabGroups: [],
+      recentlyClosedTabGroups: [],
     });
     await flushTasks();
     assertEquals(1, tabSearchApp.getSelectedIndex());
@@ -302,6 +315,7 @@ suite('TabSearchAppTest', () => {
       windows: [{active: true, tabs: [testData.windows[0].tabs[0]]}],
       recentlyClosedTabs: [],
       tabGroups: [],
+      recentlyClosedTabGroups: [],
     });
     await flushTasks();
     assertEquals(0, tabSearchApp.getSelectedIndex());
@@ -511,6 +525,7 @@ suite('TabSearchAppTest', () => {
       windows: [{active: true, height: SAMPLE_WINDOW_HEIGHT, tabs}],
       recentlyClosedTabs: [],
       tabGroups: [],
+      recentlyClosedTabGroups: [],
     });
     verifyTabIds(queryRows(), [3, 1, 2]);
 
@@ -519,6 +534,7 @@ suite('TabSearchAppTest', () => {
           windows: [{active: true, height: SAMPLE_WINDOW_HEIGHT, tabs}],
           recentlyClosedTabs: [],
           tabGroups: [],
+          recentlyClosedTabGroups: [],
         },
         {'moveActiveTabToBottom': false});
     verifyTabIds(queryRows(), [2, 3, 1]);
@@ -564,6 +580,7 @@ suite('TabSearchAppTest', () => {
       windows: [{active: true, height: SAMPLE_WINDOW_HEIGHT, tabs}],
       recentlyClosedTabs: [],
       tabGroups: [tabGroup],
+      recentlyClosedTabGroups: [],
     });
 
     let tabSearchItem = /** @type {!HTMLElement} */ (

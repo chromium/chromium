@@ -166,8 +166,8 @@ const base::FeatureParam<int> kTabSearchRecentlyClosedDefaultItemDisplayCount{
     &kTabSearchRecentlyClosed, "TabSearchRecentlyClosedDefaultItemDisplayCount",
     8};
 
-const base::FeatureParam<int> kTabSearchRecentlyClosedMaxEntries{
-    &kTabSearchRecentlyClosed, "TabSearchRecentlyClosedMaxEntries", 100};
+const base::FeatureParam<int> kTabSearchRecentlyClosedTabCountThreshold{
+    &kTabSearchRecentlyClosed, "TabSearchRecentlyClosedTabCountThreshold", 100};
 
 const base::Feature kToolbarUseHardwareBitmapDraw{
     "ToolbarUseHardwareBitmapDraw", base::FEATURE_DISABLED_BY_DEFAULT};

@@ -4,15 +4,16 @@
 
 module tab_search.mojom;
 
+import "components/tab_groups/public/mojom/tab_group_types.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/token.mojom";
-import "components/tab_groups/public/mojom/tab_group_types.mojom";
 
 // Collection of window details associated with a profile.
 struct ProfileData {
   array<Window> windows;
-  array<RecentlyClosedTab> recently_closed_tabs;
   array<TabGroup> tab_groups;
+  array<RecentlyClosedTab> recently_closed_tabs;
+  array<RecentlyClosedTabGroup> recently_closed_tab_groups;
 };
 
 // Properties and tabs associated with a window.
@@ -63,10 +64,20 @@ struct Tab {
   string last_active_elapsed_text;
 };
 
-// Information about a recently closed tab.
+// Information about a recently closed tab. Recently closed tabs that were
+// closed as part of closing a group will contain a session id belonging to
+// the group while recently closed tabs that were closed individually will
+// contain a group id that associates them with either an open or no longer
+// present tab group.
 struct RecentlyClosedTab {
   // The unique identifier of the tab.
   int32 tab_id;
+
+  // The session identifier of the tab's group.
+  int32 session_id;
+
+  // The group identifier of the tab.
+  mojo_base.mojom.Token? group_id;
 
   // The title of the tab.
   string title;
@@ -95,6 +106,28 @@ struct TabGroup {
   string title;
 };
 
+// Information about a recently closed tab group.
+struct RecentlyClosedTabGroup {
+  // The unique identifier of the tab group that is only valid for the duration
+  // of the session.
+  int32 session_id;
+
+  // The color of the tab group.
+  tab_groups.mojom.Color color;
+
+  // The title of the tab group.
+  string title;
+
+  // A count of tabs that belong to the tab group.
+  uint32 tab_count;
+
+  // Elapsed time since the group was closed.
+  mojo_base.mojom.Time last_active_time;
+
+  // String representing the elapsed time since the group was closed.
+  string last_active_elapsed_text;
+};
+
 // Information about switching to a tab.
 struct SwitchToTabInfo {
   int32 tab_id;
@@ -118,8 +151,8 @@ interface PageHandler {
   // Switch to a specific tab.
   SwitchToTab(SwitchToTabInfo switch_to_tab_info);
 
-  // Open a recently closed tab.
-  OpenRecentlyClosedTab(int32 tab_id);
+  // Open a recently closed tab or tab group.
+  OpenRecentlyClosedEntry(int32 session_id);
 
   // Notify the backend that the UI is ready to be shown.
   ShowUI();

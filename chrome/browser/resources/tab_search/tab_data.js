@@ -4,7 +4,7 @@
 
 import {Token} from 'chrome://resources/mojo/mojo/public/mojom/base/token.mojom-webui.js';
 
-import {Tab, TabGroup} from './tab_search.mojom-webui.js';
+import {RecentlyClosedTab, Tab, TabGroup} from './tab_search.mojom-webui.js';
 
 /** @enum {number} */
 export const TabItemType = {
@@ -19,7 +19,7 @@ export const TabItemType = {
  */
 export class TabData {
   constructor() {
-    /** @type {!Tab} */
+    /** @type {!Tab|!RecentlyClosedTab} */
     this.tab;
 
     /** @type {string} */

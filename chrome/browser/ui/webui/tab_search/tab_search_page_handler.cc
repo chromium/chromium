@@ -152,7 +152,7 @@ void TabSearchPageHandler::SwitchToTab(
   details.browser->window()->Activate();
 }
 
-void TabSearchPageHandler::OpenRecentlyClosedTab(int32_t tab_id) {
+void TabSearchPageHandler::OpenRecentlyClosedEntry(int32_t session_id) {
   sessions::TabRestoreService* tab_restore_service =
       TabRestoreServiceFactory::GetForProfile(Profile::FromWebUI(web_ui_));
   if (!tab_restore_service)
@@ -163,7 +163,7 @@ void TabSearchPageHandler::OpenRecentlyClosedTab(int32_t tab_id) {
   tab_restore_service->RestoreEntryById(
       BrowserLiveTabContext::FindContextForWebContents(
           active_browser->tab_strip_model()->GetActiveWebContents()),
-      SessionID::FromSerializedValue(tab_id),
+      SessionID::FromSerializedValue(session_id),
       WindowOpenDisposition::NEW_FOREGROUND_TAB);
 }
 
@@ -180,6 +180,7 @@ tab_search::mojom::ProfileDataPtr TabSearchPageHandler::CreateProfileData() {
     return profile_data;
 
   std::set<std::string> tab_urls;
+  std::set<tab_groups::TabGroupId> tab_group_ids;
   for (auto* browser : *BrowserList::GetInstance()) {
     if (!ShouldTrackBrowser(browser))
       continue;
@@ -208,54 +209,112 @@ tab_search::mojom::ProfileDataPtr TabSearchPageHandler::CreateProfileData() {
       tab_group->id = tab_group_id.token();
       tab_group->title = base::UTF16ToUTF8(tab_group_visual_data->title());
       tab_group->color = tab_group_visual_data->color();
+
+      tab_group_ids.insert(tab_group_id);
       profile_data->tab_groups.push_back(std::move(tab_group));
     }
   }
 
-  AddRecentlyClosedTabs(profile_data->recently_closed_tabs, tab_urls);
-  DCHECK(features::kTabSearchRecentlyClosedMaxEntries.Get() >= 0);
-  DCHECK(profile_data->recently_closed_tabs.size() <=
-         static_cast<unsigned int>(
-             features::kTabSearchRecentlyClosedMaxEntries.Get()));
+  AddRecentlyClosedEntries(profile_data->recently_closed_tabs,
+                           profile_data->recently_closed_tab_groups,
+                           tab_group_ids, profile_data->tab_groups, tab_urls);
+  DCHECK(features::kTabSearchRecentlyClosedTabCountThreshold.Get() >= 0);
   return profile_data;
 }
 
-void TabSearchPageHandler::AddRecentlyClosedTabs(
+void TabSearchPageHandler::AddRecentlyClosedEntries(
     std::vector<tab_search::mojom::RecentlyClosedTabPtr>& recently_closed_tabs,
+    std::vector<tab_search::mojom::RecentlyClosedTabGroupPtr>&
+        recently_closed_tab_groups,
+    std::set<tab_groups::TabGroupId>& tab_group_ids,
+    std::vector<tab_search::mojom::TabGroupPtr>& tab_groups,
     std::set<std::string>& tab_urls) {
   sessions::TabRestoreService* tab_restore_service =
       TabRestoreServiceFactory::GetForProfile(Profile::FromWebUI(web_ui_));
-  const size_t kMaxTabCount =
-      static_cast<size_t>(features::kTabSearchRecentlyClosedMaxEntries.Get());
   if (tab_restore_service) {
-    // Flatten tab restore service entries into tabs. Ignore any entries that
-    // match URLs that are currently open.
+    const int kRecentlyClosedTabCountThreshold = static_cast<size_t>(
+        features::kTabSearchRecentlyClosedTabCountThreshold.Get());
+    int recently_closed_tab_count = 0;
+    // The minimum number of desired recently closed items (tab or group) to be
+    // shown in the 'Recently Closed' section of the UI.
+    const int kMinRecentlyClosedItemDisplayCount = static_cast<size_t>(
+        features::kTabSearchRecentlyClosedDefaultItemDisplayCount.Get());
+    int recently_closed_item_count = 0;
+
+    // Attempt to add as many recently closed items as necessary to support the
+    // default item display count. On reaching this minimum, keep adding
+    // items until we have reached or exceeded a tab count threshold value.
+    // Ignore any entries that match URLs that are currently open.
     for (auto& entry : tab_restore_service->entries()) {
+      if (recently_closed_item_count >= kMinRecentlyClosedItemDisplayCount &&
+          recently_closed_tab_count >= kRecentlyClosedTabCountThreshold) {
+        return;
+      }
+
       if (entry->type == sessions::TabRestoreService::Type::WINDOW) {
         sessions::TabRestoreService::Window* window =
             static_cast<sessions::TabRestoreService::Window*>(entry.get());
         for (auto& tab : window->tabs) {
-          if (!AddRecentlyClosedTab(recently_closed_tabs, tab.get(), tab_urls,
-                                    kMaxTabCount)) {
+          AddRecentlyClosedTab(recently_closed_tabs, tab.get(), tab_urls, 0);
+          recently_closed_tab_count += 1;
+          recently_closed_item_count += 1;
+
+          if (recently_closed_item_count >=
+                  kMinRecentlyClosedItemDisplayCount &&
+              recently_closed_tab_count >= kRecentlyClosedTabCountThreshold) {
             return;
           }
         }
       } else if (entry->type == sessions::TabRestoreService::Type::TAB) {
         sessions::TabRestoreService::Tab* tab =
             static_cast<sessions::TabRestoreService::Tab*>(entry.get());
-        if (!AddRecentlyClosedTab(recently_closed_tabs, tab, tab_urls,
-                                  kMaxTabCount)) {
-          return;
+
+        // If a recently closed tab is associated to a group that is no longer
+        // open we create TabGroup entry with the required fields to support
+        // rendering the tab's associated group information in the UI.
+        if (tab->group.has_value() &&
+            !base::Contains(tab_group_ids, tab->group.value())) {
+          tab_groups::TabGroupId tab_group_id = tab->group.value();
+          const tab_groups::TabGroupVisualData* tab_group_visual_data =
+              &tab->group_visual_data.value();
+          auto tab_group = tab_search::mojom::TabGroup::New();
+          tab_group->id = tab_group_id.token();
+          tab_group->color = tab_group_visual_data->color();
+          tab_group->title = base::UTF16ToUTF8(tab_group_visual_data->title());
+
+          tab_group_ids.insert(tab_group_id);
+          tab_groups.push_back(std::move(tab_group));
         }
+
+        AddRecentlyClosedTab(recently_closed_tabs, tab, tab_urls, 0);
+        recently_closed_tab_count += 1;
+        recently_closed_item_count += 1;
       } else if (entry->type == sessions::TabRestoreService::Type::GROUP) {
         sessions::TabRestoreService::Group* group =
             static_cast<sessions::TabRestoreService::Group*>(entry.get());
+
+        const tab_groups::TabGroupVisualData* tab_group_visual_data =
+            &group->visual_data;
+        auto recently_closed_tab_group =
+            tab_search::mojom::RecentlyClosedTabGroup::New();
+        recently_closed_tab_group->session_id = entry->id.id();
+        recently_closed_tab_group->color = tab_group_visual_data->color();
+        recently_closed_tab_group->title =
+            base::UTF16ToUTF8(tab_group_visual_data->title());
+        recently_closed_tab_group->tab_count = group->tabs.size();
+        recently_closed_tab_group->last_active_time = entry->timestamp;
+        recently_closed_tab_group->last_active_elapsed_text =
+            GetLastActiveElapsedText(entry->timestamp);
+        recently_closed_tab_groups.push_back(
+            std::move(recently_closed_tab_group));
+
         for (auto& tab : group->tabs) {
-          if (!AddRecentlyClosedTab(recently_closed_tabs, tab.get(), tab_urls,
-                                    kMaxTabCount)) {
-            return;
-          }
+          AddRecentlyClosedTab(recently_closed_tabs, tab.get(), tab_urls,
+                               group->id.id());
+          recently_closed_tab_count += 1;
         }
+        // Restored recently closed tab groups map to a single display item.
+        recently_closed_item_count += 1;
       }
     }
   }
@@ -265,10 +324,7 @@ bool TabSearchPageHandler::AddRecentlyClosedTab(
     std::vector<tab_search::mojom::RecentlyClosedTabPtr>& recently_closed_tabs,
     sessions::TabRestoreService::Tab* tab,
     std::set<std::string>& tab_urls,
-    size_t max_tab_count) {
-  if (recently_closed_tabs.size() >= max_tab_count)
-    return false;
-
+    int32_t session_id) {
   if (tab->navigations.size() == 0)
     return true;
 
@@ -286,7 +342,11 @@ bool TabSearchPageHandler::AddRecentlyClosedTab(
   if (tab_urls.count(recently_closed_tab->url))
     return true;
 
+  if (session_id)
+    recently_closed_tab->session_id = session_id;
+
   tab_urls.insert(recently_closed_tab->url);
+
   recently_closed_tabs.push_back(std::move(recently_closed_tab));
 
   return true;
@@ -350,6 +410,11 @@ TabSearchPageHandler::GetRecentlyClosedTab(
   recently_closed_tab->last_active_time_ticks = last_active_time_ticks;
   recently_closed_tab->last_active_elapsed_text =
       GetLastActiveElapsedText(last_active_time_ticks);
+
+  if (tab->group.has_value()) {
+    recently_closed_tab->group_id = tab->group.value().token();
+  }
+
   return recently_closed_tab;
 }
 

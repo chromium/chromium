@@ -28,8 +28,8 @@ export class TabSearchApiProxy {
   /** @return {Promise<{profileData: ProfileData}>} */
   getProfileData() {}
 
-  /** @param {number} tabId */
-  openRecentlyClosedTab(tabId) {}
+  /** @param {number} id */
+  openRecentlyClosedEntry(id) {}
 
   /**
    * @param {!SwitchToTabInfo} info
@@ -76,8 +76,8 @@ export class TabSearchApiProxyImpl {
   }
 
   /** @override */
-  openRecentlyClosedTab(tabId) {
-    this.handler.openRecentlyClosedTab(tabId);
+  openRecentlyClosedEntry(tabId) {
+    this.handler.openRecentlyClosedEntry(tabId);
   }
 
   /** @override */

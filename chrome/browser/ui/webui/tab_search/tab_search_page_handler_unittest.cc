@@ -292,7 +292,11 @@ TEST_F(TabSearchPageHandlerTest, GetTabs) {
   handler()->GetProfileData(std::move(callback3));
 }
 
-TEST_F(TabSearchPageHandlerTest, GetTabsAndGroups) {
+TEST_F(TabSearchPageHandlerTest, TabsAndGroups) {
+  TabRestoreServiceFactory::GetInstance()->SetTestingFactory(
+      profile(),
+      base::BindRepeating(&TabSearchPageHandlerTest::GetTabRestoreService));
+
   // Add tabs to a browser.
   AddTabWithTitle(browser1(), GURL(kTabUrl1), kTabName1);
   AddTabWithTitle(browser1(), GURL(kTabUrl2), kTabName2);
@@ -300,8 +304,6 @@ TEST_F(TabSearchPageHandlerTest, GetTabsAndGroups) {
   TabStripModel* tab_strip_model = browser1()->tab_strip_model();
   TabGroupModel* tab_group_model = tab_strip_model->group_model();
 
-  EXPECT_CALL(page_, TabUpdated(_)).Times(1);
-  EXPECT_CALL(page_, TabsRemoved(_)).Times(1);
   // Associate a tab to a given tab group.
   tab_groups::TabGroupId group1 = tab_strip_model->AddToNewGroup({0});
 
@@ -326,6 +328,96 @@ TEST_F(TabSearchPageHandlerTest, GetTabsAndGroups) {
             ASSERT_EQ(base::UTF16ToUTF8(sample_title), tab_group->title);
           });
   handler()->GetProfileData(std::move(callback1));
+
+  // Close a group's tab.
+  int tab_id = extensions::ExtensionTabUtil::GetTabId(
+      browser1()->tab_strip_model()->GetWebContentsAt(0));
+  handler()->CloseTab(tab_id);
+
+  // Assert the closed tab's data is correct in ProfileData.
+  tab_search::mojom::PageHandler::GetProfileDataCallback callback2 =
+      base::BindLambdaForTesting(
+          [&](tab_search::mojom::ProfileDataPtr profile_tabs) {
+            ASSERT_EQ(2u, profile_tabs->windows.size());
+            auto* window1 = profile_tabs->windows[0].get();
+            ASSERT_TRUE(window1->active);
+            ASSERT_EQ(1u, window1->tabs.size());
+
+            auto& tab_groups = profile_tabs->tab_groups;
+            ASSERT_EQ(1u, tab_groups.size());
+            tab_search::mojom::TabGroup* tab_group = tab_groups[0].get();
+            ASSERT_EQ(sample_color, tab_group->color);
+            ASSERT_EQ(base::UTF16ToUTF8(sample_title), tab_group->title);
+
+            auto& recently_closed_tabs = profile_tabs->recently_closed_tabs;
+            ASSERT_EQ(1u, recently_closed_tabs.size());
+            tab_search::mojom::RecentlyClosedTab* tab =
+                recently_closed_tabs[0].get();
+            ExpectRecentlyClosedTab(tab, kTabUrl2, kTabName2);
+            ASSERT_TRUE(tab->group_id);
+            ASSERT_EQ(tab_group->id, tab->group_id);
+          });
+  handler()->GetProfileData(std::move(callback2));
+
+  EXPECT_CALL(page_, TabUpdated(_)).Times(1);
+  EXPECT_CALL(page_, TabsRemoved(_)).Times(2);
+}
+
+TEST_F(TabSearchPageHandlerTest, RecentlyClosedTabGroup) {
+  TabRestoreServiceFactory::GetInstance()->SetTestingFactory(
+      profile(),
+      base::BindRepeating(&TabSearchPageHandlerTest::GetTabRestoreService));
+
+  // Add tabs to a browser.
+  AddTabWithTitle(browser1(), GURL(kTabUrl1), kTabName1);
+  AddTabWithTitle(browser1(), GURL(kTabUrl2), kTabName2);
+
+  TabStripModel* tab_strip_model = browser1()->tab_strip_model();
+  TabGroupModel* tab_group_model = tab_strip_model->group_model();
+
+  // Associate a tab to a given tab group.
+  tab_groups::TabGroupId group1 = tab_strip_model->AddToNewGroup({0});
+
+  std::u16string sample_title = u"Sample title";
+  const tab_groups::TabGroupColorId sample_color =
+      tab_groups::TabGroupColorId::kGrey;
+  tab_groups::TabGroupVisualData visual_data1(sample_title, sample_color);
+  tab_group_model->GetTabGroup(group1)->SetVisualData(visual_data1);
+
+  // Close a group and its tabs.
+  tab_strip_model->CloseAllTabsInGroup(group1);
+
+  // Assert the closed tab group and tab data is correct in ProfileData.
+  tab_search::mojom::PageHandler::GetProfileDataCallback callback =
+      base::BindLambdaForTesting(
+          [&](tab_search::mojom::ProfileDataPtr profile_tabs) {
+            ASSERT_EQ(2u, profile_tabs->windows.size());
+            auto* window1 = profile_tabs->windows[0].get();
+            ASSERT_TRUE(window1->active);
+            ASSERT_EQ(1u, window1->tabs.size());
+
+            ASSERT_EQ(0u, profile_tabs->tab_groups.size());
+
+            auto& recently_closed_tab_groups =
+                profile_tabs->recently_closed_tab_groups;
+            ASSERT_EQ(1u, recently_closed_tab_groups.size());
+            tab_search::mojom::RecentlyClosedTabGroup* tab_group =
+                recently_closed_tab_groups[0].get();
+            ASSERT_EQ(sample_color, tab_group->color);
+            ASSERT_EQ(base::UTF16ToUTF8(sample_title), tab_group->title);
+
+            auto& recently_closed_tabs = profile_tabs->recently_closed_tabs;
+            ASSERT_EQ(1u, recently_closed_tabs.size());
+            tab_search::mojom::RecentlyClosedTab* tab =
+                recently_closed_tabs[0].get();
+            ExpectRecentlyClosedTab(tab, kTabUrl2, kTabName2);
+            ASSERT_TRUE(tab->group_id);
+            ASSERT_EQ(tab_group->session_id, tab->session_id);
+          });
+  handler()->GetProfileData(std::move(callback));
+
+  EXPECT_CALL(page_, TabUpdated(_)).Times(1);
+  EXPECT_CALL(page_, TabsRemoved(_)).Times(2);
 }
 
 // Ensure that repeated tab model changes do not result in repeated calls to
@@ -460,7 +552,7 @@ TEST_F(TabSearchPageHandlerTest, OpenRecentlyClosedTab) {
             tab_id = recently_closed_tabs[0]->tab_id;
           });
   handler()->GetProfileData(std::move(callback1));
-  handler()->OpenRecentlyClosedTab(tab_id);
+  handler()->OpenRecentlyClosedEntry(tab_id);
   tab_search::mojom::PageHandler::GetProfileDataCallback callback2 =
       base::BindLambdaForTesting(
           [&](tab_search::mojom::ProfileDataPtr profile_tabs) {

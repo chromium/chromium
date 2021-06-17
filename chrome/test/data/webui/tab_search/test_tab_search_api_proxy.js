@@ -12,7 +12,7 @@ export class TestTabSearchApiProxy extends TestBrowserProxy {
     super([
       'closeTab',
       'getProfileData',
-      'openRecentlyClosedTab',
+      'openRecentlyClosedEntry',
       'switchToTab',
       'showUI',
       'closeUI',
@@ -41,8 +41,8 @@ export class TestTabSearchApiProxy extends TestBrowserProxy {
   }
 
   /** @override */
-  openRecentlyClosedTab(tabId) {
-    this.methodCalled('openRecentlyClosedTab', tabId);
+  openRecentlyClosedEntry(id) {
+    this.methodCalled('openRecentlyClosedEntry', id);
   }
 
   /** @override */
