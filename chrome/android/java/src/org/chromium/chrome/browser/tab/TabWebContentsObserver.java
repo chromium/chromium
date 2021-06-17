@@ -262,11 +262,6 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
 
         @Override
         public void didFailLoad(boolean isMainFrame, int errorCode, GURL failingGurl) {
-            RewindableIterator<TabObserver> observers = mTab.getTabObservers();
-            while (observers.hasNext()) {
-                observers.next().onDidFailLoad(mTab, isMainFrame, errorCode, failingGurl);
-            }
-
             if (isMainFrame) mTab.didFailPageLoad(errorCode);
 
             recordErrorInPolicyAuditor(failingGurl.getSpec(), "net error: " + errorCode, errorCode);

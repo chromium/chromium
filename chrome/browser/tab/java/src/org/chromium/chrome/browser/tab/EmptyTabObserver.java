@@ -96,9 +96,6 @@ public class EmptyTabObserver implements TabObserver {
     public void onUpdateUrl(Tab tab, GURL url) {}
 
     @Override
-    public void onDidFailLoad(Tab tab, boolean isMainFrame, int errorCode, GURL failingUrl) {}
-
-    @Override
     public void onDidStartNavigation(Tab tab, NavigationHandle navigationHandle) {}
 
     @Override

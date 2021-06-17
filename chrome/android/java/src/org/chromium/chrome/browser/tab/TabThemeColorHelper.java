@@ -10,7 +10,6 @@ import org.chromium.base.Callback;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.net.NetError;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.url.GURL;
 
 /**
  * Monitor changes that indicate a theme color change may be needed from tab contents.
@@ -44,11 +43,6 @@ public class TabThemeColorHelper extends EmptyTabObserver {
     @Override
     public void onUrlUpdated(Tab tab) {
         updateIfNeeded(tab, false);
-    }
-
-    @Override
-    public void onDidFailLoad(Tab tab, boolean isMainFrame, int errorCode, GURL failingUrl) {
-        updateIfNeeded(tab, true);
     }
 
     @Override

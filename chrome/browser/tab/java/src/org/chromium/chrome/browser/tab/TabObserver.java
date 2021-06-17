@@ -208,15 +208,6 @@ public interface TabObserver {
     // WebContentsObserver methods ---------------------------------------------------------
 
     /**
-     * Called when an error occurs while loading a page and/or the page fails to load.
-     * @param tab               The notifying {@link Tab}.
-     * @param isMainFrame       Whether failed load happened for the main frame.
-     * @param errorCode         Code for the occurring error.
-     * @param failingUrl        The url that was loading when the error occurred.
-     */
-    void onDidFailLoad(Tab tab, boolean isMainFrame, int errorCode, GURL failingUrl);
-
-    /**
      * Called when a navigation is started in the WebContents.
      * @param tab The notifying {@link Tab}.
      * @param navigationHandle Pointer to a NavigationHandle representing the navigation.
