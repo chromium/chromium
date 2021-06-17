@@ -289,9 +289,11 @@ TEST(UserAgentUtilsTest, UserAgentMetadata) {
   EXPECT_TRUE(contains_product_brand_version);
 
   EXPECT_EQ(metadata.full_version, version_info::GetVersionNumber());
+
+  int32_t major, minor, bugfix = 0;
+  base::SysInfo::OperatingSystemVersionNumbers(&major, &minor, &bugfix);
   EXPECT_EQ(metadata.platform_version,
-            content::GetOSVersion(content::IncludeAndroidBuildNumber::Exclude,
-                                  content::IncludeAndroidModel::Exclude));
+            base::StringPrintf("%d.%d.%d", major, minor, bugfix));
   // This makes sure no extra information is added to the platform version.
   EXPECT_EQ(metadata.platform_version.find(";"), std::string::npos);
   // TODO(crbug.com/1103047): This can be removed/re-refactored once we use

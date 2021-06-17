@@ -7,6 +7,8 @@
 #include "base/command_line.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
+#include "base/system/sys_info.h"
 #include "build/branding_buildflags.h"
 #include "components/embedder_support/switches.h"
 #include "components/version_info/version_info.h"
@@ -138,9 +140,6 @@ blink::UserAgentMetadata GetUserAgentMetadata() {
   metadata.brand_version_list = GetBrandVersionList();
   metadata.full_version = version_info::GetVersionNumber();
   metadata.platform = GetPlatformForUAMetadata();
-  metadata.platform_version =
-      content::GetOSVersion(content::IncludeAndroidBuildNumber::Exclude,
-                            content::IncludeAndroidModel::Exclude);
   metadata.architecture = content::GetLowEntropyCpuArchitecture();
   metadata.model = content::BuildModelInfo();
 
@@ -149,6 +148,11 @@ blink::UserAgentMetadata GetUserAgentMetadata() {
   metadata.mobile = base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kUseMobileUserAgent);
 #endif
+
+  int32_t major, minor, bugfix = 0;
+  base::SysInfo::OperatingSystemVersionNumbers(&major, &minor, &bugfix);
+  metadata.platform_version =
+      base::StringPrintf("%d.%d.%d", major, minor, bugfix);
 
   return metadata;
 }
