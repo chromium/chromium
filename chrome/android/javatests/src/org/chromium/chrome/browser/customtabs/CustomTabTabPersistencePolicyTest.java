@@ -460,7 +460,7 @@ public class CustomTabTabPersistencePolicyTest {
         orchestrator.createTabModels(activity::getWindowAndroid, activity,
                 new ChromeTabModelFilterFactory(), buildTestPersistencePolicy(),
                 AsyncTabParamsManagerSingleton.getInstance());
-        TabModelSelectorImpl selector = orchestrator.getTabModelSelector();
+        TabModelSelectorImpl selector = (TabModelSelectorImpl) orchestrator.getTabModelSelector();
         selector.initializeForTesting(normalTabModel, incognitoTabModel);
         ApplicationStatus.onStateChangeForTesting(activity, ActivityState.DESTROYED);
         return selector;

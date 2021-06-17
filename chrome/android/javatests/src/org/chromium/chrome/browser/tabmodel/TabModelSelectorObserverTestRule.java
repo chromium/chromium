@@ -67,6 +67,19 @@ public class TabModelSelectorObserverTestRule extends ChromeBrowserTestRule {
     private void initialize() {
         mSelector = new TabModelSelectorBase(null, EmptyTabModelFilter::new, false) {
             @Override
+            public void requestToShowTab(Tab tab, int type) {}
+
+            @Override
+            public boolean closeAllTabsRequest(boolean incognito) {
+                return false;
+            }
+
+            @Override
+            public boolean isSessionRestoreInProgress() {
+                return false;
+            }
+
+            @Override
             public Tab openNewTab(LoadUrlParams loadUrlParams, @TabLaunchType int type, Tab parent,
                     boolean incognito) {
                 return null;

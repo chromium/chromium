@@ -29,7 +29,7 @@ import org.chromium.chrome.browser.tabmodel.AsyncTabParamsManager;
 import org.chromium.chrome.browser.tabmodel.ChromeTabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModelFilterFactory;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ActivityWindowAndroid;
 
@@ -96,7 +96,7 @@ public class CustomTabActivityTabFactory {
     }
 
     /** Returns the previously created {@link TabModelSelector}. */
-    public TabModelSelectorImpl getTabModelSelector() {
+    public TabModelSelectorBase getTabModelSelector() {
         getTabModelOrchestrator();
         if (mTabModelOrchestrator.getTabModelSelector() == null) {
             assert false;

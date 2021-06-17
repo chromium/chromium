@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.app.tabmodel;
 
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabPersistentStoreObserver;
@@ -15,7 +17,7 @@ import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabPersistentStor
  */
 public abstract class TabModelOrchestrator {
     protected TabPersistentStore mTabPersistentStore;
-    protected TabModelSelectorImpl mTabModelSelector;
+    protected TabModelSelectorBase mTabModelSelector;
     private boolean mTabModelsInitialized;
 
     /**
@@ -26,9 +28,9 @@ public abstract class TabModelOrchestrator {
     }
 
     /**
-     * @return The {@link TabModelSelectorImpl} managed by this orchestrator.
+     * @return The {@link TabModelSelector} managed by this orchestrator.
      */
-    public TabModelSelectorImpl getTabModelSelector() {
+    public TabModelSelectorBase getTabModelSelector() {
         return mTabModelSelector;
     }
 
@@ -132,7 +134,7 @@ public abstract class TabModelOrchestrator {
     }
 
     protected void wireSelectorAndStore() {
-        // Notify TabModelSelectorImpl when TabPersistentStore initializes tab state
+        // Notify TabModelSelector when TabPersistentStore initializes tab state
         final TabPersistentStoreObserver persistentStoreObserver =
                 new TabPersistentStoreObserver() {
                     @Override

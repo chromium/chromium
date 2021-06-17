@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tabmodel;
 
 import org.chromium.base.ObserverList;
+import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -17,7 +18,8 @@ import java.util.List;
 /**
  * Implement methods shared across the different model implementations.
  */
-public abstract class TabModelSelectorBase implements TabModelSelector, IncognitoTabModelObserver {
+public abstract class TabModelSelectorBase
+        implements TabModelSelector, IncognitoTabModelObserver, TabModelDelegate {
     private static final int MODEL_NOT_FOUND = -1;
 
     private static TabModelSelectorObserver sObserver;
@@ -97,6 +99,17 @@ public abstract class TabModelSelectorBase implements TabModelSelector, Incognit
     public static void setObserverForTests(TabModelSelectorObserver observer) {
         sObserver = observer;
     }
+
+    /**
+     * Should be called once the native library is loaded so that the actual internals of this
+     * class can be initialized.
+     *
+     * @param tabContentProvider A {@link TabContentManager} instance.
+     */
+    public void onNativeLibraryReady(TabContentManager tabContentProvider) {}
+
+    @Override
+    public void onTabsViewShown() {}
 
     @Override
     public void selectModel(boolean incognito) {
@@ -280,7 +293,8 @@ public abstract class TabModelSelectorBase implements TabModelSelector, Incognit
      * Notifies all the listeners that the {@link TabModelSelector} or its {@link TabModel} has
      * changed.
      */
-    protected void notifyChanged() {
+    // TODO(tedchoc): Remove the need for this to be exposed.
+    public void notifyChanged() {
         for (TabModelSelectorObserver listener : mObservers) {
             listener.onChange();
         }

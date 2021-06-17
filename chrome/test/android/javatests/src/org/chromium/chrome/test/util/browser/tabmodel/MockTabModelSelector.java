@@ -66,6 +66,21 @@ public class MockTabModelSelector extends TabModelSelectorBase {
     }
 
     @Override
+    public void requestToShowTab(Tab tab, int type) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean closeAllTabsRequest(boolean incognito) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean isSessionRestoreInProgress() {
+        return false;
+    }
+
+    @Override
     public void selectModel(boolean incognito) {
         super.selectModel(incognito);
         ((MockTabModel) getModel(incognito)).setAsActiveModelForTesting();

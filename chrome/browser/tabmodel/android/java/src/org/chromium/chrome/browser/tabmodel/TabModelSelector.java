@@ -21,7 +21,7 @@ public interface TabModelSelector {
     /**
      * A delegate interface to push close all tabs requests.
      */
-    public interface CloseAllTabsDelegate {
+    interface CloseAllTabsDelegate {
         /**
          * Sends a request to close all tabs for a {@link TabModel}.
          * @param incognito Whether the tabs to be closed are incognito.
@@ -29,6 +29,11 @@ public interface TabModelSelector {
          */
         boolean closeAllTabsRequest(boolean incognito);
     }
+
+    /**
+     * Should be called when the app starts showing a view with multiple tabs.
+     */
+    void onTabsViewShown();
 
     /**
      * Set the current model. This won't cause an animation, but will still change the stack that is

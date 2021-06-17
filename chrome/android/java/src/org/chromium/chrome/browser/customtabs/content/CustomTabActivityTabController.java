@@ -56,7 +56,7 @@ import org.chromium.chrome.browser.tabmodel.AsyncTabParams;
 import org.chromium.chrome.browser.tabmodel.AsyncTabParamsManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
 import org.chromium.chrome.browser.tabmodel.TabReparentingParams;
 import org.chromium.chrome.browser.translate.TranslateBridge;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -242,7 +242,7 @@ public class CustomTabActivityTabController implements InflationObserver {
         }
 
         TabModelOrchestrator tabModelOrchestrator = mTabFactory.getTabModelOrchestrator();
-        TabModelSelectorImpl tabModelSelector = tabModelOrchestrator.getTabModelSelector();
+        TabModelSelectorBase tabModelSelector = tabModelOrchestrator.getTabModelSelector();
 
         TabModel tabModel = tabModelSelector.getModel(mIntentDataProvider.isIncognito());
         tabModel.addObserver(mTabObserverRegistrar);
