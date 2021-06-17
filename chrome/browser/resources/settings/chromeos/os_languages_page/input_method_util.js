@@ -344,6 +344,12 @@ cr.define('settings.input_method_util', function() {
         return 'inputMethodOptionsXkbLayout';
       case OptionType.EDIT_USER_DICT:
         return 'inputMethodOptionsEditUserDict';
+      case OptionType.ZHUYIN_KEYBOARD_LAYOUT:
+        return 'inputMethodOptionsZhuyinKeyboardLayout';
+      case OptionType.ZHUYIN_SELECT_KEYS:
+        return 'inputMethodOptionsZhuyinSelectKeys';
+      case OptionType.ZHUYIN_PAGE_SIZE:
+        return 'inputMethodOptionsZhuyinPageSize';
       default:
         assertNotReached();
     }
@@ -368,6 +374,29 @@ cr.define('settings.input_method_util', function() {
           {value: 'US', name: 'inputMethodOptionsUsKeyboard'},
           {value: 'Dvorak', name: 'inputMethodOptionsDvorakKeyboard'},
           {value: 'Colemak', name: 'inputMethodOptionsColemakKeyboard'}
+        ];
+      case OptionType.ZHUYIN_KEYBOARD_LAYOUT:
+        return [
+          {value: 'Default', name: 'inputMethodOptionsZhuyinLayoutDefault'},
+          {value: 'IBM', name: 'inputMethodOptionsZhuyinLayoutIBM'},
+          {value: 'Eten', name: 'inputMethodOptionsZhuyinLayoutEten'},
+        ];
+      case OptionType.ZHUYIN_SELECT_KEYS:
+        // Zhuyin select keys correspond to physical keys so are not
+        // translated.
+        return [
+          {value: '1234567890'},
+          {value: 'asdfghjkl;'},
+          {value: 'asdfzxcv89'},
+          {value: 'asdfjkl789'},
+          {value: '1234qweras'},
+        ];
+      case OptionType.ZHUYIN_PAGE_SIZE:
+        // Zhuyin page size is just a number, so is not translated.
+        return [
+          {value: '10'},
+          {value: '9;'},
+          {value: '8'},
         ];
       default:
         return [];

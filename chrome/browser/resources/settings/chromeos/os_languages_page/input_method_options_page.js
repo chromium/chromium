@@ -87,7 +87,8 @@ Polymer({
   getMenuItems(name, value) {
     return settings.input_method_util.getOptionMenuItems(name).map(menuItem => {
       menuItem['selected'] = menuItem['value'] === value;
-      menuItem['label'] = this.i18n(menuItem['name']);
+      menuItem['label'] =
+          menuItem['name'] ? this.i18n(menuItem['name']) : menuItem['value'];
       return menuItem;
     });
   },
