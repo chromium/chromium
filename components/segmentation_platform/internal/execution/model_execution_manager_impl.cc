@@ -18,6 +18,7 @@
 #include "components/optimization_guide/core/model_executor.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/database/metadata_utils.h"
+#include "components/segmentation_platform/internal/execution/feature_aggregator.h"
 #include "components/segmentation_platform/internal/execution/model_execution_manager.h"
 #include "components/segmentation_platform/internal/execution/model_execution_status.h"
 #include "components/segmentation_platform/internal/execution/segmentation_model_handler.h"
@@ -51,8 +52,10 @@ ModelExecutionManagerImpl::ModelExecutionManagerImpl(
     optimization_guide::OptimizationGuideModelProvider* model_provider,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner,
     std::vector<OptimizationTarget> segment_ids,
-    SegmentInfoDatabase* segment_database)
-    : segment_database_(segment_database) {
+    SegmentInfoDatabase* segment_database,
+    std::unique_ptr<FeatureAggregator> feature_aggregator)
+    : segment_database_(segment_database),
+      feature_aggregator_(std::move(feature_aggregator)) {
   for (OptimizationTarget segment_id : segment_ids) {
     model_handlers_.emplace(std::make_pair(
         segment_id, std::make_unique<SegmentationModelHandler>(

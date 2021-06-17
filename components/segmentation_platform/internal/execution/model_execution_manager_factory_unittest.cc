@@ -13,6 +13,7 @@
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/database/test_segment_info_database.h"
+#include "components/segmentation_platform/internal/execution/feature_aggregator_impl.h"
 #include "components/segmentation_platform/internal/execution/model_execution_status.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -26,6 +27,7 @@ class ModelExecutionManagerFactoryTest : public testing::Test {
     optimization_guide_model_provider_ = std::make_unique<
         optimization_guide::TestOptimizationGuideModelProvider>();
     segment_database_ = std::make_unique<test::TestSegmentInfoDatabase>();
+    feature_aggregator_ = std::make_unique<FeatureAggregatorImpl>();
   }
 
   void TearDown() override {
@@ -38,6 +40,7 @@ class ModelExecutionManagerFactoryTest : public testing::Test {
   std::unique_ptr<optimization_guide::TestOptimizationGuideModelProvider>
       optimization_guide_model_provider_;
   std::unique_ptr<test::TestSegmentInfoDatabase> segment_database_;
+  std::unique_ptr<FeatureAggregatorImpl> feature_aggregator_;
 };
 
 TEST_F(ModelExecutionManagerFactoryTest, CreateModelExecutionManager) {
@@ -45,7 +48,7 @@ TEST_F(ModelExecutionManagerFactoryTest, CreateModelExecutionManager) {
       optimization_guide_model_provider_.get(),
       task_environment_.GetMainThreadTaskRunner(),
       {OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB},
-      segment_database_.get());
+      segment_database_.get(), std::move(feature_aggregator_));
   // This should work regardless of whether a DummyModelExecutionManager or
   // ModelExecutionManagerImpl is returned.
   CHECK(model_execution_manager);

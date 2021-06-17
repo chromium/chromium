@@ -10,6 +10,7 @@
 #include "base/sequenced_task_runner.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/optimization_guide/proto/models.pb.h"
+#include "components/segmentation_platform/internal/execution/feature_aggregator.h"
 #include "components/segmentation_platform/internal/execution/model_execution_manager.h"
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
@@ -23,16 +24,19 @@ class OptimizationGuideModelProvider;
 }  // namespace optimization_guide
 
 namespace segmentation_platform {
+class FeatureAggregator;
 class SegmentInfoDatabase;
 
 std::unique_ptr<ModelExecutionManager> CreateModelExecutionManager(
     optimization_guide::OptimizationGuideModelProvider* model_provider,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner,
     std::vector<optimization_guide::proto::OptimizationTarget> segment_ids,
-    SegmentInfoDatabase* segment_database) {
+    SegmentInfoDatabase* segment_database,
+    std::unique_ptr<FeatureAggregator> feature_aggregator) {
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   return std::make_unique<ModelExecutionManagerImpl>(
-      model_provider, background_task_runner, segment_ids, segment_database);
+      model_provider, background_task_runner, segment_ids, segment_database,
+      std::move(feature_aggregator));
 #else
   return std::make_unique<DummyModelExecutionManager>();
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
