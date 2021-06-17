@@ -60,12 +60,13 @@ void HandleBadMessage(const std::string& error) {
   base::debug::DumpWithoutCrashing();
 }
 
-ChildThreadImpl::Options GetOptions() {
+ChildThreadImpl::Options GetOptions(
+    const InProcessChildThreadParams* in_process_params = nullptr) {
   ChildThreadImpl::Options::Builder builder;
-
   builder.ConnectToBrowser(true);
   builder.ExposesInterfacesToBrowser();
-
+  if (in_process_params)
+    builder.InBrowserProcess(*in_process_params);
   return builder.Build();
 }
 
@@ -105,11 +106,7 @@ GpuChildThread::GpuChildThread(base::RepeatingClosure quit_closure,
 GpuChildThread::GpuChildThread(const InProcessChildThreadParams& params,
                                std::unique_ptr<gpu::GpuInit> gpu_init)
     : GpuChildThread(base::DoNothing(),
-                     ChildThreadImpl::Options::Builder()
-                         .InBrowserProcess(params)
-                         .ConnectToBrowser(true)
-                         .ExposesInterfacesToBrowser()
-                         .Build(),
+                     GetOptions(&params),
                      std::move(gpu_init)) {}
 
 GpuChildThread::GpuChildThread(base::RepeatingClosure quit_closure,
@@ -150,14 +147,6 @@ void GpuChildThread::Init(const base::Time& process_start_time) {
 
 bool GpuChildThread::in_process_gpu() const {
   return viz_main_.gpu_service()->gpu_info().in_process_gpu;
-}
-
-bool GpuChildThread::Send(IPC::Message* msg) {
-  // The GPU process must never send a synchronous IPC message to the browser
-  // process. This could result in deadlock.
-  DCHECK(!msg->is_sync());
-
-  return ChildThreadImpl::Send(msg);
 }
 
 void GpuChildThread::OnInitializationFailed() {

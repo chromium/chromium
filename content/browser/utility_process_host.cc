@@ -94,13 +94,6 @@ base::WeakPtr<UtilityProcessHost> UtilityProcessHost::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-bool UtilityProcessHost::Send(IPC::Message* message) {
-  if (!StartProcess())
-    return false;
-
-  return process_->Send(message);
-}
-
 void UtilityProcessHost::SetSandboxType(
     sandbox::policy::SandboxType sandbox_type) {
   sandbox_type_ = sandbox_type;
@@ -339,10 +332,6 @@ bool UtilityProcessHost::StartProcess() {
                                        GetV8SnapshotFilesToPreload(), true);
   }
 
-  return true;
-}
-
-bool UtilityProcessHost::OnMessageReceived(const IPC::Message& message) {
   return true;
 }
 
