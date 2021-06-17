@@ -13,6 +13,7 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.blink.mojom.AuthenticatorStatus;
 import org.chromium.content_public.browser.GlobalFrameRoutingId;
+import org.chromium.content_public.browser.LifecycleState;
 import org.chromium.content_public.browser.PermissionsPolicyFeature;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.mojo.bindings.Interface;
@@ -197,6 +198,14 @@ public class RenderFrameHostImpl implements RenderFrameHost {
         return mRenderFrameHostId;
     }
 
+    @Override
+    @LifecycleState
+    public int getLifecycleState() {
+        if (mNativeRenderFrameHostAndroid == 0) return LifecycleState.PENDING_DELETION;
+        return RenderFrameHostImplJni.get().getLifecycleState(
+                mNativeRenderFrameHostAndroid, RenderFrameHostImpl.this);
+    }
+
     @NativeMethods
     interface Natives {
         GURL getLastCommittedURL(long nativeRenderFrameHostAndroid, RenderFrameHostImpl caller);
@@ -221,5 +230,6 @@ public class RenderFrameHostImpl implements RenderFrameHost {
                 RenderFrameHostImpl caller, String relyingPartyId, Origin effectiveOrigin);
         int performMakeCredentialWebAuthSecurityChecks(long nativeRenderFrameHostAndroid,
                 RenderFrameHostImpl caller, String relyingPartyId, Origin effectiveOrigin);
+        int getLifecycleState(long nativeRenderFrameHostAndroid, RenderFrameHostImpl caller);
     }
 }

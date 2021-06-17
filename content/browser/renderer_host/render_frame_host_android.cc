@@ -208,4 +208,10 @@ jint RenderFrameHostAndroid::PerformMakeCredentialWebAuthSecurityChecks(
           ConvertJavaStringToUTF8(env, relying_party_id), origin));
 }
 
+jint RenderFrameHostAndroid::GetLifecycleState(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>&) const {
+  return static_cast<jint>(render_frame_host_->GetLifecycleState());
+}
+
 }  // namespace content

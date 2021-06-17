@@ -72,7 +72,7 @@ public class PaymentHandlerToolbarMediatorTest {
                 .getSecurityIconContentDescription(Mockito.anyInt());
 
         NavigationHandle navigation = Mockito.mock(NavigationHandle.class);
-        Mockito.when(navigation.isInMainFrame()).thenReturn(true);
+        Mockito.when(navigation.isInPrimaryMainFrame()).thenReturn(true);
         Mockito.when(navigation.isSameDocument()).thenReturn(false);
 
         mMediator.didStartNavigation(navigation);

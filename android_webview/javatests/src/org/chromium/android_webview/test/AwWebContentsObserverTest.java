@@ -17,6 +17,8 @@ import org.junit.runner.RunWith;
 import org.chromium.android_webview.AwContentsStatics;
 import org.chromium.android_webview.AwWebContentsObserver;
 import org.chromium.base.test.util.Feature;
+import org.chromium.content_public.browser.GlobalFrameRoutingId;
+import org.chromium.content_public.browser.LifecycleState;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
 import org.chromium.ui.base.PageTransition;
@@ -58,14 +60,15 @@ public class AwWebContentsObserverTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testOnPageFinished() throws Throwable {
-        int frameId = 0;
+        GlobalFrameRoutingId frameId = new GlobalFrameRoutingId(-1, -1);
         boolean mainFrame = true;
         boolean subFrame = false;
         final TestCallbackHelperContainer.OnPageFinishedHelper onPageFinishedHelper =
                 mContentsClient.getOnPageFinishedHelper();
 
         int callCount = onPageFinishedHelper.getCallCount();
-        mWebContentsObserver.didFinishLoad(frameId, mExampleURL, true, mainFrame);
+        mWebContentsObserver.didFinishLoad(
+                frameId, mExampleURL, true, mainFrame, LifecycleState.ACTIVE);
         mWebContentsObserver.didStopLoading(mExampleURL, true);
         onPageFinishedHelper.waitForCallback(callCount);
         Assert.assertEquals("onPageFinished should be called for main frame navigations.",
@@ -78,8 +81,10 @@ public class AwWebContentsObserverTest {
         // have got only one callback, and that its URL is from the last call. Since
         // callbacks are serialized, that means we didn't have a callback for the first call.
         callCount = onPageFinishedHelper.getCallCount();
-        mWebContentsObserver.didFinishLoad(frameId, mExampleURL, true, subFrame);
-        mWebContentsObserver.didFinishLoad(frameId, mSyncURL, true, mainFrame);
+        mWebContentsObserver.didFinishLoad(
+                frameId, mExampleURL, true, subFrame, LifecycleState.ACTIVE);
+        mWebContentsObserver.didFinishLoad(
+                frameId, mSyncURL, true, mainFrame, LifecycleState.ACTIVE);
         mWebContentsObserver.didStopLoading(mSyncURL, true);
         onPageFinishedHelper.waitForCallback(callCount);
         Assert.assertEquals("onPageFinished should only be called for the main frame.",
@@ -88,8 +93,10 @@ public class AwWebContentsObserverTest {
                 mSyncURL.getSpec(), onPageFinishedHelper.getUrl());
 
         callCount = onPageFinishedHelper.getCallCount();
-        mWebContentsObserver.didFinishLoad(frameId, mUnreachableWebDataUrl, false, mainFrame);
-        mWebContentsObserver.didFinishLoad(frameId, mSyncURL, true, mainFrame);
+        mWebContentsObserver.didFinishLoad(
+                frameId, mUnreachableWebDataUrl, false, mainFrame, LifecycleState.ACTIVE);
+        mWebContentsObserver.didFinishLoad(
+                frameId, mSyncURL, true, mainFrame, LifecycleState.ACTIVE);
         mWebContentsObserver.didStopLoading(mSyncURL, true);
         onPageFinishedHelper.waitForCallback(callCount);
         Assert.assertEquals("onPageFinished should not be called for the error url.", callCount + 1,
@@ -119,7 +126,8 @@ public class AwWebContentsObserverTest {
         callCount = onPageFinishedHelper.getCallCount();
         simulateNavigation(mExampleURL, isInMainFrame, isErrorPage, !isSameDocument,
                 !fragmentNavigation, !isRendererInitiated, PageTransition.TYPED);
-        mWebContentsObserver.didFinishLoad(frameId, mSyncURL, true, mainFrame);
+        mWebContentsObserver.didFinishLoad(
+                frameId, mSyncURL, true, mainFrame, LifecycleState.ACTIVE);
         mWebContentsObserver.didStopLoading(mSyncURL, true);
         onPageFinishedHelper.waitForCallback(callCount);
         onPageFinishedHelper.waitForCallback(callCount);

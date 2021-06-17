@@ -9,6 +9,8 @@ import android.os.Handler;
 import androidx.annotation.DrawableRes;
 
 import org.chromium.components.security_state.ConnectionSecurityLevel;
+import org.chromium.content_public.browser.GlobalFrameRoutingId;
+import org.chromium.content_public.browser.LifecycleState;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
@@ -71,7 +73,9 @@ import org.chromium.url.GURL;
 
     // WebContentsObserver:
     @Override
-    public void didFinishLoad(long frameId, GURL url, boolean isKnownValid, boolean isMainFrame) {
+    public void didFinishLoad(GlobalFrameRoutingId rfhId, GURL url, boolean isKnownValid,
+            boolean isMainFrame, @LifecycleState int rfhLifecycleState) {
+        if (rfhLifecycleState != LifecycleState.ACTIVE) return;
         // Hides the Progress Bar after a delay to make sure it is rendered for at least
         // a few frames, otherwise its completion won't be visually noticeable.
         mHideProgressBarHandler = new Handler();
@@ -82,20 +86,22 @@ import org.chromium.url.GURL;
     }
 
     @Override
-    public void didFailLoad(boolean isMainFrame, int errorCode, GURL failingUrl) {
+    public void didFailLoad(boolean isMainFrame, int errorCode, GURL failingUrl,
+            @LifecycleState int frameLifecycleState) {
+        if (frameLifecycleState != LifecycleState.ACTIVE) return;
         mModel.set(PaymentHandlerToolbarProperties.PROGRESS_VISIBLE, false);
     }
 
     @Override
     public void didFinishNavigation(NavigationHandle navigation) {
-        if (!navigation.hasCommitted() || !navigation.isInMainFrame()) return;
+        if (!navigation.hasCommitted() || !navigation.isInPrimaryMainFrame()) return;
         mModel.set(PaymentHandlerToolbarProperties.URL, mWebContentsRef.getVisibleUrl());
         mModel.set(PaymentHandlerToolbarProperties.PROGRESS_VISIBLE, false);
     }
 
     @Override
     public void didStartNavigation(NavigationHandle navigation) {
-        if (!navigation.isInMainFrame() || navigation.isSameDocument()) return;
+        if (!navigation.isInPrimaryMainFrame() || navigation.isSameDocument()) return;
         setSecurityState(ConnectionSecurityLevel.NONE);
     }
 

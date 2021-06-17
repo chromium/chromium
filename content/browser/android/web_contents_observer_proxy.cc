@@ -131,7 +131,8 @@ void WebContentsObserverProxy::DidFailLoad(RenderFrameHost* render_frame_host,
   JNIEnv* env = AttachCurrentThread();
   Java_WebContentsObserverProxy_didFailLoad(
       env, java_observer_, !render_frame_host->GetParent(), error_code,
-      url::GURLAndroid::FromNativeGURL(env, validated_url));
+      url::GURLAndroid::FromNativeGURL(env, validated_url),
+      static_cast<jint>(render_frame_host->GetLifecycleState()));
 }
 
 void WebContentsObserverProxy::DidChangeVisibleSecurityState() {
@@ -178,17 +179,20 @@ void WebContentsObserverProxy::DidFinishLoad(RenderFrameHost* render_frame_host,
   bool assume_valid = SetToBaseURLForDataURLIfNeeded(&url);
 
   Java_WebContentsObserverProxy_didFinishLoad(
-      env, java_observer_, render_frame_host->GetRoutingID(),
+      env, java_observer_, render_frame_host->GetProcess()->GetID(),
+      render_frame_host->GetRoutingID(),
       url::GURLAndroid::FromNativeGURL(env, url), assume_valid,
-      !render_frame_host->GetParent());
+      !render_frame_host->GetParent(),
+      static_cast<jint>(render_frame_host->GetLifecycleState()));
 }
 
 void WebContentsObserverProxy::DOMContentLoaded(
     RenderFrameHost* render_frame_host) {
   JNIEnv* env = AttachCurrentThread();
   Java_WebContentsObserverProxy_documentLoadedInFrame(
-      env, java_observer_, render_frame_host->GetRoutingID(),
-      !render_frame_host->GetParent());
+      env, java_observer_, render_frame_host->GetProcess()->GetID(),
+      render_frame_host->GetRoutingID(), !render_frame_host->GetParent(),
+      static_cast<jint>(render_frame_host->GetLifecycleState()));
 }
 
 void WebContentsObserverProxy::NavigationEntryCommitted(

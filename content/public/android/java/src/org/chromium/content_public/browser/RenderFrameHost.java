@@ -130,4 +130,15 @@ public interface RenderFrameHost {
      * @return An identifier for this RenderFrameHost.
      */
     GlobalFrameRoutingId getGlobalFrameRoutingId();
+
+    /**
+     * Returns the LifecycleState associated with this RenderFrameHost.
+     * Features that display UI to the user (or cross document/tab boundary in
+     * general, e.g. when using WebContents::FromRenderFrameHost) should first
+     * check whether the RenderFrameHost is in the appropriate lifecycle state.
+     *
+     * @return The LifecycleState associated with this RenderFrameHost.
+     */
+    @LifecycleState
+    int getLifecycleState();
 }

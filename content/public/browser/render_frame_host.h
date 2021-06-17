@@ -558,6 +558,9 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // state): this is a content-internal implementation detail that is planned to
   // be eventually removed, and //content embedders shouldn't rely on their
   // existence.
+  // A Java counterpart will be generated for this enum.
+  // GENERATED_JAVA_ENUM_PACKAGE: (
+  //   org.chromium.content_public.browser)
   enum class LifecycleState {
     // RenderFrameHost is waiting for an acknowledgment from the renderer to
     // to commit a cross-RenderFrameHost navigation and swap in this

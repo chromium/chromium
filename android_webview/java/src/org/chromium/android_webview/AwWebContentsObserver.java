@@ -6,6 +6,8 @@ package org.chromium.android_webview;
 
 import org.chromium.android_webview.AwContents.VisualStateCallback;
 import org.chromium.base.task.PostTask;
+import org.chromium.content_public.browser.GlobalFrameRoutingId;
+import org.chromium.content_public.browser.LifecycleState;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
@@ -53,7 +55,9 @@ public class AwWebContentsObserver extends WebContentsObserver {
     }
 
     @Override
-    public void didFinishLoad(long frameId, GURL url, boolean isKnownValid, boolean isMainFrame) {
+    public void didFinishLoad(GlobalFrameRoutingId rfhId, GURL url, boolean isKnownValid,
+            boolean isMainFrame, @LifecycleState int rfhLifecycleState) {
+        if (rfhLifecycleState != LifecycleState.ACTIVE) return;
         String validatedUrl = isKnownValid ? url.getSpec() : url.getPossiblyInvalidSpec();
         if (isMainFrame && getClientIfNeedToFireCallback(validatedUrl) != null) {
             mLastDidFinishLoadUrl = validatedUrl;
@@ -79,14 +83,21 @@ public class AwWebContentsObserver extends WebContentsObserver {
     }
 
     @Override
-    public void didFailLoad(boolean isMainFrame, @NetError int errorCode, GURL failingGurl) {
+    public void didFailLoad(boolean isMainFrame, @NetError int errorCode, GURL failingGurl,
+            @LifecycleState int frameLifecycleState) {
+        processFailedLoad(isMainFrame && frameLifecycleState == LifecycleState.ACTIVE, errorCode,
+                failingGurl);
+    }
+
+    private void processFailedLoad(
+            boolean isPrimaryMainFrame, @NetError int errorCode, GURL failingGurl) {
         String failingUrl = failingGurl.getPossiblyInvalidSpec();
         AwContentsClient client = mAwContentsClient.get();
         if (client == null) return;
         String unreachableWebDataUrl = AwContentsStatics.getUnreachableWebDataUrl();
         boolean isErrorUrl =
                 unreachableWebDataUrl != null && unreachableWebDataUrl.equals(failingUrl);
-        if (isMainFrame && !isErrorUrl) {
+        if (isPrimaryMainFrame && !isErrorUrl) {
             if (errorCode == NetError.ERR_ABORTED) {
                 // Need to call onPageFinished for backwards compatibility with the classic webview.
                 // See also AwContentsClientBridge.onReceivedError.
@@ -113,14 +124,15 @@ public class AwWebContentsObserver extends WebContentsObserver {
     public void didFinishNavigation(NavigationHandle navigation) {
         String url = navigation.getUrl().getPossiblyInvalidSpec();
         if (navigation.errorCode() != NetError.OK && !navigation.isDownload()) {
-            didFailLoad(navigation.isInMainFrame(), navigation.errorCode(), navigation.getUrl());
+            processFailedLoad(
+                    navigation.isInPrimaryMainFrame(), navigation.errorCode(), navigation.getUrl());
         }
 
         if (!navigation.hasCommitted()) return;
 
         mCommittedNavigation = true;
 
-        if (!navigation.isInMainFrame()) return;
+        if (!navigation.isInPrimaryMainFrame()) return;
 
         AwContentsClient client = mAwContentsClient.get();
         if (client != null) {

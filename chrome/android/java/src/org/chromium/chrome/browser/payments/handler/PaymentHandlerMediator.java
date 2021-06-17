@@ -24,6 +24,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Shee
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.payments.SslValidityChecker;
+import org.chromium.content_public.browser.LifecycleState;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
@@ -247,7 +248,7 @@ import java.lang.annotation.RetentionPolicy;
         // Checking uncommitted navigations (e.g., Network errors) is unnecessary because
         // they have no chance to be loaded nor rendered.
         if (navigationHandle.isSameDocument() || !navigationHandle.hasCommitted()
-                || !navigationHandle.isInMainFrame()) {
+                || !navigationHandle.isInPrimaryMainFrame()) {
             return;
         }
         closeIfInsecure();
@@ -274,8 +275,9 @@ import java.lang.annotation.RetentionPolicy;
 
     // Implement WebContentsObserver:
     @Override
-    public void didFailLoad(boolean isMainFrame, int errorCode, GURL failingUrl) {
-        if (!isMainFrame) return;
+    public void didFailLoad(boolean isMainFrame, int errorCode, GURL failingUrl,
+            @LifecycleState int rfhLifecycleState) {
+        if (rfhLifecycleState != LifecycleState.ACTIVE || !isMainFrame) return;
         mHandler.post(() -> {
             mCloseReason = CloseReason.FAIL_LOAD;
             mHider.run();

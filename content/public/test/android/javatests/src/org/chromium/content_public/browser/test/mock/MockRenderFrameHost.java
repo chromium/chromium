@@ -6,6 +6,7 @@ package org.chromium.content_public.browser.test.mock;
 
 import org.chromium.base.Callback;
 import org.chromium.content_public.browser.GlobalFrameRoutingId;
+import org.chromium.content_public.browser.LifecycleState;
 import org.chromium.content_public.browser.PermissionsPolicyFeature;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.mojo.bindings.Interface;
@@ -81,5 +82,10 @@ public class MockRenderFrameHost implements RenderFrameHost {
     @Override
     public GlobalFrameRoutingId getGlobalFrameRoutingId() {
         return new GlobalFrameRoutingId(-1, -1);
+    }
+
+    @Override
+    public int getLifecycleState() {
+        return LifecycleState.ACTIVE;
     }
 }
