@@ -689,6 +689,13 @@ TEST_F(HistoryClustersServiceTest, DoesQueryMatchAnyCluster) {
 
   // Now the query should match the populated cache.
   EXPECT_TRUE(history_clusters_service_->DoesQueryMatchAnyCluster("appl"));
+
+  // Also verify that queries that are too short don't match clusters.
+  EXPECT_FALSE(history_clusters_service_->DoesQueryMatchAnyCluster("ap"));
+
+  // But verify that it's okay to accept a short second query word.
+  // We need this to prevent flicker as the user types in the omnibox.
+  EXPECT_TRUE(history_clusters_service_->DoesQueryMatchAnyCluster("appl ap"));
 }
 
 }  // namespace

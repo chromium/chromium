@@ -48,6 +48,10 @@ void AttachHistoryClustersActions(
           GURL(base::StringPrintf(
               "chrome://memories/?q=%s",
               net::EscapeQueryParamValue(query, /*use_plus=*/false).c_str())));
+
+      // Only ever attach one action (to the highest match), to not overwhelm
+      // the user with multiple "Resume Journey" action buttons.
+      return;
     }
   }
 #endif
