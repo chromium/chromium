@@ -104273,19 +104273,6 @@
         {}
        ]
       ],
-      "positioned-grid-items-019.html": [
-       "b0aeac3a1dcaa6637a0e20481e6029ca2354c9e6",
-       [
-        null,
-        [
-         [
-          "/css/css-grid/abspos/positioned-grid-items-019-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
       "positioned-grid-items-020.html": [
        "baddf0bed62feb28921a56bf8565a071921801fd",
        [
@@ -104306,19 +104293,6 @@
         [
          [
           "/css/reference/ref-filled-green-100px-square.xht",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "positioned-grid-items-022.html": [
-       "df35b546f8fa9cd720b781d6d429a3322217154b",
-       [
-        null,
-        [
-         [
-          "/css/css-grid/abspos/positioned-grid-items-022-ref.html",
           "=="
          ]
         ],
@@ -110980,283 +110954,6 @@
        {}
       ]
      ]
-    },
-    "css-highlight-api": {
-     "painting": {
-      "custom-highlight-painting-001.html": [
-       "ede3383c6e3195d6373578c09f8140fd741b1487",
-       [
-        null,
-        [
-         [
-          "/css/css-highlight-api/painting/custom-highlight-painting-001-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "custom-highlight-painting-002.html": [
-       "0926c3564b126f398b34811469f9a72c09197c6a",
-       [
-        null,
-        [
-         [
-          "/css/css-highlight-api/painting/custom-highlight-painting-002-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "custom-highlight-painting-003.html": [
-       "972a0e67dd93256e3adce0477c260160a510bd0f",
-       [
-        null,
-        [
-         [
-          "/css/css-highlight-api/painting/custom-highlight-painting-003-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "custom-highlight-painting-004-2.html": [
-       "accbd8b8515204aed900909b2cd2a804496908b7",
-       [
-        null,
-        [
-         [
-          "/css/css-highlight-api/painting/custom-highlight-painting-004-2-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "custom-highlight-painting-004.html": [
-       "4ca7979279c034438e780d8724ba49dbff5c5f58",
-       [
-        null,
-        [
-         [
-          "/css/css-highlight-api/painting/custom-highlight-painting-004-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "custom-highlight-painting-005.html": [
-       "9209d94e22a02f0cc8b717d9ce842e870de58fc1",
-       [
-        null,
-        [
-         [
-          "/css/css-highlight-api/painting/custom-highlight-painting-001-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "custom-highlight-painting-006.html": [
-       "4a9e88bc378a15404e9e66cd7ce15bbd7200ac58",
-       [
-        null,
-        [
-         [
-          "/css/css-highlight-api/painting/custom-highlight-painting-001-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "custom-highlight-painting-007.html": [
-       "0e58131cd7f2ff37499cd6be5ca733925bc50a7f",
-       [
-        null,
-        [
-         [
-          "/css/css-highlight-api/painting/custom-highlight-painting-001-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "custom-highlight-painting-008.html": [
-       "68b4b8c8a946349875e908f892a7ec1541b4edb7",
-       [
-        null,
-        [
-         [
-          "/css/css-highlight-api/painting/custom-highlight-painting-001-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "custom-highlight-painting-009.html": [
-       "9214c16f7b0e844b417a55fb10c0e9f4c2830fdb",
-       [
-        null,
-        [
-         [
-          "/css/css-highlight-api/painting/custom-highlight-painting-001-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "custom-highlight-painting-010.html": [
-       "ca5755d2d973a10c56fc316bdb78dadcb31cad87",
-       [
-        null,
-        [
-         [
-          "/css/css-highlight-api/painting/custom-highlight-painting-001-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "custom-highlight-painting-011.html": [
-       "f37680eb30ccb60a50fd59ad1069e05f9d491d40",
-       [
-        null,
-        [
-         [
-          "/css/css-highlight-api/painting/custom-highlight-painting-001-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "custom-highlight-painting-012.html": [
-       "eb3cbea0bfe587904108edbcc32a7408bb2d77b1",
-       [
-        null,
-        [
-         [
-          "/css/css-highlight-api/painting/custom-highlight-painting-001-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "custom-highlight-painting-013.html": [
-       "6bb21bf4b9e34dd470fd0f83c8f9406ba746cf30",
-       [
-        null,
-        [
-         [
-          "/css/css-highlight-api/painting/custom-highlight-painting-001-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "custom-highlight-painting-below-grammar.html": [
-       "f6b4839a72e457623100910d7236ad2e78e24083",
-       [
-        null,
-        [
-         [
-          "/css/css-highlight-api/painting/custom-highlight-painting-below-grammar-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "custom-highlight-painting-below-target-text.html": [
-       "99e7af72fddf6749a444a6496230a47ddfed201d",
-       [
-        null,
-        [
-         [
-          "/css/css-highlight-api/painting/custom-highlight-painting-below-target-text-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "custom-highlight-painting-prioritization-001.html": [
-       "88c7716ad02a80d8fb5914e8f5ed9c47d4588f6a",
-       [
-        null,
-        [
-         [
-          "/css/css-highlight-api/painting/custom-highlight-painting-001-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "custom-highlight-painting-prioritization-002.html": [
-       "9c9b05c37592fa17f664348877033d2ccb35b2f3",
-       [
-        null,
-        [
-         [
-          "/css/css-highlight-api/painting/custom-highlight-painting-001-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "custom-highlight-painting-staticrange-001.html": [
-       "1d0a6f921caf5af18da6b8ef02edc3836c3137c0",
-       [
-        null,
-        [
-         [
-          "/css/css-highlight-api/painting/custom-highlight-painting-staticrange-001-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "custom-highlight-painting-staticrange-002.html": [
-       "ed280f7476ae3ef2259fac0fb2f247273989e0b8",
-       [
-        null,
-        [
-         [
-          "/css/css-highlight-api/painting/custom-highlight-painting-001-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "custom-highlight-painting-staticrange-003.html": [
-       "e621ca3c378e27fb8c82301c3faf8d76a2a06563",
-       [
-        null,
-        [
-         [
-          "/css/css-highlight-api/painting/custom-highlight-painting-001-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ]
-     }
     },
     "css-images": {
      "color-stop-currentcolor.html": [
@@ -160129,7 +159826,7 @@
       ]
      ],
      "preserve3d-and-filter-with-perspective.html": [
-      "240ce6ec33037de7ab9cfd30b7fe676a454f1d29",
+      "8c0b0057cb9ccfc600ab4de382526d74e993f668",
       [
        null,
        [
@@ -197733,21 +197430,6 @@
       }
      },
      "interactive-elements": {
-      "the-details-element": {
-       "details-add-summary.html": [
-        "1b0062e43aaec84a5bafc096e759c96ca1240876",
-        [
-         null,
-         [
-          [
-           "/html/semantics/interactive-elements/the-details-element/details-add-summary-ref.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ]
-      },
       "the-popup-element": {
        "popup-hidden-display.tentative.html": [
         "b313f06f664d35ca86e98a2361c04e329964e02a",
@@ -223107,12 +222789,6 @@
        []
       ]
      },
-     "parsing": {
-      "contain-computed-expected.txt": [
-       "659e36521dc5cfb9c947a722337ebac47a38438a",
-       []
-      ]
-     },
      "reference": {
       "contain-baseline-ref.html": [
        "1fdecb1c33149af52c48c105bce8ad91904bad44",
@@ -234456,10 +234132,6 @@
        "865b3d83a2f3ad065acbf9830b0c2babb85af58f",
        []
       ],
-      "positioned-grid-items-022-ref.html": [
-       "0b2cfdac07a05b0ad2b19887c282cece4eea8a1b",
-       []
-      ],
       "positioned-grid-items-negative-indices-001-ref.html": [
        "2bbc3a95136e0e61191ec10fe5ff1ca901e799b9",
        []
@@ -235540,41 +235212,7 @@
      "idlharness.window-expected.txt": [
       "0d86946da77d668a4cd8c5282420afca11a64812",
       []
-     ],
-     "painting": {
-      "custom-highlight-painting-001-ref.html": [
-       "b058789f6de04c017dec9a37d8955485dcd6b7e9",
-       []
-      ],
-      "custom-highlight-painting-002-ref.html": [
-       "d063bbd497eba2e0158401360bc16f3475cad81b",
-       []
-      ],
-      "custom-highlight-painting-003-ref.html": [
-       "b2dccfa59ffbe198f21f8aec8c644ec114bdc001",
-       []
-      ],
-      "custom-highlight-painting-004-2-ref.html": [
-       "4ad1de63dfc82cfe2ef0c73364821f094e7c33b0",
-       []
-      ],
-      "custom-highlight-painting-004-ref.html": [
-       "8cb5b69d98c6a82e7385f413a57c604e409ccd88",
-       []
-      ],
-      "custom-highlight-painting-below-grammar-ref.html": [
-       "d660daf7c745efeb663e652d83a6e92c9d6e39d0",
-       []
-      ],
-      "custom-highlight-painting-below-target-text-ref.html": [
-       "70d69263645319162dc0bb0437fd6db5f5b37be7",
-       []
-      ],
-      "custom-highlight-painting-staticrange-001-ref.html": [
-       "a89d86dc819c3235846a83a49b58755459098ace",
-       []
-      ]
-     }
+     ]
     },
     "css-images": {
      "META.yml": [
@@ -246292,7 +245930,7 @@
       []
      ],
      "preserve3d-and-filter-with-perspective-ref.html": [
-      "590085f9c08c13ede327201768fdf91d284ee617",
+      "93fb41a70cb11462a293ddff1d837276f2e59c97",
       []
      ],
      "preserve3d-button-ref.html": [
@@ -273069,10 +272707,6 @@
        }
       },
       "the-details-element": {
-       "details-add-summary-ref.html": [
-        "14f2be232fb4aba0afb4542213331995fcb12575",
-        []
-       ],
        "toggleEvent-expected.txt": [
         "5c808aa0a050a4ad866e65445b3fbd7c6807903d",
         []
@@ -329750,7 +329384,7 @@
      ],
      "parsing": {
       "contain-computed.html": [
-       "00b0cb10142a8566f26d670e0391197aa36f1e2d",
+       "f25db353a077761d0f2f65beb2cc735c6c0496ff",
        [
         null,
         {}
@@ -418859,13 +418493,6 @@
        ]
       ],
       "the-details-element": {
-       "closed-details-layout-apis.tentative.html": [
-        "1936cdb67d8443ba43629777c2490c59418caaa2",
-        [
-         null,
-         {}
-        ]
-       ],
        "details.html": [
         "5ed14c53afc9371275917d460f5b9638ab9a091e",
         [
@@ -517585,6 +517212,13 @@
      "abspos": {
       "absolute-positioning-grid-container-parent-002.html": [
        "22c58c9c806dcc78afc4913638ad599e74a4c2f8",
+       [
+        null,
+        {}
+       ]
+      ],
+      "positioned-grid-items-019.html": [
+       "b26729f1d187e20132c25f6a6dad2261571a70d2",
        [
         null,
         {}
