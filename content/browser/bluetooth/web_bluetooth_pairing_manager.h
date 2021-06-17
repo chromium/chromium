@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
 #include "device/bluetooth/bluetooth_device.h"
@@ -49,11 +50,13 @@ class CONTENT_EXPORT WebBluetoothPairingManager
  private:
   void OnReadCharacteristicValuePairSuccess(
       std::string characteristic_instance_id,
+      blink::WebBluetoothDeviceId device_id,
       blink::mojom::WebBluetoothService::RemoteCharacteristicReadValueCallback
           read_callback);
 
   void OnReadCharacteristicValuePairFailure(
       std::string characteristic_instance_id,
+      blink::WebBluetoothDeviceId device_id,
       int num_pair_attempts,
       blink::mojom::WebBluetoothService::RemoteCharacteristicReadValueCallback
           read_callback,
@@ -70,6 +73,9 @@ class CONTENT_EXPORT WebBluetoothPairingManager
   void ConfirmPasskey(device::BluetoothDevice* device,
                       uint32_t passkey) override;
   void AuthorizePairing(device::BluetoothDevice* device) override;
+
+  // The device IDs currently in the pairing process.
+  base::flat_set<blink::WebBluetoothDeviceId> pending_pair_device_ids_;
 
   // The purpose of WebBluetoothPairingManagerDelegate is to support
   // this class. Currently the WebBluetoothPairingManagerDelegate implementation

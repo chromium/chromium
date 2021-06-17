@@ -2346,6 +2346,16 @@ blink::WebBluetoothDeviceId WebBluetoothServiceImpl::GetCharacteristicDeviceID(
   return device_id;
 }
 
+BluetoothDevice* WebBluetoothServiceImpl::GetCachedDevice(
+    const blink::WebBluetoothDeviceId& device_id) {
+  DCHECK(device_id.IsValid());
+  CacheQueryResult query_result = QueryCacheForDevice(device_id);
+  if (query_result.outcome != CacheQueryOutcome::SUCCESS)
+    return nullptr;
+
+  return query_result.device;
+}
+
 void WebBluetoothServiceImpl::PairDevice(
     const blink::WebBluetoothDeviceId& device_id,
     BluetoothDevice::PairingDelegate* pairing_delegate,
@@ -2357,14 +2367,7 @@ void WebBluetoothServiceImpl::PairDevice(
     return;
   }
 
-  CacheQueryResult query_result = QueryCacheForDevice(device_id);
-  if (query_result.outcome != CacheQueryOutcome::SUCCESS) {
-    std::move(error_callback)
-        .Run(BluetoothDevice::ConnectErrorCode::ERROR_UNKNOWN);
-    return;
-  }
-
-  BluetoothDevice* device = query_result.device;
+  BluetoothDevice* device = GetCachedDevice(device_id);
   if (!device) {
     std::move(error_callback)
         .Run(BluetoothDevice::ConnectErrorCode::ERROR_UNKNOWN);
@@ -2375,6 +2378,17 @@ void WebBluetoothServiceImpl::PairDevice(
 
   device->Pair(pairing_delegate, std::move(callback),
                std::move(error_callback));
+}
+
+void WebBluetoothServiceImpl::CancelPairing(
+    const blink::WebBluetoothDeviceId& device_id) {
+  DCHECK(device_id.IsValid());
+
+  BluetoothDevice* device = GetCachedDevice(device_id);
+  if (!device)
+    return;
+
+  device->CancelPairing();
 }
 
 }  // namespace content

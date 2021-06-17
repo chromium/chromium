@@ -33,6 +33,10 @@ class WebBluetoothPairingManagerDelegate {
       base::OnceClosure callback,
       device::BluetoothDevice::ConnectErrorCallback error_callback) = 0;
 
+  // Cancels a pairing attempt to a remote device, clearing its reference to
+  // the pairing delegate.
+  virtual void CancelPairing(const blink::WebBluetoothDeviceId& device_id) = 0;
+
   // Reads the value for the characteristic identified by
   // |characteristic_instance_id|. If the value is successfully read the
   // callback will be run with WebBluetoothResult::SUCCESS and the

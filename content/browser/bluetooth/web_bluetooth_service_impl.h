@@ -355,6 +355,10 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
   CacheQueryResult QueryCacheForDevice(
       const blink::WebBluetoothDeviceId& device_id);
 
+  // Return the cached BluetoothDevice for the given |device_id|.
+  device::BluetoothDevice* GetCachedDevice(
+      const blink::WebBluetoothDeviceId& device_id);
+
   // Queries the platform cache for a Service with |service_instance_id|. Fills
   // in the |outcome| field, and |device| and |service| fields if successful.
   CacheQueryResult QueryCacheForService(const std::string& service_instance_id);
@@ -408,6 +412,7 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
       device::BluetoothDevice::PairingDelegate* pairing_delegate,
       base::OnceClosure callback,
       device::BluetoothDevice::ConnectErrorCallback error_callback) override;
+  void CancelPairing(const blink::WebBluetoothDeviceId& device_id) override;
 
   // Used to open a BluetoothChooser and start a device discovery session.
   std::unique_ptr<BluetoothDeviceChooserController> device_chooser_controller_;
