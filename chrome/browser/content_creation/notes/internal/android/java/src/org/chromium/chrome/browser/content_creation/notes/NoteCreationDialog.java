@@ -28,6 +28,7 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
+import org.chromium.ui.widget.Toast;
 
 /**
  * Dialog for the note creation.
@@ -40,6 +41,7 @@ public class NoteCreationDialog extends DialogFragment {
     private String mTitle;
     private String mSelectedText;
     private int mSelectedItemIndex;
+    private Toast mToast;
 
     interface NoteDialogObserver {
         void onViewCreated(View view);
@@ -131,9 +133,10 @@ public class NoteCreationDialog extends DialogFragment {
                 getActivity().getString(R.string.content_creation_note_template_selected,
                         model.get(NoteProperties.TEMPLATE).localizedName));
         Typeface typeface = model.get(NoteProperties.TYPEFACE);
-        TextView noteText = (TextView) parent.findViewById(R.id.text);
+        LineLimitedTextView noteText = (LineLimitedTextView) parent.findViewById(R.id.text);
         noteText.setTypeface(typeface);
         template.textStyle.apply(noteText, mSelectedText);
+        noteText.setIsEllipsizedListener(this::maybeShowToast);
 
         if (template.contentBackground != null) {
             template.contentBackground.apply(noteText);
@@ -169,5 +172,14 @@ public class NoteCreationDialog extends DialogFragment {
         }
         itemView.setPadding(paddingLeft, itemView.getPaddingTop(), itemView.getPaddingRight(),
                 itemView.getPaddingBottom());
+    }
+
+    private void maybeShowToast() {
+        if (mToast != null) return;
+
+        String toastMessage =
+                getActivity().getString(R.string.content_creation_note_shortened_message);
+        mToast = Toast.makeText(getActivity(), toastMessage, Toast.LENGTH_LONG);
+        mToast.show();
     }
 }

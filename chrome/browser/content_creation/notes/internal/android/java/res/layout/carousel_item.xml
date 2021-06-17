@@ -25,17 +25,19 @@
             android:importantForAccessibility="yes">
 
             <!-- Selected text -->
-            <TextView
+            <org.chromium.chrome.browser.content_creation.notes.LineLimitedTextView
                 android:id="@+id/text"
                 android:layout_width="240dp"
                 android:layout_height="200dp"
-                android:maxLines="6"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="20dp"
                 android:layout_marginEnd="20dp"
                 android:layout_marginBottom="20dp"
                 android:background="@drawable/note_background_outline"
-                android:textAppearance="@style/TextAppearance.Headline"
+                android:autoSizeTextType="uniform"
+                android:autoSizeMinTextSize="@dimen/min_text_size"
+                android:autoSizeMaxTextSize="@dimen/max_text_size"
+                android:ellipsize="end"
                 android:importantForAccessibility="no"/>
 
             <!-- Footer -->

@@ -13,6 +13,7 @@ android_library("java") {
   ]
 
   sources = [
+    "java/src/org/chromium/chrome/browser/content_creation/notes/LineLimitedTextView.java",
     "java/src/org/chromium/chrome/browser/content_creation/notes/NoteCreationCoordinatorFactory.java",
     "java/src/org/chromium/chrome/browser/content_creation/notes/NoteCreationCoordinatorImpl.java",
     "java/src/org/chromium/chrome/browser/content_creation/notes/NoteCreationDialog.java",

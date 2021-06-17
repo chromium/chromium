@@ -6,4 +6,7 @@
 <resources>
     <dimen name="note_width">280dp</dimen>
     <dimen name="note_side_padding">20dp</dimen>
+
+    <dimen name="max_text_size">26sp</dimen>
+    <dimen name="min_text_size">14sp</dimen>
 </resources>
