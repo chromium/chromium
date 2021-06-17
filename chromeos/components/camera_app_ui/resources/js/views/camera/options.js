@@ -259,8 +259,8 @@ export class Options {
     });
     // Prepended 'null' deviceId means there is no facing information to sort
     // device IDs and prefer the default one. Add it only when the app is
-    // launched (no video-device-id set).
-    if (!facings && this.videoDeviceId_ === null) {
+    // launched (no video-device-id set) and there is at least one device.
+    if (!facings && this.videoDeviceId_ === null && sorted.length > 0) {
       sorted.unshift(null);
     }
     return sorted;

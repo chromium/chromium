@@ -281,7 +281,11 @@ export class StreamManager {
   async enumerateDevices_() {
     const devices = (await navigator.mediaDevices.enumerateDevices())
                         .filter((device) => device.kind === 'videoinput');
-    if (devices.length === 0) {
+
+    const deviceType = loadTimeData.getDeviceType();
+    const shouldHaveBuiltinCamera =
+        deviceType === 'chromebook' || deviceType === 'chromebase';
+    if (devices.length === 0 && shouldHaveBuiltinCamera) {
       throw new Error('Device list empty.');
     }
     return devices;

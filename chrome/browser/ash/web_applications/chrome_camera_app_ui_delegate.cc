@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "ash/constants/devicetype.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
@@ -33,6 +34,26 @@
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "ui/gfx/native_widget_types.h"
 #include "url/gurl.h"
+
+namespace {
+
+std::string DeviceTypeToString(chromeos::DeviceType device_type) {
+  switch (device_type) {
+    case chromeos::DeviceType::kChromebase:
+      return "chromebase";
+    case chromeos::DeviceType::kChromebit:
+      return "chromebit";
+    case chromeos::DeviceType::kChromebook:
+      return "chromebook";
+    case chromeos::DeviceType::kChromebox:
+      return "chromebox";
+    case chromeos::DeviceType::kUnknown:
+    default:
+      return "unknown";
+  }
+}
+
+}  // namespace
 
 // static
 void ChromeCameraAppUIDelegate::CameraAppDialog::ShowIntent(
@@ -104,6 +125,8 @@ void ChromeCameraAppUIDelegate::PopulateLoadTimeData(
     content::WebUIDataSource* source) {
   // Add strings that can be pulled in.
   source->AddString("board_name", base::SysInfo::GetLsbReleaseBoard());
+  source->AddString("device_type",
+                    DeviceTypeToString(chromeos::GetDeviceType()));
 }
 
 bool ChromeCameraAppUIDelegate::IsMetricsAndCrashReportingEnabled() {
