@@ -1909,11 +1909,6 @@
     "expiry_milestone": 80
   },
   {
-    "name": "enable-hosted-app-quit-notification",
-    "owners": [ "ccameron" ],
-    "expiry_milestone": 77
-  },
-  {
     "name": "enable-hostname-setting",
     "owners": [ "jhawkins" ],
     "expiry_milestone": 92

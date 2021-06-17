@@ -1343,12 +1343,6 @@ const char kTabSwitcherOnReturnName[] = "Tab switcher on return";
 const char kTabSwitcherOnReturnDescription[] =
     "Enable tab switcher on return after specified time has elapsed";
 
-const char kHostedAppQuitNotificationName[] =
-    "Quit notification for hosted apps";
-const char kHostedAppQuitNotificationDescription[] =
-    "Display a notification when quitting Chrome if hosted apps are currently "
-    "running.";
-
 const char kHostedAppShimCreationName[] =
     "Creation of app shims for hosted apps on Mac";
 const char kHostedAppShimCreationDescription[] =

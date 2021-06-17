@@ -778,9 +778,6 @@ extern const char kTabSwitcherOnReturnDescription[];
 extern const char kHideShelfControlsInTabletModeName[];
 extern const char kHideShelfControlsInTabletModeDescription[];
 
-extern const char kHostedAppQuitNotificationName[];
-extern const char kHostedAppQuitNotificationDescription[];
-
 extern const char kHostedAppShimCreationName[];
 extern const char kHostedAppShimCreationDescription[];
 

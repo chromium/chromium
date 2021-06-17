@@ -651,10 +651,6 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
   // sessions.
   if (!browser_shutdown::IsTryingToQuit() && !isPoweringOff &&
       _quitWithAppsController.get() && !_quitWithAppsController->ShouldQuit()) {
-    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-            switches::kHostedAppQuitNotification)) {
-      return NO;
-    }
 
     chrome::OnClosingAllBrowsers(true);
     // This will close all browser sessions.

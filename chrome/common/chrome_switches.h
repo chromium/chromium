@@ -220,7 +220,6 @@ extern const char kWmClass[];
 extern const char kAppsKeepChromeAliveInTests[];
 extern const char kDisableHostedAppShimCreation[];
 extern const char kEnableUserMetrics[];
-extern const char kHostedAppQuitNotification[];
 extern const char kMetricsClientID[];
 extern const char kRelauncherProcess[];
 extern const char kRelauncherProcessDMGDevice[];

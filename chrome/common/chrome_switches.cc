@@ -703,10 +703,6 @@ const char kDisableHostedAppShimCreation[] = "disable-hosted-app-shim-creation";
 // Enable user metrics from within the installer.
 const char kEnableUserMetrics[] = "enable-user-metrics";
 
-// Shows a notification when quitting Chrome with hosted apps running. Default
-// behavior is to also quit all hosted apps.
-const char kHostedAppQuitNotification[] = "enable-hosted-app-quit-notification";
-
 // This is how the metrics client ID is passed from the browser process to its
 // children. With Crashpad, the metrics client ID is distinct from the crash
 // client ID.

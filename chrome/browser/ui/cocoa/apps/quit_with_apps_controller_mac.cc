@@ -56,21 +56,16 @@ void CloseNotification(Profile* profile) {
 const char QuitWithAppsController::kQuitWithAppsNotificationID[] =
     "quit-with-apps";
 
-QuitWithAppsController::QuitWithAppsController()
-    : hosted_app_quit_notification_(
-          base::CommandLine::ForCurrentProcess()->HasSwitch(
-              switches::kHostedAppQuitNotification)) {
+QuitWithAppsController::QuitWithAppsController() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   message_center::ButtonInfo quit_apps_button_info(
       l10n_util::GetStringUTF16(IDS_QUIT_WITH_APPS_QUIT_LABEL));
   message_center::RichNotificationData rich_notification_data;
   rich_notification_data.buttons.push_back(quit_apps_button_info);
-  if (!hosted_app_quit_notification_) {
-    message_center::ButtonInfo suppression_button_info(
-        l10n_util::GetStringUTF16(IDS_QUIT_WITH_APPS_SUPPRESSION_LABEL));
-    rich_notification_data.buttons.push_back(suppression_button_info);
-  }
+  message_center::ButtonInfo suppression_button_info(
+      l10n_util::GetStringUTF16(IDS_QUIT_WITH_APPS_SUPPRESSION_LABEL));
+  rich_notification_data.buttons.push_back(suppression_button_info);
 
   notification_ = std::make_unique<message_center::Notification>(
       message_center::NOTIFICATION_TYPE_SIMPLE, kQuitWithAppsNotificationID,
@@ -89,7 +84,7 @@ QuitWithAppsController::~QuitWithAppsController() {}
 
 void QuitWithAppsController::Close(bool by_user) {
   if (by_user)
-    suppress_for_session_ = !hosted_app_quit_notification_;
+    suppress_for_session_ = true;
 }
 
 void QuitWithAppsController::Click(
@@ -101,13 +96,8 @@ void QuitWithAppsController::Click(
     return;
 
   if (*button_index == kQuitAllAppsButtonIndex) {
-    if (hosted_app_quit_notification_) {
-      chrome::OnClosingAllBrowsers(true);
-      chrome::CloseAllBrowsers();
-    }
     AppWindowRegistryUtil::CloseAllAppWindows();
-  } else if (*button_index == kDontShowAgainButtonIndex &&
-             !hosted_app_quit_notification_) {
+  } else if (*button_index == kDontShowAgainButtonIndex) {
     g_browser_process->local_state()->SetBoolean(
         prefs::kNotifyWhenAppsKeepChromeAlive, false);
   }
@@ -129,35 +119,10 @@ bool QuitWithAppsController::ShouldQuit() {
     return true;
   }
 
-  if (hosted_app_quit_notification_) {
-    bool hosted_apps_open = false;
-    for (Browser* browser : *BrowserList::GetInstance()) {
-      if (!browser->deprecated_is_app())
-        continue;
-
-      ExtensionRegistry* registry = ExtensionRegistry::Get(browser->profile());
-      const extensions::Extension* extension = registry->GetExtensionById(
-          web_app::GetAppIdFromApplicationName(browser->app_name()),
-          ExtensionRegistry::ENABLED);
-      if (extension->is_hosted_app()) {
-        hosted_apps_open = true;
-        break;
-      }
-    }
-
-    // Quit immediately if there are no packaged app windows or hosted apps open
-    // or the confirmation has been suppressed. Ignore panels.
-    if (!AppWindowRegistryUtil::IsAppWindowVisibleInAnyProfile(
-            extensions::AppWindow::WINDOW_TYPE_DEFAULT) &&
-        !hosted_apps_open) {
-      return true;
-    }
-  } else {
-    // Quit immediately if there are no windows or the confirmation has been
-    // suppressed.
-    if (!AppWindowRegistryUtil::IsAppWindowVisibleInAnyProfile(
-            extensions::AppWindow::WINDOW_TYPE_DEFAULT))
-      return true;
+  // Quit immediately if there are no windows.
+  if (!AppWindowRegistryUtil::IsAppWindowVisibleInAnyProfile(
+          extensions::AppWindow::WINDOW_TYPE_DEFAULT)) {
+    return true;
   }
 
   // If there are browser windows, and this notification has been suppressed for
