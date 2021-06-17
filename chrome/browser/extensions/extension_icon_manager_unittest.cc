@@ -25,6 +25,7 @@
 #include "ui/base/layout.h"
 #include "ui/display/display_list.h"
 #include "ui/display/display_switches.h"
+#include "ui/display/test/scoped_screen_override.h"
 #include "ui/display/test/test_screen.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/image/image.h"
@@ -45,16 +46,17 @@ class ScopedSetDeviceScaleFactor {
         switches::kForceDeviceScaleFactor, base::StringPrintf("%3.2f", scale));
     // This has to be inited after fiddling with the command line.
     test_screen_ = std::make_unique<display::test::TestScreen>();
-    display::Screen::SetScreenInstance(test_screen_.get());
+    screen_override_ = std::make_unique<display::test::ScopedScreenOverride>(
+        test_screen_.get());
   }
 
   ~ScopedSetDeviceScaleFactor() {
     display::Display::ResetForceDeviceScaleFactorForTesting();
-    display::Screen::SetScreenInstance(nullptr);
   }
 
  private:
   std::unique_ptr<display::test::TestScreen> test_screen_;
+  std::unique_ptr<display::test::ScopedScreenOverride> screen_override_;
   base::test::ScopedCommandLine command_line_;
 
   DISALLOW_COPY_AND_ASSIGN(ScopedSetDeviceScaleFactor);
@@ -67,7 +69,7 @@ class ExtensionIconManagerTest : public testing::Test,
  public:
   ExtensionIconManagerTest() : unwaited_image_loads_(0), waiting_(false) {}
 
-  ~ExtensionIconManagerTest() override {}
+  ~ExtensionIconManagerTest() override = default;
 
   void OnImageLoaded(const std::string& extension_id) override {
     unwaited_image_loads_++;

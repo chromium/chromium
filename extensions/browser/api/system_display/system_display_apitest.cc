@@ -4,6 +4,7 @@
 
 #include <stdint.h>
 
+#include <memory>
 #include <set>
 #include <utility>
 
@@ -221,14 +222,19 @@ class SystemDisplayApiTest : public ShellApiTest {
   SystemDisplayApiTest()
       : provider_(new MockDisplayInfoProvider), screen_(new MockScreen) {}
 
-  ~SystemDisplayApiTest() override {}
+  ~SystemDisplayApiTest() override = default;
 
   void SetUpOnMainThread() override {
     ShellApiTest::SetUpOnMainThread();
-    ANNOTATE_LEAKING_OBJECT_PTR(display::Screen::GetScreen());
+    ANNOTATE_LEAKING_OBJECT_PTR(Screen::GetScreen());
     scoped_screen_override_ =
         std::make_unique<ScopedScreenOverride>(screen_.get());
     DisplayInfoProvider::InitializeForTesting(provider_.get());
+  }
+
+  void TearDownOnMainThread() override {
+    ShellApiTest::TearDownOnMainThread();
+    scoped_screen_override_.reset();
   }
 
  protected:
@@ -239,7 +245,7 @@ class SystemDisplayApiTest : public ShellApiTest {
         base::BindOnce([](absl::optional<std::string>) {}));
   }
   std::unique_ptr<MockDisplayInfoProvider> provider_;
-  std::unique_ptr<display::Screen> screen_;
+  std::unique_ptr<Screen> screen_;
   std::unique_ptr<ScopedScreenOverride> scoped_screen_override_;
 
  private:

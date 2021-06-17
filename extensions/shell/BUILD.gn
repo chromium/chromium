@@ -327,6 +327,7 @@ test("app_shell_unittests") {
     "//extensions/common/api",
     "//extensions/shell/browser/system_logs",
     "//testing/gtest",
+    "//ui/display:test_support",
     "//ui/gl:test_support",
     "//ui/platform_window",
   ]
