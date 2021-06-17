@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/paint/ng/ng_inline_box_fragment_painter.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_mathml_painter.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_table_painters.h"
+#include "third_party/blink/renderer/core/paint/ng/ng_text_combine_painter.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_text_fragment_painter.h"
 #include "third_party/blink/renderer/core/paint/object_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
@@ -468,6 +469,24 @@ void NGBoxFragmentPainter::PaintInternal(const PaintInfo& paint_info) {
   if (ShouldPaintSelfOutline(original_phase)) {
     info.phase = PaintPhase::kSelfOutlineOnly;
     PaintObject(info, paint_offset);
+  }
+
+  if (UNLIKELY(text_combine) &&
+      NGTextCombinePainter::ShouldPaint(*text_combine)) {
+    if (recorder) {
+      // Paint text decorations and emphasis marks without scaling and share.
+      DCHECK(text_combine->NeedsAffineTransformInPaint());
+      graphics_context_state_saver->Restore();
+    } else {
+      DCHECK(!text_combine->NeedsAffineTransformInPaint());
+      if (DrawingRecorder::UseCachedDrawingIfPossible(
+              paint_info.context, GetDisplayItemClient(), paint_info.phase))
+        return;
+      recorder.emplace(paint_info.context, GetDisplayItemClient(),
+                       paint_info.phase,
+                       text_combine->VisualRectForPaint(paint_offset));
+    }
+    NGTextCombinePainter::Paint(info, paint_offset, *text_combine);
   }
 
   // We paint scrollbars after we painted other things, so that the scrollbars
