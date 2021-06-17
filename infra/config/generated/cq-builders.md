@@ -61,21 +61,15 @@ These builders must pass before a CL may land that affects files outside of
 
 * [linux-ozone-rel](https://ci.chromium.org/p/chromium/builders/try/linux-ozone-rel) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+linux-ozone-rel)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+linux-ozone-rel))
 
-* [linux-rel](https://ci.chromium.org/p/chromium/builders/try/linux-rel) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+linux-rel)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+linux-rel))
-
 * [linux_chromium_asan_rel_ng](https://ci.chromium.org/p/chromium/builders/try/linux_chromium_asan_rel_ng) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+linux_chromium_asan_rel_ng)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+linux_chromium_asan_rel_ng))
 
 * [linux_chromium_compile_dbg_ng](https://ci.chromium.org/p/chromium/builders/try/linux_chromium_compile_dbg_ng) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+linux_chromium_compile_dbg_ng)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+linux_chromium_compile_dbg_ng))
 
 * [linux_chromium_tsan_rel_ng](https://ci.chromium.org/p/chromium/builders/try/linux_chromium_tsan_rel_ng) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+linux_chromium_tsan_rel_ng)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+linux_chromium_tsan_rel_ng))
 
-* [mac-rel](https://ci.chromium.org/p/chromium/builders/try/mac-rel) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+mac-rel)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+mac-rel))
-
 * [mac_chromium_compile_dbg_ng](https://ci.chromium.org/p/chromium/builders/try/mac_chromium_compile_dbg_ng) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+mac_chromium_compile_dbg_ng)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+mac_chromium_compile_dbg_ng))
 
 * [win-libfuzzer-asan-rel](https://ci.chromium.org/p/chromium/builders/try/win-libfuzzer-asan-rel) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+win-libfuzzer-asan-rel)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+win-libfuzzer-asan-rel))
-
-* [win10_chromium_x64_rel_ng](https://ci.chromium.org/p/chromium/builders/try/win10_chromium_x64_rel_ng) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+win10_chromium_x64_rel_ng)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+win10_chromium_x64_rel_ng))
 
 * [win_chromium_compile_dbg_ng](https://ci.chromium.org/p/chromium/builders/try/win_chromium_compile_dbg_ng) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+win_chromium_compile_dbg_ng)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+win_chromium_compile_dbg_ng))
 
