@@ -390,7 +390,7 @@ class CC_EXPORT ThreadedInputHandler : public InputHandler,
   // A set of elements that scroll-snapped to a new target since the last
   // begin main frame. The snap target ids of these elements will be sent to
   // the main thread in the next begin main frame.
-  base::flat_set<ElementId> updated_snapped_elements_;
+  base::flat_map<ElementId, TargetSnapAreaElementIds> updated_snapped_elements_;
 
   ElementId scroll_element_id_mouse_currently_over_;
   ElementId scroll_element_id_mouse_currently_captured_;

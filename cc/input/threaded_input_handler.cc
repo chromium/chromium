@@ -956,7 +956,8 @@ void ThreadedInputHandler::ScrollEndForSnapFling(bool did_finish) {
       scroll_node->snap_container_data.has_value()) {
     scroll_node->snap_container_data.value().SetTargetSnapAreaElementIds(
         scroll_animating_snap_target_ids_);
-    updated_snapped_elements_.insert(scroll_node->element_id);
+    updated_snapped_elements_[scroll_node->element_id] =
+        scroll_animating_snap_target_ids_;
     SetNeedsCommit();
   }
   scroll_animating_snap_target_ids_ = TargetSnapAreaElementIds();
@@ -981,7 +982,7 @@ void ThreadedInputHandler::ProcessCommitDeltas(
       InnerViewportScrollNode() ? InnerViewportScrollNode()->element_id
                                 : ElementId();
 
-  base::flat_set<ElementId> snapped_elements;
+  base::flat_map<ElementId, TargetSnapAreaElementIds> snapped_elements;
   updated_snapped_elements_.swap(snapped_elements);
 
   // Scroll commit data is stored in the scroll tree so it has its own method
@@ -1106,7 +1107,8 @@ void ThreadedInputHandler::ScrollOffsetAnimationFinished() {
   if (scroll_node && scroll_node->snap_container_data.has_value()) {
     scroll_node->snap_container_data.value().SetTargetSnapAreaElementIds(
         scroll_animating_snap_target_ids_);
-    updated_snapped_elements_.insert(scroll_node->element_id);
+    updated_snapped_elements_[scroll_node->element_id] =
+        scroll_animating_snap_target_ids_;
     SetNeedsCommit();
   }
   scroll_animating_snap_target_ids_ = TargetSnapAreaElementIds();
@@ -2074,7 +2076,7 @@ bool ThreadedInputHandler::SnapAtScrollEnd(SnapReason reason) {
     // The snap target will be set when the animation is completed.
     scroll_animating_snap_target_ids_ = snap_target_ids;
   } else if (data.SetTargetSnapAreaElementIds(snap_target_ids)) {
-    updated_snapped_elements_.insert(scroll_node->element_id);
+    updated_snapped_elements_[scroll_node->element_id] = snap_target_ids;
     SetNeedsCommit();
   }
   return did_animate;

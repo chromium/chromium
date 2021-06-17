@@ -662,9 +662,9 @@ TEST_F(TreeSynchronizerTest, SynchronizeScrollTreeScrollOffsetMap) {
 
   // Pull ScrollOffset delta for main thread, and change offset on main thread
   std::unique_ptr<CompositorCommitData> commit_data(new CompositorCommitData());
-  scroll_tree.CollectScrollDeltas(commit_data.get(), ElementId(),
-                                  settings.commit_fractional_scroll_deltas,
-                                  base::flat_set<ElementId>());
+  scroll_tree.CollectScrollDeltas(
+      commit_data.get(), ElementId(), settings.commit_fractional_scroll_deltas,
+      base::flat_map<ElementId, TargetSnapAreaElementIds>());
   host_->proxy()->SetNeedsCommit();
   host_->ApplyCompositorChanges(commit_data.get());
   EXPECT_EQ(gfx::ScrollOffset(20, 30), scroll_layer->scroll_offset());

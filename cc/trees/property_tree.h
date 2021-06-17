@@ -450,10 +450,12 @@ class CC_EXPORT ScrollTree final : public PropertyTree<ScrollNode> {
   // Collects deltas for scroll changes on the impl thread that need to be
   // reported to the main thread during the main frame. As such, should only be
   // called on the impl thread side PropertyTrees.
-  void CollectScrollDeltas(CompositorCommitData* commit_data,
-                           ElementId inner_viewport_scroll_element_id,
-                           bool use_fractional_deltas,
-                           const base::flat_set<ElementId>& snapped_elements);
+  void CollectScrollDeltas(
+      CompositorCommitData* commit_data,
+      ElementId inner_viewport_scroll_element_id,
+      bool use_fractional_deltas,
+      const base::flat_map<ElementId, TargetSnapAreaElementIds>&
+          snapped_elements);
 
   // Applies deltas sent in the previous main frame onto the impl thread state.
   // Should only be called on the impl thread side PropertyTrees.

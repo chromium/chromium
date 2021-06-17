@@ -6864,7 +6864,6 @@ crbug.com/1215575 [ Mac11.0 ] fast/peerconnection/RTCPeerConnection-sdes-gcm.htm
 crbug.com/1215584 [ Mac11.0 ] inspector-protocol/layout-fonts/lang-fallback.js [ Pass Failure ]
 
 # Fail with field trial testing config.
-crbug.com/1219767 [ Linux ] virtual/threaded-prefer-compositing/fast/scroll-snap/snap-to-target-on-layout-change.html [ Failure ]
 crbug.com/1219767 [ Linux ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-local-time-null-1.https.html [ Failure ]
 
 # Sheriff 2021-06-03
