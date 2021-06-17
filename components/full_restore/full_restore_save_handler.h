@@ -88,6 +88,12 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreSaveHandler
   // data.
   void Flush(const base::FilePath& profile_path);
 
+  // Returns true if there is a AppRestoreData for the given `profile_path`,
+  // `app_id` and `window_id`. Otherwise, returns false.
+  bool HasAppRestoreData(const base::FilePath& profile_path,
+                         const std::string& app_id,
+                         int32_t window_id);
+
   // Saves |app_launch_info| to |profile_path_to_file_handler_| for
   // |profile_path| which will be written to the full restore file, if
   // |app_launch_info| has a window_id.

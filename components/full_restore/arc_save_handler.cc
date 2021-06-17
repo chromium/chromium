@@ -35,9 +35,11 @@ void ArcSaveHandler::SaveAppLaunchInfo(AppLaunchInfoPtr app_launch_info) {
   // the ARC task to be created.
   int32_t session_id = app_launch_info->arc_session_id.value();
 
-  // If the ghost window has been created for `session_id`, add
-  // `app_launch_info` to the restore data.
-  if (base::Contains(ghost_window_session_id_to_app_id_, session_id)) {
+  // If the ghost window has been created for `session_id`, and the launch info
+  // hasn't been added yet, add `app_launch_info` to the restore data.
+  if (base::Contains(ghost_window_session_id_to_app_id_, session_id) &&
+      !FullRestoreSaveHandler::GetInstance()->HasAppRestoreData(
+          profile_path_, app_launch_info->app_id, session_id)) {
     app_launch_info->window_id = session_id;
     FullRestoreSaveHandler::GetInstance()->AddAppLaunchInfo(
         profile_path_, std::move(app_launch_info));
@@ -152,6 +154,7 @@ void ArcSaveHandler::OnTaskCreated(const std::string& app_id,
     FullRestoreSaveHandler::GetInstance()->ModifyWindowId(
         profile_path_, session_it->second, session_id, task_id);
     ghost_window_session_id_to_app_id_.erase(session_it);
+    task_id_to_app_id_[task_id] = app_id;
     return;
   }
 

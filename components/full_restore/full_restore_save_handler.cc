@@ -229,6 +229,17 @@ void FullRestoreSaveHandler::Flush(const base::FilePath& profile_path) {
                          weak_factory_.GetWeakPtr(), profile_path));
 }
 
+bool FullRestoreSaveHandler::HasAppRestoreData(
+    const base::FilePath& profile_path,
+    const std::string& app_id,
+    int32_t window_id) {
+  auto it = profile_path_to_restore_data_.find(profile_path);
+  if (it == profile_path_to_restore_data_.end())
+    return false;
+
+  return it->second.HasAppRestoreData(app_id, window_id);
+}
+
 void FullRestoreSaveHandler::AddAppLaunchInfo(
     const base::FilePath& profile_path,
     AppLaunchInfoPtr app_launch_info) {

@@ -1245,6 +1245,10 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerArcAppBrowserTest,
 
   VerifyGetArcAppLaunchInfo(app_id, session_id2, kTaskId1);
 
+  // Call SaveAppLaunchInfo to simulate the ARC app is ready, and launch the app
+  // again.
+  SaveAppLaunchInfo(app_id, session_id2);
+
   // Simulate creating the task for the restored window.
   int32_t kTaskId2 = 200;
   window->SetProperty(::full_restore::kWindowIdKey, kTaskId2);
@@ -1342,6 +1346,10 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerArcAppBrowserTest, SaveArcGhostWindow) {
 
   SaveAppLaunchInfo(app_id, session_id3);
   SaveWindowInfo(window);
+
+  // Call SaveAppLaunchInfo to simulate the ARC app is ready, and launch the app
+  // again.
+  SaveAppLaunchInfo(app_id, session_id3);
 
   // Simulate creating the task for the restored window.
   int32_t kTaskId2 = 200;
