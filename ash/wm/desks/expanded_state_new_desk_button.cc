@@ -17,6 +17,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/text_elider.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/label.h"
 
@@ -102,8 +103,6 @@ ExpandedStateNewDeskButton::ExpandedStateNewDeskButton(DesksBarView* bar_view)
       label_(AddChildView(std::make_unique<views::Label>())) {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
-
-  label_->SetText(l10n_util::GetStringUTF16(IDS_ASH_DESKS_NEW_DESK_BUTTON));
   label_->SetHorizontalAlignment(gfx::ALIGN_CENTER);
   label_->SetBackgroundColor(AshColorProvider::Get()->GetShieldLayerColor(
       AshColorProvider::ShieldLayerType::kShield80));
@@ -120,19 +119,25 @@ void ExpandedStateNewDeskButton::Layout() {
   const gfx::Rect new_desk_button_bounds = DeskMiniView::GetDeskPreviewBounds(
       bar_view_->GetWidget()->GetNativeWindow()->GetRootWindow());
   new_desk_button_->SetBoundsRect(new_desk_button_bounds);
-
+  auto* desk_mini_view = bar_view_->mini_views()[0];
+  auto* desk_name_view = desk_mini_view->desk_name_view();
+  // 'New desk' string might exceed the maximum width in different languages.
+  // Elide the string 'New desk' if it exceeds the width limit after been
+  // translated into a different language.
+  label_->SetText(gfx::ElideText(
+      l10n_util::GetStringUTF16(IDS_ASH_DESKS_NEW_DESK_BUTTON), gfx::FontList(),
+      new_desk_button_bounds.width() - desk_name_view->GetInsets().width(),
+      gfx::ELIDE_TAIL));
   const gfx::Size label_size = label_->GetPreferredSize();
   // Set the label to have the same height as the DeskNameView to keep them at
   // the same horizotal level. Note, don't get the label's width from
   // DeskNameView since desk's name is changeable, but this label here is not.
-  const int label_height =
-      bar_view_->mini_views()[0]->desk_name_view()->GetPreferredSize().height();
+  const int label_height = desk_name_view->GetPreferredSize().height();
   label_->SetBoundsRect(gfx::Rect(
-      gfx::Point(
-          (new_desk_button_bounds.width() - label_size.width()) / 2,
-          new_desk_button_bounds.bottom() -
-              bar_view_->mini_views()[0]->GetPreviewBorderInsets().bottom() +
-              kNewDeskButtonAndNameSpacing),
+      gfx::Point((new_desk_button_bounds.width() - label_size.width()) / 2,
+                 new_desk_button_bounds.bottom() -
+                     desk_mini_view->GetPreviewBorderInsets().bottom() +
+                     kNewDeskButtonAndNameSpacing),
       gfx::Size(label_size.width(), label_height)));
 }
 
