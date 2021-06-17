@@ -976,11 +976,6 @@ VideoCaptureDeviceFactoryWin::GetSupportedFormatsMediaFoundation(
     ++stream_index;
     if (capture_format.pixel_format == PIXEL_FORMAT_UNKNOWN)
       continue;
-    // If we're using the hardware capture path, ignore non-NV12 pixel formats
-    // to prevent copies
-    if (dxgi_device_manager_available &&
-        capture_format.pixel_format != PIXEL_FORMAT_NV12)
-      continue;
     formats.push_back(capture_format);
 
     DVLOG(1) << display_name << " "

@@ -8,6 +8,7 @@
 #include <ksmedia.h>
 #include <mfapi.h>
 #include <mferror.h>
+#include <mfobjects.h>
 #include <stddef.h>
 #include <vidcap.h>
 #include <wrl.h>
@@ -63,6 +64,11 @@ const wchar_t* kDirectShowDeviceName5 = L"Dazzle";
 
 const wchar_t* kDirectShowDeviceId6 = L"\\\\?\\usb#vid_eb1a&pid_2860&mi_00";
 const wchar_t* kDirectShowDeviceName6 = L"Empia Device";
+
+constexpr int kWidth = 1280;
+constexpr int kHeight = 720;
+
+constexpr int kFps = 30;
 
 using iterator = std::vector<VideoCaptureDeviceInfo>::const_iterator;
 iterator FindDeviceInRange(iterator begin,
@@ -385,6 +391,11 @@ class StubMFMediaSource final : public StubDeviceInterface<IMFMediaSourceEx> {
       *object = AddReference(static_cast<IMFMediaSource*>(this));
       return S_OK;
     }
+    if (riid == _uuidof(IMFMediaEventGenerator)) {
+      *object = AddReference(static_cast<IMFMediaEventGenerator*>(this));
+      return S_OK;
+    }
+
     return StubDeviceInterface::QueryInterface(riid, object);
   }
   // IMFMediaEventGenerator
@@ -433,6 +444,15 @@ class StubMFMediaSource final : public StubDeviceInterface<IMFMediaSourceEx> {
           break;
       }
       hr = media_type->SetGUID(MF_MT_SUBTYPE, subType);
+      if (FAILED(hr)) {
+        return hr;
+      }
+      hr = MFSetAttributeSize(media_type.Get(), MF_MT_FRAME_SIZE, kWidth,
+                              kHeight);
+      if (FAILED(hr)) {
+        return hr;
+      }
+      hr = MFSetAttributeRatio(media_type.Get(), MF_MT_FRAME_RATE, kFps, 1);
       if (FAILED(hr)) {
         return hr;
       }
@@ -1579,6 +1599,7 @@ TEST_P(VideoCaptureDeviceFactoryMFWinTest,
                                   base::SysWideToUTF8(kMFDeviceId0));
   ASSERT_NE(it, devices_info.end());
   EXPECT_EQ(it->descriptor.display_name(), base::SysWideToUTF8(kMFDeviceName0));
+  EXPECT_FALSE(it->supported_formats.empty());
   for (size_t i = 0; i < it->supported_formats.size(); i++) {
     SCOPED_TRACE(i);
     EXPECT_EQ(it->supported_formats[i].pixel_format,
@@ -1589,9 +1610,11 @@ TEST_P(VideoCaptureDeviceFactoryMFWinTest,
                          base::SysWideToUTF8(kMFDeviceId1));
   ASSERT_NE(it, devices_info.end());
   EXPECT_EQ(it->descriptor.display_name(), base::SysWideToUTF8(kMFDeviceName1));
+  EXPECT_FALSE(it->supported_formats.empty());
   for (size_t i = 0; i < it->supported_formats.size(); i++) {
     SCOPED_TRACE(i);
-    EXPECT_EQ(it->supported_formats[i].pixel_format, PIXEL_FORMAT_I420);
+    EXPECT_EQ(it->supported_formats[i].pixel_format,
+              expected_pixel_format_for_nv12);
   }
 }
 
