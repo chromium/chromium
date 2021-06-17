@@ -37,6 +37,10 @@ class VIEWS_EXPORT TableHeader : public views::View {
   void ResizeColumnViaKeyboard(int index,
                                TableView::AdvanceDirection direction);
 
+  // Call to update TableHeader objects that rely on the focus state of its
+  // corresponding virtual accessibility views.
+  void UpdateFocusState();
+
   // views::View overrides.
   void OnPaint(gfx::Canvas* canvas) override;
   gfx::Size CalculatePreferredSize() const override;
@@ -52,6 +56,8 @@ class VIEWS_EXPORT TableHeader : public views::View {
   void OnThemeChanged() override;
 
  private:
+  class HighlightPathGenerator;
+
   // Used to track the column being resized.
   struct ColumnResizeDetails {
     ColumnResizeDetails() = default;
@@ -65,6 +71,15 @@ class VIEWS_EXPORT TableHeader : public views::View {
     // Width of the column when the drag started.
     int initial_width = 0;
   };
+
+  // Returns true if the TableView's header has focus.
+  bool GetHeaderRowHasFocus() const;
+
+  // Gets the bounds of the currently active header cell.
+  gfx::Rect GetActiveHeaderCellBounds() const;
+
+  // Returns true if one of the TableHeader's cells has a focus indicator.
+  bool HasFocusIndicator() const;
 
   // If not already resizing and |event| is over a resizable column starts
   // resizing.

@@ -43,6 +43,7 @@
 #include "ui/views/controls/table/table_header.h"
 #include "ui/views/controls/table/table_utils.h"
 #include "ui/views/controls/table/table_view_observer.h"
+#include "ui/views/focus/focus_manager.h"
 #include "ui/views/image_model_utils.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/style/platform_style.h"
@@ -176,6 +177,9 @@ TableView::TableView() : weak_factory_(this) {
       this, std::make_unique<TableView::HighlightPathGenerator>());
 
   FocusRing::Install(this);
+  views::FocusRing::Get(this)->SetHasFocusPredicate([&](View* view) {
+    return static_cast<TableView*>(view)->HasFocus() && !header_row_is_active_;
+  });
 }
 
 TableView::TableView(ui::TableModel* model,
@@ -508,11 +512,15 @@ bool TableView::OnKeyPressed(const ui::KeyEvent& event) {
       break;
 
     case ui::VKEY_HOME:
+      if (header_row_is_active_)
+        break;
       if (GetRowCount())
         SelectByViewIndex(0);
       return true;
 
     case ui::VKEY_END:
+      if (header_row_is_active_)
+        break;
       if (GetRowCount())
         SelectByViewIndex(GetRowCount() - 1);
       return true;
@@ -552,7 +560,7 @@ bool TableView::OnKeyPressed(const ui::KeyEvent& event) {
           if (active_visible_column_index_ != -1 && header_) {
             header_->ResizeColumnViaKeyboard(active_visible_column_index_,
                                              direction);
-            views::FocusRing::Get(this)->SchedulePaint();
+            UpdateFocusRings();
           }
         } else {
           AdvanceActiveVisibleColumn(direction);
@@ -562,6 +570,9 @@ bool TableView::OnKeyPressed(const ui::KeyEvent& event) {
       break;
 
     case ui::VKEY_RIGHT:
+      // TODO(crbug.com/1221001): Update TableView to support keyboard
+      // navigation to table cells on Mac when "Full keyboard access" is
+      // specified.
       if (PlatformStyle::kTableViewSupportsKeyboardNavigationByCell) {
         const AdvanceDirection direction = base::i18n::IsRTL()
                                                ? AdvanceDirection::kDecrement
@@ -570,11 +581,23 @@ bool TableView::OnKeyPressed(const ui::KeyEvent& event) {
           if (active_visible_column_index_ != -1 && header_) {
             header_->ResizeColumnViaKeyboard(active_visible_column_index_,
                                              direction);
-            views::FocusRing::Get(this)->SchedulePaint();
+            UpdateFocusRings();
           }
         } else {
           AdvanceActiveVisibleColumn(direction);
         }
+        return true;
+      }
+      break;
+
+    // Currently there are TableView clients that take an action when the return
+    // key is pressed and there is an active selection in the body. To avoid
+    // breaking these cases only allow toggling sort order with the return key
+    // when the table header is active.
+    case ui::VKEY_RETURN:
+      if (PlatformStyle::kTableViewSupportsKeyboardNavigationByCell &&
+          active_visible_column_index_ != -1 && header_row_is_active_) {
+        ToggleSortOrder(active_visible_column_index_);
         return true;
       }
       break;
@@ -837,13 +860,13 @@ gfx::Point TableView::GetKeyboardContextMenuLocation() {
 
 void TableView::OnFocus() {
   SchedulePaintForSelection();
-  views::FocusRing::Get(this)->SchedulePaint();
+  UpdateFocusRings();
   ScheduleUpdateAccessibilityFocusIfNeeded();
 }
 
 void TableView::OnBlur() {
   SchedulePaintForSelection();
-  views::FocusRing::Get(this)->SchedulePaint();
+  UpdateFocusRings();
   ScheduleUpdateAccessibilityFocusIfNeeded();
 }
 
@@ -1159,7 +1182,7 @@ void TableView::AdvanceActiveVisibleColumn(AdvanceDirection direction) {
   }
 
   if (active_visible_column_index_ == -1) {
-    if (selection_model_.active() == -1)
+    if (selection_model_.active() == -1 && !header_row_is_active_)
       SelectByViewIndex(0);
     SetActiveVisibleColumnIndex(0);
     return;
@@ -1189,7 +1212,7 @@ void TableView::SetActiveVisibleColumnIndex(int index) {
                                       active_visible_column_index_));
   }
 
-  views::FocusRing::Get(this)->SchedulePaint();
+  UpdateFocusRings();
   ScheduleUpdateAccessibilityFocusIfNeeded();
   OnPropertyChanged(&active_visible_column_index_, kPropertyEffectsNone);
 }
@@ -1226,11 +1249,11 @@ void TableView::SetSelectionModel(ui::ListSelectionModel new_selection) {
 
     if (active_visible_column_index_ == -1)
       SetActiveVisibleColumnIndex(0);
-  } else {
+  } else if (!header_row_is_active_) {
     SetActiveVisibleColumnIndex(-1);
   }
 
-  views::FocusRing::Get(this)->SchedulePaint();
+  UpdateFocusRings();
   ScheduleUpdateAccessibilityFocusIfNeeded();
   if (observer_)
     observer_->OnSelectionChanged();
@@ -1238,14 +1261,23 @@ void TableView::SetSelectionModel(ui::ListSelectionModel new_selection) {
 
 void TableView::AdvanceSelection(AdvanceDirection direction) {
   if (selection_model_.active() == -1) {
-    SelectByViewIndex(0);
+    bool make_header_active =
+        header_ && direction == AdvanceDirection::kDecrement;
+    header_row_is_active_ = make_header_active;
+    SelectByViewIndex(make_header_active ? -1 : 0);
+    UpdateFocusRings();
+    ScheduleUpdateAccessibilityFocusIfNeeded();
     return;
   }
   int view_index = ModelToView(selection_model_.active());
-  if (direction == AdvanceDirection::kDecrement)
-    view_index = std::max(0, view_index - 1);
-  else
+  if (direction == AdvanceDirection::kDecrement) {
+    bool make_header_active = header_ && view_index == 0;
+    header_row_is_active_ = make_header_active;
+    view_index = make_header_active ? -1 : std::max(0, view_index - 1);
+  } else {
+    header_row_is_active_ = false;
     view_index = std::min(GetRowCount() - 1, view_index + 1);
+  }
   SelectByViewIndex(view_index);
 }
 
@@ -1485,6 +1517,12 @@ void TableView::PopulateAccessibilityCellData(AXVirtualView* ax_cell,
   }
 }
 
+void TableView::UpdateFocusRings() {
+  views::FocusRing::Get(this)->SchedulePaint();
+  if (header_)
+    header_->UpdateFocusState();
+}
+
 std::unique_ptr<AXVirtualView> TableView::CreateHeaderAccessibilityView() {
   DCHECK(header_) << "header_ needs to be instantiated before setting its"
                      "accessibility view.";
@@ -1662,6 +1700,25 @@ void TableView::UpdateAccessibilityFocus(
   if (!HasFocus())
     return;
 
+  if (header_ && header_row_is_active_) {
+    AXVirtualView* ax_header_row = GetVirtualAccessibilityHeaderRow();
+    if (!PlatformStyle::kTableViewSupportsKeyboardNavigationByCell ||
+        active_visible_column_index_ == -1) {
+      if (ax_header_row) {
+        ax_header_row->NotifyAccessibilityEvent(ax::mojom::Event::kSelection);
+        GetViewAccessibility().OverrideFocus(ax_header_row);
+      }
+    } else {
+      AXVirtualView* ax_header_cell = GetVirtualAccessibilityCellImpl(
+          ax_header_row, active_visible_column_index_);
+      if (ax_header_cell) {
+        ax_header_cell->NotifyAccessibilityEvent(ax::mojom::Event::kSelection);
+        GetViewAccessibility().OverrideFocus(ax_header_cell);
+      }
+    }
+    return;
+  }
+
   if (selection_model_.active() == ui::ListSelectionModel::kUnselectedIndex ||
       active_visible_column_index_ == -1) {
     GetViewAccessibility().OverrideFocus(nullptr);
@@ -1669,15 +1726,15 @@ void TableView::UpdateAccessibilityFocus(
   }
 
   int active_row = ModelToView(selection_model_.active());
+  AXVirtualView* ax_row = GetVirtualAccessibilityBodyRow(active_row);
   if (!PlatformStyle::kTableViewSupportsKeyboardNavigationByCell) {
-    AXVirtualView* ax_row = GetVirtualAccessibilityRow(active_row);
     if (ax_row) {
       ax_row->NotifyAccessibilityEvent(ax::mojom::Event::kSelection);
       GetViewAccessibility().OverrideFocus(ax_row);
     }
   } else {
     AXVirtualView* ax_cell =
-        GetVirtualAccessibilityCell(active_row, active_visible_column_index_);
+        GetVirtualAccessibilityCellImpl(ax_row, active_visible_column_index_);
     if (ax_cell) {
       ax_cell->NotifyAccessibilityEvent(ax::mojom::Event::kSelection);
       GetViewAccessibility().OverrideFocus(ax_cell);
@@ -1685,7 +1742,7 @@ void TableView::UpdateAccessibilityFocus(
   }
 }
 
-AXVirtualView* TableView::GetVirtualAccessibilityRow(int row) {
+AXVirtualView* TableView::GetVirtualAccessibilityBodyRow(int row) {
   DCHECK_GE(row, 0);
   DCHECK_LT(row, GetRowCount());
   if (header_)
@@ -1702,10 +1759,29 @@ AXVirtualView* TableView::GetVirtualAccessibilityRow(int row) {
   return nullptr;
 }
 
+AXVirtualView* TableView::GetVirtualAccessibilityHeaderRow() {
+  if (!header_) {
+    NOTREACHED() << "|row| not found. Did you forget to call "
+                    "RebuildVirtualAccessibilityChildren()?";
+    return nullptr;
+  }
+  // The header row is always the first virtual child.
+  const auto& ax_row = GetViewAccessibility().virtual_children()[size_t{0}];
+  DCHECK(ax_row);
+  DCHECK_EQ(ax_row->GetData().role, ax::mojom::Role::kRow);
+  return ax_row.get();
+}
+
 AXVirtualView* TableView::GetVirtualAccessibilityCell(
     int row,
     int visible_column_index) {
-  AXVirtualView* ax_row = GetVirtualAccessibilityRow(row);
+  return GetVirtualAccessibilityCellImpl(GetVirtualAccessibilityBodyRow(row),
+                                         visible_column_index);
+}
+
+AXVirtualView* TableView::GetVirtualAccessibilityCellImpl(
+    AXVirtualView* ax_row,
+    int visible_column_index) {
   DCHECK(ax_row) << "|row| not found. Did you forget to call "
                     "RebuildVirtualAccessibilityChildren()?";
   const auto matches_index = [visible_column_index](const auto& ax_cell) {

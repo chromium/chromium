@@ -64,8 +64,17 @@ class TableViewTestHelper {
 
   const gfx::FontList& font_list() { return table_->font_list_; }
 
-  AXVirtualView* GetVirtualAccessibilityRow(int row) {
-    return table_->GetVirtualAccessibilityRow(row);
+  AXVirtualView* GetVirtualAccessibilityBodyRow(int row) {
+    return table_->GetVirtualAccessibilityBodyRow(row);
+  }
+
+  AXVirtualView* GetVirtualAccessibilityHeaderRow() {
+    return table_->GetVirtualAccessibilityHeaderRow();
+  }
+
+  AXVirtualView* GetVirtualAccessibilityHeaderCell(int visible_column_index) {
+    return table_->GetVirtualAccessibilityCellImpl(
+        GetVirtualAccessibilityHeaderRow(), visible_column_index);
   }
 
   AXVirtualView* GetVirtualAccessibilityCell(int row,
@@ -711,9 +720,9 @@ TEST_P(TableViewTest, UpdateVirtualAccessibilityChildrenBoundsHideColumn) {
                                expected_bounds_after_hiding);
 }
 
-TEST_P(TableViewTest, GetVirtualAccessibilityRow) {
+TEST_P(TableViewTest, GetVirtualAccessibilityBodyRow) {
   for (int i = 0; i < table_->GetRowCount(); ++i) {
-    const AXVirtualView* row = helper_->GetVirtualAccessibilityRow(i);
+    const AXVirtualView* row = helper_->GetVirtualAccessibilityBodyRow(i);
     ASSERT_TRUE(row);
     const ui::AXNodeData& row_data = row->GetData();
     EXPECT_EQ(ax::mojom::Role::kRow, row_data.role);
@@ -1548,8 +1557,15 @@ TEST_P(TableViewTest, KeyUpDown) {
   EXPECT_EQ(1, observer.GetChangedCountAndClear());
   EXPECT_EQ("active=0 anchor=0 selection=0 1", SelectionStateAsString());
 
+  // Key up at this point will clear selection and navigate into the header.
+  EXPECT_FALSE(table_->header_row_is_active());
   PressKey(ui::VKEY_UP);
-  EXPECT_EQ(0, observer.GetChangedCountAndClear());
+  EXPECT_TRUE(table_->header_row_is_active());
+  EXPECT_EQ(1, observer.GetChangedCountAndClear());
+  EXPECT_EQ("active=-1 anchor=-1 selection=", SelectionStateAsString());
+
+  PressKey(ui::VKEY_DOWN);
+  EXPECT_EQ(1, observer.GetChangedCountAndClear());
   EXPECT_EQ("active=0 anchor=0 selection=0 1", SelectionStateAsString());
 
   // Sort the table descending by column 1, view now looks like:
@@ -1567,8 +1583,15 @@ TEST_P(TableViewTest, KeyUpDown) {
   EXPECT_EQ("active=-1 anchor=-1 selection=", SelectionStateAsString());
 
   observer.GetChangedCountAndClear();
-  // Up with nothing selected selects the first row.
+
+  // Up with nothing selected moves selection into the table's header.
+  EXPECT_FALSE(table_->header_row_is_active());
   PressKey(ui::VKEY_UP);
+  EXPECT_TRUE(table_->header_row_is_active());
+  EXPECT_EQ(0, observer.GetChangedCountAndClear());
+  EXPECT_EQ("active=-1 anchor=-1 selection=", SelectionStateAsString());
+
+  PressKey(ui::VKEY_DOWN);
   EXPECT_EQ(1, observer.GetChangedCountAndClear());
   EXPECT_EQ("active=2 anchor=2 selection=2", SelectionStateAsString());
 
@@ -1608,9 +1631,12 @@ TEST_P(TableViewTest, KeyUpDown) {
   EXPECT_EQ(1, observer.GetChangedCountAndClear());
   EXPECT_EQ("active=2 anchor=2 selection=2", SelectionStateAsString());
 
+  // Key up at this point will clear selection and navigate into the header.
+  EXPECT_FALSE(table_->header_row_is_active());
   PressKey(ui::VKEY_UP);
-  EXPECT_EQ(0, observer.GetChangedCountAndClear());
-  EXPECT_EQ("active=2 anchor=2 selection=2", SelectionStateAsString());
+  EXPECT_TRUE(table_->header_row_is_active());
+  EXPECT_EQ(1, observer.GetChangedCountAndClear());
+  EXPECT_EQ("active=-1 anchor=-1 selection=", SelectionStateAsString());
 
   table_->set_observer(nullptr);
 }
@@ -2005,6 +2031,76 @@ TEST_P(TableViewTest, RemovingSortedRowsDoesNotCauseOverflow) {
   model_->RemoveRow(0);
   model_->RemoveRow(0);
   model_->RemoveRow(0);
+}
+
+// Ensure that the TableView's header row is keyboard accessible.
+// Tests for crbug.com/1189851.
+TEST_P(TableViewTest, TableHeaderRowAccessibleViewFocusable) {
+  ASSERT_NE(nullptr, helper_->header());
+  table_->RequestFocus();
+  RunPendingMessages();
+
+  // If no table body row has selection the TableView itself is focused and
+  // there is no focused virtual view.
+  EXPECT_TRUE(table_->HasFocus());
+  EXPECT_FALSE(table_->header_row_is_active());
+  EXPECT_EQ(nullptr, table_->GetViewAccessibility().FocusedVirtualChild());
+
+  // Hitting the up arrow key should give the header focus and make it active.
+  PressKey(ui::VKEY_UP);
+  RunPendingMessages();
+  EXPECT_TRUE(table_->HasFocus());
+  EXPECT_TRUE(table_->header_row_is_active());
+  EXPECT_EQ(helper_->GetVirtualAccessibilityHeaderRow(),
+            table_->GetViewAccessibility().FocusedVirtualChild());
+
+  // Hitting the down arrow key should move focus back into the body.
+  PressKey(ui::VKEY_DOWN);
+  RunPendingMessages();
+  EXPECT_TRUE(table_->HasFocus());
+  EXPECT_FALSE(table_->header_row_is_active());
+  EXPECT_NE(helper_->GetVirtualAccessibilityHeaderRow(),
+            table_->GetViewAccessibility().FocusedVirtualChild());
+}
+
+// Ensure that the TableView's header columns are keyboard accessible.
+// Tests for crbug.com/1189851.
+TEST_P(TableViewTest, TableHeaderColumnAccessibleViewsFocusable) {
+  if (!PlatformStyle::kTableViewSupportsKeyboardNavigationByCell)
+    return;
+
+  ASSERT_NE(nullptr, helper_->header());
+  table_->RequestFocus();
+  RunPendingMessages();
+
+  // Hitting the up arrow key should give the header focus and make it active.
+  auto& view_accessibility = table_->GetViewAccessibility();
+  PressKey(ui::VKEY_UP);
+  RunPendingMessages();
+  EXPECT_TRUE(table_->HasFocus());
+  EXPECT_TRUE(table_->header_row_is_active());
+  EXPECT_EQ(helper_->GetVirtualAccessibilityHeaderRow(),
+            view_accessibility.FocusedVirtualChild());
+
+  // Navigating with arrow keys should move focus between TableView header
+  // columns.
+  PressKey(ui::VKEY_RIGHT);
+  RunPendingMessages();
+  ASSERT_EQ(0, helper_->GetActiveVisibleColumnIndex());
+  EXPECT_EQ(helper_->GetVirtualAccessibilityHeaderCell(0),
+            view_accessibility.FocusedVirtualChild());
+
+  PressKey(ui::VKEY_RIGHT);
+  RunPendingMessages();
+  ASSERT_EQ(1, helper_->GetActiveVisibleColumnIndex());
+  EXPECT_EQ(helper_->GetVirtualAccessibilityHeaderCell(1),
+            view_accessibility.FocusedVirtualChild());
+
+  PressKey(ui::VKEY_LEFT);
+  RunPendingMessages();
+  ASSERT_EQ(0, helper_->GetActiveVisibleColumnIndex());
+  EXPECT_EQ(helper_->GetVirtualAccessibilityHeaderCell(0),
+            view_accessibility.FocusedVirtualChild());
 }
 
 namespace {
