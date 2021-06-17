@@ -51,7 +51,6 @@ const CGFloat kDateTextFieldWidth = 40;
 @synthesize CVCText = _CVCText;
 @synthesize showDateInput = _showDateInput;
 @synthesize showNewCardButton = _showNewCardButton;
-@synthesize showCVCInputError = _showCVCInputError;
 @synthesize CVCImageResourceID = _CVCImageResourceID;
 
 - (instancetype)initWithType:(NSInteger)type {

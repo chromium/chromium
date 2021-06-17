@@ -37,9 +37,6 @@
 // Whether the cell should show the "New Card?" button.
 @property(nonatomic, assign) BOOL showNewCardButton;
 
-// Whether the CVC input contains erroneous data.
-@property(nonatomic, assign) BOOL showCVCInputError;
-
 // The resource ID of the CVC image to use.
 @property(nonatomic, assign) int CVCImageResourceID;
 

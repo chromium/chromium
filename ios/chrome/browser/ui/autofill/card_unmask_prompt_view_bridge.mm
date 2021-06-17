@@ -238,14 +238,11 @@ void CardUnmaskPromptViewBridge::DeleteSelf() {
   // didn't and there was an error, show the "New card?" link which will show
   // the date inputs on click. This link is intended to remind the user that
   // they might have recently received a new card with updated expiration date
-  // and CVC. At the same time, we only put the CVC input in an error state if
-  // we're not requesting a new date. Because if we're asking the user for both,
-  // we don't know which is incorrect.
+  // and CVC.
   if (_bridge->GetController()->ShouldRequestExpirationDate()) {
     _CVCItem.showDateInput = YES;
   } else if (errorMessage) {
     _CVCItem.showNewCardButton = YES;
-    _CVCItem.showCVCInputError = YES;
   }
 }
 
@@ -441,7 +438,6 @@ void CardUnmaskPromptViewBridge::DeleteSelf() {
   _CVCItem.errorMessage = @"";
   _CVCItem.showDateInput = YES;
   _CVCItem.showNewCardButton = NO;
-  _CVCItem.showCVCInputError = NO;
 
   [self reconfigureCellsForItems:@[ _CVCItem ]];
   [self.collectionViewLayout invalidateLayout];
@@ -468,7 +464,6 @@ void CardUnmaskPromptViewBridge::DeleteSelf() {
   [self inputsDidChange:_CVCItem];
   if (_bridge->GetController()->InputCvcIsValid(
           base::SysNSStringToUTF16(textField.text))) {
-    _CVCItem.showCVCInputError = NO;
     [self updateDateErrorState:_CVCItem];
   }
 }
