@@ -497,6 +497,12 @@ LayoutUnit ComputeInlineSizeFromAspectRatio(const NGConstraintSpace& space,
                                             const NGBoxStrut& border_padding) {
   DCHECK(!style.AspectRatio().IsAuto());
 
+  // Even though an implicit stretch will resolve - we return an indefinite
+  // size, as we prefer the inline-axis size for this case.
+  if (style.LogicalHeight().IsAuto() &&
+      space.BlockAutoBehavior() != NGAutoBehavior::kStretchExplicit)
+    return kIndefiniteSize;
+
   LayoutUnit block_size = ComputeBlockSizeForFragment(
       space, style, border_padding,
       /* intrinsic_size */ kIndefiniteSize, /* inline_size */ absl::nullopt);
