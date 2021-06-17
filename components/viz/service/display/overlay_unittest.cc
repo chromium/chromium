@@ -27,6 +27,7 @@
 #include "components/viz/common/quads/stream_video_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/quads/video_hole_draw_quad.h"
+#include "components/viz/common/resources/resource_id.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "components/viz/service/display/ca_layer_overlay.h"
 #include "components/viz/service/display/display_resource_provider_gl.h"
@@ -47,6 +48,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/latency/latency_info.h"
 
@@ -995,6 +997,109 @@ TEST_F(SingleOverlayOnTopTest, PrioritizeBiggerOne) {
   EXPECT_EQ(1U, candidate_list.size());
   // Check that the right resource id (bigger quad) got extracted.
   EXPECT_EQ(resource_big, candidate_list.front().resource_id);
+}
+
+// This test makes sure that the prioritization choices remain stable over a
+// series of many frames. The example here would be two similar sized unoccluded
+// videos running at 30fps. It is possible (observed on android) for these
+// frames to get staggered such that each video frame updates on alternating
+// frames of the 60fps vsync. Under specific damage conditions this will lead
+// prioritization to be very indecisive and flip priorities every frame. The
+// root cause for this issue has been resolved.
+TEST_F(SingleOverlayOnTopTest, StablePrioritizeIntervalFrame) {
+  if (!features::IsOverlayPrioritizationEnabled())
+    return;
+
+  const auto kCandidateRectA = gfx::Rect(0, 0, 16, 16);
+  // Add a bigger quad below the previous one, but not occluded.
+  const auto kCandidateRectB = gfx::Rect(20, 20, 16, 16);
+  float vertex_opacity[4] = {1.0f, 1.0f, 1.0f, 1.0f};
+  ResourceId resource_id_a =
+      CreateResource(resource_provider_.get(), child_resource_provider_.get(),
+                     child_provider_.get(), kCandidateRectA.size(),
+                     true /*is_overlay_candidate*/);
+  ResourceId resource_id_b =
+      CreateResource(resource_provider_.get(), child_resource_provider_.get(),
+                     child_provider_.get(), kCandidateRectB.size(),
+                     true /*is_overlay_candidate*/);
+  ResourceId prev_resource = kInvalidResourceId;
+  int num_overlay_swaps = 0;
+  // The number of frames here is very high to simulate two videos or animations
+  // playing each at 30fps.
+  constexpr int kNumFrames = 300;
+  for (int i = 1; i < kNumFrames; i++) {
+    auto pass = CreateRenderPass();
+    SharedQuadState* shared_quad_state_a =
+        pass->shared_quad_state_list.AllocateAndCopyFrom(
+            pass->shared_quad_state_list.back());
+    shared_quad_state_a->overlay_damage_index = 0;
+    TextureDrawQuad* quad_small =
+        pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
+    quad_small->SetNew(
+        shared_quad_state_a, kCandidateRectA, kCandidateRectA,
+        false /*needs_blending*/, resource_id_a, false /*premultiplied_alpha*/,
+        kUVTopLeft, kUVBottomRight, SK_ColorTRANSPARENT, vertex_opacity,
+        false /*flipped*/, false /*nearest_neighbor*/,
+        false /*secure_output_only*/, gfx::ProtectedVideoType::kClear);
+    quad_small->set_resource_size_in_pixels(kCandidateRectA.size());
+    AddExpectedRectToOverlayProcessor(gfx::RectF(kCandidateRectA));
+
+    SharedQuadState* shared_quad_state_b =
+        pass->shared_quad_state_list.AllocateAndCopyFrom(
+            pass->shared_quad_state_list.back());
+    TextureDrawQuad* quad_big =
+        pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
+
+    quad_big->SetNew(shared_quad_state_b, kCandidateRectB, kCandidateRectB,
+                     false /*needs_blending*/, resource_id_b,
+                     false /*premultiplied_alpha*/, kUVTopLeft, kUVBottomRight,
+                     SK_ColorTRANSPARENT, vertex_opacity, false /*flipped*/,
+                     false /*nearest_neighbor*/, false /*secure_output_only*/,
+                     gfx::ProtectedVideoType::kClear);
+    quad_big->set_resource_size_in_pixels(kCandidateRectB.size());
+
+    shared_quad_state_b->overlay_damage_index = 1;
+    AddExpectedRectToOverlayProcessor(gfx::RectF(kCandidateRectB));
+
+    // Add something behind it.
+    SharedQuadState* default_shared_quad_state =
+        pass->shared_quad_state_list.AllocateAndCopyFrom(
+            pass->shared_quad_state_list.back());
+    CreateFullscreenOpaqueQuad(resource_provider_.get(),
+                               default_shared_quad_state, pass.get());
+
+    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
+    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
+    AggregatedRenderPassList pass_list;
+    pass_list.push_back(std::move(pass));
+
+    OverlayCandidateList candidate_list;
+    SurfaceDamageRectList surface_damage_rect_list;
+    // Alternatively add damage to each potential overlay.
+    surface_damage_rect_list.push_back((i % 2) == 0 ? kCandidateRectA
+                                                    : gfx::Rect());
+    surface_damage_rect_list.push_back((i % 2) == 0 ? gfx::Rect()
+                                                    : kCandidateRectB);
+
+    overlay_processor_->SetFrameSequenceNumber(i);
+    overlay_processor_->ProcessForOverlays(
+        resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
+        render_pass_filters, render_pass_backdrop_filters,
+        std::move(surface_damage_rect_list), nullptr, &candidate_list,
+        &damage_rect_, &content_bounds_);
+    ASSERT_EQ(1U, candidate_list.size());
+
+    if (prev_resource != candidate_list.front().resource_id) {
+      if (prev_resource != kInvalidResourceId) {
+        num_overlay_swaps++;
+      }
+      prev_resource = candidate_list.front().resource_id;
+    }
+  }
+  // Note the value of |kMaxNumSwaps| is not simply 2 or 3 due to some possible
+  // additional swaps that can occur as part of initial overlay tracking.
+  constexpr int kMaxNumSwaps = 10;
+  EXPECT_LE(num_overlay_swaps, kMaxNumSwaps);
 }
 
 TEST_F(SingleOverlayOnTopTest, OpaqueOverlayDamageSubtract) {
