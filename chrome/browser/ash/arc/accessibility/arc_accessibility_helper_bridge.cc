@@ -628,9 +628,7 @@ ArcAccessibilityHelperBridge::GetFilterTypeForProfile(Profile* profile) {
     return arc::mojom::AccessibilityFilterType::ALL;
   }
 
-  if (magnification_manager->IsMagnifierEnabled() ||
-      magnification_manager->IsDockedMagnifierEnabled() ||
-      accessibility_manager->IsFocusHighlightEnabled()) {
+  if (accessibility_manager->IsFocusHighlightEnabled()) {
     return arc::mojom::AccessibilityFilterType::FOCUS;
   }
 
@@ -735,10 +733,7 @@ void ArcAccessibilityHelperBridge::UpdateEnabledFeature() {
 
   const AccessibilityManager* accessibility_manager =
       AccessibilityManager::Get();
-  const MagnificationManager* magnification_manager =
-      MagnificationManager::Get();
-
-  if (!accessibility_manager || !magnification_manager)
+  if (!accessibility_manager)
     return;
 
   is_focus_event_enabled_ = accessibility_manager->IsFocusHighlightEnabled();
