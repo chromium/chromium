@@ -3,7 +3,12 @@
 # found in the LICENSE file.
 
 import os
-import pickle
+import sys
+
+if sys.version_info.major == 2:
+    import cPickle as pickle  # 'cPickle' is faster than 'pickle' on Py2
+else:
+    import pickle
 
 
 def read_pickle_file(filepath):
@@ -20,7 +25,9 @@ def write_pickle_file_if_changed(filepath, obj):
 
     Returns True if the object is written to the file, and False if skipped.
     """
-    return write_to_file_if_changed(filepath, pickle.dumps(obj))
+    # TODO(crbug.com/1112471): Drop protocol=2 when we're no longer
+    # compiling anything using Python2.
+    return write_to_file_if_changed(filepath, pickle.dumps(obj, protocol=2))
 
 
 def write_to_file_if_changed(filepath, contents):
