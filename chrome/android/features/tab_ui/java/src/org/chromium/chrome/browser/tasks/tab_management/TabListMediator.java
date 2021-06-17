@@ -1633,8 +1633,7 @@ class TabListMediator {
 
         // If there is an available icon, we fetch favicon synchronously; otherwise asynchronously.
         if (icon != null) {
-            Drawable drawable = mTabListFaviconProvider.getFaviconForUrlSync(
-                    pseudoTab.getUrl(), pseudoTab.isIncognito(), icon);
+            Drawable drawable = mTabListFaviconProvider.getFaviconForUrlSync(icon);
             mModel.get(modelIndex).model.set(TabProperties.FAVICON, drawable);
             return;
         }

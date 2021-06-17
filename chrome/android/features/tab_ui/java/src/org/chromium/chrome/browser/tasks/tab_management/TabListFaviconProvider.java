@@ -13,13 +13,13 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
-import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.ui.base.ViewUtils;
@@ -170,19 +170,11 @@ public class TabListFaviconProvider {
 
     /**
      * Synchronously get the processed favicon Drawable.
-     * @param url The URL whose favicon is requested.
-     * @param isIncognito Whether the tab is incognito or not.
      * @param icon The favicon that was received.
      * @return The processed favicon.
      */
-    public Drawable getFaviconForUrlSync(String url, boolean isIncognito, Bitmap icon) {
-        if (icon == null) {
-            boolean isNativeUrl = NativePage.isNativePageUrl(url, isIncognito);
-            return isNativeUrl ? getRoundedChromeDrawable(isIncognito)
-                               : getRoundedGlobeDrawable(isIncognito);
-        } else {
-            return processBitmap(icon, mIsTabStrip);
-        }
+    public Drawable getFaviconForUrlSync(@NonNull Bitmap icon) {
+        return processBitmap(icon, mIsTabStrip);
     }
 
     /**

@@ -359,7 +359,7 @@ public class TabListMediatorUnitTest {
                 .getFaviconForUrlAsync(anyString(), anyBoolean(), mCallbackCaptor.capture());
         doReturn(mFaviconDrawable)
                 .when(mTabListFaviconProvider)
-                .getFaviconForUrlSync(anyString(), anyBoolean(), any(Bitmap.class));
+                .getFaviconForUrlSync(any(Bitmap.class));
         doReturn(mTab1).when(mTabModelSelector).getTabById(TAB1_ID);
         doReturn(mTab2).when(mTabModelSelector).getTabById(TAB2_ID);
         doReturn(tabs1).when(mTabGroupModelFilter).getRelatedTabList(TAB1_ID);
