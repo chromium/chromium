@@ -1341,6 +1341,21 @@
             ]
         }
     ],
+    "BiometricAuthPwdFillAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20210616",
+                    "enable_features": [
+                        "BiometricTouchToFill"
+                    ]
+                }
+            ]
+        }
+    ],
     "BrowserJankinessProfiling": [
         {
             "platforms": [
