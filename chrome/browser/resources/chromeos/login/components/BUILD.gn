@@ -10,6 +10,7 @@ import("//ui/webui/resources/tools/js_modulizer.gni")
 group("closure_compile") {
   deps = [
     ":closure_compile_local",
+    "buttons:closure_compile",
     "hd_iron_icon:closure_compile",
     "oobe_adaptive_dialog:closure_compile",
     "oobe_carousel:closure_compile",
@@ -27,7 +28,6 @@ js_type_check("closure_compile_local") {
     ":fake_oobe",
     ":html-echo",
     ":network_select_login",
-    ":oobe_buttons",
     ":oobe_i18n_dropdown",
     ":oobe_modal_dialog",
     ":oobe_select",
@@ -39,6 +39,7 @@ group("closure_compile_module") {
   deps = [
     ":oobe_icons.m",
     "behaviors:closure_compile_module",
+    "buttons:closure_compile_module",
   ]
 }
 
@@ -80,10 +81,6 @@ js_library("network_select_login") {
   ]
 }
 
-js_library("oobe_buttons") {
-  deps = [ "behaviors:oobe_i18n_behavior" ]
-}
-
 js_library("oobe_i18n_dropdown") {
   deps = [
     ":oobe_select",
@@ -92,7 +89,10 @@ js_library("oobe_i18n_dropdown") {
 }
 
 js_library("oobe_modal_dialog") {
-  deps = [ "behaviors:oobe_i18n_behavior" ]
+  deps = [
+    "behaviors:oobe_i18n_behavior",
+    "buttons:oobe_text_button",
+  ]
 }
 
 js_library("oobe_select") {

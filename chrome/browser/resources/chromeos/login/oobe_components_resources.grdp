@@ -12,6 +12,15 @@
   <include name="IDR_OOBE_COMPONENTS_SCROLLABLE_BEHAVIOR_JS" file="components/behaviors/oobe_scrollable_behavior.js" type="chrome_html" />
   <include name="IDR_OOBE_COMPONENTS_OOBE_ICONS_HTML" file="components/oobe_icons.html" type="chrome_html" />
 
+  <include name="IDR_OOBE_COMPONENTS_OOBE_NEXT_BUTTON_HTML" file="components/buttons/oobe_next_button.html" type="chrome_html" />
+  <include name="IDR_OOBE_COMPONENTS_OOBE_NEXT_BUTTON_JS" file="components/buttons/oobe_next_button.js" type="chrome_html" />
+  <include name="IDR_OOBE_COMPONENTS_OOBE_BACK_BUTTON_HTML" file="components/buttons/oobe_back_button.html" type="chrome_html" />
+  <include name="IDR_OOBE_COMPONENTS_OOBE_BACK_BUTTON_JS" file="components/buttons/oobe_back_button.js" type="chrome_html" />
+  <include name="IDR_OOBE_COMPONENTS_OOBE_TEXT_BUTTON_HTML" file="components/buttons/oobe_text_button.html" type="chrome_html" />
+  <include name="IDR_OOBE_COMPONENTS_OOBE_TEXT_BUTTON_JS" file="components/buttons/oobe_text_button.js" type="chrome_html" />
+  <include name="IDR_OOBE_COMPONENTS_OOBE_ICON_BUTTON_HTML" file="components/buttons/oobe_icon_button.html" type="chrome_html" />
+  <include name="IDR_OOBE_COMPONENTS_OOBE_ICON_BUTTON_JS" file="components/buttons/oobe_icon_button.js" type="chrome_html" />
+
   <include name="IDR_OOBE_COMPONENTS_LOGIN_SCREEN_BEHAVIOR_HTML" file="components/behaviors/login_screen_behavior.html" type="chrome_html" />
   <include name="IDR_OOBE_COMPONENTS_LOGIN_SCREEN_BEHAVIOR_JS" file="components/behaviors/login_screen_behavior.js" type="chrome_html" />
   <include name="IDR_OOBE_COMPONENTS_MULTI_STEP_BEHAVIOR_HTML" file="components/behaviors/multi_step_behavior.html" type="chrome_html" />

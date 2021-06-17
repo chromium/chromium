@@ -8,8 +8,12 @@
 <link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_lottie/cr_lottie.html">
 
+
 <link rel="import" href="/components/oobe_shared_vars_css.html">
 <link rel="import" href="/components/behaviors/oobe_i18n_behavior.html">
+<link rel="import" href="/components/buttons/oobe_icon_button.html">
+<link rel="import" href="/components/buttons/oobe_next_button.html">
+<link rel="import" href="/components/buttons/oobe_text_button.html">
 <link rel="import" href="/components/oobe_dialog/oobe_dialog.html">
 
 <!--
@@ -215,34 +219,34 @@
       </div>
       <div id="newContent">
         <div id="newButtons" class="layout vertical">
-          <oobe-welcome-secondary-button id="newLanguageSelectionButton"
+          <oobe-icon-button id="newLanguageSelectionButton"
               icon1x="oobe-welcome-dialog-20:language"
               icon2x="oobe-welcome-dialog-40:language"
               on-click="onLanguageClicked_"
               label-for-aria="[[i18nDynamic(locale, 'languageButtonLabel',
                   currentLanguage)]]">
             <div slot="text">[[currentLanguage]]</div>
-          </oobe-welcome-secondary-button>
-          <oobe-welcome-secondary-button id="newAccessibilitySettingsButton"
+          </oobe-icon-button>
+          <oobe-icon-button id="newAccessibilitySettingsButton"
               text-key="accessibilityLink"
               icon1x="oobe-welcome-dialog-20:accessibility"
               icon2x="oobe-welcome-dialog-40:accessibility"
               on-click="onAccessibilityClicked_">
-          </oobe-welcome-secondary-button>
-          <oobe-welcome-secondary-button id="newTimezoneSettingsButton"
+          </oobe-icon-button>
+          <oobe-icon-button id="newTimezoneSettingsButton"
               text-key="timezoneButtonText"
               icon1x="oobe-32:timezone"
               icon2x="oobe-32:timezone"
               on-click="onTimezoneClicked_"
               hidden="[[!timezoneButtonVisible]]">
-          </oobe-welcome-secondary-button>
-          <oobe-welcome-secondary-button id="enableDebuggingButton"
+          </oobe-icon-button>
+          <oobe-icon-button id="enableDebuggingButton"
             text-key="debuggingFeaturesLink"
             icon1x="oobe-32:chromebook"
             icon2x="oobe-32:chromebook"
             on-click="onDebuggingLinkClicked_"
             hidden="[[!debuggingLinkVisible]]">
-          </oobe-welcome-secondary-button>
+          </oobe-icon-button>
         </div>
         <div id="bottomButtons">
           <oobe-text-button id="osInstall"
@@ -332,25 +336,25 @@
         </div>
       </div>
       <div slot="back-navigation">
-        <oobe-welcome-secondary-button id="languageSelectionButton"
+        <oobe-icon-button id="languageSelectionButton"
             icon1x="oobe-welcome-dialog-20:language"
             icon2x="oobe-welcome-dialog-40:language"
             on-click="onLanguageClicked_"
             label-for-aria="[[i18nDynamic(locale, 'languageButtonLabel',
                 currentLanguage)]]">
           <div slot="text">[[currentLanguage]]</div>
-        </oobe-welcome-secondary-button>
-        <oobe-welcome-secondary-button id="accessibilitySettingsButton"
+        </oobe-icon-button>
+        <oobe-icon-button id="accessibilitySettingsButton"
             text-key="accessibilityLink"
             icon1x="oobe-welcome-dialog-20:accessibility"
             icon2x="oobe-welcome-dialog-40:accessibility"
-            on-click="onAccessibilityClicked_"></oobe-welcome-secondary-button>
-        <oobe-welcome-secondary-button id="timezoneSettingsButton"
+            on-click="onAccessibilityClicked_"></oobe-icon-button>
+        <oobe-icon-button id="timezoneSettingsButton"
             text-key="timezoneButtonText"
             icon1x="oobe-32:timezone"
             icon2x="oobe-32:timezone"
             on-click="onTimezoneClicked_"
-            hidden="[[!timezoneButtonVisible]]"></oobe-welcome-secondary-button>
+            hidden="[[!timezoneButtonVisible]]"></oobe-icon-button>
       </div>
       <div slot="bottom-buttons">
         <oobe-next-button id="welcomeNextButton"

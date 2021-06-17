@@ -15,6 +15,11 @@
 <link rel="import" href="/components/behaviors/login_screen_behavior.html">
 <link rel="import" href="/components/oobe_icons.html">
 
+<link rel="import" href="/components/buttons/oobe_back_button.html">
+<link rel="import" href="/components/buttons/oobe_icon_button.html">
+<link rel="import" href="/components/buttons/oobe_text_button.html">
+
+
 <dom-module id="marketing-opt-in-element">
   <template>
     <style include="oobe-dialog-host">
@@ -168,14 +173,14 @@
           </cr-lottie>
         </div>
       </div>
-      <oobe-welcome-secondary-button slot="bottom-buttons"
+      <oobe-icon-button slot="bottom-buttons"
           hidden="[[!isA11ySettingsButtonVisible_]]"
           id="marketing-opt-in-accessibility-button"
           on-click="onToggleAccessibilityPage_"
           icon1x="oobe-32:accessibility"
           icon2x="oobe-32:accessibility"
           text-key="marketingOptInA11yButtonLabel">
-      </oobe-welcome-secondary-button>
+      </oobe-icon-button>
       <oobe-text-button slot="bottom-buttons"
           on-click="onGetStarted_" class="focus-on-show"
           inverse text-key="marketingOptInScreenAllSet"

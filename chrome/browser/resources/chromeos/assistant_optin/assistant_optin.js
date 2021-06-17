@@ -5,7 +5,6 @@
 HTMLImports.whenReady(() => {
 // <include src="../login/components/behaviors/multi_step_behavior.js">
 // <include src="../login/components/oobe_types.js">
-// <include src="../login/components/oobe_buttons.js">
 // <include src="assistant_optin_flow.js">
 // <include src="browser_proxy.js">
 
