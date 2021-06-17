@@ -19,6 +19,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/sms_fetcher.h"
+#include "third_party/protobuf/src/google/protobuf/repeated_field.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -28,6 +29,22 @@ namespace {
 // visible to users.
 static constexpr base::TimeDelta kNotificationDelay =
     base::TimeDelta::FromSeconds(1);
+
+bool DoesMatchOriginList(const std::vector<std::u16string>& origins,
+                         const content::OriginList& origin_list) {
+  if (origins.size() != origin_list.size())
+    return false;
+
+  for (size_t i = 0; i < origins.size(); ++i) {
+    if (origins[i] != url_formatter::FormatOriginForSecurityDisplay(
+                          origin_list[i],
+                          url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS)) {
+      return false;
+    }
+  }
+  return true;
+}
+
 }  // namespace
 
 SmsFetchRequestHandler::SmsFetchRequestHandler(
@@ -50,9 +67,17 @@ void SmsFetchRequestHandler::OnMessage(
   const std::string& client_name =
       device ? device->client_name() : message.sender_device_name();
 
-  auto origin = url::Origin::Create(GURL(message.sms_fetch_request().origin()));
-  auto request = std::make_unique<Request>(this, fetcher_, origin, client_name,
-                                           std::move(done_callback));
+  const google::protobuf::RepeatedPtrField<std::string>& origin_strings =
+      message.sms_fetch_request().origins();
+  if (origin_strings.empty())
+    return;
+
+  std::vector<url::Origin> origin_list;
+  for (const std::string& origin_string : origin_strings)
+    origin_list.push_back(url::Origin::Create(GURL(origin_string)));
+
+  auto request = std::make_unique<Request>(
+      this, fetcher_, origin_list, client_name, std::move(done_callback));
   requests_.insert(std::move(request));
 }
 
@@ -65,9 +90,25 @@ void SmsFetchRequestHandler::AskUserPermission(
     const std::string& one_time_code,
     const std::string& client_name) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  // TODO(crbug.com/1015645): Support iframe in cross-device WebOTP.
-  const std::u16string origin = url_formatter::FormatOriginForSecurityDisplay(
-      origin_list[0], url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
+  DCHECK(origin_list.size() == 1 || origin_list.size() == 2);
+
+  base::android::ScopedJavaLocalRef<jstring> embedded_origin;
+  base::android::ScopedJavaLocalRef<jstring> top_origin;
+  if (origin_list.size() == 2) {
+    embedded_origin = base::android::ConvertUTF16ToJavaString(
+        env,
+        url_formatter::FormatOriginForSecurityDisplay(
+            origin_list[0], url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS));
+    top_origin = base::android::ConvertUTF16ToJavaString(
+        env,
+        url_formatter::FormatOriginForSecurityDisplay(
+            origin_list[1], url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS));
+  } else {
+    top_origin = base::android::ConvertUTF16ToJavaString(
+        env,
+        url_formatter::FormatOriginForSecurityDisplay(
+            origin_list[0], url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS));
+  }
 
   // If there is a notification from a previous request on screen this will
   // overwrite that one with the new origin. In most cases where there's only
@@ -77,25 +118,41 @@ void SmsFetchRequestHandler::AskUserPermission(
   // handle failures when there are multiple pending origins simultaneously.
   Java_SmsFetcherMessageHandler_showNotification(
       env, base::android::ConvertUTF8ToJavaString(env, one_time_code),
-      base::android::ConvertUTF16ToJavaString(env, origin),
+      top_origin, embedded_origin,
       base::android::ConvertUTF8ToJavaString(env, client_name),
       reinterpret_cast<intptr_t>(this));
 }
 
-void SmsFetchRequestHandler::OnConfirm(JNIEnv* env, jstring j_origin) {
-  // TODO(crbug.com/1015645): Support iframe in cross-device WebOTP.
-  std::u16string origin =
-      base::android::ConvertJavaStringToUTF16(env, j_origin);
-  auto* request = GetRequest(origin);
+void SmsFetchRequestHandler::OnConfirm(JNIEnv* env,
+                                       jstring j_top_origin,
+                                       jstring j_embedded_origin) {
+  std::vector<std::u16string> origins;
+  if (j_embedded_origin) {
+    std::u16string embedded_origin =
+        base::android::ConvertJavaStringToUTF16(env, j_embedded_origin);
+    origins.push_back(embedded_origin);
+  }
+  std::u16string top_origin =
+      base::android::ConvertJavaStringToUTF16(env, j_top_origin);
+  origins.push_back(top_origin);
+  auto* request = GetRequest(origins);
   DCHECK(request);
   request->SendSuccessMessage();
 }
 
-void SmsFetchRequestHandler::OnDismiss(JNIEnv* env, jstring j_origin) {
-  // TODO(crbug.com/1015645): Support iframe in cross-device WebOTP.
-  std::u16string origin =
-      base::android::ConvertJavaStringToUTF16(env, j_origin);
-  auto* request = GetRequest(origin);
+void SmsFetchRequestHandler::OnDismiss(JNIEnv* env,
+                                       jstring j_top_origin,
+                                       jstring j_embedded_origin) {
+  std::vector<std::u16string> origins;
+  if (j_embedded_origin) {
+    std::u16string embedded_origin =
+        base::android::ConvertJavaStringToUTF16(env, j_embedded_origin);
+    origins.push_back(embedded_origin);
+  }
+  std::u16string top_origin =
+      base::android::ConvertJavaStringToUTF16(env, j_top_origin);
+  origins.push_back(top_origin);
+  auto* request = GetRequest(origins);
   DCHECK(request);
   // TODO(crbug.com/1015645): We should have a separate catergory for this type
   // of failure.
@@ -103,15 +160,12 @@ void SmsFetchRequestHandler::OnDismiss(JNIEnv* env, jstring j_origin) {
 }
 
 SmsFetchRequestHandler::Request* SmsFetchRequestHandler::GetRequest(
-    const std::u16string& origin) {
+    const std::vector<std::u16string>& origins) {
+  // If the request is made from a cross-origin iframe, the origin_list consists
+  // of the embedded frame origin and then the top frame origin.
   for (auto& request : requests_) {
-    const auto& origin_list = request->origin_list();
-    // TODO(crbug.com/1015645): Support iframe in cross-device WebOTP.
-    if (origin == url_formatter::FormatOriginForSecurityDisplay(
-                      origin_list[0],
-                      url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS)) {
+    if (DoesMatchOriginList(origins, request->origin_list()))
       return request.get();
-    }
   }
   return nullptr;
 }
@@ -123,20 +177,18 @@ base::WeakPtr<SmsFetchRequestHandler> SmsFetchRequestHandler::GetWeakPtr() {
 SmsFetchRequestHandler::Request::Request(
     SmsFetchRequestHandler* handler,
     content::SmsFetcher* fetcher,
-    const url::Origin& origin,
+    const std::vector<url::Origin>& origin_list,
     const std::string& client_name,
     SharingMessageHandler::DoneCallback respond_callback)
     : handler_(handler),
       fetcher_(fetcher),
-      origin_list_(content::OriginList{origin}),
+      origin_list_(origin_list),
       client_name_(client_name),
       respond_callback_(std::move(respond_callback)) {
-  // TODO(crbug.com/1015645): Support iframe in cross-device WebOTP.
   fetcher_->Subscribe(origin_list_, this);
 }
 
 SmsFetchRequestHandler::Request::~Request() {
-  // TODO(crbug.com/1015645): Support iframe in cross-device WebOTP.
   fetcher_->Unsubscribe(origin_list_, this);
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_SmsFetcherMessageHandler_dismissNotification(env);
@@ -146,8 +198,7 @@ void SmsFetchRequestHandler::Request::OnReceive(
     const content::OriginList& origin_list,
     const std::string& one_time_code,
     content::SmsFetcher::UserConsent consent_requirement) {
-  // TODO(crbug.com/1015645): Support iframe in cross-device WebOTP.
-  DCHECK_EQ(origin_list[0], origin_list_[0]);
+  DCHECK(origin_list_ == origin_list);
   one_time_code_ = one_time_code;
 
   // Postpones asking for user permission to make sure that the notification is
@@ -163,7 +214,7 @@ void SmsFetchRequestHandler::Request::OnReceive(
 void SmsFetchRequestHandler::Request::SendSuccessMessage() {
   auto response = std::make_unique<chrome_browser_sharing::ResponseMessage>();
   for (const auto& origin : origin_list_)
-    response->mutable_sms_fetch_response()->add_origin(origin.Serialize());
+    response->mutable_sms_fetch_response()->add_origins(origin.Serialize());
   response->mutable_sms_fetch_response()->set_one_time_code(one_time_code_);
 
   std::move(respond_callback_).Run(std::move(response));

@@ -14,7 +14,7 @@
 
 base::OnceClosure FetchRemoteSms(
     content::WebContents* web_contents,
-    const url::Origin& origin,
+    const std::vector<url::Origin>& origin_list,
     base::OnceCallback<void(absl::optional<std::vector<url::Origin>>,
                             absl::optional<std::string>,
                             absl::optional<content::SmsFetchFailureType>)>
@@ -35,7 +35,7 @@ base::OnceClosure FetchRemoteSms(
 #if !defined(OS_ANDROID)
   auto* ui_controller =
       SmsRemoteFetcherUiController::GetOrCreateFromWebContents(web_contents);
-  return ui_controller->FetchRemoteSms(origin, std::move(callback));
+  return ui_controller->FetchRemoteSms(origin_list, std::move(callback));
 #else
   std::move(callback).Run(absl::nullopt, absl::nullopt, absl::nullopt);
   return base::NullCallback();

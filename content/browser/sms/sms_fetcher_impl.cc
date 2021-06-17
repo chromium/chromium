@@ -63,10 +63,9 @@ void SmsFetcherImpl::Subscribe(const OriginList& origin_list,
   subscribers_.Push(origin_list, subscriber);
 
   // Fetches a remote SMS.
-  // TODO(crbug.com/1015645): Support iframe in cross-device WebOTP.
   base::OnceClosure cancel_callback =
       GetContentClient()->browser()->FetchRemoteSms(
-          WebContents::FromRenderFrameHost(render_frame_host), origin_list[0],
+          WebContents::FromRenderFrameHost(render_frame_host), origin_list,
           base::BindOnce(&SmsFetcherImpl::OnRemote,
                          weak_ptr_factory_.GetWeakPtr()));
   if (cancel_callback)

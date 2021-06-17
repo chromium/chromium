@@ -31,7 +31,8 @@ public class SmsFetcherMessageHandler {
     private static final String TAG = "SmsMessageHandler";
     private static final boolean DEBUG = false;
     private static long sSmsFetcherMessageHandlerAndroid;
-    private static String sOrigin;
+    private static String sTopOrigin;
+    private static String sEmbeddedOrigin;
 
     /**
      * Handles the interaction of an incoming notification when an expected SMS arrives.
@@ -53,12 +54,12 @@ public class SmsFetcherMessageHandler {
                 case NOTIFICATION_ACTION_CONFIRM:
                     if (DEBUG) Log.d(TAG, "Notification confirmed");
                     SmsFetcherMessageHandlerJni.get().onConfirm(
-                            sSmsFetcherMessageHandlerAndroid, sOrigin);
+                            sSmsFetcherMessageHandlerAndroid, sTopOrigin, sEmbeddedOrigin);
                     break;
                 case NOTIFICATION_ACTION_CANCEL:
                     if (DEBUG) Log.d(TAG, "Notification canceled");
                     SmsFetcherMessageHandlerJni.get().onDismiss(
-                            sSmsFetcherMessageHandlerAndroid, sOrigin);
+                            sSmsFetcherMessageHandlerAndroid, sTopOrigin, sEmbeddedOrigin);
                     break;
             }
         }
@@ -69,14 +70,17 @@ public class SmsFetcherMessageHandler {
      * device.
      *
      * @param oneTimeCode The one time code from SMS
-     * @param origin The origin from the SMS
+     * @param topOrigin The top frame origin from the SMS
+     * @param embeddedOrigin The embedded frame origin from the SMS. Null if the SMS does not
+     *         contain an iframe origin.
      * @param clientName The client name where the remote request comes from
      * @param smsFetcherMessageHandlerAndroid The native handler
      */
     @CalledByNative
-    private static void showNotification(String oneTimeCode, String origin, String clientName,
-            long smsFetcherMessageHandlerAndroid) {
-        sOrigin = origin;
+    private static void showNotification(String oneTimeCode, String topOrigin,
+            String embeddedOrigin, String clientName, long smsFetcherMessageHandlerAndroid) {
+        sTopOrigin = topOrigin;
+        sEmbeddedOrigin = embeddedOrigin;
         sSmsFetcherMessageHandlerAndroid = smsFetcherMessageHandlerAndroid;
         Context context = ContextUtils.getApplicationContext();
         PendingIntentProvider confirmIntent = PendingIntentProvider.getBroadcast(context,
@@ -93,8 +97,11 @@ public class SmsFetcherMessageHandler {
         String notificationTitle = TextUtils.isEmpty(clientName)
                 ? resources.getString(R.string.sms_fetcher_notification_title_unknown_device)
                 : resources.getString(R.string.sms_fetcher_notification_title, clientName);
-        String notificationText =
-                resources.getString(R.string.sms_fetcher_notification_text, oneTimeCode, origin);
+        String notificationText = embeddedOrigin != null
+                ? resources.getString(R.string.sms_fetcher_notification_text_for_embedded_frame,
+                        oneTimeCode, topOrigin, embeddedOrigin)
+                : resources.getString(
+                        R.string.sms_fetcher_notification_text, oneTimeCode, topOrigin);
         SharingNotificationUtil.showNotification(
                 NotificationUmaTracker.SystemNotificationType.SMS_FETCHER,
                 NotificationConstants.GROUP_SMS_FETCHER,
@@ -114,12 +121,13 @@ public class SmsFetcherMessageHandler {
     @CalledByNative
     private static void reset() {
         sSmsFetcherMessageHandlerAndroid = 0;
-        sOrigin = "";
+        sTopOrigin = null;
+        sEmbeddedOrigin = null;
     }
 
     @NativeMethods
     interface Natives {
-        void onConfirm(long nativeSmsFetchRequestHandler, String origin);
-        void onDismiss(long nativeSmsFetchRequestHandler, String origin);
+        void onConfirm(long nativeSmsFetchRequestHandler, String topOrigin, String embeddedOrigin);
+        void onDismiss(long nativeSmsFetchRequestHandler, String topOrigin, String embeddedOrigin);
     }
 }

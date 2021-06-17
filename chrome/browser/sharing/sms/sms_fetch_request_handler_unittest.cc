@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/sharing/sms/sms_fetch_request_handler.h"
+
 #include <string>
 
 #include "base/android/jni_android.h"
@@ -83,7 +84,15 @@ class MockSmsFetchRequestHandler : public SmsFetchRequestHandler {
 
 SharingMessage CreateRequest(const std::string& origin) {
   SharingMessage message;
-  message.mutable_sms_fetch_request()->set_origin(origin);
+  message.mutable_sms_fetch_request()->add_origins(origin);
+  return message;
+}
+
+SharingMessage CreateRequestWithMultipleOrigins(
+    const std::vector<std::string>& origins) {
+  SharingMessage message;
+  for (const auto& origin : origins)
+    message.mutable_sms_fetch_request()->add_origins(origin);
   return message;
 }
 
@@ -118,7 +127,7 @@ TEST(SmsFetchRequestHandlerTest, Basic) {
 
   subscriber->OnReceive(content::OriginList{url::Origin::Create(GURL(origin))},
                         "123", SmsFetcher::UserConsent::kNotObtained);
-  handler.OnConfirm(env, j_origin.obj());
+  handler.OnConfirm(env, j_origin.obj(), nullptr);
   loop.Run();
 }
 
@@ -173,12 +182,12 @@ TEST(SmsFetchRequestHandlerTest, OutOfOrder) {
 
   request2->OnReceive(content::OriginList{url::Origin::Create(GURL(origin2))},
                       "2", SmsFetcher::UserConsent::kNotObtained);
-  handler.OnConfirm(env, j_origin2.obj());
+  handler.OnConfirm(env, j_origin2.obj(), nullptr);
   loop2.Run();
 
   request1->OnReceive(content::OriginList{url::Origin::Create(GURL(origin1))},
                       "1", SmsFetcher::UserConsent::kNotObtained);
-  handler.OnConfirm(env, j_origin1.obj());
+  handler.OnConfirm(env, j_origin1.obj(), nullptr);
   loop1.Run();
 }
 
@@ -251,7 +260,7 @@ TEST(SmsFetchRequestHandlerTest, SendSuccessMessageOnConfirm) {
 
   subscriber->OnReceive(content::OriginList{url::Origin::Create(GURL(origin))},
                         "123", SmsFetcher::UserConsent::kNotObtained);
-  handler.OnConfirm(env, j_origin.obj());
+  handler.OnConfirm(env, j_origin.obj(), nullptr);
   loop.Run();
 }
 
@@ -286,6 +295,101 @@ TEST(SmsFetchRequestHandlerTest, SendFailureMessageOnDismiss) {
 
   subscriber->OnReceive(content::OriginList{url::Origin::Create(GURL(origin))},
                         "123", SmsFetcher::UserConsent::kNotObtained);
-  handler.OnDismiss(env, j_origin.obj());
+  handler.OnDismiss(env, j_origin.obj(), nullptr);
+  loop.Run();
+}
+
+TEST(SmsFetchRequestHandlerTest, EmbeddedFrameConfirm) {
+  StrictMock<MockSmsFetcher> fetcher;
+  MockSmsFetchRequestHandler handler(&fetcher);
+  const std::string top_origin = "https://top.com";
+  const std::string embedded_origin = "https://embedded.com";
+  std::vector<std::string> origins{embedded_origin, top_origin};
+  SharingMessage message = CreateRequestWithMultipleOrigins(origins);
+  JNIEnv* env = base::android::AttachCurrentThread();
+  const std::u16string formatted_top_origin =
+      url_formatter::FormatOriginForSecurityDisplay(
+          url::Origin::Create(GURL(top_origin)),
+          url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
+  base::android::ScopedJavaLocalRef<jstring> j_top_origin =
+      base::android::ConvertUTF16ToJavaString(env, formatted_top_origin);
+
+  const std::u16string formatted_embedded_origin =
+      url_formatter::FormatOriginForSecurityDisplay(
+          url::Origin::Create(GURL(embedded_origin)),
+          url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
+  base::android::ScopedJavaLocalRef<jstring> j_embedded_origin =
+      base::android::ConvertUTF16ToJavaString(env, formatted_embedded_origin);
+
+  base::RunLoop loop;
+
+  SmsFetcher::Subscriber* subscriber;
+  EXPECT_CALL(fetcher, Subscribe(_, _)).WillOnce(SaveArg<1>(&subscriber));
+  EXPECT_CALL(fetcher, Unsubscribe(_, _));
+
+  handler.OnMessage(
+      message,
+      BindLambdaForTesting([&](std::unique_ptr<ResponseMessage> response) {
+        EXPECT_TRUE(response->has_sms_fetch_response());
+        EXPECT_EQ("123", response->sms_fetch_response().one_time_code());
+        const auto& origin_strings = response->sms_fetch_response().origins();
+        EXPECT_EQ(embedded_origin, origin_strings[0]);
+        EXPECT_EQ(top_origin, origin_strings[1]);
+        loop.Quit();
+      }));
+
+  content::OriginList origin_list;
+  origin_list.push_back(url::Origin::Create(GURL(embedded_origin)));
+  origin_list.push_back(url::Origin::Create(GURL(top_origin)));
+  subscriber->OnReceive(origin_list, "123",
+                        SmsFetcher::UserConsent::kNotObtained);
+  handler.OnConfirm(env, j_top_origin.obj(), j_embedded_origin.obj());
+  loop.Run();
+}
+
+TEST(SmsFetchRequestHandlerTest, EmbeddedFrameDismiss) {
+  StrictMock<MockSmsFetcher> fetcher;
+  MockSmsFetchRequestHandler handler(&fetcher);
+  const std::string top_origin = "https://top.com";
+  const std::string embedded_origin = "https://embedded.com";
+  std::vector<std::string> origins{embedded_origin, top_origin};
+  SharingMessage message = CreateRequestWithMultipleOrigins(origins);
+  JNIEnv* env = base::android::AttachCurrentThread();
+  const std::u16string formatted_top_origin =
+      url_formatter::FormatOriginForSecurityDisplay(
+          url::Origin::Create(GURL(top_origin)),
+          url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
+  base::android::ScopedJavaLocalRef<jstring> j_top_origin =
+      base::android::ConvertUTF16ToJavaString(env, formatted_top_origin);
+
+  const std::u16string formatted_embedded_origin =
+      url_formatter::FormatOriginForSecurityDisplay(
+          url::Origin::Create(GURL(embedded_origin)),
+          url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
+  base::android::ScopedJavaLocalRef<jstring> j_embedded_origin =
+      base::android::ConvertUTF16ToJavaString(env, formatted_embedded_origin);
+
+  base::RunLoop loop;
+
+  SmsFetcher::Subscriber* subscriber;
+  EXPECT_CALL(fetcher, Subscribe(_, _)).WillOnce(SaveArg<1>(&subscriber));
+  EXPECT_CALL(fetcher, Unsubscribe(_, _));
+
+  handler.OnMessage(
+      message,
+      BindLambdaForTesting([&](std::unique_ptr<ResponseMessage> response) {
+        EXPECT_TRUE(response->has_sms_fetch_response());
+        EXPECT_EQ(content::SmsFetchFailureType::kPromptCancelled,
+                  static_cast<content::SmsFetchFailureType>(
+                      response->sms_fetch_response().failure_type()));
+        loop.Quit();
+      }));
+
+  content::OriginList origin_list;
+  origin_list.push_back(url::Origin::Create(GURL(embedded_origin)));
+  origin_list.push_back(url::Origin::Create(GURL(top_origin)));
+  subscriber->OnReceive(origin_list, "123",
+                        SmsFetcher::UserConsent::kNotObtained);
+  handler.OnDismiss(env, j_top_origin.obj(), j_embedded_origin.obj());
   loop.Run();
 }

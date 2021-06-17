@@ -14,17 +14,19 @@ option optimize_for = LITE_RUNTIME;
 
 // Request message to fetch a SMS from a remote device.
 message SmsFetchRequest {
-  // The origin that is requesting the SMS. Remote devices use it to match
-  // against the metadata contained in the received SMS.
+  // The list of origins that is requesting the SMS. Remote devices use it to
+  // match against the metadata contained in the received SMS. At the moment we
+  // expect at most 2 origins in the list when the request is made from a cross
+  // origin iframe. i.e. they represent the top frame and the embedded frame.
   // required
-  string origin = 1;
+  repeated string origins = 1;
 }
 
 // Response message to fetch a SMS from a remote device.
 message SmsFetchResponse {
   // The list of parsed origins of the received SMS.
   // required
-  repeated string origin = 1;
+  repeated string origins = 1;
   // The parsed one time code of the received SMS.
   // required
   string one_time_code = 2;

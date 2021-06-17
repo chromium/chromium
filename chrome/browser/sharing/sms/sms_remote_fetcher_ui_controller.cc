@@ -98,7 +98,7 @@ void SmsRemoteFetcherUiController::OnSmsRemoteFetchResponse(
                                 response->sms_fetch_response().failure_type()));
     return;
   }
-  auto origin_strings = response->sms_fetch_response().origin();
+  auto origin_strings = response->sms_fetch_response().origins();
   std::vector<url::Origin> origin_list;
   for (const std::string& origin_string : origin_strings)
     origin_list.push_back(url::Origin::Create(GURL(origin_string)));
@@ -109,7 +109,7 @@ void SmsRemoteFetcherUiController::OnSmsRemoteFetchResponse(
 }
 
 base::OnceClosure SmsRemoteFetcherUiController::FetchRemoteSms(
-    const url::Origin& origin,
+    const std::vector<url::Origin>& origin_list,
     OnRemoteCallback callback) {
   SharingService::SharingDeviceList devices = GetDevices();
 
@@ -127,7 +127,8 @@ base::OnceClosure SmsRemoteFetcherUiController::FetchRemoteSms(
   last_device_name_ = device->client_name();
   chrome_browser_sharing::SharingMessage request;
 
-  request.mutable_sms_fetch_request()->set_origin(origin.Serialize());
+  for (const url::Origin& origin : origin_list)
+    request.mutable_sms_fetch_request()->add_origins(origin.Serialize());
 
   return SendMessageToDevice(
       *device.get(), blink::kWebOTPRequestTimeout, std::move(request),

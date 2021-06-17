@@ -4208,6 +4208,9 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_SMS_FETCHER_NOTIFICATION_TEXT" translateable="false" desc="Content text shown when the browser has received an SMS on the user's behalf.">
         Let Chrome submit <ph name="ONE_TIME_CODE">%1$s<ex>123</ex></ph> on <ph name="ORIGIN">%2$s<ex>example.com</ex></ph>
       </message>
+      <message name="IDS_SMS_FETCHER_NOTIFICATION_TEXT_FOR_EMBEDDED_FRAME" translateable="false" desc="Content text shown when the browser has received an SMS on the user's behalf. User is on TOP_ORIGIN and they need to use service provided by EMBEDDED_ORIGIN. EMBEDDED_ORIGIN sends out an SMS to verify user identity.">
+        Tap OK to submit <ph name="ONE_TIME_CODE">%1$s<ex>123</ex></ph> on <ph name="EMBEDDED_ORIGIN">%3$s<ex>payment.com</ex></ph> to continue on <ph name="TOP_ORIGIN">%2$s<ex>shopping.com</ex></ph>
+      </message>
 
       <!-- Interventions -->
       <message name="IDS_REDIRECT_BLOCKED_MESSAGE" desc="The message stating that a redirect (noun) was blocked on this page. This will be followed on a separate line with the address the user was being redirected to.">

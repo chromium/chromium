@@ -38,8 +38,8 @@ class SmsFetchRequestHandler : public SharingMessageHandler {
   virtual void AskUserPermission(const content::OriginList&,
                                  const std::string& one_time_code,
                                  const std::string& client_name);
-  virtual void OnConfirm(JNIEnv*, jstring origin);
-  virtual void OnDismiss(JNIEnv*, jstring origin);
+  virtual void OnConfirm(JNIEnv*, jstring top_origin, jstring embedded_origin);
+  virtual void OnDismiss(JNIEnv*, jstring top_origin, jstring embedded_origin);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(SmsFetchRequestHandlerTest, Basic);
@@ -57,7 +57,7 @@ class SmsFetchRequestHandler : public SharingMessageHandler {
    public:
     Request(SmsFetchRequestHandler* handler,
             content::SmsFetcher* fetcher,
-            const url::Origin& origin,
+            const std::vector<url::Origin>& origin_list,
             const std::string& client_name,
             SharingMessageHandler::DoneCallback respond_callback);
     ~Request() override;
@@ -84,7 +84,8 @@ class SmsFetchRequestHandler : public SharingMessageHandler {
   };
 
   void RemoveRequest(Request* Request);
-  Request* GetRequest(const std::u16string& origin);
+  Request* GetRequest(const std::vector<std::u16string>& origins);
+
   base::WeakPtr<SmsFetchRequestHandler> GetWeakPtr();
 
   // |device_source_| is owned by |SharingService| which also transitively owns

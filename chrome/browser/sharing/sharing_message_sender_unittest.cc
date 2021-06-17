@@ -352,7 +352,7 @@ TEST_F(SharingMessageSenderTest, RequestCancelled) {
   std::unique_ptr<syncer::DeviceInfo> device_info = SetupDevice();
 
   chrome_browser_sharing::SharingMessage sent_message;
-  sent_message.mutable_sms_fetch_request()->set_origin("https://a.com");
+  sent_message.mutable_sms_fetch_request()->add_origins("https://a.com");
 
   chrome_browser_sharing::ResponseMessage expected_response_message;
   base::MockCallback<SharingMessageSender::ResponseCallback> mock_callback;

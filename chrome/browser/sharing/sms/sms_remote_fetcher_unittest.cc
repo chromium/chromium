@@ -56,7 +56,7 @@ TEST(SmsRemoteFetcherTest, DisabledByDefault) {
   base::RunLoop loop;
 
   FetchRemoteSms(
-      web_contents.get(), GetOriginForURL("a.com"),
+      web_contents.get(), std::vector<url::Origin>{GetOriginForURL("a.com")},
       BindLambdaForTesting(
           [&loop](absl::optional<std::vector<url::Origin>>,
                   absl::optional<std::string> result,
@@ -88,7 +88,7 @@ TEST(SmsRemoteFetcherTest, NoDevicesAvailable) {
   base::RunLoop loop;
 
   FetchRemoteSms(
-      web_contents.get(), GetOriginForURL("a.com"),
+      web_contents.get(), std::vector<url::Origin>{GetOriginForURL("a.com")},
       BindLambdaForTesting(
           [&loop](absl::optional<std::vector<url::Origin>>,
                   absl::optional<std::string> result,
@@ -134,7 +134,7 @@ TEST(SmsRemoteFetcherTest, OneDevice) {
       }));
 
   FetchRemoteSms(
-      web_contents.get(), GetOriginForURL("a.com"),
+      web_contents.get(), std::vector<url::Origin>{GetOriginForURL("a.com")},
       BindLambdaForTesting(
           [&loop](absl::optional<std::vector<url::Origin>>,
                   absl::optional<std::string> result,
@@ -179,7 +179,7 @@ TEST(SmsRemoteFetcherTest, OneDeviceTimesOut) {
       }));
 
   FetchRemoteSms(
-      web_contents.get(), GetOriginForURL("a.com"),
+      web_contents.get(), std::vector<url::Origin>{GetOriginForURL("a.com")},
       BindLambdaForTesting(
           [&loop](absl::optional<std::vector<url::Origin>>,
                   absl::optional<std::string> result,
@@ -224,7 +224,7 @@ TEST(SmsRemoteFetcherTest, RequestCancelled) {
       }));
 
   base::OnceClosure cancel_callback = FetchRemoteSms(
-      web_contents.get(), GetOriginForURL("a.com"),
+      web_contents.get(), std::vector<url::Origin>{GetOriginForURL("a.com")},
       BindLambdaForTesting(
           [&loop](absl::optional<std::vector<url::Origin>>,
                   absl::optional<std::string> one_time_code,
