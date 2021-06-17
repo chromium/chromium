@@ -28,6 +28,10 @@
 #include "net/log/net_log_with_source.h"
 #include "net/proxy_resolution/proxy_resolution_request.h"
 #include "net/spdy/spdy_session.h"
+#include "url/gurl.h"
+#include "url/scheme_host_port.h"
+#include "url/third_party/mozilla/url_parse.h"
+#include "url/url_canon.h"
 #include "url/url_constants.h"
 
 namespace net {
@@ -43,6 +47,36 @@ base::Value NetLogHttpStreamJobProxyServerResolved(
                                         ? proxy_server.ToPacString()
                                         : std::string());
   return dict;
+}
+
+GURL CreateAltSvcUrl(const GURL& origin_url,
+                     const HostPortPair& alternative_destination) {
+  DCHECK(origin_url.is_valid());
+  DCHECK(origin_url.IsStandard());
+
+  url::Replacements<char> replacements;
+  std::string port_str = base::NumberToString(alternative_destination.port());
+  replacements.SetPort(port_str.c_str(), url::Component(0, port_str.size()));
+  replacements.SetHost(
+      alternative_destination.host().c_str(),
+      url::Component(0, alternative_destination.host().size()));
+
+  return origin_url.ReplaceComponents(replacements);
+}
+
+void ConvertWsToHttp(url::SchemeHostPort& input) {
+  if (base::EqualsCaseInsensitiveASCII(input.scheme(), url::kHttpScheme) ||
+      base::EqualsCaseInsensitiveASCII(input.scheme(), url::kHttpsScheme)) {
+    return;
+  }
+
+  if (base::EqualsCaseInsensitiveASCII(input.scheme(), url::kWsScheme)) {
+    input = url::SchemeHostPort(url::kHttpScheme, input.host(), input.port());
+    return;
+  }
+
+  DCHECK(base::EqualsCaseInsensitiveASCII(input.scheme(), url::kWssScheme));
+  input = url::SchemeHostPort(url::kHttpsScheme, input.host(), input.port());
 }
 
 }  // namespace
@@ -105,6 +139,15 @@ HttpStreamFactory::JobController::JobController(
           session->net_log(),
           NetLogSourceType::HTTP_STREAM_JOB_CONTROLLER)) {
   DCHECK(factory);
+  DCHECK(base::EqualsCaseInsensitiveASCII(request_info_.url.scheme_piece(),
+                                          url::kHttpScheme) ||
+         base::EqualsCaseInsensitiveASCII(request_info_.url.scheme_piece(),
+                                          url::kHttpsScheme) ||
+         base::EqualsCaseInsensitiveASCII(request_info_.url.scheme_piece(),
+                                          url::kWsScheme) ||
+         base::EqualsCaseInsensitiveASCII(request_info_.url.scheme_piece(),
+                                          url::kWssScheme));
+
   net_log_.BeginEvent(NetLogEventType::HTTP_STREAM_JOB_CONTROLLER, [&] {
     return NetLogJobControllerParams(request_info.url, is_preconnect);
   });
@@ -613,8 +656,8 @@ int HttpStreamFactory::JobController::DoResolveProxy() {
     return OK;
   }
 
-  HostPortPair destination(HostPortPair::FromURL(request_info_.url));
-  GURL origin_url = ApplyHostMappingRules(request_info_.url, &destination);
+  GURL origin_url = request_info_.url;
+  RewriteUrlWithHostMappingRules(origin_url);
 
   CompletionOnceCallback io_callback =
       base::BindOnce(&JobController::OnIOComplete, base::Unretained(this));
@@ -658,9 +701,15 @@ int HttpStreamFactory::JobController::DoResolveProxyComplete(int rv) {
 int HttpStreamFactory::JobController::DoCreateJobs() {
   DCHECK(!main_job_);
   DCHECK(!alternative_job_);
+  DCHECK(request_info_.url.is_valid());
+  DCHECK(request_info_.url.IsStandard());
 
-  HostPortPair destination(HostPortPair::FromURL(request_info_.url));
-  GURL origin_url = ApplyHostMappingRules(request_info_.url, &destination);
+  GURL origin_url = request_info_.url;
+  RewriteUrlWithHostMappingRules(origin_url);
+
+  url::SchemeHostPort destination(origin_url);
+  DCHECK(destination.IsValid());
+  ConvertWsToHttp(destination);
 
   // Create an alternative job if alternative service is set up for this domain,
   // but only if we'll be speaking directly to the server, since QUIC through
@@ -682,27 +731,33 @@ int HttpStreamFactory::JobController::DoCreateJobs() {
     // preconnects is currently ignored (see RequestSocketsForPool()), but could
     // be used at some point for proxy resolution or something.
     if (alternative_service_info_.protocol() != kProtoUnknown) {
-      HostPortPair alternative_destination(
-          alternative_service_info_.host_port_pair());
-      ignore_result(
-          ApplyHostMappingRules(request_info_.url, &alternative_destination));
+      GURL alternative_url = CreateAltSvcUrl(
+          origin_url, alternative_service_info_.host_port_pair());
+      RewriteUrlWithHostMappingRules(alternative_url);
+
+      url::SchemeHostPort alternative_destination =
+          url::SchemeHostPort(alternative_url);
+      ConvertWsToHttp(alternative_destination);
+
       main_job_ = job_factory_->CreateAltSvcJob(
           this, PRECONNECT, session_, request_info_, IDLE, proxy_info_,
-          server_ssl_config_, proxy_ssl_config_, alternative_destination,
-          origin_url, alternative_service_info_.protocol(), quic_version,
-          is_websocket_, enable_ip_based_pooling_, session_->net_log());
+          server_ssl_config_, proxy_ssl_config_,
+          std::move(alternative_destination), origin_url,
+          alternative_service_info_.protocol(), quic_version, is_websocket_,
+          enable_ip_based_pooling_, session_->net_log());
     } else {
       main_job_ = job_factory_->CreateMainJob(
           this, PRECONNECT, session_, request_info_, IDLE, proxy_info_,
-          server_ssl_config_, proxy_ssl_config_, destination, origin_url,
-          is_websocket_, enable_ip_based_pooling_, session_->net_log());
+          server_ssl_config_, proxy_ssl_config_, std::move(destination),
+          origin_url, is_websocket_, enable_ip_based_pooling_,
+          session_->net_log());
     }
     main_job_->Preconnect(num_streams_);
     return OK;
   }
   main_job_ = job_factory_->CreateMainJob(
       this, MAIN, session_, request_info_, priority_, proxy_info_,
-      server_ssl_config_, proxy_ssl_config_, destination, origin_url,
+      server_ssl_config_, proxy_ssl_config_, std::move(destination), origin_url,
       is_websocket_, enable_ip_based_pooling_, net_log_.net_log());
   // Alternative Service can only be set for HTTPS requests while Alternative
   // Proxy is set for HTTP requests.
@@ -713,15 +768,20 @@ int HttpStreamFactory::JobController::DoCreateJobs() {
              << " port: " << alternative_service_info_.host_port_pair().port()
              << " version: " << quic_version << ")";
 
-    HostPortPair alternative_destination(
-        alternative_service_info_.host_port_pair());
-    ignore_result(
-        ApplyHostMappingRules(request_info_.url, &alternative_destination));
+    GURL alternative_url =
+        CreateAltSvcUrl(origin_url, alternative_service_info_.host_port_pair());
+    RewriteUrlWithHostMappingRules(alternative_url);
+
+    url::SchemeHostPort alternative_destination =
+        url::SchemeHostPort(alternative_url);
+    ConvertWsToHttp(alternative_destination);
+
     alternative_job_ = job_factory_->CreateAltSvcJob(
         this, ALTERNATIVE, session_, request_info_, priority_, proxy_info_,
-        server_ssl_config_, proxy_ssl_config_, alternative_destination,
-        origin_url, alternative_service_info_.protocol(), quic_version,
-        is_websocket_, enable_ip_based_pooling_, net_log_.net_log());
+        server_ssl_config_, proxy_ssl_config_,
+        std::move(alternative_destination), origin_url,
+        alternative_service_info_.protocol(), quic_version, is_websocket_,
+        enable_ip_based_pooling_, net_log_.net_log());
 
     main_job_is_blocked_ = true;
     alternative_job_->Start(request_->stream_type());
@@ -892,18 +952,9 @@ void HttpStreamFactory::JobController::NotifyRequestFailed(int rv) {
                             ProxyInfo(), ResolveErrorInfo());
 }
 
-GURL HttpStreamFactory::JobController::ApplyHostMappingRules(
-    const GURL& url,
-    HostPortPair* endpoint) {
-  if (session_->params().host_mapping_rules.RewriteHost(endpoint)) {
-    url::Replacements<char> replacements;
-    const std::string port_str = base::NumberToString(endpoint->port());
-    replacements.SetPort(port_str.c_str(), url::Component(0, port_str.size()));
-    replacements.SetHost(endpoint->host().c_str(),
-                         url::Component(0, endpoint->host().size()));
-    return url.ReplaceComponents(replacements);
-  }
-  return url;
+void HttpStreamFactory::JobController::RewriteUrlWithHostMappingRules(
+    GURL& url) {
+  session_->params().host_mapping_rules.RewriteUrl(url);
 }
 
 AlternativeServiceInfo
@@ -949,12 +1000,12 @@ HttpStreamFactory::JobController::GetAlternativeServiceInfoInternal(
   if (!original_url.SchemeIs(url::kHttpsScheme))
     return AlternativeServiceInfo();
 
-  url::SchemeHostPort origin(original_url);
   HttpServerProperties& http_server_properties =
       *session_->http_server_properties();
   const AlternativeServiceInfoVector alternative_service_info_vector =
       http_server_properties.GetAlternativeServiceInfos(
-          origin, request_info.network_isolation_key);
+          url::SchemeHostPort(original_url),
+          request_info.network_isolation_key);
   if (alternative_service_info_vector.empty())
     return AlternativeServiceInfo();
 
@@ -997,7 +1048,7 @@ HttpStreamFactory::JobController::GetAlternativeServiceInfoInternal(
     if (!session_->params().enable_user_alternate_protocol_ports &&
         (alternative_service_info.alternative_service().port >=
              kUnrestrictedPort &&
-         origin.port() < kUnrestrictedPort))
+         original_url.EffectiveIntPort() < kUnrestrictedPort))
       continue;
 
     if (alternative_service_info.protocol() == kProtoHTTP2) {
@@ -1032,21 +1083,24 @@ HttpStreamFactory::JobController::GetAlternativeServiceInfoInternal(
       continue;
 
     // Check whether there is an existing QUIC session to use for this origin.
-    HostPortPair mapped_origin(origin.host(), origin.port());
-    ignore_result(ApplyHostMappingRules(original_url, &mapped_origin));
+    GURL mapped_origin = original_url;
+    RewriteUrlWithHostMappingRules(mapped_origin);
     QuicSessionKey session_key(
-        mapped_origin, request_info.privacy_mode, request_info.socket_tag,
-        request_info.network_isolation_key, request_info.secure_dns_policy);
+        HostPortPair::FromURL(mapped_origin), request_info.privacy_mode,
+        request_info.socket_tag, request_info.network_isolation_key,
+        request_info.secure_dns_policy);
 
-    HostPortPair destination(alternative_service_info.host_port_pair());
-    if (session_key.host() != destination.host() &&
+    GURL destination = CreateAltSvcUrl(
+        original_url, alternative_service_info.host_port_pair());
+    if (session_key.host() != destination.host_piece() &&
         !session_->context().quic_context->params()->allow_remote_alt_svc) {
       continue;
     }
-    ignore_result(ApplyHostMappingRules(original_url, &destination));
+    RewriteUrlWithHostMappingRules(destination);
 
-    if (session_->quic_stream_factory()->CanUseExistingSession(session_key,
-                                                               destination))
+    // TODO(crbug.com/1206799): Pass scheme to CanUseExistingSession().
+    if (session_->quic_stream_factory()->CanUseExistingSession(
+            session_key, HostPortPair::FromURL(destination)))
       return alternative_service_info;
 
     if (!IsQuicAllowedForHost(destination.host()))

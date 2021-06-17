@@ -49,7 +49,7 @@ class HttpStreamFactory::JobController
   const Job* main_job() const { return main_job_.get(); }
   const Job* alternative_job() const { return alternative_job_.get(); }
 
-  GURL ApplyHostMappingRules(const GURL& url, HostPortPair* endpoint);
+  void RewriteUrlWithHostMappingRules(GURL& url);
 
   // Methods below are called by HttpStreamFactory only.
   // Creates request and hands out to HttpStreamFactory, this will also create

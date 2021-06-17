@@ -10,9 +10,14 @@
 #include <string>
 #include <tuple>
 
+#include "base/strings/string_piece.h"
 #include "net/base/net_export.h"
 
 class GURL;
+
+namespace url {
+class SchemeHostPort;
+}  // namespace url
 
 namespace net {
 
@@ -22,10 +27,13 @@ class NET_EXPORT HostPortPair {
  public:
   HostPortPair();
   // If |in_host| represents an IPv6 address, it should not bracket the address.
-  HostPortPair(const std::string& in_host, uint16_t in_port);
+  HostPortPair(base::StringPiece in_host, uint16_t in_port);
 
   // Creates a HostPortPair for the origin of |url|.
   static HostPortPair FromURL(const GURL& url);
+
+  static HostPortPair FromSchemeHostPort(
+      const url::SchemeHostPort& scheme_host_port);
 
   // Creates a HostPortPair from an IPEndPoint.
   static HostPortPair FromIPEndPoint(const IPEndPoint& ipe);

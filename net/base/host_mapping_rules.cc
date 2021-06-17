@@ -8,11 +8,15 @@
 
 #include "base/logging.h"
 #include "base/strings/pattern.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/url_util.h"
+#include "url/gurl.h"
+#include "url/third_party/mozilla/url_parse.h"
+#include "url/url_canon.h"
 
 namespace net {
 
@@ -67,6 +71,36 @@ bool HostMappingRules::RewriteHost(HostPortPair* host_port) const {
   }
 
   return false;
+}
+
+bool HostMappingRules::RewriteUrl(GURL& url) const {
+  // Must be a valid and standard URL. Otherwise, Chrome might not know how to
+  // find/replace the contained host or port.
+  DCHECK(url.is_valid());
+  DCHECK(url.IsStandard());
+  DCHECK(url.has_host());
+
+  HostPortPair host_port_pair = HostPortPair::FromURL(url);
+  if (!RewriteHost(&host_port_pair))
+    return false;
+
+  url::Replacements<char> replacements;
+  std::string port_str = base::NumberToString(host_port_pair.port());
+  replacements.SetPort(port_str.c_str(), url::Component(0, port_str.size()));
+  replacements.SetHost(host_port_pair.host().c_str(),
+                       url::Component(0, host_port_pair.host().size()));
+  GURL new_url = url.ReplaceComponents(replacements);
+
+  if (!new_url.is_valid())
+    return false;
+
+  DCHECK(new_url.IsStandard());
+  DCHECK(new_url.has_host());
+  DCHECK_EQ(url.EffectiveIntPort() == url::PORT_UNSPECIFIED,
+            new_url.EffectiveIntPort() == url::PORT_UNSPECIFIED);
+
+  url = std::move(new_url);
+  return true;
 }
 
 bool HostMappingRules::AddRuleFromString(base::StringPiece rule_string) {

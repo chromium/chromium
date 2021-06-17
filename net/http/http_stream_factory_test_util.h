@@ -16,6 +16,7 @@
 #include "net/proxy_resolution/proxy_info.h"
 #include "net/socket/next_proto.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "url/scheme_host_port.h"
 
 using testing::_;
 using testing::Invoke;
@@ -109,7 +110,7 @@ class MockHttpStreamFactoryJob : public HttpStreamFactory::Job {
                            ProxyInfo proxy_info,
                            const SSLConfig& server_ssl_config,
                            const SSLConfig& proxy_ssl_config,
-                           HostPortPair destination,
+                           url::SchemeHostPort destination,
                            GURL origin_url,
                            NextProto alternative_protocol,
                            quic::ParsedQuicVersion quic_version,
@@ -139,7 +140,7 @@ class TestJobFactory : public HttpStreamFactory::JobFactory {
       const ProxyInfo& proxy_info,
       const SSLConfig& server_ssl_config,
       const SSLConfig& proxy_ssl_config,
-      HostPortPair destination,
+      url::SchemeHostPort destination,
       GURL origin_url,
       bool is_websocket,
       bool enable_ip_based_pooling,
@@ -154,7 +155,7 @@ class TestJobFactory : public HttpStreamFactory::JobFactory {
       const ProxyInfo& proxy_info,
       const SSLConfig& server_ssl_config,
       const SSLConfig& proxy_ssl_config,
-      HostPortPair destination,
+      url::SchemeHostPort destination,
       GURL origin_url,
       NextProto alternative_protocol,
       quic::ParsedQuicVersion quic_version,

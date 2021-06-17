@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -24,6 +25,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "net/base/host_port_pair.h"
 #include "net/base/port_util.h"
 #include "net/base/proxy_delegate.h"
 #include "net/base/trace_constants.h"
@@ -55,6 +57,7 @@
 #include "net/spdy/spdy_session.h"
 #include "net/ssl/ssl_cert_request_info.h"
 #include "net/third_party/quiche/src/spdy/core/spdy_protocol.h"
+#include "url/scheme_host_port.h"
 #include "url/url_constants.h"
 
 namespace net {
@@ -103,7 +106,7 @@ HttpStreamFactory::Job::Job(Delegate* delegate,
                             const ProxyInfo& proxy_info,
                             const SSLConfig& server_ssl_config,
                             const SSLConfig& proxy_ssl_config,
-                            HostPortPair destination,
+                            url::SchemeHostPort destination,
                             GURL origin_url,
                             NextProto alternative_protocol,
                             quic::ParsedQuicVersion quic_version,
@@ -122,7 +125,7 @@ HttpStreamFactory::Job::Job(Delegate* delegate,
       connection_(new ClientSocketHandle),
       session_(session),
       next_state_(STATE_NONE),
-      destination_(destination),
+      destination_(std::move(destination)),
       origin_url_(origin_url),
       is_websocket_(is_websocket),
       try_websocket_over_http2_(is_websocket_ &&
@@ -139,12 +142,9 @@ HttpStreamFactory::Job::Job(Delegate* delegate,
       job_type_(job_type),
       using_ssl_(origin_url_.SchemeIs(url::kHttpsScheme) ||
                  origin_url_.SchemeIs(url::kWssScheme)),
-      using_quic_(alternative_protocol == kProtoQUIC ||
-                  (ShouldForceQuic(session,
-                                   destination,
-                                   origin_url,
-                                   proxy_info,
-                                   using_ssl_))),
+      using_quic_(
+          alternative_protocol == kProtoQUIC ||
+          (ShouldForceQuic(session, destination_, proxy_info, using_ssl_))),
       quic_version_(quic_version),
       expect_spdy_(alternative_protocol == kProtoHTTP2 && !using_quic_),
       using_spdy_(false),
@@ -170,6 +170,10 @@ HttpStreamFactory::Job::Job(Delegate* delegate,
                                           request_info_.secure_dns_policy)),
       stream_type_(HttpStreamRequest::BIDIRECTIONAL_STREAM),
       init_connection_already_resumed_(false) {
+  // Websocket `destination` schemes should be converted to HTTP(S).
+  DCHECK(base::LowerCaseEqualsASCII(destination_.scheme(), url::kHttpScheme) ||
+         base::LowerCaseEqualsASCII(destination_.scheme(), url::kHttpsScheme));
+
   // QUIC can only be spoken to servers, never to proxies.
   if (alternative_protocol == kProtoQUIC)
     DCHECK(proxy_info_.is_direct());
@@ -177,8 +181,7 @@ HttpStreamFactory::Job::Job(Delegate* delegate,
   // The Job is forced to use QUIC without a designated version, try the
   // preferred QUIC version that is supported by default.
   if (quic_version_ == quic::ParsedQuicVersion::Unsupported() &&
-      ShouldForceQuic(session, destination, origin_url, proxy_info,
-                      using_ssl_)) {
+      ShouldForceQuic(session, destination_, proxy_info, using_ssl_)) {
     quic_version_ =
         session->context().quic_context->params()->supported_versions[0];
   }
@@ -345,11 +348,11 @@ void HttpStreamFactory::Job::GetSSLInfo(SSLInfo* ssl_info) {
 }
 
 // static
-bool HttpStreamFactory::Job::ShouldForceQuic(HttpNetworkSession* session,
-                                             const HostPortPair& destination,
-                                             const GURL& origin_url,
-                                             const ProxyInfo& proxy_info,
-                                             bool using_ssl) {
+bool HttpStreamFactory::Job::ShouldForceQuic(
+    HttpNetworkSession* session,
+    const url::SchemeHostPort& destination,
+    const ProxyInfo& proxy_info,
+    bool using_ssl) {
   if (!session->IsQuicEnabled())
     return false;
   // If this is going through a QUIC proxy, only force QUIC for insecure
@@ -358,10 +361,14 @@ bool HttpStreamFactory::Job::ShouldForceQuic(HttpNetworkSession* session,
   if (proxy_info.is_quic())
     return !using_ssl;
   const QuicParams* quic_params = session->context().quic_context->params();
+  // TODO(crbug.com/1206799): Consider converting `origins_to_force_quic_on` to
+  // use url::SchemeHostPort.
   return (base::Contains(quic_params->origins_to_force_quic_on,
                          HostPortPair()) ||
-          base::Contains(quic_params->origins_to_force_quic_on, destination)) &&
-         proxy_info.is_direct() && origin_url.SchemeIs(url::kHttpsScheme);
+          base::Contains(quic_params->origins_to_force_quic_on,
+                         HostPortPair::FromSchemeHostPort(destination))) &&
+         proxy_info.is_direct() &&
+         base::LowerCaseEqualsASCII(destination.scheme(), url::kHttpsScheme);
 }
 
 // static
@@ -813,11 +820,13 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
   if (job_type_ == PRECONNECT) {
     DCHECK(!is_websocket_);
     DCHECK(request_info_.socket_tag == SocketTag());
+    // TODO(crbug.com/1206799): Pass scheme to socket connection.
     return PreconnectSocketsForHttpRequest(
-        GetSocketGroup(), destination_, request_info_.load_flags, priority_,
-        session_, proxy_info_, server_ssl_config_, proxy_ssl_config_,
-        request_info_.privacy_mode, request_info_.network_isolation_key,
-        request_info_.secure_dns_policy, net_log_, num_streams_);
+        GetSocketGroup(), HostPortPair::FromSchemeHostPort(destination_),
+        request_info_.load_flags, priority_, session_, proxy_info_,
+        server_ssl_config_, proxy_ssl_config_, request_info_.privacy_mode,
+        request_info_.network_isolation_key, request_info_.secure_dns_policy,
+        net_log_, num_streams_);
   }
 
   ClientSocketPool::ProxyAuthCallback proxy_auth_callback =
@@ -828,19 +837,23 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
     DCHECK_EQ(SecureDnsPolicy::kAllow, request_info_.secure_dns_policy);
     SSLConfig websocket_server_ssl_config = server_ssl_config_;
     websocket_server_ssl_config.alpn_protos.clear();
+    // TODO(crbug.com/1206799): Pass scheme to socket connection.
     return InitSocketHandleForWebSocketRequest(
-        GetSocketGroup(), destination_, request_info_.load_flags, priority_,
-        session_, proxy_info_, websocket_server_ssl_config, proxy_ssl_config_,
+        GetSocketGroup(), HostPortPair::FromSchemeHostPort(destination_),
+        request_info_.load_flags, priority_, session_, proxy_info_,
+        websocket_server_ssl_config, proxy_ssl_config_,
         request_info_.privacy_mode, request_info_.network_isolation_key,
         net_log_, connection_.get(), io_callback_, proxy_auth_callback);
   }
 
+  // TODO(crbug.com/1206799): Pass scheme to socket connection.
   return InitSocketHandleForHttpRequest(
-      GetSocketGroup(), destination_, request_info_.load_flags, priority_,
-      session_, proxy_info_, server_ssl_config_, proxy_ssl_config_,
-      request_info_.privacy_mode, request_info_.network_isolation_key,
-      request_info_.secure_dns_policy, request_info_.socket_tag, net_log_,
-      connection_.get(), io_callback_, proxy_auth_callback);
+      GetSocketGroup(), HostPortPair::FromSchemeHostPort(destination_),
+      request_info_.load_flags, priority_, session_, proxy_info_,
+      server_ssl_config_, proxy_ssl_config_, request_info_.privacy_mode,
+      request_info_.network_isolation_key, request_info_.secure_dns_policy,
+      request_info_.socket_tag, net_log_, connection_.get(), io_callback_,
+      proxy_auth_callback);
 }
 
 int HttpStreamFactory::Job::DoInitConnectionImplQuic() {
@@ -867,12 +880,15 @@ int HttpStreamFactory::Job::DoInitConnectionImplQuic() {
     // The certificate of a QUIC alternative server is expected to be valid
     // for the origin of the request (in addition to being valid for the
     // server itself).
-    destination = destination_;
+    destination = HostPortPair::FromSchemeHostPort(destination_);
     ssl_config = &server_ssl_config_;
   }
+  DCHECK(url.SchemeIs(url::kHttpsScheme));
+
+  // TODO(crbug.com/1206799): Pass scheme to QUIC request.
   int rv = quic_request_.Request(
-      destination, quic_version_, request_info_.privacy_mode, priority_,
-      request_info_.socket_tag, request_info_.network_isolation_key,
+      std::move(destination), quic_version_, request_info_.privacy_mode,
+      priority_, request_info_.socket_tag, request_info_.network_isolation_key,
       request_info_.secure_dns_policy, proxy_info_.is_direct(),
       ssl_config->GetCertVerifyFlags(), url, net_log_, &net_error_details_,
       base::BindOnce(&Job::OnFailedOnDefaultNetwork, ptr_factory_.GetWeakPtr()),
@@ -1270,14 +1286,14 @@ HttpStreamFactory::JobFactory::CreateMainJob(
     const ProxyInfo& proxy_info,
     const SSLConfig& server_ssl_config,
     const SSLConfig& proxy_ssl_config,
-    HostPortPair destination,
+    url::SchemeHostPort destination,
     GURL origin_url,
     bool is_websocket,
     bool enable_ip_based_pooling,
     NetLog* net_log) {
   return std::make_unique<HttpStreamFactory::Job>(
       delegate, job_type, session, request_info, priority, proxy_info,
-      server_ssl_config, proxy_ssl_config, destination, origin_url,
+      server_ssl_config, proxy_ssl_config, std::move(destination), origin_url,
       kProtoUnknown, quic::ParsedQuicVersion::Unsupported(), is_websocket,
       enable_ip_based_pooling, net_log);
 }
@@ -1292,7 +1308,7 @@ HttpStreamFactory::JobFactory::CreateAltSvcJob(
     const ProxyInfo& proxy_info,
     const SSLConfig& server_ssl_config,
     const SSLConfig& proxy_ssl_config,
-    HostPortPair destination,
+    url::SchemeHostPort destination,
     GURL origin_url,
     NextProto alternative_protocol,
     quic::ParsedQuicVersion quic_version,
@@ -1301,7 +1317,7 @@ HttpStreamFactory::JobFactory::CreateAltSvcJob(
     NetLog* net_log) {
   return std::make_unique<HttpStreamFactory::Job>(
       delegate, job_type, session, request_info, priority, proxy_info,
-      server_ssl_config, proxy_ssl_config, destination, origin_url,
+      server_ssl_config, proxy_ssl_config, std::move(destination), origin_url,
       alternative_protocol, quic_version, is_websocket, enable_ip_based_pooling,
       net_log);
 }

@@ -6,6 +6,8 @@
 
 #include "net/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
+#include "url/scheme_host_port.h"
 
 using std::string;
 
@@ -110,6 +112,36 @@ TEST(HostPortPairTest, Equals) {
   EXPECT_FALSE(new_a_10.Equals(a_11));
   EXPECT_FALSE(new_a_10.Equals(b_10));
   EXPECT_FALSE(new_a_10.Equals(b_11));
+}
+
+TEST(HostPortPairTest, ParsesFromUrl) {
+  HostPortPair parsed = HostPortPair::FromURL(GURL("https://foo.test:1250"));
+  HostPortPair expected("foo.test", 1250);
+
+  EXPECT_EQ(parsed, expected);
+}
+
+TEST(HostPortPairTest, ParsesFromUrlWithIpv6Brackets) {
+  HostPortPair parsed = HostPortPair::FromURL(GURL("https://[::1]"));
+  HostPortPair expected("::1", 443);
+
+  EXPECT_EQ(parsed, expected);
+}
+
+TEST(HostPortPairTest, ParsesFromSchemeHostPort) {
+  HostPortPair parsed = HostPortPair::FromSchemeHostPort(
+      url::SchemeHostPort("ws", "bar.test", 111));
+  HostPortPair expected("bar.test", 111);
+
+  EXPECT_EQ(parsed, expected);
+}
+
+TEST(HostPortPairTest, ParsesFromSchemeHostPortWithIpv6Brackets) {
+  HostPortPair parsed = HostPortPair::FromSchemeHostPort(
+      url::SchemeHostPort("wss", "[::1022]", 112));
+  HostPortPair expected("::1022", 112);
+
+  EXPECT_EQ(parsed, expected);
 }
 
 }  // namespace

@@ -11,6 +11,8 @@
 #include "base/strings/string_piece.h"
 #include "net/base/net_export.h"
 
+class GURL;
+
 namespace net {
 
 class HostPortPair;
@@ -23,9 +25,15 @@ class NET_EXPORT_PRIVATE HostMappingRules {
 
   HostMappingRules& operator=(const HostMappingRules& host_mapping_rules);
 
-  // Modifies |*host_port| based on the current rules. Returns true if
-  // |*host_port| was modified, false otherwise.
+  // Modifies `*host_port` based on the current rules. Returns true if
+  // `*host_port` was modified, false otherwise.
   bool RewriteHost(HostPortPair* host_port) const;
+
+  // Modifies the host and port of `url` based on current rules. Returns true if
+  // `url` was modified, false otherwise. May only be called for URLs with a
+  // host and a scheme that is standard, and if the scheme does not allow ports,
+  // only the host will be rewritten.
+  bool RewriteUrl(GURL& url) const;
 
   // Adds a rule to this mapper. The format of the rule can be one of:
   //

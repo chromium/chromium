@@ -15,18 +15,33 @@
 #include "net/base/parse_number.h"
 #include "net/base/port_util.h"
 #include "url/gurl.h"
+#include "url/scheme_host_port.h"
 
 namespace net {
 
 HostPortPair::HostPortPair() : port_(0) {}
-HostPortPair::HostPortPair(const std::string& in_host, uint16_t in_port)
-    : host_(in_host), port_(in_port) {
-}
+HostPortPair::HostPortPair(base::StringPiece in_host, uint16_t in_port)
+    : host_(in_host), port_(in_port) {}
 
 // static
 HostPortPair HostPortPair::FromURL(const GURL& url) {
   return HostPortPair(url.HostNoBrackets(),
                       static_cast<uint16_t>(url.EffectiveIntPort()));
+}
+
+// static
+HostPortPair HostPortPair::FromSchemeHostPort(
+    const url::SchemeHostPort& scheme_host_port) {
+  DCHECK(scheme_host_port.IsValid());
+
+  // HostPortPair assumes hostnames do not have surrounding brackets (as is
+  // commonly used for IPv6 literals), so strip them if present.
+  base::StringPiece host = scheme_host_port.host();
+  if (host.size() >= 2 && host.front() == '[' && host.back() == ']') {
+    host = host.substr(1, host.size() - 2);
+  }
+
+  return HostPortPair(host, scheme_host_port.port());
 }
 
 // static
