@@ -40,7 +40,6 @@
 
 namespace {
 
-const char kIsUsingDefaultAvatarKey[] = "is_using_default_avatar";
 const char kUseGAIAPictureKey[] = "use_gaia_picture";
 const char kGAIAPictureFileNameKey[] = "gaia_picture_file_name";
 const char kLastDownloadedGAIAPictureUrlWithSizeKey[] =
@@ -88,8 +87,9 @@ ProfileInfoCache::ProfileInfoCache(PrefService* prefs,
 
     // For profiles that don't have the "using default avatar" state set yet,
     // assume it's the same as the "using default name" state.
-    if (!info->HasKey(kIsUsingDefaultAvatarKey)) {
-      info->SetBoolean(kIsUsingDefaultAvatarKey, using_default_name);
+    if (!info->HasKey(ProfileAttributesEntry::kIsUsingDefaultAvatarKey)) {
+      info->SetBoolean(ProfileAttributesEntry::kIsUsingDefaultAvatarKey,
+                       using_default_name);
     }
 
     // `info` may become invalid after this call.
@@ -161,7 +161,7 @@ void ProfileInfoCache::AddProfileToCache(ProfileAttributesInitParams params) {
       IsDefaultProfileName(params.profile_name,
                            /*include_check_for_legacy_profile_name*/ false));
   // Assume newly created profiles use a default avatar.
-  info->SetBoolean(kIsUsingDefaultAvatarKey, true);
+  info->SetBoolean(ProfileAttributesEntry::kIsUsingDefaultAvatarKey, true);
   if (params.account_id.HasAccountIdKey())
     info->SetString(kAccountIdKey, params.account_id.GetAccountIdKey());
   info->SetBoolKey(prefs::kSignedInWithCredentialProvider,
@@ -308,7 +308,8 @@ bool ProfileInfoCache::IsUsingGAIAPictureOfProfileAtIndex(size_t index) const {
 
 bool ProfileInfoCache::ProfileIsUsingDefaultAvatarAtIndex(size_t index) const {
   bool value = false;
-  GetInfoForProfileAtIndex(index)->GetBoolean(kIsUsingDefaultAvatarKey, &value);
+  GetInfoForProfileAtIndex(index)->GetBoolean(
+      ProfileAttributesEntry::kIsUsingDefaultAvatarKey, &value);
   return value;
 }
 
@@ -444,7 +445,7 @@ void ProfileInfoCache::SetProfileIsUsingDefaultAvatarAtIndex(
 
   std::unique_ptr<base::DictionaryValue> info(
       GetInfoForProfileAtIndex(index)->DeepCopy());
-  info->SetBoolean(kIsUsingDefaultAvatarKey, value);
+  info->SetBoolean(ProfileAttributesEntry::kIsUsingDefaultAvatarKey, value);
   SetInfoForProfileAtIndex(index, std::move(info));
 }
 

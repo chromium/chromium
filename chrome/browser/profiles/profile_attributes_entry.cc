@@ -124,6 +124,8 @@ const char ProfileAttributesEntry::kIsConsentedPrimaryAccountKey[] =
 const char ProfileAttributesEntry::kNameKey[] = "name";
 const char ProfileAttributesEntry::kIsUsingDefaultNameKey[] =
     "is_using_default_name";
+const char ProfileAttributesEntry::kIsUsingDefaultAvatarKey[] =
+    "is_using_default_avatar";
 
 // static
 void ProfileAttributesEntry::RegisterLocalStatePrefs(
@@ -416,8 +418,7 @@ bool ProfileAttributesEntry::IsAuthenticated() const {
 }
 
 bool ProfileAttributesEntry::IsUsingDefaultAvatar() const {
-  return profile_info_cache_->ProfileIsUsingDefaultAvatarAtIndex(
-      profile_index());
+  return GetBool(kIsUsingDefaultAvatarKey);
 }
 
 bool ProfileAttributesEntry::IsSignedInWithCredentialProvider() const {
@@ -590,8 +591,7 @@ void ProfileAttributesEntry::SetIsUsingDefaultName(bool value) {
 }
 
 void ProfileAttributesEntry::SetIsUsingDefaultAvatar(bool value) {
-  profile_info_cache_->SetProfileIsUsingDefaultAvatarAtIndex(
-      profile_index(), value);
+  SetBool(kIsUsingDefaultAvatarKey, value);
 }
 
 void ProfileAttributesEntry::SetAvatarIconIndex(size_t icon_index) {
