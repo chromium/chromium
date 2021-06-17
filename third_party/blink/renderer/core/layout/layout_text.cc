@@ -2407,9 +2407,9 @@ PhysicalRect LayoutText::LocalSelectionVisualRect() const {
 
   const FrameSelection& frame_selection = GetFrame()->Selection();
   if (IsInLayoutNGInlineFormattingContext()) {
-    float scaling_factor = 1.0f;
-    if (const auto* svg_inline_text = DynamicTo<LayoutSVGInlineText>(this))
-      scaling_factor = svg_inline_text->ScalingFactor();
+    const auto* svg_inline_text = DynamicTo<LayoutSVGInlineText>(this);
+    float scaling_factor =
+        svg_inline_text ? svg_inline_text->ScalingFactor() : 1.0f;
     PhysicalRect rect;
     NGInlineCursor cursor(*ContainingNGBlockFlow());
     for (cursor.MoveTo(*this); cursor; cursor.MoveToNextForSameLayoutObject()) {
@@ -2420,13 +2420,20 @@ PhysicalRect LayoutText::LocalSelectionVisualRect() const {
       if (status.start == status.end)
         continue;
       PhysicalRect item_rect = cursor.CurrentLocalSelectionRectForText(status);
-      // TODO(tkent): Apply bounding box transform.
-      // See svg/text/text-selection-path-01-b.svg.
-      if (scaling_factor != 1.0f) {
-        item_rect.offset.Scale(1 / scaling_factor);
-        item_rect.size.Scale(1 / scaling_factor);
+      if (svg_inline_text) {
+        FloatRect float_rect(item_rect);
+        const NGFragmentItem& item = *cursor.CurrentItem();
+        float_rect.MoveBy(item.SvgFragmentData()->rect.Location());
+        if (item.HasSvgTransformForBoundingBox()) {
+          float_rect =
+              item.BuildSvgTransformForBoundingBox().MapRect(float_rect);
+        }
+        if (scaling_factor != 1.0f)
+          float_rect.Scale(1 / scaling_factor);
+        item_rect = PhysicalRect::EnclosingRect(float_rect);
+      } else {
+        item_rect.offset += cursor.Current().OffsetInContainerFragment();
       }
-      item_rect.offset += cursor.Current().OffsetInContainerFragment();
       rect.Unite(item_rect);
     }
     return rect;

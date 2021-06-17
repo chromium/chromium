@@ -4196,7 +4196,6 @@ crbug.com/1179585 virtual/layout_ng_svg_text/svg/text/text-outline-2.html [ Fail
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/text/textPathBoundsBug.svg [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/text/textpath-outline.svg [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/text/text-selection-deco-01-b.svg [ Failure ]
-crbug.com/1179585 virtual/layout_ng_svg_text/svg/text/text-selection-path-01-b.svg [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/text/text-selection-text-03-b.svg [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/text/text-with-geometric-precision.svg [ Skip ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/text/tspan-multiple-outline.svg [ Failure ]
