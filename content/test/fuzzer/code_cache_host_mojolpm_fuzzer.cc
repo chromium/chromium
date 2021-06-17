@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <stdint.h>
+
 #include <utility>
 
 #include "base/at_exit.h"
@@ -14,8 +15,11 @@
 #include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread.h"
+#include "content/browser/blob_storage/chrome_blob_storage_context.h"  // [nogncheck]
 #include "content/browser/code_cache/generated_code_cache_context.h"  // [nogncheck]
+#include "content/browser/network_service_instance_impl.h"       // [nogncheck]
 #include "content/browser/renderer_host/code_cache_host_impl.h"  // [nogncheck]
+#include "content/browser/storage_partition_impl.h"              // [nogncheck]
 #include "content/browser/storage_partition_impl_map.h"          // [nogncheck]
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -62,6 +66,10 @@ class ContentFuzzerEnvironment {
     logging::SetMinLogLevel(logging::LOG_FATAL);
     mojo::core::Init();
     base::i18n::InitializeICU();
+
+    content::ForceCreateNetworkServiceDirectlyForTesting();
+    content::StoragePartitionImpl::ForceInProcessStorageServiceForTesting();
+
     fuzzer_thread_.StartAndWaitForTesting();
   }
 
@@ -217,7 +225,8 @@ void CodeCacheHostTestcase::SetUpOnUIThread() {
           browser_context_->GetDefaultStoragePartition()
               ->GetQuotaManager()
               ->proxy(),
-          /*blob_storage_context=*/mojo::NullRemote());
+          content::ChromeBlobStorageContext::GetRemoteFor(
+              browser_context_.get()));
 
   generated_code_cache_context_ =
       base::MakeRefCounted<content::GeneratedCodeCacheContext>();
@@ -343,7 +352,7 @@ void CodeCacheHostTestcase::AddCodeCacheHost(
 // Helper function to keep scheduling fuzzer actions on the current runloop
 // until the testcase has completed, and then quit the runloop.
 void NextAction(CodeCacheHostTestcase* testcase,
-                base::RepeatingClosure quit_closure) {
+                base::OnceClosure quit_closure) {
   if (!testcase->IsFinished()) {
     testcase->NextAction();
     GetFuzzerTaskRunner()->PostTask(
