@@ -19,6 +19,8 @@ class TestExternallyManagedAppManagerImpl
   explicit TestExternallyManagedAppManagerImpl(Profile* profile);
   ~TestExternallyManagedAppManagerImpl() override;
 
+  void InstallNow(ExternalInstallOptions install_options,
+                  OnceInstallCallback callback) override;
   void Install(ExternalInstallOptions install_options,
                OnceInstallCallback callback) override;
   void InstallApps(std::vector<ExternalInstallOptions> install_options_list,

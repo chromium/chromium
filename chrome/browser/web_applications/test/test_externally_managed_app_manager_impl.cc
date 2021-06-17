@@ -15,9 +15,16 @@ TestExternallyManagedAppManagerImpl::TestExternallyManagedAppManagerImpl(
 TestExternallyManagedAppManagerImpl::~TestExternallyManagedAppManagerImpl() =
     default;
 
+void TestExternallyManagedAppManagerImpl::InstallNow(
+    ExternalInstallOptions install_options,
+    OnceInstallCallback callback) {
+  Install(install_options, std::move(callback));
+}
+
 void TestExternallyManagedAppManagerImpl::Install(
     ExternalInstallOptions install_options,
     OnceInstallCallback callback) {
+  install_requests_.push_back(install_options);
   if (handle_install_request_callback_) {
     base::ThreadTaskRunnerHandle::Get()->PostTaskAndReplyWithResult(
         FROM_HERE,
@@ -25,8 +32,6 @@ void TestExternallyManagedAppManagerImpl::Install(
         base::BindOnce(std::move(callback), install_options.install_url));
     return;
   }
-
-  install_requests_.push_back(install_options);
   ExternallyManagedAppManagerImpl::Install(install_options,
                                            std::move(callback));
 }
@@ -52,6 +57,8 @@ void TestExternallyManagedAppManagerImpl::UninstallApps(
     std::vector<GURL> uninstall_urls,
     ExternalInstallSource install_source,
     const UninstallCallback& callback) {
+  std::copy(uninstall_urls.begin(), uninstall_urls.end(),
+            std::back_inserter(uninstall_requests_));
   if (handle_uninstall_request_callback_) {
     for (auto& app_url : uninstall_urls) {
       base::ThreadTaskRunnerHandle::Get()->PostTaskAndReplyWithResult(
@@ -62,9 +69,6 @@ void TestExternallyManagedAppManagerImpl::UninstallApps(
     }
     return;
   }
-
-  std::copy(uninstall_urls.begin(), uninstall_urls.end(),
-            std::back_inserter(uninstall_requests_));
   ExternallyManagedAppManagerImpl::UninstallApps(uninstall_urls, install_source,
                                                  std::move(callback));
 }

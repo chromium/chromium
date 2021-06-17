@@ -49,45 +49,6 @@ namespace web_app {
 
 namespace {
 
-// TODO(loyso): Call sites should specify Source explicitly as a part of
-// AppTraits parameter object.
-Source::Type InferSourceFromMetricsInstallSource(
-    webapps::WebappInstallSource install_source) {
-  switch (install_source) {
-    case webapps::WebappInstallSource::MENU_BROWSER_TAB:
-    case webapps::WebappInstallSource::MENU_CUSTOM_TAB:
-    case webapps::WebappInstallSource::AUTOMATIC_PROMPT_BROWSER_TAB:
-    case webapps::WebappInstallSource::AUTOMATIC_PROMPT_CUSTOM_TAB:
-    case webapps::WebappInstallSource::API_BROWSER_TAB:
-    case webapps::WebappInstallSource::API_CUSTOM_TAB:
-    case webapps::WebappInstallSource::DEVTOOLS:
-    case webapps::WebappInstallSource::MANAGEMENT_API:
-    case webapps::WebappInstallSource::AMBIENT_BADGE_BROWSER_TAB:
-    case webapps::WebappInstallSource::AMBIENT_BADGE_CUSTOM_TAB:
-    case webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON:
-    case webapps::WebappInstallSource::SYNC:
-    case webapps::WebappInstallSource::MENU_CREATE_SHORTCUT:
-      return Source::kSync;
-
-    case webapps::WebappInstallSource::INTERNAL_DEFAULT:
-    case webapps::WebappInstallSource::EXTERNAL_DEFAULT:
-      return Source::kDefault;
-
-    case webapps::WebappInstallSource::EXTERNAL_POLICY:
-      return Source::kPolicy;
-
-    case webapps::WebappInstallSource::SYSTEM_DEFAULT:
-      return Source::kSystem;
-
-    case webapps::WebappInstallSource::ARC:
-      return Source::kWebAppStore;
-
-    case webapps::WebappInstallSource::COUNT:
-      NOTREACHED();
-      return Source::kSync;
-  }
-}
-
 Source::Type InferSourceFromWebAppUninstallSource(
     webapps::WebappUninstallSource external_install_source) {
   switch (external_install_source) {
