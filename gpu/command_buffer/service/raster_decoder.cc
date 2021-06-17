@@ -347,11 +347,11 @@ class RasterCommandsCompletedQuery : public QueryManager::Query {
 
   void Process(bool did_finish) override {
     DCHECK(begin_time_);
-    if (!finished_)
-      return;
-    const base::TimeDelta elapsed = base::TimeTicks::Now() - *begin_time_;
-    MarkAsCompleted(elapsed.InMicroseconds());
-    begin_time_.reset();
+    if (did_finish || finished_) {
+      const base::TimeDelta elapsed = base::TimeTicks::Now() - *begin_time_;
+      MarkAsCompleted(elapsed.InMicroseconds());
+      begin_time_.reset();
+    }
   }
 
   void Destroy(bool have_context) override {
@@ -1922,15 +1922,17 @@ error::Error RasterDecoderImpl::HandleQueryCounterEXT(
 }
 
 void RasterDecoderImpl::DoFinish() {
-  if (shared_context_state_->GrContextIsGL())
-    api()->glFinishFn();
-  ProcessPendingQueries(true);
+  if (auto* gr_context = shared_context_state_->gr_context()) {
+    gr_context->flushAndSubmit(/*syncCpu=*/true);
+  }
+  ProcessPendingQueries(/*did_finish=*/true);
 }
 
 void RasterDecoderImpl::DoFlush() {
-  if (shared_context_state_->GrContextIsGL())
-    api()->glFlushFn();
-  ProcessPendingQueries(false);
+  if (auto* gr_context = shared_context_state_->gr_context()) {
+    gr_context->flushAndSubmit(/*syncCpu=*/false);
+  }
+  ProcessPendingQueries(/*did_finish=*/false);
 }
 
 bool RasterDecoderImpl::GenQueriesEXTHelper(GLsizei n,

@@ -227,11 +227,13 @@ _FUNCTION_INFO = {
     'impl_func': False,
     'client_test': False,
     'decoder_func': 'DoFinish',
+    'unit_test': False,
     'trace_level': 1,
   },
   'Flush': {
     'impl_func': False,
     'decoder_func': 'DoFlush',
+    'unit_test': False,
     'trace_level': 1,
   },
   'GetError': {
