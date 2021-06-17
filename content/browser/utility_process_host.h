@@ -19,6 +19,7 @@
 #include "content/common/child_process.mojom.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_child_process_host_delegate.h"
+#include "ipc/ipc_sender.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/system/message_pipe.h"
@@ -51,7 +52,8 @@ typedef base::Thread* (*UtilityMainThreadFactoryFunction)(
 // avoid a use after free since this object is deleted synchronously but the
 // client notification is asynchronous.  See http://crbug.com/108871.
 class CONTENT_EXPORT UtilityProcessHost
-    : public BrowserChildProcessHostDelegate {
+    : public IPC::Sender,
+      public BrowserChildProcessHostDelegate {
  public:
   static void RegisterUtilityMainThreadFactory(
       UtilityMainThreadFactoryFunction create);
@@ -114,7 +116,11 @@ class CONTENT_EXPORT UtilityProcessHost
   // Starts the child process if needed, returns true on success.
   bool StartProcess();
 
+  // IPCSender:
+  bool Send(IPC::Message* message) override;
+
   // BrowserChildProcessHostDelegate:
+  bool OnMessageReceived(const IPC::Message& message) override;
   void OnProcessLaunched() override;
   void OnProcessLaunchFailed(int error_code) override;
   void OnProcessCrashed(int exit_code) override;

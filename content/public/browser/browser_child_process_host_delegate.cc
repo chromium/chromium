@@ -10,9 +10,4 @@ absl::optional<std::string> BrowserChildProcessHostDelegate::GetServiceName() {
   return absl::nullopt;
 }
 
-bool BrowserChildProcessHostDelegate::OnMessageReceived(
-    const IPC::Message& message) {
-  return false;
-}
-
 }  // namespace content
