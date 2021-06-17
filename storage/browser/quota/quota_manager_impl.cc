@@ -595,10 +595,10 @@ class QuotaManagerImpl::OriginDataDeleter : public QuotaTask {
       QuotaClientType client_type = client_and_type.second;
       if (quota_client_types_.contains(client_type)) {
         static int tracing_id = 0;
-        TRACE_EVENT_ASYNC_BEGIN2("browsing_data",
-                                 "QuotaManagerImpl::OriginDataDeleter",
-                                 ++tracing_id, "client_type", client_type,
-                                 "origin", origin_.Serialize());
+        TRACE_EVENT_NESTABLE_ASYNC_BEGIN2(
+            "browsing_data", "QuotaManagerImpl::OriginDataDeleter",
+            ++tracing_id, "client_type", client_type, "origin",
+            origin_.Serialize());
         client->DeleteOriginData(
             origin_, type_,
             base::BindOnce(&OriginDataDeleter::DidDeleteOriginData,
@@ -635,8 +635,8 @@ class QuotaManagerImpl::OriginDataDeleter : public QuotaTask {
   void DidDeleteOriginData(int tracing_id,
                            blink::mojom::QuotaStatusCode status) {
     DCHECK_GT(remaining_clients_, 0U);
-    TRACE_EVENT_ASYNC_END0("browsing_data",
-                           "QuotaManagerImpl::OriginDataDeleter", tracing_id);
+    TRACE_EVENT_NESTABLE_ASYNC_END0(
+        "browsing_data", "QuotaManagerImpl::OriginDataDeleter", tracing_id);
 
     if (status != blink::mojom::QuotaStatusCode::kOk)
       ++error_count_;
