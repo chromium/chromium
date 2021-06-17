@@ -90,6 +90,18 @@ void TestSegmentInfoDatabase::AddUserActionFeature(
   feature->set_aggregation(aggregation);
 }
 
+void TestSegmentInfoDatabase::AddHistogramValueFeature(
+    OptimizationTarget segment_id,
+    const std::string& histogram_name) {
+  proto::SegmentInfo* info = FindOrCreateSegment(segment_id);
+  proto::SegmentationModelMetadata* metadata = info->mutable_model_metadata();
+  proto::Feature* feature = metadata->add_features();
+  proto::HistogramValueFeature* histogram_value =
+      feature->mutable_histogram_value();
+  histogram_value->set_name(histogram_name);
+  histogram_value->set_name_hash(base::HashMetricName(histogram_name));
+}
+
 void TestSegmentInfoDatabase::AddPredictionResult(OptimizationTarget segment_id,
                                                   float score,
                                                   base::Time timestamp) {

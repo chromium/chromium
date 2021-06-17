@@ -26,7 +26,6 @@ static_library("internal") {
     "database/signal_key.h",
     "database/signal_key_internal.cc",
     "database/signal_key_internal.h",
-    "database/user_action_database.h",
     "execution/dummy_model_execution_manager.cc",
     "execution/dummy_model_execution_manager.h",
     "execution/model_execution_manager.h",
@@ -43,6 +42,8 @@ static_library("internal") {
     "selection/segment_selector_impl.h",
     "selection/segmentation_result_prefs.cc",
     "selection/segmentation_result_prefs.h",
+    "signals/histogram_signal_handler.cc",
+    "signals/histogram_signal_handler.h",
     "signals/signal_filter_processor.cc",
     "signals/signal_filter_processor.h",
     "signals/user_action_signal_handler.cc",
@@ -88,6 +89,8 @@ source_set("unit_tests") {
   # tests in //components/segmentation_platform/components_unittests.filter
   sources = [
     "database/metadata_utils_unittest.cc",
+    "database/mock_signal_database.cc",
+    "database/mock_signal_database.h",
     "database/segment_info_database_unittest.cc",
     "database/signal_database_impl_unittest.cc",
     "database/signal_key_internal_unittest.cc",
@@ -99,6 +102,7 @@ source_set("unit_tests") {
     "scheduler/model_execution_scheduler_unittest.cc",
     "segmentation_platform_service_impl_unittest.cc",
     "selection/segment_selector_unittest.cc",
+    "signals/histogram_signal_handler_unittest.cc",
     "signals/signal_filter_processor_unittest.cc",
     "signals/user_action_signal_handler_unittest.cc",
   ]
