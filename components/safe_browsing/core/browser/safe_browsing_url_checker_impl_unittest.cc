@@ -11,10 +11,10 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "components/safe_browsing/core/browser/safe_browsing_token_fetcher.h"
 #include "components/safe_browsing/core/browser/url_checker_delegate.h"
 #include "components/safe_browsing/core/common/test_task_environment.h"
-#include "components/safe_browsing/core/common/thread_utils.h"
 #include "components/safe_browsing/core/db/test_database_manager.h"
 #include "components/safe_browsing/core/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/proto/csd.pb.h"
@@ -51,10 +51,9 @@ class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
       return true;
     }
     if (!urls_delayed_callback_[url]) {
-      GetTaskRunner(ThreadID::IO)
-          ->PostTask(FROM_HERE,
-                     base::BindOnce(
-                         &MockSafeBrowsingDatabaseManager::OnCheckBrowseURLDone,
+      base::ThreadTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE,
+          base::BindOnce(&MockSafeBrowsingDatabaseManager::OnCheckBrowseURLDone,
                          this, gurl, client));
     } else {
       // If delayed callback is set to true, store the client in |urls_client_|.
@@ -93,10 +92,9 @@ class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
     std::string url = gurl.spec();
     DCHECK(base::Contains(urls_delayed_callback_, url));
     DCHECK_EQ(true, urls_delayed_callback_[url]);
-    GetTaskRunner(ThreadID::IO)
-        ->PostTask(FROM_HERE,
-                   base::BindOnce(
-                       &MockSafeBrowsingDatabaseManager::OnCheckBrowseURLDone,
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&MockSafeBrowsingDatabaseManager::OnCheckBrowseURLDone,
                        this, gurl, urls_client_[url]));
   }
 
