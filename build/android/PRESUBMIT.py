@@ -32,6 +32,7 @@ def CommonChecks(input_api, output_api):
               r'.*_pb2\.py',
               r'.*list_java_targets\.py',  # crbug.com/1100664
               r'.*fast_local_dev_server\.py',  # crbug.com/1100664
+              r'.*incremental_javac_test_android_library.py', #crbug.com/1100664
           ] + build_pys,
           extra_paths_list=[
               J(),

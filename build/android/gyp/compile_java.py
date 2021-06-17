@@ -471,6 +471,11 @@ def _RunCompiler(changes,
         if (all_changed_paths_are_java and not changes.HasStringChanges()
             and os.path.exists(jar_path)
             and (jar_info_path is None or os.path.exists(jar_info_path))):
+          # Log message is used by tests to determine whether partial javac
+          # optimization was used.
+          logging.info('Using partial javac optimization for %s compile' %
+                       (jar_path))
+
           # Header jar corresponding to |java_files| did not change.
           # As a build speed optimization (crbug.com/1170778), re-compile only
           # java files which have changed. Re-use old jar .info file.

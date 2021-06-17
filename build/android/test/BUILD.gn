@@ -84,4 +84,14 @@ if (enable_java_templates) {
       },
     ]
   }
+
+  # Tests that builds which use incremental javac are valid.
+  junit_binary("incremental_javac_junit_tests") {
+    sources = [ "../java/test/IncrementalJavacTest.java" ]
+    deps = [
+      "incremental_javac_gn:no_signature_change_prebuilt_java",
+      "//base:base_junit_test_support",
+      "//third_party/junit",
+    ]
+  }
 }
