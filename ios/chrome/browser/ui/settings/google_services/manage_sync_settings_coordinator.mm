@@ -328,7 +328,24 @@ using signin_metrics::PromoAction;
 #pragma mark - SyncObserverModelBridge
 
 - (void)onSyncStateChanged {
-  if (!self.syncService->GetDisableReasons().Empty()) {
+  syncer::SyncService::DisableReasonSet disableReasons =
+      self.syncService->GetDisableReasons();
+  bool isMICeEnabled =
+      base::FeatureList::IsEnabled(signin::kMobileIdentityConsistency);
+  syncer::SyncService::DisableReasonSet userChoiceDisableReason =
+      syncer::SyncService::DisableReasonSet(
+          syncer::SyncService::DISABLE_REASON_USER_CHOICE);
+  // MICe: manage sync settings needs to stay opened if sync is disabled with
+  // DISABLE_REASON_USER_CHOICE. Manage sync settings is the only way for a
+  // user to turn on the sync engine (and remove DISABLE_REASON_USER_CHOICE).
+  // The sync engine turned back on automatically by enabling any datatype.
+  // A pre-MICe signed in user who migrated to MICe, might have sync disabled.
+  bool closeSyncSettingsWithMice =
+      isMICeEnabled &&
+      (!disableReasons.Empty() && disableReasons != userChoiceDisableReason);
+  // Pre-MICe: manage sync settings needs to be closed if the sync is disabled.
+  bool closeSyncSettingsPreMICE = !isMICeEnabled && !disableReasons.Empty();
+  if (closeSyncSettingsWithMice || closeSyncSettingsPreMICE) {
     [self closeManageSyncSettings];
   }
 }
