@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.share;
 
 import android.app.Activity;
-import android.net.Uri;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
@@ -15,7 +14,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.AppHooks;
-import org.chromium.chrome.browser.feature_engagement.ScreenshotTabObserver;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.history_clusters.HistoryClustersTabHelper;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -30,9 +28,7 @@ import org.chromium.chrome.browser.share.share_sheet.ShareSheetPropertyModelBuil
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.util.ChromeFileProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.share.ShareImageFileUtils;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -60,8 +56,6 @@ public class ShareDelegateImpl implements ShareDelegate {
     private final ShareSheetDelegate mDelegate;
     private final boolean mIsCustomTab;
     private long mShareStartTime;
-
-    private static boolean sScreenshotCaptureSkippedForTesting;
 
     /**
      * Constructs a new {@link ShareDelegateImpl}.
@@ -140,12 +134,6 @@ public class ShareDelegateImpl implements ShareDelegate {
 
     private void triggerShare(final Tab currentTab, @ShareOrigin final int shareOrigin,
             final boolean shareDirectly, boolean isIncognito) {
-        ScreenshotTabObserver tabObserver = ScreenshotTabObserver.from(currentTab);
-        if (tabObserver != null) {
-            tabObserver.onActionPerformedAfterScreenshot(
-                    ScreenshotTabObserver.SCREENSHOT_ACTION_SHARE);
-        }
-
         OfflinePageUtils.maybeShareOfflinePage(currentTab, (ShareParams p) -> {
             if (p != null) {
                 share(p, new ChromeShareExtras.Builder().setIsUrlOfVisiblePage(true).build(),
@@ -179,15 +167,9 @@ public class ShareDelegateImpl implements ShareDelegate {
             final WebContents webContents, final String title, final @NonNull GURL visibleUrl,
             final GURL canonicalUrl, @ShareOrigin final int shareOrigin,
             final boolean shareDirectly, boolean isIncognito) {
-        // Share an empty blockingUri in place of screenshot file. The file ready notification is
-        // sent by onScreenshotReady call below when the file is written.
-        final Uri blockingUri = (isIncognito || webContents == null)
-                ? null
-                : ChromeFileProvider.generateUriAndBlockAccess();
         ShareParams.Builder builder =
                 new ShareParams.Builder(window, title, getUrlToShare(visibleUrl, canonicalUrl))
-                        .setScreenshotUri(blockingUri);
-
+                        .setScreenshotUri(null);
         share(builder.build(),
                 new ChromeShareExtras.Builder()
                         .setSaveLastUsed(!shareDirectly)
@@ -197,18 +179,6 @@ public class ShareDelegateImpl implements ShareDelegate {
                 shareOrigin);
 
         HistoryClustersTabHelper.onCurrentTabUrlShared(webContents);
-        if (blockingUri == null) return;
-
-        // Start screenshot capture and notify the provider when it is ready.
-        Callback<Uri> callback = (saveFile) -> {
-            // Unblock the file once it is saved to disk.
-            ChromeFileProvider.notifyFileReady(blockingUri, saveFile);
-        };
-        if (sScreenshotCaptureSkippedForTesting) {
-            callback.onResult(null);
-        } else {
-            ShareImageFileUtils.captureScreenshotForContents(webContents, 0, 0, callback);
-        }
     }
 
     @VisibleForTesting
@@ -228,11 +198,6 @@ public class ShareDelegateImpl implements ShareDelegate {
         int result = getCanonicalUrlResult(visibleUrl, canonicalUrl);
         RecordHistogram.recordEnumeratedHistogram(CANONICAL_URL_RESULT_HISTOGRAM, result,
                 CanonicalURLResult.CANONICAL_URL_RESULT_COUNT);
-    }
-
-    @VisibleForTesting
-    public static void setScreenshotCaptureSkippedForTesting(boolean value) {
-        sScreenshotCaptureSkippedForTesting = value;
     }
 
     @VisibleForTesting
