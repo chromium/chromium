@@ -43,7 +43,8 @@ def tryjob(
         location_regexp = None,
         location_regexp_exclude = None,
         cancel_stale = None,
-        add_default_excludes = True):
+        add_default_excludes = True,
+        enable_for_quick_run = False):
     """Specifies the details of a tryjob verifier.
 
     See https://chromium.googlesource.com/infra/luci/luci-go/+/HEAD/lucicfg/doc/README.md#luci.cq_tryjob_verifier
@@ -54,6 +55,8 @@ def tryjob(
         for certain directories that would have no impact when building chromium
         with the patch applied (docs, config files that don't take effect until
         landing, etc., see DEFAULT_EXCLUDE_REGEXPS).
+      enable_for_quick_run - A bool indicating whether to enable the builder for
+        cq.MODE_QUICK_DRY_RUN.
 
     Returns:
       A struct that can be passed to the `tryjob` argument of `try_.builder` to
@@ -66,6 +69,7 @@ def tryjob(
         location_regexp = location_regexp,
         location_regexp_exclude = location_regexp_exclude,
         cancel_stale = cancel_stale,
+        enable_for_quick_run = enable_for_quick_run,
     )
 
 def try_builder(
@@ -185,6 +189,10 @@ def try_builder(
         if tryjob.add_default_excludes:
             location_regexp_exclude = DEFAULT_EXCLUDE_REGEXPS + (location_regexp_exclude or [])
 
+        mode_allowlist = [cq.MODE_FULL_RUN, cq.MODE_DRY_RUN]
+        if tryjob.enable_for_quick_run:
+            mode_allowlist.append(cq.MODE_QUICK_DRY_RUN)
+
         luci.cq_tryjob_verifier(
             builder = builder,
             cq_group = cq_group,
@@ -193,6 +201,7 @@ def try_builder(
             location_regexp = tryjob.location_regexp,
             location_regexp_exclude = location_regexp_exclude,
             cancel_stale = tryjob.cancel_stale,
+            mode_allowlist = mode_allowlist,
         )
     else:
         # Allow CQ to trigger this builder if user opts in via CQ-Include-Trybots.
