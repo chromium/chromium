@@ -104,7 +104,8 @@ void ChosenObjectView::ExecuteDeleteCommand() {
 }
 
 void ChosenObjectView::UpdateIconImage(bool is_deleted) const {
-  row_view_->SetIcon(PageInfoUI::GetChosenObjectIcon(*info_, is_deleted));
+  row_view_->SetIcon(
+      PageInfoViewFactory::GetChosenObjectIcon(*info_, is_deleted));
 }
 
 BEGIN_METADATA(ChosenObjectView, views::View)

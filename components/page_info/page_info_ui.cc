@@ -24,7 +24,6 @@
 #include "components/security_interstitials/core/common_string_util.h"
 #include "components/strings/grit/components_chromium_strings.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/vector_icons/vector_icons.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "services/device/public/cpp/device_features.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -34,7 +33,6 @@
 #else
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
-#include "ui/gfx/paint_vector_icon.h"
 #include "ui/native_theme/native_theme.h"  // nogncheck
 #endif
 
@@ -45,13 +43,6 @@
 namespace {
 
 const int kInvalidResourceID = -1;
-
-#if !defined(OS_ANDROID)
-// The icon size is actually 16, but the vector icons being used generally all
-// have additional internal padding. Account for this difference by asking for
-// the vectors in 18x18dip sizes.
-constexpr int kVectorIconSize = 18;
-#endif
 
 // The resource IDs for the strings that are displayed on the permissions
 // button if the permission setting is managed by policy.
@@ -620,205 +611,7 @@ int PageInfoUI::GetConnectionIconColorID(
   return 0;
 }
 
-#else  // !defined(OS_ANDROID)
-// static
-const ui::ImageModel PageInfoUI::GetPermissionIcon(
-    const PageInfo::PermissionInfo& info) {
-  const gfx::VectorIcon* icon = &gfx::kNoneIcon;
-  switch (info.type) {
-    case ContentSettingsType::COOKIES:
-      icon = &vector_icons::kCookieIcon;
-      break;
-    case ContentSettingsType::IMAGES:
-      icon = &vector_icons::kPhotoIcon;
-      break;
-    case ContentSettingsType::JAVASCRIPT:
-      icon = &vector_icons::kCodeIcon;
-      break;
-    case ContentSettingsType::POPUPS:
-      icon = &vector_icons::kLaunchIcon;
-      break;
-    case ContentSettingsType::GEOLOCATION:
-      icon = &vector_icons::kLocationOnIcon;
-      break;
-    case ContentSettingsType::NOTIFICATIONS:
-      icon = &vector_icons::kNotificationsIcon;
-      break;
-    case ContentSettingsType::MEDIASTREAM_MIC:
-      icon = &vector_icons::kMicIcon;
-      break;
-    case ContentSettingsType::MEDIASTREAM_CAMERA:
-    case ContentSettingsType::CAMERA_PAN_TILT_ZOOM:
-      icon = &vector_icons::kVideocamIcon;
-      break;
-    case ContentSettingsType::AUTOMATIC_DOWNLOADS:
-      icon = &vector_icons::kFileDownloadIcon;
-      break;
-#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN)
-    case ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER:
-      icon = &vector_icons::kProtectedContentIcon;
-      break;
-#endif
-    case ContentSettingsType::MIDI_SYSEX:
-      icon = &vector_icons::kMidiIcon;
-      break;
-    case ContentSettingsType::BACKGROUND_SYNC:
-      icon = &vector_icons::kSyncIcon;
-      break;
-    case ContentSettingsType::ADS:
-      icon = &vector_icons::kAdsIcon;
-      break;
-    case ContentSettingsType::SOUND:
-      icon = &vector_icons::kVolumeUpIcon;
-      break;
-    case ContentSettingsType::CLIPBOARD_READ_WRITE:
-      icon = &vector_icons::kPageInfoContentPasteIcon;
-      break;
-    case ContentSettingsType::SENSORS:
-      icon = &vector_icons::kSensorsIcon;
-      break;
-    case ContentSettingsType::USB_GUARD:
-      icon = &vector_icons::kUsbIcon;
-      break;
-    case ContentSettingsType::SERIAL_GUARD:
-      icon = &vector_icons::kSerialPortIcon;
-      break;
-    case ContentSettingsType::BLUETOOTH_GUARD:
-      icon = &vector_icons::kBluetoothIcon;
-      break;
-    case ContentSettingsType::BLUETOOTH_SCANNING:
-      icon = &vector_icons::kBluetoothScanningIcon;
-      break;
-    case ContentSettingsType::FILE_SYSTEM_WRITE_GUARD:
-      icon = &vector_icons::kSaveOriginalFileIcon;
-      break;
-    case ContentSettingsType::VR:
-    case ContentSettingsType::AR:
-      icon = &vector_icons::kVrHeadsetIcon;
-      break;
-    case ContentSettingsType::WINDOW_PLACEMENT:
-      icon = &vector_icons::kSelectWindowIcon;
-      break;
-    case ContentSettingsType::FONT_ACCESS:
-      icon = &vector_icons::kFontDownloadIcon;
-      break;
-    case ContentSettingsType::HID_GUARD:
-      icon = &vector_icons::kVideogameAssetIcon;
-      break;
-    case ContentSettingsType::IDLE_DETECTION:
-      icon = &vector_icons::kDevicesIcon;
-      break;
-    case ContentSettingsType::FILE_HANDLING:
-      icon = &vector_icons::kDescriptionIcon;
-      break;
-    default:
-      // All other |ContentSettingsType|s do not have icons on desktop or are
-      // not shown in the Page Info bubble.
-      NOTREACHED();
-      break;
-  }
-
-  ContentSetting setting = info.setting == CONTENT_SETTING_DEFAULT
-                               ? info.default_setting
-                               : info.setting;
-  return ui::ImageModel::FromVectorIcon(
-      *icon, ui::NativeTheme::kColorId_DefaultIconColor, kVectorIconSize,
-      (setting == CONTENT_SETTING_BLOCK) ? &vector_icons::kBlockedBadgeIcon
-                                         : nullptr);
-}
-
-// static
-const ui::ImageModel PageInfoUI::GetChosenObjectIcon(
-    const ChosenObjectInfo& object,
-    bool deleted) {
-  // The permissions data for device APIs will always appear even if the device
-  // is not currently conncted to the system.
-  // TODO(https://crbug.com/1048860): Check the connected status of devices and
-  // change the icon to one that reflects that status.
-  const gfx::VectorIcon* icon = &gfx::kNoneIcon;
-  switch (object.ui_info.content_settings_type) {
-    case ContentSettingsType::USB_CHOOSER_DATA:
-      icon = &vector_icons::kUsbIcon;
-      break;
-    case ContentSettingsType::SERIAL_CHOOSER_DATA:
-      icon = &vector_icons::kSerialPortIcon;
-      break;
-    case ContentSettingsType::BLUETOOTH_CHOOSER_DATA:
-      icon = &vector_icons::kBluetoothIcon;
-      break;
-    case ContentSettingsType::HID_CHOOSER_DATA:
-      icon = &vector_icons::kVideogameAssetIcon;
-      break;
-    default:
-      // All other content settings types do not represent chosen object
-      // permissions.
-      NOTREACHED();
-      break;
-  }
-
-  return ui::ImageModel::FromVectorIcon(
-      *icon, ui::NativeTheme::kColorId_DefaultIconColor, kVectorIconSize,
-      deleted ? &vector_icons::kBlockedBadgeIcon : nullptr);
-}
-
-// static
-const ui::ImageModel PageInfoUI::GetValidCertificateIcon() {
-  return ui::ImageModel::FromVectorIcon(
-      vector_icons::kCertificateIcon,
-      ui::NativeTheme::kColorId_DefaultIconColor, kVectorIconSize);
-}
-
-// static
-const ui::ImageModel PageInfoUI::GetInvalidCertificateIcon() {
-  return ui::ImageModel::FromVectorIcon(
-      vector_icons::kCertificateIcon,
-      ui::NativeTheme::kColorId_DefaultIconColor, kVectorIconSize,
-      &vector_icons::kBlockedBadgeIcon);
-}
-
-// static
-const ui::ImageModel PageInfoUI::GetSiteSettingsIcon() {
-  return ui::ImageModel::FromVectorIcon(
-      vector_icons::kSettingsIcon, ui::NativeTheme::kColorId_DefaultIconColor,
-      kVectorIconSize);
-}
-
-// static
-const ui::ImageModel PageInfoUI::GetVrSettingsIcon() {
-  return ui::ImageModel::FromVectorIcon(
-      vector_icons::kVrHeadsetIcon, ui::NativeTheme::kColorId_DefaultIconColor,
-      kVectorIconSize);
-}
-
-// static
-const ui::ImageModel PageInfoUI::GetLaunchIcon() {
-  return ui::ImageModel::FromVectorIcon(
-      vector_icons::kLaunchIcon, ui::NativeTheme::kColorId_SecondaryIconColor,
-      kVectorIconSize);
-}
-
-// static
-const ui::ImageModel PageInfoUI::GetConnectionNotSecureIcon() {
-  return ui::ImageModel::FromVectorIcon(
-      vector_icons::kNotSecureWarningIcon,
-      ui::NativeTheme::kColorId_AlertSeverityHigh);
-}
-
-// static
-const ui::ImageModel PageInfoUI::GetConnectionSecureIcon() {
-  return ui::ImageModel::FromVectorIcon(
-      vector_icons::kHttpsValidIcon,
-      ui::NativeTheme::kColorId_DefaultIconColor);
-}
-
-// static
-const ui::ImageModel PageInfoUI::GetOpenSubpageIcon() {
-  return ui::ImageModel::FromVectorIcon(
-      vector_icons::kSubmenuArrowIcon,
-      ui::NativeTheme::kColorId_DefaultIconColor);
-}
-
-#endif
+#endif  // defined(OS_ANDROID)
 
 // static
 bool PageInfoUI::ContentSettingsTypeInPageInfo(ContentSettingsType type) {

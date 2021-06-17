@@ -37,10 +37,10 @@ void PageInfoSecurityContentView::SetIdentityInfo(
   security_description_type_ = security_description->type;
 
   if (security_description->summary_style == SecuritySummaryColor::RED) {
-    security_view_->SetIcon(PageInfoUI::GetConnectionNotSecureIcon());
+    security_view_->SetIcon(PageInfoViewFactory::GetConnectionNotSecureIcon());
     security_view_->SetSummary(security_description->summary, STYLE_RED);
   } else {
-    security_view_->SetIcon(PageInfoUI::GetConnectionSecureIcon());
+    security_view_->SetIcon(PageInfoViewFactory::GetConnectionSecureIcon());
     security_view_->SetSummary(security_description->summary,
                                views::style::STYLE_PRIMARY);
   }
@@ -73,9 +73,9 @@ void PageInfoSecurityContentView::SetIdentityInfo(
     }
 
     // Add the Certificate Section.
-    const ui::ImageModel icon = valid_identity
-                                    ? PageInfoUI::GetValidCertificateIcon()
-                                    : PageInfoUI::GetInvalidCertificateIcon();
+    const ui::ImageModel icon =
+        valid_identity ? PageInfoViewFactory::GetValidCertificateIcon()
+                       : PageInfoViewFactory::GetInvalidCertificateIcon();
     const int title_id = valid_identity
                              ? IDS_PAGE_INFO_CERTIFICATE_IS_VALID
                              : IDS_PAGE_INFO_CERTIFICATE_IS_NOT_VALID;
@@ -117,7 +117,7 @@ void PageInfoSecurityContentView::SetIdentityInfo(
             icon, title_id, std::u16string(),
             PageInfoViewFactory::
                 VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_CERTIFICATE_VIEWER,
-            tooltip, subtitle_text, PageInfoUI::GetLaunchIcon())
+            tooltip, subtitle_text, PageInfoViewFactory::GetLaunchIcon())
             .release());
   }
 

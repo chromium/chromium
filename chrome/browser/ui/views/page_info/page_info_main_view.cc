@@ -87,10 +87,10 @@ PageInfoMainView::PageInfoMainView(
               view->HandleMoreInfoRequest(view->site_settings_link_);
             },
             this),
-        PageInfoUI::GetSiteSettingsIcon(), IDS_PAGE_INFO_SITE_SETTINGS_LINK,
-        std::u16string(),
+        PageInfoViewFactory::GetSiteSettingsIcon(),
+        IDS_PAGE_INFO_SITE_SETTINGS_LINK, std::u16string(),
         PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_SITE_SETTINGS,
-        tooltip, std::u16string(), PageInfoUI::GetLaunchIcon()));
+        tooltip, std::u16string(), PageInfoViewFactory::GetLaunchIcon()));
   }
 
   presenter_->InitializeUiState(this);
@@ -119,7 +119,7 @@ void PageInfoMainView::SetCookieInfo(const CookieInfoList& cookie_info_list) {
     PageInfo::PermissionInfo info;
     info.type = ContentSettingsType::COOKIES;
     info.setting = CONTENT_SETTING_ALLOW;
-    const ui::ImageModel icon = PageInfoUI::GetPermissionIcon(info);
+    const ui::ImageModel icon = PageInfoViewFactory::GetPermissionIcon(info);
 
     const std::u16string& tooltip =
         l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_TOOLTIP);
@@ -133,7 +133,7 @@ void PageInfoMainView::SetCookieInfo(const CookieInfoList& cookie_info_list) {
                 this),
             icon, IDS_PAGE_INFO_COOKIES, num_cookies_text,
             PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIE_DIALOG,
-            tooltip, std::u16string(), PageInfoUI::GetLaunchIcon())
+            tooltip, std::u16string(), PageInfoViewFactory::GetLaunchIcon())
             .release();
     site_settings_view_->AddChildView(cookie_button_);
   }
@@ -204,11 +204,11 @@ void PageInfoMainView::SetIdentityInfo(const IdentityInfo& identity_info) {
         std::make_unique<PageInfoHoverButton>(
             base::BindRepeating(&PageInfoNavigationHandler::OpenSecurityPage,
                                 base::Unretained(navigation_handler_)),
-            PageInfoUI::GetConnectionSecureIcon(), 0, std::u16string(),
+            PageInfoViewFactory::GetConnectionSecureIcon(), 0, std::u16string(),
             PageInfoViewFactory::
                 VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_SECURITY_INFORMATION,
             std::u16string(), std::u16string(),
-            PageInfoUI::GetOpenSubpageIcon())
+            PageInfoViewFactory::GetOpenSubpageIcon())
             .release());
     connection_button_->SetTitleText(security_description->summary);
   } else {
@@ -238,7 +238,7 @@ void PageInfoMainView::SetPageFeatureInfo(const PageFeatureInfo& info) {
       content_view->SetLayoutManager(std::make_unique<views::FlexLayout>());
 
   auto icon = std::make_unique<NonAccessibleImageView>();
-  icon->SetImage(PageInfoUI::GetVrSettingsIcon());
+  icon->SetImage(PageInfoViewFactory::GetVrSettingsIcon());
   content_view->AddChildView(std::move(icon));
 
   auto label = std::make_unique<views::Label>(

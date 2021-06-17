@@ -84,6 +84,8 @@ int GetLayoutConstant(LayoutConstant constant) {
       return touch_ui ? 0 : 4;
     case TOOLBAR_STANDARD_SPACING:
       return touch_ui ? 12 : 8;
+    case PAGE_INFO_ICON_SIZE:
+      return 16;
     default:
       break;
   }
