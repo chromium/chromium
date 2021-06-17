@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_coordinator.h"
 
+#import "base/metrics/histogram_functions.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/first_run/first_run_metrics.h"
 #include "ios/chrome/browser/main/browser.h"
@@ -120,6 +121,9 @@
   if (@available(iOS 13, *)) {
     self.viewController.modalInPresentation = YES;
   }
+
+  base::UmaHistogramEnumeration("FirstRun.Stage",
+                                first_run::kSignInScreenStart);
 }
 
 - (void)stop {
@@ -161,6 +165,8 @@
 
 - (void)didTapSecondaryActionButton {
   [self finishPresentingAndSkipRemainingScreens:NO];
+  base::UmaHistogramEnumeration(
+      "FirstRun.Stage", first_run::kSignInScreenCompletionWithoutSignIn);
 }
 
 #pragma mark - IdentityChooserCoordinatorDelegate
@@ -191,6 +197,8 @@
 - (void)signinScreenMediator:(SigninScreenMediator*)mediator
     didFinishSigninWithResult:(SigninCoordinatorResult)result {
   [self finishPresentingAndSkipRemainingScreens:NO];
+  base::UmaHistogramEnumeration("FirstRun.Stage",
+                                first_run::kSignInScreenCompletionWithSignIn);
 }
 
 #pragma mark - PolicyWatcherBrowserAgentObserving
