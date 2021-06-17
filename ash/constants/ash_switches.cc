@@ -469,6 +469,10 @@ const char kEnterpriseEnrollmentInitialModulus[] =
 const char kEnterpriseEnrollmentModulusLimit[] =
     "enterprise-enrollment-modulus-limit";
 
+// Write extension install events to chrome log for integration test.
+const char kExtensionInstallEventChromeLogForTests[] =
+    "extension-install-event-chrome-log-for-tests";
+
 // Interval in seconds between Chrome reading external metrics from
 // /var/lib/metrics/uma-events.
 const char kExternalMetricsCollectionInterval[] =

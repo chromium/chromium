@@ -6,7 +6,9 @@
 
 #include <atomic>
 
+#include "ash/constants/ash_switches.h"
 #include "base/bind.h"
+#include "base/command_line.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -305,6 +307,24 @@ void ExtensionInstallEventLogUploader::EnqueueReport(
 
   base::Value value_report = RealtimeReportingJobConfiguration::BuildReport(
       std::move(event_list), std::move(context));
+
+  // If --extension-install-event-chrome-log-for-tests is present, write event
+  // logs to Chrome log. LOG(ERROR) ensures that logs are written.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ash::switches::kExtensionInstallEventChromeLogForTests)) {
+    for (const em::ExtensionInstallReport& extension_install_report :
+         report.extension_install_reports()) {
+      for (const em::ExtensionInstallReportLogEvent&
+               extension_install_report_log_event :
+           extension_install_report.logs()) {
+        if (extension_install_report_log_event.has_event_type()) {
+          LOG(ERROR) << "Add extension install event: "
+                     << extension_install_report.extension_id() << ", "
+                     << extension_install_report_log_event.event_type();
+        }
+      }
+    }
+  }
 
   // Uploader must be called on the correct thread, in order to achieve that we
   // pass the appropriate task_runner along with the call.
