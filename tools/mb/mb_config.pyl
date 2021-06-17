@@ -2999,7 +2999,7 @@
 
     'cronet_ios': {
       'mixins': ['cronet_common'],
-      'gn_args': ('disable_brotli_filter=false is_cronet_build=true enable_remoting=false use_allocator_shim=false'),
+      'gn_args': ('disable_brotli_filter=false is_cronet_build=true enable_remoting=false use_allocator_shim=false ios_stack_profiler_enabled=false'),
     },
 
     'custom_args': {

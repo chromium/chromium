@@ -279,6 +279,7 @@
       "include_transport_security_state_preload_list": false,
       "ios_deployment_target": "10.0",
       "ios_set_attributes_for_xcode_project_generation": false,
+      "ios_stack_profiler_enabled": false,
       "is_component_build": false,
       "is_cronet_build": true,
       "is_debug": true,
