@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_combine.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_item.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_item.h"
@@ -1073,6 +1074,13 @@ PhysicalRect NGPhysicalBoxFragment::RecalcContentsInkOverflow() {
   if (const NGFragmentItems* items = Items()) {
     NGInlineCursor cursor(*this, *items);
     contents_rect = NGFragmentItem::RecalcInkOverflowForCursor(&cursor);
+
+    // Add text decorations and emphasis mark ink over flow for combined
+    // text.
+    const auto* const text_combine =
+        DynamicTo<LayoutNGTextCombine>(GetLayoutObject());
+    if (UNLIKELY(text_combine))
+      contents_rect.Unite(text_combine->RecalcContentsInkOverflow());
 
     // Even if this turned out to be an inline formatting context with
     // fragment items (handled above), we need to handle floating descendants.

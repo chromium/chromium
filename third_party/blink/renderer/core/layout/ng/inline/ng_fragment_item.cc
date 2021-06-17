@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/editing/bidi_adjustment.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_combine.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_caret_position.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_items_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
@@ -795,6 +796,10 @@ void NGFragmentItem::RecalcInkOverflow(
   contents_rect.offset -= OffsetInContainerFragment();
 
   if (Type() == kLine) {
+    const auto* const text_combine =
+        DynamicTo<LayoutNGTextCombine>(GetLayoutObject());
+    if (UNLIKELY(text_combine))
+      contents_rect = text_combine->AdjustRectForBoundingBox(contents_rect);
     // Line boxes don't have self overflow. Compute content overflow only.
     *self_and_contents_rect_out = UnionRect(LocalRect(), contents_rect);
     ink_overflow_type_ =

@@ -4,16 +4,48 @@
 
 #include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_combine.h"
 
+#include <sstream>
+#include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/core/dom/text.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_item.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_test.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 
 namespace blink {
+
+using ::testing::ElementsAre;
 
 class LayoutNGTextCombineTest : public NGLayoutTest,
                                 private ScopedLayoutNGTextCombineForTest {
  protected:
   LayoutNGTextCombineTest() : ScopedLayoutNGTextCombineForTest(true) {}
+
+  std::string AsInkOverflowString(const LayoutBlockFlow& root) {
+    std::ostringstream ostream;
+    ostream << std::endl;
+    for (NGInlineCursor cursor(root); cursor; cursor.MoveToNext()) {
+      ostream << cursor.CurrentItem() << std::endl;
+      ostream << "                 Rect "
+              << cursor.CurrentItem()->RectInContainerFragment() << std::endl;
+      ostream << "          InkOverflow " << cursor.CurrentItem()->InkOverflow()
+              << std::endl;
+      ostream << "      SelfInkOverflow "
+              << cursor.CurrentItem()->SelfInkOverflow() << std::endl;
+      ostream << "  ContentsInkOverflow "
+              << ContentsInkOverflow(*cursor.CurrentItem()) << std::endl;
+    }
+    return ostream.str();
+  }
+
+  static PhysicalRect ContentsInkOverflow(const NGFragmentItem& item) {
+    if (const NGPhysicalBoxFragment* box_fragment = item.BoxFragment())
+      return box_fragment->ContentsInkOverflow();
+    if (!item.HasInkOverflow())
+      return PhysicalRect();
+    return item.ink_overflow_.Contents(item.InkOverflowType(), item.Size());
+  }
 };
 
 TEST_F(LayoutNGTextCombineTest, AppendChild) {
@@ -101,6 +133,303 @@ LayoutNGBlockFlow DIV id="root"
   +--LayoutText #text "de"
 )DUMP",
             ToSimpleLayoutTree(root_layout_object));
+}
+
+TEST_F(LayoutNGTextCombineTest, InkOverflow) {
+  LoadAhem();
+  InsertStyleElement(
+      "body { font: 100px/110px Ahem; }"
+      "c { text-combine-upright: all; }"
+      "div { writing-mode: vertical-rl; }");
+  SetBodyInnerHTML("<div id=root>a<c id=combine>0123456789</c>b</div>");
+  const auto& root =
+      *To<LayoutBlockFlow>(GetElementById("root")->GetLayoutObject());
+
+  EXPECT_EQ(R"DUMP(
+{Line #descendants=5 LTR Standard}
+                 Rect "0,0 110x300"
+          InkOverflow "0,0 110x300"
+      SelfInkOverflow "0,0 110x300"
+  ContentsInkOverflow "0,0 0x0"
+{Text 0-1 LTR Standard}
+                 Rect "5,0 100x100"
+          InkOverflow "0,0 100x100"
+      SelfInkOverflow "0,0 100x100"
+  ContentsInkOverflow "0,0 0x0"
+{Box #descendants=2 Standard}
+                 Rect "5,100 100x100"
+          InkOverflow "-5,0 110x100"
+      SelfInkOverflow "0,0 100x100"
+  ContentsInkOverflow "-5,0 110x100"
+{Box #descendants=1 AtomicInlineLTR Standard}
+                 Rect "5,100 100x100"
+          InkOverflow "-5,0 110x100"
+      SelfInkOverflow "0,0 100x100"
+  ContentsInkOverflow "-5,0 110x100"
+{Text 2-3 LTR Standard}
+                 Rect "5,200 100x100"
+          InkOverflow "0,0 100x100"
+      SelfInkOverflow "0,0 100x100"
+  ContentsInkOverflow "0,0 0x0"
+)DUMP",
+            AsInkOverflowString(root));
+
+  // Note: text item rect has non-scaled size.
+  const auto& text_combine = *To<LayoutNGTextCombine>(
+      GetElementById("combine")->GetLayoutObject()->SlowFirstChild());
+  EXPECT_EQ(R"DUMP(
+{Line #descendants=2 LTR Standard}
+                 Rect "0,0 100x100"
+          InkOverflow "-5,0 110x100"
+      SelfInkOverflow "0,0 100x100"
+  ContentsInkOverflow "-5,0 110x100"
+{Text 0-10 LTR Standard}
+                 Rect "0,0 1000x100"
+          InkOverflow "0,0 1000x100"
+      SelfInkOverflow "0,0 1000x100"
+  ContentsInkOverflow "0,0 0x0"
+)DUMP",
+            AsInkOverflowString(text_combine));
+}
+
+TEST_F(LayoutNGTextCombineTest, InkOverflowEmphasisMark) {
+  LoadAhem();
+  InsertStyleElement(
+      "body { font: 100px/110px Ahem; }"
+      "c { text-combine-upright: all; }"
+      "div { -webkit-text-emphasis: dot; }"
+      "div { writing-mode: vertical-rl; }");
+  SetBodyInnerHTML("<div id=root>a<c id=combine>0123456789</c>b</div>");
+  const auto& root =
+      *To<LayoutBlockFlow>(GetElementById("root")->GetLayoutObject());
+
+  EXPECT_EQ(R"DUMP(
+{Line #descendants=5 LTR Standard}
+                 Rect "0,0 155x300"
+          InkOverflow "0,0 155x300"
+      SelfInkOverflow "0,0 155x300"
+  ContentsInkOverflow "0,0 0x0"
+{Text 0-1 LTR Standard}
+                 Rect "5,0 100x100"
+          InkOverflow "0,0 150x100"
+      SelfInkOverflow "0,0 150x100"
+  ContentsInkOverflow "0,0 0x0"
+{Box #descendants=2 Standard}
+                 Rect "5,100 100x100"
+          InkOverflow "-5,0 155x100"
+      SelfInkOverflow "0,0 100x100"
+  ContentsInkOverflow "-5,0 155x100"
+{Box #descendants=1 AtomicInlineLTR Standard}
+                 Rect "5,100 100x100"
+          InkOverflow "-5,0 155x100"
+      SelfInkOverflow "0,0 100x100"
+  ContentsInkOverflow "-5,0 155x100"
+{Text 2-3 LTR Standard}
+                 Rect "5,200 100x100"
+          InkOverflow "0,0 150x100"
+      SelfInkOverflow "0,0 150x100"
+  ContentsInkOverflow "0,0 0x0"
+)DUMP",
+            AsInkOverflowString(root));
+
+  // Note: Emphasis mark is part of text-combine box instead of combined text.
+  // Note: text item rect has non-scaled size.
+  const auto& text_combine = *To<LayoutNGTextCombine>(
+      GetElementById("combine")->GetLayoutObject()->SlowFirstChild());
+  EXPECT_EQ(R"DUMP(
+{Line #descendants=2 LTR Standard}
+                 Rect "0,0 100x100"
+          InkOverflow "-5,0 110x100"
+      SelfInkOverflow "0,0 100x100"
+  ContentsInkOverflow "-5,0 110x100"
+{Text 0-10 LTR Standard}
+                 Rect "0,0 1000x100"
+          InkOverflow "0,0 1000x100"
+      SelfInkOverflow "0,0 1000x100"
+  ContentsInkOverflow "0,0 0x0"
+)DUMP",
+            AsInkOverflowString(text_combine));
+}
+
+TEST_F(LayoutNGTextCombineTest, InkOverflowOverline) {
+  LoadAhem();
+  InsertStyleElement(
+      "body { font: 100px/110px Ahem; }"
+      "c { text-combine-upright: all; }"
+      "div { text-decoration: overline; }"
+      "div { writing-mode: vertical-rl; }");
+  SetBodyInnerHTML("<div id=root>a<c id=combine>0123456789</c>b</div>");
+  const auto& root =
+      *To<LayoutBlockFlow>(GetElementById("root")->GetLayoutObject());
+
+  EXPECT_EQ(R"DUMP(
+{Line #descendants=5 LTR Standard}
+                 Rect "0,0 110x300"
+          InkOverflow "0,0 115x300"
+      SelfInkOverflow "0,0 110x300"
+  ContentsInkOverflow "0,0 115x300"
+{Text 0-1 LTR Standard}
+                 Rect "5,0 100x100"
+          InkOverflow "0,0 110x100"
+      SelfInkOverflow "0,0 110x100"
+  ContentsInkOverflow "0,0 0x0"
+{Box #descendants=2 Standard}
+                 Rect "5,100 100x100"
+          InkOverflow "0,0 110x100"
+      SelfInkOverflow "0,0 100x100"
+  ContentsInkOverflow "0,0 110x100"
+{Box #descendants=1 AtomicInlineLTR Standard}
+                 Rect "5,100 100x100"
+          InkOverflow "0,0 110x100"
+      SelfInkOverflow "0,0 100x100"
+  ContentsInkOverflow "0,0 110x100"
+{Text 2-3 LTR Standard}
+                 Rect "5,200 100x100"
+          InkOverflow "0,0 110x100"
+      SelfInkOverflow "0,0 110x100"
+  ContentsInkOverflow "0,0 0x0"
+)DUMP",
+            AsInkOverflowString(root));
+
+  const auto& text_combine = *To<LayoutNGTextCombine>(
+      GetElementById("combine")->GetLayoutObject()->SlowFirstChild());
+  EXPECT_EQ(R"DUMP(
+{Line #descendants=2 LTR Standard}
+                 Rect "0,0 100x100"
+          InkOverflow "0,0 100x100"
+      SelfInkOverflow "0,0 100x100"
+  ContentsInkOverflow "0,0 0x0"
+{Text 0-10 LTR Standard}
+                 Rect "0,0 1000x100"
+          InkOverflow "0,0 1000x100"
+      SelfInkOverflow "0,0 1000x100"
+  ContentsInkOverflow "0,0 0x0"
+)DUMP",
+            AsInkOverflowString(text_combine));
+}
+
+TEST_F(LayoutNGTextCombineTest, InkOverflowUnderline) {
+  LoadAhem();
+  InsertStyleElement(
+      "body { font: 100px/110px Ahem; }"
+      "c { text-combine-upright: all; }"
+      "div { text-decoration: underline; }"
+      "div { writing-mode: vertical-rl; }");
+  SetBodyInnerHTML("<div id=root>a<c id=combine>0123456789</c>b</div>");
+  const auto& root =
+      *To<LayoutBlockFlow>(GetElementById("root")->GetLayoutObject());
+
+  EXPECT_EQ(R"DUMP(
+{Line #descendants=5 LTR Standard}
+                 Rect "0,0 110x300"
+          InkOverflow "-6,0 116x300"
+      SelfInkOverflow "0,0 110x300"
+  ContentsInkOverflow "-6,0 116x300"
+{Text 0-1 LTR Standard}
+                 Rect "5,0 100x100"
+          InkOverflow "-11,0 111x100"
+      SelfInkOverflow "-11,0 111x100"
+  ContentsInkOverflow "0,0 0x0"
+{Box #descendants=2 Standard}
+                 Rect "5,100 100x100"
+          InkOverflow "-11,0 111x100"
+      SelfInkOverflow "0,0 100x100"
+  ContentsInkOverflow "-11,0 111x100"
+{Box #descendants=1 AtomicInlineLTR Standard}
+                 Rect "5,100 100x100"
+          InkOverflow "-11,0 111x100"
+      SelfInkOverflow "0,0 100x100"
+  ContentsInkOverflow "-11,0 111x100"
+{Text 2-3 LTR Standard}
+                 Rect "5,200 100x100"
+          InkOverflow "-11,0 111x100"
+      SelfInkOverflow "-11,0 111x100"
+  ContentsInkOverflow "0,0 0x0"
+)DUMP",
+            AsInkOverflowString(root));
+
+  const auto& text_combine = *To<LayoutNGTextCombine>(
+      GetElementById("combine")->GetLayoutObject()->SlowFirstChild());
+  EXPECT_EQ(R"DUMP(
+{Line #descendants=2 LTR Standard}
+                 Rect "0,0 100x100"
+          InkOverflow "0,0 100x100"
+      SelfInkOverflow "0,0 100x100"
+  ContentsInkOverflow "0,0 0x0"
+{Text 0-10 LTR Standard}
+                 Rect "0,0 1000x100"
+          InkOverflow "0,0 1000x100"
+      SelfInkOverflow "0,0 1000x100"
+  ContentsInkOverflow "0,0 0x0"
+)DUMP",
+            AsInkOverflowString(text_combine));
+}
+
+TEST_F(LayoutNGTextCombineTest, InkOverflowWBR) {
+  LoadAhem();
+  InsertStyleElement(
+      "body { font: 100px/110px Ahem; }"
+      "c { text-combine-upright: all; }"
+      "div { writing-mode: vertical-rl; }");
+  SetBodyInnerHTML("<div id=root>a<c id=combine>01234<wbr>56789</c>b</div>");
+  const auto& root =
+      *To<LayoutBlockFlow>(GetElementById("root")->GetLayoutObject());
+
+  EXPECT_EQ(R"DUMP(
+{Line #descendants=5 LTR Standard}
+                 Rect "0,0 110x300"
+          InkOverflow "0,0 110x300"
+      SelfInkOverflow "0,0 110x300"
+  ContentsInkOverflow "0,0 0x0"
+{Text 0-1 LTR Standard}
+                 Rect "5,0 100x100"
+          InkOverflow "0,0 100x100"
+      SelfInkOverflow "0,0 100x100"
+  ContentsInkOverflow "0,0 0x0"
+{Box #descendants=2 Standard}
+                 Rect "5,100 100x100"
+          InkOverflow "-5,0 110x100"
+      SelfInkOverflow "0,0 100x100"
+  ContentsInkOverflow "-5,0 110x100"
+{Box #descendants=1 AtomicInlineLTR Standard}
+                 Rect "5,100 100x100"
+          InkOverflow "-5,0 110x100"
+      SelfInkOverflow "0,0 100x100"
+  ContentsInkOverflow "-5,0 110x100"
+{Text 2-3 LTR Standard}
+                 Rect "5,200 100x100"
+          InkOverflow "0,0 100x100"
+      SelfInkOverflow "0,0 100x100"
+  ContentsInkOverflow "0,0 0x0"
+)DUMP",
+            AsInkOverflowString(root));
+
+  // Note: text item rect has non-scaled size.
+  const auto& text_combine = *To<LayoutNGTextCombine>(
+      GetElementById("combine")->GetLayoutObject()->SlowFirstChild());
+  EXPECT_EQ(R"DUMP(
+{Line #descendants=4 LTR Standard}
+                 Rect "0,0 100x100"
+          InkOverflow "-5,0 110x100"
+      SelfInkOverflow "0,0 100x100"
+  ContentsInkOverflow "-5,0 110x100"
+{Text 0-5 LTR Standard}
+                 Rect "0,0 500x100"
+          InkOverflow "0,0 500x100"
+      SelfInkOverflow "0,0 500x100"
+  ContentsInkOverflow "0,0 0x0"
+{Text 5-6 LTR Standard}
+                 Rect "500,0 0x100"
+          InkOverflow "0,0 0x100"
+      SelfInkOverflow "0,0 0x100"
+  ContentsInkOverflow "0,0 0x0"
+{Text 6-11 LTR Standard}
+                 Rect "500,0 500x100"
+          InkOverflow "0,0 500x100"
+      SelfInkOverflow "0,0 500x100"
+  ContentsInkOverflow "0,0 0x0"
+)DUMP",
+            AsInkOverflowString(text_combine));
 }
 
 TEST_F(LayoutNGTextCombineTest, InsertBefore) {

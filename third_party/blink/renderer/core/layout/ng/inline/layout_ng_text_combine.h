@@ -11,6 +11,7 @@
 namespace blink {
 
 class AffineTransform;
+class NGFragmentItem;
 
 // The layout object for the element having "text-combine-upright:all" in
 // vertical writing mode, e.g. <i style="text-upright:all"><b>12</b>34<i>.
@@ -32,6 +33,19 @@ class CORE_EXPORT LayoutNGTextCombine final : public LayoutNGBlockFlow {
   void SetCompressedFont(const Font& font);
 
   // Scaling
+
+  // Maps non-scaled |rect| to scaled rect for
+  //  * |LayoutText::PhysicalLinesBoundingBox()| used by
+  //    |LayoutObject::DebugRect()|, intersection observer, and scroll anchor.
+  //  * |NGFragmentItem::RecalcInkOverflow()| for line box
+  //  * |NGLayoutOverflowCalculator::AddItemsInternal()| for line box.
+  //  * |NGPhysicalFragment::AddOutlineRectsForCursor()|
+  //  * |NGPhysicalFragment::AddScrollableOverflowForInlineChild()|
+  PhysicalRect AdjustRectForBoundingBox(const PhysicalRect& rect) const;
+
+  // Returns ink overflow for text decorations and emphasis mark.
+  PhysicalRect RecalcContentsInkOverflow() const;
+
   void ResetLayout();
   void SetScaleX(float new_scale_x);
   bool UsesScaleX() const { return scale_x_.has_value(); }
@@ -64,6 +78,11 @@ class CORE_EXPORT LayoutNGTextCombine final : public LayoutNGBlockFlow {
  private:
   bool IsOfType(LayoutObjectType) const override;
   const char* GetName() const override { return "LayoutNGTextCombine"; }
+
+  // Helper functions for scaling.
+  PhysicalOffset ApplyScaleX(const PhysicalOffset& offset) const;
+  PhysicalRect ApplyScaleX(const PhysicalRect& rect) const;
+  PhysicalSize ApplyScaleX(const PhysicalSize& offset) const;
 
   float ComputeInlineSpacing() const;
   bool UsingSyntheticOblique() const;
