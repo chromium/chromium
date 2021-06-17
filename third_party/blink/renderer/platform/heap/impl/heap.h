@@ -709,6 +709,12 @@ class LivenessBrokerFactory final {
 
 }  // namespace internal
 
+#if DCHECK_IS_ON()
+static constexpr bool kBlinkGCHasDebugChecks = true;
+#else
+static constexpr bool kBlinkGCHasDebugChecks = false;
+#endif  // DCHECK_IS_ON()
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_IMPL_HEAP_H_

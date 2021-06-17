@@ -33,10 +33,10 @@ struct SameSizeAsCSSRule : public GarbageCollected<SameSizeAsCSSRule>,
   ~SameSizeAsCSSRule() override;
   unsigned char bitfields;
   Member<ScriptWrappable> member;
-#if !DCHECK_IS_ON()
-  // Increasing size of Member increases size of CSSRule.
-  ASSERT_SIZE(Member<ScriptWrappable>, void*);
-#endif  // DCHECK_IS_ON()
+  static_assert(kBlinkGCHasDebugChecks ||
+                    ::WTF::internal::SizesEqual<sizeof(Member<ScriptWrappable>),
+                                                sizeof(void*)>::value,
+                "Member<ScriptWrappable> should stay small");
 };
 
 ASSERT_SIZE(CSSRule, SameSizeAsCSSRule);

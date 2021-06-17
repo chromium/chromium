@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/platform/heap/v8_wrapper/thread_state.h"
 #include "v8/include/cppgc/allocation.h"
 #include "v8/include/cppgc/garbage-collected.h"
+#include "v8/include/cppgc/internal/pointer-policies.h"
 #include "v8/include/cppgc/liveness-broker.h"
 
 namespace blink {
@@ -40,6 +41,10 @@ T* MakeGarbageCollected(AdditionalBytes additional_bytes, Args&&... args) {
       std::forward<AdditionalBytes>(additional_bytes),
       std::forward<Args>(args)...);
 }
+
+static constexpr bool kBlinkGCHasDebugChecks =
+    !std::is_same<cppgc::internal::DefaultMemberCheckingPolicy,
+                  cppgc::internal::DisabledCheckingPolicy>::value;
 
 }  // namespace blink
 

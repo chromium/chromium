@@ -180,10 +180,11 @@ struct SameSizeAsNode : EventTarget {
   uint32_t node_flags_;
   Member<void*> willbe_member_[4];
   Member<NodeData> member_;
-#if !DCHECK_IS_ON()
   // Increasing size of Member increases size of Node.
-  ASSERT_SIZE(Member<NodeData>, void*);
-#endif  // !DCHECK_IS_ON()
+  static_assert(kBlinkGCHasDebugChecks ||
+                    ::WTF::internal::SizesEqual<sizeof(Member<NodeData>),
+                                                sizeof(void*)>::value,
+                "Member<NodeData> should stay small");
 };
 
 ASSERT_SIZE(Node, SameSizeAsNode);
