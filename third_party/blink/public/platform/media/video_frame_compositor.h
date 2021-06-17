@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
@@ -80,6 +79,9 @@ class BLINK_PLATFORM_EXPORT VideoFrameCompositor
   VideoFrameCompositor(
       const scoped_refptr<base::SingleThreadTaskRunner>& task_runner,
       std::unique_ptr<blink::WebVideoFrameSubmitter> submitter);
+
+  VideoFrameCompositor(const VideoFrameCompositor&) = delete;
+  VideoFrameCompositor& operator=(const VideoFrameCompositor&) = delete;
 
   // Destruction must happen on the compositor thread; Stop() must have been
   // called before destruction starts.
@@ -288,8 +290,6 @@ class BLINK_PLATFORM_EXPORT VideoFrameCompositor
   std::unique_ptr<blink::WebVideoFrameSubmitter> submitter_;
 
   base::WeakPtrFactory<VideoFrameCompositor> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VideoFrameCompositor);
 };
 
 }  // namespace media

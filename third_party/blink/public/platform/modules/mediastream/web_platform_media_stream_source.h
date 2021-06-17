@@ -37,6 +37,9 @@ class BLINK_PLATFORM_EXPORT WebPlatformMediaStreamSource {
   static const char kSourceId[];
 
   WebPlatformMediaStreamSource();
+  WebPlatformMediaStreamSource(const WebPlatformMediaStreamSource&) = delete;
+  WebPlatformMediaStreamSource& operator=(const WebPlatformMediaStreamSource&) =
+      delete;
   virtual ~WebPlatformMediaStreamSource();
 
   // Returns device information about a source that has been created by a
@@ -93,8 +96,6 @@ class BLINK_PLATFORM_EXPORT WebPlatformMediaStreamSource {
                 kWebPrivatePtrDestructionSameThread,
                 WebPrivatePtrStrength::kWeak>
       owner_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebPlatformMediaStreamSource);
 };
 
 }  // namespace blink

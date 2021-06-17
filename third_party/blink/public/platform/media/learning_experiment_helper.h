@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "media/learning/common/feature_dictionary.h"
 #include "media/learning/common/labelled_example.h"
 #include "media/learning/common/learning_task.h"
@@ -22,6 +21,9 @@ class BLINK_PLATFORM_EXPORT LearningExperimentHelper {
   // If |controller| is null, then everything else no-ops.
   LearningExperimentHelper(
       std::unique_ptr<learning::LearningTaskController> controller);
+
+  LearningExperimentHelper(const LearningExperimentHelper&) = delete;
+  LearningExperimentHelper& operator=(const LearningExperimentHelper&) = delete;
 
   // Cancels any existing observation.
   ~LearningExperimentHelper();
@@ -43,8 +45,6 @@ class BLINK_PLATFORM_EXPORT LearningExperimentHelper {
   // May be null if no observation is in flight.  Must be null if |controller_|
   // is null.
   base::UnguessableToken observation_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(LearningExperimentHelper);
 };
 
 }  // namespace media

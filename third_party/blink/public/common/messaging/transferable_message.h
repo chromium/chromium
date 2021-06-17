@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/messaging/cloneable_message.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
@@ -42,9 +41,6 @@ struct BLINK_COMMON_EXPORT TransferableMessage : public CloneableMessage {
 
   // Whether payment request capability is delegated to the destination frame.
   bool delegate_payment_request = false;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TransferableMessage);
 };
 
 }  // namespace blink

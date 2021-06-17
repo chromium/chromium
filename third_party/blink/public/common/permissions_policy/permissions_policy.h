@@ -8,7 +8,6 @@
 #include <map>
 #include <vector>
 
-#include "base/macros.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy_features.h"
@@ -169,6 +168,8 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
     bool matches_opaque_src_{false};
   };
 
+  PermissionsPolicy(const PermissionsPolicy&) = delete;
+  PermissionsPolicy& operator=(const PermissionsPolicy&) = delete;
   ~PermissionsPolicy();
 
   static std::unique_ptr<PermissionsPolicy> CreateFromParentPolicy(
@@ -245,8 +246,6 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
   PermissionsPolicyFeatureState inherited_policies_;
 
   const PermissionsPolicyFeatureList& feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(PermissionsPolicy);
 };
 
 }  // namespace blink

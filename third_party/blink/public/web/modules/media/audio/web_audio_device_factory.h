@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_MODULES_MEDIA_AUDIO_WEB_AUDIO_DEVICE_FACTORY_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "media/audio/audio_sink_parameters.h"
 #include "media/audio/audio_source_parameters.h"
@@ -31,6 +30,9 @@ namespace blink {
 // AudioCapturerSourceFactory.
 class BLINK_MODULES_EXPORT WebAudioDeviceFactory {
  public:
+  WebAudioDeviceFactory(const WebAudioDeviceFactory&) = delete;
+  WebAudioDeviceFactory& operator=(const WebAudioDeviceFactory&) = delete;
+
   // Maps the source type to the audio latency it requires.
   static media::AudioLatency::LatencyType GetSourceLatencyType(
       WebAudioDeviceSourceType source);
@@ -116,8 +118,6 @@ class BLINK_MODULES_EXPORT WebAudioDeviceFactory {
       const LocalFrameToken& frame_token,
       const media::AudioSinkParameters& params,
       base::TimeDelta auth_timeout);
-
-  DISALLOW_COPY_AND_ASSIGN(WebAudioDeviceFactory);
 };
 
 }  // namespace blink

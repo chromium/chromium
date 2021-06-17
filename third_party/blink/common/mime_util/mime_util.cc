@@ -114,6 +114,9 @@ static const char* const kSupportedNonImageTypes[] = {
 // Singleton utility class for mime types
 class MimeUtil {
  public:
+  MimeUtil(const MimeUtil&) = delete;
+  MimeUtil& operator=(const MimeUtil&) = delete;
+
   bool IsSupportedImageMimeType(const std::string& mime_type) const;
   bool IsSupportedNonImageMimeType(const std::string& mime_type) const;
   bool IsUnsupportedTextMimeType(const std::string& mime_type) const;
@@ -133,8 +136,6 @@ class MimeUtil {
   MimeTypes non_image_types_;
   MimeTypes unsupported_text_types_;
   MimeTypes javascript_types_;
-
-  DISALLOW_COPY_AND_ASSIGN(MimeUtil);
 };
 
 MimeUtil::MimeUtil() {

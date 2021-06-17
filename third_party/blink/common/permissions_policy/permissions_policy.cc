@@ -5,7 +5,6 @@
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 
 #include "base/containers/contains.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"

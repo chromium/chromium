@@ -11,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/eme_constants.h"
 #include "third_party/blink/public/platform/web_common.h"
@@ -63,6 +62,8 @@ class BLINK_PLATFORM_EXPORT KeySystemConfigSelector {
       KeySystems* key_systems,
       MediaPermission* media_permission,
       std::unique_ptr<WebLocalFrameDelegate> web_frame_delegate);
+  KeySystemConfigSelector(const KeySystemConfigSelector&) = delete;
+  KeySystemConfigSelector& operator=(const KeySystemConfigSelector&) = delete;
 
   ~KeySystemConfigSelector();
 
@@ -151,8 +152,6 @@ class BLINK_PLATFORM_EXPORT KeySystemConfigSelector {
   IsSupportedMediaTypeCB is_supported_media_type_cb_;
 
   base::WeakPtrFactory<KeySystemConfigSelector> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(KeySystemConfigSelector);
 };
 
 }  // namespace media

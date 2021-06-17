@@ -11,7 +11,6 @@
 #include <map>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
@@ -65,7 +64,10 @@ class BLINK_PLATFORM_EXPORT UrlData : public base::RefCounted<UrlData> {
  public:
   // Keep in sync with WebMediaPlayer::CorsMode.
   enum CorsMode { CORS_UNSPECIFIED, CORS_ANONYMOUS, CORS_USE_CREDENTIALS };
-  typedef std::pair<GURL, CorsMode> KeyType;
+  using KeyType = std::pair<GURL, CorsMode>;
+
+  UrlData(const UrlData&) = delete;
+  UrlData& operator=(const UrlData&) = delete;
 
   // Accessors
   const GURL& url() const { return url_; }
@@ -226,8 +228,6 @@ class BLINK_PLATFORM_EXPORT UrlData : public base::RefCounted<UrlData> {
   std::vector<RedirectCB> redirect_callbacks_;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(UrlData);
 };
 
 // The UrlIndex lets you look up UrlData instances by url.

@@ -10,7 +10,6 @@
 #include "base/callback.h"
 #include "base/containers/circular_deque.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "media/base/ranges.h"
@@ -41,6 +40,9 @@ class BLINK_PLATFORM_EXPORT BufferedDataSourceHostImpl
  public:
   BufferedDataSourceHostImpl(base::RepeatingClosure progress_cb,
                              const base::TickClock* tick_clock);
+  BufferedDataSourceHostImpl(const BufferedDataSourceHostImpl&) = delete;
+  BufferedDataSourceHostImpl& operator=(const BufferedDataSourceHostImpl&) =
+      delete;
   ~BufferedDataSourceHostImpl() override;
 
   // BufferedDataSourceHost implementation.
@@ -93,7 +95,6 @@ class BLINK_PLATFORM_EXPORT BufferedDataSourceHostImpl
   FRIEND_TEST_ALL_PREFIXES(BufferedDataSourceHostImplTest, CanPlayThrough);
   FRIEND_TEST_ALL_PREFIXES(BufferedDataSourceHostImplTest,
                            CanPlayThroughSmallAdvances);
-  DISALLOW_COPY_AND_ASSIGN(BufferedDataSourceHostImpl);
 };
 
 }  // namespace media

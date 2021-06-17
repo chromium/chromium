@@ -14,8 +14,10 @@ namespace blink {
 template <typename T>
 class SecureDisplayLinkTracker {
  public:
-  SecureDisplayLinkTracker() {}
-  ~SecureDisplayLinkTracker() {}
+  SecureDisplayLinkTracker() = default;
+  SecureDisplayLinkTracker(const SecureDisplayLinkTracker&) = delete;
+  SecureDisplayLinkTracker& operator=(const SecureDisplayLinkTracker&) = delete;
+  ~SecureDisplayLinkTracker() = default;
 
   void Add(T* link, bool is_link_secure);
   void Remove(T* link);
@@ -25,8 +27,6 @@ class SecureDisplayLinkTracker {
  private:
   // Record every insecure links.
   Vector<T*> insecure_links_;
-
-  DISALLOW_COPY_AND_ASSIGN(SecureDisplayLinkTracker);
 };
 
 template <typename T>

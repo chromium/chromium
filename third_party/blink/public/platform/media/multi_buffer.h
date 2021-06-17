@@ -18,7 +18,6 @@
 
 #include "base/callback.h"
 #include "base/hash/hash.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
@@ -91,15 +90,14 @@ class BLINK_PLATFORM_EXPORT MultiBuffer {
   // but we keep and compare pointers to Readers internally.
   class Reader {
    public:
-    Reader() {}
-    virtual ~Reader() {}
+    Reader() = default;
+    Reader(const Reader&) = delete;
+    Reader& operator=(const Reader&) = delete;
+    virtual ~Reader() = default;
     // Notifies the reader that the range of available blocks has changed.
     // The reader must call MultiBuffer::Observe() to activate this callback.
     virtual void NotifyAvailableRange(
         const Interval<MultiBufferBlockId>& range) = 0;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Reader);
   };
 
   // DataProvider is the interface that MultiBuffer
@@ -139,6 +137,8 @@ class BLINK_PLATFORM_EXPORT MultiBuffer {
    public:
     typedef MultiBufferGlobalBlockId GlobalBlockId;
     explicit GlobalLRU(scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+    GlobalLRU(const GlobalLRU&) = delete;
+    GlobalLRU& operator=(const GlobalLRU&) = delete;
 
     // Free elements from cache if possible.
     // Don't free more than |max_to_free| blocks.
@@ -198,12 +198,12 @@ class BLINK_PLATFORM_EXPORT MultiBuffer {
 
     // Where we run our tasks.
     scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-
-    DISALLOW_COPY_AND_ASSIGN(GlobalLRU);
   };
 
   MultiBuffer(int32_t block_size_shift,
               const scoped_refptr<GlobalLRU>& global_lru);
+  MultiBuffer(const MultiBuffer&) = delete;
+  MultiBuffer& operator=(const MultiBuffer&) = delete;
   virtual ~MultiBuffer();
 
   // Identifies a block in the cache.
@@ -380,8 +380,6 @@ class BLINK_PLATFORM_EXPORT MultiBuffer {
   // and 0 for all blocks that are not. Used to quickly figure out
   // ranges of available/unavailable blocks without iterating.
   IntervalMap<BlockId, int32_t> present_;
-
-  DISALLOW_COPY_AND_ASSIGN(MultiBuffer);
 };
 
 }  // namespace media

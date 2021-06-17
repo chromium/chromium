@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -74,9 +73,6 @@ struct BLINK_COMMON_EXPORT CloneableMessage {
   // FileSystemDirectoryHandles.
   std::vector<mojo::PendingRemote<mojom::FileSystemAccessTransferToken>>
       file_system_access_tokens;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CloneableMessage);
 };
 
 }  // namespace blink

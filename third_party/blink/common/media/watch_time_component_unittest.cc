@@ -35,6 +35,8 @@ class WatchTimeInterceptor : public media::mojom::WatchTimeRecorder {
 class WatchTimeComponentTest : public testing::Test {
  public:
   WatchTimeComponentTest() = default;
+  WatchTimeComponentTest(const WatchTimeComponentTest&) = delete;
+  WatchTimeComponentTest& operator=(const WatchTimeComponentTest&) = delete;
   ~WatchTimeComponentTest() override = default;
 
  protected:
@@ -55,9 +57,6 @@ class WatchTimeComponentTest : public testing::Test {
   // Usage of StrictMock is intentional here. This ensures all mock method calls
   // are accounted for in tests.
   testing::StrictMock<WatchTimeInterceptor> recorder_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WatchTimeComponentTest);
 };
 
 // Components should be key agnostic so just choose an arbitrary key for running

@@ -13,7 +13,6 @@
 
 #include "base/cancelable_callback.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -114,6 +113,8 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerImpl
       UrlIndex* url_index,
       std::unique_ptr<VideoFrameCompositor> compositor,
       std::unique_ptr<WebMediaPlayerParams> params);
+  WebMediaPlayerImpl(const WebMediaPlayerImpl&) = delete;
+  WebMediaPlayerImpl& operator=(const WebMediaPlayerImpl&) = delete;
   ~WebMediaPlayerImpl() override;
 
   // WebSurfaceLayerBridgeObserver implementation.
@@ -1031,8 +1032,6 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerImpl
 
   base::WeakPtr<WebMediaPlayerImpl> weak_this_;
   base::WeakPtrFactory<WebMediaPlayerImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebMediaPlayerImpl);
 };
 
 }  // namespace media

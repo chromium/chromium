@@ -106,6 +106,9 @@ class ThrottlingURLLoader::ForwardingThrottleDelegate
   ForwardingThrottleDelegate(ThrottlingURLLoader* loader,
                              URLLoaderThrottle* throttle)
       : loader_(loader), throttle_(throttle) {}
+  ForwardingThrottleDelegate(const ForwardingThrottleDelegate&) = delete;
+  ForwardingThrottleDelegate& operator=(const ForwardingThrottleDelegate&) =
+      delete;
   ~ForwardingThrottleDelegate() override = default;
 
   // URLLoaderThrottle::Delegate:
@@ -235,6 +238,9 @@ class ThrottlingURLLoader::ForwardingThrottleDelegate
       owner_->loader_->inside_delegate_calls_++;
     }
 
+    ScopedDelegateCall(const ScopedDelegateCall&) = delete;
+    ScopedDelegateCall& operator=(const ScopedDelegateCall&) = delete;
+
     ~ScopedDelegateCall() {
       // The loader may have been detached and destroyed.
       if (owner_->loader_)
@@ -243,13 +249,10 @@ class ThrottlingURLLoader::ForwardingThrottleDelegate
 
    private:
     ForwardingThrottleDelegate* const owner_;
-    DISALLOW_COPY_AND_ASSIGN(ScopedDelegateCall);
   };
 
   ThrottlingURLLoader* loader_;
   URLLoaderThrottle* const throttle_;
-
-  DISALLOW_COPY_AND_ASSIGN(ForwardingThrottleDelegate);
 };
 
 ThrottlingURLLoader::StartInfo::StartInfo(

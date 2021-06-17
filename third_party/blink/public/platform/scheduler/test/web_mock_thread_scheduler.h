@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_SCHEDULER_TEST_WEB_MOCK_THREAD_SCHEDULER_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_SCHEDULER_TEST_WEB_MOCK_THREAD_SCHEDULER_H_
 
-#include "base/macros.h"
 #include "base/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
@@ -23,6 +22,8 @@ namespace scheduler {
 class WebMockThreadScheduler : public WebThreadScheduler {
  public:
   WebMockThreadScheduler() = default;
+  WebMockThreadScheduler(const WebMockThreadScheduler&) = delete;
+  WebMockThreadScheduler& operator=(const WebMockThreadScheduler&) = delete;
   ~WebMockThreadScheduler() override = default;
 
   MOCK_METHOD0(DefaultTaskRunner,
@@ -73,9 +74,6 @@ class WebMockThreadScheduler : public WebThreadScheduler {
   MOCK_METHOD1(SetTopLevelBlameContext, void(base::trace_event::BlameContext*));
   MOCK_METHOD1(SetRendererProcessType, void(WebRendererProcessType));
   MOCK_METHOD0(OnMainFrameRequestedForInput, void());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebMockThreadScheduler);
 };
 
 }  // namespace scheduler

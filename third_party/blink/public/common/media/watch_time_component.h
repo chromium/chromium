@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "media/base/timestamp_constants.h"
 #include "media/base/watch_time_keys.h"
@@ -52,6 +51,8 @@ class WatchTimeComponent {
                      ValueToKeyCB value_to_key_cb,
                      GetMediaTimeCB get_media_time_cb,
                      media::mojom::WatchTimeRecorder* recorder);
+  WatchTimeComponent(const WatchTimeComponent&) = delete;
+  WatchTimeComponent& operator=(const WatchTimeComponent&) = delete;
   ~WatchTimeComponent();
 
   // Called when the main WatchTimeReporter timer is started. Reinitializes
@@ -127,8 +128,6 @@ class WatchTimeComponent {
 
   // The last media timestamp seen by RecordWatchTime().
   base::TimeDelta last_timestamp_ = media::kNoTimestamp;
-
-  DISALLOW_COPY_AND_ASSIGN(WatchTimeComponent);
 };
 
 }  // namespace blink

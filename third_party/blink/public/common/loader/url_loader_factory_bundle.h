@@ -10,7 +10,6 @@
 #include <string>
 #include <utility>
 
-#include "base/macros.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -51,6 +50,9 @@ class BLINK_COMMON_EXPORT PendingURLLoaderFactoryBundle
       SchemeMap scheme_specific_pending_factories,
       OriginMap isolated_world_pending_factories,
       bool bypass_redirect_checks);
+  PendingURLLoaderFactoryBundle(const PendingURLLoaderFactoryBundle&) = delete;
+  PendingURLLoaderFactoryBundle& operator=(
+      const PendingURLLoaderFactoryBundle&) = delete;
   ~PendingURLLoaderFactoryBundle() override;
 
   mojo::PendingRemote<network::mojom::URLLoaderFactory>&
@@ -88,8 +90,6 @@ class BLINK_COMMON_EXPORT PendingURLLoaderFactoryBundle
   SchemeMap pending_scheme_specific_factories_;
   OriginMap pending_isolated_world_factories_;
   bool bypass_redirect_checks_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(PendingURLLoaderFactoryBundle);
 };
 
 // Encapsulates a collection of URLLoaderFactoryPtrs which can be usd to acquire

@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "cc/input/input_handler.h"
 #include "cc/input/snap_fling_controller.h"
 #include "cc/paint/element_id.h"
@@ -68,6 +67,8 @@ class BLINK_PLATFORM_EXPORT InputHandlerProxy
  public:
   InputHandlerProxy(cc::InputHandler& input_handler,
                     InputHandlerProxyClient* client);
+  InputHandlerProxy(const InputHandlerProxy&) = delete;
+  InputHandlerProxy& operator=(const InputHandlerProxy&) = delete;
   ~InputHandlerProxy() override;
 
   ElasticOverscrollController* elastic_overscroll_controller() {
@@ -367,8 +368,6 @@ class BLINK_PLATFORM_EXPORT InputHandlerProxy
 
   // Swipe to move cursor feature.
   std::unique_ptr<CursorControlHandler> cursor_control_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(InputHandlerProxy);
 };
 
 }  // namespace blink

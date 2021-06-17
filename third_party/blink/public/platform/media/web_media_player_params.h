@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "cc/layers/surface_layer.h"
@@ -87,6 +86,8 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerParams {
       std::unique_ptr<Demuxer> demuxer_override,
       std::unique_ptr<PowerStatusHelper> power_status_helper);
 
+  WebMediaPlayerParams(const WebMediaPlayerParams&) = delete;
+  WebMediaPlayerParams& operator=(const WebMediaPlayerParams&) = delete;
   ~WebMediaPlayerParams();
 
   DeferLoadCB defer_load_cb() const { return defer_load_cb_; }
@@ -207,8 +208,6 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerParams {
   std::unique_ptr<Demuxer> demuxer_override_;
 
   std::unique_ptr<PowerStatusHelper> power_status_helper_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(WebMediaPlayerParams);
 };
 
 }  // namespace media

@@ -57,6 +57,8 @@ class BLINK_COMMON_EXPORT MimeSniffingURLLoader
     : public network::mojom::URLLoaderClient,
       public network::mojom::URLLoader {
  public:
+  MimeSniffingURLLoader(const MimeSniffingURLLoader&) = delete;
+  MimeSniffingURLLoader& operator=(const MimeSniffingURLLoader&) = delete;
   ~MimeSniffingURLLoader() override;
 
   // Start waiting for the body.
@@ -151,8 +153,6 @@ class BLINK_COMMON_EXPORT MimeSniffingURLLoader
   mojo::ScopedDataPipeProducerHandle body_producer_handle_;
   mojo::SimpleWatcher body_consumer_watcher_;
   mojo::SimpleWatcher body_producer_watcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(MimeSniffingURLLoader);
 };
 
 }  // namespace blink

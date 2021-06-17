@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/permissions_policy/document_policy_features.h"
 #include "third_party/blink/public/common/permissions_policy/policy_value.h"
@@ -78,6 +77,9 @@ class BLINK_COMMON_EXPORT DocumentPolicy {
 
   static std::unique_ptr<DocumentPolicy> CopyStateFrom(const DocumentPolicy*);
 
+  DocumentPolicy(const DocumentPolicy&) = delete;
+  DocumentPolicy& operator=(const DocumentPolicy&) = delete;
+
   // Returns true if the feature is unrestricted (has its default value for the
   // platform)
   bool IsFeatureEnabled(mojom::DocumentPolicyFeature feature) const;
@@ -139,8 +141,6 @@ class BLINK_COMMON_EXPORT DocumentPolicy {
       internal_feature_state_;
 
   FeatureEndpointMap endpoint_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(DocumentPolicy);
 };
 
 bool inline operator==(const DocumentPolicy::ParsedDocumentPolicy& lhs,

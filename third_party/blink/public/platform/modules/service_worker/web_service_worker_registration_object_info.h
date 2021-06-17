@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MODULES_SERVICE_WORKER_WEB_SERVICE_WORKER_REGISTRATION_OBJECT_INFO_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MODULES_SERVICE_WORKER_WEB_SERVICE_WORKER_REGISTRATION_OBJECT_INFO_H_
 
-#include "base/macros.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom-shared.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom-shared.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
@@ -44,6 +43,11 @@ struct WebServiceWorkerRegistrationObjectInfo {
   WebServiceWorkerRegistrationObjectInfo(
       WebServiceWorkerRegistrationObjectInfo&& other) = default;
 
+  WebServiceWorkerRegistrationObjectInfo(
+      const WebServiceWorkerRegistrationObjectInfo&) = delete;
+  WebServiceWorkerRegistrationObjectInfo& operator=(
+      const WebServiceWorkerRegistrationObjectInfo&) = delete;
+
   int64_t registration_id;
 
   WebURL scope;
@@ -59,8 +63,6 @@ struct WebServiceWorkerRegistrationObjectInfo {
   WebServiceWorkerObjectInfo installing;
   WebServiceWorkerObjectInfo waiting;
   WebServiceWorkerObjectInfo active;
-
-  DISALLOW_COPY_AND_ASSIGN(WebServiceWorkerRegistrationObjectInfo);
 };
 
 }  // namespace blink

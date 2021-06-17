@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "media/base/video_frame.h"
@@ -61,6 +60,8 @@ class BLINK_MODULES_EXPORT MediaStreamVideoSource
   using RestartCallback = base::OnceCallback<void(RestartResult)>;
 
   MediaStreamVideoSource();
+  MediaStreamVideoSource(const MediaStreamVideoSource&) = delete;
+  MediaStreamVideoSource& operator=(const MediaStreamVideoSource&) = delete;
   ~MediaStreamVideoSource() override;
 
   // Returns the MediaStreamVideoSource object owned by |source|.
@@ -365,8 +366,6 @@ class BLINK_MODULES_EXPORT MediaStreamVideoSource
   // died before this callback is resolved, we still need to trigger the
   // callback to notify the caller that the request is canceled.
   base::OnceClosure remove_last_track_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaStreamVideoSource);
 };
 
 }  // namespace blink

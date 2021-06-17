@@ -63,6 +63,8 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
       absl::optional<std::vector<std::string>> cors_exempt_header_list =
           absl::nullopt);
 
+  ThrottlingURLLoader(const ThrottlingURLLoader&) = delete;
+  ThrottlingURLLoader& operator=(const ThrottlingURLLoader&) = delete;
   ~ThrottlingURLLoader() override;
 
   // Follows a redirect, calling CreateLoaderAndStart() on the factory. This
@@ -215,15 +217,11 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
     ThrottleEntry(ThrottlingURLLoader* loader,
                   std::unique_ptr<URLLoaderThrottle> the_throttle);
     ThrottleEntry(ThrottleEntry&& other);
-    ~ThrottleEntry();
-
     ThrottleEntry& operator=(ThrottleEntry&& other);
+    ~ThrottleEntry();
 
     std::unique_ptr<ForwardingThrottleDelegate> delegate;
     std::unique_ptr<URLLoaderThrottle> throttle;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(ThrottleEntry);
   };
 
   std::vector<ThrottleEntry> throttles_;
@@ -328,8 +326,6 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
       accept_ch_frame_observers_;
 
   base::WeakPtrFactory<ThrottlingURLLoader> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ThrottlingURLLoader);
 };
 
 }  // namespace blink

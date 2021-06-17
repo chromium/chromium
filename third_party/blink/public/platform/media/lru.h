@@ -11,7 +11,6 @@
 #include <unordered_map>
 
 #include "base/check.h"
-#include "base/macros.h"
 #include "third_party/blink/public/platform/web_common.h"
 
 namespace media {
@@ -30,7 +29,9 @@ namespace media {
 template <typename T>
 class BLINK_PLATFORM_EXPORT LRU {
  public:
-  LRU() {}
+  LRU() = default;
+  LRU(const LRU&) = delete;
+  LRU& operator=(const LRU&) = delete;
 
   // Adds |x| to LRU.
   // |x| must not already be in the LRU.
@@ -88,8 +89,6 @@ class BLINK_PLATFORM_EXPORT LRU {
   // Maps element values to positions in the list so that we
   // can quickly remove elements.
   std::unordered_map<T, typename std::list<T>::iterator> pos_;
-
-  DISALLOW_COPY_AND_ASSIGN(LRU);
 };
 
 }  // namespace media

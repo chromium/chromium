@@ -46,6 +46,10 @@ class BLINK_PLATFORM_EXPORT ChildPendingURLLoaderFactoryBundle
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           pending_prefetch_loader_factory,
       bool bypass_redirect_checks);
+  ChildPendingURLLoaderFactoryBundle(
+      const ChildPendingURLLoaderFactoryBundle&) = delete;
+  ChildPendingURLLoaderFactoryBundle& operator=(
+      const ChildPendingURLLoaderFactoryBundle&) = delete;
   ~ChildPendingURLLoaderFactoryBundle() override;
 
   static std::unique_ptr<ChildPendingURLLoaderFactoryBundle>
@@ -74,8 +78,6 @@ class BLINK_PLATFORM_EXPORT ChildPendingURLLoaderFactoryBundle
 
   mojo::PendingRemote<network::mojom::URLLoaderFactory>
       pending_prefetch_loader_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChildPendingURLLoaderFactoryBundle);
 };
 
 // This class extends URLLoaderFactoryBundle to support prefetch loader factory

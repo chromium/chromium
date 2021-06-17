@@ -23,8 +23,10 @@ class AssociatedInterfaceProvider::LocalProvider
         remote_.BindNewEndpointAndPassDedicatedReceiver(),
         std::move(task_runner));
   }
+  LocalProvider(const LocalProvider&) = delete;
+  LocalProvider& operator=(const LocalProvider&) = delete;
 
-  ~LocalProvider() override {}
+  ~LocalProvider() override = default;
 
   void SetBinderForName(const std::string& name, const Binder& binder) {
     binders_[name] = binder;
@@ -56,8 +58,6 @@ class AssociatedInterfaceProvider::LocalProvider
   mojo::AssociatedReceiver<mojom::AssociatedInterfaceProvider>
       associated_interface_provider_receiver_{this};
   mojo::AssociatedRemote<mojom::AssociatedInterfaceProvider> remote_;
-
-  DISALLOW_COPY_AND_ASSIGN(LocalProvider);
 };
 
 AssociatedInterfaceProvider::AssociatedInterfaceProvider(

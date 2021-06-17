@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/message_loop/message_pump.h"
 #include "base/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -42,6 +41,8 @@ class WebWidgetScheduler;
 
 class BLINK_PLATFORM_EXPORT WebThreadScheduler {
  public:
+  WebThreadScheduler(const WebThreadScheduler&) = delete;
+  WebThreadScheduler& operator=(const WebThreadScheduler&) = delete;
   virtual ~WebThreadScheduler();
 
   // ==== Functions for any scheduler =========================================
@@ -216,10 +217,9 @@ class BLINK_PLATFORM_EXPORT WebThreadScheduler {
   class BLINK_PLATFORM_EXPORT RendererPauseHandle {
    public:
     RendererPauseHandle() = default;
+    RendererPauseHandle(const RendererPauseHandle&) = delete;
+    RendererPauseHandle& operator=(const RendererPauseHandle&) = delete;
     virtual ~RendererPauseHandle() = default;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(RendererPauseHandle);
   };
 
   // Tells the scheduler that the renderer process should be paused.
@@ -248,7 +248,6 @@ class BLINK_PLATFORM_EXPORT WebThreadScheduler {
 
  protected:
   WebThreadScheduler() = default;
-  DISALLOW_COPY_AND_ASSIGN(WebThreadScheduler);
 };
 
 }  // namespace scheduler

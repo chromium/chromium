@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "media/base/data_source.h"
@@ -63,6 +62,8 @@ class BLINK_PLATFORM_EXPORT MultiBufferDataSource : public DataSource {
       MediaLog* media_log,
       BufferedDataSourceHost* host,
       DownloadingCB downloading_cb);
+  MultiBufferDataSource(const MultiBufferDataSource&) = delete;
+  MultiBufferDataSource& operator=(const MultiBufferDataSource&) = delete;
   ~MultiBufferDataSource() override;
 
   // Executes |init_cb| with the result of initialization when it has completed.
@@ -288,8 +289,6 @@ class BLINK_PLATFORM_EXPORT MultiBufferDataSource : public DataSource {
   // reaching into this class from multiple threads to attain a WeakPtr.
   base::WeakPtr<MultiBufferDataSource> weak_ptr_;
   base::WeakPtrFactory<MultiBufferDataSource> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MultiBufferDataSource);
 };
 
 }  // namespace media
