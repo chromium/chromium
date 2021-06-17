@@ -137,6 +137,24 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Scheduler.TimerBase.ScheduledTaskInvokedReason"
+    enum="ScheduledTaskInvokedReason" expires_after="M95">
+  <owner>pmonette@chromium.org</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    Records the reason that a timer's scheduled task was invoked.
+
+    To avoid a degenerate case where a timer could flood the task queue by
+    repeatedly stopping and starting, the scheduled task is kept active in the
+    task queue even if the timer is not running anymore. The issue with this is
+    that the scheduled task can now cause unnecessary wake-ups just to do
+    nothing. This histogram records how many times the timer's task was run
+    unnecessarily.
+
+    Not recorded on Fuchsia.
+  </summary>
+</histogram>
+
 <histogram name="Scheduling.BeginImplFrameLatency2" units="microseconds"
     expires_after="M85">
   <owner>stanisc@chromium.org</owner>

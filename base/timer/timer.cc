@@ -11,12 +11,37 @@
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/tick_clock.h"
+#include "build/build_config.h"
 
 namespace base {
 namespace internal {
+
+namespace {
+
+// The reason for which the timer's scheduled task was invoked.
+enum ScheduledTaskInvokedReason {
+  kStopped,      // The timer fired for a stopped timer so nothing was done.
+  kRescheduled,  // The timer fired before the desired run time so the user task
+                 // was rescheduled for later. This can happens when the timer
+                 // is restarted while it is already running.
+  kReady,        // The timer fired at the desired run time so the task is ready
+                 // to be invoked.
+  kMaxValue
+};
+
+void RecordScheduledTaskInvokedReason(ScheduledTaskInvokedReason reason) {
+  // Recording this histogram breaks a fuchsia test.
+#if !defined(OS_FUCHSIA)
+  UMA_HISTOGRAM_ENUMERATION("Scheduler.TimerBase.ScheduledTaskInvokedReason",
+                            reason);
+#endif
+}
+
+}  // namespace
 
 // TaskDestructionDetector's role is to detect when the scheduled task is
 // deleted without being executed. It can be disabled when the timer no longer
@@ -193,8 +218,10 @@ void TimerBase::OnScheduledTaskInvoked(
   task_destruction_detector.reset();
 
   // The timer may have been stopped.
-  if (!is_running_)
+  if (!is_running_) {
+    RecordScheduledTaskInvokedReason(ScheduledTaskInvokedReason::kStopped);
     return;
+  }
 
   // First check if we need to delay the task because of a new target time.
   if (desired_run_time_ > scheduled_run_time_) {
@@ -204,12 +231,15 @@ void TimerBase::OnScheduledTaskInvoked(
     // Task runner may have called us late anyway, so only post a continuation
     // task if the |desired_run_time_| is in the future.
     if (desired_run_time_ > now) {
+      RecordScheduledTaskInvokedReason(
+          ScheduledTaskInvokedReason::kRescheduled);
       // Post a new task to span the remaining time.
       ScheduleNewTask(desired_run_time_ - now);
       return;
     }
   }
 
+  RecordScheduledTaskInvokedReason(ScheduledTaskInvokedReason::kReady);
   RunUserTask();
   // No more member accesses here: |this| could be deleted at this point.
 }

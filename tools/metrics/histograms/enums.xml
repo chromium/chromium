@@ -71075,6 +71075,12 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="11" label="(gesture) ScheduledPageBlock"/>
 </enum>
 
+<enum name="ScheduledTaskInvokedReason">
+  <int value="0" label="Stopped"/>
+  <int value="1" label="Rescheduled"/>
+  <int value="2" label="Ready"/>
+</enum>
+
 <enum name="SchedulerThreadType">
   <int value="0" label="BrowserUIThread"/>
   <int value="1" label="BrowserIOThread"/>
