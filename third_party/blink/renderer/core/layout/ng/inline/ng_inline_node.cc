@@ -1045,6 +1045,7 @@ void NGInlineNode::CollectInlines(NGInlineNodeData* data,
 const SvgTextChunkOffsets* NGInlineNode::FindSvgTextChunks(
     LayoutBlockFlow& block,
     NGInlineNodeData& data) const {
+  TRACE_EVENT0("blink", "NGInlineNode::FindSvgTextChunks");
   // Build NGInlineItems and NGOffsetMapping first.  They are used only by
   // NGSVGTextLayoutAttributesBuilder, and are discarded because they might
   // be different from final ones.

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/ng/svg/ng_svg_text_layout_algorithm.h"
 
+#include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/core/layout/ng/svg/svg_inline_node_data.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_text_path.h"
@@ -75,6 +76,7 @@ NGSvgTextLayoutAlgorithm::NGSvgTextLayoutAlgorithm(NGInlineNode node,
 void NGSvgTextLayoutAlgorithm::Layout(
     const String& ifc_text_content,
     NGFragmentItemsBuilder::ItemWithOffsetList& items) {
+  TRACE_EVENT0("blink", "NGSvgTextLayoutAlgorithm::Layout");
   // https://svgwg.org/svg2-draft/text.html#TextLayoutAlgorithm
   //
   // The major difference from the algorithm in the specification:
