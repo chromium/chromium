@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/page_info/page_info_row_view.h"
 
-#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
@@ -26,8 +25,8 @@ PageInfoRowView::PageInfoRowView() {
       .SetInteriorMargin(button_insets);
 
   icon_ = AddChildView(std::make_unique<views::ImageView>());
-  const int icon_size = GetLayoutConstant(PAGE_INFO_ICON_SIZE);
-  icon_->SetImageSize({icon_size, icon_size});
+  icon_->SetImageSize({PageInfoViewFactory::kVectorIconSize,
+                       PageInfoViewFactory::kVectorIconSize});
 
   labels_wrapper_ = AddChildView(PageInfoViewFactory::CreateLabelWrapper());
   title_ = labels_wrapper_->AddChildView(std::make_unique<views::Label>(
@@ -37,7 +36,7 @@ PageInfoRowView::PageInfoRowView() {
   // Calculate difference between label height and icon size to align icons
   // and label in the first row.
   const int label_height = title_->GetPreferredSize().height();
-  const int margin = (label_height - icon_size) / 2;
+  const int margin = (label_height - PageInfoViewFactory::kVectorIconSize) / 2;
   layout_manager_->SetDefault(views::kMarginsKey, gfx::Insets(margin, 0));
 }
 

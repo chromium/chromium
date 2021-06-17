@@ -9,7 +9,6 @@ aggregate_vector_icons("components_vector_icons") {
 
   sources = [
     "ads.icon",
-    "arrow_back.icon",
     "back_arrow.icon",
     "blocked_badge.icon",
     "bluetooth.icon",

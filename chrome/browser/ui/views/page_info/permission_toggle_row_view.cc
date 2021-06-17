@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/page_info/permission_toggle_row_view.h"
 
-#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_ui_delegate.h"
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -29,7 +28,7 @@ PermissionToggleRowView::PermissionToggleRowView(
   SetUseDefaultFillLayout(true);
   row_view_ = AddChildView(std::make_unique<PageInfoRowView>());
   row_view_->SetTitle(PageInfoUI::PermissionTypeToUIString(permission.type));
-  row_view_->SetIcon(PageInfoViewFactory::GetPermissionIcon(permission));
+  row_view_->SetIcon(PageInfoUI::GetPermissionIcon(permission));
 
   // Add extra details as sublabel.
   std::u16string detail = delegate->GetPermissionDetail(permission.type);
@@ -63,7 +62,7 @@ void PermissionToggleRowView::AddObserver(
 void PermissionToggleRowView::PermissionChanged(
     const PageInfo::PermissionInfo& permission) {
   // Change the permission icon to reflect the selected setting.
-  row_view_->SetIcon(PageInfoViewFactory::GetPermissionIcon(permission));
+  row_view_->SetIcon(PageInfoUI::GetPermissionIcon(permission));
 
   for (PermissionSelectorRowObserver& observer : observer_list_) {
     observer.OnPermissionChanged(permission);
@@ -119,8 +118,8 @@ void PermissionToggleRowView::InitForUserSource() {
           base::Unretained(this)),
       vector_icons::kSubmenuArrowIcon);
   views::InstallCircleHighlightPathGenerator(subpage_button.get());
-  const int icon_size = GetLayoutConstant(PAGE_INFO_ICON_SIZE);
-  subpage_button->SetMinimumImageSize({icon_size, icon_size});
+  subpage_button->SetMinimumImageSize({PageInfoViewFactory::kVectorIconSize,
+                                       PageInfoViewFactory::kVectorIconSize});
 
   // If type isn't supported by the PermissionManager, don't show the button
   // that opens subpage. Instead, use a spacer view to align this row with
@@ -154,6 +153,8 @@ void PermissionToggleRowView::InitForManagedSource(
   row_view_->AddControl(std::move(state_label));
 
   auto managed_icon = std::make_unique<NonAccessibleImageView>();
-  managed_icon->SetImage(PageInfoViewFactory::GetManagedIcon());
+  managed_icon->SetImage(ui::ImageModel::FromVectorIcon(
+      vector_icons::kBusinessIcon, ui::NativeTheme::kColorId_DefaultIconColor,
+      PageInfoViewFactory::kVectorIconSize));
   row_view_->AddControl(std::move(managed_icon));
 }
