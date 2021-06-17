@@ -5,12 +5,19 @@
 import * as barcodeChip from '../../barcode_chip.js';
 import {assert, assertInstanceof} from '../../chrome_util.js';
 import * as dom from '../../dom.js';
+import {reportError} from '../../error.js';
 import {FaceOverlay} from '../../face.js';
 import {BarcodeScanner} from '../../models/barcode.js';
 import {DeviceOperator, parseMetadata} from '../../mojo/device_operator.js';
 import * as nav from '../../nav.js';
 import * as state from '../../state.js';
-import {Facing, Mode, Resolution} from '../../type.js';
+import {
+  ErrorLevel,
+  ErrorType,
+  Facing,
+  Mode,
+  Resolution,
+} from '../../type.js';
 import * as util from '../../util.js';
 import {windowController} from '../../window_controller.js';
 
@@ -253,9 +260,11 @@ export class Preview {
             await deviceOperator.setCameraFrameRotationEnabledAtSource(
                 deviceId, false);
         if (!isSuccess) {
-          console.warn(
-              'Cannot disable camera frame rotation. ' +
-              'The camera is probably being used by another app.');
+          reportError(
+              ErrorType.FRAME_ROTATION_NOT_DISABLED, ErrorLevel.WARNING,
+              new Error(
+                  'Cannot disable camera frame rotation. ' +
+                  'The camera is probably being used by another app.'));
         }
         this.vidPid_ = await deviceOperator.getVidPid(deviceId);
       }
@@ -380,7 +389,9 @@ export class Preview {
           continue;
         }
         if (map.has(val)) {
-          console.error(`Duplicated value: ${val}`);
+          reportError(
+              ErrorType.METADATA_MAPPING_FAILURE, ErrorLevel.ERROR,
+              new Error(`Duplicated value: ${val}`));
           continue;
         }
         map.set(val, key.slice(prefix.length));
@@ -579,8 +590,10 @@ export class Preview {
     const isSuccess = await deviceOperator.removeMetadataObserver(
         deviceId, this.metadataObserverId_);
     if (!isSuccess) {
-      console.error(`Failed to remove metadata observer with id: ${
-          this.metadataObserverId_}`);
+      reportError(
+          ErrorType.REMOVE_METADATA_OBSERVER_FAILURE, ErrorLevel.ERROR,
+          new Error(`Failed to remove metadata observer with id: ${
+              this.metadataObserverId_}`));
     }
     this.metadataObserverId_ = null;
 

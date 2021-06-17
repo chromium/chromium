@@ -219,14 +219,28 @@ export let ErrorInfo;
  */
 export const ErrorType = {
   BROKEN_THUMBNAIL: 'broken-thumbnail',
+  DEVICE_INFO_UPDATE_FAILURE: 'device-info-update-failure',
+  DEVICE_NOT_EXIST: 'device-not-exist',
   EMPTY_FILE: 'empty-file',
+  FILE_SYSTEM_FAILURE: 'file-system-failure',
+  FRAME_ROTATION_NOT_DISABLED: 'frame-rotation-not-disabled',
+  HANDLE_CAMERA_RESULT_FAILURE: 'handle-camera-result-failure',
   IDLE_DETECTOR_FAILURE: 'idle-detector-failure',
+  INVALID_REVIEW_UI_STATE: 'invalid-review-ui-state',
+  METADATA_MAPPING_FAILURE: 'metadata-mapping-failure',
+  NO_AVAILABLE_LEVEL: 'no-available-level',
+  PERF_METRICS_FAILURE: 'perf-metrics-failure',
   PRELOAD_IMAGE_FAILURE: 'preload-image-failure',
+  REMOVE_METADATA_OBSERVER_FAILURE: 'remove-metadata-observer-failure',
+  REMOVE_SHUTTER_OBSERVER_FAILURE: 'remove-shutter-observer-failure',
   SET_FPS_RANGE_FAILURE: 'set-fps-range-failure',
   START_CAMERA_FAILURE: 'start-camera-failure',
   START_CAPTURE_FAILURE: 'start-capture-failure',
   STOP_CAPTURE_FAILURE: 'stop-capture-failure',
   UNCAUGHT_PROMISE: 'uncaught-promise',
+  UNKNOWN_FACING: 'unknown-facing',
+  UNSAFE_INTEGER: 'unsafe-integer',
+  UNSUPPORTED_PROTOCOL: 'unsupported-protocol',
   MULTIPLE_STREAMS_FAILURE: 'multiple-streams-failure',
 };
 

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {reportError} from '../error.js';
+import {ErrorLevel, ErrorType} from '../type.js';
 import {windowController} from '../window_controller.js';
 
 import {closeWhenUnload} from './util.js';
@@ -163,11 +165,15 @@ export class ChromeHelper {
   async checkReturn_(caller, value) {
     const ret = await value;
     if (ret === null) {
-      console.error(`Return null from calling intent ${caller}.`);
+      reportError(
+          ErrorType.HANDLE_CAMERA_RESULT_FAILURE, ErrorLevel.ERROR,
+          new Error(`Return null from calling intent ${caller}.`));
       return;
     }
     if (!ret.isSuccess) {
-      console.error(`Return not isSuccess from calling intent ${caller}.`);
+      reportError(
+          ErrorType.HANDLE_CAMERA_RESULT_FAILURE, ErrorLevel.ERROR,
+          new Error(`Return not isSuccess from calling intent ${caller}.`));
     }
   }
 

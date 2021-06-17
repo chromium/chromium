@@ -260,6 +260,7 @@
       "webui"
     ],
     "matches": [
+      "chrome://camera-app/*",
       "chrome://media-app/*"
     ]
   },
@@ -267,6 +268,7 @@
     "channel": "stable",
     "contexts": ["webui_untrusted"],
     "matches": [
+      "chrome-untrusted://camera-app/*",
       "chrome-untrusted://help-app/*",
       "chrome-untrusted://media-app/*"
     ]

@@ -40,7 +40,9 @@ export function parseMetadata(entry) {
       return Array.from(new BigInt64Array(buffer), (bigIntVal) => {
         const numVal = Number(bigIntVal);
         if (!Number.isSafeInteger(numVal)) {
-          console.warn('The int64 value is not a safe integer');
+          reportError(
+              ErrorType.UNSAFE_INTEGER, ErrorLevel.WARNING,
+              new Error('The int64 value is not a safe integer'));
         }
         return numVal;
       });

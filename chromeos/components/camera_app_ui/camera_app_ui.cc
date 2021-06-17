@@ -298,6 +298,11 @@ void CameraAppUI::DevToolsAgentHostDetached(
   app_window_manager()->SetDevToolsEnabled(false);
 }
 
+bool CameraAppUI::IsJavascriptErrorReportingEnabled() {
+  // Since we proactively call CrashReportPrivate.reportError() in CCA now.
+  return false;
+}
+
 WEB_UI_CONTROLLER_TYPE_IMPL(CameraAppUI)
 
 }  // namespace chromeos

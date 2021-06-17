@@ -11,6 +11,7 @@ import {
 // eslint-disable-next-line no-unused-vars
 import {DeviceInfoUpdater} from '../device/device_info_updater.js';
 import * as dom from '../dom.js';
+import {reportError} from '../error.js';
 import {setExpertMode} from '../expert.js';
 import {I18nString} from '../i18n_string.js';
 import * as loadTimeData from '../models/load_time_data.js';
@@ -18,6 +19,8 @@ import {ChromeHelper} from '../mojo/chrome_helper.js';
 import * as nav from '../nav.js';
 import * as state from '../state.js';
 import {
+  ErrorLevel,
+  ErrorType,
   Facing,
   Resolution,      // eslint-disable-line no-unused-vars
   ResolutionList,  // eslint-disable-line no-unused-vars
@@ -204,7 +207,9 @@ export class ResolutionSettings extends BaseSettings {
     const createOpenMenuHandler = (getSetting, getElement, isPhoto) => () => {
       const setting = getSetting();
       if (setting === null) {
-        console.error('Open settings of non-exist device.');
+        reportError(
+            ErrorType.DEVICE_NOT_EXIST, ErrorLevel.ERROR,
+            new Error('Open settings of non-exist device.'));
         return;
       }
       const element = getElement();
@@ -368,7 +373,9 @@ export class ResolutionSettings extends BaseSettings {
             this.externalSettings_.push(deviceSetting);
             break;
           default:
-            console.error(`Ignore device of unknown facing: ${facing}`);
+            reportError(
+                ErrorType.UNKNOWN_FACING, ErrorLevel.ERROR,
+                new Error(`Ignore device of unknown facing: ${facing}`));
         }
       });
       this.updateResolutions_();

@@ -4,12 +4,17 @@
 
 import {assert} from './chrome_util.js';
 import * as dom from './dom.js';
+import {reportError} from './error.js';
 import {I18nString} from './i18n_string.js';
 import {BarcodeContentType, sendBarcodeDetectedEvent} from './metrics.js';
 import * as loadTimeData from './models/load_time_data.js';
 import * as snackbar from './snackbar.js';
 import * as state from './state.js';
 import {OneShotTimer} from './timer.js';
+import {
+  ErrorLevel,
+  ErrorType,
+} from './type.js';
 
 // TODO(b/172879638): Tune the duration according to the final motion spec.
 const CHIP_DURATION = 8000;
@@ -69,7 +74,9 @@ function isSafeUrl(s) {
   try {
     const url = new URL(s);
     if (url.protocol !== 'http:' && url.protocol !== 'https:') {
-      console.warn('Reject url with protocol:', url.protocol);
+      reportError(
+          ErrorType.UNSUPPORTED_PROTOCOL, ErrorLevel.WARNING,
+          new Error(`Reject url with protocol: ${url.protocol}`));
       return false;
     }
     return true;

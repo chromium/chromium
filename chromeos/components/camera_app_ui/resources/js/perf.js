@@ -2,9 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {reportError} from './error.js';
 import {ChromeHelper} from './mojo/chrome_helper.js';
-// eslint-disable-next-line no-unused-vars
-import {PerfEntry, PerfEvent, PerfInformation} from './type.js';
+import {
+  ErrorLevel,
+  ErrorType,
+  PerfEntry,        // eslint-disable-line no-unused-vars
+  PerfEvent,        // eslint-disable-line no-unused-vars
+  PerfInformation,  // eslint-disable-line no-unused-vars
+} from './type.js';
 
 /**
  * @typedef {function(!PerfEntry): void}
@@ -63,8 +69,10 @@ export class PerfLogger {
    */
   start(event, startTime = performance.now()) {
     if (this.startTimeMap_.has(event)) {
-      console.error(`Failed to start event ${event} since the previous one is
-                     not stopped.`);
+      reportError(
+          ErrorType.PERF_METRICS_FAILURE, ErrorLevel.ERROR,
+          new Error(`Failed to start event ${
+              event} since the previous one is not stopped.`));
       return;
     }
     this.startTimeMap_.set(event, startTime);
@@ -79,7 +87,9 @@ export class PerfLogger {
    */
   stop(event, perfInfo = {}) {
     if (!this.startTimeMap_.has(event)) {
-      console.error(`Failed to stop event ${event} which is never started.`);
+      reportError(
+          ErrorType.PERF_METRICS_FAILURE, ErrorLevel.ERROR,
+          new Error(`Failed to stop event ${event} which is never started.`));
       return;
     }
 

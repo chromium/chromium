@@ -11,6 +11,7 @@ import * as toast from '../toast.js';
 // eslint-disable-next-line no-unused-vars
 import {ErrorLevel, ErrorType, Facing, VideoConfig} from '../type.js';
 import {WaitableEvent} from '../waitable_event.js';
+
 import {Camera3DeviceInfo} from './camera3_device_info.js';
 
 /**
@@ -219,7 +220,7 @@ export class StreamManager {
     try {
       return await this.camera3DevicesInfo_;
     } catch (e) {
-      console.error(e);
+      reportError(ErrorType.DEVICE_INFO_UPDATE_FAILURE, ErrorLevel.ERROR, e);
     }
     return null;
   }

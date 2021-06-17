@@ -71,6 +71,9 @@ class CameraAppUI : public ui::MojoWebUIController,
   void DevToolsAgentHostDetached(
       content::DevToolsAgentHost* agent_host) override;
 
+  // content::WebUIController overrides.
+  bool IsJavascriptErrorReportingEnabled() override;
+
  private:
   std::unique_ptr<CameraAppUIDelegate> delegate_;
 

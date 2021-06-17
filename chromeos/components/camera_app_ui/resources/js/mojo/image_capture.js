@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {reportError} from '../error.js';
+import {ErrorLevel, ErrorType} from '../type.js';
+
 import {DeviceOperator} from './device_operator.js';
 
 /**
@@ -104,7 +107,9 @@ export class CrosImageCapture {
       const isSuccess = await deviceOperator.removeShutterObserver(
           this.deviceId_, observerId);
       if (!isSuccess) {
-        console.error('Failed to remove shutter observer');
+        reportError(
+            ErrorType.REMOVE_SHUTTER_OBSERVER_FAILURE, ErrorLevel.ERROR,
+            new Error('Failed to remove shutter observer'));
       }
       return takes;
     } else {

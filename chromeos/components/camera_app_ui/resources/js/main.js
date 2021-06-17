@@ -13,7 +13,7 @@ import {
 } from './device/constraints_preferrer.js';
 import {DeviceInfoUpdater} from './device/device_info_updater.js';
 import * as dom from './dom.js';
-import * as error from './error.js';
+import {reportError} from './error.js';
 import * as focusRing from './focus_ring.js';
 import {GalleryButton} from './gallerybutton.js';
 import {I18nString} from './i18n_string.js';
@@ -264,7 +264,7 @@ export class App {
         this.galleryButton_.initialize(cameraDir);
       }
     } catch (error) {
-      console.error(error);
+      reportError(ErrorType.FILE_SYSTEM_FAILURE, ErrorLevel.ERROR, error);
       nav.open(ViewName.WARNING, WarningType.FILESYSTEM_FAILURE);
     }
 
@@ -333,7 +333,7 @@ export class App {
           preloadImagesList.map((name) => loadImage(`/images/${name}`)));
       const failure = results.find(({status}) => status === 'rejected');
       if (failure !== undefined) {
-        error.reportError(
+        reportError(
             ErrorType.PRELOAD_IMAGE_FAILURE, ErrorLevel.ERROR,
             assertInstanceof(failure.reason, Error));
       }

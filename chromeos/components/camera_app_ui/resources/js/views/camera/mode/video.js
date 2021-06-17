@@ -12,6 +12,7 @@ import {
   StreamManager,
 } from '../../../device/stream_manager.js';
 import * as dom from '../../../dom.js';
+import {reportError} from '../../../error.js';
 // eslint-disable-next-line no-unused-vars
 import * as h264 from '../../../h264.js';
 import {I18nString} from '../../../i18n_string.js';
@@ -26,6 +27,8 @@ import * as state from '../../../state.js';
 import * as toast from '../../../toast.js';
 import {
   CanceledError,
+  ErrorLevel,
+  ErrorType,
   Facing,  // eslint-disable-line no-unused-vars
   NoChunkError,
   PerfEvent,
@@ -366,9 +369,11 @@ export class Video extends ModeBase {
     const bitrate = resolution.area * multiplier;
     const level = h264.getMinimalLevel(profile, bitrate, frameRate, resolution);
     if (level === null) {
-      console.warn(
-          `No valid level found for ` +
-          `profile: ${h264.getProfileName(profile)} bitrate: ${bitrate}`);
+      reportError(
+          ErrorType.NO_AVAILABLE_LEVEL, ErrorLevel.WARNING,
+          new Error(
+              `No valid level found for ` +
+              `profile: ${h264.getProfileName(profile)} bitrate: ${bitrate}`));
       return null;
     }
     return {profile, level, bitrate};

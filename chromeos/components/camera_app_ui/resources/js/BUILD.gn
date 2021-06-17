@@ -62,6 +62,7 @@ js_library("compile_resources") {
   ]
   externs_list = [
     "$externs_path/chrome_extensions.js",
+    "$externs_path/crash_report_private.js",
     "$externs_path/file_manager_private.js",
     "$externs_path/file_system_provider.js",
     "$externs_path/metrics_private.js",

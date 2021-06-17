@@ -23,6 +23,8 @@ import {
  */
 export let StackFrame;
 
+const PRODUCT_NAME = 'Chrome_ChromeOS';
+
 /**
  * Converts v8 CallSite object to StackFrame.
  * @param {!CallSite} callsite
@@ -54,7 +56,7 @@ export function getStackFrames(error) {
     try {
       return stack.map(toStackFrame);
     } catch (e) {
-      console.error('Failed to prepareStackTrace', e);
+      console.warn('Failed to prepareStackTrace', e);
       return null;
     }
   };
@@ -69,18 +71,27 @@ export function getStackFrames(error) {
 }
 
 /**
+ * Gets the description text for an error.
+ * @param {!Error} error
+ * @return {string}
+ */
+function getErrorDescription(error) {
+  return `${error.name}: ${error.message}`;
+}
+
+/**
  * Gets formatted string stack from error.
  * @param {!Error} error
  * @return {string}
  */
-export function formatErrorStack(error) {
+function formatErrorStack(error) {
   if (typeof error.stack === 'string') {
     return error.stack;
   }
-  const errorString = error.name + ': ' + error.message;
   const frames = error.stack || /** @type {!Array<!StackFrame>} */ ([]);
 
-  return errorString +
+  const errorDesc = getErrorDescription(error);
+  return errorDesc +
       frames
           .map(({fileName, funcName, lineNo, colNo}) => {
             let position = '';
@@ -126,33 +137,63 @@ const triggeredErrorSet = new Set();
  * @param {!Error} error
  */
 export function reportError(type, level, error) {
-  // uncaught promise is already logged in console
+  // Uncaught promise is already logged in console.
   if (type !== ErrorType.UNCAUGHT_PROMISE) {
     if (level === ErrorLevel.ERROR) {
       console.error(type, error);
-    } else {
+    } else if (level === ErrorLevel.WARNING) {
       console.warn(type, error);
     }
   }
+
   const time = Date.now();
   const frames = getStackFrames(error);
   const errorName = error.name;
+  const errorDesc = getErrorDescription(error);
   const frame = (frames !== null && frames.length > 0) ? frames[0] : {};
-  let {fileName = '', lineNo = '', colNo = '', funcName = ''} = frame;
-  lineNo = String(lineNo);
-  colNo = String(colNo);
+  const {fileName = '', lineNo = 0, colNo = 0, funcName = ''} = frame;
 
-  const hash = [errorName, fileName, lineNo, colNo].join(',');
+  const hash = [errorName, fileName, String(lineNo), String(colNo)].join(',');
   if (triggeredErrorSet.has(hash)) {
     return;
   }
   triggeredErrorSet.add(hash);
 
+  const stackStr = formatErrorStack(error);
   if (appWindow !== null) {
-    appWindow.reportError(
-        {type, level, stack: formatErrorStack(error), time, name: errorName});
+    appWindow.reportError({
+      type,
+      level,
+      stack: stackStr,
+      time,
+      name: errorName,
+    });
     return;
   }
-  metrics.sendErrorEvent(
-      {type, level, errorName, fileName, funcName, lineNo, colNo});
+  metrics.sendErrorEvent({
+    type,
+    level,
+    errorName,
+    fileName,
+    funcName,
+    lineNo: String(lineNo),
+    colNo: String(colNo),
+  });
+
+  // Only reports the error to crash server if it reaches "error" level.
+  if (level !== ErrorLevel.ERROR) {
+    return;
+  }
+
+  /** @type {!chrome.crashReportPrivate.ErrorInfo} */
+  const params = {
+    product: PRODUCT_NAME,
+    url: self.location.href,
+    message: `${type}: ${errorDesc}`,
+    lineNumber: lineNo || 0,
+    stackTrace: stackStr || '',
+    columnNumber: colNo || 0,
+  };
+
+  chrome.crashReportPrivate.reportError(params, () => {});
 }
