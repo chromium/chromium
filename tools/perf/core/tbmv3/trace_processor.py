@@ -28,9 +28,10 @@ MetricFiles = namedtuple('MetricFiles', ('sql', 'proto', 'internal_metric'))
 class InvalidTraceProcessorOutput(Exception):
   pass
 
-# This will be set to a path once trace processor has been fetched
+# These will be set to respective paths once the files have been fetched
 # to avoid downloading several times during one Results Processor run.
 _fetched_trace_processor = None
+_fetched_power_profile = None
 _fetch_lock = threading.Lock()
 
 
@@ -55,6 +56,17 @@ def _EnsureTraceProcessor(trace_processor_path):
     raise RuntimeError("Can't find trace processor executable at %s" %
                        trace_processor_path)
   return trace_processor_path
+
+
+def _EnsurePowerProfile():
+  global _fetched_power_profile
+  with _fetch_lock:
+    if not _fetched_power_profile:
+      _fetched_power_profile = binary_deps_manager.FetchDataFile(
+          POWER_PROFILE_SQL)
+      logging.info('Device power profiles downloaded to %s',
+                   _fetched_power_profile)
+  return _fetched_power_profile
 
 
 def _RunTraceProcessor(*args):
@@ -220,8 +232,7 @@ def RunMetrics(trace_processor_path,
       trace_file,
   ]
   if fetch_power_profile:
-    power_profile_sql = binary_deps_manager.FetchDataFile(POWER_PROFILE_SQL)
-    command_args[1:1] = ['--pre-metrics', power_profile_sql]
+    command_args[1:1] = ['--pre-metrics', _EnsurePowerProfile()]
 
   output = _RunTraceProcessor(*command_args)
   measurements = json.loads(output)
