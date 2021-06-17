@@ -74,7 +74,7 @@ constexpr gfx::Size kMinWindowSize(260, 146);
 constexpr int kOverlayBorderThickness = 10;
 
 // The opacity of the controls scrim.
-constexpr double kControlsScrimOpacity = 0.6;
+constexpr double kControlsScrimOpacity = 0.76;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // The opacity of the resize handle control.
