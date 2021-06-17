@@ -94,6 +94,11 @@ void AccessTokenFetcher::Finish() {
   DCHECK(callback_.is_null())
       << "Finish called before responding to pending request";
 
+  // If `OnMojoPipeError` is called after `OnGetTokenSuccess` or
+  // `OnGetTokenFailure`, the `done_callback_` will be null.
+  if (done_callback_.is_null())
+    return;
+
   // We cannot call `TriggerDeletion` directly because it will immediately start
   // deleting `this`, before this method has had a chance to return.
   base::SequencedTaskRunnerHandle::Get()->PostTask(
