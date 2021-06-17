@@ -8,7 +8,6 @@
 #include <numeric>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
-#include "ash/public/cpp/accelerators.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/tray_constants.h"
@@ -34,6 +33,7 @@
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/painter.h"
+#include "ui/views/views_delegate.h"
 #include "ui/wm/core/shadow_types.h"
 #include "ui/wm/core/window_util.h"
 
@@ -41,6 +41,7 @@ using views::BubbleBorder;
 using views::BubbleFrameView;
 using views::NonClientFrameView;
 using views::View;
+using views::ViewsDelegate;
 using views::Widget;
 
 namespace ash {
@@ -197,13 +198,13 @@ void TrayBubbleView::RerouteEventHandler::OnKeyEvent(ui::KeyEvent* event) {
   // MenuController::OnWillDispatchKeyEvent.
   event->StopPropagation();
 
-  // Process accelerators here since the event will not be propagated past this
-  // point.
+  // To provide consistent behavior with a menu, process accelerator as a menu
+  // is open if the event is not handled by the widget.
   ui::Accelerator accelerator(*event);
-  AcceleratorController::Get()->Process(accelerator);
-
-  // Close menu if required by the accelerator.
-  if (AcceleratorController::Get()->OnMenuAccelerator(accelerator))
+  ViewsDelegate::ProcessMenuAcceleratorResult result =
+      ViewsDelegate::GetInstance()->ProcessAcceleratorWhileMenuShowing(
+          accelerator);
+  if (result == ViewsDelegate::ProcessMenuAcceleratorResult::CLOSE_MENU)
     tray_bubble_view_->CloseBubbleView();
 }
 

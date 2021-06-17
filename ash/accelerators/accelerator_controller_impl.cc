@@ -894,7 +894,9 @@ void HandleToggleSystemTrayBubbleInternal(bool focus_message_center) {
   UnifiedSystemTray* tray = RootWindowController::ForWindow(target_root)
                                 ->GetStatusAreaWidget()
                                 ->unified_system_tray();
-  if (!tray->IsBubbleShown()) {
+  if (tray->IsBubbleShown()) {
+    tray->CloseBubble();
+  } else {
     tray->ShowBubble();
     tray->ActivateBubble();
 
