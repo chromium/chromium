@@ -170,9 +170,11 @@ scanning::ScanJobFailureReason GetScanJobFailureReason(
 void RecordScanJobResult(
     bool success,
     const absl::optional<scanning::ScanJobFailureReason>& failure_reason,
+    int num_files_created,
     int num_pages_scanned) {
   base::UmaHistogramBoolean("Scanning.ScanJobSuccessful", success);
   if (success) {
+    base::UmaHistogramCounts100("Scanning.NumFilesCreated", num_files_created);
     base::UmaHistogramCounts100("Scanning.NumPagesScanned", num_pages_scanned);
     return;
   }
@@ -233,7 +235,7 @@ void ScanService::StartScan(
   if (scanner_name.empty()) {
     std::move(callback).Run(false);
     RecordScanJobResult(false, scanning::ScanJobFailureReason::kScannerNotFound,
-                        /*not used*/ 0);
+                        /*not used*/ 0, /*not used*/ 0);
     return;
   }
 
@@ -247,7 +249,7 @@ void ScanService::StartScan(
     std::move(callback).Run(false);
     RecordScanJobResult(false,
                         scanning::ScanJobFailureReason::kUnsupportedScanToPath,
-                        /*not used*/ 0);
+                        /*not used*/ 0, /*not used*/ 0);
     return;
   }
 
@@ -449,7 +451,8 @@ void ScanService::OnAllPagesSaved(lorgnette::ScanFailureMode failure_mode) {
   }
   RecordScanJobResult(failure_mode == lorgnette::SCAN_FAILURE_MODE_NO_FAILURE &&
                           !page_save_failed_,
-                      failure_reason, num_pages_scanned_);
+                      failure_reason, scanned_file_paths_.size(),
+                      num_pages_scanned_);
 }
 
 void ScanService::ClearScanState() {

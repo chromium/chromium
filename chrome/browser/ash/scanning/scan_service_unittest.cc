@@ -449,6 +449,9 @@ TEST_F(ScanServiceTest, Scan) {
   // Since we're using mock time, this is deterministic.
   base::Time::Now().LocalExplode(&scan_time);
 
+  base::HistogramTester histogram_tester;
+  int num_single_file_scans = 0u;
+  int num_multi_file_scans = 0u;
   scan_service_->SetMyFilesPathForTesting(scanned_files_mount_->GetRootPath());
   for (int type_num = static_cast<int>(mojo_ipc::FileType::kMinValue);
        type_num <= static_cast<int>(mojo_ipc::FileType::kMaxValue);
@@ -475,6 +478,15 @@ TEST_F(ScanServiceTest, Scan) {
     EXPECT_EQ(mojo_ipc::ScanResult::kSuccess,
               fake_scan_job_observer_.scan_result());
     EXPECT_EQ(saved_scan_paths, fake_scan_job_observer_.scanned_file_paths());
+
+    // Verify that the histograms have been updated correctly.
+    histogram_tester.ExpectBucketCount(
+        "Scanning.NumFilesCreated", saved_scan_paths.size(),
+        type == mojo_ipc::FileType::kPdf ? ++num_single_file_scans
+                                         : ++num_multi_file_scans);
+    histogram_tester.ExpectUniqueSample(
+        "Scanning.NumPagesScanned", scan_data.size(),
+        num_single_file_scans + num_multi_file_scans);
   }
 }
 
