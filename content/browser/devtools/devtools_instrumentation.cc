@@ -443,6 +443,19 @@ void ApplyNetworkRequestOverrides(
   bool disable_cache = false;
   DevToolsAgentHostImpl* agent_host =
       RenderFrameDevToolsAgentHost::GetFor(frame_tree_node);
+  // Prerendered pages do not have DevTools attached but it's important for
+  // developers that they get the UA override of the visible DevTools for
+  // testing mobile sites. Use the DevTools agent of the primary main frame of
+  // the WebContents.
+  // TODO(https://crbug.com/1221419): The real fix may be to make a separate
+  // target for the prerendered page.
+  if (frame_tree_node->frame_tree()->is_prerendering()) {
+    DCHECK(!agent_host);
+    agent_host = RenderFrameDevToolsAgentHost::GetFor(
+        WebContentsImpl::FromFrameTreeNode(frame_tree_node)
+            ->GetMainFrame()
+            ->frame_tree_node());
+  }
   if (!agent_host)
     return;
   net::HttpRequestHeaders headers;
@@ -473,6 +486,19 @@ bool ApplyUserAgentMetadataOverrides(
     absl::optional<blink::UserAgentMetadata>* override_out) {
   DevToolsAgentHostImpl* agent_host =
       RenderFrameDevToolsAgentHost::GetFor(frame_tree_node);
+  // Prerendered pages do not have DevTools attached but it's important for
+  // developers that they get the UA override of the visible DevTools for
+  // testing mobile sites. Use the DevTools agent of the primary main frame of
+  // the WebContents.
+  // TODO(https://crbug.com/1221419): The real fix may be to make a separate
+  // target for the prerendered page.
+  if (frame_tree_node->frame_tree()->is_prerendering()) {
+    DCHECK(!agent_host);
+    agent_host = RenderFrameDevToolsAgentHost::GetFor(
+        WebContentsImpl::FromFrameTreeNode(frame_tree_node)
+            ->GetMainFrame()
+            ->frame_tree_node());
+  }
   if (!agent_host)
     return false;
 

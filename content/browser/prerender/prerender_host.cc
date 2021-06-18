@@ -279,6 +279,9 @@ bool PrerenderHost::StartPrerendering() {
   if (attributes_->referrer)
     load_url_params.referrer = Referrer(*attributes_->referrer);
 
+  // TODO(https://crbug.com/1189034): Should we set `override_user_agent` here?
+  // Things seem to work without it.
+
   // TODO(https://crbug.com/1132746): Set up other fields of `load_url_params`
   // as well, and add tests for them.
   base::WeakPtr<NavigationHandle> created_navigation_handle =
