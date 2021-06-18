@@ -14,6 +14,7 @@
 #include "media/base/audio_decoder.h"
 #include "media/base/cdm_factory.h"
 #include "media/base/media_switches.h"
+#include "media/base/media_util.h"
 #include "media/base/video_decoder.h"
 #include "media/gpu/gpu_video_accelerator_util.h"
 #include "media/gpu/gpu_video_decode_accelerator_factory.h"
@@ -135,8 +136,13 @@ std::unique_ptr<VideoDecoder> GpuMojoMediaClient::CreateVideoDecoder(
     mojom::CommandBufferIdPtr command_buffer_id,
     RequestOverlayInfoCB request_overlay_info_cb,
     const gfx::ColorSpace& target_color_space) {
+  // All implementations require a command buffer.
+  if (!command_buffer_id)
+    return nullptr;
+  std::unique_ptr<MediaLog> log =
+      media_log ? media_log->Clone() : std::make_unique<media::NullMediaLog>();
   VideoDecoderTraits traits(
-      task_runner, gpu_task_runner_, media_log->Clone(),
+      task_runner, gpu_task_runner_, std::move(log),
       std::move(request_overlay_info_cb), &target_color_space, gpu_preferences_,
       gpu_feature_info_, &gpu_workarounds_, gpu_memory_buffer_factory_,
       // CreatePlatformVideoDecoder does not keep a reference to |traits|
