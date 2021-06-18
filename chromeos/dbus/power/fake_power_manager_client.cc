@@ -397,6 +397,7 @@ void FakePowerManagerClient::RefreshBluetoothBattery(
         peripheral_battery_refresh_levels_[address],
         power_manager::
             PeripheralBatteryStatus_ChargeStatus_CHARGE_STATUS_UNKNOWN,
+        /*serial_number=*/"",
         /*active_update=*/true);
   }
 }

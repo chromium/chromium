@@ -755,9 +755,13 @@ class PowerManagerClientImpl : public PowerManagerClient {
     bool active_update = protobuf_status.has_active_update()
                              ? protobuf_status.active_update()
                              : false;
+    std::string serial_number = "";
+    if (protobuf_status.has_serial_number())
+      serial_number = protobuf_status.serial_number();
+
     for (auto& observer : observers_)
       observer.PeripheralBatteryStatusReceived(path, name, level, status,
-                                               active_update);
+                                               serial_number, active_update);
   }
 
   void PowerSupplyPollReceived(dbus::Signal* signal) {

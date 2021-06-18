@@ -110,6 +110,8 @@ class COMPONENT_EXPORT(DBUS_POWER) PowerManagerClient {
     // Note that peripherals and peripheral chargers may be separate
     // (such as stylus vs. internal stylus charger), and have two distinct
     // charge levels.
+    // |serial_number| Text representation of peripheral S/N, if available
+    // and retrievable, empty string otherwise.
     // |active_update| true if peripheral event triggered update, false
     // if due to periodic poll or restart, and value may be stale.
     virtual void PeripheralBatteryStatusReceived(
@@ -117,6 +119,7 @@ class COMPONENT_EXPORT(DBUS_POWER) PowerManagerClient {
         const std::string& name,
         int level,
         power_manager::PeripheralBatteryStatus_ChargeStatus status,
+        const std::string& serial_number,
         bool active_update) {}
 
     // Called when updated information about the power supply is available.

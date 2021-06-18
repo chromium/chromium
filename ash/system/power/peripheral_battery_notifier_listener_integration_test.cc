@@ -99,7 +99,7 @@ class PeripheralBatteryNotifierListenerTest : public AshTestBase {
         path, name, level,
         power_manager::
             PeripheralBatteryStatus_ChargeStatus_CHARGE_STATUS_DISCHARGING,
-        kBatteryPolledUpdate);
+        /*serial_number=*/"", kBatteryPolledUpdate);
   }
 
   void SendBatteryUpdate(
@@ -107,9 +107,10 @@ class PeripheralBatteryNotifierListenerTest : public AshTestBase {
       const std::string& name,
       int level,
       power_manager::PeripheralBatteryStatus_ChargeStatus status,
+      const std::string& serial_number,
       bool active_update) {
-    battery_listener_->PeripheralBatteryStatusReceived(path, name, level,
-                                                       status, active_update);
+    battery_listener_->PeripheralBatteryStatusReceived(
+        path, name, level, status, serial_number, active_update);
   }
 
   // Extracts the battery percentage from the message of a notification.
@@ -189,7 +190,7 @@ TEST_F(PeripheralBatteryNotifierListenerTest, Basic) {
       kTestBatteryPath, kTestDeviceName, 5,
       power_manager::
           PeripheralBatteryStatus_ChargeStatus_CHARGE_STATUS_DISCHARGING,
-      kBatteryEventUpdate);
+      /*serial_number=*/"", kBatteryEventUpdate);
   EXPECT_EQ(5, info.level);
 
   EXPECT_EQ(GetTestingClock(), info.last_notification_timestamp);
@@ -264,12 +265,12 @@ TEST_F(PeripheralBatteryNotifierListenerTest, ExtractBluetoothAddress) {
       bluetooth_path, kTestDeviceName, 10,
       power_manager::
           PeripheralBatteryStatus_ChargeStatus_CHARGE_STATUS_DISCHARGING,
-      kBluetoothBatteryUpdate);
+      /*serial_number=*/"", kBluetoothBatteryUpdate);
   SendBatteryUpdate(
       non_bluetooth_path, kTestDeviceName, 10,
       power_manager::
           PeripheralBatteryStatus_ChargeStatus_CHARGE_STATUS_DISCHARGING,
-      kBatteryPolledUpdate);
+      /*serial_number=*/"", kBatteryPolledUpdate);
   EXPECT_EQ(2u, battery_notifier_->battery_notifications_.size());
 }
 
@@ -308,7 +309,7 @@ TEST_F(PeripheralBatteryNotifierListenerIncompleteDevicesTest,
       kTestStylusBatteryPath, kTestStylusName, 5,
       power_manager::
           PeripheralBatteryStatus_ChargeStatus_CHARGE_STATUS_DISCHARGING,
-      kBatteryEventUpdate);
+      /*serial_number=*/"", kBatteryEventUpdate);
   EXPECT_FALSE(message_center_->FindVisibleNotificationById(
       PeripheralBatteryNotifier::kStylusNotificationId));
   EXPECT_FALSE(
@@ -324,7 +325,7 @@ TEST_F(PeripheralBatteryNotifierListenerIncompleteDevicesTest,
       kTestStylusBatteryPath, kTestStylusName, 5,
       power_manager::
           PeripheralBatteryStatus_ChargeStatus_CHARGE_STATUS_DISCHARGING,
-      kBatteryEventUpdate);
+      /*serial_number=*/"", kBatteryEventUpdate);
   EXPECT_TRUE(message_center_->FindVisibleNotificationById(
       PeripheralBatteryNotifier::kStylusNotificationId));
   EXPECT_FALSE(
@@ -354,7 +355,7 @@ TEST_F(PeripheralBatteryNotifierListenerIncompleteDevicesTest,
       kTestStylusBatteryPath, kTestStylusName, 5,
       power_manager::
           PeripheralBatteryStatus_ChargeStatus_CHARGE_STATUS_DISCHARGING,
-      kBatteryEventUpdate);
+      /*serial_number=*/"", kBatteryEventUpdate);
   EXPECT_FALSE(message_center_->FindVisibleNotificationById(
       PeripheralBatteryNotifier::kStylusNotificationId));
   EXPECT_FALSE(
@@ -370,7 +371,7 @@ TEST_F(PeripheralBatteryNotifierListenerIncompleteDevicesTest,
       kTestStylusBatteryPath, kTestStylusName, 5,
       power_manager::
           PeripheralBatteryStatus_ChargeStatus_CHARGE_STATUS_DISCHARGING,
-      kBatteryEventUpdate);
+      /*serial_number=*/"", kBatteryEventUpdate);
   EXPECT_FALSE(message_center_->FindVisibleNotificationById(
       PeripheralBatteryNotifier::kStylusNotificationId));
   EXPECT_FALSE(

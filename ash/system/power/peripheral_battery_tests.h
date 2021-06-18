@@ -57,6 +57,8 @@ const auto kTestStylusBatteryStatusDischargingIn = power_manager::
     PeripheralBatteryStatus_ChargeStatus_CHARGE_STATUS_DISCHARGING;
 const auto kTestStylusBatteryStatusDischargingOut =
     ash::PeripheralBatteryListener::BatteryInfo::ChargeStatus::kDischarging;
+const std::string kStylusEligibleSerialNumber = "DG-FABCDE01BCA23633";
+const std::string kStylusIneligibleSerialNumber = "DG-0190AB234FFE368C";
 // A period of time less than full garage charge, in seconds
 const int kPartialGarageChargeTime = 3;
 // A period of time greater than full garage charge, in seconds

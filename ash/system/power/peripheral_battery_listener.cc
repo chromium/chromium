@@ -21,6 +21,7 @@
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/re2/src/re2/re2.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/events/devices/device_data_manager.h"
@@ -58,6 +59,13 @@ constexpr int kGaragedStylusChargeTime = 17 * 1000;
 constexpr char kStylusGarageKey[] = "garaged-stylus-charger";
 constexpr char16_t kStylusGarageName[] = u"Stylus Charger";
 
+// Serial numbers for styluses which may report inconsistent battery levels.
+const RE2 kBlockedStylusDevicesPattern(
+    "(?i)^DG-019[0-9A-F]{5}(11|4[F0])FE368C$");
+// Serial numbers for styluses which may report inconsistent battery levels,
+// but might not actually exist in wild.
+const RE2 kUnusualStylusDevicesPattern("(?i)^DG-019[0-9A-F]{7}FE368C$");
+
 // Checks if the device is an external stylus.
 bool IsStylusDevice(const std::string& path,
                     const std::string& model_name,
@@ -75,6 +83,19 @@ bool IsStylusDevice(const std::string& path,
   }
 
   return false;
+}
+
+// Checks for devices which are ineligible for battery reports.
+bool IsEligibleForBatteryReport(const std::string& serial_number) {
+  if (serial_number.empty())
+    return true;
+
+  // TODO(b/188811631): Add metrics
+  if (RE2::FullMatch(serial_number, kBlockedStylusDevicesPattern))
+    return false;
+
+  // kUnusualStylusDevicesPattern and unrecognized devices are eligible
+  return true;
 }
 
 // Checks if device is the internal charger for an external stylus.
@@ -135,6 +156,7 @@ PeripheralBatteryListener::BatteryInfo::BatteryInfo(
     const std::string& key,
     const std::u16string& name,
     absl::optional<uint8_t> level,
+    bool battery_report_eligible,
     base::TimeTicks last_update_timestamp,
     PeripheralType type,
     ChargeStatus charge_status,
@@ -142,6 +164,7 @@ PeripheralBatteryListener::BatteryInfo::BatteryInfo(
     : key(key),
       name(name),
       level(level),
+      battery_report_eligible(battery_report_eligible),
       last_update_timestamp(last_update_timestamp),
       type(type),
       charge_status(charge_status),
@@ -201,6 +224,7 @@ void PeripheralBatteryListener::GetSwitchStateCallback(ui::StylusState state) {
                       (state == ui::StylusState::REMOVED)
                           ? absl::optional<uint8_t>(absl::nullopt)
                           : 100,
+                      /*battery_report_eligible=*/true,
                       base::TimeTicks::Now(),
                       BatteryInfo::PeripheralType::kStylusViaCharger,
                       (state == ui::StylusState::REMOVED)
@@ -217,6 +241,7 @@ void PeripheralBatteryListener::PeripheralBatteryStatusReceived(
     const std::string& name,
     int level,
     power_manager::PeripheralBatteryStatus_ChargeStatus pmc_charge_status,
+    const std::string& serial_number,
     bool active_update) {
   // Note that zero levels are seen during boot on hid devices; a
   // power_supply node may be created without a real charge level, and
@@ -272,10 +297,15 @@ void PeripheralBatteryListener::PeripheralBatteryStatusReceived(
     opt_level = level;
   }
 
+  // TODO(kenalba): if ineligible should we keep opt_level as previously set,
+  // or clamp it to a fixed value?
+  bool battery_report_eligible = IsEligibleForBatteryReport(serial_number);
+
   PeripheralBatteryListener::BatteryInfo battery{
       map_key,
       base::ASCIIToUTF16(name),
       opt_level,
+      battery_report_eligible,
       base::TimeTicks::Now(),
       type,
       ConvertPowerManagerChargeStatus(pmc_charge_status),
@@ -295,6 +325,7 @@ void PeripheralBatteryListener::DeviceBatteryChanged(
   BatteryInfo battery{GetBatteryMapKey(device),
                       device->GetNameForDisplay(),
                       new_battery_percentage,
+                      /*battery_report_eligible=*/true,
                       base::TimeTicks::Now(),
                       BatteryInfo::PeripheralType::kOther,
                       BatteryInfo::ChargeStatus::kUnknown,
@@ -499,6 +530,8 @@ void PeripheralBatteryListener::UpdateBattery(const BatteryInfo& battery_info,
     existing_battery_info.last_update_timestamp =
         battery_info.last_update_timestamp;
     existing_battery_info.charge_status = battery_info.charge_status;
+    existing_battery_info.battery_report_eligible =
+        battery_info.battery_report_eligible;
   }
 
   BatteryInfo& info = batteries_[map_key];

@@ -73,6 +73,7 @@ class ASH_EXPORT PeripheralBatteryListener
     BatteryInfo(const std::string& key,
                 const std::u16string& name,
                 absl::optional<uint8_t> level,
+                bool battery_report_eligible,
                 base::TimeTicks last_update_timestamp,
                 PeripheralType type,
                 ChargeStatus charge_status,
@@ -86,9 +87,15 @@ class ASH_EXPORT PeripheralBatteryListener
 
     // Human readable name for the device. It is changeable.
     std::u16string name;
-    // Battery level within range [0, 100], or unset. This is changeable.
+    // Battery level within range [0, 100], or unset. This is changeable as
+    // the peripheral charge level changes.
     // TODO(kenalba): explain when we might have an unset state.
     absl::optional<uint8_t> level;
+    // True unless peripheral is known to have unreliable battery reporting.
+    // It is changeable.
+    // TODO(kenalba): specify how a nullopt level and !battery_report_eligible
+    // interact.
+    bool battery_report_eligible = true;
     // Time of last known update of the battery state; this is changeable,
     // and may be updated even if no other fields are; it gives the time of the
     // last known confirmed reading.
@@ -162,6 +169,7 @@ class ASH_EXPORT PeripheralBatteryListener
       const std::string& name,
       int level,
       power_manager::PeripheralBatteryStatus_ChargeStatus status,
+      const std::string& serial_number,
       bool active_update) override;
 
   // device::BluetoothAdapter::Observer:
