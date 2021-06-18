@@ -562,7 +562,8 @@ void LayoutShiftTracker::NotifyPrePaintFinishedInternal() {
             << SubframeWeightingFactor();
   }
 
-  if (pointerdown_pending_data_.saw_pointerdown) {
+  if (pointerdown_pending_data_.saw_pointerdown ||
+      pointerdown_pending_data_.num_pressed_mouse_buttons > 0) {
     pointerdown_pending_data_.score_delta += score_delta;
     pointerdown_pending_data_.weighted_score_delta += weighted_score_delta;
   } else {
@@ -647,6 +648,13 @@ void LayoutShiftTracker::NotifyInput(const WebInputEvent& event) {
   const bool saw_pointerdown = pointerdown_pending_data_.saw_pointerdown;
   const bool pointerdown_became_tap =
       saw_pointerdown && type == WebInputEvent::Type::kPointerUp;
+  bool release_all_mouse_buttons = false;
+  if (type == WebInputEvent::Type::kMouseUp) {
+    pointerdown_pending_data_.num_pressed_mouse_buttons--;
+    release_all_mouse_buttons =
+        pointerdown_pending_data_.num_pressed_mouse_buttons == 0;
+  }
+
   const bool event_type_stops_pointerdown_buffering =
       type == WebInputEvent::Type::kPointerUp ||
       type == WebInputEvent::Type::kPointerCausedUaAction ||
@@ -657,17 +665,6 @@ void LayoutShiftTracker::NotifyInput(const WebInputEvent& event) {
       type == WebInputEvent::Type::kPointerDown &&
       static_cast<const WebPointerEvent&>(event).hovering;
 
-  const bool mousemove_with_button_down =
-      type == WebInputEvent::Type::kMouseMove &&
-      (event.GetModifiers() & WebInputEvent::kLeftButtonDown ||
-       event.GetModifiers() & WebInputEvent::kMiddleButtonDown ||
-       event.GetModifiers() & WebInputEvent::kRightButtonDown ||
-       event.GetModifiers() & WebInputEvent::kBackButtonDown ||
-       event.GetModifiers() & WebInputEvent::kForwardButtonDown);
-
-  const bool mouseup_after_dragging =
-      type == WebInputEvent::Type::kMouseUp && saw_dragged_mousemove_;
-
   const bool should_trigger_shift_exclusion =
       type == WebInputEvent::Type::kMouseDown ||
       type == WebInputEvent::Type::kKeyDown ||
@@ -675,8 +672,7 @@ void LayoutShiftTracker::NotifyInput(const WebInputEvent& event) {
       // We need to explicitly include tap, as if there are no listeners, we
       // won't receive the pointer events.
       type == WebInputEvent::Type::kGestureTap || is_hovering_pointerdown ||
-      pointerdown_became_tap || mousemove_with_button_down ||
-      mouseup_after_dragging;
+      pointerdown_became_tap || release_all_mouse_buttons;
 
   if (should_trigger_shift_exclusion) {
     observed_input_or_scroll_ = true;
@@ -686,7 +682,8 @@ void LayoutShiftTracker::NotifyInput(const WebInputEvent& event) {
     UpdateInputTimestamp(event.TimeStamp());
   }
 
-  if (saw_pointerdown && event_type_stops_pointerdown_buffering) {
+  if ((saw_pointerdown && event_type_stops_pointerdown_buffering) ||
+      release_all_mouse_buttons) {
     double score_delta = pointerdown_pending_data_.score_delta;
     if (score_delta > 0)
       ReportShift(score_delta, pointerdown_pending_data_.weighted_score_delta);
@@ -694,13 +691,8 @@ void LayoutShiftTracker::NotifyInput(const WebInputEvent& event) {
   }
   if (type == WebInputEvent::Type::kPointerDown && !is_hovering_pointerdown)
     pointerdown_pending_data_.saw_pointerdown = true;
-
-  if (mousemove_with_button_down)
-    saw_dragged_mousemove_ = mousemove_with_button_down;
-  if (type == WebInputEvent::Type::kMouseUp ||
-      type == WebInputEvent::Type::kMouseDown) {
-    saw_dragged_mousemove_ = false;
-  }
+  if (type == WebInputEvent::Type::kMouseDown)
+    pointerdown_pending_data_.num_pressed_mouse_buttons++;
 }
 
 void LayoutShiftTracker::UpdateInputTimestamp(base::TimeTicks timestamp) {

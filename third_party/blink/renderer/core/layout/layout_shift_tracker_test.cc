@@ -351,6 +351,10 @@ TEST_F(LayoutShiftTrackerSimTest, MouseMoveDraggingAction) {
     <div id="box"></div>
     <script>
       box.addEventListener("mousemove", (e) => {
+        box.style.top = "50px";
+        e.preventDefault();
+      });
+      box.addEventListener("mouseup", (e) => {
         box.style.top = "100px";
         e.preventDefault();
       });
@@ -368,10 +372,15 @@ TEST_F(LayoutShiftTrackerSimTest, MouseMoveDraggingAction) {
                        gfx::PointF(), WebPointerProperties::Button::kLeft, 1,
                        WebInputEvent::Modifiers::kLeftButtonDown,
                        base::TimeTicks::Now());
+  WebMouseEvent event3(WebInputEvent::Type::kMouseUp, gfx::PointF(),
+                       gfx::PointF(), WebPointerProperties::Button::kLeft, 1,
+                       WebInputEvent::Modifiers::kLeftButtonDown,
+                       base::TimeTicks::Now());
 
   // Coordinates inside #box.
   event1.SetPositionInWidget(50, 150);
   event2.SetPositionInWidget(50, 160);
+  event3.SetPositionInWidget(50, 160);
 
   WebView().MainFrameWidget()->HandleInputEvent(
       WebCoalescedInputEvent(event1, ui::LatencyInfo()));
@@ -392,14 +401,23 @@ TEST_F(LayoutShiftTrackerSimTest, MouseMoveDraggingAction) {
   Compositor().BeginFrame();
   test::RunPendingTasks();
 
+  EXPECT_EQ(0u, perf.getBufferedEntriesByType("layout-shift").size());
+  EXPECT_FLOAT_EQ(0.0, tracker.Score());
+
+  tracker.ResetTimerForTesting();
+
+  WebView().MainFrameWidget()->HandleInputEvent(
+      WebCoalescedInputEvent(event3, ui::LatencyInfo()));
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
   auto entries = perf.getBufferedEntriesByType("layout-shift");
-  EXPECT_EQ(1u, entries.size());
+  EXPECT_EQ(2u, entries.size());
   LayoutShift* shift = static_cast<LayoutShift*>(entries.back().Get());
 
-  // region fraction 50%, distance fraction 1/8
-  const double expected_shift = 0.5 * 0.125;
   EXPECT_TRUE(shift->hadRecentInput());
-  EXPECT_FLOAT_EQ(expected_shift, shift->value());
+  EXPECT_GT(shift->value(), 0);
   EXPECT_FLOAT_EQ(0.0, tracker.Score());
 }
 

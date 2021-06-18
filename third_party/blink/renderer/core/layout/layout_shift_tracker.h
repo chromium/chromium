@@ -207,11 +207,11 @@ class CORE_EXPORT LayoutShiftTracker final
   // treatment is known, the pending layout shifts are reported appropriately
   // and the PointerdownPendingData object is reset.
   struct PointerdownPendingData {
-    PointerdownPendingData()
-        : saw_pointerdown(false), score_delta(0), weighted_score_delta(0) {}
-    bool saw_pointerdown;
-    double score_delta;
-    double weighted_score_delta;
+    PointerdownPendingData() = default;
+    bool saw_pointerdown = false;
+    int num_pressed_mouse_buttons = 0;
+    double score_delta = 0;
+    double weighted_score_delta = 0;
   };
 
   PointerdownPendingData pointerdown_pending_data_;
@@ -267,11 +267,6 @@ class CORE_EXPORT LayoutShiftTracker final
 
   // Nodes that have contributed to the impact region for the current frame.
   std::array<Attribution, LayoutShift::kMaxAttributions> attributions_;
-
-  // Set to true when we see MouseMove events with any button pressed, and
-  // reset to false when we see a MouseUp or MouseDown event. This helps to set
-  // the MouseUp event after mouse dragging to be hasRecentInput.
-  bool saw_dragged_mousemove_ = false;
 };
 
 }  // namespace blink
