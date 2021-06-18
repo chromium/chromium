@@ -5384,21 +5384,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithVibration,
   ExpectRestored(FROM_HERE);
 }
 
-class BackForwardCacheBrowserTestWithServiceWorkerEnabled
-    : public BackForwardCacheBrowserTest {
- public:
-  BackForwardCacheBrowserTestWithServiceWorkerEnabled() = default;
-  ~BackForwardCacheBrowserTestWithServiceWorkerEnabled() override = default;
-
- protected:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    EnableFeatureAndSetParams(features::kBackForwardCache,
-                              "service_worker_supported", "true");
-    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithServiceWorkerEnabled,
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                        CachedPagesWithServiceWorkers) {
   CreateHttpsServer();
   SetupCrossSiteRedirector(https_server());
@@ -5429,7 +5415,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithServiceWorkerEnabled,
   EXPECT_EQ(rfh_a, current_frame_host());
 }
 
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithServiceWorkerEnabled,
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                        EvictIfCacheBlocksServiceWorkerVersionActivation) {
   CreateHttpsServer();
   https_server()->RegisterRequestHandler(
@@ -5471,7 +5457,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithServiceWorkerEnabled,
       {}, {}, {}, FROM_HERE);
 }
 
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithServiceWorkerEnabled,
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                        EvictWithPostMessageToCachedClient) {
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
   https_server.RegisterRequestHandler(
@@ -5529,8 +5515,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithServiceWorkerEnabled,
       {}, {}, {}, FROM_HERE);
 }
 
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithServiceWorkerEnabled,
-                       EvictOnServiceWorkerClaim) {
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, EvictOnServiceWorkerClaim) {
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
   https_server.RegisterRequestHandler(
       base::BindRepeating(&RequestHandlerForUpdateWorker));
@@ -5580,7 +5565,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithServiceWorkerEnabled,
       {}, FROM_HERE);
 }
 
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithServiceWorkerEnabled,
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                        EvictOnServiceWorkerUnregistration) {
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
   https_server.RegisterRequestHandler(

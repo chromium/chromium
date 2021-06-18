@@ -3288,7 +3288,6 @@ class RenderFrameHostManagerTestWithBackForwardCache
         {{features::kBackForwardCache,
           {
               {"TimeToLiveInBackForwardCacheInSeconds", "3600"},
-              {"service_worker_supported", "true"},
           }}},
         // Allow BackForwardCache for all devices regardless of their memory.
         /*disabled_features=*/{features::kBackForwardCacheMemoryControls});

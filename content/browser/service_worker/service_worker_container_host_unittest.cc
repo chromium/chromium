@@ -1126,8 +1126,7 @@ class ServiceWorkerContainerHostTestWithBackForwardCache
 
  protected:
   base::FieldTrialParams GetFeatureParams() {
-    return {{"TimeToLiveInBackForwardCacheInSeconds", "3600"},
-            {"service_worker_supported", "true"}};
+    return {{"TimeToLiveInBackForwardCacheInSeconds", "3600"}};
   }
 
  private:
