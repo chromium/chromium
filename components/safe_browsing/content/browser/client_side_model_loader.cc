@@ -87,7 +87,7 @@ int ModelLoader::GetModelNumber() {
 #endif
   int model_number = 0;
   if (!base::StringToInt(num_str, &model_number)) {
-    model_number = 8;  // Default model
+    model_number = 9;  // Default model
   }
   return model_number;
 }
