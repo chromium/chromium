@@ -9,6 +9,7 @@
 #include "base/run_loop.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_conversion_helper.h"
+#include "content/browser/prerender/prerender_host_registry.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
@@ -248,9 +249,11 @@ PrerenderHost::PrerenderHost(blink::mojom::PrerenderAttributesPtr attributes,
   CreatePageHolder(*static_cast<WebContentsImpl*>(web_contents));
 }
 
-// TODO(https://crbug.com/1132746): Abort ongoing prerendering and notify the
-// mojo capability controller in the destructor.
 PrerenderHost::~PrerenderHost() {
+  // Stop observing here. Otherwise, destructing members may lead
+  // DidFinishNavigation call after almost everything being destructed.
+  Observe(nullptr);
+
   for (auto& observer : observers_)
     observer.OnHostDestroyed();
 
@@ -319,13 +322,19 @@ void PrerenderHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
   if (navigation_handle->GetFrameTreeNodeId() != frame_tree_node_id_)
     return;
 
+  // Stop observing the events about the prerendered contents.
+  Observe(nullptr);
+
+  // Cancel if the initial prerender navigation hasn't committed.
+  if (!navigation_handle->HasCommitted()) {
+    Cancel(FinalStatus::kNavigationNotCommitted);
+    return;
+  }
+
   // The prerendered contents are considered ready for activation when the
   // main frame navigation reaches DidFinishNavigation.
   DCHECK(!is_ready_for_activation_);
   is_ready_for_activation_ = true;
-
-  // Stop observing the events about the prerendered contents.
-  Observe(nullptr);
 }
 
 std::unique_ptr<BackForwardCacheImpl::Entry> PrerenderHost::Activate(
@@ -408,6 +417,19 @@ absl::optional<int64_t> PrerenderHost::GetInitialNavigationId() const {
 void PrerenderHost::SetInitialNavigationId(int64_t navigation_id) {
   DCHECK(!initial_navigation_id_.has_value());
   initial_navigation_id_ = navigation_id;
+}
+
+void PrerenderHost::Cancel(FinalStatus status) {
+  // Already cancelled.
+  if (final_status_)
+    return;
+
+  RenderFrameHostImpl* host = PrerenderHost::GetPrerenderedMainFrameHost();
+  DCHECK(host);
+  PrerenderHostRegistry* registry =
+      host->delegate()->GetPrerenderHostRegistry();
+  DCHECK(registry);
+  registry->CancelHost(frame_tree_node_id_, status);
 }
 
 }  // namespace content

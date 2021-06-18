@@ -64,6 +64,8 @@
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
+#include "net/test/embedded_test_server/http_response.h"
+#include "net/test/embedded_test_server/request_handler_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
@@ -358,6 +360,32 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, ResponseHeaders) {
   NavigatePrimaryPage(kPrerenderingUrl);
   EXPECT_TRUE(observer2.has_committed());
   EXPECT_EQ("bar", observer2.GetNormalizedResponseHeader("x-foo"));
+}
+
+// Tests that prerendering is cancelled if a network request for the
+// navigation results in 404.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PrerenderNotFoundPage) {
+  base::HistogramTester histogram_tester;
+
+  const GURL kInitialUrl = GetUrl("/empty.html");
+  // Specify a URL for which we don't have a corresponding file in the data dir.
+  const GURL kPrerenderingUrl = GetUrl("/404");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Start prerendering `kPrerenderingUrl`.
+  test::PrerenderHostRegistryObserver registry_observer(*web_contents_impl());
+  AddPrerenderAsync(kPrerenderingUrl);
+  registry_observer.WaitForTrigger(kPrerenderingUrl);
+  int host_id = GetHostForUrl(kPrerenderingUrl);
+  test::PrerenderHostObserver host_observer(*web_contents_impl(), host_id);
+  host_observer.WaitForDestroyed();
+  EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 1);
+  EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
+  histogram_tester.ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostFinalStatus",
+      PrerenderHost::FinalStatus::kNavigationRequestFailure, 1);
 }
 
 // Tests that prerendering triggered by prerendered pages is deferred until
@@ -1386,8 +1414,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
 // TODO(https://crbug.com/1132746): Test canceling prerendering when its
 // initiator is no longer interested in prerending this page.
 
-// TODO(https://crbug.com/1132746): Test prerendering for 404 page, auth error,
-// cross origin, etc.
+// TODO(https://crbug.com/1132746): Test prerendering for auth error, etc.
 
 // Tests for feature restrictions in prerendered pages =========================
 

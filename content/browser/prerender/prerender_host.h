@@ -67,7 +67,8 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
     kRendererProcessKilled = 14,
     kDownload = 15,
     kTriggerDestroyed = 16,
-    kMaxValue = kTriggerDestroyed
+    kNavigationNotCommitted = 17,
+    kMaxValue = kNavigationNotCommitted,
   };
 
   PrerenderHost(blink::mojom::PrerenderAttributesPtr attributes,
@@ -135,6 +136,9 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
   void RecordFinalStatus(FinalStatus status);
 
   void CreatePageHolder(WebContentsImpl& web_contents);
+
+  // Asks the registry to cancel prerendering.
+  void Cancel(FinalStatus status);
 
   // TODO(https://crbug.com/1217045): Flatten the params and do not rely on
   // PrerenderAttributesPtr.
