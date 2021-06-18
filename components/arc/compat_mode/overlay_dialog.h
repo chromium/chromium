@@ -7,6 +7,10 @@
 
 #include <memory>
 
+#include "base/callback_forward.h"
+#include "base/callback_helpers.h"
+#include "ui/views/layout/flex_layout_view.h"
+
 namespace aura {
 class Window;
 }  // namespace aura
@@ -17,18 +21,34 @@ class View;
 
 namespace arc {
 
-// Show |dialog_view| on |base_window| with "scrim" (semi-transparent black)
-// background and horizontal margin. If |dialog_view| is nullptr, only the
-// background is shown.
-// The |dialog_view|'s width is responsive to the width of |base_window|. It
-// matches the |base_window|'s width inside the horizontal margin unless it
-// exceeds the |dialog_view|'s preferred width. Note that if |base_window| has
-// another overlay already, the view will not be added to the view tree.
-void ShowOverlayDialog(aura::Window* base_window,
-                       std::unique_ptr<views::View> dialog_view);
+class OverlayDialog : public views::FlexLayoutView {
+ public:
+  OverlayDialog(const OverlayDialog&) = delete;
+  OverlayDialog& operator=(const OverlayDialog&) = delete;
+  ~OverlayDialog() override;
 
-// Close overlay view on |base_window| if it has any.
-void CloseOverlayDialogIfAny(aura::Window* base_window);
+  // Show |dialog_view| on |base_window| with "scrim" (semi-transparent black)
+  // background and horizontal margin. If |dialog_view| is nullptr, only the
+  // background is shown.
+  // The |dialog_view|'s width is responsive to the width of |base_window|. It
+  // matches the |base_window|'s width inside the horizontal margin unless it
+  // exceeds the |dialog_view|'s preferred width. Note that if |base_window| has
+  // another overlay already, the view will not be added to the view tree.
+  static void Show(aura::Window* base_window,
+                   base::OnceClosure on_destroying,
+                   std::unique_ptr<views::View> dialog_view);
+
+  // Close overlay view on |base_window| if it has any.
+  static void CloseIfAny(aura::Window* base_window);
+
+ private:
+  friend class OverlayDialogTest;
+
+  OverlayDialog(base::OnceClosure on_destroying,
+                std::unique_ptr<views::View> dialog_view);
+
+  base::ScopedClosureRunner scoped_callback_;
+};
 
 }  // namespace arc
 

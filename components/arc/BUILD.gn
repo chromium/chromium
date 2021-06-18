@@ -443,6 +443,7 @@ source_set("unit_tests") {
     "clipboard/arc_clipboard_bridge_unittest.cc",
     "compat_mode/arc_resize_lock_manager_unittest.cc",
     "compat_mode/arc_splash_screen_dialog_view_unittest.cc",
+    "compat_mode/overlay_dialog_unittest.cc",
     "compat_mode/resize_confirmation_dialog_view_unittest.cc",
     "compat_mode/resize_toggle_menu_unittest.cc",
     "compat_mode/resize_util_unittest.cc",

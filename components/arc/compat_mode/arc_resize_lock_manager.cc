@@ -223,7 +223,7 @@ void ArcResizeLockManager::ToggleResizeToggleMenu(views::Widget* widget) {
 
 void ArcResizeLockManager::MayShowSplashScreen(aura::Window* window) {
   if (ShouldShowSplashScreenDialog(pref_delegate_)) {
-    ShowSplashScreenDialog(window);
+    ArcSplashScreenDialogView::Show(window);
   }
 }
 

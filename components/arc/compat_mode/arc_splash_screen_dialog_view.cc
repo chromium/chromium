@@ -6,6 +6,7 @@
 
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "components/arc/compat_mode/overlay_dialog.h"
 #include "components/arc/compat_mode/style/arc_color_provider.h"
 #include "components/arc/vector_icons/vector_icons.h"
@@ -197,21 +198,27 @@ void ArcSplashScreenDialogView::OnLinkClicked() {
 }
 
 void ArcSplashScreenDialogView::OnCloseButtonClicked() {
-  DCHECK(close_callback_);
+  if (!close_callback_)
+    return;
   std::move(close_callback_).Run();
   GetWidget()->CloseWithReason(
       views::Widget::ClosedReason::kCloseButtonClicked);
 }
 
-void ShowSplashScreenDialog(aura::Window* parent) {
+void ArcSplashScreenDialogView::Show(aura::Window* parent) {
   auto* const frame_view = ash::NonClientFrameViewAsh::Get(parent);
   DCHECK(frame_view);
   auto* const anchor_view = frame_view->GetHeaderView();
   auto dialog_view = std::make_unique<ArcSplashScreenDialogView>(
-      base::BindOnce(&CloseOverlayDialogIfAny, base::Unretained(parent)),
+      base::BindOnce(&OverlayDialog::CloseIfAny, base::Unretained(parent)),
       parent, anchor_view);
 
-  ShowOverlayDialog(parent, /*dialog_view=*/nullptr);
+  OverlayDialog::Show(
+      parent,
+      base::BindOnce(&ArcSplashScreenDialogView::OnCloseButtonClicked,
+                     base::Unretained(dialog_view.get())),
+      /*dialog_view=*/nullptr);
+
   views::BubbleDialogDelegateView::CreateBubble(std::move(dialog_view))->Show();
 }
 
