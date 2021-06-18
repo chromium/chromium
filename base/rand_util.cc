@@ -79,4 +79,42 @@ std::string RandBytesAsString(size_t length) {
   return result;
 }
 
+void InsecureRandomGenerator::Seed() {
+  a_ = base::RandUint64();
+  b_ = base::RandUint64();
+  seeded_ = true;
+}
+
+void InsecureRandomGenerator::SeedForTesting(uint64_t seed) {
+  a_ = seed;
+  b_ = seed;
+  seeded_ = true;
+}
+
+uint64_t InsecureRandomGenerator::RandUint64() {
+  DCHECK(seeded_);
+
+  // Using XorShift128+, which is simple and widely used. See
+  // https://en.wikipedia.org/wiki/Xorshift#xorshift+ for details.
+  uint64_t t = a_;
+  const uint64_t s = b_;
+
+  a_ = s;
+  t ^= t << 23;
+  t ^= t >> 17;
+  t ^= s ^ (s >> 26);
+  b_ = t;
+
+  return t + s;
+}
+
+uint32_t InsecureRandomGenerator::RandUint32() {
+  // The generator usually returns an uint64_t, truncate it.
+  //
+  // It is noted in this paper (https://arxiv.org/abs/1810.05313) that the
+  // lowest 32 bits fail some statistical tests from the Big Crush
+  // suite. Use the higher ones instead.
+  return this->RandUint64() >> 32;
+}
+
 }  // namespace base
