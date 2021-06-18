@@ -3835,7 +3835,7 @@
   },
   {
     "name": "ntp-modules-drag-and-drop",
-    "owners": [ "lydialam", "mahmadi", "tiborg"],
+    "owners": [ "lydialam", "mahmadi", "tiborg" ],
     "expiry_milestone": 96
   },
   {

@@ -4,7 +4,7 @@
   }
 
   ntp-module-wrapper {
-    width: 100%;
+    width: var(--ntp-search-box-width);
   }
 
   ntp-module-wrapper + ntp-module-wrapper {
@@ -18,6 +18,8 @@
 <template is="dom-repeat" items="[[modules_]]" id="modules"
     on-dom-change="onModulesLoaded_">
   <ntp-module-wrapper module="[[item]]"
+      draggable="[[dragEnabled_]]"
+      on-dragstart="onDragStart_"
       on-dismiss-module="onDismissModule_"
       on-disable-module="onDisableModule_"
       hidden="[[moduleDisabled_(item.descriptor.id,

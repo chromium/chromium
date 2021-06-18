@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {$$, Module, ModuleRegistry, ModulesElement, NewTabPageProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {TestBrowserProxy} from '../../test_browser_proxy.m.js';
@@ -224,5 +225,50 @@ suite('NewTabPageModulesModulesTest', () => {
     }));
 
     // Assert: no crash.
+  });
+
+  suite('modules drag and drop', () => {
+    suiteSetup(() => {
+      loadTimeData.overrideValues({
+        modulesDragAndDropEnabled: true,
+      });
+    });
+
+    test('module can be dragged', async () => {
+      // Arrange.
+      const modulesElement = await createModulesElement([
+        {
+          descriptor: {id: 'foo'},
+          element: document.createElement('div'),
+        },
+      ]);
+      callbackRouterRemote.setDisabledModules(false, []);
+      await callbackRouterRemote.$.flushForTesting();
+
+      const moduleWrapper =
+          modulesElement.shadowRoot.querySelector('ntp-module-wrapper');
+      assertTrue(!!moduleWrapper);
+
+      const moduleRect = moduleWrapper.getBoundingClientRect();
+      const startX = moduleRect.x + moduleRect.width / 2;
+      const startY = moduleRect.y + moduleRect.height / 2;
+
+      // Act.
+      moduleWrapper.dispatchEvent(new DragEvent('dragstart', {
+        clientX: startX,
+        clientY: startY,
+      }));
+
+      document.dispatchEvent(new DragEvent('dragover', {
+        clientX: startX + 500,
+        clientY: startY + 500,
+      }));
+
+      document.dispatchEvent(new DragEvent('dragend'));
+
+      // Assert.
+      assertEquals(moduleRect.x + 500, moduleWrapper.getBoundingClientRect().x);
+      assertEquals(moduleRect.y + 500, moduleWrapper.getBoundingClientRect().y);
+    });
   });
 });

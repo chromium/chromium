@@ -74,6 +74,12 @@ export class ModulesElement extends mixinBehaviors
           modulesVisibilityDetermined_)`,
         observer: 'onModulesLoadedAndVisibilityDeterminedChange_',
       },
+
+      /** @private */
+      dragEnabled_: {
+        type: Boolean,
+        value: loadTimeData.getBoolean('modulesDragAndDropEnabled'),
+      },
     };
   }
 
@@ -247,6 +253,47 @@ export class ModulesElement extends mixinBehaviors
     $$(this, '#removeModuleToast').hide();
 
     this.removedModuleData_ = null;
+  }
+
+  /**
+   * Module is dragged by updating the module position based on the
+   * position of the pointer.
+   * @param {!DragEvent} e
+   * @private
+   */
+  onDragStart_(e) {
+    assert(loadTimeData.getBoolean('modulesDragAndDropEnabled'));
+
+    // |dataTransfer| is null in tests.
+    if (e.dataTransfer) {
+      // Remove the transparent image that appears on top when dragging.
+      e.dataTransfer.setDragImage(new Image(), 0, 0);
+      e.dataTransfer.effectAllowed = 'move';
+    }
+
+    const dragElement = e.target;
+    const dragElementRect = e.target.getBoundingClientRect();
+    // This is the offset between the pointer and module so that the
+    // module isn't dragged by the top-left corner.
+    const dragOffset = {
+      x: e.x - dragElementRect.x,
+      y: e.y - dragElementRect.y,
+    };
+
+    const dragOver = e => {
+      e.preventDefault();
+      if (e.dataTransfer) {
+        e.dataTransfer.dropEffect = 'move';
+      }
+      dragElement.style.position = 'fixed';
+      dragElement.style.left = `${e.x - dragOffset.x}px`;
+      dragElement.style.top = `${e.y - dragOffset.y}px`;
+    };
+
+    this.ownerDocument.addEventListener('dragover', dragOver);
+    this.ownerDocument.addEventListener('dragend', () => {
+      this.ownerDocument.removeEventListener('dragover', dragOver);
+    }, {once: true});
   }
 }
 
