@@ -645,7 +645,7 @@ void HoldingSpaceTray::ShowContextMenuForViewImpl(
   switch (shelf()->alignment()) {
     case ShelfAlignment::kBottom:
     case ShelfAlignment::kBottomLocked:
-      anchor = views::MenuAnchorPosition::kBubbleAbove;
+      anchor = views::MenuAnchorPosition::kBubbleTopRight;
       break;
     case ShelfAlignment::kLeft:
       anchor = views::MenuAnchorPosition::kBubbleRight;

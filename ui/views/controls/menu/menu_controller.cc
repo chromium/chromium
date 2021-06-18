@@ -41,6 +41,7 @@
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_pre_target_handler.h"
 #include "ui/views/controls/menu/menu_scroll_view_container.h"
+#include "ui/views/controls/menu/menu_types.h"
 #include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/drag_utils.h"
 #include "ui/views/interaction/element_tracker_views.h"
@@ -1724,28 +1725,32 @@ void MenuController::UpdateInitialLocation(const gfx::Rect& bounds,
 // static
 MenuAnchorPosition MenuController::AdjustAnchorPositionForRtl(
     MenuAnchorPosition position) {
+  if (!base::i18n::IsRTL())
+    return position;
   // Reverse anchor position for RTL languages.
   switch (position) {
     case MenuAnchorPosition::kTopLeft:
-      return base::i18n::IsRTL() ? MenuAnchorPosition::kTopRight
-                                 : MenuAnchorPosition::kTopLeft;
+      return MenuAnchorPosition::kTopRight;
       break;
     case MenuAnchorPosition::kTopRight:
-      return base::i18n::IsRTL() ? MenuAnchorPosition::kTopLeft
-                                 : MenuAnchorPosition::kTopRight;
+      return MenuAnchorPosition::kTopLeft;
       break;
     case MenuAnchorPosition::kBubbleLeft:
-      return base::i18n::IsRTL() ? MenuAnchorPosition::kBubbleRight
-                                 : MenuAnchorPosition::kBubbleLeft;
+      return MenuAnchorPosition::kBubbleRight;
       break;
     case MenuAnchorPosition::kBubbleRight:
-      return base::i18n::IsRTL() ? MenuAnchorPosition::kBubbleLeft
-                                 : MenuAnchorPosition::kBubbleRight;
+      return MenuAnchorPosition::kBubbleLeft;
+      break;
+    case MenuAnchorPosition::kBubbleTopLeft:
+      return MenuAnchorPosition::kBubbleTopRight;
+      break;
+    case MenuAnchorPosition::kBubbleTopRight:
+      return MenuAnchorPosition::kBubbleTopLeft;
       break;
     case MenuAnchorPosition::kBottomCenter:
-    case MenuAnchorPosition::kBubbleAbove:
     case MenuAnchorPosition::kBubbleBelow:
       return position;
+      break;
   }
 }
 
@@ -2466,7 +2471,7 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(MenuItemView* item,
       int max_height = monitor_bounds.height();
       // In case of bubbles, the maximum width is limited by the space
       // between the display corner and the target area + the tip size.
-      if (state_.anchor == MenuAnchorPosition::kBubbleAbove ||
+      if (MenuItemView::IsBubble(state_.anchor) ||
           item->actual_menu_position() == MenuPosition::kAboveBounds) {
         // Don't consider |border_and_shadow_insets| because when the max size
         // is enforced, the scroll view is shown and the md shadows are not
@@ -2485,8 +2490,7 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(MenuItemView* item,
     menu_size.set_width(std::min(
         menu_size.width(), item->GetDelegate()->GetMaxWidthForMenu(item)));
 
-    if (state_.anchor == MenuAnchorPosition::kBubbleAbove ||
-        state_.anchor == MenuAnchorPosition::kBubbleBelow) {
+    if (state_.anchor == MenuAnchorPosition::kBubbleBelow) {
       // Align the left edges of the menu and anchor.
       x = std::max(monitor_bounds.x(),
                    anchor_bounds.x() - border_and_shadow_insets.left());
@@ -2495,21 +2499,15 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(MenuItemView* item,
         x = anchor_bounds.right() - menu_size.width() +
             border_and_shadow_insets.right();
       }
-
+      // Align the top of the menu with the bottom of the anchor.
       const int y_for_menu_below = anchor_bounds.bottom() -
                                    border_and_shadow_insets.top() +
                                    menu_config.touchable_anchor_offset;
+      // Align the bottom of the menu with the top of the anchor.
       const int y_for_menu_above = anchor_bounds.y() - menu_size.height() +
                                    border_and_shadow_insets.bottom() -
                                    menu_config.touchable_anchor_offset;
-      if (state_.anchor == MenuAnchorPosition::kBubbleAbove) {
-        y = y_for_menu_above;
-        item->set_actual_menu_position(MenuPosition::kAboveBounds);
-        if (y < monitor_bounds.y()) {
-          y = y_for_menu_below;
-          item->set_actual_menu_position(MenuPosition::kBelowBounds);
-        }
-      } else if (state_.anchor == MenuAnchorPosition::kBubbleBelow) {
+
         // Respect the previous MenuPosition. The menu contents could change
         // while the menu is shown, the menu position should not change.
         const bool able_to_show_menu_below =
@@ -2521,13 +2519,14 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(MenuItemView* item,
           y = y_for_menu_below;
         } else if (item->actual_menu_position() == MenuPosition::kAboveBounds &&
                    able_to_show_menu_above) {
+          // No room below.
           y = y_for_menu_above;
         } else if (able_to_show_menu_below) {
+          // No room above, and no prevailing menu position.
           y = y_for_menu_below;
           item->set_actual_menu_position(MenuPosition::kBelowBounds);
         } else if (able_to_show_menu_above) {
           // No room below, but there is room above. Show above the anchor.
-          // Align the bottom of the menu with the bottom of the anchor.
           y = y_for_menu_above;
           item->set_actual_menu_position(MenuPosition::kAboveBounds);
         } else {
@@ -2536,12 +2535,67 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(MenuItemView* item,
           y = monitor_bounds.bottom() - menu_size.height();
           item->set_actual_menu_position(MenuPosition::kBestFit);
         }
+    } else if (state_.anchor == MenuAnchorPosition::kBubbleTopLeft ||
+               state_.anchor == MenuAnchorPosition::kBubbleTopRight) {
+      // Align the right of the menu with the right of the anchor.
+      const int x_for_top_left = std::max(
+          monitor_bounds.x(), anchor_bounds.right() - menu_size.width() +
+                                  border_and_shadow_insets.right());
+      // Align the left of the menu with the left of the anchor.
+      const int x_for_top_right =
+          std::min(monitor_bounds.right() - menu_size.width(),
+                   anchor_bounds.x() - border_and_shadow_insets.left());
+      if (state_.anchor == MenuAnchorPosition::kBubbleTopRight) {
+        x = x_for_top_right;
+        if (x + menu_size.width() > monitor_bounds.right())
+          x = x_for_top_left;
+      } else {
+        x = x_for_top_left;
+        if (x < monitor_bounds.x())
+          x = x_for_top_right;
+      }
+
+      // Align the top of the menu with the bottom of the anchor.
+      const int y_for_menu_below = anchor_bounds.bottom() -
+                                   border_and_shadow_insets.top() +
+                                   menu_config.touchable_anchor_offset;
+      // Align the bottom of the menu with the top of the anchor.
+      const int y_for_menu_above = anchor_bounds.y() - menu_size.height() +
+                                   border_and_shadow_insets.bottom() -
+                                   menu_config.touchable_anchor_offset;
+
+      const bool able_to_show_menu_below =
+          (y_for_menu_below + menu_size.height() <= monitor_bounds.bottom());
+      const bool able_to_show_menu_above =
+          (y_for_menu_above >= monitor_bounds.y());
+
+      // Respect the previous MenuPosition. The menu contents could change
+      // while the menu is shown, the menu position should not change.
+      if (item->actual_menu_position() == MenuPosition::kAboveBounds &&
+          able_to_show_menu_above) {
+        y = y_for_menu_above;
+      } else if (item->actual_menu_position() == MenuPosition::kBelowBounds &&
+                 able_to_show_menu_below) {
+        // No room above.
+        y = y_for_menu_below;
+      } else if (able_to_show_menu_above) {
+        // No room below, and no prevailing menu position.
+        y = y_for_menu_above;
+        item->set_actual_menu_position(MenuPosition::kAboveBounds);
+      } else if (able_to_show_menu_below) {
+        // No room above.
+        y = y_for_menu_below;
+        item->set_actual_menu_position(MenuPosition::kBelowBounds);
+      } else {
+        // No room above or below. Show the menu as high as possible.
+        // Align the top of the menu with the top of the screen.
+        y = monitor_bounds.y();
+        item->set_actual_menu_position(MenuPosition::kBestFit);
       }
     } else if (state_.anchor == MenuAnchorPosition::kBubbleLeft ||
                state_.anchor == MenuAnchorPosition::kBubbleRight) {
       if (state_.anchor == MenuAnchorPosition::kBubbleLeft) {
-        // Align the right of the menu with the left of the anchor, and the top
-        // of the menu with the top of the anchor.
+        // Align the right of the menu with the left of the anchor.
         x = anchor_bounds.x() - menu_size.width() +
             border_and_shadow_insets.right() -
             menu_config.touchable_anchor_offset;
@@ -2551,8 +2605,7 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(MenuItemView* item,
               menu_config.touchable_anchor_offset;
         }
       } else {
-        // Align the left of the menu with the right of the anchor, and the top
-        // of the menu with the top of the anchor.
+        // Align the left of the menu with the right of the anchor.
         x = anchor_bounds.right() - border_and_shadow_insets.left() +
             menu_config.touchable_anchor_offset;
         if (x + menu_size.width() > monitor_bounds.right()) {
@@ -2563,8 +2616,10 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(MenuItemView* item,
         }
       }
 
+      // Align the top of the menu with the top of the anchor.
       const int y_for_menu_below =
           anchor_bounds.y() - border_and_shadow_insets.top();
+      // Align the bottom of the menu with the bottom of the anchor.
       const int y_for_menu_above = anchor_bounds.bottom() - menu_size.height() +
                                    border_and_shadow_insets.bottom();
 
@@ -2575,7 +2630,6 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(MenuItemView* item,
 
       // Respect the actual menu position calculated earlier if possible, to
       // prevent changing positions during menu size updates.
-
       if (item->actual_menu_position() == MenuPosition::kBelowBounds &&
           able_to_show_menu_below) {
         y = y_for_menu_below;
@@ -2583,18 +2637,15 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(MenuItemView* item,
                  able_to_show_menu_above) {
         y = y_for_menu_above;
       } else if (able_to_show_menu_below) {
-        // Show below the anchor. Align the top of the menu with the top of the
-        // anchor.
+        // No room below, and no prevailing menu position.
         y = y_for_menu_below;
         item->set_actual_menu_position(MenuPosition::kBelowBounds);
       } else if (able_to_show_menu_above) {
-        // No room below, but there is room above. Show above the anchor. Align
-        // the bottom of the menu with the bottom of the anchor.
+        // No room below, but there is room above. Show above the anchor.
         y = y_for_menu_above;
         item->set_actual_menu_position(MenuPosition::kAboveBounds);
       } else {
-        // No room above or below. Show as low as possible. Align the bottom of
-        // the menu with the bottom of the screen.
+        // No room above or below. Show as low as possible.
         y = monitor_bounds.bottom() - menu_size.height();
         item->set_actual_menu_position(MenuPosition::kBestFit);
       }

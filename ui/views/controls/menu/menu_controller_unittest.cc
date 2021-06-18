@@ -606,9 +606,10 @@ class MenuControllerTest : public ViewsTestBase,
 
   void TestSubmenuFitsOnScreen(MenuItemView* item,
                                const gfx::Rect& monitor_bounds,
-                               const gfx::Rect& parent_bounds) {
+                               const gfx::Rect& parent_bounds,
+                               MenuAnchorPosition menu_anchor) {
     MenuBoundsOptions options;
-    options.menu_anchor = MenuAnchorPosition::kBubbleAbove;
+    options.menu_anchor = menu_anchor;
     options.monitor_bounds = monitor_bounds;
 
     // Adjust the final bounds to not include the shadow and border.
@@ -2262,7 +2263,8 @@ TEST_P(MenuControllerTest, TestMenuFitsOnScreen) {
     for (int y = -1; y <= 1; y++) {
       const gfx::Rect monitor_bounds(x * display_size, y * display_size,
                                      display_size, display_size);
-      TestMenuFitsOnScreen(MenuAnchorPosition::kBubbleAbove, monitor_bounds);
+      TestMenuFitsOnScreen(MenuAnchorPosition::kBubbleTopLeft, monitor_bounds);
+      TestMenuFitsOnScreen(MenuAnchorPosition::kBubbleTopRight, monitor_bounds);
       TestMenuFitsOnScreen(MenuAnchorPosition::kBubbleLeft, monitor_bounds);
       TestMenuFitsOnScreen(MenuAnchorPosition::kBubbleRight, monitor_bounds);
     }
@@ -2276,7 +2278,9 @@ TEST_P(MenuControllerTest, TestMenuFitsOnScreenSmallAnchor) {
     for (int y = -1; y <= 1; y++) {
       const gfx::Rect monitor_bounds(x * display_size, y * display_size,
                                      display_size, display_size);
-      TestMenuFitsOnScreenSmallAnchor(MenuAnchorPosition::kBubbleAbove,
+      TestMenuFitsOnScreenSmallAnchor(MenuAnchorPosition::kBubbleTopLeft,
+                                      monitor_bounds);
+      TestMenuFitsOnScreenSmallAnchor(MenuAnchorPosition::kBubbleTopRight,
                                       monitor_bounds);
       TestMenuFitsOnScreenSmallAnchor(MenuAnchorPosition::kBubbleLeft,
                                       monitor_bounds);
@@ -2294,7 +2298,9 @@ TEST_P(MenuControllerTest, TestMenuFitsOnSmallScreen) {
     for (int y = -1; y <= 1; y++) {
       const gfx::Rect monitor_bounds(x * display_size, y * display_size,
                                      display_size, display_size);
-      TestMenuFitsOnSmallScreen(MenuAnchorPosition::kBubbleAbove,
+      TestMenuFitsOnSmallScreen(MenuAnchorPosition::kBubbleTopLeft,
+                                monitor_bounds);
+      TestMenuFitsOnSmallScreen(MenuAnchorPosition::kBubbleTopRight,
                                 monitor_bounds);
       TestMenuFitsOnSmallScreen(MenuAnchorPosition::kBubbleLeft,
                                 monitor_bounds);
@@ -2316,37 +2322,47 @@ TEST_P(MenuControllerTest, TestSubmenuFitsOnScreen) {
   const int kDisplayWidth = parent_size.width() * 3;
   const int kDisplayHeight = parent_size.height() * 3;
 
-  // Simulate multiple display layouts.
-  for (int x = -1; x <= 1; x++)
-    for (int y = -1; y <= 1; y++) {
-      const gfx::Rect monitor_bounds(x * kDisplayWidth, y * kDisplayHeight,
-                                     kDisplayWidth, kDisplayHeight);
+  // For both kBubbleTopLeft and kBubbleTopRight.
+  for (auto menu_position : {MenuAnchorPosition::kBubbleTopLeft,
+                             MenuAnchorPosition::kBubbleTopRight}) {
+    // Simulate multiple display layouts.
+    for (int x = -1; x <= 1; x++)
+      for (int y = -1; y <= 1; y++) {
+        const gfx::Rect monitor_bounds(x * kDisplayWidth, y * kDisplayHeight,
+                                       kDisplayWidth, kDisplayHeight);
 
-      const int x_min = monitor_bounds.x();
-      const int x_max = monitor_bounds.right() - parent_size.width();
-      const int x_mid = (x_min + x_max) / 2;
-      const int x_qtr = x_min + (x_max - x_min) / 4;
+        const int x_min = monitor_bounds.x();
+        const int x_max = monitor_bounds.right() - parent_size.width();
+        const int x_mid = (x_min + x_max) / 2;
+        const int x_qtr = x_min + (x_max - x_min) / 4;
 
-      const int y_min = monitor_bounds.y();
-      const int y_max = monitor_bounds.bottom() - parent_size.height();
-      const int y_mid = (y_min + y_max) / 2;
+        const int y_min = monitor_bounds.y();
+        const int y_max = monitor_bounds.bottom() - parent_size.height();
+        const int y_mid = (y_min + y_max) / 2;
 
-      TestSubmenuFitsOnScreen(sub_item, monitor_bounds,
-                              gfx::Rect(gfx::Point(x_min, y_min), parent_size));
-      TestSubmenuFitsOnScreen(sub_item, monitor_bounds,
-                              gfx::Rect(gfx::Point(x_max, y_min), parent_size));
-      TestSubmenuFitsOnScreen(sub_item, monitor_bounds,
-                              gfx::Rect(gfx::Point(x_mid, y_min), parent_size));
-      TestSubmenuFitsOnScreen(sub_item, monitor_bounds,
-                              gfx::Rect(gfx::Point(x_min, y_mid), parent_size));
-      TestSubmenuFitsOnScreen(sub_item, monitor_bounds,
-                              gfx::Rect(gfx::Point(x_min, y_max), parent_size));
+        TestSubmenuFitsOnScreen(
+            sub_item, monitor_bounds,
+            gfx::Rect(gfx::Point(x_min, y_min), parent_size), menu_position);
+        TestSubmenuFitsOnScreen(
+            sub_item, monitor_bounds,
+            gfx::Rect(gfx::Point(x_max, y_min), parent_size), menu_position);
+        TestSubmenuFitsOnScreen(
+            sub_item, monitor_bounds,
+            gfx::Rect(gfx::Point(x_mid, y_min), parent_size), menu_position);
+        TestSubmenuFitsOnScreen(
+            sub_item, monitor_bounds,
+            gfx::Rect(gfx::Point(x_min, y_mid), parent_size), menu_position);
+        TestSubmenuFitsOnScreen(
+            sub_item, monitor_bounds,
+            gfx::Rect(gfx::Point(x_min, y_max), parent_size), menu_position);
 
-      // Extra wide menu: test with insufficient room on both sides.
-      TestSubmenuFitsOnScreen(
-          sub_item, monitor_bounds,
-          gfx::Rect(gfx::Point(x_qtr, y_min), parent_size_wide));
-    }
+        // Extra wide menu: test with insufficient room on both sides.
+        TestSubmenuFitsOnScreen(
+            sub_item, monitor_bounds,
+            gfx::Rect(gfx::Point(x_qtr, y_min), parent_size_wide),
+            menu_position);
+      }
+  }
 }
 
 // Test that a menu that was originally drawn below the anchor does not get

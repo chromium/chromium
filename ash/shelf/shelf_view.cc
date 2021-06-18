@@ -2334,8 +2334,9 @@ void ShelfView::ShowMenu(std::unique_ptr<ui::SimpleMenuModel> menu_model,
       /*for_application_menu_items*/ !context_menu);
   shelf_menu_model_adapter_->Run(
       GetMenuAnchorRect(*source, click_point, context_menu),
-      shelf_->IsHorizontalAlignment() ? views::MenuAnchorPosition::kBubbleAbove
-                                      : views::MenuAnchorPosition::kBubbleLeft,
+      shelf_->IsHorizontalAlignment()
+          ? views::MenuAnchorPosition::kBubbleTopRight
+          : views::MenuAnchorPosition::kBubbleLeft,
       run_types);
 
   if (!context_menu_shown_callback_.is_null())
