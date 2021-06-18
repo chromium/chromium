@@ -1036,6 +1036,8 @@ RuleFeatureSet::SelectorPreMatch RuleFeatureSet::CollectFeaturesFromRuleData(
       kSelectorNeverMatches) {
     return kSelectorNeverMatches;
   }
+  metadata.uses_container_queries |=
+      static_cast<bool>(rule_data->GetContainerQuery());
 
   metadata_.Add(metadata);
 
@@ -1108,6 +1110,7 @@ RuleFeatureSet::SelectorPreMatch RuleFeatureSet::CollectFeaturesFromSelector(
 void RuleFeatureSet::FeatureMetadata::Add(const FeatureMetadata& other) {
   uses_first_line_rules |= other.uses_first_line_rules;
   uses_window_inactive_selector |= other.uses_window_inactive_selector;
+  uses_container_queries |= other.uses_container_queries;
   max_direct_adjacent_selectors = std::max(max_direct_adjacent_selectors,
                                            other.max_direct_adjacent_selectors);
 }
@@ -1115,6 +1118,7 @@ void RuleFeatureSet::FeatureMetadata::Add(const FeatureMetadata& other) {
 void RuleFeatureSet::FeatureMetadata::Clear() {
   uses_first_line_rules = false;
   uses_window_inactive_selector = false;
+  uses_container_queries = false;
   needs_full_recalc_for_rule_set_invalidation = false;
   max_direct_adjacent_selectors = 0;
   invalidates_parts = false;
@@ -1124,6 +1128,7 @@ bool RuleFeatureSet::FeatureMetadata::operator==(
     const FeatureMetadata& other) const {
   return uses_first_line_rules == other.uses_first_line_rules &&
          uses_window_inactive_selector == other.uses_window_inactive_selector &&
+         uses_container_queries == other.uses_container_queries &&
          needs_full_recalc_for_rule_set_invalidation ==
              other.needs_full_recalc_for_rule_set_invalidation &&
          max_direct_adjacent_selectors == other.max_direct_adjacent_selectors &&
@@ -1564,6 +1569,7 @@ String RuleFeatureSet::ToString() const {
   StringBuilder metadata;
   metadata.Append(metadata_.uses_first_line_rules ? "F" : "");
   metadata.Append(metadata_.uses_window_inactive_selector ? "W" : "");
+  metadata.Append(metadata_.uses_container_queries ? "C" : "");
   metadata.Append(metadata_.needs_full_recalc_for_rule_set_invalidation ? "R"
                                                                         : "");
   metadata.Append(metadata_.invalidates_parts ? "P" : "");

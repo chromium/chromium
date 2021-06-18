@@ -2006,6 +2006,11 @@ void Document::UpdateStyleAndLayoutTree() {
   }
 
   UpdateStyleAndLayoutTreeForThisDocument();
+
+  if (GetStyleEngine().UsesContainerQueries()) {
+    // TODO(crbug.com/1145970): Provide a better reason.
+    UpdateStyleAndLayout(DocumentUpdateReason::kUnknown);
+  }
 }
 
 void Document::UpdateStyleAndLayoutTreeForThisDocument() {

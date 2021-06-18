@@ -3608,6 +3608,94 @@ TEST_F(StyleEngineContainerQueryTest, MarkStyleDirtyFromContainerRecalc) {
   EXPECT_NE(old_inner_style, new_inner_style);
 }
 
+TEST_F(StyleEngineContainerQueryTest, UsesContainerQueries) {
+  GetDocument().documentElement()->setInnerHTML(R"HTML(
+      <style>
+        #a { z-index:2; }
+      </style>
+      <style id=late>
+      </style>
+      <div id=a></div>
+    )HTML");
+  UpdateAllLifecyclePhases();
+  auto* a = GetDocument().getElementById("a");
+  ASSERT_TRUE(a);
+  EXPECT_EQ(2, a->ComputedStyleRef().ZIndex());
+  EXPECT_FALSE(GetStyleEngine().UsesContainerQueries());
+
+  auto* late_style = GetDocument().getElementById("late");
+  ASSERT_TRUE(late_style);
+
+  late_style->setTextContent(R"CSS(
+      @container (min-width: 1px) {
+        #a { color: green; }
+      }
+    )CSS");
+  GetStyleEngine().UpdateActiveStyle();
+  // Note the @container query does not match anything (it's not inside a
+  // container), but UsesContainerQueries should still be true.
+  EXPECT_TRUE(GetStyleEngine().UsesContainerQueries());
+
+  late_style->setTextContent("");
+  GetStyleEngine().UpdateActiveStyle();
+  EXPECT_FALSE(GetStyleEngine().UsesContainerQueries());
+}
+
+TEST_F(StyleEngineContainerQueryTest,
+       UpdateStyleAndLayoutTreeWithoutLayoutDependency) {
+  GetDocument().documentElement()->setInnerHTML(R"HTML(
+    <style>
+      .toggle { width: 200px; }
+    </style>
+    <div id=a></div>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(GetDocument().View()->NeedsLayout());
+
+  Element* a = GetDocument().getElementById("a");
+  ASSERT_TRUE(a);
+  a->classList().Add("toggle");
+
+  GetDocument().UpdateStyleAndLayoutTree();
+  EXPECT_TRUE(GetDocument().View()->NeedsLayout())
+      << "No layout if style does not depend on layout";
+}
+
+TEST_F(StyleEngineContainerQueryTest,
+       UpdateStyleAndLayoutTreeWithLayoutDependency) {
+  GetDocument().documentElement()->setInnerHTML(R"HTML(
+    <style>
+      #container {
+        container-type: inline-size;
+      }
+      #container.toggle {
+        width: 200px;
+      }
+
+      @container (min-width: 200px) {
+        #a { z-index: 2; }
+      }
+    </style>
+    <main id=container>
+      <div id=a></div>
+    </main>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(GetDocument().View()->NeedsLayout());
+
+  Element* container = GetDocument().getElementById("container");
+  ASSERT_TRUE(container);
+  container->classList().Add("toggle");
+
+  GetDocument().UpdateStyleAndLayoutTree();
+  EXPECT_FALSE(GetDocument().View()->NeedsLayout())
+      << "Layout should happen as part of UpdateStyleAndLayoutTree";
+
+  Element* a = GetDocument().getElementById("a");
+  ASSERT_TRUE(a);
+  EXPECT_EQ(2, a->ComputedStyleRef().ZIndex());
+}
+
 TEST_F(StyleEngineTest, VideoControlsReject) {
   GetDocument().body()->setInnerHTML(R"HTML(
     <video controls></video>
