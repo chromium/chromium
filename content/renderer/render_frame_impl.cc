@@ -4574,21 +4574,32 @@ RenderFrameImpl::MakeDidCommitProvisionalLoadParams(
     params->history_list_was_cleared = false;
   }
 
+  bool requires_universal_access = false;
+  const bool file_scheme_with_universal_access =
+      params->origin.scheme() == url::kFileScheme &&
+      GetBlinkPreferences().allow_universal_access_from_file_urls;
+
   // Standard URLs must match the reported origin, when it is not unique.
   // This check is very similar to RenderFrameHostImpl::CanCommitOrigin, but
   // adapted to the renderer process side.
   if (!params->origin.opaque() && params->url.IsStandard() &&
       GetBlinkPreferences().web_security_enabled) {
-    // Exclude file: URLs when settings allow them access any origin.
-    if (params->origin.scheme() != url::kFileScheme ||
-        !GetBlinkPreferences().allow_universal_access_from_file_urls) {
-      if (!params->origin.IsSameOriginWith(url::Origin::Create(params->url))) {
+    if (!params->origin.IsSameOriginWith(url::Origin::Create(params->url))) {
+      // Exclude file: URLs when settings allow them access any origin.
+      if (!file_scheme_with_universal_access) {
         SCOPED_CRASH_KEY_STRING256("MakeDCPLParams", "mismatched_url",
                                    params->url.possibly_invalid_spec());
         SCOPED_CRASH_KEY_STRING256("MakeDCPLParams", "mismatched_origin",
                                    params->origin.GetDebugString());
         CHECK(false) << " url:" << params->url << " origin:" << params->origin;
+      } else {
+        requires_universal_access = true;
       }
+    }
+    if (file_scheme_with_universal_access) {
+      base::UmaHistogramBoolean(
+          "Android.WebView.UniversalAccess.OriginUrlMismatchInRenderFrame",
+          requires_universal_access);
     }
   }
   params->request_id = internal_data->request_id();

@@ -3617,6 +3617,32 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram
+    name="Android.WebView.UniversalAccess.OriginUrlMismatchInHistoryUtil"
+    enum="BooleanAllowed" expires_after="2022-06-04">
+  <owner>alexmitra@chromium.org</owner>
+  <owner>torne@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records when we allow a cross origin push state from a file URL solely
+    because AllowUniversalAccessFromFileURLs is enabled. This is logged from the
+    implementation of history.
+  </summary>
+</histogram>
+
+<histogram
+    name="Android.WebView.UniversalAccess.OriginUrlMismatchInRenderFrame"
+    enum="BooleanAllowed" expires_after="2022-06-04">
+  <owner>alexmitra@chromium.org</owner>
+  <owner>torne@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records when we allow a cross origin push state from a file URL solely
+    because AllowUniversalAccessFromFileURLs is enabled. This is logged from the
+    implementation of the frame renderer.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.UserAgent.Valid" enum="WebViewUserAgentType"
     expires_after="M88">
   <obsolete>
