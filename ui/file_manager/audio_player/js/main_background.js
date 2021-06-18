@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview Entry point for it replaces background_scripts.js.
+ * @fileoverview Entry point for the background page.
  */
 
 import './error_util.js';

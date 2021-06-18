@@ -3,8 +3,7 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview Main entry point for background page, it replaces the
- * background_scripts.js.
+ * @fileoverview Main entry point for background page.
  */
 
 import './metrics_start.js';
