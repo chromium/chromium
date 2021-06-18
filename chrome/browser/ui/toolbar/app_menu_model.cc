@@ -199,6 +199,14 @@ class HelpMenuModel : public ui::SimpleMenuModel {
       if (base::FeatureList::IsEnabled(features::kChromeTipsInMainMenuNewBadge))
         SetIsNewFeatureAt(GetIndexOfCommandId(IDC_CHROME_TIPS), true);
     }
+    if (base::FeatureList::IsEnabled(features::kChromeWhatsNewUI)) {
+      AddItem(IDC_CHROME_WHATS_NEW,
+              l10n_util::GetStringUTF16(IDS_CHROME_WHATS_NEW));
+      if (base::FeatureList::IsEnabled(
+              features::kChromeWhatsNewInMainMenuNewBadge)) {
+        SetIsNewFeatureAt(GetIndexOfCommandId(IDC_CHROME_WHATS_NEW), true);
+      }
+    }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
     AddItemWithStringId(IDC_HELP_PAGE_VIA_MENU, help_string_id);
     if (browser_defaults::kShowHelpMenuItemIcon) {
@@ -651,6 +659,13 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       if (!uma_action_recorded_)
         UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.ChromeTips", delta);
       LogMenuAction(MENU_ACTION_CHROME_TIPS);
+      break;
+    case IDC_CHROME_WHATS_NEW:
+      if (!uma_action_recorded_) {
+        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.ChromeWhatsNew",
+                                   delta);
+      }
+      LogMenuAction(MENU_ACTION_CHROME_WHATS_NEW);
       break;
 #endif
 

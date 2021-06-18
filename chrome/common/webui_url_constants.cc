@@ -196,6 +196,7 @@ const char kChromeUIWebFooterExperimentURL[] =
 const char kChromeUIWelcomeHost[] = "welcome";
 const char kChromeUIWelcomeURL[] = "chrome://welcome/";
 const char kChromeUIWhatsNewHost[] = "whats-new";
+const char kChromeUIWhatsNewURL[] = "chrome://whats-new/";
 
 #if defined(OS_WIN)
 // TODO(crbug.com/1003960): Remove when issue is resolved.

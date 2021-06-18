@@ -280,6 +280,11 @@ extern const char kChromeTipsInMainMenuNewBadgeDescription[];
 extern const char kChromeWhatsNewUIName[];
 extern const char kChromeWhatsNewUIDescription[];
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+extern const char kChromeWhatsNewInMainMenuNewBadgeName[];
+extern const char kChromeWhatsNewInMainMenuNewBadgeDescription[];
+#endif
+
 extern const char kCompositingBasedThrottling[];
 extern const char kCompositingBasedThrottlingDescription[];
 

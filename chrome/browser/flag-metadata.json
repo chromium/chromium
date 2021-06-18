@@ -597,9 +597,14 @@
     "expiry_milestone": 95
   },
   {
+    "name": "chrome-whats-new-in-main-menu-new-badge",
+    "owners": [ "rbpotter" ],
+    "expiry_milestone": 97
+  },
+  {
     "name": "chrome-whats-new-ui",
     "owners": [ "rbpotter" ],
-    "expiry_milestone": 96
+    "expiry_milestone": 97
   },
   {
     "name": "chromeos-direct-video-decoder",

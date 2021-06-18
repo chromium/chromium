@@ -30,6 +30,12 @@ const base::Feature kChromeTipsInMainMenuNewBadge{
 const base::Feature kChromeWhatsNewUI{"ChromeWhatsNewUI",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+// Enables "new" badge for "Chrome What's New" in Main Chrome Menu | Help.
+const base::Feature kChromeWhatsNewInMainMenuNewBadge{
+    "ChromeWhatsNewInMainMenuNewBadge", base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
+
 // Enables showing the EV certificate details in the Page Info bubble.
 const base::Feature kEvDetailsInPageInfo{"EvDetailsInPageInfo",
                                          base::FEATURE_ENABLED_BY_DEFAULT};

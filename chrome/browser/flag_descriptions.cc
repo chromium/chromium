@@ -478,6 +478,14 @@ const char kChromeWhatsNewUIName[] =
 const char kChromeWhatsNewUIDescription[] =
     "Enables Chrome What's New page at chrome://whats-new.";
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+const char kChromeWhatsNewInMainMenuNewBadgeName[] =
+    "Show 'New' badge on 'What's New' menu item.";
+const char kChromeWhatsNewInMainMenuNewBadgeDescription[] =
+    "Enables 'New' promo badge on 'What's New' in the Help portion of the main "
+    "menu.";
+#endif
+
 const char kCompositingBasedThrottling[] = "Compositing-based Throttling";
 const char kCompositingBasedThrottlingDescription[] =
     "Enables compositing-based throttling to throttle appropriate frame sinks "

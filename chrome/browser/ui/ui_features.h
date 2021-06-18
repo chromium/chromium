@@ -30,6 +30,10 @@ extern const base::Feature kChromeTipsInMainMenuNewBadge;
 
 extern const base::Feature kChromeWhatsNewUI;
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+extern const base::Feature kChromeWhatsNewInMainMenuNewBadge;
+#endif
+
 extern const base::Feature kCommander;
 
 extern const base::Feature kEvDetailsInPageInfo;

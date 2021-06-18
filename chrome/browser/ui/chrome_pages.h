@@ -109,6 +109,7 @@ void ShowHelp(Browser* browser, HelpSource source);
 void ShowHelpForProfile(Profile* profile, HelpSource source);
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 void ShowChromeTips(Browser* browser);
+void ShowChromeWhatsNew(Browser* browser);
 #endif
 void LaunchReleaseNotes(Profile* profile, apps::mojom::LaunchSource source);
 void ShowBetaForum(Browser* browser);

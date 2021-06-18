@@ -46732,6 +46732,7 @@ from previous Chrome versions.
   <int value="-773238824" label="AutoplayWhitelistSettings:disabled"/>
   <int value="-772679248" label="MojoVideoEncodeAccelerator:enabled"/>
   <int value="-772608284" label="MyFilesVolume:enabled"/>
+  <int value="-772040705" label="ChromeWhatsNewInMainMenuNewBadge:disabled"/>
   <int value="-771080109" label="GrantNotificationsToDSE:disabled"/>
   <int value="-770319039" label="enable-touch-editing"/>
   <int value="-769865314" label="AutofillCacheQueryResponses:disabled"/>
@@ -49585,6 +49586,7 @@ from previous Chrome versions.
       label="ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes:disabled"/>
   <int value="1677167062" label="AutomaticPasswordGeneration:enabled"/>
   <int value="1677258310" label="DragAppsInTabletMode:disabled"/>
+  <int value="1678259296" label="ChromeWhatsNewInMainMenuNewBadge:enabled"/>
   <int value="1678866761" label="SystemLatinPhysicalTyping:disabled"/>
   <int value="1679558835" label="ArcAvailableForChildAccount:enabled"/>
   <int value="1680248931" label="use-fake-device-for-media-stream:enabled"/>
@@ -87513,6 +87515,7 @@ Called by update_scheduler_enums.py.-->
   <int value="51" label="Uninstall app"/>
   <int value="52" label="Show Kaleidoscope"/>
   <int value="53" label="Show tips for Chrome"/>
+  <int value="54" label="Show Chrome What's New"/>
 </enum>
 
 <enum name="WrongConfigurationMetric">
