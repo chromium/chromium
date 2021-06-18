@@ -9,7 +9,7 @@ import re
 import requests
 import sys
 import unittest
-from urlparse import urlparse
+from six.moves.urllib.parse import urlparse
 
 from blinkpy.common.host_mock import MockHost
 from blinkpy.common.path_finder import RELATIVE_WEB_TESTS

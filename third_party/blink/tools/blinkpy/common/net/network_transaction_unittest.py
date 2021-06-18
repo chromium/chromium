@@ -26,9 +26,10 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from urllib2 import HTTPError
 from blinkpy.common.net.network_transaction import NetworkTransaction, NetworkTimeout
 from blinkpy.common.system.log_testing import LoggingTestCase
+
+from six.moves.urllib.error import HTTPError
 
 
 class NetworkTransactionTest(LoggingTestCase):

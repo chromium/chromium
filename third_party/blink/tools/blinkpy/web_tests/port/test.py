@@ -161,15 +161,14 @@ def unit_test_list():
         'failures/expected/image_checksum.html',
         actual_checksum='image_checksum_fail-checksum',
         actual_image='image_checksum_fail-png')
-    tests.add(
-        'failures/expected/audio.html',
-        actual_audio=base64.b64encode('audio_fail-wav'),
-        expected_audio='audio-wav',
-        actual_text=None,
-        expected_text=None,
-        actual_image=None,
-        expected_image=None,
-        actual_checksum=None)
+    tests.add('failures/expected/audio.html',
+              actual_audio=base64.b64encode(b'audio_fail-wav'),
+              expected_audio='audio-wav',
+              actual_text=None,
+              expected_text=None,
+              actual_image=None,
+              expected_image=None,
+              actual_checksum=None)
     tests.add(
         'failures/unexpected/image-mismatch.html',
         actual_image='image_fail-pngtEXtchecksum\x00checksum_fail',
@@ -183,31 +182,28 @@ def unit_test_list():
         'failures/unexpected/no-image-baseline.html',
         actual_image='image_fail-pngtEXtchecksum\x00checksum_fail',
         expected_image=None)
-    tests.add(
-        'failures/unexpected/audio-mismatch.html',
-        actual_audio=base64.b64encode('audio_fail-wav'),
-        expected_audio='audio-wav',
-        actual_text=None,
-        expected_text=None,
-        actual_image=None,
-        expected_image=None,
-        actual_checksum=None)
-    tests.add(
-        'failures/unexpected/no-audio-baseline.html',
-        actual_audio=base64.b64encode('audio_fail-wav'),
-        actual_text=None,
-        expected_text=None,
-        actual_image=None,
-        expected_image=None,
-        actual_checksum=None)
-    tests.add(
-        'failures/unexpected/no-audio-generated.html',
-        expected_audio=base64.b64encode('audio_fail-wav'),
-        actual_text=None,
-        expected_text=None,
-        actual_image=None,
-        expected_image=None,
-        actual_checksum=None)
+    tests.add('failures/unexpected/audio-mismatch.html',
+              actual_audio=base64.b64encode(b'audio_fail-wav'),
+              expected_audio='audio-wav',
+              actual_text=None,
+              expected_text=None,
+              actual_image=None,
+              expected_image=None,
+              actual_checksum=None)
+    tests.add('failures/unexpected/no-audio-baseline.html',
+              actual_audio=base64.b64encode(b'audio_fail-wav'),
+              actual_text=None,
+              expected_text=None,
+              actual_image=None,
+              expected_image=None,
+              actual_checksum=None)
+    tests.add('failures/unexpected/no-audio-generated.html',
+              expected_audio=base64.b64encode(b'audio_fail-wav'),
+              actual_text=None,
+              expected_text=None,
+              actual_image=None,
+              expected_image=None,
+              actual_checksum=None)
     tests.add(
         'failures/unexpected/text-mismatch-overlay.html',
         actual_text='"invalidations": [\nfail',
@@ -296,16 +292,15 @@ layer at (0,0) size 800x34
     tests.add('passes/args.html')
     tests.add('passes/error.html', error='stuff going to stderr')
     tests.add('passes/image.html', actual_text=None, expected_text=None)
-    tests.add(
-        'passes/audio.html',
-        actual_audio=base64.b64encode('audio-wav'),
-        expected_audio='audio-wav',
-        actual_text=None,
-        expected_text=None,
-        actual_image=None,
-        expected_image=None,
-        actual_checksum=None,
-        expected_checksum=None)
+    tests.add('passes/audio.html',
+              actual_audio=base64.b64encode(b'audio-wav'),
+              expected_audio='audio-wav',
+              actual_text=None,
+              expected_text=None,
+              actual_image=None,
+              expected_image=None,
+              actual_checksum=None,
+              expected_checksum=None)
     tests.add('passes/platform_image.html')
     tests.add('passes/slow.html')
     tests.add(

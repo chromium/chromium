@@ -5,7 +5,7 @@
 import base64
 import json
 import logging
-from urllib2 import HTTPError
+from six.moves.urllib.error import HTTPError
 
 from blinkpy.common.net.network_transaction import NetworkTimeout
 from blinkpy.w3c.chromium_commit import ChromiumCommit

@@ -7,8 +7,10 @@ import datetime
 import json
 import logging
 import re
-import urllib2
+
 from collections import namedtuple
+from six.moves.urllib.error import HTTPError
+from six.moves.urllib.parse import quote
 
 from blinkpy.common.memoized import memoized
 from blinkpy.w3c.common import WPT_GH_ORG, WPT_GH_REPO_NAME, EXPORT_PR_LABEL
@@ -128,7 +130,7 @@ class WPTGitHub(object):
         }
         try:
             response = self.request(path, method='POST', body=body)
-        except urllib2.HTTPError as e:
+        except HTTPError as e:
             _log.error(e.reason)
             if e.code == 422:
                 _log.error('Please check if branch already exists; If so, '
@@ -185,7 +187,7 @@ class WPTGitHub(object):
             WPT_GH_ORG,
             WPT_GH_REPO_NAME,
             number,
-            urllib2.quote(label),
+            quote(label),
         )
         response = self.request(path, method='DELETE')
 
@@ -373,7 +375,7 @@ class WPTGitHub(object):
             else:
                 raise GitHubError(204, response.status_code,
                                   'check if PR %d is merged' % pr_number)
-        except urllib2.HTTPError as e:
+        except HTTPError as e:
             if e.code == 404:
                 return False
             else:
@@ -395,7 +397,7 @@ class WPTGitHub(object):
 
         try:
             response = self.request(path, method='PUT', body=body)
-        except urllib2.HTTPError as e:
+        except HTTPError as e:
             if e.code == 405:
                 raise MergeError(pr_number)
             else:
