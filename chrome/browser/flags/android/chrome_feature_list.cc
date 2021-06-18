@@ -12,7 +12,6 @@
 #include "base/android/jni_string.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
-#include "chrome/browser/commerce/commerce_feature_list.h"
 #include "chrome/browser/flags/jni_headers/ChromeFeatureList_jni.h"
 #include "chrome/browser/notifications/chime/android/features.h"
 #include "chrome/browser/performance_hints/performance_hints_features.h"
@@ -90,8 +89,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &autofill_assistant::features::kAutofillAssistantProactiveHelp,
     &autofill_assistant::features::
         kAutofillAssistantDisableProactiveHelpTiedToMSBB,
-    &commerce::kCommerceMerchantViewer,
-    &commerce::kCommercePriceTracking,
     &device::kWebAuthPhoneSupport,
     &download::features::kDownloadAutoResumptionNative,
     &download::features::kDownloadLater,
@@ -171,6 +168,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kChromeSharingHub,
     &kChromeSurveyNextAndroid,
     &kCommandLineOnNonRooted,
+    &kCommerceMerchantViewer,
     &kConditionalTabStripAndroid,
     &kContentSuggestionsScrollToLoad,
     &kContextMenuEnableLensShoppingAllowlist,
@@ -451,6 +449,9 @@ const base::Feature kChromeSurveyNextAndroid{"ChromeSurveyNextAndroid",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kCommandLineOnNonRooted{"CommandLineOnNonRooted",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kCommerceMerchantViewer{"CommerceMerchantViewer",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kContentSuggestionsScrollToLoad{

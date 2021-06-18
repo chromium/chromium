@@ -72,19 +72,19 @@ public class ShoppingPersistedTabData extends PersistedTabData {
     private static final long NINETY_DAYS_SECONDS = TimeUnit.DAYS.toSeconds(90);
 
     public static final IntCachedFieldTrialParameter STALE_TAB_THRESHOLD_SECONDS =
-            new IntCachedFieldTrialParameter(ChromeFeatureList.COMMERCE_PRICE_TRACKING,
+            new IntCachedFieldTrialParameter(ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,
                     STALE_TAB_THRESHOLD_SECONDS_PARAM, (int) NINETY_DAYS_SECONDS);
 
     public static final IntCachedFieldTrialParameter TIME_TO_LIVE_MS =
-            new IntCachedFieldTrialParameter(ChromeFeatureList.COMMERCE_PRICE_TRACKING,
+            new IntCachedFieldTrialParameter(ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,
                     TIME_TO_LIVE_MS_PARAM, (int) ONE_HOUR_MS);
 
     public static final IntCachedFieldTrialParameter DISPLAY_TIME_MS =
-            new IntCachedFieldTrialParameter(ChromeFeatureList.COMMERCE_PRICE_TRACKING,
+            new IntCachedFieldTrialParameter(ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,
                     DISPLAY_TIME_MS_PARAM, (int) ONE_WEEK_MS);
 
     public static final BooleanCachedFieldTrialParameter PRICE_TRACKING_WITH_OPTIMIZATION_GUIDE =
-            new BooleanCachedFieldTrialParameter(ChromeFeatureList.COMMERCE_PRICE_TRACKING,
+            new BooleanCachedFieldTrialParameter(ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,
                     PRICE_TRACKING_WITH_OPTIMIZATION_GUIDE_PARAM, false);
 
     @VisibleForTesting

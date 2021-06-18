@@ -2386,10 +2386,6 @@ const char kCommerceMerchantViewerAndroidName[] = "Merchant Viewer";
 const char kCommerceMerchantViewerAndroidDescription[] =
     "Allows users to view merchant trust signals on eligible pages.";
 
-const char kCommercePriceTrackingAndroidName[] = "Price Tracking";
-const char kCommercePriceTrackingAndroidDescription[] =
-    "Allows users to track product prices through Chrome.";
-
 const char kTabGroupsAndroidName[] = "Tab Groups";
 const char kTabGroupsAndroidDescription[] =
     "Allows users to create groups to better organize their tabs on phones.";
