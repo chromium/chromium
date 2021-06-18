@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_csscolorvalue_canvasgradient_canvaspattern_string.h"
 #include "third_party/blink/renderer/core/css/cssom/css_color_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
+#include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/html/canvas/text_metrics.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_filter.h"
@@ -62,8 +63,28 @@ const char BaseRenderingContext2D::kOptimizeLegibilityRendering[] =
 const char BaseRenderingContext2D::kGeometricPrecisionRendering[] =
     "geometricprecision";
 
+// After context lost, it waits |kTryRestoreContextInterval| before start the
+// restore the context. This wait needs to be long enough to avoid spamming the
+// GPU process with retry attempts and short enough to provide decent UX. It's
+// currently set to 500ms.
+const base::TimeDelta kTryRestoreContextInterval =
+    base::TimeDelta::FromMilliseconds(500);
+
 BaseRenderingContext2D::BaseRenderingContext2D()
-    : clip_antialiasing_(kNotAntiAliased), origin_tainted_by_content_(false) {
+    : dispatch_context_lost_event_timer_(
+          Thread::Current()->GetTaskRunner(),
+          this,
+          &BaseRenderingContext2D::DispatchContextLostEvent),
+      dispatch_context_restored_event_timer_(
+          Thread::Current()->GetTaskRunner(),
+          this,
+          &BaseRenderingContext2D::DispatchContextRestoredEvent),
+      try_restore_context_event_timer_(
+          Thread::Current()->GetTaskRunner(),
+          this,
+          &BaseRenderingContext2D::TryRestoreContextEvent),
+      clip_antialiasing_(kNotAntiAliased),
+      origin_tainted_by_content_(false) {
   state_stack_.push_back(MakeGarbageCollected<CanvasRenderingContext2DState>());
 }
 
@@ -1395,6 +1416,36 @@ bool BaseRenderingContext2D::ShouldDrawImageAntialiased(
          dest_rect.Height() * fabs(height_expansion) < 1;
 }
 
+void BaseRenderingContext2D::DispatchContextLostEvent(TimerBase*) {
+  if (GetCanvasRenderingContextHost() &&
+      RuntimeEnabledFeatures::NewCanvas2DAPIEnabled()) {
+    Event* event = Event::CreateCancelable(event_type_names::kContextlost);
+    GetCanvasRenderingContextHost()->HostDispatchEvent(event);
+    if (event->defaultPrevented()) {
+      context_restorable_ = false;
+    }
+  }
+
+  if (context_restorable_ &&
+      (context_lost_mode_ == CanvasRenderingContext::kRealLostContext ||
+       context_lost_mode_ == CanvasRenderingContext::kSyntheticLostContext)) {
+    try_restore_context_attempt_count_ = 0;
+    try_restore_context_event_timer_.StartOneShot(kTryRestoreContextInterval,
+                                                  FROM_HERE);
+  }
+}
+
+void BaseRenderingContext2D::DispatchContextRestoredEvent(TimerBase*) {
+  if (context_lost_mode_ == CanvasRenderingContext::kNotLostContext)
+    return;
+  reset();
+  context_lost_mode_ = CanvasRenderingContext::kNotLostContext;
+  if (RuntimeEnabledFeatures::NewCanvas2DAPIEnabled()) {
+    Event* event(Event::Create(event_type_names::kContextrestored));
+    GetCanvasRenderingContextHost()->HostDispatchEvent(event);
+  }
+}
+
 void BaseRenderingContext2D::DrawImageInternal(
     cc::PaintCanvas* c,
     CanvasImageSource* image_source,
@@ -2335,6 +2386,9 @@ String BaseRenderingContext2D::fontVariantCaps() const {
 
 void BaseRenderingContext2D::Trace(Visitor* visitor) const {
   visitor->Trace(state_stack_);
+  visitor->Trace(dispatch_context_lost_event_timer_);
+  visitor->Trace(dispatch_context_restored_event_timer_);
+  visitor->Trace(try_restore_context_event_timer_);
 }
 
 BaseRenderingContext2D::UsageCounters::UsageCounters()

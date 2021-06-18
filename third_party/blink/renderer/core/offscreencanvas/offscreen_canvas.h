@@ -122,7 +122,7 @@ class CORE_EXPORT OffscreenCanvas final
   UkmParameters GetUkmParameters() override;
 
   // Partial CanvasResourceHost implementation
-  void NotifyGpuContextLost() override {}
+  void NotifyGpuContextLost() override;
   void SetNeedsCompositingUpdate() override {}
   // TODO(fserb): Merge this with HTMLCanvasElement::UpdateMemoryUsage
   void UpdateMemoryUsage() override;

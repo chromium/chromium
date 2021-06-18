@@ -533,6 +533,11 @@ UkmParameters OffscreenCanvas::GetUkmParameters() {
   return {context->UkmRecorder(), context->UkmSourceID()};
 }
 
+void OffscreenCanvas::NotifyGpuContextLost() {
+  if (context_)
+    context_->LoseContext(CanvasRenderingContext::kRealLostContext);
+}
+
 FontSelector* OffscreenCanvas::GetFontSelector() {
   if (auto* window = DynamicTo<LocalDOMWindow>(GetExecutionContext())) {
     return window->document()->GetStyleEngine().GetFontSelector();

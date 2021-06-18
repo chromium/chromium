@@ -95,7 +95,7 @@ OffscreenCanvasRenderingContext2D::OffscreenCanvasRenderingContext2D(
     OffscreenCanvas* canvas,
     const CanvasContextCreationAttributesCore& attrs)
     : CanvasRenderingContext(canvas, attrs),
-      random_generator_((uint32_t)base::RandUint64()),
+      random_generator_(static_cast<uint32_t>(base::RandUint64())),
       bernoulli_distribution_(kUMASampleProbability),
       color_params_(attrs.color_space, attrs.pixel_format, attrs.alpha) {
   is_valid_size_ = IsValidImageSize(Host()->Size());
@@ -221,6 +221,11 @@ bool OffscreenCanvasRenderingContext2D::PushFrame() {
   return ret;
 }
 
+CanvasRenderingContextHost*
+OffscreenCanvasRenderingContext2D::GetCanvasRenderingContextHost() {
+  return Host();
+}
+
 ImageBitmap* OffscreenCanvasRenderingContext2D::TransferToImageBitmap(
     ScriptState* script_state) {
   WebFeature feature = WebFeature::kOffscreenCanvasTransferToImageBitmap2D;
@@ -308,7 +313,17 @@ void OffscreenCanvasRenderingContext2D::ValidateStateStackWithCanvas(
 }
 
 bool OffscreenCanvasRenderingContext2D::isContextLost() const {
-  return false;
+  return context_lost_mode_ != kNotLostContext;
+}
+
+void OffscreenCanvasRenderingContext2D::LoseContext(LostContextMode lost_mode) {
+  if (context_lost_mode_ != kNotLostContext)
+    return;
+  context_lost_mode_ = lost_mode;
+  if (context_lost_mode_ == kSyntheticLostContext && Host()) {
+    Host()->DiscardResourceProvider();
+  }
+  dispatch_context_lost_event_timer_.StartOneShot(base::TimeDelta(), FROM_HERE);
 }
 
 bool OffscreenCanvasRenderingContext2D::IsPaintable() const {
@@ -741,6 +756,42 @@ bool OffscreenCanvasRenderingContext2D::IsCanvas2DBufferValid() const {
   if (IsPaintable())
     return GetCanvasResourceProvider()->IsValid();
   return false;
+}
+
+void OffscreenCanvasRenderingContext2D::TryRestoreContextEvent(
+    TimerBase* timer) {
+  if (context_lost_mode_ == kNotLostContext) {
+    // Canvas was already restored (possibly thanks to a resize), so stop
+    // trying.
+    try_restore_context_event_timer_.Stop();
+    return;
+  }
+
+  DCHECK(context_lost_mode_ != kWebGLLoseContextLostContext);
+
+  // If lost mode is |kSyntheticLostContext| and |context_restorable_| is set to
+  // true, it means context is forced to be lost for testing purpose. Restore
+  // the context.
+  if (context_lost_mode_ == kSyntheticLostContext) {
+    try_restore_context_event_timer_.Stop();
+    Host()->GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
+    DispatchContextRestoredEvent(nullptr);
+
+    // If lost mode is |kRealLostContext|, it means the context was not lost due
+    // to surface failure but rather due to a an eviction, which means image
+    // buffer exists.
+  } else if (context_lost_mode_ == kRealLostContext &&
+             GetOrCreatePaintCanvas()) {
+    try_restore_context_event_timer_.Stop();
+    DispatchContextRestoredEvent(nullptr);
+  }
+
+  // It gets here if lost mode is |kRealLostContext| and it fails to create a
+  // new PaintCanvas. Discard the old resource and allocating a new one here.
+  Host()->DiscardResourceProvider();
+  try_restore_context_event_timer_.Stop();
+  if (GetOrCreatePaintCanvas())
+    DispatchContextRestoredEvent(nullptr);
 }
 
 }  // namespace blink

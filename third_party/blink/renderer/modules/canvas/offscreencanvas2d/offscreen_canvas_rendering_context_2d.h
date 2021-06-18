@@ -133,12 +133,15 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
     return CreationAttributes().desynchronized;
   }
   bool isContextLost() const override;
+  void LoseContext(LostContextMode) override;
 
   ImageBitmap* TransferToImageBitmap(ScriptState*) final;
 
   void Trace(Visitor*) const override;
 
   bool PushFrame() override;
+
+  CanvasRenderingContextHost* GetCanvasRenderingContextHost() override;
 
   IdentifiableToken IdentifiableTextToken() const override {
     return identifiability_study_helper_.GetToken();
@@ -167,6 +170,7 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
                    int x,
                    int y) override;
   void WillOverwriteCanvas() override;
+  void TryRestoreContextEvent(TimerBase*) override;
 
  private:
   void FinalizeFrame() final;

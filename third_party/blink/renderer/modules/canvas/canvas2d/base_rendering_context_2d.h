@@ -9,6 +9,7 @@
 #include "base/macros.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/geometry/dom_matrix.h"
+#include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 #include "third_party/blink/renderer/core/html/canvas/image_data.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_gradient.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_image_source_util.h"
@@ -293,6 +294,10 @@ class MODULES_EXPORT BaseRenderingContext2D : public GarbageCollectedMixin,
   virtual sk_sp<PaintFilter> StateGetFilter() = 0;
   virtual void SnapshotStateForFilter() = 0;
 
+  virtual CanvasRenderingContextHost* GetCanvasRenderingContextHost() {
+    return nullptr;
+  }
+
   void ValidateStateStack() const {
     ValidateStateStackWithCanvas(GetPaintCanvas());
   }
@@ -380,6 +385,12 @@ class MODULES_EXPORT BaseRenderingContext2D : public GarbageCollectedMixin,
   };
 
   const UsageCounters& GetUsage();
+  HeapTaskRunnerTimer<BaseRenderingContext2D>
+      dispatch_context_lost_event_timer_;
+  HeapTaskRunnerTimer<BaseRenderingContext2D>
+      dispatch_context_restored_event_timer_;
+  HeapTaskRunnerTimer<BaseRenderingContext2D> try_restore_context_event_timer_;
+  unsigned try_restore_context_attempt_count_ = 0;
 
  protected:
   BaseRenderingContext2D();
@@ -437,6 +448,9 @@ class MODULES_EXPORT BaseRenderingContext2D : public GarbageCollectedMixin,
   virtual void FinalizeFrame() {}
 
   float GetFontBaseline(const SimpleFontData&) const;
+  virtual void DispatchContextLostEvent(TimerBase*);
+  virtual void DispatchContextRestoredEvent(TimerBase*);
+  virtual void TryRestoreContextEvent(TimerBase*) {}
 
   static const char kDefaultFont[];
   static const char kInheritDirectionString[];
@@ -472,6 +486,9 @@ class MODULES_EXPORT BaseRenderingContext2D : public GarbageCollectedMixin,
   virtual bool IsPaint2D() const { return false; }
   virtual void WillOverwriteCanvas() = 0;
 
+  bool context_restorable_{true};
+  CanvasRenderingContext::LostContextMode context_lost_mode_{
+      CanvasRenderingContext::kNotLostContext};
   IdentifiabilityStudyHelper identifiability_study_helper_;
 
  private:

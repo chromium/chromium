@@ -79,8 +79,9 @@
 
 namespace blink {
 
-static const base::TimeDelta kTryRestoreContextInterval =
-    base::TimeDelta::FromMilliseconds(500);
+// Try to restore context 4 times in the event that the context is lost. If the
+// context is unable to be restored after 4 attempts, we discard the backing
+// storage of the context and allocate a new one.
 static const unsigned kMaxTryRestoreContextAttempts = 4;
 
 // Drawing methods need to use this instead of SkAutoCanvasRestore in case
@@ -129,21 +130,6 @@ CanvasRenderingContext2D::CanvasRenderingContext2D(
     HTMLCanvasElement* canvas,
     const CanvasContextCreationAttributesCore& attrs)
     : CanvasRenderingContext(canvas, attrs),
-      context_lost_mode_(kNotLostContext),
-      context_restorable_(true),
-      try_restore_context_attempt_count_(0),
-      dispatch_context_lost_event_timer_(
-          canvas->GetDocument().GetTaskRunner(TaskType::kMiscPlatformAPI),
-          this,
-          &CanvasRenderingContext2D::DispatchContextLostEvent),
-      dispatch_context_restored_event_timer_(
-          canvas->GetDocument().GetTaskRunner(TaskType::kMiscPlatformAPI),
-          this,
-          &CanvasRenderingContext2D::DispatchContextRestoredEvent),
-      try_restore_context_event_timer_(
-          canvas->GetDocument().GetTaskRunner(TaskType::kMiscPlatformAPI),
-          this,
-          &CanvasRenderingContext2D::TryRestoreContextEvent),
       should_prune_local_font_cache_(false),
       random_generator_((uint32_t)base::RandUint64()),
       bernoulli_distribution_(kRasterMetricProbability),
@@ -239,30 +225,10 @@ void CanvasRenderingContext2D::DidSetSurfaceSize() {
 
 void CanvasRenderingContext2D::Trace(Visitor* visitor) const {
   visitor->Trace(hit_region_manager_);
-  visitor->Trace(dispatch_context_lost_event_timer_);
-  visitor->Trace(dispatch_context_restored_event_timer_);
-  visitor->Trace(try_restore_context_event_timer_);
   visitor->Trace(filter_operations_);
   CanvasRenderingContext::Trace(visitor);
   BaseRenderingContext2D::Trace(visitor);
   SVGResourceClient::Trace(visitor);
-}
-
-void CanvasRenderingContext2D::DispatchContextLostEvent(TimerBase*) {
-  if (canvas() && RuntimeEnabledFeatures::NewCanvas2DAPIEnabled()) {
-    Event* event = Event::CreateCancelable(event_type_names::kContextlost);
-    canvas()->DispatchEvent(*event);
-    if (event->defaultPrevented()) {
-      context_restorable_ = false;
-    }
-  }
-
-  if (context_restorable_ && (context_lost_mode_ == kRealLostContext ||
-                              context_lost_mode_ == kSyntheticLostContext)) {
-    try_restore_context_attempt_count_ = 0;
-    try_restore_context_event_timer_.StartRepeating(kTryRestoreContextInterval,
-                                                    FROM_HERE);
-  }
 }
 
 void CanvasRenderingContext2D::TryRestoreContextEvent(TimerBase* timer) {
@@ -291,23 +257,16 @@ void CanvasRenderingContext2D::TryRestoreContextEvent(TimerBase* timer) {
     DispatchContextRestoredEvent(nullptr);
   }
 
-  if (++try_restore_context_attempt_count_ > kMaxTryRestoreContextAttempts) {
-    // final attempt: allocate a brand new image buffer instead of restoring
+  // If it fails to restore the context, TryRestoreContextEvent again.
+  if (++try_restore_context_attempt_count_ < kMaxTryRestoreContextAttempts) {
+    TryRestoreContextEvent(nullptr);
+  } else {
+    // After 4 tries, we start the final attempt, allocate a brand new image
+    // buffer instead of restoring
     Host()->DiscardResourceProvider();
     try_restore_context_event_timer_.Stop();
     if (CanCreateCanvas2dResourceProvider())
       DispatchContextRestoredEvent(nullptr);
-  }
-}
-
-void CanvasRenderingContext2D::DispatchContextRestoredEvent(TimerBase*) {
-  if (context_lost_mode_ == kNotLostContext)
-    return;
-  Reset();
-  context_lost_mode_ = kNotLostContext;
-  if (RuntimeEnabledFeatures::NewCanvas2DAPIEnabled()) {
-    Event* event(Event::Create(event_type_names::kContextrestored));
-    canvas()->DispatchEvent(*event);
   }
 }
 
@@ -698,6 +657,11 @@ void CanvasRenderingContext2D::FinalizeFrame() {
   TRACE_EVENT0("blink", "CanvasRenderingContext2D::FinalizeFrame");
   if (IsPaintable())
     canvas()->GetCanvas2DLayerBridge()->FinalizeFrame();
+}
+
+CanvasRenderingContextHost*
+CanvasRenderingContext2D::GetCanvasRenderingContextHost() {
+  return Host();
 }
 
 bool CanvasRenderingContext2D::ParseColorOrCurrentColor(

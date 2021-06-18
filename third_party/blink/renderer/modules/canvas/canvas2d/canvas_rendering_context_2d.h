@@ -205,6 +205,8 @@ class MODULES_EXPORT CanvasRenderingContext2D final
 
   void FinalizeFrame() override;
 
+  CanvasRenderingContextHost* GetCanvasRenderingContextHost() override;
+
   bool IsPaintable() const final {
     return canvas() && canvas()->GetCanvas2DLayerBridge();
   }
@@ -251,13 +253,10 @@ class MODULES_EXPORT CanvasRenderingContext2D final
                    int x,
                    int y) override;
   void WillOverwriteCanvas() override;
+  void TryRestoreContextEvent(TimerBase*) override;
 
  private:
   friend class CanvasRenderingContext2DAutoRestoreSkCanvas;
-
-  void DispatchContextLostEvent(TimerBase*);
-  void DispatchContextRestoredEvent(TimerBase*);
-  void TryRestoreContextEvent(TimerBase*);
 
   void PruneLocalFontCache(size_t target_size);
 
@@ -299,15 +298,6 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   bool IsCanvas2DBufferValid() const override;
 
   Member<HitRegionManager> hit_region_manager_;
-  LostContextMode context_lost_mode_;
-  bool context_restorable_;
-  unsigned try_restore_context_attempt_count_;
-  HeapTaskRunnerTimer<CanvasRenderingContext2D>
-      dispatch_context_lost_event_timer_;
-  HeapTaskRunnerTimer<CanvasRenderingContext2D>
-      dispatch_context_restored_event_timer_;
-  HeapTaskRunnerTimer<CanvasRenderingContext2D>
-      try_restore_context_event_timer_;
 
   FilterOperations filter_operations_;
   HashMap<String, FontDescription> fonts_resolved_using_current_style_;
