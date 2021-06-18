@@ -5,9 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_ARC_NEARBY_SHARE_NEARBY_SHARE_SESSION_IMPL_H_
 #define CHROME_BROWSER_ASH_ARC_NEARBY_SHARE_NEARBY_SHARE_SESSION_IMPL_H_
 
-#include <cstdint>
-#include <memory>
-
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
@@ -26,11 +23,15 @@ class NearbyShareSessionImpl : public mojom::NearbyShareSessionHost,
                                public aura::WindowObserver,
                                public aura::EnvObserver {
  public:
-  static mojo::PendingRemote<mojom::NearbyShareSessionHost> Create(
+  using SessionFinishedCallback = base::OnceCallback<void(int32_t)>;
+
+  NearbyShareSessionImpl(
       Profile* profile,
       int32_t task_id,
       mojom::ShareIntentInfoPtr share_info,
-      mojo::PendingRemote<mojom::NearbyShareSessionInstance> instance);
+      mojo::PendingRemote<mojom::NearbyShareSessionInstance> session_instance,
+      mojo::PendingReceiver<mojom::NearbyShareSessionHost> session_receiver,
+      SessionFinishedCallback session_finished_callback);
 
   NearbyShareSessionImpl(const NearbyShareSessionImpl&) = delete;
   NearbyShareSessionImpl& operator=(const NearbyShareSessionImpl&) = delete;
@@ -46,13 +47,6 @@ class NearbyShareSessionImpl : public mojom::NearbyShareSessionHost,
   void OnWindowVisibilityChanged(aura::Window* window, bool visible) override;
 
  private:
-  NearbyShareSessionImpl(
-      Profile* profile,
-      int32_t task_id,
-      mojom::ShareIntentInfoPtr share_info,
-      mojo::PendingRemote<mojom::NearbyShareSessionInstance> session_instance,
-      mojo::PendingReceiver<mojom::NearbyShareSessionHost> receiver);
-
   // Calls |SharesheetService.ShowNearbyShareBubble()| to start the Chrome
   // Nearby Share user flow.
   void ShowNearbyBubble(aura::Window* arc_window);
@@ -91,6 +85,9 @@ class NearbyShareSessionImpl : public mojom::NearbyShareSessionHost,
 
   // Observes the Aura environment.
   base::ScopedObservation<aura::Env, aura::EnvObserver> env_observation_{this};
+
+  // Callback when the Nearby Share Session is finished and no longer needed.
+  SessionFinishedCallback session_finished_callback_;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.

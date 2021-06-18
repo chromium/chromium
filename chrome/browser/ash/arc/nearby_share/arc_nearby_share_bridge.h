@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_ASH_ARC_NEARBY_SHARE_ARC_NEARBY_SHARE_BRIDGE_H_
 
 #include <stdint.h>
+#include <map>
+#include <memory>
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/arc/nearby_share/nearby_share_session_impl.h"
@@ -50,10 +52,17 @@ class ArcNearbyShareBridge : public KeyedService,
       StartNearbyShareCallback callback) override;
 
  private:
+  // Called by NearbyShareSessionImpl when the session is finished and can be
+  // cleaned up.
+  void OnNearbyShareSessionFinished(int32_t task_id);
+
   ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
 
   // Unowned pointer.
   Profile* const profile_;
+
+  // Map that keeps track of a task_id with its NearbyShareSessionImpl instance.
+  std::map<int32_t, std::unique_ptr<NearbyShareSessionImpl>> session_map_;
 
   base::WeakPtrFactory<ArcNearbyShareBridge> weak_ptr_factory_{this};
 };

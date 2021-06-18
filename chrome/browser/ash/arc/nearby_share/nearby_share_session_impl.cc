@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/arc/nearby_share/nearby_share_session_impl.h"
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -36,25 +37,31 @@ constexpr base::TimeDelta kWindowInitializationTimeout =
 constexpr char kIntentExtraText[] = "android.intent.extra.TEXT";
 }  // namespace
 
-// static
-mojo::PendingRemote<mojom::NearbyShareSessionHost>
-NearbyShareSessionImpl::Create(
+NearbyShareSessionImpl::NearbyShareSessionImpl(
     Profile* profile,
     int32_t task_id,
     mojom::ShareIntentInfoPtr share_info,
-    mojo::PendingRemote<mojom::NearbyShareSessionInstance> instance) {
-  if (!instance) {
-    LOG(ERROR) << "instance is null. Unable to create NearbyShareSessionImpl";
-    return mojo::NullRemote();
+    mojo::PendingRemote<mojom::NearbyShareSessionInstance> session_instance,
+    mojo::PendingReceiver<mojom::NearbyShareSessionHost> session_receiver,
+    SessionFinishedCallback session_finished_callback)
+    : task_id_(task_id),
+      session_instance_(std::move(session_instance)),
+      session_receiver_(this, std::move(session_receiver)),
+      share_info_(std::move(share_info)),
+      profile_(profile),
+      session_finished_callback_(std::move(session_finished_callback)) {
+  aura::Window* arc_window = GetArcWindow(task_id_);
+  if (arc_window) {
+    VLOG(1) << "ARC window found. Creating NearbySession";
+    ShowNearbyBubble(std::move(arc_window));
+  } else {
+    VLOG(1) << "No ARC window found for task ID " << task_id_;
+    env_observation_.Observe(aura::Env::GetInstance());
+    window_initialization_timer_.Start(
+        FROM_HERE, kWindowInitializationTimeout,
+        base::BindOnce(&NearbyShareSessionImpl::OnTimerFired,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
-
-  mojo::PendingRemote<mojom::NearbyShareSessionHost> remote;
-  // The NearbyShareSessionImpl instance will be deleted when the mojo
-  // connection is closed.
-  new NearbyShareSessionImpl(profile, task_id, std::move(share_info),
-                             std::move(instance),
-                             remote.InitWithNewPipeAndPassReceiver());
-  return remote;
 }
 
 NearbyShareSessionImpl::~NearbyShareSessionImpl() {
@@ -64,6 +71,7 @@ NearbyShareSessionImpl::~NearbyShareSessionImpl() {
 
 void NearbyShareSessionImpl::OnNearbyShareClosed() {
   session_instance_->OnNearbyShareViewClosed();
+  std::move(session_finished_callback_).Run(task_id_);
 }
 
 // Overridden from aura::EnvObserver:
@@ -84,31 +92,6 @@ void NearbyShareSessionImpl::OnWindowVisibilityChanged(aura::Window* window,
         FROM_HERE,
         base::BindOnce(&NearbyShareSessionImpl::ShowNearbyBubble,
                        weak_ptr_factory_.GetWeakPtr(), std::move(window)));
-  }
-}
-
-NearbyShareSessionImpl::NearbyShareSessionImpl(
-    Profile* profile,
-    int32_t task_id,
-    mojom::ShareIntentInfoPtr share_info,
-    mojo::PendingRemote<mojom::NearbyShareSessionInstance> session_instance,
-    mojo::PendingReceiver<mojom::NearbyShareSessionHost> session_receiver)
-    : task_id_(task_id),
-      session_instance_(std::move(session_instance)),
-      session_receiver_(this, std::move(session_receiver)),
-      share_info_(std::move(share_info)),
-      profile_(profile) {
-  aura::Window* arc_window = GetArcWindow(task_id_);
-  if (arc_window) {
-    VLOG(1) << "ARC window found. Creating NearbySession.";
-    ShowNearbyBubble(std::move(arc_window));
-  } else {
-    VLOG(1) << "No ARC window found for task ID " << task_id_;
-    env_observation_.Observe(aura::Env::GetInstance());
-    window_initialization_timer_.Start(
-        FROM_HERE, kWindowInitializationTimeout,
-        base::BindOnce(&NearbyShareSessionImpl::OnTimerFired,
-                       weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
@@ -186,8 +169,9 @@ void NearbyShareSessionImpl::OnNearbyShareBubbleShown(
 
 void NearbyShareSessionImpl::OnTimerFired() {
   // TODO(phshah): Handle error case and add UMA metric.
-  LOG(ERROR) << " ARC window didn't get initialized in time.";
-  env_observation_.Reset();
+  LOG(ERROR) << "ARC window didn't get initialized within "
+             << kWindowInitializationTimeout.InSeconds() << " second";
+  OnNearbyShareClosed();
 }
 
 }  // namespace arc

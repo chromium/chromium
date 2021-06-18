@@ -70,6 +70,14 @@ ArcNearbyShareBridge::ArcNearbyShareBridge(
 ArcNearbyShareBridge::~ArcNearbyShareBridge() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   arc_bridge_service_->nearby_share()->SetHost(nullptr);
+  session_map_.clear();
+}
+
+void ArcNearbyShareBridge::OnNearbyShareSessionFinished(int32_t task_id) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!session_map_.erase(task_id)) {
+    VLOG(1) << "No share session found for " << task_id;
+  }
 }
 
 void ArcNearbyShareBridge::StartNearbyShare(
@@ -80,8 +88,30 @@ void ArcNearbyShareBridge::StartNearbyShare(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   VLOG(1) << "Creating Nearby Share session";
-  std::move(callback).Run(NearbyShareSessionImpl::Create(
-      profile_, task_id, std::move(share_info), std::move(session_instance)));
+  if (!session_instance) {
+    LOG(ERROR) << "instance is null. Unable to create NearbyShareSessionImpl";
+    std::move(callback).Run(mojo::NullRemote());
+    return;
+  }
+
+  if (session_map_.find(task_id) != session_map_.end()) {
+    LOG(ERROR) << "Unable to create NearbyShareSessionImpl since one already "
+               << "exists for " << task_id;
+    std::move(callback).Run(mojo::NullRemote());
+    return;
+  }
+
+  mojo::PendingRemote<mojom::NearbyShareSessionHost> remote;
+  // The NearbyShareSessionImpl instance will be deleted when the instance calls
+  // |SessionFinishedCallback|. This indicates the session is no longer needed.
+  session_map_.emplace(
+      task_id,
+      std::make_unique<NearbyShareSessionImpl>(
+          profile_, task_id, std::move(share_info), std::move(session_instance),
+          remote.InitWithNewPipeAndPassReceiver(),
+          base::BindOnce(&ArcNearbyShareBridge::OnNearbyShareSessionFinished,
+                         weak_ptr_factory_.GetWeakPtr())));
+  std::move(callback).Run(std::move(remote));
 }
 
 }  // namespace arc
