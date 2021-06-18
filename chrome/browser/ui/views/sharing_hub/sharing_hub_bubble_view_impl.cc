@@ -7,6 +7,7 @@
 #include "chrome/browser/sharing_hub/sharing_hub_model.h"
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_controller.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/sharing_hub/sharing_hub_bubble_action_button.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -34,7 +35,6 @@ views::Separator* GetSeparator() {
   separator->SetColor(gfx::kGoogleGrey300);
   return separator;
 }
-
 }  // namespace
 
 SharingHubBubbleViewImpl::SharingHubBubbleViewImpl(
@@ -60,11 +60,11 @@ void SharingHubBubbleViewImpl::Hide() {
 }
 
 bool SharingHubBubbleViewImpl::ShouldShowCloseButton() const {
-  return true;
+  return false;
 }
 
-std::u16string SharingHubBubbleViewImpl::GetWindowTitle() const {
-  return controller_->GetWindowTitle();
+bool SharingHubBubbleViewImpl::ShouldShowWindowTitle() const {
+  return false;
 }
 
 void SharingHubBubbleViewImpl::WindowClosing() {
@@ -130,6 +130,22 @@ void SharingHubBubbleViewImpl::PopulateScrollView(
   }
 
   action_list_view->AddChildView(GetSeparator());
+
+  const int kLabelLineHeight = 22;
+  const int kIndent = 9;
+
+  auto* share_link_label =
+      new views::Label(l10n_util::GetStringUTF16(IDS_SHARING_HUB_SHARE_LABEL));
+  share_link_label->SetFontList(gfx::FontList("GoogleSans, 13px"));
+  share_link_label->SetLineHeight(kLabelLineHeight);
+  share_link_label->SetMultiLine(true);
+  share_link_label->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
+  share_link_label->SizeToFit(views::DISTANCE_BUBBLE_PREFERRED_WIDTH);
+  constexpr auto kPrimaryIconBorder =
+      gfx::Insets(kIndent, kLabelLineHeight, 0, 0);
+  share_link_label->SetBorder(views::CreateEmptyBorder(kPrimaryIconBorder));
+
+  action_list_view->AddChildView(share_link_label);
 
   for (const auto& action : third_party_actions) {
     auto* view = action_list_view->AddChildView(

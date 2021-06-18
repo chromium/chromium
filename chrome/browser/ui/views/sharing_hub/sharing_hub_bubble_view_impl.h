@@ -40,7 +40,7 @@ class SharingHubBubbleViewImpl : public SharingHubBubbleView,
 
   // views::WidgetDelegateView:
   bool ShouldShowCloseButton() const override;
-  std::u16string GetWindowTitle() const override;
+  bool ShouldShowWindowTitle() const override;
   void WindowClosing() override;
 
   // LocationBarBubbleDelegateView:
