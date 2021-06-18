@@ -174,7 +174,6 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser/chromeos:test_support",
     "//chrome/common/printing",
-    "//chrome/test:browser_tests",
     "//chrome/test:test_support",
     "//chromeos",
     "//chromeos/crosapi/cpp:cpp",
