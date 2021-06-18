@@ -120,78 +120,8 @@ class SocketResourceManager : public SocketResourceManagerInterface {
   ApiResourceManager<T>* manager_;
 };
 
-class SocketApiFunctionBase : public ExtensionFunction {
- public:
-  SocketApiFunctionBase();
-
- protected:
-  ~SocketApiFunctionBase() override;
-
-  virtual std::unique_ptr<SocketResourceManagerInterface>
-  CreateSocketResourceManager();
-
-  int AddSocket(Socket* socket);
-  Socket* GetSocket(int api_resource_id);
-  void ReplaceSocket(int api_resource_id, Socket* socket);
-  void RemoveSocket(int api_resource_id);
-  std::unordered_set<int>* GetSocketIds();
-
-  // A no-op outside of Chrome OS. Returns an error string.
-  absl::optional<std::string> OpenFirewallHoleImpl(const std::string& address,
-                                                   int socket_id,
-                                                   Socket* ksocket);
-
-  std::unique_ptr<SocketResourceManagerInterface> manager_;
-};
-
-// TODO(crbug.com/1200440): Migrate all subclasses to SocketApiFunction.
-class SocketAsyncApiFunction : public SocketApiFunctionBase {
- public:
-  SocketAsyncApiFunction();
-
- protected:
-  ~SocketAsyncApiFunction() override;
-
-  // ExtensionFunction:
-  ResponseAction Run() override;
-
-  // These 3 override-able function are run in sequence. Return false to abort
-  // with an error.
-  virtual bool PrePrepare();
-  virtual bool Prepare();
-  virtual void AsyncWorkStart();
-
-  // The default AsyncWorkStart() calls Work() followed by AsyncWorkCompleted().
-  virtual void Work();
-
-  // Notify that the ExtensionFunction is done running. Subclasses only need to
-  // call this if they override AsyncWorkStart().
-  void AsyncWorkCompleted();
-
-  // Sets a single Value as the results of the function.
-  void SetResult(std::unique_ptr<base::Value> result);
-
-  // ValidationFailure override to match RunAsync(). This lets us use the
-  // EXTENSION_FUNCTION_VALIDATE() macro.
-  static bool ValidationFailure(SocketAsyncApiFunction* function);
-
-  // A no-op outside of Chrome OS.
-  void OpenFirewallHole(const std::string& address,
-                        int socket_id,
-                        Socket* socket);
-
-  std::string error_;
-  std::unique_ptr<base::ListValue> results_;
-
- private:
-  ResponseValue GetResponseValue();
-};
-
 // Base class for socket API functions, with some helper functions.
-//
-// TODO(crbug.com/1200440): Migrate all SocketAsyncApiFunction subclasses to
-// this.
-class SocketApiFunction : public SocketApiFunctionBase {
+class SocketApiFunction : public ExtensionFunction {
  public:
   SocketApiFunction();
 
@@ -208,10 +138,22 @@ class SocketApiFunction : public SocketApiFunctionBase {
   // one integer value.
   ResponseValue ErrorWithCode(int error_code, const std::string& error);
 
+  virtual std::unique_ptr<SocketResourceManagerInterface>
+  CreateSocketResourceManager();
+
+  int AddSocket(Socket* socket);
+  Socket* GetSocket(int api_resource_id);
+  void ReplaceSocket(int api_resource_id, Socket* socket);
+  void RemoveSocket(int api_resource_id);
+  std::unordered_set<int>* GetSocketIds();
+
   // A no-op outside of Chrome OS. Calls Respond() with an error if it fails.
   void OpenFirewallHole(const std::string& address,
                         int socket_id,
                         Socket* socket);
+
+ private:
+  std::unique_ptr<SocketResourceManagerInterface> manager_;
 };
 
 class SocketExtensionWithDnsLookupFunction
