@@ -26,7 +26,6 @@
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_image.h"
 #include "cc/paint/paint_image_builder.h"
-#include "content/public/renderer/render_frame.h"
 #include "net/cookies/site_for_cookies.h"
 #include "pdf/accessibility_structs.h"
 #include "pdf/mojom/pdf.mojom.h"
@@ -169,8 +168,11 @@ class BlinkContainerWrapper final : public PdfViewWebPlugin::ContainerWrapper {
 
 }  // namespace
 
-PdfViewWebPlugin::PdfViewWebPlugin(const blink::WebPluginParams& params)
-    : initial_params_(params) {}
+PdfViewWebPlugin::PdfViewWebPlugin(
+    mojo::AssociatedRemote<pdf::mojom::PdfService> pdf_service_remote,
+    const blink::WebPluginParams& params)
+    : pdf_service_remote_(std::move(pdf_service_remote)),
+      initial_params_(params) {}
 
 PdfViewWebPlugin::~PdfViewWebPlugin() = default;
 
@@ -597,8 +599,12 @@ void PdfViewWebPlugin::SendMessage(base::Value message) {
 }
 
 void PdfViewWebPlugin::SaveAs() {
-  GetPdfService()->SaveUrlAs(GURL(GetURL().c_str()),
-                             network::mojom::ReferrerPolicy::kDefault);
+  auto* service = GetPdfService();
+  if (!service)
+    return;
+
+  service->SaveUrlAs(GURL(GetURL().c_str()),
+                     network::mojom::ReferrerPolicy::kDefault);
 }
 
 void PdfViewWebPlugin::InitImageData(const gfx::Size& size) {
@@ -636,11 +642,19 @@ void PdfViewWebPlugin::SetAccessibilityViewportInfo(
 }
 
 void PdfViewWebPlugin::SetContentRestrictions(int content_restrictions) {
-  GetPdfService()->UpdateContentRestrictions(content_restrictions);
+  auto* service = GetPdfService();
+  if (!service)
+    return;
+
+  service->UpdateContentRestrictions(content_restrictions);
 }
 
 void PdfViewWebPlugin::SetPluginCanSave(bool can_save) {
-  GetPdfService()->SetPluginCanSave(can_save);
+  auto* service = GetPdfService();
+  if (!service)
+    return;
+
+  service->SetPluginCanSave(can_save);
 }
 
 void PdfViewWebPlugin::DidStartLoading() {
@@ -717,13 +731,6 @@ bool PdfViewWebPlugin::Redo() {
 }
 
 pdf::mojom::PdfService* PdfViewWebPlugin::GetPdfService() {
-  if (!pdf_service_remote_) {
-    DCHECK(IsValid());
-    content::RenderFrame* render_frame =
-        content::RenderFrame::FromWebFrame(container_wrapper_->GetFrame());
-    render_frame->GetRemoteAssociatedInterfaces()->GetInterface(
-        pdf_service_remote_.BindNewEndpointAndPassReceiver());
-  }
   return pdf_service_remote_.get();
 }
 

@@ -276,7 +276,10 @@ static_library("renderer") {
   }
 
   if (enable_pdf) {
-    deps += [ "//components/pdf/renderer" ]
+    deps += [
+      "//components/pdf/renderer",
+      "//pdf/mojom",
+    ]
   }
 
   if (is_chromeos_ash) {

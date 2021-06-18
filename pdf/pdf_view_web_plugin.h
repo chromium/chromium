@@ -85,7 +85,9 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
     virtual blink::WebPluginContainer* Container() = 0;
   };
 
-  explicit PdfViewWebPlugin(const blink::WebPluginParams& params);
+  PdfViewWebPlugin(
+      mojo::AssociatedRemote<pdf::mojom::PdfService> pdf_service_remote,
+      const blink::WebPluginParams& params);
   PdfViewWebPlugin(const PdfViewWebPlugin& other) = delete;
   PdfViewWebPlugin& operator=(const PdfViewWebPlugin& other) = delete;
 
@@ -226,10 +228,7 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   bool Undo();
   bool Redo();
 
-  // Gets the receiver associated with the plugin's render frame if the receiver
-  // is bound to `pdf_service_remote_`. If such receiver is not available, binds
-  // `pdf_service_remote_` with a new receiver and returns the handle of that
-  // receiver.
+  // May be null in unit tests.
   pdf::mojom::PdfService* GetPdfService();
 
   blink::WebString selected_text_;
@@ -237,7 +236,8 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   blink::WebTextInputType text_input_type_ =
       blink::WebTextInputType::kWebTextInputTypeNone;
 
-  mojo::AssociatedRemote<pdf::mojom::PdfService> pdf_service_remote_;
+  // May be unbound in unit tests.
+  mojo::AssociatedRemote<pdf::mojom::PdfService> const pdf_service_remote_;
 
   blink::WebPluginParams initial_params_;
 

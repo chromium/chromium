@@ -1,6 +1,6 @@
 include_rules = [
   "+cc/paint",
-  "+content/public/renderer",
+  "+content/public/renderer/v8_value_converter.h",
   "+gin",
   "+mojo/core/embedder",
   "+mojo/public/cpp/bindings",

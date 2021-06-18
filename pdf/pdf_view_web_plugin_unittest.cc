@@ -157,8 +157,9 @@ class PdfViewWebPluginTest : public testing::Test {
     params.attribute_names.push_back(blink::WebString("src"));
     params.attribute_values.push_back(blink::WebString("dummy.pdf"));
 
+    mojo::AssociatedRemote<pdf::mojom::PdfService> unbound_remote;
     plugin_ = std::unique_ptr<PdfViewWebPlugin, PluginDeleter>(
-        new PdfViewWebPlugin(params));
+        new PdfViewWebPlugin(std::move(unbound_remote), params));
 
     auto wrapper = std::make_unique<FakeContainerWrapper>(plugin_.get());
     wrapper_ptr_ = wrapper.get();
