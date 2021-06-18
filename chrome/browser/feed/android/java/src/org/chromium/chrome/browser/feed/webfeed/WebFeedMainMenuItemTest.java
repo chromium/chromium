@@ -94,6 +94,7 @@ public final class WebFeedMainMenuItemTest {
                 .formatUrlForDisplayOmitSchemePathAndTrivialSubdomains(any());
 
         doReturn(GURL.emptyGURL()).when(mTab).getOriginalUrl();
+        doReturn(false).when(mTab).isShowingErrorPage();
 
         mActivity = Robolectric.setupActivity(Activity.class);
         // Required for resolving an attribute used in AppMenuItemText.
@@ -158,7 +159,7 @@ public final class WebFeedMainMenuItemTest {
 
         initializeWebFeedMainMenuItem(/*bitmap=*/null);
 
-        verifyFollowChip();
+        verifyFollowChip(/*enabled=*/true);
     }
 
     @Test
@@ -169,7 +170,19 @@ public final class WebFeedMainMenuItemTest {
 
         initializeWebFeedMainMenuItem(/*bitmap=*/null);
 
-        verifyFollowChip();
+        verifyFollowChip(/*enabled=*/true);
+    }
+
+    @Test
+    @UiThreadTest
+    public void initialize_errorPage_displaysDisabledFollowChip() {
+        doReturn(true).when(mTab).isShowingErrorPage();
+        setGetWebFeedMetadataForPageRepsonse(
+                createWebFeedMetadata(WebFeedSubscriptionStatus.NOT_SUBSCRIBED));
+
+        initializeWebFeedMainMenuItem(/*bitmap=*/null);
+
+        verifyFollowChip(/*enabled=*/false);
     }
 
     @Test
@@ -180,7 +193,7 @@ public final class WebFeedMainMenuItemTest {
 
         initializeWebFeedMainMenuItem(/*bitmap=*/null);
 
-        verifyFollowChip();
+        verifyFollowChip(/*enabled=*/true);
     }
 
     @Test
@@ -244,7 +257,7 @@ public final class WebFeedMainMenuItemTest {
     /**
      * Verifies that the follow chip is showing.
      */
-    private void verifyFollowChip() {
+    private void verifyFollowChip(boolean enabled) {
         ChipView followChipView = mWebFeedMainMenuItem.findViewById(R.id.follow_chip_view);
         ChipView followingChipView = mWebFeedMainMenuItem.findViewById(R.id.following_chip_view);
         TextView textView = followChipView.getPrimaryTextView();
@@ -254,7 +267,8 @@ public final class WebFeedMainMenuItemTest {
                 "Following chip should be gone.", View.GONE, followingChipView.getVisibility());
         assertEquals("Chip text should say Follow.",
                 mActivity.getResources().getString(R.string.menu_follow), textView.getText());
-        assertTrue("Follow chip should be enabled.", followChipView.isEnabled());
+        assertEquals(String.format("Follow chip isEnabled should be %b", enabled), enabled,
+                followChipView.isEnabled());
     }
 
     /**

@@ -87,6 +87,9 @@ public class WebFeedMainMenuItem extends FrameLayout {
         WebFeedBridge.getWebFeedMetadataForPage(mTab, mUrl, result -> {
             initializeText(result);
             initializeChipView(result);
+            if (mTab.isShowingErrorPage()) {
+                mChipView.setEnabled(false);
+            }
         });
     }
 
@@ -205,7 +208,7 @@ public class WebFeedMainMenuItem extends FrameLayout {
         chipTextView.setText(chipText);
         chipView.setIcon(chipIconRes, /*tintWithTextColor=*/true);
         chipView.setOnClickListener(onClickListener);
-        chipView.setEnabled(true);
+        chipView.setEnabled(!mTab.isShowingErrorPage());
         chipView.setVisibility(View.VISIBLE);
     }
 

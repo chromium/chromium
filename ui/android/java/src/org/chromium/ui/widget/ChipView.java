@@ -202,6 +202,7 @@ public class ChipView extends LinearLayout {
     public void setEnabled(boolean enabled) {
         super.setEnabled(enabled);
         getPrimaryTextView().setEnabled(enabled);
+        mStartIcon.setEnabled(enabled);
         if (mSecondaryText != null) mSecondaryText.setEnabled(enabled);
     }
 
