@@ -13,6 +13,8 @@ import android.util.Size;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.TraceEvent;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -83,6 +85,7 @@ class PlayerFrameBitmapPainter {
         if (mViewPort.isEmpty()) return;
 
         if (mTileSize.getWidth() <= 0 || mTileSize.getHeight() <= 0) return;
+        TraceEvent.begin("PlayerFrameBitmapPainter.onDraw");
 
         final int rowStart = mViewPort.top / mTileSize.getHeight();
         int rowEnd = (int) Math.ceil((double) mViewPort.bottom / mTileSize.getHeight());
@@ -165,5 +168,6 @@ class PlayerFrameBitmapPainter {
         if (needsInvalidate) {
             mHandler.post(mInvalidateCallback);
         }
+        TraceEvent.end("PlayerFrameBitmapPainter.onDraw");
     }
 }

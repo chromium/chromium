@@ -12,6 +12,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.MemoryPressureLevel;
+import org.chromium.base.TraceEvent;
 import org.chromium.base.UnguessableToken;
 import org.chromium.base.memory.MemoryPressureMonitor;
 import org.chromium.base.task.SequencedTaskRunner;
@@ -136,6 +137,7 @@ public class PlayerFrameBitmapState {
      */
     void requestBitmapForRect(Rect viewportRect) {
         if (mRequiredBitmaps == null || mBitmapMatrix == null) return;
+        TraceEvent.begin("PlayerFrameBitmapState.requestBitmapForRect");
         clearBeforeRequest();
 
         final int rowStart =
@@ -171,6 +173,7 @@ public class PlayerFrameBitmapState {
         }
 
         cancelUnrequiredPendingRequests();
+        TraceEvent.end("PlayerFrameBitmapState.requestBitmapForRect");
     }
 
     /**
@@ -178,6 +181,7 @@ public class PlayerFrameBitmapState {
      */
     void releaseNotVisibleTiles() {
         if (mBitmapMatrix == null || mVisibleBitmaps == null) return;
+        TraceEvent.begin("PlayerFrameBitmapState.releaseNotVisibleTiles");
 
         for (int row = 0; row < mBitmapMatrix.length; row++) {
             for (int col = 0; col < mBitmapMatrix[row].length; col++) {
@@ -188,6 +192,7 @@ public class PlayerFrameBitmapState {
                 }
             }
         }
+        TraceEvent.end("PlayerFrameBitmapState.releaseNotVisibleTiles");
     }
 
     private void requestBitmapForAdjacentTiles(int row, int col) {
@@ -243,6 +248,7 @@ public class PlayerFrameBitmapState {
      */
     private void deleteUnrequiredBitmaps() {
         if (mBitmapMatrix == null || mRequiredBitmaps == null) return;
+        TraceEvent.begin("PlayerFrameBitmapState.deleteUnrequiredBitmaps");
 
         for (int row = 0; row < mBitmapMatrix.length; row++) {
             for (int col = 0; col < mBitmapMatrix[row].length; col++) {
@@ -253,6 +259,7 @@ public class PlayerFrameBitmapState {
                 }
             }
         }
+        TraceEvent.end("PlayerFrameBitmapState.deleteUnrequiredBitmaps");
     }
 
     /**
@@ -277,6 +284,7 @@ public class PlayerFrameBitmapState {
 
     private void clearBeforeRequest() {
         if (mVisibleBitmaps == null || mRequiredBitmaps == null) return;
+        TraceEvent.begin("PlayerFrameBitmapState.clearBeforeRequest");
 
         assert mVisibleBitmaps.length == mRequiredBitmaps.length;
         assert (mVisibleBitmaps.length > 0)
@@ -289,10 +297,12 @@ public class PlayerFrameBitmapState {
                 mRequiredBitmaps[row][col] = false;
             }
         }
+        TraceEvent.end("PlayerFrameBitmapState.clearBeforeRequest");
     }
 
     private void cancelUnrequiredPendingRequests() {
         if (mPendingBitmapRequests == null || mRequiredBitmaps == null) return;
+        TraceEvent.begin("PlayerFrameBitmapState.cancelUnrequiredPendingRequests");
 
         assert mPendingBitmapRequests.length == mRequiredBitmaps.length;
         assert (mPendingBitmapRequests.length > 0)
@@ -310,6 +320,7 @@ public class PlayerFrameBitmapState {
                 }
             }
         }
+        TraceEvent.end("PlayerFrameBitmapState.cancelUnrequiredPendingRequests");
     }
 
     /**
@@ -339,7 +350,10 @@ public class PlayerFrameBitmapState {
         }
 
         private boolean cancel() {
-            return mCompositorDelegate.cancelBitmapRequest(mRequestId);
+            TraceEvent.begin("BitmapRequestHandler.cancel");
+            boolean ret = mCompositorDelegate.cancelBitmapRequest(mRequestId);
+            TraceEvent.end("BitmapRequestHandler.cancel");
+            return ret;
         }
 
         /**
@@ -348,8 +362,10 @@ public class PlayerFrameBitmapState {
          */
         @Override
         public void onResult(Bitmap result) {
+            TraceEvent.begin("BitmapRequestHandler.onResult");
             if (result == null) {
                 onError();
+                TraceEvent.end("BitmapRequestHandler.onResult");
                 return;
             }
             if (mBitmapMatrix == null || mPendingBitmapRequests == null || mRequiredBitmaps == null
@@ -361,6 +377,7 @@ public class PlayerFrameBitmapState {
                 if (mPendingBitmapRequests != null) {
                     mPendingBitmapRequests[mRequestRow][mRequestCol] = null;
                 }
+                TraceEvent.end("BitmapRequestHandler.onResult");
                 return;
             }
 
@@ -369,6 +386,7 @@ public class PlayerFrameBitmapState {
             deleteUnrequiredBitmaps();
             markBitmapReceived(mRequestRow, mRequestCol);
             mPendingBitmapRequests[mRequestRow][mRequestCol] = null;
+            TraceEvent.end("BitmapRequestHandler.onResult");
         }
 
         /**

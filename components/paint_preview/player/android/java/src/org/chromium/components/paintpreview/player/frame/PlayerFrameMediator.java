@@ -89,7 +89,7 @@ class PlayerFrameMediator implements PlayerFrameViewDelegate, PlayerFrameMediato
         mGuid = frameGuid;
         mContentSize = contentSize;
         SequencedTaskRunner taskRunner =
-                PostTask.createSequencedTaskRunner(TaskTraits.USER_VISIBLE);
+                PostTask.createSequencedTaskRunner(TaskTraits.THREAD_POOL_USER_VISIBLE);
         mBitmapStateController = new PlayerFrameBitmapStateController(
                 mGuid, mViewport, mContentSize, mCompositorDelegate, this, taskRunner);
         mViewport.offset(initialScrollX, initialScrollY);

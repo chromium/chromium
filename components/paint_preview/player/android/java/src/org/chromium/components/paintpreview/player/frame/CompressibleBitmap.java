@@ -15,6 +15,7 @@ import android.graphics.PorterDuffXfermode;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.TraceEvent;
 import org.chromium.base.task.SequencedTaskRunner;
 
 import java.io.ByteArrayOutputStream;
@@ -125,7 +126,9 @@ class CompressibleBitmap {
      */
     void inflateInBackground(Callback<CompressibleBitmap> onInflated) {
         mTaskRunner.postTask(() -> {
+            TraceEvent.begin("CompressibleBitmap.inflate");
             inflate();
+            TraceEvent.end("CompressibleBitmap.inflate");
             if (onInflated != null) {
                 onInflated.onResult(this);
             }
@@ -186,7 +189,9 @@ class CompressibleBitmap {
 
     private void compressInBackground(boolean visible) {
         mTaskRunner.postTask(() -> {
+            TraceEvent.begin("CompressibleBitmap.compress");
             compress();
+            TraceEvent.end("CompressibleBitmap.compress");
             if (visible) return;
 
             discardBitmapInternal();

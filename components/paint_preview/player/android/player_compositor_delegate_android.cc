@@ -56,6 +56,7 @@ ScopedJavaLocalRef<jobjectArray> ToJavaUnguessableTokenArray(
 }
 
 ScopedJavaGlobalRef<jobject> ConvertToJavaBitmap(const SkBitmap& sk_bitmap) {
+  TRACE_EVENT0("paint_preview", "ConvertToJavaBitmap");
   return ScopedJavaGlobalRef<jobject>(
       gfx::ConvertToJavaBitmap(sk_bitmap, gfx::OomBehavior::kReturnNullOnOom));
 }
@@ -124,6 +125,8 @@ void PlayerCompositorDelegateAndroid::OnCompositorReady(
     CompositorStatus compositor_status,
     mojom::PaintPreviewBeginCompositeResponsePtr composite_response,
     std::unique_ptr<ui::AXTreeUpdate> ax_tree) {
+  TRACE_EVENT0("paint_preview",
+               "PlayerCompositorDelegateAndroid::OnCompositorReady");
   bool compositor_started = CompositorStatus::OK == compositor_status;
   base::UmaHistogramBoolean(
       "Browser.PaintPreview.Player.CompositorProcessStartedCorrectly",
@@ -242,6 +245,7 @@ jint PlayerCompositorDelegateAndroid::RequestBitmap(
     jint j_clip_y,
     jint j_clip_width,
     jint j_clip_height) {
+  TRACE_EVENT0("paint_preview", "RequestBitmap");
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
       "paint_preview", "PlayerCompositorDelegateAndroid::RequestBitmap",
       TRACE_ID_LOCAL(request_id_));
@@ -281,6 +285,7 @@ void PlayerCompositorDelegateAndroid::OnBitmapCallback(
     int request_id,
     mojom::PaintPreviewCompositor::BitmapStatus status,
     const SkBitmap& sk_bitmap) {
+  TRACE_EVENT0("paint_preview", "OnBitmapReceived");
   TRACE_EVENT_NESTABLE_ASYNC_END2(
       "paint_preview", "PlayerCompositorDelegateAndroid::RequestBitmap",
       TRACE_ID_LOCAL(request_id), "status", static_cast<int>(status), "bytes",

@@ -8,6 +8,8 @@
 
 #include "base/bind_post_task.h"
 #include "base/callback.h"
+#include "base/trace_event/common/trace_event_common.h"
+#include "base/trace_event/trace_event.h"
 
 namespace paint_preview {
 
@@ -73,6 +75,9 @@ void PaintPreviewCompositorClientImpl::BitmapForSeparatedFrame(
              callback,
          mojom::PaintPreviewCompositor::BitmapStatus status,
          const SkBitmap& bitmap) {
+        TRACE_EVENT0("paint_preview",
+                     "PaintPreviewCompositorClientImpl::"
+                     "BitmapForSeparatedFrameCallback");
         // The paint preview service should be sending us N32 32bpp bitmaps in
         // reply, otherwise this can lead to out-of-bounds mistakes when
         // transferring the pixels out of the bitmap into other buffers.

@@ -336,6 +336,7 @@ void PlayerCompositorDelegate::OnProtoAvailable(
     const GURL& expected_url,
     PaintPreviewFileMixin::ProtoReadStatus proto_status,
     std::unique_ptr<PaintPreviewProto> proto) {
+  TRACE_EVENT0("paint_preview", "PlayerCompositorDelegate::OnProtoAvailable");
   if (proto_status == PaintPreviewFileMixin::ProtoReadStatus::kExpired) {
     OnCompositorReady(CompositorStatus::CAPTURE_EXPIRED, nullptr, nullptr);
     return;
@@ -414,6 +415,8 @@ void PlayerCompositorDelegate::OnAXTreeUpdateAvailable(
 
 void PlayerCompositorDelegate::SendCompositeRequest(
     mojom::PaintPreviewBeginCompositeRequestPtr begin_composite_request) {
+  TRACE_EVENT0("paint_preview",
+               "PlayerCompositorDelegate::SendCompositeRequest");
   // TODO(crbug.com/1021590): Handle initialization errors.
   if (!begin_composite_request) {
     OnCompositorReady(CompositorStatus::INVALID_REQUEST, nullptr, nullptr);
@@ -465,6 +468,8 @@ void PlayerCompositorDelegate::OnCompositorTimeout() {
 }
 
 void PlayerCompositorDelegate::ProcessBitmapRequestsFromQueue() {
+  TRACE_EVENT0("paint_preview",
+               "PlayerCompositorDelegate::ProcessBitmapRequestsFromQueue");
   while (active_requests_ < max_requests_ && bitmap_request_queue_.size()) {
     int request_id = bitmap_request_queue_.front();
     bitmap_request_queue_.pop();
@@ -497,6 +502,8 @@ void PlayerCompositorDelegate::BitmapRequestCallbackAdapter(
                             const SkBitmap&)> callback,
     mojom::PaintPreviewCompositor::BitmapStatus status,
     const SkBitmap& bitmap) {
+  TRACE_EVENT0("paint_preview",
+               "PlayerCompositorDelegate::BitmapRequestCallbackAdapter");
   std::move(callback).Run(status, bitmap);
 
   active_requests_--;

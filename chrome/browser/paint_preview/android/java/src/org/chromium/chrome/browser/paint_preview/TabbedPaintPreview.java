@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.TraceEvent;
 import org.chromium.base.UserData;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.paint_preview.services.PaintPreviewTabService;
@@ -109,10 +110,14 @@ public class TabbedPaintPreview implements UserData {
      */
     public boolean maybeShow(@NonNull PlayerManager.Listener listener) {
         if (mIsAttachedToTab) return true;
+        TraceEvent.begin("TabbedPaintPreview.maybeShow");
 
         // Check if a capture exists. This is a quick check using a cache.
         boolean hasCapture = getService().hasCaptureForTab(mTab.getId());
-        if (!hasCapture) return false;
+        if (!hasCapture) {
+            TraceEvent.end("TabbedPaintPreview.maybeShow");
+            return false;
+        }
 
         mTab.addObserver(mTabObserver);
         PaintPreviewCompositorUtils.warmupCompositor();
@@ -123,6 +128,7 @@ public class TabbedPaintPreview implements UserData {
         mTab.getTabViewManager().addTabViewProvider(mTabbedPainPreviewViewProvider);
         mIsAttachedToTab = true;
         mWasEverShown = true;
+        TraceEvent.end("TabbedPaintPreview.maybeShow");
         return true;
     }
 
@@ -137,6 +143,7 @@ public class TabbedPaintPreview implements UserData {
     public void remove(boolean matchScroll, boolean animate) {
         PaintPreviewCompositorUtils.stopWarmCompositor();
         if (mTab == null || mPlayerManager == null || mFadingOut) return;
+        TraceEvent.begin("TabbedPaintPreview.remove");
 
         mFadingOut = true;
         mPlayerManager.setAcceptUserInput(false);
@@ -169,6 +176,7 @@ public class TabbedPaintPreview implements UserData {
                     }
                 });
         if (mProgressSimulatorNeededCallback != null) mProgressSimulatorNeededCallback.run();
+        TraceEvent.end("TabbedPaintPreview.remove");
     }
 
     public boolean isShowing() {

@@ -128,6 +128,7 @@ public class PlayerManager {
             NativePaintPreviewServiceProvider nativePaintPreviewServiceProvider,
             String directoryKey, @NonNull Listener listener, int backgroundColor,
             boolean ignoreInitialScrollOffset) {
+        TraceEvent.begin("PlayerManager");
         TraceEvent.startAsync(sInitEvent, hashCode());
         mContext = context;
         mListener = listener;
@@ -142,6 +143,7 @@ public class PlayerManager {
                 new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         mHostView.setBackgroundColor(backgroundColor);
         mIgnoreInitialScrollOffset = ignoreInitialScrollOffset;
+        TraceEvent.end("PlayerManager");
     }
 
     public void setAcceptUserInput(boolean acceptUserInput) {
@@ -167,6 +169,7 @@ public class PlayerManager {
     private void onCompositorReady(UnguessableToken rootFrameGuid, UnguessableToken[] frameGuids,
             int[] frameContentSize, int[] scrollOffsets, int[] subFramesCount,
             UnguessableToken[] subFrameGuids, int[] subFrameClipRects, long nativeAxTree) {
+        TraceEvent.begin("PlayerManager.onCompositorReady");
         mRootFrameData = buildFrameTreeHierarchy(rootFrameGuid, frameGuids, frameContentSize,
                 scrollOffsets, subFramesCount, subFrameGuids, subFrameClipRects,
                 mIgnoreInitialScrollOffset);
@@ -188,6 +191,7 @@ public class PlayerManager {
         mNativeAxTree = nativeAxTree;
         TraceEvent.finishAsync(sInitEvent, hashCode());
         mListener.onViewReady();
+        TraceEvent.end("PlayerManager.onCompositorReady");
     }
 
     /**
