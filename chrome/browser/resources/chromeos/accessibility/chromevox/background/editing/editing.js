@@ -59,7 +59,8 @@ editing.TextEditHandler = class {
       // ChromeVox handles two general groups of text fields:
       // A rich text field is one where selection gets placed on a DOM
       // descendant to a root text field. This is one of:
-      // - content editables (detected via richly editable state)
+      // - content editables (detected via editable state and contenteditable
+      // html attribute, or just richly editable state)
       // - text areas (<textarea>) detected via its html tag
       //
       // A non-rich text field is one where accessibility only provides a value,
@@ -67,8 +68,17 @@ editing.TextEditHandler = class {
       // single-lined text fields, including those from web content, and ARC++
       // in this group. In addition, multiline ARC++ text fields are treated
       // this way.
-      const useRichText =
-          node.state[StateType.RICHLY_EDITABLE] || node.htmlTag === 'textarea';
+      //
+      // Note that these definitions slightly differ from those in Blink, which
+      // only considers text fields in web content.
+      const useRichText = node.state[StateType.RICHLY_EDITABLE] ||
+
+          // This condition is a full proof way to ensure the node is editable
+          // and has the content editable attribute set to any valid value.
+          (node.state[StateType.EDITABLE] && node.htmlAttributes &&
+           node.htmlAttributes['contenteditable'] !== undefined &&
+           node.htmlAttributes['contenteditable'] !== 'false') ||
+          node.htmlTag === 'textarea';
 
       this.editableText_ = useRichText ? new AutomationRichEditableText(node) :
                                          new AutomationEditableText(node);
