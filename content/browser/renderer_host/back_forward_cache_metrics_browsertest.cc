@@ -38,9 +38,6 @@ namespace content {
 
 namespace {
 
-constexpr uint64_t kPageShowFeature = static_cast<uint64_t>(
-    blink::scheduler::WebSchedulerTrackedFeature::kPageShowEventListener);
-
 constexpr uint64_t kRequestedGeolocationPermissionFeature =
     static_cast<uint64_t>(blink::scheduler::WebSchedulerTrackedFeature::
                               kRequestedGeolocationPermission);
@@ -456,9 +453,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheMetricsBrowserTest, Features_MainFrame) {
   // ukm::SourceId id2 = ToSourceId(navigation_ids_[1]);
   ukm::SourceId id3 = ToSourceId(navigation_ids_[2]);
 
-  EXPECT_THAT(
-      GetFeatureUsageMetrics(&recorder),
-      testing::ElementsAre(FeatureUsage{id3, 1 << kPageShowFeature, 0, 0}));
+  EXPECT_THAT(GetFeatureUsageMetrics(&recorder),
+              testing::ElementsAre(FeatureUsage{id3, 0, 0, 0}));
 }
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheMetricsBrowserTest,
@@ -483,9 +479,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheMetricsBrowserTest,
   // ukm::SourceId id2 = ToSourceId(navigation_ids_[1]);
   ukm::SourceId id3 = ToSourceId(navigation_ids_[2]);
 
-  EXPECT_THAT(
-      GetFeatureUsageMetrics(&recorder),
-      testing::ElementsAre(FeatureUsage{id3, 1 << kPageShowFeature, 0, 0}));
+  EXPECT_THAT(GetFeatureUsageMetrics(&recorder),
+              testing::ElementsAre(FeatureUsage{id3, 0, 0, 0}));
 }
 
 // https://crbug.com/1219373 fails with BFCache field trial testing config.
@@ -517,9 +512,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheMetricsBrowserTest,
   // ukm::SourceId id3 = ToSourceId(navigation_ids_[2]);
   ukm::SourceId id4 = ToSourceId(navigation_ids_[3]);
 
-  EXPECT_THAT(
-      GetFeatureUsageMetrics(&recorder),
-      testing::ElementsAre(FeatureUsage{id4, 0, 1 << kPageShowFeature, 0}));
+  EXPECT_THAT(GetFeatureUsageMetrics(&recorder),
+              testing::ElementsAre(FeatureUsage{id4, 0, 0, 0}));
 }
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheMetricsBrowserTest,
@@ -546,9 +540,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheMetricsBrowserTest,
   // ukm::SourceId id3 = ToSourceId(navigation_ids_[2]);
   ukm::SourceId id4 = ToSourceId(navigation_ids_[3]);
 
-  EXPECT_THAT(
-      GetFeatureUsageMetrics(&recorder),
-      testing::ElementsAre(FeatureUsage{id4, 0, 1 << kPageShowFeature, 0}));
+  EXPECT_THAT(GetFeatureUsageMetrics(&recorder),
+              testing::ElementsAre(FeatureUsage{id4, 0, 0, 0}));
 }
 
 // https://crbug.com/1219373 fails with BFCache field trial testing config.
@@ -582,9 +575,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheMetricsBrowserTest,
   // ukm::SourceId id3 = ToSourceId(navigation_ids_[2]);
   ukm::SourceId id4 = ToSourceId(navigation_ids_[3]);
 
-  EXPECT_THAT(
-      GetFeatureUsageMetrics(&recorder),
-      testing::ElementsAre(FeatureUsage{id4, 0, 0, 1 << kPageShowFeature}));
+  EXPECT_THAT(GetFeatureUsageMetrics(&recorder),
+              testing::ElementsAre(FeatureUsage{id4, 0, 0, 0}));
 }
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheMetricsBrowserTest, DedicatedWorker) {

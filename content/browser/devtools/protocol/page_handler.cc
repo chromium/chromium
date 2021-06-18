@@ -1427,19 +1427,6 @@ Page::BackForwardCacheNotRestoredReason BlocklistedFeatureToProtocol(
     case WebSchedulerTrackedFeature::kSubresourceHasCacheControlNoStore:
       return Page::BackForwardCacheNotRestoredReasonEnum::
           SubresourceHasCacheControlNoStore;
-    case WebSchedulerTrackedFeature::kPageShowEventListener:
-      return Page::BackForwardCacheNotRestoredReasonEnum::PageShowEventListener;
-    case WebSchedulerTrackedFeature::kPageHideEventListener:
-      return Page::BackForwardCacheNotRestoredReasonEnum::PageHideEventListener;
-    case WebSchedulerTrackedFeature::kBeforeUnloadEventListener:
-      return Page::BackForwardCacheNotRestoredReasonEnum::
-          BeforeUnloadEventListener;
-    case WebSchedulerTrackedFeature::kUnloadEventListener:
-      return Page::BackForwardCacheNotRestoredReasonEnum::UnloadEventListener;
-    case WebSchedulerTrackedFeature::kFreezeEventListener:
-      return Page::BackForwardCacheNotRestoredReasonEnum::FreezeEventListener;
-    case WebSchedulerTrackedFeature::kResumeEventListener:
-      return Page::BackForwardCacheNotRestoredReasonEnum::ResumeEventListener;
     case WebSchedulerTrackedFeature::kContainsPlugins:
       return Page::BackForwardCacheNotRestoredReasonEnum::ContainsPlugins;
     case WebSchedulerTrackedFeature::kDocumentLoaded:
@@ -1599,12 +1586,6 @@ Page::BackForwardCacheNotRestoredReasonType MapBlocklistedFeatureToType(
     WebSchedulerTrackedFeature feature) {
   switch (feature) {
     case WebSchedulerTrackedFeature::kWebRTC:
-    case WebSchedulerTrackedFeature::kPageShowEventListener:
-    case WebSchedulerTrackedFeature::kPageHideEventListener:
-    case WebSchedulerTrackedFeature::kBeforeUnloadEventListener:
-    case WebSchedulerTrackedFeature::kUnloadEventListener:
-    case WebSchedulerTrackedFeature::kFreezeEventListener:
-    case WebSchedulerTrackedFeature::kResumeEventListener:
     case WebSchedulerTrackedFeature::kContainsPlugins:
     case WebSchedulerTrackedFeature::kOutstandingNetworkRequestOthers:
     case WebSchedulerTrackedFeature::kOutstandingIndexedDBTransaction:

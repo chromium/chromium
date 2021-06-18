@@ -34,18 +34,6 @@ FeatureNames FeatureToNames(WebSchedulerTrackedFeature feature) {
     case WebSchedulerTrackedFeature::kSubresourceHasCacheControlNoStore:
       return {"SubresourceHasCacheControlNoStore",
               "subresource has Cache-Control: No-Store"};
-    case WebSchedulerTrackedFeature::kPageShowEventListener:
-      return {"PageShowEventListener", "onpageshow() event listener"};
-    case WebSchedulerTrackedFeature::kPageHideEventListener:
-      return {"PageHideEventListener", "onpagehide() event listener"};
-    case WebSchedulerTrackedFeature::kBeforeUnloadEventListener:
-      return {"BeforeUnloadEventListener", "onbeforeunload() event listener"};
-    case WebSchedulerTrackedFeature::kUnloadEventListener:
-      return {"UnloadEventListener", "onunload() event listener"};
-    case WebSchedulerTrackedFeature::kFreezeEventListener:
-      return {"FreezeEventListener", "onfreeze() event listener"};
-    case WebSchedulerTrackedFeature::kResumeEventListener:
-      return {"ResumeEventListener", "onresume() event listener"};
     case WebSchedulerTrackedFeature::kContainsPlugins:
       return {"ContainsPlugins", "page contains plugins"};
     case WebSchedulerTrackedFeature::kDocumentLoaded:
@@ -191,12 +179,6 @@ uint64_t StickyFeaturesBitmask() {
              WebSchedulerTrackedFeature::kSubresourceHasCacheControlNoStore) |
          FeatureToBit(
              WebSchedulerTrackedFeature::kSubresourceHasCacheControlNoCache) |
-         FeatureToBit(WebSchedulerTrackedFeature::kPageShowEventListener) |
-         FeatureToBit(WebSchedulerTrackedFeature::kPageHideEventListener) |
-         FeatureToBit(WebSchedulerTrackedFeature::kBeforeUnloadEventListener) |
-         FeatureToBit(WebSchedulerTrackedFeature::kUnloadEventListener) |
-         FeatureToBit(WebSchedulerTrackedFeature::kFreezeEventListener) |
-         FeatureToBit(WebSchedulerTrackedFeature::kResumeEventListener) |
          FeatureToBit(WebSchedulerTrackedFeature::kContainsPlugins) |
          FeatureToBit(WebSchedulerTrackedFeature::kDocumentLoaded) |
          FeatureToBit(

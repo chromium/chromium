@@ -30,12 +30,13 @@ enum class WebSchedulerTrackedFeature : uint32_t {
   kSubresourceHasCacheControlNoCache = 4,
   kSubresourceHasCacheControlNoStore = 5,
 
-  kPageShowEventListener = 6,
-  kPageHideEventListener = 7,
-  kBeforeUnloadEventListener = 8,
-  kUnloadEventListener = 9,
-  kFreezeEventListener = 10,
-  kResumeEventListener = 11,
+  // These are unused.
+  // kPageShowEventListener = 6,
+  // kPageHideEventListener = 7,
+  // kBeforeUnloadEventListener = 8,
+  // kUnloadEventListener = 9,
+  // kFreezeEventListener = 10,
+  // kResumeEventListener = 11,
 
   kContainsPlugins = 12,
   kDocumentLoaded = 13,

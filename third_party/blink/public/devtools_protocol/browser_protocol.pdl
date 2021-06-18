@@ -7694,12 +7694,6 @@ domain Page
       MainResourceHasCacheControlNoCache
       SubresourceHasCacheControlNoStore
       SubresourceHasCacheControlNoCache
-      PageShowEventListener
-      PageHideEventListener
-      BeforeUnloadEventListener
-      UnloadEventListener
-      FreezeEventListener
-      ResumeEventListener
       ContainsPlugins
       DocumentLoaded
       DedicatedWorkerOrWorklet
