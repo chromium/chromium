@@ -7,6 +7,10 @@ async_test(t => {
   // yet completed.
   window.onload = () => t.step_timeout(() => {
     assert_equals(appHistory.entries().length, 1);
+
+    let onnavigate_count = 0;
+    appHistory.onnavigate = () => onnavigate_count++;
+
     let key = appHistory.current.key;
     appHistory.navigate("#")
       .then(t.step_func(() => {
@@ -32,6 +36,7 @@ async_test(t => {
         assert_equals(appHistory.entries().length, 2);
         assert_equals(appHistory.current, appHistory.entries()[0]);
         assert_equals(key, appHistory.current.key);
+        assert_equals(onnavigate_count, 4);
       }));
   }, 0);
 }, "same-document navigate.goTo(), back(), and forward()");

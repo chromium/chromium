@@ -1,0 +1,18 @@
+<!doctype html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+async_test(t => {
+  // step_timeout because blink doesn't create history entries if onload has not
+  // yet completed.
+  window.onload = () => t.step_timeout(async () => {
+    let key = appHistory.current.key;
+    await appHistory.navigate("#1");
+
+    let first_promise = appHistory.goTo(key);
+    appHistory.goTo(key);
+    await promise_rejects_dom(t, 'AbortError', first_promise);
+    t.done();
+  }, 0);
+}, "Repeated navigate.goTo()");
+</script>

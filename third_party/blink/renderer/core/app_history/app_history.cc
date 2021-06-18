@@ -256,7 +256,6 @@ ScriptPromise AppHistory::navigate(ScriptState* script_state,
       &navigate_method_call_promise_resolver_,
       MakeGarbageCollected<ScriptPromiseResolver>(script_state));
   base::AutoReset<bool> did_react(&did_react_to_promise_, false);
-  goto_promise_resolver_ = nullptr;
   base::AutoReset<ScriptValue> event_info(
       &navigate_event_info_,
       options->getNavigateInfoOr(
@@ -325,45 +324,43 @@ ScriptPromise AppHistory::goTo(ScriptState* script_state,
   if (key == current()->key())
     return ScriptPromise::CastUndefined(script_state);
 
-  base::AutoReset<Member<ScriptPromiseResolver>> promise(
-      &navigate_method_call_promise_resolver_,
-      MakeGarbageCollected<ScriptPromiseResolver>(script_state));
-  goto_promise_resolver_ = nullptr;
-  base::AutoReset<ScriptValue> event_info(
-      &navigate_event_info_,
-      options->getNavigateInfoOr(
-          ScriptValue(script_state->GetIsolate(),
-                      v8::Undefined(script_state->GetIsolate())))
-  );
+  if (goto_promise_resolver_) {
+    goto_promise_resolver_->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kAbortError, "Navigation was aborted"));
+    goto_promise_resolver_ = nullptr;
+  }
+
   AppHistoryEntry* destination = entries_[keys_to_indices_.at(key)];
-  // TODO(japhet): Right now this is the only kind of back/forward navigation
-  // that fires the navigate event. This should probably move to a more central
-  // location.
-  if (DispatchNavigateEvent(destination->url(), nullptr,
-                            destination->sameDocument()
-                                ? NavigateEventType::kAppHistorySameDocumentGoto
-                                : NavigateEventType::kCrossDocument,
-                            WebFrameLoadType::kBackForward,
-                            UserNavigationInvolvement::kNone, nullptr,
-                            destination->GetItem())) {
-    GetSupplementable()
-        ->GetFrame()
-        ->GetLocalFrameHostRemote()
-        .NavigateToAppHistoryKey(key, LocalFrame::HasTransientUserActivation(
-                                          GetSupplementable()->GetFrame()));
+
+  goto_promise_resolver_ =
+      MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  // TODO(https://crbug.com/1220750): This can get "leaked" for the lifetime of
+  // the window in certain cases.
+  goto_navigate_event_info_ = options->getNavigateInfoOr(ScriptValue(
+      script_state->GetIsolate(), v8::Undefined(script_state->GetIsolate())));
+  goto_item_sequence_number_ = destination->GetItem()->ItemSequenceNumber();
+
+  // TODO(japhet): We will fire the navigate event for same-document navigations
+  // at commit time, but not cross-document. This should probably move to a more
+  // central location if we want to fire the navigate event for cross-document
+  // back-forward navigations in general.
+  if (!destination->sameDocument()) {
+    if (!DispatchNavigateEvent(
+            destination->url(), nullptr, NavigateEventType::kCrossDocument,
+            WebFrameLoadType::kBackForward, UserNavigationInvolvement::kNone,
+            nullptr, destination->GetItem())) {
+      exception_state.ThrowDOMException(DOMExceptionCode::kAbortError,
+                                        "Navigation was aborted");
+      return ScriptPromise();
+    }
   }
-  // The spec says to handle the window-detach case in DispatchNavigateEvent()
-  // using navigate_method_call_promise_resolver_, but ScriptPromiseResolver
-  // clears its state on window detach, so we can't use  it to return a rejected
-  // promise in the detach case (it returns undefined  instead). Rather than
-  // bypassing ScriptPromiseResolver and managing our own v8::Promise::Resolver,
-  // special case detach here.
-  if (!GetSupplementable()->GetFrame()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kAbortError,
-                                      "Navigation was aborted");
-    return ScriptPromise();
-  }
-  return navigate_method_call_promise_resolver_->Promise();
+
+  GetSupplementable()
+      ->GetFrame()
+      ->GetLocalFrameHostRemote()
+      .NavigateToAppHistoryKey(key, LocalFrame::HasTransientUserActivation(
+                                        GetSupplementable()->GetFrame()));
+  return goto_promise_resolver_->Promise();
 }
 
 bool AppHistory::canGoBack() const {
@@ -416,6 +413,10 @@ bool AppHistory::DispatchNavigateEvent(const KURL& url,
   // is not implemented yet. Move this once it is implemented.
   CancelOngoingNavigateEvent();
 
+  auto* script_state =
+      ToScriptStateForMainWorld(GetSupplementable()->GetFrame());
+  ScriptState::Scope scope(script_state);
+
   const KURL& current_url = GetSupplementable()->Url();
 
   auto* init = AppHistoryNavigateEventInit::Create();
@@ -441,8 +442,15 @@ bool AppHistory::DispatchNavigateEvent(const KURL& url,
   init->setUserInitiated(involvement != UserNavigationInvolvement::kNone);
   init->setFormData(form ? FormData::Create(form, ASSERT_NO_EXCEPTION)
                          : nullptr);
-  if (!(navigate_event_info_.IsEmpty() || navigate_event_info_.IsUndefined()))
+  if (!(navigate_event_info_.IsEmpty() || navigate_event_info_.IsUndefined())) {
     init->setInfo(navigate_event_info_);
+  } else if (!(goto_navigate_event_info_.IsEmpty() ||
+               goto_navigate_event_info_.IsUndefined()) &&
+             destination_item) {
+    if (goto_item_sequence_number_ == destination_item->ItemSequenceNumber())
+      init->setInfo(goto_navigate_event_info_);
+    goto_navigate_event_info_ = ScriptValue();
+  }
   auto* navigate_event = AppHistoryNavigateEvent::Create(
       GetSupplementable(), event_type_names::kNavigate, init);
   navigate_event->SetUrl(url);
@@ -465,21 +473,10 @@ bool AppHistory::DispatchNavigateEvent(const KURL& url,
     }
   }
 
-  auto* script_state =
-      ToScriptStateForMainWorld(GetSupplementable()->GetFrame());
-  ScriptState::Scope scope(script_state);
   if (!promise.IsEmpty() || (!navigate_event->defaultPrevented() &&
                              event_type != NavigateEventType::kCrossDocument)) {
-    if (promise.IsEmpty()) {
-      if (event_type == NavigateEventType::kAppHistorySameDocumentGoto) {
-        DCHECK(!goto_promise_resolver_);
-        goto_promise_resolver_ =
-            MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-        promise = goto_promise_resolver_->Promise();
-      } else {
-        promise = ScriptPromise::CastUndefined(script_state);
-      }
-    }
+    if (promise.IsEmpty())
+      promise = ScriptPromise::CastUndefined(script_state);
     if (navigate_method_call_promise_resolver_)
       did_react_to_promise_ = true;
     NavigateReaction::React(script_state, promise,
@@ -529,6 +526,7 @@ void AppHistory::Trace(Visitor* visitor) const {
   visitor->Trace(navigate_method_call_promise_resolver_);
   visitor->Trace(goto_promise_resolver_);
   visitor->Trace(navigate_event_info_);
+  visitor->Trace(goto_navigate_event_info_);
 }
 
 }  // namespace blink
