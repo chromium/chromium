@@ -2587,7 +2587,6 @@ test("base_perftests") {
     "hash/hash_perftest.cc",
     "message_loop/message_pump_perftest.cc",
     "observer_list_perftest.cc",
-    "rand_util_perftest.cc",
     "strings/string_util_perftest.cc",
     "task/job_perftest.cc",
     "task/sequence_manager/sequence_manager_perftest.cc",

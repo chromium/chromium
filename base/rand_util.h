@@ -12,7 +12,6 @@
 #include <string>
 
 #include "base/base_export.h"
-#include "base/gtest_prod_util.h"
 #include "build/build_config.h"
 
 namespace base {
@@ -73,70 +72,6 @@ void RandomShuffle(Itr first, Itr last) {
 #if defined(OS_POSIX)
 BASE_EXPORT int GetUrandomFD();
 #endif
-
-namespace partition_alloc {
-class RandomGenerator;
-}
-
-// Fast, insecure pseudo-random number generator.
-//
-// WARNING: This is not the generator you are looking for. This has significant
-// caveats:
-//   - It is non-cryptographic, so easy to miuse
-//   - It is neither fork() nor clone()-safe.
-//   - Synchronization is up to the client.
-//
-// Always prefer base::Rand*() above, unless you have a use case where its
-// overhead is too high, or system calls are disallowed.
-//
-// Performance: As of 2021, rough overhead on Linux on a desktop machine of
-// base::RandUint64() is ~800ns per call (it performs a system call). On Windows
-// it is lower. On the same machine, this generator's cost is ~2ns per call,
-// regardless of platform.
-//
-// This is different from |Rand*()| above as it is guaranteed to never make a
-// system call to generate a new number, except to seed it.  This should *never*
-// be used for cryptographic applications, and is not thread-safe.
-//
-// It must be seeded before use with |Seed()|, but the period is long enough to
-// not require re-seeding. Nevertheless, seeding the generator multiple times is
-// harmless.
-//
-// Uses the XorShift128+ generator under the hood.
-class BASE_EXPORT InsecureRandomGenerator {
- public:
-  // Sets the seed by calling RandUint64() to initialize internal state.
-  void Seed();
-  bool seeded() const { return seeded_; }
-
-  // Never use outside testing, not enough entropy.
-  void SeedForTesting(uint64_t seed);
-
-  uint32_t RandUint32();
-  uint64_t RandUint64();
-
- private:
-  InsecureRandomGenerator() = default;
-
-  bool seeded_ = false;
-  // State.
-  uint64_t a_ = 0, b_ = 0;
-
-  // Before adding a new friend class, make sure that the overhead of
-  // base::Rand*() is too high, using something more representative than a
-  // microbenchmark.
-  //
-  // PartitionAlloc allocations should not take more than 40-50ns per
-  // malloc()/free() pair, otherwise high-level benchmarks regress, and does not
-  // need a secure PRNG, as it's used for ASLR and zeroing some allocations at
-  // free() time.
-  friend class partition_alloc::RandomGenerator;
-
-  FRIEND_TEST_ALL_PREFIXES(RandUtilTest,
-                           InsecureRandomGeneratorProducesBothValuesOfAllBits);
-  FRIEND_TEST_ALL_PREFIXES(RandUtilTest, InsecureRandomGeneratorChiSquared);
-  FRIEND_TEST_ALL_PREFIXES(RandUtilPerfTest, InsecureRandomRandUint64);
-};
 
 }  // namespace base
 
