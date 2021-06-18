@@ -409,3 +409,5 @@ crbug.com/852089 [ win7 ] Pixel_WebGPU* [ Skip ]
 # Flaky on Pixel 4
 crbug.com/1215747 [ android android-pixel-4 skia-renderer-gl ] Pixel_OffscreenCanvas2DResizeOnWorker [ RetryOnFailure ]
 crbug.com/1215747 [ android android-pixel-4 skia-renderer-gl ] Pixel_OffscreenCanvasWebGLDefault [ RetryOnFailure ]
+# Failure on Nexus 5
+crbug.com/1221258 [ android android-nexus-5 skia-renderer-gl ] Pixel_OffscreenCanvas2DResizeOnWorker [ Failure ]
