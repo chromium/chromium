@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from page_sets.desktop_ui.custom_metric_utils import SetMetricNames
 from page_sets.desktop_ui.js_utils import MEASURE_JS_MEMORY
 from page_sets.desktop_ui.multitab_story import MultiTabStory
 from page_sets.desktop_ui.ui_devtools_utils import ClickOn
@@ -22,6 +23,20 @@ WEBUI_TAB_STRIP_BENCHMARK_UMA = [
     'WebUITabStrip.TabDataReceived',
 ]
 
+WEBUI_TAB_STRIP_CUSTOM_METRIC_NAMES = [
+    'TabStripUIHandler:HandleGetGroupVisualData',
+    'TabStripUIHandler:HandleGetLayout',
+    'TabStripUIHandler:HandleGetTabs',
+    'TabStripUIHandler:HandleGetThemeColors',
+    'TabStripUIHandler:HandleSetThumbnailTracked',
+    'TabStripUIHandler:HandleThumbnailUpdate',
+    'TabStripUIHandler:NotifyLayoutChanged',
+    'TabStripUIHandler:OnTabGroupChanged',
+    'TabStripUIHandler:OnTabStripModelChanged',
+    'TabStripUIHandler:TabChangedAt',
+    'TabStripUIHandler:TabGroupedStateChanged',
+]
+
 WEBUI_TAB_STRIP_URL = 'chrome://tab-strip/'
 
 
@@ -29,12 +44,14 @@ class WebUITabStripStory(MultiTabStory):
   """Base class for webui tab strip stories"""
 
   def RunPageInteractions(self, action_runner):
+    SetMetricNames(action_runner, WEBUI_TAB_STRIP_CUSTOM_METRIC_NAMES)
     ClickOn(self._devtools, 'WebUITabCounterButton')
     action_runner = Inspect(action_runner.tab.browser, WEBUI_TAB_STRIP_URL)
     action_runner.ExecuteJavaScript(MEASURE_JS_MEMORY %
-                                    'used_js_heap_size_begin')
+                                    'webui_tab_strip:used_js_heap_size_begin')
     self.InteractWithPage(action_runner)
-    action_runner.ExecuteJavaScript(MEASURE_JS_MEMORY % 'used_js_heap_size_end')
+    action_runner.ExecuteJavaScript(MEASURE_JS_MEMORY %
+                                    'webui_tab_strip:used_js_heap_size_end')
 
   def InteractWithPage(self, action_runner):
     self.ScrollTabs(action_runner)
@@ -42,7 +59,8 @@ class WebUITabStripStory(MultiTabStory):
 
   def ScrollTabs(self, action_runner):
     action_runner.Wait(1)
-    self.StartMeasuringFrameTime(action_runner, 'frame_time_on_scroll')
+    self.StartMeasuringFrameTime(action_runner,
+                                 'webui_tab_strip:frame_time_on_scroll')
     action_runner.ScrollElement(element_function=SCROLL_ELEMENT_FUNCTION,
                                 direction='left')
     self.StopMeasuringFrameTime(action_runner)

@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from page_sets.desktop_ui.custom_metric_utils import SetMetricNames
 from page_sets.desktop_ui.js_utils import MEASURE_JS_MEMORY
 from page_sets.desktop_ui.multitab_story import MultiTabStory
 from page_sets.desktop_ui.ui_devtools_utils import ClickOn
@@ -25,6 +26,11 @@ TAB_SEARCH_BENCHMARK_UMA = [
     'Tabs.TabSearch.WindowTimeToShowUncachedWebView',
 ]
 
+TAB_SEARCH_CUSTOM_METRIC_NAMES = [
+    'TabSearchPageHandler:GetProfileTabs',
+    'TabSearchPageHandler:TabChangedAt',
+]
+
 TAB_SEARCH_URL = 'chrome://tab-search.top-chrome/'
 
 
@@ -32,12 +38,14 @@ class TabSearchStory(MultiTabStory):
   """Base class for tab search stories"""
 
   def RunPageInteractions(self, action_runner):
+    SetMetricNames(action_runner, TAB_SEARCH_CUSTOM_METRIC_NAMES)
     self.ToggleTabSearch()
     action_runner = Inspect(action_runner.tab.browser, TAB_SEARCH_URL)
     action_runner.ExecuteJavaScript(MEASURE_JS_MEMORY %
-                                    'used_js_heap_size_begin')
+                                    'tab_search:used_js_heap_size_begin')
     self.InteractWithPage(action_runner)
-    action_runner.ExecuteJavaScript(MEASURE_JS_MEMORY % 'used_js_heap_size_end')
+    action_runner.ExecuteJavaScript(MEASURE_JS_MEMORY %
+                                    'tab_search:used_js_heap_size_end')
 
   def ToggleTabSearch(self, index=0):
     ClickOn(self._devtools, 'TabSearchButton', index)
@@ -69,7 +77,8 @@ class TabSearchStory(MultiTabStory):
 
   def ScrollTabs(self, action_runner):
     action_runner.Wait(1)
-    self.StartMeasuringFrameTime(action_runner, 'frame_time_on_scroll')
+    self.StartMeasuringFrameTime(action_runner,
+                                 'tab_search:frame_time_on_scroll')
     action_runner.ScrollElement(element_function=SCROLL_ELEMENT_FUNCTION)
     self.StopMeasuringFrameTime(action_runner)
     action_runner.Wait(1)
@@ -96,13 +105,14 @@ class TabSearchStory(MultiTabStory):
   def ScrollUpAndDown(self, action_runner):
     action_runner.Wait(1)
     self.StartMeasuringFrameTime(action_runner,
-                                 'frame_time_on_first_scroll_down')
+                                 'tab_search:frame_time_on_first_scroll_down')
     action_runner.ScrollElement(element_function=SCROLL_ELEMENT_FUNCTION)
-    self.StartMeasuringFrameTime(action_runner, 'frame_time_on_first_scroll_up')
+    self.StartMeasuringFrameTime(action_runner,
+                                 'tab_search:frame_time_on_first_scroll_up')
     action_runner.ScrollElement(element_function=SCROLL_ELEMENT_FUNCTION,
                                 direction='up')
     self.StartMeasuringFrameTime(action_runner,
-                                 'frame_time_on_second_scroll_down')
+                                 'tab_search:frame_time_on_second_scroll_down')
     action_runner.ScrollElement(element_function=SCROLL_ELEMENT_FUNCTION)
     self.StopMeasuringFrameTime(action_runner)
     action_runner.Wait(1)
@@ -242,7 +252,7 @@ class TabSearchStoryMeasureMemory2TabSearch(TabSearchStoryMeasureMemory):
     new_tab.Navigate(TAB_SEARCH_URL)
     new_tab.WaitForDocumentReadyStateToBeComplete()
     new_tab.action_runner.ExecuteJavaScript(MEASURE_JS_MEMORY %
-                                            'used_js_heap_size2')
+                                            'tab_search:used_js_heap_size2')
 
   def InteractWithPage(self, action_runner):
     action_runner.MeasureMemory(deterministic_mode=True)
@@ -260,7 +270,7 @@ class TabSearchStoryMeasureMemory3TabSearch(TabSearchStoryMeasureMemory):
       new_tab.Navigate(TAB_SEARCH_URL)
       new_tab.WaitForDocumentReadyStateToBeComplete()
       new_tab.action_runner.ExecuteJavaScript(
-          MEASURE_JS_MEMORY % ('used_js_heap_size' + str(i + 2)))
+          MEASURE_JS_MEMORY % ('tab_search:used_js_heap_size' + str(i + 2)))
 
   def InteractWithPage(self, action_runner):
     action_runner.MeasureMemory(deterministic_mode=True)

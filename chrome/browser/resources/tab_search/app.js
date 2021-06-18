@@ -384,14 +384,14 @@ export class TabSearchAppElement extends PolymerElement {
    * @private
    */
   onItemClose_(e) {
-    performance.mark('close_tab:benchmark_begin');
+    performance.mark('tab_search:close_tab:metric_begin');
     const tabId = e.model.item.tab.tabId;
     this.apiProxy_.closeTab(
         tabId, !!this.searchText_,
         /** @type {number} */ (e.model.index));
     this.announceA11y_(loadTimeData.getString('a11yTabClosed'));
     listenOnce(this.$.tabsList, 'iron-items-changed', () => {
-      performance.mark('close_tab:benchmark_end');
+      performance.mark('tab_search:close_tab:metric_end');
     });
   }
 

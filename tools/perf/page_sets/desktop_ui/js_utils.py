@@ -11,7 +11,7 @@ window.__webui_startMeasuringFrameTime = function(name) {
     const now = performance.now();
     if (window.__webui_lastAnimationFrameTime) {
       performance.mark(
-          `${name}:${now - window.__webui_lastAnimationFrameTime}:benchmark_value`);
+          `${name}:${now - window.__webui_lastAnimationFrameTime}:metric_value`);
     }
     window.__webui_lastAnimationFrameTime = now;
     if (window.__webui_onRequestAnimationFrame) {
@@ -43,5 +43,5 @@ window.__webui_stopMeasuringFrameTime()
 
 MEASURE_JS_MEMORY = '''
 performance.mark(
-    `%s:${performance.memory.usedJSHeapSize}:benchmark_value`);
+    `%s:${performance.memory.usedJSHeapSize}:metric_value`);
 '''

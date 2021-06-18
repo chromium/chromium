@@ -30,7 +30,7 @@ export function fuzzySearch(input, records, options) {
   // present in the input string.
   // To address these shortcomings we use the exactSearch implementation below
   // if the options indicate an exact matching algorithm should be used.
-  performance.mark('search_algorithm:benchmark_begin');
+  performance.mark('tab_search:search_algorithm:metric_begin');
   let result;
   if (options.threshold === 0.0) {
     result = exactSearch(input, records, options);
@@ -48,7 +48,7 @@ export function fuzzySearch(input, records, options) {
       return item;
     });
   }
-  performance.mark('search_algorithm:benchmark_end');
+  performance.mark('tab_search:search_algorithm:metric_end');
   return result;
 }
 

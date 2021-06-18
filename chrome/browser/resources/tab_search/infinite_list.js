@@ -302,8 +302,8 @@ export class InfiniteList extends PolymerElement {
     // keep adding items.
 
     if (initialDomItemCount !== desiredDomItemCount) {
-      performance.mark(`infinite_list_view_updated:${
-          performance.now() - startTime}:benchmark_value`);
+      performance.mark(`tab_search:infinite_list_view_updated:${
+          performance.now() - startTime}:metric_value`);
 
       return true;
     }
