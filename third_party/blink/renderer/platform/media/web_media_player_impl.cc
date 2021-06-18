@@ -1354,6 +1354,7 @@ void WebMediaPlayerImpl::Paint(cc::PaintCanvas* canvas,
   TRACE_EVENT0("media", "WebMediaPlayerImpl:paint");
 
   scoped_refptr<VideoFrame> video_frame = GetCurrentFrameFromCompositor();
+  last_frame_request_time_ = tick_clock_->NowTicks();
 
   gfx::Rect gfx_rect(rect);
   if (video_frame && video_frame->HasTextures()) {
@@ -1371,6 +1372,7 @@ void WebMediaPlayerImpl::Paint(cc::PaintCanvas* canvas,
 }
 
 scoped_refptr<VideoFrame> WebMediaPlayerImpl::GetCurrentFrame() {
+  last_frame_request_time_ = tick_clock_->NowTicks();
   return GetCurrentFrameFromCompositor();
 }
 
@@ -3542,6 +3544,10 @@ bool WebMediaPlayerImpl::IsBackgroundOptimizationCandidate() const {
   if (!HasVideo() || IsStreaming())
     return false;
 
+  // If frames are being captured, don't disable the track or pause the video.
+  if (IsVideoBeingCaptured())
+    return false;
+
   // Video-only players are always optimized (paused).
   // Don't check the keyframe distance and duration.
   if (!HasAudio() && HasVideo())
@@ -3888,6 +3894,12 @@ bool WebMediaPlayerImpl::HasUnmutedAudio() const {
   // not apply if a media was audible so the system states do not flicker
   // depending on whether the user muted the player.
   return HasAudio() && !client_->WasAlwaysMuted();
+}
+
+bool WebMediaPlayerImpl::IsVideoBeingCaptured() const {
+  // 5 seconds chosen arbitrarily since most videos are never captured.
+  return tick_clock_->NowTicks() - last_frame_request_time_ <
+         base::TimeDelta::FromSeconds(5);
 }
 
 }  // namespace media

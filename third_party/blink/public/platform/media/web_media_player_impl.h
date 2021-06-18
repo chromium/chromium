@@ -625,6 +625,9 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerImpl
   // allowed to play it.
   bool HasUnmutedAudio() const;
 
+  // Returns true if the video frame from this player are being captured.
+  bool IsVideoBeingCaptured() const;
+
   blink::WebLocalFrame* const frame_;
 
   blink::WebMediaPlayer::NetworkState network_state_ =
@@ -1029,6 +1032,10 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerImpl
   // Created while playing, deleted otherwise.
   std::unique_ptr<SmoothnessHelper> smoothness_helper_;
   absl::optional<int> last_reported_fps_;
+
+  // Time of the last call to GetCurrentFrameFromCompositor(). Used to prevent
+  // background optimizations from being applied when capturing is active.
+  base::TimeTicks last_frame_request_time_;
 
   base::WeakPtr<WebMediaPlayerImpl> weak_this_;
   base::WeakPtrFactory<WebMediaPlayerImpl> weak_factory_{this};

@@ -2191,7 +2191,7 @@ TEST_F(WebMediaPlayerImplTest, DISABLED_DemuxerOverride) {
 class WebMediaPlayerImplBackgroundBehaviorTest
     : public WebMediaPlayerImplTest,
       public ::testing::WithParamInterface<
-          std::tuple<bool, int, int, bool, bool, bool, bool, bool>> {
+          std::tuple<bool, int, int, bool, bool, bool, bool, bool, bool>> {
  public:
   // Indices of the tuple parameters.
   static const int kIsMediaSuspendEnabled = 0;
@@ -2202,6 +2202,7 @@ class WebMediaPlayerImplBackgroundBehaviorTest
   static const int kIsBackgroundPauseEnabled = 5;
   static const int kIsPictureInPictureEnabled = 6;
   static const int kIsBackgroundVideoPlaybackEnabled = 7;
+  static const int kIsVideoBeingCaptured = 8;
 
   void SetUp() override {
     WebMediaPlayerImplTest::SetUp();
@@ -2248,6 +2249,9 @@ class WebMediaPlayerImplBackgroundBehaviorTest
       wmpi_->OnSurfaceIdUpdated(surface_id_);
     }
 
+    if (IsVideoBeingCaptured())
+      wmpi_->GetCurrentFrame();
+
     BackgroundPlayer();
   }
 
@@ -2275,6 +2279,10 @@ class WebMediaPlayerImplBackgroundBehaviorTest
 
   bool IsBackgroundVideoPlaybackEnabled() {
     return std::get<kIsBackgroundVideoPlaybackEnabled>(GetParam());
+  }
+
+  bool IsVideoBeingCaptured() {
+    return std::get<kIsVideoBeingCaptured>(GetParam());
   }
 
   int GetDurationSec() const { return std::get<kDurationSec>(GetParam()); }
@@ -2328,7 +2336,8 @@ TEST_P(WebMediaPlayerImplBackgroundBehaviorTest, VideoOnly) {
   EXPECT_FALSE(ShouldDisableVideoWhenHidden());
 
   // There's no optimization criteria for video only in Picture-in-Picture.
-  bool matches_requirements = !IsPictureInPictureOn();
+  bool matches_requirements =
+      !IsPictureInPictureOn() && !IsVideoBeingCaptured();
   EXPECT_EQ(matches_requirements, IsBackgroundOptimizationCandidate());
 
   // Video is always paused when suspension is on and only if matches the
@@ -2344,7 +2353,7 @@ TEST_P(WebMediaPlayerImplBackgroundBehaviorTest, AudioVideo) {
 
   // Optimization requirements are the same for all platforms.
   bool matches_requirements =
-      !IsPictureInPictureOn() &&
+      !IsPictureInPictureOn() && !IsVideoBeingCaptured() &&
       ((GetDurationSec() < GetMaxKeyframeDistanceSec()) ||
        (GetAverageKeyframeDistanceSec() < GetMaxKeyframeDistanceSec()));
 
@@ -2400,6 +2409,7 @@ INSTANTIATE_TEST_SUITE_P(
                     base::Time::kMillisecondsPerSecond -
                 1,
             100),
+        ::testing::Bool(),
         ::testing::Bool(),
         ::testing::Bool(),
         ::testing::Bool(),
