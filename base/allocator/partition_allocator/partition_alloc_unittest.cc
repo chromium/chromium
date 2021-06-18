@@ -3109,7 +3109,7 @@ TEST_F(PartitionAllocTest, ReservationOffset) {
 
   // For not yet allocated memory, offset should be kOffsetTagNotAllocated.
   EXPECT_EQ(kOffsetTagNotAllocated,
-            *ReservationOffsetPointer(ptr_as_uintptr + kSuperPageSize));
+            *ReservationOffsetPointer(ptr_as_uintptr + 100 * kSuperPageSize));
 
   // For direct-map,
   size_t large_size = kSuperPageSize * 5 + PartitionPageSize() * .5f;
