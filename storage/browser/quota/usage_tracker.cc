@@ -29,14 +29,14 @@ struct UsageTracker::AccumulateInfo {
 };
 
 UsageTracker::UsageTracker(
-    const base::flat_map<QuotaClient*, QuotaClientType>& client_types,
+    const base::flat_map<mojom::QuotaClient*, QuotaClientType>& client_types,
     blink::mojom::StorageType type,
     scoped_refptr<SpecialStoragePolicy> special_storage_policy)
     : type_(type) {
   size_t client_count = 0;
 
   for (const auto& client_and_type : client_types) {
-    QuotaClient* client = client_and_type.first;
+    mojom::QuotaClient* client = client_and_type.first;
     QuotaClientType client_type = client_and_type.second;
     client_tracker_map_[client_type].push_back(
         std::make_unique<ClientUsageTracker>(this, client, type,

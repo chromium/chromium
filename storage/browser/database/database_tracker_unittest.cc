@@ -14,7 +14,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/sequenced_task_runner.h"
 #include "base/test/bind.h"
@@ -103,13 +102,6 @@ class TestQuotaManagerProxy : public QuotaManagerProxy {
       : QuotaManagerProxy(
             /*quota_manager_impl=*/nullptr,
             base::SequencedTaskRunnerHandle::Get()) {}
-
-  void RegisterLegacyClient(
-      scoped_refptr<QuotaClient> client,
-      QuotaClientType client_type,
-      const std::vector<blink::mojom::StorageType>& storage_types) override {
-    NOTREACHED();
-  }
 
   void RegisterClient(
       mojo::PendingRemote<mojom::QuotaClient> client,

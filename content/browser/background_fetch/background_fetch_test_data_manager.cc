@@ -35,10 +35,6 @@ class MockBGFQuotaManagerProxy : public storage::MockQuotaManagerProxy {
       mojo::PendingRemote<storage::mojom::QuotaClient> client,
       storage::QuotaClientType client_type,
       const std::vector<blink::mojom::StorageType>& storage_types) override {}
-  void RegisterLegacyClient(
-      scoped_refptr<storage::QuotaClient> client,
-      storage::QuotaClientType client_type,
-      const std::vector<blink::mojom::StorageType>& storage_types) override {}
 
   void GetUsageAndQuota(
       const url::Origin& origin,

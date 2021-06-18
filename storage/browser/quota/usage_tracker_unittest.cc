@@ -15,6 +15,7 @@
 #include "base/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/usage_tracker.h"
 #include "storage/browser/test/mock_special_storage_policy.h"
@@ -41,7 +42,7 @@ void DidGetGlobalUsage(bool* done,
 
 // TODO(crbug.com/1215208): Migrate to use StorageKey when the QuotaClient is
 // migrated to use StorageKey instead of Origin.
-class UsageTrackerTestQuotaClient : public QuotaClient {
+class UsageTrackerTestQuotaClient : public mojom::QuotaClient {
  public:
   UsageTrackerTestQuotaClient() = default;
 
@@ -107,8 +108,6 @@ class UsageTrackerTestQuotaClient : public QuotaClient {
   }
 
  private:
-  ~UsageTrackerTestQuotaClient() override = default;
-
   std::map<url::Origin, int64_t> origin_usage_map_;
 
   DISALLOW_COPY_AND_ASSIGN(UsageTrackerTestQuotaClient);
@@ -120,7 +119,7 @@ class UsageTrackerTest : public testing::Test {
  public:
   UsageTrackerTest()
       : storage_policy_(base::MakeRefCounted<MockSpecialStoragePolicy>()),
-        quota_client_(base::MakeRefCounted<UsageTrackerTestQuotaClient>()),
+        quota_client_(std::make_unique<UsageTrackerTestQuotaClient>()),
         usage_tracker_(GetQuotaClientMap(),
                        StorageType::kTemporary,
                        storage_policy_.get()) {}
@@ -201,8 +200,8 @@ class UsageTrackerTest : public testing::Test {
   }
 
  private:
-  base::flat_map<QuotaClient*, QuotaClientType> GetQuotaClientMap() {
-    base::flat_map<QuotaClient*, QuotaClientType> client_map;
+  base::flat_map<mojom::QuotaClient*, QuotaClientType> GetQuotaClientMap() {
+    base::flat_map<mojom::QuotaClient*, QuotaClientType> client_map;
     client_map.insert(
         std::make_pair(quota_client_.get(), QuotaClientType::kFileSystem));
     return client_map;
@@ -211,7 +210,7 @@ class UsageTrackerTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
 
   scoped_refptr<MockSpecialStoragePolicy> storage_policy_;
-  scoped_refptr<UsageTrackerTestQuotaClient> quota_client_;
+  std::unique_ptr<UsageTrackerTestQuotaClient> quota_client_;
   UsageTracker usage_tracker_;
 
   DISALLOW_COPY_AND_ASSIGN(UsageTrackerTest);

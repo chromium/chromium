@@ -18,8 +18,8 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
+#include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "storage/browser/quota/quota_callbacks.h"
-#include "storage/browser/quota/quota_client.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_task.h"
 #include "storage/browser/quota/special_storage_policy.h"
@@ -42,11 +42,10 @@ class ClientUsageTracker;
 class COMPONENT_EXPORT(STORAGE_BROWSER) UsageTracker
     : public QuotaTaskObserver {
  public:
-  // TODO(crbug.com/1163009): Switch the map key type in `client_types` to
-  //                          mojom::QuotaClient* after all QuotaClients have
-  //                          been mojofied.
+  // The caller must ensure that all mojo::QuotaClient instances outlive this
+  // instance.
   UsageTracker(
-      const base::flat_map<QuotaClient*, QuotaClientType>& client_types,
+      const base::flat_map<mojom::QuotaClient*, QuotaClientType>& client_types,
       blink::mojom::StorageType type,
       scoped_refptr<SpecialStoragePolicy> special_storage_policy);
 

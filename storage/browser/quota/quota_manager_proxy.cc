@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -19,7 +20,6 @@
 #include "base/time/time.h"
 #include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "storage/browser/quota/quota_client.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_manager_impl.h"
 #include "storage/browser/quota/quota_override_handle.h"
@@ -52,25 +52,6 @@ QuotaManagerProxy::QuotaManagerProxy(
   DCHECK(quota_manager_impl_task_runner_.get());
 
   DETACH_FROM_SEQUENCE(quota_manager_impl_sequence_checker_);
-}
-
-void QuotaManagerProxy::RegisterLegacyClient(
-    scoped_refptr<QuotaClient> client,
-    QuotaClientType client_type,
-    const std::vector<blink::mojom::StorageType>& storage_types) {
-  if (!quota_manager_impl_task_runner_->RunsTasksInCurrentSequence()) {
-    quota_manager_impl_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&QuotaManagerProxy::RegisterLegacyClient, this,
-                       std::move(client), client_type, storage_types));
-    return;
-  }
-
-  DCHECK_CALLED_ON_VALID_SEQUENCE(quota_manager_impl_sequence_checker_);
-  if (quota_manager_impl_) {
-    quota_manager_impl_->RegisterLegacyClient(std::move(client), client_type,
-                                              storage_types);
-  }
 }
 
 void QuotaManagerProxy::RegisterClient(

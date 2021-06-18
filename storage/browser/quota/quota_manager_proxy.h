@@ -41,7 +41,6 @@ class Origin;
 
 namespace storage {
 
-class QuotaClient;
 class QuotaOverrideHandle;
 
 // Thread-safe proxy for QuotaManagerImpl.
@@ -65,13 +64,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
 
   QuotaManagerProxy(const QuotaManagerProxy&) = delete;
   QuotaManagerProxy& operator=(const QuotaManagerProxy&) = delete;
-
-  // TODO(crbug.com/1163009): Remove this method after all QuotaClients have
-  //                          been mojofied.
-  virtual void RegisterLegacyClient(
-      scoped_refptr<QuotaClient> client,
-      QuotaClientType client_type,
-      const std::vector<blink::mojom::StorageType>& storage_types);
 
   virtual void RegisterClient(
       mojo::PendingRemote<mojom::QuotaClient> client,

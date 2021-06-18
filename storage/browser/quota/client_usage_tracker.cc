@@ -77,10 +77,10 @@ struct ClientUsageTracker::AccumulateInfo {
 
 ClientUsageTracker::ClientUsageTracker(
     UsageTracker* tracker,
-    scoped_refptr<QuotaClient> client,
+    mojom::QuotaClient* client,
     blink::mojom::StorageType type,
     scoped_refptr<SpecialStoragePolicy> special_storage_policy)
-    : client_(std::move(client)),
+    : client_(client),
       type_(type),
       global_limited_usage_(0),
       global_unlimited_usage_(0),

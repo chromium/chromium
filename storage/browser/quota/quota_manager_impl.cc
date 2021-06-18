@@ -39,7 +39,6 @@
 #include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "storage/browser/quota/client_usage_tracker.h"
-#include "storage/browser/quota/mojo_quota_client_wrapper.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_features.h"
 #include "storage/browser/quota/quota_macros.h"
@@ -591,7 +590,7 @@ class QuotaManagerImpl::OriginDataDeleter : public QuotaTask {
     remaining_clients_ = manager()->client_types_[type_].size();
 
     for (const auto& client_and_type : manager()->client_types_[type_]) {
-      QuotaClient* client = client_and_type.first;
+      mojom::QuotaClient* client = client_and_type.first;
       QuotaClientType client_type = client_and_type.second;
       if (quota_client_types_.contains(client_type)) {
         static int tracing_id = 0;
@@ -781,7 +780,7 @@ class QuotaManagerImpl::StorageCleanupHelper : public QuotaTask {
     // This may synchronously trigger |callback_| at the end of the for loop,
     // make sure we do nothing after this block.
     for (const auto& client_and_type : manager()->client_types_[type_]) {
-      QuotaClient* client = client_and_type.first;
+      mojom::QuotaClient* client = client_and_type.first;
       QuotaClientType client_type = client_and_type.second;
       if (quota_client_types_.contains(client_type)) {
         client->PerformStorageCleanup(type_, barrier);
@@ -1409,30 +1408,8 @@ void QuotaManagerImpl::RegisterClient(
   clients_for_ownership_.emplace_back(std::move(client));
   mojom::QuotaClient* client_ptr = clients_for_ownership_.back().get();
 
-  // TODO(crbug.com/1163009): Remove this block after all QuotaClients have been
-  //                          mojofied.
-  legacy_clients_for_ownership_.push_back(
-      base::MakeRefCounted<MojoQuotaClientWrapper>(client_ptr));
-  QuotaClient* legacy_client_ptr = legacy_clients_for_ownership_.back().get();
-
-  // TODO(crbug.com/1163009): Use client_ptr instead of legacy_client_ptr after
-  //                          all QuotaClients have been mojofied.
   for (blink::mojom::StorageType storage_type : storage_types)
-    client_types_[storage_type].insert({legacy_client_ptr, client_type});
-}
-
-void QuotaManagerImpl::RegisterLegacyClient(
-    scoped_refptr<QuotaClient> client,
-    QuotaClientType client_type,
-    const std::vector<blink::mojom::StorageType>& storage_types) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!database_.get())
-      << "All clients must be registered before the database is initialized";
-  DCHECK(client.get());
-
-  for (blink::mojom::StorageType storage_type : storage_types)
-    client_types_[storage_type].insert({client.get(), client_type});
-  legacy_clients_for_ownership_.push_back(std::move(client));
+    client_types_[storage_type].insert({client_ptr, client_type});
 }
 
 UsageTracker* QuotaManagerImpl::GetUsageTracker(StorageType type) const {

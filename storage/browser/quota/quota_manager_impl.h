@@ -33,7 +33,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "storage/browser/quota/quota_callbacks.h"
-#include "storage/browser/quota/quota_client.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_database.h"
 #include "storage/browser/quota/quota_settings.h"
@@ -418,15 +417,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
       QuotaClientType client_type,
       const std::vector<blink::mojom::StorageType>& storage_types);
 
-  // Legacy overload for QuotaClients that have not been mojofied yet.
-  //
-  // TODO(crbug.com/1163009): Remove this overload after all QuotaClients have
-  //                          been mojofied.
-  void RegisterLegacyClient(
-      scoped_refptr<QuotaClient> client,
-      QuotaClientType client_type,
-      const std::vector<blink::mojom::StorageType>& storage_types);
-
   UsageTracker* GetUsageTracker(blink::mojom::StorageType type) const;
 
   // Extract cached origins list from the usage tracker.
@@ -575,22 +565,12 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   //                          using a mojo::RemoteSet here.
   std::vector<mojo::Remote<mojom::QuotaClient>> clients_for_ownership_;
 
-  // Owns the QuotaClient instances registered by RegisterLegacyClient() and
-  // their wrappers.
-  //
-  // TODO(crbug.com/1163009): Remove this member after all QuotaClients have
-  //                          been mojofied.
-  std::vector<scoped_refptr<QuotaClient>> legacy_clients_for_ownership_;
-
   // Maps QuotaClient instances to client types.
   //
   // The QuotaClient instances pointed to by the map keys are guaranteed to be
   // alive, because they are owned by `legacy_clients_for_ownership_`.
-  //
-  // TODO(crbug.com/1163009): Replace the map key with mojom::QuotaClient* after
-  //                          all QuotaClients have been mojofied.
   base::flat_map<blink::mojom::StorageType,
-                 base::flat_map<QuotaClient*, QuotaClientType>>
+                 base::flat_map<mojom::QuotaClient*, QuotaClientType>>
       client_types_;
 
   std::unique_ptr<UsageTracker> temporary_usage_tracker_;

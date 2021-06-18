@@ -7,6 +7,9 @@
 
 #include <stdint.h>
 
+#include <vector>
+
+#include "base/containers/flat_set.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequenced_task_runner.h"
@@ -14,12 +17,11 @@
 #include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "storage/browser/quota/quota_client.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/mock_quota_manager.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
-#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace storage {
 
@@ -37,27 +39,6 @@ class MockQuotaManagerProxy : public QuotaManagerProxy {
       mojo::PendingRemote<mojom::QuotaClient> client,
       QuotaClientType client_type,
       const std::vector<blink::mojom::StorageType>& storage_types) override;
-
-  // TODO(crbug.com/1163009): Remove these methods after all QuotaClients have
-  //                          been mojofied.
-  void RegisterLegacyClient(
-      scoped_refptr<QuotaClient> client,
-      QuotaClientType client_type,
-      const std::vector<blink::mojom::StorageType>& storage_types) override;
-  // Breaks the reference cycle between MockQuotaManagerProxy and QuotaClients.
-  //
-  // Legacy QuotaClient API implementations (indirectly) hold a reference to
-  // QuotaManagerProxy. For example FileSystemQuotaClient holds a reference to
-  // FileSystemContext, which holds a reference to QuotaManagerProxy.
-  //
-  // When the QuotaManagerProxy is a MockQuotaManagerProxy, a reference cycle is
-  // created, because MockQuotaManagerProxy holds references to the legacy
-  // QuotaClient implementations.
-  //
-  // This is not a problem in production code, because the "real" QuotaManager
-  // holds references to legacy QuotaClients, and the "real" QuotaManagerProxy
-  // does not hold a reference to QuotaManager.
-  void ResetRegisteredLegacyClient();
 
   // We don't mock them.
   void NotifyOriginInUse(const url::Origin& origin) override;
@@ -116,10 +97,6 @@ class MockQuotaManagerProxy : public QuotaManagerProxy {
   base::flat_set<url::Origin> origins_in_use_;
 
   mojo::Remote<mojom::QuotaClient> registered_client_;
-
-  // TODO(crbug.com/1163009): Remove this member after all QuotaClients have
-  //                          been mojofied.
-  scoped_refptr<QuotaClient> registered_legacy_client_;
 
   DISALLOW_COPY_AND_ASSIGN(MockQuotaManagerProxy);
 };

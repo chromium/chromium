@@ -15,8 +15,8 @@
 
 #include "base/callback.h"
 #include "base/sequence_checker.h"
+#include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "storage/browser/quota/quota_callbacks.h"
-#include "storage/browser/quota/quota_client.h"
 #include "storage/browser/quota/quota_task.h"
 #include "storage/browser/quota/special_storage_policy.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
@@ -51,9 +51,10 @@ class ClientUsageTracker : public SpecialStoragePolicy::Observer {
   using StorageKeySetByHost =
       std::map<std::string, std::set<blink::StorageKey>>;
 
+  // The caller must ensure that `client` outlives this instance.
   ClientUsageTracker(
       UsageTracker* tracker,
-      scoped_refptr<QuotaClient> client,
+      mojom::QuotaClient* client,
       blink::mojom::StorageType type,
       scoped_refptr<SpecialStoragePolicy> special_storage_policy);
 
@@ -121,7 +122,7 @@ class ClientUsageTracker : public SpecialStoragePolicy::Observer {
 
   bool IsStorageUnlimited(const blink::StorageKey& storage_key) const;
 
-  scoped_refptr<QuotaClient> client_;
+  mojom::QuotaClient* client_;
   const blink::mojom::StorageType type_;
 
   int64_t global_limited_usage_;

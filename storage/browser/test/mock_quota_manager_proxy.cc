@@ -30,18 +30,6 @@ void MockQuotaManagerProxy::RegisterClient(
   registered_client_.Bind(std::move(client));
 }
 
-void MockQuotaManagerProxy::RegisterLegacyClient(
-    scoped_refptr<QuotaClient> client,
-    QuotaClientType client_type,
-    const std::vector<blink::mojom::StorageType>& storage_types) {
-  DCHECK(!registered_client_);
-  registered_legacy_client_ = std::move(client);
-}
-
-void MockQuotaManagerProxy::ResetRegisteredLegacyClient() {
-  registered_legacy_client_ = nullptr;
-}
-
 void MockQuotaManagerProxy::GetUsageAndQuota(
     const url::Origin& origin,
     blink::mojom::StorageType type,
