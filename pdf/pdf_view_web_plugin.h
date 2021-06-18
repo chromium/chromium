@@ -65,6 +65,16 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
     virtual void SetReferrerForRequest(blink::WebURLRequest& request,
                                        const blink::WebURL& referrer_url) = 0;
 
+    // Calls underlying WebLocalFrame::Alert().
+    virtual void Alert(const blink::WebString& message) = 0;
+
+    // Calls underlying WebLocalFrame::Confirm().
+    virtual bool Confirm(const blink::WebString& message) = 0;
+
+    // Calls underlying WebLocalFrame::Prompt().
+    virtual blink::WebString Prompt(const blink::WebString& message,
+                                    const blink::WebString& default_value) = 0;
+
     // Calls underlying WebLocalFrame::TextSelectionChanged().
     virtual void TextSelectionChanged(const blink::WebString& selection_text,
                                       uint32_t offset,

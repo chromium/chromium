@@ -99,6 +99,15 @@ class FakeContainerWrapper final : public PdfViewWebPlugin::ContainerWrapper {
               (blink::WebURLRequest&, const blink::WebURL&),
               (override));
 
+  MOCK_METHOD(void, Alert, (const blink::WebString&), (override));
+
+  MOCK_METHOD(bool, Confirm, (const blink::WebString&), (override));
+
+  MOCK_METHOD(blink::WebString,
+              Prompt,
+              (const blink::WebString&, const blink::WebString&),
+              (override));
+
   MOCK_METHOD(void,
               TextSelectionChanged,
               (const blink::WebString&, uint32_t, const gfx::Range&),

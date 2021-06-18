@@ -141,6 +141,19 @@ class BlinkContainerWrapper final : public PdfViewWebPlugin::ContainerWrapper {
     GetFrame()->SetReferrerForRequest(request, referrer_url);
   }
 
+  void Alert(const blink::WebString& message) override {
+    GetFrame()->Alert(message);
+  }
+
+  bool Confirm(const blink::WebString& message) override {
+    return GetFrame()->Confirm(message);
+  }
+
+  blink::WebString Prompt(const blink::WebString& message,
+                          const blink::WebString& default_value) override {
+    return GetFrame()->Prompt(message, default_value);
+  }
+
   void TextSelectionChanged(const blink::WebString& selection_text,
                             uint32_t offset,
                             const gfx::Range& range) override {
@@ -449,15 +462,20 @@ void PdfViewWebPlugin::NotifyNumberOfFindResultsChanged(int total,
 void PdfViewWebPlugin::NotifySelectedFindResultChanged(int current_find_index) {
 }
 
-void PdfViewWebPlugin::Alert(const std::string& message) {}
+void PdfViewWebPlugin::Alert(const std::string& message) {
+  container_wrapper_->Alert(blink::WebString::FromUTF8(message));
+}
 
 bool PdfViewWebPlugin::Confirm(const std::string& message) {
-  return false;
+  return container_wrapper_->Confirm(blink::WebString::FromUTF8(message));
 }
 
 std::string PdfViewWebPlugin::Prompt(const std::string& question,
                                      const std::string& default_answer) {
-  return "";
+  return container_wrapper_
+      ->Prompt(blink::WebString::FromUTF8(question),
+               blink::WebString::FromUTF8(default_answer))
+      .Utf8();
 }
 
 void PdfViewWebPlugin::Print() {}
