@@ -133,7 +133,7 @@ uint8_t* PaintOpReader::CopyScratchSpace(size_t bytes) {
 }
 
 template <typename T>
-void PaintOpReader::ReadFlattenable(sk_sp<T>* val) {
+void PaintOpReader::ReadFlattenable(sk_sp<T>* val, Factory<T> factory) {
   size_t bytes = 0;
   ReadSize(&bytes);
   if (remaining_bytes_ < bytes)
@@ -144,9 +144,7 @@ void PaintOpReader::ReadFlattenable(sk_sp<T>* val) {
     return;
 
   auto* scratch = CopyScratchSpace(bytes);
-  val->reset(static_cast<T*>(
-      SkFlattenable::Deserialize(T::GetFlattenableType(), scratch, bytes)
-          .release()));
+  val->reset(factory(scratch, bytes, nullptr).release());
   if (!val)
     SetInvalid();
 
@@ -263,9 +261,9 @@ void PaintOpReader::Read(PaintFlags* flags) {
 
   ReadSimple(&flags->bitfields_uint_);
 
-  ReadFlattenable(&flags->path_effect_);
-  ReadFlattenable(&flags->mask_filter_);
-  ReadFlattenable(&flags->color_filter_);
+  ReadFlattenable(&flags->path_effect_, SkPathEffect::Deserialize);
+  ReadFlattenable(&flags->mask_filter_, SkMaskFilter::Deserialize);
+  ReadFlattenable(&flags->color_filter_, SkColorFilter::Deserialize);
 
   if (enable_security_constraints_) {
     size_t bytes = 0;
@@ -275,7 +273,7 @@ void PaintOpReader::Read(PaintFlags* flags) {
       return;
     }
   } else {
-    ReadFlattenable(&flags->draw_looper_);
+    ReadFlattenable(&flags->draw_looper_, SkDrawLooper::Deserialize);
   }
 
   Read(&flags->image_filter_);
@@ -859,7 +857,7 @@ void PaintOpReader::ReadColorFilterPaintFilter(
   sk_sp<SkColorFilter> color_filter;
   sk_sp<PaintFilter> input;
 
-  ReadFlattenable(&color_filter);
+  ReadFlattenable(&color_filter, SkColorFilter::Deserialize);
   Read(&input);
   if (!color_filter)
     SetInvalid();

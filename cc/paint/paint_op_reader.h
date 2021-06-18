@@ -130,7 +130,12 @@ class CC_PAINT_EXPORT PaintOpReader {
   void ReadSimple(T* val);
 
   template <typename T>
-  void ReadFlattenable(sk_sp<T>* val);
+  using Factory = sk_sp<T> (*)(const void* data,
+                               size_t size,
+                               const SkDeserialProcs* procs);
+
+  template <typename T>
+  void ReadFlattenable(sk_sp<T>* val, Factory<T> factory);
 
   template <typename Enum, Enum kMaxValue = Enum::kMaxValue>
   void ReadEnum(Enum* enum_value) {
