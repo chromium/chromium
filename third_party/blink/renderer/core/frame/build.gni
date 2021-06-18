@@ -152,6 +152,7 @@ blink_core_sources_frame = [
   "remote_dom_window.h",
   "remote_frame.cc",
   "remote_frame.h",
+  "remote_frame_client.h",
   "remote_frame_client_impl.cc",
   "remote_frame_client_impl.h",
   "child_frame_compositing_helper.cc",

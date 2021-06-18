@@ -6,22 +6,23 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_REMOTE_FRAME_CLIENT_IMPL_H_
 
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink-forward.h"
-#include "third_party/blink/renderer/core/frame/frame_client.h"
+#include "third_party/blink/renderer/core/frame/remote_frame_client.h"
 
 namespace blink {
 class WebRemoteFrameImpl;
 
-class RemoteFrameClientImpl final : public FrameClient {
+class RemoteFrameClientImpl final : public RemoteFrameClient {
  public:
   explicit RemoteFrameClientImpl(WebRemoteFrameImpl*);
 
   void Trace(Visitor*) const override;
 
   // FrameClient overrides:
-  bool IsRemoteFrameClient() const override;
   bool InShadowTree() const override;
   void Detached(FrameDetachType) override;
+
   unsigned BackForwardLength() override;
+  AssociatedInterfaceProvider* GetRemoteAssociatedInterfaces() override;
 
   WebRemoteFrameImpl* GetWebFrame() const { return web_frame_; }
 

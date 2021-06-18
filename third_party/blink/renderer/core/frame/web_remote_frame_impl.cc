@@ -315,10 +315,11 @@ void WebRemoteFrameImpl::InitializeFrameVisualProperties(
 }
 
 WebRemoteFrameImpl* WebRemoteFrameImpl::FromFrame(RemoteFrame& frame) {
-  FrameClient* client = frame.Client();
-  if (!client)
+  if (!frame.Client())
     return nullptr;
-  return static_cast<RemoteFrameClientImpl*>(client)->GetWebFrame();
+  RemoteFrameClientImpl* client =
+      static_cast<RemoteFrameClientImpl*>(frame.Client());
+  return client->GetWebFrame();
 }
 
 void WebRemoteFrameImpl::SetReplicatedOrigin(

@@ -28,11 +28,11 @@
 #include "third_party/blink/renderer/core/events/message_event.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
 #include "third_party/blink/renderer/core/frame/child_frame_compositing_helper.h"
-#include "third_party/blink/renderer/core/frame/frame_client.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/remote_dom_window.h"
+#include "third_party/blink/renderer/core/frame/remote_frame_client.h"
 #include "third_party/blink/renderer/core/frame/remote_frame_owner.h"
 #include "third_party/blink/renderer/core/frame/remote_frame_view.h"
 #include "third_party/blink/renderer/core/frame/user_activation.h"
@@ -96,7 +96,7 @@ RemoteFrame* RemoteFrame::FromFrameToken(const RemoteFrameToken& frame_token) {
 }
 
 RemoteFrame::RemoteFrame(
-    FrameClient* client,
+    RemoteFrameClient* client,
     Page& page,
     FrameOwner* owner,
     Frame* parent,
@@ -129,8 +129,6 @@ RemoteFrame::RemoteFrame(
       task_runner_(page.GetPageScheduler()
                        ->GetAgentGroupScheduler()
                        .DefaultTaskRunner()) {
-  DCHECK(client->IsRemoteFrameClient());
-
   // TODO(crbug.com/1094850): Remove this check once the renderer is correctly
   // handling errors during the creation of HTML portal elements, which would
   // otherwise cause RemoteFrame() being created with empty frame tokens.
@@ -508,6 +506,10 @@ void RemoteFrame::ForwardPostMessage(
 
 mojom::blink::RemoteFrameHost& RemoteFrame::GetRemoteFrameHostRemote() {
   return *remote_frame_host_remote_.get();
+}
+
+RemoteFrameClient* RemoteFrame::Client() const {
+  return static_cast<RemoteFrameClient*>(Frame::Client());
 }
 
 void RemoteFrame::DidChangeVisibleToHitTesting() {
