@@ -11,6 +11,8 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.chrome.browser.toolbar.ButtonData.ButtonSpec;
@@ -19,8 +21,13 @@ import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
 import org.chromium.chrome.browser.toolbar.ButtonDataProvider.ButtonDataObserver;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures.AdaptiveToolbarButtonVariant;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
 /** Meta {@link ButtonDataProvider} which chooses the optional button variant that will be shown. */
-public class AdaptiveToolbarButtonController implements ButtonDataProvider, ButtonDataObserver {
+public class AdaptiveToolbarButtonController
+        implements ButtonDataProvider, ButtonDataObserver, NativeInitObserver {
     private ObserverList<ButtonDataObserver> mObservers = new ObserverList<>();
     @Nullable
     private ButtonDataProvider mSingleProvider;
@@ -32,11 +39,26 @@ public class AdaptiveToolbarButtonController implements ButtonDataProvider, Butt
     @Nullable
     private ButtonSpec mOriginalButtonSpec;
 
+    private final ActivityLifecycleDispatcher mLifecycleDispatcher;
+
+    // Maps from {@link AdaptiveToolbarButtonVariant} to {@link ButtonDataProvider}.
+    private Map<Integer, ButtonDataProvider> mButtonDataProviderMap =
+            new HashMap<Integer, ButtonDataProvider>();
+
     /**
      * {@link ButtonData} instance returned by {@link AdaptiveToolbarButtonController#get(Tab)}
      * when wrapping {@code mOriginalButtonSpec}.
      */
     private final ButtonDataImpl mButtonData = new ButtonDataImpl();
+
+    /**
+     * Constructs the {@link AdaptiveToolbarButtonController}.
+     * @param lifecycleDispatcher notifies about native initialization
+     */
+    public AdaptiveToolbarButtonController(ActivityLifecycleDispatcher lifecycleDispatcher) {
+        mLifecycleDispatcher = lifecycleDispatcher;
+        mLifecycleDispatcher.register(this);
+    }
 
     /**
      * Adds an instance of a button variant to the collection of buttons managed by {@code
@@ -49,8 +71,6 @@ public class AdaptiveToolbarButtonController implements ButtonDataProvider, Butt
      */
     public void addButtonVariant(
             @AdaptiveToolbarButtonVariant int variant, ButtonDataProvider buttonProvider) {
-        assert AdaptiveToolbarFeatures.isSingleVariantModeEnabled()
-            : "Adaptive toolbar button is disabled";
         assert variant >= 0
                 && variant < AdaptiveToolbarButtonVariant.NUM_ENTRIES
             : "invalid adaptive button variant: "
@@ -61,24 +81,32 @@ public class AdaptiveToolbarButtonController implements ButtonDataProvider, Butt
         assert variant
                 != AdaptiveToolbarButtonVariant.NONE : "must not provide NONE button provider";
 
-        if (variant != AdaptiveToolbarFeatures.getSingleVariantMode()) {
-            buttonProvider.destroy();
-            return;
-        }
+        mButtonDataProviderMap.put(variant, buttonProvider);
 
-        setSingleProvider(buttonProvider);
+        if (AdaptiveToolbarFeatures.isSingleVariantModeEnabled()
+                && variant == AdaptiveToolbarFeatures.getSingleVariantMode()) {
+            setSingleProvider(buttonProvider);
+        }
     }
 
     @Override
     public void destroy() {
         setSingleProvider(null);
         mObservers.clear();
+        mLifecycleDispatcher.unregister(this);
+
+        Iterator<Map.Entry<Integer, ButtonDataProvider>> it =
+                mButtonDataProviderMap.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<Integer, ButtonDataProvider> entry = it.next();
+            entry.getValue().destroy();
+            it.remove();
+        }
     }
 
     private void setSingleProvider(@Nullable ButtonDataProvider buttonProvider) {
         if (mSingleProvider != null) {
             mSingleProvider.removeObserver(this);
-            mSingleProvider.destroy();
         }
         mSingleProvider = buttonProvider;
         if (mSingleProvider != null) {
@@ -101,8 +129,6 @@ public class AdaptiveToolbarButtonController implements ButtonDataProvider, Butt
         if (mSingleProvider == null) return null;
         final ButtonData receivedButtonData = mSingleProvider.get(tab);
         if (receivedButtonData == null) return null;
-        assert receivedButtonData.getButtonSpec().getButtonVariant()
-                == AdaptiveToolbarFeatures.getSingleVariantMode();
 
         if (!mIsSessionVariantRecorded && receivedButtonData.canShow()
                 && receivedButtonData.isEnabled()) {
@@ -146,6 +172,17 @@ public class AdaptiveToolbarButtonController implements ButtonDataProvider, Butt
     @Override
     public void buttonDataChanged(boolean canShowHint) {
         notifyObservers(canShowHint);
+    }
+
+    @Override
+    public void onFinishNativeInitialization() {
+        if (!AdaptiveToolbarFeatures.isCustomizationEnabled()) return;
+        new AdaptiveToolbarStatePredictor().recomputeUiState(uiState -> {
+            setSingleProvider(uiState.canShowUi
+                            ? mButtonDataProviderMap.get(uiState.toolbarButtonState)
+                            : null);
+            notifyObservers(uiState.canShowUi);
+        });
     }
 
     private void notifyObservers(boolean canShowHint) {

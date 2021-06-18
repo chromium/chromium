@@ -98,7 +98,8 @@ import java.util.List;
                 LocationBarMediatorTest.ObjectAnimatorShadow.class,
                 LocationBarMediatorTest.GSAStateShadow.class})
 @Features.EnableFeatures(ChromeFeatureList.OMNIBOX_ASSISTANT_VOICE_SEARCH)
-@Features.DisableFeatures(ChromeFeatureList.VOICE_BUTTON_IN_TOP_TOOLBAR)
+@Features.DisableFeatures({ChromeFeatureList.VOICE_BUTTON_IN_TOP_TOOLBAR,
+        ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION})
 public class LocationBarMediatorTest {
     @Implements(UrlUtilities.class)
     static class ShadowUrlUtilities {

@@ -80,7 +80,6 @@ import org.chromium.chrome.browser.toolbar.ToolbarIntentMetadata;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.toolbar.VoiceToolbarButtonController;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonController;
-import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.adaptive.OptionalNewTabButtonController;
 import org.chromium.chrome.browser.toolbar.top.ToolbarActionModeCallback;
@@ -712,28 +711,25 @@ public class RootUiCoordinator
                             mActivityTabProvider, trackerSupplier,
                             mActivity.getLifecycleDispatcher(), mActivity.getModalDialogManager(),
                             voiceSearchDelegate);
-            // TODO(shaktisahu): Add async mechanism for handling segmentation.
-            if (AdaptiveToolbarFeatures.isSingleVariantModeEnabled()) {
-                OptionalNewTabButtonController newTabButtonController =
-                        new OptionalNewTabButtonController(mActivity,
-                                AppCompatResources.getDrawable(mActivity, R.drawable.new_tab_icon),
-                                mActivity.getLifecycleDispatcher(),
-                                mActivity.getTabCreatorManagerSupplier(), mTabModelSelectorSupplier,
-                                trackerSupplier);
-                AdaptiveToolbarButtonController adaptiveToolbarButtonController =
-                        new AdaptiveToolbarButtonController();
-                adaptiveToolbarButtonController.addButtonVariant(
-                        AdaptiveToolbarButtonVariant.NEW_TAB, newTabButtonController);
-                adaptiveToolbarButtonController.addButtonVariant(
-                        AdaptiveToolbarButtonVariant.SHARE, shareButtonController);
-                adaptiveToolbarButtonController.addButtonVariant(
-                        AdaptiveToolbarButtonVariant.VOICE, voiceToolbarButtonController);
-                mButtonDataProviders =
-                        Arrays.asList(mIdentityDiscController, adaptiveToolbarButtonController);
-            } else {
-                mButtonDataProviders = Arrays.asList(mIdentityDiscController, shareButtonController,
-                        voiceToolbarButtonController);
-            }
+
+            OptionalNewTabButtonController newTabButtonController =
+                    new OptionalNewTabButtonController(mActivity,
+                            AppCompatResources.getDrawable(mActivity, R.drawable.new_tab_icon),
+                            mActivity.getLifecycleDispatcher(),
+                            mActivity.getTabCreatorManagerSupplier(), mTabModelSelectorSupplier,
+                            trackerSupplier);
+            AdaptiveToolbarButtonController adaptiveToolbarButtonController =
+                    new AdaptiveToolbarButtonController(mActivity.getLifecycleDispatcher());
+            adaptiveToolbarButtonController.addButtonVariant(
+                    AdaptiveToolbarButtonVariant.NEW_TAB, newTabButtonController);
+            adaptiveToolbarButtonController.addButtonVariant(
+                    AdaptiveToolbarButtonVariant.SHARE, shareButtonController);
+            adaptiveToolbarButtonController.addButtonVariant(
+                    AdaptiveToolbarButtonVariant.VOICE, voiceToolbarButtonController);
+            mButtonDataProviders =
+                    Arrays.asList(mIdentityDiscController, adaptiveToolbarButtonController,
+                            shareButtonController, voiceToolbarButtonController);
+
             mToolbarManager = new ToolbarManager(mActivity, mBrowserControlsManager,
                     mActivity.getFullscreenManager(), toolbarContainer,
                     mActivity.getCompositorViewHolder(), urlFocusChangedCallback,
