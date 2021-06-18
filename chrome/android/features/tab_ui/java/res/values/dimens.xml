@@ -6,6 +6,7 @@
     <dimen name="tab_grid_favicon_size">32dp</dimen>
     <dimen name="tab_list_selected_inset">7dp</dimen>
     <dimen name="tab_list_selected_inset_low_end">6dp</dimen>
+    <dimen name="tab_list_card_favicon_bg_padding">7dp</dimen>
     <dimen name="tab_list_card_padding">8dp</dimen>
     <dimen name="tab_list_card_radius">4dp</dimen>
     <dimen name="tab_grid_price_card_radius">4dp</dimen>

@@ -43,11 +43,14 @@ public class TabListFaviconProvider {
     private final int mFaviconSize;
     private final int mFaviconInset;
     private final boolean mIsTabStrip;
+    private final boolean mForceDarkTint;
     private final Context mContext;
     @ColorInt
     private final int mDefaultIconColor;
     @ColorInt
     private final int mIncognitoIconColor;
+    @ColorInt
+    private final int mDarkIconColor;
     private boolean mIsInitialized;
 
     private Profile mProfile;
@@ -59,7 +62,7 @@ public class TabListFaviconProvider {
      * @param isTabStrip Indicator for whether this class provides favicons for tab strip or not.
      *
      */
-    public TabListFaviconProvider(Context context, boolean isTabStrip) {
+    public TabListFaviconProvider(Context context, boolean isTabStrip, boolean forceDarkTint) {
         mContext = context;
         mDefaultFaviconSize =
                 context.getResources().getDimensionPixelSize(R.dimen.default_favicon_size);
@@ -69,6 +72,7 @@ public class TabListFaviconProvider {
         mFaviconInset = ViewUtils.dpToPx(context,
                 context.getResources().getDimensionPixelSize(R.dimen.tab_strip_favicon_inset));
         mIsTabStrip = isTabStrip;
+        mForceDarkTint = forceDarkTint;
 
         if (sRoundedGlobeDrawable == null) {
             // TODO(crbug.com/1066709): From Android Developer Documentation, we should avoid
@@ -101,6 +105,7 @@ public class TabListFaviconProvider {
         }
         mDefaultIconColor = mContext.getResources().getColor(R.color.default_icon_color);
         mIncognitoIconColor = mContext.getResources().getColor(R.color.default_icon_color_light);
+        mDarkIconColor = mContext.getResources().getColor(R.color.default_icon_color_dark);
     }
 
     public void initWithNative(Profile profile) {
@@ -216,7 +221,12 @@ public class TabListFaviconProvider {
 
     private Drawable getTintedDrawable(Drawable drawable, boolean isIncognito) {
         @ColorInt
-        int color = isIncognito ? mIncognitoIconColor : mDefaultIconColor;
+        int color = mDefaultIconColor;
+        if (mForceDarkTint) {
+            color = mDarkIconColor;
+        } else if (isIncognito) {
+            color = mIncognitoIconColor;
+        }
         // Since static variable is still loaded when activity is destroyed due to configuration
         // changes, e.g. light/dark theme changes, setColorFilter is needed when we retrieve the
         // drawable. setColorFilter would be a no-op if color and the mode are the same.

@@ -46,7 +46,7 @@ class SingleTabSwitcherCoordinator implements TabSwitcher {
         container.addView(singleTabView);
         mPropertyModelChangeProcessor = PropertyModelChangeProcessor.create(
                 propertyModel, singleTabView, SingleTabViewBinder::bind);
-        mTabListFaviconProvider = new TabListFaviconProvider(activity, false);
+        mTabListFaviconProvider = new TabListFaviconProvider(activity, false, false);
         mMediator = new SingleTabSwitcherMediator(
                 propertyModel, tabModelSelector, mTabListFaviconProvider);
         if (CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START)) {

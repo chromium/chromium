@@ -232,7 +232,8 @@ public class TabListCoordinator
         if (recyclerListener != null) mRecyclerView.setRecyclerListener(recyclerListener);
 
         TabListFaviconProvider tabListFaviconProvider =
-                new TabListFaviconProvider(mContext, mMode == TabListMode.STRIP);
+                new TabListFaviconProvider(mContext, mMode == TabListMode.STRIP,
+                        mMode == TabListMode.GRID || mMode == TabListMode.CAROUSEL);
 
         mMediator = new TabListMediator(context, mModel, mMode, tabModelSelector, thumbnailProvider,
                 titleProvider, tabListFaviconProvider, actionOnRelatedTabs,

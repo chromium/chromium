@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2021 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:left="@dimen/tab_list_card_favicon_bg_padding"
+        android:right="@dimen/tab_list_card_favicon_bg_padding"
+        android:top="@dimen/tab_list_card_favicon_bg_padding"
+        android:bottom="@dimen/tab_list_card_favicon_bg_padding">
+        <shape>
+            <solid android:color="@color/modern_white"/>
+            <corners android:radius="@dimen/tab_list_card_radius" />
+        </shape>
+    </item>
+</layer-list>

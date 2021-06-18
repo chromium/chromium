@@ -51,6 +51,7 @@ android_resources("java_resources") {
     "java/res/drawable/selected_tab_background.xml",
     "java/res/drawable/selected_tab_background_incognito.xml",
     "java/res/drawable/single_tab_background.xml",
+    "java/res/drawable/tab_grid_card_favicon_background.xml",
     "java/res/drawable/tab_grid_dialog_background.xml",
     "java/res/drawable/tab_grid_dialog_background_incognito.xml",
     "java/res/drawable/tab_grid_selection_list_icon.xml",
