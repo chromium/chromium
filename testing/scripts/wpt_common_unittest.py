@@ -25,6 +25,25 @@ from blinkpy.w3c.wpt_manifest import BASE_MANIFEST_NAME
 OUTPUT_JSON_FILENAME = "out.json"
 
 
+class MockResultSink(object):
+
+    def __init__(self):
+        self.sink_requests = []
+        self.host = MockHost()
+
+    def report_individual_test_result(self, test_name, result,
+                                      artifacts_sub_dir,
+                                      expectation, test_path):
+        del artifacts_sub_dir
+        assert not expectation, 'expectation parameter should always be None'
+        self.sink_requests.append(
+            {'test': test_name,
+             'test_path': test_path,
+             'result': {'actual': result.actual,
+                        'expected': result.expected,
+                        'unexpected': result.unexpected,
+                        'artifacts': result.artifacts}})
+
 class BaseWptScriptAdapterTest(unittest.TestCase):
     def setUp(self):
         self.host = MockHost()
@@ -72,6 +91,7 @@ class BaseWptScriptAdapterTest(unittest.TestCase):
             "results-viewer-body")
         self.wpt_adapter = BaseWptScriptAdapter(self.host)
         self.wpt_adapter.wpt_output = OUTPUT_JSON_FILENAME
+        self.wpt_adapter.sink = MockResultSink()
 
     def _create_json_output(self, json_dict):
         """Writing some json output for processing."""
@@ -81,6 +101,103 @@ class BaseWptScriptAdapterTest(unittest.TestCase):
     def _load_json_output(self, filename=OUTPUT_JSON_FILENAME):
         """Loads the json output after post-processing."""
         return json.loads(self.host.filesystem.read_text_file(filename))
+
+    def test_result_sink_for_test_expected_result(self):
+        json_dict = {
+            'tests': {
+                'fail': {
+                    'test.html?variant1': {
+                        'expected': 'PASS FAIL',
+                        'actual': 'FAIL',
+                        'artifacts': {
+                            'wpt_actual_status': ['OK'],
+                            'wpt_actual_metadata': ['test.html actual text'],
+                        },
+                    },
+                },
+            },
+            'path_delimiter': os.path.sep,
+        }
+        test_abs_path = os.path.join(WEB_TESTS_DIR,
+                                     'external/wpt/fail/test.html')
+        self._create_json_output(json_dict)
+        self.wpt_adapter.do_post_test_run_tasks()
+
+        baseline_artifacts = {'wpt_actual_status': [['OK']],
+                              'actual_text': [
+                                  [('layout-test-results/external'
+                                    '/wpt/fail/test_variant1-actual.txt')]]}
+        self.assertEquals(self.wpt_adapter.sink.sink_requests,
+                          [{'test': 'external/wpt/fail/test.html?variant1',
+                            'test_path': test_abs_path,
+                            'result': {'actual': 'FAIL',
+                                       'expected': set(['PASS', 'FAIL']),
+                                       'unexpected': False,
+                                       'artifacts': baseline_artifacts}}])
+
+    def test_result_sink_for_test_variant(self):
+        json_dict = {
+            'tests': {
+                'fail': {
+                    'test.html?variant1': {
+                        'expected': 'PASS',
+                        'actual': 'FAIL',
+                        'artifacts': {
+                            'wpt_actual_status': ['OK'],
+                            'wpt_actual_metadata': ['test.html actual text'],
+                        },
+                    },
+                },
+            },
+            'path_delimiter': os.path.sep,
+        }
+        test_abs_path = os.path.join(WEB_TESTS_DIR,
+                                     'external/wpt/fail/test.html')
+        self._create_json_output(json_dict)
+        self.wpt_adapter.do_post_test_run_tasks()
+        baseline_artifacts = {'wpt_actual_status': [['OK']],
+                              'actual_text': [
+                                  [('layout-test-results/external'
+                                    '/wpt/fail/test_variant1-actual.txt')]]}
+        self.assertEquals(self.wpt_adapter.sink.sink_requests,
+                          [{'test': 'external/wpt/fail/test.html?variant1',
+                            'test_path': test_abs_path,
+                            'result': {'actual': 'FAIL',
+                                       'expected': set(['PASS']),
+                                       'unexpected': True,
+                                       'artifacts': baseline_artifacts}}])
+
+    def test_result_sink_artifacts(self):
+        json_dict = {
+            'tests': {
+                'fail': {
+                    'test.html': {
+                        'expected': 'PASS',
+                        'actual': 'FAIL',
+                        'artifacts': {
+                            'wpt_actual_status': ['OK'],
+                            'wpt_actual_metadata': ['test.html actual text'],
+                        },
+                    },
+                },
+            },
+            'path_delimiter': os.path.sep,
+        }
+        self._create_json_output(json_dict)
+        self.wpt_adapter.do_post_test_run_tasks()
+        test_abs_path = os.path.join(WEB_TESTS_DIR,
+                                     'external/wpt/fail/test.html')
+        baseline_artifacts = {'wpt_actual_status': [['OK']],
+                              'actual_text': [
+                                  [('layout-test-results/external'
+                                    '/wpt/fail/test-actual.txt')]]}
+        self.assertEquals(self.wpt_adapter.sink.sink_requests,
+                          [{'test': 'external/wpt/fail/test.html',
+                            'test_path': test_abs_path,
+                            'result': {'actual': 'FAIL',
+                                       'expected': set(['PASS']),
+                                       'unexpected': True,
+                                       'artifacts': baseline_artifacts}}])
 
     def test_write_jsons(self):
         # Ensure that various JSONs are written to the correct location.
