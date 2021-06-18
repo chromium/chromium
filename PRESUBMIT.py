@@ -1853,7 +1853,7 @@ def CheckFilePermissions(input_api, output_api):
     except input_api.subprocess.CalledProcessError as error:
       return [output_api.PresubmitError(
           'checkperms.py failed:',
-          long_text=error.output)]
+          long_text=error.output.decode('utf-8', 'ignore'))]
 
 
 def CheckNoAuraWindowPropertyHInHeaders(input_api, output_api):
