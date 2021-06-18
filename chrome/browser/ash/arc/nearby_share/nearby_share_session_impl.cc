@@ -71,7 +71,6 @@ NearbyShareSessionImpl::~NearbyShareSessionImpl() {
 
 void NearbyShareSessionImpl::OnNearbyShareClosed() {
   session_instance_->OnNearbyShareViewClosed();
-  std::move(session_finished_callback_).Run(task_id_);
 }
 
 // Overridden from aura::EnvObserver:
