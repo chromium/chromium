@@ -679,6 +679,69 @@ TEST_F(AccessibilityTest, PositionInHTMLLabel) {
         Label text.
       </label>
       <p id="paragraph">Intervening paragraph.</p>
+      <input id="input">
+      )HTML");
+
+  const Node* label = GetElementById("label");
+  ASSERT_NE(nullptr, label);
+  const Node* label_text = label->firstChild();
+  ASSERT_NE(nullptr, label_text);
+  ASSERT_TRUE(label_text->IsTextNode());
+  const Node* paragraph = GetElementById("paragraph");
+  ASSERT_NE(nullptr, paragraph);
+
+  const AXObject* ax_body = GetAXBodyObject();
+  ASSERT_NE(nullptr, ax_body);
+  ASSERT_EQ(ax::mojom::Role::kGenericContainer, ax_body->RoleValue());
+
+  const AXObject* ax_label = GetAXObjectByElementId("label");
+  ASSERT_NE(nullptr, ax_label);
+  ASSERT_FALSE(ax_label->AccessibilityIsIgnored());
+  const AXObject* ax_label_text = ax_label->FirstChildIncludingIgnored();
+  ASSERT_NE(nullptr, ax_label_text);
+  ASSERT_EQ(ax::mojom::Role::kStaticText, ax_label_text->RoleValue());
+  const AXObject* ax_paragraph = GetAXObjectByElementId("paragraph");
+  ASSERT_NE(nullptr, ax_paragraph);
+  ASSERT_EQ(ax::mojom::Role::kParagraph, ax_paragraph->RoleValue());
+
+  const auto position_before_label = Position::BeforeNode(*label);
+  const auto ax_position_before_label =
+      AXPosition::FromPosition(position_before_label, TextAffinity::kDownstream,
+                               AXPositionAdjustmentBehavior::kMoveLeft);
+  EXPECT_FALSE(ax_position_before_label.IsTextPosition());
+  EXPECT_EQ(ax_body, ax_position_before_label.ContainerObject());
+  EXPECT_EQ(0, ax_position_before_label.ChildIndex());
+  EXPECT_EQ(ax_label, ax_position_before_label.ChildAfterTreePosition());
+
+  const auto position_before_text = Position::BeforeNode(*label_text);
+  const auto position_in_text = Position::FirstPositionInNode(*label_text);
+  const auto position_after_label = Position::AfterNode(*label);
+  for (const auto& position :
+       {position_before_text, position_in_text, position_after_label}) {
+    const auto ax_position =
+        AXPosition::FromPosition(position, TextAffinity::kDownstream,
+                                 AXPositionAdjustmentBehavior::kMoveLeft);
+    EXPECT_TRUE(ax_position.IsTextPosition());
+    EXPECT_EQ(ax_label_text, ax_position.ContainerObject());
+    EXPECT_EQ(nullptr, ax_position.ChildAfterTreePosition());
+  }
+  const auto position_before_paragraph = Position::BeforeNode(*paragraph);
+  const auto ax_position_before_paragraph = AXPosition::FromPosition(
+      position_before_paragraph, TextAffinity::kDownstream,
+      AXPositionAdjustmentBehavior::kMoveLeft);
+  EXPECT_FALSE(ax_position_before_paragraph.IsTextPosition());
+  EXPECT_EQ(ax_body, ax_position_before_paragraph.ContainerObject());
+  EXPECT_EQ(1, ax_position_before_paragraph.ChildIndex());
+  EXPECT_EQ(ax_paragraph,
+            ax_position_before_paragraph.ChildAfterTreePosition());
+}
+
+TEST_F(AccessibilityTest, PositionInHTMLLabelIgnored) {
+  SetBodyInnerHTML(R"HTML(
+      <label id="label" for="input">
+        Label text.
+      </label>
+      <p id="paragraph">Intervening paragraph.</p>
       <input id="input" type="checkbox" checked>
       )HTML");
 
