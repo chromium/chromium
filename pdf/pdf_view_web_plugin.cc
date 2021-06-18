@@ -672,7 +672,11 @@ void PdfViewWebPlugin::NotifySelectionChanged(const gfx::PointF& left,
                                               int left_height,
                                               const gfx::PointF& right,
                                               int right_height) {
-  NOTIMPLEMENTED();
+  auto* service = GetPdfService();
+  if (!service)
+    return;
+
+  service->SelectionChanged(left, left_height, right, right_height);
 }
 
 void PdfViewWebPlugin::NotifyUnsupportedFeature() {
@@ -737,7 +741,7 @@ bool PdfViewWebPlugin::Redo() {
 }
 
 pdf::mojom::PdfService* PdfViewWebPlugin::GetPdfService() {
-  return pdf_service_remote_.get();
+  return pdf_service_remote_.is_bound() ? pdf_service_remote_.get() : nullptr;
 }
 
 }  // namespace chrome_pdf
