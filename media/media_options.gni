@@ -246,20 +246,8 @@ declare_args() {
   enable_cast_streaming_renderer = false
 }
 
-# Use an additional declare_args to pick up overrides of
-# |enable_cast_streaming_renderer|.
-declare_args() {
-  # Signifies whether E2E testing for the Cast Media Runtime is being performed
-  # with this build.
-  enable_cast_runtime_e2e_testing =
-      enable_cast_streaming_renderer && !enable_cast_renderer
-}
-
 assert(!enable_cast_streaming_renderer || is_chromecast,
        "Currently, libcast mirroring is only supported for chromecast.")
-assert(!enable_cast_streaming_renderer || enable_cast_runtime_e2e_testing ||
-           enable_cast_renderer,
-       "No valid renderer enabled for use with the Cast Streaming Renderer.")
 
 # Do not expand this list without double-checking with OWNERS, this is a list of
 # all targets which roll up into the //media component. It controls visibility

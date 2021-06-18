@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//media/media_options.gni")
 import("//testing/test.gni")
 
 # TODO(crbug.com/1207718): Remove cast_message_port_impl code from this
@@ -187,8 +186,5 @@ source_set("unit_tests") {
     "//components/cast/message_port:test_message_port_receiver",
     "//testing/gtest",
   ]
-  sources = []
-  if (!enable_cast_runtime_e2e_testing) {
-    sources += [ "cast_message_port_impl_unittest.cc" ]
-  }
+  sources = [ "cast_message_port_impl_unittest.cc" ]
 }

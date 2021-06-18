@@ -6,19 +6,15 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
-#include "build/buildflag.h"
 #include "components/cast/message_port/test_message_port_receiver.h"
-#include "media/media_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(ENABLE_CAST_RUNTIME_E2E_TESTING)
-#include "components/cast/message_port/message_port_mojo.h"  // nogncheck
-#elif defined(OS_FUCHSIA)
+#if defined(OS_FUCHSIA)
 #include "components/cast/message_port/message_port_fuchsia.h"
 #else
 #include "components/cast/message_port/message_port_cast.h"  // nogncheck
 #include "third_party/blink/public/common/messaging/web_message_port.h"  // nogncheck
-#endif  // BUILDFLAG(ENABLE_CAST_RUNTIME_E2E_TESTING)
+#endif  // defined(OS_FUCHSIA)
 
 #ifdef PostMessage
 #undef PostMessage
@@ -96,6 +92,21 @@ TEST_F(MessagePortTest, Close) {
   ASSERT_FALSE(server_->CanPostMessage());
 }
 
+TEST_F(MessagePortTest, OnError) {
+  server_receiver_.SetOnMessageResult(false);
+  SetDefaultReceivers();
+  client_->PostMessage("");
+
+#if defined(OS_FUCHSIA)
+  // blink::WebMessagePort reports failure when PostMessage returns false, but
+  // fuchsia::web::MessagePort will not report the error until the port closes
+  server_receiver_.RunUntilMessageCountEqual(1);
+  server_.reset();
+#endif
+
+  client_receiver_.RunUntilDisconnected();
+}
+
 TEST_F(MessagePortTest, PostMessage) {
   TestPostMessage();
 }
@@ -126,22 +137,6 @@ TEST_F(MessagePortTest, PostMessageWithTransferables) {
   port1->SetReceiver(&port1_receiver);
   PostMessages({"from port0"}, port0.get(), &port1_receiver);
   PostMessages({"from port1"}, port1.get(), &port0_receiver);
-}
-
-#if !BUILDFLAG(ENABLE_CAST_RUNTIME_E2E_TESTING)
-TEST_F(MessagePortTest, OnError) {
-  server_receiver_.SetOnMessageResult(false);
-  SetDefaultReceivers();
-  client_->PostMessage("");
-
-#if defined(OS_FUCHSIA)
-  // blink::WebMessagePort reports failure when PostMessage returns false, but
-  // fuchsia::web::MessagePort will not report the error until the port closes
-  server_receiver_.RunUntilMessageCountEqual(1);
-  server_.reset();
-#endif
-
-  client_receiver_.RunUntilDisconnected();
 }
 
 TEST_F(MessagePortTest, WrapPlatformPort) {
@@ -176,6 +171,5 @@ TEST_F(MessagePortTest, UnwrapPlatformPortCast) {
 
   TestPostMessage();
 }
-#endif  // !BUILDFLAG(ENABLE_CAST_RUNTIME_E2E_TESTING)
 
 }  // namespace cast_api_bindings

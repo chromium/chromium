@@ -762,16 +762,18 @@ MediaFactory::CreateRendererFactorySelector(
 
 #if BUILDFLAG(ENABLE_CAST_STREAMING_RENDERER)
   if (cast_streaming::IsCastStreamingMediaSourceUrl(url)) {
-#if BUILDFLAG(ENABLE_CAST_RUNTIME_E2E_TESTING)
-    // TODO(b/187332037): Correct issues preventing playback when using this
-    // renderer.
-    auto default_factory_cast_streaming = CreateDefaultRendererFactory(
-        media_log, decoder_factory, render_thread, render_frame_);
-#else   // BUILDFLAG(ENABLE_CAST_RUNTIME_E2E_TESTING)
+#if BUILDFLAG(ENABLE_CAST_RENDERER)
     auto default_factory_cast_streaming =
         std::make_unique<CastRendererClientFactory>(
             media_log, CreateMojoRendererFactory());
-#endif  // BUILDFLAG(ENABLE_CAST_RUNTIME_E2E_TESTING)
+#else   // BUILDFLAG(ENABLE_CAST_RENDERER)
+    // NOTE: Prior to the resolution of b/187332037, playback will not work
+    // correctly with this renderer.
+    // NOTE: This renderer is only expected to be used in TEST scenarios and
+    // should not be used in production.
+    auto default_factory_cast_streaming = CreateDefaultRendererFactory(
+        media_log, decoder_factory, render_thread, render_frame_);
+#endif  // BUILDFLAG(ENABLE_CAST_RENDERER)
 
     auto cast_streaming_renderer_factory =
         std::make_unique<media::cast::CastStreamingRendererFactory>(
