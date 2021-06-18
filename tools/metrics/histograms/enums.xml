@@ -45030,6 +45030,7 @@ from previous Chrome versions.
   <int value="-2142665444" label="ScrollableTabStrip:disabled"/>
   <int value="-2141661938" label="AnimatedAppMenuIcon:enabled"/>
   <int value="-2141602766" label="NtpWebUI:enabled"/>
+  <int value="-2141575276" label="FileHandlingIcons:enabled"/>
   <int value="-2141247271" label="AndroidOmniboxPreviewsBadge:enabled"/>
   <int value="-2140007754" label="HomepageSettingsUIConversion:disabled"/>
   <int value="-2139379065" label="StoragePressureUI:enabled"/>
@@ -46001,6 +46002,7 @@ from previous Chrome versions.
   <int value="-1371984027" label="CrostiniWebUIUpgrader:disabled"/>
   <int value="-1371239786" label="EnablePasswordsAccountStorage:enabled"/>
   <int value="-1370532920" label="AppServiceAsh:enabled"/>
+  <int value="-1369613781" label="FileHandlingIcons:disabled"/>
   <int value="-1368913664" label="TabSearch:disabled"/>
   <int value="-1368734981" label="IPH_DesktopSnoozeFeature:enabled"/>
   <int value="-1368499577" label="OnTheFlyMhtmlHashComputation:enabled"/>

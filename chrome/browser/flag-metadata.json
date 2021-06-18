@@ -2900,6 +2900,11 @@
     "expiry_milestone": 95
   },
   {
+    "name": "file-handling-icons",
+    "owners": [ "huangdarwin", "mgiuca", "cmp" ],
+    "expiry_milestone": 95
+  },
+  {
     "name": "files-app-copy-image",
     "owners": ["nohe", "lucmult", "weifangsun"],
     "expiry_milestone": 95

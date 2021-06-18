@@ -722,6 +722,9 @@ extern const char kEffectiveConnectionType4GDescription[];
 extern const char kFileHandlingAPIName[];
 extern const char kFileHandlingAPIDescription[];
 
+extern const char kFileHandlingIconsName[];
+extern const char kFileHandlingIconsDescription[];
+
 extern const char kFillingAcrossAffiliatedWebsitesName[];
 extern const char kFillingAcrossAffiliatedWebsitesDescription[];
 

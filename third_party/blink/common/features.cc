@@ -355,6 +355,10 @@ const base::Feature kTextFragmentAnchor{"TextFragmentAnchor",
 const base::Feature kFileHandlingAPI{"FileHandlingAPI",
                                      base::FEATURE_DISABLED_BY_DEFAULT};
 
+// File handling icons. https://crbug.com/1218213
+const base::Feature kFileHandlingIcons{"FileHandlingIcons",
+                                       base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Allows for synchronous XHR requests during page dismissal
 const base::Feature kAllowSyncXHRInPageDismissal{
     "AllowSyncXHRInPageDismissal", base::FEATURE_DISABLED_BY_DEFAULT};
