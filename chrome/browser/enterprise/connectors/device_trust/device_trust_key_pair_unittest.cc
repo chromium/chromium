@@ -10,6 +10,7 @@
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/os_crypt/os_crypt_mocker.h"
+#include "crypto/signature_verifier.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace enterprise_connectors {
@@ -34,16 +35,39 @@ class DeviceTrustKeyPairTest : public testing::Test {
   ScopedTestingLocalState local_state_;
 };
 
-TEST_F(DeviceTrustKeyPairTest, ExportPrivateKey) {
-  std::string private_key = key_.ExportPEMPrivateKey();
-  EXPECT_TRUE(base::StartsWith(private_key, "-----BEGIN PRIVATE KEY-----\n"));
-  EXPECT_TRUE(base::EndsWith(private_key, "-----END PRIVATE KEY-----\n"));
+TEST_F(DeviceTrustKeyPairTest, KeyPairCreateStoreLoad) {
+  // Create the key pair, if will store the private part into prefs.
+  EXPECT_TRUE(key_.Init());
+  // Get public key.
+  std::vector<uint8_t> public_key_info;
+  EXPECT_TRUE(key_.ExportPublicKey(&public_key_info));
+  // Create a new key pair, after call `Init` it will be created
+  // from the private key info block stored in prefs.
+  DeviceTrustKeyPair key2;
+  EXPECT_TRUE(key2.Init());
+  std::vector<uint8_t> public_key_info2;
+  EXPECT_TRUE(key2.ExportPublicKey(&public_key_info2));
+  // Check we have the same key pair.
+  EXPECT_EQ(public_key_info, public_key_info2);
 }
 
-TEST_F(DeviceTrustKeyPairTest, ExportPublicKey) {
-  std::string public_key = key_.ExportPEMPublicKey();
-  EXPECT_TRUE(base::StartsWith(public_key, "-----BEGIN PUBLIC KEY-----\n"));
-  EXPECT_TRUE(base::EndsWith(public_key, "-----END PUBLIC KEY-----\n"));
+TEST_F(DeviceTrustKeyPairTest, MakeSignature) {
+  // Create the key pair.
+  EXPECT_TRUE(key_.Init());
+  // Sign the message.
+  std::string message = "data to be sign";
+  std::string signature;
+  EXPECT_TRUE(key_.SignMessage(message, &signature));
+  // Verify signature with ECDSA_SHA256.
+  std::vector<uint8_t> public_key_info;
+  EXPECT_TRUE(key_.ExportPublicKey(&public_key_info));
+  crypto::SignatureVerifier signature_verifier;
+  EXPECT_TRUE(signature_verifier.VerifyInit(
+      crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
+      std::vector<uint8_t>(signature.begin(), signature.end()),
+      public_key_info));
+  signature_verifier.VerifyUpdate(base::as_bytes(base::make_span(message)));
+  EXPECT_TRUE(signature_verifier.VerifyFinal());
 }
 
 }  // namespace enterprise_connectors

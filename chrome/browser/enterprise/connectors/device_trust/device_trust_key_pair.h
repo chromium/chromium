@@ -16,7 +16,7 @@ namespace enterprise_connectors {
 // An instantiation of `DeviceTrustKeyPair` class will be restricted to a single
 // instance consisting of a `key_pair_` that is composed of a private key and a
 // public key linked to a set of specifics `origins`. This key pair will be
-// stored in the user prefs. In the case of the private key, an encrypted
+// stored in the local state prefs. In the case of the private key, an encrypted
 // version is stored using `OSCrypt`.
 // `origins` is a list of URLs which indicates the endpoints where the key pair
 // will be allowed to interact with.
@@ -28,7 +28,7 @@ namespace enterprise_connectors {
 //
 //  Example:
 //    std::unique_ptr<DeviceTrustKeyPair> key_pair =
-//        std::make_unique<DeviceTrustKeyPair>(profile, origins);
+//        std::make_unique<DeviceTrustKeyPair>();
 //
 class DeviceTrustKeyPair {
  public:
@@ -37,40 +37,28 @@ class DeviceTrustKeyPair {
   DeviceTrustKeyPair& operator=(const DeviceTrustKeyPair&) = delete;
   ~DeviceTrustKeyPair();
 
-  // Returns a string of the private key in PEM format on success or an empty
-  // string otherwise.
-  std::string ExportPEMPrivateKey();
-
-  // Returns a string of the public key in PEM format on success or an empty
-  // string otherwise.
-  std::string ExportPEMPublicKey();
-
   // Load key pair from prefs if available, if not, it will generate a
-  // new key pair and store the encoded encrypted version of it into prefs.
-  // Return strue on success.
+  // new EC P-256 key pair and store the encoded encrypted version of it into
+  // prefs. Return true on success.
   bool Init();
 
-  // Sign `message` using elliptic curve (EC) private key.
-  bool SignMessage(const std::string& message, std::vector<uint8_t>& signature);
-
-  // Sign `message` using `SignMessage` method and return the signature as a
-  // base64 encode string.
-  bool GetSignatureInBase64(const std::string& message, std::string* signature);
-
- private:
-  std::unique_ptr<crypto::ECPrivateKey> key_pair_;
-
-  // Store encrypted private key and public key into prefs.
-  // Return strue on success.
-  bool StoreKeyPair();
+  // Sign `message` using elliptic curve (EC) P-256 private key.
+  bool SignMessage(const std::string& message, std::string* signature);
 
   // Exports the public key to `public_key` as an X.509 SubjectPublicKeyInfo
   // block.
   bool ExportPublicKey(std::vector<uint8_t>* public_key);
 
-  // Load private key from a constant private key info value.
-  static std::unique_ptr<crypto::ECPrivateKey> LoadFromPrivateKeyInfo(
-      const std::string& private_key_info_block);
+ private:
+  std::unique_ptr<crypto::ECPrivateKey> key_pair_;
+
+  // Store encrypted private key and public key into prefs.
+  // Returns true on success.
+  bool StoreKeyPair();
+
+  // Loads the key pair that was stored in the local state.
+  // Returns true on success.
+  bool LoadKeyPair();
 };
 
 }  // namespace enterprise_connectors
