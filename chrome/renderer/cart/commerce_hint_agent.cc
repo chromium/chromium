@@ -695,8 +695,7 @@ void CommerceHintAgent::WillSubmitForm(const blink::WebFormElement& form) {
 }
 
 // TODO(crbug/1164236): use MutationObserver on cart instead.
-void CommerceHintAgent::DidObserveLayoutShift(double score,
-                                              bool after_input_or_scroll) {
+void CommerceHintAgent::ExtractCartFromCurrentFrame() {
   blink::WebLocalFrame* frame = render_frame()->GetWebFrame();
   // Don't do anything for subframes.
   if (frame->Parent())
@@ -706,9 +705,18 @@ void CommerceHintAgent::DidObserveLayoutShift(double score,
     return;
 
   if (IsVisitCart(url)) {
-    DVLOG(1) << "In-cart layout shift: " << url;
     ExtractProducts();
   }
+}
+
+void CommerceHintAgent::DidObserveLayoutShift(double score,
+                                              bool after_input_or_scroll) {
+  ExtractCartFromCurrentFrame();
+}
+
+void CommerceHintAgent::OnMainFrameIntersectionChanged(
+    const gfx::Rect& intersect_rect) {
+  ExtractCartFromCurrentFrame();
 }
 
 bool CommerceHintAgent::ShouldSkipAddToCartRequest(const GURL& navigation_url,
