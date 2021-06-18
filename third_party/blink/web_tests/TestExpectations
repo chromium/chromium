@@ -4147,6 +4147,7 @@ crbug.com/1179585 virtual/layout_ng_svg_text/svg/clip-path/clip-path-tspan-and-s
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/clip-path/clip-path-use-referencing-clipped-text.html [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/clip-path/clip-path-use-referencing-text.html [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/clip-path/clip-path-with-text-clipped.svg [ Failure ]
+crbug.com/1179585 virtual/layout_ng_svg_text/svg/css/alignment-baseline.html [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/css/text-shadow-multiple.xhtml [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/custom/empty-mask.svg [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/custom/focus-ring.svg [ Failure ]
