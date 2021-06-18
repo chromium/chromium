@@ -352,6 +352,12 @@ cr.define('settings.input_method_util', function() {
         return 'inputMethodOptionsZhuyinSelectKeys';
       case OptionType.ZHUYIN_PAGE_SIZE:
         return 'inputMethodOptionsZhuyinPageSize';
+      case OptionType.KOREAN_KEYBOARD_LAYOUT:
+        return 'inputMethodOptionsKoreanLayout';
+      case OptionType.KOREAN_ENABLE_SYLLABLE_INPUT:
+        return 'inputMethodOptionsKoreanSyllableInput';
+      case OptionType.KOREAN_SHOW_HANGUL_CANDIDATE:
+        return 'inputMethodOptionsKoreanShowHangulCandidate';
       default:
         assertNotReached();
     }
@@ -399,6 +405,20 @@ cr.define('settings.input_method_util', function() {
           {value: '10'},
           {value: '9;'},
           {value: '8'},
+        ];
+      case OptionType.KOREAN_KEYBOARD_LAYOUT:
+        // Korean layout strings are already Korean / English, so not
+        // translated. The literal values of these strings are critical.
+        return [
+          {value: '2 Set / 두벌식'},
+          {value: '3 Set (390) / 세벌식 (390)'},
+          {value: '3 Set (Final) / 세벌식 (최종)'},
+          {value: '3 Set (No Shift) / 세벌식 (순아래)'},
+          {value: 'Romaja / 로마자'},
+          {value: 'Ahnmatae / 안마태'},
+          {value: '2 Set (Old Hangul) / 두벌식 (옛글)'},
+          {value: '3 Set (Old Hangul) / 세벌식 (옛글)'},
+          {value: '3 Set (2 set) / 세벌식 (두벌)'},
         ];
       default:
         return [];
