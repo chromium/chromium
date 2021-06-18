@@ -7,6 +7,10 @@
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "build/build_config.h"
 
+#if defined(OS_WIN)
+#include <windows.h>
+#endif
+
 #if defined(PA_HAS_SPINNING_MUTEX)
 
 #if defined(PA_HAS_LINUX_KERNEL)

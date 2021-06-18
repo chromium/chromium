@@ -27,6 +27,10 @@
 #include <malloc.h>
 #endif
 
+#if defined(OS_WIN) && defined(ARCH_CPU_X86)
+#include <windows.h>
+#endif
+
 using base::allocator::AllocatorDispatch;
 
 namespace {

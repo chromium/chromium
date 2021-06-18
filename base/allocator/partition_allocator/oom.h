@@ -11,10 +11,6 @@
 #include "base/process/memory.h"
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
-#include <windows.h>
-#endif
-
 namespace {
 // The crash is generated in a NOINLINE function so that we can classify the
 // crash as an OOM solely by analyzing the stack trace. It is tagged as

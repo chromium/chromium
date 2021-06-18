@@ -4,6 +4,8 @@
 
 #include "base/allocator/partition_allocator/partition_tls.h"
 
+#include <windows.h>
+
 namespace base {
 namespace internal {
 namespace {

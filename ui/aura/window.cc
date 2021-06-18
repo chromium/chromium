@@ -1747,9 +1747,6 @@ void Window::SetVisible(bool visible) {
   // Changed notification is handled in SetVisibleInternal().
 }
 
-// Under Windows this macro is defined.
-#undef GetClassName
-
 BEGIN_METADATA_BASE(Window)
 ADD_READONLY_PROPERTY_METADATA(gfx::Rect, ActualBoundsInRootWindow)
 ADD_READONLY_PROPERTY_METADATA(gfx::Rect, ActualBoundsInScreen)
