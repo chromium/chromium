@@ -179,12 +179,23 @@ class TestAudioConsumer
   std::unique_ptr<TestStreamSink> WaitStreamSinkConnected() {
     if (!stream_sink_) {
       base::RunLoop run_loop;
-      stream_sink_created_loop_ = &run_loop;
+      wait_stream_sink_created_loop_ = &run_loop;
       run_loop.Run();
-      stream_sink_created_loop_ = nullptr;
+      wait_stream_sink_created_loop_ = nullptr;
     }
     EXPECT_TRUE(stream_sink_);
     return TakeStreamSink();
+  }
+
+  void WaitStarted() {
+    if (started_)
+      return;
+
+    base::RunLoop run_loop;
+    wait_started_loop_ = &run_loop;
+    run_loop.Run();
+    wait_started_loop_ = nullptr;
+    EXPECT_TRUE(started_);
   }
 
   void UpdateStatus(absl::optional<base::TimeTicks> reference_time,
@@ -223,20 +234,24 @@ class TestAudioConsumer
       std::unique_ptr<fuchsia::media::Compression> compression,
       fidl::InterfaceRequest<fuchsia::media::StreamSink> stream_sink_request)
       override {
+    create_stream_sink_called_ = true;
     stream_sink_ = std::make_unique<TestStreamSink>(
         std::move(buffers), std::move(stream_type), std::move(compression),
         std::move(stream_sink_request));
-    if (stream_sink_created_loop_)
-      stream_sink_created_loop_->Quit();
+    if (wait_stream_sink_created_loop_)
+      wait_stream_sink_created_loop_->Quit();
   }
 
   void Start(fuchsia::media::AudioConsumerStartFlags flags,
              int64_t reference_time,
              int64_t media_time) override {
+    EXPECT_TRUE(create_stream_sink_called_);
     EXPECT_FALSE(started_);
     EXPECT_EQ(reference_time, fuchsia::media::NO_TIMESTAMP);
     started_ = true;
     start_media_time_ = base::TimeDelta::FromZxDuration(media_time);
+    if (wait_started_loop_)
+      wait_started_loop_->Quit();
   }
 
   void Stop() override {
@@ -251,6 +266,7 @@ class TestAudioConsumer
           volume_control_request) override {
     volume_control_binding_.Bind(std::move(volume_control_request));
   }
+
   void WatchStatus(WatchStatusCallback callback) override {
     EXPECT_FALSE(!!status_callback_);
 
@@ -283,7 +299,10 @@ class TestAudioConsumer
   fidl::Binding<fuchsia::media::audio::VolumeControl> volume_control_binding_;
   std::unique_ptr<TestStreamSink> stream_sink_;
 
-  base::RunLoop* stream_sink_created_loop_ = nullptr;
+  base::RunLoop* wait_stream_sink_created_loop_ = nullptr;
+  base::RunLoop* wait_started_loop_ = nullptr;
+
+  bool create_stream_sink_called_ = false;
 
   WatchStatusCallback status_callback_;
   absl::optional<fuchsia::media::AudioConsumerStatus> status_update_;
@@ -370,6 +389,7 @@ class FuchsiaAudioRendererTest : public testing::Test {
   ~FuchsiaAudioRendererTest() override = default;
 
   void CreateUninitializedRenderer();
+  void CreateTestDemuxerStream();
   void InitializeRenderer();
   void CreateAndInitializeRenderer();
   void ProduceDemuxerPacket(base::TimeDelta duration);
@@ -409,11 +429,16 @@ void FuchsiaAudioRendererTest::CreateUninitializedRenderer() {
   time_source_ = audio_renderer_->GetTimeSource();
 }
 
-void FuchsiaAudioRendererTest::InitializeRenderer() {
+void FuchsiaAudioRendererTest::CreateTestDemuxerStream() {
   AudioDecoderConfig config(kCodecPCM, kSampleFormatF32, CHANNEL_LAYOUT_MONO,
                             kDefaultSampleRate, {},
                             EncryptionScheme::kUnencrypted);
   demuxer_stream_ = std::make_unique<TestDemuxerStream>(config);
+}
+
+void FuchsiaAudioRendererTest::InitializeRenderer() {
+  if (!demuxer_stream_)
+    CreateTestDemuxerStream();
 
   base::RunLoop run_loop;
   PipelineStatus pipeline_status;
@@ -847,6 +872,31 @@ TEST_F(FuchsiaAudioRendererTest, SetVolumeBeforeInitialize) {
 
   ASSERT_NO_FATAL_FAILURE(InitializeRenderer());
   EXPECT_EQ(audio_consumer_->volume(), 0.5);
+}
+
+// Verify that the case when StartTicking() is called shortly after
+// StartPlaying() is handled correctly. AudioConsumer::Start() should be sent
+// only after CreateStreamSink(). See crbug.com/1219147 .
+TEST_F(FuchsiaAudioRendererTest, PlaybackBeforeSinkCreation) {
+  CreateTestDemuxerStream();
+  const auto kStreamLength = base::TimeDelta::FromMilliseconds(100);
+  FillDemuxerStream(kStreamLength);
+  demuxer_stream_->QueueReadResult(
+      TestDemuxerStream::ReadResult(DecoderBuffer::CreateEOSBuffer()));
+
+  ASSERT_NO_FATAL_FAILURE(CreateAndInitializeRenderer());
+
+  // Call StartTicking() shortly after StartPlayback(). At this point sysmem
+  // buffer allocation hasn't been complete, so AudioConsumer::Start() should be
+  // delayed until the buffer are allocated.
+  audio_renderer_->StartPlaying();
+  time_source_->StartTicking();
+
+  // Wait until the stream is started. Start() should be called only after
+  // StreamSink() is connected and the packets are buffered.
+  audio_consumer_->WaitStarted();
+  stream_sink_ = audio_consumer_->TakeStreamSink();
+  EXPECT_GT(stream_sink_->received_packets()->size(), 0U);
 }
 
 }  // namespace media

@@ -61,6 +61,11 @@ class MEDIA_EXPORT FuchsiaAudioRenderer : public AudioRenderer,
   enum class PlaybackState {
     kStopped,
 
+    // StartTicking() was called, but sysmem buffers haven't been allocated yet.
+    // AudioConsumer::Start() will be called after CreateStreamSink() once the
+    // sysmem buffers are allocated.
+    kStartPending,
+
     // We've called Start(), but haven't received updated state. |start_time_|
     // should not be used yet.
     kStarting,
@@ -69,6 +74,8 @@ class MEDIA_EXPORT FuchsiaAudioRenderer : public AudioRenderer,
     // state.
     kPlaying,
   };
+
+  void StartAudioConsumer();
 
   // Returns current PlaybackState. Should be used only on the main thread.
   PlaybackState GetPlaybackState() NO_THREAD_SAFETY_ANALYSIS;
