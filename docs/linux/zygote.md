@@ -1,4 +1,4 @@
-A zygote process is one that listens for spawn requests from a master process
+A zygote process is one that listens for spawn requests from a main process
 and forks itself in response. Generally they are used because forking a process
 after some expensive setup has been performed can save time and share extra
 memory pages.
