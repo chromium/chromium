@@ -16,13 +16,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/simple_menu_model.h"
 
-namespace chromeos {
-namespace string_matching {
-class TokenizedString;
-class TokenizedStringMatch;
-}  // namespace string_matching
-}  // namespace chromeos
-
 namespace app_list {
 class AppContextMenu;
 }  // namespace app_list
@@ -130,6 +123,13 @@ class ChromeSearchResult {
   double relevance() const { return relevance_; }
   void set_relevance(double relevance) { relevance_ = relevance; }
 
+  const base::flat_map<std::string, double>& ranker_scores() const {
+    return ranker_scores_;
+  }
+  void set_ranker_score(std::string ranking_method, double score) {
+    ranker_scores_[ranking_method] = score;
+  }
+
   bool dismiss_view_on_open() const { return dismiss_view_on_open_; }
   void set_dismiss_view_on_open(bool dismiss_view_on_open) {
     dismiss_view_on_open_ = dismiss_view_on_open;
@@ -144,21 +144,12 @@ class ChromeSearchResult {
   // Called if set visible/hidden.
   virtual void OnVisibilityChanged(bool visibility);
 
-  // Updates the result's relevance score, and sets its title and title tags,
-  // based on a string match result.
-  void UpdateFromMatch(
-      const chromeos::string_matching::TokenizedString& title,
-      const chromeos::string_matching::TokenizedStringMatch& match);
-
   // Returns the context menu model for this item, or NULL if there is currently
   // no menu for the item (e.g. during install). |callback| takes the ownership
   // of the returned menu model.
   using GetMenuModelCallback =
       base::OnceCallback<void(std::unique_ptr<ui::SimpleMenuModel>)>;
   virtual void GetContextMenuModel(GetMenuModelCallback callback);
-
-  static std::string TagsDebugStringForTest(const std::string& text,
-                                            const Tags& tags);
 
  protected:
   // These id setters should be called in derived class constructors only.
@@ -174,6 +165,11 @@ class ChromeSearchResult {
   // SearchModel in Ash. We'll update metadata_->display_score based on the
   // sorted order, group multiplier and group boost.
   double relevance_ = 0;
+
+  // Relevance scores keyed by a string describing the ranking method it was
+  // obtained from. These can include scores from intermediate ranking steps, as
+  // well as prototype scores to be inspected for experimentation.
+  base::flat_map<std::string, double> ranker_scores_;
 
   // More often than not, calling Open() on a ChromeSearchResult will cause the
   // app list view to be closed as a side effect. Because opening apps can take

@@ -8,6 +8,7 @@ import {Result} from './launcher_internals.mojom-webui.js';
 
 export interface LauncherResultsTableElement {
   $: {
+    'headerRow': HTMLTableRowElement,
     'resultsSection': HTMLTableSectionElement,
   };
 }
@@ -21,20 +22,34 @@ export class LauncherResultsTableElement extends PolymerElement {
     return html`{__html_template__}`;
   }
 
-  private idSet: Set<string> = new Set();
+  // Current results keyed by result id.
+  private results: Map<string, Result> = new Map();
+
+  // Extra header cells, keyed by their text content. These are placed into the
+  // header row in insertion order.
+  private headerCells: Map<string, HTMLTableCellElement> = new Map();
 
   clearResults() {
-    this.idSet.clear();
+    this.results.clear();
     this.$.resultsSection.innerHTML = '';
+    for (const cell of this.headerCells.values()) {
+      this.$.headerRow.removeChild(cell);
+    }
+    this.headerCells.clear();
   }
 
-  addResults(results: Array<Result>) {
-    for (const result of results) {
-      if (this.idSet.has(result.id)) {
-        continue;
-      }
-      this.idSet.add(result.id);
+  addResults(newResults: Array<Result>) {
+    for (const result of newResults) {
+      this.results.set(result.id, result);
+      this.addHeaders(Object.keys(result.rankerScores));
+    }
 
+    // Clear and repopulate the table, sorted by descending score.
+    // TODO(crbug.com/1211232): Allow sorting by other ranking methods.
+    let sortedResults = Array.from(this.results.values());
+    sortedResults.sort((a, b) => b.score - a.score);
+    this.$.resultsSection.innerHTML = '';
+    for (const result of sortedResults) {
       const newRow = this.$.resultsSection.insertRow();
       [result.id,
        result.title,
@@ -42,14 +57,35 @@ export class LauncherResultsTableElement extends PolymerElement {
        result.resultType,
        result.displayType,
        result.score.toString(),
+       ...this.flattenScores(result.rankerScores),
       ].forEach(field => {
         const newCell = newRow.insertCell();
         newCell.textContent = field;
       });
-
-      // TODO(crbug.com/1211232): Handle other ranker scores and allow sorting
-      // by the chosen score.
     }
+  }
+
+  // Appends any new headers to the end of the header row.
+  private addHeaders(newHeaders: Array<string>) {
+    for (const header of newHeaders) {
+      if (this.headerCells.has(header)) {
+        continue;
+      }
+      const newCell = this.$.headerRow.insertCell();
+      newCell.textContent = header;
+      this.headerCells.set(header, newCell);
+    }
+  }
+
+  // Converts ranker scores into an array of scores in string form and ordered
+  // according to the current headers.
+  private flattenScores(inputScores: {[key: string]: number}): Array<string> {
+    let outputScores = [];
+    for (const header of this.headerCells.keys()) {
+      const score = inputScores[header];
+      outputScores.push(score === undefined ? '' : score.toString());
+    }
+    return outputScores;
   }
 }
 

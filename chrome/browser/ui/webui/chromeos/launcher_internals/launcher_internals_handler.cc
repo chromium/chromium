@@ -25,14 +25,12 @@ void LauncherInternalsHandler::OnResultsAdded(
     const std::vector<ChromeSearchResult*>& results) {
   std::vector<launcher_internals::mojom::ResultPtr> internals_results;
   for (auto* result : results) {
-    // TODO(crbug.com/1211232): Handle ranker scores once they exist.
     internals_results.emplace_back(launcher_internals::mojom::Result::New(
         result->id(), base::UTF16ToUTF8(result->title()),
         base::UTF16ToUTF8(result->details()),
         app_list::ResultTypeToString(result->result_type()),
         app_list::DisplayTypeToString(result->display_type()),
-        result->relevance(),
-        std::vector<launcher_internals::mojom::ScorePtr>()));
+        result->relevance(), result->ranker_scores()));
   }
   page_->UpdateResults(base::UTF16ToUTF8(query), std::move(internals_results));
 }

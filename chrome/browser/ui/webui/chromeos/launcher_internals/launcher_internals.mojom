@@ -4,14 +4,6 @@
 
 module launcher_internals.mojom;
 
-struct Score {
-  // A debug string describing the method used to calculate the score.
-  string ranking_method;
-
-  // The score corresponding to this method.
-  double score;
-};
-
 // A single search result. More fields can be added when needed.
 struct Result {
   // Unique ID string for the result.
@@ -32,8 +24,9 @@ struct Result {
   // The score associated with this result, in the range [0,1].
   double score;
 
-  // Scores corresponding to different ranking methods.
-  array<Score> ranker_scores;
+  // Scores corresponding to different ranking methods. These are keyed by a
+  // string describing the ranking method.
+  map<string, double> ranker_scores;
 };
 
 // Interface for creating internals page handlers. Implemented by the WebUI
