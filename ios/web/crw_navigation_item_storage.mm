@@ -86,11 +86,6 @@ const char kNavigationItemSerializedRequestHeadersSizeHistogram[] =
     if ([aDecoder containsValueForKey:web::kNavigationItemStorageURLKey]) {
       _URL = GURL(web::nscoder_util::DecodeString(
           aDecoder, web::kNavigationItemStorageURLKey));
-    } else {
-      // TODO(crbug.com/1073378): this is a temporary workaround added in M84 to
-      // support old client that don't have the kNavigationItemStorageURLKey. It
-      // should be removed once enough time has passed.
-      _URL = _virtualURL;
     }
 
     if ([aDecoder

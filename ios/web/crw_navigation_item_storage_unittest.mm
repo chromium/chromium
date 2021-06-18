@@ -104,31 +104,6 @@ TEST_F(CRWNavigationItemStorageTest, Histograms) {
       web::kNavigationItemSerializedRequestHeadersSizeHistogram, 1 /*KB*/, 1);
 }
 
-// Tests that unarchiving CRWNavigationItemStorage data with the URL key being
-// removed is working.
-// TODO(crbug.com/1073378): this is a temporary workaround added in M84 to
-// support old client that don't have the kNavigationItemStorageURLKey. It
-// should be removed once enough time has passed.
-TEST_F(CRWNavigationItemStorageTest, EncodeDecodeNoURL) {
-  NSKeyedArchiver* archiver =
-      [[NSKeyedArchiver alloc] initRequiringSecureCoding:NO];
-  std::string virtualURL = item_storage().virtualURL.spec();
-  [archiver encodeBytes:reinterpret_cast<const uint8_t*>(virtualURL.data())
-                 length:virtualURL.size()
-                 forKey:web::kNavigationItemStorageVirtualURLKey];
-
-  NSKeyedUnarchiver* unarchiver =
-      [[NSKeyedUnarchiver alloc] initForReadingFromData:archiver.encodedData
-                                                  error:nil];
-  unarchiver.requiresSecureCoding = NO;
-  CRWNavigationItemStorage* decoded =
-      [[CRWNavigationItemStorage alloc] initWithCoder:unarchiver];
-
-  // If the URL isn't encoded, the virtual URL is used.
-  EXPECT_EQ(item_storage().virtualURL, decoded.URL);
-  EXPECT_EQ(item_storage().virtualURL, decoded.virtualURL);
-}
-
 // CRWNavigationItemStorage does not store "virtualURL" if the it's the same
 // as "URL" to save memory. This test verifies that virtualURL actually gets
 // restored correctly.
