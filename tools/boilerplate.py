@@ -38,6 +38,7 @@ EXTENSIONS_TO_COMMENTS = {
     'gni': '#',
     'mojom': '//',
     'typemap': '#',
+    "swift": "//",
 }
 
 
