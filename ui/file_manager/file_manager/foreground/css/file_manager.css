@@ -1231,7 +1231,7 @@ body.files-ng .dialog-footer .select {
 }
 
 body.files-ng .dialog-footer div.select:not(:active):focus {
-  box-shadow: 0 0 0 2px rgba(var(--cros-menu-button-outline-color-focused-rgb),
+  box-shadow: 0 0 0 2px rgba(var(--cros-focus-ring-color-rgb),
               50%);
 }
 

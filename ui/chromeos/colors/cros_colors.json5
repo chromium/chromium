@@ -74,16 +74,34 @@
       dark: "$google_grey_500",
     },
 
+    highlight_color: {
+      light: "$google_blue_50",
+      dark: "rgba($google_blue_300_rgb, 0.3)",
+    },
+
+    dark_ink_ripple_color: "rgba($black_rgb, 0.06)",
+    light_ink_ripple_color: "rgba($white_rgb, 0.08)",
+    ink_ripple_color: {
+      light: "$dark_ink_ripple_color",
+      dark: "$light_ink_ripple_color",
+    },
+
+    focus_ring_color: "$icon_color_prominent",
+
     /*
      * Component colors.
      */
     toolbar_bg_color: "$white",
     toolbar_search_bg_color: "$google_grey_100",
+    toolbar_search_result_color_active: "$highlight_color",
 
-    // TODO(crbug/1122767): Rename menu_button_* to app sidebar menu items.
-    menu_button_bg_color_active: "$google_blue_50",
-    menu_button_bg_color_hover: "$google_grey_100",
-    menu_button_outline_color_focused: "$google_blue_600",
+    tab_bg_color_active: "$highlight_color",
+    tab_bg_color_hover: "$ink_ripple_color",
+    tab_label_color_prominent: "$icon_color_prominent",
+    tab_label_color: {
+      light: "$text_color_secondary",
+      dark: "$text_color_primary",
+    },
 
     menu_item_bg_color_focus: {
       light: "rgba($black_rgb, 0.06)",
