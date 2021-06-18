@@ -33,7 +33,7 @@ class BaseViewBuilderT : public internal::ViewBuilderCore {
   }
 
   template <typename Child>
-  Builder& AddChild(Child& child) {
+  Builder& AddChild(Child&& child) {
     children_.push_back(child);
     return *static_cast<Builder*>(this);
   }
