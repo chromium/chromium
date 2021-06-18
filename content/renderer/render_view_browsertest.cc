@@ -2498,7 +2498,7 @@ TEST_F(RenderViewImplTest, NavigateSubframe) {
   common_params->url = GURL("data:text/html,world");
   common_params->navigation_type = mojom::NavigationType::DIFFERENT_DOCUMENT;
   common_params->transition = ui::PAGE_TRANSITION_TYPED;
-  common_params->navigation_start = base::TimeTicks::FromInternalValue(1);
+  common_params->navigation_start = base::TimeTicks::Now();
   auto commit_params = DummyCommitNavigationParams();
   commit_params->current_history_list_length = 1;
   commit_params->current_history_list_offset = 0;
