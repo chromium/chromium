@@ -111,14 +111,14 @@
 <div class="text-container" aria-hidden="true">
   <div id="primaryText" title="[[data.tab.title]]"></div>
   <div id="secondaryContainer">
-    <template is="dom-if" if="[[data.tabGroup]]">
-      <svg id="groupSvg" viewBox="-5 -5 10 10"
-          xmlns="http://www.w3.org/2000/svg">
-        <circle id= "groupDot" cx="0" cy="0" r="4">
-      </svg>
-      <div id="groupTitle">[[data.tabGroup.title]]</div>
-      <div class="separator">•</div>
-    </template>
+    <!-- We do not leverage a dom-if element as the element highlighting logic
+        may trigger before the stamping has taken place -->
+    <svg id="groupSvg" viewBox="-5 -5 10 10" xmlns="http://www.w3.org/2000/svg"
+        display$="[[groupSvgDisplay_(data)]]">
+      <circle id= "groupDot" cx="0" cy="0" r="4">
+    </svg>
+    <div id="groupTitle" hidden="[[!data.tabGroup]]">[[data.tabGroup.title]]</div>
+    <div class="separator" hidden="[[!data.tabGroup]]">•</div>
     <div id="secondaryText"></div>
     <div class="separator" hidden="[[!data.hostname]]">•</div>
     <div id="secondaryTimestamp">

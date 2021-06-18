@@ -25,12 +25,6 @@ export class TabData {
     /** @type {string} */
     this.hostname;
 
-    /** @type {!Array<!{start: number, length: number}>|undefined} */
-    this.titleHighlightRanges;
-
-    /** @type {!Array<!{start: number, length: number}>|undefined} */
-    this.hostnameHighlightRanges;
-
     /** @type {boolean} */
     this.inActiveWindow;
 
@@ -42,7 +36,29 @@ export class TabData {
 
     /** @type {?TabGroup} */
     this.tabGroup;
+
+    /** @type {!Object} */
+    this.highlightRanges = {};
   }
+}
+
+// TODO(romanarora): Replace with Polymer's path get function when available.
+// See crbug.com/1221602
+/**
+ * @param {!Object} obj
+ * @param {!Array<string>} path
+ * @return The value present at the path specified or undefined if no such path
+ *     exists.
+ */
+export function getPathValue(obj, path) {
+  for (let i = 0; i < path.length; i++) {
+    if (obj === undefined) {
+      return undefined;
+    }
+    obj = obj[path[i]];
+  }
+
+  return obj;
 }
 
 /**

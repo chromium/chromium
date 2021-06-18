@@ -168,8 +168,14 @@ const base::FeatureParam<int> kTabSearchSearchDistance{
 const base::FeatureParam<double> kTabSearchSearchThreshold{
     &kTabSearchFuzzySearch, "TabSearchSearchThreshold", 0.0};
 
-const base::FeatureParam<double> kTabSearchTitleToHostnameWeightRatio{
-    &kTabSearchFuzzySearch, "TabSearchTitleToHostnameWeightRatio", 2.0};
+const base::FeatureParam<double> kTabSearchTitleWeight{
+    &kTabSearchFuzzySearch, "TabSearchTitleWeight", 2.0};
+
+const base::FeatureParam<double> kTabSearchHostnameWeight{
+    &kTabSearchFuzzySearch, "TabSearchHostnameWeight", 1.0};
+
+const base::FeatureParam<double> kTabSearchGroupTitleWeight{
+    &kTabSearchFuzzySearch, "TabSearchGroupTitleWeight", 1.5};
 
 const base::FeatureParam<bool> kTabSearchMoveActiveTabToBottom{
     &kTabSearchFuzzySearch, "TabSearchMoveActiveTabToBottom", true};

@@ -14,7 +14,7 @@ import {getFaviconForPageURL} from 'chrome://resources/js/icon.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {highlight} from 'chrome://resources/js/search_highlight_utils.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {ariaLabel, TabData, TabItemType} from './tab_data.js';
+import {ariaLabel, getPathValue, TabData, TabItemType} from './tab_data.js';
 import {colorName} from './tab_group_color_helper.js';
 import {Tab} from './tab_search.mojom-webui.js';
 
@@ -84,24 +84,41 @@ export class TabSearchItem extends TabSearchItemBase {
             tab.isDefaultFavicon ? 'chrome://newtab' : tab.url, false);
   }
 
-  /** @private */
-  dataChanged_() {
-    this.highlightText_(
-        /** @type {!HTMLElement} */ (this.$.primaryText), this.data.tab.title,
-        this.data.titleHighlightRanges);
-    this.highlightText_(
-        /** @type {!HTMLElement} */ (this.$.secondaryText), this.data.hostname,
-        this.data.hostnameHighlightRanges);
+  /**
+   * Determines the display attribute value for the group SVG element.
+   * @param {!TabData} tabData
+   * @return {string}
+   * @private
+   */
+  groupSvgDisplay_(tabData) {
+    return tabData.tabGroup ? 'block' : 'none';
+  }
+
+  /**
+   * @param {!TabData} data
+   * @private
+   */
+  dataChanged_(data) {
+    [['tab.title', this.$.primaryText], ['hostname', this.$.secondaryText],
+     ['tabGroup.title', this.$.groupTitle]]
+        .forEach(([path, element]) => {
+          if (element) {
+            const highlightRanges =
+                data.highlightRanges ? data.highlightRanges[path] : undefined;
+            this.highlightText_(
+                /** @type {!HTMLElement} */ (element),
+                getPathValue(data, path.split('.')), highlightRanges);
+          }
+        });
 
     // Show chrome:// if it's a chrome internal url
-    let secondaryLabel = this.data.hostname;
+    let secondaryLabel = data.hostname;
     let protocol = '';
     try {
-      protocol = new URL(this.data.tab.url).protocol;
+      protocol = new URL(data.tab.url).protocol;
     } catch (e) {
       // TODO(crbug.com/1186409): Remove this after we root cause the issue
-      console.error(
-          `Error parsing URL on Tab Search: url=${this.data.tab.url}`);
+      console.error(`Error parsing URL on Tab Search: url=${data.tab.url}`);
     }
     if (protocol === 'chrome:') {
       /** @type {!HTMLElement} */ (this.$.secondaryText)
@@ -109,10 +126,10 @@ export class TabSearchItem extends TabSearchItemBase {
       secondaryLabel = `chrome://${secondaryLabel}`;
     }
 
-    if (this.data.tabGroup) {
+    if (data.tabGroup) {
       this.style.setProperty(
           '--group-dot-color',
-          `var(--tab-group-color-${colorName(this.data.tabGroup.color)})`);
+          `var(--tab-group-color-${colorName(data.tabGroup.color)})`);
     }
   }
 

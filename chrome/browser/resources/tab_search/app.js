@@ -94,7 +94,11 @@ export class TabSearchAppElement extends PolymerElement {
             {
               name: 'hostname',
               weight: 1,
-            }
+            },
+            {
+              name: 'tabGroup.title',
+              weight: 1.5,
+            },
           ],
         },
       },
@@ -163,12 +167,16 @@ export class TabSearchAppElement extends PolymerElement {
       keys: [
         {
           name: 'tab.title',
-          weight: loadTimeData.getValue('searchTitleToHostnameWeightRatio'),
+          weight: loadTimeData.getValue('searchTitleWeight'),
         },
         {
           name: 'hostname',
-          weight: 1,
-        }
+          weight: loadTimeData.getValue('searchHostnameWeight'),
+        },
+        {
+          name: 'tabGroup.title',
+          weight: loadTimeData.getValue('searchGroupTitleWeight'),
+        },
       ],
     });
   }

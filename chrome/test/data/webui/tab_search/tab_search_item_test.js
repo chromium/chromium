@@ -25,15 +25,13 @@ suite('TabSearchItemTest', () => {
 
   /**
    * @param {string} text
-   * @param {?Array<{start:number, length:number}>} highlightRanges
+   * @param {?Array<{start:number, length:number}>} fieldHighlightRanges
    * @param {!Array<string>} expected
    */
   async function assertTabSearchItemHighlights(
-      text, highlightRanges, expected) {
+      text, fieldHighlightRanges, expected) {
     const data = /** @type {!TabData} */ ({
-      titleHighlightRanges: highlightRanges,
       hostname: text,
-      hostnameHighlightRanges: highlightRanges,
       tab: {
         active: true,
         index: 0,
@@ -44,7 +42,11 @@ suite('TabSearchItemTest', () => {
         tabId: 0,
         url: 'https://example.com',
         title: text,
-      }
+      },
+      highlightRanges: {
+        'tab.title': fieldHighlightRanges,
+        hostname: fieldHighlightRanges,
+      },
     });
     await setupTest(data);
 
@@ -93,8 +95,12 @@ suite('TabSearchItemTest', () => {
       title: 'Example.com site',
     });
 
-    await setupTest(/** @type {!TabData} */ (
-        {hostname: 'example', tab, type: TabItemType.OPEN}));
+    await setupTest(/** @type {!TabData} */ ({
+      hostname: 'example',
+      tab,
+      type: TabItemType.OPEN,
+      highlightRanges: {},
+    }));
 
     let tabSearchItemCloseButton = /** @type {!HTMLElement} */ (
         tabSearchItem.shadowRoot.querySelector('cr-icon-button'));
@@ -129,8 +135,13 @@ suite('TabSearchItemTest', () => {
       title: 'Examples',
     });
 
-    await setupTest(/** @type {!TabData} */ (
-        {hostname: 'example', tab, type: TabItemType.OPEN, tabGroup}));
+    await setupTest(/** @type {!TabData} */ ({
+      hostname: 'example',
+      tab,
+      type: TabItemType.OPEN,
+      tabGroup,
+      highlightRanges: {},
+    }));
     const groupDotElement = tabSearchItem.shadowRoot.querySelector('#groupDot');
     assertNotEquals(null, groupDotElement);
     const groupDotComputedStyle = getComputedStyle(groupDotElement);

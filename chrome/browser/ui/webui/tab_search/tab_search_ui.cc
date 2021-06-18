@@ -64,8 +64,11 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
       base::ClampToRange<double>(features::kTabSearchSearchThreshold.Get(),
                                  features::kTabSearchSearchThresholdMin,
                                  features::kTabSearchSearchThresholdMax));
-  source->AddDouble("searchTitleToHostnameWeightRatio",
-                    features::kTabSearchTitleToHostnameWeightRatio.Get());
+  source->AddDouble("searchTitleWeight", features::kTabSearchTitleWeight.Get());
+  source->AddDouble("searchHostnameWeight",
+                    features::kTabSearchHostnameWeight.Get());
+  source->AddDouble("searchGroupTitleWeight",
+                    features::kTabSearchGroupTitleWeight.Get());
 
   source->AddBoolean("moveActiveTabToBottom",
                      features::kTabSearchMoveActiveTabToBottom.Get());

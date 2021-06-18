@@ -112,8 +112,17 @@ extern const base::FeatureParam<double> kTabSearchSearchThreshold;
 constexpr double kTabSearchSearchThresholdMin = 0.0;
 constexpr double kTabSearchSearchThresholdMax = 1.0;
 
-// Controls how heavily weighted the tab's title is relative to the hostname.
-extern const base::FeatureParam<double> kTabSearchTitleToHostnameWeightRatio;
+// Controls the weight associated with a tab's title for filtering and ordering
+// list items.
+extern const base::FeatureParam<double> kTabSearchTitleWeight;
+
+// Controls the weight associated with a tab's hostname when filering and
+// odering list items.
+extern const base::FeatureParam<double> kTabSearchHostnameWeight;
+
+// Controls the weight associated with a tab's group title filering and
+// odering list items
+extern const base::FeatureParam<double> kTabSearchGroupTitleWeight;
 
 // Whether to move the active tab to the bottom of the list.
 extern const base::FeatureParam<bool> kTabSearchMoveActiveTabToBottom;
