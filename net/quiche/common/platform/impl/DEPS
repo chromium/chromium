@@ -6,5 +6,4 @@ include_rules = [
   "+third_party/abseil-cpp/absl/container/node_hash_map.h",
   "+third_party/abseil-cpp/absl/hash/hash.h",
   "+third_party/abseil-cpp/absl/strings",
-  "+third_party/abseil-cpp/absl/types/optional.h",
 ]

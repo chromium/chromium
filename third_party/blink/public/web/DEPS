@@ -63,7 +63,6 @@ include_rules = [
     "+ui/base/ime/mojom/virtual_keyboard_types.mojom-shared.h",
 
     # Allowed only inside INSIDE_BLINK
-    "+third_party/abseil-cpp/absl/types/optional.h",
     "+third_party/blink/renderer/core",
     "+third_party/blink/renderer/platform",
 ]

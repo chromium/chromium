@@ -10,7 +10,6 @@ include_rules = [
     "+base/threading/thread.h",
     "+base/time/time.h",
     "+build/build_config.h",
-    "+third_party/abseil-cpp/absl/types/optional.h",
     # Currently the only AgentSchedulingGroup-scoped object in Blink is the
     # AgentGroupScheduler. As such, that is how we provide access to the
     # ASG-bound BrowserInterfaceBroker, necessitating this dependency.

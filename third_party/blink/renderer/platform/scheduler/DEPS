@@ -53,7 +53,6 @@ include_rules = [
   "+components/scheduling_metrics",
   "+services/metrics",
 
-  "+third_party/abseil-cpp/absl/types/optional.h",
   "+third_party/blink/renderer/platform/back_forward_cache_utils.h",
   "+third_party/blink/renderer/platform/bindings/parkable_string_manager.h",
   "+third_party/blink/renderer/platform/instrumentation",

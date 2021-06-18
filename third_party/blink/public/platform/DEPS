@@ -68,7 +68,6 @@ include_rules = [
     "+services/network/public/mojom/web_client_hints_types.mojom-shared.h",
 
     "+services/service_manager/public/mojom",
-    "+third_party/abseil-cpp/absl/types/optional.h",
     "+third_party/blink/public/common/web_cache/web_cache_resource_type_stats.h",
     "+third_party/blink/public/platform",
     "+third_party/blink/public/mojom/tokens",
