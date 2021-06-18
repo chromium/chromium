@@ -3442,17 +3442,6 @@ scoped_refptr<const NGLayoutResult> LayoutBox::CachedLayoutResult(
   if (early_break)
     return nullptr;
 
-  // We'll never re-use the layout result of a fieldset contents wrapper. If the
-  // current rendered legend ceased to be one, and any next legend child became
-  // the rendered legend instead, we need to lay out the fieldset contents
-  // wrapper, to get rid of the fragment for the former regular block child
-  // legend (now rendered legend). When this happens, the contents wrapper won't
-  // necessarily be marked for layout, since we don't detect that anything in
-  // there has changed (and detecting that would be more expensive). So just
-  // refuse to hit the cache, so that we force re-layout.
-  if (UNLIKELY(IsAnonymous() && Parent() && Parent()->IsLayoutNGFieldset()))
-    return nullptr;
-
   DCHECK_EQ(cached_layout_result->Status(), NGLayoutResult::kSuccess);
 
   // Set our initial temporary cache status to "hit".

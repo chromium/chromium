@@ -149,24 +149,7 @@ LayoutObject* FindAncestorByPredicate(const LayoutObject* descendant,
     if (skip_info)
       skip_info->Update(*object);
 
-    if (UNLIKELY(object->IsRenderedLegend())) {
-      // According to the HTML standard, a rendered legend is a child of a
-      // fieldset. However a rendered legend is a child of an anonymous fieldset
-      // content box in a LayoutObject tree. NG fragment trees follow the
-      // structure of the standard.
-      //
-      // The following code resolves this inconsistency, and we skip anonymous
-      // fieldset content boxes if |descendant| is in a rendered legend. We also
-      // need to skip flow threads, in case the containing fieldset also
-      // establishes a multicol container.
-      LayoutObject* legend_parent = object->Parent();
-      while (legend_parent->IsAnonymous()) {
-        if (skip_info)
-          skip_info->Update(*legend_parent);
-        object = legend_parent;
-        legend_parent = legend_parent->Parent();
-      }
-    } else if (UNLIKELY(object->IsColumnSpanAll())) {
+    if (UNLIKELY(object->IsColumnSpanAll())) {
       // The containing block chain goes directly from the column spanner to the
       // multi-column container.
       const auto* multicol_container =
@@ -725,14 +708,6 @@ bool LayoutObject::IsRenderedLegendInternal() const {
   if (!parent)
     return false;
 
-  // If there is a rendered legend, it will be found inside the anonymous
-  // fieldset wrapper. If the anonymous fieldset wrapper is a multi-column,
-  // the rendered legend will be found inside the multi-column flow thread.
-  if (parent->IsLayoutFlowThread())
-    parent = parent->Parent();
-  if (parent->IsAnonymous() && parent->Parent()->IsLayoutNGFieldset())
-    parent = parent->Parent();
-
   const auto* parent_layout_block = DynamicTo<LayoutBlock>(parent);
   return parent_layout_block && IsA<HTMLFieldSetElement>(parent->GetNode()) &&
          LayoutFieldset::FindInFlowLegend(*parent_layout_block) == this;
@@ -979,9 +954,6 @@ PaintLayer* LayoutObject::PaintingLayer() const {
     // be accessed through the associated out-of-flow placeholder's parent.
     if (object.IsColumnSpanAll())
       return object.SpannerPlaceholder();
-    // Rendered legends paint through their fieldset container.
-    if (object.IsRenderedLegend())
-      return LayoutFieldset::FindLegendContainingBlock(To<LayoutBox>(object));
     // Use ContainingBlock() instead of Parent() for floating objects to omit
     // any self-painting layers of inline objects that don't paint the floating
     // object. This is only needed for inline-level floats not managed by
@@ -1552,9 +1524,6 @@ LayoutBlock* LayoutObject::ContainingBlock(AncestorSkipInfo* skip_info) const {
   LayoutObject* object;
   if (IsColumnSpanAll()) {
     object = SpannerPlaceholder()->ContainingBlock();
-  } else if (IsRenderedLegend()) {
-    return LayoutFieldset::FindLegendContainingBlock(To<LayoutBox>(*this),
-                                                     skip_info);
   } else {
     object = Parent();
     if (!object && IsLayoutCustomScrollbarPart()) {
@@ -3670,8 +3639,7 @@ LayoutObject* LayoutObject::Container(AncestorSkipInfo* skip_info) const {
     return multicol_container;
   }
 
-  if ((IsFloating() && !IsInLayoutNGInlineFormattingContext()) ||
-      IsRenderedLegend())
+  if (IsFloating() && !IsInLayoutNGInlineFormattingContext())
     return ContainingBlock(skip_info);
 
   return Parent();

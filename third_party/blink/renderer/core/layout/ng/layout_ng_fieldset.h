@@ -21,6 +21,8 @@ class CORE_EXPORT LayoutNGFieldset final : public LayoutNGBlockFlow {
 
   bool CreatesNewFormattingContext() const final { return true; }
 
+  LayoutBlock* FindAnonymousFieldsetContentBox() const;
+
  protected:
   bool IsOfType(LayoutObjectType) const override;
   void UpdateAnonymousChildStyle(const LayoutObject* child,

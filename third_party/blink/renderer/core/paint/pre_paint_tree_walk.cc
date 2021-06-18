@@ -796,17 +796,6 @@ void PrePaintTreeWalk::WalkLegacyChildren(const LayoutObject& object,
     }
   }
 
-  if (UNLIKELY(object.IsFieldsetIncludingNG())) {
-    // Handle the rendered legend of the fieldset right away. It may not be a
-    // direct child in the layout object tree (there may be an anonymous
-    // fieldset content wrapper in-between, and even a flow thread), but it is
-    // to be treated as such (similarly to out-of-flow positioned elements in a
-    // way).
-    if (const LayoutBox* legend =
-            LayoutFieldset::FindInFlowLegend(To<LayoutBlock>(object)))
-      Walk(*legend, context, /* iterator */ nullptr);
-  }
-
   for (const LayoutObject* child = object.SlowFirstChild(); child;
        child = child->NextSibling()) {
     if (child->IsLayoutMultiColumnSpannerPlaceholder()) {
@@ -825,11 +814,6 @@ void PrePaintTreeWalk::WalkLegacyChildren(const LayoutObject& object,
     // (see SetupFragmentData()).
     if (UNLIKELY(RuntimeEnabledFeatures::LayoutNGFragmentTraversalEnabled() &&
                  child->IsOutOfFlowPositioned() && object.IsLayoutNGObject()))
-      continue;
-
-    // The rendered legend was handled above, before processing the children of
-    // the fieldset. So skip it when found during normal child traversal.
-    if (UNLIKELY(child->IsRenderedLegend()))
       continue;
 
     Walk(*child, context, /* iterator */ nullptr);

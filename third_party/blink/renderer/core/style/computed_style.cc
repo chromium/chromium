@@ -264,6 +264,15 @@ bool ComputedStyle::NeedsReattachLayoutTree(const Element& element,
     // based on appearance.
     return true;
   }
+
+  // LayoutObject tree structure for <legend> depends on whether it's a
+  // rendered legend or not.
+  if (UNLIKELY(IsA<HTMLLegendElement>(element) &&
+               (old_style->IsFloating() != new_style->IsFloating() ||
+                old_style->HasOutOfFlowPosition() !=
+                    new_style->HasOutOfFlowPosition())))
+    return true;
+
   if (!RuntimeEnabledFeatures::LayoutNGEnabled())
     return false;
 

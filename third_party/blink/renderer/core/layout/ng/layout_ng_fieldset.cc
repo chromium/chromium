@@ -14,9 +14,40 @@ LayoutNGFieldset::LayoutNGFieldset(Element* element)
   SetChildrenInline(false);
 }
 
+LayoutBlock* LayoutNGFieldset::FindAnonymousFieldsetContentBox() const {
+  LayoutObject* first_child = FirstChild();
+  if (!first_child)
+    return nullptr;
+  if (first_child->IsAnonymous())
+    return To<LayoutBlock>(first_child);
+  LayoutObject* last_child = first_child->NextSibling();
+  DCHECK(!last_child || !last_child->NextSibling());
+  if (last_child && last_child->IsAnonymous())
+    return To<LayoutBlock>(last_child);
+  return nullptr;
+}
+
 void LayoutNGFieldset::AddChild(LayoutObject* new_child,
                                 LayoutObject* before_child) {
-  LayoutBlock* fieldset_content = To<LayoutBlock>(FirstChild());
+  // Adding a child LayoutObject always causes reattach of <fieldset>. So
+  // |before_child| is always nullptr.
+  // See HTMLFieldSetElement::DidRecalcStyle().
+  DCHECK(!before_child);
+
+  // https://html.spec.whatwg.org/C/#the-fieldset-and-legend-elements
+  // > * If the element has a rendered legend, then that element is expected
+  // >   to be the first child box.
+  // > * The anonymous fieldset content box is expected to appear after the
+  // >   rendered legend and is expected to contain the content (including
+  // >   the '::before' and '::after' pseudo-elements) of the fieldset
+  // >   element except for the rendered legend, if there is one.
+
+  if (new_child->IsRenderedLegendCandidate() &&
+      !LayoutFieldset::FindInFlowLegend(*this)) {
+    LayoutNGBlockFlow::AddChild(new_child, FirstChild());
+    return;
+  }
+  LayoutBlock* fieldset_content = FindAnonymousFieldsetContentBox();
   if (!fieldset_content) {
     // We wrap everything inside an anonymous child, which will take care of the
     // fieldset contents. This parent will only be responsible for the fieldset
@@ -171,16 +202,14 @@ bool LayoutNGFieldset::HitTestChildren(HitTestResult& result,
 }
 
 LayoutUnit LayoutNGFieldset::ScrollWidth() const {
-  const LayoutObject* child = FirstChild();
-  if (child && child->IsAnonymous())
-    return To<LayoutBox>(child)->ScrollWidth();
+  if (const auto* content = FindAnonymousFieldsetContentBox())
+    return content->ScrollWidth();
   return LayoutNGBlockFlow::ScrollWidth();
 }
 
 LayoutUnit LayoutNGFieldset::ScrollHeight() const {
-  const LayoutObject* child = FirstChild();
-  if (child && child->IsAnonymous())
-    return To<LayoutBox>(child)->ScrollHeight();
+  if (const auto* content = FindAnonymousFieldsetContentBox())
+    return content->ScrollHeight();
   return LayoutNGBlockFlow::ScrollHeight();
 }
 

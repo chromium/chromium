@@ -969,10 +969,8 @@ PaintLayer* PaintLayer::ContainingLayer(const PaintLayer* ancestor,
   // inline parent to find the actual containing layer through the containing
   // block chain.
   // Column span need to find the containing layer through its containing block.
-  // A rendered legend needs to find the containing layer through its containing
-  // block to skip anonymous fieldset content box.
   if ((!Parent() || Parent()->GetLayoutObject().IsLayoutBlock()) &&
-      !layout_object.IsColumnSpanAll() && !layout_object.IsRenderedLegend())
+      !layout_object.IsColumnSpanAll())
     return Parent();
 
   return SlowContainingLayer(ancestor, skipped_ancestor, &layout_object);

@@ -33,12 +33,16 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/layout_object_factory.h"
+#include "third_party/blink/renderer/core/layout/ng/layout_ng_fieldset.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace blink {
 
 HTMLFieldSetElement::HTMLFieldSetElement(Document& document)
-    : HTMLFormControlElement(html_names::kFieldsetTag, document) {}
+    : HTMLFormControlElement(html_names::kFieldsetTag, document) {
+  // This class has DidRecalcStyle().
+  SetHasCustomStyleCallbacks();
+}
 
 bool HTMLFieldSetElement::MatchesValidityPseudoClasses() const {
   return true;
@@ -125,13 +129,16 @@ LayoutObject* HTMLFieldSetElement::CreateLayoutObject(
 }
 
 LayoutBox* HTMLFieldSetElement::GetLayoutBoxForScrolling() const {
-  auto* layout_box = GetLayoutBox();
-  if (!layout_box || !layout_box->IsLayoutNGFieldset())
-    return HTMLFormControlElement::GetLayoutBoxForScrolling();
-  LayoutObject* child = layout_box->SlowFirstChild();
-  if (child && child->IsAnonymous())
-    return To<LayoutBox>(child);
+  if (const auto* ng_fieldset = DynamicTo<LayoutNGFieldset>(GetLayoutBox())) {
+    if (auto* content = ng_fieldset->FindAnonymousFieldsetContentBox())
+      return content;
+  }
   return HTMLFormControlElement::GetLayoutBoxForScrolling();
+}
+
+void HTMLFieldSetElement::DidRecalcStyle(const StyleRecalcChange change) {
+  if (ChildNeedsReattachLayoutTree())
+    SetNeedsReattachLayoutTree();
 }
 
 HTMLLegendElement* HTMLFieldSetElement::Legend() const {

@@ -1072,7 +1072,7 @@ void LayoutBlock::RemovePositionedObject(LayoutBox* o) {
 
 bool LayoutBlock::IsAnonymousNGFieldsetContentWrapper() const {
   NOT_DESTROYED();
-  return Parent() && Parent()->IsLayoutNGFieldset();
+  return Parent() && Parent()->IsLayoutNGFieldset() && IsAnonymous();
 }
 
 void LayoutBlock::InvalidatePaint(
@@ -1296,12 +1296,6 @@ bool LayoutBlock::HitTestChildren(HitTestResult& result,
         result, hit_test_location, accumulated_offset, hit_test_action);
   }
 
-  // We may use legacy code to hit-test the anonymous fieldset content wrapper
-  // child. The layout object for the rendered legend will be a child of that
-  // one, and has to be skipped here, since its fragment is actually laid out on
-  // the outside and is a sibling of the anonymous wrapper.
-  bool may_contain_rendered_legend = IsAnonymousNGFieldsetContentWrapper();
-
   PhysicalOffset scrolled_offset = accumulated_offset;
   if (IsScrollContainer())
     scrolled_offset -= PhysicalOffset(PixelSnappedScrolledContentOffset());
@@ -1310,8 +1304,7 @@ bool LayoutBlock::HitTestChildren(HitTestResult& result,
     child_hit_test = kHitTestChildBlockBackground;
   for (LayoutBox* child = LastChildBox(); child;
        child = child->PreviousSiblingBox()) {
-    if (child->HasSelfPaintingLayer() || child->IsColumnSpanAll() ||
-        (may_contain_rendered_legend && child->IsRenderedLegend()))
+    if (child->HasSelfPaintingLayer() || child->IsColumnSpanAll())
       continue;
 
     PhysicalOffset child_accumulated_offset =

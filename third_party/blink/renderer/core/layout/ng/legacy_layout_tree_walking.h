@@ -11,8 +11,7 @@
 // container LayoutBlockFlow will consist of a LayoutFlowThread child, followed
 // by zero or more siblings of type LayoutMultiColumnSet and/or
 // LayoutMultiColumnSpannerPlaceholder. NG needs to skip these special
-// objects. The actual content is inside the flow thread. There are similar
-// complications for fieldset / legend.
+// objects. The actual content is inside the flow thread.
 
 namespace blink {
 
@@ -25,13 +24,6 @@ inline LayoutObject* GetLayoutObjectForFirstChildNode(LayoutBlock* parent) {
     return nullptr;
   if (UNLIKELY(child->IsLayoutFlowThread()))
     child = To<LayoutBlockFlow>(child)->FirstChild();
-  // The rendered legend is a child of the anonymous wrapper, inside the
-  // fieldset container. Or in the case of a multi-column, the rendered legend
-  // is a child of the multi-column flow thread, inside the anonymous wrapper
-  // and fieldset. If we find it, skip it. As far as NG is concerned, the
-  // rendered legend is a child of the fieldset container.
-  if (UNLIKELY(child && child->IsRenderedLegend()))
-    return child->NextSibling();
   return child;
 }
 
@@ -53,30 +45,9 @@ inline Type GetLayoutObjectForParentNode(Type object) {
   if (UNLIKELY(!parent))
     return nullptr;
 
-  // The parent of the rendered legend is the fieldset container, as far as NG
-  // is concerned. Skip the anonymous wrapper in-between.
-  if (UNLIKELY(object->IsRenderedLegend()))
-    return parent->Parent();
-
   if (UNLIKELY(parent->IsLayoutFlowThread()))
     return parent->Parent();
   return parent;
-}
-
-// Return the layout object that should be the sibling NGLayoutInputNode of
-// |object|. Normally this will just be the next sibling layout object, but
-// there are certain layout objects that should be skipped for NG.
-inline LayoutObject* GetLayoutObjectForNextSiblingNode(LayoutObject* object) {
-  // We don't expect to walk the layout tree starting at the rendered legend,
-  // and we'll skip over it if we find it. The renderered legend will be handled
-  // by a special algorithm, and should be invisible among siblings.
-  DCHECK(!object->IsRenderedLegend());
-  LayoutObject* next = object->NextSibling();
-  if (!next)
-    return nullptr;
-  if (UNLIKELY(next->IsRenderedLegend()))
-    return next->NextSibling();
-  return next;
 }
 
 // Return true if the NGLayoutInputNode children of the NGLayoutInputNode
