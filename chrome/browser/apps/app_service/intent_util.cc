@@ -199,7 +199,7 @@ base::flat_map<std::string, std::string> CreateArcIntentExtras(
   return extras;
 }
 
-arc::mojom::IntentInfoPtr CreateArcIntent(
+arc::mojom::IntentInfoPtr ConvertAppServiceToArcIntent(
     const apps::mojom::IntentPtr& intent) {
   arc::mojom::IntentInfoPtr arc_intent;
   if (!intent->action.has_value() && !intent->url.has_value() &&
@@ -332,7 +332,7 @@ std::string CreateLaunchIntent(const std::string& package_name,
   return ret;
 }
 
-arc::IntentFilter CreateArcIntentFilter(
+arc::IntentFilter ConvertAppServiceToArcIntentFilter(
     const std::string& package_name,
     const apps::mojom::IntentFilterPtr& intent_filter) {
   std::vector<std::string> actions;
@@ -394,7 +394,7 @@ arc::IntentFilter CreateArcIntentFilter(
                            std::move(schemes), std::move(mime_types));
 }
 
-apps::mojom::IntentFilterPtr ConvertArcIntentFilter(
+apps::mojom::IntentFilterPtr ConvertArcToAppServiceIntentFilter(
     const arc::IntentFilter& arc_intent_filter) {
   auto intent_filter = apps::mojom::IntentFilter::New();
 

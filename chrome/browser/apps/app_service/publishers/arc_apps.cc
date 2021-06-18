@@ -281,8 +281,9 @@ void AddPreferredApp(const std::string& app_id,
 
   instance->AddPreferredApp(
       package_name,
-      apps_util::CreateArcIntentFilter(package_name, intent_filter),
-      apps_util::CreateArcIntent(std::move(intent)));
+      apps_util::ConvertAppServiceToArcIntentFilter(package_name,
+                                                    intent_filter),
+      apps_util::ConvertAppServiceToArcIntent(std::move(intent)));
 }
 
 void ResetVerifiedLinks(
@@ -743,7 +744,8 @@ void ArcApps::LaunchAppWithIntent(const std::string& app_id,
     } else {
       // If |intent| can't be converted to a string, call the HandleIntent
       // interface.
-      auto arc_intent = apps_util::CreateArcIntent(std::move(intent));
+      auto arc_intent =
+          apps_util::ConvertAppServiceToArcIntent(std::move(intent));
 
       if (!arc_intent) {
         LOG(ERROR) << "Launch App failed, launch intent is not valid";
@@ -1198,7 +1200,7 @@ void ArcApps::OnPreferredAppsChanged() {
     }
     app_service->AddPreferredApp(
         apps::mojom::AppType::kArc, app_id,
-        apps_util::ConvertArcIntentFilter(added_preferred_app),
+        apps_util::ConvertArcToAppServiceIntentFilter(added_preferred_app),
         /*intent=*/nullptr, kFromPublisher);
   }
 
@@ -1227,7 +1229,7 @@ void ArcApps::OnPreferredAppsChanged() {
     }
     app_service->RemovePreferredAppForFilter(
         apps::mojom::AppType::kArc, app_id,
-        apps_util::ConvertArcIntentFilter(deleted_preferred_app));
+        apps_util::ConvertArcToAppServiceIntentFilter(deleted_preferred_app));
   }
 }
 
@@ -1484,7 +1486,7 @@ void ArcApps::UpdateAppIntentFilters(
       continue;
     }
     intent_filters->push_back(
-        apps_util::ConvertArcIntentFilter(arc_intent_filter));
+        apps_util::ConvertArcToAppServiceIntentFilter(arc_intent_filter));
   }
 }
 

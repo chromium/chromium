@@ -105,8 +105,8 @@ TEST_F(IntentUtilsTest, CreateIntentForArcIntentAndActivity) {
     dst_activity->activity_name = intent->activity_name.value();
   }
 
-  EXPECT_TRUE(
-      IsEqual(std::move(arc_intent), apps_util::CreateArcIntent(intent)));
+  EXPECT_TRUE(IsEqual(std::move(arc_intent),
+                      apps_util::ConvertAppServiceToArcIntent(intent)));
   EXPECT_TRUE(IsEqual(std::move(src_activity), std::move(dst_activity)));
 }
 
@@ -116,7 +116,8 @@ TEST_F(IntentUtilsTest, CreateIntentForActivity) {
   const std::string& category = "android.intent.category.LAUNCHER";
   apps::mojom::IntentPtr intent =
       apps_util::CreateIntentForActivity(activity_name, start_type, category);
-  arc::mojom::IntentInfoPtr arc_intent = apps_util::CreateArcIntent(intent);
+  arc::mojom::IntentInfoPtr arc_intent =
+      apps_util::ConvertAppServiceToArcIntent(intent);
 
   ASSERT_TRUE(intent);
   ASSERT_TRUE(arc_intent);

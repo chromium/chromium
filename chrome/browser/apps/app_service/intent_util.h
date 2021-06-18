@@ -66,7 +66,8 @@ base::flat_map<std::string, std::string> CreateArcIntentExtras(
     const apps::mojom::IntentPtr& intent);
 
 // Convert between App Service and ARC Intents.
-arc::mojom::IntentInfoPtr CreateArcIntent(const apps::mojom::IntentPtr& intent);
+arc::mojom::IntentInfoPtr ConvertAppServiceToArcIntent(
+    const apps::mojom::IntentPtr& intent);
 
 // Converts an ARC intent action to an App Service intent action. Returns
 // nullptr if |arc_action| is an action which is not supported by App Service.
@@ -80,10 +81,10 @@ std::string CreateLaunchIntent(const std::string& package_name,
                                const apps::mojom::IntentPtr& intent);
 
 // Convert between App Service and ARC IntentFilters.
-arc::IntentFilter CreateArcIntentFilter(
+arc::IntentFilter ConvertAppServiceToArcIntentFilter(
     const std::string& package_name,
     const apps::mojom::IntentFilterPtr& intent_filter);
-apps::mojom::IntentFilterPtr ConvertArcIntentFilter(
+apps::mojom::IntentFilterPtr ConvertArcToAppServiceIntentFilter(
     const arc::IntentFilter& arc_intent_filter);
 #endif
 
