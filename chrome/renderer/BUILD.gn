@@ -359,6 +359,12 @@ static_library("renderer") {
         "pepper/chrome_pdf_print_client.h",
       ]
     }
+    if (enable_pdf) {
+      sources += [
+        "chrome_pdf_view_web_plugin_print_client.cc",
+        "chrome_pdf_view_web_plugin_print_client.h",
+      ]
+    }
   }
 
   if (enable_paint_preview) {

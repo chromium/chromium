@@ -170,8 +170,10 @@ class BlinkContainerWrapper final : public PdfViewWebPlugin::ContainerWrapper {
 
 PdfViewWebPlugin::PdfViewWebPlugin(
     mojo::AssociatedRemote<pdf::mojom::PdfService> pdf_service_remote,
+    std::unique_ptr<PrintClient> print_client,
     const blink::WebPluginParams& params)
     : pdf_service_remote_(std::move(pdf_service_remote)),
+      print_client_(std::move(print_client)),
       initial_params_(params) {}
 
 PdfViewWebPlugin::~PdfViewWebPlugin() = default;

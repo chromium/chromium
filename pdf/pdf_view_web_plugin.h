@@ -25,6 +25,7 @@
 
 namespace blink {
 class WebAssociatedURLLoader;
+class WebElement;
 class WebLocalFrame;
 class WebPluginContainer;
 class WebURL;
@@ -85,8 +86,16 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
     virtual blink::WebPluginContainer* Container() = 0;
   };
 
+  class PrintClient {
+   public:
+    virtual ~PrintClient() = default;
+
+    virtual void Print(const blink::WebElement& element) = 0;
+  };
+
   PdfViewWebPlugin(
       mojo::AssociatedRemote<pdf::mojom::PdfService> pdf_service_remote,
+      std::unique_ptr<PrintClient> print_client,
       const blink::WebPluginParams& params);
   PdfViewWebPlugin(const PdfViewWebPlugin& other) = delete;
   PdfViewWebPlugin& operator=(const PdfViewWebPlugin& other) = delete;
@@ -241,6 +250,9 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
 
   // May be unbound in unit tests.
   mojo::AssociatedRemote<pdf::mojom::PdfService> const pdf_service_remote_;
+
+  // May be null in unit tests, or if there is no printing support.
+  std::unique_ptr<PrintClient> const print_client_;
 
   blink::WebPluginParams initial_params_;
 
