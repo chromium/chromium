@@ -171,6 +171,15 @@ bool ShouldDisableHangMonitor() {
       switches::kDisableHangMonitor);
 }
 
+// Returns the cached result of IsUseZoomForDSFEnabled().
+// IsUseZoomForDSFEnabled() calls base::CommandLine::HasSwitch() which
+// is relatively heavyweight when invoked repeatedly (some functions that
+// check this setting can be called frequently). https://crbug.com/1220717 .
+bool ShouldUseZoomForDSF() {
+  static bool is_use_zoom_for_DSF_enabled = IsUseZoomForDSFEnabled();
+  return is_use_zoom_for_DSF_enabled;
+}
+
 // <process id, routing id>
 using RenderWidgetHostID = std::pair<int32_t, int32_t>;
 using RoutingIDWidgetMap =
@@ -940,7 +949,7 @@ blink::VisualProperties RenderWidgetHostImpl::GetVisualProperties() {
   // The top and bottom control sizes are physical pixels but the IPC wants
   // DIPs *when not using page zoom for DSF* because blink layout is working
   // in DIPs then.
-  if (!IsUseZoomForDSFEnabled())
+  if (!ShouldUseZoomForDSF())
     browser_controls_dsf_multiplier = current_screen_info.device_scale_factor;
   visual_properties.browser_controls_params.top_controls_height =
       top_controls_height / browser_controls_dsf_multiplier;
@@ -1002,7 +1011,7 @@ blink::VisualProperties RenderWidgetHostImpl::GetVisualProperties() {
   } else {
     visual_properties.compositor_viewport_pixel_rect =
         properties_from_parent_local_root_.compositor_viewport;
-    if (!IsUseZoomForDSFEnabled()) {
+    if (!ShouldUseZoomForDSF()) {
       // If UseZoomForDSF is not used, the coordinates were not scaled by DSF
       // when coming from the renderer.
       visual_properties.compositor_viewport_pixel_rect =
@@ -1851,7 +1860,7 @@ void RenderWidgetHostImpl::GetScreenInfo(display::ScreenInfo* result) {
 
   // TODO(sievers): find a way to make this done another way so the method
   // can be const.
-  if (IsUseZoomForDSFEnabled())
+  if (ShouldUseZoomForDSF())
     input_router_->SetDeviceScaleFactor(result->device_scale_factor);
 }
 
@@ -1920,7 +1929,7 @@ void RenderWidgetHostImpl::DragTargetDragLeave(
   // TODO(https://crbug.com/1102769): Replace with a for_frame() check.
   if (blink_frame_widget_) {
     gfx::PointF viewport_point = client_point;
-    if (IsUseZoomForDSFEnabled())
+    if (ShouldUseZoomForDSF())
       viewport_point.Scale(GetScaleFactorForView(GetView()));
     blink_frame_widget_->DragTargetDragLeave(viewport_point, screen_point);
   }
@@ -3511,7 +3520,7 @@ void RenderWidgetHostImpl::SetupInputRouter() {
   // input_router_ recreated, need to update the force_enable_zoom_ state.
   input_router_->SetForceEnableZoom(force_enable_zoom_);
 
-  if (IsUseZoomForDSFEnabled()) {
+  if (ShouldUseZoomForDSF()) {
     input_router_->SetDeviceScaleFactor(GetScaleFactorForView(view_.get()));
   }
 }
@@ -3722,7 +3731,7 @@ gfx::Size RenderWidgetHostImpl::GetRootWidgetViewportSize() {
 gfx::PointF RenderWidgetHostImpl::ConvertWindowPointToViewport(
     const gfx::PointF& window_point) {
   gfx::PointF viewport_point = window_point;
-  if (IsUseZoomForDSFEnabled())
+  if (ShouldUseZoomForDSF())
     viewport_point.Scale(GetScaleFactorForView(GetView()));
   return viewport_point;
 }
