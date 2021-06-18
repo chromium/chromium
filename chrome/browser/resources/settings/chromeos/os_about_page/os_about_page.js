@@ -27,7 +27,7 @@ Polymer({
         progress: 0,
         rollback: false,
         powerwash: false,
-        status: UpdateStatus.DISABLED
+        status: UpdateStatus.UPDATED
       },
     },
 

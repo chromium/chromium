@@ -555,6 +555,15 @@ cr.define('settings_about_page', function() {
           deepLinkElement, getDeepActiveElement(),
           'Diagnostics should be focused for settingId=1707.');
     });
+
+    // Regression test for crbug.com/1220294
+    test('Update button shown initially', async () => {
+      aboutBrowserProxy.blockRefreshUpdateStatus();
+      await initNewPage();
+
+      const {checkForUpdates} = page.$;
+      assertFalse(checkForUpdates.hidden);
+    });
   });
 
   suite('DetailedBuildInfoTest', function() {
