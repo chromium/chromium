@@ -2903,6 +2903,8 @@ static_library("browser") {
       "android/webapk/webapk_metrics.h",
       "android/webapk/webapk_post_share_target_navigator.cc",
       "android/webapk/webapk_post_share_target_navigator.h",
+      "android/webapk/webapk_proto_builder.cc",
+      "android/webapk/webapk_proto_builder.h",
       "android/webapk/webapk_types.h",
       "android/webapk/webapk_ukm_recorder.cc",
       "android/webapk/webapk_ukm_recorder.h",
