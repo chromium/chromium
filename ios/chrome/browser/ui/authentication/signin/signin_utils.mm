@@ -111,8 +111,8 @@ bool ShouldPresentUserSigninUpgrade(ChromeBrowserState* browser_state,
       ios::GetChromeBrowserProvider()->GetChromeIdentityService();
 
   // Don't show the promo if there are no identities.
-  NSArray* identities = identity_service->GetAllIdentitiesSortedForDisplay(
-      browser_state->GetPrefs());
+  NSArray* identities =
+      identity_service->GetAllIdentities(browser_state->GetPrefs());
   if (identities.count == 0)
     return false;
 
@@ -148,10 +148,9 @@ void RecordVersionSeen(PrefService* pref_service,
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
   [defaults setObject:base::SysUTF8ToNSString(current_version.GetString())
                forKey:kDisplayedSSORecallForMajorVersionKey];
-  NSArray<ChromeIdentity*>* identities =
-      ios::GetChromeBrowserProvider()
-          ->GetChromeIdentityService()
-          ->GetAllIdentitiesSortedForDisplay(pref_service);
+  NSArray<ChromeIdentity*>* identities = ios::GetChromeBrowserProvider()
+                                             ->GetChromeIdentityService()
+                                             ->GetAllIdentities(pref_service);
   NSSet<NSString*>* gaia_id_set = GaiaIdSetWithIdentities(identities);
   [defaults setObject:gaia_id_set.allObjects
                forKey:kLastShownAccountGaiaIdVersionKey];

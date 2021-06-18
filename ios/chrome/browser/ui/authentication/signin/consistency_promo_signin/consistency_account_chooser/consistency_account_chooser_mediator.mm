@@ -85,8 +85,7 @@
 
   NSMutableArray* configurators = [NSMutableArray array];
   NSArray* identities =
-      self.chromeIdentityService->GetAllIdentitiesSortedForDisplay(
-          self.prefService);
+      self.chromeIdentityService->GetAllIdentities(self.prefService);
   BOOL hasSelectedIdentity = NO;
   for (ChromeIdentity* identity in identities) {
     IdentityItemConfigurator* configurator =

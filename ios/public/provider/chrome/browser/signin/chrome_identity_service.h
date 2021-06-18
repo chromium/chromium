@@ -166,13 +166,15 @@ class ChromeIdentityService {
   // Returns true if there is at least one identity.
   virtual bool HasIdentities();
 
-  // Returns all ChromeIdentity objects in an array.It uses PrefService to
-  // filter ChromeIdentities according to enterprise policies.
+  // Returns all ChromeIdentity objects sorted by the ordering used in the
+  // account manager, which is typically based on the keychain ordering of
+  // accounts. It uses PrefService to filter ChromeIdentities according to
+  // enterprise policies.
   virtual NSArray* GetAllIdentities(PrefService* pref_service);
 
   // Returns all ChromeIdentity objects sorted by the ordering used in the
   // account manager, which is typically based on the keychain ordering of
-  // accounts.It uses PrefService to filter ChromeIdentities according to
+  // accounts. It uses PrefService to filter ChromeIdentities according to
   // enterprise policies.
   virtual NSArray* GetAllIdentitiesSortedForDisplay(PrefService* pref_service);
 

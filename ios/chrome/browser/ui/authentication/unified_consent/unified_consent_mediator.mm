@@ -101,10 +101,9 @@
     return self.authenticationService->GetAuthenticatedIdentity();
   }
 
-  NSArray* identities =
-      ios::GetChromeBrowserProvider()
-          ->GetChromeIdentityService()
-          ->GetAllIdentitiesSortedForDisplay(self.prefService);
+  NSArray* identities = ios::GetChromeBrowserProvider()
+                            ->GetChromeIdentityService()
+                            ->GetAllIdentities(self.prefService);
   return identities.count ? identities[0] : nil;
 }
 
@@ -165,10 +164,9 @@
   if (!self.selectedIdentity || !ios::GetChromeBrowserProvider()
                                      ->GetChromeIdentityService()
                                      ->IsValidIdentity(self.selectedIdentity)) {
-    NSArray* identities =
-        ios::GetChromeBrowserProvider()
-            ->GetChromeIdentityService()
-            ->GetAllIdentitiesSortedForDisplay(self.prefService);
+    NSArray* identities = ios::GetChromeBrowserProvider()
+                              ->GetChromeIdentityService()
+                              ->GetAllIdentities(self.prefService);
     ChromeIdentity* newIdentity = nil;
     if (identities.count != 0) {
       newIdentity = identities[0];

@@ -123,8 +123,7 @@
   if (!self.selectedIdentity ||
       !self.identityService->IsValidIdentity(self.selectedIdentity)) {
     NSArray* identities =
-        self.identityService->GetAllIdentitiesSortedForDisplay(
-            self.prefService);
+        self.identityService->GetAllIdentities(self.prefService);
     ChromeIdentity* newIdentity = nil;
     if (identities.count != 0) {
       newIdentity = identities[0];

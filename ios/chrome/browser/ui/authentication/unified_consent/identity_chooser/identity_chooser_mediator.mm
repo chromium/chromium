@@ -96,8 +96,7 @@
 
   // Create all the identity items.
   NSArray<ChromeIdentity*>* identities =
-      self.chromeIdentityService->GetAllIdentitiesSortedForDisplay(
-          self.prefService);
+      self.chromeIdentityService->GetAllIdentities(self.prefService);
   NSMutableArray<TableViewIdentityItem*>* items = [NSMutableArray array];
   for (ChromeIdentity* identity in identities) {
     TableViewIdentityItem* item =
@@ -140,8 +139,7 @@
   [self loadIdentitySection];
   // Updates the selection.
   NSArray* allIdentities =
-      self.chromeIdentityService->GetAllIdentitiesSortedForDisplay(
-          self.prefService);
+      self.chromeIdentityService->GetAllIdentities(self.prefService);
   if (![allIdentities containsObject:self.selectedIdentity]) {
     if (allIdentities.count) {
       self.selectedIdentity = allIdentities[0];

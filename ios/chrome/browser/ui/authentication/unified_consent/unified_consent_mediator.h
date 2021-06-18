@@ -29,7 +29,7 @@ class PrefService;
 @interface UnifiedConsentMediator : NSObject
 
 // Identity selected by the user to sign-in. By default, the first identity from
-// |GetAllIdentitiesSortedForDisplay(PrefService) is used. If there is no
+// |GetAllIdentities(PrefService) is used. If there is no
 // identity in the list, the identity picker will be hidden. Nil is not accepted
 // if at least one identity exists.
 @property(nonatomic, strong) ChromeIdentity* selectedIdentity;

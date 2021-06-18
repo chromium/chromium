@@ -75,10 +75,9 @@
     return;
   }
 
-  NSArray* identities =
-      ios::GetChromeBrowserProvider()
-          ->GetChromeIdentityService()
-          ->GetAllIdentitiesSortedForDisplay(self.prefService);
+  NSArray* identities = ios::GetChromeBrowserProvider()
+                            ->GetChromeIdentityService()
+                            ->GetAllIdentities(self.prefService);
 
   if (identities.count == 0) {
     [self.delegate consistencyDefaultAccountMediatorNoIdentities:self];

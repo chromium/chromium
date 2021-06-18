@@ -407,10 +407,9 @@ const char* AlreadySeenSigninViewPreferenceKey(
     _accessPoint = accessPoint;
     _browserState = browserState;
     _presenter = presenter;
-    NSArray* identities =
-        ios::GetChromeBrowserProvider()
-            ->GetChromeIdentityService()
-            ->GetAllIdentitiesSortedForDisplay(browserState->GetPrefs());
+    NSArray* identities = ios::GetChromeBrowserProvider()
+                              ->GetChromeIdentityService()
+                              ->GetAllIdentities(browserState->GetPrefs());
     if (identities.count != 0) {
       [self selectIdentity:identities[0]];
     }
@@ -608,10 +607,9 @@ const char* AlreadySeenSigninViewPreferenceKey(
 
 - (void)identityListChanged {
   ChromeIdentity* newIdentity = nil;
-  NSArray* identities =
-      ios::GetChromeBrowserProvider()
-          ->GetChromeIdentityService()
-          ->GetAllIdentitiesSortedForDisplay(self.browserState->GetPrefs());
+  NSArray* identities = ios::GetChromeBrowserProvider()
+                            ->GetChromeIdentityService()
+                            ->GetAllIdentities(self.browserState->GetPrefs());
   if (identities.count != 0) {
     newIdentity = identities[0];
   }

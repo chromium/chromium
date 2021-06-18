@@ -104,10 +104,10 @@
   self.viewController.delegate = self;
   self.mediator = [[SigninScreenMediator alloc]
       initWithPrefService:self.browser->GetBrowserState()->GetPrefs()];
-  NSArray* identities = ios::GetChromeBrowserProvider()
-                            ->GetChromeIdentityService()
-                            ->GetAllIdentitiesSortedForDisplay(
-                                self.browser->GetBrowserState()->GetPrefs());
+  NSArray* identities =
+      ios::GetChromeBrowserProvider()
+          ->GetChromeIdentityService()
+          ->GetAllIdentities(self.browser->GetBrowserState()->GetPrefs());
   ChromeIdentity* newIdentity = nil;
   if (identities.count != 0) {
     newIdentity = identities[0];

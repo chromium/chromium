@@ -178,7 +178,7 @@
       PrefService* prefService = self.browser->GetBrowserState()->GetPrefs();
       NSArray* identities = ios::GetChromeBrowserProvider()
                                 ->GetChromeIdentityService()
-                                ->GetAllIdentitiesSortedForDisplay(prefService);
+                                ->GetAllIdentities(prefService);
       DCHECK(identities.count > 0);
       if ([self.addedGaiaIDs containsObject:identity.gaiaID]) {
         // Added identity.

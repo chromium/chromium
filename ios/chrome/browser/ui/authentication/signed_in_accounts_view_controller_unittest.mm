@@ -50,8 +50,8 @@ class SignedInAccountsViewControllerTest : public BlockCleanupTest {
         std::make_unique<AuthenticationServiceDelegateFake>());
     AuthenticationService* auth_service =
         AuthenticationServiceFactory::GetForBrowserState(browser_state_.get());
-    auth_service->SignIn([identity_service->GetAllIdentitiesSortedForDisplay(
-        nullptr) objectAtIndex:0]);
+    auth_service->SignIn(
+        [identity_service->GetAllIdentities(nullptr) firstObject]);
   }
 
  protected:

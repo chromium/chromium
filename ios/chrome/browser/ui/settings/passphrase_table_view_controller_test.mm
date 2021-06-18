@@ -100,8 +100,7 @@ void PassphraseTableViewControllerTest::SetUp() {
       ios::FakeChromeIdentityService::GetInstanceFromChromeProvider();
   identityService->AddIdentities(@[ @"identity1" ]);
   ChromeIdentity* identity =
-      [identityService->GetAllIdentitiesSortedForDisplay(nullptr)
-          objectAtIndex:0];
+      [identityService->GetAllIdentities(nullptr) firstObject];
   AuthenticationServiceFactory::GetForBrowserState(chrome_browser_state_.get())
       ->SignIn(identity);
 }
