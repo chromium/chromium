@@ -118,7 +118,7 @@ class IndexedDBTransactionTest : public testing::Test {
 
   std::unique_ptr<IndexedDBConnection> CreateConnection() {
     auto connection = std::make_unique<IndexedDBConnection>(
-        IndexedDBOriginStateHandle(), IndexedDBClassFactory::Get(),
+        IndexedDBStorageKeyStateHandle(), IndexedDBClassFactory::Get(),
         db_->AsWeakPtr(), base::DoNothing(), base::DoNothing(),
         base::MakeRefCounted<MockIndexedDBDatabaseCallbacks>());
     db_->AddConnectionForTesting(connection.get());

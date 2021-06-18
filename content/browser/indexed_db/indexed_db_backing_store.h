@@ -585,7 +585,7 @@ class CONTENT_EXPORT IndexedDBBackingStore {
       blink::mojom::IDBTransactionDurability durability);
 
  protected:
-  friend class IndexedDBOriginState;
+  friend class IndexedDBStorageKeyState;
 
   leveldb::Status AnyDatabaseContainsBlobs(
       TransactionalLevelDBDatabase* database,

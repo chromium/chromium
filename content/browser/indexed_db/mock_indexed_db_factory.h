@@ -72,7 +72,7 @@ class MockIndexedDBFactory : public IndexedDBFactory {
                     const IndexedDBDatabaseError& error));
   // The Android NDK implements a subset of STL, and the gtest templates can't
   // deal with std::pair's. This means we can't use GoogleMock for this method
-  std::vector<IndexedDBDatabase*> GetOpenDatabasesForOrigin(
+  std::vector<IndexedDBDatabase*> GetOpenDatabasesForStorageKey(
       const blink::StorageKey& storage_key) const override;
   MOCK_METHOD2(ForceClose,
                void(const blink::StorageKey& storage_key,

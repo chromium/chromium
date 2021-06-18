@@ -26,14 +26,14 @@ static int32_t g_next_indexed_db_connection_id;
 }  // namespace
 
 IndexedDBConnection::IndexedDBConnection(
-    IndexedDBOriginStateHandle origin_state_handle,
+    IndexedDBStorageKeyStateHandle storage_key_state_handle,
     IndexedDBClassFactory* indexed_db_class_factory,
     base::WeakPtr<IndexedDBDatabase> database,
     base::RepeatingClosure on_version_change_ignored,
     base::OnceCallback<void(IndexedDBConnection*)> on_close,
     scoped_refptr<IndexedDBDatabaseCallbacks> callbacks)
     : id_(g_next_indexed_db_connection_id++),
-      origin_state_handle_(std::move(origin_state_handle)),
+      storage_key_state_handle_(std::move(storage_key_state_handle)),
       indexed_db_class_factory_(indexed_db_class_factory),
       database_(std::move(database)),
       on_version_change_ignored_(std::move(on_version_change_ignored)),
@@ -54,7 +54,8 @@ IndexedDBConnection::~IndexedDBConnection() {
   leveldb::Status status =
       AbortTransactionsAndClose(CloseErrorHandling::kAbortAllReturnLastError);
   if (!status.ok())
-    origin_state_handle_.origin_state()->tear_down_callback().Run(status);
+    storage_key_state_handle_.storage_key_state()->tear_down_callback().Run(
+        status);
 }
 
 leveldb::Status IndexedDBConnection::AbortTransactionsAndClose(
@@ -80,7 +81,7 @@ leveldb::Status IndexedDBConnection::AbortTransactionsAndClose(
   }
 
   std::move(on_close_).Run(this);
-  origin_state_handle_.Release();
+  storage_key_state_handle_.Release();
   return status;
 }
 
@@ -113,12 +114,13 @@ IndexedDBTransaction* IndexedDBConnection::CreateTransaction(
     IndexedDBBackingStore::Transaction* backing_store_transaction) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(GetTransaction(id), nullptr) << "Duplicate transaction id." << id;
-  IndexedDBOriginState* origin_state = origin_state_handle_.origin_state();
+  IndexedDBStorageKeyState* storage_key_state =
+      storage_key_state_handle_.storage_key_state();
   std::unique_ptr<IndexedDBTransaction> transaction =
       indexed_db_class_factory_->CreateIndexedDBTransaction(
           id, this, scope, mode, database()->tasks_available_callback(),
-          origin_state ? origin_state->tear_down_callback()
-                       : IndexedDBTransaction::TearDownCallback(),
+          storage_key_state ? storage_key_state->tear_down_callback()
+                            : IndexedDBTransaction::TearDownCallback(),
           backing_store_transaction);
   IndexedDBTransaction* transaction_ptr = transaction.get();
   transactions_[id] = std::move(transaction);
@@ -132,7 +134,8 @@ void IndexedDBConnection::AbortTransactionAndTearDownOnError(
   IDB_TRACE1("IndexedDBDatabase::Abort(error)", "txn.id", transaction->id());
   leveldb::Status status = transaction->Abort(error);
   if (!status.ok())
-    origin_state_handle_.origin_state()->tear_down_callback().Run(status);
+    storage_key_state_handle_.storage_key_state()->tear_down_callback().Run(
+        status);
 }
 
 leveldb::Status IndexedDBConnection::AbortAllTransactions(
@@ -194,7 +197,7 @@ void IndexedDBConnection::RemoveTransaction(int64_t id) {
 
 void IndexedDBConnection::ClearStateAfterClose() {
   callbacks_ = nullptr;
-  origin_state_handle_.Release();
+  storage_key_state_handle_.Release();
 }
 
 }  // namespace content

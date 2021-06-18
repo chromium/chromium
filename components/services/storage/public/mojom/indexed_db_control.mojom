@@ -55,7 +55,7 @@ interface IndexedDBControl {
   GetUsage() => (array<StorageUsageInfo> info);
 
   // Deletes all indexed db files for the given `storage_key`.
-  DeleteForOrigin(blink.mojom.StorageKey storage_key) => (bool success);
+  DeleteForStorageKey(blink.mojom.StorageKey storage_key) => (bool success);
 
   // Forcibly closes all connections to all databases within the `storage_key`.
   ForceClose(blink.mojom.StorageKey storage_key, ForceCloseReason reason) => ();
@@ -68,13 +68,14 @@ interface IndexedDBControl {
   // data for a particular `storage_key`.  This creates a zip file at
   // `zip_path` using the temporary directory `temp_path` which needs to be
   // cleaned up after the user downloads the file.
-  DownloadOriginData(blink.mojom.StorageKey storage_key) => (
+  DownloadStorageKeyData(blink.mojom.StorageKey storage_key) => (
       bool success,
       mojo_base.mojom.FilePath temp_path,
       mojo_base.mojom.FilePath zip_path);
 
   // Called by chrome://indexeddb-internals to populate its page details.
-  GetAllOriginsDetails() => (bool incognito, mojo_base.mojom.ListValue details);
+  GetAllStorageKeysDetails() => (bool incognito,
+                                 mojo_base.mojom.ListValue details);
 
   // Disables the exit-time deletion of session-only data, so that internal
   // restarts can preserve that data.

@@ -3671,7 +3671,7 @@ leveldb::Status IndexedDBBackingStore::Transaction::Rollback() {
   if (!transaction_)
     return leveldb::Status::OK();
   // The RollbackAndMaybeTearDown method could tear down the
-  // IndexedDBOriginState, which would destroy |this|.
+  // IndexedDBStorageKeyState, which would destroy |this|.
   scoped_refptr<TransactionalLevelDBTransaction> transaction =
       std::move(transaction_);
   return transaction->Rollback();

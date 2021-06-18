@@ -46,7 +46,7 @@ void IndexedDBQuotaClient::GetOriginUsage(const url::Origin& origin,
   // TODO(crbug.com/1215208): Migrate to use StorageKey when the QuotaClient
   // is migrated to use StorageKey instead of Origin.
   std::move(callback).Run(
-      indexed_db_context_.GetOriginDiskUsage(blink::StorageKey(origin)));
+      indexed_db_context_.GetStorageKeyDiskUsage(blink::StorageKey(origin)));
 }
 
 void IndexedDBQuotaClient::GetOriginsForType(
@@ -57,7 +57,7 @@ void IndexedDBQuotaClient::GetOriginsForType(
   // TODO(crbug.com/1215208): Migrate to use StorageKey when the QuotaClient
   // is migrated to use StorageKey instead of Origin.
   std::vector<blink::StorageKey> storage_keys =
-      indexed_db_context_.GetAllOrigins();
+      indexed_db_context_.GetAllStorageKeys();
   std::vector<url::Origin> origins;
   origins.reserve(storage_keys.size());
   for (const auto& storage_key : storage_keys) {
@@ -80,7 +80,7 @@ void IndexedDBQuotaClient::GetOriginsForHost(
   // origin. The origin will be https://host or http://host.
   host_origins.reserve(1);
 
-  for (auto& storage_key : indexed_db_context_.GetAllOrigins()) {
+  for (auto& storage_key : indexed_db_context_.GetAllStorageKeys()) {
     if (host == storage_key.origin().host())
       host_origins.push_back(std::move(storage_key.origin()));
   }
@@ -96,7 +96,7 @@ void IndexedDBQuotaClient::DeleteOriginData(const url::Origin& origin,
 
   // TODO(crbug.com/1215208): Migrate to use StorageKey when the QuotaClient
   // is migrated to use StorageKey instead of Origin.
-  indexed_db_context_.DeleteForOrigin(
+  indexed_db_context_.DeleteForStorageKey(
       blink::StorageKey(origin),
       base::BindOnce(
           [](DeleteOriginDataCallback callback, bool success) {

@@ -86,7 +86,7 @@ class CONTENT_EXPORT IndexedDBPreCloseTaskQueue {
 
     bool set_metadata_was_called_ = false;
     // Raw pointer is safe because |database_| is owned by the
-    // IndexedDBOriginState.
+    // IndexedDBStorageKeyState.
     leveldb::DB* const database_;
   };
 

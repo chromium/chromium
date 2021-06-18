@@ -44,7 +44,7 @@ void IndexedDBHelper::StartFetching(FetchCallback callback) {
 void IndexedDBHelper::DeleteIndexedDB(const blink::StorageKey& storage_key,
                                       base::OnceCallback<void(bool)> callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  storage_partition_->GetIndexedDBControl().DeleteForOrigin(
+  storage_partition_->GetIndexedDBControl().DeleteForStorageKey(
       storage_key, std::move(callback));
 }
 
@@ -88,7 +88,8 @@ size_t CannedIndexedDBHelper::GetCount() const {
   return pending_storage_keys_.size();
 }
 
-const std::set<blink::StorageKey>& CannedIndexedDBHelper::GetOrigins() const {
+const std::set<blink::StorageKey>& CannedIndexedDBHelper::GetStorageKeys()
+    const {
   return pending_storage_keys_;
 }
 

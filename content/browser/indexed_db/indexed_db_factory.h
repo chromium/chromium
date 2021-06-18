@@ -35,9 +35,6 @@ class CONTENT_EXPORT IndexedDBFactory {
  public:
   virtual ~IndexedDBFactory() = default;
 
-  using OriginDBMap =
-      base::flat_map<std::u16string, std::unique_ptr<IndexedDBDatabase>>;
-
   virtual void GetDatabaseInfo(scoped_refptr<IndexedDBCallbacks> callbacks,
                                const blink::StorageKey& storage_key,
                                const base::FilePath& data_directory) = 0;
@@ -65,10 +62,10 @@ class CONTENT_EXPORT IndexedDBFactory {
       const blink::StorageKey& storage_key,
       const IndexedDBDatabaseError& error) = 0;
 
-  virtual std::vector<IndexedDBDatabase*> GetOpenDatabasesForOrigin(
+  virtual std::vector<IndexedDBDatabase*> GetOpenDatabasesForStorageKey(
       const blink::StorageKey& storage_key) const = 0;
 
-  // Close all connections to all databases within the origin. If
+  // Close all connections to all databases within the storage key. If
   // |delete_in_memory_store| is true, references to in-memory databases will be
   // dropped thereby allowing their deletion (otherwise they are retained for
   // the lifetime of the factory).

@@ -36,23 +36,23 @@ constexpr const char kIDBCloseImmediatelySwitch[] = "idb-close-immediately";
 // shut off.
 CONTENT_EXPORT extern const base::Feature kCompactIDBOnClose;
 
-// IndexedDBOriginState manages the per-storage_key IndexedDB state, and
+// IndexedDBStorageKeyState manages the per-storage_key IndexedDB state, and
 // contains the backing store for the storage_key.
 //
 // This class is expected to manage its own lifetime by using the
 // |destruct_myself_| closure, which is expected to destroy this object in the
 // parent IndexedDBFactoryImpl (and remove it from any collections, etc).
-// However, IndexedDBOriginState should still handle destruction without the use
-// of that closure when the storage partition is destructed.
+// However, IndexedDBStorageKeyState should still handle destruction without the
+// use of that closure when the storage partition is destructed.
 //
-// IndexedDBOriginState will keep itself alive while:
+// IndexedDBStorageKeyState will keep itself alive while:
 // * There are handles referencing the factory,
 // * There are outstanding blob references to this database's blob files, and
 // * The factory is in an incognito profile.
-class CONTENT_EXPORT IndexedDBOriginState {
+class CONTENT_EXPORT IndexedDBStorageKeyState {
  public:
   using TearDownCallback = base::RepeatingCallback<void(leveldb::Status)>;
-  using OriginDBMap =
+  using DBMap =
       base::flat_map<std::u16string, std::unique_ptr<IndexedDBDatabase>>;
 
   // Maximum time interval between runs of the IndexedDBSweeper. Sweeping only
@@ -63,7 +63,7 @@ class CONTENT_EXPORT IndexedDBOriginState {
   // Maximum time interval between runs of the IndexedDBSweeper for a given
   // storage_key. Sweeping only occurs after backing store close.
   // Visible for testing.
-  static constexpr const base::TimeDelta kMaxEarliestOriginSweepFromNow =
+  static constexpr const base::TimeDelta kMaxEarliestStorageKeySweepFromNow =
       base::TimeDelta::FromDays(3);
 
   // Maximum time interval between runs of the IndexedDBCompactionTask.
@@ -74,13 +74,13 @@ class CONTENT_EXPORT IndexedDBOriginState {
   // Maximum time interval between runs of the IndexedDBCompactionTask for a
   // given storage_key. Compaction only occurs after backing store close.
   // Visible for testing.
-  static constexpr const base::TimeDelta kMaxEarliestOriginCompactionFromNow =
-      base::TimeDelta::FromDays(3);
+  static constexpr const base::TimeDelta
+      kMaxEarliestStorageKeyCompactionFromNow = base::TimeDelta::FromDays(3);
 
   enum class ClosingState {
-    // IndexedDBOriginState isn't closing.
+    // IndexedDBStorageKeyState isn't closing.
     kNotClosing,
-    // IndexedDBOriginState is pausing for kBackingStoreGracePeriodSeconds
+    // IndexedDBStorageKeyState is pausing for kBackingStoreGracePeriodSeconds
     // to
     // allow new references to open before closing the backing store.
     kPreCloseGracePeriod,
@@ -92,7 +92,7 @@ class CONTENT_EXPORT IndexedDBOriginState {
   // Calling |destruct_myself| should destruct this object.
   // |earliest_global_sweep_time| and |earliest_global_compaction_time| are
   // expected to outlive this object.
-  IndexedDBOriginState(
+  IndexedDBStorageKeyState(
       blink::StorageKey storage_key,
       bool persist_for_incognito,
       base::Clock* clock,
@@ -103,7 +103,7 @@ class CONTENT_EXPORT IndexedDBOriginState {
       TasksAvailableCallback notify_tasks_callback,
       TearDownCallback tear_down_callback,
       std::unique_ptr<IndexedDBBackingStore> backing_store);
-  ~IndexedDBOriginState();
+  ~IndexedDBStorageKeyState();
 
   void AbortAllTransactions(bool compact);
 
@@ -128,7 +128,7 @@ class CONTENT_EXPORT IndexedDBOriginState {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return backing_store_.get();
   }
-  const OriginDBMap& databases() const {
+  const DBMap& databases() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return databases_;
   }
@@ -145,7 +145,7 @@ class CONTENT_EXPORT IndexedDBOriginState {
     return notify_tasks_callback_;
   }
 
-  // Note: calling this callback will destroy the IndexedDBOriginState.
+  // Note: calling this callback will destroy the IndexedDBStorageKeyState.
   const TearDownCallback& tear_down_callback() { return tear_down_callback_; }
 
   bool is_running_tasks() const { return running_tasks_; }
@@ -160,13 +160,13 @@ class CONTENT_EXPORT IndexedDBOriginState {
   enum class RunTasksResult { kDone, kError, kCanBeDestroyed };
   std::tuple<RunTasksResult, leveldb::Status> RunTasks();
 
-  base::WeakPtr<IndexedDBOriginState> AsWeakPtr() {
+  base::WeakPtr<IndexedDBStorageKeyState> AsWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
 
  private:
   friend IndexedDBFactoryImpl;
-  friend IndexedDBOriginStateHandle;
+  friend IndexedDBStorageKeyStateHandle;
 
   // Test needs access to ShouldRunTombstoneSweeper.
   FRIEND_TEST_ALL_PREFIXES(IndexedDBFactoryTestWithMockTime,
@@ -184,7 +184,7 @@ class CONTENT_EXPORT IndexedDBOriginState {
 
   // Returns a new handle to this factory. If this object was in its closing
   // sequence, then that sequence will be halted by this call.
-  IndexedDBOriginStateHandle CreateHandle() WARN_UNUSED_RESULT;
+  IndexedDBStorageKeyStateHandle CreateHandle() WARN_UNUSED_RESULT;
 
   void OnHandleDestruction();
 
@@ -234,9 +234,9 @@ class CONTENT_EXPORT IndexedDBOriginState {
   const std::unique_ptr<DisjointRangeLockManager> lock_manager_;
   std::unique_ptr<IndexedDBBackingStore> backing_store_;
 
-  OriginDBMap databases_;
-  // This is the refcount for the number of IndexedDBOriginStateHandle's given
-  // out for this factory using OpenReference. This is used as closing
+  DBMap databases_;
+  // This is the refcount for the number of IndexedDBStorageKeyStateHandle's
+  // given out for this factory using OpenReference. This is used as closing
   // criteria for this object, see CanCloseFactory.
   int64_t open_handles_ = 0;
 
@@ -245,9 +245,9 @@ class CONTENT_EXPORT IndexedDBOriginState {
   TasksAvailableCallback notify_tasks_callback_;
   TearDownCallback tear_down_callback_;
 
-  base::WeakPtrFactory<IndexedDBOriginState> weak_factory_{this};
+  base::WeakPtrFactory<IndexedDBStorageKeyState> weak_factory_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(IndexedDBOriginState);
+  DISALLOW_COPY_AND_ASSIGN(IndexedDBStorageKeyState);
 };
 
 }  // namespace content

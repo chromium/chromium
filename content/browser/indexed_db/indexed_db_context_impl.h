@@ -87,16 +87,17 @@ class CONTENT_EXPORT IndexedDBContextImpl
       const blink::StorageKey& storage_key,
       mojo::PendingReceiver<blink::mojom::IDBFactory> receiver) override;
   void GetUsage(GetUsageCallback usage_callback) override;
-  void DeleteForOrigin(const blink::StorageKey& storage_key,
-                       DeleteForOriginCallback callback) override;
+  void DeleteForStorageKey(const blink::StorageKey& storage_key,
+                           DeleteForStorageKeyCallback callback) override;
   void ForceClose(const blink::StorageKey& storage_key,
                   storage::mojom::ForceCloseReason reason,
                   base::OnceClosure callback) override;
   void GetConnectionCount(const blink::StorageKey& storage_key,
                           GetConnectionCountCallback callback) override;
-  void DownloadOriginData(const blink::StorageKey& storage_key,
-                          DownloadOriginDataCallback callback) override;
-  void GetAllOriginsDetails(GetAllOriginsDetailsCallback callback) override;
+  void DownloadStorageKeyData(const blink::StorageKey& storage_key,
+                              DownloadStorageKeyDataCallback callback) override;
+  void GetAllStorageKeysDetails(
+      GetAllStorageKeysDetailsCallback callback) override;
   void SetForceKeepSessionState() override;
   void ApplyPolicyUpdates(std::vector<storage::mojom::StoragePolicyUpdatePtr>
                               policy_updates) override;
@@ -151,7 +152,7 @@ class CONTENT_EXPORT IndexedDBContextImpl
   // *not* called on the IDBTaskRunner.
   void Shutdown();
 
-  int64_t GetOriginDiskUsage(const blink::StorageKey& storage_key);
+  int64_t GetStorageKeyDiskUsage(const blink::StorageKey& storage_key);
 
   // This getter is thread-safe.
   base::SequencedTaskRunner* IDBTaskRunner() { return idb_task_runner_.get(); }
@@ -175,11 +176,11 @@ class CONTENT_EXPORT IndexedDBContextImpl
   }
 
   // Returns a list of all storage_keys with backing stores.
-  std::vector<blink::StorageKey> GetAllOrigins();
-  bool HasOrigin(const blink::StorageKey& storage_key);
+  std::vector<blink::StorageKey> GetAllStorageKeys();
+  bool HasStorageKey(const blink::StorageKey& storage_key);
 
   // Used by IndexedDBInternalsUI to populate internals page.
-  base::ListValue* GetAllOriginsDetails();
+  base::ListValue* GetAllStorageKeysDetails();
 
   // GetStoragePaths returns all paths owned by this database, in arbitrary
   // order.
@@ -189,7 +190,7 @@ class CONTENT_EXPORT IndexedDBContextImpl
   const base::FilePath& data_path() const { return data_path_; }
   bool IsInMemoryContext() const { return data_path_.empty(); }
   size_t GetConnectionCountSync(const blink::StorageKey& storage_key);
-  int GetOriginBlobFileCount(const blink::StorageKey& storage_key);
+  int GetStorageKeyBlobFileCount(const blink::StorageKey& storage_key);
 
   bool is_incognito() const { return data_path_.empty(); }
 
@@ -230,11 +231,11 @@ class CONTENT_EXPORT IndexedDBContextImpl
   // there is a difference, it updates `storage_key_size_map_` and notifies the
   // quota system.
   void QueryDiskAndUpdateQuotaUsage(const blink::StorageKey& storage_key);
-  base::Time GetOriginLastModified(const blink::StorageKey& storage_key);
+  base::Time GetStorageKeyLastModified(const blink::StorageKey& storage_key);
 
   // Returns `storage_key_set_` (this context's in-memory cache of storage_keys
   // with backing stores); the cache will be primed as needed by checking disk.
-  std::set<blink::StorageKey>* GetOriginSet();
+  std::set<blink::StorageKey>* GetStorageKeySet();
 
   const scoped_refptr<base::SequencedTaskRunner> idb_task_runner_;
   IndexedDBDispatcherHost dispatcher_host_;

@@ -10,21 +10,21 @@
 #include "content/common/content_export.h"
 
 namespace content {
-class IndexedDBOriginState;
+class IndexedDBStorageKeyState;
 
-// This handle tells the IndexedDBOriginState that there is still something
-// using the origin, and the IndexedDBOriginState won't close until all
-// handles are destroyed. Destroying this handle can cause the origin state to
-// synchronously destruct, which modifies the |factories_per_origin_| map in
-// IndexedDBFactoryImpl.
-class CONTENT_EXPORT IndexedDBOriginStateHandle {
+// This handle tells the IndexedDBStorageKeyState that there is still something
+// using the storage key, and the IndexedDBStorageKeyState won't close until all
+// handles are destroyed. Destroying this handle can cause the storage key state
+// to synchronously destruct, which modifies the `factories_per_storage_key_`
+// map in IndexedDBFactoryImpl.
+class CONTENT_EXPORT IndexedDBStorageKeyStateHandle {
  public:
-  IndexedDBOriginStateHandle();
-  explicit IndexedDBOriginStateHandle(
-      base::WeakPtr<IndexedDBOriginState> origin_state);
-  IndexedDBOriginStateHandle(IndexedDBOriginStateHandle&&);
-  IndexedDBOriginStateHandle& operator=(IndexedDBOriginStateHandle&&);
-  ~IndexedDBOriginStateHandle();
+  IndexedDBStorageKeyStateHandle();
+  explicit IndexedDBStorageKeyStateHandle(
+      base::WeakPtr<IndexedDBStorageKeyState> storage_key_state);
+  IndexedDBStorageKeyStateHandle(IndexedDBStorageKeyStateHandle&&);
+  IndexedDBStorageKeyStateHandle& operator=(IndexedDBStorageKeyStateHandle&&);
+  ~IndexedDBStorageKeyStateHandle();
 
   bool IsHeld() const;
 
@@ -32,12 +32,14 @@ class CONTENT_EXPORT IndexedDBOriginStateHandle {
 
   // Returns null if the factory was destroyed, which should only happen on
   // context destruction.
-  IndexedDBOriginState* origin_state() { return origin_state_.get(); }
+  IndexedDBStorageKeyState* storage_key_state() {
+    return storage_key_state_.get();
+  }
 
  private:
-  base::WeakPtr<IndexedDBOriginState> origin_state_;
+  base::WeakPtr<IndexedDBStorageKeyState> storage_key_state_;
 
-  DISALLOW_COPY_AND_ASSIGN(IndexedDBOriginStateHandle);
+  DISALLOW_COPY_AND_ASSIGN(IndexedDBStorageKeyStateHandle);
 };
 
 }  // namespace content

@@ -85,7 +85,7 @@ class CannedIndexedDBHelper : public IndexedDBHelper {
   size_t GetCount() const;
 
   // Returns the current list of indexed data bases.
-  const std::set<blink::StorageKey>& GetOrigins() const;
+  const std::set<blink::StorageKey>& GetStorageKeys() const;
 
   // IndexedDBHelper methods.
   void StartFetching(FetchCallback callback) override;

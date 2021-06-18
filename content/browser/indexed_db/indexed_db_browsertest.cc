@@ -195,16 +195,16 @@ class IndexedDBBrowserTest : public ContentBrowserTest,
         storage::GetHardCodedSettings(per_host_quota_kilobytes * KB));
   }
 
-  bool DeleteForOrigin(const blink::StorageKey& storage_key,
-                       Shell* browser = nullptr) {
+  bool DeleteForStorageKey(const blink::StorageKey& storage_key,
+                           Shell* browser = nullptr) {
     base::RunLoop loop;
     auto& control = GetControl(browser);
     bool result = false;
-    control.DeleteForOrigin(storage_key,
-                            base::BindLambdaForTesting([&](bool success) {
-                              result = success;
-                              loop.Quit();
-                            }));
+    control.DeleteForStorageKey(storage_key,
+                                base::BindLambdaForTesting([&](bool success) {
+                                  result = success;
+                                  loop.Quit();
+                                }));
     loop.Run();
     return result;
   }
@@ -714,7 +714,7 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, EmptyBlob) {
   const GURL kTestUrl = GetTestUrl("indexeddb", "empty_blob.html");
   const blink::StorageKey kTestStorageKey =
       blink::StorageKey(url::Origin::Create(kTestUrl));
-  DeleteForOrigin(kTestStorageKey);
+  DeleteForStorageKey(kTestStorageKey);
   EXPECT_EQ(
       0, RequestBlobFileCount(kTestStorageKey));  // Start with no blob files.
   // For some reason Android's futimes fails (EPERM) in this test. Do not assert
@@ -731,7 +731,7 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, BlobsCountAgainstQuota) {
   SimpleTest(GetTestUrl("indexeddb", "blobs_use_quota.html"));
 }
 
-IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, DeleteForOriginDeletesBlobs) {
+IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, DeleteForStorageKeyDeletesBlobs) {
   const GURL kTestUrl = GetTestUrl("indexeddb", "write_4mb_blob.html");
   const blink::StorageKey kTestStorageKey =
       blink::StorageKey(url::Origin::Create(kTestUrl));
@@ -739,11 +739,11 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, DeleteForOriginDeletesBlobs) {
   int64_t size = RequestUsage(kTestStorageKey);
   // This assertion assumes that we do not compress blobs.
   EXPECT_GT(size, 4 << 20 /* 4 MB */);
-  DeleteForOrigin(kTestStorageKey);
+  DeleteForStorageKey(kTestStorageKey);
   EXPECT_EQ(0, RequestUsage(kTestStorageKey));
 }
 
-IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, DeleteForOriginIncognito) {
+IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, DeleteForStorageKeyIncognito) {
   const GURL test_url = GetTestUrl("indexeddb", "fill_up_5k.html");
   const blink::StorageKey kTestStorageKey =
       blink::StorageKey(url::Origin::Create(test_url));
@@ -753,7 +753,7 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, DeleteForOriginIncognito) {
 
   EXPECT_GT(RequestUsage(kTestStorageKey, browser), 5 * 1024);
 
-  DeleteForOrigin(kTestStorageKey, browser);
+  DeleteForStorageKey(kTestStorageKey, browser);
 
   EXPECT_EQ(0, RequestUsage(kTestStorageKey, browser));
 }
@@ -1119,7 +1119,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, ForceCloseEventTest) {
   constexpr char kFilename[] = "force_close_event.html";
   NavigateAndWaitForTitle(shell(), kFilename, nullptr, "connection ready");
-  DeleteForOrigin(blink::StorageKey(
+  DeleteForStorageKey(blink::StorageKey(
       url::Origin::Create(GetTestUrl("indexeddb", kFilename))));
   std::u16string expected_title16(u"connection closed");
   TitleWatcher title_watcher(shell()->web_contents(), expected_title16);

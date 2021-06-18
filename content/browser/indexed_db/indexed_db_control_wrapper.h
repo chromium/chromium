@@ -39,16 +39,17 @@ class CONTENT_EXPORT IndexedDBControlWrapper
       const blink::StorageKey& storage_key,
       mojo::PendingReceiver<blink::mojom::IDBFactory> receiver) override;
   void GetUsage(GetUsageCallback usage_callback) override;
-  void DeleteForOrigin(const blink::StorageKey& storage_key,
-                       DeleteForOriginCallback callback) override;
+  void DeleteForStorageKey(const blink::StorageKey& storage_key,
+                           DeleteForStorageKeyCallback callback) override;
   void ForceClose(const blink::StorageKey& storage_key,
                   storage::mojom::ForceCloseReason reason,
                   base::OnceClosure callback) override;
   void GetConnectionCount(const blink::StorageKey& storage_key,
                           GetConnectionCountCallback callback) override;
-  void DownloadOriginData(const blink::StorageKey& storage_key,
-                          DownloadOriginDataCallback callback) override;
-  void GetAllOriginsDetails(GetAllOriginsDetailsCallback callback) override;
+  void DownloadStorageKeyData(const blink::StorageKey& storage_key,
+                              DownloadStorageKeyDataCallback callback) override;
+  void GetAllStorageKeysDetails(
+      GetAllStorageKeysDetailsCallback callback) override;
   void SetForceKeepSessionState() override;
   void ApplyPolicyUpdates(std::vector<storage::mojom::StoragePolicyUpdatePtr>
                               policy_updates) override;

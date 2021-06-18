@@ -118,17 +118,17 @@ class IndexedDBTest : public testing::Test {
       // Loop through all open storage_keys, and force close them, and request
       // the deletion of the leveldb state. Once the states are no longer
       // around, delete all of the databases on disk.
-      auto open_factory_storage_keys = factory->GetOpenOrigins();
+      auto open_factory_storage_keys = factory->GetOpenStorageKeys();
       for (const auto& storage_key : open_factory_storage_keys) {
         context_->ForceCloseSync(
             storage_key,
             storage::mojom::ForceCloseReason::FORCE_CLOSE_DELETE_ORIGIN);
       }
       // All leveldb databases are closed, and they can be deleted.
-      for (auto storage_key : context_->GetAllOrigins()) {
+      for (auto storage_key : context_->GetAllStorageKeys()) {
         bool success = false;
         storage::mojom::IndexedDBControlAsyncWaiter waiter(context_.get());
-        waiter.DeleteForOrigin(storage_key, &success);
+        waiter.DeleteForStorageKey(storage_key, &success);
         EXPECT_TRUE(success);
       }
     }
@@ -282,7 +282,7 @@ TEST_F(IndexedDBTest, ForceCloseOpenDatabasesOnDelete) {
 
   bool success = false;
   storage::mojom::IndexedDBControlAsyncWaiter waiter(context());
-  waiter.DeleteForOrigin(kTestStorageKey, &success);
+  waiter.DeleteForStorageKey(kTestStorageKey, &success);
   EXPECT_TRUE(success);
 
   EXPECT_FALSE(base::DirectoryExists(test_path));
@@ -303,7 +303,7 @@ TEST_F(IndexedDBTest, DeleteFailsIfDirectoryLocked) {
   context()->IDBTaskRunner()->PostTask(
       FROM_HERE, base::BindLambdaForTesting([&]() {
         storage::mojom::IndexedDBControlAsyncWaiter waiter(context());
-        waiter.DeleteForOrigin(kTestStorageKey, &success);
+        waiter.DeleteForStorageKey(kTestStorageKey, &success);
         loop.Quit();
       }));
   loop.Run();

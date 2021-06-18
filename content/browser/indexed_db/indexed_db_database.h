@@ -52,7 +52,7 @@ class IndexedDBConnection;
 class IndexedDBDatabaseCallbacks;
 class IndexedDBFactory;
 class IndexedDBMetadataCoding;
-class IndexedDBOriginStateHandle;
+class IndexedDBStorageKeyStateHandle;
 class IndexedDBTransaction;
 struct IndexedDBValue;
 
@@ -98,8 +98,8 @@ class CONTENT_EXPORT IndexedDBDatabase {
   void RegisterAndScheduleTransaction(IndexedDBTransaction* transaction);
 
   // The database object (this object) must be kept alive for the duration of
-  // this call. This means the caller should own an IndexedDBOriginStateHandle
-  // while caling this methods.
+  // this call. This means the caller should own an
+  // IndexedDBStorageKeyStateHandle while calling this methods.
   leveldb::Status ForceCloseAndRunTasks();
 
   void Commit(IndexedDBTransaction* transaction);
@@ -109,11 +109,12 @@ class CONTENT_EXPORT IndexedDBDatabase {
                            bool committed);
 
   void ScheduleOpenConnection(
-      IndexedDBOriginStateHandle origin_state_handle,
+      IndexedDBStorageKeyStateHandle storage_key_state_handle,
       std::unique_ptr<IndexedDBPendingConnection> connection);
-  void ScheduleDeleteDatabase(IndexedDBOriginStateHandle origin_state_handle,
-                              scoped_refptr<IndexedDBCallbacks> callbacks,
-                              base::OnceClosure on_deletion_complete);
+  void ScheduleDeleteDatabase(
+      IndexedDBStorageKeyStateHandle storage_key_state_handle,
+      scoped_refptr<IndexedDBCallbacks> callbacks,
+      base::OnceClosure on_deletion_complete);
 
   void AddObjectStoreToMetadata(blink::IndexedDBObjectStoreMetadata metadata,
                                 int64_t new_max_object_store_id);
@@ -354,7 +355,7 @@ class CONTENT_EXPORT IndexedDBDatabase {
   void MaybeReleaseDatabase();
 
   std::unique_ptr<IndexedDBConnection> CreateConnection(
-      IndexedDBOriginStateHandle origin_state_handle,
+      IndexedDBStorageKeyStateHandle storage_key_state_handle,
       scoped_refptr<IndexedDBDatabaseCallbacks> database_callbacks);
 
   // Ack that one of the connections notified with a "versionchange" event did
@@ -374,7 +375,7 @@ class CONTENT_EXPORT IndexedDBDatabase {
   bool CanBeDestroyed();
 
   // Safe because the IndexedDBBackingStore is owned by the same object which
-  // owns us, the IndexedDBPerOriginFactory.
+  // owns us, the IndexedDBPerStorageKeyFactory.
   IndexedDBBackingStore* backing_store_;
   blink::IndexedDBDatabaseMetadata metadata_;
 

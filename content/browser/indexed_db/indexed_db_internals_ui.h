@@ -52,11 +52,11 @@ class IndexedDBInternalsHandler : public WebUIMessageHandler {
   void OnJavascriptDisallowed() override;
 
  private:
-  void GetAllOrigins(const base::ListValue* args);
-  void OnOriginsReady(const base::Value& storage_keys,
-                      const base::FilePath& path);
+  void GetAllStorageKeys(const base::ListValue* args);
+  void OnStorageKeysReady(const base::Value& storage_keys,
+                          const base::FilePath& path);
 
-  void DownloadOriginData(const base::ListValue* args);
+  void DownloadStorageKeyData(const base::ListValue* args);
   void OnDownloadDataReady(const std::string& callback_id,
                            uint64_t connection_count,
                            bool success,
@@ -68,17 +68,17 @@ class IndexedDBInternalsHandler : public WebUIMessageHandler {
                          download::DownloadItem* item,
                          download::DownloadInterruptReason interrupt_reason);
 
-  void ForceCloseOrigin(const base::ListValue* args);
+  void ForceCloseStorageKey(const base::ListValue* args);
   void OnForcedClose(const std::string& callback_id, uint64_t connection_count);
 
-  bool GetOriginControl(const base::FilePath& path,
-                        const blink::StorageKey& storage_key,
-                        storage::mojom::IndexedDBControl** control);
-  bool GetOriginData(const base::ListValue* args,
-                     std::string* callback_id,
-                     base::FilePath* path,
-                     blink::StorageKey* storage_key,
-                     storage::mojom::IndexedDBControl** control);
+  bool GetStorageKeyControl(const base::FilePath& path,
+                            const blink::StorageKey& storage_key,
+                            storage::mojom::IndexedDBControl** control);
+  bool GetStorageKeyData(const base::ListValue* args,
+                         std::string* callback_id,
+                         base::FilePath* path,
+                         blink::StorageKey* storage_key,
+                         storage::mojom::IndexedDBControl** control);
 
   base::WeakPtrFactory<IndexedDBInternalsHandler> weak_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(IndexedDBInternalsHandler);

@@ -124,7 +124,7 @@ size_t LocalSharedObjectsContainer::GetObjectCountForDomain(
   }
 
   // Count indexed dbs for the domain of the given `storage_key`.
-  for (const auto& storage_key : indexed_dbs()->GetOrigins()) {
+  for (const auto& storage_key : indexed_dbs()->GetStorageKeys()) {
     // TODO(https://crbug.com/1199077): Use the real StorageKey once migrated.
     if (SameDomainOrHost(origin, storage_key.origin().GetURL()))
       ++count;
@@ -187,7 +187,7 @@ size_t LocalSharedObjectsContainer::GetDomainCount() const {
   for (const auto& origin : session_storages()->GetOrigins())
     hosts.insert(origin.host());
 
-  for (const auto& storage_key : indexed_dbs()->GetOrigins()) {
+  for (const auto& storage_key : indexed_dbs()->GetStorageKeys()) {
     // TODO(https://crbug.com/1199077): Use the real StorageKey once migrated.
     hosts.insert(storage_key.origin().host());
   }

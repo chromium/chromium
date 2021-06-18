@@ -65,18 +65,21 @@ IndexedDBInternalsHandler::IndexedDBInternalsHandler() = default;
 IndexedDBInternalsHandler::~IndexedDBInternalsHandler() = default;
 
 void IndexedDBInternalsHandler::RegisterMessages() {
+  // TODO(https://crbug.com/1199077): Fix this name as part of storage key
+  // migration.
   web_ui()->RegisterMessageCallback(
       "getAllOrigins",
-      base::BindRepeating(&IndexedDBInternalsHandler::GetAllOrigins,
+      base::BindRepeating(&IndexedDBInternalsHandler::GetAllStorageKeys,
                           base::Unretained(this)));
-
+  // TODO(https://crbug.com/1199077): Fix this name as part of storage key
+  // migration.
   web_ui()->RegisterMessageCallback(
       "downloadOriginData",
-      base::BindRepeating(&IndexedDBInternalsHandler::DownloadOriginData,
+      base::BindRepeating(&IndexedDBInternalsHandler::DownloadStorageKeyData,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "forceClose",
-      base::BindRepeating(&IndexedDBInternalsHandler::ForceCloseOrigin,
+      base::BindRepeating(&IndexedDBInternalsHandler::ForceCloseStorageKey,
                           base::Unretained(this)));
 }
 
@@ -84,7 +87,7 @@ void IndexedDBInternalsHandler::OnJavascriptDisallowed() {
   weak_factory_.InvalidateWeakPtrs();
 }
 
-void IndexedDBInternalsHandler::GetAllOrigins(const base::ListValue* args) {
+void IndexedDBInternalsHandler::GetAllStorageKeys(const base::ListValue* args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   AllowJavascript();
@@ -98,14 +101,14 @@ void IndexedDBInternalsHandler::GetAllOrigins(const base::ListValue* args) {
             if (!handler)
               return;
             auto& control = partition->GetIndexedDBControl();
-            control.GetAllOriginsDetails(base::BindOnce(
+            control.GetAllStorageKeysDetails(base::BindOnce(
                 [](base::WeakPtr<IndexedDBInternalsHandler> handler,
                    base::FilePath partition_path, bool incognito,
                    base::Value info_list) {
                   if (!handler)
                     return;
 
-                  handler->OnOriginsReady(
+                  handler->OnStorageKeysReady(
                       info_list, incognito ? base::FilePath() : partition_path);
                 },
                 handler, partition->GetPath()));
@@ -113,9 +116,12 @@ void IndexedDBInternalsHandler::GetAllOrigins(const base::ListValue* args) {
           weak_factory_.GetWeakPtr()));
 }
 
-void IndexedDBInternalsHandler::OnOriginsReady(const base::Value& storage_keys,
-                                               const base::FilePath& path) {
+void IndexedDBInternalsHandler::OnStorageKeysReady(
+    const base::Value& storage_keys,
+    const base::FilePath& path) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  // TODO(https://crbug.com/1199077): Fix this name as part of storage key
+  // migration.
   FireWebUIListener("origins-ready", storage_keys,
                     base::Value(path.AsUTF8Unsafe()));
 }
@@ -130,7 +136,7 @@ static void FindControl(const base::FilePath& partition_path,
   }
 }
 
-bool IndexedDBInternalsHandler::GetOriginData(
+bool IndexedDBInternalsHandler::GetStorageKeyData(
     const base::ListValue* args,
     std::string* callback_id,
     base::FilePath* partition_path,
@@ -153,14 +159,14 @@ bool IndexedDBInternalsHandler::GetOriginData(
 
   *storage_key = blink::StorageKey(url::Origin::Create(GURL(url_string)));
 
-  return GetOriginControl(*partition_path, *storage_key, control);
+  return GetStorageKeyControl(*partition_path, *storage_key, control);
 }
 
-bool IndexedDBInternalsHandler::GetOriginControl(
+bool IndexedDBInternalsHandler::GetStorageKeyControl(
     const base::FilePath& path,
     const blink::StorageKey& storage_key,
     storage::mojom::IndexedDBControl** control) {
-  // search the origins to find the right context
+  // search the storage keys to find the right context
   BrowserContext* browser_context =
       web_ui()->GetWebContents()->GetBrowserContext();
 
@@ -175,7 +181,7 @@ bool IndexedDBInternalsHandler::GetOriginControl(
   return true;
 }
 
-void IndexedDBInternalsHandler::DownloadOriginData(
+void IndexedDBInternalsHandler::DownloadStorageKeyData(
     const base::ListValue* args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -183,8 +189,8 @@ void IndexedDBInternalsHandler::DownloadOriginData(
   base::FilePath partition_path;
   blink::StorageKey storage_key;
   storage::mojom::IndexedDBControl* control;
-  if (!GetOriginData(args, &callback_id, &partition_path, &storage_key,
-                     &control))
+  if (!GetStorageKeyData(args, &callback_id, &partition_path, &storage_key,
+                         &control))
     return;
 
   AllowJavascript();
@@ -209,7 +215,7 @@ void IndexedDBInternalsHandler::DownloadOriginData(
                       if (!handler)
                         return;
 
-                      control->DownloadOriginData(
+                      control->DownloadStorageKeyData(
                           storage_key,
                           base::BindOnce(
                               &IndexedDBInternalsHandler::OnDownloadDataReady,
@@ -220,15 +226,16 @@ void IndexedDBInternalsHandler::DownloadOriginData(
           weak_factory_.GetWeakPtr(), storage_key, control, callback_id));
 }
 
-void IndexedDBInternalsHandler::ForceCloseOrigin(const base::ListValue* args) {
+void IndexedDBInternalsHandler::ForceCloseStorageKey(
+    const base::ListValue* args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   std::string callback_id;
   base::FilePath partition_path;
   blink::StorageKey storage_key;
   storage::mojom::IndexedDBControl* control;
-  if (!GetOriginData(args, &callback_id, &partition_path, &storage_key,
-                     &control))
+  if (!GetStorageKeyData(args, &callback_id, &partition_path, &storage_key,
+                         &control))
     return;
 
   AllowJavascript();

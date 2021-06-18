@@ -337,18 +337,19 @@ class IndexedDBBackingStoreTest : public testing::Test {
         file_system_access_context_.get());
 
     leveldb::Status s;
-    std::tie(origin_state_handle_, s, std::ignore, data_loss_info_,
+    std::tie(storage_key_state_handle_, s, std::ignore, data_loss_info_,
              std::ignore) =
-        idb_factory_->GetOrOpenOriginFactory(storage_key,
-                                             idb_context_->data_path(),
-                                             /*create_if_missing=*/true);
-    if (!origin_state_handle_.IsHeld()) {
+        idb_factory_->GetOrOpenStorageKeyFactory(storage_key,
+                                                 idb_context_->data_path(),
+                                                 /*create_if_missing=*/true);
+    if (!storage_key_state_handle_.IsHeld()) {
       backing_store_ = nullptr;
       return;
     }
     backing_store_ = static_cast<TestableIndexedDBBackingStore*>(
-        origin_state_handle_.origin_state()->backing_store());
-    lock_manager_ = origin_state_handle_.origin_state()->lock_manager();
+        storage_key_state_handle_.storage_key_state()->backing_store());
+    lock_manager_ =
+        storage_key_state_handle_.storage_key_state()->lock_manager();
   }
 
   std::vector<ScopeLock> CreateDummyLock() {
@@ -365,7 +366,7 @@ class IndexedDBBackingStoreTest : public testing::Test {
   }
 
   void DestroyFactoryAndBackingStore() {
-    origin_state_handle_.Release();
+    storage_key_state_handle_.Release();
     idb_factory_.reset();
     backing_store_ = nullptr;
   }
@@ -378,15 +379,15 @@ class IndexedDBBackingStoreTest : public testing::Test {
       // Loop through all open origins, and force close them, and request the
       // deletion of the leveldb state. Once the states are no longer around,
       // delete all of the databases on disk.
-      auto open_factory_storage_keys = factory->GetOpenOrigins();
+      auto open_factory_storage_keys = factory->GetOpenStorageKeys();
 
       for (const auto& storage_key : open_factory_storage_keys) {
         base::RunLoop loop;
-        IndexedDBOriginState* per_origin_factory =
-            factory->GetOriginFactory(storage_key);
+        IndexedDBStorageKeyState* per_storage_key_factory =
+            factory->GetStorageKeyFactory(storage_key);
 
         auto* leveldb_state =
-            per_origin_factory->backing_store()->db()->leveldb_state();
+            per_storage_key_factory->backing_store()->db()->leveldb_state();
 
         base::WaitableEvent leveldb_close_event;
         base::WaitableEventWatcher event_watcher;
@@ -409,10 +410,10 @@ class IndexedDBBackingStoreTest : public testing::Test {
         EXPECT_TRUE(leveldb_close_event.IsSignaled());
       }
       // All leveldb databases are closed, and they can be deleted.
-      for (auto origin : idb_context_->GetAllOrigins()) {
+      for (auto storage_key : idb_context_->GetAllStorageKeys()) {
         bool success = false;
         storage::mojom::IndexedDBControlAsyncWaiter waiter(idb_context_.get());
-        waiter.DeleteForOrigin(origin, &success);
+        waiter.DeleteForStorageKey(storage_key, &success);
         EXPECT_TRUE(success);
       }
     }
@@ -454,7 +455,7 @@ class IndexedDBBackingStoreTest : public testing::Test {
   std::unique_ptr<TestIDBFactory> idb_factory_;
   DisjointRangeLockManager* lock_manager_;
 
-  IndexedDBOriginStateHandle origin_state_handle_;
+  IndexedDBStorageKeyStateHandle storage_key_state_handle_;
   TestableIndexedDBBackingStore* backing_store_ = nullptr;
   IndexedDBDataLossInfo data_loss_info_;
 

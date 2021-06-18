@@ -8,29 +8,29 @@
 
 namespace content {
 
-IndexedDBOriginStateHandle::IndexedDBOriginStateHandle() = default;
-IndexedDBOriginStateHandle::IndexedDBOriginStateHandle(
-    base::WeakPtr<IndexedDBOriginState> origin_state)
-    : origin_state_(origin_state) {}
-IndexedDBOriginStateHandle::IndexedDBOriginStateHandle(
-    IndexedDBOriginStateHandle&&) = default;
-IndexedDBOriginStateHandle& IndexedDBOriginStateHandle::operator=(
-    IndexedDBOriginStateHandle&&) = default;
+IndexedDBStorageKeyStateHandle::IndexedDBStorageKeyStateHandle() = default;
+IndexedDBStorageKeyStateHandle::IndexedDBStorageKeyStateHandle(
+    base::WeakPtr<IndexedDBStorageKeyState> storage_key_state)
+    : storage_key_state_(storage_key_state) {}
+IndexedDBStorageKeyStateHandle::IndexedDBStorageKeyStateHandle(
+    IndexedDBStorageKeyStateHandle&&) = default;
+IndexedDBStorageKeyStateHandle& IndexedDBStorageKeyStateHandle::operator=(
+    IndexedDBStorageKeyStateHandle&&) = default;
 
-IndexedDBOriginStateHandle::~IndexedDBOriginStateHandle() {
-  if (origin_state_)
-    origin_state_->OnHandleDestruction();
+IndexedDBStorageKeyStateHandle::~IndexedDBStorageKeyStateHandle() {
+  if (storage_key_state_)
+    storage_key_state_->OnHandleDestruction();
 }
 
-void IndexedDBOriginStateHandle::Release() {
-  if (origin_state_) {
-    origin_state_->OnHandleDestruction();
-    origin_state_.reset();
+void IndexedDBStorageKeyStateHandle::Release() {
+  if (storage_key_state_) {
+    storage_key_state_->OnHandleDestruction();
+    storage_key_state_.reset();
   }
 }
 
-bool IndexedDBOriginStateHandle::IsHeld() const {
-  return !!origin_state_;
+bool IndexedDBStorageKeyStateHandle::IsHeld() const {
+  return !!storage_key_state_;
 }
 
 }  // namespace content
