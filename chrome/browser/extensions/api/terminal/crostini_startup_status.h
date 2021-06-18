@@ -49,7 +49,7 @@ class CrostiniStartupStatus
   const bool verbose_;
   bool progress_initialized_ = false;
   int spinner_index_ = 0;
-  int stage_index_ = 0;
+  int stage_index_ = 1;
   int end_of_line_index_ = 0;
   std::unique_ptr<base::RepeatingTimer> show_progress_timer_;
 
