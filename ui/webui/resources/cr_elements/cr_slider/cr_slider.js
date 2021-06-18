@@ -11,7 +11,7 @@ import '../hidden_style_css.m.js';
 import '../shared_vars_css.m.js';
 
 import {PaperRippleBehavior} from '//resources/polymer/v3_0/paper-behaviors/paper-ripple-behavior.js';
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {Debouncer, html, microTask, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {EventTracker} from '../../js/event_tracker.m.js';
 
@@ -53,155 +53,187 @@ function getAriaValue(tick) {
   }
 }
 
+class PaperRippleBehaviorInterface {
+  /** @return  {!PaperRippleElement} */
+  getRipple() {}
+}
+
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {PaperRippleBehaviorInterface}
+ */
+const CrSliderElementBase =
+    mixinBehaviors([PaperRippleBehavior], PolymerElement);
+
 /**
  * The following are the events emitted from cr-slider.
  *
  * cr-slider-value-changed: fired when updating slider via the UI.
  * dragging-changed: fired on pointer down and on pointer up.
  */
-Polymer({
-  is: 'cr-slider',
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+export class CrSliderElement extends CrSliderElementBase {
+  static get is() {
+    return 'cr-slider';
+  }
 
-  behaviors: [
-    PaperRippleBehavior,
-  ],
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    disabled: {
-      type: Boolean,
-      value: false,
-    },
+  static get properties() {
+    return {
+      disabled: {
+        type: Boolean,
+        value: false,
+      },
 
-    /**
-     * Internal representation of disabled depending on |disabled| and
-     * |ticks|.
-     * @private
-     */
-    disabled_: {
-      type: Boolean,
-      computed: 'computeDisabled_(disabled, ticks.*)',
-      reflectToAttribute: true,
-      observer: 'onDisabledChanged_',
-    },
+      /**
+       * Internal representation of disabled depending on |disabled| and
+       * |ticks|.
+       * @private
+       */
+      disabled_: {
+        type: Boolean,
+        computed: 'computeDisabled_(disabled, ticks.*)',
+        reflectToAttribute: true,
+        observer: 'onDisabledChanged_',
+      },
 
-    dragging: {
-      type: Boolean,
-      value: false,
-      notify: true,
-      reflectToAttribute: true,
-    },
+      dragging: {
+        type: Boolean,
+        value: false,
+        notify: true,
+        reflectToAttribute: true,
+      },
 
-    updatingFromKey: {
-      type: Boolean,
-      value: false,
-      notify: true,
-    },
+      updatingFromKey: {
+        type: Boolean,
+        value: false,
+        notify: true,
+      },
 
-    markerCount: {
-      type: Number,
-      value: 0,
-    },
+      markerCount: {
+        type: Number,
+        value: 0,
+      },
 
-    max: {
-      type: Number,
-      value: 100,
-    },
+      max: {
+        type: Number,
+        value: 100,
+      },
 
-    min: {
-      type: Number,
-      value: 0,
-    },
+      min: {
+        type: Number,
+        value: 0,
+      },
 
-    /**
-     * When set to false, the keybindings are not handled by this component,
-     * for example when the owner of the component wants to set up its own
-     * keybindings.
-     */
-    noKeybindings: {
-      type: Boolean,
-      value: false,
-    },
+      /**
+       * When set to false, the keybindings are not handled by this component,
+       * for example when the owner of the component wants to set up its own
+       * keybindings.
+       */
+      noKeybindings: {
+        type: Boolean,
+        value: false,
+      },
 
-    snaps: {
-      type: Boolean,
-      value: false,
-    },
+      snaps: {
+        type: Boolean,
+        value: false,
+      },
 
-    /**
-     * The data associated with each tick on the slider. Each element in the
-     * array contains a value and the label corresponding to that value.
-     * @type {!Array<SliderTick>|!Array<number>}
-     */
-    ticks: {
-      type: Array,
-      value: () => [],
-    },
+      /**
+       * The data associated with each tick on the slider. Each element in the
+       * array contains a value and the label corresponding to that value.
+       * @type {!Array<SliderTick>|!Array<number>}
+       */
+      ticks: {
+        type: Array,
+        value: () => [],
+      },
 
-    value: Number,
+      value: Number,
 
-    /** @private */
-    label_: {
-      type: String,
-      value: '',
-    },
+      /** @private */
+      label_: {
+        type: String,
+        value: '',
+      },
 
-    /** @private */
-    showLabel_: {
-      type: Boolean,
-      value: false,
-      reflectToAttribute: true,
-    },
+      /** @private */
+      showLabel_: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
 
-    /** @private */
-    isRtl_: {
-      type: Boolean,
-      value: false,
-      reflectToAttribute: true,
-    },
+      /** @private */
+      isRtl_: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
 
-    /**
-     * |transiting_| is set to true when bar is touched or clicked. This
-     * triggers a single position transition effect to take place for the
-     * knob, bar and label. When the transition is complete, |transiting_| is
-     * set to false resulting in no transition effect during dragging, manual
-     * value updates and keyboard events.
-     * @private
-     */
-    transiting_: {
-      type: Boolean,
-      value: false,
-      reflectToAttribute: true,
-    },
-  },
+      /**
+       * |transiting_| is set to true when bar is touched or clicked. This
+       * triggers a single position transition effect to take place for the
+       * knob, bar and label. When the transition is complete, |transiting_| is
+       * set to false resulting in no transition effect during dragging, manual
+       * value updates and keyboard events.
+       * @private
+       */
+      transiting_: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
+    };
+  }
 
-  hostAttributes: {
-    role: 'slider',
-  },
+  static get observers() {
+    return [
+      'onTicksChanged_(ticks.*)',
+      'updateUi_(ticks.*, value, min, max)',
+      'onValueMinMaxChange_(value, min, max)',
+    ];
+  }
 
-  observers: [
-    'onTicksChanged_(ticks.*)',
-    'updateUi_(ticks.*, value, min, max)',
-    'onValueMinMaxChange_(value, min, max)',
-  ],
+  constructor() {
+    super();
 
-  listeners: {
-    blur: 'hideRipple_',
-    focus: 'showRipple_',
-    keydown: 'onKeyDown_',
-    keyup: 'onKeyUp_',
-    pointerdown: 'onPointerDown_',
-  },
+    /** @private {Map<string, number>} */
+    this.deltaKeyMap_ = null;
 
-  /** @private {Map<string, number>} */
-  deltaKeyMap_: null,
+    /** @private {EventTracker} */
+    this.draggingEventTracker_ = null;
 
-  /** @private {EventTracker} */
-  draggingEventTracker_: null,
+    /** @private {Debouncer} */
+    this.debouncer_;
+
+    /** @type {!Element} */
+    this._rippleContainer;
+  }
 
   /** @override */
-  attached() {
+  ready() {
+    super.ready();
+    this.setAttribute('role', 'slider');
+
+    this.addEventListener('blur', this.hideRipple_);
+    this.addEventListener('focus', this.showRipple_);
+    this.addEventListener('keydown', this.onKeyDown_);
+    this.addEventListener('keyup', this.onKeyUp_);
+    this.addEventListener(
+        'pointerdown',
+        e => this.onPointerDown_(/** @type {!PointerEvent} */ (e)));
+  }
+
+  /** @override */
+  connectedCallback() {
+    super.connectedCallback();
     this.isRtl_ = window.getComputedStyle(this)['direction'] === 'rtl';
     this.deltaKeyMap_ = new Map([
       ['ArrowDown', -1],
@@ -212,7 +244,17 @@ Polymer({
       ['ArrowRight', this.isRtl_ ? -1 : 1],
     ]);
     this.draggingEventTracker_ = new EventTracker();
-  },
+  }
+
+  /**
+   * @param {string} eventName
+   * @param {*=} detail
+   * @private
+   */
+  fire_(eventName, detail) {
+    this.dispatchEvent(
+        new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
+  }
 
   /**
    * @return {boolean}
@@ -220,7 +262,7 @@ Polymer({
    */
   computeDisabled_() {
     return this.disabled || this.ticks.length === 1;
-  },
+  }
 
   /**
    * When markers are displayed on the slider, they are evenly spaced across
@@ -233,7 +275,7 @@ Polymer({
    */
   getMarkers_() {
     return new Array(Math.max(0, this.markerCount - 1));
-  },
+  }
 
   /**
    * @param {number} index
@@ -243,7 +285,7 @@ Polymer({
   getMarkerClass_(index) {
     const currentStep = (this.markerCount - 1) * this.getRatio();
     return index < currentStep ? 'active-marker' : 'inactive-marker';
-  },
+  }
 
   /**
    * The ratio is a value from 0 to 1.0 corresponding to a location along the
@@ -254,7 +296,7 @@ Polymer({
    */
   getRatio() {
     return (this.value - this.min) / (this.max - this.min);
-  },
+  }
 
   /**
    * Removes all event listeners related to dragging, and cancels ripple.
@@ -266,25 +308,25 @@ Polymer({
     this.releasePointerCapture(pointerId);
     this.dragging = false;
     this.hideRipple_();
-  },
+  }
 
   /** @private */
   hideRipple_() {
     this.getRipple().clear();
     this.showLabel_ = false;
-  },
+  }
 
   /** @private */
   showRipple_() {
     this.getRipple().showAndHoldDown();
     this.showLabel_ = true;
-  },
+  }
 
   /** @private */
   onDisabledChanged_() {
     this.setAttribute('tabindex', this.disabled_ ? -1 : 0);
     this.blur();
-  },
+  }
 
   /**
    * @param {!Event} event
@@ -315,12 +357,12 @@ Polymer({
 
     this.updatingFromKey = true;
     if (this.updateValue_(newValue)) {
-      this.fire('cr-slider-value-changed');
+      this.fire_('cr-slider-value-changed');
     }
     event.preventDefault();
     event.stopPropagation();
     this.showRipple_();
-  },
+  }
 
   /**
    * @param {!Event} event
@@ -333,7 +375,7 @@ Polymer({
         this.updatingFromKey = false;
       });
     }
-  },
+  }
 
   /**
    * When the left-mouse button is pressed, the knob location is updated and
@@ -378,7 +420,7 @@ Polymer({
         stopDragging();
       }
     });
-  },
+  }
 
   /** @private */
   onTicksChanged_() {
@@ -390,23 +432,23 @@ Polymer({
     if (this.value !== undefined) {
       this.updateValue_(this.value);
     }
-  },
+  }
 
   /** @private */
   onTransitionEnd_() {
     this.transiting_ = false;
-  },
+  }
 
   /** @private */
   onValueMinMaxChange_() {
-    this.debounce('onValueMinMaxChange', () => {
+    this.debouncer_ = Debouncer.debounce(this.debouncer_, microTask, () => {
       if (this.value === undefined || this.min === undefined ||
           this.max === undefined) {
         return;
       }
       this.updateValue_(this.value);
     });
-  },
+  }
 
   /** @private */
   updateUi_() {
@@ -431,7 +473,7 @@ Polymer({
       this.setAttribute('aria-valuemin', this.min);
       this.setAttribute('aria-valuemax', this.max);
     }
-  },
+  }
 
   /**
    * @param {number} value
@@ -454,7 +496,7 @@ Polymer({
     }
     this.value = value;
     return true;
-  },
+  }
 
   /**
    * @param {number} clientX
@@ -467,9 +509,9 @@ Polymer({
       ratio = 1 - ratio;
     }
     if (this.updateValue_(ratio * (this.max - this.min) + this.min)) {
-      this.fire('cr-slider-value-changed');
+      this.fire_('cr-slider-value-changed');
     }
-  },
+  }
 
   _createRipple() {
     this._rippleContainer = this.$.knob;
@@ -478,5 +520,7 @@ Polymer({
     ripple.setAttribute('recenters', '');
     ripple.classList.add('circle', 'toggle-ink');
     return ripple;
-  },
-});
+  }
+}
+
+customElements.define(CrSliderElement.is, CrSliderElement);

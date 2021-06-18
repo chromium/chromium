@@ -259,8 +259,8 @@ polymer_modulizer("nearby_share_receive_dialog") {
   migrated_imports = os_settings_migrated_imports
   namespace_rewrites =
       os_settings_namespace_rewrites + nearby_shared_namespace_rewrites
-  auto_imports =
-      os_settings_auto_imports + nearby_shared_auto_imports_closure_fix
+  auto_imports = os_settings_auto_imports +
+                 nearby_shared_auto_imports_closure_fix + [ "ui/webui/resources/cr_elements/cr_view_manager/cr_view_manager.html|CrViewManagerElement" ]
 }
 
 polymer_modulizer("nearby_share_subpage") {

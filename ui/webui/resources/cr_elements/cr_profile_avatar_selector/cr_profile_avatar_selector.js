@@ -7,6 +7,17 @@
  * profile avatar icons and allows an avatar to be selected.
  */
 
+import '../cr_button/cr_button.m.js';
+import '../shared_vars_css.m.js';
+import '../shared_style_css.m.js';
+import '//resources/polymer/v3_0/paper-styles/color.js';
+import '//resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
+import './cr_profile_avatar_selector_grid.js';
+
+import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {getImage} from '../../js/icon.m.js';
+
 /**
  * @typedef {{url: string,
  *            label: string,
@@ -16,57 +27,54 @@
  */
 export let AvatarIcon;
 
-import {Polymer, html} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+/** @polymer */
+export class CrProfileAvatarSelectorElement extends PolymerElement {
+  static get is() {
+    return 'cr-profile-avatar-selector';
+  }
 
-import '../cr_button/cr_button.m.js';
-import '../shared_vars_css.m.js';
-import '../shared_style_css.m.js';
-import {getImage} from '../../js/icon.m.js';
-import '//resources/polymer/v3_0/paper-styles/color.js';
-import '//resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
-import './cr_profile_avatar_selector_grid.js';
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-Polymer({
-  is: 'cr-profile-avatar-selector',
+  static get properties() {
+    return {
+      /**
+       * The list of profile avatar URLs and labels.
+       * @type {!Array<!AvatarIcon>}
+       */
+      avatars: {
+        type: Array,
+        value() {
+          return [];
+        }
+      },
 
-  _template: html`{__html_template__}`,
+      /**
+       * The currently selected profile avatar icon, if any.
+       * @type {?AvatarIcon}
+       */
+      selectedAvatar: {
+        type: Object,
+        notify: true,
+      },
 
-  properties: {
-    /**
-     * The list of profile avatar URLs and labels.
-     * @type {!Array<!AvatarIcon>}
-     */
-    avatars: {
-      type: Array,
-      value() {
-        return [];
-      }
-    },
+      ignoreModifiedKeyEvents: {
+        type: Boolean,
+        value: false,
+      },
 
-    /**
-     * The currently selected profile avatar icon, if any.
-     * @type {?AvatarIcon}
-     */
-    selectedAvatar: {
-      type: Object,
-      notify: true,
-    },
-
-    ignoreModifiedKeyEvents: {
-      type: Boolean,
-      value: false,
-    },
-
-    /**
-     * The currently selected profile avatar icon index, or '-1' if none is
-     * selected.
-     * @type {number}
-     */
-    tabFocusableAvatar_: {
-      type: Number,
-      computed: 'computeTabFocusableAvatar_(avatars, selectedAvatar)',
-    },
-  },
+      /**
+       * The currently selected profile avatar icon index, or '-1' if none is
+       * selected.
+       * @type {number}
+       */
+      tabFocusableAvatar_: {
+        type: Number,
+        computed: 'computeTabFocusableAvatar_(avatars, selectedAvatar)',
+      },
+    };
+  }
 
   /**
    * @param {number} index
@@ -75,7 +83,7 @@ Polymer({
    */
   getAvatarId_(index) {
     return 'avatarId' + index;
-  },
+  }
 
   /**
    * @param {number} index
@@ -93,7 +101,7 @@ Polymer({
       return '0';
     }
     return '-1';
-  },
+  }
 
   /**
    * @return {number}
@@ -103,14 +111,14 @@ Polymer({
     const selectedAvatar =
         this.avatars.find(avatar => this.isAvatarSelected(avatar));
     return selectedAvatar ? selectedAvatar.index : -1;
-  },
+  }
 
   /** @private */
   getSelectedClass_(avatarItem) {
     // TODO(dpapad): Rename 'iron-selected' to 'selected' now that this CSS
     // class is not assigned by any iron-* behavior.
     return this.isAvatarSelected(avatarItem) ? 'iron-selected' : '';
-  },
+  }
 
   /**
    * @param {AvatarIcon} avatarItem
@@ -119,7 +127,7 @@ Polymer({
    */
   getCheckedAttribute_(avatarItem) {
     return this.isAvatarSelected(avatarItem) ? 'true' : 'false';
-  },
+  }
 
   /**
    * @param {AvatarIcon} avatarItem
@@ -131,7 +139,7 @@ Polymer({
         (avatarItem.selected ||
          (!!this.selectedAvatar &&
           this.selectedAvatar.index === avatarItem.index));
-  },
+  }
 
   /**
    * @param {string} iconUrl
@@ -140,7 +148,7 @@ Polymer({
    */
   getIconImageSet_(iconUrl) {
     return getImage(iconUrl);
-  },
+  }
 
   /**
    * @param {!Event} e
@@ -151,5 +159,8 @@ Polymer({
     // component.
     this.selectedAvatar =
         /** @type {!{model: {item: !AvatarIcon}}} */ (e).model.item;
-  },
-});
+  }
+}
+
+customElements.define(
+    CrProfileAvatarSelectorElement.is, CrProfileAvatarSelectorElement);

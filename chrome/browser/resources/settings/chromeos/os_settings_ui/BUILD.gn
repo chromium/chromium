@@ -44,6 +44,6 @@ polymer_modulizer("os_settings_ui") {
   html_file = "os_settings_ui.html"
   html_type = "dom-module"
   migrated_imports = os_settings_migrated_imports
-  auto_imports = os_settings_auto_imports
+  auto_imports = os_settings_auto_imports + [ "ui/webui/resources/cr_elements/cr_drawer/cr_drawer.html|CrDrawerElement" ]
   namespace_rewrites = os_settings_namespace_rewrites
 }

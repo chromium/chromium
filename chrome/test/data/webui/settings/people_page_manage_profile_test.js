@@ -107,8 +107,8 @@ suite('ManageProfileTests', function() {
     let items = null;
     await browserProxy.whenCalled('getAvailableIcons');
     flush();
-    items = manageProfile.$$('cr-profile-avatar-selector')
-                .$$('#avatar-grid')
+    items = manageProfile.shadowRoot.querySelector('cr-profile-avatar-selector')
+                .shadowRoot.querySelector('#avatar-grid')
                 .querySelectorAll('.avatar');
 
     assertFalse(!!manageProfile.profileAvatar);
@@ -127,7 +127,7 @@ suite('ManageProfileTests', function() {
   });
 
   test('ManageProfileChangeName', async function() {
-    const nameField = manageProfile.$$('#name');
+    const nameField = manageProfile.shadowRoot.querySelector('#name');
     assertTrue(!!nameField);
     assertFalse(!!nameField.disabled);
     assertEquals('.*\\S.*', nameField.pattern);
@@ -144,7 +144,7 @@ suite('ManageProfileTests', function() {
   test('ProfileNameIsDisabledForSupervisedUser', function() {
     manageProfile.syncStatus = {supervisedUser: true, childUser: false};
 
-    const nameField = manageProfile.$$('#name');
+    const nameField = manageProfile.shadowRoot.querySelector('#name');
     assertTrue(!!nameField);
 
     // Name field should be disabled for legacy supervised users.
@@ -153,7 +153,7 @@ suite('ManageProfileTests', function() {
 
   // Tests profile name updates pushed from the browser.
   test('ManageProfileNameUpdated', async function() {
-    const nameField = manageProfile.$$('#name');
+    const nameField = manageProfile.shadowRoot.querySelector('#name');
     assertTrue(!!nameField);
 
     await browserProxy.whenCalled('getAvailableIcons');
@@ -166,13 +166,14 @@ suite('ManageProfileTests', function() {
 
   // Tests that the theme selector is visible.
   test('ProfileThemeSelector', function() {
-    assertTrue(!!manageProfile.$$('#themeSelector'));
+    assertTrue(!!manageProfile.shadowRoot.querySelector('#themeSelector'));
   });
 
   // Tests profile shortcut toggle is hidden if profile shortcuts feature is
   // disabled.
   test('ManageProfileShortcutToggleHidden', function() {
-    const hasShortcutToggle = manageProfile.$$('#hasShortcutToggle');
+    const hasShortcutToggle =
+        manageProfile.shadowRoot.querySelector('#hasShortcutToggle');
     assertFalse(!!hasShortcutToggle);
   });
 
@@ -184,12 +185,13 @@ suite('ManageProfileTests', function() {
     manageProfile = createManageProfileElement();
     flush();
 
-    assertFalse(!!manageProfile.$$('#hasShortcutToggle'));
+    assertFalse(!!manageProfile.shadowRoot.querySelector('#hasShortcutToggle'));
     await browserProxy.whenCalled('getProfileShortcutStatus');
 
     flush();
 
-    const hasShortcutToggle = manageProfile.$$('#hasShortcutToggle');
+    const hasShortcutToggle =
+        manageProfile.shadowRoot.querySelector('#hasShortcutToggle');
     assertTrue(!!hasShortcutToggle);
 
     // The profile shortcut toggle is checked.
@@ -220,12 +222,13 @@ suite('ManageProfileTests', function() {
     manageProfile = createManageProfileElement();
     flush();
 
-    assertFalse(!!manageProfile.$$('#hasShortcutToggle'));
+    assertFalse(!!manageProfile.shadowRoot.querySelector('#hasShortcutToggle'));
     await browserProxy.whenCalled('getProfileShortcutStatus');
 
     flush();
 
-    const hasShortcutToggle = manageProfile.$$('#hasShortcutToggle');
+    const hasShortcutToggle =
+        manageProfile.shadowRoot.querySelector('#hasShortcutToggle');
     assertTrue(!!hasShortcutToggle);
 
     assertFalse(hasShortcutToggle.checked);
@@ -242,12 +245,12 @@ suite('ManageProfileTests', function() {
     manageProfile = createManageProfileElement();
     flush();
 
-    assertFalse(!!manageProfile.$$('#hasShortcutToggle'));
+    assertFalse(!!manageProfile.shadowRoot.querySelector('#hasShortcutToggle'));
 
     await browserProxy.whenCalled('getProfileShortcutStatus');
 
     flush();
 
-    assertFalse(!!manageProfile.$$('#hasShortcutToggle'));
+    assertFalse(!!manageProfile.shadowRoot.querySelector('#hasShortcutToggle'));
   });
 });

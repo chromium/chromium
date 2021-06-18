@@ -7,26 +7,36 @@
  * profile avatar icons that allows keyboard navigation with all arrow keys.
  */
 
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assert} from '../../js/assert.m.js';
 import {hasKeyModifiers} from '../../js/util.m.js';
 
-Polymer({
-  is: 'cr-profile-avatar-selector-grid',
+/** @polymer */
+class CrProfileAvatarSelectorGridElement extends PolymerElement {
+  static get is() {
+    return 'cr-profile-avatar-selector-grid';
+  }
 
-  _template: html`{__html_template__}`,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    ignoreModifiedKeyEvents: {
-      type: Boolean,
-      value: false,
-    },
-  },
+  static get properties() {
+    return {
+      ignoreModifiedKeyEvents: {
+        type: Boolean,
+        value: false,
+      },
+    };
+  }
 
-  listeners: {
-    keydown: 'onKeyDown_',
-  },
+  /** @override */
+  ready() {
+    super.ready();
+    this.addEventListener(
+        'keydown', e => this.onKeyDown_(/** @type {!KeyboardEvent} */ (e)));
+  }
 
   /**
    * @param {!KeyboardEvent} e
@@ -51,7 +61,7 @@ Polymer({
         e.preventDefault();
         return;
     }
-  },
+  }
 
   /**
    * Moves focus up/down/left/right according to the given direction. Wraps
@@ -101,4 +111,7 @@ Polymer({
     nextItem.focus();
     assert(this.parentNode.activeElement === nextItem);
   }
-});
+}
+
+customElements.define(
+    CrProfileAvatarSelectorGridElement.is, CrProfileAvatarSelectorGridElement);

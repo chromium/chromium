@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-import 'chrome://resources/cr_elements/cr_drawer/cr_drawer.js';
+import {CrDrawerElement} from 'chrome://resources/cr_elements/cr_drawer/cr_drawer.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -45,12 +45,13 @@ suite('cr-drawer', function() {
           document.querySelector('.drawer-content').click();
 
           const whenClosed = eventToPromise('close', drawer);
-          drawer.$$('#dialog').dispatchEvent(new MouseEvent('click', {
-            bubbles: true,
-            cancelable: true,
-            clientX: 300,  // Must be larger than the drawer width (256px).
-            clientY: 300,
-          }));
+          drawer.shadowRoot.querySelector('#dialog').dispatchEvent(
+              new MouseEvent('click', {
+                bubbles: true,
+                cancelable: true,
+                clientX: 300,  // Must be larger than the drawer width (256px).
+                clientY: 300,
+              }));
 
           return whenClosed;
         })
@@ -77,7 +78,7 @@ suite('cr-drawer', function() {
     await eventToPromise('cr-drawer-opened', drawer);
 
     // Clicking the icon closes the drawer.
-    drawer.$$('#iconButton').click();
+    drawer.shadowRoot.querySelector('#iconButton').click();
     await eventToPromise('close', drawer);
     assertFalse(drawer.open);
     assertTrue(drawer.wasCanceled());
@@ -87,7 +88,8 @@ suite('cr-drawer', function() {
     const drawer = createDrawer('ltr');
     drawer.openDrawer();
     return eventToPromise('cr-drawer-opened', drawer).then(() => {
-      const rect = drawer.$$('#dialog').getBoundingClientRect();
+      const rect =
+          drawer.shadowRoot.querySelector('#dialog').getBoundingClientRect();
       assertEquals(0, rect.left);
       assertNotEquals(0, rect.right);
     });
@@ -97,7 +99,8 @@ suite('cr-drawer', function() {
     const drawer = createDrawer('rtl');
     drawer.openDrawer();
     return eventToPromise('cr-drawer-opened', drawer).then(() => {
-      const rect = drawer.$$('#dialog').getBoundingClientRect();
+      const rect =
+          drawer.shadowRoot.querySelector('#dialog').getBoundingClientRect();
       assertNotEquals(0, rect.left);
       assertEquals(window.innerWidth, rect.right);
     });

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-import 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
+import {CrSliderElement} from 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
 
 import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -76,7 +76,8 @@ suite('cr-slider', function() {
   }
 
   function pointerEvent(eventType, ratio) {
-    const rect = crSlider.$$('#container').getBoundingClientRect();
+    const rect =
+        crSlider.shadowRoot.querySelector('#container').getBoundingClientRect();
     crSlider.dispatchEvent(new PointerEvent(eventType, {
       buttons: 1,
       pointerId: 1,
@@ -190,9 +191,9 @@ suite('cr-slider', function() {
   });
 
   test('markers', () => {
-    assertTrue(crSlider.$$('#markers').hidden);
+    assertTrue(crSlider.shadowRoot.querySelector('#markers').hidden);
     crSlider.markerCount = 10;
-    assertFalse(crSlider.$$('#markers').hidden);
+    assertFalse(crSlider.shadowRoot.querySelector('#markers').hidden);
     flush();
     const markers = Array.from(crSlider.root.querySelectorAll('#markers div'));
     assertEquals(9, markers.length);
@@ -219,13 +220,15 @@ suite('cr-slider', function() {
     assertEquals('8', crSlider.getAttribute('aria-valuemax'));
     assertEquals('4', crSlider.getAttribute('aria-valuetext'));
     assertEquals('4', crSlider.getAttribute('aria-valuenow'));
-    assertEquals('', crSlider.$$('#label').innerHTML.trim());
+    assertEquals(
+        '', crSlider.shadowRoot.querySelector('#label').innerHTML.trim());
     assertEquals(2, crSlider.value);
     pressArrowRight();
     assertEquals(3, crSlider.value);
     assertEquals('8', crSlider.getAttribute('aria-valuetext'));
     assertEquals('8', crSlider.getAttribute('aria-valuenow'));
-    assertEquals('', crSlider.$$('#label').innerHTML.trim());
+    assertEquals(
+        '', crSlider.shadowRoot.querySelector('#label').innerHTML.trim());
     crSlider.value = 2;
     crSlider.ticks = [
       {
@@ -246,12 +249,14 @@ suite('cr-slider', function() {
     assertEquals('1', crSlider.getAttribute('aria-valuemin'));
     assertEquals('3', crSlider.getAttribute('aria-valuemax'));
     assertEquals('Third', crSlider.getAttribute('aria-valuetext'));
-    assertEquals('Third', crSlider.$$('#label').innerHTML.trim());
+    assertEquals(
+        'Third', crSlider.shadowRoot.querySelector('#label').innerHTML.trim());
     assertEquals('3', crSlider.getAttribute('aria-valuenow'));
     pressArrowLeft();
     assertEquals('Second', crSlider.getAttribute('aria-valuetext'));
     assertEquals('20', crSlider.getAttribute('aria-valuenow'));
-    assertEquals('Second', crSlider.$$('#label').innerHTML.trim());
+    assertEquals(
+        'Second', crSlider.shadowRoot.querySelector('#label').innerHTML.trim());
   });
 
   test('disabled whenever public |disabled| is true', () => {
@@ -329,16 +334,24 @@ suite('cr-slider', function() {
     const assertNoTransition = () => {
       const expected = 'all 0s ease 0s';
       assertEquals(
-          expected, getComputedStyle(crSlider.$$('#knobAndLabel')).transition);
-      assertEquals(expected, getComputedStyle(crSlider.$$('#bar')).transition);
+          expected,
+          getComputedStyle(crSlider.shadowRoot.querySelector('#knobAndLabel'))
+              .transition);
+      assertEquals(
+          expected,
+          getComputedStyle(crSlider.shadowRoot.querySelector('#bar'))
+              .transition);
     };
     const assertTransition = () => {
       const getValue = propName => `${propName} 0.08s ease 0s`;
       assertEquals(
           getValue('margin-inline-start'),
-          getComputedStyle(crSlider.$$('#knobAndLabel')).transition);
+          getComputedStyle(crSlider.shadowRoot.querySelector('#knobAndLabel'))
+              .transition);
       assertEquals(
-          getValue('width'), getComputedStyle(crSlider.$$('#bar')).transition);
+          getValue('width'),
+          getComputedStyle(crSlider.shadowRoot.querySelector('#bar'))
+              .transition);
     };
 
     assertNoTransition();
@@ -346,7 +359,8 @@ suite('cr-slider', function() {
     assertTransition();
 
     const knobAndLabel =
-        /** @type {!HTMLElement} */ (crSlider.$$('#knobAndLabel'));
+        /** @type {!HTMLElement} */ (
+            crSlider.shadowRoot.querySelector('#knobAndLabel'));
 
     await eventToPromise('transitionend', knobAndLabel);
     assertNoTransition();
@@ -426,9 +440,9 @@ suite('cr-slider', function() {
     document.body.innerHTML = '<cr-slider></cr-slider>';
     crSlider = /** @type {!CrSliderElement} */ (
         document.body.querySelector('cr-slider'));
-    assertTrue(crSlider.$$('#container').hidden);
+    assertTrue(crSlider.shadowRoot.querySelector('#container').hidden);
     crSlider.value = 0;
     await flushTasks();
-    assertFalse(crSlider.$$('#container').hidden);
+    assertFalse(crSlider.shadowRoot.querySelector('#container').hidden);
   });
 });

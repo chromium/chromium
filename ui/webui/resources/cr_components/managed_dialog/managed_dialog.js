@@ -12,27 +12,41 @@ import '../../cr_elements/icons.m.js';
 import '../../cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {I18nBehavior} from '../../js/i18n_behavior.m.js';
+import {I18nBehavior, I18nBehaviorInterface} from '../../js/i18n_behavior.m.js';
 
-Polymer({
-  is: 'managed-dialog',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const ManagedDialogElementBase = mixinBehaviors([I18nBehavior], PolymerElement);
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+class ManagedDialogElement extends ManagedDialogElementBase {
+  static get is() {
+    return 'managed-dialog';
+  }
 
-  behaviors: [I18nBehavior],
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /** Managed dialog title text. */
-    title: String,
+  static get properties() {
+    return {
+      /** Managed dialog title text. */
+      title: String,
 
-    /** Managed dialog body text. */
-    body: String,
-  },
+      /** Managed dialog body text. */
+      body: String,
+    };
+  }
 
   /** @private */
   onOkClick_() {
     this.$.dialog.close();
-  },
-});
+  }
+}
+
+customElements.define(ManagedDialogElement.is, ManagedDialogElement);

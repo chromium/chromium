@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assert} from '../../js/assert.m.js';
 
@@ -51,10 +51,15 @@ viewAnimations.set('fade-out', element => {
   return whenFinished(animation);
 });
 
-Polymer({
-  is: 'cr-view-manager',
+/** @polymer */
+export class CrViewManagerElement extends PolymerElement {
+  static get is() {
+    return 'cr-view-manager';
+  }
 
-  _template: html`{__html_template__}`,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
   /**
    * @param {!Element} element
@@ -75,7 +80,7 @@ Polymer({
       element.dispatchEvent(
           new CustomEvent('view-exit-finish', {bubbles: true, composed: true}));
     });
-  },
+  }
 
   /**
    * @param {!Element} view
@@ -96,7 +101,7 @@ Polymer({
       effectiveView.dispatchEvent(new CustomEvent(
           'view-enter-finish', {bubbles: true, composed: true}));
     });
-  },
+  }
 
   /**
    * @param {string} newViewId
@@ -117,5 +122,7 @@ Polymer({
     }
 
     return Promise.all(promises);
-  },
-});
+  }
+}
+
+customElements.define(CrViewManagerElement.is, CrViewManagerElement);
