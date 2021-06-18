@@ -55,17 +55,26 @@ async function loadFrames(test, parentSuffix, targetUrl) {
   return frame;
 }
 
-async function observeReports(global) {
+async function observeReports(global, expected_count) {
   const reports = [];
-  const observer = new global.ReportingObserver((rs) => {
-    for (const r of rs) {
-      reports.push(r.toJSON());
-    }
-  });
-  observer.observe();
+  const receivedEveryReports = new Promise(resolve => {
+    if (expected_count == 0)
+      resolve();
 
-  // Wait 1000ms for reports to settle.
-  await new Promise(r => step_timeout(r, 1000));
+    const observer = new global.ReportingObserver((rs) => {
+      for (const r of rs) {
+        reports.push(r.toJSON());
+      }
+      if (expected_count <= reports.length)
+        resolve();
+    });
+    observer.observe();
+
+  });
+
+  // Wait 500ms more to catch additionnal unexpected reports.
+  await receivedEveryReports;
+  await new Promise(r => step_timeout(r, 500));
   return reports;
 }
 
@@ -89,7 +98,10 @@ const reportingTest = function(
     const targetUrl = REMOTE_FRAME_URL + target_headers;
     const parent = await loadFrames(t, parent_headers, targetUrl);
     const contextUrl = parent.src ? parent.src : 'about:blank';
-    const reports = await observeReports(parent.contentWindow);
+    const reports = await observeReports(
+        parent.contentWindow,
+        expected_reports.length
+      );
     assert_equals(reports.length, expected_reports.length);
     for (let i = 0; i < reports.length; i += 1) {
       const report = reports[i];

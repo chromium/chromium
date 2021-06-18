@@ -6427,8 +6427,6 @@ crbug.com/1060837 external/wpt/html/cross-origin-embedder-policy/reporting-to-fr
 # These timeout because COEP reporting to a worker is not implemented.
 crbug.com/1197041 external/wpt/html/cross-origin-embedder-policy/reporting-to-worker-owner.https.html [ Skip ]
 crbug.com/1197041 virtual/plz-dedicated-worker/external/wpt/html/cross-origin-embedder-policy/reporting-to-worker-owner.https.html [ Skip ]
-# Failure related to COEP reporting.
-crbug.com/1218372 virtual/plz-dedicated-worker/external/wpt/html/cross-origin-embedder-policy/credentialless/reporting-navigation.tentative.https.html [ Skip ]
 
 # Sheriff 2021-04-12
 crbug.com/1198103 virtual/scroll-unification/fast/events/drag-and-drop-autoscroll.html [ Pass Timeout ]
@@ -6907,8 +6905,6 @@ crbug.com/1217342 [ Linux ] http/tests/devtools/sources/debugger-async/async-cal
 crbug.com/626703 [ Linux ] external/wpt/css/CSS2/backgrounds/background-position-201.xht [ Pass Failure ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/css/CSS2/backgrounds/background-position-201.xht [ Pass Failure ]
 crbug.com/1177996 [ Mac10.15 ] storage/websql/database-lock-after-reload.html [ Failure Pass ]
-crbug.com/1218484 [ Linux ] external/wpt/html/cross-origin-embedder-policy/credentialless/reporting-navigation.tentative.https.html [ Pass Failure ]
-crbug.com/1218484 [ Linux ] virtual/plz-service-worker/external/wpt/html/cross-origin-embedder-policy/credentialless/reporting-navigation.tentative.https.html [ Pass Failure ]
 
 # CSS Highlight API painting issues related to general CSS highlight
 # pseudo-elements painting
