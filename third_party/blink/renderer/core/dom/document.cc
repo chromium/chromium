@@ -8049,8 +8049,10 @@ void Document::ColorSchemeChanged() {
   MediaQueryAffectingValueChanged(MediaValueChange::kOther);
   MediaValues* media_values =
       MediaValues::CreateDynamicIfFrameExists(GetFrame());
-  GetFrame()->GetLocalFrameHostRemote().DidUpdatePreferredColorScheme(
-      media_values->GetPreferredColorScheme());
+  if (GetFrame()) {
+    GetFrame()->GetLocalFrameHostRemote().DidUpdatePreferredColorScheme(
+        media_values->GetPreferredColorScheme());
+  }
 }
 
 void Document::VisionDeficiencyChanged() {
