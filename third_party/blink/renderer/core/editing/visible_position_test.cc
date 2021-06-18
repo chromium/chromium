@@ -5,8 +5,10 @@
 #include "third_party/blink/renderer/core/editing/visible_position.h"
 
 #include "third_party/blink/renderer/core/css/css_style_declaration.h"
+#include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
 #include "third_party/blink/renderer/core/editing/visible_units.h"
+#include "third_party/blink/renderer/core/layout/layout_text.h"
 
 namespace blink {
 
@@ -325,6 +327,54 @@ TEST_P(ParameterizedVisiblePositionTest, SpacesAroundLineBreak) {
     EXPECT_EQ(Position(b, 1),
               CreateVisiblePosition(Position(b, 1)).DeepEquivalent());
   }
+}
+
+TEST_P(ParameterizedVisiblePositionTest, TextCombine) {
+  ScopedLayoutNGTextCombineForTest enable_layout_ng_text_combine(GetParam());
+  InsertStyleElement(
+      "div {"
+      "  font: 100px/110px Ahem;"
+      "  writing-mode: vertical-rl;"
+      "}"
+      "tcy { text-combine-upright: all; }");
+  SetBodyInnerHTML("<div>a<tcy id=target>01234</tcy>b</div>");
+  const auto& target = *GetElementById("target");
+  const auto& text_a = *To<Text>(target.previousSibling());
+  const auto& text_01234 = *To<Text>(target.firstChild());
+  const auto& text_b = *To<Text>(target.nextSibling());
+
+  EXPECT_EQ(Position(text_a, 0),
+            CreateVisiblePosition(Position(text_a, 0)).DeepEquivalent());
+  EXPECT_EQ(Position(text_a, 1),
+            CreateVisiblePosition(Position(text_a, 1)).DeepEquivalent());
+
+  if (text_01234.GetLayoutObject()->Parent()->IsLayoutNGTextCombine()) {
+    EXPECT_EQ(Position(text_01234, 0),
+              CreateVisiblePosition(Position(text_01234, 0)).DeepEquivalent());
+  } else {
+    EXPECT_EQ(Position(text_a, 1),
+              CreateVisiblePosition(Position(text_01234, 0)).DeepEquivalent());
+  }
+  EXPECT_EQ(Position(text_01234, 1),
+            CreateVisiblePosition(Position(text_01234, 1)).DeepEquivalent());
+  EXPECT_EQ(Position(text_01234, 2),
+            CreateVisiblePosition(Position(text_01234, 2)).DeepEquivalent());
+  EXPECT_EQ(Position(text_01234, 3),
+            CreateVisiblePosition(Position(text_01234, 3)).DeepEquivalent());
+  EXPECT_EQ(Position(text_01234, 4),
+            CreateVisiblePosition(Position(text_01234, 4)).DeepEquivalent());
+  EXPECT_EQ(Position(text_01234, 5),
+            CreateVisiblePosition(Position(text_01234, 5)).DeepEquivalent());
+
+  if (text_01234.GetLayoutObject()->Parent()->IsLayoutNGTextCombine()) {
+    EXPECT_EQ(Position(text_b, 0),
+              CreateVisiblePosition(Position(text_b, 0)).DeepEquivalent());
+  } else {
+    EXPECT_EQ(Position(text_01234, 5),
+              CreateVisiblePosition(Position(text_b, 0)).DeepEquivalent());
+  }
+  EXPECT_EQ(Position(text_b, 1),
+            CreateVisiblePosition(Position(text_b, 1)).DeepEquivalent());
 }
 
 }  // namespace blink
