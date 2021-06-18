@@ -92,6 +92,15 @@ class FrameImpl : public fuchsia::web::Frame,
     return navigation_policy_handler_.get();
   }
 
+  // Enables explicit sites filtering and set the error page. If |error_page| is
+  // empty, the default error page will be used.
+  void EnableExplicitSitesFilter(std::string error_page);
+
+  const absl::optional<std::string>& explicit_sites_filter_error_page() const {
+    return explicit_sites_filter_error_page_;
+  }
+
+  // Accessors required by tests.
   zx::unowned_channel GetBindingChannelForTest() const;
   content::WebContents* web_contents_for_test() const {
     return web_contents_.get();
@@ -106,14 +115,6 @@ class FrameImpl : public fuchsia::web::Frame,
   }
   FrameWindowTreeHost* window_tree_host_for_test() {
     return window_tree_host_.get();
-  }
-
-  // Enables explicit sites filtering and set the error page. If |error_page| is
-  // empty, the default error page will be used.
-  void EnableExplicitSitesFilter(std::string error_page);
-
-  const absl::optional<std::string>& explicit_sites_filter_error_page() const {
-    return explicit_sites_filter_error_page_;
   }
 
  private:
