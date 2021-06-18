@@ -3465,11 +3465,10 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
 
   // Create the NavigationParams based on |params|.
 
-  bool is_view_source_mode = virtual_url.SchemeIs(kViewSourceScheme);
+  bool is_view_source_mode = entry->IsViewSourceMode();
+  DCHECK_EQ(is_view_source_mode, virtual_url.SchemeIs(kViewSourceScheme));
 
-  // Update |download_policy| if the virtual URL is view-source. Why do this
-  // now? Possibly the URL could be rewritten to a view-source via some URL
-  // handler.
+  // Update |download_policy| if the virtual URL is view-source.
   if (is_view_source_mode)
     download_policy.SetDisallowed(blink::NavigationDownloadType::kViewSource);
 

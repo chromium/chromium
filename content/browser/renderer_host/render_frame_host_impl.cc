@@ -7053,7 +7053,6 @@ void RenderFrameHostImpl::CommitNavigation(
     network::mojom::URLResponseHeadPtr response_head,
     mojo::ScopedDataPipeConsumerHandle response_body,
     network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
-    bool is_view_source,
     absl::optional<SubresourceLoaderParams> subresource_loader_params,
     absl::optional<std::vector<blink::mojom::TransferrableURLLoaderPtr>>
         subresource_overrides,
@@ -7158,7 +7157,7 @@ void RenderFrameHostImpl::CommitNavigation(
 
   // The renderer can exit view source mode when any error or cancellation
   // happen. When reusing the same renderer, overwrite to recover the mode.
-  if (is_view_source && IsActive()) {
+  if (commit_params->is_view_source && IsActive()) {
     DCHECK(!GetParent());
     GetAssociatedLocalFrame()->EnableViewSourceMode();
   }

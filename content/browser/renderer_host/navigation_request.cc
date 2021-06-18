@@ -1306,7 +1306,6 @@ NavigationRequest::NavigationRequest(
       }
     }
     isolation_info_ = entry->isolation_info();
-    is_view_source_ = entry->IsViewSourceMode();
 
     // Ensure that we always have a |source_site_instance_| for navigations
     // that require it at this point. This is needed to ensure that data: URLs
@@ -3962,7 +3961,7 @@ void NavigationRequest::CommitNavigation() {
   render_frame_host_->CommitNavigation(
       this, std::move(common_params), std::move(commit_params),
       std::move(response_head), std::move(response_body_),
-      std::move(url_loader_client_endpoints_), is_view_source_,
+      std::move(url_loader_client_endpoints_),
       std::move(subresource_loader_params_), std::move(subresource_overrides_),
       std::move(service_worker_container_info), devtools_navigation_token_,
       std::move(web_bundle_handle_));

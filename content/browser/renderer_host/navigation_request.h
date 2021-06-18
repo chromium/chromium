@@ -415,8 +415,6 @@ class CONTENT_EXPORT NavigationRequest
     return dest_site_instance_.get();
   }
 
-  bool is_view_source() const { return is_view_source_; }
-
   int bindings() const { return bindings_; }
 
   bool browser_initiated() const {
@@ -1415,7 +1413,6 @@ class CONTENT_EXPORT NavigationRequest
   const RestoreType restore_type_;
   const ReloadType reload_type_;
   const int nav_entry_id_;
-  bool is_view_source_ = false;
   int bindings_ = FrameNavigationEntry::kInvalidBindings;
 
   scoped_refptr<SiteInstanceImpl> starting_site_instance_;

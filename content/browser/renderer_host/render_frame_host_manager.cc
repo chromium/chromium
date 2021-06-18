@@ -2922,7 +2922,7 @@ RenderFrameHostManager::GetSiteInstanceForNavigationRequest(
       request->state() >= NavigationRequest::CANCELING, is_reload,
       request->IsSameDocument(),
       request->GetRestoreType() == RestoreType::kRestored,
-      request->is_view_source(), request->WasServerRedirect(),
+      request->commit_params().is_view_source, request->WasServerRedirect(),
       request->coop_status().require_browsing_instance_swap(),
       request->common_params().should_replace_current_entry,
       request->state() < NavigationRequest::NavigationState::
