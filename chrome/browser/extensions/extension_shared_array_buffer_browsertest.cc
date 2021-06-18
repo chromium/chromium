@@ -15,4 +15,12 @@ IN_PROC_BROWSER_TEST_F(SharedArrayBufferTest, TransferToWorker) {
   ASSERT_TRUE(RunExtensionTest("shared_array_buffers")) << message_;
 }
 
+// Ensures platform apps can use the SharedArrayBuffer API.
+IN_PROC_BROWSER_TEST_F(SharedArrayBufferTest, TransferToWorker_PlatformApp) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  ASSERT_TRUE(RunExtensionTest("shared_array_buffers_platform_app",
+                               {.launch_as_platform_app = true}))
+      << message_;
+}
+
 }  // namespace extensions
