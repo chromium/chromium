@@ -1654,8 +1654,6 @@ crbug.com/919789 images/image-zoom-to-500.html [ Timeout ]
 # Sheriff 2020-02-06
 # Flaking on Linux Leak
 crbug.com/1049599 [ Linux ] virtual/threaded-prefer-compositing/fast/scrolling/events/overscroll-event-fired-to-element-with-overscroll-behavior.html [ Pass Failure Timeout ]
-crbug.com/1049641 http/tests/devtools/sources/debugger/js-with-inline-stylesheets.js [ Pass Failure ]
-crbug.com/1049641 [ Debug ] http/tests/devtools/sources/debugger-breakpoints/set-breakpoint.js [ Pass Failure ]
 
 # Sheriff 2019-08-19
 crbug.com/626703 [ Win7 ] external/wpt/html/dom/documents/resource-metadata-management/document-lastModified-01.html [ Failure ]
@@ -1734,9 +1732,6 @@ crbug.com/555703 [ Fuchsia ] virtual/media-gpu-accelerated/* [ Skip ]
 crbug.com/467477 fast/multicol/vertical-rl/nested-columns.html [ Failure ]
 
 crbug.com/400841 media/video-canvas-draw.html [ Failure ]
-
-# Source map asyncification requires some 3-way changes with the DevTools frontend.
-crbug.com/1032016 http/tests/devtools/sources/debugger-breakpoints/breakpoints-ui-shifted-breakpoint.js [ Pass Failure Timeout ]
 
 # switching to apache-win32: needs triaging.
 crbug.com/528062 [ Win ] http/tests/css/missing-repaint-after-slow-style-sheet.pl [ Failure ]
