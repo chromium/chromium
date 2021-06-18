@@ -61,6 +61,7 @@ absl::optional<std::string> UserAgentMetadata::Marshal(
   out.WriteString(in->architecture);
   out.WriteString(in->model);
   out.WriteBool(in->mobile);
+  out.WriteString(in->bitness);
   return std::string(reinterpret_cast<const char*>(out.data()), out.size());
 }
 
@@ -102,6 +103,8 @@ absl::optional<UserAgentMetadata> UserAgentMetadata::Demarshal(
     return absl::nullopt;
   if (!in.ReadBool(&out.mobile))
     return absl::nullopt;
+  if (!in.ReadString(&out.bitness))
+    return absl::nullopt;
   return absl::make_optional(std::move(out));
 }
 
@@ -114,7 +117,7 @@ bool operator==(const UserAgentMetadata& a, const UserAgentMetadata& b) {
          a.full_version == b.full_version && a.platform == b.platform &&
          a.platform_version == b.platform_version &&
          a.architecture == b.architecture && a.model == b.model &&
-         a.mobile == b.mobile;
+         a.mobile == b.mobile && a.bitness == b.bitness;
 }
 
 bool operator==(const UserAgentOverride& a, const UserAgentOverride& b) {

@@ -53,6 +53,10 @@ bool StructTraits<blink::mojom::UserAgentMetadataDataView,
   out->model = string;
   out->mobile = data.mobile();
 
+  if (!data.ReadBitness(&string))
+    return false;
+  out->bitness = string;
+
   return true;
 }
 

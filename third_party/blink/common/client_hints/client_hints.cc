@@ -19,24 +19,23 @@
 
 namespace blink {
 
-const char* const kClientHintsHeaderMapping[] = {
-    "device-memory",
-    "dpr",
-    "width",
-    "viewport-width",
-    "rtt",
-    "downlink",
-    "ect",
-    "sec-ch-lang",
-    "sec-ch-ua",
-    "sec-ch-ua-arch",
-    "sec-ch-ua-platform",
-    "sec-ch-ua-model",
-    "sec-ch-ua-mobile",
-    "sec-ch-ua-full-version",
-    "sec-ch-ua-platform-version",
-    "sec-ch-prefers-color-scheme",
-};
+const char* const kClientHintsHeaderMapping[] = {"device-memory",
+                                                 "dpr",
+                                                 "width",
+                                                 "viewport-width",
+                                                 "rtt",
+                                                 "downlink",
+                                                 "ect",
+                                                 "sec-ch-lang",
+                                                 "sec-ch-ua",
+                                                 "sec-ch-ua-arch",
+                                                 "sec-ch-ua-platform",
+                                                 "sec-ch-ua-model",
+                                                 "sec-ch-ua-mobile",
+                                                 "sec-ch-ua-full-version",
+                                                 "sec-ch-ua-platform-version",
+                                                 "sec-ch-prefers-color-scheme",
+                                                 "sec-ch-ua-bitness"};
 
 const unsigned kClientHintsNumberOfLegacyHints = 4;
 
@@ -60,6 +59,7 @@ const mojom::PermissionsPolicyFeature kClientHintsPermissionsPolicyMapping[] = {
     mojom::PermissionsPolicyFeature::kClientHintUAFullVersion,
     mojom::PermissionsPolicyFeature::kClientHintUAPlatformVersion,
     mojom::PermissionsPolicyFeature::kClientHintPrefersColorScheme,
+    mojom::PermissionsPolicyFeature::kClientHintUABitness,
 };
 
 const size_t kClientHintsMappingsCount = base::size(kClientHintsHeaderMapping);
@@ -117,6 +117,7 @@ absl::optional<std::vector<network::mojom::WebClientHintsType>> FilterAcceptCH(
       case network::mojom::WebClientHintsType::kUAModel:
       case network::mojom::WebClientHintsType::kUAMobile:
       case network::mojom::WebClientHintsType::kUAFullVersion:
+      case network::mojom::WebClientHintsType::kUABitness:
         if (permit_ua_hints)
           result.push_back(hint);
         break;

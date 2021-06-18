@@ -20,6 +20,7 @@ struct UserAgentMetadata {
   string architecture;
   string model;
   bool mobile;
+  string bitness;
 };
 
 // See UserAgentOverride in

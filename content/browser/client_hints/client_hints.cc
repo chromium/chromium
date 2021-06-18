@@ -556,6 +556,11 @@ void UpdateNavigationRequestClientUaHeadersImpl(
       AddUAHeader(headers, network::mojom::WebClientHintsType::kUAModel,
                   SerializeHeaderString(ua_metadata->model));
     }
+    if (ShouldAddClientHint(data,
+                            network::mojom::WebClientHintsType::kUABitness)) {
+      AddUAHeader(headers, network::mojom::WebClientHintsType::kUABitness,
+                  SerializeHeaderString(ua_metadata->bitness));
+    }
   } else if (call_type == ClientUaHeaderCallType::kAfterCreated) {
     RemoveClientHintHeader(network::mojom::WebClientHintsType::kUA, headers);
     RemoveClientHintHeader(network::mojom::WebClientHintsType::kUAMobile,
@@ -569,6 +574,8 @@ void UpdateNavigationRequestClientUaHeadersImpl(
     RemoveClientHintHeader(
         network::mojom::WebClientHintsType::kUAPlatformVersion, headers);
     RemoveClientHintHeader(network::mojom::WebClientHintsType::kUAModel,
+                           headers);
+    RemoveClientHintHeader(network::mojom::WebClientHintsType::kUABitness,
                            headers);
   }
 }
@@ -678,7 +685,7 @@ void AddRequestClientHintsHeaders(
   // If possible, logic should be added above so that the request headers for
   // the newly added client hint can be added to the request.
   static_assert(
-      network::mojom::WebClientHintsType::kPrefersColorScheme ==
+      network::mojom::WebClientHintsType::kUABitness ==
           network::mojom::WebClientHintsType::kMaxValue,
       "Consider adding client hint request headers from the browser process");
 

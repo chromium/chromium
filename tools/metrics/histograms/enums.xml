@@ -32981,6 +32981,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3942" label="ExplicitPointerCaptureClickTargetDiff"/>
   <int value="3943" label="ControlledNonBlobURLWorkerWillBeUncontrolled"/>
   <int value="3944" label="MediaMetaThemeColor"/>
+  <int value="3945" label="ClientHintsUABitness"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
@@ -33087,6 +33088,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="84" label="DirectSockets"/>
   <int value="85" label="ClientHintPrefersColorScheme"/>
   <int value="86" label="WindowPlacement"/>
+  <int value="87" label="ClientHintUABitness"/>
 </enum>
 
 <enum name="FeaturePolicyImageCompressionFormat">

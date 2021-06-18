@@ -24,6 +24,7 @@ blink::UserAgentMetadata MakeToEncode() {
   to_encode.architecture = "Z80";
   to_encode.model = "unofficial";
   to_encode.mobile = false;
+  to_encode.bitness = "8";
   return to_encode;
 }
 

@@ -466,6 +466,7 @@ bool IsCorsSafelistedHeader(const std::string& name, const std::string& value) {
       //
       // https://tomayac.github.io/user-preference-media-features-headers/#sec-ch-prefers-color-scheme
       "sec-ch-prefers-color-scheme",
+      "sec-ch-ua-bitness",
   };
   if (std::find(std::begin(safe_names), std::end(safe_names), lower_name) ==
       std::end(safe_names))

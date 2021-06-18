@@ -305,6 +305,7 @@ TEST(UserAgentUtilsTest, UserAgentMetadata) {
 #endif
   EXPECT_EQ(metadata.architecture, content::GetLowEntropyCpuArchitecture());
   EXPECT_EQ(metadata.model, content::BuildModelInfo());
+  EXPECT_EQ(metadata.bitness, content::GetLowEntropyCpuBitness());
 }
 
 TEST(UserAgentUtilsTest, GenerateBrandVersionList) {

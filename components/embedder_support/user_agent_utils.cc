@@ -142,7 +142,6 @@ blink::UserAgentMetadata GetUserAgentMetadata() {
   metadata.platform = GetPlatformForUAMetadata();
   metadata.architecture = content::GetLowEntropyCpuArchitecture();
   metadata.model = content::BuildModelInfo();
-
   metadata.mobile = false;
 #if defined(OS_ANDROID)
   metadata.mobile = base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -153,6 +152,11 @@ blink::UserAgentMetadata GetUserAgentMetadata() {
   base::SysInfo::OperatingSystemVersionNumbers(&major, &minor, &bugfix);
   metadata.platform_version =
       base::StringPrintf("%d.%d.%d", major, minor, bugfix);
+  // These methods use the same information as the User-Agent string, but are
+  // "low entropy" in that they reduce the number of options for output to a
+  // set number. For more information, see the respective headers.
+  metadata.architecture = content::GetLowEntropyCpuArchitecture();
+  metadata.bitness = content::GetLowEntropyCpuBitness();
 
   return metadata;
 }
@@ -171,9 +175,12 @@ void SetDesktopUserAgentOverride(content::WebContents* web_contents,
   spoofed_ua.ua_metadata_override->platform = "Linux";
   spoofed_ua.ua_metadata_override->platform_version =
       std::string();  // match content::GetOSVersion(false) on Linux
-  spoofed_ua.ua_metadata_override->architecture = "x86";
   spoofed_ua.ua_metadata_override->model = std::string();
   spoofed_ua.ua_metadata_override->mobile = false;
+  // Match the above "CpuInfo" string, which is also the most common Linux
+  // CPU architecture and bitness.`
+  spoofed_ua.ua_metadata_override->architecture = "x86";
+  spoofed_ua.ua_metadata_override->bitness = "64";
 
   web_contents->SetUserAgentOverride(spoofed_ua, override_in_new_tabs);
 }

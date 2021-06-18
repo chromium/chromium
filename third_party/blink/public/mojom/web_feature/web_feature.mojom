@@ -3257,6 +3257,7 @@ enum WebFeature {
   kExplicitPointerCaptureClickTargetDiff = 3942,
   kControlledNonBlobURLWorkerWillBeUncontrolled = 3943,
   kMediaMetaThemeColor = 3944,
+  kClientHintsUABitness = 3945,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

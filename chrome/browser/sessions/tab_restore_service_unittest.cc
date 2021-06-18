@@ -93,6 +93,7 @@ class TabRestoreServiceImplTest : public ChromeRenderViewHostTestHarness {
     user_agent_override_.ua_metadata_override->full_version = "18.0.1025.45";
     user_agent_override_.ua_metadata_override->platform = "Linux";
     user_agent_override_.ua_metadata_override->architecture = "x86_64";
+    user_agent_override_.ua_metadata_override->bitness = "32";
   }
 
   ~TabRestoreServiceImplTest() override {}

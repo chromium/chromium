@@ -96,6 +96,11 @@
       depends_on: ["FeaturePolicyForClientHints"],
     },
     {
+      name: "ClientHintUABitness",
+      permissions_policy_name: "ch-ua-bitness",
+      depends_on: ["FeaturePolicyForClientHints"],
+    },
+    {
       name: "ClientHintUAPlatform",
       permissions_policy_name: "ch-ua-platform",
       depends_on: ["FeaturePolicyForClientHints"],

@@ -61,7 +61,7 @@
 
 namespace {
 
-const unsigned expected_client_hints_number = 13u;
+const unsigned expected_client_hints_number = 14u;
 const int32_t uma_histogram_max_value = 1471228928;
 
 // An interceptor that records count of fetches and client hint headers for

@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include "base/containers/contains.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -125,11 +126,7 @@ std::string GetLowEntropyCpuArchitecture() {
     return "arm";
   }
 #elif defined(OS_POSIX) && !defined(OS_ANDROID)
-  // This extra cpu_info_str variable is required to make sure the compiler
-  // doesn't optimize the copy away and have the StringPiece point at the
-  // internal std::string, resulting in a memory violation.
-  std::string cpu_info_str = BuildCpuInfo();
-  base::StringPiece cpu_info = cpu_info_str;
+  std::string cpu_info = BuildCpuInfo();
   if (base::StartsWith(cpu_info, "arm") ||
       base::StartsWith(cpu_info, "aarch")) {
     return "arm";
@@ -140,6 +137,21 @@ std::string GetLowEntropyCpuArchitecture() {
   }
 #endif
   return std::string();
+}
+
+std::string GetLowEntropyCpuBitness() {
+#if defined(OS_WIN)
+  return (base::win::OSInfo::GetInstance()->GetArchitecture() ==
+          base::win::OSInfo::X86_ARCHITECTURE)
+             ? "32"
+             : "64";
+#elif defined(OS_MAC)
+  return "64";
+#elif defined(OS_POSIX) && !defined(OS_ANDROID)
+  return base::Contains(BuildCpuInfo(), "64") ? "64" : "32";
+#else
+  return std::string();
+#endif
 }
 
 std::string GetOSVersion(IncludeAndroidBuildNumber include_android_build_number,

@@ -891,6 +891,8 @@ TEST_F(SessionServiceTest, PersistUserAgentOverrides) {
   client_hints_override.full_version = "18.0.1025.45";
   client_hints_override.platform = "Linux";
   client_hints_override.architecture = "x86_64";
+  // Doesn't have to match, just needs to be different than the default
+  client_hints_override.bitness = "8";
 
   SerializedNavigationEntry nav1 =
       ContentTestHelper::CreateNavigation("http://google.com", "abc");

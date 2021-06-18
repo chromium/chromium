@@ -220,6 +220,8 @@ blink::UserAgentMetadata GetShellUserAgentMetadata() {
   metadata.architecture = BuildCpuInfo();
   metadata.model = BuildModelInfo();
 
+  metadata.bitness = GetLowEntropyCpuBitness();
+
   return metadata;
 }
 

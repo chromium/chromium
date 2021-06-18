@@ -127,11 +127,11 @@ TEST(ClientHintsTest, FindClientHintsToRemoveLegacy) {
   std::vector<std::string> removed_headers;
   FindClientHintsToRemove(nullptr, GURL(), &removed_headers);
   EXPECT_THAT(removed_headers,
-              UnorderedElementsAre("rtt", "downlink", "ect", "sec-ch-lang",
-                                   "sec-ch-ua-arch", "sec-ch-ua-platform",
-                                   "sec-ch-ua-model", "sec-ch-ua-full-version",
-                                   "sec-ch-ua-platform-version",
-                                   "sec-ch-prefers-color-scheme"));
+              UnorderedElementsAre(
+                  "rtt", "downlink", "ect", "sec-ch-lang", "sec-ch-ua-arch",
+                  "sec-ch-ua-platform", "sec-ch-ua-model",
+                  "sec-ch-ua-full-version", "sec-ch-ua-platform-version",
+                  "sec-ch-prefers-color-scheme", "sec-ch-ua-bitness"));
 }
 
 // Checks that the removed header list includes legacy headers but not the
@@ -142,12 +142,12 @@ TEST(ClientHintsTest, FindClientHintsToRemoveNoLegacy) {
       features::kAllowClientHintsToThirdParty);
   std::vector<std::string> removed_headers;
   FindClientHintsToRemove(nullptr, GURL(), &removed_headers);
-  EXPECT_THAT(
-      removed_headers,
-      UnorderedElementsAre(
-          "device-memory", "dpr", "width", "viewport-width", "rtt", "downlink",
-          "ect", "sec-ch-lang", "sec-ch-ua-arch", "sec-ch-ua-platform",
-          "sec-ch-ua-model", "sec-ch-ua-full-version",
-          "sec-ch-ua-platform-version", "sec-ch-prefers-color-scheme"));
+  EXPECT_THAT(removed_headers,
+              UnorderedElementsAre(
+                  "device-memory", "dpr", "width", "viewport-width", "rtt",
+                  "downlink", "ect", "sec-ch-lang", "sec-ch-ua-arch",
+                  "sec-ch-ua-platform", "sec-ch-ua-model",
+                  "sec-ch-ua-full-version", "sec-ch-ua-platform-version",
+                  "sec-ch-prefers-color-scheme", "sec-ch-ua-bitness"));
 }
 }  // namespace blink
