@@ -5,6 +5,7 @@
 #include "components/segmentation_platform/internal/execution/model_execution_manager_impl.h"
 
 #include <deque>
+#include <format>
 #include <map>
 #include <memory>
 #include <vector>
@@ -12,8 +13,10 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "base/time/clock.h"
 #include "base/time/time.h"
 #include "components/optimization_guide/core/model_executor.h"
 #include "components/optimization_guide/proto/models.pb.h"
@@ -49,18 +52,22 @@ struct ModelExecutionManagerImpl::ExecutionState {
 };
 
 ModelExecutionManagerImpl::ModelExecutionManagerImpl(
-    optimization_guide::OptimizationGuideModelProvider* model_provider,
-    scoped_refptr<base::SequencedTaskRunner> background_task_runner,
     std::vector<OptimizationTarget> segment_ids,
+    ModelHandlerCreator model_handler_creator,
+    base::Clock* clock,
     SegmentInfoDatabase* segment_database,
+    SignalDatabase* signal_database,
     std::unique_ptr<FeatureAggregator> feature_aggregator)
-    : segment_database_(segment_database),
+    : clock_(clock),
+      segment_database_(segment_database),
+      signal_database_(signal_database),
       feature_aggregator_(std::move(feature_aggregator)) {
   for (OptimizationTarget segment_id : segment_ids) {
-    model_handlers_.emplace(std::make_pair(
-        segment_id, std::make_unique<SegmentationModelHandler>(
-                        model_provider, background_task_runner, segment_id)));
+    model_handlers_.emplace(
+        std::make_pair(segment_id, model_handler_creator.Run(segment_id)));
   }
+  // TODO(nyquist): Remove this once the members are in use.
+  DVLOG(3) << "clock_=" << clock_ << ", signal_database_=" << signal_database_;
 }
 
 ModelExecutionManagerImpl::~ModelExecutionManagerImpl() = default;

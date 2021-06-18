@@ -10,16 +10,40 @@
 #include "base/callback_forward.h"
 #include "base/run_loop.h"
 #include "base/test/gtest_util.h"
+#include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
 #include "components/optimization_guide/proto/models.pb.h"
+#include "components/segmentation_platform/internal/database/mock_signal_database.h"
+#include "components/segmentation_platform/internal/database/signal_database.h"
 #include "components/segmentation_platform/internal/database/test_segment_info_database.h"
 #include "components/segmentation_platform/internal/execution/feature_aggregator.h"
 #include "components/segmentation_platform/internal/execution/model_execution_status.h"
+#include "components/segmentation_platform/internal/proto/types.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace segmentation_platform {
+using Samples = std::vector<SignalDatabase::Sample>;
+
+class MockSegmentationModelHandler : public SegmentationModelHandler {
+ public:
+  MockSegmentationModelHandler(
+      optimization_guide::OptimizationGuideModelProvider* model_provider,
+      scoped_refptr<base::SequencedTaskRunner> background_task_runner,
+      optimization_guide::proto::OptimizationTarget optimization_target)
+      : SegmentationModelHandler(model_provider,
+                                 background_task_runner,
+                                 optimization_target) {}
+
+  MOCK_METHOD(void,
+              ExecuteModelWithInput,
+              (base::OnceCallback<void(const absl::optional<float>&)> callback,
+               const std::vector<float>& input),
+              (override));
+
+  MOCK_METHOD(bool, ModelAvailable, (), (const override));
+};
 
 class MockFeatureAggregator : public FeatureAggregator {
  public:
@@ -49,6 +73,8 @@ class ModelExecutionManagerTest : public testing::Test {
     optimization_guide_model_provider_ = std::make_unique<
         optimization_guide::TestOptimizationGuideModelProvider>();
     segment_database_ = std::make_unique<test::TestSegmentInfoDatabase>();
+    signal_database_ = std::make_unique<MockSignalDatabase>();
+    clock_.SetNow(base::Time::Now());
   }
 
   void TearDown() override {
@@ -64,9 +90,20 @@ class ModelExecutionManagerTest : public testing::Test {
     feature_aggregator_ = feature_aggregator.get();
 
     model_execution_manager_ = std::make_unique<ModelExecutionManagerImpl>(
+        segment_ids,
+        base::BindRepeating(&ModelExecutionManagerTest::CreateModelHandler,
+                            base::Unretained(this)),
+        &clock_, segment_database_.get(), signal_database_.get(),
+        std::move(feature_aggregator));
+  }
+
+  std::unique_ptr<SegmentationModelHandler> CreateModelHandler(
+      optimization_guide::proto::OptimizationTarget segment_id) {
+    auto handler = std::make_unique<MockSegmentationModelHandler>(
         optimization_guide_model_provider_.get(),
-        task_environment_.GetMainThreadTaskRunner(), segment_ids,
-        segment_database_.get(), std::move(feature_aggregator));
+        task_environment_.GetMainThreadTaskRunner(), segment_id);
+    model_handlers_.emplace(std::make_pair(segment_id, handler.get()));
+    return handler;
   }
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
@@ -93,7 +130,10 @@ class ModelExecutionManagerTest : public testing::Test {
 
   std::unique_ptr<optimization_guide::TestOptimizationGuideModelProvider>
       optimization_guide_model_provider_;
+  std::map<OptimizationTarget, MockSegmentationModelHandler*> model_handlers_;
+  base::SimpleTestClock clock_;
   std::unique_ptr<test::TestSegmentInfoDatabase> segment_database_;
+  std::unique_ptr<MockSignalDatabase> signal_database_;
   MockFeatureAggregator* feature_aggregator_;
 
   std::unique_ptr<ModelExecutionManagerImpl> model_execution_manager_;

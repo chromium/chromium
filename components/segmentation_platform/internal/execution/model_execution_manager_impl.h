@@ -18,13 +18,14 @@
 #include "components/segmentation_platform/internal/execution/segmentation_model_handler.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace optimization_guide {
-class OptimizationGuideModelProvider;
-using proto::OptimizationTarget;
-}  // namespace optimization_guide
+namespace base {
+class Clock;
+}  // namespace base
 
 namespace segmentation_platform {
 class FeatureAggregator;
+class SignalDatabase;
+
 namespace proto {
 class SegmentInfo;
 }  // namespace proto
@@ -44,11 +45,16 @@ class SegmentInfo;
 // so the SegmentationModelHandler instances can be created early.
 class ModelExecutionManagerImpl : public ModelExecutionManager {
  public:
+  using ModelHandlerCreator =
+      base::RepeatingCallback<std::unique_ptr<SegmentationModelHandler>(
+          optimization_guide::proto::OptimizationTarget)>;
+
   explicit ModelExecutionManagerImpl(
-      optimization_guide::OptimizationGuideModelProvider* model_provider,
-      scoped_refptr<base::SequencedTaskRunner> background_task_runner,
       std::vector<OptimizationTarget> segment_ids,
+      ModelHandlerCreator model_handler_creator,
+      base::Clock* clock,
       SegmentInfoDatabase* segment_database,
+      SignalDatabase* signal_database,
       std::unique_ptr<FeatureAggregator> feature_aggregator);
   ~ModelExecutionManagerImpl() override;
 
@@ -73,7 +79,9 @@ class ModelExecutionManagerImpl : public ModelExecutionManager {
 
   std::map<OptimizationTarget, std::unique_ptr<SegmentationModelHandler>>
       model_handlers_;
+  base::Clock* clock_;
   SegmentInfoDatabase* segment_database_;
+  SignalDatabase* signal_database_;
   std::unique_ptr<FeatureAggregator> feature_aggregator_;
 
   base::WeakPtrFactory<ModelExecutionManagerImpl> weak_ptr_factory_{this};
