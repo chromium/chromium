@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_scheduler.h"
 
 #include "base/ios/ios_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -21,6 +22,7 @@
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_commands.h"
+#import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_metrics_util.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
@@ -386,6 +388,108 @@ TEST_F(DefaultBrowserPromoNonModalSchedulerTest, TestTabGridDismissesPromo) {
 
   // Check that NSUserDefaults has not been updated.
   EXPECT_EQ(UserInteractionWithNonModalPromoCount(), 0);
+}
+
+// Tests background cancel metric logs correctly.
+TEST_F(DefaultBrowserPromoNonModalSchedulerTest, TestBackgroundCancelMetric) {
+  // Default promo is not supported on iOS < 14
+  if (!base::ios::IsRunningOnIOS14OrLater()) {
+    return;
+  }
+
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectUniqueSample(
+      "IOS.DefaultBrowserPromo.NonModal.VisitPastedLink",
+      NonModalPromoAction::kBackgroundCancel, 0);
+
+  [scheduler_ logUserPastedInOmnibox];
+
+  [[promo_commands_handler_ expect]
+      dismissDefaultBrowserNonModalPromoAnimated:NO];
+
+  [scheduler_ sceneState:nil
+      transitionedToActivationLevel:SceneActivationLevelBackground];
+
+  histogram_tester.ExpectUniqueSample(
+      "IOS.DefaultBrowserPromo.NonModal.VisitPastedLink",
+      NonModalPromoAction::kBackgroundCancel, 1);
+}
+
+// Tests background cancel metric is not logged after a promo is shown.
+TEST_F(DefaultBrowserPromoNonModalSchedulerTest,
+       TestBackgroundCancelMetricNotLogAfterPromoShown) {
+  // Default promo is not supported on iOS < 14
+  if (!base::ios::IsRunningOnIOS14OrLater()) {
+    return;
+  }
+
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectUniqueSample(
+      "IOS.DefaultBrowserPromo.NonModal.VisitPastedLink",
+      NonModalPromoAction::kBackgroundCancel, 0);
+
+  [scheduler_ logUserPastedInOmnibox];
+
+  // Finish loading the page.
+  test_web_state_->SetLoading(true);
+  test_web_state_->OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
+  test_web_state_->SetLoading(false);
+
+  // Advance the timer by the post-load delay. This should trigger the promo.
+  [[promo_commands_handler_ expect] showDefaultBrowserNonModalPromo];
+  task_env_.FastForwardBy(base::TimeDelta::FromSeconds(3));
+  [promo_commands_handler_ verify];
+
+  [[promo_commands_handler_ expect]
+      dismissDefaultBrowserNonModalPromoAnimated:NO];
+
+  [scheduler_ sceneState:nil
+      transitionedToActivationLevel:SceneActivationLevelBackground];
+
+  histogram_tester.ExpectBucketCount(
+      "IOS.DefaultBrowserPromo.NonModal.VisitPastedLink",
+      NonModalPromoAction::kBackgroundCancel, 0);
+}
+
+// Tests background cancel metric is not logged after a promo is dismissed.
+TEST_F(DefaultBrowserPromoNonModalSchedulerTest,
+       TestBackgroundCancelMetricNotLogAfterPromoDismiss) {
+  // Default promo is not supported on iOS < 14
+  if (!base::ios::IsRunningOnIOS14OrLater()) {
+    return;
+  }
+
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectUniqueSample(
+      "IOS.DefaultBrowserPromo.NonModal.VisitPastedLink",
+      NonModalPromoAction::kBackgroundCancel, 0);
+
+  [scheduler_ logUserPastedInOmnibox];
+
+  // Finish loading the page.
+  test_web_state_->SetLoading(true);
+  test_web_state_->OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
+  test_web_state_->SetLoading(false);
+
+  // Advance the timer by the post-load delay. This should trigger the promo.
+  [[promo_commands_handler_ expect] showDefaultBrowserNonModalPromo];
+  task_env_.FastForwardBy(base::TimeDelta::FromSeconds(3));
+  [promo_commands_handler_ verify];
+
+  [[promo_commands_handler_ expect]
+      dismissDefaultBrowserNonModalPromoAnimated:YES];
+
+  task_env_.FastForwardBy(base::TimeDelta::FromSeconds(100));
+
+  [[promo_commands_handler_ expect]
+      dismissDefaultBrowserNonModalPromoAnimated:NO];
+
+  [scheduler_ sceneState:nil
+      transitionedToActivationLevel:SceneActivationLevelBackground];
+
+  histogram_tester.ExpectBucketCount(
+      "IOS.DefaultBrowserPromo.NonModal.VisitPastedLink",
+      NonModalPromoAction::kBackgroundCancel, 0);
 }
 
 }  // namespace
