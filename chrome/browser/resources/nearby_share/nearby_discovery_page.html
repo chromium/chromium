@@ -17,14 +17,6 @@
     position: relative;
   }
 
-  #deviceList {
-    align-self: stretch;
-    display: block;
-    margin-top: 12px;
-    overflow: auto;
-    width: 200px;
-  }
-
   #errorSection {
     align-items: flex-start;
     display: flex;
@@ -94,6 +86,14 @@
     overflow: hidden;
   }
 
+  .device-list-container {
+    align-self: stretch;
+    display: block;
+    margin-top: 12px;
+    overflow: auto;
+    width: 200px;
+  }
+
   cr-lottie {
     bottom: 0;
     height: 100px;
@@ -149,20 +149,21 @@
           $i18n{nearbyShareDiscoveryPagePlaceholder}
         </div>
         <template is="dom-if" if="[[!isShareTargetsEmpty_(shareTargets_.*)]]">
-          <iron-list items="[[shareTargets_]]" id="deviceList"
-              selected-item="{{selectedShareTarget}}"
-              on-selected-item-changed="onSelectedShareTargetChanged_"
-              preserve-focus selection-enabled
-              role="radiogroup" aria-live="polite"
-              aria-label="$i18n{nearbyShareDiscoveryPageSubtitle}">
-            <template>
-              <nearby-device tabindex$="[[tabIndex]]" share-target="[[item]]"
-                  is-selected="[[selected]]"
+          <div class="device-list-container">
+            <array-selector id="selector" items="{{shareTargets_}}"
+                selected-item="{{selectedShareTarget}}">
+            </array-selector>
+            <template is="dom-repeat" items="[[shareTargets_]]" id="deviceList">
+              <nearby-device tabindex$="[[getTabIndexOfShareTarget_(item, selectedShareTarget, shareTargets_.*)]]"
+                  share-target="[[item]]"
+                  is-selected="[[isShareTargetSelected_(item, selectedShareTarget)]]"
                   role="radio"
-                  aria-checked$="[[boolToString_(selected)]]">
+                  aria-checked$="[[isShareTargetSelectedToString_(item, selectedShareTarget)]]"
+                  on-click="onShareTargetClicked_"
+                  on-keydown="onKeyDownForShareTarget_">
               </nearby-device>
             </template>
-          </iron-list>
+          </div>
         </template>
       </template>
     </div>

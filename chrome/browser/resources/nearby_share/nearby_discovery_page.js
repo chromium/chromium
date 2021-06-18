@@ -125,6 +125,7 @@ Polymer({
     'next': 'onNext_',
     'view-enter-start': 'onViewEnterStart_',
     'view-exit-finish': 'onViewExitFinish_',
+    'on-click': 'onShareTargetClicked_',
   },
 
   /** @private {?nearbyShare.mojom.ShareTargetListenerCallbackRouter} */
@@ -136,12 +137,6 @@ Polymer({
   /** @private {Map<!string,!nearbyShare.mojom.ShareTarget>} */
   shareTargetMap_: null,
 
-  /** @private {?nearbyShare.mojom.ShareTarget} */
-  lastSelectedShareTarget_: null,
-
-  /** @type {ResizeObserver} used to observer size changes to this element */
-  resizeObserver_: null,
-
   /** @private {?nearbyShare.mojom.DiscoveryObserverReceiver} */
   discoveryObserver_: null,
 
@@ -149,22 +144,6 @@ Polymer({
   attached() {
     this.shareTargetMap_ = new Map();
     this.clearShareTargets_();
-
-    // This is a required work around to get the iron-list to display on first
-    // view. Currently iron-list won't generate item elements on attach if the
-    // element is not visible. Because we are hosted in a cr-view-manager for
-    // on-boarding, this component is not visible when the items are bound. To
-    // fix this issue, we listen for resize events (which happen when display is
-    // switched from none to block by the view manager) and manually call
-    // notifyResize on the iron-list
-    this.resizeObserver_ = new ResizeObserver(entries => {
-      const deviceList =
-          /** @type {IronListElement} */ (this.$$('#deviceList'));
-      if (deviceList) {
-        deviceList.notifyResize();
-      }
-    });
-    this.resizeObserver_.observe(this);
     this.discoveryObserver_ = observeDiscoveryManager(
         /** @type {!nearbyShare.mojom.DiscoveryObserverInterface} */ (this));
   },
@@ -172,7 +151,6 @@ Polymer({
   /** @override */
   detached() {
     this.stopDiscovery_();
-    this.resizeObserver_.disconnect();
     if (this.discoveryObserver_) {
       this.discoveryObserver_.$.close();
     }
@@ -299,8 +277,89 @@ Polymer({
     if (this.shareTargetMap_) {
       this.shareTargetMap_.clear();
     }
-    this.lastSelectedShareTarget_ = null;
     this.shareTargets_ = [];
+  },
+
+  /**
+   * Guides selection process for share target list, which is used by
+   * screen readers to iterate and select items, when keys are pressed on
+   * the share target list.
+   * @param {Event} event containing the key
+   * @private
+   */
+  onKeyDownForShareTarget_(event) {
+    const currentShareTarget = event.currentTarget.shareTarget;
+    const currentIndex = this.shareTargets_.findIndex(
+        (target) => tokensEqual(target.id, currentShareTarget.id));
+    console.log(event.code);
+    event.stopPropagation();
+    switch (event.code) {
+      // Down arrow: bring into focus the next shareTarget in list.
+      case 'ArrowDown':
+        this.focusShareTarget_(currentIndex + 1);
+        break;
+      // Up arrow: bring into focus the previous shareTarget in list.
+      case 'ArrowUp':
+        this.focusShareTarget_(currentIndex - 1);
+        break;
+      // Space key: Select the shareTarget
+      case 'Space':
+      // Enter key: Select the shareTarget
+      case 'Enter':
+        this.selectShareTargetOnUserInput_(currentShareTarget);
+        break;
+    }
+  },
+
+  /**
+   * Focuses the element that corresponds to the share target at |index|.
+   * @param {number} index in |shareTargets_| and also the dom-repeat list.
+   * @private
+   */
+  focusShareTarget_(index) {
+    const container = this.$$('.device-list-container');
+    const nearbyDeviceElements = container.querySelectorAll('nearby-device');
+
+    if (index >= 0 && index < nearbyDeviceElements.length) {
+      nearbyDeviceElements[index].focus();
+    }
+  },
+
+  /**
+   * Selects the shareTarget when clicked.
+   * @private
+   * @param {Event} event
+   */
+  onShareTargetClicked_(event) {
+    event.preventDefault();
+    const currentShareTarget = event.currentTarget.shareTarget;
+    this.selectShareTargetOnUserInput_(currentShareTarget);
+  },
+
+  /**
+   * Selects the shareTarget when selected by the user, either through click
+   * or key press.
+   * @private
+   * @param {!nearbyShare.mojom.ShareTarget} shareTarget
+   */
+  selectShareTargetOnUserInput_(shareTarget) {
+    if (this.isShareTargetSelected_(shareTarget)) {
+      return;
+    }
+
+    this.selectedShareTarget = shareTarget;
+    const selector = this.$$('#selector');
+    selector.select(this.selectedShareTarget);
+  },
+
+  /**
+   * @private
+   * @param {!nearbyShare.mojom.ShareTarget} shareTarget
+   * @return {boolean} True if shareTarget is currently selected
+   */
+  isShareTargetSelected_(shareTarget) {
+    return !!this.selectedShareTarget && !!shareTarget &&
+        tokensEqual(this.selectedShareTarget.id, shareTarget.id);
   },
 
   /**
@@ -364,34 +423,22 @@ Polymer({
   /** @private */
   onSelectedShareTargetChanged_() {
     const deviceList = this.$$('#deviceList');
+    const selector = this.$$('#selector');
     if (!deviceList) {
       // deviceList is in dom-if and may not be found
       return;
     }
 
-    // <iron-list> causes |selectedItem| to be null if tapped a second time.
-    // Manually reselect the last item to preserve selection.
-    if (!deviceList.selectedItem && this.lastSelectedShareTarget_) {
-      // Use async to make sure this happens after |selectedItem| gets its
-      // final value.
-      this.async(() => {
-        const deviceList = this.$$('#deviceList');
-        if (!deviceList.selectedItem) {
-          deviceList.selectItem(this.lastSelectedShareTarget_);
-        }
-      });
-    } else {
-      this.lastSelectedShareTarget_ = deviceList.selectedItem;
-    }
+    this.selectedShareTarget = selector.selectedItem;
   },
 
   /**
-   * @param {boolean} bool
+   * @param {!nearbyShare.mojom.ShareTarget} shareTarget
    * @return {string}
    * @private
    */
-  boolToString_(bool) {
-    return bool.toString();
+  isShareTargetSelectedToString_(shareTarget) {
+    return this.isShareTargetSelected_(shareTarget).toString();
   },
 
   /**
@@ -411,9 +458,28 @@ Polymer({
   updateSelectedShareTarget_(id, shareTarget) {
     if (this.selectedShareTarget &&
         tokensEqual(this.selectedShareTarget.id, id)) {
-      this.lastSelectedShareTarget_ = shareTarget;
       this.selectedShareTarget = shareTarget;
+      const selector = this.$$('#selector');
+      selector.select(this.selectedShareTarget);
     }
+  },
+
+  /*
+   * If the shareTarget is the first in the list, it's tab index should be 0
+   * if there is no current selected share target. Otherwise, the tab index
+   * should be 0 if it is the current selected share target. Tab index of 0
+   *  allows users to navigate to it with tabs, and others should be -1
+   * so users will not navigate to by tab.
+   * @param {?nearbyShare.mojom.ShareTarget} shareTarget
+   * @return {string}
+   * @private
+   */
+  getTabIndexOfShareTarget_(shareTarget) {
+    if ((!this.selectedShareTarget && shareTarget == this.shareTargets_[0]) ||
+        (shareTarget == this.selectedShareTarget)) {
+      return '0';
+    }
+    return '-1';
   },
 
   /**
