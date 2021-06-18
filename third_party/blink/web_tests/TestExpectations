@@ -6154,6 +6154,12 @@ crbug.com/1157849 [ Linux Release ] external/wpt/webrtc/RTCPeerConnection-iceCon
 crbug.com/1157861 http/tests/devtools/extensions/extensions-resources.js [ Pass Failure ]
 crbug.com/1157861 http/tests/devtools/console/paintworklet-console-selector.js [ Pass Failure ]
 
+# DevTools underscore migration
+crbug.com/1207342 http/tests/devtools/modify-cross-domain-rule.js [ Pass Failure ]
+crbug.com/1207342 http/tests/devtools/stylesheet-source-mapping.js [ Pass Failure ]
+crbug.com/1207342 http/tests/devtools/elements/styles-1/add-new-rule-inline-style-csp.js [ Pass Failure ]
+crbug.com/1207342 http/tests/devtools/elements/styles-4/supported-css-properties.js [ Pass Failure ]
+
 # Wpt importer Sheriff 2020-12-11
 crbug.com/626703 [ Linux ] wpt_internal/storage/estimate-usage-details-filesystem.https.tentative.any.html [ Pass Failure ]
 
