@@ -9,27 +9,13 @@
 #include "base/macros.h"
 #include "components/favicon_base/favicon_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/layout.h"
 
 class FaviconUrlParserTest : public testing::Test {
  public:
-  FaviconUrlParserTest() {
-    // Set the supported scale factors because the supported scale factors
-    // affect the result of ParsePathAndScale().
-    std::vector<ui::ScaleFactor> supported_scale_factors;
-    supported_scale_factors.push_back(ui::SCALE_FACTOR_100P);
-    supported_scale_factors.push_back(ui::SCALE_FACTOR_140P);
-    scoped_set_supported_scale_factors_ =
-        std::make_unique<ui::test::ScopedSetSupportedScaleFactors>(
-            supported_scale_factors);
-  }
-
-  ~FaviconUrlParserTest() override {}
+  FaviconUrlParserTest() = default;
+  ~FaviconUrlParserTest() override = default;
 
  private:
-  typedef std::unique_ptr<ui::test::ScopedSetSupportedScaleFactors>
-      ScopedSetSupportedScaleFactors;
-  ScopedSetSupportedScaleFactors scoped_set_supported_scale_factors_;
 
   DISALLOW_COPY_AND_ASSIGN(FaviconUrlParserTest);
 };

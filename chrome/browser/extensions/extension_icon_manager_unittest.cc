@@ -222,9 +222,6 @@ TEST_F(ExtensionIconManagerTest, ScaleFactors) {
       {ui::SCALE_FACTOR_100P},
       // Two scale factors.
       {ui::SCALE_FACTOR_100P, ui::SCALE_FACTOR_200P},
-      // A scale factor that is in between two of the provided icon sizes
-      // (should use the larger one and scale down).
-      {ui::SCALE_FACTOR_125P},
       // One scale factor for which we have an icon, one scale factor for which
       // we don't.
       {ui::SCALE_FACTOR_100P, ui::SCALE_FACTOR_300P},
@@ -282,7 +279,6 @@ TEST_F(ExtensionIconManagerTest, ScaleFactors) {
 
   // Now check that the scale factors for active displays are respected, even
   // when it's not a supported scale.
-  EXPECT_FALSE(ui::IsSupportedScale(ui::SCALE_FACTOR_150P));
   ScopedSetDeviceScaleFactor scoped_dsf(1.5f);
   ExtensionIconManager icon_manager;
   icon_manager.set_observer(this);

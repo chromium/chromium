@@ -9,21 +9,16 @@
 
 namespace ui {
 
-// Supported UI scale factors for the platform. This is used as an index
+// Supported resource scale factors for the platform. This is used as an index
 // into the array |kScaleFactorScales| which maps the enum value to a float.
 // SCALE_FACTOR_NONE is used for density independent resources such as
 // string, html/js files or an image that can be used for any scale factors
 // (such as wallpapers).
+// TODO(oshima): Rename to ResourceScaleFactor.
 enum ScaleFactor : int {
   SCALE_FACTOR_NONE = 0,
   SCALE_FACTOR_100P,
-  SCALE_FACTOR_125P,
-  SCALE_FACTOR_133P,
-  SCALE_FACTOR_140P,
-  SCALE_FACTOR_150P,
-  SCALE_FACTOR_180P,
   SCALE_FACTOR_200P,
-  SCALE_FACTOR_250P,
   SCALE_FACTOR_300P,
 
   NUM_SCALE_FACTORS  // This always appears last.

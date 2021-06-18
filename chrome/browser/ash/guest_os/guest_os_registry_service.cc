@@ -701,20 +701,8 @@ base::FilePath GuestOsRegistryService::GetIconPath(
   switch (scale_factor) {
     case ui::SCALE_FACTOR_100P:
       return app_path.AppendASCII("icon_100p.png");
-    case ui::SCALE_FACTOR_125P:
-      return app_path.AppendASCII("icon_125p.png");
-    case ui::SCALE_FACTOR_133P:
-      return app_path.AppendASCII("icon_133p.png");
-    case ui::SCALE_FACTOR_140P:
-      return app_path.AppendASCII("icon_140p.png");
-    case ui::SCALE_FACTOR_150P:
-      return app_path.AppendASCII("icon_150p.png");
-    case ui::SCALE_FACTOR_180P:
-      return app_path.AppendASCII("icon_180p.png");
     case ui::SCALE_FACTOR_200P:
       return app_path.AppendASCII("icon_200p.png");
-    case ui::SCALE_FACTOR_250P:
-      return app_path.AppendASCII("icon_250p.png");
     case ui::SCALE_FACTOR_300P:
       return app_path.AppendASCII("icon_300p.png");
     default:
@@ -1078,9 +1066,7 @@ void GuestOsRegistryService::RequestContainerAppIcon(
   // needs.
   uint32_t icon_scale = 1;
   switch (scale_factor) {
-    case ui::SCALE_FACTOR_180P:  // Close enough to 2, so use 2.
     case ui::SCALE_FACTOR_200P:
-    case ui::SCALE_FACTOR_250P:  // Rounding scale factor down is better.
       icon_scale = 2;
       break;
     case ui::SCALE_FACTOR_300P:
