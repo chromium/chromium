@@ -70,6 +70,7 @@ source_set("badges") {
     "//ios/chrome/browser/ui/fullscreen:ui",
     "//ios/chrome/browser/ui/infobars:feature_flags",
     "//ios/chrome/browser/ui/infobars:infobars_ui",
+    "//ios/chrome/browser/ui/infobars/resources:infobar_reading_list",
     "//ios/chrome/browser/ui/infobars/resources:infobar_settings_icon",
     "//ios/chrome/browser/ui/list_model",
     "//ios/chrome/browser/ui/util",

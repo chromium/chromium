@@ -56,6 +56,7 @@ typedef NS_ENUM(NSInteger, PopupMenuAction) {
   PopupMenuActionShowSaveAddressProfileOptions,
   PopupMenuActionShowSaveCardOptions,
   PopupMenuActionShowTranslateOptions,
+  PopupMenuActionAddToReadingListOptions,
   // Textual popup menu
   PopupMenuActionEnterpriseInfoMessage,
 };

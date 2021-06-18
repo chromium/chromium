@@ -71,8 +71,12 @@ const CGFloat kBadgeCornerRadius = 5.0;
         break;
       case BadgeType::kBadgeTypeTranslate:
         _actionIdentifier = PopupMenuActionShowTranslateOptions;
-        // TODO(crbug.com/1014959): use l10n to translate string.
-        _title = @"Translate Page";
+        _title = l10n_util::GetNSString(IDS_IOS_TRANSLATE_INFOBAR_MODAL_TITLE);
+        break;
+      case BadgeType::kBadgeTypeAddToReadingList:
+        _actionIdentifier = PopupMenuActionAddToReadingListOptions;
+        _title =
+            l10n_util::GetNSString(IDS_IOS_READING_LIST_MESSAGES_MODAL_TITLE);
         break;
       case BadgeType::kBadgeTypeIncognito:
         NOTREACHED() << "A BadgePopupMenuItem should not be an Incognito badge";
@@ -110,6 +114,10 @@ const CGFloat kBadgeCornerRadius = 5.0;
       break;
     case BadgeType::kBadgeTypeTranslate:
       badgeImage = [[UIImage imageNamed:@"infobar_translate_icon"]
+          imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+      break;
+    case BadgeType::kBadgeTypeAddToReadingList:
+      badgeImage = [[UIImage imageNamed:@"infobar_reading_list"]
           imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
       break;
     case BadgeType::kBadgeTypeIncognito:

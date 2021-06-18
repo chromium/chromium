@@ -197,6 +197,13 @@ const char kInfobarOverflowBadgeShownUserAction[] =
 
 #pragma mark - BadgeDelegate
 
+- (void)addToReadingListBadgeButtonTapped:(id)sender {
+  BadgeButton* badgeButton = base::mac::ObjCCastStrict<BadgeButton>(sender);
+  DCHECK_EQ(badgeButton.badgeType, BadgeType::kBadgeTypeAddToReadingList);
+
+  [self handleTappedBadgeButton:badgeButton];
+}
+
 - (void)passwordsBadgeButtonTapped:(id)sender {
   BadgeButton* badgeButton = base::mac::ObjCCastStrict<BadgeButton>(sender);
   DCHECK(badgeButton.badgeType == BadgeType::kBadgeTypePasswordSave ||

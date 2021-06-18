@@ -7,6 +7,9 @@
 
 // Protocol to communicate Badge actions to the mediator.
 @protocol BadgeDelegate
+// Action when a Reading List badge is tapped.
+- (void)addToReadingListBadgeButtonTapped:(id)sender;
+
 // Action when a Passwords badge is tapped.
 - (void)passwordsBadgeButtonTapped:(id)sender;
 

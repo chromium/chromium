@@ -38,6 +38,8 @@
       return [self overflowBadgeButton];
     case BadgeType::kBadgeTypeSaveAddressProfile:
       return [self saveAddressProfileBadgeButton];
+    case BadgeType::kBadgeTypeAddToReadingList:
+      return [self readingListBadgeButton];
     case BadgeType::kBadgeTypeNone:
       NOTREACHED() << "A badge should not have kBadgeTypeNone";
       return nil;
@@ -146,6 +148,20 @@
       forControlEvents:UIControlEventTouchUpInside];
   button.accessibilityIdentifier =
       kBadgeButtonSaveAddressProfileAccessibilityIdentifier;
+  // TODO(crbug.com/1014652): Create a11y label hint.
+  return button;
+}
+
+- (BadgeButton*)readingListBadgeButton {
+  BadgeButton* button =
+      [self createButtonForType:BadgeType::kBadgeTypeAddToReadingList
+                     imageNamed:@"infobar_reading_list"
+                  renderingMode:UIImageRenderingModeAlwaysTemplate];
+  [button addTarget:self.delegate
+                action:@selector(addToReadingListBadgeButtonTapped:)
+      forControlEvents:UIControlEventTouchUpInside];
+  button.accessibilityIdentifier =
+      kBadgeButtonReadingListAccessibilityIdentifier;
   // TODO(crbug.com/1014652): Create a11y label hint.
   return button;
 }

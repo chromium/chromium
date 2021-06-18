@@ -4,11 +4,14 @@
 
 #import "ios/chrome/browser/overlays/public/infobar_banner/add_to_reading_list_infobar_banner_overlay_request_config.h"
 
+#include "base/strings/sys_string_conversions.h"
 #include "components/infobars/core/infobar.h"
 #include "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_type.h"
 #import "ios/chrome/browser/overlays/public/common/infobars/infobar_overlay_request_config.h"
 #import "ios/chrome/browser/ui/reading_list/ios_add_to_reading_list_infobar_delegate.h"
+#include "ios/chrome/grit/ios_strings.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -16,6 +19,11 @@
 #endif
 
 using infobars::InfoBar;
+
+namespace {
+// The name of the icon image for the reading list banner.
+NSString* const kIconImageName = @"infobar_reading_list";
+}  // namespace
 
 namespace reading_list_infobar_overlay {
 
@@ -27,10 +35,17 @@ ReadingListBannerRequestConfig::ReadingListBannerRequestConfig(InfoBar* infobar)
   IOSAddToReadingListInfobarDelegate* delegate =
       static_cast<IOSAddToReadingListInfobarDelegate*>(infobar_->delegate());
   int time_to_read = delegate->time_to_read();
-  // TODO(crbug.com/1195978): Use localized strings.
-  message_text_ = [NSString stringWithFormat:@"%i minute read", time_to_read];
-  title_text_ = [NSString stringWithFormat:@"Add to Reading List for Later?"];
-  button_text_ = @"Add";
+
+  NSString* time_to_read_string =
+      [NSString stringWithFormat:@"%i", time_to_read];
+  message_text_ =
+      l10n_util::GetNSStringF(IDS_IOS_READING_LIST_MESSAGES_BANNER_SUBTITLE,
+                              base::SysNSStringToUTF16(time_to_read_string));
+  title_text_ =
+      l10n_util::GetNSString(IDS_IOS_READING_LIST_MESSAGES_BANNER_TITLE);
+  button_text_ =
+      l10n_util::GetNSString(IDS_IOS_READING_LIST_MESSAGES_MAIN_ACTION);
+  icon_image_name_ = kIconImageName;
 }
 
 ReadingListBannerRequestConfig::~ReadingListBannerRequestConfig() = default;

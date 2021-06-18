@@ -25,6 +25,8 @@ enum class BadgeType {
   kBadgeTypeTranslate = 6,
   // Badge type for the Save Address Profile Infobar.
   kBadgeTypeSaveAddressProfile = 7,
+  // Badge type for the Add to Reading List Infobar.
+  kBadgeTypeAddToReadingList = 8,
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_BADGES_BADGE_TYPE_H_

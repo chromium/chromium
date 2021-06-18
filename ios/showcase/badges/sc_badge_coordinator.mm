@@ -136,6 +136,9 @@
                                      animated:YES];
 }
 
+- (void)addToReadingListBadgeButtonTapped:(id)sender {
+}
+
 - (void)passwordsBadgeButtonTapped:(id)sender {
 }
 

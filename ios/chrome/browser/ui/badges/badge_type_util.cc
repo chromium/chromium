@@ -20,6 +20,8 @@ BadgeType BadgeTypeForInfobarType(InfobarType infobar_type) {
       return BadgeType::kBadgeTypeSaveCard;
     case InfobarType::kInfobarTypeTranslate:
       return BadgeType::kBadgeTypeTranslate;
+    case InfobarType::kInfobarTypeAddToReadingList:
+      return BadgeType::kBadgeTypeAddToReadingList;
     default:
       return BadgeType::kBadgeTypeNone;
   }
@@ -37,6 +39,8 @@ InfobarType InfobarTypeForBadgeType(BadgeType badge_type) {
       return InfobarType::kInfobarTypeSaveCard;
     case BadgeType::kBadgeTypeTranslate:
       return InfobarType::kInfobarTypeTranslate;
+    case BadgeType::kBadgeTypeAddToReadingList:
+      return InfobarType::kInfobarTypeAddToReadingList;
     default:
       NOTREACHED() << "Unsupported badge type.";
       return InfobarType::kInfobarTypeConfirm;
