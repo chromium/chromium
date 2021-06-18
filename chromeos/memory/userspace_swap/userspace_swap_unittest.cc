@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/allocator/buildflags.h"
 #include "chromeos/memory/userspace_swap/region.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/os_metrics.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -105,14 +104,11 @@ TEST(EligibleVMA, RegionTooLargeIsNotEligible) {
   ASSERT_FALSE(IsVMASwapEligible(r.Clone()));
 }
 
-// With PartitionAlloc as malloc(), there are no large enough ranges by default.
-#if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 TEST(GetAllSwapEligibleVMAs, SimpleVerification) {
   std::vector<Region> regions;
   ASSERT_TRUE(GetAllSwapEligibleVMAs(getpid(), &regions));
   ASSERT_GT(regions.size(), 0u);
 }
-#endif  // !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 }  // namespace userspace_swap
 }  // namespace memory
