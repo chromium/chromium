@@ -15,13 +15,15 @@ static_library("browser") {
 
   deps = [
     "//base",
-    "//components/pdf/common:interfaces",
     "//content/public/browser",
     "//ui/base",
     "//ui/touch_selection",
   ]
 
-  public_deps = [ "//ipc" ]
+  public_deps = [
+    "//ipc",
+    "//pdf/mojom",
+  ]
 }
 
 if (enable_pdf) {

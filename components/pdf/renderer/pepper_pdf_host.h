@@ -13,11 +13,11 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "components/pdf/common/pdf.mojom.h"
 #include "ipc/ipc_platform_file.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "pdf/buildflags.h"
+#include "pdf/mojom/pdf.mojom.h"
 #include "ppapi/c/ppb_image_data.h"
 #include "ppapi/c/private/ppb_pdf.h"
 #include "ppapi/host/resource_host.h"

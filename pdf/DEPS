@@ -1,6 +1,5 @@
 include_rules = [
   "+cc/paint",
-  "+components/pdf/common",
   "+content/public/renderer",
   "+gin",
   "+mojo/core/embedder",

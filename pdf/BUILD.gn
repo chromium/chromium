@@ -352,7 +352,7 @@ if (enable_pdf) {
 
     public = [ "pdf_view_web_plugin.h" ]
 
-    public_deps = [ "//components/pdf/common:interfaces" ]
+    public_deps = [ "//pdf/mojom" ]
 
     deps = [
       ":accessibility_structs",

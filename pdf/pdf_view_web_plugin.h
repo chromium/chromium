@@ -10,8 +10,8 @@
 
 #include "base/memory/weak_ptr.h"
 #include "cc/paint/paint_image.h"
-#include "components/pdf/common/pdf.mojom.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "pdf/mojom/pdf.mojom.h"
 #include "pdf/pdf_view_plugin_base.h"
 #include "pdf/post_message_receiver.h"
 #include "pdf/post_message_sender.h"

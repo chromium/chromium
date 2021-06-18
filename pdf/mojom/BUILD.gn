@@ -5,7 +5,7 @@
 import("//build/config/features.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
-mojom("interfaces") {
+mojom("mojom") {
   sources = [ "pdf.mojom" ]
 
   public_deps = [
