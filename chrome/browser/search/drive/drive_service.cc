@@ -21,6 +21,7 @@
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "components/signin/public/identity_manager/scope_set.h"
 #include "google_apis/gaia/gaia_constants.h"
+#include "mojo/public/cpp/bindings/clone_traits.h"
 #include "net/base/load_flags.h"
 
 namespace {
@@ -273,40 +274,40 @@ void DriveService::OnJsonParsed(
     callbacks_.clear();
     return;
   }
-  for (auto& callback : callbacks_) {
-    std::vector<drive::mojom::FilePtr> document_list;
-    for (const auto& item : items->GetList()) {
-      auto* title = item.FindStringPath("driveItem.title");
-      auto* mime_type = item.FindStringPath("driveItem.mimeType");
-      auto* justification_text_segments =
-          item.FindListPath("justification.displayText.textSegment");
-      if (!justification_text_segments ||
-          justification_text_segments->GetList().size() == 0) {
-        continue;
-      }
-      std::string justification_text;
-      for (auto& text_segment : justification_text_segments->GetList()) {
-        auto* justification_text_path = text_segment.FindStringPath("text");
-        if (!justification_text_path) {
-          continue;
-        }
-        justification_text += *justification_text_path;
-      }
-      auto* id = item.FindStringKey("itemId");
-      auto* item_url = item.FindStringKey("url");
-      if (!title || !mime_type || justification_text.empty() || !id ||
-          !item_url || !GURL(*item_url).is_valid()) {
-        continue;
-      }
-      auto mojo_drive_doc = drive::mojom::File::New();
-      mojo_drive_doc->title = *title;
-      mojo_drive_doc->mime_type = *mime_type;
-      mojo_drive_doc->justification_text = justification_text;
-      mojo_drive_doc->id = *id;
-      mojo_drive_doc->item_url = GURL(*item_url);
-      document_list.push_back(std::move(mojo_drive_doc));
+  std::vector<drive::mojom::FilePtr> document_list;
+  for (const auto& item : items->GetList()) {
+    auto* title = item.FindStringPath("driveItem.title");
+    auto* mime_type = item.FindStringPath("driveItem.mimeType");
+    auto* justification_text_segments =
+        item.FindListPath("justification.displayText.textSegment");
+    if (!justification_text_segments ||
+        justification_text_segments->GetList().size() == 0) {
+      continue;
     }
-    std::move(callback).Run(std::move(document_list));
+    std::string justification_text;
+    for (auto& text_segment : justification_text_segments->GetList()) {
+      auto* justification_text_path = text_segment.FindStringPath("text");
+      if (!justification_text_path) {
+        continue;
+      }
+      justification_text += *justification_text_path;
+    }
+    auto* id = item.FindStringKey("itemId");
+    auto* item_url = item.FindStringKey("url");
+    if (!title || !mime_type || justification_text.empty() || !id ||
+        !item_url || !GURL(*item_url).is_valid()) {
+      continue;
+    }
+    auto mojo_drive_doc = drive::mojom::File::New();
+    mojo_drive_doc->title = *title;
+    mojo_drive_doc->mime_type = *mime_type;
+    mojo_drive_doc->justification_text = justification_text;
+    mojo_drive_doc->id = *id;
+    mojo_drive_doc->item_url = GURL(*item_url);
+    document_list.push_back(std::move(mojo_drive_doc));
+  }
+  for (auto& callback : callbacks_) {
+    std::move(callback).Run(mojo::Clone(document_list));
   }
   callbacks_.clear();
 }
