@@ -61,16 +61,16 @@ source_set("v4l2") {
     "v4l2_video_decoder_backend_stateful.h",
     "v4l2_video_decoder_backend_stateless.cc",
     "v4l2_video_decoder_backend_stateless.h",
+    "v4l2_video_decoder_delegate_vp9.cc",
+    "v4l2_video_decoder_delegate_vp9.h",
+    "v4l2_video_decoder_delegate_vp9_legacy.cc",
+    "v4l2_video_decoder_delegate_vp9_legacy.h",
     "v4l2_video_encode_accelerator.cc",
     "v4l2_video_encode_accelerator.h",
     "v4l2_vp8_accelerator.cc",
     "v4l2_vp8_accelerator.h",
     "v4l2_vp8_accelerator_legacy.cc",
     "v4l2_vp8_accelerator_legacy.h",
-    "v4l2_vp9_accelerator_chromium.cc",
-    "v4l2_vp9_accelerator_chromium.h",
-    "v4l2_vp9_accelerator_legacy.cc",
-    "v4l2_vp9_accelerator_legacy.h",
   ]
 
   libs = [

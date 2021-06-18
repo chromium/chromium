@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/gpu/v4l2/v4l2_vp9_accelerator_legacy.h"
+#include "media/gpu/v4l2/v4l2_video_decoder_delegate_vp9_legacy.h"
 
 #include <type_traits>
 
@@ -183,7 +183,7 @@ class V4L2VP9Picture : public VP9Picture {
   DISALLOW_COPY_AND_ASSIGN(V4L2VP9Picture);
 };
 
-V4L2LegacyVP9Accelerator::V4L2LegacyVP9Accelerator(
+V4L2VideoDecoderDelegateVP9Legacy::V4L2VideoDecoderDelegateVP9Legacy(
     V4L2DecodeSurfaceHandler* surface_handler,
     V4L2Device* device)
     : surface_handler_(surface_handler), device_(device) {
@@ -196,9 +196,10 @@ V4L2LegacyVP9Accelerator::V4L2LegacyVP9Accelerator(
       << "Device requires frame context parsing";
 }
 
-V4L2LegacyVP9Accelerator::~V4L2LegacyVP9Accelerator() {}
+V4L2VideoDecoderDelegateVP9Legacy::~V4L2VideoDecoderDelegateVP9Legacy() {}
 
-scoped_refptr<VP9Picture> V4L2LegacyVP9Accelerator::CreateVP9Picture() {
+scoped_refptr<VP9Picture>
+V4L2VideoDecoderDelegateVP9Legacy::CreateVP9Picture() {
   scoped_refptr<V4L2DecodeSurface> dec_surface =
       surface_handler_->CreateSurface();
   if (!dec_surface)
@@ -207,7 +208,7 @@ scoped_refptr<VP9Picture> V4L2LegacyVP9Accelerator::CreateVP9Picture() {
   return new V4L2VP9Picture(std::move(dec_surface));
 }
 
-DecodeStatus V4L2LegacyVP9Accelerator::SubmitDecode(
+DecodeStatus V4L2VideoDecoderDelegateVP9Legacy::SubmitDecode(
     scoped_refptr<VP9Picture> pic,
     const Vp9SegmentationParams& segm_params,
     const Vp9LoopFilterParams& lf_params,
@@ -371,7 +372,8 @@ DecodeStatus V4L2LegacyVP9Accelerator::SubmitDecode(
   return DecodeStatus::kOk;
 }
 
-bool V4L2LegacyVP9Accelerator::OutputPicture(scoped_refptr<VP9Picture> pic) {
+bool V4L2VideoDecoderDelegateVP9Legacy::OutputPicture(
+    scoped_refptr<VP9Picture> pic) {
   // TODO(crbug.com/647725): Insert correct color space.
   surface_handler_->SurfaceReady(VP9PictureToV4L2DecodeSurface(pic.get()),
                                  pic->bitstream_id(), pic->visible_rect(),
@@ -379,8 +381,9 @@ bool V4L2LegacyVP9Accelerator::OutputPicture(scoped_refptr<VP9Picture> pic) {
   return true;
 }
 
-bool V4L2LegacyVP9Accelerator::GetFrameContext(scoped_refptr<VP9Picture> pic,
-                                               Vp9FrameContext* frame_ctx) {
+bool V4L2VideoDecoderDelegateVP9Legacy::GetFrameContext(
+    scoped_refptr<VP9Picture> pic,
+    Vp9FrameContext* frame_ctx) {
   struct v4l2_ctrl_vp9_entropy v4l2_entropy;
   memset(&v4l2_entropy, 0, sizeof(v4l2_entropy));
 
@@ -407,12 +410,13 @@ bool V4L2LegacyVP9Accelerator::GetFrameContext(scoped_refptr<VP9Picture> pic,
   return true;
 }
 
-bool V4L2LegacyVP9Accelerator::IsFrameContextRequired() const {
+bool V4L2VideoDecoderDelegateVP9Legacy::IsFrameContextRequired() const {
   return device_needs_frame_context_;
 }
 
 scoped_refptr<V4L2DecodeSurface>
-V4L2LegacyVP9Accelerator::VP9PictureToV4L2DecodeSurface(VP9Picture* pic) {
+V4L2VideoDecoderDelegateVP9Legacy::VP9PictureToV4L2DecodeSurface(
+    VP9Picture* pic) {
   V4L2VP9Picture* v4l2_pic = pic->AsV4L2VP9Picture();
   CHECK(v4l2_pic);
   return v4l2_pic->dec_surface();
