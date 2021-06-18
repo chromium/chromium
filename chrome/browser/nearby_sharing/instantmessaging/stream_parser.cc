@@ -5,6 +5,7 @@
 #include "chrome/browser/nearby_sharing/instantmessaging/stream_parser.h"
 
 #include "base/strings/string_piece.h"
+#include "chrome/browser/nearby_sharing/instantmessaging/proto/instantmessaging.pb.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "net/base/io_buffer.h"
 #include "third_party/protobuf/src/google/protobuf/io/coded_stream.h"
@@ -29,12 +30,14 @@ constexpr int kMinimumBytesToParseNextMessagesField = 2;
 
 }  // namespace
 
-StreamParser::StreamParser() = default;
+StreamParser::StreamParser(
+    base::RepeatingCallback<void(const std::string& message)> listener,
+    base::OnceClosure fastpath_ready_callback)
+    : listener_(listener),
+      fastpath_ready_callback_(std::move(fastpath_ready_callback)) {}
 StreamParser::~StreamParser() = default;
 
-std::vector<
-    chrome_browser_nearby_sharing_instantmessaging::ReceiveMessagesResponse>
-StreamParser::Append(base::StringPiece data) {
+void StreamParser::Append(base::StringPiece data) {
   if (!unparsed_data_buffer_) {
     unparsed_data_buffer_ = base::MakeRefCounted<net::GrowableIOBuffer>();
     unparsed_data_buffer_->SetCapacity(data.size() + kReadBufferSpareCapacity);
@@ -48,20 +51,15 @@ StreamParser::Append(base::StringPiece data) {
   memcpy(unparsed_data_buffer_->data(), data.data(), data.size());
   unparsed_data_buffer_->set_offset(unparsed_data_buffer_->offset() +
                                     data.size());
-  return ParseStreamIfAvailable();
+  ParseStreamIfAvailable();
 }
 
-std::vector<
-    chrome_browser_nearby_sharing_instantmessaging::ReceiveMessagesResponse>
-StreamParser::ParseStreamIfAvailable() {
+void StreamParser::ParseStreamIfAvailable() {
   DCHECK(unparsed_data_buffer_);
-  std::vector<
-      chrome_browser_nearby_sharing_instantmessaging::ReceiveMessagesResponse>
-      receive_messages_responses;
-
   int unparsed_bytes_available = unparsed_data_buffer_->offset();
+
   if (unparsed_bytes_available < kMinimumBytesToParseNextMessagesField)
-    return receive_messages_responses;
+    return;
 
   google::protobuf::io::CodedInputStream input_stream(
       reinterpret_cast<const uint8_t*>(unparsed_data_buffer_->StartOfBuffer()),
@@ -70,29 +68,20 @@ StreamParser::ParseStreamIfAvailable() {
 
   // We can't use StreamBody::ParseFromString() here, as it can't do partial
   // parsing, nor can it tell how many bytes are consumed.
-  bool continue_parsing = unparsed_bytes_available > 0;
-  while (continue_parsing) {
-    chrome_browser_nearby_sharing_instantmessaging::ReceiveMessagesResponse
-        parsed_response;
-    StreamParsingResult result =
-        ParseNextMessagesFieldFromStream(&input_stream, &parsed_response);
-    switch (result) {
-      case StreamParser::StreamParsingResult::kSuccessfullyParsedResponse:
-        receive_messages_responses.push_back(parsed_response);
-        FALLTHROUGH;
-      case StreamParser::StreamParsingResult::kNoop:
-        bytes_consumed = input_stream.CurrentPosition();
-        continue_parsing = bytes_consumed < unparsed_bytes_available;
-        break;
-      case StreamParser::StreamParsingResult::kNotEnoughDataYet:
-      case StreamParser::StreamParsingResult::kParsingUnexpectedlyFailed:
-        continue_parsing = false;
-        break;
+  while (bytes_consumed < unparsed_bytes_available) {
+    bool is_successful = ParseNextMessagesFieldFromStream(&input_stream);
+    if (is_successful) {
+      // Only update |bytes_consumed| if the whole field is decoded.
+      bytes_consumed = input_stream.CurrentPosition();
+    } else {
+      // The stream data can't be fully decoded yet.
+      break;
     }
   }
 
-  if (bytes_consumed == 0)
-    return receive_messages_responses;
+  if (bytes_consumed == 0) {
+    return;
+  }
 
   CHECK_LE(bytes_consumed, unparsed_bytes_available);
   int bytes_not_consumed = unparsed_bytes_available - bytes_consumed;
@@ -103,15 +92,10 @@ StreamParser::ParseStreamIfAvailable() {
           unparsed_data_buffer_->StartOfBuffer() + bytes_consumed,
           bytes_not_consumed);
   unparsed_data_buffer_->set_offset(bytes_not_consumed);
-
-  return receive_messages_responses;
 }
 
-StreamParser::StreamParsingResult
-StreamParser::ParseNextMessagesFieldFromStream(
-    google::protobuf::io::CodedInputStream* input_stream,
-    chrome_browser_nearby_sharing_instantmessaging::ReceiveMessagesResponse*
-        parsed_response) {
+bool StreamParser::ParseNextMessagesFieldFromStream(
+    google::protobuf::io::CodedInputStream* input_stream) {
   // The WireFormat nature of protos allows for key:value pairs, each which
   // contains the value of one proto field. The key (also called tag) for each
   // pair is actually two values: the field number and the wire type.
@@ -145,12 +129,13 @@ StreamParser::ParseNextMessagesFieldFromStream(
   // enough bytes to read a tag. If we cannot read the tag, we likely need to
   // wait for more bytes to be appended to the input stream.
   uint32_t messages_tag = input_stream->ReadTag();
-  if (messages_tag == 0)
-    return StreamParser::StreamParsingResult::kNotEnoughDataYet;
+  if (messages_tag == 0) {
+    return false;
+  }
 
   // If we were able to read the full tag above, and the field id does not
   // match the StreamBody messages field body or the noop field body we were
-  // expecting then we are encountering a field we are not prepared to handle.
+  // expecting then we need more data to continue.
   // TODO(crbug.com/1217150) Add a way to read through bytes of the unknown
   // fields to skip it, in order to be more robost to StreamBody changes.
   int field_number = WireFormatLite::GetTagFieldNumber(messages_tag);
@@ -158,7 +143,7 @@ StreamParser::ParseNextMessagesFieldFromStream(
                           StreamBody::kMessagesFieldNumber &&
       field_number != chrome_browser_nearby_sharing_instantmessaging::
                           StreamBody::kNoopFieldNumber) {
-    return StreamParser::StreamParsingResult::kParsingUnexpectedlyFailed;
+    return false;
   }
 
   // WireType specifies the format of the data to follow. Here, we are verifying
@@ -168,41 +153,64 @@ StreamParser::ParseNextMessagesFieldFromStream(
   // field as the "bytes" type.
   if (WireFormatLite::GetTagWireType(messages_tag) !=
       WireFormatLite::WireType::WIRETYPE_LENGTH_DELIMITED) {
-    return StreamParser::StreamParsingResult::kParsingUnexpectedlyFailed;
+    return false;
   }
 
-  // Read the byte field, not including tags of the StreamBody, which will
-  // either be "StreamBody.messages" or "StreamBody.noop". If it is not
-  // successful, we likely need to wait for more bytes to be appended to the
-  // input stream to form a complete StreamBody. This function makes the
-  // assumption that we already know the field and read the tag to determine
-  // what field to read, which is why we need the checks above.
-  std::string stream_body_field_bytes;
-  if (!WireFormatLite::ReadBytes(input_stream, &stream_body_field_bytes))
-    return StreamParser::StreamParsingResult::kNotEnoughDataYet;
+  // Read the byte field, not including tags. If it is not successful,
+  // we likely need to wait for more bytes to be appended to the input stream to
+  // form a complete message. This function makes the assumption that we
+  // already know the field and read the tag to determine what field to read,
+  // which is why we need the checks above.
+  std::string messages_field_bytes;
+  if (!WireFormatLite::ReadBytes(input_stream, &messages_field_bytes)) {
+    return false;
+  }
 
   // Now that we have a complete "StreamBody.messages" or "StreamBody.noop"
-  // bytes field, we want to properly handle it. If we have a
-  // "StreamBody.messages", we want to transform the bytes into a
-  // ReceiveMessagesResponse and append it to the vector we are returning, then
-  // we can move along and read the next data from the buffer, if applicable.
-  // "StreamBody.noop" messages may be generated as a way to keep the connection
-  // to the server alive, and it is not an error. However, these messages do not
-  // contain a ReceiveMessagesResponse, but we still want to remove this data
-  // from the buffer and continue reading the next data, if applicable. We
-  // update the |is_noop_field_| to true to tell ParseStreamIfAvailable that
-  // although it receives an absl::nullopt, it should still remove the bytes
-  // from the buffer.
+  // bytes field, we want to properly handle it. DelegateMessage allows us to
+  // transform the bytes message we received to a ReceiveMessagesResponse if we
+  // are encountering a "StreamBody.messages" and then run the appropriate
+  // callback depending on the response body. Then we can
+  // move along and read the next data from the buffer, if applicable.
+  // Noop messages may be generated as a way to keep the connection to the
+  // server alive, and it is not an error. It reaches this point as a field in
+  // the StreamBody proto message. We return true because we acknowledge we
+  // read a complete message, and we can move on and remove this data from
+  // the buffer and continue. We only want to DelegateMessage is we have a
+  // a "messages" field.
   if (field_number == chrome_browser_nearby_sharing_instantmessaging::
-                          StreamBody::kNoopFieldNumber) {
-    return StreamParser::StreamParsingResult::kNoop;
+                          StreamBody::kMessagesFieldNumber) {
+    DelegateMessage(messages_field_bytes);
+  }
+  return true;
+}
+
+void StreamParser::DelegateMessage(const std::string& messages) {
+  // Security Note - The ReceiveMessagesResponse proto is coming from a trusted
+  // Google server and hence can be parsed on the browser process. The message
+  // contained within the proto is untrusted and should be parsed within a
+  // sandbox process.
+  chrome_browser_nearby_sharing_instantmessaging::ReceiveMessagesResponse
+      response;
+  if (!response.ParseFromString(messages)) {
+    NS_LOG(ERROR) << "Cannot read ReceiveMessagesResponse from string.";
+    return;
   }
 
-  if (!parsed_response->ParseFromString(stream_body_field_bytes)) {
-    NS_LOG(ERROR) << "Failed to parse ReceiveMessagesResponse from stream body "
-                     "message bytes.";
-    return StreamParser::StreamParsingResult::kParsingUnexpectedlyFailed;
+  switch (response.body_case()) {
+    case chrome_browser_nearby_sharing_instantmessaging::
+        ReceiveMessagesResponse::kFastPathReady:
+      if (fastpath_ready_callback_) {
+        std::move(fastpath_ready_callback_).Run();
+      }
+      break;
+    case chrome_browser_nearby_sharing_instantmessaging::
+        ReceiveMessagesResponse::kInboxMessage:
+      listener_.Run(response.inbox_message().message());
+      break;
+    default:
+      NS_LOG(ERROR) << __func__ << ": message body case was unexpected: "
+                    << response.body_case();
+      NOTREACHED();
   }
-
-  return StreamParser::StreamParsingResult::kSuccessfullyParsedResponse;
 }

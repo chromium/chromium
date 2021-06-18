@@ -12,7 +12,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/nearby_sharing/instantmessaging/proto/instantmessaging.pb.h"
 #include "chrome/browser/nearby_sharing/instantmessaging/stream_parser.h"
 #include "chrome/browser/nearby_sharing/instantmessaging/token_fetcher.h"
 #include "chromeos/services/nearby/public/mojom/webrtc_signaling_messenger.mojom.h"
@@ -92,9 +91,6 @@ class ReceiveMessagesExpress : public sharing::mojom::ReceiveMessagesSession,
   // and self destruct. After calling, this object may no longer be valid and
   // no further interactions should be done.
   void FailSessionAndDestruct(const std::string reason);
-
-  void DelegateMessage(const chrome_browser_nearby_sharing_instantmessaging::
-                           ReceiveMessagesResponse& response);
 
   StartReceivingMessagesCallback start_receiving_messages_callback_;
   mojo::PendingRemote<sharing::mojom::ReceiveMessagesSession>

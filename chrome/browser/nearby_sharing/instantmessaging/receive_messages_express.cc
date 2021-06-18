@@ -140,7 +140,12 @@ ReceiveMessagesExpress::ReceiveMessagesExpress(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : incoming_messages_listener_(std::move(incoming_messages_listener)),
       token_fetcher_(identity_manager),
-      url_loader_factory_(std::move(url_loader_factory)) {}
+      url_loader_factory_(std::move(url_loader_factory)),
+      stream_parser_(
+          base::BindRepeating(&ReceiveMessagesExpress::OnMessageReceived,
+                              base::Unretained(this)),
+          base::BindOnce(&ReceiveMessagesExpress::OnFastPathReady,
+                         base::Unretained(this))) {}
 
 ReceiveMessagesExpress::~ReceiveMessagesExpress() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -258,34 +263,8 @@ void ReceiveMessagesExpress::OnDataReceived(base::StringPiece data,
                                             base::OnceClosure resume) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  for (auto response : stream_parser_.Append(data)) {
-    DelegateMessage(response);
-  }
+  stream_parser_.Append(data);
   std::move(resume).Run();
-}
-
-void ReceiveMessagesExpress::DelegateMessage(
-    const chrome_browser_nearby_sharing_instantmessaging::
-        ReceiveMessagesResponse& response) {
-  // Security Note - The ReceiveMessagesResponse proto is coming from a trusted
-  // Google server (Tachyon) from the signaling channel for webrtc messages for
-  // sharing messages and hence can be parsed on the browser process.
-  // The message contained within the proto is untrusted and should be parsed
-  // within a sandbox process.
-  switch (response.body_case()) {
-    case chrome_browser_nearby_sharing_instantmessaging::
-        ReceiveMessagesResponse::kFastPathReady:
-      OnFastPathReady();
-      break;
-    case chrome_browser_nearby_sharing_instantmessaging::
-        ReceiveMessagesResponse::kInboxMessage:
-      OnMessageReceived(response.inbox_message().message());
-      break;
-    default:
-      NS_LOG(ERROR) << __func__ << ": message body case was unexpected: "
-                    << response.body_case();
-      NOTREACHED();
-  }
 }
 
 void ReceiveMessagesExpress::OnComplete(bool success) {
