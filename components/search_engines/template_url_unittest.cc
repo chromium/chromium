@@ -1150,15 +1150,6 @@ TEST_F(TemplateURLTest, SuggestClient) {
       url.url_ref().ReplaceSearchTerms(search_terms_args, search_terms_data_));
   ASSERT_TRUE(result_2.is_valid());
   EXPECT_EQ("http://google.com/?client=suggest_client", result_2.spec());
-
-  // Check that the URL is correct when a suggest request is made from a
-  // non-searchbox NTP surface.
-  search_terms_args.request_source = TemplateURLRef::NON_SEARCHBOX_NTP;
-  GURL result_3(
-      url.url_ref().ReplaceSearchTerms(search_terms_args, search_terms_data_));
-  ASSERT_TRUE(result_3.is_valid());
-  EXPECT_EQ("http://google.com/?client=suggest_client_from_ntp",
-            result_3.spec());
 }
 
 TEST_F(TemplateURLTest, GetURLNoSuggestionsURL) {

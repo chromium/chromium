@@ -68,11 +68,11 @@ class TemplateURLRef {
   // the |post_data|. See http://tools.ietf.org/html/rfc2046 for the details.
   typedef std::pair<std::string, std::string> PostContent;
 
-  // Enumeration of the known search or suggest request sources.
+  // Enumeration of the known search or suggest request sources. These values
+  // are not persisted or used in histograms; thus can be freely changed.
   enum RequestSource {
     SEARCHBOX,          // Omnibox or the NTP realbox. The default.
     CROS_APP_LIST,      // Chrome OS app list search box.
-    NON_SEARCHBOX_NTP,  // Non-searchbox NTP surfaces.
   };
 
   // This struct encapsulates arguments passed to

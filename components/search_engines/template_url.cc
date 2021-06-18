@@ -1195,11 +1195,8 @@ std::string TemplateURLRef::HandleReplacements(
       }
 
       case GOOGLE_SUGGEST_CLIENT:
-        HandleReplacement(
-            std::string(),
-            search_terms_data.GetSuggestClient(
-                search_terms_args.request_source == NON_SEARCHBOX_NTP),
-            *i, &url);
+        HandleReplacement(std::string(), search_terms_data.GetSuggestClient(),
+                          *i, &url);
         break;
 
       case GOOGLE_SUGGEST_REQUEST_ID:

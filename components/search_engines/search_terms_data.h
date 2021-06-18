@@ -44,9 +44,8 @@ class SearchTermsData {
 
   // The suggest client parameter ("client") passed with Google suggest
   // requests.  See GetSuggestRequestIdentifier() for more details.
-  // |from_ntp| is true if the search is made from a non-searchbox NTP surface.
   // This implementation returns the empty string.
-  virtual std::string GetSuggestClient(bool from_ntp) const;
+  virtual std::string GetSuggestClient() const;
 
   // The suggest request identifier parameter ("gs_ri") passed with Google
   // suggest requests.   Along with suggestclient (See GetSuggestClient()),

@@ -22,7 +22,7 @@ class UIThreadSearchTermsData : public SearchTermsData {
   std::string GetApplicationLocale() const override;
   std::u16string GetRlzParameterValue(bool from_app_list) const override;
   std::string GetSearchClient() const override;
-  std::string GetSuggestClient(bool from_ntp) const override;
+  std::string GetSuggestClient() const override;
   std::string GetSuggestRequestIdentifier() const override;
   std::string GoogleImageSearchSource() const override;
 
