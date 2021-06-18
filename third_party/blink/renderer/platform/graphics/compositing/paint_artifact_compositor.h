@@ -339,8 +339,7 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
 
   static void UpdateLayerProperties(cc::Layer&,
                                     const PendingLayer&,
-                                    cc::LayerSelection& layer_selection,
-                                    PropertyTreeManager* = nullptr);
+                                    cc::LayerSelection& layer_selection);
 
   // Updates the cc::Layer associated with a |pending_layer| following a paint.
   // This includes both raster invalidation and updating the cc::Layer

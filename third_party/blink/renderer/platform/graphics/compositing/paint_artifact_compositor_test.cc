@@ -1145,11 +1145,6 @@ TEST_P(PaintArtifactCompositorTest, OneScrollNodeComposited) {
 }
 
 TEST_P(PaintArtifactCompositorTest, OneScrollNodeNonComposited) {
-  // In pre-CompositeAfterPaint, PaintArtifactCompositor doesn't see
-  // non-composited scroll node.
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return;
-
   CompositorElementId scroll_element_id = ScrollElementId(2);
   auto scroll = CreateScroll(ScrollPaintPropertyNode::Root(), ScrollState1(),
                              kNotScrollingOnMain, scroll_element_id);
@@ -1161,10 +1156,10 @@ TEST_P(PaintArtifactCompositorTest, OneScrollNodeNonComposited) {
       .RectDrawing(IntRect(-110, 12, 170, 19), Color::kWhite);
 
   Update(artifact.Build());
-  // Node #0 reserved for null; #1 for root render surface; #2 is the blink
-  // scroll translation.
-  EXPECT_EQ(3u, GetPropertyTrees().scroll_tree.size());
-  EXPECT_EQ(3u, GetPropertyTrees().transform_tree.size());
+  // Blink scroll nodes not referenced by composited transforms don't create
+  // cc scroll nodes.
+  EXPECT_EQ(2u, GetPropertyTrees().scroll_tree.size());
+  EXPECT_EQ(2u, GetPropertyTrees().transform_tree.size());
   EXPECT_EQ(1u, LayerCount());
 }
 

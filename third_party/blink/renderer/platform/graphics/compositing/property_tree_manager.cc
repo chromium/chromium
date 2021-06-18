@@ -481,9 +481,22 @@ int PropertyTreeManager::EnsureCompositorTransformNode(
     compositor_node.element_id = compositor_element_id;
   }
 
+  // ScrollUnification creates the entire scroll tree and will already have done
+  // this.
+  if (!RuntimeEnabledFeatures::ScrollUnificationEnabled()) {
+    if (auto* scroll_translation_for_fixed =
+            transform_node.ScrollTranslationForFixed()) {
+      // Fixed-position can cause different topologies of the transform tree and
+      // the scroll tree. This ensures the ancestor scroll nodes of the scroll
+      // node for a descendant transform node below is created.
+      EnsureCompositorTransformNode(*scroll_translation_for_fixed);
+    }
+  }
+
   // If this transform is a scroll offset translation, create the associated
   // compositor scroll property node and adjust the compositor transform node's
   // scroll offset.
+  // TODO(ScrollUnification): Move this code into EnsureCompositorScrollNodes().
   if (auto* scroll_node = transform_node.ScrollNode()) {
     compositor_node.scrolls = true;
     compositor_node.should_be_snapped = true;
@@ -615,6 +628,9 @@ void PropertyTreeManager::CreateCompositorScrollNode(
 
 int PropertyTreeManager::EnsureCompositorScrollNode(
     const TransformPaintPropertyNode& scroll_offset_translation) {
+  // TODO(ScrollUnification): Remove this function and let
+  // EnsureCompositorScrollNodes() call EnsureCompositorTransformNode() and
+  // CreateCompositorScrollNode() directly.
   const auto* scroll_node = scroll_offset_translation.ScrollNode();
   DCHECK(scroll_node);
   EnsureCompositorTransformNode(scroll_offset_translation);

@@ -1340,8 +1340,7 @@ void PaintArtifactCompositor::Update(
         pending_layer, new_content_layer_clients, new_scroll_hit_test_layers,
         new_scrollbar_layers);
 
-    UpdateLayerProperties(*layer, pending_layer, layer_selection,
-                          &property_tree_manager);
+    UpdateLayerProperties(*layer, pending_layer, layer_selection);
 
     layer->SetLayerTreeHost(root_layer_->layer_tree_host());
 
@@ -1373,6 +1372,8 @@ void PaintArtifactCompositor::Update(
     // state but can be created via the scroll offset translation node.
     const auto& scroll_translation =
         NearestScrollTranslationForLayer(pending_layer);
+    // TODO(ScrollUnification): We may combine the following two calls to
+    // property_tree_manager.SetCcScrollNodeIsComposited(scroll_translation);
     int scroll_id =
         property_tree_manager.EnsureCompositorScrollNode(scroll_translation);
     if (RuntimeEnabledFeatures::ScrollUnificationEnabled())
@@ -1446,8 +1447,7 @@ void PaintArtifactCompositor::Update(
 void PaintArtifactCompositor::UpdateLayerProperties(
     cc::Layer& layer,
     const PendingLayer& pending_layer,
-    cc::LayerSelection& layer_selection,
-    PropertyTreeManager* property_tree_manager) {
+    cc::LayerSelection& layer_selection) {
   // Properties of foreign layers are managed by their owners.
   if (pending_layer.compositing_type == PendingLayer::kForeignLayer)
     return;
@@ -1457,12 +1457,11 @@ void PaintArtifactCompositor::UpdateLayerProperties(
     PaintChunkSubset chunks(pending_layer.graphics_layer->GetPaintController()
                                 .GetPaintArtifactShared());
     PaintChunksToCcLayer::UpdateLayerProperties(
-        layer, pending_layer.property_tree_state, chunks, layer_selection,
-        property_tree_manager);
+        layer, pending_layer.property_tree_state, chunks, layer_selection);
   } else {
     PaintChunksToCcLayer::UpdateLayerProperties(
         layer, pending_layer.property_tree_state, pending_layer.chunks,
-        layer_selection, property_tree_manager);
+        layer_selection);
   }
 }
 
