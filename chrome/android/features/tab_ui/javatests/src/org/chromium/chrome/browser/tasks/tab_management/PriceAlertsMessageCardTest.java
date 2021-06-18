@@ -73,7 +73,7 @@ import java.io.IOException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 // clang-format off
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-        "enable-features=" + ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID + "<Study",
+        "enable-features=" + ChromeFeatureList.COMMERCE_PRICE_TRACKING + "<Study",
         "force-fieldtrials=Study/Group"})
 @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
 @Features.DisableFeatures({ChromeFeatureList.START_SURFACE_ANDROID})

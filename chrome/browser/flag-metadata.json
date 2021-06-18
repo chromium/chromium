@@ -1478,7 +1478,12 @@
   {
     "name": "enable-commerce-merchant-viewer",
     "owners": [ "chrome-shopping@google.com" ],
-    "expiry_milestone": 94
+    "expiry_milestone": 97
+  },
+  {
+    "name": "enable-commerce-price-tracking",
+    "owners": [ "chrome-shopping@google.com" ],
+    "expiry_milestone": 97
   },
   {
     "name": "enable-compositing-based-throttling",

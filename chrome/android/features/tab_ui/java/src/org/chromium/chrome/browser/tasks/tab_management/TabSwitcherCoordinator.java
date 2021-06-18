@@ -256,7 +256,7 @@ public class TabSwitcherCoordinator
                         NewTabTileViewBinder::bind);
             }
 
-            if (TabUiFeatureUtilities.isPriceTrackingEnabled()) {
+            if (PriceTrackingUtilities.isPriceTrackingEnabled()) {
                 mTabListCoordinator.registerItemType(TabProperties.UiType.LARGE_MESSAGE,
                         new LayoutViewBuilder(R.layout.large_message_card_item),
                         LargeMessageCardViewBinder::bind);
@@ -331,7 +331,7 @@ public class TabSwitcherCoordinator
                 mMessageCardProviderCoordinator.subscribeMessageService(iphMessageService);
             }
 
-            if (TabUiFeatureUtilities.isPriceTrackingEnabled()) {
+            if (PriceTrackingUtilities.isPriceTrackingEnabled()) {
                 PriceDropNotificationManager notificationManager =
                         new PriceDropNotificationManager();
                 mPriceTrackingDialogCoordinator = new PriceTrackingDialogCoordinator(

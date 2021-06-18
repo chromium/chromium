@@ -20,6 +20,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
@@ -304,7 +305,7 @@ public class OverviewAppMenuTest {
     @Test
     @SmallTest
     @Feature({"Browser", "Main"})
-    @Features.EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID + "<Study"})
+    @Features.EnableFeatures({ChromeFeatureList.COMMERCE_PRICE_TRACKING + "<Study"})
     @Features.DisableFeatures({ChromeFeatureList.START_SURFACE_ANDROID})
     @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
             "force-fieldtrial-params=Study.Group:enable_price_tracking/false"})
@@ -330,7 +331,7 @@ public class OverviewAppMenuTest {
     @Test
     @SmallTest
     @Feature({"Browser", "Main"})
-    @Features.EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID + "<Study"})
+    @Features.EnableFeatures({ChromeFeatureList.COMMERCE_PRICE_TRACKING + "<Study"})
     @Features.DisableFeatures({ChromeFeatureList.START_SURFACE_ANDROID})
     @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
             "force-fieldtrial-params=Study.Group:enable_price_tracking/true"})
@@ -362,7 +363,7 @@ public class OverviewAppMenuTest {
     @Test
     @SmallTest
     @Feature({"Browser", "Main"})
-    @Features.EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID + "<Study"})
+    @Features.EnableFeatures({ChromeFeatureList.COMMERCE_PRICE_TRACKING + "<Study"})
     @Features.DisableFeatures({ChromeFeatureList.START_SURFACE_ANDROID})
     @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
             "force-fieldtrial-params=Study.Group:enable_price_tracking/true"})
@@ -389,7 +390,7 @@ public class OverviewAppMenuTest {
     @Test
     @SmallTest
     @Feature({"Browser", "Main"})
-    @Features.EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID + "<Study"})
+    @Features.EnableFeatures({ChromeFeatureList.COMMERCE_PRICE_TRACKING + "<Study"})
     @Features.DisableFeatures({ChromeFeatureList.START_SURFACE_ANDROID})
     @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
             "force-fieldtrial-params=Study.Group:enable_price_tracking/true"})
@@ -416,7 +417,7 @@ public class OverviewAppMenuTest {
     @SmallTest
     @Feature({"Browser", "Main"})
     @Features.EnableFeatures({ChromeFeatureList.START_SURFACE_ANDROID,
-            ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID + "<Study"})
+            ChromeFeatureList.COMMERCE_PRICE_TRACKING + "<Study"})
     @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
             "force-fieldtrial-params=Study.Group:enable_price_tracking/false"})
     public void
@@ -441,11 +442,10 @@ public class OverviewAppMenuTest {
     @Test
     @SmallTest
     @Feature({"Browser", "Main"})
-    @Features.EnableFeatures({ChromeFeatureList.START_SURFACE_ANDROID,
-            ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID + "<Study"})
+    @Features.EnableFeatures({ChromeFeatureList.COMMERCE_PRICE_TRACKING + "<Study"})
     @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
             "force-fieldtrial-params=Study.Group:enable_price_tracking/true"})
-    // TODO(crbug.com/1152925): Re-add the test when the bug is fixed.
+    @DisabledTest(message = "crbug.com/1152925")
     public void
     testTrackPriceOnTabsIsEnabledWithStartSurface() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> {

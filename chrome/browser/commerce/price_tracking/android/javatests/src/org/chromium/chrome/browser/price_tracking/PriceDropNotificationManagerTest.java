@@ -61,7 +61,7 @@ import org.chromium.components.browser_ui.notifications.MockNotificationManagerP
 @RunWith(ChromeJUnit4ClassRunner.class)
 // clang-format off
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-        "enable-features=" + ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID + "<Study",
+        "enable-features=" + ChromeFeatureList.COMMERCE_PRICE_TRACKING + "<Study",
         "force-fieldtrials=Study/Group",
         "force-fieldtrial-params=Study.Group:enable_price_notification/true"})
 @Features.DisableFeatures({ChromeFeatureList.START_SURFACE_ANDROID})
