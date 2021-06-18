@@ -559,5 +559,50 @@ TEST_F(PolicyContainerNavigationBundleTest,
   EXPECT_THAT(bundle.ParentPolicies(), Pointee(Eq(ByRef(*parent_policies))));
 }
 
+// Verifies that the parent policies are preserved on
+// ResetForCrossDocumentRestart.
+TEST_F(PolicyContainerNavigationBundleTest,
+       ResetForCrossDocumentRestartParentPolicies) {
+  std::unique_ptr<PolicyContainerPolicies> parent_policies = MakeTestPolicies();
+
+  TestRenderFrameHost* parent = contents()->GetMainFrame();
+  parent->SetPolicyContainerHost(NewHost(parent_policies->Clone()));
+
+  PolicyContainerNavigationBundle bundle(parent, nullptr, nullptr);
+  bundle.ComputePolicies(GURL("https://foo.test"));
+  EXPECT_EQ(bundle.FinalPolicies(), PolicyContainerPolicies());
+
+  bundle.ResetForCrossDocumentRestart();
+  EXPECT_THAT(bundle.ParentPolicies(), Pointee(Eq(ByRef(*parent_policies))));
+  bundle.ComputePolicies(AboutSrcdocUrl());
+
+  EXPECT_EQ(bundle.FinalPolicies(), *parent_policies);
+}
+
+// Verifies that the initiator policies are preserved on
+// ResetForCrossDocumentRestart.
+TEST_F(PolicyContainerNavigationBundleTest,
+       ResetForCrossDocumentRestartInitiatorPolicies) {
+  std::unique_ptr<PolicyContainerPolicies> initiator_policies =
+      MakeTestPolicies();
+
+  TestRenderFrameHost* initiator = contents()->GetMainFrame();
+  initiator->SetPolicyContainerHost(NewHost(initiator_policies->Clone()));
+
+  // Force implicit conversion from LocalFrameToken to UnguessableToken.
+  const blink::LocalFrameToken& token = initiator->GetFrameToken();
+  PolicyContainerNavigationBundle bundle(nullptr, &token, nullptr);
+
+  bundle.ComputePolicies(GURL("https://foo.test"));
+  EXPECT_EQ(bundle.FinalPolicies(), PolicyContainerPolicies());
+
+  bundle.ResetForCrossDocumentRestart();
+  EXPECT_THAT(bundle.InitiatorPolicies(),
+              Pointee(Eq(ByRef(*initiator_policies))));
+  bundle.ComputePolicies(AboutBlankUrl());
+
+  EXPECT_EQ(bundle.FinalPolicies(), *initiator_policies);
+}
+
 }  // namespace
 }  // namespace content

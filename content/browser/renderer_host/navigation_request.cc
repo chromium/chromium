@@ -1890,6 +1890,8 @@ void NavigationRequest::ResetForCrossDocumentRestart() {
 
   // Reset navigation handle timings.
   navigation_handle_timing_ = NavigationHandleTiming();
+
+  policy_container_navigation_bundle_->ResetForCrossDocumentRestart();
 }
 
 void NavigationRequest::ResetStateForSiteInstanceChange() {
