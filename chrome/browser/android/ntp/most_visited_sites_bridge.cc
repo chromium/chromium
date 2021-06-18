@@ -221,7 +221,7 @@ void MostVisitedSitesBridge::SetObserver(
     const JavaParamRef<jobject>& j_observer,
     jint num_sites) {
   java_observer_ = std::make_unique<JavaObserver>(env, j_observer);
-  most_visited_->SetMostVisitedURLsObserver(java_observer_.get(), num_sites);
+  most_visited_->AddMostVisitedURLsObserver(java_observer_.get(), num_sites);
 }
 
 void MostVisitedSitesBridge::AddOrRemoveBlockedUrl(

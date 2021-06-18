@@ -55,7 +55,7 @@ MostVisitedHandler::MostVisitedHandler(
       page_handler_(this, std::move(pending_page_handler)),
       page_(std::move(pending_page)) {
   most_visited_sites_->EnableCustomLinks(IsCustomLinksEnabled());
-  most_visited_sites_->SetMostVisitedURLsObserver(
+  most_visited_sites_->AddMostVisitedURLsObserver(
       this, ntp_tiles::kMaxNumMostVisited);
 }
 

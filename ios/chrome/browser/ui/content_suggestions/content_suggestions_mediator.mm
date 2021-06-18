@@ -225,7 +225,7 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
     _mostVisitedSites = std::move(mostVisitedSites);
     _mostVisitedBridge =
         std::make_unique<ntp_tiles::MostVisitedSitesObserverBridge>(self);
-    _mostVisitedSites->SetMostVisitedURLsObserver(_mostVisitedBridge.get(),
+    _mostVisitedSites->AddMostVisitedURLsObserver(_mostVisitedBridge.get(),
                                                   kMaxNumMostVisitedTiles);
 
     _prefChangeRegistrar = std::make_unique<PrefChangeRegistrar>();
