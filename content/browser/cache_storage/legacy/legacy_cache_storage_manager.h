@@ -26,7 +26,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
-#include "storage/browser/quota/quota_client.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace base {

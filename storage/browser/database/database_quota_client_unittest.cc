@@ -27,7 +27,6 @@
 #include "storage/browser/database/database_quota_client.h"
 #include "storage/browser/database/database_tracker.h"
 #include "storage/browser/database/database_util.h"
-#include "storage/browser/quota/quota_client.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/quota/special_storage_policy.h"
 #include "storage/common/database/database_identifier.h"
