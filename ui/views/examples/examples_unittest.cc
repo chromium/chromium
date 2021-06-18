@@ -10,13 +10,14 @@
 namespace views {
 namespace examples {
 
+// TODO(crbug.com/1221012): Disabled the test on windows due to its flakiness.
 #if defined(OS_WIN)
-#define TestViewsExamplesLaunches_MAYBE TestViewsExamplesLaunches
+#define MAYBE_TestViewsExamplesLaunches DISABLED_TestViewsExamplesLaunches
 #else
-#define TestViewsExamplesLaunches_MAYBE TestViewsExamplesLaunches_DISABLED
+#define MAYBE_TestViewsExamplesLaunches TestViewsExamplesLaunches
 #endif
 
-TEST(ExamplesTest, TestViewsExamplesLaunches_MAYBE) {
+TEST(ExamplesTest, MAYBE_TestViewsExamplesLaunches) {
   const ExamplesExitCode exit_code = ExamplesMainProc(true);
   // Check the status of the Skia Gold comparison.
   EXPECT_EQ(ExamplesExitCode::kSucceeded, exit_code);
