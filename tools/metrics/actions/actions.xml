@@ -28590,6 +28590,8 @@ should be able to be added at any place in this file.
   <suffix name="ReopenTab" label="For ReopenTab feature."/>
   <suffix name="SharedHighlightingBuilder"
       label="For SharedHighlightingBuilder feature."/>
+  <suffix name="StartSurfaceTabSwitcherHomeButton"
+      label="For StartSurfaceTabSwitcherHomeButton feature."/>
   <suffix name="TabGroupsDragAndDrop" label="For drop-to-merge in tab group."/>
   <suffix name="TabGroupsQuicklyComparePages"
       label="For long press links to create tab groups."/>

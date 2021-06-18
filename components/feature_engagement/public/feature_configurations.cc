@@ -227,6 +227,28 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
                                Comparator(ANY, 0), 360, 360);
     return config;
   }
+
+  if (kIPHStartSurfaceTabSwitcherHomeButton.name == feature->name) {
+    // A config that allows the StartSurfaceTabSwitcherHomeButton IPH to be
+    // shown:
+    // * Once per day
+    // * Up to 7 times but only if the home button is not clicked when IPH is
+    // showing.
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    config->trigger =
+        EventConfig("start_surface_tab_switcher_home_button_iph_trigger",
+                    Comparator(LESS_THAN, 7), k10YearsInDays, k10YearsInDays);
+    config->used =
+        EventConfig("start_surface_tab_switcher_home_button_clicked",
+                    Comparator(EQUAL, 0), k10YearsInDays, k10YearsInDays);
+    config->event_configs.insert(
+        EventConfig("start_surface_tab_switcher_home_button_iph_trigger",
+                    Comparator(EQUAL, 0), 1, 360));
+    return config;
+  }
 #endif  // defined(OS_ANDROID)
 
   if (kIPHDummyFeature.name == feature->name) {

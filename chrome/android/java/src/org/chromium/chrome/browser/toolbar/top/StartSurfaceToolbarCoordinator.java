@@ -95,7 +95,7 @@ public class StartSurfaceToolbarCoordinator {
                 homepageEnabledSupplier, startSurfaceAsHomepageSupplier,
                 homepageManagedByPolicySupplier, homeButtonOnClickHandler,
                 StartSurfaceConfiguration.shouldShowNewSurfaceFromHomeButton(),
-                isTabGroupsAndroidContinuationEnabled);
+                isTabGroupsAndroidContinuationEnabled, userEducationHelper);
 
         mThemeColorProvider = provider;
         mMenuButtonCoordinator = menuButtonCoordinator;
@@ -258,6 +258,8 @@ public class StartSurfaceToolbarCoordinator {
                 mPropertyModel.get(StartSurfaceToolbarProperties.MENU_IS_VISIBLE));
         mPropertyModelChangeProcessor = PropertyModelChangeProcessor.create(
                 mPropertyModel, mView, StartSurfaceToolbarViewBinder::bind);
+
+        mToolbarMediator.setHomeButtonView(mView.getHomeButtonView());
 
         if (StartSurfaceConfiguration.shouldShowNewSurfaceFromHomeButton()) {
             mTabSwitcherButtonView = mView.findViewById(R.id.start_tab_switcher_button);

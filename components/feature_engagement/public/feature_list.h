@@ -155,6 +155,8 @@ DEFINE_VARIATION_PARAM(kIPHWebFeedPostFollowDialogFeature,
                        "IPH_WebFeedPostFollowDialog");
 DEFINE_VARIATION_PARAM(kIPHSharedHighlightingBuilder,
                        "IPH_SharedHighlightingBuilder");
+DEFINE_VARIATION_PARAM(kIPHStartSurfaceTabSwitcherHomeButton,
+                       "IPH_StartSurfaceTabSwitcherHomeButton");
 #endif  // defined(OS_ANDROID)
 #if defined(OS_IOS)
 DEFINE_VARIATION_PARAM(kIPHBottomToolbarTipFeature, "IPH_BottomToolbarTip");

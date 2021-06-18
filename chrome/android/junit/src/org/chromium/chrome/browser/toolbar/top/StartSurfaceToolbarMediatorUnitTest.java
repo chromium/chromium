@@ -13,8 +13,10 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.BUTTONS_CLICKABLE;
+import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.HOME_BUTTON_CLICK_HANDLER;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.HOME_BUTTON_IS_VISIBLE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IDENTITY_DISC_AT_START;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IDENTITY_DISC_CLICK_HANDLER;
@@ -47,9 +49,11 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.identity_disc.IdentityDiscController;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -59,8 +63,11 @@ import org.chromium.chrome.browser.toolbar.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.toolbar.ButtonDataImpl;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
+import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.features.start_surface.StartSurfaceState;
+import org.chromium.components.feature_engagement.EventConstants;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -92,11 +99,21 @@ public class StartSurfaceToolbarMediatorUnitTest {
     @Mock
     Drawable.ConstantState mMockConstantState;
     @Mock
-    Callback<IPHCommandBuilder> mMockCallback;
+    Callback<IPHCommandBuilder> mMockIdentityIPHCallback;
     @Mock
     Tab mMockIncognitoTab;
     @Mock
     MenuButtonCoordinator mMenuButtonCoordinator;
+    @Mock
+    UserEducationHelper mUserEducationHelper;
+    @Mock
+    View mHomeButtonView;
+    @Mock
+    Resources mResources;
+    @Mock
+    private Profile mProfile;
+    @Mock
+    Tracker mTracker;
     @Captor
     private ArgumentCaptor<LayoutStateProvider.LayoutStateObserver> mLayoutStateObserverCaptor;
     @Captor
@@ -109,6 +126,7 @@ public class StartSurfaceToolbarMediatorUnitTest {
     private ObservableSupplierImpl<Boolean> mIdentityDiscStateSupplier;
     private ObservableSupplierImpl<Boolean> mStartSurfaceAsHomepageSupplier;
     private ObservableSupplierImpl<Boolean> mHomepageEnabledSupplier;
+    private StartSurfaceHomeButtonIPHController mStartSurfaceHomeButtonIPHController;
 
     @Before
     public void setUp() {
@@ -128,6 +146,12 @@ public class StartSurfaceToolbarMediatorUnitTest {
         mStartSurfaceAsHomepageSupplier.set(true);
         mHomepageEnabledSupplier = new ObservableSupplierImpl<>();
         mHomepageEnabledSupplier.set(true);
+
+        Profile.setLastUsedProfileForTesting(mProfile);
+        when(mHomeButtonView.getResources()).thenReturn(mResources);
+        TrackerFactory.setTrackerForTests(mTracker);
+        mStartSurfaceHomeButtonIPHController =
+                new StartSurfaceHomeButtonIPHController(mUserEducationHelper, mHomeButtonView);
 
         doReturn(mButtonData)
                 .when(mIdentityDiscController)
@@ -424,7 +448,7 @@ public class StartSurfaceToolbarMediatorUnitTest {
         mMediator.updateIdentityDisc(mButtonData);
         assertTrue(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE));
 
-        verify(mMockCallback, times(1))
+        verify(mMockIdentityIPHCallback, times(1))
                 .onResult(mButtonData.getButtonSpec().getIPHCommandBuilder());
     }
 
@@ -681,6 +705,27 @@ public class StartSurfaceToolbarMediatorUnitTest {
     }
 
     @Test
+    public void testShowHomeButtonIPH() {
+        createMediator(false, true, false, false);
+
+        // Show tab switcher surface and the IPH should show.
+        assertFalse(mStartSurfaceHomeButtonIPHController.isShowingHomeButtonIPHForTesting());
+        mMediator.setStartSurfaceMode(true);
+        mLayoutStateObserverCaptor.getValue().onStartedShowing(LayoutType.TAB_SWITCHER, false);
+        mLayoutStateObserverCaptor.getValue().onFinishedShowing(LayoutType.TAB_SWITCHER);
+        mMediator.onStartSurfaceStateChanged(StartSurfaceState.SHOWN_TABSWITCHER, true);
+        assertTrue(mPropertyModel.get(HOME_BUTTON_IS_VISIBLE));
+        verify(mUserEducationHelper, times(1))
+                .requestShowIPH(mStartSurfaceHomeButtonIPHController.getIPHCommand());
+
+        // When the IPH is showing and the home button is clicked,
+        // START_SURFACE_TAB_SWITCHER_HOME_BUTTON_CLICKED event should be notified.
+        mStartSurfaceHomeButtonIPHController.setIsShowingIPHForTesting(true);
+        mPropertyModel.get(HOME_BUTTON_CLICK_HANDLER).onClick(mHomeButtonView);
+        verify(mTracker).notifyEvent(EventConstants.START_SURFACE_TAB_SWITCHER_HOME_BUTTON_CLICKED);
+    }
+
+    @Test
     public void testNewHomeSurface() {
         createMediator(false, true, true, false);
         mMediator.setTabModelSelector(mTabModelSelector);
@@ -752,7 +797,7 @@ public class StartSurfaceToolbarMediatorUnitTest {
     private void createMediator(boolean hideIncognitoSwitchWhenNoTabs,
             boolean showHomeButtonOnTabSwitcher, boolean shouldShowTabSwitcherButtonOnHomepage,
             boolean isTabGroupsAndroidContinuationEnabled) {
-        mMediator = new StartSurfaceToolbarMediator(mPropertyModel, mMockCallback,
+        mMediator = new StartSurfaceToolbarMediator(mPropertyModel, mMockIdentityIPHCallback,
                 hideIncognitoSwitchWhenNoTabs, showHomeButtonOnTabSwitcher, mMenuButtonCoordinator,
                 mIdentityDiscStateSupplier,
                 ()
@@ -760,9 +805,11 @@ public class StartSurfaceToolbarMediatorUnitTest {
                                 mMediator.getOverviewModeStateForTesting()),
                 mHomepageEnabledSupplier, mStartSurfaceAsHomepageSupplier,
                 new ObservableSupplierImpl<>(), null, shouldShowTabSwitcherButtonOnHomepage,
-                isTabGroupsAndroidContinuationEnabled);
+                isTabGroupsAndroidContinuationEnabled, mUserEducationHelper);
 
         mMediator.setLayoutStateProvider(mLayoutStateProvider);
+        mMediator.setStartSurfaceHomeButtonIPHControllerForTesting(
+                mStartSurfaceHomeButtonIPHController);
         verify(mLayoutStateProvider).addObserver(mLayoutStateObserverCaptor.capture());
     }
 }

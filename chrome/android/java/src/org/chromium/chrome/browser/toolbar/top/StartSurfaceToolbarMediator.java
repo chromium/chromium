@@ -52,6 +52,7 @@ import org.chromium.chrome.browser.toolbar.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.toolbar.TabCountProvider;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
+import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
@@ -60,11 +61,12 @@ import org.chromium.ui.modelutil.PropertyModel;
 /** The mediator implements interacts between the views and the caller. */
 class StartSurfaceToolbarMediator {
     private final PropertyModel mPropertyModel;
-    private final Callback<IPHCommandBuilder> mShowIPHCallback;
+    private final Callback<IPHCommandBuilder> mShowIdentityIPHCallback;
     private final boolean mHideIncognitoSwitchWhenNoTabs;
     private final boolean mShouldShowTabSwitcherButtonOnHomepage;
     private final Supplier<ButtonData> mIdentityDiscButtonSupplier;
     private final boolean mIsTabGroupsAndroidContinuationEnabled;
+    private final UserEducationHelper mUserEducationHelper;
 
     private TabModelSelector mTabModelSelector;
     private TabCountProvider mTabCountProvider;
@@ -83,8 +85,11 @@ class StartSurfaceToolbarMediator {
     private float mNonIncognitoHomepageTranslationY;
 
     private boolean mShowHomeButtonOnTabSwitcher;
+    private StartSurfaceHomeButtonIPHController mStartSurfaceHomeButtonIPHController;
+    private View mHomeButtonView;
 
-    StartSurfaceToolbarMediator(PropertyModel model, Callback<IPHCommandBuilder> showIPHCallback,
+    StartSurfaceToolbarMediator(PropertyModel model,
+            Callback<IPHCommandBuilder> showIdentityIPHCallback,
             boolean hideIncognitoSwitchWhenNoTabs, boolean showHomeButtonOnTabSwitcher,
             MenuButtonCoordinator menuButtonCoordinator,
             ObservableSupplier<Boolean> identityDiscStateSupplier,
@@ -93,14 +98,16 @@ class StartSurfaceToolbarMediator {
             ObservableSupplier<Boolean> startSurfaceAsHomepageSupplier,
             ObservableSupplier<Boolean> homepageManagedByPolicySupplier,
             OnClickListener homeButtonOnClickHandler, boolean shouldShowTabSwitcherButtonOnHomepage,
-            boolean isTabGroupsAndroidContinuationEnabled) {
+            boolean isTabGroupsAndroidContinuationEnabled,
+            UserEducationHelper userEducationHelper) {
         mPropertyModel = model;
         mOverviewModeState = StartSurfaceState.NOT_SHOWN;
-        mShowIPHCallback = showIPHCallback;
+        mShowIdentityIPHCallback = showIdentityIPHCallback;
         mHideIncognitoSwitchWhenNoTabs = hideIncognitoSwitchWhenNoTabs;
         mMenuButtonCoordinator = menuButtonCoordinator;
         mIdentityDiscButtonSupplier = identityDiscButtonSupplier;
         mIsTabGroupsAndroidContinuationEnabled = isTabGroupsAndroidContinuationEnabled;
+        mUserEducationHelper = userEducationHelper;
         identityDiscStateSupplier.addObserver((canShowHint) -> {
             // If the identity disc wants to be hidden and is hidden, there's nothing we need to do.
             if (!canShowHint && !mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE)) return;
@@ -116,7 +123,16 @@ class StartSurfaceToolbarMediator {
             }));
             mPropertyModel.set(
                     HOMEPAGE_MANAGED_BY_POLICY_SUPPLIER, homepageManagedByPolicySupplier);
-            mPropertyModel.set(HOME_BUTTON_CLICK_HANDLER, homeButtonOnClickHandler);
+
+            View.OnClickListener homeButtonOnClickListener = v -> {
+                if (homeButtonOnClickHandler != null) homeButtonOnClickHandler.onClick(v);
+
+                if (mStartSurfaceHomeButtonIPHController != null) {
+                    mStartSurfaceHomeButtonIPHController.onHomeButtonClicked();
+                }
+            };
+
+            mPropertyModel.set(HOME_BUTTON_CLICK_HANDLER, homeButtonOnClickListener);
             startSurfaceAsHomepageSupplier.addObserver(
                     mCallbackController.makeCancelable((showStartSurfaceAsHomepage) -> {
                         mShouldShowStartSurfaceAsHomepage = showStartSurfaceAsHomepage;
@@ -356,6 +372,10 @@ class StartSurfaceToolbarMediator {
         mPropertyModel.set(NEW_TAB_BUTTON_HIGHLIGHT, highlight);
     }
 
+    void setHomeButtonView(View homeButtonView) {
+        mHomeButtonView = homeButtonView;
+    }
+
     private void updateLogoVisibility(boolean isGoogleSearchEngine) {
         mIsGoogleSearchEngine = isGoogleSearchEngine;
         boolean shouldShowLogo =
@@ -375,7 +395,7 @@ class StartSurfaceToolbarMediator {
                     IDENTITY_DISC_IMAGE, buttonSpec.getDrawable().getConstantState().newDrawable());
             mPropertyModel.set(IDENTITY_DISC_DESCRIPTION, buttonSpec.getContentDescriptionResId());
             mPropertyModel.set(IDENTITY_DISC_IS_VISIBLE, true);
-            mShowIPHCallback.onResult(buttonSpec.getIPHCommandBuilder());
+            mShowIdentityIPHCallback.onResult(buttonSpec.getIPHCommandBuilder());
         } else {
             mPropertyModel.set(IDENTITY_DISC_IS_VISIBLE, false);
         }
@@ -394,11 +414,21 @@ class StartSurfaceToolbarMediator {
 
     private void updateHomeButtonVisibility() {
         boolean isShownTabSwitcherState = mOverviewModeState == StartSurfaceState.SHOWN_TABSWITCHER;
+        boolean shouldShow = mHomepageEnabled && isShownTabSwitcherState
+                && !mPropertyModel.get(IS_INCOGNITO) && mShowHomeButtonOnTabSwitcher
+                && mShouldShowStartSurfaceAsHomepage;
         // If start surface is not shown as the homepage, home button shouldn't be shown on tab
         // switcher page.
-        mPropertyModel.set(HOME_BUTTON_IS_VISIBLE,
-                mHomepageEnabled && isShownTabSwitcherState && !mPropertyModel.get(IS_INCOGNITO)
-                        && mShowHomeButtonOnTabSwitcher && mShouldShowStartSurfaceAsHomepage);
+        mPropertyModel.set(HOME_BUTTON_IS_VISIBLE, shouldShow);
+
+        // If the home button is shown, maybe show the IPH.
+        if (shouldShow) {
+            if (mStartSurfaceHomeButtonIPHController == null) {
+                mStartSurfaceHomeButtonIPHController = new StartSurfaceHomeButtonIPHController(
+                        mUserEducationHelper, mHomeButtonView);
+            }
+            mStartSurfaceHomeButtonIPHController.maybeShowIPH();
+        }
     }
 
     private void updateTabSwitcherButtonVisibility() {
@@ -432,5 +462,11 @@ class StartSurfaceToolbarMediator {
     @VisibleForTesting
     void setShowHomeButtonOnTabSwitcherForTesting(boolean showHomeButtonOnTabSwitcher) {
         mShowHomeButtonOnTabSwitcher = showHomeButtonOnTabSwitcher;
+    }
+
+    @VisibleForTesting
+    void setStartSurfaceHomeButtonIPHControllerForTesting(
+            StartSurfaceHomeButtonIPHController startSurfaceHomeButtonIPHController) {
+        mStartSurfaceHomeButtonIPHController = startSurfaceHomeButtonIPHController;
     }
 }

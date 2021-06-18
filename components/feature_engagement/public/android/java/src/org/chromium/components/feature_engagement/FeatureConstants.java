@@ -55,7 +55,8 @@ import java.lang.annotation.RetentionPolicy;
         FeatureConstants.PWA_INSTALL_AVAILABLE_FEATURE, FeatureConstants.PAGE_INFO_FEATURE,
         FeatureConstants.IPH_SHARE_SCREENSHOT_FEATURE, FeatureConstants.IPH_WEB_FEED_FOLLOW_FEATURE,
         FeatureConstants.IPH_WEB_FEED_POST_FOLLOW_DIALOG_FEATURE,
-        FeatureConstants.SHARED_HIGHLIGHTING_BUILDER_FEATURE})
+        FeatureConstants.SHARED_HIGHLIGHTING_BUILDER_FEATURE,
+        FeatureConstants.START_SURFACE_TAB_SWITCHER_HOME_BUTTON_FEATURE})
 @Retention(RetentionPolicy.SOURCE)
 public @interface FeatureConstants {
     String ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_NEW_TAB_FEATURE =
@@ -273,4 +274,10 @@ public @interface FeatureConstants {
      * An IPH feature to inform users about the link-to-text on selection share.
      */
     String SHARED_HIGHLIGHTING_BUILDER_FEATURE = "IPH_SharedHighlightingBuilder";
+
+    /**
+     * An IPH feature to prompt users to click home button on the tab switcher surface when start
+     * surface is enabled.
+     */
+    String START_SURFACE_TAB_SWITCHER_HOME_BUTTON_FEATURE = "IPH_StartSurfaceTabSwitcherHomeButton";
 }

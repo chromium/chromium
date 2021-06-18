@@ -107,6 +107,7 @@ extern const base::Feature kIPHShareScreenshotFeature;
 extern const base::Feature kIPHWebFeedFollowFeature;
 extern const base::Feature kIPHWebFeedPostFollowDialogFeature;
 extern const base::Feature kIPHSharedHighlightingBuilder;
+extern const base::Feature kIPHStartSurfaceTabSwitcherHomeButton;
 #endif  // defined(OS_ANDROID)
 
 #if defined(OS_IOS)

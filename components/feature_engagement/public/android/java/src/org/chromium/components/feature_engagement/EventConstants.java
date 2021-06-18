@@ -253,6 +253,10 @@ public final class EventConstants {
     /** WebFeed events. */
     public static final String WEB_FEED_FOLLOW_INTRO_CLICKED = "web_feed_follow_intro_clicked";
 
+    /** Tab switcher home button events. */
+    public static final String START_SURFACE_TAB_SWITCHER_HOME_BUTTON_CLICKED =
+            "start_surface_tab_switcher_home_button_clicked";
+
     /**
      * Do not instantiate.
      */

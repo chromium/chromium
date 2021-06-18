@@ -8299,6 +8299,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="IPH_SharedHighlightingBuilder"
       label="The in product help message to notify the user that the share
              action can preemptively share a link-to-text."/>
+  <suffix name="IPH_StartSurfaceTabSwitcherHomeButton"
+      label="In product help for home button on the tab switcher when start
+             surface is enabled."/>
   <suffix name="IPH_TabGroupsDragAndDrop"
       label="In product help for educating user to drop one tab on another
              tab to create group."/>

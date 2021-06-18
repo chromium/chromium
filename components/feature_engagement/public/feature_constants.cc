@@ -180,6 +180,8 @@ const base::Feature kIPHWebFeedPostFollowDialogFeature{
     "IPH_WebFeedPostFollowDialog", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kIPHSharedHighlightingBuilder{
     "IPH_SharedHighlightingBuilder", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kIPHStartSurfaceTabSwitcherHomeButton{
+    "IPH_StartSurfaceTabSwitcherHomeButton", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif  // defined(OS_ANDROID)
 
 #if defined(OS_IOS)
