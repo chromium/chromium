@@ -106,9 +106,12 @@ void MediaQueryMatcher::MediaFeaturesChanged() {
   if (!document_)
     return;
 
-  // Make sure the favicon is updated when media features have changed.
-  if (document_->GetFrame())
+  // Update favicon and theme color when a media query value has changed.
+  if (document_->GetFrame()) {
     document_->GetFrame()->UpdateFaviconURL();
+    document_->GetFrame()->DidChangeThemeColor(
+        /*update_theme_color_cache=*/false);
+  }
 
   HeapVector<Member<MediaQueryListListener>> listeners_to_notify;
   for (const auto& list : media_lists_) {

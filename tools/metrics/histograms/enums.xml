@@ -32978,6 +32978,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3941" label="WindowOpenNewPopupBehaviorMismatch"/>
   <int value="3942" label="ExplicitPointerCaptureClickTargetDiff"/>
   <int value="3943" label="ControlledNonBlobURLWorkerWillBeUncontrolled"/>
+  <int value="3944" label="MediaMetaThemeColor"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

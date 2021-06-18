@@ -110,8 +110,8 @@ WebString WebDocument::GetReferrer() const {
   return ConstUnwrap<Document>()->referrer();
 }
 
-absl::optional<SkColor> WebDocument::ThemeColor() const {
-  absl::optional<Color> color = ConstUnwrap<Document>()->ThemeColor();
+absl::optional<SkColor> WebDocument::ThemeColor() {
+  absl::optional<Color> color = Unwrap<Document>()->ThemeColor();
   if (color)
     return color->Rgb();
   return absl::nullopt;

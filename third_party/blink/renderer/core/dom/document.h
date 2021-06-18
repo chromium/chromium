@@ -152,6 +152,7 @@ class HTMLElement;
 class HTMLFrameOwnerElement;
 class HTMLHeadElement;
 class HTMLLinkElement;
+class HTMLMetaElement;
 class HTMLPopupElement;
 class HasMatchedCacheScope;
 class HitTestRequest;
@@ -1194,7 +1195,8 @@ class CORE_EXPORT Document : public ContainerNode,
 
   Vector<IconURL> IconURLs(int icon_types_mask);
 
-  absl::optional<Color> ThemeColor() const;
+  void UpdateThemeColorCache();
+  absl::optional<Color> ThemeColor();
 
   // Returns the HTMLLinkElement currently in use for the Web Manifest.
   // Returns null if there is no such element.
@@ -2290,6 +2292,10 @@ class CORE_EXPORT Document : public ContainerNode,
   WeakMember<Node> find_in_page_active_match_node_;
 
   Member<DocumentData> data_;
+
+  // List of meta[name=theme-color] elements cached used when getting theme
+  // color.
+  HeapVector<Member<HTMLMetaElement>> meta_theme_color_elements_;
 
   // If you want to add new data members to blink::Document, please reconsider
   // if the members really should be in blink::Document.  document.h is a very

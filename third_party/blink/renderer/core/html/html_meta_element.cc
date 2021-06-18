@@ -483,7 +483,8 @@ void HTMLMetaElement::NameRemoved(const AtomicString& name_value) {
     return;
   if (EqualIgnoringASCIICase(name_value, "theme-color") &&
       GetDocument().GetFrame()) {
-    GetDocument().GetFrame()->DidChangeThemeColor();
+    GetDocument().GetFrame()->DidChangeThemeColor(
+        /*update_theme_color_cache=*/true);
   } else if (EqualIgnoringASCIICase(name_value, "color-scheme")) {
     GetDocument().ColorSchemeMetaChanged();
   } else if (EqualIgnoringASCIICase(name_value, "battery-savings")) {
@@ -502,6 +503,8 @@ void HTMLMetaElement::ParseAttribute(
     ProcessHttpEquiv();
   } else if (params.name == html_names::kHttpEquivAttr) {
     ProcessHttpEquiv();
+  } else if (params.name == html_names::kMediaAttr) {
+    ProcessContent();
   } else {
     HTMLElement::ParseAttribute(params);
   }
@@ -562,7 +565,8 @@ void HTMLMetaElement::ProcessContent() {
 
   if (EqualIgnoringASCIICase(name_value, "theme-color") &&
       GetDocument().GetFrame()) {
-    GetDocument().GetFrame()->DidChangeThemeColor();
+    GetDocument().GetFrame()->DidChangeThemeColor(
+        /*update_theme_color_cache=*/true);
     return;
   }
   if (EqualIgnoringASCIICase(name_value, "color-scheme")) {
@@ -625,6 +629,10 @@ const AtomicString& HTMLMetaElement::Content() const {
 
 const AtomicString& HTMLMetaElement::HttpEquiv() const {
   return FastGetAttribute(html_names::kHttpEquivAttr);
+}
+
+const AtomicString& HTMLMetaElement::Media() const {
+  return FastGetAttribute(html_names::kMediaAttr);
 }
 
 const AtomicString& HTMLMetaElement::GetName() const {

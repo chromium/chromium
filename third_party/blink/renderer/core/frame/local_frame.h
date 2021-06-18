@@ -218,7 +218,7 @@ class CORE_EXPORT LocalFrame final
   // false otherwise.
   bool CanContinueBufferingWhileInBackForwardCache();
 
-  void DidChangeThemeColor();
+  void DidChangeThemeColor(bool update_theme_color_cache);
   void DidChangeBackgroundColor(SkColor background_color, bool color_adjust);
 
   // Returns false if detaching child frames reentrantly detached `this`.

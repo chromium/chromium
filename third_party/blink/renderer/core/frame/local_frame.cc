@@ -1263,9 +1263,12 @@ void LocalFrame::DidFocus() {
   GetLocalFrameHostRemote().DidFocusFrame();
 }
 
-void LocalFrame::DidChangeThemeColor() {
+void LocalFrame::DidChangeThemeColor(bool update_theme_color_cache) {
   if (Tree().Parent())
     return;
+
+  if (update_theme_color_cache)
+    GetDocument()->UpdateThemeColorCache();
 
   absl::optional<Color> color = GetDocument()->ThemeColor();
   absl::optional<SkColor> sk_color;
