@@ -6,49 +6,63 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/icons.m.js';
 import './profile_picker_shared_css.js';
 
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ManageProfilesBrowserProxy, ManageProfilesBrowserProxyImpl, ProfileState} from './manage_profiles_browser_proxy.js';
 
-Polymer({
-  is: 'profile-switch',
+/** @polymer */
+export class ProfileSwitchElement extends PolymerElement {
+  static get is() {
+    return 'profile-switch';
+  }
 
-  _template: html`{__html_template__}`,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /** @type {ProfileState} */
-    profileState_: {
-      type: Object,
-    },
+  static get properties() {
+    return {
+      /** @type {ProfileState} */
+      profileState_: {
+        type: Object,
+      },
 
-    /** @type {boolean} */
-    isProfileStateInitialized_: {
-      type: Boolean,
-      value: false,
-    },
-  },
+      /** @type {boolean} */
+      isProfileStateInitialized_: {
+        type: Boolean,
+        value: false,
+      },
+    };
+  }
 
-  /** @private {?ManageProfilesBrowserProxy} */
-  manageProfilesBrowserProxy_: null,
+  constructor() {
+    super();
+
+    /** @private {?ManageProfilesBrowserProxy} */
+    this.manageProfilesBrowserProxy_ = null;
+  }
 
   /** @override */
   ready() {
+    super.ready();
     this.manageProfilesBrowserProxy_ =
         ManageProfilesBrowserProxyImpl.getInstance();
     this.manageProfilesBrowserProxy_.getSwitchProfile().then(profileState => {
       this.profileState_ = profileState;
       this.isProfileStateInitialized_ = true;
     });
-  },
+  }
 
   /** @private */
   onCancelClick_() {
     this.manageProfilesBrowserProxy_.cancelProfileSwitch();
-  },
+  }
 
   /** @private */
   onSwitchClick_() {
     this.manageProfilesBrowserProxy_.confirmProfileSwitch(
         this.profileState_.profilePath);
-  },
-});
+  }
+}
+
+customElements.define(ProfileSwitchElement.is, ProfileSwitchElement);

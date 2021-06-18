@@ -11,10 +11,10 @@ import './profile_picker_shared_css.js';
 import './icons.js';
 
 import {assertNotReached} from 'chrome://resources/js/assert.m.js';
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ManageProfilesBrowserProxy, ManageProfilesBrowserProxyImpl, ProfileState} from './manage_profiles_browser_proxy.js';
 
@@ -49,68 +49,86 @@ const ProfileStatistics = {
   AUTOFILL: 'Autofill',
 };
 
-Polymer({
-  is: 'profile-card-menu',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ * @implements {WebUIListenerBehaviorInterface}
+ */
+const ProfileCardMenuElementBase =
+    mixinBehaviors([I18nBehavior, WebUIListenerBehavior], PolymerElement);
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+export class ProfileCardMenuElement extends ProfileCardMenuElementBase {
+  static get is() {
+    return 'profile-card-menu';
+  }
 
-  behaviors: [I18nBehavior, WebUIListenerBehavior],
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /**  @type {!ProfileState} */
-    profileState: {
-      type: Object,
-    },
+  static get properties() {
+    return {
+      /**  @type {!ProfileState} */
+      profileState: Object,
 
-    /**
-     * Results of profile statistics, keyed by the suffix of the corresponding
-     * data type, as reported by the C++ side.
-     * @private {!Object<number>}
-     */
-    statistics_: {
-      type: Object,
-      // Will be filled as results are reported.
-      value() {
-        return {};
-      }
-    },
+      /**
+       * Results of profile statistics, keyed by the suffix of the corresponding
+       * data type, as reported by the C++ side.
+       * @private {!Object<number>}
+       */
+      statistics_: {
+        type: Object,
+        // Will be filled as results are reported.
+        value() {
+          return {};
+        }
+      },
 
-    /**
-     * List of selected data types.
-     * @private {!Array<string>}
-     */
-    profileStatistics_: {
-      type: Object,
-      value: [
-        ProfileStatistics.BROWSING_HISTORY, ProfileStatistics.PASSWORDS,
-        ProfileStatistics.BOOKMARKS, ProfileStatistics.AUTOFILL
-      ],
-    },
+      /**
+       * List of selected data types.
+       * @private {!Array<string>}
+       */
+      profileStatistics_: {
+        type: Object,
+        value: [
+          ProfileStatistics.BROWSING_HISTORY, ProfileStatistics.PASSWORDS,
+          ProfileStatistics.BOOKMARKS, ProfileStatistics.AUTOFILL
+        ],
+      },
 
-    /** @private */
-    removeWarningText_: {
-      type: String,
-      computed: 'computeRemoveWarningText_(profileState)',
-    },
+      /** @private */
+      removeWarningText_: {
+        type: String,
+        computed: 'computeRemoveWarningText_(profileState)',
+      },
 
-    /** @private */
-    removeWarningTitle_: {
-      type: String,
-      computed: 'computeRemoveWarningTitle_(profileState)',
-    },
-  },
+      /** @private */
+      removeWarningTitle_: {
+        type: String,
+        computed: 'computeRemoveWarningTitle_(profileState)',
+      },
+    };
+  }
 
-  /** @private {ManageProfilesBrowserProxy} */
-  manageProfilesBrowserProxy_: null,
+  constructor() {
+    super();
+
+    /** @private {ManageProfilesBrowserProxy} */
+    this.manageProfilesBrowserProxy_ = null;
+  }
 
   /** @override */
   ready() {
+    super.ready();
     this.manageProfilesBrowserProxy_ =
         ManageProfilesBrowserProxyImpl.getInstance();
-  },
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
     this.addWebUIListener(
         'profiles-list-changed', () => this.handleProfilesUpdated_());
     this.addWebUIListener(
@@ -118,7 +136,7 @@ Polymer({
     this.addWebUIListener(
         'profile-statistics-received',
         this.handleProfileStatsReceived_.bind(this));
-  },
+  }
 
   /**
    * @return {string}
@@ -128,7 +146,7 @@ Polymer({
     return this.i18n(
         this.profileState.isSyncing ? 'removeWarningSignedInProfile' :
                                       'removeWarningLocalProfile');
-  },
+  }
 
   /**
    * @return {string}
@@ -138,7 +156,7 @@ Polymer({
     return this.i18n(
         this.profileState.isSyncing ? 'removeWarningSignedInProfileTitle' :
                                       'removeWarningLocalProfileTitle');
-  },
+  }
 
   /**
    * @param {!Event} e
@@ -150,7 +168,7 @@ Polymer({
     this.$.actionMenu.showAt(this.$.moreActionsButton);
     chrome.metricsPrivate.recordUserAction(
         'ProfilePicker_ThreeDottedMenuClicked');
-  },
+  }
 
   /**
    * @param {!Event} e
@@ -159,13 +177,12 @@ Polymer({
   onRemoveButtonClicked_(e) {
     e.stopPropagation();
     e.preventDefault();
-    this.dataCounters_ = {};
     this.manageProfilesBrowserProxy_.getProfileStatistics(
         this.profileState.profilePath);
     this.$.actionMenu.close();
     this.$.removeConfirmationDialog.showModal();
     chrome.metricsPrivate.recordUserAction('ProfilePicker_RemoveOptionClicked');
-  },
+  }
 
   /**
    * @param {!StatisticsResult} result
@@ -176,7 +193,7 @@ Polymer({
       return;
     }
     this.statistics_ = result.statistics;
-  },
+  }
 
   /**
    * @param {ProfileStatistics} dataType
@@ -196,7 +213,7 @@ Polymer({
       default:
         assertNotReached();
     }
-  },
+  }
 
   /**
    * @param {string} dataType
@@ -207,7 +224,7 @@ Polymer({
     const count = this.statistics_[dataType];
     return (count === undefined) ? this.i18n('removeWarningCalculating') :
                                    count.toString();
-  },
+  }
 
   /**
    * @param {!Event} e
@@ -218,7 +235,7 @@ Polymer({
     e.preventDefault();
     this.manageProfilesBrowserProxy_.removeProfile(
         this.profileState.profilePath);
-  },
+  }
 
   /**
    * @param {!Event} e
@@ -226,7 +243,7 @@ Polymer({
    */
   onRemoveCancelClicked_(e) {
     this.$.removeConfirmationDialog.cancel();
-  },
+  }
 
   /**
    * Ensure any menu is closed on profile list updated.
@@ -234,7 +251,7 @@ Polymer({
    */
   handleProfilesUpdated_() {
     this.$.actionMenu.close();
-  },
+  }
 
   /**
    * Closes the remove confirmation dialog when the profile is removed.
@@ -246,12 +263,14 @@ Polymer({
     if (this.profileState.profilePath === profilePath) {
       this.$.removeConfirmationDialog.close();
     }
-  },
+  }
 
   /** @private */
   onCustomizeButtonClicked_() {
     this.manageProfilesBrowserProxy_.openManageProfileSettingsSubPage(
         this.profileState.profilePath);
     this.$.actionMenu.close();
-  },
-});
+  }
+}
+
+customElements.define(ProfileCardMenuElement.is, ProfileCardMenuElement);

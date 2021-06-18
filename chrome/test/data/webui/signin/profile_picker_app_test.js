@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ensureLazyLoaded, ManageProfilesBrowserProxyImpl, navigateTo, Routes} from 'chrome://profile-picker/profile_picker.js';
+import {LocalProfileCustomizationElement, ProfileTypeChoiceElement} from 'chrome://profile-picker/lazy_load.js';
+import {ensureLazyLoaded, ManageProfilesBrowserProxyImpl, navigateTo, ProfilePickerAppElement, ProfilePickerMainViewElement, Routes} from 'chrome://profile-picker/profile_picker.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -50,20 +51,21 @@ suite('ProfilePickerAppTest', function() {
   /** @param {!HTMLElement} element */
   function verifyProfileCreationViewStyle(element) {
     assertEquals(
-        getComputedStyle(element.$$('#headerContainer'))
+        getComputedStyle(element.shadowRoot.querySelector('#headerContainer'))
             .getPropertyValue('--theme-frame-color')
             .trim(),
         browserProxy.profileThemeInfo.themeFrameColor);
     assertEquals(
-        getComputedStyle(element.$$('#headerContainer'))
+        getComputedStyle(element.shadowRoot.querySelector('#headerContainer'))
             .getPropertyValue('--theme-text-color')
             .trim(),
         browserProxy.profileThemeInfo.themeFrameTextColor);
     assertEquals(
-        getComputedStyle(element.$$('#headerContainer')).backgroundColor,
+        getComputedStyle(element.shadowRoot.querySelector('#headerContainer'))
+            .backgroundColor,
         browserProxy.profileThemeInfo.themeFrameColor);
     assertEquals(
-        getComputedStyle(element.$$('#backButton'))
+        getComputedStyle(element.shadowRoot.querySelector('#backButton'))
             .getPropertyValue('--cr-icon-button-fill-color')
             .trim(),
         browserProxy.profileThemeInfo.themeFrameTextColor);
@@ -73,22 +75,25 @@ suite('ProfilePickerAppTest', function() {
     assertEquals(
         testElement.shadowRoot.querySelectorAll('[slot=view]').length, 1);
     const mainView = /** @type {!ProfilePickerMainViewElement} */ (
-        testElement.$$('profile-picker-main-view'));
+        testElement.shadowRoot.querySelector('profile-picker-main-view'));
     await whenCheck(mainView, () => mainView.classList.contains('active'));
     await browserProxy.whenCalled('initializeMainView');
-    assertTrue(mainView.$$('#wrapper').hidden);
+    assertTrue(mainView.shadowRoot.querySelector('#wrapper').hidden);
 
     webUIListenerCallback(
         'profiles-list-changed', [browserProxy.profileSample]);
     flushTasks();
     assertEquals(
-        mainView.$$('#wrapper').querySelectorAll('profile-card').length, 1);
-    mainView.$$('#addProfile').click();
+        mainView.shadowRoot.querySelector('#wrapper')
+            .querySelectorAll('profile-card')
+            .length,
+        1);
+    mainView.shadowRoot.querySelector('#addProfile').click();
     await waitForProfileCretionLoad();
     assertEquals(
         testElement.shadowRoot.querySelectorAll('[slot=view]').length, 2);
     const choice = /** @type {!ProfileTypeChoiceElement} */ (
-        testElement.$$('profile-type-choice'));
+        testElement.shadowRoot.querySelector('profile-type-choice'));
     assertTrue(!!choice);
     await whenCheck(choice, () => choice.classList.contains('active'));
     verifyProfileCreationViewStyle(choice);
@@ -98,12 +103,12 @@ suite('ProfilePickerAppTest', function() {
     await resetTestElement(Routes.NEW_PROFILE);
     await waitForProfileCretionLoad();
     const choice = /** @type {!ProfileTypeChoiceElement} */ (
-        testElement.$$('profile-type-choice'));
+        testElement.shadowRoot.querySelector('profile-type-choice'));
     assertTrue(!!choice);
-    choice.$$('#signInButton').click();
-    assertTrue(choice.$$('#signInButton').disabled);
-    assertTrue(choice.$$('#notNowButton').disabled);
-    assertTrue(choice.$$('#backButton').disabled);
+    choice.shadowRoot.querySelector('#signInButton').click();
+    assertTrue(choice.shadowRoot.querySelector('#signInButton').disabled);
+    assertTrue(choice.shadowRoot.querySelector('#notNowButton').disabled);
+    assertTrue(choice.shadowRoot.querySelector('#backButton').disabled);
     return browserProxy.whenCalled('loadSignInProfileCreationFlow');
   });
 
@@ -111,15 +116,16 @@ suite('ProfilePickerAppTest', function() {
     await resetTestElement(Routes.NEW_PROFILE);
     await waitForProfileCretionLoad();
     const choice = /** @type {!ProfileTypeChoiceElement} */ (
-        testElement.$$('profile-type-choice'));
+        testElement.shadowRoot.querySelector('profile-type-choice'));
     assertTrue(!!choice);
     await whenCheck(choice, () => choice.classList.contains('active'));
     verifyProfileCreationViewStyle(choice);
-    choice.$$('#notNowButton').click();
+    choice.shadowRoot.querySelector('#notNowButton').click();
     await waitBeforeNextRender(testElement);
     const customization =
         /** @type {!LocalProfileCustomizationElement} */ (
-            testElement.$$('local-profile-customization'));
+            testElement.shadowRoot.querySelector(
+                'local-profile-customization'));
     assertTrue(!!customization);
     await whenCheck(
         customization, () => customization.classList.contains('active'));
@@ -128,7 +134,7 @@ suite('ProfilePickerAppTest', function() {
     // Test color changes from the local profile customization is reflected in
     // the profile type choice.
     browserProxy.resetResolver('getProfileThemeInfo');
-    const colorPicker = customization.$$('#colorPicker');
+    const colorPicker = customization.shadowRoot.querySelector('#colorPicker');
     assertTrue(!!colorPicker);
     assertTrue(!!colorPicker.selectedTheme);
     browserProxy.setProfileThemeInfo({
@@ -148,7 +154,7 @@ suite('ProfilePickerAppTest', function() {
     };
     await browserProxy.whenCalled('getProfileThemeInfo');
     verifyProfileCreationViewStyle(customization);
-    customization.$$('#backButton').click();
+    customization.shadowRoot.querySelector('#backButton').click();
     await whenCheck(choice, () => choice.classList.contains('active'));
     verifyProfileCreationViewStyle(choice);
   });
@@ -161,7 +167,7 @@ suite('ProfilePickerAppTest', function() {
     assertEquals(
         testElement.shadowRoot.querySelectorAll('[slot=view]').length, 1);
     const mainView = /** @type {!ProfilePickerMainViewElement} */ (
-        testElement.$$('profile-picker-main-view'));
+        testElement.shadowRoot.querySelector('profile-picker-main-view'));
     await whenCheck(mainView, () => mainView.classList.contains('active'));
   });
 
@@ -174,7 +180,7 @@ suite('ProfilePickerAppTest', function() {
     assertEquals(
         testElement.shadowRoot.querySelectorAll('[slot=view]').length, 1);
     const mainView = /** @type {!ProfilePickerMainViewElement} */ (
-        testElement.$$('profile-picker-main-view'));
+        testElement.shadowRoot.querySelector('profile-picker-main-view'));
     await whenCheck(mainView, () => mainView.classList.contains('active'));
     await browserProxy.whenCalled('loadSignInProfileCreationFlow');
   });

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://profile-picker/lazy_load.js';
+import {ProfileSwitchElement} from 'chrome://profile-picker/lazy_load.js';
 
 import {ManageProfilesBrowserProxyImpl, ProfileState} from 'chrome://profile-picker/profile_picker.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
@@ -36,18 +36,27 @@ suite('ProfileSwitchTest', function() {
   });
 
   test('getSwitchProfile', async function() {
-    assertTrue(profileSwitchElement.$$('#switchButton').disabled);
+    assertTrue(profileSwitchElement.shadowRoot.querySelector('#switchButton')
+                   .disabled);
 
     getSwitchProfilePromiseResolver.resolve(browserProxy.profileSample);
     await browserProxy.whenCalled('getSwitchProfile');
 
-    assertFalse(profileSwitchElement.$$('#switchButton').disabled);
+    assertFalse(profileSwitchElement.shadowRoot.querySelector('#switchButton')
+                    .disabled);
     assertEquals(
-        profileSwitchElement.$$('img.profile-avatar').src.split('/').pop(),
+        profileSwitchElement.shadowRoot.querySelector('img.profile-avatar')
+            .src.split('/')
+            .pop(),
         'url');
-    assertEquals(profileSwitchElement.$$('#profileName').innerText, 'Work');
-    assertEquals(profileSwitchElement.$$('#gaiaName').innerText, 'Alice');
-    assertTrue(profileSwitchElement.$$('#iconContainer').hidden);
+    assertEquals(
+        profileSwitchElement.shadowRoot.querySelector('#profileName').innerText,
+        'Work');
+    assertEquals(
+        profileSwitchElement.shadowRoot.querySelector('#gaiaName').innerText,
+        'Alice');
+    assertTrue(
+        profileSwitchElement.shadowRoot.querySelector('#iconContainer').hidden);
   });
 
   test('getSwitchProfile_managed', async function() {
@@ -58,22 +67,25 @@ suite('ProfileSwitchTest', function() {
     getSwitchProfilePromiseResolver.resolve(profileState);
     await browserProxy.whenCalled('getSwitchProfile');
 
-    assertFalse(profileSwitchElement.$$('#iconContainer').hidden);
+    assertFalse(
+        profileSwitchElement.shadowRoot.querySelector('#iconContainer').hidden);
   });
 
   test('confirmSwitch', async function() {
     getSwitchProfilePromiseResolver.resolve(browserProxy.profileSample);
     await browserProxy.whenCalled('getSwitchProfile');
 
-    assertFalse(profileSwitchElement.$$('#switchButton').disabled);
-    profileSwitchElement.$$('#switchButton').click();
+    assertFalse(profileSwitchElement.shadowRoot.querySelector('#switchButton')
+                    .disabled);
+    profileSwitchElement.shadowRoot.querySelector('#switchButton').click();
     const [profilePath] = await browserProxy.whenCalled('confirmProfileSwitch');
     assertEquals(profilePath, 'profile1');
   });
 
   test('cancelSwitch_beforeGetSwitchProfile', async function() {
-    assertFalse(profileSwitchElement.$$('#cancelButton').disabled);
-    profileSwitchElement.$$('#cancelButton').click();
+    assertFalse(profileSwitchElement.shadowRoot.querySelector('#cancelButton')
+                    .disabled);
+    profileSwitchElement.shadowRoot.querySelector('#cancelButton').click();
     await browserProxy.whenCalled('cancelProfileSwitch');
   });
 
@@ -81,8 +93,9 @@ suite('ProfileSwitchTest', function() {
     getSwitchProfilePromiseResolver.resolve(browserProxy.profileSample);
     await browserProxy.whenCalled('getSwitchProfile');
 
-    assertFalse(profileSwitchElement.$$('#cancelButton').disabled);
-    profileSwitchElement.$$('#cancelButton').click();
+    assertFalse(profileSwitchElement.shadowRoot.querySelector('#cancelButton')
+                    .disabled);
+    profileSwitchElement.shadowRoot.querySelector('#cancelButton').click();
     await browserProxy.whenCalled('cancelProfileSwitch');
   });
 });

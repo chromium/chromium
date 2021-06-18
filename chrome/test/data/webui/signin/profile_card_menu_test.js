@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ManageProfilesBrowserProxyImpl, ProfileState, Statistics, StatisticsResult} from 'chrome://profile-picker/profile_picker.js';
+import {ManageProfilesBrowserProxyImpl, ProfileCardMenuElement, ProfileState, Statistics, StatisticsResult} from 'chrome://profile-picker/profile_picker.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../chai_assert.js';
@@ -50,11 +50,18 @@ suite('ProfileCardMenuTest', function() {
 
   // Checks basic layout of the action menu.
   test('ProfileCardMenuActionMenu', async function() {
-    assertFalse(profileCardMenuElement.$$('#actionMenu').open);
-    assertFalse(profileCardMenuElement.$$('#removeConfirmationDialog').open);
-    profileCardMenuElement.$$('#moreActionsButton').click();
-    assertTrue(profileCardMenuElement.$$('#actionMenu').open);
-    assertFalse(profileCardMenuElement.$$('#removeConfirmationDialog').open);
+    assertFalse(
+        profileCardMenuElement.shadowRoot.querySelector('#actionMenu').open);
+    assertFalse(profileCardMenuElement.shadowRoot
+                    .querySelector('#removeConfirmationDialog')
+                    .open);
+    profileCardMenuElement.shadowRoot.querySelector('#moreActionsButton')
+        .click();
+    assertTrue(
+        profileCardMenuElement.shadowRoot.querySelector('#actionMenu').open);
+    assertFalse(profileCardMenuElement.shadowRoot
+                    .querySelector('#removeConfirmationDialog')
+                    .open);
     const menuButtons = profileCardMenuElement.shadowRoot.querySelectorAll(
         '#actionMenu > .dropdown-item');
     assertEquals(menuButtons.length, 2);
@@ -63,29 +70,39 @@ suite('ProfileCardMenuTest', function() {
   // Click on the customize profile menu item calls native to open the profile
   // settings page.
   test('ProfileCardMenuCustomizeButton', async function() {
-    profileCardMenuElement.$$('#moreActionsButton').click();
-    const menuButtons = profileCardMenuElement.$$('#actionMenu')
-                            .querySelectorAll('.dropdown-item');
+    profileCardMenuElement.shadowRoot.querySelector('#moreActionsButton')
+        .click();
+    const menuButtons =
+        profileCardMenuElement.shadowRoot.querySelector('#actionMenu')
+            .querySelectorAll('.dropdown-item');
     menuButtons[menuButtonIndex.CUSTOMIZE].click();
     await browserProxy.whenCalled('openManageProfileSettingsSubPage');
-    assertFalse(profileCardMenuElement.$$('#actionMenu').open);
-    assertFalse(profileCardMenuElement.$$('#removeConfirmationDialog').open);
+    assertFalse(
+        profileCardMenuElement.shadowRoot.querySelector('#actionMenu').open);
+    assertFalse(profileCardMenuElement.shadowRoot
+                    .querySelector('#removeConfirmationDialog')
+                    .open);
   });
 
   // Click on the delete profile menu item opens the remove confirmation dialog.
   test('ProfileCardMenuDeleteButton', async function() {
-    profileCardMenuElement.$$('#moreActionsButton').click();
+    profileCardMenuElement.shadowRoot.querySelector('#moreActionsButton')
+        .click();
     const menuButtons = profileCardMenuElement.shadowRoot.querySelectorAll(
         '#actionMenu > .dropdown-item');
     menuButtons[menuButtonIndex.DELETE].click();
-    assertFalse(profileCardMenuElement.$$('#actionMenu').open);
-    assertTrue(profileCardMenuElement.$$('#removeConfirmationDialog').open);
+    assertFalse(
+        profileCardMenuElement.shadowRoot.querySelector('#actionMenu').open);
+    assertTrue(profileCardMenuElement.shadowRoot
+                   .querySelector('#removeConfirmationDialog')
+                   .open);
   });
 
   // Click on the cancel button in the remove confirmation dialog closes the
   // dialog.
   test('RemoveConfirmationDialogCancel', async function() {
-    const dialog = profileCardMenuElement.$$('#removeConfirmationDialog');
+    const dialog = profileCardMenuElement.shadowRoot.querySelector(
+        '#removeConfirmationDialog');
     dialog.showModal();
     assertTrue(dialog.open);
     dialog.querySelector('.cancel-button').click();
@@ -96,7 +113,8 @@ suite('ProfileCardMenuTest', function() {
   // Click on the delete button in the remove confirmation dialog calls native
   // to remove profile.
   test('RemoveConfirmationDialogDelete', async function() {
-    const dialog = profileCardMenuElement.$$('#removeConfirmationDialog');
+    const dialog = profileCardMenuElement.shadowRoot.querySelector(
+        '#removeConfirmationDialog');
     dialog.showModal();
     assertTrue(dialog.open);
     dialog.querySelector('.action-button').click();
@@ -107,7 +125,8 @@ suite('ProfileCardMenuTest', function() {
 
   // The profile info in the remove confirmation dialog is displayed correctly.
   test('RemoveConfirmationDialogProfileCard', async function() {
-    const dialog = profileCardMenuElement.$$('#removeConfirmationDialog');
+    const dialog = profileCardMenuElement.shadowRoot.querySelector(
+        '#removeConfirmationDialog');
     dialog.showModal();
     assertTrue(dialog.open);
 
@@ -128,7 +147,8 @@ suite('ProfileCardMenuTest', function() {
   // The profile statistics in the remove confirmation dialog are displayed
   // correctly.
   test('RemoveConfirmationDialogStatistics', async function() {
-    const dialog = profileCardMenuElement.$$('#removeConfirmationDialog');
+    const dialog = profileCardMenuElement.shadowRoot.querySelector(
+        '#removeConfirmationDialog');
     dialog.showModal();
     assertTrue(dialog.open);
 
@@ -155,7 +175,8 @@ suite('ProfileCardMenuTest', function() {
 
   // The profile statistics of another profile aren't displayed.
   test('RemoveConfirmationDialogStatisticsWrongProfile', async function() {
-    const dialog = profileCardMenuElement.$$('#removeConfirmationDialog');
+    const dialog = profileCardMenuElement.shadowRoot.querySelector(
+        '#removeConfirmationDialog');
     dialog.showModal();
     assertTrue(dialog.open);
 

@@ -14,61 +14,82 @@ import './profile_picker_shared_css.js';
 import './strings.m.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ManageProfilesBrowserProxy, ManageProfilesBrowserProxyImpl, ProfileState} from './manage_profiles_browser_proxy.js';
 import {navigateTo, NavigationBehavior, Routes} from './navigation_behavior.js';
 import {isAskOnStartupAllowed, isGuestModeEnabled, isProfileCreationAllowed} from './policy_helper.js';
 
-Polymer({
-  is: 'profile-picker-main-view',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {WebUIListenerBehaviorInterface}
+ */
+const ProfilePickerMainViewElementBase =
+    mixinBehaviors([WebUIListenerBehavior, NavigationBehavior], PolymerElement);
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+export class ProfilePickerMainViewElement extends
+    ProfilePickerMainViewElementBase {
+  static get is() {
+    return 'profile-picker-main-view';
+  }
 
-  behaviors: [WebUIListenerBehavior, NavigationBehavior],
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
+  static get properties() {
+    return {
+      /**
+       * Profiles list supplied by ManageProfilesBrowserProxy.
+       * @type {!Array<!ProfileState>}
+       */
+      profilesList_: {
+        type: Object,
+        value: () => [],
+      },
+
+      /** @private */
+      profilesListLoaded_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /** @private */
+      hideAskOnStartup_: {
+        type: Boolean,
+        value: true,
+        computed: 'computeHideAskOnStartup_(profilesList_.length)',
+
+      },
+
+      /** @private */
+      askOnStartup_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('askOnStartup');
+        }
+      },
+    };
+  }
+
+  constructor() {
+    super();
+
+    /** @private {?ManageProfilesBrowserProxy} */
+    this.manageProfilesBrowserProxy_ = null;
+
     /**
-     * Profiles list supplied by ManageProfilesBrowserProxy.
-     * @type {!Array<!ProfileState>}
+     * @private {ResizeObserver} used to observer size changes to this element
      */
-    profilesList_: {
-      type: Object,
-      value: () => [],
-    },
-
-    /** @private */
-    profilesListLoaded_: {
-      type: Boolean,
-      value: false,
-    },
-
-    /** @private */
-    hideAskOnStartup_: {
-      type: Boolean,
-      value: true,
-      computed: 'computeHideAskOnStartup_(profilesList_.length)',
-
-    },
-
-    /** @private */
-    askOnStartup_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('askOnStartup');
-      }
-    },
-  },
-
-  /** @private {?ManageProfilesBrowserProxy} */
-  manageProfilesBrowserProxy_: null,
-
-  /** @type {ResizeObserver} used to observer size changes to this element */
-  resizeObserver_: null,
+    this.resizeObserver_ = null;
+  }
 
   /** @override */
   ready() {
+    super.ready();
     if (!isGuestModeEnabled()) {
       this.$.browseAsGuestButton.style.display = 'none';
     }
@@ -79,37 +100,42 @@ Polymer({
 
     this.manageProfilesBrowserProxy_ =
         ManageProfilesBrowserProxyImpl.getInstance();
-  },
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
     this.addResizeObserver_();
     this.addWebUIListener(
         'profiles-list-changed', this.handleProfilesListChanged_.bind(this));
     this.addWebUIListener(
         'profile-removed', this.handleProfileRemoved_.bind(this));
     this.manageProfilesBrowserProxy_.initializeMainView();
-  },
+  }
 
   /** @override */
-  detached() {
+  disconnectedCallback() {
+    super.disconnectedCallback();
     this.resizeObserver_.disconnect();
-  },
+  }
 
   /** @private */
   addResizeObserver_() {
     this.resizeObserver_ = new ResizeObserver(() => {
       const profileContainer =
-          /** @type {!HTMLDivElement} */ (this.$$('.profiles-container'));
+          /** @type {!HTMLDivElement} */ (
+              this.shadowRoot.querySelector('.profiles-container'));
       if (profileContainer.scrollHeight > profileContainer.clientHeight) {
-        this.$$('.footer').classList.add('division-line');
+        this.shadowRoot.querySelector('.footer').classList.add('division-line');
       } else {
-        this.$$('.footer').classList.remove('division-line');
+        this.shadowRoot.querySelector('.footer').classList.remove(
+            'division-line');
       }
     });
     this.resizeObserver_.observe(
-        /** @type {!HTMLDivElement} */ (this.$$('.profiles-container')));
-  },
+        /** @type {!HTMLDivElement} */ (
+            this.shadowRoot.querySelector('.profiles-container')));
+  }
 
   /** @private */
   onProductLogoTap_() {
@@ -121,7 +147,7 @@ Polymer({
           duration: 500,
           easing: 'cubic-bezier(1, 0, 0, 1)',
         });
-  },
+  }
 
   /**
    * Handler for when the profiles list are updated.
@@ -131,7 +157,7 @@ Polymer({
   handleProfilesListChanged_(profilesList) {
     this.profilesListLoaded_ = true;
     this.profilesList_ = profilesList;
-  },
+  }
 
   /**
    * Called when the user modifies 'Ask on startup' preference.
@@ -143,7 +169,7 @@ Polymer({
     }
 
     this.manageProfilesBrowserProxy_.askOnStartupChanged(this.askOnStartup_);
-  },
+  }
 
   /** @private */
   onAddProfileClick_() {
@@ -152,7 +178,7 @@ Polymer({
     }
     chrome.metricsPrivate.recordUserAction('ProfilePicker_AddClicked');
     navigateTo(Routes.NEW_PROFILE);
-  },
+  }
 
   /** @private */
   onLaunchGuestProfileClick_() {
@@ -160,7 +186,7 @@ Polymer({
       return;
     }
     this.manageProfilesBrowserProxy_.launchGuestProfile();
-  },
+  }
 
   /** @private */
   handleProfileRemoved_(profilePath) {
@@ -171,7 +197,7 @@ Polymer({
         break;
       }
     }
-  },
+  }
 
   /**
    * @return boolean
@@ -180,5 +206,8 @@ Polymer({
   computeHideAskOnStartup_() {
     return !isAskOnStartupAllowed() || !this.profilesList_ ||
         this.profilesList_.length < 2;
-  },
-});
+  }
+}
+
+customElements.define(
+    ProfilePickerMainViewElement.is, ProfilePickerMainViewElement);

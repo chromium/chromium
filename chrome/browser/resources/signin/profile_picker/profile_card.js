@@ -12,43 +12,60 @@ import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ManageProfilesBrowserProxy, ManageProfilesBrowserProxyImpl, ProfileState} from './manage_profiles_browser_proxy.js';
 
-Polymer({
-  is: 'profile-card',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ */
+const ProfileCardElementBase = mixinBehaviors([I18nBehavior], PolymerElement);
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+class ProfileCardElement extends ProfileCardElementBase {
+  static get is() {
+    return 'profile-card';
+  }
 
-  behaviors: [I18nBehavior],
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /**  @type {!ProfileState} */
-    profileState: {
-      type: Object,
-    },
+  static get properties() {
+    return {
+      /**  @type {!ProfileState} */
+      profileState: {
+        type: Object,
+      },
 
-    pattern_: {
-      type: String,
-      value: '.*\\S.*',
-    },
-  },
+      pattern_: {
+        type: String,
+        value: '.*\\S.*',
+      },
+    };
+  }
 
-  /** @private {ManageProfilesBrowserProxy} */
-  manageProfilesBrowserProxy_: null,
+  constructor() {
+    super();
+
+    /** @private {ManageProfilesBrowserProxy} */
+    this.manageProfilesBrowserProxy_ = null;
+  }
 
   /** @override */
   ready() {
+    super.ready();
     this.manageProfilesBrowserProxy_ =
         ManageProfilesBrowserProxyImpl.getInstance();
-  },
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
     this.addNameInputTooltipListeners_();
     this.addGaiaNameTooltipListeners_();
-  },
+  }
 
   /** @private */
   addNameInputTooltipListeners_() {
@@ -70,7 +87,7 @@ Polymer({
     target.addEventListener('mouseleave', hideTooltip);
     target.addEventListener('click', hideTooltip);
     this.$.tooltip.addEventListener('mouseenter', hideTooltip);
-  },
+  }
 
   /** @private */
   addGaiaNameTooltipListeners_() {
@@ -89,7 +106,7 @@ Polymer({
     target.addEventListener('blur', hideTooltip);
     target.addEventListener('tap', hideTooltip);
     this.$.gaiaNameTooltip.addEventListener('mouseenter', hideTooltip);
-  },
+  }
 
   /**
    * @param {!Element} element
@@ -98,13 +115,13 @@ Polymer({
    */
   isNameTruncated_(element) {
     return !!element && element.scrollWidth > element.offsetWidth;
-  },
+  }
 
   /** @private */
   onProfileClick_() {
     this.manageProfilesBrowserProxy_.launchSelectedProfile(
         this.profileState.profilePath);
-  },
+  }
 
   /**
    * Handler for when the profile name field is changed, then blurred.
@@ -120,7 +137,7 @@ Polymer({
         this.profileState.profilePath, event.target.value);
 
     event.target.blur();
-  },
+  }
 
   /**
    * Handler for profile name keydowns.
@@ -131,7 +148,7 @@ Polymer({
     if (event.key === 'Escape' || event.key === 'Enter') {
       event.target.blur();
     }
-  },
+  }
 
   /**
    * Handler for profile name blur.
@@ -141,5 +158,7 @@ Polymer({
     if (this.$.nameInput.invalid) {
       this.$.nameInput.value = this.profileState.localProfileName;
     }
-  },
-});
+  }
+}
+
+customElements.define(ProfileCardElement.is, ProfileCardElement);
