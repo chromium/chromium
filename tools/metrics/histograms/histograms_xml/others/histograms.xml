@@ -12731,6 +12731,29 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="PushMessaging.CheckOriginForAbuseTime" units="ms"
+    expires_after="M96">
+  <owner>knollr@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    Time from receiving a push message until we checked its origin against
+    SafeBrowsing. Logged for each received message after the origin abuse check
+    completes if the origin has notification permissions.
+  </summary>
+</histogram>
+
+<histogram name="PushMessaging.DeliverQueuedMessageTime" units="ms"
+    expires_after="M96">
+  <owner>knollr@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    Time from receiving a push message until just before firing the push event
+    on the Service Worker registration. This might be delayed when a Service
+    Worker receives multiple messages in a short period as they are handled in
+    series. Logged just before firing the push event for a message.
+  </summary>
+</histogram>
+
 <histogram name="PushMessaging.DeliveryStatus" enum="PushEventStatus"
     expires_after="2021-10-17">
   <owner>peter@chromium.org</owner>
@@ -12771,6 +12794,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     When a webpage asks for details about its current push messaging
     registration, this records whether the request is successful, or otherwise
     the type of error encountered.
+  </summary>
+</histogram>
+
+<histogram name="PushMessaging.MessageHandledTime" units="ms"
+    expires_after="M96">
+  <owner>knollr@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    Time from receiving a push message until we finished handling it. This
+    includes the time spent in the Service Worker to handle the push event.
+    Logged after the push event has been handled.
   </summary>
 </histogram>
 
