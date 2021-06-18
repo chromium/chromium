@@ -18,8 +18,10 @@ void OverlayDialog::Show(aura::Window* base_window,
                          base::OnceClosure on_destroying,
                          std::unique_ptr<views::View> dialog_view) {
   auto* shell_surface_base = exo::GetShellSurfaceBaseForWindow(base_window);
-  if (!shell_surface_base || shell_surface_base->HasOverlay())
+  if (!shell_surface_base)
     return;
+
+  CloseIfAny(base_window);
 
   auto dialog = base::WrapUnique(
       new OverlayDialog(std::move(on_destroying), std::move(dialog_view)));

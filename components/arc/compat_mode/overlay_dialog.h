@@ -33,7 +33,7 @@ class OverlayDialog : public views::FlexLayoutView {
   // The |dialog_view|'s width is responsive to the width of |base_window|. It
   // matches the |base_window|'s width inside the horizontal margin unless it
   // exceeds the |dialog_view|'s preferred width. Note that if |base_window| has
-  // another overlay already, the view will not be added to the view tree.
+  // another overlay already, the existing overlay is closed.
   static void Show(aura::Window* base_window,
                    base::OnceClosure on_destroying,
                    std::unique_ptr<views::View> dialog_view);
