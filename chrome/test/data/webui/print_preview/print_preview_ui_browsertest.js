@@ -1327,6 +1327,13 @@ TEST_F('PrintPreviewPrinterStatusTestCros', 'ChangeIcon', function() {
   this.runMochaTest(printer_status_test_cros.TestNames.ChangeIcon);
 });
 
+TEST_F(
+    'PrintPreviewPrinterStatusTestCros', 'SuccessfulPrinterStatusAfterRetry',
+    function() {
+      this.runMochaTest(
+          printer_status_test_cros.TestNames.SuccessfulPrinterStatusAfterRetry);
+    });
+
 // eslint-disable-next-line no-var
 var PrintPreviewDestinationDropdownCrosTest = class extends PrintPreviewTest {
   /** @override */

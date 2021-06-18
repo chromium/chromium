@@ -23,6 +23,7 @@ printer_status_test_cros.TestNames = {
   SendStatusRequestOnce: 'send status request once',
   HiddenStatusText: 'hidden status text',
   ChangeIcon: 'change icon',
+  SuccessfulPrinterStatusAfterRetry: 'successful printer status after retry',
 };
 
 suite(printer_status_test_cros.suiteName, function() {
@@ -105,6 +106,13 @@ suite(printer_status_test_cros.suiteName, function() {
        statusReasons: [{
          reason: PrinterStatusReason.UNKNOWN_REASON,
          severity: PrinterStatusSeverity.UNKNOWN_SEVERITY
+       }],
+     },
+     {
+       printerId: 'ID10',
+       statusReasons: [{
+         reason: PrinterStatusReason.PRINTER_UNREACHABLE,
+         severity: PrinterStatusSeverity.ERROR
        }],
      }]
         .forEach(
@@ -398,4 +406,40 @@ suite(printer_status_test_cros.suiteName, function() {
       assertEquals('cr:insert-drive-file', dropdown.destinationIcon);
     });
   });
+
+  test(
+      assert(
+          printer_status_test_cros.TestNames.SuccessfulPrinterStatusAfterRetry),
+      function() {
+        nativeLayerCros.simulateStatusRetrySuccesful();
+
+        const destination =
+            createDestination('ID10', 'Ten', DestinationOrigin.CROS);
+        destination.setPrinterStatusRetryTimeoutForTesting(100);
+        const whenStatusRequestsDonePromise =
+            nativeLayerCros.waitForMultiplePrinterStatusRequests(2);
+        destinationSelect.recentDestinationList = [
+          destination,
+        ];
+
+        const dropdown =
+            /** @type {!PrintPreviewDestinationDropdownCrosElement} */ (
+                destinationSelect.$$('#dropdown'));
+        return whenStatusRequestsDonePromise
+            .then(() => {
+              assertEquals(
+                  'print-preview:printer-status-grey',
+                  getIconString(dropdown, destination.key));
+              return waitBeforeNextRender(destinationSelect);
+            })
+            .then(() => {
+              // The printer status is requested twice because of the retry.
+              assertEquals(
+                  2,
+                  nativeLayerCros.getCallCount('requestPrinterStatusUpdate'));
+              assertEquals(
+                  'print-preview:printer-status-green',
+                  getIconString(dropdown, destination.key));
+            });
+      });
 });

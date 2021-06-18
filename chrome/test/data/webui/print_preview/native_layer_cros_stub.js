@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {NativeLayerCros, NativeLayerCrosImpl, PrinterSetupResponse, PrintServer, PrintServersConfig} from 'chrome://print/print_preview.js';
+import {NativeLayerCros, NativeLayerCrosImpl, PrinterSetupResponse, PrinterStatusReason, PrinterStatusSeverity, PrintServer, PrintServersConfig} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 
@@ -63,6 +63,12 @@ export class NativeLayerCrosStub extends TestBrowserProxy {
       printServers: [],
       isSingleServerFetchingMode: false
     };
+
+    /**
+     * When true, all printer status retry requests return NO_ERROR.
+     * @private {boolean}
+     */
+    this.simulateStatusRetrySuccesful_ = false;
   }
 
   /** @override */
@@ -118,7 +124,20 @@ export class NativeLayerCrosStub extends TestBrowserProxy {
       }
     }
 
-    return Promise.resolve(this.printerStatusMap_.get(printerId) || {});
+    const printerStatus = this.printerStatusMap_.get(printerId);
+
+    // When |simulateStatusRetrySuccesful_| is true, force the next status
+    // request for |printerId| to return NO_ERROR.
+    if (this.simulateStatusRetrySuccesful_) {
+      this.addPrinterStatusToMap(printerId, {
+        printerId: printerId,
+        statusReasons: [{
+          reason: PrinterStatusReason.NO_ERROR,
+          severity: PrinterStatusSeverity.REPORT
+        }],
+      });
+    }
+    return Promise.resolve(printerStatus || {});
   }
 
   /**
@@ -157,5 +176,9 @@ export class NativeLayerCrosStub extends TestBrowserProxy {
   /** @param {!PrintServersConfig} printServersConfig */
   setPrintServersConfig(printServersConfig) {
     this.printServersConfig_ = printServersConfig;
+  }
+
+  simulateStatusRetrySuccesful() {
+    this.simulateStatusRetrySuccesful_ = true;
   }
 }

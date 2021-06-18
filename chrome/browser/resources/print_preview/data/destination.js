@@ -330,6 +330,18 @@ export class Destination {
      * @private {?Promise<string>}
      */
     this.printerStatusRequestedPromise_ = null;
+
+    /**
+     * True if the failed printer status request has already been retried once.
+     * @private {boolean}
+     */
+    this.printerStatusRetrySent_ = false;
+
+    /**
+     * The length of time to wait before retrying a printer status request.
+     * @private {number}
+     */
+    this.printerStatusRetryTimerMs_ = 3000;
     // </if>
 
     assert(
@@ -524,6 +536,13 @@ export class Destination {
   }
 
   /**
+   * @param {number} timeoutMs
+   */
+  setPrinterStatusRetryTimeoutForTesting(timeoutMs) {
+    this.printerStatusRetryTimerMs_ = timeoutMs;
+  }
+
+  /**
    * Requests a printer status for the destination.
    * @return {!Promise<string>} Promise with destination key.
    */
@@ -545,18 +564,52 @@ export class Destination {
     }
 
     // Request printer status then set and return the promise.
-    this.printerStatusRequestedPromise_ =
-        NativeLayerCrosImpl.getInstance()
-            .requestPrinterStatusUpdate(this.id_)
-            .then(status => {
-              if (status) {
-                this.printerStatusReason_ = getStatusReasonFromPrinterStatus(
-                    /** @type {!PrinterStatus} */ (status));
-              }
-              return Promise.resolve(this.key);
-            });
+    this.printerStatusRequestedPromise_ = this.requestPrinterStatusPromise_();
     return this.printerStatusRequestedPromise_;
   }
+
+  /**
+   * Requests a printer status for the destination. If the printer status comes
+   * back as |PRINTER_UNREACHABLE|, this function will retry and call itself
+   * again once before resolving the original call.
+   * @return {!Promise<string>} Promise with destination key.
+   * @private
+   */
+  requestPrinterStatusPromise_() {
+    return NativeLayerCrosImpl.getInstance()
+        .requestPrinterStatusUpdate(this.id_)
+        .then(status => {
+          if (status) {
+            const statusReason = getStatusReasonFromPrinterStatus(
+                /** @type {!PrinterStatus} */ (status));
+            if (statusReason === PrinterStatusReason.PRINTER_UNREACHABLE &&
+                !this.printerStatusRetrySent_) {
+              this.printerStatusRetrySent_ = true;
+              return this.printerStatusWaitForTimerPromise_();
+            }
+
+            this.printerStatusReason_ = statusReason;
+          }
+          return Promise.resolve(this.key);
+        });
+  }
+
+  /**
+   * Pause for a set timeout then retry the printer status request.
+   * @return {!Promise<string>} Promise with destination key.
+   * @private
+   */
+  printerStatusWaitForTimerPromise_() {
+    return new Promise((resolve, reject) => {
+             setTimeout(() => {
+               resolve();
+             }, this.printerStatusRetryTimerMs_);
+           })
+        .then(() => {
+          return this.requestPrinterStatusPromise_();
+        });
+  }
+
   // </if>
 
   /**
