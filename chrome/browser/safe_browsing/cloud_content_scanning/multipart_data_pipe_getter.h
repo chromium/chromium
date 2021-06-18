@@ -10,6 +10,7 @@
 
 #include "base/files/file.h"
 #include "base/files/memory_mapped_file.h"
+#include "base/time/time.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/network/public/mojom/data_pipe_getter.mojom.h"
 
@@ -82,6 +83,9 @@ class MultipartDataPipeGetter : public network::mojom::DataPipeGetter {
   // avoid blocking calls on the main thread.
   std::unique_ptr<base::MemoryMappedFile> file_;
   int64_t write_position_ = 0;
+
+  // Used for metrics.
+  base::TimeTicks write_start_time_;
 
   mojo::ScopedDataPipeProducerHandle pipe_;
   std::unique_ptr<mojo::SimpleWatcher> watcher_;
