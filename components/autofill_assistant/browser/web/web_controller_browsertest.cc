@@ -1231,14 +1231,14 @@ document.getElementById("overlay_in_frame").style.visibility='hidden';
 
     TopPadding top_padding{0.25, TopPadding::Unit::RATIO};
     ScrollToElementPosition(selector, top_padding);
-    base::ListValue eval_result = content::EvalJs(shell(), R"(
+    base::Value eval_result = content::EvalJs(shell(), R"(
       let item = document.querySelector("#scroll_item_5");
       let itemRect = item.getBoundingClientRect();
       let container = document.querySelector("#scroll_container");
       let containerRect = container.getBoundingClientRect();
       [itemRect.top, itemRect.bottom, window.innerHeight,
            containerRect.top, containerRect.bottom])")
-                                      .ExtractList();
+                                  .ExtractList();
     double top = eval_result.GetList()[0].GetDouble();
     double bottom = eval_result.GetList()[1].GetDouble();
     double window_height = eval_result.GetList()[2].GetDouble();
@@ -1962,13 +1962,13 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
 
   // std::this_thread::sleep_for(std::chrono::milliseconds(3000));
   ScrollToElementPosition(selector, top_padding, container_selector);
-  base::ListValue eval_result = content::EvalJs(shell(), R"(
+  base::Value eval_result = content::EvalJs(shell(), R"(
       let item = document.querySelector("#scroll_item_2");
       let itemRect = item.getBoundingClientRect();
       let container = document.querySelector("#scroll_container");
       let containerRect = container.getBoundingClientRect();
       [itemRect.top, containerRect.top])")
-                                    .ExtractList();
+                                .ExtractList();
   double element_top = eval_result.GetList()[0].GetDouble();
   double container_top = eval_result.GetList()[1].GetDouble();
 
@@ -2035,12 +2035,12 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
   TopPadding top_padding{/* value= */ 0.7, TopPadding::Unit::RATIO};
   ScrollToElementPosition(selector, top_padding);
 
-  base::ListValue eval_result = content::EvalJs(shell(), R"(
+  base::Value eval_result = content::EvalJs(shell(), R"(
       let scrollTarget = document.querySelector("#scroll-me");
       let scrollTargetRect = scrollTarget.getBoundingClientRect();
       [scrollTargetRect.top, window.innerHeight]
   )")
-                                    .ExtractList();
+                                .ExtractList();
 
   double top = eval_result.GetList()[0].GetDouble();
   double window_inner_height = eval_result.GetList()[1].GetDouble();
