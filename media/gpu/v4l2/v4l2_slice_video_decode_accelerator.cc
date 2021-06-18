@@ -40,11 +40,11 @@
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/v4l2_decode_surface.h"
-#include "media/gpu/v4l2/v4l2_h264_accelerator.h"
-#include "media/gpu/v4l2/v4l2_h264_accelerator_legacy.h"
 #include "media/gpu/v4l2/v4l2_image_processor_backend.h"
 #include "media/gpu/v4l2/v4l2_utils.h"
 #include "media/gpu/v4l2/v4l2_vda_helpers.h"
+#include "media/gpu/v4l2/v4l2_video_decoder_delegate_h264.h"
+#include "media/gpu/v4l2/v4l2_video_decoder_delegate_h264_legacy.h"
 #include "media/gpu/v4l2/v4l2_video_decoder_delegate_vp9.h"
 #include "media/gpu/v4l2/v4l2_video_decoder_delegate_vp9_legacy.h"
 #include "media/gpu/v4l2/v4l2_vp8_accelerator.h"
@@ -297,11 +297,12 @@ bool V4L2SliceVideoDecodeAccelerator::Initialize(const Config& config,
   if (video_profile_ >= H264PROFILE_MIN && video_profile_ <= H264PROFILE_MAX) {
     if (supports_requests_) {
       decoder_ = std::make_unique<H264Decoder>(
-          std::make_unique<V4L2H264Accelerator>(this, device_.get()),
+          std::make_unique<V4L2VideoDecoderDelegateH264>(this, device_.get()),
           video_profile_);
     } else {
       decoder_ = std::make_unique<H264Decoder>(
-          std::make_unique<V4L2LegacyH264Accelerator>(this, device_.get()),
+          std::make_unique<V4L2VideoDecoderDelegateH264Legacy>(this,
+                                                               device_.get()),
           video_profile_);
     }
   } else if (video_profile_ >= VP8PROFILE_MIN &&

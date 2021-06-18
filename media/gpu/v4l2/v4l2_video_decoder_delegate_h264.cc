@@ -1,10 +1,14 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/gpu/v4l2/v4l2_h264_accelerator_legacy.h"
+#include "media/gpu/v4l2/v4l2_video_decoder_delegate_h264.h"
 
-#include <linux/media/h264-ctrls-legacy.h>
+// TODO(987856): prevent legacy headers being included from videodev2.h until
+// v4.14 support is deprecated.
+#define _H264_CTRLS_LEGACY_H_
+
+#include <linux/media/h264-ctrls-upstream.h>
 #include <linux/videodev2.h>
 #include <type_traits>
 
@@ -20,12 +24,8 @@ namespace media {
 // This struct contains the kernel-specific parts of the H264 acceleration,
 // that we don't want to expose in the .h file since they may differ from
 // upstream.
-struct V4L2LegacyH264AcceleratorPrivate {
-  // TODO(posciak): This should be queried from hardware once supported.
-  static constexpr size_t kMaxSlices = 16;
-
-  struct v4l2_ctrl_h264_slice_param v4l2_slice_params[kMaxSlices];
-  struct v4l2_ctrl_h264_decode_param v4l2_decode_param;
+struct V4L2VideoDecoderDelegateH264Private {
+  struct v4l2_ctrl_h264_decode_params v4l2_decode_param;
 };
 
 class V4L2H264Picture : public H264Picture {
@@ -44,19 +44,18 @@ class V4L2H264Picture : public H264Picture {
   DISALLOW_COPY_AND_ASSIGN(V4L2H264Picture);
 };
 
-V4L2LegacyH264Accelerator::V4L2LegacyH264Accelerator(
+V4L2VideoDecoderDelegateH264::V4L2VideoDecoderDelegateH264(
     V4L2DecodeSurfaceHandler* surface_handler,
     V4L2Device* device)
-    : num_slices_(0),
-      surface_handler_(surface_handler),
+    : surface_handler_(surface_handler),
       device_(device),
-      priv_(std::make_unique<V4L2LegacyH264AcceleratorPrivate>()) {
+      priv_(std::make_unique<V4L2VideoDecoderDelegateH264Private>()) {
   DCHECK(surface_handler_);
 }
 
-V4L2LegacyH264Accelerator::~V4L2LegacyH264Accelerator() {}
+V4L2VideoDecoderDelegateH264::~V4L2VideoDecoderDelegateH264() {}
 
-scoped_refptr<H264Picture> V4L2LegacyH264Accelerator::CreateH264Picture() {
+scoped_refptr<H264Picture> V4L2VideoDecoderDelegateH264::CreateH264Picture() {
   scoped_refptr<V4L2DecodeSurface> dec_surface =
       surface_handler_->CreateSurface();
   if (!dec_surface)
@@ -65,22 +64,10 @@ scoped_refptr<H264Picture> V4L2LegacyH264Accelerator::CreateH264Picture() {
   return new V4L2H264Picture(dec_surface);
 }
 
-void V4L2LegacyH264Accelerator::H264PictureListToDPBIndicesList(
-    const H264Picture::Vector& src_pic_list,
-    uint8_t dst_list[kDPBIndicesListSize]) {
-  size_t i;
-  for (i = 0; i < src_pic_list.size() && i < kDPBIndicesListSize; ++i) {
-    const H264Picture* pic = src_pic_list[i].get();
-    dst_list[i] = pic ? pic->dpb_position : VIDEO_MAX_FRAME;
-  }
+std::vector<scoped_refptr<V4L2DecodeSurface>>
+V4L2VideoDecoderDelegateH264::H264DPBToV4L2DPB(const H264DPB& dpb) {
+  std::vector<scoped_refptr<V4L2DecodeSurface>> ref_surfaces;
 
-  while (i < kDPBIndicesListSize)
-    dst_list[i++] = VIDEO_MAX_FRAME;
-}
-
-void V4L2LegacyH264Accelerator::H264DPBToV4L2DPB(
-    const H264DPB& dpb,
-    std::vector<scoped_refptr<V4L2DecodeSurface>>* ref_surfaces) {
   memset(priv_->v4l2_decode_param.dpb, 0, sizeof(priv_->v4l2_decode_param.dpb));
   size_t i = 0;
   for (const auto& pic : dpb) {
@@ -94,22 +81,25 @@ void V4L2LegacyH264Accelerator::H264DPBToV4L2DPB(
       scoped_refptr<V4L2DecodeSurface> dec_surface =
           H264PictureToV4L2DecodeSurface(pic.get());
       index = dec_surface->GetReferenceID();
-      ref_surfaces->push_back(dec_surface);
+      ref_surfaces.push_back(dec_surface);
     }
 
     struct v4l2_h264_dpb_entry& entry = priv_->v4l2_decode_param.dpb[i++];
-    entry.buf_index = index;
-    entry.frame_num = pic->frame_num;
+    entry.reference_ts = index;
     entry.pic_num = pic->pic_num;
+    entry.frame_num = pic->frame_num;
     entry.top_field_order_cnt = pic->top_field_order_cnt;
     entry.bottom_field_order_cnt = pic->bottom_field_order_cnt;
-    entry.flags = (pic->ref ? V4L2_H264_DPB_ENTRY_FLAG_ACTIVE : 0) |
+    entry.flags = V4L2_H264_DPB_ENTRY_FLAG_VALID |
+                  (pic->ref ? V4L2_H264_DPB_ENTRY_FLAG_ACTIVE : 0) |
                   (pic->long_term ? V4L2_H264_DPB_ENTRY_FLAG_LONG_TERM : 0);
   }
+
+  return ref_surfaces;
 }
 
 H264Decoder::H264Accelerator::Status
-V4L2LegacyH264Accelerator::SubmitFrameMetadata(
+V4L2VideoDecoderDelegateH264::SubmitFrameMetadata(
     const H264SPS* sps,
     const H264PPS* pps,
     const H264DPB& dpb,
@@ -146,8 +136,9 @@ V4L2LegacyH264Accelerator::SubmitFrameMetadata(
   static_assert(std::extent<decltype(v4l2_sps.offset_for_ref_frame)>() ==
                     std::extent<decltype(sps->offset_for_ref_frame)>(),
                 "offset_for_ref_frame arrays must be same size");
-  for (size_t i = 0; i < base::size(v4l2_sps.offset_for_ref_frame); ++i)
+  for (size_t i = 0; i < base::size(v4l2_sps.offset_for_ref_frame); ++i) {
     v4l2_sps.offset_for_ref_frame[i] = sps->offset_for_ref_frame[i];
+  }
   SPS_TO_V4L2SPS(max_num_ref_frames);
   SPS_TO_V4L2SPS(pic_width_in_mbs_minus1);
   SPS_TO_V4L2SPS(pic_height_in_map_units_minus1);
@@ -170,7 +161,7 @@ V4L2LegacyH264Accelerator::SubmitFrameMetadata(
                        V4L2_H264_SPS_FLAG_DIRECT_8X8_INFERENCE);
 #undef SET_V4L2_SPS_FLAG_IF
   memset(&ctrl, 0, sizeof(ctrl));
-  ctrl.id = V4L2_CID_MPEG_VIDEO_H264_SPS;
+  ctrl.id = V4L2_CID_STATELESS_H264_SPS;
   ctrl.size = sizeof(v4l2_sps);
   ctrl.ptr = &v4l2_sps;
   ctrls.push_back(ctrl);
@@ -207,10 +198,10 @@ V4L2LegacyH264Accelerator::SubmitFrameMetadata(
   SET_V4L2_PPS_FLAG_IF(transform_8x8_mode_flag,
                        V4L2_H264_PPS_FLAG_TRANSFORM_8X8_MODE);
   SET_V4L2_PPS_FLAG_IF(pic_scaling_matrix_present_flag,
-                       V4L2_H264_PPS_FLAG_PIC_SCALING_MATRIX_PRESENT);
+                       V4L2_H264_PPS_FLAG_SCALING_MATRIX_PRESENT);
 #undef SET_V4L2_PPS_FLAG_IF
   memset(&ctrl, 0, sizeof(ctrl));
-  ctrl.id = V4L2_CID_MPEG_VIDEO_H264_PPS;
+  ctrl.id = V4L2_CID_STATELESS_H264_PPS;
   ctrl.size = sizeof(v4l2_pps);
   ctrl.ptr = &v4l2_pps;
   ctrls.push_back(ctrl);
@@ -227,7 +218,7 @@ V4L2LegacyH264Accelerator::SubmitFrameMetadata(
               std::extent<decltype(pps->scaling_list8x8)>() &&
           std::extent<decltype(v4l2_scaling_matrix.scaling_list_8x8[0])>() <=
               std::extent<decltype(pps->scaling_list8x8[0])>(),
-      "scaling_lists must be of correct size");
+      "PPS scaling_lists must be of correct size");
   static_assert(
       std::extent<decltype(v4l2_scaling_matrix.scaling_list_4x4)>() <=
               std::extent<decltype(sps->scaling_list4x4)>() &&
@@ -237,7 +228,7 @@ V4L2LegacyH264Accelerator::SubmitFrameMetadata(
               std::extent<decltype(sps->scaling_list8x8)>() &&
           std::extent<decltype(v4l2_scaling_matrix.scaling_list_8x8[0])>() <=
               std::extent<decltype(sps->scaling_list8x8[0])>(),
-      "scaling_lists must be of correct size");
+      "SPS scaling_lists must be of correct size");
 
   const auto* scaling_list4x4 = &sps->scaling_list4x4[0];
   const auto* scaling_list8x8 = &sps->scaling_list8x8[0];
@@ -262,7 +253,7 @@ V4L2LegacyH264Accelerator::SubmitFrameMetadata(
   }
 
   memset(&ctrl, 0, sizeof(ctrl));
-  ctrl.id = V4L2_CID_MPEG_VIDEO_H264_SCALING_MATRIX;
+  ctrl.id = V4L2_CID_STATELESS_H264_SCALING_MATRIX;
   ctrl.size = sizeof(v4l2_scaling_matrix);
   ctrl.ptr = &v4l2_scaling_matrix;
   ctrls.push_back(ctrl);
@@ -280,21 +271,13 @@ V4L2LegacyH264Accelerator::SubmitFrameMetadata(
     return Status::kFail;
   }
 
-  H264PictureListToDPBIndicesList(ref_pic_listp0,
-                                  priv_->v4l2_decode_param.ref_pic_list_p0);
-  H264PictureListToDPBIndicesList(ref_pic_listb0,
-                                  priv_->v4l2_decode_param.ref_pic_list_b0);
-  H264PictureListToDPBIndicesList(ref_pic_listb1,
-                                  priv_->v4l2_decode_param.ref_pic_list_b1);
-
-  std::vector<scoped_refptr<V4L2DecodeSurface>> ref_surfaces;
-  H264DPBToV4L2DPB(dpb, &ref_surfaces);
+  auto ref_surfaces = H264DPBToV4L2DPB(dpb);
   dec_surface->SetReferenceSurfaces(ref_surfaces);
 
   return Status::kOk;
 }
 
-H264Decoder::H264Accelerator::Status V4L2LegacyH264Accelerator::SubmitSlice(
+H264Decoder::H264Accelerator::Status V4L2VideoDecoderDelegateH264::SubmitSlice(
     const H264PPS* pps,
     const H264SliceHeader* slice_hdr,
     const H264Picture::Vector& ref_pic_list0,
@@ -303,111 +286,25 @@ H264Decoder::H264Accelerator::Status V4L2LegacyH264Accelerator::SubmitSlice(
     const uint8_t* data,
     size_t size,
     const std::vector<SubsampleEntry>& subsamples) {
-  if (num_slices_ == priv_->kMaxSlices) {
-    VLOGF(1) << "Over limit of supported slices per frame";
-    return Status::kFail;
-  }
-
-  struct v4l2_ctrl_h264_slice_param& v4l2_slice_param =
-      priv_->v4l2_slice_params[num_slices_++];
-  memset(&v4l2_slice_param, 0, sizeof(v4l2_slice_param));
-
-  v4l2_slice_param.size = size;
-#define SHDR_TO_V4L2SPARM(a) v4l2_slice_param.a = slice_hdr->a
-  SHDR_TO_V4L2SPARM(header_bit_size);
-  SHDR_TO_V4L2SPARM(first_mb_in_slice);
-  SHDR_TO_V4L2SPARM(slice_type);
-  SHDR_TO_V4L2SPARM(pic_parameter_set_id);
-  SHDR_TO_V4L2SPARM(colour_plane_id);
-  SHDR_TO_V4L2SPARM(frame_num);
-  SHDR_TO_V4L2SPARM(idr_pic_id);
-  SHDR_TO_V4L2SPARM(pic_order_cnt_lsb);
-  SHDR_TO_V4L2SPARM(delta_pic_order_cnt_bottom);
-  SHDR_TO_V4L2SPARM(delta_pic_order_cnt0);
-  SHDR_TO_V4L2SPARM(delta_pic_order_cnt1);
-  SHDR_TO_V4L2SPARM(redundant_pic_cnt);
-  SHDR_TO_V4L2SPARM(dec_ref_pic_marking_bit_size);
-  SHDR_TO_V4L2SPARM(cabac_init_idc);
-  SHDR_TO_V4L2SPARM(slice_qp_delta);
-  SHDR_TO_V4L2SPARM(slice_qs_delta);
-  SHDR_TO_V4L2SPARM(disable_deblocking_filter_idc);
-  SHDR_TO_V4L2SPARM(slice_alpha_c0_offset_div2);
-  SHDR_TO_V4L2SPARM(slice_beta_offset_div2);
-  SHDR_TO_V4L2SPARM(num_ref_idx_l0_active_minus1);
-  SHDR_TO_V4L2SPARM(num_ref_idx_l1_active_minus1);
-  SHDR_TO_V4L2SPARM(pic_order_cnt_bit_size);
-#undef SHDR_TO_V4L2SPARM
-
-#define SET_V4L2_SPARM_FLAG_IF(cond, flag) \
-  v4l2_slice_param.flags |= ((slice_hdr->cond) ? (flag) : 0)
-  SET_V4L2_SPARM_FLAG_IF(field_pic_flag, V4L2_SLICE_FLAG_FIELD_PIC);
-  SET_V4L2_SPARM_FLAG_IF(bottom_field_flag, V4L2_SLICE_FLAG_BOTTOM_FIELD);
-  SET_V4L2_SPARM_FLAG_IF(direct_spatial_mv_pred_flag,
-                         V4L2_SLICE_FLAG_DIRECT_SPATIAL_MV_PRED);
-  SET_V4L2_SPARM_FLAG_IF(sp_for_switch_flag, V4L2_SLICE_FLAG_SP_FOR_SWITCH);
-#undef SET_V4L2_SPARM_FLAG_IF
-
-  struct v4l2_h264_pred_weight_table* pred_weight_table =
-      &v4l2_slice_param.pred_weight_table;
-
-  if (((slice_hdr->IsPSlice() || slice_hdr->IsSPSlice()) &&
-       pps->weighted_pred_flag) ||
-      (slice_hdr->IsBSlice() && pps->weighted_bipred_idc == 1)) {
-    pred_weight_table->luma_log2_weight_denom =
-        slice_hdr->luma_log2_weight_denom;
-    pred_weight_table->chroma_log2_weight_denom =
-        slice_hdr->chroma_log2_weight_denom;
-
-    struct v4l2_h264_weight_factors* factorsl0 =
-        &pred_weight_table->weight_factors[0];
-
-    for (int i = 0; i < 32; ++i) {
-      factorsl0->luma_weight[i] =
-          slice_hdr->pred_weight_table_l0.luma_weight[i];
-      factorsl0->luma_offset[i] =
-          slice_hdr->pred_weight_table_l0.luma_offset[i];
-
-      for (int j = 0; j < 2; ++j) {
-        factorsl0->chroma_weight[i][j] =
-            slice_hdr->pred_weight_table_l0.chroma_weight[i][j];
-        factorsl0->chroma_offset[i][j] =
-            slice_hdr->pred_weight_table_l0.chroma_offset[i][j];
-      }
-    }
-
-    if (slice_hdr->IsBSlice()) {
-      struct v4l2_h264_weight_factors* factorsl1 =
-          &pred_weight_table->weight_factors[1];
-
-      for (int i = 0; i < 32; ++i) {
-        factorsl1->luma_weight[i] =
-            slice_hdr->pred_weight_table_l1.luma_weight[i];
-        factorsl1->luma_offset[i] =
-            slice_hdr->pred_weight_table_l1.luma_offset[i];
-
-        for (int j = 0; j < 2; ++j) {
-          factorsl1->chroma_weight[i][j] =
-              slice_hdr->pred_weight_table_l1.chroma_weight[i][j];
-          factorsl1->chroma_offset[i][j] =
-              slice_hdr->pred_weight_table_l1.chroma_offset[i][j];
-        }
-      }
-    }
-  }
-
-  H264PictureListToDPBIndicesList(ref_pic_list0,
-                                  v4l2_slice_param.ref_pic_list0);
-  H264PictureListToDPBIndicesList(ref_pic_list1,
-                                  v4l2_slice_param.ref_pic_list1);
+#define SHDR_TO_V4L2DPARM(a) priv_->v4l2_decode_param.a = slice_hdr->a
+  SHDR_TO_V4L2DPARM(frame_num);
+  SHDR_TO_V4L2DPARM(idr_pic_id);
+  SHDR_TO_V4L2DPARM(pic_order_cnt_lsb);
+  SHDR_TO_V4L2DPARM(delta_pic_order_cnt_bottom);
+  SHDR_TO_V4L2DPARM(delta_pic_order_cnt0);
+  SHDR_TO_V4L2DPARM(delta_pic_order_cnt1);
+  SHDR_TO_V4L2DPARM(dec_ref_pic_marking_bit_size);
+  SHDR_TO_V4L2DPARM(pic_order_cnt_bit_size);
+#undef SHDR_TO_V4L2DPARM
 
   scoped_refptr<V4L2DecodeSurface> dec_surface =
       H264PictureToV4L2DecodeSurface(pic.get());
 
   priv_->v4l2_decode_param.nal_ref_idc = slice_hdr->nal_ref_idc;
 
-  // TODO(posciak): Don't add start code back here, but have it passed from
-  // the parser.
-  size_t data_copy_size = size + 3;
+  // Add the 3-bytes NAL start code.
+  // TODO: don't do it here, but have it passed from the parser?
+  const size_t data_copy_size = size + 3;
   std::unique_ptr<uint8_t[]> data_copy(new uint8_t[data_copy_size]);
   memset(data_copy.get(), 0, data_copy_size);
   data_copy[2] = 0x01;
@@ -418,13 +315,28 @@ H264Decoder::H264Accelerator::Status V4L2LegacyH264Accelerator::SubmitSlice(
              : Status::kFail;
 }
 
-H264Decoder::H264Accelerator::Status V4L2LegacyH264Accelerator::SubmitDecode(
+H264Decoder::H264Accelerator::Status V4L2VideoDecoderDelegateH264::SubmitDecode(
     scoped_refptr<H264Picture> pic) {
   scoped_refptr<V4L2DecodeSurface> dec_surface =
       H264PictureToV4L2DecodeSurface(pic.get());
 
-  priv_->v4l2_decode_param.num_slices = num_slices_;
-  priv_->v4l2_decode_param.idr_pic_flag = pic->idr;
+  switch (pic->field) {
+    case H264Picture::FIELD_NONE:
+      priv_->v4l2_decode_param.flags = 0;
+      break;
+    case H264Picture::FIELD_TOP:
+      priv_->v4l2_decode_param.flags = V4L2_H264_DECODE_PARAM_FLAG_FIELD_PIC;
+      break;
+    case H264Picture::FIELD_BOTTOM:
+      priv_->v4l2_decode_param.flags =
+          (V4L2_H264_DECODE_PARAM_FLAG_FIELD_PIC |
+           V4L2_H264_DECODE_PARAM_FLAG_BOTTOM_FIELD);
+      break;
+  }
+
+  if (pic->idr)
+    priv_->v4l2_decode_param.flags |= V4L2_H264_DECODE_PARAM_FLAG_IDR_PIC;
+
   priv_->v4l2_decode_param.top_field_order_cnt = pic->top_field_order_cnt;
   priv_->v4l2_decode_param.bottom_field_order_cnt = pic->bottom_field_order_cnt;
 
@@ -432,15 +344,14 @@ H264Decoder::H264Accelerator::Status V4L2LegacyH264Accelerator::SubmitDecode(
   std::vector<struct v4l2_ext_control> ctrls;
 
   memset(&ctrl, 0, sizeof(ctrl));
-  ctrl.id = V4L2_CID_MPEG_VIDEO_H264_SLICE_PARAM;
-  ctrl.size = sizeof(priv_->v4l2_slice_params);
-  ctrl.ptr = priv_->v4l2_slice_params;
+  ctrl.id = V4L2_CID_STATELESS_H264_DECODE_PARAMS;
+  ctrl.size = sizeof(priv_->v4l2_decode_param);
+  ctrl.ptr = &priv_->v4l2_decode_param;
   ctrls.push_back(ctrl);
 
   memset(&ctrl, 0, sizeof(ctrl));
-  ctrl.id = V4L2_CID_MPEG_VIDEO_H264_DECODE_PARAM;
-  ctrl.size = sizeof(priv_->v4l2_decode_param);
-  ctrl.ptr = &priv_->v4l2_decode_param;
+  ctrl.id = V4L2_CID_STATELESS_H264_DECODE_MODE;
+  ctrl.value = V4L2_STATELESS_H264_DECODE_MODE_FRAME_BASED;
   ctrls.push_back(ctrl);
 
   struct v4l2_ext_controls ext_ctrls;
@@ -460,7 +371,8 @@ H264Decoder::H264Accelerator::Status V4L2LegacyH264Accelerator::SubmitDecode(
   return Status::kOk;
 }
 
-bool V4L2LegacyH264Accelerator::OutputPicture(scoped_refptr<H264Picture> pic) {
+bool V4L2VideoDecoderDelegateH264::OutputPicture(
+    scoped_refptr<H264Picture> pic) {
   // TODO(crbug.com/647725): Insert correct color space.
   surface_handler_->SurfaceReady(H264PictureToV4L2DecodeSurface(pic.get()),
                                  pic->bitstream_id(), pic->visible_rect(),
@@ -468,14 +380,12 @@ bool V4L2LegacyH264Accelerator::OutputPicture(scoped_refptr<H264Picture> pic) {
   return true;
 }
 
-void V4L2LegacyH264Accelerator::Reset() {
-  num_slices_ = 0;
+void V4L2VideoDecoderDelegateH264::Reset() {
   memset(&priv_->v4l2_decode_param, 0, sizeof(priv_->v4l2_decode_param));
-  memset(&priv_->v4l2_slice_params, 0, sizeof(priv_->v4l2_slice_params));
 }
 
 scoped_refptr<V4L2DecodeSurface>
-V4L2LegacyH264Accelerator::H264PictureToV4L2DecodeSurface(H264Picture* pic) {
+V4L2VideoDecoderDelegateH264::H264PictureToV4L2DecodeSurface(H264Picture* pic) {
   V4L2H264Picture* v4l2_pic = pic->AsV4L2H264Picture();
   CHECK(v4l2_pic);
   return v4l2_pic->dec_surface();

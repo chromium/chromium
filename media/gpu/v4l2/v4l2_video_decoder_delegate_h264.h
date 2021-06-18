@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_GPU_V4L2_V4L2_H264_ACCELERATOR_H_
-#define MEDIA_GPU_V4L2_V4L2_H264_ACCELERATOR_H_
+#ifndef MEDIA_GPU_V4L2_V4L2_VIDEO_DECODER_DELEGATE_H264_H_
+#define MEDIA_GPU_V4L2_V4L2_VIDEO_DECODER_DELEGATE_H264_H_
 
 #include <memory>
 #include <vector>
@@ -18,15 +18,16 @@ namespace media {
 class V4L2Device;
 class V4L2DecodeSurface;
 class V4L2DecodeSurfaceHandler;
-struct V4L2H264AcceleratorPrivate;
+struct V4L2VideoDecoderDelegateH264Private;
 
-class V4L2H264Accelerator : public H264Decoder::H264Accelerator {
+class V4L2VideoDecoderDelegateH264 : public H264Decoder::H264Accelerator {
  public:
   using Status = H264Decoder::H264Accelerator::Status;
 
-  explicit V4L2H264Accelerator(V4L2DecodeSurfaceHandler* surface_handler,
-                               V4L2Device* device);
-  ~V4L2H264Accelerator() override;
+  explicit V4L2VideoDecoderDelegateH264(
+      V4L2DecodeSurfaceHandler* surface_handler,
+      V4L2Device* device);
+  ~V4L2VideoDecoderDelegateH264() override;
 
   // H264Decoder::H264Accelerator implementation.
   scoped_refptr<H264Picture> CreateH264Picture() override;
@@ -60,11 +61,11 @@ class V4L2H264Accelerator : public H264Decoder::H264Accelerator {
 
   // Contains the kernel-specific structures that we don't want to expose
   // outside of the compilation unit.
-  const std::unique_ptr<V4L2H264AcceleratorPrivate> priv_;
+  const std::unique_ptr<V4L2VideoDecoderDelegateH264Private> priv_;
 
-  DISALLOW_COPY_AND_ASSIGN(V4L2H264Accelerator);
+  DISALLOW_COPY_AND_ASSIGN(V4L2VideoDecoderDelegateH264);
 };
 
 }  // namespace media
 
-#endif  // MEDIA_GPU_V4L2_V4L2_H264_ACCELERATOR_H_
+#endif  // MEDIA_GPU_V4L2_V4L2_VIDEO_DECODER_DELEGATE_H264_H_
