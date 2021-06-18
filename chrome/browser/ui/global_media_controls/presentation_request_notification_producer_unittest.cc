@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/global_media_controls/presentation_request_notification_producer.h"
 
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/media/router/chrome_media_router_factory.h"
 #include "chrome/browser/media/router/media_router_feature.h"
@@ -246,5 +247,20 @@ TEST_F(PresentationRequestNotificationProducerTest,
       HideMediaSession(notification_producer_->GetNotificationItem()->id()));
   DeleteContents();
   EXPECT_FALSE(notification_producer_->GetNotificationItem());
+  SimulateDialogClosedAndWait(&delegate);
+}
+
+TEST_F(PresentationRequestNotificationProducerTest,
+       InvokeCallbackOnDialogClosed) {
+  MockMediaDialogDelegate delegate;
+
+  // PRNP should invoke |mock_error_cb| after the media dialog is closed.
+  base::MockCallback<content::PresentationConnectionErrorCallback>
+      mock_error_cb;
+  EXPECT_CALL(mock_error_cb, Run);
+  auto context = std::make_unique<media_router::StartPresentationContext>(
+      CreatePresentationRequest(), base::DoNothing(), mock_error_cb.Get());
+  notification_service_->OnStartPresentationContextCreated(std::move(context));
+  SimulateDialogOpenedAndWait(&delegate);
   SimulateDialogClosedAndWait(&delegate);
 }

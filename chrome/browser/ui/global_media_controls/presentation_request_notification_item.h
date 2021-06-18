@@ -37,6 +37,9 @@ class PresentationRequestNotificationItem final
   }
 
   const std::string& id() const { return id_; }
+  media_router::StartPresentationContext* context() const {
+    return context_.get();
+  }
   bool is_default_presentation_request() const {
     return is_default_presentation_request_;
   }
