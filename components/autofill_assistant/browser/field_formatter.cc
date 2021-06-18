@@ -50,12 +50,10 @@ std::map<std::string, std::string> CreateFormGroupMappings(
 }
 
 void GetNameAndAbbreviationViaAlternativeStateNameMap(
-    const std::u16string& country_name,
+    const std::string& country_code,
     const std::u16string& state_from_profile,
     std::u16string* name,
     std::u16string* abbreviation) {
-  std::string country_code =
-      autofill::CountryNames::GetInstance()->GetCountryCode(country_name);
   absl::optional<autofill::StateEntry> state_entry =
       autofill::AlternativeStateNameMap::GetInstance()->GetEntry(
           autofill::AlternativeStateNameMap::CountryCode(country_code),
@@ -179,6 +177,13 @@ CreateAutofillMappings<autofill::AutofillProfile>(
     const std::string& locale) {
   auto mappings = CreateFormGroupMappings(profile, locale);
 
+  std::string country_code =
+      autofill::CountryNames::GetInstance()->GetCountryCode(profile.GetInfo(
+          autofill::AutofillType(autofill::ADDRESS_HOME_COUNTRY), locale));
+  if (!country_code.empty()) {
+    mappings[base::NumberToString(static_cast<int>(
+        AutofillFormatProto::ADDRESS_HOME_COUNTRY_CODE))] = country_code;
+  }
   auto state = profile.GetInfo(
       autofill::AutofillType(autofill::ADDRESS_HOME_STATE), locale);
   if (!state.empty()) {
@@ -191,13 +196,11 @@ CreateAutofillMappings<autofill::AutofillProfile>(
                     ? base::StrCat({base::i18n::ToUpper(full_name.substr(0, 1)),
                                     full_name.substr(1)})
                     : base::i18n::ToUpper(full_name);
-    if (abbreviation.empty() &&
+    if (abbreviation.empty() && !country_code.empty() &&
         base::FeatureList::IsEnabled(
             autofill::features::kAutofillUseAlternativeStateNameMap)) {
-      const std::u16string& country_name = profile.GetInfo(
-          autofill::AutofillType(autofill::ADDRESS_HOME_COUNTRY), locale);
       GetNameAndAbbreviationViaAlternativeStateNameMap(
-          country_name, state, &full_name, &abbreviation);
+          country_code, state, &full_name, &abbreviation);
     }
     mappings[base::NumberToString(
         static_cast<int>(AutofillFormatProto::ADDRESS_HOME_STATE_NAME))] =

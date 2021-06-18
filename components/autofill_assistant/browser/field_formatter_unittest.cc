@@ -285,6 +285,12 @@ TEST(FieldFormatterTest, AutofillProfile) {
                           CreateAutofillMappings(profile, "en-US")),
             "(+1) (234) 5678901");
 
+  // Country and country code.
+  EXPECT_EQ(*FormatString("${36}", CreateAutofillMappings(profile, "en-US")),
+            "United States");
+  EXPECT_EQ(*FormatString("${-8}", CreateAutofillMappings(profile, "en-US")),
+            "US");
+
   // State handling from abbreviation.
   EXPECT_EQ(*FormatString("${34}", CreateAutofillMappings(profile, "en-US")),
             "CA");
@@ -401,6 +407,7 @@ TEST(FieldFormatterTest, DifferentLocales) {
 
 TEST(FieldFormatterTest, AddsAllProfileFieldsUsAddress) {
   std::map<std::string, std::string> expected_values = {
+      {"-8", "US"},
       {"-6", "California"},
       {"3", "Alpha"},
       {"4", "Beta"},
@@ -433,6 +440,7 @@ TEST(FieldFormatterTest, AddsAllProfileFieldsUsAddress) {
 
 TEST(FieldFormatterTest, AddsAllProfileFieldsForNonUsAddress) {
   std::map<std::string, std::string> expected_values = {
+      {"-8", "CH"},
       {"-6", "Canton Zurich"},
       {"3", "Alpha"},
       {"4", "Beta"},
