@@ -456,7 +456,8 @@ class ChromiumDepGraph {
             }
         }
 
-        if (dependency.moduleArtifacts.size() != 1) {
+        if (dependency.moduleArtifacts.isEmpty() ||
+            !areAllModuleArtifactsSameFile(dependency.moduleArtifacts)) {
             throw new IllegalStateException("The dependency ${id} does not have exactly one " +
                                             "artifact: ${dependency.moduleArtifacts}")
         }
@@ -493,6 +494,21 @@ class ChromiumDepGraph {
         } else {
             dependencies.put(id, buildDepDescription(id, dependency, artifact, []))
         }
+    }
+
+    private boolean areAllModuleArtifactsSameFile(Set<ResolvedArtifact> artifacts) {
+       String expectedPath;
+       for (ResolvedArtifact artifact : artifacts) {
+           String path = artifact.getFile().getAbsolutePath()
+           if (expectedPath == null) {
+               expectedPath = path
+               continue
+           }
+           if (expectedPath != path) {
+               return false
+          }
+       }
+       return true
     }
 
     private DependencyDescription buildDepDescription(
