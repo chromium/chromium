@@ -31,6 +31,7 @@ class WebAppUrlHandlerHoverButton : public WebAppHoverButton {
   // +-------------------------------------------------------------------+
   //
   WebAppUrlHandlerHoverButton(
+      size_t buttons_count,
       views::Button::PressedCallback callback,
       const web_app::UrlHandlerLaunchParams& url_handler_launch_params,
       web_app::WebAppProvider* provider,
@@ -45,7 +46,8 @@ class WebAppUrlHandlerHoverButton : public WebAppHoverButton {
   // |      |                                                            |
   // +-------------------------------------------------------------------+
   //
-  explicit WebAppUrlHandlerHoverButton(views::Button::PressedCallback callback);
+  explicit WebAppUrlHandlerHoverButton(size_t buttons_count,
+                                       views::Button::PressedCallback callback);
   WebAppUrlHandlerHoverButton(const WebAppUrlHandlerHoverButton&) = delete;
   WebAppUrlHandlerHoverButton& operator=(const WebAppUrlHandlerHoverButton&) =
       delete;
@@ -57,11 +59,16 @@ class WebAppUrlHandlerHoverButton : public WebAppHoverButton {
 
   bool is_app() const { return is_app_; }
 
+  // views::View:
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+
  private:
   const web_app::UrlHandlerLaunchParams url_handler_launch_params_;
   // True if the current WebAppUrlHandlerHoverButton is for an app, false if
   // it's for the browser.
   const bool is_app_;
+  // Total number of buttons. Used for accessibility.
+  size_t total_buttons_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEB_APPS_WEB_APP_URL_HANDLER_HOVER_BUTTON_H_

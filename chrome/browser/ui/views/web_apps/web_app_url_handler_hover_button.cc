@@ -14,12 +14,14 @@
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/views/controls/button/button.h"
 #include "url/gurl.h"
 
 WebAppUrlHandlerHoverButton::WebAppUrlHandlerHoverButton(
+    size_t total_buttons,
     views::Button::PressedCallback callback,
     const web_app::UrlHandlerLaunchParams& url_handler_launch_params,
     web_app::WebAppProvider* provider,
@@ -31,15 +33,28 @@ WebAppUrlHandlerHoverButton::WebAppUrlHandlerHoverButton(
                         display_name,
                         app_start_url),
       url_handler_launch_params_(url_handler_launch_params),
-      is_app_(true) {}
+      is_app_(true),
+      total_buttons_(total_buttons) {}
 
 WebAppUrlHandlerHoverButton::WebAppUrlHandlerHoverButton(
+    size_t total_buttons,
     views::Button::PressedCallback callback)
     : WebAppHoverButton(
           std::move(callback),
           *(ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
               IDR_PRODUCT_LOGO_32)),
           l10n_util::GetStringUTF16(IDS_PRODUCT_NAME)),
-      is_app_(false) {}
+      is_app_(false),
+      total_buttons_(total_buttons) {}
 
 WebAppUrlHandlerHoverButton::~WebAppUrlHandlerHoverButton() = default;
+
+void WebAppUrlHandlerHoverButton::GetAccessibleNodeData(
+    ui::AXNodeData* node_data) {
+  WebAppHoverButton::GetAccessibleNodeData(node_data);
+
+  node_data->SetName(l10n_util::GetStringFUTF16(
+      IDS_URL_HANDLER_INTENT_PICKER_OPTION_N_OF_M, GetAccessibleName(),
+      base::NumberToString16(tag() + 1),
+      base::NumberToString16(total_buttons_)));
+}

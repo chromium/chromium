@@ -197,14 +197,15 @@ void WebAppUrlHandlerIntentPickerView::Initialize() {
       views::BoxLayout::Orientation::kVertical));
 
   web_app::WebAppProvider* provider;
-  // Reserve size+1 for the browser entry.
-  hover_buttons_.reserve(launch_params_list_.size() + 1);
+  // size+1 for the browser entry.
+  size_t total_buttons = launch_params_list_.size() + 1;
+  hover_buttons_.reserve(total_buttons);
   // Create a WebAppUrlHandlerHoverButton to open the link in browser and
   // list it as the first choice.
-  auto app_button =
-      std::make_unique<WebAppUrlHandlerHoverButton>(base::BindRepeating(
-          &WebAppUrlHandlerIntentPickerView::SetSelectedAppIndex,
-          base::Unretained(this), 0));
+  auto app_button = std::make_unique<WebAppUrlHandlerHoverButton>(
+      total_buttons, base::BindRepeating(
+                         &WebAppUrlHandlerIntentPickerView::SetSelectedAppIndex,
+                         base::Unretained(this), 0));
   app_button->set_tag(0);
   hover_buttons_.push_back(app_button.get());
   scrollable_view->AddChildViewAt(std::move(app_button), 0);
@@ -231,6 +232,7 @@ void WebAppUrlHandlerIntentPickerView::Initialize() {
     // TODO(crbug.com/1072058): Make sure the UI is reasonable when
     // |app_title| is long.
     auto app_button = std::make_unique<WebAppUrlHandlerHoverButton>(
+        total_buttons,
         base::BindRepeating(
             &WebAppUrlHandlerIntentPickerView::SetSelectedAppIndex,
             base::Unretained(this), button_index),

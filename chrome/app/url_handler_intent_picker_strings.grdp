@@ -19,4 +19,7 @@
   <message name="IDS_URL_HANDLER_INTENT_PICKER_APP_ORIGIN_LABEL" desc="Label for the url origin of each item in the web app list in the URL handler intent picker dialog">
     Publisher: <ph name="APP_ORIGIN">$1<ex>example.com</ex></ph>
   </message>
+  <message name="IDS_URL_HANDLER_INTENT_PICKER_OPTION_N_OF_M" desc="Text for screenreaders describing the current option's position in the list of options in the URL handler intent picker dialog.">
+    <ph name="BUTTON_ACCESSIBLE_TEXT">$1<ex>Chromium</ex></ph>, <ph name="OPTION_POSITION">$2<ex>1</ex></ph> of <ph name="NUM_OPTIONS">$3<ex>2</ex></ph>
+  </message>
 </grit-part>
