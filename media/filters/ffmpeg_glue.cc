@@ -89,9 +89,6 @@ FFmpegGlue::FFmpegGlue(FFmpegURLProtocol* protocol) {
   // Enable fast, but inaccurate seeks for MP3.
   format_context_->flags |= AVFMT_FLAG_FAST_SEEK;
 
-  // Ensures we can read out various metadata bits like vp8 alpha.
-  format_context_->flags |= AVFMT_FLAG_KEEP_SIDE_DATA;
-
   // Ensures format parsing errors will bail out. From an audit on 11/2017, all
   // instances were real failures. Solves bugs like http://crbug.com/710791.
   format_context_->error_recognition |= AV_EF_EXPLODE;

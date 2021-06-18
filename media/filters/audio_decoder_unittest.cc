@@ -109,7 +109,7 @@ void SetDiscardPadding(AVPacket* packet,
   }
 
   // If the timestamp is positive, try to use FFmpeg's discard data.
-  int skip_samples_size = 0;
+  size_t skip_samples_size = 0;
   const uint32_t* skip_samples_ptr =
       reinterpret_cast<const uint32_t*>(av_packet_get_side_data(
           packet, AV_PKT_DATA_SKIP_SAMPLES, &skip_samples_size));

@@ -168,7 +168,7 @@ bool FFmpegCdmAudioDecoder::Initialize(
   if (codec_context_->sample_fmt == AV_SAMPLE_FMT_S16P)
     codec_context_->request_sample_fmt = AV_SAMPLE_FMT_S16;
 
-  AVCodec* codec = avcodec_find_decoder(codec_context_->codec_id);
+  const AVCodec* codec = avcodec_find_decoder(codec_context_->codec_id);
   if (!codec || avcodec_open2(codec_context_.get(), codec, NULL) < 0) {
     DLOG(ERROR) << "Could not initialize audio decoder: "
                 << codec_context_->codec_id;
@@ -235,15 +235,16 @@ cdm::Status FFmpegCdmAudioDecoder::DecodeBuffer(
   size_t total_size = 0u;
   std::vector<std::unique_ptr<AVFrame, ScopedPtrAVFreeFrame>> audio_frames;
 
-  AVPacket packet;
-  av_init_packet(&packet);
-  packet.data = const_cast<uint8_t*>(compressed_buffer);
-  packet.size = compressed_buffer_size;
+  AVPacket* packet = av_packet_alloc();
+  packet->data = const_cast<uint8_t*>(compressed_buffer);
+  packet->size = compressed_buffer_size;
 
-  switch (decoding_loop_->DecodePacket(
-      &packet, base::BindRepeating(&FFmpegCdmAudioDecoder::OnNewFrame,
-                                   base::Unretained(this), &total_size,
-                                   &audio_frames))) {
+  FFmpegDecodingLoop::DecodeStatus decode_status = decoding_loop_->DecodePacket(
+      packet,
+      base::BindRepeating(&FFmpegCdmAudioDecoder::OnNewFrame,
+                          base::Unretained(this), &total_size, &audio_frames));
+  av_packet_free(&packet);
+  switch (decode_status) {
     case FFmpegDecodingLoop::DecodeStatus::kSendPacketFailed:
       return cdm::kDecodeError;
     case FFmpegDecodingLoop::DecodeStatus::kFrameProcessingFailed:

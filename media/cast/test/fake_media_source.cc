@@ -141,7 +141,7 @@ void FakeMediaSource::SetSourceFile(const base::FilePath& video_file,
       continue;
     }
 
-    AVCodec* av_codec = avcodec_find_decoder(av_codec_context->codec_id);
+    const AVCodec* av_codec = avcodec_find_decoder(av_codec_context->codec_id);
 
     if (!av_codec) {
       LOG(ERROR) << "Cannot find decoder for the codec: "
@@ -432,7 +432,7 @@ void FakeMediaSource::Rewind() {
 }
 
 ScopedAVPacket FakeMediaSource::DemuxOnePacket(bool* audio) {
-  ScopedAVPacket packet(new AVPacket());
+  ScopedAVPacket packet = MakeScopedAVPacket();
   if (av_read_frame(av_format_context_, packet.get()) < 0) {
     VLOG(1) << "Failed to read one AVPacket.";
     packet.reset();

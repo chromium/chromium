@@ -167,26 +167,27 @@ void FFmpegAudioDecoder::DecodeBuffer(const DecoderBuffer& buffer,
 }
 
 bool FFmpegAudioDecoder::FFmpegDecode(const DecoderBuffer& buffer) {
-  AVPacket packet;
-  av_init_packet(&packet);
+  AVPacket* packet = av_packet_alloc();
   if (buffer.end_of_stream()) {
-    packet.data = NULL;
-    packet.size = 0;
+    packet->data = NULL;
+    packet->size = 0;
   } else {
-    packet.data = const_cast<uint8_t*>(buffer.data());
-    packet.size = buffer.data_size();
+    packet->data = const_cast<uint8_t*>(buffer.data());
+    packet->size = buffer.data_size();
 
-    DCHECK(packet.data);
-    DCHECK_GT(packet.size, 0);
+    DCHECK(packet->data);
+    DCHECK_GT(packet->size, 0);
   }
 
   bool decoded_frame_this_loop = false;
   // base::Unretained and std::cref are safe to use with the callback given
   // to DecodePacket() since that callback is only used the function call.
-  switch (decoding_loop_->DecodePacket(
-      &packet, base::BindRepeating(&FFmpegAudioDecoder::OnNewFrame,
-                                   base::Unretained(this), std::cref(buffer),
-                                   &decoded_frame_this_loop))) {
+  FFmpegDecodingLoop::DecodeStatus decode_status = decoding_loop_->DecodePacket(
+      packet, base::BindRepeating(&FFmpegAudioDecoder::OnNewFrame,
+                                  base::Unretained(this), std::cref(buffer),
+                                  &decoded_frame_this_loop));
+  av_packet_free(&packet);
+  switch (decode_status) {
     case FFmpegDecodingLoop::DecodeStatus::kSendPacketFailed:
       MEDIA_LOG(ERROR, media_log_)
           << "Failed to send audio packet for decoding: "
@@ -330,7 +331,7 @@ bool FFmpegAudioDecoder::ConfigureDecoder(const AudioDecoderConfig& config) {
     }
   }
 
-  AVCodec* codec = avcodec_find_decoder(codec_context_->codec_id);
+  const AVCodec* codec = avcodec_find_decoder(codec_context_->codec_id);
   if (!codec ||
       avcodec_open2(codec_context_.get(), codec, &codec_options) < 0) {
     DLOG(ERROR) << "Could not initialize audio decoder: "

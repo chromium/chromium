@@ -119,7 +119,7 @@ void VideoFrameExtractor::ConvertPacket(AVPacket* packet) {
 
 ScopedAVPacket VideoFrameExtractor::ReadVideoFrame() {
   AVFormatContext* format_context = glue_->format_context();
-  ScopedAVPacket packet(new AVPacket());
+  ScopedAVPacket packet = MakeScopedAVPacket();
   while (av_read_frame(format_context, packet.get()) >= 0) {
     // Skip frames from streams other than video.
     if (packet->stream_index != video_stream_index_)

@@ -59,7 +59,7 @@ TEST_F(FFmpegAACBitstreamConverterTest, Conversion_Success) {
     dummy_packet[i] = i & 0xFF; // Repeated sequences of 0-255
   }
 
-  ScopedAVPacket test_packet(new AVPacket());
+  ScopedAVPacket test_packet = MakeScopedAVPacket();
   CreatePacket(test_packet.get(), dummy_packet,
                sizeof(dummy_packet));
 
@@ -91,7 +91,7 @@ TEST_F(FFmpegAACBitstreamConverterTest, Conversion_FailureNullParams) {
   EXPECT_FALSE(converter.ConvertPacket(NULL));
 
   // Create new packet to test actual conversion.
-  ScopedAVPacket test_packet(new AVPacket());
+  ScopedAVPacket test_packet = MakeScopedAVPacket();
   CreatePacket(test_packet.get(), dummy_packet, sizeof(dummy_packet));
 
   // Try out the actual conversion. This should fail due to missing extradata.
@@ -103,7 +103,7 @@ TEST_F(FFmpegAACBitstreamConverterTest, Conversion_AudioProfileType) {
 
   uint8_t dummy_packet[1000] = {0};
 
-  ScopedAVPacket test_packet(new AVPacket());
+  ScopedAVPacket test_packet = MakeScopedAVPacket();
   CreatePacket(test_packet.get(), dummy_packet,
                sizeof(dummy_packet));
 
@@ -142,7 +142,7 @@ TEST_F(FFmpegAACBitstreamConverterTest, Conversion_MultipleLength) {
 
   uint8_t dummy_packet[1000];
 
-  ScopedAVPacket test_packet(new AVPacket());
+  ScopedAVPacket test_packet = MakeScopedAVPacket();
   CreatePacket(test_packet.get(), dummy_packet,
                sizeof(dummy_packet));
 
@@ -158,7 +158,7 @@ TEST_F(FFmpegAACBitstreamConverterTest, Conversion_MultipleLength) {
   EXPECT_EQ(frame_length, test_packet->size);
 
   // Create a second packet that is 1 byte smaller than the first one
-  ScopedAVPacket second_test_packet(new AVPacket());
+  ScopedAVPacket second_test_packet = MakeScopedAVPacket();
   CreatePacket(second_test_packet.get(), dummy_packet,
                sizeof(dummy_packet) - 1);
 

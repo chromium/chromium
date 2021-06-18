@@ -53,8 +53,7 @@ inline void ScopedPtrAVFree::operator()(void* x) const {
 
 inline void ScopedPtrAVFreePacket::operator()(void* x) const {
   AVPacket* packet = static_cast<AVPacket*>(x);
-  av_packet_unref(packet);
-  delete packet;
+  av_packet_free(&packet);
 }
 
 inline void ScopedPtrAVFreeContext::operator()(void* x) const {

@@ -86,7 +86,7 @@ bool AudioFileReader::OpenDemuxer() {
 }
 
 bool AudioFileReader::OpenDecoder() {
-  AVCodec* codec = avcodec_find_decoder(codec_context_->codec_id);
+  const AVCodec* codec = avcodec_find_decoder(codec_context_->codec_id);
   if (codec) {
     // MP3 decodes to S16P which we don't support, tell it to use S16 instead.
     if (codec_context_->sample_fmt == AV_SAMPLE_FMT_S16P)

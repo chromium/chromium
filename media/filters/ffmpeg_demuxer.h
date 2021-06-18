@@ -62,6 +62,10 @@ class FFmpegGlue;
 
 typedef std::unique_ptr<AVPacket, ScopedPtrAVFreePacket> ScopedAVPacket;
 
+// Use av_packet_alloc() to create a packet, which is scoped to delete with
+// av_packet_free at the end of it's lifetime.
+MEDIA_EXPORT ScopedAVPacket MakeScopedAVPacket();
+
 class MEDIA_EXPORT FFmpegDemuxerStream : public DemuxerStream {
  public:
   // Attempts to create FFmpegDemuxerStream form the given AVStream. Will return
