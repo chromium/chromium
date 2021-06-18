@@ -366,8 +366,10 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PrerenderChain) {
   // kInitialUrl prerenders kPrerenderChain1, then kPrerenderChain1 prerenders
   // kPrerenderChain2.
   const GURL kInitialUrl = GetUrl("/empty.html");
-  const GURL kPrerenderChain1 = GetUrl("/prerender/prerender_chain.html?1");
-  const GURL kPrerenderChain2 = GetUrl("/prerender/prerender_chain.html?2");
+  const GURL kPrerenderChain1 =
+      GetUrl("/prerender/page_with_trigger_function.html?1");
+  const GURL kPrerenderChain2 =
+      GetUrl("/prerender/page_with_trigger_function.html?2");
 
   // Navigate to an initial page.
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
@@ -414,6 +416,48 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PrerenderChain) {
   WaitForPrerenderLoadCompletion(kPrerenderChain2);
   EXPECT_EQ(GetRequestCount(kPrerenderChain2), 1);
   EXPECT_TRUE(HasHostForUrl(kPrerenderChain2));
+}
+
+// Tests that sub-frames cannot trigger prerendering.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, IgnoreSubFrameInitiatedPrerender) {
+  const GURL kInitialUrl = GetUrl("/empty.html");
+  const GURL kSubFrameUrl =
+      GetUrl("/prerender/page_with_trigger_function.html");
+  const GURL kPrerenderingUrl = GetUrl("/title.html");
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  RenderFrameHostImpl* main_frame_host = current_frame_host();
+  EXPECT_TRUE(AddTestUtilJS(main_frame_host));
+  EXPECT_EQ("LOADED",
+            EvalJs(web_contents(), JsReplace("add_iframe($1)", kSubFrameUrl)));
+  RenderFrameHost* child_frame_host = ChildFrameAt(main_frame_host, 0);
+  ASSERT_NE(child_frame_host, nullptr);
+  ASSERT_EQ(child_frame_host->GetLastCommittedURL(), kSubFrameUrl);
+
+  // Add a prerender trigger to the subframe.
+  EXPECT_TRUE(ExecJs(child_frame_host,
+                     JsReplace("add_speculation_rules($1)", kPrerenderingUrl)));
+
+  // Speculation rules is processed by the idle task runner in Blink. To ensure
+  // the speculation candidates has been sent by renderer processes, we should
+  // wait until this runner finishes all tasks.
+  EXPECT_TRUE(ExecJs(child_frame_host, R"(
+    const idlePromise = new Promise(resolve => requestIdleCallback(resolve));
+    idlePromise;
+  )"));
+
+  // Start a navigation request that should not be ignored, and wait it to
+  // reach the server. If the prerender request is not ignored, the navigation
+  // request for kPrerenderingUrl will reach the server earlier than the
+  // non-ignored one, so we can wait until the latest request reaches the sever
+  // to prove that the prerender request for kPrerenderingUrl is ignored.
+  EXPECT_TRUE(ExecJs(main_frame_host, "add_iframe_async('/title1.html')",
+                     EvalJsOptions::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+  WaitForRequest(GetUrl("/title1.html"), 1);
+
+  // The prerender requests were ignored by SpeculationHostImpl.
+  EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 0);
+  EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
 }
 
 // Regression test for https://crbug.com/1194865.
