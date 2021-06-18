@@ -368,7 +368,7 @@ void ScriptInjection::OnJsInjectionCompleted(
 
   bool expects_results = injector_->ExpectsResults();
   if (expects_results) {
-    if (!results.empty() && !results[0].IsEmpty()) {
+    if (!results.empty() && !results.back().IsEmpty()) {
       // Right now, we only support returning single results (per frame).
       // It's safe to always use the main world context when converting
       // here. V8ValueConverterImpl shouldn't actually care about the
@@ -376,8 +376,12 @@ void ScriptInjection::OnJsInjectionCompleted(
       // when encountered.
       v8::Local<v8::Context> context =
           render_frame_->GetWebFrame()->MainWorldScriptContext();
-      execution_result_ =
-          content::V8ValueConverter::Create()->FromV8Value(results[0], context);
+      // We use the final result, since it is the most meaningful (the result
+      // after running all scripts). Additionally, the final script can
+      // reference values from the previous scripts, so could return them if
+      // desired.
+      execution_result_ = content::V8ValueConverter::Create()->FromV8Value(
+          results.back(), context);
     }
     if (!execution_result_.get())
       execution_result_ = std::make_unique<base::Value>();
@@ -399,7 +403,7 @@ void ScriptInjection::OnJsInjectionCompleted(
 void ScriptInjection::InjectOrRemoveCss(
     std::set<std::string>* injected_stylesheets,
     size_t* num_injected_stylesheets) {
-  std::vector<blink::WebString> css_sources = injector_->GetCssSources(
+  std::vector<ScriptInjector::CSSSource> css_sources = injector_->GetCssSources(
       run_location_, injected_stylesheets, num_injected_stylesheets);
   blink::WebLocalFrame* web_frame = render_frame_->GetWebFrame();
 
@@ -414,31 +418,27 @@ void ScriptInjection::InjectOrRemoveCss(
       break;
   }
 
-  blink::WebStyleSheetKey style_sheet_key;
-  if (const absl::optional<std::string>& injection_key =
-          injector_->GetInjectionKey())
-    style_sheet_key = blink::WebString::FromASCII(*injection_key);
-  // CSS deletion can be thought of as the inverse of CSS injection
-  // (i.e. x - y = x + -y and x | y = ~(~x & ~y)), so it is handled here in the
-  // injection function.
-  //
-  // TODO(https://crbug.com/1116061): Extend this API's capabilities to also
-  // remove CSS added by content scripts?
-  mojom::CSSInjection::Operation injection_type =
+  mojom::CSSInjection::Operation operation =
       injector_->GetCSSInjectionOperation();
-
-  switch (injection_type) {
-    case mojom::CSSInjection::Operation::kRemove:
-      web_frame->GetDocument().RemoveInsertedStyleSheet(style_sheet_key,
-                                                        blink_css_origin);
-      break;
-    case mojom::CSSInjection::Operation::kAdd: {
-      for (const blink::WebString& css : css_sources) {
+  for (const auto& source : css_sources) {
+    switch (operation) {
+      case mojom::CSSInjection::Operation::kRemove:
+        DCHECK(!source.key.IsEmpty())
+            << "An injection key is required to remove CSS.";
+        // CSS deletion can be thought of as the inverse of CSS injection
+        // (i.e. x - y = x + -y and x | y = ~(~x & ~y)), so it is handled here
+        // in the injection function.
+        //
+        // TODO(https://crbug.com/1116061): Extend this API's capabilities to
+        // also remove CSS added by content scripts?
+        web_frame->GetDocument().RemoveInsertedStyleSheet(source.key,
+                                                          blink_css_origin);
+        break;
+      case mojom::CSSInjection::Operation::kAdd:
         web_frame->GetDocument().InsertStyleSheet(
-            css, &style_sheet_key, blink_css_origin,
+            source.code, &source.key, blink_css_origin,
             blink::BackForwardCacheAware::kPossiblyDisallow);
-      }
-      break;
+        break;
     }
   }
 }

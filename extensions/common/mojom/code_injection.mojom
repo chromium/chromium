@@ -7,13 +7,29 @@ module extensions.mojom;
 import "extensions/common/mojom/css_origin.mojom";
 import "url/mojom/url.mojom";
 
-// A struct representing a single piece of code to inject in the renderer.
-struct JSInjection {
+// A single JS source to execute in the renderer.
+struct JSSource {
   // The Javascript code to execute.
   string code;
 
   // The URL of the script that was injected, if any.
   url.mojom.Url script_url;
+};
+
+// A single CSS source to execute in the renderer.
+struct CSSSource {
+  // The CSS code to insert.
+  string code;
+
+  // A generated injection key for the CSS, which can be used to remove it
+  // later.
+  string? key;
+};
+
+// A struct representing a collection of JS code to inject in the renderer.
+struct JSInjection {
+  // The JS sources to execute.
+  array<JSSource> sources;
 
   // Whether the caller is interested in the result value. Manifest-declared
   // content scripts and executeScript() calls without a response callback
@@ -24,18 +40,15 @@ struct JSInjection {
   bool user_gesture;
 };
 
+// A struct representing a collection of CSS code to insert in the renderer.
 struct CSSInjection {
   enum Operation {
     kAdd,
     kRemove,
   };
 
-  // The CSS code to insert.
-  string code;
-
-  // A generated injection key for the CSS, which can be used to remove it
-  // later.
-  string? key;
+  // The CSS sources to insert.
+  array<CSSSource> sources;
 
   // The origin of the CSS.
   CSSOrigin css_origin;

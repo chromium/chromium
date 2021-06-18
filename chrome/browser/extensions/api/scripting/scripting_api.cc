@@ -322,11 +322,14 @@ bool ScriptingExecuteScriptFunction::Execute(std::string code_to_execute,
     return false;
   }
 
+  std::vector<mojom::JSSourcePtr> sources;
+  sources.push_back(
+      mojom::JSSource::New(std::move(code_to_execute), std::move(script_url)));
   script_executor->ExecuteScript(
       mojom::HostID(mojom::HostID::HostType::kExtensions, extension()->id()),
-      mojom::CodeInjection::NewJs(mojom::JSInjection::New(
-          std::move(code_to_execute), std::move(script_url),
-          /*wants_result=*/true, user_gesture())),
+      mojom::CodeInjection::NewJs(mojom::JSInjection::New(std::move(sources),
+                                                          /*wants_result=*/true,
+                                                          user_gesture())),
       frame_scope, frame_ids, ScriptExecutor::MATCH_ABOUT_BLANK,
       mojom::RunLocation::kDocumentIdle, ScriptExecutor::DEFAULT_PROCESS,
       /* webview_src */ GURL(),
@@ -442,11 +445,14 @@ bool ScriptingInsertCSSFunction::Execute(std::string code_to_execute,
                         extension()->id());
   std::string injection_key = ScriptExecutor::GenerateInjectionKey(
       host_id, script_url, code_to_execute);
+
+  std::vector<mojom::CSSSourcePtr> sources;
+  sources.push_back(mojom::CSSSource::New(std::move(code_to_execute),
+                                          std::move(injection_key)));
   script_executor->ExecuteScript(
       std::move(host_id),
       mojom::CodeInjection::NewCss(mojom::CSSInjection::New(
-          std::move(code_to_execute), std::move(injection_key),
-          ConvertStyleOriginToCSSOrigin(injection_.origin),
+          std::move(sources), ConvertStyleOriginToCSSOrigin(injection_.origin),
           mojom::CSSInjection::Operation::kAdd)),
       frame_scope, frame_ids, ScriptExecutor::MATCH_ABOUT_BLANK,
       kCSSRunLocation, ScriptExecutor::DEFAULT_PROCESS,
@@ -515,11 +521,14 @@ ExtensionFunction::ResponseAction ScriptingRemoveCSSFunction::Run() {
                         extension()->id());
   std::string injection_key =
       ScriptExecutor::GenerateInjectionKey(host_id, script_url, code);
+
+  std::vector<mojom::CSSSourcePtr> sources;
+  sources.push_back(
+      mojom::CSSSource::New(std::move(code), std::move(injection_key)));
   script_executor->ExecuteScript(
       std::move(host_id),
       mojom::CodeInjection::NewCss(mojom::CSSInjection::New(
-          std::move(code), std::move(injection_key),
-          ConvertStyleOriginToCSSOrigin(injection.origin),
+          std::move(sources), ConvertStyleOriginToCSSOrigin(injection.origin),
           mojom::CSSInjection::Operation::kRemove)),
       frame_scope, frame_ids, ScriptExecutor::MATCH_ABOUT_BLANK,
       kCSSRunLocation, ScriptExecutor::DEFAULT_PROCESS,

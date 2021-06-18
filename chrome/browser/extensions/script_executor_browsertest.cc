@@ -126,10 +126,13 @@ IN_PROC_BROWSER_TEST_F(ScriptExecutorBrowserTest, MainFrameExecution) {
         )";
 
   ScriptExecutorHelper helper;
+  std::vector<mojom::JSSourcePtr> sources;
+  sources.push_back(mojom::JSSource::New(kCode, GURL()));
   script_executor.ExecuteScript(
       mojom::HostID(mojom::HostID::HostType::kExtensions, extension->id()),
-      mojom::CodeInjection::NewJs(mojom::JSInjection::New(
-          kCode, GURL(), true /* wants_result */, false /* user_gesture */)),
+      mojom::CodeInjection::NewJs(
+          mojom::JSInjection::New(std::move(sources), true /* wants_result */,
+                                  false /* user_gesture */)),
       ScriptExecutor::SPECIFIED_FRAMES, {ExtensionApiFrameIdMap::kTopFrameId},
       ScriptExecutor::DONT_MATCH_ABOUT_BLANK, mojom::RunLocation::kDocumentIdle,
       ScriptExecutor::DEFAULT_PROCESS, GURL() /* webview_src */,
@@ -140,6 +143,60 @@ IN_PROC_BROWSER_TEST_F(ScriptExecutorBrowserTest, MainFrameExecution) {
   ASSERT_EQ(1u, helper.results().size());
   EXPECT_EQ(web_contents->GetLastCommittedURL(), helper.results()[0].url);
   EXPECT_EQ(base::Value("OK"), helper.results()[0].value);
+  EXPECT_EQ(0, helper.results()[0].frame_id);
+  EXPECT_EQ("", helper.results()[0].error);
+}
+
+// Tests injecting multiple JS sources into a frame.
+IN_PROC_BROWSER_TEST_F(ScriptExecutorBrowserTest, MultipleSourceExecution) {
+  const Extension* extension =
+      LoadExtensionWithHostPermission("http://example.com/*");
+
+  GURL example_com =
+      embedded_test_server()->GetURL("example.com", "/simple.html");
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+
+  {
+    content::TestNavigationObserver nav_observer(web_contents);
+    ui_test_utils::NavigateToURL(browser(), example_com);
+    nav_observer.Wait();
+    EXPECT_TRUE(nav_observer.last_navigation_succeeded());
+  }
+
+  EXPECT_EQ("OK", base::UTF16ToUTF8(web_contents->GetTitle()));
+
+  // Inject two pieces of code. Note that the second references a variable set
+  // by the first, which thus also exercises injection order (in addition to
+  // that they both run).
+  ScriptExecutor script_executor(web_contents);
+  constexpr char kCode1[] =
+      R"(window.newTitle = 'New Title';
+         'First Result';)";
+  constexpr char kCode2[] =
+      R"(document.title = window.newTitle;
+         'Second Result';)";
+
+  ScriptExecutorHelper helper;
+  std::vector<mojom::JSSourcePtr> sources;
+  sources.push_back(mojom::JSSource::New(kCode1, GURL()));
+  sources.push_back(mojom::JSSource::New(kCode2, GURL()));
+  script_executor.ExecuteScript(
+      mojom::HostID(mojom::HostID::HostType::kExtensions, extension->id()),
+      mojom::CodeInjection::NewJs(
+          mojom::JSInjection::New(std::move(sources), true /* wants_result */,
+                                  false /* user_gesture */)),
+      ScriptExecutor::SPECIFIED_FRAMES, {ExtensionApiFrameIdMap::kTopFrameId},
+      ScriptExecutor::DONT_MATCH_ABOUT_BLANK, mojom::RunLocation::kDocumentIdle,
+      ScriptExecutor::DEFAULT_PROCESS, GURL() /* webview_src */,
+      helper.GetCallback());
+  helper.Wait();
+  EXPECT_EQ("New Title", base::UTF16ToUTF8(web_contents->GetTitle()));
+
+  ASSERT_EQ(1u, helper.results().size());
+  EXPECT_EQ(web_contents->GetLastCommittedURL(), helper.results()[0].url);
+  EXPECT_EQ(base::Value("Second Result"), helper.results()[0].value);
   EXPECT_EQ(0, helper.results()[0].frame_id);
   EXPECT_EQ("", helper.results()[0].error);
 }
@@ -207,10 +264,13 @@ IN_PROC_BROWSER_TEST_F(ScriptExecutorBrowserTest, SpecifiedFrames) {
     // Execute in frames 1 and 2. These are the only frames for which we should
     // get a result.
     ScriptExecutorHelper helper;
+    std::vector<mojom::JSSourcePtr> sources;
+    sources.push_back(mojom::JSSource::New(kCode, GURL()));
     script_executor.ExecuteScript(
         mojom::HostID(mojom::HostID::HostType::kExtensions, extension->id()),
-        mojom::CodeInjection::NewJs(mojom::JSInjection::New(
-            kCode, GURL(), true /* wants_result */, false /* user_gesture */)),
+        mojom::CodeInjection::NewJs(
+            mojom::JSInjection::New(std::move(sources), true /* wants_result */,
+                                    false /* user_gesture */)),
         ScriptExecutor::SPECIFIED_FRAMES, {frame1_id, frame2_id},
         ScriptExecutor::DONT_MATCH_ABOUT_BLANK,
         mojom::RunLocation::kDocumentIdle, ScriptExecutor::DEFAULT_PROCESS,
@@ -227,10 +287,13 @@ IN_PROC_BROWSER_TEST_F(ScriptExecutorBrowserTest, SpecifiedFrames) {
     // Repeat the execution in frames 1 and 2, but include subframes. This
     // should result in frame2_child being added to the results.
     ScriptExecutorHelper helper;
+    std::vector<mojom::JSSourcePtr> sources;
+    sources.push_back(mojom::JSSource::New(kCode, GURL()));
     script_executor.ExecuteScript(
         mojom::HostID(mojom::HostID::HostType::kExtensions, extension->id()),
-        mojom::CodeInjection::NewJs(mojom::JSInjection::New(
-            kCode, GURL(), true /* wants_result */, false /* user_gesture */)),
+        mojom::CodeInjection::NewJs(
+            mojom::JSInjection::New(std::move(sources), true /* wants_result */,
+                                    false /* user_gesture */)),
         ScriptExecutor::INCLUDE_SUB_FRAMES, {frame1_id, frame2_id},
         ScriptExecutor::DONT_MATCH_ABOUT_BLANK,
         mojom::RunLocation::kDocumentIdle, ScriptExecutor::DEFAULT_PROCESS,
@@ -256,10 +319,13 @@ IN_PROC_BROWSER_TEST_F(ScriptExecutorBrowserTest, SpecifiedFrames) {
     // Try injecting into multiple frames when one of the specified frames
     // doesn't exist.
     ScriptExecutorHelper helper;
+    std::vector<mojom::JSSourcePtr> sources;
+    sources.push_back(mojom::JSSource::New(kCode, GURL()));
     script_executor.ExecuteScript(
         mojom::HostID(mojom::HostID::HostType::kExtensions, extension->id()),
-        mojom::CodeInjection::NewJs(mojom::JSInjection::New(
-            kCode, GURL(), true /* wants_result */, false /* user_gesture */)),
+        mojom::CodeInjection::NewJs(
+            mojom::JSInjection::New(std::move(sources), true /* wants_result */,
+                                    false /* user_gesture */)),
         ScriptExecutor::SPECIFIED_FRAMES,
         {frame1_id, frame2_id, kNonExistentFrameId},
         ScriptExecutor::DONT_MATCH_ABOUT_BLANK,
@@ -280,10 +346,13 @@ IN_PROC_BROWSER_TEST_F(ScriptExecutorBrowserTest, SpecifiedFrames) {
   {
     // Try injecting into a single non-existent frame.
     ScriptExecutorHelper helper;
+    std::vector<mojom::JSSourcePtr> sources;
+    sources.push_back(mojom::JSSource::New(kCode, GURL()));
     script_executor.ExecuteScript(
         mojom::HostID(mojom::HostID::HostType::kExtensions, extension->id()),
-        mojom::CodeInjection::NewJs(mojom::JSInjection::New(
-            kCode, GURL(), true /* wants_result */, false /* user_gesture */)),
+        mojom::CodeInjection::NewJs(
+            mojom::JSInjection::New(std::move(sources), true /* wants_result */,
+                                    false /* user_gesture */)),
         ScriptExecutor::SPECIFIED_FRAMES, {kNonExistentFrameId},
         ScriptExecutor::DONT_MATCH_ABOUT_BLANK,
         mojom::RunLocation::kDocumentIdle, ScriptExecutor::DEFAULT_PROCESS,

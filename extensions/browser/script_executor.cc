@@ -10,9 +10,11 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/dcheck_is_on.h"
 #include "base/hash/hash.h"
 #include "base/memory/weak_ptr.h"
 #include "base/pickle.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/types/pass_key.h"
 #include "content/public/browser/render_frame_host.h"
@@ -302,11 +304,22 @@ void ScriptExecutor::ExecuteScript(const mojom::HostID& host_id,
     CHECK(process_type == WEB_VIEW_PROCESS);
   }
 
+#if DCHECK_IS_ON()
   if (injection->is_css()) {
     bool expect_injection_key =
         host_id.type == mojom::HostID::HostType::kExtensions;
-    DCHECK_EQ(expect_injection_key, injection->get_css()->key.has_value());
+    if (injection->get_css()->operation ==
+        mojom::CSSInjection::Operation::kRemove) {
+      DCHECK(expect_injection_key)
+          << "Only extensions (with injection keys supplied) can remove CSS.";
+    }
+    DCHECK(base::ranges::all_of(
+        injection->get_css()->sources,
+        [expect_injection_key](const mojom::CSSSourcePtr& source) {
+          return expect_injection_key == source->key.has_value();
+        }));
   }
+#endif
 
   auto params = mojom::ExecuteCodeParams::New();
   params->host_id = host_id.Clone();

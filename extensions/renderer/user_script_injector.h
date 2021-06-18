@@ -45,7 +45,6 @@ class UserScriptInjector : public ScriptInjector,
   bool IsUserGesture() const override;
   mojom::CSSOrigin GetCssOrigin() const override;
   mojom::CSSInjection::Operation GetCSSInjectionOperation() const override;
-  const absl::optional<std::string> GetInjectionKey() const override;
   bool ExpectsResults() const override;
   bool ShouldInjectJs(
       mojom::RunLocation run_location,
@@ -61,7 +60,7 @@ class UserScriptInjector : public ScriptInjector,
       mojom::RunLocation run_location,
       std::set<std::string>* executing_scripts,
       size_t* num_injected_js_scripts) const override;
-  std::vector<blink::WebString> GetCssSources(
+  std::vector<CSSSource> GetCssSources(
       mojom::RunLocation run_location,
       std::set<std::string>* injected_stylesheets,
       size_t* num_injected_stylesheets) const override;

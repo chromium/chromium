@@ -143,10 +143,6 @@ mojom::CSSInjection::Operation UserScriptInjector::GetCSSInjectionOperation()
   return mojom::CSSInjection::Operation::kAdd;
 }
 
-const absl::optional<std::string> UserScriptInjector::GetInjectionKey() const {
-  return absl::nullopt;
-}
-
 bool UserScriptInjector::ShouldInjectJs(
     mojom::RunLocation run_location,
     const std::set<std::string>& executing_scripts) const {
@@ -238,21 +234,21 @@ std::vector<blink::WebScriptSource> UserScriptInjector::GetJsSources(
         user_script_set_->GetJsSource(*file, script_->emulate_greasemonkey()),
         script_url));
 
-    (*num_injected_js_scripts) += 1;
+    ++*num_injected_js_scripts;
     executing_scripts->insert(script_url.path());
   }
 
   return sources;
 }
 
-std::vector<blink::WebString> UserScriptInjector::GetCssSources(
+std::vector<ScriptInjector::CSSSource> UserScriptInjector::GetCssSources(
     mojom::RunLocation run_location,
     std::set<std::string>* injected_stylesheets,
     size_t* num_injected_stylesheets) const {
   DCHECK(script_);
   DCHECK_EQ(mojom::RunLocation::kDocumentStart, run_location);
 
-  std::vector<blink::WebString> sources;
+  std::vector<CSSSource> sources;
 
   const UserScript::FileList& css_scripts = script_->css_scripts();
   sources.reserve(css_scripts.size());
@@ -262,10 +258,11 @@ std::vector<blink::WebString> UserScriptInjector::GetCssSources(
     if (injected_stylesheets->count(stylesheet_path) != 0)
       continue;
 
-    sources.push_back(user_script_set_->GetCssSource(*file));
-    (*num_injected_stylesheets) += 1;
+    sources.push_back(CSSSource{user_script_set_->GetCssSource(*file),
+                                blink::WebStyleSheetKey()});
     injected_stylesheets->insert(stylesheet_path);
   }
+  *num_injected_stylesheets += sources.size();
   return sources;
 }
 

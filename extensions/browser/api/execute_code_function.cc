@@ -132,12 +132,17 @@ bool ExecuteCodeFunction::Execute(const std::string& code_string,
     mojom::CSSInjection::Operation operation =
         ShouldInsertCSS() ? mojom::CSSInjection::Operation::kAdd
                           : mojom::CSSInjection::Operation::kRemove;
-    injection = mojom::CodeInjection::NewCss(mojom::CSSInjection::New(
-        code_string, std::move(injection_key), css_origin, operation));
+    std::vector<mojom::CSSSourcePtr> sources;
+    sources.push_back(
+        mojom::CSSSource::New(code_string, std::move(injection_key)));
+    injection = mojom::CodeInjection::NewCss(
+        mojom::CSSInjection::New(std::move(sources), css_origin, operation));
   } else {
     bool wants_result = has_callback();
+    std::vector<mojom::JSSourcePtr> sources;
+    sources.push_back(mojom::JSSource::New(code_string, script_url_));
     injection = mojom::CodeInjection::NewJs(mojom::JSInjection::New(
-        code_string, script_url_, wants_result, user_gesture()));
+        std::move(sources), wants_result, user_gesture()));
   }
 
   executor->ExecuteScript(

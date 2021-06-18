@@ -55,12 +55,6 @@ ProgrammaticScriptInjector::GetCSSInjectionOperation() const {
   return params_->injection->get_css()->operation;
 }
 
-const absl::optional<std::string> ProgrammaticScriptInjector::GetInjectionKey()
-    const {
-  DCHECK(params_->injection->is_css());
-  return params_->injection->get_css()->key;
-}
-
 bool ProgrammaticScriptInjector::ExpectsResults() const {
   DCHECK(params_->injection->is_js());
   return params_->injection->get_js()->wants_result;
@@ -123,20 +117,36 @@ std::vector<blink::WebScriptSource> ProgrammaticScriptInjector::GetJsSources(
   DCHECK(params_->injection->is_js());
 
   auto& js_injection = params_->injection->get_js();
-  return std::vector<blink::WebScriptSource>(
-      1, blink::WebScriptSource(blink::WebString::FromUTF8(js_injection->code),
-                                js_injection->script_url));
+  std::vector<blink::WebScriptSource> sources;
+  sources.reserve(js_injection->sources.size());
+  for (const auto& source : js_injection->sources) {
+    sources.emplace_back(blink::WebString::FromUTF8(source->code),
+                         source->script_url);
+  }
+
+  return sources;
 }
 
-std::vector<blink::WebString> ProgrammaticScriptInjector::GetCssSources(
+std::vector<ScriptInjector::CSSSource>
+ProgrammaticScriptInjector::GetCssSources(
     mojom::RunLocation run_location,
     std::set<std::string>* injected_stylesheets,
     size_t* num_injected_stylesheets) const {
   DCHECK_EQ(params_->run_at, run_location);
   DCHECK(params_->injection->is_css());
 
-  return std::vector<blink::WebString>(
-      1, blink::WebString::FromUTF8(params_->injection->get_css()->code));
+  auto& css_injection = params_->injection->get_css();
+  std::vector<CSSSource> sources;
+  sources.reserve(css_injection->sources.size());
+  for (const auto& source : css_injection->sources) {
+    blink::WebStyleSheetKey style_sheet_key;
+    if (source->key)
+      style_sheet_key = blink::WebString::FromASCII(*source->key);
+    sources.push_back(
+        CSSSource{blink::WebString::FromUTF8(source->code), style_sheet_key});
+  }
+
+  return sources;
 }
 
 void ProgrammaticScriptInjector::OnInjectionComplete(

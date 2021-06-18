@@ -7,6 +7,7 @@
 #include <set>
 
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/timer/elapsed_timer.h"
 #include "content/public/renderer/render_frame.h"
@@ -471,6 +472,31 @@ void ExtensionFrameHelper::MessageInvoke(const std::string& extension_id,
 
 void ExtensionFrameHelper::ExecuteCode(mojom::ExecuteCodeParamsPtr param,
                                        ExecuteCodeCallback callback) {
+  // Sanity checks.
+  if (param->injection->is_css()) {
+    if (param->injection->get_css()->sources.empty()) {
+      mojo::ReportBadMessage("At least one CSS source must be specified.");
+      return;
+    }
+
+    if (param->injection->get_css()->operation ==
+            mojom::CSSInjection::Operation::kRemove &&
+        !base::ranges::all_of(param->injection->get_css()->sources,
+                              [](const mojom::CSSSourcePtr& source) {
+                                return source->key.has_value();
+                              })) {
+      mojo::ReportBadMessage(
+          "An injection key must be specified for CSS removal.");
+      return;
+    }
+  } else {
+    DCHECK(param->injection->is_js());  // Enforced by mojo.
+    if (param->injection->get_js()->sources.empty()) {
+      mojo::ReportBadMessage("At least one JS source must be specified.");
+      return;
+    }
+  }
+
   extension_dispatcher_->ExecuteCode(std::move(param), std::move(callback),
                                      render_frame());
 }
