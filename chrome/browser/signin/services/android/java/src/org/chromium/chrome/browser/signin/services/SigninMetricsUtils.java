@@ -116,7 +116,7 @@ public class SigninMetricsUtils {
     public static void logWebSignin() {
         final AccountManagerFacade accountManagerFacade =
                 AccountManagerFacadeProvider.getInstance();
-        accountManagerFacade.tryGetGoogleAccounts(accounts -> {
+        accountManagerFacade.getAccounts().then(accounts -> {
             new AsyncTask<List<String>>() {
                 @Override
                 protected List<String> doInBackground() {
