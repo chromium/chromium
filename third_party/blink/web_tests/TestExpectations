@@ -1800,6 +1800,10 @@ crbug.com/1218729 virtual/stable/webexposed/feature-policy-features.html [ Failu
 # This test relies on racy should_send_resource_timing_info_to_parent() flag being sent between processes.
 crbug.com/957181 external/wpt/resource-timing/nested-context-navigations-iframe.html [ Pass Failure ]
 
+# Landing a failing test temporarily to observe results on other browsers
+# through wpt.fyi
+crbug.com/1218565 external/wpt/resource-timing/TAO-match.html [ Failure Timeout ]
+
 # Chrome touch-action computation ignores div transforms.
 crbug.com/715148 external/wpt/pointerevents/pointerevent_touch-action-rotated-divs_touch-manual.html [ Skip ]
 
