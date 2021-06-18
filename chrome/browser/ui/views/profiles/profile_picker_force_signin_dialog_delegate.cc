@@ -27,6 +27,9 @@ ProfilePickerForceSigninDialogDelegate::ProfilePickerForceSigninDialogDelegate(
   SetTitle(IDS_PROFILES_GAIA_SIGNIN_TITLE);
   SetButtons(ui::DIALOG_BUTTON_NONE);
   SetModalType(ui::MODAL_TYPE_WINDOW);
+  RegisterDeleteDelegateCallback(
+      base::BindOnce(&ProfilePickerForceSigninDialogDelegate::OnDialogDestroyed,
+                     base::Unretained(this)));
   set_use_custom_frame(false);
 
   web_view_ = AddChildView(std::move(web_view));
@@ -100,11 +103,6 @@ void ProfilePickerForceSigninDialogDelegate::AddObserver(
 
 void ProfilePickerForceSigninDialogDelegate::RemoveObserver(
     web_modal::ModalDialogHostObserver* observer) {}
-
-void ProfilePickerForceSigninDialogDelegate::DeleteDelegate() {
-  OnDialogDestroyed();
-  delete this;
-}
 
 views::View* ProfilePickerForceSigninDialogDelegate::GetInitiallyFocusedView() {
   return static_cast<views::View*>(web_view_);

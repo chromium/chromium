@@ -83,6 +83,12 @@ MediaGalleriesDialogViews::MediaGalleriesDialogViews(
   SetModalType(ui::MODAL_TYPE_CHILD);
   SetShowCloseButton(false);
   SetTitle(controller_->GetHeader());
+  SetOwnedByWidget(false);
+  RegisterDeleteDelegateCallback(base::BindOnce(
+      [](MediaGalleriesDialogViews* dialog) {
+        dialog->controller_->DialogFinished(dialog->accepted_);
+      },
+      this));
 
   std::u16string label = controller_->GetAuxiliaryButtonText();
   if (!label.empty()) {
@@ -244,10 +250,6 @@ bool MediaGalleriesDialogViews::AddOrUpdateGallery(
   gallery_view->checkbox()->SetChecked(gallery.selected);
   checkbox_map_[gallery.pref_info.pref_id] = gallery_view;
   return true;
-}
-
-void MediaGalleriesDialogViews::DeleteDelegate() {
-  controller_->DialogFinished(accepted_);
 }
 
 views::Widget* MediaGalleriesDialogViews::GetWidget() {

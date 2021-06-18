@@ -253,10 +253,6 @@ std::u16string CardUnmaskPromptViews::GetWindowTitle() const {
   return controller_->GetWindowTitle();
 }
 
-void CardUnmaskPromptViews::DeleteDelegate() {
-  delete this;
-}
-
 bool CardUnmaskPromptViews::IsDialogButtonEnabled(
     ui::DialogButton button) const {
   if (button == ui::DIALOG_BUTTON_CANCEL)

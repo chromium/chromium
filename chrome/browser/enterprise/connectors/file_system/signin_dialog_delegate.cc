@@ -146,10 +146,6 @@ ui::ModalType FileSystemSigninDialogDelegate::GetModalType() const {
   return ui::MODAL_TYPE_WINDOW;
 }
 
-void FileSystemSigninDialogDelegate::DeleteDelegate() {
-  delete this;
-}
-
 views::View* FileSystemSigninDialogDelegate::GetInitiallyFocusedView() {
   return static_cast<views::View*>(web_view_.get());
 }

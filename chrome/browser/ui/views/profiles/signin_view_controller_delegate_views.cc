@@ -95,11 +95,6 @@ const views::Widget* SigninViewControllerDelegateViews::GetWidget() const {
   return content_view_->GetWidget();
 }
 
-void SigninViewControllerDelegateViews::DeleteDelegate() {
-  NotifyModalSigninClosed();
-  delete this;
-}
-
 bool SigninViewControllerDelegateViews::ShouldShowCloseButton() const {
   return should_show_close_button_;
 }
@@ -199,6 +194,10 @@ SigninViewControllerDelegateViews::SigninViewControllerDelegateViews(
          dialog_modal_type == ui::MODAL_TYPE_WINDOW)
       << "Unsupported dialog modal type " << dialog_modal_type;
   SetModalType(dialog_modal_type);
+
+  RegisterDeleteDelegateCallback(base::BindOnce(
+      &SigninViewControllerDelegateViews::NotifyModalSigninClosed,
+      base::Unretained(this)));
 
   if (!wait_for_size)
     DisplayModal();

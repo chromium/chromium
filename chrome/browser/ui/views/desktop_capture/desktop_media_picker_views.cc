@@ -189,7 +189,13 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
   SetModalType(params.modality);
   SetButtonLabel(ui::DIALOG_BUTTON_OK,
                  l10n_util::GetStringUTF16(IDS_DESKTOP_MEDIA_PICKER_SHARE));
-  const ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
+  RegisterDeleteDelegateCallback(base::BindOnce(
+      [](DesktopMediaPickerDialogView* dialog) {
+        // If the dialog is being closed then notify the parent about it.
+        if (dialog->parent_)
+          dialog->parent_->NotifyDialogResult(DesktopMediaID());
+      },
+      this));
 
   if (params.request_audio) {
     std::unique_ptr<views::Checkbox> audio_share_checkbox =
@@ -199,6 +205,7 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
     audio_share_checkbox_ = SetExtraView(std::move(audio_share_checkbox));
   }
 
+  const ChromeLayoutProvider* const provider = ChromeLayoutProvider::Get();
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
       provider->GetDialogInsetsForContentType(
@@ -573,13 +580,6 @@ bool DesktopMediaPickerDialogView::Cancel() {
 
 bool DesktopMediaPickerDialogView::ShouldShowCloseButton() const {
   return false;
-}
-
-void DesktopMediaPickerDialogView::DeleteDelegate() {
-  // If the dialog is being closed then notify the parent about it.
-  if (parent_)
-    parent_->NotifyDialogResult(DesktopMediaID());
-  delete this;
 }
 
 void DesktopMediaPickerDialogView::OnSelectionChanged() {

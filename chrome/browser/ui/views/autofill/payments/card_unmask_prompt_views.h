@@ -54,7 +54,6 @@ class CardUnmaskPromptViews : public CardUnmaskPromptView,
   void AddedToWidget() override;
   void OnThemeChanged() override;
   std::u16string GetWindowTitle() const override;
-  void DeleteDelegate() override;
   bool IsDialogButtonEnabled(ui::DialogButton button) const override;
   View* GetInitiallyFocusedView() override;
   bool ShouldShowCloseButton() const override;

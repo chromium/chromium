@@ -45,12 +45,11 @@ class ResizableWidgetDelegate : public views::WidgetDelegateView {
     SetCanMinimize(true);
     SetCanResize(true);
   }
+
+  ResizableWidgetDelegate(const ResizableWidgetDelegate&) = delete;
+  ResizableWidgetDelegate& operator=(const ResizableWidgetDelegate&) = delete;
+
   ~ResizableWidgetDelegate() override = default;
-
- private:
-  void DeleteDelegate() override { delete this; }
-
-  DISALLOW_COPY_AND_ASSIGN(ResizableWidgetDelegate);
 };
 
 // Support class for testing windows with a maximum size.
@@ -87,16 +86,17 @@ class MaxSizeWidgetDelegate : public views::WidgetDelegateView {
     SetCanMinimize(true);
     SetCanResize(true);
   }
+
+  MaxSizeWidgetDelegate(const MaxSizeWidgetDelegate&) = delete;
+  MaxSizeWidgetDelegate& operator=(const MaxSizeWidgetDelegate&) = delete;
+
   ~MaxSizeWidgetDelegate() override = default;
 
  private:
-  void DeleteDelegate() override { delete this; }
   std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
       views::Widget* widget) override {
     return std::make_unique<MaxSizeNCFV>();
   }
-
-  DISALLOW_COPY_AND_ASSIGN(MaxSizeWidgetDelegate);
 };
 
 }  // namespace

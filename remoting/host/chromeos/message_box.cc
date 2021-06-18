@@ -47,7 +47,6 @@ class MessageBox::Core : public views::DialogDelegateView {
   views::View* GetContentsView() override;
   views::Widget* GetWidget() override;
   const views::Widget* GetWidget() const override;
-  void DeleteDelegate() override;
 
   // Called by MessageBox::Core when it is destroyed.
   void OnMessageBoxDestroyed();
@@ -72,19 +71,24 @@ MessageBox::Core::Core(const std::u16string& title_label,
       message_box_(message_box),
       message_box_view_(new views::MessageBoxView(message_label)) {
   DCHECK(message_box_);
-  DialogDelegate::SetButtonLabel(ui::DIALOG_BUTTON_OK, ok_label);
-  DialogDelegate::SetButtonLabel(ui::DIALOG_BUTTON_CANCEL, cancel_label);
+  SetButtonLabel(ui::DIALOG_BUTTON_OK, ok_label);
+  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL, cancel_label);
 
   auto run_callback = [](MessageBox::Core* core, Result result) {
     if (core->result_callback_)
       std::move(core->result_callback_).Run(result);
   };
-  DialogDelegate::SetAcceptCallback(
-      base::BindOnce(run_callback, base::Unretained(this), OK));
-  DialogDelegate::SetCancelCallback(
+  SetAcceptCallback(base::BindOnce(run_callback, base::Unretained(this), OK));
+  SetCancelCallback(
       base::BindOnce(run_callback, base::Unretained(this), CANCEL));
-  DialogDelegate::SetCloseCallback(
+  SetCloseCallback(
       base::BindOnce(run_callback, base::Unretained(this), CANCEL));
+  RegisterDeleteDelegateCallback(base::BindOnce(
+      [](Core* dialog) {
+        if (dialog->message_box_)
+          dialog->message_box_->core_ = nullptr;
+      },
+      this));
 }
 
 void MessageBox::Core::Show() {
@@ -123,13 +127,6 @@ views::Widget* MessageBox::Core::GetWidget() {
 
 const views::Widget* MessageBox::Core::GetWidget() const {
   return message_box_view_->GetWidget();
-}
-
-void MessageBox::Core::DeleteDelegate() {
-  if (message_box_) {
-    message_box_->core_ = nullptr;
-  }
-  delete this;
 }
 
 void MessageBox::Core::OnMessageBoxDestroyed() {

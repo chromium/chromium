@@ -64,7 +64,6 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
   bool Accept() override;
   bool Cancel() override;
   bool ShouldShowCloseButton() const override;
-  void DeleteDelegate() override;
 
  private:
   friend class DesktopMediaPickerViewsTestApi;

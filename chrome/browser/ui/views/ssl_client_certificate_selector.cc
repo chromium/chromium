@@ -89,6 +89,16 @@ SSLClientCertificateSelector::SSLClientCertificateSelector(
           std::make_unique<SSLClientAuthObserverImpl>(web_contents,
                                                       cert_request_info,
                                                       std::move(delegate))) {
+  RegisterDeleteDelegateCallback(base::BindOnce(
+      [](SSLClientCertificateSelector* dialog) {
+        // This is here and not in Cancel() to give WebContentsDestroyed a
+        // chance to abort instead of proceeding with a null certificate. (This
+        // will be ignored if there was a previous call to CertificateSelected
+        // or CancelCertificateSelection.)
+        if (dialog->auth_observer_impl_)
+          dialog->auth_observer_impl_->CertificateSelected(nullptr, nullptr);
+      },
+      this));
   chrome::RecordDialogCreation(
       chrome::DialogIdentifier::SSL_CLIENT_CERTIFICATE_SELECTOR);
 }
@@ -112,16 +122,6 @@ void SSLClientCertificateSelector::Init() {
 
 void SSLClientCertificateSelector::CloseDialog() {
   GetWidget()->Close();
-}
-
-void SSLClientCertificateSelector::DeleteDelegate() {
-  // This is here and not in Cancel() to give WebContentsDestroyed a chance
-  // to abort instead of proceeding with a null certificate. (This will be
-  // ignored if there was a previous call to CertificateSelected or
-  // CancelCertificateSelection.)
-  if (auth_observer_impl_)
-    auth_observer_impl_->CertificateSelected(nullptr, nullptr);
-  chrome::CertificateSelector::DeleteDelegate();
 }
 
 void SSLClientCertificateSelector::AcceptCertificate(

@@ -271,9 +271,6 @@ class TestingWidgetDelegateView : public WidgetDelegateView {
       delete;
 
  private:
-  // WidgetDelegate:
-  void DeleteDelegate() override { delete this; }
-
   base::RunLoop* run_loop_;
 };
 

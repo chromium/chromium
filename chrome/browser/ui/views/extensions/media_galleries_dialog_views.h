@@ -37,7 +37,6 @@ class MediaGalleriesDialogViews : public MediaGalleriesDialog,
   void UpdateGalleries() override;
 
   // views::DialogDelegate:
-  void DeleteDelegate() override;
   views::Widget* GetWidget() override;
   const views::Widget* GetWidget() const override;
   views::View* GetContentsView() override;

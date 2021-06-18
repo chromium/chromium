@@ -37,7 +37,6 @@ class SSLClientCertificateSelector : public chrome::CertificateSelector {
   void CloseDialog();
 
   // chrome::CertificateSelector:
-  void DeleteDelegate() override;
   void AcceptCertificate(
       std::unique_ptr<net::ClientCertIdentity> identity) override;
 

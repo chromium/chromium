@@ -73,9 +73,8 @@ class ProfilePickerForceSigninDialogDelegate
   // to the ProfilePickerForceSigninDialogDelegate.
   void OnDialogDestroyed();
 
-  // views::DialogDelegate:
+  // views::DialogDelegateView:
   gfx::Size CalculatePreferredSize() const override;
-  void DeleteDelegate() override;
   views::View* GetInitiallyFocusedView() override;
 
   ProfilePickerForceSigninDialogHost* host_;  // Not owned.

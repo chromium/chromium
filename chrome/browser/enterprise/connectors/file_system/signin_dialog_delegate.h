@@ -62,7 +62,6 @@ class FileSystemSigninDialogDelegate
   // views::DialogDelegate:
   gfx::Size CalculatePreferredSize() const override;
   ui::ModalType GetModalType() const override;
-  void DeleteDelegate() override;
   views::View* GetInitiallyFocusedView() override;
 
   void OnCancellation();
