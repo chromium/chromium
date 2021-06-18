@@ -585,10 +585,21 @@ class SessionRestoreImpl : public BrowserListObserver {
                            &new_group_ids);
       (*tab_count) += (static_cast<int>(browser->tab_strip_model()->count()) -
                        initial_tab_count);
+
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-      DCHECK(browser->window()->IsVisible() ||
+#if defined(OS_MAC)
+      // On the mac, app visibility is asynchronously available, so we can't
+      // rely on a particular value here.
+      const bool is_visibility_async =
+          browser->type() == Browser::Type::TYPE_APP;
+#else
+      const bool is_visibility_async = false;
+#endif  // defined(OS_MAC)
+
+      DCHECK(is_visibility_async || browser->window()->IsVisible() ||
              browser->window()->IsMinimized());
-#endif
+
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
       // 6. Tabs will be grouped appropriately in RestoreTabsToBrowser. Now
       //    restore the groups' visual data.
@@ -988,13 +999,9 @@ void SessionRestore::RestoreSessionAfterCrash(Browser* browser) {
           ? SessionRestore::CLOBBER_CURRENT_TAB
           : 0;
 
-// TODO(stahon@microsoft.com) http://crbug.com/1194201 covers this
-// being disabled on mac. MacOS will not restore apps on crash restore.
 #if BUILDFLAG(ENABLE_APP_SESSION_SERVICE)
-#if !defined(OS_MAC)
   // Apps should always be restored on crash restore.
   behavior |= SessionRestore::RESTORE_APPS;
-#endif
 #endif
   SessionRestore::RestoreSession(profile, browser, behavior,
                                  std::vector<GURL>());

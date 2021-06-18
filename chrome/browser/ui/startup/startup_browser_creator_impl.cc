@@ -108,11 +108,6 @@ namespace {
 bool ShouldRestoreApps(bool is_post_restart) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return true;
-#elif defined(OS_MAC)
-  // TODO(stahon@microsoft.com)
-  // Even when app restores are enabled on mac, don't actually restore apps
-  // because they do not restore correctly. http://crbug.com/1194201
-  return false;
 #else
   return is_post_restart;
 #endif

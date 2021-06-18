@@ -1338,18 +1338,9 @@ class StartupBrowserCreatorRestartTest : public StartupBrowserCreatorTest,
       relaunch_chrome_override_;
 };
 
-#if defined(OS_MAC)
-// This test triggers a restart and expects apps to be restored. This is not
-// yet enabled on Mac pending crbug.com/1194201.
-#define MAYBE_PRE_ProfileRestartedAppRestore \
-  DISABLED_PRE_ProfileRestartedAppRestore
-#else
-#define MAYBE_PRE_ProfileRestartedAppRestore \
-  PRE_ProfileRestartedAppRestore
-#endif
 // Open an App and restart in preparation for the real test.
 IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorRestartTest,
-                       MAYBE_PRE_ProfileRestartedAppRestore) {
+                       PRE_ProfileRestartedAppRestore) {
   // Ensure services are started.
   Profile* test_profile = browser()->profile();
 
@@ -1373,13 +1364,6 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorRestartTest,
   EXPECT_TRUE(pref_service->GetBoolean(prefs::kWasRestarted));
 }
 
-#if defined(OS_MAC)
-// This test triggers a restart and expects apps to be restored. This is not
-// yet enabled on Mac pending crbug.com/1194201.
-#define MAYBE_ProfileRestartedAppRestore DISABLED_ProfileRestartedAppRestore
-#else
-#define MAYBE_ProfileRestartedAppRestore ProfileRestartedAppRestore
-#endif
 // This test tests a specific scenario where the browser is marked as restarted
 // and a SessionBrowserCreatorImpl::MaybeAsyncRestore is triggered.
 // ShouldRestoreApps will return true because the profile is marked as
@@ -1388,7 +1372,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorRestartTest,
 // does not occur. This test doesn't build on non app_session_service
 // platforms, hence the buildflag disablement.
 IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorRestartTest,
-                       MAYBE_ProfileRestartedAppRestore) {
+                       ProfileRestartedAppRestore) {
   Profile* test_profile = browser()->profile();
 
   // StartupBrowserCreator() has already run in SetUp(), so it would already be

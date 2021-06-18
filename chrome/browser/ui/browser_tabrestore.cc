@@ -203,7 +203,13 @@ WebContents* AddRestoredTab(
   if (session_service)
     session_service->TabRestored(raw_web_contents, pin);
 
-  LoadRestoredTabIfVisible(browser, raw_web_contents);
+// On OS_MAC, app restorations take longer than the normal browser window to
+// be restored and that will cause LoadRestoredTabIfVisible() to fail.
+// Skip LoadRestoreTabIfVisible if OS_MAC && the browser is an app browser.
+#if defined(OS_MAC)
+  if (browser->type() != Browser::Type::TYPE_APP)
+#endif  // defined(OS_MAC)
+    LoadRestoredTabIfVisible(browser, raw_web_contents);
 
   return raw_web_contents;
 }
