@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {WallpaperBreadcrumbTest} from './wallpaper_breadcrumb_element_test.js';
 import {WallpaperCollectionsTest} from './wallpaper_collections_element_test.js';
 import {WallpaperImagesTest} from './wallpaper_images_element_test.js';
 import {WallpaperSelectedTest} from './wallpaper_selected_element_test.js';
@@ -11,6 +12,7 @@ import {WallpaperSelectedTest} from './wallpaper_selected_element_test.js';
 window.console.warn = () => {};
 
 const testCases = [
+  WallpaperBreadcrumbTest,
   WallpaperCollectionsTest,
   WallpaperImagesTest,
   WallpaperSelectedTest,

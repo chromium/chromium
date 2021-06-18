@@ -8,6 +8,7 @@ import("//tools/polymer/html_to_js.gni")
 
 polymer_element_files = [
   "local_images_element.js",
+  "wallpaper_breadcrumb_element.js",
   "wallpaper_collections_element.js",
   "wallpaper_images_element.js",
   "wallpaper_selected_element.js",
@@ -57,6 +58,7 @@ js_library("personalization_app") {
     ":personalization_router_element",
     ":personalization_store",
     ":styles",
+    ":wallpaper_breadcrumb_element",
     ":wallpaper_collections_element",
     ":wallpaper_images_element",
     ":wallpaper_selected_element",
@@ -102,6 +104,7 @@ js_library("personalization_store") {
     ":personalization_actions",
     ":personalization_reducers",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:i18n_behavior.m",
     "//ui/webui/resources/js/cr/ui:store.m",
     "//ui/webui/resources/js/cr/ui:store_client.m",
   ]
@@ -109,6 +112,14 @@ js_library("personalization_store") {
 
 js_library("styles") {
   deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("wallpaper_breadcrumb_element") {
+  deps = [
+    ":personalization_router_element",
+    ":personalization_store",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
@@ -155,6 +166,7 @@ js_type_check("closure_compile") {
     ":personalization_router_element",
     ":personalization_store",
     ":styles",
+    ":wallpaper_breadcrumb_element",
     ":wallpaper_collections_element",
     ":wallpaper_images_element",
     ":wallpaper_selected_element",

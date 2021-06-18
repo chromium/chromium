@@ -58,6 +58,19 @@ js_library("test_mojo_interface_provider") {
   ]
 }
 
+js_library("wallpaper_breadcrumb_element_test") {
+  deps = [
+    ":personalization_app_test_utils",
+    ":test_mojo_interface_provider",
+    ":test_personalization_store",
+    "../..:chai_assert",
+    "../..:test_util.m",
+    "//chromeos/components/personalization_app/resources/trusted:personalization_router_element",
+    "//chromeos/components/personalization_app/resources/trusted:wallpaper_breadcrumb_element",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
 js_library("wallpaper_collections_element_test") {
   deps = [
     ":personalization_app_test_utils",

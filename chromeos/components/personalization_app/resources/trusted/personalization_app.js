@@ -11,6 +11,7 @@
 import '/strings.m.js';
 import './local_images_element.js';
 import './personalization_router_element.js';
+import './wallpaper_breadcrumb_element.js';
 import './wallpaper_collections_element.js';
 import './wallpaper_images_element.js';
 import './wallpaper_selected_element.js';

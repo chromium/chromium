@@ -1,0 +1,19 @@
+<style include="cr-icons">
+  #container {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+  }
+</style>
+<div id="container">
+  <div id="navigation" hidden="[[!showNavigation_]]">
+    <cr-icon-button id="backButton" class="icon-arrow-back"
+      on-click="onBackClick_">
+    </cr-icon-button>
+  </div>
+  <span id="wallpaperLabel" class="cr-title-text">[[i18n('title')]]</span>
+  <div id="subpage" hidden="[[!pageLabel_]]">
+    <iron-icon icon="cr:chevron-right"></iron-icon>
+    <span id="pageLabel" class="cr-title-text">[[pageLabel_]]</span>
+  </div>
+</div>

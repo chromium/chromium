@@ -4,6 +4,7 @@
 
 import {Store, StoreObserver} from 'chrome://resources/js/cr/ui/store.m.js';
 import {StoreClient, StoreClientInterface} from 'chrome://resources/js/cr/ui/store_client.m.js';
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {emptyState, PersonalizationState, reduce} from './personalization_reducers.js';
 
@@ -76,9 +77,10 @@ export class PersonalizationStoreClientInterface {
  * @implements {PersonalizationStoreClientInterface}
  * @implements {StoreClientInterface}
  * @implements {StoreObserver<PersonalizationState>}
+ * @implements {I18nBehavior}
  */
 export const PersonalizationStoreClient =
-    [StoreClient, PersonalizationStoreClientImpl];
+    [StoreClient, PersonalizationStoreClientImpl, I18nBehavior];
 
 /**
  * @constructor

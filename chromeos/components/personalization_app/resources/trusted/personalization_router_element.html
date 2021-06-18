@@ -2,6 +2,8 @@
 </iron-location>
 <iron-query-params params-object="{{queryParams_}}" params-string="{{query_}}">
 </iron-query-params>
+<wallpaper-breadcrumb path=[[path_]] collection-id="[[queryParams_.id]]">
+</wallpaper-breadcrumb>
 <wallpaper-selected></wallpaper-selected>
 <wallpaper-collections hidden$="[[!shouldShowCollections_(path_)]]">
 </wallpaper-collections>
