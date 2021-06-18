@@ -43,24 +43,6 @@ class DecoderBufferValidator : public BitstreamProcessor {
   size_t num_errors_ = 0;
 };
 
-// TemporalLayerValidator checks whether the stream is valid on each temporal
-// layer.
-class TemporalLayerValidator {
- public:
-  TemporalLayerValidator(size_t num_temporal_layers);
-  ~TemporalLayerValidator();
-
-  bool ValidateAndUpdate(bool keyframe,
-                         uint8_t temporal_index,
-                         uint8_t reference_index,
-                         uint8_t refresh_frame_index);
-
- private:
-  static constexpr size_t kReferenceFramePoolSize = 8;
-  const size_t num_temporal_layers_ = 3;
-  std::array<uint8_t, kReferenceFramePoolSize> reference_frames_;
-};
-
 class H264Validator : public DecoderBufferValidator {
  public:
   H264Validator(VideoCodecProfile profile,
@@ -117,22 +99,33 @@ class VP9Validator : public DecoderBufferValidator {
  public:
   VP9Validator(VideoCodecProfile profile,
                const gfx::Rect& visible_rect,
+               size_t num_spatial_layers,
                size_t num_temporal_layers);
   ~VP9Validator() override;
 
  private:
+  // Struct representing the expected state of a reference buffer.
+  struct BufferState {
+    int picture_id = 0;
+    uint8_t spatial_id = 0;
+    uint8_t temporal_id = 0;
+  };
+
   bool Validate(const DecoderBuffer& decoder_buffer,
                 const BitstreamBufferMetadata& metadata) override;
 
   Vp9Parser parser_;
 
-  // Whether key frame has been input.
-  bool seen_keyframe_ = false;
-
-  // The expected h264 profile of |decoder_buffer|.
+  // The expected VP9 profile of |decoder_buffer|.
   const int profile_;
+  const size_t num_spatial_layers_;
+  const size_t num_temporal_layers_;
+  int next_picture_id_;
 
-  const std::unique_ptr<TemporalLayerValidator> temporal_layer_validator_;
+  // An optional state for each specified VP9 reference buffer.
+  // A nullopt indicates either keyframe not yet seen, or that a
+  // buffer has been invalidated (e.g. due to sync points).
+  std::array<absl::optional<BufferState>, kVp9NumRefFrames> reference_buffers_;
 };
 }  // namespace test
 }  // namespace media

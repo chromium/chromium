@@ -218,7 +218,8 @@ class VideoEncoderTest : public ::testing::Test {
         break;
       case kCodecVP9:
         bitstream_processors.emplace_back(new VP9Validator(
-            config.output_profile, visible_rect, config.num_temporal_layers));
+            config.output_profile, visible_rect, /*num_spatial_layers=*/1,
+            config.num_temporal_layers));
         break;
       default:
         LOG(ERROR) << "Unsupported profile: "
