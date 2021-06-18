@@ -239,6 +239,30 @@ class OverlayProcessorWebView::Manager
     pending_removals_.insert(overlay_id);
   }
 
+  // Initiate removal of all current surfaces and drop reference to
+  // parent_surface. This can be called with empty array.
+  void RemoveOverlays(std::vector<uint64_t> overlay_ids) {
+    DCHECK_CALLED_ON_VALID_THREAD(render_thread_checker_);
+    TRACE_EVENT0("gpu,benchmark,webview",
+                 "OverlayProcessorWebview::Manager::RemoveOverlays");
+
+    parent_surface_.reset();
+
+    if (overlay_ids.empty())
+      return;
+
+    auto& transaction = GetHWUITransaction();
+    {
+      base::AutoLock lock(lock_);
+      for (auto overlay_id : overlay_ids) {
+        auto& overlay = GetOverlaySurfaceLocked(overlay_id);
+        transaction.SetParent(*overlay.surface, nullptr);
+      }
+    }
+
+    pending_removals_.insert(overlay_ids.begin(), overlay_ids.end());
+  }
+
   void OnUpdateBufferTransactionAck(
       uint64_t overlay_id,
       std::unique_ptr<Resource> resource,
@@ -550,8 +574,20 @@ void OverlayProcessorWebView::SetOverlaysEnabledByHWUI(bool enabled) {
 
 void OverlayProcessorWebView::RemoveOverlays() {
   overlays_enabled_by_hwui_ = false;
-  // TODO(vasilyt): Remove overlays.
-  NOTIMPLEMENTED();
+
+  std::vector<uint64_t> ids;
+  ids.reserve(overlays_.size());
+  for (auto overlay : overlays_)
+    ids.push_back(overlay.second.id);
+
+  // Note, that we send it even there are no overlays, to drop reference to the
+  // parent surface.
+  render_thread_sequence_->ScheduleGpuTask(
+      base::BindOnce(&Manager::RemoveOverlays, base::Unretained(manager_.get()),
+                     std::move(ids)),
+      std::vector<gpu::SyncToken>());
+
+  overlays_.clear();
 }
 
 absl::optional<gfx::SurfaceControl::Transaction>
