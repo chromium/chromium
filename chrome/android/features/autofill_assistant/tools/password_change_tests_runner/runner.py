@@ -24,7 +24,8 @@ tests_list = [
     'testNoCookies',
     'testInvalidCredentials',
     'testUserDeclinesGeneratedPassword',
-    'testMultipleCredentials'
+    'testMultipleCredentials',
+    'testWrongCurrentPassword'
 ]
 
 

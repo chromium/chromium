@@ -263,6 +263,42 @@ public class PasswordChangeFixtureTest implements PasswordStoreBridge.PasswordSt
     }
 
     /**
+     * Fills out the current password field with a wrong password, submits the
+     * password change form and validates that the script ends gracefully with an error.
+     */
+    @Test
+    @Manual
+    public void testWrongCurrentPassword() throws Exception {
+        // Fetch login credential for username.
+        PasswordStoreCredential initialCredential = getCredentialForDomainAndUser(
+                mCredentials, mParameters.getDomainUrl(), mParameters.getUsername());
+        // Run script.
+        runScriptForUser(mParameters.getUsername());
+
+        // Opening site's settings.
+        waitUntilViewMatchesCondition(
+                withText("Opening site's settings..."), isDisplayed(), MAX_WAIT_TIME_IN_MS);
+
+        // Filling out old password.
+        waitUntilViewMatchesCondition(
+                withText("Changing password..."), isDisplayed(), MAX_WAIT_TIME_IN_MS);
+
+        mPasswordStoreBridge.editPassword(initialCredential, "wrongpassword");
+        // Requesting authorization to change the password.
+        waitUntilViewMatchesCondition(
+                withText("Use suggested password?"), isDisplayed(), MAX_WAIT_TIME_IN_MS);
+
+        // Accept generated password.
+        onView(withText("Use password")).perform(click());
+
+        // Password change submission failed.
+        waitUntilViewMatchesCondition(
+                withText("Can't change your password"), isDisplayed(), MAX_WAIT_TIME_IN_MS);
+
+        logPasswordStoreCredentials(mPasswordStoreBridge, "Final password store state");
+    }
+
+    /**
      * Runs the password change flow for all credentials in the store and validates the changes.
      */
     @Test
