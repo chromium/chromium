@@ -990,13 +990,6 @@ void Dispatcher::ActivateExtension(const std::string& extension_id) {
   if (IsExtensionActive(extension_id))
     return;
 
-  // TODO(crbug.com/1184892): This is a temporary hack to allow
-  // SharedArrayBuffer and wasm-threads in extension processes. Remove once we
-  // add support for extension opt-in into cross-origin isolation.
-  if (extension->is_extension()) {
-    blink::WebV8Features::EnableSharedArrayBuffer();
-  }
-
   active_extension_ids_.insert(extension_id);
 
   if (activity_logging_enabled_) {

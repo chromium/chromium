@@ -24,17 +24,5 @@ chrome.test.runTests([
 
     // The worker will ack on receiving the SharedArrayBuffer causing the test
     // to terminate.
-  },
-
-  // Ensure an extension can construct a shared WebAssembly.Memory instance
-  // (with a SharedArrayBuffer as a backing store). This is used as a proxy to
-  // test that web assembly threads are enabled for the extension.
-  function constructSharedWebAssemblyMemory() {
-    let memory =
-        new WebAssembly.Memory({initial: 10, maximum: 100, shared: true});
-    chrome.test.assertEq(
-        '[object SharedArrayBuffer]',
-        Object.getPrototypeOf(memory.buffer).toString());
-    chrome.test.succeed();
   }
 ]);
