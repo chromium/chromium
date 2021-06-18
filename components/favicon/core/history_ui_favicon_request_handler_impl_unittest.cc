@@ -224,7 +224,6 @@ class HistoryUiFaviconRequestHandlerImplTest : public ::testing::Test {
   const std::string kOriginHistogramSuffix = ".HISTORY";
   const std::string kAvailabilityHistogramName =
       "Sync.SyncedHistoryFaviconAvailability";
-  const std::string kLatencyHistogramName = "Sync.SyncedHistoryFaviconLatency";
 
   DISALLOW_COPY_AND_ASSIGN(HistoryUiFaviconRequestHandlerImplTest);
 };
@@ -241,8 +240,6 @@ TEST_F(HistoryUiFaviconRequestHandlerImplTest, ShouldGetEmptyBitmap) {
   histogram_tester_.ExpectUniqueSample(
       kAvailabilityHistogramName + kOriginHistogramSuffix,
       FaviconAvailability::kNotAvailable, 1);
-  histogram_tester_.ExpectTotalCount(
-      kLatencyHistogramName + kOriginHistogramSuffix, 1);
 }
 
 TEST_F(HistoryUiFaviconRequestHandlerImplTest, ShouldGetLocalBitmap) {
@@ -259,8 +256,6 @@ TEST_F(HistoryUiFaviconRequestHandlerImplTest, ShouldGetLocalBitmap) {
   histogram_tester_.ExpectUniqueSample(
       kAvailabilityHistogramName + kOriginHistogramSuffix,
       FaviconAvailability::kLocal, 1);
-  histogram_tester_.ExpectTotalCount(
-      kLatencyHistogramName + kOriginHistogramSuffix, 1);
 }
 
 TEST_F(HistoryUiFaviconRequestHandlerImplTest, ShouldGetGoogleServerBitmap) {
@@ -282,8 +277,6 @@ TEST_F(HistoryUiFaviconRequestHandlerImplTest, ShouldGetGoogleServerBitmap) {
   histogram_tester_.ExpectUniqueSample(
       kAvailabilityHistogramName + kOriginHistogramSuffix,
       FaviconAvailability::kLocal, 1);
-  histogram_tester_.ExpectTotalCount(
-      kLatencyHistogramName + kOriginHistogramSuffix, 1);
 }
 
 TEST_F(HistoryUiFaviconRequestHandlerImplTest, ShouldGetEmptyImage) {
@@ -295,8 +288,6 @@ TEST_F(HistoryUiFaviconRequestHandlerImplTest, ShouldGetEmptyImage) {
   histogram_tester_.ExpectUniqueSample(
       kAvailabilityHistogramName + kOriginHistogramSuffix,
       FaviconAvailability::kNotAvailable, 1);
-  histogram_tester_.ExpectTotalCount(
-      kLatencyHistogramName + kOriginHistogramSuffix, 1);
 }
 
 TEST_F(HistoryUiFaviconRequestHandlerImplTest, ShouldGetLocalImage) {
@@ -310,8 +301,6 @@ TEST_F(HistoryUiFaviconRequestHandlerImplTest, ShouldGetLocalImage) {
   histogram_tester_.ExpectUniqueSample(
       kAvailabilityHistogramName + kOriginHistogramSuffix,
       FaviconAvailability::kLocal, 1);
-  histogram_tester_.ExpectTotalCount(
-      kLatencyHistogramName + kOriginHistogramSuffix, 1);
 }
 
 TEST_F(HistoryUiFaviconRequestHandlerImplTest, ShouldGetGoogleServerImage) {
@@ -330,8 +319,6 @@ TEST_F(HistoryUiFaviconRequestHandlerImplTest, ShouldGetGoogleServerImage) {
   histogram_tester_.ExpectUniqueSample(
       kAvailabilityHistogramName + kOriginHistogramSuffix,
       FaviconAvailability::kLocal, 1);
-  histogram_tester_.ExpectTotalCount(
-      kLatencyHistogramName + kOriginHistogramSuffix, 1);
 }
 
 TEST_F(HistoryUiFaviconRequestHandlerImplTest,

@@ -63,7 +63,6 @@ class HistoryUiFaviconRequestHandlerImpl
       int desired_size_in_pixel,
       favicon_base::FaviconRawBitmapCallback response_callback,
       HistoryUiFaviconRequestOrigin origin_for_uma,
-      base::Time request_start_time_for_uma,
       const favicon_base::FaviconRawBitmapResult& bitmap_result);
 
   // Called after the first attempt to retrieve the icon image from local
@@ -74,7 +73,6 @@ class HistoryUiFaviconRequestHandlerImpl
       const GURL& page_url,
       favicon_base::FaviconImageCallback response_callback,
       HistoryUiFaviconRequestOrigin origin_for_uma,
-      base::Time request_start_time_for_uma,
       const favicon_base::FaviconImageResult& image_result);
 
   // Requests an icon from Google favicon server. Since requests work by
@@ -84,8 +82,7 @@ class HistoryUiFaviconRequestHandlerImpl
   void RequestFromGoogleServer(const GURL& page_url,
                                base::OnceClosure empty_response_callback,
                                base::OnceClosure local_lookup_callback,
-                               HistoryUiFaviconRequestOrigin origin_for_uma,
-                               base::Time request_start_time_for_uma);
+                               HistoryUiFaviconRequestOrigin origin_for_uma);
 
   // Called once the request to the favicon server has finished. If the request
   // succeeded, |local_lookup_callback| is called to effectively retrieve the
@@ -94,7 +91,6 @@ class HistoryUiFaviconRequestHandlerImpl
       base::OnceClosure empty_response_callback,
       base::OnceClosure local_lookup_callback,
       HistoryUiFaviconRequestOrigin origin_for_uma,
-      base::Time request_start_time_for_uma,
       favicon_base::GoogleFaviconServerRequestStatus status);
 
   FaviconService* const favicon_service_;

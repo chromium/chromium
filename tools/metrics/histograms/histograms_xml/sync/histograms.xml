@@ -1294,6 +1294,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true" name="Sync.SyncedHistoryFaviconLatency" units="ms"
     expires_after="2021-07-10">
+  <obsolete>
+    Deprecated in M93.
+  </obsolete>
   <owner>jkrcal@chromium.org</owner>
   <owner>mastiz@chromium.org</owner>
   <component>Services&gt;Sync</component>
