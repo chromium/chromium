@@ -7,7 +7,8 @@ import 'chrome://resources/mojo/url/mojom/url.mojom-lite.js';
 
 import './read_later.mojom-lite.js';
 
-import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
+/** @type {?ReadLaterApiProxy} */
+let instance = null;
 
 /** @interface */
 export class ReadLaterApiProxy {
@@ -95,6 +96,15 @@ export class ReadLaterApiProxyImpl {
   getCallbackRouter() {
     return this.callbackRouter;
   }
+
+  /** @return {!ReadLaterApiProxy} */
+  static getInstance() {
+    return instance || (instance = new ReadLaterApiProxyImpl());
+  }
+
+  /** @param {!ReadLaterApiProxy} obj */
+  static setInstance(obj) {
+    instance = obj;
+  }
 }
 
-addSingletonGetter(ReadLaterApiProxyImpl);

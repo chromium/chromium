@@ -84,7 +84,7 @@ suite('ReadLaterAppTest', () => {
 
   setup(async () => {
     testProxy = new TestReadLaterApiProxy();
-    ReadLaterApiProxyImpl.instance_ = testProxy;
+    ReadLaterApiProxyImpl.setInstance(testProxy);
     testProxy.setEntries(getSampleData());
     document.body.innerHTML = '';
 

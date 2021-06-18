@@ -9,18 +9,15 @@
 import 'chrome://resources/cr_elements/cr_tabs/cr_tabs.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
-import './bookmarks_list.js';
 import '../app.js'; /* <read-later-app> */
 import '../strings.m.js';
+import './bookmarks_list.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {ReadLaterApiProxy, ReadLaterApiProxyImpl} from '../read_later_api_proxy.js';
 
-/**
- * Key for localStorage object that refers to the last active tab's ID.
- * @const {string}
- */
+// Key for localStorage object that refers to the last active tab's ID.
 export const LOCAL_STORAGE_TAB_ID_KEY = 'lastActiveTab';
 
 export class SidePanelAppElement extends PolymerElement {
@@ -34,7 +31,6 @@ export class SidePanelAppElement extends PolymerElement {
 
   static get properties() {
     return {
-      /** @private {!Object<string, string>} */
       tabs_: {
         type: Object,
         value: () => ({
@@ -43,7 +39,6 @@ export class SidePanelAppElement extends PolymerElement {
         }),
       },
 
-      /** @private {number} */
       selectedTab_: {
         type: Number,
         value: 0,
@@ -51,15 +46,9 @@ export class SidePanelAppElement extends PolymerElement {
     };
   }
 
-  constructor() {
-    super();
-
-    /**
-     * The side panel is currently hosted within Read Later UI.
-     * @const @private {!ReadLaterApiProxy}
-     */
-    this.apiProxy_ = ReadLaterApiProxyImpl.getInstance();
-  }
+  private apiProxy_: ReadLaterApiProxy = ReadLaterApiProxyImpl.getInstance();
+  private selectedTab_: number;
+  private tabs_: {[key: string]: string};
 
   connectedCallback() {
     super.connectedCallback();
@@ -72,34 +61,19 @@ export class SidePanelAppElement extends PolymerElement {
     this.apiProxy_.showUI();
   }
 
-  /**
-   * @return {!Array<string>}
-   * @private
-   */
-  getTabNames_() {
+  private getTabNames_(): string[] {
     return Object.values(this.tabs_);
   }
 
-  /**
-   * @param {number} selectedTab
-   * @param {number} index
-   * @return {boolean}
-   * @private
-   */
-  isSelectedTab_(selectedTab, index) {
+  private isSelectedTab_(selectedTab: number, index: number): boolean {
     return selectedTab === index;
   }
 
-  /** @private */
-  onCloseClick_() {
+  private onCloseClick_() {
     this.apiProxy_.closeUI();
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onSelectedTabChanged_(event) {
+  private onSelectedTabChanged_(event: CustomEvent<{value: number}>) {
     const tabIndex = event.detail.value;
     window.localStorage[LOCAL_STORAGE_TAB_ID_KEY] =
         Object.keys(this.tabs_)[tabIndex];

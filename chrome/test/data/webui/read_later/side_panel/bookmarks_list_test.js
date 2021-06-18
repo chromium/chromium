@@ -7,7 +7,7 @@
 import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 
 import {BookmarkFolderElement, FOLDER_OPEN_CHANGED_EVENT} from 'chrome://read-later.top-chrome/side_panel/bookmark_folder.js';
-import {BookmarksApiProxyImpl} from 'chrome://read-later.top-chrome/side_panel/bookmarks_api_proxy.js';
+import {BookmarksApiProxy} from 'chrome://read-later.top-chrome/side_panel/bookmarks_api_proxy.js';
 import {BookmarksListElement, LOCAL_STORAGE_OPEN_FOLDERS_KEY} from 'chrome://read-later.top-chrome/side_panel/bookmarks_list.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -85,7 +85,7 @@ suite('SidePanelBookmarksListTest', () => {
     bookmarksApi.setFolders(
         /** @type {!Array<!chrome.bookmarks.BookmarkTreeNode>} */ (
             JSON.parse(JSON.stringify(folders))));
-    BookmarksApiProxyImpl.setInstance(bookmarksApi);
+    BookmarksApiProxy.setInstance(bookmarksApi);
 
     bookmarksList = /** @type {!BookmarksListElement} */ (
         document.createElement('bookmarks-list'));

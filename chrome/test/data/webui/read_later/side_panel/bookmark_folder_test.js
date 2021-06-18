@@ -55,7 +55,7 @@ suite('SidePanelBookmarkFolderTest', () => {
     document.body.innerHTML = '';
 
     readLaterApi = new TestReadLaterApiProxy();
-    ReadLaterApiProxyImpl.instance_ = readLaterApi;
+    ReadLaterApiProxyImpl.setInstance(readLaterApi);
 
     bookmarkFolder = /** @type {!BookmarkFolderElement} */ (
         document.createElement('bookmark-folder'));

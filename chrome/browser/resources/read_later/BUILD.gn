@@ -7,6 +7,7 @@ import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_js.gni")
+import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
 preprocess_folder = "preprocessed"
@@ -32,11 +33,7 @@ grit("resources") {
 }
 
 generate_grd("build_grd") {
-  input_files = [
-    "read_later.html",
-    "side_panel/bookmarks_api_proxy.js",
-    "side_panel/side_panel.html",
-  ]
+  input_files = [ "read_later.html" ]
   input_files_base_dir = rebase_path(".", "//")
   grdp_files = [ "$target_gen_dir/side_panel/resources.grdp" ]
   deps = [
@@ -82,14 +79,7 @@ preprocess_if_expr("preprocess_web_components") {
   ]
 }
 
-group("closure_compile") {
-  deps = [
-    ":closure_compile_main",
-    "side_panel:closure_compile",
-  ]
-}
-
-js_type_check("closure_compile_main") {
+js_type_check("closure_compile") {
   is_polymer3 = true
   deps = [
     ":app",
@@ -136,5 +126,31 @@ html_to_js("web_components") {
     "icons.js",
     "read_later_shared_style.js",
     "read_later_item.js",
+  ]
+}
+
+ts_library("build_ts") {
+  tsconfig_base = "tsconfig_base.json"
+  root_dir = "$target_gen_dir/$preprocess_folder"
+  out_dir = "$target_gen_dir/side_panel/tsc"
+  in_files = [
+    "read_later_api_proxy.js",
+    "side_panel/app.ts",
+    "side_panel/bookmark_folder.ts",
+    "side_panel/bookmarks_list.ts",
+    "side_panel/bookmarks_api_proxy.ts",
+  ]
+  definitions = [
+    "//tools/typescript/definitions/bookmarks.d.ts",
+    "//tools/typescript/definitions/chrome_event.d.ts",
+  ]
+  deps = [
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources:library",
+  ]
+  extra_deps = [
+    ":preprocess",
+    "side_panel:preprocess",
+    "side_panel:preprocess_generated",
   ]
 }

@@ -2,23 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/** @type {?BookmarksApiProxy} */
-let instance = null;
+import {ChromeEvent} from '/tools/typescript/definitions/chrome_event.js';
 
-/** @interface */
+let instance: BookmarksApiProxy|null = null;
+
 export class BookmarksApiProxy {
-  constructor() {
-    /** @type {!Object<string, !ChromeEvent>} */
-    this.callbackRouter;
-  }
-  /** @return {!Promise<!Array<!chrome.bookmarks.BookmarkTreeNode>>} */
-  getFolders() {}
-}
+  callbackRouter: {[key: string]: ChromeEvent<Function>};
 
-/** @implements {BookmarksApiProxy} */
-export class BookmarksApiProxyImpl {
   constructor() {
-    /** @type {!Object<string, !ChromeEvent>} */
     this.callbackRouter = {
       onChanged: chrome.bookmarks.onChanged,
       onChildrenReordered: chrome.bookmarks.onChildrenReordered,
@@ -28,19 +19,21 @@ export class BookmarksApiProxyImpl {
     };
   }
 
-  /** @override */
-  getFolders() {
+  getFolders(): Promise<chrome.bookmarks.BookmarkTreeNode[]> {
     return new Promise(resolve => chrome.bookmarks.getTree(results => {
-      resolve(results[0].children);
+      if (results[0] && results[0].children) {
+        resolve(results[0].children);
+        return;
+      }
+      resolve([]);
     }));
   }
 
   static getInstance() {
-    return instance || (instance = new BookmarksApiProxyImpl());
+    return instance || (instance = new BookmarksApiProxy());
   }
 
-  /** @param {!BookmarksApiProxy} obj */
-  static setInstance(obj) {
+  static setInstance(obj: BookmarksApiProxy) {
     instance = obj;
   }
 }

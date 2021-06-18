@@ -10,10 +10,20 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 
 import {ReadLaterApiProxy, ReadLaterApiProxyImpl} from '../read_later_api_proxy.js';
 
-/**
- * Event name for open state of a folder being changed.
- * @const {string}
- */
+/** Event interface for dom-repeat. */
+interface RepeaterEvent extends CustomEvent {
+  model: {
+    item: chrome.bookmarks.BookmarkTreeNode,
+  };
+}
+
+export interface BookmarkFolderElement {
+  $: {
+    children: HTMLElement,
+  };
+}
+
+// Event name for open state of a folder being changed.
 export const FOLDER_OPEN_CHANGED_EVENT = 'bookmark-folder-open-changed';
 
 export class BookmarkFolderElement extends PolymerElement {
@@ -27,7 +37,6 @@ export class BookmarkFolderElement extends PolymerElement {
 
   static get properties() {
     return {
-      /** @private */
       childDepth_: {
         type: Number,
         value: 1,
@@ -39,16 +48,13 @@ export class BookmarkFolderElement extends PolymerElement {
         value: 0,
       },
 
-      /** @type {!chrome.bookmarks.BookmarkTreeNode} */
       folder: Object,
 
-      /** @private */
       open_: {
         type: Boolean,
         value: false,
       },
 
-      /** @type {!Array<string>} */
       openFolders: {
         type: Array,
         observer: 'onOpenFoldersChanged_',
@@ -56,41 +62,31 @@ export class BookmarkFolderElement extends PolymerElement {
     };
   }
 
-  constructor() {
-    super();
+  private childDepth_: number;
+  depth: number;
+  folder: chrome.bookmarks.BookmarkTreeNode;
+  private open_: boolean;
+  openFolders: string[];
+  private readLaterApi_: ReadLaterApiProxy =
+      ReadLaterApiProxyImpl.getInstance();
 
-    /** @private @const {!ReadLaterApiProxy} */
-    this.readLaterApi_ = ReadLaterApiProxyImpl.getInstance();
-  }
-
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onBookmarkClick_(event) {
+  private onBookmarkClick_(event: RepeaterEvent) {
     event.preventDefault();
-    this.readLaterApi_.openURL({url: event.model.item.url}, false);
+    this.readLaterApi_.openURL({url: event.model.item.url!}, false);
   }
 
-  /**
-   * @param {string} url
-   * @return {string}
-   * @private
-   */
-  getBookmarkIcon_(url) {
+  private getBookmarkIcon_(url: string): string {
     return getFaviconForPageURL(url, false);
   }
 
-  /** @private */
-  onDepthChanged_() {
+  private onDepthChanged_() {
     this.childDepth_ = this.depth + 1;
     this.style.setProperty('--node-depth', `${this.depth}`);
     this.$.children.style.setProperty('--node-depth', `${this.childDepth_}`);
   }
 
-  /** @private */
-  onFolderClick_() {
-    if (!this.folder.children.length) {
+  private onFolderClick_() {
+    if (!this.folder.children || this.folder.children.length === 0) {
       // No reason to open if there are no children to show.
       return;
     }
@@ -106,8 +102,7 @@ export class BookmarkFolderElement extends PolymerElement {
     }));
   }
 
-  /** @private */
-  onOpenFoldersChanged_() {
+  private onOpenFoldersChanged_() {
     this.open_ =
         Boolean(this.openFolders) && this.openFolders.includes(this.folder.id);
   }

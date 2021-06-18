@@ -2,67 +2,44 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_js.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
+preprocess_folder =
+    "$root_gen_dir/chrome/browser/resources/read_later/preprocessed/side_panel"
+
 generate_grd("build_grdp") {
-  grd_prefix = "side_panel"
+  grd_prefix = "read_later_side_panel"
   out_grd = "$target_gen_dir/resources.grdp"
-  input_files = [
-    "app.js",
-    "bookmark_folder.js",
-    "bookmarks_list.js",
-  ]
-  input_files_base_dir = rebase_path(target_gen_dir, root_build_dir)
+  deps = [ "../:build_ts" ]
+  manifest_files =
+      [ "$root_gen_dir/chrome/browser/resources/read_later/tsconfig.manifest" ]
+  input_files = [ "side_panel.html" ]
+  input_files_base_dir = rebase_path(".", "//")
+}
+
+preprocess_if_expr("preprocess") {
+  in_folder = "./"
+  out_folder = preprocess_folder
+  in_files = [ "bookmarks_api_proxy.ts" ]
+}
+
+preprocess_if_expr("preprocess_generated") {
   deps = [ ":web_components" ]
-  resource_path_prefix = "side_panel"
-}
-
-js_library("app") {
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-}
-
-js_library("bookmarks_api_proxy") {
-  externs_list = [ "$externs_path/bookmarks.js" ]
-}
-
-js_library("bookmark_folder") {
-  deps = [
-    ":bookmarks_api_proxy",
-    "../:read_later_api_proxy",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
-    "//ui/webui/resources/js:icon.m",
-  ]
-  externs_list = [ "$externs_path/bookmarks.js" ]
-}
-
-js_library("bookmarks_list") {
-  deps = [
-    ":bookmarks_api_proxy",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:list_property_update_behavior.m",
+  in_folder = target_gen_dir
+  out_folder = preprocess_folder
+  in_files = [
+    "app.ts",
+    "bookmark_folder.ts",
+    "bookmarks_list.ts",
   ]
 }
 
 html_to_js("web_components") {
   js_files = [
-    "app.js",
-    "bookmark_folder.js",
-    "bookmarks_list.js",
-  ]
-}
-
-js_type_check("closure_compile") {
-  is_polymer3 = true
-  deps = [
-    ":app",
-    ":bookmark_folder",
-    ":bookmarks_api_proxy",
-    ":bookmarks_list",
+    "app.ts",
+    "bookmark_folder.ts",
+    "bookmarks_list.ts",
   ]
 }

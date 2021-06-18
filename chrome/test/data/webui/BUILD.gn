@@ -545,7 +545,6 @@ group("closure_compile") {
     "media_router:closure_compile",
     "new_tab_page:closure_compile",
     "read_later:closure_compile",
-    "read_later/side_panel:closure_compile",
     "settings:closure_compile",
     "signin:closure_compile",
     "tab_search:closure_compile",
