@@ -866,9 +866,10 @@ bool GpuInit::InitializeVulkan() {
   if (!vulkan_implementation_)
     return false;
 
-  auto disable_patterns = base::GetFieldTrialParamValueByFeature(
-      features::kVulkan, "disable_by_gl_renderer");
-  if (MatchGLRenderer(gpu_info_, disable_patterns))
+  const base::FeatureParam<std::string> disable_patterns(
+      &features::kVulkan, "disable_by_gl_renderer",
+      "*Mali-G?? M*" /* https://crbug.com/1183702 */);
+  if (MatchGLRenderer(gpu_info_, disable_patterns.Get()))
     return false;
 
   auto enable_patterns = base::GetFieldTrialParamValueByFeature(
