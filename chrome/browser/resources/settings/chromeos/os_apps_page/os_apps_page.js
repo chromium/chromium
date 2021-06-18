@@ -84,9 +84,6 @@ Polymer({
               settings.routes.ANDROID_APPS_DETAILS.path,
               '#android-apps .subpage-arrow');
         }
-        if (settings.routes.ON_STARTUP) {
-          map.set(settings.routes.ON_STARTUP.path, '#onStartup');
-        }
         return map;
       },
     },
@@ -98,6 +95,22 @@ Polymer({
     app_: Object,
 
     /**
+     * List of options for the on startup drop-down menu.
+     * @type {!DropdownMenuOptionList}
+     */
+    onStartupOptions_: {
+      readOnly: true,
+      type: Array,
+      value() {
+        return [
+          {value: 1, name: loadTimeData.getString('onStartupAlways')},
+          {value: 2, name: loadTimeData.getString('onStartupAskEveryTime')},
+          {value: 3, name: loadTimeData.getString('onStartupDoNotRestore')},
+        ];
+      },
+    },
+
+    /**
      * Used by DeepLinkingBehavior to focus this page's deep links.
      * @type {!Set<!chromeos.settings.mojom.Setting>}
      */
@@ -106,6 +119,7 @@ Polymer({
       value: () => new Set([
         chromeos.settings.mojom.Setting.kManageAndroidPreferences,
         chromeos.settings.mojom.Setting.kTurnOnPlayStore,
+        chromeos.settings.mojom.Setting.kRestoreAppsAndPages,
       ]),
     },
   },
@@ -187,11 +201,6 @@ Polymer({
     const isKeyboardAction = event.detail === 0;
     settings.AndroidAppsBrowserProxyImpl.getInstance().showAndroidAppsSettings(
         isKeyboardAction);
-  },
-
-  /** @private */
-  onStartupClick_() {
-    settings.Router.getInstance().navigateTo(settings.routes.ON_STARTUP);
   },
 
 });

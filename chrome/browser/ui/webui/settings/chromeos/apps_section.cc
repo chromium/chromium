@@ -114,18 +114,13 @@ const std::vector<SearchConcept>& GetAndroidPlayStoreDisabledSearchConcepts() {
 
 const std::vector<SearchConcept>& GetOnStartupSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
-      {IDS_OS_SETTINGS_TAG_ON_STARTUP,
-       mojom::kOnStartupSubpagePath,
-       mojom::SearchResultIcon::kStartup,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSubpage,
-       {.subpage = mojom::Subpage::kOnStartup}},
       {IDS_OS_SETTINGS_TAG_RESTORE_APPS_AND_PAGES,
-       mojom::kOnStartupSubpagePath,
+       mojom::kAppsSectionPath,
        mojom::SearchResultIcon::kStartup,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kRestoreAppsAndPages}},
+       {.setting = mojom::Setting::kRestoreAppsAndPages},
+       {IDS_OS_SETTINGS_TAG_ON_STARTUP, SearchConcept::kAltTagEnd}},
   });
   return *tags;
 }
@@ -199,6 +194,7 @@ void AddOnStartupTimeData(content::WebUIDataSource* html_source) {
       {"onStartupPageTitle", IDS_OS_SETTINGS_ON_STARTUP},
       {"onStartupRadioGroundTitle",
        IDS_OS_SETTINGS_ON_STARTUP_RADIO_GROUP_TITLE},
+      {"onStartupTitle", IDS_OS_SETTINGS_ON_STARTUP_TITLE},
       {"onStartupAlways", IDS_OS_SETTINGS_ON_STARTUP_ALWAYS},
       {"onStartupAskEveryTime", IDS_OS_SETTINGS_ON_STARTUP_ASK_EVERY_TIME},
       {"onStartupDoNotRestore", IDS_OS_SETTINGS_ON_STARTUP_DO_NOT_RESTORE},
@@ -312,6 +308,7 @@ bool AppsSection::LogMetric(mojom::Setting setting, base::Value& value) const {
 
 void AppsSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   generator->RegisterTopLevelSetting(mojom::Setting::kTurnOnPlayStore);
+  generator->RegisterTopLevelSetting(mojom::Setting::kRestoreAppsAndPages);
 
   // Manage apps.
   generator->RegisterTopLevelSubpage(IDS_SETTINGS_APPS_LINK_TEXT,
@@ -357,17 +354,6 @@ void AppsSection::RegisterHierarchy(HierarchyGenerator* generator) const {
                             kGooglePlayStoreSettings, generator);
   generator->RegisterTopLevelAltSetting(
       mojom::Setting::kManageAndroidPreferences);
-
-  // On startup
-  generator->RegisterTopLevelSubpage(
-      IDS_OS_SETTINGS_TAG_ON_STARTUP, mojom::Subpage::kOnStartup,
-      mojom::SearchResultIcon::kStartup,
-      mojom::SearchResultDefaultRank::kMedium, mojom::kOnStartupSubpagePath);
-  static constexpr mojom::Setting kOnStartupSettings[] = {
-      mojom::Setting::kRestoreAppsAndPages,
-  };
-  RegisterNestedSettingBulk(mojom::Subpage::kOnStartup, kOnStartupSettings,
-                            generator);
 }
 
 void AppsSection::OnAppRegistered(const std::string& app_id,

@@ -68,23 +68,6 @@ TEST_F(
     'OSSettingsDevicePageKeyboardArrangementDisabledV3Test', 'All',
     () => mocha.grep('/.*arrow_key_arrangement_disabled.*/').run());
 
-// TODO(crbug/1146900): Move this test down to the bottom where the rest are
-// once the FullRestore flag is enabled by default.
-// eslint-disable-next-line no-var
-var OSSettingsOnStartupPageV3Test = class extends OSSettingsV3BrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/on_startup_page_tests.m.js';
-  }
-
-  /** @override */
-  get featureList() {
-    return {enabled: ['full_restore::features::kFullRestore']};
-  }
-};
-
-TEST_F('OSSettingsOnStartupPageV3Test', 'All', () => mocha.run());
-
 // eslint-disable-next-line no-var
 var OSSettingsNearbyShareSubPageV3Test = class extends OSSettingsV3BrowserTest {
   /** @override */

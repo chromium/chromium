@@ -204,11 +204,6 @@ cr.define('settings', function() {
           r.APP_MANAGEMENT, mojom.PLUGIN_VM_USB_PREFERENCES_SUBPAGE_PATH,
           Subpage.kPluginVmUsbPreferences);
     }
-    if (loadTimeData.valueExists('showStartup') &&
-        loadTimeData.getBoolean('showStartup')) {
-      r.ON_STARTUP = createSubpage(
-          r.APPS, mojom.ON_STARTUP_SUBPAGE_PATH, Subpage.kOnStartup);
-    }
 
     // Crostini section.
     if (loadTimeData.valueExists('showCrostini') &&

@@ -46,6 +46,7 @@ js_library("os_apps_page.m") {
     "..:deep_linking_behavior.m",
     "..:os_route.m",
     "../../:router",
+    "../../controls:settings_dropdown_menu",
     "../../prefs:prefs_behavior",
     "../../settings_page:settings_animated_pages",
     "../localized_link:localized_link",

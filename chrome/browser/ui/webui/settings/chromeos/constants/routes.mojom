@@ -94,7 +94,7 @@ enum Subpage {
   kGooglePlayStore = 702,
   kPluginVmSharedPaths = 703,
   kPluginVmUsbPreferences = 704,
-  kOnStartup = 705,
+  // Note: Value 705 was for deprecated kOnStartup. Do not reuse.
   kAppNotifications = 706,
 
   // Crostini section.

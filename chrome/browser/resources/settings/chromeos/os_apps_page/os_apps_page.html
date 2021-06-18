@@ -5,6 +5,7 @@
 <link rel="import" href="chrome://resources/cr_elements/cr_link_row/cr_link_row.html">
 <link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_pref_indicator.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
+<link rel="import" href="../../controls/settings_dropdown_menu.html">
 <link rel="import" href="../../i18n_setup.html">
 <link rel="import" href="../../prefs/prefs_behavior.html">
 <link rel="import" href="../deep_linking_behavior.html">
@@ -94,13 +95,16 @@
         </template>
       </template>
       <template is="dom-if" if="[[showStartup]]">
-        <cr-link-row id="onStartup"
-            label="$i18n{onStartupPageTitle}"
-            sub-label="[[getAssistantEnabledDisabledLabel_(
-                    prefs.settings.voice_interaction.enabled.value)]]"
-            on-click="onStartupClick_"
-            role-description="$i18n{subpageArrowRoleDescription}">
-        </cr-link-row>
+        <div class="settings-box">
+          <div class="start settings-box-text" aria-hidden="true">
+              $i18n{onStartupTitle}
+          </div>
+          <settings-dropdown-menu id="onStartupDropdown"
+              label="$i18n{onStartupTitle}"
+              pref="{{prefs.settings.restore_apps_and_pages}}"
+              menu-options="[[onStartupOptions_]]">
+          </settings-dropdown-menu>
+        </div>
       </template>
     </div>
 
@@ -159,16 +163,6 @@
         <settings-subpage page-title="$i18n{guestOsSharedUsbDevicesLabel}">
           <settings-guest-os-shared-usb-devices guest-os-type="pluginVm">
           </settings-guest-os-shared-usb-devices>
-        </settings-subpage>
-      </template>
-    </template>
-
-    <!-- On Startup -->
-    <template is="dom-if" if="[[showStartup]]" restamp>
-      <template is="dom-if" route-path="/onstartup">
-        <settings-subpage page-title="$i18n{onStartupPageTitle}">
-          <settings-on-startup-page prefs="{{prefs}}">
-          </settings-on-startup-page>
         </settings-subpage>
       </template>
     </template>

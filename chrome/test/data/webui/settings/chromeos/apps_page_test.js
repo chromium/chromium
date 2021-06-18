@@ -18,6 +18,44 @@ let appsPage = null;
 /** @type {?TestAndroidAppsBrowserProxy} */
 let androidAppsBrowserProxy = null;
 
+function getFakePrefs() {
+  return {
+    arc: {
+      enabled: {
+        key: 'arc.enabledd',
+        type: chrome.settingsPrivate.PrefType.BOOLEAN,
+        value: false,
+      }
+    },
+    settings: {
+      restore_apps_and_pages: {
+        key: 'settings.restore_apps_and_pages',
+        type: chrome.settingsPrivate.PrefType.NUMBER,
+        value: 2,
+      }
+    }
+  };
+}
+
+function setPrefs(restoreOption) {
+  return {
+    arc: {
+      enabled: {
+        key: 'arc.enabledd',
+        type: chrome.settingsPrivate.PrefType.BOOLEAN,
+        value: false,
+      }
+    },
+    settings: {
+      restore_apps_and_pages: {
+        key: 'settings.restore_apps_and_pages',
+        type: chrome.settingsPrivate.PrefType.NUMBER,
+        value: restoreOption,
+      }
+    }
+  };
+}
+
 suite('AppsPageTests', function() {
   setup(function() {
     androidAppsBrowserProxy = new TestAndroidAppsBrowserProxy();
@@ -37,26 +75,42 @@ suite('AppsPageTests', function() {
   suite('Page Combinations', function() {
     setup(function() {
       appsPage.havePlayStoreApp = true;
-      appsPage.prefs = {arc: {enabled: {value: false}}};
+      appsPage.prefs = getFakePrefs();
     });
 
     const AndroidAppsShown = () => !!appsPage.$$('#android-apps');
     const AppManagementShown = () => !!appsPage.$$('#appManagement');
+    const RestoreAppsOnStartupShown = () => !!appsPage.$$('#onStartupDropdown');
 
     test('Only App Management Shown', function() {
       appsPage.showAndroidApps = false;
+      appsPage.showStartup = false;
       Polymer.dom.flush();
 
       assertTrue(AppManagementShown());
       assertFalse(AndroidAppsShown());
+      assertFalse(RestoreAppsOnStartupShown());
     });
 
     test('Android Apps and App Management Shown', function() {
       appsPage.showAndroidApps = true;
+      appsPage.showStartup = false;
       Polymer.dom.flush();
 
       assertTrue(AppManagementShown());
       assertTrue(AndroidAppsShown());
+      assertFalse(RestoreAppsOnStartupShown());
+    });
+
+    test('Android Apps, On Startup and App Management Shown', function() {
+      appsPage.showAndroidApps = true;
+      appsPage.showStartup = true;
+      Polymer.dom.flush();
+
+      assertTrue(AppManagementShown());
+      assertTrue(AndroidAppsShown());
+      assertTrue(RestoreAppsOnStartupShown());
+      expectEquals(3, appsPage.onStartupOptions_.length);
     });
   });
 
@@ -64,7 +118,8 @@ suite('AppsPageTests', function() {
     setup(function() {
       appsPage.showAndroidApps = true;
       appsPage.havePlayStoreApp = true;
-      appsPage.prefs = {arc: {enabled: {value: false}}};
+      appsPage.showStartup = true;
+      appsPage.prefs = getFakePrefs();
       appsPage.androidAppsInfo = {
         playStoreEnabled: false,
         settingsAppAvailable: false,
@@ -87,6 +142,20 @@ suite('AppsPageTests', function() {
       };
       Polymer.dom.flush();
       assertTrue(!!appsPage.$$('.subpage-arrow'));
+    });
+
+    test('On startup dropdown menu', async () => {
+      appsPage.prefs = setPrefs(1);
+      Polymer.dom.flush();
+      assertEquals(1, appsPage.$$('#onStartupDropdown').pref.value);
+
+      appsPage.prefs = setPrefs(2);
+      Polymer.dom.flush();
+      assertEquals(2, appsPage.$$('#onStartupDropdown').pref.value);
+
+      appsPage.prefs = setPrefs(3);
+      Polymer.dom.flush();
+      assertEquals(3, appsPage.$$('#onStartupDropdown').pref.value);
     });
 
     test('Deep link to manage android prefs', async () => {
