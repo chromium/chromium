@@ -64,6 +64,7 @@ public class PaymentRequestContactDetailsAndFreeShippingTest implements MainActi
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testPay() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());

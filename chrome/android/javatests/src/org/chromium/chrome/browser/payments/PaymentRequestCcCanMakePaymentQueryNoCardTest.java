@@ -12,6 +12,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
@@ -43,6 +44,7 @@ public class PaymentRequestCcCanMakePaymentQueryNoCardTest implements MainActivi
 
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testCanMakePayment() throws TimeoutException {
         mPaymentRequestTestRule.openPageAndClickBuyAndWait(
@@ -52,6 +54,7 @@ public class PaymentRequestCcCanMakePaymentQueryNoCardTest implements MainActivi
 
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testHasEnrolledInstrument() throws TimeoutException {
         mPaymentRequestTestRule.openPageAndClickNodeAndWait("has-enrolled-instrument-visa",

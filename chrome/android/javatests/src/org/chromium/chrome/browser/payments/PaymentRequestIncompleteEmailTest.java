@@ -14,6 +14,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
@@ -58,6 +59,7 @@ public class PaymentRequestIncompleteEmailTest implements MainActivityStartCallb
     /** Attempt to update the email with invalid data and cancel the transaction. */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testEditIncompleteEmailAndCancel() throws TimeoutException {
         // Not ready to pay since Contact email is invalid.
@@ -89,6 +91,7 @@ public class PaymentRequestIncompleteEmailTest implements MainActivityStartCallb
     /** Attempt to add an invalid email alongside the already invalid data and cancel. */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testAddIncompleteEmailAndCancel() throws TimeoutException {
         // Not ready to pay since Contact email is invalid.
@@ -121,6 +124,7 @@ public class PaymentRequestIncompleteEmailTest implements MainActivityStartCallb
     /** Update the email with valid data and provide that to the merchant. */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testEditIncompleteEmailAndPay() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyForInput());

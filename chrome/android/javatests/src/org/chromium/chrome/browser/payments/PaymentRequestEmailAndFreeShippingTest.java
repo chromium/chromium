@@ -15,6 +15,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
@@ -59,6 +60,7 @@ public class PaymentRequestEmailAndFreeShippingTest implements MainActivityStart
     /** Submit the email and the shipping address to the merchant when the user clicks "Pay." */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testPay() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
@@ -79,6 +81,7 @@ public class PaymentRequestEmailAndFreeShippingTest implements MainActivityStart
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testPaymentRequestEventsMetric() throws TimeoutException {
         // Start and cancel the Payment Request.
@@ -103,6 +106,7 @@ public class PaymentRequestEmailAndFreeShippingTest implements MainActivityStart
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testAddAddressNoCrash() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyForInput());

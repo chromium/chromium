@@ -14,6 +14,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
@@ -63,6 +64,7 @@ public class PaymentRequestShippingAddressAndOptionTest implements MainActivityS
     /** Verifies that the shipping address format in bottomsheet mode is as expected. */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testShippingAddressFormat_BottomSheet() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
@@ -84,6 +86,7 @@ public class PaymentRequestShippingAddressAndOptionTest implements MainActivityS
     /** Verifies that the shipping address format in fullsheet mode is as expected. */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testShippingAddressFormat_FullSheet() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
@@ -107,6 +110,7 @@ public class PaymentRequestShippingAddressAndOptionTest implements MainActivityS
     /** Verifies that the shipping address format in fullsheet mode is as expected. */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testShippingAddressFormat_Expanded() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
@@ -137,6 +141,7 @@ public class PaymentRequestShippingAddressAndOptionTest implements MainActivityS
     /** Verifies that the shipping address format of a new address is as expected. */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testShippingAddressFormat_NewAddress() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
@@ -166,6 +171,7 @@ public class PaymentRequestShippingAddressAndOptionTest implements MainActivityS
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testEditShippingAddressAndCancelEditorShouldKeepAddressSelected()
             throws TimeoutException {
@@ -190,6 +196,7 @@ public class PaymentRequestShippingAddressAndOptionTest implements MainActivityS
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testEditShippingAddressAndClickAndroidBackButtonShouldKeepAddressSelected()
             throws TimeoutException {
@@ -214,6 +221,7 @@ public class PaymentRequestShippingAddressAndOptionTest implements MainActivityS
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testAddShippingAddressAndCancelEditorShouldKeepAddressSelected()
             throws TimeoutException {
@@ -238,6 +246,7 @@ public class PaymentRequestShippingAddressAndOptionTest implements MainActivityS
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testAddShippingAddressAndClickAndroidBackButtonShouldKeepAddressSelected()
             throws TimeoutException {

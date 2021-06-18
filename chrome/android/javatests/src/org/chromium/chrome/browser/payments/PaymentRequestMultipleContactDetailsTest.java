@@ -147,6 +147,7 @@ public class PaymentRequestMultipleContactDetailsTest implements MainActivitySta
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testContactDetailsSuggestionOrdering() throws TimeoutException {
         // Set the use stats so that profile[0] has the highest frecency score, profile[1] the
@@ -183,6 +184,7 @@ public class PaymentRequestMultipleContactDetailsTest implements MainActivitySta
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testContactDetailsEditRequiredMessage() throws TimeoutException {
         mProfilesToAdd = new AutofillProfile[] {AUTOFILL_PROFILES[0], AUTOFILL_PROFILES[1],
@@ -246,6 +248,7 @@ public class PaymentRequestMultipleContactDetailsTest implements MainActivitySta
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testContactDetailsDedupe_Capitalization() throws TimeoutException {
         // Add the original profile and the one where the the name is not capitalized.
@@ -268,6 +271,7 @@ public class PaymentRequestMultipleContactDetailsTest implements MainActivitySta
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testContactDetailsDontDedupe_FieldSubset() throws TimeoutException {
         // Add the original profile and the one where the email is a superset of the original.

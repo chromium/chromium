@@ -15,6 +15,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
@@ -111,6 +112,7 @@ public class PaymentRequestMultiplePaymentInstrumentsTest implements MainActivit
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testCreditCardSuggestionOrdering() throws TimeoutException {
         mCreditCardsToAdd = new CreditCard[] {CREDIT_CARDS[0], CREDIT_CARDS[3], CREDIT_CARDS[2],
@@ -150,6 +152,7 @@ public class PaymentRequestMultiplePaymentInstrumentsTest implements MainActivit
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testMissingNameFieldRecorded() throws TimeoutException {
         // Add a card with invalid billing address and another one with missing name.
@@ -175,6 +178,7 @@ public class PaymentRequestMultiplePaymentInstrumentsTest implements MainActivit
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testMissingBillingAddressFieldRecorded() throws TimeoutException {
         // Add a card with invalid billing address.
@@ -199,6 +203,7 @@ public class PaymentRequestMultiplePaymentInstrumentsTest implements MainActivit
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     @CommandLineFlags.Add("disable-features=StrictHasEnrolledAutofillInstrument")
     public void testAllMissingFieldsRecorded() throws TimeoutException {

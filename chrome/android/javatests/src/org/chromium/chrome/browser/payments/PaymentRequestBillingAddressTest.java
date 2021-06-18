@@ -21,6 +21,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
@@ -118,6 +119,7 @@ public class PaymentRequestBillingAddressTest implements MainActivityStartCallba
     /** Verifies the format of the billing address suggestions when adding a new credit card. */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testNewCardBillingAddressFormat() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
@@ -144,6 +146,7 @@ public class PaymentRequestBillingAddressTest implements MainActivityStartCallba
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testNumberOfBillingAddressSuggestions() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
@@ -165,6 +168,7 @@ public class PaymentRequestBillingAddressTest implements MainActivityStartCallba
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testNumberOfBillingAddressSuggestions_AfterCancellingNewBillingAddress()
             throws TimeoutException {
@@ -195,6 +199,7 @@ public class PaymentRequestBillingAddressTest implements MainActivityStartCallba
      * maintains the previous selection. */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testAddBillingAddressOnCardAndCancel_MaintainsPreviousSelection()
             throws TimeoutException {
@@ -231,6 +236,7 @@ public class PaymentRequestBillingAddressTest implements MainActivityStartCallba
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testAddBillingAddressOnCardWithNoBillingAndCancel_MaintainsPreviousSelection()
             throws TimeoutException {
@@ -266,6 +272,7 @@ public class PaymentRequestBillingAddressTest implements MainActivityStartCallba
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testBillingAddressSortedByFrecency() throws TimeoutException {
         // Add a payment method.
@@ -305,6 +312,7 @@ public class PaymentRequestBillingAddressTest implements MainActivityStartCallba
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testBillingAddressSortedByFrecency_AddNewAddress() throws TimeoutException {
         // Add a payment method.
@@ -360,6 +368,7 @@ public class PaymentRequestBillingAddressTest implements MainActivityStartCallba
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testNewShippingAddressSuggestedFirst() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
@@ -397,6 +406,7 @@ public class PaymentRequestBillingAddressTest implements MainActivityStartCallba
 
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testSelectIncompleteBillingAddress_EditComplete() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
@@ -446,6 +456,7 @@ public class PaymentRequestBillingAddressTest implements MainActivityStartCallba
 
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testSelectIncompleteBillingAddress_EditCancel() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());

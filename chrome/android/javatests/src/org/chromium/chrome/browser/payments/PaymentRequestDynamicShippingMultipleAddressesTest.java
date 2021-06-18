@@ -15,6 +15,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
@@ -120,6 +121,7 @@ public class PaymentRequestDynamicShippingMultipleAddressesTest
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testShippingAddressSuggestionOrdering() throws TimeoutException {
         // Create two complete and two incomplete profiles. Values are set so that complete profiles
@@ -158,6 +160,7 @@ public class PaymentRequestDynamicShippingMultipleAddressesTest
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testEquallyIncompleteSuggestionsOrdering() throws TimeoutException {
         // Create two profiles both with missing phone numbers.
@@ -182,6 +185,7 @@ public class PaymentRequestDynamicShippingMultipleAddressesTest
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testShippingAddressSuggestionLimit() throws TimeoutException {
         // Create five profiles that can be suggested to the user.
@@ -222,6 +226,7 @@ public class PaymentRequestDynamicShippingMultipleAddressesTest
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testShippingAddressSuggestion_OnlyIncludeProfilesWithStreetAddress()
             throws TimeoutException {
@@ -254,6 +259,7 @@ public class PaymentRequestDynamicShippingMultipleAddressesTest
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testShippingAddresNotAcceptedByMerchant() throws TimeoutException {
         // Add a profile that is not accepted by the website.
@@ -282,6 +288,7 @@ public class PaymentRequestDynamicShippingMultipleAddressesTest
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testShippingAddressEditRequiredMessage() throws TimeoutException {
         // Create four incomplete profiles with different missing information. Profiles will be
@@ -320,6 +327,7 @@ public class PaymentRequestDynamicShippingMultipleAddressesTest
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testMissingShippingAddressFieldRecorded() throws TimeoutException {
         // Add a profile with invalid shipping address, and another one with both missing name and
@@ -346,6 +354,7 @@ public class PaymentRequestDynamicShippingMultipleAddressesTest
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testMissingNameFieldRecorded() throws TimeoutException {
         // Add a profile with invalid shipping address, and another one with missing name.
@@ -370,6 +379,7 @@ public class PaymentRequestDynamicShippingMultipleAddressesTest
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     @CommandLineFlags.Add("disable-features=StrictHasEnrolledAutofillInstrument")
     public void testAllMissingFieldsRecorded() throws TimeoutException {

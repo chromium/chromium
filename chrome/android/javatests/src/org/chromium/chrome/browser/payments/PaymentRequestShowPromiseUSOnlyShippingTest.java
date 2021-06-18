@@ -14,6 +14,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
@@ -46,6 +47,7 @@ public class PaymentRequestShowPromiseUSOnlyShippingTest implements MainActivity
 
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testCannotShipWithFastApp() throws TimeoutException {
         mRule.addPaymentAppFactory("basic-card", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
@@ -54,6 +56,7 @@ public class PaymentRequestShowPromiseUSOnlyShippingTest implements MainActivity
 
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testCannotShipWithSlowApp() throws TimeoutException {
         mRule.addPaymentAppFactory(
@@ -80,6 +83,7 @@ public class PaymentRequestShowPromiseUSOnlyShippingTest implements MainActivity
 
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testCanShipWithFastApp() throws TimeoutException {
         mRule.addPaymentAppFactory("basic-card", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
@@ -88,6 +92,7 @@ public class PaymentRequestShowPromiseUSOnlyShippingTest implements MainActivity
 
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testCanShipWithSlowApp() throws TimeoutException {
         mRule.addPaymentAppFactory(

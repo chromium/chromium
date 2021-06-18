@@ -15,6 +15,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
@@ -77,6 +78,7 @@ public class PaymentRequestEmailTest implements MainActivityStartCallback {
     /** Provide the existing valid email address to the merchant. */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testPay() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
@@ -88,6 +90,7 @@ public class PaymentRequestEmailTest implements MainActivityStartCallback {
     /** Attempt to add an invalid email address and cancel the transaction. */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testAddInvalidEmailAndCancel() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
@@ -110,6 +113,7 @@ public class PaymentRequestEmailTest implements MainActivityStartCallback {
     /** Add a new email address and provide that to the merchant. */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testAddEmailAndPay() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
@@ -133,6 +137,7 @@ public class PaymentRequestEmailTest implements MainActivityStartCallback {
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testSuggestionsDeduped() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
@@ -147,6 +152,7 @@ public class PaymentRequestEmailTest implements MainActivityStartCallback {
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testPaymentRequestEventsMetric() throws TimeoutException {
         // Start and complete the Payment Request.

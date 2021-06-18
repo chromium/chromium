@@ -19,6 +19,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
@@ -79,6 +80,7 @@ public class PaymentRequestCanMakePaymentMetricsTest implements MainActivityStar
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     @CommandLineFlags.Add("disable-features=StrictHasEnrolledAutofillInstrument")
     public void testCannotMakePayment_UserAbort() throws TimeoutException {
@@ -113,6 +115,7 @@ public class PaymentRequestCanMakePaymentMetricsTest implements MainActivityStar
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     @CommandLineFlags.Add("disable-features=StrictHasEnrolledAutofillInstrument")
     public void testCannotMakePayment_Complete() throws TimeoutException {

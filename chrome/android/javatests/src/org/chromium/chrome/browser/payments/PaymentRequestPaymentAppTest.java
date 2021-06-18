@@ -103,7 +103,7 @@ public class PaymentRequestPaymentAppTest {
     /** If the factory calls into delegate after the UI has been dismissed, don't crash. */
     @Test
     @MediumTest
-    @Feature({"Payments"})    
+    @Feature({"Payments"})
     @FlakyTest(message = "https://crbug.com/1189547")
     public void testFactoryActivityAfterDismissShouldNotCrash() throws TimeoutException {
         TestFactory factory = mPaymentRequestTestRule.addPaymentAppFactory(

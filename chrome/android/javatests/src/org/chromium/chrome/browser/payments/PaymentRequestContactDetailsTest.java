@@ -79,6 +79,7 @@ public class PaymentRequestContactDetailsTest implements MainActivityStartCallba
     /** Provide the existing valid payer name, phone number and email address to the merchant. */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testPay() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
@@ -91,6 +92,7 @@ public class PaymentRequestContactDetailsTest implements MainActivityStartCallba
     /** Attempt to add invalid contact information and cancel the transaction. */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testAddInvalidContactAndCancel() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
@@ -113,6 +115,7 @@ public class PaymentRequestContactDetailsTest implements MainActivityStartCallba
     /** Add new payer name, phone number and email address and provide that to the merchant. */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testAddContactAndPay() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
@@ -167,6 +170,7 @@ public class PaymentRequestContactDetailsTest implements MainActivityStartCallba
     /** Quickly pressing on [X] and then "add contact info" should not crash. */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testQuickCloseAndAddContactShouldNotCrash() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
@@ -194,6 +198,7 @@ public class PaymentRequestContactDetailsTest implements MainActivityStartCallba
     /** Test that going into the editor and cancelling will leave the row checked. */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testEditContactAndCancelEditorShouldKeepContactSelected() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
@@ -214,6 +219,7 @@ public class PaymentRequestContactDetailsTest implements MainActivityStartCallba
     /** Test that going into the "add" flow and cancelling will leave existing row checked. */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testAddContactAndCancelEditorShouldKeepContactSelected() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
@@ -234,6 +240,7 @@ public class PaymentRequestContactDetailsTest implements MainActivityStartCallba
     /** Quickly pressing on "add contact info" and then "cancel" should not crash. */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testQuickAddContactAndCancelShouldNotCrash() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
@@ -265,6 +272,7 @@ public class PaymentRequestContactDetailsTest implements MainActivityStartCallba
     /** Quickly pressing on "cancel" and then "add contact info" should not crash. */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testQuickCancelAndAddContactShouldNotCrash() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
@@ -295,6 +303,7 @@ public class PaymentRequestContactDetailsTest implements MainActivityStartCallba
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testSuggestionsDeduped() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
@@ -309,6 +318,7 @@ public class PaymentRequestContactDetailsTest implements MainActivityStartCallba
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testPaymentRequestEventsMetric() throws TimeoutException {
         // Start and complete the Payment Request.

@@ -19,6 +19,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
@@ -62,6 +63,7 @@ public class PaymentRequestNoShippingTest implements MainActivityStartCallback {
     /** Click [X] to cancel payment. */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testCloseDialog() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyForInput());
@@ -74,6 +76,7 @@ public class PaymentRequestNoShippingTest implements MainActivityStartCallback {
     /** Click [EDIT] to expand the dialog, then click [X] to cancel payment. */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testEditAndCloseDialog() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyForInput());
@@ -88,6 +91,7 @@ public class PaymentRequestNoShippingTest implements MainActivityStartCallback {
     /** Click [EDIT] to expand the dialog, then click [CANCEL] to cancel payment. */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testEditAndCancelDialog() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyForInput());
@@ -102,6 +106,7 @@ public class PaymentRequestNoShippingTest implements MainActivityStartCallback {
     /** Click [PAY] and dismiss the card unmask dialog. */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testPay() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
@@ -118,6 +123,7 @@ public class PaymentRequestNoShippingTest implements MainActivityStartCallback {
     /** Click [PAY], type in "123" into the CVC dialog, then submit the payment. */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testCancelUnmaskAndRetry() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
@@ -138,6 +144,7 @@ public class PaymentRequestNoShippingTest implements MainActivityStartCallback {
     /** Attempt to add an invalid credit card number and cancel payment. */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testAddInvalidCardNumberAndCancel() throws TimeoutException {
         // Attempting to add an invalid card and cancelling out of the flow will result in the user
@@ -156,6 +163,7 @@ public class PaymentRequestNoShippingTest implements MainActivityStartCallback {
     /** Attempt to add a credit card with an empty name on card and cancel payment. */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testAddEmptyNameOnCardAndCancel() throws TimeoutException {
         fillNewCardForm("5454-5454-5454-5454", "", DECEMBER, NEXT_YEAR, FIRST_BILLING_ADDRESS);
@@ -172,6 +180,7 @@ public class PaymentRequestNoShippingTest implements MainActivityStartCallback {
     /** Save a new card on disk and pay. */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testSaveNewCardAndPay() throws TimeoutException {
         fillNewCardForm("5454-5454-5454-5454", "Bob", DECEMBER, NEXT_YEAR, FIRST_BILLING_ADDRESS);
@@ -190,6 +199,7 @@ public class PaymentRequestNoShippingTest implements MainActivityStartCallback {
     /** Use a temporary credit card to complete payment. */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testAddTemporaryCardAndPay() throws TimeoutException {
         fillNewCardForm("5454-5454-5454-5454", "Bob", DECEMBER, NEXT_YEAR, FIRST_BILLING_ADDRESS);
@@ -227,6 +237,7 @@ public class PaymentRequestNoShippingTest implements MainActivityStartCallback {
     /** Add a new card together with a new billing address and pay. */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testSaveNewCardAndNewBillingAddressAndPay() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
@@ -267,6 +278,7 @@ public class PaymentRequestNoShippingTest implements MainActivityStartCallback {
     /** Quickly pressing on "add card" and then [X] should not crash. */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testQuickAddCardAndCloseShouldNotCrash() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
@@ -298,6 +310,7 @@ public class PaymentRequestNoShippingTest implements MainActivityStartCallback {
     /** Quickly pressing on [X] and then "add card" should not crash. */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testQuickCloseAndAddCardShouldNotCrash() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
@@ -325,6 +338,7 @@ public class PaymentRequestNoShippingTest implements MainActivityStartCallback {
     /** Quickly pressing on "add card" and then "cancel" should not crash. */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testQuickAddCardAndCancelShouldNotCrash() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
@@ -356,6 +370,7 @@ public class PaymentRequestNoShippingTest implements MainActivityStartCallback {
     /** Quickly pressing on "cancel" and then "add card" should not crash. */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testQuickCancelAndAddCardShouldNotCrash() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
@@ -386,6 +401,7 @@ public class PaymentRequestNoShippingTest implements MainActivityStartCallback {
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testQuickDismissAndPayShouldNotCrash() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
@@ -411,6 +427,7 @@ public class PaymentRequestNoShippingTest implements MainActivityStartCallback {
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testQuickDismissAndCloseShouldNotCrash() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
@@ -436,6 +453,7 @@ public class PaymentRequestNoShippingTest implements MainActivityStartCallback {
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testQuickCloseAndDismissShouldNotCrash() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
@@ -462,6 +480,7 @@ public class PaymentRequestNoShippingTest implements MainActivityStartCallback {
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testPaymentRequestEventsMetric() throws TimeoutException {
         // Start and cancel the Payment Request.

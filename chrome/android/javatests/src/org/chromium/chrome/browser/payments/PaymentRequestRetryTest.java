@@ -13,8 +13,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
@@ -97,6 +97,7 @@ public class PaymentRequestRetryTest implements MainActivityStartCallback {
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testDoNotAllowAddingCards() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyForInput());
@@ -126,6 +127,7 @@ public class PaymentRequestRetryTest implements MainActivityStartCallback {
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testRetryWithDefaultError() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyForInput());
@@ -149,6 +151,7 @@ public class PaymentRequestRetryTest implements MainActivityStartCallback {
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testRetryWithCustomError() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyForInput());
@@ -173,8 +176,8 @@ public class PaymentRequestRetryTest implements MainActivityStartCallback {
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments", "RenderTest"})
-    @DisabledTest(message = "crbug.com/980276")
     public void testRetryWithShippingAddressErrors() throws Throwable {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickAndWait(
@@ -224,6 +227,7 @@ public class PaymentRequestRetryTest implements MainActivityStartCallback {
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments", "RenderTest"})
     public void testRetryWithPayerErrors() throws Throwable {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyForInput());
@@ -266,6 +270,7 @@ public class PaymentRequestRetryTest implements MainActivityStartCallback {
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testRetryWithShippingAddressErrorsAndPayerErrors() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyForInput());
@@ -308,6 +313,7 @@ public class PaymentRequestRetryTest implements MainActivityStartCallback {
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testRetryAndPayerDetailChangeEvent() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyForInput());
@@ -347,6 +353,7 @@ public class PaymentRequestRetryTest implements MainActivityStartCallback {
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testRetryAndReselectContactDetail() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyForInput());

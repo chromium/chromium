@@ -90,6 +90,7 @@ public class PaymentRequestIncompletePhoneTest implements MainActivityStartCallb
     /** Attempt to add an invalid phone alongside the already invalid data and cancel. */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testAddIncompletePhoneAndCancel() throws TimeoutException {
         // Not ready to pay since Contact phone is invalid.
@@ -122,6 +123,7 @@ public class PaymentRequestIncompletePhoneTest implements MainActivityStartCallb
     /** Update the phone with valid data and provide that to the merchant. */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testEditIncompletePhoneAndPay() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyForInput());
