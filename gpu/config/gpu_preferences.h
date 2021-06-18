@@ -77,7 +77,7 @@ struct GPU_EXPORT GpuPreferences {
   // Disables hardware acceleration of video decode, where available.
   bool disable_accelerated_video_decode = false;
 
-  // Disables hardware acceleration of video decode, where available.
+  // Disables hardware acceleration of video encode, where available.
   bool disable_accelerated_video_encode = false;
 
   // Causes the GPU process to display a dialog on launch.

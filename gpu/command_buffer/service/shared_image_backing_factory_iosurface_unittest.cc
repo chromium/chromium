@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "gpu/command_buffer/service/shared_image_backing_factory_gl_texture.h"
+#include "gpu/command_buffer/service/shared_image_backing_factory_gl_image.h"
 
 #include <memory>
 #include <utility>
@@ -65,7 +65,7 @@ class SharedImageBackingFactoryIOSurfaceTest : public testing::Test {
         base::MakeRefCounted<gles2::FeatureInfo>(workarounds, GpuFeatureInfo());
     context_state_->InitializeGL(preferences, std::move(feature_info));
 
-    backing_factory_ = std::make_unique<SharedImageBackingFactoryGLTexture>(
+    backing_factory_ = std::make_unique<SharedImageBackingFactoryGLImage>(
         preferences, workarounds, GpuFeatureInfo(), &image_factory_,
         /*progress_reporter=*/nullptr);
 
@@ -81,7 +81,7 @@ class SharedImageBackingFactoryIOSurfaceTest : public testing::Test {
   scoped_refptr<gl::GLSurface> surface_;
   scoped_refptr<gl::GLContext> context_;
   scoped_refptr<SharedContextState> context_state_;
-  std::unique_ptr<SharedImageBackingFactoryGLTexture> backing_factory_;
+  std::unique_ptr<SharedImageBackingFactoryGLImage> backing_factory_;
   gles2::MailboxManagerImpl mailbox_manager_;
   SharedImageManager shared_image_manager_;
   std::unique_ptr<MemoryTypeTracker> memory_type_tracker_;

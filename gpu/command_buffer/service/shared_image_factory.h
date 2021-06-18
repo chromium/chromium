@@ -34,6 +34,7 @@ class MemoryTracker;
 class SharedContextState;
 class SharedImageBackingFactory;
 class SharedImageBackingFactoryEGL;
+class SharedImageBackingFactoryGLImage;
 class SharedImageBackingFactoryGLTexture;
 struct GpuFeatureInfo;
 struct GpuPreferences;
@@ -171,9 +172,12 @@ class GPU_GLES2_EXPORT SharedImageFactory {
   base::flat_set<std::unique_ptr<SharedImageRepresentationFactoryRef>>
       shared_images_;
 
-  // TODO(ericrk): This should be some sort of map from usage to factory
-  // eventually.
-  std::unique_ptr<SharedImageBackingFactoryGLTexture> gl_backing_factory_;
+  // Used for creating shared image using GLTexture backing
+  std::unique_ptr<SharedImageBackingFactoryGLTexture>
+      gl_texture_backing_factory_;
+
+  // Used for creating shared image using GLImage backing
+  std::unique_ptr<SharedImageBackingFactoryGLImage> gl_image_backing_factory_;
 
   // Used for creating shared image which can be shared between GL, Vulkan and
   // D3D12.

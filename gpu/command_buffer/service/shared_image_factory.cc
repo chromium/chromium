@@ -20,6 +20,7 @@
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image_backing.h"
+#include "gpu/command_buffer/service/shared_image_backing_factory_gl_image.h"
 #include "gpu/command_buffer/service/shared_image_backing_factory_gl_texture.h"
 #include "gpu/command_buffer/service/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image_representation.h"
@@ -133,10 +134,18 @@ SharedImageFactory::SharedImageFactory(
 
   bool use_gl = gl::GetGLImplementation() != gl::kGLImplementationNone;
   if (use_gl) {
-    gl_backing_factory_ = std::make_unique<SharedImageBackingFactoryGLTexture>(
-        gpu_preferences, workarounds, gpu_feature_info, image_factory,
-        shared_context_state_ ? shared_context_state_->progress_reporter()
-                              : nullptr);
+    gl_texture_backing_factory_ =
+        std::make_unique<SharedImageBackingFactoryGLTexture>(
+            gpu_preferences, workarounds, gpu_feature_info,
+            shared_context_state_ ? shared_context_state_->progress_reporter()
+                                  : nullptr);
+
+    gl_image_backing_factory_ =
+        std::make_unique<SharedImageBackingFactoryGLImage>(
+            gpu_preferences, workarounds, gpu_feature_info, image_factory,
+            shared_context_state_ ? shared_context_state_->progress_reporter()
+                                  : nullptr);
+
 #if defined(OS_ANDROID)
     egl_backing_factory_ = std::make_unique<SharedImageBackingFactoryEGL>(
         gpu_preferences, workarounds, gpu_feature_info,
@@ -263,7 +272,13 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
     factory = backing_factory_for_testing_;
   } else if (gr_context_type_ == GrContextType::kGL) {
     allow_legacy_mailbox = true;
-    factory = gl_backing_factory_.get();
+    if (gl_texture_backing_factory_->IsSupported(
+            usage, format, IsSharedBetweenThreads(usage), gfx::EMPTY_BUFFER,
+            gr_context_type_, &allow_legacy_mailbox)) {
+      factory = gl_texture_backing_factory_.get();
+    } else {
+      factory = gl_image_backing_factory_.get();
+    }
   } else {
     factory = wrapped_sk_image_factory_.get();
   }
@@ -508,13 +523,20 @@ SharedImageBackingFactory* SharedImageFactory::GetFactoryByUsage(
     return wrapped_sk_image_factory_.get();
   }
 
+  if (gl_texture_backing_factory_ &&
+      gl_texture_backing_factory_->IsSupported(
+          usage, format, share_between_threads, gmb_type, gr_context_type_,
+          allow_legacy_mailbox)) {
+    return gl_texture_backing_factory_.get();
+  }
+
   // check if GpuMemoryBufferType is empty. If empty prefer
-  // |gl_backing_factory_| first
-  if (gmb_type == gfx::EMPTY_BUFFER && gl_backing_factory_ &&
-      gl_backing_factory_->IsSupported(usage, format, share_between_threads,
-                                       gmb_type, gr_context_type_,
-                                       allow_legacy_mailbox)) {
-    return gl_backing_factory_.get();
+  // |gl_image_backing_factory_| first
+  if (gmb_type == gfx::EMPTY_BUFFER && gl_image_backing_factory_ &&
+      gl_image_backing_factory_->IsSupported(
+          usage, format, share_between_threads, gmb_type, gr_context_type_,
+          allow_legacy_mailbox)) {
+    return gl_image_backing_factory_.get();
   }
 
 #if defined(OS_ANDROID)
@@ -543,11 +565,11 @@ SharedImageBackingFactory* SharedImageFactory::GetFactoryByUsage(
     return external_vk_image_factory_.get();
 #endif  // !defined(OS_ANDROID)
 
-  if (gmb_type != gfx::EMPTY_BUFFER && gl_backing_factory_ &&
-      gl_backing_factory_->IsSupported(usage, format, share_between_threads,
-                                       gmb_type, gr_context_type_,
-                                       allow_legacy_mailbox)) {
-    return gl_backing_factory_.get();
+  if (gmb_type != gfx::EMPTY_BUFFER && gl_image_backing_factory_ &&
+      gl_image_backing_factory_->IsSupported(
+          usage, format, share_between_threads, gmb_type, gr_context_type_,
+          allow_legacy_mailbox)) {
+    return gl_image_backing_factory_.get();
   }
 
   LOG(ERROR) << "Could not find SharedImageBackingFactory with params: usage: "
