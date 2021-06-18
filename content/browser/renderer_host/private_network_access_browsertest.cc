@@ -306,6 +306,7 @@ class PrivateNetworkAccessBrowserTest : public PrivateNetworkAccessBrowserTestBa
   PrivateNetworkAccessBrowserTest()
       : PrivateNetworkAccessBrowserTestBase(
             {
+                features::kBlockInsecurePrivateNetworkRequests,
                 features::kWarnAboutSecurePrivateNetworkRequests,
             },
             {}) {}
@@ -318,6 +319,7 @@ class PrivateNetworkAccessBrowserTestBlockNavigations
   PrivateNetworkAccessBrowserTestBlockNavigations()
       : PrivateNetworkAccessBrowserTestBase(
             {
+                features::kBlockInsecurePrivateNetworkRequests,
                 features::kWarnAboutSecurePrivateNetworkRequests,
                 features::kBlockInsecurePrivateNetworkRequestsForNavigations,
             },
@@ -328,11 +330,7 @@ class PrivateNetworkAccessBrowserTestBlockNavigations
 class PrivateNetworkAccessBrowserTestNoBlocking : public PrivateNetworkAccessBrowserTestBase {
  public:
   PrivateNetworkAccessBrowserTestNoBlocking()
-      : PrivateNetworkAccessBrowserTestBase(
-            {},
-            {
-                features::kBlockInsecurePrivateNetworkRequests,
-            }) {}
+      : PrivateNetworkAccessBrowserTestBase({}, {}) {}
 };
 
 // ===========================
