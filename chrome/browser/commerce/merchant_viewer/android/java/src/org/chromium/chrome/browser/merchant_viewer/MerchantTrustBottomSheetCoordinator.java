@@ -158,9 +158,11 @@ public class MerchantTrustBottomSheetCoordinator implements View.OnLayoutChangeL
         mThinWebView = ThinWebViewFactory.create(mContext, new ThinWebViewConstraints());
         mThinWebView.getView().setLayoutParams(new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
-                (int) (getMaxViewHeight() * MerchantTrustBottomSheetContent.FULL_HEIGHT_RATIO)));
-
-        mThinWebView.getView().setPadding(0, mToolbarView.getToolbarHeightPx(), 0, 0);
+                (int) (getMaxViewHeight() * MerchantTrustBottomSheetContent.FULL_HEIGHT_RATIO)
+                        - mToolbarView.getToolbarHeightPx()));
+        ViewGroup.MarginLayoutParams params =
+                (ViewGroup.MarginLayoutParams) mThinWebView.getView().getLayoutParams();
+        params.topMargin = mToolbarView.getToolbarHeightPx();
     }
 
     private void createToolbarView() {
@@ -194,7 +196,8 @@ public class MerchantTrustBottomSheetCoordinator implements View.OnLayoutChangeL
         // We scale it by |FULL_HEIGHT_RATIO| to make the size equal to that of
         // ThinWebView and so it can leave a portion of the page below it visible.
         layoutParams.height =
-                (int) (maxViewHeight * MerchantTrustBottomSheetContent.FULL_HEIGHT_RATIO);
+                (int) (maxViewHeight * MerchantTrustBottomSheetContent.FULL_HEIGHT_RATIO)
+                - mToolbarView.getToolbarHeightPx();
         mThinWebView.getView().requestLayout();
         mCurrentMaxViewHeight = maxViewHeight;
     }
