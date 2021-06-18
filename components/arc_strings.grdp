@@ -35,7 +35,10 @@
     This app is designed for mobile
   </message>
   <message name="IDS_ARC_COMPAT_MODE_SPLASH_SCREEN_BODY" desc="A Dialog body of splash screen to advertise resize-lock feature.">
-    It may behave unexpectedly if resized. You can now limit the ability to resize apps in <ph name="SETTINGS">$1<ex>Settings</ex></ph>.
+    <ph name="APP_NAME">$1<ex>Gmail app</ex></ph> may not resize well. Use preset window sizes to prevent the app from misbehaving.
+  </message>
+  <message name="IDS_ARC_COMPAT_MODE_SPLASH_SCREEN_CLOSE" desc="A label of the button for the user to accept and dismiss a splash screen message.">
+    Got it
   </message>
   <message name="IDS_ARC_COMPAT_MODE_SPLASH_SCREEN_LINK" desc="Text of link to app settings.">
     Settings

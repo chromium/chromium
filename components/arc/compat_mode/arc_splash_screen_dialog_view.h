@@ -14,7 +14,7 @@ class Window;
 
 namespace views {
 class View;
-class Button;
+class MdTextButton;
 }  // namespace views
 
 namespace arc {
@@ -54,11 +54,10 @@ class ArcSplashScreenDialogView : public views::BubbleDialogDelegateView {
   void AddedToWidget() override;
 
  private:
-  void OnLinkClicked();
   void OnCloseButtonClicked();
 
   base::OnceClosure close_callback_;
-  views::Button* close_button_ = nullptr;
+  views::MdTextButton* close_button_ = nullptr;
 };
 
 }  // namespace arc
