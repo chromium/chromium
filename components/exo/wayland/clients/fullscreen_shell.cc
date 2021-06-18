@@ -72,7 +72,9 @@ bool FullscreenClient::Run(const InitParams& params) {
 
 void FullscreenClient::AllocateBuffers(const InitParams& params) {
   for (size_t i = 0; i < params.num_buffers; ++i) {
-    auto buffer = CreateBuffer(size_, params.drm_format, params.bo_usage);
+    auto buffer =
+        CreateBuffer(size_, params.drm_format, params.bo_usage,
+                     /*add_buffer_listener=*/!params.use_release_fences);
     if (!buffer) {
       LOG(ERROR) << "Failed to create buffer";
       return;

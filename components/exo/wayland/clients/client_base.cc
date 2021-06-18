@@ -606,7 +606,9 @@ bool ClientBase::Init(const InitParams& params) {
     wl_output_add_listener(globals_.output.get(), &kOutputListener, this);
   } else {
     for (size_t i = 0; i < params.num_buffers; ++i) {
-      auto buffer = CreateBuffer(size_, params.drm_format, params.bo_usage);
+      auto buffer =
+          CreateBuffer(size_, params.drm_format, params.bo_usage,
+                       /*add_buffer_listener=*/!params.use_release_fences);
       if (!buffer) {
         LOG(ERROR) << "Failed to create buffer";
         return false;
@@ -864,8 +866,7 @@ std::unique_ptr<ClientBase::Buffer> ClientBase::CreateBuffer(
     const gfx::Size& size,
     int32_t drm_format,
     int32_t bo_usage,
-    wl_buffer_listener* buffer_listener,
-    void* data) {
+    bool add_buffer_listener) {
   std::unique_ptr<Buffer> buffer;
 #if defined(USE_GBM)
   if (device_) {
@@ -962,9 +963,10 @@ std::unique_ptr<ClientBase::Buffer> ClientBase::CreateBuffer(
     DCHECK(buffer->sk_surface);
   }
 
-  wl_buffer_add_listener(buffer->buffer.get(),
-                         buffer_listener ? buffer_listener : &g_buffer_listener,
-                         data ? data : buffer.get());
+  if (add_buffer_listener) {
+    wl_buffer_add_listener(buffer->buffer.get(), &g_buffer_listener,
+                           buffer.get());
+  }
   return buffer;
 }
 

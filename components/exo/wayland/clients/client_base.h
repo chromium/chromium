@@ -65,6 +65,7 @@ class ClientBase {
     bool use_touch = false;
     bool use_vulkan = false;
     bool use_xdg = false;
+    bool use_release_fences = false;
   };
 
   struct Globals {
@@ -120,12 +121,10 @@ class ClientBase {
  protected:
   ClientBase();
   virtual ~ClientBase();
-  std::unique_ptr<Buffer> CreateBuffer(
-      const gfx::Size& size,
-      int32_t drm_format,
-      int32_t bo_usage,
-      wl_buffer_listener* buffer_listener = nullptr,
-      void* data = nullptr);
+  std::unique_ptr<Buffer> CreateBuffer(const gfx::Size& size,
+                                       int32_t drm_format,
+                                       int32_t bo_usage,
+                                       bool add_buffer_listener = true);
   std::unique_ptr<Buffer> CreateDrmBuffer(const gfx::Size& size,
                                           int32_t drm_format,
                                           int32_t bo_usage,
