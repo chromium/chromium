@@ -10,34 +10,20 @@ namespace blink {
 
 namespace {
 
-const AtomicString& UserBlockingPriorityKeyword() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(const AtomicString, user_blocking_priority,
-                                  ("user-blocking"));
-  return user_blocking_priority;
-}
-
-const AtomicString& UserVisiblePriorityKeyword() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(const AtomicString, user_visible_priority,
-                                  ("user-visible"));
-  return user_visible_priority;
-}
-
-const AtomicString& BackgroundPriorityKeyword() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(const AtomicString, background_priority,
-                                  ("background"));
-  return background_priority;
-}
+const char kUserBlockingPriorityKeyword[] = "user-blocking";
+const char kUserVisiblePriorityKeyword[] = "user-visible";
+const char kBackgroundPriorityKeyword[] = "background";
 
 }  // namespace
 
 AtomicString WebSchedulingPriorityToString(WebSchedulingPriority priority) {
   switch (priority) {
     case WebSchedulingPriority::kUserBlockingPriority:
-      return UserBlockingPriorityKeyword();
+      return AtomicString(kUserBlockingPriorityKeyword);
     case WebSchedulingPriority::kUserVisiblePriority:
-      return UserVisiblePriorityKeyword();
+      return AtomicString(kUserVisiblePriorityKeyword);
     case WebSchedulingPriority::kBackgroundPriority:
-      return BackgroundPriorityKeyword();
+      return AtomicString(kBackgroundPriorityKeyword);
   }
 
   NOTREACHED();
@@ -46,11 +32,11 @@ AtomicString WebSchedulingPriorityToString(WebSchedulingPriority priority) {
 
 WebSchedulingPriority WebSchedulingPriorityFromString(
     const AtomicString& priority) {
-  if (priority == UserBlockingPriorityKeyword())
+  if (priority == kUserBlockingPriorityKeyword)
     return WebSchedulingPriority::kUserBlockingPriority;
-  if (priority == UserVisiblePriorityKeyword())
+  if (priority == kUserVisiblePriorityKeyword)
     return WebSchedulingPriority::kUserVisiblePriority;
-  if (priority == BackgroundPriorityKeyword())
+  if (priority == kBackgroundPriorityKeyword)
     return WebSchedulingPriority::kBackgroundPriority;
   NOTREACHED();
   return WebSchedulingPriority::kUserVisiblePriority;
