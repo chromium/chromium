@@ -18,6 +18,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace segmentation_platform {
+using Samples = std::vector<SignalDatabase::Sample>;
 
 class FeatureAggregatorImplTest : public testing::Test {
  public:
@@ -33,10 +34,11 @@ class FeatureAggregatorImplTest : public testing::Test {
 };
 
 TEST_F(FeatureAggregatorImplTest, SumCountAggregation) {
-  std::vector<SignalDatabase::Sample> samples;
-  samples.emplace_back(std::make_pair(clock_.Now(), absl::make_optional(1)));
-  samples.emplace_back(std::make_pair(clock_.Now(), absl::make_optional(2)));
-  samples.emplace_back(std::make_pair(clock_.Now(), absl::make_optional(3)));
+  Samples samples{
+      {clock_.Now(), 1},
+      {clock_.Now(), 2},
+      {clock_.Now(), 3},
+  };
 
   std::vector<float> res = feature_aggregator_->Process(
       proto::SignalType::HISTOGRAM_VALUE, proto::Aggregation::SUM_COUNT, 1u,
@@ -47,11 +49,12 @@ TEST_F(FeatureAggregatorImplTest, SumCountAggregation) {
   EXPECT_EQ(3, res[0]);
 }
 
-TEST_F(FeatureAggregatorImplTest, SumValuesAggregation) {
-  std::vector<SignalDatabase::Sample> samples;
-  samples.emplace_back(std::make_pair(clock_.Now(), absl::make_optional(1)));
-  samples.emplace_back(std::make_pair(clock_.Now(), absl::make_optional(2)));
-  samples.emplace_back(std::make_pair(clock_.Now(), absl::make_optional(3)));
+TEST_F(FeatureAggregatorImplTest, SumValuesAggregationHistogram) {
+  Samples samples{
+      {clock_.Now(), 1},
+      {clock_.Now(), 2},
+      {clock_.Now(), 3},
+  };
 
   std::vector<float> res = feature_aggregator_->Process(
       proto::SignalType::HISTOGRAM_VALUE, proto::Aggregation::SUM_VALUES, 1u,
@@ -62,13 +65,43 @@ TEST_F(FeatureAggregatorImplTest, SumValuesAggregation) {
   EXPECT_EQ(6, res[0]);
 }
 
+TEST_F(FeatureAggregatorImplTest, SumValuesAggregationUserAction) {
+  Samples samples{
+      {clock_.Now(), absl::nullopt},
+      {clock_.Now(), absl::nullopt},
+      {clock_.Now(), absl::nullopt},
+  };
+
+  std::vector<float> res = feature_aggregator_->Process(
+      proto::SignalType::USER_ACTION, proto::Aggregation::SUM_VALUES, 1u,
+      clock_.Now(), base::TimeDelta::FromSeconds(10), samples);
+  // SUM_VALUES always produces a single value.
+  EXPECT_EQ(1u, res.size());
+  // We should have summed up to 1+1+1=3.
+  EXPECT_EQ(3, res[0]);
+}
+
+TEST_F(FeatureAggregatorImplTest, SumValuesAggregationUserActionIgnoresValue) {
+  Samples samples{
+      {clock_.Now(), 1},
+      {clock_.Now(), 2},
+      {clock_.Now(), 3},
+  };
+
+  std::vector<float> res = feature_aggregator_->Process(
+      proto::SignalType::USER_ACTION, proto::Aggregation::SUM_VALUES, 1u,
+      clock_.Now(), base::TimeDelta::FromSeconds(10), samples);
+  // SUM_VALUES always produces a single value.
+  EXPECT_EQ(1u, res.size());
+  // We should have summed up to 1+1+1=3.
+  EXPECT_EQ(3, res[0]);
+}
+
 TEST_F(FeatureAggregatorImplTest, FilterEnumSamples) {
-  std::vector<SignalDatabase::Sample> samples;
-  samples.emplace_back(std::make_pair(clock_.Now(), absl::make_optional(1)));
-  samples.emplace_back(std::make_pair(clock_.Now(), absl::make_optional(2)));
-  samples.emplace_back(std::make_pair(clock_.Now(), absl::make_optional(3)));
-  samples.emplace_back(std::make_pair(clock_.Now(), absl::make_optional(4)));
-  samples.emplace_back(std::make_pair(clock_.Now(), absl::make_optional(5)));
+  Samples samples{
+      {clock_.Now(), 1}, {clock_.Now(), 2}, {clock_.Now(), 3},
+      {clock_.Now(), 4}, {clock_.Now(), 5},
+  };
 
   // Empty accept list should keep all samples.
   feature_aggregator_->FilterEnumSamples(std::vector<uint32_t>(), samples);
