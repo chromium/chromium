@@ -242,6 +242,11 @@ void WebEngineURLLoaderThrottle::ApplyAddHeaders(
   // Bucket each |header| into the regular/CORS-compliant header list or the
   // CORS-exempt header list.
   for (const auto& header : add_headers->headers.GetHeaderVector()) {
+    if (request->headers.HasHeader(header.key) ||
+        request->cors_exempt_headers.HasHeader(header.key)) {
+      // Skip headers already present in the request at this point.
+      continue;
+    }
     if (IsHeaderCorsExempt(header.key)) {
       request->cors_exempt_headers.SetHeader(header.key, header.value);
     } else {
