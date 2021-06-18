@@ -161,10 +161,9 @@ void ArcResizeLockManager::UpdateCompatModeButton(aura::Window* window) {
         base::Unretained(frame_view->frame())));
     compat_mode_button->SetSubImage(views::kMenuDropArrowIcon);
     frame_header->SetCenterButton(compat_mode_button);
-    const auto* surface = static_cast<exo::ClientControlledShellSurface*>(
-        exo::GetShellSurfaceBaseForWindow(window));
-    DCHECK(surface);
-    // TODO(b:185720086): Set the button to WideFrameView.
+    // Ideally, we want HeaderView to update properties, but as currently
+    // the center button is set to FrameHeader, we need to call this explicitly.
+    frame_view->GetHeaderView()->UpdateCaptionButtons();
   }
 
   const auto currentMode =
