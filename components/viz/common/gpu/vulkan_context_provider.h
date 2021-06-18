@@ -14,7 +14,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(ENABLE_VULKAN)
-#include <vulkan/vulkan.h>
+#include <vulkan/vulkan_core.h>
 #endif
 
 struct GrContextOptions;
