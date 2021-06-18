@@ -5,26 +5,19 @@
 #ifndef CHROME_BROWSER_GOOGLE_DID_RUN_UPDATER_WIN_H_
 #define CHROME_BROWSER_GOOGLE_DID_RUN_UPDATER_WIN_H_
 
-#include "base/macros.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
+#include "content/public/browser/render_process_host_creation_observer.h"
 
 // Updates Chrome's "did run" state periodically when the process is in use.
 // The creation of renderers is used as a proxy for "is the browser in use."
-class DidRunUpdater : public content::NotificationObserver {
+class DidRunUpdater final : public content::RenderProcessHostCreationObserver {
  public:
-  DidRunUpdater();
-  ~DidRunUpdater() override;
+  DidRunUpdater() = default;
+  DidRunUpdater(const DidRunUpdater&) = delete;
+  DidRunUpdater& operator=(const DidRunUpdater&) = delete;
 
- private:
-  // content::NotificationObserver:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
-
-  content::NotificationRegistrar registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(DidRunUpdater);
+  // content::RenderProcessHostCreationObserver:
+  void OnRenderProcessHostCreated(
+      content::RenderProcessHost* process_host) override;
 };
 
 #endif  // CHROME_BROWSER_GOOGLE_DID_RUN_UPDATER_WIN_H_
