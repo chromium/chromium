@@ -22,6 +22,7 @@ import android.widget.RemoteViews;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.CustomTabsSessionToken;
@@ -159,6 +160,13 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     public static final String EXPERIMENT_IDS =
             "org.chromium.chrome.browser.customtabs.AGA_EXPERIMENT_IDS";
 
+    /**
+     * Extra that, if set, makes the Custom Tab activity's height x% of the screen height. The value
+     * is an integer, range from 1 to 100.
+     */
+    public static final String EXTRA_INITIAL_ACTIVITY_HEIGHT_IN_PIXEL =
+            "androidx.browser.customtabs.extra.INITIAL_ACTIVITY_HEIGHT_IN_PIXEL";
+
     private final Intent mIntent;
     private final CustomTabsSessionToken mSession;
     private final boolean mIsTrustedIntent;
@@ -207,6 +215,8 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     @NonNull
     private final ColorProvider mColorProvider;
 
+    private final @Px int mInitialActivityHeight;
+
     /**
      * Add extras to customize menu items for opening Reader Mode UI custom tab from Chrome.
      */
@@ -227,6 +237,18 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     public static boolean isTrustedCustomTab(Intent intent, CustomTabsSessionToken session) {
         return IntentHandler.wasIntentSenderChrome(intent)
                 || CustomTabsConnection.getInstance().isSessionFirstParty(session);
+    }
+
+    public static void configureIntentForResizableCustomTab(Context context, Intent intent) {
+        final int height = IntentUtils.safeGetIntExtra(
+                intent, CustomTabIntentDataProvider.EXTRA_INITIAL_ACTIVITY_HEIGHT_IN_PIXEL, 0);
+        if (height <= 0) {
+            // fallback to normal Custom Tab.
+            return;
+        }
+        intent.setClassName(context, TranslucentCustomTabActivity.class.getName());
+        // When scrolling up the web content, we don't want to hide the URL bar.
+        intent.putExtra(CustomTabsIntent.EXTRA_ENABLE_URLBAR_HIDING, false);
     }
 
     /**
@@ -319,6 +341,9 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
                 ScreenOrientation.DEFAULT));
 
         mGsaExperimentIds = IntentUtils.safeGetIntArrayExtra(intent, EXPERIMENT_IDS);
+
+        mInitialActivityHeight =
+                IntentUtils.safeGetIntExtra(intent, EXTRA_INITIAL_ACTIVITY_HEIGHT_IN_PIXEL, 0);
     }
 
     private void updateExtraMenuItems(List<Bundle> menuItems) {
@@ -766,5 +791,10 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     @Nullable
     public int[] getGsaExperimentIds() {
         return mGsaExperimentIds;
+    }
+
+    @Override
+    public @Px int getInitialActivityHeight() {
+        return mInitialActivityHeight;
     }
 }

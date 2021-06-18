@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.attribution_reporting.AttributionIntentHandle
 import org.chromium.chrome.browser.browserservices.SessionDataHolder;
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.trustedwebactivity.TwaSplashController;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
+import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.firstrun.FirstRunFlowSequencer;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -307,6 +308,11 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
         newIntent.setAction(Intent.ACTION_VIEW);
         newIntent.setData(uri);
         newIntent.setClassName(context, CustomTabActivity.class.getName());
+
+        // Since configureIntentForResizableCustomTab() might change the componenet/class
+        // associated with the passed intent, it needs to be called after #setClassName(context,
+        // CustomTabActivity.class.getName());
+        CustomTabIntentDataProvider.configureIntentForResizableCustomTab(context, newIntent);
 
         if (clearTopIntentsForCustomTabsEnabled(intent)) {
             // Ensure the new intent is routed into the instance of CustomTabActivity in this task.

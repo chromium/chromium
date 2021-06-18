@@ -10,6 +10,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -41,6 +42,7 @@ import android.provider.Browser;
 import android.support.test.InstrumentationRegistry;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.RemoteViews;
@@ -1820,6 +1822,18 @@ public class CustomTabActivityTest {
         String actualHeader =
                 mWebServer.getLastRequest("/ok.html").headerValue("X-CCT-Client-Data");
         assertEquals(expectedHeader, actualHeader);
+    }
+
+    @Test
+    @SmallTest
+    public void testLaunchPartialCustomTabActivity() throws Exception {
+        Intent intent = createMinimalCustomTabIntent();
+        intent.putExtra(CustomTabIntentDataProvider.EXTRA_INITIAL_ACTIVITY_HEIGHT_IN_PIXEL, 50);
+        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
+
+        WindowManager.LayoutParams attributes = getActivity().getWindow().getAttributes();
+        assertNotEquals("The height shouldn't be match_parent",
+                WindowManager.LayoutParams.MATCH_PARENT, attributes.height);
     }
 
     private void verifyHistoryAfterHiddenTab(boolean speculationWasAHit) throws Exception {

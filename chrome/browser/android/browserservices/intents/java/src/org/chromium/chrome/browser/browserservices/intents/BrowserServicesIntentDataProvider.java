@@ -13,6 +13,7 @@ import android.widget.RemoteViews;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.Px;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.browser.trusted.TrustedWebActivityDisplayMode;
@@ -447,5 +448,13 @@ public abstract class BrowserServicesIntentDataProvider {
     @Nullable
     public int[] getGsaExperimentIds() {
         return null;
+    }
+
+    /**
+     * @return The value in pixels  of the initial height of the Activity. It will return 0 if there
+     *         is no value set.
+     */
+    public @Px int getInitialActivityHeight() {
+        return 0;
     }
 }

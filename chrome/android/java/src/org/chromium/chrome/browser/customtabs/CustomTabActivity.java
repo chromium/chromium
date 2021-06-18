@@ -54,6 +54,7 @@ import org.chromium.ui.util.ColorUtils;
  */
 public class CustomTabActivity extends BaseCustomTabActivity {
     private CustomTabsSessionToken mSession;
+    private CustomTabHeightStrategy mHeightStrategy;
 
     private final CustomTabsConnection mConnection = CustomTabsConnection.getInstance();
 
@@ -102,6 +103,9 @@ public class CustomTabActivity extends BaseCustomTabActivity {
         mSession = mIntentDataProvider.getSession();
 
         CustomTabNavigationBarController.update(getWindow(), mIntentDataProvider, getResources());
+
+        mHeightStrategy = CustomTabHeightStrategy.createStrategy(
+                this, mIntentDataProvider.getInitialActivityHeight());
     }
 
     @Override
