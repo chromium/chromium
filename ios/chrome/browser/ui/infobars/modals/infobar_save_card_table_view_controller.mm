@@ -8,6 +8,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "ios/chrome/browser/infobars/infobar_metrics_recorder.h"
+#import "ios/chrome/browser/ui/autofill/cells/target_account_item.h"
 #import "ios/chrome/browser/ui/autofill/save_card_infobar_metrics_recorder.h"
 #import "ios/chrome/browser/ui/autofill/save_card_message_with_links.h"
 #import "ios/chrome/browser/ui/infobars/modals/infobar_modal_constants.h"
@@ -43,6 +44,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeCardExpireYear,
   ItemTypeCardLegalMessage,
   ItemTypeCardSave,
+  ItemTypeTargetAccount,
 };
 
 @interface InfobarSaveCardTableViewController () <TableViewTextLinkCellDelegate,
@@ -76,6 +78,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
 @property(nonatomic, assign) BOOL currentCardSaved;
 // Set to YES if the Modal should support editing.
 @property(nonatomic, assign) BOOL supportsEditing;
+// The email to identify the account where the card will be saved. Empty if none
+// should be shown, e.g. if the card won't be saved to any account.
+@property(nonatomic, copy) NSString* displayedTargetAccountEmail;
+// The avatar to identify the account where the card will be saved. Null if none
+// should be shown, e.g. if the card won't be saved to any account.
+@property(nonatomic, strong) UIImage* displayedTargetAccountAvatar;
 
 // Item for displaying and editing the cardholder name.
 @property(nonatomic, strong) TableViewTextEditItem* cardholderNameItem;
@@ -195,6 +203,16 @@ typedef NS_ENUM(NSInteger, ItemType) {
         toSectionWithIdentifier:SectionIdentifierContent];
   }
 
+  if ([self.displayedTargetAccountEmail length] &&
+      self.displayedTargetAccountAvatar != nil) {
+    TargetAccountItem* targetTargetAccountItem =
+        [[TargetAccountItem alloc] initWithType:ItemTypeTargetAccount];
+    targetTargetAccountItem.email = self.displayedTargetAccountEmail;
+    targetTargetAccountItem.avatar = self.displayedTargetAccountAvatar;
+    [model addItem:targetTargetAccountItem
+        toSectionWithIdentifier:SectionIdentifierContent];
+  }
+
   self.saveCardButtonItem =
       [[TableViewTextButtonItem alloc] initWithType:ItemTypeCardSave];
   self.saveCardButtonItem.textAlignment = NSTextAlignmentNatural;
@@ -228,6 +246,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
   self.legalMessages = prefs[kLegalMessagesPrefKey];
   self.currentCardSaved = [prefs[kCurrentCardSavedPrefKey] boolValue];
   self.supportsEditing = [prefs[kSupportsEditingPrefKey] boolValue];
+  self.displayedTargetAccountEmail = prefs[kDisplayedTargetAccountEmailPrefKey];
+  self.displayedTargetAccountAvatar =
+      prefs[kDisplayedTargetAccountAvatarPrefKey] == [NSNull null]
+          ? nil
+          : prefs[kDisplayedTargetAccountAvatarPrefKey];
   [self.tableView reloadData];
 }
 
@@ -314,6 +337,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
           forControlEvents:UIControlEventTouchUpInside];
       break;
     }
+    case ItemTypeTargetAccount:
+      cell.separatorInset =
+          UIEdgeInsetsMake(0, self.tableView.bounds.size.width, 0, 0);
+      break;
   }
 
   return cell;
