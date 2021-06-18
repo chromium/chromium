@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+PASS Discarding the browsing context must not change window.navigator
+FAIL Navigating from the initial about:blank must not replace window.navigator assert_equals: expected object "[object Navigator]" but got object "[object Navigator]"
+PASS document.open() must replace window.navigator
+PASS Discarding the browsing context must not change window.clientInformation
+FAIL Navigating from the initial about:blank must not replace window.clientInformation assert_equals: expected object "[object Navigator]" but got object "[object Navigator]"
+PASS document.open() must replace window.clientInformation
+Harness: the test ran to completion.
+
