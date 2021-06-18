@@ -184,7 +184,7 @@ class ShillManagerClientImpl : public ShillManagerClient {
                                base::OnceClosure callback,
                                ErrorCallback error_callback) {
     dbus::MethodCall method_call(shill::kFlimflamManagerInterface,
-                                 shill::kSetDNSProxyDOHProvidersProperty);
+                                 shill::kSetDNSProxyDOHProvidersFunction);
     dbus::MessageWriter writer(&method_call);
     ShillClientHelper::AppendServiceProperties(&writer, providers);
     helper_->CallVoidMethodWithErrorCallback(&method_call, std::move(callback),
