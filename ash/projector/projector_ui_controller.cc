@@ -9,6 +9,7 @@
 #include "ash/projector/projector_metrics.h"
 #include "ash/projector/ui/projector_bar_view.h"
 #include "ash/public/cpp/toast_data.h"
+#include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/toast/toast_manager_impl.h"
@@ -110,6 +111,13 @@ class ProjectorUiController::CaptionBubbleController
     caption_bubble_widget_->AddObserver(this);
     AddExcludedWindowToFastInkController(
         caption_bubble_widget_->GetNativeWindow());
+    // Use Picture-in-Picture (PIP) window management logic for caption bubble
+    // so that
+    // a) it avoids collision with system UI such as virtual keyboards, quick
+    // settings etc.
+    // b) it is draggable in tablet mode as well.
+    caption_bubble_widget_->GetNativeWindow()->SetProperty(
+        ash::kWindowPipTypeKey, true);
   }
 
   CaptionBubbleController(const CaptionBubbleController&) = delete;

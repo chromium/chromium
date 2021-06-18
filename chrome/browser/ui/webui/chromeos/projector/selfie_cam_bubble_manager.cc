@@ -6,12 +6,14 @@
 
 #include <memory>
 
+#include "ash/public/cpp/window_properties.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
 #include "chrome/browser/ui/webui/chromeos/projector/projector_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "ui/aura/window.h"
 #include "ui/base/hit_test.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
@@ -195,6 +197,11 @@ void SelfieCamBubbleManager::Show(Profile* profile,
   // Needed to make the selfie cam draggable everywhere within its bounds.
   bubble_view_->web_view()->holder()->SetHitTestTopInset(
       bubble_view_->height());
+  // Use Picture-in-Picture (PIP) window management logic for selfie cam so that
+  // a) it avoids collision with system UI such as virtual keyboards, quick
+  // settings etc.
+  // b) it is draggable in tablet mode as well.
+  bubble_widget->GetNativeWindow()->SetProperty(ash::kWindowPipTypeKey, true);
   bubble_widget->Show();
 }
 
