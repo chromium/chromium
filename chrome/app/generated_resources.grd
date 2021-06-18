@@ -9943,10 +9943,10 @@ Please help our engineers fix this problem. Tell us what happened right before y
         Share an application window
       </message>
       <message name="IDS_DESKTOP_MEDIA_PICKER_TEXT" desc="Text for the window picker dialog shown when desktop capture is requested by an app to be used by the app itself.">
-        The extension "<ph name="APP_NAME">$1<ex>Google Hangouts</ex></ph>" wants to share the contents of your screen.
+        <ph name="APP_NAME">$1<ex>Google Hangouts</ex></ph> wants to share the contents of your screen.
       </message>
       <message name="IDS_DESKTOP_MEDIA_PICKER_TEXT_DELEGATED" desc="Text for the window picker dialog shown when desktop capture is requested by an app to be used by a tab.">
-        The extension "<ph name="APP_NAME">$1<ex>Google Hangouts</ex></ph>" wants to share the contents of your screen with <ph name="TARGET_NAME">$2<ex>https://google.com</ex></ph>.
+        <ph name="APP_NAME">$1<ex>Google Hangouts</ex></ph> wants to share the contents of your screen with <ph name="TARGET_NAME">$2<ex>https://google.com</ex></ph>.
       </message>
       <message name="IDS_DESKTOP_MEDIA_PICKER_AUDIO_SHARE" desc="Text for the checkbox on the window picker dialog, when checked, audio will be shared, otherwise just video sharing">
         Share audio
