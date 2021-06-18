@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/process/arc_process.h"
@@ -243,8 +243,8 @@ bool WorkingSetTrimmerPolicyChromeOS::TrimArcProcess(base::ProcessId pid) {
   SetArcProcessLastTrimTime(pid, base::TimeTicks::Now());
 
   static int arc_processes_trimmed = 0;
-  UMA_HISTOGRAM_COUNTS_10000("Memory.WorkingSetTrim.ArcProcessTrimCount",
-                             ++arc_processes_trimmed);
+  base::UmaHistogramCounts10000("Memory.WorkingSetTrim.ArcProcessTrimCount",
+                                ++arc_processes_trimmed);
 
   auto* trimmer = static_cast<mechanism::WorkingSetTrimmerChromeOS*>(
       mechanism::WorkingSetTrimmer::GetInstance());
