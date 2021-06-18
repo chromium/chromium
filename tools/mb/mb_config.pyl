@@ -2287,7 +2287,7 @@
     ],
 
     'lacros_on_linux_release_trybot': [
-      'lacros_on_linux', 'release_trybot', 'also_build_ash_chrome',
+      'lacros_on_linux', 'release_trybot', 'also_build_ash_chrome', 'no_symbols',
     ],
 
     'libfuzzer_asan_debug_bot': [
