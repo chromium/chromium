@@ -581,6 +581,15 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 - (void)performActionForShortcutItem:(UIApplicationShortcutItem*)shortcutItem
                    completionHandler:(void (^)(BOOL succeeded))completionHandler
     API_AVAILABLE(ios(13)) {
+  if (self.sceneState.appState.initStage <= InitStageNormalUI ||
+      !self.currentInterface.browserState) {
+    // Don't handle the intent if the browser UI objects aren't yet initialized.
+    // This is the case when the app is in safe mode or may be the case when the
+    // app is going through an odd sequence of lifecyle events (shouldn't happen
+    // but happens somehow), see crbug.com/1211006 for more details.
+    return;
+  }
+
   self.sceneState.startupHadExternalIntent = YES;
 
   // Perform the action in incognito when only incognito mode is available.
@@ -598,10 +607,19 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 
 - (void)sceneState:(SceneState*)sceneState
     receivedUserActivity:(NSUserActivity*)userActivity {
-  if (self.sceneState.appState.initStage <= InitStageSafeMode ||
-      !userActivity) {
+  if (!userActivity) {
     return;
   }
+
+  if (self.sceneState.appState.initStage <= InitStageNormalUI ||
+      !self.currentInterface.browserState) {
+    // Don't handle the intent if the browser UI objects aren't yet initialized.
+    // This is the case when the app is in safe mode or may be the case when the
+    // app is going through an odd sequence of lifecyle events (shouldn't happen
+    // but happens somehow), see crbug.com/1211006 for more details.
+    return;
+  }
+
   BOOL sceneIsActive =
       self.sceneState.activationLevel >= SceneActivationLevelForegroundActive;
   // TODO(crbug.com/1210542): Review this stage threshold; works for now.
@@ -2746,7 +2764,12 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 
 - (void)openURLContexts:(NSSet<UIOpenURLContext*>*)URLContexts
     API_AVAILABLE(ios(13)) {
-  if (self.sceneState.appState.initStage <= InitStageSafeMode) {
+  if (self.sceneState.appState.initStage <= InitStageNormalUI ||
+      !self.currentInterface.browserState) {
+    // Don't handle the intent if the browser UI objects aren't yet initialized.
+    // This is the case when the app is in safe mode or may be the case when the
+    // app is going through an odd sequence of lifecyle events (shouldn't happen
+    // but happens somehow), see crbug.com/1211006 for more details.
     return;
   }
 
