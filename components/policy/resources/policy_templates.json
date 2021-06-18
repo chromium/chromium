@@ -21643,7 +21643,7 @@
     },
     {
       'name': 'SamlInSessionPasswordChangeEnabled',
-      'owners': ['olsen@chromium.org', 'rsorokin@chromium.org'],
+      'owners': ['mslus@chromium.org', 'rsorokin@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:76-'],
@@ -21656,18 +21656,20 @@
       'items': [
         {
           'value': True,
-          'caption': 'Allow SAML users to change their SAML passwords in-session at chrome://password-change',
+          'caption': 'Trigger authentication flows to synchronize passwords with SSO providers',
         },
         {
           'value': False,
-          'caption': 'Do not allow in-session SAML password changes at chrome://password-change',
+          'caption': 'Do not trigger authentication flows for password synchronization',
         },
       ],
       'example_value': True,
       'default': False,
       'id': 545,
-      'caption': '''Enables a page for in-session change of password for SAML users''',
-      'desc': '''Enables a page at chrome://password-change that lets SAML users change their SAML passwords while in-session, which ensures that the SAML password and the device lockscreen password are kept in-sync.
+      'caption': '''Password synchronization between third-party SSO providers and Chrome devices''',
+      'desc': '''Enables SAML password sync between multiple Chrome devices by monitoring the value of password sync token and sending a user through the online re-authentication if password was updated and needs to be synchronized.
+
+      Enables a page at chrome://password-change that lets SAML users change their SAML passwords while in-session, which ensures that the SAML password and the device lockscreen password are kept in-sync.
 
       This policy also enables notifications that warn SAML users if their SAML passwords are soon to expire so that they can deal with this immediately by doing an in-session password change.
       But, these notifications will only be shown if password expiry information is sent to the device by the SAML identity provider during the SAML login flow.
