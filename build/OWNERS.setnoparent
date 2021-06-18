@@ -60,3 +60,8 @@ file://weblayer/API_OWNERS
 # New features for lock/login UI on Chrome OS need to work stably in all corner
 # cases.
 file://ash/login/LOGIN_LOCK_OWNERS
+
+# Changes to the CQ configuration can have a significant impact on the CQ cost
+# and performance. Approval should be limited to a small subset of the users
+# that can make infra changes.
+file://infra/config/groups/cq-usage/CQ_USAGE_OWNERS
