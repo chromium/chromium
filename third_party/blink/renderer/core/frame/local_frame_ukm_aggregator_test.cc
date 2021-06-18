@@ -52,6 +52,10 @@ class LocalFrameUkmAggregatorTest : public testing::Test {
     return GetMetricName(index) + "BeginMainFrame";
   }
 
+  int64_t GetIntervalCount(int index) {
+    return aggregator_->absolute_metric_records_[index].interval_count;
+  }
+
   void ChooseNextFrameForTest() { aggregator().ChooseNextFrameForTest(); }
   void DoNotChooseNextFrameForTest() {
     aggregator().DoNotChooseNextFrameForTest();
@@ -538,4 +542,24 @@ TEST_F(LocalFrameUkmAggregatorTest, SampleDoesChange) {
   EXPECT_LT(iteration_count, 100000u);
 }
 
+TEST_F(LocalFrameUkmAggregatorTest, IterativeTimer) {
+  {
+    LocalFrameUkmAggregator::IterativeTimer timer(aggregator());
+    timer.StartInterval(LocalFrameUkmAggregator::kStyle);
+    test_task_runner_->AdvanceMockTickClock(
+        base::TimeDelta::FromMicroseconds(5));
+    timer.StartInterval(LocalFrameUkmAggregator::kLayout);
+    test_task_runner_->AdvanceMockTickClock(
+        base::TimeDelta::FromMicroseconds(7));
+    timer.StartInterval(LocalFrameUkmAggregator::kLayout);
+    test_task_runner_->AdvanceMockTickClock(
+        base::TimeDelta::FromMicroseconds(11));
+    timer.StartInterval(LocalFrameUkmAggregator::kPrePaint);
+    test_task_runner_->AdvanceMockTickClock(
+        base::TimeDelta::FromMicroseconds(13));
+  }
+  EXPECT_EQ(GetIntervalCount(LocalFrameUkmAggregator::kStyle), 5);
+  EXPECT_EQ(GetIntervalCount(LocalFrameUkmAggregator::kLayout), 18);
+  EXPECT_EQ(GetIntervalCount(LocalFrameUkmAggregator::kPrePaint), 13);
+}
 }  // namespace blink

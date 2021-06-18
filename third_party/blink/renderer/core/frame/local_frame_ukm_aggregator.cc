@@ -53,6 +53,35 @@ LocalFrameUkmAggregator::ScopedUkmHierarchicalTimer::
   }
 }
 
+LocalFrameUkmAggregator::IterativeTimer::IterativeTimer(
+    LocalFrameUkmAggregator& aggregator)
+    : aggregator_(base::TimeTicks::IsHighResolution() ? &aggregator : nullptr) {
+}
+
+LocalFrameUkmAggregator::IterativeTimer::~IterativeTimer() {
+  if (aggregator_.get() && metric_index_ != -1)
+    Record();
+}
+
+void LocalFrameUkmAggregator::IterativeTimer::StartInterval(
+    int64_t metric_index) {
+  if (aggregator_.get() && metric_index != metric_index_) {
+    Record();
+    metric_index_ = metric_index;
+  }
+}
+
+void LocalFrameUkmAggregator::IterativeTimer::Record() {
+  DCHECK(aggregator_.get());
+  base::TimeTicks now = aggregator_->GetClock()->NowTicks();
+  if (metric_index_ != -1) {
+    aggregator_->RecordTimerSample(base::saturated_cast<size_t>(metric_index_),
+                                   start_time_, now);
+  }
+  metric_index_ = -1;
+  start_time_ = now;
+}
+
 void LocalFrameUkmAggregator::AbsoluteMetricRecord::reset() {
   interval_count = 0;
   main_frame_count = 0;
