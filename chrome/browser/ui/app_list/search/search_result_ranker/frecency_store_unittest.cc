@@ -7,8 +7,6 @@
 #include "chrome/browser/ui/app_list/search/search_result_ranker/app_launch_predictor_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-// TODO(crbug.com/1219417): Resolve usage of this header.
-#include "third_party/protobuf/src/google/protobuf/stubs/mathutil.h"  // nogncheck
 
 using testing::_;
 using testing::Contains;
@@ -52,7 +50,8 @@ FrecencyStoreProto MakeTestingProto() {
 }
 
 MATCHER_P(ScoreEq, score, "") {
-  return google::protobuf::MathUtil::AlmostEquals(arg.last_score, score);
+  static float kTolerance = 1e-5;
+  return abs(arg.last_score - score) < kTolerance;
 }
 
 MATCHER_P(IdNe, id, "") {
