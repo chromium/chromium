@@ -10,6 +10,7 @@ rootWebArea
 ++++++++staticText name='Button: '
 ++++++++++inlineTextBox name='Button: '
 ++++++++button name='Button:'
+++++++staticText ignored name='Checkbox: '
 ++++++checkBox name='Checkbox:' checkedState=false
 ++++++labelText
 ++++++++staticText name='Color: '
@@ -51,6 +52,7 @@ rootWebArea
 ++++++++++inlineTextBox name='Password: '
 ++++++++textField editable protected name='Password:'
 ++++++++++genericContainer editable
+++++++staticText ignored name='Radio: '
 ++++++radioButton name='Radio:' checkedState=false
 ++++++labelText
 ++++++++staticText name='Range: '

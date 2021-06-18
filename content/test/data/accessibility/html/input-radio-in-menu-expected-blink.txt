@@ -9,7 +9,9 @@ rootWebArea
 ++++++++staticText name='Radio1 '
 ++++++++++inlineTextBox name='Radio1 '
 ++++++++radioButton inputType='radio' name='Radio2' setSize=3 posInSet=3 checkedState=false
+++++++++staticText ignored name='Radio2'
 ++++++menu setSize=0
 ++++++++radioButton inputType='radio' name='Radio3' setSize=3 posInSet=1 checkedState=false
+++++++++staticText ignored name='Radio3'
 ++++++++radioButton inputType='radio' setSize=3 posInSet=2 checkedState=false
 ++++++++radioButton inputType='radio' setSize=3 posInSet=3 checkedState=true

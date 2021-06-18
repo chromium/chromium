@@ -2,7 +2,12 @@ rootWebArea
 ++genericContainer ignored
 ++++genericContainer
 ++++++checkBox inputType='checkbox' name='Checkbox0' checkedState=false
+++++++staticText ignored name='Checkbox0'
 ++++++checkBox inputType='checkbox' name='Checkbox1' checkedState=true
+++++++staticText ignored name='Checkbox1'
 ++++++checkBox inputType='checkbox' name='Checkbox2' checkedState=true
+++++++staticText ignored name='Checkbox2'
 ++++++checkBox inputType='checkbox' name='Checkbox3' checkedState=true
+++++++staticText ignored name='Checkbox3'
 ++++++checkBox inputType='checkbox' name='Checkbox4' checkedState=mixed
+++++++staticText ignored name='Checkbox4'

@@ -2,3 +2,4 @@ rootWebArea
 ++genericContainer ignored
 ++++genericContainer
 ++++++checkBox inputType='checkbox' name='Checkbox Title' checkedState=false
+++++++staticText ignored name=' Checkbox Title'

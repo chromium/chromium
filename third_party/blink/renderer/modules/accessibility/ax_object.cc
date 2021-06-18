@@ -2428,9 +2428,14 @@ bool AXObject::ComputeAccessibilityIsIgnoredButIncludedInTree() const {
 
   // Custom elements and their children are included in the tree.
   // <slot>s and their children are included in the tree.
-  // This checks to see if this a child one of those.
+  // Also children of <label> elements, for accname calculation purposes.
+  // This checks to see whether this is a child of one of those.
   if (Node* parent_node = LayoutTreeBuilderTraversal::Parent(*node)) {
     if (parent_node->IsCustomElement() || IsA<HTMLSlotElement>(parent_node))
+      return true;
+    // <span>s are ignored because they are considered uninteresting. Do not add
+    // them back inside labels.
+    if (IsA<HTMLLabelElement>(parent_node) && !IsA<HTMLSpanElement>(node))
       return true;
   }
 
