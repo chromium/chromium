@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 """Presubmit script for OS Settings."""
 
+USE_PYTHON3 = True
+
 import re
 
 
