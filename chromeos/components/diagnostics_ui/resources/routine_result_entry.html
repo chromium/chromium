@@ -10,11 +10,25 @@
   #routine {
     @apply --diagnostics-routine-name-font;
   }
+
+  .routineLinkContainer {
+    --iron-icon-width: var(--diagnostics-default-font-size);
+    --iron-icon-height: var(--diagnostics-default-font-size);
+    --iron-icon-fill-color: var(--diagnostics-routine-name-color);
+    vertical-align: text-bottom;
+  }
 </style>
 
 <div class="entryRow">
   <text-badge id="status" badge-type="[[badgeType_]]" value="[[badgeText_]]"
       aria-labelledby="routine">
   </text-badge>
-  <div id="routine" aria-hidden="true">[[routineType_]]</div>
+  <div id="routine" aria-hidden="true">
+    [[routineType_]]
+    <span class="routineLinkContainer" hidden$="[[!routineLink_]]">
+      <a href="[[routineLink_]]" aria-labelledby="routine">
+        <iron-icon icon="cr:open-in-new"></iron-icon>
+      </a>
+    </span>
+  </div>
 </div>

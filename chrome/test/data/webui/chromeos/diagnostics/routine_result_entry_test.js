@@ -95,6 +95,17 @@ export function routineResultEntryTestSuite() {
     return badge;
   }
 
+  /**
+   * Returns the span wrapping the link icon.
+   * @return {!HTMLSpanElement}
+   */
+  function getRoutineLinkContainer() {
+    const routineLinkContainer = /** @type{!HTMLSpanElement} */ (
+        routineResultEntryElement.$$('.routineLinkContainer'));
+    assertTrue(!!routineLinkContainer);
+    return routineLinkContainer;
+  }
+
   test('ElementRendered', () => {
     return initializeRoutineResultEntry().then(() => {
       // Verify the element rendered.
@@ -216,6 +227,32 @@ export function routineResultEntryTestSuite() {
       // Status should show the passed result.
       assertEquals(getStatusBadge().value, 'SUCCESS');
       assertEquals(getStatusBadge().badgeType, BadgeType.SUCCESS);
+    });
+  });
+
+  test('RoutineHasNoLinkTest', () => {
+    const item = createCompletedStatus(
+        RoutineType.kBatteryCharge,
+        /** @type {!RoutineResult} */ ({
+          simpleResult: StandardRoutineResult.kTestPassed
+        }));
+
+    return initializeEntryWithItem(item).then(() => {
+      // Span should be hidden
+      assertFalse(isVisible(getRoutineLinkContainer()));
+    });
+  });
+
+  test('RoutineHasLinkTest', () => {
+    const item = createCompletedStatus(
+        RoutineType.kLanConnectivity,
+        /** @type {!RoutineResult} */ ({
+          simpleResult: StandardRoutineResult.kTestPassed
+        }));
+
+    return initializeEntryWithItem(item).then(() => {
+      // Span should not be hidden
+      assertTrue(isVisible(getRoutineLinkContainer()));
     });
   });
 }
