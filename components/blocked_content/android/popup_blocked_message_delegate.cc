@@ -31,14 +31,14 @@ bool PopupBlockedMessageDelegate::ShowMessage(
   url_ = web_contents_->GetLastCommittedURL();
   // Unretained is safe because |this| will always outlive |message_| which owns
   // the callback.
-  message_ = std::make_unique<messages::MessageWrapper>(
+  auto message = std::make_unique<messages::MessageWrapper>(
       messages::MessageIdentifier::POPUP_BLOCKED,
       base::BindOnce(&PopupBlockedMessageDelegate::HandleClick,
                      base::Unretained(this)),
       base::BindOnce(&PopupBlockedMessageDelegate::HandleDismissCallback,
                      base::Unretained(this)));
 
-  message_->SetTitle(l10n_util::GetPluralStringFUTF16(
+  message->SetTitle(l10n_util::GetPluralStringFUTF16(
       IDS_POPUPS_BLOCKED_INFOBAR_TEXT, num_popups));
 
   map_ = settings_map;
@@ -47,13 +47,20 @@ bool PopupBlockedMessageDelegate::ShowMessage(
   // Don't allow the user to configure the setting in the UI if the setting
   // is managed by policy.
   int button_text_id = allow_settings_changes_ ? IDS_SHOW_CONTENT : IDS_OK;
-  message_->SetPrimaryButtonText(l10n_util::GetStringUTF16(button_text_id));
-  message_->SetIconResourceId(
+  message->SetPrimaryButtonText(l10n_util::GetStringUTF16(button_text_id));
+  message->SetIconResourceId(
       resource_id_mapper.Run(IDR_ANDROID_INFOBAR_BLOCKED_POPUPS));
 
-  messages::MessageDispatcherBridge::Get()->EnqueueMessage(
-      message_.get(), web_contents_, messages::MessageScopeType::NAVIGATION);
+  // On rare occasions, such as the moment when activity is being recreated
+  // or destroyed, popup blocked message will not be displayed and the
+  // method will return false.
+  if (!messages::MessageDispatcherBridge::Get()->EnqueueMessage(
+          message.get(), web_contents_,
+          messages::MessageScopeType::NAVIGATION)) {
+    return false;
+  }
 
+  message_ = std::move(message);
   return true;
 }
 

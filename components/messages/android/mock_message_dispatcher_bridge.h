@@ -15,7 +15,7 @@ class MockMessageDispatcherBridge : public MessageDispatcherBridge {
   MockMessageDispatcherBridge();
   ~MockMessageDispatcherBridge() override;
 
-  MOCK_METHOD(void,
+  MOCK_METHOD(bool,
               EnqueueMessage,
               (MessageWrapper * message,
                content::WebContents* web_contents,
