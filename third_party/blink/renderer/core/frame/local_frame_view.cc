@@ -3732,6 +3732,13 @@ void LocalFrameView::AttachToLayout() {
                                parent_view->CanThrottleRendering(),
                                IsDisplayLocked());
 
+  // This is to handle a special case: a display:none iframe may have a fully
+  // populated layout tree if it contains an <embed>. In that case, we must
+  // ensure that the embed's compositing layer is properly reattached.
+  // crbug.com/749737 for context.
+  if (auto* layout_view = GetLayoutView())
+    layout_view->Layer()->SetNeedsCompositingInputsUpdate();
+
   // We may have updated paint properties in detached frame subtree for
   // printing (see UpdateLifecyclePhasesForPrinting()). The paint properties
   // may change after the frame is attached.
@@ -4470,6 +4477,9 @@ unsigned LocalFrameView::GetIntersectionObservationFlags(
           root_frame.GetSecurityContext()->GetSecurityOrigin())) {
     flags |= IntersectionObservation::kReportImplicitRootBounds;
   }
+
+  if (!target_frame.IsLocalRoot() && !target_frame.OwnerLayoutObject())
+    flags |= IntersectionObservation::kAncestorFrameIsDetachedFromLayout;
 
   // Observers with explicit roots only need to be checked on the same frame,
   // since in this case target and root must be in the same document.

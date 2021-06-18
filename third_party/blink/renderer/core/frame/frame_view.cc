@@ -80,10 +80,11 @@ void FrameView::UpdateViewportIntersection(unsigned flags,
 
   LayoutEmbeddedContent* owner_layout_object =
       owner_element->GetLayoutEmbeddedContent();
-  if (!owner_layout_object || owner_layout_object->ContentSize().IsEmpty()) {
-    // The frame is detached from layout, not visible, or zero size; leave
-    // viewport_intersection empty, and signal the frame as occluded if
-    // necessary.
+  if (!owner_layout_object || owner_layout_object->ContentSize().IsEmpty() ||
+      (flags & IntersectionObservation::kAncestorFrameIsDetachedFromLayout)) {
+    // The frame, or an ancestor frame, is detached from layout, not visible, or
+    // zero size; leave viewport_intersection empty, and signal the frame as
+    // occluded if necessary.
     occlusion_state = mojom::blink::FrameOcclusionState::kPossiblyOccluded;
   } else if (parent_lifecycle_state >= DocumentLifecycle::kLayoutClean &&
              !owner_document.View()->NeedsLayout()) {
