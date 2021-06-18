@@ -61,7 +61,7 @@ def _ExtractMain(args):
         info_dict[resource_id].textual_id
         if args.textual_id else str(resource_id))
     path = os.path.join(args.output_dir, filename)
-    with open(path, 'w') as f:
+    with open(path, 'wb') as f:
       f.write(payload)
 
 
