@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>about:mumble test</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script>
+async_test(t => {
+    document.addEventListener("DOMContentLoaded", function() {
+        t.step(() => {
+            // This is a regression test for https://crbug.com/1220186
+            const f = document.createElement('iframe');
+            f.src = 'about:mumble'
+            document.body.appendChild(f);
+
+            // According to https://crbug.com/1220186#c11 the specs are
+            // incomplete and browsers are not interoperable here.  FWIW,
+            // before https://crbug.com/1220186 Chromium would commit
+            // "about:mumble" with the origin of the navigation initiator
+            // (treating "about:mumble" as "about:blank" in 1)
+            // ShouldInheritSecurityOriginFromOwner on the renderer-side and 2)
+            // rewriting "about:mumble" to "about:blank#blocked" on the
+            // browser-side.
+            assert_equals(window.origin, f.contentWindow.origin);
+            assert_equals("about:mumble", f.contentWindow.location.href);
+
+            // Let's verify if document.open/write/close work (these were a
+            // part of the repro steps in https://crbug.com/1220186).  Without
+            // the fixes from https://crrev.com/c/2966194, the
+            // `document.open()` call below would fail, because
+            // `f.contentWindow`'s origin would be opaque and therefore
+            // cross-origin from the current, test-driving frame/origin.
+            f.contentWindow.document.open()
+            f.contentWindow.document.write("<h1>Document-written content</h1>")
+            f.contentWindow.document.close()
+            assert_equals("Document-written content",
+                          f.contentWindow.document.body.innerText);
+
+            t.done();
+        });
+    });
+}, "Ensure that 'about:mumble' has the same origin as its parent/initiator.");
+</script>
