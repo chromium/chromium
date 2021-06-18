@@ -24,6 +24,17 @@ public class SplashUtils {
      */
     private static final int MAX_SIZE_ENCODE_PNG = 1024 * 1024;
 
+    /** Helper class for the return type of {@link #createScaledBitmapAndCanvas}. */
+    static class BitmapAndCanvas {
+        public final Bitmap bitmap;
+        public final Canvas canvas;
+
+        private BitmapAndCanvas(Bitmap bitmap, Canvas canvas) {
+            this.bitmap = bitmap;
+            this.canvas = canvas;
+        }
+    }
+
     /** Creates view with splash screen. */
     public static View createSplashView(Context context) {
         Resources resources = context.getResources();
@@ -52,22 +63,32 @@ public class SplashUtils {
         // Implementation copied from Android shared element code -
         // TransitionUtils#createViewBitmap().
 
-        int bitmapWidth = view.getWidth();
-        int bitmapHeight = view.getHeight();
-        if (bitmapWidth == 0 || bitmapHeight == 0) return null;
+        int width = view.getWidth();
+        int height = view.getHeight();
+        if (width == 0 || height == 0) return null;
 
-        float scale = Math.min(1f, ((float) maxSizeBytes) / (4 * bitmapWidth * bitmapHeight));
-        bitmapWidth = Math.round(bitmapWidth * scale);
-        bitmapHeight = Math.round(bitmapHeight * scale);
+        BitmapAndCanvas pair = createScaledBitmapAndCanvas(width, height, maxSizeBytes);
+
+        view.draw(pair.canvas);
+        return pair.bitmap;
+    }
+
+    /**
+     * Creates a Bitmap of at most {@code maxSizeBytes} with an attached Canvas to draw on it.
+     */
+    static BitmapAndCanvas createScaledBitmapAndCanvas(int width, int height, int maxSizeBytes) {
+        float scale = Math.min(1f, ((float) maxSizeBytes) / (4 * width * height));
+        width = Math.round(width * scale);
+        height = Math.round(height * scale);
 
         Matrix matrix = new Matrix();
         matrix.postScale(scale, scale);
 
-        Bitmap bitmap = Bitmap.createBitmap(bitmapWidth, bitmapHeight, Bitmap.Config.ARGB_8888);
+        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
         canvas.concat(matrix);
-        view.draw(canvas);
-        return bitmap;
+
+        return new BitmapAndCanvas(bitmap, canvas);
     }
 
     /** Selects encoding for the bitmap based on its size. */

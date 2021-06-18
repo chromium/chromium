@@ -50,17 +50,30 @@ public class SplashActivity extends Activity {
     }
 
     private View mSplashView;
+    private Bitmap mBitmap;
     private HostBrowserLauncherParams mParams;
     private @ActivityResult int mResult;
 
-    private final LaunchTrigger mLaunchTrigger =
-            new LaunchTrigger(this::screenshotAndEncodeSplashInBackground);
+    private final LaunchTrigger mLaunchTrigger = new LaunchTrigger(this::encodeSplashInBackground);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        showSplashScreen();
+        boolean androidSSplashSuccess = false;
+        if (isAtLeastS()) {
+            androidSSplashSuccess =
+                    SplashUtilsForS.listenForSplashScreen(this, getWindow(), (view, bitmap) -> {
+                        mSplashView = view;
+                        mBitmap = bitmap;
+                        mLaunchTrigger.onSplashScreenReady();
+                    });
+        }
+        if (!androidSSplashSuccess) {
+            // Fall back to the old behaviour if our reflection based method to launch the Android S
+            // splash screen fails.
+            showPreSSplashScreen();
+        }
         final long splashAddedToLayoutTimeMs = SystemClock.elapsedRealtime();
 
         // On Android O+, if:
@@ -145,7 +158,7 @@ public class SplashActivity extends Activity {
                 });
     }
 
-    private void showSplashScreen() {
+    private void showPreSSplashScreen() {
         Bundle metadata = WebApkUtils.readMetaData(this);
         updateStatusBar(metadata);
 
@@ -163,7 +176,9 @@ public class SplashActivity extends Activity {
                         if (mSplashView.getWidth() == 0 || mSplashView.getHeight() == 0) return;
 
                         mSplashView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                        mLaunchTrigger.onSplashScreenLaidOut();
+                        mBitmap = SplashUtils.screenshotView(
+                                mSplashView, SplashContentProvider.MAX_TRANSFER_SIZE_BYTES);
+                        mLaunchTrigger.onSplashScreenReady();
                     }
                 });
         setContentView(mSplashView);
@@ -220,10 +235,8 @@ public class SplashActivity extends Activity {
      * Screenshots and encodes {@link mSplashView} on a background thread.
      */
     @SuppressWarnings("NoAndroidAsyncTaskCheck")
-    private void screenshotAndEncodeSplashInBackground() {
-        final Bitmap bitmap = SplashUtils.screenshotView(
-                mSplashView, SplashContentProvider.MAX_TRANSFER_SIZE_BYTES);
-        if (bitmap == null) {
+    private void encodeSplashInBackground() {
+        if (mBitmap == null) {
             launch(null, Bitmap.CompressFormat.PNG);
             return;
         }
@@ -237,8 +250,8 @@ public class SplashActivity extends Activity {
                                 try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
                                     Bitmap.CompressFormat encodingFormat =
                                             SplashUtils.selectBitmapEncoding(
-                                                    bitmap.getWidth(), bitmap.getHeight());
-                                    bitmap.compress(encodingFormat, 100, out);
+                                                    mBitmap.getWidth(), mBitmap.getHeight());
+                                    mBitmap.compress(encodingFormat, 100, out);
                                     return Pair.create(out.toByteArray(), encodingFormat);
                                 } catch (IOException e) {
                                 }
@@ -257,5 +270,19 @@ public class SplashActivity extends Activity {
                             // Do nothing if task was cancelled.
                         }
                         .executeOnExecutor(android.os.AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    /**
+     * Checks if the device is running on a pre-release version of Android S or a release version of
+     * Android S or newer.
+     * <p>
+     * <strong>Note:</strong> When Android S is finalized for release, this method will be
+     * deprecated and all calls should be replaced with {@code Build.VERSION.SDK_INT >=
+     * Build.VERSION_CODES.S}.
+     *
+     * @return {@code true} if S APIs are available for use, {@code false} otherwise
+     */
+    private static boolean isAtLeastS() {
+        return Build.VERSION.CODENAME.equals("S");
     }
 }

@@ -7,7 +7,7 @@ package org.chromium.webapk.shell_apk.h2o;
 /**
  * Controls when to launch the WebAPK for {@link SplashActivity}.
  *
- * Executes the provided Runnable when all of {@link #onSplashScreenLaidOut}, {@link #onWillLaunch}
+ * Executes the provided Runnable when all of {@link #onSplashScreenReady}, {@link #onWillLaunch}
  * and {@link #onHostBrowserSelected} have been called. The provided Runnable is only called once,
  * but this can be reset by calling {@link #reset}.
  */
@@ -15,7 +15,7 @@ public class LaunchTrigger {
     private final Runnable mCallback;
 
     // Variables that determine whether we are ready to encode the splash screen.
-    private boolean mSplashScreenLaidOut;
+    private boolean mSplashScreenReady;
     private boolean mWillLaunch;
     private boolean mHostBrowserSelected;
     private boolean mLaunchingOrLaunched;
@@ -25,8 +25,8 @@ public class LaunchTrigger {
     }
 
     // Methods that could trigger the splash screen encoding.
-    public void onSplashScreenLaidOut() {
-        mSplashScreenLaidOut = true;
+    public void onSplashScreenReady() {
+        mSplashScreenReady = true;
         maybeTrigger();
     }
 
@@ -47,8 +47,7 @@ public class LaunchTrigger {
     }
 
     private void maybeTrigger() {
-        if (!mHostBrowserSelected || !mSplashScreenLaidOut || !mWillLaunch
-                || mLaunchingOrLaunched) {
+        if (!mHostBrowserSelected || !mSplashScreenReady || !mWillLaunch || mLaunchingOrLaunched) {
             return;
         }
         mLaunchingOrLaunched = true;

@@ -73,6 +73,7 @@ template("webapk_java") {
       "src/org/chromium/webapk/shell_apk/h2o/SplashActivity.java",
       "src/org/chromium/webapk/shell_apk/h2o/SplashContentProvider.java",
       "src/org/chromium/webapk/shell_apk/h2o/SplashUtils.java",
+      "src/org/chromium/webapk/shell_apk/h2o/SplashUtilsForS.java",
     ]
     deps += [
       "//chrome/android/webapk/libs/common:common_java",
