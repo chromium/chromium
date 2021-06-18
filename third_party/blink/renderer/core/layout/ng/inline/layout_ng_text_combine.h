@@ -34,6 +34,11 @@ class CORE_EXPORT LayoutNGTextCombine final : public LayoutNGBlockFlow {
 
   // Scaling
 
+  // Map scaled |offset_in_container| to non-scaled offset if |this| uses
+  // scale x, otherwise return |offset_in_container|.
+  PhysicalOffset AdjustOffsetForHitTest(
+      const PhysicalOffset& offset_in_container) const;
+
   // Maps non-scaled |rect| to scaled rect for
   //  * |LayoutText::PhysicalLinesBoundingBox()| used by
   //    |LayoutObject::DebugRect()|, intersection observer, and scroll anchor.
@@ -42,6 +47,10 @@ class CORE_EXPORT LayoutNGTextCombine final : public LayoutNGBlockFlow {
   //  * |NGPhysicalFragment::AddOutlineRectsForCursor()|
   //  * |NGPhysicalFragment::AddScrollableOverflowForInlineChild()|
   PhysicalRect AdjustRectForBoundingBox(const PhysicalRect& rect) const;
+
+  PhysicalRect ComputeTextBoundsRectForHitTest(
+      const NGFragmentItem& text_item,
+      const PhysicalOffset& inline_root_offset) const;
 
   // Returns ink overflow for text decorations and emphasis mark.
   PhysicalRect RecalcContentsInkOverflow() const;
@@ -83,6 +92,7 @@ class CORE_EXPORT LayoutNGTextCombine final : public LayoutNGBlockFlow {
   PhysicalOffset ApplyScaleX(const PhysicalOffset& offset) const;
   PhysicalRect ApplyScaleX(const PhysicalRect& rect) const;
   PhysicalSize ApplyScaleX(const PhysicalSize& offset) const;
+  PhysicalOffset UnapplyScaleX(const PhysicalOffset& offset) const;
 
   float ComputeInlineSpacing() const;
   bool UsingSyntheticOblique() const;

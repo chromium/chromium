@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_combine.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_items.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_physical_line_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
@@ -665,11 +666,16 @@ PositionWithAffinity NGInlineCursor::PositionForPointInInlineFormattingContext(
 }
 
 PositionWithAffinity NGInlineCursor::PositionForPointInInlineBox(
-    const PhysicalOffset& point) const {
+    const PhysicalOffset& point_in) const {
   const NGFragmentItem* container = CurrentItem();
   DCHECK(container);
   DCHECK(container->Type() == NGFragmentItem::kLine ||
          container->Type() == NGFragmentItem::kBox);
+  const auto* const text_combine =
+      DynamicTo<LayoutNGTextCombine>(container->GetLayoutObject());
+  const PhysicalOffset point =
+      UNLIKELY(text_combine) ? text_combine->AdjustOffsetForHitTest(point_in)
+                             : point_in;
   const auto writing_direction = container->Style().GetWritingDirection();
   const PhysicalSize& container_size = container->Size();
   const LayoutUnit point_inline_offset =

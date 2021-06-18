@@ -108,12 +108,38 @@ PhysicalSize LayoutNGTextCombine::ApplyScaleX(const PhysicalSize& size) const {
   return PhysicalSize(LayoutUnit(size.width * *scale_x_), size.height);
 }
 
+PhysicalOffset LayoutNGTextCombine::UnapplyScaleX(
+    const PhysicalOffset& offset) const {
+  DCHECK(scale_x_.has_value());
+  const float spacing = ComputeInlineSpacing();
+  return PhysicalOffset(LayoutUnit((offset.left - spacing) / *scale_x_),
+                        offset.top);
+}
+
+PhysicalOffset LayoutNGTextCombine::AdjustOffsetForHitTest(
+    const PhysicalOffset& offset_in_container) const {
+  if (!scale_x_)
+    return offset_in_container;
+  return UnapplyScaleX(offset_in_container);
+}
+
 PhysicalRect LayoutNGTextCombine::AdjustRectForBoundingBox(
     const PhysicalRect& rect) const {
   if (!scale_x_)
     return rect;
   // See "text-combine-upright-compression-007.html"
   return ApplyScaleX(rect);
+}
+
+PhysicalRect LayoutNGTextCombine::ComputeTextBoundsRectForHitTest(
+    const NGFragmentItem& text_item,
+    const PhysicalOffset& inline_root_offset) const {
+  DCHECK(text_item.IsText()) << text_item;
+  PhysicalRect rect = text_item.SelfInkOverflow();
+  rect.Move(text_item.OffsetInContainerFragment());
+  rect = AdjustRectForBoundingBox(rect);
+  rect.Move(inline_root_offset);
+  return rect;
 }
 
 void LayoutNGTextCombine::ResetLayout() {

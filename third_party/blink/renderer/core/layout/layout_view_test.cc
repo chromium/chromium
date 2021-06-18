@@ -1138,4 +1138,161 @@ TEST_P(LayoutViewHitTestTest, TextAndInputsWithRtlDirection) {
   }
 }
 
+TEST_P(LayoutViewHitTestTest, TextCombineOneTextNode) {
+  ScopedLayoutNGTextCombineForTest enable_layout_ng_text_combine(true);
+  LoadAhem();
+  InsertStyleElement(
+      "body { margin: 0px; font: 100px/110px Ahem; }"
+      "c { text-combine-upright: all; }"
+      "div { writing-mode: vertical-rl; }");
+  SetBodyInnerHTML("<div>a<c id=target>01234</c>b</div>");
+  //  LayoutNGBlockFlow {HTML} at (0,0) size 800x600
+  //    LayoutNGBlockFlow {BODY} at (0,0) size 800x600
+  //      LayoutNGBlockFlow {DIV} at (0,0) size 110x300
+  //        LayoutText {#text} at (5,0) size 100x100
+  //          text run at (5,0) width 100: "a"
+  //        LayoutInline {C} at (5,100) size 100x100
+  //          LayoutNGTextCombine (anonymous) at (5,100) size 100x100
+  //            LayoutText {#text} at (-5,0) size 110x100
+  //              text run at (0,0) width 500: "01234"
+  //        LayoutText {#text} at (5,200) size 100x100
+  //          text run at (5,200) width 100: "b"
+  const auto& target = *GetElementById("target");
+  const auto& text_01234 = *To<Text>(target.firstChild());
+  const auto& text_a = *To<Text>(target.previousSibling());
+  const auto& text_b = *To<Text>(target.nextSibling());
+
+  if (LayoutNG()) {
+    EXPECT_EQ(PositionWithAffinity(Position(text_01234, 0)), HitTest(0, 150));
+    EXPECT_EQ(PositionWithAffinity(Position(text_01234, 0)), HitTest(10, 150));
+    EXPECT_EQ(PositionWithAffinity(Position(text_01234, 1)), HitTest(20, 150));
+    EXPECT_EQ(PositionWithAffinity(Position(text_01234, 1)), HitTest(30, 150));
+    EXPECT_EQ(PositionWithAffinity(Position(text_01234, 2)), HitTest(40, 150));
+    EXPECT_EQ(PositionWithAffinity(Position(text_01234, 2)), HitTest(50, 150));
+    EXPECT_EQ(PositionWithAffinity(Position(text_01234, 3)), HitTest(60, 150));
+    EXPECT_EQ(PositionWithAffinity(Position(text_01234, 3)), HitTest(70, 150));
+    EXPECT_EQ(PositionWithAffinity(Position(text_01234, 4)), HitTest(80, 150));
+    EXPECT_EQ(PositionWithAffinity(Position(text_01234, 4)), HitTest(90, 150));
+    EXPECT_EQ(
+        PositionWithAffinity(Position(text_01234, 5), TextAffinity::kUpstream),
+        HitTest(100, 150));
+    // TODO(yosin): should be text_01234@5
+    if (IsAndroidOrWindowsEditingBehavior()) {
+      EXPECT_EQ(PositionWithAffinity(Position(text_b, 0)), HitTest(110, 150));
+      EXPECT_EQ(PositionWithAffinity(Position(text_b, 0)), HitTest(120, 150));
+    } else {
+      EXPECT_EQ(PositionWithAffinity(Position(text_a, 0)), HitTest(110, 150));
+      EXPECT_EQ(PositionWithAffinity(Position(text_a, 0)), HitTest(120, 150));
+    }
+  } else {
+    // Note: Hit test for legacy layout is broken. This is just record of
+    // current behavior.
+    if (IsAndroidOrWindowsEditingBehavior())
+      EXPECT_EQ(PositionWithAffinity(Position(text_01234, 0)), HitTest(0, 150));
+    else
+      EXPECT_EQ(PositionWithAffinity(Position(text_b, 1)), HitTest(0, 150));
+    EXPECT_EQ(PositionWithAffinity(Position(text_01234, 0)), HitTest(10, 150));
+    EXPECT_EQ(PositionWithAffinity(Position(text_01234, 0)), HitTest(20, 150));
+    EXPECT_EQ(PositionWithAffinity(Position(text_01234, 0)), HitTest(30, 150));
+    EXPECT_EQ(PositionWithAffinity(Position(text_01234, 0)), HitTest(40, 150));
+    EXPECT_EQ(PositionWithAffinity(Position(text_01234, 0)), HitTest(50, 150));
+    EXPECT_EQ(PositionWithAffinity(Position(text_01234, 0)), HitTest(60, 150));
+    EXPECT_EQ(PositionWithAffinity(Position(text_01234, 0)), HitTest(70, 150));
+    EXPECT_EQ(PositionWithAffinity(Position(text_01234, 0)), HitTest(80, 150));
+    EXPECT_EQ(PositionWithAffinity(Position(text_01234, 0)), HitTest(90, 150));
+    EXPECT_EQ(PositionWithAffinity(Position(text_01234, 0)), HitTest(100, 150));
+    if (IsAndroidOrWindowsEditingBehavior()) {
+      EXPECT_EQ(PositionWithAffinity(Position(text_01234, 0)),
+                HitTest(110, 150));
+      EXPECT_EQ(PositionWithAffinity(Position(text_01234, 0)),
+                HitTest(120, 150));
+    } else {
+      EXPECT_EQ(PositionWithAffinity(Position(text_a, 0)), HitTest(110, 150));
+      EXPECT_EQ(PositionWithAffinity(Position(text_a, 0)), HitTest(120, 150));
+    }
+  }
+}
+
+TEST_P(LayoutViewHitTestTest, TextCombineTwoTextNodes) {
+  ScopedLayoutNGTextCombineForTest enable_layout_ng_text_combine(true);
+  LoadAhem();
+  InsertStyleElement(
+      "body { margin: 0px; font: 100px/110px Ahem; }"
+      "c { text-combine-upright: all; }"
+      "div { writing-mode: vertical-rl; }");
+  SetBodyInnerHTML("<div>a<c id=target>012<wbr>34</c>b</div>");
+  //   LayoutNGBlockFlow {HTML} at (0,0) size 800x600
+  //     LayoutNGBlockFlow {BODY} at (0,0) size 800x600
+  //       LayoutNGBlockFlow {DIV} at (0,0) size 110x300
+  //         LayoutText {#text} at (5,0) size 100x100
+  //           text run at (5,0) width 100: "a"
+  //         LayoutInline {C} at (5,100) size 100x100
+  //           LayoutNGTextCombine (anonymous) at (5,100) size 100x100
+  //             LayoutText {#text} at (-5,0) size 66x100
+  //               text run at (0,0) width 300: "012"
+  //             LayoutWordBreak {WBR} at (61,0) size 0x100
+  //               text run at (300,0) width 0: "\x{200B}"
+  //             LayoutText {#text} at (61,0) size 44x100
+  //               text run at (300,0) width 200: "34"
+  //         LayoutInline {B} at (5,200) size 100x100
+  //           LayoutText {#text} at (5,200) size 100x100
+  //             text run at (5,200) width 100: "b"
+  //   const auto& target = *GetElementById("target");
+  const auto& target = *GetElementById("target");
+  const auto& text_012 = *To<Text>(target.firstChild());
+  const auto& text_34 = *To<Text>(target.lastChild());
+  const auto& text_a = *To<Text>(target.previousSibling());
+  const auto& text_b = *To<Text>(target.nextSibling());
+
+  if (LayoutNG()) {
+    EXPECT_EQ(PositionWithAffinity(Position(text_012, 0)), HitTest(0, 150));
+    EXPECT_EQ(PositionWithAffinity(Position(text_012, 0)), HitTest(10, 150));
+    EXPECT_EQ(PositionWithAffinity(Position(text_012, 1)), HitTest(20, 150));
+    EXPECT_EQ(PositionWithAffinity(Position(text_012, 1)), HitTest(30, 150));
+    EXPECT_EQ(PositionWithAffinity(Position(text_012, 2)), HitTest(40, 150));
+    EXPECT_EQ(PositionWithAffinity(Position(text_012, 2)), HitTest(50, 150));
+    EXPECT_EQ(
+        PositionWithAffinity(Position(text_012, 3), TextAffinity::kUpstream),
+        HitTest(60, 150));
+    EXPECT_EQ(PositionWithAffinity(Position(text_34, 0)), HitTest(70, 150));
+    EXPECT_EQ(PositionWithAffinity(Position(text_34, 1)), HitTest(80, 150));
+    EXPECT_EQ(PositionWithAffinity(Position(text_34, 1)), HitTest(90, 150));
+    EXPECT_EQ(
+        PositionWithAffinity(Position(text_34, 2), TextAffinity::kUpstream),
+        HitTest(100, 150));
+    // TODO(yosin): should be text_012@5
+    if (IsAndroidOrWindowsEditingBehavior()) {
+      EXPECT_EQ(PositionWithAffinity(Position(text_b, 0)), HitTest(110, 150));
+      EXPECT_EQ(PositionWithAffinity(Position(text_b, 0)), HitTest(120, 150));
+    } else {
+      EXPECT_EQ(PositionWithAffinity(Position(text_a, 0)), HitTest(110, 150));
+      EXPECT_EQ(PositionWithAffinity(Position(text_a, 0)), HitTest(120, 150));
+    }
+  } else {
+    // Note: Hit test for legacy layout is broken. This is just record of
+    // current behavior.
+    if (IsAndroidOrWindowsEditingBehavior())
+      EXPECT_EQ(PositionWithAffinity(Position(text_012, 0)), HitTest(0, 150));
+    else
+      EXPECT_EQ(PositionWithAffinity(Position(text_b, 1)), HitTest(0, 150));
+    EXPECT_EQ(PositionWithAffinity(Position(text_012, 0)), HitTest(10, 150));
+    EXPECT_EQ(PositionWithAffinity(Position(text_012, 0)), HitTest(20, 150));
+    EXPECT_EQ(PositionWithAffinity(Position(text_012, 0)), HitTest(30, 150));
+    EXPECT_EQ(PositionWithAffinity(Position(text_012, 0)), HitTest(40, 150));
+    EXPECT_EQ(PositionWithAffinity(Position(text_012, 0)), HitTest(50, 150));
+    EXPECT_EQ(PositionWithAffinity(Position(text_012, 0)), HitTest(60, 150));
+    EXPECT_EQ(PositionWithAffinity(Position(text_012, 0)), HitTest(70, 150));
+    EXPECT_EQ(PositionWithAffinity(Position(text_012, 0)), HitTest(80, 150));
+    EXPECT_EQ(PositionWithAffinity(Position(text_012, 0)), HitTest(90, 150));
+    EXPECT_EQ(PositionWithAffinity(Position(text_012, 0)), HitTest(100, 150));
+    if (IsAndroidOrWindowsEditingBehavior()) {
+      EXPECT_EQ(PositionWithAffinity(Position(text_012, 0)), HitTest(110, 150));
+      EXPECT_EQ(PositionWithAffinity(Position(text_012, 0)), HitTest(120, 150));
+    } else {
+      EXPECT_EQ(PositionWithAffinity(Position(text_a, 0)), HitTest(110, 150));
+      EXPECT_EQ(PositionWithAffinity(Position(text_a, 0)), HitTest(120, 150));
+    }
+  }
+}
+
 }  // namespace blink

@@ -1785,6 +1785,10 @@ bool NGBoxFragmentPainter::NodeAtPoint(HitTestResult& result,
                                        const PhysicalOffset& physical_offset,
                                        HitTestAction action) {
   HitTestContext hit_test(action, hit_test_location, physical_offset, &result);
+  const auto* const text_combine =
+      DynamicTo<LayoutNGTextCombine>(box_fragment_.GetLayoutObject());
+  if (UNLIKELY(text_combine) && text_combine->UsesScaleX())
+    hit_test.text_combine = text_combine;
   return NodeAtPoint(hit_test, physical_offset);
 }
 
@@ -1795,6 +1799,10 @@ bool NGBoxFragmentPainter::NodeAtPoint(HitTestResult& result,
                                        HitTestAction action) {
   HitTestContext hit_test(action, hit_test_location, inline_root_offset,
                           &result);
+  const auto* const text_combine =
+      DynamicTo<LayoutNGTextCombine>(box_fragment_.GetLayoutObject());
+  if (UNLIKELY(text_combine) && text_combine->UsesScaleX())
+    hit_test.text_combine = text_combine;
   return NodeAtPoint(hit_test, physical_offset);
 }
 
@@ -1948,9 +1956,13 @@ bool NGBoxFragmentPainter::HitTestTextItem(
     return false;
 
   // TODO(layout-dev): Clip to line-top/bottom.
-  const PhysicalRect rect = text_item.ComputeTextBoundsRectForHitTest(
-      hit_test.inline_root_offset,
-      hit_test.result->GetHitTestRequest().IsHitTestVisualOverflow());
+  const PhysicalRect rect =
+      UNLIKELY(hit_test.text_combine)
+          ? hit_test.text_combine->ComputeTextBoundsRectForHitTest(
+                text_item, hit_test.inline_root_offset)
+          : text_item.ComputeTextBoundsRectForHitTest(
+                hit_test.inline_root_offset,
+                hit_test.result->GetHitTestRequest().IsHitTestVisualOverflow());
   if (!hit_test.location.Intersects(rect))
     return false;
 
