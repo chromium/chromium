@@ -5,13 +5,15 @@
 #ifndef IOS_CHROME_BROWSER_UI_INFOBARS_MODALS_INFOBAR_READING_LIST_TABLE_VIEW_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_UI_INFOBARS_MODALS_INFOBAR_READING_LIST_TABLE_VIEW_CONTROLLER_H_
 
+#import "ios/chrome/browser/ui/infobars/modals/infobar_reading_list_modal_consumer.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller.h"
 
 @protocol InfobarReadingListModalDelegate;
 
 // InfobarReadingListTableViewController represents the content for the Add to
 // Reading List InfobarModal.
-@interface InfobarReadingListTableViewController : ChromeTableViewController
+@interface InfobarReadingListTableViewController
+    : ChromeTableViewController <InfobarReadingListModalConsumer>
 
 - (instancetype)initWithDelegate:
     (id<InfobarReadingListModalDelegate>)modalDelegate

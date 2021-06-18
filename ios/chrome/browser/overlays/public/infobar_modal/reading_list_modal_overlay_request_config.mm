@@ -17,6 +17,7 @@ ReadingListInfobarModalOverlayRequestConfig::
     ReadingListInfobarModalOverlayRequestConfig(InfoBarIOS* infobar)
     : infobar_(infobar) {
   DCHECK(infobar_);
+  current_page_added_ = infobar->accepted();
 }
 
 ReadingListInfobarModalOverlayRequestConfig::

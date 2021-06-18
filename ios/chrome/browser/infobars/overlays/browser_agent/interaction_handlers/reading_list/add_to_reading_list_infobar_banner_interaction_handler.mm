@@ -29,7 +29,8 @@ AddToReadingListInfobarBannerInteractionHandler::
 
 void AddToReadingListInfobarBannerInteractionHandler::MainButtonTapped(
     InfoBarIOS* infobar) {
-  GetInfobarDelegate(infobar)->Accept();
+  IOSAddToReadingListInfobarDelegate* delegate = GetInfobarDelegate(infobar);
+  infobar->set_accepted(delegate->Accept());
 }
 
 #pragma mark - Private

@@ -34,7 +34,7 @@ void ReadingListInfobarModalInteractionHandler::NeverAsk(InfoBarIOS* infobar) {
 void ReadingListInfobarModalInteractionHandler::PerformMainAction(
     InfoBarIOS* infobar) {
   IOSAddToReadingListInfobarDelegate* delegate = GetDelegate(infobar);
-  delegate->Accept();
+  infobar->set_accepted(delegate->Accept());
 }
 
 #pragma mark - Private

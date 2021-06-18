@@ -66,6 +66,7 @@
           initWithDelegate:modalMediator];
   modalViewController.title =
       l10n_util::GetNSString(IDS_IOS_READING_LIST_MESSAGES_MODAL_TITLE);
+  modalMediator.consumer = modalViewController;
   self.modalMediator = modalMediator;
   self.modalViewController = modalViewController;
 }

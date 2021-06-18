@@ -20,6 +20,21 @@
 
 @implementation ReadingListInfobarModalOverlayMediator
 
+#pragma mark - Public
+
+- (void)setConsumer:(id<InfobarReadingListModalConsumer>)consumer {
+  if (_consumer == consumer)
+    return;
+
+  _consumer = consumer;
+
+  ReadingListInfobarModalOverlayRequestConfig* config = self.config;
+  if (!_consumer || !config)
+    return;
+
+  [_consumer setCurrentPageAdded:config->current_page_added()];
+}
+
 #pragma mark - Accessors
 
 - (ReadingListInfobarModalOverlayRequestConfig*)config {

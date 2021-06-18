@@ -44,9 +44,13 @@ typedef NS_ENUM(NSInteger, ItemType) {
 };
 
 @interface InfobarReadingListTableViewController ()
+
 // InfobarReadingListModalDelegate for this ViewController.
 @property(nonatomic, weak) id<InfobarReadingListModalDelegate>
     infobarModalDelegate;
+// YES if the current page has already been added.
+@property(nonatomic, assign) BOOL currentPageAdded;
+
 @end
 
 @implementation InfobarReadingListTableViewController
@@ -114,6 +118,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
                                       IDS_IOS_READING_LIST_MESSAGES_MAIN_ACTION)
                   accessibilityId:kReadingListInfobarModalAddButtonAXId];
   addButtonItem.disableButtonIntrinsicWidth = YES;
+  addButtonItem.enabled = !self.currentPageAdded;
   [model addItem:addButtonItem
       toSectionWithIdentifier:SectionIdentifierContent];
 
@@ -171,6 +176,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (CGFloat)tableView:(UITableView*)tableView
     heightForFooterInSection:(NSInteger)section {
   return 0;
+}
+
+#pragma mark - InfobarReadingListModalConsumer
+
+- (void)setCurrentPageAdded:(BOOL)pageAdded {
+  _currentPageAdded = pageAdded;
 }
 
 #pragma mark - Private Methods
