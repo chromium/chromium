@@ -9,6 +9,7 @@
 #include <string>
 
 #include "ash/public/cpp/desks_helper.h"
+#include "ash/wm/desks/desks_test_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -72,6 +73,10 @@ class DesksClientTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     ::full_restore::SetActiveProfilePath(browser()->profile()->GetPath());
     InProcessBrowserTest::SetUpOnMainThread();
+  }
+
+  void SetLaunchTemplate(std::unique_ptr<ash::DeskTemplate> launch_template) {
+    DesksClient::Get()->launch_template_for_test_ = std::move(launch_template);
   }
 
  private:
@@ -207,4 +212,25 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, CaptureActiveDeskAsTemplateTest) {
   EXPECT_EQ(window->GetProperty(aura::client::kShowStateKey),
             chromeos::ToWindowShowState(data->window_state_type.value()));
   EXPECT_FALSE(data2->desk_id.has_value());
+}
+
+// Tests that launching a desk template creates a desk with the given name.
+IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchEmptyDeskTemplate) {
+  const double kDeskUuid = 40.0;
+  const std::u16string kDeskName(u"Test Desk Name");
+
+  DesksClient* desks_client = DesksClient::Get();
+  ash::DesksHelper* desks_helper = ash::DesksHelper::Get();
+
+  ASSERT_EQ(0, desks_helper->GetActiveDeskIndex());
+
+  auto desk_template = std::make_unique<ash::DeskTemplate>(kDeskUuid);
+  desk_template->set_desk_name(kDeskName);
+  SetLaunchTemplate(std::move(desk_template));
+  ash::DeskSwitchAnimationWaiter waiter;
+  desks_client->LaunchDeskTemplate(kDeskUuid);
+  waiter.Wait();
+
+  EXPECT_EQ(1, desks_helper->GetActiveDeskIndex());
+  EXPECT_EQ(kDeskName, desks_helper->GetDeskName(1));
 }

@@ -891,6 +891,22 @@ std::unique_ptr<DeskTemplate> DesksController::CaptureActiveDeskAsTemplate(
   return desk_template;
 }
 
+void DesksController::CreateAndActivateNewDeskForTemplate(
+    const std::u16string& desk_name,
+    base::OnceCallback<void(bool)> callback) {
+  if (!CanCreateDesks()) {
+    std::move(callback).Run(/*success=*/false);
+    return;
+  }
+
+  // TODO: Run the callback after the desk animation is complete.
+  NewDesk(DesksCreationRemovalSource::kLaunchTemplate);
+  Desk* desk = desks().back().get();
+  desk->SetName(desk_name, /*set_by_user=*/true);
+  ActivateDesk(desk, DesksSwitchSource::kLaunchTemplate);
+  std::move(callback).Run(/*success=*/true);
+}
+
 void DesksController::UpdateDesksDefaultNames() {
   size_t i = 0;
   for (auto& desk : desks_) {

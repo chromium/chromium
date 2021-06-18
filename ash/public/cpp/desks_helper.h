@@ -79,6 +79,12 @@ class ASH_PUBLIC_EXPORT DesksHelper {
   virtual std::unique_ptr<DeskTemplate> CaptureActiveDeskAsTemplate(
       const base::FilePath& profile_path) = 0;
 
+  // Creates and activates a new desk for a template with name `desk_name`. Runs
+  // `callback` with true if creation was successful, false otherwise.
+  virtual void CreateAndActivateNewDeskForTemplate(
+      const std::u16string& desk_name,
+      base::OnceCallback<void(bool)> callback) = 0;
+
  protected:
   DesksHelper();
   virtual ~DesksHelper();

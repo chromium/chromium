@@ -7,6 +7,9 @@
 
 #include <memory>
 
+#include "base/callback.h"
+#include "base/memory/weak_ptr.h"
+
 namespace ash {
 class DesksHelper;
 class DeskTemplate;
@@ -30,8 +33,26 @@ class DesksClient {
   // template will not be saved to storage.
   std::unique_ptr<ash::DeskTemplate> CaptureActiveDeskAsTemplate();
 
+  // Launches the desk template with `template_uuid` as a new desk. `desk_uuid`
+  // is the unique id for an existing desk template.
+  void LaunchDeskTemplate(double template_uuid);
+
  private:
-  ash::DesksHelper* const desks_helper_ = nullptr;
+  friend class DesksClientTest;
+
+  // Callback function that is ran after a desk is created, or has failed to be
+  // created.
+  void OnCreateAndActivateNewDesk(ash::DeskTemplate* desk_template,
+                                  bool on_create_activate_success);
+
+  // Convenience pointer to the desks helper which is `ash::DesksController`.
+  // Guaranteed to be not null for the duration of `this`.
+  ash::DesksHelper* const desks_helper_;
+
+  // A test only template for testing `LaunchDeskTemplate`.
+  std::unique_ptr<ash::DeskTemplate> launch_template_for_test_;
+
+  base::WeakPtrFactory<DesksClient> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_DESKS_CLIENT_H_
