@@ -133,6 +133,12 @@ about:version template page
           <td class="version" id="profile_path">$i18n{profile_path}</td>
         </tr>
 </if>
+<if expr="is_macosx">
+        <tr id="linker-section">
+          <td class="label">Linker</td>
+          <td class="version" id="linker">$i18n{linker}</td>
+        </tr>
+</if>
         <tr id="variations-section">
           <td class="label">$i18n{variations_name}</td>
           <td class="version" id="variations-list"></td>

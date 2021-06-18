@@ -224,6 +224,10 @@ void VersionUI::AddVersionDetailStrings(content::WebUIDataSource* html_source) {
   html_source->AddString(version_ui::kCommandLine, command_line);
 #endif
 
+#if defined(OS_MAC)
+  html_source->AddString("linker", CHROMIUM_LINKER_NAME);
+#endif  // defined(OS_MAC)
+
 #if defined(OS_WIN)
   html_source->AddString(version_ui::kUpdateCohortName,
                          version_utils::win::GetCohortVersionInfo());

@@ -322,6 +322,14 @@ static_library("ui") {
   }
 
   defines = []
+  if (is_mac) {
+    # For version_ui.cc:
+    if (use_lld) {
+      defines += [ "CHROMIUM_LINKER_NAME=\"lld\"" ]
+    } else {
+      defines += [ "CHROMIUM_LINKER_NAME=\"ld\"" ]
+    }
+  }
   libs = []
 
   configs += [
