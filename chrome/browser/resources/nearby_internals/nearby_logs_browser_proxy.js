@@ -16,6 +16,13 @@ export class NearbyLogsBrowserProxy {
   getLogMessages() {
     return sendWithPromise('getLogMessages');
   }
+
+  /**
+   * @return {!Promise<!Array<!LogMessage>>}
+   */
+  getQuickPairLogMessages() {
+    return sendWithPromise('getQuickPairLogMessages');
+  }
 }
 
 addSingletonGetter(NearbyLogsBrowserProxy);

@@ -34,7 +34,8 @@ Polymer({
     /** @private */
     tabNames_: {
       type: Array,
-      value: () => ['Logs', 'HTTP Messages', 'Contacts', 'UI Triggers'],
+      value: () =>
+          ['Logs', 'HTTP Messages', 'Contacts', 'UI Triggers', 'Fast Pair'],
       readonly: true,
     },
 

@@ -50,6 +50,15 @@ const nearbyShareLogProvider = {
   getLogMessages: () => NearbyLogsBrowserProxy.getInstance().getLogMessages(),
 };
 
+/** @type {LogProvider} */
+const quickPairLogProvider = {
+  messageAddedEventName: 'quick-pair-log-message-added',
+  bufferClearedEventName: 'quick-pair-log-buffer-cleared',
+  logFilePrefix: 'fast_pair_logs_',
+  getLogMessages: () =>
+      NearbyLogsBrowserProxy.getInstance().getQuickPairLogMessages(),
+};
+
 /**
  * Gets a log provider instance for a feature.
  * @param {!string} feature
@@ -59,6 +68,8 @@ function getLogProvider(feature) {
   switch (feature) {
     case 'nearby-share':
       return nearbyShareLogProvider;
+    case 'quick-pair':
+      return quickPairLogProvider;
     default:
       return null;
   }
