@@ -510,6 +510,45 @@ LayoutBlockFlow DIV id="root"
       << "No more LayoutNGTextCombine";
 }
 
+TEST_F(LayoutNGTextCombineTest, LayoutOverflow) {
+  LoadAhem();
+  InsertStyleElement(
+      "div {"
+      "  writing-mode: vertical-lr;"
+      "  font: 100px/150px Ahem;"
+      "}"
+      "tcy { text-combine-upright: all; }");
+  SetBodyInnerHTML(
+      "<div id=t1><tcy>abcefgh</tcy>X</div>"
+      "<div id=t2>aX</div>");
+
+  // Layout tree is
+  //    LayoutNGBlockFlow {DIV} at (0,0) size 100x200
+  //      LayoutInline {TCY} at (0,0) size 100x100
+  //        LayoutNGTextCombine (anonymous) at (0,0) size 100x100
+  //          LayoutText {#text} at (0,0) size 110x100
+  //            text run at (0,0) width 700: "abcefgh"
+  //      LayoutText {#text} at (0,100) size 100x100
+  //        text run at (0,100) width 100: "X"
+  //   LayoutNGBlockFlow {DIV} at (0,200) size 100x200
+  //     LayoutText {#text} at (0,0) size 100x200
+  //       text run at (0,0) width 200: "aX"
+
+  const auto& sample1 = *To<LayoutBlockFlow>(GetLayoutObjectByElementId("t1"));
+  const auto& sample_fragment1 = *sample1.CurrentFragment();
+  EXPECT_FALSE(sample_fragment1.HasLayoutOverflow());
+  EXPECT_EQ(PhysicalSize(150, 200), sample_fragment1.Size());
+  EXPECT_EQ(PhysicalRect(PhysicalOffset(), PhysicalSize(150, 200)),
+            sample_fragment1.LayoutOverflow());
+
+  const auto& sample2 = *To<LayoutBlockFlow>(GetLayoutObjectByElementId("t2"));
+  const auto& sample_fragment2 = *sample2.CurrentFragment();
+  EXPECT_FALSE(sample_fragment2.HasLayoutOverflow());
+  EXPECT_EQ(PhysicalSize(150, 200), sample_fragment2.Size());
+  EXPECT_EQ(PhysicalRect(PhysicalOffset(), PhysicalSize(150, 200)),
+            sample_fragment2.LayoutOverflow());
+}
+
 TEST_F(LayoutNGTextCombineTest, MultipleTextNode) {
   InsertStyleElement(
       "c { text-combine-upright: all; }"

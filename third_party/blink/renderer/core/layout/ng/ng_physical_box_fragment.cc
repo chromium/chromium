@@ -154,8 +154,10 @@ scoped_refptr<const NGPhysicalBoxFragment> NGPhysicalBoxFragment::Create(
         /* is_css_box */ builder->box_type_ != NGBoxType::kColumnBox, borders,
         scrollbar, padding, physical_size, writing_direction);
 
-    if (NGFragmentItemsBuilder* items_builder = builder->ItemsBuilder())
-      calculator.AddItems(items_builder->Items(physical_size));
+    if (NGFragmentItemsBuilder* items_builder = builder->ItemsBuilder()) {
+      calculator.AddItems(builder->GetLayoutObject(),
+                          items_builder->Items(physical_size));
+    }
 
     for (auto& child : builder->children_) {
       const auto* box_fragment =

@@ -46,14 +46,15 @@ class CORE_EXPORT NGLayoutOverflowCalculator {
   }
 
   // Adds layout-overflow from fragment-items.
-  void AddItems(const NGFragmentItems&);
-  void AddItems(const NGFragmentItemsBuilder::ItemWithOffsetList&);
+  void AddItems(const NGPhysicalBoxFragment&, const NGFragmentItems&);
+  void AddItems(const LayoutObject*,
+                const NGFragmentItemsBuilder::ItemWithOffsetList&);
 
   void AddTableCollapsedBorders(const NGTableBorders&);
 
  private:
   template <typename Items>
-  void AddItemsInternal(const Items& items);
+  void AddItemsInternal(const LayoutObject* layout_object, const Items& items);
 
   PhysicalRect AdjustOverflowForHanging(const PhysicalRect& line_box_rect,
                                         PhysicalRect overflow);
