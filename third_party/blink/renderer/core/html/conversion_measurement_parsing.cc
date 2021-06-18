@@ -69,9 +69,10 @@ WebImpressionOrError GetImpression(
   }
 
   LocalFrame* frame = nullptr;
-  if (auto* window = DynamicTo<LocalDOMWindow>(execution_context)) {
+  if (auto* window = DynamicTo<LocalDOMWindow>(execution_context))
     frame = window->GetFrame();
-  } else {
+
+  if (!frame) {
     // TODO(apaseltiner): Perhaps this should be something like `kUnknown`.
     return mojom::blink::RegisterImpressionError::kNotAllowed;
   }
