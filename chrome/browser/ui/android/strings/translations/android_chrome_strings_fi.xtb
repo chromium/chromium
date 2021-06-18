@@ -41,6 +41,7 @@
 <translation id="1240288207750131269">Ladataan: <ph name="LANG" /></translation>
 <translation id="1242883863226959074">laitteella</translation>
 <translation id="124678866338384709">Sulje nykyinen välilehti</translation>
+<translation id="1246905108078336582">Poistetaanko ehdotus leikepöydältä?</translation>
 <translation id="1258753120186372309">Google-piirros: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Jakaminen epäonnistui: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Laajenna napauttamalla.</translation>
@@ -361,6 +362,7 @@ Hae sanaa koskettamalla sitä pitkään. Jos haluat tarkentaa hakuasi, valitse e
 <translation id="3295530008794733555">Selaa nettiä nopeammin. Käytä vähemmän dataa.</translation>
 <translation id="3297344142967351106">Ääniapu</translation>
 <translation id="3303414029551471755">Jatketaanko sisällön lataamiseen?</translation>
+<translation id="333367884906698540">Bluetooth menee taas pois päältä, kun olet valmis</translation>
 <translation id="3334729583274622784">Vaihdetaanko tiedostotunniste?</translation>
 <translation id="3341058695485821946">Katso paljonko dataa olet säästänyt</translation>
 <translation id="3341262203274374114">Ei voi seurata. Jotain meni pieleen.</translation>
@@ -1035,6 +1037,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="7641339528570811325">Poista selaustiedot…</translation>
 <translation id="764170292089748542">Kun selaat yksityisesti, Chrome ei tallenna selaushistoriaasi. Voit edelleen käyttää kirjanmerkkejä päästäksesi suosikkisivustoillesi.</translation>
 <translation id="7646772052135772216">Salasanojen synkronointi ei toimi</translation>
+<translation id="7655900163790317559">Laitetaan Bluetooth päälle…</translation>
 <translation id="7658239707568436148">Peru</translation>
 <translation id="7665369617277396874">Lisää tili</translation>
 <translation id="766587987807204883">Tässä näet artikkelit, jotka voit lukea myös offline-tilassa</translation>

@@ -372,6 +372,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2276057643614339130">Base de impresión</translation>
 <translation id="2277103315734023688">Buscar más adelante</translation>
 <translation id="2283340219607151381">Guardar y completar direcciones</translation>
+<translation id="2283447177162560884">Se borró "<ph name="PAGE_TITLE" />"</translation>
 <translation id="2288422996159078444">Todo lo que escribas, las páginas que visites o cualquier otra actividad que realices en la Web está visible. Además, se puede cambiar contenido en los sitios sin tu conocimiento.</translation>
 <translation id="2289385804009217824">Cortar</translation>
 <translation id="2292556288342944218">Se bloqueó tu acceso a Internet</translation>
@@ -498,6 +499,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="277133753123645258">Método de envío</translation>
 <translation id="277499241957683684">Falta un registro de dispositivo.</translation>
 <translation id="2775884851269838147">Primera página de impresión</translation>
+<translation id="2778854133681684171">Puedes verificar tu identidad rápidamente con tu dispositivo la próxima vez que realices compras a través de esta forma de pago.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2784949926578158345">Se ha restablecido la conexión.</translation>
 <translation id="2792012897584536778">Los administradores de este dispositivo configuraron certificados de seguridad que les permiten ver el contenido de los sitios web que visitas.</translation>
@@ -656,6 +658,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3377736046129930310">Usa el bloqueo de pantalla para confirmar las tarjetas más rápido</translation>
 <translation id="3380365263193509176">Error desconocido</translation>
 <translation id="3380864720620200369">ID de cliente:</translation>
+<translation id="3381668585148405088">Verificar tu compra</translation>
 <translation id="3387261909427947069">Formas de pago</translation>
 <translation id="3391030046425686457">Dirección de entrega</translation>
 <translation id="3395827396354264108">Método de retiro</translation>
@@ -831,6 +834,10 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3996311196211510766">El sitio <ph name="ORIGIN" /> solicitó que se aplique una política de origen a todas las solicitudes. Sin embargo, no es posible en este momento.</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Documento PDF con {COUNT} página}other{Documento PDF con {COUNT} páginas}}</translation>
 <translation id="4023431997072828269">Dado que se está utilizando una conexión no segura para enviar este formulario, otras personas podrán ver tu información.</translation>
+<translation id="4027177651527820006">Si habilitas estas funciones, podrías perder los datos de navegación o
+    poner en riesgo la seguridad o la privacidad. Las funciones habilitadas se aplican a todos
+    los usuarios de este navegador. Si eres un administrador empresarial, no debes
+    usar estas funciones experimentales en producción.</translation>
 <translation id="4030383055268325496">&amp;Deshacer Agregar</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4058922952496707368">Clave "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>

@@ -41,6 +41,7 @@
 <translation id="1240288207750131269"><ph name="LANG" /> yüklənir</translation>
 <translation id="1242883863226959074">cihaz</translation>
 <translation id="124678866338384709">Cari paneli bağlayın</translation>
+<translation id="1246905108078336582">Təklif mübadilə buferindən silinsin?</translation>
 <translation id="1258753120186372309">Google doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> paylaşmaq mümkün olmnadı</translation>
 <translation id="1283039547216852943">Genişləndirmək üçün klikləyin</translation>
@@ -361,6 +362,7 @@ Axtarmaq üçün istənilən sözə toxunub saxlayın. Axtarışınızı dəqiql
 <translation id="3295530008794733555">Daha sürətli axtarış edin. Daha az data istifadə edin.</translation>
 <translation id="3297344142967351106">Səsli yardım</translation>
 <translation id="3303414029551471755">Kontentin endirilməsinə davam etmək istəyirsiniz?</translation>
+<translation id="333367884906698540">İşi bitirdikdən sonra Bluetooth yenidən deaktiv olacaq</translation>
 <translation id="3334729583274622784">Fayl artırması dəyişdirilsin?</translation>
 <translation id="3341058695485821946">Yadda saxladığınız data miqdarına baxın</translation>
 <translation id="3341262203274374114">İzləmədən çıxarmaq olmur. Xəta baş verdi.</translation>
@@ -1033,6 +1035,7 @@ Məxfilik Sendboksu sınaqları hələ də aktiv hazırlanma mərhələsindədir
 <translation id="7641339528570811325">Brauzinq datasını təmizləyin...</translation>
 <translation id="764170292089748542">Məxfi baxmağı seçdiyiniz zaman Chrome brauzer tarixçənizi saxlamır. Sevdiyiniz saytlara giriş üçün hələ də əlfəcinlərdən istifadə edə bilərsiniz.</translation>
 <translation id="7646772052135772216">Parol sinxronizasiyası işləmir</translation>
+<translation id="7655900163790317559">Bluetooth aktiv edilir…</translation>
 <translation id="7658239707568436148">Ləğv edin</translation>
 <translation id="7665369617277396874">Hesab əlavə edin</translation>
 <translation id="766587987807204883">Məqalələr burada görünəcək. Onları oflayn olduqda belə oxuya bilərsiniz</translation>

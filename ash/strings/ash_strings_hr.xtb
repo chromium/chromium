@@ -727,6 +727,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="6816797338148849397">Dostupne su informacije o vašem odabiru. Pristupite im pritiskom strelice prema gore.</translation>
 <translation id="6818242057446442178">Riječ unatrag</translation>
 <translation id="6820676911989879663">Odmorite se!</translation>
+<translation id="6837064795450991317">Sakrivanje deskbara</translation>
 <translation id="6850010208275816200">Aplikacija se trenutačno prikazuje na cijelom zaslonu. Ako aplikacija zatraži zaporku, prvo izađite iz prikaza preko cijelog zaslona.</translation>
 <translation id="6852052252232534364">Kliknite za aktivaciju</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
@@ -762,6 +763,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="7076293881109082629">Prijava</translation>
 <translation id="7088960765736518739">Prekidač za pristup</translation>
 <translation id="7098389117866926363">USB-C uređaj (lijevi priključak sa stražnje strane)</translation>
+<translation id="7106330611027933926">Prikazivanje deskbara</translation>
 <translation id="7118268675952955085">snimka zaslona</translation>
 <translation id="7131634465328662194">Odjavit ćete se automatski.</translation>
 <translation id="7143207342074048698">Povezivanje</translation>
@@ -805,6 +807,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="7466449121337984263">Dodirnite senzor</translation>
 <translation id="7473891865547856676">Ne, hvala</translation>
 <translation id="7477793887173910789">Upravljate glazbom, videozapisima i drugim medijima</translation>
+<translation id="7482097454533720217">Pronađite definicije, prijevode ili pretvorbe jedinica kada tekst kliknete desnom tipkom ili ga dodirnete i držite.</translation>
 <translation id="7483025031359818980">Za područje odabira postavljen je cijeli zaslon</translation>
 <translation id="7486227320194954040">Sažmi alate markera</translation>
 <translation id="7497767806359279797">Odaberite jezik i tipkovnicu</translation>
@@ -981,6 +984,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="8843682306134542540">Prebacivanje zaključavanja rotacije. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Pretraživanje + Esc</translation>
 <translation id="8853703225951107899">Bez obzira na to, vaš PIN ili zaporku nije bilo moguće potvrditi. Napomena: ako ste nedavno promijenili zaporku, upotrijebite staru zaporku. Vaša nova zaporka primijenit će se nakon što se odjavite.</translation>
+<translation id="8863888432376731307">Pogledajte <ph name="INTENT" /> za "<ph name="QUERY" />" i još mnogo toga</translation>
 <translation id="8870509716567206129">Aplikacija ne podržava podijeljeni zaslon.</translation>
 <translation id="8871580645200179206">Uključite ili isključite tamnu temu. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Niste povezani</translation>

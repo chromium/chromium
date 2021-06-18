@@ -376,6 +376,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2276057643614339130">Osnova za tiskanje</translation>
 <translation id="2277103315734023688">Išči naprej</translation>
 <translation id="2283340219607151381">Shranjevanje in izpolnjevanje naslovov</translation>
+<translation id="2283447177162560884">Stran »<ph name="PAGE_TITLE" />« je izbrisana</translation>
 <translation id="2288422996159078444">Vse, kar vnesete, vse spletne strani, ki si jih ogledate, in vsa dejavnost v spletu se nadzorujejo. Vsebino na spletnih mestih je mogoče spremeniti brez vaše vednosti.</translation>
 <translation id="2289385804009217824">Obrezovanje</translation>
 <translation id="2292556288342944218">Internetni dostop je blokiran</translation>
@@ -502,6 +503,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="277133753123645258">Način pošiljanja</translation>
 <translation id="277499241957683684">Manjka zapis o napravi</translation>
 <translation id="2775884851269838147">Prva stran za tiskanje</translation>
+<translation id="2778854133681684171">S svojo napravo lahko hitro potrdite, da ste to vi, ko boste naslednjič za nakup uporabili to plačilno sredstvo.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2784949926578158345">Povezava je bila obnovljena.</translation>
 <translation id="2792012897584536778">Skrbniki te naprave so nastavili varnostna potrdila, ki jim morda omogočajo ogled vsebine spletnih mest, ki jih obiščete.</translation>
@@ -659,6 +661,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3377736046129930310">Uporabite zaklepanje zaslona za hitrejše potrjevanje kartic</translation>
 <translation id="3380365263193509176">Neznana napaka</translation>
 <translation id="3380864720620200369">ID odjemalca:</translation>
+<translation id="3381668585148405088">Potrdite nakup</translation>
 <translation id="3387261909427947069">Plačilna sredstva</translation>
 <translation id="3391030046425686457">Naslov za dostavo</translation>
 <translation id="3395827396354264108">Način prevzema</translation>
@@ -835,6 +838,10 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
     velja za vse njegove zahteve, vendar tega pravilnika trenutno ni mogoče uveljaviti.</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Dokument PDF, ki vsebuje {COUNT} stran}one{Dokument PDF, ki vsebuje {COUNT} stran}two{Dokument PDF, ki vsebuje {COUNT} strani}few{Dokument PDF, ki vsebuje {COUNT} strani}other{Dokument PDF, ki vsebuje {COUNT} strani}}</translation>
 <translation id="4023431997072828269">Ta obrazec pošiljate prek povezave, ki ni varna, zato bodo drugi uporabniki lahko videli vaše podatke.</translation>
+<translation id="4027177651527820006">Če omogočite te funkcije, lahko izgubite podatke brskalnika oziroma
+    ogrozite svojo varnost ali zasebnost. Omogočene funkcije veljajo za
+    vse uporabnike tega brskalnika. Če ste skrbnik podjetja, ne uporabljajte teh zastavic
+    v različici za splošno razpoložljivost.</translation>
 <translation id="4030383055268325496">&amp;Razveljavi dodajanje</translation>
 <translation id="4056223980640387499">Sepija</translation>
 <translation id="4058922952496707368">Ključ »<ph name="SUBKEY" />«: <ph name="ERROR" /></translation>

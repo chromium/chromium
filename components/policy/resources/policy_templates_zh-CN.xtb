@@ -162,7 +162,6 @@
 
       如需详细了解有效的 <ph name="URL_LABEL" /> 格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是此政策可接受的值。</translation>
 <translation id="120937472976628837">报告风扇信息</translation>
-<translation id="1214202898523114033">端口 10080（2022/04/01 到期）</translation>
 <translation id="1216919699175573511">启用 Signed HTTP Exchange (SXG) 支持</translation>
 <translation id="1219695476179627719">指定是否要将已在运行较新版本的设备回滚到 <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" /> 所设定的版本。
 
@@ -4113,15 +4112,6 @@
 <translation id="6506486086262398387">如果此政策已启用，适用于 <ph name="PRODUCT_OS_NAME" />的网络文件共享功能会酌情使用 NTLM 对 SMB 共享文件进行身份验证。如果此政策已停用，系统会关闭对 SMB 共享文件的 NTLM 身份验证机制。
 
       如果您未设置此政策，系统的默认行为就会是：为受管用户停用此政策，并为其他用户启用此政策。</translation>
-<translation id="651012148496266279">通过设置此政策，您可以允许系统绕过 <ph name="PRODUCT_NAME" /> 内置的受限端口列表。此政策的值应是一个逗号分隔列表，包含 0 个或多个获准进行外发连接的端口。
-
-      限制端口是为了防止不良之徒将 <ph name="PRODUCT_NAME" /> 作为媒介来利用各种网络安全漏洞。设置此政策可能会致使您的网络遭到攻击。此政策是一种临时的变通方案，旨在应对“ERR_UNSAFE_PORT”代码类错误，以协助将正在禁用端口上运行的服务迁移到标准端口（例如端口 80 或 443）。
-
-      恶意网站可轻松地检测到此政策已设置以及其中指定了哪些端口，并会使用这类信息来确定攻击目标。
-
-      将此政策的值留空（不设置此政策）意味着所有受限端口都会被禁用。如果该列表既包含有效值也包含无效值，有效值会被付诸应用。
-
-      此政策会覆盖“--explicitly-allowed-ports”命令行选项。</translation>
 <translation id="6515357889978918016"><ph name="PLUGIN_VM_NAME" /> 图片</translation>
 <translation id="6518102411616460786">为实现版本降级，等待当前版本有可用的稳定版</translation>
 <translation id="6520802717075138474">首次运行时，从默认浏览器导入搜索引擎</translation>
@@ -6260,7 +6250,6 @@
       此政策只是一项暂时性措施，会从 <ph name="PRODUCT_NAME" /> 的未来版本中移除。移除此政策后，<ph name="PRODUCT_NAME" /> 将始终都能查询其他 DNS 类型。</translation>
 <translation id="9167719789236691545">在 <ph name="PRODUCT_OS_NAME" />的“文件”应用中停用 Google 云端硬盘</translation>
 <translation id="9187743794267626640">禁止装载外部存储设备</translation>
-<translation id="9190257149451871588">端口 6566（2021/10/15 到期）</translation>
 <translation id="9190456586252617675">此政策旨在控制 Google 助理新手入门体验的模式。
 
       如果此政策设为<ph name="ASSISTANT_ONBOARDING_MODE_DEFAULT" />或未设置，系统会使用 Google 助理新手入门体验的默认模式。
@@ -6278,7 +6267,6 @@
 <translation id="927444535723396977">如果此政策设为 1，系统会允许网站运行 JavaScript。如果此政策设为 2，系统会禁止网站运行 JavaScript。
 
       如果此政策未设置，系统会允许运行 JavaScript，但用户可以更改此设置。</translation>
-<translation id="928189505080808353">端口 554（2021/10/15 到期）</translation>
 <translation id="929549405492388749">如果设为 true，即使 AppCache 在 Chrome 中默认不可用，此政策仍会强制启用 AppCache。
 
       如果此政策设为 false 或未设置，AppCache 会遵从 Chrome 的默认设置。</translation>

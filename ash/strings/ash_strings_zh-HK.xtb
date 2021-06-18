@@ -726,6 +726,7 @@
 <translation id="6816797338148849397">你所揀嘅項目有相關資料可以提供。用向上箭咀掣就可以存取。</translation>
 <translation id="6818242057446442178">往後一個字詞</translation>
 <translation id="6820676911989879663">休息一下！</translation>
+<translation id="6837064795450991317">隱藏桌面列</translation>
 <translation id="6850010208275816200">目前應用程式正處於全螢幕模式。如果應用程式需要您的密碼，請先退出全螢幕模式。</translation>
 <translation id="6852052252232534364">按一下即可啟動</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> 秒</translation>
@@ -761,6 +762,7 @@
 <translation id="7076293881109082629">登入中</translation>
 <translation id="7088960765736518739">按鈕控制</translation>
 <translation id="7098389117866926363">USB-C 裝置 (後方左側連接埠)</translation>
+<translation id="7106330611027933926">顯示桌面列</translation>
 <translation id="7118268675952955085">螢幕截圖</translation>
 <translation id="7131634465328662194">您將會自動登出。</translation>
 <translation id="7143207342074048698">正在連接</translation>
@@ -804,6 +806,7 @@
 <translation id="7466449121337984263">請輕觸感應器</translation>
 <translation id="7473891865547856676">不用了，謝謝</translation>
 <translation id="7477793887173910789">控制音樂、影片及其他內容</translation>
+<translation id="7482097454533720217">按住文字或在文字上按一下右鍵後，就能取得定義、翻譯或單位轉換結果。</translation>
 <translation id="7483025031359818980">揀咗全螢幕作為來源</translation>
 <translation id="7486227320194954040">收合標記工具</translation>
 <translation id="7497767806359279797">選擇語言和鍵盤配置</translation>
@@ -980,6 +983,7 @@
 <translation id="8843682306134542540">切換旋轉鎖定。<ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">搜尋鍵 + Esc 鍵</translation>
 <translation id="8853703225951107899">系統仍然無法驗證您的 PIN 或密碼。注意：如果您最近變更過密碼，請嘗試使用舊密碼，新密碼會在您登出後立即生效。</translation>
+<translation id="8863888432376731307">取得「<ph name="QUERY" />」和其他查詢內容的<ph name="INTENT" /></translation>
 <translation id="8870509716567206129">應用程式不支援分割畫面。</translation>
 <translation id="8871580645200179206">切換深色主題背景。<ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">未連線</translation>

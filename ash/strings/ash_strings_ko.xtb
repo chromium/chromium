@@ -727,6 +727,7 @@
 <translation id="6816797338148849397">선택 항목과 관련된 정보를 이용할 수 있습니다. 액세스하려면 위쪽 화살표 키를 사용하세요.</translation>
 <translation id="6818242057446442178">한 단어 뒤로 이동</translation>
 <translation id="6820676911989879663">잠시 쉬어 가세요.</translation>
+<translation id="6837064795450991317">데스크바 숨기기</translation>
 <translation id="6850010208275816200">현재 앱이 전체 화면 모드로 실행 중입니다. 앱에서 비밀번호를 요구하면 먼저 전체 화면을 종료하세요.</translation>
 <translation id="6852052252232534364">클릭하여 활성화</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" />초</translation>
@@ -762,6 +763,7 @@
 <translation id="7076293881109082629">로그인</translation>
 <translation id="7088960765736518739">스위치 제어</translation>
 <translation id="7098389117866926363">USB-C 기기(좌측 후면 포트)</translation>
+<translation id="7106330611027933926">데스크바 표시</translation>
 <translation id="7118268675952955085">스크린샷</translation>
 <translation id="7131634465328662194">자동으로 로그아웃됩니다.</translation>
 <translation id="7143207342074048698">연결 중</translation>
@@ -805,6 +807,7 @@
 <translation id="7466449121337984263">센서를 터치하세요.</translation>
 <translation id="7473891865547856676">건너뛰기</translation>
 <translation id="7477793887173910789">음악, 동영상 등의 항목 제어하기</translation>
+<translation id="7482097454533720217">텍스트를 마우스 오른쪽 버튼으로 클릭하거나 길게 터치하여 정의 또는 번역을 확인하거나 단위를 변환합니다.</translation>
 <translation id="7483025031359818980">선택 영역이 전체 화면으로 설정됨</translation>
 <translation id="7486227320194954040">마커 도구 접기</translation>
 <translation id="7497767806359279797">언어 및 키보드 선택</translation>
@@ -981,6 +984,7 @@
 <translation id="8843682306134542540">회전 잠금을 전환합니다. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">여전히 PIN 또는 비밀번호를 확인할 수 없습니다. 참고: 최근에 비밀번호를 변경한 경우 이전 비밀번호를 사용해 보세요. 로그아웃하고 나면 새로운 비밀번호가 적용됩니다.</translation>
+<translation id="8863888432376731307">"<ph name="QUERY" />"의 <ph name="INTENT" /> 확인 등</translation>
 <translation id="8870509716567206129">앱이 화면 분할을 지원하지 않습니다.</translation>
 <translation id="8871580645200179206">어두운 테마를 켜거나 끕니다. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">연결되지 않음</translation>

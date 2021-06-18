@@ -162,7 +162,6 @@
 
       想進一步瞭解有效的<ph name="URL_LABEL" />模式，請參閱 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是這項政策許可的值。</translation>
 <translation id="120937472976628837">回報風扇資訊</translation>
-<translation id="1214202898523114033">通訊埠 10080 (2022 年 4 月 1 日到期)</translation>
 <translation id="1216919699175573511">啟用 Signed HTTP Exchange (SXG) 支援</translation>
 <translation id="1219695476179627719">指定是否要將已搭載較新版本的裝置復原至 <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" /> 所設定的版本。
 
@@ -4098,15 +4097,6 @@
 <translation id="6506486086262398387">如果將這項政策設為啟用，<ph name="PRODUCT_OS_NAME" />的網路檔案共用功能會在必要時對 SMB 共用檔案使用 NTLM 驗證機制。如果設為停用，將會關閉 SMB 共用檔案的 NTLM 驗證機制。
 
       如果不設定這項政策，系統預設會為受管理的使用者停用此機制，其他使用者則會設為啟用。</translation>
-<translation id="651012148496266279">如果設定這項政策，即可允許略過 <ph name="PRODUCT_NAME" /> 中建立的受限通訊埠清單。設定值為一份逗號分隔清單，其中可能包含零或多個對外連線能使用的通訊埠。
-
-      限制通訊埠的目的是防止有人將 <ph name="PRODUCT_NAME" /> 做為媒介來利用各種網路安全漏洞。設定這項政策可能會導致你的網路遭受攻擊。這項政策是用來處理「ERR_UNSAFE_PORT」錯誤的暫時性解決方案，可協助將服務從受封鎖的通訊埠遷移至標準通訊埠 (例如通訊埠 80 或 443)。
-
-      惡意網站可以輕易偵測到這項政策設定與否和適用的通訊埠，並根據這項資訊鎖定攻擊目標。
-
-      如果留下空白值或不設定，系統就會封鎖所有受限制的通訊埠。假如同時輸入有效和無效的值，系統只會採用有效的值。
-
-      這項政策會覆寫「--explicitly-allowed-ports」指令列選項。</translation>
 <translation id="6515357889978918016"><ph name="PLUGIN_VM_NAME" /> 圖片</translation>
 <translation id="6518102411616460786">等待目標版本跟上版本降級</translation>
 <translation id="6520802717075138474">第一次執行時從預設瀏覽器匯入搜尋引擎</translation>
@@ -6239,7 +6229,6 @@
       這項政策僅是暫時性措施，我們會在日後的 <ph name="PRODUCT_NAME" /> 版本中予以移除。待這項政策移除後，<ph name="PRODUCT_NAME" /> 便一律可以查詢其他 DNS 類型。</translation>
 <translation id="9167719789236691545">禁止在 <ph name="PRODUCT_OS_NAME" />的「檔案」應用程式中使用 Google 雲端硬碟</translation>
 <translation id="9187743794267626640">停用外部儲存裝置掛載功能</translation>
-<translation id="9190257149451871588">通訊埠 6566 (2021 年 10 月 15 日到期)</translation>
 <translation id="9190456586252617675">這項政策可控管 Google 助理入門使用體驗的模式。
 
       如果不設定這項政策或設為 <ph name="ASSISTANT_ONBOARDING_MODE_DEFAULT" />，系統會使用 Google 助理入門使用體驗的預設模式。
@@ -6257,7 +6246,6 @@
 <translation id="927444535723396977">如果將這項政策設為 1，網站即可執行 JavaScript。如果將這項政策設為 2，網站將無法執行 JavaScript。
 
       如果不設定，網站可執行 JavaScript，但使用者可以變更這項設定。</translation>
-<translation id="928189505080808353">通訊埠 554 (2021 年 10 月 15 日到期)</translation>
 <translation id="929549405492388749">如果設為 True，即使 Chrome 預設為不提供 AppCache，系統仍會強制啟用 AppCache。
 
       如果不設定或設為 False，系統會按照 Chrome 的預設值啟用或停用 AppCache。</translation>

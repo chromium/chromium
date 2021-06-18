@@ -100,6 +100,7 @@
 <translation id="3594780231884063836">Mute video</translation>
 <translation id="3596414637720633074">Block third-party cookies in Incognito</translation>
 <translation id="3600792891314830896">Mute sites that play sound</translation>
+<translation id="365089839707261811">Review name updates</translation>
 <translation id="3744111561329211289">Background sync</translation>
 <translation id="3763247130972274048">Double-tap video left or right to skip 10s</translation>
 <translation id="381841723434055211">Phone numbers</translation>
@@ -121,6 +122,7 @@
 <translation id="429312253194641664">A site is playing media</translation>
 <translation id="42981349822642051">Expand</translation>
 <translation id="4336434711095810371">Clear all data</translation>
+<translation id="4339203724549370495">Uninstall app</translation>
 <translation id="4402755511846832236">Block sites from knowing when you're actively using this device</translation>
 <translation id="4434045419905280838">Pop-ups and redirects</translation>
 <translation id="445467742685312942">Allow sites to play protected content</translation>
@@ -133,6 +135,7 @@
 <translation id="4670064810192446073">Virtual reality</translation>
 <translation id="4708011789095599544">Are you sure that you want to clear cookies and other site data for this website?</translation>
 <translation id="4751476147751820511">Motion or light sensors</translation>
+<translation id="4800839971935185386">Review name and icon updates</translation>
 <translation id="4836046166855586901">Ask when a site wants to know when you're actively using this device</translation>
 <translation id="4883854917563148705">Managed settings cannot be reset</translation>
 <translation id="4887024562049524730">Ask before allowing sites to use your virtual reality device and data (recommended)</translation>
@@ -248,6 +251,7 @@
 <translation id="7589445247086920869">Block for current search engine</translation>
 <translation id="7649070708921625228">Help</translation>
 <translation id="7658239707568436148">Cancel</translation>
+<translation id="7734541938181328224">Review icon updates</translation>
 <translation id="7781829728241885113">Yesterday</translation>
 <translation id="7791543448312431591">Add</translation>
 <translation id="780301667611848630">No, thanks</translation>
@@ -289,6 +293,7 @@
 <translation id="8487700953926739672">Available offline</translation>
 <translation id="851751545965956758">Block sites from connecting to devices</translation>
 <translation id="8525306231823319788">Full screen</translation>
+<translation id="857074314439694500">If this web app is trying to trick you into thinking that it is a different app, uninstall it.</translation>
 <translation id="857943718398505171">Allowed (recommended)</translation>
 <translation id="8609465669617005112">Move up</translation>
 <translation id="8676374126336081632">Clear input</translation>

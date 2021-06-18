@@ -100,6 +100,7 @@
 <translation id="3594780231884063836">Isključivanje zvuka videozapisa</translation>
 <translation id="3596414637720633074">Blokirajte kolačiće trećih strana u anonimnom načinu rada</translation>
 <translation id="3600792891314830896">Isključuje zvuk na web lokacijama koje ga reproduciraju</translation>
+<translation id="365089839707261811">Pregledajte ažuriranja naziva</translation>
 <translation id="3744111561329211289">Sinhronizacija u pozadini</translation>
 <translation id="3763247130972274048">Dvaput dodirnite videozapis lijevo ili desno da preskočite 10 s</translation>
 <translation id="381841723434055211">Brojevi telefona</translation>
@@ -121,6 +122,7 @@
 <translation id="429312253194641664">Web lokacija reproducira medij</translation>
 <translation id="42981349822642051">Proširi</translation>
 <translation id="4336434711095810371">Obriši sve podatke</translation>
+<translation id="4339203724549370495">Deinstaliraj aplikaciju</translation>
 <translation id="4402755511846832236">Blokirajte web lokacijama informacije o vašem aktivnom korištenju ovog uređaja</translation>
 <translation id="4434045419905280838">Skočni proz. i preusmjeravanja</translation>
 <translation id="445467742685312942">Dozvoljava web lokacijama da reproduciraju zaštićen sadržaj</translation>
@@ -133,6 +135,7 @@
 <translation id="4670064810192446073">Virtuelna realnost</translation>
 <translation id="4708011789095599544">Jeste li sigurni da želite obrisati kolačiće i druge podatke za ovu web lokaciju?</translation>
 <translation id="4751476147751820511">Senzori pokreta ili svjetla</translation>
+<translation id="4800839971935185386">Pregledajte ažuriranja naziva i ikone</translation>
 <translation id="4836046166855586901">Traži odobrenje kada web lokacija želi pristupiti informacijama o mom aktivnom korištenju ovog uređaja</translation>
 <translation id="4883854917563148705">Upravljane postavke se ne mogu poništiti</translation>
 <translation id="4887024562049524730">Web lokacije moraju tražiti dozvolu za korištenje uređaja i podataka virtuelne realnosti (preporučeno)</translation>
@@ -248,6 +251,7 @@
 <translation id="7589445247086920869">Blokiraj za trenutni pretraživač</translation>
 <translation id="7649070708921625228">Pomoć</translation>
 <translation id="7658239707568436148">Otkaži</translation>
+<translation id="7734541938181328224">Pregledajte ažuriranja ikone</translation>
 <translation id="7781829728241885113">Jučer</translation>
 <translation id="7791543448312431591">Dodaj</translation>
 <translation id="780301667611848630">Ne, hvala</translation>
@@ -289,6 +293,7 @@
 <translation id="8487700953926739672">Dostupno van mreže</translation>
 <translation id="851751545965956758">Blokiraj povezivanje web-lokacija s uređajima</translation>
 <translation id="8525306231823319788">Cijeli ekran</translation>
+<translation id="857074314439694500">Ako vas ova web aplikacija pokušava prevariti da mislite da je neka druga, deinstalirajte je.</translation>
 <translation id="857943718398505171">Dozvoljeno (preporučeno)</translation>
 <translation id="8609465669617005112">Pomjeri nagore</translation>
 <translation id="8676374126336081632">Brisanje unosa</translation>

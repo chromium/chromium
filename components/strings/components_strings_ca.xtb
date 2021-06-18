@@ -372,6 +372,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2276057643614339130">Base d'impressió</translation>
 <translation id="2277103315734023688">Avança</translation>
 <translation id="2283340219607151381">Desa i emplena les adreces</translation>
+<translation id="2283447177162560884">S'ha suprimit: <ph name="PAGE_TITLE" /></translation>
 <translation id="2288422996159078444">Tot el que escrius, les pàgines que veus i qualsevol altra activitat que fas al web se supervisa. És possible que el contingut dels llocs web canviï sense que ho sàpigues.</translation>
 <translation id="2289385804009217824">Retallat</translation>
 <translation id="2292556288342944218">El vostre accés a Internet està bloquejat</translation>
@@ -498,6 +499,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="277133753123645258">Mètode d'enviament</translation>
 <translation id="277499241957683684">Falta el registre del dispositiu</translation>
 <translation id="2775884851269838147">Primera pàgina d'impressió</translation>
+<translation id="2778854133681684171">Pots utilitzar el teu dispositiu per verificar ràpidament la teva identitat la propera vegada que facis una compra amb aquesta forma de pagament.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2784949926578158345">S'ha restablert la connexió.</translation>
 <translation id="2792012897584536778">Els administradors d'aquest dispositiu han configurat certificats de seguretat que els permeten veure el contingut dels llocs web que visites.</translation>
@@ -655,6 +657,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3377736046129930310">Fes servir el bloqueig de pantalla per confirmar les targetes més ràpidament</translation>
 <translation id="3380365263193509176">Error desconegut</translation>
 <translation id="3380864720620200369">Identificador de client:</translation>
+<translation id="3381668585148405088">Verifica la teva compra</translation>
 <translation id="3387261909427947069">Formes de pagament</translation>
 <translation id="3391030046425686457">Adreça d'entrega</translation>
 <translation id="3395827396354264108">Mètode de recollida</translation>
@@ -830,6 +833,10 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3996311196211510766">El lloc web <ph name="ORIGIN" /> ha sol·licitat que s'apliqui una política d'origen a totes les sol·licituds que rebi, però en aquest moment aquesta política no es pot aplicar.</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Document PDF que conté {COUNT} pàgina}other{Document PDF que conté {COUNT} pàgines}}</translation>
 <translation id="4023431997072828269">Com que el formulari s'està enviant mitjançant una connexió que no és segura, altres persones podran veure la teva informació.</translation>
+<translation id="4027177651527820006">En activar aquestes funcions, podries perdre dades del navegador 
+    o posar en perill la teva seguretat o privadesa. Les funcions activades s'apliquen a tots
+    els usuaris d'aquest navegador. Si ets administrador d'una empresa,
+    no hauries d'utilitzar aquestes marques durant la producció.</translation>
 <translation id="4030383055268325496">&amp;Desfés l'addició</translation>
 <translation id="4056223980640387499">Sèpia</translation>
 <translation id="4058922952496707368">Tecla "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>

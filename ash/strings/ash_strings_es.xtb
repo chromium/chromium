@@ -728,6 +728,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="6816797338148849397">Hay disponible información relacionada con tu selección. Utiliza la flecha hacia arriba para consultarla.</translation>
 <translation id="6818242057446442178">Retroceder por palabra</translation>
 <translation id="6820676911989879663">Haz una pausa</translation>
+<translation id="6837064795450991317">Ocultar barra de escritorio</translation>
 <translation id="6850010208275816200">La aplicación actual está en pantalla completa. Si la aplicación te pide la contraseña, primero sal del modo de pantalla completa.</translation>
 <translation id="6852052252232534364">Clic para activar</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
@@ -763,6 +764,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="7076293881109082629">Iniciando sesión</translation>
 <translation id="7088960765736518739">Accesibilidad con interruptores</translation>
 <translation id="7098389117866926363">Dispositivo USB tipo C (puerto izquierdo situado en la parte trasera)</translation>
+<translation id="7106330611027933926">Mostrar barra de escritorio</translation>
 <translation id="7118268675952955085">captura de pantalla</translation>
 <translation id="7131634465328662194">Tu sesión se cerrará automáticamente.</translation>
 <translation id="7143207342074048698">Conectando</translation>
@@ -806,6 +808,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="7466449121337984263">Toca el sensor</translation>
 <translation id="7473891865547856676">No, gracias</translation>
 <translation id="7477793887173910789">Controla tu música, tus vídeos y más</translation>
+<translation id="7482097454533720217">Consulta definiciones, traducciones o conversiones de unidades haciendo clic con el botón derecho en un texto o manteniéndolo pulsado</translation>
 <translation id="7483025031359818980">Área de selección establecida en pantalla completa</translation>
 <translation id="7486227320194954040">Ocultar herramientas de marcado</translation>
 <translation id="7497767806359279797">Seleccionar idioma y teclado</translation>
@@ -982,6 +985,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="8843682306134542540">Activa o desactiva el bloqueo. <ph name="STATE_TEXT" />.</translation>
 <translation id="8850991929411075241">Buscar+Esc</translation>
 <translation id="8853703225951107899">Todavía no se ha podido verificar tu PIN o contraseña. Nota: Si has cambiado la contraseña recientemente, utiliza la contraseña anterior. La nueva contraseña se aplicará cuando hayas cerrado la sesión.</translation>
+<translation id="8863888432376731307">Consulta información sobre "<ph name="QUERY" />", como su <ph name="INTENT" /></translation>
 <translation id="8870509716567206129">La aplicación no admite la pantalla dividida.</translation>
 <translation id="8871580645200179206">Activar o desactivar Tema oscuro. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">No conectado</translation>

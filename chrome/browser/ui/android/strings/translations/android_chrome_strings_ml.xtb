@@ -41,6 +41,7 @@
 <translation id="1240288207750131269"><ph name="LANG" /> ലോഡ് ചെയ്യുന്നു</translation>
 <translation id="1242883863226959074">ഉപകരണം</translation>
 <translation id="124678866338384709">നിലവിലെ ടാബ് അടയ്‌ക്കുക</translation>
+<translation id="1246905108078336582">ക്ലിപ്പ്ബോർഡിൽ നിന്ന് നിർദ്ദേശം നീക്കം ചെയ്യണോ?</translation>
 <translation id="1258753120186372309">Google ഡൂഡിൽ: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> പങ്കിടാനായില്ല</translation>
 <translation id="1283039547216852943">വികസിപ്പിക്കാൻ ടാപ്പ് ചെയ്യുക</translation>
@@ -361,6 +362,7 @@
 <translation id="3295530008794733555">വേഗത്തിൽ ബ്രൗസ് ചെയ്യൂ. കുറച്ച് ഡാറ്റ ഉപയോഗിക്കൂ.</translation>
 <translation id="3297344142967351106">ശബ്ദ സഹായം</translation>
 <translation id="3303414029551471755">ഉള്ളടക്കം ഡൗൺലോഡ് ചെയ്യുന്നതിലേക്ക് തുടരണോ?</translation>
+<translation id="333367884906698540">പ്രവർത്തനം പൂർത്തിയാകുമ്പോൾ Bluetooth വീണ്ടും ഓഫാകും</translation>
 <translation id="3334729583274622784">ഫയൽ എക്സ്റ്റൻഷൻ മാറ്റണോ?</translation>
 <translation id="3341058695485821946">നിങ്ങൾ എത്ര ഡാറ്റ ലാഭിച്ചെന്ന് കാണുക</translation>
 <translation id="3341262203274374114">പിന്തുടരുന്നത് ഒഴിവാക്കാനാകുന്നില്ല. എന്തോ കുഴപ്പമുണ്ടായി.</translation>
@@ -1035,6 +1037,7 @@
 <translation id="7641339528570811325">ബ്രൗസിംഗ് ഡാറ്റ മായ്‌ക്കുക...</translation>
 <translation id="764170292089748542">നിങ്ങൾ സ്വകാര്യമായി ബ്രൗസ് ചെയ്യാൻ തിരഞ്ഞെടുക്കുമ്പോൾ, Chrome നിങ്ങളുടെ ബ്രൗസിംഗ് ചരിത്രം സംരക്ഷിക്കില്ല. നിങ്ങളുടെ പ്രിയപ്പെട്ട സൈറ്റുകൾ ആക്സസ് ചെയ്യാൻ ഇപ്പോഴും ബുക്ക്‌മാർക്കുകൾ ഉപയോഗിക്കാം.</translation>
 <translation id="7646772052135772216">പാസ്‍വേഡ് സമന്വയം പ്രവർത്തിക്കുന്നില്ല</translation>
+<translation id="7655900163790317559">Bluetooth ഓണാക്കുന്നു…</translation>
 <translation id="7658239707568436148">റദ്ദാക്കൂ</translation>
 <translation id="7665369617277396874">അക്കൗണ്ട് ചേർക്കുക</translation>
 <translation id="766587987807204883">ഇവിടെ ദൃശ്യമാകുന്ന ലേഖനങ്ങൾ നിങ്ങൾ ഓഫ്‌ലൈൻ ആകുന്ന സമയത്ത് പോലും വായിക്കാം</translation>

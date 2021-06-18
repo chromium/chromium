@@ -376,6 +376,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2276057643614339130">Print na base</translation>
 <translation id="2277103315734023688">Mag-seek Pasulong</translation>
 <translation id="2283340219607151381">I-save at punan ang mga address</translation>
+<translation id="2283447177162560884">Na-delete ang '<ph name="PAGE_TITLE" />'</translation>
 <translation id="2288422996159078444">Binabantayan ang anumang bagay na tina-type mo, ang anumang page na iyong tinitingnan, o ang anupamang aktibidad mo sa web. Puwedeng mabago ang content sa mga site nang hindi mo alam.</translation>
 <translation id="2289385804009217824">Paikliin</translation>
 <translation id="2292556288342944218">Naka-block ang iyong access sa Internet</translation>
@@ -502,6 +503,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="277133753123645258">Paraan ng pagpapadala</translation>
 <translation id="277499241957683684">Nawawalang tala ng device</translation>
 <translation id="2775884851269838147">Unang page ng pag-print</translation>
+<translation id="2778854133681684171">Puwede mong gamitin ang iyong device para mabilis na i-verify na ikaw ito sa susunod na pagkakataong bibili ka gamit ang paraan ng pagbabayad na ito.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2784949926578158345">Na-reset ang koneksyon.</translation>
 <translation id="2792012897584536778">Nag-set up ang mga administrator ng device na ito ng mga certificate ng seguridad na puwedeng magbigay-daan sa kanilang matingnan ang content ng mga website na binibisita mo.</translation>
@@ -659,6 +661,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3377736046129930310">Gumamit ng lock ng screen para kumpirmahin nang mas mabilis ang mga card</translation>
 <translation id="3380365263193509176">Hindi kilalang error</translation>
 <translation id="3380864720620200369">Client ID:</translation>
+<translation id="3381668585148405088">I-verify ang pagbili mo</translation>
 <translation id="3387261909427947069">Mga Paraan ng Pagbabayad</translation>
 <translation id="3391030046425686457">Address kung saan maghahatid</translation>
 <translation id="3395827396354264108">Pamamaraan sa pag-pick up</translation>
@@ -835,6 +838,10 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
     sa lahat ng kahilingan dito, pero hindi pa mailalapat sa ngayon ang patakarang ito.</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF na dokumentong naglalaman ng {COUNT} page}one{PDF na dokumentong naglalaman ng {COUNT} page}other{PDF na dokumentong naglalaman ng {COUNT} na page}}</translation>
 <translation id="4023431997072828269">Dahil isinusumite ang form na ito gamit ang isang koneksyong hindi secure, makikita ng iba ang iyong impormasyon.</translation>
+<translation id="4027177651527820006">Sa pamamagitan ng pag-enable sa mga feature na ito, puwedeng mawala ang data sa iyong browser o
+    makompromiso ang seguridad o privacy mo. Nalalapat ang mga naka-enable na feature sa lahat
+    ng user ng browser na ito. Kung isa kang admin ng enterprise hindi mo dapat ginagamit
+    ang mga flag na ito sa production.</translation>
 <translation id="4030383055268325496">&amp;I-undo ang pagdagdag</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4058922952496707368">Key "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>

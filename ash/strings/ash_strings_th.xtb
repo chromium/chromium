@@ -727,6 +727,7 @@
 <translation id="6816797338148849397">มีข้อมูลที่เกี่ยวข้องกับสิ่งที่คุณเลือก ใช้แป้นลูกศรขึ้นเพื่อดูข้อมูลนั้น</translation>
 <translation id="6818242057446442178">ถอยกลับทีละคำ</translation>
 <translation id="6820676911989879663">พักสายตาหน่อย</translation>
+<translation id="6837064795450991317">ซ่อนเดสก์บาร์</translation>
 <translation id="6850010208275816200">แอปที่เปิดอยู่แสดงเต็มหน้าจอ หากแอปขอให้ป้อนรหัสผ่าน ขอแนะนำให้ออกจากโหมดเต็มหน้าจอก่อน</translation>
 <translation id="6852052252232534364">คลิกเพื่อเปิดใช้</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> วินาที</translation>
@@ -762,6 +763,7 @@
 <translation id="7076293881109082629">กำลังลงชื่อเข้าใช้</translation>
 <translation id="7088960765736518739">การเข้าถึงด้วยสวิตช์</translation>
 <translation id="7098389117866926363">อุปกรณ์ USB-C (พอร์ตด้านหลังซ้าย)</translation>
+<translation id="7106330611027933926">แสดงเดสก์บาร์</translation>
 <translation id="7118268675952955085">ภาพหน้าจอ</translation>
 <translation id="7131634465328662194">คุณจะออกจากระบบโดยอัตโนมัติ</translation>
 <translation id="7143207342074048698">กำลังเชื่อมต่อ</translation>
@@ -805,6 +807,7 @@
 <translation id="7466449121337984263">โปรดแตะเซ็นเซอร์</translation>
 <translation id="7473891865547856676">ไม่ ขอบคุณ</translation>
 <translation id="7477793887173910789">ควบคุมเพลง วิดีโอ และอื่นๆ</translation>
+<translation id="7482097454533720217">รับคำจำกัดความ คำแปล หรือการแปลงหน่วยเมื่อคุณคลิกขวาหรือแตะข้อความค้างไว้</translation>
 <translation id="7483025031359818980">กำหนดพื้นที่สำหรับการเลือกเป็นเต็มหน้าจอ</translation>
 <translation id="7486227320194954040">ยุบเครื่องมือทำเครื่องหมาย</translation>
 <translation id="7497767806359279797">เลือกภาษาและแป้นพิมพ์</translation>
@@ -981,6 +984,7 @@
 <translation id="8843682306134542540">เปิด/ปิดการล็อกการหมุน <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">ยังคงยืนยัน PIN หรือรหัสผ่านของคุณไม่ได้ หากคุณเพิ่งเปลี่ยนรหัสผ่านไปไม่นาน ให้ใช้รหัสผ่านเก่า รหัสผ่านใหม่จะมีผลเมื่อคุณออกจากระบบ</translation>
+<translation id="8863888432376731307">รับ <ph name="INTENT" /> สำหรับ "<ph name="QUERY" />" และอื่นๆ</translation>
 <translation id="8870509716567206129">แอปไม่สนับสนุนการแยกหน้าจอ</translation>
 <translation id="8871580645200179206">เปิด/ปิดธีมมืด <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">ไม่เชื่อมต่อ</translation>

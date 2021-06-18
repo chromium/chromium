@@ -727,6 +727,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="6816797338148849397">Maelezo yanayohusiana na chaguo lako yanapatikana. Tumia kishale cha Juu ili uyafikie.</translation>
 <translation id="6818242057446442178">Rudi nyuma kwa neno moja</translation>
 <translation id="6820676911989879663">Pumzika kidogo!</translation>
+<translation id="6837064795450991317">Ficha upau wa kazi</translation>
 <translation id="6850010208275816200">Programu uliyoifungua sasa inatumia skrini nzima. Programu ikikuomba uweke nenosiri lako, ondoka kwenye skrini nzima kwanza.</translation>
 <translation id="6852052252232534364">Bofya uwashe</translation>
 <translation id="6857725247182211756">sek <ph name="SECONDS" /></translation>
@@ -762,6 +763,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="7076293881109082629">Unaingia katika akaunti</translation>
 <translation id="7088960765736518739">Kufikia Kupitia Swichi</translation>
 <translation id="7098389117866926363">Kifaa cha USB-C (mlango wa kushoto nyuma)</translation>
+<translation id="7106330611027933926">Onyesha upau wa kazi</translation>
 <translation id="7118268675952955085">picha ya skrini</translation>
 <translation id="7131634465328662194">Utaondolewa kwenye akaunti kiotomatiki.</translation>
 <translation id="7143207342074048698">Inaunganisha</translation>
@@ -805,6 +807,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="7466449121337984263">Tafadhali gusa kitambuzi</translation>
 <translation id="7473891865547856676">La Asante</translation>
 <translation id="7477793887173910789">Dhibiti muziki, video na vipengee vyako vingine</translation>
+<translation id="7482097454533720217">Pata ufafanuzi, tafsiri au ubadilishaji wa vipimo unapobofya kulia au unapogusa na kushikilia maandishi.</translation>
 <translation id="7483025031359818980">Sehemu iliyochaguliwa imewekwa kuwa skrini nzima</translation>
 <translation id="7486227320194954040">Kunja zana za kitia alama</translation>
 <translation id="7497767806359279797">Chagua lugha na kibodi</translation>
@@ -982,6 +985,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="8843682306134542540">Washa au uzime hali ya kufunga kwa kuzungusha. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">Bado imeshindwa kuthibitisha PIN au nenosiri lako. Kumbuka: Iwapo ulibadilisha nenosiri lako hivi majuzi, tumia nenosiri lako la awali. Nenosiri lako jipya litatumika utakapoondoka kwenye akaunti.</translation>
+<translation id="8863888432376731307">Pata <ph name="INTENT" /> wa "<ph name="QUERY" />" na mengine mengi</translation>
 <translation id="8870509716567206129">Programu haiwezi kutumia skrini iliyogawanywa.</translation>
 <translation id="8871580645200179206">Zima au uwashe Mandhari meusi. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Hujaunganishwa</translation>

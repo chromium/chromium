@@ -41,6 +41,7 @@
 <translation id="1240288207750131269">Φόρτωση <ph name="LANG" /></translation>
 <translation id="1242883863226959074">συσκευή</translation>
 <translation id="124678866338384709">Κλείσιμο τρέχουσας καρτέλας</translation>
+<translation id="1246905108078336582">Θέλετε να καταργήσετε την πρόταση από το πρόχειρο;</translation>
 <translation id="1258753120186372309">Google doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Δεν ήταν δυνατή η κοινοποίηση <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Πατήστε για ανάπτυξη</translation>
@@ -361,6 +362,7 @@
 <translation id="3295530008794733555">Ταχύτερη περιήγηση. Χρήση λιγότερων δεδομένων.</translation>
 <translation id="3297344142967351106">Φωνητική βοήθεια</translation>
 <translation id="3303414029551471755">Συνέχεια για λήψη του περιεχομένου;</translation>
+<translation id="333367884906698540">Το Bluetooth θα απενεργοποιηθεί ξανά όταν τελειώσετε</translation>
 <translation id="3334729583274622784">Θέλετε να αλλάξετε την επέκταση αρχείου;</translation>
 <translation id="3341058695485821946">Δείτε πόσα δεδομένα έχετε εξοικονομήσει</translation>
 <translation id="3341262203274374114">Δεν είναι δυνατή η κατάργηση παρακολούθησης. Παρουσιάστηκε κάποιο πρόβλημα.</translation>
@@ -1035,6 +1037,7 @@
 <translation id="7641339528570811325">Διαγραφή δεδομένων περιήγησης…</translation>
 <translation id="764170292089748542">Το Chrome δεν αποθηκεύει το ιστορικό περιήγησής σας όταν περιηγείστε ιδιωτικά. Μπορείτε ακόμα να χρησιμοποιείτε σελιδοδείκτες για μετάβαση στους αγαπημένους ιστοτόπους σας.</translation>
 <translation id="7646772052135772216">Ο συγχρονισμός κωδικών πρόσβασης δεν λειτουργεί</translation>
+<translation id="7655900163790317559">Ενεργοποίηση Bluetooth…</translation>
 <translation id="7658239707568436148">Ακύρωση</translation>
 <translation id="7665369617277396874">Προσθήκη λογαριασμού</translation>
 <translation id="766587987807204883">Εδώ εμφανίζονται άρθρα τα οποία μπορείτε να διαβάσετε ακόμη και εκτός σύνδεσης</translation>

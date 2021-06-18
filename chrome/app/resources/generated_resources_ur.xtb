@@ -231,7 +231,6 @@
 <translation id="1244265436519979884">‏Linux بحالی فی الحال جاری ہے</translation>
 <translation id="1244303850296295656">ایکسٹینشن میں خرابی</translation>
 <translation id="1246863218384630739">‏<ph name="VM_NAME" /> کو انسٹال نہیں کیا جا سکا: تصویری URL نے <ph name="HTTP_ERROR" /> خرابی کا کوڈ واپس کر دیا۔ براہ کرم اپنے منتظم سے رابطہ کریں۔</translation>
-<translation id="1246905108078336582">کلپ بورڈ سے تجویز ہٹائیں؟</translation>
 <translation id="1251366534849411931">ابتدائی خمیدہ قوسین کی توقع ہے: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">اس سے سائٹس اور انسٹال کردہ ایپس کا <ph name="TOTAL_USAGE" /> اسٹور کردہ ڈیٹا صاف ہو جائے گا</translation>
 <translation id="125220115284141797">ڈیفالٹ</translation>
@@ -747,7 +746,6 @@
 <translation id="1795214765651529549">کلاسک استعمال کریں</translation>
 <translation id="1796588414813960292">وہ خصوصیات کام نہیں کریں گی جن کیلئے آواز کی ضرورت ہوتی ہے</translation>
 <translation id="1799071797295057738">ایکسٹینشن "<ph name="EXTENSION_NAME" />" کو خود کار طور پر غیر فعال کر دیا گیا۔</translation>
-<translation id="1800973090344019061">ایکسٹینشن "<ph name="APP_NAME" />" آپ کی اسکرین کے مواد کا اشتراک کرنا چاہتا ہے۔</translation>
 <translation id="1802624026913571222">کوَر بند ہونے پر سلیپ وضع میں بھیجیں</translation>
 <translation id="1802687198411089702">صفحہ کھل نہیں رہا ہے۔ آپ اس کے کھلنے انتظار کر سکتے ہیں یا باہر نکل سکتے ہیں۔</translation>
 <translation id="1803531841600994172">وہ زبان جس میں ترجمہ کرنا ہے</translation>
@@ -1607,6 +1605,7 @@
 <translation id="2734760316755174687"><ph name="SITE_GROUP_NAME" /> کے تحت موجود سائٹس کو بھی دوبارہ سیٹ کر دیا جائے گا۔</translation>
 <translation id="2735712963799620190">شیڈول</translation>
 <translation id="2737363922397526254">سکیڑیں…</translation>
+<translation id="2737916598897808047"><ph name="APP_NAME" /> آپ کی اسکرین کے مواد کا <ph name="TARGET_NAME" /> کے ساتھ اشتراک کرنا چاہتی ہے۔</translation>
 <translation id="2738030019664645674">سائٹس کو اپنے آلے پر انسٹال کردہ فونٹس کا استعمال کرنے کی اجازت نہ دیں</translation>
 <translation id="2738771556149464852">بعد میں نہیں</translation>
 <translation id="2739191690716947896">ڈیبگ کریں</translation>
@@ -1895,6 +1894,7 @@
 <translation id="3027296729579831126">قریبی آلات کے ساتھ اشتراک آن کریں</translation>
 <translation id="3029466929721441205">شیلف میں اسٹائلس ٹولز دکھائیں</translation>
 <translation id="3030311804857586740">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> کا تقاضہ ہے کہ آپ آج ہی ایک اپ ڈیٹ ڈاؤن لوڈ کریں۔ آپ کے انٹرنیٹ سے منسلک ہونے پر اپ ڈیٹ خودکار طور پر ڈاؤن لوڈ ہو جائے گا۔}other{<ph name="MANAGER" /> کا تقاضہ ہے کہ آپ آخری تاریخ سے پہلے ایک اپ ڈیٹ ڈاؤن لوڈ کریں۔ آپ کے انٹرنیٹ سے منسلک ہونے پر اپ ڈیٹ خودکار طور پر ڈاؤن لوڈ ہو جائے گا۔}}</translation>
+<translation id="3030967311408872958">غروب آفتاب سے طلوع آفتاب تک</translation>
 <translation id="3031417829280473749">‏ایجنٹ X</translation>
 <translation id="3031557471081358569">درآمد کرنے کیلئے آئٹمز منتخب کریں:</translation>
 <translation id="3036327949511794916">اس <ph name="DEVICE_TYPE" /> کو واپس کرنے کی آخری تاریخ گزر چکی ہے۔</translation>
@@ -3744,6 +3744,7 @@
 <translation id="5127805178023152808">‏Sync آف ہے</translation>
 <translation id="5127881134400491887">نیٹ ورک کنکشنز کا نظم کریں</translation>
 <translation id="512903556749061217">منسلک</translation>
+<translation id="5130080518784460891">Eten</translation>
 <translation id="5130675701626084557">پروفائل ڈاؤن لوڈ نہیں کی جا سکی۔ براہ کرم بعد میں دوبارہ کوشش کریں یا مدد کے لئے کیرئیر سے رابطہ کریں۔</translation>
 <translation id="5131591206283983824">ٹچ پیڈ تھپتھپا کر گھسیٹنا</translation>
 <translation id="5135085122826131075">‏"Ok Google" کہہ کر اپنی اسسٹنٹ تک رسائی حاصل کریں۔</translation>
@@ -4038,6 +4039,7 @@
 <translation id="5470735824776589490">‏Powerwash کے ساتھ آپ کا آلہ دوبارہ ترتیب دینے سے پہلے ایک ری اسٹارٹ درکار ہے۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="5471768120198416576">آداب! میں آپ کی ٹیکسٹ ٹو اسپیچ آواز ہوں۔</translation>
 <translation id="5472627187093107397">اس سائٹ کے لیے پاس ورڈز محفوظ کریں</translation>
+<translation id="5473075389972733037">IBM</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{‏PIN میں کم از کم ایک حرف ہونا چاہیے}other{‏PIN میں کم از کم # حروف ہونا چاہیے}}</translation>
 <translation id="5481273127572794904">خودکار طور پر متعدد فائلز ڈاؤن لوڈ کرنے کی اجازت نہیں ہے</translation>
 <translation id="5481941284378890518">قریبی پرنٹرز کو شامل کریں</translation>
@@ -4076,6 +4078,7 @@
 <translation id="5502500733115278303">‏Firefox سے درآمد کردہ</translation>
 <translation id="5502915260472117187">ایک بچہ</translation>
 <translation id="5503982651688210506"><ph name="HOST" /> کو اپنا کیمرا استعمال اور منتقل کرنے کی اجازت دینا جاری رکھیں اور اپنا مائیکروفون استعمال کریں</translation>
+<translation id="5504909642107847870">رازداری اور سیکیورٹی کا جائزہ</translation>
 <translation id="5505264765875738116">سائٹس اطلاعات بھیجنے کے لیے نہیں کہہ سکتی ہیں</translation>
 <translation id="5505307013568720083">سیاہی ختم ہو گئی</translation>
 <translation id="5505794066310932198">ٹوگل کمانڈر</translation>
@@ -4633,7 +4636,6 @@
 <translation id="6136114942382973861">ڈاؤن لوڈز بار بند کریں</translation>
 <translation id="6136287496450963112">‏آپ کی سیکیورٹی کلید PIN کے ذریعے محفوظ نہیں ہے۔ فنگر پرنٹس کا نظم کرنے کیلئے، پہلے ایک PIN تخلیق کریں۔</translation>
 <translation id="6138680304137685902">‏SHA-384 کے ساتھ X9.62 ECDSA دستخط</translation>
-<translation id="6138774640412545950">ایکسٹینشن "<ph name="APP_NAME" />" آپ کی اسکرین کے مواد کا اشتراک <ph name="TARGET_NAME" /> کے ساتھ کرنا چاہتا ہے۔</translation>
 <translation id="6141988275892716286">ڈاؤن لوڈ کی توثیق کریں</translation>
 <translation id="6143186082490678276">مدد حاصل کریں</translation>
 <translation id="6143366292569327983">اس سے ترجمہ کرنے کیلئے صفحے کی زبان منتخب کریں</translation>
@@ -4903,6 +4905,7 @@
 <translation id="6444909401984215022"><ph name="WINDOW_TITLE" /> - بلوٹوتھ اسکین فعال ہے</translation>
 <translation id="6445450263907939268">اگر آپ یہ تبدیلیاں نہ چاہیں تو، آپ اپنی پچھلی ترتیبات بحال کر سکتے ہیں۔</translation>
 <translation id="6446213738085045933">ڈیسک ٹاپ شارٹ کٹ بنائیں</translation>
+<translation id="6447210166804596538">ایک ہی مقام پر انتہائی اہم رازداری اور سیکیورٹی کنٹرولز کا جائزہ لیں</translation>
 <translation id="6447842834002726250">کوکیز</translation>
 <translation id="6450876761651513209">رازداری سے متعلقہ اپنی ترتیبات تبدیل کریں</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> اور 1 دیگر ٹیب}other{<ph name="PAGE_TITLE" /> اور # دیگر ٹیبز}}</translation>
@@ -5152,6 +5155,7 @@
 <translation id="6723839937902243910">پاور</translation>
 <translation id="6725073593266469338">‏UI سروس</translation>
 <translation id="6725206449694821596">‏انٹرنیٹ پرنٹنگ پروٹوکول (IPP)</translation>
+<translation id="6725970970008349185">فی صفحہ ڈسپلے کرنے کیلئے امیدواروں کی تعداد</translation>
 <translation id="672609503628871915">دیکھیں کہ نیا کیا ہے</translation>
 <translation id="67269783048918309">‏استعمال اور ڈائیگناسٹک کا ڈیٹا بھیجیں۔ فی الوقت یہ آلہ خود کار طور پر ڈائیگناسٹک، آلے اور ایپ کے استعمال کا ڈیٹا Google کو بھیج رہا ہے۔ اس کا استعمال آپ کے بچے کی شناخت کیلئے نہیں کیا جائے گا اور اس سے سسٹم اور ایپ کے استحکام اور دیگر بہتریوں میں مدد ملے گی۔ کچھ مجموعی ڈیٹا Google ایپس اور پارٹنرز، جیسے Android ڈیولپرز، کی مدد بھی کرے گا۔ اس <ph name="BEGIN_LINK1" />ترتیب<ph name="END_LINK1" /> کو مالک نافذ کرتا ہے۔ اگر آپ کے بچے کیلئے ویب اور ایپ کی اضافی سرگرمی کی ترتیب آن ہے تو اس ڈیٹا کو اس کے Google اکاؤنٹ میں محفوظ کیا جا سکتا ہے۔ <ph name="BEGIN_LINK2" />مزید جانیں<ph name="END_LINK2" /></translation>
 <translation id="6727969043791803658">منسلک ہے، <ph name="BATTERY_PERCENTAGE" /> فیصد بیٹری ہے</translation>
@@ -6508,6 +6512,7 @@
 <translation id="8189750580333936930">رازداری سینڈ باکس</translation>
 <translation id="8190193592390505034"><ph name="PROVIDER_NAME" /> سے منسلک کیا جا رہا ہے</translation>
 <translation id="8191230140820435481">اپنی ایپس، ایکسٹینشنز اور تھیمز کا نظم کریں</translation>
+<translation id="8192944472786724289"><ph name="APP_NAME" /> آپ کی اسکرین کے مواد کا اشتراک کرنا چاہتی ہے۔</translation>
 <translation id="8195027750202970175">ڈسک پر سائز</translation>
 <translation id="8198323535106903877">ہم آپ کے لیے وہ <ph name="NUMBER_OF_APPS" /> ایپس انسٹال کریں گے</translation>
 <translation id="8198456017687137612">کاسٹنگ ٹیب</translation>
@@ -6651,6 +6656,7 @@
 <translation id="8363095875018065315">مستحکم</translation>
 <translation id="8363142353806532503">مائیکروفون مسدود ہے</translation>
 <translation id="8366396658833131068">آپ کے نیٹ ورک کی کنیکٹوٹی بحال ہوگئی ہے۔ براہ کرم اپنی کیوسک ایپ شروع کرنے کیلئے ایک مختلف نیٹ ورک منتخب کریں یا ذیل میں 'جاری رکھیں' بٹن دبائیں۔</translation>
+<translation id="8366694425498033255">انتخاب کی کلیدیں</translation>
 <translation id="8368027906805972958">نا معلوم یا غیر تعاون یافتہ آلہ (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368859634510605990">سبھی بُک مارکس &amp;کھولیں</translation>
 <translation id="8370294614544004647">لیپ ٹاپ بند ہونے پر سلیپ وضع میں بھیجیں</translation>
@@ -6889,6 +6895,7 @@
 <translation id="8655972064210167941">سائن ان ناکام ہو گیا کیونکہ آپ کے پاس ورڈز کی توثیق نہيں ہو سکی۔ براہ کرم اپنے منتظم سے رابطہ کریں یا دوبارہ کوشش کریں۔</translation>
 <translation id="8657393004602556571">کیا آپ تاثرات کو مسترد کرنا چاہتے ہیں؟</translation>
 <translation id="8658645149275195032"><ph name="APP_NAME" /> آپ کی اسکرین اور آڈیو کا <ph name="TAB_NAME" /> کے ساتھ اشتراک کر رہی ہے۔</translation>
+<translation id="8660073998956001352">آپ کے سرچ انجنز</translation>
 <translation id="8661290697478713397">لنک پوشید&amp;گی ونڈو میں کھولیں</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> نیٹ ورک میں شامل ہوں</translation>
 <translation id="8662795692588422978">لوگ</translation>
@@ -7076,6 +7083,7 @@
 <translation id="8845001906332463065">مدد حاصل کریں</translation>
 <translation id="8846132060409673887">اس کمپیوٹر کے مینوفیکچرر اور ماڈل کو پڑھیں</translation>
 <translation id="8846163936679269230">‏eSIM پروفائلز کو ری سیٹ کریں</translation>
+<translation id="8846746259444262774">انسٹالیشن ناکام ہو گیا</translation>
 <translation id="8847523528195140327">کوَر بند ہونے پر سائن آؤٹ کریں</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">پوشیدہ</translation>

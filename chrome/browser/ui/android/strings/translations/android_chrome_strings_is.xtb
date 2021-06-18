@@ -41,6 +41,7 @@
 <translation id="1240288207750131269">Hleður <ph name="LANG" /></translation>
 <translation id="1242883863226959074">tæki</translation>
 <translation id="124678866338384709">Loka núverandi flipa</translation>
+<translation id="1246905108078336582">Fjarlægja tillögu af klippiborði?</translation>
 <translation id="1258753120186372309">Google dúlla: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Ekki tókst að deila <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Ýttu til að stækka</translation>
@@ -361,6 +362,7 @@ Haltu fingri á hvaða orði sem er til að leita að því. Veldu fleiri eða f
 <translation id="3295530008794733555">Vafraðu hraðar. Með minna gagnamagni.</translation>
 <translation id="3297344142967351106">Raddaðstoð</translation>
 <translation id="3303414029551471755">Viltu halda áfram og sækja efnið?</translation>
+<translation id="333367884906698540">Kveikt er aftur á Bluetooth að því loknu.</translation>
 <translation id="3334729583274622784">Breyta skráarendingu?</translation>
 <translation id="3341058695485821946">Skoða hversu mikið af gagnamagni þú hefur sparað</translation>
 <translation id="3341262203274374114">Ekki er hægt að hætta að fylgja. Eitthvað fór úrskeiðis.</translation>
@@ -1035,6 +1037,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="7641339528570811325">Hreinsa vafragögn…</translation>
 <translation id="764170292089748542">Chrome vistar ekki vafraferil þegar þú notar huliðsstillinguna til að vafra. Þú getur áfram notað bókamerki til að opna uppáhaldsvefsvæðin þín.</translation>
 <translation id="7646772052135772216">Samstilling aðgangsorða virkar ekki</translation>
+<translation id="7655900163790317559">Kveikir á Bluetooth…</translation>
 <translation id="7658239707568436148">Hætta við</translation>
 <translation id="7665369617277396874">Bæta við reikningi</translation>
 <translation id="766587987807204883">Greinar birtast hér. Þú getur lesið þær jafnvel þótt nettenging sé ekki til staðar</translation>

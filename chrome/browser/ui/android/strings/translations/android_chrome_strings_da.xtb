@@ -41,6 +41,7 @@
 <translation id="1240288207750131269"><ph name="LANG" /> indlæses</translation>
 <translation id="1242883863226959074">enhed</translation>
 <translation id="124678866338384709">Luk aktuel fane</translation>
+<translation id="1246905108078336582">Vil du fjerne forslaget fra udklipsholderen?</translation>
 <translation id="1258753120186372309">Google-doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Det var ikke muligt at dele <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Tryk for at udvide</translation>
@@ -361,6 +362,7 @@ Tryk og hold på et ord for at søge. Du kan tilpasse din søgning ved at vælge
 <translation id="3295530008794733555">Få hurtigere browsing. Brug mindre data.</translation>
 <translation id="3297344142967351106">Stemmesøgning</translation>
 <translation id="3303414029551471755">Vil du fortsætte og downloade indholdet?</translation>
+<translation id="333367884906698540">Bluetooth aktiveres igen, når du er færdig</translation>
 <translation id="3334729583274622784">Vil du ændre filtypen?</translation>
 <translation id="3341058695485821946">Se, hvor meget data du har sparet</translation>
 <translation id="3341262203274374114">"Følg ikke" kan ikke udføres. Der opstod en fejl.</translation>
@@ -1035,6 +1037,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="7641339528570811325">Ryd browserdata…</translation>
 <translation id="764170292089748542">Chrome gemmer ikke din browserhistorik, når du vælger at bruge nettet privat. Du kan stadig bruge bogmærker og få adgang til dine foretrukne websites.</translation>
 <translation id="7646772052135772216">Synkronisering af adgangskoder fungerer ikke</translation>
+<translation id="7655900163790317559">Aktiverer Bluetooth…</translation>
 <translation id="7658239707568436148">Annuller</translation>
 <translation id="7665369617277396874">Tilføj konto</translation>
 <translation id="766587987807204883">Her vises artikler, som du kan læse, selv når du er offline</translation>

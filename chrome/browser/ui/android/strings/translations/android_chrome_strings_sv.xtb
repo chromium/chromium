@@ -41,6 +41,7 @@
 <translation id="1240288207750131269">Läser in <ph name="LANG" /></translation>
 <translation id="1242883863226959074">enhet</translation>
 <translation id="124678866338384709">Stäng den aktuella fliken</translation>
+<translation id="1246905108078336582">Vill du ta bort förslaget från urklipp?</translation>
 <translation id="1258753120186372309">Googles doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Det gick inte att dela <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Tryck och utöka</translation>
@@ -361,6 +362,7 @@ Sök genom att trycka länge på ett ord. Du kan förfina sökningen genom att v
 <translation id="3295530008794733555">Surfa snabbare. Förbruka mindre data.</translation>
 <translation id="3297344142967351106">Rösthjälp</translation>
 <translation id="3303414029551471755">Vill du ladda ned innehållet?</translation>
+<translation id="333367884906698540">Bluetooth stängs av igen när du är klar</translation>
 <translation id="3334729583274622784">Vill du ändra filnamnstillägget?</translation>
 <translation id="3341058695485821946">Se hur mycket data du har sparat</translation>
 <translation id="3341262203274374114">Det gick inte att sluta följa flödet på grund av ett fel.</translation>
@@ -1035,6 +1037,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="7641339528570811325">Rensa webbinformation …</translation>
 <translation id="764170292089748542">Chrome sparar inte webbhistoriken när du väljer att surfa privat. Du kan fortfarande använda bokmärken för att få åtkomst till dina favoritwebbplatser.</translation>
 <translation id="7646772052135772216">Det går inte att synkronisera lösenord</translation>
+<translation id="7655900163790317559">Bluetooth aktiveras …</translation>
 <translation id="7658239707568436148">Avbryt</translation>
 <translation id="7665369617277396874">Lägg till konto</translation>
 <translation id="766587987807204883">Artiklar som du kan läsa även när du är offline visas här</translation>

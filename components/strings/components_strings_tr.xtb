@@ -373,6 +373,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2276057643614339130">Yazdırma tabanı</translation>
 <translation id="2277103315734023688">İleri Sar</translation>
 <translation id="2283340219607151381">Adresleri kaydet ve doldur</translation>
+<translation id="2283447177162560884">"<ph name="PAGE_TITLE" />" silindi</translation>
 <translation id="2288422996159078444">Yazdığınız her şey, görüntülediğiniz her sayfa ve web'deki diğer tüm etkinlikleriniz izlenir. Sitelerdeki içerik, bilginiz dışında değiştirilebilir.</translation>
 <translation id="2289385804009217824">Kırp</translation>
 <translation id="2292556288342944218">İnternet erişiminiz engellendi</translation>
@@ -499,6 +500,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="277133753123645258">Gönderim yöntemi</translation>
 <translation id="277499241957683684">Eksik cihaz kaydı</translation>
 <translation id="2775884851269838147">İlk basılacak sayfa</translation>
+<translation id="2778854133681684171">Gelecek sefer bu ödeme yöntemiyle satın alma işlemi gerçekleştirirken kimliğinizi hızlıca doğrulamak için cihazınızı kullanabilirsiniz.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2784949926578158345">Bağlantı sıfırlandı.</translation>
 <translation id="2792012897584536778">Bu cihazın yöneticileri, ziyaret ettiğiniz web sitelerinin içeriğini görmelerine izin verebilecek güvenlik sertifikaları ayarladı.</translation>
@@ -656,6 +658,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3377736046129930310">Kartları daha hızlı onaylamak için ekran kilidini kullanın</translation>
 <translation id="3380365263193509176">Bilinmeyen hata</translation>
 <translation id="3380864720620200369">İstemci Kimliği:</translation>
+<translation id="3381668585148405088">Satın alma işleminizi doğrulayın</translation>
 <translation id="3387261909427947069">Ödeme Yöntemleri</translation>
 <translation id="3391030046425686457">Teslimat adresi</translation>
 <translation id="3395827396354264108">Alım yöntemi</translation>
@@ -831,6 +834,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3996311196211510766"><ph name="ORIGIN" /> sitesi, bir kaynak politikasının kendisine gelen tüm talepler için geçerli olmasını istedi, ancak bu politika şu anda uygulanamıyor.</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{{COUNT} sayfalı PDF dokümanı}other{{COUNT} sayfalı PDF dokümanı}}</translation>
 <translation id="4023431997072828269">Bu form, güvenli olmayan bir bağlantı kullanılarak gönderildiğinden bilgileriniz başkaları tarafından görülebilir.</translation>
+<translation id="4027177651527820006">Bu özellikleri etkinleştirdiğinizde tarama verileri kaybolabilir ya da güvenliğiniz veya gizliliğiniz ihlal edilebilir. Etkinleştirilen özellikler, bu tarayıcının tüm kullanıcıları için geçerli olur. Kurumsal yöneticiyseniz üretimde bu flag'leri kullanmamalısınız.</translation>
 <translation id="4030383055268325496">Eklemeyi &amp;geri al</translation>
 <translation id="4056223980640387499">Sepya Tonu</translation>
 <translation id="4058922952496707368">"<ph name="SUBKEY" />" anahtarı: <ph name="ERROR" /></translation>

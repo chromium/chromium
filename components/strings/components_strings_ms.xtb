@@ -376,6 +376,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2276057643614339130">Asas cetak</translation>
 <translation id="2277103315734023688">Cari Ke Hadapan</translation>
 <translation id="2283340219607151381">Simpan dan lengkapkan alamat</translation>
+<translation id="2283447177162560884">'<ph name="PAGE_TITLE" />' dipadamkan</translation>
 <translation id="2288422996159078444">Apa-apa sahaja yang anda taip, sebarang halaman yang anda lihat atau sebarang aktiviti lain menerusi web sedang diperhatikan. Kandungan pada tapak boleh diubah tanpa pengetahuan anda.</translation>
 <translation id="2289385804009217824">Pangkas</translation>
 <translation id="2292556288342944218">Akses Internet anda disekat</translation>
@@ -502,6 +503,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="277133753123645258">Kaedah penghantaran</translation>
 <translation id="277499241957683684">Tiada rekod peranti</translation>
 <translation id="2775884851269838147">Cetakan halaman pertama</translation>
+<translation id="2778854133681684171">Anda boleh menggunakan peranti anda untuk mengesahkan orang itu ialah anda dengan pantas pada kali seterusnya anda membuat pembelian dengan kaedah pembayaran ini.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2784949926578158345">Sambungan ditetapkan semula.</translation>
 <translation id="2792012897584536778">Pentadbir peranti ini telah menyediakan sijil keselamatan yang mungkin membolehkan mereka melihat kandungan tapak web yang anda lawati.</translation>
@@ -659,6 +661,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3377736046129930310">Gunakan kunci skrin untuk mengesahkan kad dengan lebih cepat</translation>
 <translation id="3380365263193509176">Ralat tidak diketahui</translation>
 <translation id="3380864720620200369">ID Pelanggan:</translation>
+<translation id="3381668585148405088">Sahkan pembelian anda</translation>
 <translation id="3387261909427947069">Kaedah Pembayaran</translation>
 <translation id="3391030046425686457">Alamat penghantaran</translation>
 <translation id="3395827396354264108">Kaedah pengambilan</translation>
@@ -836,6 +839,10 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
     dikenakan pada semua permintaan yang diterima, tetapi dasar ini tidak dapat dikenakan pada masa ini.</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Dokumen PDF mengandungi {COUNT} halaman}other{Dokumen PDF mengandungi {COUNT} halaman}}</translation>
 <translation id="4023431997072828269">Oleh sebab borang ini diserahkan menggunakan sambungan yang tidak selamat, maklumat anda akan dapat dilihat oleh orang lain.</translation>
+<translation id="4027177651527820006">Dengan mendayakan ciri ini, anda mungkin akan kehilangan data penyemak imbas atau
+    menjejaskan keselamatan atau privasi anda. Ciri yang didayakan digunakan untuk semua
+    pengguna penyemak imbas ini. Jika anda seorang pentadbir perusahaan, anda hendaklah
+    tidak menggunakan bendera ini dalam pengeluaran.</translation>
 <translation id="4030383055268325496">&amp;Buat asal tambahkan</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4058922952496707368">Kekunci "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>

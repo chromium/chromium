@@ -231,7 +231,6 @@
 <translation id="1244265436519979884">È in corso il ripristino di Linux</translation>
 <translation id="1244303850296295656">Errore delle estensioni</translation>
 <translation id="1246863218384630739">Impossibile installare <ph name="VM_NAME" />: l'URL dell'immagine ha restituito un codice di errore <ph name="HTTP_ERROR" />. Contatta l'amministratore.</translation>
-<translation id="1246905108078336582">Rimuovere il suggerimento dagli appunti?</translation>
 <translation id="1251366534849411931">Parentesi graffa aperta prevista: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Verranno cancellati <ph name="TOTAL_USAGE" /> di dati memorizzati da siti e app installate</translation>
 <translation id="125220115284141797">Predefiniti</translation>
@@ -541,6 +540,7 @@
 <translation id="1589055389569595240">Mostra ortografia e grammatica</translation>
 <translation id="1591679663873027990">Concedi a Parallels Desktop l'autorizzazione per accedere a dispositivi USB. Parallels Desktop non ricorderà un dispositivo USB dopo che è stato rimosso.</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" /> ha disattivato il debug ADB; il dispositivo <ph name="DEVICE_TYPE" /> verrà reimpostato. Effettua il backup dei tuoi file prima di riavviare il dispositivo.</translation>
+<translation id="1592126057537046434">Traduzione Risposte rapide</translation>
 <translation id="1593594475886691512">Formattazione in corso...</translation>
 <translation id="159359590073980872">Cache immagini</translation>
 <translation id="1593926297800505364">Salva il metodo di pagamento</translation>
@@ -747,7 +747,6 @@
 <translation id="1795214765651529549">Usa classico</translation>
 <translation id="1796588414813960292">Le funzionalità che richiedono l'audio non funzioneranno</translation>
 <translation id="1799071797295057738">L'estensione "<ph name="EXTENSION_NAME" />" è stata disattivata automaticamente.</translation>
-<translation id="1800973090344019061">L'estensione "<ph name="APP_NAME" />" vuole condividere i contenuti del tuo schermo.</translation>
 <translation id="1802624026913571222">Sospendi alla chiusura dello schermo</translation>
 <translation id="1802687198411089702">La pagina non risponde. Puoi aspettare oppure chiuderla.</translation>
 <translation id="1803531841600994172">Lingua in cui tradurre</translation>
@@ -1092,6 +1091,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2163004395084716754">Tasto non riconosciuto. Premi un tasto qualsiasi per uscire.</translation>
 <translation id="2163470535490402084">Connettiti a Internet per accedere al tuo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> e 1 altro sensore</translation>
+<translation id="2165177462441582039">Scegli la durata dell'evidenziazione di ogni elemento</translation>
 <translation id="2165421703844373933">Accedi all'assistente quando dici "Ok Google". Per consumare meno batteria, seleziona "On (opzione consigliata)". L'assistente risponderà soltanto quando il dispositivo è collegato a una fonte di alimentazione o in carica.</translation>
 <translation id="2166369534954157698">Pranzo d'acqua fa volti sghembi</translation>
 <translation id="2167276631610992935">JavaScript</translation>
@@ -1338,6 +1338,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2442916515643169563">Ombreggiatura testo</translation>
 <translation id="2445081178310039857">La directory principale dell'estensione è obbligatoria.</translation>
 <translation id="2445484935443597917">Crea un nuovo profilo</translation>
+<translation id="244641233057214044">Correlato alla tua ricerca</translation>
 <translation id="2448312741937722512">Tipo</translation>
 <translation id="2448810255793562605">Scansione automatica Switch Access</translation>
 <translation id="2450223707519584812">Non potrai aggiungere utenti perché mancano le chiavi dell'API di Google. Per informazioni dettagliate, visita la pagina <ph name="DETAILS_URL" />.</translation>
@@ -1594,6 +1595,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="2721334646575696520">Microsoft Edge</translation>
 <translation id="2721695630904737430">Gli utenti supervisionati sono stati disattivati dall'amministratore.</translation>
 <translation id="2724841811573117416">Log WebRTC</translation>
+<translation id="272488616838512378">Conversione di unità</translation>
 <translation id="2725200716980197196">Connettività di rete ripristinata</translation>
 <translation id="2727633948226935816">Non visualizzare più il promemoria</translation>
 <translation id="2727712005121231835">Dimensioni reali</translation>
@@ -1608,6 +1610,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="2734760316755174687">Verranno reimpostati anche i siti su <ph name="SITE_GROUP_NAME" />.</translation>
 <translation id="2735712963799620190">Pianificazione</translation>
 <translation id="2737363922397526254">Comprimi...</translation>
+<translation id="2737916598897808047"><ph name="APP_NAME" /> vuole condividere i contenuti del tuo schermo con <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">Non consentire ai siti di utilizzare i caratteri installati sul tuo dispositivo</translation>
 <translation id="2738771556149464852">Non dopo</translation>
 <translation id="2739191690716947896">Debug</translation>
@@ -1778,6 +1781,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="291056154577034373">DA LEGGERE</translation>
 <translation id="2910718431259223434">Si è verificato un problema. Riprova oppure contatta l'amministratore o il proprietario del dispositivo. Codice di errore: <ph name="ERROR_CODE" />.</translation>
 <translation id="2911433807131383493">Apri il tutorial di ChromeVox</translation>
+<translation id="2912247081180973411">Chiudi finestre</translation>
 <translation id="2913331724188855103">Consenti ai siti di salvare e leggere i dati dei cookie (opzione consigliata)</translation>
 <translation id="2915102088417824677">Apri log delle attività</translation>
 <translation id="2915873080513663243">Scansione automatica</translation>
@@ -2036,6 +2040,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="3201422919974259695">I dispositivi USB disponibili vengono indicati qui.</translation>
 <translation id="3202131003361292969">Percorso</translation>
 <translation id="3202173864863109533">L'audio di questa scheda sta per essere disattivato.</translation>
+<translation id="3202879084005596395">Puoi modificare impostazioni aggiuntive o riaprire la guida alla configurazione in qualsiasi momento dalle impostazioni di Switch Access.</translation>
 <translation id="3208321278970793882">App</translation>
 <translation id="3208584281581115441">Controlla ora</translation>
 <translation id="3208703785962634733">Non confermato</translation>
@@ -2113,6 +2118,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="3298789223962368867">L'URL inserito non è valido.</translation>
 <translation id="32991397311664836">Dispositivi:</translation>
 <translation id="33022249435934718">Handle GDI</translation>
+<translation id="3302388252085547855">Inserisci una motivazione…</translation>
 <translation id="3303260552072730022">Un'estensione ha attivato lo schermo intero.</translation>
 <translation id="3303818374450886607">Copie</translation>
 <translation id="3303855915957856445">Nessun risultato di ricerca trovato</translation>
@@ -2667,6 +2673,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="3888586133700543064">Queste informazioni ci aiutano a capire meglio il problema del tuo assistente. Vengono memorizzate per massimo 90 giorni e l'accesso è limitato ai team di tecnici e responsabili dei feedback competenti.</translation>
 <translation id="3890064827463908288">Per utilizzare Sync Wi-Fi, attiva Sincronizzazione Chrome</translation>
 <translation id="3892414795099177503">Aggiungi L2TP/OpenVPN</translation>
+<translation id="3893295674388762059">Per cancellare i dati, chiudi tutte le finestre di navigazione in incognito</translation>
 <translation id="3893536212201235195">Leggere e modificare le impostazioni di accessibilità</translation>
 <translation id="3893630138897523026">ChromeVox (lettura vocale)</translation>
 <translation id="3893764153531140319"><ph name="DOWNLOADED_SIZE" />/<ph name="DOWNLOAD_SIZE" /></translation>
@@ -2778,6 +2785,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="3984159763196946143">Impossibile avviare la modalità demo</translation>
 <translation id="3984431586879874039">Vuoi consentire a questo sito di rilevare il tuo token di sicurezza?</translation>
 <translation id="398477389655464998">Copia link al testo evidenziato</translation>
+<translation id="3984862166739904574">Definizione Risposte rapide</translation>
 <translation id="3987544746655539083">Continua a impedire a questo sito di accedere alla tua posizione</translation>
 <translation id="3987938432087324095">Scusa, non ho capito.</translation>
 <translation id="3987993985790029246">Copia link</translation>
@@ -3247,6 +3255,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="4549791035683739768">Nel token di sicurezza non sono archiviate impronte</translation>
 <translation id="4551763574344810652">Premi <ph name="MODIFIER_KEY_DESCRIPTION" /> per annullare</translation>
 <translation id="4553526521109675518">Per cambiare la lingua del dispositivo, devi riavviare il Chromebook. <ph name="BEGIN_LINK_LEARN_MORE" />Ulteriori informazioni<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="4553898717331438468">Ricomincia la configurazione</translation>
 <translation id="4554591392113183336">La versione dell'estensione esterna è pari o precedente a quella dell'estensione esistente.</translation>
 <translation id="4555769855065597957">Ombra</translation>
 <translation id="4555863373929230635">Per salvare le password nel tuo Account Google, accedi e attiva la sincronizzazione.</translation>
@@ -3265,6 +3274,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="4568025708905928793">Viene richiesto un token di sicurezza</translation>
 <translation id="4568213207643490790">Spiacenti, gli Account Google non sono consentiti su questo dispositivo.</translation>
 <translation id="4569747168316751899">Quando non attivo</translation>
+<translation id="4570201855944865395">Motivazione della richiesta di questa estensione:</translation>
 <translation id="4572659312570518089">Autenticazione annullata durante la connessione a "<ph name="DEVICE_NAME" />".</translation>
 <translation id="4572779512957829735">Inserisci il codice PIN per il token di sicurezza</translation>
 <translation id="4573515936045019911">Per eseguire l'upgrade di Linux è necessaria una connessione di rete. Connettiti a Internet e riprova.</translation>
@@ -3746,6 +3756,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="5127805178023152808">La sincronizzazione è disattivata</translation>
 <translation id="5127881134400491887">Gestione di connessioni di rete</translation>
 <translation id="512903556749061217">collegato</translation>
+<translation id="5130080518784460891">Eten</translation>
 <translation id="5130675701626084557">Impossibile scaricare il profilo. Riprova più tardi oppure contatta l'operatore per ricevere assistenza.</translation>
 <translation id="5131591206283983824">Trascinamento al tocco sul touchpad</translation>
 <translation id="5135085122826131075">Accedi all'assistente quando dici "Ok Google".</translation>
@@ -3804,6 +3815,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> vuole scaricare più file</translation>
 <translation id="5192062846343383368">Per vedere le impostazioni della supervisione, apri l'app Family Link</translation>
 <translation id="5193988420012215838">Copiata nei tuoi appunti</translation>
+<translation id="5194256020863090856">L'azione viene applicata soltanto per le finestre di navigazione in incognito</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198430103906431024">Invia dati diagnostici e sull'utilizzo. Attualmente, questo dispositivo invia a Google dati diagnostici e sull'utilizzo delle app e del dispositivo. Tali dati contribuiranno alla stabilità delle app e del sistema, nonché ad altri miglioramenti. Alcuni dati aggregati saranno utili anche alle app e ai partner di Google, come ad esempio agli sviluppatori Android. Se hai attivato l'impostazione Attività web e app aggiuntiva, queste informazioni potrebbero essere salvate nel tuo Account Google.</translation>
 <translation id="5199729219167945352">Esperimenti</translation>
@@ -3834,6 +3846,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="5227679487546032910">Avatar verde acqua predefinito</translation>
 <translation id="5228579091201413441">Abilita sincronizzazione</translation>
 <translation id="5230516054153933099">Finestra</translation>
+<translation id="523271575098439435">Aggiungi le tue lingue preferite per i siti web. Per le traduzioni verrà usata la lingua in cima all'elenco.</translation>
 <translation id="5233019165164992427">Porta di debug NaCl</translation>
 <translation id="5233231016133573565">ID processo</translation>
 <translation id="5233638681132016545">Nuova scheda</translation>
@@ -4040,6 +4053,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="5470735824776589490">È necessario riavviare prima che il dispositivo possa essere reimpostato con Powerwash. <ph name="LINK_BEGIN" />Ulteriori informazioni<ph name="LINK_END" /></translation>
 <translation id="5471768120198416576">Ciao! Sono la voce della sintesi locale.</translation>
 <translation id="5472627187093107397">Salva le password per questo sito</translation>
+<translation id="5473075389972733037">IBM</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{Il PIN deve contenere almeno un carattere}other{Il PIN deve contenere almeno # caratteri}}</translation>
 <translation id="5481273127572794904">Non possono scaricare automaticamente più file</translation>
 <translation id="5481941284378890518">Aggiungi stampanti nelle vicinanze</translation>
@@ -4558,6 +4572,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="6057312498756061228">Il file è troppo grande per essere sottoposto a un controllo di sicurezza. La dimensione massima dei file che puoi aprire è di 50 MB.</translation>
 <translation id="6057381398996433816">A questo sito è stato impedito di usare i sensori di movimento e della luce.</translation>
 <translation id="6059276912018042191">Schede Chrome recenti</translation>
+<translation id="6059347142391822629">Per chiudere la guida, premi il sensore quando lo stato attivo è impostato sul pulsante Fine.</translation>
 <translation id="6059652578941944813">Gerarchia certificati</translation>
 <translation id="6059925163896151826">Dispositivi USB</translation>
 <translation id="6061882183774845124">Invia link ai tuoi dispositivi</translation>
@@ -4636,7 +4651,6 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="6136114942382973861">Chiudi la barra dei download</translation>
 <translation id="6136287496450963112">Il token di sicurezza non è protetto tramite PIN. Per gestire le impronte, devi prima creare un PIN.</translation>
 <translation id="6138680304137685902">Firma X9.62 ECDSA con SHA-384</translation>
-<translation id="6138774640412545950">L'estensione "<ph name="APP_NAME" />" vuole condividere i contenuti del tuo schermo con <ph name="TARGET_NAME" />.</translation>
 <translation id="6141988275892716286">Conferma download</translation>
 <translation id="6143186082490678276">Assistenza</translation>
 <translation id="6143366292569327983">Seleziona la lingua della pagina di origine</translation>
@@ -4776,6 +4790,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="6291949900244949761">Chiedi conferma quando un sito vuole accedere ai dispositivi USB (consigliata)</translation>
 <translation id="6291953229176937411">Mo&amp;stra nel Finder</translation>
 <translation id="6292699686837272722">Le schede si riducono a una larghezza media</translation>
+<translation id="6294759976468837022">Velocità della scansione automatica</translation>
 <translation id="6295158916970320988">Tutti i siti</translation>
 <translation id="6295855836753816081">Salvataggio in corso...</translation>
 <translation id="6298962879096096191">Utilizza Google Play per installare le app Android</translation>
@@ -5156,6 +5171,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="6723839937902243910">Alimentazione</translation>
 <translation id="6725073593266469338">Servizio di gestione UI</translation>
 <translation id="6725206449694821596">Protocollo di stampa Internet (IPP)</translation>
+<translation id="6725970970008349185">Numero di candidati da visualizzare per pagina</translation>
 <translation id="672609503628871915">Scopri le novità</translation>
 <translation id="67269783048918309">Invia dati diagnostici e sull'utilizzo. Questo dispositivo attualmente invia a Google dati diagnostici e sull'utilizzo delle app e del dispositivo. Non verranno utilizzati per identificare tuo figlio e contribuiranno alla stabilità di app e sistema, nonché ad altri miglioramenti. Alcuni dati aggregati saranno utili anche alle app e ai partner di Google, ad esempio agli sviluppatori Android. Questa <ph name="BEGIN_LINK1" />impostazione<ph name="END_LINK1" /> è applicata dal proprietario. Se l'impostazione Attività web e app aggiuntiva è attiva per tuo figlio, questi dati potrebbero essere salvati nel suo Account Google. <ph name="BEGIN_LINK2" />Ulteriori informazioni<ph name="END_LINK2" /></translation>
 <translation id="6727969043791803658">Dispositivo connesso. Livello batteria: <ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -5815,6 +5831,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="746861123368584540">Estensione caricata</translation>
 <translation id="7470424110735398630">Possono accedere agli appunti</translation>
 <translation id="747114903913869239">Errore: impossibile decodificare l'estensione</translation>
+<translation id="7471520329163184433">Più lenta</translation>
 <translation id="7473891865547856676">No grazie</translation>
 <translation id="747459581954555080">Ripristina tutto</translation>
 <translation id="747507174130726364">{NUM_DAYS,plural, =1{È richiesta la restituzione immediata}other{Restituisci questo <ph name="DEVICE_TYPE" /> entro {NUM_DAYS} giorni}}</translation>
@@ -6247,6 +6264,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="7910768399700579500">&amp;Nuova cartella</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912080627461681647">La password è stata modificata sul server. Esci e accedi nuovamente.</translation>
+<translation id="7912974581251770345">Traduzione</translation>
 <translation id="7915457674565721553">Connettiti a Internet per configurare il Controllo genitori</translation>
 <translation id="7918257978052780342">Registrati</translation>
 <translation id="7919123827536834358">Traduci queste lingue automaticamente</translation>
@@ -6479,6 +6497,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8155676038687609779">{COUNT,plural, =0{Non sono state trovate password compromesse}=1{{COUNT} password compromessa}other{{COUNT} password compromesse}}</translation>
 <translation id="8157248655669507702">Attiva i dati mobili per installare un profilo eSIM</translation>
 <translation id="8157704005178149728">Impostazione della supervisione</translation>
+<translation id="8157954703669743215">Ultima visualizzazione: <ph name="RELATIVE_TIME" /></translation>
 <translation id="8158117992543756526">Questo dispositivo non riceve più aggiornamenti automatici di software e sicurezza da <ph name="MONTH_AND_YEAR" />. <ph name="LINK_BEGIN" />Ulteriori informazioni<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">Errore durante l'impostazione dell'attendibilità del certificato</translation>
 <translation id="8160775796528709999">Aggiungi sottotitoli ai tuoi contenuti audio e video attivando la funzionalità Sottotitoli in tempo reale nelle impostazioni</translation>
@@ -6513,6 +6532,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034">Connessione a <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Gestire applicazioni, estensioni e temi</translation>
+<translation id="8192944472786724289"><ph name="APP_NAME" /> vuole condividere i contenuti del tuo schermo.</translation>
 <translation id="8195027750202970175">Dimensioni su disco</translation>
 <translation id="8198323535106903877">Le <ph name="NUMBER_OF_APPS" /> app verranno installate automaticamente</translation>
 <translation id="8198456017687137612">Trasmissione della scheda in corso…</translation>
@@ -6656,6 +6676,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8363095875018065315">stabile</translation>
 <translation id="8363142353806532503">Microfono bloccato</translation>
 <translation id="8366396658833131068">La connettività di rete è stata ripristinata. Seleziona un'altra rete o premi il pulsante "Continua" sotto per avviare l'app kiosk.</translation>
+<translation id="8366694425498033255">Tasti di selezione</translation>
 <translation id="8368027906805972958">Dispositivo sconosciuto o non supportato (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368859634510605990">&amp;Apri tutti i Preferiti</translation>
 <translation id="8370294614544004647">Sospendere alla chiusura del laptop</translation>
@@ -6763,6 +6784,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8499083585497694743">Riattiva microfono</translation>
 <translation id="8502536196501630039">Per utilizzare le app di Google Play, è prima necessario ripristinare le app. Alcuni dati potrebbero essere andati persi.</translation>
 <translation id="8503813439785031346">Nome utente</translation>
+<translation id="850382998924680137">Ultima visualizzazione: oggi</translation>
 <translation id="8507227974644337342">Risoluzione dello schermo</translation>
 <translation id="850875081535031620">Nessun software dannoso trovato</translation>
 <translation id="8509177919508253835">Reimposta i token di sicurezza e crea PIN</translation>
@@ -6946,6 +6968,7 @@ Premi un sensore assegnato per rimuovere l'assegnazione.</translation>
 <translation id="8712637175834984815">Fatto</translation>
 <translation id="8713570323158206935">Invia <ph name="BEGIN_LINK1" />informazioni sul sistema<ph name="END_LINK1" /></translation>
 <translation id="8714838604780058252">Grafica in background</translation>
+<translation id="871515167518607670">Scegli un dispositivo. Dopodiché apri Chrome dal dispositivo per visualizzare la pagina.</translation>
 <translation id="8715480913140015283">Una scheda in secondo piano sta usando la videocamera</translation>
 <translation id="8716931980467311658">Vuoi eliminare tutti i dati e le applicazioni Linux della cartella File di Linux da questo dispositivo <ph name="DEVICE_TYPE" />?</translation>
 <translation id="8717864919010420084">Copia link</translation>
@@ -7189,6 +7212,7 @@ Premi un sensore assegnato per rimuovere l'assegnazione.</translation>
 <translation id="895347679606913382">Avvio download in corso...</translation>
 <translation id="8957757410289731985">Personalizza il profilo</translation>
 <translation id="895944840846194039">Memoria JavaScript</translation>
+<translation id="8960208913905765425">Conversione di unità Risposte rapide</translation>
 <translation id="8962051932294470566">Puoi condividere un solo file alla volta. Riprova al termine dell'attuale trasferimento.</translation>
 <translation id="8962083179518285172">Nascondi dettagli</translation>
 <translation id="8962918469425892674">Questo sito usa sensori di movimento o della luce.</translation>

@@ -376,6 +376,7 @@ Annars blockeras detta av sekretessinställningarna. Om du tillåter detta kan i
 <translation id="2276057643614339130">Utskriftsbas</translation>
 <translation id="2277103315734023688">Sök framåt</translation>
 <translation id="2283340219607151381">Spara och fyll i adresser</translation>
+<translation id="2283447177162560884"><ph name="PAGE_TITLE" /> har raderats</translation>
 <translation id="2288422996159078444">Allt du skriver, sidor du visar och all annan aktivitet på webben övervakas. Innehåll på webbplatser kan ändras utan din vetskap.</translation>
 <translation id="2289385804009217824">Beskär</translation>
 <translation id="2292556288342944218">Internetanslutningen har blockerats</translation>
@@ -502,6 +503,7 @@ Annars blockeras detta av sekretessinställningarna. Om du tillåter detta kan i
 <translation id="277133753123645258">Fraktalternativ</translation>
 <translation id="277499241957683684">Enhetsregister saknas</translation>
 <translation id="2775884851269838147">Första utskriftssidan</translation>
+<translation id="2778854133681684171">Du kan använda din enhet för att snabbt verifiera din identitet nästa gång du gör ett köp med den här betalningsmetoden.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2784949926578158345">Anslutningen  återställdes.</translation>
 <translation id="2792012897584536778">Den här enhetens administratör har konfigurerat säkerhetscertifikat som kan tillåta den att se innehållet på webbplatser du besöker.</translation>
@@ -659,6 +661,7 @@ Annars blockeras detta av sekretessinställningarna. Om du tillåter detta kan i
 <translation id="3377736046129930310">Verifiera kreditkort snabbare med skärmlås</translation>
 <translation id="3380365263193509176">Okänt fel</translation>
 <translation id="3380864720620200369">Klient-ID:</translation>
+<translation id="3381668585148405088">Verifiera köpet</translation>
 <translation id="3387261909427947069">Betalningsmetoder</translation>
 <translation id="3391030046425686457">Leveransadress</translation>
 <translation id="3395827396354264108">Alternativ för utlämning</translation>
@@ -835,6 +838,10 @@ Annars blockeras detta av sekretessinställningarna. Om du tillåter detta kan i
     ska gälla varje gång den svarar på en begäran, men denna princip går inte att tillämpa just nu.</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF-dokument som innehåller {COUNT} sida}other{PDF-dokument som innehåller {COUNT} sidor}}</translation>
 <translation id="4023431997072828269">Din information blir synlig för andra eftersom anslutningen som används för att skicka formuläret inte är säker.</translation>
+<translation id="4027177651527820006">Om du aktiverar dessa funktioner kan du förlora webbinformation
+    eller äventyra din säkerhet eller integritet. Aktiverade funktioner gäller för alla
+    som använder den här webbläsaren. Om du är företagsadministratör bör du inte
+    använda de här flaggorna i produktionen.</translation>
 <translation id="4030383055268325496">&amp;Ångra Lägg till</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4058922952496707368">Nyckel <ph name="SUBKEY" />: <ph name="ERROR" /></translation>

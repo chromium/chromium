@@ -41,6 +41,7 @@
 <translation id="1240288207750131269"><ph name="LANG" />-г ачаалж байна</translation>
 <translation id="1242883863226959074">төхөөрөмж</translation>
 <translation id="124678866338384709">Үндсэн чихтэй хуудсыг хаах</translation>
+<translation id="1246905108078336582">Түр санах ойгоос зөвлөмжийг устгах уу?</translation>
 <translation id="1258753120186372309">Google doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" />-г хуваалцаж чадсангүй</translation>
 <translation id="1283039547216852943">Дэлгэхийн тулд товших</translation>
@@ -361,6 +362,7 @@
 <translation id="3295530008794733555">Хөтчийг илүү хурдан ашиглаарай. Бага дата ашиглах.</translation>
 <translation id="3297344142967351106">Дуут тусламж</translation>
 <translation id="3303414029551471755">Контентыг татаж авах үйлдлийг эхлүүлэх үү?</translation>
+<translation id="333367884906698540">Таныг дууссан үед Bluetooth буцаж унтарна</translation>
 <translation id="3334729583274622784">Файлын өргөтгөлийг өөрчлөх үү?</translation>
 <translation id="3341058695485821946">Ямар хэмжээний дата хэмнэснээ харах</translation>
 <translation id="3341262203274374114">Дагахаа болих боломжгүй. Алдаа гарлаа.</translation>
@@ -1034,6 +1036,7 @@ Privacy Sandbox-н туршилт нь идэвхтэй хөгжүүлэлтэд
 <translation id="7641339528570811325">Хайлтын өгөгдлийг цэвэрлэх...</translation>
 <translation id="764170292089748542">Таныг нууцлалтайгаар үзэхээр сонгосон үед Chrome таны хөтчийн түүхийг хадгалдаггүй. Та дуртай сайтууддаа хандахын тулд хавчуургыг ашиглах боломжтой хэвээр байна.</translation>
 <translation id="7646772052135772216">Нууц үгийг синк хийх ажиллахгүй байна</translation>
+<translation id="7655900163790317559">Bluetooth-г асааж байна…</translation>
 <translation id="7658239707568436148">Болих</translation>
 <translation id="7665369617277396874">Бүртгэл нэмэх</translation>
 <translation id="766587987807204883">Офлайн үедээ ч унших боломжтой нийтлэлүүд энд харагддаг</translation>

@@ -39,7 +39,9 @@
 <translation id="1231733316453485619">సమకాలీకరణను ఆన్ చేయాలా?</translation>
 <translation id="123724288017357924">కాష్ కంటెంట్ విస్మరించి ప్రస్తుత పేజీ మళ్లీ లోడ్ చేయండి</translation>
 <translation id="1240288207750131269"><ph name="LANG" /> లోడ్ అవుతోంది</translation>
+<translation id="1242883863226959074">పరికరం</translation>
 <translation id="124678866338384709">ప్రస్తుత ట్యాబ్‌ను మూసివేయండి</translation>
+<translation id="1246905108078336582">క్లిప్‌బోర్డ్ నుండి సూచనను తొలగించాలా?</translation>
 <translation id="1258753120186372309">Google doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" />ను షేర్ చేయడం సాధ్యపడలేదు</translation>
 <translation id="1283039547216852943">విస్త‌రించ‌డానికి నొక్కండి</translation>
@@ -918,6 +920,7 @@
 <translation id="6864459304226931083">చిత్రాన్ని డౌన్‌లోడ్ చేయి</translation>
 <translation id="6865313869410766144">ఆటో-ఫిల్ ఫారమ్ డేటా</translation>
 <translation id="6867400383614725881">కొత్త అజ్ఞాత ట్యాబ్</translation>
+<translation id="6869056123412990582">కంప్యూటర్</translation>
 <translation id="6882836635272038266">ప్రమాదకరంగా గుర్తించిన వెబ్‌సైట్‌లు, డౌన్‌లోడ్‌లు, ఎక్స్‌టెన్షన్‌ల నుండి ప్రామాణిక రక్షణ.</translation>
 <translation id="688738109438487280">ఇప్పటికే ఉన్న డేటాను <ph name="TO_ACCOUNT" />కి జోడించండి.</translation>
 <translation id="6891726759199484455">మీ పాస్‌వర్డ్‌ను కాపీ చేయడానికి అన్‌లాక్ చేయండి</translation>
@@ -1154,6 +1157,7 @@
 <translation id="8393700583063109961">సందేశాన్ని పంపండి</translation>
 <translation id="8410695015584479363">ధరలను ట్రాక్ చేయండి</translation>
 <translation id="8413126021676339697">పూర్తి చరిత్రను చూపించు</translation>
+<translation id="8424781820952413435">పేజీ పంపబడింది. దానిని చూడటానికి మీ <ph name="DEVICE_TYPE" />లో Chromeను తెరవండి</translation>
 <translation id="8427875596167638501">ప్రివ్యూ ట్యాబ్ సగం తెరవబడింది</translation>
 <translation id="8428213095426709021">సెట్టింగ్‌లు</translation>
 <translation id="8438566539970814960">సెర్చ్‌లను, బ్రౌజింగ్‌ను మెరుగుపరచండి</translation>
@@ -1195,6 +1199,7 @@
 <translation id="860282621117673749">ధర తగ్గింపు అలర్ట్‌లు</translation>
 <translation id="8616006591992756292">మీ Google ఖాతా <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />లో ఇతర రూపాల్లో ఉన్న బ్రౌజింగ్ చరిత్రను కలిగి ఉండవచ్చు.</translation>
 <translation id="8617240290563765734">డౌన్‌లోడ్ చేసిన కంటెంట్‌లో పేర్కొన్న సూచిత URLని తెరవాలా?</translation>
+<translation id="8621068256433641644">ఫోన్</translation>
 <translation id="8636825310635137004">మీ ఇతర పరికరాల నుండి మీ ట్యాబ్‌లను పొందడానికి, సమకాలీకరణను ఆన్ చేయండి</translation>
 <translation id="8641930654639604085">వయోజన కంటెంట్ గల సైట్‌లను బ్లాక్ చేయడానికి ప్రయత్నించండి</translation>
 <translation id="8655129584991699539">మీరు Chrome సెట్టింగ్‌లలో డేటాను తీసివేయవచ్చు</translation>

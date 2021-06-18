@@ -376,6 +376,7 @@
 <translation id="2276057643614339130">בסיס הדפסה</translation>
 <translation id="2277103315734023688">הרצה קדימה</translation>
 <translation id="2283340219607151381">שמירה ומילוי של כתובות</translation>
+<translation id="2283447177162560884">בוצעה מחיקה של '<ph name="PAGE_TITLE" />'</translation>
 <translation id="2288422996159078444">כל הקלדת טקסט, הצגת דף או פעילות אחרת באינטרנט נמצאת במעקב. בנוסף, התוכן באתרים עשוי להשתנות ללא ידיעתך.</translation>
 <translation id="2289385804009217824">חיתוך</translation>
 <translation id="2292556288342944218">הגישה לאינטרנט חסומה</translation>
@@ -502,6 +503,7 @@
 <translation id="277133753123645258">שיטת משלוח</translation>
 <translation id="277499241957683684">חסרה רשומת מכשיר</translation>
 <translation id="2775884851269838147">דף מודפס ראשון</translation>
+<translation id="2778854133681684171">המכשיר שלך יכול לשמש לאימות מהיר של זהותך בפעם הבאה שתתבצע רכישה באמצעי התשלום הזה.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2784949926578158345">החיבור עבר איפוס.</translation>
 <translation id="2792012897584536778">מנהלי מערכת של המכשיר הזה הגדירו אישורי אבטחה שעשויים לאפשר להם לראות את התוכן של אתרים שביקרת בהם.</translation>
@@ -659,6 +661,7 @@
 <translation id="3377736046129930310">נעילת המסך מאפשרת לך לאשר כרטיסים מהר יותר</translation>
 <translation id="3380365263193509176">שגיאה לא ידועה</translation>
 <translation id="3380864720620200369">מספר לקוח:</translation>
+<translation id="3381668585148405088">אימות הרכישה</translation>
 <translation id="3387261909427947069">אמצעי תשלום</translation>
 <translation id="3391030046425686457">כתובת למשלוח</translation>
 <translation id="3395827396354264108">שיטת איסוף</translation>
@@ -835,6 +838,10 @@
     על כל הבקשות הנשלחות אליו, אבל לא ניתן כרגע להחיל את המדיניות הזו.</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{‏מסמך ה-PDF מכיל דף אחד ({COUNT})}two{‏מסמך ה-PDF מכיל {COUNT} דפים}many{‏מסמך ה-PDF מכיל {COUNT} דפים}other{‏מסמך ה-PDF מכיל {COUNT} דפים}}</translation>
 <translation id="4023431997072828269">שליחת הטופס הזה מתבצעת דרך חיבור שאינו מאובטח, לכן המידע שלך יהיה גלוי לאחרים.</translation>
+<translation id="4027177651527820006">ההפעלה של התכונות האלה עלולה לגרום לאובדן נתוני גלישה
+    או לפגיעה באבטחה או בפרטיות שלך. התכונות המופעלות חלות על
+    כל המשתמשים בדפדפן הזה. אם תפקידך הוא מנהל/ת מערכת של ארגון,
+    עליך להימנע משימוש בתכונות הניסיוניות האלה בסביבת ייצור.</translation>
 <translation id="4030383055268325496">&amp;ביטול הוספה</translation>
 <translation id="4056223980640387499">חום-ספיה</translation>
 <translation id="4058922952496707368">מפתח "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>

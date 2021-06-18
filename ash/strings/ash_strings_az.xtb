@@ -727,6 +727,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="6816797338148849397">Seçiminizlə əlaqəli məlumat əlçatandır. Giriş üçün Yuxarı ox düyməsini istifadə edin.</translation>
 <translation id="6818242057446442178">Söz üzrə geri qayıdın</translation>
 <translation id="6820676911989879663">Fasilə verin!</translation>
+<translation id="6837064795450991317">Masaüstü paneli gizlədin</translation>
 <translation id="6850010208275816200">Cari tətbiqiniz tam ekranda açılıb. Tətbiq parol tələb edərsə, əvvəlcə tam ekrandan çıxın.</translation>
 <translation id="6852052252232534364">Aktiv etmək üçün klikləyin</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> san</translation>
@@ -762,6 +763,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="7076293881109082629">Hesaba giriş</translation>
 <translation id="7088960765736518739">Açarlı idarəetmə</translation>
 <translation id="7098389117866926363">USB-C cihazı (arxadakı sol port)</translation>
+<translation id="7106330611027933926">Masaüstü paneli göstərin</translation>
 <translation id="7118268675952955085">skrinşot</translation>
 <translation id="7131634465328662194">Avtomatik hesabdan çıxacaqsınız.</translation>
 <translation id="7143207342074048698">Qoşulur</translation>
@@ -805,6 +807,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="7466449121337984263">Sensora toxunun</translation>
 <translation id="7473891865547856676">Yox</translation>
 <translation id="7477793887173910789">Musiqi, video və daha çoxuna nəzarət edin</translation>
+<translation id="7482097454533720217">Mətnə sağ düymə ilə toxunduqda və ya toxunub saxladıqda izahlar, tərcümələr və ya vahid çevirmələrini əldə edin.</translation>
 <translation id="7483025031359818980">Seçim sahəsi tam ekran olaraq ayarlanıb</translation>
 <translation id="7486227320194954040">Marker alətlərini yığcamlaşdırın</translation>
 <translation id="7497767806359279797">Dil və klaviatura seçin</translation>
@@ -981,6 +984,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="8843682306134542540">Fırlanma kilidini aktiv edin. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">PIN və ya parolunuzu yenə doğrulamaq mümkün olmadı. Qeyd: Bu yaxınlarda parolunuzu dəyişmisinizsə, köhnə parolunuzu istifadə edin. Çıxdıqdan sonra yeni parolunuz tətbiq ediləcək.</translation>
+<translation id="8863888432376731307">"<ph name="QUERY" />" və daha çoxu üçün <ph name="INTENT" /> əldə edin</translation>
 <translation id="8870509716567206129">Tətbiq ekran bölünməsini dəstəkləmir.</translation>
 <translation id="8871580645200179206">Tünd temanı dəyişdirin. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Qoşulmayıb</translation>

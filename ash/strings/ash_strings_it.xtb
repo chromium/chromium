@@ -80,7 +80,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1516740043221086139">La modalità Non disturbare è attiva.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Mostra impostazioni di notifica. Le notifiche sono disattivate per un'app}other{Mostra impostazioni di notifica. Le notifiche sono disattivate per # app}}</translation>
 <translation id="1525508553941733066">IGNORA</translation>
-<translation id="1536604384701784949">Per usare l'account <ph name="USER_EMAIL_ADDRESS" />, devi prima uscire da tutti gli account. A tale scopo, seleziona Annulla per tornare indietro. Dopodiché seleziona l'ora per aprire l'area di stato e seleziona Esci, quindi accedi di nuovo all'account <ph name="USER_EMAIL_ADDRESS_2" />.</translation>
+<translation id="1536604384701784949">Per usare l'account <ph name="USER_EMAIL_ADDRESS" />, devi prima uscire da tutti gli account. A tale scopo, seleziona Annulla per tornare indietro. Dopodiché seleziona l'ora per aprire l'area di stato e poi Esci. Quindi accedi di nuovo all'account <ph name="USER_EMAIL_ADDRESS_2" />.</translation>
 <translation id="15373452373711364">Puntatore del mouse grande</translation>
 <translation id="1546492247443594934">Scrivania 2</translation>
 <translation id="1550523713251050646">Fai clic per visualizzare altre opzioni</translation>
@@ -728,6 +728,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="6816797338148849397">Sono disponibili informazioni relative al testo selezionato. Per accedere, utilizza il tasto Freccia su.</translation>
 <translation id="6818242057446442178">Indietro per parola</translation>
 <translation id="6820676911989879663">Fai una pausa!</translation>
+<translation id="6837064795450991317">Nascondi deskbar</translation>
 <translation id="6850010208275816200">L'app aperta in questo momento è a schermo intero. Se l'app richiede la password, prima di tutto esci dallo schermo intero.</translation>
 <translation id="6852052252232534364">Fai clic per attivare</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sec</translation>
@@ -763,6 +764,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="7076293881109082629">Accesso</translation>
 <translation id="7088960765736518739">Switch Access</translation>
 <translation id="7098389117866926363">Dispositivo USB-C (porta posteriore sinistra)</translation>
+<translation id="7106330611027933926">Mostra deskbar</translation>
 <translation id="7118268675952955085">screenshot</translation>
 <translation id="7131634465328662194">Verrai disconnesso automaticamente.</translation>
 <translation id="7143207342074048698">Connessione</translation>
@@ -806,6 +808,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="7466449121337984263">Tocca il sensore</translation>
 <translation id="7473891865547856676">No grazie</translation>
 <translation id="7477793887173910789">Gestisci la tua musica, i tuoi video e altro ancora</translation>
+<translation id="7482097454533720217">Ricevi definizioni, traduzioni o conversioni di unità quando tocchi e tieni premuto del testo oppure quando ci fai clic sopra con il pulsante destro del mouse.</translation>
 <translation id="7483025031359818980">Area di selezione impostata su Schermo intero</translation>
 <translation id="7486227320194954040">Comprimi strumenti indicatore</translation>
 <translation id="7497767806359279797">Scegli la lingua e la tastiera</translation>
@@ -982,6 +985,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="8843682306134542540">Attiva/disattiva blocco rotazione. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Tasto di ricerca+ESC</translation>
 <translation id="8853703225951107899">Non è stato di nuovo possibile verificare il PIN o la password. Nota: se hai modificato la password di recente, usa la password precedente. La nuova password verrà applicata quando uscirai dall'account.</translation>
+<translation id="8863888432376731307">Ricevi <ph name="INTENT" /> per "<ph name="QUERY" />" e non solo</translation>
 <translation id="8870509716567206129">L'app non supporta la modalità Schermo diviso.</translation>
 <translation id="8871580645200179206">Attiva/disattiva il tema scuro. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Non connesso</translation>

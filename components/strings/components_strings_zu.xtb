@@ -376,6 +376,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="2276057643614339130">Isisekelo sokuphrinta</translation>
 <translation id="2277103315734023688">Funela phambili</translation>
 <translation id="2283340219607151381">Londoloza futhi ugcwalise amakheli</translation>
+<translation id="2283447177162560884">'<ph name="PAGE_TITLE" />' kusuliwe</translation>
 <translation id="2288422996159078444">Noma yini oyithayiphayo, noma imaphi amakhasi owabukayo, noma imuphi umsebenzi kuwebhu obukwayo. Okuqukethwe kumasayithi kungashintshwa ngaphandle kolwazi lwakho.</translation>
 <translation id="2289385804009217824">Lungisa</translation>
 <translation id="2292556288342944218">Ukufinyelela kwakho ku-inthanethi kuvinjiwe</translation>
@@ -502,6 +503,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="277133753123645258">Indlela yokuthumela</translation>
 <translation id="277499241957683684">Irekhodi ledivayisi engekho</translation>
 <translation id="2775884851269838147">Qala ngokuphrinta ikhasi</translation>
+<translation id="2778854133681684171">Ungasebenzisa idivayisi yakho ukuqinisekisa ngokushesha ukuthi nguwe esikhathini esizayo lapho uthenga ngale ndlela yokukhokha.</translation>
 <translation id="2781692009645368755">I-Google Pay</translation>
 <translation id="2784949926578158345">Ukuxhumeka kusethwe kabusha.</translation>
 <translation id="2792012897584536778">Abalawuli bale divayisi basethe izitifiketi zokuvikela ezingabavumela ukuthi babone okuqukethwe kwamawebhusayithi owavakashelayo.</translation>
@@ -657,6 +659,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="3377736046129930310">Sebenzisa ukukhiya kwesikrini ukuze uqinisekise amakhadi ngokushesha</translation>
 <translation id="3380365263193509176">Iphutha elingaziwa</translation>
 <translation id="3380864720620200369">I-ID yeklayenti:</translation>
+<translation id="3381668585148405088">Qinisekisa ukuthenga kwakho</translation>
 <translation id="3387261909427947069">Izindlela zokukhokha</translation>
 <translation id="3391030046425686457">Ikheli lokulethwa</translation>
 <translation id="3395827396354264108">Indlela yokulandwa</translation>
@@ -832,6 +835,10 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
     isebenze kuzo zonke izicelo zayo, kodwa le nqubomgomo ayikwazi ukusetshenziswa okwamanje.</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Idokhumenti le-PDF eliqukethe ikhasi elingu-{COUNT}}one{Idokhumenti le-PDF eliqukethe amakhasi angu-{COUNT}}other{Idokhumenti le-PDF eliqukethe amakhasi angu-{COUNT}}}</translation>
 <translation id="4023431997072828269">Ngenxa yokuthi leli fomu lithunyelwe kusetshenziswa uxhumo olungavikelwanga, ulwazi lwakho luzobonakala kwabanye.</translation>
+<translation id="4027177651527820006">Ngokunika amandla lezi zakhi, ungase ulahlekelwe idatha ye-browser noma
+    ufake engcupheni ukuvikeleka noma ubumfihlo bakho. Izakhi ezinikwe amandla zisebenza kubo bonke
+    abasebenzisi bale browser. Uma ungumphathi webhizinisi akufanele
+    ngabe usebenzisa labo maka kulokhu kukhiqizwa.</translation>
 <translation id="4030383055268325496">&amp;Hlelisa ukungeza</translation>
 <translation id="4056223980640387499">I-Sepia</translation>
 <translation id="4058922952496707368">Ukhiye we-"<ph name="SUBKEY" />": <ph name="ERROR" /></translation>

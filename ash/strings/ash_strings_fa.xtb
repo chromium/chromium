@@ -727,6 +727,7 @@
 <translation id="6816797338148849397">اطلاعات مرتبط با انتخاب شما دردسترس است. برای دسترسی، از کلید «پیکان روبه بالا» استفاده کنید.</translation>
 <translation id="6818242057446442178">عقب رفتن کلمه‌به‌کلمه</translation>
 <translation id="6820676911989879663">استراحت کنید!</translation>
+<translation id="6837064795450991317">پنهان کردن نوار میزکار</translation>
 <translation id="6850010208275816200">برنامه فعلی شما درحالت تمام‌صفحه است. اگر برنامه گذرواژه‌تان را درخواست کرد، ابتدا از حالت تمام‌صفحه خارج شوید.</translation>
 <translation id="6852052252232534364">کلیک برای فعال‌سازی</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> ثانیه</translation>
@@ -762,6 +763,7 @@
 <translation id="7076293881109082629">در حال ورود به سیستم</translation>
 <translation id="7088960765736518739">دسترسی کلیدی</translation>
 <translation id="7098389117866926363">‏دستگاه USB-C (درگاه عقب سمت چپ)</translation>
+<translation id="7106330611027933926">نمایش نوار میزکار</translation>
 <translation id="7118268675952955085">نماگرفت</translation>
 <translation id="7131634465328662194">به‌طور خودکار از سیستم خارج خواهید شد.</translation>
 <translation id="7143207342074048698">در حال اتصال</translation>
@@ -805,6 +807,7 @@
 <translation id="7466449121337984263">لطفاً حسگر را لمس کنید</translation>
 <translation id="7473891865547856676">نه متشکرم</translation>
 <translation id="7477793887173910789">کنترل موسیقی، ویدیو و سایر موارد</translation>
+<translation id="7482097454533720217">وقتی روی نوشتار کلیک راست می‌کنید، یا آن را لمس می‌کنید و نگه می‌دارید، تعاریف، ترجمه‌ها، یا تبدیل‌های واحد را دریافت می‌کنید.</translation>
 <translation id="7483025031359818980">ناحیه انتخاب روی تمام صفحه تنظیم شد</translation>
 <translation id="7486227320194954040">جمع کردن ابزارهای نشان‌گذاری</translation>
 <translation id="7497767806359279797">انتخاب زبان و صفحه‌کلید</translation>
@@ -981,6 +984,7 @@
 <translation id="8843682306134542540">تغییر وضعیت قفل چرخش. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">همچنان نمی‌توان پین یا گذرواژه را تأیید کرد. توجه: اگر اخیراً گذرواژه‌تان را تغییر داده‌اید، از گذرواژه قدیمی‌تان استفاده کنید. گذرواژه جدیدتان بعد از خروج شما از سیستم اعمال می‌شود.</translation>
+<translation id="8863888432376731307">دریافت <ph name="INTENT" /> برای «<ph name="QUERY" />» و موارد دیگر</translation>
 <translation id="8870509716567206129">برنامه از تقسیم صفحه پشتیبانی نمی‌کند.</translation>
 <translation id="8871580645200179206">روشن/خاموش کردن طرح زمینه تیره. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">متصل نیست</translation>

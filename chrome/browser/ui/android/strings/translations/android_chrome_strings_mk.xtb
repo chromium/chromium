@@ -41,6 +41,7 @@
 <translation id="1240288207750131269">Се вчитува <ph name="LANG" /></translation>
 <translation id="1242883863226959074">уред</translation>
 <translation id="124678866338384709">Затвори ја тековната картичка</translation>
+<translation id="1246905108078336582">Дали да се отстрани предлогот од привремената меморија?</translation>
 <translation id="1258753120186372309">Google Doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Не може да се сподели <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Допрете за да се прошири</translation>
@@ -361,6 +362,7 @@
 <translation id="3295530008794733555">Прелистувајте побрзо. Користете помалку мобилен интернет.</translation>
 <translation id="3297344142967351106">Гласовна помош</translation>
 <translation id="3303414029551471755">Продолжете со преземање на содржината?</translation>
+<translation id="333367884906698540">Bluetooth повторно ќе се исклучи кога ќе завршите</translation>
 <translation id="3334729583274622784">Дали да се промени наставката на датотеката?</translation>
 <translation id="3341058695485821946">Видете колку мобилен интернет сте заштедиле</translation>
 <translation id="3341262203274374114">Не може да се отследи. Нешто тргна наопаку.</translation>
@@ -1035,6 +1037,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="7641339528570811325">Исчисти податоци од прелистување…</translation>
 <translation id="764170292089748542">Chrome не ја зачувува историјата на прелистувањето кога ќе изберете да прелистувате приватно. Сѐ уште може да користите обележувачи за да пристапувате до омилените сајтови.</translation>
 <translation id="7646772052135772216">Синхронизацијата на лозинките не работи</translation>
+<translation id="7655900163790317559">Се вклучува Bluetooth…</translation>
 <translation id="7658239707568436148">Откажи</translation>
 <translation id="7665369617277396874">Додајте сметка</translation>
 <translation id="766587987807204883">Статиите се појавуваат тука, а може да се читаат кога сте офлајн</translation>

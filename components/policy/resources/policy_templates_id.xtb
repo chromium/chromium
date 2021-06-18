@@ -163,7 +163,6 @@
 
       Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  <ph name="WILDCARD_VALUE" /> bukanlah nilai yang diterima untuk kebijakan ini.</translation>
 <translation id="120937472976628837">Melaporkan info kipas</translation>
-<translation id="1214202898523114033">port 10080 (berakhir 01/04/2022)</translation>
 <translation id="1216919699175573511">Aktifkan dukungan Signed HTTP Exchange (SXG)</translation>
 <translation id="1219695476179627719">Menentukan apakah perangkat harus di-rollback ke versi yang disetel oleh <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" /> jika telah menjalankan versi lebih baru.
 
@@ -4195,15 +4194,6 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 <translation id="6506486086262398387">Menyetel kebijakan ke Aktif berarti fitur Berbagi File Jaringan untuk <ph name="PRODUCT_OS_NAME" /> akan menggunakan NTLM sebagai autentikasi untuk berbagi SMB jika perlu. Jika kebijakan disetel ke Nonaktif, autentikasi NTLM untuk berbagi SMB akan dinonaktifkan.
 
       Jika kebijakan tidak disetel, perilaku default akan dinonaktifkan bagi pengguna terkelola dan aktif bagi pengguna lainnya.</translation>
-<translation id="651012148496266279">Menyetel kebijakan akan mengizinkan pengabaian daftar port yang dibatasi yang dibuat di <ph name="PRODUCT_NAME" />. Nilai berupa daftar yang dipisahkan koma dari nol atau lebih banyak port yang akan mengizinkan koneksi keluar.
-
-      Port dibatasi guna mencegah <ph name="PRODUCT_NAME" /> digunakan sebagai vektor untuk mengeksploitasi berbagai kerentanan jaringan. Menyetel kebijakan ini dapat membuat jaringan Anda terkena serangan. Kebijakan ini ditujukan sebagai solusi sementara untuk error dengan kode "ERR_UNSAFE_PORT" saat memigrasikan layanan yang berjalan di port yang diblokir ke port standar (yaitu, port 80 atau 443).
-
-      Situs berbahaya dapat mudah mendeteksi bahwa kebijakan ini disetel, dan untuk port mana, serta menggunakan informasi tersebut untuk menargetkan serangan.
-
-      Jika kebijakan ini disetel ke nilai kosong atau tidak disetel, semua port yang dibatasi akan diblokir. Jika ada campuran nilai yang valid dan tidak valid, nilai yang valid akan diterapkan.
-
-      Kebijakan ini menggantikan opsi command line "--explicitly-allowed-ports".</translation>
 <translation id="6515357889978918016">Gambar <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="6518102411616460786">Tunggu saluran target juga mengalami downgrade saluran rilis</translation>
 <translation id="6520802717075138474">Impor mesin telusur dari browser default saat pertama kali dijalankan</translation>
@@ -6345,7 +6335,6 @@ Kebijakan akan dihapus pada M75.</translation>
       Kebijakan ini adalah tindakan sementara dan akan dihapus di <ph name="PRODUCT_NAME" /> versi mendatang. Setelah kebijakan dihapus, <ph name="PRODUCT_NAME" /> akan dapat mengkueri jenis DNS tambahan kapan saja.</translation>
 <translation id="9167719789236691545">Nonaktifkan Drive di aplikasi File <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="9187743794267626640">Menonaktifkan pemasangan penyimpanan eksternal</translation>
-<translation id="9190257149451871588">port 6566 (berakhir 15/10/2021)</translation>
 <translation id="9190456586252617675">Kebijakan ini mengontrol mode pengalaman aktivasi Asisten.
 
       Jika kebijakan tidak disetel atau disetel ke <ph name="ASSISTANT_ONBOARDING_MODE_DEFAULT" />, mode default pengalaman aktivasi Asisten akan digunakan.
@@ -6363,7 +6352,6 @@ Kebijakan akan dihapus pada M75.</translation>
 <translation id="927444535723396977">Jika kebijakan disetel ke 1, situs akan dapat menjalankan JavaScript. Jika kebijakan disetel ke 2, JavaScript tidak akan dapat dijalankan.
 
       Jika tidak disetel, kebijakan akan mengizinkan JavaScript, tetapi pengguna dapat mengubah setelan ini.</translation>
-<translation id="928189505080808353">port 554 (berakhir 15/10/2021)</translation>
 <translation id="929549405492388749">Jika ditetapkan ke benar, AppCache akan dipaksa aktif, meskipun AppCache di Chrome tidak tersedia secara default.
 
       Jika tidak ditetapkan atau ditetapkan ke salah, AppCache akan mengikuti default Chrome.</translation>

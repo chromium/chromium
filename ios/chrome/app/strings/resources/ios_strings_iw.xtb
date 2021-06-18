@@ -391,7 +391,7 @@
 <translation id="5062321486222145940">‏התקנת Google Drive</translation>
 <translation id="5083464117946352670">גודל הקובץ אינו ידוע.</translation>
 <translation id="5090832849094901128">מחיקת הסיסמה הזו לא תגרום למחיקת החשבון שלך באתר <ph name="WEBSITE" />.</translation>
-<translation id="5092117651143801290">‏ניתן לשמור דפים לקריאה במועד מאוחר יותר או במצב אופליין. תתקבל שאלה מ-Chrome אם ברצונך לשמור דפים ארוכים.</translation>
+<translation id="5092117651143801290">‏יש לך אפשרות לשמור דפים לקריאה במועד מאוחר יותר או במצב אופליין. כשמגיעים ב-Chrome לדפים ארוכים, מופיעה שאלה ‒ האם לשמור אותם?</translation>
 <translation id="5094827893301452931">הציוץ בוצע.</translation>
 <translation id="5118764316110575523">כבויה</translation>
 <translation id="5127805178023152808">סנכרון כבוי</translation>
@@ -758,7 +758,7 @@
 <translation id="8548878600947630424">חיפוש בדף...</translation>
 <translation id="8574235780160508979">‏התנאים וההגבלות של Chrome ישתנו ב-31 במרץ. <ph name="BEGIN_LINK" />יש לקרוא אותם<ph name="END_LINK" /></translation>
 <translation id="8588404856427128947">כבוי</translation>
-<translation id="8590913940444621808">אין לשאול שוב</translation>
+<translation id="8590913940444621808">אל תשאלו יותר</translation>
 <translation id="8591976964826315682">‏חסימת קובצי cookie של צד שלישי במצב אנונימי</translation>
 <translation id="8605219856220328675">סגירת כרטיסייה.</translation>
 <translation id="8620640915598389714">עריכה</translation>

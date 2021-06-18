@@ -41,6 +41,7 @@
 <translation id="1240288207750131269"><ph name="LANG" /> yükleniyor</translation>
 <translation id="1242883863226959074">cihaz</translation>
 <translation id="124678866338384709">Geçerli sekmeyi kapatır</translation>
+<translation id="1246905108078336582">Öneri panodan kaldırılsın mı?</translation>
 <translation id="1258753120186372309">Google doodle'ı: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> paylaşılamadı</translation>
 <translation id="1283039547216852943">Genişletmek için dokunun</translation>
@@ -361,6 +362,7 @@ Arama yapmak için herhangi bir kelimeye dokunup basılı tutun. Aramanızı has
 <translation id="3295530008794733555">Daha hızlı tarayın. Daha az veri kullanın.</translation>
 <translation id="3297344142967351106">Sesli yardım</translation>
 <translation id="3303414029551471755">İçeriği indirme işlemine başlansın mı?</translation>
+<translation id="333367884906698540">İşiniz bittiğinde Bluetooth tekrar kapanır</translation>
 <translation id="3334729583274622784">Dosya uzantısı değiştirilsin mi?</translation>
 <translation id="3341058695485821946">Ne kadar veri tasarrufu sağladığınıza bakın</translation>
 <translation id="3341262203274374114">Takip bırakılamıyor. Bir sorun oldu.</translation>
@@ -1035,6 +1037,7 @@ Privacy Sandbox denemeleri, hâlâ aktif geliştirme aşamasında olup belirli b
 <translation id="7641339528570811325">Tarama verilerini temizle…</translation>
 <translation id="764170292089748542">İnternette gizli olarak dolaşmayı seçtiğinizde Chrome, tarama geçmişinizi kaydetmez. Sık ziyaret ettiğiniz sitelere erişmek için yer işaretlerini kullanmaya devam edebilirsiniz.</translation>
 <translation id="7646772052135772216">Şifre senkronizasyonu çalışmıyor</translation>
+<translation id="7655900163790317559">Bluetooth açılıyor…</translation>
 <translation id="7658239707568436148">İptal</translation>
 <translation id="7665369617277396874">Hesap ekle</translation>
 <translation id="766587987807204883">Çevrimdışı olsanız bile okuyabileceğiniz makaleler burada görünür.</translation>

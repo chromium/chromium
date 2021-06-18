@@ -372,6 +372,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2276057643614339130">Tlačová základňa</translation>
 <translation id="2277103315734023688">Pretočiť dopredu</translation>
 <translation id="2283340219607151381">Ukladať a dopĺňať adresy</translation>
+<translation id="2283447177162560884">Položka <ph name="PAGE_TITLE" /> bola odstránená</translation>
 <translation id="2288422996159078444">Akýkoľvek zadaný text, zobrazené stránky aj všetka ďalšia aktivita na webe sú sledované. Obsah na weboch môže byť bez vášho vedomia zmenený.</translation>
 <translation id="2289385804009217824">Orezať</translation>
 <translation id="2292556288342944218">Váš prístup k internetu je blokovaný</translation>
@@ -498,6 +499,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="277133753123645258">Spôsob dodania</translation>
 <translation id="277499241957683684">Chýbajúci záznam zariadenia</translation>
 <translation id="2775884851269838147">Prvá tlačená strana</translation>
+<translation id="2778854133681684171">Pri ďalšom nákupe týmto spôsobom platby môžete pomocou svojho zariadenia rýchlo overiť svoju totožnosť.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2784949926578158345">Spojenie bolo resetované.</translation>
 <translation id="2792012897584536778">Správcovia tohto zariadenia nastavili bezpečnostné certifikáty, ktoré im môžu umožniť zobraziť obsah vami navštívených webov.</translation>
@@ -652,6 +654,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3377736046129930310">Potvrdzujte karty rýchlejšie pomocou zámky obrazovky</translation>
 <translation id="3380365263193509176">Neznáma chyba</translation>
 <translation id="3380864720620200369">ID klienta:</translation>
+<translation id="3381668585148405088">Overenie nákupu</translation>
 <translation id="3387261909427947069">Spôsoby platby</translation>
 <translation id="3391030046425686457">Doručovacia adresa</translation>
 <translation id="3395827396354264108">Spôsob vyzdvihnutia</translation>
@@ -826,6 +829,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3996311196211510766">Web <ph name="ORIGIN" /> požiadal, aby sa na všetky jeho požiadavky vzťahovalo pravidlo pre zdroj, ale toto pravidlo sa momentálne nedá uplatniť.</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Dokument PDF s {COUNT} stranou}few{Dokument PDF s {COUNT} stranami}many{Dokument PDF s {COUNT} strany}other{Dokument PDF s {COUNT} stranami}}</translation>
 <translation id="4023431997072828269">Tento formulár je odosielaný cez pripojenie, ktoré nie je zabezpečené, takže ostatní budú vidieť vaše informácie.</translation>
+<translation id="4027177651527820006">Aktivovaním týchto funkcií môžete prísť o dáta prehliadania alebo ohroziť svoje zabezpečenie či ochranu súkromia. Funkcie sa aktivujú všetkým používateľom tohto prehliadača. Ak ste podnikový správca, nemali by ste používať tieto experimentálne funkcie v ostrej verzii.</translation>
 <translation id="4030383055268325496">&amp;Vrátiť späť pridanie</translation>
 <translation id="4056223980640387499">Sépia</translation>
 <translation id="4058922952496707368">Kľúč <ph name="SUBKEY" />: <ph name="ERROR" /></translation>

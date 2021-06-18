@@ -41,6 +41,7 @@
 <translation id="1240288207750131269">Nilo-load ang <ph name="LANG" /></translation>
 <translation id="1242883863226959074">device</translation>
 <translation id="124678866338384709">Isara ang kasalukuyang tab</translation>
+<translation id="1246905108078336582">Alisin ang suhestyon mula sa clipboard?</translation>
 <translation id="1258753120186372309">Google doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Hindi maibahagi ang <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">I-tap upang palawakin</translation>
@@ -361,6 +362,7 @@ Pindutin nang matagal ang anumang salita para maghanap. Para pinuhin ang iyong p
 <translation id="3295530008794733555">Mag-browse nang mas mabilis. Gumamit ng mas kaunting data.</translation>
 <translation id="3297344142967351106">Tulong sa pamamagitan ng boses</translation>
 <translation id="3303414029551471755">Magpatuloy na i-download ang content?</translation>
+<translation id="333367884906698540">Io-off ulit ang bluetooth kapag tapos ka na</translation>
 <translation id="3334729583274622784">Baguhin ang file extension?</translation>
 <translation id="3341058695485821946">Tingnan kung gaano karaming data ang iyong natipid</translation>
 <translation id="3341262203274374114">Hindi ma-unfollow. Nagkaproblema.</translation>
@@ -1035,6 +1037,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="7641339528570811325">I-clear ang data sa pag-browse...</translation>
 <translation id="764170292089748542">Hindi sine-save ng Chrome ang iyong history ng pag-browse kapag pinili mong mag-browse nang pribado. Puwede ka pa ring gumamit ng mga bookmark para ma-access ang iyong mga paboritong site.</translation>
 <translation id="7646772052135772216">Hindi gumagana ang pag-sync ng password</translation>
+<translation id="7655900163790317559">Ino-on ang Bluetooth…</translation>
 <translation id="7658239707568436148">Kanselahin</translation>
 <translation id="7665369617277396874">Magdagdag ng account</translation>
 <translation id="766587987807204883">Lalabas dito ang mga artikulong mababasa mo kahit offline ka</translation>

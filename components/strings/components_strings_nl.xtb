@@ -371,6 +371,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2276057643614339130">Afdrukbasis</translation>
 <translation id="2277103315734023688">Vooruit zoeken</translation>
 <translation id="2283340219607151381">Adressen opslaan en invullen</translation>
+<translation id="2283447177162560884"><ph name="PAGE_TITLE" /> verwijderd</translation>
 <translation id="2288422996159078444">Alles wat je typt, pagina's die je bekijkt en andere activiteiten op internet worden in de gaten gehouden. Content op sites kan zonder jouw medeweten worden gewijzigd.</translation>
 <translation id="2289385804009217824">Bijsnijden</translation>
 <translation id="2292556288342944218">Je toegang tot internet wordt geblokkeerd</translation>
@@ -497,6 +498,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="277133753123645258">Verzendmethode</translation>
 <translation id="277499241957683684">Apparaatrecord ontbreekt</translation>
 <translation id="2775884851269838147">Eerste afdrukpagina</translation>
+<translation id="2778854133681684171">Met je apparaat kun je snel bevestigen dat jij het bent als je weer een aankoop doet met deze betaalmethode.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2784949926578158345">De verbinding is opnieuw ingesteld.</translation>
 <translation id="2792012897584536778">De beheerders van dit apparaat hebben beveiligingscertificaten ingesteld waarmee ze de content kunnen bekijken van websites die je bezoekt.</translation>
@@ -651,6 +653,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="3377736046129930310">Gebruik schermvergrendeling om kaarten sneller te bevestigen</translation>
 <translation id="3380365263193509176">Onbekende fout</translation>
 <translation id="3380864720620200369">Klant-ID:</translation>
+<translation id="3381668585148405088">Je aankoop verifiëren</translation>
 <translation id="3387261909427947069">Betaalmethoden</translation>
 <translation id="3391030046425686457">Afleveradres</translation>
 <translation id="3395827396354264108">Ophaalmethode</translation>
@@ -825,6 +828,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
     toe te passen op alle verzoeken aan de site, maar dit beleid kan momenteel niet worden toegepast.</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Pdf-document met {COUNT} pagina}other{Pdf-document met {COUNT} pagina's}}</translation>
 <translation id="4023431997072828269">Dit formulier wordt ingediend via een verbinding die niet beveiligd is. Hierdoor zijn je gegevens zichtbaar voor anderen.</translation>
+<translation id="4027177651527820006">Als je deze functies aanzet, kun je browsergegevens kwijtraken of je veiligheid of privacy in gevaar brengen. Functies die worden aangezet, zijn van toepassing op alle gebruikers van deze browser. Als je bedrijfsbeheerder bent, moet je deze flags niet in productie gebruiken.</translation>
 <translation id="4030383055268325496">&amp;Toevoegen ongedaan maken</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4058922952496707368">Sleutel '<ph name="SUBKEY" />': <ph name="ERROR" /></translation>

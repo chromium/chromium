@@ -80,7 +80,7 @@
 <translation id="1516740043221086139">מצב 'נא לא להפריע' מופעל.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{צפייה בהגדרות של הודעות. ההודעות מושבתות באפליקציה אחת}two{צפייה בהגדרות של הודעות. ההודעות מושבתות ב-# אפליקציות}many{צפייה בהגדרות של הודעות. ההודעות מושבתות ב-# אפליקציות}other{צפייה בהגדרות של הודעות. ההודעות מושבתות ב-# אפליקציות}}</translation>
 <translation id="1525508553941733066">סגירה</translation>
-<translation id="1536604384701784949">כדי להשתמש ב-<ph name="USER_EMAIL_ADDRESS" />, עליך לצאת תחילה מכל החשבונות. כדי לצאת, בוחרים ב'ביטול' וחוזרים חזרה. לאחר מכן בוחרים בשעה לפתיחת אזור הסטטוס ובאפשרות 'יציאה'. לאחר מכן נכנסים שוב אל <ph name="USER_EMAIL_ADDRESS_2" />.</translation>
+<translation id="1536604384701784949">כדי להשתמש ב-<ph name="USER_EMAIL_ADDRESS" />, עליך לצאת תחילה מכל החשבונות. כדי לצאת, בוחרים ב'ביטול' וחוזרים חזרה. לוחצים על השעון כדי לפתוח את אזור הסטטוס ובוחרים באפשרות 'יציאה'. אחר כך נכנסים שוב אל <ph name="USER_EMAIL_ADDRESS_2" />.</translation>
 <translation id="15373452373711364">סמן עכבר גדול</translation>
 <translation id="1546492247443594934">שולחן עבודה 2</translation>
 <translation id="1550523713251050646">יש ללחוץ לקבלת אפשרויות נוספות</translation>
@@ -727,6 +727,7 @@
 <translation id="6816797338148849397">יש מידע בקשר לבחירה שלך. כדי לגשת אליו, יש להקיש על מקש החץ למעלה.</translation>
 <translation id="6818242057446442178">מילה אחת אחורה</translation>
 <translation id="6820676911989879663">הגיע הזמן להפסקה</translation>
+<translation id="6837064795450991317">הסתרת הסרגל של שולחנות העבודה הווירטואליים</translation>
 <translation id="6850010208275816200">האפליקציה הנוכחית מוצגת במסך מלא. אם התבקשת להזין סיסמה, עליך קודם לצאת ממסך מלא.</translation>
 <translation id="6852052252232534364">תופעל בלחיצה</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> שניות</translation>
@@ -762,6 +763,7 @@
 <translation id="7076293881109082629">כניסה</translation>
 <translation id="7088960765736518739">גישה באמצעות מתג</translation>
 <translation id="7098389117866926363">‏מכשיר עם יציאת USB-C (יציאה שמאלית מאחור)</translation>
+<translation id="7106330611027933926">הצגת הסרגל של שולחנות העבודה הווירטואליים</translation>
 <translation id="7118268675952955085">צילום מסך</translation>
 <translation id="7131634465328662194">המערכת תוציא אותך מהחשבון באופן אוטומטי.</translation>
 <translation id="7143207342074048698">מתבצע חיבור</translation>
@@ -805,6 +807,7 @@
 <translation id="7466449121337984263">יש לגעת בחיישן</translation>
 <translation id="7473891865547856676">לא, תודה</translation>
 <translation id="7477793887173910789">שליטה במוזיקה, בסרטונים ועוד</translation>
+<translation id="7482097454533720217">בלחיצה ימנית או בלחיצה ארוכה על טקסט, יוצגו הגדרות, תרגומים או המרת יחידות.</translation>
 <translation id="7483025031359818980">אזור הבחירה הוגדר כמסך מלא</translation>
 <translation id="7486227320194954040">כיווץ כלי הסימון</translation>
 <translation id="7497767806359279797">בחירת שפה ומקלדת</translation>
@@ -983,6 +986,7 @@
 <translation id="8843682306134542540">הפעלה או השבתה של נעילת הסיבוב. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">לא הצלחנו לאמת את קוד האימות או את הסיסמה שלך. הערה: אם שינית לאחרונה את הסיסמה, עליך לנסות להיכנס עם הסיסמה הישנה. הסיסמה החדשה תיכנס לתוקף לאחר היציאה מהחשבון.</translation>
+<translation id="8863888432376731307">לקבלת ה<ph name="INTENT" /> עבור "<ph name="QUERY" />" ועוד</translation>
 <translation id="8870509716567206129">האפליקציה אינה תומכת במסך מפוצל.</translation>
 <translation id="8871580645200179206">מעבר לעיצוב כהה. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">לא מחובר</translation>

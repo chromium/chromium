@@ -41,6 +41,7 @@
 <translation id="1240288207750131269">Notiek valodas ielāde (<ph name="LANG" />)</translation>
 <translation id="1242883863226959074">ierīcē</translation>
 <translation id="124678866338384709">Aizvērt pašreizējo cilni</translation>
+<translation id="1246905108078336582">Vai noņemt ieteikumu no starpliktuves?</translation>
 <translation id="1258753120186372309">Google svētku logotips: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Nevarēja kopīgot: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Pieskarties, lai izvērstu</translation>
@@ -361,6 +362,7 @@ Nospiediet un turiet jebkuru vārdu, lai to meklētu. Lai precizētu meklēšanu
 <translation id="3295530008794733555">Ietaupiet laiku. Samaziniet datu lietojumu.</translation>
 <translation id="3297344142967351106">Balss palīgs</translation>
 <translation id="3303414029551471755">Vai turpināt ar satura lejupielādi?</translation>
+<translation id="333367884906698540">Kad pabeigsiet šo darbību, tehnoloģija Bluetooth atkal tiks izslēgta</translation>
 <translation id="3334729583274622784">Vai mainīt faila paplašinājumu?</translation>
 <translation id="3341058695485821946">Uzziniet ietaupīto datu apjomu</translation>
 <translation id="3341262203274374114">Nevar pārtraukt sekošanu. Radās kļūda.</translation>
@@ -1035,6 +1037,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="7641339528570811325">Pārlūkošanas datu notīrīšana…</translation>
 <translation id="764170292089748542">Kad pārlūkojat tīmekli privāti, pārlūkā Chrome netiek saglabāta jūsu pārlūkošanas vēsture. Pāriešanai uz savām iecienītākajām vietnēm joprojām varat izmantot grāmatzīmes.</translation>
 <translation id="7646772052135772216">Paroļu sinhronizācija nedarbojas</translation>
+<translation id="7655900163790317559">Notiek Bluetooth ieslēgšana…</translation>
 <translation id="7658239707568436148">Atcelt</translation>
 <translation id="7665369617277396874">Pievienot kontu</translation>
 <translation id="766587987807204883">Šeit tiek rādīti raksti, kurus varat lasīt arī bezsaistē</translation>

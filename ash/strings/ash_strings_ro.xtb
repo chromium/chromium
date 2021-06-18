@@ -727,6 +727,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="6816797338148849397">Sunt disponibile informații despre selecția ta. Folosește tasta săgeată în sus pentru a le accesa.</translation>
 <translation id="6818242057446442178">Înapoi cu un cuvânt</translation>
 <translation id="6820676911989879663">Fă o pauză!</translation>
+<translation id="6837064795450991317">Ascunde bara de pe desktop</translation>
 <translation id="6850010208275816200">Aplicația actuală este afișată pe ecran complet. Dacă aplicația solicită parola, mai întâi ieși din ecranul complet.</translation>
 <translation id="6852052252232534364">Dă clic pentru activare</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sec.</translation>
@@ -762,6 +763,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="7076293881109082629">Conectare</translation>
 <translation id="7088960765736518739">Acces prin comutare</translation>
 <translation id="7098389117866926363">Dispozitiv USB-C (portul din stânga în spate)</translation>
+<translation id="7106330611027933926">Afișează bara de pe desktop</translation>
 <translation id="7118268675952955085">captură de ecran</translation>
 <translation id="7131634465328662194">Vei fi deconectat(ă) automat.</translation>
 <translation id="7143207342074048698">Se conectează</translation>
@@ -805,6 +807,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="7466449121337984263">Atinge senzorul</translation>
 <translation id="7473891865547856676">Nu, mulțumesc</translation>
 <translation id="7477793887173910789">Gestionează muzica, videoclipurile și altele</translation>
+<translation id="7482097454533720217">Obții definiții, traduceri sau conversii ale unităților când dai clic dreapta sau apeși lung textul.</translation>
 <translation id="7483025031359818980">Zona de selectare este setată la ecran complet</translation>
 <translation id="7486227320194954040">Restrânge instrumentele pentru marker</translation>
 <translation id="7497767806359279797">Alege limba și tastatura</translation>
@@ -981,6 +984,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="8843682306134542540">Comută blocarea rotației. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Tasta de căutare + Esc</translation>
 <translation id="8853703225951107899">Codul PIN sau parola tot nu au putut fi confirmate. Notă: dacă ai schimbat parola recent, folosește vechea parolă. Noua parolă se va aplica după ce te deconectezi.</translation>
+<translation id="8863888432376731307">Vezi <ph name="INTENT" /> pentru <ph name="QUERY" /> și altele</translation>
 <translation id="8870509716567206129">Aplicația nu acceptă ecranul împărțit.</translation>
 <translation id="8871580645200179206">Activează/dezactivează Tema întunecată. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Neconectat</translation>

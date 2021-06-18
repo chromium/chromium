@@ -727,6 +727,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="6816797338148849397">Informasjon om det du har markert, er tilgjengelig. Bruk oppoverpilen for å se informasjonen.</translation>
 <translation id="6818242057446442178">Ett ord tilbake</translation>
 <translation id="6820676911989879663">Ta en pause!</translation>
+<translation id="6837064795450991317">Skjul skrivebordslinje</translation>
 <translation id="6850010208275816200">Den nåværende appen er i fullskjerm. Hvis appen spør om passordet ditt, bør du gå ut av fullskjerm først.</translation>
 <translation id="6852052252232534364">Klikk for å aktivere</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sek</translation>
@@ -762,6 +763,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="7076293881109082629">Pålogging</translation>
 <translation id="7088960765736518739">Brytertilgang</translation>
 <translation id="7098389117866926363">USB-C-enhet (venstre port på baksiden)</translation>
+<translation id="7106330611027933926">Vis skrivebordslinje</translation>
 <translation id="7118268675952955085">skjermdump</translation>
 <translation id="7131634465328662194">Du logges av automatisk.</translation>
 <translation id="7143207342074048698">Kobler til</translation>
@@ -805,6 +807,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="7466449121337984263">Trykk på sensoren</translation>
 <translation id="7473891865547856676">Nei takk</translation>
 <translation id="7477793887173910789">Styr musikk, video og mer</translation>
+<translation id="7482097454533720217">Få definisjoner, oversettelser eller enhetskonverteringer når du høyreklikker eller trykker og holder inne på tekst.</translation>
 <translation id="7483025031359818980">Hele skjermen er valgt som kilde</translation>
 <translation id="7486227320194954040">Skjul merkepennverktøy</translation>
 <translation id="7497767806359279797">Velg språk og tastatur</translation>
@@ -981,6 +984,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="8843682306134542540">Slå av/på rotasjonslås. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Søk+Esc</translation>
 <translation id="8853703225951107899">PIN-koden eller passordet kunne fremdeles ikke verifiseres. Merk: Hvis du nylig har byttet passord, bruker du det gamle passordet. Det nye passordet blir tatt i bruk når du logger av.</translation>
+<translation id="8863888432376731307">Få <ph name="INTENT" /> for «<ph name="QUERY" />» med mer</translation>
 <translation id="8870509716567206129">Appen støtter ikke delt skjerm.</translation>
 <translation id="8871580645200179206">Slå av/på mørkt tema. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Ikke tilkoblet</translation>

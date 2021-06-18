@@ -159,7 +159,6 @@
 
       Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns (link em inglês).  <ph name="WILDCARD_VALUE" /> não é um valor aceitável para esta política.</translation>
 <translation id="120937472976628837">Enviar informações sobre o ventilador</translation>
-<translation id="1214202898523114033">porta 10.080 (expira em 01/04/2022)</translation>
 <translation id="1216919699175573511">Ativa a compatibilidade com Signed HTTP Exchange (SXG)</translation>
 <translation id="1219695476179627719">Especifica se o dispositivo deve ser revertido para a versão definida por <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" /> se ele já estiver executando uma versão posterior.
 
@@ -4167,15 +4166,6 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
 <translation id="6506486086262398387">Se a política for definida como "Ativada", o recurso Compartilhamentos de arquivos de rede do <ph name="PRODUCT_OS_NAME" /> usará NTLM para fazer a autenticação para compartilhamentos SMB, se necessário. Se a política for definida como "Desativada", a autenticação NTLM para compartilhamentos SMB será desativada.
 
       Se a política não for definida, o comportamento ficará desativado por padrão para usuários gerenciados e ativado para outros usuários.</translation>
-<translation id="651012148496266279">Se a política for definida, será possível ignorar a lista de portas restritas integrada ao <ph name="PRODUCT_NAME" />. O valor é uma lista separada por vírgulas de zero ou mais portas em que conexões de saída serão permitidas.
-
-      As portas são restritas para evitar que o <ph name="PRODUCT_NAME" /> seja usado como vetor para explorar diversas vulnerabilidades de rede. Se a política for definida, sua rede poderá ficar exposta a ataques. Esta política visa ser uma solução temporária para erros com o código "ERR_UNSAFE_PORT" ao mesmo tempo em que migra um serviço executado em uma porta bloqueada para uma porta padrão (por exemplo, a porta 80 ou 443).
-
-      Sites maliciosos podem detectar facilmente que esta política foi definida e para quais portas, usando essas informações para fazer ataques direcionados.
-
-      Se o valor não for preenchido ou definido, todas as portas restritas serão bloqueadas. Se houver uma mistura de valores válidos e inválidos, os valores válidos serão aplicados.
-
-      Esta política substitui a opção "--explicitly-allowed-ports" na linha de comando.</translation>
 <translation id="6515357889978918016">Imagem de <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="6518102411616460786">Esperar que o canal conclua o downgrade de canal</translation>
 <translation id="6520802717075138474">Importar mecanismos de pesquisa do navegador padrão na primeira execução</translation>
@@ -6317,7 +6307,6 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
       Ela é uma medida temporária e será removida em versões futuras do <ph name="PRODUCT_NAME" />. Após a remoção da política, o <ph name="PRODUCT_NAME" /> sempre poderá consultar outros tipos de DNS.</translation>
 <translation id="9167719789236691545">Desativar o Drive no app Arquivos do <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="9187743794267626640">Desativa a montagem de armazenamento externo</translation>
-<translation id="9190257149451871588">porta 6566 (expira em 15/10/2021)</translation>
 <translation id="9190456586252617675">Esta política controla o modo da experiência de integração do Assistente.
 
       Se ela não for definida ou for definida como "<ph name="ASSISTANT_ONBOARDING_MODE_DEFAULT" />", o modo usado para a experiência de integração será o padrão.
@@ -6335,7 +6324,6 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
 <translation id="927444535723396977">Se a política for definida como 1, os sites poderão executar o JavaScript. Se for definida como 2, o JavaScript não será executado.
 
       Se ela não for definida, o JavaScript será executado, mas os usuários poderão mudar essa configuração.</translation>
-<translation id="928189505080808353">porta 554 (expira em 15/10/2021)</translation>
 <translation id="929549405492388749">Se definida como verdadeira, esta política forçará a ativação do AppCache, mesmo que ele esteja indisponível no Chrome por padrão.
 
       Se a política não for definida ou for definida como falsa, o AppCache seguirá o padrão do Chrome.</translation>

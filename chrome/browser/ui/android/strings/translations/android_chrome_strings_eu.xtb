@@ -41,6 +41,7 @@
 <translation id="1240288207750131269"><ph name="LANG" /> kargatzen</translation>
 <translation id="1242883863226959074">gailuan</translation>
 <translation id="124678866338384709">Itxi oraingo fitxa</translation>
+<translation id="1246905108078336582">Iradokizuna arbeletik kendu nahi duzu?</translation>
 <translation id="1258753120186372309">Google doodle-a: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Ezin izan da partekatu <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Sakatu zabaltzeko</translation>
@@ -361,6 +362,7 @@ Eduki sakatuta bilatu nahi duzun hitza. Bilaketa mugatzeko, hautatu hitz gehiago
 <translation id="3295530008794733555">Arakatu bizkorrago. Erabili datu gutxiago.</translation>
 <translation id="3297344142967351106">Ahozko laguntza</translation>
 <translation id="3303414029551471755">Aurrera egin eta edukia deskargatu nahi duzu?</translation>
+<translation id="333367884906698540">Bluetooth-a desaktibatu egingo da amaitzen duzunean</translation>
 <translation id="3334729583274622784">Fitxategi-luzapena aldatu nahi duzu?</translation>
 <translation id="3341058695485821946">Ikusi zenbat datu aurreztu dituzun</translation>
 <translation id="3341262203274374114">Ezin zaio jarraitzeari utzi. Arazoren bat izan da.</translation>
@@ -1035,6 +1037,7 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="7641339528570811325">Garbitu arakatze-datuak…</translation>
 <translation id="764170292089748542">Sarea modu pribatuan arakatzen duzunean, Chrome-k ez du gordetzen arakatze-historia. Hala ere, laster-markak erabil ditzakezu gogoko webguneak atzitzeko.</translation>
 <translation id="7646772052135772216">Pasahitzen sinkronizazioa ez dabil</translation>
+<translation id="7655900163790317559">Bluetooth-a aktibatzen…</translation>
 <translation id="7658239707568436148">Utzi</translation>
 <translation id="7665369617277396874">Gehitu kontu bat</translation>
 <translation id="766587987807204883">Artikuluak agertuko dira hemen, nahi duzunean irakur ditzazun, baita konektatuta ez bazaude ere</translation>

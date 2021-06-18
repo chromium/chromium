@@ -41,6 +41,7 @@
 <translation id="1240288207750131269">Ładuję: <ph name="LANG" /></translation>
 <translation id="1242883863226959074">urządzeniu</translation>
 <translation id="124678866338384709">Zamknij bieżącą kartę</translation>
+<translation id="1246905108078336582">Usunąć podpowiedź ze schowka?</translation>
 <translation id="1258753120186372309">Doodle Google: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> – nie udało się udostępnić</translation>
 <translation id="1283039547216852943">Kliknij, by rozwinąć</translation>
@@ -361,6 +362,7 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="3295530008794733555">Szybsze przeglądanie. Mniejsze zużycie danych.</translation>
 <translation id="3297344142967351106">Pomoc głosowa</translation>
 <translation id="3303414029551471755">Przejść do pobrania treści?</translation>
+<translation id="333367884906698540">Gdy skończysz, Bluetooth zostanie z powrotem wyłączony</translation>
 <translation id="3334729583274622784">Zmienić rozszerzenie pliku?</translation>
 <translation id="3341058695485821946">Sprawdź ilość zaoszczędzonych danych</translation>
 <translation id="3341262203274374114">Nie udało się przestać obserwować. Coś poszło nie tak.</translation>
@@ -1035,6 +1037,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="7641339528570811325">Wyczyść dane przeglądania…</translation>
 <translation id="764170292089748542">Kiedy przeglądasz strony w trybie incognito, Chrome nie zapisuje historii przeglądania. Nadal możesz używać zakładek, aby uzyskać dostęp do ulubionych witryn.</translation>
 <translation id="7646772052135772216">Synchronizacja haseł nie działa</translation>
+<translation id="7655900163790317559">Włączam Bluetooth…</translation>
 <translation id="7658239707568436148">Anuluj</translation>
 <translation id="7665369617277396874">Dodaj konto</translation>
 <translation id="766587987807204883">Tutaj pojawiają się artykuły, które możesz czytać, nawet gdy jesteś offline</translation>

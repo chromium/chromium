@@ -728,6 +728,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="6816797338148849397">Seçiminizle ilgili bilgi mevcut. Erişmek için yukarı ok tuşunu kullanın.</translation>
 <translation id="6818242057446442178">Kelime bazında geri git</translation>
 <translation id="6820676911989879663">Mola verin!</translation>
+<translation id="6837064795450991317">Masa çubuğunu gizle</translation>
 <translation id="6850010208275816200">Geçerli uygulamanız tam ekran modunda. Uygulama, şifrenizi isterse önce tam ekrandan çıkın.</translation>
 <translation id="6852052252232534364">Etkinleştirmek için tıklayın</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sn.</translation>
@@ -763,6 +764,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="7076293881109082629">Oturum açılıyor</translation>
 <translation id="7088960765736518739">Anahtar Erişimi</translation>
 <translation id="7098389117866926363">USB-C cihaz (arkadaki sol bağlantı noktası)</translation>
+<translation id="7106330611027933926">Masa çubuğunu göster</translation>
 <translation id="7118268675952955085">ekran görüntüsü</translation>
 <translation id="7131634465328662194">Oturumunuz otomatik olarak kapatılacak.</translation>
 <translation id="7143207342074048698">Bağlanıyor</translation>
@@ -806,6 +808,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="7466449121337984263">Lütfen sensöre dokunun</translation>
 <translation id="7473891865547856676">Hayır, Teşekkürler</translation>
 <translation id="7477793887173910789">Müzik, video ve diğer içeriklerinizi kontrol edin</translation>
+<translation id="7482097454533720217">Metni sağ tıkladığınızda veya dokunup basılı tuttuğunuzda tanımını veya çevirisini görün ya da birim dönüştürmesi alın.</translation>
 <translation id="7483025031359818980">Seçim alanı tam ekran olarak ayarlandı</translation>
 <translation id="7486227320194954040">İşaretçi araçlarını daralt</translation>
 <translation id="7497767806359279797">Dil ve klavye seçin</translation>
@@ -982,6 +985,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="8843682306134542540">Döndürme kilidini aç/kapat. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Ara+Esc</translation>
 <translation id="8853703225951107899">PIN'iniz veya şifreniz hâlâ doğrulanamadı. Not: Şifrenizi yakın zamanda değiştirdiyseniz eski şifrenizi kullanın. Yeni şifreniz, oturumunuzu kapattıktan sonra geçerli olacaktır.</translation>
+<translation id="8863888432376731307">"<ph name="QUERY" />" için <ph name="INTENT" /> ve daha fazlasını alın</translation>
 <translation id="8870509716567206129">Uygulama bölünmüş ekranı desteklemiyor.</translation>
 <translation id="8871580645200179206">Koyu temayı aç/kapat. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Bağlı değil</translation>

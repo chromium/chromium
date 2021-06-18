@@ -231,7 +231,6 @@
 <translation id="1244265436519979884">正在进行 Linux 恢复</translation>
 <translation id="1244303850296295656">扩展程序错误</translation>
 <translation id="1246863218384630739">无法安装 <ph name="VM_NAME" />：图片网址返回了 <ph name="HTTP_ERROR" /> 错误代码。请与您的管理员联系。</translation>
-<translation id="1246905108078336582">从剪贴板中移除建议？</translation>
 <translation id="1251366534849411931">缺少左大括号：<ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">此操作会清除网站及安装的应用存储的 <ph name="TOTAL_USAGE" /> 数据</translation>
 <translation id="125220115284141797">默认</translation>
@@ -744,7 +743,6 @@
 <translation id="1795214765651529549">使用经典主题背景</translation>
 <translation id="1796588414813960292">所有需要使用声音的功能都将无法正常运行</translation>
 <translation id="1799071797295057738">扩展程序“<ph name="EXTENSION_NAME" />”已被自动停用。</translation>
-<translation id="1800973090344019061">扩展程序“<ph name="APP_NAME" />”想分享您屏幕上的内容。</translation>
 <translation id="1802624026913571222">合盖后休眠</translation>
 <translation id="1802687198411089702">该页面没有响应。您可以继续等待，也可以退出。</translation>
 <translation id="1803531841600994172">翻译目标语言</translation>
@@ -1604,6 +1602,7 @@
 <translation id="2734760316755174687"><ph name="SITE_GROUP_NAME" /> 下的网站也会重置。</translation>
 <translation id="2735712963799620190">排定时间</translation>
 <translation id="2737363922397526254">收起...</translation>
+<translation id="2737916598897808047"><ph name="APP_NAME" />想与 <ph name="TARGET_NAME" /> 分享您屏幕上的内容。</translation>
 <translation id="2738030019664645674">不允许网站使用您设备上安装的字体</translation>
 <translation id="2738771556149464852">不晚于</translation>
 <translation id="2739191690716947896">调试</translation>
@@ -3741,6 +3740,7 @@
 <translation id="5127805178023152808">同步功能已关闭</translation>
 <translation id="5127881134400491887">管理网络连接</translation>
 <translation id="512903556749061217">已连接</translation>
+<translation id="5130080518784460891">Eten</translation>
 <translation id="5130675701626084557">无法下载配置文件。请稍后再试，或向运营商求助。</translation>
 <translation id="5131591206283983824">触控板点按拖动</translation>
 <translation id="5135085122826131075">只需说“Ok Google”即可访问您的 Google 助理。</translation>
@@ -4035,6 +4035,7 @@
 <translation id="5470735824776589490">必须先重启设备，然后才能通过 Powerwash 重置。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="5471768120198416576">您好！这是文字转语音的语音。</translation>
 <translation id="5472627187093107397">为此网站保存密码</translation>
+<translation id="5473075389972733037">IBM</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN 码必须包含至少 1 个字符}other{PIN 码必须包含至少 # 个字符}}</translation>
 <translation id="5481273127572794904">不允许自动下载多个文件</translation>
 <translation id="5481941284378890518">添加附近的打印机</translation>
@@ -4631,7 +4632,6 @@
 <translation id="6136114942382973861">关闭下载内容栏</translation>
 <translation id="6136287496450963112">您尚未设置 PIN 码来保护您的安全密钥。若要管理指纹，请先创建一个 PIN 码。</translation>
 <translation id="6138680304137685902">采用 SHA-384 算法的 X9.62 ECDSA 签名</translation>
-<translation id="6138774640412545950">扩展程序“<ph name="APP_NAME" />”想与 <ph name="TARGET_NAME" /> 分享您屏幕上的内容。</translation>
 <translation id="6141988275892716286">确认下载</translation>
 <translation id="6143186082490678276">获取帮助</translation>
 <translation id="6143366292569327983">选择要翻译的网页语言</translation>
@@ -5151,6 +5151,7 @@
 <translation id="6723839937902243910">电源</translation>
 <translation id="6725073593266469338">界面服务</translation>
 <translation id="6725206449694821596">互联网打印协议 (IPP)</translation>
+<translation id="6725970970008349185">每页显示的候选字词数</translation>
 <translation id="672609503628871915">了解一下新变化</translation>
 <translation id="67269783048918309">发送使用情况数据和诊断数据。目前，此设备会自动向 Google 发送诊断数据、设备数据和应用使用情况数据。这些数据不会被用来辨识您孩子的身份，而是会被用来帮助提高系统和应用的稳定性以及实现其他方面的改进。部分汇总数据也会对 Google 应用和合作伙伴（例如 Android 开发者）有所帮助。这项<ph name="BEGIN_LINK1" />设置<ph name="END_LINK1" />是由此设备的所有者强制指定的。如果您已为孩子开启“其他网络与应用活动记录”设置，这些数据可能会被保存到其 Google 帐号中。<ph name="BEGIN_LINK2" />了解详情<ph name="END_LINK2" /></translation>
 <translation id="6727969043791803658">已连接，剩余电量为 <ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -6507,6 +6508,7 @@
 <translation id="8189750580333936930">隐私沙盒</translation>
 <translation id="8190193592390505034">正在连接到<ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">管理您的应用、扩展程序和主题背景</translation>
+<translation id="8192944472786724289"><ph name="APP_NAME" />想分享您屏幕上的内容。</translation>
 <translation id="8195027750202970175">占用的存储空间</translation>
 <translation id="8198323535106903877">我们将为您安装这 <ph name="NUMBER_OF_APPS" /> 款应用</translation>
 <translation id="8198456017687137612">正在投射标签页</translation>
@@ -6650,6 +6652,7 @@
 <translation id="8363095875018065315">稳定</translation>
 <translation id="8363142353806532503">已禁止使用麦克风</translation>
 <translation id="8366396658833131068">您的网络连接已恢复。要启动自助服务终端应用，请选择其他网络或按下方的“继续”按钮。</translation>
+<translation id="8366694425498033255">选择键</translation>
 <translation id="8368027906805972958">未知或不支持的设备 (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368859634510605990">打开所有书签(&amp;O)</translation>
 <translation id="8370294614544004647">合上笔记本电脑后休眠</translation>

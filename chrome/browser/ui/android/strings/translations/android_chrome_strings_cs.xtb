@@ -41,6 +41,7 @@
 <translation id="1240288207750131269">Načítání jazyka <ph name="LANG" /></translation>
 <translation id="1242883863226959074">zařízení</translation>
 <translation id="124678866338384709">Zavřít aktuální kartu</translation>
+<translation id="1246905108078336582">Odstranit návrh ze schránky?</translation>
 <translation id="1258753120186372309">Sváteční logo Google: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Sdílení obsahu typu <ph name="CONTENT_TYPE" /> se nezdařilo</translation>
 <translation id="1283039547216852943">Klepnutím rozbalíte</translation>
@@ -361,6 +362,7 @@ Vyhledávání spustíte podržením libovolného slova. Vyhledávání můžete
 <translation id="3295530008794733555">Prohlížejte si internet rychleji. Využívejte méně dat.</translation>
 <translation id="3297344142967351106">Hlasová asistence</translation>
 <translation id="3303414029551471755">Chcete pokračovat ke stažení obsahu?</translation>
+<translation id="333367884906698540">Až skončíte, Bluetooth se opět vypne</translation>
 <translation id="3334729583274622784">Změnit příponu souboru?</translation>
 <translation id="3341058695485821946">Podívejte se, kolik dat jste ušetřili</translation>
 <translation id="3341262203274374114">Sledování nelze zrušit. Něco se pokazilo.</translation>
@@ -1035,6 +1037,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="7641339528570811325">Vymazat údaje o prohlížení…</translation>
 <translation id="764170292089748542">Při procházení v anonymním režimu Chrome neukládá historii. Své oblíbené weby můžete i nadále navštívit pomocí záložek.</translation>
 <translation id="7646772052135772216">Synchronizace hesel nefunguje</translation>
+<translation id="7655900163790317559">Zapínání Bluetooth…</translation>
 <translation id="7658239707568436148">Zrušit</translation>
 <translation id="7665369617277396874">Přidat účet</translation>
 <translation id="766587987807204883">Zde se zobrazují články, které si můžete číst i offline</translation>

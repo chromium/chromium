@@ -372,6 +372,7 @@
 <translation id="2276057643614339130">列印基底</translation>
 <translation id="2277103315734023688">快轉</translation>
 <translation id="2283340219607151381">儲存及填入地址</translation>
+<translation id="2283447177162560884">已刪除「<ph name="PAGE_TITLE" />」</translation>
 <translation id="2288422996159078444">你輸入的內容、瀏覽的網頁或任何其他網路活動都會遭到監視，而且網站內容可能會在你不知情的情況下遭到變更。</translation>
 <translation id="2289385804009217824">裁切</translation>
 <translation id="2292556288342944218">您的網際網路存取權遭到封鎖</translation>
@@ -498,6 +499,7 @@
 <translation id="277133753123645258">運送方式</translation>
 <translation id="277499241957683684">沒有裝置記錄</translation>
 <translation id="2775884851269838147">首刷頁面</translation>
+<translation id="2778854133681684171">下次透過這個付款方式進行交易時，可以使用你的裝置快速驗證身分。</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2784949926578158345">連線已重設。</translation>
 <translation id="2792012897584536778">這個裝置的系統管理員已設定安全憑證，這些憑證將允許系統管理員檢視你所造訪的網站內容。</translation>
@@ -655,6 +657,7 @@
 <translation id="3377736046129930310">使用螢幕鎖定功能加快卡片驗證速度</translation>
 <translation id="3380365263193509176">未知的錯誤</translation>
 <translation id="3380864720620200369">用戶端 ID：</translation>
+<translation id="3381668585148405088">驗證交易</translation>
 <translation id="3387261909427947069">付款方式</translation>
 <translation id="3391030046425686457">快遞地址</translation>
 <translation id="3395827396354264108">取件方式</translation>
@@ -830,6 +833,7 @@
 <translation id="3996311196211510766">「<ph name="ORIGIN" />」網站指定所有收到的要求都必須套用來源政策，但目前無法套用此政策。</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF 文件，共 {COUNT} 頁}other{PDF 文件，共 {COUNT} 頁}}</translation>
 <translation id="4023431997072828269">這個表單是透過不安全的連線提交，其他人將可看到你的資訊。</translation>
+<translation id="4027177651527820006">啟用這些功能可能會造成瀏覽器資料遺失，或導致你的安全性或隱私權面臨威脅，而且啟用的功能適用於這個瀏覽器的所有使用者。如果你是企業管理員，請勿在正式作業環境中使用這些旗標。</translation>
 <translation id="4030383055268325496">復原新增(&amp;U)</translation>
 <translation id="4056223980640387499">深褐色調</translation>
 <translation id="4058922952496707368">鍵「<ph name="SUBKEY" />」：<ph name="ERROR" /></translation>

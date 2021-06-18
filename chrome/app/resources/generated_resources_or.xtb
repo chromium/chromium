@@ -232,7 +232,6 @@
 <translation id="1244265436519979884">ବର୍ତ୍ତମାନ Linuxର ରିଷ୍ଟୋର୍ ଚାଲିଛି</translation>
 <translation id="1244303850296295656">ଏକ୍ସଟେନ୍‌ସନ୍ ତ୍ରୁଟି</translation>
 <translation id="1246863218384630739"><ph name="VM_NAME" />କୁ ଇନଷ୍ଟଲ୍ କରାଯାଇପାରିଲା ନାହିଁ: ଛବି URL ଏକ ତ୍ରୁଟି କୋଡ୍ <ph name="HTTP_ERROR" /> ପ୍ରଦାନ କରିଛି। ଦୟାକରି ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ସହ ଯୋଗାଯୋଗ କରନ୍ତୁ।</translation>
-<translation id="1246905108078336582">କ୍ଲିପ୍‍‍ବୋର୍ଡରୁ ପ୍ରସ୍ତାବ କାଢ଼ି ଦେବେ?</translation>
 <translation id="1251366534849411931">ପ୍ରତ୍ୟାଶିତ ଖୋଲାଥିବା କୁଟିଳ ବନ୍ଧନୀ: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">ଏହା ସାଇଟ୍ ଏବଂ ଇନଷ୍ଟଲ୍ କରାଯାଇଥିବା ଆପଗୁଡ଼ିକ ଦ୍ୱାରା ଷ୍ଟୋର୍ କରାଯାଇଥିବା <ph name="TOTAL_USAGE" /> ଡାଟାକୁ ଖାଲି କରିଦେବ</translation>
 <translation id="125220115284141797">ଡିଫଲ୍ଟ</translation>
@@ -746,7 +745,6 @@
 <translation id="1795214765651529549">କ୍ଲାସିକ୍ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="1796588414813960292">ସାଉଣ୍ଡ ଆବଶ୍ୟକ କରୁଥିବା ଫିଚରଗୁଡ଼ିକ କାମ କରିବ ନାହିଁ</translation>
 <translation id="1799071797295057738">"<ph name="EXTENSION_NAME" />" ଏକ୍ସଟେନ୍‌ସନ୍‌ ସ୍ୱଚାଳିତ ଭାବେ ଅକ୍ଷମ ହୋ‍ଇଗଲା।</translation>
-<translation id="1800973090344019061">"<ph name="APP_NAME" />" ଏକ୍ସଟେନସନ୍ ଆପଣଙ୍କ ସ୍କ୍ରିନର ବିଷୟବସ୍ତୁକୁ ସେୟାର୍ କରିବାକୁ ଚାହୁଁଛି।</translation>
 <translation id="1802624026913571222">କଭର୍ ବନ୍ଦ ହେବା ପରେ ସ୍ଲିପ୍ ମୋଡ୍ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="1802687198411089702">ପୃଷ୍ଠାଟି କାମ କରୁନାହିଁ। ଆପଣ ଏଥିପାଇଁ ଅପେକ୍ଷା କରିପାରିବେ କିମ୍ବା ପ୍ରସ୍ଥାନ କରିପାରିବେ।</translation>
 <translation id="1803531841600994172">ଏହି ଭାଷାକୁ ଅନୁବାଦ କରାଯିବ</translation>
@@ -1606,6 +1604,7 @@
 <translation id="2734760316755174687"><ph name="SITE_GROUP_NAME" /> ଅଧୀନରେ ଥିବା ସାଇଟ୍‌ଗୁଡ଼ିକ ମଧ୍ୟ ରିସେଟ୍ ହୋଇଯିବ।</translation>
 <translation id="2735712963799620190">ସମୟସୂଚୀ ନିର୍ଦ୍ଧାରଣ କରନ୍ତୁ</translation>
 <translation id="2737363922397526254">ସଙ୍କୁଚିତ କରନ୍ତୁ...</translation>
+<translation id="2737916598897808047"><ph name="APP_NAME" /> ଆପଣଙ୍କ ସ୍କ୍ରିନର ବିଷୟବସ୍ତୁକୁ <ph name="TARGET_NAME" /> ସହ ସେୟାର୍ କରିବାକୁ ଚାହେଁ।</translation>
 <translation id="2738030019664645674">ଆପଣଙ୍କ ଡିଭାଇସରେ ଇନଷ୍ଟଲ୍ କରାଯାଇଥିବା ଫଣ୍ଟଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିବା ପାଇଁ ସାଇଟଗୁଡ଼ିକୁ ଅନୁମତି ଦିଅନ୍ତୁ ନାହିଁ</translation>
 <translation id="2738771556149464852">ପରେ ନୁହେଁ</translation>
 <translation id="2739191690716947896">ଡିବଗ୍ କରନ୍ତୁ</translation>
@@ -4632,7 +4631,6 @@
 <translation id="6136114942382973861">ଡାଉନ୍‌ଲୋଡ୍ ବାର୍‍କୁ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="6136287496450963112">ଆପଣଙ୍କର ସୁରକ୍ଷା କୀ ଏକ PIN ଦ୍ୱାରା ସୁରକ୍ଷିତ ନୁହେଁ। ଟିପଚିହ୍ନଗୁଡ଼ିକୁ ପରିଚାଳନା କରିବା ପାଇଁ ପ୍ରଥମେ ଏକ PIN ତିଆରି କରନ୍ତୁ।</translation>
 <translation id="6138680304137685902">SHA-384 ସହିତ X9.62 ECDSAର ସ୍ଵାକ୍ଷର</translation>
-<translation id="6138774640412545950">"<ph name="APP_NAME" />" ଏକ୍ସଟେନସନ୍ ଆପଣଙ୍କ ସ୍କ୍ରିନର ବିଷୟବସ୍ତୁକୁ <ph name="TARGET_NAME" /> ସହ ସେୟାର୍ କରିବାକୁ ଚାହୁଁଛି।</translation>
 <translation id="6141988275892716286">ଡାଉନ୍‌ଲୋଡ୍ ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="6143186082490678276">ସାହାଯ୍ୟ ପାଆନ୍ତୁ</translation>
 <translation id="6143366292569327983">କେଉଁ ଭାଷାର ପୃଷ୍ଠାକୁ ଅନୁବାଦ କରିବେ ତାହା ବାଛନ୍ତୁ</translation>
@@ -6507,6 +6505,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8189750580333936930">ପ୍ରାଇଭେସି ସେଣ୍ଡବକ୍ସ</translation>
 <translation id="8190193592390505034"><ph name="PROVIDER_NAME" /> ସହ ସଂଯୋଗ କରାଯାଉଛି</translation>
 <translation id="8191230140820435481">ନିଜର ଆପ୍ସ, ଏକ୍ସଟେନ୍‌ସନ୍‌ଗୁଡ଼ିକ ଓ ଥିମ୍‍ଗୁଡ଼ିକ ପରିଚାଳନା କରନ୍ତୁ</translation>
+<translation id="8192944472786724289"><ph name="APP_NAME" /> ଆପଣଙ୍କ ସ୍କ୍ରିନର ବିଷୟବସ୍ତୁକୁ ସେୟାର୍ କରିବାକୁ ଚାହେଁ।</translation>
 <translation id="8195027750202970175">ଡିସ୍କରେ ଆକାର</translation>
 <translation id="8198323535106903877">ଆମେ ଆପଣଙ୍କ ପାଇଁ ସେହି <ph name="NUMBER_OF_APPS" />ଟି ଆପ୍‌ ଇନଷ୍ଟଲ୍‌ କରିବୁ</translation>
 <translation id="8198456017687137612">କାଷ୍ଟିଂ ଟାବ୍</translation>

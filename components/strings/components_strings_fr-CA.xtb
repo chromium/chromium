@@ -372,6 +372,7 @@
 <translation id="2276057643614339130">Base d'impression</translation>
 <translation id="2277103315734023688">Rechercher vers l'avant</translation>
 <translation id="2283340219607151381">Enregistrer et remplir les adresses</translation>
+<translation id="2283447177162560884">« <ph name="PAGE_TITLE" /> » supprimé</translation>
 <translation id="2288422996159078444">Tout ce que vous écrivez, toutes les pages que vous consultez ou toute autre activité sur le Web sont sous surveillance, et le contenu des sites peut être changé sans que vous le sachiez.</translation>
 <translation id="2289385804009217824">Découper</translation>
 <translation id="2292556288342944218">Votre accès à Internet est bloqué</translation>
@@ -498,6 +499,7 @@
 <translation id="277133753123645258">Mode de livraison</translation>
 <translation id="277499241957683684">Enregistrement d'appareil manquant.</translation>
 <translation id="2775884851269838147">Première page imprimée</translation>
+<translation id="2778854133681684171">Vous pouvez utiliser votre appareil pour rapidement vérifier votre identité lors de votre prochain achat effectué avec ce mode de paiement.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2784949926578158345">La connexion a été réinitialisée.</translation>
 <translation id="2792012897584536778">Les administrateurs de cet appareil ont configuré des certificats de sécurité qui leur permettent de voir le contenu des sites Web que vous visitez.</translation>
@@ -655,6 +657,7 @@
 <translation id="3377736046129930310">Utiliser le verrouillage d'écran pour vérifier les cartes plus rapidement</translation>
 <translation id="3380365263193509176">Erreur inconnue</translation>
 <translation id="3380864720620200369">Numéro de client :</translation>
+<translation id="3381668585148405088">Vérifier votre achat</translation>
 <translation id="3387261909427947069">Modes de paiement</translation>
 <translation id="3391030046425686457">Adresse de livraison</translation>
 <translation id="3395827396354264108">Mode de ramassage</translation>
@@ -830,6 +833,10 @@
 <translation id="3996311196211510766">Le site <ph name="ORIGIN" /> a exigé qu'une politique d'origine soit appliquée à toutes les demandes qu'il reçoit, mais cette politique ne peut pas être appliquée actuellement.</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Document PDF contenant {COUNT} page}one{Document PDF contenant {COUNT} page}other{Document PDF contenant {COUNT} pages}}</translation>
 <translation id="4023431997072828269">Comme ce formulaire est envoyé à l'aide d'une connexion qui n'est pas sécurisée, vos données pourraient être visibles par d'autres utilisateurs.</translation>
+<translation id="4027177651527820006">En activant ces fonctionnalités, vous risquez de perdre les données du navigateur ou
+    de compromettre votre sécurité ou votre confidentialité. Les fonctionnalités activées s'appliquent à tous
+    les utilisateurs de ce navigateur. Si vous êtes l'administrateur d'une entreprise, vous ne devriez
+    pas utiliser ces indicateurs dans la production.</translation>
 <translation id="4030383055268325496">&amp;Annuler l'ajout</translation>
 <translation id="4056223980640387499">Sépia</translation>
 <translation id="4058922952496707368">Clé « <ph name="SUBKEY" /> » : <ph name="ERROR" /></translation>

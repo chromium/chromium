@@ -376,6 +376,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2276057643614339130">Nyomtatási alap</translation>
 <translation id="2277103315734023688">Ugrás előre</translation>
 <translation id="2283340219607151381">Címek mentése és kitöltése</translation>
+<translation id="2283447177162560884">„<ph name="PAGE_TITLE" />” törölve</translation>
 <translation id="2288422996159078444">Megfigyelik, hogy mit gépel be, milyen oldalakat keres fel, illetve milyen egyéb tevékenységeket végez az interneten; emellett a webhelyek tartalma is módosulhat az Ön tudta nélkül.</translation>
 <translation id="2289385804009217824">Vágás</translation>
 <translation id="2292556288342944218">Az internethez való hozzáférést a rendszer letiltotta</translation>
@@ -502,6 +503,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="277133753123645258">Szállítási mód</translation>
 <translation id="277499241957683684">Hiányzó eszközrekord</translation>
 <translation id="2775884851269838147">Első nyomtatási oldal</translation>
+<translation id="2778854133681684171">Az eszköz használatával gyorsan igazolhatja személyazonosságát, amikor legközelebb ezzel a fizetési móddal vásárol.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2784949926578158345">A kapcsolat alaphelyzetbe állt.</translation>
 <translation id="2792012897584536778">Az eszköz rendszergazdái olyan biztonsági tanúsítványokat állítottak be, amelyek lehetővé tehetik számukra az Ön által felkeresett webhelyek tartalmának megtekintését.</translation>
@@ -657,6 +659,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3377736046129930310">Képernyőzár használata a kártyák gyorsabb ellenőrzése érdekében</translation>
 <translation id="3380365263193509176">Ismeretlen hiba</translation>
 <translation id="3380864720620200369">Ügyfél-azonosító:</translation>
+<translation id="3381668585148405088">Vásárlás igazolása</translation>
 <translation id="3387261909427947069">Fizetési módok</translation>
 <translation id="3391030046425686457">Szállítási cím</translation>
 <translation id="3395827396354264108">Átvételi mód</translation>
@@ -833,6 +836,10 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
     az összes kérésére, de ez a házirend jelenleg nem alkalmazható.</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{{COUNT} oldalból álló PDF-dokumentum}other{{COUNT} oldalból álló PDF-dokumentum}}</translation>
 <translation id="4023431997072828269">Mivel az űrlap beküldéséhez nem biztonságos kapcsolatot használ, az Ön adatait mások is láthatják majd.</translation>
+<translation id="4027177651527820006">A funkciók engedélyezésével elveszhetnek a böngészési adatok, illetve
+    veszélyeztetheti biztonságát és személyes adatait. Az engedélyezett funkciók
+    a böngésző minden felhasználójára vonatkoznak. Ha Ön vállalati rendszergazda, akkor
+    ne használja ezeket a jelöléseket éles környezetben.</translation>
 <translation id="4030383055268325496">&amp;Hozzáadás visszavonása</translation>
 <translation id="4056223980640387499">Szépia</translation>
 <translation id="4058922952496707368">"<ph name="SUBKEY" />" kulcs: <ph name="ERROR" /></translation>

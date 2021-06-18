@@ -41,6 +41,7 @@
 <translation id="1240288207750131269">Բեռնվում է <ph name="LANG" /> լեզվի փաթեթը</translation>
 <translation id="1242883863226959074">սարք</translation>
 <translation id="124678866338384709">Փակել ընթացիկ ներդիրը</translation>
+<translation id="1246905108078336582">Հեռացնե՞լ առաջարկը սեղմատախտակից:</translation>
 <translation id="1258753120186372309">Google doodle՝ <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Չհաջողվեց ուղարկել բովանդակությունը (<ph name="CONTENT_TYPE" />)</translation>
 <translation id="1283039547216852943">Հպեք՝ ընդարձակելու համար</translation>
@@ -361,6 +362,7 @@
 <translation id="3295530008794733555">Որոնեք ավելի արագ: Օգտագործեք ավելի քիչ թրաֆիկ:</translation>
 <translation id="3297344142967351106">Ձայնային հուշումներ</translation>
 <translation id="3303414029551471755">Ներբեռնե՞լ բովանդակությունը:</translation>
+<translation id="333367884906698540">Երբ ավարտեք, Bluetooth-ը նորից կանջատվի</translation>
 <translation id="3334729583274622784">Փոխե՞լ ֆայլի ընդլայնումը</translation>
 <translation id="3341058695485821946">Դիտեք պահված տվյալների ծավալը</translation>
 <translation id="3341262203274374114">Սխալի պատճառով չհաջողվեց չեղարկել բաժանորդագրությունը։</translation>
@@ -1035,6 +1037,7 @@ Privacy Sandbox տեխնոլոգիան դեռևս մշակման փուլում 
 <translation id="7641339528570811325">Մաքրել այցելությունների պատմությունը…</translation>
 <translation id="764170292089748542">Ձեր այցելությունների պատմությունը չի պահվում Chrome-ում, երբ միացնում եք ինկոգնիտո ռեժիմը։ Ձեր էջանիշները հասանելի կլինեն ձեզ։</translation>
 <translation id="7646772052135772216">Գաղտնաբառերի համաժամացումը չի աշխատում</translation>
+<translation id="7655900163790317559">Bluetooth-ը միանում է…</translation>
 <translation id="7658239707568436148">Չեղարկել</translation>
 <translation id="7665369617277396874">Ավելացնել հաշիվ</translation>
 <translation id="766587987807204883">Հոդվածները ցուցադրվում են այստեղ։ Դրանք կարող եք կարդալ նույնիսկ անցանց ռեժիմում։</translation>

@@ -727,6 +727,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="6816797338148849397">K dispozícii sú informácie súvisiace s vaším výberom. Prístup získate pomocou šípky nahor.</translation>
 <translation id="6818242057446442178">Dozadu o slovo</translation>
 <translation id="6820676911989879663">Urobte si prestávku.</translation>
+<translation id="6837064795450991317">Skryť panel na ploche</translation>
 <translation id="6850010208275816200">Aktuálna aplikácia je spustená v režime celej obrazovky. Ak vás požiada o heslo, najprv ukončite režim celej obrazovky.</translation>
 <translation id="6852052252232534364">Aktivovať kliknutím</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
@@ -762,6 +763,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="7076293881109082629">Prihlásenie</translation>
 <translation id="7088960765736518739">Ovládanie prepínačmi</translation>
 <translation id="7098389117866926363">Zariadenie USB-C (ľavý port vzadu)</translation>
+<translation id="7106330611027933926">Zobraziť panel na ploche</translation>
 <translation id="7118268675952955085">snímka obrazovky</translation>
 <translation id="7131634465328662194">Odhlásenie prebehne automaticky.</translation>
 <translation id="7143207342074048698">Pripája sa</translation>
@@ -805,6 +807,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="7466449121337984263">Dotknite sa senzora</translation>
 <translation id="7473891865547856676">Nie, ďakujem</translation>
 <translation id="7477793887173910789">Ovládajte svoju hudbu, videá a ďalší obsah</translation>
+<translation id="7482097454533720217">Získavajte definície, preklady alebo prevody jednotiek kliknutím pravým tlačidlom alebo pridržaním textu.</translation>
 <translation id="7483025031359818980">Oblasť výberu je nastavená na celú obrazovku</translation>
 <translation id="7486227320194954040">Zbaliť nástroje značiek</translation>
 <translation id="7497767806359279797">Vybrať jazyk a klávesnicu</translation>
@@ -981,6 +984,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="8843682306134542540">Prepnúť uzamknutie otočenia. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Hľadať+Esc</translation>
 <translation id="8853703225951107899">Váš kód PIN alebo heslo sa stále nepodarilo overiť. Poznámka: Ak ste nedávno zmenili svoje heslo, použite predchádzajúce. Nové heslo bude uplatnené až po odhlásení.</translation>
+<translation id="8863888432376731307">Získajte <ph name="INTENT" /> pre dopyt <ph name="QUERY" /> a ešte viac</translation>
 <translation id="8870509716567206129">Aplikácia nepodporuje rozdelenú obrazovku.</translation>
 <translation id="8871580645200179206">Prepnúť tmavý motív. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Nepripojené</translation>

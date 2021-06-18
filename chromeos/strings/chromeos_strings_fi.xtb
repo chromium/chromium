@@ -164,6 +164,7 @@
 <translation id="469379815867856270">Signaalin voimakkuus</translation>
 <translation id="4707579418881001319">L2TP/IPsec + käyttäjävarmenne</translation>
 <translation id="4731797938093519117">Avaus vanhemmille</translation>
+<translation id="475869545581454722">Chrome-käyttöjärjestelmän salasana vaihdettu</translation>
 <translation id="4773299976671772492">Keskeytetty</translation>
 <translation id="4794140124556169553">CPU-testin suorittaminen voi vaikuttaa järjestelmän suorituskykyyn</translation>
 <translation id="4808449224298348341">Peruutettu tulostustyö: <ph name="DOCUMENT_TITLE" /></translation>
@@ -320,6 +321,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="7701040980221191251">Ei mitään</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Syklien määrä</translation>
+<translation id="7762130827864645708">Salasanasi vaihtaminen onnistui. Käytä jatkossa uutta salasanaa.</translation>
 <translation id="7769672763586021400">Mallitunnus</translation>
 <translation id="7805768142964895445">Tila</translation>
 <translation id="7819857487979277519">PSK (WPA tai RSN)</translation>

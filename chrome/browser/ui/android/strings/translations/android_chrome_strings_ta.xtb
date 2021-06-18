@@ -39,7 +39,9 @@
 <translation id="1231733316453485619">ஒத்திசைவை இயக்கவா?</translation>
 <translation id="123724288017357924">தற்காலிக சேமிப்பைப் புறக்கணித்து, நடப்புப் பக்கத்தை மீண்டும் ஏற்றும்</translation>
 <translation id="1240288207750131269"><ph name="LANG" /> மொழியைப் பதிவிறக்குகிறது</translation>
+<translation id="1242883863226959074">சாதனத்தில்</translation>
 <translation id="124678866338384709">தற்போதைய தாவலை மூடும்</translation>
+<translation id="1246905108078336582">கிளிப்போர்டிலிருந்து பரிந்துரையை அகற்றவா?</translation>
 <translation id="1258753120186372309">Google doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" />ஐப் பகிர முடியவில்லை</translation>
 <translation id="1283039547216852943">விரிவாக்க, தட்டவும்</translation>
@@ -918,6 +920,7 @@
 <translation id="6864459304226931083">படத்தைப் பதிவிறக்கு</translation>
 <translation id="6865313869410766144">தன்னிரப்பி படிவத் தரவு</translation>
 <translation id="6867400383614725881">புதிய மறைநிலைத் தாவல்</translation>
+<translation id="6869056123412990582">கம்ப்யூட்டரில்</translation>
 <translation id="6882836635272038266">நிலையான பாதுகாப்பு பயன்முறையானது ஆபத்து என அறியப்படும் இணையதளங்கள், பதிவிறக்கங்கள், நீட்டிப்புகள் ஆகியவற்றுக்கு எதிரானது.</translation>
 <translation id="688738109438487280">ஏற்கனவே உள்ள தரவை <ph name="TO_ACCOUNT" /> இல் சேர்.</translation>
 <translation id="6891726759199484455">உங்கள் கடவுச்சொல்லை நகலெடுக்க, திறக்கவும்</translation>
@@ -1154,6 +1157,7 @@
 <translation id="8393700583063109961">செய்தி அனுப்பு</translation>
 <translation id="8410695015584479363">விலைகளைக் கண்காணி</translation>
 <translation id="8413126021676339697">முழு வரலாற்றையும் காண்பி</translation>
+<translation id="8424781820952413435">பக்கம் அனுப்பப்பட்டது. அதைப் பார்க்க, <ph name="DEVICE_TYPE" /> Chromeமைத் திறக்கவும்</translation>
 <translation id="8427875596167638501">மாதிரிக்காட்சித் தாவல் பாதியளவு திறந்துள்ளது</translation>
 <translation id="8428213095426709021">அமைப்புகள்</translation>
 <translation id="8438566539970814960">தேடல்களையும் உலாவலையும் மேலும் சிறப்பாக்குக</translation>
@@ -1195,6 +1199,7 @@
 <translation id="860282621117673749">விலைச் சரிவு குறித்த விழிப்பூட்டல்கள்</translation>
 <translation id="8616006591992756292">உங்கள் Google கணக்கு, <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> என்ற இணைப்பில் உலாவல் வரலாறு தொடர்பான பிற தகவல்களைக் கொண்டிருக்கக்கூடும்.</translation>
 <translation id="8617240290563765734">பதிவிறக்கிய உள்ளடக்கத்தில் குறிப்பிட்ட பரிந்துரைக்கப்பட்ட URLஐத் திறக்கவா?</translation>
+<translation id="8621068256433641644">ஃபோனில்</translation>
 <translation id="8636825310635137004">உங்கள் பிற சாதனங்களிலிருந்து தாவல்களைப் பெற, ஒத்திசைவை இயக்கவும்.</translation>
 <translation id="8641930654639604085">பெரியவர்களுக்கான தளங்களைத் தடு</translation>
 <translation id="8655129584991699539">Chrome அமைப்புகளில் தரவை அழிக்கலாம்</translation>

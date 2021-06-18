@@ -163,7 +163,6 @@
 
       Geçerli <ph name="URL_LABEL" /> kalıpları hakkında ayrıntılı bilgi için https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns adresine bakabilirsiniz.  <ph name="WILDCARD_VALUE" />, bu politikada kabul edilen bir değer değildir.</translation>
 <translation id="120937472976628837">Pervane bilgilerini raporla</translation>
-<translation id="1214202898523114033">bağlantı noktası 10080 (geçerlilik süresi sonu: 01/04/2022)</translation>
 <translation id="1216919699175573511">İmzalı HTTP Değişimi (SXG) desteğini etkinleştir</translation>
 <translation id="1219695476179627719">Bu cihazın sonraki bir sürümü çalıştırıyor olması halinde, <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" /> tarafından ayarlanan sürüme geri döndürülüp döndürülmeyeceğini belirler.
 
@@ -4134,15 +4133,6 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 <translation id="6506486086262398387">Politika Etkin değerine ayarlanırsa <ph name="PRODUCT_OS_NAME" /> için Ağ Üzerinde Dosya Paylaşımı özelliği, gerektiğinde SMB paylaşımlarında NTLM ile kimlik doğrulama kullanır. Politika, Devre Dışı değerine ayarlanırsa SMB paylaşımlarında NTLM ile kimlik doğrulama devre dışı bırakılır.
 
       Politika ayarlanmadan bırakılırsa paylaşım keşfi, varsayılan olarak yönetilen kullanıcılar için devre dışı bırakılır, diğer kullanıcılar için etkinleştirilir.</translation>
-<translation id="651012148496266279">Politika ayarlanırsa <ph name="PRODUCT_NAME" /> ürününde yerleşik olarak bulunan kısıtlanmış bağlantı noktaları listesinin atlanmasına izin verilir. Değer, giden bağlantılara izin verilen sıfır veya daha fazla bağlantı noktasının virgülle ayrılmış listesidir.
-
-      Bağlantı noktaları, çeşitli ağ güvenlik açıklarından yararlanmak amacıyla <ph name="PRODUCT_NAME" /> ürününün kullanılmasını önlemek için kısıtlanır. Bu politikanın ayarlanması ağınızı saldırılara açık hale getirebilir. Bu politika, engellenen bir bağlantı noktasında çalışan bir hizmeti standart bir bağlantı noktasına (yani bağlantı noktası 80 veya 443) taşırken "ERR_UNSAFE_PORT" kodlu hatalar için geçici bir çözüm olarak tasarlanmıştır.
-
-      Kötü amaçlı web siteleri bu politikayı ve hangi bağlantı noktaları için ayarlandığını kolayca tespit ederek bu bilgileri saldırılarını hedeflemek için kullanabilir.
-
-      Bu değer boş veya ayarlanmadan bırakılırsa tüm kısıtlanmış bağlantı noktaları engellenir. Geçerli ve geçersiz değerler bir arada olursa geçerli değerler uygulanır.
-
-      Bu politika "--explicitly-allowed-ports" komut satırı seçeneğini geçersiz kılar.</translation>
 <translation id="6515357889978918016"><ph name="PLUGIN_VM_NAME" /> resmi</translation>
 <translation id="6518102411616460786">Hedef kanalın kanal sürümü değişikliğini yakalamasını bekle</translation>
 <translation id="6520802717075138474">İlk çalıştırmada arama motorlarını varsayılan tarayıcıdan içe aktar</translation>
@@ -6291,7 +6281,6 @@ Bu politika "true" (doğru) olarak ayarlanırsa kullanıcının tarayıcıyı ku
       Bu politika geçici bir çözüm olup gelecekteki <ph name="PRODUCT_NAME" /> sürümlerinden kaldırılacaktır. Politikanın kaldırılmasından sonra <ph name="PRODUCT_NAME" />, her zaman ilave DNS türlerini sorgulayabilecektir.</translation>
 <translation id="9167719789236691545"><ph name="PRODUCT_OS_NAME" />, Dosyalar uygulamasında Drive'ı devre dışı bırak</translation>
 <translation id="9187743794267626640">Harici depolama birimi eklemeyi devre dışı bırak</translation>
-<translation id="9190257149451871588">bağlantı noktası 6566 (geçerlilik süresi sonu: 15.10.2021)</translation>
 <translation id="9190456586252617675">Bu politika, Asistan ilk katılım deneyimi modunu kontrol eder.
 
       Politika ayarlanmadan bırakılırsa veya <ph name="ASSISTANT_ONBOARDING_MODE_DEFAULT" /> değerine ayaranırsa Asistan ilk katılım deneyiminin varsayılan modu kullanılır.
@@ -6309,7 +6298,6 @@ Bu politika "true" (doğru) olarak ayarlanırsa kullanıcının tarayıcıyı ku
 <translation id="927444535723396977">Politikayı True (Doğru) değerine ayarlanmak web sitelerinin JavaScript çalıştırmasına izin verir. Politikayı False (Yanlış) değerine ayarlamak web sitelerinin JavaScript çalıştırmasını engeller.
 
       Politikayı ayarlamadan bırakırsanız JavaScript'e izin verilir. Kullanıcılar bu ayarı değiştirebilir.</translation>
-<translation id="928189505080808353">bağlantı noktası 554 (geçerlilik süresi sonu: 15.10.2021)</translation>
 <translation id="929549405492388749">Politika true (doğru) değerine ayarlanırsa Chrome'da AppCacheIf varsayılan olarak kullanılabilir olmasa bile, bu politika AppCache'in etkinleştirilmesini zorunlu tutar.
 
       Politika ayarlanmazsa veya false (yanlış) değerine ayarlanırsa AppCache, Chrome'un varsayılan ayarlarını izler.</translation>

@@ -728,6 +728,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="6816797338148849397">Inligting is beskikbaar wat met jou keuse verband hou. Gebruik oppylsleutel om dit te sien.</translation>
 <translation id="6818242057446442178">Terug per woord</translation>
 <translation id="6820676911989879663">Geniet 'n blaaskans!</translation>
+<translation id="6837064795450991317">Versteek werkskermbalk</translation>
 <translation id="6850010208275816200">Jou huidige program is volskerm. As die program jou wagwoord vra, moet jy volskerm eers verlaat.</translation>
 <translation id="6852052252232534364">Klik om te aktiveer</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sek.</translation>
@@ -763,6 +764,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="7076293881109082629">Meld tans aan</translation>
 <translation id="7088960765736518739">Skakelaartoegang</translation>
 <translation id="7098389117866926363">USB C-toestel (linkerpoort aan agterkant)</translation>
+<translation id="7106330611027933926">Wys werkskermbalk</translation>
 <translation id="7118268675952955085">skermkiekie</translation>
 <translation id="7131634465328662194">Jy sal outomaties afgemeld word.</translation>
 <translation id="7143207342074048698">Koppel tans</translation>
@@ -806,6 +808,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="7466449121337984263">Raak asseblief die sensor</translation>
 <translation id="7473891865547856676">Nee, dankie</translation>
 <translation id="7477793887173910789">Beheer jou musiek, video's en meer</translation>
+<translation id="7482097454533720217">Kry definisies, vertalings of eenheidomskakelings wanneer jy regsklik of teks raak en hou.</translation>
 <translation id="7483025031359818980">Seleksiearea is gestel op volskerm</translation>
 <translation id="7486227320194954040">Vou merkernutsgoed in</translation>
 <translation id="7497767806359279797">Kies taal en sleutelbord</translation>
@@ -982,6 +985,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="8843682306134542540">Wissel rotasieslot. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">Jou PIN of wagwoord kon steeds nie geverifieer word nie. Let wel: As jy jou wagwoord onlangs verander het, moet jy jou ou wagwoord gebruik. Jou nuwe wagwoord sal van toepassing wees sodra jy afmeld.</translation>
+<translation id="8863888432376731307">Kry die <ph name="INTENT" /> vir "<ph name="QUERY" />" en meer</translation>
 <translation id="8870509716567206129">Program steun nie verdeelde skerm nie.</translation>
 <translation id="8871580645200179206">Wissel Donkertema. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Nie gekoppel nie</translation>

@@ -376,6 +376,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2276057643614339130">Drukāšanas virsma</translation>
 <translation id="2277103315734023688">Pāriet uz priekšu</translation>
 <translation id="2283340219607151381">Saglabāt un aizpildīt adreses</translation>
+<translation id="2283447177162560884">Lapa “<ph name="PAGE_TITLE" />” ir izdzēsta no vēstures</translation>
 <translation id="2288422996159078444">Tiek skatīts viss, ko jūs rakstāt, visas lapas, kuras skatāt, vai jebkura cita darbība tīmeklī. Vietņu saturs var tikt mainīts, jūs neinformējot.</translation>
 <translation id="2289385804009217824">Apgriešana</translation>
 <translation id="2292556288342944218">Piekļuve internetam ir bloķēta</translation>
@@ -502,6 +503,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="277133753123645258">Nosūtīšanas veids</translation>
 <translation id="277499241957683684">Trūkst ierīces ieraksta.</translation>
 <translation id="2775884851269838147">Pirmā drukas lapa</translation>
+<translation id="2778854133681684171">Varat izmantot savu ierīci, lai ātri apstiprinātu savu identitāti nākamreiz, kad pirkuma veikšanai izmantosiet šo maksājuma veidu.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2784949926578158345">Savienojums tika atiestatīts.</translation>
 <translation id="2792012897584536778">Šīs ierīces administratori ir iestatījuši drošības sertifikātus, kas var ļaut viņiem skatīt jūsu apmeklēto vietņu saturu.</translation>
@@ -659,6 +661,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3377736046129930310">Izmantot ekrāna bloķēšanu, lai kartes apstiprinātu ātrāk</translation>
 <translation id="3380365263193509176">Nezināma kļūda</translation>
 <translation id="3380864720620200369">Klienta ID:</translation>
+<translation id="3381668585148405088">Pirkuma apstiprināšana</translation>
 <translation id="3387261909427947069">Maksājumu veidi</translation>
 <translation id="3391030046425686457">Piegādes adrese</translation>
 <translation id="3395827396354264108">Saņemšanas veids</translation>
@@ -834,6 +837,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
     tās pieprasījumu, taču šobrīd šo politiku nevar piemērot.</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF dokumentā ir {COUNT} lapa}zero{PDF dokumentā ir {COUNT} lapas}one{PDF dokumentā ir {COUNT} lapa}other{PDF dokumentā ir {COUNT} lapas}}</translation>
 <translation id="4023431997072828269">Tā kā šī veidlapa tiek iesniegta, izmantojot nedrošu savienojumu, jūsu informācija būs redzama citām personām.</translation>
+<translation id="4027177651527820006">Ja iespējosiet šīs funkcijas, var tikt zaudēti pārlūka dati vai apdraudēta jūsu drošība vai konfidencialitāte. Iespējotās funkcijas ir aktīvas visiem šī pārlūka lietotājiem. Ja esat uzņēmuma administrators, neizmantojiet šos karodziņus produkcijas versijā.</translation>
 <translation id="4030383055268325496">&amp;Atsaukt pievienošanu</translation>
 <translation id="4056223980640387499">Sēpija</translation>
 <translation id="4058922952496707368">Atslēga <ph name="SUBKEY" />: <ph name="ERROR" /></translation>

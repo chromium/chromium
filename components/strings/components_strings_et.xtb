@@ -375,6 +375,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2276057643614339130">Printimisalus</translation>
 <translation id="2277103315734023688">Keri edasi</translation>
 <translation id="2283340219607151381">Salvesta ja sisesta aadressid</translation>
+<translation id="2283447177162560884">„<ph name="PAGE_TITLE" />“ kustutati</translation>
 <translation id="2288422996159078444">Kõike, mida sisestate, mis tahes lehti, mida vaatate, või mis tahes muid veebitoiminguid jälgitakse. Saitide sisu võidakse teie teadmata muuta.</translation>
 <translation id="2289385804009217824">Kärbi</translation>
 <translation id="2292556288342944218">Teie juurdepääs Internetile on blokeeritud</translation>
@@ -501,6 +502,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="277133753123645258">Tarneviis</translation>
 <translation id="277499241957683684">Seadme kirje puudub</translation>
 <translation id="2775884851269838147">Esimesena prinditav leht</translation>
+<translation id="2778854133681684171">Seadme abil saate kiirelt oma isiku kinnitada, et järgmisel korral selle makseviisi kaudu ost sooritada.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2784949926578158345">Ühendus lähtestati.</translation>
 <translation id="2792012897584536778">Seadme administraatorid on seadistanud turvasertifikaadid, mille abil võivad nad näha teie külastatavate veebisaitide sisu.</translation>
@@ -658,6 +660,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3377736046129930310">Kasutage kaartide kiiremaks kinnitamiseks ekraanilukku</translation>
 <translation id="3380365263193509176">Tundmatu viga</translation>
 <translation id="3380864720620200369">Kliendi ID:</translation>
+<translation id="3381668585148405088">Kinnitage oma ost</translation>
 <translation id="3387261909427947069">Makseviisid</translation>
 <translation id="3391030046425686457">Kohaletoimetamise aadress</translation>
 <translation id="3395827396354264108">Kättesaamisviis</translation>
@@ -834,6 +837,10 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
     kohaldataks kõigi taotluste puhul, kuid reeglit ei saa praegu rakendada.</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF-dokument sisaldab {COUNT} lehte}other{PDF-dokument sisaldab {COUNT} lehte}}</translation>
 <translation id="4023431997072828269">Kuna see vorm esitatakse ühenduse kaudu, mis pole turvaline, on teie teave teistele nähtav.</translation>
+<translation id="4027177651527820006">Nende funktsioonide lubamisel võivad sirvimisandmed kaotsi minna
+    või teie turvalisus või privaatsus võib ohtu sattuda. Lubatud funktsioonid on
+     saadaval kõigile selle brauseri kasutajatele. Kui olete ettevõtte administraator, ei tohiks te
+    tootmisversioonis neid märgistusi kasutada.</translation>
 <translation id="4030383055268325496">&amp;Võta lisamine tagasi</translation>
 <translation id="4056223980640387499">Seepia</translation>
 <translation id="4058922952496707368">Võti „<ph name="SUBKEY" />”: <ph name="ERROR" /></translation>

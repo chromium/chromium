@@ -376,6 +376,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2276057643614339130">Drukbasis</translation>
 <translation id="2277103315734023688">Soek vorentoe</translation>
 <translation id="2283340219607151381">Stoor en vul adresse in</translation>
+<translation id="2283447177162560884">"<ph name="PAGE_TITLE" />" is uitgevee</translation>
 <translation id="2288422996159078444">Enigiets wat jy tik, enige bladsye wat jy bekyk of enige ander aktiwiteit op die web word dopgehou. Inhoud op werwe kan sonder jou wete verander word.</translation>
 <translation id="2289385804009217824">Knip</translation>
 <translation id="2292556288342944218">Jou internettoegang is geblokkeer</translation>
@@ -502,6 +503,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="277133753123645258">Versendingmetode</translation>
 <translation id="277499241957683684">Toestelrekord ontbreek</translation>
 <translation id="2775884851269838147">Eerste drukbladsy</translation>
+<translation id="2778854133681684171">Jy kan jou toestel gebruik om vinnig te verifieer dat dit jy is wanneer jy weer 'n aankoop met hierdie betaalmetode doen.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2784949926578158345">Hierdie verbinding is teruggestel.</translation>
 <translation id="2792012897584536778">Administrateurs van hierdie toestel het sekuriteitsertifikate opgestel wat hulle dalk toelaat om die inhoud van webwerwe wat jy besoek te sien.</translation>
@@ -659,6 +661,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3377736046129930310">Gebruik skermslot om kaarte vinniger te bevestig</translation>
 <translation id="3380365263193509176">Onbekende fout</translation>
 <translation id="3380864720620200369">Kliënt-ID:</translation>
+<translation id="3381668585148405088">Verifieer jou aankoop</translation>
 <translation id="3387261909427947069">Betaalmetodes</translation>
 <translation id="3391030046425686457">Afleweringadres</translation>
 <translation id="3395827396354264108">Oplaaimetode</translation>
@@ -835,6 +838,10 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
     op alle versoeke daaraan toegepas word, maar hierdie beleid kan nie op die oomblik toegepas word nie.</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF-dokument met {COUNT} bladsy}other{PDF-dokument met {COUNT} bladsye}}</translation>
 <translation id="4023431997072828269">Ander mense sal jou inligting kan sien omdat hierdie vorm ingedien word oor 'n verbinding wat nie heeltemal veilig is nie.</translation>
+<translation id="4027177651527820006">Deur hierdie kenmerke te aktiveer, kan jy blaaierdata verloor of
+     jou sekuriteit of privaatheid in die gedrang bring. Geaktiveerde kenmerke is op alle gebruikers
+     van hierdie blaaier van toepassing. As jy 'n ondernemingadmin is, moet jy nie
+    hierdie vlae vir produksie gebruik nie.</translation>
 <translation id="4030383055268325496">Ontdoen voeg by</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4058922952496707368">Sleutel "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>

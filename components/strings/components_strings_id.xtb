@@ -372,6 +372,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="2276057643614339130">Dasar cetak</translation>
 <translation id="2277103315734023688">Cari Maju</translation>
 <translation id="2283340219607151381">Simpan dan isi alamat</translation>
+<translation id="2283447177162560884">'<ph name="PAGE_TITLE" />' dihapus</translation>
 <translation id="2288422996159078444">Apa pun yang Anda ketik, halaman mana pun yang Anda lihat, atau aktivitas lain di web sedang dipantau. Konten di situs dapat berubah tanpa pemberitahuan sebelumnya.</translation>
 <translation id="2289385804009217824">Trim</translation>
 <translation id="2292556288342944218">Akses Internet Anda diblokir</translation>
@@ -498,6 +499,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="277133753123645258">Metode pengiriman</translation>
 <translation id="277499241957683684">Catatan perangkat hilang</translation>
 <translation id="2775884851269838147">Halaman cetak pertama</translation>
+<translation id="2778854133681684171">Anda dapat menggunakan perangkat untuk memverifikasi diri Anda dengan cepat pada kali berikutnya Anda melakukan pembelian dengan metode pembayaran ini.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2784949926578158345">Sambungan direset.</translation>
 <translation id="2792012897584536778">Administrator perangkat ini telah menetapkan sertifikat keamanan yang memungkinkan mereka melihat konten situs yang Anda kunjungi.</translation>
@@ -655,6 +657,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="3377736046129930310">Gunakan kunci layar untuk mengonfirmasi kartu dengan lebih cepat</translation>
 <translation id="3380365263193509176">Kesalahan tidak dikenal</translation>
 <translation id="3380864720620200369">ID Klien:</translation>
+<translation id="3381668585148405088">Verifikasi pembelian Anda</translation>
 <translation id="3387261909427947069">Metode Pembayaran</translation>
 <translation id="3391030046425686457">Alamat pengiriman</translation>
 <translation id="3395827396354264108">Metode pengambilan</translation>
@@ -829,6 +832,10 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="3996311196211510766"><ph name="ORIGIN" /> situs telah meminta kebijakan asal agar diterapkan ke semua permintaan yang ditujukan kepadanya, tetapi kebijakan ini tidak dapat diterapkan untuk saat ini.</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Dokumen PDF berisi {COUNT} halaman}other{Dokumen PDF berisi {COUNT} halaman}}</translation>
 <translation id="4023431997072828269">Karena formulir ini dikirim menggunakan koneksi yang tidak aman, informasi Anda akan dapat dilihat oleh pengguna lain.</translation>
+<translation id="4027177651527820006">Jika mengaktifkan fitur ini, Anda dapat kehilangan data penjelajahan atau
+    membahayakan keamanan atau privasi Anda. Fitur yang diaktifkan berlaku bagi semua
+    pengguna browser ini. Jika Anda adalah admin perusahaan, Anda sebaiknya
+    tidak menggunakan tanda ini dalam produksi.</translation>
 <translation id="4030383055268325496">&amp;Urungkan penambahan</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4058922952496707368">Kunci "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>

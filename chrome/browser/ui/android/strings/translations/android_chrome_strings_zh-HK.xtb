@@ -41,6 +41,7 @@
 <translation id="1240288207750131269">正在載入<ph name="LANG" /></translation>
 <translation id="1242883863226959074">裝置</translation>
 <translation id="124678866338384709">關閉目前分頁</translation>
+<translation id="1246905108078336582">要從剪貼簿中移除建議嗎？</translation>
 <translation id="1258753120186372309">Google Doodle：<ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">無法分享<ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">輕按即可展開</translation>
@@ -361,6 +362,7 @@
 <translation id="3295530008794733555">瀏覽速度更快。使用較少流動數據。</translation>
 <translation id="3297344142967351106">語音助手</translation>
 <translation id="3303414029551471755">繼續下載內容？</translation>
+<translation id="333367884906698540">系統會在您操作完成後重新關閉藍牙</translation>
 <translation id="3334729583274622784">要變更副檔名嗎？</translation>
 <translation id="3341058695485821946">查看已節省的數據用量</translation>
 <translation id="3341262203274374114">無法取消追蹤，發生錯誤。</translation>
@@ -1035,6 +1037,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="7641339528570811325">清除瀏覽資料…</translation>
 <translation id="764170292089748542">當您選擇私下瀏覽內容時，Chrome 將不會儲存您的瀏覽記錄，但您仍可透過書籤存取喜愛的網站。</translation>
 <translation id="7646772052135772216">密碼同步功能無法正常運作</translation>
+<translation id="7655900163790317559">正在開啟藍牙…</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7665369617277396874">新增帳戶</translation>
 <translation id="766587987807204883">文章在這裡顯示，即使處於離線狀態也可閱讀</translation>

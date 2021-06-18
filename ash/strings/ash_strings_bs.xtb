@@ -727,6 +727,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="6816797338148849397">Dostupne su informacije u vezi s vašim odabirom. Pristupite tipkom strelice nagore.</translation>
 <translation id="6818242057446442178">Riječ unazad</translation>
 <translation id="6820676911989879663">Odmori se!</translation>
+<translation id="6837064795450991317">Sakrij traku radne površine</translation>
 <translation id="6850010208275816200">Trenutna aplikacija je prikazana preko cijelog ekrana. Ako vam aplikacija zatraži lozinku, prvo izađite iz prikaza preko cijelog ekrana.</translation>
 <translation id="6852052252232534364">Kliknite da aktivirate</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
@@ -762,6 +763,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="7076293881109082629">Prijavljivanje</translation>
 <translation id="7088960765736518739">Prekidač za pristup</translation>
 <translation id="7098389117866926363">USB-C uređaj (lijevi priključak sa zadnje strane)</translation>
+<translation id="7106330611027933926">Prikaži traku radne površine</translation>
 <translation id="7118268675952955085">snimak ekrana</translation>
 <translation id="7131634465328662194">Automatski ćete se odjaviti.</translation>
 <translation id="7143207342074048698">Povezivanje</translation>
@@ -805,6 +807,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="7466449121337984263">Dodirnite senzor</translation>
 <translation id="7473891865547856676">Ne, hvala</translation>
 <translation id="7477793887173910789">Kontrolirajte muziku, videozapise i drugi sadržaj</translation>
+<translation id="7482097454533720217">Primite definicije, prijevode ili pretvaranje jedinica kada kliknete desnim klikom na tekst ili ga dodirnete i zadržite.</translation>
 <translation id="7483025031359818980">Područje za odabir je postavljeno preko cijelog ekrana</translation>
 <translation id="7486227320194954040">Suzi alate označivača</translation>
 <translation id="7497767806359279797">Odaberite jezik i tastaturu</translation>
@@ -981,6 +984,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="8843682306134542540">Uključi/isključi zaključavanje rotacije. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">Potvrđivanje PIN-a ili lozinke i dalje nije uspjelo. Napomena: Ako ste nedavno promijenili lozinku, koristite staru. Nova lozinka će se primijeniti nakon što se odjavite.</translation>
+<translation id="8863888432376731307"><ph name="INTENT" /> za upit "<ph name="QUERY" />" i drugo</translation>
 <translation id="8870509716567206129">Aplikacija ne podržava dijeljenje ekrana.</translation>
 <translation id="8871580645200179206">Uključite/isključite tamnu temu. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Nije povezano</translation>

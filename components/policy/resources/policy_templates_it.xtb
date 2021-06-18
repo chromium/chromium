@@ -164,7 +164,6 @@
 
       Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  <ph name="WILDCARD_VALUE" /> non è un valore accettato per questo criterio.</translation>
 <translation id="120937472976628837">Segnala informazioni sulla ventola</translation>
-<translation id="1214202898523114033">Porta 10080 (scadenza: 01/04/2022)</translation>
 <translation id="1216919699175573511">Attiva il supporto per Signed HTTP Exchange (SXG)</translation>
 <translation id="1219695476179627719">Consente di specificare se il dispositivo deve eseguire il rollback alla versione impostata da <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" /> nel caso in cui sia già in esecuzione una versione successiva.
 
@@ -4141,15 +4140,6 @@ Per ulteriori informazioni sui contesti sicuri, visita il sito https://www.w3.or
 <translation id="6506486086262398387">Se il criterio viene impostato su Attivato, la funzionalità Condivisione file di rete di <ph name="PRODUCT_OS_NAME" /> utilizza l'autenticazione NTLM per le condivisioni SMB, se necessario. Se viene impostato su Disattivato, l'autenticazione NTLM per le condivisioni SMB viene disattivata.
 
       Se non viene configurato, il comportamento predefinito è off per gli utenti gestiti e on per gli altri utenti.</translation>
-<translation id="651012148496266279">La configurazione del criterio consente di ignorare l'elenco di porte con restrizioni integrato in <ph name="PRODUCT_NAME" />. Il valore è un elenco separato da virgole di nessuna porta o di più porte tramite le quali saranno consentite connessioni in uscita.
-
-      Le porte sono limitate per impedire l'utilizzo di <ph name="PRODUCT_NAME" /> come vettore per sfruttare varie vulnerabilità di rete. La configurazione di questo criterio potrebbe mettere la tua rete a rischio di attacchi. Questo criterio è inteso come soluzione alternativa temporanea per gli errori con codice "ERR_UNSAFE_PORT" durante la migrazione a una porta standard (ossia 80 o 443) di un servizio in esecuzione tramite una porta bloccata.
-
-      I siti web dannosi possono rilevare facilmente che questo criterio è impostato e per quali porte, quindi usano queste informazioni per attacchi mirati.
-
-      Se il criterio viene lasciato vuoto o se non viene configurato, verranno bloccate tutte le porte con restrizioni. Se sono presenti valori validi e non validi, verranno applicati quelli validi.
-
-      Questo criterio sostituisce l'opzione della riga di comando "--explicitly-allowed-ports".</translation>
 <translation id="6515357889978918016">Immagine <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="6518102411616460786">Attendi che il canale di destinazione controlli il downgrade del canale</translation>
 <translation id="6520802717075138474">Importa motori di ricerca dal browser predefinito alla prima esecuzione</translation>
@@ -6292,7 +6282,6 @@ Se la norma non viene impostata o viene impostata su false, la posizione non vie
       Questo criterio è una misura temporanea e verrà rimosso nelle future versioni di <ph name="PRODUCT_NAME" />. Dopo la rimozione del criterio, <ph name="PRODUCT_NAME" /> potrà sempre eseguire query su tipi DNS aggiuntivi.</translation>
 <translation id="9167719789236691545">Disattiva Drive nell'app File di <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="9187743794267626640">Disabilita il montaggio di una memoria esterna</translation>
-<translation id="9190257149451871588">Porta 6566 (scadenza: 15/10/2021)</translation>
 <translation id="9190456586252617675">Questo criterio consente di stabilire la modalità dell'esperienza di onboarding dell'assistente.
 
       Se il criterio non viene impostato o viene impostato su <ph name="ASSISTANT_ONBOARDING_MODE_DEFAULT" />, viene usata la modalità predefinita dell'esperienza di onboarding dell'assistente.
@@ -6310,7 +6299,6 @@ Se la norma non viene impostata o viene impostata su false, la posizione non vie
 <translation id="927444535723396977">Se il criterio è impostato su 1, i siti web possono eseguire JavaScript. Se il criterio è impostato su 2, JavaScript viene negato.
 
       Se non viene configurato, JavaScript è consentito, ma gli utenti possono cambiare l'impostazione.</translation>
-<translation id="928189505080808353">Porta 554 (scadenza: 15/10/2021)</translation>
 <translation id="929549405492388749">Se questo criterio viene impostato su true, viene forzata l'attivazione della funzionalità AppCache, anche se in Chrome non è disponibile per impostazione predefinita.
 
       Se non viene impostato o viene impostato su false, la funzionalità AppCache dipenderà dalle impostazioni predefinite di Chrome.</translation>

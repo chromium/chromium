@@ -41,6 +41,7 @@
 <translation id="1240288207750131269"><ph name="LANG" /> po ngarkohet</translation>
 <translation id="1242883863226959074">pajisja</translation>
 <translation id="124678866338384709">Mbyll skedën aktuale</translation>
+<translation id="1246905108078336582">Të hiqet sugjerimi nga kujtesa e fragmenteve?</translation>
 <translation id="1258753120186372309">Logoja alternative e Google: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Nuk mund të ndahet <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Trokit për të zgjeruar</translation>
@@ -361,6 +362,7 @@ Prek dhe mbaj shtypur një fjalë për ta kërkuar. Për të përsosur kërkimin
 <translation id="3295530008794733555">Shfleto më shpejt. Përdor më pak të dhëna.</translation>
 <translation id="3297344142967351106">Ndihma zanore</translation>
 <translation id="3303414029551471755">Të vazhdohet me shkarkimin e përmbajtjes?</translation>
+<translation id="333367884906698540">Bluetooth do të fiket pasi të mbarosh</translation>
 <translation id="3334729583274622784">Do ta ndryshosh prapashtesën e skedarit?</translation>
 <translation id="3341058695485821946">Shiko se sa të dhëna kurseve</translation>
 <translation id="3341262203274374114">Ndjekja nuk mund të anulohet. Ndodhi një gabim.</translation>
@@ -1035,6 +1037,7 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="7641339528570811325">Pastro të dhënat e shfletimit...</translation>
 <translation id="764170292089748542">Chrome nuk e ruan historikun tënd të shfletimit kur zgjedh të shfletosh privatisht. Mund të përdorësh gjithsesi faqeshënuesit për t'u qasur te faqet e tua të preferuara.</translation>
 <translation id="7646772052135772216">Sinkronizimi i fjalëkalimeve nuk po funksionon</translation>
+<translation id="7655900163790317559">Po aktivizon Bluetooth-in…</translation>
 <translation id="7658239707568436148">Anulo</translation>
 <translation id="7665369617277396874">Shto një llogari</translation>
 <translation id="766587987807204883">Këtu shfaqen artikujt, të cilët mund t'i lexosh edhe kur je jashtë linje</translation>

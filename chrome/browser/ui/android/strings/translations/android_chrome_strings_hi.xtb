@@ -41,6 +41,7 @@
 <translation id="1240288207750131269"><ph name="LANG" /> लोड हो रही है</translation>
 <translation id="1242883863226959074">डिवाइस</translation>
 <translation id="124678866338384709">वर्तमान टैब को बंद करें</translation>
+<translation id="1246905108078336582">क्लिपबोर्ड से सुझाव हटाना चाहते हैं?</translation>
 <translation id="1258753120186372309">Google doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> शेयर नहीं किया जा सका</translation>
 <translation id="1283039547216852943">पूरा खोलने के लिए टैप करें</translation>
@@ -361,6 +362,7 @@
 <translation id="3295530008794733555">तेज़ी से ब्राउज़ करें. कम डेटा इस्तेमाल करें.</translation>
 <translation id="3297344142967351106">आवाज़ से डिवाइस का इस्तेमाल करना</translation>
 <translation id="3303414029551471755">सामग्री डाउनलोड करने के लिए आगे बढ़ें?</translation>
+<translation id="333367884906698540">आपका काम पूरा हो जाने पर ब्लूटूथ फिर से बंद हो जाएगा</translation>
 <translation id="3334729583274622784">फ़ाइल एक्सटेंशन बदलना चाहते हैं?</translation>
 <translation id="3341058695485821946">देखें कि आपने कितना डेटा बचाया है</translation>
 <translation id="3341262203274374114">अनफ़ॉलो नहीं कर सकते. कोई गड़बड़ी हुई.</translation>
@@ -1035,6 +1037,7 @@
 <translation id="7641339528570811325">ब्राउज़िंग डेटा साफ़ करें…</translation>
 <translation id="764170292089748542">जब आप निजी तौर पर ब्राउज़ करने का विकल्प चुनते हैं, तो Chrome आपका ब्राउज़िंग इतिहास सेव नहीं करता है. आप अब भी अपनी पसंदीदा साइटों को ऐक्सेस करने के लिए, बुकमार्क का इस्तेमाल कर सकते हैं.</translation>
 <translation id="7646772052135772216">पासवर्ड को सिंक करने की सुविधा काम नहीं कर रही है</translation>
+<translation id="7655900163790317559">ब्लूटूथ चालू हो रहा है…</translation>
 <translation id="7658239707568436148">अभी नहीं</translation>
 <translation id="7665369617277396874">खाता जोड़ें</translation>
 <translation id="766587987807204883">लेख यहां दिखाई देते हैं जिन्हें आप ऑफ़लाइन होने पर भी पढ़ सकते हैं.</translation>

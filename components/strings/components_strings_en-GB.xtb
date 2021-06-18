@@ -375,6 +375,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2276057643614339130">Print base</translation>
 <translation id="2277103315734023688">Seek forwards</translation>
 <translation id="2283340219607151381">Save and fill addresses</translation>
+<translation id="2283447177162560884">'<ph name="PAGE_TITLE" />' deleted</translation>
 <translation id="2288422996159078444">Anything that you type, any pages that you view or any other activity on the web is being watched. Content on sites may be changed without your knowledge.</translation>
 <translation id="2289385804009217824">Trim</translation>
 <translation id="2292556288342944218">Your Internet access is blocked</translation>
@@ -501,6 +502,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="277133753123645258">Delivery method</translation>
 <translation id="277499241957683684">Missing device record</translation>
 <translation id="2775884851269838147">First print page</translation>
+<translation id="2778854133681684171">You can use your device to quickly verify that it's you the next time that you make a purchase with this payment method.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2784949926578158345">The connection was reset.</translation>
 <translation id="2792012897584536778">Administrators of this device have set up security certificates that may allow them to see the content of websites that you visit.</translation>
@@ -658,6 +660,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3377736046129930310">Use screen lock to confirm cards faster</translation>
 <translation id="3380365263193509176">Unknown error</translation>
 <translation id="3380864720620200369">Client ID:</translation>
+<translation id="3381668585148405088">Verify your purchase</translation>
 <translation id="3387261909427947069">Payment Methods</translation>
 <translation id="3391030046425686457">Delivery address</translation>
 <translation id="3395827396354264108">Pickup method</translation>
@@ -834,6 +837,10 @@ This will otherwise be blocked by your privacy settings. This will allow the con
     apply to all requests to it, but this policy cannot presently be applied.</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF document containing {COUNT} page}other{PDF document containing {COUNT} pages}}</translation>
 <translation id="4023431997072828269">Because this form is being submitted using a connection that’s not secure, your information will be visible to others.</translation>
+<translation id="4027177651527820006">By enabling these features, you could lose browser data or
+    compromise your security or privacy. Enabled features apply to all
+    users of this browser. If you are an enterprise admin you should
+    not be using these flags in production.</translation>
 <translation id="4030383055268325496">&amp;Undo add</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4058922952496707368">Key "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>

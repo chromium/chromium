@@ -727,6 +727,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="6816797338148849397">Ka informacion në lidhje me zgjedhjen tënde. Përdor tastin "Shigjeta lart" për ta hapur.</translation>
 <translation id="6818242057446442178">Një fjalë pas</translation>
 <translation id="6820676911989879663">Bëj një pushim!</translation>
+<translation id="6837064795450991317">Fshihe panelin e fushës</translation>
 <translation id="6850010208275816200">Aplikacioni yt aktual është në ekranin e plotë. Nëse aplikacioni kërkon fjalëkalimin, në fillim dil nga ekrani i plotë.</translation>
 <translation id="6852052252232534364">Kliko për ta aktivizuar</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sek.</translation>
@@ -762,6 +763,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="7076293881109082629">Po identifikohesh</translation>
 <translation id="7088960765736518739">Qasja me çelës</translation>
 <translation id="7098389117866926363">Pajisja USB-C (porta majtas, prapa)</translation>
+<translation id="7106330611027933926">Shfaq panelin e fushës</translation>
 <translation id="7118268675952955085">pamja e ekranit</translation>
 <translation id="7131634465328662194">Do të dalësh automatikisht</translation>
 <translation id="7143207342074048698">Po lidhet</translation>
@@ -805,6 +807,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="7466449121337984263">Prek sensorin</translation>
 <translation id="7473891865547856676">Jo, faleminderit</translation>
 <translation id="7477793887173910789">Kontrollo muzikën, videot e tua etj.</translation>
+<translation id="7482097454533720217">Merr përkufizime, përkthime ose konvertime të njësive kur klikon me të djathtin ose troket dhe mban tekst.</translation>
 <translation id="7483025031359818980">Zona e përzgjedhjes është caktuar në ekran të plotë</translation>
 <translation id="7486227320194954040">Palos veglat e piketës</translation>
 <translation id="7497767806359279797">Zgjidh gjuhën dhe tastierën</translation>
@@ -981,6 +984,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="8843682306134542540">Aktivizo/çaktivizo kyçjen e rrotullimit. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Kërko+Esc</translation>
 <translation id="8853703225951107899">Kod yt PIN ose fjalëkalimi përsëri nuk mund të verifikoheshin. Shënim. Nëse e ke ndryshuar fjalëkalimin së fundi, përdor fjalëkalimin e vjetër. Fjalëkalimi yt i ri do të zbatohet pasi të dalësh nga llogaria.</translation>
+<translation id="8863888432376731307">Merr <ph name="INTENT" /> për "<ph name="QUERY" />" dhe më shumë</translation>
 <translation id="8870509716567206129">Aplikacioni nuk e mbështet ekranin e ndarë.</translation>
 <translation id="8871580645200179206">Aktivizo/çaktivizo "Temën e errët". <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Nuk u lidh</translation>

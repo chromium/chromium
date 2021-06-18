@@ -41,6 +41,7 @@
 <translation id="1240288207750131269"><ph name="LANG" /> en cours de chargement…</translation>
 <translation id="1242883863226959074">appareil</translation>
 <translation id="124678866338384709">Fermer l'onglet actuel</translation>
+<translation id="1246905108078336582">Supprimer la suggestion du presse-papiers?</translation>
 <translation id="1258753120186372309">Logo commémoratif de Google : <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Partage impossible du contenu suivant : <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Toucher pour développer</translation>
@@ -361,6 +362,7 @@ Maintenez le doigt sur un mot pour effectuer une recherche sur celui-ci. Pour af
 <translation id="3295530008794733555">Naviguez plus vite. Utilisez moins de données.</translation>
 <translation id="3297344142967351106">Assistance vocale</translation>
 <translation id="3303414029551471755">Lancer le téléchargement du contenu?</translation>
+<translation id="333367884906698540">Le Bluetooth se désactivera lorsque vous aurez terminé</translation>
 <translation id="3334729583274622784">Modifier l'extension du fichier?</translation>
 <translation id="3341058695485821946">Affichez la quantité de données enregistrées</translation>
 <translation id="3341262203274374114">Le désabonnement a échoué. Un problème est survenu.</translation>
@@ -1035,6 +1037,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7641339528570811325">Effacer les données de navigation…</translation>
 <translation id="764170292089748542">Chrome n'enregistre pas votre historique de navigation lorsque vous choisissez de naviguer en mode privé. Vous pouvez toujours utiliser les favoris pour accéder à vos sites préférés.</translation>
 <translation id="7646772052135772216">La synchronisation des mots de passe ne fonctionne pas</translation>
+<translation id="7655900163790317559">Activation du Bluetooth en cours…</translation>
 <translation id="7658239707568436148">Annuler</translation>
 <translation id="7665369617277396874">Ajouter un compte</translation>
 <translation id="766587987807204883">Les articles s'affichent ici, et vous pouvez les lire même lorsque vous êtes hors ligne</translation>

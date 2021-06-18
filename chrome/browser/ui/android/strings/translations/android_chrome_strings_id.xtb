@@ -41,6 +41,7 @@
 <translation id="1240288207750131269">Memuat <ph name="LANG" /></translation>
 <translation id="1242883863226959074">perangkat</translation>
 <translation id="124678866338384709">Menutup tab aktif</translation>
+<translation id="1246905108078336582">Hapus saran dari papan klip?</translation>
 <translation id="1258753120186372309">Google doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Tidak dapat membagikan <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Ketuk untuk meluaskan</translation>
@@ -361,6 +362,7 @@ Sentuh lama kata apa pun untuk menelusurinya. Untuk menyaring penelusuran, pilih
 <translation id="3295530008794733555">Browsing lebih cepat. Gunakan lebih sedikit kuota.</translation>
 <translation id="3297344142967351106">Bantuan suara</translation>
 <translation id="3303414029551471755">Lanjutkan untuk mendownload konten?</translation>
+<translation id="333367884906698540">Bluetooth akan kembali nonaktif saat Anda selesai</translation>
 <translation id="3334729583274622784">Ubah ekstensi file?</translation>
 <translation id="3341058695485821946">Lihat banyaknya kuota yang Anda hemat</translation>
 <translation id="3341262203274374114">Tidak dapat berhenti mengikuti. Terjadi error.</translation>
@@ -1035,6 +1037,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="7641339528570811325">Hapus data penjelajahan...</translation>
 <translation id="764170292089748542">Chrome tidak menyimpan histori penjelajahan saat Anda memilih untuk melakukan penjelajahan rahasia. Anda tetap dapat menggunakan bookmark untuk mengakses situs favorit Anda.</translation>
 <translation id="7646772052135772216">Sinkronisasi sandi tidak berfungsi</translation>
+<translation id="7655900163790317559">Mengaktifkan Bluetooth …</translation>
 <translation id="7658239707568436148">Batal</translation>
 <translation id="7665369617277396874">Tambahkan akun</translation>
 <translation id="766587987807204883">Artikel ditampilkan di sini, yang dapat Anda baca bahkan saat offline</translation>

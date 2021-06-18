@@ -376,6 +376,7 @@
 <translation id="2276057643614339130">Çap bazası</translation>
 <translation id="2277103315734023688">İrəli çəkin</translation>
 <translation id="2283340219607151381">Ünvanları yadda saxlayın və doldurun</translation>
+<translation id="2283447177162560884">"<ph name="PAGE_TITLE" />" silindi</translation>
 <translation id="2288422996159078444">Yazdığınız hər mətn, baxdığınız hər səhifə və ya vebdəki digər bütün fəaliyyətləriniz izlənilir. Saytlardakı məzmun xəbəriniz olmadan dəyişdirilə bilər.</translation>
 <translation id="2289385804009217824">Kəsin</translation>
 <translation id="2292556288342944218">İnternet girişiniz blok edilib</translation>
@@ -502,6 +503,7 @@
 <translation id="277133753123645258">Göndərmə üsulu</translation>
 <translation id="277499241957683684">Çatmayan cihaz qeydi</translation>
 <translation id="2775884851269838147">İlk çap səhifəsi</translation>
+<translation id="2778854133681684171">Növbəti dəfə bu ödəniş metodu ilə alış etdiyiniz zaman kimliyinizi sürətli şəkildə doğrulamaq üçün cihazınızdan istifadə edə bilərsiniz.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2784949926578158345">Əlaqə sıfırlanmışdı.</translation>
 <translation id="2792012897584536778">Bu cihazın administratorlarının quraşdırdığı güvənlik sertifikatları daxil olduğunuz veb saytların kontentini görmələrinə imkan verir.</translation>
@@ -657,6 +659,7 @@
 <translation id="3377736046129930310">Kartları daha sürətli təsdiqləmək üçün ekran kilidi istifadə edin</translation>
 <translation id="3380365263193509176">Naməlum xəta</translation>
 <translation id="3380864720620200369">Klient ID:</translation>
+<translation id="3381668585148405088">Alışınızı doğrulayın</translation>
 <translation id="3387261909427947069">Ödəniş Üsulları</translation>
 <translation id="3391030046425686457">Çatdırılma ünvanı</translation>
 <translation id="3395827396354264108">Götürmə üsulu</translation>
@@ -831,6 +834,7 @@
     bütün sorğulara mənbə siyasətin tətbiq edilməsini tələb edib, lakin bu siyasət hazırda tətbiq edilə bilmir.</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{{COUNT} səhifədən ibarət PDF sənədi}other{{COUNT} səhifədən ibarət PDF sənədi}}</translation>
 <translation id="4023431997072828269">Bu forma təhlükəsiz olmayan bağlantıdan istifadə etməklə təqdim edildiyinə görə məlumatlarınız digərləri tərəfindən görüləcək.</translation>
+<translation id="4027177651527820006">Bu funksiyaları aktiv etməklə brauzer datanızı itirə və ya təhlükəsizlik və ya məxfiliyinizi təhlükəyə ata bilərsiniz. Aktiv edilən funksiyalar bu brauzerin bütün istifadəçilərinə tətbiq olunur. Müəssisə adminisinizsə iş prosesində bu işarələrdən istifadə etməməlisiniz.</translation>
 <translation id="4030383055268325496">Əlavəni geri qaytarın</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4058922952496707368">Açar "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>

@@ -727,6 +727,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="6816797338148849397">K dispozici jsou informace související s vaším výběrem. Zobrazíte je pomocí šipky nahoru.</translation>
 <translation id="6818242057446442178">Zpět o slovo</translation>
 <translation id="6820676911989879663">Dejte si pauzu.</translation>
+<translation id="6837064795450991317">Skrýt plochu</translation>
 <translation id="6850010208275816200">Aktuální aplikace je v režimu celé obrazovky. Pokud vás aplikace požádá o heslo, nejdřív režim celé obrazovky ukončete.</translation>
 <translation id="6852052252232534364">Aktivujte kliknutím</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
@@ -762,6 +763,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="7076293881109082629">Přihlášení</translation>
 <translation id="7088960765736518739">Přístup pomocí přepínačů</translation>
 <translation id="7098389117866926363">Zařízení USB Type-C (levý zadní port)</translation>
+<translation id="7106330611027933926">Zobrazit plochu</translation>
 <translation id="7118268675952955085">snímek obrazovky</translation>
 <translation id="7131634465328662194">Budete automaticky odhlášeni.</translation>
 <translation id="7143207342074048698">Připojování</translation>
@@ -805,6 +807,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="7466449121337984263">Dotkněte se senzoru</translation>
 <translation id="7473891865547856676">Ne, děkuji</translation>
 <translation id="7477793887173910789">Ovládejte hudbu, videa a další obsah</translation>
+<translation id="7482097454533720217">Když podržíte text nebo na něj kliknete pravým tlačítkem, mohou se zobrazit definice, překlad nebo převod jednotek.</translation>
 <translation id="7483025031359818980">Oblast výběru je nastavena na celou obrazovku</translation>
 <translation id="7486227320194954040">Sbalit zvýrazňovací nástroje</translation>
 <translation id="7497767806359279797">Vybrat jazyk a klávesnici</translation>
@@ -981,6 +984,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="8843682306134542540">Přepnout zámek otáčení. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Hledat+Esc</translation>
 <translation id="8853703225951107899">Váš PIN nebo heslo se stále nepodařilo ověřit. Poznámka: Pokud jste heslo nedávno změnili, použijte staré heslo. Nové heslo bude možné použít až po odhlášení.</translation>
+<translation id="8863888432376731307">Získejte <ph name="INTENT" /> na dotaz „<ph name="QUERY" />“ a mnohem víc</translation>
 <translation id="8870509716567206129">Aplikace nepodporuje režim rozdělené obrazovky.</translation>
 <translation id="8871580645200179206">Přepnout tmavý motiv. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Nepřipojeno</translation>

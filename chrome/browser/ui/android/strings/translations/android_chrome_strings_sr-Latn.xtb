@@ -41,6 +41,7 @@
 <translation id="1240288207750131269"><ph name="LANG" /> se učitava</translation>
 <translation id="1242883863226959074">uređaju</translation>
 <translation id="124678866338384709">Zatvaranje aktuelne kartice</translation>
+<translation id="1246905108078336582">Želite li da uklonite predlog iz privremene memorije?</translation>
 <translation id="1258753120186372309">Google dudl logotip: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Nije uspelo deljenje: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Dodirnite da biste proširili</translation>
@@ -361,6 +362,7 @@ Dodirnite i zadržite bilo koju reč za pretragu. Da biste precizirali pretragu,
 <translation id="3295530008794733555">Pregledajte brže. Koristite manje podataka.</translation>
 <translation id="3297344142967351106">Glasovna pomoć</translation>
 <translation id="3303414029551471755">Želite li da nastavite sa preuzimanjem sadržaja?</translation>
+<translation id="333367884906698540">Bluetooth će se ponovo isključiti kada završite</translation>
 <translation id="3334729583274622784">Želite da promenite ekstenziju datoteke?</translation>
 <translation id="3341058695485821946">Pogledajte koliko ste podataka uštedeli</translation>
 <translation id="3341262203274374114">Opozivanje praćenja nije uspelo. Došlo je do greške.</translation>
@@ -1035,6 +1037,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="7641339528570811325">Obriši podatke pregledanja…</translation>
 <translation id="764170292089748542">Chrome ne čuva istoriju pregledanja kada odaberete da privatno pregledate. I dalje možete da koristite obeleživače da biste pristupili omiljenim sajtovima.</translation>
 <translation id="7646772052135772216">Sinhronizacija lozinki ne radi</translation>
+<translation id="7655900163790317559">Bluetooth se uključuje…</translation>
 <translation id="7658239707568436148">Otkaži</translation>
 <translation id="7665369617277396874">Dodajte nalog</translation>
 <translation id="766587987807204883">Ovde se pojavljuju članci, koje možete da čitate čak i kada ste oflajn</translation>

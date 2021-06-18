@@ -232,7 +232,6 @@
 <translation id="1244265436519979884">હાલમાં Linuxને પહેલાંના જેવું કરવાની પ્રક્રિયા ચાલુ છે</translation>
 <translation id="1244303850296295656">એક્સટેંશન ભૂલ</translation>
 <translation id="1246863218384630739"><ph name="VM_NAME" /> ઇન્સ્ટૉલ કરી શક્યાં નહીં: છબીના URL દ્વારા ભૂલનો કોડ <ph name="HTTP_ERROR" /> પરત આપવામાં આવ્યો છે. કૃપા કરીને તમારા વ્યવસ્થાપકનો સંપર્ક કરો.</translation>
-<translation id="1246905108078336582">શું ક્લિપબોર્ડમાંથી સૂચન કાઢી નાખીએ?</translation>
 <translation id="1251366534849411931">અપેક્ષિત ખુલતો વાંકળિયો કૌંસ: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">આમ કરવાથી સાઇટ અને ઇન્સ્ટૉલ કરેલી ઍપ દ્વારા સ્ટોર કરવામાં આવેલો <ph name="TOTAL_USAGE" /> ડેટા સાફ કરવામાં આવશે</translation>
 <translation id="125220115284141797">ડિફૉલ્ટ</translation>
@@ -744,7 +743,6 @@
 <translation id="1795214765651529549">ક્લાસિકનો ઉપયોગ કરો</translation>
 <translation id="1796588414813960292">સાઉન્ડની આવશ્યકતા હોય તેવી સુવિધાઓ કામ કરશે નહીં</translation>
 <translation id="1799071797295057738">એક્સટેન્શન "<ph name="EXTENSION_NAME" />" ઑટોમૅટિક રીતે બંધ કરવામાં આવ્યું છે.</translation>
-<translation id="1800973090344019061">"<ph name="APP_NAME" />" એક્સ્ટેન્શન તમારી સ્ક્રીનનું કન્ટેન્ટ શેર કરવા માગે છે.</translation>
 <translation id="1802624026913571222">કવર બંધ કરવામાં આવે ત્યારે નિષ્ક્રિય કરો</translation>
 <translation id="1802687198411089702">પેજ પ્રતિસાદ આપી રહ્યું નથી. તમે તેની રાહ જોઈ શકો છો અથવા બહાર નીકળી શકો છો.</translation>
 <translation id="1803531841600994172">જેમાં અનુવાદ કરવો છે તે ભાષા</translation>
@@ -1606,6 +1604,7 @@
 <translation id="2734760316755174687"><ph name="SITE_GROUP_NAME" /> હેઠળની સાઇટ પણ રીસેટ કરવામાં આવશે.</translation>
 <translation id="2735712963799620190">શેડ્યૂલ</translation>
 <translation id="2737363922397526254">સંકુચિત કરો...</translation>
+<translation id="2737916598897808047"><ph name="APP_NAME" /> તમારી સ્ક્રીન પરનું કન્ટેન્ટ <ph name="TARGET_NAME" /> સાથે શેર કરવા માગે છે.</translation>
 <translation id="2738030019664645674">સાઇટને તમારા ડિવાઇસ પર ઇન્સ્ટૉલ કરેલા ફૉન્ટનો ઉપયોગ કરવાની મંજૂરી આપશો નહીં</translation>
 <translation id="2738771556149464852">આના પછી નહીં</translation>
 <translation id="2739191690716947896">ડીબગ કરો</translation>
@@ -3743,6 +3742,7 @@
 <translation id="5127805178023152808">સમન્વયન બંધ છે</translation>
 <translation id="5127881134400491887">નેટવર્ક કનેક્શન્સનું સંચાલન કરો</translation>
 <translation id="512903556749061217">જોડાયેલું</translation>
+<translation id="5130080518784460891">ઇટેન</translation>
 <translation id="5130675701626084557">પ્રોફાઇલ ડાઉનલોડ કરી શકાઈ નથી. કૃપા કરીને થોડા સમય પછી ફરી પ્રયાસ કરો અથવા સહાય માટે મોબાઇલ ઑપરેટરનો સંપર્ક કરો.</translation>
 <translation id="5131591206283983824">ટચપૅડના ટૅપ ખેંચવાના સેટિંગ</translation>
 <translation id="5135085122826131075">તમે "ઓકે Google" બોલીને તમારા આસિસ્ટંટને ઍક્સેસ કરો.</translation>
@@ -4037,6 +4037,7 @@
 <translation id="5470735824776589490">તમારું ડિવાઇસ Powerwash સાથે રીસેટ થઈ શકે તે પહેલાં એકવાર ફરી શરૂ કરવું આવશ્યક છે. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="5471768120198416576">કેમ છો! હું તમારો ટેક્સ્ટ-ટુ-સ્પીચ વૉઇસ છું.</translation>
 <translation id="5472627187093107397">આ સાઇટ માટેનો પાસવર્ડ સાચવો</translation>
+<translation id="5473075389972733037">IBM</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{પિન ઓછામાં ઓછો એક અક્ષરનો હોવો આવશ્યક છે}one{પિન ઓછામાં ઓછો # અક્ષરનો હોવો આવશ્યક છે}other{પિન ઓછામાં ઓછો # અક્ષરનો હોવો આવશ્યક છે}}</translation>
 <translation id="5481273127572794904">એકથી વધારે ફાઇલો ઑટોમૅટિક રીતે ડાઉનલોડ કરવાની મંજૂરી નથી</translation>
 <translation id="5481941284378890518">નજીકના પ્રિન્ટર્સ ઉમેરો</translation>
@@ -4634,7 +4635,6 @@ USB ડિવાઇસ</translation>
 <translation id="6136114942382973861">ડાઉનલોડ બાર બંધ કરો</translation>
 <translation id="6136287496450963112">તમારી 'સિક્યુરિટી કી' પિન વડે સુરક્ષિત નથી. ફિંગરપ્રિન્ટ મેનેજ કરવા માટે, પહેલાં પિન બનાવો.</translation>
 <translation id="6138680304137685902">SHA-384 સાથે X9.62 ECDSA સહી</translation>
-<translation id="6138774640412545950">"<ph name="APP_NAME" />" એક્સ્ટેન્શન તમારી સ્ક્રીનના કન્ટેન્ટને <ph name="TARGET_NAME" /> સાથે શેર કરવા માગે છે.</translation>
 <translation id="6141988275892716286">ડાઉનલોડની પુષ્ટિ કરો</translation>
 <translation id="6143186082490678276">સહાય મેળવો</translation>
 <translation id="6143366292569327983">પેજની જે ભાષામાંથી અનુવાદ કરાવવા ઇચ્છતા હો, તે પસંદ કરો</translation>
@@ -5153,6 +5153,7 @@ USB ડિવાઇસ</translation>
 <translation id="6723839937902243910">પાવર</translation>
 <translation id="6725073593266469338">UI સેવા</translation>
 <translation id="6725206449694821596">ઇન્ટરનેટ પ્રિંટિંગ પ્રોટોકોલ (IPP)</translation>
+<translation id="6725970970008349185">પૃષ્ઠ દીઠ પ્રદર્શિત કરવાના ઉમેદવારોની સંખ્યા</translation>
 <translation id="672609503628871915">શું નવું છે તે જુઓ</translation>
 <translation id="67269783048918309">વપરાશ અને નિદાનનો ડેટા મોકલો. આ ડિવાઇસ હાલમાં Googleને નિદાન, ડિવાઇસ અને ઍપ વપરાશનો ડેટા ઑટોમૅટિક રીતે મોકલી રહ્યું છે. આનો ઉપયોગ તમારા બાળકને ઓળખવા માટે થશે નહીં અને સિસ્ટમ અને ઍપની સ્થિરતા અને અન્ય સુધારણાઓમાં સહાય કરશે. એકત્રીકરણ કરેલો કેટલોક ડેટા Google ઍપ અને ભાગીદારોને પણ મદદ કરશે, જેમ કે Android ડેવલપર. આ <ph name="BEGIN_LINK1" />સેટિંગ<ph name="END_LINK1" /> માલિક દ્વારા લાગુ કરવામાં આવેલ છે. જો તમારા બાળક માટે વધારાની વેબ અને ઍપ પ્રવૃત્તિ સેટિંગ ચાલુ હોય, તો આ ડેટા તેમના Google એકાઉન્ટમાં સાચવવામાં આવી શકે છે. <ph name="BEGIN_LINK2" />વધુ જાણો<ph name="END_LINK2" /></translation>
 <translation id="6727969043791803658">કનેક્ટ થયેલ, બૅટરી <ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -6504,6 +6505,7 @@ USB ડિવાઇસ</translation>
 <translation id="8189750580333936930">પ્રાઇવસી સૅન્ડબૉક્સ</translation>
 <translation id="8190193592390505034"><ph name="PROVIDER_NAME" /> થી કનેક્ટ કરે છે</translation>
 <translation id="8191230140820435481">તમારી ઍપ્લિકેશનો, એક્સ્ટેન્શન અને થીમ્સ મેનેજ કરો</translation>
+<translation id="8192944472786724289"><ph name="APP_NAME" /> તમારી સ્ક્રીન પરનું કન્ટેન્ટ શેર કરવા માગે છે.</translation>
 <translation id="8195027750202970175">ડિસ્ક પર કદ</translation>
 <translation id="8198323535106903877">અમે તમારા માટે તે <ph name="NUMBER_OF_APPS" /> ઍપ ઇન્સ્ટૉલ કરીશું</translation>
 <translation id="8198456017687137612">ટૅબ કાસ્ટ કરી રહ્યાં છીએ</translation>
@@ -6647,6 +6649,7 @@ USB ડિવાઇસ</translation>
 <translation id="8363095875018065315">સ્થિર</translation>
 <translation id="8363142353806532503">માઇક્રોફોન અવરોધિત</translation>
 <translation id="8366396658833131068">તમારી નેટવર્ક કનેક્ટિવિટી પુનઃસ્થાપિત થઈ છે. કૃપા કરીને બીજું નેટવર્ક પસંદ કરો અથવા તમારી કિઓસ્ક એપ્લિકેશનને લોંચ કરવા માટે નીચે 'ચાલુ રાખો' બટનને દબાવો.</translation>
+<translation id="8366694425498033255">પસંદગી કીઝ</translation>
 <translation id="8368027906805972958">અજાણ્યું અથવા અસમર્થિત ડિવાઇસ (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368859634510605990">બધાં બુકમાર્ક્સ &amp;ખોલો</translation>
 <translation id="8370294614544004647">લૅપટૉપ બંધ કરવામાં આવે ત્યારે નિષ્ક્રિય કરો</translation>

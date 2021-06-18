@@ -39,7 +39,9 @@
 <translation id="1231733316453485619">સિંક કરવાનું ચાલુ કરીએ?</translation>
 <translation id="123724288017357924">કૅશ કરેલ કન્ટેન્ટને અવગણીને વર્તમાન પેજ ફરીથી લોડ કરો</translation>
 <translation id="1240288207750131269"><ph name="LANG" /> લોડ કરી રહ્યાં છીએ</translation>
+<translation id="1242883863226959074">ડિવાઇસ</translation>
 <translation id="124678866338384709">વર્તમાન ટૅબ બંધ કરો</translation>
+<translation id="1246905108078336582">શું ક્લિપબોર્ડમાંથી સૂચન કાઢી નાખીએ?</translation>
 <translation id="1258753120186372309">Google ડૂડલ: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> શેર કરી શકાયો નથી</translation>
 <translation id="1283039547216852943">વિસ્તૃત કરવા માટે ટૅપ કરો</translation>
@@ -918,6 +920,7 @@
 <translation id="6864459304226931083">છબી ડાઉનલોડ કરો</translation>
 <translation id="6865313869410766144">સ્વતઃભરણ ફોર્મ ડેટા</translation>
 <translation id="6867400383614725881">નવી છૂપી ટૅબ</translation>
+<translation id="6869056123412990582">કમ્પ્યુટર</translation>
 <translation id="6882836635272038266">જોખમકારક જણાતી હોય એવી વેબસાઇટ, ડાઉનલોડ અને એક્સ્ટેંશન સામે માનક સંરક્ષણ.</translation>
 <translation id="688738109438487280">અસ્તિત્વમાંના ડેટાને <ph name="TO_ACCOUNT" /> માં ઉમેરો.</translation>
 <translation id="6891726759199484455">તમારો પાસવર્ડ કૉપિ કરવા માટે અનલૉક કરો</translation>
@@ -1154,6 +1157,7 @@
 <translation id="8393700583063109961">સંદેશ મોકલો</translation>
 <translation id="8410695015584479363">કિંમત ટ્રૅક કરો</translation>
 <translation id="8413126021676339697">પૂર્ણ ઇતિહાસ બતાવો</translation>
+<translation id="8424781820952413435">પેજ મોકલ્યું. તેને જોવા માટે, તમારા <ph name="DEVICE_TYPE" /> પર Chrome ખોલો</translation>
 <translation id="8427875596167638501">પ્રીવ્યૂ ટૅબ અડધી ઊંચાઈએ ખુલી</translation>
 <translation id="8428213095426709021">સેટિંગ</translation>
 <translation id="8438566539970814960">શોધ અને બ્રાઉઝિંગ વધુ સારું બનાવો</translation>
@@ -1195,6 +1199,7 @@
 <translation id="860282621117673749">કિંમતમાં ઘટાડા વિશે અલર્ટ</translation>
 <translation id="8616006591992756292">તમારા Google એકાઉન્ટમાં <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> પર બ્રાઉઝિંગ ઇતિહાસના બીજા સ્વરૂપો હોય શકે.</translation>
 <translation id="8617240290563765734">ડાઉનલોડ કરેલી કન્ટેન્ટમાં ઉલ્લેખિત, સૂચવેલ URL ખોલીએ?</translation>
+<translation id="8621068256433641644">ફોન</translation>
 <translation id="8636825310635137004">તમારા અન્ય ઉપકરણો પરથી તમારા ટૅબ્સ મેળવવા માટે, સમન્વયન ચાલુ કરો.</translation>
 <translation id="8641930654639604085">વયસ્ક સાઇટને અવરોધિત કરવાનો પ્રયાસ કરો</translation>
 <translation id="8655129584991699539">Chrome સેટિંગમાં તમે ડેટા સાફ કરી શકો છો</translation>

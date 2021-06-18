@@ -727,6 +727,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="6816797338148849397">Det finns information om det som är markerat. Tryck på uppåtpilen för att komma åt den.</translation>
 <translation id="6818242057446442178">Bakåt ord för ord</translation>
 <translation id="6820676911989879663">Ta en paus!</translation>
+<translation id="6837064795450991317">Dölj skrivbordsfält</translation>
 <translation id="6850010208275816200">Den aktuella appen visas i helskärmsläge. Om du blir ombedd att ange ditt lösenord måste du först stänga helskärmsläget.</translation>
 <translation id="6852052252232534364">Aktivera</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sek</translation>
@@ -762,6 +763,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="7076293881109082629">Logga in</translation>
 <translation id="7088960765736518739">Brytarstyrning</translation>
 <translation id="7098389117866926363">USB-C-enhet (vänstra porten på baksidan)</translation>
+<translation id="7106330611027933926">Visa skrivbordsfält</translation>
 <translation id="7118268675952955085">skärmbild</translation>
 <translation id="7131634465328662194">Du loggas ut automatiskt.</translation>
 <translation id="7143207342074048698">Ansluter</translation>
@@ -805,6 +807,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="7466449121337984263">Tryck på sensorn</translation>
 <translation id="7473891865547856676">Nej tack</translation>
 <translation id="7477793887173910789">Styr uppspelningen av musik, videor med mera</translation>
+<translation id="7482097454533720217">Få definitioner, översättningar eller enhetskonverteringar när du högerklickar eller trycker länge på text.</translation>
 <translation id="7483025031359818980">Markeringsområdet är inställt på helskärm</translation>
 <translation id="7486227320194954040">Komprimera markeringsverktygen</translation>
 <translation id="7497767806359279797">Välj språk och tangentbord</translation>
@@ -981,6 +984,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="8843682306134542540">Aktivera och inaktivera rotationslås. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Sök+Escape</translation>
 <translation id="8853703225951107899">Det gick fortfarande inte att verifiera pinkoden eller lösenordet. Obs! Om du nyligen har bytt lösenord ska du använda det gamla lösenordet. Det nya lösenordet börjar gälla när du loggar ut.</translation>
+<translation id="8863888432376731307">Be om en <ph name="INTENT" /> av <ph name="QUERY" /> och annat</translation>
 <translation id="8870509716567206129">Appen har inte stöd för delad skärm.</translation>
 <translation id="8871580645200179206">Aktivera och inaktivera mörkt tema. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Inte ansluten</translation>

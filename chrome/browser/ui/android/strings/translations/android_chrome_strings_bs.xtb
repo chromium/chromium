@@ -41,6 +41,7 @@
 <translation id="1240288207750131269">Učitavanje jezika <ph name="LANG" /></translation>
 <translation id="1242883863226959074">uređaj</translation>
 <translation id="124678866338384709">Zatvori trenutnu karticu</translation>
+<translation id="1246905108078336582">Ukloniti prijedlog iz međumemorije?</translation>
 <translation id="1258753120186372309">Google crtež: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Nije moguće podijeliti <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Dodirnite da proširite</translation>
@@ -361,6 +362,7 @@ Dodirnite i zadržite bilo koju riječ da je pretražite. Za fino podešavanje p
 <translation id="3295530008794733555">Pretražujte brže. Koristite manje podataka.</translation>
 <translation id="3297344142967351106">Glasovna pomoć</translation>
 <translation id="3303414029551471755">Nastaviti s preuzimanjem sadržaja?</translation>
+<translation id="333367884906698540">Bluetooth će se ponovo isključiti kada završite</translation>
 <translation id="3334729583274622784">Promijeniti ekstenziju fajla?</translation>
 <translation id="3341058695485821946">Pogledajte koliko ste podataka sačuvali</translation>
 <translation id="3341262203274374114">Nije moguće prestati pratiti. Nešto nije uredu.</translation>
@@ -1035,6 +1037,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="7641339528570811325">Obriši podatke pregledanja…</translation>
 <translation id="764170292089748542">Chrome ne pohranjuje vašu historiju pregledanja kada odaberete da pregledate privatno. I dalje možete koristiti oznake da pristupite omiljenim web lokacijama.</translation>
 <translation id="7646772052135772216">Sinhronizacija lozinki ne funkcionira</translation>
+<translation id="7655900163790317559">Uključivanje Bluetootha…</translation>
 <translation id="7658239707568436148">Otkaži</translation>
 <translation id="7665369617277396874">Dodaj račun</translation>
 <translation id="766587987807204883">Članci se prikazuju ovdje i možete ih čitati čak i kada ste van mreže</translation>

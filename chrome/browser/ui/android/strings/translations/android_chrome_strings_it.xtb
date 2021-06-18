@@ -41,6 +41,7 @@
 <translation id="1240288207750131269">Caricamento della lingua <ph name="LANG" /> in corso…</translation>
 <translation id="1242883863226959074">dispositivo</translation>
 <translation id="124678866338384709">Chiudi scheda corrente</translation>
+<translation id="1246905108078336582">Rimuovere il suggerimento dagli appunti?</translation>
 <translation id="1258753120186372309">Doodle di Google: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Impossibile condividere <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Tocca per espandere</translation>
@@ -361,6 +362,7 @@ Tocca e tieni premuta una parola per eseguire una ricerca. Per perfezionare la r
 <translation id="3295530008794733555">Naviga più velocemente. Consuma meno dati.</translation>
 <translation id="3297344142967351106">Assistenza vocale</translation>
 <translation id="3303414029551471755">Procedere al download dei contenuti?</translation>
+<translation id="333367884906698540">Al termine dell'operazione il Bluetooth verrà disattivato di nuovo</translation>
 <translation id="3334729583274622784">Vuoi cambiare l'estensione del file?</translation>
 <translation id="3341058695485821946">Scopri la quantità di dati risparmiata</translation>
 <translation id="3341262203274374114">Non è possibile non seguire più. Si è verificato un errore.</translation>
@@ -1035,6 +1037,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="7641339528570811325">Cancella dati di navigazione…</translation>
 <translation id="764170292089748542">Chrome non salva la cronologia di navigazione quando scegli di navigare in privato. Puoi comunque usare i preferiti per accedere ai siti che visiti più spesso.</translation>
 <translation id="7646772052135772216">La sincronizzazione delle password non funziona</translation>
+<translation id="7655900163790317559">Attivazione del Bluetooth in corso…</translation>
 <translation id="7658239707568436148">Annulla</translation>
 <translation id="7665369617277396874">Aggiungi account</translation>
 <translation id="766587987807204883">Qui vengono visualizzati gli articoli che potrai leggere anche offline</translation>

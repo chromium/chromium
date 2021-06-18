@@ -233,7 +233,6 @@
 <translation id="1244265436519979884">Pemulihan Linux sedang dijalankan</translation>
 <translation id="1244303850296295656">Ralat sambungan</translation>
 <translation id="1246863218384630739">Tidak dapat memasang <ph name="VM_NAME" />: URL imej mengembalikan kod ralat <ph name="HTTP_ERROR" />. Sila hubungi pentadbir anda.</translation>
-<translation id="1246905108078336582">Alih keluar cadangan daripada papan keratan?</translation>
 <translation id="1251366534849411931">Tiada tanda kurung keriting pembuka: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Tindakan ini akan mengosongkan <ph name="TOTAL_USAGE" /> daripada data yang disimpan oleh tapak dan apl yang dipasang</translation>
 <translation id="125220115284141797">Lalai</translation>
@@ -544,6 +543,7 @@
 <translation id="1589055389569595240">Tunjukkan Ejaan dan Tatabahasa</translation>
 <translation id="1591679663873027990">Berikan Parallels Desktop kebenaran untuk mengakses peranti USB. Parallels Desktop tidak akan ingat peranti USB selepas peranti itu dialih keluar.</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" /> telah melumpuhkan penyahpepijatan ADB, yang akan menetapkan semula <ph name="DEVICE_TYPE" /> anda. Sandarkan fail anda sebelum memulakan semula peranti.</translation>
+<translation id="1592126057537046434">Jawapan Segera terjemahan</translation>
 <translation id="1593594475886691512">Memformatkan...</translation>
 <translation id="159359590073980872">Cache Imej</translation>
 <translation id="1593926297800505364">Simpan kaedah pembayaran</translation>
@@ -758,7 +758,6 @@
 <translation id="1795214765651529549">Gunakan Klasik</translation>
 <translation id="1796588414813960292">Ciri yang memerlukan bunyi tidak akan berfungsi</translation>
 <translation id="1799071797295057738">Sambungan "<ph name="EXTENSION_NAME" />" telah dilumpuhkan secara automatik.</translation>
-<translation id="1800973090344019061">Sambungan "<ph name="APP_NAME" />" mahu berkongsi kandungan skrin anda.</translation>
 <translation id="1802624026913571222">Tidur apabila penutup ditutup</translation>
 <translation id="1802687198411089702">Halaman tidak bertindak balas. Anda boleh menunggu atau keluar.</translation>
 <translation id="1803531841600994172">Bahasa sasaran terjemahan</translation>
@@ -1104,6 +1103,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2163004395084716754">Kekunci tidak dikenali. Tekan mana-mana kekunci untuk keluar.</translation>
 <translation id="2163470535490402084">Sila sambung ke Internet untuk melog masuk ke <ph name="DEVICE_TYPE" /> anda.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> dan 1 lagi suis</translation>
+<translation id="2165177462441582039">Pilih tempoh serlahan dipaparkan pada setiap item</translation>
 <translation id="2165421703844373933">Akses Assistant anda apabila anda menyebut "Ok Google". Untuk menjimatkan bateri, pilih “Hidup (Disyorkan)”. Assistant anda hanya akan memberikan respons apabila peranti anda dipasang palam atau mengecas.</translation>
 <translation id="2166369534954157698">The quick brown fox jumps over the lazy dog</translation>
 <translation id="2167276631610992935">JavaScript</translation>
@@ -1353,6 +1353,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2442916515643169563">Bayangan teks</translation>
 <translation id="2445081178310039857">Direktori akar sambungan adalah diperlukan.</translation>
 <translation id="2445484935443597917">Buat Profil Baharu</translation>
+<translation id="244641233057214044">Berkaitan dengan carian anda</translation>
 <translation id="2448312741937722512">Jenis</translation>
 <translation id="2448810255793562605">Autoimbas akses suis</translation>
 <translation id="2450223707519584812">Anda tidak akan dapat menambahkan pengguna kerana kunci API Google tiada. Lihat <ph name="DETAILS_URL" /> untuk mendapatkan butiran.</translation>
@@ -1609,6 +1610,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="2721334646575696520">Microsoft Edge</translation>
 <translation id="2721695630904737430">Pengguna di bawah seliaan telah dilumpuhkan oleh pentadbir anda.</translation>
 <translation id="2724841811573117416">Log WebRTC</translation>
+<translation id="272488616838512378">Penukaran Unit</translation>
 <translation id="2725200716980197196">Sambungan rangkaian dipulihkan</translation>
 <translation id="2727633948226935816">Jangan ingatkan saya lagi</translation>
 <translation id="2727712005121231835">Saiz Sebenar</translation>
@@ -1623,6 +1625,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="2734760316755174687">Tapak di bawah <ph name="SITE_GROUP_NAME" /> akan ditetapkan semula juga.</translation>
 <translation id="2735712963799620190">Jadual</translation>
 <translation id="2737363922397526254">Runtuhkan...</translation>
+<translation id="2737916598897808047"><ph name="APP_NAME" /> mahu berkongsi kandungan skrin anda dengan <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">Jangan benarkan laman menggunakan fon yang dipasang pada peranti anda</translation>
 <translation id="2738771556149464852">Bukan Selepas</translation>
 <translation id="2739191690716947896">Nyahpepijat</translation>
@@ -1793,6 +1796,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="291056154577034373">BELUM DIBACA</translation>
 <translation id="2910718431259223434">Kesilapan telah berlaku. Sila cuba lagi atau hubungi pemilik atau pentadbir peranti anda. Kod ralat: <ph name="ERROR_CODE" />.</translation>
 <translation id="2911433807131383493">Buka tutorial ChromeVox</translation>
+<translation id="2912247081180973411">Tutup tetingkap</translation>
 <translation id="2913331724188855103">Benarkan tapak untuk menyimpan dan membaca data kuki (disyorkan)</translation>
 <translation id="2915102088417824677">Lihat log aktiviti</translation>
 <translation id="2915873080513663243">Autoimbas</translation>
@@ -2051,6 +2055,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="3201422919974259695">Peranti USB yang tersedia akan dipaparkan di sini.</translation>
 <translation id="3202131003361292969">Laluan</translation>
 <translation id="3202173864863109533">Audio bagi tab ini sedang diredam.</translation>
+<translation id="3202879084005596395">Anda boleh menukar tetapan tambahan pada bila-bila masa atau membuka panduan persediaan sekali lagi daripada tetapan Akses Suis.</translation>
 <translation id="3208321278970793882">Apl</translation>
 <translation id="3208584281581115441">Semak sekarang</translation>
 <translation id="3208703785962634733">Tidak disahkan</translation>
@@ -2128,6 +2133,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="3298789223962368867">URL tidak sah dimasukkan.</translation>
 <translation id="32991397311664836">Peranti:</translation>
 <translation id="33022249435934718">Pemegang GDI</translation>
+<translation id="3302388252085547855">Masukkan justifikasi...</translation>
 <translation id="3303260552072730022">Sambungan mencetuskan skrin penuh.</translation>
 <translation id="3303818374450886607">Salinan</translation>
 <translation id="3303855915957856445">Tiada hasil carian ditemui</translation>
@@ -2682,6 +2688,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="3888586133700543064">Maklumat ini membantu kami memahami isu Assistant anda dengan lebih baik. Maklumat ini akan disimpan selama maksimum 90 hari dan akses dihadkan kepada pasukan kejuruteraan dan maklum balas yang berkenaan.</translation>
 <translation id="3890064827463908288">Hidupkan Penyegerakan Chrome untuk menggunakan Penyegerakan Wi-Fi</translation>
 <translation id="3892414795099177503">Tambahkan OpenVPN / L2TP...</translation>
+<translation id="3893295674388762059">Untuk mengosongkan data, tutup semua tetingkap Inkognito</translation>
 <translation id="3893536212201235195">Baca dan tukar tetapan kebolehaksesan anda</translation>
 <translation id="3893630138897523026">ChromeVox (maklum balas dituturkan)</translation>
 <translation id="3893764153531140319"><ph name="DOWNLOADED_SIZE" />/<ph name="DOWNLOAD_SIZE" /></translation>
@@ -2793,6 +2800,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="3984159763196946143">Tidak dapat memulakan mod tunjuk cara</translation>
 <translation id="3984431586879874039">Benarkan tapak ini melihat kunci keselamatan anda?</translation>
 <translation id="398477389655464998">Salin Pautan kepada Serlahan</translation>
+<translation id="3984862166739904574">Jawapan Segera takrif</translation>
 <translation id="3987544746655539083">Teruskan menyekat tapak ini daripada mengakses lokasi anda</translation>
 <translation id="3987938432087324095">Maaf, kurang jelas.</translation>
 <translation id="3987993985790029246">Salin pautan</translation>
@@ -3263,6 +3271,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="4549791035683739768">Kunci keselamatan anda tidak menyimpan cap jari.</translation>
 <translation id="4551763574344810652">Tekan <ph name="MODIFIER_KEY_DESCRIPTION" /> untuk buat asal</translation>
 <translation id="4553526521109675518">Anda perlu memulakan semula Chromebook anda untuk menukar bahasa peranti. <ph name="BEGIN_LINK_LEARN_MORE" />Ketahui lebih lanjut<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="4553898717331438468">Mulakan semula persediaan</translation>
 <translation id="4554591392113183336">Sambungan luar ialah versi yang sama atau lebih rendah berbanding yang sedia ada.</translation>
 <translation id="4555769855065597957">Bayang</translation>
 <translation id="4555863373929230635">Untuk menyimpan kata laluan pada Akaun Google anda, log masuk dan aktifkan penyegerakan.</translation>
@@ -3281,6 +3290,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="4568025708905928793">Kunci keselamatan sedang diminta</translation>
 <translation id="4568213207643490790">Maaf, akaun Google tidak dibenarkan pada peranti ini.</translation>
 <translation id="4569747168316751899">Apabila melahu</translation>
+<translation id="4570201855944865395">Justifikasi untuk meminta sambungan ini:</translation>
 <translation id="4572659312570518089">Pengesahan dibatalkan semasa menyambung ke "<ph name="DEVICE_NAME" />".</translation>
 <translation id="4572779512957829735">Masukkan PIN untuk kunci keselamatan anda</translation>
 <translation id="4573515936045019911">Sambungan rangkaian diperlukan untuk meningkatkan Linux. Sila sambung ke Internet dan cuba lagi.</translation>
@@ -3762,6 +3772,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5127805178023152808">Penyegerakan dimatikan</translation>
 <translation id="5127881134400491887">Urus sambungan rangkaian</translation>
 <translation id="512903556749061217">dipasang</translation>
+<translation id="5130080518784460891">Eten</translation>
 <translation id="5130675701626084557">Profil tidak dapat dimuat turun. Sila cuba sebentar lagi atau hubungi pembawa untuk mendapatkan bantuan.</translation>
 <translation id="5131591206283983824">Penyeretan ketikan pad sentuh</translation>
 <translation id="5135085122826131075">Akses Assistant anda apabila anda menyebut "Ok Google".</translation>
@@ -3820,6 +3831,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> mahu memuat turun berbilang fail</translation>
 <translation id="5192062846343383368">Buka apl Family Link untuk melihat tetapan pengawasan anda</translation>
 <translation id="5193988420012215838">Disalin ke papan keratan anda</translation>
+<translation id="5194256020863090856">Tindakan ini hanya melibatkan tetingkap Inkognito</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198430103906431024">Hantar data penggunaan dan diagnostik. Pada masa ini, peranti ini menghantar data diagnostik dan penggunaan peranti serta apl kepada Google secara automatik. Data ini akan membantu peningkatan kestabilan sistem dan apl serta pelbagai lagi. Sesetengah data agregat juga akan membantu apl dan rakan kongsi Google, seperti pembangun Android. Jika tetapan Aktiviti Web &amp; Apl tambahan anda dihidupkan, data ini mungkin disimpan pada Akaun Google anda.</translation>
 <translation id="5199729219167945352">Eksperimen</translation>
@@ -3850,6 +3862,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5227679487546032910">Avatar teal lalai</translation>
 <translation id="5228579091201413441">Dayakan penyegerakan</translation>
 <translation id="5230516054153933099">Tingkap</translation>
+<translation id="523271575098439435">Tambah bahasa laman web pilihan anda. Bahasa teratas daripada senarai akan digunakan untuk terjemahan.</translation>
 <translation id="5233019165164992427">Port nyahpepijat NaCl</translation>
 <translation id="5233231016133573565">ID Proses</translation>
 <translation id="5233638681132016545">Tab baharu</translation>
@@ -4056,6 +4069,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5470735824776589490">Mula semula diperlukan sebelum peranti anda boleh ditetapkan semula dengan Powerwash. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="5471768120198416576">Hai! Saya ialah suara teks ke pertuturan anda.</translation>
 <translation id="5472627187093107397">Simpan kata laluan untuk tapak ini</translation>
+<translation id="5473075389972733037">IBM</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN mestilah sekurang-kurangnya satu aksara}other{PIN mestilah sekurang-kurangnya # aksara}}</translation>
 <translation id="5481273127572794904">Tidak dibenarkan untuk memuat turun berbilang fail secara automatik</translation>
 <translation id="5481941284378890518">Tambahkan Pencetak Berdekatan</translation>
@@ -4574,6 +4588,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="6057312498756061228">Fail ini terlalu besar untuk semakan keselamatan. Anda boleh membuka fail sehingga 50 MB.</translation>
 <translation id="6057381398996433816">Tapak ini telah disekat daripada menggunakan penderia gerakan dan cahaya.</translation>
 <translation id="6059276912018042191">Tab Chrome baru-baru ini</translation>
+<translation id="6059347142391822629">Tekan suis anda apabila fokus berada pada butang Selesai untuk menutup panduan.</translation>
 <translation id="6059652578941944813">Hierarki Sijil</translation>
 <translation id="6059925163896151826">Peranti USB</translation>
 <translation id="6061882183774845124">Hantar pautan ke peranti anda</translation>
@@ -4652,7 +4667,6 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="6136114942382973861">Tutup bar muat turun</translation>
 <translation id="6136287496450963112">Kunci keselamatan anda tidak dilindungi dengan PIN. Untuk mengurus cap jari, buat PIN dahulu.</translation>
 <translation id="6138680304137685902">Tandatangan X9.62 ECDSA dengan SHA-384</translation>
-<translation id="6138774640412545950">Sambungan "<ph name="APP_NAME" />" mahu berkongsi kandungan skrin anda dengan <ph name="TARGET_NAME" />.</translation>
 <translation id="6141988275892716286">Sahkan muat turun</translation>
 <translation id="6143186082490678276">Dapatkan Bantuan</translation>
 <translation id="6143366292569327983">Pilih bahasa halaman yang perlu diterjemahkan</translation>
@@ -4792,6 +4806,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="6291949900244949761">Tanya apabila tapak mahu mengakses peranti USB (disyorkan)</translation>
 <translation id="6291953229176937411">&amp;Paparkan dalam Pencari</translation>
 <translation id="6292699686837272722">Tab mengecil kepada lebar sederhana</translation>
+<translation id="6294759976468837022">Kelajuan autoimbas</translation>
 <translation id="6295158916970320988">Semua tapak</translation>
 <translation id="6295855836753816081">Menyimpan...</translation>
 <translation id="6298962879096096191">Gunakan Google Play untuk memasang apl Android</translation>
@@ -5172,6 +5187,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="6723839937902243910">Kuasa</translation>
 <translation id="6725073593266469338">Perkhidmatan UI</translation>
 <translation id="6725206449694821596">Protokol Cetakan Internet (IPP)</translation>
+<translation id="6725970970008349185">Bilangan calon untuk dipaparkan bagi setiap halaman</translation>
 <translation id="672609503628871915">Lihat apa yang baharu</translation>
 <translation id="67269783048918309">Hantar data penggunaan dan diagnostik. Pada masa ini, peranti ini menghantar data diagnostik dan penggunaan peranti serta apl kepada Google secara automatik. Data ini tidak akan digunakan untuk mengenal pasti anak anda dan akan membantu peningkatan kestabilan sistem dan apl serta pelbagai lagi. Sesetengah data agregat juga akan membantu apl dan rakan kongsi Google, seperti pembangun Android. <ph name="BEGIN_LINK1" />Tetapan<ph name="END_LINK1" /> ini dikuatkuasakan oleh pemilik. Jika tetapan Aktiviti Web &amp; Apl tambahan dihidupkan untuk anak anda, data ini mungkin disimpan ke akaun Googlenya. <ph name="BEGIN_LINK2" />Ketahui Lebih Lanjut<ph name="END_LINK2" /></translation>
 <translation id="6727969043791803658">Disambungkan, bateri <ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -5831,6 +5847,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="746861123368584540">Sambungan dimuatkan</translation>
 <translation id="7470424110735398630">Dibenarkan untuk melihat papan keratan anda</translation>
 <translation id="747114903913869239">Ralat: Tidak dapat menyahkod sambungan</translation>
+<translation id="7471520329163184433">Lebih perlahan</translation>
 <translation id="7473891865547856676">Tidak, Terima Kasih</translation>
 <translation id="747459581954555080">Pulihkan semua</translation>
 <translation id="747507174130726364">{NUM_DAYS,plural, =1{Pemulangan segera diperlukan}other{Pulangkan <ph name="DEVICE_TYPE" /> dalam {NUM_DAYS} hari}}</translation>
@@ -6263,6 +6280,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="7910768399700579500">&amp;Folder baharu</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912080627461681647">Kata laluan anda telah ditukar pada pelayan. Sila log keluar, kemudian log masuk semula.</translation>
+<translation id="7912974581251770345">Terjemahan</translation>
 <translation id="7915457674565721553">Sambung ke Internet untuk menyediakan kawalan ibu bapa</translation>
 <translation id="7918257978052780342">Daftar</translation>
 <translation id="7919123827536834358">Terjemahkan bahasa ini secara automatik</translation>
@@ -6495,6 +6513,7 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="8155676038687609779">{COUNT,plural, =0{Tiada kata laluan yang terjejas dijumpai}=1{{COUNT} kata laluan yang terjejas}other{{COUNT} kata laluan yang terjejas}}</translation>
 <translation id="8157248655669507702">Dayakan data mudah alih untuk memasang profil eSIM</translation>
 <translation id="8157704005178149728">Menyediakan pengawasan</translation>
+<translation id="8157954703669743215">Melihat <ph name="RELATIVE_TIME" /></translation>
 <translation id="8158117992543756526">Peranti ini berhenti menerima kemas kini perisian dan keselamatan automatik pada <ph name="MONTH_AND_YEAR" />. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">Ralat Tetapan Kepercayaan Sijil</translation>
 <translation id="8160775796528709999">Dapatkan sari kata untuk audio dan video anda dengan mendayakan Sari Kata Langsung dalam tetapan</translation>
@@ -6529,6 +6548,7 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="8189750580333936930">Kotak Pasir Privasi</translation>
 <translation id="8190193592390505034">Disambungkan ke <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Uruskan apl, sambungan dan tema anda</translation>
+<translation id="8192944472786724289"><ph name="APP_NAME" /> mahu berkongsi kandungan skrin anda.</translation>
 <translation id="8195027750202970175">Saiz pada cakera</translation>
 <translation id="8198323535106903877">Kami akan memasang <ph name="NUMBER_OF_APPS" /> apl itu untuk anda</translation>
 <translation id="8198456017687137612">Menghantar tab</translation>
@@ -6673,6 +6693,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8363095875018065315">stabil</translation>
 <translation id="8363142353806532503">Mikrofon disekat</translation>
 <translation id="8366396658833131068">Sambungan rangkaian anda sudah dipulihkan. Sila pilih rangkaian lain atau tekan butang 'Teruskan' di bawah untuk melancarkan apl kios anda.</translation>
+<translation id="8366694425498033255">Kunci pemilihan</translation>
 <translation id="8368027906805972958">Peranti tidak diketahui atau tidak disokong (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368859634510605990">&amp;Buka semua penanda halaman</translation>
 <translation id="8370294614544004647">Tidur apabila komputer riba ditutup</translation>
@@ -6780,6 +6801,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8499083585497694743">Nyahredamkan mikrofon</translation>
 <translation id="8502536196501630039">Untuk menggunakan apl daripada Google Play, anda mesti memulihkan apl anda dahulu. Sesetengah data mungkin hilang.</translation>
 <translation id="8503813439785031346">Nama pengguna</translation>
+<translation id="850382998924680137">Dilihat hari ini</translation>
 <translation id="8507227974644337342">Peleraian skrin</translation>
 <translation id="850875081535031620">Tiada perisian berbahaya ditemui</translation>
 <translation id="8509177919508253835">Tetapkan semula kunci keselamatan dan buat PIN</translation>
@@ -6963,6 +6985,7 @@ Tekan suis yang telah ditetapkan untuk membatalkan penetapan.</translation>
 <translation id="8712637175834984815">Faham</translation>
 <translation id="8713570323158206935">Hantar <ph name="BEGIN_LINK1" />maklumat sistem<ph name="END_LINK1" /></translation>
 <translation id="8714838604780058252">Grafik latar</translation>
+<translation id="871515167518607670">Pilih peranti. Kemudian, untuk melihat halaman, buka Chrome pada peranti itu.</translation>
 <translation id="8715480913140015283">Tab latar belakang menggunakan kamera anda</translation>
 <translation id="8716931980467311658">Padamkan semua apl dan data Linux dalam folder fail Linux anda daripada <ph name="DEVICE_TYPE" /> ini?</translation>
 <translation id="8717864919010420084">Salin Pautan</translation>
@@ -7206,6 +7229,7 @@ Tekan suis yang telah ditetapkan untuk membatalkan penetapan.</translation>
 <translation id="895347679606913382">Memulakan...</translation>
 <translation id="8957757410289731985">Sesuaikan profil</translation>
 <translation id="895944840846194039">Memori JavaScript</translation>
+<translation id="8960208913905765425">Jawapan Segera penukaran unit</translation>
 <translation id="8962051932294470566">Anda hanya boleh berkongsi satu fail pada satu-satu masa. Cuba lagi apabila pemindahan semasa sudah selesai nanti.</translation>
 <translation id="8962083179518285172">Sembunyikan Butiran</translation>
 <translation id="8962918469425892674">Tapak ini menggunakan penderia gerakan atau cahaya.</translation>

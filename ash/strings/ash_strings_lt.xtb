@@ -727,6 +727,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="6816797338148849397">Pasiekiama su pasirinkimu susijusi informacija Norėdami pasiekti, spustelėkite rodyklės aukštyn klavišą.</translation>
 <translation id="6818242057446442178">Grįžti per vieną žodį</translation>
 <translation id="6820676911989879663">Padarykite pertrauką!</translation>
+<translation id="6837064795450991317">Slėpti darbalaukio juostą</translation>
 <translation id="6850010208275816200">Jūsų dabartinė programa veikia viso ekrano režimu. Programai paprašius jūsų slaptažodžio, pirmiausia išjunkite viso ekrano režimą.</translation>
 <translation id="6852052252232534364">Sp. ir suakt.</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sek.</translation>
@@ -762,6 +763,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="7076293881109082629">Prisijungimas</translation>
 <translation id="7088960765736518739">Prieiga jungikliu</translation>
 <translation id="7098389117866926363">USB-C įrenginys (prievadas kairėje, užpakalinėje dalyje)</translation>
+<translation id="7106330611027933926">Rodyti darbalaukio juostą</translation>
 <translation id="7118268675952955085">ekrano kopija</translation>
 <translation id="7131634465328662194">Būsite automatiškai atjungti.</translation>
 <translation id="7143207342074048698">Jungiama</translation>
@@ -805,6 +807,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="7466449121337984263">Palieskite jutiklį</translation>
 <translation id="7473891865547856676">Ne, ačiū</translation>
 <translation id="7477793887173910789">Valdykite savo muziką, vaizdo įrašus ir žaidimus</translation>
+<translation id="7482097454533720217">Spustelėkite dešiniuoju klavišu arba palieskite ir palaikykite tekstą, kad būtų pateikti apibrėžimai, vertimai ar vienetų konvertavimas.</translation>
 <translation id="7483025031359818980">Pasirinkta viso ekrano sritis</translation>
 <translation id="7486227320194954040">Sutraukti žymeklio įrankius</translation>
 <translation id="7497767806359279797">Pasirinkti kalbą ir klaviatūros išdėstymą</translation>
@@ -981,6 +984,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="8843682306134542540">Perjungti pasukimo užrakinimą. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Paieškos klavišas + „Esc“</translation>
 <translation id="8853703225951107899">Vis tiek nepavyko patvirtinti PIN kodo arba slaptažodžio. Pastaba: jei neseniai pakeitėte slaptažodį, naudokite senąjį. Naujas slaptažodis bus pritaikytas atsijungus.</translation>
+<translation id="8863888432376731307">Jums bus pateiktas „<ph name="QUERY" />“ <ph name="INTENT" /> ir dar daugiau</translation>
 <translation id="8870509716567206129">Programoje nepalaikomas skaidytas ekranas.</translation>
 <translation id="8871580645200179206">Perjungti Tamsiąją temą. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Neprisijungta</translation>

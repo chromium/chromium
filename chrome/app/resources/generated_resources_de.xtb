@@ -231,7 +231,6 @@
 <translation id="1244265436519979884">Wiederherstellung für Linux wird gerade ausgeführt</translation>
 <translation id="1244303850296295656">Erweiterungsfehler</translation>
 <translation id="1246863218384630739"><ph name="VM_NAME" /> konnte nicht installiert werden: Die Image-URL hat einen <ph name="HTTP_ERROR" />-Fehlercode zurückgegeben. Bitte wenden Sie sich an Ihren Administrator.</translation>
-<translation id="1246905108078336582">Vorschlag aus Zwischenablage entfernen?</translation>
 <translation id="1251366534849411931">Erwartete öffnende geschweifte Klammer: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Dadurch werden <ph name="TOTAL_USAGE" /> an von Websites oder installierten Apps gespeicherten Daten gelöscht</translation>
 <translation id="125220115284141797">Standard</translation>
@@ -744,7 +743,6 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="1795214765651529549">Klassisches Design verwenden</translation>
 <translation id="1796588414813960292">Funktionen, die Ton erfordern, funktionieren dann nicht</translation>
 <translation id="1799071797295057738">Die Erweiterung "<ph name="EXTENSION_NAME" />" wurde automatisch deaktiviert.</translation>
-<translation id="1800973090344019061">Die Erweiterung „<ph name="APP_NAME" />“ möchte den Inhalt Ihres Bildschirms teilen.</translation>
 <translation id="1802624026913571222">Beim Zuklappen in den Ruhemodus wechseln</translation>
 <translation id="1802687198411089702">Die Seite reagiert nicht. Sie können warten, bis sie wieder reagiert, oder sie schließen.</translation>
 <translation id="1803531841600994172">Sprache, in die übersetzt wird</translation>
@@ -1605,6 +1603,7 @@ und „Strg + Alt + dunkler“, um herauszuzoomen.</translation>
 <translation id="2734760316755174687">Websites unter <ph name="SITE_GROUP_NAME" /> werden ebenfalls zurückgesetzt.</translation>
 <translation id="2735712963799620190">Zeitplan</translation>
 <translation id="2737363922397526254">Minimieren...</translation>
+<translation id="2737916598897808047"><ph name="APP_NAME" /> möchte den Inhalt Ihres Bildschirms mit <ph name="TARGET_NAME" /> teilen.</translation>
 <translation id="2738030019664645674">Websites dürfen keine auf meinem Gerät installierten Schriftarten verwenden</translation>
 <translation id="2738771556149464852">Nicht nach</translation>
 <translation id="2739191690716947896">Fehlerbehebung</translation>
@@ -3741,6 +3740,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5127805178023152808">Synchronisierung ist deaktiviert</translation>
 <translation id="5127881134400491887">Netzwerkverbindungen verwalten</translation>
 <translation id="512903556749061217">angeschlossen</translation>
+<translation id="5130080518784460891">Eten</translation>
 <translation id="5130675701626084557">Das Profil konnte nicht heruntergeladen werden. Bitte versuche es später noch einmal oder wende dich an deinen Mobilfunkanbieter.</translation>
 <translation id="5131591206283983824">Antippen und Ziehen für Touchpad</translation>
 <translation id="5135085122826131075">Mit "Ok Google" können Sie auf Ihren Assistant zugreifen.</translation>
@@ -4035,6 +4035,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5470735824776589490">Für das Zurücksetzen Ihres Geräts mit Powerwash ist ein Neustart erforderlich. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="5471768120198416576">Hallo! Ich bin die Stimme Ihrer Sprachausgabe.</translation>
 <translation id="5472627187093107397">Passwörter für diese Website speichern</translation>
+<translation id="5473075389972733037">IBM</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{Die PIN muss aus mindestens 1 Zeichen bestehen}other{Die PIN muss aus mindestens # Zeichen bestehen}}</translation>
 <translation id="5481273127572794904">Dürfen nicht automatisch mehrere Dateien herunterladen</translation>
 <translation id="5481941284378890518">Drucker in der Nähe hinzufügen</translation>
@@ -4631,7 +4632,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6136114942382973861">Downloadleiste schließen</translation>
 <translation id="6136287496450963112">Ihr Sicherheitsschlüssel ist nicht durch eine PIN geschützt. Erstellen Sie zuerst eine PIN, um Fingerabdrücke zu verwalten.</translation>
 <translation id="6138680304137685902">X9.62-ECDSA-Signatur mit SHA-384</translation>
-<translation id="6138774640412545950">Die Erweiterung „<ph name="APP_NAME" />“ möchte den Inhalt Ihres Bildschirms mit <ph name="TARGET_NAME" /> teilen.</translation>
 <translation id="6141988275892716286">Download bestätigen</translation>
 <translation id="6143186082490678276">Hilfe</translation>
 <translation id="6143366292569327983">Wählen Sie die Ausgangssprache aus</translation>
@@ -5148,6 +5148,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6723839937902243910">Leistung</translation>
 <translation id="6725073593266469338">UI-Dienst</translation>
 <translation id="6725206449694821596">Internet Printing Protocol (IPP)</translation>
+<translation id="6725970970008349185">Anzahl von Kandidaten, die pro Seite angezeigt werden sollen</translation>
 <translation id="672609503628871915">Neuigkeiten</translation>
 <translation id="67269783048918309">Sie haben die Möglichkeit, Nutzungsdaten &amp; Fehlerberichte zu senden. Dieses Gerät sendet momentan automatisch Diagnose- sowie Geräte- und App-Nutzungsdaten an Google. Ihr Kind wird mithilfe dieser Daten nicht identifiziert, sie helfen jedoch beispielsweise dabei, die Stabilität des Systems und der Apps zu verbessern. Einige aggregierte Daten sind auch für Apps und Partner von Google, beispielsweise Android-Entwickler, nützlich. Diese <ph name="BEGIN_LINK1" />Einstellung<ph name="END_LINK1" /> wird vom Inhaber erzwungen. Wenn zusätzlich die Einstellung "Web- &amp; App-Aktivitäten" für Ihr Kind aktiviert ist, werden diese Daten in seinem Google-Konto gespeichert. <ph name="BEGIN_LINK2" />Weitere Informationen<ph name="END_LINK2" /></translation>
 <translation id="6727969043791803658">Verbunden, Akkustand bei <ph name="BATTERY_PERCENTAGE" /> %</translation>
@@ -6504,6 +6505,7 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034">Verbindung zu <ph name="PROVIDER_NAME" /> wird hergestellt.</translation>
 <translation id="8191230140820435481">Apps, Erweiterungen und Designs verwalten</translation>
+<translation id="8192944472786724289"><ph name="APP_NAME" /> möchte den Inhalt Ihres Bildschirms teilen.</translation>
 <translation id="8195027750202970175">Dateigröße</translation>
 <translation id="8198323535106903877"><ph name="NUMBER_OF_APPS" /> Apps werden installiert</translation>
 <translation id="8198456017687137612">Tab wird gestreamt</translation>
@@ -6647,6 +6649,7 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8363095875018065315">Stabil</translation>
 <translation id="8363142353806532503">Mikrofon blockiert</translation>
 <translation id="8366396658833131068">Ihre Netzwerkverbindung wurde wiederhergestellt. Wählen Sie ein anderes Netzwerk aus oder klicken Sie unten auf "Weiter", um Ihre Kiosk-App zu starten.</translation>
+<translation id="8366694425498033255">Auswahltasten</translation>
 <translation id="8368027906805972958">Unbekanntes oder nicht unterstütztes Gerät (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368859634510605990">&amp;Alle Lesezeichen öffnen</translation>
 <translation id="8370294614544004647">Beim Zuklappen des Laptops in den Ruhemodus wechseln</translation>

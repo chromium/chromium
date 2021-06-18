@@ -159,7 +159,6 @@
 
       有効な <ph name="URL_LABEL" /> パターンについて詳しくは、https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns をご覧ください。このポリシーの値に「<ph name="WILDCARD_VALUE" />」は使用できません。</translation>
 <translation id="120937472976628837">ファン情報を報告する</translation>
-<translation id="1214202898523114033">ポート 10080（有効期限: 2022 年 4 月 1 日）</translation>
 <translation id="1216919699175573511">Signed HTTP Exchange（SXG）のサポートを有効にします</translation>
 <translation id="1219695476179627719">デバイスですでに新しいバージョンを実行している場合に、<ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" /> で設定されているバージョンに戻すかどうかを指定します。
 
@@ -4030,15 +4029,6 @@
 <translation id="6506486086262398387">このポリシーを有効に設定した場合、<ph name="PRODUCT_OS_NAME" /> のネットワーク ファイル共有の機能では、必要に応じて SMB 共有の認証に NTLM が使用されます。このポリシーを無効に設定した場合、SMB 共有の NTLM 認証は無効になります。
 
       このポリシーを未設定のままにした場合、デフォルトの動作は管理対象ユーザーに対して無効になり、それ以外のユーザーに対しては有効になります。</translation>
-<translation id="651012148496266279">このポリシーでは、<ph name="PRODUCT_NAME" /> に組み込まれている制限ポートのリストを回避するポートを指定できます。値には、発信接続を許可する 0 個以上のポートのカンマ区切りのリストを指定します。
-
-      ポートは、<ph name="PRODUCT_NAME" /> を経路としてさまざまなネットワークの脆弱性が悪用されるのを防ぐために制限されています。このポリシーを設定した場合、ネットワークが攻撃にさらされる可能性があります。このポリシーは、ブロックされたポートで実行されるサービスを標準ポート（ポート 80 または 443）に移行する際に、コード「ERR_UNSAFE_PORT」のエラーを一時的に解決するためのものです。
-
-      悪意のあるウェブサイトは、このポリシーの設定の有無と対象のポートを簡単に検出して標的型攻撃に使用することができます。
-
-      空の値を設定した場合や未設定のままにした場合は、すべての制限ポートがブロックされます。有効な値と無効な値が設定されている場合は、有効な値のみが適用されます。
-
-      このポリシーは「--explicitly-allowed-ports」コマンドライン オプションをオーバーライドします。</translation>
 <translation id="6515357889978918016"><ph name="PLUGIN_VM_NAME" /> の画像</translation>
 <translation id="6518102411616460786">ターゲット チャンネルがチャンネル ダウングレードの対象になるまで待機する</translation>
 <translation id="6520802717075138474">初回実行時にデフォルトのブラウザから検索エンジンをインポートする</translation>
@@ -6136,7 +6126,6 @@
       このポリシーは一時的なもので、今後リリースされるバージョン <ph name="PRODUCT_NAME" /> で削除される予定です。ポリシーの削除後は、<ph name="PRODUCT_NAME" /> はその他の DNS タイプのクエリを常に行えるようになります。</translation>
 <translation id="9167719789236691545"><ph name="PRODUCT_OS_NAME" /> ファイルアプリでドライブを無効にする</translation>
 <translation id="9187743794267626640">外部ストレージのマウントを無効にする</translation>
-<translation id="9190257149451871588">ポート 6566（有効期限: 2021 年 10 月 15 日）</translation>
 <translation id="9190456586252617675">このポリシーでは、アシスタントのオンボーディング エクスペリエンスのモードを管理します。
 
       このポリシーを未設定のままにするか <ph name="ASSISTANT_ONBOARDING_MODE_DEFAULT" /> に設定した場合、アシスタントのオンボーディング エクスペリエンスではデフォルトのモードが使用されます。
@@ -6154,7 +6143,6 @@
 <translation id="927444535723396977">このポリシーを 1 に設定した場合、ウェブサイトによる JavaScript の実行が許可されます。このポリシーを 2 に設定した場合、JavaScript は拒否されます。
 
       このポリシーを未設定のままにした場合、JavaScript は許可されますが、ユーザーはこの設定を変更できます。</translation>
-<translation id="928189505080808353">ポート 554（有効期限: 2021 年 10 月 15 日）</translation>
 <translation id="929549405492388749">このポリシーを true に設定した場合、Chrome の AppCache がデフォルトで無効になっていても、強制的に有効化します。
 
       このポリシーを未設定のままにするか、false に設定した場合、AppCache の設定は Chrome のデフォルト設定に準拠します。</translation>

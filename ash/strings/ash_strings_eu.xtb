@@ -728,6 +728,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="6816797338148849397">Eskuragarri dago zure hautapenari buruzko informazioa. Erabili gora egiteko gezi-tekla informazioa atzitzeko.</translation>
 <translation id="6818242057446442178">Joan aurreko hitzera</translation>
 <translation id="6820676911989879663">Hartu atseden</translation>
+<translation id="6837064795450991317">Ezkutatu lan-eremuko barra</translation>
 <translation id="6850010208275816200">Pantaila osoko moduan dago oraingo aplikazioa. Aplikazioak pasahitza eskatzen badizu, lehenik atera pantaila osoko modutik.</translation>
 <translation id="6852052252232534364">Sakatu aktibatzeko</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
@@ -763,6 +764,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="7076293881109082629">Saioa hasten</translation>
 <translation id="7088960765736518739">Etengailu bidezko sarbidea</translation>
 <translation id="7098389117866926363">USB-C gailua (ezkerraldeko atzeko ataka)</translation>
+<translation id="7106330611027933926">Erakutsi lan-eremuko barra</translation>
 <translation id="7118268675952955085">pantaila-argazkia</translation>
 <translation id="7131634465328662194">Automatikoki amaituko da saioa.</translation>
 <translation id="7143207342074048698">Konektatzen</translation>
@@ -806,6 +808,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="7466449121337984263">Ukitu sentsorea</translation>
 <translation id="7473891865547856676">Ez, eskerrik asko</translation>
 <translation id="7477793887173910789">Kontrolatu musika, bideoak eta beste</translation>
+<translation id="7482097454533720217">Eskuratu definizioak, itzulpenak edo unitate-bihurketak testua eskuineko botoiarekin sakatzean edo sakatuta edukitzean.</translation>
 <translation id="7483025031359818980">Hautapen-eremua pantaila osoan dago ezarrita</translation>
 <translation id="7486227320194954040">Tolestu markatzailearen tresnak</translation>
 <translation id="7497767806359279797">Aukeratu hizkuntza eta teklatua</translation>
@@ -982,6 +985,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="8843682306134542540">Aldatu biratzearen blokeoa. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Bilaketa + Ihes</translation>
 <translation id="8853703225951107899">Oraindik ezin izan da egiaztatu PINa edo pasahitza. Oharra: pasahitza duela gutxi aldatu baduzu, erabili pasahitz zaharra. Saioa amaitu eta gero aplikatuko da pasahitz berria.</translation>
+<translation id="8863888432376731307">Eskuratu "<ph name="QUERY" />" adierazpenaren <ph name="INTENT" /> eta beste</translation>
 <translation id="8870509716567206129">Aplikazioak ez du onartzen pantaila zatitua erabiltzea.</translation>
 <translation id="8871580645200179206">Aldatu gai ilunaren egoera. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Konektatu gabe</translation>

@@ -164,6 +164,7 @@
 <translation id="469379815867856270">Уровень сигнала</translation>
 <translation id="4707579418881001319">L2TP/IPsec + сертификат пользователя</translation>
 <translation id="4731797938093519117">Родительский доступ</translation>
+<translation id="475869545581454722">Пароль Chrome OS изменен</translation>
 <translation id="4773299976671772492">Остановлено</translation>
 <translation id="4794140124556169553">Выполнение тестирования процессора может повлиять на производительность системы.</translation>
 <translation id="4808449224298348341">Отменено задание печати файла "<ph name="DOCUMENT_TITLE" />"</translation>
@@ -320,6 +321,7 @@
 <translation id="7701040980221191251">Нет</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Количество циклов</translation>
+<translation id="7762130827864645708">Вы установили новый пароль. В дальнейшем используйте его.</translation>
 <translation id="7769672763586021400">Идентификатор модели</translation>
 <translation id="7805768142964895445">Состояние</translation>
 <translation id="7819857487979277519">PSK (WPA или RSN)</translation>

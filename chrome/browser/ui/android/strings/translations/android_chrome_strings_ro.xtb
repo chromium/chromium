@@ -41,6 +41,7 @@
 <translation id="1240288207750131269">Se încarcă <ph name="LANG" /></translation>
 <translation id="1242883863226959074">dispozitiv</translation>
 <translation id="124678866338384709">Închide fila actuală</translation>
+<translation id="1246905108078336582">Elimini sugestia din clipboard?</translation>
 <translation id="1258753120186372309">Doodle Google: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Nu s-a trimis <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Atinge pentru a extinde</translation>
@@ -361,6 +362,7 @@ Atinge lung orice cuvânt pentru a-l căuta. Pentru a rafina căutarea, selectea
 <translation id="3295530008794733555">Navighează mai rapid. Folosește mai puține date.</translation>
 <translation id="3297344142967351106">Asistență vocală</translation>
 <translation id="3303414029551471755">Continui pentru descărcarea conținutului?</translation>
+<translation id="333367884906698540">Bluetooth se va dezactiva din nou după ce termini</translation>
 <translation id="3334729583274622784">Modifici extensia de fișier?</translation>
 <translation id="3341058695485821946">Vezi ce volum de date ai economisit</translation>
 <translation id="3341262203274374114">Nu se poate anula urmărirea. A apărut o eroare.</translation>
@@ -1035,6 +1037,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="7641339528570811325">Șterge datele de navigare…</translation>
 <translation id="764170292089748542">Chrome nu salvează istoricul de navigare dacă alegi să navighezi în privat. Poți folosi în continuare marcaje pentru a accesa site-urile preferate.</translation>
 <translation id="7646772052135772216">Sincronizarea parolelor nu funcționează</translation>
+<translation id="7655900163790317559">Se activează Bluetooth…</translation>
 <translation id="7658239707568436148">Anulează</translation>
 <translation id="7665369617277396874">Adaugă un cont</translation>
 <translation id="766587987807204883">Articolele apar aici și le poți citi chiar dacă ești offline</translation>

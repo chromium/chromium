@@ -41,6 +41,7 @@
 <translation id="1240288207750131269">Loading <ph name="LANG" /></translation>
 <translation id="1242883863226959074">device</translation>
 <translation id="124678866338384709">Close current tab</translation>
+<translation id="1246905108078336582">Remove suggestion from clipboard?</translation>
 <translation id="1258753120186372309">Google doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Couldn't share <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Tap to expand</translation>
@@ -361,6 +362,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="3295530008794733555">Browse faster. Use less data.</translation>
 <translation id="3297344142967351106">Voice assistance</translation>
 <translation id="3303414029551471755">Proceed to download the content?</translation>
+<translation id="333367884906698540">Bluetooth will turn back off when you've finished</translation>
 <translation id="3334729583274622784">Change file extension?</translation>
 <translation id="3341058695485821946">See how much data you've saved</translation>
 <translation id="3341262203274374114">Can’t unfollow. Something went wrong.</translation>
@@ -1035,6 +1037,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="7641339528570811325">Clear browsing data…</translation>
 <translation id="764170292089748542">Chrome doesn’t save your browsing history when you choose to browse privately. You can still use bookmarks to access your favourite sites.</translation>
 <translation id="7646772052135772216">Password sync isn't working</translation>
+<translation id="7655900163790317559">Turning on Bluetooth…</translation>
 <translation id="7658239707568436148">Cancel</translation>
 <translation id="7665369617277396874">Add account</translation>
 <translation id="766587987807204883">Articles appear here, which you can read even when you're offline</translation>

@@ -372,6 +372,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2276057643614339130">Base da impressão</translation>
 <translation id="2277103315734023688">Avançar</translation>
 <translation id="2283340219607151381">Salvar e preencher endereços</translation>
+<translation id="2283447177162560884">Item "<ph name="PAGE_TITLE" />" excluído</translation>
 <translation id="2288422996159078444">Tudo o que é digitado, as páginas que são acessadas e qualquer outra atividade na Web está sendo monitorado, e o conteúdo dos sites pode mudar sem que você saiba.</translation>
 <translation id="2289385804009217824">Cortar</translation>
 <translation id="2292556288342944218">O seu acesso à Internet está bloqueado</translation>
@@ -498,6 +499,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="277133753123645258">Método de envio</translation>
 <translation id="277499241957683684">Registro de dispositivo não encontrado</translation>
 <translation id="2775884851269838147">Primeira página de impressão</translation>
+<translation id="2778854133681684171">Você pode usar seu dispositivo para confirmar sua identidade com rapidez quando fizer uma nova compra com esta forma de pagamento.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2784949926578158345">A conexão foi redefinida.</translation>
 <translation id="2792012897584536778">Os administradores deste dispositivo configuraram certificados de segurança que podem permitir que eles vejam o conteúdo dos sites que você visita.</translation>
@@ -655,6 +657,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3377736046129930310">Use o bloqueio de tela para confirmar seus cartões mais rapidamente</translation>
 <translation id="3380365263193509176">Erro desconhecido</translation>
 <translation id="3380864720620200369">ID do cliente:</translation>
+<translation id="3381668585148405088">Verificar sua compra</translation>
 <translation id="3387261909427947069">Formas de pagamento</translation>
 <translation id="3391030046425686457">Endereço de entrega</translation>
 <translation id="3395827396354264108">Método de retirada</translation>
@@ -830,6 +833,10 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3996311196211510766">O site <ph name="ORIGIN" /> solicitou que uma política de origem seja aplicada a todas as solicitações feitas a ele, mas não é possível aplicá-la no momento.</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Documento PDF com {COUNT} página}one{Documento PDF com {COUNT} página}other{Documento PDF com {COUNT} páginas}}</translation>
 <translation id="4023431997072828269">Como o formulário é enviado por uma conexão que não é segura, suas informações ficarão visíveis para outras pessoas.</translation>
+<translation id="4027177651527820006">Ao ativar esses recursos, você pode perder dados do navegador ou
+    comprometer sua segurança ou privacidade. Os recursos ativados se aplicam a todos
+    os usuários deste navegador. Caso você seja um administrador de empresa, não
+    use essas sinalizações na fase de produção.</translation>
 <translation id="4030383055268325496">&amp;Desfazer adicionar</translation>
 <translation id="4056223980640387499">Sépia</translation>
 <translation id="4058922952496707368">Chave "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>

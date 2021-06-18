@@ -41,6 +41,7 @@
 <translation id="1240288207750131269">Ідзе загрузка пакета для наступнай мовы: <ph name="LANG" /></translation>
 <translation id="1242883863226959074">прыладзе</translation>
 <translation id="124678866338384709">Закрыць бягучую ўкладку</translation>
+<translation id="1246905108078336582">Выдаліць прапанову з буфера абмену?</translation>
 <translation id="1258753120186372309">Дудл Google: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Не ўдалося абагуліць змесціва наступнага тыпу: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Дакраніцеся, каб разгарнуць</translation>
@@ -361,6 +362,7 @@
 <translation id="3295530008794733555">Больш хуткая загрузка вэб-старонак і эканомія трафіка.</translation>
 <translation id="3297344142967351106">Галасавая дапамога</translation>
 <translation id="3303414029551471755">Перайсці да спампоўкі змесціва?</translation>
+<translation id="333367884906698540">Пасля завяршэння аперацыі Bluetooth зноў выключыцца</translation>
 <translation id="3334729583274622784">Змяніць пашырэнне файла?</translation>
 <translation id="3341058695485821946">Глядзіце, колькі трафіка вы сэканомілі</translation>
 <translation id="3341262203274374114">Адпісацца не ўдалося. Нешта пайшло не так.</translation>
@@ -1035,6 +1037,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="7641339528570811325">Выдаліць гісторыю праглядаў…</translation>
 <translation id="764170292089748542">Chrome не захоўвае гісторыю прагляду сайтаў, калі вы праглядаеце вэб-старонкі ў прыватным рэжыме. Вы па-ранейшаму можаце выкарыстоўваць закладкі для пераходу да любімых сайтаў.</translation>
 <translation id="7646772052135772216">Сінхранізацыя пароляў не працуе</translation>
+<translation id="7655900163790317559">Уключаецца Bluetooth…</translation>
 <translation id="7658239707568436148">Скасаваць</translation>
 <translation id="7665369617277396874">Дадаць уліковы запіс</translation>
 <translation id="766587987807204883">Тут паказваюцца артыкулы, якія можна чытаць нават па-за сеткай</translation>

@@ -375,6 +375,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2276057643614339130">Baza e printimit</translation>
 <translation id="2277103315734023688">Kërko përpara</translation>
 <translation id="2283340219607151381">Ruaj dhe plotëso adresat</translation>
+<translation id="2283447177162560884">"<ph name="PAGE_TITLE" />" u fshi</translation>
 <translation id="2288422996159078444">Çdo gjë që shkruan, çdo faqe që shikon ose çdo aktivitet tjetër në ueb po shikohet. Përmbajtjet në sajte mund të ndryshohen pa dijeninë tënde.</translation>
 <translation id="2289385804009217824">Prerje</translation>
 <translation id="2292556288342944218">Qasja jote në internet është bllokuar</translation>
@@ -501,6 +502,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="277133753123645258">Mënyra e dërgimit</translation>
 <translation id="277499241957683684">Mungon një regjistrim i pajisjes</translation>
 <translation id="2775884851269838147">Faqja e parë e printimit</translation>
+<translation id="2778854133681684171">Mund të përdorësh pajisjen tënde për të verifikuar me shpejtësi që je ti herën tjetër që kryen një blerje me këtë mënyrë pagese.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2784949926578158345">Lidhja u rivendos.</translation>
 <translation id="2792012897584536778">Administratorët e kësaj pajisjeje kanë konfiguruar certifikatat e sigurisë që mund t'i lejojnë të shohin përmbajtjen e sajteve të uebit që viziton.</translation>
@@ -658,6 +660,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3377736046129930310">Përdor kyçjen e ekranit për të konfirmuar kartat më shpejt</translation>
 <translation id="3380365263193509176">Gabim i panjohur</translation>
 <translation id="3380864720620200369">ID-ja e klientit:</translation>
+<translation id="3381668585148405088">Verifiko blerjen tënde</translation>
 <translation id="3387261909427947069">Mënyrat e pagesës</translation>
 <translation id="3391030046425686457">Adresa e dorëzimit</translation>
 <translation id="3395827396354264108">Mënyra e marrjes</translation>
@@ -834,6 +837,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
     për të gjitha kërkesat drejtuar atij, por kjo politikë nuk mund të zbatohet aktualisht.</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Dokumenti PDF me {COUNT} faqe}other{Dokumenti PDF me {COUNT} faqe}}</translation>
 <translation id="4023431997072828269">Për shkak se ky formular po dërgohet duke përdorur një lidhje që nuk është e sigurt, informacionet e tua do të jenë të dukshme për të tjerët.</translation>
+<translation id="4027177651527820006">Duke aktivizuar këto veçori mund të humbësh të dhënat e shfletuesit ose të komprometosh sigurinë, ose privatësinë tënde. Veçoritë e aktivizuara zbatohen për të gjithë përdoruesit e këtij shfletuesi. Nëse je admin i kompanisë duhet të mos i përdorësh këta flamurë në prodhim.</translation>
 <translation id="4030383055268325496">&amp;Zhbëje shtimin</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4058922952496707368">Çelësi "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>

@@ -41,6 +41,7 @@
 <translation id="1240288207750131269">Cargando <ph name="LANG" /></translation>
 <translation id="1242883863226959074">dispositivo</translation>
 <translation id="124678866338384709">Cerrar la pestaña actual</translation>
+<translation id="1246905108078336582">¿Quieres quitar la sugerencia del portapapeles?</translation>
 <translation id="1258753120186372309">Doodle de Google: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">No se pudo compartir <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Presiona para expandir</translation>
@@ -361,6 +362,7 @@ Para buscar una palabra, mantenla presionada. Si quieres definir mejor la búsqu
 <translation id="3295530008794733555">Navega más rápido; usa menos datos</translation>
 <translation id="3297344142967351106">Asistencia de voz</translation>
 <translation id="3303414029551471755">¿Deseas descargar el contenido?</translation>
+<translation id="333367884906698540">La conexión Bluetooth se volverá a desactivar cuando hayas terminado</translation>
 <translation id="3334729583274622784">¿Quieres cambiar la extensión del archivo?</translation>
 <translation id="3341058695485821946">Consulta cuántos datos redujiste</translation>
 <translation id="3341262203274374114">No se puede dejar de seguir. Se produjo un error.</translation>
@@ -1035,6 +1037,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="7641339528570811325">Borrar datos de navegación…</translation>
 <translation id="764170292089748542">Chrome no guarda tu historial de navegación cuando navegas de forma privada. Puedes seguir usando tus favoritos para acceder a tus sitios preferidos.</translation>
 <translation id="7646772052135772216">No funciona la sincronización de contraseñas</translation>
+<translation id="7655900163790317559">Activando Bluetooth…</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7665369617277396874">Agregar cuenta</translation>
 <translation id="766587987807204883">Los artículos aparecen aquí, y puedes leerlos incluso cuando estás sin conexión</translation>

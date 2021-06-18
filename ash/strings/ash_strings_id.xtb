@@ -727,6 +727,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="6816797338148849397">Info terkait pilihan Anda tersedia. Gunakan tombol Panah atas untuk mengakses.</translation>
 <translation id="6818242057446442178">Mundur per kata</translation>
 <translation id="6820676911989879663">Istirahatlah sebentar</translation>
+<translation id="6837064795450991317">Sembunyikan deskbar</translation>
 <translation id="6850010208275816200">Aplikasi saat ini dalam mode layar penuh. Jika aplikasi meminta sandi, keluar dari mode layar penuh terlebih dahulu.</translation>
 <translation id="6852052252232534364">Klik untuk mengaktifkan</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> detik</translation>
@@ -762,6 +763,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="7076293881109082629">Sedang masuk</translation>
 <translation id="7088960765736518739">Tombol Akses</translation>
 <translation id="7098389117866926363">Perangkat USB-C (port belakang sebelah kiri)</translation>
+<translation id="7106330611027933926">Tampilkan deskbar</translation>
 <translation id="7118268675952955085">screenshot</translation>
 <translation id="7131634465328662194">Anda akan logout otomatis.</translation>
 <translation id="7143207342074048698">Menghubungkan</translation>
@@ -805,6 +807,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="7466449121337984263">Sentuh sensor</translation>
 <translation id="7473891865547856676">Lain Kali</translation>
 <translation id="7477793887173910789">Kontrol musik, video, dan banyak lagi</translation>
+<translation id="7482097454533720217">Dapatkan definisi, terjemahan, atau konversi unit saat Anda mengklik kanan atau menyentuh lama teks.</translation>
 <translation id="7483025031359818980">Area pemilihan disetel ke layar penuh</translation>
 <translation id="7486227320194954040">Ciutkan alat penanda</translation>
 <translation id="7497767806359279797">Pilih bahasa dan keyboard</translation>
@@ -981,6 +984,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="8843682306134542540">Alihkan kunci rotasi. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">PIN atau sandi Anda belum dapat diverifikasi. Catatan: Jika Anda baru-baru ini mengubah sandi, gunakan sandi lama Anda. Sandi baru akan diterapkan setelah Anda logout.</translation>
+<translation id="8863888432376731307">Dapatkan <ph name="INTENT" /> untuk "<ph name="QUERY" />" dan lainnya</translation>
 <translation id="8870509716567206129">Aplikasi tidak mendukung layar terpisah.</translation>
 <translation id="8871580645200179206">Tombol Tema gelap. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Tak terhubung</translation>

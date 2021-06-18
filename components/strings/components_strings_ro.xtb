@@ -376,6 +376,7 @@
 <translation id="2276057643614339130">Bază de printare</translation>
 <translation id="2277103315734023688">Derulează înainte</translation>
 <translation id="2283340219607151381">Salvează și completează adresele</translation>
+<translation id="2283447177162560884">S-a șters <ph name="PAGE_TITLE" /></translation>
 <translation id="2288422996159078444">Tot ceea ce tastezi, paginile pe care le afișezi și orice altă activitate de pe web este urmărită. Conținutul site-urilor poate fi modificat fără știrea ta.</translation>
 <translation id="2289385804009217824">Decupare</translation>
 <translation id="2292556288342944218">Accesul la internet este blocat</translation>
@@ -502,6 +503,7 @@
 <translation id="277133753123645258">Metodă de expediere</translation>
 <translation id="277499241957683684">Lipsește o înregistrare pentru gadget</translation>
 <translation id="2775884851269838147">Prima pagină printată</translation>
+<translation id="2778854133681684171">Poți folosi dispozitivul pentru a-ți confirma rapid identitatea data viitoare când faci o achiziție cu această metodă de plată.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2784949926578158345">Conexiunea a fost resetată.</translation>
 <translation id="2792012897584536778">Administratorii acestui dispozitiv au configurat certificate de securitate cu care pot vedea conținutul site-urilor pe care le accesezi.</translation>
@@ -659,6 +661,7 @@
 <translation id="3377736046129930310">Folosește blocarea ecranului pentru a confirma mai repede cardurile</translation>
 <translation id="3380365263193509176">Eroare necunoscută</translation>
 <translation id="3380864720620200369">Cod de client:</translation>
+<translation id="3381668585148405088">Confirmă achiziția</translation>
 <translation id="3387261909427947069">Metode de plată</translation>
 <translation id="3391030046425686457">Adresă de livrare</translation>
 <translation id="3395827396354264108">Metodă de preluare</translation>
@@ -835,6 +838,7 @@
     să se aplice tuturor solicitărilor, dar această politică nu poate fi aplicată momentan.</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Document PDF cu {COUNT} pagină}few{Document PDF cu {COUNT} pagini}other{Document PDF cu {COUNT} de pagini}}</translation>
 <translation id="4023431997072828269">Întrucât formularul este trimis printr-o conexiune care nu este securizată, informațiile tale vor vizibile pentru alte persoane.</translation>
+<translation id="4027177651527820006">Dacă activezi aceste opțiuni, este posibilă pierderea datelor browserului sau compromiterea securității ori a confidențialității. Opțiunile activate se aplică tuturor utilizatorilor acestui browser. Dacă ești administrator de întreprindere, nu ar trebui să folosești aceste funcții experimentale în producție.</translation>
 <translation id="4030383055268325496">&amp;Anulați adăugarea</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4058922952496707368">Cheie „<ph name="SUBKEY" />”: <ph name="ERROR" /></translation>

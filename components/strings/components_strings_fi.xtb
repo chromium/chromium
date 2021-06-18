@@ -376,6 +376,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2276057643614339130">Tulostusalusta</translation>
 <translation id="2277103315734023688">Kelaa eteenpäin</translation>
 <translation id="2283340219607151381">Tallenna ja täytä osoitteet</translation>
+<translation id="2283447177162560884">"<ph name="PAGE_TITLE" />" poistettu</translation>
 <translation id="2288422996159078444">Joku muu näkee kaikki kirjoittamasi asiat, avaamasi sivut ja muut toimesi verkossa. Sivustojen sisältöä voidaan muuttaa tietämättäsi.</translation>
 <translation id="2289385804009217824">Leikkaus</translation>
 <translation id="2292556288342944218">Internetyhteytesi on estetty</translation>
@@ -502,6 +503,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="277133753123645258">Lähetystapa</translation>
 <translation id="277499241957683684">Laitetallenne puuttuu</translation>
 <translation id="2775884851269838147">Ensimmäinen tulostettava sivu</translation>
+<translation id="2778854133681684171">Laitteesi avulla voit todentaa henkilöllisyytesi nopeasti seuraavan kerran, kun ostat jotain tällä maksutavalla.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2784949926578158345">Yhteys katkaistiin.</translation>
 <translation id="2792012897584536778">Tämän laitteen järjestelmänvalvojat ovat ottaneet käyttöön tietosuojavarmenteita, joiden avulla he saattavat nähdä avaamiesi sivustojen sisällöt.</translation>
@@ -660,6 +662,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3377736046129930310">Vahvista kortteja nopeammin näytön lukituksella</translation>
 <translation id="3380365263193509176">Tuntematon virhe</translation>
 <translation id="3380864720620200369">Asiakastunnus:</translation>
+<translation id="3381668585148405088">Todenna ostoksesi</translation>
 <translation id="3387261909427947069">Maksutavat</translation>
 <translation id="3391030046425686457">Toimitusosoite</translation>
 <translation id="3395827396354264108">Noutotapa</translation>
@@ -836,6 +839,10 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
     soveltamista kaikkiin sen pyyntöihin, mutta käytäntöä ei voi soveltaa tällä hetkellä.</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF-dokumentti, jossa on {COUNT} sivu}other{PDF-dokumentti, jossa on {COUNT} sivua}}</translation>
 <translation id="4023431997072828269">Koska lomake lähetetään suojaamattomalla yhteydellä, tietosi näkyvät muille.</translation>
+<translation id="4027177651527820006">Jos otat nämä ominaisuudet käyttöön, voit menettää selaustietoja tai
+    vaarantaa tietosuojasi tai yksityisyytesi. Ominaisuuksien käyttöönotto koskee kaikkia
+    selaimen käyttäjiä. Jos et ole yrityksen järjestelmänvalvoja, älä
+    käytä näitä merkintöjä tuotannossa.</translation>
 <translation id="4030383055268325496">K&amp;umoa lisäys</translation>
 <translation id="4056223980640387499">Seepia</translation>
 <translation id="4058922952496707368">Avain <ph name="SUBKEY" />: <ph name="ERROR" /></translation>

@@ -235,7 +235,6 @@
 <translation id="1244265436519979884">‏استعادة Linux قيد التقدم حاليًا</translation>
 <translation id="1244303850296295656">خطأ في الإضافة</translation>
 <translation id="1246863218384630739">‏تعذّر تثبيت <ph name="VM_NAME" />: عنوان URL للصورة عرضَ رمز الخطأ <ph name="HTTP_ERROR" />. يُرجى التواصل مع المشرف.</translation>
-<translation id="1246905108078336582">هل تريد إزالة اقتراح من الحافظة؟</translation>
 <translation id="1251366534849411931">قوس متعرج مفتوح بشكلٍ متوقع: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">سيؤدي هذا الإجراء إلى محو <ph name="TOTAL_USAGE" /> من البيانات المُخزّنة من خلال المواقع الإلكترونية والتطبيقات المثبّتة.</translation>
 <translation id="125220115284141797">تلقائي</translation>
@@ -751,7 +750,6 @@
 <translation id="1795214765651529549">استخدام المظهر الكلاسيكي</translation>
 <translation id="1796588414813960292">لن تعمل الميزات التي تحتاج إلى استخدام الصوت.</translation>
 <translation id="1799071797295057738">تم إيقاف الإضافة "<ph name="EXTENSION_NAME" />" تلقائيًا.</translation>
-<translation id="1800973090344019061">تريد الإضافة "<ph name="APP_NAME" />" مشاركة محتوى شاشتك.</translation>
 <translation id="1802624026913571222">السكون عند غلق الغلاف</translation>
 <translation id="1802687198411089702">الصفحة لا تستجيب. يمكنك الانتظار أو الخروج منها.</translation>
 <translation id="1803531841600994172">اللغة التي تريد الترجمة إليها</translation>
@@ -1610,6 +1608,7 @@
 <translation id="2734760316755174687">سيتم أيضًا إعادة ضبط المواقع الإلكترونية ضمن <ph name="SITE_GROUP_NAME" />.</translation>
 <translation id="2735712963799620190">الجدول الزمني</translation>
 <translation id="2737363922397526254">تصغير...</translation>
+<translation id="2737916598897808047">يريد <ph name="APP_NAME" /> مشاركة محتوى شاشتك مع <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">عدم السماح للمواقع الإلكترونية باستخدام أشكال الخط المثبَّتة على جهازك</translation>
 <translation id="2738771556149464852">آخر يوم للصلاحية</translation>
 <translation id="2739191690716947896">تصحيح الأخطاء</translation>
@@ -3745,6 +3744,7 @@
 <translation id="5127805178023152808">المزامنة متوقفة.</translation>
 <translation id="5127881134400491887">إدارة اتصالات الشبكة</translation>
 <translation id="512903556749061217">متصل</translation>
+<translation id="5130080518784460891">Eten</translation>
 <translation id="5130675701626084557">تعذَّر تنزيل الملف الشخصي. يُرجى إعادة المحاولة لاحقًا أو التواصل مع مشغّل شبكة الجوّال للحصول على المساعدة.</translation>
 <translation id="5131591206283983824">السحب بعد النقر على لوحة اللمس</translation>
 <translation id="5135085122826131075">‏الوصول إلى "مساعد Google" عند قول "Ok Google"</translation>
@@ -4039,6 +4039,7 @@
 <translation id="5470735824776589490">‏يلزم إعادة تشغيل الجهاز حتى يتسنى لك إعادة ضبطه باستخدام Powerwash. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="5471768120198416576">مرحبًا! هذا صوت ميزة تحويل النص إلى كلام.</translation>
 <translation id="5472627187093107397">حفظ كلمات المرور لهذا الموقع الإلكتروني</translation>
+<translation id="5473075389972733037">IBM</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{يجب ألا يقلّ رقم التعريف الشخصي عن حرف واحد.}zero{يجب ألا يقلّ رقم التعريف الشخصي عن # حرف.}two{يجب ألا يقلّ رقم التعريف الشخصي عن حرفَين.}few{يجب ألا يقلّ رقم التعريف الشخصي عن # أحرف.}many{يجب ألا يقلّ رقم التعريف الشخصي عن # حرفًا.}other{يجب ألا يقلّ رقم التعريف الشخصي عن # حرف.}}</translation>
 <translation id="5481273127572794904">المواقع الإلكترونية التي لا يُسمح لها بتنزيل الملفات المتعدّدة تلقائيًا</translation>
 <translation id="5481941284378890518">إضافة طابعات مجاورة</translation>
@@ -4635,7 +4636,6 @@
 <translation id="6136114942382973861">إغلاق شريط عمليات التنزيل</translation>
 <translation id="6136287496450963112">مفتاح الأمان غير محمي برقم تعريف شخصي. لإدارة بصمات الإصبع، يجب إنشاء رقم تعريف شخصي.</translation>
 <translation id="6138680304137685902">‏توقيع X9.62 ECDSA باستخدام SHA-384</translation>
-<translation id="6138774640412545950">تريد الإضافة "<ph name="APP_NAME" />" مشاركة محتوى شاشتك مع <ph name="TARGET_NAME" />.</translation>
 <translation id="6141988275892716286">تأكيد التنزيل</translation>
 <translation id="6143186082490678276">الحصول على مساعدة</translation>
 <translation id="6143366292569327983">اختَر صفحة اللغة التي تريد ترجمتها.</translation>
@@ -5154,6 +5154,7 @@
 <translation id="6723839937902243910">الطاقة</translation>
 <translation id="6725073593266469338">خدمة واجهة المستخدم</translation>
 <translation id="6725206449694821596">‏بروتوكول الطباعة على الإنترنت (IPP)</translation>
+<translation id="6725970970008349185">عدد المرشحين المراد عرضهم لكل صفحة</translation>
 <translation id="672609503628871915">تعرف على الجديد</translation>
 <translation id="67269783048918309">‏يمكنك إرسال بيانات الاستخدام والتشخيص. يرسل هذا الجهاز حاليًا بيانات استخدام التطبيق والجهاز والتشخيص تلقائيًا إلى Google. لن يتم استخدام ذلك لتعريف حسابك الفرعي وسيساعد في استقرار عمل النظام والتطبيقات، بالإضافة إلى التحسينات الأخرى. كما ستساعد بعض البيانات المجمّعة تطبيقات Google وشركائها، مثل مطوّري برامج نظام التشغيل Android. ويفرض المالك هذا <ph name="BEGIN_LINK1" />الإعداد<ph name="END_LINK1" />. في حال تفعيل إعداد "النشاط الإضافي على الويب وفي التطبيقات" لحسابك الفرعي، قد يتم حفظ هذه البيانات في حسابك على Google. <ph name="BEGIN_LINK2" />مزيد من المعلومات<ph name="END_LINK2" /></translation>
 <translation id="6727969043791803658">البلوتوث متصل، ومستوى شحن البطارية: <ph name="BATTERY_PERCENTAGE" /> %</translation>
@@ -6510,6 +6511,7 @@
 <translation id="8189750580333936930">مبادرة حماية الخصوصية</translation>
 <translation id="8190193592390505034">جارٍ الاتصال بـ <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">إدارة التطبيقات والإضافات والمظاهر</translation>
+<translation id="8192944472786724289">يريد <ph name="APP_NAME" /> مشاركة محتوى شاشتك.</translation>
 <translation id="8195027750202970175">الحجم على القرص</translation>
 <translation id="8198323535106903877">سنعمل على تثبيت <ph name="NUMBER_OF_APPS" /> من هذه التطبيقات من أجلك</translation>
 <translation id="8198456017687137612">جارٍ إرسال محتوى علامة التبويب</translation>
@@ -6653,6 +6655,7 @@
 <translation id="8363095875018065315">ثابتة</translation>
 <translation id="8363142353806532503">تم حظر استخدام الميكروفون</translation>
 <translation id="8366396658833131068">تمت استعادة اتصال الشبكة. يُرجى اختيار شبكة أخرى أو الضغط على الزر "متابعة" أدناه لتشغيل تطبيق الكشك.</translation>
+<translation id="8366694425498033255">مفاتيح التحديد</translation>
 <translation id="8368027906805972958">جهاز غير معروف أو غير متوافق (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368859634510605990">&amp;فتح كل الإشارات المرجعية</translation>
 <translation id="8370294614544004647">السكون عند غلق الكمبيوتر المحمول</translation>

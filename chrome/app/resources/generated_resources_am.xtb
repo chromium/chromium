@@ -232,7 +232,6 @@
 <translation id="1244265436519979884">Linux ወደነበረበት መመለስ አሁን በሂደት ላይ ነው</translation>
 <translation id="1244303850296295656">የቅጥያ ስህተት</translation>
 <translation id="1246863218384630739"><ph name="VM_NAME" />ን መጫን አልተቻለም፦ የምስል ዩአርኤል የ<ph name="HTTP_ERROR" /> የስህተት ኮድን መልሷል። እባክዎ አስተዳዳሪዎን ያነጋግሩ።</translation>
-<translation id="1246905108078336582">የአስተያየት ጥቆማ ከቅንጥብ ሰሌዳ ይወገድ?</translation>
 <translation id="1251366534849411931">የሚገመት ጠምዛዛ መያዣን መክፈቻ፦ <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">ይህ በጣቢያዎች እና በተጫኑ መተግበሪያዎቹ የተከማቸ <ph name="TOTAL_USAGE" /> ውሂብ ያጠፋል</translation>
 <translation id="125220115284141797">ነባሪ</translation>
@@ -755,7 +754,6 @@
 <translation id="1795214765651529549">የታወቀ ገጽታን ተጠቀም</translation>
 <translation id="1796588414813960292">ድምጽ የሚያስፈልጋቸው ባህሪዎች አይሰሩም</translation>
 <translation id="1799071797295057738">የ«<ph name="EXTENSION_NAME" />» ቅጥያ በራስ-ሰር ተሰናክሏል።</translation>
-<translation id="1800973090344019061">ቅጥያው «<ph name="APP_NAME" />» የማያ ገጽዎን ይዘቶች ማጋራት ይፈልጋል።</translation>
 <translation id="1802624026913571222">ክዳኑ ሲዘጋ ተኛ</translation>
 <translation id="1802687198411089702">ይህ ገጽ ምላሽ እየሰጠ አይደለም። እሱን መጠበቅ ወይም ትተው መውጣት ይችላል።</translation>
 <translation id="1803531841600994172">የሚተረጎምበት ቋንቋ</translation>
@@ -1617,6 +1615,7 @@
 <translation id="2734760316755174687">በ<ph name="SITE_GROUP_NAME" /> ስር ያሉ ጣቢያዎች እንዲሁም ዳግም ይጀመራሉ።</translation>
 <translation id="2735712963799620190">የጊዜ ሰሌዳ</translation>
 <translation id="2737363922397526254">ሰብስብ...</translation>
+<translation id="2737916598897808047"><ph name="APP_NAME" /> የማያ ገጽዎን ይዘቶች ለ<ph name="TARGET_NAME" /> ማጋራት ይፈልጋል።</translation>
 <translation id="2738030019664645674">ጣቢያዎች በእርስዎ መሣሪያ ላይ የተጫኑ ቅርጸ-ቁምፊዎችን እንዲጠቀሙ አይፍቀዱ</translation>
 <translation id="2738771556149464852">ከኋላ ያለሆነ</translation>
 <translation id="2739191690716947896">አርም</translation>
@@ -3753,6 +3752,7 @@
 <translation id="5127805178023152808">አመሳስል ጠፍቷል</translation>
 <translation id="5127881134400491887">የአውታረ መረብ ግንኙነቶች አቀናብር</translation>
 <translation id="512903556749061217">ተያያዟል</translation>
+<translation id="5130080518784460891">ኢቴን</translation>
 <translation id="5130675701626084557">መገለጫ ሊውረድ አይችልም። እባክዎ ቆይተው እንደገና ይሞክሩ ወይም ለእርዳታ አገልግሎት አቅራቢን ያነጋግሩ።</translation>
 <translation id="5131591206283983824">የመዳሰሻ ሰሌዳን መታ አድርጎ መጎተት</translation>
 <translation id="5135085122826131075">«Ok Google» ሲሉ ረዳትዎን ይድረሱ።</translation>
@@ -4047,6 +4047,7 @@
 <translation id="5470735824776589490">መሣሪያዎ በPowerwash ዳግም ሊጀምር ከመቻሉ በፊት ዳግም ማስጀመር ያስፈልጋል። <ph name="LINK_BEGIN" />የበለጠ ለመረዳት<ph name="LINK_END" /></translation>
 <translation id="5471768120198416576">ጤና ይስጥልን! እኔ የጽሑፍ-ወደ-ንግግር ድምጽዎ ነኝ።</translation>
 <translation id="5472627187093107397">ለዚህ ጣቢያ የይለፍ ቃላትን ያስቀምጡ</translation>
+<translation id="5473075389972733037">IBM</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{ፒን ቢያንስ አንድ ቁምፊ መሆን አለበት}one{ፒን ቢያንስ # ቁምፊዎች መሆን አለበት}other{ፒን ቢያንስ # ቁምፊዎች መሆን አለበት}}</translation>
 <translation id="5481273127572794904">ብዙ ፋይሎችን በራስ-ሰር ለማውረድ አልተፈቀደም</translation>
 <translation id="5481941284378890518">አቅራቢያ ያሉ አታሚዎችን አክል</translation>
@@ -4643,7 +4644,6 @@
 <translation id="6136114942382973861">የውርዶች አሞሌን ዝጋ</translation>
 <translation id="6136287496450963112">የእርስዎ ደህንነት ቁልፍ በፒን ጥበቃ እየተደረገለት አይደለም ያለው። የዲጂታል አሻራዎችን ለማቀናበር መጀመሪያ ፒን ይፍጠሩ።</translation>
 <translation id="6138680304137685902">የX9.62 ECDSA ፊርማ በSHA-384</translation>
-<translation id="6138774640412545950">ቅጥያው «<ph name="APP_NAME" />» የማያ ገጽዎን ይዘቶች ከ<ph name="TARGET_NAME" /> ጋር ማጋራት ይፈልጋል።</translation>
 <translation id="6141988275892716286">ማውረድ ያረጋግጡ</translation>
 <translation id="6143186082490678276">እገዛ ያግኙ</translation>
 <translation id="6143366292569327983">የሚተረጎመውን የገጽ ቋንቋ ይምረጡ</translation>
@@ -5163,6 +5163,7 @@
 <translation id="6723839937902243910">ኃይል</translation>
 <translation id="6725073593266469338">የዩአይ አገልግሎት</translation>
 <translation id="6725206449694821596">የበይነመረብ ህትመት ፕሮቶኮል (አይፒፒፒ)</translation>
+<translation id="6725970970008349185">በገጽ የሚታዩ የእጩዎች ብዛት</translation>
 <translation id="672609503628871915">ምን አዲስ ነገር እንዳለ ይመልከቱ</translation>
 <translation id="67269783048918309">የአጠቃቀም እና የምርመራ ውሂብ ይላኩ። ይህ መሣሪያ በአሁኑ ጊዜ በራስ-ሰር የምርመራ፣ የመሣሪያ እና የመተግበሪያ አጠቃቀም ውሂብ ወደ Google እየላከ ነው። ይህ ልጅዎን ለመለየት ስራ ላይ አይውልም፣ እና የስርዓት እና የመተግበሪያ እርጋታን እና ሌሎች ማሻሻያዎችን ያግዛል። አንዳንድ ውሑድ ውሂብ እንዲሁም የGoogle መተግበሪያዎችን እና እንደ የAndroid ገንቢዎች ያሉ አጋሮችን ያግዛሉ። ይህ <ph name="BEGIN_LINK1" />ቅንብር<ph name="END_LINK1" /> በባለቤቱ ተፈጻሚ ይደረጋል። የተጨማሪ የድር እና መተግበሪያ እንቅስቃሴ ቅንብር ለልጅዎ በርቶ ከሆነ ይህ ውሂብ ወደ የGoogle መለያቸው ሊቀመጥ ይችላል። <ph name="BEGIN_LINK2" />የበለጠ ለመረዳት<ph name="END_LINK2" /></translation>
 <translation id="6727969043791803658">ተገናኝቷል፣ <ph name="BATTERY_PERCENTAGE" />% ባትሪ</translation>
@@ -6525,6 +6526,7 @@ nil</translation>
 <translation id="8189750580333936930">የግላዊነት Sandbox</translation>
 <translation id="8190193592390505034">ከ<ph name="PROVIDER_NAME" /> ጋር በመገናኘት ላይ</translation>
 <translation id="8191230140820435481">መተግበሪያዎችዎን፣ ቅጥያዎችዎን እና ገጽታዎችዎን ያቀናብራል</translation>
+<translation id="8192944472786724289"><ph name="APP_NAME" /> የማያ ገጽዎን ይዘቶች ማጋራት ይፈልጋል።</translation>
 <translation id="8195027750202970175">ዲስክ ላይ ያለው መጠን</translation>
 <translation id="8198323535106903877">እነዚህን <ph name="NUMBER_OF_APPS" /> መተግበሪያዎች እንጭንልዎታለን</translation>
 <translation id="8198456017687137612">የCast ማድረጊያ ትር</translation>
@@ -6668,6 +6670,7 @@ nil</translation>
 <translation id="8363095875018065315">የረጋ</translation>
 <translation id="8363142353806532503">ማይክሮፎን ታግዷል</translation>
 <translation id="8366396658833131068">የአውታረ መረብ ግንኙነትዎ ወደነበረበት ተመልሷል። እባክዎ የተለየ አውታረ መረብ ይምረጡ ወይም የኪዮስክ መተግበሪያዎን ለማስጀመር «ቀጥል»ን ይጫኑ።</translation>
+<translation id="8366694425498033255">የምርጫ ቁልፎች</translation>
 <translation id="8368027906805972958">ያልታወቀ ወይም የማይደገፍ መሣሪያ (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368859634510605990">&amp;ሁሉንም እልባቶች ክፈት</translation>
 <translation id="8370294614544004647">ላፕቶፕ ሲዘጋ ተኛ</translation>

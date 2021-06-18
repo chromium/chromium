@@ -41,6 +41,7 @@
 <translation id="1240288207750131269">Зарежда се <ph name="LANG" /></translation>
 <translation id="1242883863226959074">устройството</translation>
 <translation id="124678866338384709">Затваряне на текущия раздел</translation>
+<translation id="1246905108078336582">Искате ли да премахнете предложението от буферната памет?</translation>
 <translation id="1258753120186372309">Драскулка на Google: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Споделянето на <ph name="CONTENT_TYPE" /> не бе възможно</translation>
 <translation id="1283039547216852943">Докоснете за разгъване</translation>
@@ -361,6 +362,7 @@
 <translation id="3295530008794733555">Сърфирайте по-бързо. Използвайте по-малко данни.</translation>
 <translation id="3297344142967351106">Гласова помощ</translation>
 <translation id="3303414029551471755">Искате ли да продължите с изтеглянето на съдържанието?</translation>
+<translation id="333367884906698540">Bluetooth ще се изключи, когато приключите</translation>
 <translation id="3334729583274622784">Да се промени ли файловото разширение?</translation>
 <translation id="3341058695485821946">Вижте колко данни сте спестили</translation>
 <translation id="3341262203274374114">Прекратяването на следенето не е възможно. Нещо се обърка.</translation>
@@ -1035,6 +1037,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="7641339528570811325">Изчистване на данните за сърфирането…</translation>
 <translation id="764170292089748542">Chrome не запазва съответната ви история, когато сърфирате частно. Пак можете да използвате отметки, за да посещавате любимите си сайтове.</translation>
 <translation id="7646772052135772216">Синхронизирането на паролите не работи.</translation>
+<translation id="7655900163790317559">Bluetooth се включва…</translation>
 <translation id="7658239707568436148">Отказ</translation>
 <translation id="7665369617277396874">Добавяне на профил</translation>
 <translation id="766587987807204883">Тук се показват статии, които можете да четете дори когато сте офлайн</translation>

@@ -41,6 +41,7 @@
 <translation id="1240288207750131269"><ph name="LANG" /> בטעינה</translation>
 <translation id="1242883863226959074">מכשיר</translation>
 <translation id="124678866338384709">סגירת הכרטיסייה הנוכחית</translation>
+<translation id="1246905108078336582">להסיר את ההצעה מהלוח?</translation>
 <translation id="1258753120186372309">‏דודל של Google‏: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">לא ניתן היה לשתף את ה<ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">יש להקיש כדי להרחיב</translation>
@@ -361,6 +362,7 @@
 <translation id="3295530008794733555">יותר מהירות. פחות נתונים.</translation>
 <translation id="3297344142967351106">האסיסטנט</translation>
 <translation id="3303414029551471755">האם להוריד את התוכן?</translation>
+<translation id="333367884906698540">‏בסיום, ה-Bluetooth יושבת שוב</translation>
 <translation id="3334729583274622784">לשנות את סיומת הקובץ?</translation>
 <translation id="3341058695485821946">בדיקת החיסכון בצריכת נתונים</translation>
 <translation id="3341262203274374114">לא ניתן לבטל את המעקב. משהו השתבש.</translation>
@@ -1035,6 +1037,7 @@
 <translation id="7641339528570811325">מחיקת נתוני הגלישה...</translation>
 <translation id="764170292089748542">‏היסטוריית הגלישה לא נשמרת ב-Chrome במהלך גלישה פרטית. ניתן להמשיך להשתמש בסימניות כדי לגשת לאתרים המועדפים עליך.</translation>
 <translation id="7646772052135772216">סנכרון הסיסמאות לא פועל</translation>
+<translation id="7655900163790317559">‏הפעלת ה-Bluetooth מתבצעת…</translation>
 <translation id="7658239707568436148">ביטול</translation>
 <translation id="7665369617277396874">חשבון חדש</translation>
 <translation id="766587987807204883">כאן יוצגו מאמרים, ואפשר לקרוא אותם גם במצב אונליין</translation>
@@ -1156,7 +1159,7 @@
 <translation id="8393700583063109961">שליחת הודעה</translation>
 <translation id="8410695015584479363">מעקב אחר מחירים</translation>
 <translation id="8413126021676339697">להצגת ההיסטוריה המלאה</translation>
-<translation id="8424781820952413435">‏הדף נשלח. כדי להציג אותו, יש לפתוח דפדפן Chrome ב<ph name="DEVICE_TYPE" /></translation>
+<translation id="8424781820952413435">‏הדף נשלח. כדי לראות אותו, פותחים את דפדפן Chrome ב<ph name="DEVICE_TYPE" /></translation>
 <translation id="8427875596167638501">כרטיסיית התצוגה המקדימה פתוחה בחצי גובה המסך</translation>
 <translation id="8428213095426709021">הגדרות</translation>
 <translation id="8438566539970814960">שיפור החיפושים והגלישה</translation>

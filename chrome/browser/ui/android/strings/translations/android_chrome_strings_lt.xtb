@@ -41,6 +41,7 @@
 <translation id="1240288207750131269">Įkeliama <ph name="LANG" /></translation>
 <translation id="1242883863226959074">įrenginyje</translation>
 <translation id="124678866338384709">Uždaryti dabartinį skirtuką</translation>
+<translation id="1246905108078336582">Pašalinti pasiūlymą iš iškarpinės?</translation>
 <translation id="1258753120186372309">„Google“ papuoštas logotipas: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Nepavyko bendrinti turinio: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Palieskite ir išskleiskite</translation>
@@ -361,6 +362,7 @@ Norėdami ieškoti, palieskite ir palaikykite bet kurį žodį. Jei norite patik
 <translation id="3295530008794733555">Naršykite greičiau. Naudokite mažiau duomenų.</translation>
 <translation id="3297344142967351106">Pagalba balsu</translation>
 <translation id="3303414029551471755">Tęsti turinio atsisiuntimo procesą?</translation>
+<translation id="333367884906698540">„Bluetooth“ vėl išsijungs, kai baigsite</translation>
 <translation id="3334729583274622784">Pakeisti failo plėtinį?</translation>
 <translation id="3341058695485821946">Žr., kiek duomenų sutaupėte</translation>
 <translation id="3341262203274374114">Negalima nebestebėti. Kažkas ne taip.</translation>
@@ -1035,6 +1037,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="7641339528570811325">Valyti naršymo duomenis...</translation>
 <translation id="764170292089748542">„Chrome“ neišsaugo naršymo istorijos, kai pasirenkate naršyti privačiai. Vis tiek galite naudoti žymes, kad pasiektumėte mėgstamiausias svetaines.</translation>
 <translation id="7646772052135772216">Slaptažodžio sinchronizavimas neveikia</translation>
+<translation id="7655900163790317559">Įjungiamas „Bluetooth“…</translation>
 <translation id="7658239707568436148">Atšaukti</translation>
 <translation id="7665369617277396874">Pridėti paskyrą</translation>
 <translation id="766587987807204883">Čia rodomi straipsniai, kuriuos galima skaityti net neprisijungus</translation>

@@ -727,6 +727,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="6816797338148849397">Tiltækar upplýsingar sem tengjast vali þínu. Notaðu ör upp-lykilinn til að opna.</translation>
 <translation id="6818242057446442178">Til baka um orð</translation>
 <translation id="6820676911989879663">Taktu pásu!</translation>
+<translation id="6837064795450991317">Fela verkstiku</translation>
 <translation id="6850010208275816200">Núverandi forrit er á öllum skjánum Ef forritið biður þig um aðgangsorð þarftu fyrst að loka öllum skjánum.</translation>
 <translation id="6852052252232534364">Smelltu til að kveikja</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sek.</translation>
@@ -762,6 +763,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="7076293881109082629">Skráir inn</translation>
 <translation id="7088960765736518739">Rofaaðgangur</translation>
 <translation id="7098389117866926363">USB-C tæki (vinstra tengi að aftan)</translation>
+<translation id="7106330611027933926">Sýna verkstiku</translation>
 <translation id="7118268675952955085">skjámynd</translation>
 <translation id="7131634465328662194">Þú verður skráð(ur) út sjálfkrafa.</translation>
 <translation id="7143207342074048698">Tengist</translation>
@@ -805,6 +807,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="7466449121337984263">Snertu fingrafaralesarann</translation>
 <translation id="7473891865547856676">Nei, takk</translation>
 <translation id="7477793887173910789">Stjórnaðu tónlistinni, myndskeiðunum og fleiru</translation>
+<translation id="7482097454533720217">Fáðu skilgreiningar, þýðingar eða umreikninga mæligilda þegar þú hægrismellir eða snertir og heldur texta inni.</translation>
 <translation id="7483025031359818980">Valsvæði stillt á allan skjáinn</translation>
 <translation id="7486227320194954040">Draga saman merkiverkfæri</translation>
 <translation id="7497767806359279797">Velja tungumál og lyklaborð</translation>
@@ -981,6 +984,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="8843682306134542540">Víxla snúningslás. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">Enn tókst ekki að staðfesta PIN-númerið eða aðgangsorðið. Athugaðu: Ef þú skiptir nýlega um aðgangsorð skaltu nota gamla aðgangsorðið. Nýja aðgangsorðið tekur gildi þegar þú hefur skráð þig út.</translation>
+<translation id="8863888432376731307">Fáðu <ph name="INTENT" /> fyrir „<ph name="QUERY" />“ og fleira</translation>
 <translation id="8870509716567206129">Forritið styður ekki að skjánum sé skipt.</translation>
 <translation id="8871580645200179206">Kveikja/slökkva á dökku þema. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Ekki tengt</translation>

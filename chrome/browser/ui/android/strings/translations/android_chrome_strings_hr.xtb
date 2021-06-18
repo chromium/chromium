@@ -41,6 +41,7 @@
 <translation id="1240288207750131269">Učitava se <ph name="LANG" /></translation>
 <translation id="1242883863226959074">uređaju</translation>
 <translation id="124678866338384709">Zatvaranje trenutačne kartice</translation>
+<translation id="1246905108078336582">Želite li ukloniti prijedlog iz međuspremnika?</translation>
 <translation id="1258753120186372309">Googleov doodle logotip: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Nije moguće podijeliti <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Dodirnite za proširivanje</translation>
@@ -361,6 +362,7 @@ Dodirnite i držite bilo koju riječ da biste pokrenuli pretraživanje. Ako žel
 <translation id="3295530008794733555">Pregledavajte brže. Smanjite podatkovni promet.</translation>
 <translation id="3297344142967351106">Glasovna pomoć</translation>
 <translation id="3303414029551471755">Želite li nastaviti s preuzimanjem sadržaja?</translation>
+<translation id="333367884906698540">Kad završite, Bluetooth će se ponovo isključiti</translation>
 <translation id="3334729583274622784">Promijeniti datotečni nastavak?</translation>
 <translation id="3341058695485821946">Pogledajte količinu ušteđenih podataka</translation>
 <translation id="3341262203274374114">Prestanak praćenja nije uspio. Došlo je do pogreške.</translation>
@@ -1034,6 +1036,7 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="7641339528570811325">Izbriši podatke o pregledavanju…</translation>
 <translation id="764170292089748542">Chrome ne sprema vašu povijest pregledavanja kad pregledavate privatno. I dalje možete pristupati svojim omiljenim web-lokacijama pomoću oznaka.</translation>
 <translation id="7646772052135772216">Sinkronizacija zaporki ne radi</translation>
+<translation id="7655900163790317559">Uključivanje Bluetootha…</translation>
 <translation id="7658239707568436148">Odustani</translation>
 <translation id="7665369617277396874">Dodaj račun</translation>
 <translation id="766587987807204883">Ovdje će se prikazivati članci koje možete čitati i offline</translation>

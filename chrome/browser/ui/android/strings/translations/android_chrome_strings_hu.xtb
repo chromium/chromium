@@ -41,6 +41,7 @@
 <translation id="1240288207750131269">Betöltés: <ph name="LANG" /></translation>
 <translation id="1242883863226959074">eszközén</translation>
 <translation id="124678866338384709">Az aktuális lap bezárása</translation>
+<translation id="1246905108078336582">Eltávolítja a javaslatot a vágólapról?</translation>
 <translation id="1258753120186372309">Google ünnepi embléma: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Nem sikerült a(z) <ph name="CONTENT_TYPE" /> megosztása</translation>
 <translation id="1283039547216852943">Koppintson a kibontáshoz</translation>
@@ -361,6 +362,7 @@ A kereséshez tartsa nyomva a kívánt szót. A keresés finomításához válas
 <translation id="3295530008794733555">Gyorsabb böngészés. Kevesebb adathasználat.</translation>
 <translation id="3297344142967351106">Hangalapú segítség</translation>
 <translation id="3303414029551471755">Biztosan letölti a tartalmat?</translation>
+<translation id="333367884906698540">A Bluetooth újra kikapcsol, ha végzett</translation>
 <translation id="3334729583274622784">Módosítja a fájl kiterjesztését?</translation>
 <translation id="3341058695485821946">Megnézheti, mennyi adatot takarított meg</translation>
 <translation id="3341262203274374114">Nem sikerült felhagyni a követéssel. Hiba történt.</translation>
@@ -1035,6 +1037,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="7641339528570811325">Böngészési adatok törlése…</translation>
 <translation id="764170292089748542">A Chrome nem menti a böngészési előzményeket, ha privát módon böngészik. Kedvenc webhelyeihez azonban könyvjelzők segítségével ezután is hozzáférhet.</translation>
 <translation id="7646772052135772216">Nem működik a jelszavak szinkronizálása</translation>
+<translation id="7655900163790317559">Bluetooth bekapcsolása…</translation>
 <translation id="7658239707568436148">Mégse</translation>
 <translation id="7665369617277396874">Fiók hozzáadása</translation>
 <translation id="766587987807204883">Itt jelennek meg a cikkek, amelyeket offline állapotban is olvashat</translation>

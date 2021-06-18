@@ -727,6 +727,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="6816797338148849397">Available ang impormasyong nauugnay sa iyong pinili. Gamitin ang Pataas na arrow key para ma-access.</translation>
 <translation id="6818242057446442178">Bumalik nang paisa-isang salita</translation>
 <translation id="6820676911989879663">Magpahinga!</translation>
+<translation id="6837064795450991317">Itago ang deskbar</translation>
 <translation id="6850010208275816200">Naka-full screen ang iyong kasalukuyang app. Kung hihingin ng app ang iyong password, umalis muna sa full screen.</translation>
 <translation id="6852052252232534364">I-activate</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> seg</translation>
@@ -762,6 +763,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="7076293881109082629">Nagsa-sign in</translation>
 <translation id="7088960765736518739">Switch Access</translation>
 <translation id="7098389117866926363">USB-C device (kaliwang port sa likod)</translation>
+<translation id="7106330611027933926">Ipakita ang deskbar</translation>
 <translation id="7118268675952955085">screenshot</translation>
 <translation id="7131634465328662194">Awtomatiko kang masa-sign out.</translation>
 <translation id="7143207342074048698">Kumokonekta</translation>
@@ -805,6 +807,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="7466449121337984263">Pakipindot ang sensor</translation>
 <translation id="7473891865547856676">Hindi, Salamat</translation>
 <translation id="7477793887173910789">Kontrolin ang iyong musika, mga video, at higit pa</translation>
+<translation id="7482097454533720217">Makakuha ng mga kahulugan, pagsasalin, o pag-convert ng unit kapag nag-right click ka o pinindot mo nang matagal ang text.</translation>
 <translation id="7483025031359818980">Itinakda sa full screen ang selection area</translation>
 <translation id="7486227320194954040">I-collapse ang mga tool ng marker</translation>
 <translation id="7497767806359279797">Pumili ng wika at keyboard</translation>
@@ -981,6 +984,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="8843682306134542540">I-toggle ang lock ng pag-rotate. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">Hindi pa rin ma-verify ang iyong PIN o password. Tandaan: Kung pinalitan mo kamakailan ang iyong password, gamitin ang lumang password mo. Malalapat ang iyong bagong password kapag nag-sign out ka.</translation>
+<translation id="8863888432376731307">Kunin ang <ph name="INTENT" /> para sa "<ph name="QUERY" />" at higit pa</translation>
 <translation id="8870509716567206129">Hindi sinusuportahan ng app ang split-screen.</translation>
 <translation id="8871580645200179206">I-toggle ang Madilim na tema. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Hindi konekta</translation>

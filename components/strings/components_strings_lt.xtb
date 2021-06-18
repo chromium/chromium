@@ -376,6 +376,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2276057643614339130">Spausdinimo pagrindas</translation>
 <translation id="2277103315734023688">Prasukti pirmyn</translation>
 <translation id="2283340219607151381">Išsaugoti ir užpildyti adresus</translation>
+<translation id="2283447177162560884">„<ph name="PAGE_TITLE" />“ ištrintas</translation>
 <translation id="2288422996159078444">Visas vedamas tekstas, visi peržiūrimi puslapiai ar bet kokia kita veikla žiniatinklyje yra stebima. Svetainių turinys gali būti keičiamas jums nežinant.</translation>
 <translation id="2289385804009217824">Apkarpymas</translation>
 <translation id="2292556288342944218">Interneto prieiga užblokuota</translation>
@@ -502,6 +503,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="277133753123645258">Pristatymo metodas</translation>
 <translation id="277499241957683684">Trūksta įrenginio įrašo</translation>
 <translation id="2775884851269838147">Pirmas spausdinamas lapas</translation>
+<translation id="2778854133681684171">Galite naudoti įrenginį, kad sparčiai patvirtintumėte savo tapatybę, kai kitą kartą norėsite ką nors įsigyti naudodami šį mokėjimo metodą.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2784949926578158345">Ryšys atkurtas.</translation>
 <translation id="2792012897584536778">Šio įrenginio administratoriai nustatė saugos sertifikatus, leidžiančius jiems peržiūrėti svetainių, kuriose lankotės, turinį.</translation>
@@ -660,6 +662,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3377736046129930310">Naudodami ekrano užraktą korteles patvirtinsite greičiau</translation>
 <translation id="3380365263193509176">Nežinoma klaida</translation>
 <translation id="3380864720620200369">Kliento ID:</translation>
+<translation id="3381668585148405088">Pirkinio patvirtinimas</translation>
 <translation id="3387261909427947069">Mokėjimo metodai</translation>
 <translation id="3391030046425686457">Pristatymo adresas</translation>
 <translation id="3395827396354264108">Paėmimo metodas</translation>
@@ -836,6 +839,10 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
     visoms jos užklausoms, bet šiuo metu šios politikos taikyti negalima.</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF dokumente yra {COUNT} puslapis}one{PDF dokumente yra {COUNT} puslapis}few{PDF dokumente yra {COUNT} puslapiai}many{PDF dokumente yra {COUNT} puslapio}other{PDF dokumente yra {COUNT} puslapių}}</translation>
 <translation id="4023431997072828269">Kadangi ši forma teikiama naudojant nesaugų ryšį, jūsų informacija bus matoma kitiems.</translation>
+<translation id="4027177651527820006">Įgalinus šias funkcijas gali būti prarasti naršymo duomenys arba
+    pažeistas jūsų privatumas ar sauga. Įgalintos funkcijos taikomos visiems
+    šios naršyklės naudotojams. Jei esate įmonės administratorius, neturėtumėte
+    šių gamybinės versijos žymų.</translation>
 <translation id="4030383055268325496">&amp;Anuliuoti pridėjimą</translation>
 <translation id="4056223980640387499">Sepija</translation>
 <translation id="4058922952496707368">Raktas „<ph name="SUBKEY" />“: <ph name="ERROR" /></translation>

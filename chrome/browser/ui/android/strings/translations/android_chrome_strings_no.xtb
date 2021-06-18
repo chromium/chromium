@@ -41,6 +41,7 @@
 <translation id="1240288207750131269">Laster inn <ph name="LANG" /></translation>
 <translation id="1242883863226959074">enhet</translation>
 <translation id="124678866338384709">Lukk den aktive fanen</translation>
+<translation id="1246905108078336582">Vil du fjerne forslaget fra utklippstavlen?</translation>
 <translation id="1258753120186372309">Google-doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Kunne ikke dele <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Trykk for å vise</translation>
@@ -361,6 +362,7 @@ Trykk og hold inne på et ord for å søke. For å finstemme søket, merk flere 
 <translation id="3295530008794733555">Surf raskere. Bruk mindre data.</translation>
 <translation id="3297344142967351106">Talehjelp</translation>
 <translation id="3303414029551471755">Vil du gå videre med å laste ned innholdet?</translation>
+<translation id="333367884906698540">Bluetooth slås av igjen når du er ferdig</translation>
 <translation id="3334729583274622784">Vil du endre filetternavnet?</translation>
 <translation id="3341058695485821946">Se hvor mye data du har spart</translation>
 <translation id="3341262203274374114">Kan ikke slutte å følge. Noe gikk galt.</translation>
@@ -1035,6 +1037,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="7641339528570811325">Slett nettleserdata</translation>
 <translation id="764170292089748542">Chrome lagrer ikke nettleserloggen din når du velger å surfe privat. Du kan fremdeles bruke bokmerker for å åpne favorittnettstedene dine.</translation>
 <translation id="7646772052135772216">Passordsynkronisering fungerer ikke</translation>
+<translation id="7655900163790317559">Slår på Bluetooth …</translation>
 <translation id="7658239707568436148">Avbryt</translation>
 <translation id="7665369617277396874">Legg til konto</translation>
 <translation id="766587987807204883">Her vises artikler, som du kan lese selv om du er uten nett</translation>

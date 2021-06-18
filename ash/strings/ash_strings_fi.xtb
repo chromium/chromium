@@ -727,6 +727,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="6816797338148849397">Valintaasi liittyvää tietoa on saatavilla. Paina ylänuolta, niin näet tiedot.</translation>
 <translation id="6818242057446442178">Yksi sana taaksepäin</translation>
 <translation id="6820676911989879663">Pidä tauko</translation>
+<translation id="6837064795450991317">Piilota työpöytäpalkki</translation>
 <translation id="6850010208275816200">Nykyinen sovellus näkyy koko näytöllä. Jos sovellus pyytää salasanaa, poistu ensin koko näytön tilasta.</translation>
 <translation id="6852052252232534364">Klikkaa: aktivoi</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
@@ -762,6 +763,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="7076293881109082629">Kirjautuminen</translation>
 <translation id="7088960765736518739">Kytkimen käyttö</translation>
 <translation id="7098389117866926363">C-tyypin USB-laite (vasemmanpuoleinen takaportti)</translation>
+<translation id="7106330611027933926">Piilota työpöytäpalkki</translation>
 <translation id="7118268675952955085">kuvakaappaus</translation>
 <translation id="7131634465328662194">Sinut kirjataan automaattisesti ulos.</translation>
 <translation id="7143207342074048698">Yhdistetään</translation>
@@ -805,6 +807,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="7466449121337984263">Kosketa tunnistinta</translation>
 <translation id="7473891865547856676">Ei kiitos</translation>
 <translation id="7477793887173910789">Ohjaa musiikkia, videoita ja muuta</translation>
+<translation id="7482097454533720217">Voit nähdä määritelmiä, käännöksiä tai yksikkömuunnoksia klikkaamalla tekstiä kakkospainikkeella tai koskettamalla sitä pitkään.</translation>
 <translation id="7483025031359818980">Lähteeksi on valittu koko näyttö</translation>
 <translation id="7486227320194954040">Tiivistä tussityökalut</translation>
 <translation id="7497767806359279797">Valitse kieli ja näppäimistö</translation>
@@ -981,6 +984,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="8843682306134542540">Laita kierron lukitus päälle tai pois päältä. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Haku+Esc</translation>
 <translation id="8853703225951107899">PIN-koodiasi tai salasanaasi ei voitu vieläkään vahvistaa. Huom. Jos vaihdoit salasanasi äskettäin, käytä vanhaa salasanaa. Uusi salasana otetaan käyttöön kirjauduttuasi ulos.</translation>
+<translation id="8863888432376731307">Hae <ph name="INTENT" />: "<ph name="QUERY" />" ja muita</translation>
 <translation id="8870509716567206129">Sovellus ei tue jaetun näytön tilaa.</translation>
 <translation id="8871580645200179206">Tumma teema päälle/pois. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Ei yhdistetty</translation>

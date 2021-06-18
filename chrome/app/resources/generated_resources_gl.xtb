@@ -231,7 +231,6 @@
 <translation id="1244265436519979884">Estase restaurando Linux</translation>
 <translation id="1244303850296295656">Erro de extensión</translation>
 <translation id="1246863218384630739">Non se puido instalar <ph name="VM_NAME" />: o URL da imaxe devolveu o código de erro <ph name="HTTP_ERROR" />. Ponte en contacto co teu administrador.</translation>
-<translation id="1246905108078336582">Queres quitar a suxestión do portapapeis?</translation>
 <translation id="1251366534849411931">Falta unha chave de apertura: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Ao realizar esta acción, borraranse <ph name="TOTAL_USAGE" /> dos datos que almacenasen os sitios e as aplicacións instaladas</translation>
 <translation id="125220115284141797">Predeterminadas</translation>
@@ -746,7 +745,6 @@
 <translation id="1795214765651529549">Usar tema clásico</translation>
 <translation id="1796588414813960292">As funcións que necesiten reproducir sons non estarán dispoñibles</translation>
 <translation id="1799071797295057738">A extensión <ph name="EXTENSION_NAME" /> desactivouse automaticamente.</translation>
-<translation id="1800973090344019061">A extensión <ph name="APP_NAME" /> solicita compartir o contido da pantalla.</translation>
 <translation id="1802624026913571222">Activar suspensión cando se peche a tapa</translation>
 <translation id="1802687198411089702">A páxina non responde. Podes esperar ou saír da páxina.</translation>
 <translation id="1803531841600994172">Idioma ao que queres traducir</translation>
@@ -1606,6 +1604,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2734760316755174687">Tamén se restablecerán os sitios situados en <ph name="SITE_GROUP_NAME" />.</translation>
 <translation id="2735712963799620190">Programación</translation>
 <translation id="2737363922397526254">Contraer...</translation>
+<translation id="2737916598897808047"><ph name="APP_NAME" /> solicita que compartas o contido da túa pantalla con <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">Non permitir que os sitios utilicen os tipos de letra instalados no dispositivo</translation>
 <translation id="2738771556149464852">Non despois de</translation>
 <translation id="2739191690716947896">Depuración</translation>
@@ -3744,6 +3743,7 @@ Obtén <ph name="BEGIN_LINK" />máis información<ph name="END_LINK" /> sobre os
 <translation id="5127805178023152808">A sincronización está desactivada</translation>
 <translation id="5127881134400491887">Xestionar conexións de rede</translation>
 <translation id="512903556749061217">conectado</translation>
+<translation id="5130080518784460891">Eten</translation>
 <translation id="5130675701626084557">Non se puido descargar o perfil. Téntao de novo máis tarde ou ponte en contacto co operador para obter axuda.</translation>
 <translation id="5131591206283983824">Acción de tocar e arrastrar no panel táctil</translation>
 <translation id="5135085122826131075">Accede ao teu Asistente cando digas "Ok Google".</translation>
@@ -4038,6 +4038,7 @@ Obtén <ph name="BEGIN_LINK" />máis información<ph name="END_LINK" /> sobre os
 <translation id="5470735824776589490">É necesario reiniciar o dispositivo para poder restablecelo cun Powerwash. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="5471768120198416576">Ola! Son a túa voz de conversión de texto a voz.</translation>
 <translation id="5472627187093107397">Gardar os contrasinais deste sitio</translation>
+<translation id="5473075389972733037">IBM</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{O PIN debe ter como mínimo 1 carácter}other{O PIN debe ter como mínimo # caracteres}}</translation>
 <translation id="5481273127572794904">Sitios que non poden descargar automaticamente varios ficheiros</translation>
 <translation id="5481941284378890518">Engadir impresoras que estean cerca</translation>
@@ -4634,7 +4635,6 @@ Obtén <ph name="BEGIN_LINK" />máis información<ph name="END_LINK" /> sobre os
 <translation id="6136114942382973861">Pechar barra de descargas</translation>
 <translation id="6136287496450963112">A túa chave de seguranza non está protexida cun PIN. Para xestionar as impresións dixitais, primeiro crea un PIN.</translation>
 <translation id="6138680304137685902">Sinatura X9.62 ECDSA con SHA-384</translation>
-<translation id="6138774640412545950">A extensión <ph name="APP_NAME" /> solicita compartir o contido da pantalla con <ph name="TARGET_NAME" />.</translation>
 <translation id="6141988275892716286">Confirma a descarga</translation>
 <translation id="6143186082490678276">Obter axuda</translation>
 <translation id="6143366292569327983">Escolle o idioma de orixe da páxina</translation>
@@ -5154,6 +5154,7 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="6723839937902243910">A</translation>
 <translation id="6725073593266469338">Servizo de IU</translation>
 <translation id="6725206449694821596">Protocolo de impresión por Internet (IPP)</translation>
+<translation id="6725970970008349185">Número de candidatos para mostrar por páxina</translation>
 <translation id="672609503628871915">Ver as novidades</translation>
 <translation id="67269783048918309">Enviar datos de uso e de diagnóstico. Este dispositivo envía automaticamente datos de diagnóstico e de uso do dispositivo e das aplicacións a Google. Esta información non se utilizará para identificar o teu fillo, senón co obxectivo de aumentar a estabilidade do sistema e das aplicacións, e de realizar outras melloras. Algúns datos agregados tamén serán útiles para as aplicacións e os socios de Google, como os programadores de Android. Esta <ph name="BEGIN_LINK1" />opción de configuración<ph name="END_LINK1" /> contrólaa o propietario. Se está activada a opción de configuración Actividade web e das aplicacións adicional para o teu fillo, estes datos pódense gardar na súa conta de Google <ph name="BEGIN_LINK2" />Máis información<ph name="END_LINK2" /></translation>
 <translation id="6727969043791803658">Conectado, <ph name="BATTERY_PERCENTAGE" /> % de batería</translation>
@@ -6509,6 +6510,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034">Establecendo conexión con <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Xestiona as túas aplicacións, extensións e temas</translation>
+<translation id="8192944472786724289"><ph name="APP_NAME" /> solicita que compartas o contido da túa pantalla.</translation>
 <translation id="8195027750202970175">Tamaño en disco</translation>
 <translation id="8198323535106903877">Encargarémonos de instalar esas <ph name="NUMBER_OF_APPS" /> aplicacións</translation>
 <translation id="8198456017687137612">Recibindo emisión de pestana</translation>
@@ -6652,6 +6654,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8363095875018065315">estable</translation>
 <translation id="8363142353806532503">Bloqueouse o micrófono</translation>
 <translation id="8366396658833131068">Restableceuse a túa conectividade de rede. Selecciona unha rede diferente ou preme o botón "Continuar" a continuación para iniciar a túa aplicación de quiosco.</translation>
+<translation id="8366694425498033255">Teclas de selección</translation>
 <translation id="8368027906805972958">Dispositivo descoñecido ou non compatible (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368859634510605990">&amp;Abrir todos os marcadores</translation>
 <translation id="8370294614544004647">Entrar en suspensión ao pechar o ordenador portátil</translation>

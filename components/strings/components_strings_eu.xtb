@@ -372,6 +372,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2276057643614339130">Inprimatze-oinarria</translation>
 <translation id="2277103315734023688">Aurreratu</translation>
 <translation id="2283340219607151381">Gorde eta bete helbideak</translation>
+<translation id="2283447177162560884">Ezabatu da "<ph name="PAGE_TITLE" />"</translation>
 <translation id="2288422996159078444">Zer idazten duzun, zer orri ikusten dituzun edo, orokorrean, sarean egiten duzun edozer ari dira gainbegiratzen. Baliteke webguneetako edukia aldatzea zuk jakin gabe.</translation>
 <translation id="2289385804009217824">Moztu</translation>
 <translation id="2292556288342944218">Blokeatuta duzu Interneteko konexioa</translation>
@@ -498,6 +499,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="277133753123645258">Bidalketa-metodoa</translation>
 <translation id="277499241957683684">Gailuaren erregistroa falta da</translation>
 <translation id="2775884851269838147">Inprimatu lehenengo orria</translation>
+<translation id="2778854133681684171">Ordainketa-metodo honekin ordaintzen duzun hurrengo aldian zeu zarela bizkor egiaztatzeko erabil dezakezu gailua.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2784949926578158345">Konexioa berrezarri da.</translation>
 <translation id="2792012897584536778">Segurtasun-ziurtagiri batzuk konfiguratu dituzte gailu honen administratzaileek, bisitatzen dituzun webguneen edukia ikusteko aukera eman diezaieketenak.</translation>
@@ -652,6 +654,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3377736046129930310">Erabili pantailaren blokeoa txartelak bizkorrago berresteko</translation>
 <translation id="3380365263193509176">Errore ezezaguna</translation>
 <translation id="3380864720620200369">Bezeroaren IDa:</translation>
+<translation id="3381668585148405088">Egiaztatu erosketa</translation>
 <translation id="3387261909427947069">Ordainketa-metodoak</translation>
 <translation id="3391030046425686457">Entrega-helbidea</translation>
 <translation id="3395827396354264108">Jasotze-metodoa</translation>
@@ -826,6 +829,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3996311196211510766"><ph name="ORIGIN" /> webguneak hartarako eskaera guztiei jatorri-gidalerro bat aplikatzeko eskatu du, baina ezin da aplikatu gidalerroa une honetan.</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{{COUNT} orri daukan PDF dokumentua}other{{COUNT} orri dauzkan PDF dokumentua}}</translation>
 <translation id="4023431997072828269">Inprimakia segurua ez den konexio baten bidez bidaliko denez, gainerako erabiltzaileek zure informazioa ikusi ahalko dute.</translation>
+<translation id="4027177651527820006">Eginbide hauek gaitzen badituzu, baliteke arakatzaileko datuak galtzea, edo segurtasuna edo pribatutasuna arriskuan jartzea. Arakatzailea darabilten pertsona guztiek izango dituzte erabilgarri gaitzen diren eginbideak. Enpresa bateko administratzailea bazara, ezin dituzu erabili eginbide esperimental hauek ekoizpenerako.</translation>
 <translation id="4030383055268325496">&amp;Desegin gehitzea</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4058922952496707368">"<ph name="SUBKEY" />" tekla: <ph name="ERROR" /></translation>

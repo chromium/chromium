@@ -41,6 +41,7 @@
 <translation id="1240288207750131269">S'està carregant <ph name="LANG" /></translation>
 <translation id="1242883863226959074">dispositiu</translation>
 <translation id="124678866338384709">Tanca la pestanya actual</translation>
+<translation id="1246905108078336582">Vols suprimir el suggeriment del porta-retalls?</translation>
 <translation id="1258753120186372309">Doodle de Google: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">No s'ha pogut compartir <ph name="CONTENT_TYPE" />.</translation>
 <translation id="1283039547216852943">Toca per desplegar</translation>
@@ -361,6 +362,7 @@ Mantén premuda qualsevol paraula per cercar-la. Per definir millor la cerca, se
 <translation id="3295530008794733555">Navega més de pressa. Utilitza menys dades.</translation>
 <translation id="3297344142967351106">Assistència per veu</translation>
 <translation id="3303414029551471755">Voleu baixar el contingut?</translation>
+<translation id="333367884906698540">El Bluetooth es desactivarà quan acabis</translation>
 <translation id="3334729583274622784">Vols canviar l'extensió del fitxer?</translation>
 <translation id="3341058695485821946">Consulta la quantitat de dades que has estalviat</translation>
 <translation id="3341262203274374114">No es pot deixar de seguir. S'ha produït un error.</translation>
@@ -1035,6 +1037,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="7641339528570811325">Esborra les dades de navegació…</translation>
 <translation id="764170292089748542">Chrome no desa l'historial de navegació quan tries navegar de manera privada. Pots seguir utilitzant les adreces d'interès per accedir als teus llocs web preferits.</translation>
 <translation id="7646772052135772216">La sincronització de contrasenyes no funciona</translation>
+<translation id="7655900163790317559">S'està activant el Bluetooth…</translation>
 <translation id="7658239707568436148">Cancel·la</translation>
 <translation id="7665369617277396874">Afegeix un compte</translation>
 <translation id="766587987807204883">Els articles es mostren aquí i els pots llegir fins i tot sense connexió</translation>

@@ -376,6 +376,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2276057643614339130">Base di stampa</translation>
 <translation id="2277103315734023688">Vai avanti</translation>
 <translation id="2283340219607151381">Salva e compila gli indirizzi</translation>
+<translation id="2283447177162560884">Pagina "<ph name="PAGE_TITLE" />" eliminata</translation>
 <translation id="2288422996159078444">Tutto ciò che digiti, tutte le pagine che visualizzi e ogni altra attività che svolgi sul Web vengono monitorati. I contenuti sui siti potrebbero essere modificati a tua insaputa.</translation>
 <translation id="2289385804009217824">Taglio</translation>
 <translation id="2292556288342944218">L'accesso a Internet è bloccato</translation>
@@ -502,6 +503,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="277133753123645258">Metodo di spedizione</translation>
 <translation id="277499241957683684">Record del dispositivo mancante</translation>
 <translation id="2775884851269838147">Prima pagina di stampa</translation>
+<translation id="2778854133681684171">Potrai usare il tuo dispositivo per verificare rapidamente la tua identità la prossima volta che effettuerai un acquisto con questo metodo di pagamento.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2784949926578158345">La connessione è stata reimpostata.</translation>
 <translation id="2792012897584536778">Gli amministratori di questo dispositivo hanno configurato certificati di sicurezza che potrebbero consentire loro di visualizzare i contenuti dei siti web che visiti.</translation>
@@ -656,6 +658,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3377736046129930310">Usa il blocco schermo per verificare più velocemente le carte</translation>
 <translation id="3380365263193509176">Errore sconosciuto</translation>
 <translation id="3380864720620200369">ID client:</translation>
+<translation id="3381668585148405088">Verifica l'acquisto</translation>
 <translation id="3387261909427947069">Metodi di pagamento</translation>
 <translation id="3391030046425686457">Indirizzo di consegna</translation>
 <translation id="3395827396354264108">Metodo di ritiro</translation>
@@ -832,6 +835,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
     a tutte le richieste indirizzate a esso, ma questo criterio al momento non può essere applicato.</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Documento PDF contenente {COUNT} pagina}other{Documento PDF contenente {COUNT} pagine}}</translation>
 <translation id="4023431997072828269">Le tue informazioni saranno visibili agli altri utenti perché il modulo verrà inviato tramite una connessione non sicura.</translation>
+<translation id="4027177651527820006">Se attivi queste funzionalità, potresti perdere i dati del browser oppure compromettere la sicurezza o la privacy. Le funzionalità attivate vengono applicate per tutti gli utenti di questo browser. Se sei un amministratore aziendale, non dovresti usare questi flag in versione di produzione.</translation>
 <translation id="4030383055268325496">&amp;Annulla aggiunta</translation>
 <translation id="4056223980640387499">Seppia</translation>
 <translation id="4058922952496707368">Chiave "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>

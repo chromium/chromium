@@ -372,6 +372,7 @@
 <translation id="2276057643614339130">인쇄 베이스</translation>
 <translation id="2277103315734023688">앞으로 탐색</translation>
 <translation id="2283340219607151381">주소 저장 및 자동 입력</translation>
+<translation id="2283447177162560884">'<ph name="PAGE_TITLE" />' 삭제됨</translation>
 <translation id="2288422996159078444">내가 입력하는 내용, 접속하는 페이지, 웹상의 기타 모든 활동이 감시되며, 사이트의 콘텐츠가 눈치채지 못하게 변경될 수 있습니다.</translation>
 <translation id="2289385804009217824">트림</translation>
 <translation id="2292556288342944218">인터넷 액세스가 차단됨</translation>
@@ -498,6 +499,7 @@
 <translation id="277133753123645258">배송 방법</translation>
 <translation id="277499241957683684">기기 기록 없음</translation>
 <translation id="2775884851269838147">첫 인쇄 페이지</translation>
+<translation id="2778854133681684171">다음번에 이 결제 수단을 사용해 구매할 때 기기를 사용하여 빠르게 본인 인증을 마칠 수 있습니다.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2784949926578158345">연결이 재설정되었습니다.</translation>
 <translation id="2792012897584536778">이 기기의 관리자가 보안 인증서를 설정했으며, 이를 통해 관리자가 내가 방문하는 웹사이트의 콘텐츠를 확인할 수 있습니다.</translation>
@@ -655,6 +657,7 @@
 <translation id="3377736046129930310">화면 잠금을 사용하여 빠르게 카드 확인</translation>
 <translation id="3380365263193509176">알 수 없는 오류가 발생했습니다.</translation>
 <translation id="3380864720620200369">클라이언트 ID:</translation>
+<translation id="3381668585148405088">구매 확인</translation>
 <translation id="3387261909427947069">결제 수단</translation>
 <translation id="3391030046425686457">배송지 주소</translation>
 <translation id="3395827396354264108">수령 방법</translation>
@@ -830,6 +833,7 @@
 <translation id="3996311196211510766">사이트 <ph name="ORIGIN" />에서 모든 요청에 출처 정책을 적용하도록 요청했으나 이 정책은 현재 적용할 수 없습니다.</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{{COUNT}페이지로 이루어진 PDF 문서}other{{COUNT}페이지로 이루어진 PDF 문서}}</translation>
 <translation id="4023431997072828269">안전하지 않은 연결을 통해 이 양식이 제출되므로 내 정보가 다른 사용자에게 표시됩니다.</translation>
+<translation id="4027177651527820006">이러한 기능을 사용 설정하면 브라우저 데이터가 손실되거나 보안이 악화되거나 개인 정보가 유출될 수도 있습니다. 사용 설정된 기능은 브라우저의 모든 사용자에게 적용됩니다. 기업 관리자인 경우 프로덕션에서 이러한 신고를 사용해서는 안 됩니다.</translation>
 <translation id="4030383055268325496">추가 실행 취소(&amp;U)</translation>
 <translation id="4056223980640387499">세피아</translation>
 <translation id="4058922952496707368">'<ph name="SUBKEY" />' 키: <ph name="ERROR" /></translation>

@@ -727,6 +727,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="6816797338148849397">Informações disponíveis relacionadas com a sua seleção. Utilize a tecla da seta para cima para aceder.</translation>
 <translation id="6818242057446442178">Recuar por palavra</translation>
 <translation id="6820676911989879663">Faça uma pausa!</translation>
+<translation id="6837064795450991317">Ocultar a barra do espaço de trabalho</translation>
 <translation id="6850010208275816200">A sua app atual está em ecrã inteiro. Se a app solicitar a sua palavra-passe, saia primeiro do ecrã inteiro.</translation>
 <translation id="6852052252232534364">Clicar: ativar</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
@@ -762,6 +763,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="7076293881109082629">Iniciar sessão</translation>
 <translation id="7088960765736518739">Acesso por comutador</translation>
 <translation id="7098389117866926363">Dispositivo USB-C (porta traseira esquerda)</translation>
+<translation id="7106330611027933926">Mostrar a barra do espaço de trabalho</translation>
 <translation id="7118268675952955085">captura de ecrã</translation>
 <translation id="7131634465328662194">A sessão será terminada automaticamente.</translation>
 <translation id="7143207342074048698">A ligar</translation>
@@ -805,6 +807,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="7466449121337984263">Toque no sensor.</translation>
 <translation id="7473891865547856676">Não, obrigado</translation>
 <translation id="7477793887173910789">Controle a sua música, vídeos e muito mais.</translation>
+<translation id="7482097454533720217">Obtenha definições, traduções ou conversões de unidades quando clicar com o botão direito do rato ou tocar sem soltar no texto.</translation>
 <translation id="7483025031359818980">Área de seleção definida para ecrã inteiro</translation>
 <translation id="7486227320194954040">Reduzir ferramentas de marcador</translation>
 <translation id="7497767806359279797">Escolher idioma e teclado</translation>
@@ -981,6 +984,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="8843682306134542540">Ativar/desativar bloqueio de rotação. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Pesquisa+Esc</translation>
 <translation id="8853703225951107899">Ainda não foi possível validar o seu PIN ou palavra-passe. Nota: se alterou a sua palavra-passe recentemente, utilize a palavra-passe antiga. A nova palavra-passe será aplicada quando terminar sessão.</translation>
+<translation id="8863888432376731307">Obtenha a intenção <ph name="INTENT" /> para a consulta "<ph name="QUERY" />" e muito mais</translation>
 <translation id="8870509716567206129">A aplicação não é compatível com o ecrã dividido.</translation>
 <translation id="8871580645200179206">Ative/desative o tema escuro. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Sem ligação</translation>

@@ -41,6 +41,7 @@
 <translation id="1240288207750131269">Выполняется загрузка пакета "<ph name="LANG" />"…</translation>
 <translation id="1242883863226959074">устройстве</translation>
 <translation id="124678866338384709">Закрыть вкладку</translation>
+<translation id="1246905108078336582">Удалить подсказку из буфера обмена?</translation>
 <translation id="1258753120186372309">Дудл Google: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Не удалось отправить: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Нажмите, чтобы развернуть</translation>
@@ -361,6 +362,7 @@
 <translation id="3295530008794733555">Быстрый просмотр сайтов и экономия трафика</translation>
 <translation id="3297344142967351106">Голосовой помощник</translation>
 <translation id="3303414029551471755">Скачать?</translation>
+<translation id="333367884906698540">По окончании операции функция Bluetooth будет отключена.</translation>
 <translation id="3334729583274622784">Изменить расширение имени файла?</translation>
 <translation id="3341058695485821946">Узнайте, сколько трафика вы сэкономили.</translation>
 <translation id="3341262203274374114">Не удалось отменить подписку. Что-то пошло не так.</translation>
@@ -1035,6 +1037,7 @@
 <translation id="7641339528570811325">Очистить историю...</translation>
 <translation id="764170292089748542">В режиме инкогнито история браузера не сохраняется. Однако вы по-прежнему можете использовать закладки для доступа к любимым сайтам.</translation>
 <translation id="7646772052135772216">Синхронизация паролей не работает</translation>
+<translation id="7655900163790317559">Включение Bluetooth…</translation>
 <translation id="7658239707568436148">Отмена</translation>
 <translation id="7665369617277396874">Добавить аккаунт</translation>
 <translation id="766587987807204883">Здесь появляются статьи, которые можно читать даже в офлайн-режиме.</translation>

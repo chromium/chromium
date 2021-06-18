@@ -41,6 +41,7 @@
 <translation id="1240288207750131269"><ph name="LANG" /> 로드 중</translation>
 <translation id="1242883863226959074">기기</translation>
 <translation id="124678866338384709">현재 탭 닫기</translation>
+<translation id="1246905108078336582">클립보드에서 추천 항목을 삭제하시겠습니까?</translation>
 <translation id="1258753120186372309">Google 기념일 로고: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> 공유할 수 없음</translation>
 <translation id="1283039547216852943">탭하여 펼치기</translation>
@@ -361,6 +362,7 @@
 <translation id="3295530008794733555">데이터를 절약하면서 웹을 더 빠르게 탐색하세요</translation>
 <translation id="3297344142967351106">음성 지원</translation>
 <translation id="3303414029551471755">콘텐츠를 다운로드하시겠습니까?</translation>
+<translation id="333367884906698540">작업이 완료되면 블루투스가 다시 꺼집니다</translation>
 <translation id="3334729583274622784">파일 확장자를 변경하시겠습니까?</translation>
 <translation id="3341058695485821946">저장한 데이터의 양을 확인해보세요.</translation>
 <translation id="3341262203274374114">팔로우를 해제할 수 없습니다. 문제가 발생했습니다.</translation>
@@ -1035,6 +1037,7 @@
 <translation id="7641339528570811325">인터넷 사용 기록 삭제...</translation>
 <translation id="764170292089748542">비공개 탐색을 선택하면 Chrome에서 방문 기록을 저장하지 않습니다. 이때도 북마크를 사용해 자주 찾는 사이트에 액세스할 수 있습니다.</translation>
 <translation id="7646772052135772216">비밀번호 동기화가 작동하지 않음</translation>
+<translation id="7655900163790317559">블루투스 켜는 중…</translation>
 <translation id="7658239707568436148">취소</translation>
 <translation id="7665369617277396874">계정 추가</translation>
 <translation id="766587987807204883">기사가 여기 표시되며 오프라인 상태에서도 읽을 수 있습니다.</translation>

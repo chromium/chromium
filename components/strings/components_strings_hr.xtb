@@ -376,6 +376,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="2276057643614339130">Ispisna baza</translation>
 <translation id="2277103315734023688">Traži prema naprijed</translation>
 <translation id="2283340219607151381">Spremi i popuni adrese</translation>
+<translation id="2283447177162560884">Izbrisana je stavka "<ph name="PAGE_TITLE" />"</translation>
 <translation id="2288422996159078444">Prati se sve što upisujete, stranice koje pregledavate ili druge aktivnosti na webu, a sadržaj na web-lokacijama može se izmijeniti bez vašeg znanja.</translation>
 <translation id="2289385804009217824">Obrezivanje</translation>
 <translation id="2292556288342944218">Internetski je pristup blokiran</translation>
@@ -502,6 +503,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="277133753123645258">Način dostave</translation>
 <translation id="277499241957683684">Zapis uređaja nije prisutan</translation>
 <translation id="2775884851269838147">Prva ispisana stranica</translation>
+<translation id="2778854133681684171">Kad sljedeći put izvršite kupnju ovim načinom plaćanja, možete upotrijebiti svoj uređaj za brzu potvrdu da ste to vi.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2784949926578158345">Veza je ponovo uspostavljena.</translation>
 <translation id="2792012897584536778">Administratori uređaja postavili su sigurnosne certifikate koji im mogu omogućiti prikaz sadržaja web-lokacija koje posjetite.</translation>
@@ -659,6 +661,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="3377736046129930310">Za brže potvrđivanje kartica upotrijebite zaključavanje zaslona</translation>
 <translation id="3380365263193509176">Nepoznata pogreška</translation>
 <translation id="3380864720620200369">ID klijenta:</translation>
+<translation id="3381668585148405088">Potvrdite kupnju</translation>
 <translation id="3387261909427947069">Načini plaćanja</translation>
 <translation id="3391030046425686457">Adresa za dostavu</translation>
 <translation id="3395827396354264108">Način preuzimanja</translation>
@@ -834,6 +837,10 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
     primjenjuje na sve zahtjeve za nju, no to se pravilo trenutačno ne može primijeniti.</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF dokument koji sadrži {COUNT} stranicu}one{PDF dokument koji sadrži {COUNT} stranicu}few{PDF dokument koji sadrži {COUNT} stranice}other{PDF dokument koji sadrži {COUNT} stranica}}</translation>
 <translation id="4023431997072828269">Budući da se ovaj obrazac šalje vezom koja nije sigurna, vaši će podaci biti vidljivi drugima.</translation>
+<translation id="4027177651527820006">Omogućivanjem tih značajki mogli biste izgubiti podatke preglednika ili
+    ugroziti svoju sigurnost ili privatnost. Omogućene značajke primjenjuju se na svel
+    korisnike ovog preglednika. Ako ste administrator poduzeća, ne biste smjeli
+    upotrebljavati te oznake u produkciji.</translation>
 <translation id="4030383055268325496">&amp;Poništi dodavanje</translation>
 <translation id="4056223980640387499">Sepija</translation>
 <translation id="4058922952496707368">Stavka "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>

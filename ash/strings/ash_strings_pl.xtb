@@ -727,6 +727,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="6816797338148849397">Dostępne są informacje związane z zaznaczoną treścią. Aby je otworzyć, naciśnij klawisz strzałki w górę.</translation>
 <translation id="6818242057446442178">Cofnij o jedno słowo</translation>
 <translation id="6820676911989879663">Zrób sobie przerwę</translation>
+<translation id="6837064795450991317">Ukryj pasek</translation>
 <translation id="6850010208275816200">Bieżąca aplikacja działa w trybie pełnoekranowym. Jeśli aplikacja pyta o hasło, najpierw zamknij ten tryb.</translation>
 <translation id="6852052252232534364">Kliknij, by włączyć</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
@@ -762,6 +763,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="7076293881109082629">Loguję</translation>
 <translation id="7088960765736518739">Switch Access</translation>
 <translation id="7098389117866926363">Urządzenie USB-C (lewy port z tyłu)</translation>
+<translation id="7106330611027933926">Pokaż pasek</translation>
 <translation id="7118268675952955085">zrzut ekranu</translation>
 <translation id="7131634465328662194">Nastąpi automatyczne wylogowanie.</translation>
 <translation id="7143207342074048698">Łączenie</translation>
@@ -805,6 +807,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="7466449121337984263">Dotknij czytnika</translation>
 <translation id="7473891865547856676">Nie, dziękuję</translation>
 <translation id="7477793887173910789">Steruj filmami, muzyką i innymi multimediami</translation>
+<translation id="7482097454533720217">Kliknij tekst prawym przyciskiem lub dotknij go i przytrzymaj, aby zobaczyć definicję, tłumaczenie lub konwersję jednostek.</translation>
 <translation id="7483025031359818980">Jako obszar ustawiono cały ekran</translation>
 <translation id="7486227320194954040">Zwiń narzędzia pisaka</translation>
 <translation id="7497767806359279797">Wybierz język i klawiaturę</translation>
@@ -981,6 +984,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="8843682306134542540">Włącz lub wyłącz blokadę obracania. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Szukaj+Esc</translation>
 <translation id="8853703225951107899">Nadal nie udało się zweryfikować Twojego hasła ani kodu PIN. Uwaga: jeśli Twoje hasło zostało ostatnio zmienione, użyj starego hasła. Nowe hasło zacznie obowiązywać, gdy się wylogujesz.</translation>
+<translation id="8863888432376731307">Pobierz <ph name="INTENT" />, aby znajdować odpowiedzi na pytania takie jak „<ph name="QUERY" />” i inne</translation>
 <translation id="8870509716567206129">Aplikacja nie obsługuje dzielonego ekranu.</translation>
 <translation id="8871580645200179206">Przełącz ciemny motyw. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Brak połączenia</translation>

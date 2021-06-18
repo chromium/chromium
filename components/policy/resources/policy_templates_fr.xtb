@@ -163,7 +163,6 @@
 
       Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez consulter la page https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  La valeur <ph name="WILDCARD_VALUE" /> n'est pas acceptée pour cette règle.</translation>
 <translation id="120937472976628837">Transmettre des infos sur le ventilateur</translation>
-<translation id="1214202898523114033">port 10080 (expire le 01/04/2022)</translation>
 <translation id="1216919699175573511">Activer la compatibilité avec la fonctionnalité Signed HTTP Exchange (SXG)</translation>
 <translation id="1219695476179627719">Spécifie si la version définie par <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" /> doit être rétablie sur l'appareil s'il exécute une version ultérieure.
 
@@ -4164,15 +4163,6 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 <translation id="6506486086262398387">Si cette règle est activée, la fonctionnalité Partages de fichiers en réseau de <ph name="PRODUCT_OS_NAME" /> utilise le protocole NTLM pour s'authentifier sur les partages SMB, si nécessaire. Si elle est désactivée, l'authentification NTLM sur les partages SMB l'est également.
 
       Si cette règle n'est pas configurée, le protocole est, par défaut, désactivé pour les utilisateurs gérés et activé pour les autres.</translation>
-<translation id="651012148496266279">Définir la règle permet de contourner la liste de restriction des ports intégrée à <ph name="PRODUCT_NAME" />. Il s'agit d'une liste d'éléments séparés par une virgule contenant zéro port ou plus sur lesquels les connexions sortantes seront autorisées.
-
-      Les ports sont restreints afin d'éviter l'utilisation de <ph name="PRODUCT_NAME" /> en tant que vecteur pour exploiter différentes failles réseau. Définir cette règle peut exposer votre réseau aux attaques. Cette règle est conçue comme solution de contournement temporaire pour les erreurs avec le code "ERR_UNSAFE_PORT" qui surviennent lors de la migration d'un service d'un port bloqué vers un port standard (port 80 ou 443, par exemple).
-
-      Les sites Web malveillants peuvent facilement détecter que cette règle est définie (et pour quels ports) et utiliser cette information pour cibler des attaques.
-
-      Si vous laissez la valeur vide ou non définie, tous les ports restreints sont bloqués. Dans le cas d'un mélange de valeurs valides et non valides, les valeurs valides sont appliquées.
-
-      Cette règle remplace l'option de ligne de commande "--explicitly-allowed-ports".</translation>
 <translation id="6515357889978918016">Fichier image <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="6518102411616460786">Attendre que la version sélectionnée rattrape la version installée lors du retour à une version antérieure</translation>
 <translation id="6520802717075138474">Importer les moteurs de recherche du navigateur par défaut à la première exécution</translation>
@@ -6328,7 +6318,6 @@ Si cette règle n'est pas configurée, ce paramètre est activé et l'utilisateu
       Cette règle est une mesure temporaire qui sera supprimée dans les futures versions de <ph name="PRODUCT_NAME" />. Après la suppression de cette règle, il sera toujours possible d'envoyer d'autres types de requêtes DNS avec <ph name="PRODUCT_NAME" />.</translation>
 <translation id="9167719789236691545">Désactiver Drive dans l'application "Fichiers" de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="9187743794267626640">Désactiver le montage de périphériques de stockage externe</translation>
-<translation id="9190257149451871588">port 6566 (expire le 15/10/2021)</translation>
 <translation id="9190456586252617675">Cette règle permet de gérer le mode du processus de prise en main de l'Assistant.
 
       Si elle n'est pas configurée ou si elle est définie sur <ph name="ASSISTANT_ONBOARDING_MODE_DEFAULT" />, le mode par défaut du processus de prise en main de l'Assistant est utilisé.
@@ -6346,7 +6335,6 @@ Si cette règle n'est pas configurée, ce paramètre est activé et l'utilisateu
 <translation id="927444535723396977">Si cette règle est définie sur "1", les sites Web peuvent exécuter JavaScript. Si cette règle est définie sur "2", les sites ne sont pas autorisés à exécuter ce langage.
 
       Si cette règle n'est pas configurée, les sites peuvent exécuter JavaScript. Toutefois, les utilisateurs peuvent modifier ce paramètre.</translation>
-<translation id="928189505080808353">port 554 (expire le 15/10/2021)</translation>
 <translation id="929549405492388749">Si cette règle est définie sur "vrai", le cache des applications est activé de manière forcée, même s'il n'est pas disponible par défaut dans Chrome.
 
       Si cette règle n'est pas configurée ou si elle est définie sur "faux", le cache des applications applique les paramètres par défaut de Chrome.</translation>

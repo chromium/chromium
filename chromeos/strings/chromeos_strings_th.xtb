@@ -164,6 +164,7 @@
 <translation id="469379815867856270">ความแรงของสัญญาณ</translation>
 <translation id="4707579418881001319">L2TP/IPsec + ใบรับรองผู้ใช้</translation>
 <translation id="4731797938093519117">การเข้าถึงของผู้ปกครอง</translation>
+<translation id="475869545581454722">อัปเดตรหัสผ่าน Chrome OS แล้ว</translation>
 <translation id="4773299976671772492">หยุดแล้ว</translation>
 <translation id="4794140124556169553">การทดสอบ CPU อาจส่งผลต่อประสิทธิภาพของระบบ</translation>
 <translation id="4808449224298348341">ยกเลิกงานพิมพ์ <ph name="DOCUMENT_TITLE" /> แล้ว</translation>
@@ -320,6 +321,7 @@
 <translation id="7701040980221191251">ไม่มี</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">จำนวนรอบ</translation>
+<translation id="7762130827864645708">เปลี่ยนรหัสผ่านสำเร็จ โปรดใช้รหัสผ่านใหม่จากนี้ไป</translation>
 <translation id="7769672763586021400">รหัสรุ่น</translation>
 <translation id="7805768142964895445">สถานะ</translation>
 <translation id="7819857487979277519">PSK (WPA หรือ RSN)</translation>

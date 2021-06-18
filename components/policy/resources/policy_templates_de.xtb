@@ -163,7 +163,6 @@
 
       Genaue Informationen zu gültigen <ph name="URL_LABEL" />-Mustern finden Sie unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  <ph name="WILDCARD_VALUE" /> ist kein akzeptierter Wert für diese Richtlinie.</translation>
 <translation id="120937472976628837">Informationen zum Lüfter melden</translation>
-<translation id="1214202898523114033">Port 10080 (gültig bis 01.04.2022)</translation>
 <translation id="1216919699175573511">Unterstützung für Signed HTTP Exchange (SXG) aktivieren</translation>
 <translation id="1219695476179627719">Gibt an, ob das Gerät auf die von <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" /> festgelegte Version zurückgesetzt werden soll, obwohl bereits eine neuere Version ausgeführt wird.
 
@@ -4149,15 +4148,6 @@ Durch Festlegen dieser Richtlinie bestimmen Sie, ob sich ein Nutzer in <ph name=
 <translation id="6506486086262398387">Wenn die Richtlinie aktiviert ist, verwendet die Funktion zur Netzwerkfreigabe für <ph name="PRODUCT_OS_NAME" /> bei Bedarf NTLM zur Authentifizierung gegenüber SMB-Freigaben. Ist die Richtlinie deaktiviert, wird die NTLM-Authentifizierung gegenüber SMB-Freigaben ausgeschaltet.
 
       Ist sie nicht konfiguriert, wird dieses Verhalten für verwaltete Nutzer standardmäßig deaktiviert und für andere Nutzer hingegen aktiviert.</translation>
-<translation id="651012148496266279">Wenn diese Richtlinie festgelegt ist, ist das Umgehen der in <ph name="PRODUCT_NAME" /> integrierten Liste beschränkter Ports zulässig. Der Wert ist eine durch Kommas getrennte Liste von null oder mehr Ports, an denen ausgehende Verbindungen erlaubt werden.
-
-      Ports sind beschränkt, um zu verhindern, dass <ph name="PRODUCT_NAME" /> als Vektor für die Ausnutzung verschiedener Netzwerk-Sicherheitslücken verwendet wird. Wird diese Richtlinie konfiguriert, kann Ihr Netzwerk dadurch dem Risiko von Angriffen ausgesetzt sein. Diese Richtlinie dient zur vorübergehenden Problemumgehung bei Fehlern mit dem Code „ERR_UNSAFE_PORT“, die während der Migration eines Dienstes auftreten, wenn der Dienst an einem gesperrten Port läuft und an einen Standardport migriert wird (z. B. Port 80 oder 443).
-
-      Schädliche Websites können schnell erkennen, ob und für welche Ports diese Richtlinie konfiguriert ist, und diese Informationen für gezielte Angriffe nutzen.
-
-      Wenn dieser Wert leer gelassen oder nicht konfiguriert wird, werden alle beschränkten Ports blockiert. Wenn gültige und ungültige Werte vorhanden sind, werden die gültigen angewendet.
-
-      Diese Richtlinie überschreibt die Befehlszeilenoption „--explicitly-allowed-ports“.</translation>
 <translation id="6515357889978918016"><ph name="PLUGIN_VM_NAME" />-Bild</translation>
 <translation id="6518102411616460786">Abwarten, bis die Zielversion auf dem Stand des Versionsdowngrades ist</translation>
 <translation id="6520802717075138474">Suchmaschinen bei erster Ausführung aus Standardbrowser importieren</translation>
@@ -6298,7 +6288,6 @@ Auf <ph name="PRODUCT_OS_NAME" />-Version 75 und höher unterstützt. Bei älte
       Diese Richtlinie ist eine vorübergehende Maßnahme. Sie wird aus künftigen Versionen von <ph name="PRODUCT_NAME" /> entfernt. Nachdem sie entfernt wurde, kann <ph name="PRODUCT_NAME" /> zusätzliche DNS-Typen immer abfragen.</translation>
 <translation id="9167719789236691545">Synchronisierung zwischen Drive und der App "Dateien" von <ph name="PRODUCT_OS_NAME" /> deaktivieren</translation>
 <translation id="9187743794267626640">Bereitstellen von externem Speicher deaktivieren</translation>
-<translation id="9190257149451871588">Port 6566 (gültig bis 15.10.2021)</translation>
 <translation id="9190456586252617675">Mit dieser Richtlinie kann der Modus für die Einrichtung von Assistant konfiguriert werden.
 
       Wenn diese Richtlinie nicht konfiguriert oder auf "<ph name="ASSISTANT_ONBOARDING_MODE_DEFAULT" />" festgelegt ist, wird für die Einrichtung von Assistant der Standardmodus verwendet.
@@ -6316,7 +6305,6 @@ Auf <ph name="PRODUCT_OS_NAME" />-Version 75 und höher unterstützt. Bei älte
 <translation id="927444535723396977">Wenn die Richtlinie auf "1" gesetzt ist, können Websites JavaScript ausführen. Wenn sie auf "2" gesetzt ist, wird die Ausführung von JavaScript verweigert.
 
       Wird die Richtlinie nicht konfiguriert, können Websites JavaScript ausführen, aber Nutzer können diese Einstellung ändern.</translation>
-<translation id="928189505080808353">Port 554 (gültig bis 15.10.2021)</translation>
 <translation id="929549405492388749">Wird die Richtlinie auf "true" gesetzt, wird die Aktivierung von AppCache erzwungen, selbst wenn AppCache in Chrome nicht standardmäßig verfügbar ist.
 
       Wird die Richtlinie nicht festgelegt oder auf "false" gesetzt, folgt AppCache der Standardeinstellung von Chrome.</translation>

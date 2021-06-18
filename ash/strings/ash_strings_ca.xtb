@@ -727,6 +727,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="6816797338148849397">Hi ha disponible informació relacionada amb la teva selecció. Utilitza la tecla de fletxa amunt per accedir-hi.</translation>
 <translation id="6818242057446442178">Enrere per paraula</translation>
 <translation id="6820676911989879663">Fes una pausa</translation>
+<translation id="6837064795450991317">Amaga la barra d'escriptori</translation>
 <translation id="6850010208275816200">L'aplicació actual està oberta en pantalla completa. Si et demana la contrasenya, primer has de sortir de la pantalla completa.</translation>
 <translation id="6852052252232534364">Clic per activar</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
@@ -762,6 +763,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="7076293881109082629">Inicia la sessió</translation>
 <translation id="7088960765736518739">Accés amb interruptors</translation>
 <translation id="7098389117866926363">Dispositiu USB-C (port posterior esquerre)</translation>
+<translation id="7106330611027933926">Mostra la barra d'escriptori</translation>
 <translation id="7118268675952955085">captura de pantalla</translation>
 <translation id="7131634465328662194">La sessió es tancarà automàticament.</translation>
 <translation id="7143207342074048698">Connectant</translation>
@@ -805,6 +807,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="7466449121337984263">Toca el sensor</translation>
 <translation id="7473891865547856676">No, gràcies</translation>
 <translation id="7477793887173910789">Controla la música, els vídeos i molt més</translation>
+<translation id="7482097454533720217">Obtén definicions, traduccions o conversions d'unitats quan mantinguis premut el text o quan hi facis clic amb el botó dret.</translation>
 <translation id="7483025031359818980">S'ha establert la pantalla completa com a àrea de selecció</translation>
 <translation id="7486227320194954040">Replega les eines de marcatge</translation>
 <translation id="7497767806359279797">Tria l'idioma i el teclat</translation>
@@ -981,6 +984,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="8843682306134542540">Activa o desactiva el bloqueig de rotació. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Cerca + Esc</translation>
 <translation id="8853703225951107899">El PIN o la contrasenya continuen sense poder-se verificar. Nota: si fa poc que has canviat la contrasenya, fes servir l'antiga. La contrasenya nova s'aplicarà un cop hagis tancat la sessió.</translation>
+<translation id="8863888432376731307">Obtén la <ph name="INTENT" /> per a "<ph name="QUERY" />" i més</translation>
 <translation id="8870509716567206129">L'aplicació no admet la pantalla dividida.</translation>
 <translation id="8871580645200179206">Commuta el tema fosc. <ph name="STATE_TEXT" />.</translation>
 <translation id="8874184842967597500">No connectada</translation>

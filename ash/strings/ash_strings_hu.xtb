@@ -728,6 +728,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="6816797338148849397">Rendelkezésre áll információ a kiválasztott elemmel kapcsolatban. A felfelé nyíllal érheti el.</translation>
 <translation id="6818242057446442178">Visszalépés szavanként</translation>
 <translation id="6820676911989879663">Tartson egy kis szünetet!</translation>
+<translation id="6837064795450991317">Deskbar elrejtése</translation>
 <translation id="6850010208275816200">Az aktuális alkalmazás teljes képernyős módban van. Ha az alkalmazás jelszót kér, először lépjen ki a teljes képernyős módból.</translation>
 <translation id="6852052252232534364">Aktiválás</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> mp</translation>
@@ -763,6 +764,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="7076293881109082629">Bejelentkezés</translation>
 <translation id="7088960765736518739">Kapcsolóalapú hozzáférés</translation>
 <translation id="7098389117866926363">C típusú USB-vel kompatibilis eszköz (bal hátsó port)</translation>
+<translation id="7106330611027933926">Deskbar megjelenítése</translation>
 <translation id="7118268675952955085">képernyőkép</translation>
 <translation id="7131634465328662194">A rendszer automatikusan kijelentkezteti.</translation>
 <translation id="7143207342074048698">Csatlakozás</translation>
@@ -806,6 +808,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="7466449121337984263">Érintse meg az érzékelőt</translation>
 <translation id="7473891865547856676">Nem, köszönöm</translation>
 <translation id="7477793887173910789">Zeneszámok, videók és további tartalmak vezérlése</translation>
+<translation id="7482097454533720217">A szövegre jobb egérgombbal kattintva, illetve a szöveget lenyomva tartva megjelenítheti a definíciókat, a fordításokat vagy mértékegységek átváltását.</translation>
 <translation id="7483025031359818980">Kijelölési terület teljes képernyős nézetre állítva</translation>
 <translation id="7486227320194954040">Jelölőeszközök összecsukása</translation>
 <translation id="7497767806359279797">Nyelv és billentyűzet kiválasztása</translation>
@@ -982,6 +985,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="8843682306134542540">Váltás a forgatás zárolásának állapotai közt. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Keresés+Esc</translation>
 <translation id="8853703225951107899">PIN-kódjának vagy jelszavának ellenőrzése még mindig nem sikerült. Megjegyzés: Ha nemrég módosította jelszavát, akkor használja a régit. Az új jelszó beállítása a kijelentkezés után lép érvénybe.</translation>
+<translation id="8863888432376731307"><ph name="INTENT" /> kérése „<ph name="QUERY" />” és egyebek esetében</translation>
 <translation id="8870509716567206129">Az alkalmazás nem támogatja az osztott képernyős nézetet.</translation>
 <translation id="8871580645200179206">Sötét téma be-/kikapcsolása. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Nincs csatl.</translation>

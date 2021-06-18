@@ -375,6 +375,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="2276057643614339130">Inayochapishwa</translation>
 <translation id="2277103315734023688">Sogeza Mbele</translation>
 <translation id="2283340219607151381">Hifadhi na ujaze anwani</translation>
+<translation id="2283447177162560884">Umefuta '<ph name="PAGE_TITLE" />'</translation>
 <translation id="2288422996159078444">Chochote unachochapa, kurasa zozote unazoangalia au shughuli nyingine zozote kwenye wavuti zinafuatiliwa. Maudhui kwenye tovuti yanaweza kubadilishwa bila kukujulisha.</translation>
 <translation id="2289385804009217824">Punguza</translation>
 <translation id="2292556288342944218">Ufikiaji wako wa intaneti umezuiwa</translation>
@@ -501,6 +502,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="277133753123645258">Mbinu ya usafirishaji</translation>
 <translation id="277499241957683684">Rekodi ya kifaa inayokosekana</translation>
 <translation id="2775884851269838147">Kwanza chapisha ukurasa</translation>
+<translation id="2778854133681684171">Unaweza kutumia kifaa chako kuthibitisha kwamba ni wewe kwa haraka, wakati mwingine utakapofanya ununuzi ukitumia njia hii ya kulipa.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2784949926578158345">Muunganisho uliwekwa upya.</translation>
 <translation id="2792012897584536778">Wasimamizi wa kifaa hiki wameweka mipangilio ya vyeti vya usalama ambavyo vinaweza kuwaruhusu kuona maudhui ya tovuti unazotembelea.</translation>
@@ -658,6 +660,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="3377736046129930310">Tumia mbinu ya kufunga skrini kuthibitisha kadi kwa haraka zaidi</translation>
 <translation id="3380365263193509176">Hitilafu isiyojulikana</translation>
 <translation id="3380864720620200369">Kitambulisho cha Mteja:</translation>
+<translation id="3381668585148405088">Thibitisha ununuzi wako</translation>
 <translation id="3387261909427947069">Njia za Kulipa</translation>
 <translation id="3391030046425686457">Mahali pa kupeleka</translation>
 <translation id="3395827396354264108">Mbinu ya kuchukua</translation>
@@ -834,6 +837,9 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
     itumike kwenye maombi yote inayopokea, lakini sera hii haiwezi kutumika kwa sasa.</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Hati ya PDF iliyo na ukurasa {COUNT}}other{Hati ya PDF iliyo na kurasa {COUNT}}}</translation>
 <translation id="4023431997072828269">Kwa sababu fomu hii inatumwa kwa kutumia muunganisho ambao si salama, watu wengine wataona maelezo yako.</translation>
+<translation id="4027177651527820006">Kwa kuwasha vipengele hivi, unaweza kupoteza data ya kivinjari au kuathiri usalama au faragha yako. Vipengele ulivyowasha vitatumika kwa
+    watumiaji wote wa kivinjari hiki. Iwapo wewe ni msimamizi wa biashara hupaswi
+    kutumia vitia alama hivi katika toleo la umma.</translation>
 <translation id="4030383055268325496">Tendua kuongeza</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4058922952496707368">Kitufe "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>

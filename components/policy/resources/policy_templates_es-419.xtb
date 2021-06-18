@@ -163,7 +163,6 @@
 
       Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="120937472976628837">Envía información de los ventiladores</translation>
-<translation id="1214202898523114033">puerto 10080 (caduca el 01/04/2022)</translation>
 <translation id="1216919699175573511">Habilitar compatibilidad con intercambios HTTP firmados (SXG)</translation>
 <translation id="1219695476179627719">Especifica si el dispositivo debe volver a la versión que se establece en <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" />, si ya ejecuta una versión más reciente.
 
@@ -4178,15 +4177,6 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
 <translation id="6506486086262398387">Si habilitas la política, la función Network File Shares para <ph name="PRODUCT_OS_NAME" /> utilizará el protocolo NTLM para autenticar archivos compartidos SMB en caso de ser necesario. Si inhabilitas la política, se desactivará la autenticación de archivos compartidos SMB mediante NTLM.
 
       Si no la estableces, de forma predeterminada se desactivará para los usuarios administrados y se activará para los demás usuarios.</translation>
-<translation id="651012148496266279">Si estableces la política, se podrá omitir la lista de puertos restringidos integrada en <ph name="PRODUCT_NAME" />. El valor es una lista separada por comas que incluye cero o más puertos en los que se permiten las conexiones de salida.
-
-      Los puertos están restringidos a fin de impedir que se utilice <ph name="PRODUCT_NAME" /> como vector para aprovecharse de diversas vulnerabilidades de la red. Si estableces esta política, es posible que tu red quede expuesta a ataques. Esta política es una solución temporal para los errores con el código "ERR_UNSAFE_PORT" que se producen al migrar un servicio de un puerto bloqueado a un puerto estándar (p. ej., el puerto 80 o 443).
-
-      Los sitios web maliciosos pueden detectar fácilmente si esta política está establecida y en qué puertos, y utilizar esa información para dirigir ataques.
-
-      Si dejas el valor vacío o no lo estableces, se bloquearán todos los puertos restringidos. Si hay valores tanto válidos como no válidos, se aplicarán los válidos.
-
-      Esta política anula la opción de la línea de comandos "--explicitly-allowed-ports".</translation>
 <translation id="6515357889978918016">Imagen de <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="6518102411616460786">Espera a que el canal objetivo complete el cambio a la versión inferior del canal</translation>
 <translation id="6520802717075138474">Importar los motores de búsqueda desde el navegador predeterminado en la primera ejecución</translation>
@@ -6348,7 +6338,6 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
       Esta política es una medida temporal y se eliminará en las futuras versiones de <ph name="PRODUCT_NAME" />. Después de que se elimine la política, <ph name="PRODUCT_NAME" /> podrá seguir haciendo consultas sobre los tipos de DNS adicionales.</translation>
 <translation id="9167719789236691545">Inhabilitar Drive en la app de Archivos de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="9187743794267626640">Inhabilitar la activación del almacenamiento externo</translation>
-<translation id="9190257149451871588">puerto 6566 (caduca el 15/10/2021)</translation>
 <translation id="9190456586252617675">Esta política controla el modo de la experiencia de integración del Asistente.
 
       Si no se establece la política o se establece en <ph name="ASSISTANT_ONBOARDING_MODE_DEFAULT" />, se utilizará el modo predeterminado de la experiencia de integración del Asistente.
@@ -6366,7 +6355,6 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="927444535723396977">Si estableces la política en 1, los sitios web podrán ejecutar JavaScript. Si la estableces en 2, se rechazará JavaScript.
 
       Si no la estableces, se podrá ejecutar JavaScript, pero los usuarios podrán cambiar esta configuración.</translation>
-<translation id="928189505080808353">puerto 554 (caduca el 15/10/2021)</translation>
 <translation id="929549405492388749">Si se establece esta política como verdadera, se forzará la habilitación de la función AppCache, incluso cuando no esté disponible en Chrome de forma predeterminada.
 
       Si no se establece o se establece como falsa, AppCache funcionará según la configuración predeterminada de Chrome.</translation>
