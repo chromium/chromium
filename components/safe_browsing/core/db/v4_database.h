@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner.h"
 #include "base/single_thread_task_runner.h"
+#include "base/threading/thread_checker.h"
 #include "components/safe_browsing/core/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/db/v4_store.h"
 #include "components/safe_browsing/core/proto/webui.pb.h"
@@ -106,11 +107,16 @@ class V4Database {
   // provided |db_task_runner| containing stores in |store_file_name_map|. When
   // the database creation is complete, it runs the NewDatabaseReadyCallback on
   // the same thread as it was called.
+  // NOTE: Within |new_db_callback| the client should invoke
+  // V4Database::InitializeOnIOThread() on the IO thread.
   static void Create(
       const scoped_refptr<base::SequencedTaskRunner>& db_task_runner,
       const base::FilePath& base_path,
       const ListInfos& list_infos,
       NewDatabaseReadyCallback new_db_callback);
+
+  // Initialize state that lives on the IO thread.
+  void InitializeOnIOThread();
 
   // Destroys the provided v4_database on its task_runner since this may be a
   // long operation.
@@ -228,6 +234,9 @@ class V4Database {
       const std::vector<ListIdentifier>& stores_to_reset);
 
   bool IsStoreAvailable(const ListIdentifier& identifier) const;
+
+  // Used to verify that certain methods are called on the IO thread.
+  THREAD_CHECKER(io_thread_checker_);
 
   const scoped_refptr<base::SequencedTaskRunner> db_task_runner_;
 

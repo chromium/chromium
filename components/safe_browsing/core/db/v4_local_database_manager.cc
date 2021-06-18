@@ -676,6 +676,8 @@ void V4LocalDatabaseManager::DatabaseReadyForChecks(
     std::unique_ptr<V4Database> v4_database) {
   DCHECK(io_task_runner()->RunsTasksInCurrentSequence());
 
+  v4_database->InitializeOnIOThread();
+
   // The following check is needed because it is possible that by the time the
   // database is ready, StopOnIOThread has been called.
   if (enabled_) {

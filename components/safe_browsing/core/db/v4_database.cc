@@ -15,7 +15,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/task_runner_util.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "components/safe_browsing/core/common/thread_utils.h"
 #include "components/safe_browsing/core/proto/webui.pb.h"
 
 using base::TimeTicks;
@@ -132,13 +131,25 @@ V4Database::V4Database(
       db_task_runner_(db_task_runner),
       pending_store_updates_(0) {
   DCHECK(db_task_runner->RunsTasksInCurrentSequence());
+  // This method executes on the DB task runner, whereas |io_thread_checker_| is
+  // meant to verify methods that should execute on the IO thread. Detach that
+  // thread checker here; it will be bound to the IO thread in
+  // InitializeOnIOThread().
+  DETACH_FROM_THREAD(io_thread_checker_);
+}
+
+void V4Database::InitializeOnIOThread() {
+  // This invocation serves to bind |io_thread_checker_| to the IO thread after
+  // its having been detached from the DB task runner in this object's
+  // constructor.
+  DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
 }
 
 // static
 void V4Database::Destroy(std::unique_ptr<V4Database> v4_database) {
-  DCHECK(CurrentlyOnThread(ThreadID::IO));
   V4Database* v4_database_raw = v4_database.release();
   if (v4_database_raw) {
+    DCHECK_CALLED_ON_VALID_THREAD(v4_database_raw->io_thread_checker_);
     v4_database_raw->weak_factory_on_io_.InvalidateWeakPtrs();
     v4_database_raw->db_task_runner_->DeleteSoon(FROM_HERE, v4_database_raw);
   }
@@ -151,7 +162,7 @@ V4Database::~V4Database() {
 void V4Database::ApplyUpdate(
     std::unique_ptr<ParsedServerResponse> parsed_server_response,
     DatabaseUpdatedCallback db_updated_callback) {
-  DCHECK(CurrentlyOnThread(ThreadID::IO));
+  DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
   DCHECK(!pending_store_updates_);
   DCHECK(db_updated_callback_.is_null());
 
@@ -192,7 +203,7 @@ void V4Database::ApplyUpdate(
 
 void V4Database::UpdatedStoreReady(ListIdentifier identifier,
                                    std::unique_ptr<V4Store> new_store) {
-  DCHECK(CurrentlyOnThread(ThreadID::IO));
+  DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
   DCHECK(pending_store_updates_);
   if (new_store) {
     (*store_map_)[identifier].swap(new_store);
@@ -218,7 +229,7 @@ std::unique_ptr<StoreStateMap> V4Database::GetStoreStateMap() {
 
 bool V4Database::AreAnyStoresAvailable(
     const StoresToCheck& stores_to_check) const {
-  DCHECK(CurrentlyOnThread(ThreadID::IO));
+  DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
   for (const ListIdentifier& identifier : stores_to_check) {
     if (IsStoreAvailable(identifier))
       return true;
@@ -228,7 +239,7 @@ bool V4Database::AreAnyStoresAvailable(
 
 bool V4Database::AreAllStoresAvailable(
     const StoresToCheck& stores_to_check) const {
-  DCHECK(CurrentlyOnThread(ThreadID::IO));
+  DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
   for (const ListIdentifier& identifier : stores_to_check) {
     if (!IsStoreAvailable(identifier))
       return false;
@@ -240,7 +251,7 @@ void V4Database::GetStoresMatchingFullHash(
     const FullHash& full_hash,
     const StoresToCheck& stores_to_check,
     StoreAndHashPrefixes* matched_store_and_hash_prefixes) {
-  DCHECK(CurrentlyOnThread(ThreadID::IO));
+  DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
   matched_store_and_hash_prefixes->clear();
   for (const ListIdentifier& identifier : stores_to_check) {
     if (!IsStoreAvailable(identifier))
@@ -257,7 +268,7 @@ void V4Database::GetStoresMatchingFullHash(
 
 void V4Database::ResetStores(
     const std::vector<ListIdentifier>& stores_to_reset) {
-  DCHECK(CurrentlyOnThread(ThreadID::IO));
+  DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
   for (const ListIdentifier& identifier : stores_to_reset) {
     store_map_->at(identifier)->Reset();
   }
@@ -265,7 +276,7 @@ void V4Database::ResetStores(
 
 void V4Database::VerifyChecksum(
     DatabaseReadyForUpdatesCallback db_ready_for_updates_callback) {
-  DCHECK(CurrentlyOnThread(ThreadID::IO));
+  DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
 
   // Make a threadsafe copy of store_map_ w/raw pointers that we can hand to
   // the DB thread. The V4Stores ptrs are guaranteed to be valid because their
@@ -287,7 +298,7 @@ void V4Database::VerifyChecksum(
 void V4Database::OnChecksumVerified(
     DatabaseReadyForUpdatesCallback db_ready_for_updates_callback,
     const std::vector<ListIdentifier>& stores_to_reset) {
-  DCHECK(CurrentlyOnThread(ThreadID::IO));
+  DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
   std::move(db_ready_for_updates_callback).Run(stores_to_reset);
 }
 
