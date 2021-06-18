@@ -1052,6 +1052,45 @@ TEST_P(ParameterizedLayoutTextTest, PhysicalLinesBoundingBox) {
                 ->PhysicalLinesBoundingBox());
 }
 
+TEST_P(ParameterizedLayoutTextTest, PhysicalLinesBoundingBoxTextCombine) {
+  ScopedLayoutNGTextCombineForTest enable_layout_ng_text_combine(true);
+  LoadAhem();
+  InsertStyleElement(
+      "body { font: 100px/130px Ahem; }"
+      "c { text-combine-upright: all; }"
+      "div { writing-mode: vertical-rl; }");
+  SetBodyInnerHTML("<div>a<c id=target>01234</c>b</div>");
+  const auto& target = *GetElementById("target");
+  const auto& text_a = *To<Text>(target.previousSibling())->GetLayoutObject();
+  const auto& text_01234 = *To<Text>(target.firstChild())->GetLayoutObject();
+  const auto& text_b = *To<Text>(target.nextSibling())->GetLayoutObject();
+
+  //   LayoutNGBlockFlow {HTML} at (0,0) size 800x600
+  //     LayoutNGBlockFlow {BODY} at (8,8) size 784x584
+  //       LayoutNGBlockFlow {DIV} at (0,0) size 130x300
+  //         LayoutText {#text} at (15,0) size 100x100
+  //           text run at (15,0) width 100: "a"
+  //         LayoutInline {C} at (15,100) size 100x100
+  //           LayoutNGTextCombine (anonymous) at (15,100) size 100x100
+  //             LayoutText {#text} at (-5,0) size 110x100
+  //               text run at (0,0) width 500: "01234"
+  //         LayoutText {#text} at (15,200) size 100x100
+  //           text run at (15,200) width 100: "b"
+  //
+
+  EXPECT_EQ(PhysicalRect(15, 0, 100, 100), text_a.PhysicalLinesBoundingBox());
+  if (text_01234.Parent()->IsLayoutNGTextCombine()) {
+    // Note: Width 110 comes from |100px * kTextCombineMargin| in
+    // |LayoutNGTextCombine::DesiredWidth()|.
+    EXPECT_EQ(PhysicalRect(-5, 0, 110, 100),
+              text_01234.PhysicalLinesBoundingBox());
+  } else {
+    EXPECT_EQ(PhysicalRect(15, 100, 100, 100),
+              text_01234.PhysicalLinesBoundingBox());
+  }
+  EXPECT_EQ(PhysicalRect(15, 200, 100, 100), text_b.PhysicalLinesBoundingBox());
+}
+
 TEST_P(ParameterizedLayoutTextTest, PhysicalLinesBoundingBoxVerticalRL) {
   LoadAhem();
   SetBasicBody(R"HTML(

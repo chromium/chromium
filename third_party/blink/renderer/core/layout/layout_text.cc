@@ -2344,6 +2344,10 @@ PhysicalRect LayoutText::PhysicalLinesBoundingBox() const {
   // Some callers expect correct offset even if the rect is empty.
   if (result == PhysicalRect())
     result.offset = FirstLineBoxTopLeft();
+  // Note: |result.offset| is relative to container fragment.
+  const auto* const text_combine = DynamicTo<LayoutNGTextCombine>(Parent());
+  if (UNLIKELY(text_combine))
+    return text_combine->AdjustRectForBoundingBox(result);
   return result;
 }
 
