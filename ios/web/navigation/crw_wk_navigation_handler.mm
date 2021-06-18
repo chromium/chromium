@@ -1822,26 +1822,22 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
       return;
     }
 
-    ui::PageTransition transition = navigationContext->GetPageTransition();
     if (error.code == web::kWebKitErrorUrlBlockedByContentFilter) {
       DCHECK(provisionalLoad);
-        // If URL is blocked due to Restriction, do not take any further
-        // action as WKWebView will show a built-in error.
-        if (!web::RequiresContentFilterBlockingWorkaround()) {
-          // On iOS13, immediately following this navigation, WebKit will
-          // navigate to an internal failure page. Unfortunately, due to how
-          // session restoration works with same document navigations, this page
-          // blocked by a content filter puts WebKit into a state where all
-          // further restoration same-document navigations are 'stuck' on this
-          // failure page.  Instead, avoid restoring this page completely.
-          // Consider revisiting this if and when a proper session restoration
-          // API is provided by WKWebView.
-          self.navigationManagerImpl->SetWKWebViewNextPendingUrlNotSerializable(
-              navigationContext->GetUrl());
-          return;
-        } else if (!PageTransitionIsNewNavigation(transition)) {
-          return;
-        }
+      // If URL is blocked due to Restriction, do not take any further
+      // action as WKWebView will show a built-in error.
+
+      // On iOS13, immediately following this navigation, WebKit will
+      // navigate to an internal failure page. Unfortunately, due to how
+      // session restoration works with same document navigations, this page
+      // blocked by a content filter puts WebKit into a state where all
+      // further restoration same-document navigations are 'stuck' on this
+      // failure page.  Instead, avoid restoring this page completely.
+      // Consider revisiting this once WKWebView's interactionSate is used
+      // for session restoration everywhere.
+      self.navigationManagerImpl->SetWKWebViewNextPendingUrlNotSerializable(
+          navigationContext->GetUrl());
+      return;
     }
 
     if (error.code == web::kWebKitErrorFrameLoadInterruptedByPolicyChange &&
@@ -2518,21 +2514,6 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
   NSURLRequest* request =
       [NSURLRequest requestWithURL:net::NSURLWithGURL(placeholderURL)];
   WKNavigation* navigation = [webView loadRequest:request];
-
-  NSError* error = originalContext ? originalContext->GetError() : nil;
-  if (web::RequiresContentFilterBlockingWorkaround() &&
-      [error.domain isEqual:base::SysUTF8ToNSString(web::kWebKitErrorDomain)] &&
-      error.code == web::kWebKitErrorUrlBlockedByContentFilter) {
-    GURL currentWKItemURL =
-        net::GURLWithNSURL(webView.backForwardList.currentItem.URL);
-    if (currentWKItemURL.SchemeIs(url::kAboutScheme)) {
-      // WKWebView will pass nil WKNavigation objects to WKNavigationDelegate
-      // callback for this navigation. TODO(crbug.com/954332): Remove the
-      // workaround when https://bugs.webkit.org/show_bug.cgi?id=196930 is
-      // fixed.
-      navigation = nil;
-    }
-  }
 
   [self.navigationStates setState:web::WKNavigationState::REQUESTED
                     forNavigation:navigation];
