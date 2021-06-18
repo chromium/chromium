@@ -11,12 +11,24 @@ enum ConnectionType {
   kUnknown,
 };
 
+// The physical style of a keyboard.
+enum PhysicalLayout {
+  kUnknown,
+  // A typical Chrome OS keyboard with action keys on the top row, reduced
+  // navigation keys, etc.
+  kChromeOS,
+  // The slightly-modified Chrome OS keyboard found on Dell Enterprise
+  // Chromebooks or Dell WWCB keyboards (like the KM713 Chrome Keyboard).
+  kChromeOSDellEnterprise,
+};
+
 // Describes a connected keyboard.
 struct KeyboardInfo {
   // The number of the keyboard's /dev/input/event* node.
   uint32 id;
   ConnectionType connection_type;
   string name;
+  PhysicalLayout physical_layout;
 };
 
 enum TouchDeviceType {

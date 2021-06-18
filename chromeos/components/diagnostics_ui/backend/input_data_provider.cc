@@ -5,6 +5,7 @@
 #include "chromeos/components/diagnostics_ui/backend/input_data_provider.h"
 
 #include <fcntl.h>
+#include <linux/input.h>
 #include <algorithm>
 #include <vector>
 
@@ -176,6 +177,22 @@ void InputDataProvider::AddKeyboard(int id,
   keyboards_[id]->connection_type =
       ConnectionTypeFromInputDeviceType(device_info->device_type());
   keyboards_[id]->name = device_info->name();
+
+  if (keyboards_[id]->connection_type == mojom::ConnectionType::kInternal) {
+    if (device_info->HasKeyEvent(KEY_KBD_LAYOUT_NEXT)) {
+      // Only Dell Enterprise devices have this key, marked by a globe icon.
+      keyboards_[id]->physical_layout =
+          mojom::PhysicalLayout::kChromeOSDellEnterprise;
+    } else {
+      keyboards_[id]->physical_layout = mojom::PhysicalLayout::kChromeOS;
+    }
+    // TODO(crbug.com/1207678): set internal keyboard as unknown on CloudReady
+    // (board names chromeover64 or reven).
+  } else {
+    keyboards_[id]->physical_layout = mojom::PhysicalLayout::kUnknown;
+    // TODO(crbug.com/1207678): support WWCB keyboards, Chromebase keyboards,
+    // and Dell KM713 Chrome keyboard.
+  }
 
   for (auto& observer : connected_devices_observers_) {
     observer->OnKeyboardConnected(keyboards_[id]->Clone());

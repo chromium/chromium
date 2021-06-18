@@ -93,6 +93,7 @@ extern const DeviceCapabilities kDrallionStylus;
 extern const DeviceCapabilities kDellActivePenButton;
 extern const DeviceCapabilities kPuffMicrophoneMuteSwitch;
 extern const DeviceCapabilities kDrawciaStylusGarage;
+extern const DeviceCapabilities kSarienKeyboard;
 }  // namspace ui
 
 #endif  // UI_EVENTS_OZONE_EVDEV_EVENT_DEVICE_TEST_UTIL_H_

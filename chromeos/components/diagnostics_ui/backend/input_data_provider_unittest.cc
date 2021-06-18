@@ -79,6 +79,8 @@ class TestInputDataProvider : public InputDataProvider {
       device_caps = ui::kKohakuStylus;
     } else if (base_name == "event4") {
       device_caps = ui::kHpUsbKeyboard;
+    } else if (base_name == "event5") {
+      device_caps = ui::kSarienKeyboard;
     }
 
     EXPECT_TRUE(ui::CapabilitiesToDeviceInfo(device_caps, dev_info.get()));
@@ -223,6 +225,46 @@ TEST_F(InputDataProviderTest, GetConnectedDevices_Remove) {
         run_loop.Quit();
       }));
 
+  run_loop.Run();
+}
+
+TEST_F(InputDataProviderTest, KeyboardPhysicalLayoutDetection) {
+  base::RunLoop run_loop;
+  ui::DeviceEvent event0(ui::DeviceEvent::DeviceType::INPUT,
+                         ui::DeviceEvent::ActionType::ADD,
+                         base::FilePath("/dev/input/event0"));
+  ui::DeviceEvent event1(ui::DeviceEvent::DeviceType::INPUT,
+                         ui::DeviceEvent::ActionType::ADD,
+                         base::FilePath("/dev/input/event4"));
+  ui::DeviceEvent event2(ui::DeviceEvent::DeviceType::INPUT,
+                         ui::DeviceEvent::ActionType::ADD,
+                         base::FilePath("/dev/input/event5"));
+  provider_->OnDeviceEvent(event0);
+  provider_->OnDeviceEvent(event1);
+  provider_->OnDeviceEvent(event2);
+
+  provider_->GetConnectedDevices(base::BindLambdaForTesting(
+      [&](std::vector<mojom::KeyboardInfoPtr> keyboards,
+          std::vector<mojom::TouchDeviceInfoPtr> touch_devices) {
+        EXPECT_EQ(3ul, keyboards.size());
+
+        mojom::KeyboardInfoPtr builtin_keyboard = keyboards[0].Clone();
+        EXPECT_EQ(0u, builtin_keyboard->id);
+        EXPECT_EQ(mojom::PhysicalLayout::kChromeOS,
+                  builtin_keyboard->physical_layout);
+
+        mojom::KeyboardInfoPtr external_keyboard = keyboards[1].Clone();
+        EXPECT_EQ(4u, external_keyboard->id);
+        EXPECT_EQ(mojom::PhysicalLayout::kUnknown,
+                  external_keyboard->physical_layout);
+
+        mojom::KeyboardInfoPtr dell_internal_keyboard = keyboards[2].Clone();
+        EXPECT_EQ(5u, dell_internal_keyboard->id);
+        EXPECT_EQ(mojom::PhysicalLayout::kChromeOSDellEnterprise,
+                  dell_internal_keyboard->physical_layout);
+
+        run_loop.Quit();
+      }));
   run_loop.Run();
 }
 
