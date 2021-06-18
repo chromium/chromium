@@ -1658,6 +1658,14 @@ Browser* OpenInChrome(Browser* hosted_app_browser) {
   }
 
   TabStripModel* source_tabstrip = hosted_app_browser->tab_strip_model();
+
+  // Clear bounds once a PWA with window controls overlay display override opens
+  // in browser.
+  if (hosted_app_browser->app_controller()->IsWindowControlsOverlayEnabled()) {
+    source_tabstrip->GetActiveWebContents()->UpdateWindowControlsOverlay(
+        gfx::Rect());
+  }
+
   target_browser->tab_strip_model()->AppendWebContents(
       source_tabstrip->DetachWebContentsAt(source_tabstrip->active_index()),
       true);

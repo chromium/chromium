@@ -7,6 +7,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -609,4 +610,22 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserFrameViewMacWindowControlsOverlayTest,
   browser_view_->ToggleWindowControlsOverlayEnabled();
   EXPECT_FALSE(browser_view_->IsWindowControlsOverlayEnabled());
   EXPECT_TRUE(browser_view_->AppUsesWindowControlsOverlay());
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppBrowserFrameViewMacWindowControlsOverlayTest,
+                       OpenInChrome) {
+  InstallAndLaunchWebAppWithWindowControlsOverlay();
+
+  // Toggle overlay on, and validate JS API reflects the expected
+  // values.
+  ToggleWindowControlsOverlayEnabledAndWait();
+
+  // Validate non-empty bounds are being sent.
+  EXPECT_TRUE(GetWindowControlOverlayVisibility());
+
+  chrome::ExecuteCommand(browser_view_->browser(), IDC_OPEN_IN_CHROME);
+
+  // Validate bounds are cleared.
+  EXPECT_EQ(false, EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                          "window.navigator.windowControlsOverlay.visible"));
 }
