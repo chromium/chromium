@@ -25,9 +25,7 @@ DeviceTrustService::DeviceTrustService(Profile* profile)
       signal_report_callback_(
           base::BindOnce(&DeviceTrustService::OnSignalReported,
                          base::Unretained(this))) {
-#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
   attestation_service_ = std::make_unique<AttestationService>();
-#endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
   pref_observer_.Init(prefs_);
   pref_observer_.Add(kContextAwareAccessSignalsAllowlistPref,
                      base::BindRepeating(&DeviceTrustService::OnPolicyUpdated,
@@ -123,12 +121,12 @@ void DeviceTrustService::SetSignalReportCallbackForTesting(
 std::string DeviceTrustService::GetAttestationCredentialForTesting() const {
   return attestation_service_->ExportPEMPublicKey();
 }
+#endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
 
 void DeviceTrustService::BuildChallengeResponse(const std::string& challenge,
                                                 AttestationCallback callback) {
   attestation_service_->BuildChallengeResponseForVAChallenge(
       challenge, std::move(callback));
 }
-#endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
 
 }  // namespace enterprise_connectors

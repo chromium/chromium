@@ -32,39 +32,31 @@ const size_t kChallengResponseNonceBytesSize = 32;
 }  // namespace
 
 AttestationService::AttestationService() {
+#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
   key_pair_ = std::make_unique<DeviceTrustKeyPair>();
-  if (!key_pair_->Init())
-    LOG(ERROR) << "Error while initializing the key pair.";
-}
+  key_pair_->Init();
 
-AttestationService::~AttestationService() = default;
-
-void AttestationService::FillValuesForCBCM() {
-  if (public_key_.empty())
-    public_key_ = ExportPEMPublicKey();
-  if (device_id_.empty())
-    device_id_ = policy::BrowserDMTokenStorage::Get()->RetrieveClientId();
-  if (customer_id_.empty())
-    MayGetCustomerId();
-}
-
-void AttestationService::MayGetCustomerId() {
+  device_id_ = policy::BrowserDMTokenStorage::Get()->RetrieveClientId();
   policy::ChromeBrowserPolicyConnector* browser_policy_connector =
       g_browser_process->browser_policy_connector();
-  if (!browser_policy_connector)
+  if (!browser_policy_connector) {
+    LOG(ERROR) << "No customer_id filled.";
     return;
+  }
   policy::MachineLevelUserCloudPolicyManager*
       machine_level_user_cloud_policy_manager =
           browser_policy_connector->machine_level_user_cloud_policy_manager();
-  // Check that we can retrieve the customer id.
-  if (!machine_level_user_cloud_policy_manager ||
-      !machine_level_user_cloud_policy_manager->store() ||
-      !machine_level_user_cloud_policy_manager->store()->has_policy())
+  if (!machine_level_user_cloud_policy_manager) {
+    LOG(ERROR) << "No customer_id filled.";
     return;
+  }
   customer_id_ = machine_level_user_cloud_policy_manager->store()
                      ->policy()
                      ->obfuscated_customer_id();
+#endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
 }
+
+AttestationService::~AttestationService() = default;
 
 bool AttestationService::ChallengeComesFromVerifiedAccess(
     const std::string& serialized_signed_data,
@@ -111,9 +103,11 @@ std::string AttestationService::ProtobufChallengeToJsonChallenge(
   base::Base64Encode(challenge_response, &encoded);
   signed_data.SetKey("data", base::Value(encoded));
 
+#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
   std::string signature;
   key_pair_->GetSignatureInBase64(challenge_response, &signature);
   signed_data.SetKey("signature", base::Value(signature));
+#endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
 
   base::Value dict(base::Value::Type::DICTIONARY);
   dict.SetKey("challengeResponse", std::move(signed_data));
@@ -123,19 +117,17 @@ std::string AttestationService::ProtobufChallengeToJsonChallenge(
   return json;
 }
 
+#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
 std::string AttestationService::ExportPEMPublicKey() {
   return key_pair_->ExportPEMPublicKey();
 }
+#endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
 
 void AttestationService::BuildChallengeResponseForVAChallenge(
     const std::string& challenge,
     AttestationCallback callback) {
   std::string serialized_signed_data =
       JsonChallengeToProtobufChallenge(challenge);
-  // If one of this values is missing then attestation flow won't succeed.
-  FillValuesForCBCM();
-  if (device_id_.empty() || public_key_.empty() || customer_id_.empty())
-    LOG(ERROR) << "There are missing values for the attestation flow.";
 
   AttestationCallback reply = base::BindOnce(
       &AttestationService::PaserChallengeResponseAndRunCallback,
@@ -200,10 +192,12 @@ void AttestationService::SignEnterpriseChallengeTask(
   }
   KeyInfo key_info;
   // Fill `key_info` out for Chrome Browser.
+#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
   key_info.set_key_type(CBCM);
-  key_info.set_browser_instance_public_key(public_key_);
+  key_info.set_browser_instance_public_key(ExportPEMPublicKey());
   key_info.set_device_id(device_id_);
   key_info.set_customer_id(customer_id_);
+#endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
 
   ChallengeResponse response_pb;
   *response_pb.mutable_challenge() = signed_challenge;
@@ -263,10 +257,12 @@ bool AttestationService::EncryptEnterpriseKeyInfo(
 bool AttestationService::SignChallengeData(const std::string& data,
                                            std::string* response) {
   std::string signature;
+#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
   if (!key_pair_->GetSignatureInBase64(data, &signature)) {
     LOG(ERROR) << __func__ << ": Failed to sign data.";
     return false;
   }
+#endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
   SignedData signed_data;
   signed_data.set_data(data);
   signed_data.set_signature(signature);
