@@ -17,7 +17,6 @@
 #include "base/timer/timer.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
-#include "components/safe_browsing/core/common/thread_utils.h"
 #include "components/safe_browsing/core/features.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_response_headers.h"
@@ -271,7 +270,6 @@ void V4GetHashProtocolManager::GetFullHashes(
         full_hash_to_store_and_hash_prefixes,
     const std::vector<std::string>& list_client_states,
     FullHashCallback callback) {
-  DCHECK(CurrentlyOnThread(ThreadID::IO));
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!full_hash_to_store_and_hash_prefixes.empty());
 
@@ -363,7 +361,7 @@ void V4GetHashProtocolManager::GetFullHashesWithApis(
     const GURL& url,
     const std::vector<std::string>& list_client_states,
     ThreatMetadataForApiCallback api_callback) {
-  DCHECK(CurrentlyOnThread(ThreadID::IO));
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(url.SchemeIs(url::kHttpScheme) || url.SchemeIs(url::kHttpsScheme));
 
   std::vector<FullHash> full_hashes;
@@ -717,7 +715,7 @@ void V4GetHashProtocolManager::UpdateCache(
     const std::vector<HashPrefix>& prefixes_requested,
     const std::vector<FullHashInfo>& full_hash_infos,
     const Time& negative_cache_expire) {
-  DCHECK(CurrentlyOnThread(ThreadID::IO));
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // If negative_cache_expire is null, don't cache the results since it's not
   // clear till what time they should be considered valid.
@@ -773,7 +771,6 @@ void V4GetHashProtocolManager::OnURLLoaderComplete(
     network::SimpleURLLoader* url_loader,
     std::unique_ptr<std::string> response_body) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(CurrentlyOnThread(ThreadID::IO));
 
   int response_code = 0;
   if (url_loader->ResponseInfo() && url_loader->ResponseInfo()->headers)
