@@ -359,7 +359,10 @@ bool SynchronizedMinidumpManager::AddEntryToLockFile(
 }
 
 bool SynchronizedMinidumpManager::RemoveEntryFromLockFile(int index) {
-  return dumps_->Remove(static_cast<uint64_t>(index), nullptr);
+  base::Value::ListView dumps_view = dumps_->GetList();
+  if (index < 0 || static_cast<size_t>(index) >= dumps_view.size())
+    return false;
+  return dumps_->EraseListIter(dumps_view.begin() + index);
 }
 
 void SynchronizedMinidumpManager::ReleaseLockFile() {
