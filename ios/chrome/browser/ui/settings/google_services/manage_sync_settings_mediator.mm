@@ -140,7 +140,8 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
 // is set to YES.
 - (void)updateSyncEverythingItemNotifyConsumer:(BOOL)notifyConsumer {
   BOOL shouldSyncEverythingBeEditable =
-      self.syncSetupService->CanSyncFeatureStart() &&
+      (self.syncSetupService->CanSyncFeatureStart() ||
+       base::FeatureList::IsEnabled(signin::kMobileIdentityConsistency)) &&
       (!self.disabledBecauseOfSyncError || self.syncSettingsNotConfirmed);
   BOOL shouldSyncEverythingItemBeOn =
       self.syncSetupService->CanSyncFeatureStart() &&
@@ -170,8 +171,13 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
         static_cast<SyncSetupService::SyncableDatatype>(
             syncSwitchItem.dataType);
     syncer::ModelType modelType = self.syncSetupService->GetModelType(dataType);
-    BOOL isDataTypeSynced =
-        self.syncSetupService->IsDataTypePreferred(modelType);
+    BOOL isDataTypeSynced;
+    if (base::FeatureList::IsEnabled(signin::kMobileIdentityConsistency)) {
+      isDataTypeSynced = self.syncSetupService->IsSyncRequested() &&
+                         self.syncSetupService->IsDataTypePreferred(modelType);
+    } else {
+      isDataTypeSynced = self.syncSetupService->IsDataTypePreferred(modelType);
+    }
     BOOL needsUpdate =
         (syncSwitchItem.on != isDataTypeSynced) ||
         (syncSwitchItem.isEnabled != self.shouldSyncDataItemEnabled);
@@ -188,11 +194,24 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
 - (void)updateAutocompleteWalletItemNotifyConsumer:(BOOL)notifyConsumer {
   syncer::ModelType autofillModelType =
       self.syncSetupService->GetModelType(SyncSetupService::kSyncAutofill);
-  BOOL isAutofillOn =
-      self.syncSetupService->IsDataTypePreferred(autofillModelType);
+  BOOL isAutofillOn;
+  if (base::FeatureList::IsEnabled(signin::kMobileIdentityConsistency)) {
+    isAutofillOn =
+        self.syncSetupService->IsSyncRequested() &&
+        self.syncSetupService->IsDataTypePreferred(autofillModelType);
+  } else {
+    isAutofillOn =
+        self.syncSetupService->IsDataTypePreferred(autofillModelType);
+  }
   BOOL autocompleteWalletEnabled =
       isAutofillOn && self.shouldSyncDataItemEnabled;
-  BOOL autocompleteWalletOn = self.autocompleteWalletPreference.value;
+  BOOL autocompleteWalletOn;
+  if (base::FeatureList::IsEnabled(signin::kMobileIdentityConsistency)) {
+    autocompleteWalletOn = self.syncSetupService->IsSyncRequested() &&
+                           self.autocompleteWalletPreference.value;
+  } else {
+    autocompleteWalletOn = self.autocompleteWalletPreference.value;
+  }
   BOOL needsUpdate =
       (self.autocompleteWalletItem.enabled != autocompleteWalletEnabled) ||
       (self.autocompleteWalletItem.on != autocompleteWalletOn);
@@ -421,6 +440,11 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
 }
 
 - (BOOL)shouldSyncDataItemEnabled {
+  if (base::FeatureList::IsEnabled(signin::kMobileIdentityConsistency)) {
+    return (!self.syncSetupService->IsSyncingAllDataTypes() ||
+            !self.syncSetupService->IsSyncRequested()) &&
+           (!self.disabledBecauseOfSyncError || self.syncSettingsNotConfirmed);
+  }
   return (!self.syncSetupService->IsSyncingAllDataTypes() &&
           self.syncSetupService->CanSyncFeatureStart() &&
           (!self.disabledBecauseOfSyncError || self.syncSettingsNotConfirmed));
@@ -434,7 +458,8 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
 
 - (BOOL)shouldDisplaySignoutSection {
   return self.syncSetupService->IsFirstSetupComplete() &&
-         self.syncSetupService->CanSyncFeatureStart();
+         (self.syncSetupService->CanSyncFeatureStart() ||
+          base::FeatureList::IsEnabled(signin::kMobileIdentityConsistency));
 }
 
 #pragma mark - ManageSyncSettingsTableViewControllerModelDelegate

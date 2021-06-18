@@ -6,6 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/mac/foundation_util.h"
 #include "base/test/scoped_feature_list.h"
 #import "components/autofill/core/common/autofill_prefs.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -19,6 +20,7 @@
 #import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service_mock.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
+#import "ios/chrome/browser/ui/settings/cells/sync_switch_item.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_consumer.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_table_view_controller.h"
@@ -97,10 +99,12 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
     mediator_.consumer = consumer_;
   }
 
-  void SetupSyncServiceInitializedExpectations() {
+  void FirstSetupSyncOnWithConsentEnabled() {
     ON_CALL(*sync_service_mock_->GetMockUserSettings(), IsFirstSetupComplete())
         .WillByDefault(Return(true));
     ON_CALL(*sync_setup_service_mock_, CanSyncFeatureStart())
+        .WillByDefault(Return(true));
+    ON_CALL(*sync_setup_service_mock_, IsSyncRequested())
         .WillByDefault(Return(true));
     ON_CALL(*sync_setup_service_mock_, IsSyncingAllDataTypes())
         .WillByDefault(Return(true));
@@ -110,8 +114,25 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
         .WillByDefault(Return(syncer::SyncService::TransportState::ACTIVE));
   }
 
-  void SetupSyncDisabledExpectations() {
+  void FirstSetupSyncOnWithConsentDisabled() {
+    ON_CALL(*sync_service_mock_->GetMockUserSettings(), IsFirstSetupComplete())
+        .WillByDefault(Return(true));
     ON_CALL(*sync_setup_service_mock_, CanSyncFeatureStart())
+        .WillByDefault(Return(false));
+    ON_CALL(*sync_setup_service_mock_, IsSyncRequested())
+        .WillByDefault(Return(false));
+    ON_CALL(*sync_setup_service_mock_, IsSyncingAllDataTypes())
+        .WillByDefault(Return(true));
+    ON_CALL(*sync_setup_service_mock_, HasFinishedInitialSetup())
+        .WillByDefault(Return(true));
+    ON_CALL(*sync_service_mock_, GetTransportState())
+        .WillByDefault(Return(syncer::SyncService::TransportState::DISABLED));
+  }
+
+  void FirstSetupSyncOff() {
+    ON_CALL(*sync_setup_service_mock_, CanSyncFeatureStart())
+        .WillByDefault(Return(false));
+    ON_CALL(*sync_setup_service_mock_, IsSyncRequested())
         .WillByDefault(Return(false));
     ON_CALL(*sync_setup_service_mock_, IsSyncingAllDataTypes())
         .WillByDefault(Return(true));
@@ -143,7 +164,7 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
 // Tests that encryption is not accessible when Sync settings have not been
 // confirmed.
 TEST_F(ManageSyncSettingsMediatorTest, SyncServiceSetupNotCommitted) {
-  SetupSyncDisabledExpectations();
+  FirstSetupSyncOff();
   ON_CALL(*sync_setup_service_mock_, GetSyncServiceState())
       .WillByDefault(Return(SyncSetupService::kSyncSettingsNotConfirmed));
 
@@ -169,7 +190,7 @@ TEST_F(ManageSyncSettingsMediatorTest, SyncServiceSetupNotCommitted) {
 // Tests that encryption is not accessible when Sync is disabled by the
 // administrator.
 TEST_F(ManageSyncSettingsMediatorTest, SyncServiceDisabledByAdministrator) {
-  SetupSyncDisabledExpectations();
+  FirstSetupSyncOff();
   ON_CALL(*sync_service_mock_, GetDisableReasons())
       .WillByDefault(
           Return(syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY));
@@ -196,7 +217,7 @@ TEST_F(ManageSyncSettingsMediatorTest, SyncServiceDisabledByAdministrator) {
 // Tests that encryption is accessible when there is a Sync error due to a
 // missing passphrase, but Sync has otherwise been enabled.
 TEST_F(ManageSyncSettingsMediatorTest, SyncServiceDisabledNeedsPassphrase) {
-  SetupSyncServiceInitializedExpectations();
+  FirstSetupSyncOnWithConsentEnabled();
   ON_CALL(*sync_setup_service_mock_, GetSyncServiceState())
       .WillByDefault(Return(SyncSetupService::kSyncServiceNeedsPassphrase));
 
@@ -214,7 +235,7 @@ TEST_F(ManageSyncSettingsMediatorTest, SyncServiceDisabledNeedsPassphrase) {
 
 // Tests that encryption is accessible when Sync is enabled.
 TEST_F(ManageSyncSettingsMediatorTest, SyncServiceEnabledWithEncryption) {
-  SetupSyncServiceInitializedExpectations();
+  FirstSetupSyncOnWithConsentEnabled();
   ON_CALL(*sync_setup_service_mock_, GetSyncServiceState())
       .WillByDefault(Return(SyncSetupService::kNoSyncServiceError));
 
@@ -238,7 +259,7 @@ TEST_F(ManageSyncSettingsMediatorTest, SyncServiceDisabledWithTurnOffSync) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(signin::kMobileIdentityConsistency);
 
-  SetupSyncDisabledExpectations();
+  FirstSetupSyncOff();
   ON_CALL(*sync_setup_service_mock_, GetSyncServiceState())
       .WillByDefault(Return(SyncSetupService::kNoSyncServiceError));
 
@@ -256,7 +277,7 @@ TEST_F(ManageSyncSettingsMediatorTest, SyncServiceEnabledWithTurnOffSync) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(signin::kMobileIdentityConsistency);
 
-  SetupSyncServiceInitializedExpectations();
+  FirstSetupSyncOnWithConsentEnabled();
   ON_CALL(*sync_setup_service_mock_, GetSyncServiceState())
       .WillByDefault(Return(SyncSetupService::kNoSyncServiceError));
 
@@ -275,7 +296,7 @@ TEST_F(ManageSyncSettingsMediatorTest, SyncServiceSuccessThenDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(signin::kMobileIdentityConsistency);
 
-  SetupSyncServiceInitializedExpectations();
+  FirstSetupSyncOnWithConsentEnabled();
   EXPECT_CALL(*sync_service_mock_, GetDisableReasons())
       .WillOnce(Return(syncer::MockSyncService::DisableReasonSet()))
       .WillOnce(Return(syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY));
@@ -300,7 +321,7 @@ TEST_F(ManageSyncSettingsMediatorTest, SyncServiceMultipleErrors) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(signin::kMobileIdentityConsistency);
 
-  SetupSyncServiceInitializedExpectations();
+  FirstSetupSyncOnWithConsentEnabled();
   ON_CALL(*sync_setup_service_mock_, GetSyncServiceState())
       .WillByDefault(Return(SyncSetupService::kSyncServiceNeedsPassphrase));
   EXPECT_CALL(*sync_service_mock_, GetDisableReasons())
@@ -320,7 +341,7 @@ TEST_F(ManageSyncSettingsMediatorTest, SyncServiceMultipleErrors) {
                                        SyncErrorsSectionIdentifier];
   ASSERT_EQ(1UL, error_items.count);
   SettingsImageDetailTextItem* error_item =
-      static_cast<SettingsImageDetailTextItem*>(error_items[0]);
+      base::mac::ObjCCastStrict<SettingsImageDetailTextItem>(error_items[0]);
   ASSERT_NSEQ(
       error_item.detailText,
       l10n_util::GetNSString(
@@ -335,7 +356,7 @@ TEST_F(ManageSyncSettingsMediatorTest,
   feature_list.InitAndEnableFeature(signin::kMobileIdentityConsistency);
 
   // Set Sync disabled expectations.
-  SetupSyncDisabledExpectations();
+  FirstSetupSyncOff();
   ON_CALL(*sync_setup_service_mock_, GetSyncServiceState())
       .WillByDefault(Return(SyncSetupService::kSyncSettingsNotConfirmed));
 
@@ -348,7 +369,7 @@ TEST_F(ManageSyncSettingsMediatorTest,
   ASSERT_EQ(0UL, hidden_sign_out_items.count);
 
   // Set Sync enabled expectations.
-  SetupSyncServiceInitializedExpectations();
+  FirstSetupSyncOnWithConsentEnabled();
   ON_CALL(*sync_setup_service_mock_, GetSyncServiceState())
       .WillByDefault(Return(SyncSetupService::kNoSyncServiceError));
 
@@ -360,4 +381,50 @@ TEST_F(ManageSyncSettingsMediatorTest,
       itemsInSectionWithIdentifier:SyncSettingsSectionIdentifier::
                                        SignOutSectionIdentifier];
   ASSERT_EQ(1UL, shown_sign_out_items.count);
+}
+
+// Tests Signout is shown when first setup is complete and sync engine is off.
+TEST_F(ManageSyncSettingsMediatorTest, SyncEngineOffSignOutVisible) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(signin::kMobileIdentityConsistency);
+
+  // Set Sync disabled expectations.
+  FirstSetupSyncOnWithConsentDisabled();
+  ON_CALL(*sync_setup_service_mock_, GetSyncServiceState())
+      .WillByDefault(Return(SyncSetupService::kSyncSettingsNotConfirmed));
+
+  [mediator_ manageSyncSettingsTableViewControllerLoadModel:mediator_.consumer];
+
+  // "Turn off Sync" item is shown.
+  NSArray* hidden_sign_out_items = [mediator_.consumer.tableViewModel
+      itemsInSectionWithIdentifier:SyncSettingsSectionIdentifier::
+                                       SignOutSectionIdentifier];
+  ASSERT_EQ(1UL, hidden_sign_out_items.count);
+}
+
+// Tests data types are editable when first setup is complete and sync engine
+// is off.
+TEST_F(ManageSyncSettingsMediatorTest,
+       SyncEngineOffSyncEverythingAndDataTypeEditable) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(signin::kMobileIdentityConsistency);
+
+  // Set Sync disabled expectations.
+  FirstSetupSyncOnWithConsentDisabled();
+  ON_CALL(*sync_setup_service_mock_, GetSyncServiceState())
+      .WillByDefault(Return(SyncSetupService::kSyncSettingsNotConfirmed));
+
+  [mediator_ manageSyncSettingsTableViewControllerLoadModel:mediator_.consumer];
+
+  NSArray* items = [mediator_.consumer.tableViewModel
+      itemsInSectionWithIdentifier:SyncDataTypeSectionIdentifier];
+  for (TableViewItem* item in items) {
+    SyncSwitchItem* switch_item =
+        base::mac::ObjCCastStrict<SyncSwitchItem>(item);
+    if (switch_item.type == AutocompleteWalletItemType) {
+      ASSERT_FALSE(switch_item.enabled);
+    } else {
+      ASSERT_TRUE(switch_item.enabled);
+    }
+  }
 }
