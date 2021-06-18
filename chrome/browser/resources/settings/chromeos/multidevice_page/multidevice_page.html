@@ -40,7 +40,7 @@
       <div route-path="default">
         <div id="multidevice-item"
             class="settings-box first two-line no-padding">
-          <div class="link-wrapper" actionable
+          <div class="link-wrapper" id="suiteLinkWrapper"
               actionable$="[[doesClickOpenSubpage_(pageContentData)]]"
               on-click="handleItemClick_">
             <iron-icon icon=
@@ -70,7 +70,8 @@
           <template is="dom-if"
                     if="[[!isSuiteAllowedByPolicy(pageContentData)]]"
                     restamp>
-            <cr-policy-indicator indicator-type="userPolicy">
+            <cr-policy-indicator id="suitePolicyIndicator"
+                                 indicator-type="userPolicy">
             </cr-policy-indicator>
             <settings-multidevice-feature-toggle
                 class="margin-matches-padding"
@@ -110,23 +111,26 @@
         </div>
         <template is="dom-if" if="[[isNearbyShareSupported_]]" restamp>
           <div id="nearbyshare-item" class="settings-box two-line no-padding">
-            <div class="link-wrapper" actionable on-click="nearbyShareClick_">
+            <div class="link-wrapper" id="nearbyLinkWrapper"
+                actionable$=
+                    "[[!isNearbyShareDisallowedByPolicy_(pageContentData)]]"
+                on-click="nearbyShareClick_">
               <iron-icon icon="os-settings:nearby-share">
               </iron-icon>
               <div id="nearbyShareLabel" class="middle settings-box-text"
                   aria-hidden="true">
                 $i18n{nearbyShareTitle}
-                <template is="dom-if"
-                    if="[[prefs.nearby_sharing.onboarding_complete.value]]"
-                    restamp>
+                <template is="dom-if" if="[[showNearbyShareOnOffString_(
+                          prefs.nearby_sharing.onboarding_complete.value,
+                          pageContentData)]]" restamp>
                   <div class="secondary" id="nearbyShareSecondary">
                     [[getOnOffString_(prefs.nearby_sharing.enabled.value,
                       '$i18nPolymer{deviceOn}', '$i18nPolymer{deviceOff}')]]
                   </div>
                 </template>
-                <template is="dom-if"
-                    if="[[!prefs.nearby_sharing.onboarding_complete.value]]"
-                    restamp>
+                <template is="dom-if" if="[[showNearbyShareDescription_(
+                          prefs.nearby_sharing.onboarding_complete.value,
+                          pageContentData)]]" restamp>
                   <div class="secondary" id="nearbyShareSecondary">
                     <settings-localized-link
                         localized-string="$i18n{nearbyShareDescription}"
@@ -144,22 +148,38 @@
                 </cr-icon-button>
               </template>
             </div>
-            <div class="separator"></div>
             <template is="dom-if"
-                if="[[prefs.nearby_sharing.onboarding_complete.value]]"
+                if="[[isNearbyShareDisallowedByPolicy_(pageContentData)]]"
                 restamp>
+              <cr-policy-indicator id="nearbyPolicyIndicator"
+                                   indicator-type="userPolicy">
+              </cr-policy-indicator>
+            </template>
+            <template is="dom-if"
+                if="[[!isNearbyShareDisallowedByPolicy_(pageContentData)]]"
+                restamp>
+              <div class="separator"></div>
+            </template>
+            <template is="dom-if" if="[[showNearbyShareToggle_(
+                      prefs.nearby_sharing.onboarding_complete.value,
+                      pageContentData)]]" restamp>
               <cr-toggle id="nearbySharingToggleButton"
                   class="margin-matches-padding"
                   aria-label="$i18n{nearbyShareTitle}"
                   checked="{{prefs.nearby_sharing.enabled.value}}"
+                  disabled=
+                      "[[isNearbyShareDisallowedByPolicy_(pageContentData)]]"
                   deep-link-focus-id$="[[Setting.kNearbyShareOnOff]]">
               </cr-toggle>
             </template>
-            <template is="dom-if"
-                if="[[!prefs.nearby_sharing.onboarding_complete.value]]"
-                restamp>
+            <template is="dom-if" if="[[showNearbyShareSetupButton_(
+                      prefs.nearby_sharing.onboarding_complete.value,
+                      pageContentData)]]" restamp>
               <cr-button class="margin-matches-padding"
-                  id="nearbySetUp" on-click="handleNearbySetUpClick_">
+                  id="nearbySetUp"
+                  on-click="handleNearbySetUpClick_"
+                  disabled=
+                      "[[isNearbyShareDisallowedByPolicy_(pageContentData)]]">
                 $i18n{nearbyShareSetUpButtonTitle}
               </cr-button>
             </template>

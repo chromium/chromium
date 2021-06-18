@@ -80,6 +80,9 @@ class MultideviceHandler
   // android_sms::AndroidSmsAppManager::Observer:
   void OnInstalledAppUrlChanged() override;
 
+  // Called when the Nearby Share enabled pref changes.
+  void OnNearbySharingEnabledChanged();
+
   // Sends the most recent PageContentData dictionary to the WebUI page as an
   // update (e.g., not due to a getPageContent() request).
   void UpdatePageContent();
