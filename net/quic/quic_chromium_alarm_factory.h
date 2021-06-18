@@ -9,7 +9,6 @@
 #define NET_QUIC_QUIC_CHROMIUM_ALARM_FACTORY_H_
 
 #include "base/macros.h"
-#include "base/memory/weak_ptr.h"
 #include "net/base/net_export.h"
 #include "net/third_party/quiche/src/quic/core/quic_alarm_factory.h"
 #include "net/third_party/quiche/src/quic/core/quic_clock.h"
@@ -17,7 +16,7 @@
 #include "net/third_party/quiche/src/quic/core/quic_time.h"
 
 namespace base {
-class TaskRunner;
+class SequencedTaskRunner;
 }  // namespace base
 
 namespace net {
@@ -25,7 +24,7 @@ namespace net {
 class NET_EXPORT_PRIVATE QuicChromiumAlarmFactory
     : public quic::QuicAlarmFactory {
  public:
-  QuicChromiumAlarmFactory(base::TaskRunner* task_runner,
+  QuicChromiumAlarmFactory(base::SequencedTaskRunner* task_runner,
                            const quic::QuicClock* clock);
   ~QuicChromiumAlarmFactory() override;
 
@@ -36,9 +35,8 @@ class NET_EXPORT_PRIVATE QuicChromiumAlarmFactory
       quic::QuicConnectionArena* arena) override;
 
  private:
-  base::TaskRunner* task_runner_;
-  const quic::QuicClock* clock_;
-  base::WeakPtrFactory<QuicChromiumAlarmFactory> weak_factory_{this};
+  base::SequencedTaskRunner* task_runner_;
+  const quic::QuicClock* const clock_;
 
   DISALLOW_COPY_AND_ASSIGN(QuicChromiumAlarmFactory);
 };
