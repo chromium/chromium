@@ -38,65 +38,73 @@ const PersistentDesksBarView* GetPersistentDesksBarView() {
 
 }  // namespace
 
-DesksTestApi::DesksTestApi() = default;
-
-DesksTestApi::~DesksTestApi() = default;
-
-ScrollArrowButton* DesksTestApi::GetDesksBarLeftScrollButton() const {
+// static
+ScrollArrowButton* DesksTestApi::GetDesksBarLeftScrollButton() {
   return GetDesksBarView()->left_scroll_button_;
 }
 
-ScrollArrowButton* DesksTestApi::GetDesksBarRightScrollButton() const {
+// static
+ScrollArrowButton* DesksTestApi::GetDesksBarRightScrollButton() {
   return GetDesksBarView()->right_scroll_button_;
 }
 
-views::ScrollView* DesksTestApi::GetDesksBarScrollView() const {
+// static
+views::ScrollView* DesksTestApi::GetDesksBarScrollView() {
   return GetDesksBarView()->scroll_view_;
 }
 
-const DeskMiniView* DesksTestApi::GetDesksBarDragView() const {
+// static
+const DeskMiniView* DesksTestApi::GetDesksBarDragView() {
   return GetDesksBarView()->drag_view_;
 }
 
-PersistentDesksBarContextMenu* DesksTestApi::GetDesksBarContextMenu() const {
+// static
+PersistentDesksBarContextMenu* DesksTestApi::GetDesksBarContextMenu() {
   return GetDesksBarView()->vertical_dots_button_->context_menu_.get();
 }
 
-SkColor DesksTestApi::GetNewDeskButtonBackgroundColor() const {
+// static
+SkColor DesksTestApi::GetNewDeskButtonBackgroundColor() {
   return GetDesksBarView()
       ->expanded_state_new_desk_button()
       ->new_desk_button()
       ->background_color_;
 }
 
-PersistentDesksBarContextMenu* DesksTestApi::GetPersistentDesksBarContextMenu()
-    const {
+// static
+PersistentDesksBarContextMenu*
+DesksTestApi::GetPersistentDesksBarContextMenu() {
   return GetPersistentDesksBarView()
       ->vertical_dots_button_->context_menu_.get();
 }
 
+// static
 const std::vector<PersistentDesksBarDeskButton*>
-DesksTestApi::GetPersistentDesksBarDeskButtons() const {
+DesksTestApi::GetPersistentDesksBarDeskButtons() {
   return GetPersistentDesksBarView()->desk_buttons_;
 }
 
-bool DesksTestApi::IsDesksBarLeftGradientVisible() const {
+// static
+bool DesksTestApi::IsDesksBarLeftGradientVisible() {
   return !GetDesksBarView()
               ->gradient_layer_delegate_->start_fade_zone_bounds()
               .IsEmpty();
 }
 
-bool DesksTestApi::IsDesksBarRightGradientVisible() const {
+// static
+bool DesksTestApi::IsDesksBarRightGradientVisible() {
   return !GetDesksBarView()
               ->gradient_layer_delegate_->end_fade_zone_bounds()
               .IsEmpty();
 }
 
+// static
 void DesksTestApi::OverrideDeskClock(Desk* desk, base::Clock* test_clock) {
   DCHECK(!desk->override_clock_);
   desk->override_clock_ = test_clock;
 }
 
+// static
 void DesksTestApi::ResetDeskVisitedMetrics(Desk* desk) {
   const int current_date = desk->GetDaysFromLocalEpoch();
   desk->first_day_visited_ = current_date;

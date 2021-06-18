@@ -27,32 +27,33 @@ class ScrollArrowButton;
 // PersistentDesksBarView.
 class DesksTestApi {
  public:
-  DesksTestApi();
-  DesksTestApi(const DesksTestApi&) = delete;
-  DesksTestApi& operator=(const DesksTestApi&) = delete;
-  ~DesksTestApi();
-
   // Getters for elements inside the desks.
-  ScrollArrowButton* GetDesksBarLeftScrollButton() const;
-  ScrollArrowButton* GetDesksBarRightScrollButton() const;
-  views::ScrollView* GetDesksBarScrollView() const;
-  const DeskMiniView* GetDesksBarDragView() const;
-  PersistentDesksBarContextMenu* GetDesksBarContextMenu() const;
-  SkColor GetNewDeskButtonBackgroundColor() const;
-  PersistentDesksBarContextMenu* GetPersistentDesksBarContextMenu() const;
-  const std::vector<PersistentDesksBarDeskButton*>
-  GetPersistentDesksBarDeskButtons() const;
+  static ScrollArrowButton* GetDesksBarLeftScrollButton();
+  static ScrollArrowButton* GetDesksBarRightScrollButton();
+  static views::ScrollView* GetDesksBarScrollView();
+  static const DeskMiniView* GetDesksBarDragView();
+  static PersistentDesksBarContextMenu* GetDesksBarContextMenu();
+  static SkColor GetNewDeskButtonBackgroundColor();
+  static PersistentDesksBarContextMenu* GetPersistentDesksBarContextMenu();
+  static const std::vector<PersistentDesksBarDeskButton*>
+  GetPersistentDesksBarDeskButtons();
 
-  bool IsDesksBarLeftGradientVisible() const;
-  bool IsDesksBarRightGradientVisible() const;
+  static bool IsDesksBarLeftGradientVisible();
+  static bool IsDesksBarRightGradientVisible();
 
   // Overrides the `override_clock_` of `desk` with `test_clock` for mocking
   // time in tests.
-  void OverrideDeskClock(Desk* desk, base::Clock* test_clock);
+  static void OverrideDeskClock(Desk* desk, base::Clock* test_clock);
 
   // Resets `first_day_visited_` and `last_day_visited_` of `desk` for testing
   // to the current date.
-  void ResetDeskVisitedMetrics(Desk* desk);
+  static void ResetDeskVisitedMetrics(Desk* desk);
+
+ private:
+  DesksTestApi() = default;
+  DesksTestApi(const DesksTestApi&) = delete;
+  DesksTestApi& operator=(const DesksTestApi&) = delete;
+  ~DesksTestApi() = default;
 };
 
 }  // namespace ash
