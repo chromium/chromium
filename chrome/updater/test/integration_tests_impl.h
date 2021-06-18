@@ -127,8 +127,8 @@ void RegisterApp(const std::string& app_id);
 void WaitForServerExit(UpdaterScope scope);
 
 #if defined(OS_WIN)
-void ExpectInterfacesRegistered();
-#endif
+void ExpectInterfacesRegistered(UpdaterScope scope);
+#endif  // OS_WIN
 
 }  // namespace test
 }  // namespace updater

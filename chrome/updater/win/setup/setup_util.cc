@@ -100,12 +100,23 @@ std::vector<IID> GetActiveInterfaces() {
           __uuidof(IUpdaterCallback)};
 }
 
-std::vector<CLSID> GetSideBySideServers() {
-  return {__uuidof(UpdaterInternalClass)};
+std::vector<CLSID> GetSideBySideServers(UpdaterScope scope) {
+  switch (scope) {
+    case UpdaterScope::kUser:
+      return {__uuidof(UpdaterInternalUserClass)};
+    case UpdaterScope::kSystem:
+      return {__uuidof(UpdaterInternalSystemClass)};
+  }
 }
 
-std::vector<CLSID> GetActiveServers() {
-  return {__uuidof(UpdaterClass), __uuidof(GoogleUpdate3WebUserClass)};
+std::vector<CLSID> GetActiveServers(UpdaterScope scope) {
+  switch (scope) {
+    case UpdaterScope::kUser:
+      return {__uuidof(UpdaterUserClass), __uuidof(GoogleUpdate3WebUserClass)};
+    case UpdaterScope::kSystem:
+      return {__uuidof(UpdaterSystemClass),
+              __uuidof(GoogleUpdate3WebSystemClass)};
+  }
 }
 
 void AddInstallComInterfaceWorkItems(HKEY root,
@@ -208,7 +219,9 @@ void AddComServiceWorkItems(const base::FilePath& com_service_path,
   list->AddWorkItem(new installer::InstallServiceWorkItem(
       kWindowsServiceName, kWindowsServiceName, com_service_command,
       base::ASCIIToWide(UPDATER_KEY),
-      internal_service ? GetSideBySideServers() : GetActiveServers(), {}));
+      internal_service ? GetSideBySideServers(UpdaterScope::kSystem)
+                       : GetActiveServers(UpdaterScope::kSystem),
+      {}));
 
   const std::vector<GUID> com_interfaces_to_install =
       internal_service ? GetSideBySideInterfaces() : GetActiveInterfaces();

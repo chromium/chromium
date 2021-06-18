@@ -157,6 +157,10 @@ void AppTestHelper::FirstTaskRun() {
      WithSystemScope(Wrap(&ExpectCandidateUninstalled))},
     {"expect_clean", WithSystemScope(Wrap(&ExpectClean))},
     {"expect_installed", WithSystemScope(Wrap(&ExpectInstalled))},
+#if defined(OS_WIN)
+    {"expect_interfaces_registered",
+     WithSystemScope(Wrap(&ExpectInterfacesRegistered))},
+#endif  // OS_WIN
     {"expect_version_active",
      WithSwitch("version", Wrap(&ExpectVersionActive))},
     {"expect_version_not_active",

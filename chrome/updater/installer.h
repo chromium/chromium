@@ -15,12 +15,11 @@
 #include "base/version.h"
 #include "build/build_config.h"
 #include "chrome/updater/persisted_data.h"
+#include "chrome/updater/updater_scope.h"
 #include "components/update_client/update_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
-
-enum class UpdaterScope;
 
 // Manages the install of one application. Some of the functions of this
 // class are blocking and can't be invoked on the main sequence.

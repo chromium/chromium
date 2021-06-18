@@ -31,11 +31,14 @@ class UpdateServiceInternalProxy : public UpdateServiceInternal {
   ~UpdateServiceInternalProxy() override;
 
   // These function are invoked on the |com_task_runner_|.
+  CLSID GetInternalClass() const;
   void RunOnSTA(base::OnceClosure callback);
   void InitializeUpdateServiceOnSTA(base::OnceClosure callback);
 
   // Bound to the main sequence.
   SEQUENCE_CHECKER(sequence_checker_);
+
+  UpdaterScope scope_;
 
   // Runs the tasks which involve outbound COM calls and inbound COM callbacks.
   // This task runner is thread-affine with the COM STA.

@@ -111,8 +111,9 @@ void UpdaterInternalCallback::RunOnSTA() {
 
 }  // namespace
 
-UpdateServiceInternalProxy::UpdateServiceInternalProxy(UpdaterScope /*scope*/)
-    : STA_task_runner_(
+UpdateServiceInternalProxy::UpdateServiceInternalProxy(UpdaterScope scope)
+    : scope_(scope),
+      STA_task_runner_(
           base::ThreadPool::CreateCOMSTATaskRunner(kComClientTraits)) {}
 
 UpdateServiceInternalProxy::~UpdateServiceInternalProxy() = default;
@@ -136,11 +137,20 @@ void UpdateServiceInternalProxy::Run(base::OnceClosure callback) {
               base::SequencedTaskRunnerHandle::Get(), std::move(callback))));
 }
 
+CLSID UpdateServiceInternalProxy::GetInternalClass() const {
+  switch (scope_) {
+    case UpdaterScope::kUser:
+      return __uuidof(UpdaterInternalUserClass);
+    case UpdaterScope::kSystem:
+      return __uuidof(UpdaterInternalSystemClass);
+  }
+}
+
 void UpdateServiceInternalProxy::RunOnSTA(base::OnceClosure callback) {
   DCHECK(STA_task_runner_->BelongsToCurrentThread());
 
   Microsoft::WRL::ComPtr<IUnknown> server;
-  HRESULT hr = ::CoCreateInstance(__uuidof(UpdaterInternalClass), nullptr,
+  HRESULT hr = ::CoCreateInstance(GetInternalClass(), nullptr,
                                   CLSCTX_LOCAL_SERVER, IID_PPV_ARGS(&server));
   if (FAILED(hr)) {
     DVLOG(2) << "Failed to instantiate the updater internal server. "
@@ -203,7 +213,7 @@ void UpdateServiceInternalProxy::InitializeUpdateServiceOnSTA(
   DCHECK(STA_task_runner_->BelongsToCurrentThread());
 
   Microsoft::WRL::ComPtr<IUnknown> server;
-  HRESULT hr = ::CoCreateInstance(__uuidof(UpdaterInternalClass), nullptr,
+  HRESULT hr = ::CoCreateInstance(GetInternalClass(), nullptr,
                                   CLSCTX_LOCAL_SERVER, IID_PPV_ARGS(&server));
   if (FAILED(hr)) {
     DVLOG(2) << "Failed to instantiate the updater internal server. "

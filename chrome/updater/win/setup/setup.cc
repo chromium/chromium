@@ -42,9 +42,8 @@
 namespace updater {
 namespace {
 
-// Adds work items to register the COM Server with Windows.
-void AddComServerWorkItems(HKEY root,
-                           const base::FilePath& com_server_path,
+// Adds work items to register the per-user internal COM Server with Windows.
+void AddComServerWorkItems(const base::FilePath& com_server_path,
                            WorkItemList* list) {
   DCHECK(list);
   if (com_server_path.empty()) {
@@ -52,8 +51,9 @@ void AddComServerWorkItems(HKEY root,
     return;
   }
 
-  for (const auto& clsid : GetSideBySideServers()) {
-    AddInstallServerWorkItems(root, clsid, com_server_path, true, list);
+  for (const auto& clsid : GetSideBySideServers(UpdaterScope::kUser)) {
+    AddInstallServerWorkItems(HKEY_CURRENT_USER, clsid, com_server_path, true,
+                              list);
   }
 }
 
@@ -176,7 +176,7 @@ int Setup(UpdaterScope scope) {
                             install_list.get());
   switch (scope) {
     case UpdaterScope::kUser:
-      AddComServerWorkItems(key, versioned_dir->Append(kUpdaterExe),
+      AddComServerWorkItems(versioned_dir->Append(kUpdaterExe),
                             install_list.get());
       break;
     case UpdaterScope::kSystem:

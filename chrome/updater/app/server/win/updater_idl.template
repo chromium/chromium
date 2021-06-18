@@ -106,18 +106,18 @@ library UpdaterLib {
 
   [
     uuid(PLACEHOLDER-GUID-158428a4-6014-4978-83ba-9fad0dabe791),
-    helpstring("Updater Class")
+    helpstring("Updater Class for per-user applications")
   ]
-  coclass UpdaterClass
+  coclass UpdaterUserClass
   {
     [default] interface IUnknown;
   }
 
   [
     uuid(PLACEHOLDER-GUID-415FD747-D79E-42D7-93AC-1BA6E5FD4E93),
-    helpstring("UpdaterService Class")
+    helpstring("Updater Class for per-system applications")
   ]
-  coclass UpdaterServiceClass
+  coclass UpdaterSystemClass
   {
     [default] interface IUnknown;
   }

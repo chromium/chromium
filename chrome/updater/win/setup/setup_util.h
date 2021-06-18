@@ -21,6 +21,8 @@ class FilePath;
 
 namespace updater {
 
+enum class UpdaterScope;
+
 bool RegisterWakeTask(const base::CommandLine& run_command);
 void UnregisterWakeTask();
 
@@ -49,11 +51,11 @@ std::vector<IID> GetActiveInterfaces();
 
 // Returns the CLSIDs of servers that can be installed side-by-side with other
 // instances of the updater.
-std::vector<CLSID> GetSideBySideServers();
+std::vector<CLSID> GetSideBySideServers(UpdaterScope scope);
 
 // Returns the CLSIDs of servers that can only be installed for the active
 // instance of the updater.
-std::vector<CLSID> GetActiveServers();
+std::vector<CLSID> GetActiveServers(UpdaterScope scope);
 
 // Helper function that joins two vectors and returns the resultant vector.
 template <typename T>

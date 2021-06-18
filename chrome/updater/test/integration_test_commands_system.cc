@@ -129,6 +129,12 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
     updater::test::WaitForServerExit(kUpdaterScope);
   }
 
+#if defined(OS_WIN)
+  void ExpectInterfacesRegistered() const override {
+    RunCommand("expect_interfaces_registered");
+  }
+#endif  // OS_WIN
+
   base::FilePath GetDifferentUserPath() const override {
 #if defined(OS_MAC)
     // The updater_tests executable is owned by non-root.

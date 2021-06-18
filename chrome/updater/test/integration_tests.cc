@@ -109,6 +109,12 @@ class IntegrationTest : public ::testing::Test {
 
   void ExpectActiveUpdater() { test_commands_->ExpectActiveUpdater(); }
 
+#if defined(OS_WIN)
+  void ExpectInterfacesRegistered() {
+    test_commands_->ExpectInterfacesRegistered();
+  }
+#endif  // OS_WIN
+
   void SetupFakeUpdaterHigherVersion() {
     test_commands_->SetupFakeUpdaterHigherVersion();
   }

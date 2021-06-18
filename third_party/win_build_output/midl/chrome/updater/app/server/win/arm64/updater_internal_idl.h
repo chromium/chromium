@@ -59,16 +59,28 @@ typedef interface IUpdaterInternal IUpdaterInternal;
 #endif 	/* __IUpdaterInternal_FWD_DEFINED__ */
 
 
-#ifndef __UpdaterInternalClass_FWD_DEFINED__
-#define __UpdaterInternalClass_FWD_DEFINED__
+#ifndef __UpdaterInternalUserClass_FWD_DEFINED__
+#define __UpdaterInternalUserClass_FWD_DEFINED__
 
 #ifdef __cplusplus
-typedef class UpdaterInternalClass UpdaterInternalClass;
+typedef class UpdaterInternalUserClass UpdaterInternalUserClass;
 #else
-typedef struct UpdaterInternalClass UpdaterInternalClass;
+typedef struct UpdaterInternalUserClass UpdaterInternalUserClass;
 #endif /* __cplusplus */
 
-#endif 	/* __UpdaterInternalClass_FWD_DEFINED__ */
+#endif 	/* __UpdaterInternalUserClass_FWD_DEFINED__ */
+
+
+#ifndef __UpdaterInternalSystemClass_FWD_DEFINED__
+#define __UpdaterInternalSystemClass_FWD_DEFINED__
+
+#ifdef __cplusplus
+typedef class UpdaterInternalSystemClass UpdaterInternalSystemClass;
+#else
+typedef struct UpdaterInternalSystemClass UpdaterInternalSystemClass;
+#endif /* __cplusplus */
+
+#endif 	/* __UpdaterInternalSystemClass_FWD_DEFINED__ */
 
 
 #ifndef __IUpdaterInternal_FWD_DEFINED__
@@ -276,12 +288,20 @@ EXTERN_C const IID IID_IUpdaterInternal;
 
 EXTERN_C const IID LIBID_UpdaterInternalLib;
 
-EXTERN_C const CLSID CLSID_UpdaterInternalClass;
+EXTERN_C const CLSID CLSID_UpdaterInternalUserClass;
 
 #ifdef __cplusplus
 
 class DECLSPEC_UUID("1F87FE2F-D6A9-4711-9D11-8187705F8457")
-UpdaterInternalClass;
+UpdaterInternalUserClass;
+#endif
+
+EXTERN_C const CLSID CLSID_UpdaterInternalSystemClass;
+
+#ifdef __cplusplus
+
+class DECLSPEC_UUID("4556BA55-517E-4F03-8016-331A43C269C9")
+UpdaterInternalSystemClass;
 #endif
 #endif /* __UpdaterInternalLib_LIBRARY_DEFINED__ */
 

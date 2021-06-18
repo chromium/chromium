@@ -145,7 +145,7 @@ void Clean(UpdaterScope scope) {
   }
 
   for (const CLSID& clsid :
-       JoinVectors(GetSideBySideServers(), GetActiveServers())) {
+       JoinVectors(GetSideBySideServers(scope), GetActiveServers(scope))) {
     EXPECT_TRUE(DeleteRegKey(root, 0, GetComServerClsidRegistryPath(clsid)));
     if (scope == UpdaterScope::kSystem)
       EXPECT_TRUE(DeleteRegKey(root, 0, GetComServerAppidRegistryPath(clsid)));
@@ -212,7 +212,7 @@ void ExpectClean(UpdaterScope scope) {
   }
 
   for (const CLSID& clsid :
-       JoinVectors(GetSideBySideServers(), GetActiveServers())) {
+       JoinVectors(GetSideBySideServers(scope), GetActiveServers(scope))) {
     EXPECT_FALSE(RegKeyExists(root, 0, GetComServerClsidRegistryPath(clsid)));
     if (scope == UpdaterScope::kSystem)
       EXPECT_FALSE(RegKeyExists(root, 0, GetComServerAppidRegistryPath(clsid)));
@@ -361,22 +361,24 @@ void WaitForServerExit(UpdaterScope scope) {
 // Tests if the typelibs and some of the public, internal, and
 // legacy interfaces are available. Failure to query these interfaces indicates
 // an issue with typelib registration.
-void ExpectInterfacesRegistered() {
+void ExpectInterfacesRegistered(UpdaterScope scope) {
   {  // IUpdater, IGoogleUpdate3Web and IAppBundleWeb.
     // The block is necessary so that updater_server goes out of scope and
     // releases the prefs lock before updater_internal_server tries to acquire
     // it to mode-check.
     Microsoft::WRL::ComPtr<IUnknown> updater_server;
-    ASSERT_HRESULT_SUCCEEDED(::CoCreateInstance(__uuidof(UpdaterClass), nullptr,
-                                                CLSCTX_LOCAL_SERVER,
-                                                IID_PPV_ARGS(&updater_server)));
+    ASSERT_HRESULT_SUCCEEDED(::CoCreateInstance(
+        scope == UpdaterScope::kSystem ? __uuidof(UpdaterSystemClass)
+                                       : __uuidof(UpdaterUserClass),
+        nullptr, CLSCTX_LOCAL_SERVER, IID_PPV_ARGS(&updater_server)));
     Microsoft::WRL::ComPtr<IUpdater> updater;
     EXPECT_HRESULT_SUCCEEDED(updater_server.As(&updater));
 
     Microsoft::WRL::ComPtr<IUnknown> updater_legacy_server;
     EXPECT_HRESULT_SUCCEEDED(::CoCreateInstance(
-        __uuidof(GoogleUpdate3WebUserClass), nullptr, CLSCTX_LOCAL_SERVER,
-        IID_PPV_ARGS(&updater_legacy_server)));
+        scope == UpdaterScope::kSystem ? __uuidof(GoogleUpdate3WebSystemClass)
+                                       : __uuidof(GoogleUpdate3WebUserClass),
+        nullptr, CLSCTX_LOCAL_SERVER, IID_PPV_ARGS(&updater_legacy_server)));
     Microsoft::WRL::ComPtr<IGoogleUpdate3Web> google_update;
     EXPECT_HRESULT_SUCCEEDED(updater_legacy_server.As(&google_update));
     Microsoft::WRL::ComPtr<IAppBundleWeb> app_bundle;
@@ -388,8 +390,9 @@ void ExpectInterfacesRegistered() {
   // IUpdaterInternal.
   Microsoft::WRL::ComPtr<IUnknown> updater_internal_server;
   EXPECT_HRESULT_SUCCEEDED(::CoCreateInstance(
-      __uuidof(UpdaterInternalClass), nullptr, CLSCTX_LOCAL_SERVER,
-      IID_PPV_ARGS(&updater_internal_server)));
+      scope == UpdaterScope::kSystem ? __uuidof(UpdaterInternalSystemClass)
+                                     : __uuidof(UpdaterInternalUserClass),
+      nullptr, CLSCTX_LOCAL_SERVER, IID_PPV_ARGS(&updater_internal_server)));
   Microsoft::WRL::ComPtr<IUpdaterInternal> updater_internal;
   EXPECT_HRESULT_SUCCEEDED(updater_internal_server.As(&updater_internal));
 }

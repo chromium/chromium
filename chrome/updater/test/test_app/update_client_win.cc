@@ -31,9 +31,10 @@
 namespace updater {
 namespace {
 
+// TODO(crbug.com/1096654): Enable for system tests.
 HRESULT CreateUpdaterInterface(Microsoft::WRL::ComPtr<IUpdater>* updater) {
   Microsoft::WRL::ComPtr<IUnknown> server;
-  HRESULT hr = ::CoCreateInstance(__uuidof(UpdaterClass), nullptr,
+  HRESULT hr = ::CoCreateInstance(__uuidof(UpdaterUserClass), nullptr,
                                   CLSCTX_LOCAL_SERVER, IID_PPV_ARGS(&server));
 
   if (FAILED(hr)) {

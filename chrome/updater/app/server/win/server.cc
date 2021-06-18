@@ -120,22 +120,17 @@ HRESULT ComServerApp::RegisterClassObjects() {
   // The pointer in this array is unowned. Do not release it.
   IClassFactory* class_factories[] = {class_factory_updater.Get(),
                                       class_factory_legacy_ondemand.Get()};
-  IID class_ids[] = {__uuidof(UpdaterClass),
-                     __uuidof(GoogleUpdate3WebUserClass)};
-  DWORD cookies[base::size(class_factories)];
-  static_assert(std::extent<decltype(cookies)>() == base::size(class_ids),
-                "Arrays cookies and class_ids must be the same size.");
+  std::vector<CLSID> class_ids = GetActiveServers(updater_scope());
+  std::vector<DWORD> cookies(class_ids.size());
   hr = Microsoft::WRL::Module<Microsoft::WRL::OutOfProc>::GetModule()
-           .RegisterCOMObject(nullptr, class_ids, class_factories, cookies,
-                              base::size(cookies));
-  for (DWORD cookie : cookies) {
-    cookies_.push_back(cookie);
-  }
+           .RegisterCOMObject(nullptr, &class_ids[0], class_factories,
+                              &cookies[0], class_ids.size());
   if (FAILED(hr)) {
     LOG(ERROR) << "RegisterCOMObject failed; hr: " << hr;
     return hr;
   }
 
+  cookies.swap(cookies_);
   return hr;
 }
 
@@ -161,21 +156,17 @@ HRESULT ComServerApp::RegisterInternalClassObjects() {
 
   // The pointer in this array is unowned. Do not release it.
   IClassFactory* class_factories[] = {class_factory_updater_internal.Get()};
-  IID class_ids[] = {__uuidof(UpdaterInternalClass)};
-  DWORD cookies[base::size(class_factories)];
-  static_assert(std::extent<decltype(cookies)>() == base::size(class_ids),
-                "Arrays cookies and class_ids must be the same size.");
+  std::vector<CLSID> class_ids = GetSideBySideServers(updater_scope());
+  std::vector<DWORD> cookies(class_ids.size());
   hr = Microsoft::WRL::Module<Microsoft::WRL::OutOfProc>::GetModule()
-           .RegisterCOMObject(nullptr, class_ids, class_factories, cookies,
-                              base::size(cookies));
-  for (DWORD cookie : cookies) {
-    cookies_.push_back(cookie);
-  }
+           .RegisterCOMObject(nullptr, &class_ids[0], class_factories,
+                              &cookies[0], class_ids.size());
   if (FAILED(hr)) {
     LOG(ERROR) << "RegisterCOMObject failed; hr: " << hr;
     return hr;
   }
 
+  cookies.swap(cookies_);
   return hr;
 }
 
@@ -240,7 +231,7 @@ bool ComServerApp::SwapRPCInterfaces() {
 
   HKEY root = (updater_scope() == UpdaterScope::kSystem) ? HKEY_LOCAL_MACHINE
                                                          : HKEY_CURRENT_USER;
-  for (const CLSID& clsid : GetActiveServers()) {
+  for (const CLSID& clsid : GetActiveServers(updater_scope())) {
     AddInstallServerWorkItems(root, clsid, updater_path, false, list.get());
   }
 

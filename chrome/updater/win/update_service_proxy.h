@@ -70,6 +70,8 @@ class UpdateServiceProxy : public UpdateService {
   // Bound to the main sequence.
   SEQUENCE_CHECKER(sequence_checker_);
 
+  UpdaterScope scope_;
+
   // Bound to the main sequence.
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
 

@@ -87,28 +87,28 @@ typedef interface IUpdater IUpdater;
 #endif 	/* __IUpdater_FWD_DEFINED__ */
 
 
-#ifndef __UpdaterClass_FWD_DEFINED__
-#define __UpdaterClass_FWD_DEFINED__
+#ifndef __UpdaterUserClass_FWD_DEFINED__
+#define __UpdaterUserClass_FWD_DEFINED__
 
 #ifdef __cplusplus
-typedef class UpdaterClass UpdaterClass;
+typedef class UpdaterUserClass UpdaterUserClass;
 #else
-typedef struct UpdaterClass UpdaterClass;
+typedef struct UpdaterUserClass UpdaterUserClass;
 #endif /* __cplusplus */
 
-#endif 	/* __UpdaterClass_FWD_DEFINED__ */
+#endif 	/* __UpdaterUserClass_FWD_DEFINED__ */
 
 
-#ifndef __UpdaterServiceClass_FWD_DEFINED__
-#define __UpdaterServiceClass_FWD_DEFINED__
+#ifndef __UpdaterSystemClass_FWD_DEFINED__
+#define __UpdaterSystemClass_FWD_DEFINED__
 
 #ifdef __cplusplus
-typedef class UpdaterServiceClass UpdaterServiceClass;
+typedef class UpdaterSystemClass UpdaterSystemClass;
 #else
-typedef struct UpdaterServiceClass UpdaterServiceClass;
+typedef struct UpdaterSystemClass UpdaterSystemClass;
 #endif /* __cplusplus */
 
-#endif 	/* __UpdaterServiceClass_FWD_DEFINED__ */
+#endif 	/* __UpdaterSystemClass_FWD_DEFINED__ */
 
 
 #ifndef __ICompleteStatus_FWD_DEFINED__
@@ -804,20 +804,20 @@ EXTERN_C const IID IID_IUpdater;
 
 EXTERN_C const IID LIBID_UpdaterLib;
 
-EXTERN_C const CLSID CLSID_UpdaterClass;
+EXTERN_C const CLSID CLSID_UpdaterUserClass;
 
 #ifdef __cplusplus
 
 class DECLSPEC_UUID("158428a4-6014-4978-83ba-9fad0dabe791")
-UpdaterClass;
+UpdaterUserClass;
 #endif
 
-EXTERN_C const CLSID CLSID_UpdaterServiceClass;
+EXTERN_C const CLSID CLSID_UpdaterSystemClass;
 
 #ifdef __cplusplus
 
 class DECLSPEC_UUID("415FD747-D79E-42D7-93AC-1BA6E5FD4E93")
-UpdaterServiceClass;
+UpdaterSystemClass;
 #endif
 #endif /* __UpdaterLib_LIBRARY_DEFINED__ */
 

@@ -228,6 +228,14 @@ library UpdaterLegacyLib {
     [default] interface IUnknown;
   }
 
+  [
+    uuid(8A1D4361-2C08-4700-A351-3EAA9CBFF5E4),
+    helpstring("GoogleUpdate3WebSystemClass")
+  ]
+  coclass GoogleUpdate3WebSystemClass {
+    [default] interface IUnknown;
+  }
+
   interface ICurrentState;
   interface IGoogleUpdate3Web;
   interface IAppBundleWeb;

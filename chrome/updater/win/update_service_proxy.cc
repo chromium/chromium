@@ -42,10 +42,13 @@ static constexpr base::TaskTraits kComClientTraits = {
     base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN};
 
 // Creates an instance of IUpdater in the COM STA apartment.
-HRESULT CreateUpdater(Microsoft::WRL::ComPtr<IUpdater>& updater) {
+HRESULT CreateUpdater(UpdaterScope scope,
+                      Microsoft::WRL::ComPtr<IUpdater>& updater) {
   Microsoft::WRL::ComPtr<IUnknown> server;
-  HRESULT hr = ::CoCreateInstance(__uuidof(UpdaterClass), nullptr,
-                                  CLSCTX_LOCAL_SERVER, IID_PPV_ARGS(&server));
+  HRESULT hr = ::CoCreateInstance(
+      scope == UpdaterScope::kSystem ? __uuidof(UpdaterSystemClass)
+                                     : __uuidof(UpdaterUserClass),
+      nullptr, CLSCTX_LOCAL_SERVER, IID_PPV_ARGS(&server));
   if (FAILED(hr)) {
     DVLOG(2) << "Failed to instantiate the update server: " << std::hex << hr;
     return hr;
@@ -434,7 +437,8 @@ void UpdaterCallback::OnRunOnSTA(LONG status_code) {
 }
 
 UpdateServiceProxy::UpdateServiceProxy(UpdaterScope updater_scope)
-    : main_task_runner_(base::SequencedTaskRunnerHandle::Get()),
+    : scope_(updater_scope),
+      main_task_runner_(base::SequencedTaskRunnerHandle::Get()),
       com_task_runner_(
           base::ThreadPool::CreateCOMSTATaskRunner(kComClientTraits)) {}
 
@@ -542,7 +546,7 @@ void UpdateServiceProxy::GetVersionOnSTA(
   DCHECK(com_task_runner_->BelongsToCurrentThread());
 
   Microsoft::WRL::ComPtr<IUpdater> updater;
-  HRESULT hr = CreateUpdater(updater);
+  HRESULT hr = CreateUpdater(scope_, updater);
   if (FAILED(hr)) {
     DVLOG(2) << "Failed to create the updater interface: " << std::hex << hr;
     std::move(callback).Run(base::Version());
@@ -566,7 +570,7 @@ void UpdateServiceProxy::RegisterAppOnSTA(
   DCHECK(com_task_runner_->BelongsToCurrentThread());
 
   Microsoft::WRL::ComPtr<IUpdater> updater;
-  HRESULT hr = CreateUpdater(updater);
+  HRESULT hr = CreateUpdater(scope_, updater);
   if (FAILED(hr)) {
     DVLOG(2) << "Failed to create the updater interface: " << std::hex << hr;
     std::move(callback).Run(RegistrationResponse(hr));
@@ -617,7 +621,7 @@ void UpdateServiceProxy::RegisterAppOnSTA(
 void UpdateServiceProxy::RunPeriodicTasksOnSTA(base::OnceClosure callback) {
   DCHECK(com_task_runner_->BelongsToCurrentThread());
   Microsoft::WRL::ComPtr<IUpdater> updater;
-  HRESULT hr = CreateUpdater(updater);
+  HRESULT hr = CreateUpdater(scope_, updater);
   if (FAILED(hr)) {
     DVLOG(2) << "Failed to create the updater interface: " << std::hex << hr;
     std::move(callback).Run();
@@ -641,7 +645,7 @@ void UpdateServiceProxy::UpdateAllOnSTA(StateChangeCallback state_update,
   DCHECK(com_task_runner_->BelongsToCurrentThread());
 
   Microsoft::WRL::ComPtr<IUpdater> updater;
-  HRESULT hr = CreateUpdater(updater);
+  HRESULT hr = CreateUpdater(scope_, updater);
   if (FAILED(hr)) {
     DVLOG(2) << "Failed to create the updater interface: " << std::hex << hr;
     std::move(callback).Run(Result::kServiceFailed);
@@ -677,7 +681,7 @@ void UpdateServiceProxy::UpdateOnSTA(const std::string& app_id,
   DCHECK(com_task_runner_->BelongsToCurrentThread());
 
   Microsoft::WRL::ComPtr<IUpdater> updater;
-  HRESULT hr = CreateUpdater(updater);
+  HRESULT hr = CreateUpdater(scope_, updater);
   if (FAILED(hr)) {
     DVLOG(2) << "Failed to create the updater interface: " << std::hex << hr;
     std::move(callback).Run(Result::kServiceFailed);

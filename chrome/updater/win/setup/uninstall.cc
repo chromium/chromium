@@ -36,10 +36,10 @@
 namespace updater {
 namespace {
 
-void DeleteComServer(HKEY root) {
+void DeleteComServer(UpdaterScope scope, HKEY root) {
   // TODO(crbug.com/1175095): Support candidate-specific uninstallation.
   for (const CLSID& clsid :
-       JoinVectors(GetSideBySideServers(), GetActiveServers())) {
+       JoinVectors(GetSideBySideServers(scope), GetActiveServers(scope))) {
     InstallUtil::DeleteRegistryKey(root, GetComServerClsidRegistryPath(clsid),
                                    WorkItem::kWow64Default);
   }
@@ -50,7 +50,8 @@ void DeleteComService() {
 
   // TODO(crbug.com/1175095): Support candidate-specific uninstallation.
   for (const GUID& appid :
-       JoinVectors(GetSideBySideServers(), GetActiveServers())) {
+       JoinVectors(GetSideBySideServers(UpdaterScope::kSystem),
+                   GetActiveServers(UpdaterScope::kSystem))) {
     InstallUtil::DeleteRegistryKey(HKEY_LOCAL_MACHINE,
                                    GetComServerAppidRegistryPath(appid),
                                    WorkItem::kWow64Default);
@@ -138,7 +139,7 @@ int Uninstall(UpdaterScope scope) {
   DeleteComInterfaces(key);
   if (scope == UpdaterScope::kSystem)
     DeleteComService();
-  DeleteComServer(key);
+  DeleteComServer(scope, key);
 
   return RunUninstallScript(true);
 }
