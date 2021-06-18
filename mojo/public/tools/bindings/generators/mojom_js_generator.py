@@ -400,10 +400,6 @@ class Generator(generator.Generator):
   def _GenerateAMDModule(self):
     return self._GetParameters()
 
-  @UseJinja("externs/module.externs.tmpl")
-  def _GenerateExterns(self):
-    return self._GetParameters()
-
   @UseJinja("lite/mojom.html.tmpl")
   def _GenerateLiteHtml(self):
     return self._GetParameters()
@@ -436,8 +432,6 @@ class Generator(generator.Generator):
     self._SetUniqueNameForImports()
 
     self.WriteWithComment(self._GenerateAMDModule(), "%s.js" % self.module.path)
-    self.WriteWithComment(self._GenerateExterns(),
-                          "%s.externs.js" % self.module.path)
     if self.js_bindings_mode == "new":
       self.WriteWithComment(self._GenerateLiteHtml(),
                             "%s.html" % self.module.path)

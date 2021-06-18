@@ -1697,7 +1697,6 @@ template("mojom") {
         foreach(base_path, output_file_base_paths) {
           outputs += [
             "$root_gen_dir/$base_path.js",
-            "$root_gen_dir/$base_path.externs.js",
             "$root_gen_dir/$base_path.m.js",
             "$root_gen_dir/$base_path-lite.js",
             "$root_gen_dir/$base_path.html",
