@@ -49,11 +49,14 @@ ChromeVoxPanelTest = class extends ChromeVoxPanelTestBase {
     });
   }
 
-  assertActiveMenuItem(menuMsg, menuItemTitle) {
+  assertActiveMenuItem(menuMsg, menuItemTitle, opt_menuItemShortcut) {
     const menu = this.getPanel().activeMenu_;
     const menuItem = menu.items_[menu.activeIndex_];
     assertEquals(menuMsg, menu.menuMsg);
     assertEquals(menuItemTitle, menuItem.menuItemTitle);
+    if (opt_menuItemShortcut) {
+      assertEquals(opt_menuItemShortcut, menuItem.menuItemShortcut);
+    }
   }
 
   assertActiveSearchMenuItem(menuItemTitle) {
@@ -200,5 +203,25 @@ TEST_F('ChromeVoxPanelTest', 'ActionsMenu', function() {
     this.assertActiveMenuItem('panel_menu_actions', 'Start Or End Selection');
     this.fireMockEvent('ArrowUp')();
     this.assertActiveMenuItem('panel_menu_actions', 'Click On Current Item');
+  });
+});
+
+TEST_F('ChromeVoxPanelTest', 'ShortcutsAreInternationalized', function() {
+  this.runWithLoadedTree(this.linksDoc, async function(root) {
+    new PanelCommand(PanelCommandType.OPEN_MENUS).send();
+    await this.waitForMenu('panel_search_menu');
+    this.fireMockEvent('ArrowRight')();
+    this.assertActiveMenuItem(
+        'panel_menu_jump', 'Go To Beginning Of Table',
+        'Search+Alt+Shift+ArrowLeft');
+    this.fireMockEvent('ArrowRight')();
+    this.assertActiveMenuItem(
+        'panel_menu_speech', 'Announce Current Battery Status',
+        'Search+O, then B');
+    // Skip the tabs menu.
+    this.fireMockEvent('ArrowRight')();
+    this.fireMockEvent('ArrowRight')();
+    this.assertActiveMenuItem(
+        'panel_menu_chromevox', 'Open keyboard shortcuts menu', 'Ctrl+Alt+/');
   });
 });

@@ -27792,6 +27792,8 @@ Called by update_extension_histograms.py.-->
   <int value="1553" label="TTSENGINE_SENDTTSAUDIO"/>
   <int value="1554" label="AUTOTESTPRIVATE_ACTIVATEAPPWINDOW"/>
   <int value="1555" label="FILEMANAGERPRIVATEINTERNAL_CANCELZIP"/>
+  <int value="1556"
+      label="ACCESSIBILITY_PRIVATE_GETLOCALIZEDDOMKEYSTRINGFORKEYCODE"/>
 </enum>
 
 <enum name="ExtensionIconState">

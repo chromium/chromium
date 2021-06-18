@@ -608,6 +608,29 @@
             ]
           }
         ]
+      },
+      {
+        "name": "getLocalizedDomKeyStringForKeyCode",
+        "type": "function",
+        "description": "Gets the DOM key string for the given key code, taking into account the current input method locale, and assuming the key code is for U.S. input. For example, the key code for '/' would return the string '!' if the current input method is French.",
+        "parameters": [
+          {
+            "name": "keyCode",
+            "type": "integer"
+          },
+          {
+            "name": "callback",
+            "type": "function",
+            "description": "Called with the resulting Dom key string.",
+            "parameters": [
+              {
+                "type": "string",
+                "name": "domKeyString",
+                "description": "The dom key string localized for the current input method."
+              }
+            ]
+          }
+        ]
       }
     ],
     "events": [

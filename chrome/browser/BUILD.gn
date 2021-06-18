@@ -5984,7 +5984,10 @@ static_library("browser") {
         "speech/extension_api/tts_engine_extension_observer_chromeos.cc",
         "speech/extension_api/tts_engine_extension_observer_chromeos.h",
       ]
-      deps += [ "//chromeos/services/tts/public/mojom" ]
+      deps += [
+        "//chromeos/services/tts/public/mojom",
+        "//ui/events/ozone/layout:layout",
+      ]
     }
   }
 

@@ -51,7 +51,10 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/events/keycodes/dom/dom_codes.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/events/ozone/layout/keyboard_layout_engine.h"
+#include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
 namespace {
@@ -673,4 +676,46 @@ AccessibilityPrivateShowConfirmationDialogFunction::Run() {
 void AccessibilityPrivateShowConfirmationDialogFunction::OnDialogResult(
     bool confirmed) {
   Respond(OneArgument(base::Value(confirmed)));
+}
+
+ExtensionFunction::ResponseAction
+AccessibilityPrivateGetLocalizedDomKeyStringForKeyCodeFunction::Run() {
+  std::unique_ptr<
+      accessibility_private::GetLocalizedDomKeyStringForKeyCode::Params>
+      params = accessibility_private::GetLocalizedDomKeyStringForKeyCode::
+          Params::Create(*args_);
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  ui::KeyboardCode key_code = static_cast<ui::KeyboardCode>(params->key_code);
+  ui::DomKey dom_key;
+  ui::KeyboardCode key_code_to_compare = ui::VKEY_UNKNOWN;
+  const ui::KeyboardLayoutEngine* layout_engine =
+      ui::KeyboardLayoutEngineManager::GetKeyboardLayoutEngine();
+  ui::DomCode dom_code =
+      ui::KeycodeConverter::MapUSPositionalShortcutKeyToDomCode(key_code);
+  if (dom_code != ui::DomCode::NONE) {
+    if (layout_engine->Lookup(dom_code, /*flags=*/ui::EF_NONE, &dom_key,
+                              &key_code_to_compare)) {
+      if (dom_key.IsDeadKey() || !dom_key.IsValid()) {
+        return RespondNow(Error("Invalid key code"));
+      }
+      return RespondNow(OneArgument(
+          base::Value(ui::KeycodeConverter::DomKeyToKeyString(dom_key))));
+    }
+  }
+
+  for (const auto& dom_code : ui::dom_codes) {
+    if (!layout_engine->Lookup(dom_code, /*flags=*/ui::EF_NONE, &dom_key,
+                               &key_code_to_compare)) {
+      continue;
+    }
+    if (key_code_to_compare != key_code || !dom_key.IsValid() ||
+        dom_key.IsDeadKey()) {
+      continue;
+    }
+    return RespondNow(OneArgument(
+        base::Value(ui::KeycodeConverter::DomKeyToKeyString((dom_key)))));
+  }
+
+  return RespondNow(OneArgument(base::Value(std::string())));
 }

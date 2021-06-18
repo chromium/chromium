@@ -340,9 +340,9 @@ KeyUtil = class {
    * @param {boolean=} opt_modifiers Restrict printout to only modifiers.
    *     Defaults
    * to false.
-   * @return {string} Readable string representation of the KeySequence object.
    */
-  static keySequenceToString(keySequence, opt_readableKeyCode, opt_modifiers) {
+  static async keySequenceToString(
+      keySequence, opt_readableKeyCode, opt_modifiers) {
     // TODO(rshearer): Move this method and the getReadableNameForKeyCode and
     // the method to KeySequence after we refactor isModifierActive (when the
     // modifie key becomes customizable and isn't stored as a string). We can't
@@ -400,7 +400,23 @@ KeyUtil = class {
             // we've already added that into the string above.
             if (!keySequence.isModifierKey(keyCode) && !opt_modifiers) {
               if (opt_readableKeyCode) {
-                tempStr += KeyUtil.getReadableNameForKeyCode(keyCode);
+                // First, try using Chrome OS's localized DOM key string
+                // conversion.
+                let domKeyString = await new Promise(
+                    resolve => chrome.accessibilityPrivate
+                                   .getLocalizedDomKeyStringForKeyCode(
+                                       keyCode, resolve));
+                if (domKeyString) {
+                  // Upper case single-lettered key strings for better tts.
+                  if (domKeyString.length === 1) {
+                    domKeyString = domKeyString.toUpperCase();
+                  }
+
+
+                  tempStr += domKeyString;
+                } else {
+                  tempStr += KeyUtil.getReadableNameForKeyCode(keyCode);
+                }
               } else {
                 tempStr += KeyUtil.keyCodeToString(keyCode);
               }

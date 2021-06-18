@@ -468,6 +468,16 @@ chrome.accessibilityPrivate.updateSelectToSpeakPanel = function(show, anchor, is
 chrome.accessibilityPrivate.showConfirmationDialog = function(title, description, callback) {};
 
 /**
+ * Gets the DOM key string for the given key code, taking into account the
+ * current input method locale, and assuming the key code is for U.S. input. For
+ * example, / would return the string ! if the current input method is French.
+ * @param {number} keyCode
+ * @param {function(string): void} callback Called with the resulting Dom key
+ *     string.
+ */
+chrome.accessibilityPrivate.getLocalizedDomKeyStringForKeyCode = function(keyCode, callback) {};
+
+/**
  * Fired whenever ChromeVox should output introduction.
  * @type {!ChromeEvent}
  */

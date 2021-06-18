@@ -1616,6 +1616,7 @@ enum HistogramValue {
   TTSENGINE_SENDTTSAUDIO = 1553,
   AUTOTESTPRIVATE_ACTIVATEAPPWINDOW = 1554,
   FILEMANAGERPRIVATEINTERNAL_CANCELZIP = 1555,
+  ACCESSIBILITY_PRIVATE_GETLOCALIZEDDOMKEYSTRINGFORKEYCODE = 1556,
   // Last entry: Add new entries above, then run:
   // python tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

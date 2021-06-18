@@ -224,4 +224,15 @@ class AccessibilityPrivateShowConfirmationDialogFunction
                              ACCESSIBILITY_PRIVATE_SHOWCONFIRMATIONDIALOG)
 };
 
+// API function that gets the localized DOM key string for a given key code.
+class AccessibilityPrivateGetLocalizedDomKeyStringForKeyCodeFunction
+    : public ExtensionFunction {
+  ~AccessibilityPrivateGetLocalizedDomKeyStringForKeyCodeFunction() override =
+      default;
+  ResponseAction Run() override;
+  DECLARE_EXTENSION_FUNCTION(
+      "accessibilityPrivate.getLocalizedDomKeyStringForKeyCode",
+      ACCESSIBILITY_PRIVATE_GETLOCALIZEDDOMKEYSTRINGFORKEYCODE)
+};
+
 #endif  // CHROME_BROWSER_ACCESSIBILITY_ACCESSIBILITY_EXTENSION_API_CHROMEOS_H_
