@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_CLOUD_CONTENT_SCANNING_FILE_ANALYSIS_REQUEST_H_
 #define CHROME_BROWSER_SAFE_BROWSING_CLOUD_CONTENT_SCANNING_FILE_ANALYSIS_REQUEST_H_
 
+#include "base/feature_list.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/common/safe_browsing/archive_analyzer_results.h"
@@ -39,7 +40,7 @@ class FileAnalysisRequest : public BinaryUploadService::Request {
                               const ArchiveAnalyzerResults& analyzer_result);
 
   // Helper functions to access the request proto.
-  bool FileTypeUnsupportedByDlp() const;
+  bool FileSupportedByDlp(const std::string& mime_type) const;
   bool HasMalwareRequest() const;
 
   void CacheResultAndData(BinaryUploadService::Result result, Data data);

@@ -302,15 +302,16 @@ void RecordDeepScanMetrics(DeepScanAccessPoint access_point,
       50);
 }
 
-std::array<const base::FilePath::CharType*, 24> SupportedDlpFileTypes() {
+const std::array<const base::FilePath::CharType*, 26>& SupportedDlpFileTypes() {
   // Keep sorted for efficient access.
-  static constexpr const std::array<const base::FilePath::CharType*, 24>
+  static constexpr const std::array<const base::FilePath::CharType*, 26>
       kSupportedDLPFileTypes = {
           FILE_PATH_LITERAL(".7z"),   FILE_PATH_LITERAL(".bz2"),
           FILE_PATH_LITERAL(".bzip"), FILE_PATH_LITERAL(".cab"),
           FILE_PATH_LITERAL(".csv"),  FILE_PATH_LITERAL(".doc"),
           FILE_PATH_LITERAL(".docx"), FILE_PATH_LITERAL(".eps"),
           FILE_PATH_LITERAL(".gz"),   FILE_PATH_LITERAL(".gzip"),
+          FILE_PATH_LITERAL(".htm"),  FILE_PATH_LITERAL(".html"),
           FILE_PATH_LITERAL(".odt"),  FILE_PATH_LITERAL(".pdf"),
           FILE_PATH_LITERAL(".ppt"),  FILE_PATH_LITERAL(".pptx"),
           FILE_PATH_LITERAL(".ps"),   FILE_PATH_LITERAL(".rar"),
@@ -334,8 +335,71 @@ bool FileTypeSupportedForDlp(const base::FilePath& path) {
   std::transform(extension.begin(), extension.end(), extension.begin(),
                  tolower);
 
-  auto dlp_types = SupportedDlpFileTypes();
+  const auto& dlp_types = SupportedDlpFileTypes();
   return std::binary_search(dlp_types.begin(), dlp_types.end(), extension);
+}
+
+const std::array<const char*, 38>& SupportedDlpMimeTypes() {
+  // Keep sorted for efficient access.
+  static constexpr const std::array<const char*, 38> kSupportedDLPMimeTypes = {
+      "application/gzip",
+      "application/msexcel",
+      "application/mspowerpoint",
+      "application/msword",
+      "application/octet-stream",
+      "application/pdf",
+      "application/postscript",
+      "application/rtf",
+      "application/vnd.google-apps.document.internal",
+      "application/vnd.google-apps.spreadsheet.internal",
+      "application/vnd.ms-cab-compressed",
+      "application/vnd.ms-excel",
+      "application/vnd.ms-excel.sheet.macroenabled.12",
+      "application/vnd.ms-excel.template.macroenabled.12",
+      "application/vnd.ms-powerpoint",
+      "application/vnd.ms-powerpoint.presentation.macroenabled.12",
+      "application/vnd.ms-word",
+      "application/vnd.ms-word.document.12",
+      "application/vnd.ms-word.document.macroenabled.12",
+      "application/vnd.ms-word.template.macroenabled.12",
+      "application/vnd.ms-xpsdocument",
+      "application/vnd.msword",
+      "application/vnd.oasis.opendocument.text",
+      "application/"
+      "vnd.openxmlformats-officedocument.presentationml.presentation",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.template",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.template",
+      "application/vnd.rar",
+      "application/vnd.wordperfect",
+      "application/x-7z-compressed",
+      "application/x-bzip",
+      "application/x-bzip2",
+      "application/x-gzip",
+      "application/x-rar-compressed",
+      "application/x-tar",
+      "application/x-zip-compressed",
+      "application/zip"};
+  // TODO: Replace this DCHECK with a static assert once std::is_sorted is
+  // constexpr in C++20.
+  DCHECK(std::is_sorted(kSupportedDLPMimeTypes.begin(),
+                        kSupportedDLPMimeTypes.end(),
+                        [](const std::string& a, const std::string& b) {
+                          return a.compare(b) < 0;
+                        }));
+
+  return kSupportedDLPMimeTypes;
+}
+
+// Returns true if the given mime type is supported for DLP scanning.
+bool MimeTypeSupportedForDlp(const std::string& mime_type) {
+  // All text mime type are considered scannable for DLP.
+  if (mime_type.size() >= 5 && mime_type.substr(0, 5) == "text/")
+    return true;
+
+  const auto& mime_types = SupportedDlpMimeTypes();
+  return std::binary_search(mime_types.begin(), mime_types.end(), mime_type);
 }
 
 enterprise_connectors::ContentAnalysisResponse

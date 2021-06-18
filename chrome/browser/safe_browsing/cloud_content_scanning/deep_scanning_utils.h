@@ -118,10 +118,16 @@ void RecordDeepScanMetrics(DeepScanAccessPoint access_point,
                            bool success);
 
 // Returns an array of the file types supported for DLP scanning.
-std::array<const base::FilePath::CharType*, 24> SupportedDlpFileTypes();
+const std::array<const base::FilePath::CharType*, 26>& SupportedDlpFileTypes();
 
 // Returns true if the given file type is supported for DLP scanning.
 bool FileTypeSupportedForDlp(const base::FilePath& path);
+
+// Returns an array of the mime types supported for DLP scanning.
+const std::array<const char*, 38>& SupportedDlpMimeTypes();
+
+// Returns true if the given mime type is supported for DLP scanning.
+bool MimeTypeSupportedForDlp(const std::string& mime_type);
 
 // Helper function to make ContentAnalysisResponses for tests.
 enterprise_connectors::ContentAnalysisResponse

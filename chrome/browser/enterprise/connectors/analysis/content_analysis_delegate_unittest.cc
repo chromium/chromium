@@ -1342,8 +1342,8 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, SupportedTypes) {
              base::BindOnce(
                  [](bool* called, const ContentAnalysisDelegate::Data& data,
                     const ContentAnalysisDelegate::Result& result) {
-                   EXPECT_EQ(24u, data.paths.size());
-                   EXPECT_EQ(24u, result.paths_results.size());
+                   EXPECT_EQ(26u, data.paths.size());
+                   EXPECT_EQ(26u, result.paths_results.size());
 
                    // The supported types should be marked as false.
                    for (const auto& result : result.paths_results)

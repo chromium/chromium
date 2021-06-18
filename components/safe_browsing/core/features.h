@@ -160,6 +160,10 @@ extern const base::FeatureParam<bool> kDelayedWarningsEnableMouseClicks;
 // default and control groups of the experiment.
 extern const base::Feature kSimplifiedUrlDisplay;
 
+// This gates mime type sniffing for DLP file support until the mime type list
+// and implementation are validated experimentally.
+extern const base::Feature kFileAnalysisMimeTypeSniff;
+
 base::ListValue GetFeatureStatusList();
 
 // Returns whether or not to stop filling in the SyncAccountType and

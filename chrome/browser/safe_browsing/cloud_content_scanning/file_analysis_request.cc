@@ -4,6 +4,7 @@
 
 #include "chrome/browser/safe_browsing/cloud_content_scanning/file_analysis_request.h"
 
+#include "base/feature_list.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece_forward.h"
@@ -15,6 +16,7 @@
 #include "chrome/common/safe_browsing/archive_analyzer_results.h"
 #include "chrome/services/file_util/public/cpp/sandboxed_rar_analyzer.h"
 #include "chrome/services/file_util/public/cpp/sandboxed_zip_analyzer.h"
+#include "components/safe_browsing/core/features.h"
 #include "crypto/secure_hash.h"
 #include "crypto/sha2.h"
 #include "net/base/filename_util.h"
@@ -134,12 +136,23 @@ void FileAnalysisRequest::GetRequestData(DataCallback callback) {
                      weakptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-bool FileAnalysisRequest::FileTypeUnsupportedByDlp() const {
+bool FileAnalysisRequest::FileSupportedByDlp(
+    const std::string& mime_type) const {
   for (const std::string& tag : content_analysis_request().tags()) {
-    if (tag == "dlp")
-      return !FileTypeSupportedForDlp(file_name_);
+    if (tag == "dlp") {
+      if (FileTypeSupportedForDlp(file_name_)) {
+        return true;
+      } else if (base::FeatureList::IsEnabled(
+                     safe_browsing::kFileAnalysisMimeTypeSniff)) {
+        return MimeTypeSupportedForDlp(mime_type);
+      }
+      return false;
+    }
   }
-  return false;
+
+  // This function's default is true when there is no "dlp" tag so that the
+  // unsupported DLP path isn't used.
+  return true;
 }
 
 bool FileAnalysisRequest::HasMalwareRequest() const {
@@ -162,7 +175,9 @@ void FileAnalysisRequest::OnGotFileData(
     return;
   }
 
-  if (FileTypeUnsupportedByDlp()) {
+  if (!FileSupportedByDlp(cached_data_.mime_type.empty()
+                              ? result_and_data.second.mime_type
+                              : cached_data_.mime_type)) {
     // Abort the request early if settings say to block unsupported types or if
     // there was no malware request to be done, otherwise proceed with the
     // malware request only.
