@@ -98,6 +98,7 @@ class PdfViewPluginBase : public PDFEngine::Client,
   void FormTextFieldFocusChange(bool in_focus) override;
   SkColor GetBackgroundColor() override;
   void SetIsSelecting(bool is_selecting) override;
+  void SelectionChanged(const gfx::Rect& left, const gfx::Rect& right) override;
   void EnteredEditMode() override;
   void DocumentFocusChanged(bool document_has_focus) override;
 
@@ -303,6 +304,13 @@ class PdfViewPluginBase : public PDFEngine::Client,
 
   // Performs tasks necessary when the document is loaded in print preview mode.
   virtual void OnPrintPreviewLoaded() = 0;
+
+  // Notifies the embedder of the top-left and bottom-right coordinates of the
+  // current selection.
+  virtual void NotifySelectionChanged(const gfx::PointF& left,
+                                      int left_height,
+                                      const gfx::PointF& right,
+                                      int right_height) = 0;
 
   // Notifies the user about unsupported feature if the PDF Viewer occupies the
   // full frame.

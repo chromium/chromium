@@ -377,6 +377,27 @@ void PdfViewPluginBase::SetIsSelecting(bool is_selecting) {
   SendMessage(std::move(message));
 }
 
+void PdfViewPluginBase::SelectionChanged(const gfx::Rect& left,
+                                         const gfx::Rect& right) {
+  const gfx::Rect left_with_offset = left + plugin_rect_.OffsetFromOrigin();
+  const gfx::Rect right_with_offset = right + plugin_rect_.OffsetFromOrigin();
+
+  gfx::PointF left_point(left_with_offset.x() + available_area_.x(),
+                         left_with_offset.y());
+  gfx::PointF right_point(right_with_offset.x() + available_area_.x(),
+                          right_with_offset.y());
+
+  const float inverse_scale = 1.0f / device_scale_;
+  left_point.Scale(inverse_scale);
+  right_point.Scale(inverse_scale);
+
+  NotifySelectionChanged(left_point, left_with_offset.height(), right_point,
+                         right_with_offset.height());
+
+  if (accessibility_state_ == AccessibilityState::kLoaded)
+    PrepareAndSetAccessibilityViewportInfo();
+}
+
 void PdfViewPluginBase::EnteredEditMode() {
   edit_mode_ = true;
   SetPluginCanSave(true);

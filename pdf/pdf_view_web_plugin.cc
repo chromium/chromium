@@ -486,9 +486,6 @@ bool PdfViewWebPlugin::IsPrintPreview() {
   return false;
 }
 
-void PdfViewWebPlugin::SelectionChanged(const gfx::Rect& left,
-                                        const gfx::Rect& right) {}
-
 void PdfViewWebPlugin::SetSelectedText(const std::string& selected_text) {
   selected_text_ = blink::WebString::FromUTF8(selected_text);
   container_wrapper_->TextSelectionChanged(
@@ -666,6 +663,13 @@ void PdfViewWebPlugin::DidStopLoading() {
 }
 
 void PdfViewWebPlugin::OnPrintPreviewLoaded() {
+  NOTIMPLEMENTED();
+}
+
+void PdfViewWebPlugin::NotifySelectionChanged(const gfx::PointF& left,
+                                              int left_height,
+                                              const gfx::PointF& right,
+                                              int right_height) {
   NOTIMPLEMENTED();
 }
 

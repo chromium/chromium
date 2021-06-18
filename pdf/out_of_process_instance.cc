@@ -626,28 +626,6 @@ void OutOfProcessInstance::GetPrintPresetOptionsFromDocument(
       PPPdfPrintPresetOptionsFromWebPrintPresetOptions(GetPrintPresetOptions());
 }
 
-void OutOfProcessInstance::SelectionChanged(const gfx::Rect& left,
-                                            const gfx::Rect& right) {
-  const gfx::Rect left_with_offset = left + plugin_rect().OffsetFromOrigin();
-  const gfx::Rect right_with_offset = right + plugin_rect().OffsetFromOrigin();
-
-  pp::Point l(left_with_offset.x() + available_area().x(),
-              left_with_offset.y());
-  pp::Point r(right_with_offset.x() + available_area().x(),
-              right_with_offset.y());
-
-  float inverse_scale = 1.0f / device_scale();
-  ScalePoint(inverse_scale, &l);
-  ScalePoint(inverse_scale, &r);
-
-  pp::PDF::SelectionChanged(
-      GetPluginInstance(), PP_MakeFloatPoint(l.x(), l.y()),
-      left_with_offset.height(), PP_MakeFloatPoint(r.x(), r.y()),
-      right_with_offset.height());
-  if (accessibility_state() == AccessibilityState::kLoaded)
-    PrepareAndSetAccessibilityViewportInfo();
-}
-
 void OutOfProcessInstance::SetCaretPosition(const pp::FloatPoint& position) {
   pp::Point new_position(position.x(), position.y());
   ScalePoint(device_scale(), &new_position);
@@ -1292,6 +1270,15 @@ void OutOfProcessInstance::OnPrintPreviewLoaded() {
 
 void OutOfProcessInstance::SetContentRestrictions(int content_restrictions) {
   pp::PDF::SetContentRestriction(this, content_restrictions);
+}
+
+void OutOfProcessInstance::NotifySelectionChanged(const gfx::PointF& left,
+                                                  int left_height,
+                                                  const gfx::PointF& right,
+                                                  int right_height) {
+  pp::PDF::SelectionChanged(GetPluginInstance(), PPFloatPointFromPointF(left),
+                            left_height, PPFloatPointFromPointF(right),
+                            right_height);
 }
 
 void OutOfProcessInstance::NotifyUnsupportedFeature() {

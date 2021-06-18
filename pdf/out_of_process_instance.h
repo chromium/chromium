@@ -111,7 +111,6 @@ class OutOfProcessInstance : public PdfViewPluginBase,
                                                bool case_sensitive) override;
   pp::Instance* GetPluginInstance() override;
   bool IsPrintPreview() override;
-  void SelectionChanged(const gfx::Rect& left, const gfx::Rect& right) override;
   void SetSelectedText(const std::string& selected_text) override;
   void SetLinkUnderCursor(const std::string& link_under_cursor) override;
   bool IsValidLink(const std::string& url) override;
@@ -154,6 +153,10 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   void DidStartLoading() override;
   void DidStopLoading() override;
   void OnPrintPreviewLoaded() override;
+  void NotifySelectionChanged(const gfx::PointF& left,
+                              int left_height,
+                              const gfx::PointF& right,
+                              int right_height) override;
   void NotifyUnsupportedFeature() override;
   void UserMetricsRecordAction(const std::string& action) override;
 

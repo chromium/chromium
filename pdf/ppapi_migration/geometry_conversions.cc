@@ -24,6 +24,10 @@ gfx::PointF PointFFromPPFloatPoint(const PP_FloatPoint& pp_point) {
   return gfx::PointF(pp_point.x, pp_point.y);
 }
 
+PP_FloatPoint PPFloatPointFromPointF(const gfx::PointF& point) {
+  return PP_MakeFloatPoint(point.x(), point.y());
+}
+
 gfx::Rect RectFromPPRect(const PP_Rect& pp_rect) {
   return gfx::Rect(pp_rect.point.x, pp_rect.point.y, pp_rect.size.width,
                    pp_rect.size.height);
