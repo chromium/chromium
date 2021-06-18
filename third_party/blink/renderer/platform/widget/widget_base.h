@@ -37,9 +37,12 @@ namespace ui {
 class Cursor;
 }
 
+namespace display {
+struct ScreenInfos;
+}
+
 namespace blink {
 class ImeEventGuard;
-struct ScreenInfos;
 class LayerTreeView;
 class WidgetBaseClient;
 class WidgetInputHandlerManager;
@@ -84,7 +87,7 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   void InitializeCompositing(
       scheduler::WebAgentGroupScheduler& agent_group_scheduler,
       bool for_child_local_root_frame,
-      const ScreenInfos& screen_infos,
+      const display::ScreenInfos& screen_infos,
       const cc::LayerTreeSettings* settings,
       base::WeakPtr<mojom::blink::FrameWidgetInputHandler>
           frame_widget_input_handler);
@@ -321,28 +324,28 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   void UpdateSurfaceAndScreenInfo(
       const viz::LocalSurfaceId& new_local_surface_id,
       const gfx::Rect& compositor_viewport_pixel_rect,
-      const ScreenInfos& new_screen_infos);
+      const display::ScreenInfos& new_screen_infos);
   // Similar to UpdateSurfaceAndScreenInfo but the screen info remains the same.
   void UpdateSurfaceAndCompositorRect(
       const viz::LocalSurfaceId& new_local_surface_id,
       const gfx::Rect& compositor_viewport_pixel_rect);
   // Similar to UpdateSurfaceAndScreenInfo but the surface allocation
   // and compositor viewport rect remains the same.
-  void UpdateScreenInfo(const ScreenInfos& new_screen_infos);
+  void UpdateScreenInfo(const display::ScreenInfos& new_screen_infos);
   // Similar to UpdateSurfaceAndScreenInfo but the surface allocation
   // remains the same.
   void UpdateCompositorViewportAndScreenInfo(
       const gfx::Rect& compositor_viewport_pixel_rect,
-      const ScreenInfos& new_screen_infos);
+      const display::ScreenInfos& new_screen_infos);
   // Similar to UpdateSurfaceAndScreenInfo but the surface allocation and screen
   // info remains the same.
   void UpdateCompositorViewportRect(
       const gfx::Rect& compositor_viewport_pixel_rect);
-  const ScreenInfo& GetScreenInfo();
+  const display::ScreenInfo& GetScreenInfo();
 
   // Accessors for information about available screens and the current screen.
-  void set_screen_infos(const ScreenInfos& s) { screen_infos_ = s; }
-  const ScreenInfos& screen_infos() const { return screen_infos_; }
+  void set_screen_infos(const display::ScreenInfos& s) { screen_infos_ = s; }
+  const display::ScreenInfos& screen_infos() const { return screen_infos_; }
 
   const viz::LocalSurfaceId& local_surface_id_from_parent() const {
     return local_surface_id_from_parent_;
@@ -456,7 +459,7 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   // Info about available screens and which is currently showing the WidgetBase.
   // Rects in these structures do not include any scaling by device scale
   // factor, so are in DIPs, not blink coordinate space.
-  ScreenInfos screen_infos_;
+  display::ScreenInfos screen_infos_;
 
   viz::LocalSurfaceId local_surface_id_from_parent_;
 

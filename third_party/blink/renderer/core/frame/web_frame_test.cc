@@ -1345,8 +1345,8 @@ bool CheckTextAutosizingMultiplier(Document* document, float multiplier) {
 
 void UpdateScreenInfoAndResizeView(
     frame_test_helpers::WebViewHelper* web_view_helper,
-    const ScreenInfo& screen_info) {
-  ScreenInfos screen_infos(screen_info);
+    const display::ScreenInfo& screen_info) {
+  display::ScreenInfos screen_infos(screen_info);
   web_view_helper->GetWebView()->MainFrameViewWidget()->UpdateScreenInfo(
       screen_infos);
   web_view_helper->Resize(screen_info.rect.size());
@@ -1356,7 +1356,7 @@ void UpdateScreenInfoAndResizeView(
     frame_test_helpers::WebViewHelper* web_view_helper,
     int viewport_width,
     int viewport_height) {
-  ScreenInfo screen_info =
+  display::ScreenInfo screen_info =
       web_view_helper->GetMainFrameWidget()->GetOriginalScreenInfo();
   screen_info.rect = gfx::Rect(viewport_width, viewport_height);
   UpdateScreenInfoAndResizeView(web_view_helper, screen_info);
@@ -10064,7 +10064,7 @@ TEST_F(WebFrameTest, ResizeInvalidatesDeviceMediaQueries) {
   Element* element = frame->GetDocument()->getElementById("test");
   ASSERT_TRUE(element);
 
-  ScreenInfo screen_info =
+  display::ScreenInfo screen_info =
       web_view_helper.GetMainFrameWidget()->GetOriginalScreenInfo();
   screen_info.rect = screen_info.available_rect = gfx::Rect(700, 500);
   UpdateScreenInfoAndResizeView(&web_view_helper, screen_info);
@@ -10106,7 +10106,7 @@ class DeviceEmulationTest : public WebFrameTest {
   }
 
   void TestResize(const gfx::Size& size, const String& expected_size) {
-    ScreenInfo screen_info =
+    display::ScreenInfo screen_info =
         web_view_helper_.GetMainFrameWidget()->GetOriginalScreenInfo();
     screen_info.rect = screen_info.available_rect = gfx::Rect(size);
     UpdateScreenInfoAndResizeView(&web_view_helper_, screen_info);
@@ -13663,7 +13663,8 @@ TEST_F(WebFrameTest, MediaQueriesInLocalFrameInsideRemote) {
   frame_test_helpers::TestWebFrameWidget* local_frame_widget =
       static_cast<frame_test_helpers::TestWebFrameWidget*>(
           local_frame->FrameWidgetImpl());
-  ScreenInfos screen_infos(local_frame_widget->GetOriginalScreenInfo());
+  display::ScreenInfos screen_infos(
+      local_frame_widget->GetOriginalScreenInfo());
   screen_infos.mutable_current().is_monochrome = false;
   screen_infos.mutable_current().depth_per_component = 8;
   local_frame_widget->UpdateScreenInfo(screen_infos);

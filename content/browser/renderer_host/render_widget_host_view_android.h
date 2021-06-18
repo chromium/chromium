@@ -188,7 +188,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   WebContentsAccessibility* GetWebContentsAccessibility() override;
   viz::ScopedSurfaceIdAllocator DidUpdateVisualProperties(
       const cc::RenderFrameMetadata& metadata) override;
-  void GetScreenInfo(blink::ScreenInfo* screen_info) override;
+  void GetScreenInfo(display::ScreenInfo* screen_info) override;
   std::vector<std::unique_ptr<ui::TouchEvent>> ExtractAndCancelActiveTouches()
       override;
   void TransferTouches(

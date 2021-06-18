@@ -49,7 +49,7 @@ struct BLINK_COMMON_EXPORT
     return r.viewport_scale;
   }
 
-  static blink::mojom::ScreenOrientation screen_orientation_type(
+  static display::mojom::ScreenOrientation screen_orientation_type(
       const blink::DeviceEmulationParams& r) {
     return r.screen_orientation_type;
   }

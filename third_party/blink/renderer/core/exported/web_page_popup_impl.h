@@ -161,7 +161,7 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
   WebHitTestResult HitTestResultAt(const gfx::PointF&) override { return {}; }
   void InitializeCompositing(
       scheduler::WebAgentGroupScheduler& agent_group_scheduler,
-      const ScreenInfos& screen_infos,
+      const display::ScreenInfos& screen_infos,
       const cc::LayerTreeSettings* settings) override;
   scheduler::WebRenderWidgetSchedulingState* RendererWidgetSchedulingState()
       override;
@@ -177,10 +177,10 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
   void CancelCompositionForPepper() override;
   void ApplyVisualProperties(
       const VisualProperties& visual_properties) override;
-  const ScreenInfo& GetScreenInfo() override;
-  const ScreenInfos& GetScreenInfos() override;
-  const ScreenInfo& GetOriginalScreenInfo() override;
-  const ScreenInfos& GetOriginalScreenInfos() override;
+  const display::ScreenInfo& GetScreenInfo() override;
+  const display::ScreenInfos& GetScreenInfos() override;
+  const display::ScreenInfo& GetOriginalScreenInfo() override;
+  const display::ScreenInfos& GetOriginalScreenInfos() override;
   gfx::Rect WindowRect() override;
   gfx::Rect ViewRect() override;
   void SetScreenRects(const gfx::Rect& widget_screen_rect,

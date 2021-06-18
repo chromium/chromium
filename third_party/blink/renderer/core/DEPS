@@ -116,6 +116,8 @@ include_rules = [
     "+ui/base/resource/scale_factor.h",
     "+ui/base/ui_base_features.h",
     "+ui/display/mojom/display.mojom-blink.h",
+    "+ui/display/screen_info.h",
+    "+ui/display/screen_infos.h",
     "+ui/gfx/geometry",
     "+ui/gfx/range/range.h",
     "+ui/gfx/skia_util.h",

@@ -413,7 +413,7 @@ RenderWidgetHostImpl* RenderWidgetHostViewMac::GetWidgetForIme() {
   return GetActiveWidget();
 }
 
-void RenderWidgetHostViewMac::GetScreenInfo(blink::ScreenInfo* screen_info) {
+void RenderWidgetHostViewMac::GetScreenInfo(display::ScreenInfo* screen_info) {
   const display::DisplayList& displays = browser_compositor_->display_list();
   CHECK(displays.IsValidAndHasPrimaryAndCurrentDisplays());
   const display::Display& display = displays.GetCurrentDisplay();

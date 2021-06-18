@@ -52,7 +52,7 @@ class MODULES_EXPORT ModulesInitializer : public CoreInitializer {
 
   void DidChangeManifest(LocalFrame&) override;
   void NotifyOrientationChanged(LocalFrame&) override;
-  void DidUpdateScreens(LocalFrame&, const ScreenInfos&) override;
+  void DidUpdateScreens(LocalFrame&, const display::ScreenInfos&) override;
 };
 
 }  // namespace blink

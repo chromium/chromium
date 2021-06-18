@@ -21,7 +21,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/widget/screen_info.h"
+#include "ui/display/screen_info.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
 #include "weblayer/test/subresource_filter_browser_test_harness.h"

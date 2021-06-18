@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-module blink.mojom;
+module display.mojom;
 
 // The screen orientation. This is slightly different than the
 // device.mojom.ScreenOrientationLockType which is a request to lock to

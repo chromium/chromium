@@ -25,7 +25,7 @@ IPC_ENUM_TRAITS_MAX_VALUE(blink::mojom::EmulatedScreenType,
 IPC_ENUM_TRAITS_MAX_VALUE(device::mojom::ScreenOrientationLockType,
                           device::mojom::ScreenOrientationLockType::kMaxValue)
 
-IPC_ENUM_TRAITS_MAX_VALUE(blink::mojom::ScreenOrientation,
-                          blink::mojom::ScreenOrientation::kMaxValue)
+IPC_ENUM_TRAITS_MAX_VALUE(display::mojom::ScreenOrientation,
+                          display::mojom::ScreenOrientation::kMaxValue)
 
 #endif  // CONTENT_COMMON_COMMON_PARAM_TRAITS_MACROS_H_

@@ -15,7 +15,7 @@ namespace mojo {
 template <>
 struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::VisualPropertiesDataView,
                                         blink::VisualProperties> {
-  static const blink::ScreenInfos& screen_infos(
+  static const display::ScreenInfos& screen_infos(
       const blink::VisualProperties& r) {
     return r.screen_infos;
   }

@@ -5,8 +5,8 @@
 #include "third_party/blink/renderer/core/page/touch_adjustment.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/widget/screen_info.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+#include "ui/display/screen_info.h"
 
 namespace blink {
 
@@ -20,12 +20,12 @@ class FakeChromeClient : public RenderingTestChromeClient {
     screen_info_.device_scale_factor = device_scale_factor;
   }
 
-  const ScreenInfo& GetScreenInfo(LocalFrame&) const override {
+  const display::ScreenInfo& GetScreenInfo(LocalFrame&) const override {
     return screen_info_;
   }
 
  private:
-  ScreenInfo screen_info_;
+  display::ScreenInfo screen_info_;
 };
 
 }  // namespace

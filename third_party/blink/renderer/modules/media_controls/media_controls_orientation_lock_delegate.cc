@@ -8,7 +8,6 @@
 
 #include "build/build_config.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
-#include "third_party/blink/public/common/widget/screen_info.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -25,6 +24,7 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
+#include "ui/display/screen_info.h"
 
 #if defined(OS_ANDROID)
 #include "third_party/blink/public/platform/platform.h"
@@ -271,13 +271,13 @@ MediaControlsOrientationLockDelegate::ComputeOrientationLock() const {
 
   ChromeClient& chrome_client = frame->GetChromeClient();
   switch (chrome_client.GetScreenInfo(*frame).orientation_type) {
-    case mojom::blink::ScreenOrientation::kPortraitPrimary:
-    case mojom::blink::ScreenOrientation::kPortraitSecondary:
+    case display::mojom::blink::ScreenOrientation::kPortraitPrimary:
+    case display::mojom::blink::ScreenOrientation::kPortraitSecondary:
       return device::mojom::blink::ScreenOrientationLockType::PORTRAIT;
-    case mojom::blink::ScreenOrientation::kLandscapePrimary:
-    case mojom::blink::ScreenOrientation::kLandscapeSecondary:
+    case display::mojom::blink::ScreenOrientation::kLandscapePrimary:
+    case display::mojom::blink::ScreenOrientation::kLandscapeSecondary:
       return device::mojom::blink::ScreenOrientationLockType::LANDSCAPE;
-    case mojom::blink::ScreenOrientation::kUndefined:
+    case display::mojom::blink::ScreenOrientation::kUndefined:
       return device::mojom::blink::ScreenOrientationLockType::LANDSCAPE;
   }
 

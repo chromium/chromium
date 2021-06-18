@@ -2495,7 +2495,7 @@ RenderWidgetHostViewAndroid::DidUpdateVisualProperties(
 }
 
 void RenderWidgetHostViewAndroid::GetScreenInfo(
-    blink::ScreenInfo* screen_info) {
+    display::ScreenInfo* screen_info) {
   bool use_window_wide_color_gamut =
       GetContentClient()->browser()->GetWideColorGamutHeuristic() ==
       ContentBrowserClient::WideColorGamutHeuristic::kUseWindow;

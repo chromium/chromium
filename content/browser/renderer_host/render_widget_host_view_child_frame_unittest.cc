@@ -141,12 +141,12 @@ class RenderWidgetHostViewChildFrameTest : public testing::Test {
             .BindNewEndpointAndPassDedicatedReceiver(),
         TestRenderWidgetHost::CreateStubFrameWidgetRemote());
 
-    blink::ScreenInfo screen_info;
+    display::ScreenInfo screen_info;
     screen_info.rect = gfx::Rect(1, 2, 3, 4);
     view_ =
         RenderWidgetHostViewChildFrame::Create(widget_host_.get(), screen_info);
     // Test we get the expected ScreenInfo before the FrameDelegate is set.
-    blink::ScreenInfo actual_screen_info;
+    display::ScreenInfo actual_screen_info;
     view_->GetScreenInfo(&actual_screen_info);
     EXPECT_EQ(screen_info, actual_screen_info);
 
@@ -277,7 +277,7 @@ class RenderWidgetHostViewChildFrameZoomForDSFTest
 // Tests that moving the child around does not affect the physical backing size.
 TEST_F(RenderWidgetHostViewChildFrameZoomForDSFTest,
        CompositorViewportPixelSize) {
-  blink::ScreenInfo screen_info;
+  display::ScreenInfo screen_info;
   screen_info.device_scale_factor = 2.0f;
   test_frame_connector_->SetScreenInfoForTesting(screen_info);
 

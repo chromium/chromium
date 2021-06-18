@@ -19,7 +19,6 @@
 
 #include "third_party/blink/renderer/core/page/touch_adjustment.h"
 
-#include "third_party/blink/public/common/widget/screen_info.h"
 #include "third_party/blink/renderer/core/dom/container_node.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
@@ -41,6 +40,7 @@
 #include "third_party/blink/renderer/platform/geometry/float_quad.h"
 #include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/text/text_break_iterator.h"
+#include "ui/display/screen_info.h"
 
 namespace blink {
 

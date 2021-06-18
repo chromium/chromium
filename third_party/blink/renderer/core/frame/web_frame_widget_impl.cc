@@ -1656,8 +1656,8 @@ void WebFrameWidgetImpl::SetDeviceColorSpaceForTesting(
   // new viz::LocalSurfaceId to avoid surface invariants violations in tests.
   widget_base_->LayerTreeHost()->RequestNewLocalSurfaceId();
 
-  blink::ScreenInfos screen_infos = widget_base_->screen_infos();
-  for (blink::ScreenInfo& screen_info : screen_infos.screen_infos)
+  display::ScreenInfos screen_infos = widget_base_->screen_infos();
+  for (display::ScreenInfo& screen_info : screen_infos.screen_infos)
     screen_info.display_color_spaces = gfx::DisplayColorSpaces(color_space);
   widget_base_->UpdateScreenInfo(screen_infos);
 }
@@ -1915,7 +1915,7 @@ void WebFrameWidgetImpl::ResetMeaningfulLayoutStateForMainFrame() {
 
 void WebFrameWidgetImpl::InitializeCompositing(
     scheduler::WebAgentGroupScheduler& agent_group_scheduler,
-    const ScreenInfos& screen_infos,
+    const display::ScreenInfos& screen_infos,
     const cc::LayerTreeSettings* settings) {
   DCHECK(View()->does_composite());
   DCHECK(!non_composited_client_);  // Assure only one initialize is called.
@@ -2575,12 +2575,13 @@ float WebFrameWidgetImpl::PageScaleInMainFrame() {
 void WebFrameWidgetImpl::UpdateSurfaceAndScreenInfo(
     const viz::LocalSurfaceId& new_local_surface_id,
     const gfx::Rect& compositor_viewport_pixel_rect,
-    const ScreenInfos& new_screen_infos) {
+    const display::ScreenInfos& new_screen_infos) {
   widget_base_->UpdateSurfaceAndScreenInfo(
       new_local_surface_id, compositor_viewport_pixel_rect, new_screen_infos);
 }
 
-void WebFrameWidgetImpl::UpdateScreenInfo(const ScreenInfos& new_screen_infos) {
+void WebFrameWidgetImpl::UpdateScreenInfo(
+    const display::ScreenInfos& new_screen_infos) {
   widget_base_->UpdateScreenInfo(new_screen_infos);
 }
 
@@ -2596,21 +2597,21 @@ void WebFrameWidgetImpl::UpdateCompositorViewportRect(
   widget_base_->UpdateCompositorViewportRect(compositor_viewport_pixel_rect);
 }
 
-const ScreenInfo& WebFrameWidgetImpl::GetScreenInfo() {
+const display::ScreenInfo& WebFrameWidgetImpl::GetScreenInfo() {
   return widget_base_->GetScreenInfo();
 }
 
-const ScreenInfos& WebFrameWidgetImpl::GetScreenInfos() {
+const display::ScreenInfos& WebFrameWidgetImpl::GetScreenInfos() {
   return widget_base_->screen_infos();
 }
 
-const ScreenInfo& WebFrameWidgetImpl::GetOriginalScreenInfo() {
+const display::ScreenInfo& WebFrameWidgetImpl::GetOriginalScreenInfo() {
   if (device_emulator_)
     return device_emulator_->GetOriginalScreenInfo();
   return widget_base_->GetScreenInfo();
 }
 
-const ScreenInfos& WebFrameWidgetImpl::GetOriginalScreenInfos() {
+const display::ScreenInfos& WebFrameWidgetImpl::GetOriginalScreenInfos() {
   if (device_emulator_)
     return device_emulator_->original_screen_infos();
   return widget_base_->screen_infos();
@@ -3707,7 +3708,7 @@ void WebFrameWidgetImpl::SetScreenMetricsEmulationParameters(
 }
 
 void WebFrameWidgetImpl::SetScreenInfoAndSize(
-    const ScreenInfos& screen_infos,
+    const display::ScreenInfos& screen_infos,
     const gfx::Size& widget_size_in_dips,
     const gfx::Size& visible_viewport_size_in_dips) {
   // Emulation happens on regular main frames which don't use auto-resize mode.
@@ -3812,8 +3813,8 @@ void WebFrameWidgetImpl::OrientationChanged() {
 }
 
 void WebFrameWidgetImpl::DidUpdateSurfaceAndScreen(
-    const ScreenInfo& previous_original_screen_info) {
-  ScreenInfo screen_info = widget_base_->GetScreenInfo();
+    const display::ScreenInfo& previous_original_screen_info) {
+  display::ScreenInfo screen_info = widget_base_->GetScreenInfo();
   if (Platform::Current()->IsUseZoomForDSFEnabled()) {
     View()->SetZoomFactorForDeviceScaleFactor(screen_info.device_scale_factor);
   } else {
@@ -3834,7 +3835,7 @@ void WebFrameWidgetImpl::DidUpdateSurfaceAndScreen(
   // When the device scale changes, the size and position of the popup would
   // need to be adjusted, which we can't do. Just close the popup, which is
   // also consistent with page zoom and resize behavior.
-  ScreenInfo original_screen_info = GetOriginalScreenInfo();
+  display::ScreenInfo original_screen_info = GetOriginalScreenInfo();
   if (previous_original_screen_info.device_scale_factor !=
       original_screen_info.device_scale_factor) {
     View()->CancelPagePopup();
@@ -3859,7 +3860,8 @@ void WebFrameWidgetImpl::DidUpdateSurfaceAndScreen(
     // Propagate changes down to child local root RenderWidgets and
     // BrowserPlugins in other frame trees/processes.
     ForEachRemoteFrameControlledByWidget(WTF::BindRepeating(
-        [](const ScreenInfo& original_screen_info, RemoteFrame* remote_frame) {
+        [](const display::ScreenInfo& original_screen_info,
+           RemoteFrame* remote_frame) {
           remote_frame->DidChangeScreenInfo(original_screen_info);
         },
         original_screen_info));
@@ -3874,7 +3876,7 @@ gfx::Rect WebFrameWidgetImpl::ViewportVisibleRect() {
   }
 }
 
-absl::optional<blink::mojom::ScreenOrientation>
+absl::optional<display::mojom::blink::ScreenOrientation>
 WebFrameWidgetImpl::ScreenOrientationOverride() {
   return View()->ScreenOrientationOverride();
 }
@@ -4020,7 +4022,7 @@ void WebFrameWidgetImpl::SetDeviceScaleFactorForTesting(float factor) {
   // new viz::LocalSurfaceId to avoid surface invariants violations in tests.
   widget_base_->LayerTreeHost()->RequestNewLocalSurfaceId();
 
-  ScreenInfos screen_infos = widget_base_->screen_infos();
+  display::ScreenInfos screen_infos = widget_base_->screen_infos();
   screen_infos.mutable_current().device_scale_factor = factor;
   gfx::Size size_with_dsf = gfx::ScaleToCeiledSize(size_in_dips, factor);
   widget_base_->UpdateCompositorViewportAndScreenInfo(gfx::Rect(size_with_dsf),

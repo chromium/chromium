@@ -10,13 +10,13 @@
 #include "base/macros.h"
 #include "services/device/public/mojom/screen_orientation.mojom-blink.h"
 #include "services/device/public/mojom/screen_orientation_lock_types.mojom-shared.h"
-#include "third_party/blink/public/mojom/widget/screen_orientation.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/page/page_visibility_observer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/screen_orientation/web_lock_orientation_callback.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_remote.h"
+#include "ui/display/mojom/screen_orientation.mojom-blink.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace blink {
@@ -55,8 +55,9 @@ class MODULES_EXPORT ScreenOrientationController final
   friend class MediaControlsOrientationLockAndRotateToFullscreenDelegateTest;
   friend class ScreenOrientationControllerTest;
 
-  static mojom::blink::ScreenOrientation ComputeOrientation(const gfx::Rect&,
-                                                            uint16_t);
+  static display::mojom::blink::ScreenOrientation ComputeOrientation(
+      const gfx::Rect&,
+      uint16_t);
   void NotifyOrientationChangedInternal();
 
   // Inherited from ExecutionContextLifecycleObserver and

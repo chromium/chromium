@@ -5232,7 +5232,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, ParentDetachRemoteChild) {
     ignore_result(params->widget_params->widget_host
                       .InitWithNewEndpointAndPassReceiver());
     params->widget_params->visual_properties.screen_infos =
-        blink::ScreenInfos(blink::ScreenInfo());
+        display::ScreenInfos(display::ScreenInfo());
     params->replication_state = blink::mojom::FrameReplicationState::New();
     params->replication_state->name = "name";
     params->replication_state->unique_name = "name";
@@ -11791,7 +11791,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // +4 for a 2px border on each iframe.
   gfx::PointF expected(iframe_b_offset_left + iframe_c_offset_left + 4,
                        iframe_b_offset_top + iframe_c_offset_top + 4);
-  blink::ScreenInfo screen_info;
+  display::ScreenInfo screen_info;
   root->render_manager()->GetRenderWidgetHostView()->GetScreenInfo(
       &screen_info);
   // Convert from CSS to physical pixels
@@ -14862,7 +14862,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   ASSERT_TRUE(b2_to_c2_message_filter->MessageReceived());
 
   // Window scroll offset will be scaled by device scale factor
-  blink::ScreenInfo screen_info;
+  display::ScreenInfo screen_info;
   a_node->render_manager()->GetRenderWidgetHostView()->GetScreenInfo(
       &screen_info);
   float expected_y = screen_info.device_scale_factor * 5.0;

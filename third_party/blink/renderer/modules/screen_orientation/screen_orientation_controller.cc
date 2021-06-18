@@ -9,7 +9,6 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
-#include "third_party/blink/public/common/widget/screen_info.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -20,6 +19,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/modules/screen_orientation/screen_orientation.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
+#include "ui/display/screen_info.h"
 
 namespace blink {
 
@@ -59,14 +59,14 @@ ScreenOrientationController::ScreenOrientationController(LocalDOMWindow& window)
 
 // Compute the screen orientation using the orientation angle and the screen
 // width / height.
-mojom::blink::ScreenOrientation ScreenOrientationController::ComputeOrientation(
-    const gfx::Rect& rect,
-    uint16_t rotation) {
+display::mojom::blink::ScreenOrientation
+ScreenOrientationController::ComputeOrientation(const gfx::Rect& rect,
+                                                uint16_t rotation) {
   // Bypass orientation detection in web tests to get consistent results.
   // FIXME: The screen dimension should be fixed when running the web tests
   // to avoid such issues.
   if (WebTestSupport::IsRunningWebTest())
-    return mojom::blink::ScreenOrientation::kPortraitPrimary;
+    return display::mojom::blink::ScreenOrientation::kPortraitPrimary;
 
   bool is_tall_display = rotation % 180 ? rect.height() < rect.width()
                                         : rect.height() > rect.width();
@@ -79,23 +79,24 @@ mojom::blink::ScreenOrientation ScreenOrientationController::ComputeOrientation(
   switch (rotation) {
     case 0:
       return is_tall_display
-                 ? mojom::blink::ScreenOrientation::kPortraitPrimary
-                 : mojom::blink::ScreenOrientation::kLandscapePrimary;
+                 ? display::mojom::blink::ScreenOrientation::kPortraitPrimary
+                 : display::mojom::blink::ScreenOrientation::kLandscapePrimary;
     case 90:
       return is_tall_display
-                 ? mojom::blink::ScreenOrientation::kLandscapePrimary
-                 : mojom::blink::ScreenOrientation::kPortraitSecondary;
+                 ? display::mojom::blink::ScreenOrientation::kLandscapePrimary
+                 : display::mojom::blink::ScreenOrientation::kPortraitSecondary;
     case 180:
       return is_tall_display
-                 ? mojom::blink::ScreenOrientation::kPortraitSecondary
-                 : mojom::blink::ScreenOrientation::kLandscapeSecondary;
+                 ? display::mojom::blink::ScreenOrientation::kPortraitSecondary
+                 : display::mojom::blink::ScreenOrientation::
+                       kLandscapeSecondary;
     case 270:
       return is_tall_display
-                 ? mojom::blink::ScreenOrientation::kLandscapeSecondary
-                 : mojom::blink::ScreenOrientation::kPortraitPrimary;
+                 ? display::mojom::blink::ScreenOrientation::kLandscapeSecondary
+                 : display::mojom::blink::ScreenOrientation::kPortraitPrimary;
     default:
       NOTREACHED();
-      return mojom::blink::ScreenOrientation::kPortraitPrimary;
+      return display::mojom::blink::ScreenOrientation::kPortraitPrimary;
   }
 }
 
@@ -104,16 +105,18 @@ void ScreenOrientationController::UpdateOrientation() {
   DCHECK(GetPage());
   ChromeClient& chrome_client = GetPage()->GetChromeClient();
   LocalFrame& frame = *DomWindow()->GetFrame();
-  const ScreenInfo& screen_info = chrome_client.GetScreenInfo(frame);
-  mojom::blink::ScreenOrientation orientation_type =
+  const display::ScreenInfo& screen_info = chrome_client.GetScreenInfo(frame);
+  display::mojom::blink::ScreenOrientation orientation_type =
       screen_info.orientation_type;
-  if (orientation_type == mojom::blink::ScreenOrientation::kUndefined) {
+  if (orientation_type ==
+      display::mojom::blink::ScreenOrientation::kUndefined) {
     // The embedder could not provide us with an orientation, deduce it
     // ourselves.
     orientation_type =
         ComputeOrientation(screen_info.rect, screen_info.orientation_angle);
   }
-  DCHECK(orientation_type != mojom::blink::ScreenOrientation::kUndefined);
+  DCHECK(orientation_type !=
+         display::mojom::blink::ScreenOrientation::kUndefined);
 
   orientation_->SetType(orientation_type);
   orientation_->SetAngle(screen_info.orientation_angle);

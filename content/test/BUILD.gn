@@ -2444,6 +2444,7 @@ test("content_unittests") {
     "//ui/compositor:test_support",
     "//ui/display",
     "//ui/display:test_support",
+    "//ui/display/mojom",
     "//ui/events:gesture_detection",
     "//ui/events:test_support",
     "//ui/events/blink",

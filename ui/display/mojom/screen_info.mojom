@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-module blink.mojom;
+module display.mojom;
 
-import "third_party/blink/public/mojom/widget/screen_orientation.mojom";
+import "ui/display/mojom/screen_orientation.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/display_color_spaces.mojom";
 
 // Information about the screen on which a WidgetBase is being displayed. This
-// is the content counterpart to blink::ScreenInfo, and it roughly parallels
+// is the content counterpart to display::ScreenInfo, and it roughly parallels
 // display.mojom.Display. It may be desirable to deprecate derived counterparts
 // of ui/display types, but doing so is complicated by widespread use and legacy
-// quirks around blink::ScreenInfo.
+// quirks around display::ScreenInfo.
 struct ScreenInfo {
   // Device scale factor. Specifies the ratio between physical and logical
   // pixels.

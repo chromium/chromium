@@ -5,12 +5,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SCREEN_ENUMERATION_SCREENS_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SCREEN_ENUMERATION_SCREENS_H_
 
-#include "third_party/blink/public/common/widget/screen_infos.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "ui/display/screen_infos.h"
 
 namespace blink {
 
@@ -43,12 +43,13 @@ class MODULES_EXPORT Screens final : public EventTargetWithInlineData,
 
   // Called when there is a visual property update with potentially new
   // multi-screen information.
-  void UpdateScreenInfos(LocalDOMWindow* window, const ScreenInfos& new_infos);
+  void UpdateScreenInfos(LocalDOMWindow* window,
+                         const display::ScreenInfos& new_infos);
 
  private:
   // The ScreenInfos sent by the previous UpdateScreenInfos call.
-  ScreenInfos prev_screen_infos_;
-  int64_t current_display_id_ = ScreenInfo::kInvalidDisplayId;
+  display::ScreenInfos prev_screen_infos_;
+  int64_t current_display_id_ = display::ScreenInfo::kInvalidDisplayId;
   HeapVector<Member<ScreenAdvanced>> screens_;
 };
 

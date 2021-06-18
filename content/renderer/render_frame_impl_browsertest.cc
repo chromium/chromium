@@ -46,8 +46,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/loader/previews_state.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
-#include "third_party/blink/public/common/widget/screen_info.h"
-#include "third_party/blink/public/common/widget/screen_infos.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom.h"
 #include "third_party/blink/public/mojom/frame/frame_replication_state.mojom.h"
 #include "third_party/blink/public/mojom/frame/tree_scope_type.mojom.h"
@@ -62,6 +60,8 @@
 #include "third_party/blink/public/web/web_history_item.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_view.h"
+#include "ui/display/screen_info.h"
+#include "ui/display/screen_infos.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/native_theme/native_theme_features.h"
 
@@ -111,7 +111,7 @@ class RenderFrameImplTest : public RenderViewTest {
     widget_params->routing_id = kSubframeWidgetRouteId;
     widget_params->visual_properties.new_size = gfx::Size(100, 100);
     widget_params->visual_properties.screen_infos =
-        blink::ScreenInfos(blink::ScreenInfo());
+        display::ScreenInfos(display::ScreenInfo());
 
     widget_remote_.reset();
     mojo::PendingAssociatedReceiver<blink::mojom::Widget>
@@ -244,7 +244,7 @@ TEST_F(RenderFrameImplTest, FrameResize) {
   // Make an update where the widget's size and the visible_viewport_size
   // are not the same.
   blink::VisualProperties visual_properties;
-  visual_properties.screen_infos = blink::ScreenInfos(blink::ScreenInfo());
+  visual_properties.screen_infos = display::ScreenInfos(display::ScreenInfo());
   gfx::Size widget_size(400, 200);
   gfx::Size visible_size(350, 170);
   visual_properties.new_size = widget_size;

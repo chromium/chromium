@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_WIDGET_SCREEN_INFOS_H_
-#define THIRD_PARTY_BLINK_PUBLIC_COMMON_WIDGET_SCREEN_INFOS_H_
+#ifndef UI_DISPLAY_SCREEN_INFOS_H_
+#define UI_DISPLAY_SCREEN_INFOS_H_
 
-#include "third_party/blink/public/common/common_export.h"
-#include "third_party/blink/public/common/widget/screen_info.h"
+#include "ui/display/display_export.h"
+#include "ui/display/screen_info.h"
 
-namespace blink {
+namespace display {
 
 // Information about a set of screens that are relevant to a particular widget.
 // This includes an id for the screen currently showing the widget.
 // This structure roughly parallels display::DisplayList. It may be desirable to
 // deprecate derived counterparts of ui/display types; see crbug.com/1208469.
-struct BLINK_COMMON_EXPORT ScreenInfos {
+struct DISPLAY_EXPORT ScreenInfos {
   ScreenInfos();
   explicit ScreenInfos(const ScreenInfo& screen_info);
   ScreenInfos(const ScreenInfos& other);
@@ -32,6 +32,6 @@ struct BLINK_COMMON_EXPORT ScreenInfos {
   int64_t current_display_id = ScreenInfo::kInvalidDisplayId;
 };
 
-}  // namespace blink
+}  // namespace display
 
-#endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_WIDGET_SCREEN_INFOS_H_
+#endif  // UI_DISPLAY_SCREEN_INFOS_H_

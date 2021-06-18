@@ -7,7 +7,7 @@
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/widget/device_emulation_params.mojom-shared.h"
-#include "third_party/blink/public/mojom/widget/screen_orientation.mojom-shared.h"
+#include "ui/display/mojom/screen_orientation.mojom.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
@@ -49,8 +49,8 @@ struct DeviceEmulationParams {
 
   // Optional screen orientation type, with mojom::ScreenOrientation::kUndefined
   // value meaning no emulation necessary.
-  mojom::ScreenOrientation screen_orientation_type =
-      mojom::ScreenOrientation::kUndefined;
+  display::mojom::ScreenOrientation screen_orientation_type =
+      display::mojom::ScreenOrientation::kUndefined;
 
   // Screen orientation angle, used together with screenOrientationType.
   uint32_t screen_orientation_angle = 0;

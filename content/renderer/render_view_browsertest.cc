@@ -571,7 +571,8 @@ class RenderViewImplScaleFactorTest : public RenderViewImplTest {
 
   blink::VisualProperties MakeVisualPropertiesWithDeviceScaleFactor(float dsf) {
     blink::VisualProperties visual_properties;
-    visual_properties.screen_infos = blink::ScreenInfos(blink::ScreenInfo());
+    visual_properties.screen_infos =
+        display::ScreenInfos(display::ScreenInfo());
     visual_properties.screen_infos.mutable_current().device_scale_factor = dsf;
     visual_properties.new_size = gfx::Size(100, 100);
     visual_properties.compositor_viewport_pixel_rect = gfx::Rect(200, 200);

@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SCREEN_ORIENTATION_SCREEN_ORIENTATION_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SCREEN_ORIENTATION_SCREEN_ORIENTATION_H_
 
-#include "third_party/blink/public/mojom/widget/screen_orientation.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -13,6 +12,7 @@
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "ui/display/mojom/screen_orientation.mojom-blink.h"
 
 namespace blink {
 
@@ -40,7 +40,7 @@ class MODULES_EXPORT ScreenOrientation final : public EventTargetWithInlineData,
   String type() const;
   uint16_t angle() const;
 
-  void SetType(mojom::blink::ScreenOrientation);
+  void SetType(display::mojom::blink::ScreenOrientation);
   void SetAngle(uint16_t);
 
   ScriptPromise lock(ScriptState*,
@@ -52,14 +52,14 @@ class MODULES_EXPORT ScreenOrientation final : public EventTargetWithInlineData,
 
   // Helper being used by this class and LockOrientationCallback.
   static const AtomicString& OrientationTypeToString(
-      mojom::blink::ScreenOrientation);
+      display::mojom::blink::ScreenOrientation);
 
   void Trace(Visitor*) const override;
 
  private:
   ScreenOrientationController* Controller();
 
-  mojom::blink::ScreenOrientation type_;
+  display::mojom::blink::ScreenOrientation type_;
   uint16_t angle_;
 };
 

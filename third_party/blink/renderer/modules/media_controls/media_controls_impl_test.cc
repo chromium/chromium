@@ -10,9 +10,7 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
-#include "third_party/blink/public/common/widget/screen_info.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
-#include "third_party/blink/public/mojom/widget/screen_orientation.mojom-blink.h"
 #include "third_party/blink/public/platform/modules/remoteplayback/web_remote_playback_client.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_gc_controller.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
@@ -55,6 +53,8 @@
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
+#include "ui/display/mojom/screen_orientation.mojom-blink.h"
+#include "ui/display/screen_info.h"
 
 // The MediaTimelineWidths histogram suffix expected to be encountered in these
 // tests.
@@ -68,16 +68,16 @@ class FakeChromeClient : public EmptyChromeClient {
  public:
   FakeChromeClient() {
     screen_info_.orientation_type =
-        mojom::blink::ScreenOrientation::kLandscapePrimary;
+        display::mojom::blink::ScreenOrientation::kLandscapePrimary;
   }
 
   // ChromeClient overrides.
-  const ScreenInfo& GetScreenInfo(LocalFrame&) const override {
+  const display::ScreenInfo& GetScreenInfo(LocalFrame&) const override {
     return screen_info_;
   }
 
  private:
-  ScreenInfo screen_info_;
+  display::ScreenInfo screen_info_;
 };
 
 class MockWebMediaPlayerForImpl : public EmptyWebMediaPlayer {

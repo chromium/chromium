@@ -9,9 +9,11 @@
 
 struct skcms_ICCProfile;
 
-namespace blink {
-
+namespace display {
 struct ScreenInfo;
+}
+
+namespace blink {
 
 enum class ColorSpaceGamut {
   // Values synced with 'Gamut' in src/tools/metrics/histograms/histograms.xml
@@ -31,7 +33,7 @@ enum class ColorSpaceGamut {
 
 namespace color_space_utilities {
 
-PLATFORM_EXPORT ColorSpaceGamut GetColorSpaceGamut(const ScreenInfo&);
+PLATFORM_EXPORT ColorSpaceGamut GetColorSpaceGamut(const display::ScreenInfo&);
 ColorSpaceGamut GetColorSpaceGamut(const skcms_ICCProfile*);
 
 }  // namespace color_space_utilities

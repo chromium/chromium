@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/sensor/sensor_proxy.h"
 
-#include "third_party/blink/public/common/widget/screen_info.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -15,6 +14,7 @@
 #include "third_party/blink/renderer/modules/sensor/sensor_reading_remapper.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+#include "ui/display/screen_info.h"
 
 namespace blink {
 

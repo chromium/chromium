@@ -47,7 +47,7 @@ namespace content {
 // static
 RenderWidgetHostViewChildFrame* RenderWidgetHostViewChildFrame::Create(
     RenderWidgetHost* widget,
-    const blink::ScreenInfo& parent_screen_info) {
+    const display::ScreenInfo& parent_screen_info) {
   RenderWidgetHostViewChildFrame* view =
       new RenderWidgetHostViewChildFrame(widget, parent_screen_info);
   view->Init();
@@ -56,7 +56,7 @@ RenderWidgetHostViewChildFrame* RenderWidgetHostViewChildFrame::Create(
 
 RenderWidgetHostViewChildFrame::RenderWidgetHostViewChildFrame(
     RenderWidgetHost* widget_host,
-    const blink::ScreenInfo& parent_screen_info)
+    const display::ScreenInfo& parent_screen_info)
     : RenderWidgetHostViewBase(widget_host),
       frame_sink_id_(
           base::checked_cast<uint32_t>(widget_host->GetProcess()->GetID()),
@@ -808,7 +808,7 @@ void RenderWidgetHostViewChildFrame::CopyFromSurface(
   if (src_subrect.IsEmpty()) {
     request->set_area(gfx::Rect(GetCompositorViewportPixelSize()));
   } else {
-    blink::ScreenInfo screen_info;
+    display::ScreenInfo screen_info;
     GetScreenInfo(&screen_info);
     // |src_subrect| is in DIP coordinates; convert to Surface coordinates.
     request->set_area(
@@ -927,7 +927,7 @@ RenderWidgetHostViewChildFrame::FilterInputEvent(
 }
 
 void RenderWidgetHostViewChildFrame::GetScreenInfo(
-    blink::ScreenInfo* screen_info) {
+    display::ScreenInfo* screen_info) {
   // TODO(crbug.com/1182855): Propagate screen infos from the parent on changes
   // and on connection init; avoid lazily updating the local cache like this.
   if (frame_connector_)

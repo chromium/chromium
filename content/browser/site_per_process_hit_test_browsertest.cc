@@ -770,7 +770,7 @@ enum class HitTestType {
 };
 
 #if !defined(OS_MAC) && !defined(OS_ANDROID)
-bool IsScreenTooSmallForPopup(const blink::ScreenInfo& screen_info) {
+bool IsScreenTooSmallForPopup(const display::ScreenInfo& screen_info) {
   // Small display size will cause popup positions to be adjusted,
   // causing test failures.
   //
@@ -5931,7 +5931,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest, MAYBE_PopupMenuTest) {
   SetWebEventPositions(&click_event, gfx::Point(1, 1), rwhv_root);
   rwhv_child->ProcessMouseEvent(click_event, ui::LatencyInfo());
 
-  blink::ScreenInfo screen_info;
+  display::ScreenInfo screen_info;
   shell()->web_contents()->GetRenderWidgetHostView()->GetScreenInfo(
       &screen_info);
 
@@ -6067,7 +6067,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
   EXPECT_EQ(popup_rect.x(), 9);
   EXPECT_EQ(popup_rect.y(), 9);
 #else
-  blink::ScreenInfo screen_info;
+  display::ScreenInfo screen_info;
   shell()->web_contents()->GetRenderWidgetHostView()->GetScreenInfo(
       &screen_info);
   if (!IsScreenTooSmallForPopup(screen_info)) {

@@ -249,7 +249,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
       RenderWidgetHost::InputEventObserver* observer) override;
   void AddObserver(RenderWidgetHostObserver* observer) override;
   void RemoveObserver(RenderWidgetHostObserver* observer) override;
-  void GetScreenInfo(blink::ScreenInfo* result) override;
+  void GetScreenInfo(display::ScreenInfo* result) override;
   float GetDeviceScaleFactor() override;
   absl::optional<cc::TouchAction> GetAllowedTouchAction() override;
   void WriteIntoTrace(perfetto::TracedValue context) override;
@@ -343,7 +343,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
 
   // Get info regarding all screens, including which screen is currently showing
   // this RenderWidgetHost.
-  blink::ScreenInfos GetScreenInfos();
+  display::ScreenInfos GetScreenInfos();
 
   // Forces redraw in the renderer and when the update reaches the browser.
   // grabs snapshot from the compositor.
@@ -771,7 +771,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   void ForceFirstFrameAfterNavigationTimeout();
 
   void SetScreenOrientationForTesting(uint16_t angle,
-                                      blink::mojom::ScreenOrientation type);
+                                      display::mojom::ScreenOrientation type);
 
   // Requests Keyboard lock.  Note: the lock may not take effect until later.
   // If |codes| has no value then all keys will be locked, otherwise only the
@@ -1369,7 +1369,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   mojo::Remote<viz::mojom::InputTargetClient> input_target_client_;
 
   absl::optional<uint16_t> screen_orientation_angle_for_testing_;
-  absl::optional<blink::mojom::ScreenOrientation>
+  absl::optional<display::mojom::ScreenOrientation>
       screen_orientation_type_for_testing_;
 
   bool force_enable_zoom_ = false;

@@ -16,7 +16,7 @@ template <>
 struct BLINK_COMMON_EXPORT
     StructTraits<blink::mojom::FrameVisualPropertiesDataView,
                  blink::FrameVisualProperties> {
-  static const blink::ScreenInfo& screen_info(
+  static const display::ScreenInfo& screen_info(
       const blink::FrameVisualProperties& r) {
     return r.screen_info;
   }

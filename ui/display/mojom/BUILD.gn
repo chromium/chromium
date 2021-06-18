@@ -16,6 +16,9 @@ mojom("mojom") {
     "display_mode.mojom",
     "display_snapshot.mojom",
     "gamma_ramp_rgb_entry.mojom",
+    "screen_info.mojom",
+    "screen_infos.mojom",
+    "screen_orientation.mojom",
   ]
 
   public_deps = [
@@ -33,6 +36,26 @@ mojom("mojom") {
         },
       ]
       traits_headers = [ "display_mojom_traits.h" ]
+      traits_public_deps = [ ":shared_mojom_traits" ]
+    },
+    {
+      types = [
+        {
+          mojom = "display.mojom.ScreenInfo"
+          cpp = "::display::ScreenInfo"
+        },
+      ]
+      traits_headers = [ "screen_info_mojom_traits.h" ]
+      traits_public_deps = [ ":shared_mojom_traits" ]
+    },
+    {
+      types = [
+        {
+          mojom = "display.mojom.ScreenInfos"
+          cpp = "::display::ScreenInfos"
+        },
+      ]
+      traits_headers = [ "screen_infos_mojom_traits.h" ]
       traits_public_deps = [ ":shared_mojom_traits" ]
     },
   ]
@@ -175,6 +198,10 @@ component("shared_mojom_traits") {
   sources = [
     "display_mojom_traits.cc",
     "display_mojom_traits.h",
+    "screen_info_mojom_traits.cc",
+    "screen_info_mojom_traits.h",
+    "screen_infos_mojom_traits.cc",
+    "screen_infos_mojom_traits.h",
   ]
   public_deps = [
     ":mojom_shared",

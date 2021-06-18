@@ -62,7 +62,7 @@ TEST_F(WebFrameWidgetSimTest, AutoResizeAllocatedLocalSurfaceId) {
 
   // Enable auto-resize.
   VisualProperties visual_properties;
-  visual_properties.screen_infos = ScreenInfos(ScreenInfo());
+  visual_properties.screen_infos = display::ScreenInfos(display::ScreenInfo());
   visual_properties.auto_resize_enabled = true;
   visual_properties.min_size_for_auto_resize = gfx::Size(100, 100);
   visual_properties.max_size_for_auto_resize = gfx::Size(200, 200);
@@ -166,7 +166,7 @@ TEST_F(WebFrameWidgetImplRemoteFrameSimTest,
       LocalFrameRootWidget()->LayerTreeHostForTesting();
   EXPECT_FALSE(layer_tree_host->is_external_pinch_gesture_active_for_testing());
   VisualProperties visual_properties;
-  visual_properties.screen_infos = ScreenInfos(ScreenInfo());
+  visual_properties.screen_infos = display::ScreenInfos(display::ScreenInfo());
 
   // Sync visual properties on a child widget.
   visual_properties.is_pinch_gesture_active = true;
@@ -665,7 +665,7 @@ TEST_F(WebFrameWidgetSimTest, ActivePinchGestureUpdatesLayerTreeHost) {
       WebView().MainFrameViewWidget()->LayerTreeHostForTesting();
   EXPECT_FALSE(layer_tree_host->is_external_pinch_gesture_active_for_testing());
   VisualProperties visual_properties;
-  visual_properties.screen_infos = ScreenInfos(ScreenInfo());
+  visual_properties.screen_infos = display::ScreenInfos(display::ScreenInfo());
 
   // Sync visual properties on a mainframe RenderWidget.
   visual_properties.is_pinch_gesture_active = true;

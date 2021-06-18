@@ -1078,7 +1078,7 @@ void RemoteFrame::SetViewportIntersection(
       intersection_state.Clone(), visual_properties);
 }
 
-void RemoteFrame::DidChangeScreenInfo(const ScreenInfo& screen_info) {
+void RemoteFrame::DidChangeScreenInfo(const display::ScreenInfo& screen_info) {
   pending_visual_properties_.screen_info = screen_info;
   SynchronizeVisualProperties();
 }

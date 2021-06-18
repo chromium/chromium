@@ -386,6 +386,10 @@ _CONFIG = [
             # base/types/strong_alias.h
             'base::StrongAlias',
 
+            # Common display structs across display <-> Blink.
+            'display::ScreenInfo',
+            'display::ScreenInfos',
+
             # Standalone utility libraries that only depend on //base
             'skia::.+',
             'url::.+',

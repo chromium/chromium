@@ -7,7 +7,6 @@
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/base/string16_mojom_traits.h"
-#include "third_party/blink/public/mojom/widget/screen_info.mojom.h"
 #include "url/mojom/url_gurl_mojom_traits.h"
 
 namespace mojo {

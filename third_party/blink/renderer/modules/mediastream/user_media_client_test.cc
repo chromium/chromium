@@ -19,7 +19,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/mediastream/media_devices.h"
-#include "third_party/blink/public/common/widget/screen_info.h"
 #include "third_party/blink/public/mojom/media/capture_handle_config.mojom-blink.h"
 #include "third_party/blink/public/mojom/mediastream/media_devices.mojom-blink.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
@@ -47,6 +46,7 @@
 #include "third_party/blink/renderer/platform/mediastream/media_stream_track_platform.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "ui/display/screen_info.h"
 
 using testing::_;
 using testing::Mock;
@@ -484,12 +484,12 @@ class UserMediaChromeClient : public EmptyChromeClient {
     screen_info_.rect = gfx::Rect(blink::kDefaultScreenCastWidth,
                                   blink::kDefaultScreenCastHeight);
   }
-  const ScreenInfo& GetScreenInfo(LocalFrame&) const override {
+  const display::ScreenInfo& GetScreenInfo(LocalFrame&) const override {
     return screen_info_;
   }
 
  private:
-  ScreenInfo screen_info_;
+  display::ScreenInfo screen_info_;
 };
 
 }  // namespace

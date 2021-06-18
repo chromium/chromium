@@ -150,6 +150,7 @@ test("weblayer_browsertests") {
     "//net:test_support",
     "//testing/gtest",
     "//ui/base",
+    "//ui/display",
     "//ui/gfx:test_support",
     "//weblayer:resources",
     "//weblayer/shell:weblayer_shell_lib",

@@ -23,7 +23,7 @@
 #include "services/device/public/mojom/geolocation_context.mojom.h"
 #include "services/device/public/mojom/geoposition.mojom.h"
 #include "third_party/blink/public/mojom/idle/idle_manager.mojom.h"
-#include "third_party/blink/public/mojom/widget/screen_orientation.mojom.h"
+#include "ui/display/mojom/screen_orientation.mojom.h"
 #include "ui/events/gesture_detection/gesture_provider_config_helper.h"
 
 namespace content {
@@ -31,17 +31,17 @@ namespace protocol {
 
 namespace {
 
-blink::mojom::ScreenOrientation WebScreenOrientationTypeFromString(
+display::mojom::ScreenOrientation WebScreenOrientationTypeFromString(
     const std::string& type) {
   if (type == Emulation::ScreenOrientation::TypeEnum::PortraitPrimary)
-    return blink::mojom::ScreenOrientation::kPortraitPrimary;
+    return display::mojom::ScreenOrientation::kPortraitPrimary;
   if (type == Emulation::ScreenOrientation::TypeEnum::PortraitSecondary)
-    return blink::mojom::ScreenOrientation::kPortraitSecondary;
+    return display::mojom::ScreenOrientation::kPortraitSecondary;
   if (type == Emulation::ScreenOrientation::TypeEnum::LandscapePrimary)
-    return blink::mojom::ScreenOrientation::kLandscapePrimary;
+    return display::mojom::ScreenOrientation::kLandscapePrimary;
   if (type == Emulation::ScreenOrientation::TypeEnum::LandscapeSecondary)
-    return blink::mojom::ScreenOrientation::kLandscapeSecondary;
-  return blink::mojom::ScreenOrientation::kUndefined;
+    return display::mojom::ScreenOrientation::kLandscapeSecondary;
+  return display::mojom::ScreenOrientation::kUndefined;
 }
 
 absl::optional<content::DisplayFeature::Orientation>
@@ -252,14 +252,14 @@ Response EmulationHandler::SetDeviceMetricsOverride(
                                    base::NumberToString(max_scale));
   }
 
-  blink::mojom::ScreenOrientation orientationType =
-      blink::mojom::ScreenOrientation::kUndefined;
+  display::mojom::ScreenOrientation orientationType =
+      display::mojom::ScreenOrientation::kUndefined;
   int orientationAngle = 0;
   if (screen_orientation.isJust()) {
     Emulation::ScreenOrientation* orientation = screen_orientation.fromJust();
     orientationType = WebScreenOrientationTypeFromString(
         orientation->GetType());
-    if (orientationType == blink::mojom::ScreenOrientation::kUndefined)
+    if (orientationType == display::mojom::ScreenOrientation::kUndefined)
       return Response::InvalidParams("Invalid screen orientation type value");
     orientationAngle = orientation->GetAngle();
     if (orientationAngle < 0 || orientationAngle >= max_orientation_angle) {

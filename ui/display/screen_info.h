@@ -1,46 +1,20 @@
-/*
- * Copyright (C) 2009 Google Inc. All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
- *
- *     * Redistributions of source code must retain the above copyright
- * notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above
- * copyright notice, this list of conditions and the following disclaimer
- * in the documentation and/or other materials provided with the
- * distribution.
- *     * Neither the name of Google Inc. nor the names of its
- * contributors may be used to endorse or promote products derived from
- * this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_WIDGET_SCREEN_INFO_H_
-#define THIRD_PARTY_BLINK_PUBLIC_COMMON_WIDGET_SCREEN_INFO_H_
+#ifndef UI_DISPLAY_SCREEN_INFO_H_
+#define UI_DISPLAY_SCREEN_INFO_H_
 
-#include "third_party/blink/public/common/common_export.h"
-#include "third_party/blink/public/mojom/widget/screen_orientation.mojom-shared.h"
+#include "ui/display/display_export.h"
+#include "ui/display/mojom/screen_orientation.mojom-shared.h"
 #include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/geometry/rect.h"
 
-namespace blink {
+namespace display {
 
 // This structure roughly parallels display::Display. It may be desirable to
 // deprecate derived counterparts of ui/display types; see crbug.com/1208469.
-struct BLINK_COMMON_EXPORT ScreenInfo {
+struct DISPLAY_EXPORT ScreenInfo {
   // Device scale factor. Specifies the ratio between physical and logical
   // pixels.
   float device_scale_factor = 1.f;
@@ -81,7 +55,7 @@ struct BLINK_COMMON_EXPORT ScreenInfo {
 
   // This is the orientation 'type' or 'name', as in landscape-primary or
   // portrait-secondary for examples.
-  // See public/mojom/screen_orientation.mojom for the full list.
+  // See ui/display/mojom/screen_orientation.mojom for the full list.
   mojom::ScreenOrientation orientation_type =
       mojom::ScreenOrientation::kUndefined;
 
@@ -116,6 +90,6 @@ struct BLINK_COMMON_EXPORT ScreenInfo {
   bool operator!=(const ScreenInfo& other) const;
 };
 
-}  // namespace blink
+}  // namespace display
 
-#endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_WIDGET_SCREEN_INFO_H_
+#endif  // UI_DISPLAY_SCREEN_INFO_H_

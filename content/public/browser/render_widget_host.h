@@ -29,13 +29,16 @@
 #include "ui/surface/transport_dib.h"
 
 namespace blink {
-struct ScreenInfo;
 class WebMouseEvent;
 class WebMouseWheelEvent;
 }
 
 namespace cc {
 enum class TouchAction;
+}
+
+namespace display {
+struct ScreenInfo;
 }
 
 namespace gfx {
@@ -255,7 +258,7 @@ class CONTENT_EXPORT RenderWidgetHost {
   virtual void RemoveObserver(RenderWidgetHostObserver* observer) = 0;
 
   // Get info regarding the screen showing this RenderWidgetHost.
-  virtual void GetScreenInfo(blink::ScreenInfo* screen_info) = 0;
+  virtual void GetScreenInfo(display::ScreenInfo* screen_info) = 0;
 
   // This must always return the same device scale factor as GetScreenInfo.
   virtual float GetDeviceScaleFactor() = 0;

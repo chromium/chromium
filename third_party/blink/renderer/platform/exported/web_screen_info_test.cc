@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/public/common/widget/screen_info.h"
+#include "ui/display/screen_info.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace blink {
 
 TEST(ScreenInfoTest, Equality) {
-  ScreenInfo screen_info1;
-  ScreenInfo screen_info2;
+  display::ScreenInfo screen_info1;
+  display::ScreenInfo screen_info2;
 
   EXPECT_EQ(screen_info1, screen_info2);
 
@@ -38,7 +38,7 @@ TEST(ScreenInfoTest, Equality) {
   screen_info1.rect = gfx::Rect(1024, 1024);
   screen_info1.available_rect = gfx::Rect(1024, 1024);
   screen_info1.orientation_type =
-      blink::mojom::ScreenOrientation::kLandscapePrimary;
+      display::mojom::ScreenOrientation::kLandscapePrimary;
   screen_info1.orientation_angle = 90;
 
   EXPECT_NE(screen_info1, screen_info2);
@@ -50,7 +50,7 @@ TEST(ScreenInfoTest, Equality) {
   screen_info2.rect = gfx::Rect(1024, 1024);
   screen_info2.available_rect = gfx::Rect(1024, 1024);
   screen_info2.orientation_type =
-      blink::mojom::ScreenOrientation::kLandscapePrimary;
+      display::mojom::ScreenOrientation::kLandscapePrimary;
   screen_info2.orientation_angle = 90;
 
   EXPECT_EQ(screen_info1, screen_info2);

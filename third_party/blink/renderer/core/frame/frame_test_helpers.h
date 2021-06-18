@@ -269,7 +269,7 @@ class TestWebFrameWidget : public WebFrameWidgetImpl {
   // threaded compositor, such as SimCompositor tests.
   cc::FakeLayerTreeFrameSink* LastCreatedFrameSink();
 
-  virtual ScreenInfo GetInitialScreenInfo();
+  virtual display::ScreenInfo GetInitialScreenInfo();
   virtual std::unique_ptr<TestWebFrameWidgetHost> CreateWidgetHost();
 
   void BindWidgetChannels(

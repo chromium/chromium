@@ -2,16 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/public/common/widget/screen_info_mojom_traits.h"
+#include "ui/display/mojom/screen_info_mojom_traits.h"
 
 #include "ui/gfx/geometry/mojom/geometry.mojom.h"
 #include "ui/gfx/mojom/display_color_spaces.mojom.h"
 
 namespace mojo {
 
-bool StructTraits<blink::mojom::ScreenInfoDataView, blink::ScreenInfo>::Read(
-    blink::mojom::ScreenInfoDataView data,
-    blink::ScreenInfo* out) {
+bool StructTraits<display::mojom::ScreenInfoDataView, display::ScreenInfo>::
+    Read(display::mojom::ScreenInfoDataView data, display::ScreenInfo* out) {
   if (!data.ReadDisplayColorSpaces(&out->display_color_spaces) ||
       !data.ReadRect(&out->rect) ||
       !data.ReadAvailableRect(&out->available_rect))

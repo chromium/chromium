@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/public/common/widget/screen_infos.h"
+#include "ui/display/screen_infos.h"
 
-namespace blink {
+namespace display {
 
 ScreenInfos::ScreenInfos() = default;
 ScreenInfos::ScreenInfos(const ScreenInfo& screen_info)
@@ -33,4 +33,4 @@ const ScreenInfo& ScreenInfos::current() const {
   return *current_screen_info;
 }
 
-}  // namespace blink
+}  // namespace display

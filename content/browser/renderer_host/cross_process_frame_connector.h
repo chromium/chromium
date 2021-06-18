@@ -13,12 +13,12 @@
 #include "components/viz/common/surfaces/surface_id.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/common/frame/frame_visual_properties.h"
-#include "third_party/blink/public/common/widget/screen_info.h"
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom.h"
 #include "third_party/blink/public/mojom/frame/viewport_intersection_state.mojom.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 #include "third_party/blink/public/mojom/input/pointer_lock_result.mojom-shared.h"
+#include "ui/display/screen_info.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace blink {
@@ -207,9 +207,9 @@ class CONTENT_EXPORT CrossProcessFrameConnector {
 
   // Returns the ScreenInfo propagated from the parent to be used by this
   // child frame.
-  const blink::ScreenInfo& screen_info() const { return screen_info_; }
+  const display::ScreenInfo& screen_info() const { return screen_info_; }
 
-  void SetScreenInfoForTesting(const blink::ScreenInfo& screen_info) {
+  void SetScreenInfoForTesting(const display::ScreenInfo& screen_info) {
     screen_info_ = screen_info;
   }
 
@@ -364,7 +364,7 @@ class CONTENT_EXPORT CrossProcessFrameConnector {
   // intersection_state() can return a reference.
   blink::mojom::ViewportIntersectionState intersection_state_;
 
-  blink::ScreenInfo screen_info_;
+  display::ScreenInfo screen_info_;
   gfx::Size local_frame_size_in_dip_;
   gfx::Size local_frame_size_in_pixels_;
   gfx::Rect screen_space_rect_in_dip_;

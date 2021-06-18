@@ -4,24 +4,25 @@
 
 #include "third_party/blink/renderer/modules/screen_enumeration/screen_advanced.h"
 
-#include "third_party/blink/public/common/widget/screen_info.h"
-#include "third_party/blink/public/common/widget/screen_infos.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_statics.h"
+#include "ui/display/screen_info.h"
+#include "ui/display/screen_infos.h"
 
 namespace blink {
 
 namespace {
 
-const ScreenInfo& GetScreenInfo(LocalFrame& frame, int64_t display_id) {
+const display::ScreenInfo& GetScreenInfo(LocalFrame& frame,
+                                         int64_t display_id) {
   const auto& screen_infos = frame.GetChromeClient().GetScreenInfos(frame);
   for (const auto& screen : screen_infos.screen_infos) {
     if (screen.display_id == display_id)
       return screen;
   }
-  DEFINE_STATIC_LOCAL(ScreenInfo, kEmptyScreenInfo, ());
+  DEFINE_STATIC_LOCAL(display::ScreenInfo, kEmptyScreenInfo, ());
   return kEmptyScreenInfo;
 }
 

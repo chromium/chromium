@@ -4,8 +4,6 @@
 
 #include "third_party/blink/renderer/modules/media_controls/media_controls_rotate_to_fullscreen_delegate.h"
 
-#include "third_party/blink/public/common/widget/screen_info.h"
-#include "third_party/blink/public/mojom/widget/screen_orientation.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/user_metrics_action.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
@@ -21,6 +19,8 @@
 #include "third_party/blink/renderer/modules/device_orientation/device_orientation_event.h"
 #include "third_party/blink/renderer/modules/media_controls/media_controls_impl.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "ui/display/mojom/screen_orientation.mojom-blink.h"
+#include "ui/display/screen_info.h"
 
 namespace blink {
 
@@ -269,15 +269,15 @@ MediaControlsRotateToFullscreenDelegate::ComputeScreenOrientation() const {
     return SimpleOrientation::kUnknown;
 
   ChromeClient& chrome_client = frame->GetChromeClient();
-  const ScreenInfo& screen_info = chrome_client.GetScreenInfo(*frame);
+  const display::ScreenInfo& screen_info = chrome_client.GetScreenInfo(*frame);
   switch (screen_info.orientation_type) {
-    case mojom::blink::ScreenOrientation::kPortraitPrimary:
-    case mojom::blink::ScreenOrientation::kPortraitSecondary:
+    case display::mojom::blink::ScreenOrientation::kPortraitPrimary:
+    case display::mojom::blink::ScreenOrientation::kPortraitSecondary:
       return SimpleOrientation::kPortrait;
-    case mojom::blink::ScreenOrientation::kLandscapePrimary:
-    case mojom::blink::ScreenOrientation::kLandscapeSecondary:
+    case display::mojom::blink::ScreenOrientation::kLandscapePrimary:
+    case display::mojom::blink::ScreenOrientation::kLandscapeSecondary:
       return SimpleOrientation::kLandscape;
-    case mojom::blink::ScreenOrientation::kUndefined:
+    case display::mojom::blink::ScreenOrientation::kUndefined:
       return SimpleOrientation::kUnknown;
   }
 

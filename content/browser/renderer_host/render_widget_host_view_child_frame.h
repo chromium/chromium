@@ -62,7 +62,7 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
   // TODO(crbug.com/1182855): Pass multi-screen info from the parent.
   static RenderWidgetHostViewChildFrame* Create(
       RenderWidgetHost* widget,
-      const blink::ScreenInfo& parent_screen_info);
+      const display::ScreenInfo& parent_screen_info);
 
   void SetFrameConnector(CrossProcessFrameConnector* frame_connector);
 
@@ -164,7 +164,7 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
 
   blink::mojom::InputEventResultState FilterInputEvent(
       const blink::WebInputEvent& input_event) override;
-  void GetScreenInfo(blink::ScreenInfo* screen_info) override;
+  void GetScreenInfo(display::ScreenInfo* screen_info) override;
   void EnableAutoResize(const gfx::Size& min_size,
                         const gfx::Size& max_size) override;
   void DisableAutoResize(const gfx::Size& new_size) override;
@@ -219,7 +219,7 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
 
   // TODO(crbug.com/1182855): Pass multi-screen info from the parent.
   RenderWidgetHostViewChildFrame(RenderWidgetHost* widget,
-                                 const blink::ScreenInfo& parent_screen_info);
+                                 const display::ScreenInfo& parent_screen_info);
   void Init();
 
   // Sets |parent_frame_sink_id_| and registers frame sink hierarchy. If the
@@ -314,7 +314,7 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
   // created, to be used before this view is connected to its FrameDelegate.
   // This is kept up to date anytime GetScreenInfo() is called and we have
   // a FrameDelegate.
-  blink::ScreenInfo parent_screen_info_;
+  display::ScreenInfo parent_screen_info_;
 
   base::WeakPtrFactory<RenderWidgetHostViewChildFrame> weak_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(RenderWidgetHostViewChildFrame);

@@ -47,6 +47,7 @@ include_rules = [
     "+services/service_manager/public",
     "+ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h",
     "+ui/base/ime/ime_text_span.h",
+    "+ui/display/mojom",
     "+ui/events/types",
     "+ui/gfx/geometry",
     "+ui/gfx/range/range.h",

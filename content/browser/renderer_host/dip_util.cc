@@ -20,7 +20,7 @@ namespace content {
 float GetScaleFactorForView(RenderWidgetHostView* view) {
   if (view)
     return view->GetDeviceScaleFactor();
-  blink::ScreenInfo screen_info;
+  display::ScreenInfo screen_info;
   DisplayUtil::GetDefaultScreenInfo(&screen_info);
   return screen_info.device_scale_factor;
 }

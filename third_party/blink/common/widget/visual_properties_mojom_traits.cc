@@ -6,7 +6,7 @@
 
 #include "cc/mojom/browser_controls_params.mojom.h"
 #include "services/viz/public/mojom/compositing/local_surface_id.mojom.h"
-#include "third_party/blink/public/mojom/widget/screen_infos.mojom.h"
+#include "ui/display/mojom/screen_infos.mojom.h"
 
 namespace mojo {
 

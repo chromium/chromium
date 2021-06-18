@@ -2936,17 +2936,17 @@ void TestRunner::UseUnfortunateSynchronousResizeMode() {
 
 void TestRunner::SetMockScreenOrientation(blink::WebView* view,
                                           const std::string& orientation_str) {
-  blink::mojom::ScreenOrientation orientation;
+  display::mojom::ScreenOrientation orientation;
 
   if (orientation_str == "portrait-primary") {
-    orientation = blink::mojom::ScreenOrientation::kPortraitPrimary;
+    orientation = display::mojom::ScreenOrientation::kPortraitPrimary;
   } else if (orientation_str == "portrait-secondary") {
-    orientation = blink::mojom::ScreenOrientation::kPortraitSecondary;
+    orientation = display::mojom::ScreenOrientation::kPortraitSecondary;
   } else if (orientation_str == "landscape-primary") {
-    orientation = blink::mojom::ScreenOrientation::kLandscapePrimary;
+    orientation = display::mojom::ScreenOrientation::kLandscapePrimary;
   } else {
     DCHECK_EQ("landscape-secondary", orientation_str);
-    orientation = blink::mojom::ScreenOrientation::kLandscapeSecondary;
+    orientation = display::mojom::ScreenOrientation::kLandscapeSecondary;
   }
 
   bool changed =

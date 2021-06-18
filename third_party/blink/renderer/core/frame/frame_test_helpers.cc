@@ -561,7 +561,8 @@ TestWebFrameWidget* WebViewHelper::CreateFrameWidgetAndInitializeCompositing(
   // The WebWidget requires the compositor to be set before it is used.
   cc::LayerTreeSettings layer_tree_settings =
       GetSynchronousSingleThreadLayerTreeSettings();
-  ScreenInfos initial_screen_infos(frame_widget->GetInitialScreenInfo());
+  display::ScreenInfos initial_screen_infos(
+      frame_widget->GetInitialScreenInfo());
   frame_widget->InitializeCompositing(frame_widget->GetAgentGroupScheduler(),
                                       initial_screen_infos,
                                       &layer_tree_settings);
@@ -808,8 +809,8 @@ TestWidgetInputHandlerHost* TestWebFrameWidget::GetInputHandlerHost() {
   return widget_input_handler_host_.get();
 }
 
-ScreenInfo TestWebFrameWidget::GetInitialScreenInfo() {
-  return ScreenInfo();
+display::ScreenInfo TestWebFrameWidget::GetInitialScreenInfo() {
+  return display::ScreenInfo();
 }
 
 cc::FakeLayerTreeFrameSink* TestWebFrameWidget::LastCreatedFrameSink() {

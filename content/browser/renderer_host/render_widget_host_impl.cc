@@ -1837,7 +1837,7 @@ void RenderWidgetHostImpl::RemoveObserver(RenderWidgetHostObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void RenderWidgetHostImpl::GetScreenInfo(blink::ScreenInfo* result) {
+void RenderWidgetHostImpl::GetScreenInfo(display::ScreenInfo* result) {
   TRACE_EVENT0("renderer_host", "RenderWidgetHostImpl::GetScreenInfo");
   if (view_)
     view_->GetScreenInfo(result);
@@ -2059,11 +2059,11 @@ void RenderWidgetHostImpl::NotifyScreenInfoChanged() {
     touch_emulator->SetDeviceScaleFactor(GetScaleFactorForView(view_.get()));
 }
 
-blink::ScreenInfos RenderWidgetHostImpl::GetScreenInfos() {
+display::ScreenInfos RenderWidgetHostImpl::GetScreenInfos() {
   TRACE_EVENT0("renderer_host", "RenderWidgetHostImpl::GetScreenInfos");
 
   // Use GetScreenInfo here to retain legacy behavior for the current screen.
-  blink::ScreenInfo current_screen_info;
+  display::ScreenInfo current_screen_info;
   GetScreenInfo(&current_screen_info);
 
   // If this widget has not been connected to a view yet (or has been
@@ -2071,7 +2071,7 @@ blink::ScreenInfos RenderWidgetHostImpl::GetScreenInfos() {
   // In these cases, temporarily return the legacy screen info until
   // it is connected and visual properties updates this correctly.
   if (!view_) {
-    return blink::ScreenInfos(current_screen_info);
+    return display::ScreenInfos(current_screen_info);
   }
 
   // TODO(enne): add ScreenInfos to FrameVisualProperties and store these
@@ -2080,7 +2080,7 @@ blink::ScreenInfos RenderWidgetHostImpl::GetScreenInfos() {
   // property propagation of legacy screen info vs GetAllDisplays.
   // In the future, child frames should use screen_infos from the connector.
   if (view_->IsRenderWidgetHostViewChildFrame()) {
-    return blink::ScreenInfos(current_screen_info);
+    return display::ScreenInfos(current_screen_info);
   }
 
   // Get displays from RenderWidgetHostView, not directly from display::Screen.
@@ -2095,12 +2095,12 @@ blink::ScreenInfos RenderWidgetHostImpl::GetScreenInfos() {
   if (current_screen_info.display_id == display::kInvalidDisplayId ||
       current_screen_info.display_id == display::kDefaultDisplayId ||
       displays.empty()) {
-    return blink::ScreenInfos(current_screen_info);
+    return display::ScreenInfos(current_screen_info);
   }
 
   // Build multi-screen info from the displays returned by RenderWidgetHostView,
   // ensure its legacy singular screen info struct is included in this set.
-  blink::ScreenInfos result;
+  display::ScreenInfos result;
   bool current_display_added = false;
   for (const auto& display : displays) {
     if (display.id() == current_screen_info.display_id) {
@@ -2110,7 +2110,7 @@ blink::ScreenInfos RenderWidgetHostImpl::GetScreenInfos() {
       current_display_added = true;
       continue;
     }
-    blink::ScreenInfo screen_info;
+    display::ScreenInfo screen_info;
     DisplayUtil::DisplayToScreenInfo(&screen_info, display);
     if (display::Display::HasForceRasterColorProfile()) {
       screen_info.display_color_spaces = gfx::DisplayColorSpaces(
@@ -2145,7 +2145,7 @@ blink::ScreenInfos RenderWidgetHostImpl::GetScreenInfos() {
   }
 
   // Fall back to legacy screen info, if we are in a bad state.
-  return blink::ScreenInfos(current_screen_info);
+  return display::ScreenInfos(current_screen_info);
 }
 
 void RenderWidgetHostImpl::GetSnapshotFromBrowser(
@@ -3545,7 +3545,7 @@ void RenderWidgetHostImpl::StopFling() {
 
 void RenderWidgetHostImpl::SetScreenOrientationForTesting(
     uint16_t angle,
-    blink::mojom::ScreenOrientation type) {
+    display::mojom::ScreenOrientation type) {
   screen_orientation_angle_for_testing_ = angle;
   screen_orientation_type_for_testing_ = type;
   SynchronizeVisualProperties();

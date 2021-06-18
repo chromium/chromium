@@ -142,7 +142,7 @@ class TestView : public TestRenderWidgetHostView {
     local_surface_id_allocator_.GenerateId();
   }
 
-  void SetScreenInfo(const blink::ScreenInfo& screen_info) {
+  void SetScreenInfo(const display::ScreenInfo& screen_info) {
     if (screen_info_ == screen_info)
       return;
     screen_info_ = screen_info;
@@ -151,7 +151,7 @@ class TestView : public TestRenderWidgetHostView {
 
   void InvalidateLocalSurfaceId() { local_surface_id_allocator_.Invalidate(); }
 
-  void GetScreenInfo(blink::ScreenInfo* screen_info) override {
+  void GetScreenInfo(display::ScreenInfo* screen_info) override {
     *screen_info = screen_info_;
   }
 
@@ -238,7 +238,7 @@ class TestView : public TestRenderWidgetHostView {
   gfx::Size mock_compositor_viewport_pixel_size_;
   blink::mojom::InputEventResultState ack_result_;
   viz::ParentLocalSurfaceIdAllocator local_surface_id_allocator_;
-  blink::ScreenInfo screen_info_;
+  display::ScreenInfo screen_info_;
   gfx::Insets insets_;
 
  private:
@@ -1048,13 +1048,13 @@ TEST_F(RenderWidgetHostTest, SynchronizeVisualProperties) {
 // Test that a resize event is sent if SynchronizeVisualProperties() is called
 // after a ScreenInfo change.
 TEST_F(RenderWidgetHostTest, ResizeScreenInfo) {
-  blink::ScreenInfo screen_info;
+  display::ScreenInfo screen_info;
   screen_info.device_scale_factor = 1.f;
   screen_info.rect = gfx::Rect(0, 0, 800, 600);
   screen_info.available_rect = gfx::Rect(0, 0, 800, 600);
   screen_info.orientation_angle = 0;
   screen_info.orientation_type =
-      blink::mojom::ScreenOrientation::kPortraitPrimary;
+      display::mojom::ScreenOrientation::kPortraitPrimary;
 
   ClearVisualProperties();
   view_->SetScreenInfo(screen_info);
@@ -1068,7 +1068,7 @@ TEST_F(RenderWidgetHostTest, ResizeScreenInfo) {
 
   screen_info.orientation_angle = 180;
   screen_info.orientation_type =
-      blink::mojom::ScreenOrientation::kLandscapePrimary;
+      display::mojom::ScreenOrientation::kLandscapePrimary;
 
   ClearVisualProperties();
   view_->SetScreenInfo(screen_info);
@@ -1107,13 +1107,13 @@ TEST_F(RenderWidgetHostTest, OverrideScreenInfoDuringFullscreenMode) {
   const gfx::Rect kScreenBounds(0, 0, 800, 600);
   const gfx::Rect kViewBounds(55, 66, 600, 500);
 
-  blink::ScreenInfo screen_info;
+  display::ScreenInfo screen_info;
   screen_info.device_scale_factor = 1.f;
   screen_info.rect = kScreenBounds;
   screen_info.available_rect = kScreenBounds;
   screen_info.orientation_angle = 0;
   screen_info.orientation_type =
-      blink::mojom::ScreenOrientation::kPortraitPrimary;
+      display::mojom::ScreenOrientation::kPortraitPrimary;
   view_->SetScreenInfo(screen_info);
 
   ClearVisualProperties();
@@ -1153,13 +1153,13 @@ TEST_F(RenderWidgetHostTest, OverrideScreenInfoDuringFullscreenMode) {
 
 TEST_F(RenderWidgetHostTest, RootWindowSegments) {
   gfx::Rect screen_rect(0, 0, 800, 600);
-  blink::ScreenInfo screen_info;
+  display::ScreenInfo screen_info;
   screen_info.device_scale_factor = 1.f;
   screen_info.rect = screen_rect;
   screen_info.available_rect = screen_rect;
   screen_info.orientation_angle = 0;
   screen_info.orientation_type =
-      blink::mojom::ScreenOrientation::kPortraitPrimary;
+      display::mojom::ScreenOrientation::kPortraitPrimary;
   view_->SetScreenInfo(screen_info);
 
   // Set a vertical display feature which must result in two window segments,

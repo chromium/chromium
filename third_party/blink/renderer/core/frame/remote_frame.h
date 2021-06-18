@@ -124,7 +124,7 @@ class CORE_EXPORT RemoteFrame final : public Frame,
   void SetViewportIntersection(const mojom::blink::ViewportIntersectionState&);
 
   // Called when the local root's screen info changes.
-  void DidChangeScreenInfo(const ScreenInfo& screen_info);
+  void DidChangeScreenInfo(const display::ScreenInfo& screen_info);
   // Called when the main frame's zoom level is changed and should be propagated
   // to the remote's associated view.
   void ZoomLevelChanged(double zoom_level);

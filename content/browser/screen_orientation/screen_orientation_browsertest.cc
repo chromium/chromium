@@ -50,18 +50,18 @@ class ScreenOrientationBrowserTest : public ContentBrowserTest  {
     RenderWidgetHostImpl* main_frame_rwh = static_cast<RenderWidgetHostImpl*>(
         web_contents()->GetMainFrame()->GetRenderWidgetHost());
 
-    blink::mojom::ScreenOrientation type =
-        blink::mojom::ScreenOrientation::kUndefined;
+    display::mojom::ScreenOrientation type =
+        display::mojom::ScreenOrientation::kUndefined;
     if (str_type == "portrait-primary") {
-      type = blink::mojom::ScreenOrientation::kPortraitPrimary;
+      type = display::mojom::ScreenOrientation::kPortraitPrimary;
     } else if (str_type == "portrait-secondary") {
-      type = blink::mojom::ScreenOrientation::kPortraitSecondary;
+      type = display::mojom::ScreenOrientation::kPortraitSecondary;
     } else if (str_type == "landscape-primary") {
-      type = blink::mojom::ScreenOrientation::kLandscapePrimary;
+      type = display::mojom::ScreenOrientation::kLandscapePrimary;
     } else if (str_type == "landscape-secondary") {
-      type = blink::mojom::ScreenOrientation::kLandscapeSecondary;
+      type = display::mojom::ScreenOrientation::kLandscapeSecondary;
     }
-    ASSERT_NE(blink::mojom::ScreenOrientation::kUndefined, type);
+    ASSERT_NE(display::mojom::ScreenOrientation::kUndefined, type);
 
     std::set<RenderWidgetHost*> rwhs;
     for (RenderFrameHost* rfh : web_contents()->GetAllFrames()) {
@@ -351,7 +351,7 @@ IN_PROC_BROWSER_TEST_F(ScreenOrientationOOPIFBrowserTest,
   // Set up a fake Resize message with a screen orientation change.
   RenderWidgetHost* main_frame_rwh =
       web_contents()->GetMainFrame()->GetRenderWidgetHost();
-  blink::ScreenInfo screen_info;
+  display::ScreenInfo screen_info;
   main_frame_rwh->GetScreenInfo(&screen_info);
   int expected_angle = (screen_info.orientation_angle + 90) % 360;
 

@@ -41,13 +41,13 @@
 #include "third_party/blink/public/mojom/page/page.mojom-shared.h"
 #include "third_party/blink/public/mojom/page/page_visibility_state.mojom-shared.h"
 #include "third_party/blink/public/mojom/renderer_preference_watcher.mojom-shared.h"
-#include "third_party/blink/public/mojom/widget/screen_orientation.mojom-shared.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/display/mojom/screen_orientation.mojom-shared.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace cc {
@@ -287,7 +287,7 @@ class WebView {
 
   // Override the screen orientation override.
   virtual void SetScreenOrientationOverrideForTesting(
-      absl::optional<blink::mojom::ScreenOrientation> orientation) = 0;
+      absl::optional<display::mojom::ScreenOrientation> orientation) = 0;
 
   // Enable/Disable synchronous resize mode that is used for web tests.
   virtual void UseSynchronousResizeModeForTesting(bool enable) = 0;

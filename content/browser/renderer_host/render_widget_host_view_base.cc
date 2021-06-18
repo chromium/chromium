@@ -612,12 +612,12 @@ base::WeakPtr<RenderWidgetHostViewBase> RenderWidgetHostViewBase::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
-void RenderWidgetHostViewBase::GetScreenInfo(blink::ScreenInfo* screen_info) {
+void RenderWidgetHostViewBase::GetScreenInfo(display::ScreenInfo* screen_info) {
   DisplayUtil::GetNativeViewScreenInfo(screen_info, GetNativeView());
 }
 
 float RenderWidgetHostViewBase::GetDeviceScaleFactor() {
-  blink::ScreenInfo screen_info;
+  display::ScreenInfo screen_info;
   GetScreenInfo(&screen_info);
   return screen_info.device_scale_factor;
 }

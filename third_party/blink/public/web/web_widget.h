@@ -60,14 +60,17 @@ class LayerTreeHost;
 class LayerTreeSettings;
 }
 
+namespace display {
+struct ScreenInfo;
+struct ScreenInfos;
+}  // namespace display
+
 namespace ui {
 class Cursor;
 class LatencyInfo;
 }
 
 namespace blink {
-struct ScreenInfo;
-struct ScreenInfos;
 struct VisualProperties;
 class WebCoalescedInputEvent;
 
@@ -84,7 +87,7 @@ class WebWidget {
   // override the defaults.
   virtual void InitializeCompositing(
       scheduler::WebAgentGroupScheduler& agent_group_scheduler,
-      const ScreenInfos& screen_info,
+      const display::ScreenInfos& screen_info,
       const cc::LayerTreeSettings* settings) = 0;
 
   // Set the compositor as visible. If |visible| is true, then the compositor
@@ -195,17 +198,17 @@ class WebWidget {
 
   // Returns information about the screen where this view's widgets are being
   // displayed.
-  virtual const ScreenInfo& GetScreenInfo() = 0;
+  virtual const display::ScreenInfo& GetScreenInfo() = 0;
 
   // Returns information about all available screens.
-  virtual const ScreenInfos& GetScreenInfos() = 0;
+  virtual const display::ScreenInfos& GetScreenInfos() = 0;
 
   // Returns original (non-emulated) information about the screen where this
   // view's widgets are being displayed.
-  virtual const ScreenInfo& GetOriginalScreenInfo() = 0;
+  virtual const display::ScreenInfo& GetOriginalScreenInfo() = 0;
 
   // Returns original (non-emulated) information about all available screens.
-  virtual const ScreenInfos& GetOriginalScreenInfos() = 0;
+  virtual const display::ScreenInfos& GetOriginalScreenInfos() = 0;
 
   // Called to get the position of the widget's window in screen
   // coordinates. Note, the window includes any decorations such as borders,

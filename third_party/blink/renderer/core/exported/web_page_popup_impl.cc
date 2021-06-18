@@ -204,12 +204,12 @@ class PagePopupChromeClient final : public EmptyChromeClient {
         timeline->GetAnimationTimeline());
   }
 
-  const ScreenInfo& GetScreenInfo(LocalFrame&) const override {
+  const display::ScreenInfo& GetScreenInfo(LocalFrame&) const override {
     // LocalFrame is ignored since there is only 1 frame in a popup.
     return popup_->GetScreenInfo();
   }
 
-  const ScreenInfos& GetScreenInfos(LocalFrame&) const override {
+  const display::ScreenInfos& GetScreenInfos(LocalFrame&) const override {
     // LocalFrame is ignored since there is only 1 frame in a popup.
     return popup_->GetScreenInfos();
   }
@@ -442,7 +442,7 @@ void WebPagePopupImpl::DidSetBounds() {
 
 void WebPagePopupImpl::InitializeCompositing(
     scheduler::WebAgentGroupScheduler& agent_group_scheduler,
-    const ScreenInfos& screen_infos,
+    const display::ScreenInfos& screen_infos,
     const cc::LayerTreeSettings* settings) {
   // Careful Initialize() is called after InitializeCompositing, so don't do
   // much work here.
@@ -513,19 +513,19 @@ void WebPagePopupImpl::ApplyVisualProperties(
   widget_base_->UpdateVisualProperties(visual_properties);
 }
 
-const ScreenInfo& WebPagePopupImpl::GetScreenInfo() {
+const display::ScreenInfo& WebPagePopupImpl::GetScreenInfo() {
   return widget_base_->GetScreenInfo();
 }
 
-const ScreenInfos& WebPagePopupImpl::GetScreenInfos() {
+const display::ScreenInfos& WebPagePopupImpl::GetScreenInfos() {
   return widget_base_->screen_infos();
 }
 
-const ScreenInfo& WebPagePopupImpl::GetOriginalScreenInfo() {
+const display::ScreenInfo& WebPagePopupImpl::GetOriginalScreenInfo() {
   return widget_base_->GetScreenInfo();
 }
 
-const ScreenInfos& WebPagePopupImpl::GetOriginalScreenInfos() {
+const display::ScreenInfos& WebPagePopupImpl::GetOriginalScreenInfos() {
   return widget_base_->screen_infos();
 }
 

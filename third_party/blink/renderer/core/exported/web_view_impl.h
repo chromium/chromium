@@ -172,7 +172,8 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   gfx::PointF VisualViewportOffset() const override;
   gfx::SizeF VisualViewportSize() const override;
   void SetScreenOrientationOverrideForTesting(
-      absl::optional<blink::mojom::ScreenOrientation> orientation) override;
+      absl::optional<display::mojom::blink::ScreenOrientation> orientation)
+      override;
   void UseSynchronousResizeModeForTesting(bool enable) override;
   void SetWindowRectSynchronouslyForTesting(
       const gfx::Rect& new_window_rect) override;
@@ -294,7 +295,8 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   float DefaultMaximumPageScaleFactor() const;
   float ClampPageScaleFactorToLimits(float) const;
   void ResetScaleStateImmediately();
-  absl::optional<mojom::blink::ScreenOrientation> ScreenOrientationOverride();
+  absl::optional<display::mojom::blink::ScreenOrientation>
+  ScreenOrientationOverride();
 
   // This is only for non-composited WebViewPlugin.
   void InvalidateContainer();
@@ -879,7 +881,8 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   mojo::AssociatedRemote<mojom::blink::RemoteMainFrameHost>
       remote_main_frame_host_remote_;
 
-  absl::optional<mojom::blink::ScreenOrientation> screen_orientation_override_;
+  absl::optional<display::mojom::blink::ScreenOrientation>
+      screen_orientation_override_;
 
   mojo::AssociatedReceiver<mojom::blink::PageBroadcast> receiver_;
 

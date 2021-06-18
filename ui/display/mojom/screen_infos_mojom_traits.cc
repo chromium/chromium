@@ -2,16 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/public/common/widget/screen_infos_mojom_traits.h"
+#include "ui/display/mojom/screen_infos_mojom_traits.h"
 
-#include "third_party/blink/public/mojom/widget/screen_info.mojom.h"
+#include "ui/display/mojom/screen_info_mojom_traits.h"
 
 namespace mojo {
 
 // static
-bool StructTraits<blink::mojom::ScreenInfosDataView, blink::ScreenInfos>::Read(
-    blink::mojom::ScreenInfosDataView data,
-    blink::ScreenInfos* out) {
+bool StructTraits<display::mojom::ScreenInfosDataView, display::ScreenInfos>::
+    Read(display::mojom::ScreenInfosDataView data, display::ScreenInfos* out) {
   if (!data.ReadScreenInfos(&out->screen_infos))
     return false;
   out->current_display_id = data.current_display_id();

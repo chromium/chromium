@@ -5,7 +5,7 @@
 #include "third_party/blink/public/common/frame/frame_visual_properties_mojom_traits.h"
 
 #include "services/viz/public/mojom/compositing/local_surface_id.mojom.h"
-#include "third_party/blink/public/mojom/widget/screen_info.mojom.h"
+#include "ui/display/mojom/screen_info.mojom.h"
 #include "ui/gfx/mojom/display_color_spaces.mojom.h"
 
 namespace mojo {

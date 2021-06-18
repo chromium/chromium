@@ -12,7 +12,7 @@ namespace blink {
 
 ScreenMetricsEmulator::ScreenMetricsEmulator(
     WebFrameWidgetImpl* frame_widget,
-    const ScreenInfos& screen_infos,
+    const display::ScreenInfos& screen_infos,
     const gfx::Size& widget_size,
     const gfx::Size& visible_viewport_size,
     const gfx::Rect& view_screen_rect,
@@ -24,7 +24,8 @@ ScreenMetricsEmulator::ScreenMetricsEmulator(
       original_view_screen_rect_(view_screen_rect),
       original_window_screen_rect_(window_screen_rect) {}
 
-const ScreenInfo& ScreenMetricsEmulator::GetOriginalScreenInfo() const {
+const display::ScreenInfo& ScreenMetricsEmulator::GetOriginalScreenInfo()
+    const {
   return original_screen_infos_.current();
 }
 
@@ -99,7 +100,8 @@ void ScreenMetricsEmulator::Apply() {
     window_pos = widget_pos;
   }
 
-  const ScreenInfo& original_screen_info = original_screen_infos_.current();
+  const display::ScreenInfo& original_screen_info =
+      original_screen_infos_.current();
   gfx::Rect screen_rect = original_screen_info.rect;
 
   if (!emulation_params_.screen_size.IsEmpty()) {
@@ -117,11 +119,11 @@ void ScreenMetricsEmulator::Apply() {
   if (emulation_params_.device_scale_factor)
     device_scale_factor = emulation_params_.device_scale_factor;
 
-  mojom::blink::ScreenOrientation orientation_type =
+  display::mojom::blink::ScreenOrientation orientation_type =
       original_screen_info.orientation_type;
   uint16_t orientation_angle = original_screen_info.orientation_angle;
   if (emulation_params_.screen_orientation_type !=
-      mojom::blink::ScreenOrientation::kUndefined) {
+      display::mojom::blink::ScreenOrientation::kUndefined) {
     orientation_type = emulation_params_.screen_orientation_type;
     orientation_angle = emulation_params_.screen_orientation_angle;
   }
@@ -150,8 +152,9 @@ void ScreenMetricsEmulator::Apply() {
     frame_widget_->SetWindowSegments(emulated_segments);
   }
 
-  ScreenInfos emulated_screen_infos = original_screen_infos_;
-  ScreenInfo& emulated_screen_info = emulated_screen_infos.mutable_current();
+  display::ScreenInfos emulated_screen_infos = original_screen_infos_;
+  display::ScreenInfo& emulated_screen_info =
+      emulated_screen_infos.mutable_current();
   emulated_screen_info.device_scale_factor = device_scale_factor;
   emulated_screen_info.rect = screen_rect;
   emulated_screen_info.available_rect = screen_rect;

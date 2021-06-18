@@ -15,7 +15,7 @@
 #include "content/test/test_web_contents.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/widget/screen_info.h"
+#include "ui/display/screen_info.h"
 
 namespace content {
 namespace {
