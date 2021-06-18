@@ -70,7 +70,6 @@ class NativeThemeGtk : public ui::NativeThemeBase {
                          const FrameTopAreaExtraParams& frame_top_area,
                          ColorScheme color_scheme) const override;
   void NotifyOnNativeThemeUpdated() override;
-  std::string GetNativeThemeName() const override;
 
   void OnThemeChanged(GtkSettings* settings, GtkParamSpec* param);
 

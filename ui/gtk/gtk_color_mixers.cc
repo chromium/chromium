@@ -21,13 +21,7 @@ namespace gtk {
 void AddGtkNativeCoreColorMixer(
     ui::ColorProvider* provider,
     ui::ColorProviderManager::ColorMode color_mode,
-    ui::ColorProviderManager::ContrastMode contrast_mode,
-    ui::ColorProviderManager::ThemeName theme_name) {
-  // `theme_name` is empty when using the system theme. We do not initialize the
-  // GTK mixer in this case.
-  if (theme_name.empty())
-    return;
-
+    ui::ColorProviderManager::ContrastMode contrast_mode) {
   ui::ColorMixer& mixer = provider->AddMixer();
 
   ui::ColorSet::ColorMap color_map;

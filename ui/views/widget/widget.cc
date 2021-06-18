@@ -844,15 +844,13 @@ const ui::ThemeProvider* Widget::GetThemeProvider() const {
 
 const ui::ColorProvider* Widget::GetColorProvider() const {
   auto color_scheme = GetNativeTheme()->GetDefaultSystemColorScheme();
-  auto theme_name = GetNativeTheme()->GetNativeThemeName();
   return ui::ColorProviderManager::Get().GetColorProviderFor(
       {(color_scheme == ui::NativeTheme::ColorScheme::kDark)
            ? ui::ColorProviderManager::ColorMode::kDark
            : ui::ColorProviderManager::ColorMode::kLight,
        (color_scheme == ui::NativeTheme::ColorScheme::kPlatformHighContrast)
            ? ui::ColorProviderManager::ContrastMode::kHigh
-           : ui::ColorProviderManager::ContrastMode::kNormal,
-       std::move(theme_name)});
+           : ui::ColorProviderManager::ContrastMode::kNormal});
 }
 
 FocusManager* Widget::GetFocusManager() {

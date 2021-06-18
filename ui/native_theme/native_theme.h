@@ -450,10 +450,6 @@ class NATIVE_THEME_EXPORT NativeTheme {
   // colors, you probably shouldn't. Instead, use GetSystemColor().
   virtual bool ShouldUseDarkColors() const;
 
-  // Returns the name that uniquely identifies the current NativeTheme. Default
-  // implementation returns an empty string.
-  virtual std::string GetNativeThemeName() const;
-
   // Returns the OS-level user preferred color scheme. See the comment for
   // CalculatePreferredColorScheme() for details on how preferred color scheme
   // is calculated.
@@ -508,8 +504,7 @@ class NATIVE_THEME_EXPORT NativeTheme {
 
   // Gets the color from the color provider if using a color provider is enable.
   absl::optional<SkColor> GetColorProviderColor(ColorId color_id,
-                                                ColorScheme color_scheme,
-                                                std::string theme_name) const;
+                                                ColorScheme color_scheme) const;
 
   // Whether high contrast is forced via command-line flag.
   bool IsForcedHighContrast() const;

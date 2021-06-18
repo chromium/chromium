@@ -161,17 +161,6 @@ void NativeThemeGtk::NotifyOnNativeThemeUpdated() {
   native_theme->NotifyOnNativeThemeUpdated();
 }
 
-std::string NativeThemeGtk::GetNativeThemeName() const {
-  gchar* theme = nullptr;
-  g_object_get(gtk_settings_get_default(), "gtk-theme-name", &theme, nullptr);
-  std::string theme_string;
-  if (theme) {
-    theme_string = theme;
-    g_free(theme);
-  }
-  return theme_string;
-}
-
 void NativeThemeGtk::OnThemeChanged(GtkSettings* settings,
                                     GtkParamSpec* param) {
   SetThemeCssOverride(ScopedCssProvider());

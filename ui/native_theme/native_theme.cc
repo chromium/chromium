@@ -91,6 +91,9 @@ void NativeTheme::NotifyOnNativeThemeUpdated() {
   // sequence, because it is often invoked from a platform-specific event
   // listener, and those events may be delivered on unexpected sequences.
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Reset the ColorProviderManager's cache so that ColorProviders requested
+  // from this point onwards incorporate the changes to the system theme.
+  ui::ColorProviderManager::Get().ResetColorProviderCache();
   for (NativeThemeObserver& observer : native_theme_observers_)
     observer.OnNativeThemeUpdated(this);
 }
@@ -114,8 +117,7 @@ NativeTheme::~NativeTheme() = default;
 
 absl::optional<SkColor> NativeTheme::GetColorProviderColor(
     ColorId color_id,
-    ColorScheme color_scheme,
-    std::string theme_name) const {
+    ColorScheme color_scheme) const {
   if (base::FeatureList::IsEnabled(features::kColorProviderRedirection) &&
       AllowColorPipelineRedirection(color_scheme)) {
     if (auto provider_color_id = NativeThemeColorIdToColorId(color_id)) {
@@ -125,8 +127,7 @@ absl::optional<SkColor> NativeTheme::GetColorProviderColor(
                : ColorProviderManager::ColorMode::kLight,
            (color_scheme == NativeTheme::ColorScheme::kPlatformHighContrast)
                ? ColorProviderManager::ContrastMode::kHigh
-               : ColorProviderManager::ContrastMode::kNormal,
-           std::move(theme_name)});
+               : ColorProviderManager::ContrastMode::kNormal});
       ReportHistogramBooleanUsesColorProvider(true);
       return color_provider->GetColor(provider_color_id.value());
     }
@@ -155,10 +156,6 @@ NativeTheme::GetPlatformHighContrastColorScheme() const {
   return (GetPreferredColorScheme() == PreferredColorScheme::kDark)
              ? PlatformHighContrastColorScheme::kDark
              : PlatformHighContrastColorScheme::kLight;
-}
-
-std::string NativeTheme::GetNativeThemeName() const {
-  return std::string();
 }
 
 NativeTheme::PreferredColorScheme NativeTheme::GetPreferredColorScheme() const {
@@ -314,10 +311,8 @@ SkColor NativeTheme::GetSystemColorCommon(ColorId color_id,
   if (color_scheme == NativeTheme::ColorScheme::kDefault)
     color_scheme = GetDefaultSystemColorScheme();
 
-  if (auto color =
-          GetColorProviderColor(color_id, color_scheme, GetNativeThemeName())) {
+  if (auto color = GetColorProviderColor(color_id, color_scheme))
     return color.value();
-  }
 
   ReportHistogramBooleanUsesColorProvider(false);
   return GetSystemColorDeprecated(color_id, color_scheme, apply_processing);
