@@ -6,7 +6,6 @@ typedef (USVString or URLPatternInit) URLPatternInput;
 
 // https://wicg.github.io/urlpattern/
 [
-  SecureContext,
   Exposed=(Window,Worker),
   RuntimeEnabled=URLPattern
 ] interface URLPattern {
