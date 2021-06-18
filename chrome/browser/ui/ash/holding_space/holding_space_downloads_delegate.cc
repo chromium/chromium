@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"
@@ -15,6 +16,8 @@
 #include "components/download/public/common/download_item.h"
 #include "content/public/browser/browser_context.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/base/text/bytes_formatting.h"
 
 namespace ash {
 
@@ -25,13 +28,13 @@ content::DownloadManager* download_manager_for_testing = nullptr;
 // Helpers ---------------------------------------------------------------------
 
 // Returns whether the specified `download_item` is complete.
-bool IsComplete(download::DownloadItem* download_item) {
+bool IsComplete(const download::DownloadItem* download_item) {
   return download_item->GetState() ==
          download::DownloadItem::DownloadState::COMPLETE;
 }
 
 // Returns whether the specified `download_item` is in progress.
-bool IsInProgress(download::DownloadItem* download_item) {
+bool IsInProgress(const download::DownloadItem* download_item) {
   return download_item->GetState() ==
          download::DownloadItem::DownloadState::IN_PROGRESS;
 }
@@ -110,6 +113,53 @@ class HoldingSpaceDownloadsDelegate::InProgressDownload
   // has yet been associated with the in-progress download.
   const HoldingSpaceItem* GetHoldingSpaceItem() const {
     return holding_space_item_;
+  }
+
+  // Returns the text to display for the underlying `download_item`.
+  absl::optional<std::u16string> GetText() const {
+    // Only in-progress download items override primary text. In other cases,
+    // the primary text will fall back to the lossy display name of the backing
+    // file and be automatically updated in response to file system changes.
+    if (!IsInProgress(download_item_))
+      return absl::nullopt;
+    return download_item_->GetTargetFilePath().BaseName().LossyDisplayName();
+  }
+
+  // Returns the secondary text to display for the underlying `download_item`.
+  absl::optional<std::u16string> GetSecondaryText() const {
+    // Only in-progress download items have secondary text.
+    if (!IsInProgress(download_item_))
+      return absl::nullopt;
+
+    const int64_t received_bytes = download_item_->GetReceivedBytes();
+    const int64_t total_bytes = download_item_->GetTotalBytes();
+
+    std::u16string secondary_text;
+    if (total_bytes != -1) {
+      // If `total_bytes` is known, `secondary_text` will be something of the
+      // form "10/100 MB", where the first number is the number of received
+      // bytes and the second number is the total number of bytes expected.
+      const ui::DataUnits units = ui::GetByteDisplayUnits(total_bytes);
+      secondary_text = l10n_util::GetStringFUTF16(
+          IDS_ASH_HOLDING_SPACE_IN_PROGRESS_DOWNLOAD_SIZE_INFO,
+          ui::FormatBytesWithUnits(received_bytes, units, /*show_units=*/false),
+          ui::FormatBytesWithUnits(total_bytes, units, /*show_units=*/true));
+    } else {
+      // If `total_bytes` is not known, `secondary_text` will be something of
+      // the form "10 MB", indicating only the number of received bytes.
+      secondary_text = ui::FormatBytes(received_bytes);
+    }
+
+    if (download_item_->IsPaused()) {
+      // If the `item` is paused, prepend "Paused, " to the `secondary_text`
+      // such that the string is of the form "Paused, 10/100 MB" or "Paused, 10
+      // MB", depending on whether or not `total_bytes` is known.
+      secondary_text = l10n_util::GetStringFUTF16(
+          IDS_ASH_HOLDING_SPACE_IN_PROGRESS_DOWNLOAD_PAUSED_WITH_SIZE_INFO,
+          secondary_text);
+    }
+
+    return secondary_text;
   }
 
  private:
@@ -369,23 +419,32 @@ void HoldingSpaceDownloadsDelegate::EraseDownload(
 
 void HoldingSpaceDownloadsDelegate::CreateOrUpdateHoldingSpaceItem(
     InProgressDownload* in_progress_download) {
+  const HoldingSpaceItem* item = in_progress_download->GetHoldingSpaceItem();
+
   // Create.
-  if (!in_progress_download->GetHoldingSpaceItem()) {
+  if (!item) {
     service()->AddDownload(HoldingSpaceItem::Type::kDownload,
                            in_progress_download->GetFilePath(),
                            in_progress_download->GetProgress());
     in_progress_download->SetHoldingSpaceItem(
-        model()->GetItem(HoldingSpaceItem::Type::kDownload,
-                         in_progress_download->GetFilePath()));
-    return;
+        item = model()->GetItem(HoldingSpaceItem::Type::kDownload,
+                                in_progress_download->GetFilePath()));
+    // NOTE: This code intentionally falls through so as to update metadata for
+    // the newly created holding space item.
   }
+
+  // May be `nullptr` in tests.
+  if (!item)
+    return;
 
   // Update.
   model()
-      ->UpdateItem(in_progress_download->GetHoldingSpaceItem()->id())
+      ->UpdateItem(item->id())
       ->SetBackingFile(in_progress_download->GetFilePath(),
                        holding_space_util::ResolveFileSystemUrl(
                            profile(), in_progress_download->GetFilePath()))
+      .SetText(in_progress_download->GetText())
+      .SetSecondaryText(in_progress_download->GetSecondaryText())
       .SetPaused(in_progress_download->IsPaused())
       .SetProgress(in_progress_download->GetProgress());
 }

@@ -129,13 +129,14 @@ namespace {
 
 // Helpers ---------------------------------------------------------------------
 
-// Returns a label builder with desired `style` and paint `callback`.
+// Returns a label builder with given `style`, `elide_behavior`, and `callback`.
 std::unique_ptr<HoldingSpaceViewBuilder<views::Label>> CreateLabelBuilder(
     bubble_utils::LabelStyle style,
+    gfx::ElideBehavior elide_behavior,
     PaintCallbackLabel::Callback callback) {
   auto label = views::Builder<PaintCallbackLabel>()
                    .SetCallback(std::move(callback))
-                   .SetElideBehavior(gfx::ELIDE_MIDDLE)
+                   .SetElideBehavior(elide_behavior)
                    .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
                    .SetPaintToLayer()
                    .Build();
@@ -241,12 +242,16 @@ HoldingSpaceItemChipView::HoldingSpaceItemChipView(
                           .SetInsideBorderInsets(kLabelMargins))
                       .AddChild(CreateLabelBuilder(
                                     bubble_utils::LabelStyle::kChipTitle,
+                                    gfx::ELIDE_MIDDLE,
                                     paint_label_mask_callback)
-                                    ->CopyAddressTo(&primary_label_))
-                      .AddChild(CreateLabelBuilder(
-                                    bubble_utils::LabelStyle::kChipBody,
-                                    paint_label_mask_callback)
-                                    ->CopyAddressTo(&secondary_label_)))
+                                    ->CopyAddressTo(&primary_label_)
+                                    .SetID(kHoldingSpaceItemPrimaryChipLabelId))
+                      .AddChild(
+                          CreateLabelBuilder(
+                              bubble_utils::LabelStyle::kChipBody,
+                              gfx::FADE_TAIL, paint_label_mask_callback)
+                              ->CopyAddressTo(&secondary_label_)
+                              .SetID(kHoldingSpaceItemSecondaryChipLabelId)))
               .AddChild(
                   HoldingSpaceViewBuilder<views::BoxLayoutView>(
                       views::Builder<views::BoxLayoutView>()
