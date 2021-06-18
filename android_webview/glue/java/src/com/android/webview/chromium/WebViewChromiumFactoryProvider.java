@@ -28,6 +28,8 @@ import android.webkit.WebViewFactory;
 import android.webkit.WebViewFactoryProvider;
 import android.webkit.WebViewProvider;
 
+import androidx.annotation.IntDef;
+
 import com.android.webview.chromium.WebViewDelegateFactory.WebViewDelegate;
 
 import org.chromium.android_webview.ApkType;
@@ -399,20 +401,34 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                 AwContentsStatics.logFlagOverridesWithNative(flagOverrides);
             }
 
-            try {
-                SafeModeController controller = SafeModeController.getInstance();
-
-                controller.registerActions(BrowserSafeModeActionList.sList);
-                boolean isSafeModeEnabled = controller.isSafeModeEnabled(webViewPackageName);
-                if (isSafeModeEnabled) {
+            SafeModeController controller = SafeModeController.getInstance();
+            controller.registerActions(BrowserSafeModeActionList.sList);
+            long safeModeStart = SystemClock.elapsedRealtime();
+            boolean isSafeModeEnabled = controller.isSafeModeEnabled(webViewPackageName);
+            long safeModeEnd = SystemClock.elapsedRealtime();
+            RecordHistogram.recordTimesHistogram(
+                    "Android.WebView.SafeMode.CheckStateBlockingTime", safeModeEnd - safeModeStart);
+            RecordHistogram.recordBooleanHistogram(
+                    "Android.WebView.SafeMode.SafeModeEnabled", isSafeModeEnabled);
+            if (isSafeModeEnabled) {
+                try {
+                    long safeModeQueryExecuteStart = SystemClock.elapsedRealtime();
                     Set<String> actions = controller.queryActions(webViewPackageName);
                     Log.w(TAG, "WebViewSafeMode is enabled: received %d SafeModeActions",
                             actions.size());
+                    RecordHistogram.recordCount100Histogram(
+                            "Android.WebView.SafeMode.ActionsCount", actions.size());
                     controller.executeActions(actions);
+                    long safeModeQueryExecuteEnd = SystemClock.elapsedRealtime();
+                    RecordHistogram.recordTimesHistogram(
+                            "Android.WebView.SafeMode.QueryAndExecuteBlockingTime",
+                            safeModeQueryExecuteEnd - safeModeQueryExecuteStart);
+                    logSafeModeExecutionResult(SafeModeExecutionResult.SUCCESS);
+                } catch (Throwable t) {
+                    // Don't let SafeMode crash WebView. Instead just log the error.
+                    Log.e(TAG, "WebViewSafeMode threw exception: ", t);
+                    logSafeModeExecutionResult(SafeModeExecutionResult.UNKNOWN_ERROR);
                 }
-            } catch (Throwable t) {
-                // Don't let SafeMode crash WebView. Instead just log the error.
-                Log.e(TAG, "WebViewSafeMode threw exception: ", t);
             }
 
             mAwInit.startVariationsInit();
@@ -440,6 +456,20 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                     SystemClock.uptimeMillis() - startTime);
         }
         */
+    }
+
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    @IntDef({SafeModeExecutionResult.SUCCESS, SafeModeExecutionResult.UNKNOWN_ERROR})
+    private @interface SafeModeExecutionResult {
+        int SUCCESS = 0;
+        int UNKNOWN_ERROR = 1;
+        int COUNT = 2;
+    }
+
+    private static void logSafeModeExecutionResult(@SafeModeExecutionResult int result) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.WebView.SafeMode.ExecutionResult", result, SafeModeExecutionResult.COUNT);
     }
 
     /* package */ static void checkStorageIsNotDeviceProtected(Context context) {

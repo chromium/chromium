@@ -3317,6 +3317,67 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.SafeMode.ActionsCount"
+    units="SafeMode actions" expires_after="2022-06-08">
+  <owner>ntfschr@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records the number of SafeMode actions WebView received from the
+    SafeModeService. This is only recorded once during startup if SafeMode is
+    enabled (see &quot;Android.WebView.SafeMode.Enabled&quot;), otherwise this
+    is not recorded at all (because there were no SafeMode actions to execute).
+    This is recorded before executing any SafeMode actions.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.SafeMode.CheckStateBlockingTime" units="ms"
+    expires_after="2022-06-08">
+  <owner>ntfschr@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records the time spent blocking WebView startup to check for SafeMode (see
+    &quot;Android.WebView.SafeMode.Enabled&quot;). This is recorded once during
+    WebView startup, regardless of whether SafeMode is enabled.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.SafeMode.Enabled" enum="BooleanEnabled"
+    expires_after="2022-06-08">
+  <owner>ntfschr@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records whether or not WebView is starting up in SafeMode. This is a mode
+    where WebView takes extra steps during startup to reduce the risk of
+    starting in a bad state. This is recorded once during WebView startup,
+    regardless of whether SafeMode is enabled.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.SafeMode.ExecutionResult"
+    enum="AndroidWebViewSafeModeResult" expires_after="2022-06-08">
+  <owner>ntfschr@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records whether SafeMode was able to execute all the specified SafeMode
+    actions or if it encountered an error. This is recorded once during WebView
+    startup and only if SafeMode is enabled (see
+    &quot;Android.WebView.SafeMode.Enabled&quot;).
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.SafeMode.QueryAndExecuteBlockingTime"
+    units="ms" expires_after="2022-06-08">
+  <owner>ntfschr@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records the time spent blocking WebView startup to both retrieve the list of
+    SafeMode actions from the SafeModeService and to execute those actions. This
+    is recorded once during startup only if SafeMode is enabled (see
+    &quot;Android.WebView.SafeMode.Enabled&quot;). This can be interpreted as
+    the additional startup cost caused by enabling SafeMode.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.SecureCookieAction" enum="SecureCookieAction"
     expires_after="2022-05-10">
   <owner>ntfschr@chromium.org</owner>
