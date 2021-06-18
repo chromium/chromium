@@ -1,0 +1,44 @@
+Content-Type: multipart/related; boundary="===============2480310482194406143=="
+MIME-Version: 1.0
+Content-Location: http://localhost/prefetch-preload.mhtml_original
+
+--===============2480310482194406143==
+Content-Type: text/html
+MIME-Version: 1.0
+Content-Location: http://localhost/prefetch-preload.mhtml_original
+Content-Transfer-Encoding: binary
+
+<html>
+<link rel="prefetch" href="http://localhost/resources/style1.css">
+<link rel="preload" as="style" href="http://localhost/resources/style2.css">
+<link rel="stylesheet" href="http://localhost/resources/style1.css">
+<link rel="stylesheet" href="http://localhost/resources/style2.css">
+<img class="foo" src="http://localhost/resources/red_square.png">
+</html>
+--===============2480310482194406143==
+Content-Type: text/css
+MIME-Version: 1.0
+Content-Location: http://localhost/resources/style1.css
+Content-Transfer-Encoding: binary
+
+.foo { position: fixed; top: 30px; }
+--===============2480310482194406143==
+Content-Type: text/css
+MIME-Version: 1.0
+Content-Location: http://localhost/resources/style2.css
+Content-Transfer-Encoding: binary
+
+.foo { position: fixed; left: 60px; }
+--===============2480310482194406143==
+Content-Type: image/png
+MIME-Version: 1.0
+Content-Location: http://localhost/resources/red_square.png
+Content-Transfer-Encoding: base64
+
+iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAAAXNSR0IArs4c6QAAAARnQU1BAACx
+jwv8YQUAAAAJcEhZcwAADsQAAA7EAZUrDhsAAACESURBVEhL7ZYxDoAwCEXB2LGTo46ewXj/zXgV
+PQKgexP/Ai6l889/6Stp4HtZjYKOiRCpEpfSEIYgJqxNMFTkFUjVXiZhT6qGirwCqdrLJOxJ1VCR
+V6A/1XxNc9jqQ6JkpjTU2rwQR+5c4769YCM5zn/BX4PY33Dljb0+JtiTqqEir8ADWEIY6dz7d1cA
+AAAASUVORK5CYII=
+
+--===============2480310482194406143==--

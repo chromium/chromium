@@ -1,0 +1,7 @@
+<html>
+<link rel="prefetch" href="http://test/resources/style1.css">
+<link rel="preload" as="style" href="http://test/resources/style2.css">
+<link rel="stylesheet" href="http://test/resources/style1.css">
+<link rel="stylesheet" href="http://test/resources/style2.css">
+<img class="foo" src="http://test/resources/red_square.png">
+</html>

@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/html/parser/html_srcset_parser.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/loader/alternate_signed_exchange_resource_info.h"
+#include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/importance_attribute.h"
 #include "third_party/blink/renderer/core/loader/link_load_parameters.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_creation_params.h"
@@ -150,6 +151,9 @@ void PreloadHelper::DnsPrefetchIfNeeded(
     Document* document,
     LocalFrame* frame,
     LinkCaller caller) {
+  if (document && document->Loader() && document->Loader()->Archive()) {
+    return;
+  }
   if (params.rel.IsDNSPrefetch()) {
     UseCounter::Count(document, WebFeature::kLinkRelDnsPrefetch);
     if (caller == kLinkCalledFromHeader)
@@ -182,6 +186,9 @@ void PreloadHelper::PreconnectIfNeeded(
     Document* document,
     LocalFrame* frame,
     LinkCaller caller) {
+  if (document && document->Loader() && document->Loader()->Archive()) {
+    return;
+  }
   if (params.rel.IsPreconnect() && params.href.IsValid() &&
       params.href.ProtocolIsInHTTPFamily()) {
     UseCounter::Count(document, WebFeature::kLinkRelPreconnect);
@@ -520,6 +527,10 @@ void PreloadHelper::ModulePreloadIfNeeded(
 
 Resource* PreloadHelper::PrefetchIfNeeded(const LinkLoadParameters& params,
                                           Document& document) {
+  if (document.Loader() && document.Loader()->Archive()) {
+    return nullptr;
+  }
+
   if (params.rel.IsLinkPrefetch() && params.href.IsValid() &&
       document.GetFrame()) {
     UseCounter::Count(document, WebFeature::kLinkRelPrefetch);
