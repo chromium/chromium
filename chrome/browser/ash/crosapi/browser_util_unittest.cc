@@ -331,6 +331,12 @@ TEST_F(BrowserUtilTest, ManagedAccountLacrosPrimary) {
         static_cast<int>(browser_util::LacrosLaunchSwitch::kLacrosPrimary));
     EXPECT_TRUE(browser_util::IsLacrosPrimaryBrowserAllowed(Channel::UNKNOWN));
     EXPECT_TRUE(browser_util::IsLacrosPrimaryBrowser(Channel::UNKNOWN));
+    EXPECT_TRUE(browser_util::IsLacrosPrimaryBrowserAllowed(Channel::DEV));
+    EXPECT_TRUE(browser_util::IsLacrosPrimaryBrowser(Channel::DEV));
+    EXPECT_TRUE(browser_util::IsLacrosPrimaryBrowserAllowed(Channel::BETA));
+    EXPECT_TRUE(browser_util::IsLacrosPrimaryBrowser(Channel::BETA));
+    EXPECT_FALSE(browser_util::IsLacrosPrimaryBrowserAllowed(Channel::STABLE));
+    EXPECT_FALSE(browser_util::IsLacrosPrimaryBrowser(Channel::STABLE));
   }
 
   {
@@ -339,6 +345,12 @@ TEST_F(BrowserUtilTest, ManagedAccountLacrosPrimary) {
         static_cast<int>(browser_util::LacrosLaunchSwitch::kLacrosOnly));
     EXPECT_TRUE(browser_util::IsLacrosPrimaryBrowserAllowed(Channel::UNKNOWN));
     EXPECT_TRUE(browser_util::IsLacrosPrimaryBrowser(Channel::UNKNOWN));
+    EXPECT_TRUE(browser_util::IsLacrosPrimaryBrowserAllowed(Channel::DEV));
+    EXPECT_TRUE(browser_util::IsLacrosPrimaryBrowser(Channel::DEV));
+    EXPECT_TRUE(browser_util::IsLacrosPrimaryBrowserAllowed(Channel::BETA));
+    EXPECT_TRUE(browser_util::IsLacrosPrimaryBrowser(Channel::BETA));
+    EXPECT_FALSE(browser_util::IsLacrosPrimaryBrowserAllowed(Channel::STABLE));
+    EXPECT_FALSE(browser_util::IsLacrosPrimaryBrowser(Channel::STABLE));
   }
 }
 

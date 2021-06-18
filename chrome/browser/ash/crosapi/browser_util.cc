@@ -449,9 +449,20 @@ bool IsLacrosPrimaryBrowserAllowed(Channel channel) {
   if (!IsLacrosAllowedToBeEnabled(channel))
     return false;
 
-  if (GetLaunchSwitch() == LacrosLaunchSwitch::kLacrosDisallowed) {
-    DCHECK_EQ(channel, Channel::UNKNOWN);
-    return false;
+  switch (GetLaunchSwitch()) {
+    case LacrosLaunchSwitch::kLacrosDisallowed:
+      DCHECK_EQ(channel, Channel::UNKNOWN);
+      return false;
+    case LacrosLaunchSwitch::kLacrosPrimary:
+    case LacrosLaunchSwitch::kLacrosOnly:
+      // Forcibly allow to use Lacros as a Primary respecting the policy.
+      // This is for experiment on beta, so do not allow it yet on STABLE.
+      // TODO(hidehiko): Merge this condition to the switch-statement below
+      // once the user base for the experiment is expanded.
+      return channel != Channel::STABLE;
+    default:
+      // Fallback others.
+      break;
   }
 
   switch (channel) {
