@@ -69,7 +69,7 @@ if (cros_sdk_version != "") {
       # VM-related tools.
       _symlinks += [
         rebase_path("${_cache_path_prefix}+sys-firmware/seabios"),
-        rebase_path("${_cache_path_prefix}+chromiumos_qemu_image.tar.xz"),
+        rebase_path("${_cache_path_prefix}+chromiumos_test_image.tar.xz"),
         rebase_path("${_cache_path_prefix}+app-emulation/qemu"),
       ]
     }
