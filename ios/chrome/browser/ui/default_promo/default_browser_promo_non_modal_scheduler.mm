@@ -51,6 +51,27 @@ typedef NS_ENUM(NSUInteger, PromoReason) {
   PromoReasonShare
 };
 
+NonModalPromoTriggerType MetricTypeForPromoReason(PromoReason reason) {
+  switch (reason) {
+    case PromoReasonNone:
+      return NonModalPromoTriggerType::kUnknown;
+      break;
+    case PromoReasonOmniboxPaste:
+      return NonModalPromoTriggerType::kPastedLink;
+      break;
+    case PromoReasonExternalLink:
+      return NonModalPromoTriggerType::kGrowthKitOpen;
+      break;
+    case PromoReasonShare:
+      return NonModalPromoTriggerType::kShare;
+      break;
+
+    default:
+      NOTREACHED();
+      break;
+  }
+}
+
 }  // namespace
 
 @interface DefaultBrowserPromoNonModalScheduler () <WebStateListObserving,
@@ -71,9 +92,6 @@ typedef NS_ENUM(NSUInteger, PromoReason) {
   // Timer for dismissing the promo after it is shown.
   std::unique_ptr<base::OneShotTimer> _dismissPromoTimer;
 }
-
-// Type of the promo being triggered, use for metrics only.
-@property(nonatomic) NonModalPromoTriggerType promoTypeForMetrics;
 
 // Time when a non modal promo was shown on screen, used for metrics only.
 @property(nonatomic) base::TimeTicks promoShownTime;
@@ -107,7 +125,6 @@ typedef NS_ENUM(NSUInteger, PromoReason) {
     _webStateListObserver = std::make_unique<WebStateListObserverBridge>(self);
     _webStateObserver = std::make_unique<web::WebStateObserverBridge>(self);
     _overlayObserver = std::make_unique<OverlayPresenterObserverBridge>(self);
-    _promoTypeForMetrics = NonModalPromoTriggerType::kUnknown;
   }
   return self;
 }
@@ -134,8 +151,6 @@ typedef NS_ENUM(NSUInteger, PromoReason) {
   // Store the pasted web state, so when that web state's page load finishes,
   // the promo can be shown.
   self.webStateToListenTo = activeWebState;
-
-  self.promoTypeForMetrics = NonModalPromoTriggerType::kPastedLink;
 }
 
 - (void)logUserFinishedActivityFlow {
@@ -143,7 +158,6 @@ typedef NS_ENUM(NSUInteger, PromoReason) {
     return;
   }
   self.currentPromoReason = PromoReasonShare;
-  self.promoTypeForMetrics = NonModalPromoTriggerType::kShare;
   [self startShowPromoTimer];
 }
 
@@ -153,7 +167,6 @@ typedef NS_ENUM(NSUInteger, PromoReason) {
   }
 
   self.currentPromoReason = PromoReasonExternalLink;
-  self.promoTypeForMetrics = NonModalPromoTriggerType::kGrowthKitOpen;
 
   // Store the current web state, so when that web state's page load finishes,
   // the promo can be shown.
@@ -163,7 +176,6 @@ typedef NS_ENUM(NSUInteger, PromoReason) {
 - (void)logPromoWasDismissed {
   self.currentPromoReason = PromoReasonNone;
   self.promoIsShowing = NO;
-  self.promoTypeForMetrics = NonModalPromoTriggerType::kUnknown;
 }
 
 - (void)logTabGridEntered {
@@ -176,7 +188,7 @@ typedef NS_ENUM(NSUInteger, PromoReason) {
 
 - (void)logUserPerformedPromoAction {
   LogNonModalPromoAction(NonModalPromoAction::kAccepted,
-                         self.promoTypeForMetrics,
+                         MetricTypeForPromoReason(self.currentPromoReason),
                          UserInteractionWithNonModalPromoCount());
   LogNonModalTimeOnScreen(self.promoShownTime);
   self.promoShownTime = base::TimeTicks();
@@ -197,7 +209,7 @@ typedef NS_ENUM(NSUInteger, PromoReason) {
 
 - (void)logUserDismissedPromo {
   LogNonModalPromoAction(NonModalPromoAction::kDismiss,
-                         self.promoTypeForMetrics,
+                         MetricTypeForPromoReason(self.currentPromoReason),
                          UserInteractionWithNonModalPromoCount());
   LogNonModalTimeOnScreen(self.promoShownTime);
   self.promoShownTime = base::TimeTicks();
@@ -304,12 +316,10 @@ typedef NS_ENUM(NSUInteger, PromoReason) {
 - (void)sceneState:(SceneState*)sceneState
     transitionedToActivationLevel:(SceneActivationLevel)level {
   if (level <= SceneActivationLevelBackground) {
-    if (self.promoTypeForMetrics != NonModalPromoTriggerType::kUnknown &&
-        !self.promoIsShowing) {
+    if (self.currentPromoReason != PromoReasonNone && !self.promoIsShowing) {
       LogNonModalPromoAction(NonModalPromoAction::kBackgroundCancel,
-                             self.promoTypeForMetrics,
+                             MetricTypeForPromoReason(self.currentPromoReason),
                              UserInteractionWithNonModalPromoCount());
-      self.promoTypeForMetrics = NonModalPromoTriggerType::kUnknown;
     }
     [self cancelShowPromoTimer];
     [self cancelDismissPromoTimer];
@@ -377,7 +387,8 @@ typedef NS_ENUM(NSUInteger, PromoReason) {
   _showPromoTimer = nullptr;
   [self.handler showDefaultBrowserNonModalPromo];
   self.promoIsShowing = YES;
-  LogNonModalPromoAction(NonModalPromoAction::kAppear, self.promoTypeForMetrics,
+  LogNonModalPromoAction(NonModalPromoAction::kAppear,
+                         MetricTypeForPromoReason(self.currentPromoReason),
                          UserInteractionWithNonModalPromoCount());
   self.promoShownTime = base::TimeTicks::Now();
 
@@ -408,7 +419,7 @@ typedef NS_ENUM(NSUInteger, PromoReason) {
   _dismissPromoTimer = nullptr;
   if (self.promoIsShowing) {
     LogNonModalPromoAction(NonModalPromoAction::kTimeout,
-                           self.promoTypeForMetrics,
+                           MetricTypeForPromoReason(self.currentPromoReason),
                            UserInteractionWithNonModalPromoCount());
     LogNonModalTimeOnScreen(self.promoShownTime);
     self.promoShownTime = base::TimeTicks();
