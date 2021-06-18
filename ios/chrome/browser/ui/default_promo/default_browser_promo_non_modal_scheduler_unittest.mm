@@ -492,4 +492,48 @@ TEST_F(DefaultBrowserPromoNonModalSchedulerTest,
       NonModalPromoAction::kBackgroundCancel, 0);
 }
 
+// Tests background cancel metric is not logged when a promo can't be shown.
+// Prevents crbug.com/1221379 regression.
+TEST_F(DefaultBrowserPromoNonModalSchedulerTest,
+       TestBackgroundCancelMetricDoesNotLogWhenPromoNotShown) {
+  // Default promo is not supported on iOS < 14
+  if (!base::ios::IsRunningOnIOS14OrLater()) {
+    return;
+  }
+
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectUniqueSample(
+      "IOS.DefaultBrowserPromo.NonModal.VisitPastedLink",
+      NonModalPromoAction::kBackgroundCancel, 0);
+
+  // Disable the promo by creating a fake cool down.
+  NSUserDefaults* standardDefaults = [NSUserDefaults standardUserDefaults];
+  [standardDefaults setObject:[NSDate date]
+                       forKey:@"lastTimeUserInteractedWithFullscreenPromo"];
+
+  [scheduler_ logUserPastedInOmnibox];
+
+  // Finish loading the page.
+  test_web_state_->SetLoading(true);
+  test_web_state_->OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
+  test_web_state_->SetLoading(false);
+
+  // Advance the timer by the post-load delay. This should not trigger the
+  // promo.
+  task_env_.FastForwardBy(base::TimeDelta::FromSeconds(3));
+  // Advance the timer by the post-load delay. This should not dismiss the
+  // promo.
+  task_env_.FastForwardBy(base::TimeDelta::FromSeconds(100));
+
+  [[promo_commands_handler_ expect]
+      dismissDefaultBrowserNonModalPromoAnimated:NO];
+
+  [scheduler_ sceneState:nil
+      transitionedToActivationLevel:SceneActivationLevelBackground];
+
+  histogram_tester.ExpectBucketCount(
+      "IOS.DefaultBrowserPromo.NonModal.VisitPastedLink",
+      NonModalPromoAction::kBackgroundCancel, 0);
+}
+
 }  // namespace
