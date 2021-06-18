@@ -37,10 +37,10 @@ bool IsRichTextEditable(const AXNode* node) {
 
 bool IsAtomicTextField(const AXNode* node) {
   const std::string& html_tag =
-      node->data().GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag);
+      node->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag);
   if (html_tag == "input") {
     std::string input_type;
-    if (!node->data().GetHtmlAttribute("type", &input_type))
+    if (!node->GetHtmlAttribute("type", &input_type))
       return true;
     return input_type.empty() || input_type == "email" ||
            input_type == "password" || input_type == "search" ||
@@ -76,7 +76,7 @@ bool IsLeaf(const AXNode* node) {
 
 std::u16string GetInnerText(const AXNode* node) {
   if (node->IsText()) {
-    return node->data().GetString16Attribute(ax::mojom::StringAttribute::kName);
+    return node->GetString16Attribute(ax::mojom::StringAttribute::kName);
   }
   std::u16string text;
   for (size_t i = 0; i < node->GetUnignoredChildCount(); ++i) {
@@ -88,7 +88,7 @@ std::u16string GetInnerText(const AXNode* node) {
 
 std::u16string GetValue(const AXNode* node) {
   std::u16string value =
-      node->data().GetString16Attribute(ax::mojom::StringAttribute::kValue);
+      node->GetString16Attribute(ax::mojom::StringAttribute::kValue);
 
   if (value.empty() &&
       (IsTextField(node, node->data().state) || IsRichTextEditable(node)) &&
@@ -135,7 +135,7 @@ std::u16string GetText(const AXNode* node) {
 
   if (node->data().role == ax::mojom::Role::kColorWell) {
     unsigned int color = static_cast<unsigned int>(
-        node->data().GetIntAttribute(ax::mojom::IntAttribute::kColorValue));
+        node->GetIntAttribute(ax::mojom::IntAttribute::kColorValue));
     unsigned int red = color >> 16 & 0xFF;
     unsigned int green = color >> 8 & 0xFF;
     unsigned int blue = color >> 0 & 0xFF;
@@ -144,9 +144,9 @@ std::u16string GetText(const AXNode* node) {
   }
 
   std::u16string text =
-      node->data().GetString16Attribute(ax::mojom::StringAttribute::kName);
-  std::u16string description = node->data().GetString16Attribute(
-      ax::mojom::StringAttribute::kDescription);
+      node->GetString16Attribute(ax::mojom::StringAttribute::kName);
+  std::u16string description =
+      node->GetString16Attribute(ax::mojom::StringAttribute::kDescription);
   if (!description.empty()) {
     if (!text.empty())
       text += u" ";
@@ -171,7 +171,7 @@ std::u16string GetText(const AXNode* node) {
   if (text.empty() && (ui::IsLink(node->data().role) ||
                        node->data().role == ax::mojom::Role::kImage)) {
     std::u16string url =
-        node->data().GetString16Attribute(ax::mojom::StringAttribute::kUrl);
+        node->GetString16Attribute(ax::mojom::StringAttribute::kUrl);
     text = AXUrlBaseText(url);
   }
 
@@ -252,18 +252,16 @@ void WalkAXTreeDepthFirst(const AXNode* node,
   result->line_through = 0;
   result->underline = 0;
 
-  if (node->data().HasFloatAttribute(ax::mojom::FloatAttribute::kFontSize)) {
+  if (node->HasFloatAttribute(ax::mojom::FloatAttribute::kFontSize)) {
     gfx::RectF text_size_rect(
-        0, 0, 1,
-        node->data().GetFloatAttribute(ax::mojom::FloatAttribute::kFontSize));
+        0, 0, 1, node->GetFloatAttribute(ax::mojom::FloatAttribute::kFontSize));
     gfx::Rect scaled_text_size_rect =
         gfx::ToEnclosingRect(tree->RelativeToTreeBounds(node, text_size_rect));
     result->text_size = scaled_text_size_rect.height();
 
-    result->color =
-        node->data().GetIntAttribute(ax::mojom::IntAttribute::kColor);
+    result->color = node->GetIntAttribute(ax::mojom::IntAttribute::kColor);
     result->bgcolor =
-        node->data().GetIntAttribute(ax::mojom::IntAttribute::kBackgroundColor);
+        node->GetIntAttribute(ax::mojom::IntAttribute::kBackgroundColor);
     result->bold = node->data().HasTextStyle(ax::mojom::TextStyle::kBold);
     result->italic = node->data().HasTextStyle(ax::mojom::TextStyle::kItalic);
     result->line_through =

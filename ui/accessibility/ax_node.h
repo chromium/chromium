@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <iterator>
 #include <memory>
 #include <ostream>
 #include <string>
@@ -86,6 +87,12 @@ class AX_EXPORT AXNode final {
             NodeType* (NodeType::*LastChild)() const>
   class ChildIteratorBase {
    public:
+    using iterator_category = std::bidirectional_iterator_tag;
+    using difference_type = int;
+    using value_type = NodeType;
+    using pointer = NodeType*;
+    using reference = NodeType&;
+
     ChildIteratorBase(const NodeType* parent, NodeType* child);
     ChildIteratorBase(const ChildIteratorBase& it);
     ~ChildIteratorBase() {}

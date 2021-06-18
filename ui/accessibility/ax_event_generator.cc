@@ -423,7 +423,7 @@ void AXEventGenerator::OnStringAttributeChanged(AXTree* tree,
         AddEvent(node, Event::NAME_CHANGED);
 
       // If it's in a live region, fire live region events.
-      if (node->data().HasStringAttribute(
+      if (node->HasStringAttribute(
               ax::mojom::StringAttribute::kContainerLiveStatus)) {
         FireLiveRegionEvents(node);
       }
@@ -790,18 +790,16 @@ void AXEventGenerator::AddEventsForTesting(
 
 void AXEventGenerator::FireLiveRegionEvents(AXNode* node) {
   AXNode* live_root = node;
-  while (live_root && !live_root->data().HasStringAttribute(
+  while (live_root && !live_root->HasStringAttribute(
                           ax::mojom::StringAttribute::kLiveStatus))
     live_root = live_root->parent();
 
   if (live_root &&
-      !live_root->data().GetBoolAttribute(ax::mojom::BoolAttribute::kBusy) &&
-      live_root->data().GetStringAttribute(
-          ax::mojom::StringAttribute::kLiveStatus) != "off") {
+      !live_root->GetBoolAttribute(ax::mojom::BoolAttribute::kBusy) &&
+      live_root->GetStringAttribute(ax::mojom::StringAttribute::kLiveStatus) !=
+          "off") {
     // Fire LIVE_REGION_NODE_CHANGED on each node that changed.
-    if (!node->data()
-             .GetStringAttribute(ax::mojom::StringAttribute::kName)
-             .empty())
+    if (!node->GetStringAttribute(ax::mojom::StringAttribute::kName).empty())
       AddEvent(node, Event::LIVE_REGION_NODE_CHANGED);
     // Fire LIVE_REGION_NODE_CHANGED on the root of the live region.
     AddEvent(live_root, Event::LIVE_REGION_CHANGED);
@@ -810,8 +808,8 @@ void AXEventGenerator::FireLiveRegionEvents(AXNode* node) {
 
 void AXEventGenerator::FireActiveDescendantEvents() {
   for (AXNode* node : active_descendant_changed_) {
-    AXNode* descendant = tree_->GetFromId(node->data().GetIntAttribute(
-        ax::mojom::IntAttribute::kActivedescendantId));
+    AXNode* descendant = tree_->GetFromId(
+        node->GetIntAttribute(ax::mojom::IntAttribute::kActivedescendantId));
     if (!descendant)
       continue;
     switch (descendant->data().role) {

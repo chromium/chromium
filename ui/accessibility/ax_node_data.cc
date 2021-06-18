@@ -453,7 +453,7 @@ void AXNodeData::AddChildTreeId(const AXTreeID& tree_id) {
       ax::mojom::StringAttribute::kChildTreeId;
   if (HasStringAttribute(attribute))
     RemoveStringAttribute(attribute);
-  string_attributes.push_back(std::make_pair(attribute, tree_id.ToString()));
+  string_attributes.emplace_back(attribute, tree_id.ToString());
 }
 
 void AXNodeData::AddBoolAttribute(ax::mojom::BoolAttribute attribute,
@@ -461,14 +461,14 @@ void AXNodeData::AddBoolAttribute(ax::mojom::BoolAttribute attribute,
   DCHECK_NE(attribute, ax::mojom::BoolAttribute::kNone);
   if (HasBoolAttribute(attribute))
     RemoveBoolAttribute(attribute);
-  bool_attributes.push_back(std::make_pair(attribute, value));
+  bool_attributes.emplace_back(attribute, value);
 }
 
 void AXNodeData::AddIntAttribute(ax::mojom::IntAttribute attribute, int value) {
   DCHECK_NE(attribute, ax::mojom::IntAttribute::kNone);
   if (HasIntAttribute(attribute))
     RemoveIntAttribute(attribute);
-  int_attributes.push_back(std::make_pair(attribute, value));
+  int_attributes.emplace_back(attribute, value);
 }
 
 void AXNodeData::AddFloatAttribute(ax::mojom::FloatAttribute attribute,
@@ -476,7 +476,7 @@ void AXNodeData::AddFloatAttribute(ax::mojom::FloatAttribute attribute,
   DCHECK_NE(attribute, ax::mojom::FloatAttribute::kNone);
   if (HasFloatAttribute(attribute))
     RemoveFloatAttribute(attribute);
-  float_attributes.push_back(std::make_pair(attribute, value));
+  float_attributes.emplace_back(attribute, value);
 }
 
 void AXNodeData::AddStringAttribute(ax::mojom::StringAttribute attribute,
@@ -486,7 +486,7 @@ void AXNodeData::AddStringAttribute(ax::mojom::StringAttribute attribute,
       << "Use AddChildTreeId.";
   if (HasStringAttribute(attribute))
     RemoveStringAttribute(attribute);
-  string_attributes.push_back(std::make_pair(attribute, value));
+  string_attributes.emplace_back(attribute, value);
 }
 
 void AXNodeData::AddIntListAttribute(ax::mojom::IntListAttribute attribute,
@@ -494,7 +494,7 @@ void AXNodeData::AddIntListAttribute(ax::mojom::IntListAttribute attribute,
   DCHECK_NE(attribute, ax::mojom::IntListAttribute::kNone);
   if (HasIntListAttribute(attribute))
     RemoveIntListAttribute(attribute);
-  intlist_attributes.push_back(std::make_pair(attribute, value));
+  intlist_attributes.emplace_back(attribute, value);
 }
 
 void AXNodeData::AddStringListAttribute(
@@ -503,7 +503,7 @@ void AXNodeData::AddStringListAttribute(
   DCHECK_NE(attribute, ax::mojom::StringListAttribute::kNone);
   if (HasStringListAttribute(attribute))
     RemoveStringListAttribute(attribute);
-  stringlist_attributes.push_back(std::make_pair(attribute, value));
+  stringlist_attributes.emplace_back(attribute, value);
 }
 
 void AXNodeData::RemoveBoolAttribute(ax::mojom::BoolAttribute attribute) {
@@ -592,8 +592,7 @@ void AXNodeData::SetName(const std::string& name) {
                            });
 
   if (iter == string_attributes.end()) {
-    string_attributes.push_back(
-        std::make_pair(ax::mojom::StringAttribute::kName, name));
+    string_attributes.emplace_back(ax::mojom::StringAttribute::kName, name);
   } else {
     iter->second = name;
   }

@@ -4129,7 +4129,7 @@ class AXPosition {
   bool IsInLineBreakingObject() const {
     if (IsNullPosition())
       return false;
-    return GetAnchor()->data().GetBoolAttribute(
+    return GetAnchor()->GetBoolAttribute(
                ax::mojom::BoolAttribute::kIsLineBreakingObject) &&
            !GetAnchor()->IsInListMarker();
   }
@@ -4167,7 +4167,7 @@ class AXPosition {
     if (IsEmptyObjectReplacedByCharacter())
       return {0};
 
-    return GetAnchor()->data().GetIntListAttribute(
+    return GetAnchor()->GetIntListAttribute(
         ax::mojom::IntListAttribute::kWordStarts);
   }
 
@@ -4187,7 +4187,7 @@ class AXPosition {
     if (IsEmptyObjectReplacedByCharacter())
       return {1};
 
-    return GetAnchor()->data().GetIntListAttribute(
+    return GetAnchor()->GetIntListAttribute(
         ax::mojom::IntListAttribute::kWordEnds);
   }
 
@@ -4197,8 +4197,8 @@ class AXPosition {
     DCHECK(GetAnchor());
 
     int next_on_line_id;
-    if (GetAnchor()->data().GetIntAttribute(
-            ax::mojom::IntAttribute::kNextOnLineId, &next_on_line_id)) {
+    if (GetAnchor()->GetIntAttribute(ax::mojom::IntAttribute::kNextOnLineId,
+                                     &next_on_line_id)) {
       return static_cast<AXNodeID>(next_on_line_id);
     }
     return kInvalidAXNodeID;
@@ -4210,8 +4210,8 @@ class AXPosition {
     DCHECK(GetAnchor());
 
     int previous_on_line_id;
-    if (GetAnchor()->data().GetIntAttribute(
-            ax::mojom::IntAttribute::kPreviousOnLineId, &previous_on_line_id)) {
+    if (GetAnchor()->GetIntAttribute(ax::mojom::IntAttribute::kPreviousOnLineId,
+                                     &previous_on_line_id)) {
       return static_cast<AXNodeID>(previous_on_line_id);
     }
     return kInvalidAXNodeID;

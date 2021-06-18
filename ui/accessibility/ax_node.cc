@@ -165,9 +165,9 @@ AXNode* AXNode::GetParentCrossingTreeBoundary() const {
 
 AXNode* AXNode::GetUnignoredParent() const {
   DCHECK(!tree_->GetTreeUpdateInProgressState());
-  AXNode* unignored_parent = parent();
+  AXNode* unignored_parent = GetParent();
   while (unignored_parent && unignored_parent->IsIgnored())
-    unignored_parent = unignored_parent->parent();
+    unignored_parent = unignored_parent->GetParent();
 
   return unignored_parent;
 }
@@ -406,7 +406,7 @@ AXNode* AXNode::GetNextUnignoredSibling() const {
       // If instead node 2 is ignored, then node 4's view of siblings grows to
       // include node 3, and we have more nodes to consider:
       //   unignored tree: null <-- [4] --> 3
-      current = current->parent();
+      current = current->GetParent();
       if (!current || !current->IsIgnored())
         return nullptr;
 
@@ -485,7 +485,7 @@ AXNode* AXNode::GetPreviousUnignoredSibling() const {
       // If instead node 3 is ignored, then node 4's view of siblings grows to
       // include node 2, and we have more nodes to consider:
       //   unignored tree:    2 <-- [4] --> null
-      current = current->parent();
+      current = current->GetParent();
       if (!current || !current->IsIgnored())
         return nullptr;
 
@@ -578,15 +578,14 @@ bool AXNode::IsText() const {
   // part of the AX tree's text representation. In contrast, in Layout NG, a
   // list marker has a static text child.
   if (data().role == ax::mojom::Role::kListMarker)
-    return !children().size();
+    return !GetChildCount();
   return ui::IsText(data().role);
 }
 
 bool AXNode::IsLineBreak() const {
   return data().role == ax::mojom::Role::kLineBreak ||
          (data().role == ax::mojom::Role::kInlineTextBox &&
-          data().GetBoolAttribute(
-              ax::mojom::BoolAttribute::kIsLineBreakingObject));
+          GetBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject));
 }
 
 void AXNode::SetData(const AXNodeData& src) {
@@ -630,8 +629,8 @@ bool AXNode::IsDescendantOf(const AXNode* ancestor) const {
 
   if (this == ancestor)
     return true;
-  if (parent())
-    return parent()->IsDescendantOf(ancestor);
+  if (GetParent())
+    return GetParent()->IsDescendantOf(ancestor);
 
   return false;
 }
@@ -639,8 +638,8 @@ bool AXNode::IsDescendantOf(const AXNode* ancestor) const {
 std::vector<int> AXNode::GetOrComputeLineStartOffsets() {
   DCHECK(!tree_->GetTreeUpdateInProgressState());
   std::vector<int> line_offsets;
-  if (data().GetIntListAttribute(ax::mojom::IntListAttribute::kCachedLineStarts,
-                                 &line_offsets)) {
+  if (GetIntListAttribute(ax::mojom::IntListAttribute::kCachedLineStarts,
+                          &line_offsets)) {
     return line_offsets;
   }
 
@@ -656,16 +655,16 @@ void AXNode::ComputeLineStartOffsets(std::vector<int>* line_offsets,
   DCHECK(!tree_->GetTreeUpdateInProgressState());
   DCHECK(line_offsets);
   DCHECK(start_offset);
-  for (const AXNode* child : children()) {
-    DCHECK(child);
-    if (!child->children().empty()) {
-      child->ComputeLineStartOffsets(line_offsets, start_offset);
+  for (auto iter = AllChildrenCrossingTreeBoundaryBegin();
+       iter != AllChildrenCrossingTreeBoundaryEnd(); ++iter) {
+    if (iter->GetChildCountCrossingTreeBoundary()) {
+      iter->ComputeLineStartOffsets(line_offsets, start_offset);
       continue;
     }
 
     // Don't report if the first piece of text starts a new line or not.
-    if (*start_offset && !child->data().HasIntAttribute(
-                             ax::mojom::IntAttribute::kPreviousOnLineId)) {
+    if (*start_offset &&
+        !iter->HasIntAttribute(ax::mojom::IntAttribute::kPreviousOnLineId)) {
       // If there are multiple objects with an empty accessible label at the
       // start of a line, only include a single line start offset.
       if (line_offsets->empty() || line_offsets->back() != *start_offset)
@@ -673,7 +672,7 @@ void AXNode::ComputeLineStartOffsets(std::vector<int>* line_offsets,
     }
 
     std::u16string text =
-        child->data().GetString16Attribute(ax::mojom::StringAttribute::kName);
+        iter->GetString16Attribute(ax::mojom::StringAttribute::kName);
     *start_offset += static_cast<int>(text.length());
   }
 }
@@ -688,14 +687,14 @@ SkColor AXNode::ComputeBackgroundColor() const {
 
 SkColor AXNode::ComputeColorAttribute(ax::mojom::IntAttribute attr) const {
   SkColor color = GetIntAttribute(attr);
-  AXNode* ancestor = parent();
+  AXNode* ancestor = GetParent();
 
   // If the color has some transparency, keep blending with background
   // colors until we get an opaque color or reach the root.
   while (ancestor && SkColorGetA(color) != SK_AlphaOPAQUE) {
     SkColor background_color = ancestor->GetIntAttribute(attr);
     color = color_utils::GetResultingPaintColor(color, background_color);
-    ancestor = ancestor->parent();
+    ancestor = ancestor->GetParent();
   }
 
   return color;
@@ -739,7 +738,7 @@ const std::string& AXNode::GetInheritedStringAttribute(
   do {
     if (current_node->HasStringAttribute(attribute))
       return current_node->GetStringAttribute(attribute);
-    current_node = current_node->parent();
+    current_node = current_node->GetParent();
   } while (current_node);
   return base::EmptyString();
 }
@@ -805,18 +804,19 @@ const std::u16string& AXNode::GetHypertext() const {
     // has nothing to do with HTML.
     static const base::NoDestructor<std::u16string> embedded_character_str(
         AXNode::kEmbeddedCharacter);
-    for (size_t i = 0; i < GetUnignoredChildCountCrossingTreeBoundary(); ++i) {
-      const AXNode* child = GetUnignoredChildAtIndexCrossingTreeBoundary(i);
+    auto first = UnignoredChildrenCrossingTreeBoundaryBegin();
+    for (auto iter = first; iter != UnignoredChildrenCrossingTreeBoundaryEnd();
+         ++iter) {
       // Similar to Firefox, we don't expose text nodes in IAccessible2 and ATK
       // hypertext with the embedded object character. We copy all of their text
       // instead.
-      if (child->IsText()) {
-        hypertext_.hypertext += base::UTF8ToUTF16(child->GetInnerText());
+      if (iter->IsText()) {
+        hypertext_.hypertext += iter->GetInnerTextUTF16();
       } else {
         int character_offset = static_cast<int>(hypertext_.hypertext.size());
         auto inserted =
             hypertext_.hypertext_offset_to_hyperlink_child_index.emplace(
-                character_offset, static_cast<int>(i));
+                character_offset, static_cast<int>(std::distance(first, iter)));
         DCHECK(inserted.second) << "An embedded object at " << character_offset
                                 << " has already been encountered.";
         hypertext_.hypertext += *embedded_character_str;
@@ -874,7 +874,7 @@ int AXNode::GetInnerTextLengthUTF16() const {
 std::string AXNode::GetLanguage() const {
   DCHECK(!tree_->GetTreeUpdateInProgressState());
   // Walk up tree considering both detected and author declared languages.
-  for (const AXNode* cur = this; cur; cur = cur->parent()) {
+  for (const AXNode* cur = this; cur; cur = cur->GetParent()) {
     // If language detection has assigned a language then we prefer that.
     const AXLanguageInfo* lang_info = cur->GetLanguageInfo();
     if (lang_info && !lang_info->language.empty())
@@ -1274,7 +1274,7 @@ bool AXNode::IsCellOrHeaderOfARIATable() const {
 
   const AXNode* node = this;
   while (node && !node->IsTable())
-    node = node->parent();
+    node = node->GetParent();
   if (!node)
     return false;
 
@@ -1287,7 +1287,7 @@ bool AXNode::IsCellOrHeaderOfARIAGrid() const {
 
   const AXNode* node = this;
   while (node && !node->IsTable())
-    node = node->parent();
+    node = node->GetParent();
   if (!node)
     return false;
 
@@ -1298,7 +1298,7 @@ bool AXNode::IsCellOrHeaderOfARIAGrid() const {
 AXTableInfo* AXNode::GetAncestorTableInfo() const {
   const AXNode* node = this;
   while (node && !node->IsTable())
-    node = node->parent();
+    node = node->GetParent();
   if (node)
     return tree_->GetTableInfo(node);
   return nullptr;
@@ -1404,7 +1404,7 @@ bool AXNode::IsIgnoredContainerForOrderedSet() const {
 
 int AXNode::UpdateUnignoredCachedValuesRecursive(int startIndex) {
   int count = 0;
-  for (AXNode* child : children_) {
+  for (AXNode* child : children()) {
     if (child->IsIgnored()) {
       child->unignored_index_in_parent_ = 0;
       count += child->UpdateUnignoredCachedValuesRecursive(startIndex + count);
@@ -1419,11 +1419,11 @@ int AXNode::UpdateUnignoredCachedValuesRecursive(int startIndex) {
 // Finds ordered set that contains node.
 // Is not required for set's role to match node's role.
 AXNode* AXNode::GetOrderedSet() const {
-  AXNode* result = parent();
+  AXNode* result = GetParent();
   // Continue walking up while parent is invalid, ignored, a generic container,
   // unknown, or embedded group.
   while (result && result->IsIgnoredContainerForOrderedSet()) {
-    result = result->parent();
+    result = result->GetParent();
   }
 
   return result;
@@ -1466,8 +1466,8 @@ std::string AXNode::GetTextForRangeValue() const {
       GetStringAttribute(ax::mojom::StringAttribute::kValue);
   float numeric_value;
   if (range_value.empty() &&
-      data().GetFloatAttribute(ax::mojom::FloatAttribute::kValueForRange,
-                               &numeric_value)) {
+      GetFloatAttribute(ax::mojom::FloatAttribute::kValueForRange,
+                        &numeric_value)) {
     range_value = base::NumberToString(numeric_value);
   }
   return range_value;
@@ -1477,7 +1477,7 @@ std::string AXNode::GetValueForColorWell() const {
   DCHECK_EQ(data().role, ax::mojom::Role::kColorWell);
   // static cast because SkColor is a 4-byte unsigned int
   unsigned int color = static_cast<unsigned int>(
-      data().GetIntAttribute(ax::mojom::IntAttribute::kColorValue));
+      GetIntAttribute(ax::mojom::IntAttribute::kColorValue));
 
   unsigned int red = SkColorGetR(color);
   unsigned int green = SkColorGetG(color);
@@ -1668,7 +1668,7 @@ AXNode* AXNode::GetCollapsedMenuListPopUpButtonAncestor() const {
   // button (e.g., the AXMenuListPopup) or the popup button itself. We need
   // |node| to point to the popup button itself.
   if (node->data().role != ax::mojom::Role::kPopUpButton) {
-    node = node->parent();
+    node = node->GetParent();
     if (!node)
       return nullptr;
   }
@@ -1677,17 +1677,17 @@ AXNode* AXNode::GetCollapsedMenuListPopUpButtonAncestor() const {
 }
 
 bool AXNode::IsEmbeddedGroup() const {
-  if (data().role != ax::mojom::Role::kGroup || !parent())
+  if (data().role != ax::mojom::Role::kGroup || !GetParent())
     return false;
 
-  return ui::IsSetLike(parent()->data().role);
+  return ui::IsSetLike(GetParent()->data().role);
 }
 
 AXNode* AXNode::GetLowestPlatformAncestor() const {
   AXNode* current_node = const_cast<AXNode*>(this);
   AXNode* lowest_unignored_node = current_node;
   for (; lowest_unignored_node && lowest_unignored_node->IsIgnored();
-       lowest_unignored_node = lowest_unignored_node->parent()) {
+       lowest_unignored_node = lowest_unignored_node->GetParent()) {
   }
 
   // `highest_leaf_node` could be nullptr.
