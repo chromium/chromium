@@ -92,8 +92,6 @@ external/wpt/css/compositing/root-element-background-transparency.html [ Failure
 
 # ====== Synchronous, budgeted HTML parser tests from here ======
 crbug.com/901056 virtual/synchronous_html_parser/external/wpt/preload/modulepreload.html [ Failure Pass ]
-# An extra line ("linear_memory_inspector") appears in the output in some cases.
-crbug.com/901056 http/tests/devtools/modules-load-source.js [ Failure Pass ]
 # Extra line info appears in the output in some cases.
 crbug.com/901056 virtual/synchronous_html_parser/http/tests/inspector-protocol/issues/content-security-policy-issue-creation-img.js [ Failure Pass ]
 crbug.com/901056 virtual/synchronous_html_parser/http/tests/preload/meta-csp.html [ Failure ]
@@ -5833,8 +5831,6 @@ crbug.com/924472 external/wpt/css/css-transforms/transform-box/svgbox-stroke-box
 
 # Temporarily disable test to allow devtools-frontend changes
 crbug.com/1095733 http/tests/devtools/tabbed-pane-closeable-persistence.js [ Skip ]
-crbug.com/1144127 http/tests/devtools/modules-load-elements.js [ Pass Failure ]
-crbug.com/1144127 http/tests/devtools/modules-load-network.js [ Pass Failure ]
 crbug.com/1144127 http/tests/devtools/console/console-xpath.js [ Pass Failure ]
 
 # Sheriff 2020-06-17
@@ -5915,9 +5911,6 @@ crbug.com/1108786 [ Linux ] http/tests/devtools/tracing/timeline-js/timeline-gc-
 
 # Sheriff 2020-07-27
 crbug.com/1107944 [ Mac ] http/tests/devtools/tracing/timeline-paint/timeline-paint.js [ Pass Failure ]
-
-# Temporarily disable tests to allow a fix in devtools frontend
-crbug.com/1011811 http/tests/devtools/modules-load-initial.js [ Pass Failure ]
 
 crbug.com/1092794 fast/canvas/OffscreenCanvas-2d-placeholder-willReadFrequently.html [ Pass Failure ]
 
