@@ -79,6 +79,21 @@ source_set("incognito_blocker_scene_agent") {
   frameworks = [ "UIKit.framework" ]
 }
 
+source_set("reading_list_scene_agent") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "reading_list_background_session_scene_agent.h",
+    "reading_list_background_session_scene_agent.mm",
+  ]
+  deps = [
+    ":observing_scene_agent",
+    "//base",
+    "//ios/chrome/browser/ui/reading_list:features",
+    "//ios/chrome/browser/ui/reading_list:reading_list_constants",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
 source_set("scene") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
@@ -99,6 +114,7 @@ source_set("scene") {
     ":incognito_blocker_scene_agent",
     ":main",
     ":observing_scene_agent",
+    ":reading_list_scene_agent",
     ":scene_testing",
     "//base",
     "//base/ios",
@@ -151,6 +167,7 @@ source_set("scene") {
     "//ios/chrome/browser/ui/first_run:utils",
     "//ios/chrome/browser/ui/history",
     "//ios/chrome/browser/ui/incognito_reauth:incognito_reauth_scene_agent",
+    "//ios/chrome/browser/ui/reading_list:features",
     "//ios/chrome/browser/ui/settings:settings_root",
     "//ios/chrome/browser/ui/settings/sync",
     "//ios/chrome/browser/ui/start_surface",

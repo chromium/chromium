@@ -95,6 +95,7 @@
 #import "ios/chrome/browser/ui/main/default_browser_scene_agent.h"
 #import "ios/chrome/browser/ui/main/incognito_blocker_scene_agent.h"
 #import "ios/chrome/browser/ui/main/policy_signout_scene_agent.h"
+#import "ios/chrome/browser/ui/main/reading_list_background_session_scene_agent.h"
 #import "ios/chrome/browser/ui/main/ui_blocker_scene_agent.h"
 #import "ios/chrome/browser/ui/scoped_ui_blocker/scoped_ui_blocker.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
@@ -303,6 +304,8 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
                      initWithReauthModule:[[ReauthenticationModule alloc]
                                               init]]];
     [_sceneState addAgent:[[StartSurfaceSceneAgent alloc] init]];
+    [_sceneState
+        addAgent:[[ReadingListBackgroundSessionSceneAgent alloc] init]];
   }
   return self;
 }

@@ -11,6 +11,7 @@
 #include "components/dom_distiller/core/distillable_page_detector.h"
 #include "components/dom_distiller/core/page_features.h"
 #import "ios/chrome/browser/chrome_url_util.h"
+#import "ios/chrome/browser/ui/reading_list/reading_list_constants.h"
 #import "ios/web/public/js_messaging/java_script_feature_util.h"
 #import "ios/web/public/js_messaging/script_message.h"
 #import "ios/web/public/web_state.h"
@@ -145,7 +146,23 @@ void ReadingListJavaScriptFeature::ScriptMessageReceived(
                                 estimated_read_time);
   }
 
-  if (score > 0 && estimated_read_time > kReadTimeThreshold) {
-    // TODO(crbug.com/1195978): Insert Reading List Banner Overlay Request.
+  if (score > 0 && estimated_read_time > kReadTimeThreshold &&
+      CanShowReadingListMessages()) {
+    // TODO(crbug.com/1195978): Insert Reading List Banner Overlay Request after
+    // a three second delay. Also check if the page is already in the Reading
+    // List before adding.
+    SaveReadingListMessagesShownTime();
   }
+}
+
+bool ReadingListJavaScriptFeature::CanShowReadingListMessages() {
+  NSDate* last_shown_timestamp = [[NSUserDefaults standardUserDefaults]
+      objectForKey:kLastTimeUserShownReadingListMessages];
+  return !last_shown_timestamp;
+}
+
+void ReadingListJavaScriptFeature::SaveReadingListMessagesShownTime() {
+  [[NSUserDefaults standardUserDefaults]
+      setObject:[NSDate date]
+         forKey:kLastTimeUserShownReadingListMessages];
 }

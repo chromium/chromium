@@ -25,6 +25,12 @@ class ReadingListJavaScriptFeature : public web::JavaScriptFeature {
   absl::optional<std::string> GetScriptMessageHandlerName() const override;
   void ScriptMessageReceived(web::WebState* web_state,
                              const web::ScriptMessage& message) override;
+
+  // Returns true if there has not been a presented Add to Reading List Messages
+  // prompt in this browsing session.
+  bool CanShowReadingListMessages();
+  // Saves that an Add to Reading List Messages prompt has been presented.
+  void SaveReadingListMessagesShownTime();
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_READING_LIST_READING_LIST_JAVASCRIPT_FEATURE_H_

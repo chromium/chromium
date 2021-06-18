@@ -23,3 +23,6 @@ NSString* const kReadingListToolbarCancelButtonID =
     @"ReadingListToolbarCancelButton";
 NSString* const kReadingListToolbarMarkButtonID =
     @"ReadingListToolbarMarkButton";
+
+NSString* const kLastTimeUserShownReadingListMessages =
+    @"LastTimeUserShownReadingListMessages";

@@ -20,4 +20,7 @@ extern NSString* const kReadingListToolbarDeleteAllReadButtonID;
 extern NSString* const kReadingListToolbarCancelButtonID;
 extern NSString* const kReadingListToolbarMarkButtonID;
 
+// NSUserDefault key to save last time a Messages prompt was shown.
+extern NSString* const kLastTimeUserShownReadingListMessages;
+
 #endif  // IOS_CHROME_BROWSER_UI_READING_LIST_READING_LIST_CONSTANTS_H_
