@@ -4,6 +4,7 @@
 
 #include "base/command_line.h"
 #include "base/files/file_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -16,6 +17,7 @@
 #include "media/audio/audio_manager.h"
 #include "media/base/media_switches.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/peerconnection/webrtc_ip_handling_policy.h"
 
 namespace content {
@@ -38,6 +40,9 @@ class MAYBE_WebRtcDataBrowserTest : public WebRtcContentBrowserTestBase {
     WebRtcContentBrowserTestBase::SetUpCommandLine(command_line);
     // Automatically grant device permission.
     AppendUseFakeUIForMediaStreamFlag();
+    // Allow Plan B.
+    scoped_features_.InitAndEnableFeature(
+        blink::features::kRTCAllowPlanBOutsideDeprecationTrial);
   }
 
  protected:
@@ -46,6 +51,8 @@ class MAYBE_WebRtcDataBrowserTest : public WebRtcContentBrowserTestBase {
   void MakeTypicalPeerConnectionCall(const std::string& javascript) {
     MakeTypicalCall(javascript, "/media/peerconnection-call-data.html");
   }
+
+  base::test::ScopedFeatureList scoped_features_;
 };
 
 IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcDataBrowserTest, CanSetupLegacyCall) {

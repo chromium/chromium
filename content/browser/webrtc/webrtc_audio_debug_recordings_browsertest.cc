@@ -9,6 +9,7 @@
 #include "base/files/file_util.h"
 #include "base/process/process_handle.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/webrtc/webrtc_content_browsertest_base.h"
@@ -19,6 +20,7 @@
 #include "content/shell/browser/shell.h"
 #include "media/base/media_switches.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace {
 
@@ -79,8 +81,13 @@ class WebRtcAudioDebugRecordingsBrowserTest
   WebRtcAudioDebugRecordingsBrowserTest() {
     // Automatically grant device permission.
     AppendUseFakeUIForMediaStreamFlag();
+    // Allow Plan B.
+    scoped_features_.InitAndEnableFeature(
+        blink::features::kRTCAllowPlanBOutsideDeprecationTrial);
   }
   ~WebRtcAudioDebugRecordingsBrowserTest() override {}
+
+  base::test::ScopedFeatureList scoped_features_;
 };
 
 #if defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS)

@@ -239,7 +239,7 @@ const base::Feature kRTCUnifiedPlanByDefault{"RTCUnifiedPlanByDefault",
 // {sdpSemantics:"plan-b"} and the Deprecation Trial is not enabled. May be used
 // as a kill-switch if necessary.
 const base::Feature kRTCAllowPlanBOutsideDeprecationTrial{
-    "RTCAllowPlanBOutsideDeprecationTrial", base::FEATURE_ENABLED_BY_DEFAULT};
+    "RTCAllowPlanBOutsideDeprecationTrial", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Determines if the SDP attrbute extmap-allow-mixed should be offered by
 // default or not. The default value can be overridden by passing
