@@ -138,7 +138,7 @@ class AppListControllerImplTest : public AshTestBase {
     AppListView* app_list_view = GetAppListTestHelper()->GetAppListView();
     ui::Layer* widget_layer =
         app_list_view ? app_list_view->GetWidget()->GetLayer() : nullptr;
-    return widget_layer && !widget_layer->GetAnimator()->is_animating();
+    return widget_layer && widget_layer->GetAnimator()->is_animating();
   }
 
  private:
