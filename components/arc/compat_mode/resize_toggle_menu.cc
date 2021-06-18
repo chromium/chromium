@@ -255,11 +255,12 @@ void ResizeToggleMenu::ApplyResizeCompatMode(ResizeCompatMode mode) {
       break;
     case ResizeCompatMode::kResizable:
       EnableResizingWithConfirmationIfNeeded(widget_, pref_delegate_);
-      // Enable resizing does not trigger bounds change, so force to update
-      // selected button status.
-      UpdateSelectedButton();
       break;
   }
+
+  // Enabling/disabling resizing might not trigger bounds change, so force to
+  // update selected button status here.
+  UpdateSelectedButton();
 
   constexpr auto kAutoCloseDelay = base::TimeDelta::FromSeconds(2);
   base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(

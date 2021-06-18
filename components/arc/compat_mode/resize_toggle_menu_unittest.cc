@@ -187,4 +187,26 @@ TEST_F(ResizeToggleMenuTest, TestResizable) {
   EXPECT_TRUE(IsCommandButtonDisabled(ResizeCompatMode::kResizable));
 }
 
+// Test that the button state is dynamically changed even if no bounds change
+// happens.
+TEST_F(ResizeToggleMenuTest, TestButtonStateChangeWithoutBoundsChange) {
+  // Verify pre-conditions.
+  EXPECT_TRUE(IsMenuRunning());
+
+  ClickButton(ResizeCompatMode::kPhone);
+  EXPECT_TRUE(IsCommandButtonDisabled(ResizeCompatMode::kPhone));
+  EXPECT_FALSE(IsCommandButtonDisabled(ResizeCompatMode::kTablet));
+  EXPECT_FALSE(IsCommandButtonDisabled(ResizeCompatMode::kResizable));
+
+  ClickButton(ResizeCompatMode::kResizable);
+  EXPECT_FALSE(IsCommandButtonDisabled(ResizeCompatMode::kPhone));
+  EXPECT_FALSE(IsCommandButtonDisabled(ResizeCompatMode::kTablet));
+  EXPECT_TRUE(IsCommandButtonDisabled(ResizeCompatMode::kResizable));
+
+  ClickButton(ResizeCompatMode::kPhone);
+  EXPECT_TRUE(IsCommandButtonDisabled(ResizeCompatMode::kPhone));
+  EXPECT_FALSE(IsCommandButtonDisabled(ResizeCompatMode::kTablet));
+  EXPECT_FALSE(IsCommandButtonDisabled(ResizeCompatMode::kResizable));
+}
+
 }  // namespace arc
