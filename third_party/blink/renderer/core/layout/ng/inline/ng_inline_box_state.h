@@ -68,6 +68,9 @@ struct NGInlineBoxState {
   // The height of the text fragments.
   LayoutUnit text_height;
 
+  // SVG alignment-baseline presentation property resolved to a FontBaseline.
+  FontBaseline alignment_type = FontBaseline::kAlphabeticBaseline;
+
   // These values are to create a box fragment. Set only when needs_box_fragment
   // is set.
   bool has_start_edge = false;
@@ -91,7 +94,8 @@ struct NGInlineBoxState {
   NGInlineBoxState(const NGInlineBoxState&) = delete;
   NGInlineBoxState& operator=(const NGInlineBoxState&) = delete;
 
-  // Reset |style|, |is_svg_text|, |font|, |scaled_font|, and |scaling_factor|.
+  // Reset |style|, |is_svg_text|, |font|, |scaled_font|, |scaling_factor|, and
+  // |alignment_type|.
   void ResetStyle(const ComputedStyle& style_ref,
                   bool is_svg,
                   const LayoutObject& layout_object);
@@ -234,12 +238,10 @@ class CORE_EXPORT NGInlineLayoutStateStack {
                                      NGLogicalLineItems*,
                                      FontBaseline);
 
-  // Computes the difference between the 'dominant-baseline' and the
-  // 'alignment-baseline'.
-  static LayoutUnit ComputeAlignmentBaselineShift(
-      const FontMetrics& metrics,
-      FontBaseline baseline_type,
-      EAlignmentBaseline alignment_type);
+  // Computes an offset that will align the |box| with its 'alignment-baseline'
+  // relative to the baseline of the line box. This takes into account both the
+  // 'dominant-baseline' and 'alignment-baseline' of |box| and its parent.
+  LayoutUnit ComputeAlignmentBaselineShift(const NGInlineBoxState* box);
 
   // Compute the metrics for when 'vertical-align' is 'top' and 'bottom' from
   // |pending_descendants|.

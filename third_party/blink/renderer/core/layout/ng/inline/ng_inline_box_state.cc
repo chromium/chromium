@@ -47,6 +47,7 @@ NGInlineBoxState::NGInlineBoxState(const NGInlineBoxState&& state)
       text_metrics(state.text_metrics),
       text_top(state.text_top),
       text_height(state.text_height),
+      alignment_type(state.alignment_type),
       has_start_edge(state.has_start_edge),
       has_end_edge(state.has_end_edge),
       margin_inline_start(state.margin_inline_start),
@@ -78,6 +79,38 @@ void NGInlineBoxState::ResetStyle(const ComputedStyle& style_ref,
   LayoutSVGInlineText::ComputeNewScaledFontForStyle(
       layout_object, scaling_factor, *scaled_font);
   font = &*scaled_font;
+  switch (style_ref.AlignmentBaseline()) {
+    case EAlignmentBaseline::kAuto:
+    case EAlignmentBaseline::kBaseline:
+      alignment_type = style_ref.GetFontBaseline();
+      break;
+    case EAlignmentBaseline::kBeforeEdge:
+    case EAlignmentBaseline::kTextBeforeEdge:
+      alignment_type = FontBaseline::kTextOverBaseline;
+      break;
+    case EAlignmentBaseline::kMiddle:
+      alignment_type = FontBaseline::kXMiddleBaseline;
+      break;
+    case EAlignmentBaseline::kCentral:
+      alignment_type = FontBaseline::kCentralBaseline;
+      break;
+    case EAlignmentBaseline::kAfterEdge:
+    case EAlignmentBaseline::kTextAfterEdge:
+      alignment_type = FontBaseline::kTextUnderBaseline;
+      break;
+    case EAlignmentBaseline::kIdeographic:
+      alignment_type = FontBaseline::kIdeographicUnderBaseline;
+      break;
+    case EAlignmentBaseline::kAlphabetic:
+      alignment_type = FontBaseline::kAlphabeticBaseline;
+      break;
+    case EAlignmentBaseline::kHanging:
+      alignment_type = FontBaseline::kHangingBaseline;
+      break;
+    case EAlignmentBaseline::kMathematical:
+      alignment_type = FontBaseline::kMathBaseline;
+      break;
+  }
 }
 
 void NGInlineBoxState::ComputeTextMetrics(const ComputedStyle& styleref,
@@ -853,16 +886,6 @@ NGInlineLayoutStateStack::ApplyBaselineShift(NGInlineBoxState* box,
     return kPositionNotPending;
   }
 
-  // 'vertical-align' aligns boxes relative to themselves, to their parent
-  // boxes, or to the line box, depends on the value.
-  // Because |box| is an item in |stack_|, |box[-1]| is its parent box.
-  // If this box doesn't have a parent; i.e., this box is a line box,
-  // 'vertical-align' has no effect.
-  DCHECK(box >= stack_.begin() && box < stack_.end());
-  if (box == stack_.begin())
-    return kPositionNotPending;
-  NGInlineBoxState& parent_box = box[-1];
-
   // Check if there are any fragments to move.
   unsigned fragment_end = line_box->size();
   if (box->fragment_start == fragment_end)
@@ -882,33 +905,40 @@ NGInlineLayoutStateStack::ApplyBaselineShift(NGInlineBoxState* box,
       case EBaselineShiftType::kLength: {
         const Length& length = style.BaselineShift();
         // ValueForLength() should be called with unscaled values.
-        baseline_shift = LayoutUnit(
-            -SVGLengthContext::ValueForLength(
-                length, style,
-                parent_box.font->GetFontDescription().ComputedPixelSize() /
-                    box->scaling_factor) *
-            box->scaling_factor);
+        baseline_shift =
+            LayoutUnit(-SVGLengthContext::ValueForLength(
+                           length, style,
+                           box->font->GetFontDescription().ComputedPixelSize() /
+                               box->scaling_factor) *
+                       box->scaling_factor);
         break;
       }
       case EBaselineShiftType::kSub:
         baseline_shift = LayoutUnit(
-            parent_box.font->PrimaryFont()->GetFontMetrics().FloatHeight() / 2);
+            box->font->PrimaryFont()->GetFontMetrics().FloatHeight() / 2);
         break;
       case EBaselineShiftType::kSuper:
         baseline_shift = LayoutUnit(
-            -parent_box.font->PrimaryFont()->GetFontMetrics().FloatHeight() /
-            2);
+            -box->font->PrimaryFont()->GetFontMetrics().FloatHeight() / 2);
         break;
     }
-    baseline_shift += ComputeAlignmentBaselineShift(
-        parent_box.font->PrimaryFont()->GetFontMetrics(), baseline_type,
-        style.AlignmentBaseline());
+    baseline_shift += ComputeAlignmentBaselineShift(box);
     if (!box->metrics.IsEmpty())
       box->metrics.Move(baseline_shift);
     line_box->MoveInBlockDirection(baseline_shift, box->fragment_start,
                                    fragment_end);
     return kPositionNotPending;
   }
+
+  // 'vertical-align' aligns boxes relative to themselves, to their parent
+  // boxes, or to the line box, depends on the value.
+  // Because |box| is an item in |stack_|, |box[-1]| is its parent box.
+  // If this box doesn't have a parent; i.e., this box is a line box,
+  // 'vertical-align' has no effect.
+  DCHECK(box >= stack_.begin() && box < stack_.end());
+  if (box == stack_.begin())
+    return kPositionNotPending;
+  NGInlineBoxState& parent_box = box[-1];
 
   switch (vertical_align) {
     case EVerticalAlign::kSub:
@@ -965,49 +995,20 @@ NGInlineLayoutStateStack::ApplyBaselineShift(NGInlineBoxState* box,
   return kPositionNotPending;
 }
 
-// static
 LayoutUnit NGInlineLayoutStateStack::ComputeAlignmentBaselineShift(
-    const FontMetrics& metrics,
-    FontBaseline baseline_type,
-    EAlignmentBaseline alignment_baseline) {
-  FontBaseline alignment_type = baseline_type;
-  switch (alignment_baseline) {
-    case EAlignmentBaseline::kAuto:
-    case EAlignmentBaseline::kBaseline:
-      break;
-    case EAlignmentBaseline::kBeforeEdge:
-    case EAlignmentBaseline::kTextBeforeEdge:
-      alignment_type = FontBaseline::kTextOverBaseline;
-      break;
-    case EAlignmentBaseline::kMiddle:
-      alignment_type = FontBaseline::kXMiddleBaseline;
-      break;
-    case EAlignmentBaseline::kCentral:
-      alignment_type = FontBaseline::kCentralBaseline;
-      break;
-    case EAlignmentBaseline::kAfterEdge:
-    case EAlignmentBaseline::kTextAfterEdge:
-      alignment_type = FontBaseline::kTextUnderBaseline;
-      break;
-    case EAlignmentBaseline::kIdeographic:
-      alignment_type = FontBaseline::kIdeographicUnderBaseline;
-      break;
-    case EAlignmentBaseline::kAlphabetic:
-      alignment_type = FontBaseline::kAlphabeticBaseline;
-      break;
-    case EAlignmentBaseline::kHanging:
-      alignment_type = FontBaseline::kHangingBaseline;
-      break;
-    case EAlignmentBaseline::kMathematical:
-      alignment_type = FontBaseline::kMathBaseline;
-      break;
+    const NGInlineBoxState* box) {
+  const FontMetrics& metrics = box->font->PrimaryFont()->GetFontMetrics();
+  LayoutUnit result = metrics.FixedAscent(box->style->GetFontBaseline()) -
+                      metrics.FixedAscent(box->alignment_type);
+
+  if (box != stack_.begin()) {
+    const FontMetrics& parent_metrics =
+        box[-1].font->PrimaryFont()->GetFontMetrics();
+    result -= parent_metrics.FixedAscent(box[-1].style->GetFontBaseline()) -
+              parent_metrics.FixedAscent(box[-1].alignment_type);
   }
 
-  if (baseline_type == alignment_type)
-    return LayoutUnit(0);
-
-  return metrics.FixedAscent(baseline_type) -
-         metrics.FixedAscent(alignment_type);
+  return result;
 }
 
 FontHeight NGInlineLayoutStateStack::MetricsForTopAndBottomAlign(
