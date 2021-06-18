@@ -151,6 +151,9 @@ class ModuleInspector : public ModuleDatabaseObserver {
   // service always fails to start and the restart cycle happens infinitely.
   int connection_error_retry_count_;
 
+  // Indicates if a module is currently being inspected asynchronously.
+  bool is_inspecting_module_;
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   // Weak pointers are used to safely post the inspection result back to the

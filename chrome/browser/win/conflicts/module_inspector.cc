@@ -92,7 +92,8 @@ ModuleInspector::ModuleInspector(
               &ModuleInspector::MaybeUpdateInspectionResultsCache,
               base::Unretained(this))),
       has_new_inspection_results_(false),
-      connection_error_retry_count_(kConnectionErrorRetryCount) {
+      connection_error_retry_count_(kConnectionErrorRetryCount),
+      is_inspecting_module_(false) {
   // Use BEST_EFFORT as those will only run after startup is finished.
   content::BrowserThread::PostBestEffortTask(
       FROM_HERE, base::SequencedTaskRunnerHandle::Get(),
@@ -199,6 +200,8 @@ void ModuleInspector::OnUtilWinServiceConnectionError() {
   // Disconnect from the service.
   remote_util_win_.reset();
 
+  is_inspecting_module_ = false;
+
   // If the retry limit was reached, give up.
   if (connection_error_retry_count_ == 0)
     return;
@@ -214,6 +217,10 @@ void ModuleInspector::StartInspectingModule() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(inspection_results_cache_read_);
   DCHECK(!queue_.empty());
+  // TODO(https://crbug.com/1213241): Change to DCHECK once the issue is
+  // resolved.
+  CHECK(!is_inspecting_module_);
+  is_inspecting_module_ = true;
 
   const ModuleInfoKey& module_key = queue_.front();
 
@@ -260,6 +267,9 @@ void ModuleInspector::OnInspectionFinished(
     const ModuleInfoKey& module_key,
     ModuleInspectionResult inspection_result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  CHECK(is_inspecting_module_);
+  is_inspecting_module_ = false;
 
   // TODO(https://crbug.com/1213241): Change to DCHECKs once the issue is
   // resolved.
