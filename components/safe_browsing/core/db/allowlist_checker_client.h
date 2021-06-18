@@ -8,6 +8,7 @@
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/threading/thread_checker.h"
 #include "base/timer/timer.h"
 #include "components/safe_browsing/core/db/database_manager.h"
 #include "url/gurl.h"
@@ -75,6 +76,8 @@ class AllowlistCheckerClient : public SafeBrowsingDatabaseManager::Client {
 
   // Called when the call to CheckCsdAllowlistUrl times out.
   void OnTimeout();
+
+  THREAD_CHECKER(thread_checker_);
 
   // For setting up timeout behavior.
   base::OneShotTimer timer_;
