@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 import { IServer } from './utils/iServer';
-import { Context, BrowsingContextProcessor } from './domains/browsingContext';
+import { BrowsingContextProcessor } from './domains/context/browsingContextProcessor';
+import { Context } from './domains/context/context';
 
 export class CommandProcessor {
   private _cdpServer: IServer;

@@ -1,6 +1,8 @@
-# WebDriver BiDi for Chromium Prototype
+# WebDriver BiDi for Chromium
 
-This is an experimental prototype of the [WebDriver BiDi](https://w3c.github.io/webdriver-bidi/) protocol for Chromium, implemented as a JavaScript layer translating between BiDi and CDP run in Chrome Tab.
+This is an implementation of the [WebDriver BiDi](https://w3c.github.io/webdriver-bidi/) protocol for Chromium, implemented as a JavaScript layer translating between BiDi and CDP, running inside a Chrome tab.
+
+Current status can be checked here: [Chromium BiDi progress](https://docs.google.com/spreadsheets/d/1acM-kHlubpwnW1mFboS9hePawq3u1kf21oQzD16q-Ao/edit?usp=sharing&resourcekey=0-PuLHQYLmDJUOXH_mFO-QiA).
 
 ## Setup
 
