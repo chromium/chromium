@@ -333,11 +333,12 @@ class ModelHandler : public OptimizationTargetModelObserver {
   ModelHandler& operator=(const ModelHandler&) = delete;
 
   // Executes the model using |input| and invokes |callback| on the UI thread
-  // when completed.
+  // when completed. Virtual for testing.
   // TODO(crbug/1173328): Add a way to surface errors.
   using ExecutionCallback =
       base::OnceCallback<void(const absl::optional<OutputType>&)>;
-  void ExecuteModelWithInput(ExecutionCallback callback, InputTypes... input) {
+  virtual void ExecuteModelWithInput(ExecutionCallback callback,
+                                     InputTypes... input) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     base::TimeTicks now = base::TimeTicks::Now();
 
@@ -371,8 +372,8 @@ class ModelHandler : public OptimizationTargetModelObserver {
             background_executor_->GetBackgroundWeakPtr(), file_path));
   }
 
-  // Returns whether a model is available to be executed.
-  bool ModelAvailable() const {
+  // Returns whether a model is available to be executed. Virtual for testing.
+  virtual bool ModelAvailable() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return model_available_;
   }
