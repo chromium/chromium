@@ -23,13 +23,17 @@ import { IServer } from './iServer.js';
 
 (async () => {
   try {
+    console.log('Launching BiDi server.');
     BidiServerRunner.run(_onNewBidiConnectionOpen, _onBidiConnectionClosed);
+    console.log('BiDi server launched.');
   } catch (e) {
     console.log('Error', e);
   }
 })();
 
-async function _onNewBidiConnectionOpen(bidiServer: IServer): Promise<BrowserProcess> {
+async function _onNewBidiConnectionOpen(
+  bidiServer: IServer
+): Promise<BrowserProcess> {
   // Launch browser.
   const browserProcess = await launchBrowser();
   // Get BiDi Mapper script.
