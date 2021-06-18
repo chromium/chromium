@@ -19,9 +19,10 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/web_applications/file_handling_permission_request_dialog_test_api.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/ui/webui/settings/site_settings_helper.h"
-#include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/file_handler_manager.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
@@ -182,6 +183,12 @@ class WebAppFileHandlingTestBase : public WebAppControllerBrowserTest {
   }
 
  protected:
+  ContentSetting GetFileHandlingPermission(const GURL& url) {
+    auto* map =
+        HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+    return map->GetContentSetting(url, url, ContentSettingsType::FILE_HANDLING);
+  }
+
   void SetFileHandlingPermission(ContentSetting setting) {
     auto* map =
         HostContentSettingsMapFactory::GetForProfile(browser()->profile());
@@ -255,28 +262,43 @@ class WebAppFileHandlingBrowserTest : public WebAppFileHandlingTestBase {
     scoped_feature_list_.InitWithFeatures({blink::features::kFileHandlingAPI},
                                           {});
   }
-  content::WebContents* LaunchWithFiles(
+  void LaunchWithFiles(
       const std::string& app_id,
       const GURL& expected_launch_url,
       const std::vector<base::FilePath>& files,
       const apps::mojom::LaunchContainer launch_container =
           apps::mojom::LaunchContainer::kLaunchContainerWindow) {
-    return LaunchApplication(
+    web_contents_ = LaunchApplication(
         profile(), app_id, expected_launch_url, launch_container,
         apps::mojom::AppLaunchSource::kSourceFileHandler, files);
   }
 
- private:
+  void VerifyPwaDidReceiveFileLaunchParams(
+      bool expect_got_launch_params,
+      const base::FilePath& expected_file_path = {}) {
+    bool got_launch_params =
+        content::EvalJs(web_contents_, "!!window.launchParams").ExtractBool();
+    ASSERT_EQ(expect_got_launch_params, got_launch_params);
+    if (got_launch_params) {
+      EXPECT_EQ(1, content::EvalJs(web_contents_,
+                                   "window.launchParams.files.length"));
+      EXPECT_EQ(
+          expected_file_path.BaseName().AsUTF8Unsafe(),
+          content::EvalJs(web_contents_, "window.launchParams.files[0].name"));
+    }
+  }
+
+ protected:
   base::test::ScopedFeatureList scoped_feature_list_;
+  content::WebContents* web_contents_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
                        LaunchConsumerIsNotTriggeredWithNoFiles) {
   InstallFileHandlingPWA();
   SetFileHandlingPermission(CONTENT_SETTING_ALLOW);
-  content::WebContents* web_contents =
-      LaunchWithFiles(app_id(), GetSecureAppURL(), {});
-  EXPECT_EQ(false, content::EvalJs(web_contents, "!!window.launchParams"));
+  LaunchWithFiles(app_id(), GetSecureAppURL(), {});
+  VerifyPwaDidReceiveFileLaunchParams(false);
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
@@ -284,13 +306,9 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
   InstallFileHandlingPWA();
   SetFileHandlingPermission(CONTENT_SETTING_ALLOW);
   base::FilePath test_file_path = NewTestFilePath("txt");
-  content::WebContents* web_contents = LaunchWithFiles(
-      app_id(), GetTextFileHandlerActionURL(), {test_file_path});
+  LaunchWithFiles(app_id(), GetTextFileHandlerActionURL(), {test_file_path});
 
-  EXPECT_EQ(1,
-            content::EvalJs(web_contents, "window.launchParams.files.length"));
-  EXPECT_EQ(test_file_path.BaseName().AsUTF8Unsafe(),
-            content::EvalJs(web_contents, "window.launchParams.files[0].name"));
+  VerifyPwaDidReceiveFileLaunchParams(true, test_file_path);
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
@@ -298,10 +316,9 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
   InstallFileHandlingPWA();
   SetFileHandlingPermission(CONTENT_SETTING_BLOCK);
   base::FilePath test_file_path = NewTestFilePath("txt");
-  content::WebContents* web_contents = LaunchWithFiles(
-      app_id(), GetTextFileHandlerActionURL(), {test_file_path});
+  LaunchWithFiles(app_id(), GetTextFileHandlerActionURL(), {test_file_path});
 
-  EXPECT_EQ(false, content::EvalJs(web_contents, "!!window.launchParams"));
+  VerifyPwaDidReceiveFileLaunchParams(false);
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
@@ -309,14 +326,10 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
   InstallFileHandlingPWA();
   SetFileHandlingPermission(CONTENT_SETTING_ALLOW);
   base::FilePath test_file_path = NewTestFilePath("txt");
-  content::WebContents* web_contents =
-      LaunchWithFiles(app_id(), GetTextFileHandlerActionURL(), {test_file_path},
-                      apps::mojom::LaunchContainer::kLaunchContainerTab);
+  LaunchWithFiles(app_id(), GetTextFileHandlerActionURL(), {test_file_path},
+                  apps::mojom::LaunchContainer::kLaunchContainerTab);
 
-  EXPECT_EQ(1,
-            content::EvalJs(web_contents, "window.launchParams.files.length"));
-  EXPECT_EQ(test_file_path.BaseName().AsUTF8Unsafe(),
-            content::EvalJs(web_contents, "window.launchParams.files[0].name"));
+  VerifyPwaDidReceiveFileLaunchParams(true, test_file_path);
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
@@ -355,9 +368,8 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
 
   // Test that file handler dispatches to the normal start URL when the file
   // path is not a handled file type, and `launchParams` remains undefined.
-  content::WebContents* web_contents =
-      LaunchWithFiles(app_id(), GetSecureAppURL(), {NewTestFilePath("png")});
-  EXPECT_EQ(false, content::EvalJs(web_contents, "!!window.launchParams"));
+  LaunchWithFiles(app_id(), GetSecureAppURL(), {NewTestFilePath("png")});
+  VerifyPwaDidReceiveFileLaunchParams(false);
 }
 
 // Disabled due to flakiness on Linux bots. http://crbug.com/1207370
@@ -507,6 +519,66 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
             map->GetContentSetting(origin, origin,
                                    ContentSettingsType::FILE_HANDLING));
+}
+
+class WebAppFileHandlingPermissionDialogTest
+    : public WebAppFileHandlingBrowserTest {
+ public:
+  WebAppFileHandlingPermissionDialogTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kFileHandlingPermissionUiV2}, {});
+  }
+
+  void SetUpOnMainThread() override {
+    WebAppFileHandlingBrowserTest::SetUpOnMainThread();
+    InstallFileHandlingPWA();
+    SetFileHandlingPermission(CONTENT_SETTING_ASK);
+
+    EXPECT_FALSE(FileHandlingPermissionRequestDialogTestApi::IsShowing());
+
+    test_file_path_ = NewTestFilePath("txt");
+    LaunchWithFiles(app_id(), GetTextFileHandlerActionURL(), {test_file_path_});
+
+    // A dialog is showing now.
+    ASSERT_TRUE(FileHandlingPermissionRequestDialogTestApi::IsShowing());
+
+    // The launch consumer isn't triggered while the dialog is showing.
+    VerifyPwaDidReceiveFileLaunchParams(false);
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  base::FilePath test_file_path_;
+};
+
+IN_PROC_BROWSER_TEST_F(WebAppFileHandlingPermissionDialogTest, AllowAlways) {
+  FileHandlingPermissionRequestDialogTestApi::Resolve(/*checked=*/true,
+                                                      /*accept=*/true);
+  VerifyPwaDidReceiveFileLaunchParams(true, test_file_path_);
+  EXPECT_EQ(CONTENT_SETTING_ALLOW,
+            GetFileHandlingPermission(GetSecureAppURL()));
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppFileHandlingPermissionDialogTest, AllowOnce) {
+  FileHandlingPermissionRequestDialogTestApi::Resolve(/*checked=*/false,
+                                                      /*accept=*/true);
+  VerifyPwaDidReceiveFileLaunchParams(true, test_file_path_);
+  EXPECT_EQ(CONTENT_SETTING_ASK, GetFileHandlingPermission(GetSecureAppURL()));
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppFileHandlingPermissionDialogTest, BlockAlways) {
+  FileHandlingPermissionRequestDialogTestApi::Resolve(/*checked=*/true,
+                                                      /*accept=*/false);
+  VerifyPwaDidReceiveFileLaunchParams(false);
+  EXPECT_EQ(CONTENT_SETTING_BLOCK,
+            GetFileHandlingPermission(GetSecureAppURL()));
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppFileHandlingPermissionDialogTest, BlockOnce) {
+  FileHandlingPermissionRequestDialogTestApi::Resolve(/*checked=*/false,
+                                                      /*accept=*/false);
+  VerifyPwaDidReceiveFileLaunchParams(false);
+  EXPECT_EQ(CONTENT_SETTING_ASK, GetFileHandlingPermission(GetSecureAppURL()));
 }
 
 class WebAppFileHandlingOriginTrialBrowserTest

@@ -9,13 +9,17 @@
 #include "chrome/browser/content_settings/chrome_content_settings_utils.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/permission_bubble/permission_prompt.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/permission_bubble/file_handling_permission_prompt.h"
 #include "chrome/browser/ui/views/permission_bubble/permission_prompt_bubble_view.h"
+#include "chrome/browser/web_launch/web_launch_files_helper.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permission_ui_selector.h"
 #include "components/permissions/permission_uma_util.h"
+#include "components/permissions/request_type.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 
@@ -28,6 +32,14 @@ std::unique_ptr<permissions::PermissionPrompt> CreatePermissionPrompt(
                      "not attached to any Browser window.";
     return nullptr;
   }
+
+  if (base::FeatureList::IsEnabled(features::kFileHandlingPermissionUiV2) &&
+      delegate->Requests().size() == 1U &&
+      delegate->Requests()[0]->GetRequestType() ==
+          permissions::RequestType::kFileHandling) {
+    return FileHandlingPermissionPrompt::Create(web_contents, delegate);
+  }
+
   return std::make_unique<PermissionPromptImpl>(browser, web_contents,
                                                 delegate);
 }

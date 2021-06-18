@@ -33,6 +33,13 @@ class FileHandlingPermissionContext
       permissions::PermissionRequestImpl::PermissionDecidedCallback
           permission_decided_callback,
       base::OnceClosure delete_callback) const override;
+  void NotifyPermissionSet(const permissions::PermissionRequestID& id,
+                           const GURL& requesting_origin,
+                           const GURL& embedding_origin,
+                           permissions::BrowserPermissionCallback callback,
+                           bool persist,
+                           ContentSetting content_setting,
+                           bool is_one_time) override;
 };
 
 #endif  // CHROME_BROWSER_WEB_APPLICATIONS_COMPONENTS_FILE_HANDLING_PERMISSION_CONTEXT_H_

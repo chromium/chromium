@@ -39,6 +39,8 @@ extern const base::Feature kExtensionsSidePanel;
 // The extension id of the extension hosted in the left aligned side panel.
 extern const base::FeatureParam<std::string> kExtensionsSidePanelId;
 
+extern const base::Feature kFileHandlingPermissionUiV2;
+
 extern const base::Feature kForceSignInReauth;
 
 extern const base::Feature kNewTabstripAnimation;

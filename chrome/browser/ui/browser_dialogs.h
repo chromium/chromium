@@ -350,6 +350,7 @@ enum class DialogIdentifier {
   CURRENT_BROWSING_CONTEXT_CONFIRMATION_BOX = 106,
   PROFILE_PICKER_FORCE_SIGNIN = 107,
   EXTENSION_INSTALL_FRICTION = 108,
+  FILE_HANDLING_PERMISSION_REQUEST = 109,
   // Add values above this line with a corresponding label in
   // tools/metrics/histograms/enums.xml
   MAX_VALUE

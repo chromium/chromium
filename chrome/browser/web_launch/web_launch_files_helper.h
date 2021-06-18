@@ -43,6 +43,9 @@ class WebLaunchFilesHelper
 
   ~WebLaunchFilesHelper() override;
 
+  static WebLaunchFilesHelper* GetForWebContents(
+      content::WebContents* web_contents);
+
   // For use with standard web apps, or system web apps that don't receive the
   // launch directory in their launch params.
   static void SetLaunchPaths(content::WebContents* web_contents,
@@ -60,13 +63,15 @@ class WebLaunchFilesHelper
   // content::WebContentsObserver:
   void DidFinishNavigation(content::NavigationHandle* handle) override;
 
+  const std::vector<base::FilePath>& launch_paths() { return launch_paths_; }
+
  private:
   WebLaunchFilesHelper(content::WebContents* web_contents,
                        const GURL& launch_url,
                        base::FilePath launch_dir,
                        std::vector<base::FilePath> launch_paths);
 
-  static void CreateHelperAndSendEntries(
+  static void SetLaunchPathsIfPermitted(
       content::WebContents* web_contents,
       const GURL& launch_url,
       base::FilePath launch_dir,
@@ -79,7 +84,11 @@ class WebLaunchFilesHelper
   // After a permission check, tries to send the launch entries to the renderer.
   void MaybeSendLaunchEntriesWithPermission(ContentSetting content_setting);
 
-  // The entries causing the launch (may be empty).
+  // Called after the user has made a decision in the permission UI.
+  void OnGotPermissionDialogResult(ContentSetting content_setting);
+
+  // The files causing the launch (may be empty).
+  std::vector<base::FilePath> launch_paths_;
   std::vector<blink::mojom::FileSystemAccessEntryPtr> launch_entries_;
 
   // The url the launch entries are for.

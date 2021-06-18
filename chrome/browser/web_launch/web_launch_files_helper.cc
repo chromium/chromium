@@ -10,9 +10,13 @@
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
+#include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_dialogs.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/permissions/permission_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/navigation_handle.h"
@@ -98,6 +102,13 @@ class EntriesBuilder {
 WebLaunchFilesHelper::~WebLaunchFilesHelper() = default;
 
 // static
+WebLaunchFilesHelper* WebLaunchFilesHelper::GetForWebContents(
+    content::WebContents* web_contents) {
+  return static_cast<WebLaunchFilesHelper*>(
+      web_contents->GetUserData(UserDataKey()));
+}
+
+// static
 void WebLaunchFilesHelper::SetLaunchPaths(
     content::WebContents* web_contents,
     const GURL& launch_url,
@@ -105,8 +116,8 @@ void WebLaunchFilesHelper::SetLaunchPaths(
   if (launch_paths.size() == 0)
     return;
 
-  CreateHelperAndSendEntries(web_contents, launch_url, /*launch_dir=*/{},
-                             std::move(launch_paths));
+  SetLaunchPathsIfPermitted(web_contents, launch_url, /*launch_dir=*/{},
+                            std::move(launch_paths));
 }
 
 // static
@@ -121,8 +132,8 @@ void WebLaunchFilesHelper::SetLaunchDirectoryAndLaunchPaths(
   if (launch_paths.size() == 0)
     return;
 
-  CreateHelperAndSendEntries(web_contents, launch_url, launch_dir,
-                             std::move(launch_paths));
+  SetLaunchPathsIfPermitted(web_contents, launch_url, launch_dir,
+                            std::move(launch_paths));
 }
 
 void WebLaunchFilesHelper::DidFinishNavigation(
@@ -155,11 +166,20 @@ WebLaunchFilesHelper::WebLaunchFilesHelper(
 }
 
 // static
-void WebLaunchFilesHelper::CreateHelperAndSendEntries(
+void WebLaunchFilesHelper::SetLaunchPathsIfPermitted(
     content::WebContents* web_contents,
     const GURL& launch_url,
     base::FilePath launch_dir,
     std::vector<base::FilePath> launch_paths) {
+  // Don't even bother creating the object if the permission is blocked.
+  if (PermissionManagerFactory::GetForProfile(
+          Profile::FromBrowserContext(web_contents->GetBrowserContext()))
+          ->GetPermissionStatus(ContentSettingsType::FILE_HANDLING, launch_url,
+                                launch_url)
+          .content_setting == CONTENT_SETTING_BLOCK) {
+    return;
+  }
+
   auto helper = base::WrapUnique(
       new WebLaunchFilesHelper(web_contents, launch_url, std::move(launch_dir),
                                std::move(launch_paths)));
@@ -171,7 +191,8 @@ void WebLaunchFilesHelper::CreateHelperAndSendEntries(
 void WebLaunchFilesHelper::MaybeSendLaunchEntries() {
   if (launch_entries_.size() == 0)
     return;
-  if (launch_url_ != web_contents()->GetLastCommittedURL())
+  // TODO(estade): use GetLastCommittedOrigin(). See crbug.com/698985
+  if (launch_url_ != web_contents()->GetMainFrame()->GetLastCommittedURL())
     return;
 
   content::RenderFrameHost* frame = web_contents()->GetMainFrame();

@@ -38,3 +38,20 @@ FileHandlingPermissionContext::CreatePermissionRequest(
       request_origin, content_settings_type, has_gesture, web_contents,
       std::move(permission_decided_callback), std::move(delete_callback));
 }
+
+void FileHandlingPermissionContext::NotifyPermissionSet(
+    const permissions::PermissionRequestID& id,
+    const GURL& requesting_origin,
+    const GURL& embedding_origin,
+    permissions::BrowserPermissionCallback callback,
+    bool persist,
+    ContentSetting content_setting,
+    bool is_one_time) {
+  // In the default implementation, `is_one_time` actually means "for this
+  // session". In the case of file handling, `is_one_time` should correspond to
+  // persistence.
+  persist = persist && !is_one_time;
+  PermissionContextBase::NotifyPermissionSet(
+      id, requesting_origin, embedding_origin, std::move(callback), persist,
+      content_setting, /*is_one_time=*/false);
+}
