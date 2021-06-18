@@ -4798,6 +4798,11 @@ const char kScanAppMediaLinkDescription[] =
     "Enables showing a link in the Scan app to open scanned images in the Media"
     " app.";
 
+const char kScanAppMultiPageScanName[] =
+    "Enable multi-page scanning in Scan app";
+const char kScanAppMultiPageScanDescription[] =
+    "Enables creating a single PDF file from multiple flatbed scans";
+
 extern const char kScanAppSearchablePdfName[] =
     "Enable saving scans as a searchable PDF.";
 extern const char kScanAppSearchablePdfDescription[] =

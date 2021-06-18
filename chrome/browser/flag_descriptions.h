@@ -2777,6 +2777,9 @@ extern const char kArcResizeLockDescription[];
 extern const char kScanAppMediaLinkName[];
 extern const char kScanAppMediaLinkDescription[];
 
+extern const char kScanAppMultiPageScanName[];
+extern const char kScanAppMultiPageScanDescription[];
+
 extern const char kScanAppSearchablePdfName[];
 extern const char kScanAppSearchablePdfDescription[];
 
