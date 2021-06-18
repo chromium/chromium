@@ -1756,6 +1756,16 @@ class CORE_EXPORT Document : public ContainerNode,
   void ScheduleLayoutTreeUpdate();
 
   bool NeedsFullLayoutTreeUpdate() const;
+  bool ParentFrameNeedsLayoutTreeUpdate() const;
+
+  // See UpdateStyleAndLayoutTreeForThisDocument for an explanation of
+  // the "ForThisDocument" suffix.
+  //
+  // These functions do not take into account dirtiness of parent frames:
+  // they are assumed to be clean. If it isn't possible to guarantee
+  // clean parent frames, use Needs[Full]LayoutTreeUpdate() instead.
+  bool NeedsLayoutTreeUpdateForThisDocument() const;
+  bool NeedsFullLayoutTreeUpdateForThisDocument() const;
 
   void UpdateUseShadowTreesIfNeeded();
   void EvaluateMediaQueryListIfNeeded();

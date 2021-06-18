@@ -1827,9 +1827,24 @@ TreeWalker* Document::createTreeWalker(Node* root,
 }
 
 bool Document::NeedsLayoutTreeUpdate() const {
+  return NeedsLayoutTreeUpdateForThisDocument() ||
+         ParentFrameNeedsLayoutTreeUpdate();
+}
+
+bool Document::NeedsFullLayoutTreeUpdate() const {
+  return NeedsFullLayoutTreeUpdateForThisDocument() ||
+         ParentFrameNeedsLayoutTreeUpdate();
+}
+
+bool Document::ParentFrameNeedsLayoutTreeUpdate() const {
+  HTMLFrameOwnerElement* owner = LocalOwner();
+  return owner && owner->GetDocument().NeedsLayoutTreeUpdate();
+}
+
+bool Document::NeedsLayoutTreeUpdateForThisDocument() const {
   if (!IsActive() || !View())
     return false;
-  if (NeedsFullLayoutTreeUpdate())
+  if (NeedsFullLayoutTreeUpdateForThisDocument())
     return true;
   if (style_engine_->NeedsStyleRecalc())
     return true;
@@ -1849,7 +1864,7 @@ bool Document::NeedsLayoutTreeUpdate() const {
   return false;
 }
 
-bool Document::NeedsFullLayoutTreeUpdate() const {
+bool Document::NeedsFullLayoutTreeUpdateForThisDocument() const {
   // This method returns true if we cannot decide which specific elements need
   // to have its style or layout tree updated on the next lifecycle update. If
   // this method returns false, we typically use that to walk up the ancestor
@@ -1981,8 +1996,14 @@ void Document::UpdateStyleAndLayoutTree() {
   HTMLFrameOwnerElement::PluginDisposeSuspendScope suspend_plugin_dispose;
   ScriptForbiddenScope forbid_script;
 
-  if (HTMLFrameOwnerElement* owner = LocalOwner())
-    owner->GetDocument().UpdateStyleAndLayoutTree();
+  if (HTMLFrameOwnerElement* owner = LocalOwner()) {
+    if (GetStyleEngine().HasViewportDependentMediaQueries()) {
+      // TODO(andruud): Provide a better reason.
+      owner->GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kUnknown);
+    } else {
+      owner->GetDocument().UpdateStyleAndLayoutTree();
+    }
+  }
 
   UpdateStyleAndLayoutTreeForThisDocument();
 }
@@ -2009,7 +2030,7 @@ void Document::UpdateStyleAndLayoutTreeForThisDocument() {
                            LocalFrameUkmAggregator::kStyle);
 
   // RecalcSlotAssignments should be done before checking
-  // NeedsLayoutTreeUpdate().
+  // NeedsLayoutTreeUpdateForThisDocument().
   GetSlotAssignmentEngine().RecalcSlotAssignments();
 
   // We can call FlatTreeTraversal::AssertFlatTreeNodeDataUpdated just after
@@ -2019,12 +2040,12 @@ void Document::UpdateStyleAndLayoutTreeForThisDocument() {
 
   SlotAssignmentRecalcForbiddenScope forbid_slot_recalc(*this);
 
-  if (!NeedsLayoutTreeUpdate()) {
+  if (!NeedsLayoutTreeUpdateForThisDocument()) {
     if (Lifecycle().GetState() < DocumentLifecycle::kStyleClean) {
-      // NeedsLayoutTreeUpdate may change to false without any actual layout
-      // tree update.  For example, NeedsAnimationTimingUpdate may change to
-      // false when time elapses.  Advance lifecycle to StyleClean because style
-      // is actually clean now.
+      // NeedsLayoutTreeUpdateForThisDocument may change to false without any
+      // actual layout tree update.  For example, NeedsAnimationTimingUpdate
+      // may change to false when time elapses.  Advance lifecycle to
+      // StyleClean because style is actually clean now.
       Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
       Lifecycle().AdvanceTo(DocumentLifecycle::kStyleClean);
     }

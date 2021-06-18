@@ -260,8 +260,7 @@ void CSSComputedStyleDeclaration::UpdateStyleAndLayoutTreeIfNeeded(
     bool is_for_layout_dependent_property =
         property_name && !property_name->IsCustomProperty() &&
         CSSProperty::Get(property_name->Id()).IsLayoutDependentProperty();
-    if (is_for_layout_dependent_property ||
-        document.GetStyleEngine().HasViewportDependentMediaQueries()) {
+    if (is_for_layout_dependent_property) {
       owner->GetDocument().UpdateStyleAndLayout(
           DocumentUpdateReason::kJavaScript);
       // The style recalc could have caused the styled node to be discarded or
