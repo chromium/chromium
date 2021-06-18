@@ -1868,7 +1868,7 @@ void AddFieldSuggestionToForm(
   auto* field_suggestion = form_suggestion->add_field_suggestions();
   field_suggestion->set_field_signature(
       CalculateFieldSignatureForField(field_data).value());
-  field_suggestion->set_primary_type_prediction(field_type);
+  field_suggestion->add_predictions()->set_type(field_type);
 }
 }  // namespace
 
@@ -9738,7 +9738,7 @@ void AddFieldSuggestionToForm(
     int field_type) {
   auto* field_suggestion = form_suggestion->add_field_suggestions();
   field_suggestion->set_field_signature(field_signature.value());
-  field_suggestion->set_primary_type_prediction(field_type);
+  field_suggestion->add_predictions()->set_type(field_type);
 }
 }  // namespace
 

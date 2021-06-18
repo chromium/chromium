@@ -1172,7 +1172,6 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   // Username
   bool is_placeholder = false;
   autofill::FormStructure form_structure(form_data);
-  form_structure.field(0)->set_server_type(autofill::USERNAME);
   std::vector<FieldPrediction> username_predictions;
   FieldPrediction username_prediction;
   username_prediction.set_type(autofill::USERNAME);
@@ -1181,7 +1180,6 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   form_structure.field(0)->set_may_use_prefilled_placeholder(is_placeholder);
 
   // Password
-  form_structure.field(1)->set_server_type(autofill::PASSWORD);
   std::vector<FieldPrediction> password_predictions;
   FieldPrediction password_prediction;
   password_prediction.set_type(autofill::PASSWORD);
@@ -1237,7 +1235,6 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   // Username
   bool is_placeholder = true;
   autofill::FormStructure form_structure(form_data);
-  form_structure.field(0)->set_server_type(autofill::USERNAME);
   std::vector<FieldPrediction> username_predictions;
   FieldPrediction username_prediction;
   username_prediction.set_type(autofill::USERNAME);
@@ -1246,7 +1243,6 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   form_structure.field(0)->set_may_use_prefilled_placeholder(is_placeholder);
 
   // Password
-  form_structure.field(1)->set_server_type(autofill::PASSWORD);
   std::vector<FieldPrediction> password_predictions;
   FieldPrediction password_prediction;
   password_prediction.set_type(autofill::PASSWORD);

@@ -782,12 +782,6 @@ AutofillQueryResponse ConvertResponse<LegacyEnv>(
       const auto& in_field = in.field(in_field_index);
       auto* out_field = out_form->add_field_suggestions();
       out_field->set_field_signature(query_field.signature());
-      if (in_field.has_overall_type_prediction()) {
-        out_field->set_primary_type_prediction(
-            in_field.overall_type_prediction());
-      } else if (in_field.predictions_size() > 0) {
-        out_field->set_primary_type_prediction(in_field.predictions(0).type());
-      }
       for (const auto& in_prediction : in_field.predictions())
         out_field->add_predictions()->set_type(in_prediction.type());
       if (in_field.predictions().size() > 0 &&
@@ -930,9 +924,6 @@ std::ostream& operator<<(std::ostream& out,
     out << "\nForm";
     for (const auto& field : form.field_suggestions()) {
       out << "\n Field\n  signature: " << field.field_signature();
-      if (field.has_primary_type_prediction())
-        out << "\n  primary_type_prediction: "
-            << field.primary_type_prediction();
       for (const auto& prediction : field.predictions())
         out << "\n  prediction: " << prediction.type();
     }
@@ -999,7 +990,7 @@ void CreateEmptyResponseForFormQuery(const AutofillPageQueryRequest_Form& form,
   auto* new_form = response->add_form_suggestions();
   for (int i = 0; i < form.fields_size(); i++) {
     auto* new_field = new_form->add_field_suggestions();
-    new_field->set_primary_type_prediction(0);
+    new_field->add_predictions()->set_type(0);
   }
 }
 

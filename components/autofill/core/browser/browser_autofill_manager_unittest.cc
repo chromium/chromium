@@ -6052,13 +6052,13 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
   AutofillQueryResponse response;
   auto* form_suggestion = response.add_form_suggestions();
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(3);
+  form_suggestion->add_field_suggestions()->add_predictions()->set_type(3);
   for (int i = 0; i < 7; ++i) {
-    form_suggestion->add_field_suggestions()->set_primary_type_prediction(0);
+    form_suggestion->add_field_suggestions()->add_predictions()->set_type(0);
   }
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(3);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(2);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(61);
+  form_suggestion->add_field_suggestions()->add_predictions()->set_type(3);
+  form_suggestion->add_field_suggestions()->add_predictions()->set_type(2);
+  form_suggestion->add_field_suggestions()->add_predictions()->set_type(61);
 
   std::string response_string;
   ASSERT_TRUE(response.SerializeToString(&response_string));
@@ -6713,7 +6713,10 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
     // Assign the specified predicted type for each field in the test case.
     FormStructure form_structure(form);
     for (size_t i = 0; i < test_fields.size(); ++i) {
-      form_structure.field(i)->set_server_type(test_fields[i].field_type);
+      AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction
+          prediction;
+      prediction.set_type(test_fields[i].field_type);
+      form_structure.field(i)->set_server_predictions({prediction});
     }
 
     BrowserAutofillManager::DeterminePossibleFieldTypesForUploadForTest(
@@ -6901,8 +6904,12 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest, DisambiguateUploadTypes) {
 
     // Assign the specified predicted type for each field in the test case.
     FormStructure form_structure(form);
-    for (size_t i = 0; i < test_fields.size(); ++i)
-      form_structure.field(i)->set_server_type(test_fields[i].predicted_type);
+    for (size_t i = 0; i < test_fields.size(); ++i) {
+      AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction
+          prediction;
+      prediction.set_type(test_fields[i].predicted_type);
+      form_structure.field(i)->set_server_predictions({prediction});
+    }
 
     BrowserAutofillManager::DeterminePossibleFieldTypesForUploadForTest(
         profiles, credit_cards, std::u16string(), "en-us", &form_structure);

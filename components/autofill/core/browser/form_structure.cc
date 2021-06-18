@@ -364,9 +364,6 @@ std::ostream& operator<<(std::ostream& out,
     out << "\nForm";
     for (const auto& field : form.field_suggestions()) {
       out << "\n Field\n  signature: " << field.field_signature();
-      if (field.has_primary_type_prediction())
-        out << "\n  primary_type_prediction: "
-            << field.primary_type_prediction();
       for (const auto& prediction : field.predictions())
         out << "\n  prediction: " << prediction.type();
     }
@@ -861,33 +858,25 @@ void FormStructure::ProcessQueryResponse(
       if (it->second.size() > 1)
         it->second.pop_front();
 
-      ServerFieldType field_type =
-          static_cast<ServerFieldType>(current_field.primary_type_prediction());
-      query_response_has_no_server_data &= field_type == NO_SERVER_DATA;
-
       ServerFieldType heuristic_type = field->heuristic_type();
       if (heuristic_type != UNKNOWN_TYPE)
         heuristics_detected_fillable_field = true;
 
-      field->set_server_type(field_type);
       std::vector<AutofillQueryResponse::FormSuggestion::FieldSuggestion::
                       FieldPrediction>
           server_predictions;
 
-      if (current_field.has_primary_type_prediction()) {
-        field->set_server_type_prediction_is_override(
-            current_field.primary_type_prediction_is_override());
-      }
-
       if (current_field.predictions_size() == 0) {
         AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction
             field_prediction;
-        field_prediction.set_type(field_type);
+        field_prediction.set_type(NO_SERVER_DATA);
         server_predictions.push_back(field_prediction);
       } else {
         server_predictions.assign(current_field.predictions().begin(),
                                   current_field.predictions().end());
       }
+      query_response_has_no_server_data &=
+          server_predictions[0].type() == NO_SERVER_DATA;
       field->set_server_predictions(std::move(server_predictions));
       field->set_may_use_prefilled_placeholder(
           current_field.may_use_prefilled_placeholder());
@@ -1150,9 +1139,7 @@ void FormStructure::RetrieveFromCache(
           field->value = std::u16string();
         }
       }
-      field->set_server_type(cached_field->server_type());
-      field->set_server_type_prediction_is_override(
-          cached_field->server_type_prediction_is_override());
+      field->set_server_predictions(cached_field->server_predictions());
       field->set_previously_autofilled(cached_field->previously_autofilled());
 
       // Only retrieve an overall prediction from cache if a server prediction

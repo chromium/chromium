@@ -79,7 +79,6 @@ RequestResponsePair MakeQueryRequestResponsePair(
       query_form->add_fields()->set_signature(field.signature);
       auto* response_field = response_form->add_field_suggestions();
       response_field->set_field_signature(field.signature);
-      response_field->set_primary_type_prediction(field.prediction);
       response_field->add_predictions()->set_type(field.prediction);
     }
   }
@@ -477,21 +476,18 @@ TEST(AutofillCacheReplayerTest, ProtobufConversion) {
     auto* form1 = api_response.add_form_suggestions();
     auto* field101 = form1->add_field_suggestions();
     field101->set_field_signature(101);
-    field101->set_primary_type_prediction(101);
     field101->add_predictions()->set_type(101);
     field101->add_predictions()->set_type(1010);
     field101->set_may_use_prefilled_placeholder(true);
     // Todo: Password requirements
     auto* field102 = form1->add_field_suggestions();
     field102->set_field_signature(102);
-    field102->set_primary_type_prediction(102);
     field102->add_predictions()->set_type(102);
     field102->set_may_use_prefilled_placeholder(false);
 
     auto* form2 = api_response.add_form_suggestions();
     auto* field201 = form2->add_field_suggestions();
     field201->set_field_signature(201);
-    field201->set_primary_type_prediction(201);
     field201->add_predictions()->set_type(201);
   }
 
@@ -666,12 +662,11 @@ std::vector<bool> DoFormsMatch(const AutofillQueryResponse& response,
       }
       if (expected_field.prediction !=
           static_cast<unsigned int>(
-              response_form.field_suggestions(j).primary_type_prediction())) {
-        LOG(ERROR)
-            << "Expected field " << j << " of form " << i
-            << " to have primary type prediction " << expected_field.prediction
-            << " but got "
-            << response_form.field_suggestions(j).primary_type_prediction();
+              response_form.field_suggestions(j).predictions(0).type())) {
+        LOG(ERROR) << "Expected field " << j << " of form " << i
+                   << " to have primary type prediction "
+                   << expected_field.prediction << " but got "
+                   << response_form.field_suggestions(j).predictions(0).type();
         found_all_fields = false;
       }
     }

@@ -956,7 +956,7 @@ void AddFieldSuggestionToForm(
   auto* field_suggestion = form_suggestion->add_field_suggestions();
   field_suggestion->set_field_signature(
       CalculateFieldSignatureForField(field_data).value());
-  field_suggestion->set_primary_type_prediction(field_type);
+  field_suggestion->add_predictions()->set_type(field_type);
 }
 
 void AddFieldPredictionsToForm(
@@ -974,11 +974,9 @@ void AddFieldPredictionsToForm(
     const autofill::FormFieldData& field_data,
     const std::vector<ServerFieldType>& field_types,
     ::autofill::AutofillQueryResponse_FormSuggestion* form_suggestion) {
-  // According to api_v1.proto, the first element is always set to primary type.
   auto* field_suggestion = form_suggestion->add_field_suggestions();
   field_suggestion->set_field_signature(
       CalculateFieldSignatureForField(field_data).value());
-  field_suggestion->set_primary_type_prediction(*field_types.begin());
   for (auto field_type : field_types) {
     AutofillQueryResponse_FormSuggestion_FieldSuggestion_FieldPrediction*
         prediction = field_suggestion->add_predictions();

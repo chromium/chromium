@@ -86,6 +86,10 @@ using testing::Return;
 using testing::ReturnRef;
 using testing::SaveArg;
 using testing::WithArg;
+
+using FieldPrediction = autofill::AutofillQueryResponse::FormSuggestion::
+    FieldSuggestion::FieldPrediction;
+
 namespace password_manager {
 
 namespace {
@@ -2929,7 +2933,9 @@ TEST_P(PasswordManagerTest, AutofillPredictionBeforeFormParsed) {
   // Server predictions says that this is a sign-in form. Since they have higher
   // priority than autocomplete attributes then the form should be filled.
   FormStructure form_structure(form.form_data);
-  form_structure.field(1)->set_server_type(autofill::PASSWORD);
+  FieldPrediction prediction;
+  prediction.set_type(autofill::PASSWORD);
+  form_structure.field(1)->set_server_predictions({prediction});
 #if !defined(OS_IOS)
   manager()->ProcessAutofillPredictions(&driver_, {&form_structure});
 #else  // On iOS predictions are propagated with nullptr driver.
@@ -2964,11 +2970,14 @@ TEST_P(PasswordManagerTest, AutofillPredictionBeforeMultipleFormsParsed) {
       .WillRepeatedly(WithArg<1>(InvokeConsumer(store_.get(), form2)));
 
   FormStructure form_structure1(form1.form_data);
-  form_structure1.field(0)->set_server_type(autofill::SINGLE_USERNAME);
+  FieldPrediction prediction;
+  prediction.set_type(autofill::SINGLE_USERNAME);
+  form_structure1.field(0)->set_server_predictions({prediction});
   // Server predictions says that this is a sign-in form. Since they have higher
   // priority than autocomplete attributes then the form should be filled.
   FormStructure form_structure2(form2.form_data);
-  form_structure2.field(1)->set_server_type(autofill::PASSWORD);
+  prediction.set_type(autofill::PASSWORD);
+  form_structure2.field(1)->set_server_predictions({prediction});
 
 #if !defined(OS_IOS)
   manager()->ProcessAutofillPredictions(&driver_,
@@ -3369,7 +3378,9 @@ TEST_P(PasswordManagerTest, FillSingleUsername) {
 
   // Set SINGLE_USERNAME predictions for the field.
   FormStructure form_structure(form_data);
-  form_structure.field(0)->set_server_type(autofill::SINGLE_USERNAME);
+  FieldPrediction prediction;
+  prediction.set_type(autofill::SINGLE_USERNAME);
+  form_structure.field(0)->set_server_predictions({prediction});
 
 #if !defined(OS_IOS)
   PasswordFormFillData fill_data;
@@ -3420,7 +3431,9 @@ TEST_P(PasswordManagerTest,
 
   // Set ACCOUNT_CREATION_PASSWORD predictions for the field.
   FormStructure form_structure(form_data);
-  form_structure.field(1)->set_server_type(autofill::ACCOUNT_CREATION_PASSWORD);
+  FieldPrediction prediction;
+  prediction.set_type(autofill::ACCOUNT_CREATION_PASSWORD);
+  form_structure.field(1)->set_server_predictions({prediction});
 
   autofill::PasswordFormGenerationData form_generation_data;
   EXPECT_CALL(driver_, FormEligibleForGenerationFound(_))
@@ -3521,7 +3534,9 @@ TEST_P(PasswordManagerTest, UsernameFirstFlowFillingServerAndLocalPredictions) {
       non_password_form.name += u"1";  // for iOS.
 
       FormStructure form_structure(non_password_form);
-      form_structure.field(0)->set_server_type(server_type);
+      FieldPrediction prediction;
+      prediction.set_type(server_type);
+      form_structure.field(0)->set_server_predictions({prediction});
 
       bool should_be_filled =
           server_type == SINGLE_USERNAME || local_type == SINGLE_USERNAME;
@@ -3733,8 +3748,11 @@ TEST_P(PasswordManagerTest, GenerationOnChangedForm) {
 
   // Server predictions may arrive before the form is parsed by PasswordManager.
   FormStructure form_structure(form_data);
-  form_structure.field(1)->set_server_type(autofill::ACCOUNT_CREATION_PASSWORD);
-  form_structure.field(2)->set_server_type(autofill::CONFIRMATION_PASSWORD);
+  FieldPrediction prediction;
+  prediction.set_type(autofill::ACCOUNT_CREATION_PASSWORD);
+  form_structure.field(1)->set_server_predictions({prediction});
+  prediction.set_type(autofill::CONFIRMATION_PASSWORD);
+  form_structure.field(2)->set_server_predictions({prediction});
   manager()->ProcessAutofillPredictions(&driver_, {&form_structure});
 
   autofill::PasswordFormGenerationData form_generation_data;

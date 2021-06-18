@@ -61,7 +61,7 @@ void AddFieldSuggestionToForm(
   auto* field_suggestion = form_suggestion->add_field_suggestions();
   field_suggestion->set_field_signature(
       CalculateFieldSignatureForField(field_data).value());
-  field_suggestion->set_primary_type_prediction(field_type);
+  field_suggestion->add_predictions()->set_type(field_type);
 }
 
 void AddFieldOverrideToForm(
@@ -74,7 +74,8 @@ void AddFieldOverrideToForm(
   form_suggestion
       ->mutable_field_suggestions(form_suggestion->field_suggestions().size() -
                                   1)
-      ->set_primary_type_prediction_is_override(true);
+      ->mutable_predictions(0)
+      ->set_override(true);
 }
 
 }  // namespace
@@ -5418,9 +5419,9 @@ TEST_F(FormStructureTestImpl, ParseQueryResponse_TooManyTypes) {
   AddFieldSuggestionToForm(form_suggestion, form_data.fields[1], NAME_LAST);
   AddFieldSuggestionToForm(form_suggestion, form_data.fields[2],
                            ADDRESS_HOME_LINE1);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
+  form_suggestion->add_field_suggestions()->add_predictions()->set_type(
       EMAIL_ADDRESS);
-  form_suggestion->add_field_suggestions()->set_primary_type_prediction(
+  form_suggestion->add_field_suggestions()->add_predictions()->set_type(
       UNKNOWN_TYPE);
 
   std::string response_string = SerializeAndEncode(response);
@@ -5572,7 +5573,6 @@ TEST_F(FormStructureTestImpl, ParseApiQueryResponse) {
   // Make form 1 suggestions.
   auto* form_suggestion = api_response.add_form_suggestions();
   auto* field0 = form_suggestion->add_field_suggestions();
-  field0->set_primary_type_prediction(NAME_FULL);
   field0->set_field_signature(
       CalculateFieldSignatureForField(form.fields[0]).value());
   auto* field_prediction0 = field0->add_predictions();
@@ -5601,8 +5601,7 @@ TEST_F(FormStructureTestImpl, ParseApiQueryResponse) {
   EXPECT_EQ(NAME_FULL, forms[0]->field(0)->server_type());
   ASSERT_EQ(2U, forms[0]->field(0)->server_predictions().size());
   EXPECT_EQ(NAME_FULL, forms[0]->field(0)->server_predictions()[0].type());
-  EXPECT_EQ(PHONE_FAX_COUNTRY_CODE,
-            forms[0]->field(0)->server_predictions()[1].type());
+  EXPECT_EQ(NO_SERVER_DATA, forms[0]->field(0)->server_predictions()[1].type());
   EXPECT_EQ(ADDRESS_HOME_LINE1, forms[0]->field(1)->server_type());
   ASSERT_EQ(1U, forms[0]->field(1)->server_predictions().size());
   EXPECT_EQ(ADDRESS_HOME_LINE1,
@@ -5631,7 +5630,10 @@ TEST_F(FormStructureTestImpl,
 
   // Add form to the vector needed by the response parsing function.
   FormStructure form_structure(form);
-  form_structure.field(0)->set_server_type(NAME_FULL);
+  AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction
+      prediction;
+  prediction.set_type(NAME_FULL);
+  form_structure.field(0)->set_server_predictions({prediction});
   std::vector<FormStructure*> forms;
   forms.push_back(&form_structure);
 
@@ -5661,7 +5663,10 @@ TEST_F(FormStructureTestImpl, ParseApiQueryResponseWhenPayloadNotBase64) {
 
   // Add form to the vector needed by the response parsing function.
   FormStructure form_structure(form);
-  form_structure.field(0)->set_server_type(NAME_FULL);
+  AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction
+      prediction;
+  prediction.set_type(NAME_FULL);
+  form_structure.field(0)->set_server_predictions({prediction});
   std::vector<FormStructure*> forms;
   forms.push_back(&form_structure);
 

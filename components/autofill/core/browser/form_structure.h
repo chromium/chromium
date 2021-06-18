@@ -341,8 +341,13 @@ class FormStructure {
   // purposes.
   void set_server_field_type_for_testing(size_t field_index,
                                          ServerFieldType type) {
-    if (field_index < fields_.size() && type > 0 && type < MAX_VALID_FIELD_TYPE)
-      fields_[field_index]->set_server_type(type);
+    if (field_index < fields_.size() && type > 0 &&
+        type < MAX_VALID_FIELD_TYPE) {
+      AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction
+          prediction;
+      prediction.set_type(type);
+      fields_[field_index]->set_server_predictions({prediction});
+    }
   }
 #endif
 

@@ -106,9 +106,11 @@ TEST_P(FormPredictionsTest, ConvertToFormPredictions) {
   // Set server predictions and create expected votes.
   for (size_t i = 0; i < base::size(test_fields); ++i) {
     AutofillField* field = form_structure.field(i);
-    field->set_server_type(test_fields[i].input_type);
 
-    std::vector<FieldPrediction> predictions(1);
+    std::vector<FieldPrediction> predictions;
+    FieldPrediction prediction;
+    prediction.set_type(test_fields[i].input_type);
+    predictions.push_back(prediction);
 
     for (ServerFieldType type : test_fields[i].additional_types) {
       FieldPrediction additional_prediction;
@@ -185,7 +187,9 @@ TEST(FormPredictionsTest, ConvertToFormPredictions_SynthesiseConfirmation) {
     // Set server predictions and create expected votes.
     for (size_t i = 0; i < test_form.size(); ++i) {
       AutofillField* field = form_structure.field(i);
-      field->set_server_type(test_form[i].input_type);
+      FieldPrediction prediction;
+      prediction.set_type(test_form[i].input_type);
+      field->set_server_predictions({prediction});
     }
 
     FormPredictions actual_predictions =
