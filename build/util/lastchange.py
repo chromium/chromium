@@ -10,6 +10,7 @@ from __future__ import print_function
 
 import argparse
 import collections
+import datetime
 import logging
 import os
 import subprocess
@@ -303,7 +304,13 @@ def main(argv=None):
   if args.print_only:
     print(revision_string)
   else:
-    contents = "LASTCHANGE=%s\n" % revision_string
+    lastchange_year = datetime.datetime.utcfromtimestamp(
+        version_info.timestamp).year
+    contents_lines = [
+        "LASTCHANGE=%s" % revision_string,
+        "LASTCHANGE_YEAR=%s" % lastchange_year,
+    ]
+    contents = '\n'.join(contents_lines) + '\n'
     if not out_file and not args.header:
       sys.stdout.write(contents)
     else:
