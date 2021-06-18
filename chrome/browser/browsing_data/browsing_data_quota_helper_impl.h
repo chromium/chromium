@@ -19,12 +19,12 @@
 #include "chrome/browser/browsing_data/browsing_data_quota_helper.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom-forward.h"
 
-namespace storage {
-class QuotaManager;
+namespace blink {
+class StorageKey;
 }
 
-namespace url {
-class Origin;
+namespace storage {
+class QuotaManager;
 }
 
 // Implementation of BrowsingDataQuotaHelper.  Since a client of
@@ -43,14 +43,14 @@ class BrowsingDataQuotaHelperImpl : public BrowsingDataQuotaHelper {
   explicit BrowsingDataQuotaHelperImpl(storage::QuotaManager* quota_manager);
   ~BrowsingDataQuotaHelperImpl() override;
 
-  // Calls QuotaManager::GetOriginModifiedSince for each storage type.
+  // Calls QuotaManager::GetStorageKeysModifiedBetween for each storage type.
   void FetchQuotaInfoOnIOThread(FetchResultCallback callback);
 
-  // Callback function for QuotaManager::GetOriginModifiedSince.
-  void GotOrigins(PendingHosts* pending_hosts,
-                  base::OnceClosure completion,
-                  const std::set<url::Origin>& origins,
-                  blink::mojom::StorageType type);
+  // Callback function for QuotaManager::GetStorageKeysModifiedBetween.
+  void GotStorageKeys(PendingHosts* pending_hosts,
+                      base::OnceClosure completion,
+                      const std::set<blink::StorageKey>& storage_keys,
+                      blink::mojom::StorageType type);
 
   // Calls QuotaManager::GetHostUsage for each (origin, type) pair.
   void OnGetOriginsComplete(FetchResultCallback callback,

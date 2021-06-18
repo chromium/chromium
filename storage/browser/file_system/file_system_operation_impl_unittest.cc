@@ -40,7 +40,7 @@
 #include "storage/browser/test/sandbox_file_system_test_helper.h"
 #include "storage/common/file_system/file_system_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "url/gurl.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace storage {
 
@@ -257,7 +257,7 @@ class FileSystemOperationImplTest : public testing::Test {
   void GrantQuotaForCurrentUsage() {
     int64_t usage;
     GetUsageAndQuota(&usage, nullptr);
-    quota_manager()->SetQuota(sandbox_file_system_.origin(),
+    quota_manager()->SetQuota(blink::StorageKey(sandbox_file_system_.origin()),
                               sandbox_file_system_.storage_type(), usage);
   }
 
@@ -270,7 +270,7 @@ class FileSystemOperationImplTest : public testing::Test {
   void AddQuota(int64_t quota_delta) {
     int64_t quota;
     GetUsageAndQuota(nullptr, &quota);
-    quota_manager()->SetQuota(sandbox_file_system_.origin(),
+    quota_manager()->SetQuota(blink::StorageKey(sandbox_file_system_.origin()),
                               sandbox_file_system_.storage_type(),
                               quota + quota_delta);
   }

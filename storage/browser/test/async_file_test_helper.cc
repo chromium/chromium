@@ -18,6 +18,7 @@
 #include "storage/browser/quota/quota_manager.h"
 #include "storage/common/file_system/file_system_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace storage {
 
@@ -307,7 +308,7 @@ blink::mojom::QuotaStatusCode AsyncFileTestHelper::GetUsageAndQuota(
       blink::mojom::QuotaStatusCode::kUnknown;
   base::RunLoop run_loop;
   quota_manager->GetUsageAndQuota(
-      origin, FileSystemTypeToQuotaStorageType(type),
+      blink::StorageKey(origin), FileSystemTypeToQuotaStorageType(type),
       base::BindOnce(&DidGetUsageAndQuota, &status, usage, quota,
                      run_loop.QuitWhenIdleClosure()));
   run_loop.Run();

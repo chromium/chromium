@@ -28,6 +28,7 @@ namespace storage {
 
 class QuotaManagerProxy;
 
+// TODO(crbug.com/1215208): Change to MockStorageKeyData.
 struct MockOriginData {
   const char* origin;
   blink::mojom::StorageType type;

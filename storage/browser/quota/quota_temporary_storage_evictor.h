@@ -19,8 +19,8 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 
-namespace url {
-class Origin;
+namespace blink {
+class StorageKey;
 }
 
 namespace storage {
@@ -31,37 +31,30 @@ struct QuotaSettings;
 class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaTemporaryStorageEvictor {
  public:
   struct Statistics {
-    Statistics()
-        : num_errors_on_getting_usage_and_quota(0),
-          num_evicted_origins(0),
-          num_eviction_rounds(0),
-          num_skipped_eviction_rounds(0) {}
-    int64_t num_errors_on_getting_usage_and_quota;
-    int64_t num_evicted_origins;
-    int64_t num_eviction_rounds;
-    int64_t num_skipped_eviction_rounds;
+    int64_t num_errors_on_getting_usage_and_quota = 0;
+    int64_t num_evicted_storage_keys = 0;
+    int64_t num_eviction_rounds = 0;
+    int64_t num_skipped_eviction_rounds = 0;
 
     void subtract_assign(const Statistics& rhs) {
       num_errors_on_getting_usage_and_quota -=
           rhs.num_errors_on_getting_usage_and_quota;
-      num_evicted_origins -= rhs.num_evicted_origins;
+      num_evicted_storage_keys -= rhs.num_evicted_storage_keys;
       num_eviction_rounds -= rhs.num_eviction_rounds;
       num_skipped_eviction_rounds -= rhs.num_skipped_eviction_rounds;
     }
   };
 
   struct EvictionRoundStatistics {
-    EvictionRoundStatistics();
-
-    bool in_round;
-    bool is_initialized;
+    bool in_round = false;
+    bool is_initialized = false;
 
     base::Time start_time;
-    int64_t diskspace_shortage_at_round;
+    int64_t diskspace_shortage_at_round = -1;
 
-    int64_t usage_on_beginning_of_round;
-    int64_t usage_on_end_of_round;
-    int64_t num_evicted_origins_in_round;
+    int64_t usage_on_beginning_of_round = -1;
+    int64_t usage_on_end_of_round = -1;
+    int64_t num_evicted_storage_keys_in_round = 0;
   };
 
   QuotaTemporaryStorageEvictor(QuotaEvictionHandler* quota_eviction_handler,
@@ -84,7 +77,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaTemporaryStorageEvictor {
                               int64_t total_space,
                               int64_t current_usage,
                               bool current_usage_is_complete);
-  void OnGotEvictionOrigin(const absl::optional<url::Origin>& origin);
+  void OnGotEvictionStorageKey(
+      const absl::optional<blink::StorageKey>& storage_key);
   void OnEvictionComplete(blink::mojom::QuotaStatusCode status);
 
   void OnEvictionRoundStarted();

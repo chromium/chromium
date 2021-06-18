@@ -19,7 +19,8 @@
 #include "storage/browser/test/mock_special_storage_policy.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using blink::mojom::StorageType;
+using ::blink::StorageKey;
+using ::blink::mojom::StorageType;
 
 namespace storage {
 
@@ -51,29 +52,31 @@ class MockQuotaManagerTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-  void GetModifiedOrigins(StorageType type, base::Time begin, base::Time end) {
-    manager_->GetOriginsModifiedBetween(
+  void GetModifiedStorageKeys(StorageType type,
+                              base::Time begin,
+                              base::Time end) {
+    manager_->GetStorageKeysModifiedBetween(
         type, begin, end,
-        base::BindOnce(&MockQuotaManagerTest::GotModifiedOrigins,
+        base::BindOnce(&MockQuotaManagerTest::GotModifiedStorageKeys,
                        weak_factory_.GetWeakPtr()));
   }
 
-  void GotModifiedOrigins(const std::set<url::Origin>& origins,
-                          StorageType type) {
-    origins_ = origins;
+  void GotModifiedStorageKeys(const std::set<StorageKey>& storage_keys,
+                              StorageType type) {
+    storage_keys_ = storage_keys;
     type_ = type;
   }
 
-  void DeleteOriginData(const url::Origin& origin,
-                        StorageType type,
-                        QuotaClientTypes quota_client_types) {
-    manager_->DeleteOriginData(
-        origin, type, std::move(quota_client_types),
-        base::BindOnce(&MockQuotaManagerTest::DeletedOriginData,
+  void DeleteStorageKeyData(const StorageKey& storage_key,
+                            StorageType type,
+                            QuotaClientTypes quota_client_types) {
+    manager_->DeleteStorageKeyData(
+        storage_key, type, std::move(quota_client_types),
+        base::BindOnce(&MockQuotaManagerTest::DeletedStorageKeyData,
                        weak_factory_.GetWeakPtr()));
   }
 
-  void DeletedOriginData(blink::mojom::QuotaStatusCode status) {
+  void DeletedStorageKeyData(blink::mojom::QuotaStatusCode status) {
     ++deletion_callback_count_;
     EXPECT_EQ(blink::mojom::QuotaStatusCode::kOk, status);
   }
@@ -86,7 +89,7 @@ class MockQuotaManagerTest : public testing::Test {
     return manager_.get();
   }
 
-  const std::set<url::Origin>& origins() const { return origins_; }
+  const std::set<StorageKey>& storage_keys() const { return storage_keys_; }
 
   const StorageType& type() const {
     return type_;
@@ -100,7 +103,7 @@ class MockQuotaManagerTest : public testing::Test {
 
   int deletion_callback_count_;
 
-  std::set<url::Origin> origins_;
+  std::set<StorageKey> storage_keys_;
   StorageType type_;
 
   base::WeakPtrFactory<MockQuotaManagerTest> weak_factory_{this};
@@ -108,130 +111,183 @@ class MockQuotaManagerTest : public testing::Test {
   DISALLOW_COPY_AND_ASSIGN(MockQuotaManagerTest);
 };
 
-TEST_F(MockQuotaManagerTest, BasicOriginManipulation) {
-  const url::Origin kOrigin1 = url::Origin::Create(GURL("http://host1:1/"));
-  const url::Origin kOrigin2 = url::Origin::Create(GURL("http://host2:1/"));
+TEST_F(MockQuotaManagerTest, BasicStorageKeyManipulation) {
+  const StorageKey kStorageKey1 =
+      StorageKey::CreateFromStringForTesting("http://host1:1/");
+  const StorageKey kStorageKey2 =
+      StorageKey::CreateFromStringForTesting("http://host2:1/");
 
-  EXPECT_FALSE(manager()->OriginHasData(kOrigin1, kTemporary, kClientFile));
-  EXPECT_FALSE(manager()->OriginHasData(kOrigin1, kTemporary, kClientDB));
-  EXPECT_FALSE(manager()->OriginHasData(kOrigin1, kPersistent, kClientFile));
-  EXPECT_FALSE(manager()->OriginHasData(kOrigin1, kPersistent, kClientDB));
-  EXPECT_FALSE(manager()->OriginHasData(kOrigin2, kTemporary, kClientFile));
-  EXPECT_FALSE(manager()->OriginHasData(kOrigin2, kTemporary, kClientDB));
-  EXPECT_FALSE(manager()->OriginHasData(kOrigin2, kPersistent, kClientFile));
-  EXPECT_FALSE(manager()->OriginHasData(kOrigin2, kPersistent, kClientDB));
+  EXPECT_FALSE(
+      manager()->StorageKeyHasData(kStorageKey1, kTemporary, kClientFile));
+  EXPECT_FALSE(
+      manager()->StorageKeyHasData(kStorageKey1, kTemporary, kClientDB));
+  EXPECT_FALSE(
+      manager()->StorageKeyHasData(kStorageKey1, kPersistent, kClientFile));
+  EXPECT_FALSE(
+      manager()->StorageKeyHasData(kStorageKey1, kPersistent, kClientDB));
+  EXPECT_FALSE(
+      manager()->StorageKeyHasData(kStorageKey2, kTemporary, kClientFile));
+  EXPECT_FALSE(
+      manager()->StorageKeyHasData(kStorageKey2, kTemporary, kClientDB));
+  EXPECT_FALSE(
+      manager()->StorageKeyHasData(kStorageKey2, kPersistent, kClientFile));
+  EXPECT_FALSE(
+      manager()->StorageKeyHasData(kStorageKey2, kPersistent, kClientDB));
 
-  manager()->AddOrigin(kOrigin1, kTemporary, {kClientFile}, base::Time::Now());
-  EXPECT_TRUE(manager()->OriginHasData(kOrigin1, kTemporary, kClientFile));
-  EXPECT_FALSE(manager()->OriginHasData(kOrigin1, kTemporary, kClientDB));
-  EXPECT_FALSE(manager()->OriginHasData(kOrigin1, kPersistent, kClientFile));
-  EXPECT_FALSE(manager()->OriginHasData(kOrigin1, kPersistent, kClientDB));
-  EXPECT_FALSE(manager()->OriginHasData(kOrigin2, kTemporary, kClientFile));
-  EXPECT_FALSE(manager()->OriginHasData(kOrigin2, kTemporary, kClientDB));
-  EXPECT_FALSE(manager()->OriginHasData(kOrigin2, kPersistent, kClientFile));
-  EXPECT_FALSE(manager()->OriginHasData(kOrigin2, kPersistent, kClientDB));
+  manager()->AddStorageKey(kStorageKey1, kTemporary, {kClientFile},
+                           base::Time::Now());
+  EXPECT_TRUE(
+      manager()->StorageKeyHasData(kStorageKey1, kTemporary, kClientFile));
+  EXPECT_FALSE(
+      manager()->StorageKeyHasData(kStorageKey1, kTemporary, kClientDB));
+  EXPECT_FALSE(
+      manager()->StorageKeyHasData(kStorageKey1, kPersistent, kClientFile));
+  EXPECT_FALSE(
+      manager()->StorageKeyHasData(kStorageKey1, kPersistent, kClientDB));
+  EXPECT_FALSE(
+      manager()->StorageKeyHasData(kStorageKey2, kTemporary, kClientFile));
+  EXPECT_FALSE(
+      manager()->StorageKeyHasData(kStorageKey2, kTemporary, kClientDB));
+  EXPECT_FALSE(
+      manager()->StorageKeyHasData(kStorageKey2, kPersistent, kClientFile));
+  EXPECT_FALSE(
+      manager()->StorageKeyHasData(kStorageKey2, kPersistent, kClientDB));
 
-  manager()->AddOrigin(kOrigin1, kPersistent, {kClientFile}, base::Time::Now());
-  EXPECT_TRUE(manager()->OriginHasData(kOrigin1, kTemporary, kClientFile));
-  EXPECT_FALSE(manager()->OriginHasData(kOrigin1, kTemporary, kClientDB));
-  EXPECT_TRUE(manager()->OriginHasData(kOrigin1, kPersistent, kClientFile));
-  EXPECT_FALSE(manager()->OriginHasData(kOrigin1, kPersistent, kClientDB));
-  EXPECT_FALSE(manager()->OriginHasData(kOrigin2, kTemporary, kClientFile));
-  EXPECT_FALSE(manager()->OriginHasData(kOrigin2, kTemporary, kClientDB));
-  EXPECT_FALSE(manager()->OriginHasData(kOrigin2, kPersistent, kClientFile));
-  EXPECT_FALSE(manager()->OriginHasData(kOrigin2, kPersistent, kClientDB));
+  manager()->AddStorageKey(kStorageKey1, kPersistent, {kClientFile},
+                           base::Time::Now());
+  EXPECT_TRUE(
+      manager()->StorageKeyHasData(kStorageKey1, kTemporary, kClientFile));
+  EXPECT_FALSE(
+      manager()->StorageKeyHasData(kStorageKey1, kTemporary, kClientDB));
+  EXPECT_TRUE(
+      manager()->StorageKeyHasData(kStorageKey1, kPersistent, kClientFile));
+  EXPECT_FALSE(
+      manager()->StorageKeyHasData(kStorageKey1, kPersistent, kClientDB));
+  EXPECT_FALSE(
+      manager()->StorageKeyHasData(kStorageKey2, kTemporary, kClientFile));
+  EXPECT_FALSE(
+      manager()->StorageKeyHasData(kStorageKey2, kTemporary, kClientDB));
+  EXPECT_FALSE(
+      manager()->StorageKeyHasData(kStorageKey2, kPersistent, kClientFile));
+  EXPECT_FALSE(
+      manager()->StorageKeyHasData(kStorageKey2, kPersistent, kClientDB));
 
-  manager()->AddOrigin(kOrigin2, kTemporary, {kClientFile, kClientDB},
-                       base::Time::Now());
-  EXPECT_TRUE(manager()->OriginHasData(kOrigin1, kTemporary, kClientFile));
-  EXPECT_FALSE(manager()->OriginHasData(kOrigin1, kTemporary, kClientDB));
-  EXPECT_TRUE(manager()->OriginHasData(kOrigin1, kPersistent, kClientFile));
-  EXPECT_FALSE(manager()->OriginHasData(kOrigin1, kPersistent, kClientDB));
-  EXPECT_TRUE(manager()->OriginHasData(kOrigin2, kTemporary, kClientFile));
-  EXPECT_TRUE(manager()->OriginHasData(kOrigin2, kTemporary, kClientDB));
-  EXPECT_FALSE(manager()->OriginHasData(kOrigin2, kPersistent, kClientFile));
-  EXPECT_FALSE(manager()->OriginHasData(kOrigin2, kPersistent, kClientDB));
+  manager()->AddStorageKey(kStorageKey2, kTemporary, {kClientFile, kClientDB},
+                           base::Time::Now());
+  EXPECT_TRUE(
+      manager()->StorageKeyHasData(kStorageKey1, kTemporary, kClientFile));
+  EXPECT_FALSE(
+      manager()->StorageKeyHasData(kStorageKey1, kTemporary, kClientDB));
+  EXPECT_TRUE(
+      manager()->StorageKeyHasData(kStorageKey1, kPersistent, kClientFile));
+  EXPECT_FALSE(
+      manager()->StorageKeyHasData(kStorageKey1, kPersistent, kClientDB));
+  EXPECT_TRUE(
+      manager()->StorageKeyHasData(kStorageKey2, kTemporary, kClientFile));
+  EXPECT_TRUE(
+      manager()->StorageKeyHasData(kStorageKey2, kTemporary, kClientDB));
+  EXPECT_FALSE(
+      manager()->StorageKeyHasData(kStorageKey2, kPersistent, kClientFile));
+  EXPECT_FALSE(
+      manager()->StorageKeyHasData(kStorageKey2, kPersistent, kClientDB));
 }
 
-TEST_F(MockQuotaManagerTest, OriginDeletion) {
-  const url::Origin kOrigin1 = url::Origin::Create(GURL("http://host1:1/"));
-  const url::Origin kOrigin2 = url::Origin::Create(GURL("http://host2:1/"));
-  const url::Origin kOrigin3 = url::Origin::Create(GURL("http://host3:1/"));
+TEST_F(MockQuotaManagerTest, StorageKeyDeletion) {
+  const StorageKey kStorageKey1 =
+      StorageKey::CreateFromStringForTesting("http://host1:1/");
+  const StorageKey kStorageKey2 =
+      StorageKey::CreateFromStringForTesting("http://host2:1/");
+  const StorageKey kStorageKey3 =
+      StorageKey::CreateFromStringForTesting("http://host3:1/");
 
-  manager()->AddOrigin(kOrigin1, kTemporary, {kClientFile}, base::Time::Now());
-  manager()->AddOrigin(kOrigin2, kTemporary, {kClientFile, kClientDB},
-                       base::Time::Now());
-  manager()->AddOrigin(kOrigin3, kTemporary, {kClientFile, kClientDB},
-                       base::Time::Now());
+  manager()->AddStorageKey(kStorageKey1, kTemporary, {kClientFile},
+                           base::Time::Now());
+  manager()->AddStorageKey(kStorageKey2, kTemporary, {kClientFile, kClientDB},
+                           base::Time::Now());
+  manager()->AddStorageKey(kStorageKey3, kTemporary, {kClientFile, kClientDB},
+                           base::Time::Now());
 
-  DeleteOriginData(kOrigin2, kTemporary, {kClientFile});
+  DeleteStorageKeyData(kStorageKey2, kTemporary, {kClientFile});
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(1, deletion_callback_count());
-  EXPECT_TRUE(manager()->OriginHasData(kOrigin1, kTemporary, kClientFile));
-  EXPECT_FALSE(manager()->OriginHasData(kOrigin2, kTemporary, kClientFile));
-  EXPECT_TRUE(manager()->OriginHasData(kOrigin2, kTemporary, kClientDB));
-  EXPECT_TRUE(manager()->OriginHasData(kOrigin3, kTemporary, kClientFile));
-  EXPECT_TRUE(manager()->OriginHasData(kOrigin3, kTemporary, kClientDB));
+  EXPECT_TRUE(
+      manager()->StorageKeyHasData(kStorageKey1, kTemporary, kClientFile));
+  EXPECT_FALSE(
+      manager()->StorageKeyHasData(kStorageKey2, kTemporary, kClientFile));
+  EXPECT_TRUE(
+      manager()->StorageKeyHasData(kStorageKey2, kTemporary, kClientDB));
+  EXPECT_TRUE(
+      manager()->StorageKeyHasData(kStorageKey3, kTemporary, kClientFile));
+  EXPECT_TRUE(
+      manager()->StorageKeyHasData(kStorageKey3, kTemporary, kClientDB));
 
-  DeleteOriginData(kOrigin3, kTemporary, {kClientFile, kClientDB});
+  DeleteStorageKeyData(kStorageKey3, kTemporary, {kClientFile, kClientDB});
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(2, deletion_callback_count());
-  EXPECT_TRUE(manager()->OriginHasData(kOrigin1, kTemporary, kClientFile));
-  EXPECT_FALSE(manager()->OriginHasData(kOrigin2, kTemporary, kClientFile));
-  EXPECT_TRUE(manager()->OriginHasData(kOrigin2, kTemporary, kClientDB));
-  EXPECT_FALSE(manager()->OriginHasData(kOrigin3, kTemporary, kClientFile));
-  EXPECT_FALSE(manager()->OriginHasData(kOrigin3, kTemporary, kClientDB));
+  EXPECT_TRUE(
+      manager()->StorageKeyHasData(kStorageKey1, kTemporary, kClientFile));
+  EXPECT_FALSE(
+      manager()->StorageKeyHasData(kStorageKey2, kTemporary, kClientFile));
+  EXPECT_TRUE(
+      manager()->StorageKeyHasData(kStorageKey2, kTemporary, kClientDB));
+  EXPECT_FALSE(
+      manager()->StorageKeyHasData(kStorageKey3, kTemporary, kClientFile));
+  EXPECT_FALSE(
+      manager()->StorageKeyHasData(kStorageKey3, kTemporary, kClientDB));
 }
 
-TEST_F(MockQuotaManagerTest, ModifiedOrigins) {
-  const url::Origin kOrigin1 = url::Origin::Create(GURL("http://host1:1/"));
-  const url::Origin kOrigin2 = url::Origin::Create(GURL("http://host2:1/"));
+TEST_F(MockQuotaManagerTest, ModifiedStorageKeys) {
+  const StorageKey kStorageKey1 =
+      StorageKey::CreateFromStringForTesting("http://host1:1/");
+  const StorageKey kStorageKey2 =
+      StorageKey::CreateFromStringForTesting("http://host2:1/");
 
   base::Time now = base::Time::Now();
   base::Time then = base::Time();
   base::TimeDelta an_hour = base::TimeDelta::FromMilliseconds(3600000);
   base::TimeDelta a_minute = base::TimeDelta::FromMilliseconds(60000);
 
-  GetModifiedOrigins(kTemporary, then, base::Time::Max());
+  GetModifiedStorageKeys(kTemporary, then, base::Time::Max());
   base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(origins().empty());
+  EXPECT_TRUE(storage_keys().empty());
 
-  manager()->AddOrigin(kOrigin1, kTemporary, {kClientFile}, now - an_hour);
+  manager()->AddStorageKey(kStorageKey1, kTemporary, {kClientFile},
+                           now - an_hour);
 
-  GetModifiedOrigins(kTemporary, then, base::Time::Max());
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_EQ(kTemporary, type());
-  EXPECT_EQ(1UL, origins().size());
-  EXPECT_EQ(1UL, origins().count(kOrigin1));
-  EXPECT_EQ(0UL, origins().count(kOrigin2));
-
-  manager()->AddOrigin(kOrigin2, kTemporary, {kClientFile}, now);
-
-  GetModifiedOrigins(kTemporary, then, base::Time::Max());
+  GetModifiedStorageKeys(kTemporary, then, base::Time::Max());
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(kTemporary, type());
-  EXPECT_EQ(2UL, origins().size());
-  EXPECT_EQ(1UL, origins().count(kOrigin1));
-  EXPECT_EQ(1UL, origins().count(kOrigin2));
+  EXPECT_EQ(1UL, storage_keys().size());
+  EXPECT_EQ(1UL, storage_keys().count(kStorageKey1));
+  EXPECT_EQ(0UL, storage_keys().count(kStorageKey2));
 
-  GetModifiedOrigins(kTemporary, then, now);
+  manager()->AddStorageKey(kStorageKey2, kTemporary, {kClientFile}, now);
+
+  GetModifiedStorageKeys(kTemporary, then, base::Time::Max());
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(kTemporary, type());
-  EXPECT_EQ(1UL, origins().size());
-  EXPECT_EQ(1UL, origins().count(kOrigin1));
-  EXPECT_EQ(0UL, origins().count(kOrigin2));
+  EXPECT_EQ(2UL, storage_keys().size());
+  EXPECT_EQ(1UL, storage_keys().count(kStorageKey1));
+  EXPECT_EQ(1UL, storage_keys().count(kStorageKey2));
 
-  GetModifiedOrigins(kTemporary, now - a_minute, now + a_minute);
+  GetModifiedStorageKeys(kTemporary, then, now);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(kTemporary, type());
-  EXPECT_EQ(1UL, origins().size());
-  EXPECT_EQ(0UL, origins().count(kOrigin1));
-  EXPECT_EQ(1UL, origins().count(kOrigin2));
+  EXPECT_EQ(1UL, storage_keys().size());
+  EXPECT_EQ(1UL, storage_keys().count(kStorageKey1));
+  EXPECT_EQ(0UL, storage_keys().count(kStorageKey2));
+
+  GetModifiedStorageKeys(kTemporary, now - a_minute, now + a_minute);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(kTemporary, type());
+  EXPECT_EQ(1UL, storage_keys().size());
+  EXPECT_EQ(0UL, storage_keys().count(kStorageKey1));
+  EXPECT_EQ(1UL, storage_keys().count(kStorageKey2));
 }
 }  // namespace storage

@@ -106,11 +106,11 @@ void GotUsageAndQuotaDataCallback(
 
 void GetUsageAndQuotaOnIOThread(
     storage::QuotaManager* manager,
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     std::unique_ptr<StorageHandler::GetUsageAndQuotaCallback> callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   manager->GetUsageAndQuotaForDevtools(
-      origin, blink::mojom::StorageType::kTemporary,
+      storage_key, blink::mojom::StorageType::kTemporary,
       base::BindOnce(&GotUsageAndQuotaDataCallback, std::move(callback)));
 }
 
@@ -413,7 +413,8 @@ void StorageHandler::GetUsageAndQuota(
   GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&GetUsageAndQuotaOnIOThread, base::RetainedRef(manager),
-                     url::Origin::Create(origin_url), std::move(callback)));
+                     blink::StorageKey(url::Origin::Create(origin_url)),
+                     std::move(callback)));
 }
 
 void StorageHandler::OverrideQuotaForOrigin(

@@ -250,7 +250,7 @@ TEST_F(CacheStorageBlobToDiskCacheTest, NotifyQuotaAboutWriteErrors) {
   auto write_error_tracker = quota_manager()->write_error_tracker();
   EXPECT_EQ(1U, write_error_tracker.size());
   auto write_error_log = write_error_tracker.find(
-      cache_storage_blob_to_disk_cache_->storage_key().origin());
+      cache_storage_blob_to_disk_cache_->storage_key());
   EXPECT_NE(write_error_tracker.end(), write_error_log);
   EXPECT_EQ(1, write_error_log->second);
 }

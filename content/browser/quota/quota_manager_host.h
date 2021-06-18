@@ -13,6 +13,10 @@
 #include "storage/browser/quota/quota_manager.h"
 #include "third_party/blink/public/mojom/quota/quota_manager_host.mojom.h"
 
+namespace blink {
+class StorageKey;
+}
+
 namespace storage {
 class QuotaManager;
 }
@@ -39,6 +43,8 @@ class QuotaManagerHost : public blink::mojom::QuotaManagerHost {
  public:
   // The owner must guarantee that |quota_manager| and |permission_context|
   // outlive this instance.
+  // TODO(crbug.com/1215208): Change the constructor to take a StorageKey
+  // instead of an Origin.
   QuotaManagerHost(
       int process_id,
       int render_frame_id,
@@ -99,8 +105,8 @@ class QuotaManagerHost : public blink::mojom::QuotaManagerHost {
   // MSG_ROUTING_NONE if this host is connected to a worker.
   const int render_frame_id_;
 
-  // The origin of the frame or worker connected to this host.
-  const url::Origin origin_;
+  // The storage key of the frame or worker connected to this host.
+  const blink::StorageKey storage_key_;
 
   // Raw pointer use is safe because the QuotaContext that indirectly owns this
   // QuotaManagerHost owner holds a reference to the QuotaManager. Therefore

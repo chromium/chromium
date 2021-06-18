@@ -908,8 +908,7 @@ TEST_F(IndexedDBFactoryTest, QuotaErrorOnDiskFull) {
   base::RunLoop().RunUntilIdle();
 
   ASSERT_EQ(1U, quota_manager()->write_error_tracker().size());
-  EXPECT_EQ(storage_key.origin(),
-            quota_manager()->write_error_tracker().begin()->first);
+  EXPECT_EQ(storage_key, quota_manager()->write_error_tracker().begin()->first);
   EXPECT_EQ(1, quota_manager()->write_error_tracker().begin()->second);
 }
 
@@ -928,8 +927,7 @@ TEST_F(IndexedDBFactoryTest, NotifyQuotaOnDatabaseError) {
       storage_key, leveldb::Status::IOError("Disk is full."), "Disk is full.");
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(1U, quota_manager()->write_error_tracker().size());
-  EXPECT_EQ(storage_key.origin(),
-            quota_manager()->write_error_tracker().begin()->first);
+  EXPECT_EQ(storage_key, quota_manager()->write_error_tracker().begin()->first);
   EXPECT_EQ(1, quota_manager()->write_error_tracker().begin()->second);
 }
 

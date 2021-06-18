@@ -28,6 +28,8 @@ namespace android_webview {
 
 class AwBrowserContext;
 
+// TODO(crbug.com/1215208): Change the functions in this class to reference
+// StorageKey instead of Origin.
 class AwQuotaManagerBridge
     : public base::RefCountedThreadSafe<AwQuotaManagerBridge> {
  public:

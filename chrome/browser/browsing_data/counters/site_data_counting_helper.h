@@ -19,12 +19,12 @@
 class Profile;
 class HostContentSettingsMap;
 
-namespace content {
-struct StorageUsageInfo;
+namespace blink {
+class StorageKey;
 }
 
-namespace url {
-class Origin;
+namespace content {
+struct StorageUsageInfo;
 }
 
 namespace storage {
@@ -52,8 +52,9 @@ class SiteDataCountingHelper {
       const scoped_refptr<storage::SpecialStoragePolicy>&
           special_storage_policy,
       const std::vector<content::StorageUsageInfo>& infos);
-  void GetQuotaOriginsCallback(const std::set<url::Origin>& origin_set,
-                               blink::mojom::StorageType type);
+  void GetQuotaStorageKeysCallback(
+      const std::set<blink::StorageKey>& storage_keys,
+      blink::mojom::StorageType type);
   void SitesWithMediaLicensesCallback(
       const std::list<BrowsingDataMediaLicenseHelper::MediaLicenseInfo>&
           media_license_info_list);

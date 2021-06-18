@@ -983,8 +983,9 @@ class CacheStorageCacheTest : public testing::Test {
   virtual bool MemoryOnly() { return false; }
 
   void SetQuota(uint64_t quota) {
-    mock_quota_manager_->SetQuota(url::Origin::Create(kTestUrl),
-                                  blink::mojom::StorageType::kTemporary, quota);
+    mock_quota_manager_->SetQuota(
+        blink::StorageKey(url::Origin::Create(kTestUrl)),
+        blink::mojom::StorageType::kTemporary, quota);
   }
 
   void SetMaxQuerySizeBytes(size_t max_bytes) {

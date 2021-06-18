@@ -28,6 +28,7 @@
 #include "storage/browser/test/mock_special_storage_policy.h"
 #include "storage/browser/test/test_file_system_context.h"
 #include "storage/common/file_system/file_system_types.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace storage {
 
@@ -149,7 +150,7 @@ class SandboxFileStreamWriterTest : public FileStreamWriterTest {
   quota_usage_and_info GetUsageAndQuotaSync() {
     quota_usage_and_info info;
     quota_manager_->GetUsageAndQuota(
-        url::Origin::Create(GURL(kURLOrigin)),
+        blink::StorageKey::CreateFromStringForTesting(kURLOrigin),
         blink::mojom::StorageType::kTemporary,
         base::BindLambdaForTesting([&](blink::mojom::QuotaStatusCode status,
                                        int64_t usage, int64_t quota) {
@@ -161,8 +162,9 @@ class SandboxFileStreamWriterTest : public FileStreamWriterTest {
   }
 
   void SetQuota(int64_t quota) {
-    quota_manager_->SetQuota(url::Origin::Create(GURL(kURLOrigin)),
-                             blink::mojom::StorageType::kTemporary, quota);
+    quota_manager_->SetQuota(
+        blink::StorageKey::CreateFromStringForTesting(kURLOrigin),
+        blink::mojom::StorageType::kTemporary, quota);
   }
 
   int64_t GetFreeQuota() {

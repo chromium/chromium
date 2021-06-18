@@ -9,6 +9,7 @@
 #include "base/single_thread_task_runner.h"
 #include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace storage {
 
@@ -36,7 +37,8 @@ void MockQuotaManagerProxy::GetUsageAndQuota(
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     QuotaManager::UsageAndQuotaCallback callback) {
   if (mock_quota_manager_) {
-    mock_quota_manager_->GetUsageAndQuota(origin, type, std::move(callback));
+    mock_quota_manager_->GetUsageAndQuota(blink::StorageKey(origin), type,
+                                          std::move(callback));
   }
 }
 
@@ -62,7 +64,7 @@ void MockQuotaManagerProxy::NotifyStorageModified(
   last_notified_type_ = type;
   last_notified_delta_ = delta;
   if (mock_quota_manager_) {
-    mock_quota_manager_->UpdateUsage(origin, type, delta);
+    mock_quota_manager_->UpdateUsage(blink::StorageKey(origin), type, delta);
   }
   if (callback)
     callback_task_runner->PostTask(FROM_HERE, std::move(callback));

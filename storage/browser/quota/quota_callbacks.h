@@ -18,8 +18,8 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom-forward.h"
 
-namespace url {
-class Origin;
+namespace blink {
+class StorageKey;
 }
 
 namespace storage {
@@ -41,12 +41,12 @@ using UsageWithBreakdownCallback =
 using AvailableSpaceCallback =
     base::OnceCallback<void(blink::mojom::QuotaStatusCode, int64_t)>;
 using StatusCallback = base::OnceCallback<void(blink::mojom::QuotaStatusCode)>;
-using GetOriginsCallback =
-    base::OnceCallback<void(const std::set<url::Origin>& origins,
+using GetStorageKeysCallback =
+    base::OnceCallback<void(const std::set<blink::StorageKey>& storage_keys,
                             blink::mojom::StorageType type)>;
 using GetUsageInfoCallback = base::OnceCallback<void(UsageInfoEntries)>;
-using GetOriginCallback =
-    base::OnceCallback<void(const absl::optional<url::Origin>&)>;
+using GetStorageKeyCallback = base::OnceCallback<void(
+    const absl::optional<blink::StorageKey>& storage_key)>;
 
 // Simple template wrapper for a callback queue.
 template <typename CallbackType, typename... Args>
