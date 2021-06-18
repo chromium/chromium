@@ -484,6 +484,8 @@ void ArcSessionImpl::DoStartMiniInstance(size_t num_cores_disabled) {
       delegate_->GetChannel() != version_info::Channel::STABLE &&
       delegate_->GetChannel() != version_info::Channel::BETA;
   params.arc_custom_tabs_experiment = is_custom_tab_enabled;
+  params.enable_image_copy_paste_compat =
+      base::FeatureList::IsEnabled(arc::kImageCopyPasteCompatFeature);
   params.lcd_density = lcd_density_;
   params.num_cores_disabled = num_cores_disabled;
 

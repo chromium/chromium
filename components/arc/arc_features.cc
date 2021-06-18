@@ -57,6 +57,10 @@ const base::Feature kEnableWebAppShareFeature{
 const base::Feature kFilePickerExperimentFeature{
     "ArcFilePickerExperiment", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Controls image copy & paste app compat feature in ARC.
+const base::Feature kImageCopyPasteCompatFeature{
+    "ArcImageCopyPasteCompat", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls experimental 64-bit native bridge support for ARC on boards that
 // have 64-bit native bridge support available but not yet enabled.
 const base::Feature kNativeBridge64BitSupportExperimentFeature{

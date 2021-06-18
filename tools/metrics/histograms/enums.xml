@@ -48913,6 +48913,7 @@ from previous Chrome versions.
   <int value="1118109174" label="enable-launcher-search-provider-api"/>
   <int value="1118339487" label="MemoriesDebug:disabled"/>
   <int value="1120428727" label="TabGridLayoutAndroid:enabled"/>
+  <int value="1122820469" label="ArcImageCopyPasteCompat:enabled"/>
   <int value="1126061778" label="CaptureThumbnailOnLoadFinished:enabled"/>
   <int value="1126956909" label="UseXpsForPrintingFromPdf:disabled"/>
   <int value="1127085005" label="TreatUnsafeDownloadsAsActive:enabled"/>
@@ -49065,6 +49066,7 @@ from previous Chrome versions.
   <int value="1249215617" label="SelectToSpeakNavigationControl:enabled"/>
   <int value="1250071868" label="disable-timezone-tracking-option"/>
   <int value="1250776846" label="DnsProxyEnableDOH:enabled"/>
+  <int value="1251663392" label="ArcImageCopyPasteCompat:disabled"/>
   <int value="1253001092" label="FeedShare:enabled"/>
   <int value="1253698118" label="ash-disable-stable-overview-order"/>
   <int value="1253720084" label="CrOSEnforceSystemAecAgc:disabled"/>
