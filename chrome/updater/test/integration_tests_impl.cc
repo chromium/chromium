@@ -120,7 +120,7 @@ void RunWake(UpdaterScope scope, int expected_exit_code) {
 }
 
 void SetupFakeUpdaterPrefs(const base::Version& version) {
-  std::unique_ptr<GlobalPrefs> global_prefs =
+  scoped_refptr<GlobalPrefs> global_prefs =
       CreateGlobalPrefs(GetUpdaterScope());
   ASSERT_TRUE(global_prefs) << "No global prefs.";
   global_prefs->SetActiveVersion(version.GetString());
@@ -163,7 +163,7 @@ void SetupFakeUpdaterHigherVersion(UpdaterScope scope) {
 
 void SetExistenceCheckerPath(const std::string& app_id,
                              const base::FilePath& path) {
-  std::unique_ptr<GlobalPrefs> global_prefs =
+  scoped_refptr<GlobalPrefs> global_prefs =
       CreateGlobalPrefs(GetUpdaterScope());
   base::MakeRefCounted<PersistedData>(global_prefs->GetPrefService())
       ->SetExistenceCheckerPath(app_id, path);
@@ -171,7 +171,7 @@ void SetExistenceCheckerPath(const std::string& app_id,
 }
 
 void SetServerStarts(int value) {
-  std::unique_ptr<GlobalPrefs> global_prefs =
+  scoped_refptr<GlobalPrefs> global_prefs =
       CreateGlobalPrefs(GetUpdaterScope());
   for (int i = 0; i <= value; ++i) {
     global_prefs->CountServerStarts();
@@ -180,7 +180,7 @@ void SetServerStarts(int value) {
 }
 
 void ExpectAppUnregisteredExistenceCheckerPath(const std::string& app_id) {
-  std::unique_ptr<GlobalPrefs> global_prefs =
+  scoped_refptr<GlobalPrefs> global_prefs =
       CreateGlobalPrefs(GetUpdaterScope());
   auto persisted_data =
       base::MakeRefCounted<PersistedData>(global_prefs->GetPrefService());

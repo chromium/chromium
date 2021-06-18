@@ -124,6 +124,8 @@ if (is_win || is_mac) {
       "update_service_internal_impl.h",
       "update_service_internal_impl_inactive.cc",
       "update_service_internal_impl_inactive.h",
+      "update_service_internal_impl_qualifying.cc",
+      "update_service_internal_impl_qualifying.h",
       "updater.cc",
       "updater.h",
       "updater_scope.cc",
@@ -520,7 +522,10 @@ if (is_win || is_mac) {
         "//third_party/ocmock",
       ]
 
-      data = [ "//chrome/test/data/updater/updater_setup_test_dmg.dmg" ]
+      data = [
+        "//chrome/test/data/updater/updater_setup_test_dmg.dmg",
+        "//chrome/test/data/updater/updater_qualification_app_dmg.crx",
+      ]
 
       data_deps = [
         "//chrome/updater/mac:updater_bundle",

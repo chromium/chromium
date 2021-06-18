@@ -13,6 +13,8 @@
 #include "chrome/updater/test/integration_test_commands.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
+class GURL;
+
 namespace net {
 namespace test_server {
 
@@ -48,6 +50,8 @@ class ScopedServer {
   // fail the test during destruction.
   void ExpectOnce(const std::string& request_body_regex,
                   const std::string& response_body);
+
+  const GURL& base_url() const { return test_server_->base_url(); }
 
  private:
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(

@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/checked_math.h"
+#include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/strings/strcat.h"
@@ -21,6 +22,7 @@
 #include "base/time/time.h"
 #include "base/version.h"
 #include "build/build_config.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/prefs.h"
@@ -111,6 +113,10 @@ class IntegrationTest : public ::testing::Test {
     test_commands_->SetupFakeUpdaterHigherVersion();
   }
 
+  void SetupFakeUpdaterLowerVersion() {
+    test_commands_->SetupFakeUpdaterLowerVersion();
+  }
+
   void SetActive(const std::string& app_id) {
     test_commands_->SetActive(app_id);
   }
@@ -196,6 +202,76 @@ TEST_F(IntegrationTest, SelfUninstallOutdatedUpdater) {
   Uninstall();
   Clean();
 }
+
+#if defined(OS_MAC)
+// TODO(crbug.com/1205924): Enable QualifyUpdater test on Win.
+TEST_F(IntegrationTest, QualifyUpdater) {
+  ScopedServer test_server(test_commands_);
+  Install();
+  ExpectInstalled();
+  SleepFor(12);
+  SetupFakeUpdaterLowerVersion();
+  ExpectVersionNotActive(kUpdaterVersion);
+
+  constexpr char kUpdaterTestCRXName[] = "updater_qualification_app_dmg.crx";
+
+  std::string request = R"(.*"appid":")";
+  request += kQualificationAppId;
+  request += R"(".*)";
+
+  std::string response_body =
+      R"()]}')"
+      "\n"
+      R"({"response":{"protocol":"3.1","app":[{"appid":")";
+  response_body += kQualificationAppId;
+  response_body += R"(","status":"ok","updatecheck":{"status":"ok",)"
+                   R"("urls":{"url":[{"codebase":")";
+
+  response_body += test_server.base_url().spec();
+
+  response_body +=
+      R"("}]},)"
+      R"("manifest":{"version":"0.2",)"
+      R"("run":"updater_qualification_app_dmg.dmg","packages":{"package":)"
+      R"([{"name":"updater_qualification_app_dmg.crx",)"
+      R"("hash_sha256":)"
+      R"("aba5c3f0eb5f76ea2d6ca54e3825b0665d9cfe03cb7281f18172f651da27ebbe"})"
+      R"(]}}}}]}})";
+
+  test_server.ExpectOnce(request, response_body);
+
+  base::FilePath test_data_path;
+  ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_path));
+
+  base::FilePath crx_path = test_data_path.Append(FILE_PATH_LITERAL("updater"))
+                                .Append(FILE_PATH_LITERAL(kUpdaterTestCRXName));
+
+  ASSERT_TRUE(base::PathExists(crx_path));
+
+  std::string crx_bytes;
+  base::ReadFileToString(crx_path, &crx_bytes);
+  test_server.ExpectOnce(".*", crx_bytes);
+
+  test_server.ExpectOnce(R"(.*"eventresult":1,"eventtype":3,"nextversion":)"
+                         R"("0.2","previousversion":"0.1".*)",
+                         R"()]}')");
+
+  request = R"(.*)";
+  request += kUpdaterAppId;
+  request += R"(.*)";
+  test_server.ExpectOnce(request, R"()]}')");
+
+  RunWake(0);
+
+  SleepFor(12);
+  RunWake(0);
+
+  ExpectVersionActive(kUpdaterVersion);
+
+  Uninstall();
+  Clean();
+}
+#endif  // defined(OS_MAC)
 
 TEST_F(IntegrationTest, RegisterTestApp) {
   RegisterTestApp();

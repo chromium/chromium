@@ -76,7 +76,7 @@ int UpdaterPrefsImpl::CountServerStarts() {
   return starts;
 }
 
-std::unique_ptr<GlobalPrefs> CreateGlobalPrefs(UpdaterScope scope) {
+scoped_refptr<GlobalPrefs> CreateGlobalPrefs(UpdaterScope scope) {
   std::unique_ptr<ScopedPrefsLock> lock =
       AcquireGlobalPrefsLock(scope, base::TimeDelta::FromMinutes(2));
   if (!lock)
@@ -99,11 +99,11 @@ std::unique_ptr<GlobalPrefs> CreateGlobalPrefs(UpdaterScope scope) {
   pref_registry->RegisterTimePref(kPrefUpdateTime, base::Time());
   pref_registry->RegisterIntegerPref(kPrefServerStarts, 0);
 
-  return std::make_unique<UpdaterPrefsImpl>(
+  return base::MakeRefCounted<UpdaterPrefsImpl>(
       std::move(lock), pref_service_factory.Create(pref_registry));
 }
 
-std::unique_ptr<LocalPrefs> CreateLocalPrefs(UpdaterScope scope) {
+scoped_refptr<LocalPrefs> CreateLocalPrefs(UpdaterScope scope) {
   const absl::optional<base::FilePath> local_prefs_dir =
       GetVersionedDirectory(scope);
   if (!local_prefs_dir)
@@ -118,7 +118,7 @@ std::unique_ptr<LocalPrefs> CreateLocalPrefs(UpdaterScope scope) {
   pref_registry->RegisterBooleanPref(kPrefQualified, false);
   pref_registry->RegisterTimePref(kPrefUpdateTime, base::Time());
 
-  return std::make_unique<UpdaterPrefsImpl>(
+  return base::MakeRefCounted<UpdaterPrefsImpl>(
       nullptr, pref_service_factory.Create(pref_registry));
 }
 

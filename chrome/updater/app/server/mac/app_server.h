@@ -53,6 +53,8 @@ class AppServerMac : public AppServer {
   void MarkTaskStarted();
   void AcknowledgeTaskCompletion();
 
+  base::TimeDelta ServerKeepAlive();
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::scoped_nsobject<CRUUpdateCheckServiceXPCDelegate>

@@ -94,7 +94,8 @@ void CheckForUpdatesTask::MaybeCheckForUpdates() {
                  scoped_refptr<update_client::Configurator> config,
                  UpdateService::Result result) {
                 const int exit_code = static_cast<int>(result);
-                VLOG(0) << "UpdateAll complete: exit_code = " << exit_code;
+                VLOG(0) << "Check for update task complete: exit_code = "
+                        << exit_code;
                 if (result == UpdateService::Result::kSuccess) {
                   config->GetPrefService()->SetTime(
                       kPrefUpdateTime, base::Time::NowFromSystemTime());

@@ -15,6 +15,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/task/post_task.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "base/time/time.h"
 #include "chrome/updater/app/app.h"
 #include "chrome/updater/app/app_server.h"
 #import "chrome/updater/app/server/mac/app_server.h"
@@ -98,11 +99,17 @@ void AppServerMac::MarkTaskStarted() {
   ++tasks_running_;
 }
 
+base::TimeDelta AppServerMac::ServerKeepAlive() {
+  int seconds =
+      config() ? config()->ServerKeepAliveSeconds() : kServerKeepAliveSeconds;
+  DVLOG(2) << "ServerKeepAliveSeconds: " << seconds;
+  return base::TimeDelta::FromSeconds(seconds);
+}
+
 void AppServerMac::TaskCompleted() {
   main_task_runner_->PostDelayedTask(
       FROM_HERE, base::BindOnce(&AppServerMac::AcknowledgeTaskCompletion, this),
-      base::TimeDelta::FromSeconds(config() ? config()->ServerKeepAliveSeconds()
-                                            : kServerKeepAliveSeconds));
+      ServerKeepAlive());
 }
 
 void AppServerMac::AcknowledgeTaskCompletion() {

@@ -5,8 +5,6 @@
 #ifndef CHROME_UPDATER_APP_APP_SERVER_H_
 #define CHROME_UPDATER_APP_APP_SERVER_H_
 
-#include <memory>
-
 #include "base/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/updater/app/app.h"
@@ -16,7 +14,6 @@ namespace updater {
 
 class UpdateServiceInternal;
 class GlobalPrefs;
-class LocalPrefs;
 class UpdateService;
 
 // AppServer runs as the updater server process. Multiple servers of different
@@ -65,7 +62,6 @@ class AppServer : public App {
   // the system is consistent with an incomplete swap, ModeCheck may have the
   // side effect of promoting this candidate to the active candidate.
   base::OnceClosure ModeCheck();
-  void Qualify(std::unique_ptr<LocalPrefs> local_prefs);
   bool SwapVersions(GlobalPrefs* global_prefs);
 
   // Uninstalls the updater if it doesn't manage any apps, aside from itself.

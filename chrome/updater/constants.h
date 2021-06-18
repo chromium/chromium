@@ -13,6 +13,9 @@ namespace updater {
 // The updater specific app ID.
 extern const char kUpdaterAppId[];
 
+// The app ID used to qualify the updater.
+extern const char kQualificationAppId[];
+
 // "0.0.0.0". Historically, a null version has been used to indicate a
 // new install.
 extern const char kNullVersion[];

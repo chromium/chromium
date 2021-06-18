@@ -35,7 +35,7 @@ class ExternalConstants;
 
 class Configurator : public update_client::Configurator {
  public:
-  explicit Configurator(std::unique_ptr<UpdaterPrefs> prefs);
+  explicit Configurator(scoped_refptr<UpdaterPrefs> prefs);
   Configurator(const Configurator&) = delete;
   Configurator& operator=(const Configurator&) = delete;
 
@@ -75,7 +75,7 @@ class Configurator : public update_client::Configurator {
   friend class base::RefCountedThreadSafe<Configurator>;
   ~Configurator() override;
 
-  std::unique_ptr<UpdaterPrefs> prefs_;
+  scoped_refptr<UpdaterPrefs> prefs_;
   std::unique_ptr<ExternalConstants> external_constants_;
   std::unique_ptr<ActivityDataService> activity_data_service_;
   scoped_refptr<update_client::NetworkFetcherFactory> network_fetcher_factory_;

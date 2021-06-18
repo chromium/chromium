@@ -4,7 +4,6 @@
 
 #include "chrome/updater/app/app_uninstall.h"
 
-#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -12,6 +11,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
@@ -44,7 +44,7 @@ class AppUninstall : public App {
   // Conditionally set, if prefs must be acquired for some uninstall scenarios.
   // Creating the prefs instance may result in deadlocks. Therefore, the prefs
   // lock can't be taken in all cases.
-  std::unique_ptr<GlobalPrefs> global_prefs_;
+  scoped_refptr<GlobalPrefs> global_prefs_;
 };
 
 void AppUninstall::Initialize() {

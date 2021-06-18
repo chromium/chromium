@@ -21,12 +21,15 @@
 #include "base/strings/strcat.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/threading/platform_thread.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/common/mac/launchd.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/crash_client.h"
 #include "chrome/updater/crash_reporter.h"
+#include "chrome/updater/launchd_util.h"
 #import "chrome/updater/mac/mac_util.h"
 #import "chrome/updater/mac/xpc_service_names.h"
 #include "chrome/updater/updater_branding.h"
@@ -366,6 +369,9 @@ int PromoteCandidate(UpdaterScope scope) {
 
   if (!StartLaunchdServiceJob(scope))
     return setup_exit_codes::kFailedToStartLaunchdActiveServiceJob;
+
+  // Wait for launchd to finish the load operation for the update service.
+  base::PlatformThread::Sleep(base::TimeDelta::FromSeconds(2));
 
   return setup_exit_codes::kSuccess;
 }

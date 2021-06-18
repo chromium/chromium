@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/logging.h"
 #include "chrome/updater/test/integration_test_commands.h"
 #include "chrome/updater/test/integration_tests_impl.h"
 #include "net/http/http_status_code.h"
@@ -45,6 +46,7 @@ void ScopedServer::ExpectOnce(const std::string& request_body_regex,
 
 std::unique_ptr<net::test_server::HttpResponse> ScopedServer::HandleRequest(
     const net::test_server::HttpRequest& request) {
+  VLOG(0) << "HandleRequest: " << request.content;
   if (request_body_regexes_.empty()) {
     ADD_FAILURE() << "Unexpected request with body: " << request.content;
     auto response = std::make_unique<net::test_server::BasicHttpResponse>();

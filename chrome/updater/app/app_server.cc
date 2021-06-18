@@ -27,6 +27,7 @@
 #include "chrome/updater/update_service_internal.h"
 #include "chrome/updater/update_service_internal_impl.h"
 #include "chrome/updater/update_service_internal_impl_inactive.h"
+#include "chrome/updater/update_service_internal_impl_qualifying.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/updater_version.h"
 #include "components/prefs/pref_service.h"
@@ -51,8 +52,7 @@ void AppServer::Initialize() {
 }
 
 base::OnceClosure AppServer::ModeCheck() {
-  std::unique_ptr<GlobalPrefs> global_prefs =
-      CreateGlobalPrefs(updater_scope());
+  scoped_refptr<GlobalPrefs> global_prefs = CreateGlobalPrefs(updater_scope());
   if (!global_prefs) {
     return base::BindOnce(&AppServer::Shutdown, this,
                           kErrorFailedToLockPrefsMutex);
@@ -76,10 +76,16 @@ base::OnceClosure AppServer::ModeCheck() {
   }
 
   if (active_version != base::Version("0") && active_version != this_version) {
-    std::unique_ptr<LocalPrefs> local_prefs = CreateLocalPrefs(updater_scope());
+    scoped_refptr<LocalPrefs> local_prefs = CreateLocalPrefs(updater_scope());
     if (!local_prefs->GetQualified()) {
       global_prefs = nullptr;
-      return base::BindOnce(&AppServer::Qualify, this, std::move(local_prefs));
+      config_ = base::MakeRefCounted<Configurator>(local_prefs);
+      return IsInternalService()
+                 ? base::BindOnce(&AppServer::ActiveDutyInternal, this,
+                                  MakeQualifyingUpdateServiceInternal(
+                                      config_, local_prefs))
+                 : base::BindOnce(&AppServer::ActiveDuty, this,
+                                  MakeInactiveUpdateService());
     }
   }
 
@@ -89,6 +95,8 @@ base::OnceClosure AppServer::ModeCheck() {
   }
 
   if (IsInternalService()) {
+    config_ =
+        base::MakeRefCounted<Configurator>(CreateLocalPrefs(updater_scope()));
     return base::BindOnce(&AppServer::ActiveDutyInternal, this,
                           base::MakeRefCounted<UpdateServiceInternalImpl>());
   }
@@ -138,21 +146,6 @@ void AppServer::MaybeUninstall() {
 
 void AppServer::FirstTaskRun() {
   std::move(first_task_).Run();
-}
-
-void AppServer::Qualify(std::unique_ptr<LocalPrefs> local_prefs) {
-  // For now, assume qualification succeeds.
-  DVLOG(2) << __func__;
-  local_prefs->SetQualified(true);
-  PrefsCommitPendingWrites(local_prefs->GetPrefService());
-
-  // Start ActiveDuty with inactive service implementations. To use active
-  // implementations, the server would have to ModeCheck again.
-  if (IsInternalService()) {
-    ActiveDutyInternal(MakeInactiveUpdateServiceInternal());
-  } else {
-    ActiveDuty(MakeInactiveUpdateService());
-  }
 }
 
 bool AppServer::SwapVersions(GlobalPrefs* global_prefs) {

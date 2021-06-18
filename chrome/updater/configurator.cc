@@ -4,8 +4,6 @@
 
 #include "chrome/updater/configurator.h"
 
-#include <utility>
-
 #include "base/numerics/ranges.h"
 #include "base/rand_util.h"
 #include "base/version.h"
@@ -44,8 +42,8 @@ const int kDelayOneHour = kDelayOneMinute * 60;
 
 namespace updater {
 
-Configurator::Configurator(std::unique_ptr<UpdaterPrefs> prefs)
-    : prefs_(std::move(prefs)),
+Configurator::Configurator(scoped_refptr<UpdaterPrefs> prefs)
+    : prefs_(prefs),
       external_constants_(CreateExternalConstants()),
       activity_data_service_(
           std::make_unique<ActivityDataService>(GetUpdaterScope())),
