@@ -8,6 +8,7 @@
 
 {% block extra_uses_permissions %}
     <uses-permission android:name="android.permission.ACCESS_MOCK_LOCATION" />
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.READ_LOGS"/>
     <uses-permission android:name="android.permission.SET_ANIMATION_SCALE"/>
 {% endblock %}

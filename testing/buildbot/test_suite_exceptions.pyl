@@ -874,6 +874,7 @@
       },
       'android-11-x86-fyi-rel': {
         'args': [
+          '--avd-config=../../tools/android/avd/proto/generic_playstore_android30.textpb',
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11.chrome_public_test_apk.filter',
           '--timeout-scale=2.0',
         ],
@@ -881,6 +882,21 @@
         # are fixed.
         'swarming': {
           'shards': 30,
+          'named_caches': [
+            {
+              'name': 'avd_generic_playstore_android30',
+              'path': '.android',
+            },
+            {
+              'name': 'system_images_android_30_google_apis_playstore_x86',
+              'path': '.emulator_sdk',
+            },
+          ],
+          'dimension_sets': [
+            {
+              'machine_type': 'e2-standard-8', # use 8-core to shorten runtime
+            },
+          ],
         },
       },
       'android-arm64-proguard-rel': {
