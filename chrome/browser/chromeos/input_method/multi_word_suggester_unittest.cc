@@ -263,6 +263,38 @@ TEST(MultiWordSuggesterTest,
   EXPECT_FALSE(suggester.Suggest(u"how yo", 6, 6));
 }
 
+TEST(MultiWordSuggesterTest,
+     DoesNotTrackLastSuggestionIfCursorBeforeSuggestionStartPos) {
+  FakeSuggestionHandler suggestion_handler;
+  MultiWordSuggester suggester(&suggestion_handler);
+  int focused_context_id = 5;
+
+  std::vector<TextSuggestion> suggestions = {
+      TextSuggestion{.mode = TextSuggestionMode::kCompletion,
+                     .type = TextSuggestionType::kMultiWord,
+                     .text = " for the example"},
+  };
+
+  suggester.OnFocus(focused_context_id);
+  suggester.OnSurroundingTextChanged(u"this is some text", 17, 17);
+  suggester.OnExternalSuggestionsUpdated(suggestions);
+
+  suggester.OnSurroundingTextChanged(u"this is some text ", 18, 18);
+  suggester.Suggest(u"this is some text ", 18, 18);
+  suggester.OnSurroundingTextChanged(u"this is some text f", 19, 19);
+  suggester.Suggest(u"this is some text f", 19, 19);
+  suggester.OnSurroundingTextChanged(u"this is some text fo", 20, 20);
+  suggester.Suggest(u"this is some text fo", 20, 20);
+  suggester.OnSurroundingTextChanged(u"this is some text f", 19, 19);
+  suggester.Suggest(u"this is some text f", 19, 19);
+  suggester.OnSurroundingTextChanged(u"this is some text ", 18, 18);
+  suggester.Suggest(u"this is some text ", 18, 18);
+  suggester.OnSurroundingTextChanged(u"this is some text", 17, 17);
+
+  EXPECT_TRUE(suggester.Suggest(u"this is some text", 17, 17));
+  EXPECT_FALSE(suggester.Suggest(u"this is some tex", 16, 16));
+}
+
 TEST(MultiWordSuggesterTest, ReturnsGenericActionIfNoSuggestionShown) {
   FakeSuggestionHandler suggestion_handler;
   MultiWordSuggester suggester(&suggestion_handler);

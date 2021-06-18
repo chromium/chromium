@@ -156,7 +156,8 @@ SuggestionStatus MultiWordSuggester::HandleKeyEvent(const ui::KeyEvent& event) {
 bool MultiWordSuggester::Suggest(const std::u16string& text,
                                  size_t cursor_pos,
                                  size_t anchor_pos) {
-  if (!suggestion_state_ || cursor_pos != text.length())
+  if (!suggestion_state_ || cursor_pos != text.length() ||
+      suggestion_state_->start_pos > text.length())
     return false;
 
   auto last_suggestion_shown = suggestion_state_.value();
