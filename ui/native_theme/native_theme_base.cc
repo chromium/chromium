@@ -1432,8 +1432,9 @@ SkColor NativeThemeBase::GetDarkModeControlColor(
     case kButtonBorder:
     case kButtonFill:
       return SkColorSetRGB(0x6B, 0x6B, 0x6B);
-    case kLightenLayer:
     case kAutoCompleteBackground:
+      return SkColorSetARGB(0x66, 0x46, 0x5a, 0x7e);
+    case kLightenLayer:
     case kBackground:
       return SkColorSetRGB(0x3B, 0x3B, 0x3B);
     case kBorder:
