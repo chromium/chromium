@@ -139,6 +139,16 @@ TranslatePrefs::TranslatePrefs(PrefService* user_prefs)
 
 TranslatePrefs::~TranslatePrefs() = default;
 
+// static
+std::string TranslatePrefs::MapPreferenceName(const std::string& pref_name) {
+  if (pref_name == prefs::kPrefAlwaysTranslateList) {
+    return "translate_allowlists";
+  } else if (pref_name == kPrefNeverPromptSitesDeprecated) {
+    return "translate_site_blocklist";
+  }
+  return pref_name;
+}
+
 bool TranslatePrefs::IsOfferTranslateEnabled() const {
   return prefs_->GetBoolean(prefs::kOfferTranslateEnabled);
 }

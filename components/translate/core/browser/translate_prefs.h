@@ -128,6 +128,12 @@ class TranslatePrefs {
 
   ~TranslatePrefs();
 
+  // Some existing preferences do not follow inclusive naming. Existing
+  // preference names cannot be renamed since values are saved client side.
+  // Map these to inclusive alternatives to reduce references to those names in
+  // the rest of the code.
+  static std::string MapPreferenceName(const std::string& pref_name);
+
   // Checks if the "offer translate" (i.e. automatic translate bubble) feature
   // is enabled.
   bool IsOfferTranslateEnabled() const;
