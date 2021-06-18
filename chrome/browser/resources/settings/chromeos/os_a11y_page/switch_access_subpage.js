@@ -7,6 +7,8 @@
  * Switch Access settings.
  */
 
+import {getLabelForAssignment} from './switch_access_action_assignment_pane.m.js';
+
 /**
  * The portion of the setting name common to all Switch Access preferences.
  * @const

@@ -21,6 +21,7 @@ import './guest_os/guest_os_shared_paths.js';
 import './os_a11y_page/os_a11y_page.m.js';
 import './os_a11y_page/manage_a11y_page.m.js';
 import './os_a11y_page/switch_access_action_assignment_dialog.m.js';
+import './os_a11y_page/switch_access_action_assignment_pane.m.js';
 import './os_a11y_page/switch_access_setup_guide_dialog.m.js';
 import './os_a11y_page/switch_access_subpage.m.js';
 import './os_a11y_page/tts_subpage.m.js';

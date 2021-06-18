@@ -223,6 +223,7 @@ suite('ManageAccessibilityPageTests', function() {
 
     // This should update the error field at the bottom of the dialog.
     const errorText = page.$$('#switchAccessActionAssignmentDialog')
+                          .$$('#switchAccessActionAssignmentPane')
                           .$$('#error')
                           .textContent.trim();
     assertEquals('Keys do not match. Press any key to exit.', errorText);
