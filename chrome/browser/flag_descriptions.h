@@ -1194,6 +1194,9 @@ extern const char kQuickActionSearchWidgetAndroidDescription[];
 extern const char kQuietNotificationPromptsName[];
 extern const char kQuietNotificationPromptsDescription[];
 
+extern const char kSettingsAppNotificationSettingsName[];
+extern const char kSettingsAppNotificationSettingsDescription[];
+
 extern const char kAbusiveNotificationPermissionRevocationName[];
 extern const char kAbusiveNotificationPermissionRevocationDescription[];
 

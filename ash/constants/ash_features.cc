@@ -840,6 +840,10 @@ const base::Feature kSeparateNetworkIcons{"SeparateNetworkIcons",
 const base::Feature kSessionManagerLongKillTimeout{
     "SessionManagerLongKillTimeout", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Removes notifier settings from quick settings view.
+const base::Feature kSettingsAppNotificationSettings{
+    "SettingsAppNotificationSettings", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables or disables the new shimless rma flow.
 const base::Feature kShimlessRMAFlow{"ShimlessRMAFlow",
                                      base::FEATURE_DISABLED_BY_DEFAULT};
@@ -1330,6 +1334,10 @@ bool IsScalableStatusAreaEnabled() {
 
 bool IsSeparateNetworkIconsEnabled() {
   return base::FeatureList::IsEnabled(kSeparateNetworkIcons);
+}
+
+bool IsSettingsAppNotificationSettingsEnabled() {
+  return base::FeatureList::IsEnabled(kSettingsAppNotificationSettings);
 }
 
 bool IsShimlessRMAFlowEnabled() {

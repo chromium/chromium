@@ -2849,6 +2849,10 @@ This file contains the strings for ash.
       <message name="IDS_ASH_MESSAGE_CENTER_NO_NOTIFIERS" desc="The message displayed in the message center when there are no notification sources.">
         Nothing to see just yet
       </message>
+      <message name="IDS_ASH_MESSAGE_CENTER_NOTIFICATION_SETTINGS_LABEL" desc="The message displayed in the quick settings menu to instruct users that notification management
+        has been migrated to the settings app.">
+        To manage notifications, go to Settings
+      </message>
       <if expr="is_chrome_branded">
         <message name="IDS_ASH_MESSAGE_CENTER_SYSTEM_APP_NAME" desc="The source of a system-generated notification, as displayed to the user.">
           Chrome OS

@@ -2081,6 +2081,14 @@ const char kQuietNotificationPromptsDescription[] =
     "When a site wishes to show notifications, the usual modal dialog is "
     "replaced with a quieter version.";
 
+const char kSettingsAppNotificationSettingsName[] =
+    "Split notification permission settings";
+const char kSettingsAppNotificationSettingsDescription[] =
+    "Remove per-app notification permissions settings from the quick settings "
+    "menu. Notification permission settings will be split between the "
+    "lacros-chrome browser's notification permission page "
+    "and the ChromeOS settings app.";
+
 const char kAbusiveNotificationPermissionRevocationName[] =
     "Abusive notification permission revocation";
 const char kAbusiveNotificationPermissionRevocationDescription[] =
