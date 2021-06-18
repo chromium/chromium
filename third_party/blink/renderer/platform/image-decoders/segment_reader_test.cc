@@ -128,4 +128,25 @@ TEST_F(ParkableImageSegmentReaderTest, GetAsSkData) {
   segment_reader->UnlockData();
 }
 
+TEST_F(ParkableImageSegmentReaderTest, GetAsSkDataLongLived) {
+  const size_t kDataSize = 3.5 * 4096;
+  char data[kDataSize];
+  PrepareReferenceData(data, kDataSize);
+
+  auto shared_buffer = SharedBuffer::Create();
+  auto parkable_image = ParkableImage::Create(kDataSize);
+  shared_buffer->Append(data, kDataSize);
+  parkable_image->Append(shared_buffer.get(), parkable_image->size());
+
+  auto segment_reader =
+      SegmentReader::CreateFromParkableImage(std::move(parkable_image));
+  auto sk_data = segment_reader->GetAsSkData();
+
+  // Make it so that |sk_data| is the only reference to the ParkableImage.
+  segment_reader = nullptr;
+  parkable_image = nullptr;
+
+  EXPECT_FALSE(memcmp(shared_buffer->Data(), sk_data->bytes(), kDataSize));
+}
+
 }  // namespace blink
