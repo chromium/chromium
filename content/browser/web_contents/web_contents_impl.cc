@@ -5509,8 +5509,7 @@ void WebContentsImpl::DidFinishNavigation(NavigationHandle* navigation_handle) {
     // ReadyToCommitNavigation instead?
     // TODO(https://crbug.com/1194880): Maybe sync RendererPreferences as well?
     if (value_changed_due_to_override ||
-        navigation_handle->IsServedFromBackForwardCache() ||
-        navigation_handle->IsPrerenderedPageActivation()) {
+        NavigationRequest::From(navigation_handle)->IsPageActivation()) {
       SetWebPreferences(*web_preferences_.get());
     }
   }
