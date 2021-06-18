@@ -87,8 +87,6 @@ source_set("core") {
   ]
 
   sources = [
-    "crw_error_page_helper.h",
-    "crw_error_page_helper.mm",
     "crw_navigation_item_holder.h",
     "crw_navigation_item_holder.mm",
     "error_retry_state_machine.h",
@@ -118,6 +116,8 @@ source_set("wk_navigation_util") {
   ]
 
   sources = [
+    "crw_error_page_helper.h",
+    "crw_error_page_helper.mm",
     "nscoder_util.h",
     "nscoder_util.mm",
     "wk_navigation_util.h",

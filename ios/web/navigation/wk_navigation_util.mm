@@ -13,6 +13,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/values.h"
 #include "ios/web/common/features.h"
+#import "ios/web/navigation/crw_error_page_helper.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/web_client.h"
 #include "net/base/escape.h"
@@ -88,6 +89,12 @@ bool URLNeedsUserAgentType(const GURL& url) {
 
   if (url.SchemeIs(url::kFileScheme) && IsRestoreSessionUrl(url))
     return true;
+
+  if (url.SchemeIs(url::kFileScheme) &&
+      base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage) &&
+      [CRWErrorPageHelper isErrorPageFileURL:url]) {
+    return true;
+  }
 
   if (url.SchemeIs(url::kFileScheme))
     return false;
