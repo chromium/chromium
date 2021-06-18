@@ -430,9 +430,26 @@ using LockIconDisabledPolicyTest = LockIconPolicyTest<false>;
 IN_PROC_BROWSER_TEST_F(LockIconEnabledPolicyTest, LockIconPolicyEnabled) {
   NavigateAndExpectIcon(https_server()->GetURL("a.test", "/title1.html"),
                         vector_icons::kHttpsValidIcon);
+  // Dynamically disable the policy. It should take effect without a restart.
+  policy::PolicyMap policies;
+  policies.Set(policy::key::kLockIconInAddressBarEnabled,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD, base::Value(false), nullptr);
+  provider_.UpdateChromePolicy(policies);
+  NavigateAndExpectIcon(https_server()->GetURL("a.test", "/title1.html"),
+                        vector_icons::kHttpsValidArrowIcon);
 }
 
 IN_PROC_BROWSER_TEST_F(LockIconDisabledPolicyTest, LockIconPolicyDisabled) {
   NavigateAndExpectIcon(https_server()->GetURL("a.test", "/title1.html"),
                         vector_icons::kHttpsValidArrowIcon);
+
+  // Dynamically enable the policy. It should take effect without a restart.
+  policy::PolicyMap policies;
+  policies.Set(policy::key::kLockIconInAddressBarEnabled,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD, base::Value(true), nullptr);
+  provider_.UpdateChromePolicy(policies);
+  NavigateAndExpectIcon(https_server()->GetURL("a.test", "/title1.html"),
+                        vector_icons::kHttpsValidIcon);
 }
