@@ -273,6 +273,11 @@ public class AccountManagementFragment extends PreferenceFragmentCompat
 
     private void updateAccountsList(List<Account> accounts) {
         PreferenceCategory accountsCategory = findPreference(PREF_ACCOUNTS_CATEGORY);
+        if (accountsCategory == null) {
+            // This pref is dynamically added/removed many times, so it might not be present by now.
+            // More details can be found in crbug/1221491.
+            return;
+        }
         accountsCategory.removeAll();
 
         accountsCategory.addPreference(
