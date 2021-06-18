@@ -885,12 +885,15 @@ html[dir='rtl'].offline .icon-offline {
 
 .offline-runner-live-region {
   bottom: 0;
+  clip-path: polygon(0 0, 0 0, 0 0);
   color: var(--background-color);
   display: block;
   font-size: xx-small;
+  overflow: hidden;
   position: absolute;
   text-align: center;
   transition: color 1.5s cubic-bezier(0.65, 0.05, 0.36, 1);
+  user-select: none;
 }
 
 /* Custom toggle */
