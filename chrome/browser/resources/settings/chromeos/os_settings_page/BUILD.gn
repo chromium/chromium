@@ -32,7 +32,6 @@ js_library("os_settings_page.m") {
     "../device_page:device_page.m",
     "../kerberos_page:kerberos_page.m",
     "../multidevice_page:multidevice_page.m",
-    "../on_startup_page:on_startup_page",
     "../os_a11y_page:os_a11y_page.m",
     "../os_apps_page:android_apps_browser_proxy.m",
     "../os_apps_page:android_apps_browser_proxy.m",

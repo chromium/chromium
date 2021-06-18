@@ -71,7 +71,6 @@ js_type_check("closure_compile") {
     #":languages_subpage_details_tests",
     #":languages_tests",
     #":metrics_reporting_tests",
-    #":on_startup_page_tests",
     #":password_check_test",
     ":passwords_and_autofill_fake_data",
 

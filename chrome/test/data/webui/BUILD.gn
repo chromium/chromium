@@ -363,7 +363,6 @@ if (include_js_tests) {
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/network_proxy_section_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/network_summary_item_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/network_summary_test.m.js",
-        "$root_gen_dir/chrome/test/data/webui/settings/chromeos/on_startup_page_tests.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/os_about_page_tests.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/os_edit_dictionary_page_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/os_files_page_test.m.js",

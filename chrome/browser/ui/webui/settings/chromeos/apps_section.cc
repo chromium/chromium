@@ -191,9 +191,6 @@ bool ShouldShowStartup() {
 
 void AddOnStartupTimeData(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
-      {"onStartupPageTitle", IDS_OS_SETTINGS_ON_STARTUP},
-      {"onStartupRadioGroundTitle",
-       IDS_OS_SETTINGS_ON_STARTUP_RADIO_GROUP_TITLE},
       {"onStartupTitle", IDS_OS_SETTINGS_ON_STARTUP_TITLE},
       {"onStartupAlways", IDS_OS_SETTINGS_ON_STARTUP_ALWAYS},
       {"onStartupAskEveryTime", IDS_OS_SETTINGS_ON_STARTUP_ASK_EVERY_TIME},

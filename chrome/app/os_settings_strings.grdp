@@ -3829,12 +3829,6 @@ Press an assigned switch to remove assignment.
   </message>
 
   <!-- On Startup (OS settings) -->
-  <message name="IDS_OS_SETTINGS_ON_STARTUP" desc="Name of the settings page which displays On Startup preferences, with a radio group to configure the restore apps and pages options">
-    On Startup
-  </message>
-  <message name="IDS_OS_SETTINGS_ON_STARTUP_RADIO_GROUP_TITLE" desc="The title of the radio group that allows the user to configure the restore apps and pages options on startup.">
-    Restore apps and pages
-  </message>
   <message name="IDS_OS_SETTINGS_ON_STARTUP_TITLE" desc="The title of the dropdown menu that allows the user to configure the restore apps and pages options on startup.">
     Restore apps on startup
   </message>

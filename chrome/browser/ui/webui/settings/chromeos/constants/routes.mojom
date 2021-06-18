@@ -213,7 +213,6 @@ const string kPluginVmSharedPathsSubpagePath =
     "app-management/pluginVm/sharedPaths";
 const string kPluginVmUsbPreferencesSubpagePath =
     "app-management/pluginVm/sharedUsbDevices";
-const string kOnStartupSubpagePath = "onstartup";
 
 // Crostini section.
 const string kCrostiniSectionPath = "crostini";

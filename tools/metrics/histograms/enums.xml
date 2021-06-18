@@ -59922,7 +59922,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="702" label="Google Play Store"/>
   <int value="703" label="Plugin Vm Shared Paths"/>
   <int value="704" label="Plugin Vm USB Preferences"/>
-  <int value="705" label="On Startup"/>
+  <int value="705" label="On Startup (Deprecated)"/>
   <int value="706" label="App Notifications"/>
   <int value="800" label="Crostini Details"/>
   <int value="801" label="Crostini Manage Shared Folders"/>
