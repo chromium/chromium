@@ -22,11 +22,11 @@ TEST(JSONWriterTest, BasicTypes) {
   EXPECT_EQ("null", output_js);
 
   // Test empty dict.
-  EXPECT_TRUE(JSONWriter::Write(DictionaryValue(), &output_js));
+  EXPECT_TRUE(JSONWriter::Write(Value(Value::Type::DICTIONARY), &output_js));
   EXPECT_EQ("{}", output_js);
 
   // Test empty list.
-  EXPECT_TRUE(JSONWriter::Write(ListValue(), &output_js));
+  EXPECT_TRUE(JSONWriter::Write(Value(Value::Type::LIST), &output_js));
   EXPECT_EQ("[]", output_js);
 
   // Test integer values.
@@ -59,14 +59,14 @@ TEST(JSONWriterTest, NestedTypes) {
 
   // Writer unittests like empty list/dict nesting,
   // list list nesting, etc.
-  DictionaryValue root_dict;
-  ListValue list;
-  DictionaryValue inner_dict;
+  Value root_dict(Value::Type::DICTIONARY);
+  Value::ListStorage list_storage;
+  Value inner_dict(Value::Type::DICTIONARY);
   inner_dict.SetIntKey("inner int", 10);
-  list.Append(std::move(inner_dict));
-  list.Append(Value(Value::Type::LIST));
-  list.Append(true);
-  root_dict.SetKey("list", std::move(list));
+  list_storage.push_back(std::move(inner_dict));
+  list_storage.push_back(Value(Value::Type::LIST));
+  list_storage.push_back(Value(true));
+  root_dict.SetKey("list", Value(std::move(list_storage)));
 
   // Test the pretty-printer.
   EXPECT_TRUE(JSONWriter::Write(root_dict, &output_js));
@@ -93,16 +93,16 @@ TEST(JSONWriterTest, NestedTypes) {
 TEST(JSONWriterTest, KeysWithPeriods) {
   std::string output_js;
 
-  DictionaryValue period_dict;
+  Value period_dict(Value::Type::DICTIONARY);
   period_dict.SetIntKey("a.b", 3);
   period_dict.SetIntKey("c", 2);
-  DictionaryValue period_dict2;
+  Value period_dict2(Value::Type::DICTIONARY);
   period_dict2.SetIntKey("g.h.i.j", 1);
   period_dict.SetKey("d.e.f", std::move(period_dict2));
   EXPECT_TRUE(JSONWriter::Write(period_dict, &output_js));
   EXPECT_EQ("{\"a.b\":3,\"c\":2,\"d.e.f\":{\"g.h.i.j\":1}}", output_js);
 
-  DictionaryValue period_dict3;
+  Value period_dict3(Value::Type::DICTIONARY);
   period_dict3.SetIntPath("a.b", 2);
   period_dict3.SetIntKey("a.b", 1);
   EXPECT_TRUE(JSONWriter::Write(period_dict3, &output_js));
@@ -122,18 +122,19 @@ TEST(JSONWriterTest, BinaryValues) {
       root, JSONWriter::OPTIONS_OMIT_BINARY_VALUES, &output_js));
   EXPECT_TRUE(output_js.empty());
 
-  ListValue binary_list;
-  binary_list.Append(Value(kBufferSpan));
-  binary_list.Append(5);
-  binary_list.Append(Value(kBufferSpan));
-  binary_list.Append(2);
-  binary_list.Append(Value(kBufferSpan));
+  Value::ListStorage binary_list_storage;
+  binary_list_storage.push_back(Value(kBufferSpan));
+  binary_list_storage.push_back(Value(5));
+  binary_list_storage.push_back(Value(kBufferSpan));
+  binary_list_storage.push_back(Value(2));
+  binary_list_storage.push_back(Value(kBufferSpan));
+  Value binary_list(std::move(binary_list_storage));
   EXPECT_FALSE(JSONWriter::Write(binary_list, &output_js));
   EXPECT_TRUE(JSONWriter::WriteWithOptions(
       binary_list, JSONWriter::OPTIONS_OMIT_BINARY_VALUES, &output_js));
   EXPECT_EQ("[5,2]", output_js);
 
-  DictionaryValue binary_dict;
+  Value binary_dict(Value::Type::DICTIONARY);
   binary_dict.SetKey("a", Value(kBufferSpan));
   binary_dict.SetIntKey("b", 5);
   binary_dict.SetKey("c", Value(kBufferSpan));
@@ -158,33 +159,29 @@ TEST(JSONWriterTest, DoublesAsInts) {
 
 TEST(JSONWriterTest, StackOverflow) {
   std::string output_js;
-  ListValue deep_list;
-  ListValue* next_list = &deep_list;
 
+  Value::ListStorage deep_list_storage;
   const size_t max_depth = 100000;
 
   for (size_t i = 0; i < max_depth; ++i) {
-    ListValue inner_list;
-    next_list->Append(std::move(inner_list));
-    next_list->GetList(0, &next_list);
+    Value::ListStorage inner_list_storage;
+    std::swap(inner_list_storage, deep_list_storage);
+    deep_list_storage.push_back(Value(std::move(inner_list_storage)));
   }
 
+  Value deep_list(std::move(deep_list_storage));
   EXPECT_FALSE(JSONWriter::Write(deep_list, &output_js));
   EXPECT_FALSE(JSONWriter::WriteWithOptions(
       deep_list, JSONWriter::OPTIONS_PRETTY_PRINT, &output_js));
 
   // We cannot just let deep_list tear down since it
   // would cause a stack overflow. Therefore, we tear
-  // down from the inner lists outwards safely.
-  const size_t step = 200;
-  for (size_t i = max_depth - step; i > 0; i -= step) {
-    next_list = &deep_list;
-    for (size_t curr_depth = 0; curr_depth < i && next_list; ++curr_depth) {
-      if (!next_list->GetList(0, &next_list))
-        next_list = nullptr;
-    }
-    if (next_list)
-      next_list->Remove(0, nullptr);
+  // down the deep list manually.
+  deep_list_storage = deep_list.TakeList();
+  while (!deep_list_storage.empty()) {
+    DCHECK_EQ(deep_list_storage.size(), 1u);
+    Value inner_list = std::move(deep_list_storage[0]);
+    deep_list_storage = inner_list.TakeList();
   }
 }
 
