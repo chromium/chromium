@@ -123,6 +123,13 @@ PhysicalOffset LayoutNGTextCombine::AdjustOffsetForHitTest(
   return UnapplyScaleX(offset_in_container);
 }
 
+PhysicalOffset LayoutNGTextCombine::AdjustOffsetForLocalCaretRect(
+    const PhysicalOffset& offset_in_container) const {
+  if (!scale_x_)
+    return offset_in_container;
+  return ApplyScaleX(offset_in_container);
+}
+
 PhysicalRect LayoutNGTextCombine::AdjustRectForBoundingBox(
     const PhysicalRect& rect) const {
   if (!scale_x_)

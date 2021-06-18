@@ -39,6 +39,11 @@ class CORE_EXPORT LayoutNGTextCombine final : public LayoutNGBlockFlow {
   PhysicalOffset AdjustOffsetForHitTest(
       const PhysicalOffset& offset_in_container) const;
 
+  // Map non-scaled |offset_in_container| to scaled offset if |this| uses
+  // scale x, otherwise return |offset_in_container|.
+  PhysicalOffset AdjustOffsetForLocalCaretRect(
+      const PhysicalOffset& offset_in_container) const;
+
   // Maps non-scaled |rect| to scaled rect for
   //  * |LayoutText::PhysicalLinesBoundingBox()| used by
   //    |LayoutObject::DebugRect()|, intersection observer, and scroll anchor.

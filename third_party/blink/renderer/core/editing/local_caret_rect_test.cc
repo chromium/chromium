@@ -1162,4 +1162,142 @@ TEST_P(ParameterizedLocalCaretRectTest, OptionWithDisplayContents) {
     EXPECT_EQ(end, LocalCaretRectOfPosition(PositionWithAffinity(p)));
 }
 
+TEST_P(ParameterizedLocalCaretRectTest, TextCombineOneTextNode) {
+  if (!LayoutNGEnabled())
+    return;
+  ScopedLayoutNGTextCombineForTest enable_layout_ng_text_combine(true);
+  LoadAhem();
+  InsertStyleElement(
+      "div {"
+      "  font: 100px/110px Ahem;"
+      "  writing-mode: vertical-rl;"
+      "}"
+      "tcy { text-combine-upright: all; }");
+  SetBodyInnerHTML("<div>a<tcy id=target>01234</tcy>b</div>");
+  //   LayoutNGBlockFlow {HTML} at (0,0) size 800x600
+  //     LayoutNGBlockFlow {BODY} at (8,8) size 784x584
+  //       LayoutNGBlockFlow {DIV} at (0,0) size 110x300
+  //         LayoutText {#text} at (5,0) size 100x100
+  //           text run at (5,0) width 100: "a"
+  //         LayoutInline {TCY} at (5,100) size 100x100
+  //           LayoutNGTextCombine (anonymous) at (5,100) size 100x100
+  //             LayoutText {#text} at (-5,0) size 110x100
+  //               text run at (0,0) width 500: "01234"
+  //         LayoutText {#text} at (5,200) size 100x100
+  //           text run at (5,200) width 100: "b"
+  const auto& target = *GetElementById("target");
+  const auto& text_a = *To<Text>(target.previousSibling());
+  const auto& text_01234 = *To<Text>(target.firstChild());
+  const auto& text_b = *To<Text>(target.nextSibling());
+
+  // text_a
+  EXPECT_EQ(
+      LocalCaretRect(text_a.GetLayoutObject(), PhysicalRect(5, 0, 100, 1)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position(text_a, 0))));
+  EXPECT_EQ(
+      LocalCaretRect(text_a.GetLayoutObject(), PhysicalRect(5, 100, 100, 1)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position(text_a, 1))));
+
+  // text_01234
+  EXPECT_EQ(
+      LocalCaretRect(text_01234.GetLayoutObject(), PhysicalRect(0, 0, 1, 100)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position(text_01234, 0))));
+  EXPECT_EQ(
+      LocalCaretRect(text_01234.GetLayoutObject(), PhysicalRect(17, 0, 1, 100)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position(text_01234, 1))));
+  EXPECT_EQ(
+      LocalCaretRect(text_01234.GetLayoutObject(), PhysicalRect(39, 0, 1, 100)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position(text_01234, 2))));
+  EXPECT_EQ(
+      LocalCaretRect(text_01234.GetLayoutObject(), PhysicalRect(61, 0, 1, 100)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position(text_01234, 3))));
+  EXPECT_EQ(
+      LocalCaretRect(text_01234.GetLayoutObject(), PhysicalRect(83, 0, 1, 100)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position(text_01234, 4))));
+  EXPECT_EQ(
+      LocalCaretRect(text_01234.GetLayoutObject(), PhysicalRect(99, 0, 1, 100)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position(text_01234, 5))));
+
+  // text_b
+  EXPECT_EQ(
+      LocalCaretRect(text_b.GetLayoutObject(), PhysicalRect(5, 200, 100, 1)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position(text_b, 0))));
+  EXPECT_EQ(
+      LocalCaretRect(text_b.GetLayoutObject(), PhysicalRect(5, 299, 100, 1)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position(text_b, 1))));
+}
+
+TEST_P(ParameterizedLocalCaretRectTest, TextCombineTwoTextNodes) {
+  if (!LayoutNGEnabled())
+    return;
+  ScopedLayoutNGTextCombineForTest enable_layout_ng_text_combine(true);
+  LoadAhem();
+  InsertStyleElement(
+      "div {"
+      "  font: 100px/110px Ahem;"
+      "  writing-mode: vertical-rl;"
+      "}"
+      "tcy { text-combine-upright: all; }");
+  SetBodyInnerHTML("<div>a<tcy id=target>012<!-- -->34</tcy>b</div>");
+  //   LayoutNGBlockFlow {HTML} at (0,0) size 800x600
+  //     LayoutNGBlockFlow {BODY} at (8,8) size 784x584
+  //       LayoutNGBlockFlow {DIV} at (0,0) size 110x300
+  //         LayoutText {#text} at (5,0) size 100x100
+  //           text run at (5,0) width 100: "a"
+  //         LayoutInline {TCY} at (5,100) size 100x100
+  //           LayoutNGTextCombine (anonymous) at (5,100) size 100x100
+  //             LayoutText {#text} at (-5,0) size 66x100
+  //               text run at (0,0) width 300: "012"
+  //             LayoutText {#text} at (61,0) size 44x100
+  //               text run at (300,0) width 200: "34"
+  //         LayoutText {#text} at (5,200) size 100x100
+  //           text run at (5,200) width 100: "b"
+  const auto& target = *GetElementById("target");
+  const auto& text_a = *To<Text>(target.previousSibling());
+  const auto& text_012 = *To<Text>(target.firstChild());
+  const auto& text_34 = *To<Text>(target.lastChild());
+  const auto& text_b = *To<Text>(target.nextSibling());
+
+  // text_a
+  EXPECT_EQ(
+      LocalCaretRect(text_a.GetLayoutObject(), PhysicalRect(5, 0, 100, 1)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position(text_a, 0))));
+  EXPECT_EQ(
+      LocalCaretRect(text_a.GetLayoutObject(), PhysicalRect(5, 100, 100, 1)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position(text_a, 1))));
+
+  // text_012
+  EXPECT_EQ(
+      LocalCaretRect(text_012.GetLayoutObject(), PhysicalRect(0, 0, 1, 100)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position(text_012, 0))));
+  EXPECT_EQ(
+      LocalCaretRect(text_012.GetLayoutObject(), PhysicalRect(17, 0, 1, 100)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position(text_012, 1))));
+  EXPECT_EQ(
+      LocalCaretRect(text_012.GetLayoutObject(), PhysicalRect(39, 0, 1, 100)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position(text_012, 2))));
+  EXPECT_EQ(
+      LocalCaretRect(text_012.GetLayoutObject(), PhysicalRect(61, 0, 1, 100)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position(text_012, 3))));
+
+  // text_34
+  EXPECT_EQ(
+      LocalCaretRect(text_34.GetLayoutObject(), PhysicalRect(61, 0, 1, 100)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position(text_34, 0))));
+  EXPECT_EQ(
+      LocalCaretRect(text_34.GetLayoutObject(), PhysicalRect(83, 0, 1, 100)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position(text_34, 1))));
+  EXPECT_EQ(
+      LocalCaretRect(text_34.GetLayoutObject(), PhysicalRect(99, 0, 1, 100)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position(text_34, 2))));
+
+  // text_b
+  EXPECT_EQ(
+      LocalCaretRect(text_b.GetLayoutObject(), PhysicalRect(5, 200, 100, 1)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position(text_b, 0))));
+  EXPECT_EQ(
+      LocalCaretRect(text_b.GetLayoutObject(), PhysicalRect(5, 299, 100, 1)),
+      LocalCaretRectOfPosition(PositionWithAffinity(Position(text_b, 1))));
+}
+
 }  // namespace blink

@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_combine.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_caret_position.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 
@@ -101,6 +102,12 @@ PhysicalRect ComputeLocalCaretRectAtTextOffset(const NGInlineCursor& cursor,
   // Adjust the location to be relative to the inline formatting context.
   PhysicalOffset caret_location = PhysicalOffset(caret_left, caret_top) +
                                   cursor.Current().OffsetInContainerFragment();
+  const auto* const text_combine = DynamicTo<LayoutNGTextCombine>(
+      cursor.Current().GetLayoutObject()->Parent());
+  if (UNLIKELY(text_combine)) {
+    caret_location =
+        text_combine->AdjustOffsetForLocalCaretRect(caret_location);
+  }
   const PhysicalSize caret_size(caret_width, caret_height);
 
   const NGPhysicalBoxFragment& fragment = cursor.ContainerFragment();
