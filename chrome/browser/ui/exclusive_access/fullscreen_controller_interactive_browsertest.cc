@@ -332,7 +332,8 @@ IN_PROC_BROWSER_TEST_F(ExclusiveAccessTest,
 
 // Tests mouse lock can be escaped with ESC key.
 IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest, EscapingMouseLock) {
-  ASSERT_TRUE(embedded_test_server()->Start());
+  auto test_server_handle = embedded_test_server()->StartAndReturnHandle();
+  ASSERT_TRUE(test_server_handle);
   ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(kFullscreenMouseLockHTML));
 
@@ -361,7 +362,8 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest, EscapingMouseLock) {
 #endif
 IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
                        MAYBE_EscapingMouseLockAndFullscreen) {
-  ASSERT_TRUE(embedded_test_server()->Start());
+  auto test_server_handle = embedded_test_server()->StartAndReturnHandle();
+  ASSERT_TRUE(test_server_handle);
   ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(kFullscreenMouseLockHTML));
 
@@ -388,7 +390,8 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
 // TODO(crbug.com/913409): UAv2 seems to make this flaky.
 IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
                        DISABLED_MouseLockThenFullscreen) {
-  ASSERT_TRUE(embedded_test_server()->Start());
+  auto test_server_handle = embedded_test_server()->StartAndReturnHandle();
+  ASSERT_TRUE(test_server_handle);
   ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(kFullscreenMouseLockHTML));
 
@@ -420,7 +423,8 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
 #endif
 IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
                        MAYBE_MouseLockAndFullscreen) {
-  ASSERT_TRUE(embedded_test_server()->Start());
+  auto test_server_handle = embedded_test_server()->StartAndReturnHandle();
+  ASSERT_TRUE(test_server_handle);
   ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(kFullscreenMouseLockHTML));
 
@@ -446,7 +450,8 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
 IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
                        DISABLED_MouseLockSilentAfterTargetUnlock) {
   SetWebContentsGrantedSilentMouseLockPermission();
-  ASSERT_TRUE(embedded_test_server()->Start());
+  auto test_server_handle = embedded_test_server()->StartAndReturnHandle();
+  ASSERT_TRUE(test_server_handle);
   ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(kFullscreenMouseLockHTML));
 
@@ -504,7 +509,8 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
 // Tests mouse lock is exited on page navigation.
 IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
                        MAYBE_TestTabExitsMouseLockOnNavigation) {
-  ASSERT_TRUE(embedded_test_server()->Start());
+  auto test_server_handle = embedded_test_server()->StartAndReturnHandle();
+  ASSERT_TRUE(test_server_handle);
   ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(kFullscreenMouseLockHTML));
 
@@ -522,7 +528,8 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
 // Tests mouse lock is exited when navigating back.
 IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
                        MAYBE_TestTabExitsMouseLockOnGoBack) {
-  ASSERT_TRUE(embedded_test_server()->Start());
+  auto test_server_handle = embedded_test_server()->StartAndReturnHandle();
+  ASSERT_TRUE(test_server_handle);
 
   // Navigate twice to provide a place to go back to.
   ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
@@ -555,7 +562,8 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
 // Tests mouse lock is not exited on sub frame navigation.
 IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
                        MAYBE_TestTabDoesntExitMouseLockOnSubFrameNavigation) {
-  ASSERT_TRUE(embedded_test_server()->Start());
+  auto test_server_handle = embedded_test_server()->StartAndReturnHandle();
+  ASSERT_TRUE(test_server_handle);
 
   // Create URLs for test page and test page with #fragment.
   GURL url(embedded_test_server()->GetURL(kFullscreenMouseLockHTML));
@@ -587,7 +595,8 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
 #endif
 IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
                        MAYBE_ReloadExitsMouseLockAndFullscreen) {
-  ASSERT_TRUE(embedded_test_server()->Start());
+  auto test_server_handle = embedded_test_server()->StartAndReturnHandle();
+  ASSERT_TRUE(test_server_handle);
   ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(kFullscreenMouseLockHTML));
 
