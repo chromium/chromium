@@ -97,17 +97,17 @@ class Benchmark:
 _BENCHMARKS = [
     Benchmark('chrome_java_nosig', {
         'kind': 'incremental',
-        'from_string': '"Url',
-        'to_string': '"Url1',
+        'from_string': '(sInstance == null)',
+        'to_string': '(sInstance == null || true)',
         # pylint: disable=line-too-long
-        'change_file': 'chrome/android/java/src/org/chromium/chrome/browser/omnibox/UrlBar.java',
+        'change_file': 'chrome/android/java/src/org/chromium/chrome/browser/AppHooks.java',
     }),
     Benchmark('chrome_java_sig', {
         'kind': 'incremental',
-        'from_string': 'UrlBar";',
-        'to_string': 'UrlBar";public void NewInterfaceMethod(){}',
+        'from_string': 'AppHooksImpl sInstance;',
+        'to_string': 'AppHooksImpl sInstance;public void NewInterfaceMethod(){}',
         # pylint: disable=line-too-long
-        'change_file': 'chrome/android/java/src/org/chromium/chrome/browser/omnibox/UrlBar.java',
+        'change_file': 'chrome/android/java/src/org/chromium/chrome/browser/AppHooks.java',
     }),
     Benchmark('chrome_java_res', {
         'kind': 'incremental',
