@@ -384,6 +384,11 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
     private void updatePopupLayout() {
         // TODO(twellington): Add more unit tests for this large method.
 
+        // If the root view is not attached to the Window, this may result in an
+        // IllegalArgumentException. Regardless, sizing the popup won't work properly so exit early.
+        // See https://crbug.com/1212602 for details.
+        if (!mRootView.isAttachedToWindow()) return;
+
         // Determine the size of the text popup.
         boolean currentPositionBelow = mPositionBelow;
         boolean currentPositionToLeft = mPositionToLeft;
