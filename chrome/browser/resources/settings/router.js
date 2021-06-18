@@ -250,8 +250,11 @@ import './i18n_setup.js';
      *     URL parameters in a different order will still push to history.
      * @param {boolean=} opt_removeSearch Whether to strip the 'search' URL
      *     parameter during navigation. Defaults to false.
+     * @param {boolean=} opt_skipHistoryEntry Whether to skip pushing a new
+     * history entry for this navigation. Defaults to false.
      */
-    navigateTo(route, opt_dynamicParameters, opt_removeSearch) {
+    navigateTo(
+        route, opt_dynamicParameters, opt_removeSearch, opt_skipHistoryEntry) {
       // The ADVANCED route only serves as a parent of subpages, and should not
       // be possible to navigate to it directly.
       if (route === this.routes_.ADVANCED) {
@@ -264,6 +267,8 @@ import './i18n_setup.js';
       const oldSearchParam = this.getQueryParameters().get('search') || '';
       const newSearchParam = params.get('search') || '';
 
+      const skipHistoryEntry = opt_skipHistoryEntry || false;
+
       if (!removeSearch && oldSearchParam && !newSearchParam) {
         params.append('search', oldSearchParam);
       }
@@ -275,7 +280,11 @@ import './i18n_setup.js';
       }
 
       // History serializes the state, so we don't push the actual route object.
-      window.history.pushState(this.currentRoute.path, '', url);
+      if (skipHistoryEntry) {
+        window.history.replaceState(this.currentRoute.path, '', url);
+      } else {
+        window.history.pushState(this.currentRoute.path, '', url);
+      }
       this.setCurrentRoute(route, params, false);
     }
 
