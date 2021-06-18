@@ -422,7 +422,7 @@ TEST_F(SigninPromoViewMediatorTest,
   TestChromeBrowserState::Builder builder;
   builder.SetPrefService(CreatePrefService());
   std::unique_ptr<TestChromeBrowserState> browser_state = builder.Build();
-  browser_state->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
+  browser_state->GetPrefs()->SetBoolean(prefs::kSigninAllowedByPolicy, false);
   EXPECT_FALSE([SigninPromoViewMediator
       shouldDisplaySigninPromoViewWithAccessPoint:signin_metrics::AccessPoint::
                                                       ACCESS_POINT_RECENT_TABS

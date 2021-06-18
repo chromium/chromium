@@ -8,6 +8,7 @@
 
 #include <memory>
 
+#include "base/test/scoped_feature_list.h"
 #import "base/version.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/signin/public/base/signin_pref_names.h"
@@ -242,8 +243,12 @@ TEST_F(SigninUtilsTest, TestWillNotShowIfDisabledByPolicy) {
       chrome_browser_state_.get(), version_1_0));
 }
 
-// signin::IsSigninAllowed should respect the kSigninAllowed pref.
+// signin::IsSigninAllowed should respect the kSigninAllowed pref with MICE
+// enabled.
 TEST_F(SigninUtilsTest, TestSigninAllowedPref) {
+  base::test::ScopedFeatureList scoped_feature;
+  scoped_feature.InitAndEnableFeature(signin::kMobileIdentityConsistency);
+  
   ios::FakeChromeIdentityService::GetInstanceFromChromeProvider()
       ->AddIdentities(@[ @"foo", @"bar" ]);
   // Sign-in is allowed by default.

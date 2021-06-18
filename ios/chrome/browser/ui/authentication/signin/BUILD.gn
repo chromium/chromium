@@ -69,6 +69,7 @@ source_set("unit_tests") {
   deps = [
     ":signin_impl",
     "//base",
+    "//base/test:test_support",
     "//components/pref_registry",
     "//components/sync_preferences",
     "//components/sync_preferences:test_support",
