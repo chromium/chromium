@@ -1,3 +1,0 @@
-Printing is a work in progress component. It is introduced to allow chrome
-and webview to share the common printing-related code. When completed, it will
-contain the code necessary for using basic printing in content-based clients.
