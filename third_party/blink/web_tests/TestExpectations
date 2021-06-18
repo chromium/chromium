@@ -6951,9 +6951,9 @@ crbug.com/1219499 external/wpt/websockets/Create-blocked-port.any.html?wpt_flags
 crbug.com/1219499 [ Win ] external/wpt/websockets/Create-blocked-port.any.html?wss [ Pass Timeout ]
 
 # Sheriff 2021-06-15
-crbug.com/1220317 [ Linux ] external/wpt/media-capabilities/decodingInfoEncryptedMedia.https.html [ Pass Failure ]
-crbug.com/1220317 [ Linux ] external/wpt/media-capabilities/decodingInfo.any.html [ Pass Failure ]
-crbug.com/1220007 [ Linux ] fullscreen/full-screen-iframe-allowed-video.html [ Pass Failure ]
+crbug.com/1220317 [ Linux ] external/wpt/media-capabilities/decodingInfoEncryptedMedia.https.html [ Pass Failure Crash ]
+crbug.com/1220317 [ Linux ] external/wpt/media-capabilities/decodingInfo.any.html [ Pass Failure Crash ]
+crbug.com/1220007 [ Linux ] fullscreen/full-screen-iframe-allowed-video.html [ Pass Failure Timeout ]
 
 # Temporarily disabled to land https://crrev.com/c/2959898
 crbug.com/1208389 http/tests/devtools/console/console-call-getter-on-proto.js [ Pass Failure ]
