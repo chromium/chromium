@@ -840,7 +840,6 @@ chrome_java_resources = [
   "java/res/xml/manage_sync_preferences.xml",
   "java/res/xml/phone_as_a_security_key_accessory_filter.xml",
   "java/res/xml/privacy_preferences.xml",
-  "java/res/xml/quick_action_search_widget_info.xml",
   "java/res/xml/search_widget_info.xml",
   "java/res/xml/tracing_preferences.xml",
 ]

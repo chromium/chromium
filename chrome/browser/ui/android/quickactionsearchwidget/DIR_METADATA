@@ -1,0 +1,5 @@
+monorail {
+  component: "UI>Browser>Mobile>SearchWidget"
+}
+team_email: "seacow-team@google.com"
+os: ANDROID

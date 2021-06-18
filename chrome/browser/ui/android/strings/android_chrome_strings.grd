@@ -4053,6 +4053,17 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Chrome now downloads files faster
       </message>
 
+      <!-- Quick Action Search Widget -->
+      <message name="IDS_QUICK_ACTION_SEARCH_WIDGET_SEARCH_BAR_HINT" desc="Hint text for to search box on the quick action search widget">
+        Search or type URL
+      </message>
+      <message name="IDS_ACCESSIBILITY_QUICK_ACTION_SEARCH_WIDGET_START_DINO_GAME" desc="Content description for the Dino button on the Quick Action Search Widget.">
+        Start Dino Game
+      </message>
+      <message name="IDS_ACCESSIBILITY_QUICK_ACTION_SEARCH_WIDGET_ICON" desc="Content description for the for the icon on the Quick Action Search Widget">
+        Quick Action Search Widget Icon
+      </message>
+
       <!-- Launcher Shortcuts -->
       <message name="IDS_DISABLED_INCOGNITO_LAUNCHER_SHORTCUT_MESSAGE" desc="Text for a toast displayed prompting the user to remove the disabled 'New Incognito tab' app shortcut and recreate it.">
         Remove and recreate this shortcut

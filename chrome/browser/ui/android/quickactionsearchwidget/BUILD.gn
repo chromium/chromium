@@ -1,0 +1,17 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+android_resources("java_resources") {
+  sources = [
+    "java/res/drawable/quick_action_search_widget_background.xml",
+    "java/res/drawable/quick_action_search_widget_button_background.xml",
+    "java/res/drawable/quick_action_search_widget_search_bar_background.xml",
+    "java/res/layout/quick_action_search_widget_layout.xml",
+    "java/res/values/dimens.xml",
+    "java/res/values/styles.xml",
+    "java/res/xml/quick_action_search_widget_info.xml",
+  ]
+}

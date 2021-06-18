@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2021 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:initialLayout="@layout/quick_action_search_widget_layout"
+    android:minWidth="@dimen/quick_action_search_widget_default_width"
+    android:minHeight="@dimen/quick_action_search_widget_default_height"
+    android:widgetCategory="home_screen|searchbox" />
