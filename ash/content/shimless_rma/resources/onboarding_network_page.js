@@ -6,7 +6,13 @@ import './base_page.js';
 import './shimless_rma_shared_css.js';
 import './strings.m.js';
 import 'chrome://resources/cr_components/chromeos/network/network_list.m.js';
+import 'chrome://resources/cr_components/chromeos/network/network_config.m.js';
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 
+import {NetworkListenerBehavior} from 'chrome://resources/cr_components/chromeos/network/network_listener_behavior.m.js';
+import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
+import {assert} from 'chrome://resources/js/assert.m.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -20,7 +26,7 @@ import {NetworkConfigServiceRemote} from './shimless_rma_types.js';
  * network.
  */
 export class OnboardingNetworkPage extends mixinBehaviors
-([I18nBehavior], PolymerElement) {
+([I18nBehavior, NetworkListenerBehavior], PolymerElement) {
   static get is() {
     return 'onboarding-network-page';
   }
@@ -46,6 +52,65 @@ export class OnboardingNetworkPage extends mixinBehaviors
         type: Array,
         value: [],
       },
+
+      /**
+       * Tracks whether network has configuration to be connected
+       * @protected
+       * @type {boolean}
+       */
+      enableConnect_: {
+        type: Boolean,
+      },
+
+      /**
+       * The type of network to be configured as a string. May be set initially
+       * or updated by network-config.
+       * @type {string}
+       * @protected
+       */
+      networkType_: {
+        type: String,
+        value: '',
+      },
+
+      /**
+       * The name of the network. May be set initially or updated by
+       * network-config.
+       * @type {string}
+       * @protected
+       */
+      networkName_: {
+        type: String,
+        value: '',
+      },
+
+      /**
+       * The GUID when an existing network is being configured. This will be
+       * empty when configuring a new network.
+       * @protected
+       */
+      guid_: {
+        type: String,
+        value: '',
+      },
+
+      /**
+       * Set to true to show the 'connect' button instead of 'disconnect'.
+       * @type {boolean}
+       * @protected
+       */
+      networkShowConnect_: {
+        type: Boolean,
+      },
+
+      /**
+       * Set by network-config when a configuration error occurs.
+       * @private
+       */
+      error_: {
+        type: String,
+        value: '',
+      },
     };
   }
 
@@ -54,7 +119,11 @@ export class OnboardingNetworkPage extends mixinBehaviors
     super.ready();
     this.networkConfig_ = getNetworkConfigService();
     this.refreshNetworks();
-    // TODO(joonbug): Set interval continuously refresh networks
+  }
+
+  /** CrosNetworkConfigObserver impl */
+  onNetworkStateListChanged() {
+    this.refreshNetworks();
   }
 
   refreshNetworks() {
@@ -68,8 +137,140 @@ export class OnboardingNetworkPage extends mixinBehaviors
     });
   }
 
+  /**
+   * Event triggered when a network list item is selected.
+   * @param {!{target: HTMLElement, detail: !OncMojo.NetworkStateProperties}}
+   *     event
+   * @protected
+   */
   onNetworkSelected_(event) {
-    return;
+    const networkState = event.detail;
+    const type = networkState.type;
+    const displayName = OncMojo.getNetworkStateDisplayName(networkState);
+
+    if (!this.canAttemptConnection_(networkState)) {
+      this.showConfig_(type, networkState.guid, displayName);
+      return;
+    }
+
+    this.networkConfig_.startConnect(networkState.guid).then(response => {
+      this.refreshNetworks();
+      if (response.result ===
+          chromeos.networkConfig.mojom.StartConnectResult.kUnknown) {
+        console.error(
+            'startConnect failed for: ' + networkState.guid +
+            ' Error: ' + response.message);
+        return;
+      }
+    });
+  }
+
+  /**
+   * Determines whether or not it is possible to attempt a connection to the
+   * provided network (e.g., whether it's possible to connect or configure the
+   * network for connection).
+   * @param {!OncMojo.NetworkStateProperties} state The network state.
+   * @private
+   */
+  canAttemptConnection_(state) {
+    if (state.connectionState !==
+        chromeos.networkConfig.mojom.ConnectionStateType.kNotConnected) {
+      return false;
+    }
+
+    if (OncMojo.networkTypeHasConfigurationFlow(state.type) &&
+        (!OncMojo.isNetworkConnectable(state) || !!state.errorState)) {
+      return false;
+    }
+
+    // VPNs can only be connected if there is an existing network connection to
+    // use with the VPN.
+    if (state.type === chromeos.networkConfig.mojom.NetworkType.kVPN &&
+        (!this.defaultNetwork ||
+         !OncMojo.connectionStateIsConnected(
+             this.defaultNetwork.connectionState))) {
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
+   * @param {chromeos.networkConfig.mojom.NetworkType} type
+   * @param {string} guid
+   * @param {string} name
+   * @private
+   */
+  showConfig_(type, guid, name) {
+    assert(
+        type !== chromeos.networkConfig.mojom.NetworkType.kCellular &&
+        type !== chromeos.networkConfig.mojom.NetworkType.kTether);
+
+    this.networkType_ = OncMojo.getNetworkTypeString(type);
+    this.networkName_ = name || '';
+    this.guid_ = guid || '';
+
+    const networkConfig =
+        /** @type {!NetworkConfigElement} */ (this.$$('#networkConfig'));
+    networkConfig.init();
+
+    const dialog = /** @type {!CrDialogElement} */ (this.$$('#dialog'));
+    if (!dialog.open) {
+      dialog.showModal();
+    }
+  }
+
+  /** @protected */
+  closeConfig_() {
+    const dialog = /** @type {!CrDialogElement} */ (this.$$('#dialog'));
+    if (dialog.open) {
+      dialog.close();
+    }
+  }
+
+  /** @protected */
+  connectNetwork_() {
+    const networkConfig =
+        /** @type {!NetworkConfigElement} */ (this.$$('#networkConfig'));
+    networkConfig.connect();
+  }
+
+  /**
+   * @return {string}
+   * @private
+   */
+  getError_() {
+    if (this.i18nExists(this.error_)) {
+      return this.i18n(this.error_);
+    }
+    return this.i18n('networkErrorUnknown');
+  }
+
+  /**
+   * @protected
+   */
+  onPropertiesSet_() {
+    this.refreshNetworks();
+  }
+
+  /** @private */
+  onConfigClose_() {
+    this.closeConfig_();
+    this.refreshNetworks();
+  }
+
+  /**
+   * @return {string}
+   * @protected
+   */
+  getDialogTitle_() {
+    if (this.networkName_ && !this.showConnect) {
+      return this.networkName_;
+      // return this.i18n('internetConfigName', this.networkName_);
+    }
+    const type = this.i18n('OncType' + this.networkType_);
+    return type;
+    // return this.i18n('internetJoinType', type);
   }
 };
 

@@ -92,6 +92,21 @@ js_library("onboarding_update_page_test") {
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
 
+js_library("onboarding_network_page_test") {
+  deps = [
+    "..:fake_network_config_mojom.m",
+    "../..:chai_assert",
+    "//ash/content/shimless_rma/resources:mojo_interface_provider",
+    "//ash/content/shimless_rma/resources:onboarding_network_page",
+    "//ui/webui/resources/cr_components/chromeos/network:network_config.m",
+    "//ui/webui/resources/cr_components/chromeos/network:network_list.m",
+    "//ui/webui/resources/cr_components/chromeos/network:onc_mojo.m",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
 js_library("onboarding_wait_for_manual_wp_disable_page_test") {
   deps = [
     "../..:chai_assert",

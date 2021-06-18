@@ -156,7 +156,9 @@ js_library("onboarding_select_components_page") {
 js_library("onboarding_network_page") {
   deps = [
     ":base_page",
-    "//ui/webui/resources/cr_components/chromeos/network:network_list",
+    "//chromeos/services/network_config/public/mojom:mojom_js_library_for_compile",
+    "//ui/webui/resources/cr_components/chromeos/network:network_config.m",
+    "//ui/webui/resources/cr_components/chromeos/network:network_list.m",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
 }
