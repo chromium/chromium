@@ -149,6 +149,13 @@ TEST_F(UseCreditCardActionTest,
   EXPECT_EQ(ProcessedActionStatusProto::INVALID_ACTION, ProcessAction(action));
 }
 
+TEST_F(UseCreditCardActionTest, InvalidActionSkipResolveWithoutRequiredFields) {
+  ActionProto action;
+  auto* use_card = action.mutable_use_card();
+  use_card->set_skip_resolve(true);
+  EXPECT_EQ(ProcessedActionStatusProto::INVALID_ACTION, ProcessAction(action));
+}
+
 TEST_F(UseCreditCardActionTest, PreconditionFailedNoCreditCardInUserData) {
   ActionProto action;
   auto* use_card = action.mutable_use_card();
@@ -454,6 +461,74 @@ TEST_F(UseCreditCardActionTest, SkippingAutofill) {
       .WillOnce(RunOnceCallback<1>(OkClientStatus(), "not empty"));
 
   EXPECT_EQ(ProcessedActionStatusProto::ACTION_APPLIED, ProcessAction(action));
+}
+
+TEST_F(UseCreditCardActionTest, SkippingResolve) {
+  InSequence sequence;
+
+  ON_CALL(mock_web_controller_, GetElementTag(_, _))
+      .WillByDefault(RunOnceCallback<1>(OkClientStatus(), "INPUT"));
+
+  ActionProto action;
+  AddRequiredField(&action, static_cast<int>(autofill::CREDIT_CARD_NAME_FULL),
+                   "#name");
+  action.mutable_use_card()->set_skip_resolve(true);
+
+  Selector name_selector({"#name"});
+
+  EXPECT_CALL(mock_action_delegate_, OnShortWaitForElement(_, _)).Times(0);
+  EXPECT_CALL(mock_action_delegate_, GetFullCard(_, _)).Times(0);
+  EXPECT_CALL(mock_action_delegate_, FillCardForm(_, _, _, _)).Times(0);
+
+  // First validation fails.
+  EXPECT_CALL(mock_web_controller_,
+              GetFieldValue(EqualsElement(test_util::MockFindElement(
+                                mock_web_controller_, name_selector)),
+                            _))
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(), ""));
+  // Fill name.
+  EXPECT_CALL(mock_web_controller_,
+              SetValueAttribute(kCardName,
+                                EqualsElement(test_util::MockFindElement(
+                                    mock_action_delegate_, name_selector)),
+                                _))
+      .WillOnce(RunOnceCallback<2>(OkClientStatus()));
+  // Second validation succeeds.
+  EXPECT_CALL(mock_web_controller_,
+              GetFieldValue(EqualsElement(test_util::MockFindElement(
+                                mock_web_controller_, name_selector)),
+                            _))
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(), kCardName));
+
+  EXPECT_EQ(ProcessedActionStatusProto::ACTION_APPLIED, ProcessAction(action));
+}
+
+TEST_F(UseCreditCardActionTest, SkippingResolveCannotFillCardNumber) {
+  InSequence sequence;
+
+  ON_CALL(mock_web_controller_, GetElementTag(_, _))
+      .WillByDefault(RunOnceCallback<1>(OkClientStatus(), "INPUT"));
+
+  ActionProto action;
+  AddRequiredField(&action, static_cast<int>(autofill::CREDIT_CARD_NUMBER),
+                   "#number");
+  action.mutable_use_card()->set_skip_resolve(true);
+
+  Selector number_selector({"#number"});
+
+  EXPECT_CALL(mock_action_delegate_, OnShortWaitForElement(_, _)).Times(0);
+  EXPECT_CALL(mock_action_delegate_, GetFullCard(_, _)).Times(0);
+  EXPECT_CALL(mock_action_delegate_, FillCardForm(_, _, _, _)).Times(0);
+
+  EXPECT_CALL(mock_web_controller_,
+              GetFieldValue(EqualsElement(test_util::MockFindElement(
+                                mock_web_controller_, number_selector)),
+                            _))
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(), ""));
+  EXPECT_CALL(mock_web_controller_, SetValueAttribute(_, _, _)).Times(0);
+
+  EXPECT_EQ(ProcessedActionStatusProto::AUTOFILL_INCOMPLETE,
+            ProcessAction(action));
 }
 
 TEST_F(UseCreditCardActionTest, AutofillFailureWithoutRequiredFieldsIsFatal) {

@@ -1612,6 +1612,12 @@ message UseCreditCardProto {
   // |required_fields|.
   optional bool skip_autofill = 8;
 
+  // If true, this skips resolving the CreditCard. The card can be used to fill
+  // fields like name or expiration date. Be aware that you cannot fill CVC or
+  // credit card number without resolving the card.
+  // This skips the autofill step, regardless of |skip_autofill|.
+  optional bool skip_resolve = 9;
+
   reserved 1, 5, 6;
 }
 
