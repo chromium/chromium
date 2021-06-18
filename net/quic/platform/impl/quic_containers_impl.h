@@ -24,8 +24,8 @@ using QuicLinkedHashMapImpl = quiche::QuicheLinkedHashMap<Key, Value, Hash>;
 template <typename T, size_t N, typename A = std::allocator<T>>
 using QuicInlinedVectorImpl = std::vector<T, A>;
 
-template <typename Key, typename Compare, typename Rep>
-using QuicOrderedSetImpl = absl::btree_set<Key, Compare>;
+template <typename Key, typename Compare>
+using QuicSmallOrderedSetImpl = absl::btree_set<Key, Compare>;
 
 }  // namespace quic
 
