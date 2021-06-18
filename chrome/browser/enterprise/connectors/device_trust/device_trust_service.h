@@ -41,14 +41,14 @@ class DeviceTrustService : public KeyedService {
       std::unique_ptr<DeviceTrustSignalReporter> reporter);
   using SignalReportCallback = base::OnceCallback<void(bool)>;
   void SetSignalReportCallbackForTesting(SignalReportCallback cb);
+
 #if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
   std::string GetAttestationCredentialForTesting() const;
-#endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
-
   // Starts flow that actually builds a response. This method is called
   // from a non_UI thread.
   void BuildChallengeResponse(const std::string& challenge,
                               AttestationCallback callback);
+#endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
 
  private:
   friend class DeviceTrustFactory;
@@ -70,7 +70,11 @@ class DeviceTrustService : public KeyedService {
 
   std::unique_ptr<enterprise_connectors::DeviceTrustSignalReporter> reporter_;
   SignalReportCallback signal_report_callback_;
+
+#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
   std::unique_ptr<AttestationService> attestation_service_;
+#endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
+
   base::WeakPtrFactory<DeviceTrustService> weak_factory_{this};
 };
 
