@@ -24,6 +24,7 @@
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
+#include "chrome/browser/extensions/api/tab_groups/tab_groups_util.h"
 #include "chrome/browser/extensions/api/tabs/tabs_api.h"
 #include "chrome/browser/extensions/api/tabs/tabs_constants.h"
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -674,6 +675,26 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, QueryAllTabsWithDevTools) {
   EXPECT_EQ(window_ids, result_ids);
 
   DevToolsWindowTesting::CloseDevToolsWindowSync(devtools);
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, QueryTabGroups) {
+  GURL url(url::kAboutBlankURL);
+  AddTabAtIndex(0, url, ui::PAGE_TRANSITION_LINK);
+  AddTabAtIndex(0, url, ui::PAGE_TRANSITION_LINK);
+  AddTabAtIndex(0, url, ui::PAGE_TRANSITION_LINK);
+  tab_groups::TabGroupId group_id =
+      browser()->tab_strip_model()->AddToNewGroup({0, 1});
+
+  scoped_refptr<TabsQueryFunction> function = new TabsQueryFunction();
+  function->set_extension(ExtensionBuilder("Test").Build().get());
+  constexpr char kFormatQueryArgs[] = R"([{"groupId":%d}])";
+  const std::string args = base::StringPrintf(
+      kFormatQueryArgs, tab_groups_util::GetGroupId(group_id));
+  std::unique_ptr<base::ListValue> result(
+      utils::ToList(utils::RunFunctionAndReturnSingleResult(function.get(),
+                                                            args, browser())));
+
+  EXPECT_EQ(2u, result.get()->GetSize());
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DontCreateTabInClosingPopupWindow) {

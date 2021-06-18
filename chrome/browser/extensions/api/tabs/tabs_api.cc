@@ -1084,7 +1084,7 @@ ExtensionFunction::ResponseAction TabsQueryFunction::Run() {
 
       if (group_id.has_value()) {
         absl::optional<tab_groups::TabGroupId> group =
-            tab_strip->GetTabGroupForTab(index);
+            tab_strip->GetTabGroupForTab(i);
         if (group_id.value() == -1) {
           if (group.has_value())
             continue;
