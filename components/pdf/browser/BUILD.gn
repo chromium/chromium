@@ -41,6 +41,7 @@ if (enable_pdf) {
       "//extensions/common:common_constants",
       "//pdf:features",
       "//services/network/public/cpp:cpp_base",
+      "//ui/base",
       "//url",
     ]
   }
@@ -57,6 +58,7 @@ if (enable_pdf) {
       "//content/public/browser",
       "//content/test:test_support",
       "//pdf:features",
+      "//testing/gmock",
       "//testing/gtest",
       "//url",
     ]

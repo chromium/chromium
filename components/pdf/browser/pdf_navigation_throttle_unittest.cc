@@ -6,14 +6,18 @@
 
 #include <memory>
 
+#include "base/location.h"
+#include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/mock_navigation_handle.h"
-#include "content/public/test/navigation_simulator.h"
+#include "content/public/test/mock_web_contents_observer.h"
 #include "content/public/test/test_renderer_host.h"
 #include "pdf/pdf_features.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -21,15 +25,10 @@ namespace pdf {
 
 namespace {
 
+using ::testing::NiceMock;
+
 class PdfNavigationThrottleTest : public content::RenderViewHostTestHarness {
  protected:
-  void SetUp() override {
-    content::RenderViewHostTestHarness::SetUp();
-    content::NavigationSimulator::NavigateAndCommitFromBrowser(
-        web_contents(),
-        GURL("chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/index.html"));
-  }
-
   GURL CreateStreamUrl(
       const char* token = "00000000-0000-0000-0000-000000000000") {
     return GURL(base::StrCat(
@@ -37,6 +36,8 @@ class PdfNavigationThrottleTest : public content::RenderViewHostTestHarness {
   }
 
   content::RenderFrameHost* CreateChildFrame() {
+    content::RenderFrameHostTester::For(main_rfh())
+        ->InitializeRenderFrameIfNeeded();
     return content::RenderFrameHostTester::For(main_rfh())
         ->AppendChild("subframe");
   }
@@ -44,7 +45,10 @@ class PdfNavigationThrottleTest : public content::RenderViewHostTestHarness {
   void InitializeNavigationHandle(const GURL& url,
                                   content::RenderFrameHost* render_frame_host) {
     navigation_handle_ =
-        std::make_unique<content::MockNavigationHandle>(url, render_frame_host);
+        std::make_unique<NiceMock<content::MockNavigationHandle>>(
+            url, render_frame_host);
+    navigation_handle_->set_initiator_origin(
+        render_frame_host->GetLastCommittedOrigin());
   }
 
   std::unique_ptr<PdfNavigationThrottle> CreateNavigationThrottle(
@@ -54,7 +58,7 @@ class PdfNavigationThrottleTest : public content::RenderViewHostTestHarness {
   }
 
   base::test::ScopedFeatureList features_;
-  std::unique_ptr<content::MockNavigationHandle> navigation_handle_;
+  std::unique_ptr<NiceMock<content::MockNavigationHandle>> navigation_handle_;
 };
 
 class PdfNavigationThrottleUnseasonedDisabledTest
@@ -96,8 +100,34 @@ TEST_F(PdfNavigationThrottleUnseasonedEnabledTest,
 
 TEST_F(PdfNavigationThrottleUnseasonedEnabledTest, WillStartRequest) {
   auto navigation_throttle = CreateNavigationThrottle(CreateStreamUrl());
+  NiceMock<content::MockWebContentsObserver> web_contents_observer(
+      web_contents());
+
   EXPECT_EQ(content::NavigationThrottle::CANCEL_AND_IGNORE,
             navigation_throttle->WillStartRequest().action());
+
+  EXPECT_CALL(web_contents_observer, DidStartLoading());
+  base::RunLoop run_loop;
+  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                   run_loop.QuitClosure());
+  run_loop.Run();
+}
+
+TEST_F(PdfNavigationThrottleUnseasonedEnabledTest,
+       WillStartRequestDeleteContents) {
+  auto navigation_throttle = CreateNavigationThrottle(CreateStreamUrl());
+  NiceMock<content::MockWebContentsObserver> web_contents_observer(
+      web_contents());
+
+  EXPECT_EQ(content::NavigationThrottle::CANCEL_AND_IGNORE,
+            navigation_throttle->WillStartRequest().action());
+  DeleteContents();
+
+  EXPECT_CALL(web_contents_observer, DidStartLoading()).Times(0);
+  base::RunLoop run_loop;
+  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                   run_loop.QuitClosure());
+  run_loop.Run();
 }
 
 TEST_F(PdfNavigationThrottleUnseasonedEnabledTest, WillStartRequestOtherUrl) {
