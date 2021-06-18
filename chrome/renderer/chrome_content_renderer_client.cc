@@ -1669,17 +1669,17 @@ void ChromeContentRendererClient::AppendContentSecurityPolicy(
   const extensions::Extension* extension =
       extensions::RendererExtensionRegistry::Get()->GetExtensionOrAppByURL(
           gurl);
-  if (!extension || !extension->is_extension() ||
-      extension->manifest_version() < 3) {
+  if (!extension)
     return;
-  }
 
-  // Append the default extension pages CSP to ensure the extension can't relax
-  // the default applied CSP through means like Service Worker.
-  const std::string& default_csp =
-      extensions::CSPInfo::GetDefaultMV3ExtensionPagesCSP();
+  // Append a default CSP to ensure the extension can't relax the default
+  // applied CSP through means like Service Worker.
+  const std::string* default_csp =
+      extensions::CSPInfo::GetDefaultCSPToAppend(*extension, gurl.path());
+  if (!default_csp)
+    return;
 
-  csp->push_back({blink::WebString::FromUTF8(default_csp),
+  csp->push_back({blink::WebString::FromUTF8(*default_csp),
                   network::mojom::ContentSecurityPolicyType::kEnforce,
                   network::mojom::ContentSecurityPolicySource::kHTTP});
 #endif
