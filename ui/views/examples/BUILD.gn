@@ -41,6 +41,8 @@ component("views_examples_lib") {
     "example_combobox_model.h",
     "examples_window.cc",
     "examples_window.h",
+    "fade_animation.cc",
+    "fade_animation.h",
     "flex_layout_example.cc",
     "flex_layout_example.h",
     "label_example.cc",
