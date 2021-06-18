@@ -155,7 +155,8 @@ TEST_F(LanguagePrefsTest, ResetEmptyFluentLanguagesToDefaultTest) {
   language_prefs_->ResetEmptyFluentLanguagesToDefault();
   ExpectFluentLanguageListContent({"en", "fr"});
 
-  prefs_->Set(language::prefs::kFluentLanguages, base::ListValue());
+  prefs_->Set(language::prefs::kFluentLanguages,
+              base::Value(base::Value::Type::LIST));
   ExpectFluentLanguageListContent({});
   language_prefs_->ResetEmptyFluentLanguagesToDefault();
   ExpectFluentLanguageListContent({"en"});
