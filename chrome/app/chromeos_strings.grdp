@@ -3616,10 +3616,10 @@
     Show related info when you right click or long press on content
   </message>
   <message name="IDS_ASSISTANT_SCREEN_CONTEXT_TITLE" desc="Title for assistant screen context optin. This is also used as the title for a toggle that lets the assistant use whats on the screen in Assistant settings page.">
-    Related info
+    Screen context
   </message>
-  <message name="IDS_ASSISTANT_SCREEN_CONTEXT_DESC" desc="Description for assistant screen context optin. This is also used as the sub label for context-enable toggle in Assistant settings page.">
-    Allow Assistant to use information on screen to provide quick answers such as translation, definition, unit conversion and more
+  <message name="IDS_ASSISTANT_SCREEN_CONTEXT_DESC" desc="Description for assistant screen context optin.">
+    To get tailored responses when you ask questions, let your Assistant use info on your screen. This may include info about songs or videos that are playing.
   </message>
   <message name="IDS_ASSISTANT_READY_SCREEN_TITLE" desc="Title for assistant ready screen.">
     Your Assistant is ready
@@ -3628,18 +3628,16 @@
     When your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> is set up, press the Assistant button or say "Ok Google" to get help anytime. Go to Assistant settings to make changes.
   </message>
   <message name="IDS_ASSISTANT_RELATED_INFO_SCREEN_TITLE" desc="Title for assistant related info screen.">
-    Let your Assistant use information on your screen to help
+    Allow your Assistant to use info on your screen to help
   </message>
   <message name="IDS_ASSISTANT_RELATED_INFO_SCREEN_MESSAGE" desc="Message for assistant related info screen.">
-    Allow Assistant to use information on screen to provide quick answers such as translation, definition, unit conversion and more.
-    <ph name="BR">&lt;br&gt;&lt;br&gt;</ph>
-    <ph name="BEGIN_BOLD">&lt;b&gt;</ph>Keep in mind:<ph name="END_BOLD">&lt;/b&gt;</ph> You can always change this later in Google Assistant Settings > Related info.
+    You can change this anytime in Settings &gt; Google Assistant &gt; Screen context.
   </message>
   <message name="IDS_ASSISTANT_RELATED_INFO_SCREEN_RETURNED_USER_TITLE" desc="Title for assistant related info screen for returned users.">
-    Your Google Assistant works here too
+    Google Assistant works here too
   </message>
   <message name="IDS_ASSISTANT_RELATED_INFO_SCREEN_RETURNED_USER_MESSAGE" desc="Message for assistant related info screen for returned users.">
-    Looks like you've already set up personalized Assistant on a different device. Get even more out of your Assistant by turning on the following setting.
+    Looks like you’ve already set up Google Assistant on another device. Get even more out of your Assistant by turning on Screen context.
   </message>
   <message name="IDS_ASSISTANT_CONTINUE_BUTTON" desc="Continue button for asssitant optin flow.">
     Continue

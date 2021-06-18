@@ -23,6 +23,10 @@
       height: 288px;
     }
 
+    #subtitle-container div:not(:last-child) {
+      padding-bottom: 16px;
+    }
+
     :host-context(html:not([new-layout])) #relatedInfoImg {
       height: 240px;
     }
@@ -46,8 +50,10 @@
     <h1 slot="title">
       [[i18nDynamic(locale, titleKey_)]]
     </h1>
-    <div slot="subtitle" hidden$="[[skipActivityControl_]]"
-        inner-h-t-m-l="[[getSubtitleMessage_(locale)]]">
+    <div slot="subtitle" id="subtitle-container"
+        hidden$="[[skipActivityControl_]]">
+      <div>[[i18nDynamic(locale, 'assistantScreenContextDesc')]]</div>
+      <div>[[i18nDynamic(locale, 'assistantRelatedInfoMessage')]]</div>
     </div>
     <div id="animation-container" hidden$="[[!skipActivityControl_]]">
       <webview id="assistant-animation-webview" tabindex="-1"></webview>

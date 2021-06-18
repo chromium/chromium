@@ -3305,6 +3305,9 @@ Press an assigned switch to remove assignment.
   <message name="IDS_SETTINGS_GOOGLE_ASSISTANT_LAUNCH_WITH_MIC_OPEN_DESCRIPTION" desc="Sub label for launch-with-microphone-open toggle.">
     Default to using voice instead of keyboard
   </message>
+  <message name="IDS_SETTINGS_GOOGLE_ASSISTANT_SCREEN_CONTEXT_DESCRIPTION" desc="Sub label for context-enable toggle.">
+    To get responses that are more tailored to you, let Google Assistant use info on your screen when you ask questions. Your Assistant may also use info about songs or videos that are playing.
+  </message>
   <message name="IDS_SETTINGS_GOOGLE_ASSISTANT_SETTINGS" desc="Title for a button that opens the Google Assistant app settings.">
     Google Assistant settings
   </message>

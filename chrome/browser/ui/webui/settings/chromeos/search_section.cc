@@ -197,7 +197,7 @@ void AddGoogleAssistantStrings(content::WebUIDataSource* html_source) {
       {"googleAssistantPageTitle", IDS_SETTINGS_GOOGLE_ASSISTANT},
       {"googleAssistantEnableContext", IDS_ASSISTANT_SCREEN_CONTEXT_TITLE},
       {"googleAssistantEnableContextDescription",
-       IDS_ASSISTANT_SCREEN_CONTEXT_DESC},
+       IDS_SETTINGS_GOOGLE_ASSISTANT_SCREEN_CONTEXT_DESCRIPTION},
       {"googleAssistantEnableHotword",
        IDS_SETTINGS_GOOGLE_ASSISTANT_ENABLE_HOTWORD},
       {"googleAssistantEnableHotwordDescription",
