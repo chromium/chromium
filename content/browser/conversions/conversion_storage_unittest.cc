@@ -154,10 +154,11 @@ TEST_F(ConversionStorageTest,
           .SetConversionOrigin(url::Origin::Create(GURL("https://sub.a.test")))
           .Build();
   storage()->StoreImpression(impression);
-  StorableConversion conversion(1, net::SchemefulSite(GURL("https://a.test")),
-                                impression.reporting_origin(),
-                                /*event_source_trigger_data=*/0);
-  EXPECT_TRUE(storage()->MaybeCreateAndStoreConversionReport(conversion));
+  EXPECT_TRUE(storage()->MaybeCreateAndStoreConversionReport(
+      ConversionBuilder()
+          .SetConversionDestination(net::SchemefulSite(GURL("https://a.test")))
+          .SetReportingOrigin(impression.reporting_origin())
+          .Build()));
 }
 
 TEST_F(ConversionStorageTest, EventSourceImpressionsForConversion_Converts) {
@@ -166,7 +167,7 @@ TEST_F(ConversionStorageTest, EventSourceImpressionsForConversion_Converts) {
           .SetSourceType(StorableImpression::SourceType::kEvent)
           .Build());
   EXPECT_TRUE(storage()->MaybeCreateAndStoreConversionReport(
-      DefaultConversion(/*event_source_trigger_data=*/456)));
+      ConversionBuilder().SetEventSourceTriggerData(456).Build()));
 
   clock()->Advance(base::TimeDelta::FromMilliseconds(kReportTime));
 
@@ -674,17 +675,21 @@ TEST_F(ConversionStorageTest, ClearDataNullFilter) {
   for (int i = 0; i < 5; i++) {
     auto origin =
         url::Origin::Create(GURL(base::StringPrintf("https://%d.com/", i)));
-    StorableConversion conversion(1, net::SchemefulSite(origin), origin,
-                                  /*event_source_trigger_data=*/0);
-    EXPECT_TRUE(storage()->MaybeCreateAndStoreConversionReport(conversion));
+    EXPECT_TRUE(storage()->MaybeCreateAndStoreConversionReport(
+        ConversionBuilder()
+            .SetConversionDestination(net::SchemefulSite(origin))
+            .SetReportingOrigin(origin)
+            .Build()));
   }
   clock()->Advance(base::TimeDelta::FromDays(1));
   for (int i = 5; i < 10; i++) {
     auto origin =
         url::Origin::Create(GURL(base::StringPrintf("https://%d.com/", i)));
-    StorableConversion conversion(1, net::SchemefulSite(origin), origin,
-                                  /*event_source_trigger_data=*/0);
-    EXPECT_TRUE(storage()->MaybeCreateAndStoreConversionReport(conversion));
+    EXPECT_TRUE(storage()->MaybeCreateAndStoreConversionReport(
+        ConversionBuilder()
+            .SetConversionDestination(net::SchemefulSite(origin))
+            .SetReportingOrigin(origin)
+            .Build()));
   }
 
   auto null_filter = base::RepeatingCallback<bool(const url::Origin&)>();

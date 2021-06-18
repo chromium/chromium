@@ -255,7 +255,34 @@ class ImpressionBuilder {
 
 // Returns a StorableConversion with default data which matches the default
 // impressions created by ImpressionBuilder.
-StorableConversion DefaultConversion(uint64_t event_source_trigger_data = 0);
+StorableConversion DefaultConversion();
+
+// Helper class to construct a StorableConversion for tests using default data.
+// StorableConversion members are not mutable after construction requiring a
+// builder pattern.
+class ConversionBuilder {
+ public:
+  ConversionBuilder();
+  ~ConversionBuilder() = default;
+
+  ConversionBuilder& SetConversionData(uint64_t conversion_data);
+
+  ConversionBuilder& SetEventSourceTriggerData(
+      uint64_t event_source_trigger_data);
+
+  ConversionBuilder& SetConversionDestination(
+      const net::SchemefulSite& conversion_destination);
+
+  ConversionBuilder& SetReportingOrigin(const url::Origin& reporting_origin);
+
+  StorableConversion Build() const;
+
+ private:
+  uint64_t conversion_data_ = 111;
+  uint64_t event_source_trigger_data_ = 0;
+  net::SchemefulSite conversion_destination_;
+  url::Origin reporting_origin_;
+};
 
 testing::AssertionResult ImpressionsEqual(const StorableImpression& expected,
                                           const StorableImpression& actual);

@@ -264,14 +264,42 @@ StorableImpression ImpressionBuilder::Build() const {
                             source_type_, priority_, impression_id_);
 }
 
-StorableConversion DefaultConversion(uint64_t event_source_trigger_data) {
-  StorableConversion conversion(
-      /*conversion_data=*/111,
-      /*conversion_destination=*/
-      net::SchemefulSite(GURL(kDefaultConversionDestination)),
-      /*reporting_origin=*/url::Origin::Create(GURL(kDefaultReportOrigin)),
-      event_source_trigger_data);
-  return conversion;
+StorableConversion DefaultConversion() {
+  return ConversionBuilder().Build();
+}
+
+ConversionBuilder::ConversionBuilder()
+    : conversion_destination_(
+          net::SchemefulSite(GURL(kDefaultConversionDestination))),
+      reporting_origin_(url::Origin::Create(GURL(kDefaultReportOrigin))) {}
+
+ConversionBuilder& ConversionBuilder::SetConversionData(
+    uint64_t conversion_data) {
+  conversion_data_ = conversion_data;
+  return *this;
+}
+
+ConversionBuilder& ConversionBuilder::SetEventSourceTriggerData(
+    uint64_t event_source_trigger_data) {
+  event_source_trigger_data_ = event_source_trigger_data;
+  return *this;
+}
+
+ConversionBuilder& ConversionBuilder::SetConversionDestination(
+    const net::SchemefulSite& conversion_destination) {
+  conversion_destination_ = conversion_destination;
+  return *this;
+}
+
+ConversionBuilder& ConversionBuilder::SetReportingOrigin(
+    const url::Origin& reporting_origin) {
+  reporting_origin_ = reporting_origin;
+  return *this;
+}
+
+StorableConversion ConversionBuilder::Build() const {
+  return StorableConversion(conversion_data_, conversion_destination_,
+                            reporting_origin_, event_source_trigger_data_);
 }
 
 // Custom comparator for StorableImpressions that does not take impression id's
