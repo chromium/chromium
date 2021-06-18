@@ -33,6 +33,7 @@ mojom("mojom") {
     "power.mojom",
     "prefs.mojom",
     "remoting.mojom",
+    "resource_manager.mojom",
     "screen_manager.mojom",
     "select_file.mojom",
     "system_display.mojom",

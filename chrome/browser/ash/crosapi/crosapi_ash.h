@@ -38,6 +38,7 @@ class NativeThemeServiceAsh;
 class PowerAsh;
 class PrefsAsh;
 class RemotingAsh;
+class ResourceManagerAsh;
 class ScreenManagerAsh;
 class SelectFileAsh;
 class SystemDisplayAsh;
@@ -101,6 +102,8 @@ class CrosapiAsh : public mojom::Crosapi {
   void BindPower(mojo::PendingReceiver<mojom::Power> receiver) override;
   void BindPrefs(mojo::PendingReceiver<mojom::Prefs> receiver) override;
   void BindRemoting(mojo::PendingReceiver<mojom::Remoting> receiver) override;
+  void BindResourceManager(
+      mojo::PendingReceiver<mojom::ResourceManager> receiver) override;
   void BindScreenManager(
       mojo::PendingReceiver<mojom::ScreenManager> receiver) override;
   void BindSelectFile(
@@ -185,6 +188,7 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<PowerAsh> power_ash_;
   std::unique_ptr<PrefsAsh> prefs_ash_;
   std::unique_ptr<RemotingAsh> remoting_ash_;
+  std::unique_ptr<ResourceManagerAsh> resource_manager_ash_;
   std::unique_ptr<ScreenManagerAsh> screen_manager_ash_;
   std::unique_ptr<SelectFileAsh> select_file_ash_;
   std::unique_ptr<SystemDisplayAsh> system_display_ash_;

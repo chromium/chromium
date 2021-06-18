@@ -54,7 +54,9 @@ const base::Feature kRunOnMainThread{"RunOnMainThread",
 #if !defined(OS_ANDROID)
 const base::Feature kUrgentDiscardingFromPerformanceManager {
   "UrgentDiscardingFromPerformanceManager",
-#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_LINUX)
+// Chrome OS uses memory pressure evaluator instead of performance manager to
+// discard tabs.
+#if defined(OS_CHROMEOS) || defined(OS_LINUX)
       base::FEATURE_DISABLED_BY_DEFAULT
 #else
       base::FEATURE_ENABLED_BY_DEFAULT

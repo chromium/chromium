@@ -35,6 +35,7 @@
 #include "chrome/browser/ash/crosapi/power_ash.h"
 #include "chrome/browser/ash/crosapi/prefs_ash.h"
 #include "chrome/browser/ash/crosapi/remoting_ash.h"
+#include "chrome/browser/ash/crosapi/resource_manager_ash.h"
 #include "chrome/browser/ash/crosapi/screen_manager_ash.h"
 #include "chrome/browser/ash/crosapi/select_file_ash.h"
 #include "chrome/browser/ash/crosapi/system_display_ash.h"
@@ -113,6 +114,7 @@ CrosapiAsh::CrosapiAsh()
           std::make_unique<PrefsAsh>(g_browser_process->profile_manager(),
                                      g_browser_process->local_state())),
       remoting_ash_(std::make_unique<RemotingAsh>()),
+      resource_manager_ash_(std::make_unique<ResourceManagerAsh>()),
       screen_manager_ash_(std::make_unique<ScreenManagerAsh>()),
       select_file_ash_(std::make_unique<SelectFileAsh>()),
       system_display_ash_(std::make_unique<SystemDisplayAsh>()),
@@ -321,6 +323,11 @@ void CrosapiAsh::BindPrefs(mojo::PendingReceiver<mojom::Prefs> receiver) {
 
 void CrosapiAsh::BindRemoting(mojo::PendingReceiver<mojom::Remoting> receiver) {
   remoting_ash_->BindReceiver(std::move(receiver));
+}
+
+void CrosapiAsh::BindResourceManager(
+    mojo::PendingReceiver<mojom::ResourceManager> receiver) {
+  resource_manager_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindUrlHandler(

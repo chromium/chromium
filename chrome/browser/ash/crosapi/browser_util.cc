@@ -27,6 +27,7 @@
 #include "base/version.h"
 #include "chrome/browser/ash/crosapi/idle_service_ash.h"
 #include "chrome/browser/ash/crosapi/native_theme_service_ash.h"
+#include "chrome/browser/ash/crosapi/resource_manager_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/browser_process.h"
@@ -256,6 +257,7 @@ constexpr InterfaceVersionEntry kInterfaceVersionEntries[] = {
     MakeInterfaceVersionEntry<crosapi::mojom::Power>(),
     MakeInterfaceVersionEntry<crosapi::mojom::Prefs>(),
     MakeInterfaceVersionEntry<crosapi::mojom::Remoting>(),
+    MakeInterfaceVersionEntry<crosapi::mojom::ResourceManager>(),
     MakeInterfaceVersionEntry<crosapi::mojom::ScreenManager>(),
     MakeInterfaceVersionEntry<crosapi::mojom::SnapshotCapturer>(),
     MakeInterfaceVersionEntry<crosapi::mojom::SystemDisplay>(),
@@ -285,7 +287,7 @@ constexpr bool HasDuplicatedUuid() {
 }
 
 static_assert(
-    crosapi::mojom::Crosapi::Version_ == 35,
+    crosapi::mojom::Crosapi::Version_ == 36,
     "if you add a new crosapi, please add it to kInterfaceVersionEntries");
 static_assert(!HasDuplicatedUuid(),
               "Each Crosapi Mojom interface should have unique UUID.");

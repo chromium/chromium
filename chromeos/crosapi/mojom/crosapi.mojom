@@ -27,6 +27,7 @@ import "chromeos/crosapi/mojom/native_theme.mojom";
 import "chromeos/crosapi/mojom/power.mojom";
 import "chromeos/crosapi/mojom/prefs.mojom";
 import "chromeos/crosapi/mojom/remoting.mojom";
+import "chromeos/crosapi/mojom/resource_manager.mojom";
 import "chromeos/crosapi/mojom/screen_manager.mojom";
 import "chromeos/crosapi/mojom/select_file.mojom";
 import "chromeos/crosapi/mojom/system_display.mojom";
@@ -64,8 +65,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 36
-// Next method id: 41
+// Next version: 37
+// Next method id: 42
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -228,6 +229,11 @@ interface Crosapi {
   // Binds the Power interface for power management.
   // Added in M93.
   [MinVersion=35] BindPower@40(pending_receiver<Power> receiver);
+
+  // Binds the Resource Manager interface for querying resource status.
+  // Added in M93.
+  [MinVersion=36] BindResourceManager@41(
+      pending_receiver<ResourceManager> receiver);
 
   // Binds the System Display interface for querying display info.
   // Added in M92.
