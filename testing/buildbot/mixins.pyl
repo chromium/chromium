@@ -1084,6 +1084,13 @@
       },
     },
   },
+  'win10-20h2': {
+    'swarming': {
+      'dimensions': {
+        'os': 'Windows-10-19042',
+      },
+    },
+  },
   'win10_amd_rx_5500_xt': {
     'swarming': {
       'dimensions': {
