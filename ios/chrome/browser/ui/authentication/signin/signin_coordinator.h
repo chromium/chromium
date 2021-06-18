@@ -116,6 +116,8 @@ enum class KeyRetrievalTriggerForUMA;
 // Returns a coordinator to display the account consistency promo with a list
 // of accounts available on the device for sign-in.
 // |viewController| presents the promo.
+// This method can return nil if sign-in is not authorized or if there is no
+// account on the device.
 + (instancetype)
     consistencyPromoSigninCoordinatorWithBaseViewController:
         (UIViewController*)viewController

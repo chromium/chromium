@@ -6,6 +6,7 @@
 
 #import "base/mac/foundation_util.h"
 #import "components/signin/public/base/account_consistency_method.h"
+#import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
@@ -23,6 +24,7 @@
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator+protected.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -37,6 +39,9 @@
     UINavigationControllerDelegate,
     UIViewControllerTransitioningDelegate>
 
+// List of gaia IDs added by the user with the consistency view.
+// This set is used for metrics reasons.
+@property(nonatomic, strong) NSMutableSet* addedGaiaIDs;
 // Navigation controller for the consistency promo.
 @property(nonatomic, strong)
     ConsistencySheetNavigationController* navigationController;
@@ -89,6 +94,7 @@
 
 - (void)start {
   [super start];
+  self.addedGaiaIDs = [[NSMutableSet alloc] init];
   self.defaultAccountCoordinator = [[ConsistencyDefaultAccountCoordinator alloc]
       initWithBaseViewController:self.navigationController
                          browser:self.browser];
@@ -116,6 +122,8 @@
   [self.baseViewController presentViewController:self.navigationController
                                         animated:YES
                                       completion:nil];
+  RecordConsistencyPromoUserAction(
+      signin_metrics::AccountConsistencyPromoAction::SHOWN);
 }
 
 - (void)stop {
@@ -156,14 +164,65 @@
   self.navigationController = nil;
   SigninCompletionInfo* completionInfo =
       [SigninCompletionInfo signinCompletionInfoWithIdentity:identity];
+  [self recordHistogramWithResult:signinResult identity:identity];
   [self runCompletionCallbackWithSigninResult:signinResult
                                completionInfo:completionInfo];
 }
 
+// Records histogram at the end of the consistency promo.
+- (void)recordHistogramWithResult:(SigninCoordinatorResult)signinResult
+                         identity:(ChromeIdentity*)identity {
+  switch (signinResult) {
+    case SigninCoordinatorResultSuccess: {
+      DCHECK(identity);
+      PrefService* prefService = self.browser->GetBrowserState()->GetPrefs();
+      NSArray* identities = ios::GetChromeBrowserProvider()
+                                ->GetChromeIdentityService()
+                                ->GetAllIdentitiesSortedForDisplay(prefService);
+      DCHECK(identities.count > 0);
+      if ([self.addedGaiaIDs containsObject:identity.gaiaID]) {
+        // Added identity.
+        RecordConsistencyPromoUserAction(
+            signin_metrics::AccountConsistencyPromoAction::
+                SIGNED_IN_WITH_ADDED_ACCOUNT);
+      } else if ([identities[0] isEqual:identity]) {
+        // Default identity.
+        RecordConsistencyPromoUserAction(
+            signin_metrics::AccountConsistencyPromoAction::
+                SIGNED_IN_WITH_DEFAULT_ACCOUNT);
+      } else {
+        // Other identity.
+        RecordConsistencyPromoUserAction(
+            signin_metrics::AccountConsistencyPromoAction::
+                SIGNED_IN_WITH_NON_DEFAULT_ACCOUNT);
+      }
+      break;
+    }
+    case SigninCoordinatorResultCanceledByUser: {
+      RecordConsistencyPromoUserAction(
+          signin_metrics::AccountConsistencyPromoAction::DISMISSED_BUTTON);
+      break;
+    }
+    case SigninCoordinatorResultInterrupted: {
+      RecordConsistencyPromoUserAction(
+          signin_metrics::AccountConsistencyPromoAction::DISMISSED_OTHER);
+      break;
+    }
+  }
+}
+
 // Displays the error panel.
-- (void)displayGenericCookieError {
+- (void)displayGenericCookieErrorWithError:
+    (const GoogleServiceAuthError&)error {
   DCHECK(!self.alertCoordinator);
   [self.defaultAccountCoordinator stopSigninSpinner];
+  if (error.state() == GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS) {
+    RecordConsistencyPromoUserAction(
+        signin_metrics::AccountConsistencyPromoAction::AUTH_ERROR_SHOWN);
+  } else {
+    RecordConsistencyPromoUserAction(
+        signin_metrics::AccountConsistencyPromoAction::GENERIC_ERROR_SHOWN);
+  }
   NSString* errorMessage = l10n_util::GetNSString(IDS_IOS_SIGN_IN_AUTH_FAILURE);
   self.alertCoordinator = [[AlertCoordinator alloc]
       initWithBaseViewController:self.navigationController
@@ -207,6 +266,21 @@
                              completion:finishCompletionBlock];
     }
   }
+}
+
+// Does cleanup (metrics and remove coordinator) once the add account is
+// finished.
+- (void)
+    addAccountCompletionWithSigninResult:(SigninCoordinatorResult)signinResult
+                          completionInfo:(SigninCompletionInfo*)completionInfo {
+  if (signinResult == SigninCoordinatorResultSuccess) {
+    DCHECK(completionInfo);
+    [self.addedGaiaIDs addObject:completionInfo.identity.gaiaID];
+  }
+  RecordConsistencyPromoUserAction(
+      signin_metrics::AccountConsistencyPromoAction::ADD_ACCOUNT_COMPLETED);
+  [self.addAccountCoordinator stop];
+  self.addAccountCoordinator = nil;
 }
 
 #pragma mark - SwipeGesture
@@ -267,6 +341,8 @@
 
 - (void)consistencyAccountChooserCoordinatorOpenAddAccount:
     (ConsistencyAccountChooserCoordinator*)coordinator {
+  RecordConsistencyPromoUserAction(
+      signin_metrics::AccountConsistencyPromoAction::ADD_ACCOUNT_STARTED);
   DCHECK(!self.addAccountCoordinator);
   self.addAccountCoordinator = [SigninCoordinator
       addAccountCoordinatorWithBaseViewController:self.navigationController
@@ -277,8 +353,8 @@
   self.addAccountCoordinator.signinCompletion =
       ^(SigninCoordinatorResult signinResult,
         SigninCompletionInfo* signinCompletionInfo) {
-        [weakSelf.addAccountCoordinator stop];
-        weakSelf.addAccountCoordinator = nil;
+        [weakSelf addAccountCompletionWithSigninResult:signinResult
+                                        completionInfo:signinCompletionInfo];
       };
   [self.addAccountCoordinator start];
 }
@@ -360,7 +436,7 @@
     return;
   }
   self.authenticationService->SignOut(signin_metrics::ABORT_SIGNIN, false, ^() {
-    [weakSelf displayGenericCookieError];
+    [weakSelf displayGenericCookieErrorWithError:error];
   });
 }
 

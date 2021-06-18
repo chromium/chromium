@@ -1461,16 +1461,14 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
                                            URL:(const GURL&)url {
   // Do not display the web sign-in promo if there are no identities on the
   // device or if a sign-in is in progress.
-  if (self.signinCoordinator != nil || !ios::GetChromeBrowserProvider()
-                                            ->GetChromeIdentityService()
-                                            ->HasIdentities()) {
+  if (self.signinCoordinator)
     return;
-  }
-
   self.signinCoordinator = [SigninCoordinator
       consistencyPromoSigninCoordinatorWithBaseViewController:baseViewController
                                                       browser:self.mainInterface
                                                                   .browser];
+  if (!self.signinCoordinator)
+    return;
   __weak SceneController* weakSelf = self;
   [self startSigninCoordinatorWithCompletion:^(BOOL success) {
     // If the sign-in is not successful or the scene controller is shut down do
