@@ -14,6 +14,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/common/content_features.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -100,7 +101,8 @@ void CreateOpenNewSubmenu(apps::mojom::MenuType menu_type,
                           ? ash::USE_LAUNCH_TYPE_WINDOW
                           : ash::LAUNCH_TYPE_WINDOW,
                       IDS_APP_LIST_CONTEXT_MENU_NEW_WINDOW, kGroupId));
-  if (base::FeatureList::IsEnabled(features::kDesktopPWAsTabStrip)) {
+  if (base::FeatureList::IsEnabled(features::kDesktopPWAsTabStrip) &&
+      base::FeatureList::IsEnabled(features::kDesktopPWAsTabStripSettings)) {
     menu_item->submenu.push_back(
         CreateRadioItem((menu_type == apps::mojom::MenuType::kAppList)
                             ? ash::USE_LAUNCH_TYPE_TABBED_WINDOW

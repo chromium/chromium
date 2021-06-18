@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/web_apps/web_app_info_image_source.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/strings/grit/components_strings.h"
@@ -39,9 +40,10 @@ bool g_auto_check_open_in_window_for_testing = false;
 
 bool ShowRadioButtons() {
   // This UI is only for prototyping and is not intended for shipping.
-  DCHECK_EQ(features::kDesktopPWAsTabStrip.default_state,
+  DCHECK_EQ(features::kDesktopPWAsTabStripSettings.default_state,
             base::FEATURE_DISABLED_BY_DEFAULT);
-  return base::FeatureList::IsEnabled(features::kDesktopPWAsTabStrip);
+  return base::FeatureList::IsEnabled(features::kDesktopPWAsTabStrip) &&
+         base::FeatureList::IsEnabled(features::kDesktopPWAsTabStripSettings);
 }
 
 }  // namespace

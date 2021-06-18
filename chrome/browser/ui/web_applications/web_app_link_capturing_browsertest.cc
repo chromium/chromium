@@ -193,9 +193,10 @@ class WebAppTabStripLinkCapturingBrowserTest
     : public WebAppLinkCapturingBrowserTest {
  public:
   WebAppTabStripLinkCapturingBrowserTest() {
-    features_.InitWithFeatures({features::kDesktopPWAsTabStrip,
-                                features::kDesktopPWAsTabStripLinkCapturing},
-                               {});
+    features_.InitWithFeatures(
+        {features::kDesktopPWAsTabStrip, features::kDesktopPWAsTabStripSettings,
+         features::kDesktopPWAsTabStripLinkCapturing},
+        {});
   }
 
   void InstallTestApp() {

@@ -337,6 +337,7 @@ DisplayMode AppRegistrar::GetEffectiveDisplayModeFromManifest(
 
 bool AppRegistrar::IsInExperimentalTabbedWindowMode(const AppId& app_id) const {
   return base::FeatureList::IsEnabled(features::kDesktopPWAsTabStrip) &&
+         base::FeatureList::IsEnabled(features::kDesktopPWAsTabStripSettings) &&
          GetBoolWebAppPref(profile()->GetPrefs(), app_id,
                            kExperimentalTabbedWindowMode);
 }

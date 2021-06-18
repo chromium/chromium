@@ -310,6 +310,10 @@ const base::Feature kDesktopPWAsSubApps{"DesktopPWAsSubApps",
 const base::Feature kDesktopPWAsTabStripLinkCapturing{
     "DesktopPWAsTabStripLinkCapturing", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Adds a user settings that allows PWAs to be opened with a tab strip.
+const base::Feature kDesktopPWAsTabStripSettings{
+    "DesktopPWAsTabStripSettings", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enable DNS over HTTPS (DoH).
 const base::Feature kDnsOverHttps {
   "DnsOverHttps",

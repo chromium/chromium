@@ -23,6 +23,7 @@
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/components/web_app_prefs_utils.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/tracker.h"
@@ -151,9 +152,10 @@ PWAConfirmationBubbleView::PWAConfirmationBubbleView(
       CreateOriginLabel(url::Origin::Create(web_app_info_->start_url))
           .release());
 
-  if (base::FeatureList::IsEnabled(features::kDesktopPWAsTabStrip)) {
+  if (base::FeatureList::IsEnabled(features::kDesktopPWAsTabStrip) &&
+      base::FeatureList::IsEnabled(features::kDesktopPWAsTabStripSettings)) {
     // This UI is only for prototyping and is not intended for shipping.
-    DCHECK_EQ(features::kDesktopPWAsTabStrip.default_state,
+    DCHECK_EQ(features::kDesktopPWAsTabStripSettings.default_state,
               base::FEATURE_DISABLED_BY_DEFAULT);
     tabbed_window_checkbox_ = labels->AddChildView(
         std::make_unique<views::Checkbox>(l10n_util::GetStringUTF16(

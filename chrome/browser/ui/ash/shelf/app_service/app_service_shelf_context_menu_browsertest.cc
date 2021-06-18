@@ -18,6 +18,7 @@
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
@@ -28,7 +29,10 @@ class AppServiceShelfContextMenuWebAppBrowserTest
     : public InProcessBrowserTest {
  public:
   AppServiceShelfContextMenuWebAppBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kDesktopPWAsTabStrip);
+    scoped_feature_list_.InitWithFeatures(
+        {features::kDesktopPWAsTabStrip,
+         features::kDesktopPWAsTabStripSettings},
+        {});
   }
   ~AppServiceShelfContextMenuWebAppBrowserTest() override = default;
 
