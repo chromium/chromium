@@ -993,4 +993,8 @@ ui::Compositor* RenderWidgetHostViewBase::GetCompositor() {
   return nullptr;
 }
 
+bool RenderWidgetHostViewBase::ShouldVirtualKeyboardOverlayContent() {
+  return false;
+}
+
 }  // namespace content

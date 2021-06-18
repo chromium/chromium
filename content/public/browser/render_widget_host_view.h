@@ -306,6 +306,12 @@ class CONTENT_EXPORT RenderWidgetHostView {
       bool show_reason_tab_switching,
       bool show_reason_unoccluded,
       bool show_reason_bfcache_restore) = 0;
+
+  // Returns true if the overlaycontent flag is set in the JS, else false.
+  // This determines whether to fire geometrychange event to JS and also not
+  // resize the visual/layout viewports in response to keyboard visibility
+  // changes.
+  virtual bool ShouldVirtualKeyboardOverlayContent() = 0;
 };
 
 }  // namespace content

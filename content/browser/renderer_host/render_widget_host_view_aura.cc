@@ -2230,7 +2230,7 @@ void RenderWidgetHostViewAura::Shutdown() {
   }
 }
 
-bool RenderWidgetHostViewAura::ShouldVirtualKeyboardOverlayContent() const {
+bool RenderWidgetHostViewAura::ShouldVirtualKeyboardOverlayContent() {
   // overlaycontent flag can only be set from main frame.
   RenderFrameHostImpl* frame = host()->frame_tree()->GetMainFrame();
   if (!frame)

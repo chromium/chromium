@@ -137,6 +137,7 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
       bool show_reason_tab_switching,
       bool show_reason_unoccluded,
       bool show_reason_bfcache_restore) final;
+  bool ShouldVirtualKeyboardOverlayContent() override;
 
   // This only needs to be overridden by RenderWidgetHostViewBase subclasses
   // that handle content embedded within other RenderWidgetHostViews.

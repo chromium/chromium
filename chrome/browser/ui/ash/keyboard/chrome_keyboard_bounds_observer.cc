@@ -165,6 +165,10 @@ void ChromeKeyboardBoundsObserver::OnWidgetDestroying(views::Widget* widget) {
 void ChromeKeyboardBoundsObserver::UpdateInsets(
     aura::Window* window,
     content::RenderWidgetHostView* view) {
+  if (view->ShouldVirtualKeyboardOverlayContent()) {
+    view->SetInsets(gfx::Insets());
+    return;
+  }
   gfx::Rect view_bounds_in_screen = view->GetViewBounds();
   if (!ShouldEnableInsets(window)) {
     DVLOG(2) << "ResetInsets: " << window->GetName()
