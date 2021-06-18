@@ -344,9 +344,9 @@ TEST_F(ChromePasswordProtectionServiceTest,
       GURL("https://www.mydomain.com")));
 
   // Verify URL is allowed after setting allowlist in prefs.
-  base::ListValue allowlist;
-  allowlist.AppendString("mydomain.com");
-  allowlist.AppendString("mydomain.net");
+  base::Value allowlist(base::Value::Type::LIST);
+  allowlist.Append("mydomain.com");
+  allowlist.Append("mydomain.net");
   chrome_browser_state_->GetPrefs()->Set(prefs::kSafeBrowsingAllowlistDomains,
                                          allowlist);
   EXPECT_TRUE(service_->IsURLAllowlistedForPasswordEntry(
@@ -372,8 +372,8 @@ TEST_F(ChromePasswordProtectionServiceTest,
       prefs::kPasswordProtectionChangePasswordURL);
   EXPECT_FALSE(service_->IsURLAllowlistedForPasswordEntry(
       GURL("https://www.mydomain.com")));
-  base::ListValue login_urls;
-  login_urls.AppendString("https://mydomain.com/login.html");
+  base::Value login_urls(base::Value::Type::LIST);
+  login_urls.Append("https://mydomain.com/login.html");
   chrome_browser_state_->GetPrefs()->Set(prefs::kPasswordProtectionLoginURLs,
                                          login_urls);
   EXPECT_TRUE(service_->IsURLAllowlistedForPasswordEntry(
