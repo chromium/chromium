@@ -47,9 +47,11 @@
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "net/test/revocation_builder.h"
 #include "net/test/test_data_directory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/include/openssl/rsa.h"
+#include "url/origin.h"
 
 namespace net {
 namespace test_server {
@@ -695,6 +697,13 @@ GURL EmbeddedTestServer::GetURL(
   GURL::Replacements replace_host;
   replace_host.SetHostStr(hostname);
   return local_url.ReplaceComponents(replace_host);
+}
+
+url::Origin EmbeddedTestServer::GetOrigin(
+    const absl::optional<std::string>& hostname) const {
+  if (hostname)
+    return url::Origin::Create(GetURL(*hostname, "/"));
+  return url::Origin::Create(base_url_);
 }
 
 bool EmbeddedTestServer::GetAddressList(AddressList* address_list) const {

@@ -185,9 +185,16 @@ void AdAuctionServiceImpl::RunAdAuction(blink::mojom::AuctionAdConfigPtr config,
     return;
   }
 
-  // TODO(mmenke): This should be top frame origin, not frame origin.
-  auto browser_signals =
-      auction_worklet::mojom::BrowserSignals::New(frame_origin, config->seller);
+  url::Origin top_frame_origin;
+  if (!render_frame_host()->GetParent()) {
+    top_frame_origin = frame_origin;
+  } else {
+    top_frame_origin =
+        render_frame_host()->GetMainFrame()->GetLastCommittedOrigin();
+  }
+
+  auto browser_signals = auction_worklet::mojom::BrowserSignals::New(
+      std::move(top_frame_origin), config->seller);
 
   std::unique_ptr<AuctionRunner> auction = AuctionRunner::CreateAndStart(
       this,

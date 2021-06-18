@@ -65,7 +65,6 @@ function validateBrowserSignals(browserSignals) {
   if (Object.keys(browserSignals).length !== 5)
     throw 'Wrong number of browser signals fields ' +
         JSON.stringify(browserSignals);
-  // TODO(crbug.com/1186444): Test in subframe too.
   if (!browserSignals.topWindowHostname.includes('a.test'))
     throw 'Wrong topWindowHostname ' + browserSignals.topWindowHostname;
   if (!browserSignals.seller.includes('a.test'))

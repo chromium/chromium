@@ -29,7 +29,9 @@
 #include "net/socket/stream_socket.h"
 #include "net/socket/tcp_server_socket.h"
 #include "net/ssl/ssl_server_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace net {
 
@@ -381,6 +383,12 @@ class EmbeddedTestServer {
   // resolved to 127.0.0.1.
   GURL GetURL(const std::string& hostname,
               const std::string& relative_url) const;
+
+  // Convenience function equivalent to calling url::Origin::Create(base_url()).
+  // Will use the GetURL() variant that takes a hostname as the base URL, if
+  // `hostname` is non-null.
+  url::Origin GetOrigin(
+      const absl::optional<std::string>& hostname = absl::nullopt) const;
 
   // Returns the address list needed to connect to the server.
   bool GetAddressList(AddressList* address_list) const WARN_UNUSED_RESULT;
