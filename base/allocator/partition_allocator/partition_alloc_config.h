@@ -22,7 +22,10 @@ static_assert(sizeof(void*) != 8, "");
 
 // BackupRefPtr and PCScan are incompatible, and due to its conservative nature,
 // it is 64 bits only.
-#if defined(PA_HAS_64_BITS_POINTERS) && !BUILDFLAG(USE_BACKUP_REF_PTR)
+// Disable PCScan even for USE_BACKUP_REF_PTR_FAKE, so that a "fake" BRP
+// experiment is unaffected by PCScan, as a non-fake one would.
+#if defined(PA_HAS_64_BITS_POINTERS) && !BUILDFLAG(USE_BACKUP_REF_PTR) && \
+    !BUILDFLAG(USE_BACKUP_REF_PTR_FAKE)
 #define PA_ALLOW_PCSCAN
 #endif
 

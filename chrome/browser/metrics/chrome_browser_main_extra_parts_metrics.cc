@@ -665,7 +665,8 @@ void ChromeBrowserMainExtraPartsMetrics::PreBrowserStart() {
   //    Update to fraction X of the non-enterprise population.
   //    Note, USE_BACKUP_REF_PTR_FAKE is only used to fake that the feature is
   //    enabled for the purpose of this Finch setting, while in fact there are
-  //    no behavior changes.
+  //    no behavior changes. Note, however, PCScan will be kept away from the
+  //    fake experiment binary, just as it would be from a regular one.
   // 3) The control group is established in fraction X of non-enterprise
   //    popluation via Finch (PartitionAllocBackupRefPtrControl). Since this
   //    Finch is applicable only to 1-X of the non-enterprise population, we
