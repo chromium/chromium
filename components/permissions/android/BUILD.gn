@@ -8,10 +8,12 @@ import("//tools/grit/grit_rule.gni")
 
 generate_jni("jni_headers") {
   sources = [
+    "java/src/org/chromium/components/permissions/AndroidPermissionRequester.java",
     "java/src/org/chromium/components/permissions/PermissionDialogController.java",
     "java/src/org/chromium/components/permissions/PermissionDialogDelegate.java",
     "java/src/org/chromium/components/permissions/PermissionUmaUtil.java",
     "java/src/org/chromium/components/permissions/PermissionUtil.java",
+    "java/src/org/chromium/components/permissions/PermissionsAndroidFeatureList.java",
     "java/src/org/chromium/components/permissions/nfc/NfcSystemLevelSetting.java",
   ]
 }
@@ -96,11 +98,11 @@ android_library("java") {
     "java/src/org/chromium/components/permissions/PermissionDialogDelegate.java",
     "java/src/org/chromium/components/permissions/PermissionDialogModel.java",
     "java/src/org/chromium/components/permissions/PermissionUmaUtil.java",
-    "java/src/org/chromium/components/permissions/PermissionUtil.java",
     "java/src/org/chromium/components/permissions/nfc/NfcSystemLevelPrompt.java",
     "java/src/org/chromium/components/permissions/nfc/NfcSystemLevelSetting.java",
   ]
   deps = [
+    ":core_java",
     ":java_resources",
     "//base:base_java",
     "//components/browser_ui/modaldialog/android:java",
@@ -112,6 +114,21 @@ android_library("java") {
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   resources_package = "org.chromium.components.permissions"
+}
+
+# Contains sources that do no depend on //content.
+android_library("core_java") {
+  sources = [
+    "java/src/org/chromium/components/permissions/PermissionUtil.java",
+    "java/src/org/chromium/components/permissions/PermissionsAndroidFeatureList.java",
+  ]
+  deps = [
+    "//base:base_java",
+    "//components/content_settings/android:content_settings_enums_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_core_core_java",
+  ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
 java_library("components_permissions_junit_tests") {

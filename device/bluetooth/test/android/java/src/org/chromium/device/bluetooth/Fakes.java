@@ -4,6 +4,7 @@
 
 package org.chromium.device.bluetooth;
 
+import android.Manifest;
 import android.annotation.TargetApi;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.le.ScanFilter;
@@ -12,6 +13,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.ParcelUuid;
 import android.test.mock.MockContext;
@@ -50,21 +52,14 @@ class Fakes {
 
     /**
      * Sets the factory for LocationUtils to return an instance whose
-     * hasAndroidLocationPermission and isSystemLocationSettingEnabled return
-     * values depend on |hasPermission| and |isEnabled| respectively.
+     * isSystemLocationSettingEnabled method returns |isEnabled|.
      */
     @CalledByNative
-    public static void setLocationServicesState(
-            final boolean hasPermission, final boolean isEnabled) {
+    public static void setLocationServicesState(final boolean isEnabled) {
         LocationUtils.setFactory(new LocationUtils.Factory() {
             @Override
             public LocationUtils create() {
                 return new LocationUtils() {
-                    @Override
-                    public boolean hasAndroidLocationPermission() {
-                        return hasPermission;
-                    }
-
                     @Override
                     public boolean isSystemLocationSettingEnabled() {
                         return isEnabled;
@@ -125,6 +120,11 @@ class Fakes {
             mNativeBluetoothTestAndroid = nativeBluetoothTestAndroid;
             mFakeContext = (FakeContext) mContext;
             mFakeScanner = new FakeBluetoothLeScanner();
+        }
+
+        @CalledByNative("FakeBluetoothAdapter")
+        public void setFakeContextLocationPermission(boolean enabled) {
+            mFakeContext.setLocationPermission(enabled);
         }
 
         /**
@@ -309,8 +309,15 @@ class Fakes {
      * Fakes android.content.Context by extending MockContext.
      */
     static class FakeContext extends MockContext {
+        private boolean mLocationPermission;
+
         public FakeContext() {
             super();
+            mLocationPermission = true;
+        }
+
+        public void setLocationPermission(boolean enabled) {
+            mLocationPermission = enabled;
         }
 
         @Override
@@ -320,6 +327,16 @@ class Fakes {
 
         @Override
         public void unregisterReceiver(BroadcastReceiver receiver) {}
+
+        @Override
+        public int checkCallingOrSelfPermission(String permission) {
+            if (permission.equals(Manifest.permission.ACCESS_FINE_LOCATION)
+                    || permission.equals(Manifest.permission.ACCESS_COARSE_LOCATION)) {
+                return mLocationPermission ? PackageManager.PERMISSION_GRANTED
+                                           : PackageManager.PERMISSION_DENIED;
+            }
+            return PackageManager.PERMISSION_DENIED;
+        }
     }
 
     /**

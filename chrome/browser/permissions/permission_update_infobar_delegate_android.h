@@ -49,7 +49,7 @@ class PermissionUpdateInfoBarDelegate : public ConfirmInfoBarDelegate {
   // The |callback| will not be triggered if this is deleted.
   static infobars::InfoBar* Create(
       content::WebContents* web_contents,
-      const std::vector<std::string>& android_permissions,
+      const std::vector<std::string>& required_android_permissions,
       int permission_msg_id,
       PermissionUpdatedCallback callback);
 
@@ -60,14 +60,16 @@ class PermissionUpdateInfoBarDelegate : public ConfirmInfoBarDelegate {
  private:
   static infobars::InfoBar* Create(
       content::WebContents* web_contents,
-      const std::vector<std::string>& android_permissions,
+      const std::vector<std::string>& required_android_permissions,
+      const std::vector<std::string>& optional_android_permissions,
       const std::vector<ContentSettingsType> content_settings_types,
       int permission_msg_id,
       PermissionUpdatedCallback callback);
 
   PermissionUpdateInfoBarDelegate(
       content::WebContents* web_contents,
-      const std::vector<std::string>& android_permissions,
+      const std::vector<std::string>& required_android_permissions,
+      const std::vector<std::string>& optional_android_permissions,
       const std::vector<ContentSettingsType>& content_settings_types,
       int permission_msg_id,
       PermissionUpdatedCallback callback);
@@ -90,7 +92,6 @@ class PermissionUpdateInfoBarDelegate : public ConfirmInfoBarDelegate {
   void InfoBarDismissed() override;
 
   base::android::ScopedJavaGlobalRef<jobject> java_delegate_;
-  std::vector<std::string> android_permissions_;
   std::vector<ContentSettingsType> content_settings_types_;
   int permission_msg_id_;
   PermissionUpdatedCallback callback_;

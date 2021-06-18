@@ -14,12 +14,29 @@ namespace content {
 class WebContents;
 }
 
+namespace ui {
+class WindowAndroid;
+}
+
 namespace permissions {
 
-// Populate the list of corresponding Android permissions associated with the
-// ContentSettingsType specified.
-void GetAndroidPermissionsForContentSetting(ContentSettingsType content_type,
-                                            std::vector<std::string>* out);
+// Appends to `out` the required Android permissions associated with
+// `content_settings_type`.
+void AppendRequiredAndroidPermissionsForContentSetting(
+    ContentSettingsType content_settings_type,
+    std::vector<std::string>* out);
+
+// Appends to `out` the optional Android permissions associated with
+// `content_settings_type`.
+void AppendOptionalAndroidPermissionsForContentSetting(
+    ContentSettingsType content_settings_type,
+    std::vector<std::string>* out);
+
+// Returns whether the required Android permission for `content_settings_type`
+// are granted.
+bool HasRequiredAndroidPermissionsForContentSetting(
+    ui::WindowAndroid* window_android,
+    ContentSettingsType content_settings_type);
 
 // The states that indicate if the user should/can be re-nudged to accept
 // permissions. In Chrome this correlates to the PermissionUpdateInfoBar.
