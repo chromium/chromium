@@ -44,6 +44,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
@@ -283,6 +284,11 @@ absl::optional<std::string> GetDisableReason(
   }
 
   return absl::nullopt;
+}
+
+std::string GetConfigDirectoryFromCommandLine() {
+  return base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+      switches::kPreinstalledWebAppsDir);
 }
 
 std::string GetExtraConfigSubdirectory() {
@@ -599,7 +605,9 @@ void PreinstalledWebAppManager::OnStartUpTaskCompleted(
 }
 
 base::FilePath PreinstalledWebAppManager::GetConfigDir() {
-  base::FilePath dir;
+  std::string command_line_directory = GetConfigDirectoryFromCommandLine();
+  if (!command_line_directory.empty())
+    return base::FilePath::FromUTF8Unsafe(command_line_directory);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // As of mid 2018, only Chrome OS has default/external web apps, and
@@ -607,23 +615,24 @@ base::FilePath PreinstalledWebAppManager::GetConfigDir() {
   // which includes OS_CHROMEOS.
   if (chromeos::ProfileHelper::IsRegularProfile(profile_)) {
     if (g_config_dir_for_testing) {
-      dir = *g_config_dir_for_testing;
-    } else {
-      // For manual testing, you can change s/STANDALONE/USER/, as writing to
-      // "$HOME/.config/chromium/test-user/.config/chromium/External
-      // Extensions/web_apps" does not require root ACLs, unlike
-      // "/usr/share/chromium/extensions/web_apps".
-      if (!base::PathService::Get(chrome::DIR_STANDALONE_EXTERNAL_EXTENSIONS,
-                                  &dir)) {
-        LOG(ERROR) << "base::PathService::Get failed";
-      } else {
-        dir = dir.Append(kWebAppsSubDirectory);
-      }
+      return *g_config_dir_for_testing;
     }
+
+    // For manual testing, you can change s/STANDALONE/USER/, as writing to
+    // "$HOME/.config/chromium/test-user/.config/chromium/External
+    // Extensions/web_apps" does not require root ACLs, unlike
+    // "/usr/share/chromium/extensions/web_apps".
+    base::FilePath dir;
+    if (base::PathService::Get(chrome::DIR_STANDALONE_EXTERNAL_EXTENSIONS,
+                               &dir)) {
+      return dir.Append(kWebAppsSubDirectory);
+    }
+
+    LOG(ERROR) << "base::PathService::Get failed";
   }
 #endif
 
-  return dir;
+  return {};
 }
 
 bool PreinstalledWebAppManager::IsNewUser() {

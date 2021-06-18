@@ -142,6 +142,7 @@ extern const char kPackExtensionKey[];
 extern const char kPermissionRequestApiScope[];
 extern const char kPermissionRequestApiUrl[];
 extern const char kPredictionServiceMockLikelihood[];
+extern const char kPreinstalledWebAppsDir[];
 extern const char kPrivetIPv6Only[];
 extern const char kProductVersion[];
 extern const char kProfileDirectory[];

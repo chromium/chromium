@@ -449,6 +449,11 @@ const char kPermissionRequestApiUrl[]       = "permission-request-api-url";
 const char kPredictionServiceMockLikelihood[] =
     "prediction-service-mock-likelihood";
 
+// A directory where Chrome looks for json files describing default/preinstalled
+// web apps. This overrides any default directory to load preinstalled web apps
+// from.
+const char kPreinstalledWebAppsDir[] = "preinstalled-web-apps-dir";
+
 // Use IPv6 only for privet HTTP.
 const char kPrivetIPv6Only[]                   = "privet-ipv6-only";
 
