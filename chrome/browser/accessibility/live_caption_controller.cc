@@ -167,7 +167,6 @@ void LiveCaptionController::OnSodaInstalled() {
 }
 
 void LiveCaptionController::CreateUI() {
-  DCHECK(enabled_);
   if (is_ui_constructed_)
     return;
   DCHECK(!base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption) ||
@@ -192,7 +191,6 @@ void LiveCaptionController::CreateUI() {
 }
 
 void LiveCaptionController::DestroyUI() {
-  DCHECK(!enabled_);
   if (!is_ui_constructed_)
     return;
   is_ui_constructed_ = false;
@@ -240,6 +238,19 @@ void LiveCaptionController::OnLanguageIdentificationEvent(
     const media::mojom::LanguageIdentificationEventPtr& event) {
   // TODO(crbug.com/1175357): Implement the UI for language identification.
 }
+
+#if defined(OS_MAC) || defined(OS_CHROMEOS)
+void LiveCaptionController::OnToggleFullscreen(
+    LiveCaptionSpeechRecognitionHost* live_caption_speech_recognition_host) {
+  if (!enabled_)
+    return;
+  // The easiest way to move the Live Caption UI to the right workspace is to
+  // simply destroy and recreate the UI. The UI will automatically be created
+  // in the workspace of the browser window that is transmitting captions.
+  DestroyUI();
+  CreateUI();
+}
+#endif
 
 void LiveCaptionController::OnCaptionStyleUpdated() {
   // Metrics are recorded when passing the caption prefs to the browser, so do

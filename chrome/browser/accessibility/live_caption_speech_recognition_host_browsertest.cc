@@ -20,6 +20,8 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
 #include "media/base/media_switches.h"
+#include "net/test/embedded_test_server/http_request.h"
+#include "net/test/embedded_test_server/http_response.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
@@ -35,6 +37,32 @@ std::vector<base::Feature> RequiredFeatureFlags() {
 #endif
   return features;
 }
+
+// A WebContentsObserver that allows waiting for some media to start or stop
+// playing fullscreen.
+class FullscreenEventsWaiter : public content::WebContentsObserver {
+ public:
+  explicit FullscreenEventsWaiter(content::WebContents* web_contents)
+      : WebContentsObserver(web_contents) {}
+  FullscreenEventsWaiter(const FullscreenEventsWaiter& rhs) = delete;
+  FullscreenEventsWaiter& operator=(const FullscreenEventsWaiter& rhs) = delete;
+  ~FullscreenEventsWaiter() override = default;
+
+  void MediaEffectivelyFullscreenChanged(bool value) override {
+    if (run_loop_)
+      run_loop_->Quit();
+  }
+
+  // Wait for the current media playing fullscreen mode to be equal to
+  // |expected_media_fullscreen_mode|.
+  void Wait() {
+    run_loop_ = std::make_unique<base::RunLoop>();
+    run_loop_->Run();
+  }
+
+ private:
+  std::unique_ptr<base::RunLoop> run_loop_;
+};
 }  // namespace
 
 namespace captions {
@@ -51,7 +79,15 @@ class LiveCaptionSpeechRecognitionHostTest : public InProcessBrowserTest {
   // InProcessBrowserTest overrides:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(RequiredFeatureFlags(), {});
+    // This is required for the fullscreen video tests.
+    embedded_test_server()->ServeFilesFromSourceDirectory(
+        base::FilePath(FILE_PATH_LITERAL("content/test/data")));
     InProcessBrowserTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    ASSERT_TRUE(embedded_test_server()->Start());
   }
 
   void CreateLiveCaptionSpeechRecognitionHost(
@@ -92,6 +128,11 @@ class LiveCaptionSpeechRecognitionHostTest : public InProcessBrowserTest {
                                                  enabled);
     if (enabled)
       speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
+  }
+
+  bool HasBubbleController() {
+    return LiveCaptionControllerFactory::GetForProfile(browser()->profile())
+               ->caption_bubble_controller_.get() != nullptr;
   }
 
   void ExpectIsWidgetVisible(bool visible) {
@@ -186,5 +227,29 @@ IN_PROC_BROWSER_TEST_F(LiveCaptionSpeechRecognitionHostTest,
   SetLiveCaptionEnabled(true);
   OnSpeechRecognitionError(frame_host);
 }
+
+#if defined(OS_MAC) || defined(OS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(LiveCaptionSpeechRecognitionHostTest,
+                       MediaEffectivelyFullscreenChanged) {
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::RenderFrameHost* frame_host = web_contents->GetMainFrame();
+  CreateLiveCaptionSpeechRecognitionHost(frame_host);
+  EXPECT_TRUE(content::NavigateToURL(
+      web_contents, embedded_test_server()->GetURL("/media/fullscreen.html")));
+
+  SetLiveCaptionEnabled(true);
+  EXPECT_TRUE(HasBubbleController());
+
+  FullscreenEventsWaiter waiter(web_contents);
+  EXPECT_TRUE(content::ExecJs(web_contents, "makeFullscreen('small_video')"));
+  waiter.Wait();
+  EXPECT_TRUE(HasBubbleController());
+
+  EXPECT_TRUE(content::ExecJs(web_contents, "exitFullscreen()"));
+  waiter.Wait();
+  EXPECT_TRUE(HasBubbleController());
+}
+#endif
 
 }  // namespace captions

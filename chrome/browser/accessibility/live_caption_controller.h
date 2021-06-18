@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
+#include "build/build_config.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/soda/constants.h"
 #include "components/soda/soda_installer.h"
@@ -70,6 +71,14 @@ class LiveCaptionController : public KeyedService,
   // Alerts the CaptionBubbleController that the audio stream has ended.
   void OnAudioStreamEnd(
       LiveCaptionSpeechRecognitionHost* live_caption_speech_recognition_host);
+
+  // Mac and ChromeOS move the fullscreened window into a new workspace. When
+  // the WebContents associated with the LiveCaptionSpeechRecognitionHost goes
+  // fullscreen, ensure that the Live Caption bubble moves to the new workspace.
+#if defined(OS_MAC) || defined(OS_CHROMEOS)
+  void OnToggleFullscreen(
+      LiveCaptionSpeechRecognitionHost* live_caption_speech_recognition_host);
+#endif
 
  private:
   friend class LiveCaptionControllerFactory;

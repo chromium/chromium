@@ -144,6 +144,13 @@ class LiveCaptionControllerTest : public InProcessBrowserTest {
         GetLiveCaptionSpeechRecognitionHost());
   }
 
+#if defined(OS_MAC) || defined(OS_CHROMEOS)
+  void OnToggleFullscreen() {
+    GetControllerForProfile(browser()->profile())
+        ->OnToggleFullscreen(GetLiveCaptionSpeechRecognitionHost());
+  }
+#endif
+
   bool HasBubbleController() {
     return HasBubbleControllerOnProfile(browser()->profile());
   }
@@ -315,6 +322,23 @@ IN_PROC_BROWSER_TEST_F(LiveCaptionControllerTest, OnAudioStreamEnd) {
   OnAudioStreamEnd();
   EXPECT_FALSE(HasBubbleController());
 }
+
+#if defined(OS_MAC) || defined(OS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(LiveCaptionControllerTest, OnToggleFullscreen) {
+  OnToggleFullscreen();
+  EXPECT_FALSE(HasBubbleController());
+
+  SetLiveCaptionEnabled(true);
+  EXPECT_TRUE(HasBubbleController());
+
+  OnToggleFullscreen();
+  EXPECT_TRUE(HasBubbleController());
+
+  SetLiveCaptionEnabled(false);
+  OnToggleFullscreen();
+  EXPECT_FALSE(HasBubbleController());
+}
+#endif
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)  // No multi-profile on ChromeOS.
 
