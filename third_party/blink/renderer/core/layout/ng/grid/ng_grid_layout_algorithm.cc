@@ -3668,13 +3668,16 @@ void NGGridLayoutAlgorithm::ComputeGridItemOffsetAndSize(
       start_index > last_indefinite_index) {
     // If we have run into the max LayoutUnit, the size calculation won't work,
     // collapse all sizes from here on.
-    if (start_offset->MightBeSaturated()) {
+    if (start_offset->MightBeSaturated() ||
+        set_geometry.sets[end_index].offset.MightBeSaturated() ||
+        set_geometry.gutter_size.MightBeSaturated()) {
       *size = LayoutUnit();
     } else {
       *size = set_geometry.sets[end_index].offset - *start_offset -
               set_geometry.gutter_size;
     }
   }
+  DCHECK(!size->MightBeSaturated());
   DCHECK(*size >= 0 || *size == kIndefiniteSize);
 }
 
