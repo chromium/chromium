@@ -136,6 +136,22 @@ struct TypeConverter<lorgnette::ColorMode, mojo_ipc::ColorMode> {
   }
 };
 
+template <>
+struct TypeConverter<lorgnette::ImageFormat, mojo_ipc::FileType> {
+  static lorgnette::ImageFormat Convert(mojo_ipc::FileType type) {
+    switch (type) {
+      case mojo_ipc::FileType::kPng:
+        return lorgnette::IMAGE_FORMAT_PNG;
+      // PDF and searchable PDF images request JPEG data from lorgnette, then
+      // convert the returned JPEG data to PDF.
+      case mojo_ipc::FileType::kPdf:            // FALLTHROUGH
+      case mojo_ipc::FileType::kSearchablePdf:  // FALLTHROUGH
+      case mojo_ipc::FileType::kJpg:
+        return lorgnette::IMAGE_FORMAT_JPEG;
+    }
+  }
+};
+
 // static
 mojo_ipc::ScanResult
 TypeConverter<mojo_ipc::ScanResult, lorgnette::ScanFailureMode>::Convert(
@@ -198,6 +214,8 @@ TypeConverter<lorgnette::ScanSettings, mojo_ipc::ScanSettingsPtr>::Convert(
   lorgnette_settings.set_color_mode(
       mojo::ConvertTo<lorgnette::ColorMode>(mojo_settings->color_mode));
   lorgnette_settings.set_resolution(mojo_settings->resolution_dpi);
+  lorgnette_settings.set_image_format(
+      mojo::ConvertTo<lorgnette::ImageFormat>(mojo_settings->file_type));
   SetScanRegion(mojo_settings->page_size, lorgnette_settings);
   return lorgnette_settings;
 }

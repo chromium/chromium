@@ -11,7 +11,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/image/image_util.h"
@@ -19,16 +18,6 @@
 namespace chromeos {
 
 namespace {
-
-// Returns a manually generated PNG image.
-std::string CreatePng() {
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(100, 100);
-  bitmap.eraseARGB(255, 0, 255, 0);
-  std::vector<uint8_t> bytes;
-  gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, false, &bytes);
-  return std::string(bytes.begin(), bytes.end());
-}
 
 // Returns a manually generated JPG image.
 std::vector<uint8_t> CreateJpg() {
@@ -44,18 +33,18 @@ std::vector<uint8_t> CreateJpg() {
 
 using ConvertToPdfTest = testing::Test;
 
-// Test that PNG image can be converted to pdf file successfully.
+// Test that JPG image can be converted to pdf file successfully.
 TEST_F(ConvertToPdfTest, ToFile) {
   std::vector<std::string> images;
-  images.push_back(CreatePng());
+  std::vector<uint8_t> bytes = CreateJpg();
+  images.push_back(std::string(bytes.begin(), bytes.end()));
 
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   auto output_path = temp_dir.GetPath().Append("temp.pdf");
 
-  EXPECT_TRUE(ConvertPngImagesToPdf(images, output_path,
-                                    /*rotate_alternate_pages=*/false,
-                                    /*jpeg_quality=*/100));
+  EXPECT_TRUE(ConvertJpgImagesToPdf(images, output_path,
+                                    /*rotate_alternate_pages=*/false));
   EXPECT_TRUE(base::PathExists(output_path));
 
   int64_t file_size;

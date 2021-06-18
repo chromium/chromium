@@ -32,17 +32,12 @@
 #include "chromeos/utils/pdf_conversion.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/re2/src/re2/re2.h"
-#include "ui/gfx/image/image.h"
-#include "ui/gfx/image/image_util.h"
 
 namespace ash {
 
 namespace {
 
 namespace mojo_ipc = scanning::mojom;
-
-// The conversion quality when converting from PNG to JPG.
-constexpr int kJpgQuality = 100;
 
 // The max progress percent that can be reported for a scanned page.
 constexpr uint32_t kMaxProgressPercent = 100;
@@ -92,27 +87,14 @@ bool WriteImage(const base::FilePath& file_path,
   return true;
 }
 
-// Converts |png_img| to JPG.
-std::string PngToJpg(const std::string& png_img) {
-  std::vector<uint8_t> jpg_img;
-  const gfx::Image img = gfx::Image::CreateFrom1xPNGBytes(
-      reinterpret_cast<const unsigned char*>(png_img.c_str()), png_img.size());
-  if (!gfx::JPEG1xEncodedDataFromImage(img, kJpgQuality, &jpg_img)) {
-    LOG(ERROR) << "Failed to convert image from PNG to JPG.";
-    return "";
-  }
-
-  return std::string(jpg_img.begin(), jpg_img.end());
-}
-
-// Adds given |png_images| to a single PDF, and writes the PDF to |file_path|.
-// If |rotate_alternate_pages| is true, every other page is rotated 180 degrees.
+// Adds |jpg_images| to a single PDF, and writes the PDF to |file_path|. If
+// |rotate_alternate_pages| is true, every other page is rotated 180 degrees.
 // Returns whether the PDF was successfully saved.
-bool SaveAsPdf(const std::vector<std::string>& png_images,
+bool SaveAsPdf(const std::vector<std::string>& jpg_images,
                const base::FilePath& file_path,
                bool rotate_alternate_pages) {
-  return chromeos::ConvertPngImagesToPdf(png_images, file_path,
-                                         rotate_alternate_pages, kJpgQuality);
+  return chromeos::ConvertJpgImagesToPdf(jpg_images, file_path,
+                                         rotate_alternate_pages);
 }
 
 // Saves |scanned_image| to a file after converting it if necessary. Returns the
@@ -123,21 +105,8 @@ base::FilePath SavePage(const base::FilePath& scan_to_path,
                         uint32_t page_number,
                         const base::Time::Exploded& start_time) {
   std::string filename = CreateFilename(start_time, page_number, file_type);
-  if (file_type == mojo_ipc::FileType::kPng) {
-    if (!WriteImage(scan_to_path.Append(filename), scanned_image))
-      return base::FilePath();
-  } else if (file_type == mojo_ipc::FileType::kJpg) {
-    scanned_image = PngToJpg(scanned_image);
-    if (scanned_image.empty() ||
-        !WriteImage(scan_to_path.Append(filename), scanned_image)) {
-      return base::FilePath();
-    }
-  }
-  // Temporarily set searchable pdfs to follow png pipeline while implementing.
-  else if (file_type == mojo_ipc::FileType::kSearchablePdf) {
-    if (!WriteImage(scan_to_path.Append(filename), scanned_image))
-      return base::FilePath();
-  }
+  if (!WriteImage(scan_to_path.Append(filename), scanned_image))
+    return base::FilePath();
 
   return scan_to_path.Append(filename);
 }

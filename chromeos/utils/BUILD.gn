@@ -26,7 +26,6 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//ui/gfx",
     "//ui/gfx:test_support",
-    "//ui/gfx/codec",
   ]
   sources = [ "pdf_conversion_unittest.cc" ]
 }

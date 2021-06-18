@@ -541,28 +541,6 @@ TEST_F(ScanServiceTest, ScanFails) {
   EXPECT_TRUE(fake_scan_job_observer_.scanned_file_paths().empty());
 }
 
-// Test that when a page fails to save during the scan, the scan job is marked
-// as failed.
-TEST_F(ScanServiceTest, PageSaveFails) {
-  fake_lorgnette_scanner_manager_.SetGetScannerNamesResponse(
-      {kFirstTestScannerName});
-  // Sending an empty string in test data simulates a page failing to save.
-  const std::vector<std::string> scan_data = {"TestData1", "", "TestData3"};
-  fake_lorgnette_scanner_manager_.SetScanResponse(scan_data);
-  auto scanners = GetScanners();
-  ASSERT_EQ(scanners.size(), 1u);
-
-  scan_service_->SetMyFilesPathForTesting(scanned_files_mount_->GetRootPath());
-  const mojo_ipc::ScanSettings settings = CreateScanSettings(
-      scanned_files_mount_->GetRootPath(), mojo_ipc::FileType::kJpg);
-
-  EXPECT_TRUE(StartScan(scanners[0]->id, settings.Clone()));
-  EXPECT_FALSE(fake_scan_job_observer_.scan_success());
-  EXPECT_EQ(mojo_ipc::ScanResult::kUnknownError,
-            fake_scan_job_observer_.scan_result());
-  EXPECT_TRUE(fake_scan_job_observer_.scanned_file_paths().empty());
-}
-
 // Tests that a new scan job can succeed after the previous scan failed.
 TEST_F(ScanServiceTest, ScanAfterFailedScan) {
   // Skip setting the scan data in FakeLorgnetteScannerManager so the scan will

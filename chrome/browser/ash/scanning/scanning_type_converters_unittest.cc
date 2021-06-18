@@ -29,6 +29,8 @@ struct ScannerCapabilitiesTestParams {
 struct ScanSettingsTestParams {
   mojo_ipc::ColorMode mojom_color_mode;
   lorgnette::ColorMode lorgnette_color_mode;
+  mojo_ipc::FileType mojom_file_type;
+  lorgnette::ImageFormat lorgnete_image_format;
   mojo_ipc::PageSize mojom_page_size;
   double bottom_right_x;
   double bottom_right_y;
@@ -70,13 +72,16 @@ lorgnette::ScannerCapabilities CreateLorgnetteScannerCapabilities(
   return caps;
 }
 
-// Returns a ScanSettingsPtr with the given |color_mode| and |page_size|.
+// Returns a ScanSettingsPtr with the given |color_mode|, |page_size| and
+// |file_type|.
 mojo_ipc::ScanSettingsPtr CreateMojomScanSettings(
     mojo_ipc::ColorMode color_mode,
-    mojo_ipc::PageSize page_size) {
+    mojo_ipc::PageSize page_size,
+    mojo_ipc::FileType file_type) {
   mojo_ipc::ScanSettings settings;
   settings.source_name = kDocumentSourceName;
   settings.color_mode = color_mode;
+  settings.file_type = file_type;
   settings.page_size = page_size;
   settings.resolution_dpi = kFirstResolution;
   return settings.Clone();
@@ -147,6 +152,8 @@ INSTANTIATE_TEST_SUITE_P(
 // ScanSettingsTestParams):
 // * |mojom_color_mode| - the mojo_ipc::ColorMode to convert.
 // * |lorgnette_color_mode| - the expected lorgnette::ColorMode.
+// * |mojom_file_type| - the mojo_ipc::FileType to convert.
+// * |lorgnette_image_format| - the expected lorgnette::ImageFormat.
 // * |mojom_page_size| - the mojo_ipc::PageSize to convert.
 // * |bottom_right_x| - the expected bottom-right x-coordinate.
 // * |bottom_right_y| - the expected bottom-right y-coordinate.
@@ -163,9 +170,11 @@ class ScanSettingsTest
 TEST_P(ScanSettingsTest, MojomSettingsToLorgnette) {
   lorgnette::ScanSettings lorgnette_settings =
       mojo::ConvertTo<lorgnette::ScanSettings>(CreateMojomScanSettings(
-          params().mojom_color_mode, params().mojom_page_size));
+          params().mojom_color_mode, params().mojom_page_size,
+          params().mojom_file_type));
   EXPECT_EQ(lorgnette_settings.source_name(), kDocumentSourceName);
   EXPECT_EQ(lorgnette_settings.color_mode(), params().lorgnette_color_mode);
+  EXPECT_EQ(lorgnette_settings.image_format(), params().lorgnete_image_format);
   EXPECT_EQ(lorgnette_settings.resolution(), kFirstResolution);
 
   if (params().mojom_page_size == mojo_ipc::PageSize::kMax) {
@@ -184,17 +193,23 @@ TEST_P(ScanSettingsTest, MojomSettingsToLorgnette) {
 INSTANTIATE_TEST_SUITE_P(
     ,
     ScanSettingsTest,
-    testing::Values(ScanSettingsTestParams{mojo_ipc::ColorMode::kBlackAndWhite,
-                                           lorgnette::MODE_LINEART,
-                                           mojo_ipc::PageSize::kIsoA4, 210,
-                                           297},
-                    ScanSettingsTestParams{mojo_ipc::ColorMode::kGrayscale,
-                                           lorgnette::MODE_GRAYSCALE,
-                                           mojo_ipc::PageSize::kNaLetter, 215.9,
-                                           279.4},
-                    ScanSettingsTestParams{mojo_ipc::ColorMode::kColor,
-                                           lorgnette::MODE_COLOR,
-                                           mojo_ipc::PageSize::kMax, 0, 0}));
+    testing::Values(
+        ScanSettingsTestParams{
+            mojo_ipc::ColorMode::kBlackAndWhite, lorgnette::MODE_LINEART,
+            mojo_ipc::FileType::kPng, lorgnette::IMAGE_FORMAT_PNG,
+            mojo_ipc::PageSize::kIsoA4, 210, 297},
+        ScanSettingsTestParams{
+            mojo_ipc::ColorMode::kGrayscale, lorgnette::MODE_GRAYSCALE,
+            mojo_ipc::FileType::kJpg, lorgnette::IMAGE_FORMAT_JPEG,
+            mojo_ipc::PageSize::kNaLetter, 215.9, 279.4},
+        ScanSettingsTestParams{mojo_ipc::ColorMode::kColor,
+                               lorgnette::MODE_COLOR, mojo_ipc::FileType::kPdf,
+                               lorgnette::IMAGE_FORMAT_JPEG,
+                               mojo_ipc::PageSize::kMax, 0, 0},
+        ScanSettingsTestParams{
+            mojo_ipc::ColorMode::kColor, lorgnette::MODE_COLOR,
+            mojo_ipc::FileType::kSearchablePdf, lorgnette::IMAGE_FORMAT_JPEG,
+            mojo_ipc::PageSize::kMax, 0, 0}));
 
 // Test that each lorgnette::ScanFailureMode is converted into the correct
 // mojo_ipc::ScanResult.
