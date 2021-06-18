@@ -26,6 +26,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -84,6 +85,27 @@ std::unique_ptr<WebApplicationInfo> BuildDefaultWebAppInfo() {
   app_info->share_target = target;
 
   return app_info;
+}
+
+arc::mojom::WebApkInfoPtr BuildDefaultWebApkInfo(
+    const std::string& package_name,
+    const std::string& icon_hash) {
+  auto webapk_info = arc::mojom::WebApkInfo::New();
+  webapk_info->package_name = package_name;
+  webapk_info->apk_version = "1";
+  webapk_info->shell_apk_version = "1";
+  webapk_info->manifest_url = kTestManifestUrl;
+  webapk_info->name = "Test App";
+  webapk_info->start_url = kTestAppUrl;
+  webapk_info->scope = kTestAppUrl;
+  webapk_info->icon_hash = icon_hash;
+  auto target_info = arc::mojom::WebShareTargetInfo::New();
+  target_info->action = kTestAppActionUrl;
+  target_info->method = "POST";
+  target_info->enctype = "multipart/form-data";
+  target_info->param_text = kTestShareTextParam;
+  webapk_info->share_info = std::move(target_info);
+  return webapk_info;
 }
 
 absl::optional<arc::ArcFeatures> GetArcFeaturesWithAbiList(
@@ -216,8 +238,9 @@ TEST_F(WebApkInstallTaskTest, SuccessfulInstall) {
   EXPECT_EQ(manifest.icons(0).src(), kTestAppIcon);
 
   ASSERT_EQ(fake_webapk_instance()->handled_packages().size(), 1);
-  ASSERT_EQ(fake_webapk_instance()->handled_packages()[0],
-            "org.chromium.webapk.some_package");
+  ASSERT_EQ(fake_webapk_instance()->handled_packages().count(
+                "org.chromium.webapk.some_package"),
+            1);
 
   base::flat_set<std::string> installed_webapks =
       apps::webapk_prefs::GetWebApkAppIds(profile());
@@ -298,8 +321,9 @@ TEST_F(WebApkInstallTaskTest, FailedArcInstall) {
       arc::mojom::WebApkInstallResult::kErrorResolveNetworkError);
 
   ASSERT_FALSE(InstallWebApk(app_id));
-  ASSERT_EQ(fake_webapk_instance()->handled_packages()[0],
-            "org.chromium.webapk.some_package");
+  ASSERT_EQ(fake_webapk_instance()->handled_packages().count(
+                "org.chromium.webapk.some_package"),
+            1);
   ASSERT_EQ(apps::webapk_prefs::GetWebApkAppIds(profile()).size(), 0);
 }
 
@@ -320,4 +344,218 @@ TEST_F(WebApkInstallTaskTest, MinterTimeout) {
   run_loop.Run();
 
   ASSERT_FALSE(install_success);
+}
+
+TEST_F(WebApkInstallTaskTest, SuccessfulUpdateShortName) {
+  // Install an initial app.
+  auto app_id =
+      web_app::test::InstallWebApp(profile(), BuildDefaultWebAppInfo());
+  SetWebApkResponse(base::BindRepeating(&BuildValidWebApkResponse,
+                                        "org.chromium.webapk.some_package"));
+
+  EXPECT_TRUE(InstallWebApk(app_id));
+
+  fake_webapk_instance()->set_web_apk_info(BuildDefaultWebApkInfo(
+      "org.chromium.webapk.some_package",
+      last_webapk_request()->manifest().icons(0).hash()));
+
+  // Install the same app with |short_name| changed. This should trigger an
+  // update.
+  SetWebApkResponse(base::BindRepeating(&BuildValidWebApkResponse,
+                                        "org.chromium.webapk.some_package"));
+  auto web_app_info = BuildDefaultWebAppInfo();
+  web_app_info->title = u"Testy test App";
+  web_app::test::InstallWebApp(profile(), std::move(web_app_info));
+  EXPECT_TRUE(InstallWebApk(app_id));
+
+  // Check that the update worked.
+  ASSERT_THAT(last_webapk_request()->update_reasons(),
+              ::testing::ElementsAre(webapk::WebApk::SHORT_NAME_DIFFERS));
+  ASSERT_EQ(last_webapk_request()->package_name(),
+            "org.chromium.webapk.some_package");
+  ASSERT_EQ(last_webapk_request()->version(), "1");
+
+  webapk::WebAppManifest manifest = last_webapk_request()->manifest();
+  EXPECT_EQ(manifest.short_name(), "Testy test App");
+
+  // Check we still only have 1 version of |app_id| installed.
+  base::flat_set<std::string> installed_webapks =
+      apps::webapk_prefs::GetWebApkAppIds(profile());
+  ASSERT_EQ(installed_webapks.size(), 1);
+  ASSERT_TRUE(installed_webapks.contains(app_id));
+}
+
+TEST_F(WebApkInstallTaskTest, SuccessfulUpdateScope) {
+  // Install an initial app.
+  auto app_id =
+      web_app::test::InstallWebApp(profile(), BuildDefaultWebAppInfo());
+  SetWebApkResponse(base::BindRepeating(&BuildValidWebApkResponse,
+                                        "org.chromium.webapk.some_package"));
+
+  EXPECT_TRUE(InstallWebApk(app_id));
+
+  fake_webapk_instance()->set_web_apk_info(BuildDefaultWebApkInfo(
+      "org.chromium.webapk.some_package",
+      last_webapk_request()->manifest().icons(0).hash()));
+
+  // Install the same app with |scope| changed. This should trigger an
+  // update.
+  SetWebApkResponse(base::BindRepeating(&BuildValidWebApkResponse,
+                                        "org.chromium.webapk.some_package"));
+  auto web_app_info = BuildDefaultWebAppInfo();
+  web_app_info->scope = GURL("https://www.differentexample.com/");
+  web_app::test::InstallWebApp(profile(), std::move(web_app_info));
+  EXPECT_TRUE(InstallWebApk(app_id));
+
+  // Check that the update worked.
+  ASSERT_THAT(last_webapk_request()->update_reasons(),
+              ::testing::ElementsAre(webapk::WebApk::SCOPE_DIFFERS));
+
+  webapk::WebAppManifest manifest = last_webapk_request()->manifest();
+  EXPECT_EQ(last_webapk_request()->manifest().scopes_size(), 1);
+  EXPECT_EQ(last_webapk_request()->manifest().scopes(0),
+            "https://www.differentexample.com/");
+
+  // Check we still only have 1 version of |app_id| installed.
+  base::flat_set<std::string> installed_webapks =
+      apps::webapk_prefs::GetWebApkAppIds(profile());
+  ASSERT_EQ(installed_webapks.size(), 1);
+  ASSERT_TRUE(installed_webapks.contains(app_id));
+}
+
+TEST_F(WebApkInstallTaskTest, SuccessfulUpdateIconHash) {
+  // Install an initial app.
+  auto app_id =
+      web_app::test::InstallWebApp(profile(), BuildDefaultWebAppInfo());
+  SetWebApkResponse(base::BindRepeating(&BuildValidWebApkResponse,
+                                        "org.chromium.webapk.some_package"));
+
+  EXPECT_TRUE(InstallWebApk(app_id));
+
+  // Change icon hash.
+  fake_webapk_instance()->set_web_apk_info(BuildDefaultWebApkInfo(
+      "org.chromium.webapk.some_package", "fakeiconhash123456789"));
+
+  SetWebApkResponse(base::BindRepeating(&BuildValidWebApkResponse,
+                                        "org.chromium.webapk.some_package"));
+  auto web_app_info = BuildDefaultWebAppInfo();
+  web_app::test::InstallWebApp(profile(), std::move(web_app_info));
+  EXPECT_TRUE(InstallWebApk(app_id));
+
+  // Check that the update worked.
+  ASSERT_THAT(
+      last_webapk_request()->update_reasons(),
+      ::testing::ElementsAre(webapk::WebApk::PRIMARY_ICON_HASH_DIFFERS));
+
+  // Check we still only have 1 version of |app_id| installed.
+  base::flat_set<std::string> installed_webapks =
+      apps::webapk_prefs::GetWebApkAppIds(profile());
+  ASSERT_EQ(installed_webapks.size(), 1);
+  ASSERT_TRUE(installed_webapks.contains(app_id));
+}
+
+TEST_F(WebApkInstallTaskTest, SuccessfulUpdateShareTarget) {
+  // Install an initial app.
+  auto app_id =
+      web_app::test::InstallWebApp(profile(), BuildDefaultWebAppInfo());
+  SetWebApkResponse(base::BindRepeating(&BuildValidWebApkResponse,
+                                        "org.chromium.webapk.some_package"));
+
+  EXPECT_TRUE(InstallWebApk(app_id));
+  fake_webapk_instance()->set_web_apk_info(BuildDefaultWebApkInfo(
+      "org.chromium.webapk.some_package",
+      last_webapk_request()->manifest().icons(0).hash()));
+
+  // Install the same app with |share_target| changed. This should trigger an
+  // update.
+  SetWebApkResponse(base::BindRepeating(&BuildValidWebApkResponse,
+                                        "org.chromium.webapk.some_package"));
+  auto web_app_info = BuildDefaultWebAppInfo();
+  web_app_info->share_target->action =
+      GURL("https://www.differentexample.com/");
+  web_app::test::InstallWebApp(profile(), std::move(web_app_info));
+  EXPECT_TRUE(InstallWebApk(app_id));
+
+  // Check that the update worked.
+  ASSERT_THAT(last_webapk_request()->update_reasons(),
+              ::testing::ElementsAre(webapk::WebApk::WEB_SHARE_TARGET_DIFFERS));
+
+  webapk::WebAppManifest manifest = last_webapk_request()->manifest();
+  EXPECT_EQ(manifest.share_targets(0).action(),
+            "https://www.differentexample.com/");
+
+  // Check we still only have 1 version of |app_id| installed.
+  base::flat_set<std::string> installed_webapks =
+      apps::webapk_prefs::GetWebApkAppIds(profile());
+  ASSERT_EQ(installed_webapks.size(), 1);
+  ASSERT_TRUE(installed_webapks.contains(app_id));
+}
+
+TEST_F(WebApkInstallTaskTest, SuccessfulUpdateMultipleChanges) {
+  // Install an initial app.
+  auto app_id =
+      web_app::test::InstallWebApp(profile(), BuildDefaultWebAppInfo());
+  SetWebApkResponse(base::BindRepeating(&BuildValidWebApkResponse,
+                                        "org.chromium.webapk.some_package"));
+
+  EXPECT_TRUE(InstallWebApk(app_id));
+
+  fake_webapk_instance()->set_web_apk_info(BuildDefaultWebApkInfo(
+      "org.chromium.webapk.some_package",
+      last_webapk_request()->manifest().icons(0).hash()));
+
+  SetWebApkResponse(base::BindRepeating(&BuildValidWebApkResponse,
+                                        "org.chromium.webapk.some_package"));
+  auto web_app_info = BuildDefaultWebAppInfo();
+  web_app_info->title = u"Testy test App";
+  web_app_info->share_target->action =
+      GURL("https://www.differentexample.com/");
+  web_app::test::InstallWebApp(profile(), std::move(web_app_info));
+  EXPECT_TRUE(InstallWebApk(app_id));
+
+  ASSERT_THAT(last_webapk_request()->update_reasons(),
+              ::testing::UnorderedElementsAre(
+                  webapk::WebApk::SHORT_NAME_DIFFERS,
+                  webapk::WebApk::WEB_SHARE_TARGET_DIFFERS));
+
+  webapk::WebAppManifest manifest = last_webapk_request()->manifest();
+  EXPECT_EQ(manifest.short_name(), "Testy test App");
+  EXPECT_EQ(manifest.share_targets(0).action(),
+            "https://www.differentexample.com/");
+
+  // Check we still only have 1 version of |app_id| installed.
+  base::flat_set<std::string> installed_webapks =
+      apps::webapk_prefs::GetWebApkAppIds(profile());
+  ASSERT_EQ(installed_webapks.size(), 1);
+  ASSERT_TRUE(installed_webapks.contains(app_id));
+}
+
+TEST_F(WebApkInstallTaskTest, FailedUpdateNoChanges) {
+  auto app_id =
+      web_app::test::InstallWebApp(profile(), BuildDefaultWebAppInfo());
+  SetWebApkResponse(base::BindRepeating(&BuildValidWebApkResponse,
+                                        "org.chromium.webapk.some_package"));
+
+  EXPECT_TRUE(InstallWebApk(app_id));
+  fake_webapk_instance()->set_web_apk_info(BuildDefaultWebApkInfo(
+      "org.chromium.webapk.some_package",
+      last_webapk_request()->manifest().icons(0).hash()));
+
+  // Install the same app with no changes. This should fail.
+  SetWebApkResponse(base::BindRepeating(&BuildValidWebApkResponse,
+                                        "org.chromium.webapk.some_package"));
+  EXPECT_FALSE(InstallWebApk(app_id));
+}
+
+TEST_F(WebApkInstallTaskTest, FailedUpdateWebApkInfoInvalid) {
+  // Install an initial app.
+  auto app_id =
+      web_app::test::InstallWebApp(profile(), BuildDefaultWebAppInfo());
+  SetWebApkResponse(base::BindRepeating(&BuildValidWebApkResponse,
+                                        "org.chromium.webapk.some_package"));
+
+  EXPECT_TRUE(InstallWebApk(app_id));
+
+  // Install the same app without setting web apk info. Install should fail.
+  EXPECT_FALSE(InstallWebApk(app_id));
 }

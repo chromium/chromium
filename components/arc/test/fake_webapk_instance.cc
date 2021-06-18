@@ -15,14 +15,13 @@ void FakeWebApkInstance::InstallWebApk(const std::string& package_name,
                                        const std::string& app_name,
                                        const std::string& token,
                                        InstallWebApkCallback callback) {
-  handled_packages_.push_back(package_name);
+  handled_packages_.insert(package_name);
   std::move(callback).Run(install_result_);
 }
 
 void FakeWebApkInstance::GetWebApkInfo(const std::string& package_name,
                                        GetWebApkInfoCallback callback) {
-  // TODO(crbug.com/1214695): Add WebAPK update tests.
-  NOTIMPLEMENTED();
+  std::move(callback).Run(std::move(web_apk_info_));
 }
 
 }  // namespace arc

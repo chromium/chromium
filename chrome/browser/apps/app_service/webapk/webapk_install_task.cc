@@ -113,16 +113,16 @@ bool DoesShareTargetDiffer(webapk::WebAppManifest manifest,
   auto share_target = manifest.share_targets(0);
   DCHECK_EQ(manifest.share_targets_size(), 1);
 
-  if (share_target.action() != share_info->action ||
-      share_target.method() != share_info->method ||
-      share_target.enctype() != share_info->enctype) {
+  if (share_target.action() != share_info->action.value_or("") ||
+      share_target.method() != share_info->method.value_or("") ||
+      share_target.enctype() != share_info->enctype.value_or("")) {
     return true;
   }
 
   auto share_param = share_target.params();
-  if (share_param.title() != share_info->param_title ||
-      share_param.text() != share_info->param_text ||
-      share_param.url() != share_info->param_url) {
+  if (share_param.title() != share_info->param_title.value_or("") ||
+      share_param.text() != share_info->param_text.value_or("") ||
+      share_param.url() != share_info->param_url.value_or("")) {
     return true;
   }
 
@@ -147,7 +147,6 @@ bool DoesShareTargetDiffer(webapk::WebAppManifest manifest,
       }
     }
   }
-
   return false;
 }
 
@@ -419,6 +418,7 @@ void WebApkInstallTask::OnProtoSerialized(
     absl::optional<std::string> serialized_proto) {
   if (!serialized_proto && !serialized_proto.has_value()) {
     DeliverResult(/* success= */ false);
+    return;
   }
   GURL server_url = GetServerUrl();
 
