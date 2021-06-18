@@ -21,7 +21,7 @@ LoginNavigationThrottle::ThrottleCheckResult
 LoginNavigationThrottle::WillProcessResponse() {
   if (navigation_handle()->IsSameDocument())
     return PROCEED;
-  if (!navigation_handle()->IsInMainFrame())
+  if (!navigation_handle()->IsInPrimaryMainFrame())
     return PROCEED;
 
   LoginTabHelper* helper =
