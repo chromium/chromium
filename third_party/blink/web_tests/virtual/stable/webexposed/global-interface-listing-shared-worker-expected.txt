@@ -737,6 +737,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter mobile
 [Worker]     method constructor
 [Worker]     method getHighEntropyValues
+[Worker]     method toJSON
 [Worker] interface NetworkInformation : EventTarget
 [Worker]     attribute @@toStringTag
 [Worker]     getter downlink

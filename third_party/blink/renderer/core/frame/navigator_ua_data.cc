@@ -146,6 +146,13 @@ ScriptPromise NavigatorUAData::getHighEntropyValues(
   return promise;
 }
 
+ScriptValue NavigatorUAData::toJSON(ScriptState* script_state) const {
+  V8ObjectBuilder builder(script_state);
+  builder.Add("brands", brands());
+  builder.Add("mobile", mobile());
+  return builder.GetScriptValue();
+}
+
 void NavigatorUAData::Trace(Visitor* visitor) const {
   visitor->Trace(brand_set_);
   visitor->Trace(empty_brand_set_);

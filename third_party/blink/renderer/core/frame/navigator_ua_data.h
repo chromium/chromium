@@ -8,6 +8,7 @@
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_navigator_ua_brand_version.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -38,6 +39,7 @@ class NavigatorUAData : public ScriptWrappable, ExecutionContextClient {
   const HeapVector<Member<NavigatorUABrandVersion>>& brands() const;
   bool mobile() const;
   ScriptPromise getHighEntropyValues(ScriptState*, Vector<String>&) const;
+  ScriptValue toJSON(ScriptState*) const;
 
   void Trace(Visitor* visitor) const final;
 

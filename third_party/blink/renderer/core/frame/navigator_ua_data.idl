@@ -11,4 +11,5 @@
   readonly attribute FrozenArray<NavigatorUABrandVersion> brands;
   readonly attribute boolean mobile;
   [CallWith=ScriptState] Promise<UADataValues> getHighEntropyValues(sequence<DOMString> hints);
+  [CallWith=ScriptState] object toJSON();
 };

@@ -922,6 +922,7 @@ interface NavigatorUAData
     getter mobile
     method constructor
     method getHighEntropyValues
+    method toJSON
 interface NetworkInformation : EventTarget
     attribute @@toStringTag
     getter downlink
