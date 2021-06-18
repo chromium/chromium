@@ -25,6 +25,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.BaseActivityTestRule;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -40,6 +41,8 @@ import org.chromium.ui.test.util.DummyUiActivity;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Tests {@link ShareSheetCoordinator}.
@@ -112,10 +115,18 @@ public final class ShareSheetCoordinatorTest {
 
     @Test
     @MediumTest
-    public void testCreateThirdPartyPropertyModels() {
-        List<PropertyModel> propertyModels = mShareSheetCoordinator.createThirdPartyPropertyModels(
-                mActivity, mParams, ShareSheetPropertyModelBuilder.ALL_CONTENT_TYPES_FOR_TEST,
-                /*saveLastUsed=*/false);
+    public void testCreateThirdPartyPropertyModels() throws TimeoutException {
+        final AtomicReference<List<PropertyModel>> resultPropertyModels =
+                new AtomicReference<List<PropertyModel>>();
+        CallbackHelper helper = new CallbackHelper();
+        mShareSheetCoordinator.createThirdPartyPropertyModels(mActivity, mParams,
+                ShareSheetPropertyModelBuilder.ALL_CONTENT_TYPES_FOR_TEST,
+                /*saveLastUsed=*/false, models -> {
+                    resultPropertyModels.set(models);
+                    helper.notifyCalled();
+                });
+        helper.waitForFirst();
+        List<PropertyModel> propertyModels = resultPropertyModels.get();
 
         assertEquals("Incorrect number of property models.", 3, propertyModels.size());
         assertEquals("First property model isn't testModel1.", "testModel1",
