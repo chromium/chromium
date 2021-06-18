@@ -70,6 +70,8 @@ void TypecdClientImpl::ThunderboltDeviceConnectedReceived(
     return;
   }
 
+  VLOG(1) << "Typecd: Received device connected signal with "
+          << "DeviceConnectedType: " << device_connected_type;
   NotifyOnThunderboltDeviceConnected(
       device_connected_type ==
       static_cast<uint32_t>(typecd::DeviceConnectedType::kThunderboltOnly));

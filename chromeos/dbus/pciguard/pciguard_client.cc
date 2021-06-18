@@ -75,6 +75,7 @@ void PciguardClientImpl::BlockedThunderboltDevicedConnectedReceieved(
     return;
   }
 
+  VLOG(1) << "Pciguard: Received blocked device: " << device_name;
   NotifyOnBlockedThunderboltDeviceConnected(device_name);
 }
 
@@ -91,6 +92,8 @@ void PciguardClientImpl::SendExternalPciDevicesPermissionState(bool permitted) {
   dbus::MethodCall method_call(
       pciguard::kPciguardServiceInterface,
       pciguard::kSetExternalPciDevicesPermissionMethod);
+  VLOG(1) << "Pciguard: Sending data access enabled state: " << permitted;
+
   dbus::MessageWriter writer(&method_call);
   writer.AppendBool(permitted);
 
