@@ -734,6 +734,100 @@ TEST_F(BorealisDiskManagerTest, ReleaseSpaceSuccessful) {
   run_loop()->RunUntilIdle();
 }
 
+TEST_F(BorealisDiskManagerTest, RequestSpaceConvertsSparseDiskToFixed) {
+  // This object forces all EXPECT_CALLs to occur in the order they are
+  // declared.
+  testing::InSequence sequence;
+
+  EXPECT_CALL(*free_space_provider_, Get(_))
+      .WillOnce(
+          testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
+            auto response = BuildValidListVmDisksResponse(
+                /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
+                /*available_space=*/100 * kGiB);
+            response.mutable_images()->at(0).set_user_chosen_size(false);
+            FakeConciergeClient()->set_list_vm_disks_response(response);
+            std::move(callback).Run(100 * kGiB);
+          }));
+
+  vm_tools::concierge::ResizeDiskImageResponse disk_response;
+  disk_response.set_status(
+      vm_tools::concierge::DiskImageStatus::DISK_STATUS_RESIZED);
+  FakeConciergeClient()->set_resize_disk_image_response(disk_response);
+
+  EXPECT_CALL(*free_space_provider_, Get(_))
+      .WillOnce(
+          testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
+            // Note: available_space goes from 100 GB to 3 GB, when requesting
+            // for more space. In a sparse disk, the available space on the
+            // disk is more like the expandable space on the disk, so it makes
+            // sense that when we convert to a fixed disk, it will decrease so
+            // that it reflects the actual space available on the disk.
+            auto response = BuildValidListVmDisksResponse(
+                /*min_size=*/6 * kGiB, /*size=*/23 * kGiB,
+                /*available_space=*/3 * kGiB);
+            FakeConciergeClient()->set_list_vm_disks_response(response);
+            std::move(callback).Run(97 * kGiB);
+          }));
+
+  RequestDeltaCallbackFactory callback_factory;
+  EXPECT_CALL(callback_factory, Call(_))
+      .WillOnce(testing::Invoke(
+          [](Expected<uint64_t, std::string> response_or_error) {
+            EXPECT_TRUE(response_or_error);
+            EXPECT_EQ(response_or_error.Value(), 1 * kGiB);
+          }));
+  disk_manager_->RequestSpace(1 * kGiB, callback_factory.BindOnce());
+  run_loop()->RunUntilIdle();
+}
+
+TEST_F(BorealisDiskManagerTest, ReleaseSpaceConvertsSparseDiskToFixed) {
+  // This object forces all EXPECT_CALLs to occur in the order they are
+  // declared.
+  testing::InSequence sequence;
+
+  EXPECT_CALL(*free_space_provider_, Get(_))
+      .WillOnce(
+          testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
+            auto response = BuildValidListVmDisksResponse(
+                /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
+                /*available_space=*/100 * kGiB);
+            response.mutable_images()->at(0).set_user_chosen_size(false);
+            FakeConciergeClient()->set_list_vm_disks_response(response);
+            std::move(callback).Run(100 * kGiB);
+          }));
+
+  vm_tools::concierge::ResizeDiskImageResponse disk_response;
+  disk_response.set_status(
+      vm_tools::concierge::DiskImageStatus::DISK_STATUS_RESIZED);
+  FakeConciergeClient()->set_resize_disk_image_response(disk_response);
+
+  EXPECT_CALL(*free_space_provider_, Get(_))
+      .WillOnce(
+          testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
+            // Note: available_space goes from 100 GB to 2 GB, when releasing
+            // space. In a sparse disk, the available space on the disk is more
+            // like the expandable space on the disk, so it makes sense that
+            // when we convert to a fixed disk, it will decrease so that it
+            // reflects the actual space available on the disk.
+            auto response = BuildValidListVmDisksResponse(
+                /*min_size=*/6 * kGiB, /*size=*/22 * kGiB,
+                /*available_space=*/2 * kGiB);
+            FakeConciergeClient()->set_list_vm_disks_response(response);
+            std::move(callback).Run(98 * kGiB);
+          }));
+
+  RequestDeltaCallbackFactory callback_factory;
+  EXPECT_CALL(callback_factory, Call(_))
+      .WillOnce(testing::Invoke(
+          [](Expected<uint64_t, std::string> response_or_error) {
+            EXPECT_TRUE(response_or_error);
+            EXPECT_EQ(response_or_error.Value(), 0);
+          }));
+  disk_manager_->ReleaseSpace(1 * kGiB, callback_factory.BindOnce());
+  run_loop()->RunUntilIdle();
+}
+
 TEST_F(BorealisDiskManagerTest, RequestDeltaConcurrentAttemptFails) {
   // We don't use a sequence here because the ordering of expectations is not
   // guaranteed, because of that we need to declare the free space provider

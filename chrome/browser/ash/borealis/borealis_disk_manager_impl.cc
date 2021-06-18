@@ -176,6 +176,34 @@ class BorealisDiskManagerImpl::ResizeDisk
   }
 
  private:
+  // Sparse disks can be converted to fixed disks through a regular resize
+  // operation. This function adjusts how the resize flow uses the disk
+  // information from sparse disks.
+  void ConvertToFixedIfNeeded() {
+    if (!original_disk_info_.has_fixed_size) {
+      // Based on how sparse disks work, it's hard to know exactly what the
+      // state of the disk is. I.E sometimes the "minimum size" of the disk is
+      // larger than the actual size of the disk and the "available space" on
+      // the disk is typically much greater than what the disk actually has. To
+      // remedy this, we set the disk size so that it is at least the minimum
+      // disk size and then add the target buffer so that we know that the
+      // resized disk will have at least the target buffer size as available
+      // space (before any additional changes).
+      original_disk_info_.disk_size = std::max(original_disk_info_.min_size,
+                                               original_disk_info_.disk_size) +
+                                      kTargetBufferBytes;
+      original_disk_info_.available_space = kTargetBufferBytes;
+      original_disk_info_.expandable_space -= kTargetBufferBytes;
+
+      // When shrinking a sparse disk, we are more interested in converting it
+      // to a fixed size disk, we set the delta to 0 to loosen the success
+      // criteria.
+      if (space_delta_ < 0) {
+        space_delta_ = 0;
+      }
+    }
+  }
+
   void HandleDiskInfo(Expected<std::unique_ptr<BorealisDiskInfo>, std::string>
                           disk_info_or_error) {
     build_disk_info_transition_.reset();
@@ -191,6 +219,12 @@ class BorealisDiskManagerImpl::ResizeDisk
            "' cannot be resized");
       return;
     }
+    // The information we get on sparse disks is accurate, but needs to be used
+    // differently during a resize so that we can:
+    // 1. convert the sparse disk to a parameter-conforming fixed size disk.
+    // 2. verify that we resized the disk by the requested delta, on top of any
+    //    changes we needed to make because of the sparse->fixed conversion.
+    ConvertToFixedIfNeeded();
     if (space_delta_ > 0 &&
         original_disk_info_.expandable_space < space_delta_) {
       Fail("the space requested exceeds the space that is expandable");
@@ -474,6 +508,12 @@ void BorealisDiskManagerImpl::OnRequestSpaceDelta(
     std::move(callback).Run(Expected<uint64_t, std::string>(delta));
   } else {
     if (delta >= 0) {
+      if (!disk_info_or_error.Value()->first.has_fixed_size &&
+          disk_info_or_error.Value()->second.has_fixed_size) {
+        // We succeeded in trying to convert the disk to a fixed size.
+        std::move(callback).Run(Expected<uint64_t, std::string>(0));
+        return;
+      }
       std::string error = "RequestSpaceDelta failed: failed to shrink the disk";
       LOG(ERROR) << error;
       std::move(callback).Run(
