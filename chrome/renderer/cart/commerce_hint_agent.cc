@@ -651,7 +651,7 @@ void CommerceHintAgent::DidCommitProvisionalLoad(
     RecordCommerceEvent(CommerceEvent::kAddToCartByURL);
     OnAddToCart(render_frame());
   }
-  if (IsVisitCheckout(starting_url_)) {
+  if (!IsVisitCart(starting_url_) && IsVisitCheckout(starting_url_)) {
     RecordCommerceEvent(CommerceEvent::kVisitCheckout);
     OnVisitCheckout(render_frame());
   }
@@ -672,10 +672,16 @@ void CommerceHintAgent::DidFinishLoad() {
   if (!url.SchemeIs(url::kHttpsScheme))
     return;
 
+  // Some URLs might satisfy the patterns for both cart and checkout (e.g.
+  // https://www.foo.com/cart/checkout). In those cases, cart has higher
+  // priority.
   if (IsVisitCart(url)) {
     RecordCommerceEvent(CommerceEvent::kVisitCart);
     OnVisitCart(render_frame());
     ExtractProducts();
+  } else if (IsVisitCheckout(url)) {
+    RecordCommerceEvent(CommerceEvent::kVisitCheckout);
+    OnVisitCheckout(render_frame());
   }
 }
 
