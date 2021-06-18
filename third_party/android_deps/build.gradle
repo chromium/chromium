@@ -42,7 +42,7 @@ dependencies {
     // Note about the configuration names: they are defined in buildSrc/ChromiumPlugin
 
     // Replacement for com.android.support:design
-    compile 'com.google.android.material:material:1.2.0-alpha06'
+    compile 'com.google.android.material:material:1.4.0-rc01'
 
     // Architecture components
     String archComponentsVersion = '1.1.1'
