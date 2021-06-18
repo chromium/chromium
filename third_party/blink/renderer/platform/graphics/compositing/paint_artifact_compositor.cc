@@ -312,7 +312,7 @@ PaintArtifactCompositor::CompositedLayerForPendingLayer(
   IntRect cc_combined_bounds = EnclosingIntRect(pending_layer.bounds);
   auto cc_layer = content_layer_client->UpdateCcPictureLayer(
       pending_layer.chunks, cc_combined_bounds,
-      pending_layer.property_tree_state);
+      pending_layer.property_tree_state, pending_layer.effectively_invisible);
 
   new_content_layer_clients.push_back(std::move(content_layer_client));
 
@@ -453,12 +453,14 @@ bool PaintArtifactCompositor::PendingLayer::PropertyTreeStateChanged() const {
 PaintArtifactCompositor::PendingLayer::PendingLayer(
     const PaintChunkSubset& chunks,
     const PaintChunkIterator& first_chunk,
-    CompositingType compositing_type)
+    CompositingType compositing_type,
+    bool is_effectively_invisible)
     : bounds(first_chunk->bounds),
       rect_known_to_be_opaque(first_chunk->known_to_be_opaque ? bounds
                                                               : FloatRect()),
       text_known_to_be_on_opaque_background(
           first_chunk->text_known_to_be_on_opaque_background),
+      effectively_invisible(is_effectively_invisible),
       chunks(&chunks.GetPaintArtifact(), first_chunk.IndexInPaintArtifact()),
       property_tree_state(
           first_chunk->properties.GetPropertyTreeState().Unalias()),
@@ -468,7 +470,8 @@ PaintArtifactCompositor::PendingLayer::PendingLayer(
 
 PaintArtifactCompositor::PendingLayer::PendingLayer(
     const PreCompositedLayerInfo& pre_composited_layer)
-    : chunks(pre_composited_layer.chunks),
+    : effectively_invisible(false),
+      chunks(pre_composited_layer.chunks),
       property_tree_state(
           pre_composited_layer.graphics_layer->GetPropertyTreeState()
               .Unalias()),
@@ -697,6 +700,8 @@ bool PaintArtifactCompositor::PendingLayer::CanMerge(
     return false;
   if (&property_tree_state.Effect() != &guest_state.Effect())
     return false;
+  if (effectively_invisible != guest.effectively_invisible)
+    return false;
 
   const absl::optional<PropertyTreeState>& merged_state =
       CanUpcastWith(guest_state, property_tree_state);
@@ -851,18 +856,7 @@ bool PaintArtifactCompositor::DecompositeEffect(
   return true;
 }
 
-static bool EffectGroupContainsChunk(
-    const EffectPaintPropertyNode& group_effect,
-    const PaintChunk& chunk) {
-  const auto& effect = chunk.properties.Effect().Unalias();
-  return &effect == &group_effect ||
-         StrictUnaliasedChildOfAlongPath(group_effect, effect);
-}
-
-static bool SkipGroupIfEffectivelyInvisible(
-    const PaintChunkSubset& chunks,
-    const EffectPaintPropertyNode& group,
-    PaintChunkIterator& chunk_cursor) {
+static bool IsEffectivelyInvisible(const EffectPaintPropertyNode& group) {
   // In pre-CompositeAfterPaint, existence of composited layers is decided
   // during compositing update before paint. Each chunk contains a foreign
   // layer corresponding a composited layer. We should not skip any of them to
@@ -876,21 +870,10 @@ static bool SkipGroupIfEffectivelyInvisible(
   // color output of less than 0.5 in all channels, hence not visible.
   static const float kMinimumVisibleOpacity = 0.0004f;
   if (group.Opacity() >= kMinimumVisibleOpacity ||
-      // TODO(crbug.com/937573): We should disable the optimization for all
-      // cases that the invisible group will be composited, to ensure correct
-      // composited hit testing and animation. Checking the effect node's
-      // HasDirectCompositingReasons() is not enough.
       group.HasDirectCompositingReasons()) {
     return false;
   }
 
-  // Fast-forward to just past the end of the chunk sequence within this
-  // effect group.
-  DCHECK(EffectGroupContainsChunk(group, *chunk_cursor));
-  while (++chunk_cursor != chunks.end()) {
-    if (!EffectGroupContainsChunk(group, *chunk_cursor))
-      break;
-  }
   return true;
 }
 
@@ -914,11 +897,9 @@ static bool IsCompositedScrollbar(const DisplayItem& item) {
 void PaintArtifactCompositor::LayerizeGroup(
     const PaintChunkSubset& chunks,
     const EffectPaintPropertyNode& current_group,
-    PaintChunkIterator& chunk_cursor) {
-  // Skip paint chunks that are effectively invisible due to opacity and don't
-  // have a direct compositing reason.
-  if (SkipGroupIfEffectivelyInvisible(chunks, current_group, chunk_cursor))
-    return;
+    PaintChunkIterator& chunk_cursor,
+    bool effectively_invisible) {
+  effectively_invisible |= IsEffectivelyInvisible(current_group);
 
   wtf_size_t first_layer_in_current_group = pending_layers_.size();
   // The worst case time complexity of the algorithm is O(pqd), where
@@ -958,7 +939,8 @@ void PaintArtifactCompositor::LayerizeGroup(
           compositing_type = PendingLayer::kScrollbarLayer;
       }
 
-      pending_layers_.emplace_back(chunks, chunk_cursor, compositing_type);
+      pending_layers_.emplace_back(chunks, chunk_cursor, compositing_type,
+                                   effectively_invisible);
       ++chunk_cursor;
       if (pending_layers_.back().RequiresOwnLayer())
         continue;
@@ -972,7 +954,7 @@ void PaintArtifactCompositor::LayerizeGroup(
       // Case C: The following chunks belong to a subgroup. Process them by
       //         a recursion call.
       wtf_size_t first_layer_in_subgroup = pending_layers_.size();
-      LayerizeGroup(chunks, *subgroup, chunk_cursor);
+      LayerizeGroup(chunks, *subgroup, chunk_cursor, effectively_invisible);
       // The above LayerizeGroup generated new layers in pending_layers_
       // [first_layer_in_subgroup .. pending_layers.size() - 1]. If it
       // generated 2 or more layer that we already know can't be merged
@@ -1019,7 +1001,8 @@ void PaintArtifactCompositor::CollectPendingLayers(
       continue;
     }
     auto cursor = layer.chunks.begin();
-    LayerizeGroup(layer.chunks, EffectPaintPropertyNode::Root(), cursor);
+    LayerizeGroup(layer.chunks, EffectPaintPropertyNode::Root(), cursor,
+                  /*effectively_invisible=*/false);
     DCHECK(cursor == layer.chunks.end());
   }
   pending_layers_.ShrinkToReasonableCapacity();
@@ -1538,7 +1521,8 @@ void PaintArtifactCompositor::UpdateRepaintedLayer(
         IntRect cc_combined_bounds = EnclosingIntRect(pending_layer.bounds);
         content_layer_client->UpdateCcPictureLayer(
             pending_layer.chunks, cc_combined_bounds,
-            pending_layer.property_tree_state);
+            pending_layer.property_tree_state,
+            pending_layer.effectively_invisible);
       }
       layer = &content_layer_client->Layer();
     }

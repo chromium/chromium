@@ -61,7 +61,8 @@ void ContentLayerClientImpl::AppendAdditionalInfoAsJSON(
 scoped_refptr<cc::PictureLayer> ContentLayerClientImpl::UpdateCcPictureLayer(
     const PaintChunkSubset& paint_chunks,
     const gfx::Rect& layer_bounds,
-    const PropertyTreeState& layer_state) {
+    const PropertyTreeState& layer_state,
+    bool effectively_invisible) {
   if (paint_chunks.begin()->is_cacheable)
     id_.emplace(paint_chunks.begin()->id);
   else
@@ -116,10 +117,15 @@ scoped_refptr<cc::PictureLayer> ContentLayerClientImpl::UpdateCcPictureLayer(
     return cc_picture_layer_;
   }
 
-  cc_display_item_list_ = PaintChunksToCcLayer::Convert(
-      paint_chunks, layer_state, layer_bounds.OffsetFromOrigin(),
-      cc::DisplayItemList::kTopLevelDisplayItemList,
-      base::OptionalOrNullptr(raster_under_invalidation_params));
+  if (effectively_invisible) {
+    cc_display_item_list_ = base::MakeRefCounted<cc::DisplayItemList>(
+        cc::DisplayItemList::kTopLevelDisplayItemList);
+  } else {
+    cc_display_item_list_ = PaintChunksToCcLayer::Convert(
+        paint_chunks, layer_state, layer_bounds.OffsetFromOrigin(),
+        cc::DisplayItemList::kTopLevelDisplayItemList,
+        base::OptionalOrNullptr(raster_under_invalidation_params));
+  }
 
   cc_picture_layer_->SetBounds(layer_bounds.size());
   cc_picture_layer_->SetHitTestable(true);

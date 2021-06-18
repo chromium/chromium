@@ -52,6 +52,13 @@
       "contentsOpaqueForText": true,
       "backgroundColor": "#008000",
       "transform": 4
+    },
+    {
+      "name": "LayoutNGBlockFlow PRE id='layer-tree'",
+      "position": [8, 431],
+      "bounds": [784, 10],
+      "contentsOpaqueForText": true,
+      "drawsContent": false
     }
   ],
   "transforms": [

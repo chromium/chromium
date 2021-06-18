@@ -2771,52 +2771,80 @@ TEST_P(PaintArtifactCompositorTest, DecompositedEffectNotMergingDueToOverlap) {
 
 TEST_P(PaintArtifactCompositorTest, SkipChunkWithOpacityZero) {
   UpdateWithArtifactWithOpacity(0, false, false);
+  EXPECT_EQ(1u, LayerCount());
   if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    EXPECT_EQ(0u, LayerCount());
-  else
-    EXPECT_EQ(1u, LayerCount());
+    EXPECT_FALSE(LayerAt(0)->DrawsContent());
 }
 
 TEST_P(PaintArtifactCompositorTest,
        SkipChunkWithOpacityZeroWithPrecedingChunk) {
   UpdateWithArtifactWithOpacity(0, true, false);
-  ASSERT_EQ(1u, LayerCount());
+  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+    ASSERT_EQ(2u, LayerCount());
+    EXPECT_FALSE(LayerAt(1)->DrawsContent());
+  } else {
+    ASSERT_EQ(1u, LayerCount());
+  }
 }
 
 TEST_P(PaintArtifactCompositorTest, SkipChunkWithOpacityZeroSubsequentChunk) {
   UpdateWithArtifactWithOpacity(0, false, true);
-  ASSERT_EQ(1u, LayerCount());
+  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+    ASSERT_EQ(2u, LayerCount());
+    EXPECT_FALSE(LayerAt(0)->DrawsContent());
+  } else {
+    ASSERT_EQ(1u, LayerCount());
+  }
 }
 
 TEST_P(PaintArtifactCompositorTest,
        SkipChunkWithOpacityZeroWithPrecedingAndSubsequentChunk) {
   UpdateWithArtifactWithOpacity(0, true, true);
-  ASSERT_EQ(1u, LayerCount());
+  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+    ASSERT_EQ(2u, LayerCount());
+    EXPECT_FALSE(LayerAt(1)->DrawsContent());
+  } else {
+    ASSERT_EQ(1u, LayerCount());
+  }
 }
 
 TEST_P(PaintArtifactCompositorTest, SkipChunkWithTinyOpacity) {
   UpdateWithArtifactWithOpacity(0.0003f, false, false);
+  EXPECT_EQ(1u, LayerCount());
   if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    EXPECT_EQ(0u, LayerCount());
-  else
-    EXPECT_EQ(1u, LayerCount());
+    EXPECT_FALSE(LayerAt(0)->DrawsContent());
 }
 
 TEST_P(PaintArtifactCompositorTest,
        SkipChunkWithTinyOpacityWithPrecedingChunk) {
   UpdateWithArtifactWithOpacity(0.0003f, true, false);
-  ASSERT_EQ(1u, LayerCount());
+  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+    ASSERT_EQ(2u, LayerCount());
+    EXPECT_FALSE(LayerAt(1)->DrawsContent());
+  } else {
+    ASSERT_EQ(1u, LayerCount());
+  }
 }
 
 TEST_P(PaintArtifactCompositorTest, SkipChunkWithTinyOpacitySubsequentChunk) {
   UpdateWithArtifactWithOpacity(0.0003f, false, true);
-  ASSERT_EQ(1u, LayerCount());
+  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+    ASSERT_EQ(2u, LayerCount());
+    EXPECT_FALSE(LayerAt(0)->DrawsContent());
+  } else {
+    ASSERT_EQ(1u, LayerCount());
+  }
 }
 
 TEST_P(PaintArtifactCompositorTest,
        SkipChunkWithTinyOpacityWithPrecedingAndSubsequentChunk) {
   UpdateWithArtifactWithOpacity(0.0003f, true, true);
-  ASSERT_EQ(1u, LayerCount());
+  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+    ASSERT_EQ(2u, LayerCount());
+    EXPECT_FALSE(LayerAt(1)->DrawsContent());
+  } else {
+    ASSERT_EQ(1u, LayerCount());
+  }
 }
 
 TEST_P(PaintArtifactCompositorTest, DontSkipChunkWithMinimumOpacity) {
@@ -2885,10 +2913,9 @@ TEST_P(PaintArtifactCompositorTest,
   artifact.Chunk(t0(), c0(), *visible_effect)
       .RectDrawing(IntRect(0, 0, 100, 100), Color::kBlack);
   Update(artifact.Build());
+  EXPECT_EQ(1u, LayerCount());
   if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    EXPECT_EQ(0u, LayerCount());
-  else
-    EXPECT_EQ(1u, LayerCount());
+    EXPECT_FALSE(LayerAt(0)->DrawsContent());
 }
 
 TEST_P(
@@ -2913,10 +2940,9 @@ TEST_P(PaintArtifactCompositorTest,
   artifact.Chunk(t0(), c0(), *visible_effect)
       .RectDrawing(IntRect(0, 0, 100, 100), Color::kBlack);
   Update(artifact.Build());
+  EXPECT_EQ(1u, LayerCount());
   if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    EXPECT_EQ(0u, LayerCount());
-  else
-    EXPECT_EQ(1u, LayerCount());
+    EXPECT_FALSE(LayerAt(0)->DrawsContent());
 }
 
 TEST_P(PaintArtifactCompositorTest, UpdateManagesLayerElementIds) {

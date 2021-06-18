@@ -55,7 +55,8 @@ class PLATFORM_EXPORT ContentLayerClientImpl : public cc::ContentLayerClient,
   scoped_refptr<cc::PictureLayer> UpdateCcPictureLayer(
       const PaintChunkSubset&,
       const gfx::Rect& layer_bounds,
-      const PropertyTreeState&);
+      const PropertyTreeState&,
+      bool effectively_invisible);
 
   RasterInvalidator& GetRasterInvalidator() { return raster_invalidator_; }
 

@@ -11,6 +11,11 @@
       "bounds": [10, 10],
       "contentsOpaqueForText": true,
       "drawsContent": false
+    },
+    {
+      "name": "LayoutNGBlockFlow PRE id='layer-tree'",
+      "bounds": [800, 16],
+      "drawsContent": false
     }
   ]
 }
