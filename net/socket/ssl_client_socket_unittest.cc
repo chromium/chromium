@@ -5151,11 +5151,7 @@ TEST_F(SSLClientSocketZeroRTTTest, ZeroRTTWrongVersion) {
   int rv = ReadAndWait(buf.get(), 4096);
   EXPECT_EQ(ERR_WRONG_VERSION_ON_EARLY_DATA, rv);
   rv = WriteAndWait(kRequest);
-  // TODO(https://crbug.com/1078515): This should be
-  // ERR_WRONG_VERSION_ON_EARLY_DATA. We assert on the current value so that,
-  // when the bug is fixed (likely in BoringSSL), we remember to fix the test to
-  // set a proper test expectation.
-  EXPECT_EQ(ERR_SSL_PROTOCOL_ERROR, rv);
+  EXPECT_EQ(ERR_WRONG_VERSION_ON_EARLY_DATA, rv);
 
   // Retrying the connection should succeed.
   socket = MakeClient(true);
