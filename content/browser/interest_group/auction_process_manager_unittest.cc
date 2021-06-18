@@ -7,6 +7,7 @@
 #include <list>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/callback.h"
 #include "base/check.h"
@@ -28,6 +29,11 @@
 
 namespace content {
 namespace {
+
+// Alias constants to improve readability.
+const size_t kMaxActiveSellerWorklets =
+    AuctionProcessManager::kMaxActiveSellerWorklets;
+const size_t kMaxBidderProcesses = AuctionProcessManager::kMaxBidderProcesses;
 
 class TestAuctionProcessManager
     : public AuctionProcessManager,
@@ -173,90 +179,400 @@ TEST_F(AuctionProcessManagerTest, MultipleRequestsForSameProcess) {
   EXPECT_EQ(buyer_a1->GetService(), buyer_a3->GetService());
 }
 
-TEST_F(AuctionProcessManagerTest, SellerLimit) {
-  // This test assumes kMaxActiveSellerWorklets is greater than 1.
-  DCHECK_GT(AuctionProcessManager::kMaxActiveSellerWorklets, 1u);
+// Check that the seller process limit is respected, that sellers shared
+// processes when their origins match, and that sellers receive processes in
+// FIFO order.
+TEST_F(AuctionProcessManagerTest, SellerLimitExceeded) {
+  // The list of operations below assumes 3 sellers are allowed to run at once -
+  // the interesting cases move slightly if this changes, but should be easy to
+  // adapt the list to different values.
+  CHECK_EQ(kMaxActiveSellerWorklets, 3u);
 
-  // Make kMaxActiveSellerWorklets seller worklet requests for kOriginA.
-  std::list<std::unique_ptr<AuctionProcessManager::ProcessHandle>> sellers_a;
-  for (size_t i = 0; i < AuctionProcessManager::kMaxActiveSellerWorklets; ++i) {
-    sellers_a.emplace_back(GetServiceExpectSuccess(
-        AuctionProcessManager::WorkletType::kSeller, kOriginA));
-    EXPECT_EQ(sellers_a.back()->GetService(), sellers_a.front()->GetService());
-    EXPECT_EQ(1u, auction_process_manager_.NumReceivers());
+  struct Operation {
+    enum class Op {
+      // Request a handle. If there are less than kMaxActiveSellerWorklets
+      // handles already, expects a process to immediately assigned.
+      kRequestHandle,
+
+      // Destroy a handle with the given index. If the index is less than
+      // kMaxActiveSellerWorklets, then expect a ProcessHandle to have its
+      // callback invoked, if there are more than kMaxActiveSellerWorklets
+      // already.
+      kDestroyHandle,
+
+      // Same as destroy handle, but additionally destroys the next handle that
+      // would have been assigned the next available process slot, and makes
+      // sure the handle after that one gets a process instead.
+      kDestroyHandleAndNextInQueue,
+    };
+
+    Op op;
+
+    // Used for kRequestHandle* operations.
+    absl::optional<url::Origin> origin;
+
+    // Used for kDestroyHandle and kDestroyHandleAndNextInQueue operations.
+    absl::optional<size_t> index;
+
+    // The number of total handles expected after this operation. This can be
+    // inferred by sum of requested handles requests less handles destroyed
+    // handles, but having it explicitly in the struct makes sure the test cases
+    // are testing what they're expected to.
+    size_t expected_total_handles;
+  };
+
+  const Operation kOperationList[] = {
+      {Operation::Op::kRequestHandle, kOriginA, absl::nullopt,
+       1u /* expected_total_handles */},
+      {Operation::Op::kRequestHandle, kOriginA, absl::nullopt,
+       2u /* expected_total_handles */},
+      {Operation::Op::kRequestHandle, kOriginA, absl::nullopt,
+       3u /* expected_total_handles */},
+
+      // Check destroying middle, last, and first handle when there are no
+      // queued requests. Keep three live requests, to there remain first,
+      // middle, and last ProcessHandles.
+      {Operation::Op::kDestroyHandle, absl::nullopt, 1u /* index */,
+       2u /* expected_total_handles */},
+      {Operation::Op::kRequestHandle, kOriginA, absl::nullopt,
+       3u /* expected_total_handles */},
+      {Operation::Op::kDestroyHandle, absl::nullopt, 2u /* index */,
+       2u /* expected_total_handles */},
+      {Operation::Op::kRequestHandle, kOriginA, absl::nullopt,
+       3u /* expected_total_handles */},
+      {Operation::Op::kDestroyHandle, absl::nullopt, 0u /* index */,
+       2u /* expected_total_handles */},
+      {Operation::Op::kRequestHandle, kOriginA, absl::nullopt,
+       3u /* expected_total_handles */},
+
+      // Queue 3 more requests, but delete the last and first of them, to test
+      // deleting queued requests.
+      {Operation::Op::kRequestHandle, kOriginA, absl::nullopt,
+       4u /* expected_total_handles */},
+      {Operation::Op::kRequestHandle, kOriginA, absl::nullopt,
+       5u /* expected_total_handles */},
+      {Operation::Op::kRequestHandle, kOriginA, absl::nullopt,
+       6u /* expected_total_handles */},
+      {Operation::Op::kDestroyHandle, absl::nullopt, 5u /* index */,
+       5u /* expected_total_handles */},
+      {Operation::Op::kDestroyHandle, absl::nullopt, 3u /* index */,
+       4u /* expected_total_handles */},
+
+      // Make requests for different origins, to make sure processes aren't
+      // shared, and check that FIFO ordering is respected across origins.
+      {Operation::Op::kRequestHandle, kOriginB, absl::nullopt,
+       5u /* expected_total_handles */},
+      {Operation::Op::kRequestHandle, kOriginB, absl::nullopt,
+       6u /* expected_total_handles */},
+      {Operation::Op::kRequestHandle, kOriginA, absl::nullopt,
+       7u /* expected_total_handles */},
+      {Operation::Op::kRequestHandle, kOriginB, absl::nullopt,
+       8u /* expected_total_handles */},
+
+      // Destroy the first handle and the first kOriginB request in the queue
+      // immediately afterwards. The second kOriginB request should get a
+      // process.
+      {Operation::Op::kDestroyHandleAndNextInQueue, absl::nullopt,
+       0u /* index */, 6u /* expected_total_handles */},
+
+      // Destroy three requests with assigned processes. Make sure to destroy
+      // the first, last, and middle request with an assigned process.
+      {Operation::Op::kDestroyHandle, absl::nullopt, 2u /* index */,
+       5u /* expected_total_handles */},
+      {Operation::Op::kDestroyHandle, absl::nullopt, 0u /* index */,
+       4u /* expected_total_handles */},
+      {Operation::Op::kDestroyHandle, absl::nullopt, 1u /* index */,
+       3u /* expected_total_handles */},
+  };
+
+  struct ProcessHandleData {
+    explicit ProcessHandleData(const url::Origin& origin) : origin(origin) {}
+
+    url::Origin origin;
+    std::unique_ptr<AuctionProcessManager::ProcessHandle> process_handle =
+        std::make_unique<AuctionProcessManager::ProcessHandle>();
+    std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
+  };
+
+  std::vector<ProcessHandleData> data;
+
+  for (const auto& operation : kOperationList) {
+    size_t original_size = data.size();
+    switch (operation.op) {
+      case Operation::Op::kRequestHandle:
+        data.emplace_back(ProcessHandleData(*operation.origin));
+        ASSERT_EQ(original_size < kMaxActiveSellerWorklets,
+                  auction_process_manager_.RequestWorkletService(
+                      AuctionProcessManager::WorkletType::kSeller,
+                      *operation.origin, data.back().process_handle.get(),
+                      data.back().run_loop->QuitClosure()));
+        break;
+
+      case Operation::Op::kDestroyHandle:
+        ASSERT_GT(data.size(), *operation.index);
+        data.erase(data.begin() + *operation.index);
+        // If destroying one of the first kMaxActiveSellerWorklets handles, and
+        // there were more than kMaxActiveSellerWorklets handles before, the
+        // first of the handles waiting on a process should get a process.
+        if (*operation.index < kMaxActiveSellerWorklets &&
+            original_size > kMaxActiveSellerWorklets) {
+          data[kMaxActiveSellerWorklets - 1].run_loop->Run();
+          EXPECT_TRUE(
+              data[kMaxActiveSellerWorklets - 1].process_handle->GetService());
+        }
+        break;
+
+      case Operation::Op::kDestroyHandleAndNextInQueue:
+        ASSERT_GT(data.size(), *operation.index);
+        ASSERT_GT(data.size(), kMaxActiveSellerWorklets + 1);
+
+        data.erase(data.begin() + *operation.index);
+        // Next socket in line shouldn't have a process assigned to it yet.
+        EXPECT_FALSE(
+            data[kMaxActiveSellerWorklets - 1].process_handle->GetService());
+
+        // Delete next socket in line.
+        data.erase(data.begin() + kMaxActiveSellerWorklets - 1);
+        EXPECT_FALSE(
+            data[kMaxActiveSellerWorklets - 1].process_handle->GetService());
+
+        // New next socket in line also shouldn't have a process assigned to it
+        // yet.
+        data[kMaxActiveSellerWorklets - 1].run_loop->Run();
+
+        // Wait for the next socket in line to get a socket.
+        EXPECT_TRUE(
+            data[kMaxActiveSellerWorklets - 1].process_handle->GetService());
+        EXPECT_TRUE(
+            data[kMaxActiveSellerWorklets - 1].process_handle->GetService());
+        break;
+    }
+
+    EXPECT_EQ(operation.expected_total_handles, data.size());
+
+    // The first kMaxActiveSellerWorklets ProcessHandles should all have
+    // assigned processes, which should be the same only when the origin is the
+    // same.
+    for (size_t i = 0; i < data.size() && i < kMaxActiveSellerWorklets; ++i) {
+      EXPECT_TRUE(data[i].process_handle->GetService());
+      for (size_t j = 0; j < i; ++j) {
+        EXPECT_EQ(data[i].origin == data[j].origin,
+                  data[i].process_handle->GetService() ==
+                      data[j].process_handle->GetService());
+      }
+    }
+
+    // Make sure all pending tasks have been run.
+    base::RunLoop().RunUntilIdle();
+
+    // All other requests should not have been assigned processes yet.
+    for (size_t i = kMaxActiveSellerWorklets; i < data.size(); ++i) {
+      EXPECT_FALSE(data[i].run_loop->AnyQuitCalled());
+      EXPECT_FALSE(data[i].process_handle->GetService());
+    }
   }
-
-  // Make seller requests for kOriginA and kOriginB, which should both be
-  // blocked due to the seller worklet limit being reached.
-
-  base::RunLoop run_loop_delayed_a;
-  auto seller_delayed_a =
-      std::make_unique<AuctionProcessManager::ProcessHandle>();
-  ASSERT_FALSE(auction_process_manager_.RequestWorkletService(
-      AuctionProcessManager::WorkletType::kSeller, kOriginA,
-      seller_delayed_a.get(), run_loop_delayed_a.QuitClosure()));
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(1u, auction_process_manager_.NumReceivers());
-  EXPECT_FALSE(run_loop_delayed_a.AnyQuitCalled());
-  EXPECT_FALSE(seller_delayed_a->GetService());
-
-  base::RunLoop run_loop_delayed_b;
-  auto seller_delayed_b =
-      std::make_unique<AuctionProcessManager::ProcessHandle>();
-  ASSERT_FALSE(auction_process_manager_.RequestWorkletService(
-      AuctionProcessManager::WorkletType::kSeller, kOriginB,
-      seller_delayed_b.get(), run_loop_delayed_b.QuitClosure()));
-  base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(run_loop_delayed_b.AnyQuitCalled());
-  EXPECT_FALSE(seller_delayed_b->GetService());
-  EXPECT_EQ(1u, auction_process_manager_.NumReceivers());
-
-  // Free up a seller slot. `seller_delayed_a` should get the same process as
-  // the other requests asynchronously. That request gets the socket first
-  // because requests are currently handled alphabetically by by origin. If
-  // multiple requests are for same origin, order is random.
-  sellers_a.pop_back();
-  EXPECT_FALSE(run_loop_delayed_a.AnyQuitCalled());
-  EXPECT_FALSE(seller_delayed_a->GetService());
-
-  run_loop_delayed_a.Run();
-  EXPECT_TRUE(seller_delayed_a->GetService());
-  EXPECT_EQ(seller_delayed_a->GetService(), sellers_a.front()->GetService());
-  EXPECT_EQ(1u, auction_process_manager_.NumReceivers());
-
-  // `seller_delayed_b` is still blocked on the two active sellers.
-  base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(run_loop_delayed_b.AnyQuitCalled());
-  EXPECT_FALSE(seller_delayed_b->GetService());
-
-  // Free up another seller slot. `seller_delayed_b` should get a different
-  // process asynchronously.
-  sellers_a.pop_front();
-  EXPECT_FALSE(run_loop_delayed_b.AnyQuitCalled());
-  EXPECT_FALSE(seller_delayed_b->GetService());
-
-  run_loop_delayed_b.Run();
-  EXPECT_TRUE(seller_delayed_b->GetService());
-  EXPECT_NE(seller_delayed_b->GetService(), seller_delayed_a->GetService());
-  EXPECT_EQ(2u, auction_process_manager_.NumReceivers());
 }
 
-TEST_F(AuctionProcessManagerTest, BidderLimit) {
+// Test adding and removing bidders, exceeding the limit. This test does not
+// cover the case of multiple bidders sharing the same process, which is covered
+// by the next test.
+TEST_F(AuctionProcessManagerTest, BidderLimitExceeded) {
+  // The list of operations below assumes at least 3 bidders are allowed to run
+  // at once.
+  CHECK_GE(kMaxBidderProcesses, 3u);
+
+  // Operations applied to the process manager. All requests use unique origins,
+  // so no need to specify that.
+  struct Operation {
+    enum class Op {
+      // Request the specified number of handle. If there are less than
+      // kMaxBidderProcesses handles already, expects a process to be
+      // immediately assigned. All requests use different origins from every
+      // other request.
+      kRequestHandles,
+
+      // Destroy a handle with the given index. If the index is less than
+      // kMaxBidderProcesses, then expect a ProcessHandle to have its
+      // callback invoked, if there are more than kMaxBidderProcesses already.
+      kDestroyHandle,
+
+      // Same as destroy handle, but additionally destroys the next handle that
+      // would have been assigned the next available process slot, and makes
+      // sure the handle after that one gets a process instead.
+      kDestroyHandleAndNextInQueue,
+    };
+
+    Op op;
+
+    // Number of handles to request for kRequestHandles operations.
+    absl::optional<size_t> num_handles;
+
+    // Used for kDestroyHandle and kDestroyHandleAndNextInQueue operations.
+    absl::optional<size_t> index;
+
+    // The number of total handles expected after this operation. This can be
+    // inferred by sum of requested handles requests less handles destroyed
+    // handles, but having it explcitly in the struct makes sure the test cases
+    // are testing what they're expected to.
+    size_t expected_total_handles;
+  };
+
+  const Operation kOperationList[] = {
+      {Operation::Op::kRequestHandles, kMaxBidderProcesses /* num_handles*/,
+       absl::nullopt /* index */,
+       kMaxBidderProcesses /* expected_total_handles */},
+
+      // Check destroying intermediate, last, and first handle when there are no
+      // queued requests. Keep exactly kMaxBidderProcesses requests, to ensure
+      // there are in fact first, last, and intermediate requests (as long as
+      // kMaxBidderProcesses is at least 3).
+      {Operation::Op::kDestroyHandle, absl::nullopt /* num_handles*/,
+       1u /* index */, kMaxBidderProcesses - 1 /* expected_total_handles */},
+      {Operation::Op::kRequestHandles, 1 /* num_handles*/,
+       absl::nullopt /* index */,
+       kMaxBidderProcesses /* expected_total_handles */},
+      {Operation::Op::kDestroyHandle, absl::nullopt /* num_handles*/,
+       0u /* index */, kMaxBidderProcesses - 1 /* expected_total_handles */},
+      {Operation::Op::kRequestHandles, 1 /* num_handles*/,
+       absl::nullopt /* index */,
+       kMaxBidderProcesses /* expected_total_handles */},
+      {Operation::Op::kDestroyHandle, absl::nullopt /* num_handles*/,
+       kMaxBidderProcesses - 1 /* index */,
+       kMaxBidderProcesses - 1 /* expected_total_handles */},
+      {Operation::Op::kRequestHandles, 1 /* num_handles*/,
+       absl::nullopt /* index */,
+       kMaxBidderProcesses /* expected_total_handles */},
+
+      // Queue 3 more requests, but delete the last and first of them, to test
+      // deleting queued requests.
+      {Operation::Op::kRequestHandles, 3 /* num_handles*/,
+       absl::nullopt /* index */,
+       kMaxBidderProcesses + 3 /* expected_total_handles */},
+      {Operation::Op::kDestroyHandle, absl::nullopt /* num_handles*/,
+       kMaxBidderProcesses /* index */,
+       kMaxBidderProcesses + 2 /* expected_total_handles */},
+      {Operation::Op::kDestroyHandle, absl::nullopt /* num_handles*/,
+       kMaxBidderProcesses + 1 /* index */,
+       kMaxBidderProcesses + 1 /* expected_total_handles */},
+
+      // Request 4 more processes.
+      {Operation::Op::kRequestHandles, 4 /* num_handles*/,
+       absl::nullopt /* index */,
+       kMaxBidderProcesses + 5 /* expected_total_handles */},
+
+      // Destroy the first handle and the first pending in the queue immediately
+      // afterwards. The next pending request should get a process.
+      {Operation::Op::kDestroyHandleAndNextInQueue,
+       absl::nullopt /* num_handles*/, 0u /* index */,
+       kMaxBidderProcesses + 3 /* expected_total_handles */},
+
+      // Destroy three more requests that have been asssigned processes, being
+      // sure to destroy the first, last, and some request request with nether,
+      // amongst requests with assigned processes.
+      {Operation::Op::kDestroyHandle, absl::nullopt /* num_handles*/,
+       kMaxBidderProcesses - 1 /* index */,
+       kMaxBidderProcesses + 2 /* expected_total_handles */},
+      {Operation::Op::kDestroyHandle, absl::nullopt /* num_handles*/,
+       0u /* index */, kMaxBidderProcesses + 1 /* expected_total_handles */},
+      {Operation::Op::kDestroyHandle, absl::nullopt /* num_handles*/,
+       1u /* index */, kMaxBidderProcesses /* expected_total_handles */},
+  };
+
+  struct ProcessHandleData {
+    std::unique_ptr<AuctionProcessManager::ProcessHandle> process_handle =
+        std::make_unique<AuctionProcessManager::ProcessHandle>();
+    std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
+  };
+
+  std::vector<ProcessHandleData> data;
+
+  // Used to create distinct origins for each handle
+  int num_origins = 0;
+  for (const auto& operation : kOperationList) {
+    switch (operation.op) {
+      case Operation::Op::kRequestHandles:
+        for (size_t i = 0; i < *operation.num_handles; ++i) {
+          size_t original_size = data.size();
+          data.emplace_back(ProcessHandleData());
+          url::Origin distinct_origin = url::Origin::Create(
+              GURL(base::StringPrintf("https://%i.test", ++num_origins)));
+          ASSERT_EQ(original_size < kMaxBidderProcesses,
+                    auction_process_manager_.RequestWorkletService(
+                        AuctionProcessManager::WorkletType::kBidder,
+                        distinct_origin, data.back().process_handle.get(),
+                        data.back().run_loop->QuitClosure()));
+        }
+        break;
+
+      case Operation::Op::kDestroyHandle: {
+        size_t original_size = data.size();
+
+        ASSERT_GT(data.size(), *operation.index);
+        data.erase(data.begin() + *operation.index);
+        // If destroying one of the first kMaxBidderProcesses handles, and
+        // there were more than kMaxBidderProcesses handles before, the
+        // first of the handles waiting on a process should get a process.
+        if (*operation.index < kMaxBidderProcesses &&
+            original_size > kMaxBidderProcesses) {
+          data[kMaxBidderProcesses - 1].run_loop->Run();
+          EXPECT_TRUE(
+              data[kMaxBidderProcesses - 1].process_handle->GetService());
+        }
+        break;
+      }
+
+      case Operation::Op::kDestroyHandleAndNextInQueue: {
+        ASSERT_GT(data.size(), *operation.index);
+        ASSERT_GT(data.size(), kMaxBidderProcesses + 1);
+
+        data.erase(data.begin() + *operation.index);
+        data.erase(data.begin() + kMaxBidderProcesses);
+        data[kMaxBidderProcesses - 1].run_loop->Run();
+        EXPECT_TRUE(data[kMaxBidderProcesses - 1].process_handle->GetService());
+        break;
+      }
+    }
+
+    EXPECT_EQ(operation.expected_total_handles, data.size());
+
+    // The first kMaxBidderProcesses ProcessHandles should all have
+    // assigned processes, which should all be distinct.
+    for (size_t i = 0; i < data.size() && i < kMaxBidderProcesses; ++i) {
+      EXPECT_TRUE(data[i].process_handle->GetService());
+      for (size_t j = 0; j < i; ++j) {
+        EXPECT_NE(data[i].process_handle->GetService(),
+                  data[j].process_handle->GetService());
+      }
+    }
+
+    // Make sure all pending tasks have been run.
+    base::RunLoop().RunUntilIdle();
+
+    // All other requests should not have been assigned processes yet.
+    for (size_t i = kMaxBidderProcesses; i < data.size(); ++i) {
+      EXPECT_FALSE(data[i].run_loop->AnyQuitCalled());
+      EXPECT_FALSE(data[i].process_handle->GetService());
+    }
+  }
+}
+
+// Check the bidder process sharing logic - specifically, that bidder requests
+// share processes when origins match, and that bidders sharing processes don't
+// count towards the process limit.
+TEST_F(AuctionProcessManagerTest, BidderProcessSharing) {
   // This test assumes kMaxBidderProcesses is greater than 1.
-  DCHECK_GT(AuctionProcessManager::kMaxBidderProcesses, 1u);
+  DCHECK_GT(kMaxBidderProcesses, 1u);
 
   // Make 2*kMaxBidderProcesses bidder worklet requests for each of
   // kMaxBidderProcesses different origins. All requests should succeed
   // immediately.
   std::list<std::unique_ptr<AuctionProcessManager::ProcessHandle>>
-      bidders[AuctionProcessManager::kMaxBidderProcesses];
-  for (size_t origin_index = 0;
-       origin_index < AuctionProcessManager::kMaxBidderProcesses;
+      bidders[kMaxBidderProcesses];
+  for (size_t origin_index = 0; origin_index < kMaxBidderProcesses;
        ++origin_index) {
     url::Origin origin = url::Origin::Create(
         GURL(base::StringPrintf("https://%zu.test", origin_index)));
-    for (size_t i = 0; i < 2 * AuctionProcessManager::kMaxBidderProcesses;
-         ++i) {
+    for (size_t i = 0; i < 2 * kMaxBidderProcesses; ++i) {
       bidders[origin_index].emplace_back(GetServiceExpectSuccess(
           AuctionProcessManager::WorkletType::kBidder, origin));
       // All requests for the same origin share a process.
@@ -285,8 +601,7 @@ TEST_F(AuctionProcessManagerTest, BidderLimit) {
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(run_loop_delayed_a1.AnyQuitCalled());
   EXPECT_FALSE(bidder_delayed_a1->GetService());
-  EXPECT_EQ(AuctionProcessManager::kMaxBidderProcesses,
-            auction_process_manager_.NumReceivers());
+  EXPECT_EQ(kMaxBidderProcesses, auction_process_manager_.NumReceivers());
 
   base::RunLoop run_loop_delayed_a2;
   auto bidder_delayed_a2 =
@@ -297,8 +612,7 @@ TEST_F(AuctionProcessManagerTest, BidderLimit) {
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(run_loop_delayed_a2.AnyQuitCalled());
   EXPECT_FALSE(bidder_delayed_a2->GetService());
-  EXPECT_EQ(AuctionProcessManager::kMaxBidderProcesses,
-            auction_process_manager_.NumReceivers());
+  EXPECT_EQ(kMaxBidderProcesses, auction_process_manager_.NumReceivers());
 
   base::RunLoop run_loop_delayed_b;
   auto bidder_delayed_b =
@@ -309,8 +623,7 @@ TEST_F(AuctionProcessManagerTest, BidderLimit) {
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(run_loop_delayed_b.AnyQuitCalled());
   EXPECT_FALSE(bidder_delayed_b->GetService());
-  EXPECT_EQ(AuctionProcessManager::kMaxBidderProcesses,
-            auction_process_manager_.NumReceivers());
+  EXPECT_EQ(kMaxBidderProcesses, auction_process_manager_.NumReceivers());
 
   // Release bidders for first origin one at a time, until only one is left. The
   // pending requests for kOriginA and kOriginB should remain stalled.
@@ -323,8 +636,7 @@ TEST_F(AuctionProcessManagerTest, BidderLimit) {
     EXPECT_FALSE(bidder_delayed_a2->GetService());
     EXPECT_FALSE(run_loop_delayed_b.AnyQuitCalled());
     EXPECT_FALSE(bidder_delayed_b->GetService());
-    EXPECT_EQ(AuctionProcessManager::kMaxBidderProcesses,
-              auction_process_manager_.NumReceivers());
+    EXPECT_EQ(kMaxBidderProcesses, auction_process_manager_.NumReceivers());
   }
 
   // Remove the final bidder for the first origin. It should queue a callback to
@@ -348,8 +660,7 @@ TEST_F(AuctionProcessManagerTest, BidderLimit) {
   EXPECT_EQ(bidder_delayed_a1->GetService(), bidder_delayed_a2->GetService());
   EXPECT_FALSE(run_loop_delayed_b.AnyQuitCalled());
   EXPECT_FALSE(bidder_delayed_b->GetService());
-  EXPECT_EQ(AuctionProcessManager::kMaxBidderProcesses,
-            auction_process_manager_.NumReceivers());
+  EXPECT_EQ(kMaxBidderProcesses, auction_process_manager_.NumReceivers());
 
   // Freeing one of the two kOriginA bidders should have no effect.
   bidder_delayed_a2.reset();
@@ -365,14 +676,13 @@ TEST_F(AuctionProcessManagerTest, BidderLimit) {
 
   run_loop_delayed_b.Run();
   EXPECT_TRUE(bidder_delayed_b->GetService());
-  EXPECT_EQ(AuctionProcessManager::kMaxBidderProcesses,
-            auction_process_manager_.NumReceivers());
+  EXPECT_EQ(kMaxBidderProcesses, auction_process_manager_.NumReceivers());
 }
 
 TEST_F(AuctionProcessManagerTest, DestroyHandlesWithPendingSellerRequests) {
   // Make kMaxActiveSellerWorklets seller worklet requests.
   std::list<std::unique_ptr<AuctionProcessManager::ProcessHandle>> sellers;
-  for (size_t i = 0; i < AuctionProcessManager::kMaxActiveSellerWorklets; ++i) {
+  for (size_t i = 0; i < kMaxActiveSellerWorklets; ++i) {
     sellers.emplace_back(GetServiceExpectSuccess(
         AuctionProcessManager::WorkletType::kSeller, kOriginA));
     EXPECT_EQ(sellers.back()->GetService(), sellers.front()->GetService());
@@ -424,7 +734,7 @@ TEST_F(AuctionProcessManagerTest, DestroyHandlesWithPendingBidderRequests) {
   // Make kMaxBidderProcesses requests for bidder worklets with different
   // origins.
   std::list<std::unique_ptr<AuctionProcessManager::ProcessHandle>> bidders;
-  for (size_t i = 0; i < AuctionProcessManager::kMaxBidderProcesses; ++i) {
+  for (size_t i = 0; i < kMaxBidderProcesses; ++i) {
     url::Origin origin =
         url::Origin::Create(GURL(base::StringPrintf("https://%zu.test", i)));
     bidders.emplace_back(GetServiceExpectSuccess(

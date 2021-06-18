@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_INTEREST_GROUP_AUCTION_PROCESS_MANAGER_H_
 #define CONTENT_BROWSER_INTEREST_GROUP_AUCTION_PROCESS_MANAGER_H_
 
+#include <list>
 #include <map>
 #include <set>
 #include <string>
@@ -100,6 +101,10 @@ class CONTENT_EXPORT AuctionProcessManager {
     AuctionProcessManager* manager_ = nullptr;
     scoped_refptr<WorkletProcess> worklet_process_;
 
+    // Entry in the corresponding PendingRequestQueue if the handle has yet to
+    // be assigned a process.
+    std::list<ProcessHandle*>::iterator queued_request_;
+
     base::WeakPtrFactory<ProcessHandle> weak_ptr_factory_{this};
   };
 
@@ -131,11 +136,11 @@ class CONTENT_EXPORT AuctionProcessManager {
                              ProcessHandle* process_handle,
                              base::OnceClosure callback) WARN_UNUSED_RESULT;
 
-  size_t GetPendingSellerRequestsForTesting() const {
-    return pending_seller_requests_.size();
-  }
   size_t GetPendingBidderRequestsForTesting() const {
-    return pending_bidder_requests_.size();
+    return pending_bidder_request_queue_.size();
+  }
+  size_t GetPendingSellerRequestsForTesting() const {
+    return pending_seller_request_queue_.size();
   }
 
  protected:
@@ -152,9 +157,22 @@ class CONTENT_EXPORT AuctionProcessManager {
 
  private:
   // Contains ProcessHandles which have not yet been assigned processes.
+  // Processes requested the earliest are at the start of the list, so processes
+  // can be assigned in FIFO order as process slots become available. A list is
+  // used to allow removal of cancelled requests, or requests that are assigned
+  // processes out of order (which happens in the case of bidder worklets when a
+  // bidder further up the queue with a matching owner receives a process).
   // ProcessHandles are owned by consumers, and destroyed when they no longer
   // need to keep their processes alive.
-  using PendingRequestMap = std::map<url::Origin, std::set<ProcessHandle*>>;
+  using PendingRequestQueue = std::list<ProcessHandle*>;
+
+  // Contains ProcessHandles for bidder requests which have not yet been
+  // assigned processes, indexed by origin. When the first bidder in the
+  // PendingRequestQueue is assigned a process, all bidders that can use the
+  // same process are assigned the same process. This map is used to manage that
+  // without searching through the entire queue.
+  using PendingBidderRequestMap =
+      std::map<url::Origin, std::set<ProcessHandle*>>;
 
   // Contains running processes. Worklet processes are refcounted, and
   // automatically remove themselves from this list when destroyed.
@@ -182,11 +200,13 @@ class CONTENT_EXPORT AuctionProcessManager {
   void OnBidderProcessDestroyed();
 
   // Helpers to access the maps of the corresponding worklet type.
-  PendingRequestMap* PendingRequests(WorkletType worklet_type);
+  PendingRequestQueue* GetPendingRequestQueue(WorkletType worklet_type);
   ProcessMap* Processes(WorkletType worklet_type);
 
-  PendingRequestMap pending_bidder_requests_;
-  PendingRequestMap pending_seller_requests_;
+  PendingRequestQueue pending_bidder_request_queue_;
+  PendingRequestQueue pending_seller_request_queue_;
+
+  PendingBidderRequestMap pending_bidder_requests_;
 
   ProcessMap bidder_processes_;
   ProcessMap seller_processes_;
