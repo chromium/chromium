@@ -5,15 +5,13 @@
 package org.chromium.components.paintpreview.player.accessibility;
 
 import android.graphics.Rect;
-import android.os.Handler;
 import android.util.Size;
 import android.view.View;
+import android.view.ViewStructure;
 
 import org.chromium.components.paintpreview.player.frame.PlayerFrameCoordinator;
 import org.chromium.components.paintpreview.player.frame.PlayerFrameViewport;
 import org.chromium.content.browser.accessibility.AccessibilityDelegate;
-import org.chromium.content_public.browser.AccessibilitySnapshotCallback;
-import org.chromium.content_public.browser.AccessibilitySnapshotNode;
 import org.chromium.content_public.browser.WebContents;
 
 /**
@@ -59,13 +57,10 @@ public class PlayerAccessibilityDelegate implements AccessibilityDelegate {
     }
 
     @Override
-    public void requestAccessibilitySnapshot(AccessibilitySnapshotCallback callback) {
-        new Handler().post(() -> {
-            AccessibilitySnapshotNode rootNode =
-                    PlayerAccessibilitySnapshotHelper.getJavaAccessibilitySnapshotNode(
-                            mNativeAxTree);
-            callback.onAccessibilitySnapshot(rootNode);
-        });
+    public void requestAccessibilitySnapshot(ViewStructure root, Runnable doneCallback) {
+        // Not implemented. This is used to support Assistant reading the screen,
+        // which isn't important to support during the short window of time when the
+        // Player is active.
     }
 
     @Override

@@ -6,7 +6,6 @@ package org.chromium.content.browser.accessibility;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
-import android.app.assist.AssistStructure.ViewNode;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -48,8 +47,6 @@ import org.chromium.content.browser.accessibility.captioning.CaptioningControlle
 import org.chromium.content.browser.input.ImeAdapterImpl;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
 import org.chromium.content.browser.webcontents.WebContentsImpl.UserDataFactory;
-import org.chromium.content_public.browser.AccessibilitySnapshotCallback;
-import org.chromium.content_public.browser.AccessibilitySnapshotNode;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.ui.base.WindowAndroid;
@@ -642,77 +639,21 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
         }
         structure.setChildCount(1);
         final ViewStructure viewRoot = structure.asyncNewChild(0);
-        mDelegate.requestAccessibilitySnapshot(new AccessibilitySnapshotCallback() {
+        viewRoot.setClassName("");
+        viewRoot.setHint(mProductVersion);
+
+        WebContents webContents = mDelegate.getWebContents();
+        if (webContents != null && !webContents.isDestroyed()) {
+            Bundle extras = viewRoot.getExtras();
+            extras.putCharSequence("url", webContents.getVisibleUrl().getSpec());
+        }
+
+        mDelegate.requestAccessibilitySnapshot(viewRoot, new Runnable() {
             @Override
-            public void onAccessibilitySnapshot(AccessibilitySnapshotNode root) {
-                viewRoot.setClassName("");
-                viewRoot.setHint(mProductVersion);
-
-                WebContents webContents = mDelegate.getWebContents();
-                if (webContents != null && !webContents.isDestroyed()) {
-                    Bundle extras = viewRoot.getExtras();
-                    extras.putCharSequence("url", webContents.getVisibleUrl().getSpec());
-                }
-
-                if (root == null) {
-                    viewRoot.asyncCommit();
-                    return;
-                }
-                createVirtualStructure(viewRoot, root, ignoreScrollOffset);
+            public void run() {
+                viewRoot.asyncCommit();
             }
         });
-    }
-
-    // When creating the View structure, the left and top are relative to the parent node.
-    @TargetApi(Build.VERSION_CODES.M)
-    protected void createVirtualStructure(ViewStructure viewNode, AccessibilitySnapshotNode node,
-            final boolean ignoreScrollOffset) {
-        viewNode.setClassName(node.className);
-        if (node.hasSelection) {
-            viewNode.setText(node.text, node.startSelection, node.endSelection);
-        } else {
-            viewNode.setText(node.text);
-        }
-        AccessibilityCoordinates coordinates = mDelegate.getAccessibilityCoordinates();
-        int left = (int) coordinates.fromLocalCssToPix(node.x);
-        int top = (int) coordinates.fromLocalCssToPix(node.y);
-        int width = (int) coordinates.fromLocalCssToPix(node.width);
-        int height = (int) coordinates.fromLocalCssToPix(node.height);
-
-        Rect boundsInParent = new Rect(left, top, left + width, top + height);
-        if (node.isRootNode) {
-            // Offset of the web content relative to the View.
-            boundsInParent.offset(0, (int) coordinates.getContentOffsetYPix());
-            if (!ignoreScrollOffset) {
-                boundsInParent.offset(
-                        -(int) coordinates.getScrollXPix(), -(int) coordinates.getScrollYPix());
-            }
-        }
-
-        viewNode.setDimens(boundsInParent.left, boundsInParent.top, 0, 0, width, height);
-        viewNode.setChildCount(node.children.size());
-        if (node.hasStyle) {
-            // The text size should be in physical pixels, not CSS pixels.
-            float textSize = coordinates.fromLocalCssToPix(node.textSize);
-
-            int style = (node.bold ? ViewNode.TEXT_STYLE_BOLD : 0)
-                    | (node.italic ? ViewNode.TEXT_STYLE_ITALIC : 0)
-                    | (node.underline ? ViewNode.TEXT_STYLE_UNDERLINE : 0)
-                    | (node.lineThrough ? ViewNode.TEXT_STYLE_STRIKE_THRU : 0);
-            viewNode.setTextStyle(textSize, node.color, node.bgcolor, style);
-        }
-
-        // Note: OWebContentsAccessibility.createVirtualStructure also stores this in
-        // HtmlInfo, but putting it in the extras bundle is useful for earlier API
-        // versions, and for scenarios where HtmlInfo is stripped.
-        Bundle extras = viewNode.getExtras();
-        extras.putCharSequence("htmlTag", node.htmlTag);
-        for (String[] attr : node.htmlAttributes) extras.putCharSequence(attr[0], attr[1]);
-
-        for (int i = 0; i < node.children.size(); i++) {
-            createVirtualStructure(viewNode.asyncNewChild(i), node.children.get(i), true);
-        }
-        viewNode.asyncCommit();
     }
 
     @Override

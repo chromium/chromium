@@ -187,7 +187,8 @@ class CONTENT_EXPORT WebContentsAndroid {
 
   void RequestAccessibilitySnapshot(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
+      const base::android::JavaParamRef<jobject>& view_structure_root,
+      const base::android::JavaParamRef<jobject>& view_structure_builder,
       const base::android::JavaParamRef<jobject>& callback);
 
   base::android::ScopedJavaLocalRef<jstring> GetEncoding(
@@ -300,7 +301,9 @@ class CONTENT_EXPORT WebContentsAndroid {
                                 int end_adjust);
   // Walks over the AXTreeUpdate and creates a light weight snapshot.
   void AXTreeSnapshotCallback(
-      const base::android::ScopedJavaGlobalRef<jobject>& callback,
+      const base::android::JavaRef<jobject>& view_structure_root,
+      const base::android::JavaRef<jobject>& view_structure_builder,
+      const base::android::JavaRef<jobject>& callback,
       const ui::AXTreeUpdate& result);
 
   WebContentsImpl* web_contents_;

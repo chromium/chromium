@@ -412,14 +412,6 @@ public interface WebContents extends Parcelable {
     void setSmartClipResultHandler(final Handler smartClipHandler);
 
     /**
-     * Requests a snapshop of accessibility tree. The result is provided asynchronously
-     * using the callback
-     * @param callback The callback to be called when the snapshot is ready. The callback
-     *                 cannot be null.
-     */
-    void requestAccessibilitySnapshot(AccessibilitySnapshotCallback callback);
-
-    /**
      * Returns {@link EventForwarder} which is used to forward input/view events
      * to native content layer.
      */

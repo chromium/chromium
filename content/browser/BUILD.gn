@@ -2699,6 +2699,8 @@ source_set("browser") {
       "sms/sms_provider_gms.h",
       "speech/tts_environment_android_impl.cc",
       "speech/tts_environment_android_impl.h",
+      "web_contents/view_structure_builder_android.cc",
+      "web_contents/view_structure_builder_android.h",
       "web_contents/web_contents_android.cc",
       "web_contents/web_contents_android.h",
       "web_contents/web_contents_view_android.cc",

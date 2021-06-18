@@ -6,10 +6,10 @@ package org.chromium.content.browser.accessibility;
 
 import android.graphics.Rect;
 import android.view.View;
+import android.view.ViewStructure;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.content_public.browser.AccessibilitySnapshotCallback;
 import org.chromium.content_public.browser.WebContents;
 
 /**
@@ -40,8 +40,10 @@ public interface AccessibilityDelegate {
 
     /**
      * Requests an accessibility snapshot of the content that is currently being shown.
+     * The ViewStructure starting with |root| will be populated and then |doneCallback| will
+     * be called.
      */
-    void requestAccessibilitySnapshot(AccessibilitySnapshotCallback callback);
+    void requestAccessibilitySnapshot(ViewStructure root, Runnable doneCallback);
 
     /**
      * @return Native pointer to the accessibility tree snapshot.

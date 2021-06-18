@@ -15,6 +15,7 @@ import android.os.Parcel;
 import android.os.ParcelUuid;
 import android.os.Parcelable;
 import android.view.Surface;
+import android.view.ViewStructure;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -33,12 +34,11 @@ import org.chromium.content.browser.RenderWidgetHostViewImpl;
 import org.chromium.content.browser.ViewEventSinkImpl;
 import org.chromium.content.browser.WindowEventObserver;
 import org.chromium.content.browser.WindowEventObserverManager;
+import org.chromium.content.browser.accessibility.ViewStructureBuilder;
 import org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl;
 import org.chromium.content.browser.framehost.RenderFrameHostDelegate;
 import org.chromium.content.browser.framehost.RenderFrameHostImpl;
 import org.chromium.content.browser.selection.SelectionPopupControllerImpl;
-import org.chromium.content_public.browser.AccessibilitySnapshotCallback;
-import org.chromium.content_public.browser.AccessibilitySnapshotNode;
 import org.chromium.content_public.browser.ChildProcessImportance;
 import org.chromium.content_public.browser.GlobalFrameRoutingId;
 import org.chromium.content_public.browser.ImageDownloadCallback;
@@ -771,11 +771,18 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
         callback.onSmartClipDataExtracted(text, html, new Rect(left, top, right, bottom));
     }
 
-    @Override
-    public void requestAccessibilitySnapshot(AccessibilitySnapshotCallback callback) {
+    /**
+     * Requests a snapshop of accessibility tree. The result is provided asynchronously
+     * using the callback
+     * @param callback The callback to be called when the snapshot is ready. The callback
+     *                 cannot be null.
+     */
+    public void requestAccessibilitySnapshot(ViewStructure root, Runnable doneCallback) {
         checkNotDestroyed();
+        ViewStructureBuilder builder = ViewStructureBuilder.create(mRenderCoordinates);
+
         WebContentsImplJni.get().requestAccessibilitySnapshot(
-                mNativeWebContentsAndroid, WebContentsImpl.this, callback);
+                mNativeWebContentsAndroid, root, builder, doneCallback);
     }
 
     @VisibleForTesting
@@ -783,42 +790,6 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
         if (mObserverProxy != null) {
             mObserverProxy.renderProcessGone(wasOomProtected);
         }
-    }
-
-    // root node can be null if parsing fails.
-    @CalledByNative
-    private static void onAccessibilitySnapshot(AccessibilitySnapshotNode root,
-            AccessibilitySnapshotCallback callback) {
-        callback.onAccessibilitySnapshot(root);
-    }
-
-    @CalledByNative
-    private static void addAccessibilityNodeAsChild(AccessibilitySnapshotNode parent,
-            AccessibilitySnapshotNode child) {
-        parent.addChild(child);
-    }
-
-    @CalledByNative
-    private static AccessibilitySnapshotNode createAccessibilitySnapshotNode(int parentRelativeLeft,
-            int parentRelativeTop, int width, int height, boolean isRootNode, String text,
-            int color, int bgcolor, float size, boolean bold, boolean italic, boolean underline,
-            boolean lineThrough, String className, String htmlTag, String cssDisplay,
-            String[][] htmlAttributes) {
-        AccessibilitySnapshotNode node = new AccessibilitySnapshotNode(text, className);
-
-        // if size is smaller than 0, then style information does not exist.
-        if (size >= 0.0) {
-            node.setStyle(color, bgcolor, size, bold, italic, underline, lineThrough);
-        }
-        node.setLocationInfo(parentRelativeLeft, parentRelativeTop, width, height, isRootNode);
-        node.setHtmlInfo(htmlTag, cssDisplay, htmlAttributes);
-        return node;
-    }
-
-    @CalledByNative
-    private static void setAccessibilitySnapshotSelection(
-            AccessibilitySnapshotNode node, int start, int end) {
-        node.setSelection(start, end);
     }
 
     @Override
@@ -1147,8 +1118,9 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
         float getLoadProgress(long nativeWebContentsAndroid, WebContentsImpl caller);
         void requestSmartClipExtract(long nativeWebContentsAndroid, WebContentsImpl caller,
                 SmartClipCallback callback, int x, int y, int width, int height);
-        void requestAccessibilitySnapshot(long nativeWebContentsAndroid, WebContentsImpl caller,
-                AccessibilitySnapshotCallback callback);
+        void requestAccessibilitySnapshot(long nativeWebContentsAndroid,
+                ViewStructure viewStructureRoot, ViewStructureBuilder viewStructureBuilder,
+                Runnable doneCallback);
         void setOverscrollRefreshHandler(long nativeWebContentsAndroid, WebContentsImpl caller,
                 OverscrollRefreshHandler nativeOverscrollRefreshHandler);
         void setSpatialNavigationDisabled(
