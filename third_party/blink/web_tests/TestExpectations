@@ -2501,6 +2501,11 @@ crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-20
 crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-206.xht [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Mac10.13 ] external/wpt/css/css-lists/counter-reset-reversed-list-item.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-align/self-alignment/self-align-safe-unsafe-flex-002.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-align/self-alignment/self-align-safe-unsafe-flex-001.html [ Failure ]
+crbug.com/626703 [ Mac10.13 ] external/wpt/density-size-correction/image-set-003.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-align/self-alignment/self-align-safe-unsafe-flex-003.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-lists/counter-reset-reversed-not-list-item-start.html [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/css/css-lists/counter-reset-reversed-list-item.html [ Failure ]
 crbug.com/626703 [ Mac10.12 ] external/wpt/css/css-lists/counter-reset-reversed-list-item.html [ Failure ]

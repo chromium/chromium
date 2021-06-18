@@ -68446,6 +68446,86 @@
         {}
        ]
       ]
+     },
+     "self-alignment": {
+      "self-align-safe-unsafe-flex-001.html": [
+       "bb933b99d722d462b2b824d86fb15e825a598f5a",
+       [
+        null,
+        [
+         [
+          "/css/css-align/self-alignment/self-align-safe-unsafe-flex-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "self-align-safe-unsafe-flex-002.html": [
+       "c7dc1c1aea4c0cd31158e0c24ee060425db32fe3",
+       [
+        null,
+        [
+         [
+          "/css/css-align/self-alignment/self-align-safe-unsafe-flex-002-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "self-align-safe-unsafe-flex-003.html": [
+       "41829f7729d8e57ec371568644b4712fc8d74c4b",
+       [
+        null,
+        [
+         [
+          "/css/css-align/self-alignment/self-align-safe-unsafe-flex-003-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "self-align-safe-unsafe-grid-001.html": [
+       "0c509346278db8c6d0251d62a33679c0a8c8cb96",
+       [
+        null,
+        [
+         [
+          "/css/css-align/self-alignment/self-align-safe-unsafe-grid-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "self-align-safe-unsafe-grid-002.html": [
+       "ce6688ed1ed6882ba2c9091f1accdbdbf134a0e5",
+       [
+        null,
+        [
+         [
+          "/css/css-align/self-alignment/self-align-safe-unsafe-grid-002-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "self-align-safe-unsafe-grid-003.html": [
+       "9695f0a2f15b2f08babd82326ca410af2d6c829e",
+       [
+        null,
+        [
+         [
+          "/css/css-align/self-alignment/self-align-safe-unsafe-grid-003-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ]
      }
     },
     "css-animations": {
@@ -88882,7 +88962,7 @@
       ]
      ],
      "display-contents-dynamic-fieldset-legend-001.html": [
-      "ed787594f5d15dd024710f444056cbb099fe8cdc",
+      "a17828bd7a8d242ee3f95700cc0d0a2b88f19235",
       [
        null,
        [
@@ -195508,6 +195588,19 @@
          {}
         ]
        ],
+       "legend-in-slot.html": [
+        "c4ab5a3ea0e6d68d4019f786d6e4559f8f31728c",
+        [
+         null,
+         [
+          [
+           "/html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/legend-in-slot-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
        "legend-list-item-numbering.html": [
         "ba58d353a01f2b284e5c296455e6b54b6f705d0b",
         [
@@ -220433,6 +220526,30 @@
       "place-self-shorthand-006-expected.txt": [
        "321e2557aa2fb0af0d6651d287b7bda8372dfbe0",
        []
+      ],
+      "self-align-safe-unsafe-flex-001-ref.html": [
+       "69d7f347087d7a298090a76762714268aa11930a",
+       []
+      ],
+      "self-align-safe-unsafe-flex-002-ref.html": [
+       "92893d25da4e295b2073f62b6041ed2a215ca948",
+       []
+      ],
+      "self-align-safe-unsafe-flex-003-ref.html": [
+       "279ec4bb0bff78a4abee9873f80c90cc5e96e169",
+       []
+      ],
+      "self-align-safe-unsafe-grid-001-ref.html": [
+       "f644611795c729d5a507b600cc647b67e2bb44a6",
+       []
+      ],
+      "self-align-safe-unsafe-grid-002-ref.html": [
+       "a86c7e4ae09dd34e456469ccfa7ff12418b1445e",
+       []
+      ],
+      "self-align-safe-unsafe-grid-003-ref.html": [
+       "0d0b17977d291bcc98874f34eb5364e819050dcc",
+       []
       ]
      }
     },
@@ -224686,7 +224803,7 @@
       []
      ],
      "display-contents-dynamic-fieldset-legend-001-ref.html": [
-      "ad698b47db0e814352c86389de586b976de59990",
+      "a3998524f917ff83c22115bb5b53e8a0c42e7140",
       []
      ],
      "display-contents-dynamic-generated-content-fieldset-001-ref.html": [
@@ -270903,6 +271020,10 @@
         "403e37a0072992f19c19487291a9f6950d92ee67",
         []
        ],
+       "legend-in-slot-ref.html": [
+        "ee64e8176297bfef4ff20b634b33b71f43511c35",
+        []
+       ],
        "legend-list-item-numbering-ref.html": [
         "8023c5255ff2db03f315246ecb7cfdea829f08cc",
         []
@@ -290401,11 +290522,11 @@
      []
     ],
     "idlharness.https.any-expected.txt": [
-     "217090bf7611a2a28f51f814e823e64200a56886",
+     "f9a73581508fc660fe6479418d56340e8f86d648",
      []
     ],
     "idlharness.https.any.worker-expected.txt": [
-     "ee35c756445d64562a08352672abf8365a5d272c",
+     "8b9652d48110440e36aebf1450f848179080a4c2",
      []
     ]
    },
@@ -291239,6 +291360,10 @@
     "resources": {
      "urlpatterntestdata.json": [
       "019bf4f9170abd0818b1b5e86396264691bc9211",
+      []
+     ],
+     "urlpatterntests.js": [
+      "142ee053805b63090f253be9409c2fb3cc1ab7fe",
       []
      ]
     }
@@ -339765,8 +339890,15 @@
        {}
       ]
      ],
-     "abspos-in-multicol.html": [
+     "abspos-in-multicol-001.html": [
       "ee111487475c9dafa2eca62a95ffe4a226e2f93c",
+      [
+       null,
+       {}
+      ]
+     ],
+     "abspos-in-multicol-002.html": [
+      "6c254d437ad1600e26daccd78f141c372bb6603d",
       [
        null,
        {}
@@ -408106,7 +408238,7 @@
        ]
       ],
       "reporting-navigation.tentative.https.html": [
-       "1742d80da27012e6672685cc4879f03e505c31d3",
+       "185b576a9ad6c823b5f61cf6bd68ae6a72e18344",
        [
         null,
         {
@@ -412078,7 +412210,7 @@
         ]
        ],
        "fieldset-content-before-legend.html": [
-        "4abd9ce533d7740e906a83a0e8cbc67c8613bf52",
+        "5bd1fbc161a2ff0c749b593ee081a5906987e22f",
         [
          null,
          {}
@@ -412113,7 +412245,7 @@
         ]
        ],
        "fieldset-generated-content.html": [
-        "a4e7a490c770613bcc1d6170b64291c75c3cf074",
+        "25a36bc42cf8e1626dc91ea281cbc0bd00051c1c",
         [
          null,
          {}
@@ -474012,8 +474144,71 @@
     ]
    },
    "urlpattern": {
+    "urlpattern.any.js": [
+     "7d47d22609bf8eb14386b0363e36b86f77b2780d",
+     [
+      "urlpattern/urlpattern.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/urlpatterntests.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "urlpattern/urlpattern.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/urlpatterntests.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "urlpattern/urlpattern.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/urlpatterntests.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "urlpattern/urlpattern.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/urlpatterntests.js"
+        ]
+       ]
+      }
+     ]
+    ],
     "urlpattern.https.any.js": [
-     "1fa535a846fc568518e63a0c0f427eeb1c8c3762",
+     "7d47d22609bf8eb14386b0363e36b86f77b2780d",
      [
       "urlpattern/urlpattern.https.any.html",
       {
@@ -474021,6 +474216,10 @@
         [
          "global",
          "window,worker"
+        ],
+        [
+         "script",
+         "resources/urlpatterntests.js"
         ]
        ]
       }
@@ -474032,6 +474231,10 @@
         [
          "global",
          "window,worker"
+        ],
+        [
+         "script",
+         "resources/urlpatterntests.js"
         ]
        ]
       }
@@ -474043,6 +474246,10 @@
         [
          "global",
          "window,worker"
+        ],
+        [
+         "script",
+         "resources/urlpatterntests.js"
         ]
        ]
       }
@@ -474054,6 +474261,10 @@
         [
          "global",
          "window,worker"
+        ],
+        [
+         "script",
+         "resources/urlpatterntests.js"
         ]
        ]
       }
@@ -483161,6 +483372,31 @@
         [
          "variant",
          "?h264_annexb"
+        ]
+       ]
+      }
+     ]
+    ],
+    "videoFrame-alpha.any.js": [
+     "93e7cc9d5d71c8b91fe8f8cdfe3f4592193bf78a",
+     [
+      "webcodecs/videoFrame-alpha.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ]
+       ]
+      }
+     ],
+     [
+      "webcodecs/videoFrame-alpha.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
         ]
        ]
       }
