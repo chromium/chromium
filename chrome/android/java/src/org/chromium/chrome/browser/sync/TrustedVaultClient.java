@@ -64,10 +64,7 @@ public class TrustedVaultClient {
          * @return a promise which indicates completion and representing whether recoverability is
          *         actually degraded.
          */
-        // TODO(crbug.com/1100279): Switch to non-default method once all implementations are ready.
-        default Promise<Boolean> getIsRecoverabilityDegraded(CoreAccountInfo accountInfo) {
-            return Promise.fulfilled(false);
-        }
+        Promise<Boolean> getIsRecoverabilityDegraded(CoreAccountInfo accountInfo);
 
         /**
          * Gets a PendingIntent that can be used to display a UI that allows the user to resolve a
@@ -77,11 +74,7 @@ public class TrustedVaultClient {
          * @return a promise for a PendingIntent object. The promise will be rejected if no
          *         user action is actually required.
          */
-        // TODO(crbug.com/1100279): Switch to non-default method once all implementations are ready.
-        default Promise<PendingIntent> createRecoverabilityDegradedIntent(
-                CoreAccountInfo accountInfo) {
-            return Promise.rejected();
-        }
+        Promise<PendingIntent> createRecoverabilityDegradedIntent(CoreAccountInfo accountInfo);
 
         /**
          * Gets a PendingIntent that can be used to display a UI that allows the user to opt into
@@ -90,10 +83,7 @@ public class TrustedVaultClient {
          * @param accountInfo Account representing the user.
          * @return a promise for a PendingIntent object.
          */
-        // TODO(crbug.com/1100279): Switch to non-default method once all implementations are ready.
-        default Promise<PendingIntent> createOptInIntent(CoreAccountInfo accountInfo) {
-            return Promise.rejected();
-        }
+        Promise<PendingIntent> createOptInIntent(CoreAccountInfo accountInfo);
     }
 
     /**
@@ -113,6 +103,22 @@ public class TrustedVaultClient {
         @Override
         public Promise<Boolean> markKeysAsStale(CoreAccountInfo accountInfo) {
             return Promise.fulfilled(false);
+        }
+
+        @Override
+        public Promise<Boolean> getIsRecoverabilityDegraded(CoreAccountInfo accountInfo) {
+            return Promise.fulfilled(false);
+        }
+
+        @Override
+        public Promise<PendingIntent> createRecoverabilityDegradedIntent(
+                CoreAccountInfo accountInfo) {
+            return Promise.rejected();
+        }
+
+        @Override
+        public Promise<PendingIntent> createOptInIntent(CoreAccountInfo accountInfo) {
+            return Promise.rejected();
         }
     };
 
