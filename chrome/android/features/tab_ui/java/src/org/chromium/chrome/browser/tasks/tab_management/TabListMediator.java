@@ -719,7 +719,7 @@ class TabListMediator {
         // Right now we need to update layout only if there is a price welcome message card in tab
         // switcher.
         if (mMode == TabListMode.GRID && mUiType != UiType.SELECTABLE
-                && PriceTrackingUtilities.isPriceTrackingEnabled()) {
+                && TabUiFeatureUtilities.isPriceTrackingEnabled()) {
             mListObserver = new ListObserver<Void>() {
                 @Override
                 public void onItemRangeInserted(ListObservable source, int index, int count) {

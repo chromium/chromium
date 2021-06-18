@@ -74,7 +74,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabAssociatedApp;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.tab_management.PriceTrackingUtilities;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.toolbar.ToolbarButtonInProductHelpController;
 import org.chromium.chrome.browser.toolbar.ToolbarIntentMetadata;
@@ -551,7 +550,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     }
 
     private void initCommerceSubscriptionsService() {
-        if (!PriceTrackingUtilities.ENABLE_PRICE_NOTIFICATION.getValue()) {
+        if (!TabUiFeatureUtilities.ENABLE_PRICE_NOTIFICATION.getValue()) {
             return;
         }
 
