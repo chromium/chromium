@@ -7521,6 +7521,22 @@
             ]
         }
     ],
+    "SiteIsolationForCOOPAndOAuth": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SiteIsolationForCrossOriginOpenerPolicy",
+                        "SiteIsolationForOAuthSites"
+                    ]
+                }
+            ]
+        }
+    ],
     "SmartDimAutoMLModel": [
         {
             "platforms": [
