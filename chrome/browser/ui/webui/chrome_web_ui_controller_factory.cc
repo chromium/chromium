@@ -161,6 +161,7 @@
 #include "ash/content/shortcut_customization_ui/shortcut_customization_app_ui.h"
 #include "ash/content/shortcut_customization_ui/url_constants.h"
 #include "base/system/sys_info.h"
+#include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service_factory.h"
@@ -515,7 +516,8 @@ WebUIController* NewWebUI<chromeos::ConnectivityDiagnosticsUI>(
       /* SendFeedbackReportCallback */
       base::BindRepeating(
           &chrome::ShowFeedbackDialogForWebUI,
-          chrome::WebUIFeedbackSource::kConnectivityDiagnostics));
+          chrome::WebUIFeedbackSource::kConnectivityDiagnostics),
+      /*show_feedback_button=*/!chrome::IsRunningInAppMode());
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

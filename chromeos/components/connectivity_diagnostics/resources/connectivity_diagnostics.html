@@ -53,8 +53,10 @@
     <cr-button on-click="onRunAllRoutinesClick_">
       [[i18n('rerunRoutinesBtn')]]
     </cr-button>
-    <cr-button on-click="onSendFeedbackClick_">
-      [[i18n('sendFeedbackBtn')]]
-    </cr-button>
+    <template is="dom-if" if="[[showFeedbackBtn_]]">
+      <cr-button on-click="onSendFeedbackClick_">
+        [[i18n('sendFeedbackBtn')]]
+      </cr-button>
+    </template>
   </div>
 </div>

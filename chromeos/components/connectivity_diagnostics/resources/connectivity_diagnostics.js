@@ -8,6 +8,7 @@ import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import './strings.m.js';
 
 import {CrContainerShadowBehavior} from 'chrome://resources/cr_elements/cr_container_shadow_behavior.m.js';
+import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -23,8 +24,16 @@ Polymer({
 
   behaviors: [I18nBehavior, CrContainerShadowBehavior],
 
+  /**
+   * Boolean flag to show the feedback button in the app.
+   * @private
+   * @type {boolean}
+   */
+  showFeedbackBtn_: false,
+
   /** @override */
   attached() {
+    this.getShowFeedbackBtn_();
     this.runAllRoutines_();
   },
 
@@ -62,5 +71,12 @@ Polymer({
     chrome.send(
         'sendFeedbackReport',
         [this.getNetworkDiagnosticsElement_().getResults()]);
+  },
+
+  /** @private */
+  getShowFeedbackBtn_() {
+    sendWithPromise('getShowFeedbackButton').then(result => {
+      this.set('showFeedbackBtn_', result[0])
+    });
   }
 });

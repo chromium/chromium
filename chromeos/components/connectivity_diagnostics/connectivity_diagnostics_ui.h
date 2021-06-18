@@ -32,7 +32,8 @@ class ConnectivityDiagnosticsUI : public ui::MojoWebUIController {
       content::WebUI* web_ui,
       BindNetworkDiagnosticsServiceCallback bind_network_diagnostics_callback,
       BindNetworkHealthServiceCallback bind_network_health_callback,
-      SendFeedbackReportCallback send_feeback_report_callback);
+      SendFeedbackReportCallback send_feedback_report_callback,
+      bool show_feedback_button);
   ~ConnectivityDiagnosticsUI() override;
   ConnectivityDiagnosticsUI(const ConnectivityDiagnosticsUI&) = delete;
   ConnectivityDiagnosticsUI& operator=(const ConnectivityDiagnosticsUI&) =
@@ -50,15 +51,11 @@ class ConnectivityDiagnosticsUI : public ui::MojoWebUIController {
       mojo::PendingReceiver<network_health::mojom::NetworkHealthService>
           receiver);
 
-  void SendFeedbackReportRequest(const base::ListValue* value);
-
  private:
   const BindNetworkDiagnosticsServiceCallback
       bind_network_diagnostics_service_callback_;
 
   const BindNetworkHealthServiceCallback bind_network_health_service_callback_;
-
-  const SendFeedbackReportCallback send_feedback_report_callback_;
 
   base::WeakPtrFactory<ConnectivityDiagnosticsUI> weak_factory_{this};
 

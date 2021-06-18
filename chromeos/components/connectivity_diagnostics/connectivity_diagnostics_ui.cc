@@ -16,6 +16,7 @@
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "content/public/browser/web_ui_message_handler.h"
 #include "ui/resources/grit/webui_generated_resources.h"
 
 namespace chromeos {
@@ -37,24 +38,76 @@ void SetUpWebUIDataSource(content::WebUIDataSource* source,
 
 }  // namespace
 
+class ConnectivityDiagnosticsMessageHandler
+    : public content::WebUIMessageHandler {
+ public:
+  ConnectivityDiagnosticsMessageHandler(
+      ConnectivityDiagnosticsUI::SendFeedbackReportCallback
+          send_feedback_report_callback,
+      bool show_feedback_button)
+      : send_feedback_report_callback_(
+            std::move(send_feedback_report_callback)),
+        show_feedback_button_(show_feedback_button) {}
+  ~ConnectivityDiagnosticsMessageHandler() override = default;
+
+  void RegisterMessages() override {
+    web_ui()->RegisterMessageCallback(
+        "sendFeedbackReport",
+        base::BindRepeating(
+            &ConnectivityDiagnosticsMessageHandler::SendFeedbackReportRequest,
+            base::Unretained(this)));
+
+    web_ui()->RegisterMessageCallback(
+        "getShowFeedbackButton",
+        base::BindRepeating(
+            &ConnectivityDiagnosticsMessageHandler::GetShowFeedbackButton,
+            base::Unretained(this)));
+  }
+
+ private:
+  void SendFeedbackReportRequest(const base::ListValue* value) {
+    std::string extra_diagnostics;
+    auto values = value->GetList();
+    if (values.size() >= 1 && values[0].is_string())
+      extra_diagnostics = values[0].GetString();
+    send_feedback_report_callback_.Run(extra_diagnostics);
+  }
+
+  // TODO(crbug/1220965): Remove conditional feedback button when WebUI feedback
+  // is launched.
+  void GetShowFeedbackButton(const base::ListValue* value) {
+    auto args = value->GetList();
+    if (args.size() < 1 || !args[0].is_string())
+      return;
+
+    auto callback_id = args[0].GetString();
+    base::Value response(base::Value::Type::LIST);
+    response.Append(base::Value(show_feedback_button_));
+
+    AllowJavascript();
+    ResolveJavascriptCallback(base::Value(callback_id), response);
+  }
+
+  ConnectivityDiagnosticsUI::SendFeedbackReportCallback
+      send_feedback_report_callback_;
+
+  bool show_feedback_button_ = false;
+};
+
 ConnectivityDiagnosticsUI::ConnectivityDiagnosticsUI(
     content::WebUI* web_ui,
     BindNetworkDiagnosticsServiceCallback bind_network_diagnostics_callback,
     BindNetworkHealthServiceCallback bind_network_health_callback,
-    SendFeedbackReportCallback send_feedback_report_callback)
+    SendFeedbackReportCallback send_feedback_report_callback,
+    bool show_feedback_button)
     : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true),
       bind_network_diagnostics_service_callback_(
           std::move(bind_network_diagnostics_callback)),
       bind_network_health_service_callback_(
-          std::move(bind_network_health_callback)),
-      send_feedback_report_callback_(std::move(send_feedback_report_callback)) {
+          std::move(bind_network_health_callback)) {
   DCHECK(bind_network_diagnostics_service_callback_);
   DCHECK(bind_network_health_service_callback_);
-  DCHECK(send_feedback_report_callback_);
-  web_ui->RegisterMessageCallback(
-      "sendFeedbackReport",
-      base::BindRepeating(&ConnectivityDiagnosticsUI::SendFeedbackReportRequest,
-                          weak_factory_.GetWeakPtr()));
+  DCHECK(send_feedback_report_callback);
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(kChromeUIConnectivityDiagnosticsHost);
   source->OverrideContentSecurityPolicy(
@@ -64,6 +117,10 @@ ConnectivityDiagnosticsUI::ConnectivityDiagnosticsUI(
   source->DisableTrustedTypesCSP();
   source->UseStringsJs();
   source->EnableReplaceI18nInJS();
+
+  web_ui->AddMessageHandler(
+      std::make_unique<ConnectivityDiagnosticsMessageHandler>(
+          std::move(send_feedback_report_callback), show_feedback_button));
 
   const auto resources = base::make_span(kConnectivityDiagnosticsResources,
                                          kConnectivityDiagnosticsResourcesSize);
@@ -98,15 +155,6 @@ void ConnectivityDiagnosticsUI::BindInterface(
     mojo::PendingReceiver<network_health::mojom::NetworkHealthService>
         receiver) {
   bind_network_health_service_callback_.Run(std::move(receiver));
-}
-
-void ConnectivityDiagnosticsUI::SendFeedbackReportRequest(
-    const base::ListValue* value) {
-  std::string extra_diagnostics = "";
-  auto values = value->GetList();
-  if (values.size() && values[0].is_string())
-    extra_diagnostics = values[0].GetString();
-  send_feedback_report_callback_.Run(extra_diagnostics);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(ConnectivityDiagnosticsUI)
