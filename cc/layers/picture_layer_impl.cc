@@ -788,6 +788,8 @@ void PictureLayerImpl::UpdateRasterSource(
   bool could_have_tilings = CanHaveTilings();
   raster_source_.swap(raster_source);
 
+  raster_source_->set_debug_name(DebugName());
+
   // Register images from the new raster source, if the recording was updated.
   // TODO(khushalsagar): UMA the number of animated images in layer?
   if (recording_updated)

@@ -47,6 +47,8 @@ class CC_EXPORT PrioritizedTile {
 
   void AsValueInto(base::trace_event::TracedValue* value) const;
 
+  const PictureLayerTiling* source_tiling() const { return source_tiling_; }
+
  private:
   Tile* tile_ = nullptr;
   const PictureLayerTiling* source_tiling_ = nullptr;

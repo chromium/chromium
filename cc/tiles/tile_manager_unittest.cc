@@ -14,6 +14,7 @@
 #include "base/run_loop.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/trace_event/process_memory_dump.h"
 #include "cc/layers/recording_source.h"
 #include "cc/raster/raster_buffer.h"
 #include "cc/raster/raster_source.h"
@@ -833,6 +834,43 @@ TEST_F(TileManagerTilePriorityQueueTest, EvictionTilePriorityQueue) {
   EXPECT_EQ(16, distance_decreasing);
   EXPECT_EQ(tile_count, new_content_tiles.size());
   EXPECT_EQ(all_tiles, new_content_tiles);
+}
+
+// Verifies LayerDebugInfo::name ends up memory dumps.
+TEST_F(TileManagerTilePriorityQueueTest, DebugNameAppearsInMemoryDump) {
+  host_impl()->AdvanceToNextFrame(base::TimeDelta::FromMilliseconds(1));
+
+  gfx::Size layer_bounds(1000, 1000);
+
+  host_impl()->active_tree()->SetDeviceViewportRect(gfx::Rect(layer_bounds));
+
+  scoped_refptr<FakeRasterSource> pending_raster_source =
+      FakeRasterSource::CreateFilledWithText(layer_bounds);
+  SetupPendingTree(pending_raster_source);
+
+  auto* pending_child_layer = AddLayer<FakePictureLayerImpl>(
+      host_impl()->pending_tree(), pending_raster_source);
+  LayerDebugInfo debug_info;
+  debug_info.name = "debug-name";
+  pending_child_layer->UpdateDebugInfo(&debug_info);
+  pending_child_layer->SetDrawsContent(true);
+  CopyProperties(pending_layer(), pending_child_layer);
+
+  ActivateTree();
+  host_impl()->tile_manager()->PrepareTiles(host_impl()->global_tile_state());
+
+  base::trace_event::MemoryDumpArgs dump_args = {
+      base::trace_event::MemoryDumpLevelOfDetail::DETAILED};
+  base::trace_event::ProcessMemoryDump memory_dump(dump_args);
+  host_impl()->resource_pool()->OnMemoryDump(dump_args, &memory_dump);
+  bool found_debug_name = false;
+  for (const auto& allocator_map_pair : memory_dump.allocator_dumps()) {
+    if (allocator_map_pair.first.find("debug-name") != std::string::npos) {
+      found_debug_name = true;
+      break;
+    }
+  }
+  EXPECT_TRUE(found_debug_name);
 }
 
 TEST_F(TileManagerTilePriorityQueueTest,

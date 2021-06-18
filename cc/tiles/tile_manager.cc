@@ -1207,9 +1207,11 @@ scoped_refptr<TileTask> TileManager::CreateRasterTask(
   uint64_t resource_content_id = 0;
   gfx::Rect invalidated_rect = tile->invalidated_content_rect();
   if (UsePartialRaster(msaa_sample_count) && tile->invalidated_id()) {
+    const std::string& debug_name =
+        prioritized_tile.source_tiling()->raster_source()->debug_name();
     resource = resource_pool_->TryAcquireResourceForPartialRaster(
         tile->id(), tile->invalidated_content_rect(), tile->invalidated_id(),
-        &invalidated_rect, raster_color_space);
+        &invalidated_rect, raster_color_space, debug_name);
   }
 
   bool partial_tile_decode = false;
@@ -1218,8 +1220,10 @@ scoped_refptr<TileTask> TileManager::CreateRasterTask(
     DCHECK_EQ(format, resource.format());
     partial_tile_decode = true;
   } else {
-    resource = resource_pool_->AcquireResource(tile->desired_texture_size(),
-                                               format, raster_color_space);
+    const std::string& debug_name =
+        prioritized_tile.source_tiling()->raster_source()->debug_name();
+    resource = resource_pool_->AcquireResource(
+        tile->desired_texture_size(), format, raster_color_space, debug_name);
     DCHECK(resource);
   }
 

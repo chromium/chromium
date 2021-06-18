@@ -52,7 +52,7 @@ class PictureLayer;
 
 // For tracing and debugging. The info will be attached to this layer's tracing
 // output.
-struct LayerDebugInfo {
+struct CC_EXPORT LayerDebugInfo {
   LayerDebugInfo();
   LayerDebugInfo(const LayerDebugInfo&);
   ~LayerDebugInfo();

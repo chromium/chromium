@@ -1614,7 +1614,6 @@ void Window::OnFrameTokenChanged(uint32_t frame_token,
                                  base::TimeTicks activation_time) {}
 
 void Window::UpdateLayerName() {
-#if DCHECK_IS_ON()
   DCHECK(layer());
 
   std::string layer_name(GetName());
@@ -1625,7 +1624,6 @@ void Window::UpdateLayerName() {
     layer_name += " " + base::NumberToString(id_);
 
   layer()->SetName(layer_name);
-#endif
 }
 
 void Window::RegisterFrameSinkId() {

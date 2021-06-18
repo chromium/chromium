@@ -181,10 +181,12 @@ ResourcePool::PoolResource* ResourcePool::CreateResource(
 ResourcePool::InUsePoolResource ResourcePool::AcquireResource(
     const gfx::Size& size,
     viz::ResourceFormat format,
-    const gfx::ColorSpace& color_space) {
+    const gfx::ColorSpace& color_space,
+    const std::string& debug_name) {
   PoolResource* resource = ReuseResource(size, format, color_space);
   if (!resource)
     resource = CreateResource(size, format, color_space);
+  resource->set_debug_name(debug_name);
   return InUsePoolResource(resource, !!context_provider_);
 }
 
@@ -204,7 +206,8 @@ ResourcePool::TryAcquireResourceForPartialRaster(
     const gfx::Rect& new_invalidated_rect,
     uint64_t previous_content_id,
     gfx::Rect* total_invalidated_rect,
-    const gfx::ColorSpace& raster_color_space) {
+    const gfx::ColorSpace& raster_color_space,
+    const std::string& debug_name) {
   DCHECK(new_content_id);
   DCHECK(previous_content_id);
   *total_invalidated_rect = gfx::Rect();
@@ -266,10 +269,11 @@ ResourcePool::TryAcquireResourceForPartialRaster(
                                                          resource->format());
     *total_invalidated_rect = resource->invalidated_rect();
 
-    // Clear the invalidated rect and content ID on the resource being retunred.
+    // Clear the invalidated rect and content ID on the resource being returned.
     // These will be updated when raster completes successfully.
     resource->set_invalidated_rect(gfx::Rect());
     resource->set_content_id(0);
+    resource->set_debug_name(debug_name);
     return InUsePoolResource(resource, !!context_provider_);
   }
 
@@ -624,8 +628,10 @@ void ResourcePool::PoolResource::OnMemoryDump(
     bool is_free) const {
   // Resource IDs are not process-unique, so log with the ResourcePool's unique
   // tracing id.
-  std::string dump_name = base::StringPrintf(
-      "cc/tile_memory/provider_%d/resource_%zd", tracing_id, unique_id_);
+  const std::string dump_name = base::StringPrintf(
+      "cc/tile_memory/provider_%d/%s%sresource_%zd", tracing_id,
+      debug_name_.empty() ? "" : debug_name_.c_str(),
+      debug_name_.empty() ? "" : "/", unique_id_);
   MemoryAllocatorDump* dump = pmd->CreateAllocatorDump(dump_name);
 
   // The importance value used here needs to be greater than the importance
