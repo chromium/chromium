@@ -74,8 +74,7 @@ bool SimpleMenuModel::Delegate::GetAcceleratorForCommandId(
 
 SimpleMenuModel::SimpleMenuModel(Delegate* delegate) : delegate_(delegate) {}
 
-SimpleMenuModel::~SimpleMenuModel() {
-}
+SimpleMenuModel::~SimpleMenuModel() = default;
 
 void SimpleMenuModel::AddItem(int command_id, const std::u16string& label) {
   AppendItem(Item(command_id, TYPE_COMMAND, label));
@@ -184,6 +183,16 @@ void SimpleMenuModel::AddSubMenu(int command_id,
 void SimpleMenuModel::AddSubMenuWithStringId(int command_id,
                                              int string_id, MenuModel* model) {
   AddSubMenu(command_id, l10n_util::GetStringUTF16(string_id), model);
+}
+
+void SimpleMenuModel::AddSubMenuWithIcon(int command_id,
+                                         const std::u16string& label,
+                                         MenuModel* model,
+                                         const ImageModel& icon) {
+  Item item(command_id, TYPE_SUBMENU, label);
+  item.submenu = model;
+  item.icon = icon;
+  AppendItem(std::move(item));
 }
 
 void SimpleMenuModel::AddSubMenuWithStringIdAndIcon(int command_id,

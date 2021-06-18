@@ -140,6 +140,15 @@ class RecentTabsSubMenuModel : public ui::SimpleMenuModel,
   std::unique_ptr<ui::SimpleMenuModel> CreateGroupSubMenuModel(
       const sessions::TabRestoreService::Group& group);
 
+  // Adds a submenu item representation of |group_model| to |parent_model|.
+  void AddGroupItemToModel(SimpleMenuModel* parent_model,
+                           std::unique_ptr<SimpleMenuModel> group_model,
+                           tab_groups::TabGroupVisualData group_visual_data);
+
+  // Return the appropriate menu item label for a tab group, given its title
+  // and the number of tabs it contains.
+  std::u16string GetGroupItemLabel(std::u16string title, int num_tabs);
+
   // Return the command id of the given id's parent submenu, if it has one that
   // is created by this menu model. Otherwise, return -1. This will be the case
   // for all items whose parent is the RecentTabsSubMenuModel itself.

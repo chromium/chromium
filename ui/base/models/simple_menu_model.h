@@ -31,7 +31,7 @@ class COMPONENT_EXPORT(UI_BASE) SimpleMenuModel : public MenuModel {
 
   class COMPONENT_EXPORT(UI_BASE) Delegate : public AcceleratorProvider {
    public:
-    ~Delegate() override {}
+    ~Delegate() override = default;
 
     // Makes |command_id| appear toggled true if it's a "check" or "radio" type
     // menu item. This has no effect for menu items with no boolean state.
@@ -111,6 +111,10 @@ class COMPONENT_EXPORT(UI_BASE) SimpleMenuModel : public MenuModel {
                   const std::u16string& label,
                   MenuModel* model);
   void AddSubMenuWithStringId(int command_id, int string_id, MenuModel* model);
+  void AddSubMenuWithIcon(int command_id,
+                          const std::u16string& label,
+                          MenuModel* model,
+                          const ImageModel& icon);
   void AddSubMenuWithStringIdAndIcon(int command_id,
                                      int string_id,
                                      MenuModel* model,
