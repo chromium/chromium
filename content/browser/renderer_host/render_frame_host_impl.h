@@ -1940,7 +1940,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void SetWindowRect(const gfx::Rect& bounds,
                      SetWindowRectCallback callback) override;
 
-  void UpdateManifestURL(const absl::optional<GURL>& manifest_url);
+  void UpdateManifestURL(const GURL& manifest_url);
 
   void ReportNoBinderForInterface(const std::string& error);
 

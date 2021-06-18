@@ -13,7 +13,7 @@ PageImpl::PageImpl(RenderFrameHostImpl& rfh) : main_document_(rfh) {}
 
 PageImpl::~PageImpl() = default;
 
-const GURL& PageImpl::GetManifestURL() {
+const absl::optional<GURL>& PageImpl::GetManifestURL() {
   return manifest_url_;
 }
 

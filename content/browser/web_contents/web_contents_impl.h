@@ -320,8 +320,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // within it (recursively).
   std::vector<WebContentsImpl*> GetWebContentsAndAllInner();
 
-  void NotifyManifestUrlChanged(RenderFrameHost* rfh,
-                                const absl::optional<GURL>& manifest_url);
+  void NotifyManifestUrlChanged(RenderFrameHost* rfh);
 
   // Returns the primary FrameTree for this WebContents (as opposed to the
   // ones held by MPArch features like Prerender or Portal).

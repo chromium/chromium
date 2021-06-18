@@ -92,8 +92,7 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
   void SimulateUserActivation() override;
   const std::vector<std::string>& GetConsoleMessages() override;
   int GetHeavyAdIssueCount(HeavyAdIssueType type) override;
-  void SimulateManifestURLUpdate(
-      const absl::optional<GURL>& manifest_url) override;
+  void SimulateManifestURLUpdate(const GURL& manifest_url) override;
 
   void SendNavigate(int nav_entry_id,
                     bool did_create_new_entry,

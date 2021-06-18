@@ -158,16 +158,14 @@ class ManifestBrowserTest : public ContentBrowserTest,
         reported_manifest_urls_.size());
   }
 
-  void DidUpdateWebManifestURL(
-      RenderFrameHost* rfh,
-      const absl::optional<GURL>& manifest_url) override {
-    if (!manifest_url) {
+  void DidUpdateWebManifestURL(RenderFrameHost* rfh,
+                               const GURL& manifest_url) override {
+    if (manifest_url.is_empty()) {
       reported_manifest_urls_.emplace_back();
       return;
     }
-    EXPECT_FALSE(manifest_url->is_empty());
-    EXPECT_TRUE(manifest_url->is_valid());
-    reported_manifest_urls_.push_back(*manifest_url);
+    EXPECT_TRUE(manifest_url.is_valid());
+    reported_manifest_urls_.push_back(manifest_url);
   }
 
  private:

@@ -1698,14 +1698,15 @@ std::vector<WebContentsImpl*> WebContentsImpl::GetWebContentsAndAllInner() {
   return all_contents;
 }
 
-void WebContentsImpl::NotifyManifestUrlChanged(
-    RenderFrameHost* rfh,
-    const absl::optional<GURL>& manifest_url) {
-  // TODO(crbug.com/1201237): update the app manifest code for MPArch.
+void WebContentsImpl::NotifyManifestUrlChanged(RenderFrameHost* rfh) {
+  absl::optional<GURL> manifest_url = rfh->GetPage().GetManifestURL();
+  if (!manifest_url.has_value())
+    return;
+
   OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::NotifyManifestUrlChanged",
                         "render_frame_host", rfh, "manifest_url", manifest_url);
   observers_.NotifyObservers(&WebContentsObserver::DidUpdateWebManifestURL, rfh,
-                             manifest_url);
+                             *manifest_url);
 }
 
 WebUI* WebContentsImpl::GetWebUI() {
@@ -5516,12 +5517,15 @@ void WebContentsImpl::DidFinishNavigation(NavigationHandle* navigation_handle) {
 
   if (navigation_handle->HasCommitted() &&
       navigation_handle->IsPrerenderedPageActivation()) {
-    // We defer favicon URL updates while prerendering. Upon activation, we
-    // must inform interested parties about our candidate favicon URLs.
+    // We defer favicon and manifest URL updates while prerendering. Upon
+    // activation, we must inform interested parties about our candidate favicon
+    // URLs and the manifest URL.
     auto* rfhi = static_cast<RenderFrameHostImpl*>(
         navigation_handle->GetRenderFrameHost());
-    if (!rfhi->GetParent())
+    if (!rfhi->GetParent()) {
       UpdateFaviconURL(rfhi, rfhi->FaviconURLs());
+      NotifyManifestUrlChanged(rfhi);
+    }
   }
 }
 

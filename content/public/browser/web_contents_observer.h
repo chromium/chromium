@@ -671,9 +671,8 @@ class CONTENT_EXPORT WebContentsObserver {
   // when a document with no manifest loads. During document load, if the
   // document has both a manifest and a favicon, DidUpdateWebManifestURL() will
   // be invoked before DidUpdateFaviconURL().
-  virtual void DidUpdateWebManifestURL(
-      RenderFrameHost* target_frame,
-      const absl::optional<GURL>& manifest_url) {}
+  virtual void DidUpdateWebManifestURL(RenderFrameHost* target_frame,
+                                       const GURL& manifest_url) {}
 
   // DEPRECATED. Please register interface binders with BrowserInterfaceBroker
   // instead (see 'Interface-Brokers' section in //docs/mojo_and_services.md).

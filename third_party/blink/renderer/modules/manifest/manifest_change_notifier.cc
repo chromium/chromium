@@ -60,10 +60,7 @@ void ManifestChangeNotifier::ReportManifestChange() {
   EnsureManifestChangeObserver();
   DCHECK(manifest_change_observer_.is_bound());
 
-  if (manifest_url.IsNull())
-    manifest_change_observer_->ManifestUrlChanged(absl::nullopt);
-  else
-    manifest_change_observer_->ManifestUrlChanged(manifest_url);
+  manifest_change_observer_->ManifestUrlChanged(manifest_url);
 }
 
 void ManifestChangeNotifier::EnsureManifestChangeObserver() {

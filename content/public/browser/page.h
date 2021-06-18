@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "content/common/content_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace blink {
@@ -58,7 +59,7 @@ class CONTENT_EXPORT Page {
 
   // The GURL for the page's web application manifest.
   // See https://w3c.github.io/manifest/#web-application-manifest
-  virtual const GURL& GetManifestURL() = 0;
+  virtual const absl::optional<GURL>& GetManifestURL() = 0;
 
   // The callback invoked when the renderer responds to a request for the main
   // frame document's manifest. The url will be empty if the document specifies

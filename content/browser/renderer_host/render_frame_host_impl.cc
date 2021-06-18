@@ -4434,10 +4434,9 @@ void RenderFrameHostImpl::SetWindowRect(const gfx::Rect& bounds,
 }
 
 // TODO(crbug.com/1213863): Move this method to content::PageImpl.
-void RenderFrameHostImpl::UpdateManifestURL(
-    const absl::optional<GURL>& manifest_url) {
+void RenderFrameHostImpl::UpdateManifestURL(const GURL& manifest_url) {
   DCHECK(!GetParent());
-  GetPage().update_manifest_url(manifest_url.value_or(GURL()));
+  GetPage().update_manifest_url(manifest_url);
 }
 
 void RenderFrameHostImpl::DownloadURL(

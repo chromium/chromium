@@ -51,8 +51,9 @@ GURL ContentFaviconDriver::GetActiveURL() {
 GURL ContentFaviconDriver::GetManifestURL(content::RenderFrameHost* rfh) {
   DocumentManifestData* document_data =
       DocumentManifestData::GetOrCreateForCurrentDocument(rfh);
-  return document_data->has_manifest_url ? rfh->GetPage().GetManifestURL()
-                                         : GURL();
+  return document_data->has_manifest_url
+             ? rfh->GetPage().GetManifestURL().value_or(GURL())
+             : GURL();
 }
 
 ContentFaviconDriver::ContentFaviconDriver(content::WebContents* web_contents,
@@ -177,7 +178,7 @@ void ContentFaviconDriver::DidUpdateFaviconURL(
 
 void ContentFaviconDriver::DidUpdateWebManifestURL(
     content::RenderFrameHost* rfh,
-    const absl::optional<GURL>& manifest_url) {
+    const GURL& manifest_url) {
   // Ignore the update if there is no last committed navigation entry. This can
   // occur when loading an initially blank page.
   content::NavigationEntry* entry =

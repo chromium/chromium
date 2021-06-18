@@ -101,6 +101,10 @@ class InstallableManager
                            CheckNotOfflineCapableStartUrl);
   FRIEND_TEST_ALL_PREFIXES(InstallableManagerInPrerenderingBrowserTest,
                            InstallableManagerInPrerendering);
+  FRIEND_TEST_ALL_PREFIXES(InstallableManagerInPrerenderingBrowserTest,
+                           NotifyManifestUrlChangedInActivation);
+  FRIEND_TEST_ALL_PREFIXES(InstallableManagerInPrerenderingBrowserTest,
+                           NotNotifyManifestUrlChangedInActivation);
 
   using IconPurpose = blink::mojom::ManifestImageResource_Purpose;
 
@@ -239,9 +243,8 @@ class InstallableManager
 
   // content::WebContentsObserver overrides
   void DidFinishNavigation(content::NavigationHandle* handle) override;
-  void DidUpdateWebManifestURL(
-      content::RenderFrameHost* rfh,
-      const absl::optional<GURL>& manifest_url) override;
+  void DidUpdateWebManifestURL(content::RenderFrameHost* rfh,
+                               const GURL& manifest_url) override;
   void WebContentsDestroyed() override;
 
   const GURL& manifest_url() const;

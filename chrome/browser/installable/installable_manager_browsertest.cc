@@ -29,6 +29,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 
@@ -1919,7 +1920,7 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   static_cast<content::WebContentsObserver*>(manager)->DidUpdateWebManifestURL(
-      web_contents->GetMainFrame(), absl::nullopt);
+      web_contents->GetMainFrame(), GURL());
   run_loop.Run();
 
   ASSERT_EQ(tester->errors().size(), 1u);
@@ -2095,6 +2096,162 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerInPrerenderingBrowserTest,
     EXPECT_EQ(u"Manifest test app", tester->manifest().name);
     EXPECT_EQ(std::u16string(),
               tester->manifest().short_name.value_or(std::u16string()));
+  }
+}
+
+class MockInstallableManager : public InstallableManager {
+ public:
+  explicit MockInstallableManager(content::WebContents* web_contents)
+      : InstallableManager(web_contents) {}
+  ~MockInstallableManager() override = default;
+
+  MOCK_METHOD(void, OnResetData, (), (override));
+  MOCK_METHOD(void,
+              DidUpdateWebManifestURL,
+              (content::RenderFrameHost * rfh, const GURL& manifest_url),
+              (override));
+};
+
+MATCHER_P(IsManifestURL, file_name, std::string()) {
+  return arg.ExtractFileName() == file_name;
+}
+
+MATCHER_P(IsPrerenderedRFH, render_frame_host, std::string()) {
+  return arg->GetGlobalFrameRoutingId() ==
+         render_frame_host->GetGlobalFrameRoutingId();
+}
+
+// Tests that NotifyManifestUrlChanged is called on the page that has manifest
+// after the activation from the prerendering.
+IN_PROC_BROWSER_TEST_F(InstallableManagerInPrerenderingBrowserTest,
+                       NotifyManifestUrlChangedInActivation) {
+  auto manager = std::make_unique<MockInstallableManager>(web_contents());
+  GURL url = embedded_test_server()->GetURL("/empty.html");
+  // OnResetData() is called when a navigation is finished.
+  EXPECT_CALL(*manager.get(), OnResetData()).Times(1);
+  ui_test_utils::NavigateToURL(browser(), url);
+
+  // Loads a page in the prerendering.
+  auto prerender_url =
+      embedded_test_server()->GetURL("/banners/manifest_test_page.html");
+  // OnResetData() should not be called on the prerendering.
+  EXPECT_CALL(*manager.get(), OnResetData()).Times(0);
+  int host_id = prerender_helper()->AddPrerender(prerender_url);
+
+  content::test::PrerenderHostObserver host_observer(*web_contents(), host_id);
+  content::RenderFrameHost* render_frame_host =
+      prerender_helper()->GetPrerenderedMainFrameHost(host_id);
+
+  {
+    // Fetches the data.
+    base::RunLoop run_loop;
+    std::unique_ptr<CallbackTester> tester(
+        new CallbackTester(run_loop.QuitClosure()));
+
+    manager->GetData(
+        GetWebAppParams(),
+        base::BindOnce(&CallbackTester::OnDidFinishInstallableCheck,
+                       base::Unretained(tester.get())));
+    run_loop.Run();
+  }
+  // It should have no data since manifest_test_page.html is loaded in the
+  // prerendering.
+  EXPECT_TRUE(manager->manifest().IsEmpty());
+  EXPECT_EQ(NO_MANIFEST, manager->manifest_error());
+
+  {
+    // If the page is activated from the prerendering and the data should be
+    // reset and notify the updated manifest url.
+    EXPECT_CALL(*manager.get(), OnResetData()).Times(1);
+    EXPECT_CALL(*manager.get(),
+                DidUpdateWebManifestURL(IsPrerenderedRFH(render_frame_host),
+                                        IsManifestURL("manifest.json")));
+    prerender_helper()->NavigatePrimaryPage(prerender_url);
+  }
+
+  EXPECT_TRUE(host_observer.was_activated());
+  EXPECT_TRUE(manager->manifest().IsEmpty());
+  EXPECT_EQ(NO_ERROR_DETECTED, manager->manifest_error());
+
+  {
+    // Fetch the data again. This should succeed.
+    base::RunLoop run_loop;
+    std::unique_ptr<CallbackTester> tester(
+        new CallbackTester(run_loop.QuitClosure()));
+
+    manager->GetData(
+        GetWebAppParams(),
+        base::BindOnce(&CallbackTester::OnDidFinishInstallableCheck,
+                       base::Unretained(tester.get())));
+    run_loop.Run();
+    EXPECT_FALSE(tester->manifest().IsEmpty());
+    EXPECT_EQ(std::vector<InstallableStatusCode>{}, tester->errors());
+    EXPECT_EQ(u"Manifest test app", tester->manifest().name);
+    EXPECT_EQ(std::u16string(),
+              tester->manifest().short_name.value_or(std::u16string()));
+  }
+}
+
+// Tests that NotifyManifestUrlChanged is not called without manifest after
+// the activation from the prerendering.
+IN_PROC_BROWSER_TEST_F(InstallableManagerInPrerenderingBrowserTest,
+                       NotNotifyManifestUrlChangedInActivation) {
+  auto manager = std::make_unique<MockInstallableManager>(web_contents());
+  GURL url = embedded_test_server()->GetURL("/empty.html");
+  // OnResetData() is called when a navigation is finished.
+  EXPECT_CALL(*manager.get(), OnResetData()).Times(1);
+  ui_test_utils::NavigateToURL(browser(), url);
+
+  // Loads a page in the prerendering.
+  auto prerender_url =
+      embedded_test_server()->GetURL("/banners/no_manifest_test_page.html");
+  // OnResetData() should not be called on the prerendering.
+  EXPECT_CALL(*manager.get(), OnResetData()).Times(0);
+  int host_id = prerender_helper()->AddPrerender(prerender_url);
+
+  content::test::PrerenderHostObserver host_observer(*web_contents(), host_id);
+  {
+    // Fetches the data.
+    base::RunLoop run_loop;
+    std::unique_ptr<CallbackTester> tester(
+        new CallbackTester(run_loop.QuitClosure()));
+
+    manager->GetData(
+        GetWebAppParams(),
+        base::BindOnce(&CallbackTester::OnDidFinishInstallableCheck,
+                       base::Unretained(tester.get())));
+    run_loop.Run();
+  }
+  EXPECT_TRUE(manager->manifest().IsEmpty());
+  EXPECT_EQ(NO_MANIFEST, manager->manifest_error());
+
+  // OnResetData() is called when a navigation is finished.
+  EXPECT_CALL(*manager.get(), OnResetData()).Times(1);
+  // OnResetData() should not be called when a page doesn't have a manifest.
+  EXPECT_CALL(*manager.get(), DidUpdateWebManifestURL(testing::_, testing::_))
+      .Times(0);
+  prerender_helper()->NavigatePrimaryPage(prerender_url);
+
+  EXPECT_TRUE(host_observer.was_activated());
+  EXPECT_TRUE(manager->manifest().IsEmpty());
+  EXPECT_EQ(NO_ERROR_DETECTED, manager->manifest_error());
+
+  {
+    // Fetch the data again. This should return the same empty result as
+    // earlier.
+    base::RunLoop run_loop;
+    std::unique_ptr<CallbackTester> tester(
+        new CallbackTester(run_loop.QuitClosure()));
+
+    manager->GetData(
+        GetWebAppParams(),
+        base::BindOnce(&CallbackTester::OnDidFinishInstallableCheck,
+                       base::Unretained(tester.get())));
+    run_loop.Run();
+    EXPECT_TRUE(tester->manifest().IsEmpty());
+    EXPECT_EQ(NO_MANIFEST, manager->manifest_error());
+    EXPECT_EQ(std::vector<InstallableStatusCode>{NO_MANIFEST},
+              tester->errors());
   }
 }
 

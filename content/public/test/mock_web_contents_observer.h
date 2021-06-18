@@ -336,8 +336,7 @@ class MockWebContentsObserver : public WebContentsObserver {
               (override));
   MOCK_METHOD(void,
               DidUpdateWebManifestURL,
-              (RenderFrameHost * target_frame,
-               const absl::optional<GURL>& manifest_url),
+              (RenderFrameHost * target_frame, const GURL& manifest_url),
               (override));
   MOCK_METHOD(void,
               OnInterfaceRequestFromFrame,

@@ -649,7 +649,7 @@ void AppBannerManager::DidActivatePortal(
 
 void AppBannerManager::DidUpdateWebManifestURL(
     content::RenderFrameHost* target_frame,
-    const absl::optional<GURL>& manifest_url) {
+    const GURL& manifest_url) {
   GURL url = validated_url_;
   switch (state_) {
     case State::INACTIVE:
@@ -665,7 +665,7 @@ void AppBannerManager::DidUpdateWebManifestURL(
       Terminate();
       FALLTHROUGH;
     case State::COMPLETE:
-      if (manifest_url.has_value()) {
+      if (!manifest_url.is_empty()) {
         // This call resets has_sufficient_engagement_data_. In order to
         // re-compute that, instead of calling RequestAppBanner, DidFinishLoad
         // is called. That method will re-fetch the engagement data and re-set

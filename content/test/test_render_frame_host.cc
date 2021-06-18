@@ -225,8 +225,7 @@ int TestRenderFrameHost::GetHeavyAdIssueCount(
   }
 }
 
-void TestRenderFrameHost::SimulateManifestURLUpdate(
-    const absl::optional<GURL>& manifest_url) {
+void TestRenderFrameHost::SimulateManifestURLUpdate(const GURL& manifest_url) {
   UpdateManifestURL(manifest_url);
 }
 
