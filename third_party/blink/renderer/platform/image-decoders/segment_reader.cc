@@ -235,14 +235,6 @@ class ParkableImageSegmentReader : public SegmentReader {
 ParkableImageSegmentReader::ParkableImageSegmentReader(
     scoped_refptr<ParkableImage> image)
     : parkable_image_(std::move(image)), available_(parkable_image_->size()) {
-  // TODO(thiabaud): make ParkableImage only be locked when needed.
-  // Currently, we take a conservative approach here and lock for the full
-  // lifetime of the SegmentReader, but most of the time this is not needed
-  // and we can simply lock closer to when we need to read the data from the
-  // ParkableImage.
-  MutexLocker lock(parkable_image_->lock_);
-  parkable_image_->Unpark();
-  DCHECK(parkable_image_->rw_buffer_);
 }
 
 size_t ParkableImageSegmentReader::size() const {
