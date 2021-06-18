@@ -86,6 +86,8 @@ void SharedImageInterfaceInProcess::DestroyOnGpu(
     sync_point_client_state_->Destroy();
     sync_point_client_state_ = nullptr;
   }
+
+  context_state_ = nullptr;
   completion->Signal();
 }
 
