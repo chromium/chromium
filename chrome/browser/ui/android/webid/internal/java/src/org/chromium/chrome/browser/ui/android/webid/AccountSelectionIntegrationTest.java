@@ -43,6 +43,8 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
+import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
 
 import java.util.Arrays;
 
@@ -54,14 +56,16 @@ import java.util.Arrays;
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class AccountSelectionIntegrationTest {
-    private static final String EXAMPLE_URL = "https://www.example.xyz";
-    private static final String MOBILE_URL = "https://m.example.xyz";
-    private static final String TEST_PROFILE_PIC = "https://www.example.xyz/profile_pic/1";
+    private static final String EXAMPLE_URL = JUnitTestGURLs.EXAMPLE_URL;
+    private static final GURL TEST_URL_1 = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1);
+    private static final GURL TEST_URL_2 = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_2);
+    private static final GURL TEST_PROFILE_PIC =
+            JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1_WITH_PATH);
 
     private static final Account ANA =
-            new Account("Ana", "S3cr3t", "Ana Doe", "Ana", TEST_PROFILE_PIC, EXAMPLE_URL);
+            new Account("Ana", "ana@one.test", "Ana Doe", "Ana", TEST_PROFILE_PIC, TEST_URL_1);
     private static final Account BOB =
-            new Account("Bob", "*****", "Bob", "", TEST_PROFILE_PIC, MOBILE_URL);
+            new Account("Bob", "", "Bob", "", TEST_PROFILE_PIC, TEST_URL_2);
 
     private AccountSelectionComponent mAccountSelection;
 

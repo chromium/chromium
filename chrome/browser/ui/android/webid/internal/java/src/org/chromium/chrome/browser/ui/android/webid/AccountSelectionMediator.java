@@ -24,6 +24,7 @@ import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.url.GURL;
 
 import java.util.List;
 
@@ -122,13 +123,13 @@ class AccountSelectionMediator {
 
     private void requestIconOrFallbackImage(PropertyModel accountModel) {
         Account account = accountModel.get(AccountProperties.ACCOUNT);
-        final String iconOrigin = account.getOriginUrl();
+        final GURL iconOrigin = account.getOriginUrl();
         final LargeIconCallback setIcon = (icon, fallbackColor, hasDefaultColor, type) -> {
             accountModel.set(AccountProperties.FAVICON_OR_FALLBACK,
                     new AccountProperties.FaviconOrFallback(
                             iconOrigin, icon, fallbackColor, mDesiredIconSize));
         };
-        mLargeIconBridge.getLargeIconForStringUrl(iconOrigin, mDesiredIconSize, setIcon);
+        mLargeIconBridge.getLargeIconForUrl(iconOrigin, mDesiredIconSize, setIcon);
     }
 
     boolean isVisible() {

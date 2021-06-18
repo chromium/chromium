@@ -80,6 +80,8 @@ java_library("junit") {
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_full_java",
+    "//url:gurl_java",
+    "//url:gurl_junit_test_support",
   ]
 }
 
@@ -113,5 +115,7 @@ android_library("javatests") {
     "//ui/android:ui_full_java",
     "//ui/android:ui_java_test_support",
     "//ui/android:ui_utils_java",
+    "//url:gurl_java",
+    "//url:gurl_junit_test_support",
   ]
 }

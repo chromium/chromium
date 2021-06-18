@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.ui.android.webid.data;
 
+import org.chromium.base.annotations.CalledByNative;
+import org.chromium.url.GURL;
+
 /**
  * This class holds the data used to represent a selectable account in the
  * Account Selection sheet.
@@ -13,24 +16,25 @@ public class Account {
     private final String mEmail;
     private final String mName;
     private final String mGivenName;
-    private final String mPicture;
-    private final String mOriginUrl;
+    private final GURL mPictureUrl;
+    private final GURL mOriginUrl;
 
     /**
      * @param subject Subject shown to the user.
      * @param email Email shown to the user.
      * @param givenName Given name.
-     * @param picture picture.
+     * @param picture picture URL of the avatar shown to the user.
      * @param originUrl Origin URL for the IDP.
      */
-    public Account(String subject, String email, String name, String givenName, String picture,
-            String originUrl) {
+    @CalledByNative
+    public Account(String subject, String email, String name, String givenName, GURL pictureUrl,
+            GURL originUrl) {
         assert subject != null : "Account subject is null!";
         mSubject = subject;
         mEmail = email;
         mName = name;
         mGivenName = givenName;
-        mPicture = picture;
+        mPictureUrl = pictureUrl;
         mOriginUrl = originUrl;
     }
 
@@ -50,15 +54,17 @@ public class Account {
         return mGivenName;
     }
 
-    public String getPicture() {
-        return mPicture;
+    public GURL getPictureUrl() {
+        return mPictureUrl;
     }
 
-    public String getOriginUrl() {
+    public GURL getOriginUrl() {
         return mOriginUrl;
     }
 
-    public String[] getFields() {
-        return new String[] {mSubject, mEmail, mName, mGivenName, mPicture, mOriginUrl};
+    // Return all the String fields. Note that this excludes non-string fields in particular
+    // mOriginUrl and mPictureUrl.
+    public String[] getStringFields() {
+        return new String[] {mSubject, mEmail, mName, mGivenName};
     }
 }

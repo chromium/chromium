@@ -123,7 +123,7 @@ absl::optional<content::IdentityRequestAccount> ParseAccount(
 
   return content::IdentityRequestAccount(*sub, *email, *name,
                                          given_name ? *given_name : "",
-                                         picture ? *picture : "");
+                                         picture ? GURL(*picture) : GURL());
 }
 
 // Parses accounts from given Value. Returns true if parse is successful and

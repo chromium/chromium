@@ -55,11 +55,11 @@ constexpr char kToken[] = "[not a real token]";
 constexpr char kEmptyToken[] = "";
 
 static const std::initializer_list<IdentityRequestAccount> kAccounts{{
-    "1234",                            // sub
-    "ken@idp.example",                 // email
-    "Ken R. Example",                  // name
-    "Ken",                             // given_name
-    "https://idp.example/profile/567"  // picture
+    "1234",             // sub
+    "ken@idp.example",  // email
+    "Ken R. Example",   // name
+    "Ken",              // given_name
+    GURL()              // picture
 }};
 
 // Parameters for a call to RequestIdToken.

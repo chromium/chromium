@@ -45,6 +45,8 @@ import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.DummyUiActivity;
+import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
 
 import java.util.Collections;
 
@@ -55,14 +57,14 @@ import java.util.Collections;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class AccountSelectionViewTest {
-    private static final String TEST_PROFILE_PIC = "https://www.example.xyz/profile_pic/1";
+    private static final GURL TEST_PROFILE_PIC = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
 
     private static final Account ANA =
-            new Account("Ana", "S3cr3t", "Ana Doe", "Ana", TEST_PROFILE_PIC, "");
-    private static final Account NO_ONE =
-            new Account("", "***", "No Subject", "", TEST_PROFILE_PIC, "m.example.xyz");
-    private static final Account BOB =
-            new Account("Bob", "***", "Bob", "", TEST_PROFILE_PIC, "mobile.example.xyz");
+            new Account("Ana", "S3cr3t", "Ana Doe", "Ana", TEST_PROFILE_PIC, GURL.emptyGURL());
+    private static final Account NO_ONE = new Account("", "***", "No Subject", "", TEST_PROFILE_PIC,
+            JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1));
+    private static final Account BOB = new Account("Bob", "***", "Bob", "", TEST_PROFILE_PIC,
+            JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_2));
 
     @Mock
     private Callback<Account> mAccountCallback;

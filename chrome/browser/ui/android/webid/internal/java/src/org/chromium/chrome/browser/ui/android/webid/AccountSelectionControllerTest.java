@@ -47,6 +47,8 @@ import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.components.url_formatter.UrlFormatterJni;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -58,16 +60,19 @@ import java.util.Collections;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class AccountSelectionControllerTest {
-    private static final String TEST_URL = "https://www.example.xyz";
-    private static final String TEST_SUBDOMAIN_URL = "https://subdomain.example.xyz";
-    private static final String TEST_PROFILE_PIC = "https://www.example.xyz/profile/2";
+    private static final String TEST_URL = JUnitTestGURLs.EXAMPLE_URL;
+    private static final GURL TEST_URL_1 = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1);
+    private static final GURL TEST_URL_2 = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_2);
+    private static final GURL TEST_URL_3 = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_3);
+    private static final GURL TEST_PROFILE_PIC =
+            JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1_WITH_PATH);
 
     private static final Account ANA =
-            new Account("Ana", "S3cr3t", "Ana Doe", "Ana", TEST_PROFILE_PIC, "https://m.a.xyz/");
+            new Account("Ana", "ana@one.test", "Ana Doe", "Ana", TEST_PROFILE_PIC, TEST_URL_1);
     private static final Account BOB =
-            new Account("Bob", "*****", "Bob", "", TEST_PROFILE_PIC, TEST_SUBDOMAIN_URL);
+            new Account("Bob", "", "Bob", "", TEST_PROFILE_PIC, TEST_URL_2);
     private static final Account CARL =
-            new Account("Carl", "G3h3!m", "Carl Test", ":)", TEST_PROFILE_PIC, TEST_URL);
+            new Account("Carl", "carl@three.test", "Carl Test", ":)", TEST_PROFILE_PIC, TEST_URL_3);
     private static final @Px int DESIRED_FAVICON_SIZE = 64;
 
     @Rule
@@ -138,11 +143,11 @@ public class AccountSelectionControllerTest {
         assertNull(mSheetItems.get(3).model.get(FAVICON_OR_FALLBACK));
 
         verify(mMockIconBridge)
-                .getLargeIconForStringUrl(eq(CARL.getOriginUrl()), eq(DESIRED_FAVICON_SIZE), any());
+                .getLargeIconForUrl(eq(ANA.getOriginUrl()), eq(DESIRED_FAVICON_SIZE), any());
         verify(mMockIconBridge)
-                .getLargeIconForStringUrl(eq(ANA.getOriginUrl()), eq(DESIRED_FAVICON_SIZE), any());
+                .getLargeIconForUrl(eq(CARL.getOriginUrl()), eq(DESIRED_FAVICON_SIZE), any());
         verify(mMockIconBridge)
-                .getLargeIconForStringUrl(eq(BOB.getOriginUrl()), eq(DESIRED_FAVICON_SIZE), any());
+                .getLargeIconForUrl(eq(BOB.getOriginUrl()), eq(DESIRED_FAVICON_SIZE), any());
     }
 
     @Test
@@ -154,17 +159,16 @@ public class AccountSelectionControllerTest {
         assertEquals("Incorrect account", CARL, mSheetItems.get(1).model.get(ACCOUNT));
         assertNull(mSheetItems.get(1).model.get(FAVICON_OR_FALLBACK));
 
-        // ANA and CARL both have TEST_URL as their origin URL
         verify(mMockIconBridge)
-                .getLargeIconForStringUrl(
-                        eq(TEST_URL), eq(DESIRED_FAVICON_SIZE), mCallbackArgumentCaptor.capture());
+                .getLargeIconForUrl(eq(TEST_URL_3), eq(DESIRED_FAVICON_SIZE),
+                        mCallbackArgumentCaptor.capture());
         LargeIconBridge.LargeIconCallback callback = mCallbackArgumentCaptor.getValue();
         Bitmap bitmap = Bitmap.createBitmap(
                 DESIRED_FAVICON_SIZE, DESIRED_FAVICON_SIZE, Bitmap.Config.ARGB_8888);
         callback.onLargeIconAvailable(bitmap, 333, true, IconType.FAVICON);
         FaviconOrFallback iconData = mSheetItems.get(1).model.get(FAVICON_OR_FALLBACK);
         assertEquals("incorrect favicon bitmap", bitmap, iconData.mIcon);
-        assertEquals("incorrect favicon url", TEST_URL, iconData.mUrl);
+        assertEquals("incorrect favicon url", TEST_URL_3, iconData.mUrl);
         assertEquals("incorrect favicon size", DESIRED_FAVICON_SIZE, iconData.mIconSize);
         assertEquals("incorrect favicon fallback color", 333, iconData.mFallbackColor);
     }

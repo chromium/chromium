@@ -13,6 +13,7 @@ import org.chromium.base.Callback;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -26,13 +27,13 @@ class AccountSelectionProperties {
      */
     static class AccountProperties {
         static class FaviconOrFallback {
-            final String mUrl;
+            final GURL mUrl;
             final @Nullable Bitmap mIcon;
             final int mFallbackColor;
             final int mIconSize;
 
             FaviconOrFallback(
-                    String originUrl, @Nullable Bitmap icon, int fallbackColor, int iconSize) {
+                    GURL originUrl, @Nullable Bitmap icon, int fallbackColor, int iconSize) {
                 mUrl = originUrl;
                 mIcon = icon;
                 mFallbackColor = fallbackColor;

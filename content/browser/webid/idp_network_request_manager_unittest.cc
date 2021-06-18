@@ -15,6 +15,7 @@
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 using AccountList = content::IdpNetworkRequestManager::AccountList;
 using AccountsResponse = content::IdpNetworkRequestManager::AccountsResponse;
@@ -202,6 +203,35 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountRequiredFields) {
     EXPECT_EQ(AccountsResponse::kSuccess, accounts_response);
     EXPECT_TRUE(accounts.empty());
   }
+}
+
+TEST_F(IdpNetworkRequestManagerTest, ParseAccountPictureUrl) {
+  const auto* test_accounts_json = R"({
+  "accounts" : [
+    {
+      "sub" : "1234",
+      "email": "ken@idp.test",
+      "name": "Ken R. Example",
+      "picture": "https://idp.test/profile/1234"
+    },
+    {
+      "sub" : "567",
+      "email": "sam@idp.test",
+      "name": "Sam R. Example",
+      "picture": "invalid_url"
+    }
+  ]
+  })";
+
+  AccountsResponse accounts_response;
+  AccountList accounts;
+  std::tie(accounts_response, accounts) =
+      SendAccountsRequestAndWaitForResponse(test_accounts_json);
+
+  EXPECT_EQ(AccountsResponse::kSuccess, accounts_response);
+  EXPECT_TRUE(accounts[0].picture.is_valid());
+  EXPECT_EQ(GURL("https://idp.test/profile/1234"), accounts[0].picture);
+  EXPECT_FALSE(accounts[1].picture.is_valid());
 }
 
 TEST_F(IdpNetworkRequestManagerTest, ParseAccountUnicode) {

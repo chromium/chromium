@@ -7,8 +7,7 @@
 
 #include "base/callback.h"
 #include "content/common/content_export.h"
-
-class GURL;
+#include "url/gurl.h"
 
 namespace content {
 class WebContents;
@@ -22,7 +21,7 @@ struct CONTENT_EXPORT IdentityRequestAccount {
                          const std::string& email,
                          const std::string& name,
                          const std::string& given_name,
-                         const std::string& picture);
+                         const GURL& picture);
   IdentityRequestAccount(const IdentityRequestAccount&);
   ~IdentityRequestAccount();
 
@@ -31,7 +30,7 @@ struct CONTENT_EXPORT IdentityRequestAccount {
   std::string email;
   std::string name;
   std::string given_name;
-  std::string picture;
+  GURL picture;
 };
 
 // IdentityRequestDialogController is in interface for control of the UI
