@@ -26,7 +26,8 @@ constexpr auto kMaxDelayBetweenTypingUsernameAndSubmission =
 struct PossibleUsernameData {
   PossibleUsernameData(std::string signon_realm,
                        autofill::FieldRendererId renderer_id,
-                       std::u16string value,
+                       const std::u16string& field_name,
+                       const std::u16string& value,
                        base::Time last_change,
                        int driver_id);
   PossibleUsernameData(const PossibleUsernameData&);
@@ -34,6 +35,7 @@ struct PossibleUsernameData {
 
   std::string signon_realm;
   autofill::FieldRendererId renderer_id;
+  std::u16string field_name;
   std::u16string value;
   base::Time last_change;
 

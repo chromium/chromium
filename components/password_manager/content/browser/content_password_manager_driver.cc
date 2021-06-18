@@ -291,9 +291,10 @@ void ContentPasswordManagerDriver::UserModifiedPasswordField() {
 
 void ContentPasswordManagerDriver::UserModifiedNonPasswordField(
     autofill::FieldRendererId renderer_id,
+    const std::u16string& field_name,
     const std::u16string& value) {
   GetPasswordManager()->OnUserModifiedNonPasswordField(this, renderer_id,
-                                                       value);
+                                                       field_name, value);
 }
 
 void ContentPasswordManagerDriver::ShowPasswordSuggestions(

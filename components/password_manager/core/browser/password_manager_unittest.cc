@@ -3442,7 +3442,7 @@ TEST_P(PasswordManagerTest, UsernameFirstFlow) {
   const std::u16string username = u"googleuser@gmail.com";
   EXPECT_CALL(driver_, GetLastCommittedURL()).WillOnce(ReturnRef(form.url));
   manager()->OnUserModifiedNonPasswordField(&driver_, FieldRendererId(1001),
-                                            username /* value */);
+                                            u"username", username /* value */);
 
   // Simulate that a form which contains only 1 field which is password is added
   // to the page.

@@ -576,7 +576,8 @@ void PasswordAutofillAgent::UpdateStateForTextChange(
     GetPasswordManagerDriver()->UserModifiedPasswordField();
   } else {
     GetPasswordManagerDriver()->UserModifiedNonPasswordField(
-        FieldRendererId(element.UniqueRendererFormControlId()), element_value);
+        FieldRendererId(element.UniqueRendererFormControlId()),
+        element.NameForAutofill().Utf16(), element_value);
   }
 }
 

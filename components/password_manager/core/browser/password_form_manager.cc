@@ -723,7 +723,11 @@ bool PasswordFormManager::ProvisionallySave(
       UsePossibleUsername(possible_username)) {
     parsed_submitted_form_->username_value = possible_username->value;
     metrics_recorder_->set_possible_username_used(true);
-    if (possible_username->form_predictions) {
+    // PasswordManager does not upload votes for fields that have no names or
+    // ids to avoid aggregation of multiple unrelated fields during single
+    // username detection. (crbug.com/1209143)
+    if (!possible_username->field_name.empty() &&
+        possible_username->form_predictions) {
       votes_uploader_.set_single_username_vote_data(
           possible_username->renderer_id, *possible_username->form_predictions);
     }

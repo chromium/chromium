@@ -18,12 +18,14 @@ namespace password_manager {
 PossibleUsernameData::PossibleUsernameData(
     std::string signon_realm,
     autofill::FieldRendererId renderer_id,
-    std::u16string value,
+    const std::u16string& field_name,
+    const std::u16string& value,
     base::Time last_change,
     int driver_id)
     : signon_realm(std::move(signon_realm)),
       renderer_id(renderer_id),
-      value(std::move(value)),
+      field_name(field_name),
+      value(value),
       last_change(last_change),
       driver_id(driver_id) {}
 PossibleUsernameData::PossibleUsernameData(const PossibleUsernameData&) =

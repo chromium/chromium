@@ -502,11 +502,13 @@ void PasswordManager::OnSubframeFormSubmission(PasswordManagerDriver* driver,
 void PasswordManager::OnUserModifiedNonPasswordField(
     PasswordManagerDriver* driver,
     autofill::FieldRendererId renderer_id,
+    const std::u16string& field_name,
     const std::u16string& value) {
   // |driver| might be empty on iOS or in tests.
   int driver_id = driver ? driver->GetId() : 0;
   possible_username_.emplace(GetSignonRealm(driver->GetLastCommittedURL()),
-                             renderer_id, value, base::Time::Now(), driver_id);
+                             renderer_id, field_name, value, base::Time::Now(),
+                             driver_id);
 }
 
 void PasswordManager::OnInformAboutUserInput(PasswordManagerDriver* driver,
