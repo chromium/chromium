@@ -76,7 +76,7 @@ std::vector<int> HelpAppSystemAppDelegate::GetAdditionalSearchTerms() const {
 absl::optional<web_app::SystemAppBackgroundTaskInfo>
 HelpAppSystemAppDelegate::GetTimerInfo() const {
   if (base::FeatureList::IsEnabled(
-          chromeos::features::kHelpAppLauncherSearch)) {
+          chromeos::features::kHelpAppBackgroundPage)) {
     return web_app::SystemAppBackgroundTaskInfo(
         absl::nullopt, GURL("chrome://help-app/background"),
         /*open_immediately=*/true);
