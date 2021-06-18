@@ -14,6 +14,7 @@
 #include "base/path_service.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "crypto/openssl_util.h"
 #include "net/tools/root_store_tool/root_store.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -158,14 +159,44 @@ int main(int argc, char** argv) {
       return 1;
     }
     if (!base::WriteFile(proto_path, serialized)) {
-      LOG(ERROR) << "Error writing serialized proto root store";
+      PLOG(ERROR) << "Error writing serialized proto root store";
       return 1;
     }
   }
 
   if (!cpp_path.empty()) {
-    // TODO(https://crbug.com/1216547): implement C++ generation.
-    LOG(ERROR) << "Error writing c++ root store; unimplemented!";
+    // Root store should have at least one trust anchors.
+    CHECK_GT(root_store->trust_anchors_size(), 0);
+
+    std::string string_to_write =
+        "// This file is auto-generated, DO NOT EDIT.\n\n"
+        "const ChromeRootCertInfo kChromeRootCertList[] = {\n";
+
+    for (auto& anchor : root_store->trust_anchors()) {
+      // Every trust anchor at this point should have a DER.
+      CHECK(!anchor.der().empty());
+      std::string der = anchor.der();
+
+      // Begin struct. Assumed type of ChromeRootCertInfo:
+      //
+      // struct {
+      //   base::span<const uint8_t> der;
+      // };
+      string_to_write += "    {{{";
+
+      // Convert each character to hex representation, escaped.
+      for (auto c : der) {
+        base::StringAppendF(&string_to_write, "0x%02xu,",
+                            static_cast<uint8_t>(c));
+      }
+
+      // End struct
+      string_to_write += "}}},\n";
+    }
+    string_to_write += "};";
+    if (!base::WriteFile(cpp_path, string_to_write)) {
+      PLOG(ERROR) << "Error writing cpp include file";
+    }
   }
 
   return 0;

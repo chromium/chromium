@@ -3,7 +3,11 @@
 # found in the LICENSE file.
 
 # When adding a trust anchor, name the PEM based on the SHA-256 fingerprint of
-# the certificate.
+# the certificate. Also make sure to add the PEM file to the inputs section of
+# BUILD.gn.
+#
+# TODO(https://crbug.com/1216547): set up presubmit check to ensure consistency
+# between BUILD.gn and this file.
 
 # Actalis Authentication Root CA
 trust_anchors {
