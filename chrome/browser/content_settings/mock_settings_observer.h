@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_CONTENT_SETTINGS_MOCK_SETTINGS_OBSERVER_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -33,7 +34,7 @@ class MockSettingsObserver : public content_settings::Observer {
 
  private:
   // The map that this Observer is watching.
-  HostContentSettingsMap* map_;
+  CheckedPtr<HostContentSettingsMap> map_;
 
   base::ScopedObservation<HostContentSettingsMap, content_settings::Observer>
       observation_{this};

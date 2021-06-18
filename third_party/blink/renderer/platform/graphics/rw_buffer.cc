@@ -7,6 +7,7 @@
 #include "base/atomic_ref_count.h"
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/memory/checked_ptr.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
 
 #include <algorithm>
@@ -23,7 +24,7 @@ static const size_t kMinAllocSize = 4096;
 }  // namespace
 
 struct RWBuffer::BufferBlock {
-  RWBuffer::BufferBlock* next_;  // updated by the writer
+  CheckedPtr<RWBuffer::BufferBlock> next_;  // updated by the writer
   size_t used_;                  // updated by the writer
   const size_t capacity_;
 

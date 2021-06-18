@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_SHAPE_RESULT_VIEW_H_
 
 #include "base/containers/span.h"
+#include "base/memory/checked_ptr.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
@@ -84,8 +85,8 @@ class PLATFORM_EXPORT ShapeResultView final
           view(view),
           start_index(start_index),
           end_index(end_index) {}
-    const ShapeResult* result;
-    const ShapeResultView* view;
+    CheckedPtr<const ShapeResult> result;
+    CheckedPtr<const ShapeResultView> view;
     unsigned start_index;
     unsigned end_index;
   };

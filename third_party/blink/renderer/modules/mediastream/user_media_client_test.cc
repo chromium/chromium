@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -297,7 +298,7 @@ class MockMediaDevicesDispatcherHost
  private:
   media::AudioParameters audio_parameters_ =
       media::AudioParameters::UnavailableDeviceParams();
-  blink::MediaStreamVideoSource* video_source_ = nullptr;
+  CheckedPtr<blink::MediaStreamVideoSource> video_source_ = nullptr;
 };
 
 enum RequestState {

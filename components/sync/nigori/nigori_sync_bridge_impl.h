@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "components/sync/engine/nigori/key_derivation_params.h"
@@ -174,7 +175,7 @@ class NigoriSyncBridgeImpl : public KeystoreKeysHandler,
   // function only updates local state and doesn't trigger a commit.
   void MaybePopulateKeystoreKeysIntoCryptographer();
 
-  const Encryptor* const encryptor_;
+  const CheckedPtr<const Encryptor> encryptor_;
 
   const std::unique_ptr<NigoriLocalChangeProcessor> processor_;
   const std::unique_ptr<NigoriStorage> storage_;

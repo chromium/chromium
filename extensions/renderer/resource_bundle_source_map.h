@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "extensions/renderer/source_map.h"
 #include "v8/include/v8.h"
 
@@ -43,7 +44,7 @@ class ResourceBundleSourceMap : public SourceMap {
     mutable std::unique_ptr<std::string> cached;
   };
 
-  const ui::ResourceBundle* resource_bundle_;
+  CheckedPtr<const ui::ResourceBundle> resource_bundle_;
   std::map<std::string, ResourceInfo> resource_map_;
 
   DISALLOW_COPY_AND_ASSIGN(ResourceBundleSourceMap);

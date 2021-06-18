@@ -34,6 +34,7 @@
 #include <memory>
 
 #include "base/containers/span.h"
+#include "base/memory/checked_ptr.h"
 #include "cc/layers/texture_layer_client.h"
 #include "cc/resources/cross_thread_shared_bitmap.h"
 #include "cc/resources/shared_bitmap_id_registrar.h"
@@ -376,7 +377,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
    private:
     scoped_refptr<DrawingBuffer> drawing_buffer_;
     // The previous state restorer, in case restorers are nested.
-    ScopedStateRestorer* previous_state_restorer_ = nullptr;
+    CheckedPtr<ScopedStateRestorer> previous_state_restorer_ = nullptr;
     bool clear_state_dirty_ = false;
     bool pixel_pack_parameters_dirty_ = false;
     bool texture_binding_dirty_ = false;

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
@@ -119,13 +120,13 @@ class ExtensionViewHost
   bool IsEscapeInPopup(const content::NativeWebKeyboardEvent& event) const;
 
   // The browser associated with the ExtensionView, if any.
-  Browser* browser_;
+  CheckedPtr<Browser> browser_;
 
   // View that shows the rendered content in the UI.
-  ExtensionView* view_;
+  CheckedPtr<ExtensionView> view_;
 
   // The relevant WebContents associated with this ExtensionViewHost, if any.
-  content::WebContents* associated_web_contents_ = nullptr;
+  CheckedPtr<content::WebContents> associated_web_contents_ = nullptr;
 
   // Observer to detect when the associated web contents is destroyed.
   class AssociatedWebContentsObserver;

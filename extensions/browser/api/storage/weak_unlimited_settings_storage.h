@@ -12,6 +12,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "extensions/browser/value_store/value_store.h"
 
 namespace extensions {
@@ -44,7 +45,7 @@ class WeakUnlimitedSettingsStorage : public ValueStore {
 
  private:
   // The delegate storage area, NOT OWNED.
-  ValueStore* const delegate_;
+  const CheckedPtr<ValueStore> delegate_;
 
   DISALLOW_COPY_AND_ASSIGN(WeakUnlimitedSettingsStorage);
 };

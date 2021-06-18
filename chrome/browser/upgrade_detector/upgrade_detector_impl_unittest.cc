@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/time/clock.h"
 #include "base/time/tick_clock.h"
 #include "base/values.h"
@@ -92,7 +93,7 @@ class TestUpgradeNotificationListener : public UpgradeObserver {
   // The number of upgrade recommended notifications received.
   int notifications_count_;
 
-  UpgradeDetector* detector_;
+  CheckedPtr<UpgradeDetector> detector_;
 
   DISALLOW_COPY_AND_ASSIGN(TestUpgradeNotificationListener);
 };
@@ -112,7 +113,7 @@ class MockUpgradeObserver : public UpgradeObserver {
   MOCK_METHOD0(OnOutdatedInstallNoAutoUpdate, void());
 
  private:
-  UpgradeDetector* const upgrade_detector_;
+  const CheckedPtr<UpgradeDetector> upgrade_detector_;
   DISALLOW_COPY_AND_ASSIGN(MockUpgradeObserver);
 };
 

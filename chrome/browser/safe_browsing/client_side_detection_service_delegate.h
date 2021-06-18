@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_CLIENT_SIDE_DETECTION_SERVICE_DELEGATE_H_
 #define CHROME_BROWSER_SAFE_BROWSING_CLIENT_SIDE_DETECTION_SERVICE_DELEGATE_H_
 
+#include "base/memory/checked_ptr.h"
 #include "components/safe_browsing/content/browser/client_side_detection_service.h"
 
 class Profile;
@@ -27,7 +28,7 @@ class ClientSideDetectionServiceDelegate
   ChromeUserPopulation GetUserPopulation() override;
 
  private:
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
 
   DISALLOW_COPY_AND_ASSIGN(ClientSideDetectionServiceDelegate);
 };

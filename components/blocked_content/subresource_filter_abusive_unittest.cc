@@ -5,6 +5,7 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/blocked_content/safe_browsing_triggered_popup_blocker.h"
@@ -112,7 +113,8 @@ class SubresourceFilterAbusiveTest
   MetadataLevel bas_level_ = METADATA_NONE;
   bool enable_adblock_on_abusive_sites_ = false;
 
-  blocked_content::SafeBrowsingTriggeredPopupBlocker* popup_blocker_ = nullptr;
+  CheckedPtr<blocked_content::SafeBrowsingTriggeredPopupBlocker>
+      popup_blocker_ = nullptr;
 
  private:
   base::test::ScopedFeatureList scoped_features_;

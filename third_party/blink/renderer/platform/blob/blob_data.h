@@ -40,6 +40,7 @@
 
 #include <memory>
 #include "base/gtest_prod_util.h"
+#include "base/memory/checked_ptr.h"
 #include "base/thread_annotations.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
@@ -168,7 +169,7 @@ class PLATFORM_EXPORT BlobData {
 
   Vector<mojom::blink::DataElementPtr> elements_;
   size_t current_memory_population_ = 0;
-  BlobBytesProvider* last_bytes_provider_ = nullptr;
+  CheckedPtr<BlobBytesProvider> last_bytes_provider_ = nullptr;
 };
 
 class PLATFORM_EXPORT BlobDataHandle

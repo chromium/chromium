@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/updater/chrome_update_client_config.h"
@@ -76,7 +77,7 @@ class ExtensionUpdateClientBaseTest : public ExtensionBrowserTest {
   int get_interceptor_count() { return get_interceptor_count_; }
 
  protected:
-  extensions::UpdateService* update_service_ = nullptr;
+  CheckedPtr<extensions::UpdateService> update_service_ = nullptr;
   std::unique_ptr<content::URLLoaderInterceptor> get_interceptor_;
   int get_interceptor_count_ = 0;
   content::URLLoaderInterceptor::InterceptCallback callback_;

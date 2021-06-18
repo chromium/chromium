@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/checked_ptr.h"
 #include "base/path_service.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -151,8 +152,9 @@ class FakeRendererPpapiHost : public content::RendererPpapiHost {
   GURL GetDocumentURL(PP_Instance instance) override { return GURL(); }
 
  private:
-  content::RenderFrame* render_frame_;
-  ActionHandlingFakePepperPluginInstance* fake_pepper_plugin_instance_;
+  CheckedPtr<content::RenderFrame> render_frame_;
+  CheckedPtr<ActionHandlingFakePepperPluginInstance>
+      fake_pepper_plugin_instance_;
 };
 
 }  // namespace

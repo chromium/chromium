@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "gpu/ipc/service/gpu_channel.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 
 #include <utility>
@@ -212,7 +213,7 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelMessageFilter
   }
 #endif  // defined(OS_FUCHSIA)
 
-  IPC::Channel* ipc_channel_ = nullptr;
+  CheckedPtr<IPC::Channel> ipc_channel_ = nullptr;
   base::ProcessId peer_pid_ = base::kNullProcessId;
   std::vector<scoped_refptr<IPC::MessageFilter>> channel_filters_;
 
@@ -223,14 +224,15 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelMessageFilter
   // Note that this field may be reset at any time by the owning GpuChannel's
   // thread, so it must be accessed under lock and must be tested for null
   // before dereferencing.
-  gpu::GpuChannel* gpu_channel_ GUARDED_BY(gpu_channel_lock_) = nullptr;
+  CheckedPtr<gpu::GpuChannel> gpu_channel_ GUARDED_BY(gpu_channel_lock_) =
+      nullptr;
 
   // A token which can be retrieved by GetChannelToken to uniquely identify this
   // channel. Assigned at construction time by the GpuChannelManager, where the
   // token-to-GpuChannel mapping lives.
   const base::UnguessableToken channel_token_;
 
-  Scheduler* scheduler_;
+  CheckedPtr<Scheduler> scheduler_;
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
 
   scoped_refptr<ImageDecodeAcceleratorStub> image_decode_accelerator_stub_;

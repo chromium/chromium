@@ -8,6 +8,7 @@
 #include <dawn/dawn_proc_table.h>
 #include <dawn/webgpu.h>
 
+#include "base/memory/checked_ptr.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_resource_provider_cache.h"
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_wrapper.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -53,7 +54,7 @@ class PLATFORM_EXPORT DawnControlClientHolder
   ~DawnControlClientHolder() = default;
 
   std::unique_ptr<WebGraphicsContext3DProviderWrapper> context_provider_;
-  gpu::webgpu::WebGPUInterface* interface_;
+  CheckedPtr<gpu::webgpu::WebGPUInterface> interface_;
   DawnProcTable procs_;
   bool lost_ = false;
   WebGPURecyclableResourceCache recyclable_resource_cache_;

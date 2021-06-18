@@ -8,6 +8,7 @@
 #include <map>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/viz/common/hit_test/aggregated_hit_test_region.h"
 #include "components/viz/common/surfaces/surface_id.h"
@@ -72,7 +73,7 @@ class VIZ_SERVICE_EXPORT HitTestManager : public SurfaceObserver {
   bool ValidateHitTestRegionList(const SurfaceId& surface_id,
                                  HitTestRegionList* hit_test_region_list);
 
-  SurfaceManager* const surface_manager_;
+  const CheckedPtr<SurfaceManager> surface_manager_;
 
   std::map<SurfaceId, base::flat_map<uint64_t, HitTestRegionList>>
       hit_test_region_lists_;

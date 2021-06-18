@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_INCOGNITO_CLEAR_BROWSING_DATA_DIALOG_H_
 
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
@@ -44,7 +45,7 @@ class IncognitoClearBrowsingDataDialog
   void OnCloseWindowsButtonClicked();
   void OnCancelButtonClicked();
 
-  Profile* incognito_profile_;
+  CheckedPtr<Profile> incognito_profile_;
 
   base::OnceClosure destructor_callback_ = base::DoNothing();
 };

@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback_forward.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
@@ -94,7 +95,7 @@ class ModelExecutionManagerTest : public testing::Test {
   std::unique_ptr<optimization_guide::TestOptimizationGuideModelProvider>
       optimization_guide_model_provider_;
   std::unique_ptr<test::TestSegmentInfoDatabase> segment_database_;
-  MockFeatureAggregator* feature_aggregator_;
+  CheckedPtr<MockFeatureAggregator> feature_aggregator_;
 
   std::unique_ptr<ModelExecutionManagerImpl> model_execution_manager_;
 };

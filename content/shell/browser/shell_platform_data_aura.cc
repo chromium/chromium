@@ -5,6 +5,7 @@
 #include "content/shell/browser/shell_platform_data_aura.h"
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "content/shell/browser/shell.h"
 #include "ui/aura/client/default_capture_client.h"
@@ -69,7 +70,7 @@ class FillLayout : public aura::LayoutManager {
     SetChildBoundsDirect(child, requested_bounds);
   }
 
-  aura::Window* root_;
+  CheckedPtr<aura::Window> root_;
   bool has_bounds_;
 
   DISALLOW_COPY_AND_ASSIGN(FillLayout);

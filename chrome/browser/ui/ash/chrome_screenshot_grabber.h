@@ -10,6 +10,7 @@
 
 #include "ash/screenshot_delegate.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/ash/screenshot_area.h"
@@ -132,7 +133,7 @@ class ChromeScreenshotGrabber : public ash::ScreenshotDelegate {
   std::unique_ptr<ui::ScreenshotGrabber> screenshot_grabber_;
 
   // Forwards OnScreenshotCompleted() events to a test.
-  ChromeScreenshotGrabberTestObserver* test_observer_ = nullptr;
+  CheckedPtr<ChromeScreenshotGrabberTestObserver> test_observer_ = nullptr;
 
   // Flag used to disallow screenshots, set in some special modes.
   bool screenshots_allowed_ = true;

@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/memory/checked_ptr.h"
 #include "base/test/null_task_runner.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
@@ -57,7 +58,7 @@ class HeapMojoAssociatedReceiverSetGCBaseTest : public TestSupportingGC {
 };
 
 template <HeapMojoWrapperMode Mode>
-class GCOwner : public GarbageCollected<GCOwner<Mode>>,
+class GCOwner final : public GarbageCollected<GCOwner<Mode>>,
                 public sample::blink::Service {
  public:
   explicit GCOwner(MockContextLifecycleNotifier* context,
@@ -84,7 +85,7 @@ class GCOwner : public GarbageCollected<GCOwner<Mode>>,
  private:
   HeapMojoAssociatedReceiverSet<sample::blink::Service, GCOwner, Mode>
       associated_receiver_set_;
-  HeapMojoAssociatedReceiverSetGCBaseTest<Mode>* test_;
+  CheckedPtr<HeapMojoAssociatedReceiverSetGCBaseTest<Mode>> test_;
 };
 
 }  // namespace

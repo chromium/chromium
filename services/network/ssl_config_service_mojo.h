@@ -6,6 +6,7 @@
 #define SERVICES_NETWORK_SSL_CONFIG_SERVICE_MOJO_H_
 
 #include "base/component_export.h"
+#include "base/memory/checked_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/cert/cert_verifier.h"
@@ -54,8 +55,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SSLConfigServiceMojo
   net::SSLContextConfig ssl_context_config_;
   net::CertVerifier::Config cert_verifier_config_;
 
-  net::CertVerifier* cert_verifier_;
-  CRLSetDistributor* crl_set_distributor_;
+  CheckedPtr<net::CertVerifier> cert_verifier_;
+  CheckedPtr<CRLSetDistributor> crl_set_distributor_;
 
   // The list of domains and subdomains from enterprise policy where connection
   // coalescing is allowed when client certs are in use if the hosts being

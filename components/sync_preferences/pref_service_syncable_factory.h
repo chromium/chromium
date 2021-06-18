@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/prefs/pref_service_factory.h"
 #include "components/prefs/pref_value_store.h"
 
@@ -47,7 +48,7 @@ class PrefServiceSyncableFactory : public PrefServiceFactory {
       scoped_refptr<user_prefs::PrefRegistrySyncable> pref_registry);
 
  private:
-  PrefModelAssociatorClient* pref_model_associator_client_ = nullptr;
+  CheckedPtr<PrefModelAssociatorClient> pref_model_associator_client_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(PrefServiceSyncableFactory);
 };

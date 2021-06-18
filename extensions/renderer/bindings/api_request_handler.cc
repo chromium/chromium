@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/guid.h"
+#include "base/memory/checked_ptr.h"
 #include "base/values.h"
 #include "content/public/renderer/v8_value_converter.h"
 #include "extensions/renderer/bindings/api_binding_util.h"
@@ -31,7 +32,7 @@ class APIRequestHandler::ArgumentAdapter {
       v8::Local<v8::Context> context) const;
 
  private:
-  const base::Value* base_arguments_ = nullptr;
+  CheckedPtr<const base::Value> base_arguments_ = nullptr;
   mutable std::vector<v8::Local<v8::Value>> v8_arguments_;
 
   DISALLOW_COPY_AND_ASSIGN(ArgumentAdapter);

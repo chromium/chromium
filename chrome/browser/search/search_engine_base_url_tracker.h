@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
@@ -44,7 +45,7 @@ class SearchEngineBaseURLTracker : public TemplateURLServiceObserver {
   // Returns true if the base URL of the current search engine is Google.
   bool HasGoogleBaseURL();
 
-  TemplateURLService* template_url_service_;
+  CheckedPtr<TemplateURLService> template_url_service_;
   std::unique_ptr<SearchTermsData> search_terms_data_;
   BaseURLChangedCallback base_url_changed_callback_;
 

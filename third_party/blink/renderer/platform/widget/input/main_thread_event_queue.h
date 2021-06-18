@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/feature_list.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/timer/timer.h"
@@ -160,7 +161,7 @@ class PLATFORM_EXPORT MainThreadEventQueue
   friend class QueuedWebInputEvent;
   friend class MainThreadEventQueueTest;
   friend class MainThreadEventQueueInitializationTest;
-  MainThreadEventQueueClient* client_;
+  CheckedPtr<MainThreadEventQueueClient> client_;
   bool last_touch_start_forced_nonblocking_due_to_fling_;
   bool needs_low_latency_;
   bool needs_unbuffered_input_for_debugger_;
@@ -186,7 +187,7 @@ class PLATFORM_EXPORT MainThreadEventQueue
   SharedState shared_state_;
 
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
-  scheduler::WebThreadScheduler* main_thread_scheduler_;
+  CheckedPtr<scheduler::WebThreadScheduler> main_thread_scheduler_;
 
   // A safe guard timer to ensure input is always processed. A BeginMainFrame
   // signal might not always occur if our visibility changed.

@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "third_party/blink/public/platform/web_media_source.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
@@ -39,7 +40,7 @@ class PLATFORM_EXPORT WebMediaSourceImpl : public blink::WebMediaSource {
   void UnmarkEndOfStream() override;
 
  private:
-  ChunkDemuxer* demuxer_;  // Owned by WebMediaPlayerImpl.
+  CheckedPtr<ChunkDemuxer> demuxer_;  // Owned by WebMediaPlayerImpl.
 };
 
 }  // namespace media

@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_delegate.h"
@@ -30,7 +31,7 @@ class NetworkDelegateErrorObserver::Core
 
   virtual ~Core();
 
-  NetworkDelegate* network_delegate_;
+  CheckedPtr<NetworkDelegate> network_delegate_;
   scoped_refptr<base::SingleThreadTaskRunner> origin_runner_;
 
   DISALLOW_COPY_AND_ASSIGN(Core);

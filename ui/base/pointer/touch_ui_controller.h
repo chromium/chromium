@@ -9,6 +9,7 @@
 
 #include "base/callback_list.h"
 #include "base/component_export.h"
+#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 
 #if defined(OS_WIN)
@@ -44,7 +45,7 @@ class COMPONENT_EXPORT(UI_BASE) TouchUiController {
     void UpdateState(bool enabled);
 
    private:
-    TouchUiController* const controller_;
+    const CheckedPtr<TouchUiController> controller_;
     const TouchUiState old_state_;
   };
 

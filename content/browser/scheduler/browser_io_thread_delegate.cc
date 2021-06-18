@@ -4,6 +4,7 @@
 
 #include "content/browser/scheduler/browser_io_thread_delegate.h"
 
+#include "base/memory/checked_ptr.h"
 #include "base/message_loop/message_pump.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/task/sequence_manager/sequence_manager.h"
@@ -47,7 +48,7 @@ class BrowserIOThreadDelegate::TLSMultiplexer : public base::TaskObserver {
     }
   }
 
-  base::TaskExecutor* io_task_executor_ = nullptr;
+  CheckedPtr<base::TaskExecutor> io_task_executor_ = nullptr;
   std::vector<base::TaskExecutor*> previous_executors_;
 };
 
