@@ -1147,7 +1147,7 @@ TEST_P(StorageQueueTest, EnableCompression) {
             .Required(1, kData[1])
             .Required(2, kData[2]);
       }))
-      .RetiresOnSaturation();
+      .WillRepeatedly(Invoke(&DoNotUpload));
 
   // Trigger upload.
   task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
