@@ -6971,6 +6971,7 @@ domain Page
       optional enum format
         jpeg
         png
+        webp
       # Compression quality from range [0..100] (jpeg only).
       optional integer quality
       # Capture the screenshot of a given region only.

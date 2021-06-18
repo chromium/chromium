@@ -37,6 +37,14 @@ bool JPEG1xEncodedDataFromSkiaRepresentation(const Image& image,
                                              int quality,
                                              std::vector<unsigned char>* dst);
 
+// Fills the |dst| vector with WebP-encoded bytes of the the given image.
+// Returns true if the image was encoded (lossy) successfully.
+// |quality| determines the visual quality, 0 == lowest, 100 == highest.
+// Returns true if the Image was encoded successfully.
+GFX_EXPORT bool WebpEncodedDataFromImage(const Image& image,
+                                         int quality,
+                                         std::vector<unsigned char>* dst);
+
 // Computes the width of any nearly-transparent regions at the sides of the
 // image and returns them in |left| and |right|.  This checks each column of
 // pixels from the outsides in, looking for anything with alpha above a

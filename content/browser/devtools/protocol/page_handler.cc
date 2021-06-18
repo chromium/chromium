@@ -58,6 +58,7 @@
 #include "ui/base/page_transition_types.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/codec/png_codec.h"
+#include "ui/gfx/codec/webp_codec.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_util.h"
@@ -74,8 +75,6 @@ namespace protocol {
 namespace {
 
 constexpr const char* kMhtml = "mhtml";
-constexpr const char* kPng = "png";
-constexpr const char* kJpeg = "jpeg";
 constexpr int kDefaultScreenshotQuality = 80;
 constexpr int kFrameRetryDelayMs = 100;
 constexpr int kCaptureRetryLimit = 2;
@@ -89,12 +88,18 @@ Binary EncodeImage(const gfx::Image& image,
   DCHECK(!image.IsEmpty());
 
   scoped_refptr<base::RefCountedMemory> data;
-  if (format == kPng) {
+  if (format == protocol::Page::CaptureScreenshot::FormatEnum::Png) {
     data = image.As1xPNGBytes();
-  } else if (format == kJpeg) {
-    scoped_refptr<base::RefCountedBytes> bytes(new base::RefCountedBytes());
+  } else if (format == Page::CaptureScreenshot::FormatEnum::Jpeg) {
+    auto bytes = base::MakeRefCounted<base::RefCountedBytes>();
     if (gfx::JPEG1xEncodedDataFromImage(image, quality, &bytes->data()))
       data = bytes;
+  } else if (format == Page::CaptureScreenshot::FormatEnum::Webp) {
+    auto bytes = base::MakeRefCounted<base::RefCountedBytes>();
+    if (gfx::WebpEncodedDataFromImage(image, quality, &bytes->data()))
+      data = bytes;
+  } else {
+    NOTREACHED();
   }
 
   if (!data || !data->front())
@@ -732,7 +737,8 @@ void PageHandler::CaptureScreenshot(
   }
 
   RenderWidgetHostImpl* widget_host = host_->GetRenderWidgetHost();
-  std::string screenshot_format = format.fromMaybe(kPng);
+  std::string screenshot_format =
+      format.fromMaybe(Page::CaptureScreenshot::FormatEnum::Png);
   int screenshot_quality = quality.fromMaybe(kDefaultScreenshotQuality);
 
   // We don't support clip/emulation when capturing from window, bail out.
@@ -900,7 +906,8 @@ Response PageHandler::StartScreencast(Maybe<std::string> format,
     return Response::InternalError();
 
   screencast_enabled_ = true;
-  screencast_format_ = format.fromMaybe(kPng);
+  screencast_format_ =
+      format.fromMaybe(Page::CaptureScreenshot::FormatEnum::Png);
   screencast_quality_ = quality.fromMaybe(kDefaultScreenshotQuality);
   if (screencast_quality_ < 0 || screencast_quality_ > 100)
     screencast_quality_ = kDefaultScreenshotQuality;

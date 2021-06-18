@@ -13,6 +13,7 @@
 #include "skia/ext/image_operations.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/codec/jpeg_codec.h"
+#include "ui/gfx/codec/webp_codec.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/resize_image_dimensions.h"
@@ -73,6 +74,13 @@ bool JPEG1xEncodedDataFromSkiaRepresentation(const Image& image,
     return false;
 
   return gfx::JPEGCodec::Encode(bitmap, quality, dst);
+}
+
+bool WebpEncodedDataFromImage(const Image& image,
+                              int quality,
+                              std::vector<unsigned char>* dst) {
+  const SkBitmap bitmap = image.AsBitmap();
+  return gfx::WebpCodec::Encode(bitmap, quality, dst);
 }
 
 Image ResizedImageForSearchByImageSkiaRepresentation(const Image& image) {

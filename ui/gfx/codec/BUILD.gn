@@ -13,6 +13,8 @@ component("codec") {
     "png_codec.h",
     "vector_wstream.cc",
     "vector_wstream.h",
+    "webp_codec.cc",
+    "webp_codec.h",
   ]
 
   deps = [
