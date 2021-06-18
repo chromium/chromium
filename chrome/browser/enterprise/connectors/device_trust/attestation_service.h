@@ -28,8 +28,8 @@ class AttestationService {
   AttestationService();
   ~AttestationService();
 
-  // Export the public key of `key_pair_` in SubjectPublicKeyInfo format.
-  std::string ExportPublicKey();
+  // Export the public key of `key_pair_`.
+  std::string ExportPEMPublicKey();
 
   void SignEnterpriseChallenge(const SignEnterpriseChallengeRequest& request,
                                SignEnterpriseChallengeReply* result);

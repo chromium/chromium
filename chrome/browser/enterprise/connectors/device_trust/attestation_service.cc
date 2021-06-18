@@ -41,7 +41,7 @@ AttestationService::~AttestationService() = default;
 
 void AttestationService::FillValuesForCBCM() {
   if (public_key_.empty())
-    public_key_ = ExportPublicKey();
+    public_key_ = ExportPEMPublicKey();
   if (device_id_.empty())
     device_id_ = policy::BrowserDMTokenStorage::Get()->RetrieveClientId();
   if (customer_id_.empty())
@@ -90,13 +90,10 @@ std::string AttestationService::JsonChallengeToProtobufChallenge(
       !data.value().FindPath("challenge.signature"))
     return std::string();
 
-  if (!base::Base64Decode(data.value().FindPath("challenge.data")->GetString(),
-                          signed_challenge.mutable_data()))
-    LOG(ERROR) << "Error during decoding base64 challenge data.";
-  if (!base::Base64Decode(
-          data.value().FindPath("challenge.signature")->GetString(),
-          signed_challenge.mutable_signature()))
-    LOG(ERROR) << "Error during decoding base64 challenge signature.";
+  base::Base64Decode(data.value().FindPath("challenge.data")->GetString(),
+                     signed_challenge.mutable_data());
+  base::Base64Decode(data.value().FindPath("challenge.signature")->GetString(),
+                     signed_challenge.mutable_signature());
 
   std::string serialized_signed_challenge;
   if (!signed_challenge.SerializeToString(&serialized_signed_challenge)) {
@@ -110,14 +107,13 @@ std::string AttestationService::ProtobufChallengeToJsonChallenge(
     const std::string& challenge_response) {
   base::Value signed_data(base::Value::Type::DICTIONARY);
 
-  SignedData signed_data_proto;
-  signed_data_proto.ParseFromString(challenge_response);
   std::string encoded;
-  base::Base64Encode(signed_data_proto.data(), &encoded);
+  base::Base64Encode(challenge_response, &encoded);
   signed_data.SetKey("data", base::Value(encoded));
 
-  base::Base64Encode(signed_data_proto.signature(), &encoded);
-  signed_data.SetKey("signature", base::Value(encoded));
+  std::string signature;
+  key_pair_->GetSignatureInBase64(challenge_response, &signature);
+  signed_data.SetKey("signature", base::Value(signature));
 
   base::Value dict(base::Value::Type::DICTIONARY);
   dict.SetKey("challengeResponse", std::move(signed_data));
@@ -127,11 +123,8 @@ std::string AttestationService::ProtobufChallengeToJsonChallenge(
   return json;
 }
 
-std::string AttestationService::ExportPublicKey() {
-  std::vector<uint8_t> public_key_info;
-  if (!key_pair_->ExportPublicKey(&public_key_info))
-    return std::string();
-  return std::string(public_key_info.begin(), public_key_info.end());
+std::string AttestationService::ExportPEMPublicKey() {
+  return key_pair_->ExportPEMPublicKey();
 }
 
 void AttestationService::BuildChallengeResponseForVAChallenge(
@@ -269,13 +262,14 @@ bool AttestationService::EncryptEnterpriseKeyInfo(
 
 bool AttestationService::SignChallengeData(const std::string& data,
                                            std::string* response) {
-  SignedData signed_data;
-  signed_data.set_data(data);
   std::string signature;
-  if (!key_pair_->SignMessage(data, signed_data.mutable_signature())) {
+  if (!key_pair_->GetSignatureInBase64(data, &signature)) {
     LOG(ERROR) << __func__ << ": Failed to sign data.";
     return false;
   }
+  SignedData signed_data;
+  signed_data.set_data(data);
+  signed_data.set_signature(signature);
   if (!signed_data.SerializeToString(response)) {
     LOG(ERROR) << __func__ << ": Failed to serialize signed data.";
     return false;

@@ -4,9 +4,18 @@
 
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_service.h"
 
+#include "base/base64.h"
+#include "base/base64url.h"
+#include "base/json/json_reader.h"
+#include "base/json/json_writer.h"
+#include "base/values.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
+#include "chrome/browser/enterprise/connectors/device_trust/device_trust_attestation_ca.pb.h"
+#include "chrome/browser/enterprise/connectors/device_trust/device_trust_interface.pb.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signal_reporter.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/pref_names.h"
 
 namespace enterprise_connectors {
 
@@ -79,7 +88,7 @@ void DeviceTrustService::OnReporterInitialized(bool success) {
   auto* credential = report.mutable_attestation_credential();
   credential->set_format(
       DeviceTrustReportEvent::Credential::EC_NID_X9_62_PRIME256V1_PUBLIC_DER);
-  credential->set_credential(attestation_service_->ExportPublicKey());
+  credential->set_credential(attestation_service_->ExportPEMPublicKey());
 #endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
 
   reporter_->SendReport(&report, std::move(signal_report_callback_));
@@ -112,7 +121,7 @@ void DeviceTrustService::SetSignalReportCallbackForTesting(
 
 #if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
 std::string DeviceTrustService::GetAttestationCredentialForTesting() const {
-  return attestation_service_->ExportPublicKey();
+  return attestation_service_->ExportPEMPublicKey();
 }
 
 void DeviceTrustService::BuildChallengeResponse(const std::string& challenge,

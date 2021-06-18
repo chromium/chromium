@@ -6,14 +6,11 @@
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_DEVICE_TRUST_SERVICE_H_
 
 #include "build/build_config.h"
+#include "chrome/browser/enterprise/connectors/device_trust/attestation_service.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
-
-#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
-#include "chrome/browser/enterprise/connectors/device_trust/attestation_service.h"
-#endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
 
 #include <memory>
 
