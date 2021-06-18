@@ -75,13 +75,17 @@ std::unique_ptr<APISignature> IntAndCallback() {
   return std::make_unique<APISignature>(std::move(specs));
 }
 
-std::unique_ptr<APISignature> IntAndOptionalCallback() {
+SpecVector IntAndOptionalCallbackSpec() {
   SpecVector specs;
   specs.push_back(ArgumentSpecBuilder(ArgumentType::INTEGER, "int").Build());
   specs.push_back(ArgumentSpecBuilder(ArgumentType::FUNCTION, "callback")
                       .MakeOptional()
                       .Build());
-  return std::make_unique<APISignature>(std::move(specs));
+  return specs;
+}
+
+std::unique_ptr<APISignature> IntAndOptionalCallback() {
+  return std::make_unique<APISignature>(IntAndOptionalCallbackSpec());
 }
 
 std::unique_ptr<APISignature> OptionalIntAndCallback() {
@@ -599,6 +603,42 @@ TEST_F(APISignatureTest, ParseArgumentsToV8) {
   std::string prop2;
   ASSERT_TRUE(dict.Get("prop2", &prop2));
   EXPECT_EQ("baz", prop2);
+}
+
+// Tests that unspecified optional callback is filled with NullCallback in
+// APISignature.
+//
+// Regression test for https://crbug.com/1218569.
+TEST_F(APISignatureTest, ParseArgumentsToV8WithUnspecifiedOptionalCallback) {
+  v8::HandleScope handle_scope(isolate());
+  v8::Local<v8::Context> context = MainContext();
+
+  bool context_allows_promises = true;
+  auto promises_available = base::BindRepeating(
+      [](bool* flag, v8::Local<v8::Context> context) { return *flag; },
+      &context_allows_promises);
+  auto api_available =
+      base::BindRepeating([](v8::Local<v8::Context> context,
+                             const std::string& name) { return true; });
+  BindingAccessChecker access_checker(api_available, promises_available);
+
+  auto signature = std::make_unique<APISignature>(IntAndOptionalCallbackSpec(),
+                                                  true, &access_checker);
+
+  std::vector<v8::Local<v8::Value>> args =
+      StringToV8Vector(context, R"([1337])");
+
+  APISignature::V8ParseResult parse_result =
+      signature->ParseArgumentsToV8(context, args, type_refs());
+  ASSERT_TRUE(parse_result.arguments);
+
+  ASSERT_EQ(2u, parse_result.arguments->size());
+  int int_value = -1;
+  gin::ConvertFromV8(context->GetIsolate(), (*parse_result.arguments)[0],
+                     &int_value);
+  EXPECT_EQ(1337, int_value);
+  ASSERT_FALSE((*parse_result.arguments)[1].IsEmpty());
+  EXPECT_TRUE((*parse_result.arguments)[1]->IsNull());
 }
 
 // Tests response validation, which is stricter than typical validation.

@@ -247,6 +247,18 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest, WorkerToTab) {
       << message_;
 }
 
+// Tests that chrome.tabs.sendMessage from SW extension without specifying
+// callback doesn't crash.
+//
+// Regression test for https://crbug.com/1218569.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest,
+                       TabsSendMessageWithoutCallback) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  ASSERT_TRUE(RunExtensionTest(
+      "service_worker/messaging/tabs_send_message_without_callback"))
+      << message_;
+}
+
 // Tests port creation (chrome.runtime.connect) from content script to an
 // extension SW and disconnecting the port.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest,

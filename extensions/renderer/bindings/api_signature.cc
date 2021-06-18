@@ -359,6 +359,10 @@ bool ArgumentParser::ParseArgument(const ArgumentSpec& spec,
 bool ArgumentParser::ParseCallback(const ArgumentSpec& spec,
                                    v8::Local<v8::Value> value) {
   if (value.IsEmpty()) {
+    // Note: The null callback isn't exactly correct. See
+    // https://crbug.com/1220910 for details.
+    AddNullCallback();
+
     if (promises_allowed_ == PromisesAllowed::kAllowed) {
       // If the callback is omitted and promises are supported, assume the
       // async response type is a promise.
@@ -367,7 +371,6 @@ bool ArgumentParser::ParseCallback(const ArgumentSpec& spec,
       // Otherwise, we should only get to this point if the callback argument is
       // optional.
       DCHECK(spec.optional());
-      AddNullCallback();
       async_type_ = binding::AsyncResponseType::kNone;
     }
     return true;
