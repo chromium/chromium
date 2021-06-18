@@ -26,8 +26,7 @@ class DEVICE_GAMEPAD_EXPORT GamepadMonitor : public GamepadConsumer,
   // GamepadConsumer implementation.
   void OnGamepadConnected(uint32_t index, const Gamepad& gamepad) override;
   void OnGamepadDisconnected(uint32_t index, const Gamepad& gamepad) override;
-  void OnGamepadButtonOrAxisChanged(uint32_t index,
-                                    const Gamepad& gamepad) override;
+  void OnGamepadChanged(const mojom::GamepadChanges& change) override;
 
   // mojom::GamepadMonitor implementation.
   void GamepadStartPolling(GamepadStartPollingCallback callback) override;

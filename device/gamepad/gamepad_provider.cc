@@ -30,22 +30,89 @@
 
 namespace device {
 
+namespace {
+std::vector<mojom::ButtonChangePtr> CompareButtons(const Gamepad* old_gamepad,
+                                                   const Gamepad* new_gamepad) {
+  if (!new_gamepad)
+    return {};
+
+  std::vector<mojom::ButtonChangePtr> button_changes;
+  const auto* new_buttons = new_gamepad->buttons;
+  const auto* old_buttons = old_gamepad ? old_gamepad->buttons : nullptr;
+  for (size_t i = 0; i < new_gamepad->buttons_length; ++i) {
+    double new_value = new_buttons[i].value;
+    bool new_pressed = new_buttons[i].pressed;
+    if (old_buttons && i < old_gamepad->buttons_length) {
+      double old_value = old_buttons[i].value;
+      bool old_pressed = old_buttons[i].pressed;
+      auto this_change = mojom::ButtonChange::New();
+      this_change->button_index = i;
+      this_change->button_snapshot = new_buttons[i];
+      bool relevant_change = false;
+      if (old_value != new_value) {
+        relevant_change = true;
+        this_change->value_changed = true;
+      }
+      if (old_pressed != new_pressed) {
+        relevant_change = true;
+        this_change->button_down = new_pressed;
+        this_change->button_up = !new_pressed;
+      }
+      if (relevant_change)
+        button_changes.push_back(std::move(this_change));
+    }
+  }
+  return button_changes;
+}
+
+std::vector<mojom::AxisChangePtr> CompareAxes(const Gamepad* old_gamepad,
+                                              const Gamepad* new_gamepad) {
+  if (!new_gamepad)
+    return {};
+
+  std::vector<mojom::AxisChangePtr> axis_changes;
+  const auto* new_axes = new_gamepad->axes;
+  const auto* old_axes = old_gamepad ? old_gamepad->axes : nullptr;
+  for (size_t i = 0; i < new_gamepad->axes_length; ++i) {
+    const double new_value = new_axes[i];
+    if (old_axes && i < old_gamepad->axes_length) {
+      const double old_value = old_axes[i];
+      if (old_value != new_value) {
+        auto this_change = mojom::AxisChange::New();
+        this_change->axis_index = i;
+        this_change->axis_snapshot = new_value;
+        axis_changes.push_back(std::move(this_change));
+      }
+    }
+  }
+  return axis_changes;
+}
+
+mojom::GamepadChangesPtr CompareGamepadState(const Gamepad* old_gamepad,
+                                             const Gamepad* new_gamepad,
+                                             size_t index) {
+  return mojom::GamepadChanges::New(index,
+                                    CompareButtons(old_gamepad, new_gamepad),
+                                    CompareAxes(old_gamepad, new_gamepad));
+}
+}  // namespace
+
 constexpr int64_t kPollingIntervalMilliseconds = 4;  // ~250 Hz
 
-GamepadProvider::GamepadProvider(
-    GamepadConnectionChangeClient* connection_change_client)
+GamepadProvider::GamepadProvider(GamepadChangeClient* gamepad_change_client)
     : gamepad_shared_buffer_(std::make_unique<GamepadSharedBuffer>()),
-      connection_change_client_(connection_change_client) {
+      main_thread_task_runner_(base::ThreadTaskRunnerHandle::Get()),
+      gamepad_change_client_(gamepad_change_client) {
   Initialize(std::unique_ptr<GamepadDataFetcher>());
 }
 
-GamepadProvider::GamepadProvider(
-    GamepadConnectionChangeClient* connection_change_client,
-    std::unique_ptr<GamepadDataFetcher> fetcher,
-    std::unique_ptr<base::Thread> polling_thread)
+GamepadProvider::GamepadProvider(GamepadChangeClient* gamepad_change_client,
+                                 std::unique_ptr<GamepadDataFetcher> fetcher,
+                                 std::unique_ptr<base::Thread> polling_thread)
     : gamepad_shared_buffer_(std::make_unique<GamepadSharedBuffer>()),
       polling_thread_(std::move(polling_thread)),
-      connection_change_client_(connection_change_client) {
+      main_thread_task_runner_(base::ThreadTaskRunnerHandle::Get()),
+      gamepad_change_client_(gamepad_change_client) {
   Initialize(std::move(fetcher));
 }
 
@@ -307,21 +374,29 @@ void GamepadProvider::DoPoll() {
     it->GetGamepadData(changed);
   }
 
-  Gamepads* buffer = gamepad_shared_buffer_->buffer();
+  Gamepads old_buffer;
+  Gamepads new_buffer;
+  GetCurrentGamepadData(&old_buffer);
 
-  // Send out disconnect events using the last polled data before we wipe it out
-  // in the mapping step.
-  if (ever_had_user_gesture_) {
-    for (size_t i = 0; i < Gamepads::kItemsLengthCap; ++i) {
-      PadState& state = pad_states_.get()[i];
+  std::vector<mojom::GamepadChangesPtr> changes;
+  changes.reserve(Gamepads::kItemsLengthCap);
+  for (size_t i = 0; i < Gamepads::kItemsLengthCap; ++i) {
+    PadState& state = pad_states_.get()[i];
 
-      if (!state.is_newly_active && !state.is_active &&
-          state.source != GAMEPAD_SOURCE_NONE) {
-        auto pad = buffer->items[i];
-        pad.connected = false;
-        OnGamepadConnectionChange(false, i, pad);
-        ClearPadState(state);
-      }
+    // Send out disconnect events using the last polled data.
+    if (ever_had_user_gesture_ && !state.is_newly_active && !state.is_active &&
+        state.source != GAMEPAD_SOURCE_NONE) {
+      auto pad = old_buffer.items[i];
+      pad.connected = false;
+      OnGamepadConnectionChange(false, i, pad);
+      ClearPadState(state);
+    }
+
+    MapAndSanitizeGamepadData(&state, &new_buffer.items[i], sanitize_);
+    if (gamepad_change_client_ &&
+        features::AreGamepadButtonAxisEventsEnabled()) {
+      changes.push_back(
+          CompareGamepadState(&old_buffer.items[i], &new_buffer.items[i], i));
     }
   }
 
@@ -331,22 +406,20 @@ void GamepadProvider::DoPoll() {
     // Acquire the SeqLock. There is only ever one writer to this data.
     // See gamepad_shared_buffer.h.
     gamepad_shared_buffer_->WriteBegin();
-    for (size_t i = 0; i < Gamepads::kItemsLengthCap; ++i) {
-      PadState& state = pad_states_.get()[i];
-      // Must run through the map+sanitize here or CheckForUserGesture may fail.
-      MapAndSanitizeGamepadData(&state, &buffer->items[i], sanitize_);
-    }
+    *gamepad_shared_buffer_->buffer() = new_buffer;
     gamepad_shared_buffer_->WriteEnd();
   }
 
   if (ever_had_user_gesture_) {
     for (size_t i = 0; i < Gamepads::kItemsLengthCap; ++i) {
       PadState& state = pad_states_.get()[i];
-
-      if (state.is_newly_active && buffer->items[i].connected) {
+      if (state.is_newly_active && new_buffer.items[i].connected) {
         state.is_newly_active = false;
-        OnGamepadConnectionChange(true, i, buffer->items[i]);
+        OnGamepadConnectionChange(true, i, new_buffer.items[i]);
       }
+    }
+    for (auto& change : changes) {
+      SendChangeEvents(std::move(change));
     }
   }
 
@@ -366,6 +439,19 @@ void GamepadProvider::DoPoll() {
 
   // Schedule our next interval of polling.
   ScheduleDoPoll();
+}
+
+void GamepadProvider::SendChangeEvents(
+    mojom::GamepadChangesPtr gamepad_changes) {
+  DCHECK(gamepad_changes);
+  if (gamepad_changes->button_changes.empty() &&
+      gamepad_changes->axis_changes.empty()) {
+    return;
+  }
+  main_thread_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&GamepadChangeClient::OnGamepadChange,
+                                base::Unretained(gamepad_change_client_),
+                                std::move(gamepad_changes)));
 }
 
 void GamepadProvider::DisconnectUnrecognizedGamepad(GamepadSource source,
@@ -399,8 +485,13 @@ void GamepadProvider::ScheduleDoPoll() {
 void GamepadProvider::OnGamepadConnectionChange(bool connected,
                                                 uint32_t index,
                                                 const Gamepad& pad) {
-  if (connection_change_client_)
-    connection_change_client_->OnGamepadConnectionChange(connected, index, pad);
+  if (gamepad_change_client_) {
+    main_thread_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&GamepadChangeClient::OnGamepadConnectionChange,
+                       base::Unretained(gamepad_change_client_), connected,
+                       index, pad));
+  }
 }
 
 bool GamepadProvider::CheckForUserGesture() {

@@ -865,6 +865,12 @@ const char kEnableFencedFramesDescription[] =
     "embedding an isolated top-level page. See "
     "https://github.com/shivanigithub/fenced-frame";
 
+const char kEnableGamepadButtonAxisEventsName[] =
+    "Gamepad Button and Axis Events";
+const char kEnableGamepadButtonAxisEventsDescription[] =
+    "Enables the ability to subscribe to changes in buttons and/or axes "
+    "on the gamepad object.";
+
 const char kEnableGenericSensorExtraClassesName[] =
     "Generic Sensor Extra Classes";
 const char kEnableGenericSensorExtraClassesDescription[] =

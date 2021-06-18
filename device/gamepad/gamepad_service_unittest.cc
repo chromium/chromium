@@ -8,7 +8,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "device/gamepad/gamepad_consumer.h"
@@ -32,8 +31,7 @@ class ConnectionListener : public GamepadConsumer {
   void OnGamepadDisconnected(uint32_t index, const Gamepad& gamepad) override {
     disconnected_counter_++;
   }
-  void OnGamepadButtonOrAxisChanged(uint32_t index,
-                                    const Gamepad& gamepad) override {}
+  void OnGamepadChanged(const mojom::GamepadChanges& change) override {}
 
   void ClearCounters() {
     connected_counter_ = 0;

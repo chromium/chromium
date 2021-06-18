@@ -1850,6 +1850,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "enable-gamepad-button-axis-events",
+    "owners": [ "//device/gamepad/OWNERS", "jameshollyer@chromium.org" ],
+    "expiry_milestone": 98
+  },
+  {
     "name": "enable-generated-webapks",
     "owners": [ "tsergeant@chromium.org" ],
     "expiry_milestone": 95

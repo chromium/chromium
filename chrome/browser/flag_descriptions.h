@@ -599,6 +599,9 @@ extern const char kDownloadLaterDebugOnWifiNameDescription[];
 extern const char kEnableFencedFramesName[];
 extern const char kEnableFencedFramesDescription[];
 
+extern const char kEnableGamepadButtonAxisEventsName[];
+extern const char kEnableGamepadButtonAxisEventsDescription[];
+
 extern const char kEnableLoginDetectionName[];
 extern const char kEnableLoginDetectionDescription[];
 

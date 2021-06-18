@@ -151,11 +151,9 @@ void GamepadSharedMemoryReader::GamepadDisconnected(
     listener_->DidDisconnectGamepad(index, gamepad);
 }
 
-void GamepadSharedMemoryReader::GamepadButtonOrAxisChanged(
-    uint32_t index,
-    const device::Gamepad& gamepad) {
-  if (listener_)
-    listener_->ButtonOrAxisDidChange(index, gamepad);
+void GamepadSharedMemoryReader::GamepadChanged(
+    device::mojom::blink::GamepadChangesPtr change) {
+  // TODO(crbug.com/856290): use these calls to Generate Button Event.
 }
 
 }  // namespace blink
