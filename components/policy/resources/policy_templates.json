@@ -3882,7 +3882,7 @@
         {
           'name': 'BlockMaliciousDownloads',
           'value': 4,
-          'caption': '''Block malicious downloads''',
+          'caption': '''Block malicious downloads (recommended)''',
         },
       ],
       'supported_on': ['chrome.*:61-', 'chrome_os:61-'],
@@ -3891,7 +3891,7 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
-      'example_value': 2,
+      'example_value': 4,
       'id': 371,
       'caption': '''Allow download restrictions''',
       'tags': ['local-data-access'],
