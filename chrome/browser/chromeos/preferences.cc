@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "ash/components/pcie_peripheral/pcie_peripheral_manager.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
@@ -48,6 +49,7 @@
 #include "chrome/browser/ui/ash/system_tray_client_impl.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/dbus/pciguard/pciguard_client.h"
 #include "chromeos/settings/cros_settings_names.h"
 #include "chromeos/system/devicemode.h"
 #include "chromeos/system/statistics_provider.h"
@@ -179,6 +181,8 @@ void Preferences::RegisterPrefs(PrefRegistrySimple* registry) {
       static_cast<int>(crosapi::browser_util::LacrosLaunchSwitch::kUserChoice));
   registry->RegisterBooleanPref(
       chromeos::prefs::kDeviceSystemWideTracingEnabled, true);
+  registry->RegisterBooleanPref(
+      ash::prefs::kLocalStateDevicePeripheralDataAccessEnabled, false);
 
   ash::RegisterLocalStatePrefs(registry);
   split_settings_sync_field_trial::RegisterLocalStatePrefs(registry);
@@ -584,6 +588,9 @@ void Preferences::InitUserPrefs(sync_preferences::PrefServiceSyncable* prefs) {
                                    callback);
   xkb_auto_repeat_interval_pref_.Init(ash::prefs::kXkbAutoRepeatInterval, prefs,
                                       callback);
+  pci_data_access_enabled_pref_.Init(
+      ash::prefs::kLocalStateDevicePeripheralDataAccessEnabled,
+      g_browser_process->local_state(), callback);
 
   pref_change_registrar_.Init(prefs);
   pref_change_registrar_.Add(::prefs::kUserTimezone, callback);
@@ -1078,6 +1085,16 @@ void Preferences::ApplyPreferences(ApplyReason reason,
     user_manager::known_user::SetBooleanPref(
         user_->GetAccountId(),
         chromeos::prefs::kLoginDisplayPasswordButtonEnabled, value);
+  }
+
+  if (pref_name == ash::prefs::kLocalStateDevicePeripheralDataAccessEnabled &&
+      reason == REASON_PREF_CHANGED) {
+    const bool value = g_browser_process->local_state()->GetBoolean(
+        ash::prefs::kLocalStateDevicePeripheralDataAccessEnabled);
+    if (ash::PciePeripheralManager::IsInitialized()) {
+      ash::PciePeripheralManager::Get()->SetPcieTunnelingAllowedState(value);
+    }
+    PciguardClient::Get()->SendExternalPciDevicesPermissionState(value);
   }
 }
 

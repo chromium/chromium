@@ -1156,13 +1156,13 @@ void ChromeBrowserMainPartsChromeos::PostBrowserStart() {
                  base::BindOnce(&CrosUsbDetector::ConnectToDeviceManager,
                                 base::Unretained(cros_usb_detector_.get())));
 
-  bool pcie_tunneling_allowed = false;
-  CrosSettings::Get()->GetBoolean(chromeos::kDevicePeripheralDataAccessEnabled,
-                                  &pcie_tunneling_allowed);
   if (chromeos::features::IsPciguardUiEnabled()) {
+    // The local_state pref may not be available at this stage of Chrome's
+    // lifecycle, default to false for now. The actual state will be set in a
+    // later initializer.
     ash::PciePeripheralManager::Initialize(
         user_manager::UserManager::Get()->IsLoggedInAsGuest(),
-        pcie_tunneling_allowed);
+        /*initial_state=*/false);
     ash::Shell::Get()
         ->pcie_peripheral_notification_controller()
         ->OnPciePeripheralManagerInitialized();

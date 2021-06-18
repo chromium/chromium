@@ -1927,9 +1927,9 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
                   base::Value(false), nullptr);
   }
 
-  if (policy.has_device_pci_peripheral_data_access_enabled()) {
-    const em::DevicePciPeripheralDataAccessEnabledProto& container(
-        policy.device_pci_peripheral_data_access_enabled());
+  if (policy.has_device_pci_peripheral_data_access_enabled_v2()) {
+    const em::DevicePciPeripheralDataAccessEnabledProtoV2& container(
+        policy.device_pci_peripheral_data_access_enabled_v2());
     if (container.has_enabled()) {
       policies->Set(key::kDevicePciPeripheralDataAccessEnabled,
                     POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,

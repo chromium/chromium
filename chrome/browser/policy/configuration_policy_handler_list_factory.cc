@@ -1209,6 +1209,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kUserBorealisAllowed,
     borealis::prefs::kBorealisAllowedForUser,
     base::Value::Type::BOOLEAN },
+  { key::kDevicePciPeripheralDataAccessEnabled,
+    ash::prefs::kLocalStateDevicePeripheralDataAccessEnabled,
+    base::Value::Type::BOOLEAN },
 #endif // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_WIN)

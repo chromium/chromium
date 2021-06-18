@@ -254,6 +254,12 @@ const char kEnableStylusTools[] = "settings.enable_stylus_tools";
 const char kLaunchPaletteOnEjectEvent[] =
     "settings.launch_palette_on_eject_event";
 
+// Boolean pref indicating whether the PCI tunneling is allowed for external
+// Thunderbolt/USB4 peripherals. This pref is only used if the policy
+// "DevicePciPeripheralDataAccessEnabled" is set to "unset".
+const char kLocalStateDevicePeripheralDataAccessEnabled[] =
+    "settings.local_state_device_pci_data_access_enabled";
+
 // A boolean pref that specifies if the cellular setup notification can be
 // shown or not. This notification should be shown post-OOBE if the user has a
 // cellular-capable device but no available cellular networks. It should only be

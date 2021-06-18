@@ -17500,7 +17500,6 @@
         },
       ],
       'example_value': False,
-      'default': False,
       'device_only': True,
       'id': 825,
       'caption': '''Enable Thunderbolt/USB4 peripheral data access''',
@@ -17509,7 +17508,7 @@
 
       If this policy is enabled, user will be able to fully connect their Thunderbolt/USB4 peripheral device through PCIe tunneling.
 
-      This policy is disabled by default.''',
+      If policy is left unset, defaults to false and the user will be able to select whichever state (true/false) for this setting.''',
     },
     {
       'name': 'BrowserNetworkTimeQueriesEnabled',
@@ -26774,11 +26773,11 @@ The recommended way to configure policy on Windows is via GPO, although provisio
     'DeviceFamilyLinkAccountsAllowed': 'family_link_accounts_allowed.family_link_accounts_allowed',
     'DeviceArcDataSnapshotHours': 'arc_data_snapshot_hours.arc_data_snapshot_hours',
     'DeviceSystemWideTracingEnabled': 'device_system_wide_tracing_enabled.enabled',
-    'DevicePciPeripheralDataAccessEnabled': 'device_pci_peripheral_data_access_enabled.enabled',
     'DeviceBorealisAllowed': 'device_borealis_allowed.allowed',
     'DeviceAllowedBluetoothServices': 'device_allowed_bluetooth_services.allowlist',
     'DeviceDebugPacketCaptureAllowed': 'device_debug_packet_capture_allowed.allowed',
     'DeviceScheduledReboot': 'device_scheduled_reboot.device_scheduled_reboot_settings',
+    'DevicePciPeripheralDataAccessEnabled': 'device_pci_peripheral_data_access_enabled_v2.enabled',
   },
   'policy_atomic_group_definitions': [
     {

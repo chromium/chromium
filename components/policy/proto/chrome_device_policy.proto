@@ -1759,9 +1759,17 @@ message DeviceSystemWideTracingEnabledProto {
 }
 
 // Setting that controls whether data access is enabled for Thunderbolt/USB4
-// peripherals.
+// peripherals. This proto is no longer being used, please use
+// DevicePciPeripheralDataAccessEnabledProtoV2.
 message DevicePciPeripheralDataAccessEnabledProto {
   optional bool enabled = 1 [default = false];
+}
+
+// Setting that controls whether data access is enabled for Thunderbolt/USB4
+// peripherals. This replaces DevicePciPeripheralDataAccessEnabledProto. Used
+// only for the associated CrosSetting.
+message DevicePciPeripheralDataAccessEnabledProtoV2 {
+  optional bool enabled = 1;
 }
 
 // Setting that controls whether Borealis will be allowed on the device.
@@ -1946,4 +1954,6 @@ message ChromeDeviceSettingsProto {
   optional DeviceDebugPacketCaptureAllowedProto
       device_debug_packet_capture_allowed = 121;
   optional DeviceScheduledRebootProto device_scheduled_reboot = 122;
+  optional DevicePciPeripheralDataAccessEnabledProtoV2
+      device_pci_peripheral_data_access_enabled_v2 = 123;
 }

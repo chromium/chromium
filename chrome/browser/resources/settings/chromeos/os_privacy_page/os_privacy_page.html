@@ -1,6 +1,6 @@
 <style include="settings-shared">
-  :host(:not([is-peripheral-protection-toggle-enforced_]))
-      #peripheralDataAccessProtection {
+  :host([is-user-configurable_])
+      .peripheral-data-access-protection {
     --cr-disabled-opacity: 1;
     cursor: pointer;
     opacity: 1;
@@ -68,7 +68,8 @@
             on-focus="onDataAccessToggleFocus_"
             on-keypress="onDataAccessToggleKeyPress_">
           <settings-toggle-button
-              id="peripheralDataAccessProtection"
+              id="crosSettingDataAccessToggle"
+              class="peripheral-data-access-protection"
               pref="{{prefs.cros.device.peripheral_data_access_enabled}}"
               label="$i18n{peripheralDataAccessProtectionToggleTitle}"
               sub-label=
@@ -77,6 +78,24 @@
                   "[[Setting.kPeripheralDataAccessProtection]]"
               on-click="onPeripheralProtectionClick_"
               learn-more-url="$i18n{peripheralDataAccessLearnMoreURL}"
+              hidden$="[[isLocalStateDataAccessPref_(
+                  dataAccessProtectionPrefName_)]]"
+              disabled
+              inverted>
+          </settings-toggle-button>
+          <settings-toggle-button
+              id="localStateDataAccessToggle"
+              class="peripheral-data-access-protection"
+              pref="{{prefs.settings.local_state_device_pci_data_access_enabled}}"
+              label="$i18n{peripheralDataAccessProtectionToggleTitle}"
+              sub-label=
+                  "$i18n{peripheralDataAccessProtectionToggleDescription}"
+              deep-link-focus-id$=
+                  "[[Setting.kPeripheralDataAccessProtection]]"
+              on-click="onPeripheralProtectionClick_"
+              learn-more-url="$i18n{peripheralDataAccessLearnMoreURL}"
+              hidden$="[[isCrosSettingDataAccessPref_(
+                  dataAccessProtectionPrefName_)]]"
               disabled
               inverted>
           </settings-toggle-button>
@@ -137,6 +156,7 @@
 
 <template is="dom-if" if="[[showDisableProtectionDialog_]]" restamp>
   <settings-peripheral-data-access-protection-dialog id="protectionDialog"
-      on-close="onDisableProtectionDialogClosed_" prefs="{{prefs}}">
+      on-close="onDisableProtectionDialogClosed_" prefs="{{prefs}}"
+      pref-name="[[dataAccessProtectionPrefName_]]">
   </settings-peripheral-data-access-protection-dialog>
 </template>

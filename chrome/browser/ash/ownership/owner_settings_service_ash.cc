@@ -635,9 +635,9 @@ void OwnerSettingsServiceAsh::UpdateDeviceSettings(
       NOTREACHED();
     }
   } else if (path == kDevicePeripheralDataAccessEnabled) {
-    em::DevicePciPeripheralDataAccessEnabledProto*
+    em::DevicePciPeripheralDataAccessEnabledProtoV2*
         peripheral_data_access_proto =
-            settings.mutable_device_pci_peripheral_data_access_enabled();
+            settings.mutable_device_pci_peripheral_data_access_enabled_v2();
     if (value.is_bool()) {
       peripheral_data_access_proto->set_enabled(value.GetBool());
     } else {

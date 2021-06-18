@@ -11,10 +11,14 @@
 // #import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 // #import {assert} from 'chrome://resources/js/assert.m.js';
 // #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
-// #import {Router, routes, PeripheralDataAccessBrowserProxyImpl} from 'chrome://os-settings/chromeos/os_settings.js';
+// #import {Router, routes, PeripheralDataAccessBrowserProxyImpl, DataAccessPolicyState} from 'chrome://os-settings/chromeos/os_settings.js';
 // #import {FakeQuickUnlockPrivate} from './fake_quick_unlock_private.m.js';
 // #import {waitAfterNextRender} from 'chrome://test/test_util.m.js';
 // clang-format on
+
+const crosSettingPrefName = 'cros.device.peripheral_data_access_enabled';
+const localStatePrefName =
+    'settings.local_state_device_pci_data_access_enabled';
 
 /**
  * @implements {settings.PeripheralDataAccessBrowserProxy}
@@ -23,13 +27,35 @@ class TestPeripheralDataAccessBrowserProxy extends TestBrowserProxy {
   constructor() {
     super([
       'isThunderboltSupported',
+      'getPolicyState',
     ]);
+
+    /** @type {DataAccessPolicyState} */
+    this.policy_state_ = {
+      prefName: crosSettingPrefName,
+      isUserConfigurable: false
+    };
   }
 
   /** @override */
   isThunderboltSupported() {
     this.methodCalled('isThunderboltSupported');
     return Promise.resolve(/*supported=*/ true);
+  }
+
+  /** @override */
+  getPolicyState() {
+    this.methodCalled('getPolicyState');
+    return Promise.resolve(this.policy_state_);
+  }
+
+  /**
+   * @param {String} pref_name
+   * @param {Boolean} is_user_configurable
+   */
+  setPolicyState(pref_name, is_user_configurable) {
+    this.policy_state_.prefName = pref_name;
+    this.policy_state_.isUserConfigurable = is_user_configurable;
   }
 }
 
@@ -253,6 +279,7 @@ suite('PeripheralDataAccessTest', function() {
         }
       }
     },
+    'settings': {'local_state_device_pci_data_access_enabled': {value: false}},
   };
 
   /** @type {?TestPeripheralDataAccessBrowserProxy} */
@@ -265,15 +292,6 @@ suite('PeripheralDataAccessTest', function() {
     loadTimeData.overrideValues({
       pciguardUiEnabled: true,
     });
-
-    privacyPage = document.createElement('os-settings-privacy-page');
-    privacyPage.prefs = Object.assign({}, prefs_);
-    document.body.appendChild(privacyPage);
-    Polymer.dom.flush();
-
-    await browserProxy.whenCalled('isThunderboltSupported');
-    await test_util.waitAfterNextRender();
-    Polymer.dom.flush();
   });
 
   teardown(function() {
@@ -281,9 +299,22 @@ suite('PeripheralDataAccessTest', function() {
     settings.Router.getInstance().resetRouteForTesting();
   });
 
+  async function setUpPage(pref_name, is_user_configurable) {
+    browserProxy.setPolicyState(pref_name, is_user_configurable);
+    privacyPage = document.createElement('os-settings-privacy-page');
+    privacyPage.prefs = Object.assign({}, prefs_);
+    document.body.appendChild(privacyPage);
+    Polymer.dom.flush();
+
+    await browserProxy.whenCalled('getPolicyState');
+    await test_util.waitAfterNextRender();
+    Polymer.dom.flush();
+  }
+
   test('DialogOpensOnToggle', async () => {
+    await setUpPage(crosSettingPrefName, /**is_user_configurable=*/ true);
     // The default state is checked.
-    const toggle = privacyPage.$$('#peripheralDataAccessProtection');
+    const toggle = privacyPage.$$('#crosSettingDataAccessToggle');
     assertTrue(!!toggle);
     assertTrue(toggle.checked);
 
@@ -312,8 +343,9 @@ suite('PeripheralDataAccessTest', function() {
   });
 
   test('DisableClicked', async () => {
+    await setUpPage(crosSettingPrefName, /**is_user_configurable=*/ true);
     // The default state is checked.
-    const toggle = privacyPage.$$('#peripheralDataAccessProtection');
+    const toggle = privacyPage.$$('#crosSettingDataAccessToggle');
     assertTrue(!!toggle);
     assertTrue(toggle.checked);
 
@@ -336,28 +368,66 @@ suite('PeripheralDataAccessTest', function() {
     assertFalse(toggle.checked);
   });
 
-  test('PolicyEnforced', async () => {
-    // Update the backing pref to enabled.
-    privacyPage.prefs = {
-      'cros': {
-        'device': {
-          'peripheral_data_access_enabled':
-              {value: false, enforcement: 'ENFORCED'}
-        }
-      },
-    };
-
+  test('managedAndConfigurablePrefIsToggleable', async () => {
+    await setUpPage(localStatePrefName, /**is_user_configurable=*/ true);
     Polymer.dom.flush();
 
+    // Ensure only the local state toggle appears.
+    assertTrue(privacyPage.$$('#crosSettingDataAccessToggle').hidden);
+
     // The default state is checked.
-    const toggle = privacyPage.$$('#peripheralDataAccessProtection');
+    const toggle = privacyPage.$$('#localStateDataAccessToggle');
+
+    // The default state is checked.
     assertTrue(!!toggle);
     assertTrue(toggle.checked);
 
-    // Attempting to switch the toggle off will result in nothing happening.
+    // Attempting to switch the toggle off will result in the warning dialog
+    // appearing.
     toggle.click();
+    Polymer.dom.flush();
+
+    await test_util.waitAfterNextRender(privacyPage);
+
+    const dialog = privacyPage.$$('#protectionDialog').$.warningDialog;
+    assertTrue(dialog.open);
+
+    // Ensure that the toggle is still checked.
     assertTrue(toggle.checked);
 
+    // Click on the dialog's cancel button and expect the toggle to switch back
+    // to enabled.
+    const cancelButton = dialog.querySelector('#cancelButton');
+    cancelButton.click();
+    Polymer.dom.flush();
+    assertFalse(dialog.open);
+
+    // The toggle should not have changed position.
+    assertTrue(toggle.checked);
+  });
+
+  test('managedAndNonConfigurablePrefIsNotToggleable', async () => {
+    await setUpPage(localStatePrefName, /**is_user_configurable=*/ false);
+    Polymer.dom.flush();
+
+    // Ensure only the local state toggle appears.
+    assertTrue(privacyPage.$$('#crosSettingDataAccessToggle').hidden);
+
+    // The default state is checked.
+    const toggle = privacyPage.$$('#localStateDataAccessToggle');
+
+    // The default state is checked.
+    assertTrue(!!toggle);
+    assertTrue(toggle.checked);
+
+    // Attempting to switch the toggle off will result in the warning dialog
+    // appearing.
+    toggle.click();
+    Polymer.dom.flush();
+
+    await test_util.waitAfterNextRender(privacyPage);
+
+    // Dialog should not appear since the toggle is disabled.
     const dialog = privacyPage.$$('#protectionDialog');
     assertFalse(!!dialog);
   });

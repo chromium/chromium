@@ -30,6 +30,10 @@ Polymer({
       type: Object,
       notify: true,
     },
+
+    prefName: {
+      type: String,
+    },
   },
 
   /**
@@ -39,7 +43,7 @@ Polymer({
   onDisableClicked_() {
     // Send the new state immediately, this will also toggle the underlying
     // setting-toggle-button associated with this pref.
-    this.setPrefValue('cros.device.peripheral_data_access_enabled', true);
+    this.setPrefValue(this.prefName, true);
     this.$$('#warningDialog').close();
   },
 

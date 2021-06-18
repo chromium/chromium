@@ -103,6 +103,8 @@ ASH_PUBLIC_EXPORT extern const char kHasSeenStylus[];
 ASH_PUBLIC_EXPORT extern const char kShownPaletteWelcomeBubble[];
 ASH_PUBLIC_EXPORT extern const char kEnableStylusTools[];
 ASH_PUBLIC_EXPORT extern const char kLaunchPaletteOnEjectEvent[];
+ASH_PUBLIC_EXPORT extern const char
+    kLocalStateDevicePeripheralDataAccessEnabled[];
 
 ASH_PUBLIC_EXPORT extern const char kCanCellularSetupNotificationBeShown[];
 

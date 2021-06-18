@@ -10,13 +10,28 @@ import { addSingletonGetter,sendWithPromise} from 'chrome://resources/js/cr.m.js
  * @fileoverview Helper browser proxy for peripheral data access client.
  */
 
-  /** @interface */
+/**
+ * @typedef {{
+ *     prefName: string,
+ *     isUserConfigurable: boolean
+ * }}
+ */
+export let DataAccessPolicyState;
+
+/** @interface */
 export class PeripheralDataAccessBrowserProxy {
   /**
    * @return {!Promise<boolean>}
    * Returns true if the device supports thunderbolt peripherals.
    */
   isThunderboltSupported() {}
+
+  /**
+   * @return {!Promise<DataAccessPolicyState>}
+   * Returns the status of the policy,
+   * kDeviceDevicePciPeripheralDataAccessEnabled.
+   */
+  getPolicyState() {}
 }
 
 /** @implements {PeripheralDataAccessBrowserProxy} */
@@ -27,6 +42,14 @@ export class PeripheralDataAccessBrowserProxyImpl {
    */
   isThunderboltSupported() {
     return sendWithPromise('isThunderboltSupported');
+  }
+
+  /**
+   * @override
+   * @return {!Promise<DataAccessPolicyState>}
+   */
+  getPolicyState() {
+    return sendWithPromise('getPolicyState');
   }
 }
 

@@ -641,6 +641,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)[chromeos::kDevicePeripheralDataAccessEnabled] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
+  (*s_allowlist)[::ash::prefs::kLocalStateDevicePeripheralDataAccessEnabled] =
+      settings_api::PrefType::PREF_TYPE_BOOLEAN;
 
   // Bluetooth & Internet settings.
   (*s_allowlist)[chromeos::kAllowBluetooth] =

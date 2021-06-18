@@ -2811,6 +2811,7 @@ static_library("ui") {
       "//chromeos/services/network_health/public/mojom",
       "//chromeos/settings",
       "//chromeos/system",
+      "//chromeos/tpm",
       "//chromeos/ui/base",
       "//chromeos/ui/frame",
       "//chromeos/ui/vector_icons",

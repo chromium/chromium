@@ -14,6 +14,8 @@ namespace settings {
 
 class PeripheralDataAccessHandler : public ::settings::SettingsPageUIHandler {
  public:
+  static bool GetPrefState();
+
   PeripheralDataAccessHandler();
   ~PeripheralDataAccessHandler() override;
 
@@ -30,13 +32,20 @@ class PeripheralDataAccessHandler : public ::settings::SettingsPageUIHandler {
   // Handles checking if thunderbolt is supported in this device.
   void HandleThunderboltSupported(const base::ListValue* args);
 
+  // Handles returning the policy state.
+  void HandleGetPolicyState(const base::ListValue* args);
+
   // Observer for the CrosSetting.
   void OnPeripheralDataAccessProtectionChanged();
 
   void OnFilePathChecked(const std::string& callback_id,
       bool is_thunderbolt_supported);
 
+  void OnLocalStatePrefChanged();
+
   base::CallbackListSubscription peripheral_data_access_subscription_;
+
+  bool is_user_configurable_ = false;
 
   // Used for callbacks.
   base::WeakPtrFactory<PeripheralDataAccessHandler> weak_ptr_factory_{this};

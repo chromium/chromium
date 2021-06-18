@@ -164,6 +164,8 @@ class Preferences : public sync_preferences::PrefServiceSyncableObserver,
   IntegerPrefMember xkb_auto_repeat_delay_pref_;
   IntegerPrefMember xkb_auto_repeat_interval_pref_;
 
+  BooleanPrefMember pci_data_access_enabled_pref_;
+
   PrefChangeRegistrar pref_change_registrar_;
 
   // User owning these preferences.
