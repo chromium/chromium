@@ -41,9 +41,8 @@ struct ToV8Traits;
 // Any
 template <>
 struct ToV8Traits<IDLAny> {
-  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        const ScriptValue& script_value)
-      WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, const ScriptValue& script_value) {
     // It is not correct to take empty |script_value|.
     // However, some call sites expect to get v8::Undefined
     // when ToV8 takes empty |script_value|.
@@ -53,9 +52,8 @@ struct ToV8Traits<IDLAny> {
     return script_value.V8Value();
   }
 
-  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        const v8::Local<v8::Value>& value)
-      WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, const v8::Local<v8::Value>& value) {
     // TODO(crbug.com/1183637): Remove this if-branch.
     if (value.IsEmpty())
       return v8::Undefined(script_state->GetIsolate());
@@ -66,8 +64,8 @@ struct ToV8Traits<IDLAny> {
 // Boolean
 template <>
 struct ToV8Traits<IDLBoolean> {
-  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        bool value) WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, bool value) {
     return v8::Boolean::New(script_state->GetIsolate(), value);
   }
 };
@@ -76,8 +74,8 @@ struct ToV8Traits<IDLBoolean> {
 // int8_t
 template <bindings::IDLIntegerConvMode mode>
 struct ToV8Traits<IDLIntegerTypeBase<int8_t, mode>> {
-  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        int8_t value) WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, int8_t value) {
     return v8::Integer::New(script_state->GetIsolate(), value);
   }
 };
@@ -85,8 +83,8 @@ struct ToV8Traits<IDLIntegerTypeBase<int8_t, mode>> {
 // int16_t
 template <bindings::IDLIntegerConvMode mode>
 struct ToV8Traits<IDLIntegerTypeBase<int16_t, mode>> {
-  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        int16_t value) WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, int16_t value) {
     return v8::Integer::New(script_state->GetIsolate(), value);
   }
 };
@@ -94,8 +92,8 @@ struct ToV8Traits<IDLIntegerTypeBase<int16_t, mode>> {
 // int32_t
 template <bindings::IDLIntegerConvMode mode>
 struct ToV8Traits<IDLIntegerTypeBase<int32_t, mode>> {
-  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        int32_t value) WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, int32_t value) {
     return v8::Integer::New(script_state->GetIsolate(), value);
   }
 };
@@ -103,8 +101,8 @@ struct ToV8Traits<IDLIntegerTypeBase<int32_t, mode>> {
 // int64_t
 template <bindings::IDLIntegerConvMode mode>
 struct ToV8Traits<IDLIntegerTypeBase<int64_t, mode>> {
-  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        int64_t value) WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, int64_t value) {
     int32_t value_in_32bit = static_cast<int32_t>(value);
     if (value_in_32bit == value)
       return v8::Integer::New(script_state->GetIsolate(), value_in_32bit);
@@ -116,8 +114,8 @@ struct ToV8Traits<IDLIntegerTypeBase<int64_t, mode>> {
 // uint8_t
 template <bindings::IDLIntegerConvMode mode>
 struct ToV8Traits<IDLIntegerTypeBase<uint8_t, mode>> {
-  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        uint8_t value) WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, uint8_t value) {
     return v8::Integer::NewFromUnsigned(script_state->GetIsolate(), value);
   }
 };
@@ -125,8 +123,8 @@ struct ToV8Traits<IDLIntegerTypeBase<uint8_t, mode>> {
 // uint16_t
 template <bindings::IDLIntegerConvMode mode>
 struct ToV8Traits<IDLIntegerTypeBase<uint16_t, mode>> {
-  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        uint16_t value) WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, uint16_t value) {
     return v8::Integer::NewFromUnsigned(script_state->GetIsolate(), value);
   }
 };
@@ -134,8 +132,8 @@ struct ToV8Traits<IDLIntegerTypeBase<uint16_t, mode>> {
 // uint32_t
 template <bindings::IDLIntegerConvMode mode>
 struct ToV8Traits<IDLIntegerTypeBase<uint32_t, mode>> {
-  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        uint32_t value) WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, uint32_t value) {
     return v8::Integer::NewFromUnsigned(script_state->GetIsolate(), value);
   }
 };
@@ -143,8 +141,8 @@ struct ToV8Traits<IDLIntegerTypeBase<uint32_t, mode>> {
 // uint64_t
 template <bindings::IDLIntegerConvMode mode>
 struct ToV8Traits<IDLIntegerTypeBase<uint64_t, mode>> {
-  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        uint64_t value) WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, uint64_t value) {
     uint32_t value_in_32bit = static_cast<uint32_t>(value);
     if (value_in_32bit == value) {
       return v8::Integer::NewFromUnsigned(script_state->GetIsolate(),
@@ -158,8 +156,8 @@ struct ToV8Traits<IDLIntegerTypeBase<uint64_t, mode>> {
 // Floating Point Number
 template <typename T, bindings::IDLFloatingPointNumberConvMode mode>
 struct ToV8Traits<IDLFloatingPointNumberTypeBase<T, mode>> {
-  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        T value) WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, T value) {
     return v8::Number::New(script_state->GetIsolate(), value);
   }
 };
@@ -169,9 +167,8 @@ template <typename T>
 struct ToV8Traits<
     T,
     std::enable_if_t<std::is_base_of<IDLStringTypeBase, T>::value>> {
-  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        const String& value)
-      WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, const String& value) {
     // if |value| is a null string, V8String() returns an empty string.
     return V8String(script_state->GetIsolate(), value);
   }
@@ -180,9 +177,8 @@ struct ToV8Traits<
 // Object
 template <>
 struct ToV8Traits<IDLObject> {
-  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        const ScriptValue& script_value)
-      WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, const ScriptValue& script_value) {
     DCHECK(!script_value.IsEmpty());
     v8::Local<v8::Value> v8_value = script_value.V8Value();
     // TODO(crbug.com/1185033): Change this if-branch to DCHECK.
@@ -195,9 +191,8 @@ struct ToV8Traits<IDLObject> {
 // Promise
 template <>
 struct ToV8Traits<IDLPromise> {
-  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        const ScriptPromise& script_promise)
-      WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, const ScriptPromise& script_promise) {
     DCHECK(!script_promise.IsEmpty());
     return script_promise.V8Value();
   }
@@ -245,9 +240,8 @@ template <typename T>
 struct ToV8Traits<
     T,
     std::enable_if_t<std::is_base_of<ScriptWrappable, T>::value>> {
-  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        T* script_wrappable)
-      WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, T* script_wrappable) {
     return bindings::ToV8HelperScriptWrappable(script_state, script_wrappable);
   }
 
@@ -256,10 +250,10 @@ struct ToV8Traits<
   // which is needed to create a wrapper. If a wrapper object corresponding to
   // the receiver object exists, ToV8 can return it without a call to
   // CreationContext() which is slow.
-  static v8::MaybeLocal<v8::Value> ToV8(
-      v8::Isolate* isolate,
-      T* script_wrappable,
-      v8::Local<v8::Object> creation_context_object) WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(v8::Isolate* isolate,
+       T* script_wrappable,
+       v8::Local<v8::Object> creation_context_object) {
     return bindings::ToV8HelperScriptWrappable(isolate, script_wrappable,
                                                creation_context_object);
   }
@@ -270,9 +264,8 @@ template <typename T>
 struct ToV8Traits<
     T,
     std::enable_if_t<std::is_base_of<bindings::DictionaryBase, T>::value>> {
-  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        const T* dictionary)
-      WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, const T* dictionary) {
     DCHECK(dictionary);
     return dictionary->ToV8Value(script_state);
   }
@@ -283,9 +276,8 @@ template <typename T>
 struct ToV8Traits<
     T,
     std::enable_if_t<std::is_base_of<IDLDictionaryBase, T>::value>> {
-  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        const T* dictionary)
-      WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, const T* dictionary) {
     // TODO(crbug.com/1185018): Change this if-branch to DCHECK(dictionary).
     if (!dictionary)
       return v8::Null(script_state->GetIsolate());
@@ -299,8 +291,8 @@ template <typename T>
 struct ToV8Traits<
     T,
     std::enable_if_t<std::is_base_of<CallbackFunctionBase, T>::value>> {
-  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        T* callback) WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, T* callback) {
     // creation_context (|script_state->GetContext()|) is intentionally ignored.
     // Callback functions are not wrappers nor clonable. ToV8 on a callback
     // function must be used only when it's in the same world.
@@ -315,8 +307,8 @@ template <typename T>
 struct ToV8Traits<
     T,
     std::enable_if_t<std::is_base_of<CallbackInterfaceBase, T>::value>> {
-  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        T* callback) WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, T* callback) {
     // creation_context (|script_state->GetContext()|) is intentionally ignored.
     // Callback Interfaces are not wrappers nor clonable. ToV8 on a callback
     // interface must be used only when it's in the same world.
@@ -331,24 +323,21 @@ template <typename T>
 struct ToV8Traits<
     T,
     std::enable_if_t<std::is_base_of<bindings::EnumerationBase, T>::value>> {
-  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        const T& enumeration)
-      WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, const T& enumeration) {
     return V8String(script_state->GetIsolate(), enumeration.AsCStr());
   }
 
   // TODO(crbug.com/1184543): Remove this overload.
-  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        const String& value)
-      WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, const String& value) {
     DCHECK(!value.IsEmpty());
     return V8String(script_state->GetIsolate(), value);
   }
 
   // TODO(crbug.com/1184543): Remove this overload.
-  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        const AtomicString& value)
-      WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, const AtomicString& value) {
     DCHECK(!value.IsEmpty());
     return V8String(script_state->GetIsolate(), value);
   }
@@ -357,8 +346,8 @@ struct ToV8Traits<
 // NotShared
 template <typename T>
 struct ToV8Traits<NotShared<T>> {
-  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        NotShared<T> value) WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, NotShared<T> value) {
     DCHECK(!value.IsNull());
     return ToV8Traits<T>::ToV8(script_state, value.Get());
   }
@@ -366,8 +355,8 @@ struct ToV8Traits<NotShared<T>> {
   // TODO(crbug.com/1183647): Remove this overload. It is used in generated
   // code, but it might cause bugs because T* cannot tell whether it's NotShared
   // or MaybeShared.
-  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        T* value) WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, T* value) {
     // TODO(canonmukai): Remove this if-branch and add DCHECK(value) instead.
     if (!value)
       return v8::Null(script_state->GetIsolate());
@@ -375,9 +364,8 @@ struct ToV8Traits<NotShared<T>> {
   }
 
   // TODO(canonmukai): Remove this overload.
-  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        const ScriptValue& script_value)
-      WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, const ScriptValue& script_value) {
     DCHECK(!script_value.IsEmpty());
     return ToV8Traits<IDLAny>::ToV8(script_state, script_value);
   }
@@ -386,9 +374,8 @@ struct ToV8Traits<NotShared<T>> {
 // MaybeShared
 template <typename T>
 struct ToV8Traits<MaybeShared<T>> {
-  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        MaybeShared<T> value)
-      WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, MaybeShared<T> value) {
     return ToV8Traits<T>::ToV8(script_state, value.Get());
   }
 };
@@ -491,40 +478,35 @@ template <typename T>
 struct ToV8Traits<
     IDLSequence<T>,
     std::enable_if_t<std::is_base_of<bindings::DictionaryBase, T>::value>> {
-  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        const HeapVector<Member<T>>& value)
-      WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, const HeapVector<Member<T>>& value) {
     return bindings::ToV8HelperSequenceWithMemberUpcast<
         bindings::DictionaryBase>(script_state, &value);
   }
 
-  static v8::MaybeLocal<v8::Value> ToV8(
-      ScriptState* script_state,
-      const HeapVector<Member<const T>>& value) WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, const HeapVector<Member<const T>>& value) {
     return bindings::ToV8HelperSequenceWithMemberUpcast<
         bindings::DictionaryBase>(script_state, &value);
   }
 
-  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        const HeapVector<Member<T>>* value)
-      WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, const HeapVector<Member<T>>* value) {
     DCHECK(value);
     return bindings::ToV8HelperSequenceWithMemberUpcast<
         bindings::DictionaryBase>(script_state, value);
   }
 
-  static v8::MaybeLocal<v8::Value> ToV8(
-      ScriptState* script_state,
-      const HeapVector<Member<const T>>* value) WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, const HeapVector<Member<const T>>* value) {
     DCHECK(value);
     return bindings::ToV8HelperSequenceWithMemberUpcast<
         bindings::DictionaryBase>(script_state, value);
   }
 
   // TODO(crbug.com/1185046): Remove this overload.
-  static v8::MaybeLocal<v8::Value> ToV8(
-      ScriptState* script_state,
-      const Vector<v8::Local<v8::Value>>& value) WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, const Vector<v8::Local<v8::Value>>& value) {
     return bindings::ToV8HelperSequence<IDLAny>(script_state, value);
   }
 };
@@ -533,40 +515,35 @@ template <typename T>
 struct ToV8Traits<
     IDLSequence<T>,
     std::enable_if_t<std::is_base_of<IDLDictionaryBase, T>::value>> {
-  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        const HeapVector<Member<T>>& value)
-      WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, const HeapVector<Member<T>>& value) {
     return bindings::ToV8HelperSequenceWithMemberUpcast<IDLDictionaryBase>(
         script_state, &value);
   }
 
-  static v8::MaybeLocal<v8::Value> ToV8(
-      ScriptState* script_state,
-      const HeapVector<Member<const T>>& value) WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, const HeapVector<Member<const T>>& value) {
     return bindings::ToV8HelperSequenceWithMemberUpcast<IDLDictionaryBase>(
         script_state, &value);
   }
 
-  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        const HeapVector<Member<T>>* value)
-      WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, const HeapVector<Member<T>>* value) {
     DCHECK(value);
     return bindings::ToV8HelperSequenceWithMemberUpcast<IDLDictionaryBase>(
         script_state, value);
   }
 
-  static v8::MaybeLocal<v8::Value> ToV8(
-      ScriptState* script_state,
-      const HeapVector<Member<const T>>* value) WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, const HeapVector<Member<const T>>* value) {
     DCHECK(value);
     return bindings::ToV8HelperSequenceWithMemberUpcast<IDLDictionaryBase>(
         script_state, value);
   }
 
   // TODO(crbug.com/1185046): Remove this overload.
-  static v8::MaybeLocal<v8::Value> ToV8(
-      ScriptState* script_state,
-      const Vector<v8::Local<v8::Value>>& value) WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, const Vector<v8::Local<v8::Value>>& value) {
     return bindings::ToV8HelperSequence<IDLAny>(script_state, value);
   }
 };
@@ -575,31 +552,27 @@ template <typename T>
 struct ToV8Traits<
     IDLSequence<T>,
     std::enable_if_t<std::is_base_of<ScriptWrappable, T>::value>> {
-  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        const HeapVector<Member<T>>& value)
-      WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, const HeapVector<Member<T>>& value) {
     return bindings::ToV8HelperSequenceWithMemberUpcast<ScriptWrappable>(
         script_state, &value);
   }
 
-  static v8::MaybeLocal<v8::Value> ToV8(
-      ScriptState* script_state,
-      const HeapVector<Member<const T>>& value) WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, const HeapVector<Member<const T>>& value) {
     return bindings::ToV8HelperSequenceWithMemberUpcast<ScriptWrappable>(
         script_state, &value);
   }
 
-  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        const HeapVector<Member<T>>* value)
-      WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, const HeapVector<Member<T>>* value) {
     DCHECK(value);
     return bindings::ToV8HelperSequenceWithMemberUpcast<ScriptWrappable>(
         script_state, value);
   }
 
-  static v8::MaybeLocal<v8::Value> ToV8(
-      ScriptState* script_state,
-      const HeapVector<Member<const T>>* value) WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, const HeapVector<Member<const T>>* value) {
     DCHECK(value);
     return bindings::ToV8HelperSequenceWithMemberUpcast<ScriptWrappable>(
         script_state, value);
@@ -610,31 +583,27 @@ template <typename T>
 struct ToV8Traits<
     IDLSequence<T>,
     std::enable_if_t<std::is_base_of<bindings::UnionBase, T>::value>> {
-  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        const HeapVector<Member<T>>& value)
-      WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, const HeapVector<Member<T>>& value) {
     return bindings::ToV8HelperSequenceWithMemberUpcast<bindings::UnionBase>(
         script_state, &value);
   }
 
-  static v8::MaybeLocal<v8::Value> ToV8(
-      ScriptState* script_state,
-      const HeapVector<Member<const T>>& value) WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, const HeapVector<Member<const T>>& value) {
     return bindings::ToV8HelperSequenceWithMemberUpcast<bindings::UnionBase>(
         script_state, &value);
   }
 
-  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        const HeapVector<Member<T>>* value)
-      WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, const HeapVector<Member<T>>* value) {
     DCHECK(value);
     return bindings::ToV8HelperSequenceWithMemberUpcast<bindings::UnionBase>(
         script_state, value);
   }
 
-  static v8::MaybeLocal<v8::Value> ToV8(
-      ScriptState* script_state,
-      const HeapVector<Member<const T>>* value) WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, const HeapVector<Member<const T>>* value) {
     DCHECK(value);
     return bindings::ToV8HelperSequenceWithMemberUpcast<bindings::UnionBase>(
         script_state, value);
@@ -649,23 +618,21 @@ struct ToV8Traits<
                      !std::is_base_of<ScriptWrappable, T>::value &&
                      !std::is_base_of<bindings::UnionBase, T>::value>> {
   template <typename VectorType>
-  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        const VectorType& value)
-      WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, const VectorType& value) {
     return bindings::ToV8HelperSequence<T>(script_state, value);
   }
 
   template <typename VectorType>
-  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        const VectorType* value)
-      WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, const VectorType* value) {
     DCHECK(value);
     return bindings::ToV8HelperSequence<T>(script_state, *value);
   }
 
   template <typename VectorType>
-  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        VectorType* value) WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, VectorType* value) {
     DCHECK(value);
     return bindings::ToV8HelperSequence<T>(script_state, *value);
   }
@@ -675,9 +642,8 @@ struct ToV8Traits<
 template <typename T>
 struct ToV8Traits<IDLArray<T>> {
   template <typename VectorType>
-  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        const VectorType& value)
-      WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, const VectorType& value) {
     v8::Local<v8::Value> v8_value;
     if (!ToV8Traits<IDLSequence<T>>::ToV8(script_state, value)
              .ToLocal(&v8_value)) {
@@ -689,9 +655,8 @@ struct ToV8Traits<IDLArray<T>> {
   }
 
   template <typename VectorType>
-  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        const VectorType* value)
-      WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, const VectorType* value) {
     DCHECK(value);
     v8::Local<v8::Value> v8_value;
     if (!ToV8Traits<IDLSequence<T>>::ToV8(script_state, *value)
@@ -704,8 +669,8 @@ struct ToV8Traits<IDLArray<T>> {
   }
 
   template <typename VectorType>
-  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        VectorType* value) WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, VectorType* value) {
     DCHECK(value);
     v8::Local<v8::Value> v8_value;
     if (!ToV8Traits<IDLSequence<T>>::ToV8(script_state, *value)
@@ -718,9 +683,8 @@ struct ToV8Traits<IDLArray<T>> {
   }
 
   // TODO(crbug.com/1185046): Remove this overload.
-  static v8::MaybeLocal<v8::Value> ToV8(
-      ScriptState* script_state,
-      const Vector<v8::Local<v8::Value>>& value) WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, const Vector<v8::Local<v8::Value>>& value) {
     v8::Local<v8::Value> v8_value;
     if (!ToV8Traits<IDLSequence<IDLAny>>::ToV8(script_state, value)
              .ToLocal(&v8_value)) {
@@ -736,15 +700,15 @@ struct ToV8Traits<IDLArray<T>> {
 // K must be based of IDL String types.
 template <typename K, typename V>
 struct ToV8Traits<IDLRecord<K, V>> {
-  static v8::MaybeLocal<v8::Value> ToV8(
-      ScriptState* script_state,
-      const typename IDLRecord<K, V>::ImplType& value) WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state,
+       const typename IDLRecord<K, V>::ImplType& value) {
     return bindings::ToV8HelperRecord<V>(script_state, value);
   }
 
-  static v8::MaybeLocal<v8::Value> ToV8(
-      ScriptState* script_state,
-      const typename IDLRecord<K, V>::ImplType* value) WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state,
+       const typename IDLRecord<K, V>::ImplType* value) {
     DCHECK(value);
     return bindings::ToV8HelperRecord<V>(script_state, *value);
   }
@@ -759,9 +723,8 @@ struct ToV8Traits<IDLNullable<IDLNullable<T>>>;
 // Nullable Boolean
 template <>
 struct ToV8Traits<IDLNullable<IDLBoolean>> {
-  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        const absl::optional<bool>& value)
-      WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, const absl::optional<bool>& value) {
     if (!value)
       return v8::Null(script_state->GetIsolate());
     return ToV8Traits<IDLBoolean>::ToV8(script_state, *value);
@@ -771,9 +734,8 @@ struct ToV8Traits<IDLNullable<IDLBoolean>> {
 // Nullable Integers
 template <typename T, bindings::IDLIntegerConvMode mode>
 struct ToV8Traits<IDLNullable<IDLIntegerTypeBase<T, mode>>> {
-  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        const absl::optional<T>& value)
-      WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, const absl::optional<T>& value) {
     if (!value)
       return v8::Null(script_state->GetIsolate());
     return ToV8Traits<IDLIntegerTypeBase<T, mode>>::ToV8(script_state, *value);
@@ -783,9 +745,8 @@ struct ToV8Traits<IDLNullable<IDLIntegerTypeBase<T, mode>>> {
 // Nullable Floating Point Number
 template <typename T, bindings::IDLFloatingPointNumberConvMode mode>
 struct ToV8Traits<IDLNullable<IDLFloatingPointNumberTypeBase<T, mode>>> {
-  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        const absl::optional<T>& value)
-      WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, const absl::optional<T>& value) {
     if (!value)
       return v8::Null(script_state->GetIsolate());
     return ToV8Traits<IDLFloatingPointNumberTypeBase<T, mode>>::ToV8(
@@ -798,9 +759,8 @@ template <typename T>
 struct ToV8Traits<
     IDLNullable<T>,
     std::enable_if_t<std::is_base_of<IDLStringTypeBase, T>::value>> {
-  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        const String& value)
-      WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, const String& value) {
     if (!value)
       return v8::Null(script_state->GetIsolate());
     return ToV8Traits<T>::ToV8(script_state, value);
@@ -810,9 +770,8 @@ struct ToV8Traits<
 // Nullable Object
 template <>
 struct ToV8Traits<IDLNullable<IDLObject>> {
-  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        const ScriptValue& script_value)
-      WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, const ScriptValue& script_value) {
     // TODO(crbug.com/1183637): Remove this if-branch.
     if (script_value.IsEmpty())
       return v8::Null(script_state->GetIsolate());
@@ -828,18 +787,17 @@ template <typename T>
 struct ToV8Traits<
     IDLNullable<T>,
     std::enable_if_t<std::is_base_of<ScriptWrappable, T>::value>> {
-  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        T* script_wrappable)
-      WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, T* script_wrappable) {
     if (!script_wrappable)
       return v8::Null(script_state->GetIsolate());
     return ToV8Traits<T>::ToV8(script_state, script_wrappable);
   }
 
-  static v8::MaybeLocal<v8::Value> ToV8(v8::Isolate* isolate,
-                                        ScriptWrappable* script_wrappable,
-                                        v8::Local<v8::Object> creation_context)
-      WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(v8::Isolate* isolate,
+       ScriptWrappable* script_wrappable,
+       v8::Local<v8::Object> creation_context) {
     if (!script_wrappable)
       return v8::Null(isolate);
     return ToV8Traits<T>::ToV8(isolate, script_wrappable, creation_context);
@@ -851,9 +809,8 @@ template <typename T>
 struct ToV8Traits<
     IDLNullable<T>,
     std::enable_if_t<std::is_base_of<bindings::DictionaryBase, T>::value>> {
-  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        const T* dictionary)
-      WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, const T* dictionary) {
     if (!dictionary)
       return v8::Null(script_state->GetIsolate());
     return ToV8Traits<T>::ToV8(script_state, dictionary);
@@ -865,9 +822,8 @@ template <typename T>
 struct ToV8Traits<
     IDLNullable<T>,
     std::enable_if_t<std::is_base_of<IDLDictionaryBase, T>::value>> {
-  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        const T* dictionary)
-      WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, const T* dictionary) {
     if (!dictionary)
       return v8::Null(script_state->GetIsolate());
     return ToV8Traits<T>::ToV8(script_state, dictionary);
@@ -879,8 +835,8 @@ template <typename T>
 struct ToV8Traits<
     IDLNullable<T>,
     std::enable_if_t<std::is_base_of<CallbackFunctionBase, T>::value>> {
-  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        T* callback) WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, T* callback) {
     if (!callback)
       return v8::Null(script_state->GetIsolate());
     return ToV8Traits<T>::ToV8(script_state, callback);
@@ -892,8 +848,8 @@ template <typename T>
 struct ToV8Traits<
     IDLNullable<T>,
     std::enable_if_t<std::is_base_of<CallbackInterfaceBase, T>::value>> {
-  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        T* callback) WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, T* callback) {
     if (!callback)
       return v8::Null(script_state->GetIsolate());
     return ToV8Traits<T>::ToV8(script_state, callback);
@@ -905,9 +861,8 @@ template <typename T>
 struct ToV8Traits<
     IDLNullable<T>,
     std::enable_if_t<std::is_base_of<bindings::EnumerationBase, T>::value>> {
-  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        const absl::optional<T>& enumeration)
-      WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, const absl::optional<T>& enumeration) {
     if (!enumeration)
       return v8::Null(script_state->GetIsolate());
     return ToV8Traits<T>::ToV8(script_state, *enumeration);
@@ -917,25 +872,24 @@ struct ToV8Traits<
 // Nullable NotShared
 template <typename T>
 struct ToV8Traits<IDLNullable<NotShared<T>>> {
-  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        NotShared<T> value) WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, NotShared<T> value) {
     if (value.IsNull())
       return v8::Null(script_state->GetIsolate());
     return ToV8Traits<NotShared<T>>::ToV8(script_state, value);
   }
 
   // TODO(crbug.com/1183647): Remove this overload.
-  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        T* value) WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, T* value) {
     if (!value)
       return v8::Null(script_state->GetIsolate());
     return ToV8Traits<NotShared<T>>::ToV8(script_state, value);
   }
 
   // TODO(canonmukai): Remove this overload.
-  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        const ScriptValue& script_value)
-      WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, const ScriptValue& script_value) {
     if (script_value.IsEmpty())
       return v8::Null(script_state->GetIsolate());
     return ToV8Traits<NotShared<T>>::ToV8(script_state, script_value);
@@ -945,9 +899,8 @@ struct ToV8Traits<IDLNullable<NotShared<T>>> {
 // Nullable MaybeShared
 template <typename T>
 struct ToV8Traits<IDLNullable<MaybeShared<T>>> {
-  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        MaybeShared<T> value)
-      WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, MaybeShared<T> value) {
     if (value.IsNull())
       return v8::Null(script_state->GetIsolate());
     return ToV8Traits<MaybeShared<T>>::ToV8(script_state, value);
@@ -957,18 +910,17 @@ struct ToV8Traits<IDLNullable<MaybeShared<T>>> {
 // Nullable Sequence
 template <typename T>
 struct ToV8Traits<IDLNullable<IDLSequence<T>>> {
-  static v8::MaybeLocal<v8::Value> ToV8(
-      ScriptState* script_state,
-      const absl::optional<typename IDLSequence<T>::ImplType>& value)
-      WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state,
+       const absl::optional<typename IDLSequence<T>::ImplType>& value) {
     if (!value)
       return v8::Null(script_state->GetIsolate());
     return ToV8Traits<IDLSequence<T>>::ToV8(script_state, *value);
   }
 
-  static v8::MaybeLocal<v8::Value> ToV8(
-      ScriptState* script_state,
-      const typename IDLSequence<T>::ImplType* value) WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state,
+       const typename IDLSequence<T>::ImplType* value) {
     if (!value)
       return v8::Null(script_state->GetIsolate());
     return ToV8Traits<IDLSequence<T>>::ToV8(script_state, value);
@@ -978,18 +930,16 @@ struct ToV8Traits<IDLNullable<IDLSequence<T>>> {
 // Nullable Frozen Array
 template <typename T>
 struct ToV8Traits<IDLNullable<IDLArray<T>>> {
-  static v8::MaybeLocal<v8::Value> ToV8(
-      ScriptState* script_state,
-      const absl::optional<typename IDLArray<T>::ImplType>& value)
-      WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state,
+       const absl::optional<typename IDLArray<T>::ImplType>& value) {
     if (!value)
       return v8::Null(script_state->GetIsolate());
     return ToV8Traits<IDLArray<T>>::ToV8(script_state, *value);
   }
 
-  static v8::MaybeLocal<v8::Value> ToV8(
-      ScriptState* script_state,
-      const typename IDLArray<T>::ImplType* value) WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, const typename IDLArray<T>::ImplType* value) {
     if (!value)
       return v8::Null(script_state->GetIsolate());
     return ToV8Traits<IDLArray<T>>::ToV8(script_state, value);
@@ -999,18 +949,17 @@ struct ToV8Traits<IDLNullable<IDLArray<T>>> {
 // Nullable Record
 template <typename K, typename V>
 struct ToV8Traits<IDLNullable<IDLRecord<K, V>>> {
-  static v8::MaybeLocal<v8::Value> ToV8(
-      ScriptState* script_state,
-      const absl::optional<typename IDLRecord<K, V>::ImplType>& value)
-      WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state,
+       const absl::optional<typename IDLRecord<K, V>::ImplType>& value) {
     if (!value)
       return v8::Null(script_state->GetIsolate());
     return ToV8Traits<IDLRecord<K, V>>::ToV8(script_state, *value);
   }
 
-  static v8::MaybeLocal<v8::Value> ToV8(
-      ScriptState* script_state,
-      const typename IDLRecord<K, V>::ImplType* value) WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state,
+       const typename IDLRecord<K, V>::ImplType* value) {
     if (!value)
       return v8::Null(script_state->GetIsolate());
     return ToV8Traits<IDLRecord<K, V>>::ToV8(script_state, value);
@@ -1021,9 +970,8 @@ struct ToV8Traits<IDLNullable<IDLRecord<K, V>>> {
 // IDLDate must be used as IDLNullable<IDLDate>.
 template <>
 struct ToV8Traits<IDLNullable<IDLDate>> {
-  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        const absl::optional<base::Time> date)
-      WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, const absl::optional<base::Time> date) {
     if (!date)
       return v8::Null(script_state->GetIsolate());
     return v8::Date::New(script_state->GetContext(),
@@ -1050,8 +998,8 @@ template <typename T>
 struct ToV8Traits<
     T,
     std::enable_if_t<std::is_base_of<bindings::UnionBase, T>::value>> {
-  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        const T* value) WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, const T* value) {
     // TODO(crbug.com/1185018): nullptr shouldn't be passed.  This should be
     // DCHECK(value);
     if (!value)
@@ -1064,8 +1012,8 @@ template <typename T>
 struct ToV8Traits<
     IDLNullable<T>,
     std::enable_if_t<std::is_base_of<bindings::UnionBase, T>::value>> {
-  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        const T* value) WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, const T* value) {
     if (!value)
       return v8::Null(script_state->GetIsolate());
     return ToV8Traits<T>::ToV8(script_state, value);
@@ -1075,8 +1023,8 @@ struct ToV8Traits<
 // IDLUnionINT
 template <typename T>
 struct ToV8Traits<IDLUnionINT<T>> {
-  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        const T& value) WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, const T& value) {
     return bindings::ToV8HelperUnion(script_state, value);
   }
 };
@@ -1084,8 +1032,8 @@ struct ToV8Traits<IDLUnionINT<T>> {
 // IDLUnionNotINT
 template <typename T>
 struct ToV8Traits<IDLUnionNotINT<T>> {
-  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        const T& value) WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, const T& value) {
     return bindings::ToV8HelperUnion(script_state, value);
   }
 };
@@ -1097,8 +1045,8 @@ struct ToV8Traits<IDLNullable<IDLUnionINT<T>>>;
 // Nullable IDLUnionNotINT
 template <typename T>
 struct ToV8Traits<IDLNullable<IDLUnionNotINT<T>>> {
-  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        const T& value) WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, const T& value) {
     if (value.IsNull())
       return v8::Null(script_state->GetIsolate());
     return ToV8Traits<IDLUnionNotINT<T>>::ToV8(script_state, value);
@@ -1108,16 +1056,15 @@ struct ToV8Traits<IDLNullable<IDLUnionNotINT<T>>> {
 // Optional
 template <typename T>
 struct ToV8Traits<IDLOptional<T>> {
-  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        const T* value) WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, const T* value) {
     if (!value)
       return v8::Undefined(script_state->GetIsolate());
     return ToV8Traits<T>::ToV8(script_state, value);
   }
 
-  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        const ScriptValue& value)
-      WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, const ScriptValue& value) {
     if (value.IsEmpty())
       return v8::Undefined(script_state->GetIsolate());
     return ToV8Traits<T>::ToV8(script_state, value);
