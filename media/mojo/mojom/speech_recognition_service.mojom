@@ -200,8 +200,10 @@ interface SpeechRecognitionClientBrowserInterface {
     pending_remote<SpeechRecognitionBrowserObserver> observer);
 };
 
-// Corresponds to ExtendedSodaConfigMsg in
-// chrome/services/speech/soda/proto/soda_api.proto.
+// Corresponds to ExtendedSodaConfigMsg.RecognitionMode in
+// chrome/services/speech/soda/proto/soda_api.proto and
+// SodaRecognitionMode in
+// chromeos/services/machine_learning/public/mojom/soda.mojom.
 enum SpeechRecognitionMode {
   kUnknown,
   // Intended for voice input for keyboard usage.

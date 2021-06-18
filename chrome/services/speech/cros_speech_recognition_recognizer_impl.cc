@@ -17,7 +17,26 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace speech {
+
+namespace {
 constexpr char kNoClientError[] = "No cros soda client.";
+
+chromeos::machine_learning::mojom::SodaRecognitionMode
+GetSodaSpeechRecognitionMode(
+    media::mojom::SpeechRecognitionMode recognition_mode) {
+  switch (recognition_mode) {
+    case media::mojom::SpeechRecognitionMode::kIme:
+      return chromeos::machine_learning::mojom::SodaRecognitionMode::kIme;
+    case media::mojom::SpeechRecognitionMode::kCaption:
+      return chromeos::machine_learning::mojom::SodaRecognitionMode::kCaption;
+    case media::mojom::SpeechRecognitionMode::kUnknown:
+      // Chrome OS SODA doesn't support unknown recognition type. Default to
+      // caption.
+      NOTREACHED();
+      return chromeos::machine_learning::mojom::SodaRecognitionMode::kCaption;
+  }
+}
+}  // namespace
 
 void CrosSpeechRecognitionRecognizerImpl::Create(
     mojo::PendingReceiver<media::mojom::SpeechRecognitionRecognizer> receiver,
@@ -93,8 +112,8 @@ void CrosSpeechRecognitionRecognizerImpl::
     config->api_key = google_apis::GetSodaAPIKey();
     config->language_dlc_path = languagepack_path_.value();
     config->library_dlc_path = binary_path_.value();
-    // TODO(crbug.com/1173135): Set options_->recognition_mode in the SodaConfig
-    // when available.
+    config->recognition_mode =
+        GetSodaSpeechRecognitionMode(options_->recognition_mode);
     config->enable_formatting =
         options_->enable_formatting
             ? chromeos::machine_learning::mojom::OptionalBool::kTrue
