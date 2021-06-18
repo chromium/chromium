@@ -1277,11 +1277,30 @@ mojom::CommitResult DocumentLoader::CommitSameDocumentNavigation(
   }
 
   if (!IsBackForwardLoadType(frame_load_type)) {
-    // In the case of non-history navigations, check that this is a
-    // same-document navigation. The browser should not send invalid
-    // same-document navigations.
+    // For the browser to send a same-document navigation, it will always have a
+    // fragment. When no fragment is present, the browser loads a new document.
     CHECK(url.HasFragmentIdentifier());
-    CHECK(EqualIgnoringFragmentIdentifier(frame_->GetDocument()->Url(), url));
+    if (!EqualIgnoringFragmentIdentifier(frame_->GetDocument()->Url(), url)) {
+      // A race condition has occurred! The renderer has changed the current
+      // document's URL through history.pushState(). This change was performed
+      // as a synchronous same-document navigation in the renderer process,
+      // though the URL of that document is changed as a result. The browser
+      // will hear about this and update its current URL too, but there's a time
+      // window before it hears about it. During that time, it may try to
+      // perform a same-document navigation based on the old URL. That would
+      // arrive here. There are effectively 2 incompatible navigations in flight
+      // at the moment, and the history.pushState() one was already performed.
+      // We will reorder the incoming navigation from the browser to be
+      // performed after the history.pushState() by bouncing it back through the
+      // browser. The way we do that is by sending RestartCrossDocument, which
+      // is not strictly what we want. We just want the browser to restart the
+      // navigation. However, since the document address has changed, the
+      // restarted navigation will probably be cross-document, and this prevents
+      // a resulting same-document navigation from getting bounced and restarted
+      // yet again by a renderer performing another history.pushState(). See
+      // https://crbug.com/1209772.
+      return mojom::blink::CommitResult::RestartCrossDocument;
+    }
   }
 
   // If the requesting document is cross-origin, perform the navigation
