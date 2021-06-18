@@ -426,6 +426,7 @@ public class FirstRunIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1221647")
     public void testExitFirstRunWithPolicy() {
         skipTosDialogViaPolicy();
 
