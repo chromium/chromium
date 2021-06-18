@@ -47,7 +47,7 @@ void ReceivingUiHandlerRegistry::InstantiatePlatformSpecificHandlers(
   }
 #elif defined(OS_ANDROID)
   applicable_handlers_.push_back(
-      std::make_unique<AndroidNotificationHandler>());
+      std::make_unique<AndroidNotificationHandler>(profile));
 #endif
 }
 

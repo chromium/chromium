@@ -75,6 +75,7 @@ enum class MessageIdentifier {
   SAVE_ADDRESS_PROFILE = 6,
   MERCHANT_TRUST = 7,
   ADD_TO_HOMESCREEN_IPH = 8,
+  SEND_TAB_TO_SELF = 9,
 
   // Insert new values before this line.
   COUNT

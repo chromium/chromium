@@ -70,6 +70,8 @@ DECLARE_RESOURCE_ID(IDR_ANDROID_AUTOFILL_HTTPS_INVALID_WARNING,
 DECLARE_RESOURCE_ID(IDR_ANDROID_AUTOFILL_OFFER_TAG_GREEN,
                     R.drawable.ic_offer_tag)
 
+DECLARE_RESOURCE_ID(IDR_SEND_TAB_TO_SELF, R.drawable.send_tab)
+
 // We display settings and edit icon for keyboard accessory using Android's
 // |VectorDrawableCompat|. We do not display these icons for autofill popup.
 DECLARE_RESOURCE_ID(IDR_ANDROID_AUTOFILL_SETTINGS, R.drawable.ic_settings_black)

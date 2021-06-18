@@ -7594,6 +7594,14 @@ Keep your key file in a safe place. You will need it to create new versions of y
           Send Link to <ph name="DEVICE_NAME">$1<ex>Ted's Pixel2</ex></ph>
         </message>
       </if>
+      <if expr="is_android">
+      <message name="IDS_SEND_TAB_TO_SELF_MESSAGE" desc="Text for a message indicating that the tab was shared from a syncing device.">
+        Page shared from <ph name="device_name">$1<ex>Tanya's Pixel 2</ex></ph>
+      </message>
+      <message name="IDS_SEND_TAB_TO_SELF_MESSAGE_OPEN" desc="Label for the button to open a tab received from another device.">
+        Open
+      </message>
+      </if>
 
       <!-- Share via QR code strings -->
       <if expr="not use_titlecase">

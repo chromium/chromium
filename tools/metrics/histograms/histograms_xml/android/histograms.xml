@@ -65,6 +65,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <variant name=".SafetyTip"/>
   <variant name=".SaveAddressProfile"/>
   <variant name=".SavePassword"/>
+  <variant name=".SendTabToSelf"/>
   <variant name=".UpdatePassword"/>
 </variants>
 

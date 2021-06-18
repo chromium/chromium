@@ -53131,6 +53131,7 @@ Called by update_use_counter_css.py.-->
   <int value="6" label="SaveAddressProfile"/>
   <int value="7" label="MerchantTrust"/>
   <int value="8" label="AddToHomescreenIPH"/>
+  <int value="9" label="SendTabToSelf"/>
 </enum>
 
 <enum name="MessageLoopProblems">
