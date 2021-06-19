@@ -24,10 +24,10 @@
 #include "media/gpu/v4l2/v4l2_device.h"
 #include "media/gpu/v4l2/v4l2_video_decoder_delegate_h264.h"
 #include "media/gpu/v4l2/v4l2_video_decoder_delegate_h264_legacy.h"
+#include "media/gpu/v4l2/v4l2_video_decoder_delegate_vp8.h"
+#include "media/gpu/v4l2/v4l2_video_decoder_delegate_vp8_legacy.h"
 #include "media/gpu/v4l2/v4l2_video_decoder_delegate_vp9.h"
 #include "media/gpu/v4l2/v4l2_video_decoder_delegate_vp9_legacy.h"
-#include "media/gpu/v4l2/v4l2_vp8_accelerator.h"
-#include "media/gpu/v4l2/v4l2_vp8_accelerator_legacy.h"
 
 namespace media {
 
@@ -662,10 +662,11 @@ bool V4L2StatelessVideoDecoderBackend::CreateAvd() {
   } else if (profile_ >= VP8PROFILE_MIN && profile_ <= VP8PROFILE_MAX) {
     if (input_queue_->SupportsRequests()) {
       avd_ = std::make_unique<VP8Decoder>(
-          std::make_unique<V4L2VP8Accelerator>(this, device_.get()));
+          std::make_unique<V4L2VideoDecoderDelegateVP8>(this, device_.get()));
     } else {
       avd_ = std::make_unique<VP8Decoder>(
-          std::make_unique<V4L2LegacyVP8Accelerator>(this, device_.get()));
+          std::make_unique<V4L2VideoDecoderDelegateVP8Legacy>(this,
+                                                              device_.get()));
     }
   } else if (profile_ >= VP9PROFILE_MIN && profile_ <= VP9PROFILE_MAX) {
     if (input_queue_->SupportsRequests()) {

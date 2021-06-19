@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/gpu/v4l2/v4l2_vp8_accelerator.h"
+#include "v4l2_video_decoder_delegate_vp8.h"
 
 #define __LINUX_MEDIA_VP8_CTRLS_LEGACY_H
-#include <linux/videodev2.h>
 #include <linux/media/vp8-ctrls.h>
+#include <linux/videodev2.h>
 
 #include <type_traits>
 
@@ -109,16 +109,16 @@ class V4L2VP8Picture : public VP8Picture {
   DISALLOW_COPY_AND_ASSIGN(V4L2VP8Picture);
 };
 
-V4L2VP8Accelerator::V4L2VP8Accelerator(
+V4L2VideoDecoderDelegateVP8::V4L2VideoDecoderDelegateVP8(
     V4L2DecodeSurfaceHandler* surface_handler,
     V4L2Device* device)
     : surface_handler_(surface_handler), device_(device) {
   DCHECK(surface_handler_);
 }
 
-V4L2VP8Accelerator::~V4L2VP8Accelerator() {}
+V4L2VideoDecoderDelegateVP8::~V4L2VideoDecoderDelegateVP8() {}
 
-scoped_refptr<VP8Picture> V4L2VP8Accelerator::CreateVP8Picture() {
+scoped_refptr<VP8Picture> V4L2VideoDecoderDelegateVP8::CreateVP8Picture() {
   scoped_refptr<V4L2DecodeSurface> dec_surface =
       surface_handler_->CreateSurface();
   if (!dec_surface)
@@ -127,7 +127,7 @@ scoped_refptr<VP8Picture> V4L2VP8Accelerator::CreateVP8Picture() {
   return new V4L2VP8Picture(dec_surface);
 }
 
-bool V4L2VP8Accelerator::SubmitDecode(
+bool V4L2VideoDecoderDelegateVP8::SubmitDecode(
     scoped_refptr<VP8Picture> pic,
     const Vp8ReferenceFrameVector& reference_frames) {
   struct v4l2_ctrl_vp8_frame_header v4l2_frame_hdr;
@@ -247,7 +247,7 @@ bool V4L2VP8Accelerator::SubmitDecode(
   return true;
 }
 
-bool V4L2VP8Accelerator::OutputPicture(scoped_refptr<VP8Picture> pic) {
+bool V4L2VideoDecoderDelegateVP8::OutputPicture(scoped_refptr<VP8Picture> pic) {
   // TODO(crbug.com/647725): Insert correct color space.
   surface_handler_->SurfaceReady(VP8PictureToV4L2DecodeSurface(pic.get()),
                                  pic->bitstream_id(), pic->visible_rect(),
@@ -256,7 +256,7 @@ bool V4L2VP8Accelerator::OutputPicture(scoped_refptr<VP8Picture> pic) {
 }
 
 scoped_refptr<V4L2DecodeSurface>
-V4L2VP8Accelerator::VP8PictureToV4L2DecodeSurface(VP8Picture* pic) {
+V4L2VideoDecoderDelegateVP8::VP8PictureToV4L2DecodeSurface(VP8Picture* pic) {
   V4L2VP8Picture* v4l2_pic = pic->AsV4L2VP8Picture();
   CHECK(v4l2_pic);
   return v4l2_pic->dec_surface();

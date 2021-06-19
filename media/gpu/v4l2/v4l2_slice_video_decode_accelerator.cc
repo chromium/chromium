@@ -45,10 +45,10 @@
 #include "media/gpu/v4l2/v4l2_vda_helpers.h"
 #include "media/gpu/v4l2/v4l2_video_decoder_delegate_h264.h"
 #include "media/gpu/v4l2/v4l2_video_decoder_delegate_h264_legacy.h"
+#include "media/gpu/v4l2/v4l2_video_decoder_delegate_vp8.h"
+#include "media/gpu/v4l2/v4l2_video_decoder_delegate_vp8_legacy.h"
 #include "media/gpu/v4l2/v4l2_video_decoder_delegate_vp9.h"
 #include "media/gpu/v4l2/v4l2_video_decoder_delegate_vp9_legacy.h"
-#include "media/gpu/v4l2/v4l2_vp8_accelerator.h"
-#include "media/gpu/v4l2/v4l2_vp8_accelerator_legacy.h"
 #include "ui/gfx/native_pixmap_handle.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_image.h"
@@ -309,10 +309,11 @@ bool V4L2SliceVideoDecodeAccelerator::Initialize(const Config& config,
              video_profile_ <= VP8PROFILE_MAX) {
     if (supports_requests_) {
       decoder_ = std::make_unique<VP8Decoder>(
-          std::make_unique<V4L2VP8Accelerator>(this, device_.get()));
+          std::make_unique<V4L2VideoDecoderDelegateVP8>(this, device_.get()));
     } else {
       decoder_ = std::make_unique<VP8Decoder>(
-          std::make_unique<V4L2LegacyVP8Accelerator>(this, device_.get()));
+          std::make_unique<V4L2VideoDecoderDelegateVP8Legacy>(this,
+                                                              device_.get()));
     }
   } else if (video_profile_ >= VP9PROFILE_MIN &&
              video_profile_ <= VP9PROFILE_MAX) {

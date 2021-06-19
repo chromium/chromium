@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_GPU_V4L2_V4L2_VP8_ACCELERATOR_LEGACY_H_
-#define MEDIA_GPU_V4L2_V4L2_VP8_ACCELERATOR_LEGACY_H_
+#ifndef MEDIA_GPU_V4L2_V4L2_VIDEO_DECODER_DELEGATE_VP8_LEGACY_H_
+#define MEDIA_GPU_V4L2_V4L2_VIDEO_DECODER_DELEGATE_VP8_LEGACY_H_
 
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
@@ -15,11 +15,12 @@ class V4L2Device;
 class V4L2DecodeSurface;
 class V4L2DecodeSurfaceHandler;
 
-class V4L2LegacyVP8Accelerator : public VP8Decoder::VP8Accelerator {
+class V4L2VideoDecoderDelegateVP8Legacy : public VP8Decoder::VP8Accelerator {
  public:
-  explicit V4L2LegacyVP8Accelerator(V4L2DecodeSurfaceHandler* surface_handler,
-                                    V4L2Device* device);
-  ~V4L2LegacyVP8Accelerator() override;
+  explicit V4L2VideoDecoderDelegateVP8Legacy(
+      V4L2DecodeSurfaceHandler* surface_handler,
+      V4L2Device* device);
+  ~V4L2VideoDecoderDelegateVP8Legacy() override;
 
   // VP8Decoder::VP8Accelerator implementation.
   scoped_refptr<VP8Picture> CreateVP8Picture() override;
@@ -34,9 +35,9 @@ class V4L2LegacyVP8Accelerator : public VP8Decoder::VP8Accelerator {
   V4L2DecodeSurfaceHandler* const surface_handler_;
   V4L2Device* const device_;
 
-  DISALLOW_COPY_AND_ASSIGN(V4L2LegacyVP8Accelerator);
+  DISALLOW_COPY_AND_ASSIGN(V4L2VideoDecoderDelegateVP8Legacy);
 };
 
 }  // namespace media
 
-#endif  // MEDIA_GPU_V4L2_V4L2_VP8_ACCELERATOR_LEGACY_H_
+#endif  // MEDIA_GPU_V4L2_V4L2_VIDEO_DECODER_DELEGATE_VP8_LEGACY_H_
