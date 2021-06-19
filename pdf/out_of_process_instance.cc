@@ -1252,10 +1252,7 @@ void OutOfProcessInstance::OnPrintPreviewLoaded() {
 }
 
 void OutOfProcessInstance::InvokePrintDialog() {
-  ScheduleTaskOnMainThread(FROM_HERE,
-                           base::BindOnce(&OutOfProcessInstance::OnPrint,
-                                          weak_factory_.GetWeakPtr()),
-                           /*result=*/0, base::TimeDelta());
+  pp::PDF::Print(this);
 }
 
 void OutOfProcessInstance::SetContentRestrictions(int content_restrictions) {
@@ -1279,10 +1276,6 @@ void OutOfProcessInstance::NotifyUnsupportedFeature() {
 void OutOfProcessInstance::UserMetricsRecordAction(const std::string& action) {
   // TODO(raymes): Move this function to PPB_UMA_Private.
   pp::PDF::UserMetricsRecordAction(this, pp::Var(action));
-}
-
-void OutOfProcessInstance::OnPrint(int32_t /*unused_but_required*/) {
-  pp::PDF::Print(this);
 }
 
 }  // namespace chrome_pdf

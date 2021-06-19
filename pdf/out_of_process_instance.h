@@ -188,9 +188,6 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   // Called after a preview page has loaded or failed to load.
   void LoadNextPreviewPage();
 
-  // Callback to print without re-entrancy issues.
-  void OnPrint(int32_t /*unused_but_required*/);
-
   // The Pepper image data that is in sync with mutable_image_data().
   pp::ImageData pepper_image_data_;
 
