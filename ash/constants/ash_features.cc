@@ -864,6 +864,12 @@ const base::Feature kShowPlayInDemoMode{"ShowPlayInDemoMode",
 const base::Feature kSmartDimExperimentalComponent{
     "SmartDimExperimentalComponent", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Replaces Smart Lock UI in lock screen password box with new UI similar to
+// fingerprint auth. Adds Smart Lock to "Lock screen and sign-in" section of
+// settings.
+const base::Feature kSmartLockUIRevamp{"SmartLockUIRevamp",
+                                       base::FEATURE_DISABLED_BY_DEFAULT};
+
 // This feature:
 // - Creates a new "Sync your settings" section in Chrome OS settings
 // - Moves app, wallpaper and Wi-Fi sync to OS settings

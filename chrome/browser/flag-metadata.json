@@ -4927,6 +4927,11 @@
     "expiry_milestone": 100
   },
   {
+    "name": "smart-lock-ui-revamp",
+    "owners": [ "cclem", "better-together-dev@google.com" ],
+    "expiry_milestone": 98
+  },
+  {
     "name": "smart-suggestion-for-large-downloads",
     "owners": [ "shaktisahu" ],
     "expiry_milestone": 93

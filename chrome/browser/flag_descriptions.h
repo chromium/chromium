@@ -2835,6 +2835,9 @@ extern const char kShowTapsDescription[];
 extern const char kShowTouchHudName[];
 extern const char kShowTouchHudDescription[];
 
+extern const char kSmartLockUIRevampName[];
+extern const char kSmartLockUIRevampDescription[];
+
 extern const char kSpectreVariant2MitigationName[];
 extern const char kSpectreVariant2MitigationDescription[];
 
