@@ -26,6 +26,8 @@ struct App {
   bool hide_pin_to_shelf;
   bool is_preferred_app;
   apps.mojom.WindowMode window_mode;
+  bool resize_locked;
+  bool hide_resize_locked;
 };
 
 // Extension-based apps primarily use install-time permissions that cannot be
@@ -49,6 +51,7 @@ interface PageHandler {
   SetPinned(string app_id, apps.mojom.OptionalBool pinned);
   SetPermission(string app_id,
                 apps.mojom.Permission permission);
+  SetResizeLocked(string app_id, bool locked);
   Uninstall(string app_id);
   OpenNativeSettings(string app_id);
   SetPreferredApp(string app_id, bool is_preferred_app);

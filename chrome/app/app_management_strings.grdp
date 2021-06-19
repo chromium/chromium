@@ -25,6 +25,12 @@
   <message name="IDS_APP_MANAGEMENT_PIN_TO_SHELF" desc="Label for the pin to shelf button in the app settings page.">
     Pin to shelf
   </message>
+  <message name="IDS_APP_MANAGEMENT_PRESET_WINDOW_SIZES" desc="Label for the preset window sizes toggle in the app settings page.">
+    Preset window sizes
+  </message>
+  <message name="IDS_APP_MANAGEMENT_PRESET_WINDOW_SIZES_TEXT" desc="Label for the description of the window preset toggle in the app settings page.">
+    Use presets for phone, tablet, or resizable windows to prevent app from misbehaving
+  </message>
   <message name="IDS_APP_MANAGEMENT_PRINTING" desc="Label for the printing permission toggle.">
     Printers
   </message>

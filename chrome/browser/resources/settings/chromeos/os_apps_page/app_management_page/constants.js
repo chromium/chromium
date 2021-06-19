@@ -108,4 +108,6 @@
   StorageTurnedOff: 16,
   PrintingTurnedOn: 17,
   PrintingTurnedOff: 18,
+  ResizeLockTurnedOn: 19,
+  ResizeLockTurnedOff: 20,
 };

@@ -33,6 +33,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
+#include "components/arc/session/connection_holder.h"
 #endif
 
 using apps::mojom::OptionalBool;
@@ -176,6 +177,16 @@ void AppManagementPageHandler::SetPermission(
       app_id, std::move(permission));
 }
 
+void AppManagementPageHandler::SetResizeLocked(const std::string& app_id,
+                                               bool locked) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  apps::AppServiceProxyFactory::GetForProfile(profile_)->SetResizeLocked(
+      app_id, locked ? OptionalBool::kTrue : OptionalBool::kFalse);
+#else
+  NOTREACHED();
+#endif
+}
+
 void AppManagementPageHandler::Uninstall(const std::string& app_id) {
   apps::AppServiceProxyFactory::GetForProfile(profile_)->Uninstall(
       app_id, apps::mojom::UninstallSource::kAppManagement,
@@ -256,6 +267,9 @@ app_management::mojom::AppPtr AppManagementPageHandler::CreateUIAppPtr(
   app->is_policy_pinned = shelf_delegate_.IsPolicyPinned(update.AppId())
                               ? OptionalBool::kTrue
                               : OptionalBool::kFalse;
+  app->resize_locked = update.ResizeLocked() == OptionalBool::kTrue;
+  app->hide_resize_locked =
+      update.ResizeLocked() == apps::mojom::OptionalBool::kUnknown;
 #endif
   app->is_preferred_app =
       preferred_apps_list_.IsPreferredAppForSupportedLinks(update.AppId());

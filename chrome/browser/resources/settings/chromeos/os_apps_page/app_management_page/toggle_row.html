@@ -26,11 +26,20 @@
       }
     </style>
 
-    <div id="left-content" class="horizontal-align" aria-hidden="true">
-      <template is="dom-if" if="[[icon]]">
-        <iron-icon id="icon" icon="[[icon]]"></iron-icon>
-      </template>
-      <div id="label">[[label]]</div>
+    <div id="left-content" aria-hidden="true">
+      <div class="horizontal-align">
+        <template is="dom-if" if="[[icon]]">
+          <iron-icon id="icon" icon="[[icon]]"></iron-icon>
+        </template>
+        <div class="vertical-align">
+            <div id="label" class="header-text">[[label]]</div>
+            <template is="dom-if" if="[[description]]">
+                <div id="description" class="secondary-text">
+                  [[description]]
+                </div>
+            </template>
+        </div>
+      </div>
     </div>
     <div id="right-content" class="horizontal-align">
       <template is="dom-if" if="[[managed]]">

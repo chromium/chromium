@@ -8,6 +8,7 @@
 <link rel="import" href="shared_style.html">
 <link rel="import" href="store_client.html">
 <link rel="import" href="pin_to_shelf_item.html">
+<link rel="import" href="resize_lock_item.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
 <link rel="import" href="chrome://resources/cr_elements/icons.html">
 
@@ -69,6 +70,11 @@
           </template>
         </div>
       </div>
+      <app-management-resize-lock-item
+        id="resize-lock-setting"
+        class="permission-card-row separated-row row-with-description"
+        app="[[app_]]">
+      </app-management-resize-lock-item>
       <div id="more-settings"
         class="permission-card-row separated-row header-text clickable"
         on-click="onClickNativeSettingsButton_">

@@ -21,6 +21,10 @@ Polymer({
      * @type {boolean}
      */
     value: {type: Boolean, value: false, reflectToAttribute: true},
+    /**
+     * @type {string}
+     */
+    description: String,
   },
 
   listeners: {

@@ -130,7 +130,8 @@ interface AppService {
       string app_id,
       IntentFilter intent_filter);
 
-  // Enables resize lock mode for the app identified by |app_id|.
+  // Enables resize lock mode for the app identified by |app_id| with the given
+  // |app_type|.
   SetResizeLocked(
       AppType app_type,
       string app_id,

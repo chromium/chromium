@@ -28,6 +28,7 @@ js_type_check("closure_compile_module") {
     ":pin_to_shelf_item.m",
     ":pwa_detail_view.m",
     ":reducers.m",
+    ":resize_lock_item.m",
     ":shared_style.m",
     ":shared_vars.m",
     ":store.m",
@@ -226,6 +227,19 @@ js_library("reducers.m") {
   extra_deps = [ ":modulize" ]
 }
 
+js_library("resize_lock_item.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_apps_page/app_management_page/resize_lock_item.m.js" ]
+  deps = [
+    ":browser_proxy.m",
+    ":constants.m",
+    ":toggle_row.m",
+    ":types.m",
+    ":util.m",
+    "//ui/webui/resources/js:assert.m",
+  ]
+  extra_deps = [ ":resize_lock_item_module" ]
+}
+
 js_library("store.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_apps_page/app_management_page/store.m.js" ]
   deps = [
@@ -313,6 +327,7 @@ group("polymer3_elements") {
     ":permission_item_module",
     ":pin_to_shelf_item_module",
     ":pwa_detail_view_module",
+    ":resize_lock_item_module",
     ":shared_style_module",
     ":shared_vars_module",
     ":toggle_row_module",
@@ -410,6 +425,15 @@ polymer_modulizer("pin_to_shelf_item") {
 polymer_modulizer("pwa_detail_view") {
   js_file = "pwa_detail_view.js"
   html_file = "pwa_detail_view.html"
+  html_type = "dom-module"
+  migrated_imports = os_settings_migrated_imports
+  namespace_rewrites = os_settings_namespace_rewrites
+  auto_imports = os_settings_auto_imports
+}
+
+polymer_modulizer("resize_lock_item") {
+  js_file = "resize_lock_item.js"
+  html_file = "resize_lock_item.html"
   html_type = "dom-module"
   migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
