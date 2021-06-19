@@ -3,6 +3,10 @@ sky@chromium.org
 # For WebRTC files.
 tommi@chromium.org
 
+# For RenderFrameHost/RenderWidgetHost/RenderViewHost-related test harnesses
+# and NavigationSimulator.
+file://content/browser/renderer_host/OWNERS
+
 # For Accessibility related files
 per-file *accessibility*=file://ui/accessibility/OWNERS
 
@@ -23,6 +27,9 @@ per-file mock_badge_service.*=file://chrome/browser/badging/OWNERS
 
 # Fuchsia related files.
 per-file *fuchsia*=file://build/fuchsia/OWNERS
+
+# WebContents-related test code.
+per-file *web_contents*=file://content/browser/web_contents/OWNERS
 
 # Anyone can add rules to include new test files.
 per-file BUILD.gn=*
