@@ -435,19 +435,9 @@ void MediaInterfaceProxy::ConnectToMediaFoundationService(
   mf_service.CreateInterfaceFactory(
       mf_interface_factory_remote_.BindNewPipeAndPassReceiver(),
       GetFrameServices());
-
   // Handle unexpected mojo pipe disconnection such as MediaFoundationService
   // process crashed or killed in the browser task manager.
-  mf_interface_factory_remote_.set_disconnect_handler(base::BindOnce(
-      &MediaInterfaceProxy::OnMediaFoundationServiceConnectionError,
-      base::Unretained(this)));
-}
-
-void MediaInterfaceProxy::OnMediaFoundationServiceConnectionError() {
-  DVLOG(1) << __func__ << ": this=" << this;
-  DCHECK(thread_checker_.CalledOnValidThread());
-
-  mf_interface_factory_remote_.reset();
+  mf_interface_factory_remote_.reset_on_disconnect();
 }
 
 bool MediaInterfaceProxy::ShouldUseMediaFoundationServiceForCdm(

@@ -139,7 +139,6 @@ class MediaInterfaceProxy final : public media::mojom::InterfaceFactory {
       const base::FilePath& cdm_path);
 
   void ConnectToMediaFoundationService(const base::FilePath& cdm_path);
-  void OnMediaFoundationServiceConnectionError();
   bool ShouldUseMediaFoundationServiceForCdm(
       const std::string& key_system,
       const media::CdmConfig& cdm_config);

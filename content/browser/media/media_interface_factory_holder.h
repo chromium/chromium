@@ -37,9 +37,6 @@ class MediaInterfaceFactoryHolder {
  private:
   void ConnectToMediaService();
 
-  // Callback for connection error from |interface_factory_remote_|.
-  void OnMediaServiceConnectionError();
-
   MediaServiceGetter media_service_getter_;
   FrameServicesGetter frame_services_getter_;
   mojo::Remote<media::mojom::InterfaceFactory> interface_factory_remote_;

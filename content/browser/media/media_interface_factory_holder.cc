@@ -29,16 +29,11 @@ void MediaInterfaceFactoryHolder::ConnectToMediaService() {
   media_service_getter_.Run().CreateInterfaceFactory(
       interface_factory_remote_.BindNewPipeAndPassReceiver(),
       frame_services_getter_.Run());
-  interface_factory_remote_.set_disconnect_handler(base::BindOnce(
-      &MediaInterfaceFactoryHolder::OnMediaServiceConnectionError,
-      base::Unretained(this)));
+  // Handle unexpected mojo pipe disconnection such as media service process
+  // crashed or killed in the browser task manager.
+  interface_factory_remote_.reset_on_disconnect();
 }
 
-void MediaInterfaceFactoryHolder::OnMediaServiceConnectionError() {
-  DVLOG(1) << __func__;
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  interface_factory_remote_.reset();
-}
 
 }  // namespace content
