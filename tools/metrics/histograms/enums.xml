@@ -5994,6 +5994,13 @@ others/histograms.xml -->
   <int value="32" label="The form was parsed"/>
   <int value="33" label="The user hide the suggestions"/>
   <int value="34" label="The user hide the suggestions (once)"/>
+  <int value="35" label="Virtual card suggestion selected"/>
+  <int value="36" label="Virtual card suggestion selected (once)"/>
+  <int value="37" label="Virtual card suggestion filled"/>
+  <int value="38" label="Virtual card suggestion filled (once)"/>
+  <int value="39"
+      label="About to be submitted with virtual card suggestion filled (once)"/>
+  <int value="40" label="Submitted with virtual card suggestion filled (once)"/>
 </enum>
 
 <enum name="AutofillFormSubmittedState">

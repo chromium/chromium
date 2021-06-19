@@ -27,14 +27,15 @@ enum FormEvent {
   FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_FILLED,
   // A suggestion was used to fill the form. The origin type (local or server
   // or masked server card) of the first selected within a page load will
-  // determine which of the following two will be fired.
+  // determine which of the following will be fired. VIRTUAL_CARD is also an
+  // option later in the enum list.
   FORM_EVENT_LOCAL_SUGGESTION_FILLED_ONCE,
   FORM_EVENT_SERVER_SUGGESTION_FILLED_ONCE,
   FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_FILLED_ONCE,
   // A form was submitted. Depending on the user filling a local, server,
-  // masked server card or no suggestion one of the following will be
-  // triggered. Only one of the following four will be triggered per page
-  // load.
+  // masked server card, no suggestion, or virtual card (later in the enum
+  // list), one of the following will be triggered. Only one of the following
+  // four or virtual card will be triggered per page load.
   FORM_EVENT_NO_SUGGESTION_SUBMITTED_ONCE,
   FORM_EVENT_LOCAL_SUGGESTION_SUBMITTED_ONCE,
   FORM_EVENT_SERVER_SUGGESTION_SUBMITTED_ONCE,
@@ -45,9 +46,9 @@ enum FormEvent {
   FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SELECTED_ONCE,
   // An autofillable form is about to be submitted. If the submission is not
   // interrupted by JavaScript, the "form submitted" events above will also be
-  // logged. Depending on the user filling a local, server, masked server card
-  // or no suggestion one of the following will be triggered, at most once per
-  // page load.
+  // logged. Depending on the user filling a local, server, masked server card,
+  // no suggestion, or virtual card (later in the enum list), one of the
+  // following will be triggered, at most once per page load.
   FORM_EVENT_NO_SUGGESTION_WILL_SUBMIT_ONCE,
   FORM_EVENT_LOCAL_SUGGESTION_WILL_SUBMIT_ONCE,
   FORM_EVENT_SERVER_SUGGESTION_WILL_SUBMIT_ONCE,
@@ -91,8 +92,22 @@ enum FormEvent {
 
   // The user selected the "Hide Suggestions" item.
   FORM_EVENT_USER_HIDE_SUGGESTIONS,
-  // Same as above, but recoreded only once per page load.
+  // Same as above, but recorded only once per page load.
   FORM_EVENT_USER_HIDE_SUGGESTIONS_ONCE,
+
+  // A virtual card suggestion was selected to fill the form.
+  FORM_EVENT_VIRTUAL_CARD_SUGGESTION_SELECTED,
+  // Same as above, but recorded only once per page load.
+  FORM_EVENT_VIRTUAL_CARD_SUGGESTION_SELECTED_ONCE,
+  // A virtual card suggestion was used to fill the form.
+  FORM_EVENT_VIRTUAL_CARD_SUGGESTION_FILLED,
+  // Same as above, but recorded only once per page load.
+  FORM_EVENT_VIRTUAL_CARD_SUGGESTION_FILLED_ONCE,
+  // An Autofillable form is about to be submitted, after being filled with a
+  // virtual card.
+  FORM_EVENT_VIRTUAL_CARD_SUGGESTION_WILL_SUBMIT_ONCE,
+  // A form was submitted after being filled with a virtual card.
+  FORM_EVENT_VIRTUAL_CARD_SUGGESTION_SUBMITTED_ONCE,
 
   NUM_FORM_EVENTS,
 };

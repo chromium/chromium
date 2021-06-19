@@ -93,7 +93,9 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
   bool is_context_secure_ = false;
   UnmaskAuthFlowType current_authentication_flow_;
   bool has_logged_masked_server_card_suggestion_selected_ = false;
+  bool has_logged_virtual_card_suggestion_selected_ = false;
   bool logged_suggestion_filled_was_masked_server_card_ = false;
+  bool logged_suggestion_filled_was_virtual_card_ = false;
   std::vector<Suggestion> suggestions_;
   bool has_eligible_offer_ = false;
   bool card_selected_has_offer_ = false;
