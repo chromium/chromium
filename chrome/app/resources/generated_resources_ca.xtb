@@ -2528,6 +2528,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
 <translation id="3739254215541673094">Vols obrir <ph name="APPLICATION" />?</translation>
 <translation id="3742055079367172538">Captura de pantalla feta</translation>
+<translation id="3742235229730461951">Disseny de teclat coreà</translation>
 <translation id="3742666961763734085">No es troba cap unitat organitzativa amb aquest nom. Torna-ho a provar.</translation>
 <translation id="3744111561329211289">Sincronització en segon pla</translation>
 <translation id="3747077776423672805">Per suprimir una aplicació, ves a Configuració &gt; Google Play Store &gt; Gestiona les preferències d'Android &gt; Aplicacions o Gestor d'aplicacions. A continuació, toca l'aplicació que vulguis desinstal·lar (és possible que hagis de lliscar cap a la dreta o cap a l'esquerra per trobar-la). Tot seguit, toca Desinstal·la o Desactiva.</translation>
@@ -4693,7 +4694,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6186394437969115158">Els llocs web solen mostrar anuncis per proporcionar contingut o serveis de manera gratuïta, tot i que se sap que alguns llocs web mostren anuncis intrusius i enganyosos.</translation>
 <translation id="6195005504600220730">Llegeix informació sobre el navegador, el SO i el dispositiu</translation>
 <translation id="6195693561221576702">Aquest dispositiu no es pot configurar en mode de demostració sense connexió.</translation>
-<translation id="6195724942939841102">No restauris</translation>
 <translation id="6196640612572343990">Bloqueja les galetes de tercers</translation>
 <translation id="6196854373336333322">L'extensió <ph name="EXTENSION_NAME" /> ha passat a controlar la configuració del servidor intermediari. Això vol dir que pot modificar, desfer o espiar qualsevol acció que feu en línia. Si no esteu segur del motiu d'aquest canvi, és possible que no el vulgueu aplicar.</translation>
 <translation id="6198102561359457428">Tanca la sessió i torna-la a iniciar...</translation>

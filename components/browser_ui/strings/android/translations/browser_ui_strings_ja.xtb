@@ -100,6 +100,7 @@
 <translation id="3594780231884063836">動画をミュート</translation>
 <translation id="3596414637720633074">シークレット モードでサードパーティの Cookie をブロックする</translation>
 <translation id="3600792891314830896">音声が再生されるサイトをミュートする</translation>
+<translation id="365089839707261811">新しい名前を確認</translation>
 <translation id="3744111561329211289">バックグラウンド同期</translation>
 <translation id="3763247130972274048">動画の左または右をダブルタップすると 10 秒スキップします</translation>
 <translation id="381841723434055211">電話番号</translation>
@@ -121,6 +122,7 @@
 <translation id="429312253194641664">サイトでメディアが再生されています</translation>
 <translation id="42981349822642051">展開</translation>
 <translation id="4336434711095810371">データをすべて消去</translation>
+<translation id="4339203724549370495">アプリをアンインストール</translation>
 <translation id="4402755511846832236">サイトによるこのデバイスのアクティブ状態の検出をブロックする</translation>
 <translation id="4434045419905280838">ポップアップとリダイレクト</translation>
 <translation id="445467742685312942">保護されたコンテンツの再生をサイトに許可する</translation>
@@ -133,6 +135,7 @@
 <translation id="4670064810192446073">バーチャル リアリティ（VR）</translation>
 <translation id="4708011789095599544">このウェブサイトの Cookie とその他のサイトデータを削除してもよろしいですか？</translation>
 <translation id="4751476147751820511">モーション センサーまたは光センサー</translation>
+<translation id="4800839971935185386">新しい名前とアイコンを確認</translation>
 <translation id="4836046166855586901">サイトからこのデバイスのアクティブ状態の検出を求められたときに確認する</translation>
 <translation id="4883854917563148705">管理者による設定はリセットできません</translation>
 <translation id="4887024562049524730">サイトにバーチャル リアリティ デバイスとデータの使用を許可する前に確認する（推奨）</translation>
@@ -248,6 +251,7 @@
 <translation id="7589445247086920869">現在の検索エンジンに対してブロック</translation>
 <translation id="7649070708921625228">ヘルプ</translation>
 <translation id="7658239707568436148">キャンセル</translation>
+<translation id="7734541938181328224">新しいアイコンを確認</translation>
 <translation id="7781829728241885113">昨日</translation>
 <translation id="7791543448312431591">追加</translation>
 <translation id="780301667611848630">いいえ</translation>
@@ -289,6 +293,7 @@
 <translation id="8487700953926739672">オフラインでの利用</translation>
 <translation id="851751545965956758">サイトからデバイスへの接続をブロックする</translation>
 <translation id="8525306231823319788">全画面表示</translation>
+<translation id="857074314439694500">このウェブアプリがユーザーをだまして別のアプリになりすまそうとしている場合は、アンインストールしてください。</translation>
 <translation id="857943718398505171">許可（推奨）</translation>
 <translation id="8609465669617005112">上に移動</translation>
 <translation id="8676374126336081632">入力内容を消去</translation>

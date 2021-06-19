@@ -325,6 +325,7 @@
 <translation id="305593374596241526">አካባቢ ጠፍቷል፤ በ<ph name="BEGIN_LINK" />Android ቅንብሮች<ph name="END_LINK" /> ውስጥ ያብሩት።</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> ዕልባት}one{<ph name="BOOKMARKS_COUNT_MANY" /> ዕልባቶች}other{<ph name="BOOKMARKS_COUNT_MANY" /> ዕልባቶች}}</translation>
 <translation id="3062802207422175757">Chrome ላይ በእርስዎ ፍላጎቶች ላይ ያሉ ጽሑፎች</translation>
+<translation id="3066573403916685335">ወደታች አውርድ</translation>
 <translation id="3070005020161560471">በራስ-ሰር ይተረጉሙ</translation>
 <translation id="3091010850649238832">የቅንጥብ ሰሌዳ ይዘቶችን አሳይ</translation>
 <translation id="3098745985164956033">ለእርስዎ መግለጫዎችን ለማሻሻል አንዳንድ ምስሎች ወደ Google ይላካሉ</translation>
@@ -362,6 +363,7 @@
 <translation id="3295530008794733555">በበለጠ ፍጥነት ያስሱ። ያነሰ ውሂብን ይጠቀሙ።</translation>
 <translation id="3297344142967351106">የድምጽ እርዳታ</translation>
 <translation id="3303414029551471755">ይዘቱን ማውረድ ይቀጥል?</translation>
+<translation id="333367884906698540">ሲጨርሱ ብሉቱዝ ተመልሶ ይጠፋል</translation>
 <translation id="3334729583274622784">የፋይል ቅጥያ ይቀየር?</translation>
 <translation id="3341058695485821946">ምን ያህል ውሂብ እንዳስቀመጡ ይመልከቱ</translation>
 <translation id="3341262203274374114">መከተል አልተቻለም። የሆነ ችግር ተፈጥሯል።</translation>
@@ -453,6 +455,7 @@
 <translation id="3962957115499249330">ይህ አውርድ በWi-Fi ሲጀመር ማሳወቂያ ያያሉ።</translation>
 <translation id="3963007978381181125">የእርስዎ የይለፍ ሐረግ ያለው ሰው ብቻ ነው የእርስዎን የተመሰጠረ ውሂብ ማንበብ የሚችለው። የይለፍ ሐረጉ ወደ Google አይላክም እንዲሁም አይከማችም። የእርስዎን የይለፍ ሐረግ ከረሱት ወይም ይህን ቅንብር መለወጥ ከፈለጉ ማሥመሩን ዳግም ማስጀመር ያስፈልገዎታል። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome የእርስዎን የይለፍ ቃላት መፈተሽ አይችልም</translation>
+<translation id="3969863827134279083">ወደላይ አውጣ</translation>
 <translation id="3974987681202239636"><ph name="APP_NAME" /> በChrome ውስጥ ይከፈታል። በመቀጠልዎ በ<ph name="BEGIN_LINK1" />የGoogle አገልግሎት ውል<ph name="END_LINK1" /> እና <ph name="BEGIN_LINK2" />የGoogle Chrome እና የChrome OS ተጨማሪ አገልግሎት ውል<ph name="END_LINK2" /> ይስማማሉ። <ph name="BEGIN_LINK3" />በFamily Link የሚቀናበሩ የGoogle መለያዎች የግላዊነት ማስታወቂያ<ph name="END_LINK3" /> እንዲሁም ይተገበራል።</translation>
 <translation id="397583555483684758">ስምረት መሥራት አቁሟል</translation>
 <translation id="3976396876660209797">ይህን አቋራጭ ያስወግዱትና እና ዳግም ይፍጠሩት</translation>
@@ -589,7 +592,7 @@
 <translation id="4877678010818027629">ማንነት የማያሳውቅ ሁነታ ውስጥ ይግቡ</translation>
 <translation id="4878404682131129617">በተኪ አገልጋይ በኩል ዋሻን መመስረት አልተሳካም</translation>
 <translation id="4880127995492972015">ተርጉም…</translation>
-<translation id="4881695831933465202">ክፈት</translation>
+<translation id="4881695831933465202">ክፍት የሚሆንባቸው</translation>
 <translation id="488187801263602086">ፋይልን ዳግም ይሰይሙ</translation>
 <translation id="4885273946141277891">የማይደገፍ የChrome አብነቶች ብዛት።</translation>
 <translation id="4905269543817054577">ታሪክ ማንነት በማያሳውቅ ውስጥ አልተቀመጠም</translation>
@@ -1036,6 +1039,7 @@
 <translation id="7641339528570811325">የአሰሳ ውሂብን አጽዳ…</translation>
 <translation id="764170292089748542">በግል ለማሰስ ሲመርጡ Chrome የአሰሳ ታሪክዎን አያስቀምጥም። የሚወዷቸውን ጣቢያዎች ለመድረስ አሁንም ዕልባቶችን መጠቀም ይችላሉ።</translation>
 <translation id="7646772052135772216">የይለፍ ቃል ስምረት እየሠራ አይደለም</translation>
+<translation id="7655900163790317559">ብሉቱዝን በማብራት ላይ…</translation>
 <translation id="7658239707568436148">ይቅር</translation>
 <translation id="7665369617277396874">መለያ ያክሉ</translation>
 <translation id="766587987807204883">እርስዎ ከመስመር ውጭ ሆነውም እንኳ ሊያነብቧቸው የሚችሏቸውን ጽሑፎች እዚህ ይመጣሉ</translation>

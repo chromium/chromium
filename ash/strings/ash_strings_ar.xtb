@@ -289,7 +289,6 @@
 <translation id="3307642347673023554">تمّ التبديل إلى وضع الكمبيوتر المحمول.</translation>
 <translation id="3308453408813785101">سيظل بإمكان <ph name="USER_EMAIL_ADDRESS" /> تسجيل الدخول لاحقًا.</translation>
 <translation id="3321628682574733415">رمز أحد الوالدين غير صحيح</translation>
-<translation id="332587331255250389">يُرجى استبدال البطارية</translation>
 <translation id="3341303451326249809">تم أخذ لقطة الشاشة.</translation>
 <translation id="334252345105450327">التقاط لقطة شاشة</translation>
 <translation id="3351879221545518001">أنت حاليًا تبث محتوى الشاشة.</translation>
@@ -726,6 +725,7 @@
 <translation id="6816797338148849397">تتوفّر معلومات ذات صلة باختيارك. يمكنك استخدام مفتاح السهم المتجه للأعلى للوصول إلى هذه المعلومات.</translation>
 <translation id="6818242057446442178">الرجوع بمقدار كلمة واحدة</translation>
 <translation id="6820676911989879663">حان وقت الاستراحة</translation>
+<translation id="6837064795450991317">إخفاء شريط سطح المكتب</translation>
 <translation id="6850010208275816200">يتم عرض التطبيق الحالي في وضع ملء الشاشة. إذا طلب التطبيق إدخال كلمة المرور، يُرجى أولاً الخروج من وضع ملء الشاشة.</translation>
 <translation id="6852052252232534364">انقر للتفعيل.</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> ثانية</translation>
@@ -761,6 +761,7 @@
 <translation id="7076293881109082629">تسجيل الدخول</translation>
 <translation id="7088960765736518739">الوصول عبر مفتاح تبديل</translation>
 <translation id="7098389117866926363">‏جهاز USB-C (المنفذ الأيسر في الخلف)</translation>
+<translation id="7106330611027933926">إظهار شريط سطح المكتب</translation>
 <translation id="7118268675952955085">لقطة شاشة</translation>
 <translation id="7131634465328662194">سيتم تسجيل خروجك تلقائيًا.</translation>
 <translation id="7143207342074048698">اتصال</translation>
@@ -804,6 +805,7 @@
 <translation id="7466449121337984263">يُرجى لمس جهاز الاستشعار.</translation>
 <translation id="7473891865547856676">لا، شكرًا</translation>
 <translation id="7477793887173910789">التحكم في الموسيقى والفيديوهات وغير ذلك</translation>
+<translation id="7482097454533720217">يمكنك تعريف المصطلحات وترجمة النصوص وتحويل الوحدات من خلال النقر بزر الماوس الأيمن على نص أو النقر عليه مع الاستمرار.</translation>
 <translation id="7483025031359818980">تم ضبط منطقة الاختيار على ملء الشاشة.</translation>
 <translation id="7486227320194954040">تصغير أدوات التحديد</translation>
 <translation id="7497767806359279797">اختيار اللغة ولوحة المفاتيح</translation>
@@ -980,6 +982,7 @@
 <translation id="8843682306134542540">تبديل قفل التدوير. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">يتعذّر حتى الآن التحقُّق من رقم التعريف الشخصي أو كلمة المرور الخاصّة بك. ملاحظة: في حال تم تغيير كلمة المرور الخاصّة بك مؤخرًا، يمكنك تسجيل الدخول باستخدام كلمة المرور القديمة. وسيتم تطبيق كلمة المرور الجديدة بعد تسجيل الخروج.</translation>
+<translation id="8863888432376731307">الحصول على <ph name="INTENT" /> للطلب المتعلّق بـ "<ph name="QUERY" />" وغير ذلك</translation>
 <translation id="8870509716567206129">التطبيق لا يتيح تقسيم الشاشة.</translation>
 <translation id="8871580645200179206">تبديل المظهر الداكن. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">غير متصل</translation>

@@ -325,6 +325,7 @@ Arama yapmak için herhangi bir kelimeye dokunup basılı tutun. Aramanızı has
 <translation id="305593374596241526">Konum özelliği kapalı. <ph name="BEGIN_LINK" />Android Ayarları<ph name="END_LINK" />'ndan açın.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> yer işareti}other{<ph name="BOOKMARKS_COUNT_MANY" /> yer işareti}}</translation>
 <translation id="3062802207422175757">İlgilendiğiniz makaleler Chrome'da</translation>
+<translation id="3066573403916685335">Aşağı Git</translation>
 <translation id="3070005020161560471">Otomatik olarak çevir</translation>
 <translation id="3091010850649238832">Pano içeriklerini göster</translation>
 <translation id="3098745985164956033">Bazı resimler size daha iyi açıklamalar sunmak için Google'a gönderilir</translation>
@@ -454,6 +455,7 @@ Günümüzde web siteleri, alakalı reklamlar göstermek ve bir sitenin performa
 <translation id="3962957115499249330">Bu indirme işlemi, kablosuz bağlantı üzerinde başlatıldığında bir bildirim göreceksiniz.</translation>
 <translation id="3963007978381181125">Parolayla şifreleme, Google Pay'deki adresleri ve ödeme yöntemlerini kapsamaz. Yalnızca parolanızı bilen biri, şifrelenmiş verilerinizi okuyabilir. Parola Google'a gönderilmez veya Google tarafından saklanmaz. Parolanızı unutursanız veya bu ayarı değiştirmek isterseniz senkronizasyonu sıfırlamanız gerekir. <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome, şifrelerinizi kontrol edemiyor</translation>
+<translation id="3969863827134279083">Yukarı Git</translation>
 <translation id="3974987681202239636"><ph name="APP_NAME" />, Chrome'da açılacak. Devam ederek <ph name="BEGIN_LINK1" />Google Hizmet Şartları<ph name="END_LINK1" /> ile <ph name="BEGIN_LINK2" />Google Chrome ve Chrome OS Ek Hizmet Şartları<ph name="END_LINK2" />'nı kabul etmiş olursunuz. <ph name="BEGIN_LINK3" />Family Link ile Yönetilen Google Hesapları İçin Gizlilik Uyarısı<ph name="END_LINK3" /> da geçerlidir.</translation>
 <translation id="397583555483684758">Senkronizasyonun çalışması durdu</translation>
 <translation id="3976396876660209797">Bu kısayolu kaldırıp yeniden oluşturun</translation>

@@ -1082,11 +1082,6 @@ Als dit beleid is ingesteld, kan de gebruiker de waarde niet overschrijven.
 
 Als dit beleid niet is ingesteld, staat het privacyscherm in eerste instantie uit, maar kan de gebruiker dit aanzetten.</translation>
 <translation id="2415715982424988916">Ontdekken (ondersteund vanaf versie 91)</translation>
-<translation id="241739814668386424"> Als je dit beleid niet toepast, kan de gebruiker het Thunderbolt/USB4-randapparaat niet volledig verbinden via PCIe-tunneling.
-
-      Als je dit beleid toepast, kan de gebruiker het Thunderbolt/USB4-randapparaat volledig verbinden via PCIe-tunneling.
-
-      Dit beleid wordt standaard niet toegepast.</translation>
 <translation id="2421677964966613267">Dit beleid is beëindigd in M88. Flash wordt niet meer ondersteund door Chrome. Als je het beleid instelt, kun je een lijst met URL-patronen instellen om op te geven welke sites de <ph name="FLASH_PLUGIN_NAME" />-plug-in niet mogen uitvoeren.
 
       Als je het beleid niet instelt, is <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" />, indien ingesteld, van toepassing op alle sites. Zo niet, dan gelden de persoonlijke instellingen van de gebruiker.
@@ -3226,7 +3221,6 @@ Als dit beleid is ingesteld op False, gebruikt <ph name="PRODUCT_NAME" /> geen s
           Als je dit beleid niet instelt, staat cursormarkering in eerste instantie uit op het inlogscherm. De gebruiker kan deze functie op elk gewenst moment aanzetten.</translation>
 <translation id="5279539586558702228">Tijd wanneer het apparaat netvoeding gaat gebruiken, geïnterpreteerd in de lokale tijdzone van het apparaat.</translation>
 <translation id="5283457834853986457">Plug-inzoeker uitzetten (beëindigd)</translation>
-<translation id="5285315763984334157">Schadelijke downloads blokkeren</translation>
 <translation id="5288772341821359899">Als het beleid is ingesteld, wordt het door WebRTC gebruikte UDP-poortbereik beperkt tot het opgegeven poortinterval (inclusief eindpunten).
 
       Als het beleid niet wordt ingesteld, of als dit wordt ingesteld voor een lege tekenreeks of een ongeldig poortbereik, kan WebRTC gebruikmaken van elke lokale UDP-poort.</translation>

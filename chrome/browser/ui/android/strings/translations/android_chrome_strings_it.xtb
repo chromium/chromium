@@ -325,6 +325,7 @@ Tocca e tieni premuta una parola per eseguire una ricerca. Per perfezionare la r
 <translation id="305593374596241526">La geolocalizzazione non è attiva; attivala nelle <ph name="BEGIN_LINK" />Impostazioni Android<ph name="END_LINK" />.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> preferito}other{<ph name="BOOKMARKS_COUNT_MANY" /> preferiti}}</translation>
 <translation id="3062802207422175757">Articoli relativi ai tuoi interessi su Chrome</translation>
+<translation id="3066573403916685335">Sposta giù</translation>
 <translation id="3070005020161560471">Traduci automaticamente</translation>
 <translation id="3091010850649238832">Mostra contenuti degli appunti</translation>
 <translation id="3098745985164956033">Alcune immagini vengono inviate a Google per migliorare le descrizioni</translation>
@@ -454,6 +455,7 @@ Privacy Sandbox è ancora in fase di sviluppo attivo ed è disponibile soltanto 
 <translation id="3962957115499249330">Verrà mostrata una notifica quando inizierà questo download tramite Wi-Fi.</translation>
 <translation id="3963007978381181125">La crittografia della passphrase non include metodi di pagamento e indirizzi di Google Pay. Soltanto chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphrase non viene inviata a Google né memorizzata. Se dimentichi la passphrase o vuoi modificare questa impostazione, dovrai reimpostare la sincronizzazione. <ph name="BEGIN_LINK" />Ulteriori informazioni<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome non può controllare le tue password</translation>
+<translation id="3969863827134279083">Sposta su</translation>
 <translation id="3974987681202239636"><ph name="APP_NAME" /> si aprirà in Chrome. Se continui, accetti i <ph name="BEGIN_LINK1" />Termini di servizio di Google<ph name="END_LINK1" /> e i <ph name="BEGIN_LINK2" />Termini di servizio aggiuntivi di Google Chrome e Chrome OS<ph name="END_LINK2" />.Si applica inoltre l'<ph name="BEGIN_LINK3" />Informativa sulla privacy per gli Account Google gestiti tramite Family Link<ph name="END_LINK3" />.</translation>
 <translation id="397583555483684758">La sincronizzazione si è interrotta</translation>
 <translation id="3976396876660209797">Rimuovi e ricrea la scorciatoia</translation>

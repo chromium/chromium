@@ -325,6 +325,7 @@ Mantén premuda qualsevol paraula per cercar-la. Per definir millor la cerca, se
 <translation id="305593374596241526">La ubicació està desactivada; activa-la a la <ph name="BEGIN_LINK" />configuració d'Android<ph name="END_LINK" />.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> adreça d'interès}other{<ph name="BOOKMARKS_COUNT_MANY" /> adreces d'interès}}</translation>
 <translation id="3062802207422175757">Articles relacionats amb els teus interessos a Chrome</translation>
+<translation id="3066573403916685335">Mou cap avall</translation>
 <translation id="3070005020161560471">Tradueix automàticament</translation>
 <translation id="3091010850649238832">Mostra els continguts del porta-retalls</translation>
 <translation id="3098745985164956033">Algunes imatges s'envien a Google per millorar-ne les descripcions per a tu</translation>
@@ -454,6 +455,7 @@ Privacy Sandbox encara s'està desenvolupant i només està disponible en determ
 <translation id="3962957115499249330">Veuràs una notificació quan aquesta baixada comenci amb Wi-Fi.</translation>
 <translation id="3963007978381181125">L'encriptació de frases de contrasenya no inclou les formes de pagament ni les adreces de Google Pay. Només els usuaris que sàpiguen la teva frase de contrasenya poden llegir les dades que encriptes. La frase de contrasenya no s'envia a Google, i Google tampoc no l'emmagatzema. Si l'oblides o vols canviar aquesta opció, has de restablir la sincronització. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome no pot comprovar les teves contrasenyes</translation>
+<translation id="3969863827134279083">Mou cap amunt</translation>
 <translation id="3974987681202239636"><ph name="APP_NAME" /> s'obrirà a Chrome. En continuar, acceptes les <ph name="BEGIN_LINK1" />condicions del servei de Google<ph name="END_LINK1" /> i les <ph name="BEGIN_LINK2" />condicions del servei addicionals de Google Chrome i Chrome OS<ph name="END_LINK2" />. També s'aplica l'<ph name="BEGIN_LINK3" />avís de privadesa per als Comptes de Google gestionats amb Family Link<ph name="END_LINK3" />.</translation>
 <translation id="397583555483684758">La sincronització ha deixat de funcionar</translation>
 <translation id="3976396876660209797">Suprimeix aquesta drecera i torna-la a crear</translation>

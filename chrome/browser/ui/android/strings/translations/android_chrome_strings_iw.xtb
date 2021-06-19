@@ -325,6 +325,7 @@
 <translation id="305593374596241526">‏הגישה למיקום כבויה. יש להפעיל אותה ב<ph name="BEGIN_LINK" />הגדרות Android<ph name="END_LINK" />.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{סימנייה אחת (<ph name="BOOKMARKS_COUNT_ONE" />)}two{<ph name="BOOKMARKS_COUNT_MANY" /> סימניות}many{<ph name="BOOKMARKS_COUNT_MANY" /> סימניות}other{<ph name="BOOKMARKS_COUNT_MANY" /> סימניות}}</translation>
 <translation id="3062802207422175757">‏ב-Chrome מחכים לך מאמרים בנושאים שמעניינים אותך</translation>
+<translation id="3066573403916685335">רד למטה</translation>
 <translation id="3070005020161560471">יש לתרגם אוטומטית</translation>
 <translation id="3091010850649238832">הצגת התוכן שבלוח</translation>
 <translation id="3098745985164956033">‏חלק מהתמונות נשלחות אל Google כדי לשפר עבורך את התיאורים</translation>
@@ -454,6 +455,7 @@
 <translation id="3962957115499249330">‏תוצג לך התראה כשההורדה הזו תתחיל דרך Wi-Fi.</translation>
 <translation id="3963007978381181125">‏הצפנה באמצעות ביטוי סיסמה לא כוללת אמצעי תשלום וכתובות מ-Google Pay. רק מי שיודע את ביטוי הסיסמה שלך יכול לקרוא את הנתונים המוצפנים. ביטוי הסיסמה לא נשלח אל Google והיא אינה מאחסנת אותו. אם שוכחים את ביטוי הסיסמה או רוצים לשנות את ההגדרה הזו, צריך לאפס את הסנכרון. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">‏ל-Chrome אין אפשרות לבדוק את הסיסמאות שלך</translation>
+<translation id="3969863827134279083">עלה למעלה</translation>
 <translation id="3974987681202239636">‏האפליקציה <ph name="APP_NAME" /> תיפתח ב-Chrome. המשך הפעולה מבטא הסכמה ל<ph name="BEGIN_LINK1" />תנאים ולהגבלות של Google<ph name="END_LINK1" /> ול<ph name="BEGIN_LINK2" />תנאים ולהגבלות הנוספים של Google Chrome ו-Chrome OS<ph name="END_LINK2" />. על פעולה זו חלה גם <ph name="BEGIN_LINK3" />הודעת הפרטיות לגבי חשבונות Google המנוהלים באמצעות Family Link<ph name="END_LINK3" />.</translation>
 <translation id="397583555483684758">הסנכרון הפסיק לפעול</translation>
 <translation id="3976396876660209797">הסרה ויצירה מחדש של מקש הקיצור הזה</translation>

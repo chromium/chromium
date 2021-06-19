@@ -325,6 +325,7 @@
 <translation id="305593374596241526">位置情報が OFF になっています。<ph name="BEGIN_LINK" />Android の設定<ph name="END_LINK" />で ON にしてください。</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> 個のブックマーク}other{<ph name="BOOKMARKS_COUNT_MANY" /> 個のブックマーク}}</translation>
 <translation id="3062802207422175757">Chrome の履歴に基づくおすすめの記事を表示します</translation>
+<translation id="3066573403916685335">下に移動</translation>
 <translation id="3070005020161560471">自動的に翻訳する</translation>
 <translation id="3091010850649238832">クリップボードの内容を表示</translation>
 <translation id="3098745985164956033">正確な説明を生成するため、画像が Google に送信される場合があります</translation>
@@ -362,6 +363,7 @@
 <translation id="3295530008794733555">高速ブラウジングで、データ使用量も抑えることができます。</translation>
 <translation id="3297344142967351106">音声アシスタント</translation>
 <translation id="3303414029551471755">コンテンツのダウンロードに進みますか？</translation>
+<translation id="333367884906698540">完了したら、Bluetooth はオフに切り替わります</translation>
 <translation id="3334729583274622784">ファイル拡張子を変更しますか？</translation>
 <translation id="3341058695485821946">データ削減量を確認できます</translation>
 <translation id="3341262203274374114">フォローを解除できません。エラーが発生しました。</translation>
@@ -453,6 +455,7 @@
 <translation id="3962957115499249330">Wi-Fi 接続時にこのダウンロードが開始されると通知が表示されます。</translation>
 <translation id="3963007978381181125">パスフレーズ暗号化の対象に Google Pay のお支払い方法と住所は含まれません。パスフレーズを知っているユーザーだけが暗号化データを読み取ることができます。パスフレーズが Google に送信されたり Google で保存されたりすることはありません。パスフレーズを忘れた場合や、この設定を変更する場合は、同期をリセットする必要があります。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome でパスワードを確認できません</translation>
+<translation id="3969863827134279083">上に移動</translation>
 <translation id="3974987681202239636">Chrome で <ph name="APP_NAME" /> を開きます。続行すると、<ph name="BEGIN_LINK1" />Google 利用規約<ph name="END_LINK1" />と <ph name="BEGIN_LINK2" />Google Chrome および Chrome OS 追加利用規約<ph name="END_LINK2" />に同意したことになります。また、<ph name="BEGIN_LINK3" />ファミリー リンクで管理する Google アカウントのプライバシーに関するお知らせ<ph name="END_LINK3" />も適用されます。</translation>
 <translation id="397583555483684758">同期は停止されました</translation>
 <translation id="3976396876660209797">このショートカットを削除して再度作成します</translation>
@@ -1036,6 +1039,7 @@
 <translation id="7641339528570811325">閲覧履歴データを削除…</translation>
 <translation id="764170292089748542">シークレット モードで閲覧する場合、Chrome に閲覧履歴は保存されません。ブックマークを使って、お気に入りのサイトにアクセスすることはできます。</translation>
 <translation id="7646772052135772216">パスワード同期が機能していません</translation>
+<translation id="7655900163790317559">Bluetooth をオンにしています…</translation>
 <translation id="7658239707568436148">キャンセル</translation>
 <translation id="7665369617277396874">アカウントを追加</translation>
 <translation id="766587987807204883">記事がここに表示されます。これらの記事はオフラインでも読むことができます</translation>

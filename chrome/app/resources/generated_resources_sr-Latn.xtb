@@ -2527,6 +2527,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
 <translation id="3739254215541673094">Želite li da otvorite <ph name="APPLICATION" />?</translation>
 <translation id="3742055079367172538">Snimak ekrana je napravljen</translation>
+<translation id="3742235229730461951">Raspored tastera na tastaturi za korejski</translation>
 <translation id="3742666961763734085">Ne možemo da pronađemo organizacionu jedinicu sa tim nazivom. Probajte ponovo.</translation>
 <translation id="3744111561329211289">Sinhronizacija u pozadini</translation>
 <translation id="3747077776423672805">Da biste uklonili aplikacije, idite u odeljak Podešavanja &gt; Google Play prodavnica &gt; Upravljajte Android podešavanjima &gt; Aplikacije ili Menadžer aplikacija. Dodirnite aplikaciju koju želite da deinstalirate (možda ćete morati da prevučete nadesno ili nalevo da biste pronašli aplikaciju). Onda dodirnite Deinstaliraj ili Onemogući.</translation>
@@ -4692,7 +4693,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6186394437969115158">Sajtovi obično prikazuju oglase da bi mogli besplatno da pružaju sadržaj ili usluge. Ali, ima i sajtova koji prikazuju oglase koji ometaju aktivnosti ili obmanjujuće oglase.</translation>
 <translation id="6195005504600220730">Čitanje informacija o pregledaču, OS-u i uređaju</translation>
 <translation id="6195693561221576702">Ovaj uređaj ne može da se podesi u oflajn režimu demonstracije.</translation>
-<translation id="6195724942939841102">Ne vraćaj</translation>
 <translation id="6196640612572343990">Blokiraj kolačiće treće strane</translation>
 <translation id="6196854373336333322">Dodatak „<ph name="EXTENSION_NAME" />“ je preuzeo kontrolu nad podešavanjima proksija, što znači da može da menja, prekida ili špijunira sve što radite onlajn. Ako niste sigurni zašto je došlo do ove promene, verovatno vam nije potrebna.</translation>
 <translation id="6198102561359457428">Odjavi me, pa me ponovo prijavi...</translation>

@@ -323,6 +323,7 @@
 <translation id="305593374596241526">‏تحديد الموقع الجغرافي متوقف، يمكنك تفعيله من <ph name="BEGIN_LINK" />إعدادات Android<ph name="END_LINK" />.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{إشارة مرجعية <ph name="BOOKMARKS_COUNT_ONE" />}zero{<ph name="BOOKMARKS_COUNT_MANY" /> إشارات مرجعية}two{إشارتان مرجعيتان (<ph name="BOOKMARKS_COUNT_MANY" />)}few{<ph name="BOOKMARKS_COUNT_MANY" /> إشارات مرجعية}many{<ph name="BOOKMARKS_COUNT_MANY" /> إشارةً مرجعيةً}other{<ph name="BOOKMARKS_COUNT_MANY" /> إشارة مرجعية}}</translation>
 <translation id="3062802207422175757">‏اقرأ مقالات حول مواضيع تهمّك على متصفِّح Chrome.</translation>
+<translation id="3066573403916685335">الانتقال لأسفل</translation>
 <translation id="3070005020161560471">لغات أريد ترجمتها تلقائيًا</translation>
 <translation id="3091010850649238832">عرض محتوى الحافظة</translation>
 <translation id="3098745985164956033">‏يتم إرسال بعض الصور إلى Google لتحسين أوصاف الصور.</translation>
@@ -360,6 +361,7 @@
 <translation id="3295530008794733555">تصفُّح أسرع. واستخدام بيانات أقل.</translation>
 <translation id="3297344142967351106">المساعَدة الصوتية</translation>
 <translation id="3303414029551471755">هل ترغب في الاستمرار في تنزيل المحتوى؟</translation>
+<translation id="333367884906698540">سيتم إيقاف البلوتوث مرة أخرى بعد الانتهاء من هذا الإجراء.</translation>
 <translation id="3334729583274622784">هل تريد تغيير امتداد الملف؟</translation>
 <translation id="3341058695485821946">الاطّلاع على مقدار البيانات التي وفّرتها</translation>
 <translation id="3341262203274374114">يتعذّر إلغاء متابعة الخلاصة. حدث خطأ.</translation>
@@ -451,6 +453,7 @@
 <translation id="3962957115499249330">‏سيصلك إشعار يُعلمك ببدء عمليّة التنزيل على شبكة Wi-Fi.</translation>
 <translation id="3963007978381181125">‏لا يتضمّن التشفير باستخدام عبارة المرور طرق الدفع والعناوين من Google Pay. ولن يتمكّن أي شخص من الاطّلاع على بياناتك المشفرة إلا من يعرف عبارة مرورك. لا تُرسَل عبارة المرور إلى شركة Google ولا تُخزّن لديها. في حال نسيان عبارة المرور أو الرغبة في تغيير هذا الإعداد، ستحتاج إلى إعادة ضبط المزامنة. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">‏يتعذّر على Chrome التحقُّق من كلمات المرور.</translation>
+<translation id="3969863827134279083">تحريك لأعلى</translation>
 <translation id="3974987681202239636">‏سيتم فتح تطبيق <ph name="APP_NAME" /> في Chrome. تعني المتابعة موافقتك على <ph name="BEGIN_LINK1" />بنود خدمة Google<ph name="END_LINK1" /> و<ph name="BEGIN_LINK2" />بنود الخدمة الإضافية لكل من متصفح Google Chrome و"نظام التشغيل Chrome"<ph name="END_LINK2" />. وينطبق ذلك أيضًا على <ph name="BEGIN_LINK3" />إشعار الخصوصية لحسابات Google المُدارة من خلال Family Link<ph name="END_LINK3" />.</translation>
 <translation id="397583555483684758">توقفت المزامنة</translation>
 <translation id="3976396876660209797">إزالة هذا الاختصار وإعادة إنشائه</translation>
@@ -1032,6 +1035,7 @@
 <translation id="7641339528570811325">محو بيانات التصفّح...</translation>
 <translation id="764170292089748542">‏لا يحفظ Chrome سجلّ التصفُّح عند اختيار التصفُّح بخصوصية تامّة. وسيظلّ بإمكانك استخدام الإشارات المرجعية للوصول إلى مواقعك الإلكترونية المفضَّلة.</translation>
 <translation id="7646772052135772216">مزامنة كلمات المرور لا تعمل</translation>
+<translation id="7655900163790317559">جارٍ تفعيل البلوتوث…</translation>
 <translation id="7658239707568436148">إلغاء</translation>
 <translation id="7665369617277396874">إضافة حساب</translation>
 <translation id="766587987807204883">تظهر المقالات هنا، ويمكنك الاطّلاع عليها حتى عندما لا يكون الجهاز متّصلًا بالإنترنت.</translation>

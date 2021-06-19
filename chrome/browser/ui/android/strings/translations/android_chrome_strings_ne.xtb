@@ -324,6 +324,7 @@
 <translation id="305593374596241526">स्थानसम्बन्धी सुविधा निष्क्रिय छ; <ph name="BEGIN_LINK" />Android का सेटिङहरू<ph name="END_LINK" /> मा गई यसलाई सक्रिय गर्नुहोस्।</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> पुस्तक चिन्ह}other{<ph name="BOOKMARKS_COUNT_MANY" /> पुस्तक चिन्हहरू}}</translation>
 <translation id="3062802207422175757">Chrome मा तपाईंको रुचिका विषयसँग सम्बन्धित लेखहरू पढ्नुहोस्</translation>
+<translation id="3066573403916685335">तल सार्नुहोस्</translation>
 <translation id="3070005020161560471">स्वतः अनुवाद गरियोस्</translation>
 <translation id="3091010850649238832">क्लिपबोर्डमा भएका सामग्री देखाइयोस्</translation>
 <translation id="3098745985164956033">तपाईंलाई उपलब्ध गराइने वर्णनको गुणस्तर सुधार गर्न केही फोटोहरू Google मा पठाइन्छन्</translation>
@@ -452,6 +453,7 @@
 <translation id="3962957115499249330">Wi-Fi मा कनेक्ट भई यो डाउनलोड सुरु हुँदा तपाईं एउटा सूचना देख्नु हुने छ।</translation>
 <translation id="3963007978381181125">पासफ्रेजमार्फत इन्क्रिप्सन गर्ने कार्यअन्तर्गत Google Pay का भुक्तानी विधि र ठेगानाहरू समावेश हुँदैनन्। तपाईंको पासफ्रेज थाहा हुने व्यक्तिले मात्र तपाईंको इन्क्रिप्ट गरिएको डेटा पढ्न सक्छ। उक्त पासफ्रेज Google मा पठाइँदैन वा त्यहाँ भण्डारण गरिँदैन। तपाईंले आफ्नो पासफ्रेज बिर्सनुभयो वा तपाईं यो सेटिङ परिवर्तन गर्न चाहनुहुन्छ भने तपाईंले सिंक रिसेट गर्नु पर्ने हुन्छ। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome ले तपाईंका पासवर्डहरू जाँच्न सकेन</translation>
+<translation id="3969863827134279083">माथि सार्नुहोस्</translation>
 <translation id="3974987681202239636"><ph name="APP_NAME" /> Chrome मा खुल्ने छ। जारी राखेर तपाईं <ph name="BEGIN_LINK1" />Google का सेवाका सर्तहरू<ph name="END_LINK1" /> र <ph name="BEGIN_LINK2" />Google Chrome र Chrome OS का सेवाका अतिरिक्त सर्तहरू<ph name="END_LINK2" />मा सहमति जनाउनुहुन्छ। <ph name="BEGIN_LINK3" />Family Link मार्फत व्यवस्थापन गरिएका Google खाताहरूको गोपनीयता सूचना<ph name="END_LINK3" /> पनि लागू हुन्छ।</translation>
 <translation id="397583555483684758">सिंकले काम गर्न छाड्यो</translation>
 <translation id="3976396876660209797">यो सर्टकट हटाउनुहोस्‌ र यसलाई पुन: सिर्जना गर्नुहोस्‌</translation>

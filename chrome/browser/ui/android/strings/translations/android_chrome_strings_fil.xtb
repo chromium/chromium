@@ -325,6 +325,7 @@ Pindutin nang matagal ang anumang salita para maghanap. Para pinuhin ang iyong p
 <translation id="305593374596241526">Naka-off ang lokasyon; i-on ito sa <ph name="BEGIN_LINK" />Mga Setting ng Android<ph name="END_LINK" />.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> bookmark}one{<ph name="BOOKMARKS_COUNT_MANY" /> bookmark}other{<ph name="BOOKMARKS_COUNT_MANY" /> na bookmark}}</translation>
 <translation id="3062802207422175757">Mga artikulo tungkol sa iyong mga interes sa Chrome</translation>
+<translation id="3066573403916685335">Lumipat Pababa</translation>
 <translation id="3070005020161560471">Awtomatikong isalin</translation>
 <translation id="3091010850649238832">Ipakita ang mga content ng clipboard</translation>
 <translation id="3098745985164956033">Ipinapadala sa Google ang ilang larawan para mapahusay ang mga paglalarawan para sa iyo</translation>
@@ -454,6 +455,7 @@ Kasalukuyan pa ring dine-develop ang Privacy Sandbox at available ito sa mga pil
 <translation id="3962957115499249330">Makakakita ka ng notification kapag nagsimula na ang pag-download na ito sa Wi-Fi.</translation>
 <translation id="3963007978381181125">Hindi kasama sa pag-encrypt ng passphrase ang mga paraan ng pagbabayad at address mula sa Google Pay. Ang tao lang na may alam ng iyong passphrase ang makakabasa sa naka-encrypt mong data. Hindi ipinapadala sa Google ang passphrase at hindi nito ito sino-store. Kung makalimutan mo ang iyong passphrase o gusto mong baguhin ang setting na ito, kakailanganin mong i-reset ang pag-sync. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Hindi masuri ng Chrome ang iyong mga password</translation>
+<translation id="3969863827134279083">Lumipat Pataas</translation>
 <translation id="3974987681202239636">Bubukas ang <ph name="APP_NAME" /> sa Chrome. Sa pamamagitan ng pagpapatuloy, sumasang-ayon ka sa <ph name="BEGIN_LINK1" />Mga Tuntunin ng Serbisyo ng Google<ph name="END_LINK1" />, at sa <ph name="BEGIN_LINK2" />Mga Karagdagang Tuntunin ng Serbisyo ng Google Chrome at Chrome OS<ph name="END_LINK2" />. Nalalapat din ang <ph name="BEGIN_LINK3" />Notification ng Privacy para sa Mga Google Account na Pinapamahalaan Gamit ang Family Link<ph name="END_LINK3" />.</translation>
 <translation id="397583555483684758">Huminto ang pag-sync</translation>
 <translation id="3976396876660209797">Alisin at gawing muli ang shortcut na ito</translation>

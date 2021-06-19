@@ -325,6 +325,7 @@ Dodirnite i držite bilo koju riječ da biste pokrenuli pretraživanje. Ako žel
 <translation id="305593374596241526">Lokacija je isključena. Uključite je u <ph name="BEGIN_LINK" />postavkama Androida<ph name="END_LINK" />.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> oznaka}one{<ph name="BOOKMARKS_COUNT_MANY" /> oznaka}few{<ph name="BOOKMARKS_COUNT_MANY" /> oznake}other{<ph name="BOOKMARKS_COUNT_MANY" /> oznaka}}</translation>
 <translation id="3062802207422175757">Članci o vašim interesima na Chromeu</translation>
+<translation id="3066573403916685335">Premjesti dolje</translation>
 <translation id="3070005020161560471">Automatski prevedi</translation>
 <translation id="3091010850649238832">Prikaži sadržaj međuspremnika</translation>
 <translation id="3098745985164956033">Neke se slike šalju Googleu radi poboljšanja opisa za vas</translation>
@@ -453,6 +454,7 @@ Privacy Sandbox još uvijek je u aktivnoj fazi razvoja te je dostupan u određen
 <translation id="3962957115499249330">Obavijest će se prikazati kad preuzimanje započne na Wi-Fiju.</translation>
 <translation id="3963007978381181125">Enkripcija šifrom ne uključuje podatke o načinima plaćanja i adresama s Google Paya. Samo osoba koja ima vašu šifru može čitati vaše kriptirane podatke. Šifra se ne šalje Googleu niti se na njemu pohranjuje. Ako zaboravite šifru ili želite promijeniti tu postavku, morate poništiti sinkronizaciju. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome ne može provjeriti vaše zaporke</translation>
+<translation id="3969863827134279083">Premjesti prema gore</translation>
 <translation id="3974987681202239636">Aplikacija <ph name="APP_NAME" /> otvorit će se u Chromeu. Nastavljanjem prihvaćate <ph name="BEGIN_LINK1" />Googleove uvjete pružanja usluge<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />Dodatne uvjete pružanja usluge za Google Chrome i OS Chrome<ph name="END_LINK2" />. Primjenjuje se i <ph name="BEGIN_LINK3" />Obavijest o privatnosti za Google račune kojima se upravlja putem Family Linka<ph name="END_LINK3" />.</translation>
 <translation id="397583555483684758">Sinkronizacija je prekinuta</translation>
 <translation id="3976396876660209797">Uklonite i ponovo izradite taj prečac</translation>

@@ -2534,6 +2534,7 @@ väljasuumimiseks klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamine.</trans
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
 <translation id="3739254215541673094">Kas soovite avada rakenduse <ph name="APPLICATION" />?</translation>
 <translation id="3742055079367172538">Ekraanipilt on tehtud</translation>
+<translation id="3742235229730461951">Korea klaviatuuri paigutus</translation>
 <translation id="3742666961763734085">Selle nimega organisatsiooniüksust ei leitud. Proovige uuesti.</translation>
 <translation id="3744111561329211289">Taustal sünkroonimine</translation>
 <translation id="3747077776423672805">Rakenduste eemaldamiseks avage menüü Seaded&gt; Google Play pood &gt; Androidi eelistuste haldamine &gt; Rakendused või Rakenduste haldur. Seejärel puudutage rakendust, mille soovite desinstallida (rakenduse leidmiseks peate võib-olla paremale või vasakule pühkima). Seejärel puudutage käsku Desinstalli või Keela.</translation>
@@ -4698,7 +4699,6 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="6186394437969115158">Saidid kuvavad reklaame tavaliselt selleks, et tasuta sisu või teenuseid pakkuda. Mõned saidid aga kuvavad sekkuvaid või eksitavaid reklaame.</translation>
 <translation id="6195005504600220730">Lugege teavet oma brauseri, OS-i ja seadme kohta</translation>
 <translation id="6195693561221576702">Seadet ei saa võrguühenduseta demorežiimis seadistada.</translation>
-<translation id="6195724942939841102">Ära taasta</translation>
 <translation id="6196640612572343990">Blokeeri kolmanda osapoole küpsisefailid</translation>
 <translation id="6196854373336333322">Laiendus „<ph name="EXTENSION_NAME" />” on hõivanud puhverserveri seaded, mis tähendab, et see saab muuta, lõhkuda või kuulata pealt kogu teie veebitegevust. Kui te pole kindel, miks see muudatus toimus, siis te tõenäoliselt ei taha seda.</translation>
 <translation id="6198102561359457428">Logige välja ja uuesti sisse ...</translation>

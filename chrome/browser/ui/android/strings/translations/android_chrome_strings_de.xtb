@@ -325,6 +325,7 @@ Berühren und halten Sie ein Wort, um eine Suche damit zu starten. Sie können I
 <translation id="305593374596241526">Die Standortermittlung ist deaktiviert. Sie können sie in den <ph name="BEGIN_LINK" />Android-Einstellungen<ph name="END_LINK" /> aktivieren.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> Lesezeichen}other{<ph name="BOOKMARKS_COUNT_MANY" /> Lesezeichen}}</translation>
 <translation id="3062802207422175757">Artikel zu Ihren Interessen in Chrome</translation>
+<translation id="3066573403916685335">Nach unten</translation>
 <translation id="3070005020161560471">Automatisch übersetzen</translation>
 <translation id="3091010850649238832">Inhalte der Zwischenablage anzeigen</translation>
 <translation id="3098745985164956033">Einige Bilder werden an Google gesendet, um die Beschreibungen zu verbessern</translation>
@@ -453,6 +454,7 @@ Privacy Sandbox befindet sich noch in der Entwicklung und ist nur in ausgewählt
 <translation id="3962957115499249330">Sie erhalten eine Benachrichtigung, wenn dieser Download im WLAN gestartet wird.</translation>
 <translation id="3963007978381181125">Die Passphrasenverschlüsselung enthält keine Zahlungsmethoden oder Adressen von Google Pay. Nur Personen mit Ihrer Passphrase können Ihre verschlüsselten Daten lesen. Die Passphrase wird nicht an Google gesendet oder von Google gespeichert. Falls Sie sie vergessen oder diese Einstellung ändern möchten, müssen Sie die Synchronisierung zurücksetzen. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome kann Ihre Passwörter nicht prüfen</translation>
+<translation id="3969863827134279083">Nach oben</translation>
 <translation id="3974987681202239636"><ph name="APP_NAME" /> wird in Chrome geöffnet. Wenn Sie fortfahren, stimmen Sie den <ph name="BEGIN_LINK1" />Nutzungsbedingungen von Google<ph name="END_LINK1" /> und den <ph name="BEGIN_LINK2" />zusätzlichen Nutzungsbedingungen für Google Chrome und Chrome OS<ph name="END_LINK2" /> zu. Außerdem gelten die <ph name="BEGIN_LINK3" />Datenschutzhinweise für mit Family Link verwaltete Google-Konten<ph name="END_LINK3" />.</translation>
 <translation id="397583555483684758">Die Synchronisierung funktioniert nicht mehr</translation>
 <translation id="3976396876660209797">Verknüpfung entfernen und neu erstellen</translation>

@@ -325,6 +325,7 @@
 <translation id="305593374596241526">위치가 사용 중지되었습니다. <ph name="BEGIN_LINK" />Android 설정<ph name="END_LINK" />에서 사용 설정하세요.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{북마크 <ph name="BOOKMARKS_COUNT_ONE" />개}other{북마크 <ph name="BOOKMARKS_COUNT_MANY" />개}}</translation>
 <translation id="3062802207422175757">Chrome에서 관심분야 기사를 읽어보세요.</translation>
+<translation id="3066573403916685335">아래로 이동</translation>
 <translation id="3070005020161560471">자동으로 번역</translation>
 <translation id="3091010850649238832">클립보드 내용 표시</translation>
 <translation id="3098745985164956033">설명을 개선하기 위해 일부 이미지가 Google에 전송됨</translation>
@@ -454,6 +455,7 @@
 <translation id="3962957115499249330">Wi-Fi를 통해 다운로드가 시작되면 알림이 표시됩니다.</translation>
 <translation id="3963007978381181125">Google Pay 결제 수단 및 주소는 암호로 암호화되지 않습니다. 암호를 아는 사람만 암호화된 데이터를 읽을 수 있습니다. 암호는 Google로 전송되거나 Google에 저장되지 않습니다. 암호가 기억나지 않거나 이 설정을 변경하려면 동기화를 재설정해야 합니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome에서 비밀번호를 확인할 수 없습니다.</translation>
+<translation id="3969863827134279083">위로 이동</translation>
 <translation id="3974987681202239636"><ph name="APP_NAME" /> 앱이 Chrome에서 열립니다. 계속하면 <ph name="BEGIN_LINK1" />Google 서비스 약관<ph name="END_LINK1" />과 <ph name="BEGIN_LINK2" />Chrome 및 Chrome OS 추가 서비스 약관<ph name="END_LINK2" />에 동의하는 것으로 간주됩니다. <ph name="BEGIN_LINK3" />Family Link로 관리되는 Google 계정에 관한 개인정보처리방침<ph name="END_LINK3" />도 적용됩니다.</translation>
 <translation id="397583555483684758">동기화가 중지되었습니다.</translation>
 <translation id="3976396876660209797">이 바로가기 삭제하고 다시 만들기</translation>

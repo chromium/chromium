@@ -1098,11 +1098,6 @@ Jika kebijakan ini ditetapkan, pengguna tidak dapat mengganti nilainya.
 
 Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan tetapi dapat dikontrol oleh pengguna.</translation>
 <translation id="2415715982424988916">Jelajahi (didukung sejak versi 91)</translation>
-<translation id="241739814668386424"> Jika kebijakan ini dinonaktifkan, pengguna tidak akan dapat menghubungkan sepenuhnya perangkat periferal Thunderbolt/USB4 melalui tunneling PCIe.
-
-      Jika kebijakan ini diaktifkan, pengguna akan dapat menghubungkan sepenuhnya perangkat periferal Thunderbolt/USB4 melalui tunneling PCIe.
-
-      Kebijakan ini dinonaktifkan secara default.</translation>
 <translation id="2421677964966613267">Kebijakan ini tidak digunakan lagi di M88, Flash tidak lagi didukung oleh Chrome. Jika kebijakan disetel, Anda akan dapat menetapkan daftar pola URL yang menentukan situs yang tidak dapat menjalankan plugin <ph name="FLASH_PLUGIN_NAME" />.
 
       Tidak menyetel kebijakan berarti <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> akan berlaku untuk semua situs, jika disetel. Jika tidak, setelan pribadi pengguna akan digunakan.
@@ -3271,7 +3266,6 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
           Jika kebijakan ini tidak ditetapkan, sorotan kursor mula-mula akan dinonaktifkan di layar login, tetapi dapat diaktifkan oleh pengguna kapan saja.</translation>
 <translation id="5279539586558702228">Waktu ketika perangkat akan menggunakan arus listrik AC, disesuaikan dengan zona waktu lokal perangkat.</translation>
 <translation id="5283457834853986457">Nonaktifkan pencari plugin (tidak digunakan lagi)</translation>
-<translation id="5285315763984334157">Memblokir download berbahaya</translation>
 <translation id="5288772341821359899">Jika kebijakan disetel, rentang port UDP yang digunakan oleh WebRTC dibatasi ke interval port yang ditentukan (termasuk titik akhir).
 
       Jika kebijakan tidak disetel, atau jika disetel menjadi string kosong maupun rentang port yang tidak valid, WebRTC diizinkan untuk menggunakan port UDP lokal mana pun yang tersedia.</translation>

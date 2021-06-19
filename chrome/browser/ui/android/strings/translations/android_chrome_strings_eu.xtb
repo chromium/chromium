@@ -325,6 +325,7 @@ Eduki sakatuta bilatu nahi duzun hitza. Bilaketa mugatzeko, hautatu hitz gehiago
 <translation id="305593374596241526">Kokapena desaktibatuta dago; aktiba ezazu <ph name="BEGIN_LINK" />Android-en ezarpenetan<ph name="END_LINK" />.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> laster-marka}other{<ph name="BOOKMARKS_COUNT_MANY" /> laster-marka}}</translation>
 <translation id="3062802207422175757">Interesatzen zaizkizun gaiei buruzko artikuluak Chrome-n</translation>
+<translation id="3066573403916685335">Eraman behera</translation>
 <translation id="3070005020161560471">Itzuli automatikoki edukia hizkuntza hauetako batean badago:</translation>
 <translation id="3091010850649238832">Erakutsi arbeleko edukia</translation>
 <translation id="3098745985164956033">Jasotzen dituzun deskribapenak hobetzeko bidaltzen zaizkio irudi batzuk Google-ri</translation>
@@ -454,6 +455,7 @@ Privacy Sandbox garapen-prozesuan dago oraindik eta lurralde jakin batzuetan bai
 <translation id="3962957115499249330">Jakinarazpen bat ikusiko duzu wifi bidez deskargatzen hasten denean.</translation>
 <translation id="3963007978381181125">Pasaesaldi bidezko enkriptatzeak ez ditu hartzen barne Google Pay-ko ordainketa-metodoak eta helbideak. Pasaesaldia dutenek soilik irakur ditzakete enkriptatutako datuak. Pasaesaldia ez da bidaltzen Google-ra, ezta bertan gordetzen ere. Pasaesaldia ahazten bazaizu edo ezarpena aldatu nahi baduzu, sinkronizazioa berrezarri beharko duzu. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome-k ezin ditu egiaztatu pasahitzak</translation>
+<translation id="3969863827134279083">Joan gora</translation>
 <translation id="3974987681202239636">Chrome-n irekiko da <ph name="APP_NAME" />. Aurrera egiten baduzu, onartu egingo dituzu <ph name="BEGIN_LINK1" />Google-ren Zerbitzu-baldintzak<ph name="END_LINK1" /> eta <ph name="BEGIN_LINK2" />Google Chrome-ren eta Chrome OS-en Zerbitzu-baldintza gehigarriak<ph name="END_LINK2" />. <ph name="BEGIN_LINK3" />Family Link aplikazioaren bidez kudeatutako Google-ko kontuen Pribatutasun-oharra<ph name="END_LINK3" /> aplikatzen da ere.</translation>
 <translation id="397583555483684758">Gelditu egin da sinkronizazioa</translation>
 <translation id="3976396876660209797">Kendu eta sortu berriro lasterbide hau</translation>

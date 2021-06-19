@@ -2527,6 +2527,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
 <translation id="3739254215541673094"><ph name="APPLICATION" /> açılsın mı?</translation>
 <translation id="3742055079367172538">Ekran görüntüsü alındı</translation>
+<translation id="3742235229730461951">Korece klavye düzeni</translation>
 <translation id="3742666961763734085">Belirtilen ada sahip bir kuruluş birimi bulunamadı. Lütfen tekrar deneyin.</translation>
 <translation id="3744111561329211289">Arka plan senkronizasyonu</translation>
 <translation id="3747077776423672805">Uygulamaları kaldırmak için Ayarlar &gt; Google Play Store &gt; Android tercihlerini yönet &gt; Uygulamalar veya Uygulama yöneticisi'ne gidin. Daha sonra, yüklemesini kaldırmak istediğiniz uygulamaya dokunun (uygulamayı bulmak için sağa veya sola doğru hızlıca kaydırmanız gerekebilir). Ardından, Kaldır veya Devre Dışı Bırak'a dokunun.</translation>
@@ -4692,7 +4693,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6186394437969115158">Siteler ücretsiz içerik ve hizmet sunabilmek için genellikle reklam gösterir. Ancak araya giren veya yanıltıcı reklamlar gösterdiği bilinen bazı siteler vardır.</translation>
 <translation id="6195005504600220730">Tarayıcınız, işletim sisteminiz ve cihazınız hakkında bilgileri okuma</translation>
 <translation id="6195693561221576702">Bu cihaz çevrimdışı demo modunda kurulamıyor.</translation>
-<translation id="6195724942939841102">Geri yükleme</translation>
 <translation id="6196640612572343990">Üçüncü taraf çerezlerini engelle</translation>
 <translation id="6196854373336333322">"<ph name="EXTENSION_NAME" />" uzantısı proxy ayarlarınızın denetimini ele geçirdi. Bu, uzantının çevrimiçinde yaptıklarınızı değiştirebileceği, kesebileceği veya dinleyebileceği anlamına gelir. Bu değişikliğin neden gerçekleştiğinden emin değilseniz muhtemelen bu değişikliği yapmayı istememişsinizdir.</translation>
 <translation id="6198102561359457428">Oturumu kapatıp tekrar açın...</translation>

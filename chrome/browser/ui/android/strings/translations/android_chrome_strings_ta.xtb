@@ -325,6 +325,7 @@
 <translation id="305593374596241526">இருப்பிடம் முடக்கப்பட்டுள்ளது; அதை <ph name="BEGIN_LINK" />Android அமைப்புகளில்<ph name="END_LINK" /> இயக்கவும்.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> புக்மார்க்}other{<ph name="BOOKMARKS_COUNT_MANY" /> புக்மார்க்குகள்}}</translation>
 <translation id="3062802207422175757">உங்களுக்குப் பிடித்த கட்டுரைகளை Chromeமில் படிக்கலாம்</translation>
+<translation id="3066573403916685335">கீழே நகர்த்து</translation>
 <translation id="3070005020161560471">தானாக மொழிபெயர்க்க வேண்டியவை</translation>
 <translation id="3091010850649238832">கிளிப்போர்டில் உள்ளவற்றைக் காட்டும்</translation>
 <translation id="3098745985164956033">உங்களுக்கான விளக்கங்களை மேம்படுத்த, படங்கள் Googleளுக்கு அனுப்பப்படும்</translation>
@@ -453,6 +454,7 @@
 <translation id="3962957115499249330">இந்தப் பதிவிறக்கம் வைஃபையில் தொடங்கும்போது அறிவிப்பைப் பெறுவீர்கள்.</translation>
 <translation id="3963007978381181125">கடவுச்சொற்றொடர் என்க்ரிப்ஷனில் Google Payயிலுள்ள கட்டண முறைகளும் முகவரிகளும் சேர்க்கப்படாது. என்கிரிப்ட் செய்யப்பட்ட தரவை உங்கள் கடவுச்சொற்றொடரை அறிந்தவரால் மட்டுமே படிக்க முடியும். Googleளுக்குக் கடவுச்சொற்றொடர் அனுப்பப்படுவதில்லை. Google அதைச் சேமிப்பதுமில்லை. கடவுச்சொற்றொடரை மறந்துவிட்டாலோ இந்த அமைப்பை மாற்ற விரும்பினாலோ, ஒத்திசைவை மீட்டமைக்க வேண்டும். <ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome உலாவியால் உங்கள் கடவுச்சொற்களைச் சரிபார்க்க முடியவில்லை</translation>
+<translation id="3969863827134279083">மேலே நகர்த்து</translation>
 <translation id="3974987681202239636"><ph name="APP_NAME" /> Chromeமில் திறக்கும். தொடர்வதன் மூலம் <ph name="BEGIN_LINK1" />Google சேவை விதிமுறைகளையும்<ph name="END_LINK1" /> <ph name="BEGIN_LINK2" />Google Chrome மற்றும் Chrome OS தொடர்பான கூடுதல் சேவை விதிமுறைகளையும்<ph name="END_LINK2" /> ஏற்கிறீர்கள். இவற்றோடு <ph name="BEGIN_LINK3" />Family Link நிர்வகிக்கும் Google கணக்குகளுக்கான தனியுரிமை அறிக்கையும்<ph name="END_LINK3" /> பொருந்தும்.</translation>
 <translation id="397583555483684758">ஒத்திசைவு நிறுத்தப்பட்டது</translation>
 <translation id="3976396876660209797">இந்த ஷார்ட்கட்டை அகற்றி, மீண்டும் உருவாக்கவும்</translation>

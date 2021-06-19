@@ -290,7 +290,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="3307642347673023554">Cambiouse ao modo de ordenador portátil</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> segue podendo iniciar sesión máis tarde.</translation>
 <translation id="3321628682574733415">O código de pai ou nai é incorrecto</translation>
-<translation id="332587331255250389">Substitúe a batería</translation>
 <translation id="3341303451326249809">Realizouse a captura de pantalla</translation>
 <translation id="334252345105450327">Fai unha captura de pantalla</translation>
 <translation id="3351879221545518001">Agora estás emitindo a pantalla.</translation>
@@ -728,6 +727,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="6816797338148849397">Hai dispoñible información sobre a túa selección. Utilizar frecha arriba para acceder.</translation>
 <translation id="6818242057446442178">Retroceder unha palabra</translation>
 <translation id="6820676911989879663">Fai unha pausa!</translation>
+<translation id="6837064795450991317">Ocultar barra de escritorio</translation>
 <translation id="6850010208275816200">A aplicación actual está aberta a pantalla completa. Se che pide o contrasinal, primeiro tes que saír do modo de pantalla completa.</translation>
 <translation id="6852052252232534364">Facer clic para activar</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
@@ -763,6 +763,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="7076293881109082629">Iniciando sesión</translation>
 <translation id="7088960765736518739">Acceso con interruptores</translation>
 <translation id="7098389117866926363">Dispositivo USB‑C (porto esquerdo posterior)</translation>
+<translation id="7106330611027933926">Mostrar barra de escritorio</translation>
 <translation id="7118268675952955085">captura de pantalla</translation>
 <translation id="7131634465328662194">A sesión pecharase automaticamente.</translation>
 <translation id="7143207342074048698">Conectando</translation>
@@ -806,6 +807,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="7466449121337984263">Toca o sensor</translation>
 <translation id="7473891865547856676">Non, grazas</translation>
 <translation id="7477793887173910789">Controlar a túa música, os vídeos e moito máis</translation>
+<translation id="7482097454533720217">Obtén definicións, traducións ou conversións de unidades cando fagas clic co botón dereito sobre un texto ou o manteñas premido.</translation>
 <translation id="7483025031359818980">Definiuse a pantalla completa como área de selección</translation>
 <translation id="7486227320194954040">Contraer ferramentas de marcador</translation>
 <translation id="7497767806359279797">Escoller idioma e teclado</translation>
@@ -982,6 +984,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="8843682306134542540">Activar/desactivar o bloqueo de rotación. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Busca+Esc</translation>
 <translation id="8853703225951107899">Aínda non se puido verificar o teu PIN ou contrasinal. Nota: Se cambiaches o contrasinal recentemente, utiliza o antigo. O contrasinal novo aplicarase en canto peches sesión.</translation>
+<translation id="8863888432376731307">Obtén a <ph name="INTENT" /> de "<ph name="QUERY" />" e moito máis</translation>
 <translation id="8870509716567206129">A aplicación non é compatible coa función de pantalla dividida.</translation>
 <translation id="8871580645200179206">Activar/desactivar tema escuro. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Non conectada</translation>

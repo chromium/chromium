@@ -325,6 +325,7 @@
 <translation id="305593374596241526">ස්ථානය ක්‍රියා විරහිතයි; <ph name="BEGIN_LINK" />Android සැකසීම්<ph name="END_LINK" /> තුළ එය ක්‍රියාත්මක කරන්න.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> පිටුසනක්}one{පිටුසන් <ph name="BOOKMARKS_COUNT_MANY" />ක්}other{පිටුසන් <ph name="BOOKMARKS_COUNT_MANY" />ක්}}</translation>
 <translation id="3062802207422175757">Chrome හි ඔබේ රුචිකත්ව ගැන ලිපි</translation>
+<translation id="3066573403916685335">පහළට ගෙන යන්න</translation>
 <translation id="3070005020161560471">ස්වයංක්‍රියව පරිවර්තනය කරන්න</translation>
 <translation id="3091010850649238832">පසුරු පුවරු අන්තර්ගතය පෙන්වන්න</translation>
 <translation id="3098745985164956033">ඔබ සඳහා විස්තර වැඩි දියුණු කිරීම සඳහා සමහර පින්තූර Google වෙත යවනු ලැබේ</translation>
@@ -454,6 +455,7 @@
 <translation id="3962957115499249330">මෙම බාගැනීම Wi-Fi හි ආරම්භ වන විට ඔබ දැනුම්දීමක් දකිනු ඇත.</translation>
 <translation id="3963007978381181125">මුර-වැකිකඩ සංකේතනයට Google Pay වෙතින් ගෙවීමේ ක්‍රම සහ ලිපින ඇතුළු සංකේතන කළ දත්ත කියවිය හැක්කේ ඔබේ මුර-වැකිකඩ සහිත අයෙකුට පමණයි. මෙම මුර-වැකිකඩ Google වෙත යැවීම හෝ ගබඩා කිරීම සිදු නොවේ. ඔබට ඔබේ මුර-වැකිකඩ අමතක වූයේ නම්, ඔබ සමමුහූර්ත කිරීම අවශ්‍ය වෙයි. <ph name="BEGIN_LINK" />තවත් දැන ගන්න<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome හට ඔබේ මුරපද පරීක්ෂා කළ නොහැකිය</translation>
+<translation id="3969863827134279083">ඉහලට යන්න</translation>
 <translation id="3974987681202239636"><ph name="APP_NAME" /> Chrome තුළ විවෘත වෙයි. ඉදිරයට යාමෙන්, ඔබ <ph name="BEGIN_LINK1" />Google සේවා නියමවලට<ph name="END_LINK1" />, සහ <ph name="BEGIN_LINK2" />Google Chrome සහ Chrome OS අතිරේක සේවා නියමවලට<ph name="END_LINK2" /> එකඟ වෙයි. <ph name="BEGIN_LINK3" />Family Link මඟින් කළමනා කෙරෙන Google ගිණුම් සඳහා වන පෞද්ගලිකත්ව දැනුම්දීම<ph name="END_LINK3" /> ද යෙදේ.</translation>
 <translation id="397583555483684758">සමමුහුර්ත වීම වැඩ කිරීම නැවතී ඇත</translation>
 <translation id="3976396876660209797">මෙම කෙටි මග ඉවත් කර නැවත සාදන්න</translation>

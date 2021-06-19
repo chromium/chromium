@@ -290,7 +290,6 @@
 <translation id="3307642347673023554">लॅपटॉप मोडवर स्विच केले</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> नंतरही साइन इन करू शकतो.</translation>
 <translation id="3321628682574733415">चुकीचा पालक कोड</translation>
-<translation id="332587331255250389">कृपया बॅटरी बदला</translation>
 <translation id="3341303451326249809">स्क्रीनशॉट कॅप्चर केला</translation>
 <translation id="334252345105450327">स्क्रीनशॉट घ्या</translation>
 <translation id="3351879221545518001">तुम्ही सध्या स्क्रीन कास्ट करत आहात.</translation>
@@ -725,6 +724,7 @@
 <translation id="6816797338148849397">तुमच्या निवडीशी संबंधित माहिती उपलब्ध आहे. अ‍ॅक्सेस करण्यासाठी अप अ‍ॅरो की वापरा.</translation>
 <translation id="6818242057446442178">एक शब्द मागे जा</translation>
 <translation id="6820676911989879663">ब्रेक घ्या!</translation>
+<translation id="6837064795450991317">डेस्कबार लपवा</translation>
 <translation id="6850010208275816200">तुमचे सध्याचे अ‍ॅप फुल स्क्रीन मोडमध्ये आहे. अ‍ॅपने तुमच्या पासवर्डची विनंती केल्यास, प्रथम फुल स्क्रीनमधून बाहेर पडा.</translation>
 <translation id="6852052252232534364">अ‍ॅक्टिव्हेट करण्यासाठी क्लिक करा</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> सेकंद</translation>
@@ -760,6 +760,7 @@
 <translation id="7076293881109082629">साइन इन करीत आहे</translation>
 <translation id="7088960765736518739">स्विच ॲक्सेस</translation>
 <translation id="7098389117866926363">USB-C डिव्‍हाइस (मागील बाजूचे डावे पोर्ट)</translation>
+<translation id="7106330611027933926">डेस्कबार दाखवा</translation>
 <translation id="7118268675952955085">स्क्रीनशॉट</translation>
 <translation id="7131634465328662194">तुम्हाला आपोआप साइन आउट केले जाईल.</translation>
 <translation id="7143207342074048698">कनेक्ट करत आहे</translation>
@@ -803,6 +804,7 @@
 <translation id="7466449121337984263">कृपया सेन्सरला स्पर्श करा</translation>
 <translation id="7473891865547856676">नाही, नको</translation>
 <translation id="7477793887173910789">व्हिडिओ पाहा आणि बरेच काही नियंत्रित करा</translation>
+<translation id="7482097454533720217">तुम्ही मजकुरावर राइट क्लिक करता किंवा त्यावर स्पर्श करून तो धरून ठेवता तेव्हा व्याख्या, भाषांतरे किंवा युनिट कन्व्हर्जन मिळवा.</translation>
 <translation id="7483025031359818980">निवड क्षेत्र फुल स्क्रीनवर सेट आहे</translation>
 <translation id="7486227320194954040">मार्कर टूल कोलॅप्स करा</translation>
 <translation id="7497767806359279797">भाषा आणि कीबोर्ड निवडा</translation>
@@ -979,6 +981,7 @@
 <translation id="8843682306134542540">रोटेशन लॉक टॉगल करा. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">तुमच्या पिन किंवा पासवर्डची अद्याप पडताळणी करता आली नाही. टीप: तुम्ही अलीकडेच तुमचा पासवर्ड बदलला असल्यास, जुना पासवर्ड वापरा. तुम्ही साइन आउट केल्यानंतर तुमचा नवीन पासवर्ड लागू केला जाईल.</translation>
+<translation id="8863888432376731307">"<ph name="QUERY" />" आणि आणखी बऱ्याच गोष्टींसाठी <ph name="INTENT" /> मिळवा</translation>
 <translation id="8870509716567206129">अ‍ॅप विभाजित-स्क्रीनला सपोर्ट करत नाही.</translation>
 <translation id="8871580645200179206">गडद थीम टॉगल करा. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">कनेक्ट नाही</translation>

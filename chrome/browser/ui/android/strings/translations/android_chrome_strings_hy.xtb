@@ -325,6 +325,7 @@
 <translation id="305593374596241526">Տեղորոշումն անջատված է: Միացրեք այն <ph name="BEGIN_LINK" />Android-ի կարգավորումներում<ph name="END_LINK" />:</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> էջանիշ}one{<ph name="BOOKMARKS_COUNT_MANY" /> էջանիշ}other{<ph name="BOOKMARKS_COUNT_MANY" /> էջանիշ}}</translation>
 <translation id="3062802207422175757">Ձեր հետաքրքրությունների հիման վրա ընտրված հոդվածներ՝ Chrome-ում</translation>
+<translation id="3066573403916685335">Տեղափոխել վար</translation>
 <translation id="3070005020161560471">Ավտոմատ թարգմանել</translation>
 <translation id="3091010850649238832">Ցույց տալ սեղմատախտակի բովանդակությունը</translation>
 <translation id="3098745985164956033">Պատկերներն ուղարկվում են Google-ին՝ նկարագրությունները բարելավելու նպատակով</translation>
@@ -454,6 +455,7 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="3962957115499249330">Դուք ծանուցում կտեսնեք, երբ այս ներբեռնումը սկսվի Wi-Fi ցանցի միջոցով։</translation>
 <translation id="3963007978381181125">Անցաբառով գաղտնագրումը չի կիրառվում վճարման եղանակների և Google Pay-ի հասցեների համար։ Միայն ձեր անցաբառն ունեցող օգտատերը կարող է կարդալ ձեր գաղտնագրված տվյալները: Անցաբառը չի ուղարկվում Google-ին և չի պահվում դրա կողմից: Անցաբառը մոռանալու դեպքում ձեզ անհրաժեշտ կլինի վերակայել համաժամացումը: <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome-ը չի կարող ստուգել ձեր գաղտնաբառերը</translation>
+<translation id="3969863827134279083">Տեղափոխել վեր</translation>
 <translation id="3974987681202239636"><ph name="APP_NAME" /> հավելվածը կբացվի Chrome-ում։ Շարունակելով՝ դուք ընդունում եք <ph name="BEGIN_LINK1" />Google-ի օգտագործման պայմանները<ph name="END_LINK1" /> և <ph name="BEGIN_LINK2" />Google Chrome-ի և Chrome OS-ի օգտագործման լրացուցիչ պայմանները<ph name="END_LINK2" />։ Գործում է նաև <ph name="BEGIN_LINK3" />Family Link-ի միջոցով կառավարվող Google հաշիվների գաղտնիության ծանուցագիրը<ph name="END_LINK3" />։</translation>
 <translation id="397583555483684758">Չհաջողվեց համաժամացնել</translation>
 <translation id="3976396876660209797">Հեռացրեք այս դյուրանցումն ու նորից ստեղծեք այն</translation>

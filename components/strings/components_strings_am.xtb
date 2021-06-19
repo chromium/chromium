@@ -372,6 +372,7 @@
 <translation id="2276057643614339130">የህትመት መሠረት</translation>
 <translation id="2277103315734023688">ወደ ፊት ፈልግ</translation>
 <translation id="2283340219607151381">አድራሻዎችን አስቀምጥ እና ሙላ</translation>
+<translation id="2283447177162560884">«<ph name="PAGE_TITLE" />» ተሰርዟል</translation>
 <translation id="2288422996159078444">ማናቸውም እርስዎ የሚተይቡት፣ የሚመለከቱት ማናቸውም ገጽ፣ ወይም ማናቸውም በድር ላይ ያለ ሌላ እንቅስቃሴ እየታየ ነው። በጣቢያዎች ላይ ያለ ይዘት እርስዎ ሳያውቁት ሊለወጥ ይችላል።</translation>
 <translation id="2289385804009217824">ከርክም</translation>
 <translation id="2292556288342944218">የእርስዎ የበየነመረብ መዳረሻ ታግዷል</translation>
@@ -498,6 +499,7 @@
 <translation id="277133753123645258">የመላኪያ ዘዴ</translation>
 <translation id="277499241957683684">የሚጎድል የመሣሪያ መዝገብ</translation>
 <translation id="2775884851269838147">የመጀመሪያውን የታተመ ገጽ</translation>
+<translation id="2778854133681684171">በሚቀጥለው ጊዜ በዚህ የመክፈያ ዘዴ ግዢ ሲፈጽሙ እርስዎ መሆንዎን በፍጥነት ለማረጋገጥ መሣሪያዎን መጠቀም ይችላሉ።</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2784949926578158345">ግንኙነቱ ዳግም እንዲጀምር ተደርጓል።</translation>
 <translation id="2792012897584536778">የዚህ መሣሪያ አስተዳዳሪዎች እርስዎ የሚጎበኟቸው የድር ጣቢያዎች ይዘትን እንዲያዩ ሊያስችሉ የሚችሉ የደህንነት እውቅና ማረጋገጫዎችን አቀናብረዋል።</translation>
@@ -654,6 +656,7 @@
 <translation id="3377736046129930310">ካርዶችን በበለጠ ፍጥነት ለማረጋገጥ የማያ ገጽ መቆለፊያን ይጠቀሙ</translation>
 <translation id="3380365263193509176">ያልታወቀ ስህተት</translation>
 <translation id="3380864720620200369">የደንበኛ መታወቂያ፦</translation>
+<translation id="3381668585148405088">ግዢዎን ያረጋግጡ</translation>
 <translation id="3387261909427947069">የመክፈያ ዘዴዎች</translation>
 <translation id="3391030046425686457">የመላኪያ አድራሻ</translation>
 <translation id="3395827396354264108">የመውሰጃ ዘዴ</translation>
@@ -830,6 +833,7 @@
     በሁሉም ወደ እሱ በተላኩ ጥያቄዎች ላይ ተፈጻሚ እንዲሆን ጠይቋል፣ ነገር ግን ይህ መመሪያ በአሁኑ ጊዜ ሊተገበር አይችልም።</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{{COUNT} ገጽ የያዘ የፒዲኤፍ ሰነድ}one{{COUNT} ገጾችን የያዘ የፒዲኤፍ ሰነድ}other{{COUNT} ገጾችን የያዘ የፒዲኤፍ ሰነድ}}</translation>
 <translation id="4023431997072828269">ይህ ቅጽ ደህንነቱ በማያስተማምን ግንኙነት በመጠቀም እየገባ ያለ ስለሆነ የእርስዎ መረጃ ለሌሎች የሚታይ ይሆናል።</translation>
+<translation id="4027177651527820006">እነዚህን ባህሪዎች በማንቃት የአሳሽዎን ውሂብ ሊያጡ ወይም የእርስዎን ደህንነት ወይም ግላዊነት ለአደጋ ሊያጋልጡት ይችላሉ። የነቁ ባህሪዎች ለሁሉም የዚህ አሳሽ ተጠቃሚዎች ይተገበራሉ። የድርጅት አስተዳዳሪ ከሆኑ እነዚህን ጠቋሚዎች በምርት ውስጥ መጠቀም የለብዎትም።</translation>
 <translation id="4030383055268325496">&amp;አክልን ቀልብስ</translation>
 <translation id="4056223980640387499">ቀይ ቡናማ</translation>
 <translation id="4058922952496707368">ቁልፍ «<ph name="SUBKEY" />»፦ <ph name="ERROR" /></translation>
@@ -1073,7 +1077,7 @@
 <translation id="4879491255372875719">ራስ-ሰር (ነባሪ)</translation>
 <translation id="4879725228911483934">በእርስዎ ማያ ገጾች ላይ መስኮቶችን ይክፈቱ እና ይመድቡ</translation>
 <translation id="4880827082731008257">የፍለጋ ታሪክ</translation>
-<translation id="4881695831933465202">ክፈት</translation>
+<translation id="4881695831933465202">ክፍት የሚሆንባቸው</translation>
 <translation id="4885256590493466218">ከፍሎ መውጫው ላይ በ<ph name="CARD_DETAIL" /> ይክፈሉ</translation>
 <translation id="4889420713887366944">ማንነት የማያሳውቅ መስኮት አዝራርን ይክፈቱ፣ በግል እንዲያስሱ አዲስ ማንነት የማያሳውቅ መስኮትን ለመክፈት አስገባን ይጫኑ</translation>
 <translation id="4892518386797173871">የኋላ</translation>
@@ -1760,7 +1764,6 @@
 <translation id="7481312909269577407">ወደ ፊት</translation>
 <translation id="7485870689360869515">ምንም ውሂብ አልተገኘም።</translation>
 <translation id="7495528107193238112">ይህ ይዘት ታግዷል። ችግሩን ለማስተካከል የጣቢያውን ባለቤት ያነጋግሩ።</translation>
-<translation id="7498193950643227031">መጠኑ ከተቀየረ ያልተጠበቀ ባሕሪ ሊያሳይ ይችላል። አሁን በ<ph name="SETTINGS" /> ውስጥ የመተግበሪያዎች መጠንን ለመቀየር ያለውን ችሎታ መገደብ ይችላሉ።</translation>
 <translation id="7503664977220660814">አሁን የይለፍ ቃልዎን በአንድ አታላይ ጣቢያ ላይ አስገብተዋል። Chromium የ<ph name="WEBSITE_1" />፣ <ph name="WEBSITE_2" /> እና አሁን ይህን የይለፍ ቃል የተጠቀሙባቸው የሌሎች ጣቢያዎች የተቀመጡ የይለፍ ቃላትዎን መፈተሽ ይመክራል።</translation>
 <translation id="7508255263130623398">የተመላሽ መመሪያ መሣሪያ መታወቂያ ባዶ ነው ወይም ከአሁኑ የመሣሪያ መታወቂያ ጋር አይዛመድም</translation>
 <translation id="7508870219247277067">አቮካዶ አረንጓዴ</translation>

@@ -2525,6 +2525,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
 <translation id="3739254215541673094">¿Abrir <ph name="APPLICATION" />?</translation>
 <translation id="3742055079367172538">Captura de pantalla tomada</translation>
+<translation id="3742235229730461951">Disposición del teclado coreano</translation>
 <translation id="3742666961763734085">No se encontró ninguna unidad organizacional con ese nombre. Vuelve a intentarlo.</translation>
 <translation id="3744111561329211289">Sincronización en segundo plano</translation>
 <translation id="3747077776423672805">Para quitar apps, ve a Configuración &gt; Google Play Store &gt; Administrar preferencias de Android &gt; Apps o Administrador de aplicaciones. Luego, presiona la app que quieras desinstalar (es posible que debas deslizar el dedo hacia la derecha o la izquierda para encontrarla). A continuación, presiona Desinstalar o Inhabilitar.</translation>
@@ -4689,7 +4690,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="6186394437969115158">Por lo general los sitios muestran anuncios para poder proporcionar contenido o servicios de forma gratuita. No obstante, algunos sitios son conocidos por mostrar anuncios intrusivos o engañosos.</translation>
 <translation id="6195005504600220730">Leer información acerca de tu navegador, SO y dispositivo</translation>
 <translation id="6195693561221576702">Este dispositivo no puede configurarse en el modo de demostración sin conexión.</translation>
-<translation id="6195724942939841102">No restaurar</translation>
 <translation id="6196640612572343990">Bloquear cookies de terceros</translation>
 <translation id="6196854373336333322">La extensión "<ph name="EXTENSION_NAME" />" tomó el control de la configuración de proxy, lo que significa que puede modificar, dañar o espiar cualquier actividad que lleves a cabo en línea. Si no sabes con certeza por qué se produjo este cambio, probablemente no lo desees.</translation>
 <translation id="6198102561359457428">Salir y volver a acceder</translation>

@@ -325,6 +325,7 @@ Puudutage pikalt mis tahes sõna, et seda otsida. Otsingu täpsustamiseks valige
 <translation id="305593374596241526">Asukoht on välja lülitatud. Lülitage see sisse <ph name="BEGIN_LINK" />Androidi seadetes<ph name="END_LINK" />.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> järjehoidja}other{<ph name="BOOKMARKS_COUNT_MANY" /> järjehoidjat}}</translation>
 <translation id="3062802207422175757">Teie huvidega seotud artiklid Chrome'is</translation>
+<translation id="3066573403916685335">Liiguta allapoole</translation>
 <translation id="3070005020161560471">Tõlgi automaatselt</translation>
 <translation id="3091010850649238832">Kuva lõikelaua sisu</translation>
 <translation id="3098745985164956033">Mõned pildid saadetakse kirjelduste täiendamiseks Google'ile</translation>
@@ -454,6 +455,7 @@ Privaatsuse liivakast on endiselt arendusjärgus ja saadaval vaid valitud piirko
 <translation id="3962957115499249330">Kui see allalaadimine WiFi-võrgus algab, näete märguannet.</translation>
 <translation id="3963007978381181125">Parooli krüpteerimine ei hõlma Google Pay makseviise ega aadresse. Teie krüpteeritud andmeid saavad lugeda vaid need, kes teavad teie parooli – seda ei saadeta Google'ile ja Google ei talleta seda. Kui unustate parooli või soovite seda seadet muuta, tuleb teil sünkroonimine lähtestada. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome ei saa teie paroole kontrollida</translation>
+<translation id="3969863827134279083">Liiguta üles</translation>
 <translation id="3974987681202239636"><ph name="APP_NAME" /> avaneb Chrome'is. Jätkates nõustute <ph name="BEGIN_LINK1" />Google'i teenusetingimustega<ph name="END_LINK1" /> ning <ph name="BEGIN_LINK2" />Google Chrome'i ja Chrome OS-i lisateenusetingimustega<ph name="END_LINK2" />. Kehtib ka <ph name="BEGIN_LINK3" />Family Linkiga hallatavate Google’i kontode privaatsusteatis<ph name="END_LINK3" />.</translation>
 <translation id="397583555483684758">Sünkroonimine lakkas töötamast</translation>
 <translation id="3976396876660209797">Eemaldage see otsetee ja looge see uuesti</translation>

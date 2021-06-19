@@ -325,6 +325,7 @@
 <translation id="305593374596241526">స్థానం ఆఫ్ చేయబడింది; దీనిని <ph name="BEGIN_LINK" />Android సెట్టింగ్‌లు<ph name="END_LINK" />లో ఆన్ చేయండి.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> బుక్‌మార్క్}other{<ph name="BOOKMARKS_COUNT_MANY" /> బుక్‌మార్క్‌లు}}</translation>
 <translation id="3062802207422175757">Chromeలోని మీ అభిరుచులకు అనుగుణమైన కథనాలు</translation>
+<translation id="3066573403916685335">క్రిందికి తరలించండి</translation>
 <translation id="3070005020161560471">ఆటోమేటిక్‌గా అనువదించాల్సినవి</translation>
 <translation id="3091010850649238832">క్లిప్ బోర్డ్ కంటెంట్‌లను చూపండి</translation>
 <translation id="3098745985164956033">మీ కోసం వివరణలను మెరుగుపరచడానికి కొన్ని ఇమేజ్‌లు Googleకు పంపబడ్డాయి</translation>
@@ -453,6 +454,7 @@
 <translation id="3962957115499249330">Wi-Fi ద్వారా డౌన్‌లోడ్ ప్రారంభమయినప్పుడు మీకు నోటిఫికేషన్ కనిపిస్తుంది.</translation>
 <translation id="3963007978381181125">Google Payకి సంబంధించిన చెల్లింపు పద్ధతులు మరియు చిరునామాలు రహస్య పదబంధం ఎన్‌క్రిప్షన్‌లో ఉండవు. మీ రహస్య పదబంధాన్ని కలిగి ఉన్నవారు మాత్రమే మీ ఎన్‌క్రిప్ట్ చేసిన డేటాను చదవగలరు. రహస్య పదబంధం Google ద్వారా ఎవరికీ పంపబడదు లేదా నిల్వ చేయబడదు. మీరు మీ రహస్య పదబంధాన్ని మర్చిపోతే లేదా ఈ సెట్టింగ్‌ను మార్చాలనుకుంటే, సమకాలీకరణను రీసెట్ చేయాల్సి ఉంటుంది. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome మీ పాస్‌వర్డ్‌లను చెక్ చేయలేదు</translation>
+<translation id="3969863827134279083">పైకి తరలించండి</translation>
 <translation id="3974987681202239636"><ph name="APP_NAME" /> Chromeలో తెరవబడుతుంది. కొనసాగడం ద్వారా, మీరు <ph name="BEGIN_LINK1" />Google సేవా నిబంధనలు<ph name="END_LINK1" />, అలాగే <ph name="BEGIN_LINK2" />Google Chrome, Chrome OS అదనపు సేవా నిబంధనలు<ph name="END_LINK2" />కు అంగీకరిస్తున్నారు. <ph name="BEGIN_LINK3" />Family Linkతో మేనేజ్ చేస్తున్న Google ఖాతాల కోసం గోప్యతా ప్రకటన<ph name="END_LINK3" /> కూడా వర్తిస్తుంది.</translation>
 <translation id="397583555483684758">సమకాలీకరణ పని చేయడం ఆగిపోయింది</translation>
 <translation id="3976396876660209797">ఈ షార్ట్‌కట్‌ను తీసివేసి, పునఃసృష్టించండి</translation>

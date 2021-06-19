@@ -325,6 +325,7 @@
 <translation id="305593374596241526">स्थान सेवा बंद है, उसे <ph name="BEGIN_LINK" />Android सेटिंग<ph name="END_LINK" /> में चालू करें.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> बुकमार्क}one{<ph name="BOOKMARKS_COUNT_MANY" /> बुकमार्क}other{<ph name="BOOKMARKS_COUNT_MANY" /> बुकमार्क}}</translation>
 <translation id="3062802207422175757">Chrome पर आपकी पसंद के लेख</translation>
+<translation id="3066573403916685335">नीचे ले जाएं</translation>
 <translation id="3070005020161560471">अपने-आप अनुवाद करें</translation>
 <translation id="3091010850649238832">क्लिपबोर्ड का कॉन्टेंट दिखाएं</translation>
 <translation id="3098745985164956033">कुछ इमेज Google को भेजी जाती हैं, ताकि आपको मिलने वाली जानकारी को बेहतर बनाया जा सके</translation>
@@ -454,6 +455,7 @@
 <translation id="3962957115499249330">जब यह डाउनलोड वाई-फ़ाई पर शुरू होगा, तब आपको एक सूचना दिखेगी.</translation>
 <translation id="3963007978381181125">लंबा पासवर्ड सुरक्षित करने के तरीके में Google Pay से भुगतान करने की विधि और पते शामिल नहीं हैं. सिर्फ़ वह इंसान आपका सुरक्षित किया हुआ डेटा पढ़ सकता है जिसके पास आपका लंबा पासवर्ड है. Google की ओर से लंबा पासवर्ड भेजा या संग्रहित नहीं किया जाता है. अगर आप अपना लंबा पासवर्ड भूल जाते हैं या इस सेटिंग को बदलना चाहते हैं, तो आपको सिंक रीसेट करना होगा. <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome आपके पासवर्ड की जांच नहीं कर सकता</translation>
+<translation id="3969863827134279083">ऊपर ले जाएं</translation>
 <translation id="3974987681202239636"><ph name="APP_NAME" />, Chrome में खुलेगा. जारी रखने का मतलब है कि आप <ph name="BEGIN_LINK1" />Google की सेवा की शर्तों<ph name="END_LINK1" /> और <ph name="BEGIN_LINK2" />Google Chrome और Chrome OS की सेवा की अतिरिक्त शर्तों<ph name="END_LINK2" /> से सहमत हैं. साथ ही, आप <ph name="BEGIN_LINK3" />Family Link से प्रबंधित होने वाले Google खातों के लिए निजता सूचना<ph name="END_LINK3" /> से भी सहमत हैं.</translation>
 <translation id="397583555483684758">समन्‍वयन ने काम करना बंद कर दिया है</translation>
 <translation id="3976396876660209797">इस शॉर्टकट को निकालें और इसे फिर से बनाएं</translation>

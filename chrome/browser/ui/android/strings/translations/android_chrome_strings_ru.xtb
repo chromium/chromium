@@ -325,6 +325,7 @@
 <translation id="305593374596241526">Определение местоположения отключено. Включите его в <ph name="BEGIN_LINK" />настройках Android<ph name="END_LINK" />.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> закладка}one{<ph name="BOOKMARKS_COUNT_MANY" /> закладка}few{<ph name="BOOKMARKS_COUNT_MANY" /> закладки}many{<ph name="BOOKMARKS_COUNT_MANY" /> закладок}other{<ph name="BOOKMARKS_COUNT_MANY" /> закладки}}</translation>
 <translation id="3062802207422175757">Прочитайте в Chrome статьи, подобранные с учетом ваших интересов.</translation>
+<translation id="3066573403916685335">Перейти вниз</translation>
 <translation id="3070005020161560471">Переводить автоматически</translation>
 <translation id="3091010850649238832">Показать содержимое буфера обмена</translation>
 <translation id="3098745985164956033">Передавать некоторые изображения в Google, чтобы улучшить их описание</translation>
@@ -454,6 +455,7 @@
 <translation id="3962957115499249330">Когда начнется скачивание по Wi-Fi, вы увидите уведомление.</translation>
 <translation id="3963007978381181125">Шифрование с помощью кодовой фразы не применяется к способам оплаты и адресам из Google Pay. Доступ к зашифрованным данным будет только у тех, кто знает кодовую фразу. Она не пересылается и не хранится в Google. Если вы забудете фразу или решите изменить эту настройку, вам придется сбросить параметры синхронизации. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Браузеру Chrome не удается проверить пароли.</translation>
+<translation id="3969863827134279083">Перейти вверх</translation>
 <translation id="3974987681202239636">Приложение "<ph name="APP_NAME" />" откроется в Chrome. Продолжая, вы принимаете <ph name="BEGIN_LINK1" />Условия использования Google<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Дополнительные условия использования Chrome и Chrome OS<ph name="END_LINK2" />. Кроме этих документов, также действует <ph name="BEGIN_LINK3" />Примечание о конфиденциальности данных в аккаунтах Google, управляемых с помощью Family Link<ph name="END_LINK3" />.</translation>
 <translation id="397583555483684758">Ошибка синхронизации</translation>
 <translation id="3976396876660209797">Удалите этот ярлык и создайте его заново</translation>

@@ -325,6 +325,7 @@
 <translation id="305593374596241526">સ્થાન બંધ છે, તેને <ph name="BEGIN_LINK" />Android સેટિંગ<ph name="END_LINK" />માં ચાલુ કરો.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> બુકમાર્ક}one{<ph name="BOOKMARKS_COUNT_MANY" /> બુકમાર્ક}other{<ph name="BOOKMARKS_COUNT_MANY" /> બુકમાર્ક}}</translation>
 <translation id="3062802207422175757">Chrome પર તમારી રુચિ વિશેના લેખ</translation>
+<translation id="3066573403916685335">નીચે ખસેડો</translation>
 <translation id="3070005020161560471">ઑટોમૅટિક રીતે અનુવાદ કરો</translation>
 <translation id="3091010850649238832">ક્લિપબોર્ડ પરના કન્ટેન્ટ બતાવો</translation>
 <translation id="3098745985164956033">તમારા માટે વર્ણનોને બહેતર બનાવવા માટે કેટલીક છબીઓ Googleને મોકલવામાં આવે છે</translation>
@@ -362,6 +363,7 @@
 <translation id="3295530008794733555">વધુ ઝડપથી બ્રાઉઝ કરો. ઓછા ડેટાનો ઉપયોગ કરો.</translation>
 <translation id="3297344142967351106">વૉઇસ સહાયતા</translation>
 <translation id="3303414029551471755">કન્ટેન્ટ ડાઉનલોડ કરવા માટે આગળ વધીએ?</translation>
+<translation id="333367884906698540">તમારું કાર્ય પૂર્ણ થઈ જાય પછી બ્લૂટૂથ ફરીથી બંધ થઈ જશે</translation>
 <translation id="3334729583274622784">ફાઇલનું એક્સ્ટેંશન બદલવું છે?</translation>
 <translation id="3341058695485821946">તમે કેટલો ડેટા સાચવ્યો તે જુઓ</translation>
 <translation id="3341262203274374114">અનફૉલો કરી શકતા નથી. કંઈક ખોટું થયું.</translation>
@@ -453,6 +455,7 @@
 <translation id="3962957115499249330">આ ડાઉનલોડ જ્યારે વાઇ-ફાઇ પર શરૂ થાય, ત્યારે તમે નોટિફિકેશન જોશો.</translation>
 <translation id="3963007978381181125">પાસફ્રેઝ એન્ક્રિપ્શનમાં Google Payની ચુકવણી પદ્ધતિઓ અને ઍડ્રેસ સામેલ હોતા નથી. માત્ર તમારા પાસફ્રેઝ ધરાવતી કોઈ વ્યક્તિ જ તમારા એન્ક્રિપ્ટ કરેલા ડેટાને વાંચી શકે છે. Googleને પાસફ્રેઝ મોકલવામાં આવતો નથી કે તેના દ્વારા સંગ્રહિત કરવામાં આવતો નથી. જો તમે તમારો પાસફ્રેઝ ભૂલી જાઓ અથવા આ સેટિંગ બદલવા માંગતા હો, તો તમારે સિંકને રીસેટ કરવું પડશે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome તમારા પાસવર્ડ ચેક કરી શકતું નથી</translation>
+<translation id="3969863827134279083">ઉપર ખસેડો</translation>
 <translation id="3974987681202239636"><ph name="APP_NAME" /> Chromeમાં ખૂલશે. આગળ વધીને, તમે <ph name="BEGIN_LINK1" />Googleની સેવાની શરતો<ph name="END_LINK1" /> અને <ph name="BEGIN_LINK2" />Google Chrome તથા Chrome OSની વધારાની સેવાની શરતો<ph name="END_LINK2" /> સાથે સંમત થાઓ છો. <ph name="BEGIN_LINK3" />Family Link વડે મેનેજ કરવામાં આવતા Google એકાઉન્ટ માટેની પ્રાઇવસી નોટિસ<ph name="END_LINK3" /> પણ લાગુ.</translation>
 <translation id="397583555483684758">સમન્વયન એ કામ કરવાનું બંધ કરી દીધું છે</translation>
 <translation id="3976396876660209797">આ શૉર્ટકટ દૂર કરો અને ફરી બનાવો</translation>
@@ -1036,6 +1039,7 @@
 <translation id="7641339528570811325">બ્રાઉઝિંગ ડેટા સાફ કરો…</translation>
 <translation id="764170292089748542">જ્યારે તમે ખાનગી રીતે બ્રાઉઝ કરવાનું પસંદ કરો છો, ત્યારે Chrome તમારો બ્રાઉઝિંગનો ઇતિહાસ સાચવતું નથી. તમે હજી પણ તમારી મનપસંદ સાઇટ ઍક્સેસ કરવા માટે બુકમાર્કનો ઉપયોગ કરી શકો છો.</translation>
 <translation id="7646772052135772216">પાસવર્ડ સિંક કાર્ય કરતું નથી</translation>
+<translation id="7655900163790317559">બ્લૂટૂથ ચાલુ કરી રહ્યાં છીએ…</translation>
 <translation id="7658239707568436148">રદ કરો</translation>
 <translation id="7665369617277396874">એકાઉન્ટ ઉમેરો</translation>
 <translation id="766587987807204883">લેખો અહીં દેખાય છે, જે તમે ઑફલાઇન હો ત્યારે પણ વાંચી શકો છો</translation>

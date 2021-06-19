@@ -290,7 +290,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3307642347673023554">Mode ordinateur portable activé</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> pourra toujours se connecter plus tard.</translation>
 <translation id="3321628682574733415">Code parental incorrect</translation>
-<translation id="332587331255250389">Veuillez remplacer la batterie</translation>
 <translation id="3341303451326249809">Capture d'écran réussie</translation>
 <translation id="334252345105450327">Faire une capture d'écran</translation>
 <translation id="3351879221545518001">Vous êtes actuellement en train de caster l'écran.</translation>
@@ -727,6 +726,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="6816797338148849397">Informations sur le texte sélectionné disponibles. Pour y accéder, utilisez la flèche vers le haut.</translation>
 <translation id="6818242057446442178">Reculer par mot</translation>
 <translation id="6820676911989879663">Faites une pause !</translation>
+<translation id="6837064795450991317">Masquer la barre de bureau</translation>
 <translation id="6850010208275816200">Votre application actuelle est en plein écran. Si elle vous demande votre mot de passe, quittez d'abord le mode plein écran.</translation>
 <translation id="6852052252232534364">Cliquer pour activer</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
@@ -762,6 +762,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="7076293881109082629">Connexion</translation>
 <translation id="7088960765736518739">Switch Access</translation>
 <translation id="7098389117866926363">Appareil USB de type C (port situé sur l'arrière de l'appareil, à gauche)</translation>
+<translation id="7106330611027933926">Afficher la barre de bureau</translation>
 <translation id="7118268675952955085">capture d'écran</translation>
 <translation id="7131634465328662194">Vous allez être déconnecté automatiquement.</translation>
 <translation id="7143207342074048698">Connexion</translation>
@@ -805,6 +806,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="7466449121337984263">Veuillez toucher le capteur</translation>
 <translation id="7473891865547856676">Non, merci</translation>
 <translation id="7477793887173910789">Contrôler votre musique, vos vidéos et d'autres contenus</translation>
+<translation id="7482097454533720217">Obtenez des définitions, des traductions ou des conversions d'unités lorsque vous effectuez un clic droit ou appuyez de manière prolongée sur du texte.</translation>
 <translation id="7483025031359818980">Zone de sélection définie sur l'écran entier</translation>
 <translation id="7486227320194954040">Réduire les outils Marqueur</translation>
 <translation id="7497767806359279797">Choisir la langue et le clavier</translation>
@@ -981,6 +983,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="8843682306134542540">Activer/Désactiver le verrouillage de la rotation. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Recherche+Échap</translation>
 <translation id="8853703225951107899">Impossible de valider votre code ou votre mot de passe pour la deuxième fois. Remarque : si vous avez modifié votre mot de passe récemment, utilisez l'ancien. Votre nouveau mot de passe ne sera appliqué qu'une fois que vous serez déconnecté.</translation>
+<translation id="8863888432376731307">Obtenir la <ph name="INTENT" /> pour "<ph name="QUERY" />" et plus</translation>
 <translation id="8870509716567206129">Application incompatible avec l'écran partagé.</translation>
 <translation id="8871580645200179206">Activer/Désactiver le thème sombre. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Non connecté</translation>

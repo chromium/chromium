@@ -325,6 +325,7 @@ Thinta uphinde ubambe noma iliphi igama ukuze useshe. Ukuze wenze ngcono usesho 
 <translation id="305593374596241526">Indawo ivaliwe; ivule <ph name="BEGIN_LINK" />kuzilungiselelo ze-Android<ph name="END_LINK" />.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> ibhukhimakhi}one{<ph name="BOOKMARKS_COUNT_MANY" /> amabhukhimakhi}other{<ph name="BOOKMARKS_COUNT_MANY" /> amabhukhimakhi}}</translation>
 <translation id="3062802207422175757">Ama-athikili akho wongaba nentshisekelo kukho ku-Chrome</translation>
+<translation id="3066573403916685335">Hambisa phansi</translation>
 <translation id="3070005020161560471">Humusha ngokuzenzakalelayo</translation>
 <translation id="3091010850649238832">Bonisa okuqukethwe kwebhodi yokunamathisela</translation>
 <translation id="3098745985164956033">Izithombe zithunyelwa ku-Google ukuthuthukisa izincazelo zakho</translation>
@@ -454,6 +455,7 @@ I-Privacy Sandbox isasungulwa futhi itholakala ezifundeni ezithile. Okwamanje, a
 <translation id="3962957115499249330">Uzobona isaziso uma lokhu kudawuniloda kuqala ku-Wi-Fi.</translation>
 <translation id="3963007978381181125">Othile kuphela onomushwana wakho wokungena ongafunda idatha yakho ebetheliwe. Umushwana wokungena awuthunyelwa noma ugcinwe yi-Google. Uma ukhohlwa umushwana wakho wokungena noma ufuna ukushintsha lesi silungiselelo, kuzomele usethe kabusha ukuvumelanisa. <ph name="BEGIN_LINK" />Funda kabanzi<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">I-Chrome ayikwazi ukuhlola amaphasiwedi akho</translation>
+<translation id="3969863827134279083">Hamba phezulu</translation>
 <translation id="3974987681202239636">I-<ph name="APP_NAME" /> izovuleka ku-Chrome. Ngokuqhubeka, uvumelana <ph name="BEGIN_LINK1" />Nemigomo Yesevisi ye-Google<ph name="END_LINK1" />, kanye <ph name="BEGIN_LINK2" />ne-Google Chrome Nemigomo Yesevisi ye-Chrome OS Engeziwe<ph name="END_LINK2" />. <ph name="BEGIN_LINK3" />Isaziso Esemfihlo yama-Akhawunti e-Google Aphethwe nge-Family Link<ph name="END_LINK3" /> naso sizosebenza.</translation>
 <translation id="397583555483684758">Ukuvumelanisa kuyeke ukusebenza</translation>
 <translation id="3976396876660209797">Susa futhi udale kabusha lesi sinqamuleli</translation>

@@ -325,6 +325,7 @@ Haltu fingri á hvaða orði sem er til að leita að því. Veldu fleiri eða f
 <translation id="305593374596241526">Slökkt er á staðsetningum. Kveiktu á þeim í <ph name="BEGIN_LINK" />stillingum Android<ph name="END_LINK" />.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> bókamerki}one{<ph name="BOOKMARKS_COUNT_MANY" /> bókamerki}other{<ph name="BOOKMARKS_COUNT_MANY" /> bókamerki}}</translation>
 <translation id="3062802207422175757">Greinar sem tengjast áhugamálum þínum í Chrome</translation>
+<translation id="3066573403916685335">Færa niður</translation>
 <translation id="3070005020161560471">Þýða sjálfkrafa</translation>
 <translation id="3091010850649238832">Sýna innihald klippiborðs</translation>
 <translation id="3098745985164956033">Sumar myndir eru sendar til Google til að bæta lýsingar</translation>
@@ -454,6 +455,7 @@ Privacy Sandbox er enn í þróun og er í boði á völdum svæðum. Eins og er
 <translation id="3962957115499249330">Tilkynning birtist þegar niðurhalið hefst um Wi-Fi.</translation>
 <translation id="3963007978381181125">Dulkóðun aðgangsorðs inniheldur ekki greiðslumáta og heimilisföng af Google Pay. Aðeins þeir sem vita aðgangsorðið þitt geta lesið dulkóðuðu gögnin þín. Aðgangsorðið er hvorki sent til Google né geymt. Ef þú gleymir aðgangsorðinu eða vilt breyta þessari stillingu þarftu að endurstilla samstillingu. <ph name="BEGIN_LINK" />Frekari upplýsingar<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome getur ekki athugað aðgangsorðin þín</translation>
+<translation id="3969863827134279083">Færa upp</translation>
 <translation id="3974987681202239636"><ph name="APP_NAME" /> mun opnast í Chrome. Með því að halda áfram samþykkir þú <ph name="BEGIN_LINK1" />þjónustuskilmála Google<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />viðbótarskilmála Google Chrome og Chrome OS<ph name="END_LINK2" />. <ph name="BEGIN_LINK3" />Persónuvernd fyrir Google reikninga sem stjórnað er með Family Link<ph name="END_LINK3" /> gildir einnig.</translation>
 <translation id="397583555483684758">Samstilling er hætt að virka</translation>
 <translation id="3976396876660209797">Fjarlægðu flýtileiðina og búðu hana til aftur</translation>

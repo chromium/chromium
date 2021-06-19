@@ -325,6 +325,7 @@ Toque sem soltar em qualquer palavra para pesquisar. Para refinar a sua pesquisa
 <translation id="305593374596241526">A localização está desativada. Ative-a nas <ph name="BEGIN_LINK" />Definições do Android<ph name="END_LINK" />.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> marcador}other{<ph name="BOOKMARKS_COUNT_MANY" /> marcadores}}</translation>
 <translation id="3062802207422175757">Artigos acerca dos seus interesses no Chrome.</translation>
+<translation id="3066573403916685335">Mover para baixo</translation>
 <translation id="3070005020161560471">Traduzir automaticamente</translation>
 <translation id="3091010850649238832">Mostrar conteúdos de Copiar e colar</translation>
 <translation id="3098745985164956033">Algumas imagens são enviadas para a Google para melhorar as descrições.</translation>
@@ -454,6 +455,7 @@ A Privacy Sandbox está em desenvolvimento e está disponível em regiões selec
 <translation id="3962957115499249330">Verá uma notificação quando esta transferência for iniciada através de Wi-Fi.</translation>
 <translation id="3963007978381181125">A encriptação da frase de acesso não inclui métodos de pagamento nem endereços do Google Pay. Apenas alguém que conheça a sua frase de acesso pode ler os seus dados encriptados. A frase de acesso não é enviada para a Google nem armazenada pela mesma. Se se esquecer da frase de acesso ou pretender alterar esta definição, tem de repor a sincronização. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">O Chrome não consegue verificar as suas palavras-passe.</translation>
+<translation id="3969863827134279083">Mover para cima</translation>
 <translation id="3974987681202239636">A app <ph name="APP_NAME" /> vai abrir no Chrome. Ao continuar, aceita os <ph name="BEGIN_LINK1" />Termos de Utilização do Google<ph name="END_LINK1" /> e os <ph name="BEGIN_LINK2" />Termos de Utilização Adicionais do Google Chrome e Chrome OS<ph name="END_LINK2" />. O <ph name="BEGIN_LINK3" />Aviso de Privacidade para Contas Google geridas com o Family Link<ph name="END_LINK3" /> também se aplica.</translation>
 <translation id="397583555483684758">A sincronização deixou de funcionar</translation>
 <translation id="3976396876660209797">Remova este atalho e crie-o novamente</translation>

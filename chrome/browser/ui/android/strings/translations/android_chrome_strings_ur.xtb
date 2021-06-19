@@ -325,6 +325,7 @@
 <translation id="305593374596241526">‏مقام آف ہے، <ph name="BEGIN_LINK" />Android کی ترتیبات<ph name="END_LINK" /> میں اسے آن کریں۔</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> بُک مارک}other{<ph name="BOOKMARKS_COUNT_MANY" /> بُک مارکس}}</translation>
 <translation id="3062802207422175757">‏Chrome پر آپ کی دلچسپیوں سے متعلق مضامین</translation>
+<translation id="3066573403916685335">نیچے لے جائیں</translation>
 <translation id="3070005020161560471">خودکار طور پر ترجمہ کریں</translation>
 <translation id="3091010850649238832">کلپ بورڈ مواد دکھائیں</translation>
 <translation id="3098745985164956033">‏آپ کے لیے تفصیلات میں بہتری لانے کے لیے Google کو کچھ تصاویر بھیجی جاتی ہیں</translation>
@@ -362,6 +363,7 @@
 <translation id="3295530008794733555">مزید تیزی سے براؤز کریں۔ کم ڈیٹا استعمال کریں۔</translation>
 <translation id="3297344142967351106">صوتی معاونت</translation>
 <translation id="3303414029551471755">مواد ڈاؤن لوڈ کرنے کیلئے آگے بڑھیں؟</translation>
+<translation id="333367884906698540">آپ کا کام مکمل ہونے پر بلوٹوتھ واپس آف ہو جائے گا</translation>
 <translation id="3334729583274622784">فائل ایکسٹینشن تبدیل کریں؟</translation>
 <translation id="3341058695485821946">اپنا محفوظ کردہ ڈیٹا دیکھیں</translation>
 <translation id="3341262203274374114">پیروی ختم نہیں کر سکتے۔ کچھ غلط ہو گیا۔</translation>
@@ -453,6 +455,7 @@
 <translation id="3962957115499249330">‏Wi-Fi پر جب یہ ڈاؤن لوڈ شروع ہوگا تو آپ کو ایک اطلاع دکھائی دے گی۔</translation>
 <translation id="3963007978381181125">‏پاس فریز کی مرموز کاری میں Google Pay سے ادائيگی کے طریقے اور پتے شامل نہیں ہوتے ہیں۔ آپ کے پاس فریز کا حامل شخص ہی آپ کے مرموز کردہ ڈیٹا کو پڑھ سکتا ہے۔ پاس فریز Google کو نہیں بھیجا جاتا ہے اور نہ ہی Google اسے اسٹور کرتا ہے۔ اگر آپ اپنا پاس فریز بھول جاتے ہیں یا اس ترتیب کو تبدیل کرنا چاہتے ہیں تو آپ کو مطابقت پذیری کو دوبارہ ترتیب دینے کی ضرورت ہوگی۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">‏Chrome آپ کے پاس ورڈز چیک نہیں کر سکتا ہے</translation>
+<translation id="3969863827134279083">اوپر جائیں</translation>
 <translation id="3974987681202239636">‏<ph name="APP_NAME" /> Chrome میں کھلے گی۔ جاری رکھ کر آپ، <ph name="BEGIN_LINK1" />Google کی سروس کی شرائط<ph name="END_LINK1" />، اور <ph name="BEGIN_LINK2" />Google Chrome اور Chrome OS کی اضافی سروس کی شرائط سے اتفاق کرتے ہیں<ph name="END_LINK2" />۔ <ph name="BEGIN_LINK3" />Google اکاؤنٹس کے لیے Family Link سے نظم کردہ رازداری کا نوٹس<ph name="END_LINK3" /> بھی لاگو ہوتا ہے۔</translation>
 <translation id="397583555483684758">مطابقت پذیری نے کام کرنا بند کر دیا ہے</translation>
 <translation id="3976396876660209797">ہٹا کر یہ شارٹ کٹ تخلیق کریں</translation>
@@ -1036,6 +1039,7 @@
 <translation id="7641339528570811325">براؤزنگ ڈیٹا صاف کریں…</translation>
 <translation id="764170292089748542">‏جب آپ نجی طور پر براؤزنگ کا انتخاب کرتے ہیں تو Chrome آپ کی براؤزنگ کی سرگزشت کو محفوظ نہیں کرتا ہے۔ آپ اپنی پسندیدہ سائٹس تک رسائی کیلئے ابھی بھی بُک مارکس استعمال کر سکتے ہیں۔</translation>
 <translation id="7646772052135772216">پاس ورڈ کی مطابقت پذیری کام نہیں کر رہی ہے</translation>
+<translation id="7655900163790317559">بلوٹوتھ آن ہو رہا ہے…</translation>
 <translation id="7658239707568436148">منسوخ کریں</translation>
 <translation id="7665369617277396874">اکاؤنٹ شامل کریں</translation>
 <translation id="766587987807204883">مضامین یہاں دکھائی دیتے ہیں جنہیں آپ آف لائن ہونے پر بھی پڑھ سکتے ہیں</translation>

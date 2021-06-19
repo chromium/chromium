@@ -290,7 +290,6 @@
 <translation id="3307642347673023554">ノートパソコン モードに切り替えました</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> が後でログインすることは引き続き可能です。</translation>
 <translation id="3321628682574733415">保護者のコードが間違っています</translation>
-<translation id="332587331255250389">バッテリーを交換してください</translation>
 <translation id="3341303451326249809">スクリーンショットをキャプチャしました</translation>
 <translation id="334252345105450327">スクリーンショットを撮って</translation>
 <translation id="3351879221545518001">現在、画面をキャストしています。</translation>
@@ -727,6 +726,7 @@
 <translation id="6816797338148849397">選択した項目に関連する情報があります。上矢印キーでアクセスできます。</translation>
 <translation id="6818242057446442178">1 語戻る</translation>
 <translation id="6820676911989879663">休憩の時間です！</translation>
+<translation id="6837064795450991317">デスクバーを非表示にする</translation>
 <translation id="6850010208275816200">アプリが全画面表示になっています。パスワードの入力を求められたら、まず全画面表示を終了してください。</translation>
 <translation id="6852052252232534364">クリックして有効にする</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> 秒</translation>
@@ -762,6 +762,7 @@
 <translation id="7076293881109082629">ログイン中</translation>
 <translation id="7088960765736518739">スイッチ アクセス</translation>
 <translation id="7098389117866926363">USB-C デバイス（背面左のポート）</translation>
+<translation id="7106330611027933926">デスクバーを表示する</translation>
 <translation id="7118268675952955085">スクリーンショット</translation>
 <translation id="7131634465328662194">制限時間になると自動的にログアウトします。</translation>
 <translation id="7143207342074048698">接続中</translation>
@@ -806,6 +807,7 @@
 <translation id="7466449121337984263">センサーをタッチしてください</translation>
 <translation id="7473891865547856676">スキップ</translation>
 <translation id="7477793887173910789">音楽、動画、その他のメディアを操作します</translation>
+<translation id="7482097454533720217">テキストを右クリックまたは長押しすると、定義、翻訳、単位変換を確認できます。</translation>
 <translation id="7483025031359818980">選択領域を全画面に設定しました</translation>
 <translation id="7486227320194954040">マーカーツールを折りたたむ</translation>
 <translation id="7497767806359279797">言語とキーボードを選択</translation>
@@ -982,6 +984,7 @@
 <translation id="8843682306134542540">画面の向きの固定を切り替えます。<ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">PIN またはパスワードはまだ確認されていません。注: パスワードを最近変更した場合は、古いパスワードを使用してください。新しいパスワードはログアウトした後に適用されます。</translation>
+<translation id="8863888432376731307">「<ph name="QUERY" />」の <ph name="INTENT" /> の取得など</translation>
 <translation id="8870509716567206129">アプリで分割画面がサポートされていません。</translation>
 <translation id="8871580645200179206">ダークテーマを切り替えます。<ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">未接続</translation>

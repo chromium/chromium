@@ -325,6 +325,7 @@ Vyhľadávanie spustíte pridržaním ľubovoľného slova. Spresníte ho výber
 <translation id="305593374596241526">Poloha je vypnutá. Zapnite ju v <ph name="BEGIN_LINK" />Nastaveniach Androidu<ph name="END_LINK" />.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> záložka}few{<ph name="BOOKMARKS_COUNT_MANY" /> záložky}many{<ph name="BOOKMARKS_COUNT_MANY" /> bookmarks}other{<ph name="BOOKMARKS_COUNT_MANY" /> záložiek}}</translation>
 <translation id="3062802207422175757">Články o vašich záujmoch v Chrome</translation>
+<translation id="3066573403916685335">Presunúť nadol</translation>
 <translation id="3070005020161560471">Automaticky prekladať</translation>
 <translation id="3091010850649238832">Zobraziť obsah schránky</translation>
 <translation id="3098745985164956033">Niektoré obrázky sa na zlepšovanie popisov pre vás odosielajú Googlu</translation>
@@ -454,6 +455,7 @@ Na vývoji technológií Privacy Sandbox sa stále aktívne pracuje a je k dis
 <translation id="3962957115499249330">Keď sa toto sťahovanie cez Wi-Fi začne, zobrazí sa vám upozornenie.</translation>
 <translation id="3963007978381181125">Šifrovanie pomocou prístupovej frázy nezahŕňa spôsoby platby a adresy zo služby Google Pay. Šifrované údaje si môže prečítať iba používateľ s prístupovou frázou. Prístupová fráza sa neodosiela do Googlu a nie je na Googli uložená. Ak ju zabudnete alebo toto nastavenie budete chcieť zmeniť, bude nutné synchronizáciu resetovať. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome nemôže skontrolovať heslá</translation>
+<translation id="3969863827134279083">Presunúť nahor</translation>
 <translation id="3974987681202239636"><ph name="APP_NAME" /> sa otvorí v Chrome. Pokračovaním vyjadrujete súhlas so <ph name="BEGIN_LINK1" />zmluvnými podmienkami spoločnosti Google<ph name="END_LINK1" /> a <ph name="BEGIN_LINK2" />dodatočnými zmluvnými podmienkami prehliadača Google Chrome a systému Chrome OS<ph name="END_LINK2" />. Platí aj <ph name="BEGIN_LINK3" />oznámenie o ochrane súkromia pre účty Google spravované pomocou aplikácie Family Link<ph name="END_LINK3" />.</translation>
 <translation id="397583555483684758">Synchronizácia prestala fungovať</translation>
 <translation id="3976396876660209797">Odstráňte túto skratku a znova ju vytvorte</translation>

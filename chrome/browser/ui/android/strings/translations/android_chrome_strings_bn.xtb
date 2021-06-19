@@ -325,6 +325,7 @@
 <translation id="305593374596241526">লোকেশনটি বন্ধ, <ph name="BEGIN_LINK" />Android সেটিংস<ph name="END_LINK" /> থেকে এটি চালু করুন।</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" />টি বুকমার্ক}one{<ph name="BOOKMARKS_COUNT_MANY" />টি বুকমার্ক}other{<ph name="BOOKMARKS_COUNT_MANY" />টি বুকমার্ক}}</translation>
 <translation id="3062802207422175757">Chrome-এ আপনি যেসব নিবন্ধগুলি পড়তে পছন্দ করেন</translation>
+<translation id="3066573403916685335">নিচে যান</translation>
 <translation id="3070005020161560471">অটোমেটিক অনুবাদ</translation>
 <translation id="3091010850649238832">ক্লিপবোর্ডের কন্টেন্ট দেখান</translation>
 <translation id="3098745985164956033">আপনার জন্য ছবির বিবরণ আরও উন্নত করতে কিছু ছবি Google-কে পাঠানো হয়</translation>
@@ -455,6 +456,7 @@
 আপনার পাসফ্রেজ আছে এমন কেউই শুধু আপনার এনক্রিপ্ট করা ডেটা পড়তে পারবেন। 
 পাসফ্রেজ Google-এ পাঠানো হয় না বা Google তা সংরক্ষণ করে না। পাসফ্রেজ ভুলে গেলে বা এই সেটিং পরিবর্তন করতে চাইলে, আপনাকে সিঙ্ক রিসেট করতে হবে। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome আপনার পাসওয়ার্ড চেক করতে পারছে না</translation>
+<translation id="3969863827134279083">উপরে যান</translation>
 <translation id="3974987681202239636"><ph name="APP_NAME" /> Chrome-এ খুলবে। চালিয়ে যাওয়ার মাধ্যমে, আপনি <ph name="BEGIN_LINK1" />Google-এর পরিষেবার শর্তাবলী<ph name="END_LINK1" /> এবং <ph name="BEGIN_LINK2" />Google Chrome ও Chrome OS-এর পরিষেবার অতিরিক্ত শর্তাবলী<ph name="END_LINK2" /> মেনে নিচ্ছেন। তাছাড়া, এর সাথে <ph name="BEGIN_LINK3" />Family Link-এর মাধ্যমে ম্যানেজ করা Google অ্যাকাউন্টের গোপনীয়তা বিজ্ঞপ্তিও<ph name="END_LINK3" /> প্রযোজ্য হবে।</translation>
 <translation id="397583555483684758">সিঙ্ক কাজ করা বন্ধ করে দিয়েছে</translation>
 <translation id="3976396876660209797">এই শর্টকাটটি সরিয়ে নতুন করে তৈরি করুন</translation>

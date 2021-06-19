@@ -290,7 +290,6 @@
 <translation id="3307642347673023554">لیپ ٹاپ وضح میں سوئچ کیا</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> اب بھی بعد میں سائن ان کر سکتا ہے۔</translation>
 <translation id="3321628682574733415">والدین کا غلط کوڈ</translation>
-<translation id="332587331255250389">براہ کرم بیٹری تبدیل کریں</translation>
 <translation id="3341303451326249809">اسکرین شاٹ کیپچر ہو گیا</translation>
 <translation id="334252345105450327">ایک اسکرین شاٹ لیں</translation>
 <translation id="3351879221545518001">آپ فی الحال اسکرین کاسٹ کر رہے ہیں۔</translation>
@@ -727,6 +726,7 @@
 <translation id="6816797338148849397">آپ کے انتخاب سے متعلقہ معلومات دستیاب ہے۔ رسائی حاصل کرنے کے لئے اوپر تیر کے نشان کی کلید کا استعمال کریں۔</translation>
 <translation id="6818242057446442178">ایک لفظ پیچھے جائیں</translation>
 <translation id="6820676911989879663">تھوڑا وقفہ لیں!</translation>
+<translation id="6837064795450991317">ڈیسک بار چھپائیں</translation>
 <translation id="6850010208275816200">آپ کی موجودہ ایپ فُل اسکرین وضع میں ہے۔ اگر ایپ آپ کے پاس ورڈ کا مطالبہ کرتی ہے تو پہلے فُل اسکرین وضع سے باہر نکلیں۔</translation>
 <translation id="6852052252232534364">کلک برائے فعال</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> سیکنڈ</translation>
@@ -762,6 +762,7 @@
 <translation id="7076293881109082629">سائن ان کیا جا رہا ہے</translation>
 <translation id="7088960765736518739">سوئچ رسائی</translation>
 <translation id="7098389117866926363">‏USB-C آلہ (پیچھے موجود بایاں پورٹ)</translation>
+<translation id="7106330611027933926">ڈیسک بار دکھائیں</translation>
 <translation id="7118268675952955085">اسکرین شاٹ</translation>
 <translation id="7131634465328662194">آپ خود بخود سائن آؤٹ ہو جائیں گے۔</translation>
 <translation id="7143207342074048698">منسلک ہو رہا ہے</translation>
@@ -805,6 +806,7 @@
 <translation id="7466449121337984263">براہ کرم سینسر کو ٹچ کریں</translation>
 <translation id="7473891865547856676">نہیں شکریہ</translation>
 <translation id="7477793887173910789">اپنی موسیقی، ویڈیوز اور بھی بہت کچھ کنٹرول کریں</translation>
+<translation id="7482097454533720217">جب آپ دائیں طرف کلک کرنے یا ٹیکسٹ کو ٹچ کریں اور دبائے رکھیں تو تعریفیں، ترجمے یونٹ کی تبدیلیاں حاصل کریں۔</translation>
 <translation id="7483025031359818980">فُل اسکرین کو بطور سورس سیٹ کیا گیا</translation>
 <translation id="7486227320194954040">مارکر ٹولز کو سکیڑیں</translation>
 <translation id="7497767806359279797">زبان اور کی بورڈ منتخب کریں</translation>
@@ -981,6 +983,7 @@
 <translation id="8843682306134542540">گردش لاک ٹوگل کریں۔ <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">‏آپ کے PIN یا پاس ورڈ کی توثیق ابھی بھی نہیں کی جا سکی۔ نوٹ: اگر آپ نے حال ہی میں اپنا پاس ورڈ تبدیل کیا ہے تو اپنا پرانا پاس ورڈ استعمال کریں۔ آپ کے سائن آؤٹ ہونے کے بعد آپ کا نیا پاس ورڈ لاگو ہوگا۔</translation>
+<translation id="8863888432376731307">"<ph name="QUERY" />" اور مزید کے لیے <ph name="INTENT" /> حاصل کریں</translation>
 <translation id="8870509716567206129">ایپ اسپلٹ اسکرین کو سپورٹ نہیں کرتی ہے۔</translation>
 <translation id="8871580645200179206">گہری تھیم کو ٹوگل کریں۔ <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">منسلک نہیں</translation>

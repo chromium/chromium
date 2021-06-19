@@ -1093,11 +1093,6 @@ Si estableces esta política, el usuario no podrá anular el valor.
 
 Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pero el usuario podrá controlarla.</translation>
 <translation id="2415715982424988916">Explorar (compatible a partir de la versión 91)</translation>
-<translation id="241739814668386424"> Si se inhabilita esta política, el usuario no podrá conectar por completo su dispositivo periférico Thunderbolt/USB4 mediante la tunelización PCIe.
-
-      Si se habilita, el usuario podrá conectar por completo su dispositivo periférico Thunderbolt/USB4 mediante la tunelización PCIe.
-
-      De forma predeterminada, esta política está inhabilitada.</translation>
 <translation id="2421677964966613267">Esta política dejó de estar disponible en M88; Chrome ya no admite Flash. Si estableces la política, podrás especificar una lista de patrones de URL que indiquen los sitios que no pueden ejecutar el complemento <ph name="FLASH_PLUGIN_NAME" />.
 
       Si no la estableces, se aplicará <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> (si se establece) para todos los sitios. De lo contrario, se aplicará la configuración personal del usuario.
@@ -3257,7 +3252,6 @@ Si la estableces como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificac
           Si no la estableces, la función de resaltar el cursor estará inicialmente inhabilitada en la pantalla de acceso, pero el usuario podrá habilitarla en cualquier momento.</translation>
 <translation id="5279539586558702228">La hora a la que el dispositivo funcionará con corriente alterna (según la zona horaria local del dispositivo).</translation>
 <translation id="5283457834853986457">Inhabilitar el buscador de complementos (obsoleto)</translation>
-<translation id="5285315763984334157">Bloquear descargas con contenido malicioso</translation>
 <translation id="5288772341821359899">Si se establece la política, el intervalo de puertos UDP que usa WebRTC está restringido al intervalo de puertos especificado (extremos incluidos).
 
       Si la política no se establece, se establece con un intervalo de puertos no válido o se deja como una cadena vacía, WebRTC puede usar cualquier puerto UDP local disponible.</translation>

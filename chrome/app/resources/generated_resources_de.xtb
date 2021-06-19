@@ -2518,6 +2518,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
 <translation id="3739254215541673094"><ph name="APPLICATION" /> öffnen?</translation>
 <translation id="3742055079367172538">Screenshot erstellt</translation>
+<translation id="3742235229730461951">Koreanische Tastaturbelegung</translation>
 <translation id="3742666961763734085">Keine Organisationseinheit mit diesem Namen vorhanden. Versuchen Sie es noch einmal.</translation>
 <translation id="3744111561329211289">Hintergrundsynchronisierung</translation>
 <translation id="3747077776423672805">Wenn Sie eine App entfernen möchten, gehen Sie zu "Einstellungen" &gt; "Google Play Store" &gt; "Android-Einstellungen verwalten" &gt; "Apps" oder rufen Sie den Anwendungsmanager auf. Tippen Sie dann auf die App, die Sie deinstallieren möchten, und wählen Sie "Deinstallieren" oder "Deaktivieren" aus. Möglicherweise müssen Sie nach rechts oder links wischen, um die App zu finden.</translation>
@@ -4673,7 +4674,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6186394437969115158">Websites zeigen normalerweise Werbung an, um Inhalte oder Dienste kostenlos anbieten zu können. Allerdings gibt es auch Websites, auf denen bekanntermaßen aufdringliche oder irreführende Werbung erscheint.</translation>
 <translation id="6195005504600220730">Informationen zu Ihrem Browser, Betriebssystem und Gerät abrufen</translation>
 <translation id="6195693561221576702">Dieses Gerät kann nicht im Offlinedemomodus eingerichtet werden.</translation>
-<translation id="6195724942939841102">Nicht wiederherstellen</translation>
 <translation id="6196640612572343990">Drittanbieter-Cookies blockieren</translation>
 <translation id="6196854373336333322">Die Erweiterung <ph name="EXTENSION_NAME" /> hat die Kontrolle über Ihre Proxyeinstellungen übernommen. Das bedeutet, dass sie sämtliche Onlineaktivitäten ändern, abbrechen oder überwachen kann. Wenn Sie nicht sicher sind, wie es zu dieser Änderung gekommen ist, war sie wahrscheinlich nicht beabsichtigt.</translation>
 <translation id="6198102561359457428">Abmelden und dann erneut anmelden...</translation>

@@ -325,6 +325,7 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="305593374596241526">Đã tắt vị trí; hãy bật vị trí trong mục <ph name="BEGIN_LINK" />Cài đặt Android<ph name="END_LINK" />.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> dấu trang}other{<ph name="BOOKMARKS_COUNT_MANY" /> dấu trang}}</translation>
 <translation id="3062802207422175757">Các bài viết về chủ đề mà bạn quan tâm trên Chrome</translation>
+<translation id="3066573403916685335">Di chuyển xuống</translation>
 <translation id="3070005020161560471">Tự động dịch</translation>
 <translation id="3091010850649238832">Hiện các nội dung của bảng nhớ tạm</translation>
 <translation id="3098745985164956033">Một số hình ảnh được gửi đến Google để cải thiện nội dung mô tả cho bạn</translation>
@@ -362,6 +363,7 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="3295530008794733555">Duyệt web nhanh hơn. Sử dụng ít dữ liệu hơn.</translation>
 <translation id="3297344142967351106">Trợ lý thoại</translation>
 <translation id="3303414029551471755">Tiếp tục tải xuống nội dung?</translation>
+<translation id="333367884906698540">Bluetooth sẽ tắt sau khi bạn xong việc</translation>
 <translation id="3334729583274622784">Thay đổi đuôi tệp?</translation>
 <translation id="3341058695485821946">Xem lượng dữ liệu bạn đã tiết kiệm được</translation>
 <translation id="3341262203274374114">Không thể ngừng theo dõi. Đã xảy ra lỗi.</translation>
@@ -453,6 +455,7 @@ Hộp cát về quyền riêng tư vẫn đang trong giai đoạn phát triển 
 <translation id="3962957115499249330">Bạn sẽ thấy một thông báo khi tệp này bắt đầu tải xuống qua Wi-Fi.</translation>
 <translation id="3963007978381181125">Việc mã hóa cụm mật khẩu không bao gồm địa chỉ và phương thức thanh toán từ Google Pay. Chỉ người có cụm mật khẩu của bạn mới có thể đọc dữ liệu mã hóa. Cụm mật khẩu này sẽ không được gửi đến hay lưu trữ tại Google. Nếu quên cụm mật khẩu hoặc muốn thay đổi tùy chọn cài đặt này, thì bạn cần đặt lại tính năng đồng bộ hóa. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome không thể kiểm tra mật khẩu của bạn</translation>
+<translation id="3969863827134279083">Di chuyển lên</translation>
 <translation id="3974987681202239636"><ph name="APP_NAME" /> sẽ mở trong Chrome. Bằng việc tiếp tục, bạn đồng ý với <ph name="BEGIN_LINK1" />Điều khoản dịch vụ của Google<ph name="END_LINK1" /> cũng như <ph name="BEGIN_LINK2" />Điều khoản dịch vụ bổ sung của Google Chrome và Chrome OS<ph name="END_LINK2" />. Bạn sẽ phải tuân thủ cả <ph name="BEGIN_LINK3" />Thông báo về quyền riêng tư cho Tài khoản Google được quản lý bằng Family Link<ph name="END_LINK3" />.</translation>
 <translation id="397583555483684758">Đồng bộ hóa đã ngừng hoạt động</translation>
 <translation id="3976396876660209797">Xóa và tạo lại lối tắt này</translation>
@@ -1036,6 +1039,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7641339528570811325">Xóa dữ liệu duyệt web…</translation>
 <translation id="764170292089748542">Chrome sẽ không lưu nhật ký duyệt web khi bạn chọn duyệt web ở chế độ riêng tư. Bạn vẫn có thể dùng dấu trang để truy cập vào các trang web yêu thích.</translation>
 <translation id="7646772052135772216">Tính năng đồng bộ hóa mật khẩu hiện không hoạt động</translation>
+<translation id="7655900163790317559">Đang bật Bluetooth…</translation>
 <translation id="7658239707568436148">Hủy</translation>
 <translation id="7665369617277396874">Thêm tài khoản</translation>
 <translation id="766587987807204883">Các bài viết xuất hiện ở đây và bạn có thể đọc ngay cả khi không có kết nối mạng</translation>

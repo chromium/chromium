@@ -1771,7 +1771,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7481312909269577407">Frem</translation>
 <translation id="7485870689360869515">Ingen data ble funnet.</translation>
 <translation id="7495528107193238112">Dette innholdet er blokkert. Kontakt nettstedseieren for å løse problemet.</translation>
-<translation id="7498193950643227031">Hvis du endrer størrelsen på appen, kan det medføre uventet oppførsel. Du kan nå begrense muligheten til å endre størrelse på apper i <ph name="SETTINGS" />.</translation>
 <translation id="7503664977220660814">Du har nettopp skrevet inn passordet ditt på et villedende nettsted. Chromium anbefaler at du sjekker de lagrede passordene dine for <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> og andre nettsteder der du bruker dette passordet, nå.</translation>
 <translation id="7508255263130623398">Den returnerte enhets-ID-en for regelen er tom eller samsvarer ikke med den faktiske enhets-ID-en</translation>
 <translation id="7508870219247277067">Avokadogrønn</translation>

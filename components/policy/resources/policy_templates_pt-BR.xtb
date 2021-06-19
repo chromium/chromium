@@ -1091,11 +1091,6 @@ Se esta política for definida, o usuário não poderá modificar o valor.
 
 Se esta política não for definida, a tela de privacidade ficará desativada inicialmente, mas poderá ser controlada pelo usuário.</translation>
 <translation id="2415715982424988916">Explorar (compatível desde a versão 91)</translation>
-<translation id="241739814668386424"> Se esta política for desativada, não será possível conectar completamente um dispositivo periférico Thunderbolt/USB4 usando o encapsulamento de PCIe.
-
-      Se esta política for ativada, será possível conectar completamente um dispositivo periférico Thunderbolt/USB4 usando o encapsulamento de PCIe.
-
-      Esta política fica desativada por padrão.</translation>
 <translation id="2421677964966613267">Esta política foi suspensa na versão M88. O Flash não é mais compatível com o Chrome. Se a política for definida, será possível configurar uma lista de padrões de URL que especifica os sites que não podem executar o plug-in <ph name="FLASH_PLUGIN_NAME" />.
 
       Se a política não tiver definição, <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> será aplicada a todos os sites, se estiver definida. Caso contrário, a configuração pessoal do usuário será aplicada.
@@ -3250,7 +3245,6 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
           Se esta política não for definida, o destaque de cursor ficará inicialmente desativado na tela de login, mas poderá ser ativado pelo usuário a qualquer momento.</translation>
 <translation id="5279539586558702228">Horário em que o dispositivo funcionará usando energia de corrente alternada, interpretado no fuso horário local do dispositivo.</translation>
 <translation id="5283457834853986457">Desativar o localizador de plug-ins (uso suspenso)</translation>
-<translation id="5285315763984334157">Bloqueia downloads maliciosos</translation>
 <translation id="5288772341821359899">Se a política for configurada, o alcance da porta UDP usado por WebRTC será restrito ao intervalo de porta especificado (endpoints inclusos).
 
       Se a política não for configurada ou for definida para a string em branco ou um alcance de porta inválido, o WebRTC terá permissão para usar qualquer porta UDP local disponível.</translation>

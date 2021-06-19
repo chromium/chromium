@@ -290,7 +290,6 @@
 <translation id="3307642347673023554">ወደ የላፕቶፕ ሁነታ ተቀይሯል</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> አሁንም በኋላ በመለያ መግባት ይችላሉ።</translation>
 <translation id="3321628682574733415">ትክክል ያልሆነ የወላጅ ኮድ</translation>
-<translation id="332587331255250389">እባክዎ ባትሪውን ይተኩት</translation>
 <translation id="3341303451326249809">ቅጽበታዊ ገጽ እይታ ተቀርጿል</translation>
 <translation id="334252345105450327">ቅጽበታዊ ገጽ እይታ ያንሱ</translation>
 <translation id="3351879221545518001">አሁን ላይ ማያ ገጽን cast እያደረጉ ነው።</translation>
@@ -727,6 +726,7 @@
 <translation id="6816797338148849397">ከሚገኘው የእርስዎ ምርጫ ጋር የተገናኘ መረጃ ለመድረስ የላይ ቀስት ቁልፍን ይጠቀሙ።</translation>
 <translation id="6818242057446442178">በቃል ይመለሱ</translation>
 <translation id="6820676911989879663">እረፍት ይውሰዱ!</translation>
+<translation id="6837064795450991317">የዴስክ አሞሌን ደብቅ</translation>
 <translation id="6850010208275816200">የአሁኑ መተግበሪያዎ ሙሉ ማያ ገጽ ነው። መተግበሪያው የይለፍ ቃልዎን ከጠየቀ መጀመሪያ ከሙሉ ማያ ገጽ ይውጡ።</translation>
 <translation id="6852052252232534364">ለማግበር ጠቅ ያድርጉ</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> ሰከንድ</translation>
@@ -762,6 +762,7 @@
 <translation id="7076293881109082629">በመግባት ላይ</translation>
 <translation id="7088960765736518739">የመዳረሻ መቀየሪያ</translation>
 <translation id="7098389117866926363">USB-C መሣሪያ (የግራ ወደብ ከኋላ በኩል)</translation>
+<translation id="7106330611027933926">የዴስክ አሞሌን አሳይ</translation>
 <translation id="7118268675952955085">ቅጽበታዊ ገጽ እይታ</translation>
 <translation id="7131634465328662194">በራስሰር ዘግተው እንዲወጡ ይደረጋሉ።</translation>
 <translation id="7143207342074048698">በመያያዝ ላይ</translation>
@@ -805,6 +806,7 @@
 <translation id="7466449121337984263">እባክዎ ዳሳሹን ይንኩ</translation>
 <translation id="7473891865547856676">አይ፣ አመሰግናለሁ</translation>
 <translation id="7477793887173910789">የእርስዎን ሙዚቃ፣ ቪዲዮዎች እና ተጨማሪ ነገሮች ይቆጣጠሩ</translation>
+<translation id="7482097454533720217">ጽሑፍን በቀኝ ጠቅ ሲያደርጉ ወይም ነክተው ሲይዙ ፍቺዎችን፣ ትርጉሞችን ወይም የአሃድ ልወጣዎችን ያግኙ።</translation>
 <translation id="7483025031359818980">የምርጫ አካባቢ ወደ ሙሉ ማያ ገጽ ተቀናብሯል</translation>
 <translation id="7486227320194954040">የምልክት ማድረጊያ መሣሪያዎችን ሰብስብ</translation>
 <translation id="7497767806359279797">ቋንቋ እና ቁልፍ ሰሌዳን ይምረጡ</translation>
@@ -981,6 +983,7 @@
 <translation id="8843682306134542540">የማሽከርከሪያ ቁልፍን አብራ ወይም አጥፋ። <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">የእርስዎ ፒን ወይም ይለፍ ቃል አሁንም ሊረጋገጥ አልቻለም። ማሳሰቢያ፦ በቅርቡ የይለፍ ቃልዎን ከቀየሩ፣ የድሮውን የይለፍ ቃል ይጠቀሙ። አዲስ የይለፍ ቃልዎ የሚተገበረው ሲወጡ ነው።</translation>
+<translation id="8863888432376731307"><ph name="INTENT" />ን ለ«<ph name="QUERY" />» እና ተጨማሪ ያግኙ</translation>
 <translation id="8870509716567206129">መተግበሪያው የተከፈለ ማያ ገጽን አይደግፍም።</translation>
 <translation id="8871580645200179206">ጠቆር ያለ ገጽታን ቀያይር። <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">አልተገናኘም</translation>

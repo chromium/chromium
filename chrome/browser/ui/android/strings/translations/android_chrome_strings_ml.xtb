@@ -325,6 +325,7 @@
 <translation id="305593374596241526">ലൊക്കേഷൻ ഓഫാണ്; <ph name="BEGIN_LINK" />Android ക്രമീകരണത്തിൽ<ph name="END_LINK" /> അത് ഓണാക്കുക.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> ബുക്ക്‌മാർക്ക്}other{<ph name="BOOKMARKS_COUNT_MANY" /> ബുക്ക്‌മാർക്കുകൾ}}</translation>
 <translation id="3062802207422175757">Chrome-ൽ നിങ്ങൾക്ക് താൽപ്പര്യമുള്ള വിഷയങ്ങളിലെ ലേഖനങ്ങൾ കാണൂ</translation>
+<translation id="3066573403916685335">താഴേക്ക് നീക്കുക</translation>
 <translation id="3070005020161560471">സ്വയമേവ വിവർത്തനം ചെയ്യുക</translation>
 <translation id="3091010850649238832">ക്ലിപ്പ്ബോർഡിലെ ഉള്ളടക്കങ്ങൾ കാണിക്കുക</translation>
 <translation id="3098745985164956033">മെച്ചപ്പെട്ട വിവരണങ്ങൾ നിങ്ങൾക്ക് നൽകുന്നതിന് ചില ചിത്രങ്ങൾ Google-ന് അയയ്ക്കുന്നു</translation>
@@ -454,6 +455,7 @@
 <translation id="3962957115499249330">വൈഫൈയിൽ ഈ ഡൗൺലോഡ് ആരംഭിക്കുമ്പോൾ നിങ്ങൾ ഒരു അറിയിപ്പ് കാണും.</translation>
 <translation id="3963007978381181125">പാസ്‌ഫ്രെയ്‌സ് എൻക്രിപ്ഷനിൽ, Google Pay-ൽ നിന്നുള്ള പേയ്മെന്‍റ് രീതികളും വിലാസങ്ങളും ഉൾപ്പെടുന്നില്ല. നിങ്ങളുടെ പാസ്‌ഫ്രെയ്‌സുള്ള വ്യക്തിക്ക് മാത്രമേ എൻക്രി‌പ്‌റ്റ് ചെയ്‌ത ഡാറ്റ വായിക്കാനാവൂ. പാസ്‌ഫ്രെയ്‌സ് Google-ലേക്ക് അയയ്‌ക്കുകയോ സംഭരിക്കുകയോ ചെയ്യുന്നില്ല. പാസ്‌ഫ്രെയ്‌സ് മറന്നുപോവുകയോ ഈ ക്രമീകരണം മാറ്റുകയോ ചെയ്യണമെങ്കിൽ, സമന്വയം പുനഃക്രമീകരിക്കേണ്ടി വരും. <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome-ന് നിങ്ങളുടെ പാസ്‌വേഡുകൾ പരിശോധിക്കാനാകുന്നില്ല</translation>
+<translation id="3969863827134279083">മുകളിലേക്ക് നീക്കുക</translation>
 <translation id="3974987681202239636"><ph name="APP_NAME" />, Chrome-ൽ തുറക്കും. തുടരുന്നതിലൂടെ, നിങ്ങൾ <ph name="BEGIN_LINK1" />Google സേവന നിബന്ധനകളും<ph name="END_LINK1" /> <ph name="BEGIN_LINK2" />Google Chrome, Chrome OS അധിക സേവന നിബന്ധനകളും<ph name="END_LINK2" /> അംഗീകരിക്കുന്നു. <ph name="BEGIN_LINK3" />Family Link ഉപയോഗിച്ച് മാനേജ് ചെയ്യുന്ന Google അക്കൗണ്ടുകൾക്കുള്ള സ്വകാര്യതാ കുറിപ്പും<ph name="END_LINK3" /> ബാധകമാണ്.</translation>
 <translation id="397583555483684758">'സമന്വയം' പ്രവർത്തനം നിർത്തി</translation>
 <translation id="3976396876660209797">ഈ കുറുക്കുവഴി നീക്കംചെയ്‌ത് പുനസൃഷ്‌ടിക്കുക</translation>

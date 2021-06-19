@@ -325,6 +325,7 @@ A kereséshez tartsa nyomva a kívánt szót. A keresés finomításához válas
 <translation id="305593374596241526">A Helyadatok szolgáltatás ki van kapcsolva; bekapcsolhatja az <ph name="BEGIN_LINK" />Android-beállításokban<ph name="END_LINK" />.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> könyvjelző}other{<ph name="BOOKMARKS_COUNT_MANY" /> könyvjelző}}</translation>
 <translation id="3062802207422175757">Az érdeklődési köreihez kapcsolódó cikkek a Chrome-ban</translation>
+<translation id="3066573403916685335">Le</translation>
 <translation id="3070005020161560471">Automatikusan fordított nyelvek</translation>
 <translation id="3091010850649238832">Vágólap tartalmának mutatása</translation>
 <translation id="3098745985164956033">A leírások pontosítása érdekében a böngésző egyes képeket elküld a Google-nak</translation>
@@ -454,6 +455,7 @@ A Privacy Sandbox még mindig aktív fejlesztés alatt áll, és csak egyes rég
 <translation id="3962957115499249330">Értesítést kap, amikor ez a letöltés elindul Wi-Fi-hálózaton.</translation>
 <translation id="3963007978381181125">Az összetett jelszavas titkosítás nem tartalmazza a Google Payben megadott fizetési módokat és címeket. Titkosított adatait csak az olvashatja el, aki rendelkezik az Ön összetett jelszavával. Az összetett jelszót a Google nem kapja meg, és nem is tárolja. Ha elfelejtette összetett jelszavát, vagy módosítaná ezt a beállítást, alaphelyzetbe kell állítania a szinkronizálást. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="3969142555815019568">A Chrome nem tudja ellenőrizni a jelszavakat</translation>
+<translation id="3969863827134279083">Fel</translation>
 <translation id="3974987681202239636">A(z) <ph name="APP_NAME" /> a Chrome-ban fog megnyílni. A továbblépéssel elfogadja a <ph name="BEGIN_LINK1" />Google Általános Szerződési Feltételeket<ph name="END_LINK1" />, valamint <ph name="BEGIN_LINK2" />A Google Chrome és a Chrome OS Kiegészítő Általános Szerződési Feltételeit<ph name="END_LINK2" />. A <ph name="BEGIN_LINK3" />Family Link szolgáltatással kezelt Google-fiókokra vonatkozó adatvédelmi közlemény<ph name="END_LINK3" /> is érvényben van.</translation>
 <translation id="397583555483684758">A szinkronizálás leállt</translation>
 <translation id="3976396876660209797">A gyorsparancs eltávolítása és újbóli létrehozása</translation>

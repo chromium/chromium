@@ -325,6 +325,7 @@
 <translation id="305593374596241526">တည်နေရာကို ပိတ်ထားသည်၊ ၎င်းကို <ph name="BEGIN_LINK" />Android ဆက်တင်များ<ph name="END_LINK" /> တွင် ဖွင့်ပါ။</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{လိပ်စာ <ph name="BOOKMARKS_COUNT_ONE" /> ခု}other{လိပ်စာ <ph name="BOOKMARKS_COUNT_MANY" /> ခု}}</translation>
 <translation id="3062802207422175757">Chrome ရှိ သင်စိတ်ဝင်စားသော ဆောင်းပါးများ</translation>
+<translation id="3066573403916685335">အောက်သို့ရွှေ့</translation>
 <translation id="3070005020161560471">အလိုအလျောက် ဘာသာပြန်ပါ</translation>
 <translation id="3091010850649238832">ကလစ်ဘုတ်အကြောင်းအရာများကို ပြရန်</translation>
 <translation id="3098745985164956033">သင့်အတွက် ရှင်းလင်းချက်များ ပိုကောင်းမွန်စေရန် ပုံအချို့ကို Google သို့ ပို့သည်</translation>
@@ -454,6 +455,7 @@
 <translation id="3962957115499249330">ဤဒေါင်းလုဒ် Wi-Fi တွင် စတင်သောအခါ အကြောင်းကြားချက် ရရှိပါမည်။</translation>
 <translation id="3963007978381181125">စကားဝှက်စာ အသွင်ဝှက်ခြင်းတွင် ငွေပေးချေနည်းလမ်းများနှင့် Google Pay မှ လိပ်စာများ မပါဝင်ပါ။ သင့်စကားဝှက်ရှိသူသာ သင်အသွင်ဝှက်ထားသည့် ဒေတာများကို ဖတ်နိုင်မည် ဖြစ်သည်။ စကားဝှက်ကို Google သို့ပို့ခြင်း သို့မဟုတ် သိမ်းဆည်းထားခြင်း မရှိပါ။ သင့်စကားဝှက်ကို မေ့သွားလျှင် သို့မဟုတ် ဤဆက်တင်ကို ပြောင်းလဲလိုလျှင် စင့်ခ်လုပ်ခြင်းကို ပြင်ဆင်သတ်မှတ်ရန် လိုအပ်ပါသည်။ <ph name="BEGIN_LINK" />ပိုမို လေ့လာရန်<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome က သင့်စကားဝှက်များကို စစ်ဆေး၍မရပါ</translation>
+<translation id="3969863827134279083">အပေါ်ရွှေ့</translation>
 <translation id="3974987681202239636"><ph name="APP_NAME" /> ကို Chrome တွင် ဖွင့်ပါမည်။ ရှေ့ဆက်ခြင်းအားဖြင့် သင်သည် <ph name="BEGIN_LINK1" />Google ဝန်ဆောင်မှုစည်းမျဉ်းများ<ph name="END_LINK1" /> နှင့် <ph name="BEGIN_LINK2" />Google Chrome နှင့် Chrome OS ထပ်တိုး ဝန်ဆောင်မှုစည်းမျဉ်းများ<ph name="END_LINK2" /> ကို သဘောတူရာရောက်သည်။ <ph name="BEGIN_LINK3" />Family Link ဖြင့် ကြီးကြပ်ထားသည့် Google Account များအတွက် ပုဂ္ဂိုလ်ရေးဆိုင်ရာ ကြေညာချက်<ph name="END_LINK3" /> လည်း အကျုံးဝင်သည်။</translation>
 <translation id="397583555483684758">စင့်ခ်ပြုလုပ်ခြင်း ရပ်တန့်သွားပါပြီ</translation>
 <translation id="3976396876660209797">ဤဖြတ်လမ်းလင့်ခ်ကို ဖယ်ရှားပြီး အသစ်ပြန်လုပ်ပါ</translation>

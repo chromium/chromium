@@ -376,6 +376,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2276057643614339130">Cơ sở in</translation>
 <translation id="2277103315734023688">Tua tiến</translation>
 <translation id="2283340219607151381">Lưu và điền địa chỉ</translation>
+<translation id="2283447177162560884">Đã xóa "<ph name="PAGE_TITLE" />"</translation>
 <translation id="2288422996159078444">Mọi thông tin bạn nhập, mọi trang bạn xem hoặc mọi hoạt động khác trên web đều sẽ bị theo dõi. Nội dung trên các trang web có thể bị thay đổi mà bạn không hề hay biết.</translation>
 <translation id="2289385804009217824">Cắt bỏ</translation>
 <translation id="2292556288342944218">Quyền truy cập Internet của bạn bị chặn</translation>
@@ -502,6 +503,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="277133753123645258">Phương thức giao hàng</translation>
 <translation id="277499241957683684">Thiếu hồ sơ thiết bị</translation>
 <translation id="2775884851269838147">Trang in đầu tiên</translation>
+<translation id="2778854133681684171">Bạn có thể dùng thiết bị của mình để nhanh chóng xác minh danh tính trong lần mua hàng tiếp theo qua phương thức thanh toán này.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2784949926578158345">Kết nối đã được đặt lại.</translation>
 <translation id="2792012897584536778">Các quản trị viên của thiết bị này đã thiết lập các chứng chỉ bảo mật có thể cho phép họ xem nội dung của những trang web bạn truy cập.</translation>
@@ -659,6 +661,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3377736046129930310">Dùng phương thức khóa màn hình để xác nhận các thẻ nhanh hơn</translation>
 <translation id="3380365263193509176">Lỗi không xác định</translation>
 <translation id="3380864720620200369">ID ứng dụng khách:</translation>
+<translation id="3381668585148405088">Xác minh giao dịch mua của bạn</translation>
 <translation id="3387261909427947069">Phương thức thanh toán</translation>
 <translation id="3391030046425686457">Địa chỉ giao hàng</translation>
 <translation id="3395827396354264108">Phương thức nhận hàng</translation>
@@ -835,6 +838,10 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
     cho tất cả yêu cầu gửi tới trang web đó. Tuy nhiên, chính sách này hiện không áp dụng được.</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Tài liệu PDF chứa {COUNT} trang}other{Tài liệu PDF chứa {COUNT} trang}}</translation>
 <translation id="4023431997072828269">Vì bạn đang gửi biểu mẫu này bằng đường kết nối không an toàn nên người khác có thể nhìn thấy thông tin của bạn.</translation>
+<translation id="4027177651527820006">Khi bạn bật những tính năng này, dữ liệu của trình duyệt có thể bị mất hoặc
+     sự bảo mật hay quyền riêng tư của bạn có thể bị xâm phạm. Các tính năng được bật sẽ áp dụng cho tất cả
+    những người dùng trình duyệt này. If you are an enterprise admin you should
+    not be using these flags in production.</translation>
 <translation id="4030383055268325496">&amp;Hoàn tác thêm</translation>
 <translation id="4056223980640387499">Màu nâu đỏ</translation>
 <translation id="4058922952496707368">Khóa "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
@@ -1768,7 +1775,6 @@ Thông tin chi tiết bổ sung:
 <translation id="7481312909269577407">Chuyển tiếp</translation>
 <translation id="7485870689360869515">Không tìm thấy dữ liệu.</translation>
 <translation id="7495528107193238112">Nội dung này bị chặn. Hãy liên hệ với chủ sở hữu trang web để khắc phục sự cố.</translation>
-<translation id="7498193950643227031">Ứng dụng có thể không hoạt động như mong đợi khi bị đổi kích thước. Giờ đây, bạn có thể hạn chế khả năng đổi kích thước các ứng dụng trong phần <ph name="SETTINGS" />.</translation>
 <translation id="7503664977220660814">Bạn vừa nhập mật khẩu vào một trang web lừa đảo. Chromium khuyên bạn nên kiểm tra ngay những mật khẩu bạn đã lưu cho <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> và các trang web khác mà bạn sử dụng mật khẩu này.</translation>
 <translation id="7508255263130623398">ID thiết bị thuộc chính sách trả lại trống hoặc không khớp với ID của thiết bị hiện tại</translation>
 <translation id="7508870219247277067">Xanh quả bơ</translation>

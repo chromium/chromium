@@ -14,6 +14,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1052916631016577720">Skanerlash</translation>
 <translation id="1056775291175587022">Tarmoq topilmadi</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="1073899992769346247">Batareyani almashtiring yoki quvvatlang</translation>
 <translation id="108486256082349153">Uyali manzili: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Xayrli kun, <ph name="GIVEN_NAME" /></translation>
 <translation id="109942774857561566">Men zerikdim</translation>
@@ -290,7 +291,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="3307642347673023554">Laptop rejimiga almashildi</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> keyinroq kira oladi.</translation>
 <translation id="3321628682574733415">Ota-ona kodi xato kiritildi</translation>
-<translation id="332587331255250389">Batareyani almashtiring</translation>
 <translation id="3341303451326249809">Skrinshot olindi</translation>
 <translation id="334252345105450327">Skrinshot olish</translation>
 <translation id="3351879221545518001">Hozir ekraningiz translatsiya qilinmoqda.</translation>
@@ -307,6 +307,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="3430396595145920809">Orqaga qaytish uchun oʻngdan suring</translation>
 <translation id="343571671045587506">Eslatmani tahrirlash</translation>
 <translation id="3435967511775410570">Barmoq izi aniqlandi</translation>
+<translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> daq</translation>
 <translation id="3445925074670675829">USB-C qurilma</translation>
 <translation id="3454224730401036106">Siz yanada xavfsizroq tarmoqqa ulandingiz</translation>
@@ -431,6 +432,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="4378551569595875038">Ulanmoqda...</translation>
 <translation id="4379531060876907730">Bular – stilus vositalaringiz</translation>
 <translation id="4389184120735010762">Qadalgan lupa tezkor havolasini bosdingiz. Ishga tushirilsinmi?</translation>
+<translation id="439598569299422042">Pauzada, <ph name="SIZE_INFO" /></translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> yoqilmagan</translation>
 <translation id="4421231901400348175">Ekraningiz boshqaruvini masofaviy yordamchi orqali <ph name="HELPER_NAME" /> bilan ulashish.</translation>
 <translation id="4424159417645388645">Desk 5</translation>

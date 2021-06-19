@@ -1082,11 +1082,6 @@
 
 如果未設定這項政策，系統預設會停用隱私保護畫面，但使用者可以自行變更。</translation>
 <translation id="2415715982424988916">探索 (自 91 版起開始支援)</translation>
-<translation id="241739814668386424"> 如果停用這項政策，使用者將無法透過 PCIe 通道完全連結 Thunderbolt/USB4 周邊裝置。
-
-      如果啟用這項政策，使用者便可透過 PCIe 通道完全連結 Thunderbolt/USB4 周邊裝置。
-
-      這項政策預設為停用。</translation>
 <translation id="2421677964966613267">這項政策已在 M88 版遭到淘汰，Chrome 已不再支援 Flash。你可以透過這項政策設定網址模式清單，用於指定無法執行 <ph name="FLASH_PLUGIN_NAME" /> 外掛程式的網站。
 
       如果未設定這項政策，系統會針對所有網站套用 <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> 政策 (如果已設定)。否則系統會套用使用者的個人設定。
@@ -3218,7 +3213,6 @@
           如果不設定這項政策，系統會在初次顯示登入畫面時停用游標醒目提示功能，但使用者隨時可以啟用。</translation>
 <translation id="5279539586558702228">裝置使用交流電源供電的時間 (根據裝置當地時區)。</translation>
 <translation id="5283457834853986457">停用外掛程式尋找工具 (已淘汰)</translation>
-<translation id="5285315763984334157">封鎖惡意下載作業</translation>
 <translation id="5288772341821359899">如果設定這項政策，系統會將 WebRTC 所使用的 UDP 連接埠範圍限於指定的連接埠區間 (包括端點)。
 
       如果未設定這項政策，或是將這項政策設為空白字串或無效的連接埠範圍，WebRTC 即可使用任何可用的本機 UDP 連接埠。</translation>

@@ -325,6 +325,7 @@ Hae sanaa koskettamalla sitä pitkään. Jos haluat tarkentaa hakuasi, valitse e
 <translation id="305593374596241526">Sijainti on pois päältä. Voit laittaa sen päälle <ph name="BEGIN_LINK" />Android-asetuksista<ph name="END_LINK" />.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> kirjanmerkki}other{<ph name="BOOKMARKS_COUNT_MANY" /> kirjanmerkkiä}}</translation>
 <translation id="3062802207422175757">Artikkeleita kiinnostuksen kohteistasi Chromessa</translation>
+<translation id="3066573403916685335">Siirrä alas</translation>
 <translation id="3070005020161560471">Käännä nämä automaattisesti</translation>
 <translation id="3091010850649238832">Näytä leikepöydän sisältö</translation>
 <translation id="3098745985164956033">Jotkin kuvat lähetetään Googlelle, jotta näkemiäsi kuvauksia voidaan parantaa</translation>
@@ -454,6 +455,7 @@ Privacy Sandboxia kehitetään yhä aktiivisesti, ja se on saatavilla vain tiety
 <translation id="3962957115499249330">Näet ilmoituksen, kun tämä lataus alkaa Wi-Fin kautta.</translation>
 <translation id="3963007978381181125">Google Payn maksutapoja tai osoitteita ei salata tunnuslauseella. Salattua dataa voidaan lukea vain tunnuslauseesi avulla. Tunnuslausetta ei lähetetä Googlelle eikä Google tallenna sitä. Jos unohdat tunnuslauseesi tai haluat muokata tätä asetusta, synkronointi täytyy nollata. <ph name="BEGIN_LINK" />Lisätietoja<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome ei voi tarkistaa salasanojasi</translation>
+<translation id="3969863827134279083">Siirrä ylös</translation>
 <translation id="3974987681202239636"><ph name="APP_NAME" /> avautuu Chromessa. Jatkamalla hyväksyt <ph name="BEGIN_LINK1" />Googlen käyttöehdot<ph name="END_LINK1" /> ja <ph name="BEGIN_LINK2" />Chromen ja Chrome-käyttöjärjestelmän lisäkäyttöehdot<ph name="END_LINK2" />. Myös <ph name="BEGIN_LINK3" />Family Linkillä ylläpidettyjen Google-tilien tietosuojailmoitusta<ph name="END_LINK3" /> sovelletaan.</translation>
 <translation id="397583555483684758">Synkronointi on lakannut toimimasta.</translation>
 <translation id="3976396876660209797">Poista tämä pikakuvake ja luo se uudelleen.</translation>

@@ -325,6 +325,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="305593374596241526">Location is off; turn it on in <ph name="BEGIN_LINK" />Android Settings<ph name="END_LINK" />.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> bookmark}other{<ph name="BOOKMARKS_COUNT_MANY" /> bookmarks}}</translation>
 <translation id="3062802207422175757">Articles on your interests on Chrome</translation>
+<translation id="3066573403916685335">Move Down</translation>
 <translation id="3070005020161560471">Automatically translate</translation>
 <translation id="3091010850649238832">Show clipboard contents</translation>
 <translation id="3098745985164956033">Some images are sent to Google to improve descriptions for you</translation>
@@ -454,6 +455,7 @@ Privacy Sandbox is still in active development and is available in selected regi
 <translation id="3962957115499249330">You’ll see a notification when this download starts on Wi-Fi.</translation>
 <translation id="3963007978381181125">Passphrase encryption doesn’t include payment methods and addresses from Google Pay. Only someone with your passphrase can read your encrypted data. The passphrase is not sent to or stored by Google. If you forget your passphrase or want to change this setting, you'll need to reset sync. <ph name="BEGIN_LINK" />Find out more<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome can’t check your passwords</translation>
+<translation id="3969863827134279083">Move Up</translation>
 <translation id="3974987681202239636"><ph name="APP_NAME" /> will open in Chrome. By continuing, you agree to the <ph name="BEGIN_LINK1" />Google Terms of Service<ph name="END_LINK1" />, and the <ph name="BEGIN_LINK2" />Google Chrome and Chrome OS Additional Terms of Service<ph name="END_LINK2" />. The <ph name="BEGIN_LINK3" />Privacy Notice for Google Accounts managed with Family Link<ph name="END_LINK3" /> also applies.</translation>
 <translation id="397583555483684758">Sync has stopped working</translation>
 <translation id="3976396876660209797">Remove and recreate this shortcut</translation>

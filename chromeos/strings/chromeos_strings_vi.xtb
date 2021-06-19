@@ -164,6 +164,7 @@
 <translation id="469379815867856270">Cường độ tín hiệu</translation>
 <translation id="4707579418881001319">L2TP/IPsec + chứng chỉ người dùng</translation>
 <translation id="4731797938093519117">Quyền truy cập của cha mẹ</translation>
+<translation id="475869545581454722">Đã cập nhật mật khẩu Chrome OS</translation>
 <translation id="4773299976671772492">Đã dừng</translation>
 <translation id="4794140124556169553">Việc chạy quá trình kiểm tra CPU có thể ảnh hưởng đến hiệu suất của hệ thống</translation>
 <translation id="4808449224298348341">Đã hủy lệnh in <ph name="DOCUMENT_TITLE" /></translation>
@@ -320,6 +321,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="7701040980221191251">Không có</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Số chu kỳ</translation>
+<translation id="7762130827864645708">Bạn đã thay đổi mật khẩu thành công. Hãy sử dụng mật khẩu mới từ giờ trở đi.</translation>
 <translation id="7769672763586021400">ID kiểu máy</translation>
 <translation id="7805768142964895445">Trạng thái</translation>
 <translation id="7819857487979277519">PSK (WPA hoặc RSN)</translation>

@@ -2544,6 +2544,7 @@ og tryk på Ctrl+Alt+lysstyrke ned for at zoome ud.</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
 <translation id="3739254215541673094">Vil du åbne <ph name="APPLICATION" />?</translation>
 <translation id="3742055079367172538">Screenshottet blev gemt</translation>
+<translation id="3742235229730461951">Koreansk tastaturlayout</translation>
 <translation id="3742666961763734085">Der blev ikke fundet nogen organisationsenhed med det pågældende navn. Prøv igen.</translation>
 <translation id="3744111561329211289">Synkronisering i baggrunden</translation>
 <translation id="3747077776423672805">Hvis du vil fjerne apps, skal du gå til Indstillinger &gt; Google Play Butik &gt; Administrer dine Android-præferencer &gt; Apps eller Administration af apps. Tryk derefter på den app, du vil afinstallere (du skal muligvis stryge til højre eller venstre for at finde appen). Tryk derefter på Afinstaller eller Deaktiver.</translation>
@@ -4709,7 +4710,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6186394437969115158">Websites viser normalt annoncer, så de kan levere indhold eller tjenester gratis. Nogle websites er dog kendt for at vise påtrængende eller vildledende annoncer.</translation>
 <translation id="6195005504600220730">Læs oplysninger om din browser, dit operativsystem og din enhed</translation>
 <translation id="6195693561221576702">Enheden kan ikke konfigureres i offlinedemotilstand.</translation>
-<translation id="6195724942939841102">Gendan ikke</translation>
 <translation id="6196640612572343990">Bloker cookies fra tredjeparter</translation>
 <translation id="6196854373336333322">Udvidelsen <ph name="EXTENSION_NAME" /> har taget kontrol over dine proxyindstillinger, hvilket betyder, at den kan ændre, ødelægge eller aflytte alt, hvad du foretager dig på nettet. Hvis du ikke er sikker på, hvorfor denne ændring er sket, er den sandsynligvis uønsket.</translation>
 <translation id="6198102561359457428">Log ud, og log derefter ind igen...</translation>

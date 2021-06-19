@@ -325,6 +325,7 @@
 <translation id="305593374596241526">Местоположението е изключено. Включете го от <ph name="BEGIN_LINK" />настройките на Android<ph name="END_LINK" />.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> отметка}other{<ph name="BOOKMARKS_COUNT_MANY" /> отметки}}</translation>
 <translation id="3062802207422175757">Статии, свързани с интересите ви, в Chrome</translation>
+<translation id="3066573403916685335">Преместване надолу</translation>
 <translation id="3070005020161560471">Да се превежда автоматично от</translation>
 <translation id="3091010850649238832">Показване на съдържанието в буферната памет</translation>
 <translation id="3098745985164956033">Някои изображения се изпращат до Google с цел подобряване на описанията за вас</translation>
@@ -454,6 +455,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="3962957115499249330">Ще видите известие, когато изтеглянето започне през Wi-Fi.</translation>
 <translation id="3963007978381181125">Шифроването с пропуск не включва начините на плащане и адресите от Google Pay. Само някой с пропуска ви може да прочете шифрованите ви данни – той не се изпраща до Google, нито се съхранява от нас. Ако го забравите или искате да промените тази настройка, ще се наложи да нулирате синхронизирането. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome не може да провери паролите ви</translation>
+<translation id="3969863827134279083">Преместване нагоре</translation>
 <translation id="3974987681202239636"><ph name="APP_NAME" /> ще се отвори в Chrome. С продължаването си приемате <ph name="BEGIN_LINK1" />Общите условия на Google<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Допълнителните общи условия на Chrome и Chrome OS<ph name="END_LINK2" />. В сила е и <ph name="BEGIN_LINK3" />Съобщението за поверителност за профилите в Google, управлявани чрез Family Link<ph name="END_LINK3" />.</translation>
 <translation id="397583555483684758">Синхронизирането спря да работи</translation>
 <translation id="3976396876660209797">Премахнете и създайте отново този пряк път</translation>

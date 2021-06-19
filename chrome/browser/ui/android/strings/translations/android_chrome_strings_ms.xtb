@@ -325,6 +325,7 @@ Sentuh &amp; tahan mana-mana perkataan untuk mencari. Untuk memperhalus carian a
 <translation id="305593374596241526">Lokasi dimatikan, hidupkannya dalam <ph name="BEGIN_LINK" />Tetapan Android<ph name="END_LINK" />.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> penanda halaman}other{<ph name="BOOKMARKS_COUNT_MANY" /> penanda halaman}}</translation>
 <translation id="3062802207422175757">Artikel tentang minat anda di Chrome</translation>
+<translation id="3066573403916685335">Alihkan Ke Bawah</translation>
 <translation id="3070005020161560471">Terjemah secara automatik</translation>
 <translation id="3091010850649238832">Paparkan kandungan papan keratan</translation>
 <translation id="3098745985164956033">Sesetengah imej dihantar kepada Google untuk meningkatkan perihalan untuk anda</translation>
@@ -454,6 +455,7 @@ Kotak Pasir Privasi masih aktif dibangunkan dan tersedia di rantau terpilih. Bua
 <translation id="3962957115499249330">Anda akan melihat pemberitahuan apabila muat turun ini dimulakan pada Wi-Fi.</translation>
 <translation id="3963007978381181125">Penyulitan ungkapan laluan tidak termasuk kaedah pembayaran dan alamat daripada Google Pay. Hanya orang yang mempunyai ungkapan laluan anda boleh membaca data anda yang disulitkan. Ungkapan laluan tidak dihantar atau disimpan oleh Google. Jika anda terlupa ungkapan laluan atau ingin menukar tetapan ini, anda perlu menetapkan semula penyegerakan. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome tidak dapat menyemak kata laluan anda</translation>
+<translation id="3969863827134279083">Alihkan ke Atas</translation>
 <translation id="3974987681202239636"><ph name="APP_NAME" /> akan dibuka dalam Chrome. Dengan meneruskan penggunaan, anda bersetuju menerima <ph name="BEGIN_LINK1" />Syarat Perkhidmatan Google<ph name="END_LINK1" /> dan <ph name="BEGIN_LINK2" />Syarat Perkhidmatan Tambahan Google Chrome dan OS Chrome<ph name="END_LINK2" />. <ph name="BEGIN_LINK3" />Notis Privasi untuk Akaun Google yang Diurus dengan Family Link<ph name="END_LINK3" /> juga terpakai.</translation>
 <translation id="397583555483684758">Penyegerakan telah berhenti berfungsi</translation>
 <translation id="3976396876660209797">Alih keluar dan buat semula pintasan ini</translation>

@@ -325,6 +325,7 @@ Maintenez le doigt sur un mot pour effectuer une recherche sur celui-ci. Pour af
 <translation id="305593374596241526">Le paramètre Position est désactivé, activez-le dans les <ph name="BEGIN_LINK" />paramètres Android<ph name="END_LINK" />.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> favori}one{<ph name="BOOKMARKS_COUNT_MANY" /> favori}other{<ph name="BOOKMARKS_COUNT_MANY" /> favoris}}</translation>
 <translation id="3062802207422175757">Articles portant sur vos centres d'intérêt dans Chrome</translation>
+<translation id="3066573403916685335">Déplacer vers le bas</translation>
 <translation id="3070005020161560471">Traduire automatiquement les pages rédigées en</translation>
 <translation id="3091010850649238832">Afficher le contenu du presse-papier</translation>
 <translation id="3098745985164956033">Certaines images sont envoyées à Google afin d'améliorer les descriptions pour vous</translation>
@@ -454,6 +455,7 @@ Le bac à sable de confidentialité est toujours en cours de développement et n
 <translation id="3962957115499249330">Vous recevrez une notification lorsque le téléchargement débutera sur Wi-Fi.</translation>
 <translation id="3963007978381181125">Le chiffrement par phrase de passe ne couvre pas les modes de paiement ni les adresses de Google Pay. Seule une personne connaissant votre phrase de passe peut lire vos données chiffrées. Google ne reçoit ni ne stocke la phrase de passe. Si vous l'oubliez ou souhaitez modifier ce paramètre, vous devrez réinitialiser la synchronisation. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome ne peut pas vérifier vos mots de passe</translation>
+<translation id="3969863827134279083">Déplacer vers le haut</translation>
 <translation id="3974987681202239636"><ph name="APP_NAME" /> s'ouvrira dans Chrome. En continuant, vous acceptez les <ph name="BEGIN_LINK1" />conditions d'utilisation de Google<ph name="END_LINK1" /> et les <ph name="BEGIN_LINK2" />conditions d'utilisation supplémentaires pour Google Chrome et Chrome OS<ph name="END_LINK2" />. L'<ph name="BEGIN_LINK3" />avis de confidentialité pour les comptes Google gérés par Family Link<ph name="END_LINK3" /> s'applique aussi.</translation>
 <translation id="397583555483684758">La synchronisation a cessé de fonctionner</translation>
 <translation id="3976396876660209797">Supprimez ce raccourci et recréez-le</translation>

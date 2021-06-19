@@ -325,6 +325,7 @@
 <translation id="305593374596241526">‏مکان خاموش است، آن را در <ph name="BEGIN_LINK" />تنظیمات Android<ph name="END_LINK" /> روشن کنید.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> نشانک}one{<ph name="BOOKMARKS_COUNT_MANY" /> نشانک}other{<ph name="BOOKMARKS_COUNT_MANY" /> نشانک}}</translation>
 <translation id="3062802207422175757">‏مقاله‌های مربوط با علایقتان در Chrome</translation>
+<translation id="3066573403916685335">حرکت به پایین</translation>
 <translation id="3070005020161560471">ترجمه خودکار</translation>
 <translation id="3091010850649238832">نمایش محتوای بریده‌دان</translation>
 <translation id="3098745985164956033">‏برخی از تصاویر به Google ارسال می‌شوند تا شرح آن‌ها برایتان بهبود یابد</translation>
@@ -454,6 +455,7 @@
 <translation id="3962957115499249330">‏هنگام شروع این بارگیری ازطریق Wi-Fi، اعلانی خواهید دید.</translation>
 <translation id="3963007978381181125">‏رمزگذاری گذرعبارت شامل روش‌های پرداخت و نشانی‌های موجود در Google Pay نمی‌شود. فقط افرادی که گذرعبارتتان را داشته باشند می‌توانند داده‌های رمزگذاری‌شده‌تان را بخوانند. گذرعبارت به Google ارسال یا در سرورهای آن ذخیره نمی‌شود. اگر گذرعبارتتان را فراموش کنید یا بخواهید این تنظیم را تغییر دهید، باید همگام‌سازی را بازنشانی کنید. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">‏Chrome نمی‌تواند گذرواژه‌هایتان را بررسی کند</translation>
+<translation id="3969863827134279083">حرکت به بالا</translation>
 <translation id="3974987681202239636">‏<ph name="APP_NAME" /> در Chrome باز می‌شود. با ادامه دادن، با <ph name="BEGIN_LINK1" />شرایط خدمات Google<ph name="END_LINK1" /> و <ph name="BEGIN_LINK2" />شرایط خدمات تکمیلی Google Chrome و سیستم‌عامل Chrome<ph name="END_LINK2" /> موافقت می‌کنید. <ph name="BEGIN_LINK3" />اعلان حریم‌خصوصی برای «حساب‌های Google» مدیریت‌شده با Family Link<ph name="END_LINK3" /> نیز اعمال می‌شود.</translation>
 <translation id="397583555483684758">همگام‌سازی متوقف شده است</translation>
 <translation id="3976396876660209797">این میان‌بر را بردارید و دوباره ایجاد کنید</translation>

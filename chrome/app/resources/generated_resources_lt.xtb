@@ -2546,6 +2546,7 @@ ir „Ctrl“ + „Alt“ + šviesumo didinimo klavišus, kad tolintumėte.</tra
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
 <translation id="3739254215541673094">Atidaryti „<ph name="APPLICATION" />“?</translation>
 <translation id="3742055079367172538">Ekrano kopija padaryta</translation>
+<translation id="3742235229730461951">Korėjietiškos klaviatūros išdėstymas</translation>
 <translation id="3742666961763734085">Nepavyko rasti organizacinio vieneto tokiu pavadinimu. Bandykite dar kartą.</translation>
 <translation id="3744111561329211289">Fono sinchronizavimas</translation>
 <translation id="3747077776423672805">Jei norite pašalinti programas, eikite į skiltį „Nustatymai“ &gt; „Google Play“ parduotuvė“ &gt; „Tvarkyti „Android“ nuostatas“ &gt; „Programos“ arba „Programų tvarkytuvė“. Tada palieskite programą, kurią norite pašalinti (galbūt reikės perbraukti į dešinę arba į kairę, kad rastumėte programą). Tada palieskite „Pašalinti“ arba „Išjungti“.</translation>
@@ -4712,7 +4713,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="6186394437969115158">Paprastai svetainėse rodomi skelbimai, kad būtų galima nemokamai teikti turinį ar paslaugas. Bet žinoma, kad kai kuriose svetainėse rodomi nepageidaujami arba klaidinantys skelbimai.</translation>
 <translation id="6195005504600220730">Skaityti informaciją apie jūsų naršyklę, OS ir įrenginį</translation>
 <translation id="6195693561221576702">Šis įrenginys negali būti nustatytas, kai įjungtas neprisijungus pasiekiamas demonstracinis režimas.</translation>
-<translation id="6195724942939841102">Neatkurti</translation>
 <translation id="6196640612572343990">Blokuoti trečiosios šalies slapukus</translation>
 <translation id="6196854373336333322">Plėtinys „<ph name="EXTENSION_NAME" />“ perėmė tarpinio serverio valdymą. Tai reiškia, kad jis gali keisti, nutraukti ar stebėti visus prisijungus atliekamus veiksmus. Jei nesate tikri, kodėl įvyko šis pakeitimas, tikriausiai jūs jo nenorite.</translation>
 <translation id="6198102561359457428">Atsijunkite, tada vėl prisijunkite...</translation>

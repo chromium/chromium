@@ -325,6 +325,7 @@ Sentuh lama kata apa pun untuk menelusurinya. Untuk menyaring penelusuran, pilih
 <translation id="305593374596241526">Lokasi nonaktif, aktifkan di <ph name="BEGIN_LINK" />Setelan Android<ph name="END_LINK" />.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> bookmark}other{<ph name="BOOKMARKS_COUNT_MANY" /> bookmark}}</translation>
 <translation id="3062802207422175757">Artikel di Chrome terkait minat Anda</translation>
+<translation id="3066573403916685335">Turunkan</translation>
 <translation id="3070005020161560471">Otomatis terjemahkan</translation>
 <translation id="3091010850649238832">Tampilkan konten papan klip</translation>
 <translation id="3098745985164956033">Beberapa gambar dikirim ke Google guna menyempurnakan deskripsi untuk Anda</translation>
@@ -454,6 +455,7 @@ Privacy Sandbox masih dalam pengembangan aktif dan hanya tersedia di wilayah ter
 <translation id="3962957115499249330">Anda akan melihat notifikasi saat download ini dimulai melalui Wi-Fi.</translation>
 <translation id="3963007978381181125">Enkripsi frasa sandi tidak mencakup alamat dan metode pembayaran dari Google Pay. Hanya pengguna yang memiliki frasa sandi Anda yang dapat membaca data yang telah Anda enkripsi. Frasa sandi tidak dikirim atau disimpan oleh Google. Jika lupa frasa sandi Anda atau ingin mengubah setelan ini, Anda harus menyetel ulang sinkronisasi. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome tidak dapat memeriksa sandi Anda</translation>
+<translation id="3969863827134279083">Pindah ke Atas</translation>
 <translation id="3974987681202239636"><ph name="APP_NAME" /> akan dibuka di Chrome. Dengan melanjutkan, Anda menyetujui <ph name="BEGIN_LINK1" />Persyaratan Layanan Google<ph name="END_LINK1" />, dan <ph name="BEGIN_LINK2" />Persyaratan Layanan Tambahan Google Chrome dan Chrome OS<ph name="END_LINK2" />. <ph name="BEGIN_LINK3" />Pemberitahuan Privasi untuk Akun Google yang Dikelola dengan Family Link<ph name="END_LINK3" /> juga berlaku.</translation>
 <translation id="397583555483684758">Sinkronisasi berhenti berfungsi</translation>
 <translation id="3976396876660209797">Hapus dan buat ulang pintasan ini</translation>

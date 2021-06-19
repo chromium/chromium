@@ -290,7 +290,6 @@
 <translation id="3307642347673023554">ਲੈਪਟਾਪ ਮੋਡ 'ਤੇ ਸਵਿੱਚ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> ਹਾਲੇ ਵੀ ਬਾਅਦ ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰ ਸਕਦੇ ਹਨ।</translation>
 <translation id="3321628682574733415">ਮਾਂ-ਪਿਓ ਵਾਲਾ ਕੋਡ ਗਲਤ ਹੈ</translation>
-<translation id="332587331255250389">ਕਿਰਪਾ ਕਰਕੇ ਬੈਟਰੀ ਬਦਲੋ</translation>
 <translation id="3341303451326249809">ਸਕ੍ਰੀਨਸ਼ਾਟ ਕੈਪਚਰ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="334252345105450327">ਸਕ੍ਰੀਨਸ਼ਾਟ ਲਓ</translation>
 <translation id="3351879221545518001">ਤੁਸੀਂ ਇਸ ਵੇਲੇ ਸਕ੍ਰੀਨ ਕਾਸਟ ਕਰ ਰਹੇ ਹੋ।</translation>
@@ -725,6 +724,7 @@
 <translation id="6816797338148849397">ਤੁਹਾਡੀ ਚੋਣ ਨਾਲ ਸੰਬੰਧਿਤ ਜਾਣਕਾਰੀ ਉਪਲਬਧ ਹੈ। ਪਹੁੰਚ ਕਰਨ ਲਈ 'ਉੱਪਰ ਤੀਰ' ਕੁੰਜੀ ਵਰਤੋ।</translation>
 <translation id="6818242057446442178">ਇੱਕ ਸ਼ਬਦ ਪਿੱਛੇ ਜਾਓ</translation>
 <translation id="6820676911989879663">ਥੋੜ੍ਹੀ ਦੇਰ ਆਰਾਮ ਕਰੋ!</translation>
+<translation id="6837064795450991317">ਡੈਸਕਬਾਰ ਲੁਕਾਓ</translation>
 <translation id="6850010208275816200">ਤੁਹਾਡੀ ਮੌਜੂਦਾ ਐਪ ਪੂਰੀ ਸਕ੍ਰੀਨ ਮੋਡ ਵਿੱਚ ਹੈ। ਜੇ ਐਪ ਤੁਹਾਡਾ ਪਾਸਵਰਡ ਪੁੱਛਦੀ ਹੈ, ਤਾਂ ਪਹਿਲਾਂ ਪੂਰੀ ਸਕ੍ਰੀਨ ਮੋਡ ਤੋਂ ਬਾਹਰ ਜਾਓ।</translation>
 <translation id="6852052252232534364">ਕਿਰਿਆਸ਼ੀਲ ਕਰਨ ਲਈ ਕਲਿੱਕ ਕਰੋ</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> ਸਕਿੰਟ</translation>
@@ -760,6 +760,7 @@
 <translation id="7076293881109082629">ਸਾਈਨ ਇਨ ਕਰ ਰਿਹਾ ਹੈ</translation>
 <translation id="7088960765736518739">ਸਵਿੱਚ ਪਹੁੰਚ</translation>
 <translation id="7098389117866926363">USB-C ਡੀਵਾਈਸ (ਪਿੱਛੇ ਖੱਬਾ ਪੋਰਟ)</translation>
+<translation id="7106330611027933926">ਡੈਸਕਬਾਰ ਦਿਖਾਓ</translation>
 <translation id="7118268675952955085">ਸਕ੍ਰੀਨਸ਼ਾਟ</translation>
 <translation id="7131634465328662194">ਤੁਹਾਨੂੰ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਸਾਈਨ-ਆਊਟ ਕਰ ਦਿੱਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="7143207342074048698">ਕਨੈਕਟ ਕਰ ਰਿਹਾ ਹੈ</translation>
@@ -803,6 +804,7 @@
 <translation id="7466449121337984263">ਕਿਰਪਾ ਕਰਕੇ ਸੈਂਸਰ ਨੂੰ ਸਪਰਸ਼ ਕਰੋ</translation>
 <translation id="7473891865547856676">ਨਹੀਂ ਧੰਨਵਾਦ</translation>
 <translation id="7477793887173910789">ਆਪਣਾ ਸੰਗੀਤ, ਵੀਡੀਓ ਕੰਟਰੋਲ ਕਰੋ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ</translation>
+<translation id="7482097454533720217">ਲਿਖਤ ਨੂੰ ਸਪਰਸ਼ ਕਰਕੇ ਰੱਖਣ ਜਾਂ ਉਸ 'ਤੇ ਸੱਜਾ-ਕਲਿੱਕ ਕਰਨ 'ਤੇ ਪਰਿਭਾਸ਼ਾਵਾਂ, ਅਨੁਵਾਦ, ਜਾਂ ਇਕਾਈ ਰੂਪਾਂਤਰਨ ਪ੍ਰਾਪਤ ਕਰੋ।</translation>
 <translation id="7483025031359818980">ਚੋਣ ਖੇਤਰ ਨੂੰ ਪੂਰੀ ਸਕ੍ਰੀਨ 'ਤੇ ਸੈੱਟ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="7486227320194954040">ਮਾਰਕਰ ਟੂਲਾਂ ਨੂੰ ਸਮੇਟੋ</translation>
 <translation id="7497767806359279797">ਭਾਸ਼ਾ ਅਤੇ ਕੀ-ਬੋਰਡ ਚੁਣੋ</translation>
@@ -979,6 +981,7 @@
 <translation id="8843682306134542540">ਘੁਮਾਅ ਸੰਬੰਧੀ ਲਾਕ ਨੂੰ ਟੌਗਲ ਕਰੋ। <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">ਤੁਹਾਡੇ ਪਿੰਨ ਜਾਂ ਪਾਸਵਰਡ ਦੀ ਹਾਲੇ ਵੀ ਪੁਸ਼ਟੀ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕੀ। ਨੋਟ ਕਰੋ: ਜੇ ਤੁਸੀਂ ਹਾਲ ਹੀ ਵਿੱਚ ਆਪਣਾ ਪਾਸਵਰਡ ਬਦਲਿਆ ਹੈ, ਤਾਂ ਆਪਣਾ ਪੁਰਾਣਾ ਪਾਸਵਰਡ ਵਰਤੋ। ਇੱਕ ਵਾਰ ਸਾਈਨ-ਆਊਟ ਕਰਨ 'ਤੇ ਤੁਹਾਡਾ ਨਵਾਂ ਪਾਸਵਰਡ ਲਾਗੂ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
+<translation id="8863888432376731307">"<ph name="QUERY" />" ਅਤੇ ਹੋਰ ਲਈ <ph name="INTENT" /> ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="8870509716567206129">ਐਪ ਸਪਲਿਟ ਸਕ੍ਰੀਨ ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰਦੀ।</translation>
 <translation id="8871580645200179206">ਗੂੜ੍ਹੇ ਥੀਮ ਨੂੰ ਟੌਗਲ ਕਰੋ। <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">ਕਨੈਕਟ ਨਹੀਂ ਹੈ</translation>

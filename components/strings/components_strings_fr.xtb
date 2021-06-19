@@ -376,6 +376,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2276057643614339130">Base d'impression</translation>
 <translation id="2277103315734023688">Avance rapide</translation>
 <translation id="2283340219607151381">Enregistrer et renseigner les adresses</translation>
+<translation id="2283447177162560884">Page "<ph name="PAGE_TITLE" />" supprimée</translation>
 <translation id="2288422996159078444">Tout texte saisi, toute page consultée ou toute activité effectuée sur le Web sont surveillés. Le contenu des sites peut être modifié à votre insu.</translation>
 <translation id="2289385804009217824">Couper</translation>
 <translation id="2292556288342944218">Votre accès à Internet est bloqué</translation>
@@ -502,6 +503,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="277133753123645258">Mode d'expédition</translation>
 <translation id="277499241957683684">Enregistrement de l'appareil manquant.</translation>
 <translation id="2775884851269838147">Première page imprimée</translation>
+<translation id="2778854133681684171">Vous pouvez utiliser votre appareil pour confirmer rapidement votre identité lors de votre prochain achat avec ce mode de paiement.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2784949926578158345">La connexion a été réinitialisée.</translation>
 <translation id="2792012897584536778">Les administrateurs de cet appareil ont configuré des certificats de sécurité grâce auxquels ils ont la possibilité d'afficher le contenu des sites Web que vous consultez.</translation>
@@ -659,6 +661,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3377736046129930310">Utiliser le verrouillage de l'écran pour confirmer les cartes plus rapidement</translation>
 <translation id="3380365263193509176">Erreur inconnue.</translation>
 <translation id="3380864720620200369">ID client : </translation>
+<translation id="3381668585148405088">Valider votre achat</translation>
 <translation id="3387261909427947069">Modes de paiement</translation>
 <translation id="3391030046425686457">Adresse de livraison</translation>
 <translation id="3395827396354264108">Mode d'enlèvement</translation>
@@ -835,6 +838,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
     soit appliquée à toutes les requêtes qu'il reçoit. Or, cette règle n'est pas applicable actuellement.</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Document PDF contenant {COUNT} page}one{Document PDF contenant {COUNT} page}other{Document PDF contenant {COUNT} pages}}</translation>
 <translation id="4023431997072828269">Comme ce formulaire est envoyé via une connexion non sécurisée, vos informations seront visibles par les autres utilisateurs.</translation>
+<translation id="4027177651527820006">En activant ces fonctionnalités, vous risquez de perdre des données de navigateur, ou compromettre votre sécurité ou la confidentialité de vos données. Les fonctionnalités activées s'appliquent à tous les utilisateurs de ce navigateur. Si vous êtes administrateur d'entreprise, vous ne devriez pas utiliser ces indicateurs en production.</translation>
 <translation id="4030383055268325496">&amp;Annuler l'ajout</translation>
 <translation id="4056223980640387499">Sépia</translation>
 <translation id="4058922952496707368">Clé "<ph name="SUBKEY" />" : <ph name="ERROR" /></translation>
@@ -1769,7 +1773,6 @@ Informations supplémentaires :
 <translation id="7481312909269577407">Avancer</translation>
 <translation id="7485870689360869515">Aucune donnée n'a été trouvée.</translation>
 <translation id="7495528107193238112">Ce contenu est bloqué. Pour résoudre le problème, contactez le propriétaire du site.</translation>
-<translation id="7498193950643227031">Elle peut se comporter de façon inattendue si elle est redimensionnée. Vous pouvez limiter la capacité à redimensionner les applis dans <ph name="SETTINGS" />.</translation>
 <translation id="7503664977220660814">Vous venez de saisir votre mot de passe sur un site trompeur. Chromium vous recommande de vérifier vos mots de passe enregistrés pour <ph name="WEBSITE_1" /> et <ph name="WEBSITE_2" />, ainsi que les autres sites pour lesquels vous utilisez ce mot de passe actuellement.</translation>
 <translation id="7508255263130623398">L'ID d'appareil de la règle renvoyé est vide ou ne correspond pas à l'ID d'appareil actuel.</translation>
 <translation id="7508870219247277067">Vert avocat</translation>

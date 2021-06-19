@@ -1088,11 +1088,6 @@ Se questo criterio viene impostato, l'utente non potrà sostituire il valore.
 
 Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizialmente disattivata, ma potrà essere controllata dall'utente.</translation>
 <translation id="2415715982424988916">Esplora (supportata dalla versione 91)</translation>
-<translation id="241739814668386424"> Se questo criterio viene disattivato, l'utente non potrà collegare completamente il proprio dispositivo periferico Thunderbolt/USB4 tramite tunneling PCIe.
-
-      Se questo criterio viene attivato, l'utente potrà collegare completamente il proprio dispositivo periferico Thunderbolt/USB4 tramite tunneling PCIe.
-
-      Questo criterio è disattivato per impostazione predefinita.</translation>
 <translation id="2421677964966613267">Questo criterio è deprecato in M88 e Flash non è più supportato da Chrome. Se il criterio viene configurato, puoi impostare un elenco di pattern URL che specificano i siti che non possono eseguire il plug-in <ph name="FLASH_PLUGIN_NAME" />.
 
       Se non viene configurato, viene applicato il criterio <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> per tutti i siti, se impostato. In caso contrario, viene applicata l'impostazione personale dell'utente.
@@ -3242,7 +3237,6 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
           Se questo criterio non viene impostato, inizialmente l'evidenziazione del cursore è disattivata nella schermata di accesso, ma l'utente può attivarla in qualsiasi momento.</translation>
 <translation id="5279539586558702228">L'ora in cui il dispositivo userà la corrente alternata, nel fuso orario locale del dispositivo.</translation>
 <translation id="5283457834853986457">Disattiva la ricerca dei plug-in (ritirata)</translation>
-<translation id="5285315763984334157">Blocca download dannosi</translation>
 <translation id="5288772341821359899">Se la norma viene impostata, l'intervallo di porte UDP utilizzato da WebRTC viene limitato all'intervallo di porte specificato (endpoint inclusi).
 
       Se la norma non viene impostata oppure è impostata sulla stringa vuota o su un intervallo di porte non valido, WebRTC è autorizzato a utilizzare qualsiasi porta UDP locale disponibile.</translation>

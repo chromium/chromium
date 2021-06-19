@@ -375,6 +375,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2276057643614339130">Base de impresión</translation>
 <translation id="2277103315734023688">Avanzar</translation>
 <translation id="2283340219607151381">Gardar e autocompletar enderezos</translation>
+<translation id="2283447177162560884">Eliminouse "<ph name="PAGE_TITLE" />"</translation>
 <translation id="2288422996159078444">Estase vixiando todo o que escribes, as páxinas que visitas e calquera outra actividade que realices na Web. Ademais, pode que se modifique o contido dos sitios sen que o saibas.</translation>
 <translation id="2289385804009217824">Recortar</translation>
 <translation id="2292556288342944218">O teu acceso a Internet está bloqueado</translation>
@@ -501,6 +502,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="277133753123645258">Método de envío</translation>
 <translation id="277499241957683684">Non se atopa o rexistro do dispositivo</translation>
 <translation id="2775884851269838147">Primeira páxina de impresión</translation>
+<translation id="2778854133681684171">A próxima vez que fagas unha compra con este método de pago, podes utilizar o dispositivo para verificar rapidamente a túa identidade.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2784949926578158345">Restableceuse a conexión.</translation>
 <translation id="2792012897584536778">Os administradores deste dispositivo configuraron certificados de seguranza que poden permitirlles ver o contido dos sitios web que visitas.</translation>
@@ -658,6 +660,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3377736046129930310">Usar o bloqueo de pantalla para confirmar as tarxetas máis rápido</translation>
 <translation id="3380365263193509176">Erro descoñecido</translation>
 <translation id="3380864720620200369">ID de cliente:</translation>
+<translation id="3381668585148405088">Verifica a túa compra</translation>
 <translation id="3387261909427947069">Métodos de pago</translation>
 <translation id="3391030046425686457">Enderezo de entrega</translation>
 <translation id="3395827396354264108">Método de recollida</translation>
@@ -834,6 +837,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
     a todas as solicitudes que reciba, pero actualmente non se pode aplicar esta política.</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Documento PDF con {COUNT} páxina}other{Documento PDF con {COUNT} páxinas}}</translation>
 <translation id="4023431997072828269">Dado que estás a piques de enviar este formulario a través dunha conexión non segura, a túa información será visible para outras persoas.</translation>
+<translation id="4027177651527820006">Ao activar estas funcións, poderías perder os datos do navegador ou poñer en perigo a túa seguranza ou privacidade. As funcións activadas aplícanse a todos os usuarios deste navegador. Se es un administrador da empresa, non deberías utilizar estas funcións experimentais na produción.</translation>
 <translation id="4030383055268325496">&amp;Desfacer a acción de engadir</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4058922952496707368">Clave "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
@@ -1767,7 +1771,6 @@ Detalles adicionais:
 <translation id="7481312909269577407">Adiante</translation>
 <translation id="7485870689360869515">Non se atoparon datos.</translation>
 <translation id="7495528107193238112">Este contido está bloqueado. Ponte en contacto co propietario do sitio para corrixir o problema.</translation>
-<translation id="7498193950643227031">Se se cambia o tamaño, podería funcionar de forma inesperada. Agora podes limitar o cambio de tamaño das aplicacións en <ph name="SETTINGS" />.</translation>
 <translation id="7503664977220660814">Acabas de escribir o teu contrasinal nun sitio enganoso. Chromium recomenda comprobar os contrasinais gardados para <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> e outros sitios nos que esteas a utilizar este contrasinal neste momento.</translation>
 <translation id="7508255263130623398">O código de dispositivo da política está baleiro ou non coincide co código do dispositivo actual</translation>
 <translation id="7508870219247277067">Verde aguacate</translation>

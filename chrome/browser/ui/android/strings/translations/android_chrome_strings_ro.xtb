@@ -325,6 +325,7 @@ Atinge lung orice cuvânt pentru a-l căuta. Pentru a rafina căutarea, selectea
 <translation id="305593374596241526">Locația este dezactivată; activeaz-o în <ph name="BEGIN_LINK" />Setări Android<ph name="END_LINK" />.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> marcaj}few{<ph name="BOOKMARKS_COUNT_MANY" /> marcaje}other{<ph name="BOOKMARKS_COUNT_MANY" /> de marcaje}}</translation>
 <translation id="3062802207422175757">Articole despre ceea ce te interesează în Chrome</translation>
+<translation id="3066573403916685335">Mutați în jos</translation>
 <translation id="3070005020161560471">Tradu automat</translation>
 <translation id="3091010850649238832">Afișează conținutul clipboardului</translation>
 <translation id="3098745985164956033">Unele imagini sunt trimise la Google pentru îmbunătățirea descrierilor</translation>
@@ -454,6 +455,7 @@ Privacy Sandbox este încă în dezvoltare și este disponibil în anumite regiu
 <translation id="3962957115499249330">Vei primi o notificare când începe descărcarea prin Wi-Fi.</translation>
 <translation id="3963007978381181125">Criptarea expresiei de acces nu include metodele de plată și adresele din Google Pay. Numai cine are expresia ta de acces poate citi datele tale criptate. Expresia de acces nu este trimisă sau stocată la Google. Dacă îți uiți expresia de acces sau vrei să modifici această setare, va trebui să resetezi sincronizarea. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome nu îți poate verifica parolele</translation>
+<translation id="3969863827134279083">Mutați în sus</translation>
 <translation id="3974987681202239636"><ph name="APP_NAME" /> se va deschide în Chrome. Dacă alegi să continui, ești de acord cu <ph name="BEGIN_LINK1" />Termenii și condițiile Google<ph name="END_LINK1" /> și cu <ph name="BEGIN_LINK2" />Termenii și condițiile suplimentare pentru Google Chrome și Sistemul de operare Chrome<ph name="END_LINK2" />. Se aplică și <ph name="BEGIN_LINK3" />Notificarea privind confidențialitatea pentru Conturile Google gestionate cu Family Link<ph name="END_LINK3" />.</translation>
 <translation id="397583555483684758">Sincronizarea nu mai funcționează</translation>
 <translation id="3976396876660209797">Elimină și recreează această comandă rapidă</translation>

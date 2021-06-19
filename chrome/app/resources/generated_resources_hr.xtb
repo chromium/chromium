@@ -2530,6 +2530,7 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
 <translation id="3739254215541673094">Želite li otvoriti aplikaciju <ph name="APPLICATION" />?</translation>
 <translation id="3742055079367172538">Izrađena je snimka zaslona</translation>
+<translation id="3742235229730461951">Izgled korejske tipkovnice</translation>
 <translation id="3742666961763734085">Nije moguće pronaći organizacijsku jedinicu s tim nazivom. Pokušajte ponovo.</translation>
 <translation id="3744111561329211289">Sinkronizacija u pozadini</translation>
 <translation id="3747077776423672805">Za uklanjanje aplikacija idite na Postavke &gt; Trgovina Play &gt; Upravljanje postavkama Androida &gt; Aplikacije ili Upravitelj aplikacija. Zatim dodirnite aplikaciju koju želite deinstalirati (možda ćete morati prijeći prstom udesno ili ulijevo kako biste pronašli aplikaciju). Zatim dodirnite Deinstaliraj ili Onemogući.</translation>
@@ -4694,7 +4695,6 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="6186394437969115158">Web-lokacije obično prikazuju oglase kako bi mogle besplatno pružati sadržaj ili usluge. Međutim, za neke je web-lokacije poznato da prikazuju ometajuće ili obmanjujuće oglase.</translation>
 <translation id="6195005504600220730">čitati podatke o vašem pregledniku, OS-u i uređaju</translation>
 <translation id="6195693561221576702">Uređaj nije moguće postaviti u izvanmrežnom demo načinu.</translation>
-<translation id="6195724942939841102">Ne vraćaj</translation>
 <translation id="6196640612572343990">Blokiraj kolačiće trećih strana</translation>
 <translation id="6196854373336333322">Proširenje "<ph name="EXTENSION_NAME" />" preuzelo je kontrolu nad vašim postavkama proxyja, a to znači da može promijeniti, prekinuti ili prisluškivati sve što radite na mreži. Ako niste sigurni kako je došlo do te promjene, vjerojatno je ne želite.</translation>
 <translation id="6198102561359457428">Odjavite se, a zatim ponovo prijavite...</translation>

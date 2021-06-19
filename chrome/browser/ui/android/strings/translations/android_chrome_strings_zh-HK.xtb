@@ -325,6 +325,7 @@
 <translation id="305593374596241526">位置資訊功能已關閉，請在「<ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />」中開啟此功能。</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> 個書籤}other{<ph name="BOOKMARKS_COUNT_MANY" /> 個書籤}}</translation>
 <translation id="3062802207422175757">您感興趣的文章和內容，一切盡在 Chrome</translation>
+<translation id="3066573403916685335">向下移動</translation>
 <translation id="3070005020161560471">自動翻譯</translation>
 <translation id="3091010850649238832">顯示剪貼簿內容</translation>
 <translation id="3098745985164956033">部分圖片會傳送至 Google，以便為您提供更完善的說明</translation>
@@ -454,6 +455,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="3962957115499249330">透過 Wi-Fi 開始下載時，系統會顯示通知。</translation>
 <translation id="3963007978381181125">密碼短語加密的資料不包括 Google Pay 的付款方法和地址。只有知道您密碼短語的使用者，才能讀取已加密的資料。系統不會將密碼短語傳送給 Google，Google 也不會儲存您的密碼短語。如果您忘記自己的密碼短語，或希望變更這項設定，則必須重設同步功能。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome 無法檢查密碼</translation>
+<translation id="3969863827134279083">向上移動</translation>
 <translation id="3974987681202239636">「<ph name="APP_NAME" />」將在 Chrome 中開啟。繼續即表示您同意《<ph name="BEGIN_LINK1" />Google 服務條款<ph name="END_LINK1" />》以及 <ph name="BEGIN_LINK2" />Google Chrome 和 Chrome 作業系統的《附加服務條款》<ph name="END_LINK2" />。須同時受《<ph name="BEGIN_LINK3" />透過 Family Link 管理的 Google 帳戶私隱聲明<ph name="END_LINK3" />》約束。</translation>
 <translation id="397583555483684758">同步處理功能已停止運作</translation>
 <translation id="3976396876660209797">移除並重新建立此捷徑</translation>

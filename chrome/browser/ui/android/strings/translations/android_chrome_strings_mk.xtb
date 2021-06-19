@@ -325,6 +325,7 @@
 <translation id="305593374596241526">Локацијата е исклучена, вклучете ја во <ph name="BEGIN_LINK" />Поставки за Android<ph name="END_LINK" />.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> обележувач}one{<ph name="BOOKMARKS_COUNT_MANY" /> обележувач}other{<ph name="BOOKMARKS_COUNT_MANY" /> обележувачи}}</translation>
 <translation id="3062802207422175757">Статии за она што ве интересира на Chrome</translation>
+<translation id="3066573403916685335">Премести долу</translation>
 <translation id="3070005020161560471">Автоматски преведувај</translation>
 <translation id="3091010850649238832">Прикажи содржини од привремената меморија</translation>
 <translation id="3098745985164956033">Некои слики се испраќаат во Google за да им се подобрат описите</translation>
@@ -454,6 +455,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="3962957115499249330">Ќе видите известување кога преземањево ќе започне на Wi-Fi.</translation>
 <translation id="3963007978381181125">Шифрирањето на лозинката не ги вклучува начините на плаќање и адресите од Google Pay. Само некој што ја има вашата лозинка може да ги чита вашите шифрирани податоци. Лозинката не се испраќа, ниту зачувува во Google. Доколку ја заборавите лозинката или сакате да ја промените поставкава, ќе треба да ја ресетирате синхронизацијата. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome не може да ги провери вашите лозинки</translation>
+<translation id="3969863827134279083">Премести нагоре</translation>
 <translation id="3974987681202239636"><ph name="APP_NAME" /> ќе се отвори во Chrome. Ако продолжите, се согласувате со <ph name="BEGIN_LINK1" />Условите за користење на Google<ph name="END_LINK1" />и <ph name="BEGIN_LINK2" />Дополнителните услови за користење на Google Chrome и Chrome OS<ph name="END_LINK2" />. <ph name="BEGIN_LINK3" />Известувањето за приватност за сметките на Google управувани со Family Link<ph name="END_LINK3" /> исто така важи.</translation>
 <translation id="397583555483684758">Синхронизирањето престана да работи</translation>
 <translation id="3976396876660209797">Отстранете ја и создајте ја повторно кратенкава</translation>

@@ -325,6 +325,7 @@
 <translation id="305593374596241526">მდებარეობა გამორთულია, ჩართეთ ის <ph name="BEGIN_LINK" />Android-ის პარამეტრებიდან<ph name="END_LINK" />.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> სანიშნე}other{<ph name="BOOKMARKS_COUNT_MANY" /> სანიშნე}}</translation>
 <translation id="3062802207422175757">თქვენს ინტერესებთან დაკავშირებული სტატიები Chrome-ში</translation>
+<translation id="3066573403916685335">გადაადგილება ქვევით</translation>
 <translation id="3070005020161560471">ავტომატურად ითარგმნოს</translation>
 <translation id="3091010850649238832">გაცვლის ბუფერის შიგთავსის ჩვენება</translation>
 <translation id="3098745985164956033">ზოგიერთი სურათი გაეგზავნება Google-ს, უკეთესი აღწერილობები რომ შემოგთავაზოთ</translation>
@@ -454,6 +455,7 @@
 <translation id="3962957115499249330">Wi-Fi კავშირით ჩამოტვირთვის დაწყების შესახებ შეტყობინებას მიიღებთ.</translation>
 <translation id="3963007978381181125">საიდუმლო ფრაზით დაშიფვრა არ მოიცავს Google Pay-ში შენახულ გადახდის მეთოდებსა და მისამართებს. თქვენი დაშიფრული მონაცემების წაკითხვა შეუძლია მხოლოდ მას, ვინც იცის თქვენი საიდუმლო ფრაზა. საიდუმლო ფრაზა არ იგზავნება Google-ში და არ ინახება მის მიერ. საიდუმლო ფრაზის დავიწყების ან ამ პარამეტრის შეცვლის შემთხვევაში, სინქრონიზაციის გადაყენება მოგიწევთ. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome ვერ ახერხებს თქვენი პაროლების შემოწმებას</translation>
+<translation id="3969863827134279083">გადაადგილება ზემოთ</translation>
 <translation id="3974987681202239636"><ph name="APP_NAME" /> გაიხსნება Chrome-ში. გაგრძელებით ეთანხმებით <ph name="BEGIN_LINK1" />Google-ის მომსახურების პირობებს<ph name="END_LINK1" />, ასევე, <ph name="BEGIN_LINK2" />Google Chrome-ისა და Chrome OS-ის მომსახურების დამატებით პირობებს<ph name="END_LINK2" />. გარდა ამისა, ვრცელდება <ph name="BEGIN_LINK3" />კონფიდენციალურობის შეტყობინება Family Link-ით მართული Google ანგარიშებისთვის<ph name="END_LINK3" />.</translation>
 <translation id="397583555483684758">სინქრონიზაციის პროცესი შეწყდა</translation>
 <translation id="3976396876660209797">ამოშალეთ და ხელახლა შექმენით ეს მალსახმობი</translation>

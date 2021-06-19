@@ -325,6 +325,7 @@
 <translation id="305593374596241526">स्‍थान बंद आहे; <ph name="BEGIN_LINK" />Android सेटिंग्‍ज<ph name="END_LINK" /> मध्‍ये हे सुरू करा.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> बुकमार्क}other{<ph name="BOOKMARKS_COUNT_MANY" /> बुकमार्क}}</translation>
 <translation id="3062802207422175757">Chrome वरील तुमच्या स्वारस्यांविषयी लेख</translation>
+<translation id="3066573403916685335">खाली हलवा</translation>
 <translation id="3070005020161560471">आपोआप भाषांतर करा</translation>
 <translation id="3091010850649238832">क्लिपबोर्डवरील आशय दाखवा</translation>
 <translation id="3098745985164956033">तुमच्यासाठी वर्णनांमध्ये सुधारणा करण्याकरिता काही इमेज Google कडे पाठवल्या जातात</translation>
@@ -362,6 +363,7 @@
 <translation id="3295530008794733555">आणखी जलद ब्राउझ करा. कमी डेटा वापरा.</translation>
 <translation id="3297344142967351106">व्हॉइस साहाय्य</translation>
 <translation id="3303414029551471755">आशय डाउनलोड करणे सुरू ठेवायचे?</translation>
+<translation id="333367884906698540">तुमचे पूर्ण झाल्यावर, ब्लूटूथ परत बंद होईल</translation>
 <translation id="3334729583274622784">फाइल एक्स्टेंशन बदलायचे आहे का?</translation>
 <translation id="3341058695485821946">तुम्ही किती डेटा सेव्ह केला ते पहा</translation>
 <translation id="3341262203274374114">अनफॉलो करू शकत नाही. काहीतरी चूक झाली.</translation>
@@ -453,6 +455,7 @@
 <translation id="3962957115499249330">हा डाउनलोड वाय-फाय वर सुरू होईल तेव्हा तुम्हाला सूचना दिसेल.</translation>
 <translation id="3963007978381181125">पासफ्रेज एंक्रिप्शनमध्ये Google Pay वरील पेमेंट पद्धतींचा आणि पत्त्यांचा समावेश नसतो. फक्त तुमचा पासफ्रेज असलेली एखादी व्यक्ती तुमचा एंक्रिप्ट केलेला डेटा वाचू शकते. पासफ्रेज Google कडे पाठवला किंवा त्याद्वारे स्टोअर केला जात नाही. तुम्ही तुमचा पासफ्रेज विसरल्यास किंवा तुम्हाला हे सेटिंग बदलायचे असल्यास, तुम्हाला सिंक रीसेट करण्याची आवश्यकता असेल. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome तुमचे पासवर्ड तपासू शकत नाही</translation>
+<translation id="3969863827134279083">वर हलवा</translation>
 <translation id="3974987681202239636"><ph name="APP_NAME" /> हे Chrome मध्ये उघडेल. सुरू ठेवून, तुम्ही <ph name="BEGIN_LINK1" />Google सेवा अटी<ph name="END_LINK1" /> आणि <ph name="BEGIN_LINK2" />Google Chrome व Chrome OS अतिरिक्त सेवा अटी<ph name="END_LINK2" /> यांना सहमती दर्शवता. <ph name="BEGIN_LINK3" />Family Link सोबत व्यवस्थापित केलेली Google खाती यांसाठी गोपनीयतेची सूचना<ph name="END_LINK3" /> देखील लागू होते.</translation>
 <translation id="397583555483684758">संकालनाने कार्य करणे थांबविले आहे</translation>
 <translation id="3976396876660209797">हा शॉर्टकट काढून टाका आणि पुन्हा तयार करा</translation>
@@ -1036,6 +1039,7 @@
 <translation id="7641339528570811325">ब्राउझिंग डेटा साफ करा...</translation>
 <translation id="764170292089748542">तुम्ही खाजगीरीत्या ब्राउझ करणे निवडता तेव्हा, Chrome तुमचा ब्राउझिंग इतिहास सेव्ह करत नाही. तुम्ही तरीही तुमच्या आवडत्या साइट अ‍ॅक्सेस करण्यासाठी बुकमार्क वापरू शकता.</translation>
 <translation id="7646772052135772216">पासवर्ड सिंक काम करत नाही</translation>
+<translation id="7655900163790317559">ब्लूटूथ सुरू करत आहे…</translation>
 <translation id="7658239707568436148">रद्द करा</translation>
 <translation id="7665369617277396874">खाते जोडा</translation>
 <translation id="766587987807204883">तुम्ही ऑफलाइन असताना देखील तुम्ही वाचू शकता असे लेख येथे दिसतात</translation>

@@ -325,6 +325,7 @@
 <translation id="305593374596241526">ਟਿਕਾਣਾ ਸੇਵਾ ਬੰਦ ਹੈ; ਇਸਨੂੰ <ph name="BEGIN_LINK" />Android ਸੈਟਿੰਗਾਂ<ph name="END_LINK" /> ਵਿੱਚ ਚਾਲੂ ਕਰੋ।</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> ਬੁੱਕਮਾਰਕ}one{<ph name="BOOKMARKS_COUNT_MANY" /> ਬੁੱਕਮਾਰਕ}other{<ph name="BOOKMARKS_COUNT_MANY" /> ਬੁੱਕਮਾਰਕ}}</translation>
 <translation id="3062802207422175757">Chrome 'ਤੇ ਤੁਹਾਡੀਆਂ ਦਿਲਚਸਪੀਆਂ ਬਾਰੇ ਲੇਖ</translation>
+<translation id="3066573403916685335">ਹੇਠਾਂ ਮੂਵ ਕਰੋ</translation>
 <translation id="3070005020161560471">ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਅਨੁਵਾਦ ਕਰੋ</translation>
 <translation id="3091010850649238832">ਕਲਿੱਪਬੋਰਡ ਸਮੱਗਰੀ ਦਿਖਾਓ</translation>
 <translation id="3098745985164956033">ਤੁਹਾਡੇ ਲਈ ਵਰਣਨ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਲਈ ਕੁਝ ਚਿੱਤਰਾਂ ਨੂੰ Google ਨੂੰ ਭੇਜਿਆ ਜਾਂਦਾ ਹੈ</translation>
@@ -362,6 +363,7 @@
 <translation id="3295530008794733555">ਵਧੇਰੇ ਤੇਜ਼ ਬ੍ਰਾਊਜ਼ ਕਰੋ। ਘੱਟ ਡਾਟਾ ਵਰਤੋ।</translation>
 <translation id="3297344142967351106">ਅਵਾਜ਼ੀ ਸਹਾਇਕ</translation>
 <translation id="3303414029551471755">ਕੀ ਸਮੱਗਰੀ ਡਾਊਨਲੋਡ ਕਰਨਾ ਜਾਰੀ ਰੱਖਣਾ ਹੈ?</translation>
+<translation id="333367884906698540">ਤੁਹਾਡੇ ਪੂਰਾ ਕਰਨ ਤੋਂ ਬਾਅਦ ਬਲੂਟੁੱਥ ਦੁਬਾਰਾ ਬੰਦ ਹੋ ਜਾਵੇਗਾ</translation>
 <translation id="3334729583274622784">ਕੀ ਫ਼ਾਈਲ ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ ਬਦਲਣਾ ਹੈ?</translation>
 <translation id="3341058695485821946">ਤੁਹਾਡੇ ਵੱਲੋਂ ਬਚਾਏ ਗਏ ਡਾਟੇ ਦੀ ਮਾਤਰਾ ਦੇਖੋ</translation>
 <translation id="3341262203274374114">ਅਨੁਸਰਣ ਕਰਨਾ ਬੰਦ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ। ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ।</translation>
@@ -453,6 +455,7 @@
 <translation id="3962957115499249330">ਵਾਈ-ਫਾਈ 'ਤੇ ਇਸ ਡਾਊਨਲੋਡ ਦੇ ਸ਼ੁਰੂ ਹੋਣ 'ਤੇ ਤੁਹਾਨੂੰ ਸੂਚਨਾ ਦਿਸੇਗੀ।</translation>
 <translation id="3963007978381181125">ਪਾਸਫਰੇਜ਼ ਇਨਕ੍ਰਿਪਸ਼ਨ ਵਿੱਚ Google Pay ਦੀਆਂ ਭੁਗਤਾਨ ਵਿਧੀਆਂ ਅਤੇ ਪਤੇ ਸ਼ਾਮਲ ਨਹੀਂ ਹਨ। ਤੁਹਾਡੇ ਇਨਕ੍ਰਿਪਟਡ ਡਾਟੇ ਨੂੰ ਸਿਰਫ਼ ਓਹੀ ਵਿਅਕਤੀ ਪੜ੍ਹ ਸਕਦਾ ਹੈ ਜਿਸ ਕੋਲ ਤੁਹਾਡਾ ਪਾਸਫਰੇਜ਼ ਹੁੰਦਾ ਹੈ। ਪਾਸਫਰੇਜ਼ Google ਨੂੰ ਭੇਜਿਆ ਜਾਂ ਉਸ ਵੱਲੋਂ ਸਟੋਰ ਨਹੀਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ। ਜੇਕਰ ਤੁਸੀਂ ਆਪਣਾ ਪਾਸਫਰੇਜ਼ ਭੁੱਲ ਜਾਂਦੇ ਹੋ ਜਾਂ ਇਸ ਸੈਟਿੰਗ ਨੂੰ ਬਦਲਣਾ ਚਾਹੁੰਦੇ ਹੋ, ਤਾਂ ਤੁਹਾਨੂੰ ਸਮਕਾਲੀਕਰਨ ਨੂੰ ਰੀਸੈੱਟ ਕਰਨ ਦੀ ਲੋੜ ਪਵੇਗੀ। <ph name="BEGIN_LINK" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome ਤੁਹਾਡੇ ਪਾਸਵਰਡਾਂ ਦੀ ਜਾਂਚ ਨਹੀਂ ਕਰ ਸਕਦਾ</translation>
+<translation id="3969863827134279083">ਉੱਪਰ ਮੂਵ ਕਰੋ</translation>
 <translation id="3974987681202239636"><ph name="APP_NAME" /> ਨੂੰ Chrome ਵਿੱਚ ਖੋਲ੍ਹਿਆ ਜਾਵੇਗਾ। ਜਾਰੀ ਰੱਖ ਕੇ, ਤੁਸੀਂ <ph name="BEGIN_LINK1" />Google ਦੇ ਸੇਵਾ ਦੇ ਨਿਯਮਾਂ<ph name="END_LINK1" /> ਅਤੇ <ph name="BEGIN_LINK2" />Google Chrome ਅਤੇ Chrome OS ਦੇ ਵਧੀਕ ਸੇਵਾ ਦੇ ਨਿਯਮਾਂ<ph name="END_LINK2" /> ਨਾਲ ਸਹਿਮਤ ਹੁੰਦੇ ਹੋ। <ph name="BEGIN_LINK3" />Family Link ਨਾਲ ਪ੍ਰਤੀਬੰਧਿਤ ਕੀਤੇ ਜਾਂਦੇ Google ਖਾਤਿਆਂ ਲਈ ਪਰਦੇਦਾਰੀ ਨੋਟਿਸ<ph name="END_LINK3" /> ਵੀ ਲਾਗੂ ਹੁੰਦਾ ਹੈ।</translation>
 <translation id="397583555483684758">ਸਮਕਾਲੀਕਰਨ ਨੇ ਕੰਮ ਕਰਨਾ ਬੰਦ ਕਰ ਦਿੱਤਾ ਹੈ</translation>
 <translation id="3976396876660209797">ਇਸ ਸ਼ਾਰਟਕੱਟ ਨੂੰ ਹਟਾ ਕੇ ਮੁੜ-ਬਣਾਓ</translation>
@@ -1036,6 +1039,7 @@
 <translation id="7641339528570811325">ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟਾ ਕਲੀਅਰ ਕਰੋ...</translation>
 <translation id="764170292089748542">ਜਦੋਂ ਤੁਸੀਂ ਨਿੱਜੀ ਤੌਰ 'ਤੇ ਬ੍ਰਾਊਜ਼ ਕਰਨ ਦੀ ਚੋਣ ਕਰਦੇ ਹੋ, ਤਾਂ Chrome ਤੁਹਾਡੇ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਨੂੰ ਰੱਖਿਅਤ ਨਹੀਂ ਕਰਦਾ। ਤੁਸੀਂ ਹਾਲੇ ਵੀ ਆਪਣੀਆਂ ਮਨਪਸੰਦ ਸਾਈਟਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਲਈ ਬੁੱਕਮਾਰਕ ਦੀ ਵਰਤੋਂ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="7646772052135772216">ਪਾਸਵਰਡ ਸਮਕਾਲੀਕਰਨ ਕੰਮ ਨਹੀਂ ਕਰ ਰਿਹਾ ਹੈ</translation>
+<translation id="7655900163790317559">ਬਲੂਟੁੱਥ ਚਾਲੂ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ…</translation>
 <translation id="7658239707568436148">ਰੱਦ ਕਰੋ</translation>
 <translation id="7665369617277396874">ਖਾਤਾ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="766587987807204883">ਲੇਖ ਇੱਥੇ ਦਿਖਾਈ ਦਿੰਦੇ ਹਨ, ਜਿਨ੍ਹਾਂ ਨੂੰ ਤੁਸੀਂ ਆਫ਼ਲਾਈਨ ਹੋਣ 'ਤੇ ਵੀ ਪੜ੍ਹ ਸਕਦੇ ਹੋ</translation>

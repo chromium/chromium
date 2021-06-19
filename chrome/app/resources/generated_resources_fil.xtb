@@ -2544,6 +2544,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
 <translation id="3739254215541673094">Buksan ang <ph name="APPLICATION" />?</translation>
 <translation id="3742055079367172538">Nakakuha na ng screenshot</translation>
+<translation id="3742235229730461951">Layout ng Korean na keyboard</translation>
 <translation id="3742666961763734085">Hindi makahanap ng unit ng organisasyon na may ganyang pangalan. Pakisubukang muli.</translation>
 <translation id="3744111561329211289">Pag-sync sa background</translation>
 <translation id="3747077776423672805">Para mag-alis ng mga app, pumunta sa Mga Setting &gt; Google Play Store &gt; Pamahalaan ang mga kagustuhan sa Android &gt; Mga App o Application manager. Pagkatapos ay i-tap ang app na gusto mong i-uninstall (maaaring kailanganin mong mag-swipe pakanan o pakaliwa para mahanap ang app). Pagkatapos, i-tap ang I-uninstall o I-disable.</translation>
@@ -4709,7 +4710,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6186394437969115158">Karaniwang nagpapakita ng mga ad ang mga site para makapagbigay ang mga ito ng content o mga serbisyo nang libre. Pero, kilalang nagpapakita ng mga nakakasagabal o nakakapanlinlang na ad ang ilang site.</translation>
 <translation id="6195005504600220730">Basahin ang impormasyon tungkol sa iyong browser, OS, at device</translation>
 <translation id="6195693561221576702">Hindi ma-set up ang device na ito sa offline na demo mode.</translation>
-<translation id="6195724942939841102">Huwag i-restore</translation>
 <translation id="6196640612572343990">I-block ang mga third-party na cookie</translation>
 <translation id="6196854373336333322">Kinokontrol na ng extension na "<ph name="EXTENSION_NAME" />" ang iyong mga setting ng proxy, na ang ibig sabihin ay maaari nitong baguhin, sirain o alamin ang anumang bagay na gagawin mo online. Kung hindi ka sigurado kung bakit naganap ang pagbabagong ito, malamang ay hindi mo ito ginustong mangyari.</translation>
 <translation id="6198102561359457428">Mag-sign out pagkatapos ay mag-sign in muli...</translation>

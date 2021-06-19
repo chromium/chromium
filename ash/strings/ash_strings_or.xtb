@@ -290,7 +290,6 @@
 <translation id="3307642347673023554">ଲାପଟପ୍ ମୋଡକୁ ସ୍ୱିଚ୍ କରାଯାଇଛି</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> ଏବେ ମଧ୍ୟ ପରେ ସାଇନ୍‍ ଇନ୍‌ କରିପାରିବେ।</translation>
 <translation id="3321628682574733415">ଅବୈଧ ପ୍ୟାରେଣ୍ଟ କୋଡ୍</translation>
-<translation id="332587331255250389">ଦୟାକରି ବ୍ୟାଟେରୀ ବଦଳାନ୍ତୁ</translation>
 <translation id="3341303451326249809">ସ୍କ୍ରିନସଟକୁ କ୍ୟାପଚର୍ କରାଯାଇଛି</translation>
 <translation id="334252345105450327">ଏକ ସ୍କ୍ରିନସଟ୍ ନିଅନ୍ତୁ</translation>
 <translation id="3351879221545518001">ଆପଣ ବର୍ତ୍ତମାନ ସ୍କ୍ରିନ୍ କାଷ୍ଟ କରୁଛନ୍ତି।</translation>
@@ -318,6 +317,7 @@
 <translation id="3510164367642747937">ମାଉସ୍‌ କର୍ସର୍‌ ହାଇଲାଇଟ୍ କରନ୍ତୁ</translation>
 <translation id="3513798432020909783"><ph name="MANAGER_EMAIL" /> ଦ୍ୱାରା ଆକାଉଣ୍ଟ ପରିଚାଳିତ ହେଉଛି</translation>
 <translation id="3552189655002856821">ୱାଇ-ଫାଇ ବନ୍ଦ ଅଛି</translation>
+<translation id="3560866052109807830">ମାର୍କର୍ ଡ୍ରଇଂ ଟୁଲ୍</translation>
 <translation id="3563775809269155755">ହଟସ୍ପଟକୁ ସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="3571734092741541777">ସେଟ୍ ଅପ୍</translation>
 <translation id="3573179567135747900">"<ph name="FROM_LOCALE" />"ରେ ପୁଣି ପରିବର୍ତ୍ତନ କରନ୍ତୁ (ପୁନରାରମ୍ଭର ଆବଶ୍ୟକତା ଅଛି)</translation>
@@ -412,6 +412,7 @@
 <translation id="4274537685965975248">Ctrl + Alt + ତଳ ତୀର କୀବୋର୍ଡ ସର୍ଟକଟ୍ ବଦଳି ଯାଇଛି। End କୀକୁ ବ୍ୟବହାର କରିବା ପାଇଁ, <ph name="LAUNCHER_KEY_NAME" /> କୀ + ଡାହାଣ ତୀର କୀ ଦବାନ୍ତୁ।</translation>
 <translation id="4279490309300973883">ପ୍ରତିଫଳନ</translation>
 <translation id="4285498937028063278">ଅନ୍‌ପିନ୍ କରନ୍ତୁ</translation>
+<translation id="429402653707266969">ଟୁଲବାର୍ ଲୋକେସନ୍ ଟୋଗଲ୍ କରନ୍ତୁ</translation>
 <translation id="4294319844246081198">ସୁପ୍ରଭାତ <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">ସମସ୍ତ <ph name="COUNT" />ବିଜ୍ଞପ୍ତି ଖାଲି କରନ୍ତୁ</translation>
 <translation id="4302592941791324970">ଉପଲବ୍ଧ ନାହିଁ</translation>

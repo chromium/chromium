@@ -325,6 +325,7 @@ Sök genom att trycka länge på ett ord. Du kan förfina sökningen genom att v
 <translation id="305593374596241526">Plats har inaktiverats. Aktivera det i <ph name="BEGIN_LINK" />Android-inställningarna<ph name="END_LINK" />.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> bokmärke}other{<ph name="BOOKMARKS_COUNT_MANY" /> bokmärken}}</translation>
 <translation id="3062802207422175757">Artiklar om dina intressen i Chrome</translation>
+<translation id="3066573403916685335">Flytta ner</translation>
 <translation id="3070005020161560471">Översätt automatiskt</translation>
 <translation id="3091010850649238832">Visa innehållet i Urklipp</translation>
 <translation id="3098745985164956033">Vissa bilder skickas till Google så att du får bättre beskrivningar</translation>
@@ -454,6 +455,7 @@ Privacy Sandbox är för närvarande under utveckling och tillgängligt i vissa 
 <translation id="3962957115499249330">Du får en avisering när nedladdningen startas via wifi.</translation>
 <translation id="3963007978381181125">Betalningsmetoder och adresser från Google Pay omfattas inte av kryptering med lösenfras. Endast personer som har ditt lösenord kan läsa dina krypterade uppgifter. Lösenfrasen skickas inte till och sparas inte av Google. Om du glömmer lösenfrasen måste du återställa synkroniseringen. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome kan inte kontrollera dina lösenord</translation>
+<translation id="3969863827134279083">Flytta upp</translation>
 <translation id="3974987681202239636"><ph name="APP_NAME" /> öppnas i Chrome. Genom att fortsätta godkänner du <ph name="BEGIN_LINK1" />Googles användarvillkor<ph name="END_LINK1" /> och <ph name="BEGIN_LINK2" />de ytterligare användarvillkoren för Google Chrome och Chrome OS<ph name="END_LINK2" />. <ph name="BEGIN_LINK3" />Sekretessmeddelandet för Google-konton som hanteras med Family Link<ph name="END_LINK3" /> gäller också.</translation>
 <translation id="397583555483684758">Synkroniseringen har slutat fungera</translation>
 <translation id="3976396876660209797">Ta bort och återskapa den här genvägen</translation>

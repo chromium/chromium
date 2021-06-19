@@ -325,6 +325,7 @@ Raak en hou enige woord om te soek. Kies meer of minder woorde as jy jou soektog
 <translation id="305593374596241526">Ligging is af; skakel dit in <ph name="BEGIN_LINK" />Android-instellings<ph name="END_LINK" /> aan.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> boekmerk}other{<ph name="BOOKMARKS_COUNT_MANY" /> boekmerke}}</translation>
 <translation id="3062802207422175757">Artikels oor jou belangstellings op Chrome</translation>
+<translation id="3066573403916685335">Beweeg Af</translation>
 <translation id="3070005020161560471">Vertaal outomaties</translation>
 <translation id="3091010850649238832">Wys knipbordinhoud</translation>
 <translation id="3098745985164956033">Sommige prente word na Google toe gestuur om hul beskrywings vir jou te verbeter</translation>
@@ -454,6 +455,7 @@ Privacy Sandbox word nog aktief ontwikkel en is in sekere streke beskikbaar. Vir
 <translation id="3962957115499249330">Jy sal 'n kennisgewing sien wanneer hierdie aflaai oor wi-fi begin.</translation>
 <translation id="3963007978381181125">Wagfrase-enkripsie sluit nie betaalmetodes en adresse van Google Pay af in nie. Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word nie na Google toe gestuur of deur Google geberg nie. As jy jou wagfrase vergeet of hierdie instelling wil verander, sal jy sinkronisering moet terugstel. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome kan nie jou wagwoorde nagaan nie</translation>
+<translation id="3969863827134279083">Beweeg op</translation>
 <translation id="3974987681202239636"><ph name="APP_NAME" /> sal in Chrome oopmaak. As jy voortgaan, stem jy in tot <ph name="BEGIN_LINK1" />Google se diensbepalings<ph name="END_LINK1" /> en <ph name="BEGIN_LINK2" />Google Chrome en Chrome-bedryfstelsel se bykomende diensbepalings<ph name="END_LINK2" />. Die <ph name="BEGIN_LINK3" />Privaatheidskennisgewing vir Google-rekeninge wat met Family Link bestuur word<ph name="END_LINK3" /> is ook van toepassing.</translation>
 <translation id="397583555483684758">Sinkronisering het ophou werk</translation>
 <translation id="3976396876660209797">Verwyder hierdie kortpad en skep dit weer</translation>

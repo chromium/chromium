@@ -325,6 +325,7 @@
 <translation id="305593374596241526">Локација је искључена; укључите је у <ph name="BEGIN_LINK" />Android подешавањима<ph name="END_LINK" />.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> обележивач}one{<ph name="BOOKMARKS_COUNT_MANY" /> обележивач}few{<ph name="BOOKMARKS_COUNT_MANY" /> обележивача}other{<ph name="BOOKMARKS_COUNT_MANY" /> обележивача}}</translation>
 <translation id="3062802207422175757">Чланци о вашим интересовањима у Chrome-у</translation>
+<translation id="3066573403916685335">Помери надоле</translation>
 <translation id="3070005020161560471">Аутоматски преводи</translation>
 <translation id="3091010850649238832">Прикажи садржај привремене меморије</translation>
 <translation id="3098745985164956033">Неке слике се шаљу Google-у ради побољшања описа</translation>
@@ -454,6 +455,7 @@
 <translation id="3962957115499249330">Видећете обавештење кад се ово преузимање покрене преко WiFi мреже.</translation>
 <translation id="3963007978381181125">Шифровање помоћу приступне фразе не обухвата начине плаћања и адресе из Google Pay-а. Само неко ко има приступну фразу може да чита шифроване податке. Приступна фраза се не шаље Google-у нити је он чува. Ако заборавите приступну фразу или пожелите да промените ово подешавање, треба да ресетујете синхронизацију. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome не може да вам проверава лозинке</translation>
+<translation id="3969863827134279083">Помери нагоре</translation>
 <translation id="3974987681202239636"><ph name="APP_NAME" /> ће се отворити у Chrome-у. Ако наставите, прихватате <ph name="BEGIN_LINK1" />Google услове коришћења услуге<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />додатне услове коришћења услуге за Google Chrome и Chrome ОС<ph name="END_LINK2" />. Примењује се и <ph name="BEGIN_LINK3" />Обавештење о приватности за Google налоге којима се управља преко Family Link-а<ph name="END_LINK3" />.</translation>
 <translation id="397583555483684758">Синхронизација више не функционише</translation>
 <translation id="3976396876660209797">Уклоните и поново направите ову пречицу</translation>

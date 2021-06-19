@@ -325,6 +325,7 @@
 <translation id="305593374596241526">位置信息功能现处于关闭状态；请在 <ph name="BEGIN_LINK" />Android 设置<ph name="END_LINK" />中开启此项功能。</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> 个书签}other{<ph name="BOOKMARKS_COUNT_MANY" /> 个书签}}</translation>
 <translation id="3062802207422175757">Chrome 可提供您感兴趣的报道</translation>
+<translation id="3066573403916685335">下移</translation>
 <translation id="3070005020161560471">自动翻译</translation>
 <translation id="3091010850649238832">显示剪贴板内容</translation>
 <translation id="3098745985164956033">系统会将部分图片发送给 Google 以便为您改进说明</translation>
@@ -453,6 +454,7 @@
 <translation id="3962957115499249330">待系统能够通过可用的 Wi-Fi 开始执行这项下载操作时，您会收到通知。</translation>
 <translation id="3963007978381181125">密码加密不包括 Google Pay 中的付款方式和地址。只有知道您密码的人才能读取您的已加密数据。系统不会将该密码发送给 Google，Google 也不会存储该密码。如果您忘记了密码或想更改此设置，则需重置同步设置。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome 无法检查您的密码</translation>
+<translation id="3969863827134279083">上移</translation>
 <translation id="3974987681202239636"><ph name="APP_NAME" />将在 Chrome 中打开。继续操作即表示您同意接受 <ph name="BEGIN_LINK1" />Google 服务条款<ph name="END_LINK1" />以及 <ph name="BEGIN_LINK2" />Google Chrome 和 Chrome 操作系统附加服务条款<ph name="END_LINK2" />。<ph name="BEGIN_LINK3" />针对通过 Family Link 管理的 Google 帐号的隐私权声明<ph name="END_LINK3" />也适用。</translation>
 <translation id="397583555483684758">同步功能已停止工作</translation>
 <translation id="3976396876660209797">移除并重新创建此快捷方式</translation>

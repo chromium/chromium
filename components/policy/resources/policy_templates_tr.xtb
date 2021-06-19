@@ -1088,11 +1088,6 @@ Bu politika ayarlandığında kullanıcı, değeri geçersiz kılamaz.
 
 Bu politika ayarlanmadan bırakılırsa gizlilik ekranı başta devre dışı bırakılır, ancak kullanıcı tarafından kontrol edilebilir.</translation>
 <translation id="2415715982424988916">Keşfet (91 sürümünden itibaren desteklenir)</translation>
-<translation id="241739814668386424"> Bu politika devre dışı bırakılırsa kullanıcılar, PCle tünelleme üzerinden Thunderbolt/USB4 çevre birimini tam olarak bağlayamazlar.
-
-      Bu politika etkinleştirilirse kullanıcılar, PCle tünelleme üzerinden Thunderbolt/USB4 çevre birimini tam olarak bağlayabilirler.
-
-      Bu politika varsayılan olarak devre dışıdır.</translation>
 <translation id="2421677964966613267">Bu politika, M88 sürümünde kullanımdan kaldırılmıştır. Flash artık Chrome tarafından desteklenmemektedir. Politikayı ayarlamak, <ph name="FLASH_PLUGIN_NAME" /> eklentisini çalıştıramayan siteleri belirten URL kalıpları için bir liste yapmanıza olanak tanır.
 
       Politikayı ayarlamadan bırakırsanız <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> (ayarlanmışsa) bütün siteler için geçerli olur. Aksi takdirde kullanıcının kişisel ayarları geçerlidir.
@@ -3241,7 +3236,6 @@ Bu politika Yanlış değerine ayarlanırsa <ph name="PRODUCT_NAME" /> yerel bil
           Bu politika ayarlanmadan bırakılırsa giriş ekranında imleci vurgulama başlangıçta devre dışı bırakılır, ancak kullanıcılar istedikleri zaman bunu etkinleştirebilir.</translation>
 <translation id="5279539586558702228">Cihazın alternatif akım kullanarak çalışacağı zaman (cihazın yerel saat dilimine göre).</translation>
 <translation id="5283457834853986457">Eklenti bulucuyu devre dışı bırak (kullanımdan kaldırıldı)</translation>
-<translation id="5285315763984334157">Kötü amaçlı indirmeleri engelle</translation>
 <translation id="5288772341821359899">Politika ayarlanırsa, WebRTC tarafından kullanılan UDP bağlantı noktası aralığı, belirtilen bağlantı noktası aralığı (başlangıç ve bitiş noktaları dahil) kullanılacak şekilde kısıtlanır.
 
       Politika ayarlanmazsa veya boş dize değerine ya da geçersiz bir bağlantı noktası aralığına ayarlanırsa, WebRTC'nin kullanılabilir herhangi bir yerel UDP bağlantı noktasını kullanmasına izin verilir.</translation>

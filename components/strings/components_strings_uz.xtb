@@ -820,6 +820,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3963721102035795474">O‘qish rejimi</translation>
 <translation id="3963837677003247395">Oʻzingiz davom ettirasizmi?</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Yo‘q}=1{1 ta saytdan }other{# ta saytdan }}</translation>
+<translation id="3970481983430640194">Endi bu ilovani sudrash va oʻlchamini oʻzgartirish mumkin</translation>
 <translation id="397105322502079400">Hisoblanmoqda...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> saytiga kirish taqiqlangan</translation>
 <translation id="3973357910713125165">Chrome sozlamalari orqali Xavfsizlik tekshiruvini bajarish uchun Enter tugmasini bosing</translation>
@@ -1397,6 +1398,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6032524144326295339">Pochta qutisi 2</translation>
 <translation id="6032955021262906325">Chap chekkasini belgilash</translation>
 <translation id="6034000775414344507">Och kulrang</translation>
+<translation id="6034062182346928710"><ph name="APP_NAME" /> oʻlchami xato oʻzgarishi mumkin. Ilova bexato ishlashi uchun oyna oʻlchami andozalaridan foydalaning.</translation>
 <translation id="6034283069659657473">10x14 (Envelope)</translation>
 <translation id="6034514109191629503">Bukletsimon taxlash</translation>
 <translation id="6039846035001940113">Agar muammo qaytarilsa, sayt egasi bilan bog‘laning.</translation>
@@ -1426,6 +1428,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6120179357481664955">UPI identifikatori eslab qolinsinmi?</translation>
 <translation id="6123290840358279103">Virtual kartani ochish</translation>
 <translation id="6124432979022149706">Chrome korporativ konnektorlari</translation>
+<translation id="6143538402333184781">Bu ilova faqat “Telefon” oʻlchamida ochiladi.</translation>
 <translation id="6146055958333702838">Kabel ulanishlarini tekshiring, router, modem yoki boshqa tarmoq qurilmalarini o‘chirib yoqing.</translation>
 <translation id="614940544461990577">Quyidagilarni bajaring:</translation>
 <translation id="6150036310511284407">Chapdan 3 ta teshik ochish</translation>
@@ -1769,7 +1772,6 @@ Batafsil axborot:
 <translation id="7481312909269577407">Oldinga</translation>
 <translation id="7485870689360869515">Ma‘lumotlar topilmadi.</translation>
 <translation id="7495528107193238112">Bu kontent bloklandi. Muammoni yechish uchun sayt egasiga murojaat qiling.</translation>
-<translation id="7498193950643227031">Oʻlchami oʻzgartirilsa, ishlashida xato yuz berishi mumkin. <ph name="SETTINGS" /> orqali ilovalar hajmi oʻzgartirilishini cheklash mumkin.</translation>
 <translation id="7503664977220660814">Hozirgina shubhali saytda parol kiritdingiz. Chromium hoziroq <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> va boshqa saytlardagi shu parolingizni tekshirishni tavsiya qiladi.</translation>
 <translation id="7508255263130623398">Qurilmaning qaytarilgan identifikatori bo‘sh yoki joriy qurilma identifikatoriga mos kelmaydi</translation>
 <translation id="7508870219247277067">Yashil avokado</translation>

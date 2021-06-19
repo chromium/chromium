@@ -325,6 +325,7 @@ Axtarmaq üçün istənilən sözə toxunub saxlayın. Axtarışınızı dəqiql
 <translation id="305593374596241526">Məkan deaktivdir: <ph name="BEGIN_LINK" />Android Ayarlarından<ph name="END_LINK" /> aktiv edin.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> əlfəcin}other{<ph name="BOOKMARKS_COUNT_MANY" /> əlfəcin}}</translation>
 <translation id="3062802207422175757">Chrome'da maraqlarınıza dair məqalələr</translation>
+<translation id="3066573403916685335">Aşağıya</translation>
 <translation id="3070005020161560471">Avtomatik tərcümə edin</translation>
 <translation id="3091010850649238832">Mübadilə buferindəki kontenti göstərin</translation>
 <translation id="3098745985164956033">Sizin üçün təsvirləri yaxşılaşdırmaq üçün bəzi şəkillər Google'a göndərilir</translation>
@@ -454,6 +455,7 @@ Təhlükəsiz Sandbox hələ də aktiv inkişaf etdirilir və seçilmiş bölgə
 <translation id="3962957115499249330">Bu endirmə Wi-Fi'da başlayanda bildiriş görəcəksiniz.</translation>
 <translation id="3963007978381181125">Google Pay'dəki ödəniş metodları və ünvanlar parol şifrələməsinə daxil deyil. Yalnız parolunuzu bilən şəxs şifrələnmiş datanı oxuya bilər. Google parolu əldə etmir və ya saxlamır. Parolu unutsanız və ya bu ayarı dəyişmək istəsəniz, sinxronizasiyanı sıfırlamalısınız. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome parollarınızı yoxlaya bilmir</translation>
+<translation id="3969863827134279083">Yuxarı Köçürün</translation>
 <translation id="3974987681202239636"><ph name="APP_NAME" /> Chrome'da açılacaq. Davam etməklə, <ph name="BEGIN_LINK1" />Google Xidmət Şərtləri<ph name="END_LINK1" /> və <ph name="BEGIN_LINK2" />Google Chrome və Chrome ƏS Əlavə Xidmət Şərtləri<ph name="END_LINK2" /> ilə razılaşırsınız. <ph name="BEGIN_LINK3" />Family Link ilə İdarə Edilən Google Hesabları üçün Məxfilik Bildirişi<ph name="END_LINK3" /> də tətbiq edilir.</translation>
 <translation id="397583555483684758">Sinxronizasiya işləmir</translation>
 <translation id="3976396876660209797">Bu qısayolu silin və yenidən yaradın</translation>

@@ -325,6 +325,7 @@
 <translation id="305593374596241526">Η Τοποθεσία είναι απενεργοποιημένη. Ενεργοποιήστε την στις <ph name="BEGIN_LINK" />Ρυθμίσεις Android<ph name="END_LINK" />.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> σελιδοδείκτης}other{<ph name="BOOKMARKS_COUNT_MANY" /> σελιδοδείκτες}}</translation>
 <translation id="3062802207422175757">Άρθρα για τα ενδιαφέροντά σας στο Chrome</translation>
+<translation id="3066573403916685335">Μετακίνηση κάτω</translation>
 <translation id="3070005020161560471">Να γίνεται μετάφραση αυτόματα</translation>
 <translation id="3091010850649238832">Εμφάνιση περιεχομένων πρόχειρου</translation>
 <translation id="3098745985164956033">Ορισμένες εικόνες αποστέλλονται στην Google για τη βελτίωση των περιγραφών για εσάς.</translation>
@@ -454,6 +455,7 @@
 <translation id="3962957115499249330">Θα εμφανιστεί μια ειδοποίηση όταν ξεκινήσει αυτή η λήψη σε Wi-Fi.</translation>
 <translation id="3963007978381181125">Η κρυπτογράφηση με φράση πρόσβασης δεν περιλαμβάνει τρόπους πληρωμής και διευθύνσεις από το Google Pay. Μόνο κάποιος που γνωρίζει τη φράση πρόσβασής σας μπορεί να διαβάσει τα κρυπτογραφημένα δεδομένα σας. Η φράση πρόσβασης δεν αποστέλλεται στην Google ούτε αποθηκεύεται από αυτήν. Εάν ξεχάσετε τη φράση πρόσβασής σας ή θέλετε να αλλάξετε αυτήν τη ρύθμιση, θα πρέπει να επαναφέρετε τον συγχρονισμό. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Το Chrome δεν μπορεί να ελέγξει τους κωδικούς πρόσβασής σας.</translation>
+<translation id="3969863827134279083">Μετακίνηση επάνω</translation>
 <translation id="3974987681202239636">Η εφαρμογή <ph name="APP_NAME" /> θα ανοίξει στο Chrome. Εάν συνεχίσετε, συμφωνείτε με τους <ph name="BEGIN_LINK1" />Όρους Παροχής Υπηρεσιών της Google<ph name="END_LINK1" /> και τους <ph name="BEGIN_LINK2" />Πρόσθετους Όρους Παροχής Υπηρεσιών του Google Chrome και του Chrome OS<ph name="END_LINK2" />. Ισχύει επίσης η <ph name="BEGIN_LINK3" />Σημείωση απορρήτου για Λογαριασμούς Google που διαχειρίζονται από το Family Link<ph name="END_LINK3" />.</translation>
 <translation id="397583555483684758">Ο συγχρονισμός σταμάτησε να λειτουργεί</translation>
 <translation id="3976396876660209797">Κατάργηση και εκ νέου δημιουργία αυτής της συντόμευσης</translation>

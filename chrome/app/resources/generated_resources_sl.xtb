@@ -2546,6 +2546,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
 <translation id="3739254215541673094">Želite odpreti aplikacijo <ph name="APPLICATION" />?</translation>
 <translation id="3742055079367172538">Posnetek zaslona je narejen</translation>
+<translation id="3742235229730461951">Razporeditev tipkovnice za korejščino</translation>
 <translation id="3742666961763734085">Organizacijske enote s tem imenom ni mogoče najti. Poskusite znova.</translation>
 <translation id="3744111561329211289">Sinhroniziranje v ozadju</translation>
 <translation id="3747077776423672805">Če želite odstraniti aplikacije, pojdite v »Nastavitve« &gt; »Trgovina Google Play« &gt; »Upravljanje nastavitev Androida« &gt; »Aplikacije« ali odprite Upravitelja aplikacij. Nato se dotaknite aplikacije, ki jo želite odmestiti (morda boste morali s prstom povleči v desno ali levo, da jo boste našli). Nato se dotaknite »Odmesti« ali »Onemogoči«.</translation>
@@ -4713,7 +4714,6 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="6186394437969115158">Spletna mesta običajno prikazujejo oglase zato, da vam lahko zagotovijo brezplačno vsebino ali storitve. Vseeno pa so nekatera spletna mesta znana po tem, da prikazujejo vsiljive ali zavajajoče oglase.</translation>
 <translation id="6195005504600220730">Branje podatkov o brskalniku, operacijskem sistemu in napravi</translation>
 <translation id="6195693561221576702">Te naprave ni mogoče nastaviti v predstavitvenem načinu brez povezave.</translation>
-<translation id="6195724942939841102">Ne obnovi</translation>
 <translation id="6196640612572343990">Blokiraj piškotke drugih spletnih mest</translation>
 <translation id="6196854373336333322">Razširitev »<ph name="EXTENSION_NAME" />« je prevzela nadzor nad nastavitvami strežnika proxy, kar pomeni, da lahko spremeni, prekine ali nadzoruje vse, kar počnete v spletu. Če ne veste, zakaj je prišlo do te spremembe, je verjetno nezaželena.</translation>
 <translation id="6198102561359457428">Odjavite se in znova prijavite ...</translation>

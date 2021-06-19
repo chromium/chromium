@@ -326,6 +326,7 @@
 <translation id="305593374596241526">ಸ್ಥಳ ಆಫ್ ಆಗಿದೆ; <ph name="BEGIN_LINK" />Android ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ<ph name="END_LINK" /> ಇದನ್ನು ಆನ್‌ ಮಾಡಿ.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> ಬುಕ್‌ಮಾರ್ಕ್‌}one{<ph name="BOOKMARKS_COUNT_MANY" /> ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು}other{<ph name="BOOKMARKS_COUNT_MANY" /> ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು}}</translation>
 <translation id="3062802207422175757">Chrome ನಲ್ಲಿ ನಿಮ್ಮ ಆಸಕ್ತಿಗಳಿಗೆ ಅನುಗುಣವಾಗಿರುವ ಲೇಖನಗಳು</translation>
+<translation id="3066573403916685335">ಕೆಳಕ್ಕೆ ಸರಿಸಿ</translation>
 <translation id="3070005020161560471">ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಅನುವಾದಿಸಿ</translation>
 <translation id="3091010850649238832">ಕ್ಲಿಪ್‌ಬೋರ್ಡ್ ವಿಷಯಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="3098745985164956033">ನಿಮಗಾಗಿ ವಿವರಣೆಗಳನ್ನು ಸುಧಾರಿಸಲು, ಕೆಲವು ಚಿತ್ರಗಳನ್ನು Google ಗೆ ಕಳುಹಿಸಲಾಗಿದೆ</translation>
@@ -455,6 +456,7 @@
 <translation id="3962957115499249330">ಈ ಡೌನ್‌ಲೋಡ್ ವೈ-ಫೈ ನಲ್ಲಿ ಪ್ರಾರಂಭವಾದಾಗ, ನೀವು ಅಧಿಸೂಚನೆಯನ್ನು ನೋಡುತ್ತೀರಿ.</translation>
 <translation id="3963007978381181125">ಪಾಸ್‌ಫ್ರೇಸ್ ಎನ್‌ಕ್ರಿಪ್ಶನ್, Google Pay ನಿಂದ ಪಾವತಿ ವಿಧಾನಗಳು ಮತ್ತು ವಿಳಾಸಗಳನ್ನು ಒಳಗೊಂಡಿರುವುದಿಲ್ಲ. ನಿಮ್ಮ ಎನ್‍‍ಕ್ರಿಪ್ಟ್ ಮಾಡಲಾದ ಡೇಟಾವನ್ನು ನಿಮ್ಮ ಪಾಸ್‌ಫ್ರೇಸ್ ಹೊಂದಿರುವ ಯಾರಾದರೂ ಮಾತ್ರ ಓದಬಹುದು. ಪಾಸ್‍‍ಫ್ರೇಸ್‍ ಅನ್ನು Google ಗೆ ಕಳುಹಿಸಲಾಗುವುದಿಲ್ಲ ಅಥವಾ ಅದನ್ನು Google ನಿಂದ ಸಂಗ್ರಹಿಸಲಾಗುವುದಿಲ್ಲ. ನಿಮ್ಮ ಪಾಸ್‍‍ಫ್ರೇಸ್ ಅನ್ನು ನೀವು ಮರೆತರೆ ಅಥವಾ ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ಬದಲಾಯಿಸಲು ಬಯಸಿದರೆ, ನೀವು ಸಿಂಕ್ ಅನ್ನು ಮರುಹೊಂದಿಸುವ ಅಗತ್ಯವಿರುತ್ತದೆ.<ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome ಗೆ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ</translation>
+<translation id="3969863827134279083">ಮೇಲಕ್ಕೆ ಸರಿಸಿ</translation>
 <translation id="3974987681202239636"><ph name="APP_NAME" />, Chrome ನಲ್ಲಿ ತೆರೆಯುತ್ತದೆ. ಮುಂದುವರಿಯುವ ಮೂಲಕ, ನೀವು <ph name="BEGIN_LINK1" />Google ಸೇವಾ ನಿಯಮಗಳು<ph name="END_LINK1" />, ಹಾಗೂ <ph name="BEGIN_LINK2" />Google Chrome ಮತ್ತು Chrome OS ಹೆಚ್ಚುವರಿ ಸೇವಾ ನಿಯಮಗಳಿಗೆ<ph name="END_LINK2" /> ಸಮ್ಮತಿಸುತ್ತೀರಿ. <ph name="BEGIN_LINK3" />Family Link ಮೂಲಕ ನಿರ್ವಹಿಸಲಾಗುವ Google ಖಾತೆಗಳಿಗಾಗಿ ಗೌಪ್ಯತೆ ಸೂಚನೆ<ph name="END_LINK3" /> ಸಹ ಅನ್ವಯಿಸುತ್ತದೆ.</translation>
 <translation id="397583555483684758">ಸಿಂಕ್ ಕಾರ್ಯನಿರ್ವಹಿಸುವುದನ್ನು ನಿಲ್ಲಿಸಿದೆ</translation>
 <translation id="3976396876660209797">ಈ ಶಾರ್ಟ್‌ಕಟ್‌ ಅನ್ನು ತೆಗೆದುಹಾಕಿ ಮತ್ತು ಮರುರಚಿಸಿ</translation>

@@ -325,6 +325,7 @@
 <translation id="305593374596241526">Жайгашкан жерди аныктоо жөндөөсү өчүрүлгөн; аны <ph name="BEGIN_LINK" />Android жөндөөлөрүнө<ph name="END_LINK" /> өтүп, күйгүзүңүз.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> кыстарма}other{<ph name="BOOKMARKS_COUNT_MANY" /> кыстарма}}</translation>
 <translation id="3062802207422175757">Chrome'догу сизди кызыктырган макалалар</translation>
+<translation id="3066573403916685335">Төмөн жылдыруу</translation>
 <translation id="3070005020161560471">Автоматтык түрдө которуу</translation>
 <translation id="3091010850649238832">Алмашуу буфериндеги мазмундарды көрсөтүү</translation>
 <translation id="3098745985164956033">Сүрөттөмөлөрдү жакшыртуу үчүн айрым сүрөттөр Google'га жөнөтүлөт</translation>
@@ -454,6 +455,7 @@ Privacy Sandbox дагы эле иштелип жатат, андыктан ай
 <translation id="3962957115499249330">Бул файл Wi-Fi аркылуу жүктөлүп алынып баштаганда билдирме аласыз.</translation>
 <translation id="3963007978381181125">Купуя сөз айкашы менен шифрлөө Google Pay'деги төлөм ыкмалары менен даректерине карата колдонулбайт. Шифрленген дайын-даректериңизди купуя сөз айкашын билген адам гана окуй алат. Бул купуя сөз айкашы Google'га жөнөтүлбөйт же анда сакталбайт. Эгер купуя сөз айкашыңызды унутуп калсаңыз, шайкештирүүнү баштапкы абалга келтиришиңиз керек болот. <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome сырсөздөрүңүздү текшере албай жатат</translation>
+<translation id="3969863827134279083">Өйдө жылуу</translation>
 <translation id="3974987681202239636"><ph name="APP_NAME" /> Chrome'до ачылат. Улантуу менен, <ph name="BEGIN_LINK1" />Google'дун Тейлөө шарттарына<ph name="END_LINK1" /> жана <ph name="BEGIN_LINK2" />Google Chrome менен Chrome OS'тун Кошумча Тейлөө шарттарына<ph name="END_LINK2" /> макулдугуңузду билдиресиз. <ph name="BEGIN_LINK3" />Family Link'те башкарылган Google аккаунттары үчүн Купуялык эскертүүсү<ph name="END_LINK3" /> да колдонулат.</translation>
 <translation id="397583555483684758">Шайкештирүү иштебей калды.</translation>
 <translation id="3976396876660209797">Бул кыска жолду алып салып, кайра түзүү</translation>

@@ -325,6 +325,7 @@ Mantén pulsada cualquier palabra para buscarla. Para acotar la búsqueda, selec
 <translation id="305593374596241526">La ubicación está desactivada. Actívala en los <ph name="BEGIN_LINK" />ajustes de Android<ph name="END_LINK" />.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> marcador}other{<ph name="BOOKMARKS_COUNT_MANY" /> marcadores}}</translation>
 <translation id="3062802207422175757">Artículos sobre tus intereses en Chrome</translation>
+<translation id="3066573403916685335">Mover hacia abajo</translation>
 <translation id="3070005020161560471">Traducir automáticamente</translation>
 <translation id="3091010850649238832">Muestra el contenido del portapapeles</translation>
 <translation id="3098745985164956033">Algunas imágenes se envían a Google para mejorar las descripciones que recibes</translation>
@@ -454,6 +455,7 @@ Privacy Sandbox sigue en desarrollo y está disponible solo en ciertas regiones.
 <translation id="3962957115499249330">Verás una notificación cuando esta descarga comience al haber Wi‑Fi.</translation>
 <translation id="3963007978381181125">El cifrado mediante frase de contraseña no incluye los métodos de pago ni las direcciones de Google Pay. Solo alguien que tenga tu frase de contraseña puede leer tus datos cifrados. La frase de contraseña no se envía a Google, que tampoco la guarda. Si la olvidas o quieres cambiar esta opción, deberás restablecer la sincronización. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome no puede comprobar tus contraseñas</translation>
+<translation id="3969863827134279083">Mover hacia arriba</translation>
 <translation id="3974987681202239636"><ph name="APP_NAME" /> se abrirá en Chrome. Al continuar, aceptas los <ph name="BEGIN_LINK1" />Términos del Servicio de Google<ph name="END_LINK1" /> y los <ph name="BEGIN_LINK2" />Términos del Servicio Adicionales de Google Chrome y Chrome OS<ph name="END_LINK2" />. El uso de Chrome también está sujeto al <ph name="BEGIN_LINK3" />Aviso de Privacidad para Cuentas de Google Gestionadas con Family Link<ph name="END_LINK3" />.</translation>
 <translation id="397583555483684758">La sincronización ha dejado de funcionar</translation>
 <translation id="3976396876660209797">Quita esta combinación de teclas y vuelve a crearla</translation>

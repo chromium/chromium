@@ -1100,11 +1100,6 @@ Lorsque cette règle est définie, l'utilisateur ne peut pas remplacer la valeur
 
 Si elle n'est pas définie, l'écran de confidentialité est désactivé initialement, mais l'utilisateur peut le modifier.</translation>
 <translation id="2415715982424988916">Explorer (disponible depuis la version 91)</translation>
-<translation id="241739814668386424"> Si cette règle est désactivée, l'utilisateur ne pourra pas connecter complètement son périphérique Thunderbolt/USB4 via la tunnellisation PCIe.
-
-      Si elle est activée, l'utilisateur pourra connecter complètement son périphérique Thunderbolt/USB4 via la tunnellisation PCIe
-
-      Cette règle est désactivée par défaut.</translation>
 <translation id="2421677964966613267">Cette règle étant obsolète dans la version M88, Flash n'est plus accepté dans Chrome. Elle permet d'établir la liste des formats d'URL pour lesquels les sites ne sont pas autorisés à exécuter le plug-in <ph name="FLASH_PLUGIN_NAME" />.
 
       Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> s'applique à tous les sites, à condition qu'elle soit définie. Si ce n'est pas le cas, le paramètre défini par l'utilisateur s'applique.
@@ -3242,7 +3237,6 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
           Si cette règle n'est pas configurée, la mise en surbrillance du curseur est initialement désactivée, mais les utilisateurs peuvent l'activer à tout moment.</translation>
 <translation id="5279539586558702228">Heure (interprétée dans le fuseau horaire local de l'appareil) à laquelle l'appareil commencera à fonctionner sur secteur.</translation>
 <translation id="5283457834853986457">Désactiver l'outil de recherche de plug-ins (obsolète)</translation>
-<translation id="5285315763984334157">Bloquer les téléchargements malveillants</translation>
 <translation id="5288772341821359899">Si cette règle est définie, la portée du port UDP utilisé par WebRTC est restreinte à l'intervalle de port spécifié (points de terminaison inclus).
 
       Si cette règle n'est pas définie, ou si elle est définie sur la chaîne vide ou sur une portée de port non valide, WebRTC peut utiliser n'importe quel port UDP local disponible.</translation>

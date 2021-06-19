@@ -325,6 +325,7 @@ Nospiediet un turiet jebkuru vārdu, lai to meklētu. Lai precizētu meklēšanu
 <translation id="305593374596241526">Atrašanās vietu noteikšana ir izslēgta. Ieslēdziet to <ph name="BEGIN_LINK" />Android iestatījumos<ph name="END_LINK" />.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> grāmatzīme}zero{<ph name="BOOKMARKS_COUNT_MANY" /> grāmatzīmju}one{<ph name="BOOKMARKS_COUNT_MANY" /> grāmatzīme}other{<ph name="BOOKMARKS_COUNT_MANY" /> grāmatzīmes}}</translation>
 <translation id="3062802207422175757">Ar jūsu interesēm saistīti raksti pārlūkā Chrome</translation>
+<translation id="3066573403916685335">Pārvietot lejup</translation>
 <translation id="3070005020161560471">Automātiski tulkot</translation>
 <translation id="3091010850649238832">Rādīt starpliktuves saturu</translation>
 <translation id="3098745985164956033">Daži attēli tiek sūtīti uz Google serveriem, lai uzlabotu aprakstus</translation>
@@ -454,6 +455,7 @@ Privacy Sandbox izstrāde joprojām tiek aktīvi turpināta, un šī tehnoloģi
 <translation id="3962957115499249330">Jums tiks parādīts paziņojums, kad tiks sākta šī lejupielāde Wi-Fi tīklā.</translation>
 <translation id="3963007978381181125">Ieejas frāzes šifrējumā nav iekļauti maksājumu veidi un adreses no pakalpojuma Google Pay. Jūsu šifrētos datus var lasīt tikai personas, kurām ir zināma jūsu ieejas frāze. Ieejas frāze netiek sūtīta Google serveriem un netiek tajos glabāta. Ja aizmirsīsiet ieejas frāzi vai vēlēsieties mainīt šo iestatījumu, jums būs jāatiestata sinhronizācija. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
 <translation id="3969142555815019568">Pārlūkprogrammā Chrome nevar pārbaudīt jūsu paroles</translation>
+<translation id="3969863827134279083">Pārvietot augšup</translation>
 <translation id="3974987681202239636">Lietotne <ph name="APP_NAME" /> tiks atvērta pārlūkprogrammā Chrome. Turpinot jūs piekrītat <ph name="BEGIN_LINK1" />Google pakalpojumu sniegšanas noteikumiem<ph name="END_LINK1" /> un <ph name="BEGIN_LINK2" />Google Chrome un Chrome OS pakalpojumu sniegšanas papildu noteikumiem<ph name="END_LINK2" />. Ir spēkā arī <ph name="BEGIN_LINK3" />konfidencialitātes paziņojums Google kontiem, kas tiek pārvaldīti lietotnē Family Link<ph name="END_LINK3" />.</translation>
 <translation id="397583555483684758">Sinhronizācija vairs nedarbojas</translation>
 <translation id="3976396876660209797">Noņemt un atkārtoti izveidot šo saīsni</translation>

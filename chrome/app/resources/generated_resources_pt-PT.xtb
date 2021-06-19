@@ -2529,6 +2529,7 @@ Pretende pará-lo?</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
 <translation id="3739254215541673094">Pretende abrir <ph name="APPLICATION" />?</translation>
 <translation id="3742055079367172538">Captura de ecrã efetuada</translation>
+<translation id="3742235229730461951">Esquema de teclado coreano</translation>
 <translation id="3742666961763734085">Não é possível encontrar uma unidade organizacional com esse nome. Tente novamente.</translation>
 <translation id="3744111561329211289">Sincronização em segundo plano</translation>
 <translation id="3747077776423672805">Para remover aplicações, aceda a Definições &gt; Google Play Store &gt; Gerir preferências do Android &gt; Apps ou Gestor de aplicações. Toque na aplicação que pretende desinstalar (pode ter de deslizar rapidamente para a direita ou para a esquerda para encontrar a aplicação). Em seguida, toque em Desinstalar ou em Desativar.</translation>
@@ -4694,7 +4695,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6186394437969115158">Normalmente, os sites mostram anúncios para que possam fornecer conteúdos ou serviços gratuitamente. No entanto, alguns sites são conhecidos por mostrarem anúncios intrusivos ou enganadores.</translation>
 <translation id="6195005504600220730">Ler informações acerca do seu navegador, SO e dispositivo</translation>
 <translation id="6195693561221576702">Não é possível configurar este dispositivo no modo de demonstração offline.</translation>
-<translation id="6195724942939841102">Não restaurar</translation>
 <translation id="6196640612572343990">Bloquear cookies de terceiros</translation>
 <translation id="6196854373336333322">A extensão "<ph name="EXTENSION_NAME" />" apoderou-se das suas definições de proxy, o que significa que pode alterar, interromper ou intercetar qualquer coisa que esteja a fazer online. Se não tem a certeza do motivo pelo qual aconteceu esta alteração, é provável que não a queira.</translation>
 <translation id="6198102561359457428">Terminar sessão e, em seguida, iniciar sessão novamente...</translation>

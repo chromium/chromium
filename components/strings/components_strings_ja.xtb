@@ -372,6 +372,7 @@
 <translation id="2276057643614339130">印刷ベース</translation>
 <translation id="2277103315734023688">前方に移動</translation>
 <translation id="2283340219607151381">住所の保存と入力</translation>
+<translation id="2283447177162560884">「<ph name="PAGE_TITLE" />」を削除しました</translation>
 <translation id="2288422996159078444">ウェブで入力した情報やアクセスしたページ、その他のアクティビティがすべて監視され、知らない間にサイトのコンテンツが改変されるおそれがあります。</translation>
 <translation id="2289385804009217824">トリミング</translation>
 <translation id="2292556288342944218">インターネット アクセスがブロックされています</translation>
@@ -498,6 +499,7 @@
 <translation id="277133753123645258">配送方法</translation>
 <translation id="277499241957683684">デバイス レコードがありません</translation>
 <translation id="2775884851269838147">最初の印刷ページ</translation>
+<translation id="2778854133681684171">次回このデバイスを使用して、このお支払い方法で購入する際に本人確認をすばやく行えるようになります。</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2784949926578158345">接続がリセットされました。</translation>
 <translation id="2792012897584536778">このデバイスの管理者が設定したセキュリティ証明書により、アクセス先のウェブサイトのコンテンツを管理者が把握できるようになっている可能性があります。</translation>
@@ -655,6 +657,7 @@
 <translation id="3377736046129930310">画面ロックを使用してカードをすばやく確認する</translation>
 <translation id="3380365263193509176">不明なエラー</translation>
 <translation id="3380864720620200369">クライアント ID:</translation>
+<translation id="3381668585148405088">購入の確認</translation>
 <translation id="3387261909427947069">お支払い方法</translation>
 <translation id="3391030046425686457">配送先住所</translation>
 <translation id="3395827396354264108">受け取り方法</translation>
@@ -830,6 +833,10 @@
 <translation id="3996311196211510766">サイト <ph name="ORIGIN" /> では、サイトへのすべてのリクエストにオリジン ポリシーの適用を求めていますが、このポリシーは現在適用することができません。</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{{COUNT} ページの PDF ドキュメント}other{{COUNT} ページの PDF ドキュメント}}</translation>
 <translation id="4023431997072828269">このフォームは安全ではない接続を使用して送信されているため、情報が他人に読み取られる可能性があります。</translation>
+<translation id="4027177651527820006">これらの機能を有効にすると、ブラウザのデータが失われたり、
+    セキュリティやプライバシーが侵害されたりする可能性があります。有効にした機能はこのブラウザの
+    すべてのユーザーに適用されます。企業の管理者の場合は、これらのフラグを
+    本番環境で使用しないでください。</translation>
 <translation id="4030383055268325496">追加の取り消し（&amp;U）</translation>
 <translation id="4056223980640387499">セピア</translation>
 <translation id="4058922952496707368">キー「<ph name="SUBKEY" />」: <ph name="ERROR" /></translation>
@@ -1759,7 +1766,6 @@
 <translation id="7481312909269577407">進む</translation>
 <translation id="7485870689360869515">データが見つかりません。</translation>
 <translation id="7495528107193238112">このコンテンツはブロックされました。サイト所有者に連絡して問題を解決してください。</translation>
-<translation id="7498193950643227031">サイズが変更された場合、予期しない動作をする可能性があります。<ph name="SETTINGS" />でアプリのサイズ変更を制限できるようになりました。</translation>
 <translation id="7503664977220660814">偽のサイトでパスワードを入力しました。<ph name="WEBSITE_1" />、<ph name="WEBSITE_2" /> のほか、このパスワードを使用しているサイトで、保存したパスワードを今すぐ確認することをおすすめします。</translation>
 <translation id="7508255263130623398">返されたポリシーのデバイス ID が空であるか、現在のデバイス ID と一致しません</translation>
 <translation id="7508870219247277067">アボカド グリーン</translation>

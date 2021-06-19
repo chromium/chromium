@@ -325,6 +325,7 @@ Norėdami ieškoti, palieskite ir palaikykite bet kurį žodį. Jei norite patik
 <translation id="305593374596241526">Vieta išjungta; įjunkite <ph name="BEGIN_LINK" />„Android“ nustatymuose<ph name="END_LINK" />.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> žymė}one{<ph name="BOOKMARKS_COUNT_MANY" /> žymė}few{<ph name="BOOKMARKS_COUNT_MANY" /> žymės}many{<ph name="BOOKMARKS_COUNT_MANY" /> žymės}other{<ph name="BOOKMARKS_COUNT_MANY" /> žymių}}</translation>
 <translation id="3062802207422175757">Su jūsų pomėgiais susiję straipsniai naršyklėje „Chrome“</translation>
+<translation id="3066573403916685335">Perkelti žemyn</translation>
 <translation id="3070005020161560471">Versti automatiškai</translation>
 <translation id="3091010850649238832">Rodyti iškarpinės turinį</translation>
 <translation id="3098745985164956033">Vaizdai siunčiami „Google“ norint patobulinti jums teikiamus aprašus</translation>
@@ -454,6 +455,7 @@ Privatumo „sandbox“ (smėlio dėžė) vis dar intensyviai kuriama ir pasieki
 <translation id="3962957115499249330">Matysite pranešimą, kai šis atsisiuntimas prasidės naudojant „Wi-Fi“.</translation>
 <translation id="3963007978381181125">Slaptafrazės šifruotė neapima mokėjimo metodų ir adresų iš „Google Pay“. Tik jūsų slaptafrazę žinantis asmuo gali skaityti šifruotus duomenis. Slaptafrazė nesiunčiama į sistemą „Google“ ir joje nesaugoma. Pamiršę slaptafrazę arba norėdami pakeisti šį nustatymą turėsite iš naujo nustatyti sinchronizavimą. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">„Chrome“ negali patikrinti jūsų slaptažodžių</translation>
+<translation id="3969863827134279083">Perkelti į viršų</translation>
 <translation id="3974987681202239636">„<ph name="APP_NAME" />“ bus atidaryta naršyklėje „Chrome“. Tęsdami sutinkate su <ph name="BEGIN_LINK1" />„Google“ paslaugų teikimo sąlygomis<ph name="END_LINK1" /> ir <ph name="BEGIN_LINK2" />„Google Chrome“ bei „Chrome“ OS papildomomis paslaugų teikimo sąlygomis<ph name="END_LINK2" />. Taip pat taikomas <ph name="BEGIN_LINK3" />„Google“ paskyrų, kurios tvarkomos naudojant „Family Link“, privatumo pranešimas<ph name="END_LINK3" />.</translation>
 <translation id="397583555483684758">Sinchronizavimas nebeveikia</translation>
 <translation id="3976396876660209797">Pašalinkite šį spartųjį klavišą ir sukurkite jį iš naujo</translation>

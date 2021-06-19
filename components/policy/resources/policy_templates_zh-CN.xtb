@@ -1077,11 +1077,6 @@
 
 如果您未设置此政策，那么隐私保护屏最初会处于停用状态，但用户可以控制该功能。</translation>
 <translation id="2415715982424988916">探索（自 91 版起受支持）</translation>
-<translation id="241739814668386424"> 如果此政策已停用，用户将无法通过 PCIe 隧道完全连接 Thunderbolt/USB4 外围设备。
-
-      如果此政策已启用，用户将能够通过 PCIe 隧道完全连接 Thunderbolt/USB4 外围设备。
-
-      此政策默认处于停用状态。</translation>
 <translation id="2421677964966613267">此政策已在 M88 中弃用，而且 Chrome 已不再支持 Flash。通过设置此政策，您可以创建一个网址格式列表，从而指定哪些网站无法运行 <ph name="FLASH_PLUGIN_NAME" /> 插件。
 
       如果您未设置此政策，那么，倘若 <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> 已设置，系统便会将它应用于所有网站，否则就会应用用户的个人设置。
@@ -3220,7 +3215,6 @@
           如果此政策未设置，“光标突出显示”在登录屏幕上最初会处于停用状态，但用户可以随时启用它。</translation>
 <translation id="5279539586558702228">设备将于何时（以设备的本地时区表示）使用交流电来维持运行。</translation>
 <translation id="5283457834853986457">停用插件查找器（已弃用）</translation>
-<translation id="5285315763984334157">拦截恶意下载内容</translation>
 <translation id="5288772341821359899">如果此政策已设置，则 WebRTC 使用的 UDP 端口范围将仅限于指定的端口区间（包括端点）。
 
       如果此政策未设置，或者它设置为空字符串或无效端口范围，则允许 WebRTC 使用任何可用的本地 UDP 端口。</translation>

@@ -325,6 +325,7 @@ Prek dhe mbaj shtypur një fjalë për ta kërkuar. Për të përsosur kërkimin
 <translation id="305593374596241526">Vendndodhja është joaktive. Aktivizoje te <ph name="BEGIN_LINK" />Cilësimet e Android<ph name="END_LINK" />.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> faqeshënues}other{<ph name="BOOKMARKS_COUNT_MANY" /> faqeshënues}}</translation>
 <translation id="3062802207422175757">Artikuj rreth interesave të tua në Chrome</translation>
+<translation id="3066573403916685335">Lëviz poshtë</translation>
 <translation id="3070005020161560471">Përkthe automatikisht</translation>
 <translation id="3091010850649238832">Shfaq përmbajtjet e kujtesës së fragmenteve</translation>
 <translation id="3098745985164956033">Disa imazhet i dërgohen Google për të përmirësuar përshkrimet për ty</translation>
@@ -454,6 +455,7 @@ Privacy Sandbox është ende në zhvillim aktiv dhe ofrohet në rajone të caktu
 <translation id="3962957115499249330">Do të shikosh një njoftim kur ky shkarkim të fillojë në Wi-Fi.</translation>
 <translation id="3963007978381181125">Enkriptimi i frazës së kalimit nuk përfshin mënyrat e pagesës dhe adresat nga Google Pay. Vetëm dikush me frazën tënde të kalimit mund t'i lexojë të dhënat e enkriptuara. Fraza e kalimit nuk dërgohet te Google dhe as nuk ruhet nga ai. Nëse e harron frazën e kalimit ose dëshiron ta ndryshosh këtë cilësim, do të duhet të rivendosësh sinkronizimin. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome nuk mund t'i kontrollojë fjalëkalimet e tua</translation>
+<translation id="3969863827134279083">Lëviz lart</translation>
 <translation id="3974987681202239636"><ph name="APP_NAME" /> do të hapet në Chrome. Duke vazhduar, ti pranon <ph name="BEGIN_LINK1" />Kushtet e shërbimit të Google<ph name="END_LINK1" /> dhe <ph name="BEGIN_LINK2" />Kushtet shtesë të shërbimit të Google Chrome dhe të sistemit operativ Chrome<ph name="END_LINK2" />. Zbatohet gjithashtu <ph name="BEGIN_LINK3" />"Njoftimi i privatësisë" për "Llogaritë e menaxhuara të Google" me Family Link<ph name="END_LINK3" />.</translation>
 <translation id="397583555483684758">"Sinkronizimi" ka ndaluar së funksionuari</translation>
 <translation id="3976396876660209797">Hiqe këtë shkurtore dhe rikrijoje</translation>

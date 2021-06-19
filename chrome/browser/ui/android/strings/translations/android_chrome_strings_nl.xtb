@@ -325,6 +325,7 @@ Tik op een woord en houd dit vast om te zoeken. Selecteer meer of minder woorden
 <translation id="305593374596241526">Locatie staat uit. Je kunt deze aanzetten in de <ph name="BEGIN_LINK" />instellingen van Android<ph name="END_LINK" />.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> bookmark}other{<ph name="BOOKMARKS_COUNT_MANY" /> bookmarks}}</translation>
 <translation id="3062802207422175757">Artikelen over je interesses in Chrome</translation>
+<translation id="3066573403916685335">Naar beneden</translation>
 <translation id="3070005020161560471">Automatisch vertalen</translation>
 <translation id="3091010850649238832">Content op het klembord tonen</translation>
 <translation id="3098745985164956033">Sommige afbeeldingen worden naar Google gestuurd om de beschrijvingen voor je te verbeteren</translation>
@@ -454,6 +455,7 @@ Privacy Sandbox is nog actief in ontwikkeling en is beschikbaar in bepaalde regi
 <translation id="3962957115499249330">Je ziet een melding als deze download start via wifi.</translation>
 <translation id="3963007978381181125">Wachtwoordzinversleuteling is niet van toepassing op betaalmethoden en adressen van Google Pay. Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtwoordzin wordt niet verzonden naar of opgeslagen door Google. Als je je wachtwoordzin vergeet of deze instelling wilt wijzigen, moet je de synchronisatie resetten. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome kan je wachtwoorden niet checken</translation>
+<translation id="3969863827134279083">Naar boven</translation>
 <translation id="3974987681202239636"><ph name="APP_NAME" /> wordt geopend in Chrome. Als je doorgaat, ga je akkoord met de <ph name="BEGIN_LINK1" />servicevoorwaarden van Google<ph name="END_LINK1" /> en met de <ph name="BEGIN_LINK2" />aanvullende servicevoorwaarden van Google Chrome en Chrome OS<ph name="END_LINK2" />. Ook is de <ph name="BEGIN_LINK3" />privacyverklaring voor Google-accounts die worden beheerd met Family Link<ph name="END_LINK3" /> van toepassing.</translation>
 <translation id="397583555483684758">Synchronisatie werkt niet meer</translation>
 <translation id="3976396876660209797">Verwijder de snelkoppeling en maak deze opnieuw</translation>

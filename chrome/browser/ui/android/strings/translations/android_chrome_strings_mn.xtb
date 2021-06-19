@@ -325,6 +325,7 @@
 <translation id="305593374596241526">Байршил идэвхгүй, үүнийг <ph name="BEGIN_LINK" />Андройд Тохиргоо<ph name="END_LINK" /> дотроос асаана уу.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> хавчуурга}other{<ph name="BOOKMARKS_COUNT_MANY" /> хавчуурга}}</translation>
 <translation id="3062802207422175757">Таны сонирхолтой холбоотой Chrome дээрх нийтлэлүүд</translation>
+<translation id="3066573403916685335">Доош нь болгох</translation>
 <translation id="3070005020161560471">Автоматаар орчуул</translation>
 <translation id="3091010850649238832">Түр санах ойн контентыг харуулах</translation>
 <translation id="3098745985164956033">Танд зориулан тайлбарыг сайжруулахын тулд зарим зургийг Google-д илгээдэг.</translation>
@@ -454,6 +455,7 @@ Privacy Sandbox нь идэвхтэй хөгжүүлэлтэд байгаа бө
 <translation id="3962957115499249330">Энэ татан авалт Wi-Fi-р эхлэх үед та мэдэгдэл харна.</translation>
 <translation id="3963007978381181125">Нэвтрэх үгийн шифрлэлтэд Google Pay-н төлбөрийн хэрэгслүүд болон хаягуудыг агуулдаггүй. Зөвхөн таны нэвтрэх үгийг мэддэг хүн л таны шифрлэсэн өгөгдлийг унших боломжтой. Нэвтрэх үгийг Google-д илгээхгүй бөгөөд Google-с хадгалахгүй. Хэрэв та нэвтрэх үгээ мартсан эсвэл энэ тохиргоог өөрчлөх хүсэлтэй бол синкийг шинэчлэх шаардлагатай. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome таны нууц үгийг шалгах боломжгүй байна</translation>
+<translation id="3969863827134279083">Дээшээ зөөх</translation>
 <translation id="3974987681202239636"><ph name="APP_NAME" />-г Chrome-д нээнэ. Үргэлжлүүлснээр та <ph name="BEGIN_LINK1" />Google-н Үйлчилгээний нөхцөл<ph name="END_LINK1" /> ба <ph name="BEGIN_LINK2" />Google Chrome болон Chrome үйлдлийн системийн Үйлчилгээний нэмэлт нөхцөлийг<ph name="END_LINK2" /> зөвшөөрч байна. <ph name="BEGIN_LINK3" />Family Link-р удирддаг Google Бүртгэлийн нууцлалын сануулгыг<ph name="END_LINK3" /> мөн хэрэгжүүлнэ.</translation>
 <translation id="397583555483684758">Синк ажиллахаа больсон</translation>
 <translation id="3976396876660209797">Энэ товчлолыг устгаад дахин үүсгэх</translation>

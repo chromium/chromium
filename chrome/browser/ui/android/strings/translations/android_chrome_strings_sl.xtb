@@ -325,6 +325,7 @@ Dotaknite se poljubne besede in jo pridržite, če želite iskati. Če želite i
 <translation id="305593374596241526">Lokacija je izklopljena. Vklopite jo lahko v <ph name="BEGIN_LINK" />nastavitvah za Android<ph name="END_LINK" />.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> zaznamek}one{<ph name="BOOKMARKS_COUNT_MANY" /> zaznamek}two{<ph name="BOOKMARKS_COUNT_MANY" /> zaznamka}few{<ph name="BOOKMARKS_COUNT_MANY" /> zaznamki}other{<ph name="BOOKMARKS_COUNT_MANY" /> zaznamkov}}</translation>
 <translation id="3062802207422175757">Članki na temo vaših zanimanj v Chromu</translation>
+<translation id="3066573403916685335">Premik dol</translation>
 <translation id="3070005020161560471">Samodejno prevedi</translation>
 <translation id="3091010850649238832">Prikaz vsebine odložišča</translation>
 <translation id="3098745985164956033">Nekatere slike so poslane Googlu zaradi izboljšanja opisov.</translation>
@@ -454,6 +455,7 @@ Zasebni peskovnik je še vedno v aktivnem razvoju in na voljo le na izbranih obm
 <translation id="3962957115499249330">Ko se ta prenos začne v omrežju Wi-Fi, bo prikazano obvestilo.</translation>
 <translation id="3963007978381181125">Šifriranje gesla ne vključuje plačilnih sredstev in naslovov iz Googla Pay. Vaše šifrirane podatke lahko bere samo oseba z vašim geslom. Geslo ni poslano Googlu in ni shranjeno v Googlu. Če ga pozabite ali želite spremeniti to nastavitev, boste morali sinhronizacijo ponastaviti. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome ne more preveriti vaših gesel</translation>
+<translation id="3969863827134279083">Premik gor</translation>
 <translation id="3974987681202239636">Aplikacija <ph name="APP_NAME" /> se bo odprla v Chromu. Če nadaljujete, se strinjate z <ph name="BEGIN_LINK1" />Googlovimi pogoji storitve<ph name="END_LINK1" /> in <ph name="BEGIN_LINK2" />dodatnimi pogoji storitve za Google Chrome in Chrome OS<ph name="END_LINK2" />. Za vas velja tudi <ph name="BEGIN_LINK3" />pravilnik o zasebnosti za račune Google, upravljane s Family Linkom<ph name="END_LINK3" />.</translation>
 <translation id="397583555483684758">Sinhronizacija je prenehala delovati</translation>
 <translation id="3976396876660209797">Odstranite in znova ustvarite to bližnjico</translation>

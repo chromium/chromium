@@ -290,7 +290,6 @@
 <translation id="3307642347673023554">લૅપટૉપ મોડ પર સ્વિચ થયા</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> હજીએ થોડા સમય પછી સાઇન ઇન કરી શકશે.</translation>
 <translation id="3321628682574733415">માતાપિતાનો કોડ ખોટો</translation>
-<translation id="332587331255250389">કૃપા કરીને બૅટરી બદલો</translation>
 <translation id="3341303451326249809">સ્ક્રીનશૉટ કૅપ્ચર કર્યો</translation>
 <translation id="334252345105450327">સ્ક્રીનશૉટ લો</translation>
 <translation id="3351879221545518001">તમે હાલમાં સ્ક્રીનને કાસ્ટ કરી રહ્યા છો.</translation>
@@ -318,6 +317,7 @@
 <translation id="3510164367642747937">માઉસ કર્સરને હાઇલાઇટ કરો</translation>
 <translation id="3513798432020909783"><ph name="MANAGER_EMAIL" /> દ્વારા મેનેજ કરાતું એકાઉન્ટ</translation>
 <translation id="3552189655002856821">વાઇ-ફાઇ બંધ છે</translation>
+<translation id="3560866052109807830">માર્કર ડ્રોઇંગના સાધનો</translation>
 <translation id="3563775809269155755">હૉટસ્પૉટ ચાલુ કરો</translation>
 <translation id="3571734092741541777">સેટ અપ</translation>
 <translation id="3573179567135747900">"<ph name="FROM_LOCALE" />" પર પાછા જાઓ (ફરી શરૂ કરવું જરૂરી છે)</translation>
@@ -412,6 +412,7 @@
 <translation id="4274537685965975248">Ctrl કી + Alt કી + નીચેની ઍરો કી કીબોર્ડ શૉર્ટકટ બદલવામાં આવ્યો છે. End કીનો ઉપયોગ કરવા માટે, <ph name="LAUNCHER_KEY_NAME" /> કી + જમણી ઍરો કી દબાવો.</translation>
 <translation id="4279490309300973883">પ્રતિબિંબત થઈ રહ્યું છે</translation>
 <translation id="4285498937028063278">અનપિન કરો</translation>
+<translation id="429402653707266969">ટૂલબારનું સ્થાન ટૉગલ કરો</translation>
 <translation id="4294319844246081198">ગુડ મોર્નિંગ <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">બધા <ph name="COUNT" /> નોટિફિકેશન સાફ કરો</translation>
 <translation id="4302592941791324970">ઉપલબ્ધ નથી</translation>
@@ -725,6 +726,7 @@
 <translation id="6816797338148849397">તમારી પસંદગી સંબંધિત માહિતી ઉપલબ્ધ છે. તેને ઍક્સેસ કરવા માટે ઉપર એરો કીનો ઉપયોગ કરો.</translation>
 <translation id="6818242057446442178">એક શબ્દ પાછળ જાઓ</translation>
 <translation id="6820676911989879663">વિરામ લો!</translation>
+<translation id="6837064795450991317">ડેસ્કબાર છુપાવો</translation>
 <translation id="6850010208275816200">તમારી વર્તમાન ઍપ પૂર્ણ સ્ક્રીન મોડમાં છે. જો ઍપ તમારો પાસવર્ડ પૂછે, તો પહેલાં પૂર્ણ સ્ક્રીન મોડમાંથી બહાર નીકળો.</translation>
 <translation id="6852052252232534364">ક્લિકથી સક્રિય</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> સેકન્ડ</translation>
@@ -760,6 +762,7 @@
 <translation id="7076293881109082629">સાઇન ઇન કરી રહ્યું છે</translation>
 <translation id="7088960765736518739">સ્વિચ ઍક્સેસ</translation>
 <translation id="7098389117866926363">USB-C ડિવાઇસ (પાછળની બાજુએ ડાબું પોર્ટ)</translation>
+<translation id="7106330611027933926">ડેસ્કબાર બતાવો</translation>
 <translation id="7118268675952955085">સ્ક્રીનશૉટ</translation>
 <translation id="7131634465328662194">તમે ઑટોમૅટિક રીતે સાઇન આઉટ થઈ જશો.</translation>
 <translation id="7143207342074048698">કનેક્ટિંગ</translation>
@@ -803,6 +806,7 @@
 <translation id="7466449121337984263">કૃપા કરીને સેન્સરને સ્પર્શ કરો</translation>
 <translation id="7473891865547856676">નહીં આભાર</translation>
 <translation id="7477793887173910789">તમારું મ્યુઝિક, વીડિયો અને બીજું ઘણું નિયંત્રિત કરો</translation>
+<translation id="7482097454533720217">તમે જ્યારે રાઇટ ક્લિક કરો અથવા ટેક્સ્ટને ટચ કરીને થોડીવાર દબાવી રાખો ત્યારે વ્યાખ્યાઓ, અનુવાદો અથવા એકમ રૂપાંતરણો મેળવો.</translation>
 <translation id="7483025031359818980">સૉર્સ તરીકે પૂર્ણ સ્ક્રીન સેટ કરવામાં આવી</translation>
 <translation id="7486227320194954040">માર્કર સાધનોને નાનાં કરો</translation>
 <translation id="7497767806359279797">ભાષા અને કીબોર્ડ પસંદ કરો</translation>
@@ -979,6 +983,7 @@
 <translation id="8843682306134542540">રોટેશન લૉક ટૉગલ કરો. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">તમારો પિન કે પાસવર્ડ હજી પણ ચકાસી શકાયો નથી. નોંધ: જો તમે તમારો પાસવર્ડ તાજેતરમાં બદલ્યો હોય, તો તમારા જૂના પાસવર્ડનો ઉપયોગ કરો. એકવાર તમે સાઇન આઉટ કરો, તે પછી તમારો નવો પાસવર્ડ લાગુ કરવામાં આવશે.</translation>
+<translation id="8863888432376731307">"<ph name="QUERY" />" માટે <ph name="INTENT" /> અને વધુ મેળવો</translation>
 <translation id="8870509716567206129">ઍપ સ્ક્રીન-વિભાજનને સહાય કરતી નથી.</translation>
 <translation id="8871580645200179206">ઘેરી થીમ ટૉગલ કરો. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">કનેક્ટ નથી</translation>

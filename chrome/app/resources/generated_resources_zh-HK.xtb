@@ -2542,6 +2542,7 @@
 <translation id="3738924763801731196"><ph name="OID" />：</translation>
 <translation id="3739254215541673094">要開啟「<ph name="APPLICATION" />」嗎？</translation>
 <translation id="3742055079367172538">已拍攝螢幕擷圖</translation>
+<translation id="3742235229730461951">韓文鍵盤配置</translation>
 <translation id="3742666961763734085">找不到該名稱的機構單位。請再試一次。</translation>
 <translation id="3744111561329211289">背景同步處理</translation>
 <translation id="3747077776423672805">如要移除應用程式，請前往「設定」&gt;「Google Play 商店」&gt;「管理 Android 偏好設定」&gt;「應用程式」或「應用程式管理員」，然後輕按您想解除安裝的應用程式 (您可能需要向右或向左滑動，才能找到應用程式)，再輕按 [解除安裝] 或 [停用]。</translation>
@@ -4707,7 +4708,6 @@
 <translation id="6186394437969115158">網站通常要顯示廣告，才能免費提供內容或服務。不過，部分網站會顯示滋擾性或誤導廣告。</translation>
 <translation id="6195005504600220730">讀取您的瀏覽器、作業系統和裝置相關資料</translation>
 <translation id="6195693561221576702">無法在此裝置上設定離線示範模式。</translation>
-<translation id="6195724942939841102">不要還原</translation>
 <translation id="6196640612572343990">封鎖第三方 Cookie</translation>
 <translation id="6196854373336333322">您的 Proxy 設定已受到擴充功能「<ph name="EXTENSION_NAME" />」控制，該擴充功能可變更、中斷、或監視您在網上的行為。如果您不確定這項變更為何發生，建議您停用該擴充功能。</translation>
 <translation id="6198102561359457428">登出然後再次登入…</translation>

@@ -1076,11 +1076,6 @@ Ist diese Richtlinie konfiguriert, können Nutzer den Wert nicht überschreiben.
 
 Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, Nutzer können ihn jedoch steuern.</translation>
 <translation id="2415715982424988916">Entdecken (seit Version 91 unterstützt)</translation>
-<translation id="241739814668386424"> Wenn diese Richtlinie deaktiviert ist, können Nutzer ihre Thunderbolt/USB4-Peripheriegeräte nicht vollständig über PCIe-Tunneling verbinden.
-
-      Wenn diese Richtlinie aktiviert ist, können Nutzer ihre Thunderbolt/USB4-Peripheriegeräte vollständig über PCIe-Tunneling verbinden.
-
-      Diese Richtlinie ist standardmäßig deaktiviert.</translation>
 <translation id="2421677964966613267">Diese Richtlinie wurde in M88 eingestellt. Flash wird von Chrome nicht mehr unterstützt. Wenn diese Richtlinie konfiguriert ist, können Sie eine Liste mit URL-Mustern erstellen, die die Websites angeben, die das <ph name="FLASH_PLUGIN_NAME" />-Plug-in nicht ausführen dürfen.
 
       Wenn die Richtlinie nicht konfiguriert ist, gilt <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> für alle Websites, sofern konfiguriert. Falls nicht, wird die persönliche Einstellung des Nutzers verwendet.
@@ -3236,7 +3231,6 @@ Wird die Richtlinie auf „False“ gesetzt, verwendet <ph name="PRODUCT_NAME" /
           Wird sie nicht konfiguriert, ist die Bedienungshilfe "Mauszeiger hervorheben" auf dem Anmeldebildschirm anfangs deaktiviert, kann jedoch vom Nutzer jederzeit aktiviert werden.</translation>
 <translation id="5279539586558702228">Zeitpunkt, an dem das Gerät in den Netzbetrieb wechselt, angegeben in der lokalen Zeit des Geräts.</translation>
 <translation id="5283457834853986457">Plug-in-Suchfunktion deaktivieren (eingestellt)</translation>
-<translation id="5285315763984334157">Schädliche Downloads blockieren</translation>
 <translation id="5288772341821359899">Wenn die Richtlinie konfiguriert ist, wird der von WebRTC verwendete UDP-Port-Bereich auf den festgelegten Portintervall, einschließlich der Endpunkte, beschränkt.
 
       Wenn die Richtlinie nicht konfiguriert ist oder sie auf den leeren String oder einen ungültigen Portbereich eingestellt ist, kann von WebRTC jeder beliebige verfügbare lokale UDP-Port verwendet werden.</translation>

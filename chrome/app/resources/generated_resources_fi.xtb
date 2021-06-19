@@ -2542,6 +2542,7 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
 <translation id="3739254215541673094">Avataanko <ph name="APPLICATION" />?</translation>
 <translation id="3742055079367172538">Kuvakaappaus otettu</translation>
+<translation id="3742235229730461951">Ulkoasu: korealainen näppäimistö</translation>
 <translation id="3742666961763734085">Tämännimistä organisaatioyksikköä ei löydy. Yritä uudelleen.</translation>
 <translation id="3744111561329211289">Taustasynkronointi</translation>
 <translation id="3747077776423672805">Jos haluat poistaa sovelluksia, valitse Asetukset &gt; Google Play Kauppa &gt; Hallitse Android-asetuksia &gt; Sovellukset tai Sovellusten hallinta. Valitse sitten sovellus, jonka haluat poistaa (jos sovellusta ei näy, pyyhkäise oikealle tai vasemmalle). Valitse sitten Poista tai Poista käytöstä.</translation>
@@ -4704,7 +4705,6 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6186394437969115158">Sivustot näyttävät yleensä mainoksia voidakseen tarjota sisältöä tai palveluja maksutta. Joidenkin sivustojen tiedetään näyttävän häiritseviä tai harhaanjohtavia mainoksia.</translation>
 <translation id="6195005504600220730">Lue tietoja selaimesta, käyttöjärjestelmästä ja laitteesta</translation>
 <translation id="6195693561221576702">Tätä laitetta ei voi määrittää offline-demotilassa.</translation>
-<translation id="6195724942939841102">Älä palauta</translation>
 <translation id="6196640612572343990">Estä kolmannen osapuolen evästeet</translation>
 <translation id="6196854373336333322">Välityspalvelimesi asetuksia hallinnoi tällä hetkellä tämä laajennus <ph name="EXTENSION_NAME" />, joka voi muokata, haitata tai salakuunnella kaikkia verkkotoimiasi. Jos et tiedä, miksi tämä muutos tehtiin, et luultavasti halua käyttää sitä.</translation>
 <translation id="6198102561359457428">Kirjaudu ulos ja kirjaudu uudelleen sisään...</translation>

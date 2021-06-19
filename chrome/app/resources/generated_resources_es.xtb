@@ -2528,6 +2528,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
 <translation id="3739254215541673094">¿Abrir <ph name="APPLICATION" />?</translation>
 <translation id="3742055079367172538">Captura de pantalla hecha</translation>
+<translation id="3742235229730461951">Diseño de teclado coreano</translation>
 <translation id="3742666961763734085">No se puede encontrar una unidad organizativa con ese nombre. Inténtalo de nuevo.</translation>
 <translation id="3744111561329211289">Sincronización en segundo plano</translation>
 <translation id="3747077776423672805">Para desinstalar aplicaciones, ve a Ajustes &gt; Google Play Store &gt; Gestionar las preferencias de Android &gt; Aplicaciones o Administrador de aplicaciones. A continuación, toca la aplicación que quieras desinstalar (es posible que tengas que deslizar el dedo hacia la derecha o hacia la izquierda para encontrar la aplicación) y toca Desinstalar o Inhabilitar.</translation>
@@ -4691,7 +4692,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6186394437969115158">Los sitios suelen mostrar anuncios para poder ofrecer contenido o servicios de manera gratuita. Sin embargo, algunos sitios se caracterizan por mostrar anuncios invasivos o engañosos.</translation>
 <translation id="6195005504600220730">Leer información sobre tu navegador, tu sistema operativo y tu dispositivo</translation>
 <translation id="6195693561221576702">Este dispositivo no se puede configurar en el modo de demostración sin conexión.</translation>
-<translation id="6195724942939841102">No restaurar</translation>
 <translation id="6196640612572343990">Bloquear cookies de terceros</translation>
 <translation id="6196854373336333322">La extensión <ph name="EXTENSION_NAME" /> ahora controla la configuración del proxy, lo que significa que puede cambiar, deshacer o espiar cualquier acción que hagas online. Si no estás seguro de los motivos por los que se ha producido este cambio, probablemente no haya sido intencionado.</translation>
 <translation id="6198102561359457428">Cerrar y volver a iniciar sesión...</translation>

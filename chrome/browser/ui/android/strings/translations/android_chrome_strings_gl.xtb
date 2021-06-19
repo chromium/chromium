@@ -325,6 +325,7 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="305593374596241526">A localización está desactivada. Actívaa na <ph name="BEGIN_LINK" />configuración de Android<ph name="END_LINK" />.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> marcador}other{<ph name="BOOKMARKS_COUNT_MANY" /> marcadores}}</translation>
 <translation id="3062802207422175757">Artigos sobre os teus intereses en Chrome</translation>
+<translation id="3066573403916685335">Mover para abaixo</translation>
 <translation id="3070005020161560471">Traducir automaticamente</translation>
 <translation id="3091010850649238832">Mostrar contido do portapapeis</translation>
 <translation id="3098745985164956033">Algunhas imaxes envíanse a Google coa finalidade de mellorar as descricións para ti</translation>
@@ -362,6 +363,7 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="3295530008794733555">Navega máis rápido. Usa menos datos.</translation>
 <translation id="3297344142967351106">Asistencia de voz</translation>
 <translation id="3303414029551471755">Queres continuar coa descarga do contido?</translation>
+<translation id="333367884906698540">O Bluetooth volverá desactivarse cando acabes</translation>
 <translation id="3334729583274622784">Queres cambiar a extensión do ficheiro?</translation>
 <translation id="3341058695485821946">Comproba a cantidade de datos que aforraches</translation>
 <translation id="3341262203274374114">Non se puido deixar de seguir o feed. Produciuse un erro.</translation>
@@ -453,6 +455,7 @@ Seguimos desenvolvendo activamente esta iniciativa, que está dispoñible só na
 <translation id="3962957115499249330">Recibirás unha notificación cando se inicie esta descarga a través da conexión wifi.</translation>
 <translation id="3963007978381181125">A encriptación mediante frase de acceso non inclúe métodos de pago nin enderezos de Google Pay. Só alguén coa túa frase de acceso pode ler os teus datos encriptados. A frase de acceso non se envía nin se almacena en Google. Se a esqueces ou se queres cambiar esta opción de configuración, deberás restablecer a sincronización. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome non puido comprobar os teus contrasinais</translation>
+<translation id="3969863827134279083">Mover cara arriba</translation>
 <translation id="3974987681202239636"><ph name="APP_NAME" /> abrirase en Chrome. Ao continuar, aceptas as <ph name="BEGIN_LINK1" />Condicións de servizo de Google<ph name="END_LINK1" />, así como as <ph name="BEGIN_LINK2" />Condicións de servizo adicionais de Google Chrome e Chrome OS<ph name="END_LINK2" />. Tamén se aplica o <ph name="BEGIN_LINK3" />Aviso de privacidade das Contas de Google xestionadas a través de Family Link<ph name="END_LINK3" />.</translation>
 <translation id="397583555483684758">A sincronización deixou de funcionar</translation>
 <translation id="3976396876660209797">Elimina e volve crear este atallo</translation>
@@ -1036,6 +1039,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="7641339528570811325">Borrar datos de navegación…</translation>
 <translation id="764170292089748542">Se decides navegar de modo privado, Chrome non garda o historial de navegación. Non obstante, podes utilizar os marcadores para acceder aos teus sitios favoritos.</translation>
 <translation id="7646772052135772216">A sincronización de contrasinais non funciona</translation>
+<translation id="7655900163790317559">Activando Bluetooth…</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7665369617277396874">Engadir conta</translation>
 <translation id="766587987807204883">Aquí aparecen os artigos e podes lelos mesmo cando esteas sen conexión</translation>

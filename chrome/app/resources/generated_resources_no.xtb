@@ -2537,6 +2537,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
 <translation id="3739254215541673094">Vil du åpne <ph name="APPLICATION" />?</translation>
 <translation id="3742055079367172538">Skjermdump tatt</translation>
+<translation id="3742235229730461951">Oppsett for koreansk tastatur</translation>
 <translation id="3742666961763734085">Finner ikke noen organisasjonsenhet med det navnet. Prøv på nytt.</translation>
 <translation id="3744111561329211289">Bakgrunnssynkronisering</translation>
 <translation id="3747077776423672805">For å fjerne apper, gå til Innstillinger &gt; Google Play Butikk &gt; Administrer Android-innstillinger &gt; Apper eller Appstyring. Trykk på appen du vil avinstallere (du må kanskje sveipe til høyre eller venstre for å finne den). Trykk deretter på Avinstaller eller Slå av.</translation>
@@ -4699,7 +4700,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6186394437969115158">Nettsteder viser vanligvis annonser for å kunne tilby innhold eller tjenester gratis. Men noen nettsteder er kjent for å vise forstyrrende eller villedende annonser.</translation>
 <translation id="6195005504600220730">lese informasjon om nettleseren din, OS-et ditt og enheten din</translation>
 <translation id="6195693561221576702">Denne enheten kan ikke konfigureres i demomodus uten nett.</translation>
-<translation id="6195724942939841102">Ikke gjenopprett</translation>
 <translation id="6196640612572343990">Blokkér informasjonskapsler fra tredjeparter</translation>
 <translation id="6196854373336333322">Utvidelsen «<ph name="EXTENSION_NAME" />» har tatt kontroll over proxy-tjenerinnstillingene dine, noe som betyr at den kan endre, ødelegge eller spionere på alt du foretar deg på nettet. Hvis du ikke er sikker på hvorfor denne endringen fant sted, vil du mest sannsynlig ikke ha den.</translation>
 <translation id="6198102561359457428">Logg deg av og på igjen</translation>
