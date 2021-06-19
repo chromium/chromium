@@ -30,6 +30,7 @@ source_set("facade") {
     "//remoting/ios/persistence",
     "//remoting/resources",
     "//remoting/signaling",
+    "//services/network/public/cpp",
     "//ui/base",
   ]
 
@@ -48,10 +49,13 @@ source_set("unit_tests") {
   sources = [ "host_list_service_unittest.mm" ]
   deps = [
     ":facade",
+    "//base/test:test_support",
     "//remoting/base:test_support",
+    "//services/network/public/cpp",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/ocmock",
+    "//ui/base",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
