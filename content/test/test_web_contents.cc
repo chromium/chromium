@@ -322,7 +322,7 @@ void TestWebContents::AddPendingContents(
   pending_contents_[key] = CreatedWindow(std::move(contents), target_url);
 }
 
-RenderFrameHostDelegate* TestWebContents::CreateNewWindow(
+FrameTree* TestWebContents::CreateNewWindow(
     RenderFrameHostImpl* opener,
     const mojom::CreateNewWindowParams& params,
     bool is_new_browsing_instance,

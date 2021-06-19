@@ -105,10 +105,6 @@ RenderFrameHostDelegate::GetFocusedFrameIncludingInnerWebContents() {
   return nullptr;
 }
 
-RenderFrameHostImpl* RenderFrameHostDelegate::GetMainFrame() {
-  return nullptr;
-}
-
 std::unique_ptr<WebUIImpl>
 RenderFrameHostDelegate::CreateWebUIForRenderFrameHost(
     RenderFrameHostImpl* frame_host,
@@ -116,7 +112,7 @@ RenderFrameHostDelegate::CreateWebUIForRenderFrameHost(
   return nullptr;
 }
 
-RenderFrameHostDelegate* RenderFrameHostDelegate::CreateNewWindow(
+FrameTree* RenderFrameHostDelegate::CreateNewWindow(
     RenderFrameHostImpl* opener,
     const mojom::CreateNewWindowParams& params,
     bool is_new_browsing_instance,

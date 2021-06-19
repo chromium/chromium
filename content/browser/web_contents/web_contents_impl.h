@@ -675,7 +675,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
       const gfx::Rect& bounds_in_root_view,
       blink::mojom::FocusType focus_type) override;
   void OnAdvanceFocus(RenderFrameHostImpl* source_rfh) override;
-  RenderFrameHostDelegate* CreateNewWindow(
+  FrameTree* CreateNewWindow(
       RenderFrameHostImpl* opener,
       const mojom::CreateNewWindowParams& params,
       bool is_new_browsing_instance,

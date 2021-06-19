@@ -361,9 +361,6 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   // WebContents is not live.
   virtual RenderFrameHostImpl* GetFocusedFrameIncludingInnerWebContents();
 
-  // Returns the main frame for the delegate.
-  virtual RenderFrameHostImpl* GetMainFrame();
-
   // Called by when |source_rfh| advances focus to a RenderFrameProxyHost.
   virtual void OnAdvanceFocus(RenderFrameHostImpl* source_rfh) {}
 
@@ -398,12 +395,11 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   // Note: this is not called "CreateWindow" because that will clash with
   // the Windows function which is actually a #define.
   //
-  // On success, a non-owning pointer to the new RenderFrameHostDelegate is
-  // returned.
+  // On success, a non-owning pointer to the new FrameTree is returned.
   //
   // The caller is expected to handle cleanup if this operation fails or is
   // suppressed by checking if the return value is null.
-  virtual RenderFrameHostDelegate* CreateNewWindow(
+  virtual FrameTree* CreateNewWindow(
       RenderFrameHostImpl* opener,
       const mojom::CreateNewWindowParams& params,
       bool is_new_browsing_instance,

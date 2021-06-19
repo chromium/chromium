@@ -6109,13 +6109,13 @@ void RenderFrameHostImpl::CreateNewWindow(
 
   DCHECK(IsRenderFrameLive());
 
-  // The non-owning pointer |new_window| is valid in this stack frame since
+  // The non-owning pointer |new_frame_tree| is valid in this stack frame since
   // nothing can delete it until this thread is freed up again.
-  RenderFrameHostDelegate* new_window =
+  FrameTree* new_frame_tree =
       delegate_->CreateNewWindow(this, *params, is_new_browsing_instance,
                                  was_consumed, cloned_namespace.get());
 
-  if (is_new_browsing_instance || !new_window) {
+  if (is_new_browsing_instance || !new_frame_tree) {
     // Opener suppressed, Javascript access disabled, or delegate did not
     // provide a handle to any windows it created. In these cases, never tell
     // the renderer about the new window.
@@ -6123,7 +6123,8 @@ void RenderFrameHostImpl::CreateNewWindow(
     return;
   }
 
-  RenderFrameHostImpl* main_frame = new_window->GetMainFrame();
+  RenderFrameHostImpl* new_main_rfh =
+      new_frame_tree->root()->current_frame_host();
 
   // When the popup is created, it hasn't committed any navigation yet - its
   // initial empty document should inherit the origin of its opener (the origin
@@ -6133,31 +6134,31 @@ void RenderFrameHostImpl::CreateNewWindow(
   // Checking sandbox flags of the new frame should be safe at this point,
   // because the flags should be already inherited by the CreateNewWindow call
   // above.
-  main_frame->SetOriginDependentStateOfNewFrame(GetLastCommittedOrigin());
-  main_frame->cross_origin_embedder_policy_ = popup_coep;
+  new_main_rfh->SetOriginDependentStateOfNewFrame(GetLastCommittedOrigin());
+  new_main_rfh->cross_origin_embedder_policy_ = popup_coep;
 
-  main_frame->virtual_browsing_context_group_ =
+  new_main_rfh->virtual_browsing_context_group_ =
       popup_virtual_browsing_context_group;
 
   // If inheriting coop (checking this via |opener_suppressed|) and the original
   // coop page has a reporter we make sure the the newly created popup also has
   // a reporter.
   if (!params->opener_suppressed && GetMainFrame()->coop_reporter()) {
-    main_frame->set_coop_reporter(
+    new_main_rfh->set_coop_reporter(
         std::make_unique<CrossOriginOpenerPolicyReporter>(
             GetProcess()->GetStoragePartition(), GetLastCommittedURL(),
-            params->referrer->url, main_frame->cross_origin_opener_policy(),
+            params->referrer->url, new_main_rfh->cross_origin_opener_policy(),
             frame_token_.value(), isolation_info_.network_isolation_key()));
   }
 
   mojo::PendingAssociatedRemote<mojom::Frame> pending_frame_remote;
   mojo::PendingAssociatedReceiver<mojom::Frame> pending_frame_receiver =
       pending_frame_remote.InitWithNewEndpointAndPassReceiver();
-  main_frame->SetMojomFrameRemote(std::move(pending_frame_remote));
+  new_main_rfh->SetMojomFrameRemote(std::move(pending_frame_remote));
 
   mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
       browser_interface_broker;
-  main_frame->BindBrowserInterfaceBrokerReceiver(
+  new_main_rfh->BindBrowserInterfaceBrokerReceiver(
       browser_interface_broker.InitWithNewPipeAndPassReceiver());
 
   // With this path, RenderViewHostImpl::CreateRenderView is never called
@@ -6169,36 +6170,37 @@ void RenderFrameHostImpl::CreateNewWindow(
           page_broadcast.InitWithNewEndpointAndPassReceiver();
 
   auto widget_params =
-      main_frame->GetLocalRenderWidgetHost()
+      new_main_rfh->GetLocalRenderWidgetHost()
           ->BindAndGenerateCreateFrameWidgetParamsForNewWindow();
 
-  main_frame->render_view_host()->BindPageBroadcast(std::move(page_broadcast));
+  new_main_rfh->render_view_host()->BindPageBroadcast(
+      std::move(page_broadcast));
 
   bool wait_for_debugger =
       devtools_instrumentation::ShouldWaitForDebuggerInWindowOpen();
   mojom::CreateNewWindowReplyPtr reply = mojom::CreateNewWindowReply::New(
-      main_frame->GetRenderViewHost()->GetRoutingID(),
-      main_frame->GetFrameToken(), main_frame->GetRoutingID(),
+      new_main_rfh->GetRenderViewHost()->GetRoutingID(),
+      new_main_rfh->GetFrameToken(), new_main_rfh->GetRoutingID(),
       std::move(pending_frame_receiver), std::move(widget_params),
       std::move(page_broadcast_receiver), std::move(browser_interface_broker),
-      cloned_namespace->id(), main_frame->GetDevToolsFrameToken(),
+      cloned_namespace->id(), new_main_rfh->GetDevToolsFrameToken(),
       wait_for_debugger,
-      main_frame->policy_container_host()->CreatePolicyContainerForBlink());
+      new_main_rfh->policy_container_host()->CreatePolicyContainerForBlink());
 
   std::move(callback).Run(mojom::CreateNewWindowStatus::kSuccess,
                           std::move(reply));
 
   // When `waiting_for_init_` is true, the browser waits for the renderer to
   // request to show the window (which becomes a call to Init() on the new
-  // window's `main_frame`) before servicing subresource requests. We ensure
+  // window's `new_main_rfh`) before servicing subresource requests. We ensure
   // this is the first message received by the remote frame (instead of plumbing
   // it with the CreateNewWindow IPC).
-  if (main_frame->waiting_for_init_)
-    main_frame->GetMojomFrameInRenderer()->BlockRequests();
+  if (new_main_rfh->waiting_for_init_)
+    new_main_rfh->GetMojomFrameInRenderer()->BlockRequests();
 
   // The mojom reply callback with kSuccess causes the renderer to create the
   // renderer-side objects.
-  main_frame->render_view_host()->RenderViewCreated(main_frame);
+  new_main_rfh->render_view_host()->RenderViewCreated(new_main_rfh);
 }
 
 void RenderFrameHostImpl::CreatePortal(

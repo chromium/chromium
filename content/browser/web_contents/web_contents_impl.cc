@@ -3694,7 +3694,7 @@ void WebContentsImpl::OnRenderFrameProxyVisibilityChanged(
   }
 }
 
-RenderFrameHostDelegate* WebContentsImpl::CreateNewWindow(
+FrameTree* WebContentsImpl::CreateNewWindow(
     RenderFrameHostImpl* opener,
     const mojom::CreateNewWindowParams& params,
     bool is_new_browsing_instance,
@@ -3728,10 +3728,14 @@ RenderFrameHostDelegate* WebContentsImpl::CreateNewWindow(
                        source_site_instance, params.window_container_type,
                        opener->GetLastCommittedURL(), params.frame_name,
                        params.target_url)) {
-    return static_cast<WebContentsImpl*>(delegate_->CreateCustomWebContents(
-        opener, source_site_instance, is_new_browsing_instance,
-        opener->GetLastCommittedURL(), params.frame_name, params.target_url,
-        partition_id, session_storage_namespace));
+    auto* web_contents_impl =
+        static_cast<WebContentsImpl*>(delegate_->CreateCustomWebContents(
+            opener, source_site_instance, is_new_browsing_instance,
+            opener->GetLastCommittedURL(), params.frame_name, params.target_url,
+            partition_id, session_storage_namespace));
+    if (!web_contents_impl)
+      return nullptr;
+    return web_contents_impl->GetFrameTree();
   }
 
   bool renderer_started_hidden =
@@ -3882,7 +3886,7 @@ RenderFrameHostDelegate* WebContentsImpl::CreateNewWindow(
       }
     }
   }
-  return new_contents_impl;
+  return new_contents_impl->GetFrameTree();
 }
 
 RenderWidgetHostImpl* WebContentsImpl::CreateNewPopupWidget(

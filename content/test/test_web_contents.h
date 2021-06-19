@@ -154,7 +154,7 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
 
  private:
   // WebContentsImpl overrides
-  RenderFrameHostDelegate* CreateNewWindow(
+  FrameTree* CreateNewWindow(
       RenderFrameHostImpl* opener,
       const mojom::CreateNewWindowParams& params,
       bool is_new_browsing_instance,
