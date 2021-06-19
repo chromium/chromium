@@ -5455,7 +5455,8 @@ IN_PROC_BROWSER_TEST_F(
   VerifyImageSubresourceLoads(main_frame);
 }
 
-IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, Bug838348) {
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
+                       BeginNewNavigationAfterCommitNavigation) {
   if (!AreAllSitesIsolatedForTesting())
     return;
 
@@ -5520,22 +5521,18 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, Bug838348) {
   EXPECT_EQ(b_com_render_process_host,
             speculative_render_frame_host->GetProcess());
 
-  // Intercept the next commit navigation and ignore it, triggering a
-  // navigation to a document in c.com instead.
-  CommitCallbackInterceptor interceptor(
-      shell(), embedded_test_server()->GetURL("c.com", "/title1.html"));
+  // Simulates a race where another navigation begins after the browser sends
+  // `CommitNavigation() to the b.com renderer, but a different navigation to
+  // c.com begins before `DidCommitNavigation()` has been received from the
+  // b.com renderer.
+  const GURL final_url =
+      embedded_test_server()->GetURL("c.com", "/title1.html");
+  CommitCallbackInterceptor interceptor(shell(), final_url);
   speculative_render_frame_host->SetCommitCallbackInterceptorForTesting(
       &interceptor);
 
-  // The renderer process for b.com should crash, as the state between the
-  // browser and renderer would be out of sync otherwise. The previously opened
-  // window should ensure that fast shutdown is not used for b.com.
-  // TODO(dcheng): The render process should, in fact, not crash.
-  // https://crbug.com/838348
-  RenderProcessHostWatcher crash_observer(
-      speculative_render_frame_host->GetProcess(),
-      RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
-  crash_observer.Wait();
+  EXPECT_TRUE(WaitForLoadStop(web_contents));
+  EXPECT_EQ(final_url, web_contents->GetLastCommittedURL());
 }
 
 // The following test checks what happens if a WebContentsDelegate navigates
