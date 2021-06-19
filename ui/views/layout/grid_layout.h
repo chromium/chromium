@@ -224,9 +224,9 @@ class VIEWS_EXPORT GridLayout : public LayoutManager {
                           int height,
                           gfx::Size* pref) const;
 
-  // Calculates the master columns of all the column sets. See Column for
-  // a description of what a master column is.
-  void CalculateMasterColumnsIfNecessary() const;
+  // Calculates the primary columns of all the column sets. See Column for
+  // a description of what a primary column is.
+  void CalculatePrimaryColumnsIfNecessary() const;
 
   // These are called internally from AddView<T>.
   void AddViewImpl(std::unique_ptr<View> view, int col_span, int row_span);
@@ -266,8 +266,8 @@ class VIEWS_EXPORT GridLayout : public LayoutManager {
   // The View this is installed on.
   View* host_ = nullptr;
 
-  // Whether or not we've calculated the master/linked columns.
-  mutable bool calculated_master_columns_ = false;
+  // Whether or not we've calculated the primary/linked columns.
+  mutable bool calculated_primary_columns_ = false;
 
   // Used to verify a view isn't added with a row span that expands into
   // another column structure.
@@ -367,8 +367,8 @@ class VIEWS_EXPORT ColumnSet {
   void AddViewState(ViewState* view_state);
 
   // Set description of these.
-  void CalculateMasterColumns();
-  void AccumulateMasterColumns();
+  void CalculatePrimaryColumns();
+  void AccumulatePrimaryColumns();
 
   // Sets the size of each linked column to be the same.
   void UnifyLinkedColumnSizes();
@@ -426,9 +426,9 @@ class VIEWS_EXPORT ColumnSet {
   // order.
   std::vector<ViewState*> view_states_;
 
-  // The master column of those columns that are linked. See Column
-  // for a description of what the master column is.
-  std::vector<Column*> master_columns_;
+  // The primary column of those columns that are linked. See Column
+  // for a description of what the primary column is.
+  std::vector<Column*> primary_columns_;
 
 #if DCHECK_IS_ON()
   SizeCalculationType last_calculation_type_ = SizeCalculationType::kPreferred;

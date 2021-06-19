@@ -170,7 +170,7 @@ class Column : public LayoutElement {
         fixed_width_(fixed_width),
         min_width_(min_width),
         is_padding_(is_padding),
-        master_column_(nullptr) {}
+        primary_column_(nullptr) {}
 
   ~Column() override = default;
 
@@ -184,10 +184,10 @@ class Column : public LayoutElement {
   friend class ColumnSet;
   friend class GridLayout;
 
-  Column* GetLastMasterColumn();
+  Column* GetLastPrimaryColumn();
 
   // Determines the max size of all linked columns, and sets each column
-  // to that size. This should only be used for the master column.
+  // to that size. This should only be used for the primary column.
   void UnifyLinkedColumnSizes(int size_limit);
 
   void AdjustSize(int size) override;
@@ -202,15 +202,15 @@ class Column : public LayoutElement {
   const bool is_padding_;
 
   // If multiple columns have their sizes linked, one is the
-  // master column. The master column is identified by the
-  // master_column field being equal to itself. The master columns
+  // primary column. The primary column is identified by the
+  // primary_column field being equal to itself. The primary columns
   // same_size_columns field contains the set of Columns with the
   // the same size. Columns who are linked to other columns, but
-  // are not the master column have their master_column pointing to
-  // one of the other linked columns. Use the method GetLastMasterColumn
-  // to resolve the true master column.
+  // are not the primary column have their primary_column pointing to
+  // one of the other linked columns. Use the method GetLastprimaryColumn
+  // to resolve the true primary column.
   std::vector<Column*> same_size_columns_;
-  Column* master_column_;
+  Column* primary_column_;
 
   DISALLOW_COPY_AND_ASSIGN(Column);
 };
@@ -223,18 +223,18 @@ void Column::ResetSize() {
   }
 }
 
-Column* Column::GetLastMasterColumn() {
-  if (master_column_ == nullptr) {
+Column* Column::GetLastPrimaryColumn() {
+  if (primary_column_ == nullptr) {
     return nullptr;
   }
-  if (master_column_ == this) {
+  if (primary_column_ == this) {
     return this;
   }
-  return master_column_->GetLastMasterColumn();
+  return primary_column_->GetLastPrimaryColumn();
 }
 
 void Column::UnifyLinkedColumnSizes(int size_limit) {
-  DCHECK(master_column_ == this);
+  DCHECK(primary_column_ == this);
 
   // Accumulate the size first.
   int size = 0;
@@ -427,82 +427,82 @@ void ColumnSet::AddViewState(ViewState* view_state) {
   view_states_.insert(i, view_state);
 }
 
-void ColumnSet::CalculateMasterColumns() {
+void ColumnSet::CalculatePrimaryColumns() {
   for (const auto& column : columns_) {
     int same_size_column_index = column->same_size_column_;
     if (same_size_column_index != -1) {
       DCHECK(same_size_column_index >= 0 &&
              same_size_column_index < static_cast<int>(columns_.size()));
-      Column* master_column = column->master_column_;
+      Column* primary_column = column->primary_column_;
       Column* same_size_column = columns_[same_size_column_index].get();
-      Column* same_size_column_master = same_size_column->master_column_;
-      if (master_column == nullptr) {
+      Column* same_size_column_primary = same_size_column->primary_column_;
+      if (primary_column == nullptr) {
         // Current column is not linked to any other column.
-        if (same_size_column_master == nullptr) {
+        if (same_size_column_primary == nullptr) {
           // Both columns are not linked.
-          column->master_column_ = column.get();
-          same_size_column->master_column_ = column.get();
+          column->primary_column_ = column.get();
+          same_size_column->primary_column_ = column.get();
           column->same_size_columns_.push_back(same_size_column);
           column->same_size_columns_.push_back(column.get());
         } else {
           // Column to link to is linked with other columns.
           // Add current column to list of linked columns in other columns
-          // master column.
-          same_size_column->GetLastMasterColumn()->same_size_columns_.push_back(
-              column.get());
-          // And update the master column for the current column to that
+          // primary column.
+          same_size_column->GetLastPrimaryColumn()
+              ->same_size_columns_.push_back(column.get());
+          // And update the primary column for the current column to that
           // of the same sized column.
-          column->master_column_ = same_size_column;
+          column->primary_column_ = same_size_column;
         }
       } else {
         // Current column is already linked with another column.
-        if (same_size_column_master == nullptr) {
+        if (same_size_column_primary == nullptr) {
           // Column to link with is not linked to any other columns.
-          // Update it's master_column.
-          same_size_column->master_column_ = column.get();
+          // Update it's primary_column.
+          same_size_column->primary_column_ = column.get();
           // Add linked column to list of linked column.
-          column->GetLastMasterColumn()->same_size_columns_.push_back(
+          column->GetLastPrimaryColumn()->same_size_columns_.push_back(
               same_size_column);
-        } else if (column->GetLastMasterColumn() !=
-                   same_size_column->GetLastMasterColumn()) {
+        } else if (column->GetLastPrimaryColumn() !=
+                   same_size_column->GetLastPrimaryColumn()) {
           // The two columns are already linked with other columns.
           std::vector<Column*>* same_size_columns =
-              &(column->GetLastMasterColumn()->same_size_columns_);
+              &(column->GetLastPrimaryColumn()->same_size_columns_);
           std::vector<Column*>* other_same_size_columns =
-              &(same_size_column->GetLastMasterColumn()->same_size_columns_);
-          // Add all the columns from the others master to current columns
-          // master.
+              &(same_size_column->GetLastPrimaryColumn()->same_size_columns_);
+          // Add all the columns from the others primary to current columns
+          // primary.
           same_size_columns->insert(same_size_columns->end(),
                                     other_same_size_columns->begin(),
                                     other_same_size_columns->end());
-          // The other master is no longer a master, clear its vector of
-          // linked columns, and reset its master_column.
+          // The other primary is no longer a primary, clear its vector of
+          // linked columns, and reset its primary_column.
           other_same_size_columns->clear();
-          same_size_column->GetLastMasterColumn()->master_column_ =
+          same_size_column->GetLastPrimaryColumn()->primary_column_ =
               column.get();
         }
       }
     }
   }
-  AccumulateMasterColumns();
+  AccumulatePrimaryColumns();
 }
 
-void ColumnSet::AccumulateMasterColumns() {
-  DCHECK(master_columns_.empty());
+void ColumnSet::AccumulatePrimaryColumns() {
+  DCHECK(primary_columns_.empty());
   for (const auto& column : columns_) {
-    Column* master_column = column->GetLastMasterColumn();
-    if (master_column && !base::Contains(master_columns_, master_column)) {
-      master_columns_.push_back(master_column);
+    Column* primary_column = column->GetLastPrimaryColumn();
+    if (primary_column && !base::Contains(primary_columns_, primary_column)) {
+      primary_columns_.push_back(primary_column);
     }
-    // At this point, GetLastMasterColumn may not == master_column
-    // (may have to go through a few Columns)_. Reset master_column to
+    // At this point, GetLastPrimaryColumn may not == primary_column
+    // (may have to go through a few Columns)_. Reset primary_column to
     // avoid hops.
-    column->master_column_ = master_column;
+    column->primary_column_ = primary_column;
   }
 }
 
 void ColumnSet::UnifyLinkedColumnSizes() {
-  for (auto* column : master_columns_)
+  for (auto* column : primary_columns_)
     column->UnifyLinkedColumnSizes(linked_column_size_limit_);
 }
 
@@ -953,8 +953,8 @@ void GridLayout::SizeRowsAndColumns(bool layout,
   // layout calculations at this point, so the result will be incorrect.
   DCHECK(!adding_view_) << "GridLayout queried while adding a view.";
 
-  // Make sure the master columns have been calculated.
-  CalculateMasterColumnsIfNecessary();
+  // Make sure the primary columns have been calculated.
+  CalculatePrimaryColumnsIfNecessary();
   pref->SetSize(0, 0);
   if (rows_.empty())
     return;
@@ -1055,11 +1055,11 @@ void GridLayout::SizeRowsAndColumns(bool layout,
   }
 }
 
-void GridLayout::CalculateMasterColumnsIfNecessary() const {
-  if (!calculated_master_columns_) {
-    calculated_master_columns_ = true;
+void GridLayout::CalculatePrimaryColumnsIfNecessary() const {
+  if (!calculated_primary_columns_) {
+    calculated_primary_columns_ = true;
     for (const auto& column_set : column_sets_)
-      column_set->CalculateMasterColumns();
+      column_set->CalculatePrimaryColumns();
   }
 }
 
