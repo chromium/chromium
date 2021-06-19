@@ -4,6 +4,7 @@
 
 #include "extensions/components/native_app_window/native_app_window_views.h"
 
+#include "base/bind.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -38,6 +39,18 @@ void NativeAppWindowViews::Init(
   size_constraints_.set_maximum_size(
       create_params.GetContentMaximumSize(gfx::Insets()));
   Observe(app_window_->web_contents());
+
+  // TODO(pbos): See if this can retain SetOwnedByWidget(true) and get deleted
+  // through WidgetDelegate::DeleteDelegate(). It's not clear to me how this
+  // ends up destructed, but the below preserves a previous DialogDelegate
+  // override that did not end with a direct `delete this;`.
+  SetOwnedByWidget(false);
+  RegisterDeleteDelegateCallback(base::BindOnce(
+      [](NativeAppWindowViews* dialog) {
+        dialog->widget_->RemoveObserver(dialog);
+        dialog->app_window_->OnNativeClose();
+      },
+      this));
 
   web_view_ = AddChildView(std::make_unique<views::WebView>(nullptr));
   web_view_->SetWebContents(app_window_->web_contents());
@@ -200,11 +213,6 @@ void NativeAppWindowViews::SaveWindowPlacement(const gfx::Rect& bounds,
                                                ui::WindowShowState show_state) {
   views::WidgetDelegate::SaveWindowPlacement(bounds, show_state);
   app_window_->OnNativeWindowChanged();
-}
-
-void NativeAppWindowViews::DeleteDelegate() {
-  widget_->RemoveObserver(this);
-  app_window_->OnNativeClose();
 }
 
 bool NativeAppWindowViews::ShouldDescendIntoChildForEventHandling(

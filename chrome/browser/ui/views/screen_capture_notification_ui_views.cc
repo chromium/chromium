@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/bind.h"
 #include "base/macros.h"
 #include "base/scoped_multi_source_observation.h"
 #include "build/build_config.h"
@@ -104,7 +105,6 @@ class ScreenCaptureNotificationUIViews : public ScreenCaptureNotificationUI,
       content::MediaStreamUI::SourceCallback source_callback) override;
 
   // views::WidgetDelegateView:
-  void DeleteDelegate() override;
   views::ClientView* CreateClientView(views::Widget* widget) override;
   std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
       views::Widget* widget) override;
@@ -133,7 +133,14 @@ ScreenCaptureNotificationUIViews::ScreenCaptureNotificationUIViews(
   SetShowCloseButton(false);
   SetShowTitle(false);
   SetTitle(text);
+
+  // TODO(pbos): Investigate if this can be SetOwnedByWidget(true) and get rid
+  // of `delete GetWidget();` in the destructor.
   set_owned_by_client();
+  SetOwnedByWidget(false);
+  RegisterDeleteDelegateCallback(
+      base::BindOnce(&ScreenCaptureNotificationUIViews::NotifyStopped,
+                     base::Unretained(this)));
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
@@ -240,10 +247,6 @@ gfx::NativeViewId ScreenCaptureNotificationUIViews::OnStarted(
   widget->SetVisibleOnAllWorkspaces(true);
 
   return 0;
-}
-
-void ScreenCaptureNotificationUIViews::DeleteDelegate() {
-  NotifyStopped();
 }
 
 views::ClientView* ScreenCaptureNotificationUIViews::CreateClientView(

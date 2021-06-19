@@ -246,11 +246,15 @@ class VIEWS_EXPORT WidgetDelegate {
   // of these methods.
   virtual void WindowClosing();
 
-  // It should not be necessary to override this method in new code; instead,
-  // consider using either SetOwnedByWidget() if you need that ownership
-  // behavior, or RegisterDeleteDelegateCallback() if you need to attach
-  // behavior before deletion but want the default deletion behavior.
-  virtual void DeleteDelegate();
+  // Called when removed from a Widget. This first runs callbacks registered
+  // through RegisterDeleteDelegateCallback() and then either deletes `this` or
+  // not depending on SetOwnedByWidget(). If `this` is owned by Widget then the
+  // delegate is destructed at the end.
+  //
+  // WARNING: Use SetOwnedByWidget(true) and use delete-delegate callbacks to do
+  // pre-destruction cleanup instead of using self-deleting callbacks. The
+  // latter may become a DCHECK in the future.
+  void DeleteDelegate();
 
   // Called when the user begins/ends to change the bounds of the window.
   virtual void OnWindowBeginUserBoundsChange() {}

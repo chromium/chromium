@@ -116,6 +116,19 @@ PresentationReceiverWindowView::PresentationReceiverWindowView(
       command_updater_(this),
       exclusive_access_manager_(this) {
   SetHasWindowSizeControls(true);
+
+  // TODO(pbos): See if this can retain SetOwnedByWidget(true) and get deleted
+  // through WidgetDelegate::DeleteDelegate(). This requires confirming that
+  // delegate_->WindowClosed() is safe to call before this deletes.
+  SetOwnedByWidget(false);
+  RegisterDeleteDelegateCallback(base::BindOnce(
+      [](PresentationReceiverWindowView* dialog) {
+        auto* const delegate = dialog->delegate_;
+        delete dialog;
+        delegate->WindowClosed();
+      },
+      this));
+
   DCHECK(frame);
   DCHECK(delegate);
 }
@@ -262,12 +275,6 @@ void PresentationReceiverWindowView::ExecuteCommandWithDisposition(
 
 WebContents* PresentationReceiverWindowView::GetActiveWebContents() const {
   return delegate_->web_contents();
-}
-
-void PresentationReceiverWindowView::DeleteDelegate() {
-  auto* const delegate = delegate_;
-  delete this;
-  delegate->WindowClosed();
 }
 
 std::u16string PresentationReceiverWindowView::GetWindowTitle() const {

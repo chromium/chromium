@@ -38,8 +38,6 @@ class TestDialog : public views::DialogDelegateView {
   ~TestDialog() override {}
 
   views::View* GetInitiallyFocusedView() override { return this; }
-  // Don't delete the delegate yet. Keep it around for inspection later.
-  void DeleteDelegate() override {}
 
  private:
   DISALLOW_COPY_AND_ASSIGN(TestDialog);

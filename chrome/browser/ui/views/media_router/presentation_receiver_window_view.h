@@ -81,7 +81,6 @@ class PresentationReceiverWindowView final
   content::WebContents* GetActiveWebContents() const final;
 
   // views::WidgetDelegateView overrides.
-  void DeleteDelegate() final;
   std::u16string GetWindowTitle() const final;
 
   // ui::AcceleratorTarget overrides.

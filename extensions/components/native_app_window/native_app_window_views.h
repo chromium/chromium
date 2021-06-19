@@ -95,7 +95,6 @@ class NativeAppWindowViews : public extensions::NativeAppWindow,
   bool ShouldShowWindowTitle() const override;
   void SaveWindowPlacement(const gfx::Rect& bounds,
                            ui::WindowShowState show_state) override;
-  void DeleteDelegate() override;
   bool ShouldDescendIntoChildForEventHandling(
       gfx::NativeView child,
       const gfx::Point& location) override;
