@@ -122,9 +122,12 @@ void HistoryClustersHandler::RemoveVisits(
   for (const auto& visit_ptr : visits) {
     expire_list.resize(expire_list.size() + 1);
     auto& expire_args = expire_list.back();
+    expire_args.urls =
+        std::set<GURL>(visit_ptr->raw_urls.begin(), visit_ptr->raw_urls.end());
     // ExpireHistoryArgs::end_time is not inclusive. Make sure all visits in the
     // given timespan are removed by adding 1 second to it.
-    expire_args.end_time = visit_ptr->time + base::TimeDelta::FromSeconds(1);
+    expire_args.end_time =
+        visit_ptr->last_visit_time + base::TimeDelta::FromSeconds(1);
     expire_args.begin_time = visit_ptr->first_visit_time;
   }
   auto* history_clusters_service =
@@ -236,16 +239,16 @@ void HistoryClustersHandler::OnHistoryQueryResults(
     }
 
     auto visit = history_clusters::mojom::URLVisit::New();
-    visit->id = result.id();
-    visit->url = result.url();
+    visit->raw_urls.push_back(result.url());
+    visit->normalized_url = result.url();
     visit->page_title = base::UTF16ToUTF8(result.title());
-    visit->time = result.visit_time();
+    visit->last_visit_time = result.visit_time();
     visit->first_visit_time = result.visit_time();
     visit->relative_date = base::UTF16ToUTF8(ui::TimeFormat::Simple(
         ui::TimeFormat::FORMAT_ELAPSED, ui::TimeFormat::LENGTH_SHORT,
-        base::Time::Now() - visit->time));
+        base::Time::Now() - visit->last_visit_time));
     visit->time_of_day =
-        base::UTF16ToUTF8(base::TimeFormatTimeOfDay(visit->time));
+        base::UTF16ToUTF8(base::TimeFormatTimeOfDay(visit->last_visit_time));
 
     // Check if the URL is a valid search URL.
     std::u16string search_terms;
@@ -254,14 +257,25 @@ void HistoryClustersHandler::OnHistoryQueryResults(
         default_search_provider->ExtractSearchTermsFromURL(
             result.url(), search_terms_data, &search_terms) &&
         !search_terms.empty();
+    // If the URL is a valid search URL, try to normalize it.
     if (is_valid_search_url) {
+      const std::u16string& normalized_search_query =
+          base::i18n::ToLower(base::CollapseWhitespace(search_terms, false));
+      TemplateURLRef::SearchTermsArgs search_terms_args(
+          normalized_search_query);
+      const TemplateURLRef& search_url_ref = default_search_provider->url_ref();
+      if (!search_url_ref.SupportsReplacement(search_terms_data)) {
+        continue;
+      }
+      visit->normalized_url = GURL(search_url_ref.ReplaceSearchTerms(
+          search_terms_args, search_terms_data));
+
+      // Annotate the visit accordingly.
       visit->annotations.push_back(
           history_clusters::mojom::Annotation::kSearchResultsPage);
 
-      // Try to create a related search query.
-      const std::u16string& search_query =
-          base::i18n::ToLower(base::CollapseWhitespace(search_terms, false));
-      related_searches.insert(search_query);
+      // Also offer this as a related search query.
+      related_searches.insert(normalized_search_query);
     }
 
     // Check if the URL is in a tab group.
@@ -297,13 +311,13 @@ void HistoryClustersHandler::OnHistoryQueryResults(
     }
 
     // Count `visit` toward duplicate visits if the same URL is seen before.
-    auto duplicate_visit_it = std::find_if(
-        visits.begin(), visits.end(), [&visit](const auto& visit_ptr) {
-          return visit_ptr->url == visit->url;
+    auto duplicate_visit_it =
+        std::find_if(visits.begin(), visits.end(), [&](const auto& visit_ptr) {
+          return visit_ptr->normalized_url == visit->normalized_url;
         });
     if (duplicate_visit_it != visits.end()) {
-      (*duplicate_visit_it)->num_duplicate_visits++;
-      (*duplicate_visit_it)->first_visit_time = visit->time;
+      (*duplicate_visit_it)->raw_urls.push_back(result.url());
+      (*duplicate_visit_it)->first_visit_time = result.visit_time();
     } else {
       visits.push_back(std::move(visit));
     }

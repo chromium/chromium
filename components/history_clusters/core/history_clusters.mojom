@@ -30,37 +30,36 @@ enum Annotation {
 };
 
 // Represents the most recent visit to a URL within a Cluster. Visits for which
-// there are more recent visits to the same URL within the Cluster are omitted.
-// However, the time of the least recent visit as well as the number of those
-// duplicate visits are preserved for use in the UI as well as deletion.
+// there are more recent visits to the same (or a qualifying near-duplicate) URL
+// within the Cluster are omitted.
+// However, the time of the least recent visit as well as the raw URLs of those
+// duplicative visits are preserved for deletion purposes.
 struct URLVisit {
-  // Visit identifier. See //components/history/core/browser/history_types.h
-  int64 id;
-
-  // Visited URL.
-  url.mojom.Url url;
+  // Normalized URL of the visited webpage. Only Search Results Page urls will
+  // be normalized for now; This is because SRP visits for the same search terms
+  // have slightly different URLs due to various query params such as the AQS.
+  url.mojom.Url normalized_url;
 
   // Title of the visited webpage.
   string page_title;
 
-  // Optional externally hosted thumbnail representing the visited webpage.
-  url.mojom.Url? thumbnail_url;
+  // Time of the most recent visit in the Cluster to the same (or a qualifying
+  // near-duplicate) URL.
+  mojo_base.mojom.Time last_visit_time;
 
-  // Time of the visit.
-  mojo_base.mojom.Time time;
-
-  // Time of the least recent visit in the Cluster to the same URL. Equals
-  // `time` if there is only one visit to the URL within the Cluster.
+  // Time of the least recent visit in the Cluster to the same (or a qualifying
+  // near-duplicate) URL. Equals `last_visit_time` if there is only one visit in
+  // the Cluster to the same (or a qualifying near-duplicate) URL.
   mojo_base.mojom.Time first_visit_time;
 
-  // Localized string of approximate time of visit, e.g., "2 days ago".
+  // List of raw visited URLs for `normalized_url`.
+  array<url.mojom.Url> raw_urls;
+
+  // Localized string of approximate `last_visit_time`, e.g., "2 days ago".
   string relative_date;
 
-  // Time of day of visit, e.g., "3:07 PM".
+  // Time of day of `last_visit_time`, e.g., "3:07 PM".
   string time_of_day;
-
-  // Number of duplicate visits (i.e., visits to the same URL) in the Cluster.
-  int32 num_duplicate_visits;
 
   // Annotations for this visit.
   array<Annotation> annotations;

@@ -103,18 +103,19 @@ class ClusterCardElement extends PolymerElement {
     // falls within that of the removed visit.
     const matchingVisit = (visit) => {
       return removedVisits.findIndex((removedVisit) => {
-        return visit.url.url === removedVisit.url.url &&
-            visit.time.internalValue <= removedVisit.time.internalValue &&
+        return visit.normalizedUrl.url === removedVisit.normalizedUrl.url &&
+            visit.lastVisitTime.internalValue <=
+            removedVisit.lastVisitTime.internalValue &&
             visit.firstVisitTime.internalValue >=
             removedVisit.firstVisitTime.internalValue;
       }) !== -1;
     };
-    this.cluster.visits.forEach((visits, visitIndex) => {
-      if (matchingVisit(visits)) {
+    this.cluster.visits.forEach((visit, visitIndex) => {
+      if (matchingVisit(visit)) {
         this.splice('cluster.visits', visitIndex, 1);
         return;
       }
-      visits.relatedVisits.forEach((relatedVisit, relatedVisitIndex) => {
+      visit.relatedVisits.forEach((relatedVisit, relatedVisitIndex) => {
         if (matchingVisit(relatedVisit)) {
           this.splice(
               `cluster.visits.${visitIndex}.relatedVisits`, relatedVisitIndex,

@@ -315,13 +315,17 @@ TEST_F(HistoryClustersServiceTest, QueryMemoriesVariousQueries) {
               if (test_data[i].expect_first_cluster) {
                 const auto& cluster = response.clusters[0];
                 ASSERT_EQ(cluster->visits.size(), 2u);
-                EXPECT_EQ(cluster->visits[0]->id, 1);
-                EXPECT_EQ(cluster->visits[0]->url, "https://google.com/");
-                EXPECT_EQ(cluster->visits[0]->time, visit_1_time_);
+                EXPECT_EQ(cluster->visits[0]->normalized_url,
+                          "https://google.com/");
+                EXPECT_EQ(cluster->visits[0]->raw_urls.size(), 1u);
+                EXPECT_EQ(cluster->visits[0]->last_visit_time, visit_1_time_);
+                EXPECT_EQ(cluster->visits[0]->first_visit_time, visit_1_time_);
                 EXPECT_EQ(cluster->visits[0]->page_title, "Google title");
-                EXPECT_EQ(cluster->visits[1]->id, 2);
-                EXPECT_EQ(cluster->visits[1]->url, "https://github.com/");
-                EXPECT_EQ(cluster->visits[1]->time, visit_2_time_);
+                EXPECT_EQ(cluster->visits[1]->normalized_url,
+                          "https://github.com/");
+                EXPECT_EQ(cluster->visits[1]->raw_urls.size(), 1u);
+                EXPECT_EQ(cluster->visits[1]->last_visit_time, visit_2_time_);
+                EXPECT_EQ(cluster->visits[1]->first_visit_time, visit_2_time_);
                 EXPECT_EQ(cluster->visits[1]->page_title, "Github title");
                 ASSERT_EQ(cluster->keywords.size(), 2u);
                 EXPECT_EQ(cluster->keywords[0], u"apples");
@@ -333,9 +337,11 @@ TEST_F(HistoryClustersServiceTest, QueryMemoriesVariousQueries) {
                                           ? response.clusters[1]
                                           : response.clusters[0];
                 ASSERT_EQ(cluster->visits.size(), 1u);
-                EXPECT_EQ(cluster->visits[0]->id, 2);
-                EXPECT_EQ(cluster->visits[0]->url, "https://github.com/");
-                EXPECT_EQ(cluster->visits[0]->time, visit_2_time_);
+                EXPECT_EQ(cluster->visits[0]->normalized_url,
+                          "https://github.com/");
+                EXPECT_EQ(cluster->visits[0]->raw_urls.size(), 1u);
+                EXPECT_EQ(cluster->visits[0]->last_visit_time, visit_2_time_);
+                EXPECT_EQ(cluster->visits[0]->first_visit_time, visit_2_time_);
                 EXPECT_EQ(cluster->visits[0]->page_title, "Github title");
                 EXPECT_TRUE(cluster->keywords.empty());
               }

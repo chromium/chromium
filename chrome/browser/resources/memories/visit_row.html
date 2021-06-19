@@ -58,11 +58,11 @@
   }
 </style>
 <div id="header">
-  <a id="start-justtified" href="[[visit.url.url]]" on-click="onTap_">
-    <page-favicon url="[[visit.url]]"></page-favicon>
+  <a id="start-justtified" href="[[visit.normalizedUrl.url]]" on-click="onTap_">
+    <page-favicon url="[[visit.normalizedUrl]]"></page-favicon>
     <span id="title">[[visit.pageTitle]]</span>
     <span id="separator">–</span>
-    <span id="hostname">[[getHostnameFromUrl_(visit.url)]]</span>
+    <span id="hostname">[[getHostnameFromUrl_(visit.normalizedUrl)]]</span>
   </a>
   <div id="end-justified">
     <div id="timestamp">[[getTimeOfVisit_(visit)]]</div>

@@ -64,9 +64,10 @@ std::vector<history::Cluster> FilterClustersMatchingQuery(
 history_clusters::mojom::URLVisitPtr VisitToMojom(
     const history::AnnotatedVisit& visit) {
   auto visit_mojom = history_clusters::mojom::URLVisit::New();
-  visit_mojom->id = visit.visit_row.visit_id;
-  visit_mojom->url = visit.url_row.url();
-  visit_mojom->time = visit.visit_row.visit_time;
+  visit_mojom->normalized_url = visit.url_row.url();
+  visit_mojom->raw_urls.push_back(visit.url_row.url());
+  visit_mojom->last_visit_time = visit.visit_row.visit_time;
+  visit_mojom->first_visit_time = visit.visit_row.visit_time;
   visit_mojom->page_title = base::UTF16ToUTF8(visit.url_row.title());
   return visit_mojom;
 }
