@@ -482,57 +482,50 @@ void LocalFrameUkmAggregator::UpdateSample(
 }
 
 void LocalFrameUkmAggregator::ReportPreFCPEvent() {
-#define CASE_FOR_ID(name)                                           \
-  case k##name:                                                     \
+#define RECORD_METRIC(name)                                         \
+  {                                                                 \
+    auto& absolute_record = absolute_metric_records_[k##name];      \
+    if (absolute_record.uma_aggregate_counter) {                    \
+      absolute_record.uma_aggregate_counter->Count(                 \
+          ToSample(absolute_record.pre_fcp_aggregate));             \
+    }                                                               \
     builder.Set##name(ToSample(absolute_record.pre_fcp_aggregate)); \
-    break
+  }
 
   ukm::builders::Blink_PageLoad builder(source_id_);
-  builder.SetMainFrame(primary_metric_.pre_fcp_aggregate);
   primary_metric_.uma_aggregate_counter->Count(
       ToSample(primary_metric_.pre_fcp_aggregate));
-  for (size_t i = 0; i < metrics_data().size(); ++i) {
-    auto& absolute_record = absolute_metric_records_[i];
-    if (absolute_record.uma_aggregate_counter) {
-      absolute_record.uma_aggregate_counter->Count(
-          ToSample(absolute_record.pre_fcp_aggregate));
-    }
+  builder.SetMainFrame(ToSample(primary_metric_.pre_fcp_aggregate));
 
-    switch (static_cast<MetricId>(i)) {
-      CASE_FOR_ID(CompositingAssignments);
-      CASE_FOR_ID(CompositingCommit);
-      CASE_FOR_ID(CompositingInputs);
-      CASE_FOR_ID(ImplCompositorCommit);
-      CASE_FOR_ID(IntersectionObservation);
-      CASE_FOR_ID(Paint);
-      CASE_FOR_ID(PrePaint);
-      CASE_FOR_ID(Style);
-      CASE_FOR_ID(Layout);
-      CASE_FOR_ID(ForcedStyleAndLayout);
-      CASE_FOR_ID(HandleInputEvents);
-      CASE_FOR_ID(Animate);
-      CASE_FOR_ID(UpdateLayers);
-      CASE_FOR_ID(WaitForCommit);
-      CASE_FOR_ID(DisplayLockIntersectionObserver);
-      CASE_FOR_ID(JavascriptIntersectionObserver);
-      CASE_FOR_ID(LazyLoadIntersectionObserver);
-      CASE_FOR_ID(MediaIntersectionObserver);
-      CASE_FOR_ID(AnchorElementMetricsIntersectionObserver);
-      CASE_FOR_ID(UpdateViewportIntersection);
-      CASE_FOR_ID(UserDrivenDocumentUpdate);
-      CASE_FOR_ID(ServiceDocumentUpdate);
-      CASE_FOR_ID(ContentDocumentUpdate);
-      CASE_FOR_ID(ScrollDocumentUpdate);
-      CASE_FOR_ID(HitTestDocumentUpdate);
-      CASE_FOR_ID(JavascriptDocumentUpdate);
-      case kCount:
-      case kMainFrame:
-        NOTREACHED();
-        break;
-    }
-  }
+  RECORD_METRIC(CompositingAssignments);
+  RECORD_METRIC(CompositingCommit);
+  RECORD_METRIC(CompositingInputs);
+  RECORD_METRIC(ImplCompositorCommit);
+  RECORD_METRIC(IntersectionObservation);
+  RECORD_METRIC(Paint);
+  RECORD_METRIC(PrePaint);
+  RECORD_METRIC(Style);
+  RECORD_METRIC(Layout);
+  RECORD_METRIC(ForcedStyleAndLayout);
+  RECORD_METRIC(HandleInputEvents);
+  RECORD_METRIC(Animate);
+  RECORD_METRIC(UpdateLayers);
+  RECORD_METRIC(WaitForCommit);
+  RECORD_METRIC(DisplayLockIntersectionObserver);
+  RECORD_METRIC(JavascriptIntersectionObserver);
+  RECORD_METRIC(LazyLoadIntersectionObserver);
+  RECORD_METRIC(MediaIntersectionObserver);
+  RECORD_METRIC(AnchorElementMetricsIntersectionObserver);
+  RECORD_METRIC(UpdateViewportIntersection);
+  RECORD_METRIC(UserDrivenDocumentUpdate);
+  RECORD_METRIC(ServiceDocumentUpdate);
+  RECORD_METRIC(ContentDocumentUpdate);
+  RECORD_METRIC(ScrollDocumentUpdate);
+  RECORD_METRIC(HitTestDocumentUpdate);
+  RECORD_METRIC(JavascriptDocumentUpdate);
+
   builder.Record(recorder_);
-#undef CASE_FOR_ID
+#undef RECORD_METRIC
 }
 
 void LocalFrameUkmAggregator::ReportUpdateTimeEvent() {
@@ -540,53 +533,44 @@ void LocalFrameUkmAggregator::ReportUpdateTimeEvent() {
   if (!frames_since_last_report_)
     return;
 
-#define CASE_FOR_ID(name, index)                                 \
-  case k##name:                                                  \
-    builder.Set##name(current_sample_.sub_metrics_counts[index]) \
-        .Set##name##BeginMainFrame(                              \
-            current_sample_.sub_main_frame_counts[index]);       \
-    break
+#define RECORD_METRIC(name)                                      \
+  builder.Set##name(current_sample_.sub_metrics_counts[k##name]) \
+      .Set##name##BeginMainFrame(                                \
+          current_sample_.sub_main_frame_counts[k##name]);
 
   ukm::builders::Blink_UpdateTime builder(source_id_);
   builder.SetMainFrame(current_sample_.primary_metric_count);
   builder.SetMainFrameIsBeforeFCP(fcp_state_ != kHavePassedFCP);
   builder.SetMainFrameReasons(current_sample_.trackers);
-  for (size_t i = 0; i < metrics_data().size(); ++i) {
-    switch (static_cast<MetricId>(i)) {
-      CASE_FOR_ID(CompositingAssignments, i);
-      CASE_FOR_ID(CompositingCommit, i);
-      CASE_FOR_ID(CompositingInputs, i);
-      CASE_FOR_ID(ImplCompositorCommit, i);
-      CASE_FOR_ID(IntersectionObservation, i);
-      CASE_FOR_ID(Paint, i);
-      CASE_FOR_ID(PrePaint, i);
-      CASE_FOR_ID(Style, i);
-      CASE_FOR_ID(Layout, i);
-      CASE_FOR_ID(ForcedStyleAndLayout, i);
-      CASE_FOR_ID(HandleInputEvents, i);
-      CASE_FOR_ID(Animate, i);
-      CASE_FOR_ID(UpdateLayers, i);
-      CASE_FOR_ID(WaitForCommit, i);
-      CASE_FOR_ID(DisplayLockIntersectionObserver, i);
-      CASE_FOR_ID(JavascriptIntersectionObserver, i);
-      CASE_FOR_ID(LazyLoadIntersectionObserver, i);
-      CASE_FOR_ID(MediaIntersectionObserver, i);
-      CASE_FOR_ID(AnchorElementMetricsIntersectionObserver, i);
-      CASE_FOR_ID(UpdateViewportIntersection, i);
-      CASE_FOR_ID(UserDrivenDocumentUpdate, i);
-      CASE_FOR_ID(ServiceDocumentUpdate, i);
-      CASE_FOR_ID(ContentDocumentUpdate, i);
-      CASE_FOR_ID(ScrollDocumentUpdate, i);
-      CASE_FOR_ID(HitTestDocumentUpdate, i);
-      CASE_FOR_ID(JavascriptDocumentUpdate, i);
-      case kCount:
-      case kMainFrame:
-        NOTREACHED();
-        break;
-    }
-  }
+  RECORD_METRIC(CompositingAssignments);
+  RECORD_METRIC(CompositingCommit);
+  RECORD_METRIC(CompositingInputs);
+  RECORD_METRIC(ImplCompositorCommit);
+  RECORD_METRIC(IntersectionObservation);
+  RECORD_METRIC(Paint);
+  RECORD_METRIC(PrePaint);
+  RECORD_METRIC(Style);
+  RECORD_METRIC(Layout);
+  RECORD_METRIC(ForcedStyleAndLayout);
+  RECORD_METRIC(HandleInputEvents);
+  RECORD_METRIC(Animate);
+  RECORD_METRIC(UpdateLayers);
+  RECORD_METRIC(WaitForCommit);
+  RECORD_METRIC(DisplayLockIntersectionObserver);
+  RECORD_METRIC(JavascriptIntersectionObserver);
+  RECORD_METRIC(LazyLoadIntersectionObserver);
+  RECORD_METRIC(MediaIntersectionObserver);
+  RECORD_METRIC(AnchorElementMetricsIntersectionObserver);
+  RECORD_METRIC(UpdateViewportIntersection);
+  RECORD_METRIC(UserDrivenDocumentUpdate);
+  RECORD_METRIC(ServiceDocumentUpdate);
+  RECORD_METRIC(ContentDocumentUpdate);
+  RECORD_METRIC(ScrollDocumentUpdate);
+  RECORD_METRIC(HitTestDocumentUpdate);
+  RECORD_METRIC(JavascriptDocumentUpdate);
+
   builder.Record(recorder_);
-#undef CASE_FOR_ID
+#undef RECORD_METRIC
 
   // Reset the frames since last report to ensure correct sampling.
   frames_since_last_report_ = 0;
