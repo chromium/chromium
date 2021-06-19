@@ -14,11 +14,11 @@ PASS :has(.sibling:has(.descendant) ~ .target) ~ .parent > .descendant matches e
 PASS :has(:scope .target) matches expected elements
 PASS :has(:scope > .parent) matches expected elements
 FAIL :has(> .target) matches expected elements Failed to execute 'querySelectorAll' on 'Element': ':has(> .target)' is not a valid selector.
-FAIL :has(:scope > .target) matches expected elements assert_equals: expected "b,f,h" but got ""
-FAIL .target:has(+ .sibling) matches expected elements Failed to execute 'querySelectorAll' on 'Element': '.target:has(+ .sibling)' is not a valid selector.
-FAIL .target:has(:scope + .sibling) matches expected elements assert_equals: expected "i" but got ""
+PASS :has(:scope > .target) matches expected elements
+FAIL :has(+ #h) matches expected elements Failed to execute 'querySelectorAll' on 'Element': ':has(+ #h)' is not a valid selector.
+PASS :has(:scope + #h) matches expected elements
 FAIL .parent:has(~ #h) matches expected elements Failed to execute 'querySelectorAll' on 'Element': '.parent:has(~ #h)' is not a valid selector.
-FAIL .parent:has(:scope ~ #h) matches expected elements assert_equals: expected "b,f" but got ""
+PASS .parent:has(:scope ~ #h) matches expected elements
 PASS .sibling:has(.descendant) matches expected element
 PASS closest(.ancestor:has(.descendant)) returns expected element
 PASS :has(.target ~ .sibling .descendant) matches expectedly

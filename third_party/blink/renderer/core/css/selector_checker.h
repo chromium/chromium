@@ -121,7 +121,6 @@ class CORE_EXPORT SelectorChecker {
     Element* vtt_originating_element = nullptr;
     bool in_nested_complex_selector = false;
     bool is_inside_visited_link = false;
-    bool in_has_argument_selector = false;
   };
 
   struct MatchResult {
@@ -161,7 +160,28 @@ class CORE_EXPORT SelectorChecker {
     // div#d5 element, the div#d3 is the element that matches the leftmost
     // compound selector '.a'. So the MatchResult will return the div#d3
     // element for the matching operation.
-    Element* has_argument_leftmost_compound_match{nullptr};
+    //
+    // In case of matching none desendant relative argument selectors, we
+    // can get the candidate leftmost compound matches while matching the
+    // argument selector.
+    // To process the 'main.querySelectorAll("div:has(:scope > .a .b)")'
+    // on the above DOM tree, selector checker will try to match the
+    // argument selector ':scope > .a .b' on the descendants of #d1 div
+    // element with the :scope element as #d1. When it matches the argument
+    // selector on #d5 element, the matching result is true and it can get
+    // the element that matches the leftmost(except :scope) compound '.a'
+    // as #d2 element. But while matching the argument selector on the #d5
+    // element, selector checker can also aware that the #d3 element can
+    // be a leftmost compound matching element when the scope element is
+    // #d2 element. So the selector checker will return the #d2 and #d3
+    // element so that the #d1 and #d2 can be marked as matched with the
+    // ':has(:scope > .a .b)'
+    //
+    // Instead of having vector for the :has argument matching, MatchResult
+    // has a pointer field to hold a element vector instance to minimize the
+    // MatchResult instance allocation overhead for none-has matching operations
+    HeapVector<Member<Element>>* has_argument_leftmost_compound_matches{
+        nullptr};
   };
 
   bool Match(const SelectorCheckingContext& context, MatchResult& result) const;
