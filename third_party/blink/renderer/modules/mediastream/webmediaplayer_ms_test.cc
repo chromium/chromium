@@ -1442,6 +1442,34 @@ TEST_P(WebMediaPlayerMSTest, GetVideoFramePresentationMetadata) {
   testing::Mock::VerifyAndClearExpectations(this);
 }
 
+TEST_P(WebMediaPlayerMSTest, ValidPreferredInterval) {
+  InitializeWebMediaPlayerMS();
+  LoadAndGetFrameProvider(true);
+
+  const bool opaque_frame = testing::get<1>(GetParam());
+  const bool odd_size_frame = testing::get<2>(GetParam());
+
+  gfx::Size frame_size(kStandardWidth - (odd_size_frame ? kOddSizeOffset : 0),
+                       kStandardHeight - (odd_size_frame ? kOddSizeOffset : 0));
+
+  auto frame = media::VideoFrame::CreateZeroInitializedFrame(
+      opaque_frame ? media::PIXEL_FORMAT_I420 : media::PIXEL_FORMAT_I420A,
+      frame_size, gfx::Rect(frame_size), frame_size,
+      base::TimeDelta::FromSeconds(10));
+
+  compositor_->EnqueueFrame(std::move(frame), true);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_GE(compositor_->GetPreferredRenderInterval(), base::TimeDelta());
+
+  frame = media::VideoFrame::CreateZeroInitializedFrame(
+      opaque_frame ? media::PIXEL_FORMAT_I420 : media::PIXEL_FORMAT_I420A,
+      frame_size, gfx::Rect(frame_size), frame_size,
+      base::TimeDelta::FromSeconds(1));
+  compositor_->EnqueueFrame(std::move(frame), true);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_GE(compositor_->GetPreferredRenderInterval(), base::TimeDelta());
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          WebMediaPlayerMSTest,
                          ::testing::Combine(::testing::Bool(),

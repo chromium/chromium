@@ -461,10 +461,13 @@ void WebMediaPlayerMSCompositor::PutCurrentFrame() {
 base::TimeDelta WebMediaPlayerMSCompositor::GetPreferredRenderInterval() {
   DCHECK(video_frame_compositor_task_runner_->BelongsToCurrentThread());
   if (!rendering_frame_buffer_) {
+    DCHECK_GE(last_render_length_, base::TimeDelta());
     return last_render_length_;
-  } else {
-    return rendering_frame_buffer_->average_frame_duration();
   }
+
+  DCHECK_GE(rendering_frame_buffer_->average_frame_duration(),
+            base::TimeDelta());
+  return rendering_frame_buffer_->average_frame_duration();
 }
 
 void WebMediaPlayerMSCompositor::StartRendering() {
@@ -584,8 +587,10 @@ void WebMediaPlayerMSCompositor::RenderWithoutAlgorithmOnCompositor(
   {
     base::AutoLock auto_lock(current_frame_lock_);
     // Last timestamp in the stream might not have timestamp.
-    if (current_frame_ && !frame->timestamp().is_zero())
+    if (current_frame_ && !frame->timestamp().is_zero() &&
+        frame->timestamp() > current_frame_->timestamp()) {
       last_render_length_ = frame->timestamp() - current_frame_->timestamp();
+    }
     SetCurrentFrame(std::move(frame), is_copy, absl::nullopt);
   }
   if (video_frame_provider_client_)
