@@ -49,8 +49,6 @@ struct WebrtcVideoStream::FrameStats : public WebrtcVideoEncoder::FrameStats {
   // incoming input event.
   InputEventTimestamps input_event_timestamps;
 
-  base::TimeTicks capture_started_time;
-  base::TimeTicks capture_ended_time;
   base::TimeDelta capture_delay;
 
   uint32_t capturer_id = 0;
