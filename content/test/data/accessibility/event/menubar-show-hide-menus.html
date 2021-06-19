@@ -1,15 +1,19 @@
 <!--
-@AURALINUX-DENY:CHILDREN-CHANGED*
-@AURALINUX-DENY:PARENT-CHANGED*
-@AURALINUX-DENY:STATE-CHANGE:DEFUNCT*
-@WIN-DENY:EVENT_OBJECT_REORDER*
-@WIN-DENY:EVENT_OBJECT_SHOW*
-@WIN-DENY:EVENT_OBJECT_HIDE*
-@WIN-DENY:EVENT_OBJECT_LOCATIONCHANGE*
-@WIN-DENY:IA2_EVENT_TEXT_INSERTED*
-@WIN-DENY:IA2_EVENT_TEXT_REMOVED*
-@UIA-WIN-DENY:*StructureChanged*
-@UIA-WIN_DENY:AutomationFocusChanged*
+@AURALINUX-DENY:*
+@AURALINUX-ALLOW:STATE-CHANGE:EXPANDED*
+@AURALINUX-ALLOW:STATE-CHANGE:SHOWING*
+@MAC-DENY:*
+@MAC-ALLOW:AXExpandedChanged*
+@MAC-ALLOW:AXMenu*
+@WIN-DENY:*
+@WIN-ALLOW:EVENT_OBJECT_STATECHANGE*
+@WIN-ALLOW:EVENT_SYSTEM_MENUPOPUP*
+@UIA-WIN-DENY:*
+@UIA-WIN-ALLOW:ExpandCollapse*
+@UIA-WIN-ALLOW:Menu*
+@UIA-WIN-ALLOW:Name*
+@WIN-RUN-UNTIL-EVENT:IA2_EVENT_TEXT_INSERTED on <span#status>
+@UIA-WIN-RUN-UNTIL-EVENT:Name changed on role=group
 -->
 <!DOCTYPE html>
 <style>
@@ -31,12 +35,13 @@ ul { list-style-type: none;}
   </li>
   <li role="menuitem">About</li>
 </ul>
+<span id="status" tabindex="0"></span>
 <script>
   fileMenu = document.getElementById("file-menu");
   fileMenuItem = document.getElementById("file-menuitem");
   newMenu = document.getElementById("new-menu");
   newMenuItem = document.getElementById("new-menuitem");
-  menubar = document.getElementById("menubar")
+  menubar = document.getElementById("menubar");
   setInitialState();
 
   function setInitialState() {
@@ -46,9 +51,14 @@ ul { list-style-type: none;}
     fileMenuItem.setAttribute("aria-expanded", "false");
   }
 
+  function updateStatus(string) {
+    document.getElementById("status").innerText = string;
+  }
+
   function openFileMenu() {
     fileMenu.style.display = "block";
     fileMenuItem.setAttribute("aria-expanded", "true");
+    updateStatus("open file done");
   }
 
   function closeFileMenu() {
@@ -59,6 +69,7 @@ ul { list-style-type: none;}
   function openNewMenu() {
     newMenu.style.display = "block";
     newMenuItem.setAttribute("aria-expanded", "true");
+    updateStatus("open new done");
   }
 
   function closeNewMenu() {
@@ -67,22 +78,31 @@ ul { list-style-type: none;}
   }
 
   function openFileAndNewMenus() {
-    openFileMenu();
-    openNewMenu();
+    // We don't call openFileMenu() and openNewMenu() here because those
+    // functions also call updateStatus() which might cause the event
+    // recorder to conclude it had obtained every event.
+    fileMenu.style.display = "block";
+    fileMenuItem.setAttribute("aria-expanded", "true");
+    newMenu.style.display = "block";
+    newMenuItem.setAttribute("aria-expanded", "true");
+    updateStatus("open file and new done");
   }
 
   function closeFileAndNewMenus() {
     closeNewMenu();
     closeFileMenu();
+    updateStatus("close file and new done");
   }
 
   function hideMenubar() {
     menubar.style.display = "none";
+    updateStatus("hide menubar done");
   }
 
   function showMenubar() {
     setInitialState();
     menubar.style.display = "block";
+    updateStatus("show menubar done");
   }
 
   const go_passes = [
