@@ -430,12 +430,8 @@ gfx::RectF BrowserAccessibility::GetLocation() const {
   return GetData().relative_bounds.bounds;
 }
 
-ax::mojom::Role BrowserAccessibility::GetRole() const {
-  return GetData().role;
-}
-
-int32_t BrowserAccessibility::GetState() const {
-  return GetData().state;
+ax::mojom::State BrowserAccessibility::GetState() const {
+  return static_cast<ax::mojom::State>(GetData().state);
 }
 
 const BrowserAccessibility::HtmlAttributes&
@@ -902,10 +898,6 @@ bool BrowserAccessibility::HasInheritedStringAttribute(
          PlatformGetParent()->HasInheritedStringAttribute(attribute);
 }
 
-bool BrowserAccessibility::HasState(ax::mojom::State state_enum) const {
-  return GetData().HasState(state_enum);
-}
-
 bool BrowserAccessibility::HasAction(ax::mojom::Action action_enum) const {
   return GetData().HasAction(action_enum);
 }
@@ -1291,10 +1283,11 @@ gfx::NativeViewAccessible BrowserAccessibility::GetNativeViewAccessible() {
 //
 const ui::AXNodeData& BrowserAccessibility::GetData() const {
   static base::NoDestructor<ui::AXNodeData> empty_data;
-  if (node_)
+  if (node_) {
     return node_->data();
-  else
+  } else {
     return *empty_data;
+  }
 }
 
 const ui::AXTreeData& BrowserAccessibility::GetTreeData() const {
@@ -1303,6 +1296,10 @@ const ui::AXTreeData& BrowserAccessibility::GetTreeData() const {
     return manager()->GetTreeData();
   else
     return *empty_data;
+}
+
+ax::mojom::Role BrowserAccessibility::GetRole() const {
+  return node_ ? node_->GetRole() : ax::mojom::Role::kUnknown;
 }
 
 bool BrowserAccessibility::HasBoolAttribute(
@@ -1428,6 +1425,10 @@ bool BrowserAccessibility::GetHtmlAttribute(const char* attribute,
 bool BrowserAccessibility::GetHtmlAttribute(const char* attribute,
                                             std::u16string* value) const {
   return node_->GetHtmlAttribute(attribute, value);
+}
+
+bool BrowserAccessibility::HasState(ax::mojom::State state) const {
+  return node_->HasState(state);
 }
 
 const ui::AXTree::Selection BrowserAccessibility::GetUnignoredSelection()

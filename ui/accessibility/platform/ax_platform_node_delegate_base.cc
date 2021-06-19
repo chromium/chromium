@@ -31,6 +31,10 @@ const AXTreeData& AXPlatformNodeDelegateBase::GetTreeData() const {
   return *empty_data;
 }
 
+ax::mojom::Role AXPlatformNodeDelegateBase::GetRole() const {
+  return GetData().role;
+}
+
 bool AXPlatformNodeDelegateBase::HasBoolAttribute(
     ax::mojom::BoolAttribute attribute) const {
   return GetData().HasBoolAttribute(attribute);
@@ -159,6 +163,10 @@ bool AXPlatformNodeDelegateBase::GetHtmlAttribute(const char* attribute,
 bool AXPlatformNodeDelegateBase::GetHtmlAttribute(const char* attribute,
                                                   std::u16string* value) const {
   return GetData().GetHtmlAttribute(attribute, value);
+}
+
+bool AXPlatformNodeDelegateBase::HasState(ax::mojom::State state) const {
+  return GetData().HasState(state);
 }
 
 std::u16string AXPlatformNodeDelegateBase::GetInnerText() const {

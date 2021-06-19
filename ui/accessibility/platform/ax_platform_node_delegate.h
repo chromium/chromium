@@ -101,6 +101,7 @@ class AX_EXPORT AXPlatformNodeDelegate {
   // attribute is not present. In addition, strings can be returned as
   // either std::string or std::u16string, for convenience.
 
+  virtual ax::mojom::Role GetRole() const = 0;
   virtual bool HasBoolAttribute(ax::mojom::BoolAttribute attribute) const = 0;
   virtual bool GetBoolAttribute(ax::mojom::BoolAttribute attribute) const = 0;
   virtual bool GetBoolAttribute(ax::mojom::BoolAttribute attribute,
@@ -145,6 +146,7 @@ class AX_EXPORT AXPlatformNodeDelegate {
                                 std::string* value) const = 0;
   virtual bool GetHtmlAttribute(const char* attribute,
                                 std::u16string* value) const = 0;
+  virtual bool HasState(ax::mojom::State state) const = 0;
 
   // Returns the text of this node and all descendant nodes; including text
   // found in embedded objects.

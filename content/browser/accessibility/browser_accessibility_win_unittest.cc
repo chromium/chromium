@@ -978,7 +978,7 @@ TEST_F(BrowserAccessibilityWinTest, TestCreateEmptyDocument) {
   BrowserAccessibility* root = manager->GetRoot();
   EXPECT_EQ(1, root->GetId());
   EXPECT_EQ(ax::mojom::Role::kRootWebArea, root->GetRole());
-  EXPECT_EQ(0, root->GetState());
+  EXPECT_EQ(ax::mojom::State::kNone, root->GetState());
   EXPECT_EQ(true, root->GetBoolAttribute(ax::mojom::BoolAttribute::kBusy));
 
   // Tree with a child textfield.
@@ -1060,7 +1060,7 @@ TEST_F(BrowserAccessibilityWinTest, EmptyDocHasUniqueIdWin) {
   BrowserAccessibility* root = manager->GetRoot();
   EXPECT_EQ(1, root->GetId());
   EXPECT_EQ(ax::mojom::Role::kRootWebArea, root->GetRole());
-  EXPECT_EQ(0, root->GetState());
+  EXPECT_EQ(ax::mojom::State::kNone, root->GetState());
   EXPECT_EQ(true, root->GetBoolAttribute(ax::mojom::BoolAttribute::kBusy));
 
   BrowserAccessibilityWin* win_root = ToBrowserAccessibilityWin(root);

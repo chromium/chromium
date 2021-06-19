@@ -290,6 +290,8 @@ class AX_EXPORT AXNode final {
   // computed attributes would be automatically returned if available.
   //
 
+  ax::mojom::Role GetRole() const { return data().role; }
+
   bool HasBoolAttribute(ax::mojom::BoolAttribute attribute) const {
     return data().HasBoolAttribute(attribute);
   }
@@ -367,6 +369,8 @@ class AX_EXPORT AXNode final {
   bool GetHtmlAttribute(const char* attribute, std::u16string* value) const {
     return data().GetHtmlAttribute(attribute, value);
   }
+
+  bool HasState(ax::mojom::State state) const { return data().HasState(state); }
 
   // Return the hierarchical level if supported.
   absl::optional<int> GetHierarchicalLevel() const;

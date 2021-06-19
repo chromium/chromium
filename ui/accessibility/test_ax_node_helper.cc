@@ -104,13 +104,13 @@ gfx::Rect TestAXNodeHelper::GetInnerTextRangeBoundsRect(
       // kInlineTextBox and kStaticText.
       // For test purposes, assume node with kStaticText always has a single
       // child with role kInlineTextBox.
-      if (GetData().role == ax::mojom::Role::kInlineTextBox) {
+      if (node_->GetRole() == ax::mojom::Role::kInlineTextBox) {
         bounds = GetInlineTextRect(start_offset, end_offset);
-      } else if (GetData().role == ax::mojom::Role::kStaticText &&
+      } else if (node_->GetRole() == ax::mojom::Role::kStaticText &&
                  InternalChildCount() > 0) {
         TestAXNodeHelper* child = InternalGetChild(0);
         if (child != nullptr &&
-            child->GetData().role == ax::mojom::Role::kInlineTextBox) {
+            child->node_->GetRole() == ax::mojom::Role::kInlineTextBox) {
           bounds = child->GetInlineTextRect(start_offset, end_offset);
         }
       }

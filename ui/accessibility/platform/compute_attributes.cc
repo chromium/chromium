@@ -88,7 +88,7 @@ absl::optional<int> GetOrderedSetAttribute(
 absl::optional<int32_t> GetFromData(const ui::AXPlatformNodeDelegate* delegate,
                                     ax::mojom::IntAttribute attribute) {
   int32_t value;
-  if (delegate->GetData().GetIntAttribute(attribute, &value)) {
+  if (delegate->GetIntAttribute(attribute, &value)) {
     return value;
   }
   return absl::nullopt;

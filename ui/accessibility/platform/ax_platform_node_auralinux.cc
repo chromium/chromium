@@ -2063,8 +2063,9 @@ const gchar* GetName(AtkObject* atk_object) {
 
   ax::mojom::NameFrom name_from = obj->GetData().GetNameFrom();
   if (obj->GetName().empty() &&
-      name_from != ax::mojom::NameFrom::kAttributeExplicitlyEmpty)
+      name_from != ax::mojom::NameFrom::kAttributeExplicitlyEmpty) {
     return nullptr;
+  }
 
   obj->accessible_name_ = obj->GetName();
   return obj->accessible_name_.c_str();
@@ -2541,7 +2542,7 @@ bool AXPlatformNodeAuraLinux::IsWebDocumentForRelations() {
 }
 
 AtkObject* AXPlatformNodeAuraLinux::CreateAtkObject() {
-  if (GetData().role != ax::mojom::Role::kApplication &&
+  if (GetRole() != ax::mojom::Role::kApplication &&
       !GetDelegate()->IsToplevelBrowserWindow() &&
       !GetAccessibilityMode().has_mode(AXMode::kNativeAPIs)) {
     return nullptr;
@@ -2635,7 +2636,7 @@ void AXPlatformNodeAuraLinux::EnableAXMode() {
 }
 
 AtkRole AXPlatformNodeAuraLinux::GetAtkRole() const {
-  switch (GetData().role) {
+  switch (GetRole()) {
     case ax::mojom::Role::kAlert:
       return ATK_ROLE_NOTIFICATION;
     case ax::mojom::Role::kAlertDialog:
@@ -2883,7 +2884,7 @@ AtkRole AXPlatformNodeAuraLinux::GetAtkRole() const {
       return ATK_ROLE_EMBEDDED;
     case ax::mojom::Role::kPopUpButton: {
       std::string html_tag =
-          GetData().GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag);
+          GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag);
       if (html_tag == "select")
         return ATK_ROLE_COMBO_BOX;
       return ATK_ROLE_PUSH_BUTTON;
@@ -2966,7 +2967,7 @@ AtkRole AXPlatformNodeAuraLinux::GetAtkRole() const {
       return ATK_ROLE_TITLE_BAR;
     case ax::mojom::Role::kTextField:
     case ax::mojom::Role::kSearchBox:
-      if (GetData().HasState(ax::mojom::State::kProtected))
+      if (HasState(ax::mojom::State::kProtected))
         return ATK_ROLE_PASSWORD_TEXT;
       return ATK_ROLE_ENTRY;
     case ax::mojom::Role::kTextFieldWithComboBox:
@@ -3030,8 +3031,6 @@ bool PlatformSupportsState(AtkStateType atk_state_type) {
 }
 
 void AXPlatformNodeAuraLinux::GetAtkState(AtkStateSet* atk_state_set) {
-  AXNodeData data = GetData();
-
   bool menu_active = !GetActiveMenus().empty();
   if (!menu_active && atk_object_ == g_active_top_level_frame)
     atk_state_set_add_state(atk_state_set, ATK_STATE_ACTIVE);
@@ -3043,46 +3042,47 @@ void AXPlatformNodeAuraLinux::GetAtkState(AtkStateSet* atk_state_set) {
     atk_state_set_add_state(atk_state_set, ATK_STATE_ACTIVE);
 
   bool is_minimized = delegate_->IsMinimized();
-  if (is_minimized && data.role == ax::mojom::Role::kWindow)
+  if (is_minimized && GetRole() == ax::mojom::Role::kWindow)
     atk_state_set_add_state(atk_state_set, ATK_STATE_ICONIFIED);
 
-  if (data.HasState(ax::mojom::State::kCollapsed))
+  if (HasState(ax::mojom::State::kCollapsed))
     atk_state_set_add_state(atk_state_set, ATK_STATE_EXPANDABLE);
-  if (data.HasState(ax::mojom::State::kDefault))
+  if (HasState(ax::mojom::State::kDefault))
     atk_state_set_add_state(atk_state_set, ATK_STATE_DEFAULT);
-  if ((data.HasState(ax::mojom::State::kEditable) ||
-       data.HasState(ax::mojom::State::kRichlyEditable)) &&
-      data.GetRestriction() != ax::mojom::Restriction::kReadOnly) {
+  if ((HasState(ax::mojom::State::kEditable) ||
+       HasState(ax::mojom::State::kRichlyEditable)) &&
+      GetData().GetRestriction() != ax::mojom::Restriction::kReadOnly) {
     atk_state_set_add_state(atk_state_set, ATK_STATE_EDITABLE);
   }
-  if (data.HasState(ax::mojom::State::kExpanded)) {
+  if (HasState(ax::mojom::State::kExpanded)) {
     atk_state_set_add_state(atk_state_set, ATK_STATE_EXPANDABLE);
     atk_state_set_add_state(atk_state_set, ATK_STATE_EXPANDED);
   }
-  if (data.HasState(ax::mojom::State::kFocusable) ||
-      SelectionAndFocusAreTheSame())
+  if (HasState(ax::mojom::State::kFocusable) || SelectionAndFocusAreTheSame()) {
     atk_state_set_add_state(atk_state_set, ATK_STATE_FOCUSABLE);
-  if (data.HasState(ax::mojom::State::kHorizontal))
+  }
+  if (HasState(ax::mojom::State::kHorizontal))
     atk_state_set_add_state(atk_state_set, ATK_STATE_HORIZONTAL);
   if (!IsInvisibleOrIgnored()) {
     atk_state_set_add_state(atk_state_set, ATK_STATE_VISIBLE);
     if (!delegate_->IsOffscreen() && !is_minimized)
       atk_state_set_add_state(atk_state_set, ATK_STATE_SHOWING);
   }
-  if (data.HasState(ax::mojom::State::kMultiselectable))
+  if (HasState(ax::mojom::State::kMultiselectable))
     atk_state_set_add_state(atk_state_set, ATK_STATE_MULTISELECTABLE);
-  if (data.HasState(ax::mojom::State::kRequired))
+  if (HasState(ax::mojom::State::kRequired))
     atk_state_set_add_state(atk_state_set, ATK_STATE_REQUIRED);
-  if (data.HasState(ax::mojom::State::kVertical))
+  if (HasState(ax::mojom::State::kVertical))
     atk_state_set_add_state(atk_state_set, ATK_STATE_VERTICAL);
-  if (data.HasState(ax::mojom::State::kVisited))
+  if (HasState(ax::mojom::State::kVisited))
     atk_state_set_add_state(atk_state_set, ATK_STATE_VISITED);
-  if (data.HasIntAttribute(ax::mojom::IntAttribute::kInvalidState) &&
-      data.GetIntAttribute(ax::mojom::IntAttribute::kInvalidState) !=
-          static_cast<int32_t>(ax::mojom::InvalidState::kFalse))
+  if (HasIntAttribute(ax::mojom::IntAttribute::kInvalidState) &&
+      GetIntAttribute(ax::mojom::IntAttribute::kInvalidState) !=
+          static_cast<int32_t>(ax::mojom::InvalidState::kFalse)) {
     atk_state_set_add_state(atk_state_set, ATK_STATE_INVALID_ENTRY);
-  if (data.HasIntAttribute(ax::mojom::IntAttribute::kAriaCurrentState) &&
-      data.GetIntAttribute(ax::mojom::IntAttribute::kAriaCurrentState) !=
+  }
+  if (HasIntAttribute(ax::mojom::IntAttribute::kAriaCurrentState) &&
+      GetIntAttribute(ax::mojom::IntAttribute::kAriaCurrentState) !=
           static_cast<int32_t>(ax::mojom::AriaCurrentState::kFalse)) {
     atk_state_set_add_state(atk_state_set, ATK_STATE_ACTIVE);
   }
@@ -3090,30 +3090,31 @@ void AXPlatformNodeAuraLinux::GetAtkState(AtkStateSet* atk_state_set) {
   // Runtime checks in case we were compiled with a newer version of ATK.
   if (IsPlatformCheckable() && PlatformSupportsState(ATK_STATE_CHECKABLE))
     atk_state_set_add_state(atk_state_set, ATK_STATE_CHECKABLE);
-  if (data.HasIntAttribute(ax::mojom::IntAttribute::kHasPopup) &&
+  if (HasIntAttribute(ax::mojom::IntAttribute::kHasPopup) &&
       PlatformSupportsState(ATK_STATE_HAS_POPUP))
     atk_state_set_add_state(atk_state_set, ATK_STATE_HAS_POPUP);
 #endif
-  if (data.GetBoolAttribute(ax::mojom::BoolAttribute::kBusy))
+  if (GetBoolAttribute(ax::mojom::BoolAttribute::kBusy))
     atk_state_set_add_state(atk_state_set, ATK_STATE_BUSY);
-  if (data.GetBoolAttribute(ax::mojom::BoolAttribute::kModal))
+  if (GetBoolAttribute(ax::mojom::BoolAttribute::kModal))
     atk_state_set_add_state(atk_state_set, ATK_STATE_MODAL);
-  if (data.IsSelectable())
+  if (GetData().IsSelectable())
     atk_state_set_add_state(atk_state_set, ATK_STATE_SELECTABLE);
-  if (data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected))
+  if (GetBoolAttribute(ax::mojom::BoolAttribute::kSelected))
     atk_state_set_add_state(atk_state_set, ATK_STATE_SELECTED);
 
   if (IsTextField()) {
     atk_state_set_add_state(atk_state_set, ATK_STATE_SELECTABLE_TEXT);
-    if (data.HasState(ax::mojom::State::kMultiline))
+    if (HasState(ax::mojom::State::kMultiline))
       atk_state_set_add_state(atk_state_set, ATK_STATE_MULTI_LINE);
     else
       atk_state_set_add_state(atk_state_set, ATK_STATE_SINGLE_LINE);
   }
 
   if (!GetStringAttribute(ax::mojom::StringAttribute::kAutoComplete).empty() ||
-      data.HasState(ax::mojom::State::kAutofillAvailable))
+      HasState(ax::mojom::State::kAutofillAvailable)) {
     atk_state_set_add_state(atk_state_set, ATK_STATE_SUPPORTS_AUTOCOMPLETION);
+  }
 
   // Checked state
   const auto checked_state = GetData().GetCheckedState();
@@ -3122,8 +3123,8 @@ void AXPlatformNodeAuraLinux::GetAtkState(AtkStateSet* atk_state_set) {
     atk_state_set_add_state(atk_state_set, GetAtkStateTypeForCheckableNode());
   }
 
-  if (data.GetRestriction() != ax::mojom::Restriction::kDisabled) {
-    if (IsReadOnlySupported(data.role) && data.IsReadOnlyOrDisabled()) {
+  if (GetData().GetRestriction() != ax::mojom::Restriction::kDisabled) {
+    if (IsReadOnlySupported(GetRole()) && GetData().IsReadOnlyOrDisabled()) {
 #if defined(ATK_216)
       // Runtime check in case we were compiled with a newer version of ATK.
       if (PlatformSupportsState(ATK_STATE_READ_ONLY))
@@ -3305,12 +3306,12 @@ void AXPlatformNodeAuraLinux::Init(AXPlatformNodeDelegate* delegate) {
   AXPlatformNodeBase::Init(delegate);
 
   // Only create the AtkObject if we know enough information.
-  if (GetData().role != ax::mojom::Role::kUnknown)
+  if (GetRole() != ax::mojom::Role::kUnknown)
     GetOrCreateAtkObject();
 }
 
 bool AXPlatformNodeAuraLinux::IsPlatformCheckable() const {
-  if (GetData().role == ax::mojom::Role::kToggleButton)
+  if (GetRole() == ax::mojom::Role::kToggleButton)
     return false;
 
   return AXPlatformNodeBase::IsPlatformCheckable();
@@ -3323,7 +3324,7 @@ absl::optional<int> AXPlatformNodeAuraLinux::GetIndexInParent() {
   // application. Since the detached view has the kUnknown role and the
   // restriction is kDisabled, it early returns before finding the index.
   if (parent == AXPlatformNodeAuraLinux::application() &&
-      GetData().role == ax::mojom::Role::kUnknown &&
+      GetRole() == ax::mojom::Role::kUnknown &&
       GetData().GetRestriction() == ax::mojom::Restriction::kDisabled) {
     return absl::nullopt;
   }
@@ -3667,7 +3668,7 @@ void AXPlatformNodeAuraLinux::OnSelected() {
   AtkObject* atk_object = GetOrCreateAtkObject();
   if (!atk_object)
     return;
-  if (g_current_selected && !g_current_selected->GetData().GetBoolAttribute(
+  if (g_current_selected && !g_current_selected->GetBoolAttribute(
                                 ax::mojom::BoolAttribute::kSelected)) {
     atk_object_notify_state_change(
         ATK_OBJECT(g_current_selected->GetOrCreateAtkObject()),
@@ -3694,7 +3695,7 @@ void AXPlatformNodeAuraLinux::OnSelectedChildrenChanged() {
 
 bool AXPlatformNodeAuraLinux::SelectionAndFocusAreTheSame() {
   if (AXPlatformNodeBase* container = GetSelectionContainer()) {
-    ax::mojom::Role role = container->GetData().role;
+    ax::mojom::Role role = container->GetRole();
 
     // In the browser UI, menus and their descendants emit selection-related
     // events only, but we also want to emit platform focus-related events,
@@ -3702,7 +3703,7 @@ bool AXPlatformNodeAuraLinux::SelectionAndFocusAreTheSame() {
     if (role == ax::mojom::Role::kMenuBar || role == ax::mojom::Role::kMenu)
       return !GetDelegate()->IsWebContent();
     if (role == ax::mojom::Role::kListBox &&
-        !container->GetData().HasState(ax::mojom::State::kMultiselectable)) {
+        !container->HasState(ax::mojom::State::kMultiselectable)) {
       return container->GetDelegate()->GetFocus() ==
              container->GetNativeViewAccessible();
     }
@@ -3715,7 +3716,7 @@ bool AXPlatformNodeAuraLinux::SelectionAndFocusAreTheSame() {
   // If the selection is changing on a collapsed select element, focus remains
   // on the select element and not the newly-selected descendant.
   if (AXPlatformNodeBase* parent = FromAtkObject(GetParent())) {
-    if (parent->GetData().role == ax::mojom::Role::kMenuListPopup)
+    if (parent->GetRole() == ax::mojom::Role::kMenuListPopup)
       return !parent->IsInvisibleOrIgnored();
   }
 
@@ -3772,9 +3773,8 @@ void AXPlatformNodeAuraLinux::GetFullSelection(int32_t* anchor_node_id,
 AXPlatformNodeAuraLinux& AXPlatformNodeAuraLinux::FindEditableRootOrDocument() {
   if (GetAtkRole() == ATK_ROLE_DOCUMENT_WEB)
     return *this;
-  if (GetData().GetBoolAttribute(
-          ax::mojom::BoolAttribute::kNonAtomicTextFieldRoot) &&
-      GetData().HasState(ax::mojom::State::kEditable))
+  if (GetBoolAttribute(ax::mojom::BoolAttribute::kNonAtomicTextFieldRoot) &&
+      HasState(ax::mojom::State::kEditable))
     return *this;
   if (auto* parent = FromAtkObject(GetParent()))
     return parent->FindEditableRootOrDocument();
@@ -3891,8 +3891,8 @@ void AXPlatformNodeAuraLinux::OnTextSelectionChanged() {
 }
 
 bool AXPlatformNodeAuraLinux::SupportsSelectionWithAtkSelection() {
-  return SupportsToggle(GetData().role) ||
-         GetData().role == ax::mojom::Role::kListBoxOption;
+  return SupportsToggle(GetRole()) ||
+         GetRole() == ax::mojom::Role::kListBoxOption;
 }
 
 void AXPlatformNodeAuraLinux::OnDescriptionChanged() {
@@ -3922,9 +3922,9 @@ void AXPlatformNodeAuraLinux::OnSortDirectionChanged() {
   AtkObject* atk_table = table->GetNativeViewAccessible();
   DCHECK(ATK_IS_TABLE(atk_table));
 
-  if (GetData().role == ax::mojom::Role::kColumnHeader)
+  if (GetRole() == ax::mojom::Role::kColumnHeader)
     g_signal_emit_by_name(atk_table, "row-reordered");
-  else if (GetData().role == ax::mojom::Role::kRowHeader)
+  else if (GetRole() == ax::mojom::Role::kRowHeader)
     g_signal_emit_by_name(atk_table, "column-reordered");
 }
 
@@ -4058,8 +4058,8 @@ void AXPlatformNodeAuraLinux::OnAriaCurrentChanged() {
     return;
 
   ax::mojom::AriaCurrentState aria_current =
-      static_cast<ax::mojom::AriaCurrentState>(GetData().GetIntAttribute(
-          ax::mojom::IntAttribute::kAriaCurrentState));
+      static_cast<ax::mojom::AriaCurrentState>(
+          GetIntAttribute(ax::mojom::IntAttribute::kAriaCurrentState));
   atk_object_notify_state_change(
       ATK_OBJECT(atk_object), ATK_STATE_ACTIVE,
       aria_current != ax::mojom::AriaCurrentState::kNone &&
@@ -4067,7 +4067,7 @@ void AXPlatformNodeAuraLinux::OnAriaCurrentChanged() {
 }
 
 void AXPlatformNodeAuraLinux::OnAlertShown() {
-  DCHECK(ui::IsAlert(GetData().role));
+  DCHECK(ui::IsAlert(GetRole()));
   atk_object_notify_state_change(ATK_OBJECT(GetOrCreateAtkObject()),
                                  ATK_STATE_SHOWING, TRUE);
 }
@@ -4102,7 +4102,7 @@ void AXPlatformNodeAuraLinux::NotifyAccessibilityEvent(
       break;
     case ax::mojom::Event::kExpandedChanged:
     case ax::mojom::Event::kStateChanged:
-      OnExpandedStateChanged(GetData().HasState(ax::mojom::State::kExpanded));
+      OnExpandedStateChanged(HasState(ax::mojom::State::kExpanded));
       break;
     case ax::mojom::Event::kFocus:
     case ax::mojom::Event::kFocusContext:
@@ -4111,7 +4111,7 @@ void AXPlatformNodeAuraLinux::NotifyAccessibilityEvent(
     case ax::mojom::Event::kSelection:
       OnSelected();
       // When changing tabs also fire a name changed event.
-      if (GetData().role == ax::mojom::Role::kTab)
+      if (GetRole() == ax::mojom::Role::kTab)
         OnDocumentTitleChanged();
       break;
     case ax::mojom::Event::kSelectedChildrenChanged:
@@ -4205,7 +4205,7 @@ void AXPlatformNodeAuraLinux::UpdateHypertext() {
   text_unicode_adjustments_ = absl::nullopt;
   offset_to_text_attributes_.clear();
 
-  if ((!GetData().HasState(ax::mojom::State::kEditable) ||
+  if ((!HasState(ax::mojom::State::kEditable) ||
        GetData().GetRestriction() == ax::mojom::Restriction::kReadOnly) &&
       !IsInLiveRegion()) {
     return;
@@ -4455,8 +4455,7 @@ bool AXPlatformNodeAuraLinux::FocusFirstFocusableAncestorInWebContent() {
   if (!atk_object)
     return false;
 
-  if (GetData().HasState(ax::mojom::State::kFocusable) ||
-      SelectionAndFocusAreTheSame()) {
+  if (HasState(ax::mojom::State::kFocusable) || SelectionAndFocusAreTheSame()) {
     if (g_current_focused != atk_object)
       GrabFocus();
     return true;
@@ -4476,7 +4475,7 @@ bool AXPlatformNodeAuraLinux::FocusFirstFocusableAncestorInWebContent() {
     if (!child || child == this)
       continue;
 
-    if (child->GetData().HasState(ax::mojom::State::kFocusable) ||
+    if (child->HasState(ax::mojom::State::kFocusable) ||
         child->SelectionAndFocusAreTheSame()) {
       return false;
     }
@@ -4640,8 +4639,7 @@ void AXPlatformNodeAuraLinux::SetDocumentParent(
 }
 
 bool AXPlatformNodeAuraLinux::IsNameExposed() {
-  const AXNodeData& data = GetData();
-  switch (data.role) {
+  switch (GetRole()) {
     case ax::mojom::Role::kListMarker:
       return !GetChildCount();
     default:
@@ -4792,8 +4790,7 @@ gchar* AXPlatformNodeAuraLinux::GetSelectionWithText(int* start_offset,
 }
 
 bool AXPlatformNodeAuraLinux::IsInLiveRegion() {
-  return GetData().HasStringAttribute(
-      ax::mojom::StringAttribute::kContainerLiveStatus);
+  return HasStringAttribute(ax::mojom::StringAttribute::kContainerLiveStatus);
 }
 
 #if defined(ATK_230)

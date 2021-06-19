@@ -615,7 +615,7 @@ HRESULT AXPlatformNodeTextRangeProviderWin::GetEnclosingElement(
     return UIA_E_ELEMENTNOTAVAILABLE;
 
   while (enclosing_node->GetData().IsIgnored() ||
-         enclosing_node->GetData().role == ax::mojom::Role::kInlineTextBox ||
+         enclosing_node->GetRole() == ax::mojom::Role::kInlineTextBox ||
          enclosing_node->IsChildOfLeaf()) {
     AXPlatformNodeWin* parent = static_cast<AXPlatformNodeWin*>(
         AXPlatformNode::FromNativeViewAccessible(enclosing_node->GetParent()));
@@ -1366,8 +1366,8 @@ void AXPlatformNodeTextRangeProviderWin::
     return;
 
   if (!new_selection_node ||
-      (old_selection_node->data().HasState(ax::mojom::State::kFocusable) &&
-       !new_selection_node->data().HasState(ax::mojom::State::kFocusable))) {
+      (old_selection_node->HasState(ax::mojom::State::kFocusable) &&
+       !new_selection_node->HasState(ax::mojom::State::kFocusable))) {
     AXPlatformNodeDelegate* root_delegate =
         GetRootDelegate(old_selection_node->tree()->GetAXTreeID());
     DCHECK(root_delegate);

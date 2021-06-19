@@ -297,8 +297,7 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
 
   ui::AXNodeID GetId() const;
   gfx::RectF GetLocation() const;
-  ax::mojom::Role GetRole() const;
-  int32_t GetState() const;
+  ax::mojom::State GetState() const;
 
   typedef base::StringPairs HtmlAttributes;
   const HtmlAttributes& GetHtmlAttributes() const;
@@ -306,7 +305,6 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   // TODO(nektar): Move this method to AXNode.
   bool HasInheritedStringAttribute(ax::mojom::StringAttribute attribute) const;
   // Returns true if the bit corresponding to the given enum is 1.
-  bool HasState(ax::mojom::State state_enum) const;
   bool HasAction(ax::mojom::Action action_enum) const;
 
   // True if this is a web area, and its grandparent is a presentational iframe.
@@ -349,6 +347,7 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   std::u16string GetAuthorUniqueId() const override;
   const ui::AXNodeData& GetData() const override;
   const ui::AXTreeData& GetTreeData() const override;
+  ax::mojom::Role GetRole() const override;
   bool HasBoolAttribute(ax::mojom::BoolAttribute attribute) const override;
   bool GetBoolAttribute(ax::mojom::BoolAttribute attribute) const override;
   bool GetBoolAttribute(ax::mojom::BoolAttribute attribute,
@@ -390,6 +389,7 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
                         std::string* value) const override;
   bool GetHtmlAttribute(const char* attribute,
                         std::u16string* value) const override;
+  bool HasState(ax::mojom::State state) const override;
   const ui::AXTree::Selection GetUnignoredSelection() const override;
   AXPosition CreatePositionAt(
       int offset,

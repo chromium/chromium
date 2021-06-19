@@ -41,7 +41,7 @@ bool FindDescendantRoleWithMaxDepth(const AXPlatformNodeBase* node,
                                     ax::mojom::Role descendant_role,
                                     int max_depth,
                                     int max_children_to_check) {
-  if (node->GetData().role == descendant_role)
+  if (node->GetRole() == descendant_role)
     return true;
   if (max_depth <= 1)
     return false;
@@ -382,6 +382,12 @@ bool AXPlatformNodeBase::IsDescendant(AXPlatformNodeBase* node) {
   return IsDescendant(parent);
 }
 
+ax::mojom::Role AXPlatformNodeBase::GetRole() const {
+  if (!delegate_)
+    return ax::mojom::Role::kUnknown;
+  return delegate_->GetRole();
+}
+
 bool AXPlatformNodeBase::HasBoolAttribute(
     ax::mojom::BoolAttribute attribute) const {
   if (!delegate_)
@@ -413,7 +419,7 @@ bool AXPlatformNodeBase::HasFloatAttribute(
 float AXPlatformNodeBase::GetFloatAttribute(
     ax::mojom::FloatAttribute attribute) const {
   if (!delegate_)
-    return false;
+    return 0.0f;
   return delegate_->GetFloatAttribute(attribute);
 }
 
@@ -586,6 +592,49 @@ bool AXPlatformNodeBase::GetIntListAttribute(
   return delegate_->GetIntListAttribute(attribute, value);
 }
 
+bool AXPlatformNodeBase::HasStringListAttribute(
+    ax::mojom::StringListAttribute attribute) const {
+  if (!delegate_)
+    return false;
+  return delegate_->HasStringListAttribute(attribute);
+}
+
+const std::vector<std::string>& AXPlatformNodeBase::GetStringListAttribute(
+    ax::mojom::StringListAttribute attribute) const {
+  static const base::NoDestructor<std::vector<std::string>> empty_data;
+  if (!delegate_)
+    return *empty_data;
+  return delegate_->GetStringListAttribute(attribute);
+}
+
+bool AXPlatformNodeBase::GetStringListAttribute(
+    ax::mojom::StringListAttribute attribute,
+    std::vector<std::string>* value) const {
+  if (!delegate_)
+    return false;
+  return delegate_->GetStringListAttribute(attribute, value);
+}
+
+bool AXPlatformNodeBase::GetHtmlAttribute(const char* attribute,
+                                          std::string* value) const {
+  if (!delegate_)
+    return false;
+  return delegate_->GetHtmlAttribute(attribute, value);
+}
+
+bool AXPlatformNodeBase::GetHtmlAttribute(const char* attribute,
+                                          std::u16string* value) const {
+  if (!delegate_)
+    return false;
+  return delegate_->GetHtmlAttribute(attribute, value);
+}
+
+bool AXPlatformNodeBase::HasState(ax::mojom::State state) const {
+  if (!delegate_)
+    return false;
+  return delegate_->HasState(state);
+}
+
 // static
 AXPlatformNodeBase* AXPlatformNodeBase::FromNativeViewAccessible(
     gfx::NativeViewAccessible accessible) {
@@ -601,7 +650,7 @@ bool AXPlatformNodeBase::SetHypertextSelection(int start_offset,
 }
 
 bool AXPlatformNodeBase::IsPlatformDocument() const {
-  return ui::IsPlatformDocument(GetData().role);
+  return ui::IsPlatformDocument(GetRole());
 }
 
 bool AXPlatformNodeBase::IsStructuredAnnotation() const {
@@ -618,7 +667,7 @@ bool AXPlatformNodeBase::IsStructuredAnnotation() const {
 }
 
 bool AXPlatformNodeBase::IsSelectionItemSupported() const {
-  switch (GetData().role) {
+  switch (GetRole()) {
     // An ARIA 1.1+ role of "cell", or a role of "row" inside
     // an ARIA 1.1 role of "table", should not be selectable.
     // ARIA "table" is not interactable, ARIA "grid" is.
@@ -635,8 +684,8 @@ bool AXPlatformNodeBase::IsSelectionItemSupported() const {
       if (!table)
         return false;
 
-      return table->GetData().role == ax::mojom::Role::kGrid ||
-             table->GetData().role == ax::mojom::Role::kTreeGrid;
+      return table->GetRole() == ax::mojom::Role::kGrid ||
+             table->GetRole() == ax::mojom::Role::kTreeGrid;
     }
     // https://www.w3.org/TR/core-aam-1.1/#mapping_state-property_table
     // SelectionItem.IsSelected is exposed when aria-checked is True or False,
@@ -701,7 +750,7 @@ std::u16string AXPlatformNodeBase::GetInnerText() const {
 std::u16string
 AXPlatformNodeBase::GetRoleDescriptionFromImageAnnotationStatusOrFromAttribute()
     const {
-  if (GetData().role == ax::mojom::Role::kImage &&
+  if (GetRole() == ax::mojom::Role::kImage &&
       (GetData().GetImageAnnotationStatus() ==
            ax::mojom::ImageAnnotationStatus::kEligibleForAnnotation ||
        GetData().GetImageAnnotationStatus() ==
@@ -724,7 +773,7 @@ std::u16string AXPlatformNodeBase::GetRoleDescription() const {
 }
 
 bool AXPlatformNodeBase::IsImageWithMap() const {
-  DCHECK_EQ(GetData().role, ax::mojom::Role::kImage)
+  DCHECK_EQ(GetRole(), ax::mojom::Role::kImage)
       << "Only call IsImageWithMap() on an image";
   return GetChildCount();
 }
@@ -734,7 +783,7 @@ AXPlatformNodeBase* AXPlatformNodeBase::GetSelectionContainer() const {
     return nullptr;
   AXPlatformNodeBase* container = const_cast<AXPlatformNodeBase*>(this);
   while (container &&
-         !IsContainerWithSelectableChildren(container->GetData().role)) {
+         !IsContainerWithSelectableChildren(container->GetRole())) {
     gfx::NativeViewAccessible parent_accessible = container->GetParent();
     AXPlatformNodeBase* parent = FromNativeViewAccessible(parent_accessible);
 
@@ -747,7 +796,7 @@ AXPlatformNodeBase* AXPlatformNodeBase::GetTable() const {
   if (!delegate_)
     return nullptr;
   AXPlatformNodeBase* table = const_cast<AXPlatformNodeBase*>(this);
-  while (table && !IsTableLike(table->GetData().role)) {
+  while (table && !IsTableLike(table->GetRole())) {
     gfx::NativeViewAccessible parent_accessible = table->GetParent();
     AXPlatformNodeBase* parent = FromNativeViewAccessible(parent_accessible);
 
@@ -771,7 +820,7 @@ AXPlatformNodeBase* AXPlatformNodeBase::GetTableCaption() const {
 AXPlatformNodeBase* AXPlatformNodeBase::GetTableCell(int index) const {
   if (!delegate_)
     return nullptr;
-  if (!IsTableLike(GetData().role) && !IsCellOrTableHeader(GetData().role))
+  if (!IsTableLike(GetRole()) && !IsCellOrTableHeader(GetRole()))
     return nullptr;
 
   AXPlatformNodeBase* table = GetTable();
@@ -789,7 +838,7 @@ AXPlatformNodeBase* AXPlatformNodeBase::GetTableCell(int index) const {
 
 AXPlatformNodeBase* AXPlatformNodeBase::GetTableCell(int row,
                                                      int column) const {
-  if (!IsTableLike(GetData().role) && !IsCellOrTableHeader(GetData().role))
+  if (!IsTableLike(GetRole()) && !IsCellOrTableHeader(GetRole()))
     return nullptr;
 
   AXPlatformNodeBase* table = GetTable();
@@ -944,7 +993,7 @@ bool AXPlatformNodeBase::IsInvisibleOrIgnored() const {
   if (!GetData().IsInvisibleOrIgnored())
     return false;
 
-  if (GetData().HasState(ax::mojom::State::kFocusable))
+  if (HasState(ax::mojom::State::kFocusable))
     return !IsFocused();
 
   return !const_cast<AXPlatformNodeBase*>(this)->HasCaret();
@@ -1008,7 +1057,7 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
   AddAttributeToList(ax::mojom::StringAttribute::kAutoComplete, "autocomplete",
                      attributes);
   if (!HasStringAttribute(ax::mojom::StringAttribute::kAutoComplete) &&
-      GetData().HasState(ax::mojom::State::kAutofillAvailable)) {
+      HasState(ax::mojom::State::kAutofillAvailable)) {
     AddAttributeToList("autocomplete", "list", attributes);
   }
 
@@ -1127,7 +1176,7 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
         AddAttributeToList("haspopup", "dialog", attributes);
         break;
     }
-  } else if (GetData().HasState(ax::mojom::State::kAutofillAvailable)) {
+  } else if (HasState(ax::mojom::State::kAutofillAvailable)) {
     AddAttributeToList("haspopup", "menu", attributes);
   }
 
@@ -1163,19 +1212,19 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
   }
 
   // Expose table cell index.
-  if (IsCellOrTableHeader(GetData().role)) {
+  if (IsCellOrTableHeader(GetRole())) {
     absl::optional<int> index = delegate_->GetTableCellIndex();
     if (index) {
       std::string str_index(base::NumberToString(*index));
       AddAttributeToList("table-cell-index", str_index, attributes);
     }
   }
-  if (GetData().role == ax::mojom::Role::kLayoutTable)
+  if (GetRole() == ax::mojom::Role::kLayoutTable)
     AddAttributeToList("layout-guess", "true", attributes);
 
   // Expose aria-colcount and aria-rowcount in a table, grid or treegrid if they
   // are different from its physical dimensions.
-  if (IsTableLike(GetData().role) &&
+  if (IsTableLike(GetRole()) &&
       (delegate_->GetTableAriaRowCount() != delegate_->GetTableRowCount() ||
        delegate_->GetTableAriaColCount() != delegate_->GetTableColCount())) {
     AddAttributeToList(ax::mojom::IntAttribute::kAriaColumnCount, "colcount",
@@ -1184,14 +1233,14 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
                        attributes);
   }
 
-  if (IsCellOrTableHeader(GetData().role) || IsTableRow(GetData().role)) {
+  if (IsCellOrTableHeader(GetRole()) || IsTableRow(GetRole())) {
     // Expose aria-colindex and aria-rowindex in a cell or row only if they are
     // different from the table's physical coordinates.
     if (delegate_->GetTableCellAriaRowIndex() !=
             delegate_->GetTableCellRowIndex() ||
         delegate_->GetTableCellAriaColIndex() !=
             delegate_->GetTableCellColIndex()) {
-      if (!IsTableRow(GetData().role)) {
+      if (!IsTableRow(GetRole())) {
         AddAttributeToList(ax::mojom::IntAttribute::kAriaCellColumnIndex,
                            "colindex", attributes);
       }
@@ -1216,7 +1265,7 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
 
   // Expose row or column header sort direction.
   int32_t sort_direction;
-  if (IsTableHeader(GetData().role) &&
+  if (IsTableHeader(GetRole()) &&
       GetIntAttribute(ax::mojom::IntAttribute::kSortDirection,
                       &sort_direction)) {
     switch (static_cast<ax::mojom::SortDirection>(sort_direction)) {
@@ -1237,22 +1286,22 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
     }
   }
 
-  if (IsCellOrTableHeader(GetData().role)) {
+  if (IsCellOrTableHeader(GetRole())) {
     // Expose colspan attribute.
     std::string colspan;
-    if (GetData().GetHtmlAttribute("aria-colspan", &colspan)) {
+    if (GetHtmlAttribute("aria-colspan", &colspan)) {
       AddAttributeToList("colspan", colspan, attributes);
     }
     // Expose rowspan attribute.
     std::string rowspan;
-    if (GetData().GetHtmlAttribute("aria-rowspan", &rowspan)) {
+    if (GetHtmlAttribute("aria-rowspan", &rowspan)) {
       AddAttributeToList("rowspan", rowspan, attributes);
     }
   }
 
   // Expose the value of a progress bar, slider, scroll bar or <select> element.
   if (GetData().IsRangeValueSupported() ||
-      GetData().role == ax::mojom::Role::kComboBoxMenuButton) {
+      GetRole() == ax::mojom::Role::kComboBoxMenuButton) {
     std::string value = base::UTF16ToUTF8(GetValueForControl());
     if (!value.empty())
       AddAttributeToList("valuetext", value, attributes);
@@ -1278,21 +1327,20 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
 
   // Expose datetime attribute.
   std::string datetime;
-  if (GetData().role == ax::mojom::Role::kTime &&
-      GetData().GetHtmlAttribute("datetime", &datetime)) {
+  if (GetRole() == ax::mojom::Role::kTime &&
+      GetHtmlAttribute("datetime", &datetime)) {
     AddAttributeToList("datetime", datetime, attributes);
   }
 
   // Expose id attribute.
   std::string id;
-  if (GetData().GetHtmlAttribute("id", &id)) {
+  if (GetHtmlAttribute("id", &id)) {
     AddAttributeToList("id", id, attributes);
   }
 
   // Expose src attribute.
   std::string src;
-  if (GetData().role == ax::mojom::Role::kImage &&
-      GetData().GetHtmlAttribute("src", &src)) {
+  if (GetRole() == ax::mojom::Role::kImage && GetHtmlAttribute("src", &src)) {
     AddAttributeToList("src", src, attributes);
   }
 
@@ -1339,7 +1387,7 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
   std::string html_tag =
       GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag);
   if (IsAtomicTextField() && base::LowerCaseEqualsASCII(html_tag, "input") &&
-      GetData().GetHtmlAttribute("type", &type)) {
+      GetHtmlAttribute("type", &type)) {
     AddAttributeToList("text-input-type", type, attributes);
   }
 
@@ -1882,8 +1930,7 @@ void AXPlatformNodeBase::ComputeHypertextRemovedAndInserted(
   // example, if "car" changes to "cat" then assume all 3 letters changed.
   // Note, it is possible (though rare) that CharacterData methods are used to
   // remove, insert, replace or append a substring.
-  bool allow_partial_text_node_changes =
-      GetData().HasState(ax::mojom::State::kEditable);
+  bool allow_partial_text_node_changes = HasState(ax::mojom::State::kEditable);
   size_t prefix_index = 0;
   size_t common_prefix = 0;
   while (prefix_index < old_text.size() && prefix_index < new_text.size() &&
@@ -2061,7 +2108,7 @@ ui::TextAttributeList AXPlatformNodeBase::ComputeTextAttributes() const {
   // We include list markers for now, but there might be other objects that are
   // auto generated.
   // TODO(nektar): Compute what objects are auto-generated in Blink.
-  if (GetData().role == ax::mojom::Role::kListMarker)
+  if (GetRole() == ax::mojom::Role::kListMarker)
     attributes.push_back(std::make_pair("auto-generated", "true"));
 
   int color;
@@ -2216,7 +2263,7 @@ int AXPlatformNodeBase::GetSelectedItems(
   for (auto child_iter = AXPlatformNodeChildrenBegin();
        child_iter != AXPlatformNodeChildrenEnd() && selected_count < max_items;
        ++child_iter) {
-    if (!IsItemLike(child_iter->GetData().role)) {
+    if (!IsItemLike(child_iter->GetRole())) {
       selected_count += child_iter->GetSelectedItems(max_items - selected_count,
                                                      out_selected_items);
     } else if (child_iter->GetBoolAttribute(
@@ -2244,7 +2291,7 @@ bool AXPlatformNodeBase::IsDescribedByTooltip() const {
     AXPlatformNodeBase* description_object =
         static_cast<AXPlatformNodeBase*>(delegate_->GetFromNodeID(id));
     if (description_object &&
-        description_object->GetData().role == ax::mojom::Role::kTooltip) {
+        description_object->GetRole() == ax::mojom::Role::kTooltip) {
       return true;
     }
   }
@@ -2265,7 +2312,7 @@ std::string AXPlatformNodeBase::ComputeDetailsRoles() const {
         static_cast<AXPlatformNodeBase*>(delegate_->GetFromNodeID(id));
     if (!detail_object)
       continue;
-    switch (detail_object->GetData().role) {
+    switch (detail_object->GetRole()) {
       case ax::mojom::Role::kComment:
         details_roles_set.insert("comment");
         break;
@@ -2316,11 +2363,11 @@ int AXPlatformNodeBase::GetMaxSelectableItems() const {
   if (IsLeaf())
     return 0;
 
-  if (!IsContainerWithSelectableChildren(GetData().role))
+  if (!IsContainerWithSelectableChildren(GetRole()))
     return 0;
 
   int max_items = 1;
-  if (GetData().HasState(ax::mojom::State::kMultiselectable))
+  if (HasState(ax::mojom::State::kMultiselectable))
     max_items = std::numeric_limits<int>::max();
   return max_items;
 }

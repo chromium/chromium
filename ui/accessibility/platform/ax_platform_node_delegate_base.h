@@ -29,6 +29,7 @@ class AX_EXPORT AXPlatformNodeDelegateBase : public AXPlatformNodeDelegate {
   // `AXPlatformNodeDelegate` implementation.
   const AXNodeData& GetData() const override;
   const AXTreeData& GetTreeData() const override;
+  ax::mojom::Role GetRole() const override;
   bool HasBoolAttribute(ax::mojom::BoolAttribute attribute) const override;
   bool GetBoolAttribute(ax::mojom::BoolAttribute attribute) const override;
   bool GetBoolAttribute(ax::mojom::BoolAttribute attribute,
@@ -70,6 +71,7 @@ class AX_EXPORT AXPlatformNodeDelegateBase : public AXPlatformNodeDelegate {
                         std::string* value) const override;
   bool GetHtmlAttribute(const char* attribute,
                         std::u16string* value) const override;
+  bool HasState(ax::mojom::State state) const override;
   std::u16string GetInnerText() const override;
   std::u16string GetValueForControl() const override;
   const AXTree::Selection GetUnignoredSelection() const override;
