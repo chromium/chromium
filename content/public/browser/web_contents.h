@@ -316,12 +316,14 @@ class WebContents : public PageNavigator,
   // See also GetVisibleURL above, which may differ from this URL.
   virtual const GURL& GetLastCommittedURL() = 0;
 
-  // Returns the main frame for the currently active view.
-  // With MPArch, this returns the primary main frame. This WebContents may have
-  // additional main frames for prerendered pages, bfcached pages, etc.
+  // Returns the main frame for the currently active view. Always non-null
+  // except during WebContents destruction. With MPArch, this returns the
+  // primary main frame. This WebContents may have additional main frames for
+  // prerendered pages, bfcached pages, etc.
   virtual RenderFrameHost* GetMainFrame() = 0;
 
-  // Returns the focused frame for the currently active view.
+  // Returns the focused frame for the currently active view. Might be nullptr
+  // if nothing is focused.
   virtual RenderFrameHost* GetFocusedFrame() = 0;
 
   // Returns the current RenderFrameHost for a given FrameTreeNode ID if it is
