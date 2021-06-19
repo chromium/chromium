@@ -2530,6 +2530,11 @@ const char kTraceUploadUrlChoiceEmloading[] = "emloading";
 const char kTraceUploadUrlChoiceQa[] = "QA";
 const char kTraceUploadUrlChoiceTesting[] = "Testing";
 
+const char kTranslateAssistContentName[] = "Translate AssistContent";
+const char kTranslateAssistContentDescription[] =
+    "Enables populating translate details for the current page in "
+    "AssistContent.";
+
 const char kTranslateBubbleUIName[] =
     "Select which UI to use for translate bubble";
 const char kTranslateBubbleUIDescription[] =

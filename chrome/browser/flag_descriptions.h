@@ -1458,6 +1458,9 @@ extern const char kTraceUploadUrlChoiceEmloading[];
 extern const char kTraceUploadUrlChoiceQa[];
 extern const char kTraceUploadUrlChoiceTesting[];
 
+extern const char kTranslateAssistContentName[];
+extern const char kTranslateAssistContentDescription[];
+
 extern const char kTranslateBubbleUIName[];
 extern const char kTranslateBubbleUIDescription[];
 
