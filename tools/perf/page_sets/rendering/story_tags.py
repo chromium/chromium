@@ -85,6 +85,8 @@ TOUGH_PINCH_ZOOM_MOBILE = Tag(
     'tough_pinch_zoom_mobile', 'Tough pinch zoom mobile stories')
 TOUGH_SCHEDULING = Tag(
     'tough_scheduling', 'Tough scheduling stories')
+TOUGH_SCROLLBAR_SCROLLING = Tag('tough_scrollbar_scrolling',
+                                'Tough Scrollbar Scrolling stories')
 TOUGH_SCROLLING = Tag(
     'tough_scrolling', 'Tough scrolling stories')
 TOUGH_TEXTURE_UPLOAD = Tag(
