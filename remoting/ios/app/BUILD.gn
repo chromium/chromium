@@ -79,10 +79,13 @@ source_set("common_source_set") {
 
   deps = [
     "//base",
+    "//base:i18n",
     "//google_apis",
     "//remoting/base",
+    "//remoting/base:authorization",
     "//remoting/client",
     "//remoting/client/input",
+    "//remoting/client/notification",
     "//remoting/ios:ios_core",
     "//remoting/ios/app/resources:assets",
     "//remoting/ios/app/settings",
@@ -133,6 +136,9 @@ source_set("app_source_set") {
   deps = [
     ":common_source_set",
     "//base",
+    "//google_apis",
+    "//remoting/resources",
+    "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
 
