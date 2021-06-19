@@ -7,8 +7,11 @@
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/arc_resize_lock_type.h"
+#include "ash/public/cpp/resize_shadow_type.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/shell.h"
+#include "ash/wm/resize_shadow_controller.h"
 #include "base/bind.h"
 #include "base/memory/singleton.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -93,11 +96,15 @@ void ArcResizeLockManager::OnWindowPropertyChanged(aura::Window* window,
   // Both the resize lock value and app id are needed to enable resize lock.
   if (current_resize_lock_value != ash::ArcResizeLockType::RESIZABLE &&
       (app_id_changed || resize_lock_changed)) {
+    window->SetProperty(ash::kResizeShadowTypeKey,
+                        ash::ResizeShadowType::kLock);
     EnableResizeLock(window);
   }
 
   if (resize_lock_changed &&
       current_resize_lock_value == ash::ArcResizeLockType::RESIZABLE) {
+    window->SetProperty(ash::kResizeShadowTypeKey,
+                        ash::ResizeShadowType::kUnlock);
     DisableResizeLock(window);
   }
 }
@@ -130,10 +137,16 @@ void ArcResizeLockManager::EnableResizeLock(aura::Window* window) {
   }
 
   UpdateCompatModeButton(window);
+  // Show lock shadow effect on window. ash::Shell may not exist in tests.
+  if (ash::Shell::HasInstance())
+    ash::Shell::Get()->resize_shadow_controller()->ShowShadow(window);
 }
 
 void ArcResizeLockManager::DisableResizeLock(aura::Window* window) {
   UpdateCompatModeButton(window);
+  // Hide shadow effect on window. ash::Shell may not exist in tests.
+  if (ash::Shell::HasInstance())
+    ash::Shell::Get()->resize_shadow_controller()->HideShadow(window);
 }
 
 void ArcResizeLockManager::UpdateCompatModeButton(aura::Window* window) {

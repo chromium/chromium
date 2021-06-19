@@ -5,7 +5,9 @@
 #include "ash/wm/toplevel_window_event_handler.h"
 
 #include "ash/constants/app_types.h"
+#include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
+#include "ash/wm/resize_shadow.h"
 #include "ash/wm/resize_shadow_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_resizer.h"
@@ -86,8 +88,10 @@ void ShowResizeShadow(aura::Window* window, int component) {
 void HideResizeShadow(aura::Window* window) {
   ResizeShadowController* resize_shadow_controller =
       Shell::Get()->resize_shadow_controller();
-  if (resize_shadow_controller)
+  if (resize_shadow_controller &&
+      window->GetProperty(kResizeShadowTypeKey) == ResizeShadowType::kUnlock) {
     resize_shadow_controller->HideShadow(window);
+  }
 }
 
 // Called once the drag completes.

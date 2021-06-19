@@ -31,6 +31,7 @@ class Rect;
 namespace ash {
 
 class WindowBackdrop;
+enum class ResizeShadowType;
 
 // Shell-specific window property keys for use by ash and its clients.
 
@@ -165,6 +166,10 @@ ASH_PUBLIC_EXPORT extern const aura::WindowProperty<std::string*>* const
 // A property key to store the type of a window's shelf item.
 ASH_PUBLIC_EXPORT extern const aura::WindowProperty<int32_t>* const
     kShelfItemTypeKey;
+
+// A property key to store the type of a window's resize shadow.
+ASH_PUBLIC_EXPORT extern const aura::WindowProperty<ResizeShadowType>* const
+    kResizeShadowTypeKey;
 
 // A property key to store the system gesture exclusion region. From a point
 // inside the region, system gesture e.g. back gesture shouldn't be triggered.

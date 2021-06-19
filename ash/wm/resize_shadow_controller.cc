@@ -6,30 +6,72 @@
 
 #include <memory>
 
+#include "ash/public/cpp/window_properties.h"
 #include "ash/wm/resize_shadow.h"
+#include "ui/aura/client/aura_constants.h"
 
 namespace ash {
+
+namespace {
+
+// Lock shadow params
+constexpr ResizeShadow::InitParams kLockParams{
+    /*thickness=*/6,
+    /*shadow_corner_radius=*/6,
+    /*window_corner_radius=*/2,
+    /*opacity =*/0.3f,
+    /*color=*/gfx::kGoogleGrey900,
+    /*hit_test_enabled=*/false,
+    /*hide_duration_ms=*/0,
+};
+
+}  // namespace
 
 ResizeShadowController::ResizeShadowController() = default;
 
 ResizeShadowController::~ResizeShadowController() {
-  HideAllShadows();
+  RemoveAllShadows();
 }
 
 void ResizeShadowController::ShowShadow(aura::Window* window, int hit_test) {
   ResizeShadow* shadow = GetShadowForWindow(window);
   if (!shadow)
     shadow = CreateShadow(window);
-  shadow->ShowForHitTest(hit_test);
+  if (ShouldShowShadowForWindow(window))
+    shadow->ShowForHitTest(hit_test);
+}
+
+void ResizeShadowController::TryShowAllShadows() {
+  for (const auto& shadow : window_shadows_)
+    UpdateShadowVisibility(shadow.first, true);
 }
 
 void ResizeShadowController::HideShadow(aura::Window* window) {
   ResizeShadow* shadow = GetShadowForWindow(window);
-  if (shadow)
-    shadow->Hide();
+  if (!shadow)
+    return;
+  UpdateShadowVisibility(window, false);
 }
 
 void ResizeShadowController::HideAllShadows() {
+  for (auto& shadow : window_shadows_) {
+    if (!shadow.second)
+      continue;
+
+    switch (shadow.second->type_) {
+      case ResizeShadowType::kLock: {  // Hides lock style of shadow
+        UpdateShadowVisibility(shadow.first, false);
+        break;
+      }
+      case ResizeShadowType::kUnlock: {  // Deletes unlock style of shadow
+        shadow.second.reset();
+        break;
+      }
+    }
+  }
+}
+
+void ResizeShadowController::RemoveAllShadows() {
   windows_observation_.RemoveAllObservations();
   window_shadows_.clear();
 }
@@ -43,8 +85,7 @@ void ResizeShadowController::OnWindowHierarchyChanged(
 
 void ResizeShadowController::OnWindowVisibilityChanging(aura::Window* window,
                                                         bool visible) {
-  if (!visible)
-    HideShadow(window);
+  UpdateShadowVisibility(window, visible);
 }
 
 void ResizeShadowController::OnWindowBoundsChanged(
@@ -68,23 +109,65 @@ void ResizeShadowController::OnWindowDestroying(aura::Window* window) {
   window_shadows_.erase(window);
 }
 
-ResizeShadow* ResizeShadowController::CreateShadow(aura::Window* window) {
-  auto shadow = std::make_unique<ResizeShadow>(window);
-  windows_observation_.AddObservation(window);
-
-  ResizeShadow* raw_shadow = shadow.get();
-  window_shadows_.insert(std::make_pair(window, std::move(shadow)));
-  return raw_shadow;
-}
-
 ResizeShadow* ResizeShadowController::GetShadowForWindowForTest(
     aura::Window* window) {
   return GetShadowForWindow(window);
 }
 
-ResizeShadow* ResizeShadowController::GetShadowForWindow(aura::Window* window) {
+ResizeShadow* ResizeShadowController::CreateShadow(aura::Window* window) {
+  if (!windows_observation_.IsObservingSource(window))
+    windows_observation_.AddObservation(window);
+  ResizeShadow* shadow = GetShadowForWindow(window);
+  const ash::ResizeShadowType type =
+      window->GetProperty(ash::kResizeShadowTypeKey);
+  if (shadow && shadow->type_ == type)
+    return shadow;
+
+  ResizeShadow::InitParams params;
+  if (type == ResizeShadowType::kLock)
+    params = kLockParams;
+
+  auto new_shadow = std::make_unique<ResizeShadow>(window, params);
+  new_shadow->type_ = type;
+
+  ResizeShadow* raw_shadow = new_shadow.get();
+  auto it = window_shadows_.find(window);
+  if (it == window_shadows_.end())
+    window_shadows_.insert(std::make_pair(window, std::move(new_shadow)));
+  else
+    it->second = std::move(new_shadow);
+  return raw_shadow;
+}
+
+ResizeShadow* ResizeShadowController::GetShadowForWindow(
+    aura::Window* window) const {
   auto it = window_shadows_.find(window);
   return it != window_shadows_.end() ? it->second.get() : nullptr;
+}
+
+void ResizeShadowController::UpdateShadowVisibility(aura::Window* window,
+                                                    bool visible) const {
+  ResizeShadow* shadow = GetShadowForWindow(window);
+  if (!shadow)
+    return;
+
+  if (shadow->type_ == ResizeShadowType::kLock) {
+    visible &= ShouldShowShadowForWindow(window);
+    if (visible)
+      shadow->ShowForHitTest();
+  }
+
+  if (!visible)
+    shadow->Hide();
+}
+
+bool ResizeShadowController::ShouldShowShadowForWindow(
+    aura::Window* window) const {
+  // Hide the shadow if it's a maximized/fullscreen window.
+  ui::WindowShowState show_state =
+      window->GetProperty(aura::client::kShowStateKey);
+  return show_state != ui::SHOW_STATE_FULLSCREEN &&
+         show_state != ui::SHOW_STATE_MAXIMIZED;
 }
 
 }  // namespace ash

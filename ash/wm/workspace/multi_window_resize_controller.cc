@@ -302,6 +302,11 @@ void MultiWindowResizeController::OnOverviewModeStarting() {
   ResetResizer();
 }
 
+void MultiWindowResizeController::OnOverviewModeEnded() {
+  // Show resize-lock shadow UI after exiting overview.
+  Shell::Get()->resize_shadow_controller()->TryShowAllShadows();
+}
+
 MultiWindowResizeController::ResizeWindows
 MultiWindowResizeController::DetermineWindowsFromScreenPoint(
     aura::Window* window) const {

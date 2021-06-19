@@ -4,6 +4,7 @@
 
 #include "ash/public/cpp/window_properties.h"
 
+#include "ash/public/cpp/resize_shadow_type.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/window_backdrop.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
@@ -19,6 +20,7 @@ DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(ASH_PUBLIC_EXPORT, float*)
 DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(ASH_PUBLIC_EXPORT, SkRegion*)
 DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(ASH_PUBLIC_EXPORT,
                                        ash::ArcResizeLockType)
+DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(ASH_PUBLIC_EXPORT, ash::ResizeShadowType)
 
 namespace ash {
 
@@ -62,5 +64,8 @@ DEFINE_UI_CLASS_PROPERTY_KEY(aura::Window*,
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kWindowPositionManagedTypeKey, false)
 
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kWindowPipTypeKey, false)
+DEFINE_UI_CLASS_PROPERTY_KEY(ResizeShadowType,
+                             kResizeShadowTypeKey,
+                             ResizeShadowType::kUnlock)
 
 }  // namespace ash

@@ -7,6 +7,8 @@
 
 #include <memory>
 
+#include "ash/public/cpp/resize_shadow_type.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/hit_test.h"
 
 namespace aura {
@@ -23,7 +25,25 @@ namespace ash {
 // handled by the EventFilter.
 class ResizeShadow {
  public:
-  explicit ResizeShadow(aura::Window* window);
+  // Resize shadow parameters. Default params values are unresizable window
+  // shadow.
+  struct InitParams {
+    // The width of the resize shadow that appears on edge of the window.
+    int thickness = 8;
+    // The corner radius of the resize shadow.
+    int shadow_corner_radius = 2;
+    // The corner radius of the window.
+    int window_corner_radius = 2;
+    // The opacity of the resize shadow.
+    float opacity = 0.5f;
+    // The color of the resize shadow.
+    SkColor color = SK_ColorBLACK;
+    // Controls whether the resize shadow shall respond to hit testing or not.
+    bool hit_test_enabled = true;
+    int hide_duration_ms = 100;
+  };
+
+  ResizeShadow(aura::Window* window, const InitParams& params);
   ResizeShadow(const ResizeShadow&) = delete;
   ResizeShadow& operator=(const ResizeShadow&) = delete;
   ~ResizeShadow();
@@ -36,7 +56,7 @@ class ResizeShadow {
 
   // Shows resize effects for one or more edges based on a |hit_test| code, such
   // as HTRIGHT or HTBOTTOMRIGHT.
-  void ShowForHitTest(int hit_test);
+  void ShowForHitTest(int hit_test = HTNOWHERE);
 
   // Hides all resize effects.
   void Hide();
@@ -46,6 +66,9 @@ class ResizeShadow {
 
   // Updates bounds and visibility of |layer_|.
   void UpdateBoundsAndVisibility();
+
+  // Updates the |last_hist_test_| with given |hit_test| code.
+  void UpdateHitTest(int hit_test);
 
   // The window associated with this shadow. Guaranteed to be alive for the
   // lifetime of `this`.
@@ -58,6 +81,14 @@ class ResizeShadow {
   // Hit test value from last call to ShowForHitTest().  Used to prevent
   // repeatedly triggering the same animations for the same hit.
   int last_hit_test_ = HTNOWHERE;
+
+  // The type of the resize shadow. Used to identify variations of resize
+  // shadow.
+  ResizeShadowType type_;
+
+  InitParams params_;
+
+  bool visible_;
 };
 
 }  // namespace ash

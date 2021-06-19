@@ -232,6 +232,7 @@ component("cpp") {
     "quick_answers/controller/quick_answers_controller.h",
     "quick_answers/quick_answers_state.cc",
     "quick_answers/quick_answers_state.h",
+    "resize_shadow_type.h",
     "rounded_corner_utils.cc",
     "rounded_corner_utils.h",
     "rounded_image_view.cc",

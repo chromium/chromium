@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/frame/non_client_frame_view_ash.h"
+#include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/test_window_builder.h"
@@ -91,7 +92,8 @@ class ResizeShadowAndCursorTest : public AshTestBase {
     return resize_shadow ? resize_shadow->GetLastHitTestForTest() : HTNOWHERE;
   }
 
-  // Returns true if there is a resize shadow.
+  // Returns true if there is a resize shadow with a given type. Default type is
+  // unlock for compatibility.
   void VerifyResizeShadow(bool visible) const {
     if (visible)
       EXPECT_TRUE(GetShadow());
@@ -389,6 +391,54 @@ TEST_F(ResizeShadowAndCursorTest, Minimize) {
   VerifyResizeShadow(false);
 
   WindowState::Get(window())->Restore();
+  VerifyResizeShadow(false);
+}
+
+// Verifies that the lock style shadow gets updated when the window's bounds
+// changed.
+TEST_F(ResizeShadowAndCursorTest, LockShadowBounds) {
+  window()->SetProperty(kResizeShadowTypeKey, ResizeShadowType::kLock);
+  Shell::Get()->resize_shadow_controller()->ShowShadow(window());
+  // Set window's bounds
+  const gfx::Rect kOldBounds(20, 30, 400, 300);
+  window()->SetBounds(kOldBounds);
+  auto* resize_shadow = GetShadow();
+  ASSERT_TRUE(resize_shadow);
+  VerifyResizeShadow(true);
+  auto* layer = resize_shadow->GetLayerForTest();
+  constexpr int kVisualThickness = 6;
+  EXPECT_EQ(gfx::Rect(kOldBounds.width() + kVisualThickness * 2,
+                      kOldBounds.height() + kVisualThickness * 2)
+                .ToString(),
+            gfx::Rect(layer->GetTargetBounds().size()).ToString());
+
+  // Change the window's bounds, the shadow's should be updated too.
+  gfx::Rect kNewBounds(50, 60, 500, 400);
+  window()->SetBounds(kNewBounds);
+  EXPECT_EQ(gfx::Rect(kNewBounds.width() + kVisualThickness * 2,
+                      kNewBounds.height() + kVisualThickness * 2)
+                .ToString(),
+            gfx::Rect(layer->GetTargetBounds().size()).ToString());
+}
+
+// Tests that shadow gets updated when the window's visibility changed.
+TEST_F(ResizeShadowAndCursorTest, ShowHideShadow) {
+  ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow());
+  ASSERT_TRUE(WindowState::Get(window())->IsNormalStateType());
+  generator.MoveMouseTo(200, 50);
+  VerifyResizeShadow(true);
+  Shell::Get()->resize_shadow_controller()->HideAllShadows();
+  ASSERT_FALSE(GetShadow());
+
+  window()->SetProperty(kResizeShadowTypeKey, ResizeShadowType::kLock);
+  Shell::Get()->resize_shadow_controller()->ShowShadow(window());
+  window()->Show();
+  VerifyResizeShadow(true);
+  window()->Hide();
+  VerifyResizeShadow(false);
+  Shell::Get()->resize_shadow_controller()->TryShowAllShadows();
+  VerifyResizeShadow(true);
+  Shell::Get()->resize_shadow_controller()->HideAllShadows();
   VerifyResizeShadow(false);
 }
 
