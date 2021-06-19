@@ -102,7 +102,6 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   bool Confirm(const std::string& message) override;
   std::string Prompt(const std::string& question,
                      const std::string& default_answer) override;
-  void Print() override;
   void SubmitForm(const std::string& url,
                   const void* data,
                   int length) override;
@@ -152,6 +151,7 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   void SetPluginCanSave(bool can_save) override;
   void DidStartLoading() override;
   void DidStopLoading() override;
+  void InvokePrintDialog() override;
   void OnPrintPreviewLoaded() override;
   void NotifySelectionChanged(const gfx::PointF& left,
                               int left_height,

@@ -5,6 +5,7 @@
 #include "pdf/pdf_view_web_plugin.h"
 
 #include <stddef.h>
+#include <stdint.h>
 
 #include <memory>
 #include <string>
@@ -478,8 +479,6 @@ std::string PdfViewWebPlugin::Prompt(const std::string& question,
       .Utf8();
 }
 
-void PdfViewWebPlugin::Print() {}
-
 void PdfViewWebPlugin::SubmitForm(const std::string& url,
                                   const void* data,
                                   int length) {}
@@ -686,6 +685,14 @@ void PdfViewWebPlugin::OnPrintPreviewLoaded() {
   NOTIMPLEMENTED();
 }
 
+void PdfViewWebPlugin::InvokePrintDialog() {
+  ScheduleTaskOnMainThread(
+      FROM_HERE,
+      base::BindOnce(&PdfViewWebPlugin::OnInvokePrintDialog,
+                     weak_factory_.GetWeakPtr()),
+      /*result=*/0, base::TimeDelta());
+}
+
 void PdfViewWebPlugin::NotifySelectionChanged(const gfx::PointF& left,
                                               int left_height,
                                               const gfx::PointF& right,
@@ -756,6 +763,13 @@ bool PdfViewWebPlugin::Redo() {
 
   engine()->Redo();
   return true;
+}
+
+void PdfViewWebPlugin::OnInvokePrintDialog(int32_t /*result*/) {
+  if (!print_client_)
+    return;
+
+  print_client_->Print(Container()->GetElement());
 }
 
 pdf::mojom::PdfService* PdfViewWebPlugin::GetPdfService() {

@@ -84,8 +84,6 @@ constexpr char kType[] = "type";
 // Name of identifier field passed from JS to the plugin and back, to associate
 // Page->Plugin messages to Plugin->Page responses.
 constexpr char kJSMessageId[] = "messageId";
-// Print (Page -> Plugin)
-constexpr char kJSPrintType[] = "print";
 // Save attachment (Page -> Plugin)
 constexpr char kJSSaveAttachmentType[] = "saveAttachment";
 constexpr char kJSAttachmentIndex[] = "attachmentIndex";
@@ -582,9 +580,7 @@ void OutOfProcessInstance::HandleMessage(const pp::Var& message) {
 
   std::string type = dict.Get(kType).AsString();
 
-  if (type == kJSPrintType) {
-    Print();
-  } else if (type == kJSSaveAttachmentType) {
+  if (type == kJSSaveAttachmentType) {
     HandleSaveAttachmentMessage(dict);
   } else if (type == kJSResetPrintPreviewModeType) {
     HandleResetPrintPreviewModeMessage(dict);
@@ -877,19 +873,6 @@ std::string OutOfProcessInstance::Prompt(const std::string& question,
   pp::Var result =
       pp::PDF::ShowPromptDialog(this, question.c_str(), default_answer.c_str());
   return result.is_string() ? result.AsString() : std::string();
-}
-
-void OutOfProcessInstance::Print() {
-  if (!engine() ||
-      (!engine()->HasPermission(PDFEngine::PERMISSION_PRINT_LOW_QUALITY) &&
-       !engine()->HasPermission(PDFEngine::PERMISSION_PRINT_HIGH_QUALITY))) {
-    return;
-  }
-
-  ScheduleTaskOnMainThread(FROM_HERE,
-                           base::BindOnce(&OutOfProcessInstance::OnPrint,
-                                          weak_factory_.GetWeakPtr()),
-                           /*result=*/0, base::TimeDelta());
 }
 
 void OutOfProcessInstance::SubmitForm(const std::string& url,
@@ -1266,6 +1249,13 @@ void OutOfProcessInstance::OnPrintPreviewLoaded() {
     AppendBlankPrintPreviewPages();
   }
   OnGeometryChanged(0, 0);
+}
+
+void OutOfProcessInstance::InvokePrintDialog() {
+  ScheduleTaskOnMainThread(FROM_HERE,
+                           base::BindOnce(&OutOfProcessInstance::OnPrint,
+                                          weak_factory_.GetWeakPtr()),
+                           /*result=*/0, base::TimeDelta());
 }
 
 void OutOfProcessInstance::SetContentRestrictions(int content_restrictions) {

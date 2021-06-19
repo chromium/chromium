@@ -251,6 +251,19 @@ void PdfViewPluginBase::Email(const std::string& to,
   SendMessage(std::move(message));
 }
 
+void PdfViewPluginBase::Print() {
+  if (!engine_)
+    return;
+
+  const bool can_print =
+      engine_->HasPermission(PDFEngine::PERMISSION_PRINT_LOW_QUALITY) ||
+      engine_->HasPermission(PDFEngine::PERMISSION_PRINT_HIGH_QUALITY);
+  if (!can_print)
+    return;
+
+  InvokePrintDialog();
+}
+
 std::unique_ptr<UrlLoader> PdfViewPluginBase::CreateUrlLoader() {
   if (full_frame_) {
     DidStartLoading();
@@ -456,6 +469,7 @@ void PdfViewPluginBase::HandleMessage(const base::Value& message) {
            &PdfViewPluginBase::HandleGetPasswordCompleteMessage},
           {"getSelectedText", &PdfViewPluginBase::HandleGetSelectedTextMessage},
           {"getThumbnail", &PdfViewPluginBase::HandleGetThumbnailMessage},
+          {"print", &PdfViewPluginBase::HandlePrintMessage},
           {"rotateClockwise", &PdfViewPluginBase::HandleRotateClockwiseMessage},
           {"rotateCounterclockwise",
            &PdfViewPluginBase::HandleRotateCounterclockwiseMessage},
@@ -882,6 +896,10 @@ void PdfViewPluginBase::HandleGetThumbnailMessage(const base::Value& message) {
   engine()->RequestThumbnail(page_index, device_scale_,
                              base::BindOnce(&PdfViewPluginBase::SendThumbnail,
                                             GetWeakPtr(), std::move(reply)));
+}
+
+void PdfViewPluginBase::HandlePrintMessage(const base::Value& /*message*/) {
+  Print();
 }
 
 void PdfViewPluginBase::HandleRotateClockwiseMessage(

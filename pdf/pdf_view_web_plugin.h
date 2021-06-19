@@ -5,6 +5,8 @@
 #ifndef PDF_PDF_VIEW_WEB_PLUGIN_H_
 #define PDF_PDF_VIEW_WEB_PLUGIN_H_
 
+#include <stdint.h>
+
 #include <memory>
 #include <vector>
 
@@ -161,7 +163,6 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   bool Confirm(const std::string& message) override;
   std::string Prompt(const std::string& question,
                      const std::string& default_answer) override;
-  void Print() override;
   void SubmitForm(const std::string& url,
                   const void* data,
                   int length) override;
@@ -224,6 +225,7 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   void DidStartLoading() override;
   void DidStopLoading() override;
   void OnPrintPreviewLoaded() override;
+  void InvokePrintDialog() override;
   void NotifySelectionChanged(const gfx::PointF& left,
                               int left_height,
                               const gfx::PointF& right,
@@ -249,6 +251,13 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   bool Paste(const blink::WebString& value);
   bool Undo();
   bool Redo();
+
+  // Callback to print without re-entrancy issues. The callback prevents the
+  // invocation of printing in the middle of an event handler, which is risky;
+  // see crbug.com/66334.
+  // TODO(crbug.com/1217012): Re-evaluate the need for a callback when parts of
+  // the plugin are moved off the main thread.
+  void OnInvokePrintDialog(int32_t /*result*/);
 
   // May be null in unit tests.
   pdf::mojom::PdfService* GetPdfService();
