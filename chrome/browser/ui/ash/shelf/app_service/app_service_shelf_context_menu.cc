@@ -273,7 +273,7 @@ void AppServiceShelfContextMenu::OnGetMenuModel(
           menu_items->items, menu_model.get(), submenu_.get(),
           base::BindOnce(&AppServiceShelfContextMenu::GetCommandIdVectorIcon,
                          base::Unretained(this)))) {
-    index = 1;
+    ++index;
   }
 
   // The special rule to ensure that FilesManager's first menu item is "New
@@ -284,6 +284,14 @@ void AppServiceShelfContextMenu::OnGetMenuModel(
 
   if (build_extension_menu_before_pin)
     BuildExtensionAppShortcutsMenu(menu_model.get());
+
+  // "New Window" should go above "Pin".
+  if (menu_items->items.size() > index &&
+      menu_items->items[index]->command_id == ash::MENU_NEW_WINDOW) {
+    AddContextMenuOption(menu_model.get(), ash::MENU_NEW_WINDOW,
+                         menu_items->items[index]->string_id);
+    ++index;
+  }
 
   if (ShouldAddPinMenu())
     AddPinMenu(menu_model.get());
