@@ -763,7 +763,6 @@
 <translation id="1795214765651529549">Koristi klasičnu</translation>
 <translation id="1796588414813960292">Značajke kojima je potreban zvuk neće funkcionirati</translation>
 <translation id="1799071797295057738">Proširenje "<ph name="EXTENSION_NAME" />" automatski je onemogućeno.</translation>
-<translation id="1800973090344019061">Proširenje <ph name="APP_NAME" /> želi dijeliti sadržaj vašeg zaslona.</translation>
 <translation id="1802624026913571222">U mirovanje kada se zatvori poklopac.</translation>
 <translation id="1802687198411089702">Stranica ne reagira. Možete je pričekati ili napustiti.</translation>
 <translation id="1803531841600994172">Jezik na koji se prevodi</translation>
@@ -1638,6 +1637,7 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="2734760316755174687">Poništit će se i web-lokacije u grupi <ph name="SITE_GROUP_NAME" />.</translation>
 <translation id="2735712963799620190">Raspored</translation>
 <translation id="2737363922397526254">Sažmi...</translation>
+<translation id="2737916598897808047"><ph name="APP_NAME" /> želi dijeliti sadržaj vašeg zaslona s <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">Ne dopuštaj web-lokacijama korištenje fontova instaliranih na uređaju</translation>
 <translation id="2738771556149464852">Ne nakon</translation>
 <translation id="2739191690716947896">Otkloni pogrešku</translation>
@@ -4707,7 +4707,6 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="6136114942382973861">Zatvori traku preuzimanja</translation>
 <translation id="6136287496450963112">Vaš sigurnosni ključ nije zaštićen PIN-om. Za upravljanje otiscima prstiju najprije izradite PIN.</translation>
 <translation id="6138680304137685902">X9.62 ECDSA potpis uz SHA-384</translation>
-<translation id="6138774640412545950">Proširenje <ph name="APP_NAME" /> želi dijeliti sadržaj vašeg zaslona s <ph name="TARGET_NAME" />.</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, nema mreže</translation>
 <translation id="6141988275892716286">Potvrda preuzimanja</translation>
 <translation id="6143186082490678276">Traženje pomoći</translation>
@@ -6612,6 +6611,7 @@ Mislim da ta web-lokacija ne bi trebala biti blokirana!</translation>
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034">Povezivanje s mrežom <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">upravljati vašim aplikacijama, proširenjima i temama</translation>
+<translation id="8192944472786724289"><ph name="APP_NAME" /> želi dijeliti sadržaj vašeg zaslona.</translation>
 <translation id="8195027750202970175">Veličina na disku</translation>
 <translation id="8198323535106903877">Instalirat ćemo te aplikacije za vas (njih <ph name="NUMBER_OF_APPS" />)</translation>
 <translation id="8198456017687137612">Emitiranje kartice</translation>

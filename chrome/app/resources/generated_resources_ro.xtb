@@ -763,7 +763,6 @@
 <translation id="1795214765651529549">Folosește tema clasică</translation>
 <translation id="1796588414813960292">Opțiunile care au nevoie de sunet nu vor funcționa</translation>
 <translation id="1799071797295057738">Extensia „<ph name="EXTENSION_NAME" />” a fost dezactivată automat.</translation>
-<translation id="1800973090344019061">Extensia <ph name="APP_NAME" /> solicită permisiunea de a trimite conținut de pe ecran.</translation>
 <translation id="1802624026913571222">Când capacul este închis: modul inactiv</translation>
 <translation id="1802687198411089702">Pagina nu răspunde. Poți aștepta să răspundă sau o poți închide.</translation>
 <translation id="1803531841600994172">Limba în care se traduce</translation>
@@ -1637,6 +1636,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2734760316755174687">Site-urile din <ph name="SITE_GROUP_NAME" /> vor fi și ele resetate.</translation>
 <translation id="2735712963799620190">Program</translation>
 <translation id="2737363922397526254">Restrânge...</translation>
+<translation id="2737916598897808047"><ph name="APP_NAME" /> solicită permisiunea de a trimite conținut de pe ecran la <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">Nu permite site-urilor să folosească fonturile instalate pe dispozitiv</translation>
 <translation id="2738771556149464852">Nu după</translation>
 <translation id="2739191690716947896">Remediați erorile</translation>
@@ -4706,7 +4706,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="6136114942382973861">Închide bara de descărcări</translation>
 <translation id="6136287496450963112">Cheia de securitate nu este protejată printr-un cod PIN. Pentru a gestiona amprentele, creează mai întâi un cod PIN.</translation>
 <translation id="6138680304137685902">Semnătură X9.62 ECDSA cu SHA-384</translation>
-<translation id="6138774640412545950">Extensia <ph name="APP_NAME" /> solicită permisiunea de a trimite conținut de pe ecran la <ph name="TARGET_NAME" />.</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, nicio rețea</translation>
 <translation id="6141988275892716286">Confirmă descărcarea</translation>
 <translation id="6143186082490678276">Primiți ajutor</translation>
@@ -6611,6 +6610,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034">Se conectează la <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Gestionează aplicațiile, extensiile și temele dvs.</translation>
+<translation id="8192944472786724289"><ph name="APP_NAME" /> solicită permisiunea de a trimite conținut de pe ecran.</translation>
 <translation id="8195027750202970175">Dimensiune pe disc</translation>
 <translation id="8198323535106903877">Vom instala aceste <ph name="NUMBER_OF_APPS" /> aplicații pentru tine</translation>
 <translation id="8198456017687137612">Se proiectează fila</translation>

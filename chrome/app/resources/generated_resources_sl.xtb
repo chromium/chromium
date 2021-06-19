@@ -776,7 +776,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="1795214765651529549">Uporabi klasično</translation>
 <translation id="1796588414813960292">Funkcije, ki potrebujejo zvok, ne bodo delovale.</translation>
 <translation id="1799071797295057738">Razširitev »<ph name="EXTENSION_NAME" />« je bila samodejno onemogočena.</translation>
-<translation id="1800973090344019061">Razširitev »<ph name="APP_NAME" />« želi deliti vsebino vašega zaslona.</translation>
 <translation id="1802624026913571222">Preklop v stanje pripravljenosti, ko je pokrov zaprt</translation>
 <translation id="1802687198411089702">Ta spletna stran se ne odziva. Lahko počakate ali jo zaprete.</translation>
 <translation id="1803531841600994172">Jezik prevoda</translation>
@@ -1654,6 +1653,7 @@ in Ctrl +Alt + tipko za zmanjšanje svetlosti za pomanjšavo.</translation>
 <translation id="2734760316755174687">Spletna mesta v skupini <ph name="SITE_GROUP_NAME" /> bodo prav tako ponastavljena.</translation>
 <translation id="2735712963799620190">Razpored</translation>
 <translation id="2737363922397526254">Strni ...</translation>
+<translation id="2737916598897808047">Aplikacija <ph name="APP_NAME" /> želi deliti vsebino vašega zaslona s spletnim mestom <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">Spletnim mestom ni dovoljeno uporabljati pisave, nameščene v napravi</translation>
 <translation id="2738771556149464852">Ne po</translation>
 <translation id="2739191690716947896">Odpravljanje napak</translation>
@@ -4726,7 +4726,6 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="6136114942382973861">Zapri vrstico za prenose</translation>
 <translation id="6136287496450963112">Vaš varnostni ključ ni zaščiten s kodo PIN. Če želite upravljati prstne odtise, naprej ustvarite kodo PIN.</translation>
 <translation id="6138680304137685902">Podpis X9.62 ECDSA z algoritmom SHA-384</translation>
-<translation id="6138774640412545950">Razširitev »<ph name="APP_NAME" />« želi deliti vsebino vašega zaslona s spletnim mestom <ph name="TARGET_NAME" />.</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, ni omrežja</translation>
 <translation id="6141988275892716286">Potrdi prenos</translation>
 <translation id="6143186082490678276">Poiščite pomoč</translation>
@@ -6632,6 +6631,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8189750580333936930">Zasebni peskovnik</translation>
 <translation id="8190193592390505034">Vzpostavljanje povezave z <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Upravljajte aplikacije, razširitve in teme</translation>
+<translation id="8192944472786724289">Aplikacija <ph name="APP_NAME" /> želi deliti vsebino vašega zaslona.</translation>
 <translation id="8195027750202970175">Velikost na disku</translation>
 <translation id="8198323535106903877">Namestili bomo toliko aplikacij: <ph name="NUMBER_OF_APPS" /></translation>
 <translation id="8198456017687137612">Predvajanje vsebine zavihka</translation>

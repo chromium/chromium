@@ -762,7 +762,6 @@
 <translation id="1795214765651529549">クラシックを使用</translation>
 <translation id="1796588414813960292">音を使用する機能は動作しなくなります</translation>
 <translation id="1799071797295057738">拡張機能「<ph name="EXTENSION_NAME" />」を自動的に無効にしました。</translation>
-<translation id="1800973090344019061">拡張機能「<ph name="APP_NAME" />」が画面コンテンツの共有をリクエストしています。</translation>
 <translation id="1802624026913571222">ディスプレイを閉じたときにスリープ状態にする</translation>
 <translation id="1802687198411089702">ページが応答していません。しばらくお待ちいただくか、終了してください。</translation>
 <translation id="1803531841600994172">翻訳先の言語</translation>
@@ -1636,6 +1635,7 @@
 <translation id="2734760316755174687"><ph name="SITE_GROUP_NAME" /> のサイトもリセットされます。</translation>
 <translation id="2735712963799620190">スケジュール</translation>
 <translation id="2737363922397526254">折りたたむ...</translation>
+<translation id="2737916598897808047"><ph name="APP_NAME" /> が <ph name="TARGET_NAME" /> との画面コンテンツの共有をリクエストしています。</translation>
 <translation id="2738030019664645674">デバイスにインストールされたフォントの使用をサイトに許可しない</translation>
 <translation id="2738771556149464852">終了時刻</translation>
 <translation id="2739191690716947896">デバッグ</translation>
@@ -4705,7 +4705,6 @@
 <translation id="6136114942382973861">ダウンロード バーを閉じる</translation>
 <translation id="6136287496450963112">セキュリティ キーは PIN で保護されていません。指紋を管理するには、まず PIN を作成してください。</translation>
 <translation id="6138680304137685902">X9.62 ECDSA 署名（SHA-384）</translation>
-<translation id="6138774640412545950">拡張機能「<ph name="APP_NAME" />」が <ph name="TARGET_NAME" /> との画面コンテンツの共有をリクエストしています。</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />、ネットワークなし</translation>
 <translation id="6141988275892716286">ダウンロードの確認</translation>
 <translation id="6143186082490678276">ヘルプ</translation>
@@ -6610,6 +6609,7 @@
 <translation id="8189750580333936930">プライバシー サンドボックス</translation>
 <translation id="8190193592390505034"><ph name="PROVIDER_NAME" /> に接続中</translation>
 <translation id="8191230140820435481">アプリ、拡張機能、テーマを管理する</translation>
+<translation id="8192944472786724289"><ph name="APP_NAME" /> が画面コンテンツの共有をリクエストしています。</translation>
 <translation id="8195027750202970175">ディスク上のサイズ</translation>
 <translation id="8198323535106903877">この <ph name="NUMBER_OF_APPS" /> 個のアプリをインストールします</translation>
 <translation id="8198456017687137612">タブをキャスト中</translation>

@@ -773,7 +773,6 @@
 <translation id="1795214765651529549">Gunakan Klasik</translation>
 <translation id="1796588414813960292">Ciri yang memerlukan bunyi tidak akan berfungsi</translation>
 <translation id="1799071797295057738">Sambungan "<ph name="EXTENSION_NAME" />" telah dilumpuhkan secara automatik.</translation>
-<translation id="1800973090344019061">Sambungan "<ph name="APP_NAME" />" mahu berkongsi kandungan skrin anda.</translation>
 <translation id="1802624026913571222">Tidur apabila penutup ditutup</translation>
 <translation id="1802687198411089702">Halaman tidak bertindak balas. Anda boleh menunggu atau keluar.</translation>
 <translation id="1803531841600994172">Bahasa sasaran terjemahan</translation>
@@ -1651,6 +1650,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="2734760316755174687">Tapak di bawah <ph name="SITE_GROUP_NAME" /> akan ditetapkan semula juga.</translation>
 <translation id="2735712963799620190">Jadual</translation>
 <translation id="2737363922397526254">Runtuhkan...</translation>
+<translation id="2737916598897808047"><ph name="APP_NAME" /> mahu berkongsi kandungan skrin anda dengan <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">Jangan benarkan laman menggunakan fon yang dipasang pada peranti anda</translation>
 <translation id="2738771556149464852">Bukan Selepas</translation>
 <translation id="2739191690716947896">Nyahpepijat</translation>
@@ -4721,7 +4721,6 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="6136114942382973861">Tutup bar muat turun</translation>
 <translation id="6136287496450963112">Kunci keselamatan anda tidak dilindungi dengan PIN. Untuk mengurus cap jari, buat PIN dahulu.</translation>
 <translation id="6138680304137685902">Tandatangan X9.62 ECDSA dengan SHA-384</translation>
-<translation id="6138774640412545950">Sambungan "<ph name="APP_NAME" />" mahu berkongsi kandungan skrin anda dengan <ph name="TARGET_NAME" />.</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, tiada rangkaian</translation>
 <translation id="6141988275892716286">Sahkan muat turun</translation>
 <translation id="6143186082490678276">Dapatkan Bantuan</translation>
@@ -6627,6 +6626,7 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="8189750580333936930">Kotak Pasir Privasi</translation>
 <translation id="8190193592390505034">Disambungkan ke <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Uruskan apl, sambungan dan tema anda</translation>
+<translation id="8192944472786724289"><ph name="APP_NAME" /> mahu berkongsi kandungan skrin anda.</translation>
 <translation id="8195027750202970175">Saiz pada cakera</translation>
 <translation id="8198323535106903877">Kami akan memasang <ph name="NUMBER_OF_APPS" /> apl itu untuk anda</translation>
 <translation id="8198456017687137612">Menghantar tab</translation>

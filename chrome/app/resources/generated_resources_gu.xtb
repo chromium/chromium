@@ -759,7 +759,6 @@
 <translation id="1795214765651529549">ક્લાસિકનો ઉપયોગ કરો</translation>
 <translation id="1796588414813960292">સાઉન્ડની આવશ્યકતા હોય તેવી સુવિધાઓ કામ કરશે નહીં</translation>
 <translation id="1799071797295057738">એક્સટેન્શન "<ph name="EXTENSION_NAME" />" ઑટોમૅટિક રીતે બંધ કરવામાં આવ્યું છે.</translation>
-<translation id="1800973090344019061">"<ph name="APP_NAME" />" એક્સ્ટેન્શન તમારી સ્ક્રીનનું કન્ટેન્ટ શેર કરવા માગે છે.</translation>
 <translation id="1802624026913571222">કવર બંધ કરવામાં આવે ત્યારે નિષ્ક્રિય કરો</translation>
 <translation id="1802687198411089702">પેજ પ્રતિસાદ આપી રહ્યું નથી. તમે તેની રાહ જોઈ શકો છો અથવા બહાર નીકળી શકો છો.</translation>
 <translation id="1803531841600994172">જેમાં અનુવાદ કરવો છે તે ભાષા</translation>
@@ -1634,6 +1633,7 @@
 <translation id="2734760316755174687"><ph name="SITE_GROUP_NAME" /> હેઠળની સાઇટ પણ રીસેટ કરવામાં આવશે.</translation>
 <translation id="2735712963799620190">શેડ્યૂલ</translation>
 <translation id="2737363922397526254">સંકુચિત કરો...</translation>
+<translation id="2737916598897808047"><ph name="APP_NAME" /> તમારી સ્ક્રીન પરનું કન્ટેન્ટ <ph name="TARGET_NAME" /> સાથે શેર કરવા માગે છે.</translation>
 <translation id="2738030019664645674">સાઇટને તમારા ડિવાઇસ પર ઇન્સ્ટૉલ કરેલા ફૉન્ટનો ઉપયોગ કરવાની મંજૂરી આપશો નહીં</translation>
 <translation id="2738771556149464852">આના પછી નહીં</translation>
 <translation id="2739191690716947896">ડીબગ કરો</translation>
@@ -4705,7 +4705,6 @@ USB ડિવાઇસ</translation>
 <translation id="6136114942382973861">ડાઉનલોડ બાર બંધ કરો</translation>
 <translation id="6136287496450963112">તમારી 'સિક્યુરિટી કી' પિન વડે સુરક્ષિત નથી. ફિંગરપ્રિન્ટ મેનેજ કરવા માટે, પહેલાં પિન બનાવો.</translation>
 <translation id="6138680304137685902">SHA-384 સાથે X9.62 ECDSA સહી</translation>
-<translation id="6138774640412545950">"<ph name="APP_NAME" />" એક્સ્ટેન્શન તમારી સ્ક્રીનના કન્ટેન્ટને <ph name="TARGET_NAME" /> સાથે શેર કરવા માગે છે.</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, નેટવર્ક નથી</translation>
 <translation id="6141988275892716286">ડાઉનલોડની પુષ્ટિ કરો</translation>
 <translation id="6143186082490678276">સહાય મેળવો</translation>
@@ -6605,6 +6604,7 @@ USB ડિવાઇસ</translation>
 <translation id="8189750580333936930">પ્રાઇવસી સૅન્ડબૉક્સ</translation>
 <translation id="8190193592390505034"><ph name="PROVIDER_NAME" /> થી કનેક્ટ કરે છે</translation>
 <translation id="8191230140820435481">તમારી ઍપ્લિકેશનો, એક્સ્ટેન્શન અને થીમ્સ મેનેજ કરો</translation>
+<translation id="8192944472786724289"><ph name="APP_NAME" /> તમારી સ્ક્રીન પરનું કન્ટેન્ટ શેર કરવા માગે છે.</translation>
 <translation id="8195027750202970175">ડિસ્ક પર કદ</translation>
 <translation id="8198323535106903877">અમે તમારા માટે તે <ph name="NUMBER_OF_APPS" /> ઍપ ઇન્સ્ટૉલ કરીશું</translation>
 <translation id="8198456017687137612">ટૅબ કાસ્ટ કરી રહ્યાં છીએ</translation>

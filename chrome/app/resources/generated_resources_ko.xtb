@@ -773,7 +773,6 @@
 <translation id="1795214765651529549">기본 테마 사용</translation>
 <translation id="1796588414813960292">소리가 필요한 기능이 작동하지 않습니다</translation>
 <translation id="1799071797295057738">'<ph name="EXTENSION_NAME" />' 확장 프로그램 자동으로 사용 중지되었습니다.</translation>
-<translation id="1800973090344019061">"<ph name="APP_NAME" />" 확장 프로그램이 화면 내용을 공유하려고 합니다.</translation>
 <translation id="1802624026913571222">커버를 닫으면 절전 모드 진입</translation>
 <translation id="1802687198411089702">페이지가 응답하지 않습니다. 페이지가 응답할 때까지 기다리거나 종료할 수 있습니다.</translation>
 <translation id="1803531841600994172">번역 타겟 언어</translation>
@@ -1651,6 +1650,7 @@
 <translation id="2734760316755174687"><ph name="SITE_GROUP_NAME" /> 그룹에 있는 사이트의 권한도 초기화됩니다.</translation>
 <translation id="2735712963799620190">일정</translation>
 <translation id="2737363922397526254">접기...</translation>
+<translation id="2737916598897808047"><ph name="APP_NAME" /> 앱이 <ph name="TARGET_NAME" /> 사이트와 내 화면의 콘텐츠를 공유하려고 합니다.</translation>
 <translation id="2738030019664645674">사이트에서 기기에 설치된 글꼴을 사용할 수 없게 함</translation>
 <translation id="2738771556149464852">만료:</translation>
 <translation id="2739191690716947896">디버그</translation>
@@ -4718,7 +4718,6 @@
 <translation id="6136114942382973861">다운로드바 닫기</translation>
 <translation id="6136287496450963112">보안 키가 PIN으로 보호되어 있지 않습니다. 지문을 관리하려면 먼저 PIN을 만드세요.</translation>
 <translation id="6138680304137685902">SHA-384를 포함한 X9.62 ECDSA 서명</translation>
-<translation id="6138774640412545950">"<ph name="APP_NAME" />" 확장 프로그램이 화면 내용을 <ph name="TARGET_NAME" /> 웹사이트와 공유하려고 합니다.</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, 네트워크 없음</translation>
 <translation id="6141988275892716286">다운로드 확인</translation>
 <translation id="6143186082490678276">도움말 보기</translation>
@@ -6624,6 +6623,7 @@
 <translation id="8189750580333936930">개인정보 보호 샌드박스</translation>
 <translation id="8190193592390505034"><ph name="PROVIDER_NAME" />에 연결 중</translation>
 <translation id="8191230140820435481">앱, 확장 프로그램 및 테마 관리</translation>
+<translation id="8192944472786724289"><ph name="APP_NAME" /> 앱이 내 화면의 콘텐츠를 공유하려고 합니다.</translation>
 <translation id="8195027750202970175">디스크에서 차지하는 용량</translation>
 <translation id="8198323535106903877">앱 <ph name="NUMBER_OF_APPS" />개는 자동으로 설치됩니다</translation>
 <translation id="8198456017687137612">탭 전송 중</translation>

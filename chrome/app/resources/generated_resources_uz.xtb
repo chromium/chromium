@@ -761,7 +761,6 @@ xizmatlarini sizga moslashtirish maqsadlarida foydalanishi mumkin. Bu ruxsatni m
 <translation id="1795214765651529549">Klassik mavzu ishlatilsin</translation>
 <translation id="1796588414813960292">Ovozdan foydalanadigan funksiyalar ishlamaydi</translation>
 <translation id="1799071797295057738">“<ph name="EXTENSION_NAME" />” kengaytmasi avtomatik o‘chirib qo‘yildi.</translation>
-<translation id="1800973090344019061">“<ph name="APP_NAME" />” kengaytmasi ekraningiz kontentini ulashmoqchi.</translation>
 <translation id="1802624026913571222">Muqova yopilganda uyqu rejimiga oʻtish</translation>
 <translation id="1802687198411089702">Sahifa javob bermayapti. Server javobini kutishingiz yoki sahifani tark etishingiz mumkin.</translation>
 <translation id="1803531841600994172">Tarjima qilinadigan til</translation>
@@ -1639,6 +1638,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="2734760316755174687"><ph name="SITE_GROUP_NAME" /> guruhidagi saytlarda ham barcha huquqlar tiklanadi</translation>
 <translation id="2735712963799620190">Jadval</translation>
 <translation id="2737363922397526254">Yig‘ish...</translation>
+<translation id="2737916598897808047"><ph name="APP_NAME" /> ilovasi <ph name="TARGET_NAME" /> saytiga ekraningiz kontentini ulashmoqchi.</translation>
 <translation id="2738030019664645674">Saytlarga qurilmangizga oʻrnatilgan shriftlardan foydalanish taqiqlansin</translation>
 <translation id="2738771556149464852">Bundan kechiktirmasdan</translation>
 <translation id="2739191690716947896">Nosozliklarni ko‘rib chiqish</translation>
@@ -4709,7 +4709,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6136114942382973861">Yuklanmalar panelini yopish</translation>
 <translation id="6136287496450963112">Elektron kalit PIN kod bilan himoyalanmagan. Barmoq izlarini boshqarish uchun avval PIN kod yarating.</translation>
 <translation id="6138680304137685902">SHA-384 algoritmli X9.62 ECDSA imzosi</translation>
-<translation id="6138774640412545950">“<ph name="APP_NAME" />” kengaytmasi ekraningiz kontentini <ph name="TARGET_NAME" /> saytiga ulashmoqchi.</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, tarmoq topilmadi</translation>
 <translation id="6141988275892716286">Yuklanishni tasdiqlang</translation>
 <translation id="6143186082490678276">Get Help</translation>
@@ -6613,6 +6612,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034"><ph name="PROVIDER_NAME" /> tarmog‘iga ulanilmoqda</translation>
 <translation id="8191230140820435481">Ilovalar, kengaytmalar va mavzularni boshqarish</translation>
+<translation id="8192944472786724289"><ph name="APP_NAME" /> ekraningiz kontentini ulashmoqchi</translation>
 <translation id="8195027750202970175">Diskdagi hajmi</translation>
 <translation id="8198323535106903877">Sizga bu <ph name="NUMBER_OF_APPS" /> ta ilovani o‘rnatib beramiz</translation>
 <translation id="8198456017687137612">Translatsiya varagʻi</translation>

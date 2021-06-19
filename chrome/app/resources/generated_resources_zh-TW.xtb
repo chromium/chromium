@@ -762,7 +762,6 @@
 <translation id="1795214765651529549">使用傳統版</translation>
 <translation id="1796588414813960292">需要使用音訊的功能將無法運作</translation>
 <translation id="1799071797295057738">系統已自動停用「<ph name="EXTENSION_NAME" />」擴充功能。</translation>
-<translation id="1800973090344019061">「<ph name="APP_NAME" />」擴充功能要求分享你的螢幕內容。</translation>
 <translation id="1802624026913571222">蓋上機蓋時進入休眠狀態</translation>
 <translation id="1802687198411089702">網頁無回應。你可以等待網頁回應，也可以離開網頁。</translation>
 <translation id="1803531841600994172">翻譯目標語言</translation>
@@ -1636,6 +1635,7 @@
 <translation id="2734760316755174687"><ph name="SITE_GROUP_NAME" /> 之下的網站也會進行重設。</translation>
 <translation id="2735712963799620190">設定時間</translation>
 <translation id="2737363922397526254">收合...</translation>
+<translation id="2737916598897808047">「<ph name="APP_NAME" />」要求與 <ph name="TARGET_NAME" /> 分享螢幕內容。</translation>
 <translation id="2738030019664645674">禁止網站使用裝置上安裝的字型</translation>
 <translation id="2738771556149464852">此日期之前：</translation>
 <translation id="2739191690716947896">偵錯</translation>
@@ -4704,7 +4704,6 @@
 <translation id="6136114942382973861">關閉下載內容列</translation>
 <translation id="6136287496450963112">你的安全金鑰未設定 PIN 碼保護，如要管理指紋，請先建立 PIN 碼。</translation>
 <translation id="6138680304137685902">使用 SHA-384 的 X9.62 ECDSA 簽章</translation>
-<translation id="6138774640412545950">「<ph name="APP_NAME" />」擴充功能要求與 <ph name="TARGET_NAME" /> 分享你的螢幕內容。</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />，沒有網路連線</translation>
 <translation id="6141988275892716286">確認下載</translation>
 <translation id="6143186082490678276">取得說明</translation>
@@ -6609,6 +6608,7 @@
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034">正在連線至 <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">管理你的應用程式、擴充功能和主題</translation>
+<translation id="8192944472786724289">「<ph name="APP_NAME" />」要求分享螢幕內容。</translation>
 <translation id="8195027750202970175">佔磁碟容量</translation>
 <translation id="8198323535106903877">系統將為你安裝這 <ph name="NUMBER_OF_APPS" /> 個應用程式</translation>
 <translation id="8198456017687137612">正在投放分頁</translation>

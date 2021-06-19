@@ -759,7 +759,6 @@
 <translation id="1795214765651529549">क्लासिक प्रयोग गर्नुहोस्</translation>
 <translation id="1796588414813960292">जुन सुविधा चल्न ध्वनि चाहिन्छ ती सुविधाले काम गर्ने छैनन्</translation>
 <translation id="1799071797295057738">विस्तार "<ph name="EXTENSION_NAME" />" लाई स्वत: असक्षम गरियो।</translation>
-<translation id="1800973090344019061">"<ph name="APP_NAME" />" नामक एक्स्टेन्सन तपाईंको स्क्रिनमा देखिएका सामग्री सेयर गर्न चाहन्छ।</translation>
 <translation id="1802624026913571222">कभर बन्द गरिएको बेला शयन अवस्थामा लानुहोस्</translation>
 <translation id="1802687198411089702">उक्त पृष्ठ चलिरहेको छैन। तपाईं प्रतीक्षा गर्न वा पृष्ठबाट बाहिरिन सक्नुहुन्छ।</translation>
 <translation id="1803531841600994172">अनुवाद गरिनु पर्ने भाषा</translation>
@@ -1633,6 +1632,7 @@
 <translation id="2734760316755174687"><ph name="SITE_GROUP_NAME" /> अन्तर्गतका साइटहरूलाई पनि रिसेट गरिने छ।</translation>
 <translation id="2735712963799620190">समय तालिका</translation>
 <translation id="2737363922397526254">मासिनु...</translation>
+<translation id="2737916598897808047"><ph name="APP_NAME" /> तपाईंको डिभाइसको स्क्रिनमा भएको सामग्री <ph name="TARGET_NAME" /> सँग सेयर गर्न चाहन्छ।</translation>
 <translation id="2738030019664645674">साइटहरूलाई मेरो यन्त्रमा इन्स्टल गरिएका फन्ट प्रयोग गर्न नदिइयोस्</translation>
 <translation id="2738771556149464852">पछि होइन</translation>
 <translation id="2739191690716947896">डिबग गर्नुहोस्</translation>
@@ -4700,7 +4700,6 @@
 <translation id="6136114942382973861">डाउनलोडहरूको पट्टी बन्द गर्नुहोस्</translation>
 <translation id="6136287496450963112">तपाईंको सुरक्षा साँचो PIN प्रयोग गरी सुरक्षित गरिएको छैन। फिंगरप्रिन्ट व्यवस्थापन गर्न सर्वप्रथम PIN बनाउनुहोस्।</translation>
 <translation id="6138680304137685902">SHA-384 सहितको X9.62 ECDSA हस्ताक्षर</translation>
-<translation id="6138774640412545950">"<ph name="APP_NAME" />" नामक एक्स्टेन्सन तपाईंको स्क्रिनमा देखिएका सामग्री <ph name="TARGET_NAME" /> सँग सेयर गर्न चाहन्छ।</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, नेटवर्क छैन</translation>
 <translation id="6141988275892716286">डाउनलोड गर्ने पुष्टि गर्नुहोस्</translation>
 <translation id="6143186082490678276">मद्दत प्राप्त गर्नुहोस्</translation>
@@ -6605,6 +6604,7 @@
 <translation id="8189750580333936930">प्राइभेसी स्यान्डबक्स</translation>
 <translation id="8190193592390505034"><ph name="PROVIDER_NAME" /> मा जोडिदैं</translation>
 <translation id="8191230140820435481">आफ्नो एप्स, एक्स्टेन्सनहरू, र थिमहरूलाई व्यवस्थित गर्नुहोस्</translation>
+<translation id="8192944472786724289"><ph name="APP_NAME" /> तपाईंको डिभाइसको स्क्रिनमा भएको सामग्री सेयर गर्न चाहन्छ।</translation>
 <translation id="8195027750202970175">डिस्कमा फाइलको आकार</translation>
 <translation id="8198323535106903877">हामी तपाईंको एपमा ती <ph name="NUMBER_OF_APPS" /> एपहरू इन्स्टल गर्ने छौँ</translation>
 <translation id="8198456017687137612">ट्याब कास्ट गरिँदै छ</translation>

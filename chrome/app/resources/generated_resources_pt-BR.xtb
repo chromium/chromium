@@ -774,7 +774,6 @@
 <translation id="1795214765651529549">Usar "Clássico"</translation>
 <translation id="1796588414813960292">Os recursos que precisam reproduzir sons não funcionarão</translation>
 <translation id="1799071797295057738">A extensão "<ph name="EXTENSION_NAME" />" foi desativada automaticamente.</translation>
-<translation id="1800973090344019061">A extensão <ph name="APP_NAME" /> quer compartilhar o conteúdo da sua tela.</translation>
 <translation id="1802624026913571222">Suspender quando a capa for fechada</translation>
 <translation id="1802687198411089702">A página não está respondendo. Você pode esperar até que ele volte a responder ou sair.</translation>
 <translation id="1803531841600994172">Idioma de destino</translation>
@@ -1652,6 +1651,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="2734760316755174687">Os sites de <ph name="SITE_GROUP_NAME" /> também serão redefinidos.</translation>
 <translation id="2735712963799620190">Programar</translation>
 <translation id="2737363922397526254">Recolher...</translation>
+<translation id="2737916598897808047">O app <ph name="APP_NAME" /> quer compartilhar o conteúdo da sua tela com <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">Não permitir que sites usem as fontes instaladas no dispositivo</translation>
 <translation id="2738771556149464852">Não depois</translation>
 <translation id="2739191690716947896">Depurar</translation>
@@ -4724,7 +4724,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6136114942382973861">Fechar barra de downloads</translation>
 <translation id="6136287496450963112">Sua chave de segurança não está protegida com um PIN. Crie um PIN para gerenciar impressões digitais.</translation>
 <translation id="6138680304137685902">Assinatura X9.62 ECDSA com SHA-384</translation>
-<translation id="6138774640412545950">A extensão <ph name="APP_NAME" /> quer compartilhar o conteúdo da sua tela com <ph name="TARGET_NAME" />.</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, sem rede</translation>
 <translation id="6141988275892716286">Confirmar download</translation>
 <translation id="6143186082490678276">Receber ajuda</translation>
@@ -6630,6 +6629,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8189750580333936930">Sandbox de privacidade</translation>
 <translation id="8190193592390505034">Conectando-se a <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Gerenciar seus aplicativos, extensões e temas</translation>
+<translation id="8192944472786724289">O app <ph name="APP_NAME" /> quer compartilhar o conteúdo da sua tela.</translation>
 <translation id="8195027750202970175">Tamanho em disco</translation>
 <translation id="8198323535106903877">Instalaremos estes <ph name="NUMBER_OF_APPS" /> apps para você</translation>
 <translation id="8198456017687137612">Transmitindo guia</translation>

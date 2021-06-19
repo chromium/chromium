@@ -769,7 +769,6 @@
 <translation id="1795214765651529549">Използване на класическата тема</translation>
 <translation id="1796588414813960292">Функциите, за които е нужен звук, няма да работят</translation>
 <translation id="1799071797295057738">Разширението „<ph name="EXTENSION_NAME" />“ бе деактивирано автоматично.</translation>
-<translation id="1800973090344019061">Разширението „<ph name="APP_NAME" />“ иска да сподели съдържанието на екрана ви.</translation>
 <translation id="1802624026913571222">Преминаване в спящ режим при затваряне на капака</translation>
 <translation id="1802687198411089702">Страницата не реагира. Можете да изчакате или да я затворите.</translation>
 <translation id="1803531841600994172">Целеви език</translation>
@@ -1647,6 +1646,7 @@
 <translation id="2734760316755174687">Разрешенията за сайтовете от „<ph name="SITE_GROUP_NAME" />“ също ще бъдат нулирани.</translation>
 <translation id="2735712963799620190">График</translation>
 <translation id="2737363922397526254">Свиване...</translation>
+<translation id="2737916598897808047"><ph name="APP_NAME" /> иска да сподели съдържанието на екрана ви с(ъс) <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">Да не се разрешава на сайтовете да използват шрифтовете, инсталирани на устройството ви</translation>
 <translation id="2738771556149464852">Не след</translation>
 <translation id="2739191690716947896">Отстраняване на грешки</translation>
@@ -4719,7 +4719,6 @@
 <translation id="6136114942382973861">Затваряне на лентата на изтеглянето</translation>
 <translation id="6136287496450963112">Ключът ви за сигурност не е защитен с ПИН. За да управлявате отпечатъците, първо създайте ПИН.</translation>
 <translation id="6138680304137685902">Подпис по X9.62 ECDSA с SHA-384</translation>
-<translation id="6138774640412545950">Разширението „<ph name="APP_NAME" />“ иска да сподели съдържанието на екрана ви с(ъс) <ph name="TARGET_NAME" />.</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" /> – няма мрежа</translation>
 <translation id="6141988275892716286">Потвърждаване на изтеглянето</translation>
 <translation id="6143186082490678276">Получаване на помощ</translation>
@@ -6625,6 +6624,7 @@
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034">Осъществява се връзка с: <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Управление на вашите приложения, разширения и теми</translation>
+<translation id="8192944472786724289"><ph name="APP_NAME" /> иска да сподели съдържанието на екрана ви.</translation>
 <translation id="8195027750202970175">Размер върху диска</translation>
 <translation id="8198323535106903877">Ще инсталираме тези <ph name="NUMBER_OF_APPS" /> приложения за вас</translation>
 <translation id="8198456017687137612">Разделът се предава</translation>

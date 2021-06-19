@@ -774,7 +774,6 @@
 <translation id="1795214765651529549">Brug Klassisk</translation>
 <translation id="1796588414813960292">Funktioner, der skal bruge lyd, fungerer ikke</translation>
 <translation id="1799071797295057738">Udvidelsen "<ph name="EXTENSION_NAME" />" blev automatisk deaktiveret.</translation>
-<translation id="1800973090344019061">Udvidelsen "<ph name="APP_NAME" />" vil gerne dele indholdet på din skærm.</translation>
 <translation id="1802624026913571222">Gå i dvale, når etuiet er lukket</translation>
 <translation id="1802687198411089702">Siden svarer ikke. Du kan vente på den eller afslutte.</translation>
 <translation id="1803531841600994172">Sprog, der skal oversættes til</translation>
@@ -1652,6 +1651,7 @@ og tryk på Ctrl+Alt+lysstyrke ned for at zoome ud.</translation>
 <translation id="2734760316755174687">Websites i <ph name="SITE_GROUP_NAME" /> bliver også nulstillet.</translation>
 <translation id="2735712963799620190">Tidsplan</translation>
 <translation id="2737363922397526254">Skjul...</translation>
+<translation id="2737916598897808047"><ph name="APP_NAME" /> vil gerne dele indholdet på din skærm med <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">Tillad ikke, at websites bruger de skrifttyper, der er installeret på din enhed</translation>
 <translation id="2738771556149464852">Ikke efter</translation>
 <translation id="2739191690716947896">Fejlretning</translation>
@@ -4722,7 +4722,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6136114942382973861">Luk downloadlinje</translation>
 <translation id="6136287496450963112">Din sikkerhedsnøgle er ikke beskyttet med en pinkode. Du skal oprette en pinkode, før du kan administrere fingeraftryk.</translation>
 <translation id="6138680304137685902">X9.62 ECDSA-signatur med SHA-384</translation>
-<translation id="6138774640412545950">Udvidelsen "<ph name="APP_NAME" />" vil gerne dele indholdet på din skærm med <ph name="TARGET_NAME" />.</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, intet netværk</translation>
 <translation id="6141988275892716286">Bekræft download</translation>
 <translation id="6143186082490678276">Få hjælp</translation>
@@ -6627,6 +6626,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034">Forbinder til <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Administrere dine apps, udvidelser og temaer</translation>
+<translation id="8192944472786724289"><ph name="APP_NAME" /> vil gerne dele indholdet på din skærm.</translation>
 <translation id="8195027750202970175">Filstørrelse</translation>
 <translation id="8198323535106903877">Vi installerer disse <ph name="NUMBER_OF_APPS" /> apps til dig</translation>
 <translation id="8198456017687137612">Caster fane</translation>

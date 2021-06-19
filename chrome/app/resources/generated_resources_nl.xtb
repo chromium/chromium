@@ -762,7 +762,6 @@
 <translation id="1795214765651529549">Klassiek thema gebruiken</translation>
 <translation id="1796588414813960292">Functies die afhankelijk zijn van geluid, werken niet</translation>
 <translation id="1799071797295057738">De extensie <ph name="EXTENSION_NAME" /> is automatisch uitgezet.</translation>
-<translation id="1800973090344019061">De extensie <ph name="APP_NAME" /> wil de content van je scherm delen.</translation>
 <translation id="1802624026913571222">Slaapstand als de klep wordt gesloten</translation>
 <translation id="1802687198411089702">De pagina reageert niet. Je kunt wachten tot deze reageert of de pagina afsluiten.</translation>
 <translation id="1803531841600994172">Taal om naartoe te vertalen</translation>
@@ -1635,6 +1634,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2734760316755174687">Sites onder <ph name="SITE_GROUP_NAME" /> worden ook gereset.</translation>
 <translation id="2735712963799620190">Schema</translation>
 <translation id="2737363922397526254">Samenvouwen...</translation>
+<translation id="2737916598897808047"><ph name="APP_NAME" /> wil de content van je scherm delen met <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">Niet toestaan dat sites lettertypen gebruiken die zijn geïnstalleerd op je apparaat</translation>
 <translation id="2738771556149464852">Niet na</translation>
 <translation id="2739191690716947896">Foutopsporing</translation>
@@ -4702,7 +4702,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="6136114942382973861">Downloadbalk sluiten</translation>
 <translation id="6136287496450963112">Je beveiligingssleutel is niet beveiligd met een pincode. Maak eerst een pincode als je vingerafdrukken wilt beheren.</translation>
 <translation id="6138680304137685902">X9.62 ECDSA-handtekening met SHA-384</translation>
-<translation id="6138774640412545950">De extensie <ph name="APP_NAME" /> wil de content van je scherm delen met <ph name="TARGET_NAME" />.</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, geen netwerk</translation>
 <translation id="6141988275892716286">Download bevestigen</translation>
 <translation id="6143186082490678276">Hulp nodig?</translation>
@@ -6606,6 +6605,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034">Verbinding maken met <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Je apps, extensies en thema's beheren</translation>
+<translation id="8192944472786724289"><ph name="APP_NAME" /> wil de content van je scherm delen.</translation>
 <translation id="8195027750202970175">Grootte op schijf</translation>
 <translation id="8198323535106903877">We installeren deze <ph name="NUMBER_OF_APPS" /> apps voor je</translation>
 <translation id="8198456017687137612">Tabblad casten</translation>

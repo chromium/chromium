@@ -764,7 +764,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1795214765651529549">Użyj motywu klasycznego</translation>
 <translation id="1796588414813960292">Funkcje, które wymagają dźwięku, nie będą działać</translation>
 <translation id="1799071797295057738">Rozszerzenie „<ph name="EXTENSION_NAME" />” zostało automatycznie wyłączone.</translation>
-<translation id="1800973090344019061">Rozszerzenie „<ph name="APP_NAME" />” chce udostępnić zawartość Twojego ekranu.</translation>
 <translation id="1802624026913571222">Uśpij po zamknięciu pokrywy</translation>
 <translation id="1802687198411089702">Strona nie odpowiada. Możesz zaczekać lub ją zamknąć.</translation>
 <translation id="1803531841600994172">Język docelowy tłumaczenia</translation>
@@ -1633,6 +1632,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2734760316755174687">Witryny z grupy <ph name="SITE_GROUP_NAME" /> też zostaną zresetowane.</translation>
 <translation id="2735712963799620190">Harmonogram</translation>
 <translation id="2737363922397526254">Zwiń...</translation>
+<translation id="2737916598897808047"><ph name="APP_NAME" /> chce udostępnić zawartość ekranu stronie <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">Nie zezwalaj witrynom na używanie czcionek zainstalowanych na urządzeniu</translation>
 <translation id="2738771556149464852">Nie później niż</translation>
 <translation id="2739191690716947896">Debugowanie</translation>
@@ -4702,7 +4702,6 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="6136114942382973861">Zamknij pasek pobranych plików</translation>
 <translation id="6136287496450963112">Klucz bezpieczeństwa nie jest chroniony kodem PIN. Aby zarządzać odciskami palców, najpierw utwórz kod PIN.</translation>
 <translation id="6138680304137685902">Podpis X9.62 ECDSA z SHA-384</translation>
-<translation id="6138774640412545950">Rozszerzenie „<ph name="APP_NAME" />” chce udostępnić zawartość Twojego ekranu stronie <ph name="TARGET_NAME" />.</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, brak sieci</translation>
 <translation id="6141988275892716286">Potwierdź pobranie</translation>
 <translation id="6143186082490678276">Uzyskaj pomoc</translation>
@@ -6605,6 +6604,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8189750580333936930">Piaskownica prywatności</translation>
 <translation id="8190193592390505034">Łączenie z siecią <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Zarządzanie Twoimi aplikacjami, rozszerzeniami i motywami</translation>
+<translation id="8192944472786724289"><ph name="APP_NAME" /> chce udostępnić zawartość Twojego ekranu.</translation>
 <translation id="8195027750202970175">Rozmiar na dysku</translation>
 <translation id="8198323535106903877">Zainstalujemy dla Ciebie te aplikacje (<ph name="NUMBER_OF_APPS" />)</translation>
 <translation id="8198456017687137612">Przesyłam kartę</translation>

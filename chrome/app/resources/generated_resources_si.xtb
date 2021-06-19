@@ -762,7 +762,6 @@
 <translation id="1795214765651529549">පැරණි එක භාවිත කරන්න</translation>
 <translation id="1796588414813960292">හඬ අවශ්‍ය විශේෂාංග ක්‍රියා නොකරනු ඇත</translation>
 <translation id="1799071797295057738">"<ph name="EXTENSION_NAME" />" දිගුව ස්වයංක්‍රීයව අබල කෙරිණි.</translation>
-<translation id="1800973090344019061">"<ph name="APP_NAME" />" දිගුවට ඔබගේ තිරයේ අන්තර්ගතය බෙදා ගැනීමට අවශ්‍යයි.</translation>
 <translation id="1802624026913571222">ආවරණය වැසුණු විට නිදා ගන්න</translation>
 <translation id="1802687198411089702">පිටුව ප්‍රතිචාර නොදක්වයි. ඔබට එය සඳහා රැඳී සිටීමට හෝ පිටවීමට හැකිය.</translation>
 <translation id="1803531841600994172">පරිවර්තන කළ යුතු භාෂාව</translation>
@@ -1639,6 +1638,7 @@
 <translation id="2734760316755174687"><ph name="SITE_GROUP_NAME" /> යටතේ ඇති අඩවිත් යළි පිහිටුවනු ලැබේ.</translation>
 <translation id="2735712963799620190">කාල සටහන</translation>
 <translation id="2737363922397526254">හකුළන්න...</translation>
+<translation id="2737916598897808047"><ph name="APP_NAME" /> හට ඔබගේ තිරයේ තොරතුරු <ph name="TARGET_NAME" /> සමග බෙදා ගැනීමට අවශ්‍යයි.</translation>
 <translation id="2738030019664645674">ඔබගේ උපාංගයේ ස්ථාපනය කර ඇති ෆොන්ට භාවිත කිරීමට අඩවිවලට ඉඩ නොදෙන්න</translation>
 <translation id="2738771556149464852">පසුව නොවේ</translation>
 <translation id="2739191690716947896">නිදොස් කිරීම</translation>
@@ -4710,7 +4710,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6136114942382973861">බාගැනීම් තීරුව වසන්න</translation>
 <translation id="6136287496450963112">ඔබගේ ආරක්ෂක යතුර PIN අංකයකින් ආරක්ෂා නොකෙරේ. ඇඟිලි සලකුණු කළමනාකරණය කිරීමට, පළමුව PIN එකක් තනන්න.</translation>
 <translation id="6138680304137685902">SHA-384 සහිත X9.62 ECDSA අත්සන</translation>
-<translation id="6138774640412545950">"<ph name="APP_NAME" />" දිගුවට ඔබගේ තිරයේ අන්තර්ගතය <ph name="TARGET_NAME" /> සමග බෙදා ගැනීමට අවශ්‍යයි.</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, ජාලයක් නැත</translation>
 <translation id="6141988275892716286">බාගැනීම තහවුරු කරන්න</translation>
 <translation id="6143186082490678276">උදව් ලබන්න</translation>
@@ -6611,6 +6610,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8189750580333936930">රහස්‍යතා සෑන්ඩ්බොක්ස්</translation>
 <translation id="8190193592390505034"><ph name="PROVIDER_NAME" /> වෙත සබඳ වෙමින්</translation>
 <translation id="8191230140820435481">ඔබගේ යෙදුම්, දිගු සහ තේමා පාලනය කරන්න</translation>
+<translation id="8192944472786724289"><ph name="APP_NAME" /> හට ඔබගේ තිරයේ තොරතුරු බෙදා ගැනීමට අවශ්‍යයි.</translation>
 <translation id="8195027750202970175">තැටිය මත තරම</translation>
 <translation id="8198323535106903877">ඔබ වෙනුවෙන් එම <ph name="NUMBER_OF_APPS" /> යෙදුම් අපි ස්ථාපනය කරන් නම්</translation>
 <translation id="8198456017687137612">විකාශ ටැබය</translation>

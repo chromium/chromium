@@ -762,7 +762,6 @@
 <translation id="1795214765651529549">კლასიკურის გამოყენება</translation>
 <translation id="1796588414813960292">ფუნქციები, რომლებიც ხმას საჭიროებს, არ იმუშავებს</translation>
 <translation id="1799071797295057738">გაფართოება „<ph name="EXTENSION_NAME" />“ ავტომატურად გაითიშა.</translation>
-<translation id="1800973090344019061">გაფართოებას „<ph name="APP_NAME" />“ სურს თქვენს ეკრანზე არსებული კონტენტის გაზიარება.</translation>
 <translation id="1802624026913571222">დაძინება თავსახურის დახურვისას</translation>
 <translation id="1802687198411089702">გვერდი არ რეაგირებს. შეგიძლიათ დაელოდოთ ან გამოხვიდეთ.</translation>
 <translation id="1803531841600994172">ენა, რომელზეც უნდა ითარგმნოს</translation>
@@ -1636,6 +1635,7 @@
 <translation id="2734760316755174687">გადაყენებული იქნება „<ph name="SITE_GROUP_NAME" />“-ის ვებსაიტების ნებართვებიც.</translation>
 <translation id="2735712963799620190">განრიგი</translation>
 <translation id="2737363922397526254">აკეცვა…</translation>
+<translation id="2737916598897808047"><ph name="APP_NAME" />-ს სურს, გაუზიაროს თქვენს ეკრანზე არსებული კონტენტი <ph name="TARGET_NAME" />-ს.</translation>
 <translation id="2738030019664645674">საიტებისთვის თქვენს მოწყობილობაზე არსებული შრიფტების გამოყენების აკრძალვა</translation>
 <translation id="2738771556149464852">არა შემდეგ</translation>
 <translation id="2739191690716947896">გამართვა</translation>
@@ -4705,7 +4705,6 @@
 <translation id="6136114942382973861">ჩამოტვირთვების ზოლის დახურვა</translation>
 <translation id="6136287496450963112">თქვენი უსაფრთხოების გასაღები არ არის დაცული PIN-კოდით. თითის ანაბეჭდების სამართავად, პირველ რიგში, შექმენით PIN-კოდი.</translation>
 <translation id="6138680304137685902">X9.62 ECDSA ხელმოწერა SHA-384-ით</translation>
-<translation id="6138774640412545950">გაფართოებას „<ph name="APP_NAME" />“ სურს თქვენს ეკრანზე არსებული კონტენტის გაზიარება <ph name="TARGET_NAME" />-თან.</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, ქსელი არ არის</translation>
 <translation id="6141988275892716286">დაადასტურეთ ჩამოტვირთვა</translation>
 <translation id="6143186082490678276">დახმარების მიღება</translation>
@@ -6608,6 +6607,7 @@
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034"><ph name="PROVIDER_NAME" />-თან დაკავშირება</translation>
 <translation id="8191230140820435481">მართეთ თქვენი პროგრამები, გაფართოებები, და თემები</translation>
+<translation id="8192944472786724289"><ph name="APP_NAME" />-ს სურს თქვენს ეკრანზე არსებული კონტენტის გაზიარება.</translation>
 <translation id="8195027750202970175">ზომა დისკზე</translation>
 <translation id="8198323535106903877">ეს <ph name="NUMBER_OF_APPS" /> აპი დაინსტალირდება თქვენთვის</translation>
 <translation id="8198456017687137612">მიმდინარეობს ჩანართის ტრანსლირება</translation>

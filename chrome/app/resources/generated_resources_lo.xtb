@@ -771,7 +771,6 @@
 <translation id="1795214765651529549">ໃຊ້ແບບຄລາດສິກ</translation>
 <translation id="1796588414813960292">ຄຸນສົມບັດທີ່ຕ້ອງການສຽງຈະໃຊ້ບໍ່ໄດ້</translation>
 <translation id="1799071797295057738">ສ່ວນຂະຫຍາຍ "<ph name="EXTENSION_NAME" />" ຖືກປິດນຳໃຊ້ໂດຍອັດຕະໂນມັດ.</translation>
-<translation id="1800973090344019061">ສ່ວນຂະຫຍາຍ "<ph name="APP_NAME" />" ຕ້ອງການແບ່ງປັນເນື້ອຫາໜ້າຈໍຂອງທ່ານ.</translation>
 <translation id="1802624026913571222">ພັກເຄື່ອງເມື່ອປິດຝາ</translation>
 <translation id="1802687198411089702">ໜ້ານີ້ບໍ່ຕອບສະໜອງ. ທ່ານສາມາດລໍຖ້າມັນ ຫຼື ອອກໄດ້.</translation>
 <translation id="1803531841600994172">ພາສາທີ່ຈະແປເປັນ</translation>
@@ -1648,6 +1647,7 @@
 <translation id="2734760316755174687">ເວັບໄຊພາຍໃຕ້ <ph name="SITE_GROUP_NAME" /> ຈະຖືກຣີເຊັດເຊັ່ນກັນ.</translation>
 <translation id="2735712963799620190">ກຳນົດເວລາ</translation>
 <translation id="2737363922397526254">ຍຸບລົງ...</translation>
+<translation id="2737916598897808047"><ph name="APP_NAME" /> ຕ້ອງການແບ່ງປັນເນື້ອຫາໜ້າຈໍຂອງທ່ານນຳ <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">ບໍ່ອະນຸຍາດໃຫ້ເວັບໄຊໃຊ້ຟອນທີ່ຕິດຕັ້ງຢູ່ອຸປະກອນຂອງທ່ານໄດ້</translation>
 <translation id="2738771556149464852">ບໍ່ຫຼັງຈາກ</translation>
 <translation id="2739191690716947896">ແກ້ໄຂບັນຫາ</translation>
@@ -4718,7 +4718,6 @@
 <translation id="6136114942382973861">ປິດແຖບການດາວໂຫຼດ</translation>
 <translation id="6136287496450963112">ກະແຈຄວາມປອດໄພຂອງທ່ານບໍ່ໄດ້ຮັບການປົກປ້ອງດ້ວຍ PIN. ເພື່ອຈັດການລາຍນິ້ວມື, ໃຫ້ສ້າງ PIN ກ່ອນ.</translation>
 <translation id="6138680304137685902">ລາຍເຊັນ X9.62 ECDSA ທີ່ມີ SHA-384</translation>
-<translation id="6138774640412545950">ສ່ວນຂະຫຍາຍ "<ph name="APP_NAME" />" ຕ້ອງການແບ່ງປັນເນື້ອຫາໜ້າຈໍຂອງທ່ານກັບ <ph name="TARGET_NAME" />.</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, ບໍ່ມີເຄືອຂ່າຍ</translation>
 <translation id="6141988275892716286">ຢືນຢັນການດາວໂຫຼດ</translation>
 <translation id="6143186082490678276">ເອົາ​ການ​ຊ່ວຍ​ເຫຼືອ</translation>
@@ -6622,6 +6621,7 @@
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034">ກໍາລັງ​ເຊື່ອມ​ຕໍ່​ກັບ <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">ຈັດການແອັບ, ສ່ວນຂະຫຍາຍ, ແລະເທມຂອງທ່ານ</translation>
+<translation id="8192944472786724289"><ph name="APP_NAME" /> ຕ້ອງການແບ່ງປັນເນື້ອຫາໜ້າຈໍຂອງທ່ານ.</translation>
 <translation id="8195027750202970175">ຂະໜາດໃນດິສ</translation>
 <translation id="8198323535106903877">ພວກເຮົາຈະຕິດຕັ້ງແອັບ <ph name="NUMBER_OF_APPS" /> ເຫຼົ່ານີ້ໃຫ້ທ່ານ</translation>
 <translation id="8198456017687137612">ແຖບການສົ່ງສັນຍານ</translation>

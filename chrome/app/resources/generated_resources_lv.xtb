@@ -764,7 +764,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="1795214765651529549">Izmantot klasisko motīvu</translation>
 <translation id="1796588414813960292">Funkcijas, kurām nepieciešama skaņa, nedarbosies</translation>
 <translation id="1799071797295057738">Paplašinājums “<ph name="EXTENSION_NAME" />” tika automātiski atspējots.</translation>
-<translation id="1800973090344019061">Paplašinājums “<ph name="APP_NAME" />” pieprasa atļauju kopīgot jūsu ekrāna saturu.</translation>
 <translation id="1802624026913571222">Ieslēgt miega režīmu, aizverot vāku</translation>
 <translation id="1802687198411089702">Lapa nereaģē. Varat uzgaidīt vai iziet no lapas.</translation>
 <translation id="1803531841600994172">Valoda, kurā jātulko saturs</translation>
@@ -1638,6 +1637,7 @@ bet, lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas tausti
 <translation id="2734760316755174687">Vietnes grupā <ph name="SITE_GROUP_NAME" /> arī tiks atiestatītas.</translation>
 <translation id="2735712963799620190">Grafiks</translation>
 <translation id="2737363922397526254">Sakļaut...</translation>
+<translation id="2737916598897808047"><ph name="APP_NAME" /> vēlas kopīgot jūsu ekrāna saturu ar vietni <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">Neļaut vietnēm izmantot jūsu ierīcē instalētos fontus</translation>
 <translation id="2738771556149464852">Nevis pēc</translation>
 <translation id="2739191690716947896">Atkļūdot</translation>
@@ -4707,7 +4707,6 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="6136114942382973861">Aizvērt lejupielāžu joslu</translation>
 <translation id="6136287496450963112">Jūsu drošības atslēga nav aizsargāta ar PIN kodu. Lai pārvaldītu pirkstu nospiedumus, vispirms izveidojiet PIN kodu.</translation>
 <translation id="6138680304137685902">X9.62 ECDSA paraksts ar SHA-384</translation>
-<translation id="6138774640412545950">Paplašinājums “<ph name="APP_NAME" />” pieprasa atļauju kopīgot jūsu ekrāna saturu ar vietni <ph name="TARGET_NAME" />.</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, nav tīkla</translation>
 <translation id="6141988275892716286">Lejupielādes apstiprināšana</translation>
 <translation id="6143186082490678276">Palīdzības saņemšana</translation>
@@ -6609,6 +6608,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8189750580333936930">Konfidencialitātes smilškaste</translation>
 <translation id="8190193592390505034">Savienojas ar <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Pārvaldīt jūsu lietotnes, paplašinājumus un motīvus</translation>
+<translation id="8192944472786724289"><ph name="APP_NAME" /> vēlas kopīgot jūsu ekrāna saturu.</translation>
 <translation id="8195027750202970175">Lielums diskā</translation>
 <translation id="8198323535106903877">Mēs instalēsim jums šīs <ph name="NUMBER_OF_APPS" /> lietotnes</translation>
 <translation id="8198456017687137612">Apraides cilne</translation>

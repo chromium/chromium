@@ -773,7 +773,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="1795214765651529549">Klasszikus téma használata</translation>
 <translation id="1796588414813960292">A hangot igénylő funkciók nem működnek majd</translation>
 <translation id="1799071797295057738">A(z) „<ph name="EXTENSION_NAME" />” bővítmény automatikusan letiltva.</translation>
-<translation id="1800973090344019061">A(z) „<ph name="APP_NAME" />” bővítmény szeretné megosztani a képernyő tartalmát.</translation>
 <translation id="1802624026913571222">Alvó mód bekapcsolása a képernyő lecsukásakor</translation>
 <translation id="1802687198411089702">Az oldal nem válaszol. Várakozhat tovább, vagy bezárhatja.</translation>
 <translation id="1803531841600994172">Fordítás célnyelve</translation>
@@ -1649,6 +1648,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2734760316755174687">A(z) <ph name="SITE_GROUP_NAME" /> csoportba tartozó webhelyek visszaállítása is megtörténik.</translation>
 <translation id="2735712963799620190">Ütemezés</translation>
 <translation id="2737363922397526254">Listanézet...</translation>
+<translation id="2737916598897808047">A(z) <ph name="APP_NAME" /> szeretné megosztani a képernyő tartalmát a következővel: <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">A webhelyek nem használhatják az eszközre telepített betűtípusokat</translation>
 <translation id="2738771556149464852">Ezután nem:</translation>
 <translation id="2739191690716947896">Hibakeresés</translation>
@@ -4720,7 +4720,6 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="6136114942382973861">A letöltéssáv bezárása</translation>
 <translation id="6136287496450963112">Biztonsági kulcsát nem védi PIN-kód. Ujjlenyomatok kezeléséhez előbb hozzon létre PIN-kódot.</translation>
 <translation id="6138680304137685902">X9.62 ECDSA aláírás a következővel: SHA-384</translation>
-<translation id="6138774640412545950">A(z) „<ph name="APP_NAME" />” bővítmény szeretné megosztani a képernyő tartalmát a következővel: <ph name="TARGET_NAME" />.</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, nincs hálózat</translation>
 <translation id="6141988275892716286">Letöltés megerősítése</translation>
 <translation id="6143186082490678276">Súgó</translation>
@@ -6625,6 +6624,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034">Csatlakozás a következő hálózathoz: <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Alkalmazások, bővítmények és témák kezelése</translation>
+<translation id="8192944472786724289">A(z) <ph name="APP_NAME" /> szeretné megosztani a képernyő tartalmát.</translation>
 <translation id="8195027750202970175">Lemezen elfoglalt méret</translation>
 <translation id="8198323535106903877">Telepítjük Önnek ezt a(z) <ph name="NUMBER_OF_APPS" /> alkalmazást</translation>
 <translation id="8198456017687137612">Lap átküldése…</translation>

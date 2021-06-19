@@ -759,7 +759,6 @@
 <translation id="1795214765651529549">使用经典主题背景</translation>
 <translation id="1796588414813960292">所有需要使用声音的功能都将无法正常运行</translation>
 <translation id="1799071797295057738">扩展程序“<ph name="EXTENSION_NAME" />”已被自动停用。</translation>
-<translation id="1800973090344019061">扩展程序“<ph name="APP_NAME" />”想分享您屏幕上的内容。</translation>
 <translation id="1802624026913571222">合盖后休眠</translation>
 <translation id="1802687198411089702">该页面没有响应。您可以继续等待，也可以退出。</translation>
 <translation id="1803531841600994172">翻译目标语言</translation>
@@ -1632,6 +1631,7 @@
 <translation id="2734760316755174687"><ph name="SITE_GROUP_NAME" /> 下的网站也会重置。</translation>
 <translation id="2735712963799620190">排定时间</translation>
 <translation id="2737363922397526254">收起...</translation>
+<translation id="2737916598897808047"><ph name="APP_NAME" />想与 <ph name="TARGET_NAME" /> 分享您屏幕上的内容。</translation>
 <translation id="2738030019664645674">不允许网站使用您设备上安装的字体</translation>
 <translation id="2738771556149464852">不晚于</translation>
 <translation id="2739191690716947896">调试</translation>
@@ -4700,7 +4700,6 @@
 <translation id="6136114942382973861">关闭下载内容栏</translation>
 <translation id="6136287496450963112">您尚未设置 PIN 码来保护您的安全密钥。若要管理指纹，请先创建一个 PIN 码。</translation>
 <translation id="6138680304137685902">采用 SHA-384 算法的 X9.62 ECDSA 签名</translation>
-<translation id="6138774640412545950">扩展程序“<ph name="APP_NAME" />”想与 <ph name="TARGET_NAME" /> 分享您屏幕上的内容。</translation>
 <translation id="6138894911715675297">“<ph name="NETWORK_TYPE" />”类型，没有可连接的网络</translation>
 <translation id="6141988275892716286">确认下载</translation>
 <translation id="6143186082490678276">获取帮助</translation>
@@ -6604,6 +6603,7 @@
 <translation id="8189750580333936930">隐私沙盒</translation>
 <translation id="8190193592390505034">正在连接到<ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">管理您的应用、扩展程序和主题背景</translation>
+<translation id="8192944472786724289"><ph name="APP_NAME" />想分享您屏幕上的内容。</translation>
 <translation id="8195027750202970175">占用的存储空间</translation>
 <translation id="8198323535106903877">我们将为您安装这 <ph name="NUMBER_OF_APPS" /> 款应用</translation>
 <translation id="8198456017687137612">正在投射标签页</translation>

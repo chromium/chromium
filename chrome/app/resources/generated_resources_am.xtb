@@ -770,7 +770,6 @@
 <translation id="1795214765651529549">የታወቀ ገጽታን ተጠቀም</translation>
 <translation id="1796588414813960292">ድምጽ የሚያስፈልጋቸው ባህሪዎች አይሰሩም</translation>
 <translation id="1799071797295057738">የ«<ph name="EXTENSION_NAME" />» ቅጥያ በራስ-ሰር ተሰናክሏል።</translation>
-<translation id="1800973090344019061">ቅጥያው «<ph name="APP_NAME" />» የማያ ገጽዎን ይዘቶች ማጋራት ይፈልጋል።</translation>
 <translation id="1802624026913571222">ክዳኑ ሲዘጋ ተኛ</translation>
 <translation id="1802687198411089702">ይህ ገጽ ምላሽ እየሰጠ አይደለም። እሱን መጠበቅ ወይም ትተው መውጣት ይችላል።</translation>
 <translation id="1803531841600994172">የሚተረጎምበት ቋንቋ</translation>
@@ -1645,6 +1644,7 @@
 <translation id="2734760316755174687">በ<ph name="SITE_GROUP_NAME" /> ስር ያሉ ጣቢያዎች እንዲሁም ዳግም ይጀመራሉ።</translation>
 <translation id="2735712963799620190">የጊዜ ሰሌዳ</translation>
 <translation id="2737363922397526254">ሰብስብ...</translation>
+<translation id="2737916598897808047"><ph name="APP_NAME" /> የማያ ገጽዎን ይዘቶች ለ<ph name="TARGET_NAME" /> ማጋራት ይፈልጋል።</translation>
 <translation id="2738030019664645674">ጣቢያዎች በእርስዎ መሣሪያ ላይ የተጫኑ ቅርጸ-ቁምፊዎችን እንዲጠቀሙ አይፍቀዱ</translation>
 <translation id="2738771556149464852">ከኋላ ያለሆነ</translation>
 <translation id="2739191690716947896">አርም</translation>
@@ -3591,7 +3591,7 @@
 <translation id="4879491255372875719">ራስ-ሰር (ነባሪ)</translation>
 <translation id="4880827082731008257">የፍለጋ ታሪክ</translation>
 <translation id="4881685975363383806">በሚቀጥለው ጊዜ አታስታውሰኝ</translation>
-<translation id="4881695831933465202">ክፈት</translation>
+<translation id="4881695831933465202">ክፍት የሚሆንባቸው</translation>
 <translation id="4882312758060467256">የዚህ ጣቢያ መዳረሻ አላቸው</translation>
 <translation id="4882831918239250449">ፍለጋን፣ ማስታወቂያዎችን እና ተጨማሪ ነገሮችን ግላዊነት ለማላበስ የእርስዎ የአሰሳ ታሪክ እንዴት ጥቅም ላይ እንደሚውል ይቆጣጠሩ</translation>
 <translation id="4882919381756638075">ጣቢያዎች አብዛኛው ጊዜ ማይክሮፎንዎን እንደ የቪዲዮ ውይይት ላሉ የመገናኛ ባህሪዎች ይጠቀሙበታል</translation>
@@ -4712,7 +4712,6 @@
 <translation id="6136114942382973861">የውርዶች አሞሌን ዝጋ</translation>
 <translation id="6136287496450963112">የእርስዎ ደህንነት ቁልፍ በፒን ጥበቃ እየተደረገለት አይደለም ያለው። የዲጂታል አሻራዎችን ለማቀናበር መጀመሪያ ፒን ይፍጠሩ።</translation>
 <translation id="6138680304137685902">የX9.62 ECDSA ፊርማ በSHA-384</translation>
-<translation id="6138774640412545950">ቅጥያው «<ph name="APP_NAME" />» የማያ ገጽዎን ይዘቶች ከ<ph name="TARGET_NAME" /> ጋር ማጋራት ይፈልጋል።</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />፣ ምንም አውታረ መረብ የለም</translation>
 <translation id="6141988275892716286">ማውረድ ያረጋግጡ</translation>
 <translation id="6143186082490678276">እገዛ ያግኙ</translation>
@@ -6622,6 +6621,7 @@ nil</translation>
 <translation id="8189750580333936930">የግላዊነት Sandbox</translation>
 <translation id="8190193592390505034">ከ<ph name="PROVIDER_NAME" /> ጋር በመገናኘት ላይ</translation>
 <translation id="8191230140820435481">መተግበሪያዎችዎን፣ ቅጥያዎችዎን እና ገጽታዎችዎን ያቀናብራል</translation>
+<translation id="8192944472786724289"><ph name="APP_NAME" /> የማያ ገጽዎን ይዘቶች ማጋራት ይፈልጋል።</translation>
 <translation id="8195027750202970175">ዲስክ ላይ ያለው መጠን</translation>
 <translation id="8198323535106903877">እነዚህን <ph name="NUMBER_OF_APPS" /> መተግበሪያዎች እንጭንልዎታለን</translation>
 <translation id="8198456017687137612">የCast ማድረጊያ ትር</translation>

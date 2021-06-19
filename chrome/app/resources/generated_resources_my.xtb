@@ -773,7 +773,6 @@
 <translation id="1795214765651529549">ဂန္ထဝင်ကို အသုံးပြုရန်</translation>
 <translation id="1796588414813960292">အသံလိုအပ်သော ဝန်ဆောင်မှုများ အလုပ်လုပ်မည်မဟုတ်ပါ</translation>
 <translation id="1799071797295057738">"<ph name="EXTENSION_NAME" />" နောက်ဆက်တွဲကို အလိုအလျောက်ပိတ်ထားပါသည်။</translation>
-<translation id="1800973090344019061">“<ph name="APP_NAME" />” နောက်ဆက်တွဲသည် သင့်ဖန်သားပြင်၏ အကြောင်းအရာများကို မျှဝေလိုသည်။</translation>
 <translation id="1802624026913571222">အဖုံးကို ပိတ်လိုက်သည့်အခါ နားရန်</translation>
 <translation id="1802687198411089702">စာမျက်နှာသည် ရပ်တန့်နေပါသည်။ ၎င်းကို စောင့်နိုင်သည် သို့မဟုတ် ထွက်နိုင်သည်။</translation>
 <translation id="1803531841600994172">ပြန်ဆိုရမည့် ဘာသာစကား</translation>
@@ -1650,6 +1649,7 @@
 <translation id="2734760316755174687"><ph name="SITE_GROUP_NAME" /> အောက်ရှိ ဝဘ်ဆိုက်များကိုလည်း ပြင်ဆင်သတ်မှတ်လိုက်ပါမည်။</translation>
 <translation id="2735712963799620190">အချိန်ဇယား</translation>
 <translation id="2737363922397526254">ခေါက်သိမ်းရန်...</translation>
+<translation id="2737916598897808047"><ph name="APP_NAME" /> သည် သင့်ဖန်သားပြင် အကြောင်းအရာများကို <ph name="TARGET_NAME" /> အား မျှဝေလိုသည်။</translation>
 <translation id="2738030019664645674">သင့်စက်တွင်ထည့်သွင်းထားသော ဖောင့်များသုံးရန် ဝဘ်ဆိုက်များကို ခွင့်မပြုပါနှင့်</translation>
 <translation id="2738771556149464852">နောက်မှ မဟုတ်ပါ</translation>
 <translation id="2739191690716947896">အမှားရှာပြင်ခြင်း</translation>
@@ -4718,7 +4718,6 @@
 <translation id="6136114942382973861">ဒေါင်းလုဒ်ဘား ပိတ်ရန်</translation>
 <translation id="6136287496450963112">သင့်လုံခြုံရေးကီးကို ပင်နံပါတ်ဖြင့် ကာကွယ်မထားပါ။ လက်ဗွေများစီမံရန် ပင်နံပါတ်တစ်ခု ဦးစွာသတ်မှတ်ပါ။</translation>
 <translation id="6138680304137685902">SHA-384 ဖြင့် X9.62 ECDSA လက်မှတ်</translation>
-<translation id="6138774640412545950">“<ph name="APP_NAME" />” နောက်ဆက်တွဲသည် သင့်ဖန်သားပြင်၏ အကြောင်းအရာများကို <ph name="TARGET_NAME" /> အား မျှဝေလိုသည်။</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />၊ ကွန်ရက်မရှိပါ</translation>
 <translation id="6141988275892716286">ဒေါင်းလုဒ်လုပ်ရန် အတည်ပြုခြင်း</translation>
 <translation id="6143186082490678276">အကူအညီ ရယူရန်</translation>
@@ -6622,6 +6621,7 @@
 <translation id="8189750580333936930">ပုဂ္ဂိုလ်ရေးဆိုင်ရာ လုံခြုံသည့်နေရာ</translation>
 <translation id="8190193592390505034"><ph name="PROVIDER_NAME" />သို့ ချိတ်ဆက်​နေ</translation>
 <translation id="8191230140820435481">သင်၏ အက်ပ်များ၊ တိုးချဲ့မှုများ၊ နှင့် အပြင်အဆင်များကို စီမံကွပ်ကဲရန်</translation>
+<translation id="8192944472786724289"><ph name="APP_NAME" /> သည် သင့်ဖန်သားပြင် အကြောင်းအရာများကို မျှဝေလိုသည်။</translation>
 <translation id="8195027750202970175">ဖိုင်အရွယ်အစား</translation>
 <translation id="8198323535106903877">၎င်း <ph name="NUMBER_OF_APPS" /> အက်ပ်များကို သင့်အတွက် ထည့်သွင်းပေးပါမည်</translation>
 <translation id="8198456017687137612">တဘ်ကို ကာစ်လုပ်နေသည်</translation>

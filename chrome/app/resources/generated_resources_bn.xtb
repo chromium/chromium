@@ -774,7 +774,6 @@
 <translation id="1795214765651529549">ক্লাসিক ব্যবহার করুন</translation>
 <translation id="1796588414813960292">যেসব ফিচার ব্যবহার করার জন্য সাউন্ড প্রয়োজন সেগুলি কাজ করবে না</translation>
 <translation id="1799071797295057738">"<ph name="EXTENSION_NAME" />" এক্সটেনশনটি অটোমেটিক বন্ধ করা হয়েছে।</translation>
-<translation id="1800973090344019061">"<ph name="APP_NAME" />" এক্সটেনশনটি আপনার স্ক্রিনের কন্টেন্ট শেয়ার করতে চায়।</translation>
 <translation id="1802624026913571222">ডিভাইসের কভার বন্ধ করলে স্লিপ মোডে চলে যাবে</translation>
 <translation id="1802687198411089702">পৃষ্ঠাটি সাড়া দিচ্ছে না। আপনি অপেক্ষা করতে পারেন অথবা পৃষ্ঠা ছেড়ে যেতে পারেন।</translation>
 <translation id="1803531841600994172">যে ভাষায় অনুবাদ করতে হবে</translation>
@@ -1651,6 +1650,7 @@
 <translation id="2734760316755174687"><ph name="SITE_GROUP_NAME" />-এর অধীনে থাকা সাইটগুলিও রিসেট করা হবে।</translation>
 <translation id="2735712963799620190">সময়সূচি</translation>
 <translation id="2737363922397526254">আড়াল করুন...</translation>
+<translation id="2737916598897808047"><ph name="APP_NAME" /> আপনার স্ক্রিনের কন্টেন্ট <ph name="TARGET_NAME" />-এর সাথে শেয়ার করতে চাইছে।</translation>
 <translation id="2738030019664645674">সাইটকে আপনার ডিভাইসে ইনস্টল করা ফন্ট ব্যবহার করতে দেয় না</translation>
 <translation id="2738771556149464852">এরপরে নয়</translation>
 <translation id="2739191690716947896">ডিবাগ</translation>
@@ -4721,7 +4721,6 @@
 <translation id="6136114942382973861">ডাউনলোড বার বন্ধ করুন</translation>
 <translation id="6136287496450963112">আপনার নিরাপত্তা কী কোনও পিন দ্বারা সুরক্ষিত নেই। আঙ্গুলের ছাপ ম্যানেজ করতে, প্রথমে পিন তৈরি করুন।</translation>
 <translation id="6138680304137685902">SHA-384 সহ X9.62 ECDSA স্বাক্ষর</translation>
-<translation id="6138774640412545950">"<ph name="APP_NAME" />" এক্সটেনশনটি আপনার স্ক্রিনের কন্টেন্ট <ph name="TARGET_NAME" />-এর সাথে শেয়ার করতে চায়।</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, কোনও নেটওয়ার্ক নেই</translation>
 <translation id="6141988275892716286">ডাউনলোড নিশ্চিত করুন</translation>
 <translation id="6143186082490678276">সাহায্য পান</translation>
@@ -6625,6 +6624,7 @@
 <translation id="8189750580333936930">প্রাইভেসি স্যান্ডবক্স</translation>
 <translation id="8190193592390505034"><ph name="PROVIDER_NAME" />-তে সংযুক্ত হচ্ছে</translation>
 <translation id="8191230140820435481">আপনার অ্যাপ্লিকেশন, এক্সটেনশন, এবং থিম পরিচালনা করুন</translation>
+<translation id="8192944472786724289"><ph name="APP_NAME" /> আপনার স্ক্রিনের কন্টেন্ট শেয়ার করতে চাইছে।</translation>
 <translation id="8195027750202970175">ডিস্কের মাপ</translation>
 <translation id="8198323535106903877">আপনার জন্য সেই <ph name="NUMBER_OF_APPS" />টি অ্যাপ আমরা ইনস্টল করে দেব</translation>
 <translation id="8198456017687137612">কাস্ট করার ট্যাব</translation>

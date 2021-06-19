@@ -772,7 +772,6 @@
 <translation id="1795214765651529549">שימוש בעיצוב קלאסי</translation>
 <translation id="1796588414813960292">תכונות שצריכות צלילים לא יפעלו</translation>
 <translation id="1799071797295057738">התוסף "<ph name="EXTENSION_NAME" />" הושבת באופן אוטומטי.</translation>
-<translation id="1800973090344019061">התוסף "<ph name="APP_NAME" />" מבקש הרשאה לשתף את המסך שלך.</translation>
 <translation id="1802624026913571222">מעבר למצב שינה כשסוגרים את הכיסוי</translation>
 <translation id="1802687198411089702">הדף לא מגיב. אפשר לחכות או לצאת.</translation>
 <translation id="1803531841600994172">שפת היעד של התרגום</translation>
@@ -1651,6 +1650,7 @@
 <translation id="2734760316755174687">הפעולה תאפס גם אתרים שהם חלק מ-<ph name="SITE_GROUP_NAME" />.</translation>
 <translation id="2735712963799620190">לוח זמנים</translation>
 <translation id="2737363922397526254">כיווץ...</translation>
+<translation id="2737916598897808047">האפליקציה <ph name="APP_NAME" /> מבקשת הרשאה לשתף את המסך שלך עם <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">לא לאפשר לאתרים להשתמש בגופנים שמותקנים במכשיר</translation>
 <translation id="2738771556149464852">לא אחרי</translation>
 <translation id="2739191690716947896">ניפוי באגים</translation>
@@ -4721,7 +4721,6 @@
 <translation id="6136114942382973861">סגירת סרגל ההורדות</translation>
 <translation id="6136287496450963112">מפתח האבטחה שלך אינו מוגן באמצעות קוד אימות. כדי לנהל טביעות אצבע, יש ליצור תחילה קוד אימות.</translation>
 <translation id="6138680304137685902">‏חתימת X9.62 ECDSA עם SHA-384</translation>
-<translation id="6138774640412545950">התוסף "<ph name="APP_NAME" />" מבקש הרשאה לשתף את המסך שלך עם <ph name="TARGET_NAME" />.</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, אין רשת</translation>
 <translation id="6141988275892716286">אישור הורדה</translation>
 <translation id="6143186082490678276">קבלת עזרה</translation>
@@ -6628,6 +6627,7 @@
 <translation id="8189750580333936930">ארגז חול לפרטיות</translation>
 <translation id="8190193592390505034">מתבצע חיבור אל <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">לנהל את היישומים, התוספים והעיצובים שלך</translation>
+<translation id="8192944472786724289">האפליקציה <ph name="APP_NAME" /> מבקשת הרשאה לשתף את המסך שלך.</translation>
 <translation id="8195027750202970175">גודל בדיסק</translation>
 <translation id="8198323535106903877"><ph name="NUMBER_OF_APPS" /> האפליקציות יותקנו</translation>
 <translation id="8198456017687137612">העברת הכרטיסייה</translation>

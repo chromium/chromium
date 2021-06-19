@@ -761,7 +761,6 @@
 <translation id="1795214765651529549">Користи класичну</translation>
 <translation id="1796588414813960292">Функције којима треба звук неће радити</translation>
 <translation id="1799071797295057738">Додатак „<ph name="EXTENSION_NAME" />“ је аутоматски онемогућен.</translation>
-<translation id="1800973090344019061">Додатак <ph name="APP_NAME" /> жели да дели садржај екрана.</translation>
 <translation id="1802624026913571222">Пређи у стање спавања када се поклопац затвори</translation>
 <translation id="1802687198411089702">Страница се не одазива. Можете да сачекате да почне да се одазива или да је затворите.</translation>
 <translation id="1803531841600994172">Језик на који желите да преводите</translation>
@@ -1635,6 +1634,7 @@
 <translation id="2734760316755174687">Ресетоваће се и сајтови из групе <ph name="SITE_GROUP_NAME" />.</translation>
 <translation id="2735712963799620190">Распоред</translation>
 <translation id="2737363922397526254">Скупи...</translation>
+<translation id="2737916598897808047"><ph name="APP_NAME" /> жели да дели садржај екрана са <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">Не дозволите сајтовима да користе фонтове инсталиране на уређају</translation>
 <translation id="2738771556149464852">Не после</translation>
 <translation id="2739191690716947896">Отклони грешке</translation>
@@ -4705,7 +4705,6 @@
 <translation id="6136114942382973861">Затвори траку са преузимањима</translation>
 <translation id="6136287496450963112">Безбедносни кључ није заштићен PIN-ом. Да бисте управљали отисцима прстију, прво направите PIN.</translation>
 <translation id="6138680304137685902">Потпис X9.62 ECDSA путем SHA-384</translation>
-<translation id="6138774640412545950">Додатак <ph name="APP_NAME" /> жели да дели садржај екрана са: <ph name="TARGET_NAME" />.</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, нема мреже</translation>
 <translation id="6141988275892716286">Потврдите преузимање</translation>
 <translation id="6143186082490678276">Затражите помоћ</translation>
@@ -6607,6 +6606,7 @@
 <translation id="8189750580333936930">Заштићено окружење приватности</translation>
 <translation id="8190193592390505034">Повезивање са мрежом <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Управљање апликацијама, додацима и темама</translation>
+<translation id="8192944472786724289"><ph name="APP_NAME" /> жели да дели садржај екрана.</translation>
 <translation id="8195027750202970175">Величина на диску</translation>
 <translation id="8198323535106903877">Инсталираћемо вам те апликације (<ph name="NUMBER_OF_APPS" />)</translation>
 <translation id="8198456017687137612">Пребацује се картица</translation>

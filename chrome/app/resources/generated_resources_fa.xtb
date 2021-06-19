@@ -771,7 +771,6 @@
 <translation id="1795214765651529549">استفاده از کلاسیک</translation>
 <translation id="1796588414813960292">ویژگی‌هایی که به صدا نیاز دارند کار نخواهند کرد</translation>
 <translation id="1799071797295057738">افزونه «<ph name="EXTENSION_NAME" />» به‌طور خودکار غیرفعال شد.</translation>
-<translation id="1800973090344019061">افزونه «<ph name="APP_NAME" />» می‌خواهد محتوای صفحه‌نمایشتان را هم‌رسانی کند.</translation>
 <translation id="1802624026913571222">خواب، پس از اینکه درپوش بسته می‌شود</translation>
 <translation id="1802687198411089702">صفحه پاسخ نمی‌دهد. می‌توانید منتظر بمانید یا خارج شوید.</translation>
 <translation id="1803531841600994172">زبانی که می‌خواهید به آن ترجمه کنید</translation>
@@ -1648,6 +1647,7 @@
 <translation id="2734760316755174687">سایت‌های زیرگروه <ph name="SITE_GROUP_NAME" /> نیز بازنشانی می‌شود.</translation>
 <translation id="2735712963799620190">زمان‌بندی</translation>
 <translation id="2737363922397526254">کوچک کردن...</translation>
+<translation id="2737916598897808047"><ph name="APP_NAME" /> می‌خواهد محتوای صفحه‌نمایشتان را با <ph name="TARGET_NAME" /> هم‌رسانی کند.</translation>
 <translation id="2738030019664645674">به سایت‌ها اجازه داده نشود از قلم‌های نصب‌شده در دستگاه استفاده کنند</translation>
 <translation id="2738771556149464852">نه بعد از</translation>
 <translation id="2739191690716947896">رفع اشکال</translation>
@@ -4718,7 +4718,6 @@
 <translation id="6136114942382973861">بستن نوار بارگیری</translation>
 <translation id="6136287496450963112">کلید امنیتی‌تان پین ندارد و محافظت‌شده نیست. برای مدیریت اثر انگشت، ابتدا پین ایجاد کنید.</translation>
 <translation id="6138680304137685902">‏امضای X9.62 ECDSA با SHA-384</translation>
-<translation id="6138774640412545950">افزونه «<ph name="APP_NAME" />» می‌خواهد محتوای صفحه‌نمایش شما را با <ph name="TARGET_NAME" /> هم‌رسانی کند.</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />، بدون شبکه</translation>
 <translation id="6141988275892716286">تأیید بارگیری</translation>
 <translation id="6143186082490678276">دریافت راهنمایی</translation>
@@ -6624,6 +6623,7 @@
 <translation id="8189750580333936930">جعبه ایمنی حریم‌خصوصی</translation>
 <translation id="8190193592390505034">اتصال به <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">مدیریت برنامه‌ها، افزونه‌ها و طرح‌های زمینه</translation>
+<translation id="8192944472786724289"><ph name="APP_NAME" /> می‌خواهد محتوای صفحه‌نمایشتان را هم‌رسانی کند</translation>
 <translation id="8195027750202970175">اندازه روی دیسک</translation>
 <translation id="8198323535106903877"><ph name="NUMBER_OF_APPS" /> برنامه را برایتان نصب می‌کنیم</translation>
 <translation id="8198456017687137612">فرستادن برگه</translation>

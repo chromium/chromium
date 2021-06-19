@@ -759,7 +759,6 @@
 <translation id="1795214765651529549">Классикалық тақырыпты пайдалану</translation>
 <translation id="1796588414813960292">Дыбысты қажет ететін функциялар жұмыс істемейді.</translation>
 <translation id="1799071797295057738">"<ph name="EXTENSION_NAME" />" кеңейтімі автоматты түрде өшірілген.</translation>
-<translation id="1800973090344019061">"<ph name="APP_NAME" />" кеңейтімі экраныңыздағы мазмұнды бөліскісі келеді.</translation>
 <translation id="1802624026913571222">Қақпағы жабылғанда, ұйқы режиміне өту</translation>
 <translation id="1802687198411089702">Бет жауап бермеуде. Оны күтуге не жабуға болады.</translation>
 <translation id="1803531841600994172">Аударма тілі</translation>
@@ -1632,6 +1631,7 @@
 <translation id="2734760316755174687"><ph name="SITE_GROUP_NAME" /> тобына жататын сайттар да бастапқы күйіне қайтарылады.</translation>
 <translation id="2735712963799620190">Кесте</translation>
 <translation id="2737363922397526254">Жию…</translation>
+<translation id="2737916598897808047"><ph name="APP_NAME" /> қолданбасы экраныңыздағы мазмұнды <ph name="TARGET_NAME" /> сайтымен бөліскісі келеді.</translation>
 <translation id="2738030019664645674">Сайттардың құрылғыңызда орнатылған қаріптерді пайдалануына рұқсат бермеу</translation>
 <translation id="2738771556149464852">Кейін емес</translation>
 <translation id="2739191690716947896">Түзету</translation>
@@ -4701,7 +4701,6 @@
 <translation id="6136114942382973861">Жүктеп алынғандар жолағын жабу</translation>
 <translation id="6136287496450963112">Қауіпсіздік кілтіңіз PIN кодымен қорғалмаған. Саусақ іздерін басқару үшін алдымен PIN кодын жасаңыз.</translation>
 <translation id="6138680304137685902">X9.62 ECDSA, SHA-384 алгоритмімен қол қою</translation>
-<translation id="6138774640412545950">"<ph name="APP_NAME" />" кеңейтімі экраныңыздағы мазмұнды <ph name="TARGET_NAME" /> сайтымен бөліскісі келеді.</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, желі жоқ</translation>
 <translation id="6141988275892716286">Жүктеп алуды растау</translation>
 <translation id="6143186082490678276">Анықтама алу</translation>
@@ -6605,6 +6604,7 @@
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034"><ph name="PROVIDER_NAME" /> провайдеріне қосылу</translation>
 <translation id="8191230140820435481">Қолданбаларыңызды, кеңейтімдеріңізді және тақырыптарыңызды басқару</translation>
+<translation id="8192944472786724289"><ph name="APP_NAME" /> қолданбасы экраныңыздағы мазмұнды бөліскісі келеді.</translation>
 <translation id="8195027750202970175">Дискідегі көлемі</translation>
 <translation id="8198323535106903877">Біз <ph name="NUMBER_OF_APPS" /> қолданбаны өзіміз орнатып береміз</translation>
 <translation id="8198456017687137612">Қойынды трансляциялануда</translation>

@@ -762,7 +762,6 @@
 <translation id="1795214765651529549">Utilizar tema clásico</translation>
 <translation id="1796588414813960292">Las funciones que requieran reproducir sonido no funcionarán</translation>
 <translation id="1799071797295057738">La extensión <ph name="EXTENSION_NAME" /> se ha inhabilitado automáticamente.</translation>
-<translation id="1800973090344019061">La extensión "<ph name="APP_NAME" />" quiere compartir el contenido de tu pantalla.</translation>
 <translation id="1802624026913571222">Suspender cuando se cierre la tapa</translation>
 <translation id="1802687198411089702">La página no responde. Puedes esperar a que lo haga o cerrarla.</translation>
 <translation id="1803531841600994172">Idioma al que quieres traducir</translation>
@@ -1636,6 +1635,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2734760316755174687">También se restablecerán los permisos de los sitios de <ph name="SITE_GROUP_NAME" />.</translation>
 <translation id="2735712963799620190">Programar</translation>
 <translation id="2737363922397526254">Ocultar...</translation>
+<translation id="2737916598897808047"><ph name="APP_NAME" /> quiere compartir el contenido de tu pantalla con <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">No permitir que los sitios usen fuentes instaladas en tu dispositivo</translation>
 <translation id="2738771556149464852">Anterior a</translation>
 <translation id="2739191690716947896">Depurar</translation>
@@ -4704,7 +4704,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6136114942382973861">Cerrar barra de descargas</translation>
 <translation id="6136287496450963112">Tu llave de seguridad no está protegida mediante un PIN. Para gestionar huellas dactilares, primero debes crear un PIN.</translation>
 <translation id="6138680304137685902">Firma X9.62 ECDSA con SHA-384</translation>
-<translation id="6138774640412545950">La extensión "<ph name="APP_NAME" />" quiere compartir el contenido de tu pantalla con <ph name="TARGET_NAME" />.</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, ninguna red</translation>
 <translation id="6141988275892716286">Confirmar descarga</translation>
 <translation id="6143186082490678276">Obtener ayuda</translation>
@@ -6610,6 +6609,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034">Conectando con <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Gestionar tus aplicaciones, extensiones y temas</translation>
+<translation id="8192944472786724289"><ph name="APP_NAME" /> quiere compartir el contenido de tu pantalla.</translation>
 <translation id="8195027750202970175">Tamaño en disco</translation>
 <translation id="8198323535106903877">Vamos a instalarte estas <ph name="NUMBER_OF_APPS" /> aplicaciones</translation>
 <translation id="8198456017687137612">Enviando pestaña</translation>

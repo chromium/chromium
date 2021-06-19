@@ -772,7 +772,6 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="1795214765651529549">Koristi klasičnu</translation>
 <translation id="1796588414813960292">Funkcije za koje je potreban zvuk neće funkcionirati</translation>
 <translation id="1799071797295057738">Ekstenzija "<ph name="EXTENSION_NAME" />" je automatski onemogućena.</translation>
-<translation id="1800973090344019061">Ekstenzija "<ph name="APP_NAME" />" želi dijeliti sadržaj vašeg ekrana.</translation>
 <translation id="1802624026913571222">Uključi stanje mirovanje kada se zatvori poklopac</translation>
 <translation id="1802687198411089702">Stranica ne reagira. Možete sačekati ili je zatvoriti.</translation>
 <translation id="1803531841600994172">Jezik na koji se prevodi</translation>
@@ -1649,6 +1648,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2734760316755174687">Poništit će se i web lokacije iz grupe <ph name="SITE_GROUP_NAME" />.</translation>
 <translation id="2735712963799620190">Raspored</translation>
 <translation id="2737363922397526254">Suzi…</translation>
+<translation id="2737916598897808047"><ph name="APP_NAME" /> želi dijeliti sadržaj vašeg ekrana s karticom <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">Nemoj dozvoliti web lokacijama da koriste fontove instalirane na uređaju</translation>
 <translation id="2738771556149464852">Ne poslije</translation>
 <translation id="2739191690716947896">Otkloni pogrešku</translation>
@@ -4719,7 +4719,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="6136114942382973861">Zatvori traku preuzetih fajlova</translation>
 <translation id="6136287496450963112">Vaš sigurnosni ključ nije zaštićen PIN-om. Da biste upravljali otiscima prstiju, najprije kreirajte PIN.</translation>
 <translation id="6138680304137685902">X9.62 ECDSA potpis uz SHA-384</translation>
-<translation id="6138774640412545950">Ekstenzija "<ph name="APP_NAME" />" želi dijeliti sadržaj vašeg ekrana s web lokacijom <ph name="TARGET_NAME" />.</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, nema mreže</translation>
 <translation id="6141988275892716286">Potvrdite lozinku</translation>
 <translation id="6143186082490678276">Zatražite pomoć</translation>
@@ -6625,6 +6624,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8189750580333936930">Okruženje zaštićene privatnosti</translation>
 <translation id="8190193592390505034">Povezivanje na mrežu <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Upravljajte aplikacijama, ekstenzijama i temama</translation>
+<translation id="8192944472786724289"><ph name="APP_NAME" /> želi dijeliti sadržaj vašeg ekrana.</translation>
 <translation id="8195027750202970175">Veličina na disku</translation>
 <translation id="8198323535106903877">Instalirat ćemo sljedeći broj aplikacija za vas: <ph name="NUMBER_OF_APPS" /></translation>
 <translation id="8198456017687137612">Emitiranje kartice</translation>

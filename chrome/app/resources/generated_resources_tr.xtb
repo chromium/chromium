@@ -762,7 +762,6 @@
 <translation id="1795214765651529549">Klasik Temayı Kullan</translation>
 <translation id="1796588414813960292">Ses kullanılmasını gerektiren özellikler çalışmaz</translation>
 <translation id="1799071797295057738">"<ph name="EXTENSION_NAME" />" uzantısı otomatik olarak devre dışı bırakıldı.</translation>
-<translation id="1800973090344019061">"<ph name="APP_NAME" />" uzantısı, ekranınızın içeriğini paylaşmak istiyor.</translation>
 <translation id="1802624026913571222">Kapak kapatıldığında uyku moduna geç</translation>
 <translation id="1802687198411089702">Sayfa yanıt vermiyor. Sayfanın yanıt vermesini bekleyebilir veya sayfadan çıkabilirsiniz.</translation>
 <translation id="1803531841600994172">Çeviri hedef dili</translation>
@@ -1635,6 +1634,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2734760316755174687"><ph name="SITE_GROUP_NAME" /> altındaki siteler de sıfırlanacak.</translation>
 <translation id="2735712963799620190">Program</translation>
 <translation id="2737363922397526254">Daralt...</translation>
+<translation id="2737916598897808047"><ph name="APP_NAME" />, ekranınızın içeriğini <ph name="TARGET_NAME" /> ile paylaşmak istiyor.</translation>
 <translation id="2738030019664645674">Sitelerin, cihazımda yüklü yazı tiplerini kullanmasına izin verme</translation>
 <translation id="2738771556149464852">Şundan Sonra Değil:</translation>
 <translation id="2739191690716947896">Hata ayıkla</translation>
@@ -4705,7 +4705,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6136114942382973861">İndirme çubuğunu kapat</translation>
 <translation id="6136287496450963112">Güvenlik anahtarınız PIN ile korunmuyor. Parmak izlerini yönetmek için önce PIN oluşturun.</translation>
 <translation id="6138680304137685902">SHA-384 ile X9.62 ECDSA İmzası</translation>
-<translation id="6138774640412545950">"<ph name="APP_NAME" />" uzantısı, ekranınızın içeriğini <ph name="TARGET_NAME" /> sitesiyle paylaşmak istiyor.</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, ağ yok</translation>
 <translation id="6141988275892716286">İndirme işlemini onaylayın</translation>
 <translation id="6143186082490678276">Yardım Alın</translation>
@@ -6608,6 +6607,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8189750580333936930">Özel Korumalı Alan</translation>
 <translation id="8190193592390505034"><ph name="PROVIDER_NAME" /> ağına bağlanılıyor</translation>
 <translation id="8191230140820435481">Uygulamalarınızı, uzantılarınızı ve temalarınızı yönetme</translation>
+<translation id="8192944472786724289"><ph name="APP_NAME" /> ekranınızın içeriğini paylaşmak istiyor.</translation>
 <translation id="8195027750202970175">Diskteki boyut</translation>
 <translation id="8198323535106903877">Bu <ph name="NUMBER_OF_APPS" /> uygulamayı sizin için yükleyeceğiz</translation>
 <translation id="8198456017687137612">Sekme yayınlanıyor</translation>

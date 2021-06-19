@@ -773,7 +773,6 @@
 <translation id="1795214765651529549">Χρήση κλασικού</translation>
 <translation id="1796588414813960292">Οι λειτουργίες που απαιτούν ήχο δεν θα είναι διαθέσιμες</translation>
 <translation id="1799071797295057738">Η επέκταση "<ph name="EXTENSION_NAME" />" απενεργοποιήθηκε αυτόματα.</translation>
-<translation id="1800973090344019061">Η επέκταση "<ph name="APP_NAME" />" θέλει να μοιραστεί το περιεχόμενο της οθόνης σας.</translation>
 <translation id="1802624026913571222">Σε κατάσταση αδράνειας όταν το κάλυμμα είναι κλειστό</translation>
 <translation id="1802687198411089702">Η σελίδα δεν ανταποκρίνεται. Μπορείτε να περιμένετε ή να πραγματοποιήσετε έξοδο.</translation>
 <translation id="1803531841600994172">Γλώσσα στην οποία θα γίνει η μετάφραση</translation>
@@ -1651,6 +1650,7 @@
 <translation id="2734760316755174687">Θα γίνει επίσης επαναφορά των ιστοτόπων της ομάδας <ph name="SITE_GROUP_NAME" />.</translation>
 <translation id="2735712963799620190">Χρονοδιάγραμμα</translation>
 <translation id="2737363922397526254">Σύμπτυξη...</translation>
+<translation id="2737916598897808047">Η εφαρμογή <ph name="APP_NAME" /> θέλει να μοιραστεί το περιεχόμενο της οθόνης σας με την καρτέλα <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">Να μην επιτρέπεται στους ιστότοπους να χρησιμοποιούν τις γραμματοσειρές που είναι εγκατεστημένες στη συσκευή σας</translation>
 <translation id="2738771556149464852">Όχι αργότερα από</translation>
 <translation id="2739191690716947896">Εντοπισμός σφαλμάτων</translation>
@@ -4722,7 +4722,6 @@
 <translation id="6136114942382973861">Κλείσιμο γραμμής λήψεων</translation>
 <translation id="6136287496450963112">Το κλειδί ασφαλείας σας δεν προστατεύεται με PIN. Για τη διαχείριση δακτυλικών αποτυπωμάτων, θα πρέπει να δημιουργήσετε αρχικά ένα PIN.</translation>
 <translation id="6138680304137685902">Υπογραφή X9.62 ECDSA με SHA-384</translation>
-<translation id="6138774640412545950">Η επέκταση "<ph name="APP_NAME" />" θέλει να μοιραστεί το περιεχόμενο της οθόνης σας με την καρτέλα <ph name="TARGET_NAME" />.</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, κανένα δίκτυο</translation>
 <translation id="6141988275892716286">Επιβεβαίωση λήψης</translation>
 <translation id="6143186082490678276">Λήψη βοήθειας</translation>
@@ -6628,6 +6627,7 @@
 <translation id="8189750580333936930">Πλαίσιο ιδιωτικότητας</translation>
 <translation id="8190193592390505034">Σύνδεση με <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Διαχείριση των εφαρμογών, των επεκτάσεων και των θεμάτων σας</translation>
+<translation id="8192944472786724289">Η εφαρμογή <ph name="APP_NAME" /> θέλει να κάνει κοινή χρήση του περιεχομένου της οθόνης σας.</translation>
 <translation id="8195027750202970175">Μέγεθος στον δίσκο</translation>
 <translation id="8198323535106903877">Θα εγκατασταθούν αυτές οι <ph name="NUMBER_OF_APPS" /> εφαρμογές</translation>
 <translation id="8198456017687137612">Καρτέλα μετάδοσης</translation>

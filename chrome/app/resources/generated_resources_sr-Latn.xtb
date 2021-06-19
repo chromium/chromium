@@ -761,7 +761,6 @@
 <translation id="1795214765651529549">Koristi klasičnu</translation>
 <translation id="1796588414813960292">Funkcije kojima treba zvuk neće raditi</translation>
 <translation id="1799071797295057738">Dodatak „<ph name="EXTENSION_NAME" />“ je automatski onemogućen.</translation>
-<translation id="1800973090344019061">Dodatak <ph name="APP_NAME" /> želi da deli sadržaj ekrana.</translation>
 <translation id="1802624026913571222">Pređi u stanje spavanja kada se poklopac zatvori</translation>
 <translation id="1802687198411089702">Stranica se ne odaziva. Možete da sačekate da počne da se odaziva ili da je zatvorite.</translation>
 <translation id="1803531841600994172">Jezik na koji želite da prevodite</translation>
@@ -1635,6 +1634,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="2734760316755174687">Resetovaće se i sajtovi iz grupe <ph name="SITE_GROUP_NAME" />.</translation>
 <translation id="2735712963799620190">Raspored</translation>
 <translation id="2737363922397526254">Skupi...</translation>
+<translation id="2737916598897808047"><ph name="APP_NAME" /> želi da deli sadržaj ekrana sa <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">Ne dozvolite sajtovima da koriste fontove instalirane na uređaju</translation>
 <translation id="2738771556149464852">Ne posle</translation>
 <translation id="2739191690716947896">Otkloni greške</translation>
@@ -4705,7 +4705,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6136114942382973861">Zatvori traku sa preuzimanjima</translation>
 <translation id="6136287496450963112">Bezbednosni ključ nije zaštićen PIN-om. Da biste upravljali otiscima prstiju, prvo napravite PIN.</translation>
 <translation id="6138680304137685902">Potpis X9.62 ECDSA putem SHA-384</translation>
-<translation id="6138774640412545950">Dodatak <ph name="APP_NAME" /> želi da deli sadržaj ekrana sa: <ph name="TARGET_NAME" />.</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, nema mreže</translation>
 <translation id="6141988275892716286">Potvrdite preuzimanje</translation>
 <translation id="6143186082490678276">Zatražite pomoć</translation>
@@ -6607,6 +6606,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8189750580333936930">Zaštićeno okruženje privatnosti</translation>
 <translation id="8190193592390505034">Povezivanje sa mrežom <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Upravljanje aplikacijama, dodacima i temama</translation>
+<translation id="8192944472786724289"><ph name="APP_NAME" /> želi da deli sadržaj ekrana.</translation>
 <translation id="8195027750202970175">Veličina na disku</translation>
 <translation id="8198323535106903877">Instaliraćemo vam te aplikacije (<ph name="NUMBER_OF_APPS" />)</translation>
 <translation id="8198456017687137612">Prebacuje se kartica</translation>

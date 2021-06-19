@@ -762,7 +762,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="1795214765651529549">Erabili Klasikoa</translation>
 <translation id="1796588414813960292">Soinua behar duten eginbideek ez dute funtzionatuko</translation>
 <translation id="1799071797295057738">Automatikoki desgaitu da "<ph name="EXTENSION_NAME" />" luzapena.</translation>
-<translation id="1800973090344019061">"<ph name="APP_NAME" />" luzapenak zure pantailako edukia partekatu nahi du.</translation>
 <translation id="1802624026913571222">Ezarri inaktibo estalkia ixtean</translation>
 <translation id="1802687198411089702">Orriak ez du erantzuten. Itxaron orriak erantzun arte edo irten orritik.</translation>
 <translation id="1803531841600994172">Itzulpenaren xede-hizkuntza</translation>
@@ -1635,6 +1634,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2734760316755174687"><ph name="SITE_GROUP_NAME" /> taldeko webguneak ere berrezarriko dira.</translation>
 <translation id="2735712963799620190">Programazioa</translation>
 <translation id="2737363922397526254">Tolestu…</translation>
+<translation id="2737916598897808047"><ph name="APP_NAME" /> aplikazioak pantailan duzun edukia <ph name="TARGET_NAME" /> fitxarekin partekatu nahi du.</translation>
 <translation id="2738030019664645674">Ez eman gailuan instalatutako letrak erabiltzeko baimena webguneei</translation>
 <translation id="2738771556149464852">Ez honen atzetik</translation>
 <translation id="2739191690716947896">Araztu</translation>
@@ -4704,7 +4704,6 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="6136114942382973861">Itxi deskargen barra</translation>
 <translation id="6136287496450963112">Segurtasun-giltza ez daukazu PIN kodearekin babestuta. Hatz-markak kudeatzeko, sortu PIN bat.</translation>
 <translation id="6138680304137685902">SHA-384 ziurtagiria duen X9.62 ECDSA sinadura</translation>
-<translation id="6138774640412545950">"<ph name="APP_NAME" />" luzapenak zure pantailako edukia partekatu nahi du "<ph name="TARGET_NAME" />" fitxarekin.</translation>
 <translation id="6138894911715675297">Ez dago sarerik (<ph name="NETWORK_TYPE" />)</translation>
 <translation id="6141988275892716286">Berretsi deskarga</translation>
 <translation id="6143186082490678276">Lortu laguntza</translation>
@@ -6608,6 +6607,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034"><ph name="PROVIDER_NAME" /> hornitzailera konektatzen</translation>
 <translation id="8191230140820435481">Kudeatu aplikazioak, luzapenak eta gaiak</translation>
+<translation id="8192944472786724289"><ph name="APP_NAME" /> aplikazioak pantailan duzun edukia partekatu nahi du.</translation>
 <translation id="8195027750202970175">Diskoko tamaina</translation>
 <translation id="8198323535106903877"><ph name="NUMBER_OF_APPS" /> aplikazio horiek instalatuko dizkizugu</translation>
 <translation id="8198456017687137612">Edukia igortzen ari den fitxa</translation>

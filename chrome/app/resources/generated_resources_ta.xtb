@@ -773,7 +773,6 @@
 <translation id="1795214765651529549">கிளாசிக்கைப் பயன்படுத்து</translation>
 <translation id="1796588414813960292">ஒலியுடன் இயங்கும் அம்சங்கள் செயல்படாது</translation>
 <translation id="1799071797295057738">"<ph name="EXTENSION_NAME" />" நீட்டிப்பு தானாக முடக்கப்பட்டது.</translation>
-<translation id="1800973090344019061">"<ph name="APP_NAME" />" நீட்டிப்பு உங்கள் திரையில் உள்ளவற்றைப் பகிர விரும்புகிறது.</translation>
 <translation id="1802624026913571222">கவர் மூடப்பட்டிருக்கும்போது உறக்கநிலைக்குச் செல்</translation>
 <translation id="1802687198411089702">பக்கம் செயல்படவில்லை. காத்திருக்கவும் அல்லது வெளியேறவும்.</translation>
 <translation id="1803531841600994172">இதற்கு மொழிபெயர்க்கவும்:</translation>
@@ -1651,6 +1650,7 @@
 <translation id="2734760316755174687"><ph name="SITE_GROUP_NAME" /> குழுவில் உள்ள எல்லா தளங்களும் மீட்டமைக்கப்படும்.</translation>
 <translation id="2735712963799620190">திட்ட அட்டவணை</translation>
 <translation id="2737363922397526254">சுருக்கு...</translation>
+<translation id="2737916598897808047">உங்கள் திரையில் உள்ளவற்றை <ph name="TARGET_NAME" /> உடன் பகிர <ph name="APP_NAME" /> விரும்புகிறது.</translation>
 <translation id="2738030019664645674">சாதனத்தில் நிறுவப்பட்டுள்ள எழுத்து வடிவங்களைப் பயன்படுத்த தளங்களை அனுமதிக்காதே</translation>
 <translation id="2738771556149464852">இதன்பிறகு அல்ல</translation>
 <translation id="2739191690716947896">பிழைத்திருத்து</translation>
@@ -4722,7 +4722,6 @@
 <translation id="6136114942382973861">பதிவிறக்கங்கள் பட்டியை மூடு</translation>
 <translation id="6136287496450963112">பின் (PIN) மூலம் உங்கள் பாதுகாப்பு விசை பாதுகாக்கப்படவில்லை. கைரேகைகளை நிர்வகிக்க, முதலில் பின் (PIN) ஒன்றை உருவாக்கவும்.</translation>
 <translation id="6138680304137685902">SHA-384 உடனான X9.62 ECDSA கையொப்பம்</translation>
-<translation id="6138774640412545950">"<ph name="APP_NAME" />" நீட்டிப்பு உங்கள் திரையில் உள்ளவற்றை <ph name="TARGET_NAME" /> உடன் பகிர விரும்புகிறது.</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, நெட்வொர்க் இல்லை</translation>
 <translation id="6141988275892716286">பதிவிறக்கத்தை உறுதிப்படுத்து</translation>
 <translation id="6143186082490678276">உதவிப் பெறுக</translation>
@@ -6628,6 +6627,7 @@
 <translation id="8189750580333936930">தனியுரிமை சாண்ட்பாக்ஸ்</translation>
 <translation id="8190193592390505034"><ph name="PROVIDER_NAME" /> உடன் இணைக்கிறது</translation>
 <translation id="8191230140820435481">உங்கள் ஆப்ஸ், நீட்டிப்புகள் மற்றும் தீம்களை நிர்வகிக்கலாம்</translation>
+<translation id="8192944472786724289">உங்கள் திரையில் உள்ளவற்றை <ph name="APP_NAME" /> பகிர விரும்புகிறது.</translation>
 <translation id="8195027750202970175">வட்டில் உள்ள அளவு</translation>
 <translation id="8198323535106903877">உங்களுக்காக அந்த <ph name="NUMBER_OF_APPS" /> ஆப்ஸை நிறுவுவோம்</translation>
 <translation id="8198456017687137612">தாவலை அலைபரப்புகிறது</translation>

@@ -773,7 +773,6 @@
 <translation id="1795214765651529549">Классикалык теманы колдонуу</translation>
 <translation id="1796588414813960292">Добушту колдонгон функциялар иштебей калат</translation>
 <translation id="1799071797295057738">"<ph name="EXTENSION_NAME" />" кеңейтүүсү автоматтык түрдө өчтү.</translation>
-<translation id="1800973090344019061">"<ph name="APP_NAME" />" кеңейтүүсү экраныңыздагы мазмундарды бөлүшкөнү жатат.</translation>
 <translation id="1802624026913571222">Уйку режимине капкагы жабылып турганда өтсүн</translation>
 <translation id="1802687198411089702">Бул баракча жооп бербей жатат. Аны күтсөңүз же болбосо чыгып кетсеңиз болот.</translation>
 <translation id="1803531841600994172">Которула турган тил</translation>
@@ -1651,6 +1650,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2734760316755174687">Бардык <ph name="SITE_GROUP_NAME" /> сайттарындагы уруксаттар дагы баштапкы абалга келтирилет.</translation>
 <translation id="2735712963799620190">Графиги</translation>
 <translation id="2737363922397526254">Жыйнап коюу…</translation>
+<translation id="2737916598897808047"><ph name="APP_NAME" /> колдонмосу экраныңыздагы мазмундарды <ph name="TARGET_NAME" /> менен бөлүшкүсү келет.</translation>
 <translation id="2738030019664645674">Сайттарга түзмөктө орнотулган ариптерди колдонууга тыюу салуу</translation>
 <translation id="2738771556149464852">Кийин эмес</translation>
 <translation id="2739191690716947896">Мүчүлүштүктөрдү аныктоо</translation>
@@ -4721,7 +4721,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6136114942382973861">Жүктөлүп алынгандар тилкесин жабуу</translation>
 <translation id="6136287496450963112">Коопсуздук ачкычы PIN код менен корголгон эмес. Манжа издерин башкаруу үчүн адегенде PIN код түзүңүз.</translation>
 <translation id="6138680304137685902">X9.62 ECDSA Колтамгасы SHA-384 менен</translation>
-<translation id="6138774640412545950">"<ph name="APP_NAME" />" кеңейтүүсү экраныңыздагы мазмундарды <ph name="TARGET_NAME" /> менен бөлүшкөнү жатат.</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, тармак жок</translation>
 <translation id="6141988275892716286">Жүктөп алууну ырастаңыз</translation>
 <translation id="6143186082490678276">Жардам алуу</translation>
@@ -6626,6 +6625,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034"><ph name="PROVIDER_NAME" /> менен туташууда</translation>
 <translation id="8191230140820435481">Колдонмолоруңузду, кеңейтүүлөрүңүздү жана темаларыңызды башкарыңыз</translation>
+<translation id="8192944472786724289"><ph name="APP_NAME" /> колдонмосу экраныңыздагы мазмундарды бөлүшкүсү келет.</translation>
 <translation id="8195027750202970175">Дисктин көлөмү</translation>
 <translation id="8198323535106903877">Ал <ph name="NUMBER_OF_APPS" /> колдонмону орнотуп беребиз</translation>
 <translation id="8198456017687137612">Өтмөктү тышкы экранга чыгаруу</translation>

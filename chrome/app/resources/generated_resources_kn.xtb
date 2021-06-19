@@ -767,7 +767,6 @@
 <translation id="1795214765651529549">ಕ್ಲಾಸಿಕ್ ಬಳಸಿ</translation>
 <translation id="1796588414813960292">ಧ್ವನಿಯ ಅಗತ್ಯವಿರುವ ಫೀಚರ್‌ಗಳು ಕಾರ್ಯನಿರ್ವಹಿಸುವುದಿಲ್ಲ</translation>
 <translation id="1799071797295057738">"<ph name="EXTENSION_NAME" />" ವಿಸ್ತರಣೆಯನ್ನು ಸ್ವಯಂಚಾಲಿಕವಾಗಿ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ.</translation>
-<translation id="1800973090344019061">"<ph name="APP_NAME" />" ವಿಸ್ತರಣೆಯು ನಿಮ್ಮ ಸ್ಕ್ರೀನ್‌ನಲ್ಲಿರುವ ವಿಷಯಗಳನ್ನು ಹಂಚಿಕೊಳ್ಳಲು ಬಯಸುತ್ತದೆ.</translation>
 <translation id="1802624026913571222">ಕವರ್ ಮುಚ್ಚಿದಾಗ ಸ್ಲೀಪ್ ಮೋಡ್‌ಗೆ ಬದಲಿಸಿ</translation>
 <translation id="1802687198411089702">ಪುಟವು ಪ್ರತಿಕ್ರಿಯಿಸುತ್ತಿಲ್ಲ. ನೀವು ಅದಕ್ಕಾಗಿ ಕಾಯಬಹುದು ಅಥವಾ ನಿರ್ಗಮಿಸಬಹುದು.</translation>
 <translation id="1803531841600994172">ಈ ಭಾಷೆಯಿಂದ ಈ ಭಾಷೆಗೆ ಅನುವಾದಿಸಬೇಕು</translation>
@@ -1643,6 +1642,7 @@
 <translation id="2734760316755174687"><ph name="SITE_GROUP_NAME" /> ಹೆಸರಿನಡಿಯಲ್ಲಿನ ಸೈಟ್‌ಗಳನ್ನು ಸಹ ಮರುಹೊಂದಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="2735712963799620190">ವೇಳಾಪಟ್ಟಿ</translation>
 <translation id="2737363922397526254">ಕುಗ್ಗಿಸು...</translation>
+<translation id="2737916598897808047">ನಿಮ್ಮ ಸ್ಕ್ರೀನ್‌ನಲ್ಲಿರುವ ವಿಷಯಗಳನ್ನು <ph name="TARGET_NAME" /> ಜೊತೆಗೆ ಹಂಚಿಕೊಳ್ಳಲು <ph name="APP_NAME" /> ಬಯಸುತ್ತದೆ.</translation>
 <translation id="2738030019664645674">ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾದ ಫಾಂಟ್‌ಗಳನ್ನು ಬಳಸಲು ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಬೇಡಿ</translation>
 <translation id="2738771556149464852">ನಂತರ ಅಲ್ಲ</translation>
 <translation id="2739191690716947896">ಡೀಬಗ್</translation>
@@ -4715,7 +4715,6 @@
 <translation id="6136114942382973861">ಡೌನ್‌ಲೋಡ್‌ಗಳ ಪಟ್ಟಿಯನ್ನು ಮುಚ್ಚಿ</translation>
 <translation id="6136287496450963112">ನಿಮ್ಮ ಭದ್ರತೆ ಕೀ ಪಿನ್‌ ಸಂರಕ್ಷಿತವಾಗಿಲ್ಲ. ಫಿಂಗರ್‌ಪ್ರಿಂಟ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಲು, ಮೊದಲು ಪಿನ್ ಅನ್ನು ರಚಿಸಿ.</translation>
 <translation id="6138680304137685902">SHA-384 ಜೊತೆಗೆ X9.62 ECDSA ಸಹಿ</translation>
-<translation id="6138774640412545950">"<ph name="APP_NAME" />" ವಿಸ್ತರಣೆಯು ನಿಮ್ಮ ಸ್ಕ್ರೀನ್‌ನಲ್ಲಿರುವ ವಿಷಯಗಳನ್ನು <ph name="TARGET_NAME" /> ಜೊತೆಗೆ ಹಂಚಿಕೊಳ್ಳಲು ಬಯಸುತ್ತದೆ.</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, ನೆಟ್‌ವರ್ಕ್ ಇಲ್ಲ</translation>
 <translation id="6141988275892716286">ಡೌನ್‌ಲೋಡ್ ಅನ್ನು ದೃಢೀಕರಿಸಿ</translation>
 <translation id="6143186082490678276">ಸಹಾಯ ಪಡೆಯಿರಿ</translation>
@@ -6618,6 +6617,7 @@
 <translation id="8189750580333936930">ಪ್ರೈವೆಸಿ ಸ್ಯಾಂಡ್‌ಬಾಕ್ಸ್</translation>
 <translation id="8190193592390505034"><ph name="PROVIDER_NAME" /> ಗೆ ಸಂಪರ್ಕಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="8191230140820435481">ನಿಮ್ಮ ಅಪ್ಲಿಕೇಶನ್‌ಗಳು, ವಿಸ್ತರಣೆಗಳು, ಮತ್ತು ಥೀಮ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
+<translation id="8192944472786724289">ನಿಮ್ಮ ಸ್ಕ್ರೀನ್‌ನಲ್ಲಿರುವ ವಿಷಯಗಳನ್ನು ಹಂಚಿಕೊಳ್ಳಲು <ph name="APP_NAME" /> ಬಯಸುತ್ತದೆ.</translation>
 <translation id="8195027750202970175">ಡಿಸ್ಕ್‌ನಲ್ಲಿನ ಗಾತ್ರ</translation>
 <translation id="8198323535106903877">ನಾವು ನಿಮಗಾಗಿ ಆ <ph name="NUMBER_OF_APPS" /> ಆ್ಯಪ್‌ಗಳನ್ನು ಇನ್‌ಸ್ಟಾಲ್‌ ಮಾಡುತ್ತೇವೆ</translation>
 <translation id="8198456017687137612">ಬಿತ್ತರಿಸುವ ಟ್ಯಾಬ್‌</translation>

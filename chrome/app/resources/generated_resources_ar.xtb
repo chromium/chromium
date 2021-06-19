@@ -766,7 +766,6 @@
 <translation id="1795214765651529549">استخدام المظهر الكلاسيكي</translation>
 <translation id="1796588414813960292">لن تعمل الميزات التي تحتاج إلى استخدام الصوت.</translation>
 <translation id="1799071797295057738">تم إيقاف الإضافة "<ph name="EXTENSION_NAME" />" تلقائيًا.</translation>
-<translation id="1800973090344019061">تريد الإضافة "<ph name="APP_NAME" />" مشاركة محتوى شاشتك.</translation>
 <translation id="1802624026913571222">السكون عند غلق الغلاف</translation>
 <translation id="1802687198411089702">الصفحة لا تستجيب. يمكنك الانتظار أو الخروج منها.</translation>
 <translation id="1803531841600994172">اللغة التي تريد الترجمة إليها</translation>
@@ -1640,6 +1639,7 @@
 <translation id="2734760316755174687">سيتم أيضًا إعادة ضبط المواقع الإلكترونية ضمن <ph name="SITE_GROUP_NAME" />.</translation>
 <translation id="2735712963799620190">الجدول الزمني</translation>
 <translation id="2737363922397526254">تصغير...</translation>
+<translation id="2737916598897808047">يريد <ph name="APP_NAME" /> مشاركة محتوى شاشتك مع <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">عدم السماح للمواقع الإلكترونية باستخدام أشكال الخط المثبَّتة على جهازك</translation>
 <translation id="2738771556149464852">آخر يوم للصلاحية</translation>
 <translation id="2739191690716947896">تصحيح الأخطاء</translation>
@@ -4708,7 +4708,6 @@
 <translation id="6136114942382973861">إغلاق شريط عمليات التنزيل</translation>
 <translation id="6136287496450963112">مفتاح الأمان غير محمي برقم تعريف شخصي. لإدارة بصمات الإصبع، يجب إنشاء رقم تعريف شخصي.</translation>
 <translation id="6138680304137685902">‏توقيع X9.62 ECDSA باستخدام SHA-384</translation>
-<translation id="6138774640412545950">تريد الإضافة "<ph name="APP_NAME" />" مشاركة محتوى شاشتك مع <ph name="TARGET_NAME" />.</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />، ما من شبكة</translation>
 <translation id="6141988275892716286">تأكيد التنزيل</translation>
 <translation id="6143186082490678276">الحصول على مساعدة</translation>
@@ -6614,6 +6613,7 @@
 <translation id="8189750580333936930">مبادرة حماية الخصوصية</translation>
 <translation id="8190193592390505034">جارٍ الاتصال بـ <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">إدارة التطبيقات والإضافات والمظاهر</translation>
+<translation id="8192944472786724289">يريد <ph name="APP_NAME" /> مشاركة محتوى شاشتك.</translation>
 <translation id="8195027750202970175">الحجم على القرص</translation>
 <translation id="8198323535106903877">سنعمل على تثبيت <ph name="NUMBER_OF_APPS" /> من هذه التطبيقات من أجلك</translation>
 <translation id="8198456017687137612">جارٍ إرسال محتوى علامة التبويب</translation>

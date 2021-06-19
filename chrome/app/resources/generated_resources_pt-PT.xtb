@@ -762,7 +762,6 @@
 <translation id="1795214765651529549">Utilizar tema clássico</translation>
 <translation id="1796588414813960292">As funcionalidades que necessitam de som não funcionarão</translation>
 <translation id="1799071797295057738">A extensão "<ph name="EXTENSION_NAME" />" foi desativada automaticamente.</translation>
-<translation id="1800973090344019061">A extensão "<ph name="APP_NAME" />" pretende partilhar o conteúdo do seu ecrã.</translation>
 <translation id="1802624026913571222">Suspender quando a tampa for fechada</translation>
 <translation id="1802687198411089702">A página não responde. Pode esperar pela resposta ou sair.</translation>
 <translation id="1803531841600994172">Idioma de destino da tradução</translation>
@@ -1636,6 +1635,7 @@ e Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="2734760316755174687">Os sites em <ph name="SITE_GROUP_NAME" /> também serão repostos.</translation>
 <translation id="2735712963799620190">Programação</translation>
 <translation id="2737363922397526254">Reduzir...</translation>
+<translation id="2737916598897808047">A app <ph name="APP_NAME" /> pretende partilhar o conteúdo do seu ecrã com <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">Não permitir que os sites utilizem tipos de letra instalados no seu dispositivo</translation>
 <translation id="2738771556149464852">Não posterior a</translation>
 <translation id="2739191690716947896">Depurar</translation>
@@ -4707,7 +4707,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6136114942382973861">Fechar barra de transferências</translation>
 <translation id="6136287496450963112">A sua chave de segurança não está protegida com um PIN. Para gerir impressões digitais, crie primeiro um PIN.</translation>
 <translation id="6138680304137685902">Assinatura X9.62 ECDSA com SHA-384</translation>
-<translation id="6138774640412545950">A extensão "<ph name="APP_NAME" />" pretende partilhar o conteúdo do seu ecrã com <ph name="TARGET_NAME" />.</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, sem rede</translation>
 <translation id="6141988275892716286">Confirmar transferência</translation>
 <translation id="6143186082490678276">Obter ajuda</translation>
@@ -6612,6 +6611,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034">A ligar a <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Gerir as suas aplicações, extensões e temas</translation>
+<translation id="8192944472786724289">A app <ph name="APP_NAME" /> pretende partilhar o conteúdo do seu ecrã.</translation>
 <translation id="8195027750202970175">Tamanho em disco</translation>
 <translation id="8198323535106903877">Vamos instalar essas <ph name="NUMBER_OF_APPS" /> aplicações por si</translation>
 <translation id="8198456017687137612">A transmitir o separador</translation>

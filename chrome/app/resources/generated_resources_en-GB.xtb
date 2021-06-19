@@ -773,7 +773,6 @@
 <translation id="1795214765651529549">Use Classic</translation>
 <translation id="1796588414813960292">Features that need sound won't work</translation>
 <translation id="1799071797295057738">The extension "<ph name="EXTENSION_NAME" />" was automatically disabled.</translation>
-<translation id="1800973090344019061">The extension '<ph name="APP_NAME" />' wants to share the contents of your screen.</translation>
 <translation id="1802624026913571222">Sleep when cover is closed</translation>
 <translation id="1802687198411089702">The page isn't responding. You can wait for it or exit.</translation>
 <translation id="1803531841600994172">Language to translate into</translation>
@@ -1651,6 +1650,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="2734760316755174687">Sites under <ph name="SITE_GROUP_NAME" /> will also be reset.</translation>
 <translation id="2735712963799620190">Schedule</translation>
 <translation id="2737363922397526254">Collapse...</translation>
+<translation id="2737916598897808047"><ph name="APP_NAME" /> wants to share the contents of your screen with <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">Don't allow sites to use fonts installed on your device</translation>
 <translation id="2738771556149464852">Not After</translation>
 <translation id="2739191690716947896">Debug</translation>
@@ -4721,7 +4721,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="6136114942382973861">Close downloads bar</translation>
 <translation id="6136287496450963112">Your security key is not protected with a PIN. To manage fingerprints, first create a PIN.</translation>
 <translation id="6138680304137685902">X9.62 ECDSA Signature with SHA-384</translation>
-<translation id="6138774640412545950">The extension '<ph name="APP_NAME" />' wants to share the contents of your screen with <ph name="TARGET_NAME" />.</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, no network</translation>
 <translation id="6141988275892716286">Confirm download</translation>
 <translation id="6143186082490678276">Get Help</translation>
@@ -6627,6 +6626,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034">Connecting to <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Manage your apps, extensions, and themes</translation>
+<translation id="8192944472786724289"><ph name="APP_NAME" /> wants to share the contents of your screen.</translation>
 <translation id="8195027750202970175">Size on disk</translation>
 <translation id="8198323535106903877">We'll install those <ph name="NUMBER_OF_APPS" /> apps for you</translation>
 <translation id="8198456017687137612">Cast tab</translation>

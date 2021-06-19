@@ -762,7 +762,6 @@
 <translation id="1795214765651529549">Utilitza el tema clàssic</translation>
 <translation id="1796588414813960292">Les funcions que necessitin so no funcionaran</translation>
 <translation id="1799071797295057738">L'extensió <ph name="EXTENSION_NAME" /> s'ha desactivat automàticament.</translation>
-<translation id="1800973090344019061">L'extensió <ph name="APP_NAME" /> vol compartir el contingut de la teva pantalla.</translation>
 <translation id="1802624026913571222">Posa en repòs quan es tanqui la tapa</translation>
 <translation id="1802687198411089702">La pàgina no respon. Pots esperar que respongui o pots sortir-ne.</translation>
 <translation id="1803531841600994172">Idioma d'arribada de la traducció</translation>
@@ -1636,6 +1635,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="2734760316755174687">Els llocs web del domini <ph name="SITE_GROUP_NAME" /> també es restabliran.</translation>
 <translation id="2735712963799620190">Programació</translation>
 <translation id="2737363922397526254">Redueix...</translation>
+<translation id="2737916598897808047"><ph name="APP_NAME" /> vol compartir el contingut de la teva pantalla amb <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">No permetis que els llocs web utilitzin els tipus de lletra instal·lats al teu dispositiu</translation>
 <translation id="2738771556149464852">No després</translation>
 <translation id="2739191690716947896">Depura</translation>
@@ -4706,7 +4706,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6136114942382973861">Tanca la barra de baixades</translation>
 <translation id="6136287496450963112">La clau de seguretat no està protegida amb un PIN. Crea'n un per gestionar les empremtes digitals.</translation>
 <translation id="6138680304137685902">Signatura d'ECDSA X9.62 amb SHA-384</translation>
-<translation id="6138774640412545950">L'extensió <ph name="APP_NAME" /> vol compartir el contingut de la teva pantalla amb <ph name="TARGET_NAME" />.</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" /> (sense xarxa)</translation>
 <translation id="6141988275892716286">Confirma la baixada</translation>
 <translation id="6143186082490678276">Obtén ajuda</translation>
@@ -6611,6 +6610,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034">S'està connectant amb <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Gestionar les aplicacions, les extensions i els temes</translation>
+<translation id="8192944472786724289"><ph name="APP_NAME" /> vol compartir el contingut de la teva pantalla.</translation>
 <translation id="8195027750202970175">Espai ocupat al disc</translation>
 <translation id="8198323535106903877">T'instal·larem aquestes <ph name="NUMBER_OF_APPS" /> aplicacions</translation>
 <translation id="8198456017687137612">S'està emetent la pestanya</translation>

@@ -773,7 +773,6 @@
 <translation id="1795214765651529549">Använd klassiskt</translation>
 <translation id="1796588414813960292">Funktioner som kräver ljud slutar fungera</translation>
 <translation id="1799071797295057738">Tillägget <ph name="EXTENSION_NAME" /> har inaktiverats automatiskt.</translation>
-<translation id="1800973090344019061">Tillägget <ph name="APP_NAME" /> vill dela det som visas på skärmen.</translation>
 <translation id="1802624026913571222">Aktivera viloläge när fodralet stängs</translation>
 <translation id="1802687198411089702">Sidan svarar inte. Vänta tills den svarar eller avbryt.</translation>
 <translation id="1803531841600994172">Språk att översätta till</translation>
@@ -1651,6 +1650,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="2734760316755174687">Webbplatser som är underordnade <ph name="SITE_GROUP_NAME" /> återställs också.</translation>
 <translation id="2735712963799620190">Schema</translation>
 <translation id="2737363922397526254">Dölj...</translation>
+<translation id="2737916598897808047"><ph name="APP_NAME" /> vill dela det som visas på skärmen med <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">Tillåt inte att webbplatser använder teckensnitt som har installerats på enheten</translation>
 <translation id="2738771556149464852">Inte efter</translation>
 <translation id="2739191690716947896">Felsökning</translation>
@@ -4721,7 +4721,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="6136114942382973861">Stäng nedladdningsfältet</translation>
 <translation id="6136287496450963112">Säkerhetsnyckeln skyddas inte av en pinkod. Skapa en pinkod först om du vill använda fingeravtryck.</translation>
 <translation id="6138680304137685902">X9.62 ECDSA-signatur med SHA-384</translation>
-<translation id="6138774640412545950">Tillägget <ph name="APP_NAME" /> vill dela det som visas på skärmen med <ph name="TARGET_NAME" />.</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, inget nätverk</translation>
 <translation id="6141988275892716286">Bekräfta nedladdning</translation>
 <translation id="6143186082490678276">Få hjälp</translation>
@@ -6627,6 +6626,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034">Ansluter till <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Hantera dina appar, tillägg och teman</translation>
+<translation id="8192944472786724289"><ph name="APP_NAME" /> vill dela det som visas på skärmen.</translation>
 <translation id="8195027750202970175">Storlek på disk</translation>
 <translation id="8198323535106903877">Vi installerar de <ph name="NUMBER_OF_APPS" /> apparna åt dig</translation>
 <translation id="8198456017687137612">Castar flik</translation>

@@ -765,7 +765,6 @@
 <translation id="1795214765651529549">Kasuta klassikalist</translation>
 <translation id="1796588414813960292">Heli vajavad funktsioonid ei tööta</translation>
 <translation id="1799071797295057738">Laiendus „<ph name="EXTENSION_NAME" />” keelati automaatselt.</translation>
-<translation id="1800973090344019061">Laiendus „<ph name="APP_NAME" />“ soovib jagada teie ekraanikuva sisu.</translation>
 <translation id="1802624026913571222">Lülita unerežiimi, kui kaas on suletud</translation>
 <translation id="1802687198411089702">Leht ei reageeri. Võite oodata või väljuda.</translation>
 <translation id="1803531841600994172">Keel, millesse tõlkida</translation>
@@ -1642,6 +1641,7 @@ väljasuumimiseks klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamine.</trans
 <translation id="2734760316755174687">Rühmas <ph name="SITE_GROUP_NAME" /> olevad saidid lähtestatakse samuti.</translation>
 <translation id="2735712963799620190">Ajakava</translation>
 <translation id="2737363922397526254">Ahenda ...</translation>
+<translation id="2737916598897808047"><ph name="APP_NAME" /> soovib teie ekraanikuval olevat sisu jagada vahelehega <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">Ära luba saitidel kasutada seadmesse installitud fonte</translation>
 <translation id="2738771556149464852">Mitte pärast</translation>
 <translation id="2739191690716947896">Silu</translation>
@@ -4711,7 +4711,6 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="6136114942382973861">Sule allalaadimiste riba</translation>
 <translation id="6136287496450963112">Teie turvavõti pole PIN-koodiga kaitstud. Sõrmejälgede haldamiseks looge esmalt PIN-kood.</translation>
 <translation id="6138680304137685902">X9.62 ECDSA allkiri SHA-384-ga</translation>
-<translation id="6138774640412545950">Laiendus „<ph name="APP_NAME" />“ soovib saidiga <ph name="TARGET_NAME" /> jagada teie ekraanikuva sisu.</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, võrku pole</translation>
 <translation id="6141988275892716286">Allalaadimise kinnitamine</translation>
 <translation id="6143186082490678276">Abi hankimine</translation>
@@ -6617,6 +6616,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8189750580333936930">Privaatsuse liivakast</translation>
 <translation id="8190193592390505034">Ühendamine võrku <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Teie rakenduste, laienduste ja teemade haldamine</translation>
+<translation id="8192944472786724289"><ph name="APP_NAME" /> soovib teie ekraanikuval olevat sisu jagada.</translation>
 <translation id="8195027750202970175">Maht kettal</translation>
 <translation id="8198323535106903877">Installime need <ph name="NUMBER_OF_APPS" /> rakendust teie eest</translation>
 <translation id="8198456017687137612">Vahelehe ülekandmine</translation>

@@ -762,7 +762,6 @@
 <translation id="1795214765651529549">ใช้แบบคลาสสิก</translation>
 <translation id="1796588414813960292">ฟีเจอร์ที่ต้องใช้เสียงจะไม่ทำงาน</translation>
 <translation id="1799071797295057738">ระบบจะปิดใช้งานส่วนขยาย "<ph name="EXTENSION_NAME" />" โดยอัตโนมัติ</translation>
-<translation id="1800973090344019061">ส่วนขยาย "<ph name="APP_NAME" />" ต้องการแชร์เนื้อหาในหน้าจอของคุณ</translation>
 <translation id="1802624026913571222">สลีปเมื่อปิดเคส</translation>
 <translation id="1802687198411089702">หน้านี้ไม่ตอบสนอง คุณจะรอหรือออกก็ได้</translation>
 <translation id="1803531841600994172">ภาษาปลายทาง</translation>
@@ -1636,6 +1635,7 @@
 <translation id="2734760316755174687">ระบบจะรีเซ็ตเว็บไซต์ภายใต้ <ph name="SITE_GROUP_NAME" /> ด้วย</translation>
 <translation id="2735712963799620190">กำหนดการ</translation>
 <translation id="2737363922397526254">ยุบ...</translation>
+<translation id="2737916598897808047"><ph name="APP_NAME" /> ต้องการแชร์เนื้อหาในหน้าจอของคุณกับ <ph name="TARGET_NAME" /></translation>
 <translation id="2738030019664645674">ไม่อนุญาตให้เว็บไซต์ใช้แบบอักษรที่ติดตั้งอยู่ในอุปกรณ์</translation>
 <translation id="2738771556149464852">ไม่เกิน</translation>
 <translation id="2739191690716947896">แก้ปัญหา</translation>
@@ -4705,7 +4705,6 @@
 <translation id="6136114942382973861">ปิดแถบดาวน์โหลด</translation>
 <translation id="6136287496450963112">คีย์ความปลอดภัยไม่มีการป้องกันด้วย PIN โปรดสร้าง PIN ก่อนเพื่อจัดการลายนิ้วมือ</translation>
 <translation id="6138680304137685902">ลายเซ็น X9.62 ECDSA ที่มี SHA-384</translation>
-<translation id="6138774640412545950">ส่วนขยาย "<ph name="APP_NAME" />" ต้องการแชร์เนื้อหาในหน้าจอของคุณกับ <ph name="TARGET_NAME" /></translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" /> ไม่มีเครือข่าย</translation>
 <translation id="6141988275892716286">ยืนยันการดาวน์โหลด</translation>
 <translation id="6143186082490678276">รับความช่วยเหลือ</translation>
@@ -6610,6 +6609,7 @@
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034">กำลังเชื่อมต่อกับ <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">จัดการแอปพลิเคชัน ส่วนขยาย และธีมของคุณ</translation>
+<translation id="8192944472786724289"><ph name="APP_NAME" /> ต้องการแชร์เนื้อหาในหน้าจอของคุณ</translation>
 <translation id="8195027750202970175">ขนาดบนดิสก์</translation>
 <translation id="8198323535106903877">เราจะติดตั้งแอป <ph name="NUMBER_OF_APPS" /> แอปนั้นให้คุณ</translation>
 <translation id="8198456017687137612">กำลังแคสต์แท็บ</translation>

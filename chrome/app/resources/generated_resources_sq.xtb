@@ -759,7 +759,6 @@
 <translation id="1795214765651529549">Përdor temën klasike</translation>
 <translation id="1796588414813960292">Veçoritë që kanë nevojë për tingujt nuk do të funksionojnë</translation>
 <translation id="1799071797295057738">Shtesa "<ph name="EXTENSION_NAME" />" u çaktivizua automatikisht.</translation>
-<translation id="1800973090344019061">Shtesa "<ph name="APP_NAME" />" dëshiron të ndajë përmbajtjet e ekranit tënd.</translation>
 <translation id="1802624026913571222">Në gjumë kur mbyllet kapaku</translation>
 <translation id="1802687198411089702">Faqja nuk po përgjigjet. Mund të presësh ose mund të dalësh.</translation>
 <translation id="1803531841600994172">Gjuha në të cilën do të përkthehet</translation>
@@ -1633,6 +1632,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2734760316755174687">Do të rivendosen edhe sajtet nën <ph name="SITE_GROUP_NAME" />.</translation>
 <translation id="2735712963799620190">Planifikimi</translation>
 <translation id="2737363922397526254">Palos...</translation>
+<translation id="2737916598897808047"><ph name="APP_NAME" /> dëshiron të ndajë përmbajtjen e ekranit tënd me <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">Mos i lejo sajtet të përdorin fontet e instaluara në pajisjen tënde</translation>
 <translation id="2738771556149464852">Jo pas</translation>
 <translation id="2739191690716947896">Korrigjo</translation>
@@ -4702,7 +4702,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="6136114942382973861">Mbyll shiritin e shkarkimeve</translation>
 <translation id="6136287496450963112">Çelësi yt i sigurisë nuk është i mbrojtur me një kod PIN. Për të menaxhuar gjurmët e gishtave, në fillim krijo një kod PIN.</translation>
 <translation id="6138680304137685902">Nënshkrimi X9.62 ECDSA me SHA-384</translation>
-<translation id="6138774640412545950">Shtesa "<ph name="APP_NAME" />" dëshiron të ndajë përmbajtjet e ekranit tënd me <ph name="TARGET_NAME" />.</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, nuk ka rrjet</translation>
 <translation id="6141988275892716286">Konfirmo shkarkimin</translation>
 <translation id="6143186082490678276">Merr ndihmë</translation>
@@ -6605,6 +6604,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034">Po lidhet me <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Menaxho aplikacionet e tua, shtesat dhe temat</translation>
+<translation id="8192944472786724289"><ph name="APP_NAME" /> dëshiron të ndajë përmbajtjen e ekranit tënd.</translation>
 <translation id="8195027750202970175">Madhësia në disk</translation>
 <translation id="8198323535106903877">Do t'i instalojmë ato <ph name="NUMBER_OF_APPS" /> aplikacione për ty</translation>
 <translation id="8198456017687137612">Skeda e transmetimit</translation>

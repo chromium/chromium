@@ -773,7 +773,6 @@
 <translation id="1795214765651529549">ប្រើបែបធម្មតា</translation>
 <translation id="1796588414813960292">មុខងារដែលត្រូវការសំឡេងនឹងមិនដំណើរការទេ</translation>
 <translation id="1799071797295057738">ផ្នែកបន្ថែម "<ph name="EXTENSION_NAME" />" ត្រូវបានបិទដោយស្វ័យប្រវត្តិ</translation>
-<translation id="1800973090344019061">កម្មវិធីបន្ថែម "<ph name="APP_NAME" />" ចង់ចែករំលែក​ខ្លឹមសារ​នៅលើអេក្រង់​របស់អ្នក។</translation>
 <translation id="1802624026913571222">ដេក​នៅពេល​បិទគម្រប</translation>
 <translation id="1802687198411089702">ទំព័រ​នេះ​មិន​ឆ្លើយ​តប​ទេ។ អ្នក​អាច​រង់ចាំឱ្យ​វាឆ្លើយ​តប ឬចាកចេញ។</translation>
 <translation id="1803531841600994172">ភាសាដែលត្រូវបកប្រែទៅជា</translation>
@@ -1651,6 +1650,7 @@
 <translation id="2734760316755174687">គេហទំព័រ​ដែលស្ថិត​ក្រោម​ <ph name="SITE_GROUP_NAME" /> ក៏នឹងត្រូវកំណត់​ឡើងវិញ​ផងដែរ។</translation>
 <translation id="2735712963799620190">កាលវិភាគ</translation>
 <translation id="2737363922397526254">បង្រួម...</translation>
+<translation id="2737916598897808047"><ph name="APP_NAME" /> ចង់ចែករំលែក​ខ្លឹមសារ​នៅលើ​អេក្រង់របស់អ្នក​ជាមួយ <ph name="TARGET_NAME" />។</translation>
 <translation id="2738030019664645674">កុំអនុញ្ញាតឱ្យគេហទំព័រប្រើពុម្ព​អក្សរ​ ដែលបានដំឡើងនៅលើឧបករណ៍របស់អ្នក</translation>
 <translation id="2738771556149464852">មិនបន្ទាប់ពី</translation>
 <translation id="2739191690716947896">កម្ចាត់កំហុស</translation>
@@ -4722,7 +4722,6 @@
 <translation id="6136114942382973861">បិទ​របារ​ទាញយក</translation>
 <translation id="6136287496450963112">សោសុវត្ថិភាពរបស់អ្នក​មិនបាន​ប្រើកូដ PIN សម្រាប់​ការពារទេ។ ដើម្បីគ្រប់គ្រងស្នាម​ម្រាមដៃ សូមបង្កើតកូដ PIN ជាមុនសិន។</translation>
 <translation id="6138680304137685902">ហត្ថលេខា X9.62 ECDSA ជាមួយ SHA-384</translation>
-<translation id="6138774640412545950">កម្មវិធីបន្ថែម "<ph name="APP_NAME" />" ចង់ចែករំលែក​ខ្លឹមសារ​នៅលើអេក្រង់​របស់អ្នក​ជាមួយ <ph name="TARGET_NAME" />។</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, គ្មាន​បណ្ដាញ</translation>
 <translation id="6141988275892716286">បញ្ជាក់​ការទាញយក</translation>
 <translation id="6143186082490678276">ទទួលយកជំនួយ</translation>
@@ -6627,6 +6626,7 @@
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034">កំពុងភ្ជាប់ទៅ <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">គ្រប់គ្រងកម្មវិធី កម្មវិធីបន្ថែម និងធីមរបស់អ្នក</translation>
+<translation id="8192944472786724289"><ph name="APP_NAME" /> ចង់ចែករំលែក​ខ្លឹមសារ​នៅលើ​អេក្រង់របស់អ្នក។</translation>
 <translation id="8195027750202970175">ទំហំផ្ទុករបស់ថាស</translation>
 <translation id="8198323535106903877">យើង​នឹង​ដំឡើង​កម្មវិធីទាំង <ph name="NUMBER_OF_APPS" /> នោះសម្រាប់អ្នក</translation>
 <translation id="8198456017687137612">កំពុងបញ្ជូនផ្ទាំង</translation>

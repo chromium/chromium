@@ -770,7 +770,6 @@
 <translation id="1795214765651529549">Tumia ya Kawaida</translation>
 <translation id="1796588414813960292">Vipengele vinavyohitaji sauti havitafanya kazi</translation>
 <translation id="1799071797295057738">Kiendelezi cha "<ph name="EXTENSION_NAME" />" kimezimwa kiotomatiki.</translation>
-<translation id="1800973090344019061">Kiendelezi kiitwacho "<ph name="APP_NAME" />" kinataka kushiriki yaliyomo kwenye skrini yako.</translation>
 <translation id="1802624026913571222">Iwe katika hali tuli kifuniko kikifungwa</translation>
 <translation id="1802687198411089702">Ukurasa huu haufanyi kazi. Unaweza kuusubiri au uufunge.</translation>
 <translation id="1803531841600994172">Lugha ya kutafsiria</translation>
@@ -1647,6 +1646,7 @@ na vitufe vya Ctrl, Alt pamoja na kitufe cha kupunguza Mwangaza ili usogeze mbal
 <translation id="2734760316755174687">Itabadilisha pia ruhusa za tovuti zilizo chini ya <ph name="SITE_GROUP_NAME" />.</translation>
 <translation id="2735712963799620190">Ratiba</translation>
 <translation id="2737363922397526254">Kunja...</translation>
+<translation id="2737916598897808047"><ph name="APP_NAME" /> inataka kushiriki yaliyomo kwenye skrini yako na <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">Usiruhusu tovuti zitumie fonti zilizosakinishwa kwenye kifaa chako</translation>
 <translation id="2738771556149464852">Sio Baadaye</translation>
 <translation id="2739191690716947896">Tatua</translation>
@@ -4715,7 +4715,6 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6136114942382973861">Funga upau wa vipakuliwa</translation>
 <translation id="6136287496450963112">Ufunguo wako wa usalama haujalindwa kwa PIN. Ili uweze kudhibiti alama za vidole, kwanza weka PIN.</translation>
 <translation id="6138680304137685902">Sahihi ya X9.62 ECDSA yenye SHA-384</translation>
-<translation id="6138774640412545950">Kiendelezi kiitwacho "<ph name="APP_NAME" />" kinataka kushiriki yaliyomo kwenye skrini yako na <ph name="TARGET_NAME" />.</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, hakuna mtandao</translation>
 <translation id="6141988275892716286">Thibitisha upakuaji</translation>
 <translation id="6143186082490678276">Pata Usaidizi</translation>
@@ -6623,6 +6622,7 @@ Sidhani tovuti hii inapaswa kuzuiwa!</translation>
 <translation id="8189750580333936930">Utaratibu wa kuwekea vikwazo vya faragha</translation>
 <translation id="8190193592390505034">Inaunganisha kwenye <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Kudhibiti programu, viendelezi na mandhari yako</translation>
+<translation id="8192944472786724289"><ph name="APP_NAME" /> inataka kushiriki yaliyomo kwenye skrini yako.</translation>
 <translation id="8195027750202970175">Ukubwa kwenye diski</translation>
 <translation id="8198323535106903877">Tutakusakinishia programu hizo <ph name="NUMBER_OF_APPS" /></translation>
 <translation id="8198456017687137612">Inatuma maudhui ya kichupo</translation>

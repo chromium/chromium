@@ -776,7 +776,6 @@
 <translation id="1795214765651529549">Вибрати класичну тему</translation>
 <translation id="1796588414813960292">Функції, яким потрібен звук, не працюватимуть</translation>
 <translation id="1799071797295057738">Розширення "<ph name="EXTENSION_NAME" />" автоматично вимкнено.</translation>
-<translation id="1800973090344019061">Розширення <ph name="APP_NAME" /> хоче показувати вміст вашого екрана.</translation>
 <translation id="1802624026913571222">Переходити в режим сну, коли кришка закрита</translation>
 <translation id="1802687198411089702">Сторінка не відповідає. Зачекайте або закрийте її.</translation>
 <translation id="1803531841600994172">Мова перекладу</translation>
@@ -1654,6 +1653,7 @@
 <translation id="2734760316755174687">Дозволи сайтів групи <ph name="SITE_GROUP_NAME" /> також буде скинуто.</translation>
 <translation id="2735712963799620190">Графік</translation>
 <translation id="2737363922397526254">Згорнути...</translation>
+<translation id="2737916598897808047"><ph name="APP_NAME" /> хоче показувати вміст вашого екрана тут: <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">Заборонити сайтам використовувати шрифти, установлені на пристрої</translation>
 <translation id="2738771556149464852">Не пізніше</translation>
 <translation id="2739191690716947896">Налагоджувати</translation>
@@ -4724,7 +4724,6 @@
 <translation id="6136114942382973861">Закрити панель завантажень</translation>
 <translation id="6136287496450963112">Ваш ключ безпеки не захищено PIN-кодом. Щоб керувати відбитками пальців, спершу створіть новий PIN-код.</translation>
 <translation id="6138680304137685902">Алгоритм ECDSA X9.62 з підписом SHA-384</translation>
-<translation id="6138774640412545950">Розширення <ph name="APP_NAME" /> хоче показувати вміст вашого екрана на сайті <ph name="TARGET_NAME" />.</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, немає мережі</translation>
 <translation id="6141988275892716286">Підтвердити завантаження</translation>
 <translation id="6143186082490678276">Довідка</translation>
@@ -6630,6 +6629,7 @@
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034">З'єднання з <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Керувати вашими програмами, розширеннями та темами</translation>
+<translation id="8192944472786724289"><ph name="APP_NAME" /> хоче показувати вміст вашого екрана.</translation>
 <translation id="8195027750202970175">Розмір на диску</translation>
 <translation id="8198323535106903877">Ми встановимо для вас стільки додатків: <ph name="NUMBER_OF_APPS" /></translation>
 <translation id="8198456017687137612">Трансляція вкладки</translation>

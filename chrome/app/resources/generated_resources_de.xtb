@@ -759,7 +759,6 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="1795214765651529549">Klassisches Design verwenden</translation>
 <translation id="1796588414813960292">Funktionen, die Ton erfordern, funktionieren dann nicht</translation>
 <translation id="1799071797295057738">Die Erweiterung "<ph name="EXTENSION_NAME" />" wurde automatisch deaktiviert.</translation>
-<translation id="1800973090344019061">Die Erweiterung „<ph name="APP_NAME" />“ möchte den Inhalt Ihres Bildschirms teilen.</translation>
 <translation id="1802624026913571222">Beim Zuklappen in den Ruhemodus wechseln</translation>
 <translation id="1802687198411089702">Die Seite reagiert nicht. Sie können warten, bis sie wieder reagiert, oder sie schließen.</translation>
 <translation id="1803531841600994172">Sprache, in die übersetzt wird</translation>
@@ -1633,6 +1632,7 @@ und „Strg + Alt + dunkler“, um herauszuzoomen.</translation>
 <translation id="2734760316755174687">Websites unter <ph name="SITE_GROUP_NAME" /> werden ebenfalls zurückgesetzt.</translation>
 <translation id="2735712963799620190">Zeitplan</translation>
 <translation id="2737363922397526254">Minimieren...</translation>
+<translation id="2737916598897808047"><ph name="APP_NAME" /> möchte den Inhalt Ihres Bildschirms mit <ph name="TARGET_NAME" /> teilen.</translation>
 <translation id="2738030019664645674">Websites dürfen keine auf meinem Gerät installierten Schriftarten verwenden</translation>
 <translation id="2738771556149464852">Nicht nach</translation>
 <translation id="2739191690716947896">Fehlerbehebung</translation>
@@ -4700,7 +4700,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6136114942382973861">Downloadleiste schließen</translation>
 <translation id="6136287496450963112">Ihr Sicherheitsschlüssel ist nicht durch eine PIN geschützt. Erstellen Sie zuerst eine PIN, um Fingerabdrücke zu verwalten.</translation>
 <translation id="6138680304137685902">X9.62-ECDSA-Signatur mit SHA-384</translation>
-<translation id="6138774640412545950">Die Erweiterung „<ph name="APP_NAME" />“ möchte den Inhalt Ihres Bildschirms mit <ph name="TARGET_NAME" /> teilen.</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, nicht verbunden</translation>
 <translation id="6141988275892716286">Download bestätigen</translation>
 <translation id="6143186082490678276">Hilfe</translation>
@@ -6601,6 +6600,7 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034">Verbindung zu <ph name="PROVIDER_NAME" /> wird hergestellt.</translation>
 <translation id="8191230140820435481">Apps, Erweiterungen und Designs verwalten</translation>
+<translation id="8192944472786724289"><ph name="APP_NAME" /> möchte den Inhalt Ihres Bildschirms teilen.</translation>
 <translation id="8195027750202970175">Dateigröße</translation>
 <translation id="8198323535106903877"><ph name="NUMBER_OF_APPS" /> Apps werden installiert</translation>
 <translation id="8198456017687137612">Tab wird gestreamt</translation>

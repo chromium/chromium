@@ -772,7 +772,6 @@
 <translation id="1795214765651529549">క్లాసిక్‌ను ఉపయోగించు</translation>
 <translation id="1796588414813960292">సౌండ్ అవసరం అయ్యే ఫీచర్‌లు పని చేయవు</translation>
 <translation id="1799071797295057738">"<ph name="EXTENSION_NAME" />" పొడిగింపు స్వయంచాలకంగా నిలిపివేయబడింది.</translation>
-<translation id="1800973090344019061">"<ph name="APP_NAME" />" ఎక్స్‌టెన్షన్ మీ స్క్రీన్ కంటెంట్‌లను షేర్ చేయాలనుకుంటుంది.</translation>
 <translation id="1802624026913571222">కవర్ మూసి ఉన్నప్పుడు స్లీప్ స్థితికి వెళ్లు</translation>
 <translation id="1802687198411089702">పేజీ ప్రతిస్పందించడం లేదు. మీరు దాని కోసం వేచి ఉండవచ్చు లేదా మూసివేయవచ్చు.</translation>
 <translation id="1803531841600994172">అనువదించాల్సిన భాష</translation>
@@ -1650,6 +1649,7 @@
 <translation id="2734760316755174687"><ph name="SITE_GROUP_NAME" />లోని సైట్‌లు కూడా రీసెట్ చేయబడతాయి.</translation>
 <translation id="2735712963799620190">షెడ్యూల్</translation>
 <translation id="2737363922397526254">కుదించు...</translation>
+<translation id="2737916598897808047"><ph name="APP_NAME" /> మీ స్క్రీన్ కంటెంట్‌లను <ph name="TARGET_NAME" />తో షేర్ చేయాలనుకుంటుంది.</translation>
 <translation id="2738030019664645674">మీ పరికరంలో ఇన్‌స్టాల్ చేయబడిన ఫాంట్‌లను ఉపయోగించడానికి సైట్‌లను అనుమతించకండి</translation>
 <translation id="2738771556149464852">తరువాత కాదు</translation>
 <translation id="2739191690716947896">డీబగ్</translation>
@@ -4720,7 +4720,6 @@
 <translation id="6136114942382973861">డౌన్‌లోడ్‌ల బార్‌ను మూసివేయండి</translation>
 <translation id="6136287496450963112">మీ 'సెక్యూరిటీ కీ'కి PIN రక్షణ లేదు. వేలిముద్రలను మేనేజ్ చేయడానికి, మొదట PINను క్రియేట్ చేయండి.</translation>
 <translation id="6138680304137685902">SHA-384తో X9.62 ECDSA సంతకం</translation>
-<translation id="6138774640412545950">"<ph name="APP_NAME" />" ఎక్స్‌టెన్షన్ మీ స్క్రీన్ కంటెంట్‌లను <ph name="TARGET_NAME" />తో షేర్ చేయాలనుకుంటుంది.</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, నెట్‌వర్క్ లేదు</translation>
 <translation id="6141988275892716286">డౌన్‌లోడ్‌ను నిర్ధారించండి</translation>
 <translation id="6143186082490678276">సహాయం పొందండి</translation>
@@ -6622,6 +6621,7 @@
 <translation id="8189750580333936930">గోప్యతా పరిరక్షణ టెక్నాలజీల సెట్</translation>
 <translation id="8190193592390505034"><ph name="PROVIDER_NAME" />కు కనెక్ట్ చేస్తోంది</translation>
 <translation id="8191230140820435481">మీ అనువర్తనాలను, పొడిగింపులను మరియు థీమ్‌లను నిర్వహించండి</translation>
+<translation id="8192944472786724289"><ph name="APP_NAME" /> మీ స్క్రీన్ కంటెంట్‌లను షేర్ చేయాలనుకుంటుంది.</translation>
 <translation id="8195027750202970175">డిస్క్‌లో పరిమాణం</translation>
 <translation id="8198323535106903877">మేము మీ కోసం ఈ <ph name="NUMBER_OF_APPS" /> యాప్‌లు ఇన్‌స్టాల్ చేస్తాము</translation>
 <translation id="8198456017687137612">ప్రసారం చేసే ట్యాబ్</translation>

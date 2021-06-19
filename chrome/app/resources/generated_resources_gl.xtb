@@ -761,7 +761,6 @@
 <translation id="1795214765651529549">Usar tema clásico</translation>
 <translation id="1796588414813960292">As funcións que necesiten reproducir sons non estarán dispoñibles</translation>
 <translation id="1799071797295057738">A extensión <ph name="EXTENSION_NAME" /> desactivouse automaticamente.</translation>
-<translation id="1800973090344019061">A extensión <ph name="APP_NAME" /> solicita compartir o contido da pantalla.</translation>
 <translation id="1802624026913571222">Activar suspensión cando se peche a tapa</translation>
 <translation id="1802687198411089702">A páxina non responde. Podes esperar ou saír da páxina.</translation>
 <translation id="1803531841600994172">Idioma ao que queres traducir</translation>
@@ -1634,6 +1633,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2734760316755174687">Tamén se restablecerán os sitios situados en <ph name="SITE_GROUP_NAME" />.</translation>
 <translation id="2735712963799620190">Programación</translation>
 <translation id="2737363922397526254">Contraer...</translation>
+<translation id="2737916598897808047"><ph name="APP_NAME" /> solicita que compartas o contido da túa pantalla con <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">Non permitir que os sitios utilicen os tipos de letra instalados no dispositivo</translation>
 <translation id="2738771556149464852">Non despois de</translation>
 <translation id="2739191690716947896">Depuración</translation>
@@ -4703,7 +4703,6 @@ Obtén <ph name="BEGIN_LINK" />máis información<ph name="END_LINK" /> sobre os
 <translation id="6136114942382973861">Pechar barra de descargas</translation>
 <translation id="6136287496450963112">A túa chave de seguranza non está protexida cun PIN. Para xestionar as impresións dixitais, primeiro crea un PIN.</translation>
 <translation id="6138680304137685902">Sinatura X9.62 ECDSA con SHA-384</translation>
-<translation id="6138774640412545950">A extensión <ph name="APP_NAME" /> solicita compartir o contido da pantalla con <ph name="TARGET_NAME" />.</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, sen rede dispoñible</translation>
 <translation id="6141988275892716286">Confirma a descarga</translation>
 <translation id="6143186082490678276">Obter axuda</translation>
@@ -6607,6 +6606,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034">Establecendo conexión con <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Xestiona as túas aplicacións, extensións e temas</translation>
+<translation id="8192944472786724289"><ph name="APP_NAME" /> solicita que compartas o contido da túa pantalla.</translation>
 <translation id="8195027750202970175">Tamaño en disco</translation>
 <translation id="8198323535106903877">Encargarémonos de instalar esas <ph name="NUMBER_OF_APPS" /> aplicacións</translation>
 <translation id="8198456017687137612">Recibindo emisión de pestana</translation>

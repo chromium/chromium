@@ -769,7 +769,6 @@
 <translation id="1795214765651529549">Сонгодог загварыг ашиглах</translation>
 <translation id="1796588414813960292">Дуу чимээ шаардлагатай онцлогууд ажиллахгүй</translation>
 <translation id="1799071797295057738">"<ph name="EXTENSION_NAME" />" өргөтгөлийг автоматаар идэвхгүй болгосон.</translation>
-<translation id="1800973090344019061">"<ph name="APP_NAME" />" өргөтгөл таны дэлгэцийн контентыг хуваалцахыг хүсэж байна.</translation>
 <translation id="1802624026913571222">Хавтас хаалттай үед идэвхгүй болгох</translation>
 <translation id="1802687198411089702">Хуудас хариу өгөхгүй байна. Та хариу өгтөл нь хүлээх эсвэл гарах боломжтой.</translation>
 <translation id="1803531841600994172">Орчуулах хэл</translation>
@@ -1647,6 +1646,7 @@
 <translation id="2734760316755174687"><ph name="SITE_GROUP_NAME" /> доорх сайтууд мөн шинэчлэгдэх болно.</translation>
 <translation id="2735712963799620190">Хуваарь</translation>
 <translation id="2737363922397526254">Гэмтэлтэй байна ...</translation>
+<translation id="2737916598897808047"><ph name="APP_NAME" /> таны дэлгэцийн контентыг <ph name="TARGET_NAME" />-тай хуваалцахыг хүсэж байна.</translation>
 <translation id="2738030019664645674">Сайтуудад таны төхөөрөмж дээр суулгасан фонтуудыг ашиглахыг бүү зөвшөөр</translation>
 <translation id="2738771556149464852">Дараа нь биш</translation>
 <translation id="2739191690716947896">Алдааг засах</translation>
@@ -4716,7 +4716,6 @@
 <translation id="6136114942382973861">Татаж авсан файл хадгалах эсвэл нээх хэсгийг хаах</translation>
 <translation id="6136287496450963112">Таны аюулгүй байдлын түлхүүрийг ПИН-р хамгаалаагүй байна. Хурууны хээг удирдахын тулд эхлээд ПИН үүсгэнэ үү.</translation>
 <translation id="6138680304137685902">X9.62 ECDSA SHA-384-тэй гарын үсэг</translation>
-<translation id="6138774640412545950">"<ph name="APP_NAME" />" өргөтгөл таны дэлгэцийн контентыг <ph name="TARGET_NAME" />-тай хуваалцахыг хүсэж байна.</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, сүлжээ алга байна</translation>
 <translation id="6141988275892716286">Таталтыг баталгаажуулах</translation>
 <translation id="6143186082490678276">Тусламж авах</translation>
@@ -6618,6 +6617,7 @@
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034"><ph name="PROVIDER_NAME" /> руу холбогдож байна</translation>
 <translation id="8191230140820435481">Програм, өргөтгөл, theme-дээ тохиргоо хийх</translation>
+<translation id="8192944472786724289"><ph name="APP_NAME" /> таны дэлгэцийн контентыг хуваалцахыг хүсэж байна.</translation>
 <translation id="8195027750202970175">Дискийн хэмжээ</translation>
 <translation id="8198323535106903877">Бид эдгээр <ph name="NUMBER_OF_APPS" /> аппыг танд зориулан суулгах болно</translation>
 <translation id="8198456017687137612">Табыг дамжуулж байна</translation>

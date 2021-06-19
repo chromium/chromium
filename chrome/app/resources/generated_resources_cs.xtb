@@ -764,7 +764,6 @@
 <translation id="1795214765651529549">Použít klasický motiv</translation>
 <translation id="1796588414813960292">Funkce vyžadující zvuk nebudou k dispozici</translation>
 <translation id="1799071797295057738">Rozšíření <ph name="EXTENSION_NAME" /> bylo automaticky deaktivováno.</translation>
-<translation id="1800973090344019061">Rozšíření <ph name="APP_NAME" /> chce sdílet obsah vaší obrazovky.</translation>
 <translation id="1802624026913571222">Při zavření víka přejít do režimu spánku</translation>
 <translation id="1802687198411089702">Stránka nereaguje. Můžete počkat nebo ji zavřít.</translation>
 <translation id="1803531841600994172">Cílový jazyk překladu</translation>
@@ -1636,6 +1635,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2734760316755174687">Budou resetovány i weby ve skupině <ph name="SITE_GROUP_NAME" />.</translation>
 <translation id="2735712963799620190">Plán</translation>
 <translation id="2737363922397526254">Sbalit...</translation>
+<translation id="2737916598897808047">Aplikace <ph name="APP_NAME" /> chce sdílet obsah vaší obrazovky s kartou <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">Weby nemohou používat písma nainstalovaná ve vašem zařízení</translation>
 <translation id="2738771556149464852">Nikoli po</translation>
 <translation id="2739191690716947896">Ladit</translation>
@@ -4704,7 +4704,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="6136114942382973861">Zavřít lištu se staženými soubory</translation>
 <translation id="6136287496450963112">Váš bezpečnostní klíč není chráněn kódem PIN. Pokud chcete spravovat otisky prstů, nejdříve vytvořte PIN.</translation>
 <translation id="6138680304137685902">Podpis X9.62 ECDSA s SHA-384</translation>
-<translation id="6138774640412545950">Rozšíření <ph name="APP_NAME" /> chce sdílet obsah vaší obrazovky s: <ph name="TARGET_NAME" />.</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, žádná síť</translation>
 <translation id="6141988275892716286">Potvrzení stahování</translation>
 <translation id="6143186082490678276">Zobrazit nápovědu</translation>
@@ -6607,6 +6606,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034">Připojování k síti poskytovatele <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Spravovat aplikace, rozšíření a motivy</translation>
+<translation id="8192944472786724289">Aplikace <ph name="APP_NAME" /> chce sdílet obsah vaší obrazovky.</translation>
 <translation id="8195027750202970175">Velikost na disku</translation>
 <translation id="8198323535106903877">Aplikace (<ph name="NUMBER_OF_APPS" />) se samy nainstalují</translation>
 <translation id="8198456017687137612">Odesílání karty</translation>

@@ -773,7 +773,6 @@
 <translation id="1795214765651529549">Gebruik Klassiek</translation>
 <translation id="1796588414813960292">Kenmerke wat klank nodig het, sal nie werk nie</translation>
 <translation id="1799071797295057738">Die uitbreiding "<ph name="EXTENSION_NAME" />" is outomaties gedeaktiveer.</translation>
-<translation id="1800973090344019061">Die uitbreiding "<ph name="APP_NAME" />" wil die inhoud van jou skerm deel.</translation>
 <translation id="1802624026913571222">Slaap wanneer omhulsel toe is</translation>
 <translation id="1802687198411089702">Hierdie bladsy reageer nie. Jy kan daarvoor wag of uitgaan.</translation>
 <translation id="1803531841600994172">Taal om in te vertaal</translation>
@@ -1651,6 +1650,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="2734760316755174687">Werwe onder <ph name="SITE_GROUP_NAME" /> sal ook teruggestel word.</translation>
 <translation id="2735712963799620190">Skedule</translation>
 <translation id="2737363922397526254">Vou in …</translation>
+<translation id="2737916598897808047"><ph name="APP_NAME" /> wil jou skerm se inhoud met <ph name="TARGET_NAME" /> deel.</translation>
 <translation id="2738030019664645674">Moenie werwe toelaat om lettertipes wat op jou toestel geïnstalleer is, te gebruik nie</translation>
 <translation id="2738771556149464852">Nie na die tyd nie</translation>
 <translation id="2739191690716947896">Ontfout</translation>
@@ -4722,7 +4722,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6136114942382973861">Maak aflaaibalk toe</translation>
 <translation id="6136287496450963112">Jou sekuriteitsleutel word nie met 'n PIN beskerm nie. As jy vingerafdrukke wil bestuur, moet jy eers 'n PIN skep.</translation>
 <translation id="6138680304137685902">X9.62 ECDSA-handtekening met SHA-384</translation>
-<translation id="6138774640412545950">Die uitbreiding "<ph name="APP_NAME" />" wil die inhoud van jou skerm met <ph name="TARGET_NAME" /> deel.</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />; geen netwerk nie</translation>
 <translation id="6141988275892716286">Bevestig aflaai</translation>
 <translation id="6143186082490678276">Kry hulp</translation>
@@ -6627,6 +6626,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034">Koppel tans aan <ph name="PROVIDER_NAME" /> …</translation>
 <translation id="8191230140820435481">Bestuur jou programme, uitbreidings en temas</translation>
+<translation id="8192944472786724289"><ph name="APP_NAME" /> wil jou skerm se inhoud deel.</translation>
 <translation id="8195027750202970175">Grootte op skyf</translation>
 <translation id="8198323535106903877">Ons sal daardie <ph name="NUMBER_OF_APPS" /> programme vir jou installeer</translation>
 <translation id="8198456017687137612">Saai tans oortjie uit</translation>

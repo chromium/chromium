@@ -772,7 +772,6 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.}}</t
 <translation id="1795214765651529549">Sebenzisa okwakudala</translation>
 <translation id="1796588414813960292">Izakhi ezidinga umsindo ngeke zisebenze</translation>
 <translation id="1799071797295057738">Isandiso se-"<ph name="EXTENSION_NAME" />" sikhutshazwe ngokuzenzakalela.</translation>
-<translation id="1800973090344019061">Isandiso se-"<ph name="APP_NAME" />" sifuna ukwabelana ngokuqukethwe yisikrini sakho.</translation>
 <translation id="1802624026913571222">Lala uma ikhava ivaliwe</translation>
 <translation id="1802687198411089702">Ikhasi aliphenduli. Ungalilinda noma uphume.</translation>
 <translation id="1803531841600994172">Ulimi ongahumushela kulo</translation>
@@ -1650,6 +1649,7 @@ bese u-Ctrl+Alt+Brightness down ukuze uhlehlise isithombe.</translation>
 <translation id="2734760316755174687">Amasayithi angaphansi kwe-<ph name="SITE_GROUP_NAME" /> azophinda asethwe kabusha.</translation>
 <translation id="2735712963799620190">Ishejuli</translation>
 <translation id="2737363922397526254">Goqa...</translation>
+<translation id="2737916598897808047">I-<ph name="APP_NAME" /> ifuna ukwabelana ngokuqukethwe kwesikrini sakho ne-<ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">Ungavumeli amasayithi ukuthi asebenzise amafonti afakwe kudivayisi yakho</translation>
 <translation id="2738771556149464852">Hhayi ngemuva</translation>
 <translation id="2739191690716947896">Lungisa isiphazamisi</translation>
@@ -4722,7 +4722,6 @@ Qiniseka ukuthi awuvezi noma yiluphi ulwazi olubucayi.</translation>
 <translation id="6136114942382973861">Vala ibha yokulanda</translation>
 <translation id="6136287496450963112">Ukhiye wakho wokuqinisekisa ubunikazi awuvunyelwe ngephinikhodi. Ukuze uphathe izinsalela zeminwe, qala udale iphinikhodi.</translation>
 <translation id="6138680304137685902">Isiginesha ye-X9.62 ECDSA ne-SHA-384</translation>
-<translation id="6138774640412545950">Isandiso se-"<ph name="APP_NAME" />" sifuna ukwabelana ngokuqukethwe yisikrini sakho. ne-<ph name="TARGET_NAME" />.</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, ayikho inethiwekhi</translation>
 <translation id="6141988275892716286">Qinisekisa ukulanda</translation>
 <translation id="6143186082490678276">Thola usizo</translation>
@@ -6627,6 +6626,7 @@ Gcina ifayela lakho elingukhiye endaweni evikelekile. Uzolidinga ukuze udale izi
 <translation id="8189750580333936930">Privacy sandbox</translation>
 <translation id="8190193592390505034">Ixhumeka ku-<ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Phatha izinhlelo zakho zokusebenza, izandiso, namatimu</translation>
+<translation id="8192944472786724289">I-<ph name="APP_NAME" /> ifuna ukwabelana ngokuqukethwe kwesikrini sakho.</translation>
 <translation id="8195027750202970175">Usayizi kudiski</translation>
 <translation id="8198323535106903877">Sizokufakela lezo zinhlelo zokusebenza ezingu-<ph name="NUMBER_OF_APPS" /></translation>
 <translation id="8198456017687137612">Ithebhu yokusakaza</translation>

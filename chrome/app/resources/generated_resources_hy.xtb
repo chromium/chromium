@@ -764,7 +764,6 @@
 <translation id="1795214765651529549">Օգտագործել դասական թեման</translation>
 <translation id="1796588414813960292">Գործառույթները, որոնց համար պահանջվում է ձայն, չեն աշխատի</translation>
 <translation id="1799071797295057738">«<ph name="EXTENSION_NAME" />» ընդլայնումն ավտոմատ անջատվել է:</translation>
-<translation id="1800973090344019061"><ph name="APP_NAME" /> ընդլայնումն ուզում է կիսվել ձեր էկրանի բովանդակությամբ։</translation>
 <translation id="1802624026913571222">Անցնել քնի ռեժիմ, երբ պատյանի շապիկը փակ է</translation>
 <translation id="1802687198411089702">Էջը չի պատասխանում: Կարող եք սպասել կամ փակել այն:</translation>
 <translation id="1803531841600994172">Թարգմանության լեզուն</translation>
@@ -1637,6 +1636,7 @@
 <translation id="2734760316755174687">Թույլտվությունները կվերակայվեն նաև <ph name="SITE_GROUP_NAME" />-ի բոլոր կայքերում:</translation>
 <translation id="2735712963799620190">Ժամանակացույց</translation>
 <translation id="2737363922397526254">Կոծկել…</translation>
+<translation id="2737916598897808047"><ph name="APP_NAME" /> հավելվածն ուզում է կիսվել ձեր էկրանի բովանդակությամբ <ph name="TARGET_NAME" /> կայքի հետ։</translation>
 <translation id="2738030019664645674">Թույլ չտալ կայքերին օգտագործել սարքում տեղադրված տառատեսակները</translation>
 <translation id="2738771556149464852">Ոչ ուշ</translation>
 <translation id="2739191690716947896">Վրիպազերծել</translation>
@@ -4709,7 +4709,6 @@
 <translation id="6136114942382973861">Փակել ներբեռնումների գոտին</translation>
 <translation id="6136287496450963112">Անվտանգության բանալին պաշտպանված չէ PIN-ով: Մատնահետքերը կառավարելու համար նախ ստեղծեք PIN կոդ:</translation>
 <translation id="6138680304137685902">X9.62 ECDSA ստորագրություն SHA-384-ով</translation>
-<translation id="6138774640412545950"><ph name="APP_NAME" /> ընդլայնումն ուզում է կիսվել ձեր էկրանի բովանդակությամբ <ph name="TARGET_NAME" /> կայքի հետ։</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, ցանց չկա</translation>
 <translation id="6141988275892716286">Հաստատեք ներբեռնումը</translation>
 <translation id="6143186082490678276">Օգնություն</translation>
@@ -6612,6 +6611,7 @@
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034">Կապակցվում է <ph name="PROVIDER_NAME" />-ին</translation>
 <translation id="8191230140820435481">Կառավարել հավելվածները, ընդլայնումները և թեմաները</translation>
+<translation id="8192944472786724289"><ph name="APP_NAME" /> հավելվածն ուզում է կիսվել ձեր էկրանի բովանդակությամբ։</translation>
 <translation id="8195027750202970175">Սկավառակի տարածքը</translation>
 <translation id="8198323535106903877">Մենք կտեղադրենք այս <ph name="NUMBER_OF_APPS" /> հավելվածը ձեզ համար</translation>
 <translation id="8198456017687137612">Ներդիրի հեռարձակում</translation>

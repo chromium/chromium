@@ -772,7 +772,6 @@
 <translation id="1795214765651529549">Ota käyttöön perinteinen</translation>
 <translation id="1796588414813960292">Ääntä edellyttävät ominaisuudet eivät enää toimi</translation>
 <translation id="1799071797295057738">Laajennus <ph name="EXTENSION_NAME" /> on poistettu käytöstä automaattisesti.</translation>
-<translation id="1800973090344019061">Laajennus <ph name="APP_NAME" /> haluaa jakaa näyttösi sisällön.</translation>
 <translation id="1802624026913571222">Lepotila, kun kansi suljetaan</translation>
 <translation id="1802687198411089702">Tämä sivu ei vastaa. Voit odottaa sitä tai sulkea sen.</translation>
 <translation id="1803531841600994172">Kieli, johon käännetään</translation>
@@ -1650,6 +1649,7 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="2734760316755174687"><ph name="SITE_GROUP_NAME" />:n alaiset sivustot nollataan myös.</translation>
 <translation id="2735712963799620190">Aikataulu</translation>
 <translation id="2737363922397526254">Tiivistä...</translation>
+<translation id="2737916598897808047"><ph name="APP_NAME" /> haluaa jakaa näyttösi sisällön tälle: <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">Älä salli sivustojen käyttää laitteellesi asennettuja fontteja</translation>
 <translation id="2738771556149464852">Ei tämän jälkeen</translation>
 <translation id="2739191690716947896">Vianetsintä</translation>
@@ -4717,7 +4717,6 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6136114942382973861">Sulje latauspalkki</translation>
 <translation id="6136287496450963112">Suojausavaintasi ei ole suojattu PIN-koodilla. Luo PIN-koodi, jotta voit ylläpitää sormenjälkiä.</translation>
 <translation id="6138680304137685902">X9.62 ECDSA ‑allekirjoitus, jossa on SHA-384</translation>
-<translation id="6138774640412545950">Laajennus <ph name="APP_NAME" /> haluaa jakaa näyttösi sisällön tämän kanssa: <ph name="TARGET_NAME" /></translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, ei verkkoa</translation>
 <translation id="6141988275892716286">Vahvista lataus</translation>
 <translation id="6143186082490678276">Ohje</translation>
@@ -6622,6 +6621,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034">Muodostetaan yhteyttä sivustoon <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Hallita sovelluksia, laajennuksia ja teemoja</translation>
+<translation id="8192944472786724289"><ph name="APP_NAME" /> haluaa jakaa näyttösi sisällön.</translation>
 <translation id="8195027750202970175">Tiedoston koko</translation>
 <translation id="8198323535106903877">Asennamme nämä <ph name="NUMBER_OF_APPS" /> sovellusta puolestasi</translation>
 <translation id="8198456017687137612">Välilehteä striimataan</translation>

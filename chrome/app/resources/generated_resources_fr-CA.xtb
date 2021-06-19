@@ -763,7 +763,6 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="1795214765651529549">Utiliser le thème classique</translation>
 <translation id="1796588414813960292">Les fonctionnalités qui utilisent des sons ne fonctionneront pas</translation>
 <translation id="1799071797295057738">L'extension « <ph name="EXTENSION_NAME" /> » a été désactivée automatiquement.</translation>
-<translation id="1800973090344019061">L'extension « <ph name="APP_NAME" /> » souhaite partager le contenu de votre écran.</translation>
 <translation id="1802624026913571222">Mettre en veille lorsque le couvercle est fermé</translation>
 <translation id="1802687198411089702">La page ne répond pas. Vous pouvez attendre qu'elle réponde ou la quitter.</translation>
 <translation id="1803531841600994172">Langue cible</translation>
@@ -1638,6 +1637,7 @@ et sur Ctrl+Alt+diminuer la luminosité pour effectuer un zoom arrière.</transl
 <translation id="2734760316755174687">Les sites sous <ph name="SITE_GROUP_NAME" /> seront également réinitialisés.</translation>
 <translation id="2735712963799620190">Horaire</translation>
 <translation id="2737363922397526254">Réduire...</translation>
+<translation id="2737916598897808047"><ph name="APP_NAME" /> veut partager le contenu de votre écran avec <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">Ne pas autoriser les sites à utiliser les polices installées sur votre appareil</translation>
 <translation id="2738771556149464852">Pas après le</translation>
 <translation id="2739191690716947896">Débogage</translation>
@@ -4707,7 +4707,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6136114942382973861">Fermer la barre des téléchargements</translation>
 <translation id="6136287496450963112">Votre clé de sécurité n'est pas protégée par un NIP. Pour gérer les empreintes digitales, commencez par créer un NIP.</translation>
 <translation id="6138680304137685902">Signature X9.62 ECDSA avec SHA-384</translation>
-<translation id="6138774640412545950">L'extension « <ph name="APP_NAME" /> » souhaite partager le contenu de votre écran avec <ph name="TARGET_NAME" />.</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />; aucun réseau</translation>
 <translation id="6141988275892716286">Confirmer le téléchargement</translation>
 <translation id="6143186082490678276">Obtenir de l'aide</translation>
@@ -6612,6 +6611,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8189750580333936930">Bac à sable de confidentialité</translation>
 <translation id="8190193592390505034">Connexion à <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Gérer vos applications, vos extensions et vos thèmes</translation>
+<translation id="8192944472786724289"><ph name="APP_NAME" /> veut partager le contenu de votre écran.</translation>
 <translation id="8195027750202970175">Taille sur le disque</translation>
 <translation id="8198323535106903877">Nous allons installer ces <ph name="NUMBER_OF_APPS" /> applications pour vous</translation>
 <translation id="8198456017687137612">Diffusion de l'onglet en cours…</translation>

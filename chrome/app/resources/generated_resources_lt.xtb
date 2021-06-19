@@ -776,7 +776,6 @@
 <translation id="1795214765651529549">Naudoti klasikinę</translation>
 <translation id="1796588414813960292">Funkcijos, kurioms reikalingas garsas, neveiks</translation>
 <translation id="1799071797295057738">Plėtinys „<ph name="EXTENSION_NAME" />“ buvo automatiškai išjungtas.</translation>
-<translation id="1800973090344019061">Plėtinys „<ph name="APP_NAME" />“ nori bendrinti ekrano turinį.</translation>
 <translation id="1802624026913571222">Įjungti miego būseną, kai dangtelis uždarytas</translation>
 <translation id="1802687198411089702">Puslapis neatsako. Galite palaukti arba išeiti.</translation>
 <translation id="1803531841600994172">Kalba, į kurią verčiama</translation>
@@ -1654,6 +1653,7 @@ ir „Ctrl“ + „Alt“ + šviesumo didinimo klavišus, kad tolintumėte.</tra
 <translation id="2734760316755174687"><ph name="SITE_GROUP_NAME" /> svetainės taip pat bus nustatytos iš naujo.</translation>
 <translation id="2735712963799620190">Tvarkaraštis</translation>
 <translation id="2737363922397526254">Sutraukti...</translation>
+<translation id="2737916598897808047">„<ph name="APP_NAME" />“ nori bendrinti ekrano turinį su <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">Neleisti svetainėms naudoti įrenginyje įdiegtų šriftų</translation>
 <translation id="2738771556149464852">Iki</translation>
 <translation id="2739191690716947896">Derinti</translation>
@@ -4725,7 +4725,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="6136114942382973861">Uždaryti atsisiuntimų juostą</translation>
 <translation id="6136287496450963112">Saugos raktas neapsaugotas PIN kodu. Kad galėtumėte tvarkyti kontrolinius kodus, pirmiausia sukurkite PIN kodą.</translation>
 <translation id="6138680304137685902">X9.62 ECDSA parašas naudojant SHA-384</translation>
-<translation id="6138774640412545950">Plėtinys „<ph name="APP_NAME" />“ nori bendrinti ekrano turinį su <ph name="TARGET_NAME" />.</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, tinklo nėra</translation>
 <translation id="6141988275892716286">Atsisiuntimo patvirtinimas</translation>
 <translation id="6143186082490678276">Gauti pagalbos</translation>
@@ -6631,6 +6630,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8189750580333936930">Privatumo „sandbox“ (smėlio dėžė)</translation>
 <translation id="8190193592390505034">Jungiamasi prie „<ph name="PROVIDER_NAME" />“</translation>
 <translation id="8191230140820435481">Valdyti programas, plėtinius ir temas</translation>
+<translation id="8192944472786724289">„<ph name="APP_NAME" />“ nori bendrinti ekrano turinį.</translation>
 <translation id="8195027750202970175">Diske užimama vieta</translation>
 <translation id="8198323535106903877">Įdiegsime jums šias programas (iš viso: <ph name="NUMBER_OF_APPS" />)</translation>
 <translation id="8198456017687137612">Perduodamas skirtukas</translation>

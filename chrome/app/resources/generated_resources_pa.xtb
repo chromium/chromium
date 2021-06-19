@@ -774,7 +774,6 @@
 <translation id="1795214765651529549">ਕਲਾਸਿਕ ਵਰਤੋ</translation>
 <translation id="1796588414813960292">ਜਿਨ੍ਹਾਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਨੂੰ ਧੁਨੀ ਦੀ ਲੋੜ ਹੈ ਉਹ ਕੰਮ ਨਹੀਂ ਕਰਨਗੀਆਂ</translation>
 <translation id="1799071797295057738">ਐਕਸਟੈਂਸ਼ਨ "<ph name="EXTENSION_NAME" />" ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਬੰਦ ਕੀਤੀ ਗਈ।</translation>
-<translation id="1800973090344019061">ਐਕਸਟੈਂਸ਼ਨ "<ph name="APP_NAME" />" ਤੁਹਾਡੀ ਸਕ੍ਰੀਨ ਦੀਆਂ ਸਮੱਗਰੀਆਂ ਨੂੰ ਸਾਂਝਾ ਕਰਨਾ ਚਾਹੁੰਦੀ ਹੈ।</translation>
 <translation id="1802624026913571222">ਕਵਰ ਬੰਦ ਹੋਣ 'ਤੇ ਸਲੀਪ ਮੋਡ ਵਿੱਚ ਜਾਓ</translation>
 <translation id="1802687198411089702">ਇਹ ਪੰਨਾ ਪ੍ਰਤਿਕਿਰਿਆ ਨਹੀਂ ਦੇ ਰਿਹਾ ਹੈ। ਤੁਸੀਂ ਉਡੀਕ ਕਰ ਸਕਦੇ ਹੋ ਜਾਂ ਬਾਹਰ ਜਾ ਸਕਦੇ ਹੋ।</translation>
 <translation id="1803531841600994172">ਇਸ ਵਿੱਚ ਅਨੁਵਾਦ ਕਰਨ ਲਈ ਭਾਸ਼ਾ</translation>
@@ -1652,6 +1651,7 @@
 <translation id="2734760316755174687"><ph name="SITE_GROUP_NAME" /> ਦੀਆਂ ਸਾਈਟਾਂ ਨੂੰ ਵੀ ਰੀਸੈੱਟ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="2735712963799620190">ਸਮਾਂ ਨਿਯਤ ਕਰੋ</translation>
 <translation id="2737363922397526254">ਸਮੇਟੋ ...</translation>
+<translation id="2737916598897808047"><ph name="APP_NAME" /> ਤੁਹਾਡੀ ਸਕ੍ਰੀਨ ਦੀਆਂ ਸਮੱਗਰੀਆਂ ਨੂੰ <ph name="TARGET_NAME" /> ਨਾਲ ਸਾਂਝਾ ਕਰਨਾ ਚਾਹੁੰਦੀ ਹੈ।</translation>
 <translation id="2738030019664645674">ਸਾਈਟਾਂ ਨੂੰ ਤੁਹਾਡੇ ਡੀਵਾਈਸ 'ਤੇ ਸਥਾਪਤ ਫ਼ੌਂਟਾਂ ਨੂੰ ਵਰਤਣ ਦੀ ਇਜਾਜ਼ਤ ਨਾ ਦਿਓ</translation>
 <translation id="2738771556149464852">ਬਾਅਦ ਵਿੱਚ ਨਹੀਂ</translation>
 <translation id="2739191690716947896">ਡੀਬੱਗ</translation>
@@ -4721,7 +4721,6 @@
 <translation id="6136114942382973861">ਡਾਊਨਲੋਡ ਬਾਰ ਬੰਦ ਕਰੋ</translation>
 <translation id="6136287496450963112">ਤੁਹਾਡੀ ਸੁਰੱਖਿਆ ਕੁੰਜੀ ਕਿਸੇ ਪਿੰਨ ਦੇ ਨਾਲ ਸੁਰੱਖਿਅਤ ਨਹੀਂ ਹੈ। ਫਿੰਗਰਪ੍ਰਿੰਟਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਨ ਲਈ, ਪਹਿਲਾਂ ਕੋਈ ਪਿੰਨ ਬਣਾਓ।</translation>
 <translation id="6138680304137685902">SHA-384 ਨਾਲ X9.62 ECDSA ਹਸਤਾਖਰ</translation>
-<translation id="6138774640412545950">ਐਕਸਟੈਂਸ਼ਨ "<ph name="APP_NAME" />" ਤੁਹਾਡੀ ਸਕ੍ਰੀਨ ਦੀਆਂ ਸਮੱਗਰੀਆਂ ਨੂੰ <ph name="TARGET_NAME" /> ਨਾਲ ਸਾਂਝਾ ਕਰਨਾ ਚਾਹੁੰਦੀ ਹੈ।</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, ਕੋਈ ਨੈੱਟਵਰਕ ਨਹੀਂ</translation>
 <translation id="6141988275892716286">ਡਾਊਨਲੋਡ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
 <translation id="6143186082490678276">ਸਹਾਇਤਾ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
@@ -6624,6 +6623,7 @@
 <translation id="8189750580333936930">ਪ੍ਰਾਈਵੇਸੀ ਸੈਂਡਬਾਕਸ</translation>
 <translation id="8190193592390505034"><ph name="PROVIDER_NAME" /> ਨਾਲ ਕਨੈਕਟ ਕਰ ਰਿਹਾ ਹੈ</translation>
 <translation id="8191230140820435481">ਆਪਣੇ ਐਪਸ, ਐਕਸਟੈਂਸ਼ਨਾਂ ਅਤੇ ਵਿਸ਼ੇ ਵਿਵਸਥਿਤ ਕਰੋ</translation>
+<translation id="8192944472786724289"><ph name="APP_NAME" /> ਤੁਹਾਡੀ ਸਕ੍ਰੀਨ ਦੀਆਂ ਸਮੱਗਰੀਆਂ ਨੂੰ ਸਾਂਝਾ ਕਰਨਾ ਚਾਹੁੰਦੀ ਹੈ।</translation>
 <translation id="8195027750202970175">ਡਿਸਕ 'ਤੇ ਆਕਾਰ</translation>
 <translation id="8198323535106903877">ਅਸੀਂ ਤੁਹਾਡੇ ਲਈ ਉਹ <ph name="NUMBER_OF_APPS" /> ਐਪਾਂ ਸਥਾਪਤ ਕਰਾਂਗੇ</translation>
 <translation id="8198456017687137612">ਟੈਬ ਕਾਸਟ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ</translation>

@@ -774,7 +774,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1795214765651529549">Gamitin ang Classic</translation>
 <translation id="1796588414813960292">Hindi gagana ang mga feature na nangangailangan ng tunog</translation>
 <translation id="1799071797295057738">Awtomatikong na-disable ang extension na "<ph name="EXTENSION_NAME" />."</translation>
-<translation id="1800973090344019061">Gustong ibahagi ng extension na "<ph name="APP_NAME" />" ang mga content ng iyong screen.</translation>
 <translation id="1802624026913571222">I-sleep kapag nakasara ang cover</translation>
 <translation id="1802687198411089702">Hindi tumutugon ang page. Maaari mo itong hintayin o maaari kang lumabas.</translation>
 <translation id="1803531841600994172">Wika kung saan ita-translate</translation>
@@ -1652,6 +1651,7 @@ at Ctrl+Alt+Bawasan ang liwanag para mag-zoom out.</translation>
 <translation id="2734760316755174687">Mare-reset din ang mga site sa ilalim ng <ph name="SITE_GROUP_NAME" />.</translation>
 <translation id="2735712963799620190">Iskedyul</translation>
 <translation id="2737363922397526254">Tiklupin...</translation>
+<translation id="2737916598897808047">Gustong ibahagi ng <ph name="APP_NAME" /> sa <ph name="TARGET_NAME" /> ang mga content ng iyong screen.</translation>
 <translation id="2738030019664645674">Huwag payagan ang mga site na gamitin ang mga font na naka-install sa iyong device</translation>
 <translation id="2738771556149464852">Hindi Pagkatapos</translation>
 <translation id="2739191690716947896">I-debug</translation>
@@ -4722,7 +4722,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6136114942382973861">Isara ang bar ng mga download</translation>
 <translation id="6136287496450963112">Hindi pinoprotektahan ng PIN ang iyong security key. Para pamahalaan ang mga fingerprint, gumawa muna ng PIN.</translation>
 <translation id="6138680304137685902">X9.62 ECDSA Signature na may SHA-384</translation>
-<translation id="6138774640412545950">Gustong ibahagi ng extension na "<ph name="APP_NAME" />" ang mga content ng iyong screen sa <ph name="TARGET_NAME" />.</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, walang network</translation>
 <translation id="6141988275892716286">Kumpirmahin ang pag-download</translation>
 <translation id="6143186082490678276">Humingi ng Tulong</translation>
@@ -6628,6 +6627,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034">Kumukonekta sa <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Pamahalaan ang iyong apps, mga extension, at tema</translation>
+<translation id="8192944472786724289">Gustong ibahagi ng <ph name="APP_NAME" /> ang mga content ng iyong screen.</translation>
 <translation id="8195027750202970175">Sukat sa disk</translation>
 <translation id="8198323535106903877">Ii-install namin ang <ph name="NUMBER_OF_APPS" /> (na) app iyon para sa iyo</translation>
 <translation id="8198456017687137612">Ikina-cast ang tab</translation>

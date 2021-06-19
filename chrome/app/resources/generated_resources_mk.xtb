@@ -774,7 +774,6 @@
 <translation id="1795214765651529549">Користи „Класичен“</translation>
 <translation id="1796588414813960292">Функциите на коишто им требаат звуци нема да работат</translation>
 <translation id="1799071797295057738">Екстензијата „<ph name="EXTENSION_NAME" />“ беше автоматски оневозможена.</translation>
-<translation id="1800973090344019061">Екстензијата „<ph name="APP_NAME" />“ сака да ги сподели содржините на вашиот екран.</translation>
 <translation id="1802624026913571222">Режим во мирување кога капакот е затворен</translation>
 <translation id="1802687198411089702">Страницава не реагира. Може да почекате или да излезете.</translation>
 <translation id="1803531841600994172">Јазик на кој треба да се преведе</translation>
@@ -1652,6 +1651,7 @@
 <translation id="2734760316755174687">Сајтовите под <ph name="SITE_GROUP_NAME" /> исто така ќе се ресетираат.</translation>
 <translation id="2735712963799620190">Распоред</translation>
 <translation id="2737363922397526254">Собери...</translation>
+<translation id="2737916598897808047"><ph name="APP_NAME" /> сака да ги сподели содржините од вашиот екран со <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">Не им дозволувај на сајтовите да ги користат фонтовите инсталирани на уредот</translation>
 <translation id="2738771556149464852">Не отпосле</translation>
 <translation id="2739191690716947896">Отстранете грешка</translation>
@@ -4722,7 +4722,6 @@
 <translation id="6136114942382973861">Затвори ја лентата за преземања</translation>
 <translation id="6136287496450963112">Вашиот безбедносен клуч не е заштитен со PIN. За да управувате со отпечатоците, прво создајте PIN.</translation>
 <translation id="6138680304137685902">X9.62 ECDSA потпис со SHA-384</translation>
-<translation id="6138774640412545950">Екстензијата „<ph name="APP_NAME" />“ сака да ги сподели содржините на вашиот екран со <ph name="TARGET_NAME" />.</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, нема мрежа</translation>
 <translation id="6141988275892716286">Потврдете го преземањето</translation>
 <translation id="6143186082490678276">Побарајте помош</translation>
@@ -6627,6 +6626,7 @@
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034">Се поврзува на <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Управувајте со вашите апликации, наставки и теми</translation>
+<translation id="8192944472786724289"><ph name="APP_NAME" /> сака да ги сподели содржините од вашиот екран.</translation>
 <translation id="8195027750202970175">Големина на диск</translation>
 <translation id="8198323535106903877">Ќе ги инсталираме тие <ph name="NUMBER_OF_APPS" /> апликации за вас</translation>
 <translation id="8198456017687137612">Картичка за емитување</translation>

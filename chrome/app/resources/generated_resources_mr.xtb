@@ -772,7 +772,6 @@
 <translation id="1795214765651529549">क्लासिक वापरा</translation>
 <translation id="1796588414813960292">साउंडची आवश्यकता असलेली वैशिष्ट्ये काम करणार नाहीत</translation>
 <translation id="1799071797295057738">"<ph name="EXTENSION_NAME" />" एक्स्टेंशन आपोआप बंद केले.</translation>
-<translation id="1800973090344019061"><ph name="APP_NAME" /> एक्स्टेंशनला तुमच्या स्क्रीनचा आशय शेअर करायचा आहे.</translation>
 <translation id="1802624026913571222">कव्हर बंद केल्यावर स्लीप मोड ऑन करा</translation>
 <translation id="1802687198411089702">पेज प्रतिसाद देत नाही. तुम्ही वाट पाहू शकता किंवा बाहेर पडू शकता.</translation>
 <translation id="1803531841600994172">यामध्ये भाषांतर करण्यासाठीची भाषा</translation>
@@ -1168,7 +1167,7 @@
 <translation id="2218320521449013367">Chrome ला हानिकारक सॉफ्टवेअर काढत असताना एरर आली</translation>
 <translation id="2218515861914035131">साधा मजकूर म्हणून पेस्ट करा</translation>
 <translation id="2220409419896228519">तुमच्या आवडत्या Google Apps वर बुकमार्क जोडा</translation>
-<translation id="2220529011494928058">समस्येची तक्रार करा</translation>
+<translation id="2220529011494928058">समस्या नोंदवा</translation>
 <translation id="2220572644011485463">पिन किंवा पासवर्ड</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="2224444042887712269">ही सेटिंग <ph name="OWNER_EMAIL" /> च्या मालकीची आहे.</translation>
@@ -1650,6 +1649,7 @@
 <translation id="2734760316755174687"><ph name="SITE_GROUP_NAME" /> अंतर्गत साइट देखील रीसेट केल्या जातील.</translation>
 <translation id="2735712963799620190">शेड्यूल</translation>
 <translation id="2737363922397526254">कोलॅप्स...</translation>
+<translation id="2737916598897808047"><ph name="APP_NAME" /> ला तुमच्या स्क्रीनचा आशय <ph name="TARGET_NAME" /> सोबत शेअर करायचा आहे.</translation>
 <translation id="2738030019664645674">साइटना तुमच्या डिव्हाइसवर इंस्टॉल केलेले फाँट वापरण्याची अनुमती देऊ नका</translation>
 <translation id="2738771556149464852">नंतर नाही</translation>
 <translation id="2739191690716947896">डीबग</translation>
@@ -1838,7 +1838,7 @@
 <translation id="2932085390869194046">पासवर्ड सुचवा...</translation>
 <translation id="2932330436172705843"><ph name="PROFILE_DISPLAY_NAME" /> (मुलांसाठी खाते)</translation>
 <translation id="2932483646085333864">साइन आउट करा नंतर सिंक सुरू करण्यासाठी पुन्हा साइन इन करा</translation>
-<translation id="2932883381142163287">दुरुपयोगाची तक्रार नोंदवा</translation>
+<translation id="2932883381142163287">गैरवापराची तक्रार करा</translation>
 <translation id="2933632078076743449">शेवटचे अपडेट</translation>
 <translation id="2934999512438267372">MIDI डिव्हाइसचे पूर्ण नियंत्रण करण्याची अनुमती आहे</translation>
 <translation id="2935225303485967257">प्रोफाइल व्यवस्थापित करा</translation>
@@ -2512,7 +2512,7 @@
 <translation id="3678156199662914018">एक्स्टेंशनः <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">या विंडोमध्ये तुम्ही पाहत असलेली पेज ही ब्राउझर इतिहासामध्ये दिसणार नाहीत आणि तुम्ही साइन आउट केल्यानंतर, ती काँप्युटरवर कुकीसारखे इतर माग सोडणार नाहीत. तुम्ही डाउनलोड करत असलेल्या फाइल आणि तुम्ही तयार करत असलेले बुकमार्क यांचे जतन केले जाणार नाही.</translation>
 <translation id="3680683624079082902">टेक्‍स्‍ट टू स्‍पीच व्हॉइस</translation>
-<translation id="3681311097828166361">तुमच्या फीडबॅकाबद्दल धन्यवाद. तुम्ही आता ऑफलाइन आहात आणि तुमचा अहवाल नंतर पाठविला जाईल.</translation>
+<translation id="3681311097828166361">तुमच्या फीडबॅकबद्दल धन्यवाद. तुम्ही आता ऑफलाइन आहात. तुमचा अहवाल नंतर पाठवला जाईल.</translation>
 <translation id="3682824389861648626">हालचालाची मर्यादा</translation>
 <translation id="3683524264665795342"><ph name="APP_NAME" /> स्क्रीन शेअर विनंती</translation>
 <translation id="3685598397738512288">Linux ची USB प्राधान्ये</translation>
@@ -4319,7 +4319,7 @@
 <translation id="5691772641933328258">फिंगरप्रिंट ओळखले नाही</translation>
 <translation id="5692183275898619210">प्रिंट पूर्ण झाले</translation>
 <translation id="5695184138696833495">Linux Android अ‍ॅप ADB</translation>
-<translation id="5696143504434933566">"<ph name="EXTENSION_NAME" />" च्‍‍‍‍या गैरवर्तनाची तक्रार करा</translation>
+<translation id="5696143504434933566">"<ph name="EXTENSION_NAME" />" च्‍‍‍‍या गैरवापराची तक्रार करा</translation>
 <translation id="5696177755977520104">Chrome OS सेटिंग्ज सिंक</translation>
 <translation id="5696679855467848181">वापरातली सद्य PPD फाइल: <ph name="PPD_NAME" /></translation>
 <translation id="5697832193891326782">इमोजी पिकर</translation>
@@ -4719,7 +4719,6 @@
 <translation id="6136114942382973861">डाउनलोड बार बंद करा</translation>
 <translation id="6136287496450963112">तुमची सिक्युरिटी की पिन वापरून संरक्षित केलेली नाही. फिंगरप्रिंट व्यवस्थापित करण्यासाठी, आधी पिन तयार करा.</translation>
 <translation id="6138680304137685902">SHA-384 सह X9.62 ECDSA स्वाक्षरी</translation>
-<translation id="6138774640412545950"><ph name="APP_NAME" /> एक्स्टेंशनला तुमच्या स्क्रीनचा आशय <ph name="TARGET_NAME" /> सोबत शेअर करायचा आहे.</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, कोणतेही नेटवर्क नाही</translation>
 <translation id="6141988275892716286">डाउनलोड करण्याचे निश्चित करा</translation>
 <translation id="6143186082490678276">मदत मिळवा</translation>
@@ -6125,7 +6124,7 @@
 <translation id="7685049629764448582">JavaScript मेमरी</translation>
 <translation id="7685087414635069102">पिन आवश्यक</translation>
 <translation id="768549422429443215">भाषा जोडा किंवा सूचीचा क्रम पुन्हा लावा.</translation>
-<translation id="7686424868232681412">Lacros हा प्रायोगिक ब्राउझर आहे. कृपया पुढील मार्ग वापरून समस्येची तक्रार करा: मदत &gt; "समस्येची तक्रार करा...".</translation>
+<translation id="7686424868232681412">Lacros हा प्रायोगिक ब्राउझर आहे. कृपया समस्या नोंदवण्यासाठी मदत &gt; "समस्येची तक्रार करा..." येथे जा.</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690294790491645610">नवीन पासवर्ड कन्फर्म करा</translation>
 <translation id="7690378713476594306">सूचीतून निवडा</translation>
@@ -6623,6 +6622,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8189750580333936930">प्रायव्हसी सॅंडबॉक्स</translation>
 <translation id="8190193592390505034"><ph name="PROVIDER_NAME" /> सह कनेक्ट करत आहे</translation>
 <translation id="8191230140820435481">तुमचे ॲप्लिकेशन, विस्तार आणि थीम व्यवस्थापित करा</translation>
+<translation id="8192944472786724289"><ph name="APP_NAME" /> ला तुमच्या स्क्रीनचा आशय शेअर करायचा आहे.</translation>
 <translation id="8195027750202970175">डिस्क वरील आकार</translation>
 <translation id="8198323535106903877">आम्ही तुमच्यासाठी ती <ph name="NUMBER_OF_APPS" /> ॲप्स इंस्टॉल करू</translation>
 <translation id="8198456017687137612">टॅब कास्‍ट करत आहे</translation>

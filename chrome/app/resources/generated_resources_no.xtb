@@ -768,7 +768,6 @@
 <translation id="1795214765651529549">Bruk klassisk</translation>
 <translation id="1796588414813960292">Funksjoner som krever lyd, kommer ikke til å virke</translation>
 <translation id="1799071797295057738">Utvidelsen «<ph name="EXTENSION_NAME" />» ble slått av automatisk.</translation>
-<translation id="1800973090344019061">Utvidelsen «<ph name="APP_NAME" />» vil dele innholdet på skjermen din.</translation>
 <translation id="1802624026913571222">Gå i hvilemodus når dekselet lukkes</translation>
 <translation id="1802687198411089702">Siden svarer ikke. Du kan vente på den eller avslutte.</translation>
 <translation id="1803531841600994172">Språket du vil oversette til</translation>
@@ -1645,6 +1644,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="2734760316755174687">Nettsteder under <ph name="SITE_GROUP_NAME" /> blir også tilbakestilt.</translation>
 <translation id="2735712963799620190">Tidsplan</translation>
 <translation id="2737363922397526254">Skjul</translation>
+<translation id="2737916598897808047"><ph name="APP_NAME" /> vil dele innholdet på skjermen din med <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">Ikke la nettsteder bruke skrifttyper som er installert på enheten</translation>
 <translation id="2738771556149464852">Ikke etter</translation>
 <translation id="2739191690716947896">Feilsøk</translation>
@@ -4712,7 +4712,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6136114942382973861">Lukk nedlastingsraden</translation>
 <translation id="6136287496450963112">Sikkerhetsnøkkelen din er ikke beskyttet med PIN-kode. For å administrere fingeravtrykk må du opprette en PIN-kode først.</translation>
 <translation id="6138680304137685902">X9.62 ECDSA-signatur med SHA-384</translation>
-<translation id="6138774640412545950">Utvidelsen «<ph name="APP_NAME" />» vil dele innholdet på skjermen din med <ph name="TARGET_NAME" />.</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" /> – ingen nettverk</translation>
 <translation id="6141988275892716286">Bekreft nedlastingen</translation>
 <translation id="6143186082490678276">Få hjelp</translation>
@@ -6617,6 +6616,7 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034">Kobler til <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Administrering av programmer, utvidelser og temaer</translation>
+<translation id="8192944472786724289"><ph name="APP_NAME" /> vil dele innholdet på skjermen din.</translation>
 <translation id="8195027750202970175">Lagringsstørrelse</translation>
 <translation id="8198323535106903877">Vi installerer de <ph name="NUMBER_OF_APPS" /> appene for deg</translation>
 <translation id="8198456017687137612">Casting-fanen</translation>
