@@ -284,15 +284,12 @@ union ProviderState {
 // there are changes related to sinks or routes.
 // Each MRP is used to manage one type of media sinks (e.g. the Cast MRP is used
 // for CAST sinks)
-// EXTENSION MRPs live in the Media Router component extension and will be
-// removed soon. WIRED_DISPLAY, CAST and DIAL MRPs live in the browser.
-// ANDROID_CAF is the Cast Application Framework based MRPs used on Android
-// only.
+// WIRED_DISPLAY, CAST and DIAL MRPs live in the browser. ANDROID_CAF is the
+// Cast Application Framework based MRPs used on Android only.
 interface MediaRouteProvider {
   // Each MediaRouteProvider is associated with a unique ID. This enum must be
   // kept in sync with MediaRouteProviderId in C++.
   enum Id {
-    EXTENSION,
     WIRED_DISPLAY,
     CAST,
     DIAL,
@@ -583,12 +580,7 @@ interface MediaRouter {
   // feedback report.
   GetLogsAsString() => (string logs);
 
-  // Called to get a mirroring.mojom.MirroringServiceHost. These APIs are used
-  // by Media Router extension to start mirroring through the mirroring service.
-  // TODO(http://crbug.com/809249): Remove these APIs when native Cast MRP with
-  // mirroring support is rolled out.  NOTE(jrw): Removing these methods from
-  // the mojo interface is probably OK, but the implementation still needs
-  // to be called by the native Cast MRP.
+  // Called to get a mirroring.mojom.MirroringServiceHost.
   GetMirroringServiceHostForTab(int32 target_tab_id,
       pending_receiver<mirroring.mojom.MirroringServiceHost> receiver);
   GetMirroringServiceHostForDesktop(

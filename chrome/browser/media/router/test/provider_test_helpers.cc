@@ -120,7 +120,7 @@ MediaSinkInternal CreateDialSink(int num) {
 
   media_router::MediaSink sink(unique_id, friendly_name,
                                media_router::SinkIconType::GENERIC,
-                               MediaRouteProviderId::EXTENSION);
+                               MediaRouteProviderId::DIAL);
   media_router::DialSinkExtraData extra_data;
   extra_data.ip_address = ip_endpoint.address();
   extra_data.model_name = base::StringPrintf("model name %d", num);

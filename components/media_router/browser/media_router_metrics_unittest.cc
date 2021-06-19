@@ -94,13 +94,9 @@ void TestRouteResultCodeHistograms(
                                  RouteRequestResult::ResultCode)> record_cb,
     const std::string& base_histogram_name) {
   TestRouteResultCodeHistogramsWithProviders(
-      record_cb, MediaRouteProviderId::EXTENSION, base_histogram_name,
-      MediaRouteProviderId::WIRED_DISPLAY,
-      base_histogram_name + ".WiredDisplay");
-
-  TestRouteResultCodeHistogramsWithProviders(
-      record_cb, MediaRouteProviderId::CAST, base_histogram_name + ".Cast",
-      MediaRouteProviderId::DIAL, base_histogram_name + ".DIAL");
+      record_cb, MediaRouteProviderId::WIRED_DISPLAY,
+      base_histogram_name + ".WiredDisplay", MediaRouteProviderId::DIAL,
+      base_histogram_name + ".DIAL");
 
   TestRouteResultCodeHistogramsWithProviders(
       record_cb, MediaRouteProviderId::CAST, base_histogram_name + ".Cast",

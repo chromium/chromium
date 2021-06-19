@@ -45,8 +45,8 @@ class MediaRouterStructTraitsTest
 TEST_F(MediaRouterStructTraitsTest, DialMediaSink) {
   MediaSink::Id sink_id("sinkId123");
   std::string sink_name("The sink");
-  SinkIconType icon_type(SinkIconType::CAST);
-  MediaRouteProviderId provider_id(MediaRouteProviderId::EXTENSION);
+  SinkIconType icon_type(SinkIconType::GENERIC);
+  MediaRouteProviderId provider_id(MediaRouteProviderId::DIAL);
   std::string ip_address("192.168.1.2");
   std::string model_name("model name");
   GURL app_url("https://example.com");
@@ -71,7 +71,7 @@ TEST_F(MediaRouterStructTraitsTest, CastMediaSink) {
   MediaSink::Id sink_id("sinkId123");
   std::string sink_name("The sink");
   SinkIconType icon_type(SinkIconType::CAST);
-  MediaRouteProviderId provider_id(MediaRouteProviderId::EXTENSION);
+  MediaRouteProviderId provider_id(MediaRouteProviderId::CAST);
   std::string model_name("model name");
 
   MediaSink sink(sink_id, sink_name, icon_type, provider_id);
@@ -94,8 +94,8 @@ TEST_F(MediaRouterStructTraitsTest, CastMediaSink) {
 TEST_F(MediaRouterStructTraitsTest, GenericMediaSink) {
   MediaSink::Id sink_id("sinkId123");
   std::string sink_name("The sink");
-  SinkIconType icon_type(SinkIconType::CAST);
-  MediaRouteProviderId provider_id(MediaRouteProviderId::EXTENSION);
+  SinkIconType icon_type(SinkIconType::GENERIC);
+  MediaRouteProviderId provider_id(MediaRouteProviderId::WIRED_DISPLAY);
 
   MediaSink sink(sink_id, sink_name, icon_type, provider_id);
   MediaSinkInternal generic_sink;

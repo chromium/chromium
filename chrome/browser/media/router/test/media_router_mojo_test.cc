@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/cxx17_backports.h"
 #include "base/run_loop.h"
-#include "extensions/common/extension_builder.h"
 
 using testing::_;
 using testing::ByRef;
@@ -115,9 +114,8 @@ MediaRouterMojoTest::MediaRouterMojoTest() = default;
 
 MediaRouterMojoTest::~MediaRouterMojoTest() = default;
 
-void MediaRouterMojoTest::RegisterExtensionProvider() {
-  RegisterMediaRouteProvider(&mock_extension_provider_,
-                             MediaRouteProviderId::EXTENSION);
+void MediaRouterMojoTest::RegisterCastProvider() {
+  RegisterMediaRouteProvider(&mock_cast_provider_, MediaRouteProviderId::CAST);
 }
 
 void MediaRouterMojoTest::RegisterWiredDisplayProvider() {
@@ -128,9 +126,8 @@ void MediaRouterMojoTest::RegisterWiredDisplayProvider() {
 void MediaRouterMojoTest::SetUp() {
   media_router_ = CreateMediaRouter();
   media_router_->set_instance_id_for_test(kInstanceId);
-  RegisterExtensionProvider();
+  RegisterCastProvider();
   media_router_->Initialize();
-  extension_ = extensions::ExtensionBuilder("Test").Build();
   base::RunLoop().RunUntilIdle();
 }
 
@@ -171,12 +168,12 @@ void MediaRouterMojoTest::TestCreateRoute() {
   expected_route.set_presentation_id(kPresentationId);
   expected_route.set_controller_type(RouteControllerType::kGeneric);
 
-  ProvideTestSink(MediaRouteProviderId::EXTENSION, kSinkId);
+  ProvideTestSink(MediaRouteProviderId::CAST, kSinkId);
 
   // Use a lambda function as an invocation target here to work around
   // a limitation with GMock::Invoke that prevents it from using move-only types
   // in runnable parameter lists.
-  EXPECT_CALL(mock_extension_provider_,
+  EXPECT_CALL(mock_cast_provider_,
               CreateRouteInternal(kSource, kSinkId, _,
                                   url::Origin::Create(GURL(kOrigin)),
                                   kInvalidTabId, _, _, _))
@@ -212,14 +209,14 @@ void MediaRouterMojoTest::TestJoinRoute(const std::string& presentation_id) {
   // is a route to join.
   std::vector<MediaRoute> routes;
   routes.push_back(route);
-  router()->OnRoutesUpdated(MediaRouteProviderId::EXTENSION, routes,
-                            std::string(), std::vector<std::string>());
+  router()->OnRoutesUpdated(MediaRouteProviderId::CAST, routes, std::string(),
+                            std::vector<std::string>());
   EXPECT_TRUE(router()->HasJoinableRoute());
 
   // Use a lambda function as an invocation target here to work around
   // a limitation with GMock::Invoke that prevents it from using move-only types
   // in runnable parameter lists.
-  EXPECT_CALL(mock_extension_provider_,
+  EXPECT_CALL(mock_cast_provider_,
               JoinRouteInternal(
                   kSource, presentation_id, url::Origin::Create(GURL(kOrigin)),
                   kInvalidTabId,
@@ -252,12 +249,12 @@ void MediaRouterMojoTest::TestConnectRouteByRouteId() {
   expected_route.set_presentation_id(kPresentationId);
   expected_route.set_controller_type(RouteControllerType::kGeneric);
   MediaRoute route = CreateMediaRoute();
-  ProvideTestRoute(MediaRouteProviderId::EXTENSION, kRouteId);
+  ProvideTestRoute(MediaRouteProviderId::CAST, kRouteId);
 
   // Use a lambda function as an invocation target here to work around
   // a limitation with GMock::Invoke that prevents it from using move-only types
   // in runnable parameter lists.
-  EXPECT_CALL(mock_extension_provider_,
+  EXPECT_CALL(mock_cast_provider_,
               ConnectRouteByRouteIdInternal(
                   kSource, kRouteId, _, url::Origin::Create(GURL(kOrigin)),
                   kInvalidTabId,
@@ -284,8 +281,8 @@ void MediaRouterMojoTest::TestConnectRouteByRouteId() {
 }
 
 void MediaRouterMojoTest::TestTerminateRoute() {
-  ProvideTestRoute(MediaRouteProviderId::EXTENSION, kRouteId);
-  EXPECT_CALL(mock_extension_provider_, TerminateRouteInternal(kRouteId, _))
+  ProvideTestRoute(MediaRouteProviderId::CAST, kRouteId);
+  EXPECT_CALL(mock_cast_provider_, TerminateRouteInternal(kRouteId, _))
       .WillOnce(
           Invoke([](const std::string& route_id,
                     mojom::MediaRouteProvider::TerminateRouteCallback& cb) {
@@ -296,17 +293,17 @@ void MediaRouterMojoTest::TestTerminateRoute() {
 }
 
 void MediaRouterMojoTest::TestSendRouteMessage() {
-  ProvideTestRoute(MediaRouteProviderId::EXTENSION, kRouteId);
-  EXPECT_CALL(mock_extension_provider_, SendRouteMessage(kRouteId, kMessage));
+  ProvideTestRoute(MediaRouteProviderId::CAST, kRouteId);
+  EXPECT_CALL(mock_cast_provider_, SendRouteMessage(kRouteId, kMessage));
   router()->SendRouteMessage(kRouteId, kMessage);
   base::RunLoop().RunUntilIdle();
 }
 
 void MediaRouterMojoTest::TestSendRouteBinaryMessage() {
-  ProvideTestRoute(MediaRouteProviderId::EXTENSION, kRouteId);
+  ProvideTestRoute(MediaRouteProviderId::CAST, kRouteId);
   auto expected_binary_data = std::make_unique<std::vector<uint8_t>>(
       kBinaryMessage, kBinaryMessage + base::size(kBinaryMessage));
-  EXPECT_CALL(mock_extension_provider_, SendRouteBinaryMessage(kRouteId, _))
+  EXPECT_CALL(mock_cast_provider_, SendRouteBinaryMessage(kRouteId, _))
       .WillOnce([](const MediaRoute::Id& route_id,
                    const std::vector<uint8_t>& data) {
         EXPECT_EQ(
@@ -318,8 +315,8 @@ void MediaRouterMojoTest::TestSendRouteBinaryMessage() {
 }
 
 void MediaRouterMojoTest::TestDetachRoute() {
-  ProvideTestRoute(MediaRouteProviderId::EXTENSION, kRouteId);
-  EXPECT_CALL(mock_extension_provider_, DetachRoute(kRouteId));
+  ProvideTestRoute(MediaRouteProviderId::CAST, kRouteId);
+  EXPECT_CALL(mock_cast_provider_, DetachRoute(kRouteId));
   router()->DetachRoute(kRouteId);
   base::RunLoop().RunUntilIdle();
 }

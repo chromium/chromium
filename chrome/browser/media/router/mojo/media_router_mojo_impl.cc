@@ -269,10 +269,7 @@ void MediaRouterMojoImpl::CreateRoute(const MediaSource::Id& source_id,
       &MediaRouterMojoImpl::RouteResponseReceived, weak_factory_.GetWeakPtr(),
       presentation_id, provider_id, off_the_record, std::move(callback), false);
 
-  if (source.IsDesktopMirroringSource() &&
-      // This check is because extension-based MRPs are responsible for showing
-      // the dialog themselves if they support desktop casting.
-      provider_id != MediaRouteProviderId::EXTENSION) {
+  if (source.IsDesktopMirroringSource()) {
     desktop_picker_.Show(
         MakeDesktopPickerParams(web_contents),
         {DesktopMediaList::Type::kScreen},
@@ -1045,15 +1042,6 @@ void MediaRouterMojoImpl::RecordPresentationRequestUrlBySink(
                        source.url().SchemeIs(extensions::kExtensionScheme) ||
                        source.url().SchemeIs(url::kFileScheme);
   switch (provider_id) {
-    case MediaRouteProviderId::EXTENSION:
-      if (source.IsCastPresentationUrl()) {
-        // This "should not happen," but the code that creates media routes is
-        // tricky and we want to catch all possible cases.
-        value = PresentationUrlBySink::kCastUrlToChromecast;
-      } else if (is_normal_url) {
-        value = PresentationUrlBySink::kNormalUrlToExtension;
-      }
-      break;
     case MediaRouteProviderId::WIRED_DISPLAY:
       if (is_normal_url) {
         value = PresentationUrlBySink::kNormalUrlToWiredDisplay;

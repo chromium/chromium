@@ -10,29 +10,28 @@ namespace media_router {
 
 TEST(MediaSinkTest, TestEquals) {
   MediaSink sink1("sinkId", "Sink", SinkIconType::CAST,
-                  MediaRouteProviderId::EXTENSION);
+                  MediaRouteProviderId::CAST);
 
   MediaSink sink1_copy(sink1);
   EXPECT_EQ(sink1, sink1_copy);
 
   // No name.
-  MediaSink sink2("sinkId", "", SinkIconType::CAST,
-                  MediaRouteProviderId::EXTENSION);
+  MediaSink sink2("sinkId", "", SinkIconType::CAST, MediaRouteProviderId::CAST);
   EXPECT_FALSE(sink1 == sink2);
 
   // Sink name is different from sink1's.
   MediaSink sink3("sinkId", "Other Sink", SinkIconType::CAST,
-                  MediaRouteProviderId::EXTENSION);
+                  MediaRouteProviderId::CAST);
   EXPECT_FALSE(sink1 == sink3);
 
   // Sink ID is diffrent from sink1's.
   MediaSink sink4("otherSinkId", "Sink", SinkIconType::CAST,
-                  MediaRouteProviderId::EXTENSION);
+                  MediaRouteProviderId::CAST);
   EXPECT_FALSE(sink1 == sink4);
 
   // Sink icon type is diffrent from sink1's.
   MediaSink sink5("otherSinkId", "Sink", SinkIconType::GENERIC,
-                  MediaRouteProviderId::EXTENSION);
+                  MediaRouteProviderId::CAST);
   EXPECT_FALSE(sink1 == sink5);
 }
 

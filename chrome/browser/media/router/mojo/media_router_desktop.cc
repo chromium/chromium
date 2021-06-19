@@ -123,9 +123,6 @@ void MediaRouterDesktop::RegisterMediaRouteProvider(
   config->use_mirroring_service = true;
   std::move(callback).Run(instance_id(), std::move(config));
 
-  if (provider_id == MediaRouteProviderId::EXTENSION) {
-    return;
-  }
   mojo::Remote<mojom::MediaRouteProvider> bound_remote(
       std::move(media_route_provider_remote));
   bound_remote.set_disconnect_handler(

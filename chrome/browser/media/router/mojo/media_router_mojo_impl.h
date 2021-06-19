@@ -164,7 +164,7 @@ class MediaRouterMojoImpl : public MediaRouterBase, public mojom::MediaRouter {
                            PresentationConnectionStateChangedCallback);
   FRIEND_TEST_ALL_PREFIXES(MediaRouterMojoImplTest,
                            PresentationConnectionStateChangedCallbackRemoved);
-  FRIEND_TEST_ALL_PREFIXES(MediaRouterMojoImpl,
+  FRIEND_TEST_ALL_PREFIXES(MediaRouterMojoImplTest,
                            TestRecordPresentationRequestUrlBySink);
   FRIEND_TEST_ALL_PREFIXES(MediaRouterDesktopTest,
                            SyncStateToMediaRouteProvider);

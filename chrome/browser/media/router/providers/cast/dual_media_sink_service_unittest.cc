@@ -64,10 +64,10 @@ TEST_F(DualMediaSinkServiceTest, AddSinksDiscoveredCallback) {
   std::string dial_provider_name = "dial";
   MediaSinkInternal dial_sink1;
   dial_sink1.set_sink(MediaSink("dial_sink1", "", SinkIconType::GENERIC,
-                                MediaRouteProviderId::EXTENSION));
+                                MediaRouteProviderId::DIAL));
   MediaSinkInternal dial_sink2;
   dial_sink2.set_sink(MediaSink("dial_sink2", "", SinkIconType::GENERIC,
-                                MediaRouteProviderId::EXTENSION));
+                                MediaRouteProviderId::DIAL));
 
   sink_map[dial_provider_name] = {dial_sink1, dial_sink2};
 
@@ -84,7 +84,7 @@ TEST_F(DualMediaSinkServiceTest, AddSinksDiscoveredCallback) {
   std::string cast_provider_name = "cast";
   MediaSinkInternal cast_sink;
   cast_sink.set_sink(MediaSink("cast_sink", "", SinkIconType::CAST,
-                               MediaRouteProviderId::EXTENSION));
+                               MediaRouteProviderId::CAST));
   sink_map[cast_provider_name] = {cast_sink};
   EXPECT_CALL(*this, OnSinksDiscovered(testing::_, testing::_)).Times(0);
   dual_media_sink_service()->OnSinksDiscovered(cast_provider_name,

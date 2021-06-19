@@ -7,7 +7,6 @@
 #include "base/notreached.h"
 #include "base/strings/string_piece.h"
 
-constexpr const char kExtension[] = "EXTENSION";
 constexpr const char kWiredDisplay[] = "WIRED_DISPLAY";
 constexpr const char kDial[] = "DIAL";
 constexpr const char kCast[] = "CAST";
@@ -19,8 +18,6 @@ namespace media_router {
 
 const char* ProviderIdToString(MediaRouteProviderId provider_id) {
   switch (provider_id) {
-    case EXTENSION:
-      return kExtension;
     case WIRED_DISPLAY:
       return kWiredDisplay;
     case CAST:
@@ -40,9 +37,7 @@ const char* ProviderIdToString(MediaRouteProviderId provider_id) {
 }
 
 MediaRouteProviderId ProviderIdFromString(base::StringPiece provider_id) {
-  if (provider_id == kExtension) {
-    return MediaRouteProviderId::EXTENSION;
-  } else if (provider_id == kWiredDisplay) {
+  if (provider_id == kWiredDisplay) {
     return MediaRouteProviderId::WIRED_DISPLAY;
   } else if (provider_id == kCast) {
     return MediaRouteProviderId::CAST;

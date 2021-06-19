@@ -492,8 +492,6 @@ struct EnumTraits<media_router::mojom::MediaRouteProvider_Id,
   static media_router::mojom::MediaRouteProvider_Id ToMojom(
       media_router::MediaRouteProviderId provider_id) {
     switch (provider_id) {
-      case media_router::MediaRouteProviderId::EXTENSION:
-        return media_router::mojom::MediaRouteProvider_Id::EXTENSION;
       case media_router::MediaRouteProviderId::WIRED_DISPLAY:
         return media_router::mojom::MediaRouteProvider_Id::WIRED_DISPLAY;
       case media_router::MediaRouteProviderId::CAST:
@@ -509,15 +507,12 @@ struct EnumTraits<media_router::mojom::MediaRouteProvider_Id,
     }
     NOTREACHED() << "Invalid MediaRouteProvider_Id: "
                  << static_cast<int>(provider_id);
-    return media_router::mojom::MediaRouteProvider_Id::EXTENSION;
+    return media_router::mojom::MediaRouteProvider_Id::CAST;
   }
 
   static bool FromMojom(media_router::mojom::MediaRouteProvider_Id input,
                         media_router::MediaRouteProviderId* provider_id) {
     switch (input) {
-      case media_router::mojom::MediaRouteProvider_Id::EXTENSION:
-        *provider_id = media_router::MediaRouteProviderId::EXTENSION;
-        return true;
       case media_router::mojom::MediaRouteProvider_Id::WIRED_DISPLAY:
         *provider_id = media_router::MediaRouteProviderId::WIRED_DISPLAY;
         return true;

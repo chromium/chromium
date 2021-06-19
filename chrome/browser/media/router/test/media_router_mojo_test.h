@@ -219,9 +219,9 @@ class MediaRouterMojoTest : public ::testing::Test {
   void ProvideTestSink(MediaRouteProviderId provider_id,
                        const MediaSink::Id& sink_id);
 
-  // Register |mock_extension_provider_| or |mock_wired_display_provider_| with
+  // Register |mock_cast_provider_| or |mock_wired_display_provider_| with
   // |media_router_|.
-  void RegisterExtensionProvider();
+  void RegisterCastProvider();
   void RegisterWiredDisplayProvider();
 
   // Tests that calling MediaRouter methods result in calls to corresponding
@@ -234,24 +234,21 @@ class MediaRouterMojoTest : public ::testing::Test {
   void TestSendRouteBinaryMessage();
   void TestDetachRoute();
 
-  const std::string& extension_id() const { return extension_->id(); }
-
   MediaRouterMojoImpl* router() const { return media_router_.get(); }
 
   Profile* profile() { return &profile_; }
 
   // Mock objects.
-  MockMediaRouteProvider mock_extension_provider_;
+  MockMediaRouteProvider mock_cast_provider_;
   MockMediaRouteProvider mock_wired_display_provider_;
 
  private:
-  // Helper method for RegisterExtensionProvider() and
+  // Helper method for RegisterCastProvider() and
   // RegisterWiredDisplayProvider().
   void RegisterMediaRouteProvider(mojom::MediaRouteProvider* provider,
                                   MediaRouteProviderId provider_id);
 
   content::BrowserTaskEnvironment task_environment_;
-  scoped_refptr<const extensions::Extension> extension_;
   TestingProfile profile_;
   std::unique_ptr<MediaRouterMojoImpl> media_router_;
   mojo::ReceiverSet<mojom::MediaRouteProvider> provider_receivers_;
