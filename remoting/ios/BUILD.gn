@@ -37,6 +37,8 @@ source_set("ios_core") {
 
   deps = [
     "//base",
+    "//remoting/client",
+    "//remoting/client/input",
     "//remoting/protocol",
   ]
 
