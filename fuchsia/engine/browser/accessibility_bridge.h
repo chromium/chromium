@@ -207,7 +207,7 @@ class WEB_ENGINE_EXPORT AccessibilityBridge
       ax_trees_;
 
   // Maps frames to AXTrees.
-  base::flat_map<content::GlobalFrameRoutingId, ui::AXTreeID>
+  base::flat_map<content::GlobalRenderFrameHostId, ui::AXTreeID>
       frame_id_to_tree_id_;
 
   // Keeps track of semantic trees connections.

@@ -48,7 +48,7 @@ struct RequestParams {
       url_pattern_index::flat::RequestMethod_NONE;
 
   // ID of the parent RenderFrameHost.
-  content::GlobalFrameRoutingId parent_routing_id;
+  content::GlobalRenderFrameHostId parent_routing_id;
 
   // Matcher for `flat::UrlRule::embedder_conditions`.
   url_pattern_index::UrlPatternIndexMatcher::EmbedderConditionsMatcher

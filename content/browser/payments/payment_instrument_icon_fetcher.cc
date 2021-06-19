@@ -26,18 +26,18 @@ namespace {
 
 void DownloadBestMatchingIcon(
     const GURL& scope,
-    std::unique_ptr<std::vector<GlobalFrameRoutingId>> frame_routing_ids,
+    std::unique_ptr<std::vector<GlobalRenderFrameHostId>> frame_routing_ids,
     const std::vector<blink::Manifest::ImageResource>& icons,
     PaymentInstrumentIconFetcher::PaymentInstrumentIconFetcherCallback
         callback);
 
 WebContents* GetWebContentsFromFrameRoutingIds(
     const GURL& scope,
-    const std::vector<GlobalFrameRoutingId>& frame_routing_ids);
+    const std::vector<GlobalRenderFrameHostId>& frame_routing_ids);
 
 void OnIconFetched(
     const GURL& scope,
-    std::unique_ptr<std::vector<GlobalFrameRoutingId>> frame_routing_ids,
+    std::unique_ptr<std::vector<GlobalRenderFrameHostId>> frame_routing_ids,
     const std::vector<blink::Manifest::ImageResource>& icons,
     PaymentInstrumentIconFetcher::PaymentInstrumentIconFetcherCallback callback,
     const SkBitmap& bitmap) {
@@ -72,7 +72,7 @@ void OnIconFetched(
 
 void DownloadBestMatchingIcon(
     const GURL& scope,
-    std::unique_ptr<std::vector<GlobalFrameRoutingId>> frame_routing_ids,
+    std::unique_ptr<std::vector<GlobalRenderFrameHostId>> frame_routing_ids,
     const std::vector<blink::Manifest::ImageResource>& icons,
     PaymentInstrumentIconFetcher::PaymentInstrumentIconFetcherCallback
         callback) {
@@ -126,7 +126,7 @@ void DownloadBestMatchingIcon(
 
 WebContents* GetWebContentsFromFrameRoutingIds(
     const GURL& scope,
-    const std::vector<GlobalFrameRoutingId>& frame_routing_ids) {
+    const std::vector<GlobalRenderFrameHostId>& frame_routing_ids) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   for (const auto& ids : frame_routing_ids) {
@@ -149,7 +149,7 @@ WebContents* GetWebContentsFromFrameRoutingIds(
 
 void StartOnUI(
     const GURL& scope,
-    std::unique_ptr<std::vector<GlobalFrameRoutingId>> frame_routing_ids,
+    std::unique_ptr<std::vector<GlobalRenderFrameHostId>> frame_routing_ids,
     const std::vector<blink::Manifest::ImageResource>& icons,
     PaymentInstrumentIconFetcher::PaymentInstrumentIconFetcherCallback
         callback) {
@@ -164,7 +164,7 @@ void StartOnUI(
 // static
 void PaymentInstrumentIconFetcher::Start(
     const GURL& scope,
-    std::unique_ptr<std::vector<GlobalFrameRoutingId>> provider_hosts,
+    std::unique_ptr<std::vector<GlobalRenderFrameHostId>> provider_hosts,
     const std::vector<blink::Manifest::ImageResource>& icons,
     PaymentInstrumentIconFetcherCallback callback) {
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());

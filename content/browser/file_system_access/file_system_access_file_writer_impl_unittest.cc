@@ -292,7 +292,7 @@ class FileSystemAccessFileWriterImplTest : public testing::Test {
   const url::Origin kTestOrigin = url::Origin::Create(kTestURL);
   const int kProcessId = 1;
   const int kFrameRoutingId = 2;
-  const GlobalFrameRoutingId kFrameId{kProcessId, kFrameRoutingId};
+  const GlobalRenderFrameHostId kFrameId{kProcessId, kFrameRoutingId};
   BrowserTaskEnvironment task_environment_;
 
   base::ScopedTempDir dir_;
@@ -598,7 +598,7 @@ TEST_F(FileSystemAccessFileWriterAfterWriteChecksTest,
   base::RunLoop loop;
   EXPECT_CALL(permission_context_, PerformAfterWriteChecks_)
       .WillOnce(testing::Invoke([&](FileSystemAccessWriteItem* item,
-                                    GlobalFrameRoutingId frame_id,
+                                    GlobalRenderFrameHostId frame_id,
                                     SBCallback& callback) {
         sb_callback = std::move(callback);
         loop.Quit();
@@ -640,7 +640,7 @@ TEST_F(FileSystemAccessFileWriterAfterWriteChecksTest,
   base::RunLoop loop;
   EXPECT_CALL(permission_context_, PerformAfterWriteChecks_)
       .WillOnce(testing::Invoke([&](FileSystemAccessWriteItem* item,
-                                    GlobalFrameRoutingId frame_id,
+                                    GlobalRenderFrameHostId frame_id,
                                     SBCallback& callback) {
         sb_callback = std::move(callback);
         loop.Quit();
@@ -711,7 +711,7 @@ TEST_F(FileSystemAccessFileWriterAfterWriteChecksTest,
   base::RunLoop sb_loop;
   EXPECT_CALL(permission_context_, PerformAfterWriteChecks_)
       .WillOnce(testing::Invoke([&](FileSystemAccessWriteItem* item,
-                                    GlobalFrameRoutingId frame_id,
+                                    GlobalRenderFrameHostId frame_id,
                                     SBCallback& callback) {
         sb_callback = std::move(callback);
         sb_loop.Quit();

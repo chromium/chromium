@@ -43,7 +43,7 @@ class PaymentAppInfoFetcher {
   // Only accessed on the UI thread.
   static void StartOnUI(
       const GURL& context_url,
-      const std::unique_ptr<std::vector<GlobalFrameRoutingId>>&
+      const std::unique_ptr<std::vector<GlobalRenderFrameHostId>>&
           frame_routing_ids,
       PaymentAppInfoFetchCallback callback);
 
@@ -62,7 +62,7 @@ class PaymentAppInfoFetcher {
     ~SelfDeleteFetcher();
 
     void Start(const GURL& context_url,
-               const std::unique_ptr<std::vector<GlobalFrameRoutingId>>&
+               const std::unique_ptr<std::vector<GlobalRenderFrameHostId>>&
                    frame_routing_ids);
 
    private:

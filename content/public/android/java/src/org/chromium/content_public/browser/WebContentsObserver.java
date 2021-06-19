@@ -36,13 +36,13 @@ public abstract class WebContentsObserver {
      * To avoid creating a RenderFrameHost object without necessity, only its id is passed. Call
      * WebContents#getRenderFrameHostFromId() to get the RenderFrameHost object if needed.
      */
-    public void renderFrameCreated(GlobalFrameRoutingId id) {}
+    public void renderFrameCreated(GlobalRenderFrameHostId id) {}
 
     /**
      * Called when a RenderFrame for renderFrameHost is deleted in the
      * renderer process.
      */
-    public void renderFrameDeleted(GlobalFrameRoutingId id) {}
+    public void renderFrameDeleted(GlobalRenderFrameHostId id) {}
 
     /**
      * Called when the RenderView of the current RenderViewHost is ready, e.g. because we recreated
@@ -151,7 +151,7 @@ public abstract class WebContentsObserver {
      * @param isMainFrame Whether the load is happening for the main frame.
      * @param rfhLifecycleState The lifecycle state of the associated frame.
      */
-    public void didFinishLoad(GlobalFrameRoutingId rfhId, GURL url, boolean isKnownValid,
+    public void didFinishLoad(GlobalRenderFrameHostId rfhId, GURL url, boolean isKnownValid,
             boolean isMainFrame, @LifecycleState int rfhLifecycleState) {}
 
     /**
@@ -160,7 +160,7 @@ public abstract class WebContentsObserver {
      * @param isMainFrame Whether the load is happening for the main frame.
      * @param rfhLifecycleState The lifecycle state of the associated frame.
      */
-    public void documentLoadedInFrame(GlobalFrameRoutingId rfhId, boolean isMainFrame,
+    public void documentLoadedInFrame(GlobalRenderFrameHostId rfhId, boolean isMainFrame,
             @LifecycleState int rfhLifecycleState) {}
 
     /**

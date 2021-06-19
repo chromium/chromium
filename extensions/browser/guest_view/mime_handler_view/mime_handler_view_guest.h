@@ -84,7 +84,7 @@ class MimeHandlerViewGuest
   content::SiteInstance* GetOwnerSiteInstance() override;
 
   content::RenderFrameHost* GetEmbedderFrame();
-  void SetEmbedderFrame(content::GlobalFrameRoutingId frame_id);
+  void SetEmbedderFrame(content::GlobalRenderFrameHostId frame_id);
 
   void SetBeforeUnloadController(
       mojo::PendingRemote<mime_handler::BeforeUnloadControl>
@@ -184,7 +184,7 @@ class MimeHandlerViewGuest
   std::unique_ptr<MimeHandlerViewGuestDelegate> delegate_;
   std::unique_ptr<StreamContainer> stream_;
 
-  content::GlobalFrameRoutingId embedder_frame_id_{
+  content::GlobalRenderFrameHostId embedder_frame_id_{
       content::ChildProcessHost::kInvalidUniqueID, MSG_ROUTING_NONE};
   int embedder_widget_routing_id_ = MSG_ROUTING_NONE;
 

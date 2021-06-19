@@ -275,7 +275,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Can be set to 0 to fail immediately during tests.
   static int max_accessibility_resets_;
 
-  static RenderFrameHostImpl* FromID(GlobalFrameRoutingId id);
+  static RenderFrameHostImpl* FromID(GlobalRenderFrameHostId id);
   static RenderFrameHostImpl* FromID(int process_id, int routing_id);
   static RenderFrameHostImpl* FromFrameToken(
       int process_id,
@@ -302,7 +302,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
                              const base::TimeDelta& timeout) override;
   SiteInstanceImpl* GetSiteInstance() override;
   RenderProcessHost* GetProcess() override;
-  GlobalFrameRoutingId GetGlobalFrameRoutingId() override;
+  GlobalRenderFrameHostId GetGlobalId() override;
   RenderWidgetHostImpl* GetRenderWidgetHost() override;
   RenderWidgetHostView* GetView() override;
   RenderFrameHostImpl* GetParent() override;

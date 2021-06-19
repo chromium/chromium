@@ -357,7 +357,7 @@ bool ContentBrowserClientImpl::AllowSharedWorker(
 void ContentBrowserClientImpl::AllowWorkerFileSystem(
     const GURL& url,
     content::BrowserContext* browser_context,
-    const std::vector<content::GlobalFrameRoutingId>& render_frames,
+    const std::vector<content::GlobalRenderFrameHostId>& render_frames,
     base::OnceCallback<void(bool)> callback) {
   std::move(callback).Run(embedder_support::AllowWorkerFileSystem(
       url, render_frames,
@@ -367,7 +367,7 @@ void ContentBrowserClientImpl::AllowWorkerFileSystem(
 bool ContentBrowserClientImpl::AllowWorkerIndexedDB(
     const GURL& url,
     content::BrowserContext* browser_context,
-    const std::vector<content::GlobalFrameRoutingId>& render_frames) {
+    const std::vector<content::GlobalRenderFrameHostId>& render_frames) {
   return embedder_support::AllowWorkerIndexedDB(
       url, render_frames,
       CookieSettingsFactory::GetForBrowserContext(browser_context).get());
@@ -376,7 +376,7 @@ bool ContentBrowserClientImpl::AllowWorkerIndexedDB(
 bool ContentBrowserClientImpl::AllowWorkerCacheStorage(
     const GURL& url,
     content::BrowserContext* browser_context,
-    const std::vector<content::GlobalFrameRoutingId>& render_frames) {
+    const std::vector<content::GlobalRenderFrameHostId>& render_frames) {
   return embedder_support::AllowWorkerCacheStorage(
       url, render_frames,
       CookieSettingsFactory::GetForBrowserContext(browser_context).get());
@@ -385,7 +385,7 @@ bool ContentBrowserClientImpl::AllowWorkerCacheStorage(
 bool ContentBrowserClientImpl::AllowWorkerWebLocks(
     const GURL& url,
     content::BrowserContext* browser_context,
-    const std::vector<content::GlobalFrameRoutingId>& render_frames) {
+    const std::vector<content::GlobalRenderFrameHostId>& render_frames) {
   return embedder_support::AllowWorkerWebLocks(
       url, CookieSettingsFactory::GetForBrowserContext(browser_context).get());
 }

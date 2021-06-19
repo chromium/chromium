@@ -50,7 +50,7 @@ ServiceWorkerRegisterJob::ServiceWorkerRegisterJob(
     const blink::mojom::ServiceWorkerRegistrationOptions& options,
     blink::mojom::FetchClientSettingsObjectPtr
         outside_fetch_client_settings_object,
-    const GlobalFrameRoutingId& requesting_frame_id)
+    const GlobalRenderFrameHostId& requesting_frame_id)
     : context_(context),
       job_type_(REGISTRATION_JOB),
       scope_(options.scope),

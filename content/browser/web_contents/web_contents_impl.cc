@@ -1142,7 +1142,7 @@ WebContentsImpl* WebContentsImpl::FromFrameTreeNode(
 
 // static
 WebContents* WebContentsImpl::FromRenderFrameHostID(
-    GlobalFrameRoutingId render_frame_host_id) {
+    GlobalRenderFrameHostId render_frame_host_id) {
   OPTIONAL_TRACE_EVENT2(TRACE_DISABLED_BY_DEFAULT("content.verbose"),
                         "WebContentsImpl::FromRenderFrameHostID", "process_id",
                         render_frame_host_id.child_id, "frame_id",
@@ -1161,7 +1161,7 @@ WebContents* WebContentsImpl::FromRenderFrameHostID(
 WebContents* WebContentsImpl::FromRenderFrameHostID(int render_process_host_id,
                                                     int render_frame_host_id) {
   return FromRenderFrameHostID(
-      GlobalFrameRoutingId(render_process_host_id, render_frame_host_id));
+      GlobalRenderFrameHostId(render_process_host_id, render_frame_host_id));
 }
 
 // static
@@ -4090,8 +4090,8 @@ RenderWidgetHostView* WebContentsImpl::GetCreatedWidget(int process_id,
 void WebContentsImpl::CreateMediaPlayerHostForRenderFrameHost(
     RenderFrameHostImpl* frame_host,
     mojo::PendingAssociatedReceiver<media::mojom::MediaPlayerHost> receiver) {
-  media_web_contents_observer()->BindMediaPlayerHost(
-      frame_host->GetGlobalFrameRoutingId(), std::move(receiver));
+  media_web_contents_observer()->BindMediaPlayerHost(frame_host->GetGlobalId(),
+                                                     std::move(receiver));
 }
 
 void WebContentsImpl::RequestMediaAccessPermission(
@@ -5134,13 +5134,13 @@ int WebContentsImpl::DownloadImage(
     WebContents::ImageDownloadCallback callback) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::DownloadImage", "url",
                         url);
-  return DownloadImageInFrame(GlobalFrameRoutingId(), url, is_favicon,
+  return DownloadImageInFrame(GlobalRenderFrameHostId(), url, is_favicon,
                               preferred_size, max_bitmap_size, bypass_cache,
                               std::move(callback));
 }
 
 int WebContentsImpl::DownloadImageInFrame(
-    const GlobalFrameRoutingId& initiator_frame_routing_id,
+    const GlobalRenderFrameHostId& initiator_frame_routing_id,
     const GURL& url,
     bool is_favicon,
     uint32_t preferred_size,

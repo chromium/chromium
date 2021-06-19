@@ -11,7 +11,7 @@
 namespace content {
 
 FeatureObserver::FeatureObserver(FeatureObserverClient* client,
-                                 GlobalFrameRoutingId id)
+                                 GlobalRenderFrameHostId id)
     : client_(client), id_(id) {
   DCHECK(client_);
 
@@ -20,7 +20,7 @@ FeatureObserver::FeatureObserver(FeatureObserverClient* client,
        ++i) {
     features_by_type_[i].set_disconnect_handler(base::BindRepeating(
         [](mojo::ReceiverSet<blink::mojom::ObservedFeature>* set,
-           FeatureObserverClient* client, GlobalFrameRoutingId id,
+           FeatureObserverClient* client, GlobalRenderFrameHostId id,
            blink::mojom::ObservedFeatureType type) {
           if (!set->empty())
             return;

@@ -68,7 +68,7 @@ PaymentRequestState::PaymentRequestState(
     autofill::PersonalDataManager* personal_data_manager,
     ContentPaymentRequestDelegate* payment_request_delegate,
     JourneyLogger* journey_logger)
-    : frame_routing_id_(content::GlobalFrameRoutingId(
+    : frame_routing_id_(content::GlobalRenderFrameHostId(
           initiator_render_frame_host->GetProcess()->GetID(),
           initiator_render_frame_host->GetRoutingID())),
       top_origin_(top_level_origin),

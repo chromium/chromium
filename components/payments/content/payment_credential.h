@@ -44,7 +44,7 @@ class PaymentCredential : public mojom::PaymentCredential,
 
   PaymentCredential(
       content::WebContents* web_contents,
-      content::GlobalFrameRoutingId initiator_frame_routing_id,
+      content::GlobalRenderFrameHostId initiator_frame_routing_id,
       scoped_refptr<PaymentManifestWebDataService> web_data_service,
       mojo::PendingReceiver<mojom::PaymentCredential> receiver);
   ~PaymentCredential() override;
@@ -121,7 +121,7 @@ class PaymentCredential : public mojom::PaymentCredential,
   void Reset();
 
   State state_ = State::kIdle;
-  const content::GlobalFrameRoutingId initiator_frame_routing_id_;
+  const content::GlobalRenderFrameHostId initiator_frame_routing_id_;
   scoped_refptr<PaymentManifestWebDataService> web_data_service_;
   absl::optional<WebDataServiceBase::Handle> data_service_request_handle_;
   DownloadIconAndShowUserPromptCallback prompt_callback_;

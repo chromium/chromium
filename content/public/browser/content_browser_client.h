@@ -229,7 +229,7 @@ class WebAuthenticationDelegate;
 class WebContents;
 class WebContentsViewDelegate;
 class XrIntegrationClient;
-struct GlobalFrameRoutingId;
+struct GlobalRenderFrameHostId;
 struct GlobalRequestID;
 struct MainFunctionParams;
 struct OpenURLParams;
@@ -713,7 +713,7 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual void AllowWorkerFileSystem(
       const GURL& url,
       BrowserContext* browser_context,
-      const std::vector<GlobalFrameRoutingId>& render_frames,
+      const std::vector<GlobalRenderFrameHostId>& render_frames,
       base::OnceCallback<void(bool)> callback);
 
   // Allow the embedder to control if access to IndexedDB by a shared worker
@@ -721,21 +721,21 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual bool AllowWorkerIndexedDB(
       const GURL& url,
       BrowserContext* browser_context,
-      const std::vector<GlobalFrameRoutingId>& render_frames);
+      const std::vector<GlobalRenderFrameHostId>& render_frames);
 
   // Allow the embedder to control if access to Web Locks by a shared worker
   // is allowed.
   virtual bool AllowWorkerWebLocks(
       const GURL& url,
       BrowserContext* browser_context,
-      const std::vector<GlobalFrameRoutingId>& render_frames);
+      const std::vector<GlobalRenderFrameHostId>& render_frames);
 
   // Allow the embedder to control if access to CacheStorage by a shared worker
   // is allowed.
   virtual bool AllowWorkerCacheStorage(
       const GURL& url,
       BrowserContext* browser_context,
-      const std::vector<GlobalFrameRoutingId>& render_frames);
+      const std::vector<GlobalRenderFrameHostId>& render_frames);
 
   // Allow the embedder to control whether we can use Web Bluetooth.
   // TODO(crbug.com/589228): Replace this with a use of the permission system.

@@ -108,7 +108,7 @@ class ServiceWorkerPaymentAppFinder
   RENDER_DOCUMENT_HOST_USER_DATA_KEY_DECL();
 
   // The identifier of the frame that owns this ServiceWorkerPaymentAppFinder.
-  content::GlobalFrameRoutingId frame_routing_id_;
+  content::GlobalRenderFrameHostId frame_routing_id_;
 
   std::set<std::string> ignored_methods_;
   std::unique_ptr<PaymentManifestDownloader> test_downloader_;

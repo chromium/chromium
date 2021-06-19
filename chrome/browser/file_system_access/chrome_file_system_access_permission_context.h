@@ -83,11 +83,11 @@ class ChromeFileSystemAccessPermissionContext
       PathType path_type,
       const base::FilePath& path,
       HandleType handle_type,
-      content::GlobalFrameRoutingId frame_id,
+      content::GlobalRenderFrameHostId frame_id,
       base::OnceCallback<void(SensitiveDirectoryResult)> callback) override;
   void PerformAfterWriteChecks(
       std::unique_ptr<content::FileSystemAccessWriteItem> item,
-      content::GlobalFrameRoutingId frame_id,
+      content::GlobalRenderFrameHostId frame_id,
       base::OnceCallback<void(AfterWriteCheckResult)> callback) override;
   bool CanObtainReadPermission(const url::Origin& origin) override;
   bool CanObtainWritePermission(const url::Origin& origin) override;
@@ -189,7 +189,7 @@ class ChromeFileSystemAccessPermissionContext
       const url::Origin& origin,
       const base::FilePath& path,
       HandleType handle_type,
-      content::GlobalFrameRoutingId frame_id,
+      content::GlobalRenderFrameHostId frame_id,
       base::OnceCallback<void(SensitiveDirectoryResult)> callback,
       bool should_block);
 

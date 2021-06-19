@@ -106,7 +106,7 @@ class PaymentAppServiceBridge : public PaymentAppFactory::Delegate {
       base::RepeatingClosure set_can_make_payment_even_without_apps_callback);
 
   size_t number_of_pending_factories_;
-  content::GlobalFrameRoutingId frame_routing_id_;
+  content::GlobalRenderFrameHostId frame_routing_id_;
   const GURL top_origin_;
   const GURL frame_origin_;
   const url::Origin frame_security_origin_;

@@ -16,9 +16,9 @@ class PerformanceManagerFeatureObserverClient
   ~PerformanceManagerFeatureObserverClient() override;
 
   // content::FeatureObserverClient implementation:
-  void OnStartUsing(content::GlobalFrameRoutingId id,
+  void OnStartUsing(content::GlobalRenderFrameHostId id,
                     blink::mojom::ObservedFeatureType feature_type) override;
-  void OnStopUsing(content::GlobalFrameRoutingId id,
+  void OnStopUsing(content::GlobalRenderFrameHostId id,
                    blink::mojom::ObservedFeatureType feature_type) override;
 };
 

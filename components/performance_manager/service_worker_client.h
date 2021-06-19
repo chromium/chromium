@@ -17,7 +17,7 @@
 class ServiceWorkerClient {
  public:
   explicit ServiceWorkerClient(
-      content::GlobalFrameRoutingId render_frame_host_id);
+      content::GlobalRenderFrameHostId render_frame_host_id);
   explicit ServiceWorkerClient(
       blink::DedicatedWorkerToken dedicated_worker_token);
   explicit ServiceWorkerClient(blink::SharedWorkerToken shared_worker_token);
@@ -29,7 +29,7 @@ class ServiceWorkerClient {
 
   blink::mojom::ServiceWorkerClientType type() const { return type_; }
 
-  content::GlobalFrameRoutingId GetRenderFrameHostId() const;
+  content::GlobalRenderFrameHostId GetRenderFrameHostId() const;
   blink::DedicatedWorkerToken GetDedicatedWorkerToken() const;
   blink::SharedWorkerToken GetSharedWorkerToken() const;
 
@@ -41,7 +41,7 @@ class ServiceWorkerClient {
 
   union {
     // The frame tree node ID, if this is a window client.
-    content::GlobalFrameRoutingId render_frame_host_id_;
+    content::GlobalRenderFrameHostId render_frame_host_id_;
 
     // The token of the client, if this is a worker client.
     content::DedicatedOrSharedWorkerToken worker_token_;

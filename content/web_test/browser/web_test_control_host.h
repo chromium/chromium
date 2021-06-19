@@ -166,7 +166,7 @@ class WebTestControlHost : public WebContentsObserver,
     Node& operator=(Node&& other);
 
     RenderFrameHost* render_frame_host = nullptr;
-    GlobalFrameRoutingId render_frame_host_id;
+    GlobalRenderFrameHostId render_frame_host_id;
     std::vector<Node*> children;
   };
 
@@ -289,7 +289,7 @@ class WebTestControlHost : public WebContentsObserver,
   GetWebTestRenderFrameRemote(RenderFrameHost* frame);
   mojo::AssociatedRemote<mojom::WebTestRenderThread>&
   GetWebTestRenderThreadRemote(RenderProcessHost* process);
-  void HandleWebTestRenderFrameRemoteError(const GlobalFrameRoutingId& key);
+  void HandleWebTestRenderFrameRemoteError(const GlobalRenderFrameHostId& key);
   void HandleWebTestRenderThreadRemoteError(RenderProcessHost* key);
 
   // CompositeAllFramesThen() first builds a frame tree based on
@@ -395,7 +395,7 @@ class WebTestControlHost : public WebContentsObserver,
   std::queue<Node*> composite_all_frames_node_queue_;
 
   // Map from one frame to one mojo pipe.
-  std::map<GlobalFrameRoutingId,
+  std::map<GlobalRenderFrameHostId,
            mojo::AssociatedRemote<mojom::WebTestRenderFrame>>
       web_test_render_frame_map_;
 

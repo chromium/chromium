@@ -1207,7 +1207,7 @@ class TestServiceWorkerContextCoreObserver
   void OnControlleeNavigationCommitted(
       int64_t version_id,
       const std::string& uuid,
-      GlobalFrameRoutingId render_frame_host_id) override {
+      GlobalRenderFrameHostId render_frame_host_id) override {
     ++on_controllee_navigation_committed_count_;
   }
 

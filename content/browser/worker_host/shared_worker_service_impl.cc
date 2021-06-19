@@ -114,7 +114,7 @@ void SharedWorkerServiceImpl::SetURLLoaderFactoryForTesting(
 }
 
 void SharedWorkerServiceImpl::ConnectToWorker(
-    GlobalFrameRoutingId client_render_frame_host_id,
+    GlobalRenderFrameHostId client_render_frame_host_id,
     blink::mojom::SharedWorkerInfoPtr info,
     mojo::PendingRemote<blink::mojom::SharedWorkerClient> client,
     blink::mojom::SharedWorkerCreationContextType creation_context_type,
@@ -234,7 +234,7 @@ void SharedWorkerServiceImpl::NotifyBeforeWorkerDestroyed(
 
 void SharedWorkerServiceImpl::NotifyClientAdded(
     const blink::SharedWorkerToken& token,
-    GlobalFrameRoutingId client_render_frame_host_id) {
+    GlobalRenderFrameHostId client_render_frame_host_id) {
   auto insertion_result = shared_worker_client_counts_.insert(
       {{token, client_render_frame_host_id}, 0});
 
@@ -251,7 +251,7 @@ void SharedWorkerServiceImpl::NotifyClientAdded(
 
 void SharedWorkerServiceImpl::NotifyClientRemoved(
     const blink::SharedWorkerToken& token,
-    GlobalFrameRoutingId client_render_frame_host_id) {
+    GlobalRenderFrameHostId client_render_frame_host_id) {
   auto it = shared_worker_client_counts_.find(
       std::make_pair(token, client_render_frame_host_id));
   DCHECK(it != shared_worker_client_counts_.end());

@@ -25,7 +25,7 @@
 #include "url/origin.h"
 
 using content::BrowserContext;
-using content::GlobalFrameRoutingId;
+using content::GlobalRenderFrameHostId;
 using content::OpenURLParams;
 using content::RenderFrameHost;
 using content::RenderViewHost;

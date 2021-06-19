@@ -73,10 +73,10 @@ class WorkerWatcher : public content::DedicatedWorkerService::Observer,
   void OnWorkerCreated(
       const blink::DedicatedWorkerToken& dedicated_worker_token,
       int worker_process_id,
-      content::GlobalFrameRoutingId ancestor_render_frame_host_id) override;
+      content::GlobalRenderFrameHostId ancestor_render_frame_host_id) override;
   void OnBeforeWorkerDestroyed(
       const blink::DedicatedWorkerToken& dedicated_worker_token,
-      content::GlobalFrameRoutingId ancestor_render_frame_host_id) override;
+      content::GlobalRenderFrameHostId ancestor_render_frame_host_id) override;
   void OnFinalResponseURLDetermined(
       const blink::DedicatedWorkerToken& dedicated_worker_token,
       const GURL& url) override;
@@ -92,10 +92,10 @@ class WorkerWatcher : public content::DedicatedWorkerService::Observer,
       const GURL& url) override;
   void OnClientAdded(
       const blink::SharedWorkerToken& shared_worker_token,
-      content::GlobalFrameRoutingId render_frame_host_id) override;
+      content::GlobalRenderFrameHostId render_frame_host_id) override;
   void OnClientRemoved(
       const blink::SharedWorkerToken& shared_worker_token,
-      content::GlobalFrameRoutingId render_frame_host_id) override;
+      content::GlobalRenderFrameHostId render_frame_host_id) override;
 
   // content::ServiceWorkerContextObserver:
   // Note: If you add a new function here, make sure it is also added to
@@ -113,7 +113,7 @@ class WorkerWatcher : public content::DedicatedWorkerService::Observer,
   void OnControlleeNavigationCommitted(
       int64_t version_id,
       const std::string& client_uuid,
-      content::GlobalFrameRoutingId render_frame_host_id) override;
+      content::GlobalRenderFrameHostId render_frame_host_id) override;
 
  private:
   friend class WorkerWatcherTest;
@@ -123,13 +123,13 @@ class WorkerWatcher : public content::DedicatedWorkerService::Observer,
   // connection is added.
   void AddFrameClientConnection(
       WorkerNodeImpl* worker_node,
-      content::GlobalFrameRoutingId client_render_frame_host_id);
+      content::GlobalRenderFrameHostId client_render_frame_host_id);
   // Removes a connection between |worker_node| and the frame node represented
   // by |client_render_frame_host_id|. Disconnects them in the graph when the
   // last connection is removed.
   void RemoveFrameClientConnection(
       WorkerNodeImpl* worker_node,
-      content::GlobalFrameRoutingId client_render_frame_host_id);
+      content::GlobalRenderFrameHostId client_render_frame_host_id);
 
   // If a node with |client_dedicated_worker_token| exists, posts a task to
   // the PM graph to connect/disconnect |worker_node| with the
@@ -160,7 +160,7 @@ class WorkerWatcher : public content::DedicatedWorkerService::Observer,
                                          int64_t version_id);
 
   void OnBeforeFrameNodeRemoved(
-      content::GlobalFrameRoutingId render_frame_host_id,
+      content::GlobalRenderFrameHostId render_frame_host_id,
       FrameNodeImpl* frame_node);
 
   // Adds/removes a connection to |child_worker_node| in the set of child
@@ -172,12 +172,12 @@ class WorkerWatcher : public content::DedicatedWorkerService::Observer,
   // worker removed, and |was_last_child_worker_connection| is true if this
   // removed the last connection between the frame and |child_worker_node|.
   void AddChildWorkerConnection(
-      content::GlobalFrameRoutingId render_frame_host_id,
+      content::GlobalRenderFrameHostId render_frame_host_id,
       WorkerNodeImpl* child_worker_node,
       bool* is_first_child_worker,
       bool* is_first_child_worker_connection);
   void RemoveChildWorkerConnection(
-      content::GlobalFrameRoutingId render_frame_host_id,
+      content::GlobalRenderFrameHostId render_frame_host_id,
       WorkerNodeImpl* child_worker_node,
       bool* was_last_child_worker,
       bool* was_last_child_worker_connection);
@@ -250,7 +250,7 @@ class WorkerWatcher : public content::DedicatedWorkerService::Observer,
   // that a single frame can have multiple "controllee" relationships to the
   // same service worker. This is represented as a single edge in the PM graph.
   using WorkerNodeConnections = base::flat_map<WorkerNodeImpl*, size_t>;
-  base::flat_map<content::GlobalFrameRoutingId, WorkerNodeConnections>
+  base::flat_map<content::GlobalRenderFrameHostId, WorkerNodeConnections>
       frame_node_child_worker_connections_;
 
   // Maps each dedicated worker to all its child workers.

@@ -119,7 +119,7 @@ class ChromeFileSystemAccessPermissionContextTest : public testing::Test {
     SensitiveDirectoryResult out_result;
     permission_context_->ConfirmSensitiveDirectoryAccess(
         kTestOrigin, path_type, path, handle_type,
-        content::GlobalFrameRoutingId(),
+        content::GlobalRenderFrameHostId(),
         base::BindLambdaForTesting([&](SensitiveDirectoryResult result) {
           out_result = result;
           loop.Quit();
@@ -160,8 +160,8 @@ class ChromeFileSystemAccessPermissionContextTest : public testing::Test {
     return web_contents()->GetMainFrame()->GetProcess()->GetID();
   }
 
-  content::GlobalFrameRoutingId frame_id() {
-    return content::GlobalFrameRoutingId(
+  content::GlobalRenderFrameHostId frame_id() {
+    return content::GlobalRenderFrameHostId(
         process_id(), web_contents()->GetMainFrame()->GetRoutingID());
   }
 

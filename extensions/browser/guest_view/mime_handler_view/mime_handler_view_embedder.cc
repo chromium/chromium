@@ -201,7 +201,7 @@ void MimeHandlerViewEmbedder::DidCreateMimeHandlerViewGuest(
   DCHECK(outer_contents_rfh_);
   DCHECK(render_frame_host_);
   DCHECK_EQ(outer_contents_rfh_->GetParent(), render_frame_host_);
-  guest_view->SetEmbedderFrame(render_frame_host_->GetGlobalFrameRoutingId());
+  guest_view->SetEmbedderFrame(render_frame_host_->GetGlobalId());
 
   const int embedder_frame_process_id =
       render_frame_host_->GetProcess()->GetID();

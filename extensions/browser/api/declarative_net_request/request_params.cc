@@ -121,12 +121,12 @@ bool IsThirdPartyRequest(const url::Origin& origin,
       net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
 }
 
-content::GlobalFrameRoutingId GetFrameRoutingId(
+content::GlobalRenderFrameHostId GetFrameRoutingId(
     content::RenderFrameHost* host) {
   if (!host)
-    return content::GlobalFrameRoutingId();
+    return content::GlobalRenderFrameHostId();
 
-  return host->GetGlobalFrameRoutingId();
+  return host->GetGlobalId();
 }
 
 bool DoEmbedderConditionsMatch(

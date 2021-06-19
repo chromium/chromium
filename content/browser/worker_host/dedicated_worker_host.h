@@ -62,9 +62,9 @@ class DedicatedWorkerHost final : public blink::mojom::DedicatedWorkerHost,
       DedicatedWorkerServiceImpl* service,
       const blink::DedicatedWorkerToken& token,
       RenderProcessHost* worker_process_host,
-      absl::optional<GlobalFrameRoutingId> creator_render_frame_host_id,
+      absl::optional<GlobalRenderFrameHostId> creator_render_frame_host_id,
       absl::optional<blink::DedicatedWorkerToken> creator_worker_token,
-      GlobalFrameRoutingId ancestor_render_frame_host_id,
+      GlobalRenderFrameHostId ancestor_render_frame_host_id,
       const url::Origin& creator_origin,
       const net::IsolationInfo& isolation_info,
       const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
@@ -79,7 +79,7 @@ class DedicatedWorkerHost final : public blink::mojom::DedicatedWorkerHost,
   const blink::DedicatedWorkerToken& GetToken() const { return token_; }
   RenderProcessHost* GetProcessHost() const { return worker_process_host_; }
   const url::Origin& GetWorkerOrigin() const { return worker_origin_; }
-  const GlobalFrameRoutingId& GetAncestorRenderFrameHostId() const {
+  const GlobalRenderFrameHostId& GetAncestorRenderFrameHostId() const {
     return ancestor_render_frame_host_id_;
   }
   const absl::optional<GURL>& GetFinalResponseURL() const {
@@ -226,7 +226,7 @@ class DedicatedWorkerHost final : public blink::mojom::DedicatedWorkerHost,
 
   // The ID of the frame that directly starts this worker. This is absl::nullopt
   // when this worker is nested.
-  const absl::optional<GlobalFrameRoutingId> creator_render_frame_host_id_;
+  const absl::optional<GlobalRenderFrameHostId> creator_render_frame_host_id_;
 
   // The token of the dedicated worker that directly starts this worker. This is
   // absl::nullopt when this worker is created from a frame.
@@ -234,7 +234,7 @@ class DedicatedWorkerHost final : public blink::mojom::DedicatedWorkerHost,
 
   // The ID of the frame that owns this worker, either directly, or (in the case
   // of nested workers) indirectly via a tree of dedicated workers.
-  const GlobalFrameRoutingId ancestor_render_frame_host_id_;
+  const GlobalRenderFrameHostId ancestor_render_frame_host_id_;
 
   // The origin of the frame or dedicated worker that starts this worker.
   const url::Origin creator_origin_;

@@ -24,7 +24,7 @@
 namespace content {
 
 WebContentsVideoCaptureDevice::WebContentsVideoCaptureDevice(
-    const GlobalFrameRoutingId& id)
+    const GlobalRenderFrameHostId& id)
     : tracker_(new WebContentsFrameTracker(AsWeakPtr(), cursor_controller())) {
   GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
@@ -43,8 +43,8 @@ WebContentsVideoCaptureDevice::Create(const std::string& device_id) {
     return nullptr;
   }
 
-  const GlobalFrameRoutingId routing_id(media_id.render_process_id,
-                                        media_id.main_render_frame_id);
+  const GlobalRenderFrameHostId routing_id(media_id.render_process_id,
+                                           media_id.main_render_frame_id);
   return std::make_unique<WebContentsVideoCaptureDevice>(routing_id);
 }
 

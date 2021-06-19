@@ -32,7 +32,7 @@ class CONTENT_EXPORT MediaSessionServiceImpl
   const mojo::Remote<blink::mojom::MediaSessionClient>& GetClient() {
     return client_;
   }
-  GlobalFrameRoutingId GetRenderFrameHostId() const;
+  GlobalRenderFrameHostId GetRenderFrameHostId() const;
   RenderFrameHost* GetRenderFrameHost() const;
 
   blink::mojom::MediaSessionPlaybackState playback_state() const {
@@ -82,7 +82,7 @@ class CONTENT_EXPORT MediaSessionServiceImpl
 
   void ClearActions();
 
-  const GlobalFrameRoutingId render_frame_host_id_;
+  const GlobalRenderFrameHostId render_frame_host_id_;
 
   // RAII binding of |this| to an MediaSessionService interface request.
   // The binding is removed when receiver_ is cleared or goes out of scope.

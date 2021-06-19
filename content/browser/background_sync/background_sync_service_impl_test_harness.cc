@@ -182,7 +182,7 @@ void BackgroundSyncServiceImplTestHarness::CreateServiceWorkerRegistration() {
       blink::mojom::FetchClientSettingsObject::New(),
       base::BindOnce(&RegisterServiceWorkerCallback, &called,
                      &sw_registration_id_),
-      /*requesting_frame_id=*/GlobalFrameRoutingId());
+      /*requesting_frame_id=*/GlobalRenderFrameHostId());
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(called);
 

@@ -50,7 +50,7 @@ namespace content {
 
 namespace {
 bool IsRendererPasteAllowed(
-    const GlobalFrameRoutingId& render_frame_routing_id_) {
+    const GlobalRenderFrameHostId& render_frame_routing_id_) {
   RenderFrameHostImpl* render_frame_host =
       RenderFrameHostImpl::FromID(render_frame_routing_id_);
   if (!render_frame_host)
@@ -119,14 +119,14 @@ ClipboardHostImpl::ClipboardHostImpl(RenderFrameHost* render_frame_host)
   // |render_frame_host| may be null in unit tests.
   if (render_frame_host) {
     render_frame_routing_id_ =
-        GlobalFrameRoutingId(render_frame_host->GetProcess()->GetID(),
-                             render_frame_host->GetRoutingID());
+        GlobalRenderFrameHostId(render_frame_host->GetProcess()->GetID(),
+                                render_frame_host->GetRoutingID());
     clipboard_writer_ = std::make_unique<ui::ScopedClipboardWriter>(
         ui::ClipboardBuffer::kCopyPaste,
         std::make_unique<ui::DataTransferEndpoint>(
             render_frame_host->GetLastCommittedOrigin()));
   } else {
-    render_frame_routing_id_ = GlobalFrameRoutingId(
+    render_frame_routing_id_ = GlobalRenderFrameHostId(
         ChildProcessHost::kInvalidUniqueID, MSG_ROUTING_NONE);
     clipboard_writer_ = std::make_unique<ui::ScopedClipboardWriter>(
         ui::ClipboardBuffer::kCopyPaste);

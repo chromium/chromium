@@ -37,12 +37,12 @@ class FakeFileSystemAccessPermissionContext
       PathType path_type,
       const base::FilePath& path,
       HandleType handle_type,
-      GlobalFrameRoutingId frame_id,
+      GlobalRenderFrameHostId frame_id,
       base::OnceCallback<void(SensitiveDirectoryResult)> callback) override;
 
   void PerformAfterWriteChecks(
       std::unique_ptr<FileSystemAccessWriteItem> item,
-      GlobalFrameRoutingId frame_id,
+      GlobalRenderFrameHostId frame_id,
       base::OnceCallback<void(AfterWriteCheckResult)> callback) override;
 
   bool CanObtainReadPermission(const url::Origin& origin) override;

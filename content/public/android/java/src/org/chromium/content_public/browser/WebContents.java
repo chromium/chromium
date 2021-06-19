@@ -171,7 +171,7 @@ public interface WebContents extends Parcelable {
      *         live RenderFrameHost.
      */
     @Nullable
-    RenderFrameHost getRenderFrameHostFromId(GlobalFrameRoutingId id);
+    RenderFrameHost getRenderFrameHostFromId(GlobalRenderFrameHostId id);
 
     /**
      * @return The root level view from the renderer, or {@code null} in some cases where there is

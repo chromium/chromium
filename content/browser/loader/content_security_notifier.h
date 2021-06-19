@@ -16,7 +16,8 @@ namespace content {
 class ContentSecurityNotifier final
     : public blink::mojom::ContentSecurityNotifier {
  public:
-  explicit ContentSecurityNotifier(GlobalFrameRoutingId render_frame_host_id);
+  explicit ContentSecurityNotifier(
+      GlobalRenderFrameHostId render_frame_host_id);
   ~ContentSecurityNotifier() override = default;
 
   ContentSecurityNotifier(const ContentSecurityNotifier&) = delete;
@@ -29,7 +30,7 @@ class ContentSecurityNotifier final
                                 const GURL& insecure_url) override;
 
  private:
-  const GlobalFrameRoutingId render_frame_host_id_;
+  const GlobalRenderFrameHostId render_frame_host_id_;
 };
 
 }  // namespace content

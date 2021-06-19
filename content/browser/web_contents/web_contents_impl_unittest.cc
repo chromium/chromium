@@ -1172,11 +1172,11 @@ TEST_F(WebContentsImplTest, CrossSiteNavigationBackPreempted) {
   back_navigation1->Start();
 
   auto* first_pending_rfh = contents()->GetSpeculativePrimaryMainFrame();
-  GlobalFrameRoutingId first_pending_rfh_id;
+  GlobalRenderFrameHostId first_pending_rfh_id;
   if (CanSameSiteMainFrameNavigationsChangeRenderFrameHosts()) {
     EXPECT_TRUE(contents()->CrossProcessNavigationPending());
     EXPECT_TRUE(first_pending_rfh);
-    first_pending_rfh_id = first_pending_rfh->GetGlobalFrameRoutingId();
+    first_pending_rfh_id = first_pending_rfh->GetGlobalId();
   } else {
     EXPECT_FALSE(contents()->CrossProcessNavigationPending());
     EXPECT_FALSE(first_pending_rfh);
@@ -1197,9 +1197,8 @@ TEST_F(WebContentsImplTest, CrossSiteNavigationBackPreempted) {
     // speculative RFH even though it's a same-site navigation, and the
     // speculative RFH will be overwritten by the second back-navigation that
     // will also create a speculative RFH.
-    EXPECT_NE(first_pending_rfh_id, contents()
-                                        ->GetSpeculativePrimaryMainFrame()
-                                        ->GetGlobalFrameRoutingId());
+    EXPECT_NE(first_pending_rfh_id,
+              contents()->GetSpeculativePrimaryMainFrame()->GetGlobalId());
     // Calling Commit() on the first back navigation below will cause a DCHECK
     // failure because we've already called DidFinishNavigaition on it, so we
     // will call it on the second back navigation instead.

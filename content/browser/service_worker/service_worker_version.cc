@@ -850,7 +850,7 @@ void ServiceWorkerVersion::OnControlleeNavigationCommitted(
       FROM_HERE,
       base::BindOnce(&ServiceWorkerVersion::NotifyControlleeNavigationCommitted,
                      weak_factory_.GetWeakPtr(), client_uuid,
-                     GlobalFrameRoutingId(process_id, frame_id)));
+                     GlobalRenderFrameHostId(process_id, frame_id)));
 }
 
 void ServiceWorkerVersion::MoveControlleeToBackForwardCacheMap(
@@ -2371,7 +2371,7 @@ void ServiceWorkerVersion::NotifyControlleeRemoved(const std::string& uuid) {
 
 void ServiceWorkerVersion::NotifyControlleeNavigationCommitted(
     const std::string& uuid,
-    GlobalFrameRoutingId render_frame_host_id) {
+    GlobalRenderFrameHostId render_frame_host_id) {
   if (context_)
     context_->OnControlleeNavigationCommitted(this, uuid, render_frame_host_id);
 }

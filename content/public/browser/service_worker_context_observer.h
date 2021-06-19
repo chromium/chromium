@@ -90,7 +90,7 @@ class ServiceWorkerContextObserver {
   virtual void OnControlleeNavigationCommitted(
       int64_t version_id,
       const std::string& client_uuid,
-      GlobalFrameRoutingId render_frame_host_id) {}
+      GlobalRenderFrameHostId render_frame_host_id) {}
 
   // Called when an error is reported for the service worker with id
   // |version_id|.

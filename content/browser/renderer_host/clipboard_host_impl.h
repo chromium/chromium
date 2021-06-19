@@ -213,7 +213,7 @@ class CONTENT_EXPORT ClipboardHostImpl : public blink::mojom::ClipboardHost {
   std::unique_ptr<ui::DataTransferEndpoint> CreateDataEndpoint();
 
   ui::Clipboard* const clipboard_;  // Not owned
-  GlobalFrameRoutingId render_frame_routing_id_;
+  GlobalRenderFrameHostId render_frame_routing_id_;
   std::unique_ptr<ui::ScopedClipboardWriter> clipboard_writer_;
 
   // Outstanding is allowed requests per clipboard contents.  Maps a clipboard

@@ -22,7 +22,7 @@ class FeatureObserverClient;
 class CONTENT_EXPORT FeatureObserver : public blink::mojom::FeatureObserver {
  public:
   // |client_| must outlive FeatureObserver.
-  FeatureObserver(FeatureObserverClient* client, GlobalFrameRoutingId id);
+  FeatureObserver(FeatureObserverClient* client, GlobalRenderFrameHostId id);
   ~FeatureObserver() override;
 
   FeatureObserver(const FeatureObserver&) = delete;
@@ -46,7 +46,7 @@ class CONTENT_EXPORT FeatureObserver : public blink::mojom::FeatureObserver {
       [static_cast<int>(blink::mojom::ObservedFeatureType::kMaxValue) + 1];
 
   FeatureObserverClient* const client_;
-  const GlobalFrameRoutingId id_;
+  const GlobalRenderFrameHostId id_;
 };
 
 }  // namespace content

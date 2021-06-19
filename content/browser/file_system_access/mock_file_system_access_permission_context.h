@@ -38,7 +38,7 @@ class MockFileSystemAccessPermissionContext
       PathType path_type,
       const base::FilePath& path,
       HandleType handle_type,
-      GlobalFrameRoutingId frame_id,
+      GlobalRenderFrameHostId frame_id,
       base::OnceCallback<void(SensitiveDirectoryResult)> callback) override;
   MOCK_METHOD(void,
               ConfirmSensitiveDirectoryAccess_,
@@ -46,17 +46,17 @@ class MockFileSystemAccessPermissionContext
                PathType path_type,
                const base::FilePath& path,
                HandleType handle_type,
-               GlobalFrameRoutingId frame_id,
+               GlobalRenderFrameHostId frame_id,
                base::OnceCallback<void(SensitiveDirectoryResult)>& callback));
 
   void PerformAfterWriteChecks(
       std::unique_ptr<FileSystemAccessWriteItem> item,
-      GlobalFrameRoutingId frame_id,
+      GlobalRenderFrameHostId frame_id,
       base::OnceCallback<void(AfterWriteCheckResult)> callback) override;
   MOCK_METHOD(void,
               PerformAfterWriteChecks_,
               (FileSystemAccessWriteItem * item,
-               GlobalFrameRoutingId frame_id,
+               GlobalRenderFrameHostId frame_id,
                base::OnceCallback<void(AfterWriteCheckResult)>& callback));
 
   MOCK_METHOD(bool,

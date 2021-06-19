@@ -26,10 +26,10 @@ class CONTENT_EXPORT DedicatedWorkerService {
     virtual void OnWorkerCreated(
         const blink::DedicatedWorkerToken& worker_token,
         int worker_process_id,
-        GlobalFrameRoutingId ancestor_render_frame_host_id) = 0;
+        GlobalRenderFrameHostId ancestor_render_frame_host_id) = 0;
     virtual void OnBeforeWorkerDestroyed(
         const blink::DedicatedWorkerToken& worker_token,
-        GlobalFrameRoutingId ancestor_render_frame_host_id) = 0;
+        GlobalRenderFrameHostId ancestor_render_frame_host_id) = 0;
 
     // Called when the final response URL (the URL after redirects) was
     // determined when fetching the worker's script.

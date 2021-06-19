@@ -281,7 +281,7 @@ void MediaSessionImpl::WebContentsDestroyed() {
 }
 
 void MediaSessionImpl::RenderFrameDeleted(RenderFrameHost* rfh) {
-  const auto rfh_id = rfh->GetGlobalFrameRoutingId();
+  const auto rfh_id = rfh->GetGlobalId();
   if (services_.count(rfh_id))
     OnServiceDestroyed(services_[rfh_id]);
 }
@@ -302,8 +302,7 @@ void MediaSessionImpl::DidFinishNavigation(
     origin_ = new_origin;
   }
 
-  const auto rfh_id =
-      navigation_handle->GetRenderFrameHost()->GetGlobalFrameRoutingId();
+  const auto rfh_id = navigation_handle->GetRenderFrameHost()->GetGlobalId();
   if (services_.count(rfh_id))
     services_[rfh_id]->DidFinishNavigation();
 
@@ -1418,7 +1417,7 @@ void MediaSessionImpl::DidReceiveAction(
 }
 
 bool MediaSessionImpl::IsServiceActiveForRenderFrameHost(RenderFrameHost* rfh) {
-  return services_.find(rfh->GetGlobalFrameRoutingId()) != services_.end();
+  return services_.find(rfh->GetGlobalId()) != services_.end();
 }
 
 void MediaSessionImpl::UpdateRoutedService() {
@@ -1473,8 +1472,7 @@ MediaSessionServiceImpl* MediaSessionImpl::ComputeServiceForRouting() {
     min_depth = depth;
   }
 
-  return best_frame ? services_[best_frame->GetGlobalFrameRoutingId()]
-                    : nullptr;
+  return best_frame ? services_[best_frame->GetGlobalId()] : nullptr;
 }
 
 void MediaSessionImpl::OnPictureInPictureAvailabilityChanged() {

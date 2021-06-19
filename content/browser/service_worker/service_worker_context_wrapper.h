@@ -138,7 +138,7 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   void OnControlleeNavigationCommitted(
       int64_t version_id,
       const std::string& uuid,
-      GlobalFrameRoutingId render_frame_host_id) override;
+      GlobalRenderFrameHostId render_frame_host_id) override;
   void OnStarted(int64_t version_id,
                  const GURL& scope,
                  int process_id,
@@ -200,7 +200,7 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
                                 BoolCallback callback) const;
 
   // Returns all frame routing ids for the given `key`.
-  std::unique_ptr<std::vector<GlobalFrameRoutingId>>
+  std::unique_ptr<std::vector<GlobalRenderFrameHostId>>
   GetWindowClientFrameRoutingIds(const blink::StorageKey& key) const;
 
   // Returns the registration whose scope longest matches `client_url` with the

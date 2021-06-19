@@ -470,8 +470,8 @@ void ServiceWorkerPaymentAppFinder::IgnorePaymentMethodForTest(
 ServiceWorkerPaymentAppFinder::ServiceWorkerPaymentAppFinder(
     content::RenderFrameHost* rfh)
     : frame_routing_id_(
-          content::GlobalFrameRoutingId(rfh->GetProcess()->GetID(),
-                                        rfh->GetRoutingID())),
+          content::GlobalRenderFrameHostId(rfh->GetProcess()->GetID(),
+                                           rfh->GetRoutingID())),
       ignored_methods_({methods::kGooglePlayBilling}),
       test_downloader_(nullptr) {}
 

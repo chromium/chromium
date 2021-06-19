@@ -401,8 +401,8 @@ class WebrtcLoggingPrivateApiTest : public extensions::ExtensionApiTest {
 
     content::RenderFrameHost* render_frame_host =
         web_contents()->GetMainFrame();
-    const content::GlobalFrameRoutingId frame_id =
-        render_frame_host->GetGlobalFrameRoutingId();
+    const content::GlobalRenderFrameHostId frame_id =
+        render_frame_host->GetGlobalId();
     const base::ProcessId pid =
         render_frame_host->GetProcess()->GetProcess().Pid();
     const int lid = 0;

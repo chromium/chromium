@@ -88,8 +88,7 @@ RenderFrameHostAndroid::GetJavaObject() {
     const bool is_incognito = render_frame_host_->GetSiteInstance()
                                   ->GetBrowserContext()
                                   ->IsOffTheRecord();
-    const GlobalFrameRoutingId rfh_id =
-        render_frame_host_->GetGlobalFrameRoutingId();
+    const GlobalRenderFrameHostId rfh_id = render_frame_host_->GetGlobalId();
     ScopedJavaLocalRef<jobject> local_ref = Java_RenderFrameHostImpl_create(
         env, reinterpret_cast<intptr_t>(this),
         render_frame_host_->delegate()->GetJavaRenderFrameHostDelegate(),

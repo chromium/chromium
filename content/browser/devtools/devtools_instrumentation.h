@@ -235,7 +235,7 @@ void OnWebTransportHandshakeFailed(
     const absl::optional<net::WebTransportError>& error);
 
 void OnServiceWorkerMainScriptFetchingFailed(
-    const GlobalFrameRoutingId& requesting_frame_id,
+    const GlobalRenderFrameHostId& requesting_frame_id,
     const std::string& error);
 
 // Adds a debug error message from a worklet to the devtools console.

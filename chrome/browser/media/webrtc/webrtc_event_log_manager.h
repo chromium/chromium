@@ -102,22 +102,22 @@ class WebRtcEventLogManager final
                                 base::OnceClosure reply);
 
   // content::PeerConnectionTrackerHostObserver implementation.
-  void OnPeerConnectionAdded(content::GlobalFrameRoutingId frame_id,
+  void OnPeerConnectionAdded(content::GlobalRenderFrameHostId frame_id,
                              int lid,
                              base::ProcessId pid,
                              const std::string& url,
                              const std::string& rtc_configuration,
                              const std::string& constraints) override;
-  void OnPeerConnectionRemoved(content::GlobalFrameRoutingId frame_id,
+  void OnPeerConnectionRemoved(content::GlobalRenderFrameHostId frame_id,
                                int lid) override;
-  void OnPeerConnectionUpdated(content::GlobalFrameRoutingId frame_id,
+  void OnPeerConnectionUpdated(content::GlobalRenderFrameHostId frame_id,
                                int lid,
                                const std::string& type,
                                const std::string& value) override;
-  void OnPeerConnectionSessionIdSet(content::GlobalFrameRoutingId frame_id,
+  void OnPeerConnectionSessionIdSet(content::GlobalRenderFrameHostId frame_id,
                                     int lid,
                                     const std::string& session_id) override;
-  void OnWebRtcEventLogWrite(content::GlobalFrameRoutingId frame_id,
+  void OnWebRtcEventLogWrite(content::GlobalRenderFrameHostId frame_id,
                              int lid,
                              const std::string& message) override;
 
@@ -227,7 +227,7 @@ class WebRtcEventLogManager final
   // operation was successful. A failure can happen if a peer connection with
   // this exact key was previously added, but not removed. Another failure mode
   // is if the RPH of the frame was destroyed.
-  void OnPeerConnectionAdded(content::GlobalFrameRoutingId frame_id,
+  void OnPeerConnectionAdded(content::GlobalRenderFrameHostId frame_id,
                              int lid,
                              base::OnceCallback<void(bool)> reply);
 
@@ -235,19 +235,19 @@ class WebRtcEventLogManager final
   // the operation was successful. A failure can happen is a peer connection
   // with this key was not previously added or if it has since already been
   // removed. Another failure mode is if the RPH of the frame was destroyed.
-  void OnPeerConnectionRemoved(content::GlobalFrameRoutingId frame_id,
+  void OnPeerConnectionRemoved(content::GlobalRenderFrameHostId frame_id,
                                int lid,
                                base::OnceCallback<void(bool)> reply);
 
   // Handles a "stop" peer connection update. Replies true if and only if the
   // operation was successful. Same failure mode as OnPeerConnectionRemoved().
-  void OnPeerConnectionStopped(content::GlobalFrameRoutingId frame_id,
+  void OnPeerConnectionStopped(content::GlobalRenderFrameHostId frame_id,
                                int lid,
                                base::OnceCallback<void(bool)> reply);
 
   // An overload of OnPeerConnectionSessionIdSet() that replies true if and only
   // if the operation was successful.
-  void OnPeerConnectionSessionIdSet(content::GlobalFrameRoutingId frame_id,
+  void OnPeerConnectionSessionIdSet(content::GlobalRenderFrameHostId frame_id,
                                     int lid,
                                     const std::string& session_id,
                                     base::OnceCallback<void(bool)> reply);
@@ -258,7 +258,7 @@ class WebRtcEventLogManager final
   // and only if the message was written in its entirety into a
   // local/remote-bound log file.
   void OnWebRtcEventLogWrite(
-      content::GlobalFrameRoutingId frame_id,
+      content::GlobalRenderFrameHostId frame_id,
       int lid,
       const std::string& message,
       base::OnceCallback<void(std::pair<bool, bool>)> reply);

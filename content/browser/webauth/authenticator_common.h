@@ -220,7 +220,7 @@ class CONTENT_EXPORT AuthenticatorCommon {
   device::FidoDiscoveryFactory* discovery_factory();
   void InitDiscoveryFactory();
 
-  const GlobalFrameRoutingId render_frame_host_id_;
+  const GlobalRenderFrameHostId render_frame_host_id_;
   std::unique_ptr<device::FidoRequestHandlerBase> request_;
   std::unique_ptr<device::FidoDiscoveryFactory> discovery_factory_;
   device::FidoDiscoveryFactory* discovery_factory_testing_override_ = nullptr;

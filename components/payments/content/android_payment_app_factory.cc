@@ -193,7 +193,7 @@ class AppFinder : public base::SupportsUserData::Data {
           delegate_->GetTopOrigin(), delegate_->GetFrameOrigin(),
           delegate_->GetSpec()->details().id.value(),
           std::move(app_description), communication_,
-          delegate_->GetInitiatorRenderFrameHost()->GetGlobalFrameRoutingId()));
+          delegate_->GetInitiatorRenderFrameHost()->GetGlobalId()));
     }
 
     if (--number_of_pending_is_ready_to_pay_queries_ == 0)

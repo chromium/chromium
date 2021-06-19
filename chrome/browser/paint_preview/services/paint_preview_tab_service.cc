@@ -59,7 +59,7 @@ PaintPreviewTabService::TabServiceTask::TabServiceTask(
     int tab_id,
     const DirectoryKey& key,
     int frame_tree_node_id,
-    content::GlobalFrameRoutingId frame_routing_id,
+    content::GlobalRenderFrameHostId frame_routing_id,
     base::ScopedClosureRunner capture_handle)
     : tab_id_(tab_id),
       key_(key),
@@ -133,10 +133,10 @@ void PaintPreviewTabService::CaptureTab(int tab_id,
 
   auto key = file_manager->CreateKey(tab_id);
   auto it = tasks_.emplace(
-      tab_id, std::make_unique<TabServiceTask>(
-                  tab_id, key, contents->GetMainFrame()->GetFrameTreeNodeId(),
-                  contents->GetMainFrame()->GetGlobalFrameRoutingId(),
-                  std::move(capture_handle)));
+      tab_id,
+      std::make_unique<TabServiceTask>(
+          tab_id, key, contents->GetMainFrame()->GetFrameTreeNodeId(),
+          contents->GetMainFrame()->GetGlobalId(), std::move(capture_handle)));
   if (!it.second) {
     std::move(callback).Run(Status::kCaptureInProgress);
     return;

@@ -64,7 +64,7 @@ ComputePressureManager::~ComputePressureManager() = default;
 
 void ComputePressureManager::BindReceiver(
     url::Origin origin,
-    GlobalFrameRoutingId frame_id,
+    GlobalRenderFrameHostId frame_id,
     mojo::PendingReceiver<blink::mojom::ComputePressureHost> receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(frame_id);

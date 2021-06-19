@@ -119,7 +119,7 @@ content::RenderFrameHost* ExtensionApiFrameIdMap::GetRenderFrameHostById(
 }
 
 ExtensionApiFrameIdMap::FrameData ExtensionApiFrameIdMap::KeyToValue(
-    content::GlobalFrameRoutingId key,
+    content::GlobalRenderFrameHostId key,
     bool require_live_frame) const {
   return KeyToValue(content::RenderFrameHost::FromID(key), require_live_frame);
 }
@@ -141,7 +141,7 @@ ExtensionApiFrameIdMap::FrameData ExtensionApiFrameIdMap::KeyToValue(
 }
 
 ExtensionApiFrameIdMap::FrameData ExtensionApiFrameIdMap::GetFrameData(
-    content::GlobalFrameRoutingId rfh_id) {
+    content::GlobalRenderFrameHostId rfh_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   auto frame_id_iter = deleted_frame_data_map_.find(rfh_id);
   if (frame_id_iter != deleted_frame_data_map_.end())
@@ -155,7 +155,7 @@ void ExtensionApiFrameIdMap::OnRenderFrameDeleted(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(rfh);
 
-  const content::GlobalFrameRoutingId key(rfh->GetGlobalFrameRoutingId());
+  const content::GlobalRenderFrameHostId key(rfh->GetGlobalId());
   // TODO(http://crbug.com/522129): This is necessary right now because beacon
   // requests made in window.onunload may start after this has been called.
   // Delay the RemoveFrameData() call, so we will still have the frame data
@@ -163,12 +163,12 @@ void ExtensionApiFrameIdMap::OnRenderFrameDeleted(
   deleted_frame_data_map_.insert(
       {key, KeyToValue(rfh, false /* require_live_frame */)});
   base::SequencedTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](ExtensionApiFrameIdMap* self, content::GlobalFrameRoutingId key) {
-            self->deleted_frame_data_map_.erase(key);
-          },
-          base::Unretained(this), key));
+      FROM_HERE, base::BindOnce(
+                     [](ExtensionApiFrameIdMap* self,
+                        content::GlobalRenderFrameHostId key) {
+                       self->deleted_frame_data_map_.erase(key);
+                     },
+                     base::Unretained(this), key));
 }
 
 }  // namespace extensions

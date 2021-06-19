@@ -104,7 +104,7 @@ class ServiceWorkerContextAdapter
   void OnControlleeNavigationCommitted(
       int64_t version_id,
       const std::string& uuid,
-      content::GlobalFrameRoutingId render_frame_host_id) override;
+      content::GlobalRenderFrameHostId render_frame_host_id) override;
   void OnReportConsoleMessage(int64_t version_id,
                               const GURL& scope,
                               const content::ConsoleMessage& message) override;

@@ -58,8 +58,7 @@ void PaymentRequestWebContentsManager::DidStartNavigation(
 
 void PaymentRequestWebContentsManager::RenderFrameDeleted(
     content::RenderFrameHost* render_frame_host) {
-  const auto render_frame_host_id =
-      render_frame_host->GetGlobalFrameRoutingId();
+  const auto render_frame_host_id = render_frame_host->GetGlobalId();
   // Two passes to avoid modifying the |payment_requests_| map while iterating
   // over it.
   std::vector<PaymentRequest*> obsolete;

@@ -225,13 +225,13 @@ void SubresourceRedirectObserver::DidFinishNavigation(
       base::BindOnce(
           &SubresourceRedirectObserver::OnResourceLoadingImageHintsReceived,
           weak_factory_.GetWeakPtr(),
-          content::GlobalFrameRoutingId(
+          content::GlobalRenderFrameHostId(
               render_frame_host->GetProcess()->GetID(),
               render_frame_host->GetRoutingID())));
 }
 
 void SubresourceRedirectObserver::OnResourceLoadingImageHintsReceived(
-    content::GlobalFrameRoutingId render_frame_host_routing_id,
+    content::GlobalRenderFrameHostId render_frame_host_routing_id,
     optimization_guide::OptimizationGuideDecision decision,
     const optimization_guide::OptimizationMetadata& optimization_metadata) {
   DCHECK(ShouldEnablePublicImageHintsBasedCompression());

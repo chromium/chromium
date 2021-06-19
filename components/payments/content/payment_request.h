@@ -139,7 +139,7 @@ class PaymentRequest : public mojom::PaymentRequest,
 
   content::WebContents* web_contents();
 
-  const content::GlobalFrameRoutingId& initiator_frame_routing_id() const {
+  const content::GlobalRenderFrameHostId& initiator_frame_routing_id() const {
     return initiator_frame_routing_id_;
   }
 
@@ -212,7 +212,7 @@ class PaymentRequest : public mojom::PaymentRequest,
   // Get the payment method category from the selected app.
   JourneyLogger::PaymentMethodCategory GetSelectedMethodCategory() const;
 
-  const content::GlobalFrameRoutingId initiator_frame_routing_id_;
+  const content::GlobalRenderFrameHostId initiator_frame_routing_id_;
   DeveloperConsoleLogger log_;
   std::unique_ptr<ContentPaymentRequestDelegate> delegate_;
   // |manager_| owns this PaymentRequest.

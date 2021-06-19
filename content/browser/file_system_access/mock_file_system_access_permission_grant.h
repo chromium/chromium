@@ -20,12 +20,12 @@ class MockFileSystemAccessPermissionGrant
   MOCK_METHOD(PermissionStatus, GetStatus, (), (override));
   MOCK_METHOD(base::FilePath, GetPath, (), (override));
   void RequestPermission(
-      GlobalFrameRoutingId frame_id,
+      GlobalRenderFrameHostId frame_id,
       UserActivationState user_activation_state,
       base::OnceCallback<void(PermissionRequestOutcome)> callback) override;
   MOCK_METHOD(void,
               RequestPermission_,
-              (GlobalFrameRoutingId frame_id,
+              (GlobalRenderFrameHostId frame_id,
                UserActivationState user_activation_state,
                base::OnceCallback<void(PermissionRequestOutcome)>&));
 

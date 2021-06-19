@@ -66,7 +66,7 @@ class CONTENT_EXPORT ComputePressureManager {
 
   void BindReceiver(
       url::Origin origin,
-      GlobalFrameRoutingId frame_id,
+      GlobalRenderFrameHostId frame_id,
       mojo::PendingReceiver<blink::mojom::ComputePressureHost> receiver);
 
   // Used by tests that pass in a FakeCpuProbe that they need to direct.

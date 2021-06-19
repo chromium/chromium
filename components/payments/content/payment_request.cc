@@ -78,7 +78,7 @@ PaymentRequest::PaymentRequest(
     PaymentRequestDisplayManager* display_manager,
     mojo::PendingReceiver<mojom::PaymentRequest> receiver,
     ObserverForTest* observer_for_testing)
-    : initiator_frame_routing_id_(content::GlobalFrameRoutingId(
+    : initiator_frame_routing_id_(content::GlobalRenderFrameHostId(
           render_frame_host->GetProcess()->GetID(),
           render_frame_host->GetRoutingID())),
       log_(web_contents()),
@@ -806,8 +806,7 @@ void PaymentRequest::DidStartMainFrameNavigationToDifferentDocument(
 
 void PaymentRequest::RenderFrameDeleted(
     content::RenderFrameHost* render_frame_host) {
-  DCHECK_EQ(render_frame_host->GetGlobalFrameRoutingId(),
-            initiator_frame_routing_id_);
+  DCHECK_EQ(render_frame_host->GetGlobalId(), initiator_frame_routing_id_);
   // RenderFrameHost is usually deleted explicitly before PaymentRequest
   // destruction if the user closes the tab or browser window without closing
   // the payment request dialog.

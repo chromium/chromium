@@ -33,7 +33,7 @@ class RenderFrameHostProxy {
   content::RenderFrameHost* Get() const;
 
   // Returns the global routing ID.
-  const content::GlobalFrameRoutingId& global_frame_routing_id() const {
+  const content::GlobalRenderFrameHostId& global_frame_routing_id() const {
     return global_frame_routing_id_;
   }
 
@@ -41,10 +41,10 @@ class RenderFrameHostProxy {
   friend class FrameNodeImpl;
 
   explicit RenderFrameHostProxy(
-      const content::GlobalFrameRoutingId& global_frame_routing_id);
+      const content::GlobalRenderFrameHostId& global_frame_routing_id);
 
  private:
-  content::GlobalFrameRoutingId global_frame_routing_id_;
+  content::GlobalRenderFrameHostId global_frame_routing_id_;
 };
 
 }  // namespace performance_manager

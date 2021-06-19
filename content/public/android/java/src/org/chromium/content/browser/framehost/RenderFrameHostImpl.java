@@ -12,7 +12,7 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.blink.mojom.AuthenticatorStatus;
-import org.chromium.content_public.browser.GlobalFrameRoutingId;
+import org.chromium.content_public.browser.GlobalRenderFrameHostId;
 import org.chromium.content_public.browser.LifecycleState;
 import org.chromium.content_public.browser.PermissionsPolicyFeature;
 import org.chromium.content_public.browser.RenderFrameHost;
@@ -33,14 +33,14 @@ public class RenderFrameHostImpl implements RenderFrameHost {
     // mDelegate can be null.
     private final RenderFrameHostDelegate mDelegate;
     private final boolean mIncognito;
-    private final GlobalFrameRoutingId mRenderFrameHostId;
+    private final GlobalRenderFrameHostId mRenderFrameHostId;
 
     private RenderFrameHostImpl(long nativeRenderFrameHostAndroid, RenderFrameHostDelegate delegate,
             boolean isIncognito, int renderProcessId, int renderFrameId) {
         mNativeRenderFrameHostAndroid = nativeRenderFrameHostAndroid;
         mDelegate = delegate;
         mIncognito = isIncognito;
-        mRenderFrameHostId = new GlobalFrameRoutingId(renderProcessId, renderFrameId);
+        mRenderFrameHostId = new GlobalRenderFrameHostId(renderProcessId, renderFrameId);
 
         mDelegate.renderFrameCreated(this);
     }
@@ -194,7 +194,7 @@ public class RenderFrameHostImpl implements RenderFrameHost {
     }
 
     @Override
-    public GlobalFrameRoutingId getGlobalFrameRoutingId() {
+    public GlobalRenderFrameHostId getGlobalRenderFrameHostId() {
         return mRenderFrameHostId;
     }
 

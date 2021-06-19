@@ -41,9 +41,9 @@ int GetBucketedViewportHardcodedWidth(const blink::MobileFriendliness& mf);
 
 // Struct for storing per-frame memory update data.
 struct MemoryUpdate {
-  content::GlobalFrameRoutingId routing_id;
+  content::GlobalRenderFrameHostId routing_id;
   int64_t delta_bytes;
-  MemoryUpdate(content::GlobalFrameRoutingId id, int64_t delta);
+  MemoryUpdate(content::GlobalRenderFrameHostId id, int64_t delta);
 };
 
 // Storage types reported to page load metrics observers on storage
@@ -578,7 +578,7 @@ class PageLoadMetricsObserver {
   virtual void DidActivatePrerenderedPage() {}
 
   // Called when V8 per-frame memory usage updates are available. Each
-  // MemoryUpdate consists of a GlobalFrameRoutingId and a nonzero int64_t
+  // MemoryUpdate consists of a GlobalRenderFrameHostId and a nonzero int64_t
   // change in bytes used.
   virtual void OnV8MemoryChanged(
       const std::vector<MemoryUpdate>& memory_updates) {}

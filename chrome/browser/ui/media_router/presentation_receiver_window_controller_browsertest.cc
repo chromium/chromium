@@ -281,7 +281,7 @@ IN_PROC_BROWSER_TEST_F(PresentationReceiverWindowControllerBrowserTest,
       browser()->profile())
       ->RegisterLocalPresentationController(
           blink::mojom::PresentationInfo(presentation_url, kPresentationId),
-          content::GlobalFrameRoutingId(0, 0), std::move(controller_ptr),
+          content::GlobalRenderFrameHostId(0, 0), std::move(controller_ptr),
           controller_connection.MakeConnectionRequest(),
           media_router::MediaRoute("route",
                                    media_router::MediaSource(presentation_url),

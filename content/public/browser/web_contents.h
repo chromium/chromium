@@ -1033,7 +1033,7 @@ class WebContents : public PageNavigator,
   // Same as DownloadImage(), but uses the ImageDownloader from the specified
   // frame instead of the main frame.
   virtual int DownloadImageInFrame(
-      const GlobalFrameRoutingId& initiator_frame_routing_id,
+      const GlobalRenderFrameHostId& initiator_frame_routing_id,
       const GURL& url,
       bool is_favicon,
       uint32_t preferred_size,

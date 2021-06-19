@@ -68,7 +68,7 @@ class CONTENT_EXPORT FileSystemAccessPermissionGrant
   // should be called after the status of this grant has been updated with
   // the outcome of the request.
   virtual void RequestPermission(
-      GlobalFrameRoutingId frame_id,
+      GlobalRenderFrameHostId frame_id,
       UserActivationState user_activation_state,
       base::OnceCallback<void(PermissionRequestOutcome)> callback) = 0;
 

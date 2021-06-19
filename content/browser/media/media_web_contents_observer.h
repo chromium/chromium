@@ -121,7 +121,7 @@ class CONTENT_EXPORT MediaWebContentsObserver : public WebContentsObserver {
   // needed, and then passes |player_receiver| to it to establish a
   // communication channel.
   void BindMediaPlayerHost(
-      GlobalFrameRoutingId frame_routing_id,
+      GlobalRenderFrameHostId frame_routing_id,
       mojo::PendingAssociatedReceiver<media::mojom::MediaPlayerHost>
           player_receiver);
 
@@ -147,7 +147,7 @@ class CONTENT_EXPORT MediaWebContentsObserver : public WebContentsObserver {
   // has been created, so that a communication channel can be established.
   class MediaPlayerHostImpl : public media::mojom::MediaPlayerHost {
    public:
-    MediaPlayerHostImpl(GlobalFrameRoutingId frame_routing_id,
+    MediaPlayerHostImpl(GlobalRenderFrameHostId frame_routing_id,
                         MediaWebContentsObserver* media_web_contents_observer);
     ~MediaPlayerHostImpl() override;
 
@@ -164,7 +164,7 @@ class CONTENT_EXPORT MediaWebContentsObserver : public WebContentsObserver {
         int32_t player_id) override;
 
    private:
-    GlobalFrameRoutingId frame_routing_id_;
+    GlobalRenderFrameHostId frame_routing_id_;
     MediaWebContentsObserver* media_web_contents_observer_;
     mojo::AssociatedReceiverSet<media::mojom::MediaPlayerHost> receivers_;
   };
@@ -210,7 +210,7 @@ class CONTENT_EXPORT MediaWebContentsObserver : public WebContentsObserver {
   };
 
   using MediaPlayerHostImplMap =
-      base::flat_map<GlobalFrameRoutingId,
+      base::flat_map<GlobalRenderFrameHostId,
                      std::unique_ptr<MediaPlayerHostImpl>>;
   using MediaPlayerObserverHostImplMap =
       base::flat_map<MediaPlayerId,

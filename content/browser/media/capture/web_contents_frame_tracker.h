@@ -85,7 +85,7 @@ class CONTENT_EXPORT WebContentsFrameTracker
   void WebContentsDestroyed() final;
   void CaptureTargetChanged() final;
 
-  void SetWebContentsAndContextFromRoutingId(const GlobalFrameRoutingId& id);
+  void SetWebContentsAndContextFromRoutingId(const GlobalRenderFrameHostId& id);
 
   // WebContents are retrieved on the UI thread normally, from the render IDs,
   // so this method is provided for tests to set the web contents directly.

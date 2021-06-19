@@ -44,7 +44,7 @@ void ServiceWorkerContentSettingsProxyImpl::AllowIndexedDB(
   // content setting. However, service worker is not necessarily associated
   // with frames or making the request on behalf of frames,
   // so just pass an empty |render_frames|.
-  std::vector<GlobalFrameRoutingId> render_frames;
+  std::vector<GlobalRenderFrameHostId> render_frames;
   std::move(callback).Run(GetContentClient()->browser()->AllowWorkerIndexedDB(
       origin_.GetURL(), context_wrapper_->browser_context(), render_frames));
 }
@@ -65,7 +65,7 @@ void ServiceWorkerContentSettingsProxyImpl::AllowCacheStorage(
   // content setting. However, service worker is not necessarily associated
   // with frames or making the request on behalf of frames,
   // so just pass an empty |render_frames|.
-  std::vector<GlobalFrameRoutingId> render_frames;
+  std::vector<GlobalRenderFrameHostId> render_frames;
   std::move(callback).Run(
       GetContentClient()->browser()->AllowWorkerCacheStorage(
           origin_.GetURL(), context_wrapper_->browser_context(),
@@ -88,7 +88,7 @@ void ServiceWorkerContentSettingsProxyImpl::AllowWebLocks(
   // content setting. However, service worker is not necessarily associated
   // with frames or making the request on behalf of frames,
   // so just pass an empty |render_frames|.
-  std::vector<GlobalFrameRoutingId> render_frames;
+  std::vector<GlobalRenderFrameHostId> render_frames;
   std::move(callback).Run(GetContentClient()->browser()->AllowWorkerWebLocks(
       origin_.GetURL(), context_wrapper_->browser_context(), render_frames));
 }

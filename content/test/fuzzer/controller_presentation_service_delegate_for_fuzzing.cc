@@ -36,8 +36,8 @@ void ControllerPresentationServiceDelegateForFuzzing::AddObserver(
     int render_frame_id,
     ControllerPresentationServiceDelegate::Observer* observer) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  observers_[content::GlobalFrameRoutingId(render_process_id,
-                                           render_frame_id)] = observer;
+  observers_[content::GlobalRenderFrameHostId(render_process_id,
+                                              render_frame_id)] = observer;
 }
 
 void ControllerPresentationServiceDelegateForFuzzing::RemoveObserver(
@@ -45,7 +45,7 @@ void ControllerPresentationServiceDelegateForFuzzing::RemoveObserver(
     int render_frame_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   observers_.erase(
-      content::GlobalFrameRoutingId(render_process_id, render_frame_id));
+      content::GlobalRenderFrameHostId(render_process_id, render_frame_id));
 }
 
 void ControllerPresentationServiceDelegateForFuzzing::Reset(

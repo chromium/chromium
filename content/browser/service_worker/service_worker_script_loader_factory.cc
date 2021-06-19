@@ -288,7 +288,7 @@ void ServiceWorkerScriptLoaderFactory::OnResourceIdAssignedForNewScriptLoader(
           request_id, options, resource_request, std::move(client),
           worker_host_->version(), loader_factory_for_new_scripts_,
           traffic_annotation, resource_id, /*is_throttle_needed=*/false,
-          /*requesting_frame_id=*/GlobalFrameRoutingId()),
+          /*requesting_frame_id=*/GlobalRenderFrameHostId()),
       std::move(receiver));
 }
 

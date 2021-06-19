@@ -337,7 +337,7 @@ TEST_F(MediaRouterViewsUITest, SetDialogHeader) {
   GURL gurl("https://example.com");
   url::Origin origin = url::Origin::Create(gurl);
   content::PresentationRequest presentation_request(
-      content::GlobalFrameRoutingId(), {gurl}, origin);
+      content::GlobalRenderFrameHostId(), {gurl}, origin);
   ui_->OnDefaultPresentationChanged(&presentation_request);
 
   // Now that the presentation request has been set, the dialog header contains

@@ -435,7 +435,7 @@ class MediaNotificationServiceCastTest : public MediaNotificationServiceTest {
   // Simulate a supplementalNotification for |web_contents()|.
   std::string SimulateSupplementalNotification() {
     auto presentation_request = content::PresentationRequest(
-        main_rfh()->GetGlobalFrameRoutingId(),
+        main_rfh()->GetGlobalId(),
         {GURL("http://example.com"), GURL("http://example2.com")},
         url::Origin::Create(GURL("http://google.com")));
 

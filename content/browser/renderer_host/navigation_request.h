@@ -355,7 +355,7 @@ class CONTENT_EXPORT NavigationRequest
   int GetNavigationEntryOffset() override;
   void RegisterSubresourceOverride(
       blink::mojom::TransferrableURLLoaderPtr transferrable_loader) override;
-  GlobalFrameRoutingId GetPreviousRenderFrameHostId() override;
+  GlobalRenderFrameHostId GetPreviousRenderFrameHostId() override;
   bool IsServedFromBackForwardCache() override;
   void SetIsOverridingUserAgent(bool override_ua) override;
   void SetSilentlyIgnoreErrors() override;
@@ -1656,7 +1656,7 @@ class CONTENT_EXPORT NavigationRequest
   absl::optional<net::IsolationInfo> isolation_info_;
 
   // This is used to store the current_frame_host id at request creation time.
-  const GlobalFrameRoutingId previous_render_frame_host_id_;
+  const GlobalRenderFrameHostId previous_render_frame_host_id_;
 
   // Frame token of the frame host that initiated the navigation, derived from
   // |begin_params().initiator_frame_token|. This is best effort: it is only

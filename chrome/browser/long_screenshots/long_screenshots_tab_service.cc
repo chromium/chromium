@@ -86,15 +86,15 @@ void LongScreenshotsTabService::CaptureTab(int tab_id,
       base::BindOnce(&LongScreenshotsTabService::CaptureTabInternal,
                      weak_ptr_factory_.GetWeakPtr(), tab_id, key,
                      contents->GetMainFrame()->GetFrameTreeNodeId(),
-                     contents->GetMainFrame()->GetGlobalFrameRoutingId(), clipX,
-                     clipY, clipWidth, clipHeight));
+                     contents->GetMainFrame()->GetGlobalId(), clipX, clipY,
+                     clipWidth, clipHeight));
 }
 
 void LongScreenshotsTabService::CaptureTabInternal(
     int tab_id,
     const paint_preview::DirectoryKey& key,
     int frame_tree_node_id,
-    content::GlobalFrameRoutingId frame_routing_id,
+    content::GlobalRenderFrameHostId frame_routing_id,
     int clipX,
     int clipY,
     int clipWidth,

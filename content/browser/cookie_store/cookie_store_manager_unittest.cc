@@ -215,7 +215,7 @@ class CookieStoreManagerTest
               << blink::ServiceWorkerStatusToString(status);
           run_loop.Quit();
         }),
-        /*requesting_frame_id=*/GlobalFrameRoutingId());
+        /*requesting_frame_id=*/GlobalRenderFrameHostId());
     run_loop.Run();
     if (!success)
       return kInvalidRegistrationId;

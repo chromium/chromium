@@ -1591,8 +1591,8 @@ TEST_F(V8DetailedMemoryRequestAnySeqTest, RequestIsSequenceSafe) {
   // Create some test data to return for a measurement request.
   constexpr uint64_t kAssociatedBytes = 0x123;
   const blink::LocalFrameToken frame_token(main_frame()->GetFrameToken());
-  const content::GlobalFrameRoutingId frame_id(main_process_id().value(),
-                                               main_frame()->GetRoutingID());
+  const content::GlobalRenderFrameHostId frame_id(main_process_id().value(),
+                                                  main_frame()->GetRoutingID());
 
   V8DetailedMemoryProcessData expected_process_data;
   expected_process_data.set_shared_v8_bytes_used(kSharedBytes);
@@ -1649,7 +1649,7 @@ TEST_F(V8DetailedMemoryRequestAnySeqTest, RequestIsSequenceSafe) {
         // thread.
         EXPECT_NE(nullptr, content::RenderProcessHost::FromID(
                                main_process_id().value()));
-        const content::GlobalFrameRoutingId frame_id =
+        const content::GlobalRenderFrameHostId frame_id =
             expected_frame_data.cbegin()->first;
         EXPECT_NE(nullptr, content::RenderFrameHost::FromID(frame_id));
       });

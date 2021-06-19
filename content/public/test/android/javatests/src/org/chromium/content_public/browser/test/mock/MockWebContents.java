@@ -11,7 +11,7 @@ import android.os.Parcel;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.content_public.browser.GlobalFrameRoutingId;
+import org.chromium.content_public.browser.GlobalRenderFrameHostId;
 import org.chromium.content_public.browser.ImageDownloadCallback;
 import org.chromium.content_public.browser.JavaScriptCallback;
 import org.chromium.content_public.browser.MessagePort;
@@ -94,7 +94,7 @@ public class MockWebContents implements WebContents {
     }
 
     @Override
-    public RenderFrameHost getRenderFrameHostFromId(GlobalFrameRoutingId id) {
+    public RenderFrameHost getRenderFrameHostFromId(GlobalRenderFrameHostId id) {
         return null;
     }
 

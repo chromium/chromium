@@ -222,7 +222,7 @@ scoped_refptr<ServiceWorkerRegistration> ServiceWorkerJobTest::RunRegisterJob(
   outside_fetch_client_settings_object->outgoing_referrer = script_url;
   job_coordinator()->Register(
       script_url, options, std::move(outside_fetch_client_settings_object),
-      /*requesting_frame_id=*/GlobalFrameRoutingId(),
+      /*requesting_frame_id=*/GlobalRenderFrameHostId(),
       SaveRegistration(expected_status, &registration, run_loop.QuitClosure()));
   run_loop.Run();
   return registration;
@@ -718,14 +718,14 @@ TEST_F(ServiceWorkerJobTest, AbortAll_Register) {
       base::BarrierClosure(2, run_loop.QuitClosure());
   job_coordinator()->Register(
       script_url1, options1, blink::mojom::FetchClientSettingsObject::New(),
-      /*requesting_frame_id=*/GlobalFrameRoutingId(),
+      /*requesting_frame_id=*/GlobalRenderFrameHostId(),
       SaveRegistration(blink::ServiceWorkerStatusCode::kErrorAbort,
                        &registration1, barrier_closure));
 
   scoped_refptr<ServiceWorkerRegistration> registration2;
   job_coordinator()->Register(
       script_url2, options2, blink::mojom::FetchClientSettingsObject::New(),
-      /*requesting_frame_id=*/GlobalFrameRoutingId(),
+      /*requesting_frame_id=*/GlobalRenderFrameHostId(),
       SaveRegistration(blink::ServiceWorkerStatusCode::kErrorAbort,
                        &registration2, barrier_closure));
 
@@ -779,7 +779,7 @@ TEST_F(ServiceWorkerJobTest, AbortAll_RegUnreg) {
       base::BarrierClosure(2, run_loop.QuitClosure());
   job_coordinator()->Register(
       script_url, options, blink::mojom::FetchClientSettingsObject::New(),
-      /*requesting_frame_id=*/GlobalFrameRoutingId(),
+      /*requesting_frame_id=*/GlobalRenderFrameHostId(),
       SaveRegistration(blink::ServiceWorkerStatusCode::kErrorAbort,
                        &registration, barrier_closure));
 
@@ -812,14 +812,14 @@ TEST_F(ServiceWorkerJobTest, AbortScope) {
       base::BarrierClosure(2, run_loop.QuitClosure());
   job_coordinator()->Register(
       script_url, options1, blink::mojom::FetchClientSettingsObject::New(),
-      /*requesting_frame_id=*/GlobalFrameRoutingId(),
+      /*requesting_frame_id=*/GlobalRenderFrameHostId(),
       SaveRegistration(blink::ServiceWorkerStatusCode::kErrorAbort,
                        &registration1, barrier_closure));
 
   scoped_refptr<ServiceWorkerRegistration> registration2;
   job_coordinator()->Register(
       script_url, options2, blink::mojom::FetchClientSettingsObject::New(),
-      /*requesting_frame_id=*/GlobalFrameRoutingId(),
+      /*requesting_frame_id=*/GlobalRenderFrameHostId(),
       SaveRegistration(blink::ServiceWorkerStatusCode::kOk, &registration2,
                        barrier_closure));
 
@@ -1354,7 +1354,7 @@ class UpdateJobTestHelper : public EmbeddedWorkerTestHelper,
     job_coordinator()->Register(
         test_origin.Resolve(kScript), options,
         blink::mojom::FetchClientSettingsObject::New(),
-        /*requesting_frame_id=*/GlobalFrameRoutingId(),
+        /*requesting_frame_id=*/GlobalRenderFrameHostId(),
         SaveRegistration(blink::ServiceWorkerStatusCode::kOk, &registration,
                          run_loop.QuitClosure()));
     run_loop.Run();
@@ -2171,7 +2171,7 @@ TEST_F(ServiceWorkerJobTest, TimeoutBadJobs) {
   job_coordinator()->Register(
       GURL("https://www.example.com/service_worker1.js"), options,
       blink::mojom::FetchClientSettingsObject::New(),
-      /*requesting_frame_id=*/GlobalFrameRoutingId(),
+      /*requesting_frame_id=*/GlobalRenderFrameHostId(),
       SaveRegistration(blink::ServiceWorkerStatusCode::kErrorTimeout,
                        &registration1, loop1.QuitClosure()));
 
@@ -2187,7 +2187,7 @@ TEST_F(ServiceWorkerJobTest, TimeoutBadJobs) {
   job_coordinator()->Register(
       GURL("https://www.example.com/service_worker2.js"), options,
       blink::mojom::FetchClientSettingsObject::New(),
-      /*requesting_frame_id=*/GlobalFrameRoutingId(),
+      /*requesting_frame_id=*/GlobalRenderFrameHostId(),
       SaveRegistration(blink::ServiceWorkerStatusCode::kOk, &registration2,
                        loop2.QuitClosure()));
 
@@ -2199,7 +2199,7 @@ TEST_F(ServiceWorkerJobTest, TimeoutBadJobs) {
   job_coordinator()->Register(
       GURL("https://www.example.com/service_worker3.js"), options,
       blink::mojom::FetchClientSettingsObject::New(),
-      /*requesting_frame_id=*/GlobalFrameRoutingId(),
+      /*requesting_frame_id=*/GlobalRenderFrameHostId(),
       SaveRegistration(blink::ServiceWorkerStatusCode::kOk, &registration3,
                        loop3.QuitClosure()));
 

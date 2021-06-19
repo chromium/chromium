@@ -24,7 +24,7 @@ AndroidPaymentApp::AndroidPaymentApp(
     const std::string& payment_request_id,
     std::unique_ptr<AndroidAppDescription> description,
     base::WeakPtr<AndroidAppCommunication> communication,
-    content::GlobalFrameRoutingId frame_routing_id)
+    content::GlobalRenderFrameHostId frame_routing_id)
     : PaymentApp(/*icon_resource_id=*/0, PaymentApp::Type::NATIVE_MOBILE_APP),
       stringified_method_data_(std::move(stringified_method_data)),
       top_level_origin_(top_level_origin),

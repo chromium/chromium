@@ -187,7 +187,7 @@ class ChromeAuthenticatorRequestDelegate
 
   void HandleCablePairingEvent(device::cablev2::PairingEvent pairing);
 
-  const content::GlobalFrameRoutingId render_frame_host_id_;
+  const content::GlobalRenderFrameHostId render_frame_host_id_;
   // Holds ownership of AuthenticatorRequestDialogModel until
   // OnTransportAvailabilityEnumerated() is invoked, at which point the
   // ownership of the model is transferred to AuthenticatorRequestDialogView and

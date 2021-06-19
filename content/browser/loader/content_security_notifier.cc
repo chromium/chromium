@@ -10,7 +10,7 @@
 namespace content {
 
 ContentSecurityNotifier::ContentSecurityNotifier(
-    GlobalFrameRoutingId render_frame_host_id)
+    GlobalRenderFrameHostId render_frame_host_id)
     : render_frame_host_id_(render_frame_host_id) {}
 
 void ContentSecurityNotifier::NotifyContentWithCertificateErrorsRan() {

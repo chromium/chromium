@@ -170,8 +170,7 @@ void MediaWebContentsObserver::RenderFrameDeleted(
     RenderFrameHost* render_frame_host) {
   use_after_free_checker_.check();
 
-  GlobalFrameRoutingId frame_routing_id =
-      render_frame_host->GetGlobalFrameRoutingId();
+  GlobalRenderFrameHostId frame_routing_id = render_frame_host->GetGlobalId();
 
   base::EraseIf(
       player_info_map_,
@@ -279,7 +278,7 @@ bool MediaWebContentsObserver::IsPlayerActive(
 }
 
 MediaWebContentsObserver::MediaPlayerHostImpl::MediaPlayerHostImpl(
-    GlobalFrameRoutingId frame_routing_id,
+    GlobalRenderFrameHostId frame_routing_id,
     MediaWebContentsObserver* media_web_contents_observer)
     : frame_routing_id_(frame_routing_id),
       media_web_contents_observer_(media_web_contents_observer) {}
@@ -557,7 +556,7 @@ WebContentsImpl* MediaWebContentsObserver::web_contents_impl() const {
 }
 
 void MediaWebContentsObserver::BindMediaPlayerHost(
-    GlobalFrameRoutingId frame_routing_id,
+    GlobalRenderFrameHostId frame_routing_id,
     mojo::PendingAssociatedReceiver<media::mojom::MediaPlayerHost>
         player_receiver) {
   if (!media_player_hosts_.contains(frame_routing_id)) {

@@ -122,7 +122,7 @@ void HeadlessBrowserContextImpl::SetDevToolsFrameToken(
     const base::UnguessableToken& devtools_frame_token,
     int frame_tree_node_id) {
   base::AutoLock lock(devtools_frame_token_map_lock_);
-  devtools_frame_token_map_[content::GlobalFrameRoutingId(
+  devtools_frame_token_map_[content::GlobalRenderFrameHostId(
       render_process_id, render_frame_routing_id)] = devtools_frame_token;
   frame_tree_node_id_to_devtools_frame_token_map_[frame_tree_node_id] =
       devtools_frame_token;
@@ -133,7 +133,7 @@ void HeadlessBrowserContextImpl::RemoveDevToolsFrameToken(
     int render_frame_routing_id,
     int frame_tree_node_id) {
   base::AutoLock lock(devtools_frame_token_map_lock_);
-  devtools_frame_token_map_.erase(content::GlobalFrameRoutingId(
+  devtools_frame_token_map_.erase(content::GlobalRenderFrameHostId(
       render_process_id, render_frame_routing_id));
   frame_tree_node_id_to_devtools_frame_token_map_.erase(frame_tree_node_id);
 }
@@ -143,7 +143,7 @@ const base::UnguessableToken* HeadlessBrowserContextImpl::GetDevToolsFrameToken(
     int render_frame_id) const {
   base::AutoLock lock(devtools_frame_token_map_lock_);
   const auto& find_it = devtools_frame_token_map_.find(
-      content::GlobalFrameRoutingId(render_process_id, render_frame_id));
+      content::GlobalRenderFrameHostId(render_process_id, render_frame_id));
   if (find_it == devtools_frame_token_map_.end())
     return nullptr;
   return &find_it->second;

@@ -26,17 +26,17 @@ class FrameNodeSource {
   // Returns the frame node associated with |render_process_host_id|. Returns
   // null if no such node exists.
   virtual FrameNodeImpl* GetFrameNode(
-      content::GlobalFrameRoutingId render_process_host_id) = 0;
+      content::GlobalRenderFrameHostId render_process_host_id) = 0;
 
   // Subscribes to receive removal notification for a frame node.
   virtual void SubscribeToFrameNode(
-      content::GlobalFrameRoutingId render_process_host_id,
+      content::GlobalRenderFrameHostId render_process_host_id,
       OnbeforeFrameNodeRemovedCallback
           on_before_frame_node_removed_callback) = 0;
 
   // Unsubscribes to a frame node
   virtual void UnsubscribeFromFrameNode(
-      content::GlobalFrameRoutingId render_process_host_id) = 0;
+      content::GlobalRenderFrameHostId render_process_host_id) = 0;
 };
 
 }  // namespace performance_manager

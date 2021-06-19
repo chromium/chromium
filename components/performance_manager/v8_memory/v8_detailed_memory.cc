@@ -162,7 +162,7 @@ void V8DetailedMemoryRequest::NotifyObserversOnMeasurementAvailable(
   // If this request was made from off-sequence, notify its off-sequence
   // observers with a copy of the process and frame data.
   if (off_sequence_request_.MaybeValid()) {
-    using FrameAndData = std::pair<content::GlobalFrameRoutingId,
+    using FrameAndData = std::pair<content::GlobalRenderFrameHostId,
                                    V8DetailedMemoryExecutionContextData>;
     std::vector<FrameAndData> all_frame_data;
     process_node->VisitFrameNodes(base::BindRepeating(

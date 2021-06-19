@@ -189,7 +189,7 @@ class PaintPreviewClient
   void RequestCaptureOnUIThread(
       const base::UnguessableToken& frame_guid,
       const RecordingParams& params,
-      const content::GlobalFrameRoutingId& render_frame_id,
+      const content::GlobalRenderFrameHostId& render_frame_id,
       mojom::PaintPreviewStatus status,
       mojom::PaintPreviewCaptureParamsPtr capture_params);
 
@@ -198,7 +198,7 @@ class PaintPreviewClient
   void OnPaintPreviewCapturedCallback(
       const base::UnguessableToken& frame_guid,
       const RecordingParams& params,
-      const content::GlobalFrameRoutingId& render_frame_id,
+      const content::GlobalRenderFrameHostId& render_frame_id,
       mojom::PaintPreviewStatus status,
       mojom::PaintPreviewCaptureResponsePtr response);
 

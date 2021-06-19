@@ -17,7 +17,7 @@ import org.chromium.chrome.browser.browserservices.verification.OriginVerifier;
 import org.chromium.chrome.browser.browserservices.verification.OriginVerifier.OriginVerificationListener;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.embedder_support.util.Origin;
-import org.chromium.content_public.browser.GlobalFrameRoutingId;
+import org.chromium.content_public.browser.GlobalRenderFrameHostId;
 import org.chromium.content_public.browser.LifecycleState;
 import org.chromium.content_public.browser.MessagePort;
 import org.chromium.content_public.browser.MessagePort.MessageCallback;
@@ -90,7 +90,7 @@ public class PostMessageHandler implements OriginVerificationListener {
             }
 
             @Override
-            public void documentLoadedInFrame(GlobalFrameRoutingId rfhId, boolean isMainFrame,
+            public void documentLoadedInFrame(GlobalRenderFrameHostId rfhId, boolean isMainFrame,
                     @LifecycleState int rfhLifecycleState) {
                 if (!isMainFrame || rfhLifecycleState != LifecycleState.ACTIVE
                         || mChannel != null) {

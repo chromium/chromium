@@ -54,7 +54,7 @@ class ServiceWorkerRegisterJob : public ServiceWorkerRegisterJobBase {
       const blink::mojom::ServiceWorkerRegistrationOptions& options,
       blink::mojom::FetchClientSettingsObjectPtr
           outside_fetch_client_settings_object,
-      const GlobalFrameRoutingId& requesting_frame_id);
+      const GlobalRenderFrameHostId& requesting_frame_id);
 
   // For update jobs.
   CONTENT_EXPORT ServiceWorkerRegisterJob(
@@ -206,7 +206,7 @@ class ServiceWorkerRegisterJob : public ServiceWorkerRegisterJobBase {
   blink::ServiceWorkerStatusCode promise_resolved_status_;
   std::string promise_resolved_status_message_;
   scoped_refptr<ServiceWorkerRegistration> promise_resolved_registration_;
-  const GlobalFrameRoutingId requesting_frame_id_;
+  const GlobalRenderFrameHostId requesting_frame_id_;
 
   base::WeakPtrFactory<ServiceWorkerRegisterJob> weak_factory_{this};
 

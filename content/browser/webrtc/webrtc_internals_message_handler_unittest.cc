@@ -21,7 +21,7 @@ namespace content {
 
 namespace {
 
-static const GlobalFrameRoutingId kFrameId = {20, 30};
+static const GlobalRenderFrameHostId kFrameId = {20, 30};
 static const int kPid = 35;
 static const int kLid = 75;
 static const char kConstraints[] = "c";

@@ -101,7 +101,7 @@ class LongScreenshotsTabService
   void CaptureTabInternal(int tab_id,
                           const paint_preview::DirectoryKey& key,
                           int frame_tree_node_id,
-                          content::GlobalFrameRoutingId frame_routing_id,
+                          content::GlobalRenderFrameHostId frame_routing_id,
                           int clipX,
                           int clipY,
                           int clipWidth,

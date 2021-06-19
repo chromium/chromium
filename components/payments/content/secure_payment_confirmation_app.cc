@@ -125,7 +125,7 @@ SecurePaymentConfirmationApp::SecurePaymentConfirmationApp(
     : PaymentApp(/*icon_resource_id=*/0, PaymentApp::Type::INTERNAL),
       content::WebContentsObserver(web_contents_to_observe),
       authenticator_frame_routing_id_(
-          authenticator->GetRenderFrameHost()->GetGlobalFrameRoutingId()),
+          authenticator->GetRenderFrameHost()->GetGlobalId()),
       effective_relying_party_identity_(effective_relying_party_identity),
       icon_(std::move(icon)),
       label_(label),
@@ -136,7 +136,7 @@ SecurePaymentConfirmationApp::SecurePaymentConfirmationApp(
       spec_(spec),
       request_(std::move(request)),
       authenticator_(std::move(authenticator)) {
-  DCHECK(web_contents_to_observe->GetMainFrame()->GetGlobalFrameRoutingId() ==
+  DCHECK(web_contents_to_observe->GetMainFrame()->GetGlobalId() ==
          authenticator_frame_routing_id_);
   DCHECK(!credential_id_.empty());
 

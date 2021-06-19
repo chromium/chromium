@@ -344,7 +344,7 @@ class FileSystemAccessManagerImplTest : public testing::Test {
   const url::Origin kTestOrigin = url::Origin::Create(kTestURL);
   const int kProcessId = 1;
   const int kFrameRoutingId = 2;
-  const GlobalFrameRoutingId kFrameId{kProcessId, kFrameRoutingId};
+  const GlobalRenderFrameHostId kFrameId{kProcessId, kFrameRoutingId};
   const FileSystemAccessManagerImpl::BindingContext kBindingContext = {
       kTestOrigin, kTestURL, kFrameId};
 
@@ -1122,8 +1122,7 @@ TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_OpenFile) {
 
   mojo::Remote<blink::mojom::FileSystemAccessManager> manager_remote;
   FileSystemAccessManagerImpl::BindingContext binding_context = {
-      kTestOrigin, kTestURL,
-      web_contents_->GetMainFrame()->GetGlobalFrameRoutingId()};
+      kTestOrigin, kTestURL, web_contents_->GetMainFrame()->GetGlobalId()};
   manager_->BindReceiver(binding_context,
                          manager_remote.BindNewPipeAndPassReceiver());
 
@@ -1146,7 +1145,7 @@ TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_OpenFile) {
       ConfirmSensitiveDirectoryAccess_(
           kTestOrigin, FileSystemAccessPermissionContext::PathType::kLocal,
           test_file, FileSystemAccessPermissionContext::HandleType::kFile,
-          web_contents_->GetMainFrame()->GetGlobalFrameRoutingId(), testing::_))
+          web_contents_->GetMainFrame()->GetGlobalId(), testing::_))
       .WillOnce(RunOnceCallback<5>(FileSystemAccessPermissionContext::
                                        SensitiveDirectoryResult::kAllowed));
 
@@ -1200,8 +1199,7 @@ TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_SaveFile) {
 
   mojo::Remote<blink::mojom::FileSystemAccessManager> manager_remote;
   FileSystemAccessManagerImpl::BindingContext binding_context = {
-      kTestOrigin, kTestURL,
-      web_contents_->GetMainFrame()->GetGlobalFrameRoutingId()};
+      kTestOrigin, kTestURL, web_contents_->GetMainFrame()->GetGlobalId()};
   manager_->BindReceiver(binding_context,
                          manager_remote.BindNewPipeAndPassReceiver());
 
@@ -1226,7 +1224,7 @@ TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_SaveFile) {
       ConfirmSensitiveDirectoryAccess_(
           kTestOrigin, FileSystemAccessPermissionContext::PathType::kLocal,
           test_file, FileSystemAccessPermissionContext::HandleType::kFile,
-          web_contents_->GetMainFrame()->GetGlobalFrameRoutingId(), testing::_))
+          web_contents_->GetMainFrame()->GetGlobalId(), testing::_))
       .WillOnce(RunOnceCallback<5>(FileSystemAccessPermissionContext::
                                        SensitiveDirectoryResult::kAllowed));
 
@@ -1279,8 +1277,7 @@ TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_OpenDirectory) {
 
   mojo::Remote<blink::mojom::FileSystemAccessManager> manager_remote;
   FileSystemAccessManagerImpl::BindingContext binding_context = {
-      kTestOrigin, kTestURL,
-      web_contents_->GetMainFrame()->GetGlobalFrameRoutingId()};
+      kTestOrigin, kTestURL, web_contents_->GetMainFrame()->GetGlobalId()};
   manager_->BindReceiver(binding_context,
                          manager_remote.BindNewPipeAndPassReceiver());
 
@@ -1303,7 +1300,7 @@ TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_OpenDirectory) {
       ConfirmSensitiveDirectoryAccess_(
           kTestOrigin, FileSystemAccessPermissionContext::PathType::kLocal,
           test_dir, FileSystemAccessPermissionContext::HandleType::kDirectory,
-          web_contents_->GetMainFrame()->GetGlobalFrameRoutingId(), testing::_))
+          web_contents_->GetMainFrame()->GetGlobalId(), testing::_))
       .WillOnce(RunOnceCallback<5>(FileSystemAccessPermissionContext::
                                        SensitiveDirectoryResult::kAllowed));
 
@@ -1352,8 +1349,7 @@ TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_InvalidStartInID) {
 
   mojo::Remote<blink::mojom::FileSystemAccessManager> manager_remote;
   FileSystemAccessManagerImpl::BindingContext binding_context = {
-      kTestOrigin, kTestURL,
-      web_contents_->GetMainFrame()->GetGlobalFrameRoutingId()};
+      kTestOrigin, kTestURL, web_contents_->GetMainFrame()->GetGlobalId()};
   manager_->BindReceiver(binding_context,
                          manager_remote.BindNewPipeAndPassReceiver());
 

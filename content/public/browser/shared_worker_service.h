@@ -54,10 +54,10 @@ class CONTENT_EXPORT SharedWorkerService {
     // notifications.
     virtual void OnClientAdded(
         const blink::SharedWorkerToken& token,
-        content::GlobalFrameRoutingId render_frame_host_id) = 0;
+        content::GlobalRenderFrameHostId render_frame_host_id) = 0;
     virtual void OnClientRemoved(
         const blink::SharedWorkerToken& token,
-        content::GlobalFrameRoutingId render_frame_host_id) = 0;
+        content::GlobalRenderFrameHostId render_frame_host_id) = 0;
   };
 
   // Adds/removes an observer.

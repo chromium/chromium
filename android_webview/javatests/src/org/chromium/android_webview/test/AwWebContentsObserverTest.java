@@ -17,7 +17,7 @@ import org.junit.runner.RunWith;
 import org.chromium.android_webview.AwContentsStatics;
 import org.chromium.android_webview.AwWebContentsObserver;
 import org.chromium.base.test.util.Feature;
-import org.chromium.content_public.browser.GlobalFrameRoutingId;
+import org.chromium.content_public.browser.GlobalRenderFrameHostId;
 import org.chromium.content_public.browser.LifecycleState;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
@@ -60,7 +60,7 @@ public class AwWebContentsObserverTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testOnPageFinished() throws Throwable {
-        GlobalFrameRoutingId frameId = new GlobalFrameRoutingId(-1, -1);
+        GlobalRenderFrameHostId frameId = new GlobalRenderFrameHostId(-1, -1);
         boolean mainFrame = true;
         boolean subFrame = false;
         final TestCallbackHelperContainer.OnPageFinishedHelper onPageFinishedHelper =

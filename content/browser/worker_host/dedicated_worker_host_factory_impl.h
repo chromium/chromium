@@ -26,9 +26,9 @@ class CONTENT_EXPORT DedicatedWorkerHostFactoryImpl
  public:
   DedicatedWorkerHostFactoryImpl(
       int worker_process_id,
-      absl::optional<GlobalFrameRoutingId> creator_render_frame_host_id,
+      absl::optional<GlobalRenderFrameHostId> creator_render_frame_host_id,
       absl::optional<blink::DedicatedWorkerToken> creator_worker_token,
-      GlobalFrameRoutingId ancestor_render_frame_host_id,
+      GlobalRenderFrameHostId ancestor_render_frame_host_id,
       const url::Origin& creator_origin,
       const net::IsolationInfo& isolation_info,
       const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
@@ -62,9 +62,9 @@ class CONTENT_EXPORT DedicatedWorkerHostFactoryImpl
   const int worker_process_id_;
 
   // See comments on the corresponding members of DedicatedWorkerHost.
-  const absl::optional<GlobalFrameRoutingId> creator_render_frame_host_id_;
+  const absl::optional<GlobalRenderFrameHostId> creator_render_frame_host_id_;
   const absl::optional<blink::DedicatedWorkerToken> creator_worker_token_;
-  const GlobalFrameRoutingId ancestor_render_frame_host_id_;
+  const GlobalRenderFrameHostId ancestor_render_frame_host_id_;
 
   const url::Origin creator_origin_;
   const net::IsolationInfo isolation_info_;

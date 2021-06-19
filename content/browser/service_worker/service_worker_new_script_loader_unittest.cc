@@ -233,7 +233,7 @@ class ServiceWorkerNewScriptLoaderTest : public testing::Test {
         helper_->url_loader_factory_getter()->GetNetworkFactory(),
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
         resource_id, /*is_throttle_needed=*/false,
-        /*requesting_frame_id=*/GlobalFrameRoutingId());
+        /*requesting_frame_id=*/GlobalRenderFrameHostId());
   }
 
   // Returns false if the entry for |url| doesn't exist in the storage.

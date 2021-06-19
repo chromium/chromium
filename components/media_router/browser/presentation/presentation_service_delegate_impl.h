@@ -156,10 +156,10 @@ class PresentationServiceDelegateImpl
   explicit PresentationServiceDelegateImpl(content::WebContents* web_contents);
 
   PresentationFrame* GetOrAddPresentationFrame(
-      const content::GlobalFrameRoutingId& render_frame_host_id);
+      const content::GlobalRenderFrameHostId& render_frame_host_id);
 
   void OnJoinRouteResponse(
-      const content::GlobalFrameRoutingId& render_frame_host_id,
+      const content::GlobalRenderFrameHostId& render_frame_host_id,
       const GURL& presentation_url,
       const std::string& presentation_id,
       content::PresentationConnectionCallback success_cb,
@@ -168,7 +168,7 @@ class PresentationServiceDelegateImpl
       const RouteRequestResult& result);
 
   void OnStartPresentationSucceeded(
-      const content::GlobalFrameRoutingId& render_frame_host_id,
+      const content::GlobalRenderFrameHostId& render_frame_host_id,
       content::PresentationConnectionCallback success_cb,
       const blink::mojom::PresentationInfo& new_presentation_info,
       mojom::RoutePresentationConnectionPtr connection,
@@ -178,14 +178,14 @@ class PresentationServiceDelegateImpl
   // presentation and its corresponding MediaRoute has been created.
   // The PresentationFrame will be created if it does not already exist.
   void AddPresentation(
-      const content::GlobalFrameRoutingId& render_frame_host_id,
+      const content::GlobalRenderFrameHostId& render_frame_host_id,
       const blink::mojom::PresentationInfo& presentation_info,
       const MediaRoute& route);
 
   // Notifies the PresentationFrame of |render_frame_host_id| that a
   // presentation and its corresponding MediaRoute has been removed.
   void RemovePresentation(
-      const content::GlobalFrameRoutingId& render_frame_host_id,
+      const content::GlobalRenderFrameHostId& render_frame_host_id,
       const std::string& presentation_id);
 
   // Clears the default presentation request for the owning WebContents and
@@ -196,7 +196,7 @@ class PresentationServiceDelegateImpl
   // Returns the ID of the route corresponding to |presentation_id| in the given
   // frame, or empty if no such route exist.
   MediaRoute::Id GetRouteId(
-      const content::GlobalFrameRoutingId& render_frame_host_id,
+      const content::GlobalRenderFrameHostId& render_frame_host_id,
       const std::string& presentation_id) const;
 
 #if !defined(OS_ANDROID)
@@ -209,7 +209,7 @@ class PresentationServiceDelegateImpl
   // used for all Presentation API communication in a newly-connected
   // presentation.
   void EnsurePresentationConnection(
-      const content::GlobalFrameRoutingId& render_frame_host_id,
+      const content::GlobalRenderFrameHostId& render_frame_host_id,
       const blink::mojom::PresentationInfo& presentation_info,
       mojom::RoutePresentationConnectionPtr* connection);
 
@@ -220,7 +220,7 @@ class PresentationServiceDelegateImpl
   // Invoked by the MR when a Presentation Connection state changes in a frame.
   // It calls |RemovePresentation()| when the connection is closed/terminated.
   void OnConnectionStateChanged(
-      const content::GlobalFrameRoutingId& render_frame_host_id,
+      const content::GlobalRenderFrameHostId& render_frame_host_id,
       const blink::mojom::PresentationInfo& connection,
       const content::PresentationConnectionStateChangedCallback&
           state_changed_cb,
@@ -251,9 +251,9 @@ class PresentationServiceDelegateImpl
 
   // Maps a frame identifier to a PresentationFrame object for frames
   // that are using Presentation API.
-  std::unordered_map<content::GlobalFrameRoutingId,
+  std::unordered_map<content::GlobalRenderFrameHostId,
                      std::unique_ptr<PresentationFrame>,
-                     content::GlobalFrameRoutingIdHasher>
+                     content::GlobalRenderFrameHostIdHasher>
       presentation_frames_;
 
   PresentationServiceDelegateObservers observers_;

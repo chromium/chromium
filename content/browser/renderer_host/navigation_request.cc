@@ -1178,7 +1178,7 @@ NavigationRequest::NavigationRequest(
       rfh_restored_from_back_forward_cache_(
           rfh_restored_from_back_forward_cache),
       // Store the old RenderFrameHost id at request creation to be used later.
-      previous_render_frame_host_id_(GlobalFrameRoutingId(
+      previous_render_frame_host_id_(GlobalRenderFrameHostId(
           frame_tree_node->current_frame_host()->GetProcess()->GetID(),
           frame_tree_node->current_frame_host()->GetRoutingID())),
       initiator_frame_token_(begin_params_->initiator_frame_token),
@@ -1470,7 +1470,7 @@ NavigationRequest::~NavigationRequest() {
         return;
 
       RenderFrameHostImpl* rfh = RenderFrameHostImpl::FromID(
-          bfcache_entry->render_frame_host->GetGlobalFrameRoutingId());
+          bfcache_entry->render_frame_host->GetGlobalId());
       // RFH could have been deleted. E.g. eviction timer fired
       if (rfh && rfh->IsInBackForwardCache()) {
         // rfh is still in the cache so the navigation must have failed. But we
@@ -5933,7 +5933,7 @@ const net::ProxyServer& NavigationRequest::GetProxyServer() {
   return proxy_server_;
 }
 
-GlobalFrameRoutingId NavigationRequest::GetPreviousRenderFrameHostId() {
+GlobalRenderFrameHostId NavigationRequest::GetPreviousRenderFrameHostId() {
   return previous_render_frame_host_id_;
 }
 

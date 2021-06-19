@@ -183,8 +183,8 @@ void UrlRequestRewriteRulesManager::RenderFrameCreated(
   mojo::AssociatedRemote<mojom::UrlRequestRulesReceiver> rules_receiver;
   render_frame_host->GetRemoteAssociatedInterfaces()->GetInterface(
       &rules_receiver);
-  auto iter = active_remotes_.emplace(
-      render_frame_host->GetGlobalFrameRoutingId(), std::move(rules_receiver));
+  auto iter = active_remotes_.emplace(render_frame_host->GetGlobalId(),
+                                      std::move(rules_receiver));
   DCHECK(iter.second);
 
   if (cached_rules_) {
@@ -197,7 +197,6 @@ void UrlRequestRewriteRulesManager::RenderFrameDeleted(
     content::RenderFrameHost* render_frame_host) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  size_t removed =
-      active_remotes_.erase(render_frame_host->GetGlobalFrameRoutingId());
+  size_t removed = active_remotes_.erase(render_frame_host->GetGlobalId());
   DCHECK_EQ(removed, 1u);
 }

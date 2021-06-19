@@ -5,7 +5,7 @@
 package org.chromium.content_public.browser.test.mock;
 
 import org.chromium.base.Callback;
-import org.chromium.content_public.browser.GlobalFrameRoutingId;
+import org.chromium.content_public.browser.GlobalRenderFrameHostId;
 import org.chromium.content_public.browser.LifecycleState;
 import org.chromium.content_public.browser.PermissionsPolicyFeature;
 import org.chromium.content_public.browser.RenderFrameHost;
@@ -80,8 +80,8 @@ public class MockRenderFrameHost implements RenderFrameHost {
     }
 
     @Override
-    public GlobalFrameRoutingId getGlobalFrameRoutingId() {
-        return new GlobalFrameRoutingId(-1, -1);
+    public GlobalRenderFrameHostId getGlobalRenderFrameHostId() {
+        return new GlobalRenderFrameHostId(-1, -1);
     }
 
     @Override

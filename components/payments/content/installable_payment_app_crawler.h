@@ -129,7 +129,7 @@ class InstallablePaymentAppCrawler {
 
   DeveloperConsoleLogger log_;
   const url::Origin merchant_origin_;
-  const content::GlobalFrameRoutingId initiator_frame_routing_id_;
+  const content::GlobalRenderFrameHostId initiator_frame_routing_id_;
   PaymentManifestDownloader* downloader_;
   PaymentManifestParser* parser_;
   FinishedCrawlingCallback callback_;

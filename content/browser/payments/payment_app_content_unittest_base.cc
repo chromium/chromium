@@ -198,7 +198,7 @@ PaymentManager* PaymentAppContentUnitTestBase::CreatePaymentManager(
       sw_script_url, key, registration_opt,
       blink::mojom::FetchClientSettingsObject::New(),
       base::BindOnce(&RegisterServiceWorkerCallback, &called, &registration_id),
-      /*requesting_frame_id=*/GlobalFrameRoutingId());
+      /*requesting_frame_id=*/GlobalRenderFrameHostId());
 
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(called);

@@ -292,8 +292,8 @@ IN_PROC_BROWSER_TEST_F(WebUISecurityTest, WebUIReuseInSubframe) {
   scoped_refptr<SiteInstance> initial_site_instance =
       child->current_frame_host()->GetSiteInstance();
   WebUI* initial_web_ui = child->current_frame_host()->web_ui();
-  GlobalFrameRoutingId initial_rfh_id =
-      child->current_frame_host()->GetGlobalFrameRoutingId();
+  GlobalRenderFrameHostId initial_rfh_id =
+      child->current_frame_host()->GetGlobalId();
 
   GURL subframe_same_site_url(GetWebUIURL("web-ui/title2.html"));
   {
@@ -366,8 +366,7 @@ IN_PROC_BROWSER_TEST_F(WebUISecurityTest, WebUIReuseInSubframe) {
   // is not possible to check the web_ui() for inequality, since in some runs
   // the memory in which two different WebUI instances of the same type are
   // placed is the same.
-  EXPECT_NE(initial_rfh_id,
-            child->current_frame_host()->GetGlobalFrameRoutingId());
+  EXPECT_NE(initial_rfh_id, child->current_frame_host()->GetGlobalId());
 }
 
 // Verify that if one WebUI does a window.open() to another WebUI, then the two

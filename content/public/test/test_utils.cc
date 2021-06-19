@@ -458,7 +458,7 @@ void InProcessUtilityThreadHelper::BrowserChildProcessHostDisconnected(
 
 RenderFrameDeletedObserver::RenderFrameDeletedObserver(RenderFrameHost* rfh)
     : WebContentsObserver(WebContents::FromRenderFrameHost(rfh)),
-      routing_id_(rfh->GetGlobalFrameRoutingId()) {
+      routing_id_(rfh->GetGlobalId()) {
   DCHECK(rfh);
 }
 
@@ -466,8 +466,8 @@ RenderFrameDeletedObserver::~RenderFrameDeletedObserver() = default;
 
 void RenderFrameDeletedObserver::RenderFrameDeleted(
     RenderFrameHost* render_frame_host) {
-  if (render_frame_host->GetGlobalFrameRoutingId() == routing_id_) {
-    routing_id_ = GlobalFrameRoutingId();
+  if (render_frame_host->GetGlobalId() == routing_id_) {
+    routing_id_ = GlobalRenderFrameHostId();
 
     if (runner_.get())
       runner_->Quit();
@@ -475,7 +475,7 @@ void RenderFrameDeletedObserver::RenderFrameDeleted(
 }
 
 bool RenderFrameDeletedObserver::deleted() const {
-  return routing_id_ == GlobalFrameRoutingId();
+  return routing_id_ == GlobalRenderFrameHostId();
 }
 
 void RenderFrameDeletedObserver::WaitUntilDeleted() {
@@ -488,7 +488,7 @@ void RenderFrameDeletedObserver::WaitUntilDeleted() {
 }
 
 RenderFrameHostWrapper::RenderFrameHostWrapper(RenderFrameHost* rfh)
-    : routing_id_(rfh->GetGlobalFrameRoutingId()),
+    : routing_id_(rfh->GetGlobalId()),
       deleted_observer_(std::make_unique<RenderFrameDeletedObserver>(rfh)) {}
 
 RenderFrameHostWrapper::RenderFrameHostWrapper(RenderFrameHostWrapper&& rfhft) =

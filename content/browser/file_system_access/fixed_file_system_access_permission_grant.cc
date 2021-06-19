@@ -24,7 +24,7 @@ base::FilePath FixedFileSystemAccessPermissionGrant::GetPath() {
 }
 
 void FixedFileSystemAccessPermissionGrant::RequestPermission(
-    GlobalFrameRoutingId frame_id,
+    GlobalRenderFrameHostId frame_id,
     UserActivationState user_activation_state,
     base::OnceCallback<void(PermissionRequestOutcome)> callback) {
   std::move(callback).Run(PermissionRequestOutcome::kRequestAborted);

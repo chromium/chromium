@@ -23,7 +23,7 @@ namespace content {
 
 namespace {
 
-const GlobalFrameRoutingId kFrameId = {20, 30};
+const GlobalRenderFrameHostId kFrameId = {20, 30};
 const int kLid = 40;
 const int kPid = 123;
 const char kConstraints[] = "c";
@@ -152,7 +152,7 @@ class WebRtcInternalsTest : public testing::Test {
   }
 
   void VerifyGetUserMediaData(base::Value* actual_data,
-                              GlobalFrameRoutingId frame_id,
+                              GlobalRenderFrameHostId frame_id,
                               int pid,
                               const std::string& origin,
                               const std::string& audio,

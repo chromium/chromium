@@ -524,7 +524,7 @@ void ServiceWorkerContextCore::RegisterServiceWorker(
     blink::mojom::FetchClientSettingsObjectPtr
         outside_fetch_client_settings_object,
     RegistrationCallback callback,
-    const GlobalFrameRoutingId& requesting_frame_id) {
+    const GlobalRenderFrameHostId& requesting_frame_id) {
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
   std::string error_message;
   if (!IsValidRegisterRequest(script_url, options.scope, key, &error_message)) {
@@ -995,7 +995,7 @@ void ServiceWorkerContextCore::OnNoControllees(ServiceWorkerVersion* version) {
 void ServiceWorkerContextCore::OnControlleeNavigationCommitted(
     ServiceWorkerVersion* version,
     const std::string& client_uuid,
-    GlobalFrameRoutingId render_frame_host_id) {
+    GlobalRenderFrameHostId render_frame_host_id) {
   DCHECK_EQ(this, version->context().get());
 
   observer_list_->Notify(

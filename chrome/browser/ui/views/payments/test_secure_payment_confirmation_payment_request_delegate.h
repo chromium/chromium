@@ -37,7 +37,7 @@ class TestSecurePaymentConfirmationPaymentRequestDelegate
   }
 
  private:
-  const content::GlobalFrameRoutingId frame_routing_id_;
+  const content::GlobalRenderFrameHostId frame_routing_id_;
   base::WeakPtr<SecurePaymentConfirmationModel> model_;
   base::WeakPtr<SecurePaymentConfirmationDialogView> dialog_view_;
 };

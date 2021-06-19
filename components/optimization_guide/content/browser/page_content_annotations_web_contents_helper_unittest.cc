@@ -143,9 +143,10 @@ TEST_F(PageContentAnnotationsWebContentsHelperTest,
 
   // Invoke OnTextDumpReceived.
   FrameTextDumpResult frame_result =
-      FrameTextDumpResult::Initialize(
-          mojom::TextDumpEvent::kFirstLayout, content::GlobalFrameRoutingId(),
-          /*amp_frame=*/false, /*unique_navigation_id=*/1)
+      FrameTextDumpResult::Initialize(mojom::TextDumpEvent::kFirstLayout,
+                                      content::GlobalRenderFrameHostId(),
+                                      /*amp_frame=*/false,
+                                      /*unique_navigation_id=*/1)
           .CompleteWithContents(u"some text");
   PageTextDumpResult result;
   result.AddFrameTextDumpResult(frame_result);

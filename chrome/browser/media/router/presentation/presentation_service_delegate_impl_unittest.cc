@@ -118,7 +118,7 @@ class MockLocalPresentationManager : public LocalPresentationManager {
  public:
   void RegisterLocalPresentationController(
       const PresentationInfo& presentation_info,
-      const content::GlobalFrameRoutingId& render_frame_id,
+      const content::GlobalRenderFrameHostId& render_frame_id,
       mojo::PendingRemote<PresentationConnection> controller,
       mojo::PendingReceiver<PresentationConnection> receiver,
       const MediaRoute& route) override {
@@ -128,13 +128,13 @@ class MockLocalPresentationManager : public LocalPresentationManager {
 
   MOCK_METHOD5(RegisterLocalPresentationControllerInternal,
                void(const PresentationInfo& presentation_info,
-                    const content::GlobalFrameRoutingId& render_frame_id,
+                    const content::GlobalRenderFrameHostId& render_frame_id,
                     mojo::PendingRemote<PresentationConnection>& controller,
                     mojo::PendingReceiver<PresentationConnection>& receiver,
                     const MediaRoute& route));
   MOCK_METHOD2(UnregisterLocalPresentationController,
                void(const std::string& presentation_id,
-                    const content::GlobalFrameRoutingId& render_frame_id));
+                    const content::GlobalRenderFrameHostId& render_frame_id));
   MOCK_METHOD3(OnLocalPresentationReceiverCreated,
                void(const PresentationInfo& presentation_info,
                     const content::ReceiverConnectionAvailableCallback&
@@ -179,8 +179,8 @@ class PresentationServiceDelegateImplTest
     delegate_impl_ = PresentationServiceDelegateImpl::FromWebContents(wc);
     SetMainFrame();
     presentation_request_ = std::make_unique<content::PresentationRequest>(
-        content::GlobalFrameRoutingId(main_frame_process_id_,
-                                      main_frame_routing_id_),
+        content::GlobalRenderFrameHostId(main_frame_process_id_,
+                                         main_frame_routing_id_),
         presentation_urls_, frame_origin_);
     SetMockLocalPresentationManager();
   }
@@ -215,7 +215,7 @@ class PresentationServiceDelegateImplTest
 
     // Should not trigger callback since request doesn't match.
     content::PresentationRequest different_request(
-        content::GlobalFrameRoutingId(100, 200), {presentation_url2_},
+        content::GlobalRenderFrameHostId(100, 200), {presentation_url2_},
         frame_origin_);
     MediaRoute media_route("differentRouteId", source2_, "mediaSinkId", "",
                            true, true);
@@ -450,7 +450,7 @@ TEST_F(PresentationServiceDelegateImplTest, NotifyMediaRoutesChanged) {
   const int render_process_id = 100;
   const int render_frame_id = 200;
   content::PresentationRequest request(
-      content::GlobalFrameRoutingId(render_process_id, render_frame_id),
+      content::GlobalRenderFrameHostId(render_process_id, render_frame_id),
       {presentation_url1_}, frame_origin_);
   MediaRoute media_route("differentRouteId", source1_, "mediaSinkId", "", true,
                          true);
@@ -524,8 +524,8 @@ TEST_F(PresentationServiceDelegateImplTest, GetMediaRoutes) {
 
   // Start a session.
   content::PresentationRequest request(
-      content::GlobalFrameRoutingId(main_frame_process_id_,
-                                    main_frame_routing_id_),
+      content::GlobalRenderFrameHostId(main_frame_process_id_,
+                                       main_frame_routing_id_),
       {presentation_url1_}, frame_origin_);
   MediaRoute media_route("differentRouteId1", source1_, "mediaSinkId", "", true,
                          true);
@@ -594,8 +594,8 @@ TEST_F(PresentationServiceDelegateImplTest,
        TestCloseConnectionForLocalPresentation) {
   GURL presentation_url = GURL("http://www.example.com/presentation.html");
   PresentationInfo presentation_info(presentation_url, kPresentationId);
-  content::GlobalFrameRoutingId rfh_id(main_frame_process_id_,
-                                       main_frame_routing_id_);
+  content::GlobalRenderFrameHostId rfh_id(main_frame_process_id_,
+                                          main_frame_routing_id_);
   MediaRoute media_route("route_id",
                          MediaSource::ForPresentationUrl(presentation_url),
                          "mediaSinkId", "", true, true);
@@ -640,8 +640,8 @@ TEST_F(PresentationServiceDelegateImplTest,
   EXPECT_CALL(mock_local_manager,
               UnregisterLocalPresentationController(
                   kPresentationId,
-                  content::GlobalFrameRoutingId(main_frame_process_id_,
-                                                main_frame_routing_id_)));
+                  content::GlobalRenderFrameHostId(main_frame_process_id_,
+                                                   main_frame_routing_id_)));
 
   delegate_impl_->ReconnectPresentation(*presentation_request_, kPresentationId,
                                         success_cb.Get(), error_cb.Get());
@@ -649,8 +649,8 @@ TEST_F(PresentationServiceDelegateImplTest,
 }
 
 TEST_F(PresentationServiceDelegateImplTest, ConnectToLocalPresentation) {
-  content::GlobalFrameRoutingId rfh_id(main_frame_process_id_,
-                                       main_frame_routing_id_);
+  content::GlobalRenderFrameHostId rfh_id(main_frame_process_id_,
+                                          main_frame_routing_id_);
   PresentationInfo presentation_info(presentation_url1_, kPresentationId);
 
   MediaRoute media_route("route_id",
@@ -677,7 +677,7 @@ TEST_F(PresentationServiceDelegateImplTest, ConnectToLocalPresentation) {
                   InfoEquals(presentation_info), rfh_id, _, _, media_route))
       .WillOnce([&receiver_receiver, &connection_remote](
                     const PresentationInfo&,
-                    const content::GlobalFrameRoutingId&,
+                    const content::GlobalRenderFrameHostId&,
                     mojo::PendingRemote<PresentationConnection>& controller,
                     mojo::PendingReceiver<PresentationConnection>& receiver,
                     const MediaRoute&) {
@@ -714,8 +714,8 @@ TEST_F(PresentationServiceDelegateImplTest, ConnectToLocalPresentation) {
 }
 
 TEST_F(PresentationServiceDelegateImplTest, ConnectToPresentation) {
-  content::GlobalFrameRoutingId rfh_id(main_frame_process_id_,
-                                       main_frame_routing_id_);
+  content::GlobalRenderFrameHostId rfh_id(main_frame_process_id_,
+                                          main_frame_routing_id_);
   PresentationInfo presentation_info(presentation_url1_, kPresentationId);
 
   MediaRoute media_route("route_id",

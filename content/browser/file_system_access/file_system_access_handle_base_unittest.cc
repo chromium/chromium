@@ -169,7 +169,7 @@ TEST_F(FileSystemAccessHandleBaseTest, RequestWritePermission_AlreadyGranted) {
 TEST_F(FileSystemAccessHandleBaseTest, RequestWritePermission) {
   const int kProcessId = 1;
   const int kFrameRoutingId = 2;
-  const GlobalFrameRoutingId kFrameId(kProcessId, kFrameRoutingId);
+  const GlobalRenderFrameHostId kFrameId(kProcessId, kFrameRoutingId);
 
   auto url =
       FileSystemURL::CreateForTest(kTestOrigin, storage::kFileSystemTypeTest,

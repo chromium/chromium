@@ -63,7 +63,7 @@ bool AllowSharedWorker(
 
 bool AllowWorkerFileSystem(
     const GURL& url,
-    const std::vector<content::GlobalFrameRoutingId>& render_frames,
+    const std::vector<content::GlobalRenderFrameHostId>& render_frames,
     const content_settings::CookieSettings* cookie_settings) {
   bool allow = cookie_settings->IsFullCookieAccessAllowed(
       url, url, url::Origin::Create(url));
@@ -76,7 +76,7 @@ bool AllowWorkerFileSystem(
 
 bool AllowWorkerIndexedDB(
     const GURL& url,
-    const std::vector<content::GlobalFrameRoutingId>& render_frames,
+    const std::vector<content::GlobalRenderFrameHostId>& render_frames,
     const content_settings::CookieSettings* cookie_settings) {
   bool allow = cookie_settings->IsFullCookieAccessAllowed(
       url, url, url::Origin::Create(url));
@@ -90,7 +90,7 @@ bool AllowWorkerIndexedDB(
 
 bool AllowWorkerCacheStorage(
     const GURL& url,
-    const std::vector<content::GlobalFrameRoutingId>& render_frames,
+    const std::vector<content::GlobalRenderFrameHostId>& render_frames,
     const content_settings::CookieSettings* cookie_settings) {
   bool allow = cookie_settings->IsFullCookieAccessAllowed(
       url, url, url::Origin::Create(url));

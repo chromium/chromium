@@ -52,7 +52,7 @@ ComputePressureHost::~ComputePressureHost() {
 }
 
 void ComputePressureHost::BindReceiver(
-    GlobalFrameRoutingId frame_id,
+    GlobalRenderFrameHostId frame_id,
     mojo::PendingReceiver<blink::mojom::ComputePressureHost> receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(frame_id);
@@ -74,7 +74,7 @@ void ComputePressureHost::AddObserver(
     return;
   }
 
-  GlobalFrameRoutingId frame_id = receivers_.current_context();
+  GlobalRenderFrameHostId frame_id = receivers_.current_context();
   RenderFrameHost* rfh = content::RenderFrameHost::FromID(frame_id);
   if (!rfh || !rfh->IsActive()) {
     std::move(callback).Run(
@@ -140,7 +140,7 @@ void ComputePressureHost::UpdateObservers(ComputePressureSample sample,
     DCHECK(observer_contexts_.count(observer_id))
         << "AddObserver() failed to register an observer in the map "
         << observer_id;
-    GlobalFrameRoutingId frame_id = observer_contexts_[observer_id];
+    GlobalRenderFrameHostId frame_id = observer_contexts_[observer_id];
 
     RenderFrameHost* rfh = content::RenderFrameHost::FromID(frame_id);
     if (!rfh || !rfh->IsActive()) {

@@ -349,7 +349,7 @@ class CONTENT_EXPORT BackForwardCacheTestDelegate {
   virtual ~BackForwardCacheTestDelegate();
 
   virtual void OnDisabledForFrameWithReason(
-      GlobalFrameRoutingId id,
+      GlobalRenderFrameHostId id,
       BackForwardCache::DisabledReason reason) = 0;
 };
 

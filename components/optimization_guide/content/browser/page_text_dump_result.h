@@ -26,7 +26,7 @@ class FrameTextDumpResult {
 
   // Creates a preliminary instance with the given metadata.
   static FrameTextDumpResult Initialize(mojom::TextDumpEvent event,
-                                        content::GlobalFrameRoutingId rfh_id,
+                                        content::GlobalRenderFrameHostId rfh_id,
                                         bool amp_frame,
                                         int unique_navigation_id);
 
@@ -53,7 +53,7 @@ class FrameTextDumpResult {
 
   // The unique identifier for the content::RenderFrameHost that the text dump
   // was taken in. Set for both preliminary and completed instances.
-  content::GlobalFrameRoutingId rfh_id() const { return rfh_id_; }
+  content::GlobalRenderFrameHostId rfh_id() const { return rfh_id_; }
 
   // The unique id of the visible navigation for this frame dump, taken from the
   // visible NavigationEntry.
@@ -106,7 +106,7 @@ class FrameTextDumpResult {
 
   mojom::TextDumpEvent event_;
   absl::optional<std::u16string> contents_;
-  content::GlobalFrameRoutingId rfh_id_;
+  content::GlobalRenderFrameHostId rfh_id_;
   bool amp_frame_ = false;
   int unique_navigation_id_ = -1;
 };

@@ -99,7 +99,7 @@ FrameTextDumpResult::FrameTextDumpResult(const FrameTextDumpResult&) = default;
 // static
 FrameTextDumpResult FrameTextDumpResult::Initialize(
     mojom::TextDumpEvent event,
-    content::GlobalFrameRoutingId rfh_id,
+    content::GlobalRenderFrameHostId rfh_id,
     bool amp_frame,
     int unique_navigation_id) {
   FrameTextDumpResult result;

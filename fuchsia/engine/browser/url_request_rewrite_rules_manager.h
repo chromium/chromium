@@ -52,7 +52,7 @@ class WEB_ENGINE_EXPORT UrlRequestRewriteRulesManager
       cached_rules_;
 
   // Map of GlobalRoutingID to their current associated remote.
-  std::map<content::GlobalFrameRoutingId,
+  std::map<content::GlobalRenderFrameHostId,
            mojo::AssociatedRemote<mojom::UrlRequestRulesReceiver>>
       active_remotes_;
 

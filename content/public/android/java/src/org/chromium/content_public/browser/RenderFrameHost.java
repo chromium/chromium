@@ -129,7 +129,7 @@ public interface RenderFrameHost {
     /**
      * @return An identifier for this RenderFrameHost.
      */
-    GlobalFrameRoutingId getGlobalFrameRoutingId();
+    GlobalRenderFrameHostId getGlobalRenderFrameHostId();
 
     /**
      * Returns the LifecycleState associated with this RenderFrameHost.

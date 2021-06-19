@@ -7,7 +7,7 @@
 namespace content {
 
 PresentationRequest::PresentationRequest(
-    const GlobalFrameRoutingId& render_frame_host_id,
+    const GlobalRenderFrameHostId& render_frame_host_id,
     const std::vector<GURL>& presentation_urls,
     const url::Origin& frame_origin)
     : render_frame_host_id(render_frame_host_id),

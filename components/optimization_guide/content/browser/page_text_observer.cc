@@ -223,7 +223,7 @@ class RequestMediator : public base::RefCounted<RequestMediator> {
     mojo::AssociatedRemote<mojom::PageTextService> renderer_text_service;
     rfh->GetRemoteAssociatedInterfaces()->GetInterface(&renderer_text_service);
 
-    auto rfh_id = rfh->GetGlobalFrameRoutingId();
+    auto rfh_id = rfh->GetGlobalId();
     bool is_subframe = rfh->GetMainFrame() != rfh;
     int nav_id = content::WebContents::FromRenderFrameHost(rfh)
                      ->GetController()

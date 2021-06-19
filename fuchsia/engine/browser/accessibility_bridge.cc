@@ -622,7 +622,7 @@ void AccessibilityBridge::RenderFrameDeleted(
     content::RenderFrameHost* render_frame_host) {
   DCHECK(render_frame_host);
 
-  frame_id_to_tree_id_.erase(render_frame_host->GetGlobalFrameRoutingId());
+  frame_id_to_tree_id_.erase(render_frame_host->GetGlobalId());
 
   const auto& id = render_frame_host->GetAXTreeID();
   auto it = ax_trees_.find(id);
@@ -640,7 +640,7 @@ bool AccessibilityBridge::UpdateAXTreeID(const ui::AXTreeID& tree_id) {
   if (!frame)
     return false;
 
-  auto frame_id = frame->GetGlobalFrameRoutingId();
+  auto frame_id = frame->GetGlobalId();
   DCHECK(frame_id);
   auto frame_iter = frame_id_to_tree_id_.find(frame_id);
   if (frame_iter == frame_id_to_tree_id_.end()) {

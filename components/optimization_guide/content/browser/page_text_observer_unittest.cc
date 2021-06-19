@@ -32,7 +32,7 @@ namespace optimization_guide {
 namespace {
 
 FrameTextDumpResult MakeFrameDump(mojom::TextDumpEvent event,
-                                  content::GlobalFrameRoutingId rfh_id,
+                                  content::GlobalRenderFrameHostId rfh_id,
                                   bool amp_frame,
                                   int unique_navigation_id,
                                   const std::u16string& contents) {
@@ -323,8 +323,7 @@ TEST_F(PageTextObserverTest, MojoPlumbingSuccessCase) {
       consumer.result()->frame_results(),
       ::testing::UnorderedElementsAreArray({
           MakeFrameDump(
-              mojom::TextDumpEvent::kFirstLayout,
-              main_rfh()->GetGlobalFrameRoutingId(),
+              mojom::TextDumpEvent::kFirstLayout, main_rfh()->GetGlobalId(),
               /*amp_frame=*/false,
               web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
               u"abc"),
@@ -488,8 +487,7 @@ TEST_F(PageTextObserverTest, MaxLengthOnChunkBorder) {
       consumer.result()->frame_results(),
       ::testing::UnorderedElementsAreArray({
           MakeFrameDump(
-              mojom::TextDumpEvent::kFirstLayout,
-              main_rfh()->GetGlobalFrameRoutingId(),
+              mojom::TextDumpEvent::kFirstLayout, main_rfh()->GetGlobalId(),
               /*amp_frame=*/false,
               web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
               u"abc"),
@@ -536,8 +534,7 @@ TEST_F(PageTextObserverTest, MaxLengthWithinChunk) {
       consumer.result()->frame_results(),
       ::testing::UnorderedElementsAreArray({
           MakeFrameDump(
-              mojom::TextDumpEvent::kFirstLayout,
-              main_rfh()->GetGlobalFrameRoutingId(),
+              mojom::TextDumpEvent::kFirstLayout, main_rfh()->GetGlobalId(),
               /*amp_frame=*/false,
               web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
               u"abcd"),
@@ -583,8 +580,7 @@ TEST_F(PageTextObserverTest, MaxLengthWithoutOnEnd) {
       consumer.result()->frame_results(),
       ::testing::UnorderedElementsAreArray({
           MakeFrameDump(
-              mojom::TextDumpEvent::kFirstLayout,
-              main_rfh()->GetGlobalFrameRoutingId(),
+              mojom::TextDumpEvent::kFirstLayout, main_rfh()->GetGlobalId(),
               /*amp_frame=*/false,
               web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
               u"abcd"),
@@ -638,8 +634,7 @@ TEST_F(PageTextObserverTest, TwoConsumers) {
       consumer1.result()->frame_results(),
       ::testing::UnorderedElementsAreArray({
           MakeFrameDump(
-              mojom::TextDumpEvent::kFirstLayout,
-              main_rfh()->GetGlobalFrameRoutingId(),
+              mojom::TextDumpEvent::kFirstLayout, main_rfh()->GetGlobalId(),
               /*amp_frame=*/false,
               web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
               u"abc"),
@@ -649,8 +644,7 @@ TEST_F(PageTextObserverTest, TwoConsumers) {
       consumer2.result()->frame_results(),
       ::testing::UnorderedElementsAreArray({
           MakeFrameDump(
-              mojom::TextDumpEvent::kFirstLayout,
-              main_rfh()->GetGlobalFrameRoutingId(),
+              mojom::TextDumpEvent::kFirstLayout, main_rfh()->GetGlobalId(),
               /*amp_frame=*/false,
               web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
               u"abc"),
@@ -704,8 +698,7 @@ TEST_F(PageTextObserverTest, RemoveConsumer) {
       consumer1.result()->frame_results(),
       ::testing::UnorderedElementsAreArray({
           MakeFrameDump(
-              mojom::TextDumpEvent::kFirstLayout,
-              main_rfh()->GetGlobalFrameRoutingId(),
+              mojom::TextDumpEvent::kFirstLayout, main_rfh()->GetGlobalId(),
               /*amp_frame=*/false,
               web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
               u"abc"),
@@ -763,14 +756,12 @@ TEST_F(PageTextObserverTest, TwoEventsRequested) {
       consumer1.result()->frame_results(),
       ::testing::UnorderedElementsAreArray({
           MakeFrameDump(
-              mojom::TextDumpEvent::kFirstLayout,
-              main_rfh()->GetGlobalFrameRoutingId(),
+              mojom::TextDumpEvent::kFirstLayout, main_rfh()->GetGlobalId(),
               /*amp_frame=*/false,
               web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
               u"abc"),
           MakeFrameDump(
-              mojom::TextDumpEvent::kFinishedLoad,
-              main_rfh()->GetGlobalFrameRoutingId(),
+              mojom::TextDumpEvent::kFinishedLoad, main_rfh()->GetGlobalId(),
               /*amp_frame=*/false,
               web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
               u"xyz"),
@@ -827,8 +818,7 @@ TEST_F(PageTextObserverTest, AbandonedRequest) {
       consumer1.result()->frame_results(),
       ::testing::UnorderedElementsAreArray({
           MakeFrameDump(
-              mojom::TextDumpEvent::kFirstLayout,
-              main_rfh()->GetGlobalFrameRoutingId(),
+              mojom::TextDumpEvent::kFirstLayout, main_rfh()->GetGlobalId(),
               /*amp_frame=*/false,
               web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
               u"abc"),
@@ -913,13 +903,12 @@ TEST_F(PageTextObserverTest, AMPRequestedOnOOPIF) {
       ::testing::UnorderedElementsAreArray({
           MakeFrameDump(
               mojom::TextDumpEvent::kFinishedLoad,
-              oopif_subframe->GetGlobalFrameRoutingId(),
+              oopif_subframe->GetGlobalId(),
               /*amp_frame=*/true,
               web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
               u"amp"),
           MakeFrameDump(
-              mojom::TextDumpEvent::kFirstLayout,
-              main_rfh()->GetGlobalFrameRoutingId(),
+              mojom::TextDumpEvent::kFirstLayout, main_rfh()->GetGlobalId(),
               /*amp_frame=*/false,
               web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
               u"abcdef"),
@@ -989,8 +978,7 @@ TEST_F(PageTextObserverTest, AMPNotRequestedOnOOPIF) {
       consumer.result()->frame_results(),
       ::testing::UnorderedElementsAreArray({
           MakeFrameDump(
-              mojom::TextDumpEvent::kFirstLayout,
-              main_rfh()->GetGlobalFrameRoutingId(),
+              mojom::TextDumpEvent::kFirstLayout, main_rfh()->GetGlobalId(),
               /*amp_frame=*/false,
               web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
               u"abcdef"),
@@ -1060,8 +1048,7 @@ TEST_F(PageTextObserverTest, AMPRequestedOnNonOOPIF) {
       consumer.result()->frame_results(),
       ::testing::UnorderedElementsAreArray({
           MakeFrameDump(
-              mojom::TextDumpEvent::kFirstLayout,
-              main_rfh()->GetGlobalFrameRoutingId(),
+              mojom::TextDumpEvent::kFirstLayout, main_rfh()->GetGlobalId(),
               /*amp_frame=*/false,
               web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
               u"abcdef"),

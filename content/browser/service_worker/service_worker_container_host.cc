@@ -213,12 +213,12 @@ void ServiceWorkerContainerHost::Register(
   // We record the requesting frame host and pass it down, so that we can use
   // this context for things like printing console error if the service worker
   // does not have a process yet.
-  GlobalFrameRoutingId requesting_frame_id;
+  GlobalRenderFrameHostId requesting_frame_id;
   FrameTreeNode* requesting_frame_tree_node =
       FrameTreeNode::GloballyFindByID(frame_tree_node_id());
   if (requesting_frame_tree_node)
-    requesting_frame_id = requesting_frame_tree_node->current_frame_host()
-                              ->GetGlobalFrameRoutingId();
+    requesting_frame_id =
+        requesting_frame_tree_node->current_frame_host()->GetGlobalId();
 
   // TODO(crbug.com/1199077): Update this when ServiceWorkerContainerHost
   // implements StorageKey.

@@ -321,7 +321,7 @@ void ChromeAuthenticatorRequestDelegate::RegisterProfilePrefs(
 
 ChromeAuthenticatorRequestDelegate::ChromeAuthenticatorRequestDelegate(
     content::RenderFrameHost* render_frame_host)
-    : render_frame_host_id_(render_frame_host->GetGlobalFrameRoutingId()) {
+    : render_frame_host_id_(render_frame_host->GetGlobalId()) {
   if (g_observer) {
     g_observer->Created(this);
   }

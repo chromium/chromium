@@ -33,7 +33,7 @@ class PresentationServiceDelegateObservers {
   virtual void RemoveObserver(int render_process_id, int render_frame_id);
 
  private:
-  std::map<content::GlobalFrameRoutingId,
+  std::map<content::GlobalRenderFrameHostId,
            content::PresentationServiceDelegate::Observer*>
       observers_;
 };

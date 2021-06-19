@@ -27,7 +27,7 @@ class CONTENT_EXPORT FixedFileSystemAccessPermissionGrant
   PermissionStatus GetStatus() override;
   base::FilePath GetPath() override;
   void RequestPermission(
-      GlobalFrameRoutingId frame_id,
+      GlobalRenderFrameHostId frame_id,
       UserActivationState user_activation_state,
       base::OnceCallback<void(PermissionRequestOutcome)> callback) override;
 

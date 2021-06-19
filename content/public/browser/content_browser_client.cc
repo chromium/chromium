@@ -401,7 +401,7 @@ void ContentBrowserClient::UpdateRendererPreferencesForWorker(
 void ContentBrowserClient::AllowWorkerFileSystem(
     const GURL& url,
     BrowserContext* browser_context,
-    const std::vector<GlobalFrameRoutingId>& render_frames,
+    const std::vector<GlobalRenderFrameHostId>& render_frames,
     base::OnceCallback<void(bool)> callback) {
   std::move(callback).Run(true);
 }
@@ -409,21 +409,21 @@ void ContentBrowserClient::AllowWorkerFileSystem(
 bool ContentBrowserClient::AllowWorkerIndexedDB(
     const GURL& url,
     BrowserContext* browser_context,
-    const std::vector<GlobalFrameRoutingId>& render_frames) {
+    const std::vector<GlobalRenderFrameHostId>& render_frames) {
   return true;
 }
 
 bool ContentBrowserClient::AllowWorkerCacheStorage(
     const GURL& url,
     BrowserContext* browser_context,
-    const std::vector<GlobalFrameRoutingId>& render_frames) {
+    const std::vector<GlobalRenderFrameHostId>& render_frames) {
   return true;
 }
 
 bool ContentBrowserClient::AllowWorkerWebLocks(
     const GURL& url,
     BrowserContext* browser_context,
-    const std::vector<GlobalFrameRoutingId>& render_frames) {
+    const std::vector<GlobalRenderFrameHostId>& render_frames) {
   return true;
 }
 

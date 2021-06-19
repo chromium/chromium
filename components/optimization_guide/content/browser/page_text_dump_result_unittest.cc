@@ -12,7 +12,7 @@
 namespace optimization_guide {
 
 TEST(FrameTextDumpResultTest, Preliminary) {
-  content::GlobalFrameRoutingId id(1, 2);
+  content::GlobalRenderFrameHostId id(1, 2);
   FrameTextDumpResult frame_result = FrameTextDumpResult::Initialize(
       mojom::TextDumpEvent::kFirstLayout, id,
       /*amp_frame=*/false, /*unique_navigation_id=*/1);
@@ -27,42 +27,42 @@ TEST(FrameTextDumpResultTest, Preliminary) {
 TEST(FrameTextDumpResultTest, Equality) {
   FrameTextDumpResult starting_frame_result =
       FrameTextDumpResult::Initialize(mojom::TextDumpEvent::kFirstLayout,
-                                      content::GlobalFrameRoutingId(1, 2),
+                                      content::GlobalRenderFrameHostId(1, 2),
                                       /*amp_frame=*/false,
                                       /*unique_navigation_id=*/0)
           .CompleteWithContents(u"abc");
 
   FrameTextDumpResult different_event =
       FrameTextDumpResult::Initialize(mojom::TextDumpEvent::kFinishedLoad,
-                                      content::GlobalFrameRoutingId(1, 2),
+                                      content::GlobalRenderFrameHostId(1, 2),
                                       /*amp_frame=*/false,
                                       /*unique_navigation_id=*/0)
           .CompleteWithContents(u"abc");
 
   FrameTextDumpResult different_id =
       FrameTextDumpResult::Initialize(mojom::TextDumpEvent::kFirstLayout,
-                                      content::GlobalFrameRoutingId(2, 1),
+                                      content::GlobalRenderFrameHostId(2, 1),
                                       /*amp_frame=*/false,
                                       /*unique_navigation_id=*/0)
           .CompleteWithContents(u"abc");
 
   FrameTextDumpResult different_amp_frame =
       FrameTextDumpResult::Initialize(mojom::TextDumpEvent::kFirstLayout,
-                                      content::GlobalFrameRoutingId(1, 2),
+                                      content::GlobalRenderFrameHostId(1, 2),
                                       /*amp_frame=*/true,
                                       /*unique_navigation_id=*/0)
           .CompleteWithContents(u"abc");
 
   FrameTextDumpResult different_contents =
       FrameTextDumpResult::Initialize(mojom::TextDumpEvent::kFirstLayout,
-                                      content::GlobalFrameRoutingId(1, 2),
+                                      content::GlobalRenderFrameHostId(1, 2),
                                       /*amp_frame=*/false,
                                       /*unique_navigation_id=*/0)
           .CompleteWithContents(u"abcd");
 
   FrameTextDumpResult different_nav_id =
       FrameTextDumpResult::Initialize(mojom::TextDumpEvent::kFirstLayout,
-                                      content::GlobalFrameRoutingId(1, 2),
+                                      content::GlobalRenderFrameHostId(1, 2),
                                       /*amp_frame=*/false,
                                       /*unique_navigation_id=*/1)
           .CompleteWithContents(u"abc");
@@ -82,35 +82,35 @@ TEST(FrameTextDumpResultTest, Equality) {
 TEST(FrameTextDumpResultTest, Ordering) {
   FrameTextDumpResult starting_frame_result =
       FrameTextDumpResult::Initialize(mojom::TextDumpEvent::kFirstLayout,
-                                      content::GlobalFrameRoutingId(1, 2),
+                                      content::GlobalRenderFrameHostId(1, 2),
                                       /*amp_frame=*/false,
                                       /*unique_navigation_id=*/0)
           .CompleteWithContents(u"abc");
 
   FrameTextDumpResult later_event_frame_result =
       FrameTextDumpResult::Initialize(mojom::TextDumpEvent::kFinishedLoad,
-                                      content::GlobalFrameRoutingId(1, 2),
+                                      content::GlobalRenderFrameHostId(1, 2),
                                       /*amp_frame=*/false,
                                       /*unique_navigation_id=*/0)
           .CompleteWithContents(u"abc");
 
   FrameTextDumpResult longer_frame_result =
       FrameTextDumpResult::Initialize(mojom::TextDumpEvent::kFirstLayout,
-                                      content::GlobalFrameRoutingId(1, 2),
+                                      content::GlobalRenderFrameHostId(1, 2),
                                       /*amp_frame=*/false,
                                       /*unique_navigation_id=*/0)
           .CompleteWithContents(u"abcd");
 
   FrameTextDumpResult amp_frame_result =
       FrameTextDumpResult::Initialize(mojom::TextDumpEvent::kFirstLayout,
-                                      content::GlobalFrameRoutingId(1, 2),
+                                      content::GlobalRenderFrameHostId(1, 2),
                                       /*amp_frame=*/true,
                                       /*unique_navigation_id=*/0)
           .CompleteWithContents(u"abc");
 
   FrameTextDumpResult longer_amp_frame_result =
       FrameTextDumpResult::Initialize(mojom::TextDumpEvent::kFirstLayout,
-                                      content::GlobalFrameRoutingId(1, 2),
+                                      content::GlobalRenderFrameHostId(1, 2),
                                       /*amp_frame=*/true,
                                       /*unique_navigation_id=*/0)
           .CompleteWithContents(u"abcd");
@@ -139,7 +139,7 @@ TEST(PageTextDumpResultTest, OneAMP) {
   PageTextDumpResult page_result;
   page_result.AddFrameTextDumpResult(
       FrameTextDumpResult::Initialize(mojom::TextDumpEvent::kFinishedLoad,
-                                      content::GlobalFrameRoutingId(2, 1),
+                                      content::GlobalRenderFrameHostId(2, 1),
                                       /*amp_frame=*/true,
                                       /*unique_navigation_id=*/0)
           .CompleteWithContents(u"amp frame"));
@@ -157,7 +157,7 @@ TEST(PageTextDumpResultTest, OneMainframe) {
   PageTextDumpResult page_result;
   page_result.AddFrameTextDumpResult(
       FrameTextDumpResult::Initialize(mojom::TextDumpEvent::kFirstLayout,
-                                      content::GlobalFrameRoutingId(1, 2),
+                                      content::GlobalRenderFrameHostId(1, 2),
                                       /*amp_frame=*/false,
                                       /*unique_navigation_id=*/0)
           .CompleteWithContents(u"mainframe"));
@@ -175,14 +175,14 @@ TEST(PageTextDumpResultTest, OneAMPOneMF) {
   PageTextDumpResult page_result;
   page_result.AddFrameTextDumpResult(
       FrameTextDumpResult::Initialize(mojom::TextDumpEvent::kFirstLayout,
-                                      content::GlobalFrameRoutingId(1, 2),
+                                      content::GlobalRenderFrameHostId(1, 2),
                                       /*amp_frame=*/false,
                                       /*unique_navigation_id=*/0)
           .CompleteWithContents(u"mainframe"));
 
   page_result.AddFrameTextDumpResult(
       FrameTextDumpResult::Initialize(mojom::TextDumpEvent::kFinishedLoad,
-                                      content::GlobalFrameRoutingId(2, 1),
+                                      content::GlobalRenderFrameHostId(2, 1),
                                       /*amp_frame=*/true,
                                       /*unique_navigation_id=*/0)
           .CompleteWithContents(u"amp frame"));

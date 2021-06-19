@@ -1022,7 +1022,7 @@ class StoragePartitionImpl::ServiceWorkerCookieAccessObserver
   static void OnServiceWorkerCookiesAccessedOnCoreThread(
       scoped_refptr<ServiceWorkerContextWrapper> service_worker_context,
       network::mojom::CookieAccessDetailsPtr details) {
-    std::vector<GlobalFrameRoutingId> destinations =
+    std::vector<GlobalRenderFrameHostId> destinations =
         *service_worker_context->GetWindowClientFrameRoutingIds(
             blink::StorageKey(url::Origin::Create(details->url)));
     if (destinations.empty())
@@ -1034,9 +1034,9 @@ class StoragePartitionImpl::ServiceWorkerCookieAccessObserver
   }
 
   static void ReportCookiesAccessedOnUI(
-      std::vector<GlobalFrameRoutingId> destinations,
+      std::vector<GlobalRenderFrameHostId> destinations,
       network::mojom::CookieAccessDetailsPtr details) {
-    for (GlobalFrameRoutingId frame_id : destinations) {
+    for (GlobalRenderFrameHostId frame_id : destinations) {
       if (RenderFrameHostImpl* rfh = RenderFrameHostImpl::FromID(frame_id)) {
         rfh->OnCookiesAccessed(mojo::Clone(details));
       }

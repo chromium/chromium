@@ -85,7 +85,7 @@ class CONTENT_EXPORT BackForwardCache {
   // Helper function to be used when it is not always possible to guarantee the
   // |render_frame_host| to be still alive when this is called. In this case,
   // its |id| can be used.
-  static void DisableForRenderFrameHost(GlobalFrameRoutingId id,
+  static void DisableForRenderFrameHost(GlobalRenderFrameHostId id,
                                         DisabledReason reason);
 
   // List of reasons the BackForwardCache was disabled for a specific test. If a

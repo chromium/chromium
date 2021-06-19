@@ -918,14 +918,14 @@ bool BackForwardCache::IsBackForwardCacheFeatureEnabled() {
 void BackForwardCache::DisableForRenderFrameHost(
     RenderFrameHost* render_frame_host,
     BackForwardCache::DisabledReason reason) {
-  DisableForRenderFrameHost(static_cast<RenderFrameHostImpl*>(render_frame_host)
-                                ->GetGlobalFrameRoutingId(),
-                            reason);
+  DisableForRenderFrameHost(
+      static_cast<RenderFrameHostImpl*>(render_frame_host)->GetGlobalId(),
+      reason);
 }
 
 // static
 void BackForwardCache::DisableForRenderFrameHost(
-    GlobalFrameRoutingId id,
+    GlobalRenderFrameHostId id,
     BackForwardCache::DisabledReason reason) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (g_bfcache_disabled_test_observer)

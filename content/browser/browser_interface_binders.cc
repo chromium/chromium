@@ -340,8 +340,7 @@ void BindNativeIOHost(
 void BindSharedWorkerConnector(
     RenderFrameHostImpl* host,
     mojo::PendingReceiver<blink::mojom::SharedWorkerConnector> receiver) {
-  SharedWorkerConnectorImpl::Create(host->GetGlobalFrameRoutingId(),
-                                    std::move(receiver));
+  SharedWorkerConnectorImpl::Create(host->GetGlobalId(), std::move(receiver));
 }
 
 #if defined(OS_ANDROID)
@@ -581,9 +580,9 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
       [](RenderFrameHostImpl* host,
          mojo::PendingReceiver<blink::mojom::ContentSecurityNotifier>
              receiver) {
-        mojo::MakeSelfOwnedReceiver(std::make_unique<ContentSecurityNotifier>(
-                                        host->GetGlobalFrameRoutingId()),
-                                    std::move(receiver));
+        mojo::MakeSelfOwnedReceiver(
+            std::make_unique<ContentSecurityNotifier>(host->GetGlobalId()),
+            std::move(receiver));
       },
       base::Unretained(host)));
 

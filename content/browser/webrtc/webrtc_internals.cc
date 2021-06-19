@@ -154,7 +154,7 @@ WebRTCInternals* WebRTCInternals::GetInstance() {
   return g_webrtc_internals;
 }
 
-void WebRTCInternals::OnPeerConnectionAdded(GlobalFrameRoutingId frame_id,
+void WebRTCInternals::OnPeerConnectionAdded(GlobalRenderFrameHostId frame_id,
                                             int lid,
                                             ProcessId pid,
                                             const string& url,
@@ -187,7 +187,7 @@ void WebRTCInternals::OnPeerConnectionAdded(GlobalFrameRoutingId frame_id,
   }
 }
 
-void WebRTCInternals::OnPeerConnectionRemoved(GlobalFrameRoutingId frame_id,
+void WebRTCInternals::OnPeerConnectionRemoved(GlobalRenderFrameHostId frame_id,
                                               int lid) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -205,7 +205,7 @@ void WebRTCInternals::OnPeerConnectionRemoved(GlobalFrameRoutingId frame_id,
   }
 }
 
-void WebRTCInternals::OnPeerConnectionUpdated(GlobalFrameRoutingId frame_id,
+void WebRTCInternals::OnPeerConnectionUpdated(GlobalRenderFrameHostId frame_id,
                                               int lid,
                                               const string& type,
                                               const string& value) {
@@ -252,7 +252,7 @@ void WebRTCInternals::OnPeerConnectionUpdated(GlobalFrameRoutingId frame_id,
   EnsureLogList(&*it)->Append(std::move(log_entry));
 }
 
-void WebRTCInternals::OnAddStandardStats(GlobalFrameRoutingId frame_id,
+void WebRTCInternals::OnAddStandardStats(GlobalRenderFrameHostId frame_id,
                                          int lid,
                                          base::Value value) {
   if (observers_.empty())
@@ -267,7 +267,7 @@ void WebRTCInternals::OnAddStandardStats(GlobalFrameRoutingId frame_id,
   SendUpdate("add-standard-stats", std::move(dict));
 }
 
-void WebRTCInternals::OnAddLegacyStats(GlobalFrameRoutingId frame_id,
+void WebRTCInternals::OnAddLegacyStats(GlobalRenderFrameHostId frame_id,
                                        int lid,
                                        base::Value value) {
   if (observers_.empty())
@@ -282,7 +282,7 @@ void WebRTCInternals::OnAddLegacyStats(GlobalFrameRoutingId frame_id,
   SendUpdate("add-legacy-stats", std::move(dict));
 }
 
-void WebRTCInternals::OnGetUserMedia(GlobalFrameRoutingId frame_id,
+void WebRTCInternals::OnGetUserMedia(GlobalRenderFrameHostId frame_id,
                                      base::ProcessId pid,
                                      const std::string& origin,
                                      bool audio,
@@ -666,7 +666,7 @@ void WebRTCInternals::ProcessPendingUpdates() {
 }
 
 base::CheckedContiguousIterator<base::Value> WebRTCInternals::FindRecord(
-    GlobalFrameRoutingId frame_id,
+    GlobalRenderFrameHostId frame_id,
     int lid) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 

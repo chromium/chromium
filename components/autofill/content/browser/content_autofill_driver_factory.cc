@@ -176,7 +176,7 @@ void ContentAutofillDriverFactory::DidStartNavigation(
       navigation_handle->IsRendererInitiated() &&
       !navigation_handle->WasInitiatedByLinkClick() &&
       navigation_handle->IsInMainFrame()) {
-    content::GlobalFrameRoutingId id =
+    content::GlobalRenderFrameHostId id =
         navigation_handle->GetPreviousRenderFrameHostId();
     content::RenderFrameHost* render_frame_host =
         content::RenderFrameHost::FromID(id);
@@ -218,7 +218,7 @@ void ContentAutofillDriverFactory::ReadyToCommitNavigation(
     content::NavigationHandle* navigation_handle) {
   content::RenderFrameHost* render_frame_host =
       navigation_handle->GetRenderFrameHost();
-  content::GlobalFrameRoutingId render_frame_host_id(
+  content::GlobalRenderFrameHostId render_frame_host_id(
       render_frame_host->GetProcess()->GetID(),
       render_frame_host->GetRoutingID());
   // No need to report the metrics here if navigating to a different

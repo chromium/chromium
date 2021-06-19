@@ -79,8 +79,8 @@ class MediaSessionControllersManagerTest
 
     RenderViewHostImplTestHarness::SetUp();
 
-    GlobalFrameRoutingId frame_routing_id =
-        contents()->GetMainFrame()->GetGlobalFrameRoutingId();
+    GlobalRenderFrameHostId frame_routing_id =
+        contents()->GetMainFrame()->GetGlobalId();
     media_player_id_ = MediaPlayerId(frame_routing_id, 1);
     media_player_id2_ = MediaPlayerId(frame_routing_id, 2);
     manager_ = std::make_unique<MediaSessionControllersManager>(contents());

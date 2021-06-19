@@ -98,7 +98,7 @@ class Origin;
 namespace content {
 
 class BrowserContext;
-struct GlobalFrameRoutingId;
+struct GlobalRenderFrameHostId;
 class RenderProcessHost;
 class RenderViewHost;
 class RenderWidgetHost;
@@ -110,7 +110,7 @@ class Page;
 
 // The interface provides a communication conduit with a frame in the renderer.
 // The preferred way to keep a reference to a RenderFrameHost is storing a
-// GlobalFrameRoutingId and using RenderFrameHost::FromID() when you need to
+// GlobalRenderFrameHostId and using RenderFrameHost::FromID() when you need to
 // access it.
 class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
                                        public IPC::Sender {
@@ -120,7 +120,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
 
   // Returns the RenderFrameHost given its ID and the ID of its render process.
   // Returns nullptr if the IDs do not correspond to a live RenderFrameHost.
-  static RenderFrameHost* FromID(const GlobalFrameRoutingId& id);
+  static RenderFrameHost* FromID(const GlobalRenderFrameHostId& id);
   static RenderFrameHost* FromID(int render_process_id, int render_frame_id);
 
   // Returns the RenderFrameHost given its frame token and its process
@@ -189,9 +189,9 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // Associated RenderProcessHost never changes.
   virtual RenderProcessHost* GetProcess() = 0;
 
-  // Returns the GlobalFrameRoutingId for this frame. Embedders should store
+  // Returns the GlobalRenderFrameHostId for this frame. Embedders should store
   // this instead of a raw RenderFrameHost pointer.
-  virtual GlobalFrameRoutingId GetGlobalFrameRoutingId() = 0;
+  virtual GlobalRenderFrameHostId GetGlobalId() = 0;
 
   // Returns a StoragePartition associated with this RenderFrameHost.
   // Associated StoragePartition never changes.

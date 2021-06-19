@@ -124,7 +124,7 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
   void Destruct();
 
   void AddClient(mojo::PendingRemote<blink::mojom::SharedWorkerClient> client,
-                 GlobalFrameRoutingId client_render_frame_host_id,
+                 GlobalRenderFrameHostId client_render_frame_host_id,
                  const blink::MessagePortChannel& port,
                  ukm::SourceId client_ukm_source_id);
 
@@ -191,11 +191,11 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
   struct ClientInfo {
     ClientInfo(mojo::Remote<blink::mojom::SharedWorkerClient> client,
                int connection_request_id,
-               GlobalFrameRoutingId render_frame_host_id);
+               GlobalRenderFrameHostId render_frame_host_id);
     ~ClientInfo();
     mojo::Remote<blink::mojom::SharedWorkerClient> client;
     const int connection_request_id;
-    const GlobalFrameRoutingId render_frame_host_id;
+    const GlobalRenderFrameHostId render_frame_host_id;
   };
 
   using ClientList = std::list<ClientInfo>;
@@ -213,7 +213,7 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
   void RenderProcessHostDestroyed() override;
 
   // Returns the frame ids of this worker's clients.
-  std::vector<GlobalFrameRoutingId> GetRenderFrameIDsForWorker();
+  std::vector<GlobalRenderFrameHostId> GetRenderFrameIDsForWorker();
 
   void AllowFileSystemResponse(base::OnceCallback<void(bool)> callback,
                                bool allowed);

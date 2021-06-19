@@ -58,24 +58,25 @@ class CONTENT_EXPORT WebRTCInternals : public PeerConnectionTrackerHostObserver,
   ~WebRTCInternals() override;
 
   // PeerConnectionTrackerHostObserver implementation.
-  void OnPeerConnectionAdded(GlobalFrameRoutingId frame_id,
+  void OnPeerConnectionAdded(GlobalRenderFrameHostId frame_id,
                              int lid,
                              base::ProcessId pid,
                              const std::string& url,
                              const std::string& rtc_configuration,
                              const std::string& constraints) override;
-  void OnPeerConnectionRemoved(GlobalFrameRoutingId frame_id, int lid) override;
-  void OnPeerConnectionUpdated(GlobalFrameRoutingId frame_id,
+  void OnPeerConnectionRemoved(GlobalRenderFrameHostId frame_id,
+                               int lid) override;
+  void OnPeerConnectionUpdated(GlobalRenderFrameHostId frame_id,
                                int lid,
                                const std::string& type,
                                const std::string& value) override;
-  void OnAddStandardStats(GlobalFrameRoutingId frame_id,
+  void OnAddStandardStats(GlobalRenderFrameHostId frame_id,
                           int lid,
                           base::Value value) override;
-  void OnAddLegacyStats(GlobalFrameRoutingId frame_id,
+  void OnAddLegacyStats(GlobalRenderFrameHostId frame_id,
                         int lid,
                         base::Value value) override;
-  void OnGetUserMedia(GlobalFrameRoutingId frame_id,
+  void OnGetUserMedia(GlobalRenderFrameHostId frame_id,
                       base::ProcessId pid,
                       const std::string& origin,
                       bool audio,
@@ -176,7 +177,7 @@ class CONTENT_EXPORT WebRTCInternals : public PeerConnectionTrackerHostObserver,
   // Returns an iterator for peer_connection_data_.GetList (an end() iterator
   // if not found).
   base::CheckedContiguousIterator<base::Value> FindRecord(
-      GlobalFrameRoutingId frame_id,
+      GlobalRenderFrameHostId frame_id,
       int lid);
 
   base::ObserverList<WebRTCInternalsUIObserver>::Unchecked observers_;

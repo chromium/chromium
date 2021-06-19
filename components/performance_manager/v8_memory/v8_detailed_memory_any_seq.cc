@@ -183,7 +183,7 @@ void V8DetailedMemoryRequestOneShotAnySeq::OnMeasurementAvailable(
   DCHECK(process_node);
   DCHECK_ON_GRAPH_SEQUENCE(process_node->GetGraph());
 
-  using FrameAndData = std::pair<content::GlobalFrameRoutingId,
+  using FrameAndData = std::pair<content::GlobalRenderFrameHostId,
                                  V8DetailedMemoryExecutionContextData>;
   std::vector<FrameAndData> all_frame_data;
   process_node->VisitFrameNodes(base::BindRepeating(

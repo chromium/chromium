@@ -43,7 +43,7 @@ class AndroidPaymentApp : public PaymentApp {
       const std::string& payment_request_id,
       std::unique_ptr<AndroidAppDescription> description,
       base::WeakPtr<AndroidAppCommunication> communication,
-      content::GlobalFrameRoutingId frame_routing_id);
+      content::GlobalRenderFrameHostId frame_routing_id);
   ~AndroidPaymentApp() override;
 
   AndroidPaymentApp(const AndroidPaymentApp& other) = delete;
@@ -92,7 +92,7 @@ class AndroidPaymentApp : public PaymentApp {
   const std::string payment_request_id_;
   const std::unique_ptr<AndroidAppDescription> description_;
   base::WeakPtr<AndroidAppCommunication> communication_;
-  content::GlobalFrameRoutingId frame_routing_id_;
+  content::GlobalRenderFrameHostId frame_routing_id_;
 
   // Token used to uniquely identify a particular payment app instance between
   // Android and Chrome.

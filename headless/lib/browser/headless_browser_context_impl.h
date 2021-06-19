@@ -128,7 +128,7 @@ class HEADLESS_EXPORT HeadlessBrowserContextImpl final
   // TODO(alexclarke): Remove if we can add DevTools frame token ID to
   // ResourceRequestInfo. See https://crbug.com/715541
   mutable base::Lock devtools_frame_token_map_lock_;
-  base::flat_map<content::GlobalFrameRoutingId, base::UnguessableToken>
+  base::flat_map<content::GlobalRenderFrameHostId, base::UnguessableToken>
       devtools_frame_token_map_;
   base::flat_map<int, base::UnguessableToken>
       frame_tree_node_id_to_devtools_frame_token_map_;

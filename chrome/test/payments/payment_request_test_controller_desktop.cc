@@ -60,7 +60,7 @@ class ChromePaymentRequestTestDelegate : public ChromePaymentRequestDelegate {
                                    bool has_authenticator,
                                    PaymentUIObserver* ui_observer_for_test)
       : ChromePaymentRequestDelegate(render_frame_host),
-        frame_routing_id_(content::GlobalFrameRoutingId(
+        frame_routing_id_(content::GlobalRenderFrameHostId(
             render_frame_host->GetProcess()->GetID(),
             render_frame_host->GetRoutingID())),
         is_off_the_record_(is_off_the_record),
@@ -89,7 +89,7 @@ class ChromePaymentRequestTestDelegate : public ChromePaymentRequestDelegate {
   }
 
  private:
-  content::GlobalFrameRoutingId frame_routing_id_;
+  content::GlobalRenderFrameHostId frame_routing_id_;
   const bool is_off_the_record_;
   const bool valid_ssl_;
   PrefService* const prefs_;

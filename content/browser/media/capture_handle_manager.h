@@ -38,7 +38,7 @@ class CONTENT_EXPORT CaptureHandleManager {
   void OnTabCaptureStarted(
       const std::string& label,
       const blink::MediaStreamDevice& captured_device,
-      GlobalFrameRoutingId capturer,
+      GlobalRenderFrameHostId capturer,
       DeviceCaptureHandleChangeCallback handle_change_callback);
 
   // Stops tracking a previously tracked capture session.
@@ -51,7 +51,7 @@ class CONTENT_EXPORT CaptureHandleManager {
   void OnTabCaptureDevicesUpdated(
       const std::string& label,
       const std::vector<blink::MediaStreamDevice>& new_devices,
-      GlobalFrameRoutingId capturer,
+      GlobalRenderFrameHostId capturer,
       DeviceCaptureHandleChangeCallback handle_change_callback);
 
  private:

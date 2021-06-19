@@ -67,7 +67,7 @@ ServiceWorkerNewScriptFetcher::ServiceWorkerNewScriptFetcher(
     scoped_refptr<ServiceWorkerVersion> version,
     scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
     blink::mojom::FetchClientSettingsObjectPtr fetch_client_settings_object,
-    const GlobalFrameRoutingId& requesting_frame_id)
+    const GlobalRenderFrameHostId& requesting_frame_id)
     : context_(context),
       version_(std::move(version)),
       loader_factory_(std::move(loader_factory)),

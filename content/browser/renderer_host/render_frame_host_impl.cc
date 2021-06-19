@@ -386,9 +386,9 @@ bool g_allow_injecting_javascript = false;
 
 const char kDotGoogleDotCom[] = ".google.com";
 
-typedef std::unordered_map<GlobalFrameRoutingId,
+typedef std::unordered_map<GlobalRenderFrameHostId,
                            RenderFrameHostImpl*,
-                           GlobalFrameRoutingIdHasher>
+                           GlobalRenderFrameHostIdHasher>
     RoutingIDFrameMap;
 base::LazyInstance<RoutingIDFrameMap>::DestructorAtExit g_routing_id_frame_map =
     LAZY_INSTANCE_INITIALIZER;
@@ -1241,7 +1241,7 @@ PendingNavigation::PendingNavigation(
       navigation_client(std::move(navigation_client)) {}
 
 // static
-RenderFrameHost* RenderFrameHost::FromID(const GlobalFrameRoutingId& id) {
+RenderFrameHost* RenderFrameHost::FromID(const GlobalRenderFrameHostId& id) {
   return RenderFrameHostImpl::FromID(id);
 }
 
@@ -1249,7 +1249,7 @@ RenderFrameHost* RenderFrameHost::FromID(const GlobalFrameRoutingId& id) {
 RenderFrameHost* RenderFrameHost::FromID(int render_process_id,
                                          int render_frame_id) {
   return RenderFrameHostImpl::FromID(
-      GlobalFrameRoutingId(render_process_id, render_frame_id));
+      GlobalRenderFrameHostId(render_process_id, render_frame_id));
 }
 
 // static
@@ -1265,7 +1265,7 @@ void RenderFrameHost::AllowInjectingJavaScript() {
 }
 
 // static
-RenderFrameHostImpl* RenderFrameHostImpl::FromID(GlobalFrameRoutingId id) {
+RenderFrameHostImpl* RenderFrameHostImpl::FromID(GlobalRenderFrameHostId id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   RoutingIDFrameMap* frames = g_routing_id_frame_map.Pointer();
   auto it = frames->find(id);
@@ -1276,7 +1276,7 @@ RenderFrameHostImpl* RenderFrameHostImpl::FromID(GlobalFrameRoutingId id) {
 RenderFrameHostImpl* RenderFrameHostImpl::FromID(int render_process_id,
                                                  int render_frame_id) {
   return RenderFrameHostImpl::FromID(
-      GlobalFrameRoutingId(render_process_id, render_frame_id));
+      GlobalRenderFrameHostId(render_process_id, render_frame_id));
 }
 
 // static
@@ -1374,7 +1374,7 @@ RenderFrameHostImpl::RenderFrameHostImpl(
 
   GetAgentSchedulingGroup().AddRoute(routing_id_, this);
   g_routing_id_frame_map.Get().emplace(
-      GlobalFrameRoutingId(GetProcess()->GetID(), routing_id_), this);
+      GlobalRenderFrameHostId(GetProcess()->GetID(), routing_id_), this);
   g_token_frame_map.Get().insert(std::make_pair(frame_token_, this));
   site_instance_->AddObserver(this);
   GetProcess()->AddObserver(this);
@@ -1484,7 +1484,7 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
   // calling any delegates/observers, so that any calls to |FromID| no longer
   // return |this|.
   g_routing_id_frame_map.Get().erase(
-      GlobalFrameRoutingId(GetProcess()->GetID(), routing_id_));
+      GlobalRenderFrameHostId(GetProcess()->GetID(), routing_id_));
 
   // When a RenderFrameHostImpl is deleted, it may still contain children. This
   // can happen with the unload timer. It causes a RenderFrameHost to delete
@@ -3873,8 +3873,8 @@ RenderWidgetHostView* RenderFrameHostImpl::GetView() {
   return GetRenderWidgetHost()->GetView();
 }
 
-GlobalFrameRoutingId RenderFrameHostImpl::GetGlobalFrameRoutingId() {
-  return GlobalFrameRoutingId(GetProcess()->GetID(), GetRoutingID());
+GlobalRenderFrameHostId RenderFrameHostImpl::GetGlobalId() {
+  return GlobalRenderFrameHostId(GetProcess()->GetID(), GetRoutingID());
 }
 
 bool RenderFrameHostImpl::HasPendingCommitNavigation() const {
@@ -8530,7 +8530,7 @@ void RenderFrameHostImpl::GetFeatureObserver(
     if (!client)
       return;
     feature_observer_ = std::make_unique<FeatureObserver>(
-        client, GlobalFrameRoutingId(GetProcess()->GetID(), routing_id_));
+        client, GlobalRenderFrameHostId(GetProcess()->GetID(), routing_id_));
   }
   feature_observer_->GetFeatureObserver(std::move(receiver));
 }
@@ -8718,9 +8718,9 @@ void RenderFrameHostImpl::CreateDedicatedWorkerHostFactory(
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<DedicatedWorkerHostFactoryImpl>(
           worker_process_id,
-          /*creator_render_frame_host_id=*/GetGlobalFrameRoutingId(),
+          /*creator_render_frame_host_id=*/GetGlobalId(),
           /*creator_worker_token=*/absl::nullopt,
-          /*ancestor_render_frame_host_id=*/GetGlobalFrameRoutingId(),
+          /*ancestor_render_frame_host_id=*/GetGlobalId(),
           last_committed_origin_, isolation_info_,
           cross_origin_embedder_policy_,
           /*creator_coep_reporter=*/coep_reporter,
@@ -8963,7 +8963,7 @@ void RenderFrameHostImpl::GetFontAccessManager(
   static_cast<StoragePartitionImpl*>(GetProcess()->GetStoragePartition())
       ->GetFontAccessManager()
       ->BindReceiver(FontAccessManagerImpl::BindingContext(
-                         GetLastCommittedOrigin(), GetGlobalFrameRoutingId()),
+                         GetLastCommittedOrigin(), GetGlobalId()),
                      std::move(receiver));
 }
 
@@ -8971,7 +8971,7 @@ void RenderFrameHostImpl::BindComputePressureHost(
     mojo::PendingReceiver<blink::mojom::ComputePressureHost> receiver) {
   static_cast<StoragePartitionImpl*>(GetProcess()->GetStoragePartition())
       ->GetComputePressureManager()
-      ->BindReceiver(GetLastCommittedOrigin(), GetGlobalFrameRoutingId(),
+      ->BindReceiver(GetLastCommittedOrigin(), GetGlobalId(),
                      std::move(receiver));
 }
 
@@ -8981,10 +8981,10 @@ void RenderFrameHostImpl::GetFileSystemAccessManager(
   auto* storage_partition =
       static_cast<StoragePartitionImpl*>(GetProcess()->GetStoragePartition());
   auto* manager = storage_partition->GetFileSystemAccessManager();
-  manager->BindReceiver(FileSystemAccessManagerImpl::BindingContext(
-                            GetLastCommittedOrigin(), GetLastCommittedURL(),
-                            GetGlobalFrameRoutingId()),
-                        std::move(receiver));
+  manager->BindReceiver(
+      FileSystemAccessManagerImpl::BindingContext(
+          GetLastCommittedOrigin(), GetLastCommittedURL(), GetGlobalId()),
+      std::move(receiver));
 }
 
 void RenderFrameHostImpl::CreateLockManager(

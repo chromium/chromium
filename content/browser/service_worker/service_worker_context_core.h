@@ -141,7 +141,7 @@ class CONTENT_EXPORT ServiceWorkerContextCore
   void OnControlleeNavigationCommitted(
       ServiceWorkerVersion* version,
       const std::string& client_uuid,
-      GlobalFrameRoutingId render_frame_host_id);
+      GlobalRenderFrameHostId render_frame_host_id);
 
   // Called when all controllees are removed.
   // Note regarding BackForwardCache integration:
@@ -242,7 +242,7 @@ class CONTENT_EXPORT ServiceWorkerContextCore
       blink::mojom::FetchClientSettingsObjectPtr
           outside_fetch_client_settings_object,
       RegistrationCallback callback,
-      const GlobalFrameRoutingId& requesting_frame_id);
+      const GlobalRenderFrameHostId& requesting_frame_id);
 
   // If `is_immediate` is true, unregister clears the active worker from the
   // registration without waiting for the controlled clients to unload.

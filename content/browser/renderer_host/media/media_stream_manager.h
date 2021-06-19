@@ -605,7 +605,7 @@ class CONTENT_EXPORT MediaStreamManager
   void MaybeStartTrackingCaptureHandleConfig(
       const std::string& label,
       const blink::MediaStreamDevice& captured_device,
-      GlobalFrameRoutingId capturer);
+      GlobalRenderFrameHostId capturer);
 
   // Stop tracking capture-handle changes for tab-capture.
   void MaybeStopTrackingCaptureHandleConfig(
@@ -616,7 +616,7 @@ class CONTENT_EXPORT MediaStreamManager
   void MaybeUpdateTrackedCaptureHandleConfigs(
       const std::string& label,
       const blink::MediaStreamDevices& new_devices,
-      GlobalFrameRoutingId capturer);
+      GlobalRenderFrameHostId capturer);
 
   // Receive a new capture-handle from the CaptureHandleManager.
   void OnCaptureHandleChange(const std::string& label,

@@ -39,7 +39,7 @@ class ComputePressureHostTest : public RenderViewHostImplTestHarness {
     host_impl_ = std::move(new_host);
     int process_id = main_rfh()->GetProcess()->GetID();
     int routing_id = main_rfh()->GetRoutingID();
-    main_frame_id_ = GlobalFrameRoutingId(process_id, routing_id);
+    main_frame_id_ = GlobalRenderFrameHostId(process_id, routing_id);
 
     host_.reset();
     host_impl_->BindReceiver(main_frame_id_,
@@ -63,7 +63,7 @@ class ComputePressureHostTest : public RenderViewHostImplTestHarness {
       {0.2, 0.5, 0.8},
       {0.5}};
 
-  GlobalFrameRoutingId main_frame_id_;
+  GlobalRenderFrameHostId main_frame_id_;
   // This member is a std::unique_ptr instead of a plain ComputePressureHost
   // so it can be replaced inside tests.
   std::unique_ptr<ComputePressureHost> host_impl_;
@@ -286,8 +286,8 @@ TEST_F(ComputePressureHostTest, AddObserver_NoVisibility) {
 }
 
 TEST_F(ComputePressureHostTest, AddObserver_InvalidFrame) {
-  GlobalFrameRoutingId invalid_routing_id(main_rfh()->GetProcess()->GetID() + 1,
-                                          main_rfh()->GetRoutingID() + 1);
+  GlobalRenderFrameHostId invalid_routing_id(
+      main_rfh()->GetProcess()->GetID() + 1, main_rfh()->GetRoutingID() + 1);
   mojo::Remote<blink::mojom::ComputePressureHost> host_invalid;
   host_impl_->BindReceiver(invalid_routing_id,
                            host_invalid.BindNewPipeAndPassReceiver());

@@ -49,10 +49,10 @@ class PerProfileWorkerTaskTracker
   void OnWorkerCreated(
       const blink::DedicatedWorkerToken& worker_token,
       int worker_process_id,
-      content::GlobalFrameRoutingId ancestor_render_frame_host_id) override;
+      content::GlobalRenderFrameHostId ancestor_render_frame_host_id) override;
   void OnBeforeWorkerDestroyed(
       const blink::DedicatedWorkerToken& worker_token,
-      content::GlobalFrameRoutingId ancestor_render_frame_host_id) override;
+      content::GlobalRenderFrameHostId ancestor_render_frame_host_id) override;
   void OnFinalResponseURLDetermined(
       const blink::DedicatedWorkerToken& worker_token,
       const GURL& url) override;
@@ -68,10 +68,10 @@ class PerProfileWorkerTaskTracker
       const GURL& url) override;
   void OnClientAdded(
       const blink::SharedWorkerToken& shared_worker_token,
-      content::GlobalFrameRoutingId render_frame_host_id) override {}
+      content::GlobalRenderFrameHostId render_frame_host_id) override {}
   void OnClientRemoved(
       const blink::SharedWorkerToken& shared_worker_token,
-      content::GlobalFrameRoutingId render_frame_host_id) override {}
+      content::GlobalRenderFrameHostId render_frame_host_id) override {}
 
   // content::ServiceWorkerContextObserver:
   void OnVersionStartedRunning(

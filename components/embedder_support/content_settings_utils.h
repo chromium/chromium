@@ -52,21 +52,21 @@ bool AllowSharedWorker(const GURL& worker_url,
 // settings of file system access.
 bool AllowWorkerFileSystem(
     const GURL& url,
-    const std::vector<content::GlobalFrameRoutingId>& render_frames,
+    const std::vector<content::GlobalRenderFrameHostId>& render_frames,
     const content_settings::CookieSettings* cookie_settings);
 
 // See ContentBrowserClient::AllowWorkerIndexedDB. This also notifies content
 // settings of Indexed DB access.
 bool AllowWorkerIndexedDB(
     const GURL& url,
-    const std::vector<content::GlobalFrameRoutingId>& render_frames,
+    const std::vector<content::GlobalRenderFrameHostId>& render_frames,
     const content_settings::CookieSettings* cookie_settings);
 
 // See ContentBrowserClient::AllowWorkerCacheStorage. This also notifies content
 // settings of cache storage access.
 bool AllowWorkerCacheStorage(
     const GURL& url,
-    const std::vector<content::GlobalFrameRoutingId>& render_frames,
+    const std::vector<content::GlobalRenderFrameHostId>& render_frames,
     const content_settings::CookieSettings* cookie_settings);
 
 // See ContentBrowserClient::AllowWorkerWebLocks.

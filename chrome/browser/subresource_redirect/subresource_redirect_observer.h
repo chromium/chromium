@@ -95,7 +95,7 @@ class SubresourceRedirectObserver
   // |optimization_metadata| will be sent to the render frame host as specified
   // by |render_frame_host_routing_id| to later be compressed.
   void OnResourceLoadingImageHintsReceived(
-      content::GlobalFrameRoutingId render_frame_host_routing_id,
+      content::GlobalRenderFrameHostId render_frame_host_routing_id,
       optimization_guide::OptimizationGuideDecision decision,
       const optimization_guide::OptimizationMetadata& optimization_metadata);
 

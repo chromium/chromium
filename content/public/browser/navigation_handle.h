@@ -40,7 +40,7 @@ class ProxyServer;
 }  // namespace net
 
 namespace content {
-struct GlobalFrameRoutingId;
+struct GlobalRenderFrameHostId;
 struct GlobalRequestID;
 class NavigationEntry;
 class NavigationThrottle;
@@ -251,7 +251,7 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // same RenderFrameHost.
   // Note: This is not guaranteed to refer to a RenderFrameHost that still
   // exists.
-  virtual GlobalFrameRoutingId GetPreviousRenderFrameHostId() = 0;
+  virtual GlobalRenderFrameHostId GetPreviousRenderFrameHostId() = 0;
 
   // Whether the navigation happened without changing document. Examples of
   // same document navigations are:

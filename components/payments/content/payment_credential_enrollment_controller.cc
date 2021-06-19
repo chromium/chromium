@@ -46,7 +46,7 @@ PaymentCredentialEnrollmentController::
     ~PaymentCredentialEnrollmentController() = default;
 
 void PaymentCredentialEnrollmentController::ShowDialog(
-    content::GlobalFrameRoutingId initiator_frame_routing_id,
+    content::GlobalRenderFrameHostId initiator_frame_routing_id,
     std::unique_ptr<SkBitmap> instrument_icon,
     const std::u16string& instrument_name,
     ResponseCallback response_callback) {
@@ -139,8 +139,7 @@ void PaymentCredentialEnrollmentController::RenderFrameDeleted(
   // Close the dialog if either the initiator frame (which may be an iframe) or
   // main frame was deleted.
   if (render_frame_host == web_contents()->GetMainFrame() ||
-      render_frame_host->GetGlobalFrameRoutingId() ==
-          initiator_frame_routing_id_) {
+      render_frame_host->GetGlobalId() == initiator_frame_routing_id_) {
     CloseDialog();
   }
 }

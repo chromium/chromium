@@ -38,7 +38,7 @@ class PaymentCredentialManager
   // Creates the mojo IPC endpoint that will receive requests from the renderer
   // to store payment credential in user's profile.
   void CreatePaymentCredential(
-      content::GlobalFrameRoutingId initiator_frame_routing_id,
+      content::GlobalRenderFrameHostId initiator_frame_routing_id,
       scoped_refptr<PaymentManifestWebDataService> web_data_sevice,
       mojo::PendingReceiver<payments::mojom::PaymentCredential> receiver);
 

@@ -834,7 +834,7 @@ void DisableForRenderFrameHostForTesting(
       render_frame_host, RenderFrameHostDisabledForTestingReason());
 }
 
-void DisableForRenderFrameHostForTesting(content::GlobalFrameRoutingId id) {
+void DisableForRenderFrameHostForTesting(content::GlobalRenderFrameHostId id) {
   content::BackForwardCache::DisableForRenderFrameHost(
       id, RenderFrameHostDisabledForTestingReason());
 }

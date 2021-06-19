@@ -43,8 +43,8 @@ class FontAccessManagerImplTest : public RenderViewHostImplTestHarness {
 
     const int process_id = main_rfh()->GetProcess()->GetID();
     const int routing_id = main_rfh()->GetRoutingID();
-    const GlobalFrameRoutingId frame_id =
-        GlobalFrameRoutingId{process_id, routing_id};
+    const GlobalRenderFrameHostId frame_id =
+        GlobalRenderFrameHostId{process_id, routing_id};
     const FontAccessManagerImpl::BindingContext bindingContext = {kTestOrigin,
                                                                   frame_id};
 

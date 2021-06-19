@@ -120,7 +120,7 @@ class LocalPresentationManager : public KeyedService {
   // |receiver_callback| passed below.
   virtual void RegisterLocalPresentationController(
       const blink::mojom::PresentationInfo& presentation_info,
-      const content::GlobalFrameRoutingId& render_frame_id,
+      const content::GlobalRenderFrameHostId& render_frame_id,
       mojo::PendingRemote<blink::mojom::PresentationConnection>
           controller_connection_remote,
       mojo::PendingReceiver<blink::mojom::PresentationConnection>
@@ -134,7 +134,7 @@ class LocalPresentationManager : public KeyedService {
   // and any other pending controller.
   virtual void UnregisterLocalPresentationController(
       const std::string& presentation_id,
-      const content::GlobalFrameRoutingId& render_frame_id);
+      const content::GlobalRenderFrameHostId& render_frame_id);
 
   // Registers |receiver_callback| and set |receiver_web_contents| to
   // presentation with |presentation_info|.
@@ -178,7 +178,7 @@ class LocalPresentationManager : public KeyedService {
     // |receiver_connection_receiver|, and store it in |pending_controllers_|
     // map.
     void RegisterController(
-        const content::GlobalFrameRoutingId& render_frame_id,
+        const content::GlobalRenderFrameHostId& render_frame_id,
         mojo::PendingRemote<blink::mojom::PresentationConnection>
             controller_connection_remote,
         mojo::PendingReceiver<blink::mojom::PresentationConnection>
@@ -188,7 +188,7 @@ class LocalPresentationManager : public KeyedService {
     // Unregister controller with |render_frame_id|. Do nothing if there is no
     // pending controller with |render_frame_id|.
     void UnregisterController(
-        const content::GlobalFrameRoutingId& render_frame_id);
+        const content::GlobalRenderFrameHostId& render_frame_id);
 
     // Register |receiver_callback| and set |receiver_web_contents| to current
     // local_presentation object. For each controller in |pending_controllers_|
@@ -235,9 +235,9 @@ class LocalPresentationManager : public KeyedService {
 
     // Contains ControllerConnection objects registered via
     // |RegisterController()| before |receiver_callback_| is set.
-    std::unordered_map<content::GlobalFrameRoutingId,
+    std::unordered_map<content::GlobalRenderFrameHostId,
                        std::unique_ptr<ControllerConnection>,
-                       content::GlobalFrameRoutingIdHasher>
+                       content::GlobalRenderFrameHostIdHasher>
         pending_controllers_;
 
     DISALLOW_COPY_AND_ASSIGN(LocalPresentation);

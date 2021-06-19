@@ -67,7 +67,7 @@ class CONTENT_EXPORT ComputePressureHost
   }
 
   void BindReceiver(
-      GlobalFrameRoutingId frame_id,
+      GlobalRenderFrameHostId frame_id,
       mojo::PendingReceiver<blink::mojom::ComputePressureHost> receiver);
 
   // blink.mojom.ComputePressureManager implementation.
@@ -103,7 +103,7 @@ class CONTENT_EXPORT ComputePressureHost
   const base::TimeDelta visible_observer_rate_limit_;
 
   // Keeps track of the frame associated with each receiver.
-  mojo::ReceiverSet<blink::mojom::ComputePressureHost, GlobalFrameRoutingId>
+  mojo::ReceiverSet<blink::mojom::ComputePressureHost, GlobalRenderFrameHostId>
       receivers_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Called to inform the owner when the set of receivers or remotes changes.
@@ -120,7 +120,7 @@ class CONTENT_EXPORT ComputePressureHost
   // Keeps track of the frame associated with each observer.
   //
   // Used to determine the rate-limiting appropriate for each observer.
-  std::map<mojo::RemoteSetElementId, GlobalFrameRoutingId> observer_contexts_
+  std::map<mojo::RemoteSetElementId, GlobalRenderFrameHostId> observer_contexts_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Implements the quantizing scheme used for all the origin's observers.

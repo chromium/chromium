@@ -381,7 +381,7 @@ void ServiceWorkerContextWrapper::OnNoControllees(int64_t version_id,
 void ServiceWorkerContextWrapper::OnControlleeNavigationCommitted(
     int64_t version_id,
     const std::string& uuid,
-    GlobalFrameRoutingId render_frame_host_id) {
+    GlobalRenderFrameHostId render_frame_host_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   for (auto& observer : observer_list_)
@@ -489,7 +489,7 @@ void ServiceWorkerContextWrapper::RegisterServiceWorker(
           [](StatusCodeCallback callback, blink::ServiceWorkerStatusCode status,
              const std::string&, int64_t) { std::move(callback).Run(status); },
           std::move(callback)),
-      /*requesting_frame_id=*/GlobalFrameRoutingId());
+      /*requesting_frame_id=*/GlobalRenderFrameHostId());
 }
 
 void ServiceWorkerContextWrapper::UnregisterServiceWorker(
@@ -884,13 +884,13 @@ void ServiceWorkerContextWrapper::HasMainFrameWindowClient(
   context_core_->HasMainFrameWindowClient(key, std::move(callback));
 }
 
-std::unique_ptr<std::vector<GlobalFrameRoutingId>>
+std::unique_ptr<std::vector<GlobalRenderFrameHostId>>
 ServiceWorkerContextWrapper::GetWindowClientFrameRoutingIds(
     const blink::StorageKey& key) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  std::unique_ptr<std::vector<GlobalFrameRoutingId>> frame_routing_ids(
-      new std::vector<GlobalFrameRoutingId>());
+  std::unique_ptr<std::vector<GlobalRenderFrameHostId>> frame_routing_ids(
+      new std::vector<GlobalRenderFrameHostId>());
   if (!context_core_)
     return frame_routing_ids;
   for (std::unique_ptr<ServiceWorkerContextCore::ContainerHostIterator> it =
@@ -900,7 +900,7 @@ ServiceWorkerContextWrapper::GetWindowClientFrameRoutingIds(
        !it->IsAtEnd(); it->Advance()) {
     ServiceWorkerContainerHost* container_host = it->GetContainerHost();
     DCHECK(container_host->IsContainerForWindowClient());
-    frame_routing_ids->push_back(GlobalFrameRoutingId(
+    frame_routing_ids->push_back(GlobalRenderFrameHostId(
         container_host->process_id(), container_host->frame_id()));
   }
 

@@ -1873,8 +1873,8 @@ void MediaStreamManager::PanTiltZoomPermissionChecked(
   for (const auto& device : video_devices) {
     MaybeStartTrackingCaptureHandleConfig(
         label, device,
-        GlobalFrameRoutingId(request->requesting_process_id,
-                             request->requesting_frame_id));
+        GlobalRenderFrameHostId(request->requesting_process_id,
+                                request->requesting_frame_id));
   }
 }
 
@@ -1979,8 +1979,8 @@ void MediaStreamManager::FinalizeChangeDevice(const std::string& label,
 
   MaybeUpdateTrackedCaptureHandleConfigs(
       label, request->devices,
-      GlobalFrameRoutingId(request->requesting_process_id,
-                           request->requesting_frame_id));
+      GlobalRenderFrameHostId(request->requesting_process_id,
+                              request->requesting_frame_id));
 }
 
 void MediaStreamManager::FinalizeMediaAccessRequest(
@@ -2884,7 +2884,7 @@ void MediaStreamManager::PermissionChangedCallback(
 void MediaStreamManager::MaybeStartTrackingCaptureHandleConfig(
     const std::string& label,
     const MediaStreamDevice& captured_device,
-    GlobalFrameRoutingId capturer) {
+    GlobalRenderFrameHostId capturer) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   if (!blink::IsVideoInputMediaType(captured_device.type) ||
@@ -2930,7 +2930,7 @@ void MediaStreamManager::MaybeStopTrackingCaptureHandleConfig(
 void MediaStreamManager::MaybeUpdateTrackedCaptureHandleConfigs(
     const std::string& label,
     const MediaStreamDevices& new_devices,
-    GlobalFrameRoutingId capturer) {
+    GlobalRenderFrameHostId capturer) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   MediaStreamDevices filtered_new_devices;

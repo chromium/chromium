@@ -125,7 +125,7 @@ bool MimeHandlerViewGuest::CanBeEmbeddedInsideCrossProcessFrames() {
 }
 
 void MimeHandlerViewGuest::SetEmbedderFrame(
-    content::GlobalFrameRoutingId frame_id) {
+    content::GlobalRenderFrameHostId frame_id) {
   DCHECK_NE(MSG_ROUTING_NONE, frame_id.frame_routing_id);
   DCHECK_EQ(MSG_ROUTING_NONE, embedder_frame_id_.frame_routing_id);
 

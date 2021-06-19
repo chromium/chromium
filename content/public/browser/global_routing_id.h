@@ -54,15 +54,15 @@ inline std::ostream& operator<<(std::ostream& os, const GlobalRoutingID& id) {
 // These IDs can be considered to be unique for the lifetime of the browser
 // process. While they are finite and thus must eventually roll over, this case
 // may be considered sufficiently rare as to be ignorable.
-struct GlobalFrameRoutingId {
-  GlobalFrameRoutingId() : child_id(0), frame_routing_id(MSG_ROUTING_NONE) {}
+struct GlobalRenderFrameHostId {
+  GlobalRenderFrameHostId() : child_id(0), frame_routing_id(MSG_ROUTING_NONE) {}
 
-  GlobalFrameRoutingId(int child_id, int frame_routing_id)
+  GlobalRenderFrameHostId(int child_id, int frame_routing_id)
       : child_id(child_id), frame_routing_id(frame_routing_id) {}
 
-  // GlobalFrameRoutingId is copyable.
-  GlobalFrameRoutingId(const GlobalFrameRoutingId&) = default;
-  GlobalFrameRoutingId& operator=(const GlobalFrameRoutingId&) = default;
+  // GlobalRenderFrameHostId is copyable.
+  GlobalRenderFrameHostId(const GlobalRenderFrameHostId&) = default;
+  GlobalRenderFrameHostId& operator=(const GlobalRenderFrameHostId&) = default;
 
   // The unique ID of the child process (this is different from OS's PID / this
   // should come from RenderProcessHost::GetID()).
@@ -72,15 +72,15 @@ struct GlobalFrameRoutingId {
   // RenderFrameHost::GetRoutingID().
   int frame_routing_id;
 
-  bool operator<(const GlobalFrameRoutingId& other) const {
+  bool operator<(const GlobalRenderFrameHostId& other) const {
     return std::tie(child_id, frame_routing_id) <
            std::tie(other.child_id, other.frame_routing_id);
   }
-  bool operator==(const GlobalFrameRoutingId& other) const {
+  bool operator==(const GlobalRenderFrameHostId& other) const {
     return child_id == other.child_id &&
            frame_routing_id == other.frame_routing_id;
   }
-  bool operator!=(const GlobalFrameRoutingId& other) const {
+  bool operator!=(const GlobalRenderFrameHostId& other) const {
     return !(*this == other);
   }
   explicit operator bool() const {
@@ -89,14 +89,14 @@ struct GlobalFrameRoutingId {
 };
 
 inline std::ostream& operator<<(std::ostream& os,
-                                const GlobalFrameRoutingId& id) {
-  os << "GlobalFrameRoutingId(" << id.child_id << ", " << id.frame_routing_id
+                                const GlobalRenderFrameHostId& id) {
+  os << "GlobalRenderFrameHostId(" << id.child_id << ", " << id.frame_routing_id
      << ")";
   return os;
 }
 
-struct GlobalFrameRoutingIdHasher {
-  std::size_t operator()(const GlobalFrameRoutingId& id) const {
+struct GlobalRenderFrameHostIdHasher {
+  std::size_t operator()(const GlobalRenderFrameHostId& id) const {
     return base::HashInts(id.child_id, id.frame_routing_id);
   }
 };

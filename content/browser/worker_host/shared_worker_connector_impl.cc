@@ -21,7 +21,7 @@ namespace content {
 
 // static
 void SharedWorkerConnectorImpl::Create(
-    GlobalFrameRoutingId client_render_frame_host_id,
+    GlobalRenderFrameHostId client_render_frame_host_id,
     mojo::PendingReceiver<blink::mojom::SharedWorkerConnector> receiver) {
   mojo::MakeSelfOwnedReceiver(base::WrapUnique(new SharedWorkerConnectorImpl(
                                   client_render_frame_host_id)),
@@ -29,7 +29,7 @@ void SharedWorkerConnectorImpl::Create(
 }
 
 SharedWorkerConnectorImpl::SharedWorkerConnectorImpl(
-    GlobalFrameRoutingId client_render_frame_host_id)
+    GlobalRenderFrameHostId client_render_frame_host_id)
     : client_render_frame_host_id_(client_render_frame_host_id) {}
 
 void SharedWorkerConnectorImpl::Connect(

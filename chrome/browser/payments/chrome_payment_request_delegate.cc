@@ -69,7 +69,7 @@ std::unique_ptr<::i18n::addressinput::Storage> GetAddressInputStorage() {
 ChromePaymentRequestDelegate::ChromePaymentRequestDelegate(
     content::RenderFrameHost* render_frame_host)
     : shown_dialog_(nullptr),
-      frame_routing_id_(content::GlobalFrameRoutingId(
+      frame_routing_id_(content::GlobalRenderFrameHostId(
           render_frame_host->GetProcess()->GetID(),
           render_frame_host->GetRoutingID())) {}
 

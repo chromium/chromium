@@ -21,7 +21,7 @@ void PresentationServiceDelegateObservers::AddObserver(
     content::PresentationServiceDelegate::Observer* observer) {
   DCHECK(observer);
 
-  content::GlobalFrameRoutingId rfh_id(render_process_id, render_frame_id);
+  content::GlobalRenderFrameHostId rfh_id(render_process_id, render_frame_id);
   DCHECK(!base::Contains(observers_, rfh_id));
   observers_[rfh_id] = observer;
 }
@@ -29,7 +29,7 @@ void PresentationServiceDelegateObservers::AddObserver(
 void PresentationServiceDelegateObservers::RemoveObserver(int render_process_id,
                                                           int render_frame_id) {
   observers_.erase(
-      content::GlobalFrameRoutingId(render_process_id, render_frame_id));
+      content::GlobalRenderFrameHostId(render_process_id, render_frame_id));
 }
 
 }  // namespace media_router

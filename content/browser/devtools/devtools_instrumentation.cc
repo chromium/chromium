@@ -1053,7 +1053,7 @@ void OnWebTransportHandshakeFailed(
 }
 
 void OnServiceWorkerMainScriptFetchingFailed(
-    const GlobalFrameRoutingId& requesting_frame_id,
+    const GlobalRenderFrameHostId& requesting_frame_id,
     const std::string& error) {
   // If we have a requesting_frame_id, we should have a frame and a frame tree
   // node. However since the lifetime of these objects can be complex, we check

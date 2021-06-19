@@ -31,7 +31,7 @@ class CONTENT_EXPORT ServiceWorkerJobCoordinator {
                 const blink::mojom::ServiceWorkerRegistrationOptions& options,
                 blink::mojom::FetchClientSettingsObjectPtr
                     outside_fetch_client_settings_object,
-                const GlobalFrameRoutingId& requesting_frame_id,
+                const GlobalRenderFrameHostId& requesting_frame_id,
                 ServiceWorkerRegisterJob::RegistrationCallback callback);
 
   // If |is_immediate| is true, unregister clears the active worker from the

@@ -2117,8 +2117,7 @@ MATCHER_P(IsManifestURL, file_name, std::string()) {
 }
 
 MATCHER_P(IsPrerenderedRFH, render_frame_host, std::string()) {
-  return arg->GetGlobalFrameRoutingId() ==
-         render_frame_host->GetGlobalFrameRoutingId();
+  return arg->GetGlobalId() == render_frame_host->GetGlobalId();
 }
 
 // Tests that NotifyManifestUrlChanged is called on the page that has manifest

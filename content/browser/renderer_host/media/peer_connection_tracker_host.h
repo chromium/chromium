@@ -91,7 +91,7 @@ class PeerConnectionTrackerHost
   void AddStandardStats(int lid, base::Value value) override;
   void AddLegacyStats(int lid, base::Value value) override;
 
-  GlobalFrameRoutingId frame_id_;
+  GlobalRenderFrameHostId frame_id_;
   base::ProcessId peer_pid_;
   mojo::Receiver<blink::mojom::PeerConnectionTrackerHost> receiver_{this};
   mojo::Remote<blink::mojom::PeerConnectionManager> tracker_;

@@ -8,14 +8,14 @@ import java.util.Objects;
 
 /**
  * Identifies a RenderFrameHost.
- * See the native equivalent: content::GlobalFrameRoutingId.
+ * See the native equivalent: content::GlobalRenderFrameHostId.
  */
-public final class GlobalFrameRoutingId {
+public final class GlobalRenderFrameHostId {
     // Note that this is an internal identifier, not the PID from the OS.
     private final int mChildId;
     private final int mFrameRoutingId;
 
-    public GlobalFrameRoutingId(int childId, int frameRoutingId) {
+    public GlobalRenderFrameHostId(int childId, int frameRoutingId) {
         mChildId = childId;
         mFrameRoutingId = frameRoutingId;
     }
@@ -29,10 +29,10 @@ public final class GlobalFrameRoutingId {
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof GlobalFrameRoutingId)) {
+        if (!(obj instanceof GlobalRenderFrameHostId)) {
             return false;
         }
-        GlobalFrameRoutingId that = (GlobalFrameRoutingId) obj;
+        GlobalRenderFrameHostId that = (GlobalRenderFrameHostId) obj;
         return mChildId == that.mChildId && mFrameRoutingId == that.mFrameRoutingId;
     }
 

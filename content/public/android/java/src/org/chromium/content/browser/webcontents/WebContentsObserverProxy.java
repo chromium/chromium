@@ -10,7 +10,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.content_public.browser.GlobalFrameRoutingId;
+import org.chromium.content_public.browser.GlobalRenderFrameHostId;
 import org.chromium.content_public.browser.LifecycleState;
 import org.chromium.content_public.browser.LoadCommittedDetails;
 import org.chromium.content_public.browser.NavigationHandle;
@@ -69,11 +69,11 @@ class WebContentsObserverProxy extends WebContentsObserver {
 
     @CalledByNative
     public void renderFrameCreated(int renderProcessId, int renderFrameId) {
-        renderFrameCreated(new GlobalFrameRoutingId(renderProcessId, renderFrameId));
+        renderFrameCreated(new GlobalRenderFrameHostId(renderProcessId, renderFrameId));
     }
 
     @Override
-    public void renderFrameCreated(GlobalFrameRoutingId id) {
+    public void renderFrameCreated(GlobalRenderFrameHostId id) {
         for (mObserversIterator.rewind(); mObserversIterator.hasNext();) {
             mObserversIterator.next().renderFrameCreated(id);
         }
@@ -81,11 +81,11 @@ class WebContentsObserverProxy extends WebContentsObserver {
 
     @CalledByNative
     public void renderFrameDeleted(int renderProcessId, int renderFrameId) {
-        renderFrameDeleted(new GlobalFrameRoutingId(renderProcessId, renderFrameId));
+        renderFrameDeleted(new GlobalRenderFrameHostId(renderProcessId, renderFrameId));
     }
 
     @Override
-    public void renderFrameDeleted(GlobalFrameRoutingId id) {
+    public void renderFrameDeleted(GlobalRenderFrameHostId id) {
         for (mObserversIterator.rewind(); mObserversIterator.hasNext();) {
             mObserversIterator.next().renderFrameDeleted(id);
         }
@@ -216,12 +216,12 @@ class WebContentsObserverProxy extends WebContentsObserver {
     @CalledByNative
     private void didFinishLoad(int renderProcessId, int renderFrameId, GURL url,
             boolean isKnownValid, boolean isMainFrame, @LifecycleState int frameLifecycleState) {
-        didFinishLoad(new GlobalFrameRoutingId(renderProcessId, renderFrameId), url, isKnownValid,
-                isMainFrame, frameLifecycleState);
+        didFinishLoad(new GlobalRenderFrameHostId(renderProcessId, renderFrameId), url,
+                isKnownValid, isMainFrame, frameLifecycleState);
     }
 
     @Override
-    public void didFinishLoad(GlobalFrameRoutingId rfhId, GURL url, boolean isKnownValid,
+    public void didFinishLoad(GlobalRenderFrameHostId rfhId, GURL url, boolean isKnownValid,
             boolean isMainFrame, @LifecycleState int rfhLifecycleState) {
         for (mObserversIterator.rewind(); mObserversIterator.hasNext();) {
             mObserversIterator.next().didFinishLoad(
@@ -232,12 +232,12 @@ class WebContentsObserverProxy extends WebContentsObserver {
     @CalledByNative
     private void documentLoadedInFrame(int renderProcessId, int renderFrameId, boolean isMainFrame,
             @LifecycleState int rfhLifecycleState) {
-        documentLoadedInFrame(new GlobalFrameRoutingId(renderProcessId, renderFrameId), isMainFrame,
-                rfhLifecycleState);
+        documentLoadedInFrame(new GlobalRenderFrameHostId(renderProcessId, renderFrameId),
+                isMainFrame, rfhLifecycleState);
     }
 
     @Override
-    public void documentLoadedInFrame(GlobalFrameRoutingId rfhId, boolean isMainFrame,
+    public void documentLoadedInFrame(GlobalRenderFrameHostId rfhId, boolean isMainFrame,
             @LifecycleState int rfhLifecycleState) {
         for (mObserversIterator.rewind(); mObserversIterator.hasNext();) {
             mObserversIterator.next().documentLoadedInFrame(rfhId, isMainFrame, rfhLifecycleState);

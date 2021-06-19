@@ -81,7 +81,7 @@ class TestDedicatedWorkerService : public content::DedicatedWorkerService {
   // Creates a new dedicated worker and returns its ID.
   const blink::DedicatedWorkerToken& CreateDedicatedWorker(
       int worker_process_id,
-      content::GlobalFrameRoutingId client_render_frame_host_id);
+      content::GlobalRenderFrameHostId client_render_frame_host_id);
 
   // Destroys an existing dedicated worker.
   void DestroyDedicatedWorker(const blink::DedicatedWorkerToken& token);
@@ -90,7 +90,7 @@ class TestDedicatedWorkerService : public content::DedicatedWorkerService {
   base::ObserverList<Observer> observer_list_;
 
   // Maps each running worker to its client RenderFrameHost ID.
-  base::flat_map<blink::DedicatedWorkerToken, content::GlobalFrameRoutingId>
+  base::flat_map<blink::DedicatedWorkerToken, content::GlobalRenderFrameHostId>
       dedicated_worker_client_frame_;
 
   DISALLOW_COPY_AND_ASSIGN(TestDedicatedWorkerService);
@@ -116,7 +116,7 @@ void TestDedicatedWorkerService::EnumerateDedicatedWorkers(Observer* observer) {
 const blink::DedicatedWorkerToken&
 TestDedicatedWorkerService::CreateDedicatedWorker(
     int worker_process_id,
-    content::GlobalFrameRoutingId client_render_frame_host_id) {
+    content::GlobalRenderFrameHostId client_render_frame_host_id) {
   // Create a new token for the worker and add it to the map, along with its
   // client ID.
   const blink::DedicatedWorkerToken token;
@@ -173,18 +173,19 @@ class TestSharedWorkerService : public content::SharedWorkerService {
 
   // Adds a new frame client to an existing worker.
   void AddClient(const blink::SharedWorkerToken& shared_worker_token,
-                 content::GlobalFrameRoutingId client_render_frame_host_id);
+                 content::GlobalRenderFrameHostId client_render_frame_host_id);
 
   // Removes an existing frame client from a worker.
-  void RemoveClient(const blink::SharedWorkerToken& shared_worker_token,
-                    content::GlobalFrameRoutingId client_render_frame_host_id);
+  void RemoveClient(
+      const blink::SharedWorkerToken& shared_worker_token,
+      content::GlobalRenderFrameHostId client_render_frame_host_id);
 
  private:
   base::ObserverList<Observer> observer_list_;
 
   // Contains the set of clients for each running workers.
   base::flat_map<blink::SharedWorkerToken,
-                 base::flat_set<content::GlobalFrameRoutingId>>
+                 base::flat_set<content::GlobalRenderFrameHostId>>
       shared_worker_client_frames_;
 
   DISALLOW_COPY_AND_ASSIGN(TestSharedWorkerService);
@@ -257,12 +258,12 @@ void TestSharedWorkerService::DestroySharedWorker(
 
 void TestSharedWorkerService::AddClient(
     const blink::SharedWorkerToken& shared_worker_token,
-    content::GlobalFrameRoutingId client_render_frame_host_id) {
+    content::GlobalRenderFrameHostId client_render_frame_host_id) {
   // Add the frame to the set of clients for this worker.
   auto it = shared_worker_client_frames_.find(shared_worker_token);
   DCHECK(it != shared_worker_client_frames_.end());
 
-  base::flat_set<content::GlobalFrameRoutingId>& client_frames = it->second;
+  base::flat_set<content::GlobalRenderFrameHostId>& client_frames = it->second;
   bool inserted = client_frames.insert(client_render_frame_host_id).second;
   DCHECK(inserted);
 
@@ -273,7 +274,7 @@ void TestSharedWorkerService::AddClient(
 
 void TestSharedWorkerService::RemoveClient(
     const blink::SharedWorkerToken& shared_worker_token,
-    content::GlobalFrameRoutingId client_render_frame_host_id) {
+    content::GlobalRenderFrameHostId client_render_frame_host_id) {
   // Notify observers.
   for (auto& observer : observer_list_)
     observer.OnClientRemoved(shared_worker_token, client_render_frame_host_id);
@@ -282,7 +283,7 @@ void TestSharedWorkerService::RemoveClient(
   auto it = shared_worker_client_frames_.find(shared_worker_token);
   DCHECK(it != shared_worker_client_frames_.end());
 
-  base::flat_set<content::GlobalFrameRoutingId>& client_frames = it->second;
+  base::flat_set<content::GlobalRenderFrameHostId>& client_frames = it->second;
   size_t removed = client_frames.erase(client_render_frame_host_id);
   DCHECK_EQ(removed, 1u);
 }
@@ -338,7 +339,7 @@ class TestServiceWorkerContext : public content::FakeServiceWorkerContext {
   void OnControlleeNavigationCommitted(
       int64_t version_id,
       const std::string& client_uuid,
-      content::GlobalFrameRoutingId render_frame_host_id);
+      content::GlobalRenderFrameHostId render_frame_host_id);
 
  private:
   base::ObserverList<content::ServiceWorkerContextObserver>::Unchecked
@@ -467,7 +468,7 @@ void TestServiceWorkerContext::RemoveClient(int64_t version_id,
 void TestServiceWorkerContext::OnControlleeNavigationCommitted(
     int64_t version_id,
     const std::string& client_uuid,
-    content::GlobalFrameRoutingId render_frame_host_id) {
+    content::GlobalRenderFrameHostId render_frame_host_id) {
   auto it = service_worker_infos_.find(version_id);
   DCHECK(it != service_worker_infos_.end());
   ServiceWorkerInfo& info = it->second;
@@ -545,19 +546,21 @@ class TestFrameNodeSource : public FrameNodeSource {
 
   // FrameNodeSource:
   FrameNodeImpl* GetFrameNode(
-      content::GlobalFrameRoutingId render_frame_host_id) override;
-  void SubscribeToFrameNode(content::GlobalFrameRoutingId render_frame_host_id,
-                            OnbeforeFrameNodeRemovedCallback
-                                on_before_frame_node_removed_callback) override;
+      content::GlobalRenderFrameHostId render_frame_host_id) override;
+  void SubscribeToFrameNode(
+      content::GlobalRenderFrameHostId render_frame_host_id,
+      OnbeforeFrameNodeRemovedCallback on_before_frame_node_removed_callback)
+      override;
   void UnsubscribeFromFrameNode(
-      content::GlobalFrameRoutingId render_frame_host_id) override;
+      content::GlobalRenderFrameHostId render_frame_host_id) override;
 
   // Creates a frame node and returns its generated render frame host id.
-  content::GlobalFrameRoutingId CreateFrameNode(int render_process_id,
-                                                ProcessNodeImpl* process_node);
+  content::GlobalRenderFrameHostId CreateFrameNode(
+      int render_process_id,
+      ProcessNodeImpl* process_node);
 
   // Deletes an existing frame node and notify subscribers.
-  void DeleteFrameNode(content::GlobalFrameRoutingId render_frame_host_id);
+  void DeleteFrameNode(content::GlobalRenderFrameHostId render_frame_host_id);
 
  private:
   // Helper function that invokes the OnBeforeFrameNodeRemovedCallback
@@ -568,7 +571,8 @@ class TestFrameNodeSource : public FrameNodeSource {
   std::unique_ptr<PageNodeImpl> page_node_;
 
   // Maps each frame's render frame host id with their associated frame node.
-  base::flat_map<content::GlobalFrameRoutingId, std::unique_ptr<FrameNodeImpl>>
+  base::flat_map<content::GlobalRenderFrameHostId,
+                 std::unique_ptr<FrameNodeImpl>>
       frame_node_map_;
 
   // Maps each observed frame node to their callback.
@@ -599,13 +603,13 @@ TestFrameNodeSource::~TestFrameNodeSource() {
 }
 
 FrameNodeImpl* TestFrameNodeSource::GetFrameNode(
-    content::GlobalFrameRoutingId render_frame_host_id) {
+    content::GlobalRenderFrameHostId render_frame_host_id) {
   auto it = frame_node_map_.find(render_frame_host_id);
   return it != frame_node_map_.end() ? it->second.get() : nullptr;
 }
 
 void TestFrameNodeSource::SubscribeToFrameNode(
-    content::GlobalFrameRoutingId render_frame_host_id,
+    content::GlobalRenderFrameHostId render_frame_host_id,
     OnbeforeFrameNodeRemovedCallback on_before_frame_node_removed_callback) {
   FrameNodeImpl* frame_node = GetFrameNode(render_frame_host_id);
   DCHECK(frame_node);
@@ -618,7 +622,7 @@ void TestFrameNodeSource::SubscribeToFrameNode(
 }
 
 void TestFrameNodeSource::UnsubscribeFromFrameNode(
-    content::GlobalFrameRoutingId render_frame_host_id) {
+    content::GlobalRenderFrameHostId render_frame_host_id) {
   FrameNodeImpl* frame_node = GetFrameNode(render_frame_host_id);
   DCHECK(frame_node);
 
@@ -626,12 +630,12 @@ void TestFrameNodeSource::UnsubscribeFromFrameNode(
   DCHECK_EQ(removed, 1u);
 }
 
-content::GlobalFrameRoutingId TestFrameNodeSource::CreateFrameNode(
+content::GlobalRenderFrameHostId TestFrameNodeSource::CreateFrameNode(
     int render_process_id,
     ProcessNodeImpl* process_node) {
   int frame_id = GenerateNextId();
-  content::GlobalFrameRoutingId render_frame_host_id(render_process_id,
-                                                     frame_id);
+  content::GlobalRenderFrameHostId render_frame_host_id(render_process_id,
+                                                        frame_id);
   auto frame_node = PerformanceManagerImpl::CreateFrameNode(
       process_node, page_node_.get(), nullptr, 0, frame_id,
       blink::LocalFrameToken(), 0, 0);
@@ -645,7 +649,7 @@ content::GlobalFrameRoutingId TestFrameNodeSource::CreateFrameNode(
 }
 
 void TestFrameNodeSource::DeleteFrameNode(
-    content::GlobalFrameRoutingId render_frame_host_id) {
+    content::GlobalRenderFrameHostId render_frame_host_id) {
   auto it = frame_node_map_.find(render_frame_host_id);
   DCHECK(it != frame_node_map_.end());
 
@@ -789,7 +793,7 @@ TEST_F(WorkerWatcherTest, SimpleDedicatedWorker) {
   int render_process_id = process_node_source()->CreateProcessNode();
 
   // Create the frame node.
-  content::GlobalFrameRoutingId render_frame_host_id =
+  content::GlobalRenderFrameHostId render_frame_host_id =
       frame_node_source()->CreateFrameNode(
           render_process_id,
           process_node_source()->GetProcessNode(render_process_id));
@@ -821,7 +825,7 @@ TEST_F(WorkerWatcherTest, SimpleSharedWorker) {
   int render_process_id = process_node_source()->CreateProcessNode();
 
   // Create the frame node.
-  content::GlobalFrameRoutingId render_frame_host_id =
+  content::GlobalRenderFrameHostId render_frame_host_id =
       frame_node_source()->CreateFrameNode(
           render_process_id,
           process_node_source()->GetProcessNode(render_process_id));
@@ -883,7 +887,7 @@ TEST_F(WorkerWatcherTest, ServiceWorkerFrameClient) {
       }));
 
   // Now simulate the navigation commit.
-  content::GlobalFrameRoutingId render_frame_host_id =
+  content::GlobalRenderFrameHostId render_frame_host_id =
       frame_node_source()->CreateFrameNode(
           render_process_id,
           process_node_source()->GetProcessNode(render_process_id));
@@ -1009,7 +1013,7 @@ TEST_F(WorkerWatcherTest, ServiceWorkerTwoFrameClientRelationships) {
       content::ServiceWorkerClientInfo(frame_tree_node_id));
 
   // Now simulate the navigation commit.
-  content::GlobalFrameRoutingId render_frame_host_id =
+  content::GlobalRenderFrameHostId render_frame_host_id =
       frame_node_source()->CreateFrameNode(
           render_process_id,
           process_node_source()->GetProcessNode(render_process_id));
@@ -1121,7 +1125,7 @@ TEST_F(WorkerWatcherTest, AllTypesOfServiceWorkerClients) {
   std::string frame_client_uuid = service_worker_context()->AddClient(
       service_worker_version_id,
       content::ServiceWorkerClientInfo(frame_tree_node_id));
-  content::GlobalFrameRoutingId render_frame_host_id =
+  content::GlobalRenderFrameHostId render_frame_host_id =
       frame_node_source()->CreateFrameNode(
           render_process_id,
           process_node_source()->GetProcessNode(render_process_id));
@@ -1191,7 +1195,7 @@ TEST_F(WorkerWatcherTest, ServiceWorkerStartsAndStopsWithExistingClients) {
   std::string frame_client_uuid = service_worker_context()->AddClient(
       service_worker_version_id,
       content::ServiceWorkerClientInfo(frame_tree_node_id));
-  content::GlobalFrameRoutingId render_frame_host_id =
+  content::GlobalRenderFrameHostId render_frame_host_id =
       frame_node_source()->CreateFrameNode(
           render_process_id,
           process_node_source()->GetProcessNode(render_process_id));
@@ -1307,7 +1311,7 @@ TEST_F(WorkerWatcherTest, ServiceWorkerStartsAndStopsWithExistingClients) {
 TEST_F(WorkerWatcherTest, SharedWorkerCrossProcessClient) {
   // Create the frame node.
   int frame_process_id = process_node_source()->CreateProcessNode();
-  content::GlobalFrameRoutingId render_frame_host_id =
+  content::GlobalRenderFrameHostId render_frame_host_id =
       frame_node_source()->CreateFrameNode(
           frame_process_id,
           process_node_source()->GetProcessNode(frame_process_id));
@@ -1346,7 +1350,7 @@ TEST_F(WorkerWatcherTest, SharedWorkerCrossProcessClient) {
 // already died by the time the service worker starts.
 TEST_F(WorkerWatcherTest, SharedWorkerStartsWithDeadWorkerClients) {
   int render_process_id = process_node_source()->CreateProcessNode();
-  content::GlobalFrameRoutingId render_frame_host_id =
+  content::GlobalRenderFrameHostId render_frame_host_id =
       frame_node_source()->CreateFrameNode(
           render_process_id,
           process_node_source()->GetProcessNode(render_process_id));
@@ -1470,14 +1474,14 @@ TEST_F(WorkerWatcherTest, OneSharedWorkerTwoClients) {
       shared_worker_service()->CreateSharedWorker(render_process_id);
 
   // Create 2 client frame nodes and connect them to the worker.
-  content::GlobalFrameRoutingId render_frame_host_id_1 =
+  content::GlobalRenderFrameHostId render_frame_host_id_1 =
       frame_node_source()->CreateFrameNode(
           render_process_id,
           process_node_source()->GetProcessNode(render_process_id));
   shared_worker_service()->AddClient(shared_worker_token,
                                      render_frame_host_id_1);
 
-  content::GlobalFrameRoutingId render_frame_host_id_2 =
+  content::GlobalRenderFrameHostId render_frame_host_id_2 =
       frame_node_source()->CreateFrameNode(
           render_process_id,
           process_node_source()->GetProcessNode(render_process_id));
@@ -1513,7 +1517,7 @@ TEST_F(WorkerWatcherTest, OneClientTwoSharedWorkers) {
   int render_process_id = process_node_source()->CreateProcessNode();
 
   // Create the frame node.
-  content::GlobalFrameRoutingId render_frame_host_id =
+  content::GlobalRenderFrameHostId render_frame_host_id =
       frame_node_source()->CreateFrameNode(
           render_process_id,
           process_node_source()->GetProcessNode(render_process_id));
@@ -1563,7 +1567,7 @@ TEST_F(WorkerWatcherTest, FrameDestroyed) {
 
   // Create the frame node.
   int frame_tree_node_id = GenerateNextId();
-  content::GlobalFrameRoutingId render_frame_host_id =
+  content::GlobalRenderFrameHostId render_frame_host_id =
       frame_node_source()->CreateFrameNode(
           render_process_id,
           process_node_source()->GetProcessNode(render_process_id));

@@ -61,7 +61,7 @@ ServiceWorkerNewScriptLoader::CreateAndStart(
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
     int64_t cache_resource_id,
     bool is_throttle_needed,
-    const GlobalFrameRoutingId& requesting_frame_id) {
+    const GlobalRenderFrameHostId& requesting_frame_id) {
   return base::WrapUnique(new ServiceWorkerNewScriptLoader(
       request_id, options, original_request, std::move(client), version,
       loader_factory, traffic_annotation, cache_resource_id, is_throttle_needed,
@@ -80,7 +80,7 @@ ServiceWorkerNewScriptLoader::ServiceWorkerNewScriptLoader(
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
     int64_t cache_resource_id,
     bool is_throttle_needed,
-    const GlobalFrameRoutingId& requesting_frame_id)
+    const GlobalRenderFrameHostId& requesting_frame_id)
     : request_url_(original_request.url),
       is_main_script_(original_request.destination ==
                           network::mojom::RequestDestination::kServiceWorker &&

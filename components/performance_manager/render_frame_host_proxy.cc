@@ -20,7 +20,7 @@ content::RenderFrameHost* RenderFrameHostProxy::Get() const {
 }
 
 RenderFrameHostProxy::RenderFrameHostProxy(
-    const content::GlobalFrameRoutingId& global_frame_routing_id)
+    const content::GlobalRenderFrameHostId& global_frame_routing_id)
     : global_frame_routing_id_(global_frame_routing_id) {}
 
 }  // namespace performance_manager

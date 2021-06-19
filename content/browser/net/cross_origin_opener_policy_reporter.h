@@ -86,7 +86,7 @@ class CONTENT_EXPORT CrossOriginOpenerPolicyReporter {
   // See the class comment.
   StoragePartition* storage_partition_;
   GURL source_url_;
-  GlobalFrameRoutingId source_routing_id_;
+  GlobalRenderFrameHostId source_routing_id_;
   const GURL context_url_;
   const std::string context_referrer_url_;
   const network::CrossOriginOpenerPolicy coop_;

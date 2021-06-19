@@ -76,7 +76,7 @@ void ServiceWorkerJobCoordinator::Register(
     const blink::mojom::ServiceWorkerRegistrationOptions& options,
     blink::mojom::FetchClientSettingsObjectPtr
         outside_fetch_client_settings_object,
-    const GlobalFrameRoutingId& requesting_frame_id,
+    const GlobalRenderFrameHostId& requesting_frame_id,
     ServiceWorkerRegisterJob::RegistrationCallback callback) {
   auto job = std::make_unique<ServiceWorkerRegisterJob>(
       context_, script_url, options,

@@ -902,7 +902,7 @@ class CONTENT_EXPORT ServiceWorkerVersion
   void NotifyControlleeRemoved(const std::string& uuid);
   void NotifyControlleeNavigationCommitted(
       const std::string& uuid,
-      GlobalFrameRoutingId render_frame_host_id);
+      GlobalRenderFrameHostId render_frame_host_id);
 
   void GetClientOnExecutionReady(const std::string& client_uuid,
                                  GetClientCallback callback,

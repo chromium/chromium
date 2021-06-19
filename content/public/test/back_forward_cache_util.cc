@@ -17,19 +17,19 @@ namespace content {
 class BackForwardCacheDisabledTester::Impl
     : public BackForwardCacheTestDelegate {
  public:
-  bool IsDisabledForFrameWithReason(GlobalFrameRoutingId id,
+  bool IsDisabledForFrameWithReason(GlobalRenderFrameHostId id,
                                     BackForwardCache::DisabledReason reason) {
     return disable_reasons_[id].count(reason) != 0;
   }
 
   void OnDisabledForFrameWithReason(
-      GlobalFrameRoutingId id,
+      GlobalRenderFrameHostId id,
       BackForwardCache::DisabledReason reason) override {
     disable_reasons_[id].insert(reason);
   }
 
  private:
-  std::map<GlobalFrameRoutingId, std::set<BackForwardCache::DisabledReason>>
+  std::map<GlobalRenderFrameHostId, std::set<BackForwardCache::DisabledReason>>
       disable_reasons_;
 };
 
@@ -43,7 +43,7 @@ bool BackForwardCacheDisabledTester::IsDisabledForFrameWithReason(
     int frame_routing_id,
     BackForwardCache::DisabledReason reason) {
   return impl_->IsDisabledForFrameWithReason(
-      GlobalFrameRoutingId{process_id, frame_routing_id}, reason);
+      GlobalRenderFrameHostId{process_id, frame_routing_id}, reason);
 }
 
 void DisableBackForwardCacheForTesting(

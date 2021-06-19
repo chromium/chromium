@@ -32,7 +32,7 @@ class CONTENT_EXPORT WebContentsVideoCaptureDevice
     : public FrameSinkVideoCaptureDevice,
       public base::SupportsWeakPtr<WebContentsVideoCaptureDevice> {
  public:
-  explicit WebContentsVideoCaptureDevice(const GlobalFrameRoutingId& id);
+  explicit WebContentsVideoCaptureDevice(const GlobalRenderFrameHostId& id);
 
   WebContentsVideoCaptureDevice(WebContentsVideoCaptureDevice&&) = delete;
   WebContentsVideoCaptureDevice(const WebContentsVideoCaptureDevice&) = delete;

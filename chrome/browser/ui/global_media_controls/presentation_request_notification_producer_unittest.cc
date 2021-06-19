@@ -117,7 +117,7 @@ class PresentationRequestNotificationProducerTest
 
   content::PresentationRequest CreatePresentationRequest() {
     return content::PresentationRequest(
-        main_rfh()->GetGlobalFrameRoutingId(),
+        main_rfh()->GetGlobalId(),
         {GURL("http://example.com"), GURL("http://example2.com")},
         url::Origin::Create(GURL("http://google.com")));
   }
@@ -211,7 +211,7 @@ TEST_F(PresentationRequestNotificationProducerTest, DeleteItem) {
   // Simulate a PresentationRequest from |child_frame|.
   notification_producer_->OnStartPresentationContextCreated(
       std::make_unique<media_router::StartPresentationContext>(
-          content::PresentationRequest(child_frame->GetGlobalFrameRoutingId(),
+          content::PresentationRequest(child_frame->GetGlobalId(),
                                        {GURL(), GURL()},
                                        url::Origin::Create(GURL())),
           base::DoNothing(), base::DoNothing()));

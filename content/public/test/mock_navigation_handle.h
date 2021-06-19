@@ -64,7 +64,7 @@ class MockNavigationHandle : public NavigationHandle {
   }
   bool IsInPrimaryMainFrame() override { return is_in_primary_main_frame_; }
   MOCK_METHOD0(GetFrameTreeNodeId, int());
-  MOCK_METHOD0(GetPreviousRenderFrameHostId, GlobalFrameRoutingId());
+  MOCK_METHOD0(GetPreviousRenderFrameHostId, GlobalRenderFrameHostId());
   bool IsServedFromBackForwardCache() override {
     return is_served_from_bfcache_;
   }

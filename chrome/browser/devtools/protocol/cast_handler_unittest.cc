@@ -98,7 +98,7 @@ TEST_F(CastHandlerTest, SetSinkToUse) {
   EXPECT_TRUE(handler_->SetSinkToUse(kSinkName1).IsSuccess());
 
   const std::string presentation_url("https://example.com/");
-  content::PresentationRequest request(content::GlobalFrameRoutingId(),
+  content::PresentationRequest request(content::GlobalRenderFrameHostId(),
                                        {GURL(presentation_url)}, url::Origin());
   // Return sinks when asked for those compatible with |presentation_url|.
   EXPECT_CALL(*router_, RegisterMediaSinksObserver(_))

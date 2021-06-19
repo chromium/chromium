@@ -21,7 +21,7 @@
 
 using V8DetailedMemoryExecutionContextData =
     performance_manager::v8_memory::V8DetailedMemoryExecutionContextData;
-using FrameDataMap = base::flat_map<content::GlobalFrameRoutingId,
+using FrameDataMap = base::flat_map<content::GlobalRenderFrameHostId,
                                     V8DetailedMemoryExecutionContextData>;
 
 const char kMainUrl[] = "https://main.com/";
@@ -170,8 +170,8 @@ class PageLoadMetricsMemoryTrackerTest
     if (!render_frame_host || !render_frame_host->GetProcess())
       return;
 
-    content::GlobalFrameRoutingId global_routing_id =
-        render_frame_host->GetGlobalFrameRoutingId();
+    content::GlobalRenderFrameHostId global_routing_id =
+        render_frame_host->GetGlobalId();
     int process_id = render_frame_host->GetProcess()->GetID();
 
     performance_manager::RenderProcessHostId pm_process_id =

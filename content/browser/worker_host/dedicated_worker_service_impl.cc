@@ -51,7 +51,7 @@ void DedicatedWorkerServiceImpl::NotifyWorkerCreated(
 
 void DedicatedWorkerServiceImpl::NotifyBeforeWorkerDestroyed(
     const blink::DedicatedWorkerToken& dedicated_worker_token,
-    GlobalFrameRoutingId ancestor_render_frame_host_id) {
+    GlobalRenderFrameHostId ancestor_render_frame_host_id) {
   size_t removed = dedicated_worker_hosts_.erase(dedicated_worker_token);
   DCHECK_EQ(1u, removed);
 

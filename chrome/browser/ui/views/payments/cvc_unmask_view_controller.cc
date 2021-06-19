@@ -54,8 +54,7 @@ CvcUnmaskViewController::CvcUnmaskViewController(
     : PaymentRequestSheetController(spec, state, dialog),
       year_combobox_model_(credit_card.expiration_year()),
       credit_card_(credit_card),
-      frame_routing_id_(
-          web_contents->GetMainFrame()->GetGlobalFrameRoutingId()),
+      frame_routing_id_(web_contents->GetMainFrame()->GetGlobalId()),
       payments_client_(
           web_contents->GetBrowserContext()
               ->GetDefaultStoragePartition()

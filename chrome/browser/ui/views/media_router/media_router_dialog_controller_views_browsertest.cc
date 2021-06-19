@@ -31,9 +31,8 @@ namespace media_router {
 std::unique_ptr<StartPresentationContext> CreateStartPresentationContext(
     content::WebContents* content) {
   return std::make_unique<StartPresentationContext>(
-      content::PresentationRequest(
-          content->GetMainFrame()->GetGlobalFrameRoutingId(), {GURL(), GURL()},
-          url::Origin()),
+      content::PresentationRequest(content->GetMainFrame()->GetGlobalId(),
+                                   {GURL(), GURL()}, url::Origin()),
       base::DoNothing(), base::DoNothing());
 }
 

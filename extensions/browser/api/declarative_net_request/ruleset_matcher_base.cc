@@ -224,15 +224,15 @@ void RulesetMatcherBase::OnRenderFrameCreated(content::RenderFrameHost* host) {
   // commit for the frame is received in the browser (via DidFinishNavigation).
   // Hence if the parent frame is allowlisted, we allow list the current frame
   // as well in OnRenderFrameCreated.
-  content::GlobalFrameRoutingId parent_frame_id(parent->GetProcess()->GetID(),
-                                                parent->GetRoutingID());
+  content::GlobalRenderFrameHostId parent_frame_id(
+      parent->GetProcess()->GetID(), parent->GetRoutingID());
   absl::optional<RequestAction> parent_action =
       GetAllowlistedFrameAction(parent_frame_id);
   if (!parent_action)
     return;
 
-  content::GlobalFrameRoutingId frame_id(host->GetProcess()->GetID(),
-                                         host->GetRoutingID());
+  content::GlobalRenderFrameHostId frame_id(host->GetProcess()->GetID(),
+                                            host->GetRoutingID());
 
   bool inserted = false;
   std::tie(std::ignore, inserted) = allowlisted_frames_.insert(
@@ -242,7 +242,7 @@ void RulesetMatcherBase::OnRenderFrameCreated(content::RenderFrameHost* host) {
 
 void RulesetMatcherBase::OnRenderFrameDeleted(content::RenderFrameHost* host) {
   DCHECK(host);
-  allowlisted_frames_.erase(content::GlobalFrameRoutingId(
+  allowlisted_frames_.erase(content::GlobalRenderFrameHostId(
       host->GetProcess()->GetID(), host->GetRoutingID()));
 }
 
@@ -266,8 +266,8 @@ void RulesetMatcherBase::OnDidFinishNavigation(
   absl::optional<RequestAction> action =
       GetMaxPriorityAction(std::move(parent_action), std::move(frame_action));
 
-  content::GlobalFrameRoutingId frame_id(host->GetProcess()->GetID(),
-                                         host->GetRoutingID());
+  content::GlobalRenderFrameHostId frame_id(host->GetProcess()->GetID(),
+                                            host->GetRoutingID());
 
   allowlisted_frames_.erase(frame_id);
 
@@ -280,8 +280,8 @@ RulesetMatcherBase::GetAllowlistedFrameActionForTesting(
     content::RenderFrameHost* host) const {
   DCHECK(host);
 
-  content::GlobalFrameRoutingId frame_id(host->GetProcess()->GetID(),
-                                         host->GetRoutingID());
+  content::GlobalRenderFrameHostId frame_id(host->GetProcess()->GetID(),
+                                            host->GetRoutingID());
   return GetAllowlistedFrameAction(frame_id);
 }
 
@@ -415,7 +415,7 @@ RequestAction RulesetMatcherBase::CreateRequestAction(
 }
 
 absl::optional<RequestAction> RulesetMatcherBase::GetAllowlistedFrameAction(
-    content::GlobalFrameRoutingId frame_id) const {
+    content::GlobalRenderFrameHostId frame_id) const {
   auto it = allowlisted_frames_.find(frame_id);
   if (it == allowlisted_frames_.end())
     return absl::nullopt;

@@ -419,8 +419,8 @@ class WebRtcEventLogManagerTestBase : public ::testing::Test {
   bool OnPeerConnectionAdded(const PeerConnectionKey& key) {
     bool result;
     event_log_manager_->OnPeerConnectionAdded(
-        content::GlobalFrameRoutingId(key.render_process_id,
-                                      key.render_frame_id),
+        content::GlobalRenderFrameHostId(key.render_process_id,
+                                         key.render_frame_id),
         key.lid, ReplyClosure(&result));
     WaitForReply();
     return result;
@@ -429,8 +429,8 @@ class WebRtcEventLogManagerTestBase : public ::testing::Test {
   bool OnPeerConnectionRemoved(const PeerConnectionKey& key) {
     bool result;
     event_log_manager_->OnPeerConnectionRemoved(
-        content::GlobalFrameRoutingId(key.render_process_id,
-                                      key.render_frame_id),
+        content::GlobalRenderFrameHostId(key.render_process_id,
+                                         key.render_frame_id),
         key.lid, ReplyClosure(&result));
     WaitForReply();
     return result;
@@ -440,8 +440,8 @@ class WebRtcEventLogManagerTestBase : public ::testing::Test {
                                     const std::string& session_id) {
     bool result;
     event_log_manager_->OnPeerConnectionSessionIdSet(
-        content::GlobalFrameRoutingId(key.render_process_id,
-                                      key.render_frame_id),
+        content::GlobalRenderFrameHostId(key.render_process_id,
+                                         key.render_frame_id),
         key.lid, session_id, ReplyClosure(&result));
     WaitForReply();
     return result;
@@ -454,8 +454,8 @@ class WebRtcEventLogManagerTestBase : public ::testing::Test {
   bool OnPeerConnectionStopped(const PeerConnectionKey& key) {
     bool result;
     event_log_manager_->OnPeerConnectionStopped(
-        content::GlobalFrameRoutingId(key.render_process_id,
-                                      key.render_frame_id),
+        content::GlobalRenderFrameHostId(key.render_process_id,
+                                         key.render_frame_id),
         key.lid, ReplyClosure(&result));
     WaitForReply();
     return result;
@@ -580,8 +580,8 @@ class WebRtcEventLogManagerTestBase : public ::testing::Test {
                                               const std::string& message) {
     std::pair<bool, bool> result;
     event_log_manager_->OnWebRtcEventLogWrite(
-        content::GlobalFrameRoutingId(key.render_process_id,
-                                      key.render_frame_id),
+        content::GlobalRenderFrameHostId(key.render_process_id,
+                                         key.render_frame_id),
         key.lid, message, ReplyClosure(&result));
     WaitForReply();
     return result;

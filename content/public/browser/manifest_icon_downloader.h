@@ -41,15 +41,16 @@ class CONTENT_EXPORT ManifestIconDownloader final {
   // download the image.
   // |global_frame_routing_id| specifies the frame in which to initiate the
   // download.
-  static bool Download(content::WebContents* web_contents,
-                       const GURL& icon_url,
-                       int ideal_icon_size_in_px,
-                       int minimum_icon_size_in_px,
-                       int maximum_icon_size_in_px,
-                       IconFetchCallback callback,
-                       bool square_only = true,
-                       const GlobalFrameRoutingId& initiator_frame_routing_id =
-                           GlobalFrameRoutingId());
+  static bool Download(
+      content::WebContents* web_contents,
+      const GURL& icon_url,
+      int ideal_icon_size_in_px,
+      int minimum_icon_size_in_px,
+      int maximum_icon_size_in_px,
+      IconFetchCallback callback,
+      bool square_only = true,
+      const GlobalRenderFrameHostId& initiator_frame_routing_id =
+          GlobalRenderFrameHostId());
 
   // This threshold has been chosen arbitrarily and is open to any necessary
   // changes in the future.

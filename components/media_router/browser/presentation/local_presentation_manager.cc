@@ -37,7 +37,7 @@ LocalPresentationManager::GetOrCreateLocalPresentation(
 
 void LocalPresentationManager::RegisterLocalPresentationController(
     const PresentationInfo& presentation_info,
-    const content::GlobalFrameRoutingId& render_frame_host_id,
+    const content::GlobalRenderFrameHostId& render_frame_host_id,
     mojo::PendingRemote<blink::mojom::PresentationConnection>
         controller_connection_remote,
     mojo::PendingReceiver<blink::mojom::PresentationConnection>
@@ -52,7 +52,7 @@ void LocalPresentationManager::RegisterLocalPresentationController(
 
 void LocalPresentationManager::UnregisterLocalPresentationController(
     const std::string& presentation_id,
-    const content::GlobalFrameRoutingId& render_frame_host_id) {
+    const content::GlobalRenderFrameHostId& render_frame_host_id) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   auto it = local_presentations_.find(presentation_id);
   if (it == local_presentations_.end())
@@ -110,7 +110,7 @@ LocalPresentationManager::LocalPresentation::LocalPresentation(
 LocalPresentationManager::LocalPresentation::~LocalPresentation() {}
 
 void LocalPresentationManager::LocalPresentation::RegisterController(
-    const content::GlobalFrameRoutingId& render_frame_host_id,
+    const content::GlobalRenderFrameHostId& render_frame_host_id,
     mojo::PendingRemote<blink::mojom::PresentationConnection>
         controller_connection_remote,
     mojo::PendingReceiver<blink::mojom::PresentationConnection>
@@ -130,7 +130,7 @@ void LocalPresentationManager::LocalPresentation::RegisterController(
 }
 
 void LocalPresentationManager::LocalPresentation::UnregisterController(
-    const content::GlobalFrameRoutingId& render_frame_host_id) {
+    const content::GlobalRenderFrameHostId& render_frame_host_id) {
   pending_controllers_.erase(render_frame_host_id);
 }
 

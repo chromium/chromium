@@ -63,7 +63,7 @@ class CONTENT_EXPORT SharedWorkerServiceImpl : public SharedWorkerService {
 
   // Creates the worker if necessary or connects to an already existing worker.
   void ConnectToWorker(
-      GlobalFrameRoutingId client_render_frame_host_id,
+      GlobalRenderFrameHostId client_render_frame_host_id,
       blink::mojom::SharedWorkerInfoPtr info,
       mojo::PendingRemote<blink::mojom::SharedWorkerClient> client,
       blink::mojom::SharedWorkerCreationContextType creation_context_type,
@@ -80,9 +80,9 @@ class CONTENT_EXPORT SharedWorkerServiceImpl : public SharedWorkerService {
   void NotifyBeforeWorkerDestroyed(
       const blink::SharedWorkerToken& shared_worker_token);
   void NotifyClientAdded(const blink::SharedWorkerToken& shared_worker_token,
-                         GlobalFrameRoutingId render_frame_host_id);
+                         GlobalRenderFrameHostId render_frame_host_id);
   void NotifyClientRemoved(const blink::SharedWorkerToken& shared_worker_token,
-                           GlobalFrameRoutingId render_frame_host_id);
+                           GlobalRenderFrameHostId render_frame_host_id);
 
   StoragePartitionImpl* storage_partition() { return storage_partition_; }
 
@@ -143,7 +143,8 @@ class CONTENT_EXPORT SharedWorkerServiceImpl : public SharedWorkerService {
   // duplicate OnClientAdded() notifications if the same frame connects multiple
   // times to the same shared worker. Note that this is a situation unique to
   // shared worker and cannot happen with dedicated workers and service workers.
-  base::flat_map<std::pair<blink::SharedWorkerToken, GlobalFrameRoutingId>, int>
+  base::flat_map<std::pair<blink::SharedWorkerToken, GlobalRenderFrameHostId>,
+                 int>
       shared_worker_client_counts_;
 
   base::ObserverList<Observer> observers_;

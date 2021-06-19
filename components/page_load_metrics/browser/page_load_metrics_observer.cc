@@ -34,7 +34,7 @@ int GetBucketedViewportHardcodedWidth(const blink::MobileFriendliness& mf) {
              : BucketWithOffsetAndUnit(mf.viewport_hardcoded_width, 500, 10);
 }
 
-MemoryUpdate::MemoryUpdate(content::GlobalFrameRoutingId id, int64_t delta)
+MemoryUpdate::MemoryUpdate(content::GlobalRenderFrameHostId id, int64_t delta)
     : routing_id(id), delta_bytes(delta) {}
 
 ExtraRequestCompleteInfo::ExtraRequestCompleteInfo(

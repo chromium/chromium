@@ -110,13 +110,13 @@ void LiteVideoObserver::DidFinishNavigation(
       navigation_handle,
       base::BindOnce(&LiteVideoObserver::OnHintAvailable,
                      weak_ptr_factory_.GetWeakPtr(),
-                     content::GlobalFrameRoutingId(
+                     content::GlobalRenderFrameHostId(
                          render_frame_host->GetProcess()->GetID(),
                          render_frame_host->GetRoutingID())));
 }
 
 void LiteVideoObserver::OnHintAvailable(
-    const content::GlobalFrameRoutingId& render_frame_host_routing_id,
+    const content::GlobalRenderFrameHostId& render_frame_host_routing_id,
     absl::optional<lite_video::LiteVideoHint> hint,
     lite_video::LiteVideoBlocklistReason blocklist_reason,
     optimization_guide::OptimizationGuideDecision opt_guide_decision) {
@@ -180,7 +180,7 @@ void LiteVideoObserver::OnHintAvailable(
 }
 
 void LiteVideoObserver::SendHintToRenderFrameAgentForID(
-    const content::GlobalFrameRoutingId& routing_id,
+    const content::GlobalRenderFrameHostId& routing_id,
     const lite_video::LiteVideoHint& hint) {
   auto* render_frame_host = content::RenderFrameHost::FromID(routing_id);
   if (!render_frame_host)

@@ -71,7 +71,7 @@ class LiteVideoObserver
   // Callback run after a hint and blocklist reason is available for use
   // within the agent associated with |render_frame_host_routing_id|.
   void OnHintAvailable(
-      const content::GlobalFrameRoutingId& render_frame_host_routing_id,
+      const content::GlobalRenderFrameHostId& render_frame_host_routing_id,
       absl::optional<lite_video::LiteVideoHint> hint,
       lite_video::LiteVideoBlocklistReason blocklist_reason,
       optimization_guide::OptimizationGuideDecision opt_guide_decision);
@@ -79,7 +79,7 @@ class LiteVideoObserver
   // Sends the |hint| to the render frame agent corresponding to the
   // provided global frame routing id.
   void SendHintToRenderFrameAgentForID(
-      const content::GlobalFrameRoutingId& routing_id,
+      const content::GlobalRenderFrameHostId& routing_id,
       const lite_video::LiteVideoHint& hint);
 
   // The decider capable of making decisions about whether LiteVideos should be
@@ -99,7 +99,7 @@ class LiteVideoObserver
   // The set of routing ids corresponding to render frames that are waiting
   // for the decision of whether to throttle media requests that
   // occur within that frame.
-  std::set<content::GlobalFrameRoutingId> routing_ids_to_notify_;
+  std::set<content::GlobalRenderFrameHostId> routing_ids_to_notify_;
 
   // Current response bytes that have been targeted for LiteVideo throttling.
   uint64_t current_throttled_video_bytes_ = 0;

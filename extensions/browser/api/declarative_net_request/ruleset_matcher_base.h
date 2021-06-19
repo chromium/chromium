@@ -135,7 +135,7 @@ class RulesetMatcherBase {
   // Returns the matching RequestAction from |allowlisted_frames_| or
   // absl::nullopt if none is found.
   absl::optional<RequestAction> GetAllowlistedFrameAction(
-      content::GlobalFrameRoutingId frame_id) const;
+      content::GlobalRenderFrameHostId frame_id) const;
 
   const ExtensionId extension_id_;
   const RulesetID ruleset_id_;
@@ -143,7 +143,7 @@ class RulesetMatcherBase {
   // Stores the IDs for the RenderFrameHosts which are allow-listed due to an
   // allowAllRequests action and the corresponding highest priority
   // RequestAction.
-  std::map<content::GlobalFrameRoutingId, const RequestAction>
+  std::map<content::GlobalRenderFrameHostId, const RequestAction>
       allowlisted_frames_;
 
   DISALLOW_COPY_AND_ASSIGN(RulesetMatcherBase);

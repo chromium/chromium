@@ -224,7 +224,7 @@ class DevToolsBackgroundServicesContextTest
           base::BindOnce(&DidRegisterServiceWorker,
                          &service_worker_registration_id,
                          run_loop.QuitClosure()),
-          /*requesting_frame_id=*/GlobalFrameRoutingId());
+          /*requesting_frame_id=*/GlobalRenderFrameHostId());
 
       run_loop.Run();
     }

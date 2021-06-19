@@ -34,7 +34,7 @@ class CONTENT_EXPORT FileSystemAccessEntryFactory
   struct CONTENT_EXPORT BindingContext {
     BindingContext(const url::Origin& origin,
                    const GURL& url,
-                   GlobalFrameRoutingId frame_id)
+                   GlobalRenderFrameHostId frame_id)
         : origin(origin), url(url), frame_id(frame_id) {}
     BindingContext(const url::Origin& origin,
                    const GURL& url,
@@ -44,7 +44,7 @@ class CONTENT_EXPORT FileSystemAccessEntryFactory
           frame_id(worker_process_id, MSG_ROUTING_NONE) {}
     url::Origin origin;
     GURL url;
-    GlobalFrameRoutingId frame_id;
+    GlobalRenderFrameHostId frame_id;
     bool is_worker() const { return !frame_id; }
     int process_id() const { return frame_id.child_id; }
   };

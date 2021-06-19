@@ -96,7 +96,7 @@ class CONTENT_EXPORT ServiceWorkerNewScriptLoader final
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
       int64_t cache_resource_id,
       bool is_throttle_needed,
-      const GlobalFrameRoutingId& requesting_frame_id);
+      const GlobalRenderFrameHostId& requesting_frame_id);
 
   ~ServiceWorkerNewScriptLoader() override;
 
@@ -143,7 +143,7 @@ class CONTENT_EXPORT ServiceWorkerNewScriptLoader final
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
       int64_t cache_resource_id,
       bool is_throttle_needed,
-      const GlobalFrameRoutingId& requesting_frame_id);
+      const GlobalRenderFrameHostId& requesting_frame_id);
 
   // Writes the given headers into the service worker script storage.
   void WriteHeaders(network::mojom::URLResponseHeadPtr response_head);
@@ -245,7 +245,7 @@ class CONTENT_EXPORT ServiceWorkerNewScriptLoader final
   // PlzServiceWorker, we don't have a renderer assigned yet. We could also fail
   // the fetch and never get one. If that happens, we need to have a frame id
   // to log the failure into devtools.
-  const GlobalFrameRoutingId requesting_frame_id_;
+  const GlobalRenderFrameHostId requesting_frame_id_;
 
   base::WeakPtrFactory<ServiceWorkerNewScriptLoader> weak_factory_{this};
 

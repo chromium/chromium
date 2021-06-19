@@ -199,7 +199,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   static WebContentsImpl* FromFrameTreeNode(
       const FrameTreeNode* frame_tree_node);
   static WebContents* FromRenderFrameHostID(
-      GlobalFrameRoutingId render_frame_host_id);
+      GlobalRenderFrameHostId render_frame_host_id);
   static WebContents* FromRenderFrameHostID(int render_process_host_id,
                                             int render_frame_host_id);
   static WebContents* FromFrameTreeNodeId(int frame_tree_node_id);
@@ -520,7 +520,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
                     bool bypass_cache,
                     ImageDownloadCallback callback) override;
   int DownloadImageInFrame(
-      const GlobalFrameRoutingId& initiator_frame_routing_id,
+      const GlobalRenderFrameHostId& initiator_frame_routing_id,
       const GURL& url,
       bool is_favicon,
       uint32_t preferred_size,

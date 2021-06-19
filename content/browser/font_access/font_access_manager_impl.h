@@ -23,8 +23,8 @@ namespace content {
 // FontAccessManagerImpl (1) <- (*) BindingContext
 // FontAccessManagerImpl (1) <- (*) FontAccessChooser
 //
-// BindingContext (1) <- (1) GlobalFrameRoutingId
-// GlobalFrameRoutingId (1) <-- (1) FontAccessChooser
+// BindingContext (1) <- (1) GlobalRenderFrameHostId
+// GlobalRenderFrameHostId (1) <-- (1) FontAccessChooser
 //
 // Legend:
 //
@@ -36,7 +36,8 @@ namespace content {
 // * There's one FontAccessManagerImpl per StoragePartitionImpl
 // * Frames are bound to FontAccessManangerImpl via a BindingContext
 // * The FontAccessManagerImpl owns the lifetimes of FontAccessChoosers
-// * There is one FontAccessChooser for each Frame via its GlobalFrameRoutingId,
+// * There is one FontAccessChooser for each Frame via its
+// GlobalRenderFrameHostId,
 //   obtained from a corresponding BindingContext
 class CONTENT_EXPORT FontAccessManagerImpl
     : public blink::mojom::FontAccessManager,
@@ -50,11 +51,11 @@ class CONTENT_EXPORT FontAccessManagerImpl
   FontAccessManagerImpl operator=(const FontAccessManagerImpl&) = delete;
 
   struct BindingContext {
-    BindingContext(const url::Origin& origin, GlobalFrameRoutingId frame_id)
+    BindingContext(const url::Origin& origin, GlobalRenderFrameHostId frame_id)
         : origin(origin), frame_id(frame_id) {}
 
     url::Origin origin;
-    GlobalFrameRoutingId frame_id;
+    GlobalRenderFrameHostId frame_id;
   };
 
   void BindReceiver(
@@ -92,7 +93,8 @@ class CONTENT_EXPORT FontAccessManagerImpl
   bool skip_privacy_checks_for_testing_ = false;
 
   // Here to keep the choosers alive for the user to interact with.
-  std::map<GlobalFrameRoutingId, std::unique_ptr<FontAccessChooser>> choosers_;
+  std::map<GlobalRenderFrameHostId, std::unique_ptr<FontAccessChooser>>
+      choosers_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

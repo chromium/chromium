@@ -332,7 +332,7 @@ void BaseWebUIBrowserTest::PreLoadJavascriptLibraries(
     RenderFrameHost* preload_frame) {
   // We shouldn't preload libraries twice for the same frame in the same
   // process.
-  auto global_frame_routing_id = preload_frame->GetGlobalFrameRoutingId();
+  auto global_frame_routing_id = preload_frame->GetGlobalId();
   ASSERT_FALSE(
       base::Contains(libraries_preloaded_for_frames_, global_frame_routing_id));
 
@@ -593,7 +593,7 @@ bool BaseWebUIBrowserTest::RunJavascriptUsingHandler(
                                   ? preload_frame
                                   : test_handler_->GetRenderFrameHostForTest();
   if (!base::Contains(libraries_preloaded_for_frames_,
-                      frame_for_libraries->GetGlobalFrameRoutingId())) {
+                      frame_for_libraries->GetGlobalId())) {
     BuildJavascriptLibraries(&libraries);
     if (!preload_frame) {
       content = base::JoinString(libraries, u"\n");

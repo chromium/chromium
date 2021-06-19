@@ -29,7 +29,7 @@ using base::android::ScopedJavaLocalRef;
 
 InternalAuthenticatorAndroid::InternalAuthenticatorAndroid(
     content::RenderFrameHost* render_frame_host)
-    : render_frame_host_id_(render_frame_host->GetGlobalFrameRoutingId()) {
+    : render_frame_host_id_(render_frame_host->GetGlobalId()) {
   JNIEnv* env = AttachCurrentThread();
   java_internal_authenticator_ref_ = Java_InternalAuthenticator_create(
       env, reinterpret_cast<intptr_t>(this),

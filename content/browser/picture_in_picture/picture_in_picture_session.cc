@@ -44,8 +44,8 @@ void PictureInPictureSession::Update(
     const viz::SurfaceId& surface_id,
     const gfx::Size& natural_size,
     bool show_play_pause_button) {
-  player_id_ = MediaPlayerId(
-      service_->render_frame_host()->GetGlobalFrameRoutingId(), player_id);
+  player_id_ =
+      MediaPlayerId(service_->render_frame_host()->GetGlobalId(), player_id);
 
   media_player_remote_.reset();
   media_player_remote_.Bind(std::move(player_remote));

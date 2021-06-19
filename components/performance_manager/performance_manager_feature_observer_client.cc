@@ -12,7 +12,7 @@ namespace performance_manager {
 
 namespace {
 
-void OnChangeNodeUsing(content::GlobalFrameRoutingId id,
+void OnChangeNodeUsing(content::GlobalRenderFrameHostId id,
                        blink::mojom::ObservedFeatureType feature_type,
                        bool is_using,
                        GraphImpl* graph) {
@@ -46,7 +46,7 @@ PerformanceManagerFeatureObserverClient::
     ~PerformanceManagerFeatureObserverClient() = default;
 
 void PerformanceManagerFeatureObserverClient::OnStartUsing(
-    content::GlobalFrameRoutingId id,
+    content::GlobalRenderFrameHostId id,
     blink::mojom::ObservedFeatureType feature_type) {
   bool is_using = true;
   PerformanceManagerImpl::CallOnGraphImpl(
@@ -55,7 +55,7 @@ void PerformanceManagerFeatureObserverClient::OnStartUsing(
 }
 
 void PerformanceManagerFeatureObserverClient::OnStopUsing(
-    content::GlobalFrameRoutingId id,
+    content::GlobalRenderFrameHostId id,
     blink::mojom::ObservedFeatureType feature_type) {
   bool is_using = false;
   PerformanceManagerImpl::CallOnGraphImpl(

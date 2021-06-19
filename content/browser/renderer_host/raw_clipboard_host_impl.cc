@@ -76,8 +76,8 @@ RawClipboardHostImpl::~RawClipboardHostImpl() {
 
 RawClipboardHostImpl::RawClipboardHostImpl(RenderFrameHost* render_frame_host)
     : render_frame_routing_id_(
-          GlobalFrameRoutingId(render_frame_host->GetProcess()->GetID(),
-                               render_frame_host->GetRoutingID())),
+          GlobalRenderFrameHostId(render_frame_host->GetProcess()->GetID(),
+                                  render_frame_host->GetRoutingID())),
       clipboard_(ui::Clipboard::GetForCurrentThread()),
       clipboard_writer_(
           new ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste,

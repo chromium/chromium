@@ -12,7 +12,7 @@ MockFileSystemAccessPermissionGrant::~MockFileSystemAccessPermissionGrant() =
     default;
 
 void MockFileSystemAccessPermissionGrant::RequestPermission(
-    GlobalFrameRoutingId frame_id,
+    GlobalRenderFrameHostId frame_id,
     UserActivationState user_activation_state,
     base::OnceCallback<void(PermissionRequestOutcome)> callback) {
   RequestPermission_(frame_id, user_activation_state, callback);

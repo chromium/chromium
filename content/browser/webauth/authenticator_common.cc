@@ -735,7 +735,7 @@ std::string SerializeWebAuthnCollectedClientDataToJson(
 }
 
 AuthenticatorCommon::AuthenticatorCommon(RenderFrameHost* render_frame_host)
-    : render_frame_host_id_(render_frame_host->GetGlobalFrameRoutingId()),
+    : render_frame_host_id_(render_frame_host->GetGlobalId()),
       security_checker_(static_cast<RenderFrameHostImpl*>(render_frame_host)
                             ->GetWebAuthRequestSecurityChecker()) {
   // Disable the back-forward cache for any document that makes WebAuthn

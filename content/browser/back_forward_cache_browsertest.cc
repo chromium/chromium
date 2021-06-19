@@ -6351,7 +6351,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
   RenderFrameHostImpl* rfh_a = current_frame_host();
   RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
-  GlobalFrameRoutingId rfh_a_id = rfh_a->GetGlobalFrameRoutingId();
+  GlobalRenderFrameHostId rfh_a_id = rfh_a->GetGlobalId();
   DisableForRenderFrameHostForTesting(rfh_a_id);
 
   // 2) Navigate to B.
@@ -9883,7 +9883,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_FALSE(site_instance_1->IsRelatedSiteInstance(site_instance_2.get()));
 
   // Disable the BackForwardCache for |rfh_2|.
-  DisableForRenderFrameHostForTesting(rfh_2->GetGlobalFrameRoutingId());
+  DisableForRenderFrameHostForTesting(rfh_2->GetGlobalId());
 
   // 3) Navigate to |url_3|.
   EXPECT_TRUE(NavigateToURL(shell(), url_3));

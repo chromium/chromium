@@ -141,7 +141,7 @@ class MediaSessionServiceImplBrowserTest : public ContentBrowserTest {
 
   MediaSessionServiceImpl* GetService() {
     RenderFrameHost* main_frame = shell()->web_contents()->GetMainFrame();
-    const auto main_frame_id = main_frame->GetGlobalFrameRoutingId();
+    const auto main_frame_id = main_frame->GetGlobalId();
     if (GetSession()->services_.count(main_frame_id))
       return GetSession()->services_[main_frame_id];
 

@@ -17,7 +17,7 @@ namespace content {
 
 MediaSessionServiceImpl::MediaSessionServiceImpl(
     RenderFrameHost* render_frame_host)
-    : render_frame_host_id_(render_frame_host->GetGlobalFrameRoutingId()),
+    : render_frame_host_id_(render_frame_host->GetGlobalId()),
       playback_state_(blink::mojom::MediaSessionPlaybackState::NONE) {
   MediaSessionImpl* session = GetMediaSession();
   if (session)
@@ -39,7 +39,7 @@ void MediaSessionServiceImpl::Create(
   impl->Bind(std::move(receiver));
 }
 
-GlobalFrameRoutingId MediaSessionServiceImpl::GetRenderFrameHostId() const {
+GlobalRenderFrameHostId MediaSessionServiceImpl::GetRenderFrameHostId() const {
   return render_frame_host_id_;
 }
 

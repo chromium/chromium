@@ -200,7 +200,7 @@ void WebContentsFrameTracker::CaptureTargetChanged() {
 }
 
 void WebContentsFrameTracker::SetWebContentsAndContextFromRoutingId(
-    const GlobalFrameRoutingId& id) {
+    const GlobalRenderFrameHostId& id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   Observe(WebContents::FromRenderFrameHost(RenderFrameHost::FromID(id)));
   context_ = std::make_unique<WebContentsContext>(web_contents());

@@ -886,7 +886,7 @@ void WebTestControlHost::CompositeNodeQueueThen(
     }
 
     frame = composite_all_frames_node_queue_.front()->render_frame_host;
-    GlobalFrameRoutingId routing_id =
+    GlobalRenderFrameHostId routing_id =
         composite_all_frames_node_queue_.front()->render_frame_host_id;
     composite_all_frames_node_queue_.pop();
 
@@ -1935,7 +1935,8 @@ void WebTestControlHost::BindWebTestControlHostForRenderer(
 
 mojo::AssociatedRemote<mojom::WebTestRenderFrame>&
 WebTestControlHost::GetWebTestRenderFrameRemote(RenderFrameHost* frame) {
-  GlobalFrameRoutingId key(frame->GetProcess()->GetID(), frame->GetRoutingID());
+  GlobalRenderFrameHostId key(frame->GetProcess()->GetID(),
+                              frame->GetRoutingID());
   if (web_test_render_frame_map_.find(key) ==
       web_test_render_frame_map_.end()) {
     mojo::AssociatedRemote<mojom::WebTestRenderFrame>& new_ptr =
@@ -1969,7 +1970,7 @@ WebTestControlHost::GetWebTestRenderThreadRemote(RenderProcessHost* process) {
 }
 
 void WebTestControlHost::HandleWebTestRenderFrameRemoteError(
-    const GlobalFrameRoutingId& key) {
+    const GlobalRenderFrameHostId& key) {
   web_test_render_frame_map_.erase(key);
 }
 

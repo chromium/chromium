@@ -41,7 +41,8 @@ namespace extensions {
 // The non-static methods of this class use an internal cache.
 class ExtensionApiFrameIdMap {
  public:
-  // The data for a RenderFrame. Every GlobalFrameRoutingId maps to a FrameData.
+  // The data for a RenderFrame. Every GlobalRenderFrameHostId maps to a
+  // FrameData.
   struct FrameData {
     FrameData();
     FrameData(int frame_id, int parent_frame_id, int tab_id, int window_id);
@@ -93,7 +94,7 @@ class ExtensionApiFrameIdMap {
       int frame_id);
 
   // Retrieves the FrameData for a given RenderFrameHost id.
-  FrameData GetFrameData(content::GlobalFrameRoutingId rfh_id)
+  FrameData GetFrameData(content::GlobalRenderFrameHostId rfh_id)
       WARN_UNUSED_RESULT;
 
   // Called when a render frame is deleted. Stores the FrameData for |rfh| in
@@ -111,7 +112,7 @@ class ExtensionApiFrameIdMap {
   // If |require_live_frame| is true, FrameData will only
   // Returns empty FrameData when the corresponding RenderFrameHost is not
   // alive and |require_live_frame| is true.
-  FrameData KeyToValue(content::GlobalFrameRoutingId key,
+  FrameData KeyToValue(content::GlobalRenderFrameHostId key,
                        bool require_live_frame) const;
   FrameData KeyToValue(content::RenderFrameHost* rfh,
                        bool require_live_frame) const;
@@ -119,7 +120,7 @@ class ExtensionApiFrameIdMap {
   // Holds mappings of render frame key to FrameData from frames that have been
   // recently deleted. These are kept for a short time so beacon requests that
   // continue after a frame is unloaded can access the FrameData.
-  using FrameDataMap = std::map<content::GlobalFrameRoutingId, FrameData>;
+  using FrameDataMap = std::map<content::GlobalRenderFrameHostId, FrameData>;
   FrameDataMap deleted_frame_data_map_;
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionApiFrameIdMap);

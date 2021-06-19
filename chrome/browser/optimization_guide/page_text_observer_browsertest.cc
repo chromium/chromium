@@ -39,7 +39,7 @@ namespace optimization_guide {
 namespace {
 
 FrameTextDumpResult MakeFrameDump(mojom::TextDumpEvent event,
-                                  content::GlobalFrameRoutingId rfh_id,
+                                  content::GlobalRenderFrameHostId rfh_id,
                                   bool amp_frame,
                                   int nav_id,
                                   const std::u16string& contents) {
@@ -202,7 +202,7 @@ IN_PROC_BROWSER_TEST_F(PageTextObserverBrowserTest, SimpleCaseNoSubframes) {
       ::testing::UnorderedElementsAreArray({
           MakeFrameDump(
               mojom::TextDumpEvent::kFirstLayout,
-              web_contents()->GetMainFrame()->GetGlobalFrameRoutingId(),
+              web_contents()->GetMainFrame()->GetGlobalId(),
               /*amp_frame=*/false,
               web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
               u"hello"),
@@ -258,8 +258,7 @@ IN_PROC_BROWSER_TEST_F(PageTextObserverBrowserTest, FirstLayoutAndOnLoad) {
       SCOPED_TRACE(result);
 
       // These fields are the same for both events.
-      EXPECT_EQ(web_contents()->GetMainFrame()->GetGlobalFrameRoutingId(),
-                result.rfh_id());
+      EXPECT_EQ(web_contents()->GetMainFrame()->GetGlobalId(), result.rfh_id());
       EXPECT_FALSE(result.amp_frame());
       EXPECT_EQ(
           web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
@@ -321,10 +320,10 @@ IN_PROC_BROWSER_TEST_F(PageTextObserverBrowserTest, OOPIFAMPSubframe) {
 
   consumer.WaitForPageText();
 
-  content::GlobalFrameRoutingId amp_frame_id;
+  content::GlobalRenderFrameHostId amp_frame_id;
   for (auto* rfh : web_contents()->GetMainFrame()->GetFramesInSubtree()) {
     if (rfh->GetFrameName() == "amp") {
-      amp_frame_id = rfh->GetGlobalFrameRoutingId();
+      amp_frame_id = rfh->GetGlobalId();
       break;
     }
   }
@@ -348,8 +347,7 @@ IN_PROC_BROWSER_TEST_F(PageTextObserverBrowserTest, OOPIFAMPSubframe) {
       has_amp_result = true;
     } else {
       EXPECT_EQ(mojom::TextDumpEvent::kFirstLayout, result.event());
-      EXPECT_EQ(web_contents()->GetMainFrame()->GetGlobalFrameRoutingId(),
-                result.rfh_id());
+      EXPECT_EQ(web_contents()->GetMainFrame()->GetGlobalId(), result.rfh_id());
       EXPECT_EQ(
           web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
           result.unique_navigation_id());
@@ -394,8 +392,7 @@ IN_PROC_BROWSER_TEST_F(PageTextObserverBrowserTest, OOPIFNotAmpSubframe) {
   const auto& result = *consumer.result()->frame_results().begin();
 
   EXPECT_EQ(mojom::TextDumpEvent::kFirstLayout, result.event());
-  EXPECT_EQ(web_contents()->GetMainFrame()->GetGlobalFrameRoutingId(),
-            result.rfh_id());
+  EXPECT_EQ(web_contents()->GetMainFrame()->GetGlobalId(), result.rfh_id());
   EXPECT_FALSE(result.amp_frame());
   EXPECT_EQ(web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
             result.unique_navigation_id());
@@ -449,7 +446,7 @@ IN_PROC_BROWSER_TEST_F(PageTextObserverSingleProcessBrowserTest,
       ::testing::UnorderedElementsAreArray({
           MakeFrameDump(
               mojom::TextDumpEvent::kFinishedLoad,
-              web_contents()->GetMainFrame()->GetGlobalFrameRoutingId(),
+              web_contents()->GetMainFrame()->GetGlobalId(),
               /*amp_frame=*/false,
               web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
               u"mainframe\n\nhello"),
@@ -486,7 +483,7 @@ IN_PROC_BROWSER_TEST_F(PageTextObserverSingleProcessBrowserTest,
       ::testing::UnorderedElementsAreArray({
           MakeFrameDump(
               mojom::TextDumpEvent::kFirstLayout,
-              web_contents()->GetMainFrame()->GetGlobalFrameRoutingId(),
+              web_contents()->GetMainFrame()->GetGlobalId(),
               /*amp_frame=*/false,
               web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
               u"mainframe"),

@@ -46,7 +46,7 @@ class CONTENT_EXPORT RawClipboardHostImpl
   bool HasTransientUserActivation() const;
 
   // The render frame is not owned.
-  const GlobalFrameRoutingId render_frame_routing_id_;
+  const GlobalRenderFrameHostId render_frame_routing_id_;
 
   ui::Clipboard* const clipboard_;  // Not owned.
   std::unique_ptr<ui::ScopedClipboardWriter> clipboard_writer_;

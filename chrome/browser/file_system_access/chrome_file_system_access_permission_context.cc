@@ -116,7 +116,7 @@ const char kDeprecatedLastPickedDirectoryKey[] = "default-path";
 const char kDeprecatedLastPickedDirectoryTypeKey[] = "default-path-type";
 
 void ShowFileSystemAccessRestrictedDirectoryDialogOnUIThread(
-    content::GlobalFrameRoutingId frame_id,
+    content::GlobalRenderFrameHostId frame_id,
     const url::Origin& origin,
     const base::FilePath& path,
     HandleType handle_type,
@@ -311,7 +311,7 @@ BindResultCallbackToCurrentSequence(
 }
 
 void DoSafeBrowsingCheckOnUIThread(
-    content::GlobalFrameRoutingId frame_id,
+    content::GlobalRenderFrameHostId frame_id,
     std::unique_ptr<content::FileSystemAccessWriteItem> item,
     safe_browsing::CheckDownloadCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -434,7 +434,7 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
   }
 
   void RequestPermission(
-      content::GlobalFrameRoutingId frame_id,
+      content::GlobalRenderFrameHostId frame_id,
       UserActivationState user_activation_state,
       base::OnceCallback<void(PermissionRequestOutcome)> callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1091,7 +1091,7 @@ void ChromeFileSystemAccessPermissionContext::ConfirmSensitiveDirectoryAccess(
     PathType path_type,
     const base::FilePath& path,
     HandleType handle_type,
-    content::GlobalFrameRoutingId frame_id,
+    content::GlobalRenderFrameHostId frame_id,
     base::OnceCallback<void(SensitiveDirectoryResult)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -1116,7 +1116,7 @@ void ChromeFileSystemAccessPermissionContext::ConfirmSensitiveDirectoryAccess(
 
 void ChromeFileSystemAccessPermissionContext::PerformAfterWriteChecks(
     std::unique_ptr<content::FileSystemAccessWriteItem> item,
-    content::GlobalFrameRoutingId frame_id,
+    content::GlobalRenderFrameHostId frame_id,
     base::OnceCallback<void(AfterWriteCheckResult)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   content::GetUIThreadTaskRunner({})->PostTask(
@@ -1141,7 +1141,7 @@ void ChromeFileSystemAccessPermissionContext::
         const url::Origin& origin,
         const base::FilePath& path,
         HandleType handle_type,
-        content::GlobalFrameRoutingId frame_id,
+        content::GlobalRenderFrameHostId frame_id,
         base::OnceCallback<void(SensitiveDirectoryResult)> callback,
         bool should_block) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

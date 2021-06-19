@@ -64,7 +64,7 @@ using PathInfo = FileSystemAccessPermissionContext::PathInfo;
 namespace {
 
 void ShowFilePickerOnUIThread(const url::Origin& requesting_origin,
-                              GlobalFrameRoutingId frame_id,
+                              GlobalRenderFrameHostId frame_id,
                               const FileSystemChooser::Options& options,
                               FileSystemChooser::ResultCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);

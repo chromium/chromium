@@ -77,7 +77,7 @@ struct WebRequestInfoInitParams {
   bool is_service_worker_script = false;
   absl::optional<int64_t> navigation_id;
   ukm::SourceIdObj ukm_source_id = ukm::kInvalidSourceIdObj;
-  content::GlobalFrameRoutingId parent_routing_id;
+  content::GlobalRenderFrameHostId parent_routing_id;
 
  private:
   void InitializeWebViewAndFrameData(
@@ -184,7 +184,7 @@ struct WebRequestInfo {
   // document subresource and sub-frame requests.
   // TODO(karandeepb, mcnee): For subresources, having "parent" in the name is
   // misleading. This should be renamed to indicate that this is the initiator.
-  const content::GlobalFrameRoutingId parent_routing_id;
+  const content::GlobalRenderFrameHostId parent_routing_id;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(WebRequestInfo);

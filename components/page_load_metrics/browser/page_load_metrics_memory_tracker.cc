@@ -74,7 +74,7 @@ void PageLoadMetricsMemoryTracker::OnV8MemoryMeasurementAvailable(
 
   // Iterate through frames with available measurements.
   for (const auto& map_pair : frame_data) {
-    content::GlobalFrameRoutingId frame_routing_id = map_pair.first;
+    content::GlobalRenderFrameHostId frame_routing_id = map_pair.first;
     content::RenderFrameHost* rfh =
         content::RenderFrameHost::FromID(frame_routing_id);
 
@@ -104,14 +104,13 @@ void PageLoadMetricsMemoryTracker::OnV8MemoryMeasurementAvailable(
       continue;
 
     auto emplace_pair = memory_update_map.emplace(std::make_pair(
-        observer,
-        ObserverWeakPtrAndMemoryUpdates(
-            observer->AsWeakPtr(),
-            MemoryUpdate(rfh->GetGlobalFrameRoutingId(), delta_bytes))));
+        observer, ObserverWeakPtrAndMemoryUpdates(
+                      observer->AsWeakPtr(),
+                      MemoryUpdate(rfh->GetGlobalId(), delta_bytes))));
 
     if (!emplace_pair.second) {
       emplace_pair.first->second.updates.emplace_back(
-          MemoryUpdate(rfh->GetGlobalFrameRoutingId(), delta_bytes));
+          MemoryUpdate(rfh->GetGlobalId(), delta_bytes));
     }
   }
 
@@ -152,8 +151,8 @@ void PageLoadMetricsMemoryTracker::OnRenderFrameDeleted(
   if (delta_bytes == 0)
     return;
 
-  std::vector<MemoryUpdate> update({MemoryUpdate(
-      render_frame_host->GetGlobalFrameRoutingId(), delta_bytes)});
+  std::vector<MemoryUpdate> update(
+      {MemoryUpdate(render_frame_host->GetGlobalId(), delta_bytes)});
   observer->OnV8MemoryChanged(update);
 }
 

@@ -423,7 +423,7 @@ void SharedWorkerHost::Destruct() {
 SharedWorkerHost::ClientInfo::ClientInfo(
     mojo::Remote<blink::mojom::SharedWorkerClient> client,
     int connection_request_id,
-    GlobalFrameRoutingId render_frame_host_id)
+    GlobalRenderFrameHostId render_frame_host_id)
     : client(std::move(client)),
       connection_request_id(connection_request_id),
       render_frame_host_id(render_frame_host_id) {}
@@ -474,9 +474,9 @@ void SharedWorkerHost::RenderProcessHostDestroyed() {
   Destruct();
 }
 
-std::vector<GlobalFrameRoutingId>
+std::vector<GlobalRenderFrameHostId>
 SharedWorkerHost::GetRenderFrameIDsForWorker() {
-  std::vector<GlobalFrameRoutingId> result;
+  std::vector<GlobalRenderFrameHostId> result;
   result.reserve(clients_.size());
   for (const ClientInfo& info : clients_)
     result.push_back(info.render_frame_host_id);
@@ -501,7 +501,7 @@ void SharedWorkerHost::ReportNoBinderForInterface(const std::string& error) {
 
 void SharedWorkerHost::AddClient(
     mojo::PendingRemote<blink::mojom::SharedWorkerClient> client,
-    GlobalFrameRoutingId client_render_frame_host_id,
+    GlobalRenderFrameHostId client_render_frame_host_id,
     const blink::MessagePortChannel& port,
     ukm::SourceId client_ukm_source_id) {
   mojo::Remote<blink::mojom::SharedWorkerClient> remote_client(

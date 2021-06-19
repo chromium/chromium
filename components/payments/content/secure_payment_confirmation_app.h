@@ -105,7 +105,7 @@ class SecurePaymentConfirmationApp : public PaymentApp,
 
   // Used only for comparison with the RenderFrameHost pointer in
   // RenderFrameDeleted() method.
-  content::GlobalFrameRoutingId authenticator_frame_routing_id_;
+  content::GlobalRenderFrameHostId authenticator_frame_routing_id_;
 
   const std::string effective_relying_party_identity_;
   const std::unique_ptr<SkBitmap> icon_;

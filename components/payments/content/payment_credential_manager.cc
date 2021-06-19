@@ -29,7 +29,7 @@ void PaymentCredentialManager::DidStartNavigation(
 }
 
 void PaymentCredentialManager::CreatePaymentCredential(
-    content::GlobalFrameRoutingId initiator_frame_routing_id,
+    content::GlobalRenderFrameHostId initiator_frame_routing_id,
     scoped_refptr<PaymentManifestWebDataService> web_data_sevice,
     mojo::PendingReceiver<payments::mojom::PaymentCredential> receiver) {
   payment_credential_ = std::make_unique<PaymentCredential>(

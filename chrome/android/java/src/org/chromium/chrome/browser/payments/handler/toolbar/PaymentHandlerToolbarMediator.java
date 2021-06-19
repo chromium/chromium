@@ -9,7 +9,7 @@ import android.os.Handler;
 import androidx.annotation.DrawableRes;
 
 import org.chromium.components.security_state.ConnectionSecurityLevel;
-import org.chromium.content_public.browser.GlobalFrameRoutingId;
+import org.chromium.content_public.browser.GlobalRenderFrameHostId;
 import org.chromium.content_public.browser.LifecycleState;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
@@ -73,7 +73,7 @@ import org.chromium.url.GURL;
 
     // WebContentsObserver:
     @Override
-    public void didFinishLoad(GlobalFrameRoutingId rfhId, GURL url, boolean isKnownValid,
+    public void didFinishLoad(GlobalRenderFrameHostId rfhId, GURL url, boolean isKnownValid,
             boolean isMainFrame, @LifecycleState int rfhLifecycleState) {
         if (rfhLifecycleState != LifecycleState.ACTIVE) return;
         // Hides the Progress Bar after a delay to make sure it is rendered for at least

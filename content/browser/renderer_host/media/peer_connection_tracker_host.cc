@@ -71,7 +71,7 @@ PeerConnectionTrackerHost::GetAllHosts() {
 }
 
 PeerConnectionTrackerHost::PeerConnectionTrackerHost(RenderFrameHost* frame)
-    : frame_id_(frame->GetGlobalFrameRoutingId()),
+    : frame_id_(frame->GetGlobalId()),
       peer_pid_(frame->GetProcess()->GetProcess().Pid()) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   RegisterHost(this);

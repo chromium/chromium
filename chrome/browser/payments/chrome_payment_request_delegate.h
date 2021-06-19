@@ -80,7 +80,7 @@ class ChromePaymentRequestDelegate : public ContentPaymentRequestDelegate {
 
   std::unique_ptr<SecurePaymentConfirmationController> spc_dialog_;
 
-  content::GlobalFrameRoutingId frame_routing_id_;
+  content::GlobalRenderFrameHostId frame_routing_id_;
 
   DISALLOW_COPY_AND_ASSIGN(ChromePaymentRequestDelegate);
 };

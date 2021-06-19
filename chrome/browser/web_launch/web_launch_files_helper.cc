@@ -69,7 +69,7 @@ class EntriesBuilder {
                            ->GetFileSystemAccessEntryFactory()),
         context_(url::Origin::Create(launch_url),
                  launch_url,
-                 content::GlobalFrameRoutingId(
+                 content::GlobalRenderFrameHostId(
                      web_contents->GetMainFrame()->GetProcess()->GetID(),
                      web_contents->GetMainFrame()->GetRoutingID())) {}
 

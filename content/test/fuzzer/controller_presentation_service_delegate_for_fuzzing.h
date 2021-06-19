@@ -160,7 +160,7 @@ class ControllerPresentationServiceDelegateForFuzzing
 
   // We store all callbacks as single callables; not queued nor out of order,
   // as this mimics the real delegate as closely as possible
-  std::map<content::GlobalFrameRoutingId,
+  std::map<content::GlobalRenderFrameHostId,
            content::PresentationServiceDelegate::Observer*>
       observers_;
 

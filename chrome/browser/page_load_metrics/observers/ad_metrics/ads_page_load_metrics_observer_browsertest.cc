@@ -2263,16 +2263,14 @@ class AdsMemoryMeasurementBrowserTest
   std::unordered_set<int> GetFrameRoutingIds() {
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
-    std::unordered_set<int> frame_routing_ids = {web_contents->GetMainFrame()
-                                                     ->GetGlobalFrameRoutingId()
-                                                     .frame_routing_id};
+    std::unordered_set<int> frame_routing_ids = {
+        web_contents->GetMainFrame()->GetGlobalId().frame_routing_id};
 
     std::vector<content::RenderFrameHost*> children =
         web_contents->GetMainFrame()->GetFramesInSubtree();
 
     for (auto* child : children) {
-      frame_routing_ids.insert(
-          child->GetGlobalFrameRoutingId().frame_routing_id);
+      frame_routing_ids.insert(child->GetGlobalId().frame_routing_id);
     }
 
     return frame_routing_ids;
@@ -2315,7 +2313,7 @@ IN_PROC_BROWSER_TEST_F(AdsMemoryMeasurementBrowserTest,
                                   ->tab_strip_model()
                                   ->GetActiveWebContents()
                                   ->GetMainFrame()
-                                  ->GetGlobalFrameRoutingId()
+                                  ->GetGlobalId()
                                   .frame_routing_id;
   waiter->AddMemoryUpdateExpectation(main_frame_routing_id);
 

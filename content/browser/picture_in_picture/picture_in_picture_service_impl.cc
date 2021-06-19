@@ -41,8 +41,7 @@ void PictureInPictureServiceImpl::StartSession(
   mojo::PendingRemote<blink::mojom::PictureInPictureSession> session_remote;
 
   auto result = GetController().StartSession(
-      this,
-      MediaPlayerId(render_frame_host()->GetGlobalFrameRoutingId(), player_id),
+      this, MediaPlayerId(render_frame_host()->GetGlobalId(), player_id),
       std::move(player_remote), surface_id, natural_size,
       show_play_pause_button, std::move(observer), &session_remote,
       &window_size);

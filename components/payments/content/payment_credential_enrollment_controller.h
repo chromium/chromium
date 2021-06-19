@@ -61,7 +61,7 @@ class PaymentCredentialEnrollmentController
   PaymentCredentialEnrollmentController& operator=(
       const PaymentCredentialEnrollmentController& other) = delete;
 
-  void ShowDialog(content::GlobalFrameRoutingId initiator_frame_routing_id,
+  void ShowDialog(content::GlobalRenderFrameHostId initiator_frame_routing_id,
                   std::unique_ptr<SkBitmap> instrument_icon,
                   const std::u16string& instrument_name,
                   ResponseCallback response_callback);
@@ -96,7 +96,7 @@ class PaymentCredentialEnrollmentController
   void RecordFirstCloseReason(
       SecurePaymentConfirmationEnrollDialogResult result);
 
-  content::GlobalFrameRoutingId initiator_frame_routing_id_;
+  content::GlobalRenderFrameHostId initiator_frame_routing_id_;
 
   ResponseCallback response_callback_;
 

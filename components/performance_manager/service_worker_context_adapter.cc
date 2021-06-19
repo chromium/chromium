@@ -323,7 +323,7 @@ void ServiceWorkerContextAdapter::OnNoControllees(int64_t version_id,
 void ServiceWorkerContextAdapter::OnControlleeNavigationCommitted(
     int64_t version_id,
     const std::string& client_uuid,
-    content::GlobalFrameRoutingId render_frame_host_id) {
+    content::GlobalRenderFrameHostId render_frame_host_id) {
   // The navigation committed notification should not be sent if the frame is
   // not already a client of |version_id|.
   auto it = service_worker_clients_.find(version_id);

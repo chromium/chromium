@@ -353,7 +353,7 @@ class RenderFrameDeletedObserver : public WebContentsObserver {
   // We cannot keep a pointer because if the RenderFrameHost is not in the
   // created state when this class is initialized, then RenderFrameDeleted might
   // not be called when it is destroyed.
-  GlobalFrameRoutingId routing_id_;
+  GlobalRenderFrameHostId routing_id_;
   std::unique_ptr<base::RunLoop> runner_;
 
   DISALLOW_COPY_AND_ASSIGN(RenderFrameDeletedObserver);
@@ -387,7 +387,7 @@ class RenderFrameHostWrapper {
   RenderFrameHost* operator->() const;
 
  private:
-  const GlobalFrameRoutingId routing_id_;
+  const GlobalRenderFrameHostId routing_id_;
 
   // It's tempting to just inherit but RenderFrameDeletedObserver is not
   // movable because it is a WebContentsObserver.
