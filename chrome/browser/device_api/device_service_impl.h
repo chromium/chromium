@@ -44,7 +44,7 @@ class DeviceServiceImpl final
       content::RenderFrameHost* host,
       mojo::PendingReceiver<blink::mojom::DeviceAPIService> receiver);
 
-  void OnForceInstallWebAppListChanged();
+  void OnDisposingIfNeeded();
 
   content::RenderFrameHost* const host_;
   PrefChangeRegistrar pref_change_registrar_;

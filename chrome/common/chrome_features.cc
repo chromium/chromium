@@ -396,7 +396,7 @@ const base::Feature kEnableIncognitoShortcutOnDesktop{
 
 // Enable the restricted web APIs for high-trusted apps.
 const base::Feature kEnableRestrictedWebApis{"EnableRestrictedWebApis",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
+                                             base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enable web app uninstallation from Windows settings or control panel.
 const base::Feature kEnableWebAppUninstallFromOsSettings{

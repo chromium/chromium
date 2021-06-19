@@ -11,6 +11,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/navigation_simulator.h"
@@ -51,13 +52,32 @@ class DeviceAPIServiceTest : public ChromeRenderViewHostTestHarness {
     DeviceServiceImpl::Create(main_rfh(), remote_.BindNewPipeAndPassReceiver());
   }
 
+  void SetWebAppDeviceAttributesQueryPref(bool allowed) {
+    profile()->GetPrefs()->SetBoolean(
+        prefs::kManagedWebAppsAccessToDeviceAttributesAllowed, allowed);
+  }
+
   mojo::Remote<blink::mojom::DeviceAPIService>* remote() { return &remote_; }
 
  private:
   mojo::Remote<blink::mojom::DeviceAPIService> remote_;
 };
 
-TEST_F(DeviceAPIServiceTest, FlagOffByDefault) {
+TEST_F(DeviceAPIServiceTest, EnableServiceByDefault) {
+  TryCreatingService(GURL(kTrustedUrl));
+  remote()->FlushForTesting();
+  ASSERT_TRUE(remote()->is_connected());
+}
+
+TEST_F(DeviceAPIServiceTest, EnableServiceByTurnOnPrefs) {
+  SetWebAppDeviceAttributesQueryPref(true);
+  TryCreatingService(GURL(kTrustedUrl));
+  remote()->FlushForTesting();
+  ASSERT_TRUE(remote()->is_connected());
+}
+
+TEST_F(DeviceAPIServiceTest, DisableServiceByTurnOffPrefs) {
+  SetWebAppDeviceAttributesQueryPref(false);
   TryCreatingService(GURL(kTrustedUrl));
   remote()->FlushForTesting();
   ASSERT_FALSE(remote()->is_connected());

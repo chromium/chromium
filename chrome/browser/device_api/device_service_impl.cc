@@ -19,13 +19,18 @@ namespace {
 
 bool IsTrustedContext(content::RenderFrameHost* host,
                       const url::Origin& origin) {
-  // TODO(anqing): This is used for dev trial. The flag will be removed when
-  // permission policies are ready.
+  // TODO(anqing): This feature flag is turned on by default for origin trial.
+  // The flag will be removed when permission policies are ready.
   if (!base::FeatureList::IsEnabled(features::kEnableRestrictedWebApis))
     return false;
 
   PrefService* prefs =
       Profile::FromBrowserContext(host->GetBrowserContext())->GetPrefs();
+
+  if (!prefs->GetBoolean(
+          prefs::kManagedWebAppsAccessToDeviceAttributesAllowed)) {
+    return false;
+  }
 
   // TODO(apotapchuk): Implement a more efficient way of checking the trustness
   // status of the app.
@@ -47,8 +52,12 @@ DeviceServiceImpl::DeviceServiceImpl(
   pref_change_registrar_.Init(
       Profile::FromBrowserContext(host->GetBrowserContext())->GetPrefs());
   pref_change_registrar_.Add(
+      prefs::kManagedWebAppsAccessToDeviceAttributesAllowed,
+      base::BindRepeating(&DeviceServiceImpl::OnDisposingIfNeeded,
+                          base::Unretained(this)));
+  pref_change_registrar_.Add(
       prefs::kWebAppInstallForceList,
-      base::BindRepeating(&DeviceServiceImpl::OnForceInstallWebAppListChanged,
+      base::BindRepeating(&DeviceServiceImpl::OnDisposingIfNeeded,
                           base::Unretained(this)));
 }
 
@@ -77,7 +86,7 @@ void DeviceServiceImpl::RegisterProfilePrefs(PrefRegistrySimple* registry) {
       prefs::kManagedWebAppsAccessToDeviceAttributesAllowed, true);
 }
 
-void DeviceServiceImpl::OnForceInstallWebAppListChanged() {
+void DeviceServiceImpl::OnDisposingIfNeeded() {
   // DeviceServiceImpl is allocated on the heap, thus it is safe to remove it
   // like this.
   if (!IsTrustedContext(host_, origin())) {
