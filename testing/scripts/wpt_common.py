@@ -6,35 +6,24 @@ import base64
 import json
 import os
 import sys
-import time
 
 import six
 
 import common
 
 BLINK_TOOLS_DIR = os.path.join(common.SRC_DIR, 'third_party', 'blink', 'tools')
-CATAPULT_DIR = os.path.join(common.SRC_DIR, 'third_party', 'catapult')
-LAYOUT_TEST_RESULTS_SUBDIR = 'layout-test-results'
-TYP_DIR = os.path.join(CATAPULT_DIR, 'third_party', 'typ')
-WEB_TESTS_DIR = os.path.normpath(
-    os.path.join(BLINK_TOOLS_DIR, os.pardir, 'web_tests'))
+WEB_TESTS_DIR = os.path.join(BLINK_TOOLS_DIR, os.pardir, 'web_tests')
 EXTERNAL_WPT_TESTS_DIR = os.path.join(WEB_TESTS_DIR, 'external', 'wpt')
+LAYOUT_TEST_RESULTS_SUBDIR = 'layout-test-results'
 
 if BLINK_TOOLS_DIR not in sys.path:
     sys.path.append(BLINK_TOOLS_DIR)
-
-if TYP_DIR not in sys.path:
-    sys.path.append(TYP_DIR)
 
 from blinkpy.common.host import Host
 from blinkpy.common.html_diff import html_diff
 from blinkpy.common.system.filesystem import FileSystem
 from blinkpy.common.unified_diff import unified_diff
 from blinkpy.web_tests.models import test_failures
-from typ.artifacts import Artifacts
-from typ.json_results import Result
-from typ.result_sink import ResultSinkReporter
-
 
 class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
     """The base class for script adapters that use wptrunner to execute web
@@ -52,7 +41,6 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
         # Path to the output of the test run. Comes from the args passed to the
         # run, parsed after this constructor. Can be overwritten by tests.
         self.wpt_output = None
-        self.sink = ResultSinkReporter()
 
     def generate_test_output_args(self, output):
         return ['--log-chromium', output]
@@ -240,7 +228,6 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
                 if artifact_subpath:
                     root_node["artifacts"]["crash_log"] = [artifact_subpath]
 
-            self._add_result_to_sink(path_so_far, root_node)
             return
 
         # We're not at a leaf node, continue traversing the trie.
@@ -251,43 +238,6 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
             new_path = path_so_far + delim + key if path_so_far else key
             self._process_test_leaves(results_dir, delim, root_node[key],
                                       new_path)
-
-    def _add_result_to_sink(self, test_name, result_node):
-        """Add's test results to results sink
-
-        Args:
-          test_name: Name of the test to add to results sink.
-          result_node: Dictionary containing the actual result, expected result
-              and an artifacts dictionary.
-        """
-
-        artifacts = Artifacts(output_dir=self.wpt_output,
-                              host=self.sink.host,
-                              artifacts_base_dir=LAYOUT_TEST_RESULTS_SUBDIR)
-
-        assert len(result_node['actual'].split()) == 1, (
-            ('There should be only one result, however test %s has the '
-             'following results "%s"') % (test_name, result_node['actual']))
-        unexpected = result_node['actual'] not in result_node['expected']
-
-        for artifact_name, path in result_node.get('artifacts', {}).items():
-            artifacts.AddArtifact(artifact_name, path)
-
-        result = Result(name=test_name,
-                        actual=result_node['actual'],
-                        started=time.time() - result_node.get('time', 0),
-                        took=result_node.get('time', 0),
-                        worker=0,
-                        expected=set(result_node['expected'].split()),
-                        unexpected=unexpected,
-                        artifacts=artifacts.artifacts)
-
-        index = test_name.find('?')
-        test_path = test_name[:index] if index != -1 else test_name
-
-        self.sink.report_individual_test_result(
-            test_name, result, LAYOUT_TEST_RESULTS_SUBDIR,
-            None, os.path.join(WEB_TESTS_DIR, test_path))
 
     def _maybe_write_expected_output(self, results_dir, test_name):
         """Attempts to create an expected output artifact for the test.
