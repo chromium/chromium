@@ -30,6 +30,9 @@ source_set("unit_tests") {
   sources = [ "audio_playback_sink_ios_unittest.cc" ]
   deps = [
     ":audio",
+    "//base",
+    "//base/test:test_support",
+    "//remoting/client/audio",
     "//remoting/client/audio:test_support",
     "//testing/gmock",
     "//testing/gtest",
