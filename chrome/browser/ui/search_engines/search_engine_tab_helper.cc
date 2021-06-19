@@ -37,7 +37,21 @@ bool IsFormSubmit(NavigationEntry* entry) {
                                       ui::PAGE_TRANSITION_FORM_SUBMIT);
 }
 
-std::u16string GenerateKeywordFromNavigationEntry(NavigationEntry* entry) {
+}  // namespace
+
+SearchEngineTabHelper::~SearchEngineTabHelper() = default;
+
+void SearchEngineTabHelper::DidFinishNavigation(
+    content::NavigationHandle* handle) {
+  GenerateKeywordIfNecessary(handle);
+}
+
+void SearchEngineTabHelper::WebContentsDestroyed() {
+  favicon_driver_observation_.Reset();
+}
+
+std::u16string SearchEngineTabHelper::GenerateKeywordFromNavigationEntry(
+    NavigationEntry* entry) {
   // Don't autogenerate keywords for pages that are the result of form
   // submissions.
   if (IsFormSubmit(entry))
@@ -65,20 +79,6 @@ std::u16string GenerateKeywordFromNavigationEntry(NavigationEntry* entry) {
   }
 
   return TemplateURL::GenerateKeyword(url);
-}
-
-}  // namespace
-
-SearchEngineTabHelper::~SearchEngineTabHelper() {
-}
-
-void SearchEngineTabHelper::DidFinishNavigation(
-    content::NavigationHandle* handle) {
-  GenerateKeywordIfNecessary(handle);
-}
-
-void SearchEngineTabHelper::WebContentsDestroyed() {
-  favicon_driver_observation_.Reset();
 }
 
 SearchEngineTabHelper::SearchEngineTabHelper(WebContents* web_contents)
@@ -166,7 +166,8 @@ void SearchEngineTabHelper::OnFaviconUpdated(
 
 void SearchEngineTabHelper::GenerateKeywordIfNecessary(
     content::NavigationHandle* handle) {
-  if (!handle->IsInMainFrame() || !handle->GetSearchableFormURL().is_valid())
+  if (!handle->IsInPrimaryMainFrame() ||
+      !handle->GetSearchableFormURL().is_valid())
     return;
 
   Profile* profile =

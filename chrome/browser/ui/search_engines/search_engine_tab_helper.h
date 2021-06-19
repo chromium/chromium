@@ -16,6 +16,10 @@
 #include "content/public/browser/web_contents_receiver_set.h"
 #include "content/public/browser/web_contents_user_data.h"
 
+namespace content {
+class NavigationEntry;
+}
+
 // Per-tab search engine manager. Handles dealing search engine processing
 // functionality.
 class SearchEngineTabHelper
@@ -30,8 +34,13 @@ class SearchEngineTabHelper
   void DidFinishNavigation(content::NavigationHandle* handle) override;
   void WebContentsDestroyed() override;
 
- private:
+ protected:
   explicit SearchEngineTabHelper(content::WebContents* web_contents);
+  // Virtual for testing.
+  virtual std::u16string GenerateKeywordFromNavigationEntry(
+      content::NavigationEntry* entry);
+
+ private:
   friend class content::WebContentsUserData<SearchEngineTabHelper>;
 
   // chrome::mojom::OpenSearchDescriptionDocumentHandler overrides.
