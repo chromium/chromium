@@ -97,11 +97,14 @@ void AutocompleteResult::GroupSuggestionsBySearchVsURL(JNIEnv* env,
                                                        int first_index,
                                                        int last_index) {
   const int num_elements = matches_.size();
-  DCHECK_GE(first_index, 0);
-  DCHECK_LT(first_index, num_elements);
-  DCHECK_GT(last_index, 0);
-  DCHECK_LE(last_index, num_elements);
-  DCHECK_LT(first_index, last_index);
+  if (first_index < 0 || last_index <= first_index ||
+      last_index > num_elements) {
+    DCHECK(false) << "Range [" << first_index << "; " << last_index
+                  << ") is not valid for grouping; accepted range: [0; "
+                  << num_elements << ").";
+    return;
+  }
+
   auto range_start = const_cast<ACMatches&>(matches_).begin();
   GroupSuggestionsBySearchVsURL(range_start + first_index,
                                 range_start + last_index);

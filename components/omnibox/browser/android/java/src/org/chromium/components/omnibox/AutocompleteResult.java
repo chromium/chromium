@@ -211,7 +211,15 @@ public class AutocompleteResult {
      */
     public void groupSuggestionsBySearchVsURL(int firstIndex, int lastIndex) {
         if (mNativeAutocompleteResult != 0) {
-            assert verifyCoherency() : "Pre-group verification failed";
+            if (!verifyCoherency()) {
+                // This may trigger if the Native (C++) object got updated and we haven't had a
+                // chance to reflect this update here. When this happens, do not rearrange the
+                // order of suggestions and wait for a corresponding update.
+                // Need to identify whether this issue is anything larger than just background
+                // update.
+                assert false : "Pre-group verification failed. Please report.";
+                return;
+            }
             AutocompleteResultJni.get().groupSuggestionsBySearchVsURL(
                     mNativeAutocompleteResult, firstIndex, lastIndex);
             // Verify that the Native AutocompleteResult update has been properly
