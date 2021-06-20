@@ -8,6 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/ash/arc/nearby_share/share_info_file_handler.h"
 #include "chrome/browser/sharesheet/sharesheet_service.h"
 #include "components/arc/mojom/nearby_share.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -15,6 +16,10 @@
 #include "ui/aura/env_observer.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
+
+namespace webshare {
+class PrepareDirectoryTask;
+}  // namespace webshare
 
 namespace arc {
 
@@ -48,13 +53,19 @@ class NearbyShareSessionImpl : public mojom::NearbyShareSessionHost,
 
  private:
   // Calls |SharesheetService.ShowNearbyShareBubble()| to start the Chrome
-  // Nearby Share user flow.
+  // NearbyShare user flow.
   void ShowNearbyBubble(aura::Window* arc_window);
 
   // Converts |share_info_| to |apps::mojom::IntentPtr| type.
-  apps::mojom::IntentPtr ConvertShareIntentInfoToIntentFilter() const;
+  apps::mojom::IntentPtr ConvertShareIntentInfoToIntent() const;
 
   void OnNearbyShareBubbleShown(sharesheet::SharesheetResult result);
+
+  // Called when top level directory for NearbyShare cache files is created.
+  void OnPreparedDirectory(aura::Window* arc_window, base::File::Error result);
+
+  // Called once streaming shared files to local path from ARC VFS is completed.
+  void OnFileStreamCompleted(aura::Window* arc_window, bool result);
 
   // Called back once the session duration exceeds the maximum duration.
   void OnTimerFired();
@@ -75,6 +86,11 @@ class NearbyShareSessionImpl : public mojom::NearbyShareSessionHost,
   // Unowned pointer.
   Profile* profile_;
 
+  // Created and lives on the UI thread but is destructed on the IO thread.
+  scoped_refptr<ShareInfoFileHandler> file_handler_;
+
+  std::unique_ptr<webshare::PrepareDirectoryTask> prepare_directory_task_;
+
   // Timer used to wait for the ARC window to be asynchronously initialized and
   // visible.
   base::OneShotTimer window_initialization_timer_;
@@ -86,7 +102,7 @@ class NearbyShareSessionImpl : public mojom::NearbyShareSessionHost,
   // Observes the Aura environment.
   base::ScopedObservation<aura::Env, aura::EnvObserver> env_observation_{this};
 
-  // Callback when the Nearby Share Session is finished and no longer needed.
+  // Callback when the NearbyShare Session is finished and no longer needed.
   SessionFinishedCallback session_finished_callback_;
 
   // Note: This should remain the last member so it'll be destroyed and

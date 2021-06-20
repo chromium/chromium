@@ -24,7 +24,7 @@ namespace arc {
 
 class ArcBridgeService;
 
-// This class handles nearby share related IPC from ARC++ and allows the Chrome
+// This class handles NearbyShare related IPC from ARC++ and allows the Chrome
 // NearbyShare UI to be displayed and managed in Chrome instead of the
 // Android NearbyShare activity.
 class ArcNearbyShareBridge : public KeyedService,

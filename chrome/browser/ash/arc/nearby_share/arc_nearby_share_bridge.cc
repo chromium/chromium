@@ -89,7 +89,7 @@ void ArcNearbyShareBridge::StartNearbyShare(
     StartNearbyShareCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  VLOG(1) << "Creating Nearby Share session";
+  VLOG(1) << "Creating NearbyShare session";
   if (!session_instance) {
     LOG(ERROR) << "instance is null. Unable to create NearbyShareSessionImpl";
     std::move(callback).Run(mojo::NullRemote());

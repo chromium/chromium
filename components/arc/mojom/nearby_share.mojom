@@ -18,7 +18,7 @@ struct FileInfo {
   url.mojom.Url content_uri;  // Content URI for the shared file
   string mime_type;           // MIME type for the file
   string name;                // File name
-  uint32 size;                // The number of bytes in the file
+  int64 size;                 // Match Long type in ARC for file size in bytes
 };
 
 // Represents the share information received from an Android app.
@@ -31,9 +31,9 @@ struct ShareIntentInfo {
 };
 
 // Represents the Chrome side of NearbyShare session. Used by ARC to send
-// NearbyShare messages to Chrome and interact with the ARC Custom Tab used
+// NearbyShare messages to Chrome and interact with the ARC Window used
 // for NearbyShare.
-// Closing the interface will close the ARC Custom Tab.
+// Closing the interface will close the ARC Window.
 // Next method ID: 0
 interface NearbyShareSessionHost {
 };
