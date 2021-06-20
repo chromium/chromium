@@ -6001,6 +6001,8 @@ others/histograms.xml -->
   <int value="39"
       label="About to be submitted with virtual card suggestion filled (once)"/>
   <int value="40" label="Submitted with virtual card suggestion filled (once)"/>
+  <int value="41" label="Suggestions shown and included a virtual card"/>
+  <int value="42" label="Suggestions shown and included a virtual card (once)"/>
 </enum>
 
 <enum name="AutofillFormSubmittedState">

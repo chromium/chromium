@@ -52,11 +52,12 @@ class FormEventLoggerBase {
   void OnUserHideSuggestions(const FormStructure& form,
                              const AutofillField& field);
 
-  void OnDidShowSuggestions(const FormStructure& form,
-                            const AutofillField& field,
-                            const base::TimeTicks& form_parsed_timestamp,
-                            AutofillSyncSigninState sync_state,
-                            bool off_the_record);
+  virtual void OnDidShowSuggestions(
+      const FormStructure& form,
+      const AutofillField& field,
+      const base::TimeTicks& form_parsed_timestamp,
+      AutofillSyncSigninState sync_state,
+      bool off_the_record);
 
   void OnWillSubmitForm(AutofillSyncSigninState sync_state,
                         const FormStructure& form);
@@ -91,7 +92,7 @@ class FormEventLoggerBase {
   // |form_type_name_|.
   virtual void LogUkmInteractedWithForm(FormSignature form_signature);
 
-  virtual void OnSuggestionsShownOnce() {}
+  virtual void OnSuggestionsShownOnce(const FormStructure& form) {}
   virtual void OnSuggestionsShownSubmittedOnce(const FormStructure& form) {}
 
   // Logs |event| in a histogram prefixed with |name| according to the

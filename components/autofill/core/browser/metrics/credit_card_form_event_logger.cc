@@ -9,6 +9,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/ranges/algorithm.h"
 #include "components/autofill/core/browser/form_data_importer.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/validation.h"
@@ -39,6 +40,20 @@ void CreditCardFormEventLogger::set_suggestions(
     if (!suggestion.offer_label.empty())
       has_eligible_offer_ = true;
   }
+}
+
+void CreditCardFormEventLogger::OnDidShowSuggestions(
+    const FormStructure& form,
+    const AutofillField& field,
+    const base::TimeTicks& form_parsed_timestamp,
+    AutofillSyncSigninState sync_state,
+    bool off_the_record) {
+  if (DoSuggestionsIncludeVirtualCard())
+    Log(FORM_EVENT_SUGGESTIONS_SHOWN_WITH_VIRTUAL_CARD, form);
+
+  // Also perform the logging actions from the base class:
+  FormEventLoggerBase::OnDidShowSuggestions(form, field, form_parsed_timestamp,
+                                            sync_state, off_the_record);
 }
 
 void CreditCardFormEventLogger::OnDidSelectCardSuggestion(
@@ -212,7 +227,11 @@ void CreditCardFormEventLogger::LogUkmInteractedWithForm(
       server_record_type_count_, form_signature);
 }
 
-void CreditCardFormEventLogger::OnSuggestionsShownOnce() {
+void CreditCardFormEventLogger::OnSuggestionsShownOnce(
+    const FormStructure& form) {
+  if (DoSuggestionsIncludeVirtualCard())
+    Log(FORM_EVENT_SUGGESTIONS_SHOWN_WITH_VIRTUAL_CARD_ONCE, form);
+
   base::UmaHistogramBoolean("Autofill.Offer.SuggestedCardsHaveOffer",
                             has_eligible_offer_);
 }
@@ -299,6 +318,13 @@ bool CreditCardFormEventLogger::DoesCardHaveOffer(
       return !suggestion.offer_label.empty();
   }
   return false;
+}
+
+bool CreditCardFormEventLogger::DoSuggestionsIncludeVirtualCard() {
+  auto is_virtual_card = [](const Suggestion& suggestion) {
+    return suggestion.frontend_id == POPUP_ITEM_ID_VIRTUAL_CREDIT_CARD_ENTRY;
+  };
+  return base::ranges::any_of(suggestions_, is_virtual_card);
 }
 
 }  // namespace autofill

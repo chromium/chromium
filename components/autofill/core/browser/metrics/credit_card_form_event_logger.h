@@ -48,6 +48,12 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
 
   void set_suggestions(std::vector<Suggestion> suggestions);
 
+  void OnDidShowSuggestions(const FormStructure& form,
+                            const AutofillField& field,
+                            const base::TimeTicks& form_parsed_timestamp,
+                            AutofillSyncSigninState sync_state,
+                            bool off_the_record) override;
+
   void OnDidSelectCardSuggestion(const CreditCard& credit_card,
                                  const FormStructure& form,
                                  AutofillSyncSigninState sync_state);
@@ -75,7 +81,7 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
   void LogWillSubmitForm(const FormStructure& form) override;
   void LogFormSubmitted(const FormStructure& form) override;
   void LogUkmInteractedWithForm(FormSignature form_signature) override;
-  void OnSuggestionsShownOnce() override;
+  void OnSuggestionsShownOnce(const FormStructure& form) override;
   void OnSuggestionsShownSubmittedOnce(const FormStructure& form) override;
   void OnLog(const std::string& name,
              FormEvent event,
@@ -89,6 +95,8 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
   void RecordCardUnmaskFlowEvent(UnmaskAuthFlowType flow,
                                  UnmaskAuthFlowEvent event);
   bool DoesCardHaveOffer(const CreditCard& credit_card);
+  // Returns whether the shown suggestions included a virtual credit card.
+  bool DoSuggestionsIncludeVirtualCard();
 
   bool is_context_secure_ = false;
   UnmaskAuthFlowType current_authentication_flow_;

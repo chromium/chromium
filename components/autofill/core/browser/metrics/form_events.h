@@ -108,6 +108,10 @@ enum FormEvent {
   FORM_EVENT_VIRTUAL_CARD_SUGGESTION_WILL_SUBMIT_ONCE,
   // A form was submitted after being filled with a virtual card.
   FORM_EVENT_VIRTUAL_CARD_SUGGESTION_SUBMITTED_ONCE,
+  // Suggestions were shown, and they included a virtual credit card.
+  FORM_EVENT_SUGGESTIONS_SHOWN_WITH_VIRTUAL_CARD,
+  // Same as above, but recorded only once per page load.
+  FORM_EVENT_SUGGESTIONS_SHOWN_WITH_VIRTUAL_CARD_ONCE,
 
   NUM_FORM_EVENTS,
 };

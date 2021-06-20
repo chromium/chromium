@@ -4926,6 +4926,184 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardShownFormEvents) {
   }
 }
 
+// Test that we log specific suggestion shown form events for virtual credit
+// cards.
+TEST_P(AutofillMetricsIFrameTest, VirtualCreditCardShownFormEvents) {
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kAutofillEnableMerchantBoundVirtualCards);
+
+  // Set up our form data.  https:// is required.
+  FormData form;
+  form.name = u"TestForm";
+  form.url = GURL("https://example.com/form.html");
+  form.action = GURL("https://example.com/submit.html");
+  form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
+
+  FormFieldData field;
+  std::vector<ServerFieldType> field_types;
+  test::CreateTestFormField("Month", "card_month", "", "text", &field);
+  form.fields.push_back(field);
+  field_types.push_back(CREDIT_CARD_EXP_MONTH);
+  test::CreateTestFormField("Year", "card_year", "", "text", &field);
+  form.fields.push_back(field);
+  field_types.push_back(CREDIT_CARD_EXP_2_DIGIT_YEAR);
+  test::CreateTestFormField("CVC", "cvc", "", "text", &field);
+  form.fields.push_back(field);
+  field_types.push_back(CREDIT_CARD_VERIFICATION_CODE);
+  test::CreateTestFormField("Credit card", "card", "", "text", &field);
+  form.fields.push_back(field);
+  field_types.push_back(CREDIT_CARD_NUMBER);
+
+  // Creating cards, including a virtual card.
+  RecreateCreditCards(false /* include_local_credit_card */,
+                      true /* include_masked_server_credit_card */,
+                      false /* include_full_server_credit_card */,
+                      true /* include_virtual_credit_card */);
+
+  // Simulate having seen this form on page load.
+  // |form_structure| will be owned by |browser_autofill_manager_|.
+  browser_autofill_manager_->AddSeenForm(form, field_types, field_types);
+
+  {
+    // Simulate new popup being shown.
+    base::HistogramTester histogram_tester;
+    browser_autofill_manager_->OnQueryFormFieldAutofill(
+        0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
+    browser_autofill_manager_->DidShowSuggestions(true /* is_new_popup */, form,
+                                                  field);
+    histogram_tester.ExpectBucketCount("Autofill.FormEvents.CreditCard",
+                                       FORM_EVENT_SUGGESTIONS_SHOWN, 1);
+    histogram_tester.ExpectBucketCount(credit_card_form_events_frame_histogram_,
+                                       FORM_EVENT_SUGGESTIONS_SHOWN, 1);
+    histogram_tester.ExpectBucketCount("Autofill.FormEvents.CreditCard",
+                                       FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 1);
+    histogram_tester.ExpectBucketCount(credit_card_form_events_frame_histogram_,
+                                       FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 1);
+    histogram_tester.ExpectBucketCount(
+        "Autofill.FormEvents.CreditCard",
+        FORM_EVENT_SUGGESTIONS_SHOWN_WITH_VIRTUAL_CARD, 1);
+    histogram_tester.ExpectBucketCount(
+        credit_card_form_events_frame_histogram_,
+        FORM_EVENT_SUGGESTIONS_SHOWN_WITH_VIRTUAL_CARD, 1);
+    histogram_tester.ExpectBucketCount(
+        "Autofill.FormEvents.CreditCard",
+        FORM_EVENT_SUGGESTIONS_SHOWN_WITH_VIRTUAL_CARD_ONCE, 1);
+    histogram_tester.ExpectBucketCount(
+        credit_card_form_events_frame_histogram_,
+        FORM_EVENT_SUGGESTIONS_SHOWN_WITH_VIRTUAL_CARD_ONCE, 1);
+  }
+
+  // Reset the autofill manager state.
+  browser_autofill_manager_->Reset();
+  browser_autofill_manager_->AddSeenForm(form, field_types, field_types);
+
+  {
+    // Simulating two popups in the same page load.
+    base::HistogramTester histogram_tester;
+    browser_autofill_manager_->OnQueryFormFieldAutofill(
+        0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
+    browser_autofill_manager_->DidShowSuggestions(true /* is_new_popup */, form,
+                                                  field);
+    browser_autofill_manager_->DidShowSuggestions(true /* is_new_popup */, form,
+                                                  field);
+    histogram_tester.ExpectBucketCount("Autofill.FormEvents.CreditCard",
+                                       FORM_EVENT_SUGGESTIONS_SHOWN, 2);
+    histogram_tester.ExpectBucketCount(credit_card_form_events_frame_histogram_,
+                                       FORM_EVENT_SUGGESTIONS_SHOWN, 2);
+    histogram_tester.ExpectBucketCount("Autofill.FormEvents.CreditCard",
+                                       FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 1);
+    histogram_tester.ExpectBucketCount(credit_card_form_events_frame_histogram_,
+                                       FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 1);
+    histogram_tester.ExpectBucketCount(
+        "Autofill.FormEvents.CreditCard",
+        FORM_EVENT_SUGGESTIONS_SHOWN_WITH_VIRTUAL_CARD, 2);
+    histogram_tester.ExpectBucketCount(
+        credit_card_form_events_frame_histogram_,
+        FORM_EVENT_SUGGESTIONS_SHOWN_WITH_VIRTUAL_CARD, 2);
+    histogram_tester.ExpectBucketCount(
+        "Autofill.FormEvents.CreditCard",
+        FORM_EVENT_SUGGESTIONS_SHOWN_WITH_VIRTUAL_CARD_ONCE, 1);
+    histogram_tester.ExpectBucketCount(
+        credit_card_form_events_frame_histogram_,
+        FORM_EVENT_SUGGESTIONS_SHOWN_WITH_VIRTUAL_CARD_ONCE, 1);
+  }
+
+  // Reset the autofill manager state.
+  browser_autofill_manager_->Reset();
+  browser_autofill_manager_->AddSeenForm(form, field_types, field_types);
+
+  {
+    // Simulating same popup being refreshed.
+    base::HistogramTester histogram_tester;
+    browser_autofill_manager_->OnQueryFormFieldAutofill(
+        0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
+    browser_autofill_manager_->DidShowSuggestions(false /* is_new_popup */,
+                                                  form, field);
+    histogram_tester.ExpectBucketCount("Autofill.FormEvents.CreditCard",
+                                       FORM_EVENT_SUGGESTIONS_SHOWN, 0);
+    histogram_tester.ExpectBucketCount(credit_card_form_events_frame_histogram_,
+                                       FORM_EVENT_SUGGESTIONS_SHOWN, 0);
+    histogram_tester.ExpectBucketCount("Autofill.FormEvents.CreditCard",
+                                       FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 0);
+    histogram_tester.ExpectBucketCount(credit_card_form_events_frame_histogram_,
+                                       FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 0);
+    histogram_tester.ExpectBucketCount(
+        "Autofill.FormEvents.CreditCard",
+        FORM_EVENT_SUGGESTIONS_SHOWN_WITH_VIRTUAL_CARD, 0);
+    histogram_tester.ExpectBucketCount(
+        credit_card_form_events_frame_histogram_,
+        FORM_EVENT_SUGGESTIONS_SHOWN_WITH_VIRTUAL_CARD, 0);
+    histogram_tester.ExpectBucketCount(
+        "Autofill.FormEvents.CreditCard",
+        FORM_EVENT_SUGGESTIONS_SHOWN_WITH_VIRTUAL_CARD_ONCE, 0);
+    histogram_tester.ExpectBucketCount(
+        credit_card_form_events_frame_histogram_,
+        FORM_EVENT_SUGGESTIONS_SHOWN_WITH_VIRTUAL_CARD_ONCE, 0);
+  }
+
+  // Recreate cards, this time *without* a virtual card.
+  RecreateCreditCards(false /* include_local_credit_card */,
+                      true /* include_masked_server_credit_card */,
+                      false /* include_full_server_credit_card */,
+                      false /* include_virtual_credit_card */);
+
+  // Reset the autofill manager state.
+  browser_autofill_manager_->Reset();
+  browser_autofill_manager_->AddSeenForm(form, field_types, field_types);
+
+  {
+    // Simulating two popups in the same page load. Suggestions shown should be
+    // logged, but suggestions shown with virtual card should not.
+    base::HistogramTester histogram_tester;
+    browser_autofill_manager_->OnQueryFormFieldAutofill(
+        0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
+    browser_autofill_manager_->DidShowSuggestions(true /* is_new_popup */, form,
+                                                  field);
+    browser_autofill_manager_->DidShowSuggestions(true /* is_new_popup */, form,
+                                                  field);
+    histogram_tester.ExpectBucketCount("Autofill.FormEvents.CreditCard",
+                                       FORM_EVENT_SUGGESTIONS_SHOWN, 2);
+    histogram_tester.ExpectBucketCount(credit_card_form_events_frame_histogram_,
+                                       FORM_EVENT_SUGGESTIONS_SHOWN, 2);
+    histogram_tester.ExpectBucketCount("Autofill.FormEvents.CreditCard",
+                                       FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 1);
+    histogram_tester.ExpectBucketCount(credit_card_form_events_frame_histogram_,
+                                       FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 1);
+    histogram_tester.ExpectBucketCount(
+        "Autofill.FormEvents.CreditCard",
+        FORM_EVENT_SUGGESTIONS_SHOWN_WITH_VIRTUAL_CARD, 0);
+    histogram_tester.ExpectBucketCount(
+        credit_card_form_events_frame_histogram_,
+        FORM_EVENT_SUGGESTIONS_SHOWN_WITH_VIRTUAL_CARD, 0);
+    histogram_tester.ExpectBucketCount(
+        "Autofill.FormEvents.CreditCard",
+        FORM_EVENT_SUGGESTIONS_SHOWN_WITH_VIRTUAL_CARD_ONCE, 0);
+    histogram_tester.ExpectBucketCount(
+        credit_card_form_events_frame_histogram_,
+        FORM_EVENT_SUGGESTIONS_SHOWN_WITH_VIRTUAL_CARD_ONCE, 0);
+  }
+}
+
 // Test that we log selected form event for credit cards.
 TEST_P(AutofillMetricsIFrameTest, CreditCardSelectedFormEvents) {
   // Creating all kinds of cards.

@@ -116,7 +116,7 @@ void FormEventLoggerBase::OnDidShowSuggestions(
   if (!has_logged_suggestions_shown_) {
     has_logged_suggestions_shown_ = true;
     Log(FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, form);
-    OnSuggestionsShownOnce();
+    OnSuggestionsShownOnce(form);
   }
 
   has_logged_autocomplete_off_ |= field.autocomplete_attribute == "off";
