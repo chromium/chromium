@@ -521,6 +521,11 @@ UIWindow* GetAnyKeyWindow();
 - (void)waitForWebStateContainingLoadedImageElementWithID:
     (const std::string&)UTF8ImageID;
 
+// Waits for the web state's scroll view zoom scale to be suitably close (within
+// 0.05) of the expected scale. Returns nil if the condition is met within a
+// timeout, or else an NSError indicating why the operation failed.
+- (void)waitForWebStateZoomScale:(CGFloat)scale;
+
 // Returns the current web state's VisibleURL.
 - (GURL)webStateVisibleURL;
 

@@ -279,6 +279,11 @@
 // indicating why the operation failed.
 + (NSError*)waitForWebStateContainingBlockedImage:(NSString*)imageID;
 
+// Waits for the web state's scroll view zoom scale to be suitably close (within
+// 0.05) of the expected scale. Returns nil if the condition is met within a
+// timeout, or else an NSError indicating why the operation failed.
++ (NSError*)waitForWebStateZoomScale:(CGFloat)scale;
+
 // Sets value for content setting.
 + (void)setContentSettings:(ContentSetting)setting;
 

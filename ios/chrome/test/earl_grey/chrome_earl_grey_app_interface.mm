@@ -63,6 +63,7 @@
 #import "ios/web/public/test/web_view_content_test_util.h"
 #import "ios/web/public/test/web_view_interaction_test_util.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
+#import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
 #import "ios/web/public/web_client.h"
 #import "ios/web/public/web_state.h"
 #include "net/base/mac/url_conversions.h"
@@ -633,6 +634,25 @@ base::test::ScopedFeatureList closeAllTabsScopedFeatureList;
     return testing::NSErrorWithLocalizedDescription(errorString);
   }
 
+  return nil;
+}
+
++ (NSError*)waitForWebStateZoomScale:(CGFloat)scale {
+  bool success = WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
+    web::WebState* web_state = chrome_test_util::GetCurrentWebState();
+    if (!web_state) {
+      return false;
+    }
+
+    CGFloat current_scale =
+        [[web_state->GetWebViewProxy() scrollViewProxy] zoomScale];
+    return (current_scale > (scale - 0.05)) && (current_scale < (scale + 0.05));
+  });
+  if (!success) {
+    NSString* NSErrorDescription = [NSString
+        stringWithFormat:@"Failed waiting for web state zoom scale %f", scale];
+    return testing::NSErrorWithLocalizedDescription(NSErrorDescription);
+  }
   return nil;
 }
 
