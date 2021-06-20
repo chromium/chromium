@@ -11,7 +11,6 @@ satorux@chromium.org
 xiyuan@chromium.org
 per-file *active_directory*=rsorokin@chromium.org
 per-file *active_directory*=fsandrade@chromium.org
-per-file *active_directory*=tomdobro@chromium.org
 per-file tpm_firmware_update*=mnissler@chromium.org
 
 # Sandbox selection needs security review
