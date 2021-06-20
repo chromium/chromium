@@ -1601,30 +1601,6 @@ bool ListValue::GetList(size_t index, ListValue** out_value) {
                                  const_cast<const ListValue**>(out_value));
 }
 
-bool ListValue::Remove(size_t index, std::unique_ptr<Value>* out_value) {
-  if (index >= list().size())
-    return false;
-
-  if (out_value)
-    *out_value = std::make_unique<Value>(std::move(list()[index]));
-
-  list().erase(list().begin() + index);
-  return true;
-}
-
-bool ListValue::Remove(const Value& value, size_t* index) {
-  auto it = ranges::find(list(), value);
-
-  if (it == list().end())
-    return false;
-
-  if (index)
-    *index = std::distance(list().begin(), it);
-
-  list().erase(it);
-  return true;
-}
-
 void ListValue::Append(std::unique_ptr<Value> in_value) {
   list().push_back(std::move(*in_value));
 }

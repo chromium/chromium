@@ -884,20 +884,6 @@ class BASE_EXPORT ListValue : public Value {
   bool GetList(size_t index, const ListValue** out_value) const;
   bool GetList(size_t index, ListValue** out_value);
 
-  // Removes the Value with the specified index from this list.
-  // If `out_value` is non-NULL, the removed Value AND ITS OWNERSHIP will be
-  // passed out via `out_value`.  If `out_value` is NULL, the removed value will
-  // be deleted.  This method returns true if `index` is valid; otherwise
-  // it will return false and the ListValue object will be unchanged.
-  // DEPRECATED, use `GetList()::erase()` instead.
-  bool Remove(size_t index, std::unique_ptr<Value>* out_value);
-
-  // Removes the first instance of `value` found in the list, if any, and
-  // deletes it. `index` is the location where `value` was found. Returns false
-  // if not found.
-  // DEPRECATED, use `GetList()::erase()` instead.
-  bool Remove(const Value& value, size_t* index);
-
   using Value::Append;
   // Appends a Value to the end of the list.
   // DEPRECATED, use `Value::Append()` instead.

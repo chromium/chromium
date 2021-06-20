@@ -214,11 +214,10 @@ void TraceEventTestFixture::OnTraceDataCollected(
   ASSERT_TRUE(root->GetAsList(&root_list));
 
   // Move items into our aggregate collection
-  while (root_list->GetSize()) {
-    std::unique_ptr<Value> item;
-    root_list->Remove(0, &item);
+  for (Value& item : root_list->GetList()) {
     trace_parsed_.Append(std::move(item));
   }
+  root_list->ClearList();
 
   if (!has_more_events)
     flush_complete_event->Signal();

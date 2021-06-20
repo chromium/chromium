@@ -1494,41 +1494,6 @@ TEST(ValuesTest, ListDeletion) {
   EXPECT_TRUE(list.empty());
 }
 
-TEST(ValuesTest, ListRemoval) {
-  std::unique_ptr<Value> removed_item;
-
-  {
-    ListValue list;
-    list.Append(std::make_unique<Value>());
-    EXPECT_EQ(1U, list.GetSize());
-    EXPECT_FALSE(
-        list.Remove(std::numeric_limits<size_t>::max(), &removed_item));
-    EXPECT_FALSE(list.Remove(1, &removed_item));
-    EXPECT_TRUE(list.Remove(0, &removed_item));
-    ASSERT_TRUE(removed_item);
-    EXPECT_EQ(0U, list.GetSize());
-  }
-  removed_item.reset();
-
-  {
-    ListValue list;
-    list.Append(std::make_unique<Value>());
-    EXPECT_TRUE(list.Remove(0, nullptr));
-    EXPECT_EQ(0U, list.GetSize());
-  }
-
-  {
-    ListValue list;
-    auto value = std::make_unique<Value>();
-    Value original_value = value->Clone();
-    list.Append(std::move(value));
-    size_t index = 0;
-    list.Remove(original_value, &index);
-    EXPECT_EQ(0U, index);
-    EXPECT_EQ(0U, list.GetSize());
-  }
-}
-
 TEST(ValuesTest, DictionaryDeletion) {
   std::string key = "test";
   DictionaryValue dict;
