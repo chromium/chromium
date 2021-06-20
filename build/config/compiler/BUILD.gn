@@ -350,6 +350,11 @@ config("compiler") {
 
     if (use_lld) {
       ldflags += [ "-fuse-ld=lld" ]
+      if (is_mac) {
+        # TODO(crbug.com/1218958): Remove this once lld no longer creates
+        # unaligned __cstring reads without it.
+        ldflags += [ "-Wl,--deduplicate-literals" ]
+      }
       if (lld_path != "") {
         ldflags += [ "-B$lld_path" ]
       }
