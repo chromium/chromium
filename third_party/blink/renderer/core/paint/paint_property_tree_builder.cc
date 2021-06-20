@@ -850,19 +850,16 @@ void FragmentPaintPropertyTreeBuilder::UpdateTransformForSVGChild(
 
       // TODO(pdr): There is additional logic in
       // FragmentPaintPropertyTreeBuilder::UpdateTransform that likely needs to
-      // be included here, such as setting animation_is_axis_aligned, which
-      // may be the only important difference remaining.
-      if (RuntimeEnabledFeatures::CompositeSVGEnabled()) {
-        state.direct_compositing_reasons =
-            direct_compositing_reasons &
-            CompositingReasonsForTransformProperty();
-        state.flags.flattens_inherited_transform =
-            context_.current.should_flatten_inherited_transform;
-        state.rendering_context_id = context_.current.rendering_context_id;
-        state.flags.is_for_svg_child = true;
-        state.compositor_element_id = GetCompositorElementId(
-            CompositorElementIdNamespace::kPrimaryTransform);
-      }
+      // be included here, such as setting animation_is_axis_aligned, which may
+      // be the only important difference remaining.
+      state.direct_compositing_reasons =
+          direct_compositing_reasons & CompositingReasonsForTransformProperty();
+      state.flags.flattens_inherited_transform =
+          context_.current.should_flatten_inherited_transform;
+      state.rendering_context_id = context_.current.rendering_context_id;
+      state.flags.is_for_svg_child = true;
+      state.compositor_element_id = GetCompositorElementId(
+          CompositorElementIdNamespace::kPrimaryTransform);
 
       TransformPaintPropertyNode::AnimationState animation_state;
       animation_state.is_running_animation_on_compositor =

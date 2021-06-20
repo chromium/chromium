@@ -441,7 +441,6 @@ void GraphicsLayer::Paint(Vector<PreCompositedLayerInfo>& pre_composited_layers,
 
 void GraphicsLayer::SetShouldCreateLayersAfterPaint(
     bool should_create_layers_after_paint) {
-  DCHECK(RuntimeEnabledFeatures::CompositeSVGEnabled());
   if (should_create_layers_after_paint != should_create_layers_after_paint_) {
     should_create_layers_after_paint_ = should_create_layers_after_paint;
     // Depending on |should_create_layers_after_paint_|, raster invalidation

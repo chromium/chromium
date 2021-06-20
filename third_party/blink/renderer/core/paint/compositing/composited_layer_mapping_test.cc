@@ -1899,7 +1899,6 @@ TEST_P(CompositedLayerMappingTest,
 // Unlike CompositingTest.WillChangeTransformHintInSVG, will-change hints on the
 // SVG element itself should not opt into creating layers after paint.
 TEST_P(CompositedLayerMappingTest, WillChangeTransformHintOnSVG) {
-  ScopedCompositeSVGForTest enable_feature(true);
   SetBodyInnerHTML(R"HTML(
     <svg width="99" height="99" id="willChange" style="will-change: transform;">
       <rect width="100%" height="100%" fill="blue"></rect>
@@ -1914,7 +1913,6 @@ TEST_P(CompositedLayerMappingTest, WillChangeTransformHintOnSVG) {
 // Test that will-change changes inside SVG correctly update whether the
 // graphics layer should create layers after paint.
 TEST_P(CompositedLayerMappingTest, WillChangeTransformHintInSVGChanged) {
-  ScopedCompositeSVGForTest enable_feature(true);
   SetBodyInnerHTML(R"HTML(
     <svg width="99" height="99" id="svg" style="will-change: transform;">
       <rect id="rect" width="100%" height="100%" fill="blue"></rect>

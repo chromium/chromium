@@ -123,20 +123,11 @@ TEST_F(LayoutSVGRootTest, RectBasedHitTestPartialOverlap) {
   EXPECT_EQ(2, count);
 }
 
-class CompositeSVGLayoutSVGRootTest : public LayoutSVGRootTest,
-                                      private ScopedCompositeSVGForTest {
- public:
-  CompositeSVGLayoutSVGRootTest() : ScopedCompositeSVGForTest(true) {
-    // The tests don't apply in CompositeAfterPaint.
-    DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
-  }
-};
-
 // A PaintLayer is needed for the purposes of creating a GraphicsLayer to limit
 // CompositeSVG to SVG subtrees. This PaintLayer will not be needed with
 // CompositeAfterPaint. If compositing is needed for descendants, the paint
 // layer should be self-painting. Otherwise, it should be non-self-painting.
-TEST_F(CompositeSVGLayoutSVGRootTest, PaintLayerType) {
+TEST_F(LayoutSVGRootTest, PaintLayerType) {
   SetBodyInnerHTML(R"HTML(
     <svg id="root" style="width: 200px; height: 200px;">
       <rect id="rect" width="100" height="100" fill="green"/>
@@ -159,7 +150,7 @@ TEST_F(CompositeSVGLayoutSVGRootTest, PaintLayerType) {
   EXPECT_FALSE(root.Layer()->IsSelfPaintingLayer());
 }
 
-TEST_F(CompositeSVGLayoutSVGRootTest, HasDescendantCompositingReasons) {
+TEST_F(LayoutSVGRootTest, HasDescendantCompositingReasons) {
   SetBodyInnerHTML(R"HTML(
     <svg id="root" style="width: 200px; height: 200px;">
       <rect id="rect" width="100" height="100" fill="green"/>
@@ -214,7 +205,7 @@ TEST_F(CompositeSVGLayoutSVGRootTest, HasDescendantCompositingReasons) {
   EXPECT_FALSE(root.HasDescendantCompositingReasons());
 }
 
-TEST_F(CompositeSVGLayoutSVGRootTest, CompositedSVGMetric) {
+TEST_F(LayoutSVGRootTest, CompositedSVGMetric) {
   SetBodyInnerHTML(R"HTML(
     <style>
       .anim { animation: anim 5s infinite; }

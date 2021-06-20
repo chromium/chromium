@@ -415,10 +415,6 @@
       status: "stable"
     },
     {
-      name: "CompositeSVG",
-      status: "stable"
-    },
-    {
       name: "ComputedAccessibilityInfo",
       status: "experimental",
     },

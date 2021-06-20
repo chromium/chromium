@@ -197,8 +197,6 @@ CompositingReasons
 CompositingReasonFinder::DirectReasonsForSVGChildPaintProperties(
     const LayoutObject& object) {
   DCHECK(object.IsSVGChild());
-  if (!RuntimeEnabledFeatures::CompositeSVGEnabled())
-    return CompositingReason::kNone;
   if (object.IsText())
     return CompositingReason::kNone;
 
@@ -322,8 +320,6 @@ CompositingReasons CompositingReasonFinder::NonStyleDeterminedDirectReasons(
 static bool ObjectTypeSupportsCompositedTransformAnimation(
     const LayoutObject& object) {
   if (object.IsSVGChild()) {
-    if (!RuntimeEnabledFeatures::CompositeSVGEnabled())
-      return false;
     // Transforms are not supported on hidden containers, inlines, or text.
     return !object.IsSVGHiddenContainer() && !object.IsLayoutInline() &&
            !object.IsText();

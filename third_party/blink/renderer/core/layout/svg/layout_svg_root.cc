@@ -211,7 +211,7 @@ void LayoutSVGRoot::UpdateLayout() {
   // StyleDidChange because descendants have not yet run StyleDidChange, so we
   // don't know their compositing reasons yet. A layout is scheduled when
   // |HasCompositingDescendants()| changes to ensure this is run.
-  if (Layer() && RuntimeEnabledFeatures::CompositeSVGEnabled())
+  if (Layer())
     Layer()->UpdateSelfPaintingLayer();
 
   // The local-to-border-box transform is a function with the following as
@@ -589,8 +589,8 @@ PaintLayerType LayoutSVGRoot::LayerTypeRequired() const {
   auto layer_type_required = LayoutReplaced::LayerTypeRequired();
   if (layer_type_required == kNoPaintLayer) {
     // Force a paint layer so,
-    // 1) In CompositeSVG mode, a GraphicsLayer can be created if there are
-    // directly-composited descendants.
+    // 1) A GraphicsLayer can be created if there are directly-composited
+    // descendants.
     // 2) The parent layer will know if there are non-isolated descendants with
     // blend mode.
     layer_type_required = kForcedPaintLayer;
@@ -600,8 +600,7 @@ PaintLayerType LayoutSVGRoot::LayerTypeRequired() const {
 
 CompositingReasons LayoutSVGRoot::AdditionalCompositingReasons() const {
   NOT_DESTROYED();
-  return RuntimeEnabledFeatures::CompositeSVGEnabled() &&
-                 !RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
+  return !RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
                  HasDescendantWithCompositingReason()
              ? CompositingReason::kSVGRoot
              : CompositingReason::kNone;

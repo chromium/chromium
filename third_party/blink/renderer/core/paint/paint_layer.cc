@@ -3222,8 +3222,7 @@ bool PaintLayer::ShouldBeSelfPaintingLayer() const {
   return GetLayoutObject().LayerTypeRequired() == kNormalPaintLayer ||
          (scrollable_area_ && scrollable_area_->HasOverlayOverflowControls()) ||
          ScrollsOverflow() ||
-         (RuntimeEnabledFeatures::CompositeSVGEnabled() &&
-          GetLayoutObject().IsSVGRoot() &&
+         (GetLayoutObject().IsSVGRoot() &&
           To<LayoutSVGRoot>(GetLayoutObject())
               .HasDescendantCompositingReasons());
 }

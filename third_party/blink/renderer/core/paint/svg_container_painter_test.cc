@@ -23,7 +23,6 @@ using SVGContainerPainterTest = PaintControllerPaintTest;
 INSTANTIATE_PAINT_TEST_SUITE_P(SVGContainerPainterTest);
 
 TEST_P(SVGContainerPainterTest, FilterPaintProperties) {
-  ScopedCompositeSVGForTest enable_feature(true);
   SetBodyInnerHTML(R"HTML(
     <style>
       #container, #before, #after { will-change: transform; }

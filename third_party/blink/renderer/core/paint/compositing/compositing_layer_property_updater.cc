@@ -198,12 +198,10 @@ void CompositingLayerPropertyUpdater::Update(const LayoutObject& object) {
         state, snapped_paint_offset + mask_layer->OffsetFromLayoutObject());
   }
 
-  if (RuntimeEnabledFeatures::CompositeSVGEnabled()) {
-    if (object.IsSVGRoot()) {
-      main_graphics_layer->SetShouldCreateLayersAfterPaint(
-          To<LayoutSVGRoot>(object).HasDescendantCompositingReasons() &&
-          main_graphics_layer->PaintsContentOrHitTest());
-    }
+  if (object.IsSVGRoot()) {
+    main_graphics_layer->SetShouldCreateLayersAfterPaint(
+        To<LayoutSVGRoot>(object).HasDescendantCompositingReasons() &&
+        main_graphics_layer->PaintsContentOrHitTest());
   }
 }
 

@@ -247,7 +247,6 @@ TEST_P(CompositingTest, WillChangeTransformHint) {
 }
 
 TEST_P(CompositingTest, WillChangeTransformHintInSVG) {
-  ScopedCompositeSVGForTest enable_feature(true);
   InitializeWithHTML(*WebView()->MainFrameImpl()->GetFrame(), R"HTML(
     <!doctype html>
     <style>
@@ -270,7 +269,6 @@ TEST_P(CompositingTest, WillChangeTransformHintInSVG) {
 }
 
 TEST_P(CompositingTest, Compositing3DTransformOnSVGModelObject) {
-  ScopedCompositeSVGForTest enable_feature(true);
   InitializeWithHTML(*WebView()->MainFrameImpl()->GetFrame(), R"HTML(
     <!doctype html>
     <svg width="200" height="200">
@@ -312,7 +310,6 @@ TEST_P(CompositingTest, Compositing3DTransformOnSVGModelObject) {
 }
 
 TEST_P(CompositingTest, Compositing3DTransformOnSVGBlock) {
-  ScopedCompositeSVGForTest enable_feature(true);
   InitializeWithHTML(*WebView()->MainFrameImpl()->GetFrame(), R"HTML(
     <!doctype html>
     <svg width="200" height="200">
@@ -356,7 +353,6 @@ TEST_P(CompositingTest, Compositing3DTransformOnSVGBlock) {
 // Inlines do not support the transform property and should not be composited
 // due to 3D transforms.
 TEST_P(CompositingTest, NotCompositing3DTransformOnSVGInline) {
-  ScopedCompositeSVGForTest enable_feature(true);
   InitializeWithHTML(*WebView()->MainFrameImpl()->GetFrame(), R"HTML(
     <!doctype html>
     <svg width="200" height="200">
@@ -381,7 +377,6 @@ TEST_P(CompositingTest, NotCompositing3DTransformOnSVGInline) {
 }
 
 TEST_P(CompositingTest, PaintPropertiesWhenCompositingSVG) {
-  ScopedCompositeSVGForTest enable_feature(true);
   InitializeWithHTML(*WebView()->MainFrameImpl()->GetFrame(), R"HTML(
     <!doctype html>
     <style>
@@ -888,7 +883,6 @@ TEST_P(CompositingSimTest, DirectTransformPropertyUpdate) {
 }
 
 TEST_P(CompositingSimTest, DirectSVGTransformPropertyUpdate) {
-  ScopedCompositeSVGForTest enable_feature(true);
   InitializeWithHTML(R"HTML(
     <!doctype html>
     <style>
@@ -1959,11 +1953,10 @@ TEST_P(CompositingSimTest, MultipleChunkBackgroundColorChangeRepaintUpdate) {
   EXPECT_EQ(scrolling_contents->background_color(), SK_ColorWHITE);
 }
 
-// Similar to |BackgroundColorChangeUsesRepaintUpdate| but with CompositeSVG.
-// This test changes paint for a composited SVG element, as well as a regular
-// HTML element in the presence of composited SVG.
+// Similar to |BackgroundColorChangeUsesRepaintUpdate| but with post-paint
+// composited SVG. This test changes paint for a composited SVG element, as well
+// as a regular HTML element in the presence of composited SVG.
 TEST_P(CompositingSimTest, SVGColorChangeUsesRepaintUpdate) {
-  ScopedCompositeSVGForTest enable_feature(true);
   InitializeWithHTML(R"HTML(
       <!DOCTYPE html>
       <style>
@@ -2171,9 +2164,9 @@ TEST_P(CompositingSimTest, FullCompositingUpdateReasons) {
             PaintArtifactCompositor::PreviousUpdateType::kFull);
 }
 
-// Similar to |FullCompositingUpdateReasons| but for changes in CompositeSVG.
-TEST_P(CompositingSimTest, FullCompositingUpdateReasonInCompositeSVG) {
-  ScopedCompositeSVGForTest enable_feature(true);
+// Similar to |FullCompositingUpdateReasons| but for changes in post-paint
+// composited SVG.
+TEST_P(CompositingSimTest, FullCompositingUpdateReasonWithCompositedSVG) {
   InitializeWithHTML(R"HTML(
       <!DOCTYPE html>
       <style>
@@ -2205,7 +2198,6 @@ TEST_P(CompositingSimTest, FullCompositingUpdateReasonInCompositeSVG) {
 }
 
 TEST_P(CompositingSimTest, FullCompositingUpdateForJustCreatedChunks) {
-  ScopedCompositeSVGForTest enable_feature(true);
   InitializeWithHTML(R"HTML(
       <!DOCTYPE html>
       <style>
@@ -2243,7 +2235,6 @@ TEST_P(CompositingSimTest, FullCompositingUpdateForJustCreatedChunks) {
 }
 
 TEST_P(CompositingSimTest, FullCompositingUpdateForUncachableChunks) {
-  ScopedCompositeSVGForTest enable_feature(true);
   InitializeWithHTML(R"HTML(
       <!DOCTYPE html>
       <style>
