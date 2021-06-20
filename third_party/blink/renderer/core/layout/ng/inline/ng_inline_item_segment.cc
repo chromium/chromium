@@ -143,6 +143,15 @@ NGInlineItemSegments::Iterator NGInlineItemSegments::Ranges(
   return Iterator(start_offset, end_offset, segment);
 }
 
+void NGInlineItemSegments::ComputeSegments(
+    RunSegmenter* segmenter,
+    RunSegmenter::RunSegmenterRange* range) {
+  segments_.Shrink(0);
+  do {
+    segments_.emplace_back(*range);
+  } while (segmenter->Consume(range));
+}
+
 unsigned NGInlineItemSegments::AppendMixedFontOrientation(
     const String& text_content,
     unsigned start_offset,

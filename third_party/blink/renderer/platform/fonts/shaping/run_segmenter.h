@@ -34,18 +34,15 @@ class PLATFORM_EXPORT RunSegmenter {
   };
 
   // Initialize a RunSegmenter.
-  RunSegmenter(const UChar* buffer,
-               unsigned buffer_size,
-               FontOrientation,
-               unsigned start_offset = 0);
+  RunSegmenter(const UChar* buffer, unsigned buffer_size, FontOrientation);
   RunSegmenter(const RunSegmenter&) = delete;
   RunSegmenter& operator=(const RunSegmenter&) = delete;
 
   bool Consume(RunSegmenterRange*);
 
-  static RunSegmenterRange NullRange(unsigned offset = 0) {
-    return {offset, offset, USCRIPT_INVALID_CODE,
-            OrientationIterator::kOrientationKeep, FontFallbackPriority::kText};
+  static RunSegmenterRange NullRange() {
+    return {0, 0, USCRIPT_INVALID_CODE, OrientationIterator::kOrientationKeep,
+            FontFallbackPriority::kText};
   }
 
  private:
@@ -56,7 +53,6 @@ class PLATFORM_EXPORT RunSegmenter {
       SegmentationCategory* segmentation_category);
 
   unsigned buffer_size_;
-  unsigned start_offset_;
   RunSegmenterRange candidate_range_;
   std::unique_ptr<ScriptRunIterator> script_run_iterator_;
   std::unique_ptr<OrientationIterator> orientation_iterator_;

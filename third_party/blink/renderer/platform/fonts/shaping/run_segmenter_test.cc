@@ -251,22 +251,6 @@ TEST_F(RunSegmenterTest, NonEmojiPresentationSymbols) {
         FontFallbackPriority::kText}});
 }
 
-TEST_F(RunSegmenterTest, StartOffset) {
-  String text = String::FromUTF8("abcשלום");
-  text.Ensure16Bit();
-
-  // skip first 3 characters
-  unsigned start_offset = 3;
-  Vector<SegmenterExpectedRun> expect;
-  expect.push_back(SegmenterExpectedRun(
-      start_offset, text.length(), USCRIPT_HEBREW,
-      OrientationIterator::kOrientationKeep, FontFallbackPriority::kText));
-
-  RunSegmenter run_segmenter(text.Characters16(), text.length() - start_offset,
-                             FontOrientation::kHorizontal, start_offset);
-  VerifyRuns(&run_segmenter, expect);
-}
-
 TEST_F(RunSegmenterTest, CJKBracketsAfterLatinLetter) {
   CheckRunsHorizontal(
       {{"A", USCRIPT_LATIN, OrientationIterator::kOrientationKeep,

@@ -1107,85 +1107,42 @@ void NGInlineNode::SegmentText(NGInlineNodeData* data) const {
 
 // Segment NGInlineItem by script, Emoji, and orientation using RunSegmenter.
 void NGInlineNode::SegmentScriptRuns(NGInlineNodeData* data) const {
-  DCHECK_EQ(data->segments.get(), nullptr);
-
   String& text_content = data->text_content;
   if (text_content.IsEmpty()) {
-    return;
-  }
-
-  Vector<NGInlineItem>& items = data->items;
-  if (items.IsEmpty()) {
+    data->segments = nullptr;
     return;
   }
 
   if (text_content.Is8Bit() && !data->is_bidi_enabled_) {
-    RunSegmenter::RunSegmenterRange range = {
-        0u, data->text_content.length(), USCRIPT_LATIN,
-        OrientationIterator::kOrientationKeep, FontFallbackPriority::kText};
-    NGInlineItem::SetSegmentData(range, &items);
+    if (data->items.size()) {
+      RunSegmenter::RunSegmenterRange range = {
+          0u, data->text_content.length(), USCRIPT_LATIN,
+          OrientationIterator::kOrientationKeep, FontFallbackPriority::kText};
+      NGInlineItem::SetSegmentData(range, &data->items);
+    }
+    data->segments = nullptr;
     return;
   }
 
   // Segment by script and Emoji.
   // Orientation is segmented separately, because it may vary by items.
   text_content.Ensure16Bit();
-
-  NGInlineItem* current_item = &items.front();
-  unsigned range_length = current_item->Length();
+  RunSegmenter segmenter(text_content.Characters16(), text_content.length(),
+                         FontOrientation::kHorizontal);
 
   RunSegmenter::RunSegmenterRange range = RunSegmenter::NullRange();
-  if (data->is_bidi_enabled_) {
-    // run RunSegmenter for each bidi run
-    for (wtf_size_t idx = 1; idx < items.size(); idx++) {
-      NGInlineItem& item = items[idx];
-      if (item.BidiLevel() == current_item->BidiLevel()) {
-        // same bidi level as the previous item. We can merge
-        range_length += item.Length();
-        continue;
-      }
-
-      // We have reached the boundary of a bidi run. We need to run the script
-      // segmenter.
-      if (!data->segments) {
-        data->segments = std::make_unique<NGInlineItemSegments>();
-      }
-      RunSegmenter segmenter(text_content.Characters16(), range_length,
-                             FontOrientation::kHorizontal,
-                             current_item->StartOffset());
-      while (segmenter.Consume(&range)) {
-        data->segments->Append(range);
-      }
-      range_length = item.Length();
-      current_item = &item;
-    }
-  } else {
-    range_length = text_content.length();
-  }
-
-  // We will now handle the last item. If the text is not bidirectional, it
-  // will be the only one.
-
-  if (range_length == 0) {
-    return;
-  }
-
-  RunSegmenter segmenter(text_content.Characters16(), range_length,
-                         FontOrientation::kHorizontal,
-                         current_item->StartOffset());
   bool consumed = segmenter.Consume(&range);
   DCHECK(consumed);
-  if (range.start == 0 && range.end == text_content.length()) {
-    NGInlineItem::SetSegmentData(range, &items);
+  if (range.end == text_content.length()) {
+    NGInlineItem::SetSegmentData(range, &data->items);
+    data->segments = nullptr;
     return;
   }
 
-  if (!data->segments) {
+  // This node has multiple segments.
+  if (!data->segments)
     data->segments = std::make_unique<NGInlineItemSegments>();
-  }
-  do {
-    data->segments->Append(range);
-  } while (segmenter.Consume(&range));
+  data->segments->ComputeSegments(&segmenter, &range);
   DCHECK_EQ(range.end, text_content.length());
 }
 
