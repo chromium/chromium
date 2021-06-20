@@ -21,7 +21,6 @@ namespace media_router {
 namespace {
 
 const char kDescription[] = "description";
-const char kInstanceId[] = "instance123";
 const char kMessage[] = "message";
 const char kOrigin[] = "http://origin/";
 const char kPresentationId[] = "presentationId";
@@ -125,7 +124,6 @@ void MediaRouterMojoTest::RegisterWiredDisplayProvider() {
 
 void MediaRouterMojoTest::SetUp() {
   media_router_ = CreateMediaRouter();
-  media_router_->set_instance_id_for_test(kInstanceId);
   RegisterCastProvider();
   media_router_->Initialize();
   base::RunLoop().RunUntilIdle();
@@ -327,10 +325,8 @@ void MediaRouterMojoTest::RegisterMediaRouteProvider(
   mojo::PendingRemote<mojom::MediaRouteProvider> mojo_provider;
   provider_receivers_.Add(provider,
                           mojo_provider.InitWithNewPipeAndPassReceiver());
-  media_router_->RegisterMediaRouteProvider(
-      provider_id, std::move(mojo_provider),
-      base::BindOnce([](const std::string& instance_id,
-                        mojom::MediaRouteProviderConfigPtr config) {}));
+  media_router_->RegisterMediaRouteProvider(provider_id,
+                                            std::move(mojo_provider));
 }
 
 RouteResponseCallbackHandler::RouteResponseCallbackHandler() = default;

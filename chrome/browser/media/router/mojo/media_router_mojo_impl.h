@@ -83,21 +83,13 @@ class MediaRouterMojoImpl : public MediaRouterBase, public mojom::MediaRouter {
       mojo::PendingReceiver<mojom::MediaController> controller,
       mojo::PendingRemote<mojom::MediaStatusObserver> observer) final;
   base::Value GetLogs() const override;
-  void RegisterMediaRouteProvider(
-      MediaRouteProviderId provider_id,
-      mojo::PendingRemote<mojom::MediaRouteProvider>
-          media_route_provider_remote,
-      mojom::MediaRouter::RegisterMediaRouteProviderCallback callback) override;
+  void RegisterMediaRouteProvider(MediaRouteProviderId provider_id,
+                                  mojo::PendingRemote<mojom::MediaRouteProvider>
+                                      media_route_provider_remote) override;
 
   // Issues 0+ calls to the provider given by |provider_id| to ensure its state
   // is in sync with MediaRouter on a best-effort basis.
   virtual void SyncStateToMediaRouteProvider(MediaRouteProviderId provider_id);
-
-  const std::string& instance_id() const { return instance_id_; }
-
-  void set_instance_id_for_test(const std::string& instance_id) {
-    instance_id_ = instance_id;
-  }
 
  protected:
   // Standard constructor, used by
@@ -427,11 +419,6 @@ class MediaRouterMojoImpl : public MediaRouterBase, public mojom::MediaRouter {
       base::ObserverList<RouteMessageObserver>::Unchecked;
   base::flat_map<MediaRoute::Id, std::unique_ptr<RouteMessageObserverList>>
       message_observers_;
-
-  // GUID unique to each browser run. Component extension uses this to detect
-  // when its persisted state was written by an older browser instance, and is
-  // therefore stale.
-  std::string instance_id_;
 
   // The last reported sink availability from the media route providers.
   ProviderSinkAvailability sink_availability_;

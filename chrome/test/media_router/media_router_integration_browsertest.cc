@@ -126,8 +126,7 @@ void MediaRouterIntegrationBrowserTest::SetUpOnMainThread() {
       provider_remote.InitWithNewPipeAndPassReceiver(),
       std::move(media_router_remote));
   router->RegisterMediaRouteProvider(MediaRouteProviderId::TEST,
-                                     std::move(provider_remote),
-                                     base::DoNothing());
+                                     std::move(provider_remote));
 
   test_ui_ =
       MediaRouterUiForTest::GetOrCreateForWebContents(GetActiveWebContents());

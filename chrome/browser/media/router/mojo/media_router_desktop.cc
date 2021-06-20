@@ -108,21 +108,8 @@ MediaRouterDesktop::MediaRouterDesktop(content::BrowserContext* context,
 
 void MediaRouterDesktop::RegisterMediaRouteProvider(
     MediaRouteProviderId provider_id,
-    mojo::PendingRemote<mojom::MediaRouteProvider> media_route_provider_remote,
-    mojom::MediaRouter::RegisterMediaRouteProviderCallback callback) {
-  auto config = mojom::MediaRouteProviderConfig::New();
-  // Enabling browser side discovery / sink query means disabling extension side
-  // discovery / sink query. We are migrating discovery from the external Media
-  // Route Provider to the Media Router (https://crbug.com/687383), so we need
-  // to disable it in the provider.
-  //
-  // FIXME: Remove config flags once all features are launched
-  config->enable_cast_discovery = false;
-  config->enable_dial_sink_query = false;
-  config->enable_cast_sink_query = !CastMediaRouteProviderEnabled();
-  config->use_mirroring_service = true;
-  std::move(callback).Run(instance_id(), std::move(config));
-
+    mojo::PendingRemote<mojom::MediaRouteProvider>
+        media_route_provider_remote) {
   mojo::Remote<mojom::MediaRouteProvider> bound_remote(
       std::move(media_route_provider_remote));
   bound_remote.set_disconnect_handler(
@@ -173,8 +160,7 @@ void MediaRouterDesktop::InitializeWiredDisplayMediaRouteProvider() {
       wired_display_provider_remote.InitWithNewPipeAndPassReceiver(),
       std::move(media_router_remote), Profile::FromBrowserContext(context()));
   RegisterMediaRouteProvider(MediaRouteProviderId::WIRED_DISPLAY,
-                             std::move(wired_display_provider_remote),
-                             base::DoNothing());
+                             std::move(wired_display_provider_remote));
 }
 
 std::string MediaRouterDesktop::GetHashToken() {
@@ -199,8 +185,7 @@ void MediaRouterDesktop::InitializeCastMediaRouteProvider() {
               GetCastMessageHandler(), GetHashToken(), task_runner),
           base::OnTaskRunnerDeleter(task_runner));
   RegisterMediaRouteProvider(MediaRouteProviderId::CAST,
-                             std::move(cast_provider_remote),
-                             base::DoNothing());
+                             std::move(cast_provider_remote));
 }
 
 void MediaRouterDesktop::InitializeDialMediaRouteProvider() {
@@ -221,8 +206,7 @@ void MediaRouterDesktop::InitializeDialMediaRouteProvider() {
               GetHashToken(), task_runner),
           base::OnTaskRunnerDeleter(task_runner));
   RegisterMediaRouteProvider(MediaRouteProviderId::DIAL,
-                             std::move(dial_provider_remote),
-                             base::DoNothing());
+                             std::move(dial_provider_remote));
 }
 
 #if defined(OS_WIN)

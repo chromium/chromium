@@ -23,15 +23,13 @@ class MockMojoMediaRouter : public MockMediaRouter, public mojom::MediaRouter {
   // mojom::MediaRouter overrides:
   void RegisterMediaRouteProvider(
       MediaRouteProviderId provider_id,
-      mojo::PendingRemote<mojom::MediaRouteProvider> provider_remote,
-      RegisterMediaRouteProviderCallback callback) override {
-    RegisterMediaRouteProviderInternal(provider_id, provider_remote, callback);
+      mojo::PendingRemote<mojom::MediaRouteProvider> provider_remote) override {
+    RegisterMediaRouteProviderInternal(provider_id, provider_remote);
   }
-  MOCK_METHOD3(
+  MOCK_METHOD2(
       RegisterMediaRouteProviderInternal,
       void(MediaRouteProviderId provider_id,
-           mojo::PendingRemote<mojom::MediaRouteProvider>& provider_remote,
-           RegisterMediaRouteProviderCallback& callback));
+           mojo::PendingRemote<mojom::MediaRouteProvider>& provider_remote));
   MOCK_METHOD1(OnIssue, void(const IssueInfo& issue));
   MOCK_METHOD4(OnSinksReceived,
                void(MediaRouteProviderId provider_id,

@@ -114,7 +114,7 @@ MediaRouterMojoImpl::MediaSinksQuery::MediaSinksQuery() = default;
 MediaRouterMojoImpl::MediaSinksQuery::~MediaSinksQuery() = default;
 
 MediaRouterMojoImpl::MediaRouterMojoImpl(content::BrowserContext* context)
-    : instance_id_(base::GenerateGUID()), context_(context) {
+    : context_(context) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
@@ -124,8 +124,8 @@ MediaRouterMojoImpl::~MediaRouterMojoImpl() {
 
 void MediaRouterMojoImpl::RegisterMediaRouteProvider(
     MediaRouteProviderId provider_id,
-    mojo::PendingRemote<mojom::MediaRouteProvider> media_route_provider_remote,
-    mojom::MediaRouter::RegisterMediaRouteProviderCallback callback) {
+    mojo::PendingRemote<mojom::MediaRouteProvider>
+        media_route_provider_remote) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!base::Contains(media_route_providers_, provider_id));
   mojo::Remote<mojom::MediaRouteProvider> bound_remote(
@@ -134,7 +134,6 @@ void MediaRouterMojoImpl::RegisterMediaRouteProvider(
       base::BindOnce(&MediaRouterMojoImpl::OnProviderConnectionError,
                      weak_factory_.GetWeakPtr(), provider_id));
   media_route_providers_[provider_id] = std::move(bound_remote);
-  std::move(callback).Run(instance_id_, mojom::MediaRouteProviderConfig::New());
 }
 
 void MediaRouterMojoImpl::OnIssue(const IssueInfo& issue) {

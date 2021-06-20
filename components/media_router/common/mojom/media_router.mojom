@@ -217,25 +217,6 @@ enum RouteRequestResultCode {
 // New values must be added here.
 };
 
-// Used to pass feature configuration data from the Browser to Media Route
-// Provider. This object is used by the extension MRP only.
-struct MediaRouteProviderConfig {
-  // If the MRP should enable DIAL discovery.
-  bool enable_dial_discovery;
-
-  // If the MRP should enable Cast discovery.
-  bool enable_cast_discovery;
-
-  // If the MRP should enable DIAL sink query.
-  bool enable_dial_sink_query;
-
-  // If the MRP should enable Cast sink query.
-  bool enable_cast_sink_query;
-
-  // If Mirroring Service is being used.
-  bool use_mirroring_service;
-};
-
 // Used to pass a pair of PresentationConnection pipes as part of a route
 // result.  An MRP may return this as part of any route creation callback to
 // allow direct communication with the controlling page.
@@ -519,11 +500,8 @@ interface MediaRouter {
   };
 
   // Registers a MediaRouteProvider with the MediaRouter.
-  // Returns a string that uniquely identifies the Media Router browser
-  // process.
   RegisterMediaRouteProvider(MediaRouteProvider.Id provider_id,
-      pending_remote<MediaRouteProvider> media_router_provider) =>
-          (string instance_id, MediaRouteProviderConfig config);
+      pending_remote<MediaRouteProvider> media_router_provider);
 
   // Called when a MediaRouteProvider receives a new list of |sinks|
   // compatible with |media_source|. The result is only valid for |origins|. If
