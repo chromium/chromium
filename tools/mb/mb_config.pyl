@@ -195,12 +195,12 @@
       'ToTMacCoverage': 'clang_tot_coverage_minimal_symbols_release',
       'ToTMac (dbg)': 'clang_tot_shared_debug',
       'ToTMacASan': 'asan_disable_nacl_clang_tot_minimal_symbols_static_release',
-      'ToTWin': 'clang_tot_official_minimal_symbols_static_release_x86',
+      'ToTWin': 'clang_tot_minimal_symbols_static_release_x86',
       'ToTWin(dbg)': 'clang_tot_shared_debug_x86',
       'ToTWin(dll)': 'clang_tot_minimal_symbols_shared_release_x86_dcheck',
       'ToTWinOfficial': 'clang_tot_win_official_full_symbols_static_x86',
       'ToTWinOfficial64': 'clang_tot_win_official_full_symbols_static',
-      'ToTWin64': 'clang_tot_official_minimal_symbols_static_release',
+      'ToTWin64': 'clang_tot_minimal_symbols_static_release',
       'ToTWin64(dbg)': 'clang_tot_shared_debug',
       'ToTWin64(dll)': 'clang_tot_shared_release_dcheck',
       'ToTWin64PGO': 'clang_tot_official_pgo',
@@ -1910,12 +1910,12 @@
       'clang_tot', 'official', 'no_symbols', 'pgo_phase_1',
     ],
 
-    'clang_tot_official_minimal_symbols_static_release': [
-      'clang_tot', 'official', 'minimal_symbols', 'static', 'release',
+    'clang_tot_minimal_symbols_static_release': [
+      'clang_tot', 'minimal_symbols', 'static', 'release',
     ],
 
-    'clang_tot_official_minimal_symbols_static_release_x86': [
-      'clang_tot', 'official', 'minimal_symbols', 'static', 'release', 'x86',
+    'clang_tot_minimal_symbols_static_release_x86': [
+      'clang_tot', 'minimal_symbols', 'static', 'release', 'x86',
     ],
 
     'clang_tot_shared_debug': [

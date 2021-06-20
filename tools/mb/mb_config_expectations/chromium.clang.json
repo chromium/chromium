@@ -290,11 +290,9 @@
   },
   "ToTWin": {
     "gn_args": {
-      "is_chrome_branded": true,
       "is_clang": true,
       "is_component_build": false,
       "is_debug": false,
-      "is_official_build": true,
       "llvm_force_head_revision": true,
       "symbol_level": 1,
       "target_cpu": "x86"
@@ -322,11 +320,9 @@
   },
   "ToTWin64": {
     "gn_args": {
-      "is_chrome_branded": true,
       "is_clang": true,
       "is_component_build": false,
       "is_debug": false,
-      "is_official_build": true,
       "llvm_force_head_revision": true,
       "symbol_level": 1
     }
