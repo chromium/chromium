@@ -25,6 +25,9 @@
       # Name is vr_*, but actually has AR tests.
       'vr_android_unittests': {},
     },
+    'android_build_junit_tests': {
+      'incremental_javac_junit_tests': {}
+    },
     'android_ddready_vr_gtests': {
       'chrome_public_test_vr_apk-ddready-cardboard': {
         'args': [

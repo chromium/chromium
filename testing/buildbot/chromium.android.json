@@ -27316,6 +27316,17 @@
         "test": "zlib_unittests",
         "test_id_prefix": "ninja://third_party/zlib:zlib_unittests/"
       }
+    ],
+    "junit_tests": [
+      {
+        "name": "incremental_javac_junit_tests",
+        "resultdb": {
+          "enable": true
+        },
+        "swarming": {},
+        "test": "incremental_javac_junit_tests",
+        "test_id_prefix": "ninja://build/android/test:incremental_javac_junit_tests/"
+      }
     ]
   },
   "android-marshmallow-arm64-rel": {

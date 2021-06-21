@@ -843,6 +843,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'chromium_android_gtests',
+          'junit_tests': 'android_build_junit_tests',
         },
         'os_type': 'android',
       },
