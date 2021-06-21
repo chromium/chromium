@@ -83,6 +83,7 @@ export function WallpaperBreadcrumbTest() {
     assertFalse(div.hidden);
     const span =
         wallpaperBreadcrumbElement.shadowRoot.getElementById('pageLabel');
-    assertEquals('My Images', span.textContent);
+    assertEquals(
+        wallpaperBreadcrumbElement.i18n('myImagesLabel'), span.textContent);
   });
 }

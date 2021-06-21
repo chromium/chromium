@@ -57,7 +57,8 @@ void AddResources(content::WebUIDataSource* source) {
 
 void AddStrings(content::WebUIDataSource* source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
-      {"title", IDS_PERSONALIZATION_APP_TITLE}};
+      {"title", IDS_PERSONALIZATION_APP_TITLE},
+      {"myImagesLabel", IDS_PERSONALIZATION_APP_MY_IMAGES}};
   source->AddLocalizedStrings(kLocalizedStrings);
   source->UseStringsJs();
 }

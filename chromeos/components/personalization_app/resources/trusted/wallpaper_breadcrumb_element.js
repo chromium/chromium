@@ -91,8 +91,7 @@ export class WallpaperBreadcrumb extends WithPersonalizationStore {
             collections.find(collection => collection.id === collectionId);
         return collection ? collection.name : '';
       case Paths.LocalCollection:
-        // TODO(b/184774974): Add translation
-        return 'My Images';
+        return this.i18n('myImagesLabel');
       default:
         return '';
     }
