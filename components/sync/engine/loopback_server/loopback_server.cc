@@ -744,8 +744,7 @@ LoopbackServer::GetEntitiesAsDictionaryValue() {
   // Initialize an empty ListValue for all ModelTypes.
   ModelTypeSet all_types = ModelTypeSet::All();
   for (ModelType type : all_types) {
-    dictionary->Set(ModelTypeToString(type),
-                    std::make_unique<base::ListValue>());
+    dictionary->SetKey(ModelTypeToString(type), base::ListValue());
   }
 
   for (const auto& kv : entities_) {

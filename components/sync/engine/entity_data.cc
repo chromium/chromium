@@ -49,7 +49,8 @@ std::unique_ptr<base::DictionaryValue> EntityData::ToDictionaryValue() {
   base::Time mtime = modification_time;
   std::unique_ptr<base::DictionaryValue> dict =
       std::make_unique<base::DictionaryValue>();
-  dict->Set("SPECIFICS", EntitySpecificsToValue(specifics));
+  dict->SetKey("SPECIFICS", base::Value::FromUniquePtrValue(
+                                EntitySpecificsToValue(specifics)));
   ADD_TO_DICT(dict, id);
   ADD_TO_DICT(dict, client_tag_hash.value());
   ADD_TO_DICT(dict, originator_cache_guid);

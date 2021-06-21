@@ -102,8 +102,9 @@ std::unique_ptr<base::DictionaryValue> SyncCycleSnapshot::ToValue() const {
                     model_neutral_state_.num_local_overwrites);
   value->SetInteger("numServerOverwrites",
                     model_neutral_state_.num_server_overwrites);
-  value->Set("downloadProgressMarkers",
-             ProgressMarkerMapToValue(download_progress_markers_));
+  value->SetKey("downloadProgressMarkers",
+                base::Value::FromUniquePtrValue(
+                    ProgressMarkerMapToValue(download_progress_markers_)));
   value->SetBoolean("isSilenced", is_silenced_);
   // We don't care too much if we lose precision here, also.
   value->SetInteger("numEncryptionConflicts", num_encryption_conflicts_);
@@ -113,18 +114,16 @@ std::unique_ptr<base::DictionaryValue> SyncCycleSnapshot::ToValue() const {
   value->SetString("getUpdatesOrigin", ProtoEnumToString(get_updates_origin_));
   value->SetBoolean("notificationsEnabled", notifications_enabled_);
 
-  std::unique_ptr<base::DictionaryValue> counter_entries(
-      new base::DictionaryValue());
+  base::DictionaryValue counter_entries;
   for (ModelType type : ModelTypeSet::All()) {
-    std::unique_ptr<base::DictionaryValue> type_entries(
-        new base::DictionaryValue());
-    type_entries->SetInteger("numEntries", num_entries_by_type_[type]);
-    type_entries->SetInteger("numToDeleteEntries",
-                             num_to_delete_entries_by_type_[type]);
+    base::DictionaryValue type_entries;
+    type_entries.SetInteger("numEntries", num_entries_by_type_[type]);
+    type_entries.SetInteger("numToDeleteEntries",
+                            num_to_delete_entries_by_type_[type]);
 
-    counter_entries->Set(ModelTypeToString(type), std::move(type_entries));
+    counter_entries.SetKey(ModelTypeToString(type), std::move(type_entries));
   }
-  value->Set("counter_entries", std::move(counter_entries));
+  value->SetKey("counter_entries", std::move(counter_entries));
   value->SetBoolean("hasRemainingLocalChanges", has_remaining_local_changes_);
   value->SetString("poll_interval", FormatTimeDelta(poll_interval_));
   value->SetString(
