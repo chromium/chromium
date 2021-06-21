@@ -62,6 +62,7 @@ class ImportDataHandler : public SettingsPageUIHandler,
   void FileSelected(const base::FilePath& path,
                     int index,
                     void* params) override;
+  void FileSelectionCanceled(void* params) override;
 
   std::unique_ptr<ImporterList> importer_list_;
 
