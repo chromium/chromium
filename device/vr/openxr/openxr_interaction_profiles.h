@@ -65,7 +65,7 @@ struct OpenXrButtonActionPathMap {
 
 struct OpenXrButtonPathMap {
   OpenXrButtonType type;
-  OpenXrButtonActionPathMap action_maps[kMaxNumActionMaps];
+  const OpenXrButtonActionPathMap* action_maps;
   size_t action_map_size;
 };
 
@@ -81,7 +81,7 @@ struct OpenXrSystemInputProfiles {
   // system that doesn't have an explicit match. Each interaction profile should
   // have one OpenXrSystemInputProfiles with a system_name of nullptr.
   const char* const system_name;
-  const char* const input_profiles[kMaxInputProfiles];
+  const char* const* input_profiles;
   size_t profile_size;
 };
 
@@ -111,221 +111,324 @@ struct OpenXrControllerInteractionProfile {
 // MSFT Hand Interaction
 // Declare OpenXR input profile bindings for other runtimes when they become
 // available.
+const char* const kMicrosftMotionDefaultInputProfiles[] = {
+    "windows-mixed-reality", "generic-trigger-squeeze-touchpad-thumbstick"};
+
 constexpr OpenXrSystemInputProfiles kMicrosoftMotionInputProfiles[] = {
-    {nullptr,
-     {"windows-mixed-reality", "generic-trigger-squeeze-touchpad-thumbstick"},
-     2}};
+    {nullptr, kMicrosftMotionDefaultInputProfiles,
+     base::size(kMicrosftMotionDefaultInputProfiles)}};
+
+const char* const kGenericButtonDefaultInputProfiles[] = {"generic-button"};
 
 constexpr OpenXrSystemInputProfiles kGenericButtonInputProfiles[] = {
-    {nullptr, {"generic-button"}, 1}};
+    {nullptr, kGenericButtonDefaultInputProfiles,
+     base::size(kGenericButtonDefaultInputProfiles)}};
+
+const char* const kOculusTouchV2InputProfiles[] = {
+    "oculus-touch-v2", "oculus-touch", "generic-trigger-squeeze-thumbstick"};
+
+const char* const kOculusTouchV3InputProfiles[] = {
+    "oculus-touch-v3", "oculus-touch-v2", "oculus-touch",
+    "generic-trigger-squeeze-thumbstick"};
+
+const char* const kOculusTouchDefaultInputProfiles[] = {
+    "oculus-touch", "generic-trigger-squeeze-thumbstick"};
 
 constexpr OpenXrSystemInputProfiles kOculusTouchInputProfiles[] = {
-    {nullptr, {"oculus-touch", "generic-trigger-squeeze-thumbstick"}, 2},
-    {"Oculus Rift S",
-     {"oculus-touch-v2", "oculus-touch", "generic-trigger-squeeze-thumbstick"},
-     3},
-    {"Quest",
-     {"oculus-touch-v2", "oculus-touch", "generic-trigger-squeeze-thumbstick"},
-     3},
+    {nullptr, kOculusTouchDefaultInputProfiles,
+     base::size(kOculusTouchDefaultInputProfiles)},
+    {"Oculus Rift S", kOculusTouchV2InputProfiles,
+     base::size(kOculusTouchV2InputProfiles)},
+    {"Quest", kOculusTouchV2InputProfiles,
+     base::size(kOculusTouchV2InputProfiles)},
     // Name currently reported by OpenXR for the Quest 2
-    {"Miramar",
-     {"oculus-touch-v3", "oculus-touch-v2", "oculus-touch",
-      "generic-trigger-squeeze-thumbstick"},
-     4},
+    {"Miramar", kOculusTouchV3InputProfiles,
+     base::size(kOculusTouchV3InputProfiles)},
     // Oculus says this will soon be the name OpenXR reports
-    {"Oculus Quest2",
-     {"oculus-touch-v3", "oculus-touch-v2", "oculus-touch",
-      "generic-trigger-squeeze-thumbstick"},
-     4}};
+    {"Oculus Quest2", kOculusTouchV3InputProfiles,
+     base::size(kOculusTouchV3InputProfiles)}};
+
+const char* const kValveIndexDefaultInputProfiles[] = {
+    "valve-index", "generic-trigger-squeeze-touchpad-thumbstick"};
 
 constexpr OpenXrSystemInputProfiles kValveIndexInputProfiles[] = {
-    {nullptr,
-     {"valve-index", "generic-trigger-squeeze-touchpad-thumbstick"},
-     2}};
+    {nullptr, kValveIndexDefaultInputProfiles,
+     base::size(kValveIndexDefaultInputProfiles)}};
+
+const char* const kHTCViveDefaultInputProfiles[] = {
+    "htc-vive", "generic-trigger-squeeze-touchpad"};
 
 constexpr OpenXrSystemInputProfiles kHTCViveInputProfiles[] = {
-    {nullptr, {"htc-vive", "generic-trigger-squeeze-touchpad"}, 2}};
+    {nullptr, kHTCViveDefaultInputProfiles,
+     base::size(kHTCViveDefaultInputProfiles)}};
+
+const char* const kSamsungOdysseyDefaultInputProfiles[] = {
+    "samsung-odyssey", "windows-mixed-reality",
+    "generic-trigger-squeeze-touchpad-thumbstick"};
 
 constexpr OpenXrSystemInputProfiles kSamsungOdysseyInputProfiles[] = {
-    {nullptr,
-     {"samsung-odyssey", "windows-mixed-reality",
-      "generic-trigger-squeeze-touchpad-thumbstick"},
-     3}};
+    {nullptr, kSamsungOdysseyDefaultInputProfiles,
+     base::size(kSamsungOdysseyDefaultInputProfiles)}};
+
+const char* const kHPReverbG2DefaultInputProfiles[] = {
+    "hp-mixed-reality", "oculus-touch", "generic-trigger-squeeze"};
 
 constexpr OpenXrSystemInputProfiles kHPReverbG2InputProfiles[] = {
-    {nullptr,
-     {"hp-mixed-reality", "oculus-touch", "generic-trigger-squeeze"},
-     3}};
+    {nullptr, kHPReverbG2DefaultInputProfiles,
+     base::size(kHPReverbG2DefaultInputProfiles)}};
+
+const char* const kGenericHandSelectGraspDefaultInputProfiles[] = {
+    "generic-hand-select-grasp", "generic-hand-select"};
 
 constexpr OpenXrSystemInputProfiles kGenericHandSelectGraspInputProfile[] = {
-    {nullptr, {"generic-hand-select-grasp", "generic-hand-select"}, 2}};
+    {nullptr, kGenericHandSelectGraspDefaultInputProfiles,
+     base::size(kGenericHandSelectGraspDefaultInputProfiles)}};
+
+constexpr OpenXrButtonActionPathMap kMicrosoftMotionControllerTriggerMaps[] = {
+    {OpenXrButtonActionType::kPress, "/input/trigger/value"},
+    {OpenXrButtonActionType::kValue, "/input/trigger/value"},
+};
+
+constexpr OpenXrButtonActionPathMap kMicrosoftMotionControllerSqueezeMaps[] = {
+    {OpenXrButtonActionType::kPress, "/input/squeeze/click"},
+};
+
+constexpr OpenXrButtonActionPathMap kMicrosoftMotionControllerThumbstickMaps[] =
+    {{OpenXrButtonActionType::kPress, "/input/thumbstick/click"}};
+
+constexpr OpenXrButtonActionPathMap kMicrosoftMotionControllerTrackpadMaps[] = {
+    {OpenXrButtonActionType::kPress, "/input/trackpad/click"},
+    {OpenXrButtonActionType::kTouch, "/input/trackpad/touch"},
+};
 
 constexpr OpenXrButtonPathMap kMicrosoftMotionControllerButtonPathMaps[] = {
-    {OpenXrButtonType::kTrigger,
-     {
-         {OpenXrButtonActionType::kPress, "/input/trigger/value"},
-         {OpenXrButtonActionType::kValue, "/input/trigger/value"},
-     },
-     2},
-    {OpenXrButtonType::kSqueeze,
-     {{OpenXrButtonActionType::kPress, "/input/squeeze/click"}},
-     1},
-    {OpenXrButtonType::kThumbstick,
-     {{OpenXrButtonActionType::kPress, "/input/thumbstick/click"}},
-     1},
-    {OpenXrButtonType::kTrackpad,
-     {{OpenXrButtonActionType::kPress, "/input/trackpad/click"},
-      {OpenXrButtonActionType::kTouch, "/input/trackpad/touch"}},
-     2}};
+    {OpenXrButtonType::kTrigger, kMicrosoftMotionControllerTriggerMaps,
+     base::size(kMicrosoftMotionControllerTriggerMaps)},
+    {OpenXrButtonType::kSqueeze, kMicrosoftMotionControllerSqueezeMaps,
+     base::size(kMicrosoftMotionControllerSqueezeMaps)},
+    {OpenXrButtonType::kThumbstick, kMicrosoftMotionControllerThumbstickMaps,
+     base::size(kMicrosoftMotionControllerThumbstickMaps)},
+    {OpenXrButtonType::kTrackpad, kMicrosoftMotionControllerTrackpadMaps,
+     base::size(kMicrosoftMotionControllerTrackpadMaps)}};
+
+constexpr OpenXrButtonActionPathMap kKronosSimpleControllerTriggerMaps[] = {
+    {OpenXrButtonActionType::kPress, "/input/select/click"},
+};
 
 constexpr OpenXrButtonPathMap kKronosSimpleControllerButtonPathMaps[] = {
-    {OpenXrButtonType::kTrigger,
-     {{OpenXrButtonActionType::kPress, "/input/select/click"}},
-     1},
+    {OpenXrButtonType::kTrigger, kKronosSimpleControllerTriggerMaps,
+     base::size(kKronosSimpleControllerTriggerMaps)},
+};
+
+constexpr OpenXrButtonActionPathMap kOculusTouchControllerTriggerMaps[] = {
+    {OpenXrButtonActionType::kPress, "/input/trigger/value"},
+    {OpenXrButtonActionType::kValue, "/input/trigger/value"},
+    {OpenXrButtonActionType::kTouch, "/input/trigger/touch"}};
+
+constexpr OpenXrButtonActionPathMap kOculusTouchControllerSqueezeMaps[] = {
+    {OpenXrButtonActionType::kPress, "/input/squeeze/value"},
+    {OpenXrButtonActionType::kValue, "/input/squeeze/value"}};
+
+constexpr OpenXrButtonActionPathMap kOculusTouchControllerThumbstickMaps[] = {
+    {OpenXrButtonActionType::kPress, "/input/thumbstick/click"},
+    {OpenXrButtonActionType::kTouch, "/input/thumbstick/touch"}};
+
+constexpr OpenXrButtonActionPathMap kOculusTouchControllerThumbrestMaps[] = {
+    {OpenXrButtonActionType::kTouch, "/input/thumbrest/touch"}};
+
+constexpr OpenXrButtonActionPathMap
+    kOculusTouchLeftControllerButton1PathMaps[] = {
+        {OpenXrButtonActionType::kPress, "/input/x/click"},
+        {OpenXrButtonActionType::kTouch, "/input/x/touch"},
+};
+
+constexpr OpenXrButtonActionPathMap
+    kOculusTouchLeftControllerButton2PathMaps[] = {
+        {OpenXrButtonActionType::kPress, "/input/y/click"},
+        {OpenXrButtonActionType::kTouch, "/input/y/touch"},
 };
 
 constexpr OpenXrButtonPathMap kOculusTouchLeftControllerButtonPathMaps[] = {
-    {OpenXrButtonType::kTrigger,
-     {{OpenXrButtonActionType::kPress, "/input/trigger/value"},
-      {OpenXrButtonActionType::kValue, "/input/trigger/value"},
-      {OpenXrButtonActionType::kTouch, "/input/trigger/touch"}},
-     3},
-    {OpenXrButtonType::kSqueeze,
-     {{OpenXrButtonActionType::kPress, "/input/squeeze/value"},
-      {OpenXrButtonActionType::kValue, "/input/squeeze/value"}},
-     2},
-    {OpenXrButtonType::kThumbstick,
-     {{OpenXrButtonActionType::kPress, "/input/thumbstick/click"},
-      {OpenXrButtonActionType::kTouch, "/input/thumbstick/touch"}},
-     2},
-    {OpenXrButtonType::kThumbrest,
-     {{OpenXrButtonActionType::kTouch, "/input/thumbrest/touch"}},
-     1},
-    {OpenXrButtonType::kButton1,
-     {{OpenXrButtonActionType::kPress, "/input/x/click"},
-      {OpenXrButtonActionType::kTouch, "/input/x/touch"}},
-     2},
-    {OpenXrButtonType::kButton2,
-     {{OpenXrButtonActionType::kPress, "/input/y/click"},
-      {OpenXrButtonActionType::kTouch, "/input/y/touch"}},
-     2},
+    {OpenXrButtonType::kTrigger, kOculusTouchControllerTriggerMaps,
+     base::size(kOculusTouchControllerTriggerMaps)},
+    {OpenXrButtonType::kSqueeze, kOculusTouchControllerSqueezeMaps,
+     base::size(kOculusTouchControllerSqueezeMaps)},
+    {OpenXrButtonType::kThumbstick, kOculusTouchControllerThumbstickMaps,
+     base::size(kOculusTouchControllerThumbstickMaps)},
+    {OpenXrButtonType::kThumbrest, kOculusTouchControllerThumbrestMaps,
+     base::size(kOculusTouchControllerThumbrestMaps)},
+    {OpenXrButtonType::kButton1, kOculusTouchLeftControllerButton1PathMaps,
+     base::size(kOculusTouchLeftControllerButton1PathMaps)},
+    {OpenXrButtonType::kButton2, kOculusTouchLeftControllerButton2PathMaps,
+     base::size(kOculusTouchLeftControllerButton2PathMaps)},
+};
+
+constexpr OpenXrButtonActionPathMap
+    kOculusTouchRightControllerButton1PathMaps[] = {
+        {OpenXrButtonActionType::kPress, "/input/a/click"},
+        {OpenXrButtonActionType::kTouch, "/input/a/touch"},
+};
+
+constexpr OpenXrButtonActionPathMap
+    kOculusTouchRightControllerButton2PathMaps[] = {
+        {OpenXrButtonActionType::kPress, "/input/b/click"},
+        {OpenXrButtonActionType::kTouch, "/input/b/touch"},
 };
 
 constexpr OpenXrButtonPathMap kOculusTouchRightControllerButtonPathMaps[] = {
-    {OpenXrButtonType::kTrigger,
-     {{OpenXrButtonActionType::kPress, "/input/trigger/value"},
-      {OpenXrButtonActionType::kValue, "/input/trigger/value"},
-      {OpenXrButtonActionType::kTouch, "/input/trigger/touch"}},
-     3},
-    {OpenXrButtonType::kSqueeze,
-     {{OpenXrButtonActionType::kPress, "/input/squeeze/value"},
-      {OpenXrButtonActionType::kValue, "/input/squeeze/value"}},
-     2},
-    {OpenXrButtonType::kThumbstick,
-     {{OpenXrButtonActionType::kPress, "/input/thumbstick/click"},
-      {OpenXrButtonActionType::kTouch, "/input/thumbstick/touch"}},
-     2},
-    {OpenXrButtonType::kThumbrest,
-     {{OpenXrButtonActionType::kTouch, "/input/thumbrest/touch"}},
-     1},
-    {OpenXrButtonType::kButton1,
-     {{OpenXrButtonActionType::kPress, "/input/a/click"},
-      {OpenXrButtonActionType::kTouch, "/input/a/touch"}},
-     2},
-    {OpenXrButtonType::kButton2,
-     {{OpenXrButtonActionType::kPress, "/input/b/click"},
-      {OpenXrButtonActionType::kTouch, "/input/b/touch"}},
-     2},
+    {OpenXrButtonType::kTrigger, kOculusTouchControllerTriggerMaps,
+     base::size(kOculusTouchControllerTriggerMaps)},
+    {OpenXrButtonType::kSqueeze, kOculusTouchControllerSqueezeMaps,
+     base::size(kOculusTouchControllerSqueezeMaps)},
+    {OpenXrButtonType::kThumbstick, kOculusTouchControllerThumbstickMaps,
+     base::size(kOculusTouchControllerThumbstickMaps)},
+    {OpenXrButtonType::kThumbrest, kOculusTouchControllerThumbrestMaps,
+     base::size(kOculusTouchControllerThumbrestMaps)},
+    {OpenXrButtonType::kButton1, kOculusTouchRightControllerButton1PathMaps,
+     base::size(kOculusTouchRightControllerButton1PathMaps)},
+    {OpenXrButtonType::kButton2, kOculusTouchRightControllerButton2PathMaps,
+     base::size(kOculusTouchRightControllerButton2PathMaps)},
+};
+
+constexpr OpenXrButtonActionPathMap kValveIndexControllerTriggerPathMaps[] = {
+    {OpenXrButtonActionType::kPress, "/input/trigger/click"},
+    {OpenXrButtonActionType::kValue, "/input/trigger/value"},
+    {OpenXrButtonActionType::kTouch, "/input/trigger/touch"},
+};
+
+constexpr OpenXrButtonActionPathMap kValveIndexControllerSqueezePathMaps[] = {
+    {OpenXrButtonActionType::kPress, "/input/squeeze/value"},
+    {OpenXrButtonActionType::kValue, "/input/squeeze/force"},
+};
+
+constexpr OpenXrButtonActionPathMap kValveIndexControllerThumbstickPathMaps[] =
+    {
+        {OpenXrButtonActionType::kPress, "/input/thumbstick/click"},
+        {OpenXrButtonActionType::kTouch, "/input/thumbstick/touch"},
+};
+
+constexpr OpenXrButtonActionPathMap kValveIndexControllerTrackpadPathMaps[] = {
+    {OpenXrButtonActionType::kTouch, "/input/trackpad/touch"},
+    {OpenXrButtonActionType::kValue, "/input/trackpad/force"},
+};
+
+constexpr OpenXrButtonActionPathMap kValveIndexControllerButton1PathMaps[] = {
+    {OpenXrButtonActionType::kPress, "/input/a/click"},
+    {OpenXrButtonActionType::kTouch, "/input/a/touch"},
 };
 
 constexpr OpenXrButtonPathMap kValveIndexControllerButtonPathMaps[] = {
-    {OpenXrButtonType::kTrigger,
-     {{OpenXrButtonActionType::kPress, "/input/trigger/click"},
-      {OpenXrButtonActionType::kValue, "/input/trigger/value"},
-      {OpenXrButtonActionType::kTouch, "/input/trigger/touch"}},
-     3},
-    {OpenXrButtonType::kSqueeze,
-     {{OpenXrButtonActionType::kPress, "/input/squeeze/value"},
-      {OpenXrButtonActionType::kValue, "/input/squeeze/force"}},
-     2},
-    {OpenXrButtonType::kThumbstick,
-     {{OpenXrButtonActionType::kPress, "/input/thumbstick/click"},
-      {OpenXrButtonActionType::kTouch, "/input/thumbstick/touch"}},
-     2},
-    {OpenXrButtonType::kTrackpad,
-     {{OpenXrButtonActionType::kTouch, "/input/trackpad/touch"},
-      {OpenXrButtonActionType::kValue, "/input/trackpad/force"}},
-     2},
-    {OpenXrButtonType::kButton1,
-     {{OpenXrButtonActionType::kPress, "/input/a/click"},
-      {OpenXrButtonActionType::kTouch, "/input/a/touch"}},
-     2},
+    {OpenXrButtonType::kTrigger, kValveIndexControllerTriggerPathMaps,
+     base::size(kValveIndexControllerTriggerPathMaps)},
+    {OpenXrButtonType::kSqueeze, kValveIndexControllerSqueezePathMaps,
+     base::size(kValveIndexControllerSqueezePathMaps)},
+    {OpenXrButtonType::kThumbstick, kValveIndexControllerThumbstickPathMaps,
+     base::size(kValveIndexControllerThumbstickPathMaps)},
+    {OpenXrButtonType::kTrackpad, kValveIndexControllerTrackpadPathMaps,
+     base::size(kValveIndexControllerTrackpadPathMaps)},
+    {OpenXrButtonType::kButton1, kValveIndexControllerButton1PathMaps,
+     base::size(kValveIndexControllerButton1PathMaps)},
+};
+
+constexpr OpenXrButtonActionPathMap kHTCViveControllerTriggerPathMaps[] = {
+    {OpenXrButtonActionType::kPress, "/input/trigger/click"},
+    {OpenXrButtonActionType::kValue, "/input/trigger/value"},
+};
+
+constexpr OpenXrButtonActionPathMap kHTCViveControllerSqueezePathMaps[] = {
+    {OpenXrButtonActionType::kPress, "/input/squeeze/click"},
+};
+
+constexpr OpenXrButtonActionPathMap kHTCViveControllerTrackpadPathMaps[] = {
+    {OpenXrButtonActionType::kPress, "/input/trackpad/click"},
+    {OpenXrButtonActionType::kTouch, "/input/trackpad/touch"},
 };
 
 constexpr OpenXrButtonPathMap kHTCViveControllerButtonPathMaps[] = {
-    {OpenXrButtonType::kTrigger,
-     {
-         {OpenXrButtonActionType::kPress, "/input/trigger/click"},
-         {OpenXrButtonActionType::kValue, "/input/trigger/value"},
-     },
-     2},
-    {OpenXrButtonType::kSqueeze,
-     {{OpenXrButtonActionType::kPress, "/input/squeeze/click"}},
-     1},
-    {OpenXrButtonType::kTrackpad,
-     {{OpenXrButtonActionType::kPress, "/input/trackpad/click"},
-      {OpenXrButtonActionType::kTouch, "/input/trackpad/touch"}},
-     2}};
+    {OpenXrButtonType::kTrigger, kHTCViveControllerTriggerPathMaps,
+     base::size(kHTCViveControllerTriggerPathMaps)},
+    {OpenXrButtonType::kSqueeze, kHTCViveControllerSqueezePathMaps,
+     base::size(kHTCViveControllerSqueezePathMaps)},
+    {OpenXrButtonType::kTrackpad, kHTCViveControllerTrackpadPathMaps,
+     base::size(kHTCViveControllerTrackpadPathMaps)},
+};
+
+constexpr OpenXrButtonActionPathMap kHPReverbG2ControllerTriggerPathMaps[] = {
+    {OpenXrButtonActionType::kPress, "/input/trigger/value"},
+    {OpenXrButtonActionType::kValue, "/input/trigger/value"},
+};
+
+constexpr OpenXrButtonActionPathMap kHPReverbG2ControllerSqueezePathMaps[] = {
+    {OpenXrButtonActionType::kPress, "/input/squeeze/value"},
+    {OpenXrButtonActionType::kValue, "/input/squeeze/value"},
+};
+
+constexpr OpenXrButtonActionPathMap kHPReverbG2ControllerThumbstickPathMaps[] =
+    {
+        {OpenXrButtonActionType::kPress, "/input/thumbstick/click"},
+};
+
+constexpr OpenXrButtonActionPathMap kHPReverbG2LeftControllerButton1PathMaps[] =
+    {
+        {OpenXrButtonActionType::kPress, "/input/x/click"},
+};
+
+constexpr OpenXrButtonActionPathMap kHPReverbG2LeftControllerButton2PathMaps[] =
+    {
+        {OpenXrButtonActionType::kPress, "/input/y/click"},
+};
 
 constexpr OpenXrButtonPathMap kHPReverbG2LeftControllerButtonPathMaps[] = {
-    {OpenXrButtonType::kTrigger,
-     {{OpenXrButtonActionType::kPress, "/input/trigger/value"},
-      {OpenXrButtonActionType::kValue, "/input/trigger/value"}},
-     2},
-    {OpenXrButtonType::kSqueeze,
-     {{OpenXrButtonActionType::kPress, "/input/squeeze/value"},
-      {OpenXrButtonActionType::kValue, "/input/squeeze/value"}},
-     2},
-    {OpenXrButtonType::kThumbstick,
-     {{OpenXrButtonActionType::kPress, "/input/thumbstick/click"}},
-     1},
-    {OpenXrButtonType::kButton1,
-     {{OpenXrButtonActionType::kPress, "/input/x/click"}},
-     1},
-    {OpenXrButtonType::kButton2,
-     {{OpenXrButtonActionType::kPress, "/input/y/click"}},
-     1},
+    {OpenXrButtonType::kTrigger, kHPReverbG2ControllerTriggerPathMaps,
+     base::size(kHPReverbG2ControllerTriggerPathMaps)},
+    {OpenXrButtonType::kSqueeze, kHPReverbG2ControllerSqueezePathMaps,
+     base::size(kHPReverbG2ControllerSqueezePathMaps)},
+    {OpenXrButtonType::kThumbstick, kHPReverbG2ControllerThumbstickPathMaps,
+     base::size(kHPReverbG2ControllerThumbstickPathMaps)},
+    {OpenXrButtonType::kButton1, kHPReverbG2LeftControllerButton1PathMaps,
+     base::size(kHPReverbG2LeftControllerButton1PathMaps)},
+    {OpenXrButtonType::kButton2, kHPReverbG2LeftControllerButton2PathMaps,
+     base::size(kHPReverbG2LeftControllerButton2PathMaps)},
+};
+
+constexpr OpenXrButtonActionPathMap
+    kHPReverbG2RightControllerButton1PathMaps[] = {
+        {OpenXrButtonActionType::kPress, "/input/a/click"},
+};
+
+constexpr OpenXrButtonActionPathMap
+    kHPReverbG2RightControllerButton2PathMaps[] = {
+        {OpenXrButtonActionType::kPress, "/input/b/click"},
 };
 
 constexpr OpenXrButtonPathMap kHPReverbG2RightControllerButtonPathMaps[] = {
-    {OpenXrButtonType::kTrigger,
-     {{OpenXrButtonActionType::kPress, "/input/trigger/value"},
-      {OpenXrButtonActionType::kValue, "/input/trigger/value"}},
-     2},
-    {OpenXrButtonType::kSqueeze,
-     {{OpenXrButtonActionType::kPress, "/input/squeeze/value"},
-      {OpenXrButtonActionType::kValue, "/input/squeeze/value"}},
-     2},
-    {OpenXrButtonType::kThumbstick,
-     {{OpenXrButtonActionType::kPress, "/input/thumbstick/click"}},
-     1},
-    {OpenXrButtonType::kButton1,
-     {{OpenXrButtonActionType::kPress, "/input/a/click"}},
-     1},
-    {OpenXrButtonType::kButton2,
-     {{OpenXrButtonActionType::kPress, "/input/b/click"}},
-     1},
+    {OpenXrButtonType::kTrigger, kHPReverbG2ControllerTriggerPathMaps,
+     base::size(kHPReverbG2ControllerTriggerPathMaps)},
+    {OpenXrButtonType::kSqueeze, kHPReverbG2ControllerSqueezePathMaps,
+     base::size(kHPReverbG2ControllerSqueezePathMaps)},
+    {OpenXrButtonType::kThumbstick, kHPReverbG2ControllerThumbstickPathMaps,
+     base::size(kHPReverbG2ControllerThumbstickPathMaps)},
+    {OpenXrButtonType::kButton1, kHPReverbG2RightControllerButton1PathMaps,
+     base::size(kHPReverbG2RightControllerButton1PathMaps)},
+    {OpenXrButtonType::kButton2, kHPReverbG2RightControllerButton2PathMaps,
+     base::size(kHPReverbG2RightControllerButton2PathMaps)},
+};
+
+constexpr OpenXrButtonActionPathMap kGenericHandSelectTriggerPathMaps[] = {
+    {OpenXrButtonActionType::kPress, "/input/select/value"},
+    {OpenXrButtonActionType::kValue, "/input/select/value"},
+};
+
+constexpr OpenXrButtonActionPathMap kGenericHandSelectGraspPathMaps[] = {
+    {OpenXrButtonActionType::kPress, "/input/squeeze/value"},
+    {OpenXrButtonActionType::kValue, "/input/squeeze/value"},
 };
 
 constexpr OpenXrButtonPathMap kGenericHandSelectGraspButtonPathMaps[] = {
-    {OpenXrButtonType::kTrigger,
-     {{OpenXrButtonActionType::kPress, "/input/select/value"},
-      {OpenXrButtonActionType::kValue, "/input/select/value"}},
-     2},
-    {OpenXrButtonType::kGrasp,
-     {{OpenXrButtonActionType::kPress, "/input/squeeze/value"},
-      {OpenXrButtonActionType::kValue, "/input/squeeze/value"}},
-     2},
+    {OpenXrButtonType::kTrigger, kGenericHandSelectTriggerPathMaps,
+     base::size(kGenericHandSelectTriggerPathMaps)},
+    {OpenXrButtonType::kGrasp, kGenericHandSelectGraspPathMaps,
+     base::size(kGenericHandSelectGraspPathMaps)},
 };
 
 constexpr OpenXrAxisPathMap kMicrosoftMotionControllerAxisPathMaps[] = {
