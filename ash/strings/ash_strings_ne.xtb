@@ -140,7 +140,7 @@
 <translation id="2047639699071423250">मुख्य विचार हाल्नुहोस्</translation>
 <translation id="2049240716062114887">डेस्कको नाम बदलेर <ph name="DESK_NAME" /> बनाइयो</translation>
 <translation id="2050339315714019657">पोर्ट्रेट</translation>
-<translation id="2066708475850724665">म्याग्निफायर बन्द गर्नुहोस्</translation>
+<translation id="2066708475850724665">म्याग्निफायर अफ गर्नुहोस्</translation>
 <translation id="2067602449040652523">किबोर्डको चमक</translation>
 <translation id="2078034614700056995">अर्को डेस्कमा जान टचप्याडमा चारवटा औँलाले दायाँतिर स्वाइप गर्नुहोस्</translation>
 <translation id="2079504693865562705">सेल्फमा एपहरू लुकाउनुहोस्</translation>
@@ -153,7 +153,7 @@
 <translation id="2127372758936585790">न्यून-पावर चार्जर</translation>
 <translation id="2132302418721800944">फुल स्क्रिनको भिडियो रेकर्ड गर्नुहोस्</translation>
 <translation id="2135456203358955318">डक गरिएको म्याग्निफायर</translation>
-<translation id="2146800439053023141">बार लोकेसन टगल गर्नुहोस्</translation>
+<translation id="2146800439053023141">टगल गरी प्रोजेक्टर टुलबारको स्थान बदल्नुहोस्</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: फेरि प्रयास गर्नुहोस्</translation>
 <translation id="2167870087604746126">+ V</translation>
 <translation id="2170530631236737939">हालैका स्क्रिन देखाइने मोड बन्द गर्न तीनवटा औँलाले तलतिर स्वाइप गर्नुहोस्</translation>
@@ -461,11 +461,11 @@
 <translation id="4578906031062871102">'सेटिङ' मेनु खोलियो</translation>
 <translation id="4581047786858252841">माइक्रोफोन अन छ</translation>
 <translation id="4585337515783392668">कुनै अज्ञात प्रापकमा casting गर्न छाड्नुहोस्</translation>
-<translation id="4586483766170476230">सेल्फी क्यामेरा बन्द गर्नुहोस्</translation>
+<translation id="4586483766170476230">सेल्फी क्यामेरा अफ गर्नुहोस्</translation>
 <translation id="4587299710837179226">माइक्रोफोन अफ छ</translation>
 <translation id="4596144739579517758">अँध्यारो थिम अफ छ</translation>
 <translation id="4611292653554630842">लग इन गर्नुहोस्</translation>
-<translation id="4614295562446151104">मार्कर टुलहरू एक्सपान्ड गर्नुहोस्</translation>
+<translation id="4614295562446151104">मार्कर टुलहरू एक्स्पान्ड गर्नुहोस्</translation>
 <translation id="4623167406982293031">खाता पुष्टि गर्नुहोस्</translation>
 <translation id="4628757576491864469">यन्त्रहरू</translation>
 <translation id="4642092649622328492">आंशिक स्क्रिनसट लिनुहोस्</translation>
@@ -524,7 +524,7 @@
 <translation id="5035389544768382859">डिस्प्ले कन्फिगुरेसन पुष्टि गर्नुहोस्</translation>
 <translation id="504465286040788597">अघिल्लो अनुच्छेद</translation>
 <translation id="5071064518267176975">कुनै एपले माइक्रोफोन प्रयोग गर्ने अनुमति माग्दै छ</translation>
-<translation id="5075554201838155866">क्लोज्ड क्याप्सन देखाउन थालियोस्</translation>
+<translation id="5075554201838155866">क्लोज्ड क्याप्सन अन गर्नुहोस्</translation>
 <translation id="5078796286268621944">गलत PIN</translation>
 <translation id="5083553833479578423">सहायकका थप सुविधाहरू अनलक गर्नुहोस्।</translation>
 <translation id="5136175204352732067">भिन्न किबोर्ड जडान गरियो</translation>
@@ -771,7 +771,7 @@
 <translation id="7256634071279256947">पछाडिको माइक्रोफोन</translation>
 <translation id="726276584504105859">विभाजित स्क्रिनको प्रयोग गर्न यहाँ ड्र्याग गर्नुहोस्</translation>
 <translation id="7262906531272962081">रिमाइन्डर सिर्जना गर्नुहोस्</translation>
-<translation id="7279434993080105272"><ph name="COLOR_PARAMETER" /> मार्करको रङ</translation>
+<translation id="7279434993080105272"><ph name="COLOR_PARAMETER" /> रङको मार्कर</translation>
 <translation id="7302889331339392448">लाइभ क्याप्सन अफ छ।</translation>
 <translation id="7303365578352795231">अर्को यन्त्रमा जवाफ दिँदै।</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -884,7 +884,7 @@
 <translation id="8113423164597455979">सबै डिभाइसमा अन</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° से.</translation>
 <translation id="8131740175452115882">निश्चित</translation>
-<translation id="8132487352815776550">क्लोज्ड क्याप्सन देखाउन छाडियोस्</translation>
+<translation id="8132487352815776550">क्लोज्ड क्याप्सन अफ गर्नुहोस्</translation>
 <translation id="8132793192354020517"><ph name="NAME" /> मा जडित</translation>
 <translation id="813913629614996137">सुरुवात गर्दै...</translation>
 <translation id="8142441511840089262">दुई पटक क्लिक गर्नुहोस्</translation>

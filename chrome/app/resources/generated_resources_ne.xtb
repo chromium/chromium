@@ -1707,6 +1707,7 @@
 <translation id="2805760958323556153">नीतिको ExtensionInstallForcelist मान अवैध छ। कृपया आफ्ना एड्मिनलाई सम्पर्क गर्नुहोस्।</translation>
 <translation id="2805770823691782631">अतिरिक्त विवरणहरू</translation>
 <translation id="2806372837663997957">तपाईं जुन यन्त्रमा फाइल सेयर गर्न खोजिरहनुभएको छ उक्त यन्त्रले फाइल सेयर गर्ने अनुमति स्वीकार गरेन</translation>
+<translation id="2806840421670364300">FLoC</translation>
 <translation id="2806891468525657116">सर्टकट पहिलेदेखि नै विद्यमान छ</translation>
 <translation id="2807517655263062534">तपाईंले डाउनलोड गरेका फाइलहरू यहाँ देखिन्छन्</translation>
 <translation id="2809586584051668049">र <ph name="NUMBER_ADDITIONAL_DISABLED" /> थप</translation>
@@ -7020,12 +7021,14 @@
 <translation id="8676374126336081632">आगत मेटाउनुहोस्</translation>
 <translation id="8676770494376880701">अल्प-पावर चार्जर जडित</translation>
 <translation id="8677212948402625567">सबै संकुचित पार्नुहोस्...</translation>
+<translation id="867767487203716855">अर्को अपडेट</translation>
 <translation id="8677859815076891398">कुनै पनि एल्बम छैन। <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> मा गई एउटा एल्बम बनाउनुहोस्।</translation>
 <translation id="8678582529642151449">ट्याबहरू साना हुँदैनन्</translation>
 <translation id="8678933587484842200">तपाईं यो एप कसरी सुरु होस् भन्ने चाहनुहुन्छ?</translation>
 <translation id="8680251145628383637">तपाईंको सबै  यन्त्रहरूमा ट्याबहरू, पुस्तक चिन्हहरू, इतिहास र अन्य सेटिङहरू प्राप्त गर्न साइन इन गर्नुहोस्। तपाईं आफ्नो Google सेवाहरूमा स्वाचालित रूपमा साइन इन पनि हुनुहुनेछ।</translation>
 <translation id="8681614230122836773">Chrome ले तपाईंको कम्प्युटरमा हानिकारक सफ्टवेयर फेला पार्‍यो</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> जोडियो र छाप्नका लागि तयार छ</translation>
+<translation id="8683081248374354009">समूह रिसेट गर्नुहोस्</translation>
 <translation id="8688591111840995413">खराब पासवर्ड</translation>
 <translation id="8688672835843460752">उपलब्ध</translation>
 <translation id="8690129572193755009">साइटहरूले प्रोटोकोल व्यवस्थापन गर्ने अनुमति माग्न सक्छन्</translation>
