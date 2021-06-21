@@ -65,4 +65,4 @@ Exif.Tag = {
 };
 
 // eslint-disable-next-line semi,no-extra-semi
-/* #export */ {Exif};
+export {Exif};

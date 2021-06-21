@@ -94,9 +94,8 @@ js_library("exif_entry.m") {
   sources =
       [ "$root_gen_dir/ui/file_manager/file_manager/externs/exif_entry.m.js" ]
 
-  deps = [
-    "//ui/file_manager/file_manager/foreground/js/metadata:exif_constants.m",
-  ]
+  deps =
+      [ "//ui/file_manager/file_manager/foreground/js/metadata:exif_constants" ]
 
   extra_deps = [ ":modulize" ]
 }

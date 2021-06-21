@@ -515,7 +515,7 @@ ContentMetadataProvider.PROPERTY_NAMES = [
  * @const @private {string}
  */
 ContentMetadataProvider.DEFAULT_WORKER_SCRIPT_ =
-    'foreground/js/metadata/metadata_dispatcher.m.js';
+    'foreground/js/metadata/metadata_dispatcher.js';
 
 /**
  * Worker script URL that is overwritten by client code.

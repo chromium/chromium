@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ImageOrientation, ImageTransformParam} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/foreground/js/metadata/image_orientation.m.js';
+import {ImageOrientation, ImageTransformParam} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/foreground/js/metadata/image_orientation.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 
 

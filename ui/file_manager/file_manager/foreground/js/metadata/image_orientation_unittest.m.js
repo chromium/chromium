@@ -4,7 +4,7 @@
 
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://test/chai_assert.js';
 
-import {ImageOrientation} from './image_orientation.m.js';
+import {ImageOrientation} from './image_orientation.js';
 
 export function testGetSizeAfterCancelling() {
   // Crockwise 90 degrees image orientation.

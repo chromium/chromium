@@ -2,24 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {ByteReader} from './byte_reader.m.js';
-// #import {FunctionParallel} from './function_parallel.m.js';
-// #import {FunctionSequence} from './function_sequence.m.js';
-// #import {MetadataParser} from './metadata_parser.m.js';
-// #import {MetadataParserLogger} from '../../../externs/metadata_worker_window.m.js';
+import {MetadataParserLogger} from '../../../externs/metadata_worker_window.m.js';
 
-/* #ignore */ importScripts(
-/* #ignore */     'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/foreground/js/metadata/function_sequence.js');
-/* #ignore */ importScripts(
-/* #ignore */     'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/foreground/js/metadata/function_parallel.js');
-// clang-format on
+import {ByteReader} from './byte_reader.m.js';
+import {FunctionParallel} from './function_parallel.js';
+import {FunctionSequence} from './function_sequence.js';
+import {MetadataParser} from './metadata_parser.m.js';
+
 
 /**
  * ID3 parser.
  * @final
  */
-/* #export */ class Id3Parser extends MetadataParser {
+export class Id3Parser extends MetadataParser {
   /**
    * @param {!MetadataParserLogger} parent A metadata dispatcher.
    */

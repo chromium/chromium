@@ -2,19 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {ByteReader} from './byte_reader.m.js';
-// #import * as wrappedExif from './exif_constants.m.js'; const {Exif} = wrappedExif;
-// #import {ImageParser} from './metadata_parser.m.js';
-// #import {ExifEntry} from '../../../externs/exif_entry.m.js';
-// #import {MetadataParserLogger} from '../../../externs/metadata_worker_window.m.js';
+import {ExifEntry} from '../../../externs/exif_entry.m.js';
+import {MetadataParserLogger} from '../../../externs/metadata_worker_window.m.js';
 
-/* #ignore */ importScripts(
-/* #ignore */     'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/foreground/js/metadata/exif_constants.js');
-// clang-format on
+import {ByteReader} from './byte_reader.m.js';
+import {Exif} from './exif_constants.js';
+import {ImageParser} from './metadata_parser.m.js';
+
 
 /** @final */
-/* #export */ class ExifParser extends ImageParser {
+export class ExifParser extends ImageParser {
   /**
    * @param {!MetadataParserLogger} parent Parent object.
    */
@@ -282,7 +279,7 @@
   readDirectory(br, tags) {
     const entryCount = br.readScalar(2);
     for (let i = 0; i < entryCount; i++) {
-      const tagId = /** @type !Exif.Tag<number> */ (br.readScalar(2));
+      const tagId = /** @type {!Exif.Tag<number>} */ (br.readScalar(2));
       const tag = tags[tagId] = {id: tagId};
       tag.format = br.readScalar(2);
       tag.componentCount = br.readScalar(4);

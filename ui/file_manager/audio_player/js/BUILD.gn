@@ -86,7 +86,9 @@ js_library("error_util") {
 }
 
 js_library("metadata_worker") {
-  deps = [ "//ui/file_manager/file_manager/foreground/js/metadata:metadata_dispatcher.m" ]
+  deps = [
+    "//ui/file_manager/file_manager/foreground/js/metadata:metadata_dispatcher",
+  ]
 }
 
 js_library("test_util") {

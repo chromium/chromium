@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {ImageTransformParam} from './metadata/image_orientation.m.js';
+// #import {ImageTransformParam} from './metadata/image_orientation.js';
 // #import {FileType} from '../../common/js/file_type.m.js';
 // #import {ImageLoaderClient} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/image_loader_client.js';
 // #import {LoadImageRequest, LoadImageResponse, LoadImageResponseStatus} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/load_image_request.js';

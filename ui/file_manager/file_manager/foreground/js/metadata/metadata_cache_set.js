@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {MetadataCacheItem} from './metadata_cache_item.m.js';
-// #import {MetadataItem} from './metadata_item.m.js';
-// #import {MetadataRequest} from './metadata_request.m.js';
-// #import * as wrappedUtil from '../../../common/js/util.m.js'; const {util} = wrappedUtil;
-// #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
-// clang-format on
+import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
+
+import {util} from '../../../common/js/util.m.js';
+
+import {MetadataCacheItem} from './metadata_cache_item.js';
+import {MetadataItem} from './metadata_item.m.js';
+import {MetadataRequest} from './metadata_request.m.js';
 
 /**
  * Set of MetadataCacheItem.
  */
-/* #export */ class MetadataCacheSet extends cr.EventTarget {
+export class MetadataCacheSet extends EventTarget {
   /**
    * @param {!MetadataCacheSetStorage} items Storage object containing
    *     MetadataCacheItem.
@@ -193,7 +193,7 @@
  * Interface of raw strage for MetadataCacheItem.
  * @interface
  */
-/* #export */ class MetadataCacheSetStorage {
+export class MetadataCacheSetStorage {
   /**
    * Returns an item corresponding to the given URL.
    * @param {string} url Entry URL.
@@ -232,7 +232,7 @@
  * Implementation of MetadataCacheSetStorage by using raw object.
  * @implements {MetadataCacheSetStorage}
  */
-/* #export */ class MetadataCacheSetStorageForObject {
+export class MetadataCacheSetStorageForObject {
   /** @param {Object} items Map of URL and MetadataCacheItem. */
   constructor(items) {
     this.items_ = items;

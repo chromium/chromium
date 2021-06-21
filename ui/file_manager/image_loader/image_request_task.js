@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {FileType} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/common/js/file_type.m.js';
-import {ImageOrientation} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/foreground/js/metadata/image_orientation.m.js';
+import {ImageOrientation} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/foreground/js/metadata/image_orientation.js';
 import {assert, assertInstanceof} from 'chrome://resources/js/assert.m.js';
 
 import {ImageCache} from './cache.js';

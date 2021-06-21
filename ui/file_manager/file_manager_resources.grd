@@ -34,17 +34,9 @@
 
       <!-- Scripts required by the metadata parser worker. -->
       <include name="IDR_FILE_MANAGER_UTIL" file="file_manager/common/js/util.js" type="BINDATA" />
-      <include name="IDR_FILE_MANAGER_METADATA_DISPATCHER" file="file_manager/foreground/js/metadata/metadata_dispatcher.js" type="BINDATA" />
       <include name="IDR_FILE_MANAGER_METADATA_READER" file="file_manager/foreground/js/metadata/byte_reader.js" type="BINDATA" />
       <include name="IDR_FILE_MANAGER_METADATA_PARSER" file="file_manager/foreground/js/metadata/metadata_parser.js" type="BINDATA" />
-      <include name="IDR_FILE_MANAGER_EXIF_PARSER" file="file_manager/foreground/js/metadata/exif_parser.js" type="BINDATA" />
-      <include name="IDR_FILE_MANAGER_EXIF_CONSTANTS" file="file_manager/foreground/js/metadata/exif_constants.js" type="BINDATA" />
       <include name="IDR_FILE_MANAGER_MPEG_PARSER" file="file_manager/foreground/js/metadata/mpeg_parser.js" type="BINDATA" />
-      <include name="IDR_FILE_MANAGER_IMAGE_ORIENTATION" file="file_manager/foreground/js/metadata/image_orientation.js" type="BINDATA" />
-      <include name="IDR_FILE_MANAGER_IMAGE_PARSERS" file="file_manager/foreground/js/metadata/image_parsers.js" type="BINDATA" />
-      <include name="IDR_FILE_MANAGER_ID3_PARSER" file="file_manager/foreground/js/metadata/id3_parser.js" type="BINDATA" />
-      <include name="IDR_FILE_MANAGER_PARALLEL" file="file_manager/foreground/js/metadata/function_parallel.js" type="BINDATA" />
-      <include name="IDR_FILE_MANAGER_SEQUENCE" file="file_manager/foreground/js/metadata/function_sequence.js" type="BINDATA" />
 
       <!-- Images referenced from the manifest or the code -->
       <include name="IDR_FILE_MANAGER_ICON_16" file="file_manager/common/images/icon16.png" type="BINDATA" />

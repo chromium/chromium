@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assertEquals, assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
-import {MetadataCacheSet, MetadataCacheSetStorageForObject} from './metadata_cache_set.m.js';
+import {MetadataCacheSet, MetadataCacheSetStorageForObject} from './metadata_cache_set.js';
 
 /** @const {!Entry} */
 const entryA = /** @type {!Entry} */ ({

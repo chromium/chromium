@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import * as wrappedExif from '../foreground/js/metadata/exif_constants.m.js'; const {Exif} = wrappedExif;
+// #import {Exif} from '../foreground/js/metadata/exif_constants.js';
 // clang-format on
 
 /**

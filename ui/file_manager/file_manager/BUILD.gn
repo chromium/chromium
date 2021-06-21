@@ -29,6 +29,9 @@ generate_grd("build_static_grdp") {
     # For video player unittest:
     "common/js/notifications_browser_proxy.js",
 
+    # For some unittests:
+    "foreground/js/metadata/image_orientation.js",
+
     # CSS:
     "foreground/css/combobutton.css",
     "foreground/css/common.css",

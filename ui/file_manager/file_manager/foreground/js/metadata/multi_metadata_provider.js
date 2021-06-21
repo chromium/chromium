@@ -4,8 +4,8 @@
 
 // clang-format off
 // #import {ContentMetadataProvider} from './content_metadata_provider.m.js';
-// #import {ExternalMetadataProvider} from './external_metadata_provider.m.js';
-// #import {FileSystemMetadataProvider} from './file_system_metadata_provider.m.js';
+// #import {ExternalMetadataProvider} from './external_metadata_provider.js';
+// #import {FileSystemMetadataProvider} from './file_system_metadata_provider.js';
 // #import {MetadataItem} from './metadata_item.m.js';
 // #import {MetadataProvider} from './metadata_provider.m.js';
 // #import {MetadataRequest} from './metadata_request.m.js';

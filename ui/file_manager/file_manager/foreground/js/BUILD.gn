@@ -1845,7 +1845,7 @@ js_library("thumbnail_loader.m") {
   sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/thumbnail_loader.m.js" ]
   deps = [
     "//ui/file_manager/file_manager/common/js:file_type.m",
-    "//ui/file_manager/file_manager/foreground/js/metadata:image_orientation.m",
+    "//ui/file_manager/file_manager/foreground/js/metadata:image_orientation",
     "//ui/file_manager/image_loader:image_loader_client",
     "//ui/file_manager/image_loader:load_image_request",
     "//ui/webui/resources/js:assert.m",
@@ -2060,9 +2060,9 @@ optimize_webui("build_worker") {
   host = "file_manager"
 
   input = preprocess_folder
-  js_module_in_files = [ "metadata/metadata_dispatcher.m.js" ]
+  js_module_in_files = [ "metadata/metadata_dispatcher.js" ]
 
-  js_out_files = [ "metadata_dispatcher.m.rollup.js" ]
+  js_out_files = [ "metadata_dispatcher.rollup.js" ]
 
   external_paths = [
     "chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj|$files_app_path",
@@ -2070,7 +2070,7 @@ optimize_webui("build_worker") {
   ]
 
   deps = [
-    "metadata:metadata_dispatcher.m",
+    "metadata:metadata_dispatcher",
     "//ui/file_manager:preprocess_generated",
     "//ui/file_manager:preprocess_static",
     "//ui/webui/resources:preprocess",

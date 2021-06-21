@@ -2,4 +2,4 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '../../file_manager/foreground/js/metadata/metadata_dispatcher.m.js';
+import '../../file_manager/foreground/js/metadata/metadata_dispatcher.js';

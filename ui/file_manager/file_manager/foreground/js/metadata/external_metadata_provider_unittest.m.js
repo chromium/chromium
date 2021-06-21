@@ -5,7 +5,7 @@
 import {assertEquals} from 'chrome://test/chai_assert.js';
 import {installMockChrome} from '../../../common/js/mock_chrome.m.js';
 import {reportPromise} from '../../../common/js/test_error_reporting.m.js';
-import {ExternalMetadataProvider} from './external_metadata_provider.m.js';
+import {ExternalMetadataProvider} from './external_metadata_provider.js';
 import {MetadataRequest} from './metadata_request.m.js';
 
 /** @const {!Entry} */
