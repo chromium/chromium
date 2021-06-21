@@ -6992,6 +6992,8 @@ crbug.com/1208389 http/tests/devtools/sources/debugger-pause/debugger-eval-on-ca
 crbug.com/1208389 http/tests/devtools/sources/debugger-ui/debugger-save-to-temp-var.js [ Pass Failure ]
 crbug.com/1208389 http/tests/devtools/sources/debugger/debugger-scope-minified-variables.js [ Pass Failure ]
 crbug.com/1208389 http/tests/devtools/sources/snippet-module.js [ Pass Failure ]
+crbug.com/1208389 http/tests/devtools/portals/portals-console.js [ Pass Failure ]
+crbug.com/1208389 virtual/portals/http/tests/devtools/portals/portals-console.js [ Pass Failure ]
 
 # Temporarily disabled for https://crrev.com/c/2960211
 crbug.com/v8/11365 external/wpt/animation-worklet/idlharness.any.worker.html [ Pass Failure ]
