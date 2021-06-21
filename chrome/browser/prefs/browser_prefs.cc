@@ -587,6 +587,11 @@ const char kSpellCheckBlacklistedDictionaries[] =
 // Deprecated 06/2021.
 const char kDataReductionProxy[] = "auth.spdyproxy.origin";
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Deprecated 06/2021.
+const char kQuickAnswersConsented[] = "settings.quick_answers.user_consented";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -733,6 +738,10 @@ void RegisterProfilePrefsForMigration(
 #endif
 
   registry->RegisterStringPref(kDataReductionProxy, std::string());
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  registry->RegisterBooleanPref(kQuickAnswersConsented, false);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 }  // namespace
@@ -1473,6 +1482,11 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 
   // Added 06/2021
   profile_prefs->ClearPref(kDataReductionProxy);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Added 06/2021
+  profile_prefs->ClearPref(kQuickAnswersConsented);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

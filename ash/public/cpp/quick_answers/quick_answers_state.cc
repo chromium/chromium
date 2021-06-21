@@ -76,8 +76,8 @@ void QuickAnswersState::RegisterPrefChanges(PrefService* pref_service) {
       base::BindRepeating(&QuickAnswersState::UpdateSettingsEnabled,
                           base::Unretained(this)));
   pref_change_registrar_->Add(
-      chromeos::quick_answers::prefs::kQuickAnswersConsented,
-      base::BindRepeating(&QuickAnswersState::UpdateUserConsented,
+      chromeos::quick_answers::prefs::kQuickAnswersConsentStatus,
+      base::BindRepeating(&QuickAnswersState::UpdateConsentStatus,
                           base::Unretained(this)));
   pref_change_registrar_->Add(
       chromeos::quick_answers::prefs::kQuickAnswersDefinitionEnabled,
@@ -93,7 +93,7 @@ void QuickAnswersState::RegisterPrefChanges(PrefService* pref_service) {
                           base::Unretained(this)));
 
   UpdateSettingsEnabled();
-  UpdateUserConsented();
+  UpdateConsentStatus();
   UpdateDefinitionEnabled();
   UpdateTranslationEnabled();
   UpdateUnitConverstionEnabled();
@@ -137,13 +137,12 @@ void QuickAnswersState::UpdateSettingsEnabled() {
   UpdateEligibility();
 }
 
-void QuickAnswersState::UpdateUserConsented() {
-  auto user_consented = pref_change_registrar_->prefs()->GetBoolean(
-      chromeos::quick_answers::prefs::kQuickAnswersConsented);
-  if (user_consented_ == user_consented) {
-    return;
-  }
-  user_consented_ = user_consented;
+void QuickAnswersState::UpdateConsentStatus() {
+  auto consent_status =
+      static_cast<chromeos::quick_answers::prefs::ConsentStatus>(
+          pref_change_registrar_->prefs()->GetInteger(
+              chromeos::quick_answers::prefs::kQuickAnswersConsentStatus));
+  consent_status_ = consent_status;
 }
 
 void QuickAnswersState::UpdateDefinitionEnabled() {

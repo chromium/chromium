@@ -53,7 +53,9 @@ class ASH_PUBLIC_EXPORT QuickAnswersState : public AssistantStateObserver {
   void OnLocaleChanged(const std::string& locale) override;
 
   bool settings_enabled() const { return settings_enabled_; }
-  bool user_consented() const { return user_consented_; }
+  chromeos::quick_answers::prefs::ConsentStatus consent_status() const {
+    return consent_status_;
+  }
   bool definition_enabled() const { return definition_enabled_; }
   bool translation_enabled() const { return translation_enabled_; }
   bool unit_conversion_enabled() const { return unit_conversion_enabled_; }
@@ -68,7 +70,7 @@ class ASH_PUBLIC_EXPORT QuickAnswersState : public AssistantStateObserver {
 
   // Called when the related preferences are obtained from the pref service.
   void UpdateSettingsEnabled();
-  void UpdateUserConsented();
+  void UpdateConsentStatus();
   void UpdateDefinitionEnabled();
   void UpdateTranslationEnabled();
   void UpdateUnitConverstionEnabled();
@@ -79,8 +81,9 @@ class ASH_PUBLIC_EXPORT QuickAnswersState : public AssistantStateObserver {
   // Whether the Quick Answers is enabled in system settings.
   bool settings_enabled_ = false;
 
-  // Whether the Quick Answers feature has been consented by user.
-  bool user_consented_ = false;
+  // Status of the user's consent for the Quick Answers feature.
+  chromeos::quick_answers::prefs::ConsentStatus consent_status_ =
+      chromeos::quick_answers::prefs::ConsentStatus::kUnknown;
 
   // Whether the Quick Answers definition is enabled.
   bool definition_enabled_ = true;

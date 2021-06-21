@@ -104,7 +104,8 @@ void QuickAnswersControllerImpl::MaybeShowQuickAnswers(
 void QuickAnswersControllerImpl::HandleQuickAnswerRequest(
     const chromeos::quick_answers::QuickAnswersRequest& request) {
   if (chromeos::features::IsQuickAnswersV2Enabled() &&
-      !QuickAnswersState::Get()->user_consented()) {
+      QuickAnswersState::Get()->consent_status() ==
+          chromeos::quick_answers::prefs::ConsentStatus::kUnknown) {
     ShowUserConsent(
         IntentTypeToString(request.preprocessed_output.intent_info.intent_type),
         base::UTF8ToUTF16(request.preprocessed_output.intent_info.intent_text));
@@ -254,8 +255,10 @@ void QuickAnswersControllerImpl::OnUserConsentResult(bool consented) {
   quick_answers_ui_controller_->CloseUserConsentView();
 
   auto* prefs = Shell::Get()->session_controller()->GetPrimaryUserPrefService();
-  prefs->SetBoolean(chromeos::quick_answers::prefs::kQuickAnswersConsented,
-                    consented);
+  prefs->SetBoolean(
+      chromeos::quick_answers::prefs::kQuickAnswersConsentStatus,
+      consented ? chromeos::quick_answers::prefs::ConsentStatus::kAccepted
+                : chromeos::quick_answers::prefs::ConsentStatus::kRejected);
   prefs->SetBoolean(chromeos::quick_answers::prefs::kQuickAnswersEnabled,
                     consented);
 
