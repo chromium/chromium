@@ -41,6 +41,8 @@ class ESimManager : public mojom::ESimManager,
                     HermesManagerClient::Observer,
                     HermesEuiccClient::Observer {
  public:
+  static std::string GetRootSmdsAddress();
+
   ESimManager();
   ESimManager(CellularConnectionHandler* cellular_connection_handler,
               CellularESimProfileHandler* cellular_esim_profile_handler,

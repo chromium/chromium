@@ -133,6 +133,9 @@ extern const char kUpdatedCellularActivationUiDescription[];
 extern const char kUseLookalikesForNavigationSuggestionsName[];
 extern const char kUseLookalikesForNavigationSuggestionsDescription[];
 
+extern const char kUseStorkSmdsServerAddressName[];
+extern const char kUseStorkSmdsServerAddressDescription[];
+
 extern const char kUseWallpaperStagingUrlName[];
 extern const char kUseWallpaperStagingUrlDescription[];
 

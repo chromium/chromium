@@ -104,6 +104,7 @@
   "use-fake-device-for-media-stream",
   "use-first-party-set",
   "use_messages_staging_url",
+  "use-stork-smds-server-address",
   "use-sync-sandbox",
   "use-wallpaper-staging-url",
   "wallet-service-use-sandbox",

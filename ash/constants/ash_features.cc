@@ -942,6 +942,10 @@ const base::Feature kUseMessagesStagingUrl{"UseMessagesStagingUrl",
 const base::Feature kUseSearchClickForRightClick{
     "UseSearchClickForRightClick", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Use the Stork Production SM-DS address to fetch pending ESim profiles
+const base::Feature kUseStorkSmdsServerAddress{
+    "UseStorkSmdsServerAddress", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Use the staging server as part of the Wallpaper App to verify
 // additions/removals of wallpapers.
 const base::Feature kUseWallpaperStagingUrl{"UseWallpaperStagingUrl",
@@ -1385,6 +1389,10 @@ bool IsTrilinearFilteringEnabled() {
   static bool use_trilinear_filtering =
       base::FeatureList::IsEnabled(kTrilinearFiltering);
   return use_trilinear_filtering;
+}
+
+bool IsUseStorkSmdsServerAddressEnabled() {
+  return base::FeatureList::IsEnabled(kUseStorkSmdsServerAddress);
 }
 
 bool IsVerticalSplitScreenEnabled() {

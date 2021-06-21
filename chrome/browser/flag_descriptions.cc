@@ -182,6 +182,15 @@ const char kUseLookalikesForNavigationSuggestionsDescription[] =
     "Use lookalike URL suggestions to suggest navigations to users who "
     "face domain not found error.";
 
+const char kUseStorkSmdsServerAddressName[] = "Use Stork SM-DS address";
+const char kUseStorkSmdsServerAddressDescription[] =
+    "Use the Stork SM-DS address to fetch pending eSIM profiles managed by the "
+    "Stork prod server. Note that Stork profiles can be created with an EID at "
+    "go/stork-profile, and managed at go/stork-batch > View Profiles. Also "
+    "note that an external EUICC card is required to use this feature, and "
+    "that the kCellularUseExternal flag must be enabled. Go to "
+    "go/cros-connectivity > Dev Tips for more instructions.";
+
 const char kUseWallpaperStagingUrlName[] = "Use Wallpaper staging URL";
 const char kUseWallpaperStagingUrlDescription[] =
     "Use the staging server as part of the Wallpaper App to verify "

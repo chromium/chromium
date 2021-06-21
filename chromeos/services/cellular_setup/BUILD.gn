@@ -39,6 +39,7 @@ static_library("esim_manager") {
   ]
 
   deps = [
+    "//ash/constants",
     "//base",
     "//chromeos/dbus/hermes",
     "//chromeos/network",

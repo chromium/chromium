@@ -46113,6 +46113,7 @@ from previous Chrome versions.
   <int value="-1304957199" label="OfflinePagesShowAlternateDinoPage:enabled"/>
   <int value="-1304758527" label="SyncSendTabToSelf:disabled"/>
   <int value="-1304401930" label="CSSContainerQueries:enabled"/>
+  <int value="-1303417000" label="UseStorkSmdsServerAddress:enabled"/>
   <int value="-1302904242" label="enable-navigation-tracing"/>
   <int value="-1302859198" label="enable-stylus-virtual-keyboard:disabled"/>
   <int value="-1301804101"
@@ -50119,6 +50120,7 @@ from previous Chrome versions.
   <int value="2091002949" label="RemoveNavigationHistory:disabled"/>
   <int value="2091943748"
       label="MigrateDefaultChromeAppToWebAppsGSuite:disabled"/>
+  <int value="2092538671" label="UseStorkSmdsServerAddress:disabled"/>
   <int value="2092605092" label="ChromeHomeShowGoogleGWhenUrlCleared:disabled"/>
   <int value="2092968851" label="SharingSendViaSync:enabled"/>
   <int value="2093235103" label="default-tile-width"/>

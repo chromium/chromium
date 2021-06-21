@@ -386,7 +386,7 @@ void Euicc::PerformRequestPendingProfiles(
 
   NET_LOG(EVENT) << "Requesting pending profiles";
   HermesEuiccClient::Get()->RequestPendingProfiles(
-      path_, /*root_smds=*/std::string(),
+      path_, /*root_smds=*/ESimManager::GetRootSmdsAddress(),
       base::BindOnce(&Euicc::OnRequestPendingProfilesResult,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                      std::move(inhibit_lock)));

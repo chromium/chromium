@@ -5315,6 +5315,13 @@
     "expiry_milestone": 95
   },
   {
+    "name": "use-stork-smds-server-address",
+    "owners": [ "cros-connectivity@google.com", "hsuregan"],
+    // This flag is required for dev testing via Stork profiles which can be quickly
+    // created at go/stork-profile and managed at go/stork-batch.
+    "expiry_milestone": -1
+  },
+  {
     "name": "use-sync-sandbox",
     "owners": [ "//components/sync/OWNERS" ],
     // This flag is required for testing with the related

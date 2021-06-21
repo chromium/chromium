@@ -291,7 +291,7 @@ void ESimProfile::EnsureProfileExistsOnEuicc(
           std::move(inhibit_lock));
     } else {
       HermesEuiccClient::Get()->RequestPendingProfiles(
-          euicc_->path(), /*root_smds=*/std::string(),
+          euicc_->path(), /*root_smds=*/ESimManager::GetRootSmdsAddress(),
           base::BindOnce(&ESimProfile::OnRequestPendingProfiles,
                          weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                          std::move(inhibit_lock)));
