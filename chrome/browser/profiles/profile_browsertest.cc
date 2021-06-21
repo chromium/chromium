@@ -861,10 +861,18 @@ class ProfileBrowserTestWithDestroyProfile : public ProfileBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// Flaky on macOS when combined with UpdateHistoryEntryPointsInIncognito.
+#if defined(OS_MAC)
+#define MAYBE_OTRProfileKeepsRegularProfileAlive \
+  DISABLED_OTRProfileKeepsRegularProfileAlive
+#else
+#define MAYBE_OTRProfileKeepsRegularProfileAlive \
+  OTRProfileKeepsRegularProfileAlive
+#endif  // defined(OS_MAC)
 // Verifies the regular Profile doesn't get destroyed as long as there's an OTR
 // Profile around.
 IN_PROC_BROWSER_TEST_F(ProfileBrowserTestWithDestroyProfile,
-                       OTRProfileKeepsRegularProfileAlive) {
+                       MAYBE_OTRProfileKeepsRegularProfileAlive) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   Profile* regular_profile = browser()->profile();
   EXPECT_FALSE(profile_manager->HasKeepAliveForTesting(
