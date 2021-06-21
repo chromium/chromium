@@ -4808,6 +4808,11 @@ const char kNearbySharingWebRtcName[] = "Nearby Sharing WebRTC";
 const char kNearbySharingWebRtcDescription[] =
     "Enables use of WebRTC in Nearby Share.";
 
+const char kPhoneHubCameraRollName[] = "Camera Roll in Phone Hub";
+const char kPhoneHubCameraRollDescription[] =
+    "Enables the Camera Roll feature in Phone Hub, which allows users to "
+    "access recent photos and videos taken on a connected Android device.";
+
 const char kReduceDisplayNotificationsName[] = "Reduce display notifications";
 const char kReduceDisplayNotificationsDescription[] =
     "If enabled, notifications for display rotation, display removed, display "

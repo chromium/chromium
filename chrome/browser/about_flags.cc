@@ -7296,6 +7296,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kSmartLockUIRevamp)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"enable-phone-hub-camera-roll", flag_descriptions::kPhoneHubCameraRollName,
+     flag_descriptions::kPhoneHubCameraRollDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kPhoneHubCameraRoll)},
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

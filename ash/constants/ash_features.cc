@@ -723,6 +723,11 @@ const base::Feature kPerDeskShelf{"PerDeskShelf",
 // and perform phone-side actions within Chrome OS.
 const base::Feature kPhoneHub{"PhoneHub", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables the Camera Roll feature in Phone Hub, which allows users to access
+// recent photos and videos taken on a connected Android device
+const base::Feature kPhoneHubCameraRoll{"PhoneHubCameraRoll",
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kPinSetupForManagedUsers{"PinSetupForManagedUsers",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
@@ -1266,6 +1271,10 @@ bool IsPciguardUiEnabled() {
 
 bool IsPerDeskShelfEnabled() {
   return base::FeatureList::IsEnabled(kPerDeskShelf);
+}
+
+bool isPhoneHubCameraRollEnabled() {
+  return base::FeatureList::IsEnabled(kPhoneHubCameraRoll);
 }
 
 bool IsPhoneHubEnabled() {

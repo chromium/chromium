@@ -47028,6 +47028,7 @@ from previous Chrome versions.
   <int value="-528149352" label="WebRtcUseEchoCanceller3:enabled"/>
   <int value="-527990339" label="ForceEnableFaceAe:enabled"/>
   <int value="-526236814" label="WebAssemblyTiering:enabled"/>
+  <int value="-523155003" label="PhoneHubCameraRoll:disabled"/>
   <int value="-523030434" label="EnableBackgroundBlur:enabled"/>
   <int value="-522075903"
       label="OmniboxOnFocusSuggestionsContextualWeb:enabled"/>
@@ -47811,6 +47812,7 @@ from previous Chrome versions.
   <int value="155977192" label="EnableFileManagerFormatDialog:disabled"/>
   <int value="157217034" label="enable-tab-for-desktop-share"/>
   <int value="157318016" label="AutomaticTabDiscarding:enabled"/>
+  <int value="158490417" label="PhoneHubCameraRoll:enabled"/>
   <int value="160506687" label="ArcRtVcpuDualCore:disabled"/>
   <int value="160524775" label="PDFTwoUpView:disabled"/>
   <int value="160838658" label="SmartDimModelV3:enabled"/>

@@ -2223,6 +2223,11 @@
     "expiry_milestone": 95
   },
   {
+    "name": "enable-phone-hub-camera-roll",
+    "owners": [ "mattwalliser", "jasonsun", "cros-cameraroll@google.com" ],
+    "expiry_milestone": 97
+  },
+  {
     "name": "enable-pixel-canvas-recording",
     "owners": [ "malaykeshav", "oshima" ],
     "expiry_milestone": 95
