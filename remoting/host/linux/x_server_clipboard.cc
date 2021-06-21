@@ -299,7 +299,7 @@ void XServerClipboard::SendStringResponse(x11::Window requestor,
         .property = property,
         .type = target,
         .format = 8,
-        .data_len = data_.size(),
+        .data_len = static_cast<uint32_t>(data_.size()),
         .data = base::MakeRefCounted<base::RefCountedStaticMemory>(
             data_.data(), data_.size()),
     });

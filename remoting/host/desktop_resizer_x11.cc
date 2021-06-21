@@ -211,16 +211,17 @@ void DesktopResizerX11::SetResolutionNewMode(
            << "x" << resolution.dimensions().height();
 
   // TODO(lambroslambrou): Use the DPI from client size information.
-  int width_mm =
+  uint32_t width_mm =
       PixelsToMillimeters(resolution.dimensions().width(), kDefaultDPI);
-  int height_mm =
+  uint32_t height_mm =
       PixelsToMillimeters(resolution.dimensions().height(), kDefaultDPI);
   CreateMode(kTempModeName, resolution.dimensions().width(),
              resolution.dimensions().height());
   SwitchToMode(nullptr);
-  randr_->SetScreenSize({root_, resolution.dimensions().width(),
-                         resolution.dimensions().height(), width_mm,
-                         height_mm});
+  randr_->SetScreenSize(
+      {root_, static_cast<uint16_t>(resolution.dimensions().width()),
+       static_cast<uint16_t>(resolution.dimensions().height()), width_mm,
+       height_mm});
   SwitchToMode(kTempModeName);
   DeleteMode(kModeName);
   CreateMode(kModeName, resolution.dimensions().width(),
@@ -241,7 +242,7 @@ void DesktopResizerX11::SetResolutionExistingMode(
             .window = root_,
             .timestamp = x11::Time::CurrentTime,
             .config_timestamp = config->config_timestamp,
-            .sizeID = i,
+            .sizeID = static_cast<uint16_t>(i),
             .rotation = current_rotation,
             .rate = 0,
         });
