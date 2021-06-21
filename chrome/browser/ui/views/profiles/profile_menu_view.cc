@@ -183,7 +183,7 @@ void ProfileMenuView::BuildMenu() {
 
 gfx::ImageSkia ProfileMenuView::GetSyncIcon() const {
   Profile* profile = browser()->profile();
-  if (profile->IsOffTheRecord())
+  if (profile->IsOffTheRecord() || IsGuest(profile))
     return gfx::ImageSkia();
 
   absl::optional<AvatarSyncErrorType> error = GetAvatarSyncErrorType(profile);
