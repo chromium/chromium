@@ -136,7 +136,7 @@ public class CastWebContentsComponent {
         Intent intent = CastWebContentsIntentUtils.requestStartCastActivity(
                 context, webContents, enableTouch, isRemoteControlMode, turnOnScreen, mSessionId);
         if (DEBUG) Log.d(TAG, "start activity by intent: " + intent);
-        ResumeIntents.addResumeIntent(mSessionId, intent);
+        sResumeIntent.set(intent);
 
         CastAudioManager audioManager =
                 CastAudioManager.getAudioManager(ContextUtils.getApplicationContext());
@@ -153,7 +153,7 @@ public class CastWebContentsComponent {
         Intent intent = CastWebContentsIntentUtils.requestStopWebContents(mSessionId);
         if (DEBUG) Log.d(TAG, "stop: send STOP_WEB_CONTENT intent: " + intent);
         sendIntentSync(intent);
-        ResumeIntents.removeResumeIntent(mSessionId);
+        sResumeIntent.reset();
     }
 
     private class ServiceDelegate implements Delegate {
@@ -185,6 +185,8 @@ public class CastWebContentsComponent {
             context.unbindService(mConnection);
         }
     }
+
+    public static final Controller<Intent> sResumeIntent = new Controller<Intent>();
 
     private static final String TAG = "CastWebComponent";
     private static final boolean DEBUG = true;
