@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+FAIL RTP header extension urn:ietf:params:rtp-hdrext:ssrc-audio-level is present in offer promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'."
+FAIL RTP header extension urn:ietf:params:rtp-hdrext:sdes:mid is present in offer promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'."
+FAIL RTP header extension urn:3gpp:video-orientation is present in offer promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'."
+FAIL RTP header extension urn:ietf:params:rtp-hdrext:sdes:rtp-stream-id is present in offer promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'."
+FAIL RTP header extension urn:ietf:params:rtp-hdrext:sdes:repaired-rtp-stream-id is present in offer promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'."
+Harness: the test ran to completion.
+
