@@ -170,7 +170,6 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
                                                const char16_t* term,
                                                bool case_sensitive) override;
   pp::Instance* GetPluginInstance() override;
-  bool IsPrintPreview() override;
   void SetSelectedText(const std::string& selected_text) override;
   void SetLinkUnderCursor(const std::string& link_under_cursor) override;
   bool IsValidLink(const std::string& url) override;
@@ -207,8 +206,6 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   base::WeakPtr<PdfViewPluginBase> GetWeakPtr() override;
   std::unique_ptr<UrlLoader> CreateUrlLoaderInternal() override;
   void DidOpen(std::unique_ptr<UrlLoader> loader, int32_t result) override;
-  void DidOpenPreview(std::unique_ptr<UrlLoader> loader,
-                      int32_t result) override;
   void SendMessage(base::Value message) override;
   void SaveAs() override;
   void InitImageData(const gfx::Size& size) override;
@@ -224,7 +221,6 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   void SetPluginCanSave(bool can_save) override;
   void DidStartLoading() override;
   void DidStopLoading() override;
-  void OnPrintPreviewLoaded() override;
   void InvokePrintDialog() override;
   void NotifySelectionChanged(const gfx::PointF& left,
                               int left_height,

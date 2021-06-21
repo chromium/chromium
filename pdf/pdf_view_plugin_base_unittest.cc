@@ -116,11 +116,6 @@ class FakePdfViewPluginBase : public PdfViewPluginBase {
 
   MOCK_METHOD(void, DidOpen, (std::unique_ptr<UrlLoader>, int32_t), (override));
 
-  MOCK_METHOD(void,
-              DidOpenPreview,
-              (std::unique_ptr<UrlLoader>, int32_t),
-              (override));
-
   void SendMessage(base::Value message) override {
     sent_message_ = std::move(message);
   }
@@ -156,8 +151,6 @@ class FakePdfViewPluginBase : public PdfViewPluginBase {
   MOCK_METHOD(void, DidStartLoading, (), (override));
 
   MOCK_METHOD(void, DidStopLoading, (), (override));
-
-  MOCK_METHOD(void, OnPrintPreviewLoaded, (), (override));
 
   MOCK_METHOD(void, InvokePrintDialog, (), (override));
 

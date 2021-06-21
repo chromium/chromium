@@ -21,7 +21,6 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -76,10 +75,6 @@ namespace chrome_pdf {
 
 namespace {
 
-constexpr char kChromePrint[] = "chrome://print/";
-constexpr char kChromeExtension[] =
-    "chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai";
-
 // Constants used in handling postMessage() messages.
 constexpr char kType[] = "type";
 // Name of identifier field passed from JS to the plugin and back, to associate
@@ -91,23 +86,9 @@ constexpr char kJSAttachmentIndex[] = "attachmentIndex";
 // Save attachment data (Plugin -> Page)
 constexpr char kJSSaveAttachmentDataType[] = "saveAttachmentData";
 constexpr char kJSAttachmentDataToSave[] = "dataToSave";
-// Reset print preview mode (Page -> Plugin)
-constexpr char kJSResetPrintPreviewModeType[] = "resetPrintPreviewMode";
-constexpr char kJSPrintPreviewUrl[] = "url";
-constexpr char kJSPrintPreviewGrayscale[] = "grayscale";
-constexpr char kJSPrintPreviewPageCount[] = "pageCount";
-// Load preview page (Page -> Plugin)
-constexpr char kJSLoadPreviewPageType[] = "loadPreviewPage";
-constexpr char kJSPreviewPageUrl[] = "url";
-constexpr char kJSPreviewPageIndex[] = "index";
 
 constexpr base::TimeDelta kFindResultCooldown =
     base::TimeDelta::FromMilliseconds(100);
-
-// Same value as printing::COMPLETE_PREVIEW_DOCUMENT_INDEX.
-constexpr int kCompletePDFIndex = -1;
-// A different negative value to differentiate itself from `kCompletePDFIndex`.
-constexpr int kInvalidPDFIndex = -2;
 
 constexpr char kPPPPdfInterface[] = PPP_PDF_INTERFACE_1;
 
@@ -314,32 +295,6 @@ const PPP_Pdf ppp_private = {
     &PdfPrintBegin,
 };
 
-int ExtractPrintPreviewPageIndex(base::StringPiece src_url) {
-  // Sample `src_url` format: chrome://print/id/page_index/print.pdf
-  // The page_index is zero-based, but can be negative with special meanings.
-  std::vector<base::StringPiece> url_substr =
-      base::SplitStringPiece(src_url.substr(strlen(kChromePrint)), "/",
-                             base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-  if (url_substr.size() != 3)
-    return kInvalidPDFIndex;
-
-  if (url_substr[2] != "print.pdf")
-    return kInvalidPDFIndex;
-
-  int page_index = 0;
-  if (!base::StringToInt(url_substr[1], &page_index))
-    return kInvalidPDFIndex;
-  return page_index;
-}
-
-bool IsPrintPreviewUrl(base::StringPiece url) {
-  return base::StartsWith(url, kChromePrint);
-}
-
-bool IsPreviewingPDF(int print_preview_page_count) {
-  return print_preview_page_count == 0;
-}
-
 void ScalePoint(float scale, pp::Point* point) {
   point->set_x(static_cast<int>(point->x() * scale));
   point->set_y(static_cast<int>(point->y() * scale));
@@ -483,6 +438,7 @@ OutOfProcessInstance::~OutOfProcessInstance() {
   RemovePerInstanceObject(kPPPPdfInterface, this);
   // Explicitly destroy the PDFEngine during destruction as it may call back
   // into this object.
+  DestroyPreviewEngine();
   DestroyEngine();
 }
 
@@ -504,9 +460,8 @@ bool OutOfProcessInstance::Init(uint32_t argc,
   // a CHECK as a defense-in-depth.
   std::string document_url = document_url_var.AsString();
   base::StringPiece document_url_piece(document_url);
-  is_print_preview_ = IsPrintPreviewUrl(document_url_piece);
-  CHECK(base::StartsWith(document_url_piece, kChromeExtension) ||
-        is_print_preview_);
+  set_is_print_preview(IsPrintPreviewUrl(document_url_piece));
+  ValidateDocumentUrl(document_url_piece);
 
   // Allow the plugin to handle find requests.
   SetPluginToHandleFindRequests();
@@ -585,10 +540,6 @@ void OutOfProcessInstance::HandleMessage(const pp::Var& message) {
 
   if (type == kJSSaveAttachmentType) {
     HandleSaveAttachmentMessage(dict);
-  } else if (type == kJSResetPrintPreviewModeType) {
-    HandleResetPrintPreviewModeMessage(dict);
-  } else if (type == kJSLoadPreviewPageType) {
-    HandleLoadPreviewPageMessage(dict);
   } else {
     PdfViewPluginBase::HandleMessage(ValueFromVar(message));
   }
@@ -606,7 +557,7 @@ void OutOfProcessInstance::DidChangeView(const pp::View& view) {
   UpdateGeometryOnViewChanged(RectFromPPRect(view.GetRect()),
                               view.GetDeviceScale());
 
-  if (is_print_preview_ && !stop_scrolling()) {
+  if (IsPrintPreview() && !stop_scrolling()) {
     set_scroll_position(PointFromPPPoint(view.GetScrollOffset()));
     UpdateScroll();
   }
@@ -767,18 +718,6 @@ void OutOfProcessInstance::DidOpen(std::unique_ptr<UrlLoader> loader,
   }
 }
 
-void OutOfProcessInstance::DidOpenPreview(std::unique_ptr<UrlLoader> loader,
-                                          int32_t result) {
-  if (result == PP_OK) {
-    preview_client_ = std::make_unique<PreviewModeClient>(this);
-    preview_engine_ = std::make_unique<PDFiumEngine>(
-        preview_client_.get(), PDFiumFormFiller::ScriptOption::kNoJavaScript);
-    preview_engine_->HandleDocumentLoad(std::move(loader));
-  } else {
-    NOTREACHED();
-  }
-}
-
 void OutOfProcessInstance::SendMessage(base::Value message) {
   PostMessage(VarFromValue(message));
 }
@@ -926,72 +865,6 @@ void OutOfProcessInstance::RotateCounterclockwise() {
   engine()->RotateCounterclockwise();
 }
 
-void OutOfProcessInstance::HandleLoadPreviewPageMessage(
-    const pp::VarDictionary& dict) {
-  if (!(dict.Get(pp::Var(kJSPreviewPageUrl)).is_string() &&
-        dict.Get(pp::Var(kJSPreviewPageIndex)).is_int())) {
-    NOTREACHED();
-    return;
-  }
-
-  std::string url = dict.Get(pp::Var(kJSPreviewPageUrl)).AsString();
-  // For security reasons we crash if the URL that is trying to be loaded here
-  // isn't a print preview one.
-  CHECK(IsPrintPreview());
-  CHECK(IsPrintPreviewUrl(url));
-  ProcessPreviewPageInfo(url, dict.Get(pp::Var(kJSPreviewPageIndex)).AsInt());
-}
-
-void OutOfProcessInstance::HandleResetPrintPreviewModeMessage(
-    const pp::VarDictionary& dict) {
-  if (!(dict.Get(pp::Var(kJSPrintPreviewUrl)).is_string() &&
-        dict.Get(pp::Var(kJSPrintPreviewGrayscale)).is_bool() &&
-        dict.Get(pp::Var(kJSPrintPreviewPageCount)).is_int())) {
-    NOTREACHED();
-    return;
-  }
-
-  // For security reasons, crash if the URL that is trying to be loaded here
-  // isn't a print preview one.
-  std::string url = dict.Get(pp::Var(kJSPrintPreviewUrl)).AsString();
-  CHECK(IsPrintPreview());
-  CHECK(IsPrintPreviewUrl(url));
-
-  int print_preview_page_count =
-      dict.Get(pp::Var(kJSPrintPreviewPageCount)).AsInt();
-  if (print_preview_page_count < 0) {
-    NOTREACHED();
-    return;
-  }
-
-  // The page count is zero if the print preview source is a PDF. In which
-  // case, the page index for `url` should be at `kCompletePDFIndex`.
-  // When the page count is not zero, then the source is not PDF. In which
-  // case, the page index for `url` should be non-negative.
-  bool is_previewing_pdf = IsPreviewingPDF(print_preview_page_count);
-  int page_index = ExtractPrintPreviewPageIndex(url);
-  if ((is_previewing_pdf && page_index != kCompletePDFIndex) ||
-      (!is_previewing_pdf && page_index < 0)) {
-    NOTREACHED();
-    return;
-  }
-
-  print_preview_page_count_ = print_preview_page_count;
-  print_preview_loaded_page_count_ = 0;
-  set_url(url);
-  preview_pages_info_ = base::queue<PreviewPageInfo>();
-  preview_document_load_state_ = DocumentLoadState::kComplete;
-  set_document_load_state(DocumentLoadState::kLoading);
-  LoadUrl(GetURL(), /*is_print_preview=*/false);
-  preview_engine_.reset();
-  InitializeEngine(std::make_unique<PDFiumEngine>(
-      this, PDFiumFormFiller::ScriptOption::kNoJavaScript));
-  engine()->SetGrayscale(dict.Get(pp::Var(kJSPrintPreviewGrayscale)).AsBool());
-  engine()->New(GetURL().c_str(), /*headers=*/nullptr);
-
-  paint_manager().InvalidateRect(gfx::Rect(plugin_rect().size()));
-}
-
 void OutOfProcessInstance::HandleSaveAttachmentMessage(
     const pp::VarDictionary& dict) {
   if (!dict.Get(pp::Var(kJSMessageId)).is_string() ||
@@ -1028,38 +901,6 @@ void OutOfProcessInstance::HandleSaveAttachmentMessage(
     message.Set(kJSAttachmentDataToSave, buffer);
   }
   PostMessage(message);
-}
-
-void OutOfProcessInstance::PreviewDocumentLoadComplete() {
-  if (preview_document_load_state_ != DocumentLoadState::kLoading ||
-      preview_pages_info_.empty()) {
-    return;
-  }
-
-  preview_document_load_state_ = DocumentLoadState::kComplete;
-
-  int dest_page_index = preview_pages_info_.front().second;
-  DCHECK_GT(dest_page_index, 0);
-  preview_pages_info_.pop();
-  DCHECK(preview_engine_);
-  engine()->AppendPage(preview_engine_.get(), dest_page_index);
-
-  ++print_preview_loaded_page_count_;
-  LoadNextPreviewPage();
-}
-
-void OutOfProcessInstance::PreviewDocumentLoadFailed() {
-  UserMetricsRecordAction("PDF.PreviewDocumentLoadFailure");
-  if (preview_document_load_state_ != DocumentLoadState::kLoading ||
-      preview_pages_info_.empty()) {
-    return;
-  }
-
-  // Even if a print preview page failed to load, keep going.
-  preview_document_load_state_ = DocumentLoadState::kFailed;
-  preview_pages_info_.pop();
-  ++print_preview_loaded_page_count_;
-  LoadNextPreviewPage();
 }
 
 pp::Instance* OutOfProcessInstance::GetPluginInstance() {
@@ -1131,15 +972,6 @@ std::unique_ptr<UrlLoader> OutOfProcessInstance::CreateUrlLoaderInternal() {
   return loader;
 }
 
-void OutOfProcessInstance::AppendBlankPrintPreviewPages() {
-  engine()->AppendBlankPages(print_preview_page_count_);
-  LoadNextPreviewPage();
-}
-
-bool OutOfProcessInstance::IsPrintPreview() {
-  return is_print_preview_;
-}
-
 void OutOfProcessInstance::SetSelectedText(const std::string& selected_text) {
   pp::PDF::SetSelectedText(this, selected_text.c_str());
 }
@@ -1176,55 +1008,6 @@ void OutOfProcessInstance::ScheduleTaskOnMainThread(
       PPCompletionCallbackFromResultCallback(std::move(callback)), result);
 }
 
-void OutOfProcessInstance::ProcessPreviewPageInfo(const std::string& url,
-                                                  int dest_page_index) {
-  DCHECK(IsPrintPreview());
-
-  if (dest_page_index < 0 || dest_page_index >= print_preview_page_count_) {
-    NOTREACHED();
-    return;
-  }
-
-  // Print Preview JS will send the loadPreviewPage message for every page,
-  // including the first page in the print preview, which has already been
-  // loaded when handing the resetPrintPreviewMode message. Just ignore it.
-  if (dest_page_index == 0)
-    return;
-
-  int src_page_index = ExtractPrintPreviewPageIndex(url);
-  if (src_page_index < 0) {
-    NOTREACHED();
-    return;
-  }
-
-  preview_pages_info_.push(std::make_pair(url, dest_page_index));
-  LoadAvailablePreviewPage();
-}
-
-void OutOfProcessInstance::LoadAvailablePreviewPage() {
-  if (preview_pages_info_.empty() ||
-      document_load_state() != DocumentLoadState::kComplete ||
-      preview_document_load_state_ == DocumentLoadState::kLoading) {
-    return;
-  }
-
-  preview_document_load_state_ = DocumentLoadState::kLoading;
-  const std::string& url = preview_pages_info_.front().first;
-  LoadUrl(url, /*is_print_preview=*/true);
-}
-
-void OutOfProcessInstance::LoadNextPreviewPage() {
-  if (!preview_pages_info_.empty()) {
-    DCHECK_LT(print_preview_loaded_page_count_, print_preview_page_count_);
-    LoadAvailablePreviewPage();
-    return;
-  }
-
-  if (print_preview_loaded_page_count_ == print_preview_page_count_) {
-    SendPrintPreviewLoadedNotification();
-  }
-}
-
 void OutOfProcessInstance::DidStartLoading() {
   if (did_call_start_loading_)
     return;
@@ -1239,19 +1022,6 @@ void OutOfProcessInstance::DidStopLoading() {
 
   pp::PDF::DidStopLoading(this);
   did_call_start_loading_ = false;
-}
-
-void OutOfProcessInstance::OnPrintPreviewLoaded() {
-  // Scroll location is retained across document loads in print preview mode, so
-  // there's no need to override the scroll position by scrolling again.
-  if (IsPreviewingPDF(print_preview_page_count_)) {
-    SendPrintPreviewLoadedNotification();
-  } else {
-    DCHECK_EQ(0, print_preview_loaded_page_count_);
-    print_preview_loaded_page_count_ = 1;
-    AppendBlankPrintPreviewPages();
-  }
-  OnGeometryChanged(0, 0);
 }
 
 void OutOfProcessInstance::InvokePrintDialog() {
