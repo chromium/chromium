@@ -63,15 +63,6 @@ public interface AccountManagerFacade {
     Promise<List<Account>> getAccounts();
 
     /**
-     * Retrieves all Google accounts on the device.
-     * Returns an empty array if an error occurs while getting account list.
-     * This method is blocking, use {@link #getAccounts()} instead.
-     */
-    @AnyThread
-    @Deprecated
-    List<Account> tryGetGoogleAccounts();
-
-    /**
      * Asynchronous version of {@link #getAccounts()}.
      *
      * This method is deprecated, use {@link #getAccounts()} instead.

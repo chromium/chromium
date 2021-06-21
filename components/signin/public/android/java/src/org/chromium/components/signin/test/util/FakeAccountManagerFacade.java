@@ -83,11 +83,6 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
     }
 
     @Override
-    public List<Account> tryGetGoogleAccounts() {
-        return AccountUtils.getAccountsIfFulfilledOrEmpty(getAccounts());
-    }
-
-    @Override
     public void tryGetGoogleAccounts(Callback<List<Account>> callback) {
         callback.onResult(AccountUtils.getAccountsIfFulfilledOrEmpty(getAccounts()));
     }

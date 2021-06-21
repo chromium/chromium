@@ -246,6 +246,9 @@ prefs when the profile is loaded.  -->
 
 <histogram name="Signin.AndroidPopulateAccountCacheWaitingTime" units="ms"
     expires_after="2021-08-16">
+  <obsolete>
+    Removed in 2021/06.
+  </obsolete>
   <owner>bsazonov@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
