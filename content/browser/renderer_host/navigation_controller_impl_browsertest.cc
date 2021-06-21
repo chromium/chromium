@@ -16912,7 +16912,10 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     // when RenderDocument subframe is on).
     // TODO(http://crbug.com/1068965): Keep the history.state even with
     // RenderDocument.
-    if (ShouldCreateNewHostForSameSiteSubframe()) {
+    // TODO(http://crbug.com/1188956): Ensure error page isolation correctly
+    // maintains history.state as well.
+    if (ShouldCreateNewHostForSameSiteSubframe() ||
+        SiteIsolationPolicy::IsErrorPageIsolationEnabled(false)) {
       EXPECT_EQ(nullptr, EvalJs(child, "history.state"));
     } else {
       EXPECT_EQ("foo", EvalJs(child, "history.state"));

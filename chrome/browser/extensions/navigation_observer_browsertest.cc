@@ -12,6 +12,7 @@
 #include "chrome/browser/extensions/navigation_observer.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "content/public/browser/site_isolation_policy.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
@@ -219,17 +220,21 @@ IN_PROC_BROWSER_TEST_F(DisableExtensionBrowserTest,
   subframe = ChildFrameAt(web_contents->GetMainFrame(), 0);
   EXPECT_EQ(subframe->GetLastCommittedURL(), extension_url);
 
-  // The SiteInstance of the disabled extension frame should reference the
-  // invalid extension ID, and should be different from the SiteInstance of the
-  // enabled extension subframe.
+  // The SiteInstance of the disabled extension frame should be different from
+  // the SiteInstance of the enabled extension subframe. It should reference the
+  // invalid extension ID or the error page URL.
   EXPECT_NE(subframe->GetSiteInstance(), extension_site_instance);
-  EXPECT_EQ(subframe->GetSiteInstance()->GetSiteURL(),
-            GURL(chrome::kExtensionInvalidRequestURL));
-
-  // The disabled extension process should only be locked if strict extension
-  // isolation is enabled.
-  EXPECT_EQ(IsStrictExtensionIsolationEnabled(),
-            subframe->GetProcess()->IsProcessLockedToSiteForTesting());
+  if (content::SiteIsolationPolicy::IsErrorPageIsolationEnabled(false)) {
+    EXPECT_EQ(subframe->GetSiteInstance()->GetSiteURL(),
+              GURL(content::kUnreachableWebDataURL));
+  } else {
+    EXPECT_EQ(subframe->GetSiteInstance()->GetSiteURL(),
+              GURL(chrome::kExtensionInvalidRequestURL));
+    // The disabled extension process should only be locked if strict extension
+    // isolation is enabled.
+    EXPECT_EQ(IsStrictExtensionIsolationEnabled(),
+              subframe->GetProcess()->IsProcessLockedToSiteForTesting());
+  }
 
   // Re-enable the extension.
   extension_service()->EnableExtension(extension->id());
