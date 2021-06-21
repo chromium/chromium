@@ -10,10 +10,15 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 class Profile;
+class NonAccessibleImageView;
 
 namespace views {
 class View;
 }  // namespace views
+
+namespace gfx {
+class ImageSkia;
+}
 
 class IncognitoClearBrowsingDataDialog
     : public views::BubbleDialogDelegateView {
@@ -34,18 +39,22 @@ class IncognitoClearBrowsingDataDialog
       const IncognitoClearBrowsingDataDialog& other) = delete;
   ~IncognitoClearBrowsingDataDialog() override;
 
+  void OnThemeChanged() override;
+
  private:
   explicit IncognitoClearBrowsingDataDialog(views::View* anchor_view,
                                             Profile* incognito_profile);
 
   static void CloseDialog();
 
+  gfx::ImageSkia* GetHeaderArt();
+
   // Helper methods to add functionality to the button.
   void OnCloseWindowsButtonClicked();
   void OnCancelButtonClicked();
 
   Profile* incognito_profile_;
-
+  NonAccessibleImageView* header_view_;
   base::OnceClosure destructor_callback_ = base::DoNothing();
 };
 

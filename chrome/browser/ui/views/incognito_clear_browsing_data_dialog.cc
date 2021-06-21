@@ -6,11 +6,15 @@
 
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/grit/theme_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/resource/resource_bundle.h"
+#include "ui/gfx/color_utils.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/layout/flex_layout.h"
@@ -66,11 +70,26 @@ IncognitoClearBrowsingDataDialog::IncognitoClearBrowsingDataDialog(
   DCHECK(incognito_profile_->IsIncognitoProfile());
   SetButtons(ui::DIALOG_BUTTON_NONE);
   SetShowCloseButton(true);
-  SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetOrientation(views::LayoutOrientation::kVertical);
+
+  // Layout
+  int vertical_spacing = views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_RELATED_CONTROL_VERTICAL);
+  views::FlexLayout* layout =
+      SetLayoutManager(std::make_unique<views::FlexLayout>());
+  layout->SetOrientation(views::LayoutOrientation::kVertical);
+  layout->SetDefault(views::kMarginsKey, gfx::Insets(vertical_spacing, 0));
+  layout->SetCollapseMargins(true);
+  layout->SetIgnoreDefaultMainAxisMargins(true);
+
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
 
+  // Header art
+  auto header_view = std::make_unique<NonAccessibleImageView>();
+  header_view_ = header_view.get();
+  AddChildView(std::move(header_view));
+
+  // Text
   AddChildView(views::Builder<views::Label>()
                    .SetText(l10n_util::GetStringUTF16(
                        IDS_INCOGNITO_CLEAR_BROWSING_DATA_DIALOG_PRIMARY_TEXT))
@@ -88,6 +107,7 @@ IncognitoClearBrowsingDataDialog::IncognitoClearBrowsingDataDialog(
           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
           .Build());
 
+  // Buttons
   SetButtons(ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL);
   SetButtonLabel(
       ui::DIALOG_BUTTON_OK,
@@ -113,6 +133,19 @@ void IncognitoClearBrowsingDataDialog::OnCloseWindowsButtonClicked() {
 
 void IncognitoClearBrowsingDataDialog::OnCancelButtonClicked() {
   CloseDialog();
+}
+
+void IncognitoClearBrowsingDataDialog::OnThemeChanged() {
+  BubbleDialogDelegateView::OnThemeChanged();
+  header_view_->SetImage(GetHeaderArt());
+}
+
+gfx::ImageSkia* IncognitoClearBrowsingDataDialog::GetHeaderArt() {
+  bool is_dark =
+      color_utils::IsDark(GetBubbleFrameView()->GetBackgroundColor());
+  return ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+      is_dark ? IDR_INCOGNITO_DATA_NOT_SAVED_HEADER_DARK
+              : IDR_INCOGNITO_DATA_NOT_SAVED_HEADER_LIGHT);
 }
 
 BEGIN_METADATA(IncognitoClearBrowsingDataDialog,
