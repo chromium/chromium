@@ -240,7 +240,7 @@ XrResult OpenXrController::SuggestBindings(
     std::map<XrPath, std::vector<XrActionSuggestedBinding>>* bindings) const {
   const std::string binding_prefix = GetTopLevelUserPath(type_);
 
-  for (auto interaction_profile : kOpenXrControllerInteractionProfiles) {
+  for (const auto& interaction_profile : kOpenXrControllerInteractionProfiles) {
     // If the interaction profile is defined by an extension, check it here,
     // otherwise continue
     const bool extension_required =
