@@ -238,9 +238,10 @@ SyncFileSystemGetFileStatusesFunction::
     ~SyncFileSystemGetFileStatusesFunction() {}
 
 ExtensionFunction::ResponseAction SyncFileSystemGetFileStatusesFunction::Run() {
+  base::Value::ConstListView args_list = args_->GetList();
   // All FileEntries converted into array of URL Strings in JS custom bindings.
-  base::ListValue* file_entry_urls = NULL;
-  EXTENSION_FUNCTION_VALIDATE(args_->GetList(0, &file_entry_urls));
+  EXTENSION_FUNCTION_VALIDATE(!args_list.empty() && args_list[0].is_list());
+  base::Value::ConstListView file_entry_urls = args_list[0].GetList();
 
   scoped_refptr<storage::FileSystemContext> file_system_context =
       browser_context()
@@ -249,7 +250,7 @@ ExtensionFunction::ResponseAction SyncFileSystemGetFileStatusesFunction::Run() {
 
   // Map each file path->SyncFileStatus in the callback map.
   // TODO(calvinlo): Overload GetFileSyncStatus to take in URL array.
-  num_expected_results_ = file_entry_urls->GetSize();
+  num_expected_results_ = file_entry_urls.size();
   num_results_received_ = 0;
   file_sync_statuses_.clear();
   ::sync_file_system::SyncFileSystemService* sync_file_system_service =
@@ -259,7 +260,8 @@ ExtensionFunction::ResponseAction SyncFileSystemGetFileStatusesFunction::Run() {
 
   for (unsigned int i = 0; i < num_expected_results_; i++) {
     std::string url;
-    file_entry_urls->GetString(i, &url);
+    if (file_entry_urls[i].is_string())
+      url = file_entry_urls[i].GetString();
     storage::FileSystemURL file_system_url(
         file_system_context->CrackURL(GURL(url)));
 
