@@ -521,7 +521,7 @@ class DevToolsUIBindings::NetworkResourceLoader
                       base::OnceClosure resume) override {
     base::Value chunkValue;
 
-    bool encoded = !base::IsStringUTF8(chunk);
+    bool encoded = !base::IsStringUTF8AllowingNoncharacters(chunk);
     if (encoded) {
       std::string encoded_string;
       base::Base64Encode(chunk, &encoded_string);
