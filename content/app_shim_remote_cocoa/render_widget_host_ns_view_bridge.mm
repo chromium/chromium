@@ -255,7 +255,7 @@ void RenderWidgetHostNSViewBridge::ShowDictionaryOverlay(
   if ([string length] == 0)
     return;
   NSPoint flipped_baseline_point = {
-      baseline_point.x(),
+      static_cast<CGFloat>(baseline_point.x()),
       [cocoa_view_ frame].size.height - baseline_point.y(),
   };
   [cocoa_view_ showDefinitionForAttributedString:string

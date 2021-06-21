@@ -405,16 +405,26 @@ softirq 900 901 902 903 904 905 906 907 908 909 910
   ASSERT_THAT(parser_->core_times(), testing::SizeIs(testing::Eq(6u)));
 
   for (int i = 0; i < 6; ++i) {
-    EXPECT_EQ(parser_->core_times()[i].user(), uint64_t{i * 10 + 10});
-    EXPECT_EQ(parser_->core_times()[i].nice(), uint64_t{i * 10 + 11});
-    EXPECT_EQ(parser_->core_times()[i].system(), uint64_t{i * 10 + 12});
-    EXPECT_EQ(parser_->core_times()[i].idle(), uint64_t{i * 10 + 13});
-    EXPECT_EQ(parser_->core_times()[i].iowait(), uint64_t{i * 10 + 14});
-    EXPECT_EQ(parser_->core_times()[i].irq(), uint64_t{i * 10 + 15});
-    EXPECT_EQ(parser_->core_times()[i].softirq(), uint64_t{i * 10 + 16});
-    EXPECT_EQ(parser_->core_times()[i].steal(), uint64_t{i * 10 + 17});
-    EXPECT_EQ(parser_->core_times()[i].guest(), uint64_t{i * 10 + 18});
-    EXPECT_EQ(parser_->core_times()[i].guest_nice(), uint64_t{i * 10 + 19});
+    EXPECT_EQ(parser_->core_times()[i].user(),
+              static_cast<uint64_t>(i * 10 + 10));
+    EXPECT_EQ(parser_->core_times()[i].nice(),
+              static_cast<uint64_t>(i * 10 + 11));
+    EXPECT_EQ(parser_->core_times()[i].system(),
+              static_cast<uint64_t>(i * 10 + 12));
+    EXPECT_EQ(parser_->core_times()[i].idle(),
+              static_cast<uint64_t>(i * 10 + 13));
+    EXPECT_EQ(parser_->core_times()[i].iowait(),
+              static_cast<uint64_t>(i * 10 + 14));
+    EXPECT_EQ(parser_->core_times()[i].irq(),
+              static_cast<uint64_t>(i * 10 + 15));
+    EXPECT_EQ(parser_->core_times()[i].softirq(),
+              static_cast<uint64_t>(i * 10 + 16));
+    EXPECT_EQ(parser_->core_times()[i].steal(),
+              static_cast<uint64_t>(i * 10 + 17));
+    EXPECT_EQ(parser_->core_times()[i].guest(),
+              static_cast<uint64_t>(i * 10 + 18));
+    EXPECT_EQ(parser_->core_times()[i].guest_nice(),
+              static_cast<uint64_t>(i * 10 + 19));
   }
 }
 

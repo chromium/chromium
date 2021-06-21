@@ -32,10 +32,10 @@ TEST(CpuCoreSpeedInfoTest, NormalizedSpeed_InvalidInputs) {
 
 TEST(CpuCoreSpeedInfoTest, NormalizedSpeed_Math) {
   struct TestCase {
-    double min_frequency;
-    double max_frequency;
-    double base_frequency;
-    double current_frequency;
+    int64_t min_frequency;
+    int64_t max_frequency;
+    int64_t base_frequency;
+    int64_t current_frequency;
     double cpu_speed;
   };
 

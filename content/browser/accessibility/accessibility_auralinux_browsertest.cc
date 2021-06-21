@@ -352,7 +352,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
 
   // Single line text fields should return the whole text.
   CheckTextAtOffset(atk_text, 0, ATK_TEXT_BOUNDARY_LINE_START, 0,
-                    int{InputContentsString().size()},
+                    static_cast<int>(InputContentsString().size()),
                     InputContentsString().c_str());
 
   g_object_unref(atk_text);
@@ -371,7 +371,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
 
   // Last line does not have a trailing newline.
   CheckTextAtOffset(atk_text, 32, ATK_TEXT_BOUNDARY_LINE_START, 32,
-                    int{InputContentsString().size()}, "\"KHTML, like\".");
+                    static_cast<int>(InputContentsString().size()),
+                    "\"KHTML, like\".");
 
   g_object_unref(atk_text);
 }
@@ -395,7 +396,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
   // Blink represents the blank line with a newline character, so in total there
   // should be two more newlines. The second newline is not part of the HTML
   // value attribute however.
-  int contents_string_length = int{InputContentsString().size()} + 1;
+  int contents_string_length =
+      static_cast<int>(InputContentsString().size()) + 1;
   CheckTextAtOffset(atk_text, 32, ATK_TEXT_BOUNDARY_LINE_START, 32,
                     contents_string_length, "\"KHTML, like\".\n");
   CheckTextAtOffset(atk_text, 46, ATK_TEXT_BOUNDARY_LINE_START, 32,
@@ -924,7 +926,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest, TestScrollTo) {
                             &height, ATK_XY_SCREEN);
 
   int doc_bottom = doc_y + doc_height;
-  int bottom_third = doc_bottom - (float{doc_height} / 3.0);
+  int bottom_third = doc_bottom - (static_cast<float>(doc_height) / 3.0);
   EXPECT_GT(y, bottom_third);
   EXPECT_LT(y, doc_bottom - height + 1);
 
@@ -1152,7 +1154,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
   AccessibilityNotificationWaiter waiter(
       shell()->web_contents(), ui::kAXModeComplete,
       ax::mojom::Event::kTextSelectionChanged);
-  int contents_string_length = int{InputContentsString().size()};
+  int contents_string_length = static_cast<int>(InputContentsString().size());
   start_offset = 0;
   end_offset = contents_string_length;
 

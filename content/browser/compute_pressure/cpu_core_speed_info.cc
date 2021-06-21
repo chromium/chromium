@@ -44,7 +44,7 @@ double CpuCoreSpeedInfo::NormalizedSpeed() const {
   // Use a linear scale for cores that don't report base_frequency.
   double scaled_base_frequency =
       (base_frequency < min_frequency || base_frequency > max_frequency)
-          ? double{min_frequency + max_frequency} / 2
+          ? (min_frequency + max_frequency) / 2.0
           : base_frequency;
   DCHECK_GE(scaled_base_frequency, min_frequency);
   DCHECK_LE(scaled_base_frequency, max_frequency);

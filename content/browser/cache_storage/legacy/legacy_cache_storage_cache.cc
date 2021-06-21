@@ -550,7 +550,7 @@ struct LegacyCacheStorageCache::QueryCacheContext {
 };
 
 struct LegacyCacheStorageCache::BatchInfo {
-  int remaining_operations = 0;
+  size_t remaining_operations = 0;
   VerboseErrorCallback callback;
   absl::optional<std::string> message;
   const int64_t trace_id = 0;
@@ -896,6 +896,7 @@ void LegacyCacheStorageCache::BatchDidOneOperation(BatchInfo& batch_status,
   if (!batch_status.callback)
     return;
 
+  DCHECK_GT(batch_status.remaining_operations, 0u);
   batch_status.remaining_operations--;
 
   if (error != CacheStorageError::kSuccess) {

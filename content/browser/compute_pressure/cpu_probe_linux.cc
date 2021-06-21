@@ -119,8 +119,8 @@ void CpuProbeLinux::InitializeCore(
     const ProcfsStatCpuParser::CoreTimes& initial_core_times) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_GE(core_index, 0);
-  DCHECK_EQ(last_core_times_.size(), size_t{core_index});
-  DCHECK_EQ(cpufreq_parsers_.size(), size_t{core_index});
+  DCHECK_EQ(last_core_times_.size(), static_cast<size_t>(core_index));
+  DCHECK_EQ(cpufreq_parsers_.size(), static_cast<size_t>(core_index));
 
   if (core_index == 0)
     Initialize();

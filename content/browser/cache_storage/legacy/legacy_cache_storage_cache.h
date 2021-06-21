@@ -237,9 +237,6 @@ class CONTENT_EXPORT LegacyCacheStorageCache : public CacheStorageCache {
   // completion.
   void BatchDidOneOperation(BatchInfo& batch_status,
                             blink::mojom::CacheStorageError error);
-  // Callback invoked once all BatchDidOneOperation() calls have run.
-  // Invokes |error_callback|.
-  void BatchDidAllOperations(BatchInfo& batch_status);
 
   // Runs |callback| with matching requests/response data. The data provided
   // in the QueryCacheResults depends on the |query_type|. If |query_type| is

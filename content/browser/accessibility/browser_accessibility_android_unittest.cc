@@ -346,7 +346,8 @@ TEST_F(BrowserAccessibilityAndroidTest,
       BrowserAccessibilityManager::Create(
           tree, test_browser_accessibility_delegate_.get()));
 
-  for (int child_index = 0; child_index < int{tree.nodes[0].child_ids.size()};
+  for (int child_index = 0;
+       child_index < static_cast<int>(tree.nodes[0].child_ids.size());
        ++child_index) {
     BrowserAccessibilityAndroid* child =
         static_cast<BrowserAccessibilityAndroid*>(
@@ -393,7 +394,8 @@ TEST_F(BrowserAccessibilityAndroidTest, TestImageRoleDescription_Empty) {
       BrowserAccessibilityManager::Create(
           tree, test_browser_accessibility_delegate_.get()));
 
-  for (int child_index = 0; child_index < int{tree.nodes[0].child_ids.size()};
+  for (int child_index = 0;
+       child_index < static_cast<int>(tree.nodes[0].child_ids.size());
        ++child_index) {
     BrowserAccessibilityAndroid* child =
         static_cast<BrowserAccessibilityAndroid*>(

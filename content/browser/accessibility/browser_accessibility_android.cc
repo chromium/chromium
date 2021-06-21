@@ -1941,7 +1941,7 @@ int BrowserAccessibilityAndroid::GetSelectionEnd() const {
 
 int BrowserAccessibilityAndroid::GetEditableTextLength() const {
   if (IsTextField())
-    return int{GetValueForControl().size()};
+    return static_cast<int>(GetValueForControl().size());
   return 0;
 }
 

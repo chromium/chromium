@@ -1784,7 +1784,7 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
 
 - (NSNumber*)numberOfCharacters {
   if ([self instanceActive] && _owner->IsTextField())
-    return @(int{_owner->GetValueForControl().size()});
+    return @(static_cast<int>(_owner->GetValueForControl().size()));
   return nil;
 }
 
@@ -1962,8 +1962,8 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
     int sel_start, sel_end;
     _owner->GetIntAttribute(ax::mojom::IntAttribute::kTextSelStart, &sel_start);
     _owner->GetIntAttribute(ax::mojom::IntAttribute::kTextSelEnd, &sel_end);
-    if (size_t{sel_start} == newValue.length() &&
-        size_t{sel_end} == newValue.length()) {
+    if (static_cast<size_t>(sel_start) == newValue.length() &&
+        static_cast<size_t>(sel_end) == newValue.length()) {
       // Don't include oldValue as it would be announced -- very confusing.
       return content::AXTextEdit(newValue, std::u16string(), nil);
     }
@@ -2613,7 +2613,8 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
       !_owner->IsPasswordField()) {
     return [NSValue
         valueWithRange:NSMakeRange(0,
-                                   int{_owner->GetValueForControl().size()})];
+                                   static_cast<int>(
+                                       _owner->GetValueForControl().size()))];
   }
   return nil;
 }
@@ -2719,7 +2720,7 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
   if (!_owner->IsText()) {
     BrowserAccessibility::AXRange ax_range(
         _owner->CreateTextPositionAt(0),
-        _owner->CreateTextPositionAt(int{innerText.length()}));
+        _owner->CreateTextPositionAt(static_cast<int>(innerText.length())));
     AddMisspelledTextAttributes(ax_range, attributedInnerText);
   }
 
@@ -2801,7 +2802,7 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
     int lineIndex = [(NSNumber*)parameter intValue];
     const std::vector<int> lineBreaks = _owner->GetLineStartOffsets();
     std::u16string value = _owner->GetValueForControl();
-    int valueLength = int{value.size()};
+    int valueLength = static_cast<int>(value.size());
 
     int lineCount = static_cast<int>(lineBreaks.size()) + 1;
     if (lineIndex < 0 || lineIndex >= lineCount)
