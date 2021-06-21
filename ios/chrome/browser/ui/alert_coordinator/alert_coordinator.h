@@ -36,18 +36,11 @@
 @property(nonatomic, copy) ProceduralBlock noInteractionAction;
 
 // Init a coordinator for displaying a alert on this view controller.
-// This is the *old* API and will be going away.
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
                                      title:(NSString*)title
                                    message:(NSString*)message
     NS_DESIGNATED_INITIALIZER;
-
-// Init a coordinator for displaying a alert on this view controller.
-// This is the *new* version of the API.
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                     title:(NSString*)title
-                                   message:(NSString*)message;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
