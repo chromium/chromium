@@ -40,22 +40,12 @@
 
 namespace {
 
-const char kUseGAIAPictureKey[] = "use_gaia_picture";
-const char kGAIAPictureFileNameKey[] = "gaia_picture_file_name";
-const char kLastDownloadedGAIAPictureUrlWithSizeKey[] =
-    "last_downloaded_gaia_picture_url_with_size";
 const char kAccountIdKey[] = "account_id_key";
 const char kProfileCountLastUpdatePref[] = "profile.profile_counts_reported";
 #if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 const char kLegacyProfileNameMigrated[] = "legacy.profile.name.migrated";
 bool migration_enabled_for_testing = false;
 #endif  // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
-
-void DeleteBitmap(const base::FilePath& image_path) {
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::MAY_BLOCK);
-  base::DeleteFile(image_path);
-}
 
 }  // namespace
 
@@ -278,175 +268,10 @@ base::FilePath ProfileInfoCache::GetPathOfProfileAtIndex(size_t index) const {
   return user_data_dir_.AppendASCII(keys_[index]);
 }
 
-const gfx::Image* ProfileInfoCache::GetGAIAPictureOfProfileAtIndex(
-    size_t index) const {
-  base::FilePath path = GetPathOfProfileAtIndex(index);
-  std::string key = CacheKeyFromProfilePath(path);
-
-  std::string file_name;
-  GetInfoForProfileAtIndex(index)->GetString(
-      kGAIAPictureFileNameKey, &file_name);
-
-  // If the picture is not on disk then return NULL.
-  if (file_name.empty())
-    return nullptr;
-
-  base::FilePath image_path = path.AppendASCII(file_name);
-  return LoadAvatarPictureFromPath(path, key, image_path);
-}
-
-bool ProfileInfoCache::IsUsingGAIAPictureOfProfileAtIndex(size_t index) const {
-  bool value = false;
-  GetInfoForProfileAtIndex(index)->GetBoolean(kUseGAIAPictureKey, &value);
-  if (!value) {
-    // Prefer the GAIA avatar over a non-customized avatar.
-    value = ProfileIsUsingDefaultAvatarAtIndex(index) &&
-            GetGAIAPictureOfProfileAtIndex(index);
-  }
-  return value;
-}
-
-bool ProfileInfoCache::ProfileIsUsingDefaultAvatarAtIndex(size_t index) const {
-  bool value = false;
-  GetInfoForProfileAtIndex(index)->GetBoolean(
-      ProfileAttributesEntry::kIsUsingDefaultAvatarKey, &value);
-  return value;
-}
-
-bool ProfileInfoCache::IsGAIAPictureOfProfileAtIndexLoaded(size_t index) const {
-  return cached_avatar_images_.count(
-      CacheKeyFromProfilePath(GetPathOfProfileAtIndex(index)));
-}
-
 void ProfileInfoCache::NotifyProfileAuthInfoChanged(
     const base::FilePath& profile_path) {
   for (auto& observer : observer_list_)
     observer.OnProfileAuthInfoChanged(profile_path);
-}
-
-std::string
-ProfileInfoCache::GetLastDownloadedGAIAPictureUrlWithSizeOfProfileAtIndex(
-    size_t index) const {
-  std::string current_gaia_image_url;
-  GetInfoForProfileAtIndex(index)->GetString(
-      kLastDownloadedGAIAPictureUrlWithSizeKey, &current_gaia_image_url);
-  return current_gaia_image_url;
-}
-
-void ProfileInfoCache::SetLastDownloadedGAIAPictureUrlWithSizeOfProfileAtIndex(
-    size_t index,
-    const std::string& image_url_with_size) {
-  std::unique_ptr<base::DictionaryValue> info(
-      GetInfoForProfileAtIndex(index)->DeepCopy());
-  info->SetString(kLastDownloadedGAIAPictureUrlWithSizeKey,
-                  image_url_with_size);
-  SetInfoForProfileAtIndex(index, std::move(info));
-}
-
-bool ProfileInfoCache::ShouldUpdateGAIAPictureOfProfileAtIndex(
-    size_t index,
-    const std::string& old_file_name,
-    const std::string& key,
-    const std::string& image_url_with_size,
-    bool image_is_empty) const {
-  if (old_file_name.empty() && image_is_empty) {
-    // On Windows, Taskbar and Desktop icons are refreshed every time
-    // |OnProfileAvatarChanged| notification is fired.
-    // Updating from an empty image to a null image is a no-op and it is
-    // important to avoid firing |OnProfileAvatarChanged| in this case.
-    // See http://crbug.com/900374
-    DCHECK_EQ(0U, cached_avatar_images_.count(key));
-    return false;
-  }
-
-  std::string current_gaia_image_url =
-      GetLastDownloadedGAIAPictureUrlWithSizeOfProfileAtIndex(index);
-  if (old_file_name.empty() || image_is_empty ||
-      current_gaia_image_url != image_url_with_size) {
-    return true;
-  }
-  const gfx::Image* gaia_picture = GetGAIAPictureOfProfileAtIndex(index);
-  if (gaia_picture && !gaia_picture->IsEmpty()) {
-    return false;
-  }
-
-  // We either did not load the GAIA image or we failed to. In that case, only
-  // update if the GAIA picture is used as the profile avatar.
-  return ProfileIsUsingDefaultAvatarAtIndex(index) ||
-         IsUsingGAIAPictureOfProfileAtIndex(index);
-}
-
-void ProfileInfoCache::SetGAIAPictureOfProfileAtIndex(
-    size_t index,
-    const std::string& image_url_with_size,
-    gfx::Image image) {
-  base::FilePath path = GetPathOfProfileAtIndex(index);
-  std::string key = CacheKeyFromProfilePath(path);
-
-  std::string old_file_name;
-  GetInfoForProfileAtIndex(index)->GetString(kGAIAPictureFileNameKey,
-                                             &old_file_name);
-
-  if (!ShouldUpdateGAIAPictureOfProfileAtIndex(
-          index, old_file_name, key, image_url_with_size, image.IsEmpty())) {
-    return;
-  }
-
-  // Delete the old bitmap from cache.
-  cached_avatar_images_.erase(key);
-  std::string new_file_name;
-  if (image.IsEmpty()) {
-    // Delete the old bitmap from disk.
-    base::FilePath image_path = path.AppendASCII(old_file_name);
-    file_task_runner_->PostTask(FROM_HERE,
-                                base::BindOnce(&DeleteBitmap, image_path));
-    SetLastDownloadedGAIAPictureUrlWithSizeOfProfileAtIndex(index,
-                                                            std::string());
-  } else {
-    // Save the new bitmap to disk.
-    new_file_name =
-        old_file_name.empty()
-            ? base::FilePath(profiles::kGAIAPictureFileName).MaybeAsASCII()
-            : old_file_name;
-    base::FilePath image_path = path.AppendASCII(new_file_name);
-    SaveAvatarImageAtPath(
-        GetPathOfProfileAtIndex(index), image, key, image_path,
-        base::BindOnce(
-            &ProfileInfoCache::
-                SetLastDownloadedGAIAPictureUrlWithSizeOfProfileAtIndex,
-            weak_factory_.GetWeakPtr(), index, image_url_with_size));
-  }
-
-  std::unique_ptr<base::DictionaryValue> info(
-      GetInfoForProfileAtIndex(index)->DeepCopy());
-  info->SetString(kGAIAPictureFileNameKey, new_file_name);
-  SetInfoForProfileAtIndex(index, std::move(info));
-
-  for (auto& observer : observer_list_)
-    observer.OnProfileAvatarChanged(path);
-}
-
-void ProfileInfoCache::SetIsUsingGAIAPictureOfProfileAtIndex(size_t index,
-                                                             bool value) {
-  std::unique_ptr<base::DictionaryValue> info(
-      GetInfoForProfileAtIndex(index)->DeepCopy());
-  info->SetBoolean(kUseGAIAPictureKey, value);
-  SetInfoForProfileAtIndex(index, std::move(info));
-
-  base::FilePath profile_path = GetPathOfProfileAtIndex(index);
-  for (auto& observer : observer_list_)
-    observer.OnProfileAvatarChanged(profile_path);
-}
-
-void ProfileInfoCache::SetProfileIsUsingDefaultAvatarAtIndex(
-    size_t index, bool value) {
-  if (value == ProfileIsUsingDefaultAvatarAtIndex(index))
-    return;
-
-  std::unique_ptr<base::DictionaryValue> info(
-      GetInfoForProfileAtIndex(index)->DeepCopy());
-  info->SetBoolean(ProfileAttributesEntry::kIsUsingDefaultAvatarKey, value);
-  SetInfoForProfileAtIndex(index, std::move(info));
 }
 
 void ProfileInfoCache::NotifyIsSigninRequiredChanged(
@@ -500,7 +325,8 @@ void ProfileInfoCache::LoadGAIAPictureIfNeeded() {
     if (entry->GetSigninState() == SigninState::kNotSignedIn)
       continue;
 
-    bool is_using_GAIA_picture = entry->GetBool(kUseGAIAPictureKey);
+    bool is_using_GAIA_picture =
+        entry->GetBool(ProfileAttributesEntry::kUseGAIAPictureKey);
     bool is_using_default_avatar = entry->IsUsingDefaultAvatar();
     // Load from disk into memory GAIA picture if it exists.
     if (is_using_GAIA_picture || is_using_default_avatar)

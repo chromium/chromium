@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/i18n/number_formatting.h"
@@ -116,6 +117,12 @@ bool SaveBitmap(std::unique_ptr<ImageData> data,
     return false;
   }
   return true;
+}
+
+void DeleteBitmap(const base::FilePath& image_path) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+  base::DeleteFile(image_path);
 }
 
 void RunCallbackIfFileMissing(const base::FilePath& file_path,
@@ -401,6 +408,35 @@ const gfx::Image* ProfileAttributesStorage::LoadAvatarPictureFromPath(
                      profile_path, key));
   return nullptr;
 }
+bool ProfileAttributesStorage::IsGAIAPictureLoaded(
+    const std::string& key) const {
+  return base::Contains(cached_avatar_images_, key);
+}
+
+void ProfileAttributesStorage::SaveGAIAImageAtPath(
+    const base::FilePath& profile_path,
+    const std::string& key,
+    gfx::Image image,
+    const base::FilePath& image_path,
+    const std::string& image_url_with_size) {
+  cached_avatar_images_.erase(key);
+  SaveAvatarImageAtPath(
+      profile_path, image, key, image_path,
+      base::BindOnce(&ProfileAttributesStorage::OnGAIAPictureSaved, AsWeakPtr(),
+                     image_url_with_size, profile_path));
+}
+
+void ProfileAttributesStorage::DeleteGAIAImageAtPath(
+    const base::FilePath& profile_path,
+    const std::string& key,
+    const base::FilePath& image_path) {
+  cached_avatar_images_.erase(key);
+  file_task_runner_->PostTask(FROM_HERE,
+                              base::BindOnce(&DeleteBitmap, image_path));
+  ProfileAttributesEntry* entry = GetProfileAttributesWithPath(profile_path);
+  DCHECK(entry);
+  entry->SetLastDownloadedGAIAPictureUrlWithSize(std::string());
+}
 
 void ProfileAttributesStorage::AddObserver(Observer* obs) {
   observer_list_.AddObserver(obs);
@@ -590,6 +626,15 @@ void ProfileAttributesStorage::OnAvatarPictureSaved(
     std::move(callback).Run();
 
   NotifyOnProfileHighResAvatarLoaded(profile_path);
+}
+
+void ProfileAttributesStorage::OnGAIAPictureSaved(
+    const std::string& image_url_with_size,
+    const base::FilePath& profile_path) {
+  ProfileAttributesEntry* entry = GetProfileAttributesWithPath(profile_path);
+  // Profile could have been destroyed while saving picture to disk.
+  if (entry)
+    entry->SetLastDownloadedGAIAPictureUrlWithSize(image_url_with_size);
 }
 
 void ProfileAttributesStorage::SaveAvatarImageAtPathNoCallback(

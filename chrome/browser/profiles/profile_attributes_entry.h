@@ -219,6 +219,7 @@ class ProfileAttributesEntry {
   static const char kNameKey[];
   static const char kIsUsingDefaultNameKey[];
   static const char kIsUsingDefaultAvatarKey[];
+  static const char kUseGAIAPictureKey[];
 
  private:
   friend class ProfileInfoCache;
@@ -249,6 +250,12 @@ class ProfileAttributesEntry {
   //   profile name to clear ambiguity.
   bool ShouldShowProfileLocalName(
       const std::u16string& gaia_name_to_display) const;
+
+  // Returns true if the current GAIA picture should be updated with an image
+  // having provided parameters. `image_is_empty` is true when attempting to
+  // clear the current GAIA picture.
+  bool ShouldUpdateGAIAPicture(const std::string& image_url_with_size,
+                               bool image_is_empty) const;
 
   // Loads or uses an already loaded high resolution image of the generic
   // profile avatar.

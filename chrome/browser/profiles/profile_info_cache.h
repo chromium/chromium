@@ -26,10 +26,6 @@
 #include "chrome/browser/profiles/profile_info_interface.h"
 #include "components/signin/public/base/persistent_repeating_timer.h"
 
-namespace gfx {
-class Image;
-}
-
 namespace base {
 class DictionaryValue;
 }
@@ -66,23 +62,6 @@ class ProfileInfoCache : public ProfileInfoInterface,
       const base::FilePath& profile_path) const override;
   // Will be removed SOON with ProfileInfoCache tests. Do not use!
   base::FilePath GetPathOfProfileAtIndex(size_t index) const override;
-  // Returns the GAIA picture for the given profile. This may return NULL
-  // if the profile does not have a GAIA picture or if the picture must be
-  // loaded from disk.
-  const gfx::Image* GetGAIAPictureOfProfileAtIndex(size_t index) const override;
-  bool IsUsingGAIAPictureOfProfileAtIndex(size_t index) const override;
-  bool ProfileIsUsingDefaultAvatarAtIndex(size_t index) const override;
-
-  // Returns true if a GAIA picture has been loaded or has failed to load for
-  // profile at |index|.
-  bool IsGAIAPictureOfProfileAtIndexLoaded(size_t index) const;
-
-  void SetGAIAPictureOfProfileAtIndex(size_t index,
-                                      const std::string& image_url_with_size,
-                                      gfx::Image image);
-
-  void SetIsUsingGAIAPictureOfProfileAtIndex(size_t index, bool value);
-  void SetProfileIsUsingDefaultAvatarAtIndex(size_t index, bool value);
 
   // Notify IsSignedInRequired to all observer
   void NotifyIsSigninRequiredChanged(const base::FilePath& profile_path);
@@ -139,12 +118,6 @@ class ProfileInfoCache : public ProfileInfoInterface,
       size_t index,
       const std::string& image_url_with_size);
 
-  bool ShouldUpdateGAIAPictureOfProfileAtIndex(
-      size_t index,
-      const std::string& old_file_name,
-      const std::string& key,
-      const std::string& image_url_with_size,
-      bool image_is_empty) const;
 #if !defined(OS_ANDROID)
   void LoadGAIAPictureIfNeeded();
 #endif

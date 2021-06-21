@@ -118,6 +118,21 @@ class ProfileAttributesStorage
       const std::string& key,
       const base::FilePath& image_path) const;
 
+  // Returns true if a GAIA picture has been loaded or has failed to load for
+  // profile with `key`.
+  bool IsGAIAPictureLoaded(const std::string& key) const;
+
+  // Saves the GAIA `image` at `image_path`.
+  void SaveGAIAImageAtPath(const base::FilePath& profile_path,
+                           const std::string& key,
+                           gfx::Image image,
+                           const base::FilePath& image_path,
+                           const std::string& image_url_with_size);
+  // Deletes a GAIA picture at `image_path`.
+  void DeleteGAIAImageAtPath(const base::FilePath& profile_path,
+                             const std::string& key,
+                             const base::FilePath& image_path);
+
   // Checks whether the high res avatar at index |icon_index| exists, and if it
   // does not, calls |DownloadHighResAvatar|.
   void DownloadHighResAvatarIfNeeded(size_t icon_index,
@@ -210,6 +225,11 @@ class ProfileAttributesStorage
                             const base::FilePath& profile_path,
                             base::OnceClosure callback,
                             bool success) const;
+
+  // Called when the GAIA picture given by `image_url_with_size` has been saved
+  // to disk.
+  void OnGAIAPictureSaved(const std::string& image_url_with_size,
+                          const base::FilePath& profile_path);
 
   // Helper function that calls SaveAvatarImageAtPath without a callback.
   void SaveAvatarImageAtPathNoCallback(const base::FilePath& profile_path,

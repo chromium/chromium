@@ -9,10 +9,6 @@
 
 #include "base/files/file_path.h"
 
-namespace gfx {
-class Image;
-}
-
 // This abstract interface is used to query the profiles backend for information
 // about the different profiles. Its sole concrete implementation is the
 // ProfileInfoCache. This interface exists largely to assist in testing.
@@ -27,15 +23,6 @@ class ProfileInfoInterface {
       const base::FilePath& profile_path) const = 0;
 
   virtual base::FilePath GetPathOfProfileAtIndex(size_t index) const = 0;
-
-  virtual const gfx::Image* GetGAIAPictureOfProfileAtIndex(
-      size_t index) const = 0;
-
-  // Checks if the GAIA picture should be used as the profile's avatar icon.
-  virtual bool IsUsingGAIAPictureOfProfileAtIndex(size_t index) const = 0;
-
-  // Returns true if the user has never manually selected a profile avatar.
-  virtual bool ProfileIsUsingDefaultAvatarAtIndex(size_t index) const = 0;
 
  protected:
   virtual ~ProfileInfoInterface() {}

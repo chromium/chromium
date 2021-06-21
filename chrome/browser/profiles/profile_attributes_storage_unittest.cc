@@ -16,6 +16,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/profiles/avatar_menu.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_init_params.h"
 #include "chrome/browser/profiles/profile_avatar_downloader.h"
@@ -34,6 +35,9 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/resource/resource_bundle.h"
+#include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "ui/native_theme/native_theme.h"
 
 #if !defined(OS_ANDROID)
@@ -137,6 +141,15 @@ class ProfileAttributesTestObserver
   MOCK_METHOD1(OnProfileHostedDomainChanged,
                void(const base::FilePath& profile_path));
 };
+
+size_t GetDefaultAvatarIconResourceIDAtIndex(int index) {
+#if defined(OS_WIN)
+  return profiles::GetOldDefaultAvatar2xIconResourceIDAtIndex(index);
+#else
+  return profiles::GetDefaultAvatarIconResourceIDAtIndex(index);
+#endif  // defined(OS_WIN)
+}
+
 }  // namespace
 
 class ProfileAttributesStorageTest : public testing::Test {
@@ -152,8 +165,7 @@ class ProfileAttributesStorageTest : public testing::Test {
     EnableObserver();
   }
 
-  void TearDown() override {
-  }
+  void TearDown() override { DisableObserver(); }
 
   base::FilePath GetProfilePath(const std::string& base_name) {
     return testing_profile_manager_.profile_manager()->user_data_dir().
@@ -224,6 +236,12 @@ class ProfileAttributesStorageTest : public testing::Test {
     storage()->AddProfile(std::move(params));
 
     EXPECT_EQ(number_of_profiles + 1, storage()->GetNumberOfProfiles());
+  }
+
+  void ResetProfileInfoCache() {
+    DisableObserver();
+    testing_profile_manager_.DeleteProfileInfoCache();
+    EnableObserver();
   }
 
   TestingProfileManager testing_profile_manager_;
@@ -837,7 +855,7 @@ TEST_F(ProfileAttributesStorageTest,
         storage()->GetProfileAttributesWithPath(profile_path);
     entry->LockForceSigninProfile(true);
     VerifyAndResetCallExpectations();
-    testing_profile_manager_.DeleteProfileInfoCache();
+    ResetProfileInfoCache();
 
     entry = storage()->GetProfileAttributesWithPath(profile_path);
     ASSERT_NE(entry, nullptr);
@@ -847,7 +865,7 @@ TEST_F(ProfileAttributesStorageTest,
 
   // Reset the cache once more after the policy has been disabled and check that
   // sign-in is no longer required.
-  testing_profile_manager_.DeleteProfileInfoCache();
+  ResetProfileInfoCache();
   ProfileAttributesEntry* entry =
       storage()->GetProfileAttributesWithPath(profile_path);
   ASSERT_NE(entry, nullptr);
@@ -1191,4 +1209,210 @@ TEST_F(ProfileAttributesStorageTest, ProfileThemeColors) {
             GetDefaultProfileThemeColors(false));
   VerifyAndResetCallExpectations();
 }
+#endif  // !defined(OS_ANDROID)
+
+TEST_F(ProfileAttributesStorageTest, GAIAPicture) {
+  const int kDefaultAvatarIndex = 0;
+  const int kOtherAvatarIndex = 1;
+  const int kGaiaPictureSize = 256;  // Standard size of a Gaia account picture.
+  base::FilePath profile_path = GetProfilePath("path_1");
+  ProfileAttributesInitParams params;
+  params.profile_path = profile_path;
+  params.profile_name = u"name_1";
+  params.icon_index = kDefaultAvatarIndex;
+  EXPECT_CALL(observer(), OnProfileAdded(profile_path)).Times(1);
+  storage()->AddProfile(std::move(params));
+  VerifyAndResetCallExpectations();
+  ProfileAttributesEntry* entry =
+      storage()->GetProfileAttributesWithPath(profile_path);
+
+  // Sanity check.
+  EXPECT_EQ(nullptr, entry->GetGAIAPicture());
+  EXPECT_FALSE(entry->IsUsingGAIAPicture());
+
+  // The profile icon should be the default one.
+  EXPECT_TRUE(entry->IsUsingDefaultAvatar());
+  size_t default_avatar_id =
+      GetDefaultAvatarIconResourceIDAtIndex(kDefaultAvatarIndex);
+  const gfx::Image& default_avatar_image(
+      ui::ResourceBundle::GetSharedInstance().GetImageNamed(default_avatar_id));
+  EXPECT_TRUE(
+      gfx::test::AreImagesEqual(default_avatar_image, entry->GetAvatarIcon()));
+
+  // Set GAIA picture.
+  gfx::Image gaia_image(
+      gfx::test::CreateImage(kGaiaPictureSize, kGaiaPictureSize));
+  EXPECT_CALL(observer(), OnProfileAvatarChanged(profile_path)).Times(1);
+  entry->SetGAIAPicture("GAIA_IMAGE_URL_WITH_SIZE_1", gaia_image);
+  VerifyAndResetCallExpectations();
+  EXPECT_TRUE(gfx::test::AreImagesEqual(gaia_image, *entry->GetGAIAPicture()));
+  // Since we're still using the default avatar, the GAIA image should be
+  // preferred over the generic avatar image.
+  EXPECT_TRUE(entry->IsUsingDefaultAvatar());
+  EXPECT_TRUE(entry->IsUsingGAIAPicture());
+  EXPECT_TRUE(gfx::test::AreImagesEqual(gaia_image, entry->GetAvatarIcon()));
+
+  // Set a non-default avatar. This should be preferred over the GAIA image.
+  EXPECT_CALL(observer(), OnProfileAvatarChanged(profile_path)).Times(1);
+  entry->SetAvatarIconIndex(kOtherAvatarIndex);
+  entry->SetIsUsingDefaultAvatar(false);
+  VerifyAndResetCallExpectations();
+  EXPECT_FALSE(entry->IsUsingDefaultAvatar());
+  EXPECT_FALSE(entry->IsUsingGAIAPicture());
+// Avatar icons not used on Android.
+#if !defined(OS_ANDROID)
+
+  size_t other_avatar_id =
+      GetDefaultAvatarIconResourceIDAtIndex(kOtherAvatarIndex);
+  const gfx::Image& other_avatar_image(
+      ui::ResourceBundle::GetSharedInstance().GetImageNamed(other_avatar_id));
+  EXPECT_TRUE(
+      gfx::test::AreImagesEqual(other_avatar_image, entry->GetAvatarIcon()));
+#endif  // !defined(OS_ANDROID)
+
+  // Explicitly setting the GAIA picture should make it preferred again.
+  EXPECT_CALL(observer(), OnProfileAvatarChanged(profile_path)).Times(1);
+  entry->SetIsUsingGAIAPicture(true);
+  VerifyAndResetCallExpectations();
+  EXPECT_TRUE(entry->IsUsingGAIAPicture());
+  EXPECT_TRUE(gfx::test::AreImagesEqual(gaia_image, *entry->GetGAIAPicture()));
+  EXPECT_TRUE(gfx::test::AreImagesEqual(gaia_image, entry->GetAvatarIcon()));
+
+  // Clearing the IsUsingGAIAPicture flag should result in the generic image
+  // being used again.
+  EXPECT_CALL(observer(), OnProfileAvatarChanged(profile_path)).Times(1);
+  entry->SetIsUsingGAIAPicture(false);
+  VerifyAndResetCallExpectations();
+  EXPECT_FALSE(entry->IsUsingGAIAPicture());
+  EXPECT_TRUE(gfx::test::AreImagesEqual(gaia_image, *entry->GetGAIAPicture()));
+#if !defined(OS_ANDROID)
+  EXPECT_TRUE(
+      gfx::test::AreImagesEqual(other_avatar_image, entry->GetAvatarIcon()));
 #endif
+}
+
+TEST_F(ProfileAttributesStorageTest, PersistGAIAPicture) {
+  base::FilePath profile_path = GetProfilePath("path_1");
+  ProfileAttributesInitParams params;
+  params.profile_path = profile_path;
+  params.profile_name = u"name_1";
+  EXPECT_CALL(observer(), OnProfileAdded(profile_path)).Times(1);
+  storage()->AddProfile(std::move(params));
+  VerifyAndResetCallExpectations();
+  ProfileAttributesEntry* entry =
+      storage()->GetProfileAttributesWithPath(profile_path);
+  gfx::Image gaia_image(gfx::test::CreateImage());
+
+  EXPECT_CALL(observer(), OnProfileAvatarChanged(profile_path)).Times(1);
+  EXPECT_CALL(observer(), OnProfileHighResAvatarLoaded(profile_path)).Times(1);
+  entry->SetGAIAPicture("GAIA_IMAGE_URL_WITH_SIZE_0", gaia_image);
+  // Make sure everything has completed, and the file has been written to disk.
+  content::RunAllTasksUntilIdle();
+  VerifyAndResetCallExpectations();
+
+  EXPECT_EQ(entry->GetLastDownloadedGAIAPictureUrlWithSize(),
+            "GAIA_IMAGE_URL_WITH_SIZE_0");
+  EXPECT_TRUE(gfx::test::AreImagesEqual(gaia_image, *entry->GetGAIAPicture()));
+
+  ResetProfileInfoCache();
+  // Try to get the GAIA picture. This should return NULL until the read from
+  // disk is done.
+  entry = storage()->GetProfileAttributesWithPath(profile_path);
+  EXPECT_EQ(nullptr, entry->GetGAIAPicture());
+  EXPECT_EQ(entry->GetLastDownloadedGAIAPictureUrlWithSize(),
+            "GAIA_IMAGE_URL_WITH_SIZE_0");
+  EXPECT_CALL(observer(), OnProfileHighResAvatarLoaded(profile_path)).Times(1);
+  content::RunAllTasksUntilIdle();
+
+  EXPECT_TRUE(gfx::test::AreImagesEqual(gaia_image, *entry->GetGAIAPicture()));
+}
+
+TEST_F(ProfileAttributesStorageTest, EmptyGAIAInfo) {
+  std::u16string profile_name = u"name_1";
+  size_t id = GetDefaultAvatarIconResourceIDAtIndex(0);
+  const gfx::Image& profile_image(
+      ui::ResourceBundle::GetSharedInstance().GetImageNamed(id));
+
+  base::FilePath profile_path = GetProfilePath("path_1");
+  ProfileAttributesInitParams params;
+  params.profile_path = profile_path;
+  params.profile_name = profile_name;
+  EXPECT_CALL(observer(), OnProfileAdded(profile_path)).Times(1);
+  storage()->AddProfile(std::move(params));
+  VerifyAndResetCallExpectations();
+  ProfileAttributesEntry* entry =
+      storage()->GetProfileAttributesWithPath(profile_path);
+
+  gfx::Image gaia_image(gfx::test::CreateImage());
+  EXPECT_CALL(observer(), OnProfileAvatarChanged(profile_path)).Times(1);
+  EXPECT_CALL(observer(), OnProfileHighResAvatarLoaded(profile_path)).Times(1);
+  entry->SetGAIAPicture("GAIA_IMAGE_URL_WITH_SIZE_0", gaia_image);
+  // Make sure everything has completed, and the file has been written to disk.
+  content::RunAllTasksUntilIdle();
+  VerifyAndResetCallExpectations();
+
+  // Set empty GAIA info.
+  EXPECT_CALL(observer(), OnProfileAvatarChanged(profile_path)).Times(2);
+  entry->SetGAIAName(std::u16string());
+  entry->SetGAIAPicture(std::string(), gfx::Image());
+  entry->SetIsUsingGAIAPicture(true);
+
+  EXPECT_TRUE(entry->GetLastDownloadedGAIAPictureUrlWithSize().empty());
+
+  // Verify that the profile name and picture are not empty.
+  EXPECT_EQ(profile_name, entry->GetName());
+  EXPECT_TRUE(gfx::test::AreImagesEqual(profile_image, entry->GetAvatarIcon()));
+}
+
+#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(ProfileAttributesStorageTest, GetGaiaImageForAvatarMenu) {
+  storage()->set_disable_avatar_download_for_testing(false);
+
+  base::FilePath profile_path = GetProfilePath("path_1");
+  ProfileAttributesInitParams params;
+  params.profile_path = profile_path;
+  params.profile_name = u"name_1";
+  EXPECT_CALL(observer(), OnProfileAdded(profile_path)).Times(1);
+  storage()->AddProfile(std::move(params));
+  VerifyAndResetCallExpectations();
+  ProfileAttributesEntry* entry =
+      storage()->GetProfileAttributesWithPath(profile_path);
+
+  gfx::Image gaia_image(gfx::test::CreateImage());
+  EXPECT_CALL(observer(), OnProfileAvatarChanged(profile_path)).Times(1);
+  EXPECT_CALL(observer(), OnProfileHighResAvatarLoaded(profile_path)).Times(1);
+  entry->SetGAIAPicture("GAIA_IMAGE_URL_WITH_SIZE_0", gaia_image);
+  // Make sure everything has completed, and the file has been written to disk.
+  content::RunAllTasksUntilIdle();
+  VerifyAndResetCallExpectations();
+  // Make sure this profile is using GAIA picture.
+  EXPECT_TRUE(entry->IsUsingGAIAPicture());
+
+  ResetProfileInfoCache();
+  entry = storage()->GetProfileAttributesWithPath(profile_path);
+
+  // We need to explicitly set the GAIA usage flag after resetting the cache.
+  EXPECT_CALL(observer(), OnProfileAvatarChanged(profile_path)).Times(1);
+  EXPECT_CALL(observer(), OnProfileHighResAvatarLoaded(profile_path)).Times(1);
+  entry->SetIsUsingGAIAPicture(true);
+  EXPECT_TRUE(entry->IsUsingGAIAPicture());
+
+  gfx::Image image_loaded;
+  // Try to get the GAIA image. For the first time, it triggers an async image
+  // load from disk. The load status indicates the image is still being loaded.
+  constexpr int kArbitraryPreferredSize = 96;
+  EXPECT_EQ(AvatarMenu::ImageLoadStatus::LOADING,
+            AvatarMenu::GetImageForMenuButton(profile_path, &image_loaded,
+                                              kArbitraryPreferredSize));
+  EXPECT_FALSE(gfx::test::AreImagesEqual(gaia_image, image_loaded));
+
+  // Wait until the async image load finishes.
+  content::RunAllTasksUntilIdle();
+
+  // Since the GAIA image is loaded now, we can get it this time.
+  EXPECT_EQ(AvatarMenu::ImageLoadStatus::LOADED,
+            AvatarMenu::GetImageForMenuButton(profile_path, &image_loaded,
+                                              kArbitraryPreferredSize));
+  EXPECT_TRUE(gfx::test::AreImagesEqual(gaia_image, image_loaded));
+}
+#endif  // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)

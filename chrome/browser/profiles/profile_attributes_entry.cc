@@ -58,6 +58,7 @@ const char kHostedDomain[] = "hosted_domain";
 // Avatar info.
 const char kLastDownloadedGAIAPictureUrlWithSizeKey[] =
     "last_downloaded_gaia_picture_url_with_size";
+const char kGAIAPictureFileNameKey[] = "gaia_picture_file_name";
 
 // Profile colors info.
 const char kProfileHighlightColorKey[] = "profile_highlight_color";
@@ -126,6 +127,7 @@ const char ProfileAttributesEntry::kIsUsingDefaultNameKey[] =
     "is_using_default_name";
 const char ProfileAttributesEntry::kIsUsingDefaultAvatarKey[] =
     "is_using_default_avatar";
+const char ProfileAttributesEntry::kUseGAIAPictureKey[] = "use_gaia_picture";
 
 // static
 void ProfileAttributesEntry::RegisterLocalStatePrefs(
@@ -232,6 +234,36 @@ bool ProfileAttributesEntry::ShouldShowProfileLocalName(
     }
   }
   return false;
+}
+
+bool ProfileAttributesEntry::ShouldUpdateGAIAPicture(
+    const std::string& image_url_with_size,
+    bool image_is_empty) const {
+  std::string old_file_name = GetString(kGAIAPictureFileNameKey);
+  if (old_file_name.empty() && image_is_empty) {
+    // On Windows, Taskbar and Desktop icons are refreshed every time
+    // |OnProfileAvatarChanged| notification is fired.
+    // Updating from an empty image to a null image is a no-op and it is
+    // important to avoid firing |OnProfileAvatarChanged| in this case.
+    // See http://crbug.com/900374
+    DCHECK(!IsGAIAPictureLoaded());
+    return false;
+  }
+
+  std::string current_gaia_image_url =
+      GetLastDownloadedGAIAPictureUrlWithSize();
+  if (old_file_name.empty() || image_is_empty ||
+      current_gaia_image_url != image_url_with_size) {
+    return true;
+  }
+  const gfx::Image* gaia_picture = GetGAIAPicture();
+  if (gaia_picture && !gaia_picture->IsEmpty()) {
+    return false;
+  }
+
+  // We either did not load the GAIA image or we failed to. In that case, only
+  // update if the GAIA picture is used as the profile avatar.
+  return IsUsingDefaultAvatar() || IsUsingGAIAPicture();
 }
 
 std::u16string ProfileAttributesEntry::GetLastNameToDisplay() const {
@@ -348,17 +380,28 @@ std::string ProfileAttributesEntry::GetGAIAId() const {
 }
 
 const gfx::Image* ProfileAttributesEntry::GetGAIAPicture() const {
-  return profile_info_cache_->GetGAIAPictureOfProfileAtIndex(profile_index());
+  std::string file_name = GetString(kGAIAPictureFileNameKey);
+
+  // If the picture is not on disk then return nullptr.
+  if (file_name.empty())
+    return nullptr;
+
+  base::FilePath image_path = profile_path_.AppendASCII(file_name);
+  return profile_info_cache_->LoadAvatarPictureFromPath(
+      profile_path_, storage_key_, image_path);
 }
 
 bool ProfileAttributesEntry::IsUsingGAIAPicture() const {
-  return profile_info_cache_->IsUsingGAIAPictureOfProfileAtIndex(
-      profile_index());
+  bool result = GetBool(kUseGAIAPictureKey);
+  if (!result) {
+    // Prefer the GAIA avatar over a non-customized avatar.
+    result = IsUsingDefaultAvatar() && GetGAIAPicture();
+  }
+  return result;
 }
 
 bool ProfileAttributesEntry::IsGAIAPictureLoaded() const {
-  return profile_info_cache_->IsGAIAPictureOfProfileAtIndexLoaded(
-      profile_index());
+  return profile_info_cache_->IsGAIAPictureLoaded(storage_key_);
 }
 
 std::string ProfileAttributesEntry::GetLastDownloadedGAIAPictureUrlWithSize()
@@ -539,13 +582,35 @@ void ProfileAttributesEntry::SetGAIAGivenName(const std::u16string& name) {
 void ProfileAttributesEntry::SetGAIAPicture(
     const std::string& image_url_with_size,
     gfx::Image image) {
-  profile_info_cache_->SetGAIAPictureOfProfileAtIndex(
-      profile_index(), image_url_with_size, image);
+  if (!ShouldUpdateGAIAPicture(image_url_with_size, image.IsEmpty()))
+    return;
+
+  std::string old_file_name = GetString(kGAIAPictureFileNameKey);
+  std::string new_file_name;
+  if (image.IsEmpty()) {
+    // Delete the old bitmap from disk.
+    base::FilePath image_path = profile_path_.AppendASCII(old_file_name);
+    profile_info_cache_->DeleteGAIAImageAtPath(profile_path_, storage_key_,
+                                               image_path);
+  } else {
+    // Save the new bitmap to disk.
+    new_file_name =
+        old_file_name.empty()
+            ? base::FilePath(profiles::kGAIAPictureFileName).MaybeAsASCII()
+            : old_file_name;
+    base::FilePath image_path = profile_path_.AppendASCII(new_file_name);
+    profile_info_cache_->SaveGAIAImageAtPath(profile_path_, storage_key_, image,
+                                             image_path, image_url_with_size);
+  }
+
+  SetString(kGAIAPictureFileNameKey, new_file_name);
+  profile_info_cache_->NotifyOnProfileAvatarChanged(profile_path_);
 }
 
 void ProfileAttributesEntry::SetIsUsingGAIAPicture(bool value) {
-  profile_info_cache_->SetIsUsingGAIAPictureOfProfileAtIndex(
-      profile_index(), value);
+  SetBool(kUseGAIAPictureKey, value);
+  // TODO(alexilin): send notification only if the value has changed.
+  profile_info_cache_->NotifyOnProfileAvatarChanged(profile_path_);
 }
 
 void ProfileAttributesEntry::SetLastDownloadedGAIAPictureUrlWithSize(
