@@ -5,6 +5,7 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -13,6 +14,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/test_utils.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace content {
 
@@ -48,6 +50,9 @@ class MAYBE_WebRtcStressSourceSwitchBrowserTest
     WebRtcContentBrowserTestBase::SetUpCommandLine(command_line);
     // Automatically grant device permission.
     AppendUseFakeUIForMediaStreamFlag();
+    // Allow Plan B.
+    scoped_features_.InitAndEnableFeature(
+        blink::features::kRTCAllowPlanBOutsideDeprecationTrial);
   }
 
  protected:
@@ -55,6 +60,7 @@ class MAYBE_WebRtcStressSourceSwitchBrowserTest
     MakeTypicalCall(javascript,
                     "/media/peerconnection-source-feed-switch.html");
   }
+  base::test::ScopedFeatureList scoped_features_;
 };
 
 IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcStressSourceSwitchBrowserTest,
