@@ -4577,11 +4577,10 @@
     },
     {
       'name': 'BrowserLabsEnabled',
-      'owners': ['elainechien@chromium.org', 'robliao@chromium.org'],
+      'owners': ['elainechien@chromium.org', 'labs-on-chrome@google.com'],
       'type': 'main',
       'schema' : {'type': 'boolean'},
-      'supported_on': ['chrome.*:89-'],
-      'future_on' : ['chrome_os'],
+      'supported_on': ['chrome.*:89-', 'chrome_os:93-'],
       'example_value': False,
       'features':{
         'dynamic_refresh': True,
