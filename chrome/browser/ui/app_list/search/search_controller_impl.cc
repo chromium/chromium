@@ -295,9 +295,14 @@ void SearchControllerImpl::RemoveObserver(Observer* observer) {
 
 void SearchControllerImpl::NotifyResultsAdded(
     const std::vector<ChromeSearchResult*>& results) {
-  for (Observer& observer : observer_list_) {
-    observer.OnResultsAdded(last_query_, results);
-  }
+  if (observer_list_.empty())
+    return;
+
+  std::vector<const ChromeSearchResult*> observer_results;
+  for (auto* result : results)
+    observer_results.push_back(const_cast<const ChromeSearchResult*>(result));
+  for (Observer& observer : observer_list_)
+    observer.OnResultsAdded(last_query_, observer_results);
 }
 
 std::u16string SearchControllerImpl::get_query() {

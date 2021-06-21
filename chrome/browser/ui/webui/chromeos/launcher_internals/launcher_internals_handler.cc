@@ -22,7 +22,7 @@ LauncherInternalsHandler::~LauncherInternalsHandler() = default;
 
 void LauncherInternalsHandler::OnResultsAdded(
     const std::u16string& query,
-    const std::vector<ChromeSearchResult*>& results) {
+    const std::vector<const ChromeSearchResult*>& results) {
   std::vector<launcher_internals::mojom::ResultPtr> internals_results;
   for (auto* result : results) {
     internals_results.emplace_back(launcher_internals::mojom::Result::New(

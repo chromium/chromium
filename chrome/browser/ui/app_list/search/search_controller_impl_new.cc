@@ -219,8 +219,14 @@ void SearchControllerImplNew::SetResults(
                << result->id();
   }
 
-  for (Observer& observer : observer_list_)
-    observer.OnResultsAdded(last_query_, all_results);
+  if (!observer_list_.empty()) {
+    std::vector<const ChromeSearchResult*> observer_results;
+    for (auto* result : all_results)
+      observer_results.push_back(const_cast<const ChromeSearchResult*>(result));
+    for (Observer& observer : observer_list_)
+      observer.OnResultsAdded(last_query_, observer_results);
+  }
+
   model_updater_->PublishSearchResults(all_results);
 }
 

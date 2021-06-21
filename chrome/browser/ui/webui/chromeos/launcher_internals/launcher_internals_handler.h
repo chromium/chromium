@@ -26,8 +26,9 @@ class LauncherInternalsHandler : public app_list::SearchController::Observer {
   LauncherInternalsHandler& operator=(const LauncherInternalsHandler&) = delete;
 
   // app_list::SearchController::Observer:
-  void OnResultsAdded(const std::u16string& query,
-                      const std::vector<ChromeSearchResult*>& results) override;
+  void OnResultsAdded(
+      const std::u16string& query,
+      const std::vector<const ChromeSearchResult*>& results) override;
 
  private:
   mojo::Remote<launcher_internals::mojom::Page> page_;
