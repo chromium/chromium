@@ -138,6 +138,16 @@ char* ReserveMemoryFromGigaCage(pool_handle pool,
 #endif  // !defined(PA_HAS_64_BITS_POINTERS) &&
         // BUILDFLAG(USE_BRP_POOL_BLOCKLIST)
 
+#if !defined(PA_HAS_64_BITS_POINTERS)
+  // Only mark the region as belonging to the pool after it has passed the
+  // blocklist check in order to avoid a potential race with destructing a
+  // `CheckedPtr` object that points to non-PA memory in another thread.
+  // If `MarkUsed` was called earlier, the other thread could incorrectly
+  // determine that the allocation had come form PartitionAlloc.
+  if (ptr)
+    AddressPoolManager::GetInstance()->MarkUsed(pool, ptr, requested_size);
+#endif
+
   PA_DCHECK(!(reinterpret_cast<uintptr_t>(ptr) % kSuperPageSize));
   return ptr;
 }
@@ -272,6 +282,11 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
       if (!return_null) {
         PartitionOutOfMemoryCommitFailure(root, slot_size);
       }
+
+#if !defined(PA_HAS_64_BITS_POINTERS)
+      AddressPoolManager::GetInstance()->MarkUnused(pool, reservation_start,
+                                                    reservation_size);
+#endif
 
       AddressPoolManager::GetInstance()->UnreserveAndDecommit(
           pool, reservation_start, reservation_size);

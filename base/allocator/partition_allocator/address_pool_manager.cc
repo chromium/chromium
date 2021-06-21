@@ -285,8 +285,6 @@ char* AddressPoolManager::Reserve(pool_handle handle,
                  PageTag::kPartitionAlloc));
   if (UNLIKELY(!ptr))
     return nullptr;
-
-  MarkUsed(handle, ptr, length);
   return ptr;
 }
 
@@ -296,12 +294,11 @@ void AddressPoolManager::UnreserveAndDecommit(pool_handle handle,
   uintptr_t ptr_as_uintptr = reinterpret_cast<uintptr_t>(ptr);
   PA_DCHECK(!(ptr_as_uintptr & kSuperPageOffsetMask));
   PA_DCHECK(!(length & DirectMapAllocationGranularityOffsetMask()));
-  MarkUnused(handle, ptr_as_uintptr, length);
   FreePages(ptr, length);
 }
 
 void AddressPoolManager::MarkUsed(pool_handle handle,
-                                  const char* address,
+                                  const void* address,
                                   size_t length) {
   uintptr_t ptr_as_uintptr = reinterpret_cast<uintptr_t>(address);
   AutoLock guard(AddressPoolManagerBitmap::GetLock());
@@ -348,8 +345,9 @@ void AddressPoolManager::MarkUsed(pool_handle handle,
 }
 
 void AddressPoolManager::MarkUnused(pool_handle handle,
-                                    uintptr_t address,
+                                    const void* address,
                                     size_t length) {
+  uintptr_t ptr_as_uintptr = reinterpret_cast<uintptr_t>(address);
   AutoLock guard(AddressPoolManagerBitmap::GetLock());
   // Address regions allocated for normal buckets are never freed, so frequency
   // of codepaths taken depends solely on which pool direct map allocations go
@@ -364,7 +362,7 @@ void AddressPoolManager::MarkUnused(pool_handle handle,
                AddressPoolManagerBitmap::kBytesPer1BitOfNonBRPPoolBitmap) == 0);
     ResetBitmap(
         AddressPoolManagerBitmap::non_brp_pool_bits_,
-        address >> AddressPoolManagerBitmap::kBitShiftOfNonBRPPoolBitmap,
+        ptr_as_uintptr >> AddressPoolManagerBitmap::kBitShiftOfNonBRPPoolBitmap,
         length >> AddressPoolManagerBitmap::kBitShiftOfNonBRPPoolBitmap);
   } else {
     PA_DCHECK(handle == kBRPPoolHandle);
@@ -376,7 +374,7 @@ void AddressPoolManager::MarkUnused(pool_handle handle,
     // (See MarkUsed comment)
     ResetBitmap(
         AddressPoolManagerBitmap::brp_pool_bits_,
-        (address >> AddressPoolManagerBitmap::kBitShiftOfBRPPoolBitmap) +
+        (ptr_as_uintptr >> AddressPoolManagerBitmap::kBitShiftOfBRPPoolBitmap) +
             AddressPoolManagerBitmap::kGuardOffsetOfBRPPoolBitmap,
         (length >> AddressPoolManagerBitmap::kBitShiftOfBRPPoolBitmap) -
             AddressPoolManagerBitmap::kGuardBitsOfBRPPoolBitmap);

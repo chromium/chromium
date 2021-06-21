@@ -247,6 +247,11 @@ void DeferredUnmap::Unmap() {
     ptr_as_uintptr += kSuperPageSize;
   }
 
+#if !defined(PA_HAS_64_BITS_POINTERS)
+  AddressPoolManager::GetInstance()->MarkUnused(
+      giga_cage_pool, reservation_start, reservation_size);
+#endif
+
   // After resetting the table entries, unreserve and decommit the memory.
   AddressPoolManager::GetInstance()->UnreserveAndDecommit(
       giga_cage_pool, reservation_start, reservation_size);

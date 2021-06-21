@@ -64,6 +64,9 @@ class BASE_EXPORT AddressPoolManager {
   void ResetForTesting();
 
 #if !defined(PA_HAS_64_BITS_POINTERS)
+  void MarkUsed(pool_handle handle, const void* address, size_t size);
+  void MarkUnused(pool_handle handle, const void* address, size_t size);
+
   static bool IsManagedByNonBRPPool(const void* address) {
     return AddressPoolManagerBitmap::IsManagedByNonBRPPool(address);
   }
@@ -123,9 +126,6 @@ class BASE_EXPORT AddressPoolManager {
   Pool pools_[kNumPools];
 
 #else   // defined(PA_HAS_64_BITS_POINTERS)
-
-  void MarkUsed(pool_handle handle, const char* address, size_t size);
-  void MarkUnused(pool_handle handle, uintptr_t address, size_t size);
 
   // BRP stands for BackupRefPtr. GigaCage is split into pools, one which
   // supports BackupRefPtr and one that doesn't.

@@ -198,6 +198,10 @@ TEST(PartitionAllocAddressPoolManagerTest, IsManagedByNonBRPPool) {
     EXPECT_TRUE(addrs[i]);
     EXPECT_TRUE(
         !(reinterpret_cast<uintptr_t>(addrs[i]) & kSuperPageOffsetMask));
+    AddressPoolManager::GetInstance()->MarkUsed(
+        GetNonBRPPool(), addrs[i],
+        AddressPoolManagerBitmap::kBytesPer1BitOfNonBRPPoolBitmap *
+            kNumPages[i]);
   }
   for (size_t i = 0; i < kAllocCount; ++i) {
     const char* ptr = reinterpret_cast<const char*>(addrs[i]);
@@ -218,6 +222,10 @@ TEST(PartitionAllocAddressPoolManagerTest, IsManagedByNonBRPPool) {
     }
   }
   for (size_t i = 0; i < kAllocCount; ++i) {
+    AddressPoolManager::GetInstance()->MarkUnused(
+        GetNonBRPPool(), addrs[i],
+        AddressPoolManagerBitmap::kBytesPer1BitOfNonBRPPoolBitmap *
+            kNumPages[i]);
     AddressPoolManager::GetInstance()->UnreserveAndDecommit(
         GetNonBRPPool(), addrs[i],
         AddressPoolManagerBitmap::kBytesPer1BitOfNonBRPPoolBitmap *
@@ -238,6 +246,8 @@ TEST(PartitionAllocAddressPoolManagerTest, IsManagedByBRPPool) {
     EXPECT_TRUE(addrs[i]);
     EXPECT_TRUE(
         !(reinterpret_cast<uintptr_t>(addrs[i]) & kSuperPageOffsetMask));
+    AddressPoolManager::GetInstance()->MarkUsed(GetBRPPool(), addrs[i],
+                                                kSuperPageSize * kNumPages[i]);
   }
 
   constexpr size_t first_guard_size =
@@ -266,6 +276,8 @@ TEST(PartitionAllocAddressPoolManagerTest, IsManagedByBRPPool) {
     }
   }
   for (size_t i = 0; i < kAllocCount; ++i) {
+    AddressPoolManager::GetInstance()->MarkUnused(
+        GetBRPPool(), addrs[i], kSuperPageSize * kNumPages[i]);
     AddressPoolManager::GetInstance()->UnreserveAndDecommit(
         GetBRPPool(), addrs[i], kSuperPageSize * kNumPages[i]);
     EXPECT_FALSE(AddressPoolManager::IsManagedByNonBRPPool(addrs[i]));
