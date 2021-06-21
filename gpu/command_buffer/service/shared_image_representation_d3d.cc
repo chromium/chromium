@@ -123,14 +123,13 @@ SharedImageRepresentationOverlayD3D::SharedImageRepresentationOverlayD3D(
 
 bool SharedImageRepresentationOverlayD3D::BeginReadAccess(
     std::vector<gfx::GpuFence>* acquire_fences) {
-  // Note: only the DX11 video decoder uses this overlay and does not need to
-  // synchronize read access from different devices.
-  return true;
+  return static_cast<SharedImageBackingD3D*>(backing())->BeginAccessD3D11();
 }
 
 void SharedImageRepresentationOverlayD3D::EndReadAccess(
     gfx::GpuFenceHandle release_fence) {
   DCHECK(release_fence.is_null());
+  static_cast<SharedImageBackingD3D*>(backing())->EndAccessD3D11();
 }
 
 gl::GLImage* SharedImageRepresentationOverlayD3D::GetGLImage() {
