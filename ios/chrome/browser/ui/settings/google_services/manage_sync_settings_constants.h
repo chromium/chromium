@@ -63,6 +63,7 @@ typedef NS_ENUM(NSInteger, SyncSettingsItemType) {
   ReauthDialogAsSyncIsInAuthErrorItemType,
   ShowPassphraseDialogErrorItemType,
   SyncNeedsTrustedVaultKeyErrorItemType,
+  SyncTrustedVaultRecoverabilityDegradedErrorItemType,
   SyncDisabledByAdministratorErrorItemType,
 };
 

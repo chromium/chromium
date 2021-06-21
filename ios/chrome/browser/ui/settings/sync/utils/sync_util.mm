@@ -37,7 +37,8 @@ enum InfobarSyncError {
   SYNC_UNRECOVERABLE_ERROR = 4,
   SYNC_SYNC_SETTINGS_NOT_CONFIRMED = 5,
   SYNC_NEEDS_TRUSTED_VAULT_KEY = 6,
-  kMaxValue = SYNC_NEEDS_TRUSTED_VAULT_KEY,
+  SYNC_TRUSTED_VAULT_RECOVERABILITY_DEGRADED = 7,
+  kMaxValue = SYNC_TRUSTED_VAULT_RECOVERABILITY_DEGRADED,
 };
 
 }  // namespace
@@ -60,6 +61,15 @@ NSString* GetSyncErrorDescriptionForSyncSetupService(
       // The encryption error affects passwords only as per
       // syncer::AlwaysEncryptedUserTypes().
       return l10n_util::GetNSString(IDS_IOS_SYNC_PASSWORDS_ERROR_DESCRIPTION);
+    case SyncSetupService::kSyncServiceTrustedVaultRecoverabilityDegraded:
+      // TODO(crbug.com/1100278): Revisit strings below.
+      if (syncSetupService->IsEncryptEverythingEnabled())
+        return l10n_util::GetNSString(
+            IDS_IOS_GOOGLE_SERVICES_SETTINGS_SYNC_FIX_RECOVERABILITY_DEGRADED_FOR_EVERYTHING);
+      // The encryption error affects passwords only as per
+      // syncer::AlwaysEncryptedUserTypes().
+      return l10n_util::GetNSString(
+          IDS_IOS_GOOGLE_SERVICES_SETTINGS_SYNC_FIX_RECOVERABILITY_DEGRADED_FOR_PASSWORDS);
     case SyncSetupService::kSyncSettingsNotConfirmed:
       return l10n_util::GetNSString(
           IDS_IOS_SYNC_SETTINGS_NOT_CONFIRMED_DESCRIPTION);
@@ -84,6 +94,7 @@ NSString* GetSyncErrorMessageForBrowserState(ChromeBrowserState* browserState) {
     case SyncSetupService::kSyncServiceNeedsPassphrase:
       return l10n_util::GetNSString(IDS_IOS_SYNC_CONFIGURE_ENCRYPTION);
     case SyncSetupService::kSyncServiceNeedsTrustedVaultKey:
+    case SyncSetupService::kSyncServiceTrustedVaultRecoverabilityDegraded:
       return GetSyncErrorDescriptionForSyncSetupService(syncSetupService);
     case SyncSetupService::kSyncServiceServiceUnavailable:
       return l10n_util::GetNSString(IDS_SYNC_SERVICE_UNAVAILABLE);
@@ -109,6 +120,7 @@ NSString* GetSyncErrorButtonTitleForBrowserState(
     case SyncSetupService::kSyncServiceNeedsPassphrase:
       return l10n_util::GetNSString(IDS_IOS_SYNC_ENTER_PASSPHRASE);
     case SyncSetupService::kSyncServiceNeedsTrustedVaultKey:
+    case SyncSetupService::kSyncServiceTrustedVaultRecoverabilityDegraded:
       return l10n_util::GetNSString(IDS_IOS_SYNC_ENCRYPTION_FIX_NOW);
     case SyncSetupService::kSyncServiceUnrecoverableError:
       return l10n_util::GetNSString(IDS_IOS_SYNC_SIGN_IN_AGAIN);
@@ -140,6 +152,7 @@ bool ShouldShowSyncSettings(SyncSetupService::SyncServiceState syncState) {
     case SyncSetupService::kSyncServiceSignInNeedsUpdate:
     case SyncSetupService::kSyncServiceNeedsPassphrase:
     case SyncSetupService::kSyncServiceNeedsTrustedVaultKey:
+    case SyncSetupService::kSyncServiceTrustedVaultRecoverabilityDegraded:
       return false;
   }
 }
@@ -186,6 +199,9 @@ bool DisplaySyncErrors(ChromeBrowserState* browser_state,
     case SyncSetupService::kSyncServiceNeedsTrustedVaultKey:
       loggedErrorState = SYNC_NEEDS_TRUSTED_VAULT_KEY;
       break;
+    case SyncSetupService::kSyncServiceTrustedVaultRecoverabilityDegraded:
+      loggedErrorState = SYNC_TRUSTED_VAULT_RECOVERABILITY_DEGRADED;
+      break;
     case SyncSetupService::kSyncServiceUnrecoverableError:
       loggedErrorState = SYNC_UNRECOVERABLE_ERROR;
       break;
@@ -220,6 +236,7 @@ bool IsTransientSyncError(SyncSetupService::SyncServiceState errorState) {
     case SyncSetupService::kSyncServiceSignInNeedsUpdate:
     case SyncSetupService::kSyncServiceNeedsPassphrase:
     case SyncSetupService::kSyncServiceNeedsTrustedVaultKey:
+    case SyncSetupService::kSyncServiceTrustedVaultRecoverabilityDegraded:
     case SyncSetupService::kSyncServiceUnrecoverableError:
     case SyncSetupService::kSyncSettingsNotConfirmed:
       return false;

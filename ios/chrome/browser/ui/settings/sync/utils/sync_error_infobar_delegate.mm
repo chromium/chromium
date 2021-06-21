@@ -107,6 +107,11 @@ bool SyncErrorInfoBarDelegate::Accept() {
              SyncSetupService::kSyncServiceNeedsTrustedVaultKey) {
     [presenter_ showTrustedVaultReauthenticationWithRetrievalTrigger:
                     syncer::KeyRetrievalTriggerForUMA::kNewTabPageInfobar];
+  } else if (error_state_ ==
+             SyncSetupService::kSyncServiceTrustedVaultRecoverabilityDegraded) {
+    // TODO(crbug.com/1100278): Invoke dedicated function.
+    [presenter_ showTrustedVaultReauthenticationWithRetrievalTrigger:
+                    syncer::KeyRetrievalTriggerForUMA::kNewTabPageInfobar];
   }
   return false;
 }

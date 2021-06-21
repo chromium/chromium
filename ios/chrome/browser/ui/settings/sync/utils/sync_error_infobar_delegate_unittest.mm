@@ -115,4 +115,22 @@ TEST_F(SyncErrorInfobarDelegateTest, SyncServiceNeedsTrustedVaultKey) {
   EXPECT_FALSE(delegate->Accept());
 }
 
+TEST_F(SyncErrorInfobarDelegateTest,
+       SyncServiceTrustedVaultRecoverabilityDegraded) {
+  ON_CALL(*sync_setup_service_mock(), GetSyncServiceState())
+      .WillByDefault(Return(
+          SyncSetupService::kSyncServiceTrustedVaultRecoverabilityDegraded));
+  ON_CALL(*sync_setup_service_mock(), IsEncryptEverythingEnabled())
+      .WillByDefault(Return(true));
+
+  id presenter = OCMStrictProtocolMock(@protocol(SyncPresenter));
+  [[presenter expect]
+      showTrustedVaultReauthenticationWithRetrievalTrigger:
+          syncer::KeyRetrievalTriggerForUMA::kNewTabPageInfobar];
+  std::unique_ptr<SyncErrorInfoBarDelegate> delegate(
+      new SyncErrorInfoBarDelegate(chrome_browser_state_.get(), presenter));
+
+  EXPECT_FALSE(delegate->Accept());
+}
+
 }  // namespace

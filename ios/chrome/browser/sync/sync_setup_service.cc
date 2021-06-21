@@ -85,14 +85,16 @@ bool SyncSetupService::UserActionIsRequiredToHaveTabSyncWork() {
     // These errors are transient and don't mean that sync is off.
     case SyncSetupService::kSyncServiceCouldNotConnect:
     case SyncSetupService::kSyncServiceServiceUnavailable:
+    case SyncSetupService::kSyncServiceTrustedVaultRecoverabilityDegraded:
       return false;
     // These errors effectively amount to disabled sync and require a signin.
     case SyncSetupService::kSyncServiceSignInNeedsUpdate:
     case SyncSetupService::kSyncServiceNeedsPassphrase:
-    case SyncSetupService::kSyncServiceNeedsTrustedVaultKey:
     case SyncSetupService::kSyncServiceUnrecoverableError:
     case SyncSetupService::kSyncSettingsNotConfirmed:
       return true;
+    case SyncSetupService::kSyncServiceNeedsTrustedVaultKey:
+      return IsEncryptEverythingEnabled();
   }
   NOTREACHED() << "Unknown sync service state.";
   return true;
@@ -165,6 +167,10 @@ SyncSetupService::SyncServiceState SyncSetupService::GetSyncServiceState() {
   if (sync_service_->GetUserSettings()
           ->IsTrustedVaultKeyRequiredForPreferredDataTypes()) {
     return kSyncServiceNeedsTrustedVaultKey;
+  }
+  if (sync_service_->GetUserSettings()
+          ->IsTrustedVaultRecoverabilityDegraded()) {
+    return kSyncServiceTrustedVaultRecoverabilityDegraded;
   }
   return kNoSyncServiceError;
 }

@@ -987,6 +987,12 @@ Because your account is managed by <ph name="HOSTED_DOMAIN">$1<ex>google.com</ex
       <message name="IDS_IOS_GOOGLE_SERVICES_SETTINGS_SYNC_ENCRYPTION_FIX_NOW" desc="Title button to ask the user to reauthenticate. Syncing of encrypted types (e.g. passwords) is blocked until the user completes the reauth flow.">
         Verify it's you
       </message>
+      <message name="IDS_IOS_GOOGLE_SERVICES_SETTINGS_SYNC_FIX_RECOVERABILITY_DEGRADED_FOR_EVERYTHING" desc="Title button to ask the user to reauthenticate, in order to add recovery options, affecting all sync data.">
+        To make sure you can always access your sync data, verify it's you
+      </message>
+      <message name="IDS_IOS_GOOGLE_SERVICES_SETTINGS_SYNC_FIX_RECOVERABILITY_DEGRADED_FOR_PASSWORDS" desc="Title button to ask the user to reauthenticate, in order to add recovery options, affecting passwords only.">
+        To make sure you can always access your saved passwords, verify it's you
+      </message>
       <message name="IDS_IOS_HELP_ACCESSIBILITY_LABEL" desc="Used as the accessibility label read by screen readers for a Help button. [iOS only]">
         Help
       </message>
