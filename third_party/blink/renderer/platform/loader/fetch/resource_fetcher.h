@@ -321,6 +321,10 @@ class PLATFORM_EXPORT ResourceFetcher
     return back_forward_cache_loader_helper_;
   }
 
+  void SetEarlyHintsPreloadedResources(HashSet<KURL> preloaded) {
+    early_hints_preloaded_resources_ = std::move(preloaded);
+  }
+
  private:
   friend class ResourceCacheValidationSuppressor;
   enum class StopFetchingTarget {
@@ -428,6 +432,10 @@ class PLATFORM_EXPORT ResourceFetcher
 
   void WarnUnusedPreloads();
 
+  void PopulateAndAddResourceTimingInfo(Resource* resource,
+                                        scoped_refptr<ResourceTimingInfo> info,
+                                        base::TimeTicks response_end);
+
   Member<DetachableResourceFetcherProperties> properties_;
   Member<ResourceLoadObserver> resource_load_observer_;
   Member<FetchContext> context_;
@@ -465,6 +473,8 @@ class PLATFORM_EXPORT ResourceFetcher
 
   HeapHashSet<Member<ResourceLoader>> loaders_;
   HeapHashSet<Member<ResourceLoader>> non_blocking_loaders_;
+
+  HashSet<KURL> early_hints_preloaded_resources_;
 
   std::unique_ptr<HashSet<String>> preloaded_urls_for_test_;
 

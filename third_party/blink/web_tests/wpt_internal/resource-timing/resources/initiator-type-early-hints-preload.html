@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<img src="blue-cacheable.png">
+<script>
+test(() => {
+    const name = new URL("blue-cacheable.png", window.location);
+    const entry = performance.getEntriesByName(name);
+    assert_equals(entry.length, 1);
+    assert_equals(entry[0].initiatorType, "early-hints");
+}, "Ensure initiatorType is set to 'early-hints'");
+</script>
+</body>

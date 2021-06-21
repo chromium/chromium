@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Ensure initiatorType is set to 'early-hints' assert_equals: expected "early-hints" but got "link"
+Harness: the test ran to completion.
+

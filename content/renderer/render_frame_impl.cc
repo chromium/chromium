@@ -505,6 +505,13 @@ void FillNavigationParamsRequest(
   for (const auto& trial : commit_params.force_enabled_origin_trials)
     web_origin_trials.emplace_back(WebString::FromASCII(trial));
   navigation_params->force_enabled_origin_trials = web_origin_trials;
+
+  if (!commit_params.early_hints_preloaded_resources.empty()) {
+    navigation_params->early_hints_preloaded_resources = WebVector<WebURL>();
+    for (const auto& resource : commit_params.early_hints_preloaded_resources) {
+      navigation_params->early_hints_preloaded_resources.emplace_back(resource);
+    }
+  }
 }
 
 mojom::CommonNavigationParamsPtr MakeCommonNavigationParams(

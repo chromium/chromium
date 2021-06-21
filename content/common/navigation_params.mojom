@@ -487,4 +487,6 @@ struct CommitNavigationParams {
   // API.
   array<AppHistoryEntry> app_history_back_entries;
   array<AppHistoryEntry> app_history_forward_entries;
+
+  array<url.mojom.Url> early_hints_preloaded_resources;
 };

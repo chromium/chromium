@@ -975,7 +975,9 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
           std::vector<
               mojom::AppHistoryEntryPtr>() /* app_history_back_entries */,
           std::vector<
-              mojom::AppHistoryEntryPtr>() /* app_history_forward_entries */);
+              mojom::AppHistoryEntryPtr>() /* app_history_forward_entries */,
+          /*early_hints_preloaded_resources=*/
+          std::vector<GURL>());
 
   // CreateRendererInitiated() should only be triggered when the navigation is
   // initiated by a frame in the same process.
@@ -1094,7 +1096,8 @@ NavigationRequest::CreateForSynchronousRendererCommit(
           std::vector<
               mojom::AppHistoryEntryPtr>() /* app_history_back_entries */,
           std::vector<
-              mojom::AppHistoryEntryPtr>() /* app_history_forward_entries */);
+              mojom::AppHistoryEntryPtr>() /* app_history_forward_entries */,
+          std::vector<GURL>() /* early_hints_preloaded_resources */);
   mojom::BeginNavigationParamsPtr begin_params =
       mojom::BeginNavigationParams::New();
   std::unique_ptr<NavigationRequest> navigation_request(new NavigationRequest(
@@ -3948,6 +3951,11 @@ void NavigationRequest::CommitNavigation() {
 
   if (!IsSameDocument())
     GetNavigationController()->PopulateAppHistoryEntryVectors(this);
+
+  if (early_hints_manager_) {
+    commit_params_->early_hints_preloaded_resources =
+        early_hints_manager_->TakePreloadedResourceURLs();
+  }
 
   auto common_params = common_params_->Clone();
   auto commit_params = commit_params_.Clone();

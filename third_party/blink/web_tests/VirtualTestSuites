@@ -1113,5 +1113,10 @@
     "prefix": "webrtc-extensions-senderCaptureTimeOffset",
     "bases": ["external/wpt/webrtc-extensions/RTCRtpSynchronizationSource-senderCaptureTimeOffset.html"],
     "args": ["--force-fieldtrials=WebRTC-IncludeCaptureClockOffset/Enabled/"]
+  },
+  {
+    "prefix": "early-hints",
+    "bases": ["wpt_internal/resource-timing"],
+    "args": ["--enable-features=EarlyHintsPreloadForNavigation"]
   }
 ]
