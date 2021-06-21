@@ -1812,7 +1812,6 @@ crbug.com/654999 [ Linux ] fast/forms/color/color-suggestion-picker-appearance-z
 
 crbug.com/658304 [ Win ] fast/forms/select/input-select-after-resize.html [ Crash Timeout Pass Failure ]
 
-crbug.com/736319 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/writing-modes-3/text-combine-upright-break-inside-001a.html [ Failure ]
 crbug.com/736319 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/writing-modes-3/text-combine-upright-compression-001.html [ Failure ]
 crbug.com/736319 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/writing-modes-3/text-combine-upright-compression-002.html [ Failure ]
 crbug.com/736319 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/writing-modes-3/text-combine-upright-compression-003.html [ Failure ]

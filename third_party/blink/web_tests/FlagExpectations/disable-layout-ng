@@ -533,6 +533,9 @@ crbug.com/591099 external/wpt/css/css-sizing/hori-block-size-small-or-larger-tha
 crbug.com/591099 external/wpt/css/css-sizing/vert-block-size-small-or-larger-than-container-with-min-or-max-content-2a.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-sizing/vert-block-size-small-or-larger-than-container-with-min-or-max-content-2b.html [ Failure ]
 
+### external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/writing-modes-3/
+crbug.com/736319 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/writing-modes-3/text-combine-upright-break-inside-001a.html [ Failure ]
+
 ### external/wpt/quirks/
 crbug.com/591099 external/wpt/quirks/body-fills-html-quirk-vertical.html [ Failure ]
 crbug.com/591099 external/wpt/quirks/body-fills-html-quirk.html [ Failure ]
