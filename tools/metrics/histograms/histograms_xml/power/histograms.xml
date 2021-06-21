@@ -896,13 +896,14 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
   </summary>
 </histogram>
 
-<histogram base="true" name="Power.Mac" units="mW" expires_after="2021-07-03">
-  <owner>lgrey@chromium.org</owner>
+<histogram base="true" name="Power.Mac" units="mW" expires_after="2022-07-03">
+  <owner>olivierli@chromium.org</owner>
   <owner>markchang@chromium.org</owner>
   <summary>
     Instantaneous power consution in milliwatts, for the system as a whole and
-    broken down by component. Only recorded on macOS. NB: The collection method
-    was changed in May 2019, which may look like a regression in timeline view.
+    broken down by component. Only recorded on macOS. Only valid on Intel based
+    systems. NB: The collection method was changed in May 2019, which may look
+    like a regression in timeline view.
   </summary>
 </histogram>
 
