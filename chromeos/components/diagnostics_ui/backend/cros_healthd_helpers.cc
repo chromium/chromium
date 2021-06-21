@@ -37,14 +37,14 @@ bool CheckResponse(const TResult& result,
                    TTag expected_tag,
                    base::StringPiece type_name) {
   if (result.is_null()) {
-    DVLOG(1) << type_name << " not found in croshealthd response.";
+    LOG(ERROR) << type_name << " not found in croshealthd response.";
     return false;
   }
 
   auto tag = result->which();
   if (tag == TTag::ERROR) {
-    DVLOG(1) << "Error retrieving " << type_name
-             << "from croshealthd: " << result->get_error()->msg;
+    LOG(ERROR) << "Error retrieving " << type_name
+               << "from croshealthd: " << result->get_error()->msg;
     return false;
   }
 

@@ -469,14 +469,12 @@ void SystemDataProvider::OnBatteryChargeStatusUpdated(
   if (info_ptr.is_null()) {
     LOG(ERROR) << "Null response from croshealthd::ProbeTelemetryInfo.";
     NotifyBatteryChargeStatusObservers(battery_charge_status);
-    battery_charge_status_timer_.reset();
     return;
   }
 
   if (!power_supply_properties.has_value()) {
     LOG(ERROR) << "Null response from power_manager_client::GetLastStatus.";
     NotifyBatteryChargeStatusObservers(battery_charge_status);
-    battery_charge_status_timer_.reset();
     return;
   }
 
@@ -486,7 +484,6 @@ void SystemDataProvider::OnBatteryChargeStatusUpdated(
               DoesDeviceHaveBattery(*power_supply_properties))
         << "Sources should not disagree about whether there is a battery.";
     NotifyBatteryChargeStatusObservers(battery_charge_status);
-    battery_charge_status_timer_.reset();
     return;
   }
 
@@ -503,13 +500,11 @@ void SystemDataProvider::OnBatteryHealthUpdated(
   if (info_ptr.is_null()) {
     LOG(ERROR) << "Null response from croshealthd::ProbeTelemetryInfo.";
     NotifyBatteryHealthObservers(battery_health);
-    battery_health_timer_.reset();
     return;
   }
 
   if (!DoesDeviceHaveBattery(*info_ptr)) {
     NotifyBatteryHealthObservers(battery_health);
-    battery_health_timer_.reset();
     return;
   }
 
@@ -525,7 +520,6 @@ void SystemDataProvider::OnMemoryUsageUpdated(
   if (info_ptr.is_null()) {
     LOG(ERROR) << "Null response from croshealthd::ProbeTelemetryInfo.";
     NotifyMemoryUsageObservers(memory_usage);
-    memory_usage_timer_.reset();
     return;
   }
 
@@ -533,7 +527,6 @@ void SystemDataProvider::OnMemoryUsageUpdated(
   if (memory_info == nullptr) {
     LOG(ERROR) << "No MemoryInfo in response from cros_healthd.";
     NotifyMemoryUsageObservers(memory_usage);
-    memory_usage_timer_.reset();
     return;
   }
 
@@ -547,7 +540,6 @@ void SystemDataProvider::OnCpuUsageUpdated(healthd::TelemetryInfoPtr info_ptr) {
   if (info_ptr.is_null()) {
     LOG(ERROR) << "Null response from croshealthd::ProbeTelemetryInfo.";
     NotifyCpuUsageObservers(cpu_usage);
-    cpu_usage_timer_.reset();
     return;
   }
 
@@ -555,7 +547,6 @@ void SystemDataProvider::OnCpuUsageUpdated(healthd::TelemetryInfoPtr info_ptr) {
   if (cpu_info == nullptr) {
     LOG(ERROR) << "No CpuInfo in response from cros_healthd.";
     NotifyCpuUsageObservers(cpu_usage);
-    cpu_usage_timer_.reset();
     return;
   }
 
