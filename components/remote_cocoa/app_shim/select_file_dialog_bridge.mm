@@ -109,10 +109,6 @@ NSSavePanel* g_last_created_panel_for_testing = nil;
 
 @implementation SelectFileDialogDelegate
 
-- (BOOL)panel:(id)sender shouldEnableURL:(NSURL*)url {
-  return [url isFileURL];
-}
-
 - (BOOL)panel:(id)sender validateURL:(NSURL*)url error:(NSError**)outError {
   // Refuse to accept users closing the dialog with a key repeat, since the key
   // may have been first pressed while the user was looking at insecure content.
