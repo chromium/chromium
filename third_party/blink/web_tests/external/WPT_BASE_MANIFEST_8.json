@@ -255833,6 +255833,14 @@
      []
     ],
     "events": {
+     "AddEventListenerOptions-passive.any-expected.txt": [
+      "4a54687b14ef2f967666fff52b93d7cb4cd643d0",
+      []
+     ],
+     "AddEventListenerOptions-passive.any.worker-expected.txt": [
+      "d16fb1d7a79fa8d4b3077e81afa0c68bc5944be4",
+      []
+     ],
      "Event-constructors.any.worker-expected.txt": [
       "94a22a415036c307832b453ceab3c18b94d78f24",
       []
@@ -255855,6 +255863,10 @@
      ],
      "EventListener-incumbent-global-subsubframe.sub.html": [
       "dd683f6f65f89f097ca70594e4a02c2027fdb66b",
+      []
+     ],
+     "EventTarget-removeEventListener.any.worker-expected.txt": [
+      "508aed3c76668ea54864c83cf2bb73e571c92133",
       []
      ],
      "event-global-extra.window-expected.txt": [
@@ -293450,10 +293462,6 @@
      "95d5071171b5a20cc14a414c97c9eae2f525f43f",
      []
     ],
-    "MessageEvent-trusted-worker.js": [
-     "6e8c3a781bfbaceee72b2daa521c99c68e94724a",
-     []
-    ],
     "OWNERS": [
      "1b10b3436d923b017c68c642cc7a95a5dc331193",
      []
@@ -293479,16 +293487,30 @@
      }
     },
     "message-channels": {
-     "004-1.html": [
-      "b5dd282cdca13b9c20d63bdf19b95b8a0a80824c",
-      []
-     ],
-     "004-2.html": [
-      "1b8ef0a7a0f020f402f081d05588d5b5751191b6",
-      []
-     ],
      "close-expected.txt": [
       "ee08c8fa753db852519246d713ef0f6202b36b6c",
+      []
+     ],
+     "close.any-expected.txt": [
+      "f4fa9e1779a0743d5bbe93dfd0e2075dab818538",
+      []
+     ],
+     "close.any.worker-expected.txt": [
+      "f4fa9e1779a0743d5bbe93dfd0e2075dab818538",
+      []
+     ],
+     "resources": {
+      "cross-document-1.html": [
+       "93725a93f8764380c9bcb07557371ff3a04eb5cb",
+       []
+      ],
+      "cross-document-2.html": [
+       "1b8ef0a7a0f020f402f081d05588d5b5751191b6",
+       []
+      ]
+     },
+     "user-activation.tentative.any.worker-expected.txt": [
+      "32468e408137ae032349a9855239f31880ca0ed3",
       []
      ]
     },
@@ -293523,6 +293545,10 @@
     "support": {
      "ChildWindowPostMessage.htm": [
       "13d4103a8267f729223c3577eec397647b2c5ebe",
+      []
+     ],
+     "MessageEvent-trusted-worker.js": [
+      "6e8c3a781bfbaceee72b2daa521c99c68e94724a",
       []
      ],
      "compare.js": [
@@ -293794,7 +293820,7 @@
     },
     "protocol": {
      "README.txt": [
-      "1310717ccb9c035b011ff5fe5430fbd7e9f158f2",
+      "5e17fbf9c354edabaf48f6ee1d017f23d18e2171",
       []
      ],
      "crypto-suite.https-expected.txt": [
@@ -355961,18 +355987,54 @@
      ]
     },
     "events": {
-     "AddEventListenerOptions-once.html": [
-      "361c838b736258642c0bf5f26f243544edf2224b",
+     "AddEventListenerOptions-once.any.js": [
+      "b4edd4345c5e3431d77a6ed56dc573d4000f4c43",
       [
-       null,
-       {}
+       "dom/events/AddEventListenerOptions-once.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "AddEventListenerOptions.once"
+         ]
+        ]
+       }
+      ],
+      [
+       "dom/events/AddEventListenerOptions-once.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "AddEventListenerOptions.once"
+         ]
+        ]
+       }
       ]
      ],
-     "AddEventListenerOptions-passive.html": [
-      "bf41580325c87b0d6680e4800e5c1cd57102765a",
+     "AddEventListenerOptions-passive.any.js": [
+      "78fb0162179221330351425e4a0f80e902f89651",
       [
-       null,
-       {}
+       "dom/events/AddEventListenerOptions-passive.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "AddEventListenerOptions.passive"
+         ]
+        ]
+       }
+      ],
+      [
+       "dom/events/AddEventListenerOptions-passive.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "AddEventListenerOptions.passive"
+         ]
+        ]
+       }
       ]
      ],
      "AddEventListenerOptions-signal.any.js": [
@@ -356349,18 +356411,54 @@
        {}
       ]
      ],
-     "EventTarget-add-remove-listener.html": [
-      "8fb9f4365a17900f8ef97c6e8b3671592a324887",
+     "EventTarget-add-remove-listener.any.js": [
+      "b1d7ffb3e07fbe2038f0e33a8e63173edf12234c",
       [
-       null,
-       {}
+       "dom/events/EventTarget-add-remove-listener.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "EventTarget's addEventListener + removeEventListener"
+         ]
+        ]
+       }
+      ],
+      [
+       "dom/events/EventTarget-add-remove-listener.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "EventTarget's addEventListener + removeEventListener"
+         ]
+        ]
+       }
       ]
      ],
-     "EventTarget-addEventListener.html": [
-      "e2a46e5813e01758cf0a8d2f02c6c181e841c745",
+     "EventTarget-addEventListener.any.js": [
+      "e22da4aff850a2f0042c5ecda4c844cc1852f2ec",
       [
-       null,
-       {}
+       "dom/events/EventTarget-addEventListener.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "EventTarget.addEventListener"
+         ]
+        ]
+       }
+      ],
+      [
+       "dom/events/EventTarget-addEventListener.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "EventTarget.addEventListener"
+         ]
+        ]
+       }
       ]
      ],
      "EventTarget-constructible.any.js": [
@@ -356388,11 +356486,29 @@
        {}
       ]
      ],
-     "EventTarget-removeEventListener.html": [
-      "da2d7db3c4ddb53512cbf2d876d0212116b4a3e5",
+     "EventTarget-removeEventListener.any.js": [
+      "96202c4d90279bb69757bc6959ab2912a9c9ab04",
       [
-       null,
-       {}
+       "dom/events/EventTarget-removeEventListener.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "EventTarget.removeEventListener"
+         ]
+        ]
+       }
+      ],
+      [
+       "dom/events/EventTarget-removeEventListener.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "EventTarget.removeEventListener"
+         ]
+        ]
+       }
       ]
      ],
      "EventTarget-this-of-listener.html": [
@@ -483606,53 +483722,179 @@
     ]
    },
    "webmessaging": {
-    "Channel_postMessage_Blob.htm": [
-     "c8c247ef59dc7b513c54459fc83fd1aa6fcec8dd",
+    "Channel_postMessage_Blob.any.js": [
+     "485dd23f5357a32b630099d2d64310215c3060ab",
      [
-      null,
-      {}
+      "webmessaging/Channel_postMessage_Blob.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "postMessage() with a Blob"
+        ]
+       ]
+      }
+     ],
+     [
+      "webmessaging/Channel_postMessage_Blob.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "postMessage() with a Blob"
+        ]
+       ]
+      }
      ]
     ],
-    "Channel_postMessage_DataCloneErr.htm": [
-     "d2885d2947fd1872325c5a86d2a03154ac4da38c",
+    "Channel_postMessage_DataCloneErr.any.js": [
+     "048820fa6be3e30bc3da1081b69b83725b9b8eb2",
      [
-      null,
-      {}
+      "webmessaging/Channel_postMessage_DataCloneErr.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "postMessage() with a host object raises DataCloneError"
+        ]
+       ]
+      }
+     ],
+     [
+      "webmessaging/Channel_postMessage_DataCloneErr.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "postMessage() with a host object raises DataCloneError"
+        ]
+       ]
+      }
      ]
     ],
-    "Channel_postMessage_clone_port.htm": [
-     "0e2e2fcd14199224d93bb360320484de732353f9",
+    "Channel_postMessage_clone_port.any.js": [
+     "3dcb902b77b4f30ef3eff56aacfba854d3cdc5c8",
      [
-      null,
-      {}
+      "webmessaging/Channel_postMessage_clone_port.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "postMessage(): clone a port"
+        ]
+       ]
+      }
+     ],
+     [
+      "webmessaging/Channel_postMessage_clone_port.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "postMessage(): clone a port"
+        ]
+       ]
+      }
      ]
     ],
-    "Channel_postMessage_clone_port_error.htm": [
-     "bdc77e3b99d833cd008ad7ab39e0f137e4c4d75e",
+    "Channel_postMessage_clone_port_error.any.js": [
+     "cbee47270c461610695aef5e8f91bb417bf4175c",
      [
-      null,
-      {}
+      "webmessaging/Channel_postMessage_clone_port_error.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "postMessage() DataCloneError: cloning source port"
+        ]
+       ]
+      }
+     ],
+     [
+      "webmessaging/Channel_postMessage_clone_port_error.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "postMessage() DataCloneError: cloning source port"
+        ]
+       ]
+      }
      ]
     ],
-    "Channel_postMessage_event_properties.htm": [
-     "4be7203fce8421051acc3115b20d768a3190d003",
+    "Channel_postMessage_event_properties.any.js": [
+     "0fd8c7e90a24ce2a84e60eedeaaef65f752922c5",
      [
-      null,
-      {}
+      "webmessaging/Channel_postMessage_event_properties.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "postMessage(): MessageEvent properties"
+        ]
+       ]
+      }
+     ],
+     [
+      "webmessaging/Channel_postMessage_event_properties.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "postMessage(): MessageEvent properties"
+        ]
+       ]
+      }
      ]
     ],
-    "Channel_postMessage_ports_readonly_array.htm": [
-     "74027130377a9d27803290d9769426a6af2f8877",
+    "Channel_postMessage_ports_readonly_array.any.js": [
+     "032a54e710feec2517a9272fb5bd4ff6dea7b059",
      [
-      null,
-      {}
+      "webmessaging/Channel_postMessage_ports_readonly_array.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "postMessage(): read-only ports array"
+        ]
+       ]
+      }
+     ],
+     [
+      "webmessaging/Channel_postMessage_ports_readonly_array.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "postMessage(): read-only ports array"
+        ]
+       ]
+      }
      ]
     ],
-    "Channel_postMessage_target_source.htm": [
-     "4b00e68d49ef9fc85e92a5526ff76bd92259d4d9",
+    "Channel_postMessage_target_source.any.js": [
+     "6b7fc7f20d46716d481ae0e200f35fdc8a8eabba",
      [
-      null,
-      {}
+      "webmessaging/Channel_postMessage_target_source.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "postMessage(): target port and source port"
+        ]
+       ]
+      }
+     ],
+     [
+      "webmessaging/Channel_postMessage_target_source.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "postMessage(): target port and source port"
+        ]
+       ]
+      }
      ]
     ],
     "Channel_postMessage_transfer_xsite_incoming_messages.window.js": [
@@ -483702,18 +483944,68 @@
       {}
      ]
     ],
-    "MessageEvent-trusted.html": [
-     "8cde663339dc51421b727f3bdf12c8b173374afc",
+    "MessageEvent-trusted.any.js": [
+     "84187eb571607faa38b81332c73cb5e0f71eee77",
      [
-      null,
-      {}
+      "webmessaging/MessageEvent-trusted.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "MessagePort message events are trusted"
+        ]
+       ]
+      }
+     ],
+     [
+      "webmessaging/MessageEvent-trusted.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "MessagePort message events are trusted"
+        ]
+       ]
+      }
      ]
     ],
-    "MessageEvent.html": [
-     "401d941e1d6494e3a7b6c5912e66d772ac795704",
+    "MessageEvent-trusted.window.js": [
+     "11cf48beed9abda7d44816918364982ba1eb8824",
      [
-      null,
-      {}
+      "webmessaging/MessageEvent-trusted.window.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "MessagePort message events are trusted with window"
+        ]
+       ]
+      }
+     ]
+    ],
+    "MessageEvent.any.js": [
+     "0fb2636911ddc6ebc6026f20d8e18a2aa9007404",
+     [
+      "webmessaging/MessageEvent.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "MessageEvent"
+        ]
+       ]
+      }
+     ],
+     [
+      "webmessaging/MessageEvent.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "MessageEvent"
+        ]
+       ]
+      }
      ]
     ],
     "MessageEvent_onmessage_postMessage_infinite_loop.html": [
@@ -483730,18 +484022,54 @@
       {}
      ]
     ],
-    "MessagePort_initial_disabled.htm": [
-     "58447dc2d6ebbc827f9abbd5d4fe094d060bce3a",
+    "MessagePort_initial_disabled.any.js": [
+     "b897858175618ec6d399bb8ebe8a8af5c77f32cf",
      [
-      null,
-      {}
+      "webmessaging/MessagePort_initial_disabled.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "MessageChannel: port message queue is initially disabled"
+        ]
+       ]
+      }
+     ],
+     [
+      "webmessaging/MessagePort_initial_disabled.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "MessageChannel: port message queue is initially disabled"
+        ]
+       ]
+      }
      ]
     ],
-    "MessagePort_onmessage_start.htm": [
-     "dc4dc1e54b5e3f05a428e8a8c19acfc9f7bbf127",
+    "MessagePort_onmessage_start.any.js": [
+     "fd0a4f2c43d46f64c9fa1d024da5a8345b8b7008",
      [
-      null,
-      {}
+      "webmessaging/MessagePort_onmessage_start.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "MessageChannel: port.onmessage enables message queue"
+        ]
+       ]
+      }
+     ],
+     [
+      "webmessaging/MessagePort_onmessage_start.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "MessageChannel: port.onmessage enables message queue"
+        ]
+       ]
+      }
      ]
     ],
     "Transferred_objects_unusable.sub.htm": [
@@ -483839,66 +484167,168 @@
      ]
     ],
     "message-channels": {
-     "001.html": [
-      "12fac8229c6dd4b73fbdca5c0bbb3b6c29082cdf",
+     "basics.any.js": [
+      "5732fb268a0faa029262cfc360bf140123b707c2",
+      [
+       "webmessaging/message-channels/basics.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "basic messagechannel test"
+         ]
+        ]
+       }
+      ],
+      [
+       "webmessaging/message-channels/basics.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "basic messagechannel test"
+         ]
+        ]
+       }
+      ]
+     ],
+     "close.any.js": [
+      "8741d894b9632653721863eaf44988a27c933e43",
+      [
+       "webmessaging/message-channels/close.any.html",
+       {}
+      ],
+      [
+       "webmessaging/message-channels/close.any.worker.html",
+       {}
+      ]
+     ],
+     "cross-document.html": [
+      "f4512ba5a2a66deab9b97d5886ec04a113872c2c",
       [
        null,
        {}
       ]
      ],
-     "002.html": [
-      "8b7126718931819d8ac4c4624dc59734adcffb86",
+     "dictionary-transferrable.any.js": [
+      "bf49fddb99271fb16262a8029a97ba52041300eb",
       [
-       null,
+       "webmessaging/message-channels/dictionary-transferrable.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "basic messagechannel with transfer"
+         ]
+        ]
+       }
+      ],
+      [
+       "webmessaging/message-channels/dictionary-transferrable.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "basic messagechannel with transfer"
+         ]
+        ]
+       }
+      ]
+     ],
+     "implied-start.any.js": [
+      "460d26b7e401c301b7f7e18ade6eb9bf1870b4c1",
+      [
+       "webmessaging/message-channels/implied-start.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "onmessage implied start()"
+         ]
+        ]
+       }
+      ],
+      [
+       "webmessaging/message-channels/implied-start.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "onmessage implied start()"
+         ]
+        ]
+       }
+      ]
+     ],
+     "no-start.any.js": [
+      "75b1ea1b26e8f2e1e871122b2ed3dd53a14690fe",
+      [
+       "webmessaging/message-channels/no-start.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "without start()"
+         ]
+        ]
+       }
+      ],
+      [
+       "webmessaging/message-channels/no-start.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "without start()"
+         ]
+        ]
+       }
+      ]
+     ],
+     "user-activation.tentative.any.js": [
+      "175662873c873476545895d1b4fc18674979e6ce",
+      [
+       "webmessaging/message-channels/user-activation.tentative.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "user activation messagechannel test"
+         ]
+        ]
+       }
+      ],
+      [
+       "webmessaging/message-channels/user-activation.tentative.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "user activation messagechannel test"
+         ]
+        ]
+       }
+      ]
+     ],
+     "worker-post-after-close.any.js": [
+      "2de0c434de2e28689ab3ae7e7719a368f17ed522",
+      [
+       "webmessaging/message-channels/worker-post-after-close.any.html",
+       {}
+      ],
+      [
+       "webmessaging/message-channels/worker-post-after-close.any.worker.html",
        {}
       ]
      ],
-     "003.html": [
-      "7addaeb0faf55c20e3c5ec896f0cd6660d3ef61b",
+     "worker.any.js": [
+      "633d89a3712f04feacc8df0c705022acc40d9bd8",
       [
-       null,
+       "webmessaging/message-channels/worker.any.html",
        {}
-      ]
-     ],
-     "004.html": [
-      "19921fef85baf316121d36a00c2f2abc5c5ffb5f",
+      ],
       [
-       null,
-       {}
-      ]
-     ],
-     "close.html": [
-      "75b5f229d6d5e412abecf5807ad25f96d69bf4b7",
-      [
-       null,
-       {}
-      ]
-     ],
-     "dictionary-transferrable.html": [
-      "f7ab1086f7e7978f00a4901d7aa47d8675ee1373",
-      [
-       null,
-       {}
-      ]
-     ],
-     "user-activation.tentative.html": [
-      "2c79be8a298aa73ae20bb7898d8dd34d0d56b000",
-      [
-       null,
-       {}
-      ]
-     ],
-     "worker-post-after-close.html": [
-      "a2f6d92e9cc9ca67a4f42384a0a00e1497f98db8",
-      [
-       null,
-       {}
-      ]
-     ],
-     "worker.html": [
-      "0502021fff138a29b5bd815c589d0f556922db9b",
-      [
-       null,
+       "webmessaging/message-channels/worker.any.worker.html",
        {}
       ]
      ]
@@ -485562,6 +485992,13 @@
      ],
      "rtp-demuxing.html": [
       "1b8dce3b45dab0d369e49498e19b2fb036635717",
+      [
+       null,
+       {}
+      ]
+     ],
+     "rtp-extension-support.html": [
+      "e3d3fe87d93dc80ffd864a3147c74c22ebf568b2",
       [
        null,
        {}

@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+PASS Supports passive option on addEventListener only
+FAIL preventDefault should be ignored if-and-only-if the passive option is true assert_equals: Incorrect defaultPrevented for options: undefined expected (boolean) true but got (undefined) undefined
+PASS returnValue should be ignored if-and-only-if the passive option is true
+FAIL passive behavior of one listener should be unaffected by the presence of other listeners assert_equals: Incorrect defaultPrevented for options: {} expected (boolean) true but got (undefined) undefined
+PASS Equivalence of option values
+Harness: the test ran to completion.
+
