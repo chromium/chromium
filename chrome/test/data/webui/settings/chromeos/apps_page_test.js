@@ -158,6 +158,25 @@ suite('AppsPageTests', function() {
       assertEquals(3, appsPage.$$('#onStartupDropdown').pref.value);
     });
 
+    test('Deep link to On startup dropdown menu', async () => {
+      loadTimeData.overrideValues({
+        isDeepLinkingEnabled: true,
+      });
+
+      Polymer.dom.flush();
+
+      const params = new URLSearchParams;
+      params.append('settingId', '703');
+      settings.Router.getInstance().navigateTo(settings.routes.APPS, params);
+
+      const deepLinkElement =
+          appsPage.$$('#onStartupDropdown').$$('#dropdownMenu');
+      await test_util.waitAfterNextRender(deepLinkElement);
+      assertEquals(
+          deepLinkElement, getDeepActiveElement(),
+          'On startup dropdown menu should be focused for settingId=703.');
+    });
+
     test('Deep link to manage android prefs', async () => {
       loadTimeData.overrideValues({
         isDeepLinkingEnabled: true,
