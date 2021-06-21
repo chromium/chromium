@@ -295,7 +295,6 @@ class ShelfNavigationWidget::Delegate : public views::AccessiblePaneView,
 ShelfNavigationWidget::Delegate::Delegate(Shelf* shelf, ShelfView* shelf_view)
     : opaque_background_(ui::LAYER_SOLID_COLOR), shelf_(shelf) {
   SetOwnedByWidget(true);
-  set_owned_by_client();
 
   set_allow_deactivate_on_esc(true);
 

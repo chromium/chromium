@@ -218,7 +218,6 @@ ShelfWidget::DelegateView::DelegateView(ShelfWidget* shelf_widget, Shelf* shelf)
   animating_background_.Add(&animating_drag_handle_);
 
   DCHECK(shelf_widget_);
-  set_owned_by_client();
   SetOwnedByWidget(true);
 
   set_allow_deactivate_on_esc(true);

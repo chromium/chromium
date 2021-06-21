@@ -78,7 +78,6 @@ class OverflowGradientBackground : public views::Background {
 StatusAreaWidgetDelegate::StatusAreaWidgetDelegate(Shelf* shelf)
     : shelf_(shelf), focus_cycler_for_testing_(nullptr) {
   DCHECK(shelf_);
-  set_owned_by_client();
   SetOwnedByWidget(true);
 
   // Allow the launcher to surrender the focus to another window upon
