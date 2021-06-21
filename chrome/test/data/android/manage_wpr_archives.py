@@ -24,15 +24,11 @@ def _GetReplayTestDirectories():
       os.path.join(CHROMIUM_SRC, 'chrome', 'android', 'feed', 'core',
                    'javatests', 'src', 'org', 'chromium', 'chrome', 'browser',
                    'feed', 'wpr_tests'),
+      os.path.join(CHROMIUM_SRC, 'clank', 'javatests', 'src', 'org', 'chromium',
+                   'chrome', 'browser', 'wprtests', 'replays')
   ]
 
-  internal_dir = os.path.join(CHROMIUM_SRC, 'clank', 'javatests', 'src', 'org',
-                              'chromium', 'chrome', 'browser', 'wprtests',
-                              'replays')
-  if os.path.isdir(internal_dir):
-    directories.append(internal_dir)
-
-  return directories
+  return [d for d in directories if os.path.isdir(d)]
 
 
 def _is_file_of_interest(f):
@@ -50,11 +46,8 @@ def main():
 
   if args.action == 'download':
     for d in _GetReplayTestDirectories():
-
       download(d, _is_file_of_interest,
                'WPR archives', STORAGE_BUCKET)
-      if not verify_file_exists(d, _is_file_of_interest):
-        logging.error('There is not file of interest in dir {}'.format(d))
   else:
     for d in _GetReplayTestDirectories():
       upload(d, _is_file_of_interest,
