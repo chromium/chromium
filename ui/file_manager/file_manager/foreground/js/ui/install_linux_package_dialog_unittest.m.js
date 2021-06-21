@@ -5,7 +5,7 @@
 import {assertInstanceof} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
-import {InstallLinuxPackageDialog} from './install_linux_package_dialog.m.js';
+import {InstallLinuxPackageDialog} from './install_linux_package_dialog.js';
 
 export function testInstallButtonHiddenUntilInfoReady() {
   // Polyfill chrome.app.window.current().

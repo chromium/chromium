@@ -4,7 +4,7 @@
 
 // clang-format off
 // #import {FilesToast} from '../elements/files_toast.js';
-// #import {DirectoryTree} from './ui/directory_tree.m.js';
+// #import {DirectoryTree} from './ui/directory_tree.js';
 // #import {DirectoryModel} from './directory_model.m.js';
 // #import {FilesMessage} from '../elements/files_message.js';
 // #import {Crostini} from '../../externs/background/crostini.m.js';

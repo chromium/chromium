@@ -8,7 +8,6 @@
 class DragTarget {
   /**
    * This definition is required to satisfy
-   * ui/file_manager/file_manager/foreground/js/ui/drag_selector.js.
    *
    * @param {number} x
    * @param {number} y

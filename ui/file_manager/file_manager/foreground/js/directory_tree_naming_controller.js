@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #import {DirectoryTree, DirectoryItem} from './ui/directory_tree.m.js';
+// #import {DirectoryTree, DirectoryItem} from './ui/directory_tree.js';
 // #import {VolumeInfo} from '../../externs/volume_info.m.js';
 // #import {AlertDialog} from 'chrome://resources/js/cr/ui/dialogs.m.js';
 // #import {DirectoryModel} from './directory_model.m.js';

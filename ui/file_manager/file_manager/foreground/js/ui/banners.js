@@ -2,20 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {VolumeInfo} from '../../../externs/volume_info.m.js';
-// #import {VolumeManager} from '../../../externs/volume_manager.m.js';
-// #import {DirectoryModel} from '../directory_model.m.js';
-// #import {VolumeManagerCommon} from '../../../common/js/volume_manager_types.m.js';
-// #import {constants} from '../constants.m.js';
-// #import {HoldingSpaceUtil} from '../holding_space_util.m.js';
-// #import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
-// #import {util, str, strf} from '../../../common/js/util.m.js';
-// #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
-// #import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
-// #import {assert} from 'chrome://resources/js/assert.m.js';
-// #import {xfm} from '../../../common/js/xfm.m.js';
-// clang-format on
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
+import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
+import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
+
+import {str, strf, util} from '../../../common/js/util.m.js';
+import {VolumeManagerCommon} from '../../../common/js/volume_manager_types.m.js';
+import {xfm} from '../../../common/js/xfm.m.js';
+import {VolumeInfo} from '../../../externs/volume_info.m.js';
+import {VolumeManager} from '../../../externs/volume_manager.m.js';
+import {constants} from '../constants.m.js';
+import {DirectoryModel} from '../directory_model.m.js';
+import {HoldingSpaceUtil} from '../holding_space_util.m.js';
 
 
 /**
@@ -105,7 +104,7 @@ const PHOTOS_WELCOME_COUNTER_LIMIT = 3;
  *  - WelcomeBanner
  *  - AuthFailBanner
  */
-/* #export */ class Banners extends cr.EventTarget {
+export class Banners extends EventTarget {
   /**
    * @param {DirectoryModel} directoryModel The model.
    * @param {!VolumeManager} volumeManager The manager.
@@ -1033,7 +1032,7 @@ const PHOTOS_WELCOME_COUNTER_LIMIT = 3;
   requestRelayout_(delay) {
     const self = this;
     setTimeout(() => {
-      cr.dispatchSimpleEvent(self, 'relayout');
+      dispatchSimpleEvent(self, 'relayout');
     }, delay);
   }
 

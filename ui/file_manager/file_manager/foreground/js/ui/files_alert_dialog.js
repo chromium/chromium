@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #import {util} from '../../../common/js/util.m.js';
-// #import {AlertDialog} from 'chrome://resources/js/cr/ui/dialogs.m.js';
+import {AlertDialog} from 'chrome://resources/js/cr/ui/dialogs.m.js';
+
+import {util} from '../../../common/js/util.m.js';
 
 /**
  * Alert dialog.
  */
-/* #export */ class FilesAlertDialog extends cr.ui.dialogs.AlertDialog {
+export class FilesAlertDialog extends AlertDialog {
   /**
    * @param {!HTMLElement} parentNode
    */

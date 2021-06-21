@@ -16,10 +16,10 @@
 // #import {ListContainer} from './ui/list_container.js';
 // #import {DropEffectAndLabel, DropEffectType} from './drop_effect_and_label.m.js';
 // #import {FileSelectionHandler} from './file_selection.m.js';
-// #import {DragSelector} from './ui/drag_selector.m.js';
+// #import {DragSelector} from './ui/drag_selector.js';
 // #import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 // #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
-// #import {DirectoryItem, DirectoryTree} from './ui/directory_tree.m.js';
+// #import {DirectoryItem, DirectoryTree} from './ui/directory_tree.js';
 // #import {TreeItem} from 'chrome://resources/js/cr/ui/tree.js';
 // #import {ProgressCenterItem, ProgressItemType, ProgressItemState} from '../../common/js/progress_center_common.m.js';
 // #import {FileType} from '../../common/js/file_type.m.js';

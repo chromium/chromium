@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #import {List} from 'chrome://resources/js/cr/ui/list.m.js';
+import {List} from 'chrome://resources/js/cr/ui/list.m.js';
 
-/* #export */ class DragSelector {
+export class DragSelector {
   /**
    * Drag selector used on the file list or the grid table.
    */
   constructor() {
     /**
      * Target list of drag selection.
-     * @type {cr.ui.List}
+     * @type {List}
      * @private
      */
     this.target_ = null;
@@ -83,7 +83,7 @@
    * This function must be called from handlers of dragstart event.
    *
    * @this {DragSelector}
-   * @param {cr.ui.List} list List where the drag selection starts.
+   * @param {List} list List where the drag selection starts.
    * @param {Event} event The dragstart event.
    */
   startDragSelection(list, event) {

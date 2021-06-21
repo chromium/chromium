@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
+import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
 
-/* #export */ class EmptyFolder {
+export class EmptyFolder {
   /**
    * Empty folder UI.
    * @param {!HTMLElement} emptyFolder DOM element of empty folder.

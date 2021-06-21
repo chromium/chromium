@@ -19,7 +19,7 @@
 // #import {FileOperationManager} from './background/file_operation_manager.m.js';
 // #import {FileFilter} from '../foreground/js/directory_contents.m.js';
 // #import {DirectoryTreeNamingController} from '../foreground/js/directory_tree_naming_controller.m.js';
-// #import {DirectoryTree} from '../foreground/js/ui/directory_tree.m.js';
+// #import {DirectoryTree} from '../foreground/js/ui/directory_tree.js';
 // #import {DirectoryModel} from '../foreground/js/directory_model.m.js';
 // #import {DialogType} from '../foreground/js/dialog_type.m.js';
 // clang-format on

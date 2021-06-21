@@ -5,7 +5,7 @@
 import {assertInstanceof} from 'chrome://resources/js/assert.m.js';
 import {assertFalse} from 'chrome://test/chai_assert.js';
 import {waitUntil} from '../../../common/js/test_error_reporting.m.js';
-import {FileManagerDialogBase} from './file_manager_dialog_base.m.js';
+import {FileManagerDialogBase} from './file_manager_dialog_base.js';
 
 export function setUp() {
   // Polyfill chrome.app.window.current().

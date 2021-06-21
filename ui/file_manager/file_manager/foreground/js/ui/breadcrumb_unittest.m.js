@@ -5,7 +5,7 @@
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://test/chai_assert.js';
 
-import {BreadCrumb} from './breadcrumb.m.js';
+import {BreadCrumb} from './breadcrumb.js';
 
 /**
  * Creates new <bread-drumb> element for each test. Asserts it has no initial

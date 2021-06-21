@@ -24,7 +24,7 @@
 // #import {FileTasks} from './file_tasks.m.js';
 // #import {CrostiniController} from './crostini_controller.m.js';
 // #import {NavigationListModel, NavigationModelFakeItem, NavigationModelItemType} from './navigation_list_model.m.js';
-// #import {DirectoryTree} from './ui/directory_tree.m.js';
+// #import {DirectoryTree} from './ui/directory_tree.js';
 // #import {NavigationUma} from './navigation_uma.m.js';
 // #import {FileTypeFiltersController} from './file_type_filters_controller.m.js';
 // #import {DialogActionController} from './dialog_action_controller.m.js';
@@ -54,10 +54,10 @@
 // #import {FilteredVolumeManager} from '../../common/js/filtered_volume_manager.m.js';
 // #import {LaunchParam} from './launch_param.m.js';
 // #import {contextMenuHandler} from 'chrome://resources/js/cr/ui/context_menu_handler.m.js';
-// #import {CommandButton} from './ui/commandbutton.m.js';
+// #import {CommandButton} from './ui/commandbutton.js';
 // #import {CommandHandler, CommandUtil} from './file_manager_commands.m.js';
 // #import {FileTransferController} from './file_transfer_controller.m.js';
-// #import {Banners} from './ui/banners.m.js';
+// #import {Banners} from './ui/banners.js';
 // #import {MainWindowComponent} from './main_window_component.m.js';
 // #import {QuickViewController} from './quick_view_controller.m.js';
 // #import {MetadataBoxController} from './metadata_box_controller.m.js';

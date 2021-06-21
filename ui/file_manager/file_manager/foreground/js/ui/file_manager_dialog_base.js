@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #import {util} from '../../../common/js/util.m.js';
-// #import {BaseDialog} from 'chrome://resources/js/cr/ui/dialogs.m.js';
+import {BaseDialog} from 'chrome://resources/js/cr/ui/dialogs.m.js';
+
+import {util} from '../../../common/js/util.m.js';
 
 /**
  * This class is an extended class, to manage the status of the dialogs.
  */
-/* #export */ class FileManagerDialogBase extends cr.ui.dialogs.BaseDialog {
+export class FileManagerDialogBase extends BaseDialog {
   /**
    * @param {HTMLElement} parentNode Parent node of the dialog.
    */

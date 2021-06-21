@@ -23,7 +23,7 @@ import {MockFolderShortcutDataModel} from '../mock_folder_shortcut_data_model.m.
 import {MockNavigationListModel} from '../mock_navigation_list_model.m.js';
 import {NavigationListModel, NavigationModelFakeItem, NavigationModelItemType, NavigationSection} from '../navigation_list_model.m.js';
 
-import {DirectoryTree, EntryListItem} from './directory_tree.m.js';
+import {DirectoryTree, EntryListItem} from './directory_tree.js';
 // clang-format on
 
 /** @type {!MockVolumeManager} */

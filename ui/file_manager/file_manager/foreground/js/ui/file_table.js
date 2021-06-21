@@ -21,7 +21,7 @@ import {ListThumbnailLoader} from '../list_thumbnail_loader.m.js';
 import {MetadataModel} from '../metadata/metadata_model.m.js';
 
 import {A11yAnnounce} from './a11y_announce.js';
-import {DragSelector} from './drag_selector.m.js';
+import {DragSelector} from './drag_selector.js';
 import {FileListSelectionModel, FileListSingleSelectionModel} from './file_list_selection_model.js';
 import {FileMetadataFormatter} from './file_metadata_formatter.js';
 import {filelist, FileTableList} from './file_table_list.js';

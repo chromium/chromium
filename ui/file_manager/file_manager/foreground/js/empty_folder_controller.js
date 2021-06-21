@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #import {FilesAlertDialog} from './ui/files_alert_dialog.m.js';
-// #import {EmptyFolder} from './ui/empty_folder.m.js';
+// #import {FilesAlertDialog} from './ui/files_alert_dialog.js';
+// #import {EmptyFolder} from './ui/empty_folder.js';
 // #import {FileListModel} from './file_list_model.m.js';
 // #import {DirectoryModel} from './directory_model.m.js';
 // #import {str, strf, util} from '../../common/js/util.m.js';

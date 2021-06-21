@@ -9,7 +9,7 @@
 // #import {VolumeManager} from '../../externs/volume_manager.m.js';
 // #import {MetadataModel} from './metadata/metadata_model.m.js';
 // #import {DirectoryModel} from './directory_model.m.js';
-// #import {DialogFooter} from './ui/dialog_footer.m.js';
+// #import {DialogFooter} from './ui/dialog_footer.js';
 // #import {util, str} from '../../common/js/util.m.js';
 // #import {VolumeManagerCommon, AllowedPaths} from '../../common/js/volume_manager_types.m.js';
 // #import {DialogType} from './dialog_type.m.js';

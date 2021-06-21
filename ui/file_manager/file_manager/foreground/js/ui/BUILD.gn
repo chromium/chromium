@@ -6,7 +6,6 @@ import("//third_party/closure_compiler/compile_js.gni")
 import("//third_party/closure_compiler/js_unit_tests.gni")
 import("//ui/file_manager/base/gn/js_test_gen_html.gni")
 import("//ui/webui/resources/js/cr.gni")
-import("//ui/webui/resources/tools/js_modulizer.gni")
 
 visibility = [ "//ui/file_manager/file_manager/foreground/*" ]
 
@@ -25,15 +24,29 @@ group("js_modules") {
     ":action_model_ui",
     ":actions_submenu",
     ":autocomplete_list",
+    ":banners",
+    ":breadcrumb",
+    ":combobutton",
+    ":commandbutton",
+    ":default_task_dialog",
+    ":dialog_footer",
+    ":directory_tree",
+    ":drag_selector",
+    ":empty_folder",
     ":file_grid",
     ":file_list_selection_model",
+    ":file_manager_dialog_base",
     ":file_manager_ui",
     ":file_metadata_formatter",
     ":file_table",
     ":file_table_list",
     ":file_tap_handler",
+    ":files_alert_dialog",
+    ":files_confirm_dialog",
     ":files_menu",
     ":gear_menu",
+    ":import_crostini_image_dialog",
+    ":install_linux_package_dialog",
     ":list_container",
     ":location_line",
     ":multi_menu",
@@ -58,29 +71,29 @@ js_type_check("closure_compile_jsmodules") {
     ":action_model_ui",
     ":actions_submenu",
     ":autocomplete_list",
-    ":banners.m",
-    ":breadcrumb.m",
-    ":combobutton.m",
-    ":commandbutton.m",
-    ":default_task_dialog.m",
-    ":dialog_footer.m",
-    ":directory_tree.m",
-    ":drag_selector.m",
-    ":empty_folder.m",
+    ":banners",
+    ":breadcrumb",
+    ":combobutton",
+    ":commandbutton",
+    ":default_task_dialog",
+    ":dialog_footer",
+    ":directory_tree",
+    ":drag_selector",
+    ":empty_folder",
     ":file_grid",
     ":file_list_selection_model",
-    ":file_manager_dialog_base.m",
+    ":file_manager_dialog_base",
     ":file_manager_ui",
     ":file_metadata_formatter",
     ":file_table",
     ":file_table_list",
     ":file_tap_handler",
-    ":files_alert_dialog.m",
-    ":files_confirm_dialog.m",
+    ":files_alert_dialog",
+    ":files_confirm_dialog",
     ":files_menu",
     ":gear_menu",
-    ":import_crostini_image_dialog.m",
-    ":install_linux_package_dialog.m",
+    ":import_crostini_image_dialog",
+    ":install_linux_package_dialog",
     ":list_container",
     ":location_line",
     ":multi_menu",
@@ -102,7 +115,7 @@ js_library("a11y_announce") {
 
 js_library("action_model_ui") {
   deps = [
-    ":files_alert_dialog.m",
+    ":files_alert_dialog",
     ":list_container",
   ]
 }
@@ -131,22 +144,6 @@ js_unittest("actions_submenu_unittest.m") {
 
 js_library("banners") {
   deps = [
-    "//ui/file_manager/file_manager/common/js:util",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types",
-    "//ui/file_manager/file_manager/foreground/js:directory_model",
-    "//ui/file_manager/file_manager/foreground/js:holding_space_util",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js/cr:event_target",
-  ]
-  externs_list =
-      [ "//ui/file_manager/file_manager/externs/chrome_echo_private.js" ]
-}
-
-js_library("banners.m") {
-  sources = [
-    "$root_gen_dir/ui/file_manager/file_manager/foreground/js/ui/banners.m.js",
-  ]
-  deps = [
     "//ui/file_manager/file_manager/common/js:util.m",
     "//ui/file_manager/file_manager/common/js:volume_manager_types.m",
     "//ui/file_manager/file_manager/externs:volume_info.m",
@@ -159,36 +156,21 @@ js_library("banners.m") {
     "//ui/webui/resources/js:util.m",
     "//ui/webui/resources/js/cr:event_target.m",
   ]
-
-  extra_deps = [ ":modulize" ]
 }
 
 js_library("breadcrumb") {
-  deps = [ "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu" ]
-}
-
-js_library("breadcrumb.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/ui/breadcrumb.m.js" ]
-
   deps = [ "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu.m" ]
-
-  extra_deps = [ ":modulize" ]
 }
 
 js_unittest("breadcrumb_unittest.m") {
   deps = [
-    ":breadcrumb.m",
+    ":breadcrumb",
     "//chrome/test/data/webui:chai_assert",
     "//ui/webui/resources/js:assert.m",
   ]
 }
 
 js_library("combobutton") {
-  externs_list = [ "//ui/file_manager/file_manager/externs/paper_elements.js" ]
-}
-
-js_library("combobutton.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/ui/combobutton.m.js" ]
   deps = [
     ":files_menu",
     ":multi_menu_button",
@@ -198,64 +180,28 @@ js_library("combobutton.m") {
   ]
 
   externs_list = [ "//ui/file_manager/file_manager/externs/paper_elements.js" ]
-
-  extra_deps = [ ":modulize" ]
 }
 
 js_library("commandbutton") {
-  deps = [
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js/cr:ui",
-    "//ui/webui/resources/js/cr/ui:command",
-  ]
-}
-
-js_library("commandbutton.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/ui/commandbutton.m.js" ]
   deps = [
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js/cr:ui.m",
     "//ui/webui/resources/js/cr/ui:command.m",
   ]
-
-  extra_deps = [ ":modulize" ]
 }
 
 js_library("default_task_dialog") {
   deps = [
     ":file_manager_dialog_base",
-    "//ui/webui/resources/js/cr/ui:array_data_model",
-    "//ui/webui/resources/js/cr/ui:list",
-    "//ui/webui/resources/js/cr/ui:list_single_selection_model",
-  ]
-}
-
-js_library("default_task_dialog.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/ui/default_task_dialog.m.js" ]
-
-  deps = [
-    ":file_manager_dialog_base.m",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js/cr/ui:array_data_model.m",
     "//ui/webui/resources/js/cr/ui:list.m",
     "//ui/webui/resources/js/cr/ui:list_single_selection_model.m",
   ]
-  extra_deps = [ ":modulize" ]
 }
 
 js_library("dialog_footer") {
-  deps = [
-    "//ui/file_manager/file_manager/common/js:file_type",
-    "//ui/file_manager/file_manager/common/js:util",
-    "//ui/file_manager/file_manager/foreground/js:dialog_type",
-    "//ui/file_manager/file_manager/foreground/js:file_list_model",
-    "//ui/webui/resources/cr_elements/cr_input:cr_input",
-  ]
-}
-
-js_library("dialog_footer.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/ui/dialog_footer.m.js" ]
   deps = [
     "//ui/file_manager/file_manager/common/js:file_type.m",
     "//ui/file_manager/file_manager/common/js:util.m",
@@ -264,25 +210,9 @@ js_library("dialog_footer.m") {
     "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
     "//ui/webui/resources/js:util.m",
   ]
-
-  extra_deps = [ ":modulize" ]
 }
 
 js_library("directory_tree") {
-  deps = [
-    "//ui/file_manager/file_manager/common/js:util",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types",
-    "//ui/file_manager/file_manager/foreground/js:directory_model",
-    "//ui/file_manager/file_manager/foreground/js:navigation_list_model",
-    "//ui/file_manager/file_manager/foreground/js/metadata:metadata_model",
-    "//ui/webui/resources/js/cr/ui:context_menu_handler",
-    "//ui/webui/resources/js/cr/ui:menu",
-    "//ui/webui/resources/js/cr/ui:tree",
-  ]
-}
-
-js_library("directory_tree.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/ui/directory_tree.m.js" ]
   deps = [
     "//ui/file_manager/file_manager/common/js:file_type.m",
     "//ui/file_manager/file_manager/common/js:metrics.m",
@@ -306,13 +236,11 @@ js_library("directory_tree.m") {
   ]
   visibility +=
       [ "//ui/file_manager/file_manager/externs:command_handler_deps.m" ]
-
-  extra_deps = [ ":modulize" ]
 }
 
 js_unittest("directory_tree_unittest.m") {
   deps = [
-    ":directory_tree.m",
+    ":directory_tree",
     "//chrome/test/data/webui:chai_assert",
     "//ui/file_manager/file_manager/background/js:mock_volume_manager",
     "//ui/file_manager/file_manager/common/js:files_app_entry_types.m",
@@ -334,36 +262,18 @@ js_unittest("directory_tree_unittest.m") {
 }
 
 js_library("drag_selector") {
-  deps = [
-    "//ui/webui/resources/js/cr:ui",
-    "//ui/webui/resources/js/cr/ui:list",
-  ]
-  externs_list = [ "//ui/file_manager/file_manager/externs/drag_target.js" ]
-}
-
-js_library("drag_selector.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/ui/drag_selector.m.js" ]
   deps = [ "//ui/webui/resources/js/cr/ui:list.m" ]
   externs_list = [ "//ui/file_manager/file_manager/externs/drag_target.js" ]
-
-  extra_deps = [ ":modulize" ]
 }
 
 js_library("empty_folder") {
-  deps = [ "//ui/webui/resources/js:util" ]
-}
-
-js_library("empty_folder.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/ui/empty_folder.m.js" ]
   deps = [ "//ui/webui/resources/js:util.m" ]
-
-  extra_deps = [ ":modulize" ]
 }
 
 js_library("file_grid") {
   deps = [
     ":a11y_announce",
-    ":drag_selector.m",
+    ":drag_selector",
     ":file_table_list",
     ":file_tap_handler",
     "//ui/file_manager/file_manager/common/js:async_util.m",
@@ -401,27 +311,14 @@ js_unittest("file_list_selection_model_unittest.m") {
 
 js_library("file_manager_dialog_base") {
   deps = [
-    "//ui/file_manager/file_manager/common/js:util",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js/cr:ui",
-    "//ui/webui/resources/js/cr/ui:dialogs",
-  ]
-  externs_list = [ "$externs_path/chrome_extensions.js" ]
-}
-
-js_library("file_manager_dialog_base.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/ui/file_manager_dialog_base.m.js" ]
-  deps = [
     "//ui/file_manager/file_manager/common/js:util.m",
     "//ui/webui/resources/js/cr/ui:dialogs.m",
   ]
-
-  extra_deps = [ ":modulize" ]
 }
 
 js_unittest("file_manager_dialog_base_unittest.m") {
   deps = [
-    ":file_manager_dialog_base.m",
+    ":file_manager_dialog_base",
     "//chrome/test/data/webui:chai_assert",
     "//ui/file_manager/file_manager/common/js:test_error_reporting.m",
     "//ui/webui/resources/js:assert.m",
@@ -433,20 +330,20 @@ js_library("file_manager_ui") {
     ":a11y_announce",
     ":action_model_ui",
     ":actions_submenu",
-    ":banners.m",
-    ":combobutton.m",
-    ":default_task_dialog.m",
-    ":dialog_footer.m",
-    ":directory_tree.m",
-    ":empty_folder.m",
+    ":banners",
+    ":combobutton",
+    ":default_task_dialog",
+    ":dialog_footer",
+    ":directory_tree",
+    ":empty_folder",
     ":file_grid",
     ":file_table",
-    ":files_alert_dialog.m",
-    ":files_confirm_dialog.m",
+    ":files_alert_dialog",
+    ":files_confirm_dialog",
     ":files_menu",
     ":gear_menu",
-    ":import_crostini_image_dialog.m",
-    ":install_linux_package_dialog.m",
+    ":import_crostini_image_dialog",
+    ":install_linux_package_dialog",
     ":list_container",
     ":location_line",
     ":multi_menu",
@@ -487,7 +384,7 @@ js_library("file_metadata_formatter") {
 js_library("file_table") {
   deps = [
     ":a11y_announce",
-    ":drag_selector.m",
+    ":drag_selector",
     ":file_list_selection_model",
     ":file_metadata_formatter",
     ":file_table_list",
@@ -573,35 +470,21 @@ js_unittest("file_tap_handler_unittest.m") {
 }
 
 # TODO(tapted): Move this into //ui/file_manager/base.
-js_library("files_alert_dialog") {
-  visibility += [ "//ui/file_manager/gallery/*" ]
-  deps = [ "//ui/webui/resources/js/cr/ui:dialogs" ]
-}
 
-js_library("files_alert_dialog.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/ui/files_alert_dialog.m.js" ]
+js_library("files_alert_dialog") {
   deps = [
     "//ui/file_manager/file_manager/common/js:util.m",
     "//ui/webui/resources/js/cr/ui:dialogs.m",
   ]
-
-  extra_deps = [ ":modulize" ]
 }
 
 # TODO(tapted): Move this into //ui/file_manager/base.
-js_library("files_confirm_dialog") {
-  visibility += [ "//ui/file_manager/gallery/*" ]
-  deps = [ "//ui/webui/resources/js/cr/ui:dialogs" ]
-}
 
-js_library("files_confirm_dialog.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/ui/files_confirm_dialog.m.js" ]
+js_library("files_confirm_dialog") {
   deps = [
     "//ui/file_manager/file_manager/common/js:util.m",
     "//ui/webui/resources/js/cr/ui:dialogs.m",
   ]
-
-  extra_deps = [ ":modulize" ]
 }
 
 js_library("files_menu") {
@@ -625,24 +508,14 @@ js_library("gear_menu") {
 js_library("install_linux_package_dialog") {
   deps = [
     ":file_manager_dialog_base",
-    "//ui/file_manager/file_manager/common/js:util",
-  ]
-}
-
-js_library("install_linux_package_dialog.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/ui/install_linux_package_dialog.m.js" ]
-  deps = [
-    ":file_manager_dialog_base.m",
     "//ui/file_manager/file_manager/common/js:util.m",
     "//ui/webui/resources/js:assert.m",
   ]
-
-  extra_deps = [ ":modulize" ]
 }
 
 js_unittest("install_linux_package_dialog_unittest.m") {
   deps = [
-    ":install_linux_package_dialog.m",
+    ":install_linux_package_dialog",
     "//chrome/test/data/webui:chai_assert",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:load_time_data.m",
@@ -651,20 +524,9 @@ js_unittest("install_linux_package_dialog_unittest.m") {
 
 js_library("import_crostini_image_dialog") {
   deps = [
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js/cr:ui",
-    "//ui/webui/resources/js/cr/ui:dialogs",
-  ]
-}
-
-js_library("import_crostini_image_dialog.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/ui/import_crostini_image_dialog.m.js" ]
-  deps = [
     "//ui/file_manager/file_manager/common/js:util.m",
     "//ui/webui/resources/js/cr/ui:dialogs.m",
   ]
-
-  extra_deps = [ ":modulize" ]
 }
 
 js_library("list_container") {
@@ -687,7 +549,7 @@ js_library("list_container") {
 
 js_library("location_line") {
   deps = [
-    ":breadcrumb.m",
+    ":breadcrumb",
     ":list_container",
     "//ui/file_manager/file_manager/common/js:metrics.m",
     "//ui/file_manager/file_manager/common/js:util.m",
@@ -808,37 +670,4 @@ js_test_gen_html("js_test_gen_html_modules") {
                     "browser_resolver_prefix_replacements=\"chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/=./image_loader/\"",
                     "hide_warnings_for=third_party/",
                   ]
-}
-
-js_modulizer("modulize") {
-  input_files = [
-    "banners.js",
-    "breadcrumb.js",
-    "combobutton.js",
-    "commandbutton.js",
-    "default_task_dialog.js",
-    "dialog_footer.js",
-    "directory_tree.js",
-    "drag_selector.js",
-    "empty_folder.js",
-    "file_manager_dialog_base.js",
-    "files_alert_dialog.js",
-    "files_confirm_dialog.js",
-    "import_crostini_image_dialog.js",
-    "install_linux_package_dialog.js",
-  ]
-
-  namespace_rewrites = cr_namespace_rewrites
-  namespace_rewrites += [
-    "cr.ui.ComboButton|ComboButton",
-    "cr.ui.FilesMenuItem|FilesMenuItem",
-    "cr.ui.MultiMenu|MultiMenu",
-    "cr.ui.table.Table|Table",
-    "cr.ui.AutocompleteList|AutocompleteList",
-    "cr.filebrowser.DefaultTaskDialog|DefaultTaskDialog",
-    "cr.filebrowser.InstallLinuxPackageDialog|InstallLinuxPackageDialog",
-    "cr.filebrowser.ImportCrostiniImageDialog|ImportCrostiniImageDialog",
-  ]
-
-  preserve_offsets = [ "True" ]
 }

@@ -25,7 +25,7 @@ import {FileTransferController} from './file_transfer_controller.m.js';
 import {MockMetadataModel} from './metadata/mock_metadata.m.js';
 import {createFakeDirectoryModel} from './mock_directory_model.m.js';
 import {A11yAnnounce} from './ui/a11y_announce.js';
-import {DirectoryTree} from './ui/directory_tree.m.js';
+import {DirectoryTree} from './ui/directory_tree.js';
 import {FileGrid} from './ui/file_grid.js';
 import {FileTable} from './ui/file_table.js';
 import {ListContainer} from './ui/list_container.js';

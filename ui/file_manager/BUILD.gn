@@ -167,6 +167,20 @@ preprocess_if_expr("preprocess_static") {
     "file_manager/foreground/js/ui/file_tap_handler.js",
     "file_manager/foreground/js/ui/file_metadata_formatter.js",
     "file_manager/foreground/js/ui/file_manager_ui.js",
+    "file_manager/foreground/js/ui/import_crostini_image_dialog.js",
+    "file_manager/foreground/js/ui/install_linux_package_dialog.js",
+    "file_manager/foreground/js/ui/files_confirm_dialog.js",
+    "file_manager/foreground/js/ui/files_alert_dialog.js",
+    "file_manager/foreground/js/ui/file_manager_dialog_base.js",
+    "file_manager/foreground/js/ui/empty_folder.js",
+    "file_manager/foreground/js/ui/drag_selector.js",
+    "file_manager/foreground/js/ui/directory_tree.js",
+    "file_manager/foreground/js/ui/dialog_footer.js",
+    "file_manager/foreground/js/ui/default_task_dialog.js",
+    "file_manager/foreground/js/ui/commandbutton.js",
+    "file_manager/foreground/js/ui/combobutton.js",
+    "file_manager/foreground/js/ui/breadcrumb.js",
+    "file_manager/foreground/js/ui/banners.js",
 
     # Image Loader:
     "image_loader/background.m.js",
@@ -336,22 +350,6 @@ preprocess_if_expr("preprocess_generated") {
     "file_manager/foreground/elements/files_toggle_ripple.js",
     "file_manager/foreground/elements/files_tooltip.js",
 
-    # Files app UI:
-    "file_manager/foreground/js/ui/banners.m.js",
-    "file_manager/foreground/js/ui/breadcrumb.m.js",
-    "file_manager/foreground/js/ui/combobutton.m.js",
-    "file_manager/foreground/js/ui/commandbutton.m.js",
-    "file_manager/foreground/js/ui/default_task_dialog.m.js",
-    "file_manager/foreground/js/ui/dialog_footer.m.js",
-    "file_manager/foreground/js/ui/directory_tree.m.js",
-    "file_manager/foreground/js/ui/drag_selector.m.js",
-    "file_manager/foreground/js/ui/import_crostini_image_dialog.m.js",
-    "file_manager/foreground/js/ui/install_linux_package_dialog.m.js",
-    "file_manager/foreground/js/ui/empty_folder.m.js",
-    "file_manager/foreground/js/ui/file_manager_dialog_base.m.js",
-    "file_manager/foreground/js/ui/files_alert_dialog.m.js",
-    "file_manager/foreground/js/ui/files_confirm_dialog.m.js",
-
     # Metadata:
     "file_manager/foreground/js/metadata/byte_reader.m.js",
     "file_manager/foreground/js/metadata/content_metadata_provider.m.js",
@@ -386,7 +384,6 @@ preprocess_if_expr("preprocess_generated") {
     "//ui/file_manager/file_manager/foreground/elements:web_components",
     "//ui/file_manager/file_manager/foreground/js:modulize",
     "//ui/file_manager/file_manager/foreground/js/metadata:modulize",
-    "//ui/file_manager/file_manager/foreground/js/ui:modulize",
   ]
 }
 
