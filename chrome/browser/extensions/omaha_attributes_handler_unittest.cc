@@ -47,16 +47,25 @@ TEST_F(OmahaAttributesHandlerUnitTest, LogPolicyViolationUWSMetrics) {
   service()->PerformActionBasedOnOmahaAttributes(kTestExtensionId, attributes);
 
   histograms.ExpectBucketCount(
-      "Extensions.ExtensionAddDisabledRemotelyReason",
-      /* sample */ ExtensionUpdateCheckDataKey::kPotentiallyUWS,
-      /* expected_count */ 1);
+      "Extensions.ExtensionDisabledRemotely2",
+      /*sample=*/ExtensionUpdateCheckDataKey::kPotentiallyUWS,
+      /*expected_count=*/1);
   histograms.ExpectBucketCount(
-      "Extensions.ExtensionAddDisabledRemotelyReason",
-      /* sample */ ExtensionUpdateCheckDataKey::kPolicyViolation,
-      /* expected_count */ 1);
+      "Extensions.ExtensionAddDisabledRemotelyReason2",
+      /*sample=*/ExtensionUpdateCheckDataKey::kPotentiallyUWS,
+      /*expected_count=*/1);
+  histograms.ExpectBucketCount(
+      "Extensions.ExtensionDisabledRemotely2",
+      /*sample=*/ExtensionUpdateCheckDataKey::kPolicyViolation,
+      /*expected_count=*/1);
+  histograms.ExpectBucketCount(
+      "Extensions.ExtensionAddDisabledRemotelyReason2",
+      /*sample=*/ExtensionUpdateCheckDataKey::kPolicyViolation,
+      /*expected_count=*/1);
 }
 
 TEST_F(OmahaAttributesHandlerUnitTest, DisableRemotelyForPolicyViolation) {
+  base::HistogramTester histograms;
   InitializeGoodInstalledExtensionService();
   service()->Init();
 
@@ -84,9 +93,18 @@ TEST_F(OmahaAttributesHandlerUnitTest, DisableRemotelyForPolicyViolation) {
   EXPECT_FALSE(blocklist_prefs::HasOmahaBlocklistState(
       kTestExtensionId, BitMapBlocklistState::BLOCKLISTED_CWS_POLICY_VIOLATION,
       prefs));
+  histograms.ExpectBucketCount(
+      "Extensions.ExtensionReenabledRemotelyForPolicyViolation",
+      /*sample=*/1,
+      /*expected_count=*/1);
+  histograms.ExpectBucketCount(
+      "Extensions.ExtensionReenabledRemotelyForPotentiallyUWS",
+      /*sample=*/1,
+      /*expected_count=*/0);
 }
 
 TEST_F(OmahaAttributesHandlerUnitTest, DisableRemotelyForPotentiallyUws) {
+  base::HistogramTester histograms;
   InitializeGoodInstalledExtensionService();
   service()->Init();
 
@@ -114,6 +132,14 @@ TEST_F(OmahaAttributesHandlerUnitTest, DisableRemotelyForPotentiallyUws) {
   EXPECT_FALSE(blocklist_prefs::HasOmahaBlocklistState(
       kTestExtensionId, BitMapBlocklistState::BLOCKLISTED_POTENTIALLY_UNWANTED,
       prefs));
+  histograms.ExpectBucketCount(
+      "Extensions.ExtensionReenabledRemotelyForPotentiallyUWS",
+      /*sample=*/1,
+      /*expected_count=*/1);
+  histograms.ExpectBucketCount(
+      "Extensions.ExtensionReenabledRemotelyForPolicyViolation",
+      /*sample=*/1,
+      /*expected_count=*/0);
 }
 
 TEST_F(OmahaAttributesHandlerUnitTest, MultipleGreylistStates) {
@@ -214,6 +240,7 @@ class OmahaAttributesHandlerWithFeatureDisabledUnitTest
 
 TEST_F(OmahaAttributesHandlerWithFeatureDisabledUnitTest,
        DoNotDisableRemotelyWhenFlagsDisabled) {
+  base::HistogramTester histograms;
   InitializeGoodInstalledExtensionService();
   service()->Init();
 
@@ -231,6 +258,9 @@ TEST_F(OmahaAttributesHandlerWithFeatureDisabledUnitTest,
   EXPECT_FALSE(blocklist_prefs::HasOmahaBlocklistState(
       kTestExtensionId, BitMapBlocklistState::BLOCKLISTED_POTENTIALLY_UNWANTED,
       ExtensionPrefs::Get(profile())));
+  // Histograms should not be logged when the flag is disabled.
+  histograms.ExpectTotalCount("Extensions.ExtensionAddDisabledRemotelyReason2",
+                              /*expected_count=*/0);
 }
 
 }  // namespace extensions

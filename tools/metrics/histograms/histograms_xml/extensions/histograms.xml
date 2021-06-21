@@ -1149,12 +1149,29 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Extensions.ExtensionAddDisabledRemotelyReason"
     enum="ExtensionUpdateCheckDataKey" expires_after="2021-10-10">
+  <obsolete>
+    Removed in M92 and replaced with
+    Extensions.ExtensionAddDisabledRemotelyReason2.
+  </obsolete>
   <owner>bdea@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Recorded when a new violation is retrieved from Omaha for an extension. The
     new violation reason is retrieved from the update service data key reasons
     during an update check for extensions.
+  </summary>
+</histogram>
+
+<histogram name="Extensions.ExtensionAddDisabledRemotelyReason2"
+    enum="ExtensionUpdateCheckDataKey" expires_after="2021-10-10">
+  <owner>bdea@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Recorded when a new violation is retrieved from Omaha for an extension. The
+    new violation reason is retrieved from the update service data key reasons
+    during an update check for extensions. This metric was added in M92 to
+    replace the old version, because the logic of logging greylisted extensions
+    has changed.
   </summary>
 </histogram>
 
@@ -1182,12 +1199,28 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Extensions.ExtensionDisabledRemotely"
     enum="ExtensionUpdateCheckDataKey" expires_after="2021-10-10">
+  <obsolete>
+    Removed in M92 and replaced with Extensions.ExtensionDisabledRemotely2.
+  </obsolete>
   <owner>bdea@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Recorded when an extension that was previously enabled is disabled due to a
     new violation retrieved from Omaha. This is recorded when the violation is
     detected when Chrome checks for an update for the extension.
+  </summary>
+</histogram>
+
+<histogram name="Extensions.ExtensionDisabledRemotely2"
+    enum="ExtensionUpdateCheckDataKey" expires_after="2021-10-10">
+  <owner>bdea@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Recorded when an extension that was previously enabled is disabled due to a
+    new violation retrieved from Omaha. This is recorded when the violation is
+    detected when Chrome checks for an update for the extension. This metric was
+    added in M92 to replace the old version, because the logic of logging
+    greylisted extensions has changed.
   </summary>
 </histogram>
 
@@ -1221,6 +1254,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Recorded when an extension that was previously only disabled remotely is
     re-enabled remotely during an update service session.
   </summary>
+</histogram>
+
+<histogram name="Extensions.ExtensionReenabledRemotely{BlocklistState}"
+    units="count" expires_after="2022-06-03">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Recorded when a {BlocklistState} extension that was previously only disabled
+    remotely is re-enabled remotely during an update service session.
+  </summary>
+  <token key="BlocklistState">
+    <variant name="ForPolicyViolation" summary="policy violation"/>
+    <variant name="ForPotentiallyUWS" summary="potentially unwanted"/>
+  </token>
 </histogram>
 
 <histogram name="Extensions.ExtensionRootPathLength" units="units"

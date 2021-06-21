@@ -53,7 +53,7 @@ class OmahaAttributesHandler {
   static void ReportNoUpdateCheckKeys();
 
   // Logs UMA metrics when a remotely disabled extension is re-enabled.
-  static void ReportReenableExtensionFromMalware();
+  static void ReportReenableExtension(ExtensionUpdateCheckDataKey reason);
 
   // Checks whether the `state` is in the `attributes`.
   static bool HasOmahaBlocklistStateInAttributes(const base::Value& attributes,
@@ -66,16 +66,16 @@ class OmahaAttributesHandler {
                                            const base::Value& attributes);
 
  private:
-  void ReportPolicyViolationUWSOmahaAttributes(const base::Value& attributes);
-
   // Performs action based on `attributes` for the `extension_id`. If the
   // extension is not in the `greylist_state` or the `feature_flag` is disabled,
   // remove it from the Omaha blocklist state and maybe re-enable it. Otherwise,
-  // add it to the Omaha blocklist state and maybe disable it.
+  // add it to the Omaha blocklist state and maybe disable it. `reason` is used
+  // for logging UMA metrics.
   void HandleGreylistOmahaAttribute(const ExtensionId& extension_id,
                                     const base::Value& attributes,
                                     const base::Feature& feature_flag,
-                                    BitMapBlocklistState greylist_state);
+                                    BitMapBlocklistState greylist_state,
+                                    ExtensionUpdateCheckDataKey reason);
 
   ExtensionPrefs* extension_prefs_ = nullptr;
   ExtensionService* extension_service_ = nullptr;

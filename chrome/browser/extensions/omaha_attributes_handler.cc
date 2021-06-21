@@ -20,23 +20,38 @@ void OmahaAttributesHandler::ReportExtensionDisabledRemotely(
     ExtensionUpdateCheckDataKey reason) {
   // Report that the extension is newly disabled due to Omaha attributes.
   if (should_be_remotely_disabled)
-    base::UmaHistogramEnumeration("Extensions.ExtensionDisabledRemotely",
+    base::UmaHistogramEnumeration("Extensions.ExtensionDisabledRemotely2",
                                   reason);
 
   // Report that the extension has added a new disable reason.
-  base::UmaHistogramEnumeration("Extensions.ExtensionAddDisabledRemotelyReason",
-                                reason);
+  base::UmaHistogramEnumeration(
+      "Extensions.ExtensionAddDisabledRemotelyReason2", reason);
 }
 
 // static
 void OmahaAttributesHandler::ReportNoUpdateCheckKeys() {
-  base::UmaHistogramEnumeration("Extensions.ExtensionDisabledRemotely",
+  base::UmaHistogramEnumeration("Extensions.ExtensionDisabledRemotely2",
                                 ExtensionUpdateCheckDataKey::kNoKey);
 }
 
 // static
-void OmahaAttributesHandler::ReportReenableExtensionFromMalware() {
-  base::UmaHistogramCounts100("Extensions.ExtensionReenabledRemotely", 1);
+void OmahaAttributesHandler::ReportReenableExtension(
+    ExtensionUpdateCheckDataKey reason) {
+  const char* histogram = nullptr;
+  switch (reason) {
+    case ExtensionUpdateCheckDataKey::kMalware:
+      histogram = "Extensions.ExtensionReenabledRemotely";
+      break;
+    case ExtensionUpdateCheckDataKey::kPotentiallyUWS:
+      histogram = "Extensions.ExtensionReenabledRemotelyForPotentiallyUWS";
+      break;
+    case ExtensionUpdateCheckDataKey::kPolicyViolation:
+      histogram = "Extensions.ExtensionReenabledRemotelyForPolicyViolation";
+      break;
+    case ExtensionUpdateCheckDataKey::kNoKey:
+      NOTREACHED();
+  }
+  base::UmaHistogramCounts100(histogram, 1);
 }
 
 // static
@@ -74,50 +89,41 @@ void OmahaAttributesHandler::PerformActionBasedOnOmahaAttributes(
     const ExtensionId& extension_id,
     const base::Value& attributes) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  ReportPolicyViolationUWSOmahaAttributes(attributes);
   HandleGreylistOmahaAttribute(
       extension_id, attributes,
       extensions_features::kDisablePolicyViolationExtensionsRemotely,
-      BitMapBlocklistState::BLOCKLISTED_CWS_POLICY_VIOLATION);
+      BitMapBlocklistState::BLOCKLISTED_CWS_POLICY_VIOLATION,
+      ExtensionUpdateCheckDataKey::kPolicyViolation);
   HandleGreylistOmahaAttribute(
       extension_id, attributes,
       extensions_features::kDisablePotentiallyUwsExtensionsRemotely,
-      BitMapBlocklistState::BLOCKLISTED_POTENTIALLY_UNWANTED);
-}
-
-void OmahaAttributesHandler::ReportPolicyViolationUWSOmahaAttributes(
-    const base::Value& attributes) {
-  bool has_uws_value = HasOmahaBlocklistStateInAttributes(
-      attributes, BitMapBlocklistState::BLOCKLISTED_POTENTIALLY_UNWANTED);
-  if (has_uws_value) {
-    ReportExtensionDisabledRemotely(
-        /*should_be_remotely_disabled=*/false,
-        ExtensionUpdateCheckDataKey::kPotentiallyUWS);
-  }
-  bool has_pv_value = HasOmahaBlocklistStateInAttributes(
-      attributes, BitMapBlocklistState::BLOCKLISTED_CWS_POLICY_VIOLATION);
-  if (has_pv_value) {
-    ReportExtensionDisabledRemotely(
-        /*should_be_remotely_disabled=*/false,
-        ExtensionUpdateCheckDataKey::kPolicyViolation);
-  }
+      BitMapBlocklistState::BLOCKLISTED_POTENTIALLY_UNWANTED,
+      ExtensionUpdateCheckDataKey::kPotentiallyUWS);
 }
 
 void OmahaAttributesHandler::HandleGreylistOmahaAttribute(
     const ExtensionId& extension_id,
     const base::Value& attributes,
     const base::Feature& feature_flag,
-    BitMapBlocklistState greylist_state) {
+    BitMapBlocklistState greylist_state,
+    ExtensionUpdateCheckDataKey reason) {
   bool has_attribute_value =
       HasOmahaBlocklistStateInAttributes(attributes, greylist_state);
+  bool has_omaha_blocklist_state = blocklist_prefs::HasOmahaBlocklistState(
+      extension_id, greylist_state, extension_prefs_);
   if (!base::FeatureList::IsEnabled(feature_flag) || !has_attribute_value) {
-    blocklist_prefs::RemoveOmahaBlocklistState(extension_id, greylist_state,
-                                               extension_prefs_);
+    if (has_omaha_blocklist_state) {
+      blocklist_prefs::RemoveOmahaBlocklistState(extension_id, greylist_state,
+                                                 extension_prefs_);
+      ReportReenableExtension(reason);
+    }
     extension_service_->ClearGreylistedAcknowledgedStateAndMaybeReenable(
         extension_id);
     return;
   }
 
+  ReportExtensionDisabledRemotely(
+      /*should_be_remotely_disabled=*/!has_omaha_blocklist_state, reason);
   blocklist_prefs::AddOmahaBlocklistState(extension_id, greylist_state,
                                           extension_prefs_);
   extension_service_->MaybeDisableGreylistedExtension(extension_id,
