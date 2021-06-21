@@ -194,7 +194,7 @@ bool XShmImagePool::Resize(const gfx::Size& pixel_size) {
       auto shmseg = connection_->GenerateId<x11::Shm::Seg>();
       auto req = connection_->shm().Attach({
           .shmseg = shmseg,
-          .shmid = state.shmid,
+          .shmid = static_cast<uint32_t>(state.shmid),
           // If this class ever needs to use XShmGetImage(), this needs to be
           // changed to read-write.
           .read_only = true,

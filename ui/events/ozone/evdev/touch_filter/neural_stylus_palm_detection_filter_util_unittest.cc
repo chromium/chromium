@@ -116,7 +116,7 @@ TEST_F(NeuralStylusPalmDetectionFilterUtilTest, LinkTouchscreenSampleTest) {
   touch_.minor = 0;  // no minor from link.
   // use 40 as a base since model is trained on that kind of device.
   model_config_.radius_polynomial_resize = {
-      link_touchscreen.GetAbsResolution(ABS_MT_POSITION_X) / 40.0, 0.0};
+      link_touchscreen.GetAbsResolution(ABS_MT_POSITION_X) / 40.0f, 0.0};
   const PalmFilterSample sample =
       CreatePalmFilterSample(touch_, time, model_config_, link_distilled);
   EXPECT_FLOAT_EQ(12.5, sample.major_radius);

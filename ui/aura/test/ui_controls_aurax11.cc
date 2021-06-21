@@ -102,8 +102,8 @@ bool UIControlsX11::SendMouseMoveNotifyWhenDone(int screen_x,
     host_->window()->MoveCursorTo(root_location);
   } else {
     x11::MotionNotifyEvent xevent{
-        .event_x = root_location.x(),
-        .event_y = root_location.y(),
+        .event_x = static_cast<int16_t>(root_location.x()),
+        .event_y = static_cast<int16_t>(root_location.y()),
         .state = static_cast<x11::KeyButMask>(button_down_mask),
         .same_screen = true,
     };

@@ -153,23 +153,33 @@ void SetWindowWarp(NSWindow* window,
   // coordinates. Note that the origin of the coordinate system is top, left.
   CGPointWarp mesh[2][2] = {
       {{
-        // Top left.
-        {NSMinX(win_rect), NSMinY(win_rect)},
-        {NSMinX(screen_rect) + perspective_offset, NSMinY(screen_rect)},
+           // Top left.
+           {static_cast<float>(NSMinX(win_rect)),
+            static_cast<float>(NSMinY(win_rect))},
+           {static_cast<float>(NSMinX(screen_rect) + perspective_offset),
+            static_cast<float>(NSMinY(screen_rect))},
        },
        {
-        // Top right.
-        {NSMaxX(win_rect), NSMinY(win_rect)},
-        {NSMaxX(screen_rect) - perspective_offset, NSMinY(screen_rect)}, }},
+           // Top right.
+           {static_cast<float>(NSMaxX(win_rect)),
+            static_cast<float>(NSMinY(win_rect))},
+           {static_cast<float>(NSMaxX(screen_rect) - perspective_offset),
+            static_cast<float>(NSMinY(screen_rect))},
+       }},
       {{
-        // Bottom left.
-        {NSMinX(win_rect), NSMaxY(win_rect)},
-        {NSMinX(screen_rect), NSMaxY(screen_rect)},
+           // Bottom left.
+           {static_cast<float>(NSMinX(win_rect)),
+            static_cast<float>(NSMaxY(win_rect))},
+           {static_cast<float>(NSMinX(screen_rect)),
+            static_cast<float>(NSMaxY(screen_rect))},
        },
        {
-        // Bottom right.
-        {NSMaxX(win_rect), NSMaxY(win_rect)},
-        {NSMaxX(screen_rect), NSMaxY(screen_rect)}, }},
+           // Bottom right.
+           {static_cast<float>(NSMaxX(win_rect)),
+            static_cast<float>(NSMaxY(win_rect))},
+           {static_cast<float>(NSMaxX(screen_rect)),
+            static_cast<float>(NSMaxY(screen_rect))},
+       }},
   };
 
   CGSConnection cid = _CGSDefaultConnection();

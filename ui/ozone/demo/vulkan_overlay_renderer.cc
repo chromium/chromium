@@ -195,8 +195,8 @@ void VulkanOverlayRenderer::RenderFrame() {
             },
             /* .extent = */
             {
-                /* .width = */ buffer.size().width(),
-                /* .height = */ buffer.size().height(),
+                /* .width = */ static_cast<uint32_t>(buffer.size().width()),
+                /* .height = */ static_cast<uint32_t>(buffer.size().height()),
             },
         },
         /* .clearValueCount = */ 1,
@@ -375,8 +375,8 @@ VulkanOverlayRenderer::Buffer::Create(
       /* .renderPass = */ vk_render_pass,
       /* .attachmentCount = */ 1,
       /* .pAttachments = */ &vk_image_view,
-      /* .width = */ size.width(),
-      /* .height = */ size.height(),
+      /* .width = */ static_cast<uint32_t>(size.width()),
+      /* .height = */ static_cast<uint32_t>(size.height()),
       /* .layers = */ 1,
   };
 

@@ -63,29 +63,35 @@ bool X11SoftwareBitmapPresenter::CompositeBitmap(x11::Connection* connection,
                                                  int depth,
                                                  x11::GraphicsContext gc,
                                                  const void* data) {
-  connection->ClearArea({false, widget, x, y, width, height});
+  int16_t x_i16 = x;
+  int16_t y_i16 = y;
+  uint16_t w_u16 = width;
+  uint16_t h_u16 = height;
+  uint8_t d_u8 = depth;
+  connection->ClearArea({false, widget, x_i16, y_i16, w_u16, h_u16});
 
   constexpr auto kAllPlanes =
       std::numeric_limits<decltype(x11::GetImageRequest::plane_mask)>::max();
 
   scoped_refptr<base::RefCountedMemory> bg;
-  auto req = connection->GetImage(
-      {x11::ImageFormat::ZPixmap, widget, x, y, width, height, kAllPlanes});
+  auto req = connection->GetImage({x11::ImageFormat::ZPixmap, widget, x_i16,
+                                   y_i16, w_u16, h_u16, kAllPlanes});
   if (auto reply = req.Sync()) {
     bg = reply->data;
   } else {
     auto pixmap_id = connection->GenerateId<x11::Pixmap>();
-    connection->CreatePixmap({depth, pixmap_id, widget, width, height});
+    connection->CreatePixmap({d_u8, pixmap_id, widget, w_u16, h_u16});
     ScopedPixmap pixmap(connection, pixmap_id);
 
     connection->ChangeGC(x11::ChangeGCRequest{
         .gc = gc, .subwindow_mode = x11::SubwindowMode::IncludeInferiors});
-    connection->CopyArea({widget, pixmap_id, gc, x, y, 0, 0, width, height});
+    connection->CopyArea(
+        {widget, pixmap_id, gc, x_i16, y_i16, 0, 0, w_u16, h_u16});
     connection->ChangeGC(x11::ChangeGCRequest{
         .gc = gc, .subwindow_mode = x11::SubwindowMode::ClipByChildren});
 
-    auto req = connection->GetImage({x11::ImageFormat::ZPixmap, pixmap_id, 0, 0,
-                                     width, height, kAllPlanes});
+    auto req = connection->GetImage(
+        {x11::ImageFormat::ZPixmap, pixmap_id, 0, 0, w_u16, h_u16, kAllPlanes});
     if (auto reply = req.Sync())
       bg = reply->data;
     else
@@ -109,8 +115,8 @@ bool X11SoftwareBitmapPresenter::CompositeBitmap(x11::Connection* connection,
   canvas.drawImage(fg_bitmap.asImage(), 0, 0);
   canvas.flush();
 
-  connection->PutImage({x11::ImageFormat::ZPixmap, widget, gc, width, height, x,
-                        y, 0, depth, bg});
+  connection->PutImage({x11::ImageFormat::ZPixmap, widget, gc, w_u16, h_u16,
+                        x_i16, y_i16, 0, d_u8, bg});
 
   return true;
 }
@@ -203,15 +209,17 @@ void X11SoftwareBitmapPresenter::EndPaint(const gfx::Rect& damage_rect) {
     x11::Shm::PutImageRequest put_image_request{
         .drawable = widget_,
         .gc = gc_,
-        .total_width = shm_pool_->CurrentBitmap().width(),
-        .total_height = shm_pool_->CurrentBitmap().height(),
-        .src_x = rect.x(),
-        .src_y = rect.y(),
-        .src_width = rect.width(),
-        .src_height = rect.height(),
-        .dst_x = rect.x(),
-        .dst_y = rect.y(),
-        .depth = depth_,
+        .total_width =
+            static_cast<uint16_t>(shm_pool_->CurrentBitmap().width()),
+        .total_height =
+            static_cast<uint16_t>(shm_pool_->CurrentBitmap().height()),
+        .src_x = static_cast<uint16_t>(rect.x()),
+        .src_y = static_cast<uint16_t>(rect.y()),
+        .src_width = static_cast<uint16_t>(rect.width()),
+        .src_height = static_cast<uint16_t>(rect.height()),
+        .dst_x = static_cast<int16_t>(rect.x()),
+        .dst_y = static_cast<int16_t>(rect.y()),
+        .depth = static_cast<uint8_t>(depth_),
         .format = x11::ImageFormat::ZPixmap,
         .send_event = enable_multibuffering_,
         .shmseg = shm_pool_->CurrentSegment(),

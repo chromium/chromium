@@ -330,8 +330,8 @@ scoped_refptr<gfx::NativePixmap> GbmSurfaceFactory::CreateNativePixmapForVulkan(
       /* .format = */ vk_format,
       /* .extent = */
       {
-          /* .width = */ size.width(),
-          /* .height = */ size.height(),
+          /* .width = */ static_cast<uint32_t>(size.width()),
+          /* .height = */ static_cast<uint32_t>(size.height()),
           /* .depth = */ 1,
       },
       /* .strideInBytes = */ buffer->GetPlaneStride(0),

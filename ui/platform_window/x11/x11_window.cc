@@ -164,7 +164,8 @@ x11::NotifyDetail XI2DetailToXDetail(x11::Input::NotifyDetail xi2_detail) {
 void SyncSetCounter(x11::Connection* connection,
                     x11::Sync::Counter counter,
                     int64_t value) {
-  x11::Sync::Int64 sync_value{.hi = value >> 32, .lo = value & 0xFFFFFFFF};
+  x11::Sync::Int64 sync_value{.hi = static_cast<int32_t>(value >> 32),
+                              .lo = static_cast<uint32_t>(value)};
   connection->sync().SetCounter({counter, sync_value});
 }
 
@@ -770,8 +771,8 @@ void X11Window::SetCursor(scoped_refptr<PlatformCursor> cursor) {
 void X11Window::MoveCursorTo(const gfx::Point& location_px) {
   connection_->WarpPointer(x11::WarpPointerRequest{
       .dst_window = x_root_window_,
-      .dst_x = bounds_in_pixels_.x() + location_px.x(),
-      .dst_y = bounds_in_pixels_.y() + location_px.y(),
+      .dst_x = static_cast<int16_t>(bounds_in_pixels_.x() + location_px.x()),
+      .dst_y = static_cast<int16_t>(bounds_in_pixels_.y() + location_px.y()),
   });
 }
 
@@ -991,8 +992,10 @@ bool X11Window::CanSetDecorationInsets() const {
 }
 
 void X11Window::SetDecorationInsets(gfx::Insets insets_px) {
-  std::vector<uint32_t> extents{insets_px.left(), insets_px.right(),
-                                insets_px.top(), insets_px.bottom()};
+  std::vector<uint32_t> extents{static_cast<uint32_t>(insets_px.left()),
+                                static_cast<uint32_t>(insets_px.right()),
+                                static_cast<uint32_t>(insets_px.top()),
+                                static_cast<uint32_t>(insets_px.bottom())};
   x11::SetArrayProperty(xwindow_, x11::GetAtom("_GTK_FRAME_EXTENTS"),
                         x11::Atom::CARDINAL, extents);
 }
@@ -1015,8 +1018,10 @@ void X11Window::SetInputRegion(gfx::Rect region_px) {
       .destination_kind = x11::Shape::Sk::Input,
       .ordering = x11::ClipOrdering::YXBanded,
       .destination_window = xwindow_,
-      .rectangles = {{region_px.x(), region_px.y(), region_px.width(),
-                      region_px.height()}},
+      .rectangles = {{static_cast<int16_t>(region_px.x()),
+                      static_cast<int16_t>(region_px.y()),
+                      static_cast<uint16_t>(region_px.width()),
+                      static_cast<uint16_t>(region_px.height())}},
   });
 }
 
@@ -1040,7 +1045,7 @@ void X11Window::SetVisibleOnAllWorkspaces(bool always_visible) {
 
   workspace_ = kAllWorkspaces;
   SendClientMessage(xwindow_, x_root_window_, x11::GetAtom("_NET_WM_DESKTOP"),
-                    {new_desktop, 0, 0, 0, 0});
+                    {static_cast<uint32_t>(new_desktop), 0, 0, 0, 0});
 }
 
 bool X11Window::IsVisibleOnAllWorkspaces() const {
@@ -2299,8 +2304,8 @@ void X11Window::UpdateWindowRegion(
     // is due to a bug in KWin <= 4.11.5 (KDE bug #330573) where setting a null
     // shape causes the hint to disable system borders to be ignored (resulting
     // in a double border).
-    x11::Rectangle r{0, 0, bounds_in_pixels_.width(),
-                     bounds_in_pixels_.height()};
+    x11::Rectangle r{0, 0, static_cast<uint16_t>(bounds_in_pixels_.width()),
+                     static_cast<uint16_t>(bounds_in_pixels_.height())};
     set_shape({r});
   }
 }

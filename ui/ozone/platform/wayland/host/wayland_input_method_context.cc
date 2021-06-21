@@ -220,8 +220,9 @@ void WaylandInputMethodContext::SetSurroundingText(
     LOG(DFATAL) << "The selection range is invalid.";
     return;
   }
-  gfx::Range selection_range_utf8 = {offsets_for_adjustment[0],
-                                     offsets_for_adjustment[1]};
+  gfx::Range selection_range_utf8 = {
+      static_cast<uint32_t>(offsets_for_adjustment[0]),
+      static_cast<uint32_t>(offsets_for_adjustment[1])};
 
   // If the selection range in UTF8 form is longer than the maximum length of
   // wayland messages, skip sending set_surrounding_text requests.

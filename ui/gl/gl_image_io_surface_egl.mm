@@ -212,11 +212,11 @@ bool GLImageIOSurfaceEGL::BindTexImageImpl(unsigned target,
     const EGLint attribs[] = {
       EGL_WIDTH,                         size_.width(),
       EGL_HEIGHT,                        size_.height(),
-      EGL_IOSURFACE_PLANE_ANGLE,         io_surface_plane_,
+      EGL_IOSURFACE_PLANE_ANGLE,         static_cast<EGLint>(io_surface_plane_),
       EGL_TEXTURE_TARGET,                texture_target_,
-      EGL_TEXTURE_INTERNAL_FORMAT_ANGLE, formatType.format,
+      EGL_TEXTURE_INTERNAL_FORMAT_ANGLE, static_cast<EGLint>(formatType.format),
       EGL_TEXTURE_FORMAT,                EGL_TEXTURE_RGBA,
-      EGL_TEXTURE_TYPE_ANGLE,            formatType.type,
+      EGL_TEXTURE_TYPE_ANGLE,            static_cast<EGLint>(formatType.type),
       EGL_NONE,                          EGL_NONE,
     };
     // clang-format on

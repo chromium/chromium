@@ -330,10 +330,10 @@ void DrawPixmap(x11::Connection* connection,
         .format = x11::ImageFormat::ZPixmap,
         .drawable = drawable,
         .gc = gc,
-        .width = width,
-        .height = n_rows,
-        .dst_x = dst_x,
-        .dst_y = dst_y + row,
+        .width = static_cast<uint16_t>(width),
+        .height = static_cast<uint16_t>(n_rows),
+        .dst_x = static_cast<int16_t>(dst_x),
+        .dst_y = static_cast<int16_t>(dst_y + row),
         .left_pad = 0,
         .depth = visual_info->format->depth,
         .data = data,
@@ -602,7 +602,7 @@ void SetWMSpecState(x11::Window window,
                     x11::Atom state2) {
   SendClientMessage(
       window, GetX11RootWindow(), x11::GetAtom("_NET_WM_STATE"),
-      {enabled ? kNetWMStateAdd : kNetWMStateRemove,
+      {static_cast<uint32_t>(enabled ? kNetWMStateAdd : kNetWMStateRemove),
        static_cast<uint32_t>(state1), static_cast<uint32_t>(state2), 1, 0});
 }
 
@@ -618,7 +618,9 @@ void DoWMMoveResize(x11::Connection* connection,
   connection->UngrabPointer({x11::Time::CurrentTime});
 
   SendClientMessage(window, root_window, x11::GetAtom("_NET_WM_MOVERESIZE"),
-                    {location_px.x(), location_px.y(), direction, 0, 0});
+                    {static_cast<uint32_t>(location_px.x()),
+                     static_cast<uint32_t>(location_px.y()),
+                     static_cast<uint32_t>(direction), 0, 0});
 }
 
 bool HasWMSpecProperty(const base::flat_set<x11::Atom>& properties,

@@ -50,8 +50,8 @@ void WaylandPointer::Enter(void* data,
   pointer->connection_->set_pointer_enter_serial(serial);
 
   WaylandWindow* window = wl::RootWindowFromWlSurface(surface);
-  gfx::PointF location{wl_fixed_to_double(surface_x),
-                       wl_fixed_to_double(surface_y)};
+  gfx::PointF location{static_cast<float>(wl_fixed_to_double(surface_x)),
+                       static_cast<float>(wl_fixed_to_double(surface_y))};
   pointer->delegate_->OnPointerFocusChanged(window, location);
 }
 

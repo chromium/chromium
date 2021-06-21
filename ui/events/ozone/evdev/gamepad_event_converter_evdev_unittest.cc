@@ -223,8 +223,9 @@ TEST_F(GamepadEventConverterEvdevTest, XboxGamepadVibrationEvents) {
   std::unique_ptr<ui::TestGamepadEventConverterEvdev> dev =
       CreateDevice(kXboxGamepad);
 
-  struct ExpectedVibrationEvent expected_events[] = {{dev->kEffectId, 1},
-                                                     {dev->kEffectId, 0}};
+  struct ExpectedVibrationEvent expected_events[] = {
+      {static_cast<uint16_t>(dev->kEffectId), 1},
+      {static_cast<uint16_t>(dev->kEffectId), 0}};
   struct ExpectedVibrationEffect expected_effect = {10000, 0x8080, 0x8080};
 
   dev->PlayVibrationEffect(0x80, 10000);

@@ -67,7 +67,8 @@ class VkTestXkbKeyboardLayoutEngine : public XkbKeyboardLayoutEngine {
     xkb_flag_map_.clear();
     xkb_flag_map_.resize(base::size(kTestFlags));
     for (size_t i = 0; i < base::size(kTestFlags); ++i) {
-      XkbFlagMapEntry e = {kTestFlags[i], kTestFlags[i]};
+      XkbFlagMapEntry e = {kTestFlags[i],
+                           static_cast<xkb_mod_mask_t>(kTestFlags[i])};
       xkb_flag_map_.push_back(e);
     }
 

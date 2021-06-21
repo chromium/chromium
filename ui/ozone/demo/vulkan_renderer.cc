@@ -281,8 +281,10 @@ void VulkanRenderer::RenderFrame() {
               },
               /* .extent = */
               {
-                  /* .width = */ vulkan_swap_chain->size().width(),
-                  /* .height = */ vulkan_swap_chain->size().height(),
+                  /* .width = */ static_cast<uint32_t>(
+                      vulkan_swap_chain->size().width()),
+                  /* .height = */
+                  static_cast<uint32_t>(vulkan_swap_chain->size().height()),
               },
           },
           /* .clearValueCount = */ 1,
@@ -397,8 +399,8 @@ VulkanRenderer::Framebuffer::Create(gpu::VulkanDeviceQueue* vulkan_device_queue,
       /* .renderPass = */ vk_render_pass,
       /* .attachmentCount = */ 1,
       /* .pAttachments = */ &vk_image_view,
-      /* .width = */ vulkan_swap_chain->size().width(),
-      /* .height = */ vulkan_swap_chain->size().height(),
+      /* .width = */ static_cast<uint32_t>(vulkan_swap_chain->size().width()),
+      /* .height = */ static_cast<uint32_t>(vulkan_swap_chain->size().height()),
       /* .layers = */ 1,
   };
 

@@ -103,10 +103,10 @@ void X11UIControlsTestHelper::SendMouseMotionNotifyEvent(
     const gfx::Point& mouse_root_loc,
     base::OnceClosure closure) {
   x11::MotionNotifyEvent xevent{
-      .root_x = mouse_root_loc.x(),
-      .root_y = mouse_root_loc.y(),
-      .event_x = mouse_loc.x(),
-      .event_y = mouse_loc.y(),
+      .root_x = static_cast<int16_t>(mouse_root_loc.x()),
+      .root_y = static_cast<int16_t>(mouse_root_loc.y()),
+      .event_x = static_cast<int16_t>(mouse_loc.x()),
+      .event_y = static_cast<int16_t>(mouse_loc.y()),
       .state = static_cast<x11::KeyButMask>(button_down_mask),
       .same_screen = true,
   };

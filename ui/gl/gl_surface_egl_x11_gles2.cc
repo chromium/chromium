@@ -37,8 +37,8 @@ bool NativeViewGLSurfaceEGLX11GLES2::InitializeNativeWindow() {
   connection->CreateWindow(x11::CreateWindowRequest{
       .wid = window(),
       .parent = parent_window_,
-      .width = size_.width(),
-      .height = size_.height(),
+      .width = static_cast<uint16_t>(size_.width()),
+      .height = static_cast<uint16_t>(size_.height()),
       .c_class = x11::WindowClass::InputOutput,
       .background_pixmap = x11::Pixmap::None,
       .bit_gravity = x11::Gravity::NorthWest,

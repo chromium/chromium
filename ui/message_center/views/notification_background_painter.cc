@@ -12,12 +12,11 @@
 
 namespace message_center {
 
-NotificationBackgroundPainter::NotificationBackgroundPainter(int top_radius,
-                                                             int bottom_radius,
-                                                             SkColor color)
-    : top_radius_(SkIntToScalar(top_radius)),
-      bottom_radius_(SkIntToScalar(bottom_radius)),
-      color_(color) {}
+NotificationBackgroundPainter::NotificationBackgroundPainter(
+    float top_radius,
+    float bottom_radius,
+    SkColor color)
+    : top_radius_(top_radius), bottom_radius_(bottom_radius), color_(color) {}
 
 NotificationBackgroundPainter::~NotificationBackgroundPainter() = default;
 

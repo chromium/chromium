@@ -53,8 +53,8 @@ bool GetArrayProperty(Window window,
           ->GetProperty(GetPropertyRequest{
               .window = static_cast<Window>(window),
               .property = name,
-              .long_length =
-                  amount ? length : std::numeric_limits<lentype>::max()})
+              .long_length = static_cast<uint32_t>(
+                  amount ? length : std::numeric_limits<lentype>::max())})
           .Sync();
   if (!response || response->format != CHAR_BIT * sizeof(T))
     return false;
@@ -96,7 +96,7 @@ Future<void> SetArrayProperty(Window window,
                             .property = name,
                             .type = type,
                             .format = CHAR_BIT * sizeof(T),
-                            .data_len = values.size(),
+                            .data_len = static_cast<uint32_t>(values.size()),
                             .data = base::RefCountedBytes::TakeVector(&data)});
 }
 

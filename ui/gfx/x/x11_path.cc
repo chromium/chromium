@@ -17,10 +17,10 @@ std::unique_ptr<std::vector<Rectangle>> CreateRegionFromSkRegion(
 
   for (SkRegion::Iterator i(region); !i.done(); i.next()) {
     result->push_back({
-        .x = i.rect().x(),
-        .y = i.rect().y(),
-        .width = i.rect().width(),
-        .height = i.rect().height(),
+        .x = static_cast<int16_t>(i.rect().x()),
+        .y = static_cast<int16_t>(i.rect().y()),
+        .width = static_cast<uint16_t>(i.rect().width()),
+        .height = static_cast<uint16_t>(i.rect().height()),
     });
   }
 

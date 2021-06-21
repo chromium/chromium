@@ -72,10 +72,12 @@ void DispatchMouseMotionEvent(DesktopWindowTreeHostLinux* desktop_host,
       .detail = x11::Motion::Normal,
       .root = connection->default_root(),
       .event = static_cast<x11::Window>(desktop_host->GetAcceleratedWidget()),
-      .root_x = point_in_screen.x(),
-      .root_y = point_in_screen.y(),
-      .event_x = point_in_screen.x() - bounds_in_screen.x(),
-      .event_y = point_in_screen.y() - bounds_in_screen.y(),
+      .root_x = static_cast<int16_t>(point_in_screen.x()),
+      .root_y = static_cast<int16_t>(point_in_screen.y()),
+      .event_x =
+          static_cast<int16_t>(point_in_screen.x() - bounds_in_screen.x()),
+      .event_y =
+          static_cast<int16_t>(point_in_screen.y() - bounds_in_screen.y()),
       .same_screen = true,
   };
 

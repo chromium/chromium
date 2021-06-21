@@ -126,7 +126,7 @@ const base::Version& GtkVersion() {
   return *gtk_version;
 }
 
-bool GtkCheckVersion(int major, int minor, int micro) {
+bool GtkCheckVersion(uint32_t major, uint32_t minor, uint32_t micro) {
   return GtkVersion() >= base::Version({major, minor, micro});
 }
 

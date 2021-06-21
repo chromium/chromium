@@ -170,7 +170,8 @@ class DrmDevice::PageFlipManager {
   void RegisterCallback(uint64_t id,
                         uint64_t pending_calls,
                         DrmDevice::PageFlipCallback callback) {
-    callbacks_.push_back({id, pending_calls, std::move(callback)});
+    callbacks_.push_back(
+        {id, static_cast<uint32_t>(pending_calls), std::move(callback)});
   }
 
  private:

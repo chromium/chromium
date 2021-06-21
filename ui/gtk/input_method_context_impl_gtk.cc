@@ -121,20 +121,16 @@ bool InputMethodContextImplGtk::DispatchKeyEvent(
   // Convert the last known caret bounds relative to the screen coordinates
   // to a GdkRectangle relative to the client window.
   aura::Window* window = static_cast<aura::Window*>(key_event.target());
-  gint win_x = window->GetBoundsInScreen().x();
-  gint win_y = window->GetBoundsInScreen().y();
-  gint caret_x = last_caret_bounds_.x();
-  gint caret_y = last_caret_bounds_.y();
-  gint caret_w = last_caret_bounds_.width();
-  gint caret_h = last_caret_bounds_.height();
+  gfx::Rect caret_bounds = last_caret_bounds_;
+  caret_bounds -= window->GetBoundsInScreen().OffsetFromOrigin();
 
   // Chrome's DIPs may be different from GTK's DIPs if
   // --force-device-scale-factor is used.
-  float factor =
-      GetDeviceScaleFactor() / gtk_widget_get_scale_factor(GetDummyWindow());
-  GdkRectangle gdk_rect = {factor * (caret_x - win_x),
-                           factor * (caret_y - win_y), factor * caret_w,
-                           factor * caret_h};
+  caret_bounds = ScaleToRoundedRect(
+      caret_bounds,
+      GetDeviceScaleFactor() / gtk_widget_get_scale_factor(GetDummyWindow()));
+  GdkRectangle gdk_rect = {caret_bounds.x(), caret_bounds.y(),
+                           caret_bounds.width(), caret_bounds.height()};
   gtk_im_context_set_cursor_location(gtk_context_, &gdk_rect);
 
   if (!GtkCheckVersion(4)) {

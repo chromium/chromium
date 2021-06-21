@@ -616,11 +616,11 @@ bool NativeViewGLSurfaceGLX::Initialize(GLSurfaceFormat format) {
 
   window_ = conn->GenerateId<x11::Window>();
   x11::CreateWindowRequest req{
-      .depth = g_depth,
+      .depth = static_cast<uint8_t>(g_depth),
       .wid = window_,
       .parent = static_cast<x11::Window>(parent_window_),
-      .width = size_.width(),
-      .height = size_.height(),
+      .width = static_cast<uint16_t>(size_.width()),
+      .height = static_cast<uint16_t>(size_.height()),
       .c_class = x11::WindowClass::InputOutput,
       .visual = g_visual,
       .background_pixmap = x11::Pixmap::None,
@@ -834,11 +834,11 @@ bool UnmappedNativeViewGLSurfaceGLX::Initialize(GLSurfaceFormat format) {
   auto* conn = x11::Connection::Get();
   window_ = conn->GenerateId<x11::Window>();
   conn->CreateWindow(x11::CreateWindowRequest{
-                         .depth = g_depth,
+                         .depth = static_cast<uint8_t>(g_depth),
                          .wid = window_,
                          .parent = parent_window,
-                         .width = size_.width(),
-                         .height = size_.height(),
+                         .width = static_cast<uint16_t>(size_.width()),
+                         .height = static_cast<uint16_t>(size_.height()),
                          .c_class = x11::WindowClass::InputOutput,
                          .visual = g_visual,
                          .border_pixel = 0,

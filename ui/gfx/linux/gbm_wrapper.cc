@@ -298,9 +298,9 @@ class Device final : public ui::GbmDevice {
         gbm_bo_create(device_, size.width(), size.height(), format, flags);
     if (!bo) {
 #if DCHECK_IS_ON()
-      const char fourcc_as_string[5] = {format & 0xFF, format >> 8 & 0xFF,
-                                        format >> 16 & 0xFF,
-                                        format >> 24 & 0xFF, 0};
+      const char fourcc_as_string[5] = {
+          static_cast<char>(format), static_cast<char>(format >> 8),
+          static_cast<char>(format >> 16), static_cast<char>(format >> 24), 0};
 
       DVLOG(2) << "Failed to create GBM BO, " << fourcc_as_string << ", "
                << size.ToString() << ", flags: 0x" << std::hex << flags

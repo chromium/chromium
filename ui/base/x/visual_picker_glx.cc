@@ -215,7 +215,8 @@ void VisualPickerGlx::FillConfigMap() {
       std::make_unique<base::flat_map<gfx::BufferFormat, x11::Glx::FbConfig>>();
 
   if (auto configs = connection_->glx()
-                         .GetFBConfigs({connection_->DefaultScreenId()})
+                         .GetFBConfigs({static_cast<uint32_t>(
+                             connection_->DefaultScreenId())})
                          .Sync()) {
     const auto n_cfgs = configs->num_FB_configs;
     const auto n_props = configs->num_properties;
@@ -286,9 +287,11 @@ void VisualPickerGlx::FillConfigMap() {
 }
 
 VisualPickerGlx::VisualPickerGlx() : connection_(x11::Connection::Get()) {
-  auto configs = connection_->glx()
-                     .GetVisualConfigs({connection_->DefaultScreenId()})
-                     .Sync();
+  auto configs =
+      connection_->glx()
+          .GetVisualConfigs(
+              {static_cast<uint32_t>(connection_->DefaultScreenId())})
+          .Sync();
 
   if (configs) {
     system_visual_ = PickBestSystemVisual(*configs.reply);

@@ -33,10 +33,10 @@ void TestCompositorHostX11::Show() {
   connection->CreateWindow({
       .wid = window_,
       .parent = connection->default_root(),
-      .x = bounds_.x(),
-      .y = bounds_.y(),
-      .width = bounds_.width(),
-      .height = bounds_.height(),
+      .x = static_cast<int16_t>(bounds_.x()),
+      .y = static_cast<int16_t>(bounds_.y()),
+      .width = static_cast<uint16_t>(bounds_.width()),
+      .height = static_cast<uint16_t>(bounds_.height()),
       .c_class = x11::WindowClass::InputOutput,
       .override_redirect = x11::Bool32(true),
   });

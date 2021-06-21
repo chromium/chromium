@@ -47,8 +47,8 @@ void InitButtonEvent(x11::Event* event,
   *event = x11::Event(x11::ButtonEvent{
       .opcode = is_press ? x11::ButtonEvent::Press : x11::ButtonEvent::Release,
       .detail = static_cast<x11::Button>(button),
-      .event_x = location.x(),
-      .event_y = location.y(),
+      .event_x = static_cast<int16_t>(location.x()),
+      .event_y = static_cast<int16_t>(location.y()),
       .state = state,
   });
 }

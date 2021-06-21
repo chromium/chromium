@@ -192,7 +192,8 @@ base::FilePath GetDevicePath(x11::Connection* connection,
   auto deviceid = static_cast<uint16_t>(device.deviceid);
   if (deviceid > std::numeric_limits<uint8_t>::max())
     return base::FilePath();
-  if (connection->xinput().OpenDevice({deviceid}).Sync().error)
+  uint8_t deviceid_u8 = static_cast<uint8_t>(deviceid);
+  if (connection->xinput().OpenDevice({deviceid_u8}).Sync().error)
     return base::FilePath();
 
   x11::Input::GetDevicePropertyRequest req{
@@ -200,19 +201,19 @@ base::FilePath GetDevicePath(x11::Connection* connection,
       .type = x11::Atom::Any,
       .offset = 0,
       .len = std::numeric_limits<uint32_t>::max(),
-      .device_id = deviceid,
+      .device_id = deviceid_u8,
       .c_delete = false,
   };
   auto reply = connection->xinput().GetDeviceProperty(req).Sync();
   if (!reply || reply->type != x11::Atom::STRING || !reply->data8.has_value()) {
-    connection->xinput().CloseDevice({deviceid});
+    connection->xinput().CloseDevice({deviceid_u8});
     return base::FilePath();
   }
 
   std::string path(reinterpret_cast<char*>(reply->data8->data()),
                    reply->data8->size());
 
-  connection->xinput().CloseDevice({deviceid});
+  connection->xinput().CloseDevice({deviceid_u8});
 
   return base::FilePath(path);
 }

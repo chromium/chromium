@@ -2341,12 +2341,13 @@ class AXPosition {
           text_position->GetGraphemeIterator();
       DCHECK_GE(text_position->text_offset_, 0);
       DCHECK_LE(text_position->text_offset_, text_position->MaxTextOffset());
-      while (
-          !text_position->AtStartOfAnchor() &&
-          (!gfx::IsValidCodePointIndex(text_position->GetText(),
-                                       size_t{text_position->text_offset_}) ||
-           (grapheme_iterator && !grapheme_iterator->IsGraphemeBoundary(
-                                     size_t{text_position->text_offset_})))) {
+      while (!text_position->AtStartOfAnchor() &&
+             (!gfx::IsValidCodePointIndex(
+                  text_position->GetText(),
+                  static_cast<size_t>(text_position->text_offset_)) ||
+              (grapheme_iterator &&
+               !grapheme_iterator->IsGraphemeBoundary(
+                   static_cast<size_t>(text_position->text_offset_))))) {
         --text_position->text_offset_;
       }
       return text_position;
@@ -2395,12 +2396,13 @@ class AXPosition {
 
       DCHECK_GE(text_position->text_offset_, 0);
       DCHECK_LE(text_position->text_offset_, text_position->MaxTextOffset());
-      while (
-          !text_position->AtEndOfAnchor() &&
-          (!gfx::IsValidCodePointIndex(text_position->GetText(),
-                                       size_t{text_position->text_offset_}) ||
-           (grapheme_iterator && !grapheme_iterator->IsGraphemeBoundary(
-                                     size_t{text_position->text_offset_})))) {
+      while (!text_position->AtEndOfAnchor() &&
+             (!gfx::IsValidCodePointIndex(
+                  text_position->GetText(),
+                  static_cast<size_t>(text_position->text_offset_)) ||
+              (grapheme_iterator &&
+               !grapheme_iterator->IsGraphemeBoundary(
+                   static_cast<size_t>(text_position->text_offset_))))) {
         ++text_position->text_offset_;
       }
 
@@ -4037,7 +4039,8 @@ class AXPosition {
 
   int AnchorIndexInParent() const {
     // If this is the root tree, the index in parent will be 0.
-    return GetAnchor() ? int{GetAnchor()->GetIndexInParent()} : INVALID_INDEX;
+    return GetAnchor() ? static_cast<int>(GetAnchor()->GetIndexInParent())
+                       : INVALID_INDEX;
   }
 
   base::stack<AXNode*> GetAncestorAnchors() const {

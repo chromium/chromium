@@ -872,7 +872,9 @@ bool IsAXSetter(SEL selector) {
       _node->GetIntAttribute(ax::mojom::IntAttribute::kTextSelStart, &start) &&
       _node->GetIntAttribute(ax::mojom::IntAttribute::kTextSelEnd, &end)) {
     // NSRange cannot represent the direction the text was selected in.
-    return [NSValue valueWithRange:{std::min(start, end), abs(end - start)}];
+    return
+        [NSValue valueWithRange:{static_cast<NSUInteger>(std::min(start, end)),
+                                 static_cast<NSUInteger>(abs(end - start))}];
   }
 
   return [NSValue valueWithRange:NSMakeRange(0, 0)];

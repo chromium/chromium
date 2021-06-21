@@ -120,29 +120,29 @@ enum BubbleArrowPart { kFill, kBorder };
 SkPath GetVisibleArrowPath(BubbleBorder::Arrow arrow,
                            const gfx::Rect& bounds,
                            BubbleArrowPart part) {
-  SkPoint point1;
-  SkPoint point2;
-  SkPoint point3;
+  gfx::RectF bounds_f(bounds);
+  SkPoint point1, point2, point3;
   if (arrow & BubbleBorder::VERTICAL) {
     if (arrow & BubbleBorder::RIGHT) {
-      point1 = {bounds.x(), bounds.y()};
-      point2 = {bounds.right(), bounds.y() + BubbleBorder::kVisibleArrowRadius};
-      point3 = {bounds.x(), bounds.bottom()};
+      point1 = {bounds_f.x(), bounds_f.y()};
+      point2 = {bounds_f.right(),
+                bounds_f.y() + BubbleBorder::kVisibleArrowRadius};
+      point3 = {bounds_f.x(), bounds_f.bottom()};
     } else {
-      point1 = {bounds.right(), bounds.bottom()};
-      point2 = {bounds.x(), bounds.y() + BubbleBorder::kVisibleArrowRadius};
-      point3 = {bounds.right(), bounds.y()};
+      point1 = {bounds_f.right(), bounds_f.bottom()};
+      point2 = {bounds_f.x(), bounds_f.y() + BubbleBorder::kVisibleArrowRadius};
+      point3 = {bounds_f.right(), bounds_f.y()};
     }
   } else {
     if (arrow & BubbleBorder::BOTTOM) {
-      point1 = {bounds.right(), bounds.y()};
-      point2 = {bounds.x() + BubbleBorder::kVisibleArrowRadius,
-                bounds.bottom()};
-      point3 = {bounds.x(), bounds.y()};
+      point1 = {bounds_f.right(), bounds_f.y()};
+      point2 = {bounds_f.x() + BubbleBorder::kVisibleArrowRadius,
+                bounds_f.bottom()};
+      point3 = {bounds_f.x(), bounds_f.y()};
     } else {
-      point1 = {bounds.x(), bounds.bottom()};
-      point2 = {bounds.x() + BubbleBorder::kVisibleArrowRadius, bounds.y()};
-      point3 = {bounds.right(), bounds.bottom()};
+      point1 = {bounds_f.x(), bounds_f.bottom()};
+      point2 = {bounds_f.x() + BubbleBorder::kVisibleArrowRadius, bounds_f.y()};
+      point3 = {bounds_f.right(), bounds_f.bottom()};
     }
   }
 

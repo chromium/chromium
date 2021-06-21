@@ -81,11 +81,11 @@ const std::u16string& AXComputedNodeData::GetOrComputeInnerTextUTF16() const {
 }
 
 int AXComputedNodeData::GetOrComputeInnerTextLengthUTF8() const {
-  return int{GetOrComputeInnerTextUTF8().length()};
+  return static_cast<int>(GetOrComputeInnerTextUTF8().length());
 }
 
 int AXComputedNodeData::GetOrComputeInnerTextLengthUTF16() const {
-  return int{GetOrComputeInnerTextUTF16().length()};
+  return static_cast<int>(GetOrComputeInnerTextUTF16().length());
 }
 
 std::string AXComputedNodeData::ComputeInnerTextUTF8() const {

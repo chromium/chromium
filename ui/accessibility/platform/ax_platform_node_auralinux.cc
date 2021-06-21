@@ -980,7 +980,8 @@ gchar* GetText(AtkText* atk_text, gint start_offset, gint end_offset) {
     end_offset = text.size();
   } else {
     end_offset = obj->UnicodeToUTF16OffsetInText(end_offset);
-    end_offset = base::ClampToRange(int{text.size()}, start_offset, end_offset);
+    end_offset = base::ClampToRange(static_cast<int>(text.size()), start_offset,
+                                    end_offset);
   }
 
   DCHECK_GE(start_offset, 0);
@@ -4692,9 +4693,9 @@ bool AXPlatformNodeAuraLinux::SetTextSelectionForAtkText(int start_offset,
   end_offset = UnicodeToUTF16OffsetInText(end_offset);
 
   std::u16string text = GetHypertext();
-  if (start_offset < 0 || start_offset > int{text.length()})
+  if (start_offset < 0 || start_offset > static_cast<int>(text.length()))
     return false;
-  if (end_offset < 0 || end_offset > int{text.length()})
+  if (end_offset < 0 || end_offset > static_cast<int>(text.length()))
     return false;
 
   // We must put these in the correct order so that we can do
@@ -4876,9 +4877,9 @@ AXPlatformNodeAuraLinux::GetUnclippedHypertextRangeBoundsRect(int start_offset,
   end_offset = UnicodeToUTF16OffsetInText(end_offset);
 
   std::u16string text = GetHypertext();
-  if (start_offset < 0 || start_offset > int{text.length()})
+  if (start_offset < 0 || start_offset > static_cast<int>(text.length()))
     return absl::nullopt;
-  if (end_offset < 0 || end_offset > int{text.length()})
+  if (end_offset < 0 || end_offset > static_cast<int>(text.length()))
     return absl::nullopt;
 
   if (end_offset < start_offset)

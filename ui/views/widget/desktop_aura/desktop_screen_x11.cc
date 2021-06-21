@@ -100,7 +100,7 @@ gfx::NativeWindow DesktopScreenX11::GetLocalProcessWindowAtPoint(
 }
 
 int DesktopScreenX11::GetNumDisplays() const {
-  return int{x11_display_manager_->displays().size()};
+  return static_cast<int>(x11_display_manager_->displays().size());
 }
 
 const std::vector<display::Display>& DesktopScreenX11::GetAllDisplays() const {

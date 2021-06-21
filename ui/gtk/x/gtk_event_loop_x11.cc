@@ -27,7 +27,7 @@ x11::KeyEvent ConvertGdkEventToKeyEvent(GdkEvent* gdk_event) {
     return {
         .opcode = key->type == GdkKeyPress() ? x11::KeyEvent::Press
                                              : x11::KeyEvent::Release,
-        .send_event = key->send_event,
+        .send_event = !!key->send_event,
         .detail = static_cast<x11::KeyCode>(key->hardware_keycode),
         .time = static_cast<x11::Time>(key->time),
         .root = ui::GetX11RootWindow(),

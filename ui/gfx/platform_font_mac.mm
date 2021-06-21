@@ -14,6 +14,7 @@
 #include "base/mac/scoped_cftyperef.h"
 #import "base/mac/scoped_nsobject.h"
 #include "base/no_destructor.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "third_party/skia/include/ports/SkTypeface_mac.h"
@@ -423,8 +424,9 @@ PlatformFontMac::PlatformFontMac(
     : PlatformFontMac(
           font,
           system_font_type,
-          {base::SysNSStringToUTF8([font familyName]), [font pointSize],
-           GetFontStyleFromNSFont(font), GetFontWeightFromNSFont(font)}) {}
+          {base::SysNSStringToUTF8([font familyName]),
+           base::ClampRound([font pointSize]), GetFontStyleFromNSFont(font),
+           GetFontWeightFromNSFont(font)}) {}
 
 PlatformFontMac::PlatformFontMac(
     NativeFont font,

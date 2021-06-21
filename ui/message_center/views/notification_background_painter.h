@@ -16,8 +16,8 @@ namespace message_center {
 class MESSAGE_CENTER_EXPORT NotificationBackgroundPainter
     : public views::Painter {
  public:
-  NotificationBackgroundPainter(int top_radius,
-                                int bottom_radius,
+  NotificationBackgroundPainter(float top_radius,
+                                float bottom_radius,
                                 SkColor color);
   ~NotificationBackgroundPainter() override;
 

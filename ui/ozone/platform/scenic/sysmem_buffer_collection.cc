@@ -468,7 +468,8 @@ void SysmemBufferCollection::InitializeImageCreateInfo(
   vk_image_info->flags = is_protected_ ? VK_IMAGE_CREATE_PROTECTED_BIT : 0u;
   vk_image_info->imageType = VK_IMAGE_TYPE_2D;
   vk_image_info->format = VkFormatForBufferFormat(format_);
-  vk_image_info->extent = VkExtent3D{size.width(), size.height(), 1};
+  vk_image_info->extent = VkExtent3D{static_cast<uint32_t>(size.width()),
+                                     static_cast<uint32_t>(size.height()), 1};
   vk_image_info->mipLevels = 1;
   vk_image_info->arrayLayers = 1;
   vk_image_info->samples = VK_SAMPLE_COUNT_1_BIT;

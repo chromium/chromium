@@ -76,7 +76,8 @@ void WaylandZwpPointerGestures::OnPinchUpdate(
   base::TimeTicks timestamp =
       base::TimeTicks() + base::TimeDelta::FromMilliseconds(time);
 
-  gfx::Vector2dF delta = {wl_fixed_to_double(dx), wl_fixed_to_double(dy)};
+  gfx::Vector2dF delta = {static_cast<float>(wl_fixed_to_double(dx)),
+                          static_cast<float>(wl_fixed_to_double(dy))};
   thiz->delegate_->OnPinchEvent(ET_GESTURE_PINCH_UPDATE, delta, timestamp,
                                 thiz->obj_.id(), wl_fixed_to_double(scale));
 }
