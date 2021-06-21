@@ -15,7 +15,6 @@ source_set("browser") {
     "//components/safe_browsing/core:features",
     "//components/safe_browsing/core:realtimeapi_proto",
     "//components/safe_browsing/core/common:common",
-    "//components/safe_browsing/core/common:thread_utils",
     "//components/safe_browsing/core/db:database_manager",
     "//components/safe_browsing/core/db:util",
     "//components/safe_browsing/core/realtime:policy_engine",
@@ -49,7 +48,6 @@ source_set("safe_browsing_url_checker_unittest") {
     "//components/safe_browsing/core:csd_proto",
     "//components/safe_browsing/core/browser:token_fetcher",
     "//components/safe_browsing/core/common:test_support",
-    "//components/safe_browsing/core/common:thread_utils",
     "//components/safe_browsing/core/db:test_database_manager",
     "//components/safe_browsing/core/db:util",
     "//components/safe_browsing/core/realtime:url_lookup_service",
@@ -74,10 +72,7 @@ source_set("token_fetcher") {
     "safe_browsing_token_fetcher.h",
   ]
 
-  deps = [
-    "//base",
-    "//components/safe_browsing/core/common:thread_utils",
-  ]
+  deps = [ "//base" ]
 }
 
 source_set("token_fetcher_unit_tests") {

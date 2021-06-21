@@ -62,7 +62,6 @@ source_set("browser") {
     "//components/safe_browsing/core/browser:referrer_chain_provider",
     "//components/safe_browsing/core/common:common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
-    "//components/safe_browsing/core/common:thread_utils",
     "//components/safe_browsing/core/db:database_manager",
     "//components/safe_browsing/core/realtime:policy_engine",
     "//components/safe_browsing/core/realtime:url_lookup_service_base",

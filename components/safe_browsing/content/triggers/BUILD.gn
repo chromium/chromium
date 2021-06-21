@@ -23,7 +23,6 @@ source_set("triggers") {
     "//components/safe_browsing/core:features",
     "//components/safe_browsing/core/browser",
     "//components/safe_browsing/core/browser:referrer_chain_provider",
-    "//components/safe_browsing/core/common:thread_utils",
     "//net",
   ]
 }
