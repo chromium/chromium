@@ -27,6 +27,7 @@ class XDGPopupWrapperImpl : public ShellPopupWrapper {
   bool Initialize(WaylandConnection* connection,
                   const ShellPopupParams& params) override;
   void AckConfigure(uint32_t serial) override;
+  bool IsConfigured() override;
 
  private:
   bool InitializeStable(WaylandConnection* connection,

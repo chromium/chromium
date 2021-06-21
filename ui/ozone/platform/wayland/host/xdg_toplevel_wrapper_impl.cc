@@ -132,6 +132,11 @@ void XDGToplevelWrapperImpl::AckConfigure(uint32_t serial) {
   xdg_surface_wrapper_->AckConfigure(serial);
 }
 
+bool XDGToplevelWrapperImpl::IsConfigured() {
+  DCHECK(xdg_surface_wrapper_);
+  return xdg_surface_wrapper_->IsConfigured();
+}
+
 // static
 void XDGToplevelWrapperImpl::ConfigureTopLevel(
     void* data,

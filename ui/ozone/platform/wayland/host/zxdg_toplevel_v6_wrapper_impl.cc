@@ -128,6 +128,11 @@ void ZXDGToplevelV6WrapperImpl::AckConfigure(uint32_t serial) {
   zxdg_surface_v6_wrapper_->AckConfigure(serial);
 }
 
+bool ZXDGToplevelV6WrapperImpl::IsConfigured() {
+  DCHECK(zxdg_surface_v6_wrapper_);
+  return zxdg_surface_v6_wrapper_->IsConfigured();
+}
+
 // static
 void ZXDGToplevelV6WrapperImpl::ConfigureTopLevel(
     void* data,

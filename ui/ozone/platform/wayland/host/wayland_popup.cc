@@ -230,4 +230,8 @@ WaylandPopup* WaylandPopup::AsWaylandPopup() {
   return this;
 }
 
+bool WaylandPopup::IsSurfaceConfigured() {
+  return shell_popup() ? shell_popup()->IsConfigured() : false;
+}
+
 }  // namespace ui

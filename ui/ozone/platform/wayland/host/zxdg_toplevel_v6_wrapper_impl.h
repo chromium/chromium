@@ -38,6 +38,7 @@ class ZXDGToplevelV6WrapperImpl : public ShellToplevelWrapper {
   void SurfaceResize(WaylandConnection* connection, uint32_t hittest) override;
   void SetTitle(const std::u16string& title) override;
   void AckConfigure(uint32_t serial) override;
+  bool IsConfigured() override;
   void SetWindowGeometry(const gfx::Rect& bounds) override;
   void SetMinSize(int32_t width, int32_t height) override;
   void SetMaxSize(int32_t width, int32_t height) override;

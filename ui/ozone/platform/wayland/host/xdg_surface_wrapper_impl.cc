@@ -45,6 +45,11 @@ void XDGSurfaceWrapperImpl::AckConfigure(uint32_t serial) {
   xdg_surface_ack_configure(xdg_surface_.get(), serial);
   connection_->wayland_window_manager()->NotifyWindowConfigured(
       wayland_window_);
+  is_configured_ = true;
+}
+
+bool XDGSurfaceWrapperImpl::IsConfigured() {
+  return is_configured_;
 }
 
 void XDGSurfaceWrapperImpl::SetWindowGeometry(const gfx::Rect& bounds) {

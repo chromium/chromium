@@ -78,6 +78,7 @@ class WaylandToplevelWindow : public WaylandWindow,
   void UpdateVisualSize(const gfx::Size& size_px) override;
   bool OnInitialize(PlatformWindowInitProperties properties) override;
   bool IsActive() const override;
+  bool IsSurfaceConfigured() override;
 
   // zaura_surface listeners
   static void LockFrame(void* data, zaura_surface* surface);

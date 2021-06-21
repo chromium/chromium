@@ -198,6 +198,9 @@ class WaylandWindow : public PlatformWindow,
 
   virtual absl::optional<std::vector<gfx::Rect>> GetWindowShape() const;
 
+  // Tells if the surface has already been configured.
+  virtual bool IsSurfaceConfigured() = 0;
+
   // Returns a root parent window within the same hierarchy.
   WaylandWindow* GetRootParentWindow();
 

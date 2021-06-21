@@ -77,6 +77,9 @@ class ShellPopupWrapper {
   // Sends acknowledge configure event back to wayland.
   virtual void AckConfigure(uint32_t serial) = 0;
 
+  // Tells if the surface has been AckConfigured at least once.
+  virtual bool IsConfigured() = 0;
+
   bool CanGrabPopup(WaylandConnection* connection) const;
 };
 

@@ -28,6 +28,7 @@ class WaylandAuxiliaryWindow : public WaylandWindow {
  private:
   // WaylandWindow overrides:
   bool OnInitialize(PlatformWindowInitProperties properties) override;
+  bool IsSurfaceConfigured() override;
 
   // Creates (if necessary) and shows a subsurface window.
   void CreateSubsurface();

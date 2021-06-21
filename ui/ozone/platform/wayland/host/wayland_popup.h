@@ -33,6 +33,7 @@ class WaylandPopup : public WaylandWindow {
   void OnCloseRequest() override;
   bool OnInitialize(PlatformWindowInitProperties properties) override;
   WaylandPopup* AsWaylandPopup() override;
+  bool IsSurfaceConfigured() override;
 
   // Creates a popup window, which is visible as a menu window.
   bool CreateShellPopup();

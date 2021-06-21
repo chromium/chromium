@@ -184,6 +184,11 @@ void XDGPopupWrapperImpl::AckConfigure(uint32_t serial) {
   xdg_surface_wrapper_->AckConfigure(serial);
 }
 
+bool XDGPopupWrapperImpl::IsConfigured() {
+  DCHECK(xdg_surface_wrapper_);
+  return xdg_surface_wrapper_->IsConfigured();
+}
+
 struct xdg_positioner* XDGPopupWrapperImpl::CreatePositioner(
     WaylandConnection* connection,
     WaylandWindow* parent_window,

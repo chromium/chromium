@@ -104,4 +104,8 @@ bool WaylandAuxiliaryWindow::OnInitialize(
   return true;
 }
 
+bool WaylandAuxiliaryWindow::IsSurfaceConfigured() {
+  return !!subsurface_;
+}
+
 }  // namespace ui

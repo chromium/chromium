@@ -24,6 +24,9 @@ class ShellSurfaceWrapper {
   // Sends acknowledge configure event back to wayland.
   virtual void AckConfigure(uint32_t serial) = 0;
 
+  // Tells if the surface has been AckConfigured at least once.
+  virtual bool IsConfigured() = 0;
+
   // Sets a desired window geometry once wayland requests client to do so.
   virtual void SetWindowGeometry(const gfx::Rect& bounds) = 0;
 };

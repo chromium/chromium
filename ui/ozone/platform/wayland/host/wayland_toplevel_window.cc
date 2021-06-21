@@ -430,6 +430,10 @@ bool WaylandToplevelWindow::IsActive() const {
   return is_active_;
 }
 
+bool WaylandToplevelWindow::IsSurfaceConfigured() {
+  return shell_toplevel() ? shell_toplevel()->IsConfigured() : false;
+}
+
 void WaylandToplevelWindow::LockFrame(void* data, zaura_surface* surface) {
   WaylandToplevelWindow* self = static_cast<WaylandToplevelWindow*>(data);
   DCHECK(self);

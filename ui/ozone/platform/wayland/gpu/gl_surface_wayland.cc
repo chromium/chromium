@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "third_party/khronos/EGL/egl.h"
+#include "ui/gfx/presentation_feedback.h"
 #include "ui/ozone/common/egl_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 
@@ -71,6 +72,10 @@ EGLConfig GLSurfaceWayland::GetConfig() {
 
 gfx::SwapResult GLSurfaceWayland::SwapBuffers(PresentationCallback callback) {
   UpdateVisualSize();
+  if (!window_->IsSurfaceConfigured()) {
+    std::move(callback).Run(gfx::PresentationFeedback::Failure());
+    return gfx::SwapResult::SWAP_NAK_RECREATE_BUFFERS;
+  }
   return gl::NativeViewGLSurfaceEGL::SwapBuffers(std::move(callback));
 }
 
@@ -80,6 +85,10 @@ gfx::SwapResult GLSurfaceWayland::PostSubBuffer(int x,
                                                 int height,
                                                 PresentationCallback callback) {
   UpdateVisualSize();
+  if (!window_->IsSurfaceConfigured()) {
+    std::move(callback).Run(gfx::PresentationFeedback::Failure());
+    return gfx::SwapResult::SWAP_NAK_RECREATE_BUFFERS;
+  }
   return gl::NativeViewGLSurfaceEGL::PostSubBuffer(x, y, width, height,
                                                    std::move(callback));
 }

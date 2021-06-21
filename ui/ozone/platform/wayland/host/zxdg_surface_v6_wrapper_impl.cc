@@ -48,6 +48,11 @@ void ZXDGSurfaceV6WrapperImpl::AckConfigure(uint32_t serial) {
   zxdg_surface_v6_ack_configure(zxdg_surface_v6_.get(), serial);
   connection_->wayland_window_manager()->NotifyWindowConfigured(
       wayland_window_);
+  is_configured_ = true;
+}
+
+bool ZXDGSurfaceV6WrapperImpl::IsConfigured() {
+  return is_configured_;
 }
 
 void ZXDGSurfaceV6WrapperImpl::SetWindowGeometry(const gfx::Rect& bounds) {
