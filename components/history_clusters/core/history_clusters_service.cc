@@ -220,8 +220,10 @@ void HistoryClustersService::RemoveVisits(
     const std::vector<history::ExpireHistoryArgs>& expire_list,
     base::OnceClosure closure,
     base::CancelableTaskTracker* task_tracker) {
-  std::move(closure).Run();
-  // TODO(crbug.com/1203789): Remove the visits from relevant history tables.
+  // We expect HistoryService to internally delete any associated annotations
+  // and cluster rows. In the future we may remove this indirection entirely.
+  history_service_->ExpireHistory(expire_list, std::move(closure),
+                                  task_tracker);
 }
 
 bool HistoryClustersService::DoesQueryMatchAnyCluster(
