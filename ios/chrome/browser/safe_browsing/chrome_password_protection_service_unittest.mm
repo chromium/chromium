@@ -596,9 +596,9 @@ TEST_F(ChromePasswordProtectionServiceTest, VerifyGetPingNotSentReason) {
     chrome_browser_state_->GetPrefs()->SetInteger(
         prefs::kPasswordProtectionWarningTrigger,
         safe_browsing::PHISHING_REUSE);
-    base::ListValue allowlist;
-    allowlist.AppendString("mydomain.com");
-    allowlist.AppendString("mydomain.net");
+    base::Value allowlist(base::Value::Type::LIST);
+    allowlist.Append("mydomain.com");
+    allowlist.Append("mydomain.net");
     chrome_browser_state_->GetPrefs()->Set(prefs::kSafeBrowsingAllowlistDomains,
                                            allowlist);
     EXPECT_EQ(RequestOutcome::MATCHED_ENTERPRISE_ALLOWLIST,
