@@ -784,6 +784,7 @@ html element menu
 html element meta
     property content
     property httpEquiv
+    property media
     property name
     property scheme
 html element meter
