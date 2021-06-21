@@ -827,7 +827,7 @@ class OnConnectedSyncWebSocket : public MockSyncWebSocket {
     if (SendHelper(message, &dict, &method)) {
       base::DictionaryValue response;
       response.SetInteger("id", id_);
-      response.Set("result", std::make_unique<base::DictionaryValue>());
+      response.SetKey("result", base::DictionaryValue());
       std::string json_response;
       base::JSONWriter::Write(response, &json_response);
       queued_response_.push_back(json_response);
@@ -835,7 +835,7 @@ class OnConnectedSyncWebSocket : public MockSyncWebSocket {
       // Push one event.
       base::DictionaryValue event;
       event.SetString("method", "updateEvent");
-      event.Set("params", std::make_unique<base::DictionaryValue>());
+      event.SetKey("params", base::DictionaryValue());
       std::string json_event;
       base::JSONWriter::Write(event, &json_event);
       queued_response_.push_back(json_event);

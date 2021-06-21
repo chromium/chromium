@@ -633,13 +633,13 @@ Status WebViewImpl::DispatchTouchEvent(const TouchEvent& event,
   base::DictionaryValue params;
   std::string type = GetAsString(event.type);
   params.SetString("type", type);
-  std::unique_ptr<base::ListValue> point_list(new base::ListValue);
+  base::ListValue point_list;
   Status status(kOk);
   if (type == "touchStart" || type == "touchMove") {
     std::unique_ptr<base::DictionaryValue> point = GenerateTouchPoint(event);
-    point_list->Append(std::move(point));
+    point_list.Append(std::move(point));
   }
-  params.Set("touchPoints", std::move(point_list));
+  params.SetKey("touchPoints", std::move(point_list));
   if (async_dispatch_events) {
     status = client_->SendCommandAndIgnoreResponse("Input.dispatchTouchEvent",
                                                    params);
@@ -671,7 +671,7 @@ Status WebViewImpl::DispatchTouchEventWithMultiPoints(
   Status status(kOk);
   size_t touch_count = 1;
   for (const TouchEvent& event : events) {
-    std::unique_ptr<base::ListValue> point_list(new base::ListValue);
+    base::ListValue point_list;
     int32_t current_time =
         (base::Time::Now() - base::Time::UnixEpoch()).InMilliseconds();
     params.SetInteger("timestamp", current_time);
@@ -680,8 +680,8 @@ Status WebViewImpl::DispatchTouchEventWithMultiPoints(
     if (type == "touchCancel")
       continue;
 
-    point_list->Append(GenerateTouchPoint(event));
-    params.Set("touchPoints", std::move(point_list));
+    point_list.Append(GenerateTouchPoint(event));
+    params.SetKey("touchPoints", std::move(point_list));
 
     if (async_dispatch_events || touch_count < events.size()) {
       status = client_->SendCommandAndIgnoreResponse("Input.dispatchTouchEvent",
