@@ -1731,26 +1731,19 @@ MenuAnchorPosition MenuController::AdjustAnchorPositionForRtl(
   switch (position) {
     case MenuAnchorPosition::kTopLeft:
       return MenuAnchorPosition::kTopRight;
-      break;
     case MenuAnchorPosition::kTopRight:
       return MenuAnchorPosition::kTopLeft;
-      break;
     case MenuAnchorPosition::kBubbleLeft:
       return MenuAnchorPosition::kBubbleRight;
-      break;
     case MenuAnchorPosition::kBubbleRight:
       return MenuAnchorPosition::kBubbleLeft;
-      break;
     case MenuAnchorPosition::kBubbleTopLeft:
       return MenuAnchorPosition::kBubbleTopRight;
-      break;
     case MenuAnchorPosition::kBubbleTopRight:
       return MenuAnchorPosition::kBubbleTopLeft;
-      break;
     case MenuAnchorPosition::kBottomCenter:
     case MenuAnchorPosition::kBubbleBelow:
       return position;
-      break;
   }
 }
 
