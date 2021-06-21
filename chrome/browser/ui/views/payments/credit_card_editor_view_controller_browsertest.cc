@@ -42,18 +42,18 @@ const base::Time kJune2017 = base::Time::FromDoubleT(1497552271);
 
 }  // namespace
 
-class PaymentRequestCreditCardEditorTest
+// This test suite is flaky on desktop platforms (crbug.com/1073972) and tests
+// UI that is soon to be deprecated, so it is disabled.
+class DISABLED_PaymentRequestCreditCardEditorTest
     : public PaymentRequestBrowserTestBase {
  protected:
-  PaymentRequestCreditCardEditorTest() {}
+  DISABLED_PaymentRequestCreditCardEditorTest() = default;
 
   PersonalDataLoadedObserverMock personal_data_observer_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PaymentRequestCreditCardEditorTest);
 };
 
-IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTest, EnteringValidData) {
+IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
+                       EnteringValidData) {
   NavigateTo("/payment_request_no_shipping_test.html");
   autofill::TestAutofillClock test_clock;
   test_clock.SetNow(kJune2017);
@@ -106,7 +106,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTest, EnteringValidData) {
             request->state()->selected_app());
 }
 
-IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTest,
+IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
                        EnterConfirmsValidData) {
   NavigateTo("/payment_request_no_shipping_test.html");
   autofill::TestAutofillClock test_clock;
@@ -162,7 +162,8 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTest,
             request->state()->selected_app());
 }
 
-IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTest, CancelFromEditor) {
+IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
+                       CancelFromEditor) {
   NavigateTo("/payment_request_no_shipping_test.html");
   InvokePaymentRequestUI();
 
@@ -174,7 +175,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTest, CancelFromEditor) {
                            /*wait_for_animation=*/false);
 }
 
-IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTest,
+IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
                        EnteringExpiredCard) {
   NavigateTo("/payment_request_no_shipping_test.html");
   autofill::TestAutofillClock test_clock;
@@ -218,10 +219,10 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTest,
   EXPECT_TRUE(save_button->GetEnabled());
 }
 
-class PaymentRequestCreditCardEditorTestWithGooglePayEnabled
-    : public PaymentRequestCreditCardEditorTest {
+class DISABLED_PaymentRequestCreditCardEditorTestWithGooglePayEnabled
+    : public DISABLED_PaymentRequestCreditCardEditorTest {
  public:
-  PaymentRequestCreditCardEditorTestWithGooglePayEnabled() {
+  DISABLED_PaymentRequestCreditCardEditorTestWithGooglePayEnabled() {
     // Masked cards are from Google Pay.
     feature_list_.InitAndEnableFeature(features::kReturnGooglePayInBasicCard);
   }
@@ -230,8 +231,9 @@ class PaymentRequestCreditCardEditorTestWithGooglePayEnabled
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTestWithGooglePayEnabled,
-                       EditingMaskedCard) {
+IN_PROC_BROWSER_TEST_F(
+    DISABLED_PaymentRequestCreditCardEditorTestWithGooglePayEnabled,
+    EditingMaskedCard) {
   NavigateTo("/payment_request_no_shipping_test.html");
   autofill::TestAutofillClock test_clock;
   test_clock.SetNow(kJune2017);
@@ -310,8 +312,9 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTestWithGooglePayEnabled,
   EXPECT_EQ(additional_profile.guid(), selected->billing_address_id());
 }
 
-IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTestWithGooglePayEnabled,
-                       EditingMaskedCard_ClickOnPaymentsLink) {
+IN_PROC_BROWSER_TEST_F(
+    DISABLED_PaymentRequestCreditCardEditorTestWithGooglePayEnabled,
+    EditingMaskedCard_ClickOnPaymentsLink) {
   NavigateTo("/payment_request_no_shipping_test.html");
   autofill::TestAutofillClock test_clock;
   test_clock.SetNow(kJune2017);
@@ -356,7 +359,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTestWithGooglePayEnabled,
             new_tab_contents->GetVisibleURL());
 }
 
-IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTest,
+IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
                        EnteringNothingInARequiredField) {
   NavigateTo("/payment_request_no_shipping_test.html");
   autofill::TestAutofillClock test_clock;
@@ -387,7 +390,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTest,
   EXPECT_FALSE(IsEditorTextfieldInvalid(autofill::CREDIT_CARD_NUMBER));
 }
 
-IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTest,
+IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
                        EnteringInvalidCardNumber) {
   NavigateTo("/payment_request_no_shipping_test.html");
   autofill::TestAutofillClock test_clock;
@@ -416,7 +419,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTest,
   EXPECT_EQ(0u, personal_data_manager->GetCreditCards().size());
 }
 
-IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTest,
+IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
                        EnteringUnsupportedCardType) {
   NavigateTo("/payment_request_no_shipping_test.html");
   autofill::TestAutofillClock test_clock;
@@ -447,7 +450,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTest,
   EXPECT_EQ(0u, personal_data_manager->GetCreditCards().size());
 }
 
-IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTest,
+IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
                        EnteringInvalidCardNumber_AndFixingIt) {
   NavigateTo("/payment_request_no_shipping_test.html");
   autofill::TestAutofillClock test_clock;
@@ -503,7 +506,8 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTest,
             credit_card->GetRawInfo(autofill::CREDIT_CARD_NAME_FULL));
 }
 
-IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTest, EditingExpiredCard) {
+IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
+                       EditingExpiredCard) {
   NavigateTo("/payment_request_no_shipping_test.html");
   // Add expired card.
   autofill::CreditCard card = autofill::test::GetCreditCard();
@@ -594,7 +598,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTest, EditingExpiredCard) {
             request->state()->selected_app());
 }
 
-IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTest,
+IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
                        EditingCardWithoutBillingAddress) {
   NavigateTo("/payment_request_no_shipping_test.html");
   autofill::CreditCard card = autofill::test::GetCreditCard();
@@ -656,7 +660,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTest,
             request->state()->selected_app());
 }
 
-IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTest,
+IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
                        EditingCardWithoutCardholderName) {
   NavigateTo("/payment_request_no_shipping_test.html");
   autofill::CreditCard card = autofill::test::GetCreditCard();
@@ -718,7 +722,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTest,
             request->state()->selected_app());
 }
 
-IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTest,
+IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
                        ChangeCardholderName) {
   NavigateTo("/payment_request_no_shipping_test.html");
   autofill::AutofillProfile billing_profile(autofill::test::GetFullProfile());
@@ -768,14 +772,8 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTest,
   EXPECT_EQ(u"Bob the second", request->state()->selected_app()->GetSublabel());
 }
 
-// FLAKY on Windows: crbug.com/1001365
-#if defined(OS_WIN)
-#define MAYBE_CreateNewBillingAddress DISABLED_CreateNewBillingAddress
-#else
-#define MAYBE_CreateNewBillingAddress CreateNewBillingAddress
-#endif
-IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTest,
-                       MAYBE_CreateNewBillingAddress) {
+IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
+                       CreateNewBillingAddress) {
   NavigateTo("/payment_request_no_shipping_test.html");
   autofill::CreditCard card = autofill::test::GetCreditCard();
   // Make sure to clear billing address and have none available.
@@ -859,7 +857,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTest,
   EXPECT_TRUE(request->state()->selected_app()->IsCompleteForPayment());
 }
 
-IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTest,
+IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
                        NonexistentBillingAddres) {
   NavigateTo("/payment_request_no_shipping_test.html");
   autofill::CreditCard card = autofill::test::GetCreditCard();
@@ -894,7 +892,8 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTest,
             request->state()->selected_app());
 }
 
-IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTest, EnteringEmptyData) {
+IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
+                       EnteringEmptyData) {
   NavigateTo("/payment_request_no_shipping_test.html");
   InvokePaymentRequestUI();
 
@@ -911,7 +910,8 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTest, EnteringEmptyData) {
   EXPECT_FALSE(textfield->IsValid());
 }
 
-IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTest, DoneButtonDisabled) {
+IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
+                       DoneButtonDisabled) {
   NavigateTo("/payment_request_no_shipping_test.html");
   autofill::TestAutofillClock test_clock;
   test_clock.SetNow(kJune2017);
@@ -949,7 +949,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTest, DoneButtonDisabled) {
   EXPECT_FALSE(save_button->GetEnabled());
 }
 
-IN_PROC_BROWSER_TEST_F(PaymentRequestCreditCardEditorTest,
+IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
                        EnteringValidDataInIncognito) {
   SetIncognito();
   NavigateTo("/payment_request_no_shipping_test.html");
