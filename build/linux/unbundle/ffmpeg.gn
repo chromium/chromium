@@ -23,6 +23,7 @@ shim_headers("ffmpeg_shim") {
   root_path = "."
   headers = [
     "libavcodec/avcodec.h",
+    "libavcodec/packet.h",
     "libavformat/avformat.h",
     "libavutil/imgutils.h",
   ]
