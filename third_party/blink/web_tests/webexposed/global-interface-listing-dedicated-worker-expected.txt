@@ -967,6 +967,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     attribute @@toStringTag
 [Worker]     getter brands
 [Worker]     getter mobile
+[Worker]     getter platform
 [Worker]     method constructor
 [Worker]     method getHighEntropyValues
 [Worker]     method toJSON

@@ -17,6 +17,17 @@ brands == [{"brand":"Ferrum","version":"42.0"},{"brand":"Iron","version":"3"}]
 is mobile?true
 {
     architecture : Electromechanical
+    brands : [
+        [0] : {
+            brand : Ferrum
+            version : 42.0
+        }
+        [1] : {
+            brand : Iron
+            version : 3
+        }
+    ]
+    mobile : true
     model : QWERTY
     platform : Typewriter
     platformVersion : 1950
@@ -45,6 +56,13 @@ brands == [{"brand":"content_shell","version":"999"}]
 is mobile?true
 {
     architecture : Electronic
+    brands : [
+        [0] : {
+            brand : content_shell
+            version : 999
+        }
+    ]
+    mobile : true
     model : With erase tape
     platform : Electric Typewriter
     platformVersion : 1970

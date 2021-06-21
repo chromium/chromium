@@ -10,6 +10,7 @@
 ] interface NavigatorUAData {
   readonly attribute FrozenArray<NavigatorUABrandVersion> brands;
   readonly attribute boolean mobile;
+  readonly attribute DOMString platform;
   [CallWith=ScriptState] Promise<UADataValues> getHighEntropyValues(sequence<DOMString> hints);
   [CallWith=ScriptState] object toJSON();
 };

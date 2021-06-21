@@ -84,6 +84,10 @@ void NavigatorUAData::SetUAFullVersion(const String& ua_full_version) {
   ua_full_version_ = ua_full_version;
 }
 
+void NavigatorUAData::SetBitness(const String& bitness) {
+  bitness_ = bitness;
+}
+
 bool NavigatorUAData::mobile() const {
   if (GetExecutionContext()) {
     return is_mobile_;
@@ -97,6 +101,13 @@ const HeapVector<Member<NavigatorUABrandVersion>>& NavigatorUAData::brands()
     return brand_set_;
   }
   return empty_brand_set_;
+}
+
+const String& NavigatorUAData::platform() const {
+  if (GetExecutionContext()) {
+    return platform_;
+  }
+  return WTF::g_empty_string;
 }
 
 ScriptPromise NavigatorUAData::getHighEntropyValues(
@@ -113,6 +124,8 @@ ScriptPromise NavigatorUAData::getHighEntropyValues(
           IdentifiableSurface::Type::kNavigatorUAData_GetHighEntropyValues);
   UADataValues* values = MakeGarbageCollected<UADataValues>();
   for (const String& hint : hints) {
+    values->setBrands(brand_set_);
+    values->setMobile(is_mobile_);
     if (hint == "platform") {
       values->setPlatform(platform_);
       MaybeRecordMetric(record_identifiability, hint, platform_,
@@ -132,6 +145,10 @@ ScriptPromise NavigatorUAData::getHighEntropyValues(
     } else if (hint == "uaFullVersion") {
       values->setUaFullVersion(ua_full_version_);
       MaybeRecordMetric(record_identifiability, hint, ua_full_version_,
+                        execution_context);
+    } else if (hint == "bitness") {
+      values->setBitness(bitness_);
+      MaybeRecordMetric(record_identifiability, hint, bitness_,
                         execution_context);
     }
   }

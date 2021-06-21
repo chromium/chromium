@@ -67,6 +67,7 @@ PASS window.cached_navigator_userActivation.isActive is false
 PASS window.cached_navigator_userAgentData.brands[0].brand is ''
 PASS window.cached_navigator_userAgentData.brands[0].version is ''
 PASS window.cached_navigator_userAgentData.mobile is false
+PASS window.cached_navigator_userAgentData.platform is ''
 PASS window.cached_navigator_virtualKeyboard.boundingRect.bottom is 0
 PASS window.cached_navigator_virtualKeyboard.boundingRect.height is 0
 PASS window.cached_navigator_virtualKeyboard.boundingRect.left is 0

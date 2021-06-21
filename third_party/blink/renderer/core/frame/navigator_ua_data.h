@@ -34,10 +34,12 @@ class NavigatorUAData : public ScriptWrappable, ExecutionContextClient {
   void SetArchitecture(const String& architecture);
   void SetModel(const String& model);
   void SetUAFullVersion(const String& uaFullVersion);
+  void SetBitness(const String& bitness);
 
   // IDL implementation
   const HeapVector<Member<NavigatorUABrandVersion>>& brands() const;
   bool mobile() const;
+  const String& platform() const;
   ScriptPromise getHighEntropyValues(ScriptState*, Vector<String>&) const;
   ScriptValue toJSON(ScriptState*) const;
 
@@ -52,6 +54,7 @@ class NavigatorUAData : public ScriptWrappable, ExecutionContextClient {
   String architecture_;
   String model_;
   String ua_full_version_;
+  String bitness_;
 
   void AddBrandVersion(const String& brand, const String& version);
 };

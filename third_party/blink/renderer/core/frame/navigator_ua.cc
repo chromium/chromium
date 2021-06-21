@@ -28,6 +28,7 @@ NavigatorUAData* NavigatorUA::userAgentData() {
   ua_data->SetArchitecture(String::FromUTF8(metadata.architecture));
   ua_data->SetModel(String::FromUTF8(metadata.model));
   ua_data->SetUAFullVersion(String::FromUTF8(metadata.full_version));
+  ua_data->SetBitness(String::FromUTF8(metadata.bitness));
 
   MaybeRecordMetrics(*ua_data);
 
