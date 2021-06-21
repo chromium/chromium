@@ -2774,9 +2774,10 @@ INSTANTIATE_TEST_SUITE_P(
 // by Safe Browsing, the embedder is also treated as dangerous, and the
 // interstitial isn't delayed. This is similar to
 // PortalBrowserTest.EmbedderOfDangerousPortalConsideredDangerous.
+// TODO(crbug.com/1222099): Flaky.
 IN_PROC_BROWSER_TEST_P(
     SafeBrowsingBlockingPageDelayedWarningWithPortalBrowserTest,
-    Portal_WarningNotDelayed) {
+    DISABLED_Portal_WarningNotDelayed) {
   GURL main_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL dangerous_url(
       embedded_test_server()->GetURL("evil.com", "/title2.html"));
