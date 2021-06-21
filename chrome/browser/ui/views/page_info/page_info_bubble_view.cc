@@ -306,8 +306,8 @@ PageInfoBubbleView::PageInfoBubbleView(
               view->HandleMoreInfoRequest(view->site_settings_link);
             },
             this),
-        PageInfoUI::GetSiteSettingsIcon(), IDS_PAGE_INFO_SITE_SETTINGS_LINK,
-        std::u16string(),
+        PageInfoViewFactory::GetSiteSettingsIcon(),
+        IDS_PAGE_INFO_SITE_SETTINGS_LINK, std::u16string(),
         PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_SITE_SETTINGS,
         tooltip, std::u16string()));
   }
@@ -398,7 +398,7 @@ void PageInfoBubbleView::SetCookieInfo(const CookieInfoList& cookie_info_list) {
     PageInfo::PermissionInfo info;
     info.type = ContentSettingsType::COOKIES;
     info.setting = CONTENT_SETTING_ALLOW;
-    const ui::ImageModel icon = PageInfoUI::GetPermissionIcon(info);
+    const ui::ImageModel icon = PageInfoViewFactory::GetPermissionIcon(info);
 
     const std::u16string& tooltip =
         l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_TOOLTIP);
@@ -557,7 +557,7 @@ void PageInfoBubbleView::SetIdentityInfo(const IdentityInfo& identity_info) {
     }
 
     // Add the Certificate Section.
-    const ui::ImageModel icon = PageInfoUI::GetValidCertificateIcon();
+    const ui::ImageModel icon = PageInfoViewFactory::GetValidCertificateIcon();
     const std::u16string secondary_text = l10n_util::GetStringUTF16(
         valid_identity ? IDS_PAGE_INFO_CERTIFICATE_VALID_PARENTHESIZED
                        : IDS_PAGE_INFO_CERTIFICATE_INVALID_PARENTHESIZED);
@@ -644,7 +644,7 @@ void PageInfoBubbleView::SetPageFeatureInfo(const PageFeatureInfo& info) {
       content_view->SetLayoutManager(std::make_unique<views::FlexLayout>());
 
   auto icon = std::make_unique<NonAccessibleImageView>();
-  icon->SetImage(PageInfoUI::GetVrSettingsIcon());
+  icon->SetImage(PageInfoViewFactory::GetVrSettingsIcon());
   content_view->AddChildView(std::move(icon));
 
   auto label = std::make_unique<views::Label>(

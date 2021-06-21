@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_VIEW_FACTORY_H_
 #define CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_VIEW_FACTORY_H_
 
+#include "components/page_info/page_info.h"
+#include "components/page_info/page_info_ui.h"
+#include "ui/base/models/image_model.h"
 #include "ui/views/view.h"
 
 class ChromePageInfoUiDelegate;
@@ -18,8 +21,6 @@ class PageInfoViewFactory {
                       ChromePageInfoUiDelegate* ui_delegate,
                       PageInfoNavigationHandler* navigation_handler);
 
-  // TODO(olesiamarukhno): Update icons to be all the same size (16).
-  static constexpr int kVectorIconSize = 18;
   // Bubble width constraints.
   static constexpr int kMinBubbleWidth = 320;
   static constexpr int kMaxBubbleWidth = 1000;
@@ -47,6 +48,45 @@ class PageInfoViewFactory {
   // Supports multiple multiline labels in a column (ex. title and subtitle
   // labels). Use with flex layout only.
   static std::unique_ptr<views::View> CreateLabelWrapper() WARN_UNUSED_RESULT;
+
+  // Returns icons for the given PageInfo::PermissionInfo |info|. If |info|'s
+  // current setting is CONTENT_SETTING_DEFAULT, it will return the icon for
+  // |info|'s default setting.
+  static const ui::ImageModel GetPermissionIcon(
+      const PageInfo::PermissionInfo& info);
+
+  // Returns the icon for the given object |info|.
+  static const ui::ImageModel GetChosenObjectIcon(
+      const PageInfoUI::ChosenObjectInfo& info,
+      bool deleted);
+
+  // Returns the icon for the page's certificate when it's valid.
+  static const ui::ImageModel GetValidCertificateIcon();
+
+  // Returns the icon for the page's certificate when it's invalid.
+  static const ui::ImageModel GetInvalidCertificateIcon();
+
+  // Returns the icon for the button / link to Site settings.
+  static const ui::ImageModel GetSiteSettingsIcon();
+
+  // Returns the icon for VR settings.
+  static const ui::ImageModel GetVrSettingsIcon();
+
+  // Returns the icon for a button which opens an external dialog or page (ex.
+  // cookies dialog or site settings page).
+  static const ui::ImageModel GetLaunchIcon();
+
+  // Returns the not secure state icon for the SecurityInformationView.
+  static const ui::ImageModel GetConnectionNotSecureIcon();
+
+  // Returns the icon for the secure connection button.
+  static const ui::ImageModel GetConnectionSecureIcon();
+
+  // Returns the icon for a button which opens a subpage within page info.
+  static const ui::ImageModel GetOpenSubpageIcon();
+
+  // Returns the icon for a permission in a state not managed by the user.
+  static const ui::ImageModel GetManagedIcon();
 
   std::unique_ptr<views::View> CreateMainPageView() WARN_UNUSED_RESULT;
   std::unique_ptr<views::View> CreateSecurityPageView() WARN_UNUSED_RESULT;

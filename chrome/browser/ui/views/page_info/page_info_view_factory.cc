@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 
+#include "build/build_config.h"
+#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_ui_delegate.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/page_info/page_info_main_view.h"
@@ -13,6 +15,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
@@ -22,7 +25,6 @@
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/grid_layout.h"
 
-constexpr int PageInfoViewFactory::kVectorIconSize;
 constexpr int PageInfoViewFactory::kMinBubbleWidth;
 constexpr int PageInfoViewFactory::kMaxBubbleWidth;
 
@@ -51,6 +53,10 @@ class PageInfoSubpageView : public views::View {
 
   views::View* content_ = nullptr;
 };
+
+int GetIconSize() {
+  return GetLayoutConstant(PAGE_INFO_ICON_SIZE);
+}
 
 }  // namespace
 
@@ -135,7 +141,7 @@ std::unique_ptr<views::View> PageInfoViewFactory::CreateSubpageHeader(
   auto back_button = views::CreateVectorImageButtonWithNativeTheme(
       base::BindRepeating(&PageInfoNavigationHandler::OpenMainPage,
                           base::Unretained(navigation_handler_)),
-      vector_icons::kBackArrowIcon);
+      vector_icons::kArrowBackIcon);
   views::InstallCircleHighlightPathGenerator(back_button.get());
   back_button->SetProperty(views::kInternalPaddingKey,
                            back_button->GetInsets());
@@ -164,4 +170,206 @@ std::unique_ptr<views::View> PageInfoViewFactory::CreateSubpageHeader(
   header->AddChildView(std::move(close_button));
 
   return wrapper;
+}
+
+// static
+const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
+    const PageInfo::PermissionInfo& info) {
+  const gfx::VectorIcon* icon = &gfx::kNoneIcon;
+  switch (info.type) {
+    case ContentSettingsType::COOKIES:
+      icon = &vector_icons::kCookieIcon;
+      break;
+    case ContentSettingsType::IMAGES:
+      icon = &vector_icons::kPhotoIcon;
+      break;
+    case ContentSettingsType::JAVASCRIPT:
+      icon = &vector_icons::kCodeIcon;
+      break;
+    case ContentSettingsType::POPUPS:
+      icon = &vector_icons::kLaunchIcon;
+      break;
+    case ContentSettingsType::GEOLOCATION:
+      icon = &vector_icons::kLocationOnIcon;
+      break;
+    case ContentSettingsType::NOTIFICATIONS:
+      icon = &vector_icons::kNotificationsIcon;
+      break;
+    case ContentSettingsType::MEDIASTREAM_MIC:
+      icon = &vector_icons::kMicIcon;
+      break;
+    case ContentSettingsType::MEDIASTREAM_CAMERA:
+    case ContentSettingsType::CAMERA_PAN_TILT_ZOOM:
+      icon = &vector_icons::kVideocamIcon;
+      break;
+    case ContentSettingsType::AUTOMATIC_DOWNLOADS:
+      icon = &vector_icons::kFileDownloadIcon;
+      break;
+#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN)
+    case ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER:
+      icon = &vector_icons::kProtectedContentIcon;
+      break;
+#endif
+    case ContentSettingsType::MIDI_SYSEX:
+      icon = &vector_icons::kMidiIcon;
+      break;
+    case ContentSettingsType::BACKGROUND_SYNC:
+      icon = &vector_icons::kSyncIcon;
+      break;
+    case ContentSettingsType::ADS:
+      icon = &vector_icons::kAdsIcon;
+      break;
+    case ContentSettingsType::SOUND:
+      icon = &vector_icons::kVolumeUpIcon;
+      break;
+    case ContentSettingsType::CLIPBOARD_READ_WRITE:
+      icon = &vector_icons::kPageInfoContentPasteIcon;
+      break;
+    case ContentSettingsType::SENSORS:
+      icon = &vector_icons::kSensorsIcon;
+      break;
+    case ContentSettingsType::USB_GUARD:
+      icon = &vector_icons::kUsbIcon;
+      break;
+    case ContentSettingsType::SERIAL_GUARD:
+      icon = &vector_icons::kSerialPortIcon;
+      break;
+    case ContentSettingsType::BLUETOOTH_GUARD:
+      icon = &vector_icons::kBluetoothIcon;
+      break;
+    case ContentSettingsType::BLUETOOTH_SCANNING:
+      icon = &vector_icons::kBluetoothScanningIcon;
+      break;
+    case ContentSettingsType::FILE_SYSTEM_WRITE_GUARD:
+      icon = &vector_icons::kSaveOriginalFileIcon;
+      break;
+    case ContentSettingsType::VR:
+    case ContentSettingsType::AR:
+      icon = &vector_icons::kVrHeadsetIcon;
+      break;
+    case ContentSettingsType::WINDOW_PLACEMENT:
+      icon = &vector_icons::kSelectWindowIcon;
+      break;
+    case ContentSettingsType::FONT_ACCESS:
+      icon = &vector_icons::kFontDownloadIcon;
+      break;
+    case ContentSettingsType::HID_GUARD:
+      icon = &vector_icons::kVideogameAssetIcon;
+      break;
+    case ContentSettingsType::IDLE_DETECTION:
+      icon = &vector_icons::kDevicesIcon;
+      break;
+    case ContentSettingsType::FILE_HANDLING:
+      icon = &vector_icons::kDescriptionIcon;
+      break;
+    default:
+      // All other |ContentSettingsType|s do not have icons on desktop or are
+      // not shown in the Page Info bubble.
+      NOTREACHED();
+      break;
+  }
+
+  ContentSetting setting = info.setting == CONTENT_SETTING_DEFAULT
+                               ? info.default_setting
+                               : info.setting;
+  return ui::ImageModel::FromVectorIcon(
+      *icon, ui::NativeTheme::kColorId_DefaultIconColor, GetIconSize(),
+      (setting == CONTENT_SETTING_BLOCK) ? &vector_icons::kBlockedBadgeIcon
+                                         : nullptr);
+}
+
+// static
+const ui::ImageModel PageInfoViewFactory::GetChosenObjectIcon(
+    const PageInfoUI::ChosenObjectInfo& object,
+    bool deleted) {
+  // The permissions data for device APIs will always appear even if the device
+  // is not currently conncted to the system.
+  // TODO(https://crbug.com/1048860): Check the connected status of devices and
+  // change the icon to one that reflects that status.
+  const gfx::VectorIcon* icon = &gfx::kNoneIcon;
+  switch (object.ui_info.content_settings_type) {
+    case ContentSettingsType::USB_CHOOSER_DATA:
+      icon = &vector_icons::kUsbIcon;
+      break;
+    case ContentSettingsType::SERIAL_CHOOSER_DATA:
+      icon = &vector_icons::kSerialPortIcon;
+      break;
+    case ContentSettingsType::BLUETOOTH_CHOOSER_DATA:
+      icon = &vector_icons::kBluetoothIcon;
+      break;
+    case ContentSettingsType::HID_CHOOSER_DATA:
+      icon = &vector_icons::kVideogameAssetIcon;
+      break;
+    default:
+      // All other content settings types do not represent chosen object
+      // permissions.
+      NOTREACHED();
+      break;
+  }
+
+  return ui::ImageModel::FromVectorIcon(
+      *icon, ui::NativeTheme::kColorId_DefaultIconColor, GetIconSize(),
+      deleted ? &vector_icons::kBlockedBadgeIcon : nullptr);
+}
+
+// static
+const ui::ImageModel PageInfoViewFactory::GetValidCertificateIcon() {
+  return ui::ImageModel::FromVectorIcon(
+      vector_icons::kCertificateIcon,
+      ui::NativeTheme::kColorId_DefaultIconColor, GetIconSize());
+}
+
+// static
+const ui::ImageModel PageInfoViewFactory::GetInvalidCertificateIcon() {
+  return ui::ImageModel::FromVectorIcon(
+      vector_icons::kCertificateIcon,
+      ui::NativeTheme::kColorId_DefaultIconColor, GetIconSize(),
+      &vector_icons::kBlockedBadgeIcon);
+}
+
+// static
+const ui::ImageModel PageInfoViewFactory::GetSiteSettingsIcon() {
+  return ui::ImageModel::FromVectorIcon(
+      vector_icons::kSettingsIcon, ui::NativeTheme::kColorId_DefaultIconColor);
+}
+
+// static
+const ui::ImageModel PageInfoViewFactory::GetVrSettingsIcon() {
+  return ui::ImageModel::FromVectorIcon(
+      vector_icons::kVrHeadsetIcon, ui::NativeTheme::kColorId_DefaultIconColor);
+}
+
+// static
+const ui::ImageModel PageInfoViewFactory::GetLaunchIcon() {
+  return ui::ImageModel::FromVectorIcon(
+      vector_icons::kLaunchIcon, ui::NativeTheme::kColorId_SecondaryIconColor,
+      GetIconSize());
+}
+
+// static
+const ui::ImageModel PageInfoViewFactory::GetConnectionNotSecureIcon() {
+  return ui::ImageModel::FromVectorIcon(
+      vector_icons::kNotSecureWarningIcon,
+      ui::NativeTheme::kColorId_AlertSeverityHigh);
+}
+
+// static
+const ui::ImageModel PageInfoViewFactory::GetConnectionSecureIcon() {
+  return ui::ImageModel::FromVectorIcon(
+      vector_icons::kHttpsValidIcon,
+      ui::NativeTheme::kColorId_DefaultIconColor);
+}
+
+// static
+const ui::ImageModel PageInfoViewFactory::GetOpenSubpageIcon() {
+  return ui::ImageModel::FromVectorIcon(
+      vector_icons::kSubmenuArrowIcon,
+      ui::NativeTheme::kColorId_DefaultIconColor);
+}
+
+// static
+const ui::ImageModel PageInfoViewFactory::GetManagedIcon() {
+  return ui::ImageModel::FromVectorIcon(
+      vector_icons::kBusinessIcon, ui::NativeTheme::kColorId_DefaultIconColor,
+      GetIconSize());
 }
