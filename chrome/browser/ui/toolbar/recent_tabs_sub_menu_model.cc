@@ -600,7 +600,6 @@ RecentTabsSubMenuModel::CreateWindowSubMenuModel(
     if (tab->group != last_group && current_group_model) {
       AddGroupItemToModel(window_model.get(), std::move(current_group_model),
                           current_group_visual_data);
-      current_group_model.reset();
     }
     if (tab->group.has_value()) {
       if (!current_group_model) {
@@ -609,6 +608,10 @@ RecentTabsSubMenuModel::CreateWindowSubMenuModel(
         current_group_model = std::make_unique<ui::SimpleMenuModel>(this);
         // TODO(emshack): Add restore all menu item as first item in model.
       }
+      // The following comment silences a bugprone-use-after-move warning,
+      // which does not apply to this use case as current_group_model will
+      // always be set to a new value before adding an item to it.
+      // NOLINTNEXTLINE
       current_group_model->AddItem(
           tab_command_id,
           current_navigation.title().empty()
