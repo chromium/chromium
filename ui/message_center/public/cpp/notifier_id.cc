@@ -16,10 +16,15 @@ NotifierId::NotifierId(NotifierType type, const std::string& id)
   DCHECK(!id.empty());
 }
 
-NotifierId::NotifierId(const GURL& url)
-    : type(NotifierType::WEB_PAGE), url(url) {}
+NotifierId::NotifierId(const GURL& origin)
+    : NotifierId(origin, /*title=*/absl::nullopt) {}
+
+NotifierId::NotifierId(const GURL& url, absl::optional<std::u16string> title)
+    : type(NotifierType::WEB_PAGE), url(url), title(title) {}
 
 NotifierId::NotifierId(const NotifierId& other) = default;
+
+NotifierId::~NotifierId() = default;
 
 bool NotifierId::operator==(const NotifierId& other) const {
   if (type != other.type)

@@ -844,7 +844,9 @@ void NotificationViewMD::CreateOrUpdateContextTitleView(
   header_row_->SetSummaryText(std::u16string());
 
   std::u16string app_name;
-  if (notification.UseOriginAsContextMessage()) {
+  if (notification.notifier_id().title.has_value()) {
+    app_name = notification.notifier_id().title.value();
+  } else if (notification.UseOriginAsContextMessage()) {
     app_name = url_formatter::FormatUrlForSecurityDisplay(
         notification.origin_url(),
         url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
