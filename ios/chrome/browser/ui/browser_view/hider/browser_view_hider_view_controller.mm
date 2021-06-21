@@ -38,9 +38,7 @@
     // removed, as well as the incognito specific assets.
     self.view.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
   }
-  UIColor* backgroundColor = color::DarkModeDynamicColor(
-      [UIColor colorNamed:kSecondaryBackgroundColor], true,
-      [UIColor colorNamed:kSecondaryBackgroundDarkColor]);
+  UIColor* backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
   self.view.backgroundColor = backgroundColor;
   self.view.accessibilityIdentifier = @"BrowserViewHiderView";
   self.view.layer.cornerRadius = kTopCornerRadius;

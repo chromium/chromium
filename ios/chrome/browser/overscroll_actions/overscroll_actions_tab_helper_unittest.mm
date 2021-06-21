@@ -120,9 +120,7 @@ TEST_F(OverscrollActionsTabHelperTest, TestOffTheRecordBrowserStateStyle) {
   SimulatePullForRefreshAction();
   // For iOS 13 and dark mode, the incognito overscroll actions view uses a
   // dynamic color.
-  UIColor* expected_color =
-      color::DarkModeDynamicColor([UIColor colorNamed:kBackgroundColor], true,
-                                  [UIColor colorNamed:kBackgroundDarkColor]);
+  UIColor* expected_color = [UIColor colorNamed:kBackgroundColor];
   EXPECT_TRUE(action_view());
   EXPECT_NSEQ(expected_color, action_view().backgroundColor);
 }

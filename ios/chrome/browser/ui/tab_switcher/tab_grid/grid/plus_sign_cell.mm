@@ -78,9 +78,8 @@
 
   // selectedBackgroundView is used for highlighting as well.
   self.selectedBackgroundView = [[UIView alloc] init];
-  UIColor* highlightedBackgroundColor = color::DarkModeDynamicColor(
-      [UIColor colorNamed:kTertiaryBackgroundColor], /*forceDark=*/true,
-      [UIColor colorNamed:kTertiaryBackgroundDarkColor]);
+  UIColor* highlightedBackgroundColor =
+      [UIColor colorNamed:kTertiaryBackgroundColor];
   self.selectedBackgroundView.backgroundColor = highlightedBackgroundColor;
 
   _theme = theme;

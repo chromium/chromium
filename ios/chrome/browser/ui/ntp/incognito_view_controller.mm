@@ -49,9 +49,7 @@
                                                   URLLoader:_URLLoader];
   [self.incognitoView setAutoresizingMask:UIViewAutoresizingFlexibleHeight |
                                           UIViewAutoresizingFlexibleWidth];
-  UIColor* backgroundColor =
-      color::DarkModeDynamicColor([UIColor colorNamed:kBackgroundColor], true,
-                                  [UIColor colorNamed:kBackgroundDarkColor]);
+  UIColor* backgroundColor = [UIColor colorNamed:kBackgroundColor];
   self.incognitoView.backgroundColor = backgroundColor;
   [self.view addSubview:self.incognitoView];
 }

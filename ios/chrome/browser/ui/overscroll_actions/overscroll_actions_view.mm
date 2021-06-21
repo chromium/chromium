@@ -916,9 +916,7 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
       self.backgroundColor = [UIColor colorNamed:kBackgroundColor];
       break;
     case OverscrollStyle::REGULAR_PAGE_INCOGNITO:
-      self.backgroundColor = color::DarkModeDynamicColor(
-          [UIColor colorNamed:kBackgroundColor], true,
-          [UIColor colorNamed:kBackgroundDarkColor]);
+      self.backgroundColor = [UIColor colorNamed:kBackgroundColor];
       break;
   }
 
