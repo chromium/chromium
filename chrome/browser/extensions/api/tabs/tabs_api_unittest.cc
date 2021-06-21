@@ -166,6 +166,7 @@ TEST_F(TabsApiUnitTest, IsTabStripEditable) {
         function.get(), args, browser(), api_test_utils::NONE));
   }
 
+  // Start logical drag.
   browser_window()->SetIsTabStripEditable(false);
   ASSERT_FALSE(browser_window()->IsTabStripEditable());
 
@@ -182,6 +183,26 @@ TEST_F(TabsApiUnitTest, IsTabStripEditable) {
             function.get(), args, browser(), api_test_utils::NONE));
     EXPECT_TRUE(value && value->is_dict());
     EXPECT_EQ(*value->FindStringKey("pendingUrl"), url);
+  }
+
+  // Succeed while edit in progress and calling chrome.tabs.query.
+  {
+    const char* args = "[{}]";
+    scoped_refptr<TabsQueryFunction> function =
+        base::MakeRefCounted<TabsQueryFunction>();
+    function->set_extension(extension);
+    ASSERT_TRUE(extension_function_test_utils::RunFunction(
+        function.get(), args, browser(), api_test_utils::NONE));
+  }
+
+  // Succeed while edit in progress and calling chrome.tabs.get.
+  {
+    std::string args = base::StringPrintf("[%d]", tab_ids[0]);
+    scoped_refptr<TabsGetFunction> function =
+        base::MakeRefCounted<TabsGetFunction>();
+    function->set_extension(extension);
+    ASSERT_TRUE(extension_function_test_utils::RunFunction(
+        function.get(), args, browser(), api_test_utils::NONE));
   }
 
   // Bug fix for crbug.com/1198717. Error updating tabs while drag in progress.
@@ -219,21 +240,9 @@ TEST_F(TabsApiUnitTest, IsTabStripEditable) {
     EXPECT_EQ(tabs_constants::kTabStripNotEditableError, error);
   }
 
-  // Bug fix for crbug.com/1197888. Disable query during any tab drag to ensure
-  // that the result matches the eventual state of the tab strip.
-  {
-    const char* args = "[{}]";
-    scoped_refptr<TabsQueryFunction> function =
-        base::MakeRefCounted<TabsQueryFunction>();
-    function->set_extension(extension);
-    std::string error =
-        extension_function_test_utils::RunFunctionAndReturnError(
-            function.get(), args, browser());
-    EXPECT_EQ(tabs_constants::kTabStripNotEditableQueryError, error);
-  }
-
   // TODO(solomonkinard): Consider adding tests for drag cancellation.
 
+  // Clean up.
   while (!browser()->tab_strip_model()->empty())
     browser()->tab_strip_model()->DetachWebContentsAt(0);
 }
