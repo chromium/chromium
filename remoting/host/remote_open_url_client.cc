@@ -74,9 +74,9 @@ void RemoteOpenUrlClient::OpenUrl(const GURL& url, base::OnceClosure done) {
   auto endpoint = mojo::NamedPlatformChannel::ConnectToServer(
       GetRemoteOpenUrlIpcChannelName());
   if (!endpoint.is_valid()) {
-    LOG(WARNING)
-        << "Can't make IPC connection. The remote session may be disconnected.";
-    OnOpenUrlResponse(mojom::OpenUrlResult::FAILURE);
+    HOST_LOG << "Can't make IPC connection. URL forwarding is probably "
+             << "disabled by the client.";
+    OnOpenUrlResponse(mojom::OpenUrlResult::LOCAL_FALLBACK);
     return;
   }
 
