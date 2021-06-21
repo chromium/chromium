@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grit-part>
+  <structure type="chrome_scaled_image" name="IDR_SAVE_CARD" file="payments/save_card.png" />
+  <structure type="chrome_scaled_image" name="IDR_SAVE_CARD_DARK" file="payments/save_card_dark.png" />
+</grit-part>
