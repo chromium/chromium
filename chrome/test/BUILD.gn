@@ -6688,11 +6688,13 @@ test("unit_tests") {
   }
   if (is_linux || is_chromeos_lacros) {
     sources += [
-      "../browser/shell_integration_linux_unittest.cc",
       "../browser/ui/global_media_controls/media_notification_device_monitor_unittest.cc",
       "../browser/upgrade_detector/directory_monitor_unittest.cc",
       "../browser/upgrade_detector/get_installed_version_linux_unittest.cc",
     ]
+    if (is_linux) {
+      sources += [ "../browser/shell_integration_linux_unittest.cc" ]
+    }
   }
 
   if (is_android || is_chromeos_ash || is_win) {

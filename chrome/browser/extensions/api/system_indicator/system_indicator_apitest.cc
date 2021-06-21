@@ -50,7 +50,7 @@ class SystemIndicatorApiTest : public ExtensionApiTest {
 };
 
 // https://crbug.com/960363: Test crashes on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
 #define MAYBE_SystemIndicatorBasic DISABLED_SystemIndicatorBasic
 #else
 #define MAYBE_SystemIndicatorBasic SystemIndicatorBasic

@@ -106,9 +106,10 @@
 #include "ui/events/gesture_detection/gesture_configuration.h"
 #endif
 
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/ui/views/frame/desktop_browser_frame_lacros.h"
+#define DESKTOP_BROWSER_FRAME_AURA DesktopBrowserFrameLacros
+#elif defined(OS_LINUX)
 #include "chrome/browser/ui/views/frame/desktop_browser_frame_aura_linux.h"
 #define DESKTOP_BROWSER_FRAME_AURA DesktopBrowserFrameAuraLinux
 #else

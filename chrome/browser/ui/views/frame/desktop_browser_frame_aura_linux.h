@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_DESKTOP_BROWSER_FRAME_AURA_LINUX_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_DESKTOP_BROWSER_FRAME_AURA_LINUX_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ui/views/frame/desktop_browser_frame_aura.h"
+
 #include "components/prefs/pref_member.h"
 
 class BrowserDesktopWindowTreeHostLinux;
@@ -16,6 +16,10 @@ class DesktopBrowserFrameAuraLinux : public DesktopBrowserFrameAura {
  public:
   DesktopBrowserFrameAuraLinux(BrowserFrame* browser_frame,
                                BrowserView* browser_view);
+
+  DesktopBrowserFrameAuraLinux(const DesktopBrowserFrameAuraLinux&) = delete;
+  DesktopBrowserFrameAuraLinux& operator=(const DesktopBrowserFrameAuraLinux&) =
+      delete;
 
   void set_host(BrowserDesktopWindowTreeHostLinux* host) { host_ = host; }
 
@@ -35,8 +39,6 @@ class DesktopBrowserFrameAuraLinux : public DesktopBrowserFrameAura {
   BooleanPrefMember use_custom_frame_pref_;
 
   BrowserDesktopWindowTreeHostLinux* host_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(DesktopBrowserFrameAuraLinux);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_DESKTOP_BROWSER_FRAME_AURA_LINUX_H_

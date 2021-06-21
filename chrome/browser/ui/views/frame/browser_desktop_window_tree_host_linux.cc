@@ -7,16 +7,23 @@
 #include <utility>
 
 #include "base/macros.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/views/frame/browser_frame.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/desktop_browser_frame_aura_linux.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/platform_window/extensions/wayland_extension.h"
 #include "ui/platform_window/extensions/x11_extension.h"
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/ui/views/frame/desktop_browser_frame_lacros.h"
+#else  // defined(OS_LINUX)
+#include "chrome/browser/ui/views/frame/desktop_browser_frame_aura_linux.h"
+#endif
 
 #if defined(USE_DBUS_MENU)
 
@@ -51,7 +58,14 @@ BrowserDesktopWindowTreeHostLinux::BrowserDesktopWindowTreeHostLinux(
                                      desktop_native_widget_aura),
       browser_view_(browser_view),
       browser_frame_(browser_frame) {
-  static_cast<DesktopBrowserFrameAuraLinux*>(
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  using DesktopBrowserFrameAuraPlatform = DesktopBrowserFrameLacros;
+#elif defined(OS_LINUX)
+  using DesktopBrowserFrameAuraPlatform = DesktopBrowserFrameAuraLinux;
+#else
+#error Unknown platform
+#endif
+  static_cast<DesktopBrowserFrameAuraPlatform*>(
       browser_frame->native_browser_frame())
       ->set_host(this);
   browser_frame->set_frame_type(browser_frame->UseCustomFrame()
@@ -151,6 +165,8 @@ void BrowserDesktopWindowTreeHostLinux::OnWindowStateChanged(
 ////////////////////////////////////////////////////////////////////////////////
 // BrowserDesktopWindowTreeHost, public:
 
+// TODO(crbug.com/1221374): Separate Lacros specific codes into
+// browser_desktop_window_tree_host_lacros.cc.
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // static
 BrowserDesktopWindowTreeHost*

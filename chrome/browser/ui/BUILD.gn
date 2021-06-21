@@ -2916,6 +2916,8 @@ static_library("ui") {
       "views/chrome_browser_main_extra_parts_views_lacros.h",
       "views/frame/browser_frame_lacros.cc",
       "views/frame/browser_frame_lacros.h",
+      "views/frame/desktop_browser_frame_lacros.cc",
+      "views/frame/desktop_browser_frame_lacros.h",
       "views/frame/immersive_mode_controller_chromeos.cc",
       "views/frame/immersive_mode_controller_chromeos.h",
       "window_sizer/window_sizer_chromeos.cc",
@@ -3474,16 +3476,21 @@ static_library("ui") {
     ]
   }
 
-  if (is_linux || is_chromeos_lacros) {
+  if (is_linux) {
     sources += [
-      "views/apps/chrome_app_window_client_views_linux.cc",
-      "views/frame/browser_desktop_window_tree_host.h",
       "views/frame/desktop_browser_frame_aura_linux.cc",
       "views/frame/desktop_browser_frame_aura_linux.h",
       "views/status_icons/status_icon_button_linux.cc",
       "views/status_icons/status_icon_button_linux.h",
       "views/status_icons/status_icon_linux_wrapper.cc",
       "views/status_icons/status_icon_linux_wrapper.h",
+    ]
+  }
+
+  if (is_linux || is_chromeos_lacros) {
+    sources += [
+      "views/apps/chrome_app_window_client_views_linux.cc",
+      "views/frame/browser_desktop_window_tree_host.h",
       "webui/help/version_updater_basic.cc",
       "webui/help/version_updater_basic.h",
       "webui/settings/settings_utils_linux.cc",
@@ -4534,11 +4541,17 @@ static_library("ui") {
     }
 
     if (is_linux || is_chromeos) {
+      sources += [ "views/process_singleton_dialog_linux.cc" ]
+    }
+
+    if (is_linux) {
       sources += [
-        "views/process_singleton_dialog_linux.cc",
         "views/status_icons/status_tray_linux.cc",
         "views/status_icons/status_tray_linux.h",
       ]
+    }
+    if (is_chromeos) {
+      sources += [ "views/status_icons/status_tray_chromeos.cc" ]
     }
 
     if (is_mac) {
