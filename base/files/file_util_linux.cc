@@ -30,7 +30,7 @@ bool GetFileSystemType(const FilePath& path, FileSystemType* type) {
     case EXT2_SUPER_MAGIC:  // Also ext3 and ext4
     case MSDOS_SUPER_MAGIC:
     case REISERFS_SUPER_MAGIC:
-    case BTRFS_SUPER_MAGIC:
+    case static_cast<int>(BTRFS_SUPER_MAGIC):
     case 0x5346544E:  // NTFS
     case 0x58465342:  // XFS
     case 0x3153464A:  // JFS
@@ -40,14 +40,14 @@ bool GetFileSystemType(const FilePath& path, FileSystemType* type) {
       *type = FILE_SYSTEM_NFS;
       break;
     case SMB_SUPER_MAGIC:
-    case 0xFF534D42:  // CIFS
+    case static_cast<int>(0xFF534D42):  // CIFS
       *type = FILE_SYSTEM_SMB;
       break;
     case CODA_SUPER_MAGIC:
       *type = FILE_SYSTEM_CODA;
       break;
-    case HUGETLBFS_MAGIC:
-    case RAMFS_MAGIC:
+    case static_cast<int>(HUGETLBFS_MAGIC):
+    case static_cast<int>(RAMFS_MAGIC):
     case TMPFS_MAGIC:
       *type = FILE_SYSTEM_MEMORY;
       break;

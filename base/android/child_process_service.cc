@@ -51,7 +51,8 @@ void JNI_ChildProcessService_RegisterFileDescriptors(
   DCHECK_EQ(offsets.size(), sizes.size());
 
   for (size_t i = 0; i < ids.size(); i++) {
-    base::MemoryMappedFile::Region region = {offsets.at(i), sizes.at(i)};
+    base::MemoryMappedFile::Region region = {offsets.at(i),
+                                             static_cast<size_t>(sizes.at(i))};
     const absl::optional<std::string>& key = keys.at(i);
     int id = ids.at(i);
     int fd = fds.at(i);

@@ -946,7 +946,8 @@ bool AllocateFileRegion(File* file, int64_t offset, size_t size) {
   // does support sparse files. It does, however, have the functionality
   // available via fcntl.
   // See also: https://openradar.appspot.com/32720223
-  fstore_t params = {F_ALLOCATEALL, F_PEOFPOSMODE, offset, size, 0};
+  fstore_t params = {F_ALLOCATEALL, F_PEOFPOSMODE, offset,
+                     static_cast<off_t>(size), 0};
   if (fcntl(file->GetPlatformFile(), F_PREALLOCATE, &params) != -1)
     return true;
   DPLOG(ERROR) << "F_PREALLOCATE";

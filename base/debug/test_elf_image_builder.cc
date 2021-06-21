@@ -55,7 +55,7 @@ TestElfImageBuilder::~TestElfImageBuilder() = default;
 
 TestElfImageBuilder& TestElfImageBuilder::AddLoadSegment(Word flags,
                                                          size_t size) {
-  load_segments_.push_back({flags, size});
+  load_segments_.push_back({flags, static_cast<Word>(size)});
   return *this;
 }
 

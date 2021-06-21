@@ -70,8 +70,9 @@ const ModuleCache::Module* AddNativeModule(
 
 ArmCFITable::FrameEntry MakeFrameEntry(uint16_t cfa_offset,
                                        uint16_t ra_offset) {
-  return ArmCFITable::FrameEntry{cfa_offset * sizeof(uintptr_t),
-                                 ra_offset * sizeof(uintptr_t)};
+  return ArmCFITable::FrameEntry{
+      static_cast<uint16_t>(cfa_offset * sizeof(uintptr_t)),
+      static_cast<uint16_t>(ra_offset * sizeof(uintptr_t))};
 }
 
 }  // namespace

@@ -190,7 +190,8 @@ UnwindResult NativeUnwinderAndroid::TryUnwind(RegisterContext* thread_context,
     struct {
       uintptr_t start;
       uintptr_t end;
-    } expected_stack_pointer_range = {cur_sp, stack_top};
+    } expected_stack_pointer_range = {static_cast<uintptr_t>(cur_sp),
+                                      stack_top};
     if (regs->sp() < expected_stack_pointer_range.start ||
         regs->sp() >= expected_stack_pointer_range.end) {
       return UnwindResult::ABORTED;

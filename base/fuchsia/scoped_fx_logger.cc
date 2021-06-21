@@ -26,7 +26,7 @@ ScopedFxLogger CreateFxLoggerFromLogSinkWithTag(
       .console_fd = -1,
       .log_sink_channel = log_sink.TakeChannel().release(),
       .tags = tag.empty() ? nullptr : &tag_c_string,
-      .num_tags = tag.empty() ? 0 : 1,
+      .num_tags = tag.empty() ? 0u : 1u,
   };
 
   fx_logger_t* fx_logger = nullptr;
