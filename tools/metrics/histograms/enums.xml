@@ -39085,6 +39085,8 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
       label="DataUse.MessageSize.AllServices.Downstream.Foreground.NotCellular"/>
   <int value="-1952208361"
       label="Autofill.FieldPredictionQuality.ByFieldType.Overall"/>
+  <int value="-1910305783"
+      label="Navigation.StartToCommit.SameProcess.NewNavigation"/>
   <int value="-1777783591"
       label="Autofill.FieldPredictionQuality.ByFieldType.Server.NoSubmission"/>
   <int value="-1724216561"
@@ -39098,6 +39100,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="-1561887015" label="MediaRouter.Cast.Channel.Error"/>
   <int value="-1459119846"
       label="ServiceWorkerCache.Cache.Scheduler.QueueLength"/>
+  <int value="-1433928548" label="WebCore.FindInPage.TaskDuration"/>
   <int value="-1390672863"
       label="DataUse.MessageSize.AllServices.Upstream.Background.NotCellular"/>
   <int value="-1345388508" label="Renderer4.IdealContentsScale"/>
@@ -39105,27 +39108,38 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
       label="DataUse.BackgroundToDataRecievedPerByte.User"/>
   <int value="-1286300074"
       label="Network.Shill.Wifi.ExpiredLeaseLengthSeconds"/>
+  <int value="-1277093818"
+      label="Net.URLLoaderThrottleExecutionTime.WillStartRequest"/>
   <int value="-1189959109" label="RendererScheduler.TaskCountPerQueueType"/>
   <int value="-983723378" label="RendererScheduler.TaskDurationPerThreadType"/>
   <int value="-970685679"
       label="Bluetooth.MacOS.Errors.DidDiscoverDescriptors"/>
   <int value="-968816650"
       label="PasswordManager.Android.PasswordExceptionEntry.Website"/>
+  <int value="-919977005" label="DevTools.DeveloperResourceLoaded"/>
+  <int value="-855312845"
+      label="Net.URLLoaderThrottleExecutionTime.WillProcessResponse"/>
   <int value="-847447887"
       label="DataUse.MessageSize.AllServices.Upstream.Foreground.NotCellular"/>
+  <int value="-763978419"
+      label="DocumentEventTiming.BeforeUnloadDialogDuration.ByNavigation"/>
   <int value="-742109866" label="Stability.BrowserExitCodes"/>
   <int value="-657514887" label="DataUse.MessageSize.AllServices"/>
   <int value="-535820174"
       label="DataUse.MessageSize.AllServices.Downstream.Background.NotCellular"/>
   <int value="-453454441" label="Bluetooth.MacOS.Errors.DidWriteValue"/>
+  <int value="-436781330"
+      label="Net.URLLoaderThrottleExecutionTime.BeforeWillProcessResponse"/>
   <int value="-412157817"
       label="Autofill.FieldPredictionQuality.ByFieldType.Server"/>
   <int value="-404962476" label="Blink.ForcedStyleAndLayout.UpdateTime"/>
   <int value="-355731177" label="UMA.SamplingRatePerMille"/>
+  <int value="-343220158" label="Compositing.Renderer.LayersUpdateTime"/>
   <int value="-141990989" label="DataUse.AllServices.Background"/>
   <int value="-132932440" label="DataUse.ContentType.Services"/>
   <int value="-48200749" label="DiskCache.0.TotalIOTime"/>
   <int value="0" label="Missing hash value"/>
+  <int value="19727358" label="DataUse.BytesReceived2.Delegate"/>
   <int value="37726187" label="BlinkGC.CommittedSize"/>
   <int value="61486329" label="RendererScheduler.TaskCountPerFrameType"/>
   <int value="76333534" label="WorkerThread.Task.Time"/>
@@ -39150,15 +39164,22 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
       label="PasswordManager.Android.PasswordCredentialEntry.Website"/>
   <int value="757405826"
       label="DataUse.MessageSize.AllServices.Upstream.Foreground.Cellular"/>
+  <int value="759446272"
+      label="RendererScheduler.QueueingDurationPerQueueType.Input"/>
   <int value="761823979" label="Crashpad.HandlerLifetimeMilestone"/>
   <int value="873338882"
       label="Autofill.FieldPredictionQuality.ByFieldType.Heuristic"/>
+  <int value="1096524200" label="DevTools.IssueCreated"/>
   <int value="1126499749"
       label="Autofill.FieldPredictionQuality.ByFieldType.Overall.NoSubmission"/>
+  <int value="1193017729" label="Compositing.ResourcePoolMemoryUsage.Renderer"/>
   <int value="1225311979" label="Blink.UseCounter.Extensions.Features"/>
   <int value="1264664660" label="DataUse.PageTransition.UserTraffic"/>
+  <int value="1295093746" label="Net.SSL_Connection_Latency_TLS13Experiment"/>
   <int value="1370064090"
       label="DataUse.MessageSize.AllServices.Upstream.Background.Cellular"/>
+  <int value="1386149670" label="Navigation.StartToCommit.NewNavigation"/>
+  <int value="1488162221" label="Blink.UseCounter.File.Features"/>
   <int value="1507345292"
       label="Autofill.FieldPredictionQuality.ByFieldType.Heuristic.BasedOnAutocomplete"/>
   <int value="1514844119" label="DataUse.Sync.Upload.Bytes"/>
@@ -39166,6 +39187,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
       label="PasswordManager.Android.PasswordCredentialEntry.Username"/>
   <int value="1632894016"
       label="Autofill.FieldPredictionQuality.ByFieldType.Heuristic.NoSubmission"/>
+  <int value="1721222685" label="Blink.UseCounter.MainFrame.Features"/>
   <int value="1753226325"
       label="DataUse.MessageSize.AllServices.Downstream.Foreground.Cellular"/>
   <int value="1857977303"
