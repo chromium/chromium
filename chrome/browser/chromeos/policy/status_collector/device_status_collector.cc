@@ -717,7 +717,7 @@ class DeviceStatusCollectorState : public StatusCollectorState {
           cros_healthd_data_fetcher,
       bool report_system_info,
       bool report_vpd_info) {
-        DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     cros_healthd_data_fetcher.Run(
         CrosHealthdCollectionMode::kFull,
         base::BindOnce(&DeviceStatusCollectorState::OnCrosHealthdDataReceived,
@@ -2757,6 +2757,10 @@ std::string DeviceStatusCollector::GetAppVersion(
     const std::string& kiosk_app_id) {
   Profile* const profile = chromeos::ProfileHelper::Get()->GetProfileByUser(
       user_manager::UserManager::Get()->GetActiveUser());
+  // TODO(b/191334671): Replace with DCHECK once we no longer hit this timing
+  // issue.
+  if (!profile)
+    return std::string();
   const extensions::ExtensionRegistry* const registry =
       extensions::ExtensionRegistry::Get(profile);
   const extensions::Extension* const extension = registry->GetExtensionById(
