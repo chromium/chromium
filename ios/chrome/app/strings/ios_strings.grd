@@ -852,6 +852,15 @@ Because your account is managed by <ph name="HOSTED_DOMAIN">$1<ex>google.com</ex
       <message name="IDS_IOS_DOWNLOAD_MANAGER_GOOGLE_DRIVE" desc="Button for installing Google Drive app. Google Drive is a product name and should use the correct localized version of the product name. [Length: 25em] [iOS only]">
         Google Drive
       </message>
+      <message name="IDS_IOS_DOWNLOAD_MOBILECONFIG_CONTINUE" desc="Text in the confirmation dialog button that let the user download a .mobileconfig file.[iOS only]">
+          Continue
+      </message>
+      <message name="IDS_IOS_DOWNLOAD_MOBILECONFIG_FILE_WARNING_MESSAGE" desc="Warning message displayed inside an alert before downloading a .mobileconfig file.[iOS only]">
+          This website is trying to download a configuration profile.
+      </message>
+      <message name="IDS_IOS_DOWNLOAD_MOBILECONFIG_FILE_WARNING_TITLE" desc="Title of the alert displaying a warning message before downloading a .mobileconfig file.[iOS only]">
+          Configuration Profile Available
+      </message>
       <message name="IDS_IOS_FACETIME_BUTTON" desc="Text in the confirmation dialog button that will initiate a FaceTime call for the presented number. [Length: 10em] [iOS only]">
         FaceTime
       </message>

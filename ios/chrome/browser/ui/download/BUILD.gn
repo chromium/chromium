@@ -66,6 +66,7 @@ source_set("download") {
     "//ui/gfx",
   ]
   frameworks = [
+    "SafariServices.framework",
     "ARKit.framework",
     "StoreKit.framework",
     "UIKit.framework",
