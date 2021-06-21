@@ -755,7 +755,8 @@ bool ArCoreImpl::ConfigureCamera(ArSession* ar_session) {
   int32_t fps_min, fps_max;
   ArCameraConfig_getFpsRange(ar_session, best_config->get(), &fps_min,
                              &fps_max);
-  target_framerate_range_ = {fps_min, fps_max};
+  target_framerate_range_ = {static_cast<float>(fps_min),
+                             static_cast<float>(fps_max)};
 
 #if DCHECK_IS_ON()
   {
