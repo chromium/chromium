@@ -446,17 +446,24 @@ bool SearchSuggestionParser::ParseSuggestResults(
     int default_result_relevance,
     bool is_keyword_result,
     Results* results) {
-  std::u16string query;
-  const base::ListValue* root_list = nullptr;
-  const base::ListValue* results_list = nullptr;
+  if (!root_val.is_list())
+    return false;
+  base::Value::ConstListView root_list = root_val.GetList();
 
-  if (!root_val.GetAsList(&root_list) || !root_list->GetString(0, &query) ||
-      query != input.text() || !root_list->GetList(1, &results_list))
+  if (root_list.empty() || !root_list[0].is_string())
+    return false;
+  std::u16string query = base::UTF8ToUTF16(root_list[0].GetString());
+  if (query != input.text())
     return false;
 
+  if (root_list.size() < 2u || !root_list[1].is_list())
+    return false;
+  base::Value::ConstListView results_list = root_list[1].GetList();
+
   // 3rd element: Description list.
-  const base::ListValue* descriptions = nullptr;
-  root_list->GetList(2, &descriptions);
+  absl::optional<base::Value::ConstListView> descriptions;
+  if (root_list.size() > 2u && root_list[2].is_list())
+    descriptions = root_list[2].GetList();
 
   // 4th element: Disregard the query URL list for now.
 
@@ -473,14 +480,14 @@ bool SearchSuggestionParser::ParseSuggestResults(
   const base::Value* suggestsubtypes = nullptr;
   int prefetch_index = -1;
 
-  if (root_list->GetDictionary(4, &extras)) {
+  if (root_list.size() > 4u && root_list[4].GetAsDictionary(&extras)) {
     extras->GetList("google:suggesttype", &types);
 
     suggestsubtypes = extras->FindPath("google:suggestsubtypes");
 
     // Discard this list if its size does not match that of the suggestions.
     if (extras->GetList("google:suggestrelevance", &relevances) &&
-        (relevances->GetSize() != results_list->GetSize()))
+        (relevances->GetSize() != results_list.size()))
       relevances = nullptr;
     extras->GetInteger("google:verbatimrelevance",
                        &results->verbatim_relevance);
@@ -529,12 +536,12 @@ bool SearchSuggestionParser::ParseSuggestResults(
       client_data->GetInteger("phi", &prefetch_index);
 
     if (extras->GetList("google:suggestdetail", &suggestion_details) &&
-        suggestion_details->GetSize() != results_list->GetSize())
+        suggestion_details->GetSize() != results_list.size())
       suggestion_details = nullptr;
 
     // Legacy code: Get subtype identifiers.
     if (extras->GetList("google:subtypeid", &subtype_identifiers) &&
-        subtype_identifiers->GetSize() != results_list->GetSize()) {
+        subtype_identifiers->GetSize() != results_list.size()) {
       subtype_identifiers = nullptr;
     }
 
@@ -548,18 +555,21 @@ bool SearchSuggestionParser::ParseSuggestResults(
   // Note: ParseMatchSubtypes will handle the cases where the key does not
   // exist or contains malformed data.
   std::vector<std::vector<int>> subtypes =
-      ParseMatchSubtypes(suggestsubtypes, results_list->GetSize());
+      ParseMatchSubtypes(suggestsubtypes, results_list.size());
 
   // Clear the previous results now that new results are available.
   results->suggest_results.clear();
   results->navigation_results.clear();
 
-  std::u16string suggestion;
   std::string type;
   int relevance = default_result_relevance;
   const std::u16string& trimmed_input =
       base::CollapseWhitespace(input.text(), false);
-  for (size_t index = 0; results_list->GetString(index, &suggestion); ++index) {
+  for (size_t index = 0;
+       index < results_list.size() && results_list[index].is_string();
+       ++index) {
+    std::u16string suggestion =
+        base::UTF8ToUTF16(results_list[index].GetString());
     // Google search may return empty suggestions for weird input characters,
     // they make no sense at all and can cause problems in our code.
     suggestion = base::CollapseWhitespace(suggestion, false);
@@ -600,8 +610,10 @@ bool SearchSuggestionParser::ParseSuggestResults(
                                        std::string()));
       if (url.is_valid()) {
         std::u16string title;
-        if (descriptions != nullptr)
-          descriptions->GetString(index, &title);
+        if (descriptions.has_value() && index < descriptions.value().size() &&
+            descriptions.value()[index].is_string()) {
+          title = base::UTF8ToUTF16(descriptions.value()[index].GetString());
+        }
         results->navigation_results.push_back(NavigationResult(
             scheme_classifier, url, match_type, subtypes[index], title,
             deletion_url, is_keyword_result, relevance, relevances != nullptr,
