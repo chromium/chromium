@@ -25,8 +25,6 @@ dependencies {
     compile "androidx.lifecycle:lifecycle-viewmodel:{{androidx_dependency_version}}"
     compile "androidx.lifecycle:lifecycle-viewmodel-savedstate:{{androidx_dependency_version}}"
 
-    compile "androidx.core:core:{{androidx_dependency_version}}"
-    compile "androidx.core:core-animation:{{androidx_dependency_version}}"
     compile "androidx.activity:activity:{{androidx_dependency_version}}"
     compile "androidx.annotation:annotation:{{androidx_dependency_version}}"
     compile "androidx.appcompat:appcompat:{{androidx_dependency_version}}"
@@ -34,11 +32,15 @@ dependencies {
     compile "androidx.asynclayoutinflater:asynclayoutinflater:{{androidx_dependency_version}}"
     compile "androidx.browser:browser:{{androidx_dependency_version}}"
     compile "androidx.cardview:cardview:{{androidx_dependency_version}}"
-    compile "androidx.concurrent:concurrent-futures:{{androidx_dependency_version}}"
     compile "androidx.collection:collection:{{androidx_dependency_version}}"
+    compile "androidx.concurrent:concurrent-futures:{{androidx_dependency_version}}"
     compile "androidx.coordinatorlayout:coordinatorlayout:{{androidx_dependency_version}}"
+    compile "androidx.core:core:{{androidx_dependency_version}}"
+    compile "androidx.core:core-animation:{{androidx_dependency_version}}"
     compile "androidx.customview:customview:{{androidx_dependency_version}}"
     compile "androidx.drawerlayout:drawerlayout:{{androidx_dependency_version}}"
+    compile "androidx.dynamicanimation:dynamicanimation:{{androidx_dependency_version}}"
+    compile "androidx.exifinterface:exifinterface:{{androidx_dependency_version}}"
     compile "androidx.fragment:fragment:{{androidx_dependency_version}}"
     compile "androidx.gridlayout:gridlayout:{{androidx_dependency_version}}"
     compile "androidx.interpolator:interpolator:{{androidx_dependency_version}}"
@@ -48,16 +50,15 @@ dependencies {
     compile "androidx.media:media:{{androidx_dependency_version}}"
     compile "androidx.mediarouter:mediarouter:{{androidx_dependency_version}}"
     compile "androidx.preference:preference:{{androidx_dependency_version}}"
-    compile "androidx.slice:slice-core:{{androidx_dependency_version}}"
-    compile "androidx.slice:slice-builders:{{androidx_dependency_version}}"
     compile "androidx.recyclerview:recyclerview:{{androidx_dependency_version}}"
     compile "androidx.savedstate:savedstate:{{androidx_dependency_version}}"
+    compile "androidx.slice:slice-builders:{{androidx_dependency_version}}"
+    compile "androidx.slice:slice-core:{{androidx_dependency_version}}"
     compile "androidx.swiperefreshlayout:swiperefreshlayout:{{androidx_dependency_version}}"
+    compile "androidx.tvprovider:tvprovider:{{androidx_dependency_version}}"
     compile "androidx.vectordrawable:vectordrawable:{{androidx_dependency_version}}"
     compile "androidx.vectordrawable:vectordrawable-animated:{{androidx_dependency_version}}"
-    compile "androidx.tvprovider:tvprovider:{{androidx_dependency_version}}"
     compile "androidx.viewpager:viewpager:{{androidx_dependency_version}}"
-    compile "androidx.exifinterface:exifinterface:{{androidx_dependency_version}}"
     compile "androidx.window:window:{{androidx_dependency_version}}"
 
     // Those are for use by doubledown libraries.
@@ -72,6 +73,10 @@ dependencies {
 
     compile "androidx.multidex:multidex:2.0.0"
     compile "androidx.webkit:webkit:{{androidx_dependency_version}}"
+
+    // For some reason ConstraintLayout is not shipped with the rest of
+    // androidx, and not included in snapshots.
+    compile "androidx.constraintlayout:constraintlayout:2.1.0-beta02"
 
     // Used by 1p Play Services.
     compile "androidx.legacy:legacy-support-v4:1.0.0"
