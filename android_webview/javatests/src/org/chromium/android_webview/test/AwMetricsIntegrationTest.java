@@ -19,6 +19,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.android_webview.AwBrowserProcess;
 import org.chromium.android_webview.AwContents;
+import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.PlatformServiceBridge;
 import org.chromium.android_webview.metrics.AwMetricsServiceClient;
 import org.chromium.base.Callback;
@@ -397,6 +398,34 @@ public class AwMetricsIntegrationTest {
             Assert.assertEquals(1,
                     RecordHistogram.getHistogramTotalCountForTesting(
                             "Android.SeccompStatus.RendererSandbox"));
+        } finally {
+            embeddedTestServer.stopAndDestroyServer();
+        }
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"enable-features=" + AwFeatures.WEBVIEW_MEASURE_SCREEN_COVERAGE})
+    public void testScreenCoverageReporting() throws Throwable {
+        EmbeddedTestServer embeddedTestServer = EmbeddedTestServer.createAndStartServer(
+                InstrumentationRegistry.getInstrumentation().getContext());
+        try {
+            mRule.loadUrlAsync(mAwContents,
+                    embeddedTestServer.getURL("/android_webview/test/data/hello_world.html"));
+
+            // We need to wait for log collection because the histogram is recorded during
+            // MetricsProvider::ProvideCurrentSessionData().
+            mPlatformServiceBridge.waitForNextMetricsLog();
+
+            final String histogramName = "Android.WebView.WebViewOpenWebVisible.ScreenPortion";
+            int totalSamples = RecordHistogram.getHistogramTotalCountForTesting(histogramName);
+            Assert.assertNotEquals("There should be at least one sample recorded", 0, totalSamples);
+
+            int zeroBucketSamples =
+                    RecordHistogram.getHistogramValueCountForTesting(histogramName, 0);
+            Assert.assertNotEquals("There should be at least one sample in a non-zero bucket",
+                    zeroBucketSamples, totalSamples);
         } finally {
             embeddedTestServer.stopAndDestroyServer();
         }
