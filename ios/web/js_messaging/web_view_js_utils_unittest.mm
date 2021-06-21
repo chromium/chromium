@@ -15,6 +15,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #include "testing/platform_test.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -114,23 +115,20 @@ TEST_F(WebViewJsUtilsTest, ValueResultFromArrayWKResult) {
   NSArray* test_array = @[ @"Value1", @[ @YES ], @42 ];
 
   std::unique_ptr<base::Value> value(web::ValueResultFromWKResult(test_array));
-  base::ListValue* list = nullptr;
-  value->GetAsList(&list);
-  EXPECT_NE(nullptr, list);
+  ASSERT_TRUE(value->is_list());
+  base::Value::ConstListView list = value->GetList();
 
   size_t list_size = 3;
-  EXPECT_EQ(list_size, list->GetSize());
+  ASSERT_EQ(list_size, list.size());
 
-  std::string value1;
-  list->GetString(0, &value1);
+  ASSERT_TRUE(list[0].is_string());
+  std::string value1 = list[0].GetString();
   EXPECT_EQ("Value1", value1);
 
-  base::ListValue const* inner_list = nullptr;
-  list->GetList(1, &inner_list);
-  EXPECT_NE(nullptr, inner_list);
+  EXPECT_TRUE(list[1].is_list());
 
-  double value3;
-  list->GetDouble(2, &value3);
+  ASSERT_TRUE(list[2].is_double());
+  double value3 = list[2].GetDouble();
   EXPECT_EQ(42, value3);
 }
 
@@ -188,20 +186,22 @@ TEST_F(WebViewJsUtilsTest, ValueResultFromArrayWithDepthCheckWKResult) {
   // Check that parsing the array stopped at a depth of
   // |kMaximumParsingRecursionDepth|.
   std::unique_ptr<base::Value> value = web::ValueResultFromWKResult(test_array);
-  base::ListValue* current_list = nullptr;
-  base::ListValue* inner_list = nullptr;
+  absl::optional<base::Value::ConstListView> current_list;
+  absl::optional<base::Value::ConstListView> inner_list;
 
-  value->GetAsList(&current_list);
-  EXPECT_NE(nullptr, current_list);
+  ASSERT_TRUE(value->is_list());
+  current_list = value->GetList();
 
   for (int current_depth = 0; current_depth <= kMaximumParsingRecursionDepth;
        current_depth++) {
-    EXPECT_NE(nullptr, current_list);
-    inner_list = nullptr;
-    current_list->GetList(0, &inner_list);
+    ASSERT_TRUE(current_list.has_value());
+
+    inner_list = absl::nullopt;
+    if (!current_list.value().empty() && current_list.value()[0].is_list())
+      inner_list = current_list.value()[0].GetList();
     current_list = inner_list;
   }
-  EXPECT_EQ(nullptr, current_list);
+  EXPECT_FALSE(current_list.has_value());
 }
 
 // Tests that ExecuteJavaScript returns an error if there is no web view.
