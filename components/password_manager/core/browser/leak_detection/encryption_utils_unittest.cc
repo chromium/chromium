@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/cxx17_backports.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -75,12 +76,13 @@ TEST(EncryptionUtils, ScryptHashUsernameAndPassword) {
   // The expected result was obtained by running the Java implementation of the
   // hash.
   // Needs to stay in sync with server side constant: go/passwords-leak-salts.
-  constexpr char kExpected[] = {-103, 126, -10, 118,  7,    76,  -51, -76,
-                                -56,  -82, -38, 31,   114,  61,  -7,  103,
-                                76,   91,  52,  -52,  47,   -22, 107, 77,
-                                118,  123, -14, -125, -123, 85,  115, -3};
+  constexpr uint8_t kExpected[] = {
+      0x99, 0x7E, 0xF6, 0x76, 0x07, 0x4C, 0xCD, 0xB4, 0xC8, 0xAE, 0xDA,
+      0x1F, 0x72, 0x3D, 0xF9, 0x67, 0x4C, 0x5B, 0x34, 0xCC, 0x2F, 0xEA,
+      0x6B, 0x4D, 0x76, 0x7B, 0xF2, 0x83, 0x85, 0x55, 0x73, 0xFD};
   std::string result = *ScryptHashUsernameAndPassword("user", "password123");
-  EXPECT_THAT(result, ElementsAreArray(kExpected));
+  EXPECT_THAT(result, ElementsAreArray(reinterpret_cast<const char*>(kExpected),
+                                       base::size(kExpected)));
 }
 
 TEST(EncryptionUtils, EncryptAndDecrypt) {
@@ -98,23 +100,27 @@ TEST(EncryptionUtils, EncryptAndDecrypt) {
 
 TEST(EncryptionUtils, EncryptAndDecryptWithPredefinedKey) {
   constexpr char kRandomString[] = "very_secret";
-  const std::string kKey = {-3,   -80, 44,  -113, -1,   -67, 49,  -120,
-                            -91,  54,  -15, -2,   13,   -87, 95,  85,
-                            -101, 11,  -81, 102,  -105, -14, 8,   -123,
-                            1,    36,  -74, -19,  88,   109, -24, -102};
+  constexpr uint8_t kKey[] = {0xFD, 0xB0, 0x2C, 0x8F, 0xFF, 0xBD, 0x31, 0x88,
+                              0xA5, 0x36, 0xF1, 0xFE, 0x0D, 0xA9, 0x5F, 0x55,
+                              0x9B, 0x0B, 0xAF, 0x66, 0x97, 0xF2, 0x08, 0x85,
+                              0x01, 0x24, 0xB6, 0xED, 0x58, 0x6D, 0xE8, 0x9A};
+  const std::string kKeyStr(reinterpret_cast<const char*>(kKey),
+                            base::size(kKey));
   SCOPED_TRACE(testing::Message()
-               << "key=" << testing::PrintToString(StringAsArray(kKey)));
+               << "key=" << testing::PrintToString(StringAsArray(kKeyStr)));
   // The expected result was obtained by running the Java implementation of the
   // cipher.
-  const char kEncrypted[] = {2,    69,  19,  106, -38,  4,   -21,  -57, 110,
-                             95,   110, 111, 51,  -100, -56, -10,  -24, 71,
-                             -112, -64, 58,  -64, 76,   -35, -117, -23, -100,
-                             25,   63,  37,  114, 74,   88};
+  const uint8_t kEncrypted[] = {
+      0x02, 0x45, 0x13, 0x6A, 0xDA, 0x04, 0xEB, 0xC7, 0x6E, 0x5F, 0x6E,
+      0x6F, 0x33, 0x9C, 0xC8, 0xF6, 0xE8, 0x47, 0x90, 0xC0, 0x3A, 0xC0,
+      0x4C, 0xDD, 0x8B, 0xE9, 0x9C, 0x19, 0x3F, 0x25, 0x72, 0x4A, 0x58};
 
-  std::string cipher = *CipherEncryptWithKey(kRandomString, kKey);
-  EXPECT_THAT(cipher, ElementsAreArray(kEncrypted));
+  std::string cipher = *CipherEncryptWithKey(kRandomString, kKeyStr);
+  EXPECT_THAT(cipher,
+              ElementsAreArray(reinterpret_cast<const char*>(kEncrypted),
+                               base::size(kEncrypted)));
   EXPECT_THAT(CalculateECCurveHash(kRandomString),
-              ElementsAreArray(*CipherDecrypt(cipher, kKey)));
+              ElementsAreArray(*CipherDecrypt(cipher, kKeyStr)));
 }
 
 TEST(EncryptionUtils, CipherIsCommutative) {

@@ -48,10 +48,10 @@ std::u16string CanonicalizeUsername(base::StringPiece16 username) {
 
 std::string HashUsername(base::StringPiece canonicalized_username) {
   // Needs to stay in sync with server side constant: go/passwords-leak-salts
-  static constexpr char kUsernameSalt[] = {
-      -60, -108, -93, -107, -8, -64, -30, 62,   -87, 35,  4,
-      120, 112,  44,  114,  24, 86,  84,  -103, -77, -23, 33,
-      24,  108,  33,  26,   1,  34,  60,  69,   74,  -6};
+  static constexpr uint8_t kUsernameSalt[] = {
+      0xC4, 0x94, 0xA3, 0x95, 0xF8, 0xC0, 0xE2, 0x3E, 0xA9, 0x23, 0x04,
+      0x78, 0x70, 0x2C, 0x72, 0x18, 0x56, 0x54, 0x99, 0xB3, 0xE9, 0x21,
+      0x18, 0x6C, 0x21, 0x1A, 0x01, 0x22, 0x3C, 0x45, 0x4A, 0xFA};
 
   // Check that |canonicalized_username| is actually canonicalized.
   // Note: We can't use CanonicalizeUsername() again, since it's not idempotent
@@ -59,7 +59,8 @@ std::string HashUsername(base::StringPiece canonicalized_username) {
   DCHECK_EQ(base::ToLowerASCII(canonicalized_username), canonicalized_username);
   return crypto::SHA256HashString(base::StrCat(
       {canonicalized_username,
-       base::StringPiece(kUsernameSalt, base::size(kUsernameSalt))}));
+       base::StringPiece(reinterpret_cast<const char*>(kUsernameSalt),
+                         base::size(kUsernameSalt))}));
 }
 
 std::string BucketizeUsername(base::StringPiece canonicalized_username) {
@@ -89,10 +90,10 @@ absl::optional<std::string> ScryptHashUsernameAndPassword(
     base::StringPiece password) {
   // Constant salt added to the password hash on top of canonicalized_username.
   // Needs to stay in sync with server side constant: go/passwords-leak-salts
-  static constexpr char kPasswordHashSalt[] = {
-      48,   118, 42,  -46,  63,  123, -95, -101, -8,  -29, 66,
-      -4,   -95, -89, -115, 6,   -26, 107, -28,  -37, -72, 79,
-      -127, 83,  -59, 3,    -56, -37, -67, -34,  -91, 32};
+  static constexpr uint8_t kPasswordHashSalt[] = {
+      0x30, 0x76, 0x2A, 0xD2, 0x3F, 0x7B, 0xA1, 0x9B, 0xF8, 0xE3, 0x42,
+      0xFC, 0xA1, 0xA7, 0x8D, 0x06, 0xE6, 0x6B, 0xE4, 0xDB, 0xB8, 0x4F,
+      0x81, 0x53, 0xC5, 0x03, 0xC8, 0xDB, 0xBd, 0xDE, 0xA5, 0x20};
   static constexpr size_t kHashKeyLength = 32;
   static constexpr uint64_t kScryptCost = 1 << 12;  // It must be a power of 2.
   static constexpr uint64_t kScryptBlockSize = 8;
@@ -108,7 +109,8 @@ absl::optional<std::string> ScryptHashUsernameAndPassword(
       base::StrCat({canonicalized_username, password});
   std::string salt = base::StrCat(
       {canonicalized_username,
-       base::StringPiece(kPasswordHashSalt, base::size(kPasswordHashSalt))});
+       base::StringPiece(reinterpret_cast<const char*>(kPasswordHashSalt),
+                         base::size(kPasswordHashSalt))});
 
   std::string result;
   uint8_t* key_data =
