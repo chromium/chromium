@@ -71,13 +71,24 @@ class PerformanceManager {
   static void PassToGraph(const base::Location& from_here,
                           std::unique_ptr<GraphOwned> graph_owned);
 
-  // Returns a WeakPtr to the PageNode associated with a given WebContents,
-  // or a null WeakPtr if there's no PageNode for this WebContents.
+  // Returns a WeakPtr to the *primary* PageNode associated with a given
+  // WebContents, or a null WeakPtr if there's no PageNode for this WebContents.
   // Valid to call from the main thread only, the returned WeakPtr should only
   // be dereferenced on the PM sequence (e.g. it can be used in a
   // CallOnGraph callback).
-  static base::WeakPtr<PageNode> GetPageNodeForWebContents(
+  // NOTE: Consider using GetPageNodeForRenderFrameHost if you are in the
+  // context of a specific RenderFrameHost.
+  static base::WeakPtr<PageNode> GetPrimaryPageNodeForWebContents(
       content::WebContents* wc);
+
+  // Returns a WeakPtr to the PageNode associated with a given RenderFrameHost,
+  // or nullptr if no such page node exists. Valid to call from the main thread
+  // only, the returned WeakPtr should only be dereferenced on the PM sequence
+  // (e.g. it can be used in a CallOnGraph callback). This is equivalent to
+  // calling `GetFrameNodeForRenderFrameHost()` and subsequently calling
+  // `FrameNode::GetPageNode()`.
+  static base::WeakPtr<PageNode> GetPageNodeForRenderFrameHost(
+      content::RenderFrameHost* rfh);
 
   // Returns a WeakPtr to the FrameNode associated with a given
   // RenderFrameHost, or a null WeakPtr if there's no FrameNode for this RFH.

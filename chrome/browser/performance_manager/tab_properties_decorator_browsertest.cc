@@ -23,7 +23,7 @@ IN_PROC_BROWSER_TEST_F(TabPropertiesDecoratorBrowserTest, SetIsTab) {
 
   // Get PageNode associated with the current tab.
   base::WeakPtr<PageNode> page_node =
-      PerformanceManager::GetPageNodeForWebContents(
+      PerformanceManager::GetPrimaryPageNodeForWebContents(
           browser()->tab_strip_model()->GetActiveWebContents());
 
   // Get data from the PageNode and verify the tab properties.

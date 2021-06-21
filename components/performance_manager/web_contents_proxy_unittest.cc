@@ -33,7 +33,7 @@ class WebContentsProxyTest : public PerformanceManagerTestHarness {
 TEST_F(WebContentsProxyTest, EndToEnd) {
   std::unique_ptr<content::WebContents> contents = CreateTestWebContents();
   auto* helper = PerformanceManagerTabHelper::FromWebContents(contents.get());
-  auto* page_node = helper->page_node();
+  auto* page_node = helper->primary_page_node();
   content::WebContents* proxy_contents = nullptr;
 
   auto deref_proxy = base::BindLambdaForTesting(

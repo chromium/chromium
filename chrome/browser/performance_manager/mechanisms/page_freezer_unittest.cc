@@ -42,16 +42,17 @@ void MaybeFreezePageNode(content::WebContents* content) {
   base::RunLoop run_loop;
   auto quit_closure = run_loop.QuitClosure();
   PerformanceManager::CallOnGraph(
-      FROM_HERE, base::BindOnce(
-                     [](base::WeakPtr<PageNode> page_node,
-                        base::OnceClosure quit_closure) {
-                       EXPECT_TRUE(page_node);
-                       mechanism::PageFreezer freezer;
-                       freezer.MaybeFreezePageNode(page_node.get());
-                       std::move(quit_closure).Run();
-                     },
-                     PerformanceManager::GetPageNodeForWebContents(content),
-                     std::move(quit_closure)));
+      FROM_HERE,
+      base::BindOnce(
+          [](base::WeakPtr<PageNode> page_node,
+             base::OnceClosure quit_closure) {
+            EXPECT_TRUE(page_node);
+            mechanism::PageFreezer freezer;
+            freezer.MaybeFreezePageNode(page_node.get());
+            std::move(quit_closure).Run();
+          },
+          PerformanceManager::GetPrimaryPageNodeForWebContents(content),
+          std::move(quit_closure)));
   run_loop.Run();
 
   // Allow the bounce back to the UI thread to run; it will have been scheduled
@@ -64,16 +65,17 @@ void UnfreezePageNode(content::WebContents* content) {
   base::RunLoop run_loop;
   auto quit_closure = run_loop.QuitClosure();
   PerformanceManager::CallOnGraph(
-      FROM_HERE, base::BindOnce(
-                     [](base::WeakPtr<PageNode> page_node,
-                        base::OnceClosure quit_closure) {
-                       EXPECT_TRUE(page_node);
-                       mechanism::PageFreezer freezer;
-                       freezer.UnfreezePageNode(page_node.get());
-                       std::move(quit_closure).Run();
-                     },
-                     PerformanceManager::GetPageNodeForWebContents(content),
-                     std::move(quit_closure)));
+      FROM_HERE,
+      base::BindOnce(
+          [](base::WeakPtr<PageNode> page_node,
+             base::OnceClosure quit_closure) {
+            EXPECT_TRUE(page_node);
+            mechanism::PageFreezer freezer;
+            freezer.UnfreezePageNode(page_node.get());
+            std::move(quit_closure).Run();
+          },
+          PerformanceManager::GetPrimaryPageNodeForWebContents(content),
+          std::move(quit_closure)));
   run_loop.Run();
 
   // Allow the bounce back to the UI thread to run; it will have been scheduled

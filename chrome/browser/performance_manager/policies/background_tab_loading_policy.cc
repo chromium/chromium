@@ -49,7 +49,7 @@ void ScheduleLoadForRestoredTabs(
   weakptr_page_nodes.reserve(web_contents_vector.size());
   for (auto* content : web_contents_vector) {
     weakptr_page_nodes.push_back(
-        PerformanceManager::GetPageNodeForWebContents(content));
+        PerformanceManager::GetPrimaryPageNodeForWebContents(content));
   }
   performance_manager::PerformanceManager::CallOnGraph(
       FROM_HERE, base::BindOnce(

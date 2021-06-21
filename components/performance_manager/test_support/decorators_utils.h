@@ -48,7 +48,7 @@ void TestPageNodePropertyOnPMSequence(content::WebContents* contents,
   auto quit_closure = run_loop.QuitClosure();
 
   base::WeakPtr<PageNode> node =
-      PerformanceManager::GetPageNodeForWebContents(contents);
+      PerformanceManager::GetPrimaryPageNodeForWebContents(contents);
 
   PerformanceManager::CallOnGraph(
       FROM_HERE, base::BindLambdaForTesting([&]() {

@@ -71,7 +71,7 @@ void MarkWebContentsAsLoadedInBackgroundInSiteDataDb(
             impl->NotifyLoadedSiteBackgrounded();
             std::move(closure).Run();
           },
-          PerformanceManager::GetPageNodeForWebContents(web_contents),
+          PerformanceManager::GetPrimaryPageNodeForWebContents(web_contents),
           run_loop.QuitClosure()));
   run_loop.Run();
 }
@@ -89,7 +89,7 @@ void MarkWebContentsAsUnloadedInBackgroundInSiteDataDb(
             impl->NotifySiteUnloaded(TabVisibility::kBackground);
             std::move(closure).Run();
           },
-          PerformanceManager::GetPageNodeForWebContents(web_contents),
+          PerformanceManager::GetPrimaryPageNodeForWebContents(web_contents),
           run_loop.QuitClosure()));
   run_loop.Run();
 }
@@ -107,7 +107,7 @@ void ExpireSiteDataObservationWindowsForWebContents(
             impl->ExpireAllObservationWindowsForTesting();
             std::move(closure).Run();
           },
-          PerformanceManager::GetPageNodeForWebContents(web_contents),
+          PerformanceManager::GetPrimaryPageNodeForWebContents(web_contents),
           run_loop.QuitClosure()));
   run_loop.Run();
 }

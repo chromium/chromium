@@ -189,7 +189,7 @@ void FreezingVoteTokenPMRegistry::RegisterVoteForWebContents(
                 FreezingVoteTokenPMRegistry::GetOrCreateInstance(graph);
             registry->RegisterVoteOnPMSequence(page_node, vote, token);
           },
-          PerformanceManager::GetPageNodeForWebContents(contents),
+          PerformanceManager::GetPrimaryPageNodeForWebContents(contents),
           FreezingVote(vote_value, vote_reason), token));
 }
 

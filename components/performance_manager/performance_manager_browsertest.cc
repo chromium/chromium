@@ -97,7 +97,7 @@ IN_PROC_BROWSER_TEST_F(PerformanceManagerBrowserTest, OpenerTrackingWorks) {
   WaitForLoad(popup->web_contents());
 
   auto* contents = shell()->web_contents();
-  auto page = PerformanceManager::GetPageNodeForWebContents(contents);
+  auto page = PerformanceManager::GetPrimaryPageNodeForWebContents(contents);
 
   // Jump into the graph and make sure everything is connected as expected.
   base::RunLoop run_loop;

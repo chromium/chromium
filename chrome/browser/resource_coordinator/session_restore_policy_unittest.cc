@@ -646,8 +646,8 @@ TEST_F(SessionRestorePolicyTest, FeatureUsageSetUsedInBgBit) {
             impl->NotifyUpdatesTitleInBackground();
             std::move(closure).Run();
           },
-          performance_manager::PerformanceManager::GetPageNodeForWebContents(
-              contents1_.get()),
+          performance_manager::PerformanceManager::
+              GetPrimaryPageNodeForWebContents(contents1_.get()),
           run_loop.QuitClosure()));
   run_loop.Run();
 
@@ -697,8 +697,8 @@ TEST_F(SessionRestorePolicyTest, UnknownUsageSetUsedInBgBit) {
                 title_feature_usage);
             std::move(closure).Run();
           },
-          performance_manager::PerformanceManager::GetPageNodeForWebContents(
-              contents.get()),
+          performance_manager::PerformanceManager::
+              GetPrimaryPageNodeForWebContents(contents.get()),
           run_loop.QuitClosure()));
   run_loop.Run();
 

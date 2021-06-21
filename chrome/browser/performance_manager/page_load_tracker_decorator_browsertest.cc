@@ -115,7 +115,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadTrackerDecoratorTest, PageNodeLoadingState) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   base::WeakPtr<PageNode> page_node =
-      PerformanceManager::GetPageNodeForWebContents(
+      PerformanceManager::GetPrimaryPageNodeForWebContents(
           browser()->tab_strip_model()->GetActiveWebContents());
 
   // Wait until GetLoadingState() is LoadingState::kLoadedIdle (the initial

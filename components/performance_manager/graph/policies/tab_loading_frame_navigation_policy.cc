@@ -90,9 +90,10 @@ bool TabLoadingFrameNavigationPolicy::ShouldThrottleWebContents(
   // object exists in the graph.
   PerformanceManager::CallOnGraph(
       FROM_HERE,
-      base::BindOnce(&SetPageNodeThrottled,
-                     PerformanceManager::GetPageNodeForWebContents(contents),
-                     throttled));
+      base::BindOnce(
+          &SetPageNodeThrottled,
+          PerformanceManager::GetPrimaryPageNodeForWebContents(contents),
+          throttled));
 
   return throttled;
 }

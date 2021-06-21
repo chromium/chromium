@@ -182,7 +182,7 @@ void TabDataAccess::SetUsedInBgFromSiteDataDB(
             },
             base::Unretained(reader), std::move(reply_cb), reply_task_runner));
       },
-      performance_manager::PerformanceManager::GetPageNodeForWebContents(
+      performance_manager::PerformanceManager::GetPrimaryPageNodeForWebContents(
           contents),
       tab_data->used_in_bg_setter_cancel_callback.callback(),
       base::SequencedTaskRunnerHandle::Get());

@@ -36,7 +36,7 @@ absl::optional<FreezingVote> GetFreezingVote(content::WebContents* contents) {
             *expected_vote = vote;
             std::move(quit_closure).Run();
           },
-          PerformanceManager::GetPageNodeForWebContents(contents),
+          PerformanceManager::GetPrimaryPageNodeForWebContents(contents),
           std::move(quit_closure), &ret));
   run_loop.Run();
   return ret;
@@ -48,16 +48,17 @@ size_t GetVoteCount(content::WebContents* contents) {
   size_t ret = 0;
   auto quit_closure = run_loop.QuitClosure();
   PerformanceManager::CallOnGraph(
-      FROM_HERE, base::BindOnce(
-                     [](base::WeakPtr<PageNode> page_node,
-                        base::OnceClosure quit_closure, size_t* vote_count) {
-                       EXPECT_TRUE(page_node);
-                       *vote_count = FreezingVoteCountForPageOnPMForTesting(
-                           page_node.get());
-                       std::move(quit_closure).Run();
-                     },
-                     PerformanceManager::GetPageNodeForWebContents(contents),
-                     std::move(quit_closure), &ret));
+      FROM_HERE,
+      base::BindOnce(
+          [](base::WeakPtr<PageNode> page_node, base::OnceClosure quit_closure,
+             size_t* vote_count) {
+            EXPECT_TRUE(page_node);
+            *vote_count =
+                FreezingVoteCountForPageOnPMForTesting(page_node.get());
+            std::move(quit_closure).Run();
+          },
+          PerformanceManager::GetPrimaryPageNodeForWebContents(contents),
+          std::move(quit_closure), &ret));
   run_loop.Run();
   return ret;
 }

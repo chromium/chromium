@@ -23,19 +23,19 @@ void SetPropertyForWebContentsPageNode(
     T value) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   PerformanceManager::CallOnGraph(
-      FROM_HERE, base::BindOnce(
-                     [](base::WeakPtr<PageNode> node,
-                        void (decorator_data_type::*setter_function)(T),
-                        T value) {
-                       if (node) {
-                         auto* data = decorator_data_type::GetOrCreate(
-                             PageNodeImpl::FromNode(node.get()));
-                         DCHECK(data);
-                         (data->*setter_function)(value);
-                       }
-                     },
-                     PerformanceManager::GetPageNodeForWebContents(contents),
-                     setter_function, value));
+      FROM_HERE,
+      base::BindOnce(
+          [](base::WeakPtr<PageNode> node,
+             void (decorator_data_type::*setter_function)(T), T value) {
+            if (node) {
+              auto* data = decorator_data_type::GetOrCreate(
+                  PageNodeImpl::FromNode(node.get()));
+              DCHECK(data);
+              (data->*setter_function)(value);
+            }
+          },
+          PerformanceManager::GetPrimaryPageNodeForWebContents(contents),
+          setter_function, value));
 }
 
 }  // namespace performance_manager

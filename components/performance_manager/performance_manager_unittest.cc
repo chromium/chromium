@@ -55,7 +55,7 @@ TEST_F(PerformanceManagerTest, NodeAccessors) {
   ASSERT_TRUE(rph);
 
   base::WeakPtr<PageNode> page_node =
-      PerformanceManager::GetPageNodeForWebContents(contents.get());
+      PerformanceManager::GetPrimaryPageNodeForWebContents(contents.get());
 
   // FrameNode's and ProcessNode's don't exist until an observer fires on
   // navigation. Verify that looking them up before that returns null instead

@@ -58,14 +58,29 @@ void PerformanceManager::PassToGraph(const base::Location& from_here,
 }
 
 // static
-base::WeakPtr<PageNode> PerformanceManager::GetPageNodeForWebContents(
+base::WeakPtr<PageNode> PerformanceManager::GetPrimaryPageNodeForWebContents(
     content::WebContents* wc) {
   DCHECK(wc);
   PerformanceManagerTabHelper* helper =
       PerformanceManagerTabHelper::FromWebContents(wc);
   if (!helper)
     return nullptr;
-  return helper->page_node()->GetWeakPtrOnUIThread();
+  return helper->primary_page_node()->GetWeakPtrOnUIThread();
+}
+
+// static
+base::WeakPtr<PageNode> PerformanceManager::GetPageNodeForRenderFrameHost(
+    content::RenderFrameHost* rfh) {
+  auto* wc = content::WebContents::FromRenderFrameHost(rfh);
+  DCHECK(wc);
+  PerformanceManagerTabHelper* helper =
+      PerformanceManagerTabHelper::FromWebContents(wc);
+  if (!helper)
+    return nullptr;
+  auto* page_node = helper->GetPageNodeForRenderFrameHost(rfh);
+  if (!page_node)
+    return nullptr;
+  return page_node->GetWeakPtrOnUIThread();
 }
 
 // static

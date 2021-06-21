@@ -49,7 +49,7 @@ IN_PROC_BROWSER_TEST_F(PageDiscarderBrowserTest, DiscardPageNode) {
                     },
                     std::move(quit_closure)));
           },
-          PerformanceManager::GetPageNodeForWebContents(contents),
+          PerformanceManager::GetPrimaryPageNodeForWebContents(contents),
           std::move(quit_closure)));
   run_loop.Run();
 

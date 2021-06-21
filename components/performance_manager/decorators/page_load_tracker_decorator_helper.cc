@@ -29,7 +29,8 @@ void NotifyPageLoadTrackerDecoratorOnPMSequence(content::WebContents* contents,
               method(page_node);
             }
           },
-          PerformanceManager::GetPageNodeForWebContents(contents), method));
+          PerformanceManager::GetPrimaryPageNodeForWebContents(contents),
+          method));
 }
 
 }  // namespace

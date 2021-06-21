@@ -113,7 +113,8 @@ class PageLiveStateDecoratorTest : public PerformanceManagerTestHarness {
                   ->AddObserver(observer);
               std::move(quit_closure).Run();
             },
-            PerformanceManager::GetPageNodeForWebContents(web_contents()),
+            PerformanceManager::GetPrimaryPageNodeForWebContents(
+                web_contents()),
             observer_.get(), std::move(quit_closure)));
     run_loop.Run();
   }
@@ -133,7 +134,8 @@ class PageLiveStateDecoratorTest : public PerformanceManagerTestHarness {
                   ->RemoveObserver(observer);
               std::move(quit_closure).Run();
             },
-            PerformanceManager::GetPageNodeForWebContents(web_contents()),
+            PerformanceManager::GetPrimaryPageNodeForWebContents(
+                web_contents()),
             observer_.get(), std::move(quit_closure)));
     run_loop.Run();
 
@@ -159,7 +161,8 @@ class PageLiveStateDecoratorTest : public PerformanceManagerTestHarness {
               EXPECT_EQ(page_node.get(), observer->page_node_passed_);
               std::move(quit_closure).Run();
             },
-            PerformanceManager::GetPageNodeForWebContents(web_contents()),
+            PerformanceManager::GetPrimaryPageNodeForWebContents(
+                web_contents()),
             observer_.get(), expected_call, std::move(quit_closure)));
     run_loop.Run();
   }

@@ -65,26 +65,19 @@ bool ConnectWindowOpenRelationshipIfExists(PerformanceManagerTabHelper* helper,
 
   PerformanceManagerImpl::CallOnGraphImpl(
       FROM_HERE, base::BindOnce(&PageNodeImpl::SetOpenerFrameNode,
-                                base::Unretained(helper->page_node()),
+                                base::Unretained(helper->primary_page_node()),
                                 base::Unretained(opener_frame_node)));
   return true;
 }
 
 }  // namespace
 
+PerformanceManagerTabHelper::PageData::PageData() = default;
+PerformanceManagerTabHelper::PageData::~PageData() = default;
+
 PerformanceManagerTabHelper::PerformanceManagerTabHelper(
     content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents) {
-  // Create the page node.
-  page_node_ = PerformanceManagerImpl::CreatePageNode(
-      WebContentsProxy(weak_factory_.GetWeakPtr()),
-      web_contents->GetBrowserContext()->UniqueId(),
-      web_contents->GetVisibleURL(),
-      web_contents->GetVisibility() == content::Visibility::VISIBLE,
-      web_contents->IsCurrentlyAudible(), web_contents->GetLastActiveTime(),
-      // TODO(1211368): Support MPArch fully!
-      PageNode::PageState::kActive);
-
   // We have an early WebContents creation hook so should see it when there is
   // only a single frame, and it is not yet created. We sanity check that here.
 #if DCHECK_IS_ON()
@@ -94,11 +87,29 @@ PerformanceManagerTabHelper::PerformanceManagerTabHelper(
   DCHECK_EQ(web_contents->GetMainFrame(), frames[0]);
 #endif
 
+  // Create the page node.
+  std::unique_ptr<PageData> page = std::make_unique<PageData>();
+  page->page_node = PerformanceManagerImpl::CreatePageNode(
+      WebContentsProxy(weak_factory_.GetWeakPtr()),
+      web_contents->GetBrowserContext()->UniqueId(),
+      web_contents->GetVisibleURL(),
+      web_contents->GetVisibility() == content::Visibility::VISIBLE,
+      web_contents->IsCurrentlyAudible(), web_contents->GetLastActiveTime(),
+      // TODO(crbug.com/1211368): Support MPArch fully!
+      PageNode::PageState::kActive);
+  content::RenderFrameHost* main_rfh = web_contents->GetMainFrame();
+  DCHECK(main_rfh);
+  page->main_frame_tree_node_id = main_rfh->GetFrameTreeNodeId();
+  primary_page_ = page.get();
+  auto result = pages_.insert(std::move(page));
+  DCHECK(result.second);
+
   ConnectWindowOpenRelationshipIfExists(this, web_contents);
 }
 
 PerformanceManagerTabHelper::~PerformanceManagerTabHelper() {
-  DCHECK(!page_node_);
+  DCHECK(pages_.empty());
+  DCHECK(!primary_page_);
   DCHECK(frames_.empty());
 }
 
@@ -106,7 +117,6 @@ void PerformanceManagerTabHelper::TearDown() {
   // Ship our page and frame nodes to the PerformanceManagerImpl for
   // incineration.
   std::vector<std::unique_ptr<NodeBase>> nodes;
-  nodes.push_back(std::move(page_node_));
   for (auto& kv : frames_) {
     std::unique_ptr<FrameNodeImpl> frame_node = std::move(kv.second);
 
@@ -117,7 +127,13 @@ void PerformanceManagerTabHelper::TearDown() {
     // Ensure the node will be deleted on the graph sequence.
     nodes.push_back(std::move(frame_node));
   }
+  for (auto& kv : pages_) {
+    std::unique_ptr<PageNodeImpl> page_node = std::move(kv->page_node);
+    nodes.push_back(std::move(page_node));
+  }
 
+  pages_.clear();
+  primary_page_ = nullptr;
   frames_.clear();
 
   // Delete the page and its entire frame tree from the graph.
@@ -130,6 +146,18 @@ void PerformanceManagerTabHelper::TearDown() {
 
   // Unsubscribe from the associated WebContents.
   Observe(nullptr);
+}
+
+PageNodeImpl* PerformanceManagerTabHelper::GetPageNodeForRenderFrameHost(
+    content::RenderFrameHost* rfh) {
+  DCHECK_NE(nullptr, rfh);
+  // TODO(crbug.com/1211368): Make this lookup the appropriate PageNode once
+  // MPArch support is completed. For now, everything is artifically descended
+  // from the primary page node. Add tests for this function at that point.
+  auto* wc = content::WebContents::FromRenderFrameHost(rfh);
+  if (wc != web_contents())
+    return nullptr;
+  return primary_page_node();
 }
 
 void PerformanceManagerTabHelper::SetDestructionObserver(
@@ -164,9 +192,11 @@ void PerformanceManagerTabHelper::RenderFrameCreated(
 
   // Create the frame node, and provide a callback that will run in the graph to
   // initialize it.
+  // TODO(crbug.com/1211368): Actually look up the appropriate page to wire this
+  // frame up to!
   std::unique_ptr<FrameNodeImpl> frame =
       PerformanceManagerImpl::CreateFrameNode(
-          process_node, page_node_.get(), parent_frame_node,
+          process_node, primary_page_node(), parent_frame_node,
           render_frame_host->GetFrameTreeNodeId(),
           render_frame_host->GetRoutingID(),
           blink::LocalFrameToken(render_frame_host->GetFrameToken()),
@@ -276,13 +306,14 @@ void PerformanceManagerTabHelper::OnVisibilityChanged(
   PerformanceManagerImpl::CallOnGraphImpl(
       FROM_HERE,
       base::BindOnce(&PageNodeImpl::SetIsVisible,
-                     base::Unretained(page_node_.get()), is_visible));
+                     base::Unretained(primary_page_node()), is_visible));
 }
 
 void PerformanceManagerTabHelper::OnAudioStateChanged(bool audible) {
   PerformanceManagerImpl::CallOnGraphImpl(
-      FROM_HERE, base::BindOnce(&PageNodeImpl::SetIsAudible,
-                                base::Unretained(page_node_.get()), audible));
+      FROM_HERE,
+      base::BindOnce(&PageNodeImpl::SetIsAudible,
+                     base::Unretained(primary_page_node()), audible));
 }
 
 void PerformanceManagerTabHelper::OnFrameAudioStateChanged(
@@ -342,21 +373,23 @@ void PerformanceManagerTabHelper::DidFinishNavigation(
       FROM_HERE,
       base::BindOnce(
           &PageNodeImpl::OnMainFrameNavigationCommitted,
-          base::Unretained(page_node_.get()),
+          base::Unretained(primary_page_node()),
           navigation_handle->IsSameDocument(), navigation_committed_time,
           navigation_handle->GetNavigationId(), url,
           navigation_handle->GetWebContents()->GetContentsMimeType()));
 }
 
 void PerformanceManagerTabHelper::TitleWasSet(content::NavigationEntry* entry) {
+  DCHECK(primary_page_);
+
   // TODO(siggi): This logic belongs in the policy layer rather than here.
-  if (!first_time_title_set_) {
-    first_time_title_set_ = true;
+  if (!primary_page_->first_time_title_set) {
+    primary_page_->first_time_title_set = true;
     return;
   }
   PerformanceManagerImpl::CallOnGraphImpl(
       FROM_HERE, base::BindOnce(&PageNodeImpl::OnTitleUpdated,
-                                base::Unretained(page_node_.get())));
+                                base::Unretained(primary_page_node())));
 }
 
 void PerformanceManagerTabHelper::InnerWebContentsAttached(
@@ -369,7 +402,7 @@ void PerformanceManagerTabHelper::InnerWebContentsAttached(
   CreateForWebContents(inner_web_contents);
   auto* helper = FromWebContents(inner_web_contents);
   DCHECK(helper);
-  auto* page = helper->page_node_.get();
+  auto* page = helper->primary_page_node();
   DCHECK(page);
   auto* frame = GetFrameNode(render_frame_host);
 
@@ -407,7 +440,7 @@ void PerformanceManagerTabHelper::InnerWebContentsDetached(
   PerformanceManagerImpl::CallOnGraphImpl(
       FROM_HERE,
       base::BindOnce(&PageNodeImpl::ClearEmbedderFrameNodeAndEmbeddingType,
-                     base::Unretained(helper->page_node())));
+                     base::Unretained(helper->primary_page_node())));
 }
 
 void PerformanceManagerTabHelper::WebContentsDestroyed() {
@@ -424,19 +457,21 @@ void PerformanceManagerTabHelper::WebContentsDestroyed() {
 void PerformanceManagerTabHelper::DidUpdateFaviconURL(
     content::RenderFrameHost* render_frame_host,
     const std::vector<blink::mojom::FaviconURLPtr>& candidates) {
+  DCHECK(primary_page_);
+
   // This favicon change might have been initiated by a different frame some
   // time ago and the main frame might have changed.
   if (!render_frame_host->IsActive())
     return;
 
   // TODO(siggi): This logic belongs in the policy layer rather than here.
-  if (!first_time_favicon_set_) {
-    first_time_favicon_set_ = true;
+  if (!primary_page_->first_time_favicon_set) {
+    primary_page_->first_time_favicon_set = true;
     return;
   }
   PerformanceManagerImpl::CallOnGraphImpl(
       FROM_HERE, base::BindOnce(&PageNodeImpl::OnFaviconUpdated,
-                                base::Unretained(page_node_.get())));
+                                base::Unretained(primary_page_node())));
 }
 
 void PerformanceManagerTabHelper::BindDocumentCoordinationUnit(
@@ -456,11 +491,13 @@ content::WebContents* PerformanceManagerTabHelper::GetWebContents() const {
 }
 
 int64_t PerformanceManagerTabHelper::LastNavigationId() const {
-  return last_navigation_id_;
+  DCHECK(primary_page_);
+  return primary_page_->last_navigation_id;
 }
 
 int64_t PerformanceManagerTabHelper::LastNewDocNavigationId() const {
-  return last_new_doc_navigation_id_;
+  DCHECK(primary_page_);
+  return primary_page_->last_new_doc_navigation_id;
 }
 
 FrameNodeImpl* PerformanceManagerTabHelper::GetFrameNode(
@@ -479,18 +516,20 @@ void PerformanceManagerTabHelper::RemoveObserver(Observer* observer) {
 
 void PerformanceManagerTabHelper::OnMainFrameNavigation(int64_t navigation_id,
                                                         bool same_doc) {
-  last_navigation_id_ = navigation_id;
+  DCHECK(primary_page_);
+
+  primary_page_->last_navigation_id = navigation_id;
   if (!same_doc)
-    last_new_doc_navigation_id_ = navigation_id;
-  ukm_source_id_ =
+    primary_page_->last_new_doc_navigation_id = navigation_id;
+  primary_page_->ukm_source_id =
       ukm::ConvertToSourceId(navigation_id, ukm::SourceIdType::NAVIGATION_ID);
   PerformanceManagerImpl::CallOnGraphImpl(
-      FROM_HERE,
-      base::BindOnce(&PageNodeImpl::SetUkmSourceId,
-                     base::Unretained(page_node_.get()), ukm_source_id_));
+      FROM_HERE, base::BindOnce(&PageNodeImpl::SetUkmSourceId,
+                                base::Unretained(primary_page_node()),
+                                primary_page_->ukm_source_id));
 
-  first_time_title_set_ = false;
-  first_time_favicon_set_ = false;
+  primary_page_->first_time_title_set = false;
+  primary_page_->first_time_favicon_set = false;
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(PerformanceManagerTabHelper)

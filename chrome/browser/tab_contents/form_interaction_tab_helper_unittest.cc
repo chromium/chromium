@@ -80,9 +80,8 @@ TEST_F(FormInteractionTabHelperTest, HadFormInteractionSingleFrame) {
     // of a QuitClosure's task runner (USER_BLOCKING).
     auto graph_callback = base::BindLambdaForTesting(
         [quit_loop = run_loop.QuitWhenIdleClosure(),
-         page_node =
-             performance_manager::PerformanceManager::GetPageNodeForWebContents(
-                 contents.get())]() {
+         page_node = performance_manager::PerformanceManager::
+             GetPrimaryPageNodeForWebContents(contents.get())]() {
           auto* frame_node = performance_manager::FrameNodeImpl::FromNode(
               page_node->GetMainFrameNode());
           frame_node->SetIsCurrent(true);
@@ -125,9 +124,8 @@ TEST_F(FormInteractionTabHelperTest, HadFormInteractionWithChildFrames) {
     // of a QuitClosure's task runner (USER_BLOCKING).
     auto graph_callback = base::BindLambdaForTesting(
         [quit_loop = run_loop.QuitWhenIdleClosure(),
-         page_node =
-             performance_manager::PerformanceManager::GetPageNodeForWebContents(
-                 contents.get())]() {
+         page_node = performance_manager::PerformanceManager::
+             GetPrimaryPageNodeForWebContents(contents.get())]() {
           auto children = page_node->GetMainFrameNode()->GetChildFrameNodes();
           EXPECT_EQ(1U, children.size());
           auto* frame_node =
