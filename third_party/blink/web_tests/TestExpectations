@@ -7076,3 +7076,8 @@ crbug.com/v8/11365 virtual/webrtc-wpt-plan-b/external/wpt/webrtc/protocol/crypto
 crbug.com/v8/11365 virtual/webrtc-wpt-plan-b/external/wpt/webrtc/protocol/handover-datachannel.html [ Pass Failure ]
 crbug.com/v8/11365 virtual/webrtc-wpt-plan-b/external/wpt/webrtc/protocol/simulcast-answer.html [ Pass Failure ]
 crbug.com/v8/11365 wpt_internal/fetch/metadata/appcache.tentative.https.sub.html [ Pass Failure ]
+
+crbug.com/1222097 external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cues-sorted-before-dispatch.html [ Pass Failure ]
+crbug.com/1222097 virtual/synchronous_html_parser/external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cues-sorted-before-dispatch.html [ Pass Failure ]
+crbug.com/1222097 virtual/synchronous_html_parser/svg/css/alignment-baseline.html [ Pass Failure ]
+
