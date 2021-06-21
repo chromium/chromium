@@ -3220,6 +3220,7 @@ static_library("browser") {
       ":usage_stats_proto",
       "//chrome/android:jni_headers",
       "//chrome/android/modules/extra_icu/provider:native",
+      "//chrome/browser/android/metrics:jni_headers",
       "//chrome/browser/banners/android:jni_headers",
       "//chrome/browser/commerce/merchant_viewer:merchant_signal_db",
       "//chrome/browser/commerce/merchant_viewer:merchant_signal_db_content_proto",

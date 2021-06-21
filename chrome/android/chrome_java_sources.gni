@@ -759,6 +759,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/messages/ChromeMessageQueueMediator.java",
   "java/src/org/chromium/chrome/browser/messages/MessageContainerCoordinator.java",
   "java/src/org/chromium/chrome/browser/metrics/ActivityTabStartupMetricsTracker.java",
+  "java/src/org/chromium/chrome/browser/metrics/AndroidSessionDurationsServiceState.java",
   "java/src/org/chromium/chrome/browser/metrics/LaunchMetrics.java",
   "java/src/org/chromium/chrome/browser/metrics/MainIntentBehaviorMetrics.java",
   "java/src/org/chromium/chrome/browser/metrics/PackageMetrics.java",

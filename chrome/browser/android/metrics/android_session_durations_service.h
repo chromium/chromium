@@ -55,6 +55,11 @@ class AndroidSessionDurationsService : public KeyedService {
 
   void SetSessionStartTimeForTesting(base::Time session_start);
 
+  void GetIncognitoSessionData(base::Time& session_start,
+                               base::TimeDelta& last_reported_duration);
+  void RestoreIncognitoSession(base::Time session_start,
+                               base::TimeDelta last_reported_duration);
+
  private:
   std::unique_ptr<syncer::SyncSessionDurationsMetricsRecorder>
       sync_session_metrics_recorder_;

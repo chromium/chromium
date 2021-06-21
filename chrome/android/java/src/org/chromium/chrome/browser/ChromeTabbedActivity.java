@@ -107,6 +107,7 @@ import org.chromium.chrome.browser.infobar.SyncErrorInfoBar;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.locale.LocaleManager;
+import org.chromium.chrome.browser.metrics.AndroidSessionDurationsServiceState;
 import org.chromium.chrome.browser.metrics.LaunchMetrics;
 import org.chromium.chrome.browser.metrics.MainIntentBehaviorMetrics;
 import org.chromium.chrome.browser.modaldialog.ChromeTabModalPresenter;
@@ -126,6 +127,7 @@ import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomiza
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.reengagement.ReengagementNotificationController;
 import org.chromium.chrome.browser.search_engines.SearchEngineChoiceNotification;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
@@ -211,6 +213,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     private static final String HELP_URL_PREFIX = "https://support.google.com/chrome/";
 
     private static final String WINDOW_INDEX = "window_index";
+
+    private static final String IS_INCOGNITO_SELECTED = "is_incognito_selected";
 
     // How long to delay closing the current tab when our app is minimized.  Have to delay this
     // so that we don't show the contents of the next tab while minimizing.
@@ -973,6 +977,15 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     mInactivityTracker.getLastBackgroundedTimeMs());
         }
 
+        Bundle savedInstanceState = getSavedInstanceState();
+        if (savedInstanceState != null
+                && savedInstanceState.getBoolean(IS_INCOGNITO_SELECTED, false)) {
+            // This will be executed only once since SavedInstanceState will be reset a few lines
+            // later.
+            AndroidSessionDurationsServiceState.restoreNativeFromSerialized(
+                    savedInstanceState, getCurrentTabModel().getProfile());
+        }
+
         resetSavedInstanceState();
         StartSurfaceConfiguration.addFeedVisibilityObserver();
     }
@@ -1704,7 +1717,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
         // We determine the model as soon as possible so every systems get initialized coherently.
         boolean startIncognito = savedInstanceState != null
-                && savedInstanceState.getBoolean("is_incognito_selected", false);
+                && savedInstanceState.getBoolean(IS_INCOGNITO_SELECTED, false);
+
         int index = savedInstanceState != null ? savedInstanceState.getInt(WINDOW_INDEX, 0) : 0;
 
         mNextTabPolicySupplier = new ChromeNextTabPolicySupplier(mOverviewModeBehaviorSupplier);
@@ -2291,9 +2305,16 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         CipherFactory.getInstance().saveToBundle(outState);
-        outState.putBoolean("is_incognito_selected", getCurrentTabModel().isIncognito());
         outState.putInt(
                 WINDOW_INDEX, TabWindowManagerSingleton.getInstance().getIndexForWindow(this));
+        Boolean is_incognito = getCurrentTabModel().isIncognito();
+        outState.putBoolean(IS_INCOGNITO_SELECTED, is_incognito);
+        // If it's Incognito and native is initialized and profile exists, serialize duration
+        // service state.
+        if (is_incognito && ProfileManager.isInitialized()) {
+            AndroidSessionDurationsServiceState.serializeFromNative(
+                    outState, getCurrentTabModel().getProfile());
+        }
     }
 
     @Override

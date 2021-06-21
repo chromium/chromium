@@ -5,6 +5,10 @@
 #include "chrome/browser/android/metrics/android_session_durations_service.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
+#include "chrome/browser/android/metrics/android_session_durations_service_factory.h"
+#include "chrome/browser/android/metrics/jni_headers/AndroidSessionDurationsServiceState_jni.h"
+#include "chrome/browser/profiles/profile_android.h"
 
 namespace {
 class IncognitoSessionDurationsMetricsRecorder {
@@ -54,6 +58,20 @@ class IncognitoSessionDurationsMetricsRecorder {
 
   void SetSessionStartTimeForTesting(base::Time session_start) {
     session_start_ = session_start;
+  }
+
+  void GetStatusForSessionRestore(base::Time& session_start,
+                                  base::TimeDelta& last_reported_duration) {
+    session_start = session_start_;
+    last_reported_duration = last_reported_duration_;
+  }
+
+  void RestoreSession(base::Time session_start,
+                      base::TimeDelta last_reported_duration) {
+    session_start_ = session_start;
+    last_reported_duration_ = last_reported_duration;
+    is_foreground_ = false;
+    OnAppEnterForeground();
   }
 
  private:
@@ -123,4 +141,65 @@ void AndroidSessionDurationsService::SetSessionStartTimeForTesting(
   }
 
   NOTIMPLEMENTED();
+}
+
+void AndroidSessionDurationsService::GetIncognitoSessionData(
+    base::Time& session_start,
+    base::TimeDelta& last_reported_duration) {
+  DCHECK(incognito_session_metrics_recorder_);
+  incognito_session_metrics_recorder_->GetStatusForSessionRestore(
+      session_start, last_reported_duration);
+}
+
+void AndroidSessionDurationsService::RestoreIncognitoSession(
+    base::Time session_start,
+    base::TimeDelta last_reported_duration) {
+  DCHECK(incognito_session_metrics_recorder_);
+  incognito_session_metrics_recorder_->RestoreSession(session_start,
+                                                      last_reported_duration);
+}
+
+// Returns a java object consisting of data required to restore the service.
+// This function only covers Incognito profiles.
+// static
+base::android::ScopedJavaLocalRef<jobject>
+JNI_AndroidSessionDurationsServiceState_GetAndroidSessionDurationsServiceState(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& j_profile) {
+  Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile);
+  DCHECK(profile->IsIncognitoProfile());
+
+  AndroidSessionDurationsService* duration_service =
+      AndroidSessionDurationsServiceFactory::GetForProfile(profile);
+  base::Time session_start_time;
+  base::TimeDelta last_reported_duration;
+  duration_service->GetIncognitoSessionData(session_start_time,
+                                            last_reported_duration);
+
+  return Java_AndroidSessionDurationsServiceState_Constructor(
+      env, session_start_time.ToJavaTime(), last_reported_duration.InMinutes());
+}
+
+// Restores the service from an archived android object.
+// This function only covers Incognito profiles.
+// static
+void JNI_AndroidSessionDurationsServiceState_RestoreAndroidSessionDurationsServiceState(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& j_profile,
+    const base::android::JavaParamRef<jobject>& j_duration_service) {
+  Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile);
+  DCHECK(profile->IsIncognitoProfile());
+
+  AndroidSessionDurationsService* duration_service =
+      AndroidSessionDurationsServiceFactory::GetForProfile(profile);
+
+  base::Time session_start_time = base::Time::FromJavaTime(
+      Java_AndroidSessionDurationsServiceState_getSessionStartTime(
+          env, j_duration_service));
+  base::TimeDelta last_reported_duration = base::TimeDelta::FromMinutes(
+      Java_AndroidSessionDurationsServiceState_getLastReportedDuration(
+          env, j_duration_service));
+
+  duration_service->RestoreIncognitoSession(session_start_time,
+                                            last_reported_duration);
 }
