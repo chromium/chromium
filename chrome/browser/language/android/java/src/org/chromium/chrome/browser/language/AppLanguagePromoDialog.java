@@ -97,10 +97,9 @@ public class AppLanguagePromoDialog {
                                 new SimpleModalDialogController(
                                         mModalDialogManager, this::onDismissAppLanguageModal))
                         .with(ModalDialogProperties.TITLE, resources, R.string.languages_srp_title)
-                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, resources,
-                                R.string.languages_srp_accept_title)
+                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, resources, R.string.ok)
                         .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, resources,
-                                R.string.languages_srp_cancel_title)
+                                R.string.cancel)
                         .with(ModalDialogProperties.PRIMARY_BUTTON_FILLED, true)
                         .build();
 
