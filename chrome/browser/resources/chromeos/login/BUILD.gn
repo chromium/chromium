@@ -22,6 +22,7 @@ group("closure_compile") {
     ":closure_compile_local",
     ":closure_compile_local_with_externs",
     "components:closure_compile",
+    "os_install:closure_compile",
     "screens/login:closure_compile",
     "screens/oobe:closure_compile",
     "test_api:closure_compile",
@@ -55,7 +56,6 @@ js_type_check("closure_compile_local") {
     ":oobe_screen_autolaunch",
     ":oobe_update",
     ":oobe_welcome",
-    ":os_install",
     ":parental_handoff",
     ":pin_setup",
     ":recommend_apps",
@@ -75,8 +75,8 @@ js_type_check("closure_compile_local") {
 js_type_check("closure_compile_local_with_externs") {
   uses_legacy_modules = true
   deps = [
-    ":gaia_dialog",
     ":enterprise_enrollment",
+    ":gaia_dialog",
   ]
 }
 
@@ -88,8 +88,8 @@ js_library("login_ui_tools") {
 
 js_library("enterprise_enrollment") {
   deps = [
-    "../keyboard:keyboard_utils",
     ":offline_ad_login",
+    "../keyboard:keyboard_utils",
     "components:display_manager_types",
     "components:fake_authenticator",
     "components:fake_oobe",
@@ -306,15 +306,6 @@ js_library("oobe_update") {
     "components/buttons:oobe_next_button",
     "components/oobe_adaptive_dialog:oobe_adaptive_dialog",
     "components/oobe_loading_dialog:oobe_loading_dialog",
-  ]
-}
-
-js_library("os_install") {
-  deps = [
-    "components/behaviors:login_screen_behavior",
-    "components/behaviors:multi_step_behavior",
-    "components/behaviors:oobe_dialog_host_behavior",
-    "components/behaviors:oobe_i18n_behavior",
   ]
 }
 

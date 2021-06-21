@@ -716,8 +716,10 @@ std::vector<std::unique_ptr<BaseScreen>> WizardController::CreateScreens() {
       base::BindRepeating(&WizardController::OnParentalHandoffScreenExit,
                           weak_factory_.GetWeakPtr())));
 
-  append(std::make_unique<OsInstallScreen>(
-      oobe_ui->GetView<OsInstallScreenHandler>()));
+  if (switches::IsOsInstallAllowed()) {
+    append(std::make_unique<OsInstallScreen>(
+        oobe_ui->GetView<OsInstallScreenHandler>()));
+  }
 
   return result;
 }

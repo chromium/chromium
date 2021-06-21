@@ -205,6 +205,9 @@ constexpr char kProgressListItemJS[] = "components/progress_list_item/progress_l
 constexpr char kThrobberNoticeHTML[] = "components/throbber_notice/throbber_notice.html";
 constexpr char kThrobberNoticeJS[] = "components/throbber_notice/throbber_notice.js";
 
+constexpr char kOsInstallHTML[] = "os_install/os_install.html";
+constexpr char kOsInstallJS[] = "os_install/os_install.js";
+
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 constexpr char kLogo24PX1XSvgPath[] = "logo_24px-1x.svg";
 constexpr char kLogo24PX2XSvgPath[] = "logo_24px-2x.svg";
@@ -323,7 +326,11 @@ void AddTestAPIResources(content::WebUIDataSource* source) {
 // Default and non-shared resource definition for kOobeDisplay display type.
 // chrome://oobe/oobe
 void AddOobeDisplayTypeDefaultResources(content::WebUIDataSource* source) {
-  source->SetDefaultResource(IDR_OOBE_HTML);
+  if (switches::IsOsInstallAllowed()) {
+    source->SetDefaultResource(IDR_OS_INSTALL_OOBE_HTML);
+  } else {
+    source->SetDefaultResource(IDR_OOBE_HTML);
+  }
   source->AddResourcePath(kOobeJSPath, IDR_OOBE_JS);
   source->AddResourcePath(kCustomElementsHTMLPath,
                           IDR_CUSTOM_ELEMENTS_OOBE_HTML);
@@ -333,7 +340,12 @@ void AddOobeDisplayTypeDefaultResources(content::WebUIDataSource* source) {
 // Default and non-shared resource definition for kLoginDisplay display type.
 // chrome://oobe/login
 void AddLoginDisplayTypeDefaultResources(content::WebUIDataSource* source) {
-  source->SetDefaultResource(IDR_MD_LOGIN_HTML);
+  if (switches::IsOsInstallAllowed()) {
+    source->SetDefaultResource(IDR_OS_INSTALL_LOGIN_HTML);
+  } else {
+    source->SetDefaultResource(IDR_MD_LOGIN_HTML);
+  }
+
   source->AddResourcePath(kLoginJSPath, IDR_OOBE_JS);
   source->AddResourcePath(kCustomElementsHTMLPath,
                           IDR_CUSTOM_ELEMENTS_LOGIN_HTML);
@@ -567,8 +579,10 @@ void OobeUI::ConfigureOobeDisplay() {
   AddScreenHandler(std::make_unique<ParentalHandoffScreenHandler>(
       js_calls_container_.get()));
 
-  AddScreenHandler(
-      std::make_unique<OsInstallScreenHandler>(js_calls_container_.get()));
+  if (switches::IsOsInstallAllowed()) {
+    AddScreenHandler(
+        std::make_unique<OsInstallScreenHandler>(js_calls_container_.get()));
+  }
 
   Profile* profile = Profile::FromWebUI(web_ui());
   // Set up the chrome://theme/ source, for Chrome logo.
@@ -802,6 +816,12 @@ void OobeUI::AddOobeComponents(content::WebUIDataSource* source,
                           IDR_OOBE_COMPONENTS_THROBBER_NOTICE_HTML);
   source->AddResourcePath(kThrobberNoticeJS,
                           IDR_OOBE_COMPONENTS_THROBBER_NOTICE_JS);
+
+  if (switches::IsOsInstallAllowed()) {
+    source->AddResourcePath(kOsInstallHTML,
+                            IDR_OOBE_COMPONENTS_OS_INSTALL_HTML);
+    source->AddResourcePath(kOsInstallJS, IDR_OOBE_COMPONENTS_OS_INSTALL_JS);
+  }
 }
 
 CoreOobeView* OobeUI::GetCoreOobeView() {

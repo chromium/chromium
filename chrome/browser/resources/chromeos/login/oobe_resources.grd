@@ -9,8 +9,10 @@
   <release seq="1">
     <structures>
       <!-- Resources in this section still depend on flattenhtml -->
-      <structure name="IDR_MD_LOGIN_HTML" file="md_login.html" flattenhtml="true" type="chrome_html" variables="OOBE=login" expand_variables="true" />
-      <structure name="IDR_OOBE_HTML" file="oobe.html" flattenhtml="true" type="chrome_html" variables="OOBE=oobe" expand_variables="true" />
+      <structure name="IDR_MD_LOGIN_HTML" file="md_login.html" flattenhtml="true" type="chrome_html" variables="OOBE=login,OS_INSTALL=stub" expand_variables="true" />
+      <structure name="IDR_OOBE_HTML" file="oobe.html" flattenhtml="true" type="chrome_html" variables="OOBE=oobe,OS_INSTALL=stub" expand_variables="true" />
+      <structure name="IDR_OS_INSTALL_LOGIN_HTML" file="md_login.html" flattenhtml="true" type="chrome_html" variables="OOBE=login,OS_INSTALL=os_install" expand_variables="true" />
+      <structure name="IDR_OS_INSTALL_OOBE_HTML" file="oobe.html" flattenhtml="true" type="chrome_html" variables="OOBE=oobe,OS_INSTALL=os_install" expand_variables="true" />
       <structure name="IDR_OOBE_JS" file="oobe.js" flattenhtml="true" type="chrome_html" />
 
       <structure name="IDR_CUSTOM_ELEMENTS_OOBE_HTML" file="structure\components_common.html" flattenhtml="true" type="chrome_html" variables="OOBE=oobe" expand_variables="true" />
@@ -22,6 +24,10 @@
       <structure name="IDR_OOBE_DEBUGGER_STUB_JS" file="debug\no_debug.js" flattenhtml="true" type="chrome_html" />
 
       <structure name="IDR_OOBE_COMPONENTS_COMMON_STYLES_HTML" file="components/common_styles/common_styles.html" type="chrome_html" flattenhtml="true"/>
+
+      <!-- OS install components -->
+      <structure name="IDR_OOBE_COMPONENTS_OS_INSTALL_HTML" file="os_install/os_install.html" type="chrome_html" />
+      <structure name="IDR_OOBE_COMPONENTS_OS_INSTALL_JS" file="os_install/os_install.js" type="chrome_html" />
     </structures>
     <includes>
       <!-- Resources that are served under fixed paths -->
