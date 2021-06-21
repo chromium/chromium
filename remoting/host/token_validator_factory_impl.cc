@@ -75,7 +75,6 @@ TokenValidatorImpl::TokenValidatorImpl(
                          request_context_getter),
       key_pair_(key_pair) {
   DCHECK(key_pair_.get());
-  token_scope_ = CreateScope(local_jid, remote_jid);
 }
 
 // TokenValidator interface.
@@ -123,6 +122,13 @@ std::string TokenValidatorImpl::CreateScope(
                     kNonceLength);
   std::string nonce;
   base::Base64Encode(nonce_bytes, &nonce);
+  // Note that because of how FTL signaling IDs are managed, |local_jid| will
+  // not change between connections to a given host instance. We do expect that
+  // |remote_jid| will be different for each connection (clients should not
+  // reuse the same channel for connections) but the host does not control this.
+  // Since at least one of the JIDs will be reused between connections, we rely
+  // on the nonce to guarantee that the scope string is unique and cannot be
+  // reused for multiple connections.
   return "client:" + remote_jid + " host:" + local_jid + " nonce:" + nonce;
 }
 
