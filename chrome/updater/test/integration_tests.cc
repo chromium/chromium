@@ -211,7 +211,8 @@ TEST_F(IntegrationTest, SelfUninstallOutdatedUpdater) {
 
 #if defined(OS_MAC)
 // TODO(crbug.com/1205924): Enable QualifyUpdater test on Win.
-TEST_F(IntegrationTest, QualifyUpdater) {
+// TODO(crbug.com/1222073): Flaky.
+TEST_F(IntegrationTest, DISABLED_QualifyUpdater) {
   ScopedServer test_server(test_commands_);
   Install();
   ExpectInstalled();
@@ -375,8 +376,9 @@ TEST_F(IntegrationTest, UninstallUpdaterWhenAllAppsUninstalled) {
 
 // Windows does not currently have a concept of app ownership, so this
 // test need not run on Windows.
+// TODO(crbug.com/1222073): Flaky.
 #if defined(OS_MAC)
-TEST_F(IntegrationTest, UnregisterUnownedApp) {
+TEST_F(IntegrationTest, DISABLED_UnregisterUnownedApp) {
   Install();
   ExpectInstalled();
   ExpectVersionActive(kUpdaterVersion);
