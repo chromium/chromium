@@ -238,4 +238,10 @@ public class PriceDropNotificationManagerTest {
         verify(mMockSubscriptionsManager, times(1))
                 .unsubscribe(eq(commerceSubscription), any(Callback.class));
     }
+
+    @Test
+    @MediumTest
+    public void testNotificationTypeEnabled() {
+        assertTrue(mPriceDropNotificationManager.isEnabled());
+    }
 }

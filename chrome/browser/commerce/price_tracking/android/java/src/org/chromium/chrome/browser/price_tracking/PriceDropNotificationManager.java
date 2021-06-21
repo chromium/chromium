@@ -60,6 +60,14 @@ public class PriceDropNotificationManager {
     }
 
     /**
+     * @return Whether the price drop notification type is enabled. For now it is used in downstream
+     *         which could influence the Chime registration.
+     */
+    public boolean isEnabled() {
+        return PriceTrackingUtilities.ENABLE_PRICE_NOTIFICATION.getValue();
+    }
+
+    /**
      * @return Whether price drop notifications can be posted.
      */
     public boolean canPostNotification() {
