@@ -496,8 +496,8 @@ void OutputPresenterFuchsia::OnPresentComplete(
   }
 
   presentation_state_ =
-      PresentationState{pending_frames_.front().ordinal, presentation_time,
-                        presentation_interval};
+      PresentationState{static_cast<int>(pending_frames_.front().ordinal),
+                        presentation_time, presentation_interval};
 
   pending_frames_.pop_front();
 }
