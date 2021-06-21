@@ -23,9 +23,6 @@
 #endif
 
 #if defined(OS_FUCHSIA)
-// TODO(crbug.com/1117629): Remove this dependency and update include_rules
-// that allow it.
-#include "fuchsia/engine/switches.h"
 #include "media/filters/fuchsia/fuchsia_video_decoder.h"
 #endif
 

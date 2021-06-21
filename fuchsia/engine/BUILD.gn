@@ -14,6 +14,7 @@ import("//tools/grit/repack.gni")
 
 config("web_engine_implementation") {
   defines = [ "WEB_ENGINE_IMPLEMENTATION" ]
+  visibility = [ ":*" ]
 }
 
 mojom("mojom") {
@@ -27,13 +28,10 @@ mojom("mojom") {
 }
 
 fidl_library("fidl") {
-  visibility = [ ":web_engine_core" ]
-
   library_name = "chromium.internal"
-
   sources = [ "fidl/dev_tools.fidl" ]
-
   public_deps = [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web" ]
+  visibility = [ ":*" ]
 }
 
 repack("web_engine_pak") {
@@ -283,10 +281,7 @@ source_set("switches") {
 
   visibility = [
     ":*",
-    "./*",
-
-    # TODO(crbug.com/1117629): Remove this when fixed.
-    "//media/renderers",
+    "web_instance_host",
   ]
 }
 
@@ -307,6 +302,7 @@ source_set("webui_resources") {
     "$root_gen_dir/ui/resources/webui_resources.pak",
   ]
   deps = [ "//ui/resources" ]
+  visibility = [ ":*" ]
 }
 
 _web_engine_excluded_files = [
@@ -413,6 +409,10 @@ source_set("browsertest_core") {
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
     "//ui/ozone",
   ]
+  visibility = [
+    ":*",
+    "//fuchsia/runners:*",
+  ]
 }
 
 test("web_engine_browsertests") {
@@ -500,6 +500,8 @@ action("web_engine_unittests_fake_instance_manifest") {
     "--program",
     "web_engine_unittests__exec",
   ]
+
+  visibility = [ ":*" ]
 }
 
 test("web_engine_unittests") {

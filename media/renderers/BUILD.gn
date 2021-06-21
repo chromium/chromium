@@ -59,10 +59,6 @@ source_set("renderers") {
     "//ui/gl",
   ]
 
-  if (is_fuchsia) {
-    deps += [ "//fuchsia/engine:switches" ]
-  }
-
   if (is_win) {
     sources += [
       "win/media_engine_extension.cc",
