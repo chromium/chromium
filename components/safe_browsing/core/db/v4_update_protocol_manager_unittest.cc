@@ -289,19 +289,8 @@ TEST_F(V4UpdateProtocolManagerTest, TestBase64EncodingUsesUrlEncoding) {
 
   std::string encoded_request_with_minus =
       pm->GetBase64SerializedUpdateRequestProto();
-
   std::string expected =
       "Cg8KCHVuaXR0ZXN0EgMxLjAaGAgBEAIaCmg4eGZZcVk-OlIiBCABIAIoASICCAE=";
-#if defined(OS_IOS)
-  expected =
-      "Cg8KCHVuaXR0ZXN0EgMxLjAaHAgBEAIaCmg4eGZZcVk-OlIiCBCAgEAgASACKAEiAggB";
-#elif !BUILDFLAG(FULL_SAFE_BROWSING)
-  if (base::SysInfo::IsLowEndDevice()) {
-    expected =
-        "Cg8KCHVuaXR0ZXN0EgMxLjAaGwgBEAIaCmg4eGZZcVk-OlIiBxCAICABIAIoASICCAE=";
-  }
-#endif
-
   EXPECT_EQ(expected, encoded_request_with_minus);
 
   // TODO(vakh): Add a similar test for underscore for completeness, although
@@ -366,44 +355,25 @@ TEST_F(V4UpdateProtocolManagerTest, TestExtendedReportingLevelIncluded) {
   (*store_state_map_)[ListIdentifier(LINUX_PLATFORM, URL, MALWARE_THREAT)] =
       "state";
   std::string base = "Cg8KCHVuaXR0ZXN0EgMxLjAaEwgBEAIaBXN0YXRlIgQgASACKAEiAgg";
-#if defined(OS_IOS)
-  base = "Cg8KCHVuaXR0ZXN0EgMxLjAaFwgBEAIaBXN0YXRlIggQgIBAIAEgAigBIgIIA";
-#elif !BUILDFLAG(FULL_SAFE_BROWSING)
-  if (base::SysInfo::IsLowEndDevice()) {
-    base = "Cg8KCHVuaXR0ZXN0EgMxLjAaFggBEAIaBXN0YXRlIgcQgCAgASACKAEiAgg";
-  }
-#endif
 
   std::unique_ptr<V4UpdateProtocolManager> pm_with_off(CreateProtocolManager(
       std::vector<ListUpdateResponse>({}), false, SBER_LEVEL_OFF));
   pm_with_off->store_state_map_ = std::move(store_state_map_);
-#if defined(OS_IOS)
-  std::string suffix = "Q==";
-#else
   std::string suffix = "B";
-#endif
   EXPECT_EQ(base + suffix,
             pm_with_off->GetBase64SerializedUpdateRequestProto());
 
   std::unique_ptr<V4UpdateProtocolManager> pm_with_legacy(CreateProtocolManager(
       std::vector<ListUpdateResponse>({}), false, SBER_LEVEL_LEGACY));
   pm_with_legacy->store_state_map_ = std::move(pm_with_off->store_state_map_);
-#if defined(OS_IOS)
-  suffix = "g==";
-#else
   suffix = "C";
-#endif
   EXPECT_EQ(base + suffix,
             pm_with_legacy->GetBase64SerializedUpdateRequestProto());
 
   std::unique_ptr<V4UpdateProtocolManager> pm_with_scout(CreateProtocolManager(
       std::vector<ListUpdateResponse>({}), false, SBER_LEVEL_SCOUT));
   pm_with_scout->store_state_map_ = std::move(pm_with_legacy->store_state_map_);
-#if defined(OS_IOS)
-  suffix = "w==";
-#else
   suffix = "D";
-#endif
   EXPECT_EQ(base + suffix,
             pm_with_scout->GetBase64SerializedUpdateRequestProto());
 }

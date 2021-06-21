@@ -773,10 +773,6 @@ class EnhancedProtectionDownloadTest
     : public DownloadProtectionServiceTestBase {
  public:
   EnhancedProtectionDownloadTest() {
-    // Enable the feature early to prevent race condition trying to access
-    // the enabled features set.  This happens for example when the history
-    // service is started below.
-    EnableFeatures({kDownloadRequestWithToken});
   }
 };
 

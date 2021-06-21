@@ -42,9 +42,8 @@ class RealTimePolicyEngine {
       network::mojom::RequestDestination request_destination,
       bool can_rt_check_subresource_url);
 
-  // Return true if the feature to enable full URL lookups is enabled and the
-  // allowlist fetch is enabled for the profile represented by
-  // |pref_service|.
+  // Return true if the profile is not Incognito and real-time fetches are
+  // available in the user's country, and the user has opted in to ESB or MBB.
   static bool CanPerformFullURLLookup(
       PrefService* pref_service,
       bool is_off_the_record,
@@ -66,9 +65,6 @@ class RealTimePolicyEngine {
 
  private:
   static bool IsInExcludedCountry(const std::string& country_code);
-
-  // Is the feature to perform real-time URL lookup enabled?
-  static bool IsUrlLookupEnabled();
 
   // Whether the user has opted-in to MBB.
   static bool IsUserMbbOptedIn(PrefService* pref_service);

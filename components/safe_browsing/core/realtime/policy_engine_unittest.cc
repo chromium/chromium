@@ -4,12 +4,9 @@
 
 #include "components/safe_browsing/core/realtime/policy_engine.h"
 
-#include "base/test/scoped_feature_list.h"
-#include "build/build_config.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/common/safebrowsing_constants.h"
 #include "components/safe_browsing/core/common/test_task_environment.h"
-#include "components/safe_browsing/core/features.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/unified_consent/pref_names.h"
 #include "components/unified_consent/unified_consent_service.h"
@@ -70,13 +67,6 @@ class RealTimePolicyEngineTest : public PlatformTest {
 };
 
 TEST_F(RealTimePolicyEngineTest,
-       TestCanPerformFullURLLookup_DisabledUrlLookup) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kRealTimeUrlLookupEnabled);
-  EXPECT_FALSE(CanPerformFullURLLookup(/* is_off_the_record */ false));
-}
-
-TEST_F(RealTimePolicyEngineTest,
        TestCanPerformFullURLLookup_DisabledOffTheRecord) {
   pref_service_.SetBoolean(prefs::kSafeBrowsingEnhanced, true);
   EXPECT_FALSE(CanPerformFullURLLookup(/* is_off_the_record */ true));
@@ -114,11 +104,6 @@ TEST_F(RealTimePolicyEngineTest,
 TEST_F(
     RealTimePolicyEngineTest,
     TestCanPerformFullURLLookupWithToken_ClientControlledWithoutEnhancedProtection) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /* enabled_features */ {kRealTimeUrlLookupEnabled,
-                              kRealTimeUrlLookupEnabledWithToken},
-      /* disabled_features */ {});
   pref_service_.SetUserPref(
       unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled,
       std::make_unique<base::Value>(true));
@@ -141,14 +126,8 @@ TEST_F(
 TEST_F(
     RealTimePolicyEngineTest,
     TestCanPerformFullURLLookupWithToken_ClientControlledWithEnhancedProtection) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /* enabled_features */ {},
-      /* disabled_features */ {kRealTimeUrlLookupEnabledWithToken});
-
-  // Enhanced protection is not enabled and the Finch feature is disabled: token
-  // fetches should be disallowed whether or not they are configured in the
-  // client.
+  // Enhanced protection is disabled: token fetches should be disallowed whether
+  // or not they are configured in the client.
   EXPECT_FALSE(CanPerformFullURLLookupWithToken(
       /* is_off_the_record */ false,
       base::BindOnce(&AreTokenFetchesEnabledInClient,

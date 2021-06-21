@@ -73,12 +73,6 @@ const base::FeatureParam<bool> kDelayedWarningsEnableMouseClicks{
 const base::Feature kSimplifiedUrlDisplay{"SimplifiedUrlDisplay",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kDownloadRequestWithToken{
-    "SafeBrowsingDownloadRequestWithToken", base::FEATURE_ENABLED_BY_DEFAULT};
-
-const base::Feature kLimitedListSizeForIOS{"SafeBrowsingLimitedListSizeForIOS",
-                                           base::FEATURE_DISABLED_BY_DEFAULT};
-
 const base::Feature kPasswordProtectionForSignedInUsers {
   "SafeBrowsingPasswordProtectionForSignedInUsers",
 #if BUILDFLAG(FULL_SAFE_BROWSING)
@@ -104,13 +98,6 @@ const base::Feature kSafeBrowsingEnterpriseCsd{
 const base::Feature kSafeBrowsingDisableConsumerCsdForEnterprise{
     "SafeBrowsingDisableConsumerCsdForEnterprise",
     base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kRealTimeUrlLookupEnabled{
-    "SafeBrowsingRealTimeUrlLookupEnabled", base::FEATURE_ENABLED_BY_DEFAULT};
-
-const base::Feature kRealTimeUrlLookupEnabledWithToken{
-    "SafeBrowsingRealTimeUrlLookupEnabledWithToken",
-    base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kRealTimeUrlLookupReferrerChain{
     "SafeBrowsingRealTimeUrlLookupReferrerChain",
@@ -160,8 +147,8 @@ const base::Feature kFileAnalysisMimeTypeSniff{
     "FileAnalysisMimeTypeSniff", base::FEATURE_DISABLED_BY_DEFAULT};
 
 namespace {
-// List of Safe Browsing features. Boolean value for each list member should be
-// set to true if the experiment state should be listed on
+// List of Safe Browsing features. Boolean value for each list member should
+// be set to true if the experiment state should be listed on
 // chrome://safe-browsing. Features should be listed in alphabetical order.
 constexpr struct {
   const base::Feature* feature;
@@ -174,15 +161,14 @@ constexpr struct {
     {&kBetterTelemetryAcrossReports, true},
     {&kCaptureInlineJavascriptForGoogleAds, true},
     {&kClientSideDetectionForAndroid, true},
+    {&kClientSideDetectionModelIsFlatBuffer, true},
+    {&kClientSideDetectionModelVersion, true},
+    {&kClientSideDetectionReferrerChain, true},
     {&kClientSideDetectionWithToken, true},
     {&kDelayedWarnings, true},
-    {&kDownloadRequestWithToken, true},
-    {&kLimitedListSizeForIOS, true},
     {&kPasswordProtectionForSignedInUsers, true},
     {&kPasswordProtectionWithToken, true},
     {&kPromptEsbForDeepScanning, true},
-    {&kRealTimeUrlLookupEnabled, true},
-    {&kRealTimeUrlLookupEnabledWithToken, true},
     {&kRealTimeUrlLookupReferrerChain, true},
     {&kSafeBrowsingSeparateNetworkContexts, true},
     {&kSuspiciousSiteTriggerQuotaFeature, true},

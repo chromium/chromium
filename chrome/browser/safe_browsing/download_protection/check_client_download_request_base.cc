@@ -388,8 +388,7 @@ void CheckClientDownloadRequestBase::OnCertificateAllowlistCheckDone(
     return;
   }
 
-  if (is_enhanced_protection_ && token_fetcher_ &&
-      base::FeatureList::IsEnabled(kDownloadRequestWithToken)) {
+  if (is_enhanced_protection_ && token_fetcher_) {
     token_fetcher_->Start(base::BindOnce(
         &CheckClientDownloadRequestBase::OnGotAccessToken, GetWeakPtr()));
     return;

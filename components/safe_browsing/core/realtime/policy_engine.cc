@@ -5,14 +5,12 @@
 #include "components/safe_browsing/core/realtime/policy_engine.h"
 
 #include "base/containers/contains.h"
-#include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/common/safebrowsing_constants.h"
 #include "components/safe_browsing/core/common/utils.h"
-#include "components/safe_browsing/core/features.h"
 #include "components/unified_consent/pref_names.h"
 #include "components/user_prefs/user_prefs.h"
 #include "components/variations/service/variations_service.h"
@@ -28,11 +26,6 @@ namespace safe_browsing {
 bool RealTimePolicyEngine::IsInExcludedCountry(
     const std::string& country_code) {
   return base::Contains(GetExcludedCountries(), country_code);
-}
-
-// static
-bool RealTimePolicyEngine::IsUrlLookupEnabled() {
-  return base::FeatureList::IsEnabled(kRealTimeUrlLookupEnabled);
 }
 
 // static
@@ -59,10 +52,7 @@ bool RealTimePolicyEngine::CanPerformFullURLLookup(
       IsInExcludedCountry(variations_service->GetStoredPermanentCountry()))
     return false;
 
-  if (IsUserEpOptedIn(pref_service))
-    return true;
-
-  return IsUrlLookupEnabled() && IsUserMbbOptedIn(pref_service);
+  return IsUserEpOptedIn(pref_service) || IsUserMbbOptedIn(pref_service);
 }
 
 // static
@@ -73,14 +63,6 @@ bool RealTimePolicyEngine::CanPerformFullURLLookupWithToken(
     variations::VariationsService* variations_service) {
   if (!CanPerformFullURLLookup(pref_service, is_off_the_record,
                                variations_service)) {
-    return false;
-  }
-
-  // Safe browsing token fetches are usually disabled if the feature is not
-  // enabled via Finch. The only exception is for users who have explicitly
-  // enabled enhanced protection, for whom the Finch feature is not relevant.
-  if (!base::FeatureList::IsEnabled(kRealTimeUrlLookupEnabledWithToken) &&
-      !IsUserEpOptedIn(pref_service)) {
     return false;
   }
 

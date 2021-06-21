@@ -637,8 +637,6 @@ TEST_F(RealTimeUrlLookupServiceTest, TestCacheInCacheManager) {
 
 TEST_F(RealTimeUrlLookupServiceTest, TestStartLookup_ResponseIsAlreadyCached) {
   base::HistogramTester histograms;
-  EnableRealTimeUrlLookup({kRealTimeUrlLookupEnabled},
-                          {kRealTimeUrlLookupEnabledWithToken});
   GURL url(kTestUrl);
   MayBeCacheRealTimeUrlVerdict(url, RTLookupResponse::ThreatInfo::DANGEROUS,
                                RTLookupResponse::ThreatInfo::SOCIAL_ENGINEERING,
@@ -669,8 +667,7 @@ TEST_F(RealTimeUrlLookupServiceTest, TestStartLookup_ResponseIsAlreadyCached) {
 TEST_F(RealTimeUrlLookupServiceTest,
        TestStartLookup_AttachTokenWhenWithTokenIsEnabled) {
   base::HistogramTester histograms;
-  EnableRealTimeUrlLookup(
-      {kRealTimeUrlLookupEnabled, kRealTimeUrlLookupEnabledWithToken}, {});
+  EnableMbb();
   EnableTokenFetchesInClient();
   GURL url(kTestUrl);
   SetUpRTLookupResponse(RTLookupResponse::ThreatInfo::DANGEROUS,
@@ -708,8 +705,7 @@ TEST_F(RealTimeUrlLookupServiceTest,
 
 TEST_F(RealTimeUrlLookupServiceTest,
        TestStartLookup_NoTokenWhenNotConfiguredInClient) {
-  EnableRealTimeUrlLookup(
-      {kRealTimeUrlLookupEnabled, kRealTimeUrlLookupEnabledWithToken}, {});
+  EnableMbb();
   GURL url(kTestUrl);
   SetUpRTLookupResponse(RTLookupResponse::ThreatInfo::DANGEROUS,
                         RTLookupResponse::ThreatInfo::SOCIAL_ENGINEERING, 60,
@@ -739,41 +735,8 @@ TEST_F(RealTimeUrlLookupServiceTest,
 }
 
 TEST_F(RealTimeUrlLookupServiceTest,
-       TestStartLookup_NoTokenWhenWithTokenIsDisabled) {
-  EnableRealTimeUrlLookup({kRealTimeUrlLookupEnabled},
-                          {kRealTimeUrlLookupEnabledWithToken});
-  EnableTokenFetchesInClient();
-  GURL url(kTestUrl);
-  SetUpRTLookupResponse(RTLookupResponse::ThreatInfo::DANGEROUS,
-                        RTLookupResponse::ThreatInfo::SOCIAL_ENGINEERING, 60,
-                        "example.test/",
-                        RTLookupResponse::ThreatInfo::COVERING_MATCH);
-
-  base::MockCallback<RTLookupResponseCallback> response_callback;
-  rt_service()->StartLookup(
-      url,
-      base::BindOnce(
-          [](std::unique_ptr<RTLookupRequest> request, std::string token) {
-            // Check the token field is empty.
-            EXPECT_EQ("", token);
-          }),
-      response_callback.Get(), base::ThreadTaskRunnerHandle::Get());
-
-  EXPECT_CALL(response_callback, Run(/* is_rt_lookup_successful */ true,
-                                     /* is_cached_response */ false, _));
-
-  task_environment_.RunUntilIdle();
-
-  // Check the response is cached.
-  std::unique_ptr<RTLookupResponse> cache_response =
-      GetCachedRealTimeUrlVerdict(url);
-  EXPECT_NE(nullptr, cache_response);
-}
-
-TEST_F(RealTimeUrlLookupServiceTest,
        TestStartLookup_OnInvalidAccessTokenCalledResponseCodeUnauthorized) {
-  EnableRealTimeUrlLookup(
-      {kRealTimeUrlLookupEnabled, kRealTimeUrlLookupEnabledWithToken}, {});
+  EnableMbb();
   EnableTokenFetchesInClient();
   GURL url(kTestUrl);
   SetUpFailureResponse(net::HTTP_UNAUTHORIZED);
@@ -797,8 +760,7 @@ TEST_F(RealTimeUrlLookupServiceTest,
 
 TEST_F(RealTimeUrlLookupServiceTest,
        TestStartLookup_OnInvalidAccessTokenNotCalledResponseCodeForbidden) {
-  EnableRealTimeUrlLookup(
-      {kRealTimeUrlLookupEnabled, kRealTimeUrlLookupEnabledWithToken}, {});
+  EnableMbb();
   EnableTokenFetchesInClient();
   GURL url(kTestUrl);
   SetUpFailureResponse(net::HTTP_FORBIDDEN);
@@ -1056,8 +1018,7 @@ TEST_F(RealTimeUrlLookupServiceTest,
 }
 
 TEST_F(RealTimeUrlLookupServiceTest, TestShutdown_CallbackNotPostedOnShutdown) {
-  EnableRealTimeUrlLookup({kRealTimeUrlLookupEnabled},
-                          {kRealTimeUrlLookupEnabledWithToken});
+  EnableMbb();
   GURL url(kTestUrl);
 
   base::MockCallback<RTLookupRequestCallback> request_callback;

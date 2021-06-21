@@ -9,7 +9,6 @@
 #include "base/run_loop.h"
 #include "base/task/post_task.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -21,7 +20,6 @@
 #include "components/safe_browsing/core/db/v4_get_hash_protocol_manager.h"
 #include "components/safe_browsing/core/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/db/v4_test_util.h"
-#include "components/safe_browsing/core/features.h"
 #include "components/safe_browsing/core/proto/realtimeapi.pb.h"
 #include "components/safe_browsing/core/verdict_cache_manager.h"
 #import "components/safe_browsing/ios/browser/safe_browsing_url_allow_list.h"
@@ -270,8 +268,6 @@ TEST_F(SafeBrowsingServiceTest, SafeAndUnsafePages) {
 // lookups are enabled, and that opting out of real-time checks works as
 // expected.
 TEST_F(SafeBrowsingServiceTest, RealTimeSafeAndUnsafePages) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({safe_browsing::kRealTimeUrlLookupEnabled}, {});
   TestingApplicationContext::GetGlobal();
 
   // Opt into real-time checks.

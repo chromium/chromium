@@ -15,7 +15,6 @@
 #include "components/safe_browsing/core/browser/url_checker_delegate.h"
 #include "components/safe_browsing/core/common/safebrowsing_constants.h"
 #include "components/safe_browsing/core/db/v4_local_database_manager.h"
-#include "components/safe_browsing/core/features.h"
 #include "components/safe_browsing/core/realtime/url_lookup_service.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/net/cookie_util.h"
@@ -111,14 +110,11 @@ std::unique_ptr<safe_browsing::SafeBrowsingUrlCheckerImpl>
 SafeBrowsingServiceImpl::CreateUrlChecker(
     network::mojom::RequestDestination request_destination,
     web::WebState* web_state) {
-  bool can_perform_full_url_lookup = false;
-  safe_browsing::RealTimeUrlLookupService* url_lookup_service = nullptr;
-  if (base::FeatureList::IsEnabled(safe_browsing::kRealTimeUrlLookupEnabled)) {
-    url_lookup_service = RealTimeUrlLookupServiceFactory::GetForBrowserState(
-        ChromeBrowserState::FromBrowserState(web_state->GetBrowserState()));
-    can_perform_full_url_lookup =
-        url_lookup_service && url_lookup_service->CanPerformFullURLLookup();
-  }
+  safe_browsing::RealTimeUrlLookupService* url_lookup_service =
+      RealTimeUrlLookupServiceFactory::GetForBrowserState(
+          ChromeBrowserState::FromBrowserState(web_state->GetBrowserState()));
+  bool can_perform_full_url_lookup =
+      url_lookup_service && url_lookup_service->CanPerformFullURLLookup();
   return std::make_unique<safe_browsing::SafeBrowsingUrlCheckerImpl>(
       request_destination, url_checker_delegate_,
       web_state->CreateDefaultGetter(), can_perform_full_url_lookup,
