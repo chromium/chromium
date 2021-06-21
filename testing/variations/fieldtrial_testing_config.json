@@ -7261,28 +7261,6 @@
             ]
         }
     ],
-    "SafeBrowsingVisualCsdModelVariation9": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "ModelNum": "9"
-                    },
-                    "enable_features": [
-                        "ClientSideDetectionModel"
-                    ]
-                }
-            ]
-        }
-    ],
     "ScrollResamplingRollout": [
         {
             "platforms": [
