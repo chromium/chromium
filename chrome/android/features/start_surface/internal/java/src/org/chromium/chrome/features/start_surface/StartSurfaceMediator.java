@@ -30,7 +30,6 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.view.View;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -64,20 +63,11 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.util.ColorUtils;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 
 /** The mediator implements the logic to interact with the surfaces and caller. */
 class StartSurfaceMediator
         implements StartSurface.Controller, TabSwitcher.OverviewModeObserver, View.OnClickListener {
-    @IntDef({SurfaceMode.NO_START_SURFACE, SurfaceMode.SINGLE_PANE})
-    @Retention(RetentionPolicy.SOURCE)
-    @interface SurfaceMode {
-        int NO_START_SURFACE = 0;
-        int SINGLE_PANE = 1;
-    }
-
     /** Interface to initialize a secondary tasks surface for more tabs. */
     interface SecondaryTasksSurfaceInitializer {
         /**
@@ -105,8 +95,7 @@ class StartSurfaceMediator
     private final PropertyModel mPropertyModel;
     @Nullable
     private final SecondaryTasksSurfaceInitializer mSecondaryTasksSurfaceInitializer;
-    @SurfaceMode
-    private final int mSurfaceMode;
+    private final boolean mIsStartSurfaceEnabled;
     private final ObserverList<StartSurface.StateObserver> mStateObservers = new ObserverList<>();
 
     // Boolean histogram used to record whether cached
@@ -168,7 +157,7 @@ class StartSurfaceMediator
     StartSurfaceMediator(TabSwitcher.Controller controller, TabModelSelector tabModelSelector,
             @Nullable PropertyModel propertyModel,
             @Nullable SecondaryTasksSurfaceInitializer secondaryTasksSurfaceInitializer,
-            @SurfaceMode int surfaceMode, Context context,
+            boolean isStartSurfaceEnabled, Context context,
             BrowserControlsStateProvider browserControlsStateProvider,
             ActivityStateChecker activityStateChecker, boolean excludeMVTiles,
             OneshotSupplier<StartSurface> startSurfaceSupplier, boolean hadWarmStart) {
@@ -176,7 +165,7 @@ class StartSurfaceMediator
         mTabModelSelector = tabModelSelector;
         mPropertyModel = propertyModel;
         mSecondaryTasksSurfaceInitializer = secondaryTasksSurfaceInitializer;
-        mSurfaceMode = surfaceMode;
+        mIsStartSurfaceEnabled = isStartSurfaceEnabled;
         mContext = context;
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mActivityStateChecker = activityStateChecker;
@@ -186,7 +175,7 @@ class StartSurfaceMediator
         mLaunchOrigin = NewTabPageLaunchOrigin.UNKNOWN;
 
         if (mPropertyModel != null) {
-            assert mSurfaceMode == SurfaceMode.SINGLE_PANE;
+            assert mIsStartSurfaceEnabled;
 
             mIsIncognito = mTabModelSelector.isIncognitoSelected();
 
@@ -730,7 +719,7 @@ class StartSurfaceMediator
                     StartSurfaceConfiguration.getFeedArticlesVisibility();
         }
 
-        return mSurfaceMode == SurfaceMode.SINGLE_PANE
+        return mIsStartSurfaceEnabled
                 && CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START)
                 && StartSurfaceConfiguration.getFeedArticlesVisibility() && !mHadWarmStart;
     }
@@ -770,7 +759,7 @@ class StartSurfaceMediator
     }
 
     private void setSecondaryTasksSurfaceVisibility(boolean isVisible) {
-        assert mSurfaceMode == SurfaceMode.SINGLE_PANE;
+        assert mIsStartSurfaceEnabled;
 
         if (isVisible) {
             if (mSecondaryTasksSurfacePropertyModel == null) {
@@ -878,7 +867,7 @@ class StartSurfaceMediator
     // computeStartSurfaceState.
     @StartSurfaceState
     private int computeOverviewStateShown() {
-        if (mSurfaceMode == SurfaceMode.SINGLE_PANE) {
+        if (mIsStartSurfaceEnabled) {
             if (mStartSurfaceState == StartSurfaceState.SHOWING_PREVIOUS) {
                 assert mPreviousStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE
                         || mPreviousStartSurfaceState == StartSurfaceState.SHOWN_TABSWITCHER

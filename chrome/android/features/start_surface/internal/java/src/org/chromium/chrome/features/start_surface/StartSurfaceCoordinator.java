@@ -40,7 +40,6 @@ import org.chromium.chrome.browser.tasks.tab_management.TabManagementModuleProvi
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger.SurfaceType;
-import org.chromium.chrome.features.start_surface.StartSurfaceMediator.SurfaceMode;
 import org.chromium.chrome.start_surface.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
@@ -66,7 +65,7 @@ public class StartSurfaceCoordinator implements StartSurface {
     private final Activity mActivity;
     private final ScrimCoordinator mScrimCoordinator;
     private final StartSurfaceMediator mStartSurfaceMediator;
-    private final @SurfaceMode int mSurfaceMode;
+    private final boolean mIsStartSurfaceEnabled;
     private final BottomSheetController mBottomSheetController;
     private final Supplier<Tab> mParentTabSupplier;
     private final WindowAndroid mWindowAndroid;
@@ -217,7 +216,7 @@ public class StartSurfaceCoordinator implements StartSurface {
                 new FeedLaunchReliabilityLoggingState(SurfaceType.START_SURFACE, System.nanoTime());
         mActivity = activity;
         mScrimCoordinator = scrimCoordinator;
-        mSurfaceMode = computeSurfaceMode();
+        mIsStartSurfaceEnabled = StartSurfaceConfiguration.isStartSurfaceEnabled();
         mBottomSheetController = sheetController;
         mParentTabSupplier = parentTabSupplier;
         mWindowAndroid = windowAndroid;
@@ -237,8 +236,8 @@ public class StartSurfaceCoordinator implements StartSurface {
         mMultiWindowModeStateDispatcher = multiWindowModeStateDispatcher;
 
         boolean excludeMVTiles = StartSurfaceConfiguration.START_SURFACE_EXCLUDE_MV_TILES.getValue()
-                || mSurfaceMode == SurfaceMode.NO_START_SURFACE;
-        if (mSurfaceMode == SurfaceMode.NO_START_SURFACE) {
+                || !mIsStartSurfaceEnabled;
+        if (!mIsStartSurfaceEnabled) {
             // Create Tab switcher directly to save one layer in the view hierarchy.
             mTabSwitcher = TabManagementModuleProvider.getDelegate().createGridTabSwitcher(activity,
                     activityLifecycleDispatcher, tabModelSelector, tabContentManager,
@@ -251,13 +250,12 @@ public class StartSurfaceCoordinator implements StartSurface {
 
         TabSwitcher.Controller controller =
                 mTabSwitcher != null ? mTabSwitcher.getController() : mTasksSurface.getController();
-        mStartSurfaceMediator = new StartSurfaceMediator(controller, mTabModelSelector,
-                mPropertyModel,
-                mSurfaceMode == SurfaceMode.SINGLE_PANE ? this::initializeSecondaryTasksSurface
-                                                        : null,
-                mSurfaceMode, mActivity, mBrowserControlsManager,
-                this::isActivityFinishingOrDestroyed, excludeMVTiles, startSurfaceOneshotSupplier,
-                hadWarmStart);
+        mStartSurfaceMediator =
+                new StartSurfaceMediator(controller, mTabModelSelector, mPropertyModel,
+                        mIsStartSurfaceEnabled ? this::initializeSecondaryTasksSurface : null,
+                        mIsStartSurfaceEnabled, mActivity, mBrowserControlsManager,
+                        this::isActivityFinishingOrDestroyed, excludeMVTiles,
+                        startSurfaceOneshotSupplier, hadWarmStart);
 
         // Show feed loading image.
         if (mStartSurfaceMediator.shouldShowFeedPlaceholder()) {
@@ -340,7 +338,7 @@ public class StartSurfaceCoordinator implements StartSurface {
 
         // Set OnTabSelectingListener to the more tabs tasks surface as well if it has been
         // instantiated, otherwise remember it for the future instantiation.
-        if (mSurfaceMode == SurfaceMode.SINGLE_PANE) {
+        if (mIsStartSurfaceEnabled) {
             if (mSecondaryTasksSurface == null) {
                 mOnTabSelectingListener = listener;
             } else {
@@ -354,7 +352,7 @@ public class StartSurfaceCoordinator implements StartSurface {
         if (mIsInitializedWithNative) return;
 
         mIsInitializedWithNative = true;
-        if (mSurfaceMode == SurfaceMode.SINGLE_PANE) {
+        if (mIsStartSurfaceEnabled) {
             mExploreSurfaceCoordinator = new ExploreSurfaceCoordinator(mActivity,
                     mTasksSurface.getBodyViewContainer(), mPropertyModel, true,
                     mBottomSheetController, mParentTabSupplier,
@@ -362,7 +360,7 @@ public class StartSurfaceCoordinator implements StartSurface {
                     mWindowAndroid, mTabModelSelector, mFeedLaunchReliabilityLoggingState);
         }
         mStartSurfaceMediator.initWithNative(
-                mSurfaceMode != SurfaceMode.NO_START_SURFACE ? mOmniboxStubSupplier.get() : null,
+                mIsStartSurfaceEnabled ? mOmniboxStubSupplier.get() : null,
                 mExploreSurfaceCoordinator != null
                         ? mExploreSurfaceCoordinator.getFeedSurfaceController()
                         : null,
@@ -395,7 +393,7 @@ public class StartSurfaceCoordinator implements StartSurface {
 
     @Override
     public TabSwitcher.TabListDelegate getGridTabListDelegate() {
-        if (StartSurfaceConfiguration.isStartSurfaceEnabled()) {
+        if (mIsStartSurfaceEnabled) {
             if (mSecondaryTasksSurface == null) {
                 mStartSurfaceMediator.setSecondaryTasksSurfaceController(
                         initializeSecondaryTasksSurface());
@@ -408,7 +406,7 @@ public class StartSurfaceCoordinator implements StartSurface {
 
     @Override
     public TabSwitcher.TabListDelegate getCarouselOrSingleTabListDelegate() {
-        if (StartSurfaceConfiguration.isStartSurfaceEnabled()) {
+        if (mIsStartSurfaceEnabled) {
             assert mTasksSurface != null;
             return mTasksSurface.getTabListDelegate();
         } else {
@@ -465,13 +463,6 @@ public class StartSurfaceCoordinator implements StartSurface {
         mStartSurfaceMediator.getSecondaryTasksSurfaceController().showTabSelectionEditor(tabs);
     }
 
-    private @SurfaceMode int computeSurfaceMode() {
-        // Check the cached flag before getting the parameter to be consistent with the other
-        // places. Note that the cached flag may have been set before native initialization.
-        return StartSurfaceConfiguration.isStartSurfaceEnabled() ? SurfaceMode.SINGLE_PANE
-                                                                 : SurfaceMode.NO_START_SURFACE;
-    }
-
     @VisibleForTesting
     public boolean isMVTilesCleanedUpForTesting() {
         return mTasksSurface.isMVTilesCleanedUp();
@@ -488,8 +479,8 @@ public class StartSurfaceCoordinator implements StartSurface {
         allProperties.addAll(Arrays.asList(StartSurfaceProperties.ALL_KEYS));
         mPropertyModel = new PropertyModel(allProperties);
 
-        int tabSwitcherType = mSurfaceMode == SurfaceMode.SINGLE_PANE ? TabSwitcherType.CAROUSEL
-                                                                      : TabSwitcherType.GRID;
+        int tabSwitcherType =
+                mIsStartSurfaceEnabled ? TabSwitcherType.CAROUSEL : TabSwitcherType.GRID;
         if (StartSurfaceConfiguration.START_SURFACE_LAST_ACTIVE_TAB_ONLY.getValue()) {
             tabSwitcherType = TabSwitcherType.SINGLE;
         }
@@ -520,7 +511,7 @@ public class StartSurfaceCoordinator implements StartSurface {
     }
 
     private TabSwitcher.Controller initializeSecondaryTasksSurface() {
-        assert mSurfaceMode == SurfaceMode.SINGLE_PANE;
+        assert mIsStartSurfaceEnabled;
         assert mSecondaryTasksSurface == null;
 
         PropertyModel propertyModel = new PropertyModel(TasksSurfaceProperties.ALL_KEYS);
