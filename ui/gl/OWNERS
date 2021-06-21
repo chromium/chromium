@@ -10,3 +10,6 @@ per-file *surface_control*=vasilyt@chromium.org
 
 # For Windows Direct Composition and Swap Chain
 magchen@chromium.org
+
+# D3D, dcomp, Windows platform integration, etc.
+rafael.cintron@microsoft.com
