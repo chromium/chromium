@@ -7,7 +7,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
-#include "third_party/blink/renderer/bindings/core/v8/to_v8_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_stream_track_signal.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_stream_track_signal_type.h"
@@ -61,9 +61,9 @@ class VideoTrackSignalUnderlyingSinkTest : public testing::Test {
       const V8MediaStreamTrackSignalType& signal_type) {
     MediaStreamTrackSignal* signal = MediaStreamTrackSignal::Create();
     signal->setSignalType(signal_type);
-    return ScriptValue(script_state->GetIsolate(),
-                       ToV8(signal, script_state->GetContext()->Global(),
-                            script_state->GetIsolate()));
+    return ScriptValue(
+        script_state->GetIsolate(),
+        ToV8Traits<MediaStreamTrackSignal>::ToV8(script_state, signal));
   }
 
   ScriptValue CreateRequestFrameChunk(ScriptState* script_state) {
@@ -79,9 +79,9 @@ class VideoTrackSignalUnderlyingSinkTest : public testing::Test {
     signal->setSignalType("set-min-frame-rate");
     if (frame_rate)
       signal->setFrameRate(*frame_rate);
-    return ScriptValue(script_state->GetIsolate(),
-                       ToV8(signal, script_state->GetContext()->Global(),
-                            script_state->GetIsolate()));
+    return ScriptValue(
+        script_state->GetIsolate(),
+        ToV8Traits<MediaStreamTrackSignal>::ToV8(script_state, signal));
   }
 
  protected:
