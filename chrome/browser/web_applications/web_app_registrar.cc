@@ -139,6 +139,12 @@ const GURL& WebAppRegistrar::GetAppStartUrl(const AppId& app_id) const {
   return web_app ? web_app->start_url() : GURL::EmptyGURL();
 }
 
+absl::optional<std::string> WebAppRegistrar::GetAppManifestId(
+    const AppId& app_id) const {
+  auto* web_app = GetAppById(app_id);
+  return web_app ? web_app->manifest_id() : absl::nullopt;
+}
+
 const std::string* WebAppRegistrar::GetAppLaunchQueryParams(
     const AppId& app_id) const {
   auto* web_app = GetAppById(app_id);

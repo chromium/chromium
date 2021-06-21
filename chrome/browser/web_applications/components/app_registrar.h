@@ -109,6 +109,8 @@ class AppRegistrar {
   virtual absl::optional<SkColor> GetAppBackgroundColor(
       const AppId& app_id) const = 0;
   virtual const GURL& GetAppStartUrl(const AppId& app_id) const = 0;
+  virtual absl::optional<std::string> GetAppManifestId(
+      const AppId& app_id) const = 0;
   virtual const std::string* GetAppLaunchQueryParams(
       const AppId& app_id) const = 0;
   virtual const apps::ShareTarget* GetAppShareTarget(

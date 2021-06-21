@@ -60,6 +60,11 @@ struct BLINK_COMMON_EXPORT
     return internal::TruncateOptionalString16(manifest.description);
   }
 
+  static absl::optional<base::StringPiece16> id(
+      const ::blink::Manifest& manifest) {
+    return internal::TruncateOptionalString16(manifest.id);
+  }
+
   static absl::optional<base::StringPiece16> gcm_sender_id(
       const ::blink::Manifest& manifest) {
     return internal::TruncateOptionalString16(manifest.gcm_sender_id);

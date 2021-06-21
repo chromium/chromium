@@ -46159,6 +46159,7 @@ from previous Chrome versions.
   <int value="-1269084216" label="ash-md"/>
   <int value="-1268836676" label="disable-out-of-process-pdf"/>
   <int value="-1267958145" label="disable-pdf-material-ui"/>
+  <int value="-1265627803" label="WebAppEnableManifestId:enabled"/>
   <int value="-1262730949" label="EnableDspHotword:enabled"/>
   <int value="-1262303946" label="SubresourceRedirectPreviews:disabled"/>
   <int value="-1262152606" label="disable-lock-screen-apps"/>
@@ -48003,6 +48004,7 @@ from previous Chrome versions.
       label="enable-experimental-accessibility-language-detection"/>
   <int value="324522065" label="app-menu-icon"/>
   <int value="324631366" label="enable-drive-search-in-app-launcher"/>
+  <int value="325489620" label="WebAppEnableManifestId:disabled"/>
   <int value="325907076" label="SanitizerAPI:enabled"/>
   <int value="327045548" label="SafeSearchUrlReporting:enabled"/>
   <int value="328722396" label="NTPCondensedLayout:disabled"/>

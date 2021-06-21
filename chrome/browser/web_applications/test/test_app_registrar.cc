@@ -128,6 +128,12 @@ const GURL& TestAppRegistrar::GetAppStartUrl(const AppId& app_id) const {
   return iterator->second.launch_url;
 }
 
+absl::optional<std::string> TestAppRegistrar::GetAppManifestId(
+    const AppId& app_id) const {
+  NOTIMPLEMENTED();
+  return absl::nullopt;
+}
+
 const std::string* TestAppRegistrar::GetAppLaunchQueryParams(
     const AppId& app_id) const {
   return nullptr;

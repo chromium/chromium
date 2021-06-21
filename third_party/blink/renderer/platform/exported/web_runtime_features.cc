@@ -674,6 +674,10 @@ void WebRuntimeFeatures::EnableParseUrlProtocolHandler(bool enable) {
   RuntimeEnabledFeatures::SetParseUrlProtocolHandlerEnabled(enable);
 }
 
+void WebRuntimeFeatures::EnableWebAppManifestId(bool enable) {
+  RuntimeEnabledFeatures::SetWebAppManifestIdEnabled(enable);
+}
+
 void WebRuntimeFeatures::EnableWebID(bool enable) {
   RuntimeEnabledFeatures::SetWebIDEnabled(enable);
 }

@@ -134,14 +134,20 @@ void WebAppInstallFinalizer::FinalizeInstall(
   // A web app might be sync installed with id received from WebAppSpecifics
   // that's different from start_url hash, in this case we look up the app by
   // start_url and respect the app_id from the existing WebApp.
-  if (!existing_web_app)
+  if (!base::FeatureList::IsEnabled(blink::features::kWebAppEnableManifestId) &&
+      !existing_web_app) {
     existing_web_app =
         GetWebAppRegistrar().GetAppByStartUrl(web_app_info.start_url);
+  }
   std::unique_ptr<WebApp> web_app;
   if (existing_web_app) {
     app_id = existing_web_app->app_id();
     // Prepare copy-on-write:
-    DCHECK_EQ(web_app_info.start_url, existing_web_app->start_url());
+    // Allows changing manifest_id and start_url when manifest_id is enabled.
+    if (!base::FeatureList::IsEnabled(
+            blink::features::kWebAppEnableManifestId)) {
+      DCHECK_EQ(web_app_info.start_url, existing_web_app->start_url());
+    }
     web_app = std::make_unique<WebApp>(*existing_web_app);
 
     // The UI may initiate a full install to overwrite the existing
@@ -315,7 +321,7 @@ void WebAppInstallFinalizer::FinalizeUpdate(
   const WebApp* existing_web_app = GetWebAppRegistrar().GetAppById(app_id);
 
   if (!existing_web_app || existing_web_app->is_in_sync_install() ||
-      web_app_info.start_url != existing_web_app->start_url()) {
+      app_id != existing_web_app->app_id()) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), AppId(),
                                   InstallResultCode::kWebAppDisabled));

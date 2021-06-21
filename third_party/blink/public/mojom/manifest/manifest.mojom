@@ -24,6 +24,8 @@ struct Manifest {
 
   mojo_base.mojom.String16? description;
 
+  mojo_base.mojom.String16? id;
+
   url.mojom.Url start_url;
 
   DisplayMode display;

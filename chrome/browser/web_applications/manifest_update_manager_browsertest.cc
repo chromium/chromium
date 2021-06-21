@@ -3003,4 +3003,105 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithWebAppNoteTaking,
   EXPECT_TRUE(web_app->note_taking_new_note_url().is_empty());
 }
 
+class ManifestUpdateManagerBrowserTest_ManifestId
+    : public ManifestUpdateManagerBrowserTest {
+ public:
+  ManifestUpdateManagerBrowserTest_ManifestId() {
+    scoped_feature_list_.InitAndEnableFeature(
+        blink::features::kWebAppEnableManifestId);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_ManifestId,
+                       AllowStartUrlUpdate) {
+  constexpr char kManifestTemplate[] = R"(
+    {
+      "name": "Test app name",
+      "start_url": "$1",
+      "scope": "/",
+      "display": "minimal-ui",
+      "id": "test",
+      "icons": $2
+    }
+  )";
+  OverrideManifest(kManifestTemplate, {"/startA", kInstallableIconList});
+  AppId app_id = InstallWebApp();
+  EXPECT_EQ(GetProvider().registrar().GetAppStartUrl(app_id).path(), "/startA");
+
+  OverrideManifest(kManifestTemplate, {"/startB", kInstallableIconList});
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+            ManifestUpdateResult::kAppUpdated);
+  EXPECT_EQ(GetProvider().registrar().GetAppStartUrl(app_id).path(), "/startB");
+  histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
+                                      ManifestUpdateResult::kAppUpdated, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_ManifestId,
+                       CheckIgnoresIdChange) {
+  constexpr char kManifestTemplate[] = R"(
+    {
+      "name": "Test app name",
+      "id": "$1",
+      "start_url": "start",
+      "scope": "/",
+      "display": "standalone",
+      "icons": $2
+    }
+  )";
+  OverrideManifest(kManifestTemplate, {"test", kInstallableIconList});
+  AppId app_id = InstallWebApp();
+
+  OverrideManifest(kManifestTemplate, {"testb", kInstallableIconList});
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+            ManifestUpdateResult::kAppIdMismatch);
+  histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
+                                      ManifestUpdateResult::kAppIdMismatch, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_ManifestId,
+                       ChecksSettingIdMatchDefault) {
+  constexpr char kManifestTemplate[] = R"(
+    {
+      "name": "Test app name",
+      "start_url": "/start",
+      "scope": "/",
+      "display": "standalone",
+      "icons": $1
+    }
+  )";
+  OverrideManifest(kManifestTemplate, {kInstallableIconList});
+  AppId app_id = InstallWebApp();
+
+  // manifest_id should default to start_url when it's not provided in manifest.
+  EXPECT_EQ(GetProvider()
+                .registrar()
+                .AsWebAppRegistrar()
+                ->GetAppById(app_id)
+                ->manifest_id()
+                .value(),
+            "start");
+
+  constexpr char kManifestTemplate2[] = R"(
+    {
+      "name": "Test app name",
+      "id": "$1",
+      "start_url": "/start",
+      "scope": "/",
+      "display": "standalone",
+      "icons": $2
+    }
+  )";
+
+  // Setting manifest id to match default value won't trigger update as the
+  // parsed manifest is the same.
+  OverrideManifest(kManifestTemplate2, {"start", kInstallableIconList});
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+            ManifestUpdateResult::kAppUpToDate);
+
+  histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
+                                      ManifestUpdateResult::kAppUpToDate, 1);
+}
 }  // namespace web_app

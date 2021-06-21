@@ -14,6 +14,7 @@
 #include "base/strings/string_util.h"
 #include "chrome/browser/web_applications/components/web_app_chromeos_data.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
+#include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/components/web_app_utils.h"
 #include "components/sync/base/time.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
@@ -367,6 +368,9 @@ std::ostream& operator<<(std::ostream& out,
 
 std::ostream& operator<<(std::ostream& out, const WebApp& app) {
   out << "app_id: " << app.app_id_ << std::endl;
+
+  out << "unhashed app_id: "
+      << GenerateAppIdUnhashed(app.manifest_id_, app.start_url_) << std::endl;
 
   out << "manifest_url: " << app.manifest_url_ << std::endl;
 

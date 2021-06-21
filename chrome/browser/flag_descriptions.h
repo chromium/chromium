@@ -465,6 +465,9 @@ extern const char kDesktopPWAsNotificationIconAndTitleDescription[];
 extern const char kDesktopPWAsLinkCapturingName[];
 extern const char kDesktopPWAsLinkCapturingDescription[];
 
+extern const char kDesktopPWAsManifestIdName[];
+extern const char kDesktopPWAsManifestIdDescription[];
+
 extern const char kDesktopPWAsTabStripName[];
 extern const char kDesktopPWAsTabStripDescription[];
 

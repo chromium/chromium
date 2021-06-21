@@ -124,6 +124,7 @@ void ManifestParser::Parse() {
   manifest_->short_name = ParseShortName(root_object.get());
   manifest_->description = ParseDescription(root_object.get());
   manifest_->start_url = ParseStartURL(root_object.get());
+  manifest_->id = ParseId(root_object.get(), manifest_->start_url);
   manifest_->scope = ParseScope(root_object.get(), manifest_->start_url);
   manifest_->display = ParseDisplay(root_object.get());
   manifest_->display_override = ParseDisplayOverride(root_object.get());
@@ -329,6 +330,20 @@ String ManifestParser::ParseShortName(const JSONObject* object) {
 String ManifestParser::ParseDescription(const JSONObject* object) {
   absl::optional<String> description = ParseString(object, "description", Trim);
   return description.has_value() ? *description : String();
+}
+
+String ManifestParser::ParseId(const JSONObject* object,
+                               const KURL& start_url) {
+  if (!start_url.IsValid() ||
+      !base::FeatureList::IsEnabled(blink::features::kWebAppEnableManifestId)) {
+    return String();
+  }
+  absl::optional<String> id = ParseString(object, "id", NoTrim);
+
+  // Default to start_url with origin stripped.
+  return id.has_value()
+             ? *id
+             : start_url.GetString().Substring(start_url.PathStart() + 1);
 }
 
 KURL ManifestParser::ParseStartURL(const JSONObject* object) {

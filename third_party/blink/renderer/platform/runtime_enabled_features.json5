@@ -2215,6 +2215,13 @@
       origin_trial_os: ["chromeos"],
     },
     {
+      // This flag enables the Manifest parser to handle id field.
+      // Also enabled when blink::features::kWebAppEnableManifestId is
+      // overridden on the command line (or via chrome://flags).
+      name: "WebAppManifestId",
+      status: "experimental",
+    },
+    {
       name:"WebAppsLockScreen",
       status:"experimental",
     },

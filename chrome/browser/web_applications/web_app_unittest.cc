@@ -157,6 +157,7 @@ TEST(WebAppTest, EmptyAppToDebugString) {
       WebAppToPlatformAgnosticString(std::make_unique<WebApp>("empty_app"));
   EXPECT_EQ(debug_string,
             R"(app_id: empty_app
+unhashed app_id:
 manifest_url:
 manifest_id: nullopt
 name:
@@ -217,6 +218,7 @@ TEST(WebAppTest, SampleAppToDebugString) {
       test::CreateRandomWebApp(GURL("https://example.com/"), /*seed=*/1234));
   EXPECT_EQ(debug_string,
             R"(app_id: eajjdjobhihlgobdfaehiiheinneagde
+unhashed app_id: https://example.com/scope1234/start1234
 manifest_url: https://example.com/manifest1234.json
 manifest_id: nullopt
 name: Name1234

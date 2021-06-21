@@ -42,6 +42,9 @@ AppId GetAppIdFromApplicationName(const std::string& app_name);
 //
 // App ID and App Key match Extension ID and Extension Key for migration.
 AppId GenerateAppIdFromURL(const GURL& url);
+std::string GenerateAppIdUnhashed(
+    const absl::optional<std::string>& manifest_id,
+    const GURL& start_url);
 AppId GenerateAppId(const absl::optional<std::string>& manifest_id,
                     const GURL& start_url);
 

@@ -167,6 +167,7 @@ class WebRuntimeFeatures {
   BLINK_PLATFORM_EXPORT static void EnableUserActivationSameOriginVisibility(
       bool);
   BLINK_PLATFORM_EXPORT static void EnableV8IdleTasks(bool);
+  BLINK_PLATFORM_EXPORT static void EnableWebAppManifestId(bool);
   BLINK_PLATFORM_EXPORT static void EnableWebAuth(bool);
   BLINK_PLATFORM_EXPORT static void EnableWebBluetooth(bool);
   BLINK_PLATFORM_EXPORT static void

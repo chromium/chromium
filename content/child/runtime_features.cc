@@ -264,6 +264,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
      kSetOnlyIfOverridden},
     {wf::EnableParseUrlProtocolHandler,
      blink::features::kWebAppEnableProtocolHandlers},
+    {wf::EnableWebAppManifestId, blink::features::kWebAppEnableManifestId},
     {wf::EnablePaymentApp, features::kServiceWorkerPaymentApps},
     {wf::EnablePaymentHandlerMinimalUI, features::kWebPaymentsMinimalUI},
     {wf::EnablePaymentRequest, features::kWebPayments},

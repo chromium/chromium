@@ -844,6 +844,12 @@ const base::Feature kWebAppEnableIsolatedStorage{
 const base::Feature kWebAppEnableLinkCapturing{
     "WebAppEnableLinkCapturing", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables Unique ID feature in web apps. Controls parsing of "id" field in web
+// app manifests. See explainer for more information:
+// https://github.com/philloooo/pwa-unique-id
+const base::Feature kWebAppEnableManifestId{"WebAppEnableManifestId",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls URL handling feature in web apps. Controls parsing of "url_handlers"
 // field in web app manifests. See explainer for more information:
 // https://github.com/WICG/pwa-url-handler/blob/master/explainer.md

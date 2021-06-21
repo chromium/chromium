@@ -339,6 +339,8 @@ BLINK_COMMON_EXPORT extern const base::Feature kWebAppEnableIsolatedStorage;
 
 BLINK_COMMON_EXPORT extern const base::Feature kWebAppEnableLinkCapturing;
 
+BLINK_COMMON_EXPORT extern const base::Feature kWebAppEnableManifestId;
+
 BLINK_COMMON_EXPORT extern const base::Feature kWebAppEnableUrlHandlers;
 
 BLINK_COMMON_EXPORT extern const base::Feature kWebAppEnableProtocolHandlers;

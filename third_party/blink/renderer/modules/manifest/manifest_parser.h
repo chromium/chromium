@@ -120,6 +120,9 @@ class MODULES_EXPORT ManifestParser {
   // Returns the parsed string if any, a null string if the parsing failed.
   String ParseDescription(const JSONObject* object);
 
+  // Parses the 'id' field of the manifest.
+  String ParseId(const JSONObject* object, const KURL& start_url);
+
   // Parses the 'scope' field of the manifest, as defined in:
   // https://w3c.github.io/manifest/#scope-member. Returns the parsed KURL if
   // any, or start URL (falling back to document URL) without filename, path,

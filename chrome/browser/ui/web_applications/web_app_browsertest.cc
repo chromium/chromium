@@ -69,6 +69,7 @@
 #include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
@@ -1359,4 +1360,42 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_NoDestroyProfile, Shutdown) {
   EXPECT_EQ(web_contents, nullptr);
 }
 
+class WebAppBrowserTest_ManifestId : public WebAppBrowserTest {
+ public:
+  WebAppBrowserTest_ManifestId() = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      blink::features::kWebAppEnableManifestId};
+};
+
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_ManifestId, NoManifestId) {
+  NavigateToURLAndWait(browser(), GetInstallableAppURL());
+
+  const AppId app_id = InstallPwaForCurrentUrl();
+  auto* provider = WebAppProviderBase::GetProviderBase(profile());
+  auto* app = provider->registrar().AsWebAppRegistrar()->GetAppById(app_id);
+
+  EXPECT_EQ(web_app::GenerateAppIdFromURL(
+                provider->registrar().GetAppStartUrl(app_id)),
+            app_id);
+  EXPECT_EQ(app->start_url().spec().substr(
+                app->start_url().GetOrigin().spec().size()),
+            app->manifest_id());
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_ManifestId, ManifestIdSpecified) {
+  NavigateAndAwaitInstallabilityCheck(
+      browser(),
+      https_server()->GetURL(
+          "/banners/manifest_test_page.html?manifest=manifest_with_id.json"));
+
+  const AppId app_id = InstallPwaForCurrentUrl();
+  auto* provider = WebAppProviderBase::GetProviderBase(profile());
+  auto* app = provider->registrar().AsWebAppRegistrar()->GetAppById(app_id);
+
+  EXPECT_EQ(web_app::GenerateAppId(app->manifest_id(), app->start_url()),
+            app_id);
+  EXPECT_NE(web_app::GenerateAppIdFromURL(app->start_url()), app_id);
+}
 }  // namespace web_app

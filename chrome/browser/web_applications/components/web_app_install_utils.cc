@@ -213,6 +213,11 @@ void UpdateWebAppInfoFromManifest(const blink::Manifest& manifest,
   else if (manifest.short_name)
     web_app_info->title = *manifest.short_name;
 
+  if (manifest.id.has_value()) {
+    web_app_info->manifest_id =
+        absl::optional<std::string>(base::UTF16ToUTF8(manifest.id.value()));
+  }
+
   // Set the url based on the manifest value, if any.
   if (manifest.start_url.is_valid())
     web_app_info->start_url = manifest.start_url;

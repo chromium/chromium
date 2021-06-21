@@ -65,6 +65,8 @@ class TestAppRegistrar : public AppRegistrar {
   absl::optional<SkColor> GetAppBackgroundColor(
       const AppId& app_id) const override;
   const GURL& GetAppStartUrl(const AppId& app_id) const override;
+  absl::optional<std::string> GetAppManifestId(
+      const AppId& app_id) const override;
   const std::string* GetAppLaunchQueryParams(
       const AppId& app_id) const override;
   const apps::ShareTarget* GetAppShareTarget(

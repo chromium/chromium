@@ -24,6 +24,7 @@
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
 #include "components/services/app_service/public/cpp/share_target.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -116,6 +117,10 @@ void SetWebAppManifestFields(const WebApplicationInfo& web_app_info,
   DCHECK(!web_app_info.title.empty());
   web_app.SetName(base::UTF16ToUTF8(web_app_info.title));
 
+  if (base::FeatureList::IsEnabled(blink::features::kWebAppEnableManifestId)) {
+    web_app.SetStartUrl(web_app_info.start_url);
+    web_app.SetManifestId(web_app_info.manifest_id);
+  }
   web_app.SetDisplayMode(web_app_info.display_mode);
   web_app.SetDisplayModeOverride(web_app_info.display_override);
 

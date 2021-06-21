@@ -116,7 +116,7 @@ TEST_F(ManifestParserTest, ValidNoContentParses) {
 
 TEST_F(ManifestParserTest, MultipleErrorsReporting) {
   auto& manifest = ParseManifest(
-      "{ \"name\": 42, \"short_name\": 4,"
+      "{ \"name\": 42, \"short_name\": 4, \"id\": 12,"
       "\"orientation\": {}, \"display\": \"foo\","
       "\"start_url\": null, \"icons\": {}, \"theme_color\": 42,"
       "\"background_color\": 42, \"shortcuts\": {} }");
@@ -259,6 +259,37 @@ TEST_F(ManifestParserTest, ShortNameParseRules) {
   }
 }
 
+TEST_F(ManifestParserTest, IdParseRules) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(blink::features::kWebAppEnableManifestId);
+  // Empty manifest.
+  {
+    auto& manifest = ParseManifest("{ }");
+    ASSERT_EQ(0u, GetErrorCount());
+    EXPECT_EQ(String(), manifest->id);
+  }
+  // Does not contain id field.
+  {
+    auto& manifest = ParseManifest("{\"start_url\": \"/start?query=a\" }");
+    ASSERT_EQ(0u, GetErrorCount());
+    EXPECT_EQ("start?query=a", manifest->id);
+  }
+  // Empty string.
+  {
+    auto& manifest =
+        ParseManifest("{ \"start_url\": \"/start?query=a\", \"id\": \"\" }");
+    ASSERT_EQ(0u, GetErrorCount());
+    EXPECT_EQ("", manifest->id);
+  }
+  // Smoke test.
+  {
+    auto& manifest =
+        ParseManifest("{ \"start_url\": \"/start?query=a\", \"id\": \"foo\" }");
+    ASSERT_EQ(0u, GetErrorCount());
+    EXPECT_EQ("foo", manifest->id);
+  }
+}
+
 TEST_F(ManifestParserTest, StartURLParseRules) {
   // Smoke test.
   {
@@ -279,6 +310,7 @@ TEST_F(ManifestParserTest, StartURLParseRules) {
   {
     auto& manifest = ParseManifest("{ \"start_url\": {} }");
     ASSERT_TRUE(manifest->start_url.IsEmpty());
+    ASSERT_EQ(String(), manifest->id);
     EXPECT_EQ(1u, GetErrorCount());
     EXPECT_EQ("property 'start_url' ignored, type string expected.",
               errors()[0]);

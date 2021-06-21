@@ -164,6 +164,10 @@ struct BLINK_COMMON_EXPORT Manifest {
   // Null if the parsing failed or the field was not present.
   absl::optional<std::u16string> description;
 
+  // Null if the start_url parsing failed or missing, otherwise defaults to
+  // start_url with origin stripped when id field is not present.
+  absl::optional<std::u16string> id;
+
   // Empty if the parsing failed or the field was not present.
   GURL start_url;
 
