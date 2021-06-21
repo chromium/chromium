@@ -54,8 +54,8 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
               secure_channel_client,
               kSecureChannelFeatureName,
               kConnectionResultMetricName,
-              kConnectionDurationMetricName,
-              kConnectionLatencyMetricName)),
+              kConnectionLatencyMetricName,
+              kConnectionDurationMetricName)),
       feature_status_provider_(std::make_unique<FeatureStatusProviderImpl>(
           device_sync_client,
           multidevice_setup_client,

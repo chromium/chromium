@@ -40,8 +40,8 @@ EcheAppManager::EcheAppManager(
               secure_channel_client,
               kSecureChannelFeatureName,
               kMetricNameResult,
-              kMetricNameDuration,
-              kMetricNameLatency)),
+              kMetricNameLatency,
+              kMetricNameDuration)),
       feature_status_provider_(std::make_unique<EcheFeatureStatusProvider>(
           phone_hub_manager,
           device_sync_client,
