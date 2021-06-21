@@ -151,8 +151,8 @@ class PLATFORM_EXPORT ExceptionState {
   ExceptionState& operator=(const ExceptionState&) = delete;
 
   ~ExceptionState() {
-    if (!exception_.IsEmpty()) {
-      V8ThrowException::ThrowException(isolate_, exception_.NewLocal(isolate_));
+    if (UNLIKELY(!exception_.IsEmpty())) {
+      PropagateException();
     }
   }
 
@@ -238,6 +238,7 @@ class PLATFORM_EXPORT ExceptionState {
  private:
   void PushContextScope(ContextScope* scope);
   void PopContextScope();
+  void PropagateException();
 
   String AddExceptionContext(const String&) const;
 

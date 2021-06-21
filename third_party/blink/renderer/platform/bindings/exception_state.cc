@@ -260,6 +260,15 @@ String ExceptionState::AddExceptionContext(
   return message;
 }
 
+void ExceptionState::PropagateException() {
+  // This is the non-inlined part of the destructor. Not inlining this part
+  // deoptimizes use cases where exceptions are thrown, but it reduces binary
+  // size and results in better performance due to improved code locality in
+  // the bindings for the most frequently used code path (cases where no
+  // exception is thrown).
+  V8ThrowException::ThrowException(isolate_, exception_.NewLocal(isolate_));
+}
+
 NonThrowableExceptionState::NonThrowableExceptionState()
     : ExceptionState(nullptr,
                      ExceptionState::kUnknownContext,
