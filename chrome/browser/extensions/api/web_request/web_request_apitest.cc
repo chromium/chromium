@@ -882,22 +882,16 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
 }
 
 // TODO(crbug.com/238179): Cure these flaky tests.
-// Bulk-disabled as part of mac arm64 bot greening: https://crbug.com/1154345
-#if !defined(NDEBUG) || (defined(OS_MAC) && defined(ARCH_CPU_ARM64))
-#define MAYBE_PostData1 DISABLED_PostData1
-#define MAYBE_PostData2 DISABLED_PostData2
-#else
-#define MAYBE_PostData1 PostData1
-#define MAYBE_PostData2 PostData2
-#endif
-IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, MAYBE_PostData1) {
+// TODO(crbug.com/1154345): Bulk-disabled as part of mac arm64 bot greening
+// TODO(crbug.com/1222127): Further disabled due to ongoing flakiness.
+IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, DISABLED_PostData1) {
   // Test HTML form POST data access with the default and "url" encoding.
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("webrequest", {.page_url = "test_post1.html"}))
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, MAYBE_PostData2) {
+IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, DISABLED_PostData2) {
   // Test HTML form POST data access with the multipart and plaintext encoding.
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("webrequest", {.page_url = "test_post2.html"}))
