@@ -38,7 +38,6 @@
 #include "base/system/sys_info.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/ash/crosapi/browser_data_migrator.h"
 #include "chrome/browser/ash/crosapi/browser_loader.h"
 #include "chrome/browser/ash/crosapi/browser_service_host_ash.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
@@ -459,13 +458,13 @@ void BrowserManager::Start(mojom::InitialBrowserAction initial_browser_action) {
           ProfileManager::GetPrimaryUserProfile());
   // Check if user data directory needs to be wiped for a backward incompatible
   // update.
-  base::Version data_version = crosapi::browser_util::GetDataVer(
-      g_browser_process->local_state(), user_id_hash);
+  base::Version data_version =
+      browser_util::GetDataVer(g_browser_process->local_state(), user_id_hash);
   base::Version current_version = version_info::GetVersion();
   base::Version required_version =
-      base::Version(base::StringPiece(ash::kRequiredDataVersion));
+      base::Version(base::StringPiece(browser_util::kRequiredDataVersion));
 
-  bool cleared_user_data_dir = !ash::BrowserDataMigrator::IsDataWipeRequired(
+  bool cleared_user_data_dir = !browser_util::IsDataWipeRequired(
       data_version, current_version, required_version);
 
   base::ThreadPool::PostTaskAndReplyWithResult(

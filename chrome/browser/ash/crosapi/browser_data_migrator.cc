@@ -106,10 +106,10 @@ void BrowserDataMigrator::MaybeMigrate(const AccountId& account_id,
   base::Version data_version = crosapi::browser_util::GetDataVer(
       g_browser_process->local_state(), user_id_hash);
   base::Version current_version = version_info::GetVersion();
-  base::Version required_version =
-      base::Version(base::StringPiece(kRequiredDataVersion));
-  bool is_data_wipe_required =
-      IsDataWipeRequired(data_version, current_version, required_version);
+  base::Version required_version = base::Version(
+      base::StringPiece(crosapi::browser_util::kRequiredDataVersion));
+  bool is_data_wipe_required = crosapi::browser_util::IsDataWipeRequired(
+      data_version, current_version, required_version);
 
   if (async) {
     base::ThreadPool::PostTaskAndReplyWithResult(
@@ -161,33 +161,6 @@ void BrowserDataMigrator::RecordStatus(const FinalStatus& final_status,
     return;
   // Record elapsed time only for successful cases.
   UMA_HISTOGRAM_MEDIUM_TIMES(kTotalTime, timer->Elapsed());
-}
-
-bool BrowserDataMigrator::IsDataWipeRequired(
-    base::Version data_version,
-    const base::Version& current_version,
-    const base::Version& required_version) {
-  // `data_version` is invalid if any wipe has not been recorded yet. In
-  // such a case, assume that the last data wipe happened significantly long
-  // time ago.
-  if (!data_version.IsValid()) {
-    data_version = base::Version("0");
-  }
-
-  if (current_version < required_version) {
-    // If `current_version` is smaller than the `required_version`, that means
-    // that the data wipe doesn't need to happen yet.
-    return false;
-  }
-
-  if (data_version >= required_version) {
-    // If `data_version` is greater or equal to `required_version`, this means
-    // data wipe has already happened and that user data is compatible with the
-    // current lacros.
-    return false;
-  }
-
-  return true;
 }
 
 // TODO(crbug.com/1178702): Once testing phase is over and lacros becomes the

@@ -310,6 +310,7 @@ const char kLacrosSelectionStateful[] = "stateful";
 const char kLaunchOnLoginPref[] = "lacros.launch_on_login";
 const char kClearUserDataDir1Pref[] = "lacros.clear_user_data_dir_1";
 const char kDataVerPref[] = "lacros.data_version";
+const char kRequiredDataVersion[] = "92.0.0.0";
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kLaunchOnLoginPref, /*default_value=*/false);
@@ -667,6 +668,31 @@ void RecordDataVer(PrefService* local_state,
   DictionaryPrefUpdate update(local_state, kDataVerPref);
   base::DictionaryValue* dict = update.Get();
   dict->SetString(user_id_hash, version.GetString());
+}
+
+bool IsDataWipeRequired(base::Version data_version,
+                        const base::Version& current_version,
+                        const base::Version& required_version) {
+  // `data_version` is invalid if any wipe has not been recorded yet. In
+  // such a case, assume that the last data wipe happened significantly long
+  // time ago.
+  if (!data_version.IsValid())
+    data_version = base::Version("0");
+
+  if (current_version < required_version) {
+    // If `current_version` is smaller than the `required_version`, that means
+    // that the data wipe doesn't need to happen yet.
+    return false;
+  }
+
+  if (data_version >= required_version) {
+    // If `data_version` is greater or equal to `required_version`, this means
+    // data wipe has already happened and that user data is compatible with the
+    // current lacros.
+    return false;
+  }
+
+  return true;
 }
 
 base::Version GetRootfsLacrosVersionMayBlock(

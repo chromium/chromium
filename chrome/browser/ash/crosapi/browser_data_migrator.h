@@ -21,8 +21,6 @@ namespace ash {
 constexpr char kLacrosDir[] = "lacros";
 // Profile data directory for lacros.
 constexpr char kLacrosProfilePath[] = "Default";
-// Lacros' user data is backward compatible up until this version.
-constexpr char kRequiredDataVersion[] = "92.0.0.0";
 // The following are UMA names.
 constexpr char kFinalStatus[] = "Ash.BrowserDataMigrator.FinalStatus";
 constexpr char kCopiedDataSize[] = "Ash.BrowserDataMigrator.CopiedDataSizeMB";
@@ -110,28 +108,10 @@ class BrowserDataMigrator {
                            bool async,
                            base::OnceClosure callback);
 
-  // Checks if lacros' data directory needs to be wiped before migration.
-  // `data_version` is the version of last data wipe. `current_version` is the
-  // version of ash-chrome. `required_version` is the version that introduces
-  // some breaking change. `data_version` needs to be greater or equal to
-  // `required_version`. If `required_version` is newer than `current_version`,
-  // data wipe is not required.
-  static bool IsDataWipeRequired(base::Version data_version,
-                                 const base::Version& current_version,
-                                 const base::Version& required_version);
-
  private:
   FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorTest, IsMigrationRequiredOnUI);
   FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorTest,
                            IsMigrationRequiredOnWorker);
-  FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorTest, IsDataWipeRequiredInvalid);
-  FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorTest,
-                           IsDataWipeRequiredFutureVersion);
-  FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorTest,
-                           IsDataWipeRequiredSameVersion);
-  FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorTest, IsDataWipeRequired);
-  FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorTest, IsDataWipeRequired2);
-  FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorTest, MaybeWipeUserDir);
   FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorTest, GetTargetInfo);
   FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorTest, RecordStatus);
   FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorTest, Migrate);
