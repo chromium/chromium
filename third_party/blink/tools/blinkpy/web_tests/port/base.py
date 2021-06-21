@@ -36,9 +36,11 @@ import collections
 import json
 import logging
 import optparse
+import os
 import re
 import sys
 import tempfile
+from collections import defaultdict
 
 import six
 from six.moves import zip_longest
@@ -913,14 +915,33 @@ class Port(object):
                     or any('external' in path for path in paths)):
                 tests.extend(self._wpt_test_urls_matching_paths(paths))
         else:
-            tests.extend(self._all_virtual_tests())
             # '/' is used instead of filesystem.sep as the WPT manifest always
             # uses '/' for paths (it is not OS dependent).
-            tests.extend([
+            wpt_tests = [
                 wpt_path + '/' + test for wpt_path in self.WPT_DIRS
                 for test in self.wpt_manifest(wpt_path).all_urls()
-            ])
+            ]
+            tests_by_dir = defaultdict(list)
+            for test in tests + wpt_tests:
+                dirname = os.path.dirname(test) + '/'
+                tests_by_dir[dirname].append(test)
+
+            tests.extend(self._all_virtual_tests(tests_by_dir))
+            tests.extend(wpt_tests)
         return tests
+
+    def real_tests_from_dict(self, paths, tests_by_dir):
+        """Find all real tests in paths, using results saved in dict."""
+        files = []
+        for path in paths:
+            if self._has_supported_extension_for_all(path):
+                files.append(path)
+                continue
+            path = path + '/' if path[-1] != '/' else path
+            for key, value in tests_by_dir.items():
+                if key.startswith(path):
+                    files.extend(value)
+        return files
 
     def real_tests(self, paths):
         """Find all real tests in paths except WPT."""
@@ -963,6 +984,14 @@ class Port(object):
         '.mht',
         '.pdf',
     ])
+
+    def _has_supported_extension_for_all(self, filename):
+        extension = self._filesystem.splitext(filename)[1]
+        if 'inspector-protocol' in filename and extension == '.js':
+            return True
+        if 'devtools' in filename and extension == '.js':
+            return True
+        return extension in self.supported_file_extensions
 
     def _has_supported_extension(self, filename):
         """Returns True if filename is one of the file extensions we want to run a test on."""
@@ -1941,30 +1970,13 @@ class Port(object):
                     path_to_virtual_test_suites, error))
         return self._virtual_test_suites
 
-    def _all_virtual_tests(self):
+    def _all_virtual_tests(self, tests_by_dir):
         tests = []
 
-        # The set of paths to find tests for each virtual test suite.
-        suite_paths = []
-        # For each path, a map functor that converts the test path to be under
-        # the virtual test suite.
-        suite_prefixes = []
         for suite in self.virtual_test_suites():
-            for b in suite.bases:
-                suite_paths.append(b)
-                suite_prefixes.append(suite.full_prefix)
-
-            # TODO(crbug.com/982208): If we can pass in the set of paths and
-            # maps then this could be more efficient.
             if suite.bases:
-                tests.extend(
-                    map(lambda x: suite.full_prefix + x,
-                        self.real_tests(suite.bases)))
-
-        if suite_paths:
-            tests.extend(
-                self._wpt_test_urls_matching_paths(suite_paths,
-                                                   suite_prefixes))
+                tests.extend(map(lambda x: suite.full_prefix + x,
+                             self.real_tests_from_dict(suite.bases, tests_by_dir)))
         return tests
 
     def _get_bases_for_suite_with_paths(self, suite, paths):
