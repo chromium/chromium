@@ -53,9 +53,7 @@ namespace {
 const BOOL kDefaultStatsCheckboxValue = YES;
 }
 
-@interface WelcomeToChromeViewController () <WelcomeToChromeViewDelegate> {
-  Browser* _browser;
-}
+@interface WelcomeToChromeViewController () <WelcomeToChromeViewDelegate>
 
 // The animation which occurs at launch has run.
 @property(nonatomic, assign) BOOL ranLaunchAnimation;
@@ -79,6 +77,12 @@ const BOOL kDefaultStatsCheckboxValue = YES;
 // Stores the interrupt completion block to be invoked once the first run is
 // dismissed.
 @property(nonatomic, copy) void (^interruptCompletion)(void);
+
+// The browser of the interface that is presenting the Welcome to Chrome view.
+@property(nonatomic, readonly) Browser* mainBrowser;
+
+// The main browser that can be used for authentication.
+@property(nonatomic, readonly) Browser* browser;
 
 @end
 
@@ -110,6 +114,7 @@ const BOOL kDefaultStatsCheckboxValue = YES;
 }
 
 - (instancetype)initWithBrowser:(Browser*)browser
+                    mainBrowser:(Browser*)mainBrowser
                       presenter:(id<SyncPresenter>)presenter
                      dispatcher:(id<ApplicationCommands, BrowsingDataCommands>)
                                     dispatcher {
@@ -117,6 +122,7 @@ const BOOL kDefaultStatsCheckboxValue = YES;
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
     _browser = browser;
+    _mainBrowser = mainBrowser;
     _presenter = presenter;
     _dispatcher = dispatcher;
   }
@@ -181,7 +187,7 @@ const BOOL kDefaultStatsCheckboxValue = YES;
 - (void)openStaticFileWithURL:(NSURL*)url title:(NSString*)title {
   StaticFileViewController* staticViewController =
       [[StaticFileViewController alloc]
-          initWithBrowserState:_browser->GetBrowserState()
+          initWithBrowserState:self.mainBrowser->GetBrowserState()
                            URL:url];
   [staticViewController setTitle:title];
   [self.navigationController pushViewController:staticViewController
@@ -222,7 +228,7 @@ const BOOL kDefaultStatsCheckboxValue = YES;
   self.firstRunConfig.hasSSOAccount = identityService->HasIdentities();
 
   if (!signin::IsSigninAllowedByPolicy(
-          _browser->GetBrowserState()->GetPrefs())) {
+          self.mainBrowser->GetBrowserState()->GetPrefs())) {
     // Sign-in is disabled by policy. Skip the sign-in flow.
     self.firstRunConfig.signInAttemptStatus =
         first_run::SignInAttemptStatus::SKIPPED_BY_POLICY;
@@ -234,7 +240,7 @@ const BOOL kDefaultStatsCheckboxValue = YES;
 
   self.coordinator = [SigninCoordinator
       firstRunCoordinatorWithBaseNavigationController:self.navigationController
-                                              browser:_browser];
+                                              browser:self.mainBrowser];
   [[NSNotificationCenter defaultCenter]
       addObserver:self
          selector:@selector(markSigninAttempted:)
@@ -267,8 +273,8 @@ const BOOL kDefaultStatsCheckboxValue = YES;
 - (void)completeFirstRunWithSigninCompletionInfo:
     (SigninCompletionInfo*)completionInfo {
   web::WebState* currentWebState =
-      _browser->GetWebStateList()->GetActiveWebState();
-  FinishFirstRun(_browser->GetBrowserState(), currentWebState,
+      self.browser->GetWebStateList()->GetActiveWebState();
+  FinishFirstRun(self.mainBrowser->GetBrowserState(), currentWebState,
                  self.firstRunConfig, self.presenter);
 
   __weak __typeof(self) weakSelf = self;

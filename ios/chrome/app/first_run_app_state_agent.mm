@@ -240,7 +240,8 @@ enum class LocationPermissionsUI {
 
   WelcomeToChromeViewController* welcomeToChrome =
       [[WelcomeToChromeViewController alloc]
-          initWithBrowser:self.mainBrowser
+          initWithBrowser:self.presentingInterface.browser
+              mainBrowser:self.mainBrowser
                 presenter:self.presentingInterface.bvc
                dispatcher:welcomeHandler];
   self.welcomeToChromeController = welcomeToChrome;
@@ -266,7 +267,8 @@ enum class LocationPermissionsUI {
 
   self.firstRunCoordinator = [[FirstRunCoordinator alloc]
       initWithBaseViewController:self.presentingInterface.bvc
-                         browser:self.mainBrowser
+                         browser:self.presentingInterface.browser
+                     mainBrowser:self.mainBrowser
                    syncPresenter:self.presentingInterface.bvc
                   screenProvider:provider];
   self.firstRunCoordinator.delegate = self;

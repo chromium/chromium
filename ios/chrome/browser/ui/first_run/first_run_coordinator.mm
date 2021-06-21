@@ -35,6 +35,8 @@
 @property(nonatomic, assign) BOOL screensSkipped;
 // Presenter for showing sync-related UI.
 @property(nonatomic, readonly, weak) id<SyncPresenter> presenter;
+// The main browser that can be used for authentication.
+@property(nonatomic, readonly) Browser* mainBrowser;
 
 @end
 
@@ -42,6 +44,7 @@
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
+                               mainBrowser:(Browser*)mainBrowser
                              syncPresenter:(id<SyncPresenter>)presenter
                             screenProvider:
                                 (FirstRunScreenProvider*)screenProvider {
@@ -53,6 +56,7 @@
         [[UINavigationController alloc] initWithNavigationBarClass:nil
                                                       toolbarClass:nil];
     _navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+    _mainBrowser = mainBrowser;
   }
   return self;
 }
@@ -131,17 +135,17 @@
     case kWelcomeAndConsent:
       return [[WelcomeScreenCoordinator alloc]
           initWithBaseNavigationController:self.navigationController
-                                   browser:self.browser
+                                   browser:self.mainBrowser
                                   delegate:self];
     case kSignIn:
       return [[SigninScreenCoordinator alloc]
           initWithBaseNavigationController:self.navigationController
-                                   browser:self.browser
+                                   browser:self.mainBrowser
                                   delegate:self];
     case kSync:
       return [[SyncScreenCoordinator alloc]
           initWithBaseNavigationController:self.navigationController
-                                   browser:self.browser
+                                   browser:self.mainBrowser
                                   delegate:self];
     case kDefaultBrowserPromo:
       // TODO (crbug.com/1189807): Create the default browser screen.

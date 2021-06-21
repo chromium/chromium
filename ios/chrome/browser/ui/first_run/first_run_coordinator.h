@@ -30,6 +30,7 @@
 // |screenProvider| helps decide which screen to show.
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
+                               mainBrowser:(Browser*)mainBrowser
                              syncPresenter:(id<SyncPresenter>)presenter
                             screenProvider:
                                 (FirstRunScreenProvider*)screenProvider

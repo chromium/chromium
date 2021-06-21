@@ -25,6 +25,7 @@ class Browser;
 // Initializes with the given browser state object and tab model, neither of
 // which can be nil.
 - (instancetype)initWithBrowser:(Browser*)browser
+                    mainBrowser:(Browser*)mainBrowser
                       presenter:(id<SyncPresenter>)presenter
                      dispatcher:(id<ApplicationCommands, BrowsingDataCommands>)
                                     dispatcher NS_DESIGNATED_INITIALIZER;
