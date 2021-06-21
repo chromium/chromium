@@ -9,6 +9,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view.h"
 #include "chrome/browser/ui/webui/signin/enterprise_profile_welcome_ui.h"
@@ -158,6 +159,9 @@ class ProfilePickerSignInFlowController
   std::unique_ptr<content::WebContents> contents_;
 
   Profile* profile_ = nullptr;
+
+  // Prevent |profile_| from being destroyed first.
+  ScopedProfileKeepAlive profile_keep_alive_;
 
   // Set for the profile at the very end to avoid coloring the simple toolbar
   // for GAIA sign-in (that uses the ThemeProvider of the current profile).

@@ -8,6 +8,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/profiles/profiles_state.h"
@@ -135,6 +136,8 @@ ProfilePickerSignInFlowController::ProfilePickerSignInFlowController(
       contents_(content::WebContents::Create(
           content::WebContents::CreateParams(profile))),
       profile_(profile),
+      profile_keep_alive_(profile_,
+                          ProfileKeepAliveOrigin::kProfileCreationFlow),
       profile_color_(profile_color),
       extended_account_info_timeout_(extended_account_info_timeout) {}
 
