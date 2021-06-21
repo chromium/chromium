@@ -141,15 +141,19 @@ struct VideoCaptureImpl::BufferContext
     return gmb_resources_->gpu_memory_buffer.get();
   }
 
-  static void MailboxHolderReleased(scoped_refptr<BufferContext> buffer_context,
-                                    const gpu::SyncToken& release_sync_token) {
+  static void MailboxHolderReleased(
+      scoped_refptr<BufferContext> buffer_context,
+      const gpu::SyncToken& release_sync_token,
+      std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer) {
     if (!buffer_context->media_task_runner_->RunsTasksInCurrentSequence()) {
       buffer_context->media_task_runner_->PostTask(
-          FROM_HERE, base::BindOnce(&BufferContext::MailboxHolderReleased,
-                                    buffer_context, release_sync_token));
+          FROM_HERE,
+          base::BindOnce(&BufferContext::MailboxHolderReleased, buffer_context,
+                         release_sync_token, std::move(gpu_memory_buffer)));
       return;
     }
     buffer_context->gmb_resources_->release_sync_token = release_sync_token;
+    // Free |gpu_memory_buffer|.
   }
 
   static void DestroyTextureOnMediaThread(

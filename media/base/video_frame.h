@@ -95,9 +95,12 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
     STORAGE_LAST = STORAGE_GPU_MEMORY_BUFFER,
   };
 
-  // CB to be called on the mailbox backing this frame when the frame is
-  // destroyed.
-  typedef base::OnceCallback<void(const gpu::SyncToken&)> ReleaseMailboxCB;
+  // CB to be called on the mailbox backing this frame and its GpuMemoryBuffers
+  // (if they exist) when the frame is destroyed.
+  using ReleaseMailboxCB = base::OnceCallback<void(const gpu::SyncToken&)>;
+  using ReleaseMailboxAndGpuMemoryBufferCB =
+      base::OnceCallback<void(const gpu::SyncToken&,
+                              std::unique_ptr<gfx::GpuMemoryBuffer>)>;
 
   // Interface representing client operations on a SyncToken, i.e. insert one in
   // the GPU Command Buffer and wait for it.
@@ -253,14 +256,16 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
       base::TimeDelta timestamp);
 
   // Wraps |gpu_memory_buffer| along with the mailboxes created from
-  // |gpu_memory_buffer|. |mailbox_holders_release_cb| will be called with a
-  // sync token as the argument when the VideoFrame is to be destroyed.
+  // |gpu_memory_buffer|. This will transfer ownership of |gpu_memory_buffer|
+  // to the returned VideoFrame. |mailbox_holder_and_gmb_release_cb| will be
+  // called with a sync token and with |gpu_memory_buffer| as arguments when the
+  // VideoFrame is to be destroyed.
   static scoped_refptr<VideoFrame> WrapExternalGpuMemoryBuffer(
       const gfx::Rect& visible_rect,
       const gfx::Size& natural_size,
       std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer,
       const gpu::MailboxHolder (&mailbox_holders)[kMaxPlanes],
-      ReleaseMailboxCB mailbox_holder_release_cb,
+      ReleaseMailboxAndGpuMemoryBufferCB mailbox_holder_and_gmb_release_cb,
       base::TimeDelta timestamp);
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
@@ -543,7 +548,7 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   CVPixelBufferRef CvPixelBuffer() const;
 #endif
 
-  // Sets the mailbox release callback.
+  // Sets the mailbox (and GpuMemoryBuffer, if desired) release callback.
   //
   // The callback may be run from ANY THREAD, and so it is up to the client to
   // ensure thread safety.
@@ -551,6 +556,8 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // WARNING: This method is not thread safe; it should only be called if you
   // are still the only owner of this VideoFrame.
   void SetReleaseMailboxCB(ReleaseMailboxCB release_mailbox_cb);
+  void SetReleaseMailboxAndGpuMemoryBufferCB(
+      ReleaseMailboxAndGpuMemoryBufferCB release_mailbox_cb);
 
   // Tests whether a mailbox release callback is configured.
   bool HasReleaseMailboxCB() const;
@@ -704,7 +711,7 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
 
   // Native texture mailboxes, if this is a IsTexture() frame.
   gpu::MailboxHolder mailbox_holders_[kMaxPlanes];
-  ReleaseMailboxCB mailbox_holders_release_cb_;
+  ReleaseMailboxAndGpuMemoryBufferCB mailbox_holders_and_gmb_release_cb_;
 
   // Shared memory handle, if this frame is STORAGE_SHMEM.  The region pointed
   // to is unowned.

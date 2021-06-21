@@ -137,7 +137,7 @@ TEST_F(VideoFrameStructTraitsTest, GpuMemoryBufferVideoFrame) {
       gpu::MailboxHolder(gpu::Mailbox::Generate(), gpu::SyncToken(), 10)};
   auto frame = VideoFrame::WrapExternalGpuMemoryBuffer(
       visible_rect, visible_rect.size(), std::move(gmb), mailbox_holders,
-      base::DoNothing::Once<const gpu::SyncToken&>(), timestamp);
+      base::NullCallback(), timestamp);
   ASSERT_TRUE(RoundTrip(&frame));
   ASSERT_TRUE(frame);
   ASSERT_EQ(frame->storage_type(), VideoFrame::STORAGE_GPU_MEMORY_BUFFER);

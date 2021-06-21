@@ -431,8 +431,8 @@ scoped_refptr<VideoFrame> CreateGpuMemoryBufferVideoFrame(
   gpu::MailboxHolder dummy_mailbox[media::VideoFrame::kMaxPlanes];
   return media::VideoFrame::WrapExternalGpuMemoryBuffer(
       frame->visible_rect(), frame->natural_size(),
-      std::move(gpu_memory_buffer), dummy_mailbox,
-      base::DoNothing() /* mailbox_holder_release_cb_ */, frame->timestamp());
+      std::move(gpu_memory_buffer), dummy_mailbox, base::NullCallback(),
+      frame->timestamp());
 }
 
 scoped_refptr<const VideoFrame> CreateVideoFrameFromImage(const Image& image) {

@@ -190,7 +190,7 @@ bool StructTraits<media::mojom::VideoFrameDataView,
 
     frame = media::VideoFrame::WrapExternalGpuMemoryBuffer(
         visible_rect, natural_size, std::move(gpu_memory_buffer),
-        mailbox_holder_array, media::VideoFrame::ReleaseMailboxCB(), timestamp);
+        mailbox_holder_array, base::NullCallback(), timestamp);
   } else if (data.is_mailbox_data()) {
     media::mojom::MailboxVideoFrameDataDataView mailbox_data;
     data.GetMailboxDataDataView(&mailbox_data);

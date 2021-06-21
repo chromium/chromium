@@ -41,6 +41,20 @@ gfx::Rect Intersection(gfx::Rect a, const gfx::Rect& b) {
   return a;
 }
 
+void ReleaseMailboxAndDropGpuMemoryBuffer(
+    VideoFrame::ReleaseMailboxCB cb,
+    const gpu::SyncToken& sync_token,
+    std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer) {
+  std::move(cb).Run(sync_token);
+}
+
+VideoFrame::ReleaseMailboxAndGpuMemoryBufferCB WrapReleaseMailboxCB(
+    VideoFrame::ReleaseMailboxCB cb) {
+  if (cb.is_null())
+    return VideoFrame::ReleaseMailboxAndGpuMemoryBufferCB();
+  return base::BindOnce(&ReleaseMailboxAndDropGpuMemoryBuffer, std::move(cb));
+}
+
 }  // namespace
 
 // Static constexpr class for generating unique identifiers for each VideoFrame.
@@ -365,7 +379,8 @@ scoped_refptr<VideoFrame> VideoFrame::WrapNativeTextures(
       new VideoFrame(*layout, storage, visible_rect, natural_size, timestamp);
   memcpy(&frame->mailbox_holders_, mailbox_holders,
          sizeof(frame->mailbox_holders_));
-  frame->mailbox_holders_release_cb_ = std::move(mailbox_holder_release_cb);
+  frame->mailbox_holders_and_gmb_release_cb_ =
+      WrapReleaseMailboxCB(std::move(mailbox_holder_release_cb));
 
   // Wrapping native textures should... have textures. https://crbug.com/864145.
   DCHECK(frame->HasTextures());
@@ -576,7 +591,7 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalGpuMemoryBuffer(
     const gfx::Size& natural_size,
     std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer,
     const gpu::MailboxHolder (&mailbox_holders)[kMaxPlanes],
-    ReleaseMailboxCB mailbox_holder_release_cb,
+    ReleaseMailboxAndGpuMemoryBufferCB mailbox_holder_and_gmb_release_cb,
     base::TimeDelta timestamp) {
   const absl::optional<VideoPixelFormat> format =
       GfxBufferFormatToVideoPixelFormat(gpu_memory_buffer->GetFormat());
@@ -639,7 +654,8 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalGpuMemoryBuffer(
   frame->gpu_memory_buffer_ = std::move(gpu_memory_buffer);
   memcpy(&frame->mailbox_holders_, mailbox_holders,
          sizeof(frame->mailbox_holders_));
-  frame->mailbox_holders_release_cb_ = std::move(mailbox_holder_release_cb);
+  frame->mailbox_holders_and_gmb_release_cb_ =
+      std::move(mailbox_holder_and_gmb_release_cb);
   return frame;
 }
 
@@ -676,7 +692,8 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalDmabufs(
   }
   memcpy(&frame->mailbox_holders_, mailbox_holders,
          sizeof(frame->mailbox_holders_));
-  frame->mailbox_holders_release_cb_ = ReleaseMailboxCB();
+  frame->mailbox_holders_and_gmb_release_cb_ =
+      ReleaseMailboxAndGpuMemoryBufferCB();
   frame->dmabuf_fds_ =
       base::MakeRefCounted<DmabufHolder>(std::move(dmabuf_fds));
   DCHECK(frame->HasDmaBufs());
@@ -1244,17 +1261,27 @@ CVPixelBufferRef VideoFrame::CvPixelBuffer() const {
 
 void VideoFrame::SetReleaseMailboxCB(ReleaseMailboxCB release_mailbox_cb) {
   DCHECK(release_mailbox_cb);
-  DCHECK(!mailbox_holders_release_cb_);
+  DCHECK(!mailbox_holders_and_gmb_release_cb_);
   // We don't relay SetReleaseMailboxCB to |wrapped_frame_| because the method
   // is not thread safe.  This method should only be called by the owner of
   // |wrapped_frame_| directly.
   DCHECK(!wrapped_frame_);
-  mailbox_holders_release_cb_ = std::move(release_mailbox_cb);
+  mailbox_holders_and_gmb_release_cb_ =
+      WrapReleaseMailboxCB(std::move(release_mailbox_cb));
+}
+
+void VideoFrame::SetReleaseMailboxAndGpuMemoryBufferCB(
+    ReleaseMailboxAndGpuMemoryBufferCB release_mailbox_cb) {
+  // See remarks in SetReleaseMailboxCB.
+  DCHECK(release_mailbox_cb);
+  DCHECK(!mailbox_holders_and_gmb_release_cb_);
+  DCHECK(!wrapped_frame_);
+  mailbox_holders_and_gmb_release_cb_ = std::move(release_mailbox_cb);
 }
 
 bool VideoFrame::HasReleaseMailboxCB() const {
   return wrapped_frame_ ? wrapped_frame_->HasReleaseMailboxCB()
-                        : !!mailbox_holders_release_cb_;
+                        : !!mailbox_holders_and_gmb_release_cb_;
 }
 
 void VideoFrame::AddDestructionObserver(base::OnceClosure callback) {
@@ -1269,8 +1296,8 @@ gpu::SyncToken VideoFrame::UpdateReleaseSyncToken(SyncTokenClient* client) {
   }
   base::AutoLock locker(release_sync_token_lock_);
   // Must wait on the previous sync point before inserting a new sync point so
-  // that |mailbox_holders_release_cb_| guarantees the previous sync point
-  // occurred when it waits on |release_sync_token_|.
+  // that |mailbox_holders_and_gmb_release_cb_| guarantees the previous sync
+  // point occurred when it waits on |release_sync_token_|.
   if (release_sync_token_.HasData())
     client->WaitSyncToken(release_sync_token_);
   client->GenerateSyncToken(&release_sync_token_);
@@ -1319,7 +1346,7 @@ VideoFrame::VideoFrame(const VideoFrameLayout& layout,
 }
 
 VideoFrame::~VideoFrame() {
-  if (mailbox_holders_release_cb_) {
+  if (mailbox_holders_and_gmb_release_cb_) {
     gpu::SyncToken release_sync_token;
     {
       // To ensure that changes to |release_sync_token_| are visible on this
@@ -1327,7 +1354,8 @@ VideoFrame::~VideoFrame() {
       base::AutoLock locker(release_sync_token_lock_);
       release_sync_token = release_sync_token_;
     }
-    std::move(mailbox_holders_release_cb_).Run(release_sync_token);
+    std::move(mailbox_holders_and_gmb_release_cb_)
+        .Run(release_sync_token, std::move(gpu_memory_buffer_));
   }
 
   for (auto& callback : done_callbacks_)
