@@ -6,6 +6,7 @@
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_AGGREGATED_FRAME_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "components/viz/common/quads/aggregated_render_pass.h"
@@ -26,6 +27,9 @@ class VIZ_SERVICE_EXPORT AggregatedFrame {
   ~AggregatedFrame();
 
   AggregatedFrame& operator=(AggregatedFrame&& other);
+
+  void AsValueInto(base::trace_event::TracedValue* value) const;
+  std::string ToString() const;
 
   // The visible height of the top-controls. If the value is not set, then the
   // visible height should be the same as in the latest submitted frame with a

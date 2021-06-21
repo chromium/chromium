@@ -3,11 +3,13 @@
 // found in the LICENSE file.
 
 #include "components/viz/common/quads/render_pass_internal.h"
-#include "components/viz/common/quads/solid_color_draw_quad.h"
 
 #include <stddef.h>
 
+#include "base/trace_event/traced_value.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
+#include "components/viz/common/quads/solid_color_draw_quad.h"
+#include "components/viz/common/traced_value.h"
 
 namespace viz {
 namespace {
@@ -54,6 +56,49 @@ void RenderPassInternal::ReplaceExistingQuadWithSolidColor(
       shared_quad_state, rect, /*visible_rect=*/rect,
       /*needs_blending=*/false, color,
       /*force_anti_aliasing_off=*/true);
+}
+
+void RenderPassInternal::AsValueInto(
+    base::trace_event::TracedValue* value) const {
+  cc::MathUtil::AddToTracedValue("output_rect", output_rect, value);
+  cc::MathUtil::AddToTracedValue("damage_rect", damage_rect, value);
+
+  value->SetBoolean("has_transparent_background", has_transparent_background);
+  value->SetBoolean("cache_render_pass", cache_render_pass);
+  value->SetBoolean("has_damage_from_contributing_content",
+                    has_damage_from_contributing_content);
+  value->SetBoolean("generate_mipmap", generate_mipmap);
+  value->SetInteger("copy_requests",
+                    base::saturated_cast<int>(copy_requests.size()));
+
+  value->BeginArray("filters");
+  filters.AsValueInto(value);
+  value->EndArray();
+
+  value->BeginArray("backdrop_filters");
+  backdrop_filters.AsValueInto(value);
+  value->EndArray();
+
+  if (backdrop_filter_bounds.has_value()) {
+    cc::MathUtil::AddToTracedValue("backdrop_filter_bounds",
+                                   backdrop_filter_bounds.value(), value);
+  }
+
+  value->BeginArray("shared_quad_state_list");
+  for (auto* shared_quad_state : shared_quad_state_list) {
+    value->BeginDictionary();
+    shared_quad_state->AsValueInto(value);
+    value->EndDictionary();
+  }
+  value->EndArray();
+
+  value->BeginArray("quad_list");
+  for (auto* quad : quad_list) {
+    value->BeginDictionary();
+    quad->AsValueInto(value);
+    value->EndDictionary();
+  }
+  value->EndArray();
 }
 
 }  // namespace viz

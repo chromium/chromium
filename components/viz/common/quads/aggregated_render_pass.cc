@@ -6,8 +6,11 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/stl_util.h"
+#include "base/trace_event/traced_value.h"
 #include "base/values.h"
 #include "cc/base/math_util.h"
+#include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/quads/aggregated_render_pass_draw_quad.h"
 #include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/quads/debug_border_draw_quad.h"
@@ -22,6 +25,7 @@
 #include "components/viz/common/quads/tile_draw_quad.h"
 #include "components/viz/common/quads/video_hole_draw_quad.h"
 #include "components/viz/common/quads/yuv_video_draw_quad.h"
+#include "components/viz/common/traced_value.h"
 
 namespace viz {
 
@@ -204,6 +208,20 @@ std::unique_ptr<AggregatedRenderPass> AggregatedRenderPass::DeepCopy() const {
     }
   }
   return copy_pass;
+}
+
+void AggregatedRenderPass::AsValueInto(
+    base::trace_event::TracedValue* value) const {
+  RenderPassInternal::AsValueInto(value);
+
+  value->SetInteger("content_color_usage",
+                    base::to_underlying(content_color_usage));
+
+  value->SetBoolean("is_color_conversion_pass", is_color_conversion_pass);
+
+  TracedValue::MakeDictIntoImplicitSnapshotWithCategory(
+      TRACE_DISABLED_BY_DEFAULT("viz.quads"), value, "AggregatedRenderPass",
+      reinterpret_cast<void*>(static_cast<uint64_t>(id)));
 }
 
 }  // namespace viz

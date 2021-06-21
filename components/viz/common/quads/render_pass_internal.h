@@ -82,6 +82,8 @@ class VIZ_COMMON_EXPORT RenderPassInternal {
       out->push_back(source->DeepCopy());
   }
 
+  void AsValueInto(base::trace_event::TracedValue* value) const;
+
  protected:
   RenderPassInternal();
   explicit RenderPassInternal(size_t num_layers);

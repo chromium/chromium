@@ -96,6 +96,8 @@ class VIZ_COMMON_EXPORT AggregatedRenderPass : public RenderPassInternal {
   // Indicates current RenderPass is a color conversion pass.
   bool is_color_conversion_pass = false;
 
+  void AsValueInto(base::trace_event::TracedValue* dict) const;
+
  private:
   template <typename DrawQuadType>
   DrawQuadType* CopyFromAndAppendTypedDrawQuad(const DrawQuad* quad) {

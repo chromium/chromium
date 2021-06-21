@@ -715,6 +715,12 @@ bool Display::DrawAndSwap(base::TimeTicks expected_display_time) {
     frame = aggregator_->Aggregate(
         current_surface_id_, expected_display_time, current_display_transform,
         target_damage_bounding_rect, ++swapped_trace_id_);
+
+    // Dump aggregated frame (will dump render passes and draw quads) if run
+    // with: --vmodule=display=3
+    if (VLOG_IS_ON(3)) {
+      VLOG(3) << "Post-aggregation\n" << frame.ToString();
+    }
   }
   DebugDrawFrame(frame);
 
