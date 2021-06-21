@@ -30,6 +30,7 @@ class PageState;
 namespace content {
 
 struct FaviconStatus;
+class NavigationEntryRestoreContext;
 struct ReplacedNavigationEntryData;
 struct SSLStatus;
 
@@ -102,12 +103,15 @@ class NavigationEntry : public base::SupportsUserData {
   // Page state is an opaque blob created by Blink that represents the state of
   // the page. This includes form entries and scroll position for each frame.
   // We store it so that we can supply it back to Blink to restore form state
-  // properly when the user goes back and forward.
+  // properly when the user goes back and forward. |context| is an opaque object
+  // that tracks FrameNavigationEntries as they are created during page state
+  // initialization, and ensures equal entries are merged and shared.
   //
   // NOTE: This state is saved to disk and used to restore previous states.  If
   // the format is modified in the future, we should still be able to deal with
   // older versions.
-  virtual void SetPageState(const blink::PageState& state) = 0;
+  virtual void SetPageState(const blink::PageState& state,
+                            NavigationEntryRestoreContext* context) = 0;
   virtual blink::PageState GetPageState() = 0;
 
   // Page-related helpers ------------------------------------------------------

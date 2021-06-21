@@ -62,6 +62,7 @@
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
+#include "content/browser/renderer_host/navigation_entry_restore_context_impl.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigator.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
@@ -3831,16 +3832,15 @@ void NavigationControllerImpl::InsertEntriesFrom(
     NavigationControllerImpl* source,
     int max_index) {
   DCHECK_LE(max_index, source->GetEntryCount());
+  std::unique_ptr<NavigationEntryRestoreContextImpl> context =
+      std::make_unique<NavigationEntryRestoreContextImpl>();
   for (int i = 0; i < max_index; i++) {
     // Normally, cloning a NavigationEntryImpl results in sharing
     // FrameNavigationEntries between the original and the clone. However, when
     // cloning from a different NavigationControllerImpl, we want to fork the
     // FrameNavigationEntries.
-    // TODO(japhet): FNEs should not be shared between original and clone, but
-    // we should mirror any sharing of FNEs within the |source->entries_|. We
-    // don't currently. https://crbug.com/1211683
     entries_.insert(entries_.begin() + i,
-                    source->entries_[i]->CloneWithoutSharing());
+                    source->entries_[i]->CloneWithoutSharing(context.get()));
   }
   DCHECK(pending_entry_index_ == -1 ||
          pending_entry_ == GetEntryAtIndex(pending_entry_index_));

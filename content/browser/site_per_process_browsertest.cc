@@ -66,6 +66,7 @@
 #include "content/browser/renderer_host/input/synthetic_touchscreen_pinch_gesture.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
+#include "content/browser/renderer_host/navigation_entry_restore_context_impl.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigator.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -6599,7 +6600,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
               false, std::string(), controller.GetBrowserContext(),
               nullptr /* blob_url_loader_factory */));
   EXPECT_EQ(0U, restored_entry->root_node()->children.size());
-  restored_entry->SetPageState(entry->GetPageState());
+  std::unique_ptr<NavigationEntryRestoreContextImpl> context =
+      std::make_unique<NavigationEntryRestoreContextImpl>();
+  restored_entry->SetPageState(entry->GetPageState(), context.get());
   ASSERT_EQ(2U, restored_entry->root_node()->children.size());
 
   // Restore the NavigationEntry into a new tab and check that the data URLs are
@@ -6704,7 +6707,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
               false, std::string(), controller.GetBrowserContext(),
               nullptr /* blob_url_loader_factory */));
   EXPECT_EQ(0U, restored_entry->root_node()->children.size());
-  restored_entry->SetPageState(entry->GetPageState());
+  std::unique_ptr<NavigationEntryRestoreContextImpl> context =
+      std::make_unique<NavigationEntryRestoreContextImpl>();
+  restored_entry->SetPageState(entry->GetPageState(), context.get());
   ASSERT_EQ(2U, restored_entry->root_node()->children.size());
 
   // Restore the NavigationEntry into a new tab and check that the about:blank
@@ -6802,7 +6807,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
               false, std::string(), controller.GetBrowserContext(),
               nullptr /* blob_url_loader_factory */));
   EXPECT_EQ(0U, restored_entry->root_node()->children.size());
-  restored_entry->SetPageState(entry->GetPageState());
+  std::unique_ptr<NavigationEntryRestoreContextImpl> context =
+      std::make_unique<NavigationEntryRestoreContextImpl>();
+  restored_entry->SetPageState(entry->GetPageState(), context.get());
   ASSERT_EQ(1U, restored_entry->root_node()->children.size());
 
   // Restore the NavigationEntry into a new tab and check that the srcdoc URLs

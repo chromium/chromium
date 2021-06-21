@@ -36,6 +36,8 @@
 namespace content {
 
 class FrameTreeNode;
+class NavigationEntryRestoreContext;
+class NavigationEntryRestoreContextImpl;
 class WebBundleNavigationInfo;
 class SubresourceWebBundleNavigationInfo;
 
@@ -62,13 +64,17 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
     // clearing all of its children unless |clone_children_of_target| is true.
     // This function omits any subframe history items that do not correspond to
     // frames actually in the current page, using |current_frame_tree_node| (if
-    // present).
+    // present). |restore_context| is used to keep track of the
+    // FrameNavigationEntries that have been created during a deep clone, and to
+    // ensure that multiple copies of the same FrameNavigationEntry in different
+    // NavigationEntries are de-duplicated.
     std::unique_ptr<TreeNode> CloneAndReplace(
         scoped_refptr<FrameNavigationEntry> frame_navigation_entry,
         bool clone_children_of_target,
         FrameTreeNode* target_frame_tree_node,
         FrameTreeNode* current_frame_tree_node,
         TreeNode* parent_node,
+        NavigationEntryRestoreContextImpl* restore_context,
         ClonePolicy clone_policy) const;
 
     // The parent of this node.
@@ -119,7 +125,8 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
   const GURL& GetVirtualURL() override;
   void SetTitle(const std::u16string& title) override;
   const std::u16string& GetTitle() override;
-  void SetPageState(const blink::PageState& state) override;
+  void SetPageState(const blink::PageState& state,
+                    NavigationEntryRestoreContext* context) override;
   blink::PageState GetPageState() override;
   const std::u16string& GetTitleForDisplay() override;
   bool IsViewSourceMode() override;
@@ -164,7 +171,11 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
   // Creates a true deep copy of this NavigationEntryImpl. The
   // FrameNavigationEntries are cloned rather than merely taking a refptr to the
   // original.
-  std::unique_ptr<NavigationEntryImpl> CloneWithoutSharing() const;
+  // |restore_context| is used when cloning a vector of NavigationEntryImpls to
+  // ensure that FrameNavigationEntries that are shared across multiple entries
+  // retain that relationship in the cloned entries.
+  std::unique_ptr<NavigationEntryImpl> CloneWithoutSharing(
+      NavigationEntryRestoreContextImpl* restore_context) const;
 
   // Like |Clone|, but replaces the FrameNavigationEntry corresponding to
   // |target_frame_tree_node| with |frame_entry|, clearing all of its children
@@ -422,6 +433,7 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
       bool clone_children_of_target,
       FrameTreeNode* target_frame_tree_node,
       FrameTreeNode* root_frame_tree_node,
+      NavigationEntryRestoreContextImpl* restore_context,
       ClonePolicy clone_policy) const;
 
   // WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING

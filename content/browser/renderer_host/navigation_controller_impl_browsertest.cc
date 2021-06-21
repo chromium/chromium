@@ -31,6 +31,7 @@
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
+#include "content/browser/renderer_host/navigation_entry_restore_context_impl.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
@@ -6221,7 +6222,9 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
               false, std::string(), controller.GetBrowserContext(),
               nullptr /* blob_url_loader_factory */));
   EXPECT_EQ(0U, restored_entry->root_node()->children.size());
-  restored_entry->SetPageState(entry2->GetPageState());
+  std::unique_ptr<NavigationEntryRestoreContextImpl> context =
+      std::make_unique<NavigationEntryRestoreContextImpl>();
+  restored_entry->SetPageState(entry2->GetPageState(), context.get());
 
   // The entry should have a FrameNavigationEntry for the b.com subframe.
   EXPECT_EQ(main_url_a, restored_entry->root_node()->frame_entry->url());
@@ -6288,7 +6291,10 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
               main_url, Referrer(), absl::nullopt, ui::PAGE_TRANSITION_RELOAD,
               false, std::string(), controller.GetBrowserContext(),
               nullptr /* blob_url_loader_factory */));
-  restored_entry->SetPageState(blink::PageState::CreateFromURL(main_url));
+  std::unique_ptr<NavigationEntryRestoreContextImpl> context =
+      std::make_unique<NavigationEntryRestoreContextImpl>();
+  restored_entry->SetPageState(blink::PageState::CreateFromURL(main_url),
+                               context.get());
   EXPECT_EQ(0U, restored_entry->root_node()->children.size());
 
   // Restore the new entry in a new tab and verify the iframe loads and has
@@ -8750,7 +8756,9 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
               false, std::string(), controller.GetBrowserContext(),
               nullptr /* blob_url_loader_factory */));
   EXPECT_EQ(0U, restored_entry->root_node()->children.size());
-  restored_entry->SetPageState(entry2->GetPageState());
+  std::unique_ptr<NavigationEntryRestoreContextImpl> context =
+      std::make_unique<NavigationEntryRestoreContextImpl>();
+  restored_entry->SetPageState(entry2->GetPageState(), context.get());
 
   // The entry should have no SiteInstance in the FrameNavigationEntry for the
   // b.com subframe.
@@ -9182,12 +9190,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
             cloned_current_entry->root_node()->children[0]->frame_entry.get());
   EXPECT_EQ(original_previous_entry->root_node()->frame_entry.get(),
             original_current_entry->root_node()->frame_entry.get());
-  // TODO(japhet): This case fails because we are not correctly matching and
-  // de-duplicating FrameNavigationEntries when cloning.
-  // https://crbug.com/1211683
-  //
-  // EXPECT_EQ(cloned_previous_entry->root_node()->frame_entry.get(),
-  //           cloned_current_entry->root_node()->frame_entry.get());
+  EXPECT_EQ(cloned_previous_entry->root_node()->frame_entry.get(),
+            cloned_current_entry->root_node()->frame_entry.get());
 
   {
     // history.replaceState() in the original tab.

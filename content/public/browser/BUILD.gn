@@ -231,6 +231,7 @@ source_set("browser_sources") {
     "navigation_details.cc",
     "navigation_details.h",
     "navigation_entry.h",
+    "navigation_entry_restore_context.h",
     "navigation_handle.cc",
     "navigation_handle.h",
     "navigation_handle_timing.cc",

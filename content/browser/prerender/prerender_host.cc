@@ -13,6 +13,7 @@
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
+#include "content/browser/renderer_host/navigation_entry_restore_context_impl.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
@@ -161,10 +162,12 @@ class PrerenderHost::PageHolder : public FrameTree::Delegate,
     std::unique_ptr<BackForwardCacheImpl::Entry> page =
         frame_tree_->root()->render_manager()->TakePrerenderedPage();
 
+    std::unique_ptr<NavigationEntryRestoreContextImpl> context =
+        std::make_unique<NavigationEntryRestoreContextImpl>();
     std::unique_ptr<NavigationEntryImpl> nav_entry =
         GetNavigationController()
             .GetEntryWithUniqueID(page->render_frame_host->nav_entry_id())
-            ->CloneWithoutSharing();
+            ->CloneWithoutSharing(context.get());
 
     navigation_request.SetPrerenderNavigationEntry(std::move(nav_entry));
 

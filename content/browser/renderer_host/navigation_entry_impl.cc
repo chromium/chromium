@@ -22,6 +22,7 @@
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
+#include "content/browser/renderer_host/navigation_entry_restore_context_impl.h"
 #include "content/browser/web_package/subresource_web_bundle_navigation_info.h"
 #include "content/browser/web_package/web_bundle_navigation_info.h"
 #include "content/common/content_constants_internal.h"
@@ -53,9 +54,11 @@ int CreateUniqueEntryID() {
 }
 
 void RecursivelyGenerateFrameEntries(
+    NavigationEntryRestoreContextImpl* context,
     const blink::ExplodedFrameState& state,
     const std::vector<absl::optional<std::u16string>>& referenced_files,
     NavigationEntryImpl::TreeNode* node) {
+  DCHECK(context);
   // Set a single-frame PageState on the entry.
   blink::ExplodedPageState page_state;
 
@@ -72,24 +75,33 @@ void RecursivelyGenerateFrameEntries(
   blink::EncodePageState(page_state, &data);
   DCHECK(!data.empty()) << "Shouldn't generate an empty PageState.";
 
-  node->frame_entry = base::MakeRefCounted<FrameNavigationEntry>(
-      UTF16ToUTF8(state.target.value_or(std::u16string())),
-      state.item_sequence_number, state.document_sequence_number,
-      UTF16ToUTF8(state.app_history_key.value_or(std::u16string())), nullptr,
-      nullptr, GURL(state.url_string.value_or(std::u16string())),
-      // TODO(nasko): Supply valid origin once the value is persisted across
-      // session restore.
-      absl::nullopt /* origin */,
-      Referrer(GURL(state.referrer.value_or(std::u16string())),
-               state.referrer_policy),
-      state.initiator_origin, std::vector<GURL>(),
-      blink::PageState::CreateFromEncodedData(data), "GET", -1,
-      nullptr /* blob_url_loader_factory */,
-      nullptr /* web_bundle_navigation_info */,
-      nullptr /* subresource_web_bundle_navigation_info */,
-      // TODO(https://crbug.com/1140393): We should restore the policy
-      // container.
-      nullptr /* policy_container_policies */);
+  scoped_refptr<FrameNavigationEntry> entry =
+      context->GetFrameNavigationEntryForItemSequenceNumber(
+          state.item_sequence_number,
+          state.target ? base::UTF16ToUTF8(*state.target) : "");
+  DCHECK(!entry || entry->initiator_origin() == state.initiator_origin);
+  if (!entry) {
+    entry = base::MakeRefCounted<FrameNavigationEntry>(
+        UTF16ToUTF8(state.target.value_or(std::u16string())),
+        state.item_sequence_number, state.document_sequence_number,
+        UTF16ToUTF8(state.app_history_key.value_or(std::u16string())), nullptr,
+        nullptr, GURL(state.url_string.value_or(std::u16string())),
+        // TODO(nasko): Supply valid origin once the value is persisted across
+        // session restore.
+        absl::nullopt /* origin */,
+        Referrer(GURL(state.referrer.value_or(std::u16string())),
+                 state.referrer_policy),
+        state.initiator_origin, std::vector<GURL>(),
+        blink::PageState::CreateFromEncodedData(data), "GET", -1,
+        nullptr /* blob_url_loader_factory */,
+        nullptr /* web_bundle_navigation_info */,
+        nullptr /* subresource_web_bundle_navigation_info */,
+        // TODO(https://crbug.com/1140393): We should restore the policy
+        // container.
+        nullptr /* policy_container_policies */);
+    context->AddFrameNavigationEntry(entry.get());
+  }
+  node->frame_entry = std::move(entry);
 
   // Don't pass the file list to subframes, since that would result in multiple
   // copies of it ending up in the combined list in GetPageState (via
@@ -99,7 +111,7 @@ void RecursivelyGenerateFrameEntries(
   for (const blink::ExplodedFrameState& child_state : state.children) {
     node->children.push_back(
         std::make_unique<NavigationEntryImpl::TreeNode>(node, nullptr));
-    RecursivelyGenerateFrameEntries(child_state, empty_file_list,
+    RecursivelyGenerateFrameEntries(context, child_state, empty_file_list,
                                     node->children.back().get());
   }
 }
@@ -237,16 +249,42 @@ NavigationEntryImpl::TreeNode::CloneAndReplace(
     FrameTreeNode* target_frame_tree_node,
     FrameTreeNode* current_frame_tree_node,
     TreeNode* parent_node,
+    NavigationEntryRestoreContextImpl* restore_context,
     ClonePolicy clone_policy) const {
+  // |restore_context| should only ever be used when doing a deep clone, and
+  // when there is no target.
+  if (restore_context) {
+    DCHECK(!frame_navigation_entry && !target_frame_tree_node &&
+           clone_policy == ClonePolicy::kCloneFrameEntries);
+  }
+
   // Clone this TreeNode, possibly replacing its FrameNavigationEntry.
   bool is_target_frame =
       target_frame_tree_node && MatchesFrame(target_frame_tree_node);
+
+  scoped_refptr<FrameNavigationEntry> new_entry;
+  if (is_target_frame) {
+    new_entry = frame_navigation_entry;
+  } else if (clone_policy == ClonePolicy::kShareFrameEntries) {
+    new_entry = frame_entry;
+  } else {
+    if (restore_context) {
+      // If |restore_context| is given and already has a FrameNavigationEntry
+      // for the given item sequence number, share that FrameNavigationEntry
+      // rather than creating a duplicate.
+      new_entry = restore_context->GetFrameNavigationEntryForItemSequenceNumber(
+          frame_entry->item_sequence_number(),
+          frame_entry->frame_unique_name());
+    }
+    if (!new_entry) {
+      new_entry = frame_entry->Clone();
+      if (restore_context)
+        restore_context->AddFrameNavigationEntry(new_entry.get());
+    }
+  }
+
   auto copy = std::make_unique<NavigationEntryImpl::TreeNode>(
-      parent_node, is_target_frame
-                       ? frame_navigation_entry
-                       : (clone_policy == ClonePolicy::kShareFrameEntries
-                              ? frame_entry
-                              : frame_entry->Clone()));
+      parent_node, std::move(new_entry));
 
   // Recursively clone the children if needed.
   if (!is_target_frame || clone_children_of_target) {
@@ -258,7 +296,8 @@ NavigationEntryImpl::TreeNode::CloneAndReplace(
       if (!current_frame_tree_node) {
         copy->children.push_back(child->CloneAndReplace(
             frame_navigation_entry, clone_children_of_target,
-            target_frame_tree_node, nullptr, copy.get(), clone_policy));
+            target_frame_tree_node, nullptr, copy.get(), restore_context,
+            clone_policy));
         continue;
       }
 
@@ -282,7 +321,7 @@ NavigationEntryImpl::TreeNode::CloneAndReplace(
           copy->children.push_back(child->CloneAndReplace(
               frame_navigation_entry, clone_children_of_target,
               target_frame_tree_node, current_frame_tree_node->child_at(index),
-              copy.get(), clone_policy));
+              copy.get(), restore_context, clone_policy));
           break;
         }
       }
@@ -440,8 +479,10 @@ const std::u16string& NavigationEntryImpl::GetTitle() {
   return title_;
 }
 
-void NavigationEntryImpl::SetPageState(const blink::PageState& state) {
+void NavigationEntryImpl::SetPageState(const blink::PageState& state,
+                                       NavigationEntryRestoreContext* context) {
   DCHECK(state.IsValid());
+  DCHECK(context);
 
   // SetPageState should only be called before the NavigationEntry has been
   // loaded, such as for restore (when there are no subframe
@@ -464,6 +505,7 @@ void NavigationEntryImpl::SetPageState(const blink::PageState& state) {
   }
 
   RecursivelyGenerateFrameEntries(
+      static_cast<NavigationEntryRestoreContextImpl*>(context),
       exploded_state.top, exploded_state.referenced_files, frame_tree_.get());
 }
 
@@ -673,13 +715,15 @@ bool NavigationEntryImpl::GetCanLoadLocalResources() {
 }
 
 std::unique_ptr<NavigationEntryImpl> NavigationEntryImpl::Clone() const {
-  return CloneAndReplaceInternal(nullptr, false, nullptr, nullptr,
+  return CloneAndReplaceInternal(nullptr, false, nullptr, nullptr, nullptr,
                                  ClonePolicy::kShareFrameEntries);
 }
 
-std::unique_ptr<NavigationEntryImpl> NavigationEntryImpl::CloneWithoutSharing()
-    const {
+std::unique_ptr<NavigationEntryImpl> NavigationEntryImpl::CloneWithoutSharing(
+    NavigationEntryRestoreContextImpl* restore_context) const {
+  DCHECK(restore_context);
   return CloneAndReplaceInternal(nullptr, false, nullptr, nullptr,
+                                 restore_context,
                                  ClonePolicy::kCloneFrameEntries);
 }
 
@@ -690,7 +734,7 @@ std::unique_ptr<NavigationEntryImpl> NavigationEntryImpl::CloneAndReplace(
     FrameTreeNode* root_frame_tree_node) const {
   return CloneAndReplaceInternal(
       frame_navigation_entry, clone_children_of_target, target_frame_tree_node,
-      root_frame_tree_node, ClonePolicy::kShareFrameEntries);
+      root_frame_tree_node, nullptr, ClonePolicy::kShareFrameEntries);
 }
 
 std::unique_ptr<NavigationEntryImpl>
@@ -699,12 +743,14 @@ NavigationEntryImpl::CloneAndReplaceInternal(
     bool clone_children_of_target,
     FrameTreeNode* target_frame_tree_node,
     FrameTreeNode* root_frame_tree_node,
+    NavigationEntryRestoreContextImpl* restore_context,
     ClonePolicy clone_policy) const {
   auto copy = std::make_unique<NavigationEntryImpl>();
 
   copy->frame_tree_ = frame_tree_->CloneAndReplace(
       std::move(frame_navigation_entry), clone_children_of_target,
-      target_frame_tree_node, root_frame_tree_node, nullptr, clone_policy);
+      target_frame_tree_node, root_frame_tree_node, nullptr, restore_context,
+      clone_policy);
 
   // Copy most state over, unless cleared in ResetForCommit.
   // Don't copy unique_id_, otherwise it won't be unique.

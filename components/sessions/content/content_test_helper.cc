@@ -11,7 +11,10 @@
 #include "components/sessions/content/content_serialized_navigation_builder.h"
 #include "components/sessions/core/serialized_navigation_entry_test_helper.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/navigation_entry_restore_context.h"
 #include "content/public/common/referrer.h"
+#include "third_party/blink/public/common/page_state/page_state.h"
+
 #include "url/gurl.h"
 
 namespace sessions {
@@ -30,6 +33,21 @@ SerializedNavigationEntry ContentTestHelper::CreateNavigation(
   navigation_entry->SetTitle(base::UTF8ToUTF16(title));
   navigation_entry->SetTimestamp(base::Time::Now());
   navigation_entry->SetHttpStatusCode(200);
+
+  // Initialize the NavigationEntry with a dummy PageState with unique
+  // item and document sequence numbers. The item sequence number in particular
+  // is important to initialize because it always defaults to the same value,
+  // and it is checked during restore to find FrameNavigationEntries that can
+  // be de-duplicated.
+  static int64_t next_sequence_number = 1;
+  int64_t item_sequence_number = next_sequence_number++;
+  int64_t document_sequence_number = next_sequence_number++;
+  std::unique_ptr<content::NavigationEntryRestoreContext> restore_context =
+      content::NavigationEntryRestoreContext::Create();
+  navigation_entry->SetPageState(
+      blink::PageState::CreateForTestingWithSequenceNumbers(
+          GURL(virtual_url), item_sequence_number, document_sequence_number),
+      restore_context.get());
   return ContentSerializedNavigationBuilder::FromNavigationEntry(
       test_data::kIndex, navigation_entry.get());
 }

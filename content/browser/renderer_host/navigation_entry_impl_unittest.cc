@@ -15,6 +15,7 @@
 #include "base/test/test_file_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "content/browser/renderer_host/navigation_entry_restore_context_impl.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/public/browser/ssl_status.h"
 #include "content/public/test/browser_task_environment.h"
@@ -267,7 +268,9 @@ TEST_F(NavigationEntryTest, NavigationEntryAccessors) {
   // (referrer, initiator, etc.).  This is why it is important to test
   // SetPageState/GetPageState last.
   blink::PageState test_page_state = CreateTestPageState();
-  entry2_->SetPageState(test_page_state);
+  std::unique_ptr<NavigationEntryRestoreContextImpl> context =
+      std::make_unique<NavigationEntryRestoreContextImpl>();
+  entry2_->SetPageState(test_page_state, context.get());
   EXPECT_EQ(test_page_state.ToEncodedData(),
             entry2_->GetPageState().ToEncodedData());
 }
@@ -303,6 +306,31 @@ TEST_F(NavigationEntryTest, NavigationEntryTimestamps) {
   const base::Time now = base::Time::Now();
   entry1_->SetTimestamp(now);
   EXPECT_EQ(now, entry1_->GetTimestamp());
+}
+
+TEST_F(NavigationEntryTest, SetPageStateWithCorruptedSequenceNumbers) {
+  // Create a page state for multiple frames with identical sequence numbers,
+  // which ought never happen.
+  blink::ExplodedPageState exploded_state;
+  blink::ExplodedFrameState child_state;
+  exploded_state.top.item_sequence_number = 1234;
+  exploded_state.top.document_sequence_number = 5678;
+  child_state.target = u"unique_name";
+  child_state.item_sequence_number = 1234;
+  child_state.document_sequence_number = 5678;
+  exploded_state.top.children.push_back(child_state);
+  std::string encoded_data;
+  blink::EncodePageState(exploded_state, &encoded_data);
+  blink::PageState page_state =
+      blink::PageState::CreateFromEncodedData(encoded_data);
+
+  std::unique_ptr<NavigationEntryRestoreContextImpl> context =
+      std::make_unique<NavigationEntryRestoreContextImpl>();
+  entry1_->SetPageState(page_state, context.get());
+
+  ASSERT_EQ(1u, entry1_->root_node()->children.size());
+  EXPECT_NE(entry1_->root_node()->frame_entry.get(),
+            entry1_->root_node()->children[0]->frame_entry.get());
 }
 
 #if defined(OS_ANDROID)

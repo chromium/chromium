@@ -776,7 +776,6 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoreForeignTab) {
   for (size_t i = 0; i < tab.navigations.size(); ++i) {
     ASSERT_FALSE(tab.navigations[i].timestamp().is_null());
     tab.navigations[i].set_index(i);
-    tab.navigations[i].set_encoded_page_state("");
   }
 
   ASSERT_EQ(1, browser()->tab_strip_model()->count());
