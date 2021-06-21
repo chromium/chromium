@@ -32,9 +32,8 @@ class FeedReliabilityLoggingBridge : public ::feed::ReliabilityLogger {
                                SurfaceId stream_id) override;
   void CancelPendingLaunchEvents() override;
   void LogCacheReadStart(base::TimeTicks timestamp) override;
-  void LogCacheReadEnd(
-      base::TimeTicks timestamp,
-      feedreliabilitylogging::DiscoverCardReadCacheResult result) override;
+  void LogCacheReadEnd(base::TimeTicks timestamp,
+                       feedwire::DiscoverCardReadCacheResult result) override;
   int LogFeedRequestStart(base::TimeTicks timestamp) override;
   int LogActionsUploadRequestStart(base::TimeTicks timestamp) override;
   void LogRequestSent(int request_id, base::TimeTicks timestamp) override;
@@ -48,10 +47,9 @@ class FeedReliabilityLoggingBridge : public ::feed::ReliabilityLogger {
   void LogAtfRenderStart(base::TimeTicks timestamp) override;
   void LogAtfRenderEnd(
       base::TimeTicks timestamp,
-      feedreliabilitylogging::DiscoverAboveTheFoldRenderResult result) override;
-  void LogLaunchFinished(
-      base::TimeTicks timestamp,
-      feedreliabilitylogging::DiscoverLaunchResult result) override;
+      feedwire::DiscoverAboveTheFoldRenderResult result) override;
+  void LogLaunchFinished(base::TimeTicks timestamp,
+                         feedwire::DiscoverLaunchResult result) override;
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_ref_;

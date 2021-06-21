@@ -4,7 +4,7 @@
 
 syntax = "proto2";
 
-package feedreliabilitylogging;
+package feedwire;
 
 option optimize_for = LITE_RUNTIME;
 option java_package = "org.chromium.components.feed.proto.wire";
@@ -27,6 +27,8 @@ enum DiscoverLaunchResult {
   ABORTED_DUE_TO_INVALID_STATE = 6;
   NAVIGATED_AWAY_IN_APP = 35;
   FEED_HIDDEN = 36;
+  INELIGIBLE_EULA_NOT_ACCEPTED = 37;
+  INELIGIBLE_DISCOVER_DISABLED_BY_ENTERPRISE_POLICY = 38;
 }
 enum DiscoverCardReadCacheResult {
   CACHE_READ_OK = 1;

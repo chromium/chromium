@@ -116,7 +116,7 @@ void FeedReliabilityLoggingBridge::LogCacheReadStart(
 
 void FeedReliabilityLoggingBridge::LogCacheReadEnd(
     base::TimeTicks timestamp,
-    feedreliabilitylogging::DiscoverCardReadCacheResult result) {
+    feedwire::DiscoverCardReadCacheResult result) {
   Java_FeedReliabilityLoggingBridge_logCacheReadEnd(
       base::android::AttachCurrentThread(), java_ref_,
       ConvertTimestamp(timestamp), result);
@@ -173,7 +173,7 @@ void FeedReliabilityLoggingBridge::LogRequestFinished(
 
 void FeedReliabilityLoggingBridge::LogLaunchFinished(
     base::TimeTicks timestamp,
-    feedreliabilitylogging::DiscoverLaunchResult result) {
+    feedwire::DiscoverLaunchResult result) {
   Java_FeedReliabilityLoggingBridge_logLaunchFinished(
       base::android::AttachCurrentThread(), java_ref_,
       ConvertTimestamp(timestamp), result);
@@ -188,7 +188,7 @@ void FeedReliabilityLoggingBridge::LogAtfRenderStart(
 
 void FeedReliabilityLoggingBridge::LogAtfRenderEnd(
     base::TimeTicks timestamp,
-    feedreliabilitylogging::DiscoverAboveTheFoldRenderResult result) {
+    feedwire::DiscoverAboveTheFoldRenderResult result) {
   Java_FeedReliabilityLoggingBridge_logAtfRenderEnd(
       base::android::AttachCurrentThread(), java_ref_,
       ConvertTimestamp(timestamp), result);

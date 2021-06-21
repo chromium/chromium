@@ -29,7 +29,7 @@ class ReliabilityLogger {
   virtual void LogCacheReadStart(base::TimeTicks timestamp) = 0;
   virtual void LogCacheReadEnd(
       base::TimeTicks timestamp,
-      feedreliabilitylogging::DiscoverCardReadCacheResult result) = 0;
+      feedwire::DiscoverCardReadCacheResult result) = 0;
 
   virtual int LogFeedRequestStart(base::TimeTicks timestamp) = 0;
   virtual int LogActionsUploadRequestStart(base::TimeTicks timestamp) = 0;
@@ -46,11 +46,10 @@ class ReliabilityLogger {
   virtual void LogAtfRenderStart(base::TimeTicks timestamp) = 0;
   virtual void LogAtfRenderEnd(
       base::TimeTicks timestamp,
-      feedreliabilitylogging::DiscoverAboveTheFoldRenderResult result) = 0;
+      feedwire::DiscoverAboveTheFoldRenderResult result) = 0;
 
-  virtual void LogLaunchFinished(
-      base::TimeTicks timestamp,
-      feedreliabilitylogging::DiscoverLaunchResult result) = 0;
+  virtual void LogLaunchFinished(base::TimeTicks timestamp,
+                                 feedwire::DiscoverLaunchResult result) = 0;
 
   virtual ~ReliabilityLogger() = default;
 };
