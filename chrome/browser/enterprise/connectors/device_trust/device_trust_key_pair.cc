@@ -173,6 +173,7 @@ bool DeviceTrustKeyPair::ExportPublicKey(std::vector<uint8_t>* public_key) {
 
 std::string DeviceTrustKeyPair::ExportPEMPublicKey() {
   std::string raw_public_key;
+  // TODO(crbug/1212786): Use ExportPublickey and remove PEM code.
   if (!key_pair_->ExportRawPublicKey(&raw_public_key))
     return std::string();
   // This is intentionally using a non-standard format for the uncompressed
