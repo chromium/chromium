@@ -903,9 +903,7 @@ bool BackForwardCache::IsBackForwardCacheFeatureEnabled() {
 void BackForwardCache::DisableForRenderFrameHost(
     RenderFrameHost* render_frame_host,
     BackForwardCache::DisabledReason reason) {
-  DisableForRenderFrameHost(
-      static_cast<RenderFrameHostImpl*>(render_frame_host)->GetGlobalId(),
-      reason);
+  DisableForRenderFrameHost(render_frame_host->GetGlobalId(), reason);
 }
 
 // static

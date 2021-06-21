@@ -160,20 +160,19 @@ IN_PROC_BROWSER_TEST_F(IndexedDBFeatureObserverBrowserTest,
     return;
 
   RenderFrameHost* rfh = shell()->web_contents()->GetMainFrame();
-  GlobalRenderFrameHostId routing_id(rfh->GetProcess()->GetID(),
-                                     rfh->GetRoutingID());
+  GlobalRenderFrameHostId rfh_id = rfh->GetGlobalId();
 
   {
     // Open a connection. Expect observer notification.
     base::RunLoop run_loop;
     EXPECT_CALL(
         mock_observer_client_,
-        OnStartUsing(routing_id,
+        OnStartUsing(rfh_id,
                      blink::mojom::ObservedFeatureType::kIndexedDBConnection))
         .WillOnce([&](GlobalRenderFrameHostId,
                       blink::mojom::ObservedFeatureType) { run_loop.Quit(); });
     EXPECT_TRUE(OpenConnectionA(rfh));
-    // Quit when OnFrameStartsHoldingIndexedDBConnections(routing_id)
+    // Quit when OnFrameStartsHoldingIndexedDBConnections(rfh_id)
     // is invoked.
     run_loop.Run();
   }
@@ -183,12 +182,12 @@ IN_PROC_BROWSER_TEST_F(IndexedDBFeatureObserverBrowserTest,
     base::RunLoop run_loop;
     EXPECT_CALL(
         mock_observer_client_,
-        OnStopUsing(routing_id,
+        OnStopUsing(rfh_id,
                     blink::mojom::ObservedFeatureType::kIndexedDBConnection))
         .WillOnce([&](GlobalRenderFrameHostId,
                       blink::mojom::ObservedFeatureType) { run_loop.Quit(); });
     EXPECT_TRUE(ExecJs(rfh, "CloseConnection('A');"));
-    // Quit when OnFrameStopsHoldingIndexedDBConnections(routing_id)
+    // Quit when OnFrameStopsHoldingIndexedDBConnections(rfh_id)
     // is invoked.
     run_loop.Run();
   }
@@ -209,20 +208,19 @@ IN_PROC_BROWSER_TEST_F(IndexedDBFeatureObserverBrowserTest,
     return;
 
   RenderFrameHost* rfh = shell()->web_contents()->GetMainFrame();
-  GlobalRenderFrameHostId routing_id(rfh->GetProcess()->GetID(),
-                                     rfh->GetRoutingID());
+  GlobalRenderFrameHostId rfh_id = rfh->GetGlobalId();
 
   {
     // Open a connection. Expect observer notification.
     base::RunLoop run_loop;
     EXPECT_CALL(
         mock_observer_client_,
-        OnStartUsing(routing_id,
+        OnStartUsing(rfh_id,
                      blink::mojom::ObservedFeatureType::kIndexedDBConnection))
         .WillOnce([&](GlobalRenderFrameHostId,
                       blink::mojom::ObservedFeatureType) { run_loop.Quit(); });
     EXPECT_TRUE(OpenConnectionA(rfh));
-    // Quit when OnFrameStartsHoldingIndexedDBConnections(routing_id)
+    // Quit when OnFrameStartsHoldingIndexedDBConnections(rfh_id)
     // is invoked.
     run_loop.Run();
   }
@@ -242,12 +240,12 @@ IN_PROC_BROWSER_TEST_F(IndexedDBFeatureObserverBrowserTest,
     base::RunLoop run_loop;
     EXPECT_CALL(
         mock_observer_client_,
-        OnStopUsing(routing_id,
+        OnStopUsing(rfh_id,
                     blink::mojom::ObservedFeatureType::kIndexedDBConnection))
         .WillOnce([&](GlobalRenderFrameHostId,
                       blink::mojom::ObservedFeatureType) { run_loop.Quit(); });
     EXPECT_TRUE(ExecJs(rfh, "CloseConnection('A');"));
-    // Quit when OnFrameStopsHoldingIndexedDBConnections(routing_id)
+    // Quit when OnFrameStopsHoldingIndexedDBConnections(rfh_id)
     // is invoked.
     run_loop.Run();
   }
@@ -262,20 +260,19 @@ IN_PROC_BROWSER_TEST_F(IndexedDBFeatureObserverBrowserTest,
     return;
 
   RenderFrameHost* rfh = shell()->web_contents()->GetMainFrame();
-  GlobalRenderFrameHostId routing_id(rfh->GetProcess()->GetID(),
-                                     rfh->GetRoutingID());
+  GlobalRenderFrameHostId rfh_id = rfh->GetGlobalId();
 
   {
     // Open a connection. Expect observer notification.
     base::RunLoop run_loop;
     EXPECT_CALL(
         mock_observer_client_,
-        OnStartUsing(routing_id,
+        OnStartUsing(rfh_id,
                      blink::mojom::ObservedFeatureType::kIndexedDBConnection))
         .WillOnce([&](GlobalRenderFrameHostId,
                       blink::mojom::ObservedFeatureType) { run_loop.Quit(); });
     EXPECT_TRUE(OpenConnectionA(rfh));
-    // Quit when OnFrameStartsHoldingIndexedDBConnections(routing_id)
+    // Quit when OnFrameStartsHoldingIndexedDBConnections(rfh_id)
     // is invoked.
     run_loop.Run();
   }
@@ -285,12 +282,12 @@ IN_PROC_BROWSER_TEST_F(IndexedDBFeatureObserverBrowserTest,
     base::RunLoop run_loop;
     EXPECT_CALL(
         mock_observer_client_,
-        OnStopUsing(routing_id,
+        OnStopUsing(rfh_id,
                     blink::mojom::ObservedFeatureType::kIndexedDBConnection))
         .WillOnce([&](GlobalRenderFrameHostId,
                       blink::mojom::ObservedFeatureType) { run_loop.Quit(); });
     EXPECT_TRUE(NavigateToURL(shell(), GetTestURL("b.com")));
-    // Quit when OnFrameStopsHoldingIndexedDBConnections(routing_id)
+    // Quit when OnFrameStopsHoldingIndexedDBConnections(rfh_id)
     // is invoked.
     run_loop.Run();
   }

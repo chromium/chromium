@@ -139,15 +139,14 @@ IN_PROC_BROWSER_TEST_F(LockManagerBrowserTest, ObserverSingleLock) {
     return;
 
   RenderFrameHost* rfh = shell()->web_contents()->GetMainFrame();
-  GlobalRenderFrameHostId routing_id(rfh->GetProcess()->GetID(),
-                                     rfh->GetRoutingID());
+  GlobalRenderFrameHostId rfh_id = rfh->GetGlobalId();
 
   {
     // Acquire a lock. Expect observer notification.
     base::RunLoop run_loop;
     EXPECT_CALL(
         mock_observer_client_,
-        OnStartUsing(routing_id, blink::mojom::ObservedFeatureType::kWebLock))
+        OnStartUsing(rfh_id, blink::mojom::ObservedFeatureType::kWebLock))
         .WillOnce([&](GlobalRenderFrameHostId,
                       blink::mojom::ObservedFeatureType) { run_loop.Quit(); });
     EXPECT_TRUE(ExecJs(rfh, "AcquireLock('lock_a');"));
@@ -160,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(LockManagerBrowserTest, ObserverSingleLock) {
     base::RunLoop run_loop;
     EXPECT_CALL(
         mock_observer_client_,
-        OnStopUsing(routing_id, blink::mojom::ObservedFeatureType::kWebLock))
+        OnStopUsing(rfh_id, blink::mojom::ObservedFeatureType::kWebLock))
         .WillOnce([&](GlobalRenderFrameHostId,
                       blink::mojom::ObservedFeatureType) { run_loop.Quit(); });
     EXPECT_TRUE(ExecJs(rfh, "ReleaseLock('lock_a');"));
@@ -177,15 +176,14 @@ IN_PROC_BROWSER_TEST_F(LockManagerBrowserTest, ObserverTwoLocks) {
     return;
 
   RenderFrameHost* rfh = shell()->web_contents()->GetMainFrame();
-  GlobalRenderFrameHostId routing_id(rfh->GetProcess()->GetID(),
-                                     rfh->GetRoutingID());
+  GlobalRenderFrameHostId rfh_id = rfh->GetGlobalId();
 
   {
     // Acquire a lock. Expect observer notification.
     base::RunLoop run_loop;
     EXPECT_CALL(
         mock_observer_client_,
-        OnStartUsing(routing_id, blink::mojom::ObservedFeatureType::kWebLock))
+        OnStartUsing(rfh_id, blink::mojom::ObservedFeatureType::kWebLock))
         .WillOnce([&](GlobalRenderFrameHostId,
                       blink::mojom::ObservedFeatureType) { run_loop.Quit(); });
     EXPECT_TRUE(ExecJs(rfh, "AcquireLock('lock_a');"));
@@ -209,7 +207,7 @@ IN_PROC_BROWSER_TEST_F(LockManagerBrowserTest, ObserverTwoLocks) {
     base::RunLoop run_loop;
     EXPECT_CALL(
         mock_observer_client_,
-        OnStopUsing(routing_id, blink::mojom::ObservedFeatureType::kWebLock))
+        OnStopUsing(rfh_id, blink::mojom::ObservedFeatureType::kWebLock))
         .WillOnce([&](GlobalRenderFrameHostId,
                       blink::mojom::ObservedFeatureType) { run_loop.Quit(); });
     EXPECT_TRUE(ExecJs(rfh, "ReleaseLock('lock_b');"));
@@ -225,15 +223,14 @@ IN_PROC_BROWSER_TEST_F(LockManagerBrowserTest, ObserverNavigate) {
     return;
 
   RenderFrameHost* rfh = shell()->web_contents()->GetMainFrame();
-  GlobalRenderFrameHostId routing_id(rfh->GetProcess()->GetID(),
-                                     rfh->GetRoutingID());
+  GlobalRenderFrameHostId rfh_id = rfh->GetGlobalId();
 
   {
     // Acquire a lock. Expect observer notification.
     base::RunLoop run_loop;
     EXPECT_CALL(
         mock_observer_client_,
-        OnStartUsing(routing_id, blink::mojom::ObservedFeatureType::kWebLock))
+        OnStartUsing(rfh_id, blink::mojom::ObservedFeatureType::kWebLock))
         .WillOnce([&](GlobalRenderFrameHostId,
                       blink::mojom::ObservedFeatureType) { run_loop.Quit(); });
     EXPECT_TRUE(ExecJs(rfh, "AcquireLock('lock_a');"));
@@ -245,7 +242,7 @@ IN_PROC_BROWSER_TEST_F(LockManagerBrowserTest, ObserverNavigate) {
     base::RunLoop run_loop;
     EXPECT_CALL(
         mock_observer_client_,
-        OnStopUsing(routing_id, blink::mojom::ObservedFeatureType::kWebLock))
+        OnStopUsing(rfh_id, blink::mojom::ObservedFeatureType::kWebLock))
         .WillOnce([&](GlobalRenderFrameHostId,
                       blink::mojom::ObservedFeatureType) { run_loop.Quit(); });
     EXPECT_TRUE(NavigateToURL(shell(), GetLocksURL("b.com")));
@@ -261,15 +258,14 @@ IN_PROC_BROWSER_TEST_F(LockManagerBrowserTest, ObserverStealLock) {
     return;
 
   RenderFrameHost* rfh = shell()->web_contents()->GetMainFrame();
-  GlobalRenderFrameHostId routing_id(rfh->GetProcess()->GetID(),
-                                     rfh->GetRoutingID());
+  GlobalRenderFrameHostId rfh_id = rfh->GetGlobalId();
 
   {
     // Acquire a lock in first WebContents lock. Expect observer notification.
     base::RunLoop run_loop;
     EXPECT_CALL(
         mock_observer_client_,
-        OnStartUsing(routing_id, blink::mojom::ObservedFeatureType::kWebLock))
+        OnStartUsing(rfh_id, blink::mojom::ObservedFeatureType::kWebLock))
         .WillOnce([&](GlobalRenderFrameHostId,
                       blink::mojom::ObservedFeatureType) { run_loop.Quit(); });
     EXPECT_TRUE(ExecJs(rfh, "AcquireLock('lock_a');"));
@@ -283,8 +279,7 @@ IN_PROC_BROWSER_TEST_F(LockManagerBrowserTest, ObserverStealLock) {
                              GURL(), nullptr, gfx::Size());
   EXPECT_TRUE(NavigateToURL(other_shell, GetLocksURL("a.com")));
   RenderFrameHost* other_rfh = other_shell->web_contents()->GetMainFrame();
-  GlobalRenderFrameHostId other_routing_id(other_rfh->GetProcess()->GetID(),
-                                           other_rfh->GetRoutingID());
+  GlobalRenderFrameHostId other_rfh_id = other_rfh->GetGlobalId();
 
   {
     // Steal the lock from other WebContents. Expect observer notifications.
@@ -301,11 +296,11 @@ IN_PROC_BROWSER_TEST_F(LockManagerBrowserTest, ObserverStealLock) {
     };
     EXPECT_CALL(
         mock_observer_client_,
-        OnStopUsing(routing_id, blink::mojom::ObservedFeatureType::kWebLock))
+        OnStopUsing(rfh_id, blink::mojom::ObservedFeatureType::kWebLock))
         .WillOnce(callback);
-    EXPECT_CALL(mock_observer_client_,
-                OnStartUsing(other_routing_id,
-                             blink::mojom::ObservedFeatureType::kWebLock))
+    EXPECT_CALL(
+        mock_observer_client_,
+        OnStartUsing(other_rfh_id, blink::mojom::ObservedFeatureType::kWebLock))
         .WillOnce(callback);
 
     EXPECT_TRUE(ExecJs(other_rfh, "StealLock('lock_a');"));
@@ -316,9 +311,9 @@ IN_PROC_BROWSER_TEST_F(LockManagerBrowserTest, ObserverStealLock) {
   {
     // Release a lock. Expect observer notification.
     base::RunLoop run_loop;
-    EXPECT_CALL(mock_observer_client_,
-                OnStopUsing(other_routing_id,
-                            blink::mojom::ObservedFeatureType::kWebLock))
+    EXPECT_CALL(
+        mock_observer_client_,
+        OnStopUsing(other_rfh_id, blink::mojom::ObservedFeatureType::kWebLock))
         .WillOnce([&](GlobalRenderFrameHostId,
                       blink::mojom::ObservedFeatureType) { run_loop.Quit(); });
     EXPECT_TRUE(ExecJs(other_rfh, "ReleaseLock('lock_a');"));
