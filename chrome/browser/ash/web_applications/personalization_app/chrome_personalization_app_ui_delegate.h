@@ -77,6 +77,9 @@ class ChromePersonalizationAppUiDelegate : public PersonalizationAppUiDelegate {
   void SelectWallpaper(uint64_t image_asset_id,
                        SelectWallpaperCallback callback) override;
 
+  void SelectLocalImage(const base::UnguessableToken& id,
+                        SelectLocalImageCallback callback) override;
+
  private:
   mojo::Receiver<chromeos::personalization_app::mojom::WallpaperProvider>
       wallpaper_receiver_{this};

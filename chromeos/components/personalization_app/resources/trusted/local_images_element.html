@@ -1,14 +1,20 @@
 <style include="trusted-style common-style"></style>
 <paper-spinner-lite active="[[imagesLoading_]]">
 </paper-spinner-lite>
-<iron-list items="[[getImages_(hidden, images_)]]" grid>
-  <template>
-    <div class="photo-container">
-      <template is="dom-if"
+<!-- TODO(b/181697575) handle error cases and update error string to UI spec -->
+<p hidden$="[[!hasError_]]" id="error">error</p>
+<template is="dom-if" if="[[showImages_]]">
+  <iron-list items="[[getImages_(hidden, images_)]]" grid>
+    <template>
+      <div class="photo-container">
+        <template is="dom-if"
           if="[[shouldShowImage_(item, imageData_, imageDataLoading_)]]">
-        <img src="[[getImageData_(item, imageData_)]]">
-      </template>
-      <p class="image-name">[[item.name]]</p>
-    </div>
-  </template>
-</iron-list>
+          <div on-click="onClickImage_" data-id$="[[getImageKey_(item)]]">
+            <img src="[[getImageData_(item, imageData_)]]">
+          </div>
+        </template>
+        <p class="image-name">[[item.name]]</p>
+      </div>
+    </template>
+  </iron-list>
+</template>

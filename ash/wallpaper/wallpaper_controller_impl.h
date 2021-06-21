@@ -20,6 +20,7 @@
 #include "ash/public/cpp/wallpaper_types.h"
 #include "ash/shell_observer.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_color_calculator_observer.h"
+#include "ash/wallpaper/wallpaper_utils/wallpaper_decoder.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_resizer_observer.h"
 #include "ash/wm/overview/overview_observer.h"
 #include "base/files/file_path.h"
@@ -58,8 +59,6 @@ class WallpaperWindowStateManager;
 // the image itself.
 using CustomWallpaperElement = std::pair<base::FilePath, gfx::ImageSkia>;
 using CustomWallpaperMap = std::map<AccountId, CustomWallpaperElement>;
-
-using LoadedCallback = base::OnceCallback<void(const gfx::ImageSkia& image)>;
 
 // Controls the desktop background wallpaper:
 //   - Sets a wallpaper image and layout;
@@ -233,6 +232,12 @@ class ASH_EXPORT WallpaperControllerImpl
             const base::FilePath& wallpapers,
             const base::FilePath& custom_wallpapers,
             const base::FilePath& device_policy_wallpaper) override;
+  void SetCustomWallpaper(const AccountId& account_id,
+                          const std::string& wallpaper_files_id,
+                          const base::FilePath& file_path,
+                          WallpaperLayout layout,
+                          bool preview_mode,
+                          SetCustomWallpaperCallback callback) override;
   void SetCustomWallpaper(const AccountId& account_id,
                           const std::string& wallpaper_files_id,
                           const std::string& file_name,
@@ -427,7 +432,7 @@ class ASH_EXPORT WallpaperControllerImpl
   // Reads image from |file_path| on disk, and calls |OnWallpaperDataRead|
   // with the result of |ReadFileToString|.
   void ReadAndDecodeWallpaper(
-      LoadedCallback callback,
+      DecodeImageCallback callback,
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       const base::FilePath& file_path);
 
@@ -493,10 +498,18 @@ class ASH_EXPORT WallpaperControllerImpl
       const gfx::ImageSkia& image,
       base::OnceCallback<void(const base::FilePath&)> image_saved_callback);
 
+  void OnCustomWallpaperDecoded(const AccountId& account_id,
+                                const std::string& wallpaper_files_id,
+                                const base::FilePath& path,
+                                WallpaperLayout layout,
+                                bool preview_mode,
+                                SetCustomWallpaperCallback callback,
+                                const gfx::ImageSkia& image);
+
   // Used as the callback of wallpaper decoding. (Wallpapers of type ONLINE,
-  // DEFAULT and DEVICE should use their corresponding |*Decoded|, and all other
-  // types should use this.) Shows the wallpaper immediately if |show_wallpaper|
-  // is true. Otherwise, only updates the cache.
+  // DEFAULT, CUSTOM, and DEVICE should use their corresponding |*Decoded|,
+  // and all other types should use this.) Shows the wallpaper immediately if
+  // |show_wallpaper| is true. Otherwise, only updates the cache.
   void OnWallpaperDecoded(const AccountId& account_id,
                           const base::FilePath& path,
                           const WallpaperInfo& info,

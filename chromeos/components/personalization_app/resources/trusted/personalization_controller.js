@@ -102,7 +102,8 @@ export async function getCurrentWallpaper(provider, store) {
 }
 
 /**
- * @param {!chromeos.personalizationApp.mojom.WallpaperImage} image
+ * @param {!chromeos.personalizationApp.mojom.WallpaperImage |
+ *     !chromeos.personalizationApp.mojom.LocalImage} image
  * @param {!chromeos.personalizationApp.mojom.WallpaperProviderInterface}
  *     provider
  * @param {!PersonalizationStore} store
@@ -110,7 +111,16 @@ export async function getCurrentWallpaper(provider, store) {
 export async function selectWallpaper(image, provider, store) {
   const oldImage = store.data.selected;
   store.dispatch(beginSelectImageAction(image));
-  const {success} = await provider.selectWallpaper(image.assetId);
+  const {success} = await (() => {
+    if (image.assetId) {
+      return provider.selectWallpaper(image.assetId);
+    } else if (image.id) {
+      return provider.selectLocalImage(image.id);
+    } else {
+      console.warn('Image must be a LocalImage or a WallpaperImage');
+      return {success: false};
+    }
+  })();
   if (!success) {
     console.warn('Error setting wallpaper');
   }

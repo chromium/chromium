@@ -71,8 +71,8 @@ export class TestWallpaperProvider extends TestBrowserProxy {
 
     /** @type {!Object<string, string>} */
     this.localImageData = {
-      '100,10': 'localimage0data',
-      '200,20': 'localimage1data',
+      '100,10': 'data://localimage0data',
+      '200,20': 'data://localimage1data',
     };
 
     /**
@@ -83,6 +83,8 @@ export class TestWallpaperProvider extends TestBrowserProxy {
 
     /** @public */
     this.selectWallpaperResponse = true;
+
+    this.selectLocalImageResponse = true;
   }
 
   /**
@@ -138,6 +140,12 @@ export class TestWallpaperProvider extends TestBrowserProxy {
   selectWallpaper(assetId) {
     this.methodCalled('selectWallpaper', assetId);
     return Promise.resolve({success: this.selectWallpaperResponse});
+  }
+
+  /** @override */
+  selectLocalImage(id) {
+    this.methodCalled('selectLocalImage', id);
+    return Promise.resolve({success: this.selectLocalImageResponse});
   }
 
   /**

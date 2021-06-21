@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/public/cpp/wallpaper_controller.h"
 #include "ash/public/cpp/wallpaper_info.h"
 #include "ash/public/cpp/wallpaper_types.h"
 #include "base/bind.h"
@@ -233,6 +234,31 @@ void ChromePersonalizationAppUiDelegate::SelectWallpaper(
   client->SetOnlineWallpaper(
       user->GetAccountId(), absl::make_optional(image_asset_id),
       GURL(it->second.image_url.spec()), it->second.collection_id,
+      ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
+      /*preview_mode=*/false, std::move(callback));
+}
+
+void ChromePersonalizationAppUiDelegate::SelectLocalImage(
+    const base::UnguessableToken& id,
+    SelectLocalImageCallback callback) {
+  const auto& it = local_image_id_map_.find(id);
+
+  if (it == local_image_id_map_.end()) {
+    mojo::ReportBadMessage("Invalid local image id selected");
+    return;
+  }
+
+  const user_manager::User* user =
+      chromeos::ProfileHelper::Get()->GetUserByProfile(profile_);
+  DCHECK(user);
+
+  auto* controller = ash::WallpaperController::Get();
+  auto* client = WallpaperControllerClientImpl::Get();
+
+  const auto& account_id = user->GetAccountId();
+
+  controller->SetCustomWallpaper(
+      account_id, client->GetFilesId(account_id), it->second,
       ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
       /*preview_mode=*/false, std::move(callback));
 }

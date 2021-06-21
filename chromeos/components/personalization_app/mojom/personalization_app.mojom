@@ -32,7 +32,8 @@ struct WallpaperImage {
 };
 
 struct LocalImage {
-  // Id to be used for fetching the image thumbnail data.
+  // Unique ID for this image for fetching thumbnail data and setting as user
+  // background.
   mojo_base.mojom.UnguessableToken id;
 
   // Name of this local asset to be displayed to the user.
@@ -67,6 +68,9 @@ interface WallpaperProvider {
     // on failure.
     GetCurrentWallpaper() => (WallpaperImage? image);
 
-    // Sets the given wallpaper as the user's background.
+    // Sets the given backdrop wallpaper as the user's background.
     SelectWallpaper(uint64 image_asset_id) => (bool success);
+
+    // Sets the given local wallpaper as the user's background.
+    SelectLocalImage(mojo_base.mojom.UnguessableToken id) => (bool success);
 };

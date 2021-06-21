@@ -44,3 +44,22 @@ export function promisifyOnload(element, id, afterNextRender) {
 export function unguessableTokenToString({high, low}) {
   return `${high},${low}`;
 }
+
+/**
+ * @param {!string} str
+ * @return {!mojoBase.mojom.UnguessableToken}
+ */
+export function stringToUnguessableToken(str) {
+  const [high, low] = str.split(',').map(BigInt);
+  return {high, low};
+}
+
+/**
+ * @param {!mojoBase.mojom.UnguessableToken} a
+ * @param {!mojoBase.mojom.UnguessableToken} b
+ * @return {boolean}
+ */
+export function unguessableTokensEqual(a, b) {
+  return a.hasOwnProperty('high') && a.high === b.high &&
+      a.hasOwnProperty('low') && a.low === b.low;
+}

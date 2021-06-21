@@ -12,6 +12,12 @@ import {Action} from 'chrome://resources/js/cr/ui/store.m.js';
 import {ActionName} from './personalization_actions.js';
 
 /**
+ * @typedef {chromeos.personalizationApp.mojom.LocalImage|
+ *           chromeos.personalizationApp.mojom.WallpaperImage}
+ */
+export let DisplayableImage;
+
+/**
  * Stores collections and images from backdrop server.
  * |images| is a mapping of collection id to the list of images.
  * @typedef {{
@@ -61,7 +67,7 @@ export let LocalState;
  *   backdrop: !BackdropState,
  *   loading: !LoadingState,
  *   local: !LocalState,
- *   selected: ?chromeos.personalizationApp.mojom.WallpaperImage,
+ *   selected: ?DisplayableImage,
  * }}
  */
 export let PersonalizationState;
@@ -217,9 +223,9 @@ function localReducer(state, action) {
 }
 
 /**
- * @param {?chromeos.personalizationApp.mojom.WallpaperImage} state
+ * @param {?DisplayableImage} state
  * @param {!Action} action
- * @return {?chromeos.personalizationApp.mojom.WallpaperImage}
+ * @return {?DisplayableImage}
  */
 function selectedReducer(state, action) {
   switch (action.name) {

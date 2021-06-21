@@ -1,44 +1,71 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/wallpaper/wallpaper_utils/wallpaper_decoder.h"
 
-#include "ash/shell.h"
-#include "ash/shell_delegate.h"
+#include <string>
+
 #include "base/bind.h"
+#include "base/callback.h"
+#include "base/files/file_util.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "ipc/ipc_channel.h"
+#include "services/data_decoder/public/cpp/decode_image.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace ash {
+
 namespace {
 
 const int64_t kMaxImageSizeInBytes =
     static_cast<int64_t>(IPC::Channel::kMaximumMessageSize);
 
-void ConvertToImageSkia(OnWallpaperDecoded callback, const SkBitmap& image) {
-  if (image.isNull()) {
+std::string ReadFileToString(const base::FilePath& path) {
+  std::string result;
+  if (!base::ReadFileToString(path, &result)) {
+    LOG(WARNING) << "Failed reading file";
+    result.clear();
+  }
+
+  return result;
+}
+
+void ToImageSkia(DecodeImageCallback callback, const SkBitmap& bitmap) {
+  if (bitmap.empty()) {
+    LOG(WARNING) << "Failed to decode image";
     std::move(callback).Run(gfx::ImageSkia());
     return;
   }
-  SkBitmap final_image = image;
-  final_image.setImmutable();
-  gfx::ImageSkia image_skia = gfx::ImageSkia::CreateFrom1xBitmap(final_image);
-  image_skia.MakeThreadSafe();
-
-  std::move(callback).Run(image_skia);
+  gfx::ImageSkia image = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
+  std::move(callback).Run(image);
 }
 
 }  // namespace
 
-void DecodeWallpaper(const std::string& image_data,
-                     const data_decoder::mojom::ImageCodec& image_codec,
-                     OnWallpaperDecoded callback) {
-  std::vector<uint8_t> image_bytes(image_data.begin(), image_data.end());
+void DecodeImageFile(DecodeImageCallback callback,
+                     const base::FilePath& file_path) {
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(&ReadFileToString, file_path),
+      base::BindOnce(&DecodeImageData, std::move(callback)));
+}
+
+void DecodeImageData(DecodeImageCallback callback, const std::string& data) {
+  if (data.empty()) {
+    std::move(callback).Run(gfx::ImageSkia());
+    return;
+  }
   data_decoder::DecodeImageIsolated(
-      std::move(image_bytes), image_codec, /*shrink_to_fit=*/true,
-      kMaxImageSizeInBytes, /*desired_image_frame_size=*/gfx::Size(),
-      base::BindOnce(&ConvertToImageSkia, std::move(callback)));
+      std::vector<uint8_t>(data.begin(), data.end()),
+      data_decoder::mojom::ImageCodec::kDefault,
+      /*shrink_to_fit=*/false, kMaxImageSizeInBytes,
+      /*desired_image_frame_size=*/gfx::Size(),
+      base::BindOnce(&ToImageSkia, std::move(callback)));
 }
 
 }  // namespace ash

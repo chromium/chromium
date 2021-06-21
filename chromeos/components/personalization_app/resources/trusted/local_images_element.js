@@ -13,8 +13,11 @@ import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import './styles.js';
 import '../common/styles.js';
+import {assert} from '/assert.m.js';
 import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {unguessableTokenToString} from '../common/utils.js';
+import {isNonEmptyArray, stringToUnguessableToken, unguessableTokensEqual, unguessableTokenToString} from '../common/utils.js';
+import {getWallpaperProvider} from './mojo_interface_provider.js';
+import {selectWallpaper} from './personalization_controller.js';
 import {WithPersonalizationStore} from './personalization_store.js';
 
 /** @polymer */
@@ -65,6 +68,18 @@ export class LocalImages extends WithPersonalizationStore {
       imageDataLoading_: {
         type: Object,
       },
+
+      /** @private */
+      hasError_: {
+        type: Boolean,
+        computed: 'computeHasError_(imagesLoading_, images_)',
+      },
+
+      /** @private */
+      showImages_: {
+        type: Boolean,
+        computed: 'computeShowImages_(imagesLoading_, images_)'
+      }
     };
   }
 
@@ -76,6 +91,26 @@ export class LocalImages extends WithPersonalizationStore {
     this.watch('imageData_', state => state.local.data);
     this.watch('imageDataLoading_', state => state.loading.local.data);
     this.updateFromStore();
+  }
+
+  /**
+   * @private
+   * @param {boolean} imagesLoading
+   * @param {?Array<!chromeos.personalizationApp.mojom.LocalImage>} images
+   * @return {boolean}
+   */
+  computeHasError_(imagesLoading, images) {
+    return !imagesLoading && !isNonEmptyArray(images);
+  }
+
+  /**
+   * @private
+   * @param {boolean} imagesLoading
+   * @param {?Array<!chromeos.personalizationApp.mojom.LocalImage>} images
+   * @return {boolean}
+   */
+  computeShowImages_(imagesLoading, images) {
+    return !imagesLoading && isNonEmptyArray(images);
   }
 
   /**
@@ -113,6 +148,29 @@ export class LocalImages extends WithPersonalizationStore {
   getImageData_(image, imageData) {
     const key = unguessableTokenToString(image.id);
     return imageData[key];
+  }
+
+  /**
+   * @private
+   * @param {!chromeos.personalizationApp.mojom.LocalImage} image
+   * @return {string}
+   */
+  getImageKey_(image) {
+    return unguessableTokenToString(image.id);
+  }
+
+  /**
+   * @private
+   * @param {!Event} event
+   */
+  onClickImage_(event) {
+    const id = stringToUnguessableToken(event.currentTarget.dataset.id);
+    const image =
+        this.images_.find(image => unguessableTokensEqual(id, image.id));
+    assert(!!image, 'Image with that id not found');
+    selectWallpaper(
+        /** @type {!chromeos.personalizationApp.mojom.LocalImage} */ (image),
+        getWallpaperProvider(), this.getStore());
   }
 }
 

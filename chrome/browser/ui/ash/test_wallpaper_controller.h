@@ -47,6 +47,12 @@ class TestWallpaperController : public ash::WallpaperController {
             const base::FilePath& device_policy_wallpaper) override;
   void SetCustomWallpaper(const AccountId& account_id,
                           const std::string& wallpaper_files_id,
+                          const base::FilePath& file_path,
+                          ash::WallpaperLayout layout,
+                          bool preview_mode,
+                          SetCustomWallpaperCallback callback) override;
+  void SetCustomWallpaper(const AccountId& account_id,
+                          const std::string& wallpaper_files_id,
                           const std::string& file_name,
                           ash::WallpaperLayout layout,
                           const gfx::ImageSkia& image,

@@ -4,6 +4,7 @@
 
 import {Action} from 'chrome://resources/js/cr/ui/store.m.js';
 import {unguessableTokenToString} from '../common/utils.js';
+import {DisplayableImage} from './personalization_reducers.js';
 
 /**
  * @fileoverview Defines the actions to change state.
@@ -49,7 +50,7 @@ export function beginLoadLocalImageDataAction(image) {
 
 /**
  * Notify that a user has clicked on an image to set as wallpaper.
- * @param {!chromeos.personalizationApp.mojom.WallpaperImage} image
+ * @param {!DisplayableImage} image
  * @return {!Action}
  */
 export function beginSelectImageAction(image) {
@@ -114,7 +115,7 @@ export function setLocalImagesAction(images) {
  * Returns an action to set the current image as currently selected across the
  * app. Can be called with null to represent no image currently selected or that
  * an error occurred.
- * @param {?chromeos.personalizationApp.mojom.WallpaperImage} image
+ * @param {?DisplayableImage} image
  * @return {!Action}
  */
 export function setSelectedImageAction(image) {

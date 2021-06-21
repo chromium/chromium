@@ -41,6 +41,17 @@ void TestWallpaperController::Init(
 void TestWallpaperController::SetCustomWallpaper(
     const AccountId& account_id,
     const std::string& wallpaper_files_id,
+    const base::FilePath& file_path,
+    ash::WallpaperLayout layout,
+    bool preview_mode,
+    SetCustomWallpaperCallback callback) {
+  ++set_custom_wallpaper_count_;
+  std::move(callback).Run(true);
+}
+
+void TestWallpaperController::SetCustomWallpaper(
+    const AccountId& account_id,
+    const std::string& wallpaper_files_id,
     const std::string& file_name,
     ash::WallpaperLayout layout,
     const gfx::ImageSkia& image,

@@ -73,3 +73,9 @@ void FakePersonalizationAppUiDelegate::SelectWallpaper(
     SelectWallpaperCallback callback) {
   std::move(callback).Run(/*success=*/true);
 }
+
+void FakePersonalizationAppUiDelegate::SelectLocalImage(
+    const base::UnguessableToken& token,
+    SelectLocalImageCallback callback) {
+  std::move(callback).Run(/*success=*/true);
+}

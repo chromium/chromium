@@ -16,6 +16,7 @@
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/image_downloader.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/public/cpp/wallpaper_controller.h"
 #include "ash/public/cpp/wallpaper_controller_client.h"
 #include "ash/public/cpp/wallpaper_controller_observer.h"
 #include "ash/public/cpp/wallpaper_types.h"
@@ -287,22 +288,6 @@ ColorProfileType GetColorProfileType(ColorProfile color_profile) {
   }
   NOTREACHED();
   return ColorProfileType::DARK_MUTED;
-}
-
-// If |read_is_successful| is true, start decoding the image, which will run
-// |callback| upon completion; if it's false, run |callback| directly with an
-// empty image.
-void OnWallpaperDataRead(LoadedCallback callback,
-                         std::unique_ptr<std::string> data,
-                         bool read_is_successful) {
-  if (!read_is_successful) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), gfx::ImageSkia()));
-    return;
-  }
-  // This image was once encoded to JPEG by |ResizeAndEncodeImage|.
-  DecodeWallpaper(*data, data_decoder::mojom::ImageCodec::kDefault,
-                  std::move(callback));
 }
 
 // Deletes a list of wallpaper files in |file_list|.
@@ -987,6 +972,20 @@ void WallpaperControllerImpl::Init(
 void WallpaperControllerImpl::SetCustomWallpaper(
     const AccountId& account_id,
     const std::string& wallpaper_files_id,
+    const base::FilePath& file_path,
+    WallpaperLayout layout,
+    bool preview_mode,
+    SetCustomWallpaperCallback callback) {
+  ReadAndDecodeWallpaper(
+      base::BindOnce(&WallpaperControllerImpl::OnCustomWallpaperDecoded,
+                     weak_factory_.GetWeakPtr(), account_id, wallpaper_files_id,
+                     file_path, layout, preview_mode, std::move(callback)),
+      sequenced_task_runner_, file_path);
+}
+
+void WallpaperControllerImpl::SetCustomWallpaper(
+    const AccountId& account_id,
+    const std::string& wallpaper_files_id,
     const std::string& file_name,
     WallpaperLayout layout,
     const gfx::ImageSkia& image,
@@ -1083,7 +1082,7 @@ void WallpaperControllerImpl::SetOnlineWallpaperFromData(
   }
 
   const OnlineWallpaperParams params = {account_id, url, layout, preview_mode};
-  LoadedCallback decoded_callback =
+  DecodeImageCallback decoded_callback =
       base::BindOnce(&WallpaperControllerImpl::OnOnlineWallpaperDecoded,
                      weak_factory_.GetWeakPtr(), params, /*save_file=*/true,
                      std::move(callback));
@@ -1092,12 +1091,7 @@ void WallpaperControllerImpl::SetOnlineWallpaperFromData(
         .Run(CreateSolidColorWallpaper(kDefaultWallpaperColor));
     return;
   }
-  // Use default codec because 1) online wallpapers may have various formats,
-  // 2) the image data comes from the Chrome OS wallpaper picker and is
-  // trusted (third-party wallpaper apps use |SetThirdPartyWallpaper|), 3) the
-  // code path is never used on login screen (enforced by the check above).
-  DecodeWallpaper(image_data, data_decoder::mojom::ImageCodec::kDefault,
-                  std::move(decoded_callback));
+  DecodeImageData(std::move(decoded_callback), image_data);
 }
 
 void WallpaperControllerImpl::SetDefaultWallpaper(
@@ -1142,7 +1136,7 @@ void WallpaperControllerImpl::SetPolicyWallpaper(
 
   // Updates the screen only when the user with this account_id has logged in.
   const bool show_wallpaper = IsActiveUser(account_id);
-  LoadedCallback callback = base::BindOnce(
+  DecodeImageCallback callback = base::BindOnce(
       &WallpaperControllerImpl::SaveAndSetWallpaper, weak_factory_.GetWeakPtr(),
       account_id, wallpaper_files_id, kPolicyWallpaperFile, POLICY,
       WALLPAPER_LAYOUT_CENTER_CROPPED, show_wallpaper);
@@ -1151,8 +1145,7 @@ void WallpaperControllerImpl::SetPolicyWallpaper(
     std::move(callback).Run(CreateSolidColorWallpaper(kDefaultWallpaperColor));
     return;
   }
-  DecodeWallpaper(data, data_decoder::mojom::ImageCodec::kDefault,
-                  std::move(callback));
+  DecodeImageData(std::move(callback), data);
 }
 
 void WallpaperControllerImpl::SetDevicePolicyWallpaperPath(
@@ -1832,7 +1825,7 @@ bool WallpaperControllerImpl::WallpaperIsAlreadyLoaded(
 }
 
 void WallpaperControllerImpl::ReadAndDecodeWallpaper(
-    LoadedCallback callback,
+    DecodeImageCallback callback,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     const base::FilePath& file_path) {
   decode_requests_for_testing_.push_back(file_path);
@@ -1840,12 +1833,7 @@ void WallpaperControllerImpl::ReadAndDecodeWallpaper(
     std::move(callback).Run(CreateSolidColorWallpaper(kDefaultWallpaperColor));
     return;
   }
-  std::string* data = new std::string;
-  base::PostTaskAndReplyWithResult(
-      task_runner.get(), FROM_HERE,
-      base::BindOnce(&base::ReadFileToString, file_path, data),
-      base::BindOnce(&OnWallpaperDataRead, std::move(callback),
-                     base::WrapUnique(data)));
+  DecodeImageFile(std::move(callback), file_path);
 }
 
 bool WallpaperControllerImpl::InitializeUserWallpaperInfo(
@@ -2081,6 +2069,22 @@ void WallpaperControllerImpl::SaveAndSetWallpaperWithCompletion(
 
   wallpaper_cache_map_[account_id] =
       CustomWallpaperElement(wallpaper_path, image);
+}
+
+void WallpaperControllerImpl::OnCustomWallpaperDecoded(
+    const AccountId& account_id,
+    const std::string& wallpaper_files_id,
+    const base::FilePath& path,
+    WallpaperLayout layout,
+    bool preview_mode,
+    SetCustomWallpaperCallback callback,
+    const gfx::ImageSkia& image) {
+  bool success = !image.isNull();
+  if (success) {
+    SetCustomWallpaper(account_id, wallpaper_files_id, path.BaseName().value(),
+                       layout, image, preview_mode);
+  }
+  std::move(callback).Run(success);
 }
 
 void WallpaperControllerImpl::OnWallpaperDecoded(const AccountId& account_id,
