@@ -20,7 +20,7 @@ namespace blink {
 namespace {
 
 template <HeapMojoWrapperMode Mode>
-class GCOwner : public GarbageCollected<GCOwner<Mode>> {
+class GCOwner final : public GarbageCollected<GCOwner<Mode>> {
  public:
   explicit GCOwner(MockContextLifecycleNotifier* context)
       : receiver_set_(context) {}

@@ -28,7 +28,7 @@ template <HeapMojoWrapperMode Mode>
 class HeapMojoRemoteSetGCBaseTest;
 
 template <HeapMojoWrapperMode Mode>
-class GCOwner : public GarbageCollected<GCOwner<Mode>> {
+class GCOwner final : public GarbageCollected<GCOwner<Mode>> {
  public:
   explicit GCOwner(MockContextLifecycleNotifier* context,
                    HeapMojoRemoteSetGCBaseTest<Mode>* test)
