@@ -48,7 +48,7 @@ void FormUtilJavaScriptFeature::SetUpForUniqueIDsWithInitialState(
     web::WebFrame* frame,
     uint32_t next_available_id) {
   std::vector<base::Value> parameters;
-  parameters.emplace_back(int{next_available_id});
+  parameters.emplace_back(static_cast<int>(next_available_id));
   CallJavaScriptFunction(frame, "fill.setUpForUniqueIDs", parameters);
 }
 

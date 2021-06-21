@@ -79,7 +79,7 @@ TEST_F(FormActivityTabHelperTest, TestObserverDocumentSubmitted) {
   // Wait for |SetUpForUniqueIDsWithInitialState| to complete.
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
     return [ExecuteJavaScript(@"document[__gCrWeb.fill.ID_SYMBOL]") intValue] ==
-           int{next_available_id};
+           static_cast<int>(next_available_id);
   }));
 
   ASSERT_FALSE(observer_->submit_document_info());
@@ -120,7 +120,7 @@ TEST_F(FormActivityTabHelperTest, TestFormSubmittedHook) {
   // Wait for |SetUpForUniqueIDsWithInitialState| to complete.
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
     return [ExecuteJavaScript(@"document[__gCrWeb.fill.ID_SYMBOL]") intValue] ==
-           int{next_available_id};
+           static_cast<int>(next_available_id);
   }));
 
   ASSERT_FALSE(observer_->submit_document_info());
@@ -160,7 +160,7 @@ TEST_F(FormActivityTabHelperTest, TestObserverFormActivityFrameMessaging) {
   // Wait for |SetUpForUniqueIDsWithInitialState| to complete.
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
     return [ExecuteJavaScript(@"document[__gCrWeb.fill.ID_SYMBOL]") intValue] ==
-           int{next_available_id};
+           static_cast<int>(next_available_id);
   }));
 
   ASSERT_FALSE(observer_->form_activity_info());

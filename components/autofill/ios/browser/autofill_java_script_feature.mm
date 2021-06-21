@@ -78,7 +78,7 @@ void AutofillJavaScriptFeature::FetchForms(
 
   bool restrict_unowned_fields_to_formless_checkout = false;
   std::vector<base::Value> parameters;
-  parameters.push_back(base::Value(int{required_fields_count}));
+  parameters.push_back(base::Value(static_cast<int>(required_fields_count)));
   parameters.push_back(
       base::Value(restrict_unowned_fields_to_formless_checkout));
   CallJavaScriptFunction(

@@ -210,7 +210,7 @@ TEST_F(FormJsTest, AddForm) {
   // Wait for |SetUpForUniqueIDsWithInitialState| to complete.
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
     return [ExecuteJavaScript(@"document[__gCrWeb.fill.ID_SYMBOL]") intValue] ==
-           int{next_available_id};
+           static_cast<int>(next_available_id);
   }));
 
   TrackFormMutations(main_frame);
@@ -312,7 +312,7 @@ TEST_F(FormJsTest, RemoveForm) {
   // Wait for |SetUpForUniqueIDsWithInitialState| to complete.
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
     return [ExecuteJavaScript(@"document[__gCrWeb.fill.ID_SYMBOL]") intValue] ==
-           int{next_available_id};
+           static_cast<int>(next_available_id);
   }));
 
   TrackFormMutations(main_frame);
