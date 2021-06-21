@@ -3083,6 +3083,10 @@ const char kExploreSitesName[] = "Explore websites";
 const char kExploreSitesDescription[] =
     "Enables portal from new tab page to explore websites.";
 
+const char kFeedInteractiveRefreshName[] = "Refresh feeds";
+const char kFeedInteractiveRefreshDescription[] =
+    "Enables refreshing feeds triggered by the users.";
+
 const char kFillingPasswordsFromAnyOriginName[] =
     "Filling passwords from any origin";
 const char kFillingPasswordsFromAnyOriginDescription[] =

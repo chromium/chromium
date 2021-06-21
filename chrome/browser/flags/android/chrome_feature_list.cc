@@ -122,6 +122,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &feature_engagement::kIPHHomepagePromoCardFeature,
     &feature_engagement::kIPHNewTabPageHomeButtonFeature,
     &feature_engagement::kIPHTabSwitcherButtonFeature,
+    &feed::kFeedInteractiveRefresh,
     &feed::kInterestFeedContentSuggestions,
     &feed::kInterestFeedNoticeCardAutoDismiss,
     &feed::kInterestFeedSpinnerAlwaysAnimate,

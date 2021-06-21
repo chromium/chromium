@@ -1769,6 +1769,9 @@ extern const char kEnableUseAaudioDriverDescription[];
 extern const char kExploreSitesName[];
 extern const char kExploreSitesDescription[];
 
+extern const char kFeedInteractiveRefreshName[];
+extern const char kFeedInteractiveRefreshDescription[];
+
 extern const char kFillingPasswordsFromAnyOriginName[];
 extern const char kFillingPasswordsFromAnyOriginDescription[];
 

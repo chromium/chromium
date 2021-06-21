@@ -53,6 +53,9 @@ extern const base::Feature kXsurfaceMetricsReporting;
 // Whether to log reliability events.
 extern const base::Feature kReliabilityLogging;
 
+// Feature that enables refreshing feeds triggered by the users.
+extern const base::Feature kFeedInteractiveRefresh;
+
 std::string GetFeedReferrerUrl();
 
 }  // namespace feed
