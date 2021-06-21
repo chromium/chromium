@@ -8470,6 +8470,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="LanguageSettings.AppLanguagePrompt.Action"
+    enum="LanguageSettingsAppLanguagePromptAction" expires_after="2021-12-01">
+  <owner>perrier@chromium.org</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    The action taken by a user from the app language prompt shown on second run.
+    Each option can only be taken once for each time the prompt is shown. An
+    action must be taken if the prompt is shown, unless the application is
+    closed while the prompt is displayed. Recorded when the prompt is dismissed.
+  </summary>
+</histogram>
+
 <histogram name="LanguageSettings.PageImpression"
     enum="LanguageSettingsPageType" expires_after="2021-12-01">
   <owner>googleo@chromium.org</owner>

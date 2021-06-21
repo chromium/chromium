@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.language;
 
 import android.app.Activity;
 import android.content.res.Resources;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,7 @@ import androidx.annotation.IntDef;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.language.settings.LanguageItem;
@@ -48,11 +50,29 @@ public class AppLanguagePromoDialog {
     private LanguageItemAdapter mAdapter;
     private RestartAction mRestartAction;
 
+    /** Annotation for row item type. Either a LanguageItem or separator */
     @IntDef({ItemType.LANGUAGE, ItemType.SEPARATOR})
     @Retention(RetentionPolicy.SOURCE)
     private @interface ItemType {
         int LANGUAGE = 0;
         int SEPARATOR = 1;
+    }
+
+    /**
+     * Annotation for the action taken on the language dialog.
+     * Do not reorder or remove items, only add new items before NUM_ENTRIES.
+     * Keep in sync with LanguageSettingsAppLanguagePromptAction from enums.xml.
+     */
+    @IntDef({ActionType.DISMISSED_CANCEL_BUTTON, ActionType.DISMISSED_SYSTEM_BACK,
+            ActionType.OK_CHANGE_LANGUAGE, ActionType.OK_SAME_LANGUAGE, ActionType.OTHER})
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface ActionType {
+        int DISMISSED_CANCEL_BUTTON = 0;
+        int DISMISSED_SYSTEM_BACK = 1;
+        int OK_CHANGE_LANGUAGE = 2;
+        int OK_SAME_LANGUAGE = 3;
+        int OTHER = 4;
+        int NUM_ENTRIES = 5;
     }
 
     /**
@@ -284,7 +304,19 @@ public class AppLanguagePromoDialog {
 
     public void onDismissAppLanguageModal(@DialogDismissalCause int dismissalCause) {
         if (dismissalCause == DialogDismissalCause.POSITIVE_BUTTON_CLICKED) {
+            String languageCode = mAdapter.getSelectedLanguage().getCode();
+            if (TextUtils.equals(languageCode, AppLocaleUtils.getAppLanguagePref())) {
+                recordActionType(ActionType.OK_SAME_LANGUAGE);
+            } else {
+                recordActionType(ActionType.OK_CHANGE_LANGUAGE);
+            }
             startAppLanguageInstall();
+        } else if (dismissalCause == DialogDismissalCause.NEGATIVE_BUTTON_CLICKED) {
+            recordActionType(ActionType.DISMISSED_CANCEL_BUTTON);
+        } else if (dismissalCause == DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE) {
+            recordActionType(ActionType.DISMISSED_SYSTEM_BACK);
+        } else {
+            recordActionType(ActionType.OTHER);
         }
         TranslateBridge.setAppLanguagePromptShown();
     }
@@ -375,5 +407,14 @@ public class AppLanguagePromoDialog {
         if (TranslateBridge.getAppLanguagePromptShown()) return false;
 
         return true;
+    }
+
+    /**
+     * Record the type of action taken on the dialog.
+     * @param @ActionType int.
+     */
+    private static void recordActionType(@ActionType int actionType) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "LanguageSettings.AppLanguagePrompt.Action", actionType, ActionType.NUM_ENTRIES);
     }
 }

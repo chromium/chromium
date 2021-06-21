@@ -43705,9 +43705,17 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="10" label="Change Target Language"/>
   <int value="11" label="Remove language from 'Never Translate' list"/>
   <int value="12" label="Add language to 'Never Translate' list"/>
-  <int value="13" label="Remove language from 'Translate' list"/>
+  <int value="13" label="Remove language from 'Always Translate' list"/>
   <int value="14" label="Add language to 'Always Translate' list"/>
   <int value="15" label="Remove site from 'Never translate sites' list"/>
+</enum>
+
+<enum name="LanguageSettingsAppLanguagePromptAction">
+  <int value="0" label="Dismissed via cancel button"/>
+  <int value="1" label="Dismissed via system back"/>
+  <int value="2" label="Ok button changed language"/>
+  <int value="3" label="Ok button same language"/>
+  <int value="4" label="Other"/>
 </enum>
 
 <enum name="LanguageSettingsPageType">
