@@ -372,24 +372,20 @@ public class InfoBarContainerTest {
         dismissInfoBar(infoBar, infobarListener);
 
         // A layout must occur to recalculate the transparent region.
-        CriteriaHelper.pollUiThread(
-                () -> Criteria.checkThat(layoutCount.get(), Matchers.greaterThan(0)));
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(layoutCount.get(), Matchers.greaterThan(0));
+            // The InfoBarContainer should no longer be subtracted from the transparent region.
+            // We really want assertTrue(transparentRegion.contains(containerDisplayFrame)),
+            // but region doesn't have 'contains(Rect)', so we invert the test. So, the old
+            // container rect can't touch the bounding rect of the non-transparent region).
+            Region transparentRegion = new Region();
+            decorView.gatherTransparentRegion(transparentRegion);
+            Region opaqueRegion = new Region(fullDisplayFrame);
+            opaqueRegion.op(transparentRegion, Region.Op.DIFFERENCE);
+            Criteria.checkThat("Opaque region " + opaqueRegion.getBounds()
+                            + " should not intersect " + containerDisplayFrame,
+                    opaqueRegion.getBounds().intersect(containerDisplayFrame), Matchers.is(false));
 
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                // The InfoBarContainer should no longer be subtracted from the transparent region.
-                // We really want assertTrue(transparentRegion.contains(containerDisplayFrame)),
-                // but region doesn't have 'contains(Rect)', so we invert the test. So, the old
-                // container rect can't touch the bounding rect of the non-transparent region).
-                Region transparentRegion = new Region();
-                decorView.gatherTransparentRegion(transparentRegion);
-                Region opaqueRegion = new Region(fullDisplayFrame);
-                opaqueRegion.op(transparentRegion, Region.Op.DIFFERENCE);
-                Assert.assertFalse("Opaque region " + opaqueRegion.getBounds()
-                                + " should not intersect " + containerDisplayFrame,
-                        opaqueRegion.getBounds().intersect(containerDisplayFrame));
-            }
         });
 
         // Additional manual test that this is working:
