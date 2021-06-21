@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/callback_helpers.h"
-#include "base/logging.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
@@ -1095,6 +1094,7 @@ SharedImageBackingFactoryD3DTest::CreateVideoImages(const gfx::Size& size,
   HRESULT hr = d3d11_device->CreateTexture2D(&desc, &data, &d3d11_texture);
   if (FAILED(hr))
     return {};
+  EXPECT_TRUE(SUCCEEDED(hr));
 
   uint32_t usage =
       gpu::SHARED_IMAGE_USAGE_VIDEO_DECODE | gpu::SHARED_IMAGE_USAGE_GLES2 |
@@ -1105,17 +1105,16 @@ SharedImageBackingFactoryD3DTest::CreateVideoImages(const gfx::Size& size,
   if (use_shared_handle) {
     Microsoft::WRL::ComPtr<IDXGIResource1> dxgi_resource;
     hr = d3d11_texture.As(&dxgi_resource);
-    DCHECK_EQ(hr, S_OK);
+    EXPECT_TRUE(SUCCEEDED(hr));
 
     HANDLE handle;
     hr = dxgi_resource->CreateSharedHandle(
         nullptr, DXGI_SHARED_RESOURCE_READ | DXGI_SHARED_RESOURCE_WRITE,
         nullptr, &handle);
-    if (FAILED(hr))
-      return {};
+    EXPECT_TRUE(SUCCEEDED(hr));
 
     shared_handle.Set(handle);
-    DCHECK(shared_handle.IsValid());
+    EXPECT_TRUE(shared_handle.IsValid());
 
     usage |= gpu::SHARED_IMAGE_USAGE_WEBGPU;
   }
@@ -1367,7 +1366,7 @@ void SharedImageBackingFactoryD3DTest::RunOverlayTest(bool use_shared_handle,
   Microsoft::WRL::ComPtr<ID3D11Texture2D> staging_texture;
   HRESULT hr =
       d3d11_device->CreateTexture2D(&staging_desc, nullptr, &staging_texture);
-  ASSERT_EQ(hr, S_OK);
+  ASSERT_TRUE(SUCCEEDED(hr));
 
   Microsoft::WRL::ComPtr<ID3D11DeviceContext> device_context;
   d3d11_device->GetImmediateContext(&device_context);
@@ -1377,7 +1376,7 @@ void SharedImageBackingFactoryD3DTest::RunOverlayTest(bool use_shared_handle,
   D3D11_MAPPED_SUBRESOURCE mapped_resource = {};
   hr = device_context->Map(staging_texture.Get(), 0, D3D11_MAP_READ, 0,
                            &mapped_resource);
-  ASSERT_EQ(hr, S_OK);
+  ASSERT_TRUE(SUCCEEDED(hr));
 
   const unsigned char* pixels =
       static_cast<const unsigned char*>(mapped_resource.pData);
