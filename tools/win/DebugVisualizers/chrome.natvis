@@ -23,11 +23,11 @@
       <ExpandedItem Condition="ptr_ != 0">ptr_</ExpandedItem>
     </Expand>
   </Type>
-  <Type Name="absl::Optional&lt;*&gt;">
+  <Type Name="absl::optional&lt;*&gt;">
     <DisplayString Condition="!engaged_">(null)</DisplayString>
     <DisplayString>{data_}</DisplayString>
     <Expand>
-      <Item Name="Value" Condition="engaged_">data_</Item>
+      <ExpandedItem Condition="engaged_">data_</ExpandedItem>
     </Expand>
   </Type>
   <Type Name="IPC::Message::Header">
