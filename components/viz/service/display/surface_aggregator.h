@@ -258,22 +258,23 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
 
   int ChildIdForSurface(Surface* surface);
   bool IsSurfaceFrameIndexSameAsPrevious(const Surface* surface) const;
-  gfx::Rect DamageRectForSurface(const Surface* surface,
-                                 const CompositorRenderPass& source,
+  gfx::Rect DamageRectForSurface(const ResolvedFrameData& resolved_frame,
                                  bool include_per_quad_damage) const;
 
-  // This function adds |damage_rect| to
-  // |damage_rects_union_of_surfaces_on_top_|. |damage_rect| is in the quad
-  // content space while both clip_rect and
-  // |damage_rects_union_of_surfaces_on_top_| are already on the root target
-  // space.
+  // This function adds a damage rect to |surface_damage_rect_list_|. The damage
+  // rect will come from |resolved_frame| if provided otherwise
+  // |default_damage_rect| will be used.
+  //
+  // |surface_damage_rect_list_| is different from the |root_damage_rect_| which
+  // is the union of all surface damages. This function records per-surface
+  // damage rects to |surface_damage_rect_list_| in a top-to-bottom order and is
+  // called at each surface in the frame.
   void AddSurfaceDamageToDamageList(
-      const gfx::Rect& damage_rect,
+      const gfx::Rect& default_damage_rect,
       const gfx::Transform& parent_target_transform,
       const absl::optional<gfx::Rect>& clip_rect,
-      const CompositorRenderPass* source_pass,
       AggregatedRenderPass* dest_pass,
-      Surface* surface);
+      const ResolvedFrameData* resolved_frame);
 
   void AddRenderPassFilterDamageToDamageList(
       const gfx::Transform& parent_target_transform,

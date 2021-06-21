@@ -77,29 +77,6 @@ const base::UnguessableToken kArbitraryToken3 =
 constexpr gfx::Size kSurfaceSize(100, 100);
 constexpr gfx::Rect kEmptyDamage(0, 0);
 
-// Populate valid looking TransferableResources for `frame` based on DrawQuad
-// ResourceIds.
-void PopulateTransferableResources(CompositorFrame& frame) {
-  DCHECK(frame.resource_list.empty());
-
-  std::set<ResourceId> resources_added;
-  for (auto& render_pass : frame.render_pass_list) {
-    for (auto* quad : render_pass->quad_list) {
-      for (ResourceId resource_id : quad->resources) {
-        if (resource_id == kInvalidResourceId)
-          continue;
-
-        // Adds a TransferableResource the first time seeing a ResourceId.
-        if (resources_added.insert(resource_id).second) {
-          frame.resource_list.push_back(TransferableResource::MakeSoftware(
-              SharedBitmap::GenerateId(), quad->rect.size(), RGBA_8888));
-          frame.resource_list.back().id = resource_id;
-        }
-      }
-    }
-  }
-}
-
 class MockAggregatedDamageCallback {
  public:
   MockAggregatedDamageCallback() = default;

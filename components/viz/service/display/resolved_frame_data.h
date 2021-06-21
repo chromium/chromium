@@ -19,6 +19,11 @@ namespace viz {
 
 class Surface;
 
+// Returns |damage_rect| field from the DrawQuad if it exists otherwise returns
+// an empty optional.
+const absl::optional<gfx::Rect>& GetOptionalDamageRectFromQuad(
+    const DrawQuad* quad);
+
 // Data associated with a DrawQuad in a resolved frame.
 struct VIZ_SERVICE_EXPORT ResolvedQuadData {
   explicit ResolvedQuadData(const DrawQuad& quad);
@@ -76,14 +81,6 @@ class VIZ_SERVICE_EXPORT ResolvedFrameData {
   // resolved pass data.
   void SetInvalid();
 
-  // RenderPassData accessors. These should only be used if is_valid() returns
-  // true.
-  size_t RenderPassCount() const;
-  const ResolvedPassData& GetRenderPassDataById(
-      CompositorRenderPassId render_pass_id) const;
-  const ResolvedPassData& GetRenderPassDataByIndex(size_t index) const;
-  const ResolvedPassData& GetRootRenderPassData() const;
-
   // Marks this as used and returns true if this was the first time MarkAsUsed()
   // was called since last reset.
   bool MarkAsUsed();
@@ -91,6 +88,24 @@ class VIZ_SERVICE_EXPORT ResolvedFrameData {
   // Returns true if MarkAsUsed() was called since last reset and then resets
   // used to false.
   bool CheckIfUsedAndReset();
+
+  // All functions after this point are accessors for the resolved frame and
+  // should only be called if is_valid() returns true.
+
+  // RenderPassData accessors.
+  size_t RenderPassCount() const;
+  const ResolvedPassData& GetRenderPassDataById(
+      CompositorRenderPassId render_pass_id) const;
+  const ResolvedPassData& GetRenderPassDataByIndex(size_t index) const;
+  const ResolvedPassData& GetRootRenderPassData() const;
+
+  // Returns active frame damage rect. If |include_per_quad_damage| then the
+  // damage_rect will include unioned per quad damage, otherwise it will be
+  // limited to the root render passes damage_rect.
+  const gfx::Rect& GetDamageRect(bool include_per_quad_damage) const;
+
+  // Returns the root render pass output_rect.
+  const gfx::Rect& GetOutputRect() const;
 
  private:
   const SurfaceId surface_id_;
@@ -101,6 +116,7 @@ class VIZ_SERVICE_EXPORT ResolvedFrameData {
   uint64_t frame_index_ = 0;
   std::vector<ResolvedPassData> resolved_passes_;
   base::flat_map<CompositorRenderPassId, ResolvedPassData*> render_pass_id_map_;
+  gfx::Rect root_damage_rect_;
 
   // Track if the this resolved frame was used this frame.
   bool used_ = false;

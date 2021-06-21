@@ -9,9 +9,25 @@
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
+#include "components/viz/common/quads/texture_draw_quad.h"
+#include "components/viz/common/quads/yuv_video_draw_quad.h"
 #include "components/viz/service/surfaces/surface.h"
 
 namespace viz {
+
+const absl::optional<gfx::Rect>& GetOptionalDamageRectFromQuad(
+    const DrawQuad* quad) {
+  if (quad->material == DrawQuad::Material::kTextureContent) {
+    auto* texture_quad = TextureDrawQuad::MaterialCast(quad);
+    return texture_quad->damage_rect;
+  } else if (quad->material == DrawQuad::Material::kYuvVideoContent) {
+    auto* yuv_video_quad = YUVVideoDrawQuad::MaterialCast(quad);
+    return yuv_video_quad->damage_rect;
+  } else {
+    static absl::optional<gfx::Rect> no_damage;
+    return no_damage;
+  }
+}
 
 ResolvedQuadData::ResolvedQuadData(const DrawQuad& quad)
     : remapped_resources(quad.resources) {}
@@ -34,6 +50,8 @@ ResourceIdSet ResolvedFrameData::UpdateForActiveFrame(
   auto& compositor_frame = surface_->GetActiveOrInterpolatedFrame();
   auto& resource_list = compositor_frame.resource_list;
   auto& render_passes = compositor_frame.render_pass_list;
+  size_t num_render_pass = render_passes.size();
+  DCHECK(!render_passes.empty());
 
   // Figure out which resources are actually used in the render pass.
   // Note that we first gather them in a vector, since ResourceIdSet (which we
@@ -45,21 +63,33 @@ ResourceIdSet ResolvedFrameData::UpdateForActiveFrame(
   // Will be repopulated based on active frame.
   render_pass_id_map_.clear();
   resolved_passes_.clear();
-  render_pass_id_map_.reserve(render_passes.size());
-  resolved_passes_.resize(render_passes.size());
+  render_pass_id_map_.reserve(num_render_pass);
+  resolved_passes_.resize(num_render_pass);
+
+  root_damage_rect_ = render_passes.back()->damage_rect;
 
   // Reset and compute new render pass / quad data for this frame. This stores
   // remapped display resource ids.
-  for (size_t i = 0; i < render_passes.size(); ++i) {
+  for (size_t i = 0; i < num_render_pass; ++i) {
     auto& render_pass = render_passes[i];
     auto& resolved_pass = resolved_passes_[i];
 
     resolved_pass.render_pass = render_pass.get();
 
+    bool add_quad_damage_to_root_damage_rect =
+        i == num_render_pass - 1 && render_pass->has_per_quad_damage;
+
     // Loop through the quads, remapping resource ids and storing them.
     auto& draw_quads = resolved_passes_[i].draw_quads;
     draw_quads.reserve(render_pass->quad_list.size());
     for (auto* quad : render_pass->quad_list) {
+      if (add_quad_damage_to_root_damage_rect) {
+        auto optional_damage = GetOptionalDamageRectFromQuad(quad);
+        if (optional_damage.has_value()) {
+          root_damage_rect_.Union(optional_damage.value());
+        }
+      }
+
       if (quad->material == DrawQuad::Material::kCompositorRenderPass) {
         // Check CompositorRenderPassDrawQuad refers to a render pass
         // that exists and is drawn before the current render pass.
@@ -112,6 +142,15 @@ void ResolvedFrameData::SetInvalid() {
   valid_ = false;
 }
 
+bool ResolvedFrameData::MarkAsUsed() {
+  // Returns true the first time this is called after reset.
+  return !std::exchange(used_, true);
+}
+
+bool ResolvedFrameData::CheckIfUsedAndReset() {
+  return std::exchange(used_, false);
+}
+
 size_t ResolvedFrameData::RenderPassCount() const {
   DCHECK(valid_);
   return resolved_passes_.size();
@@ -139,13 +178,19 @@ const ResolvedPassData& ResolvedFrameData::GetRootRenderPassData() const {
   return resolved_passes_.back();
 }
 
-bool ResolvedFrameData::MarkAsUsed() {
-  // Returns true the first time this is called after reset.
-  return !std::exchange(used_, true);
+const gfx::Rect& ResolvedFrameData::GetDamageRect(
+    bool include_per_quad_damage) const {
+  DCHECK(valid_);
+
+  if (include_per_quad_damage)
+    return root_damage_rect_;
+
+  return resolved_passes_.back().render_pass->damage_rect;
 }
 
-bool ResolvedFrameData::CheckIfUsedAndReset() {
-  return std::exchange(used_, false);
+const gfx::Rect& ResolvedFrameData::GetOutputRect() const {
+  DCHECK(valid_);
+  return resolved_passes_.back().render_pass->output_rect;
 }
 
 }  // namespace viz

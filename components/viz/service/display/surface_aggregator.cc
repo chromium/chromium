@@ -97,20 +97,6 @@ gfx::Rect GetExpandedRectWithPixelMovingForegroundFilter(
       shared_quad_state->quad_to_target_transform, expanded_rect);
 }
 
-const absl::optional<gfx::Rect>& GetOptionalDamageRectFromQuad(
-    const DrawQuad* quad) {
-  if (quad->material == DrawQuad::Material::kTextureContent) {
-    auto* texture_quad = TextureDrawQuad::MaterialCast(quad);
-    return texture_quad->damage_rect;
-  } else if (quad->material == DrawQuad::Material::kYuvVideoContent) {
-    auto* yuv_video_quad = YUVVideoDrawQuad::MaterialCast(quad);
-    return yuv_video_quad->damage_rect;
-  } else {
-    static absl::optional<gfx::Rect> no_damage;
-    return no_damage;
-  }
-}
-
 }  // namespace
 
 struct SurfaceAggregator::PrewalkResult {
@@ -209,9 +195,10 @@ bool SurfaceAggregator::IsSurfaceFrameIndexSameAsPrevious(
 }
 
 gfx::Rect SurfaceAggregator::DamageRectForSurface(
-    const Surface* surface,
-    const CompositorRenderPass& source,
+    const ResolvedFrameData& resolved_frame,
     bool include_per_quad_damage) const {
+  const Surface* surface = resolved_frame.surface();
+
   // The |damage_rect| set in |SurfaceAnimationManager| is the |output_rect|.
   // However, we dont use |damage_rect| because when we transition from
   // interpolated frame we would end up using the |damage_rect| from the
@@ -220,8 +207,10 @@ gfx::Rect SurfaceAggregator::DamageRectForSurface(
   // out a small bounds on the damage given an animation that happens in
   // SurfaceAnimationManager.
   if (surface->HasSurfaceAnimationDamage())
-    return source.output_rect;
+    return resolved_frame.GetOutputRect();
 
+  // TODO(crbug.com/1194082): Cache the previous frame_index in
+  // ResolvedFrameData to avoid multiple maps lookups here.
   if (IsSurfaceFrameIndexSameAsPrevious(surface))
     return gfx::Rect();
 
@@ -234,23 +223,11 @@ gfx::Rect SurfaceAggregator::DamageRectForSurface(
   if (it != previous_contained_surfaces_.end()) {
     uint64_t previous_index = it->second;
     if (previous_index == surface->GetActiveFrameIndex() - 1) {
-      if (!source.has_per_quad_damage || !include_per_quad_damage) {
-        return source.damage_rect;
-      } else {
-        // TODO(crbug.com/1194082): Cache quad damage.
-        auto complete_damage = source.damage_rect;
-        for (auto* quad : source.quad_list) {
-          auto optional_damage = GetOptionalDamageRectFromQuad(quad);
-          if (optional_damage.has_value()) {
-            complete_damage.Union(optional_damage.value());
-          }
-        }
-        return complete_damage;
-      }
+      return resolved_frame.GetDamageRect(include_per_quad_damage);
     }
   }
 
-  return source.output_rect;
+  return resolved_frame.GetOutputRect();
 }
 
 // This function is called at each render pass - CopyQuadsToPass().
@@ -286,33 +263,27 @@ void SurfaceAggregator::AddRenderPassFilterDamageToDamageList(
   if (damage_rect_in_root_target_space.Intersects(root_damage_rect_)) {
     // Transform will be performed again in AddSurfaceDamageToDamageList()
     // Just pass in damage_rect instead of damage_rect_in_root_target_space.
-    AddSurfaceDamageToDamageList(damage_rect, gfx::Transform(), {}, source_pass,
-                                 dest_pass, /*surface=*/nullptr);
+    AddSurfaceDamageToDamageList(damage_rect, gfx::Transform(), {}, dest_pass,
+                                 /*resolved_frame=*/nullptr);
   }
 }
-
-// This is different from the |root_damage_rect_| which is the union of all
-// surface damages. This function records per-surface damage rects to
-// |surface_damage_rect_list_| in a top-to-bottom order.
-// it's called at each surface in the frame.
 void SurfaceAggregator::AddSurfaceDamageToDamageList(
     const gfx::Rect& default_damage_rect,
     const gfx::Transform& parent_target_transform,
     const absl::optional<gfx::Rect>& clip_rect,
-    const CompositorRenderPass* source_pass,
     AggregatedRenderPass* dest_pass,
-    Surface* surface) {
+    const ResolvedFrameData* resolved_frame) {
   gfx::Rect damage_rect;
-  if (!surface) {
+  if (!resolved_frame) {
     // When the surface is null, it's either the surface is lost or it comes
     // from a render pass with filters.
     damage_rect = default_damage_rect;
   } else {
     if (RenderPassNeedsFullDamage(dest_pass->id,
                                   dest_pass->cache_render_pass)) {
-      damage_rect = source_pass->output_rect;
+      damage_rect = resolved_frame->GetOutputRect();
     } else {
-      damage_rect = DamageRectForSurface(surface, *source_pass, false);
+      damage_rect = DamageRectForSurface(*resolved_frame, false);
     }
   }
 
@@ -517,7 +488,7 @@ void SurfaceAggregator::HandleSurfaceQuad(
         surface_quad->shared_quad_state->quad_to_target_transform);
     AddSurfaceDamageToDamageList(
         /*default_damage_rect=*/surface_quad->rect, transform, clip_rect,
-        /*source_pass =*/nullptr, dest_pass, /*surface=*/nullptr);
+        dest_pass, /*resolved_frame=*/nullptr);
   }
 
   // If there's no fallback surface ID available, then simply emit a
@@ -670,7 +641,7 @@ void SurfaceAggregator::EmitSurfaceContent(
   if (needs_surface_damage_rect_list_) {
     AddSurfaceDamageToDamageList(
         /*default_damage_rect=*/gfx::Rect(), combined_transform, quads_clip,
-        /*source_pass =*/render_pass_list.back().get(), dest_pass, surface);
+        dest_pass, &resolved_frame);
   }
 
   if (frame.metadata.delegated_ink_metadata) {
@@ -754,7 +725,7 @@ void SurfaceAggregator::EmitSurfaceContent(
   // damage because HandleSurfaceQuad is a recursive call by calling
   // CopyQuadsToPass in it.
   dest_pass->has_damage_from_contributing_content |=
-      !DamageRectForSurface(surface, last_pass, true).IsEmpty();
+      !DamageRectForSurface(resolved_frame, true).IsEmpty();
 
   if (merge_pass) {
     CopyQuadsToPass(resolved_frame.GetRootRenderPassData(), dest_pass,
@@ -1170,9 +1141,8 @@ void SurfaceAggregator::CopyQuadsToPass(
           dest_shared_quad_state->overlay_damage_index =
               surface_damage_rect_list_->size();
           AddSurfaceDamageToDamageList(damage_rect_in_target_space.value(),
-                                       target_transform, {}, &source_pass,
-                                       dest_pass,
-                                       /*surface=*/nullptr);
+                                       target_transform, {}, dest_pass,
+                                       /*resolved_frame=*/nullptr);
         } else if (quad == quad_with_overlay_damage_index) {
           dest_shared_quad_state->overlay_damage_index = overlay_damage_index;
         }
@@ -1316,7 +1286,7 @@ void SurfaceAggregator::CopyPasses(const ResolvedFrameData& resolved_frame,
     if (needs_surface_damage_rect_list_ && is_root_pass) {
       AddSurfaceDamageToDamageList(
           /*default_damage_rect=*/gfx::Rect(), surface_transform,
-          /*clip_rect=*/{}, &source, copy_pass.get(), surface);
+          /*clip_rect=*/{}, copy_pass.get(), &resolved_frame);
     }
 
     CopyQuadsToPass(resolved_frame.GetRenderPassDataByIndex(i), copy_pass.get(),
@@ -1383,15 +1353,11 @@ gfx::Rect SurfaceAggregator::PrewalkRenderPass(
   if (in_moved_pixel_rp)
     moved_pixel_passes_.insert(remapped_pass_id);
 
-  const CompositorFrame& frame = surface->GetActiveOrInterpolatedFrame();
-  CompositorRenderPass* last_pass = frame.render_pass_list.back().get();
-
   // The damage on the root render pass of the surface comes from damage
   // accumulated from all quads in the surface, and needs to be expanded by any
   // pixel-moving backdrop filter in the render pass if intersecting. Transform
   // this damage into the local space of the render pass for this purpose.
-  gfx::Rect surface_root_rp_damage =
-      DamageRectForSurface(surface, *last_pass, true);
+  gfx::Rect surface_root_rp_damage = DamageRectForSurface(resolved_frame, true);
   if (!surface_root_rp_damage.IsEmpty()) {
     gfx::Transform root_to_target_transform(
         gfx::Transform::kSkipInitialization);
@@ -1649,8 +1615,7 @@ gfx::Rect SurfaceAggregator::PrewalkSurface(
   valid_surfaces_.insert(surface->surface_id());
   ++stats_->prewalked_surface_count;
 
-  CompositorRenderPass* last_pass = frame.render_pass_list.back().get();
-  gfx::Rect damage_rect = DamageRectForSurface(surface, *last_pass, true);
+  gfx::Rect damage_rect = DamageRectForSurface(resolved_frame, true);
 
   // Avoid infinite recursion by adding current surface to
   // |referenced_surfaces_|.

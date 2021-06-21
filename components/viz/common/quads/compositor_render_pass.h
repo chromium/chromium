@@ -102,7 +102,8 @@ class VIZ_COMMON_EXPORT CompositorRenderPass : public RenderPassInternal {
   gfx::Size subtree_size;
 
   // Set to true if at least one of the quads in the |quad_list| contains damage
-  // that is not contained in |damage_rect|.
+  // that is not contained in |damage_rect|. Only the root render pass in a
+  // CompositorFrame should have per quad damage.
   bool has_per_quad_damage = false;
 
   // For testing functions.

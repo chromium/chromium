@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "components/viz/common/quads/compositor_render_pass.h"
+#include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/service/display/display_resource_provider_software.h"
 #include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
@@ -27,6 +28,25 @@ std::unique_ptr<CompositorRenderPass> BuildRenderPass(int id) {
   render_pass->SetNew(CompositorRenderPassId::FromUnsafeValue(id), kOutputRect,
                       kOutputRect, gfx::Transform());
   return render_pass;
+}
+
+TextureDrawQuad* AddTextureQuad(CompositorRenderPass* render_pass,
+                                ResourceId resource_id) {
+  auto* sqs = render_pass->CreateAndAppendSharedQuadState();
+  sqs->SetAll(gfx::Transform(), kOutputRect, kOutputRect, gfx::MaskFilterInfo(),
+              absl::nullopt, /*are_contents_opaque=*/false, 1,
+              SkBlendMode::kSrcOver, 0);
+  auto* quad = render_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
+  const float vertex_opacity[4] = {1.0f, 1.0f, 1.0f, 1.0f};
+  const gfx::PointF uv_top_left(0.0f, 0.0f);
+  const gfx::PointF uv_bottom_right(1.0f, 1.0f);
+  quad->SetNew(sqs, kOutputRect, kOutputRect, /*needs_blending=*/false,
+               resource_id, /*premultiplied_alpha=*/false, uv_top_left,
+               uv_bottom_right, SK_ColorTRANSPARENT, vertex_opacity,
+               /*y_flipped=*/false, /*nearest_neighbor=*/false,
+               /*secure_output_only=*/false, gfx::ProtectedVideoType::kClear);
+
+  return quad;
 }
 
 void AddRenderPassQuad(CompositorRenderPass* render_pass,
@@ -164,6 +184,40 @@ TEST_F(ResolvedFrameDataTest, RenderPassIdsCycle) {
   // invalid.
   resolved_frame.UpdateForActiveFrame(child_to_parent_map_);
   EXPECT_FALSE(resolved_frame.is_valid());
+}
+
+// Check GetRectDamage() handles per quad damage correctly.
+TEST_F(ResolvedFrameDataTest, RenderPassWithPerQuadDamage) {
+  constexpr gfx::Rect pass_damage_rect(80, 80, 10, 10);
+  constexpr gfx::Rect quad_damage_rect(10, 10, 20, 20);
+
+  auto render_pass = BuildRenderPass(1);
+  render_pass->damage_rect = pass_damage_rect;
+  render_pass->has_per_quad_damage = true;
+
+  constexpr ResourceId resource_id(1);
+  TextureDrawQuad* quad = AddTextureQuad(render_pass.get(), resource_id);
+  quad->damage_rect = quad_damage_rect;
+
+  auto frame = CompositorFrameBuilder()
+                   .AddRenderPass(std::move(render_pass))
+                   .PopulateResources()
+                   .Build();
+
+  Surface* surface = SubmitCompositorFrame(std::move(frame));
+  ResolvedFrameData resolved_frame(surface_id_, surface);
+
+  child_to_parent_map_[resource_id] = resource_id;
+  resolved_frame.UpdateForActiveFrame(child_to_parent_map_);
+  ASSERT_TRUE(resolved_frame.is_valid());
+
+  // GetDamageRect() should be the union of render pass and quad damage if
+  // `include_per_quad_damage` is true, otherwise just render pass damage.
+  constexpr gfx::Rect full_damage_rect(10, 10, 80, 80);
+  EXPECT_EQ(resolved_frame.GetDamageRect(/*include_per_quad_damage=*/true),
+            full_damage_rect);
+  EXPECT_EQ(resolved_frame.GetDamageRect(/*include_per_quad_damage=*/false),
+            pass_damage_rect);
 }
 
 TEST_F(ResolvedFrameDataTest, MarkAsUsed) {

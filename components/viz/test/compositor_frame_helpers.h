@@ -49,6 +49,9 @@ class CompositorFrameBuilder {
   // must be empty when this is called.
   CompositorFrameBuilder& SetTransferableResources(
       std::vector<TransferableResource> resource_list);
+  // Populate valid looking TransferableResources based on DrawQuad ResourceIds.
+  // The list of transferable resources must be empty when this is called.
+  CompositorFrameBuilder& PopulateResources();
 
   // Sets the BeginFrameAck. This replaces the default BeginFrameAck.
   CompositorFrameBuilder& SetBeginFrameAck(const BeginFrameAck& ack);
@@ -85,6 +88,10 @@ AggregatedFrame MakeDefaultAggregatedFrame(size_t num_render_passes = 1);
 // Creates a CompositorFrame that will be valid once its render_pass_list is
 // initialized.
 CompositorFrame MakeEmptyCompositorFrame();
+
+// Populate valid looking TransferableResources for `frame` based on DrawQuad
+// ResourceIds.
+void PopulateTransferableResources(CompositorFrame& frame);
 
 }  // namespace viz
 
