@@ -2742,11 +2742,6 @@
     "expiry_milestone": 84
   },
   {
-    "name": "enable-webrtc-stun-origin",
-    "owners": [ "qingsi", "jeroendb" ],
-    "expiry_milestone": 78
-  },
-  {
     "name": "enable-webrtc-use-min-max-vea-dimensions",
     "owners": [ "mcasas", "chromeos-gfx-video@google.com" ],
     "expiry_milestone": 88

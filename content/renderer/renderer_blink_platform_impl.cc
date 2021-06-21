@@ -642,11 +642,6 @@ bool RendererBlinkPlatformImpl::IsWebRtcEncryptionEnabled() {
       switches::kDisableWebRtcEncryption);
 }
 
-bool RendererBlinkPlatformImpl::IsWebRtcStunOriginEnabled() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kEnableWebRtcStunOrigin);
-}
-
 media::MediaPermission* RendererBlinkPlatformImpl::GetWebRTCMediaPermission(
     blink::WebLocalFrame* web_frame) {
   DCHECK(ShouldEnforceWebRTCRoutingPreferences());

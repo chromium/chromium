@@ -237,7 +237,6 @@ CONTENT_EXPORT extern const char kDisableWebRtcHWDecoding[];
 CONTENT_EXPORT extern const char kDisableWebRtcHWEncoding[];
 CONTENT_EXPORT extern const char kEnableWebRtcSrtpAesGcm[];
 CONTENT_EXPORT extern const char kEnableWebRtcSrtpEncryptedHeaders[];
-CONTENT_EXPORT extern const char kEnableWebRtcStunOrigin[];
 CONTENT_EXPORT extern const char kEnforceWebRtcIPPermissionCheck[];
 CONTENT_EXPORT extern const char kForceWebRtcIPHandlingPolicy[];
 CONTENT_EXPORT extern const char kWaitForDebuggerWebUI[];

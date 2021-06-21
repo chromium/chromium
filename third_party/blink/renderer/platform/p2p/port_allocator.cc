@@ -39,11 +39,6 @@ P2PPortAllocator::P2PPortAllocator(
   }
   set_flags(flags);
   set_allow_tcp_listen(false);
-  bool enable_webrtc_stun_origin =
-      Platform::Current()->IsWebRtcStunOriginEnabled();
-  if (enable_webrtc_stun_origin) {
-    set_origin(origin_.spec());
-  }
 }
 
 P2PPortAllocator::~P2PPortAllocator() {}

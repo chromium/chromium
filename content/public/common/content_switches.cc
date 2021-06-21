@@ -881,9 +881,6 @@ const char kEnableWebRtcSrtpAesGcm[] = "enable-webrtc-srtp-aes-gcm";
 const char kEnableWebRtcSrtpEncryptedHeaders[] =
     "enable-webrtc-srtp-encrypted-headers";
 
-// Enables Origin header in Stun messages for WebRTC.
-const char kEnableWebRtcStunOrigin[]        = "enable-webrtc-stun-origin";
-
 // Enforce IP Permission check. TODO(guoweis): Remove this once the feature is
 // not under finch and becomes the default.
 const char kEnforceWebRtcIPPermissionCheck[] =
