@@ -247,6 +247,114 @@ TEST_F(DriveServiceTest, PassesDataToMultipleRequestsToDriveService) {
                                              base::PersistentHash("drive")));
 }
 
+TEST_F(DriveServiceTest, PassesCachedDataIfRequested) {
+  constexpr char kDriveData[] = R"(
+        {
+          "item": [
+            {
+              "itemId":"234",
+              "url":"https://google.com/foo",
+              "driveItem": {
+                "title": "Foo foo",
+                "mimeType": "application/vnd.google-apps.spreadsheet"
+              },
+              "justification": {
+                "displayText": {
+                  "textSegment": [
+                    {
+                      "text": "Foo foo"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      )";
+  std::vector<drive::mojom::FilePtr> response;
+  base::MockCallback<DriveService::GetFilesCallback> callback;
+
+  EXPECT_CALL(callback, Run(testing::_))
+      .WillRepeatedly(testing::Invoke(
+          [&response](std::vector<drive::mojom::FilePtr> documents) {
+            response = std::move(documents);
+          }));
+
+  // Enable caching.
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      ntp_features::kNtpDriveModule,
+      {{ntp_features::kNtpDriveModuleCacheMaxAgeSParam, "10"}});
+
+  // Make sure we are not in the dismissed time window.
+  prefs_.SetTime(DriveService::kLastDismissedTimePrefName, base::Time::Now());
+  task_environment_.AdvanceClock(DriveService::kDismissDuration);
+
+  // First request populates the cache.
+  service_->GetDriveFiles(callback.Get());
+  identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "foo_token", base::Time());
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(1, test_url_loader_factory_.NumPending());
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      "https://appsitemsuggest-pa.googleapis.com/v1/items", kDriveData,
+      net::HTTP_OK,
+      network::TestURLLoaderFactory::ResponseMatchFlags::kUrlMatchPrefix);
+  EXPECT_FALSE(response.empty());
+  EXPECT_EQ("234", response[0]->id);
+  EXPECT_EQ(1,
+            histogram_tester_.GetBucketCount("NewTabPage.Modules.DataRequest",
+                                             base::PersistentHash("drive")));
+
+  // Subsequent fetch should use cache.
+  response.clear();
+  service_->GetDriveFiles(callback.Get());
+  identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "foo_token", base::Time());
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(0, test_url_loader_factory_.NumPending());
+  EXPECT_FALSE(response.empty());
+  EXPECT_EQ("234", response[0]->id);
+  EXPECT_EQ(1,
+            histogram_tester_.GetBucketCount("NewTabPage.Modules.DataRequest",
+                                             base::PersistentHash("drive")));
+
+  // Should re-request if cache expires.
+  response.clear();
+  task_environment_.AdvanceClock(base::TimeDelta::FromSeconds(11));
+  service_->GetDriveFiles(callback.Get());
+  identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "foo_token", base::Time());
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(1, test_url_loader_factory_.NumPending());
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      "https://appsitemsuggest-pa.googleapis.com/v1/items", kDriveData,
+      net::HTTP_OK,
+      network::TestURLLoaderFactory::ResponseMatchFlags::kUrlMatchPrefix);
+  EXPECT_FALSE(response.empty());
+  EXPECT_EQ("234", response[0]->id);
+  EXPECT_EQ(2,
+            histogram_tester_.GetBucketCount("NewTabPage.Modules.DataRequest",
+                                             base::PersistentHash("drive")));
+
+  // Should re-request if token changes.
+  response.clear();
+  service_->GetDriveFiles(callback.Get());
+  identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "bar_token", base::Time());
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(1, test_url_loader_factory_.NumPending());
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      "https://appsitemsuggest-pa.googleapis.com/v1/items", kDriveData,
+      net::HTTP_OK,
+      network::TestURLLoaderFactory::ResponseMatchFlags::kUrlMatchPrefix);
+  EXPECT_FALSE(response.empty());
+  EXPECT_EQ("234", response[0]->id);
+  EXPECT_EQ(3,
+            histogram_tester_.GetBucketCount("NewTabPage.Modules.DataRequest",
+                                             base::PersistentHash("drive")));
+}
+
 TEST_F(DriveServiceTest, PassesNoDataIfDismissed) {
   bool passed_no_data = false;
   base::MockCallback<DriveService::GetFilesCallback> callback;

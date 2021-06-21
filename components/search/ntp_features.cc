@@ -120,6 +120,8 @@ const char kNtpChromeCartModuleHeuristicsImprovementParam[] =
 const char kNtpDriveModuleDataParam[] = "NtpDriveModuleDataParam";
 const char kNtpDriveModuleManagedUsersOnlyParam[] =
     "NtpDriveModuleManagedUsersOnlyParam";
+const char kNtpDriveModuleCacheMaxAgeSParam[] =
+    "NtpDriveModuleCacheMaxAgeSParam";
 
 base::TimeDelta GetModulesLoadTimeout() {
   std::string param_value = base::GetFieldTrialParamValueByFeature(

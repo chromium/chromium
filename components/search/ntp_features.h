@@ -62,6 +62,8 @@ extern const char kNtpChromeCartModuleHeuristicsImprovementParam[];
 extern const char kNtpDriveModuleDataParam[];
 // Parameter for enabling the Drive module for managed users only.
 extern const char kNtpDriveModuleManagedUsersOnlyParam[];
+// Parameter determining the max age in seconds of the cache for drive data.
+extern const char kNtpDriveModuleCacheMaxAgeSParam[];
 
 // Returns the timeout after which the load of a module should be aborted.
 base::TimeDelta GetModulesLoadTimeout();

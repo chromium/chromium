@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "chrome/browser/search/drive/drive.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
@@ -52,7 +53,8 @@ class DriveService : public KeyedService {
  private:
   void OnTokenReceived(GoogleServiceAuthError error,
                        signin::AccessTokenInfo token_info);
-  void OnJsonReceived(const std::unique_ptr<std::string> json_response);
+  void OnJsonReceived(const std::string& token,
+                      std::unique_ptr<std::string> json_response);
   void OnJsonParsed(data_decoder::DataDecoder::ValueOrError result);
 
   // Used for fetching OAuth2 access tokens. Only non-null when a token
@@ -64,6 +66,9 @@ class DriveService : public KeyedService {
   signin::IdentityManager* identity_manager_;
   std::string application_locale_;
   PrefService* pref_service_;
+  std::unique_ptr<std::string> cached_json_;
+  base::Time cached_json_time_;
+  std::string cached_json_token_;
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<DriveService> weak_factory_{this};
 };

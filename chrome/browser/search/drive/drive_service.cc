@@ -4,6 +4,8 @@
 
 #include "chrome/browser/search/drive/drive_service.h"
 
+#include <algorithm>
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <utility>
@@ -210,6 +212,23 @@ void DriveService::OnTokenReceived(GoogleServiceAuthError error,
     return;
   }
 
+  // Skip fetch if data is cached and not expired.
+  // TODO(crbug.com/1221743): Leverage the standard HTTP cache once ItemSuggest
+  // supports GET requests.
+  if (cached_json_ && cached_json_token_ == token_info.token &&
+      /* We use std::max to guard against negative cache ages. This can happen,
+         for instance, when modifying the local clock. */
+      std::max((base::Time::Now() - cached_json_time_).InSeconds(),
+               INT64_C(0)) <
+          base::GetFieldTrialParamByFeatureAsInt(
+              ntp_features::kNtpDriveModule,
+              ntp_features::kNtpDriveModuleCacheMaxAgeSParam, 0)) {
+    data_decoder::DataDecoder::ParseJsonIsolated(
+        *cached_json_, base::BindOnce(&DriveService::OnJsonParsed,
+                                      weak_factory_.GetWeakPtr()));
+    return;
+  }
+
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->method = "POST";
   resource_request->url = GURL(server_url);
@@ -232,14 +251,15 @@ void DriveService::OnTokenReceived(GoogleServiceAuthError error,
       "application/json");
   url_loader_->DownloadToString(
       url_loader_factory_.get(),
-      base::BindOnce(&DriveService::OnJsonReceived, weak_factory_.GetWeakPtr()),
+      base::BindOnce(&DriveService::OnJsonReceived, weak_factory_.GetWeakPtr(),
+                     token_info.token),
       kMaxResponseSize);
   base::UmaHistogramSparse("NewTabPage.Modules.DataRequest",
                            base::PersistentHash("drive"));
 }
 
-void DriveService::OnJsonReceived(
-    const std::unique_ptr<std::string> response_body) {
+void DriveService::OnJsonReceived(const std::string& token,
+                                  std::unique_ptr<std::string> response_body) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const int net_error = url_loader_->NetError();
@@ -252,8 +272,11 @@ void DriveService::OnJsonReceived(
     callbacks_.clear();
     return;
   }
+  cached_json_ = std::move(response_body);
+  cached_json_time_ = base::Time::Now();
+  cached_json_token_ = token;
   data_decoder::DataDecoder::ParseJsonIsolated(
-      *response_body,
+      *cached_json_,
       base::BindOnce(&DriveService::OnJsonParsed, weak_factory_.GetWeakPtr()));
 }
 
