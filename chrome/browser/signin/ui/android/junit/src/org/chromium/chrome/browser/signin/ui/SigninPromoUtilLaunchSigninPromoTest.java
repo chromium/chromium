@@ -223,12 +223,12 @@ public class SigninPromoUtilLaunchSigninPromoTest {
     }
 
     @Test
-    public void promoHiddenWhenCanOfferExtendedSyncPromosForDefaultAccount() {
+    public void promoHiddenWhenDefaultAccountCanNotOfferExtendedSyncPromos() {
         mPrefManager.setSigninPromoLastShownVersion(38);
         mAccountManagerTestRule.addAccount("test2@gmail.com");
         doAnswer(invocation -> {
             final Account account = invocation.getArgument(0);
-            return Optional.of(AccountManagerTestRule.TEST_ACCOUNT_EMAIL.equals(account.name));
+            return Optional.of(!AccountManagerTestRule.TEST_ACCOUNT_EMAIL.equals(account.name));
         })
                 .when(mFakeAccountManagerFacade)
                 .canOfferExtendedSyncPromos(any());
@@ -240,12 +240,12 @@ public class SigninPromoUtilLaunchSigninPromoTest {
     }
 
     @Test
-    public void promoVisibleWhenCanOfferExtendedSyncPromosForTheSecondaryAccount() {
+    public void promoVisibleWhenTheSecondaryAccountCanNotOfferExtendedSyncPromos() {
         final CoreAccountInfo secondAccount = mAccountManagerTestRule.addAccount("test2@gmail.com");
         mPrefManager.setSigninPromoLastShownVersion(38);
         doAnswer(invocation -> {
             final Account account = invocation.getArgument(0);
-            return Optional.of(secondAccount.getEmail().equals(account.name));
+            return Optional.of(!secondAccount.getEmail().equals(account.name));
         })
                 .when(mFakeAccountManagerFacade)
                 .canOfferExtendedSyncPromos(any());

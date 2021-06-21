@@ -26,6 +26,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.components.signin.AccountManagerDelegate.CapabilityResponse;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -250,12 +251,13 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
 
     private void updateCanOfferExtendedSyncPromos(List<Account> accounts) {
         PostTask.postTask(TaskTraits.USER_VISIBLE, () -> {
-            final Map<String, Boolean> subjectToMinorModeRestrictions = new HashMap<>();
+            final Map<String, Boolean> canOfferExtendedSyncPromos = new HashMap<>();
             for (Account account : accounts) {
-                subjectToMinorModeRestrictions.put(AccountUtils.canonicalizeName(account.name),
-                        mDelegate.hasCapability(account, CAN_OFFER_EXTENDED_CHROME_SYNC_PROMOS));
+                canOfferExtendedSyncPromos.put(AccountUtils.canonicalizeName(account.name),
+                        mDelegate.hasCapability(account, CAN_OFFER_EXTENDED_CHROME_SYNC_PROMOS)
+                                != CapabilityResponse.NO);
             }
-            mCanOfferExtendedSyncPromos.set(subjectToMinorModeRestrictions);
+            mCanOfferExtendedSyncPromos.set(canOfferExtendedSyncPromos);
         });
     }
 

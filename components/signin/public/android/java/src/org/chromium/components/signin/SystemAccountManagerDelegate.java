@@ -147,8 +147,8 @@ public class SystemAccountManagerDelegate implements AccountManagerDelegate {
     }
 
     @Override
-    public boolean hasCapability(Account account, String capability) {
-        return false;
+    public @CapabilityResponse int hasCapability(Account account, String capability) {
+        return CapabilityResponse.EXCEPTION;
     }
 
     /**

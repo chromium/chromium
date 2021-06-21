@@ -8,8 +8,6 @@ import android.accounts.Account;
 import android.content.Context;
 import android.text.TextUtils;
 
-import com.google.common.base.Optional;
-
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -77,10 +75,10 @@ public final class SigninPromoUtil {
             return false;
         }
 
-        Optional<Boolean> canDefaultAccountOfferExtendedSyncPromos =
-                accountManagerFacade.canOfferExtendedSyncPromos(accounts.get(0));
+        final boolean canDefaultAccountOfferExtendedSyncPromos =
+                accountManagerFacade.canOfferExtendedSyncPromos(accounts.get(0)).or(true);
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.MINOR_MODE_SUPPORT)
-                && canDefaultAccountOfferExtendedSyncPromos.or(/* defaultValue= */ false)) {
+                && !canDefaultAccountOfferExtendedSyncPromos) {
             return false;
         }
 

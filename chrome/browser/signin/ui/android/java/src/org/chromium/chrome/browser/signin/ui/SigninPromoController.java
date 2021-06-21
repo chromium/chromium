@@ -239,7 +239,7 @@ public class SigninPromoController {
             return;
         }
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.MINOR_MODE_SUPPORT)
-                && accountManagerFacade.canOfferExtendedSyncPromos(visibleAccount).or(false)
+                && !accountManagerFacade.canOfferExtendedSyncPromos(visibleAccount).or(true)
                 && mAccessPoint == SigninAccessPoint.NTP_CONTENT_SUGGESTIONS) {
             // No promo will be visible since setupPromoView() is not invoked.
             return;

@@ -143,8 +143,8 @@ public class FakeAccountManagerDelegate implements AccountManagerDelegate {
     }
 
     @Override
-    public boolean hasCapability(Account account, String capability) {
-        return hasFeature(account, capability);
+    public @CapabilityResponse int hasCapability(Account account, String capability) {
+        return hasFeature(account, capability) ? CapabilityResponse.YES : CapabilityResponse.NO;
     }
 
     @Override
