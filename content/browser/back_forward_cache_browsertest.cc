@@ -6124,13 +6124,6 @@ class GeolocationBackForwardCacheBrowserTest
  protected:
   GeolocationBackForwardCacheBrowserTest() : geo_override_(0.0, 0.0) {}
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    EnableFeatureAndSetParams(features::kBackForwardCache,
-                              "geolocation_supported", "true");
-
-    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
-  }
-
   device::ScopedGeolocationOverrider geo_override_;
 };
 

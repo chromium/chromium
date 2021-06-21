@@ -87,16 +87,6 @@ const base::FeatureParam<ChildProcessImportance> kChildProcessImportanceParam{
     ChildProcessImportance::MODERATE, &child_process_importance_options};
 #endif
 
-bool IsGeolocationSupported() {
-  if (!IsBackForwardCacheEnabled())
-    return false;
-  static constexpr base::FeatureParam<bool> geolocation_supported(
-      &features::kBackForwardCache, "geolocation_supported",
-      true
-  );
-  return geolocation_supported.Get();
-}
-
 bool IsContentInjectionSupported() {
   if (!IsBackForwardCacheEnabled())
     return false;
@@ -262,11 +252,6 @@ uint64_t GetDisallowedFeatures(RenderFrameHostImpl* rfh,
           WebSchedulerTrackedFeature::kMediaSessionImplOnServiceCreated);
 
   uint64_t result = kAlwaysDisallowedFeatures;
-
-  if (!IsGeolocationSupported()) {
-    result |= FeatureToBit(
-        WebSchedulerTrackedFeature::kRequestedGeolocationPermission);
-  }
 
   if (!IsContentInjectionSupported()) {
     result |= FeatureToBit(WebSchedulerTrackedFeature::kIsolatedWorldScript) |
