@@ -7,15 +7,28 @@
 
 #include <string>
 
+#include "base/callback.h"
+
 namespace content {
 class WebContents;
 class WebUIDataSource;
-}
+}  // namespace content
 
 // A delegate which exposes browser functionality from //chrome to the camera
 // app ui page handler.
 class CameraAppUIDelegate {
  public:
+  enum class FileMonitorResult {
+    // The file is deleted.
+    DELETED = 0,
+
+    // The request is canceled since there is another monitor request.
+    CANCELED = 1,
+
+    // Fails to monitor the file due to errors.
+    ERROR = 2,
+  };
+
   virtual ~CameraAppUIDelegate() = default;
 
   // Sets Downloads folder as launch directory by File Handling API so that we
@@ -41,6 +54,13 @@ class CameraAppUIDelegate {
 
   // Opens the dev tools window.
   virtual void OpenDevToolsWindow(content::WebContents* web_contents) = 0;
+
+  // Monitors deletion of the file by its |name|. The |callback| might be
+  // triggered when the file is deleted, or when the monitor is canceled, or
+  // when error occurs.
+  virtual void MonitorFileDeletion(
+      const std::string& name,
+      base::OnceCallback<void(FileMonitorResult)> callback) = 0;
 };
 
 #endif  // CHROMEOS_COMPONENTS_CAMERA_APP_UI_CAMERA_APP_UI_DELEGATE_H_

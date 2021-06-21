@@ -104,6 +104,8 @@ bool ChromeCameraAppUIDelegate::CameraAppDialog::CheckMediaAccessPermission(
 ChromeCameraAppUIDelegate::ChromeCameraAppUIDelegate(content::WebUI* web_ui)
     : web_ui_(web_ui) {}
 
+ChromeCameraAppUIDelegate::~ChromeCameraAppUIDelegate() = default;
+
 void ChromeCameraAppUIDelegate::SetLaunchDirectory() {
   Profile* profile = Profile::FromWebUI(web_ui_);
   content::WebContents* web_contents = web_ui_->GetWebContents();
@@ -186,6 +188,37 @@ std::string ChromeCameraAppUIDelegate::GetFilePathInArcByName(
   return arc_url_out.spec();
 }
 
+void ChromeCameraAppUIDelegate::OpenDevToolsWindow(
+    content::WebContents* web_contents) {
+  DevToolsWindow::OpenDevToolsWindow(web_contents,
+                                     DevToolsToggleAction::NoOp());
+}
+
+void ChromeCameraAppUIDelegate::MonitorFileDeletion(
+    const std::string& name,
+    base::OnceCallback<void(FileMonitorResult)> callback) {
+  auto file_path = GetFilePathByName(name);
+  if (file_path.empty()) {
+    LOG(ERROR) << "Unexpected file name: " << name;
+    std::move(callback).Run(FileMonitorResult::ERROR);
+    return;
+  }
+
+  // Cancel the previous monitor callback if it hasn't been notified.
+  if (!cur_file_monitor_callback_.is_null()) {
+    std::move(cur_file_monitor_callback_).Run(FileMonitorResult::CANCELED);
+  }
+
+  cur_file_monitor_callback_ = std::move(callback);
+  file_watcher_.reset(new base::FilePathWatcher);
+  if (!file_watcher_->Watch(
+          file_path, base::FilePathWatcher::Type::kNonRecursive,
+          base::BindRepeating(&ChromeCameraAppUIDelegate::OnFileDeletion,
+                              base::Unretained(this)))) {
+    std::move(cur_file_monitor_callback_).Run(FileMonitorResult::ERROR);
+  }
+}
+
 base::FilePath ChromeCameraAppUIDelegate::GetFilePathByName(
     const std::string& name) {
   // Check to avoid directory traversal attack.
@@ -200,8 +233,15 @@ base::FilePath ChromeCameraAppUIDelegate::GetFilePathByName(
       .Append(name_component);
 }
 
-void ChromeCameraAppUIDelegate::OpenDevToolsWindow(
-    content::WebContents* web_contents) {
-  DevToolsWindow::OpenDevToolsWindow(web_contents,
-                                     DevToolsToggleAction::NoOp());
+void ChromeCameraAppUIDelegate::OnFileDeletion(const base::FilePath& path,
+                                               bool error) {
+  if (cur_file_monitor_callback_.is_null()) {
+    return;
+  }
+
+  if (error) {
+    std::move(cur_file_monitor_callback_).Run(FileMonitorResult::ERROR);
+    return;
+  }
+  std::move(cur_file_monitor_callback_).Run(FileMonitorResult::DELETED);
 }

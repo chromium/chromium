@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_ASH_WEB_APPLICATIONS_CHROME_CAMERA_APP_UI_DELEGATE_H_
 #define CHROME_BROWSER_ASH_WEB_APPLICATIONS_CHROME_CAMERA_APP_UI_DELEGATE_H_
 
+#include <memory>
+
+#include "base/callback.h"
+#include "base/files/file_path_watcher.h"
 #include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
 #include "chromeos/components/camera_app_ui/camera_app_ui_delegate.h"
 #include "content/public/browser/media_stream_request.h"
@@ -66,6 +70,7 @@ class ChromeCameraAppUIDelegate : public CameraAppUIDelegate {
   ChromeCameraAppUIDelegate(const ChromeCameraAppUIDelegate&) = delete;
   ChromeCameraAppUIDelegate& operator=(const ChromeCameraAppUIDelegate&) =
       delete;
+  ~ChromeCameraAppUIDelegate() override;
 
   // CameraAppUIDelegate
   void SetLaunchDirectory() override;
@@ -75,11 +80,18 @@ class ChromeCameraAppUIDelegate : public CameraAppUIDelegate {
   void OpenFeedbackDialog(const std::string& placeholder) override;
   std::string GetFilePathInArcByName(const std::string& name) override;
   void OpenDevToolsWindow(content::WebContents* web_contents) override;
+  void MonitorFileDeletion(
+      const std::string& name,
+      base::OnceCallback<void(FileMonitorResult)> callback) override;
 
  private:
   base::FilePath GetFilePathByName(const std::string& name);
+  void OnFileDeletion(const base::FilePath& path, bool error);
 
   content::WebUI* web_ui_;  // Owns |this|.
+
+  std::unique_ptr<base::FilePathWatcher> file_watcher_;
+  base::OnceCallback<void(FileMonitorResult)> cur_file_monitor_callback_;
 };
 
 #endif  // CHROME_BROWSER_ASH_WEB_APPLICATIONS_CHROME_CAMERA_APP_UI_DELEGATE_H_

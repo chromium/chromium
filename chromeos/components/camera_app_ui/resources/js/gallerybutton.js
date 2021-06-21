@@ -167,10 +167,16 @@ export class GalleryButton {
         cover !== null && cover.thumbnailUrl !== null ?
         `url("${cover.thumbnailUrl}")` :
         'none';
+
+    if (cover !== null) {
+      ChromeHelper.getInstance().monitorFileDeletion(file.name, () => {
+        this.checkCover_();
+      });
+    }
   }
 
   /**
-   * Checks validity of cover photo from download directory.
+   * Checks validity of cover photo from camera directory.
    * @private
    */
   async checkCover_() {

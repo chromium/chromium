@@ -242,6 +242,30 @@ export class ChromeHelper {
   }
 
   /**
+   * Monitors for the file deletion of the file given by its |name| and triggers
+   * |callback| when the file is deleted. Note that a previous monitor request
+   * will be canceled once another monitor request is sent.
+   * @param {string} name The name of the file to monitor.
+   * @param {function(): void} callback Function to trigger when deletion.
+   * @return {!Promise} Resolved when the file is deleted or the current monitor
+   *     is canceled by future monitor call.
+   * @throws {!Error} When error occurs during monitor.
+   */
+  async monitorFileDeletion(name, callback) {
+    const {result} = await this.remote_.monitorFileDeletion(name);
+    switch (result) {
+      case chromeosCamera.mojom.FileMonitorResult.DELETED:
+        callback();
+        return;
+      case chromeosCamera.mojom.FileMonitorResult.CANCELED:
+        // Do nothing if it is canceled by another monitor call.
+        return;
+      case chromeosCamera.mojom.FileMonitorResult.ERROR:
+        throw new Error('Error happens when monitoring file deletion');
+    }
+  }
+
+  /**
    * Creates a new instance of ChromeHelper if it is not set. Returns the
    *     exist instance.
    * @return {!ChromeHelper} The singleton instance.

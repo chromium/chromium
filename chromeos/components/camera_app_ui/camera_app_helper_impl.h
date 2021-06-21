@@ -70,6 +70,8 @@ class CameraAppHelperImpl : public ash::TabletModeObserver,
   void GetWindowStateController(
       GetWindowStateControllerCallback callback) override;
   void SendNewCaptureBroadcast(bool is_video, const std::string& name) override;
+  void MonitorFileDeletion(const std::string& name,
+                           MonitorFileDeletionCallback callback) override;
 
  private:
   void CheckExternalScreenState();

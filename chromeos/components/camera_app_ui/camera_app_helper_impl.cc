@@ -31,6 +31,20 @@ mojom::ScreenState ToMojoScreenState(ash::ScreenBacklightState s) {
   }
 }
 
+mojom::FileMonitorResult ToMojoFileMonitorResult(
+    CameraAppUIDelegate::FileMonitorResult result) {
+  switch (result) {
+    case CameraAppUIDelegate::FileMonitorResult::DELETED:
+      return mojom::FileMonitorResult::DELETED;
+    case CameraAppUIDelegate::FileMonitorResult::CANCELED:
+      return mojom::FileMonitorResult::CANCELED;
+    case CameraAppUIDelegate::FileMonitorResult::ERROR:
+      return mojom::FileMonitorResult::ERROR;
+    default:
+      NOTREACHED();
+  }
+}
+
 bool HasExternalScreen() {
   for (const auto& display : display::Screen::GetScreen()->GetAllDisplays()) {
     if (!display.IsInternal()) {
@@ -208,6 +222,19 @@ void CameraAppHelperImpl::SendNewCaptureBroadcast(bool is_video,
     return;
   }
   send_broadcast_callback_.Run(is_video, file_path);
+}
+
+void CameraAppHelperImpl::MonitorFileDeletion(
+    const std::string& name,
+    MonitorFileDeletionCallback callback) {
+  DCHECK_NE(camera_app_ui_, nullptr);
+  camera_app_ui_->delegate()->MonitorFileDeletion(
+      name, base::BindOnce(
+                [](MonitorFileDeletionCallback callback,
+                   CameraAppUIDelegate::FileMonitorResult result) {
+                  std::move(callback).Run(ToMojoFileMonitorResult(result));
+                },
+                std::move(callback)));
 }
 
 void CameraAppHelperImpl::OnTabletModeStarted() {
