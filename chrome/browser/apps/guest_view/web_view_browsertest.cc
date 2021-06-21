@@ -4754,6 +4754,17 @@ IN_PROC_BROWSER_TEST_F(GuestViewExtensionNameCollisionTest,
   EXPECT_EQ("PASSED", test_passed);
 }
 
+class PrivateNetworkAccessWebViewTest : public WebViewTest {
+ public:
+  PrivateNetworkAccessWebViewTest() {
+    features_.InitAndEnableFeature(
+        features::kBlockInsecurePrivateNetworkRequests);
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
 // Verify that Private Network Access has the correct understanding of the
 // chrome-guest:// scheme, that should only ever be used as a SiteURL, and not
 // interfere with the local/private/public classification.
@@ -4762,8 +4773,8 @@ IN_PROC_BROWSER_TEST_F(GuestViewExtensionNameCollisionTest,
 // Note: This test is put in this file for convenience of reusing the entire
 // app testing infrastructure. Other similar tests that do not require that
 // infrastructure live in PrivateNetworkAccessBrowserTest.*
-IN_PROC_BROWSER_TEST_F(WebViewTest,
-                       PrivateNetworkAccessSpecialSchemeChromeGuest) {
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWebViewTest,
+                       SpecialSchemeChromeGuest) {
   LoadAppWithGuest("web_view/simple");
   content::WebContents* guest = GetGuestWebContents();
   ASSERT_TRUE(guest);

@@ -302,6 +302,7 @@ class CorsRfc1918BrowserTest : public CorsRfc1918BrowserTestBase {
   CorsRfc1918BrowserTest()
       : CorsRfc1918BrowserTestBase(
             {
+                features::kBlockInsecurePrivateNetworkRequests,
                 features::kWarnAboutSecurePrivateNetworkRequests,
             },
             {}) {}
@@ -314,6 +315,7 @@ class CorsRfc1918BrowserTestBlockNavigations
   CorsRfc1918BrowserTestBlockNavigations()
       : CorsRfc1918BrowserTestBase(
             {
+                features::kBlockInsecurePrivateNetworkRequests,
                 features::kWarnAboutSecurePrivateNetworkRequests,
                 features::kBlockInsecurePrivateNetworkRequestsForNavigations,
             },
@@ -323,12 +325,7 @@ class CorsRfc1918BrowserTestBlockNavigations
 // Test with insecure private network requests allowed.
 class CorsRfc1918BrowserTestNoBlocking : public CorsRfc1918BrowserTestBase {
  public:
-  CorsRfc1918BrowserTestNoBlocking()
-      : CorsRfc1918BrowserTestBase(
-            {},
-            {
-                features::kBlockInsecurePrivateNetworkRequests,
-            }) {}
+  CorsRfc1918BrowserTestNoBlocking() : CorsRfc1918BrowserTestBase({}, {}) {}
 };
 
 // This test verifies that when the right feature is enabled, iframe requests:
