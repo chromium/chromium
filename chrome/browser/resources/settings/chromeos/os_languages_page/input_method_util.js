@@ -209,6 +209,14 @@ cr.define('settings.input_method_util', function() {
       basic: [],
       virtualKeyboard: [],
     },
+    [SettingsType.BASIC_SETTINGS]: {
+      physicalKeyboard: [],
+      virtualKeyboard: [
+        {name: OptionType.ENABLE_SOUND_ON_KEYPRESS},
+      ],
+      basic: [],
+      advanced: [],
+    }
   };
   /**
    * @param {string} id Input method ID.
