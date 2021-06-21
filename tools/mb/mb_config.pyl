@@ -313,6 +313,7 @@
       'android-backuprefptr-arm-fyi-rel': 'release_trybot_backuprefptr_arm',
       'android-backuprefptr-arm64-fyi-rel': 'release_trybot_backuprefptr_arm64',
       'chromeos-amd64-generic-rel-dchecks': 'chromeos_amd64-generic_use_fake_dbus_clients_dchecks',
+      'chromeos-amd64-generic-rel (reclient)': 'chromeos_amd64-generic_use_fake_dbus_clients_reclient',
       'fuchsia-code-coverage': 'fuchsia_clang_code_coverage',
       'fuchsia-fyi-arm64-dbg': 'debug_bot_fuchsia_arm64',
       'fuchsia-fyi-arm64-femu': 'release_bot_fuchsia_arm64',
@@ -1733,6 +1734,10 @@
       'chromeos_amd64-generic', 'use_fake_dbus_clients', 'dcheck_always_on',
     ],
 
+    'chromeos_amd64-generic_use_fake_dbus_clients_reclient': [
+      'chromeos_amd64-generic_reclient', 'use_fake_dbus_clients',
+    ],
+
     'chromeos_arm-generic': [
       'chromeos_device', 'arm-generic',
     ],
@@ -2937,6 +2942,11 @@
       'mixins': ['goma'],
     },
 
+    'chromeos_device_reclient': {
+      'gn_args': 'is_chromeos_device=true ozone_platform_headless=true',
+      'mixins': ['reclient'],
+    },
+
     'chromeos_amd64-generic': {
       'mixins': ['chromeos_device', 'amd64-generic',]
     },
@@ -2951,6 +2961,10 @@
 
     'chromeos_with_codecs': {
       'mixins': ['chromeos', 'chromeos_codecs'],
+    },
+
+    'chromeos_amd64-generic_reclient': {
+      'mixins': ['chromeos_device_reclient', 'amd64-generic',]
     },
 
     'clang_tot': {

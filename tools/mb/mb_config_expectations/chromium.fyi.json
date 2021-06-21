@@ -477,6 +477,15 @@
       "use_static_angle": true
     }
   },
+  "chromeos-amd64-generic-rel (reclient)": {
+    "args_file": "//build/args/chromeos/amd64-generic.gni",
+    "gn_args": {
+      "is_chromeos_device": true,
+      "ozone_platform_headless": true,
+      "use_rbe": true,
+      "use_real_dbus_clients": false
+    }
+  },
   "chromeos-amd64-generic-rel-dchecks": {
     "args_file": "//build/args/chromeos/amd64-generic.gni",
     "gn_args": {

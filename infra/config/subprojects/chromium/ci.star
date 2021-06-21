@@ -4055,6 +4055,19 @@ ci.fyi_windows_builder(
     os = os.WINDOWS_DEFAULT,
 )
 
+ci.fyi_builder(
+    name = "chromeos-amd64-generic-rel (reclient)",
+    console_view_entry = consoles.console_view_entry(
+        category = "cros x64",
+    ),
+    goma_backend = None,
+    reclient_instance = "rbe-chromium-trusted",
+    reclient_profiler_service = "reclient-cros",
+    configure_kitchen = True,
+    kitchen_emulate_gce = True,
+    os = os.LINUX_BIONIC_REMOVE,
+)
+
 ci.fyi_celab_builder(
     name = "win-celab-builder-rel",
     console_view_entry = consoles.console_view_entry(
