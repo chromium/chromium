@@ -98,8 +98,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>jarrydg@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
-    The number of times the evicted origin was accessed. Logged when the origin
-    is evicted.
+    The number of times the evicted storage key was accessed. Logged when the
+    storage key is evicted. Prior to M93, evictions were based on the Origin,
+    not StorageKey, but we chose not to rename the metric in order to maintain
+    historical data.
   </summary>
 </histogram>
 
@@ -108,8 +110,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>jarrydg@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
-    The number of days since the evicted origin was last accessed. Logged when
-    the origin is evicted.
+    The number of days since the evicted storage key was last accessed. Logged
+    when the storage key is evicted. Prior to M93, evictions were based on the
+    Origin, not StorageKey, but we chose not to rename the metric in order to
+    maintain historical data.
   </summary>
 </histogram>
 
@@ -117,7 +121,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     expires_after="2021-09-05">
   <owner>jarrydg@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
-  <summary>Number of evicted origins in an hour.</summary>
+  <summary>
+    Number of evicted storage keys in an hour. Prior to M93, evictions were
+    based on the Origin, not StorageKey, but we chose not to rename the metric
+    in order to maintain historical data.
+  </summary>
 </histogram>
 
 <histogram name="Quota.EvictionRoundsPerHour" units="units"
@@ -152,7 +160,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     expires_after="2022-05-18">
   <owner>jarrydg@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
-  <summary>Number of evicted origins per round.</summary>
+  <summary>
+    Number of evicted storage keys per round. Prior to M93, evictions were based
+    on the Origin, not StorageKey, but we chose not to rename the metric in
+    order to maintain historical data.
+  </summary>
 </histogram>
 
 <histogram name="Quota.OSAccomodationDelta" units="MB" expires_after="M85">

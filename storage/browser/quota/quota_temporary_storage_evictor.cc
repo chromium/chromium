@@ -78,7 +78,10 @@ void QuotaTemporaryStorageEvictor::ReportPerRoundHistogram() {
   UMA_HISTOGRAM_MBYTES("Quota.EvictedBytesPerRound",
                        round_statistics_.usage_on_beginning_of_round -
                        round_statistics_.usage_on_end_of_round);
-  // TODO(crbug.com/1215208): Change to NumberOfEvictedStorageKeysPerRound.
+
+  // Even though the metric now captures the number of evicted storage keys
+  // (instead of origins), we keep the metric identifier
+  // NumberOfEvictedOriginsPerRound so we don't lose historical data.
   UMA_HISTOGRAM_COUNTS_1M("Quota.NumberOfEvictedOriginsPerRound",
                           round_statistics_.num_evicted_storage_keys_in_round);
 }
@@ -90,8 +93,8 @@ void QuotaTemporaryStorageEvictor::ReportPerHourHistogram() {
   previous_statistics_ = statistics_;
 
   // Even though the metric now captures the number of evicted storage keys
-  // (instead of origins), we keep the metric identifier
-  // Quota.EvictedOriginsPerHour so we don't lose historical data.
+  // (instead of origins), we keep the metric identifier EvictedOriginsPerHour
+  // so we don't lose historical data.
   UMA_HISTOGRAM_COUNTS_1M("Quota.EvictedOriginsPerHour",
                           stats_in_hour.num_evicted_storage_keys);
   UMA_HISTOGRAM_COUNTS_1M("Quota.EvictionRoundsPerHour",
