@@ -4752,6 +4752,11 @@
     "expiry_milestone": 89
   },
   {
+    "name": "semantic-colors-debug-override",
+    "owners": [ "calamity@chromium.org" ],
+    "expiry_milestone": 99
+  },
+  {
     "name": "send-tab-to-self-v2",
     "owners": ["kmilka", "chrome-sharing-eng@google.com"],
     "expiry_milestone": 95

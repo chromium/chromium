@@ -136,6 +136,9 @@ extern const char kUseLookalikesForNavigationSuggestionsDescription[];
 extern const char kUseWallpaperStagingUrlName[];
 extern const char kUseWallpaperStagingUrlDescription[];
 
+extern const char kSemanticColorsDebugOverrideName[];
+extern const char kSemanticColorsDebugOverrideDescription[];
+
 extern const char kUseMessagesStagingUrlName[];
 extern const char kUseMessagesStagingUrlDescription[];
 

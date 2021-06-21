@@ -24,8 +24,11 @@
 #include "ui/resources/grit/webui_resources_map.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#include "base/feature_list.h"
 #include "chromeos/grit/chromeos_resources.h"
 #include "chromeos/grit/chromeos_resources_map.h"
+#include "ui/chromeos/colors/cros_colors.h"
 #endif
 
 namespace content {
@@ -115,6 +118,12 @@ WebUIDataSource* CreateSharedResourcesDataSource() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   AddResources(GetChromeosMojoResourceIds(), kChromeosResources,
                kChromeosResourcesSize, source);
+
+  source->AddString(
+      "crosColorsDebugOverrides",
+      base::FeatureList::IsEnabled(ash::features::kSemanticColorsDebugOverride)
+          ? cros_colors::kDebugOverrideCssString
+          : "");
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
   source->AddString("fontFamily", webui::GetFontFamily());

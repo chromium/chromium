@@ -187,6 +187,12 @@ const char kUseWallpaperStagingUrlDescription[] =
     "Use the staging server as part of the Wallpaper App to verify "
     "additions/removals of wallpapers.";
 
+const char kSemanticColorsDebugOverrideName[] =
+    "Use semantic color debug override";
+const char kSemanticColorsDebugOverrideDescription[] =
+    "Use debug override colors to find system components that are not using "
+    "semantic colors.";
+
 const char kUseMessagesStagingUrlName[] = "Use Messages staging URL";
 const char kUseMessagesStagingUrlDescription[] =
     "Use the staging server as part of the \"Messages\" feature under "

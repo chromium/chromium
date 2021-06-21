@@ -828,6 +828,10 @@ const base::Feature kScanAppSearchablePdf{"ScanAppSearchablePdf",
 const base::Feature kScanAppStickySettings{"ScanAppStickySettings",
                                            base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Overrides semantic colors in Chrome OS for easier debugging.
+const base::Feature kSemanticColorsDebugOverride{
+    "SemanticColorDebugOverride", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables displaying separate network icons for different networks types.
 // https://crbug.com/902409
 const base::Feature kSeparateNetworkIcons{"SeparateNetworkIcons",

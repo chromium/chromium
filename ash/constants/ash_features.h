@@ -319,6 +319,8 @@ extern const base::Feature kScanAppSearchablePdf;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kScanAppStickySettings;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kSemanticColorsDebugOverride;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kSeparateNetworkIcons;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kSessionManagerLongKillTimeout;

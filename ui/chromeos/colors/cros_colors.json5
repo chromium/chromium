@@ -25,10 +25,12 @@
     text_color_primary: {
       light: "$google_grey_900",
       dark: "$google_grey_200",
+      debug: "$google_green_400",
     },
     text_color_secondary: {
       light: "$google_grey_700",
       dark: "$google_grey_500",
+      debug: "$google_yellow_700",
     },
     text_color_alert: {
       light: "$google_red_600",
@@ -51,6 +53,7 @@
     icon_color_primary: {
       light: "$google_grey_700",
       dark: "$google_grey_200",
+      debug: "#ff00ff",
     },
     icon_color_alert: {
       light: "$google_red_600",
@@ -67,11 +70,13 @@
     icon_color_prominent: {
       light: "$google_blue_600",
       dark: "$google_blue_300",
+      debug: "$google_red_600",
     },
 
     icon_color_secondary: {
       light: "$google_grey_500",
       dark: "$google_grey_500",
+      debug: "#00ffff",
     },
 
     highlight_color: {

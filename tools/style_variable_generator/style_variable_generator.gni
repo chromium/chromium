@@ -49,6 +49,8 @@ template("style_variable_generator") {
 
     args = [
              "--generator=CSS",
+             "--generator-option",
+             "debug_placeholder=\$i18n{crosColorsDebugOverrides}",
              "--out-file",
              rebase_path("$out_file", root_build_dir),
            ] + rebase_path(sources, root_build_dir)

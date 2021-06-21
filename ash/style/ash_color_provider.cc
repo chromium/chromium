@@ -16,6 +16,7 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/cxx17_backports.h"
+#include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -98,8 +99,10 @@ ColorName TypeToColorName(AshColorProvider::ContentLayerType type) {
 // cros_colors.json5. Colors there will also be used by ChromeOS WebUI.
 SkColor ResolveColor(AshColorProvider::ContentLayerType type,
                      bool use_dark_color) {
-  return cros_colors::ResolveColor(TypeToColorName(type), use_dark_color,
-                                   /*use_debug_colors=*/false);
+  return cros_colors::ResolveColor(
+      TypeToColorName(type), use_dark_color,
+      base::FeatureList::IsEnabled(
+          ash::features::kSemanticColorsDebugOverride));
 }
 
 // Notify all the other components besides the System UI to update on the color
