@@ -39,7 +39,7 @@ class UnsubscribeFromWebFeedTask : public offline_pages::Task {
           result);
   void Done(WebFeedSubscriptionRequestStatus status);
 
-  FeedStream* stream_;
+  FeedStream& stream_;
   Result result_;
   std::string web_feed_name_;
   base::OnceCallback<void(Result)> callback_;

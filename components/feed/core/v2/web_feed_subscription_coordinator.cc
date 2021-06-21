@@ -488,7 +488,7 @@ void WebFeedSubscriptionCoordinator::LookupWebFeedDataAndRespond(
         std::move(callback).Run(std::move(result));
       };
 
-  feed_stream_->GetStore()->ReadRecommendedWebFeedInfo(
+  feed_stream_->GetStore().ReadRecommendedWebFeedInfo(
       entry.web_feed_id,
       base::BindOnce(adapt_callback, entry.web_feed_id, subscription_status,
                      std::move(callback)));
@@ -508,7 +508,7 @@ void WebFeedSubscriptionCoordinator::WithModel(base::OnceClosure closure) {
 
 void WebFeedSubscriptionCoordinator::LoadSubscriptionModel() {
   DCHECK(!model_);
-  feed_stream_->GetStore()->ReadWebFeedStartupData(
+  feed_stream_->GetStore().ReadWebFeedStartupData(
       base::BindOnce(&WebFeedSubscriptionCoordinator::ModelDataLoaded,
                      base::Unretained(this)));
 }
@@ -521,7 +521,7 @@ void WebFeedSubscriptionCoordinator::ModelDataLoaded(
   // TODO(crbug/1152592): Don't need recommended feed data, we could add a new
   // function on FeedStore to fetch only subscribed feed data.
   model_ = std::make_unique<WebFeedSubscriptionModel>(
-      feed_stream_->GetStore(), &index_, &recent_unsubscribed_,
+      &feed_stream_->GetStore(), &index_, &recent_unsubscribed_,
       startup_data.subscribed_web_feeds);
   for (base::OnceClosure& callback : when_model_loads_) {
     std::move(callback).Run();

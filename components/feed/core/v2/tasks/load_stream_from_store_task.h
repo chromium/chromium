@@ -76,7 +76,7 @@ class LoadStreamFromStoreTask : public offline_pages::Task {
 
   LoadStreamStatus stale_reason_ = LoadStreamStatus::kNoStatus;
   LoadType load_type_;
-  FeedStream* feed_stream_;
+  FeedStream& feed_stream_;
   StreamType stream_type_;
   FeedStore* store_;  // Unowned.
   bool ignore_staleness_ = false;

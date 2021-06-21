@@ -35,7 +35,7 @@ LoadStreamFromStoreTask::LoadStreamFromStoreTask(
     bool missed_last_refresh,
     base::OnceCallback<void(Result)> callback)
     : load_type_(load_type),
-      feed_stream_(feed_stream),
+      feed_stream_(*feed_stream),
       stream_type_(stream_type),
       store_(store),
       missed_last_refresh_(missed_last_refresh),
@@ -73,7 +73,7 @@ void LoadStreamFromStoreTask::LoadStreamDone(
     }
     if (content_age_ < base::TimeDelta()) {
       stale_reason_ = LoadStreamStatus::kDataInStoreIsStaleTimestampInFuture;
-    } else if (ShouldWaitForNewContent(feed_stream_->GetMetadata(),
+    } else if (ShouldWaitForNewContent(feed_stream_.GetMetadata(),
                                        result.stream_type, true,
                                        content_age_)) {
       stale_reason_ = LoadStreamStatus::kDataInStoreIsStale;

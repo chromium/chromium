@@ -104,7 +104,7 @@ class LoadStreamTask : public offline_pages::Task {
   void Done(LoadStreamStatus status);
 
   Options options_;
-  FeedStream* stream_;  // Unowned.
+  FeedStream& stream_;  // Unowned.
   std::unique_ptr<LoadStreamFromStoreTask> load_from_store_task_;
   std::unique_ptr<StreamModelUpdateRequest> stale_store_state_;
 

@@ -52,7 +52,7 @@ PersistentKeyValueStore* GetStore() {
   if (!feed_service)
     return nullptr;
 
-  return feed_service->GetStream()->GetPersistentKeyValueStore();
+  return &feed_service->GetStream()->GetPersistentKeyValueStore();
 }
 
 }  // namespace

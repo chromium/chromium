@@ -27,8 +27,8 @@ ImageFetchId StubFeedApi::FetchImage(
     base::OnceCallback<void(NetworkResponse)> callback) {
   return {};
 }
-PersistentKeyValueStore* StubFeedApi::GetPersistentKeyValueStore() {
-  return {};
+PersistentKeyValueStore& StubFeedApi::GetPersistentKeyValueStore() {
+  return persistent_key_value_store_;
 }
 EphemeralChangeId StubFeedApi::CreateEphemeralChange(
     const StreamType& stream_type,

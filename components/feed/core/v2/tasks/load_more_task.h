@@ -65,7 +65,7 @@ class LoadMoreTask : public offline_pages::Task {
   void Done(LoadStreamStatus status);
 
   StreamType stream_type_;
-  FeedStream* stream_;  // Unowned.
+  FeedStream& stream_;  // Unowned.
   base::TimeTicks fetch_start_time_;
   std::unique_ptr<UploadActionsTask> upload_actions_task_;
 

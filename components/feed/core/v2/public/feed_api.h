@@ -93,7 +93,7 @@ class FeedApi {
   // |id| doesn't match an active fetch, nothing happens.
   virtual void CancelImageFetch(ImageFetchId id) = 0;
 
-  virtual PersistentKeyValueStore* GetPersistentKeyValueStore() = 0;
+  virtual PersistentKeyValueStore& GetPersistentKeyValueStore() = 0;
 
   // Apply |operations| to the stream model. Does nothing if the model is not
   // yet loaded.

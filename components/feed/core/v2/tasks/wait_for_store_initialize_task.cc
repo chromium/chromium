@@ -13,20 +13,20 @@ WaitForStoreInitializeTask::WaitForStoreInitializeTask(
     FeedStore* store,
     FeedStream* stream,
     base::OnceCallback<void(Result)> callback)
-    : store_(store), stream_(stream), callback_(std::move(callback)) {}
+    : store_(*store), stream_(*stream), callback_(std::move(callback)) {}
 WaitForStoreInitializeTask::~WaitForStoreInitializeTask() = default;
 
 void WaitForStoreInitializeTask::Run() {
   // |this| stays alive as long as the |store_|, so Unretained is safe.
-  store_->Initialize(base::BindOnce(
+  store_.Initialize(base::BindOnce(
       &WaitForStoreInitializeTask::OnStoreInitialized, base::Unretained(this)));
 }
 
 void WaitForStoreInitializeTask::OnStoreInitialized() {
-  store_->ReadStartupData(
+  store_.ReadStartupData(
       base::BindOnce(&WaitForStoreInitializeTask::ReadStartupDataDone,
                      base::Unretained(this)));
-  store_->ReadWebFeedStartupData(
+  store_.ReadWebFeedStartupData(
       base::BindOnce(&WaitForStoreInitializeTask::WebFeedStartupDataDone,
                      base::Unretained(this)));
 }
@@ -34,9 +34,9 @@ void WaitForStoreInitializeTask::OnStoreInitialized() {
 void WaitForStoreInitializeTask::ReadStartupDataDone(
     FeedStore::StartupData startup_data) {
   if (startup_data.metadata &&
-      startup_data.metadata->gaia() != stream_->GetSyncSignedInGaia()) {
-    store_->ClearAll(base::BindOnce(&WaitForStoreInitializeTask::ClearAllDone,
-                                    base::Unretained(this)));
+      startup_data.metadata->gaia() != stream_.GetSyncSignedInGaia()) {
+    store_.ClearAll(base::BindOnce(&WaitForStoreInitializeTask::ClearAllDone,
+                                   base::Unretained(this)));
     return;
   }
   result_.startup_data = std::move(startup_data);
@@ -57,9 +57,9 @@ void WaitForStoreInitializeTask::MaybeUpgradeStreamSchema() {
   if (metadata.stream_schema_version() != 1) {
     result_.startup_data.stream_data.clear();
     if (metadata.gaia().empty()) {
-      metadata.set_gaia(stream_->GetSyncSignedInGaia());
+      metadata.set_gaia(stream_.GetSyncSignedInGaia());
     }
-    store_->UpgradeFromStreamSchemaV0(
+    store_.UpgradeFromStreamSchemaV0(
         std::move(metadata),
         base::BindOnce(&WaitForStoreInitializeTask::UpgradeDone,
                        base::Unretained(this)));

@@ -96,7 +96,7 @@ class UploadActionsTask : public offline_pages::Task {
   void BatchComplete(UploadActionsBatchStatus status);
   void Done(UploadActionsStatus status);
 
-  FeedStream* stream_;
+  FeedStream& stream_;
   bool upload_now_ = false;
   bool read_pending_actions_ = false;
   // Pending action to be stored.

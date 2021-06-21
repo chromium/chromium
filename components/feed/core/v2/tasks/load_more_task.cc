@@ -36,34 +36,34 @@ LoadMoreTask::LoadMoreTask(const StreamType& stream_type,
                            FeedStream* stream,
                            base::OnceCallback<void(Result)> done_callback)
     : stream_type_(stream_type),
-      stream_(stream),
+      stream_(*stream),
       done_callback_(std::move(done_callback)) {}
 
 LoadMoreTask::~LoadMoreTask() = default;
 
 void LoadMoreTask::Run() {
-  if (stream_->ClearAllInProgress()) {
+  if (stream_.ClearAllInProgress()) {
     Done(LoadStreamStatus::kAbortWithPendingClearAll);
     return;
   }
   // Check prerequisites.
-  StreamModel* model = stream_->GetModel(stream_type_);
+  StreamModel* model = stream_.GetModel(stream_type_);
   if (!model)
     return Done(LoadStreamStatus::kLoadMoreModelIsNotLoaded);
 
   LoadStreamStatus final_status =
-      stream_->ShouldMakeFeedQueryRequest(stream_type_, /*is_load_more=*/true);
+      stream_.ShouldMakeFeedQueryRequest(stream_type_, /*is_load_more=*/true);
   if (final_status != LoadStreamStatus::kNoStatus)
     return Done(final_status);
 
   upload_actions_task_ = std::make_unique<UploadActionsTask>(
-      stream_,
+      &stream_,
       base::BindOnce(&LoadMoreTask::UploadActionsComplete, GetWeakPtr()));
   upload_actions_task_->Execute(base::DoNothing());
 }
 
 void LoadMoreTask::UploadActionsComplete(UploadActionsTask::Result result) {
-  StreamModel* model = stream_->GetModel(stream_type_);
+  StreamModel* model = stream_.GetModel(stream_type_);
   DCHECK(model) << "Model was unloaded outside of a Task";
 
   // Determine whether the load more request should be forced signed-out
@@ -79,24 +79,24 @@ void LoadMoreTask::UploadActionsComplete(UploadActionsTask::Result result) {
   // This avoids a possible situation where there would be a mix of signed-in
   // and signed-out content, which we don't want.
   std::string gaia =
-      model->signed_in() ? stream_->GetSyncSignedInGaia() : std::string();
+      model->signed_in() ? stream_.GetSyncSignedInGaia() : std::string();
   // Send network request.
   fetch_start_time_ = base::TimeTicks::Now();
 
   feedwire::Request request = CreateFeedQueryLoadMoreRequest(
-      stream_->GetRequestMetadata(stream_type_,
-                                  /*is_for_next_page=*/true),
-      stream_->GetMetadata().consistency_token(),
-      stream_->GetModel(stream_type_)->GetNextPageToken());
+      stream_.GetRequestMetadata(stream_type_,
+                                 /*is_for_next_page=*/true),
+      stream_.GetMetadata().consistency_token(),
+      stream_.GetModel(stream_type_)->GetNextPageToken());
 
   // TODO(crbug/1152592): Send a different network request type for
   // WebFeeds.
   if (base::FeatureList::IsEnabled(kDiscoFeedEndpoint)) {
-    stream_->GetNetwork()->SendApiRequest<QueryNextPageDiscoverApi>(
+    stream_.GetNetwork().SendApiRequest<QueryNextPageDiscoverApi>(
         request, gaia,
         base::BindOnce(&LoadMoreTask::QueryApiRequestComplete, GetWeakPtr()));
   } else {
-    stream_->GetNetwork()->SendQueryRequest(
+    stream_.GetNetwork().SendQueryRequest(
         NetworkRequestType::kNextPage, request, gaia,
         base::BindOnce(&LoadMoreTask::QueryRequestComplete, GetWeakPtr()));
   }
@@ -117,14 +117,14 @@ void LoadMoreTask::QueryRequestComplete(
 void LoadMoreTask::ProcessNetworkResponse(
     std::unique_ptr<feedwire::Response> response_body,
     NetworkResponseInfo response_info) {
-  StreamModel* model = stream_->GetModel(stream_type_);
+  StreamModel* model = stream_.GetModel(stream_type_);
   DCHECK(model) << "Model was unloaded outside of a Task";
 
   if (!response_body)
     return Done(LoadStreamStatus::kNoResponseBody);
 
   RefreshResponseData translated_response =
-      stream_->GetWireResponseTranslator()->TranslateWireResponse(
+      stream_.GetWireResponseTranslator().TranslateWireResponse(
           *response_body, StreamModelUpdateRequest::Source::kNetworkLoadMore,
           response_info.was_signed_in, base::Time::Now());
 
@@ -135,10 +135,10 @@ void LoadMoreTask::ProcessNetworkResponse(
       !translated_response.model_update_request->stream_structures.empty();
 
   absl::optional<feedstore::Metadata> updated_metadata =
-      feedstore::MaybeUpdateSessionId(stream_->GetMetadata(),
+      feedstore::MaybeUpdateSessionId(stream_.GetMetadata(),
                                       translated_response.session_id);
   if (updated_metadata) {
-    stream_->SetMetadata(std::move(*updated_metadata));
+    stream_.SetMetadata(std::move(*updated_metadata));
   }
 
   result_.model_update_request =

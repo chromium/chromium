@@ -21,21 +21,21 @@ FetchRecommendedWebFeedsTask::Result::operator=(Result&&) = default;
 FetchRecommendedWebFeedsTask::FetchRecommendedWebFeedsTask(
     FeedStream* stream,
     base::OnceCallback<void(Result)> callback)
-    : stream_(stream), callback_(std::move(callback)) {}
+    : stream_(*stream), callback_(std::move(callback)) {}
 FetchRecommendedWebFeedsTask::~FetchRecommendedWebFeedsTask() = default;
 
 void FetchRecommendedWebFeedsTask::Run() {
-  if (stream_->ClearAllInProgress()) {
+  if (stream_.ClearAllInProgress()) {
     Done(WebFeedRefreshStatus::kAbortFetchWebFeedPendingClearAll);
     return;
   }
-  if (!stream_->GetRequestThrottler()->RequestQuota(
+  if (!stream_.GetRequestThrottler().RequestQuota(
           ListRecommendedWebFeedDiscoverApi::kRequestType)) {
     Done(WebFeedRefreshStatus::kNetworkRequestThrottled);
     return;
   }
-  stream_->GetNetwork()->SendApiRequest<ListRecommendedWebFeedDiscoverApi>(
-      {}, stream_->GetSyncSignedInGaia(),
+  stream_.GetNetwork().SendApiRequest<ListRecommendedWebFeedDiscoverApi>(
+      {}, stream_.GetSyncSignedInGaia(),
       base::BindOnce(&FetchRecommendedWebFeedsTask::RequestComplete,
                      base::Unretained(this)));
 }

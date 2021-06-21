@@ -2043,10 +2043,10 @@ TEST_F(FeedApiTest, SessionIdPersistsAcrossStreamLoads) {
 
 TEST_F(FeedApiTest, PersistentKeyValueStoreIsClearedOnClearAll) {
   // Store some data and verify it exists.
-  PersistentKeyValueStore* store = stream_->GetPersistentKeyValueStore();
-  store->Put("x", "y", base::DoNothing());
+  PersistentKeyValueStore& store = stream_->GetPersistentKeyValueStore();
+  store.Put("x", "y", base::DoNothing());
   CallbackReceiver<PersistentKeyValueStore::Result> get_result;
-  store->Get("x", get_result.Bind());
+  store.Get("x", get_result.Bind());
   ASSERT_EQ("y", *get_result.RunAndGetResult().get_result);
 
   stream_->OnCacheDataCleared();  // triggers ClearAll().
@@ -2054,7 +2054,7 @@ TEST_F(FeedApiTest, PersistentKeyValueStoreIsClearedOnClearAll) {
 
   // Verify ClearAll() deleted the data.
   get_result.Clear();
-  store->Get("x", get_result.Bind());
+  store.Get("x", get_result.Bind());
   EXPECT_FALSE(get_result.RunAndGetResult().get_result);
 }
 

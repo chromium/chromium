@@ -7,9 +7,25 @@
 
 #include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/v2/public/feed_api.h"
+#include "components/feed/core/v2/public/persistent_key_value_store.h"
 #include "components/feed/core/v2/public/test/stub_web_feed_subscriptions.h"
 
 namespace feed {
+
+class StubPersistentKeyValueStore : public PersistentKeyValueStore {
+ public:
+  StubPersistentKeyValueStore() = default;
+  ~StubPersistentKeyValueStore() override = default;
+
+  void ClearAll(ResultCallback callback) override {}
+  void Put(const std::string& key,
+           const std::string& value,
+           ResultCallback callback) override {}
+  void Get(const std::string& key, ResultCallback callback) override {}
+  void Delete(const std::string& key, ResultCallback callback) override {}
+
+ private:
+};
 
 class StubFeedApi : public FeedApi {
  public:
@@ -31,7 +47,7 @@ class StubFeedApi : public FeedApi {
       const GURL& url,
       base::OnceCallback<void(NetworkResponse)> callback) override;
   void CancelImageFetch(ImageFetchId id) override {}
-  PersistentKeyValueStore* GetPersistentKeyValueStore() override;
+  PersistentKeyValueStore& GetPersistentKeyValueStore() override;
   void ExecuteOperations(
       const StreamType& stream_type,
       std::vector<feedstore::DataOperation> operations) override {}
@@ -73,6 +89,7 @@ class StubFeedApi : public FeedApi {
 
  private:
   StubWebFeedSubscriptions web_feed_subscriptions_;
+  StubPersistentKeyValueStore persistent_key_value_store_;
 };
 
 }  // namespace feed

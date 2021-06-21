@@ -17,14 +17,14 @@ SubscribeToWebFeedTask::SubscribeToWebFeedTask(
     FeedStream* stream,
     Request request,
     base::OnceCallback<void(Result)> callback)
-    : stream_(stream),
+    : stream_(*stream),
       request_(std::move(request)),
       callback_(std::move(callback)) {}
 
 SubscribeToWebFeedTask::~SubscribeToWebFeedTask() = default;
 
 void SubscribeToWebFeedTask::Run() {
-  if (stream_->ClearAllInProgress()) {
+  if (stream_.ClearAllInProgress()) {
     Done(WebFeedSubscriptionRequestStatus::
              kAbortWebFeedSubscriptionPendingClearAll);
     return;
@@ -32,32 +32,32 @@ void SubscribeToWebFeedTask::Run() {
   if (!request_.web_feed_id.empty()) {
     DCHECK(request_.page_info.url().is_empty());
     WebFeedSubscriptionCoordinator::SubscriptionInfo info =
-        stream_->subscriptions().FindSubscriptionInfoById(request_.web_feed_id);
+        stream_.subscriptions().FindSubscriptionInfoById(request_.web_feed_id);
     if (info.status == WebFeedSubscriptionStatus::kSubscribed) {
       subscribed_web_feed_info_ = info.web_feed_info;
       Done(WebFeedSubscriptionRequestStatus::kSuccess);
       return;
     }
-    if (stream_->IsOffline()) {
+    if (stream_.IsOffline()) {
       Done(WebFeedSubscriptionRequestStatus::kFailedOffline);
       return;
     }
     feedwire::webfeed::FollowWebFeedRequest request;
     request.set_name(request_.web_feed_id);
-    stream_->GetNetwork()->SendApiRequest<FollowWebFeedDiscoverApi>(
-        request, stream_->GetSyncSignedInGaia(),
+    stream_.GetNetwork().SendApiRequest<FollowWebFeedDiscoverApi>(
+        request, stream_.GetSyncSignedInGaia(),
         base::BindOnce(&SubscribeToWebFeedTask::RequestComplete,
                        base::Unretained(this)));
   } else {
     DCHECK(request_.page_info.url().is_valid());
     WebFeedSubscriptionCoordinator::SubscriptionInfo info =
-        stream_->subscriptions().FindSubscriptionInfo(request_.page_info);
+        stream_.subscriptions().FindSubscriptionInfo(request_.page_info);
     if (info.status == WebFeedSubscriptionStatus::kSubscribed) {
       subscribed_web_feed_info_ = info.web_feed_info;
       Done(WebFeedSubscriptionRequestStatus::kSuccess);
       return;
     }
-    if (stream_->IsOffline()) {
+    if (stream_.IsOffline()) {
       Done(WebFeedSubscriptionRequestStatus::kFailedOffline);
       return;
     }
@@ -66,8 +66,8 @@ void SubscribeToWebFeedTask::Run() {
     for (const GURL& rss_url : request_.page_info.GetRssUrls()) {
       request.add_page_rss_uris(rss_url.spec());
     }
-    stream_->GetNetwork()->SendApiRequest<FollowWebFeedDiscoverApi>(
-        request, stream_->GetSyncSignedInGaia(),
+    stream_.GetNetwork().SendApiRequest<FollowWebFeedDiscoverApi>(
+        request, stream_.GetSyncSignedInGaia(),
         base::BindOnce(&SubscribeToWebFeedTask::RequestComplete,
                        base::Unretained(this)));
   }

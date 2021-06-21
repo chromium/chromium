@@ -42,7 +42,7 @@ class FetchSubscribedWebFeedsTask : public offline_pages::Task {
       FeedNetwork::ApiResult<feedwire::webfeed::ListWebFeedsResponse> response);
   void Done(WebFeedRefreshStatus status);
 
-  FeedStream* stream_;
+  FeedStream& stream_;
   Result result_;
   base::OnceCallback<void(Result)> callback_;
 };

@@ -32,7 +32,7 @@ class ClearAllTask : public offline_pages::Task {
 
   void StoreClearComplete(bool ok);
 
-  FeedStream* stream_;
+  FeedStream& stream_;
   base::WeakPtrFactory<ClearAllTask> weak_ptr_factory_{this};
 };
 }  // namespace feed

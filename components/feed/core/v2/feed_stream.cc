@@ -114,6 +114,12 @@ FeedStream::FeedStream(RefreshTaskScheduler* refresh_task_scheduler,
       request_throttler_(profile_prefs),
       upload_criteria_(profile_prefs),
       notice_card_tracker_(profile_prefs) {
+  DCHECK(persistent_key_value_store_);
+  DCHECK(feed_network_);
+  DCHECK(profile_prefs_);
+  DCHECK(metrics_reporter);
+  DCHECK(image_fetcher_);
+
   static WireResponseTranslator default_translator;
   wire_response_translator_ = &default_translator;
 
@@ -636,8 +642,8 @@ void FeedStream::LoadModelForTesting(const StreamType& stream_type,
                                      std::unique_ptr<StreamModel> model) {
   LoadModel(stream_type, std::move(model));
 }
-offline_pages::TaskQueue* FeedStream::GetTaskQueueForTesting() {
-  return &task_queue_;
+offline_pages::TaskQueue& FeedStream::GetTaskQueueForTesting() {
+  return task_queue_;
 }
 
 void FeedStream::OnTaskQueueIsIdle() {
@@ -943,8 +949,8 @@ ImageFetchId FeedStream::FetchImage(
   return image_fetcher_->Fetch(url, std::move(callback));
 }
 
-PersistentKeyValueStoreImpl* FeedStream::GetPersistentKeyValueStore() {
-  return persistent_key_value_store_;
+PersistentKeyValueStoreImpl& FeedStream::GetPersistentKeyValueStore() {
+  return *persistent_key_value_store_;
 }
 
 void FeedStream::CancelImageFetch(ImageFetchId id) {

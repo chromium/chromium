@@ -19,34 +19,34 @@ UnsubscribeFromWebFeedTask::UnsubscribeFromWebFeedTask(
     FeedStream* stream,
     const std::string& web_feed_id,
     base::OnceCallback<void(Result)> callback)
-    : stream_(stream),
+    : stream_(*stream),
       web_feed_name_(web_feed_id),
       callback_(std::move(callback)) {}
 
 UnsubscribeFromWebFeedTask::~UnsubscribeFromWebFeedTask() = default;
 
 void UnsubscribeFromWebFeedTask::Run() {
-  if (stream_->ClearAllInProgress()) {
+  if (stream_.ClearAllInProgress()) {
     Done(WebFeedSubscriptionRequestStatus::
              kAbortWebFeedSubscriptionPendingClearAll);
     return;
   }
   WebFeedSubscriptionCoordinator::SubscriptionInfo info =
-      stream_->subscriptions().FindSubscriptionInfoById(web_feed_name_);
+      stream_.subscriptions().FindSubscriptionInfoById(web_feed_name_);
   if (info.status != WebFeedSubscriptionStatus::kSubscribed) {
     Done(WebFeedSubscriptionRequestStatus::kSuccess);
     return;
   }
 
-  if (stream_->IsOffline()) {
+  if (stream_.IsOffline()) {
     Done(WebFeedSubscriptionRequestStatus::kFailedOffline);
     return;
   }
 
   feedwire::webfeed::UnfollowWebFeedRequest request;
   request.set_name(web_feed_name_);
-  stream_->GetNetwork()->SendApiRequest<UnfollowWebFeedDiscoverApi>(
-      request, stream_->GetSyncSignedInGaia(),
+  stream_.GetNetwork().SendApiRequest<UnfollowWebFeedDiscoverApi>(
+      request, stream_.GetSyncSignedInGaia(),
       base::BindOnce(&UnsubscribeFromWebFeedTask::RequestComplete,
                      base::Unretained(this)));
 }

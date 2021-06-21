@@ -61,7 +61,7 @@ LoadStreamTask::LoadStreamTask(const Options& options,
                                FeedStream* stream,
                                base::OnceCallback<void(Result)> done_callback)
     : options_(options),
-      stream_(stream),
+      stream_(*stream),
       done_callback_(std::move(done_callback)) {
   DCHECK(options.stream_type.IsValid()) << "A stream type must be chosen";
   latencies_ = std::make_unique<LoadLatencyTimes>();
@@ -70,7 +70,7 @@ LoadStreamTask::LoadStreamTask(const Options& options,
 LoadStreamTask::~LoadStreamTask() = default;
 
 void LoadStreamTask::Run() {
-  if (stream_->ClearAllInProgress()) {
+  if (stream_.ClearAllInProgress()) {
     Done(LoadStreamStatus::kAbortWithPendingClearAll);
     return;
   }
@@ -82,14 +82,14 @@ void LoadStreamTask::Run() {
 
   // First, ensure we still should load the model.
   LoadStreamStatus should_not_attempt_reason =
-      stream_->ShouldAttemptLoad(options_.stream_type,
-                                 /*model_loading=*/true);
+      stream_.ShouldAttemptLoad(options_.stream_type,
+                                /*model_loading=*/true);
   if (should_not_attempt_reason != LoadStreamStatus::kNoStatus) {
     return Done(should_not_attempt_reason);
   }
 
   if (options_.abort_if_unread_content &&
-      stream_->HasUnreadContent(options_.stream_type)) {
+      stream_.HasUnreadContent(options_.stream_type)) {
     Done(LoadStreamStatus::kAlreadyHaveUnreadContent);
     return;
   }
@@ -101,8 +101,8 @@ void LoadStreamTask::Run() {
           ? LoadStreamFromStoreTask::LoadType::kFullLoad
           : LoadStreamFromStoreTask::LoadType::kLoadNoContent;
   load_from_store_task_ = std::make_unique<LoadStreamFromStoreTask>(
-      load_from_store_type, stream_, options_.stream_type, stream_->GetStore(),
-      stream_->MissedLastRefresh(options_.stream_type),
+      load_from_store_type, &stream_, options_.stream_type, &stream_.GetStore(),
+      stream_.MissedLastRefresh(options_.stream_type),
       base::BindOnce(&LoadStreamTask::LoadFromStoreComplete, GetWeakPtr()));
   load_from_store_task_->Execute(base::DoNothing());
 }
@@ -135,7 +135,7 @@ void LoadStreamTask::LoadFromStoreComplete(
   }
 
   LoadStreamStatus final_status =
-      stream_->ShouldMakeFeedQueryRequest(options_.stream_type);
+      stream_.ShouldMakeFeedQueryRequest(options_.stream_type);
   if (final_status != LoadStreamStatus::kNoStatus) {
     Done(final_status);
     return;
@@ -143,14 +143,14 @@ void LoadStreamTask::LoadFromStoreComplete(
 
   // If making a request, first try to upload pending actions.
   upload_actions_task_ = std::make_unique<UploadActionsTask>(
-      std::move(result.pending_actions), stream_,
+      std::move(result.pending_actions), &stream_,
       base::BindOnce(&LoadStreamTask::UploadActionsComplete, GetWeakPtr()));
   upload_actions_task_->Execute(base::DoNothing());
 }
 
 void LoadStreamTask::UploadActionsComplete(UploadActionsTask::Result result) {
   bool force_signed_out_request =
-      stream_->ShouldForceSignedOutFeedQueryRequest(options_.stream_type);
+      stream_.ShouldForceSignedOutFeedQueryRequest(options_.stream_type);
   upload_actions_result_ =
       std::make_unique<UploadActionsTask::Result>(std::move(result));
   latencies_->StepComplete(LoadLatencyTimes::kUploadActions);
@@ -158,21 +158,20 @@ void LoadStreamTask::UploadActionsComplete(UploadActionsTask::Result result) {
   feedwire::Request request = CreateFeedQueryRefreshRequest(
       options_.stream_type,
       GetRequestReason(options_.stream_type, options_.load_type),
-      stream_->GetRequestMetadata(options_.stream_type,
-                                  /*is_for_next_page=*/false),
-      stream_->GetMetadata().consistency_token());
+      stream_.GetRequestMetadata(options_.stream_type,
+                                 /*is_for_next_page=*/false),
+      stream_.GetMetadata().consistency_token());
 
   const std::string gaia =
-      force_signed_out_request ? std::string() : stream_->GetSyncSignedInGaia();
+      force_signed_out_request ? std::string() : stream_.GetSyncSignedInGaia();
 
-  FeedNetwork* network = stream_->GetNetwork();
-  DCHECK(network);
+  FeedNetwork& network = stream_.GetNetwork();
 
   if (options_.stream_type.IsWebFeed() &&
       !GetFeedConfig().use_feed_query_requests_for_web_feeds) {
     // Special case: web feed that is not using Feed Query requests go to
     // WebFeedListContentsDiscoverApi.
-    network->SendApiRequest<WebFeedListContentsDiscoverApi>(
+    network.SendApiRequest<WebFeedListContentsDiscoverApi>(
         std::move(request), gaia,
         base::BindOnce(&LoadStreamTask::QueryApiRequestComplete, GetWeakPtr()));
   } else if (options_.stream_type.IsForYou() &&
@@ -181,13 +180,13 @@ void LoadStreamTask::UploadActionsComplete(UploadActionsTask::Result result) {
     // Query*FeedDiscoverApi.
     switch (options_.load_type) {
       case LoadType::kInitialLoad:
-        network->SendApiRequest<QueryInteractiveFeedDiscoverApi>(
+        network.SendApiRequest<QueryInteractiveFeedDiscoverApi>(
             request, gaia,
             base::BindOnce(&LoadStreamTask::QueryApiRequestComplete,
                            GetWeakPtr()));
         break;
       case LoadType::kBackgroundRefresh:
-        network->SendApiRequest<QueryBackgroundFeedDiscoverApi>(
+        network.SendApiRequest<QueryBackgroundFeedDiscoverApi>(
             request, gaia,
             base::BindOnce(&LoadStreamTask::QueryApiRequestComplete,
                            GetWeakPtr()));
@@ -195,7 +194,7 @@ void LoadStreamTask::UploadActionsComplete(UploadActionsTask::Result result) {
     }
   } else {
     // Other requests use GWS.
-    network->SendQueryRequest(
+    network.SendQueryRequest(
         NetworkRequestType::kFeedQuery, request, gaia,
         base::BindOnce(&LoadStreamTask::QueryRequestComplete, GetWeakPtr()));
   }
@@ -218,7 +217,7 @@ void LoadStreamTask::ProcessNetworkResponse(
     NetworkResponseInfo response_info) {
   latencies_->StepComplete(LoadLatencyTimes::kQueryRequest);
 
-  DCHECK(!stream_->GetModel(options_.stream_type));
+  DCHECK(!stream_.GetModel(options_.stream_type));
 
   network_response_info_ = response_info;
 
@@ -233,7 +232,7 @@ void LoadStreamTask::ProcessNetworkResponse(
   }
 
   RefreshResponseData response_data =
-      stream_->GetWireResponseTranslator()->TranslateWireResponse(
+      stream_.GetWireResponseTranslator().TranslateWireResponse(
           *response_body, StreamModelUpdateRequest::Source::kNetworkUpdate,
           response_info.was_signed_in, base::Time::Now());
   if (!response_data.model_update_request)
@@ -243,11 +242,10 @@ void LoadStreamTask::ProcessNetworkResponse(
   content_ids_ =
       feedstore::GetContentIds(response_data.model_update_request->stream_data);
 
-  stream_->GetStore()->OverwriteStream(
-      options_.stream_type,
-      std::make_unique<StreamModelUpdateRequest>(
-          *response_data.model_update_request),
-      base::DoNothing());
+  stream_.GetStore().OverwriteStream(options_.stream_type,
+                                     std::make_unique<StreamModelUpdateRequest>(
+                                         *response_data.model_update_request),
+                                     base::DoNothing());
 
   fetched_content_has_notice_card_ =
       response_data.model_update_request->stream_data
@@ -256,10 +254,10 @@ void LoadStreamTask::ProcessNetworkResponse(
   MetricsReporter::NoticeCardFulfilled(*fetched_content_has_notice_card_);
 
   absl::optional<feedstore::Metadata> updated_metadata =
-      feedstore::MaybeUpdateSessionId(stream_->GetMetadata(),
+      feedstore::MaybeUpdateSessionId(stream_.GetMetadata(),
                                       response_data.session_id);
   if (updated_metadata) {
-    stream_->SetMetadata(std::move(*updated_metadata));
+    stream_.SetMetadata(std::move(*updated_metadata));
   }
   if (response_data.experiments)
     experiments_ = *response_data.experiments;

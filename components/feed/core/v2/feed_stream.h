@@ -105,7 +105,7 @@ class FeedStream : public FeedApi,
       const GURL& url,
       base::OnceCallback<void(NetworkResponse)> callback) override;
   void CancelImageFetch(ImageFetchId id) override;
-  PersistentKeyValueStoreImpl* GetPersistentKeyValueStore() override;
+  PersistentKeyValueStoreImpl& GetPersistentKeyValueStore() override;
   void LoadMore(const FeedStreamSurface& surface,
                 base::OnceCallback<void(bool)> callback) override;
   void ExecuteOperations(
@@ -184,9 +184,9 @@ class FeedStream : public FeedApi,
       bool upload_now,
       base::OnceCallback<void(UploadActionsTask::Result)> callback);
 
-  FeedNetwork* GetNetwork() { return feed_network_; }
-  FeedStore* GetStore() { return store_; }
-  RequestThrottler* GetRequestThrottler() { return &request_throttler_; }
+  FeedNetwork& GetNetwork() { return *feed_network_; }
+  FeedStore& GetStore() { return *store_; }
+  RequestThrottler& GetRequestThrottler() { return request_throttler_; }
   const feedstore::Metadata& GetMetadata() const;
   void SetMetadata(feedstore::Metadata metadata);
   bool SetMetadata(absl::optional<feedstore::Metadata> metadata);
@@ -252,12 +252,12 @@ class FeedStream : public FeedApi,
 
   offline_pages::TaskQueue& GetTaskQueue() { return task_queue_; }
 
-  const WireResponseTranslator* GetWireResponseTranslator() const {
-    return wire_response_translator_;
+  const WireResponseTranslator& GetWireResponseTranslator() const {
+    return *wire_response_translator_;
   }
 
   // Testing functionality.
-  offline_pages::TaskQueue* GetTaskQueueForTesting();
+  offline_pages::TaskQueue& GetTaskQueueForTesting();
   // Loads |model|. Should be used for testing in place of typical model
   // loading from network or storage.
   void LoadModelForTesting(const StreamType& stream_type,

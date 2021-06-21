@@ -49,7 +49,7 @@ class FetchRecommendedWebFeedsTask : public offline_pages::Task {
           response);
   void Done(WebFeedRefreshStatus status);
 
-  FeedStream* stream_;
+  FeedStream& stream_;
   Result result_;
   base::OnceCallback<void(Result)> callback_;
 };

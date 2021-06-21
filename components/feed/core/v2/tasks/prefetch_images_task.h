@@ -38,7 +38,7 @@ class PrefetchImagesTask : public offline_pages::Task {
 
   void MaybePrefetchImage(const GURL& gurl);
 
-  FeedStream* stream_;
+  FeedStream& stream_;
   std::unordered_set<std::string> previously_fetched_;
   unsigned long max_images_per_refresh_;
 

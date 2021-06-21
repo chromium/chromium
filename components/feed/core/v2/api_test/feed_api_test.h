@@ -61,7 +61,7 @@ std::string ModelStateFor(const StreamType& stream_type, FeedStore* store);
 
 feedwire::FeedAction MakeFeedAction(int64_t id, size_t pad_size = 0);
 
-std::vector<feedstore::StoredAction> ReadStoredActions(FeedStore* store);
+std::vector<feedstore::StoredAction> ReadStoredActions(FeedStore& store);
 
 std::string SerializedOfflineBadgeContent();
 

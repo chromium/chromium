@@ -23,21 +23,21 @@ FetchSubscribedWebFeedsTask::Result::operator=(Result&&) = default;
 FetchSubscribedWebFeedsTask::FetchSubscribedWebFeedsTask(
     FeedStream* stream,
     base::OnceCallback<void(Result)> callback)
-    : stream_(stream), callback_(std::move(callback)) {}
+    : stream_(*stream), callback_(std::move(callback)) {}
 FetchSubscribedWebFeedsTask::~FetchSubscribedWebFeedsTask() = default;
 
 void FetchSubscribedWebFeedsTask::Run() {
-  if (stream_->ClearAllInProgress()) {
+  if (stream_.ClearAllInProgress()) {
     Done(WebFeedRefreshStatus::kAbortFetchWebFeedPendingClearAll);
     return;
   }
-  if (!stream_->GetRequestThrottler()->RequestQuota(
+  if (!stream_.GetRequestThrottler().RequestQuota(
           ListWebFeedsDiscoverApi::kRequestType)) {
     Done(WebFeedRefreshStatus::kNetworkRequestThrottled);
     return;
   }
-  stream_->GetNetwork()->SendApiRequest<ListWebFeedsDiscoverApi>(
-      {}, stream_->GetSyncSignedInGaia(),
+  stream_.GetNetwork().SendApiRequest<ListWebFeedsDiscoverApi>(
+      {}, stream_.GetSyncSignedInGaia(),
       base::BindOnce(&FetchSubscribedWebFeedsTask::RequestComplete,
                      base::Unretained(this)));
 }

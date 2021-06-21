@@ -48,7 +48,7 @@ class SubscribeToWebFeedTask : public offline_pages::Task {
   void ReadFeedDataComplete(FeedStore::WebFeedStartupData startup_data);
   void Done(WebFeedSubscriptionRequestStatus status);
 
-  FeedStream* stream_;
+  FeedStream& stream_;
   Request request_;
   feedstore::WebFeedInfo subscribed_web_feed_info_;
   base::OnceCallback<void(Result)> callback_;

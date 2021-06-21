@@ -109,10 +109,10 @@ feedwire::FeedAction MakeFeedAction(int64_t id, size_t pad_size) {
   return action;
 }
 
-std::vector<feedstore::StoredAction> ReadStoredActions(FeedStore* store) {
+std::vector<feedstore::StoredAction> ReadStoredActions(FeedStore& store) {
   base::RunLoop run_loop;
   CallbackReceiver<std::vector<feedstore::StoredAction>> cr(&run_loop);
-  store->ReadActions(cr.Bind());
+  store.ReadActions(cr.Bind());
   run_loop.Run();
   CHECK(cr.GetResult());
   return std::move(*cr.GetResult());
@@ -700,8 +700,8 @@ void FeedApiTest::CreateStream(bool wait_for_initialization) {
 }
 
 bool FeedApiTest::IsTaskQueueIdle() const {
-  return !stream_->GetTaskQueueForTesting()->HasPendingTasks() &&
-         !stream_->GetTaskQueueForTesting()->HasRunningTask();
+  return !stream_->GetTaskQueueForTesting().HasPendingTasks() &&
+         !stream_->GetTaskQueueForTesting().HasRunningTask();
 }
 
 void FeedApiTest::WaitForIdleTaskQueue() {

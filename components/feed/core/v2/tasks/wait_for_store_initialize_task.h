@@ -44,8 +44,8 @@ class WaitForStoreInitializeTask : public offline_pages::Task {
   void WebFeedStartupDataDone(FeedStore::WebFeedStartupData data);
   void Done();
 
-  FeedStore* store_;
-  FeedStream* stream_;
+  FeedStore& store_;
+  FeedStream& stream_;
   base::OnceCallback<void(Result)> callback_;
   Result result_;
   int done_count_ = 0;
