@@ -1430,10 +1430,18 @@ void URLRequestHttpJob::RecordTimer() {
   // bound to connections and which connections offer resumption. We look at all
   // TLS 1.3 responses for an apples-to-apples comparison.
   //
+  // Additionally record metrics for Google hosts. Most Google hosts are known
+  // to implement 0-RTT, so this gives more targeted metrics as we initially
+  // roll out client support.
+  //
   // TODO(https://crbug.com/641225): Remove these metrics after launching 0-RTT.
   if (transaction_ && transaction_->GetResponseInfo() &&
       IsTLS13OverTCP(*transaction_->GetResponseInfo())) {
     base::UmaHistogramMediumTimes("Net.HttpTimeToFirstByte.TLS13", to_start);
+    if (HasGoogleHost(request()->url())) {
+      base::UmaHistogramMediumTimes("Net.HttpTimeToFirstByte.TLS13.Google",
+                                    to_start);
+    }
   }
 }
 
@@ -1504,6 +1512,10 @@ void URLRequestHttpJob::RecordCompletionHistograms(CompletionCause reason) {
     // 0-RTT.
     if (IsTLS13OverTCP(*response_info_)) {
       base::UmaHistogramTimes("Net.HttpJob.TotalTime.TLS13", total_time);
+      if (is_https_google) {
+        base::UmaHistogramTimes("Net.HttpJob.TotalTime.TLS13.Google",
+                                total_time);
+      }
     }
 
     UMA_HISTOGRAM_CUSTOM_COUNTS("Net.HttpJob.PrefilterBytesRead",

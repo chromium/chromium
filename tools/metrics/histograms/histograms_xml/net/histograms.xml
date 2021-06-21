@@ -1912,6 +1912,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Net.HttpJob.TotalTime.TLS13.Google" units="ms"
+    expires_after="2021-12-31">
+  <owner>davidben@chromium.org</owner>
+  <owner>trusty-transport@chromium.org</owner>
+  <summary>
+    Time it takes to complete an HttpJob to a Google host, from starting the
+    transaction until we are done reading, if the response was received over TLS
+    1.3 and TCP. This is recorded to measure the impact of 0-RTT.
+  </summary>
+</histogram>
+
 <histogram name="Net.HttpJob.TotalTimeCached" units="ms" expires_after="never">
 <!-- expires-never: Core network stack health metric -->
 
@@ -2042,6 +2053,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Time from when an HTTP request is issued to when the first byte is
     processed, if the response was not cached and received over TLS 1.3 and TCP.
     This is recorded to measure the impact of 0-RTT.
+  </summary>
+</histogram>
+
+<histogram name="Net.HttpTimeToFirstByte.TLS13.Google" units="ms"
+    expires_after="2021-12-31">
+  <owner>davidben@chromium.org</owner>
+  <owner>trusty-transport@chromium.org</owner>
+  <summary>
+    Time from when an HTTP request to a Google host is issued to when the first
+    byte is processed, if the response was not cached and received over TLS 1.3
+    and TCP. This is recorded to measure the impact of 0-RTT.
   </summary>
 </histogram>
 
@@ -5198,9 +5220,22 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>svaldez@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
-    Indicates whether a TLS 1.3 connection with 0-RTT enabled ended up using
-    0-RTT or not, and why; this includes reasons such as the server declining to
+    Indicates whether a TLS 1.3 connection ended up using 0-RTT or not, and why;
+    this includes reasons such as the server declining to resume the connection
+    and the client not having enough tickets available. This metric is only
+    recorded if 0-RTT supported is enabled in the client.
+  </summary>
+</histogram>
+
+<histogram name="Net.SSLHandshakeEarlyDataReason.Google"
+    enum="SSLHandshakeEarlyDataReason" expires_after="2021-12-31">
+  <owner>davidben@chromium.org</owner>
+  <owner>trusty-transport@chromium.org</owner>
+  <summary>
+    Indicates whether a TLS 1.3 connection to a Google host ended up using 0-RTT
+    or not, and why; this includes reasons such as the server declining to
     resume the connection and the client not having enough tickets available.
+    This metric is only recorded if 0-RTT supported is enabled in the client.
   </summary>
 </histogram>
 

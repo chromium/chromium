@@ -1557,6 +1557,14 @@ void SSLClientSocketImpl::DoPeek() {
     UMA_HISTOGRAM_ENUMERATION("Net.SSLHandshakeEarlyDataReason",
                               SSL_get_early_data_reason(ssl_.get()),
                               ssl_early_data_reason_max_value + 1);
+    if (IsGoogleHost(host_and_port_.host())) {
+      // Most Google hosts are known to implement 0-RTT, so this gives more
+      // targeted metrics as we initially roll out client support. See
+      // https://crbug.com/641225.
+      UMA_HISTOGRAM_ENUMERATION("Net.SSLHandshakeEarlyDataReason.Google",
+                                SSL_get_early_data_reason(ssl_.get()),
+                                ssl_early_data_reason_max_value + 1);
+    }
 
     // On early data reject, clear early data on any other sessions in the
     // cache, so retries do not get stuck attempting 0-RTT. See
