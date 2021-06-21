@@ -209,7 +209,10 @@ if (enable_pdf) {
         "pdfium/pdfium_font_linux.h",
       ]
 
-      deps += [ ":font_table_linux" ]
+      deps += [
+        ":font_table_linux",
+        "//components/services/font/public/cpp",
+      ]
     }
   }
 
