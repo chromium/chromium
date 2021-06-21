@@ -112,7 +112,7 @@ OpaqueBrowserFrameViewLayout::close_button_
 # gmock/EXPECT_THAT.
 cc::GpuImageDecodeCache::dark_mode_filter_
 blink::scheduler::MainThreadSchedulerImpl::current_agent_group_scheduler_
-performance_manager::v8_memory::(anonymous namespace)::V8ContextTrackerTest::tracker
+performance_manager::v8_memory::(anonymous namespace)::V8ContextTrackerTest::tracker_
 content::(anonymous namespace)::BackForwardCacheMessageFilter::interface_name_
 base::trace_event::MemoryDumpProviderInfo::name
 
