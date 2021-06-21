@@ -48,7 +48,7 @@ blink_core_sources("probe") {
   deps = [
     ":instrumentation_probes",
     "//skia",
-    "//third_party/blink/renderer/bindings/core/v8:bindings_core_v8_generated",
+    "//third_party/blink/renderer/bindings/core/v8:generated",
     "//third_party/blink/renderer/core:all_generators",
     "//third_party/blink/renderer/platform:make_platform_generated",
     "//third_party/blink/renderer/platform/wtf",

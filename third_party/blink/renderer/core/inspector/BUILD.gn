@@ -108,7 +108,6 @@ source_set("generated") {
   deps = [
     ":protocol_sources",
     "//skia",
-    "//third_party/blink/renderer/bindings/core/v8:bindings_core_v8_generated",
     "//third_party/blink/renderer/core:all_generators",
     "//third_party/blink/renderer/core/probe:generated",
     "//third_party/blink/renderer/platform:make_platform_generated",

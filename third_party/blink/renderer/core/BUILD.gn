@@ -10,7 +10,6 @@ import("//build/toolchain/toolchain.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/blink/renderer/bindings/bindings.gni")
-import("//third_party/blink/renderer/bindings/modules/v8/generated.gni")
 import("//third_party/blink/renderer/bindings/scripts/scripts.gni")
 import("//third_party/blink/renderer/build/scripts/scripts.gni")
 import("//third_party/blink/renderer/config.gni")
@@ -129,7 +128,6 @@ source_set("prerequisites") {
     "//skia",
     "//third_party/blink/public/mojom:color_scheme_mojo_bindings",
     "//third_party/blink/public/mojom:mojom_broadcastchannel_bindings_blink",
-    "//third_party/blink/renderer/bindings/core/v8:bindings_core_v8_generated",
     "//third_party/blink/renderer/bindings/core/v8:generated",
     "//third_party/blink/renderer/core/animation:buildflags",
     "//third_party/blink/renderer/core/inspector:generated",
@@ -155,12 +153,7 @@ source_set("prerequisites") {
     "//url",
     "//v8",
   ]
-  deps = [
-    "//third_party/blink/public:scaled_resources",
-
-    # FIXME: don't depend on bindings_modules http://crbug.com/358074
-    "//third_party/blink/renderer/bindings/modules/v8:bindings_modules_v8_generated",
-  ]
+  deps = [ "//third_party/blink/public:scaled_resources" ]
 
   public_configs = [
     ":core_include_dirs",
@@ -263,7 +256,6 @@ component("core") {
     "//third_party/blink/public/mojom:mojom_broadcastchannel_bindings_blink",
     "//third_party/blink/public/mojom:mojom_core_blink",
     "//third_party/blink/renderer/bindings/core/v8",
-    "//third_party/blink/renderer/bindings/core/v8:bindings_core_v8_generated",
     "//third_party/blink/renderer/core/animation",
     "//third_party/blink/renderer/core/exported",
     "//third_party/blink/renderer/core/probe",
@@ -1143,8 +1135,6 @@ target(core_generated_target_type, "core_generated") {
     ":prerequisites",
     "//gin",
     "//skia",
-    "//third_party/blink/renderer/bindings/core/v8:bindings_core_impl",
-    "//third_party/blink/renderer/bindings/core/v8:bindings_core_v8_generated",
     "//third_party/iccjpeg",
     "//third_party/libpng",
     "//third_party/libwebp",
@@ -1153,7 +1143,6 @@ target(core_generated_target_type, "core_generated") {
 
     # FIXME: don't depend on bindings/modules http://crbug.com/358074
     "//third_party/blink/renderer/bindings/modules:bindings_modules_generated",
-    "//third_party/blink/renderer/bindings/modules/v8:bindings_modules_v8_generated",
     "//third_party/blink/renderer/platform:make_platform_generated",
     "//third_party/blink/renderer/platform/wtf",
     "//url",
