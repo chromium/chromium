@@ -2152,6 +2152,14 @@ ci.clang_builder(
 )
 
 ci.clang_builder(
+    name = "ToTAndroidCoverage x86",
+    console_view_entry = consoles.console_view_entry(
+        category = "ToT Code Coverage",
+        short_name = "and",
+    ),
+)
+
+ci.clang_builder(
     name = "ToTAndroid64",
     console_view_entry = consoles.console_view_entry(
         category = "ToT Android",

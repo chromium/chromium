@@ -178,6 +178,7 @@
       'ToTAndroid64': 'android_clang_tot_release_arm64',
       'ToTAndroid x64': 'android_clang_tot_x64',
       'ToTAndroid x86': 'android_clang_tot_x86',
+      'ToTAndroidCoverage x86': 'android_clang_tot_coverage_x86',
       'ToTFuchsia x64': 'fuchsia_clang_tot_release_x64',
       'ToTFuchsiaOfficial': 'fuchsia_clang_tot_official_arm64',
       'ToTLinuxOfficial': 'clang_tot_official',
@@ -1281,6 +1282,11 @@
     'android_clang_tot_x86': [
       'android_without_codecs', 'clang_tot', 'shared', 'x86', 'release',
       'dcheck_always_on',
+    ],
+
+    'android_clang_tot_coverage_x86': [
+      'android_without_codecs', 'clang_tot', 'shared', 'x86', 'release',
+      'dcheck_always_on', 'use_clang_coverage',
     ],
 
     'android_cronet_debug_static_bot_arm64': [

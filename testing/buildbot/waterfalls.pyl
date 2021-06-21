@@ -1671,6 +1671,11 @@
           'all',
         ],
       },
+      'ToTAndroidCoverage x86': {
+        'additional_compile_targets': [
+          'all',
+        ],
+      },
       'ToTAndroidOfficial': {
         'additional_compile_targets': [
           'all',

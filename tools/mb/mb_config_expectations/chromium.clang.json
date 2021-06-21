@@ -114,6 +114,18 @@
       "target_os": "android"
     }
   },
+  "ToTAndroidCoverage x86": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "is_clang": true,
+      "is_component_build": true,
+      "is_debug": false,
+      "llvm_force_head_revision": true,
+      "target_cpu": "x86",
+      "target_os": "android",
+      "use_clang_coverage": true
+    }
+  },
   "ToTAndroidOfficial": {
     "gn_args": {
       "ffmpeg_branding": "Chrome",
