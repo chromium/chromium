@@ -30,11 +30,6 @@ class LayoutShiftNormalization {
   void ClearAllLayoutShifts();
 
  private:
-  struct SlidingWindow {
-    base::TimeTicks start_time;
-    double layout_shift_score = 0.0;
-  };
-
   struct SessionWindow {
     base::TimeTicks start_time;
     base::TimeTicks last_time;
@@ -48,14 +43,6 @@ class LayoutShiftNormalization {
           first_non_stale,
       std::vector<std::pair<base::TimeTicks, double>>::const_iterator last,
       float cumulative_layout_shift_score);
-
-  void UpdateSlidingWindow(
-      std::vector<SlidingWindow>* sliding_windows,
-      base::TimeDelta duration,
-      base::TimeTicks current_time,
-      std::vector<std::pair<base::TimeTicks, double>>::const_iterator begin,
-      std::vector<std::pair<base::TimeTicks, double>>::const_iterator end,
-      double& max_score);
 
   void UpdateSessionWindow(
       SessionWindow* session_window,
@@ -72,13 +59,7 @@ class LayoutShiftNormalization {
   // This vector is maintained in sorted order.
   std::vector<std::pair<base::TimeTicks, double>> recent_layout_shifts_;
 
-  // Sliding window vectors are maintained in sorted order.
-  std::vector<SlidingWindow> sliding_300ms_;
-  std::vector<SlidingWindow> sliding_1000ms_;
   SessionWindow session_gap1000ms_max5000ms_;
-  SessionWindow session_gap1000ms_;
-  SessionWindow session_gap5000ms_;
-  uint32_t session_gap5000ms_count_ = 0;
 
   DISALLOW_COPY_AND_ASSIGN(LayoutShiftNormalization);
 };

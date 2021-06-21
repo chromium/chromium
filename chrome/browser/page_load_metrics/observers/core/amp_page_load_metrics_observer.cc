@@ -481,23 +481,10 @@ void AMPPageLoadMetricsObserver::MaybeRecordAmpDocumentMetrics() {
       subframe_info.layout_shift_normalization.normalized_cls_data();
   if (!normalized_cls_data.data_tainted) {
     builder
-        .SetSubFrame_LayoutInstability_AverageCumulativeShiftScore_SessionWindow_Gap5000ms(
-            page_load_metrics::LayoutShiftUkmValue(
-                normalized_cls_data
-                    .session_windows_gap5000ms_maxMax_average_cls))
-        .SetSubFrame_LayoutInstability_MaxCumulativeShiftScore_SessionWindow_Gap1000ms(
-            page_load_metrics::LayoutShiftUkmValue(
-                normalized_cls_data.session_windows_gap1000ms_maxMax_max_cls))
         .SetSubFrame_LayoutInstability_MaxCumulativeShiftScore_SessionWindow_Gap1000ms_Max5000ms(
             page_load_metrics::LayoutShiftUkmValue(
                 normalized_cls_data
-                    .session_windows_gap1000ms_max5000ms_max_cls))
-        .SetSubFrame_LayoutInstability_MaxCumulativeShiftScore_SlidingWindow_Duration300ms(
-            page_load_metrics::LayoutShiftUkmValue(
-                normalized_cls_data.sliding_windows_duration300ms_max_cls))
-        .SetSubFrame_LayoutInstability_MaxCumulativeShiftScore_SlidingWindow_Duration1000ms(
-            page_load_metrics::LayoutShiftUkmValue(
-                normalized_cls_data.sliding_windows_duration1000ms_max_cls));
+                    .session_windows_gap1000ms_max5000ms_max_cls));
   }
 
   // For UMA, report (shift_score * 10) an an int in the range [0,100].

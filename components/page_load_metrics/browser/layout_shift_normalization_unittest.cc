@@ -51,13 +51,7 @@ TEST_F(LayoutShiftNormalizationTest, MultipleShifts) {
   // Update CLS normalization data.
   AddNewLayoutShifts(new_shifts, current_time);
 
-  EXPECT_EQ(normalized_cls_data().sliding_windows_duration300ms_max_cls, 3.0);
-  EXPECT_EQ(normalized_cls_data().sliding_windows_duration1000ms_max_cls, 4.5);
   EXPECT_EQ(normalized_cls_data().session_windows_gap1000ms_max5000ms_max_cls,
-            6.0);
-  EXPECT_EQ(normalized_cls_data().session_windows_gap1000ms_maxMax_max_cls,
-            6.0);
-  EXPECT_EQ(normalized_cls_data().session_windows_gap5000ms_maxMax_average_cls,
             6.0);
   EXPECT_EQ(normalized_cls_data().data_tainted, false);
 }
@@ -75,14 +69,7 @@ TEST_F(LayoutShiftNormalizationTest, MultipleShiftsWithOneStaleShift) {
                         {{1800, 1.5}, {1300, 1.5}, {1000, 1.5}});
   // Update CLS normalization data.
   AddNewLayoutShifts(new_shifts, current_time);
-
-  EXPECT_EQ(normalized_cls_data().sliding_windows_duration300ms_max_cls, 0.0);
-  EXPECT_EQ(normalized_cls_data().sliding_windows_duration1000ms_max_cls, 0.0);
   EXPECT_EQ(normalized_cls_data().session_windows_gap1000ms_max5000ms_max_cls,
-            0.0);
-  EXPECT_EQ(normalized_cls_data().session_windows_gap1000ms_maxMax_max_cls,
-            0.0);
-  EXPECT_EQ(normalized_cls_data().session_windows_gap5000ms_maxMax_average_cls,
             0.0);
   EXPECT_EQ(normalized_cls_data().data_tainted, true);
 }
@@ -100,14 +87,8 @@ TEST_F(LayoutShiftNormalizationTest, MultipleShiftsFromTwoRenderers) {
   InsertNewLayoutShifts(new_shifts_2, current_time, {{4100, 4.0}, {1000, 1.5}});
   AddNewLayoutShifts(new_shifts_2, current_time);
 
-  EXPECT_EQ(normalized_cls_data().sliding_windows_duration300ms_max_cls, 4.0);
-  EXPECT_EQ(normalized_cls_data().sliding_windows_duration1000ms_max_cls, 4.0);
   EXPECT_EQ(normalized_cls_data().session_windows_gap1000ms_max5000ms_max_cls,
             4.5);
-  EXPECT_EQ(normalized_cls_data().session_windows_gap1000ms_maxMax_max_cls,
-            4.5);
-  EXPECT_EQ(normalized_cls_data().session_windows_gap5000ms_maxMax_average_cls,
-            8.5);
   EXPECT_EQ(normalized_cls_data().data_tainted, false);
 }
 
@@ -134,14 +115,7 @@ TEST_F(LayoutShiftNormalizationTest, MultipleShiftsFromDifferentTimes) {
   std::vector<page_load_metrics::mojom::LayoutShiftPtr> new_shifts_3;
   InsertNewLayoutShifts(new_shifts_3, current_time_3, {{0, 0.5}});
   AddNewLayoutShifts(new_shifts_3, current_time_3);
-
-  EXPECT_EQ(normalized_cls_data().sliding_windows_duration300ms_max_cls, 3.0);
-  EXPECT_EQ(normalized_cls_data().sliding_windows_duration1000ms_max_cls, 3.0);
   EXPECT_EQ(normalized_cls_data().session_windows_gap1000ms_max5000ms_max_cls,
             3.0);
-  EXPECT_EQ(normalized_cls_data().session_windows_gap1000ms_maxMax_max_cls,
-            3.0);
-  EXPECT_EQ(normalized_cls_data().session_windows_gap5000ms_maxMax_average_cls,
-            3.5);
   EXPECT_EQ(normalized_cls_data().data_tainted, false);
 }

@@ -490,29 +490,9 @@ TEST_F(AMPPageLoadMetricsObserverTest,
   // Layout Shift Normalization UKM.
   tester()->test_ukm_recorder().ExpectEntryMetric(
       entry.get(),
-      "SubFrame.LayoutInstability.AverageCumulativeShiftScore.SessionWindow."
-      "Gap5000ms",
-      65);
-  tester()->test_ukm_recorder().ExpectEntryMetric(
-      entry.get(),
-      "SubFrame.LayoutInstability.MaxCumulativeShiftScore.SessionWindow."
-      "Gap1000ms",
-      40);
-  tester()->test_ukm_recorder().ExpectEntryMetric(
-      entry.get(),
       "SubFrame.LayoutInstability.MaxCumulativeShiftScore.SessionWindow."
       "Gap1000ms.Max5000ms",
       40);
-  tester()->test_ukm_recorder().ExpectEntryMetric(
-      entry.get(),
-      "SubFrame.LayoutInstability.MaxCumulativeShiftScore.SlidingWindow."
-      "Duration1000ms",
-      30);
-  tester()->test_ukm_recorder().ExpectEntryMetric(
-      entry.get(),
-      "SubFrame.LayoutInstability.MaxCumulativeShiftScore.SlidingWindow."
-      "Duration300ms",
-      25);
   tester()->histogram_tester().ExpectUniqueSample(
       "PageLoad.Clients.AMP.LayoutInstability.MaxCumulativeShiftScore."
       "Subframe.SessionWindow.Gap1000ms.Max5000ms",

@@ -584,24 +584,8 @@ return score;
                           "CumulativeShiftScoreAfterBackForwardCacheRestore",
                           page_load_metrics::LayoutShiftUkmValue(next_score));
   ExpectMetricValueForUrl(url_a,
-                          "AverageCumulativeShiftScoreAfterBackForwardCacheRest"
-                          "ore.SessionWindow.Gap5000ms",
-                          page_load_metrics::LayoutShiftUkmValue(next_score));
-  ExpectMetricValueForUrl(url_a,
-                          "MaxCumulativeShiftScoreAfterBackForwardCacheRestore."
-                          "SessionWindow.Gap1000ms",
-                          page_load_metrics::LayoutShiftUkmValue(next_score));
-  ExpectMetricValueForUrl(url_a,
                           "MaxCumulativeShiftScoreAfterBackForwardCacheRestore."
                           "SessionWindow.Gap1000ms.Max5000ms",
-                          page_load_metrics::LayoutShiftUkmValue(next_score));
-  ExpectMetricValueForUrl(url_a,
-                          "MaxCumulativeShiftScoreAfterBackForwardCacheRestore."
-                          "SlidingWindow.Duration1000ms",
-                          page_load_metrics::LayoutShiftUkmValue(next_score));
-  ExpectMetricValueForUrl(url_a,
-                          "MaxCumulativeShiftScoreAfterBackForwardCacheRestore."
-                          "SlidingWindow.Duration1000ms",
                           page_load_metrics::LayoutShiftUkmValue(next_score));
   // Go back to A again.
   web_contents()->GetController().GoBack();
@@ -618,24 +602,8 @@ return score;
   ExpectMetricCountForUrl(
       url_a, "CumulativeShiftScoreAfterBackForwardCacheRestore", 2);
   ExpectMetricCountForUrl(url_a,
-                          "AverageCumulativeShiftScoreAfterBackForwardCacheRest"
-                          "ore.SessionWindow.Gap5000ms",
-                          2);
-  ExpectMetricCountForUrl(url_a,
-                          "MaxCumulativeShiftScoreAfterBackForwardCacheRestore."
-                          "SessionWindow.Gap1000ms",
-                          2);
-  ExpectMetricCountForUrl(url_a,
                           "MaxCumulativeShiftScoreAfterBackForwardCacheRestore."
                           "SessionWindow.Gap1000ms.Max5000ms",
-                          2);
-  ExpectMetricCountForUrl(url_a,
-                          "MaxCumulativeShiftScoreAfterBackForwardCacheRestore."
-                          "SlidingWindow.Duration1000ms",
-                          2);
-  ExpectMetricCountForUrl(url_a,
-                          "MaxCumulativeShiftScoreAfterBackForwardCacheRestore."
-                          "SlidingWindow.Duration1000ms",
                           2);
   histogram_tester().ExpectTotalCount(
       "PageLoad.LayoutInstability.MaxCumulativeShiftScore."

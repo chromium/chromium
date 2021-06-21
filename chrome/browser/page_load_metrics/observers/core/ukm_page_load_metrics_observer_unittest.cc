@@ -1537,26 +1537,6 @@ TEST_F(UkmPageLoadMetricsObserverTest, LayoutInstability) {
         PageLoad::
             kLayoutInstability_MaxCumulativeShiftScore_SessionWindow_Gap1000ms_Max5000msName,
         250);
-    ukm_recorder.ExpectEntryMetric(
-        ukm_entry,
-        PageLoad::
-            kLayoutInstability_MaxCumulativeShiftScore_SessionWindow_Gap1000msName,
-        250);
-    ukm_recorder.ExpectEntryMetric(
-        ukm_entry,
-        PageLoad::
-            kLayoutInstability_MaxCumulativeShiftScore_SlidingWindow_Duration1000msName,
-        200);
-    ukm_recorder.ExpectEntryMetric(
-        ukm_entry,
-        PageLoad::
-            kLayoutInstability_MaxCumulativeShiftScore_SlidingWindow_Duration300msName,
-        150);
-    ukm_recorder.ExpectEntryMetric(
-        ukm_entry,
-        PageLoad::
-            kLayoutInstability_AverageCumulativeShiftScore_SessionWindow_Gap5000msName,
-        250);
     ukm_recorder.ExpectEntryMetric(kv.second.get(),
                                    PageLoad::kNavigation_PageEndReason3Name,
                                    page_load_metrics::END_CLOSE);
