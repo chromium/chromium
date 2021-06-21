@@ -4,11 +4,21 @@
 
 #include "ash/content/shimless_rma/backend/shimless_rma_service.h"
 
+#include "ash/content/shimless_rma/mojom/shimless_rma_mojom_traits.h"
 #include "base/bind.h"
 #include "chromeos/dbus/rmad/rmad_client.h"
 
 namespace ash {
 namespace shimless_rma {
+
+namespace {
+
+using StateTraits =
+    mojo::EnumTraits<mojom::RmaState, rmad::RmadState::StateCase>;
+
+using ErrorTraits = mojo::EnumTraits<mojom::RmadErrorCode, rmad::RmadErrorCode>;
+
+}  // namespace
 
 // TODO(gavindodd): Declare an observer class and register an instance when
 // the mojom interface is created.
@@ -17,14 +27,21 @@ ShimlessRmaService::ShimlessRmaService() {}
 ShimlessRmaService::~ShimlessRmaService() = default;
 
 void ShimlessRmaService::GetCurrentState(GetCurrentStateCallback callback) {
+  chromeos::RmadClient::Get()->GetCurrentState(base::BindOnce(
+      &ShimlessRmaService::OnGetStateResponse<GetCurrentStateCallback>,
+      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 // TODO(crbug.com/1218180): For development only. Remove when all state
 // specific functions implemented.
 void ShimlessRmaService::GetNextState(GetNextStateCallback callback) {
+  GetNextStateGeneric(std::move(callback));
 }
 
 void ShimlessRmaService::GetPrevState(GetPrevStateCallback callback) {
+  chromeos::RmadClient::Get()->TransitionPreviousState(base::BindOnce(
+      &ShimlessRmaService::OnGetStateResponse<GetPrevStateCallback>,
+      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void ShimlessRmaService::AbortRma(AbortRmaCallback callback) {
@@ -154,6 +171,40 @@ void ShimlessRmaService::ObservePowerCableState(
 void ShimlessRmaService::BindInterface(
     mojo::PendingReceiver<mojom::ShimlessRmaService> pending_receiver) {
   receiver_.Bind(std::move(pending_receiver));
+}
+
+template <class Callback>
+void ShimlessRmaService::GetNextStateGeneric(Callback callback) {
+  chromeos::RmadClient::Get()->TransitionNextState(
+      state_proto_,
+      base::BindOnce(&ShimlessRmaService::OnGetStateResponse<Callback>,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+template <class Callback>
+void ShimlessRmaService::OnGetStateResponse(
+    Callback callback,
+    absl::optional<rmad::GetStateReply> response) {
+  if (!response) {
+    LOG(ERROR) << "Failed to call rmadClient";
+    std::move(callback).Run(mojom::RmaState::kUnknown,
+                            mojom::RmadErrorCode::kRequestInvalid);
+    return;
+  }
+  const mojom::RmaState state =
+      StateTraits::ToMojom(response->state().state_case());
+  if (!mojom::IsKnownEnumValue(state)) {
+    LOG(ERROR) << "rmadClient returned unknown state " << state;
+    std::move(callback).Run(mojom::RmaState::kUnknown,
+                            mojom::RmadErrorCode::kTransitionFailed);
+  }
+  state_proto_ = response->state();
+  if (response->error() != rmad::RMAD_ERROR_OK) {
+    LOG(ERROR) << "rmadClient returned error " << response->error();
+    std::move(callback).Run(state, ErrorTraits::ToMojom(response->error()));
+    return;
+  }
+  std::move(callback).Run(state, mojom::RmadErrorCode::kOk);
 }
 
 }  // namespace shimless_rma

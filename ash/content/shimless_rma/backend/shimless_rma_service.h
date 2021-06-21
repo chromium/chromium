@@ -12,6 +12,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace shimless_rma {
@@ -92,6 +93,14 @@ class ShimlessRmaService : public mojom::ShimlessRmaService {
       mojo::PendingReceiver<mojom::ShimlessRmaService> pending_receiver);
 
  private:
+  template <class Callback>
+  void GetNextStateGeneric(Callback callback);
+  template <class Callback>
+  void OnGetStateResponse(Callback callback,
+                          absl::optional<rmad::GetStateReply> response);
+
+  rmad::RmadState state_proto_;
+
   mojo::Receiver<mojom::ShimlessRmaService> receiver_{this};
 
   // Note: This should remain the last member so it'll be destroyed and

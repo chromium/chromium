@@ -36,22 +36,6 @@ void TestProtoToMojo(
 }
 
 template <typename MojoEnum, typename ProtoEnum, size_t N>
-void TestNoMojoToProto(
-    const base::fixed_flat_map<MojoEnum, ProtoEnum, N>& enums) {
-  // The mojo enum is not sparse.
-  EXPECT_EQ(enums.size(), static_cast<size_t>(MojoEnum::kMaxValue));
-
-#if defined(NDEBUG) && !defined(DCHECK_ALWAYS_ON)
-  // This test hits a NOTREACHED so it is a release mode only test.
-  for (auto enum_pair : enums) {
-    ProtoEnum mojo_to_proto;
-    EXPECT_FALSE((mojo::EnumTraits<MojoEnum, ProtoEnum>::FromMojom(
-        enum_pair.first, &mojo_to_proto)));
-  }
-#endif
-}
-
-template <typename MojoEnum, typename ProtoEnum, size_t N>
 void TestMojoToProto(
     const base::fixed_flat_map<MojoEnum, ProtoEnum, N>& enums) {
   // The mojo enum is not sparse.
@@ -64,22 +48,6 @@ void TestMojoToProto(
     EXPECT_EQ(mojo_to_proto, enum_pair.second)
         << "enum " << enum_pair.first << " != " << enum_pair.second;
   }
-}
-
-// Zero value can only be tested when DCHECK is off due to hitting NOTREACHED.
-template <typename MojoEnum, typename ProtoEnum>
-void TestZeroValue(MojoEnum mojoZero, ProtoEnum protoZero) {
-  EXPECT_EQ(static_cast<int32_t>(mojoZero), 0);
-  EXPECT_EQ(static_cast<int32_t>(protoZero), 0);
-#if defined(NDEBUG) && !defined(DCHECK_ALWAYS_ON)
-  // This test hits a NOTREACHED so it is a release mode only test.
-  EXPECT_EQ(mojoZero,
-            (mojo::EnumTraits<MojoEnum, ProtoEnum>::ToMojom(protoZero)));
-  ProtoEnum mojo_to_proto;
-  EXPECT_FALSE((mojo::EnumTraits<MojoEnum, ProtoEnum>::FromMojom(
-      mojoZero, &mojo_to_proto)));
-
-#endif
 }
 
 }  // namespace
@@ -123,10 +91,16 @@ TEST_F(ShimlessRmaMojoToProtoTest, StatesMatch) {
         rmad::RmadState::kWpEnablePhysical},
        {mojom::RmaState::kRepairComplete, rmad::RmadState::kFinalize}});
 
-  TestZeroValue(mojom::RmaState::kUnknown, rmad::RmadState::STATE_NOT_SET);
-
+  // rmad::RmadState::STATE_NOT_SET is used when RMA is not active so the
+  // toMojo conversion is reachable, unlike other enums.
+  EXPECT_EQ(static_cast<int32_t>(mojom::RmaState::kUnknown), 0);
+  EXPECT_EQ(static_cast<int32_t>(rmad::RmadState::STATE_NOT_SET), 0);
+  // This test hits a NOTREACHED so it is a release mode only test.
+  EXPECT_EQ(
+      mojom::RmaState::kUnknown,
+      (mojo::EnumTraits<mojom::RmaState, rmad::RmadState::StateCase>::ToMojom(
+          rmad::RmadState::STATE_NOT_SET)));
   TestProtoToMojo(enums);
-  TestNoMojoToProto(enums);
 }
 
 TEST_F(ShimlessRmaMojoToProtoTest, ErrorsMatch) {
@@ -200,11 +174,7 @@ TEST_F(ShimlessRmaMojoToProtoTest, ErrorsMatch) {
        {mojom::RmadErrorCode::kCannotCancelRma,
         rmad::RmadErrorCode::RMAD_ERROR_CANNOT_CANCEL_RMA}});
 
-  TestZeroValue(mojom::RmadErrorCode::kNotSet,
-                rmad::RmadErrorCode::RMAD_ERROR_NOT_SET);
-
   TestProtoToMojo(enums);
-  TestNoMojoToProto(enums);
 }
 
 TEST_F(ShimlessRmaMojoToProtoTest, RepairComponentsMatch) {
@@ -224,9 +194,6 @@ TEST_F(ShimlessRmaMojoToProtoTest, RepairComponentsMatch) {
            {mojom::ComponentType::kThumbReader,
             rmad::ComponentRepairState::RMAD_COMPONENT_THUMB_READER}});
 
-  TestZeroValue(mojom::ComponentType::kComponentUnknown,
-                rmad::ComponentRepairState::RMAD_COMPONENT_UNKNOWN);
-
   TestProtoToMojo(enums);
   TestMojoToProto(enums);
 }
@@ -242,9 +209,6 @@ TEST_F(ShimlessRmaMojoToProtoTest, RepairStatesMatch) {
            {mojom::ComponentRepairState::kMissing,
             rmad::ComponentRepairState::RMAD_REPAIR_MISSING}});
 
-  TestZeroValue(mojom::ComponentRepairState::kRepairUnknown,
-                rmad::ComponentRepairState::RMAD_REPAIR_UNKNOWN);
-
   TestProtoToMojo(enums);
   TestMojoToProto(enums);
 }
@@ -257,12 +221,7 @@ TEST_F(ShimlessRmaMojoToProtoTest, CalibrationComponentsMatch) {
         rmad::CalibrateComponentsState::
             RMAD_CALIBRATION_COMPONENT_ACCELEROMETER}});
 
-  TestZeroValue(
-      mojom::CalibrationComponent::kCalibrateUnknown,
-      rmad::CalibrateComponentsState::RMAD_CALIBRATION_COMPONENT_UNKNOWN);
-
   TestProtoToMojo(enums);
-  TestNoMojoToProto(enums);
 }
 
 TEST_F(ShimlessRmaMojoToProtoTest, ProvisioningStepsMatch) {
@@ -274,11 +233,7 @@ TEST_F(ShimlessRmaMojoToProtoTest, ProvisioningStepsMatch) {
            {mojom::ProvisioningStep::kProvisioningComplete,
             rmad::ProvisionDeviceState::RMAD_PROVISIONING_STEP_COMPLETE}});
 
-  TestZeroValue(mojom::ProvisioningStep::kProvisioningUnknown,
-                rmad::ProvisionDeviceState::RMAD_PROVISIONING_STEP_UNKNOWN);
-
   TestProtoToMojo(enums);
-  TestNoMojoToProto(enums);
 }
 
 }  // namespace shimless_rma

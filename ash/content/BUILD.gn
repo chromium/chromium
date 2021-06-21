@@ -18,6 +18,7 @@ test("ash_content_unittests") {
 
   deps = [
     "//ash/content/scanning:unit_tests",
+    "//ash/content/shimless_rma/backend:unit_tests",
     "//ash/content/shimless_rma/mojom:unit_tests",
     "//ash/content/shortcut_customization_ui/backend:unit_tests",
     "//base",

@@ -71,7 +71,6 @@ MojomRmaState EnumTraits<MojomRmaState, ProtoRmadState>::ToMojom(
       return MojomRmaState::kRepairComplete;
 
     case ProtoRmadState::STATE_NOT_SET:
-      NOTREACHED();
       return MojomRmaState::kUnknown;
   }
   NOTREACHED();
