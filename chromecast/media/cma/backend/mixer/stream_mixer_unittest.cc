@@ -997,27 +997,27 @@ TEST_F(StreamMixerTest, TwoUnscaledStreamsMixProperlyWithEdgeCases) {
                                        kMinSample,
                                        kMinSample,
                                        kMinSample,
-                                       0.0,
-                                       0.0,
+                                       0,
+                                       0,
                                        kMaxSample,
-                                       0.0,
-                                       0.0,
+                                       0,
+                                       0,
                                    },
                                    {
                                        kMinSample,
-                                       0.0,
+                                       0,
                                        kMaxSample,
-                                       0.0,
+                                       0,
                                        kMaxSample,
                                        kMaxSample,
-                                       0.0,
-                                       0.0,
+                                       0,
+                                       0,
                                    }};
 
   // Hand-calculate the results. Index 0 is clamped to -(2^31). Index 5 is
   // clamped to 2^31-1.
   const int32_t kResult[8] = {
-      kMinSample, kMinSample, 0.0, 0.0, kMaxSample, kMaxSample, 0.0, 0.0,
+      kMinSample, kMinSample, 0, 0, kMaxSample, kMaxSample, 0, 0,
   };
 
   // Populate the streams with data.

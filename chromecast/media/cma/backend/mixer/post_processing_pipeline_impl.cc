@@ -108,7 +108,7 @@ PostProcessingPipelineImpl::PostProcessingPipelineImpl(
     processors_.emplace_back(PostProcessorInfo{
         factory_.CreatePostProcessor(library_path, processor_config_string,
                                      channels),
-        1.0 /* output_frames_per_input_frame */, processor_name});
+        1 /* output_frames_per_input_frame */, processor_name});
     channels = processors_.back().ptr->GetStatus().output_channels;
   }
   num_output_channels_ = channels;

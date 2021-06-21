@@ -81,7 +81,7 @@ void VolumeMap::LoadVolumeMap(std::unique_ptr<base::Value> cast_audio_config) {
     CHECK(volume_map_entry->GetDouble(kKeyDb, &db));
     CHECK_LE(db, 0.0);
 
-    new_map.push_back({level, db});
+    new_map.push_back({static_cast<float>(level), static_cast<float>(db)});
   }
 
   if (new_map.empty()) {

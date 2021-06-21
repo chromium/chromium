@@ -62,8 +62,9 @@ class PushBufferQueueTests : public testing::Test {
   static PushBufferRequest CreateAudioBufferRequest(int64_t pts_micros,
                                                     bool end_of_stream,
                                                     TData... data) {
-    return CreateAudioBufferRequest(pts_micros, end_of_stream,
-                                    std::vector<uint8_t>{uint8_t{data}...});
+    return CreateAudioBufferRequest(
+        pts_micros, end_of_stream,
+        std::vector<uint8_t>{static_cast<uint8_t>(data)...});
   }
 
   static PushBufferRequest CreateAudioBufferRequest(
