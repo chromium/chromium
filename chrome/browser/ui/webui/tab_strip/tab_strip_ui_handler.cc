@@ -384,12 +384,6 @@ void TabStripUIHandler::TabBlockedStateChanged(content::WebContents* contents,
 bool TabStripUIHandler::PreHandleGestureEvent(
     content::WebContents* source,
     const blink::WebGestureEvent& event) {
-  // Apply special case gesture handling only for gesture touch events
-  // (See crbug.com/1204572).
-  if (event.primary_pointer_type !=
-      blink::WebPointerProperties::PointerType::kTouch) {
-    return false;
-  }
   switch (event.GetType()) {
     case blink::WebInputEvent::Type::kGestureScrollBegin:
       // Drag and drop for the WebUI tab strip is currently only supported for
