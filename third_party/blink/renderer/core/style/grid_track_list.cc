@@ -176,26 +176,17 @@ GridTrackList::GridTrackList(const GridTrackList& other) {
   AssignFrom(other);
 }
 
-GridTrackList::GridTrackList() {
-  if (RuntimeEnabledFeatures::LayoutNGGridEnabled()) {
-    ng_track_list_ = std::make_unique<NGGridTrackList>();
-  }
-}
-
 GridTrackList::GridTrackList(const GridTrackSize& default_track_size) {
-  if (RuntimeEnabledFeatures::LayoutNGGridEnabled()) {
-    ng_track_list_ = std::make_unique<NGGridTrackList>();
-    ng_track_list_->AddRepeater({default_track_size}, 1);
-  }
+  if (RuntimeEnabledFeatures::LayoutNGGridEnabled())
+    ng_track_list_.AddRepeater({default_track_size}, 1);
+
   legacy_track_list_.push_back(default_track_size);
 }
 
 GridTrackList::GridTrackList(Vector<GridTrackSize>& legacy_tracks)
     : legacy_track_list_(std::move(legacy_tracks)) {
-  if (RuntimeEnabledFeatures::LayoutNGGridEnabled()) {
-    ng_track_list_ = std::make_unique<NGGridTrackList>();
-    ng_track_list_->AddRepeater(legacy_track_list_, 1);
-  }
+  if (RuntimeEnabledFeatures::LayoutNGGridEnabled())
+    ng_track_list_.AddRepeater(legacy_track_list_, 1);
 }
 
 Vector<GridTrackSize>& GridTrackList::LegacyTrackList() {
@@ -208,13 +199,11 @@ const Vector<GridTrackSize>& GridTrackList::LegacyTrackList() const {
 
 NGGridTrackList& GridTrackList::NGTrackList() {
   DCHECK(RuntimeEnabledFeatures::LayoutNGGridEnabled());
-  DCHECK(ng_track_list_);
-  return *ng_track_list_;
+  return ng_track_list_;
 }
 const NGGridTrackList& GridTrackList::NGTrackList() const {
   DCHECK(RuntimeEnabledFeatures::LayoutNGGridEnabled());
-  DCHECK(ng_track_list_);
-  return *ng_track_list_;
+  return ng_track_list_;
 }
 
 void GridTrackList::operator=(const GridTrackList& other) {
@@ -222,9 +211,9 @@ void GridTrackList::operator=(const GridTrackList& other) {
 }
 
 bool GridTrackList::operator==(const GridTrackList& other) const {
-  if (RuntimeEnabledFeatures::LayoutNGGridEnabled()) {
-    return *ng_track_list_ == *other.ng_track_list_;
-  }
+  if (RuntimeEnabledFeatures::LayoutNGGridEnabled())
+    return ng_track_list_ == other.ng_track_list_;
+
   return LegacyTrackList() == other.LegacyTrackList();
 }
 
@@ -233,10 +222,9 @@ bool GridTrackList::operator!=(const GridTrackList& other) const {
 }
 
 void GridTrackList::AssignFrom(const GridTrackList& other) {
-  if (RuntimeEnabledFeatures::LayoutNGGridEnabled()) {
-    DCHECK(other.ng_track_list_);
-    ng_track_list_ = std::make_unique<NGGridTrackList>(*other.ng_track_list_);
-  }
+  if (RuntimeEnabledFeatures::LayoutNGGridEnabled())
+    ng_track_list_ = other.ng_track_list_;
+
   legacy_track_list_ = other.legacy_track_list_;
 }
 

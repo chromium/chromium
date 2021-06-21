@@ -107,7 +107,7 @@ class GridTrackList {
   DISALLOW_NEW();
 
  public:
-  GridTrackList();
+  GridTrackList() = default;
 
   GridTrackList(const GridTrackList& other);
   explicit GridTrackList(const GridTrackSize& default_track_size);
@@ -126,7 +126,7 @@ class GridTrackList {
  private:
   void AssignFrom(const GridTrackList& other);
   Vector<GridTrackSize> legacy_track_list_;
-  std::unique_ptr<NGGridTrackList> ng_track_list_;
+  NGGridTrackList ng_track_list_;
 };
 
 }  // namespace blink
