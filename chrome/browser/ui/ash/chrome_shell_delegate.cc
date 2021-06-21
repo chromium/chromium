@@ -281,6 +281,12 @@ std::vector<GURL> ChromeShellDelegate::GetURLsIfApplicable(
   return urls;
 }
 
+void ChromeShellDelegate::OpenFeedbackPageForPersistentDesksBar() {
+  chrome::OpenFeedbackDialog(/*browser=*/nullptr,
+                             chrome::kFeedbackSourceBentoBar,
+                             /*description_template=*/"#BentoBar\n\n");
+}
+
 // static
 void ChromeShellDelegate::SetDisableLoggingRedirectForTesting(bool value) {
   disable_logging_redirect_for_testing = value;

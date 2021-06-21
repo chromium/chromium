@@ -33146,6 +33146,8 @@ Called by update_permissions_policy_enum.py.-->
   <int value="14" label="Tab Search"/>
   <int value="15" label="Camera App"/>
   <int value="16" label="Capture Mode"/>
+  <int value="17" label="Chrome Labs"/>
+  <int value="18" label="Bento Bar"/>
 </enum>
 
 <enum name="FeedControlsActions">

@@ -4,9 +4,9 @@
 
 #include "ash/wm/desks/persistent_desks_bar_context_menu.h"
 
-#include "ash/public/cpp/new_window_delegate.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
+#include "ash/shell_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/wm/desks/persistent_desks_bar_controller.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -39,14 +39,13 @@ void PersistentDesksBarContextMenu::ShowContextMenuForViewImpl(
 
 void PersistentDesksBarContextMenu::ExecuteCommand(int command_id,
                                                    int event_flags) {
+  auto* shell = Shell::Get();
   switch (static_cast<CommandId>(command_id)) {
     case CommandId::kFeedBack:
-      // TODO: Open the feedback dialog with pre-populated description
-      // #BentoBar.
-      NewWindowDelegate::GetInstance()->OpenFeedbackPage();
+      shell->shell_delegate()->OpenFeedbackPageForPersistentDesksBar();
       break;
     case CommandId::kShowOrHideBar:
-      Shell::Get()->persistent_desks_bar_controller()->ToggleEnabledState();
+      shell->persistent_desks_bar_controller()->ToggleEnabledState();
       break;
     default:
       NOTREACHED();

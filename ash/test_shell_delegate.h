@@ -55,6 +55,7 @@ class TestShellDelegate : public ShellDelegate {
   bool IsLoggingRedirectDisabled() const override;
   base::FilePath GetPrimaryUserDownloadsFolder() const override;
   std::vector<GURL> GetURLsIfApplicable(aura::Window* window) override;
+  void OpenFeedbackPageForPersistentDesksBar() override {}
 
  private:
   // True if the current top window can go back.

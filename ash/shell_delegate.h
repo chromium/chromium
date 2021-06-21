@@ -129,6 +129,11 @@ class ASH_EXPORT ShellDelegate {
   // Returns the list of URLs that open in the tabs of |window| if the given
   // given |window| contains a browser frame, otherwise returns an empty list.
   virtual std::vector<GURL> GetURLsIfApplicable(aura::Window* window) = 0;
+
+  // Opens the feedback page with pre-populated description #BentoBar for
+  // persistent desks bar. Note, this will be removed once the feature is fully
+  // launched or removed.
+  virtual void OpenFeedbackPageForPersistentDesksBar() = 0;
 };
 
 }  // namespace ash
