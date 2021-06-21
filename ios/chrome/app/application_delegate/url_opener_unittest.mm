@@ -237,7 +237,6 @@ TEST_F(URLOpenerTest, VerifyLaunchOptions) {
   [[[connectionInformationMock expect] andReturn:params] startupParameters];
 
   id appStateMock = [OCMockObject mockForClass:[AppState class]];
-  [[appStateMock expect] launchFromURLHandled:NO];
   [[[appStateMock stub] andReturnValue:@(InitStageFinal)] initStage];
 
   // Action.
@@ -302,7 +301,6 @@ TEST_F(URLOpenerTest, VerifyLaunchOptionsWithNoSourceApplication) {
   [[[connectionInformationMock expect] andReturn:params] startupParameters];
 
   id appStateMock = [OCMockObject mockForClass:[AppState class]];
-  [[appStateMock expect] launchFromURLHandled:NO];
   [[[appStateMock stub] andReturnValue:@(InitStageFinal)] initStage];
 
   // Action.
@@ -367,7 +365,6 @@ TEST_F(URLOpenerTest, VerifyLaunchOptionsWithBadURL) {
   [[[connectionInformationMock expect] andReturn:nil] startupParameters];
 
   id appStateMock = [OCMockObject mockForClass:[AppState class]];
-  [[appStateMock expect] launchFromURLHandled:NO];
   [[[appStateMock stub] andReturnValue:@(InitStageFinal)] initStage];
 
   // Action.
@@ -409,7 +406,6 @@ TEST_F(URLOpenerTest, PresentingFirstRunUI) {
   [[[connectionInformationMock expect] andReturn:params] startupParameters];
 
   id appStateMock = [OCMockObject mockForClass:[AppState class]];
-  [[appStateMock expect] launchFromURLHandled:NO];
   [[[appStateMock stub] andReturnValue:@(InitStageFirstRun)] initStage];
 
   // Action.

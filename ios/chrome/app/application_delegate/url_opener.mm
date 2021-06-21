@@ -132,14 +132,13 @@ const char* const kUMAMobileSessionStartFromAppsHistogram =
     // SceneActivationLevelForegroundActive, and before the handling of
     // startupInformation is done.
     // Pass |NO| as active to avoid double processing.
-    BOOL openURLResult = [URLOpener openURL:options
-                          applicationActive:NO
-                                  tabOpener:tabOpener
-                      connectionInformation:connectionInformation
-                         startupInformation:startupInformation
-                                prefService:prefService
-                                  initStage:appState.initStage];
-    [appState launchFromURLHandled:openURLResult];
+    [URLOpener openURL:options
+            applicationActive:NO
+                    tabOpener:tabOpener
+        connectionInformation:connectionInformation
+           startupInformation:startupInformation
+                  prefService:prefService
+                    initStage:appState.initStage];
   }
 }
 

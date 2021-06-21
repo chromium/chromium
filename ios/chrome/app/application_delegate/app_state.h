@@ -144,11 +144,6 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
                        metricsMediator:(MetricsMediator*)metricsMediator
                           memoryHelper:(MemoryWarningHelper*)memoryHelper;
 
-// Sets the return value for -didFinishLaunchingWithOptions that determines if
-// UIKit should make followup delegate calls such as
-// -performActionForShortcutItem or -openURL.
-- (void)launchFromURLHandled:(BOOL)URLHandled;
-
 // Returns the foreground and active scene, if there is one.
 - (SceneState*)foregroundActiveScene;
 

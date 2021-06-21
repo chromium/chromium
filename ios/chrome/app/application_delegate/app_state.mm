@@ -107,11 +107,6 @@ const NSTimeInterval kMemoryFootprintRecordingTimeInterval = 5;
 // Container for observers.
 @property(nonatomic, strong) AppStateObserverList* observers;
 
-// Return value for -requiresHandlingAfterLaunchWithOptions that determines if
-// UIKit should make followup delegate calls such as
-// -performActionForShortcutItem or -openURL.
-@property(nonatomic, assign) BOOL shouldPerformAdditionalDelegateHandling;
-
 // This method is the first to be called when user launches the application.
 // This performs the minimal amount of browser initalization that is needed by
 // safe mode.
@@ -161,8 +156,6 @@ const NSTimeInterval kMemoryFootprintRecordingTimeInterval = 5;
 
 @implementation AppState
 
-@synthesize shouldPerformAdditionalDelegateHandling =
-    _shouldPerformAdditionalDelegateHandling;
 @synthesize userInteracted = _userInteracted;
 
 - (instancetype)
@@ -518,7 +511,6 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 - (BOOL)requiresHandlingAfterLaunchWithOptions:(NSDictionary*)launchOptions
                                stateBackground:(BOOL)stateBackground {
   [_browserLauncher setLaunchOptions:launchOptions];
-  self.shouldPerformAdditionalDelegateHandling = YES;
 
   [self queueTransitionToFirstInitStage];
 
@@ -528,11 +520,7 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
     [self initializeUIPreSafeMode];
   }
 
-  return self.shouldPerformAdditionalDelegateHandling;
-}
-
-- (void)launchFromURLHandled:(BOOL)URLHandled {
-  self.shouldPerformAdditionalDelegateHandling = !URLHandled;
+  return YES;
 }
 
 - (void)addObserver:(id<AppStateObserver>)observer {
