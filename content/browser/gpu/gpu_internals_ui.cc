@@ -49,7 +49,7 @@
 #include "gpu/ipc/host/gpu_memory_buffer_support.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "skia/ext/skia_commit_hash.h"
-#include "third_party/angle/src/common/version.h"
+#include "third_party/angle/src/common/angle_version.h"
 #include "third_party/skia/include/core/SkMilestone.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
