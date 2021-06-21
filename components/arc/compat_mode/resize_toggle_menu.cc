@@ -8,6 +8,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/notreached.h"
+#include "components/arc/compat_mode/overlay_dialog.h"
 #include "components/arc/vector_icons/vector_icons.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -146,6 +147,10 @@ ResizeToggleMenu::ResizeToggleMenu(views::Widget* widget,
                               base::Unretained(this))));
   widget_observations_.AddObservation(widget_);
   widget_observations_.AddObservation(bubble_widget_);
+  OverlayDialog::Show(widget_->GetNativeWindow(),
+                      base::BindOnce(&ResizeToggleMenu::CloseBubble,
+                                     weak_ptr_factory_.GetWeakPtr()),
+                      /*dialog_view=*/nullptr);
   bubble_widget_->Show();
 }
 
@@ -154,6 +159,7 @@ ResizeToggleMenu::~ResizeToggleMenu() {
 }
 
 void ResizeToggleMenu::OnWidgetClosing(views::Widget* widget) {
+  OverlayDialog::CloseIfAny(widget_->GetNativeWindow());
   widget_observations_.RemoveAllObservations();
   widget_ = nullptr;
   bubble_widget_ = nullptr;
