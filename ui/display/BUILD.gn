@@ -162,6 +162,13 @@ static_library("test_support") {
     ]
   }
 
+  if (is_mac) {
+    sources += [
+      "mac/test/test_screen_mac.h",
+      "mac/test/test_screen_mac.mm",
+    ]
+  }
+
   if (build_display_configuration) {
     sources += [
       "manager/test/action_logger.cc",

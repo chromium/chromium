@@ -7,6 +7,14 @@
 #include <memory>
 #include <utility>
 
+#include "build/build_config.h"
+#include "ui/views/widget/widget.h"
+
+#if defined(OS_MAC)
+#include "ui/display/mac/test/test_screen_mac.h"
+#include "ui/display/screen.h"
+#endif
+
 namespace views {
 
 namespace test {
@@ -16,6 +24,13 @@ BaseControlTestWidget::~BaseControlTestWidget() = default;
 
 void BaseControlTestWidget::SetUp() {
   ViewsTestBase::SetUp();
+
+#if defined(OS_MAC)
+  test_screen_ = std::make_unique<display::test::TestScreenMac>(gfx::Size());
+  // Purposely not use ScopedScreenOverride, in which GetScreen() will
+  // create a native screen.
+  display::Screen::SetScreenInstance(test_screen_.get());
+#endif
 
   widget_ = std::make_unique<Widget>();
   Widget::InitParams params =
@@ -31,6 +46,10 @@ void BaseControlTestWidget::SetUp() {
 
 void BaseControlTestWidget::TearDown() {
   widget_.reset();
+
+#if defined(OS_MAC)
+  display::Screen::SetScreenInstance(nullptr);
+#endif
   ViewsTestBase::TearDown();
 }
 

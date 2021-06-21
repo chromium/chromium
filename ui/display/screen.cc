@@ -41,6 +41,10 @@ Screen* Screen::SetScreenInstance(Screen* instance) {
   return std::exchange(g_screen, instance);
 }
 
+void Screen::SetCursorScreenPointForTesting(const gfx::Point& point) {
+  NOTIMPLEMENTED_LOG_ONCE();
+}
+
 Display Screen::GetDisplayNearestView(gfx::NativeView view) const {
   return GetDisplayNearestWindow(GetWindowForView(view));
 }
