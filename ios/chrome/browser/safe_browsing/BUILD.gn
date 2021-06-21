@@ -222,6 +222,7 @@ source_set("unit_tests") {
     "//components/safe_browsing/core:verdict_cache_manager",
     "//components/safe_browsing/core/browser",
     "//components/safe_browsing/core/common",
+    "//components/safe_browsing/core/common:thread_utils",
     "//components/safe_browsing/core/db",
     "//components/safe_browsing/core/db:database_manager",
     "//components/safe_browsing/core/db:metadata_proto",

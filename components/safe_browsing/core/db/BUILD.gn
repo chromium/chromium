@@ -48,6 +48,7 @@ static_library("database_manager") {
     ":v4_get_hash_protocol_manager",
     ":v4_protocol_manager_util",
     "//base",
+    "//components/safe_browsing/core/common:thread_utils",
     "//net",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
@@ -81,6 +82,7 @@ static_library("test_database_manager") {
     ":database_manager",
     ":v4_protocol_manager_util",
     "//base:base",
+    "//components/safe_browsing/core/common:thread_utils",
     "//net",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
@@ -121,6 +123,7 @@ static_library("v4_database") {
     ":v4_store",
     "//base",
     "//components/safe_browsing/core:webui_proto",
+    "//components/safe_browsing/core/common:thread_utils",
   ]
 }
 
@@ -138,6 +141,7 @@ static_library("v4_get_hash_protocol_manager") {
     "//base",
     "//components/safe_browsing/core:features",
     "//components/safe_browsing/core:webui_proto",
+    "//components/safe_browsing/core/common:thread_utils",
     "//net",
     "//services/network/public/cpp:cpp",
     "//url",
@@ -160,6 +164,7 @@ static_library("v4_local_database_manager") {
     "//base",
     "//build:branding_buildflags",
     "//components/safe_browsing/core:webui_proto",
+    "//components/safe_browsing/core/common:thread_utils",
     "//crypto",
     "//net",
     "//services/network/public/cpp",
@@ -350,6 +355,7 @@ static_library("allowlist_checker_client") {
   deps = [
     ":database_manager",
     "//base:base",
+    "//components/safe_browsing/core/common:thread_utils",
     "//url:url",
   ]
 }
