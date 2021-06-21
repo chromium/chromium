@@ -228,6 +228,32 @@ TEST_P(CanvasCaptureHandlerTest, VerifyFrame) {
   run_loop.RunUntilIdle();
 }
 
+// Verifies that SkImage is processed and produces VideoFrame as expected.
+TEST_F(CanvasCaptureHandlerTest, DropAlphaDeliversOpaqueFrame) {
+  const int width = 2;
+  const int height = 2;
+  InSequence s;
+  media::VideoCapturerSource* const source = GetVideoCapturerSource(
+      static_cast<blink::MediaStreamVideoCapturerSource*>(
+          component_->Source()->GetPlatformSource()));
+  EXPECT_TRUE(source);
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(*this, DoOnRunning(true)).Times(1);
+  media::VideoCaptureParams params;
+  source->SetCanDiscardAlpha(true);
+  source->StartCapture(
+      params,
+      base::BindRepeating(&CanvasCaptureHandlerTest::OnVerifyDeliveredFrame,
+                          base::Unretained(this), /*opaque_frame=*/true, width,
+                          height),
+      base::BindRepeating(&CanvasCaptureHandlerTest::OnRunning,
+                          base::Unretained(this)));
+  canvas_capture_handler_->SendNewFrame(
+      GenerateTestImage(/*opaque_frame=*/false, width, height), nullptr);
+  run_loop.RunUntilIdle();
+}
+
 // Checks that needsNewFrame() works as expected.
 TEST_F(CanvasCaptureHandlerTest, CheckNeedsNewFrame) {
   InSequence s;

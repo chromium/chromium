@@ -440,17 +440,15 @@ scoped_refptr<media::VideoFrame> CanvasCaptureHandler::ConvertToYUVFrame(
   DCHECK_CALLED_ON_VALID_THREAD(main_render_thread_checker_);
   TRACE_EVENT0("webrtc", "CanvasCaptureHandler::ConvertToYUVFrame");
 
-  const bool is_opaque = media::IsOpaque(temp_argb_frame->format());
+  const bool skip_alpha =
+      media::IsOpaque(temp_argb_frame->format()) || can_discard_alpha_;
   const uint8_t* source_ptr =
       temp_argb_frame->visible_data(media::VideoFrame::kARGBPlane);
   const gfx::Size image_size = temp_argb_frame->coded_size();
   const int stride = temp_argb_frame->stride(media::VideoFrame::kARGBPlane);
 
-  // TODO(https://crbug.com/1191932): Use |is_opaque || can_discard_alpha_|
-  // instead of just |is_opaque| to determine if the format should be
-  // I420 versus I420A.
   scoped_refptr<media::VideoFrame> video_frame = frame_pool_.CreateFrame(
-      is_opaque ? media::PIXEL_FORMAT_I420 : media::PIXEL_FORMAT_I420A,
+      skip_alpha ? media::PIXEL_FORMAT_I420 : media::PIXEL_FORMAT_I420A,
       image_size, gfx::Rect(image_size), image_size, base::TimeDelta());
   if (!video_frame) {
     DLOG(ERROR) << "Couldn't allocate video frame";
@@ -487,7 +485,7 @@ scoped_refptr<media::VideoFrame> CanvasCaptureHandler::ConvertToYUVFrame(
     DLOG(ERROR) << "Couldn't convert to I420";
     return nullptr;
   }
-  if (!is_opaque) {
+  if (!skip_alpha) {
     // It is ok to use ARGB function because alpha has the same alignment for
     // both ABGR and ARGB.
     libyuv::ARGBExtractAlpha(

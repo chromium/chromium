@@ -131,7 +131,7 @@ class MODULES_EXPORT CanvasCaptureHandler {
   class CanvasCaptureHandlerDelegate;
 
   media::VideoCaptureFormat capture_format_;
-  bool can_discard_alpha_ = true;
+  bool can_discard_alpha_ = false;
   bool ask_for_new_frame_;
   media::VideoFramePool frame_pool_;
   absl::optional<base::TimeTicks> first_frame_ticks_;
