@@ -372,20 +372,6 @@ class ReplaceNonASCII {
 };
 
 static bool g_should_fail_context_creation_for_testing = false;
-
-static CanvasRenderingContext::CanvasRenderingAPI GetCanvasRenderingAPIType(
-    Platform::ContextType context_type) {
-  switch (context_type) {
-    case Platform::kWebGL1ContextType:
-      return CanvasRenderingContext::CanvasRenderingAPI::kWebgl;
-    case Platform::kWebGL2ContextType:
-      return CanvasRenderingContext::CanvasRenderingAPI::kWebgl2;
-    default:
-      NOTREACHED();
-      return CanvasRenderingContext::CanvasRenderingAPI::kWebgl;
-  }
-}
-
 }  // namespace
 
 class ScopedTexture2DRestorer {
@@ -994,7 +980,11 @@ WebGLRenderingContextBase::WebGLRenderingContextBase(
     const Platform::GraphicsInfo& graphics_info,
     const CanvasContextCreationAttributesCore& requested_attributes,
     Platform::ContextType context_type)
-    : CanvasRenderingContext(host, requested_attributes),
+    : CanvasRenderingContext(host,
+                             requested_attributes,
+                             context_type == Platform::kWebGL2ContextType
+                                 ? CanvasRenderingAPI::kWebgl2
+                                 : CanvasRenderingAPI::kWebgl),
       context_group_(MakeGarbageCollected<WebGLContextGroup>()),
       dispatch_context_lost_event_timer_(
           task_runner,
@@ -3341,8 +3331,7 @@ void WebGLRenderingContextBase::RecordShaderPrecisionFormatForStudy(
 void WebGLRenderingContextBase::RecordUKMCanvasDrawnToAtFirstDrawCall() {
   if (!has_been_drawn_to_) {
     has_been_drawn_to_ = true;
-    RecordUKMCanvasDrawnToRenderingAPI(
-        GetCanvasRenderingAPIType(context_type_));
+    RecordUKMCanvasDrawnToRenderingAPI();
   }
 }
 

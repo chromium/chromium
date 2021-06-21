@@ -635,10 +635,6 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   }
   scoped_refptr<StaticBitmapImage> GetImage() override;
   void SetFilterQuality(SkFilterQuality) override;
-  bool IsWebGL() const override { return true; }
-  bool IsWebGL2() const {
-    return context_type_ == Platform::kWebGL2ContextType;
-  }
 
   V8UnionHTMLCanvasElementOrOffscreenCanvas* getHTMLOrOffscreenCanvas() const;
 

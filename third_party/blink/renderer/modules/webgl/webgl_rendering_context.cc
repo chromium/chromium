@@ -134,8 +134,6 @@ CanvasRenderingContext* WebGLRenderingContext::Factory::Create(
   }
   rendering_context->InitializeNewContext();
   rendering_context->RegisterContextExtensions();
-  rendering_context->RecordUKMCanvasRenderingAPI(
-      CanvasRenderingContext::CanvasRenderingAPI::kWebgl);
   return rendering_context;
 }
 

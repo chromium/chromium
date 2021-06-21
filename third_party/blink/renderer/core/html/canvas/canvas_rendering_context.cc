@@ -38,10 +38,12 @@ namespace blink {
 
 CanvasRenderingContext::CanvasRenderingContext(
     CanvasRenderingContextHost* host,
-    const CanvasContextCreationAttributesCore& attrs)
+    const CanvasContextCreationAttributesCore& attrs,
+    CanvasRenderingAPI canvas_rendering_API)
     : host_(host),
       color_params_(attrs.color_space, attrs.pixel_format, attrs.alpha),
-      creation_attributes_(attrs) {}
+      creation_attributes_(attrs),
+      canvas_rendering_type_(canvas_rendering_API) {}
 
 void CanvasRenderingContext::Dispose() {
   RenderTaskEnded();
@@ -76,34 +78,33 @@ void CanvasRenderingContext::DidProcessTask(
     Host()->PostFinalizeFrame();
 }
 
-void CanvasRenderingContext::RecordUKMCanvasRenderingAPI(
-    CanvasRenderingAPI canvasRenderingAPI) {
+void CanvasRenderingContext::RecordUKMCanvasRenderingAPI() {
   DCHECK(Host());
   const auto& ukm_params = Host()->GetUkmParameters();
   if (Host()->IsOffscreenCanvas()) {
     ukm::builders::ClientRenderingAPI(ukm_params.source_id)
         .SetOffscreenCanvas_RenderingContext(
-            static_cast<int>(canvasRenderingAPI))
+            static_cast<int>(canvas_rendering_type_))
         .Record(ukm_params.ukm_recorder);
   } else {
     ukm::builders::ClientRenderingAPI(ukm_params.source_id)
-        .SetCanvas_RenderingContext(static_cast<int>(canvasRenderingAPI))
+        .SetCanvas_RenderingContext(static_cast<int>(canvas_rendering_type_))
         .Record(ukm_params.ukm_recorder);
   }
 }
 
-void CanvasRenderingContext::RecordUKMCanvasDrawnToRenderingAPI(
-    CanvasRenderingAPI canvasRenderingAPI) {
+void CanvasRenderingContext::RecordUKMCanvasDrawnToRenderingAPI() {
   DCHECK(Host());
   const auto& ukm_params = Host()->GetUkmParameters();
   if (Host()->IsOffscreenCanvas()) {
     ukm::builders::ClientRenderingAPI(ukm_params.source_id)
         .SetOffscreenCanvas_RenderingContextDrawnTo(
-            static_cast<int>(canvasRenderingAPI))
+            static_cast<int>(canvas_rendering_type_))
         .Record(ukm_params.ukm_recorder);
   } else {
     ukm::builders::ClientRenderingAPI(ukm_params.source_id)
-        .SetCanvas_RenderingContextDrawnTo(static_cast<int>(canvasRenderingAPI))
+        .SetCanvas_RenderingContextDrawnTo(
+            static_cast<int>(canvas_rendering_type_))
         .Record(ukm_params.ukm_recorder);
   }
 }

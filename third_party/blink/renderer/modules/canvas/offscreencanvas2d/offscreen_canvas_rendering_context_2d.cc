@@ -83,8 +83,6 @@ CanvasRenderingContext* OffscreenCanvasRenderingContext2D::Factory::Create(
       MakeGarbageCollected<OffscreenCanvasRenderingContext2D>(
           static_cast<OffscreenCanvas*>(host), attrs);
   DCHECK(rendering_context);
-  rendering_context->RecordUKMCanvasRenderingAPI(
-      CanvasRenderingContext::CanvasRenderingAPI::k2D);
   return rendering_context;
 }
 
@@ -94,7 +92,7 @@ OffscreenCanvasRenderingContext2D::~OffscreenCanvasRenderingContext2D() =
 OffscreenCanvasRenderingContext2D::OffscreenCanvasRenderingContext2D(
     OffscreenCanvas* canvas,
     const CanvasContextCreationAttributesCore& attrs)
-    : CanvasRenderingContext(canvas, attrs),
+    : CanvasRenderingContext(canvas, attrs, CanvasRenderingAPI::k2D),
       random_generator_(static_cast<uint32_t>(base::RandUint64())),
       bernoulli_distribution_(kUMASampleProbability),
       color_params_(attrs.color_space, attrs.pixel_format, attrs.alpha) {

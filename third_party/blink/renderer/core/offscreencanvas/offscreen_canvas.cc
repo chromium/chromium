@@ -334,6 +334,7 @@ CanvasRenderingContext* OffscreenCanvas::GetCanvasRenderingContext(
       recomputed_attributes.power_preference = "low-power";
 
     context_ = factory->Create(this, recomputed_attributes);
+    context_->RecordUKMCanvasRenderingAPI();
   }
 
   return context_.Get();

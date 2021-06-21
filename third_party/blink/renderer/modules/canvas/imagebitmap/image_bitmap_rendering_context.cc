@@ -62,8 +62,6 @@ CanvasRenderingContext* ImageBitmapRenderingContext::Factory::Create(
   CanvasRenderingContext* rendering_context =
       MakeGarbageCollected<ImageBitmapRenderingContext>(host, attrs);
   DCHECK(rendering_context);
-  rendering_context->RecordUKMCanvasRenderingAPI(
-      CanvasRenderingContext::CanvasRenderingAPI::kBitmaprenderer);
   return rendering_context;
 }
 

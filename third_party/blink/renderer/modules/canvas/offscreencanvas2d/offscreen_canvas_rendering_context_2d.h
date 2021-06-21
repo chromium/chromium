@@ -56,7 +56,6 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
   // CanvasRenderingContext implementation
   ~OffscreenCanvasRenderingContext2D() override;
   ContextType GetContextType() const override { return kContext2D; }
-  bool IsRenderingContext2D() const override { return true; }
   bool IsComposited() const override { return false; }
   bool IsAccelerated() const override;
   V8RenderingContext* AsV8RenderingContext() final;

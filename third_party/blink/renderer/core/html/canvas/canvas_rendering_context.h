@@ -82,13 +82,30 @@ class CORE_EXPORT CanvasRenderingContext
 
   // Correspond to CanvasRenderingAPI defined in
   // tools/metrics/histograms/enums.xml
-  enum CanvasRenderingAPI {
+  enum class CanvasRenderingAPI {
     k2D = 0,
     kWebgl = 1,
     kWebgl2 = 2,
     kBitmaprenderer = 3,
     kWebgpu = 4,
   };
+
+  bool IsRenderingContext2D() const {
+    return canvas_rendering_type_ == CanvasRenderingAPI::k2D;
+  }
+  bool IsImageBitmapRenderingContext() const {
+    return canvas_rendering_type_ == CanvasRenderingAPI::kBitmaprenderer;
+  }
+  bool IsWebGL() const {
+    return canvas_rendering_type_ == CanvasRenderingAPI::kWebgl ||
+           canvas_rendering_type_ == CanvasRenderingAPI::kWebgl2;
+  }
+  bool IsWebGL2() const {
+    return canvas_rendering_type_ == CanvasRenderingAPI::kWebgl2;
+  }
+  bool IsWebGPU() const {
+    return canvas_rendering_type_ == CanvasRenderingAPI::kWebgpu;
+  }
 
   // ActiveScriptWrappable
   // As this class inherits from ActiveScriptWrappable, as long as
@@ -102,9 +119,10 @@ class CORE_EXPORT CanvasRenderingContext
     return Host()->GetTopExecutionContext();
   }
 
-  void RecordUKMCanvasRenderingAPI(CanvasRenderingAPI canvasRenderingAPI);
-  void RecordUKMCanvasDrawnToRenderingAPI(
-      CanvasRenderingAPI canvasRenderingAPI);
+  void RecordUKMCanvasRenderingAPI();
+
+  // This is only used in WebGL
+  void RecordUKMCanvasDrawnToRenderingAPI();
 
   static ContextType ContextTypeFromId(
       const String& id,
@@ -196,7 +214,6 @@ class CORE_EXPORT CanvasRenderingContext
   void WillProcessTask(const base::PendingTask&, bool) final {}
 
   // Canvas2D-specific interface
-  virtual bool IsRenderingContext2D() const { return false; }
   virtual void RestoreCanvasMatrixClipStack(cc::PaintCanvas*) const {}
   virtual void Reset() {}
   virtual void ClearRect(double x, double y, double width, double height) {}
@@ -215,7 +232,6 @@ class CORE_EXPORT CanvasRenderingContext
   virtual void ResetUsageTracking() {}
 
   // WebGL-specific interface
-  virtual bool IsWebGL() const { return false; }
   virtual bool UsingSwapChain() const { return false; }
   virtual void SetFilterQuality(SkFilterQuality) { NOTREACHED(); }
   virtual void Reshape(int width, int height) {}
@@ -232,9 +248,6 @@ class CORE_EXPORT CanvasRenderingContext
     NOTREACHED();
     return IntSize(0, 0);
   }
-
-  // WebGPU-specific methods
-  virtual bool IsWebGPU() const { return false; }
 
   // OffscreenCanvas-specific methods.
   virtual bool PushFrame() { return false; }
@@ -266,7 +279,8 @@ class CORE_EXPORT CanvasRenderingContext
 
  protected:
   CanvasRenderingContext(CanvasRenderingContextHost*,
-                         const CanvasContextCreationAttributesCore&);
+                         const CanvasContextCreationAttributesCore&,
+                         CanvasRenderingAPI);
 
  private:
   void Dispose();
@@ -278,6 +292,8 @@ class CORE_EXPORT CanvasRenderingContext
   void DidDrawCommon();
   void RenderTaskEnded();
   bool did_draw_in_current_task_ = false;
+
+  const CanvasRenderingAPI canvas_rendering_type_;
 };
 
 }  // namespace blink
