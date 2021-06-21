@@ -33,6 +33,8 @@ class Speedometer2(press._PressBenchmark): # pylint: disable=protected-access
   """
 
   enable_smoke_test_mode = False
+  enable_systrace = False
+  extra_chrome_categories = False
   enable_rcs = False
   iteration_count = None
 
@@ -61,7 +63,7 @@ class Speedometer2(press._PressBenchmark): # pylint: disable=protected-access
     return ps
 
   def CreateCoreTimelineBasedMeasurementOptions(self):
-    if not self.enable_rcs:
+    if not self.enable_systrace:
       return timeline_based_measurement.Options()
 
     cat_filter = chrome_trace_category_filter.ChromeTraceCategoryFilter()
@@ -73,12 +75,21 @@ class Speedometer2(press._PressBenchmark): # pylint: disable=protected-access
     # "toplevel" category is used to capture TaskQueueManager events.
     cat_filter.AddIncludedCategory('toplevel')
 
-    # V8 needed categories
-    cat_filter.AddIncludedCategory('v8')
-    cat_filter.AddDisabledByDefault('disabled-by-default-v8.runtime_stats')
+    if self.extra_chrome_categories:
+      cat_filter.AddFilterString(self.extra_chrome_categories)
+
+    if self.enable_rcs:
+      # V8 needed categories
+      cat_filter.AddIncludedCategory('v8')
+      cat_filter.AddDisabledByDefault('disabled-by-default-v8.runtime_stats')
+
+      tbm_options = timeline_based_measurement.Options(
+          overhead_level=cat_filter)
+      tbm_options.SetTimelineBasedMetrics(['runtimeStatsTotalMetric'])
+      return tbm_options
 
     tbm_options = timeline_based_measurement.Options(overhead_level=cat_filter)
-    tbm_options.SetTimelineBasedMetrics(['runtimeStatsTotalMetric'])
+    tbm_options.SetTimelineBasedMetrics(['tracingMetric'])
     return tbm_options
 
   def SetExtraBrowserOptions(self, options):
@@ -105,6 +116,10 @@ class Speedometer2(press._PressBenchmark): # pylint: disable=protected-access
           raise parser.error('--suite: No matches.')
       except re.error:
         raise parser.error('--suite: Invalid regex.')
+    if args.enable_systrace or args.enable_rcs:
+      cls.enable_systrace = True
+    if args.extra_chrome_categories:
+      cls.extra_chrome_categories = args.extra_chrome_categories
     if args.enable_rcs:
       cls.enable_rcs = True
     if args.iteration_count:
