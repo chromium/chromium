@@ -403,10 +403,15 @@ function handleU2fEnrollRequest(messageSender, request, sendResponse) {
   async function getRegistrationData(
       appId, enrollChallenge, registrationData, opt_clientData) {
     var isDirect = true;
+    var foregroundChecked = false;
 
     if (conveyancePreference(enrollChallenge) == ConveyancePreference.NONE) {
       isDirect = false;
     } else if (chrome.cryptotokenPrivate != null) {
+      // Requesting attestation permission may show a pop-up prompt, which will
+      // cause the window to appear to be unfocused on Windows. Therefore
+      // check if the tab is in the foreground now, before the pop-up.
+      foregroundChecked = await tabInForeground(messageSender.tab.id);
       isDirect = await (new Promise((resolve, reject) => {
         chrome.cryptotokenPrivate.canAppIdGetAttestation(
             {
@@ -430,14 +435,17 @@ function handleU2fEnrollRequest(messageSender, request, sendResponse) {
     }
 
     if (isDirect) {
-      return registrationData;
+      return {registrationData, foregroundChecked};
     }
 
     const reg = new Registration(
         registrationData, appId, enrollChallenge['challenge'], opt_clientData);
     const keypair = await makeCertAndKey(reg.certificate);
     const signature = await reg.sign(keypair.privateKey);
-    return reg.withReplacement(keypair.certDER, signature);
+    return {
+      registrationData: reg.withReplacement(keypair.certDER, signature),
+      foregroundChecked,
+    };
   }
 
   /**
@@ -462,11 +470,12 @@ function handleU2fEnrollRequest(messageSender, request, sendResponse) {
     getRegistrationData(
         appId, enrollChallenge, registrationData, opt_clientData)
         .then(
-            (registrationData) => {
+            ({registrationData, foregroundChecked}) => {
               var responseData = makeEnrollResponseData(
                   enrollChallenge, u2fVersion, registrationData,
                   opt_clientData);
               var response = makeU2fSuccessResponse(request, responseData);
+              response.foregroundChecked = foregroundChecked;
               sendResponseOnce(sentResponse, closeable, response, sendResponse);
             },
             (err) => {
