@@ -15,10 +15,10 @@
   <message name="IDS_FLAGS_UI_PAGE_RESET" translateable="false" desc="Label for button that resets the flags to their default value.">
     Reset all
   </message>
-  <message name="IDS_FLAGS_UI_PAGE_WARNING" desc="A warning stating that the features of the page are experimental.">
+  <message name="IDS_FLAGS_UI_PAGE_WARNING" translateable="false" desc="A warning stating that the features of the page are experimental.">
     Warning: Experimental features ahead!
   </message>
-  <message name="IDS_FLAGS_UI_PAGE_WARNING_EXPLANATION" desc="A warning stating what the user gets exposed to by enabling one the features.">
+  <message name="IDS_FLAGS_UI_PAGE_WARNING_EXPLANATION" translateable="false" desc="A warning stating what the user gets exposed to by enabling one the features.">
     By enabling these features, you could lose browser data or
     compromise your security or privacy. Enabled features apply to all
     users of this browser. If you are an enterprise admin you should
@@ -64,12 +64,12 @@
   <message name="IDS_FLAGS_UI_EXPERIMENT_ENABLED" translateable="false" desc="Screen reader text stating that an experiment is enabled.">
     Experiment enabled
   </message>
-  <message name="IDS_FLAGS_UI_SEARCH_RESULTS_SINGULAR" desc="Message announced to screenreader users when searching completes and results are showing.">
+  <message name="IDS_FLAGS_UI_SEARCH_RESULTS_SINGULAR" translateable="false" desc="Message announced to screenreader users when searching completes and results are showing.">
     1 result for '<ph name="SEARCH_TEXT">
       $1<ex>cookies</ex>
     </ph>'
   </message>
-  <message name="IDS_FLAGS_UI_SEARCH_RESULTS_PLURAL" desc="Message announced to screenreader users when searching completes and results are showing.">
+  <message name="IDS_FLAGS_UI_SEARCH_RESULTS_PLURAL" translateable="false" desc="Message announced to screenreader users when searching completes and results are showing.">
     <ph name="RESULT_COUNT">
       $1<ex>15</ex>
     </ph> results for '<ph name="SEARCH_TEXT">
