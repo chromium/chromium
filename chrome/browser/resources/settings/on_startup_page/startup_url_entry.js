@@ -16,8 +16,8 @@ import '../settings_shared_css.js';
 import '../site_favicon.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {FocusRowBehavior} from 'chrome://resources/js/cr/ui/focus_row_behavior.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {FocusRowBehavior, FocusRowBehaviorInterface} from 'chrome://resources/js/cr/ui/focus_row_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {StartupPageInfo, StartupUrlsPageBrowserProxyImpl} from './startup_urls_page_browser_proxy.js';
 
@@ -28,28 +28,47 @@ import {StartupPageInfo, StartupUrlsPageBrowserProxyImpl} from './startup_urls_p
  */
 export const EDIT_STARTUP_URL_EVENT = 'edit-startup-url';
 
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'settings-startup-url-entry',
 
-  behaviors: [FocusRowBehavior],
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {FocusRowBehaviorInterface}
+ */
+const SettingsStartupUrlEntryElementBase =
+    mixinBehaviors([FocusRowBehavior], PolymerElement);
 
-  properties: {
-    editable: {
-      type: Boolean,
-      reflectToAttribute: true,
-    },
+/** @polymer */
+class SettingsStartupUrlEntryElement extends
+    SettingsStartupUrlEntryElementBase {
+  static get is() {
+    return 'settings-startup-url-entry';
+  }
 
-    /** @type {!StartupPageInfo} */
-    model: Object,
-  },
+  static get template() {
+    return html`{__html_template__}`;
+  }
+
+  static get properties() {
+    return {
+      editable: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
+
+      /** @type {!StartupPageInfo} */
+      model: Object,
+
+    };
+  }
+
+
 
   /** @private */
   onRemoveTap_() {
-    this.$$('cr-action-menu').close();
+    this.shadowRoot.querySelector('cr-action-menu').close();
     StartupUrlsPageBrowserProxyImpl.getInstance().removeStartupPage(
         this.model.modelIndex);
-  },
+  }
 
   /**
    * @param {!Event} e
@@ -57,17 +76,25 @@ Polymer({
    */
   onEditTap_(e) {
     e.preventDefault();
-    this.$$('cr-action-menu').close();
-    this.fire(EDIT_STARTUP_URL_EVENT, {
-      model: this.model,
-      anchor: this.$$('#dots'),
-    });
-  },
+    this.shadowRoot.querySelector('cr-action-menu').close();
+    this.dispatchEvent(new CustomEvent(EDIT_STARTUP_URL_EVENT, {
+      bubbles: true,
+      composed: true,
+      detail: {
+        model: this.model,
+        anchor: this.shadowRoot.querySelector('#dots'),
+      },
+    }));
+  }
 
   /** @private */
   onDotsTap_() {
     const actionMenu =
-        /** @type {!CrActionMenuElement} */ (this.$$('#menu').get());
-    actionMenu.showAt(assert(this.$$('#dots')));
-  },
-});
+        /** @type {!CrActionMenuElement} */ (
+            this.shadowRoot.querySelector('#menu').get());
+    actionMenu.showAt(assert(this.shadowRoot.querySelector('#dots')));
+  }
+}
+
+customElements.define(
+    SettingsStartupUrlEntryElement.is, SettingsStartupUrlEntryElement);

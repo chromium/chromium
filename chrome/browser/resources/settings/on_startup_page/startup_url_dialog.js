@@ -7,7 +7,7 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import '../settings_shared_css.js';
 
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 
@@ -28,46 +28,64 @@ const UrlInputError = {
  * @fileoverview 'settings-startup-url-dialog' is a component for adding
  * or editing a startup URL entry.
  */
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'settings-startup-url-dialog',
 
-  properties: {
-    /** @private {UrlInputError} */
-    error_: {
-      type: Number,
-      value: UrlInputError.NONE,
-    },
+/** @polymer */
+class SettingsStartupUrlDialogElement extends PolymerElement {
+  static get is() {
+    return 'settings-startup-url-dialog';
+  }
 
-    /** @private */
-    url_: String,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /** @private */
-    urlLimit_: {
-      readOnly: true,
-      type: Number,
-      value: 100 * 1024,  // 100 KB.
-    },
+  static get properties() {
+    return {
+      /** @private {UrlInputError} */
+      error_: {
+        type: Number,
+        value: UrlInputError.NONE,
+      },
 
-    /**
-     * If specified the dialog acts as an "Edit page" dialog, otherwise as an
-     * "Add new page" dialog.
-     * @type {?StartupPageInfo}
-     */
-    model: Object,
+      /** @private */
+      url_: String,
 
-    /** @private */
-    dialogTitle_: String,
+      /** @private */
+      urlLimit_: {
+        readOnly: true,
+        type: Number,
+        value: 100 * 1024,  // 100 KB.
+      },
 
-    /** @private */
-    actionButtonText_: String,
-  },
+      /**
+       * If specified the dialog acts as an "Edit page" dialog, otherwise as an
+       * "Add new page" dialog.
+       * @type {?StartupPageInfo}
+       */
+      model: Object,
 
-  /** @private {?StartupUrlsPageBrowserProxy} */
-  browserProxy_: null,
+      /** @private */
+      dialogTitle_: String,
+
+      /** @private */
+      actionButtonText_: String,
+
+    };
+  }
+
+
+
+  constructor() {
+    super();
+
+    /** @private {?StartupUrlsPageBrowserProxy} */
+    this.browserProxy_ = null;
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     this.browserProxy_ = StartupUrlsPageBrowserProxyImpl.getInstance();
 
     if (this.model) {
@@ -82,7 +100,7 @@ Polymer({
       this.$.actionButton.disabled = true;
     }
     this.$.dialog.showModal();
-  },
+  }
 
   /**
    * @return {boolean}
@@ -90,7 +108,7 @@ Polymer({
    */
   hasError_() {
     return this.error_ !== UrlInputError.NONE;
-  },
+  }
 
   /**
    * @param {string} invalidUrl
@@ -100,12 +118,12 @@ Polymer({
    */
   errorMessage_(invalidUrl, tooLong) {
     return ['', invalidUrl, tooLong][this.error_];
-  },
+  }
 
   /** @private */
   onCancelTap_() {
     this.$.dialog.close();
-  },
+  }
 
   /** @private */
   onActionButtonTap_() {
@@ -120,7 +138,7 @@ Polymer({
       // If the URL was invalid, there is nothing to do, just leave the dialog
       // open and let the user fix the URL or cancel.
     });
-  },
+  }
 
   /** @private */
   validate_() {
@@ -138,5 +156,8 @@ Polymer({
       this.$.actionButton.disabled = !isValid;
       this.error_ = isValid ? UrlInputError.NONE : UrlInputError.INVALID_URL;
     });
-  },
-});
+  }
+}
+
+customElements.define(
+    SettingsStartupUrlDialogElement.is, SettingsStartupUrlDialogElement);

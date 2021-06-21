@@ -15,43 +15,63 @@ import './startup_urls_page.js';
 import '../i18n_setup.js';
 import '../settings_shared_css.js';
 
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {NtpExtension, OnStartupBrowserProxyImpl} from './on_startup_browser_proxy.js';
 
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'settings-on-startup-page',
 
-  behaviors: [WebUIListenerBehavior],
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {WebUIListenerBehaviorInterface}
+ */
+const SettingsOnStartupPageElementBase =
+    mixinBehaviors([WebUIListenerBehavior], PolymerElement);
 
-  properties: {
-    prefs: {
-      type: Object,
-      notify: true,
-    },
+/** @polymer */
+class SettingsOnStartupPageElement extends SettingsOnStartupPageElementBase {
+  static get is() {
+    return 'settings-on-startup-page';
+  }
 
-    /** @private {?NtpExtension} */
-    ntpExtension_: Object,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /**
-     * Enum values for the 'session.restore_on_startup' preference.
-     * @private {!Object<string, number>}
-     */
-    prefValues_: {
-      readOnly: true,
-      type: Object,
-      value: {
-        CONTINUE: 1,
-        OPEN_NEW_TAB: 5,
-        OPEN_SPECIFIC: 4,
+  static get properties() {
+    return {
+      prefs: {
+        type: Object,
+        notify: true,
       },
-    },
-  },
+
+      /** @private {?NtpExtension} */
+      ntpExtension_: Object,
+
+      /**
+       * Enum values for the 'session.restore_on_startup' preference.
+       * @private {!Object<string, number>}
+       */
+      prefValues_: {
+        readOnly: true,
+        type: Object,
+        value: {
+          CONTINUE: 1,
+          OPEN_NEW_TAB: 5,
+          OPEN_SPECIFIC: 4,
+        },
+      },
+
+    };
+  }
+
+
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     const updateNtpExtension = ntpExtension => {
       // Note that |ntpExtension| is empty if there is no NTP extension.
       this.ntpExtension_ = ntpExtension;
@@ -59,7 +79,7 @@ Polymer({
     OnStartupBrowserProxyImpl.getInstance().getNtpExtension().then(
         updateNtpExtension);
     this.addWebUIListener('update-ntp-extension', updateNtpExtension);
-  },
+  }
 
   /**
    * @param {number} value
@@ -68,7 +88,7 @@ Polymer({
    */
   getName_(value) {
     return value.toString();
-  },
+  }
 
   /**
    * Determine whether to show the user defined startup pages.
@@ -78,5 +98,8 @@ Polymer({
    */
   showStartupUrls_(restoreOnStartup) {
     return restoreOnStartup === this.prefValues_.OPEN_SPECIFIC;
-  },
-});
+  }
+}
+
+customElements.define(
+    SettingsOnStartupPageElement.is, SettingsOnStartupPageElement);

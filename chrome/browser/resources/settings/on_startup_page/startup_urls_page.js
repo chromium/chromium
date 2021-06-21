@@ -15,54 +15,80 @@ import '../controls/extension_controlled_indicator.js';
 import '../settings_shared_css.js';
 import './startup_url_dialog.js';
 
-import {CrScrollableBehavior} from 'chrome://resources/cr_elements/cr_scrollable_behavior.m.js';
+import {CrScrollableBehavior, CrScrollableBehaviorInterface} from 'chrome://resources/cr_elements/cr_scrollable_behavior.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {EDIT_STARTUP_URL_EVENT} from './startup_url_entry.js';
 import {StartupPageInfo, StartupUrlsPageBrowserProxy, StartupUrlsPageBrowserProxyImpl} from './startup_urls_page_browser_proxy.js';
 
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'settings-startup-urls-page',
 
-  behaviors: [CrScrollableBehavior, WebUIListenerBehavior],
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {WebUIListenerBehaviorInterface}
+ * @implements {CrScrollableBehaviorInterface}
+ */
+const SettingsStartupUrlsPageElementBase = mixinBehaviors(
+    [CrScrollableBehavior, WebUIListenerBehavior], PolymerElement);
 
-  properties: {
-    prefs: Object,
+/** @polymer */
+class SettingsStartupUrlsPageElement extends
+    SettingsStartupUrlsPageElementBase {
+  static get is() {
+    return 'settings-startup-urls-page';
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
+  }
+
+  static get properties() {
+    return {
+      prefs: Object,
+
+      /**
+       * Pages to load upon browser startup.
+       * @private {!Array<!StartupPageInfo>}
+       */
+      startupPages_: Array,
+
+      /** @private */
+      showStartupUrlDialog_: Boolean,
+
+      /** @private {?StartupPageInfo} */
+      startupUrlDialogModel_: Object,
+
+      /** @private {Object}*/
+      lastFocused_: Object,
+
+      /** @private */
+      listBlurred_: Boolean,
+
+    };
+  }
+
+
+
+  constructor() {
+    super();
+
+    /** @private {?StartupUrlsPageBrowserProxy} */
+    this.browserProxy_ = null;
 
     /**
-     * Pages to load upon browser startup.
-     * @private {!Array<!StartupPageInfo>}
+     * The element to return focus to, when the startup-url-dialog is closed.
+     * @private {?HTMLElement}
      */
-    startupPages_: Array,
-
-    /** @private */
-    showStartupUrlDialog_: Boolean,
-
-    /** @private {?StartupPageInfo} */
-    startupUrlDialogModel_: Object,
-
-    /** @private {Object}*/
-    lastFocused_: Object,
-
-    /** @private */
-    listBlurred_: Boolean,
-  },
-
-  /** @private {?StartupUrlsPageBrowserProxy} */
-  browserProxy_: null,
-
-  /**
-   * The element to return focus to, when the startup-url-dialog is closed.
-   * @private {?HTMLElement}
-   */
-  startupUrlDialogAnchor_: null,
+    this.startupUrlDialogAnchor_ = null;
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     this.browserProxy_ = StartupUrlsPageBrowserProxyImpl.getInstance();
     this.addWebUIListener('update-startup-pages', startupPages => {
       // If an "edit" URL dialog was open, close it, because the underlying page
@@ -81,7 +107,7 @@ Polymer({
       this.showStartupUrlDialog_ = true;
       event.stopPropagation();
     });
-  },
+  }
 
   /**
    * @param {!Event} e
@@ -91,8 +117,9 @@ Polymer({
     e.preventDefault();
     this.showStartupUrlDialog_ = true;
     this.startupUrlDialogAnchor_ =
-        /** @type {!HTMLElement} */ (this.$$('#addPage a[is=action-link]'));
-  },
+        /** @type {!HTMLElement} */ (
+            this.shadowRoot.querySelector('#addPage a[is=action-link]'));
+  }
 
   /** @private */
   destroyUrlDialog_() {
@@ -102,12 +129,12 @@ Polymer({
       focusWithoutInk(assert(this.startupUrlDialogAnchor_));
       this.startupUrlDialogAnchor_ = null;
     }
-  },
+  }
 
   /** @private */
   onUseCurrentPagesTap_() {
     this.browserProxy_.useCurrentPages();
-  },
+  }
 
   /**
    * @return {boolean} Whether "Add new page" and "Use current pages" are
@@ -117,5 +144,8 @@ Polymer({
   shouldAllowUrlsEdit_() {
     return this.get('prefs.session.startup_urls.enforcement') !==
         chrome.settingsPrivate.Enforcement.ENFORCED;
-  },
-});
+  }
+}
+
+customElements.define(
+    SettingsStartupUrlsPageElement.is, SettingsStartupUrlsPageElement);

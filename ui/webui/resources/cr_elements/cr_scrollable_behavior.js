@@ -190,3 +190,8 @@
             scrollable.scrollHeight);
   },
 };
+
+/* #export */ class CrScrollableBehaviorInterface {
+  updateScrollableContents() {}
+  requestUpdateScroll() {}
+}
