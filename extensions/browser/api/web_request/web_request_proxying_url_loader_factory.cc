@@ -43,6 +43,7 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
+#include "services/network/public/mojom/parsed_headers.mojom-forward.h"
 #include "third_party/blink/public/common/loader/throttling_url_loader.h"
 #include "url/origin.h"
 
@@ -934,19 +935,18 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
   }
 
   proxied_client_receiver_.Pause();
-  auto assign = [](base::OnceClosure continuation,
-                   network::mojom::URLResponseHead* head,
-                   network::mojom::ParsedHeadersPtr parsed_headers) {
-    head->parsed_headers = std::move(parsed_headers);
-    std::move(continuation).Run();
-  };
   content::GetNetworkService()->ParseHeaders(
       request_.url, current_response_->headers,
       base::BindOnce(
-          assign,
-          base::BindOnce(&InProgressRequest::ContinueToResponseStarted,
-                         weak_factory_.GetWeakPtr()),
-          current_response_.get()));
+          &InProgressRequest::AssignParsedHeadersAndContinueToResponseStarted,
+          weak_factory_.GetWeakPtr()));
+}
+
+void WebRequestProxyingURLLoaderFactory::InProgressRequest::
+    AssignParsedHeadersAndContinueToResponseStarted(
+        network::mojom::ParsedHeadersPtr parsed_headers) {
+  current_response_->parsed_headers = std::move(parsed_headers);
+  ContinueToResponseStarted();
 }
 
 void WebRequestProxyingURLLoaderFactory::InProgressRequest::

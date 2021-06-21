@@ -151,6 +151,8 @@ class WebRequestProxyingURLLoaderFactory
     void ContinueToStartRequestWithOk();
     void ContinueToHandleOverrideHeaders(int error_code);
     void OverwriteHeadersAndContinueToResponseStarted(int error_code);
+    void AssignParsedHeadersAndContinueToResponseStarted(
+        network::mojom::ParsedHeadersPtr parsed_headers);
     void ContinueToResponseStarted();
     void ContinueAuthRequest(const net::AuthChallengeInfo& auth_info,
                              WebRequestAPI::AuthRequestCallback callback,
