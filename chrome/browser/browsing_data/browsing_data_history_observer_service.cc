@@ -256,6 +256,10 @@ BrowsingDataHistoryObserverService::Factory::Factory()
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
   DependsOn(SessionServiceFactory::GetInstance());
 #endif
+
+#if defined(OS_ANDROID)
+  DependsOn(MerchantViewerDataManagerFactory::GetInstance());
+#endif
 }
 
 KeyedService*
