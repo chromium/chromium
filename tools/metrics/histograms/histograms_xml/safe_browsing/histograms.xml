@@ -1890,8 +1890,8 @@ and applied correctly. -->
 </histogram>
 
 <histogram name="SafeBrowsing.V4StoreRead.Result"
-    enum="SafeBrowsingV4StoreReadResult" expires_after="2021-07-30">
-  <owner>vakh@chromium.org</owner>
+    enum="SafeBrowsingV4StoreReadResult" expires_after="2022-07-30">
+  <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Track the parsing results of reading the SafeBrowsing V4 store file from
