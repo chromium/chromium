@@ -246,11 +246,6 @@ class StartSurfaceToolbarView extends RelativeLayout {
         return mIdentityDiscButton;
     }
 
-    /** Return the home button view. */
-    View getHomeButtonView() {
-        return mHomeButton;
-    }
-
     /**
      * @param isAtStart Whether the identity disc is at start.
      */

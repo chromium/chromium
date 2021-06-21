@@ -259,7 +259,7 @@ public class StartSurfaceToolbarCoordinator {
         mPropertyModelChangeProcessor = PropertyModelChangeProcessor.create(
                 mPropertyModel, mView, StartSurfaceToolbarViewBinder::bind);
 
-        mToolbarMediator.setHomeButtonView(mView.getHomeButtonView());
+        mToolbarMediator.setHomeButtonView(mView.findViewById(R.id.home_button_on_tab_switcher));
 
         if (StartSurfaceConfiguration.shouldShowNewSurfaceFromHomeButton()) {
             mTabSwitcherButtonView = mView.findViewById(R.id.start_tab_switcher_button);
