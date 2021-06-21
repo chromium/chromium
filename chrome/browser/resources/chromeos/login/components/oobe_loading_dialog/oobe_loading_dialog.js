@@ -8,8 +8,13 @@ Polymer({
   behaviors: [OobeI18nBehavior, OobeDialogHostBehavior],
 
   properties: {
-    textKey: {
+    titleKey: {
       type: String,
+    },
+
+    subtitleKey: {
+      type: String,
+      value: '',
     },
 
     isNewLayout_: {
@@ -35,5 +40,15 @@ Polymer({
     if (this.isNewLayout_) {
       this.$.spinner.setPlay(false);
     }
+  },
+
+  /**
+   * Localize subtitle message
+   * @private
+   * @param {string} locale  i18n locale data
+   * @param {string} messageId
+   */
+  localizeSubtitle_(locale, messageId) {
+    return messageId ? this.i18nDynamic(locale, messageId) : '';
   },
 });

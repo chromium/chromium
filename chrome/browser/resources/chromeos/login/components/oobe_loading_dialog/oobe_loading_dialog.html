@@ -37,14 +37,15 @@
       <div slot="content" class="flex layout vertical center center-justified">
         <paper-spinner-lite dir="ltr" active></paper-spinner-lite>
         <div id="comment" aria-live="polite" class="focus-on-show"
-            aria-label$="[[i18nDynamic(locale, textKey)]]">
-          [[i18nDynamic(locale, textKey)]]
+            aria-label$="[[i18nDynamic(locale, titleKey)]]">
+          [[i18nDynamic(locale, titleKey)]]
         </div>
       </div>
     </oobe-content-dialog>
     <oobe-adaptive-dialog id="dialog" role="dialog" hidden="[[!isNewLayout_]]">
       <slot slot="icon" name="icon"></slot>
-      <h1 slot="title">[[i18nDynamic(locale, textKey)]]</h1>
+      <h1 slot="title">[[i18nDynamic(locale, titleKey)]]</h1>
+      <div slot="subtitle">[[localizeSubtitle_(locale, subtitleKey)]]</div>
       <div slot="content" class="flex layout vertical center center-justified">
         <cr-lottie id="spinner" animation-url="spinner.json"></cr-lottie>
       </div>
@@ -52,4 +53,3 @@
   </template>
   <script src="oobe_loading_dialog.js"></script>
 </dom-module>
-
