@@ -21,8 +21,8 @@ class TestSwitchAccessSubpageBrowserProxy extends TestBrowserProxy {
   constructor() {
     super([
       'refreshAssignmentsFromPrefs',
-      'notifySwitchAccessActionAssignmentDialogAttached',
-      'notifySwitchAccessActionAssignmentDialogDetached',
+      'notifySwitchAccessActionAssignmentPaneActive',
+      'notifySwitchAccessActionAssignmentPaneInactive',
     ]);
   }
 
@@ -32,13 +32,13 @@ class TestSwitchAccessSubpageBrowserProxy extends TestBrowserProxy {
   }
 
   /** @override */
-  notifySwitchAccessActionAssignmentDialogAttached() {
-    this.methodCalled('notifySwitchAccessActionAssignmentDialogAttached');
+  notifySwitchAccessActionAssignmentPaneActive() {
+    this.methodCalled('notifySwitchAccessActionAssignmentPaneActive');
   }
 
   /** @override */
-  notifySwitchAccessActionAssignmentDialogDetached() {
-    this.methodCalled('notifySwitchAccessActionAssignmentDialogDetached');
+  notifySwitchAccessActionAssignmentPaneInactive() {
+    this.methodCalled('notifySwitchAccessActionAssignmentPaneInactive');
   }
 }
 
@@ -180,7 +180,7 @@ suite('ManageAccessibilityPageTests', function() {
     page.$.selectLinkRow.click();
 
     await browserProxy.methodCalled(
-        'notifySwitchAccessActionAssignmentDialogAttached');
+        'notifySwitchAccessActionAssignmentPaneActive');
 
     // Make sure we populate the initial |keyCodes_| state on the
     // SwitchAccessActionAssignmentDialog.
@@ -198,7 +198,7 @@ suite('ManageAccessibilityPageTests', function() {
 
     // This should cause the dialog to close.
     await browserProxy.methodCalled(
-        'notifySwitchAccessActionAssignmentDialogDetached');
+        'notifySwitchAccessActionAssignmentPaneInactive');
   });
 
   test('Switch access action assignment dialog error state', async function() {
@@ -208,7 +208,7 @@ suite('ManageAccessibilityPageTests', function() {
     page.$.selectLinkRow.click();
 
     await browserProxy.methodCalled(
-        'notifySwitchAccessActionAssignmentDialogAttached');
+        'notifySwitchAccessActionAssignmentPaneActive');
 
     // Simulate pressing 'a', and then 'b'.
     cr.webUIListenerCallback(

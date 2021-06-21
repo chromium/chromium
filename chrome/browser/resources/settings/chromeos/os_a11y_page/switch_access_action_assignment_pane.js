@@ -206,12 +206,12 @@ Polymer({
         'switch-access-assignments-changed',
         this.onAssignmentsChanged_.bind(this));
     this.switchAccessBrowserProxy_
-        .notifySwitchAccessActionAssignmentDialogAttached();
+        .notifySwitchAccessActionAssignmentPaneActive();
   },
 
   handleDetached_() {
     this.switchAccessBrowserProxy_
-        .notifySwitchAccessActionAssignmentDialogDetached();
+        .notifySwitchAccessActionAssignmentPaneInactive();
 
     // Restore everything before we close.
     for (const action in actionToPref) {

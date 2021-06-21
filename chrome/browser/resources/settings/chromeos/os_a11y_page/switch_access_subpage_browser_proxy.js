@@ -18,12 +18,12 @@
   /**
    * Notifies SwitchAccessHandler an assignment dialog has been attached.
    */
-  notifySwitchAccessActionAssignmentDialogAttached() {}
+  notifySwitchAccessActionAssignmentPaneActive() {}
 
   /**
    * Notifies SwitchAccessHandler an assignment dialog is closing.
    */
-  notifySwitchAccessActionAssignmentDialogDetached() {}
+  notifySwitchAccessActionAssignmentPaneInactive() {}
 }
 
 /**
@@ -36,13 +36,13 @@
   }
 
   /** @override */
-  notifySwitchAccessActionAssignmentDialogAttached() {
-    chrome.send('notifySwitchAccessActionAssignmentDialogAttached');
+  notifySwitchAccessActionAssignmentPaneActive() {
+    chrome.send('notifySwitchAccessActionAssignmentPaneActive');
   }
 
   /** @override */
-  notifySwitchAccessActionAssignmentDialogDetached() {
-    chrome.send('notifySwitchAccessActionAssignmentDialogDetached');
+  notifySwitchAccessActionAssignmentPaneInactive() {
+    chrome.send('notifySwitchAccessActionAssignmentPaneInactive');
   }
 }
 

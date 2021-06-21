@@ -36,9 +36,9 @@ class SwitchAccessHandler : public ::settings::SettingsPageUIHandler,
 
  private:
   void HandleRefreshAssignmentsFromPrefs(const base::ListValue* args);
-  void HandleNotifySwitchAccessActionAssignmentDialogAttached(
+  void HandleNotifySwitchAccessActionAssignmentPaneActive(
       const base::ListValue* args);
-  void HandleNotifySwitchAccessActionAssignmentDialogDetached(
+  void HandleNotifySwitchAccessActionAssignmentPaneInactive(
       const base::ListValue* args);
   void OnSwitchAccessAssignmentsUpdated();
 

@@ -92,16 +92,16 @@ void SwitchAccessHandler::RegisterMessages() {
           &SwitchAccessHandler::HandleRefreshAssignmentsFromPrefs,
           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
-      "notifySwitchAccessActionAssignmentDialogAttached",
+      "notifySwitchAccessActionAssignmentPaneActive",
       base::BindRepeating(
           &SwitchAccessHandler::
-              HandleNotifySwitchAccessActionAssignmentDialogAttached,
+              HandleNotifySwitchAccessActionAssignmentPaneActive,
           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
-      "notifySwitchAccessActionAssignmentDialogDetached",
+      "notifySwitchAccessActionAssignmentPaneInactive",
       base::BindRepeating(
           &SwitchAccessHandler::
-              HandleNotifySwitchAccessActionAssignmentDialogDetached,
+              HandleNotifySwitchAccessActionAssignmentPaneInactive,
           base::Unretained(this)));
 }
 
@@ -160,18 +160,16 @@ void SwitchAccessHandler::HandleRefreshAssignmentsFromPrefs(
   OnSwitchAccessAssignmentsUpdated();
 }
 
-void SwitchAccessHandler::
-    HandleNotifySwitchAccessActionAssignmentDialogAttached(
-        const base::ListValue* args) {
+void SwitchAccessHandler::HandleNotifySwitchAccessActionAssignmentPaneActive(
+    const base::ListValue* args) {
   AllowJavascript();
   OnSwitchAccessAssignmentsUpdated();
   web_ui()->GetWebContents()->GetNativeView()->AddPreTargetHandler(this);
   ash::AccessibilityController::Get()->SuspendSwitchAccessKeyHandling(true);
 }
 
-void SwitchAccessHandler::
-    HandleNotifySwitchAccessActionAssignmentDialogDetached(
-        const base::ListValue* args) {
+void SwitchAccessHandler::HandleNotifySwitchAccessActionAssignmentPaneInactive(
+    const base::ListValue* args) {
   web_ui()->GetWebContents()->GetNativeView()->RemovePreTargetHandler(this);
   ash::AccessibilityController::Get()->SuspendSwitchAccessKeyHandling(false);
 }
