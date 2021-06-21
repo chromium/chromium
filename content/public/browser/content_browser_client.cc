@@ -447,11 +447,6 @@ bool ContentBrowserClient::IsInterestGroupAPIAllowed(
   return false;
 }
 
-bool ContentBrowserClient::IsConversionMeasurementAllowed(
-    content::BrowserContext* browser_context) {
-  return true;
-}
-
 bool ContentBrowserClient::IsConversionMeasurementOperationAllowed(
     content::BrowserContext* browser_context,
     ConversionMeasurementOperation operation,

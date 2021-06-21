@@ -31,11 +31,6 @@ const int64_t kExpiryTime = 30;
 
 }  // namespace
 
-bool ConversionDisallowingContentBrowserClient::IsConversionMeasurementAllowed(
-    content::BrowserContext* browser_context) {
-  return false;
-}
-
 bool ConversionDisallowingContentBrowserClient::
     IsConversionMeasurementOperationAllowed(
         content::BrowserContext* browser_context,

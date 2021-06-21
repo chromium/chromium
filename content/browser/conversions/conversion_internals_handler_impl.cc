@@ -90,8 +90,11 @@ void ConversionInternalsHandlerImpl::IsMeasurementEnabled(
   content::WebContents* contents = web_ui_->GetWebContents();
   bool measurement_enabled =
       manager_provider_->GetManager(contents) &&
-      GetContentClient()->browser()->IsConversionMeasurementAllowed(
-          contents->GetBrowserContext());
+      GetContentClient()->browser()->IsConversionMeasurementOperationAllowed(
+          contents->GetBrowserContext(),
+          ContentBrowserClient::ConversionMeasurementOperation::kAny,
+          /*impression_origin=*/nullptr, /*conversion_origin=*/nullptr,
+          /*reporting_origin=*/nullptr);
   bool debug_mode = base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kConversionsDebugMode);
   std::move(callback).Run(measurement_enabled, debug_mode);

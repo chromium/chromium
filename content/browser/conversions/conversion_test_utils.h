@@ -35,8 +35,6 @@ class ConversionDisallowingContentBrowserClient
   ~ConversionDisallowingContentBrowserClient() override = default;
 
   // ContentBrowserClient:
-  bool IsConversionMeasurementAllowed(
-      content::BrowserContext* browser_context) override;
   bool IsConversionMeasurementOperationAllowed(
       content::BrowserContext* browser_context,
       ConversionMeasurementOperation operation,

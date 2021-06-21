@@ -2771,16 +2771,6 @@ bool ChromeContentBrowserClient::IsInterestGroupAPIAllowed(
          privacy_sandbox_settings->IsFledgeAllowed(top_frame_origin, api_url);
 }
 
-bool ChromeContentBrowserClient::IsConversionMeasurementAllowed(
-    content::BrowserContext* browser_context) {
-  Profile* profile = Profile::FromBrowserContext(browser_context);
-  PrivacySandboxSettings* privacy_sandbox_settings =
-      PrivacySandboxSettingsFactory::GetForProfile(profile);
-
-  return privacy_sandbox_settings &&
-         privacy_sandbox_settings->IsPrivacySandboxAllowed();
-}
-
 bool ChromeContentBrowserClient::IsConversionMeasurementOperationAllowed(
     content::BrowserContext* browser_context,
     ConversionMeasurementOperation operation,
@@ -2811,6 +2801,8 @@ bool ChromeContentBrowserClient::IsConversionMeasurementOperationAllowed(
       DCHECK(reporting_origin);
       return privacy_sandbox_settings->ShouldSendConversionReport(
           *impression_origin, *conversion_origin, *reporting_origin);
+    case ConversionMeasurementOperation::kAny:
+      return privacy_sandbox_settings->IsPrivacySandboxAllowed();
   }
 }
 

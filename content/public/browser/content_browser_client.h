@@ -772,30 +772,24 @@ class CONTENT_EXPORT ContentBrowserClient {
       const url::Origin& top_frame_origin,
       const GURL& api_url);
 
-  // Returns whether conversion measurement is allowed anywhere in
-  // |browser_context|. Returns false if Conversion Measurement is not allowed
-  // by default on any origin.
-  virtual bool IsConversionMeasurementAllowed(
-      content::BrowserContext* browser_context);
-
   enum class ConversionMeasurementOperation {
     kImpression,
     kConversion,
     kReport,
+    kAny,
   };
 
   // Allows the embedder to control if conversion measurement API operations can
   // happen in a given context. Origins must be provided for a given operation
   // as follows:
-  //   - kImpression must provide a non-null `impression_origin` and
+  //   - `kImpression` must provide a non-null `impression_origin` and
   //   `reporting_origin`
-  //   - kConversion must provide a non-null `conversion_origin` and
+  //   - `kConversion` must provide a non-null `conversion_origin` and
   //   `reporting_origin`
-  //   - kReport must provide all non-null origins
-  //
-  // When gating an operation, this should not be checked in conjunction with
-  // `IsConversionMeasurementAllowed()`, as the API may not be allowed by
-  // default, but allowed in a specific context due to an exception rule.
+  //   - `kReport` must provide all non-null origins
+  //   - `kAny` may provide all null origins. It checks whether conversion
+  //   measurement is allowed anywhere in `browser_context`, returning false if
+  //   conversion measurement is not allowed by default on any origin.
   virtual bool IsConversionMeasurementOperationAllowed(
       content::BrowserContext* browser_context,
       ConversionMeasurementOperation operation,

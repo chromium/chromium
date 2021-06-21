@@ -284,8 +284,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   bool IsInterestGroupAPIAllowed(content::BrowserContext* browser_context,
                                  const url::Origin& top_frame_origin,
                                  const GURL& api_url) override;
-  bool IsConversionMeasurementAllowed(
-      content::BrowserContext* browser_context) override;
   bool IsConversionMeasurementOperationAllowed(
       content::BrowserContext* browser_context,
       ConversionMeasurementOperation operation,
