@@ -165,8 +165,8 @@ def main():
         prev_len = len(generated_files)
         generated_files.add(generated_test.path)
         if prev_len == len(generated_files):
-            print 'Generated the same test twice for template:\n{}'.format(
-                generated_test.template)
+            print('Generated the same test twice for template:\n{}'.format(
+                generated_test.template))
 
         # Create or open test file
         test_file_handle = open(generated_test.path, 'wb')
@@ -177,15 +177,15 @@ def main():
 
     new_generated_files = generated_files - previous_generated_files
     if len(new_generated_files) != 0:
-        print 'Newly generated tests:'
+        print('Newly generated tests:')
         for generated_file in new_generated_files:
-            print generated_file
+            print(generated_file)
 
     obsolete_files = previous_generated_files - generated_files
     if len(obsolete_files) != 0:
-        print 'The following files might be obsolete:'
+        print('The following files might be obsolete:')
         for generated_file in obsolete_files:
-            print generated_file
+            print(generated_file)
 
 
 if __name__ == '__main__':
