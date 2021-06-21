@@ -7,8 +7,6 @@
 
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
 
-#include "base/logging.h"
-
 namespace segmentation_platform {
 
 namespace test {
@@ -21,15 +19,24 @@ class TestSegmentInfoDatabase : public SegmentInfoDatabase {
 
   // SegmentInfoDatabase overrides.
   void GetAllSegmentInfo(AllSegmentInfoCallback callback) override;
+  void SaveSegmentResult(OptimizationTarget segment_id,
+                         proto::PredictionResult* result,
+                         SuccessCallback callback) override;
 
   // Test helper methods.
   void AddUserAction(OptimizationTarget segment_id,
                      const std::string& user_action);
+  void AddPredictionResult(OptimizationTarget segment_id,
+                           float score,
+                           base::Time timestamp);
+  void AddDiscreteMapping(OptimizationTarget segment_id,
+                          float mappings[][2],
+                          int num_pairs);
 
- private:
   // Finds a segment with given |segment_id|. Creates one if it doesn't exist.
   proto::SegmentInfo* FindOrCreateSegment(OptimizationTarget segment_id);
 
+ private:
   std::vector<std::pair<OptimizationTarget, proto::SegmentInfo>> segment_infos_;
 };
 

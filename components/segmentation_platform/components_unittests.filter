@@ -1,3 +1,5 @@
+MetadataUtilsTest.*
+ModelExecutionSchedulerTest.*
 SegmentationModelExecutorTest.*
 SegmentationPlatformServiceImplTest.*
 SignalFilterProcessorTest.*
