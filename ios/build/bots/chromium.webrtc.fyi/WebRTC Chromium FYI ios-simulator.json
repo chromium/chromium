@@ -24,23 +24,23 @@
   "tests": [
     {
       "include": "webrtc_tests.json",
-      "device type": "iPhone 6s Plus",
-      "os": "12.4",
-      "host os": "Mac-10.15",
+      "device type": "iPhone 11",
+      "os": "14.4",
+      "host os": "Mac-10.15|Mac-11",
       "pool": "chromium.tests"
     },
     {
       "include": "webrtc_tests.json",
-      "device type": "iPhone 6s",
-      "os": "12.4",
-      "host os": "Mac-10.15",
+      "device type": "iPhone X",
+      "os": "14.4",
+      "host os": "Mac-10.15|Mac-11",
       "pool": "chromium.tests"
     },
     {
       "include": "webrtc_tests.json",
-      "device type": "iPad Air 2",
-      "os": "12.4",
-      "host os": "Mac-10.15",
+      "device type": "iPad Air (3rd generation)",
+      "os": "14.4",
+      "host os": "Mac-10.15|Mac-11",
       "pool": "chromium.tests"
     }
   ]
