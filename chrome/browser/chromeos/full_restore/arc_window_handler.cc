@@ -7,9 +7,14 @@
 #include "chrome/browser/chromeos/full_restore/arc_ghost_window_shell_surface.h"
 #include "chrome/browser/chromeos/full_restore/arc_window_utils.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
+#include "chromeos/ui/base/window_state_type.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/wm_helper.h"
 #include "components/full_restore/app_restore_data.h"
+
+namespace {
+const int kArcWindowCaptionBarHeight = 25;
+}
 
 namespace chromeos {
 namespace full_restore {
@@ -48,13 +53,21 @@ void ArcWindowHandler::LaunchArcGhostWindow(
   DCHECK(restore_data->current_bounds.has_value());
   DCHECK(restore_data->display_id.has_value());
 
+  gfx::Rect adjust_bounds = restore_data->current_bounds.value();
+  if (restore_data->window_state_type.has_value() &&
+      (restore_data->window_state_type.value() ==
+           chromeos::WindowStateType::kDefault ||
+       restore_data->window_state_type.value() ==
+           chromeos::WindowStateType::kNormal)) {
+    adjust_bounds.Inset(0, kArcWindowCaptionBarHeight, 0, 0);
+  }
+
   session_id_to_shell_surface_.emplace(
       session_id,
       InitArcGhostWindow(
           this, app_id, session_id, restore_data->display_id.value(),
-          restore_data->current_bounds.value(), restore_data->maximum_size,
-          restore_data->minimum_size, restore_data->title,
-          restore_data->status_bar_color,
+          adjust_bounds, restore_data->maximum_size, restore_data->minimum_size,
+          restore_data->title, restore_data->status_bar_color,
           base::BindRepeating(&ArcWindowHandler::CloseWindow,
                               weak_ptr_factory_.GetWeakPtr(), session_id)));
 }
