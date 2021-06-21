@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/config/chromecast_build.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 
 # Sanitizers replace the allocator, don't use our own.
@@ -13,12 +12,13 @@ _is_using_sanitizers = is_asan || is_hwasan || is_lsan || is_tsan || is_msan
 # compatible, see below.
 # - Android: symbol wrapping is not universal for component builds.
 # - Chromecast on Android: causes issues with crash reporting, see b/178423326.
-# - LaCros: temporarily disabled to assess performance on bots.
+# - ARM Chrome OS: see b/191314803
 _disable_partition_alloc =
     (is_win && (is_component_build || is_debug)) ||
     (is_android && is_component_build) || (is_android && is_chromecast) ||
-    (is_linux && is_component_build) || (is_chromeos && is_chromeos_lacros)
-_is_partition_alloc_platform = is_android || is_win || is_linux
+    (is_linux && is_component_build) || (is_chromeos && target_cpu == "arm") ||
+    (is_chromeos && target_cpu == "arm64")
+_is_partition_alloc_platform = is_android || is_win || is_linux || is_chromeos
 
 # The debug CRT on Windows has some debug features that are incompatible with
 # the shim. NaCl in particular does seem to link some binaries statically

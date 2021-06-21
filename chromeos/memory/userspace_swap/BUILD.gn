@@ -60,6 +60,7 @@ source_set("unit_tests") {
   deps = [
     ":mojom",
     ":userspace_swap",
+    "//base/allocator:buildflags",
     "//base/test:test_support",
     "//build:chromeos_buildflags",
     "//mojo/core/embedder",
