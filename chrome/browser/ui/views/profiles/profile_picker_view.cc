@@ -718,15 +718,6 @@ gfx::Size ProfilePickerView::GetMinimumSize() const {
 }
 
 bool ProfilePickerView::AcceleratorPressed(const ui::Accelerator& accelerator) {
-  // Ignore presses of the Escape key. The profile picker may be Chrome's only
-  // top-level window, in which case we don't want presses of Esc to maybe quit
-  // the entire browser. This has higher priority than the default dialog Esc
-  // accelerator (which would otherwise close the window).
-  if (accelerator.key_code() == ui::VKEY_ESCAPE &&
-      accelerator.modifiers() == ui::EF_NONE) {
-    return true;
-  }
-
   const auto& iter = accelerator_table_.find(accelerator);
   DCHECK(iter != accelerator_table_.end());
   int command_id = iter->second;
@@ -869,10 +860,6 @@ void ProfilePickerView::SetExtendedAccountInfoTimeoutForTesting(
 }
 
 void ProfilePickerView::ConfigureAccelerators() {
-  // By default, dialog views close when pressing escape. Override this
-  // behavior as the profile picker should not close in that case.
-  AddAccelerator(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
-
   const std::vector<AcceleratorMapping> accelerator_list(GetAcceleratorList());
   for (const auto& entry : accelerator_list) {
     if (!base::Contains(kSupportedAcceleratorCommands, entry.command_id))
