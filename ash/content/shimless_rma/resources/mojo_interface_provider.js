@@ -26,6 +26,7 @@ function setupFakeShimlessRmaService_() {
   service.setGetCurrentChromeVersionResult(fakeChromeVersion[0]);
   service.setCheckForChromeUpdatesResult(false);
   service.setGetComponentListResult(fakeComponents);
+  service.setReimageRequiredResult(false);
 
   // Set the fake service.
   setShimlessRmaServiceForTesting(service);

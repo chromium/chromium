@@ -12,6 +12,7 @@ import {onboardingNetworkPageTest} from './onboarding_network_page_test.js';
 import {onboardingSelectComponentsPageTest} from './onboarding_select_components_page_test.js';
 import {onboardingUpdatePageTest} from './onboarding_update_page_test.js';
 import {onboardingWaitForManualWpDisablePageTest} from './onboarding_wait_for_manual_wp_disable_page_test.js';
+import {reimagingFirmwareUpdatePageTest} from './reimaging_firmware_update_page_test.js';
 import {shimlessRMAAppTest} from './shimless_rma_app_test.js';
 
 window.test_suites_list = [];
@@ -37,4 +38,5 @@ runSuite('OnboardingUpdatePageTest', onboardingUpdatePageTest);
 runSuite(
     'OnboardingWaitForManualWpDisablePageTest',
     onboardingWaitForManualWpDisablePageTest);
+runSuite('ReimagingFirmwareUpdatePageTest', reimagingFirmwareUpdatePageTest);
 runSuite('ShimlessRMAAppTest', shimlessRMAAppTest);

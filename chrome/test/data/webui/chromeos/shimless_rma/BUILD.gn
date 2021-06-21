@@ -15,6 +15,7 @@ js_type_check("closure_compile") {
     ":fake_shimless_rma_service_test",
     ":onboarding_select_components_page_test",
     ":onboarding_update_page_test",
+    ":reimaging_firmware_update_page_test",
     ":shimless_rma_app_test",
     ":shimless_rma_unified_test",
   ]
@@ -111,6 +112,14 @@ js_library("onboarding_wait_for_manual_wp_disable_page_test") {
   deps = [
     "../..:chai_assert",
     "//ash/content/shimless_rma/resources:onboarding_wait_for_manual_wp_disable_page",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("reimaging_firmware_update_page_test") {
+  deps = [
+    "../..:chai_assert",
+    "//ash/content/shimless_rma/resources:onboarding_update_page",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }

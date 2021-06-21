@@ -1,0 +1,35 @@
+<style include="cr-shared-style shimless-rma-shared">
+</style>
+
+<base-page>
+  <div slot="header">
+    <!-- TODO(gavindodd): Update text for i18n -->
+    <h1 hidden$="[[!reimageRequired_]]">Select an option for firmware reimaging</h1>
+    <h1 hidden$="[[reimageRequired_]]">This device doesn't require firmware reimaging.</h1>
+    <h1 hidden$="[[reimageRequired_]]">Would you like to reimage the firmware anyway?</h1>
+  </div>
+  <div slot="body">
+    <cr-radio-group
+        id="firmwareReimageOptions"
+        on-selected-changed="onFirmwareReimageSelectionChanged_">
+      <cr-radio-button
+          name="firmwareReimageDownload"
+          id="firmwareReimageDownload">
+        [[firmwareReimageDownloadMessage_(reimageRequired_)]]
+      </cr-radio-button>
+      <p>Requires internet access</p>
+      <cr-radio-button
+          name="firmwareReimageUsb"
+          id="firmwareReimageUsb">
+        [[firmwareReimageUsbMessage_(reimageRequired_)]]
+      </cr-radio-button>
+      <p>Requires a Thumbdrive configured for Chromebook Recovery</p>
+      <cr-radio-button
+          name="firmwareReimageSkip"
+          id="firmwareReimageSkip"
+          hidden$="[[reimageRequired_]]">
+        No, skip it for now.
+      </cr-radio-button>
+    </cr-radio-group>
+  </div>
+</base-page>
