@@ -176,9 +176,6 @@ class WizardController {
   // Advances to login/update screen. Should be used in for testing only.
   void SkipToLoginForTesting();
 
-  // Skip update, go straight to enrollment after EULA is accepted.
-  void SkipUpdateEnrollAfterEula();
-
   // Returns current DemoSetupController if demo setup flow is in progress or
   // nullptr otherwise.
   DemoSetupController* demo_setup_controller() const {
