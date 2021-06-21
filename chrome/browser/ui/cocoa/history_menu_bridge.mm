@@ -452,6 +452,17 @@ void HistoryMenuBridge::OnHistoryChanged() {
 }
 
 void HistoryMenuBridge::OnVisitedHistoryResults(history::QueryResults results) {
+  // It's possible for history_service_ to have been destroyed while our request
+  // was waiting to be returned to us, because both the initial request *and the
+  // delivery of the reply* from the service are async - i.e., this can happen:
+  // 1. We call HistoryService::QueryHistory()
+  // 2. That message loop runs, the query happens, the reply to us is posted
+  // 3. HistoryService is destroyed
+  // 4. The posted reply to us arrives
+  // To guard against that, check for history_service_ here.
+  if (!history_service_)
+    return;
+
   NSMenu* menu = HistoryMenu();
   ClearMenuSection(menu, kVisited);
   NSInteger top_item = [menu indexOfItemWithTag:kVisitedTitle] + 1;
