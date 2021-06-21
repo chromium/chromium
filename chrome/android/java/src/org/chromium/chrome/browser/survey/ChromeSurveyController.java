@@ -20,6 +20,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.infobar.InfoBarContainer;
@@ -76,7 +77,7 @@ public class ChromeSurveyController implements InfoBarAnimationListener {
             FilteringResult.FORCE_SURVEY_ON_COMMAND_PRESENT,
             FilteringResult.USER_ALREADY_SAMPLED_TODAY, FilteringResult.MAX_NUMBER_MISSING,
             FilteringResult.ROLLED_NON_ZERO_NUMBER, FilteringResult.USER_SELECTED_FOR_SURVEY,
-            FilteringResult.SURVEY_ALREADY_EXISTS})
+            FilteringResult.FIRST_TIME_USER})
     @Retention(RetentionPolicy.SOURCE)
     public @interface FilteringResult {
         int SURVEY_INFOBAR_ALREADY_DISPLAYED = 0;
@@ -85,9 +86,9 @@ public class ChromeSurveyController implements InfoBarAnimationListener {
         int MAX_NUMBER_MISSING = 4;
         int ROLLED_NON_ZERO_NUMBER = 5;
         int USER_SELECTED_FOR_SURVEY = 6;
-        int SURVEY_ALREADY_EXISTS = 7;
+        int FIRST_TIME_USER = 8;
         // Number of entries
-        int NUM_ENTRIES = 8;
+        int NUM_ENTRIES = 9;
     }
 
     /**
@@ -311,11 +312,21 @@ public class ChromeSurveyController implements InfoBarAnimationListener {
     }
 
     /**
-     * Rolls a random number to see if the user was eligible for the survey.
+     * Rolls a random number to see if the user was eligible for the survey. The user will skip the
+     * roll if:
+     *  1. User is a first time user
+     *  2. User as performed the roll today
+     *  3. Max number is not setup correctly
+     *
      * @return Whether the user is eligible (i.e. the random number rolled was 0).
      */
     @VisibleForTesting
     boolean isRandomlySelectedForSurvey() {
+        if (FirstRunStatus.isFirstRunTriggered()) {
+            recordSurveyFilteringResult(FilteringResult.FIRST_TIME_USER);
+            return false;
+        }
+
         SharedPreferencesManager preferences = SharedPreferencesManager.getInstance();
         int lastDate = preferences.readInt(ChromePreferenceKeys.SURVEY_DATE_LAST_ROLLED, -1);
         int today = getDayOfYear();
