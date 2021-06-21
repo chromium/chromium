@@ -342,7 +342,6 @@ class OverlayWindowViewsMediaSessionWebRTCTest : public OverlayWindowViewsTest {
  public:
   // OverlayWindowViewsTest:
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(media::kMediaSessionWebRTC);
     OverlayWindowViewsTest::SetUp();
   }
 
@@ -351,7 +350,9 @@ class OverlayWindowViewsMediaSessionWebRTCTest : public OverlayWindowViewsTest {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
+  // |feature_list_| needs to be initialized as early as possible to avoid data
+  // races with other threads checking if a feature is enabled.
+  base::test::ScopedFeatureList feature_list_{media::kMediaSessionWebRTC};
 };
 
 TEST_F(OverlayWindowViewsMediaSessionWebRTCTest,
