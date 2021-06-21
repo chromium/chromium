@@ -38,7 +38,7 @@
   }
 
   function cssUISourceCodeAdded(uiSourceCode) {
-    styleSheetId = cssModel.styleSheetIdsForURL(styleSheetURL)[0];
+    styleSheetId = cssModel.getStyleSheetIdsForURL(styleSheetURL)[0];
     TestRunner.addSniffer(Bindings.CSSWorkspaceBinding.ModelInfo.prototype, '_updateLocations', locationsUpdated, true);
     TestRunner.addResult('Added CSS uiSourceCode: ' + uiSourceCode.url());
     TestRunner.waitForUISourceCode(sourceURL).then(scssUISourceCodeAdded);

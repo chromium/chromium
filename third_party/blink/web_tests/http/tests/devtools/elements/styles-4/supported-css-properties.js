@@ -6,7 +6,7 @@
   TestRunner.addResult(`Test supported CSS properties.\n`);
   await TestRunner.showPanel('elements');
 
-  var marginLonghands = SDK.cssMetadata().longhands('margin');
+  var marginLonghands = SDK.cssMetadata().getLonghands('margin');
   marginLonghands.sort();
   TestRunner.addResult('Margin longhands: ' + marginLonghands.join(', '));
   TestRunner.completeTest();
