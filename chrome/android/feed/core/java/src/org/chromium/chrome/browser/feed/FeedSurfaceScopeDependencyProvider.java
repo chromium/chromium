@@ -141,7 +141,7 @@ class FeedSurfaceScopeDependencyProvider implements SurfaceScopeDependencyProvid
     public void reportVideoPlayEvent(boolean isMutedAutoplay, @VideoPlayEvent int event) {
         Log.i(TAG, "Feed video event %d", event);
         RecordHistogram.recordEnumeratedHistogram(
-                getVideoHistogramName(isMutedAutoplay, "sPlayEvent"), event,
+                getVideoHistogramName(isMutedAutoplay, "PlayEvent"), event,
                 VideoPlayEvent.NUM_ENTRIES);
     }
 
