@@ -275,6 +275,8 @@ export class TabSearchAppElement extends PolymerElement {
   }
 
   /**
+   * TODO(crbug.com/1222365): updatedTab should be added to the `openTabs_` if
+   * its tabId is not found in the existing list.
    * @param {!Tab} updatedTab
    * @private
    */

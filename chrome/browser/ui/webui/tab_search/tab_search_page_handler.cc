@@ -189,8 +189,14 @@ tab_search::mojom::ProfileDataPtr TabSearchPageHandler::CreateProfileData() {
     window->active = (browser == active_browser);
     window->height = browser->window()->GetContentsSize().height();
     for (int i = 0; i < tab_strip_model->count(); ++i) {
-      tab_search::mojom::TabPtr tab =
-          GetTab(tab_strip_model, tab_strip_model->GetWebContentsAt(i), i);
+      auto* web_contents = tab_strip_model->GetWebContentsAt(i);
+      // A Tab can potentially be in a state where it has no committed entries
+      // during loading and thus has no title/URL. Skip any such pending tabs.
+      // These tabs will be added to the list later on once loading has
+      // finished (crbug.com/1197526).
+      if (!web_contents->GetController().GetLastCommittedEntry())
+        continue;
+      tab_search::mojom::TabPtr tab = GetTab(tab_strip_model, web_contents, i);
       tab_urls.insert(tab->url);
       window->tabs.push_back(std::move(tab));
     }
