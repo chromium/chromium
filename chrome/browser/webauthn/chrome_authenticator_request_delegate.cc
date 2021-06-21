@@ -838,13 +838,18 @@ GetCablePairingsFromSyncedDevices(Profile* profile) {
     return g_observer->GetCablePairingsFromSyncedDevices();
   }
 
+  std::vector<std::unique_ptr<device::cablev2::Pairing>> ret;
+  syncer::DeviceInfoSyncService* const sync_service =
+      DeviceInfoSyncServiceFactory::GetForProfile(profile);
+  if (!sync_service) {
+    return ret;
+  }
+
   syncer::DeviceInfoTracker* const tracker =
-      DeviceInfoSyncServiceFactory::GetForProfile(profile)
-          ->GetDeviceInfoTracker();
+      sync_service->GetDeviceInfoTracker();
   std::vector<std::unique_ptr<syncer::DeviceInfo>> devices =
       tracker->GetAllDeviceInfo();
 
-  std::vector<std::unique_ptr<device::cablev2::Pairing>> ret;
   for (const auto& device : devices) {
     std::unique_ptr<device::cablev2::Pairing> pairing =
         PairingFromSyncedDevice(device.get());
