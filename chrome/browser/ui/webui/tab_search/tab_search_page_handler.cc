@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/base64.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -192,8 +191,6 @@ tab_search::mojom::ProfileDataPtr TabSearchPageHandler::CreateProfileData() {
     for (int i = 0; i < tab_strip_model->count(); ++i) {
       tab_search::mojom::TabPtr tab =
           GetTab(tab_strip_model, tab_strip_model->GetWebContentsAt(i), i);
-      if (tab->url.empty())
-        base::debug::DumpWithoutCrashing();
       tab_urls.insert(tab->url);
       window->tabs.push_back(std::move(tab));
     }
@@ -330,9 +327,6 @@ bool TabSearchPageHandler::AddRecentlyClosedTab(
 
   tab_search::mojom::RecentlyClosedTabPtr recently_closed_tab =
       GetRecentlyClosedTab(tab);
-
-  if (recently_closed_tab->url.empty())
-    base::debug::DumpWithoutCrashing();
 
   // New tab page entries may exist inside a window and should be
   // ignored.
