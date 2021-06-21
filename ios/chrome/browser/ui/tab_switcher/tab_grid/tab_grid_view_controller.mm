@@ -1279,12 +1279,13 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 - (void)configureViewControllerForCurrentSizeClassesAndPage {
   self.configuration = TabGridConfigurationFloatingButton;
-  if (self.traitCollection.verticalSizeClass ==
-          UIUserInterfaceSizeClassRegular &&
-      self.traitCollection.horizontalSizeClass ==
-          UIUserInterfaceSizeClassCompact) {
-    // The only bottom toolbar configuration is when the UI is narrow but
-    // vertically long.
+  if ((self.traitCollection.verticalSizeClass ==
+           UIUserInterfaceSizeClassRegular &&
+       self.traitCollection.horizontalSizeClass ==
+           UIUserInterfaceSizeClassCompact) ||
+      self.tabGridMode == TabGridModeSelection) {
+    // The bottom toolbar configuration is applied when the UI is narrow but
+    // vertically long or the selection mode is enabled.
     self.configuration = TabGridConfigurationBottomToolbar;
   }
   [self configureButtonsForActiveAndCurrentPage];

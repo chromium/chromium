@@ -51,7 +51,7 @@
 // Controls hit testing of the bottom toolbar. When the toolbar is transparent,
 // only respond to tapping on the new tab button.
 - (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent*)event {
-  if ([self shouldUseCompactLayout]) {
+  if ([self shouldShowFullBar]) {
     return [super pointInside:point withEvent:event];
   }
   // Only floating new tab button is tappable.
@@ -60,12 +60,13 @@
                                withEvent:event];
 }
 
-// Returns UIToolbar's intrinsicContentSize for compact layout, and CGSizeZero
-// for floating button layout.
+// Returns UIToolbar's intrinsicContentSize based on the orientation and the
+// mode.
 - (CGSize)intrinsicContentSize {
-  if ([self shouldUseCompactLayout]) {
+  if ([self shouldShowFullBar]) {
     return _toolbar.intrinsicContentSize;
   }
+  // Return CGSizeZero for floating button layout.
   return CGSizeZero;
 }
 
@@ -287,8 +288,6 @@
 - (void)updateLayout {
   _largeNewTabButtonBottomAnchor.constant =
       -kTabGridFloatingButtonVerticalInset;
-  UIBarButtonItem* leadingButton = _closeAllOrUndoButton;
-  UIBarButtonItem* trailingButton = _doneButton;
 
   if (self.mode == TabGridModeSelection) {
     [_toolbar setItems:@[
@@ -300,6 +299,9 @@
     [NSLayoutConstraint activateConstraints:_compactConstraints];
     return;
   }
+
+  UIBarButtonItem* leadingButton = _closeAllOrUndoButton;
+  UIBarButtonItem* trailingButton = _doneButton;
 
   if ([self shouldUseCompactLayout]) {
     // For incognito/regular pages, display all 3 buttons;
@@ -331,6 +333,12 @@
       [NSLayoutConstraint activateConstraints:_floatingConstraints];
     }
   }
+}
+
+// Returns YES if the full toolbar should be shown instead of the floating
+// button.
+- (BOOL)shouldShowFullBar {
+  return [self shouldUseCompactLayout] || self.mode == TabGridModeSelection;
 }
 
 // Returns YES if should use compact bottom toolbar layout.
