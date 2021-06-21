@@ -8,6 +8,7 @@
 #include "chromeos/assistant/internal/test_support/fake_assistant_manager.h"
 #include "chromeos/assistant/internal/test_support/fake_assistant_manager_internal.h"
 #include "chromeos/assistant/test_support/expect_utils.h"
+#include "chromeos/services/libassistant/test_support/fake_assistant_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -52,30 +53,37 @@ class AssistantManagerMock : public assistant::FakeAssistantManager {
 
 class ConversationControllerTest : public ::testing::Test {
  public:
-  ConversationControllerTest() = default;
+  ConversationControllerTest() {
+    auto fake_assistant_manager = std::make_unique<AssistantManagerMock>();
+    assistant_client_ = std::make_unique<FakeAssistantClient>(
+        std::move(fake_assistant_manager), &assistant_manager_internal_);
+  }
   ConversationControllerTest(const ConversationControllerTest&) = delete;
   ConversationControllerTest& operator=(const ConversationControllerTest&) =
       delete;
   ~ConversationControllerTest() override = default;
 
   void StartLibassistant() {
-    controller_.OnAssistantManagerRunning(&assistant_manager_,
-                                          &assistant_manager_internal_);
+    controller_.OnAssistantManagerRunning(assistant_client_.get());
   }
 
   ConversationController& controller() { return controller_; }
 
-  AssistantManagerMock& assistant_manager_mock() { return assistant_manager_; }
+  AssistantManagerMock& assistant_manager_mock() {
+    return *(reinterpret_cast<AssistantManagerMock*>(
+        assistant_client_->assistant_manager()));
+  }
 
   AssistantManagerInternalMock& assistant_manager_internal_mock() {
-    return assistant_manager_internal_;
+    return *(reinterpret_cast<AssistantManagerInternalMock*>(
+        assistant_client_->assistant_manager_internal()));
   }
 
  private:
   base::test::SingleThreadTaskEnvironment environment_;
   ConversationController controller_;
-  AssistantManagerMock assistant_manager_;
   AssistantManagerInternalMock assistant_manager_internal_;
+  std::unique_ptr<FakeAssistantClient> assistant_client_;
 };
 
 TEST_F(ConversationControllerTest, ShouldStartVoiceInteraction) {

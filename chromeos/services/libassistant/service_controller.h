@@ -9,6 +9,7 @@
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "chromeos/services/libassistant/assistant_manager_observer.h"
+#include "chromeos/services/libassistant/grpc/assistant_client.h"
 #include "chromeos/services/libassistant/public/mojom/service.mojom.h"
 #include "chromeos/services/libassistant/public/mojom/service_controller.mojom.h"
 #include "chromeos/services/libassistant/public/mojom/settings_controller.mojom-forward.h"
@@ -61,6 +62,8 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ServiceController
   bool IsRunning() const;
 
   // Will return nullptr if the service is stopped.
+  AssistantClient* assistant_client();
+  // Will return nullptr if the service is stopped.
   assistant_client::AssistantManager* assistant_manager();
   // Will return nullptr if the service is stopped.
   assistant_client::AssistantManagerInternal* assistant_manager_internal();
@@ -85,9 +88,7 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ServiceController
 
   LibassistantFactory& libassistant_factory_;
 
-  std::unique_ptr<assistant_client::AssistantManager> assistant_manager_;
-  assistant_client::AssistantManagerInternal* assistant_manager_internal_ =
-      nullptr;
+  std::unique_ptr<AssistantClient> assistant_client_;
   std::unique_ptr<ChromiumApiDelegate> chromium_api_delegate_;
   std::unique_ptr<DeviceStateListener> device_state_listener_;
 

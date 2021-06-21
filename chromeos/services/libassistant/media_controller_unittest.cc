@@ -9,6 +9,8 @@
 #include "chromeos/assistant/internal/test_support/fake_assistant_manager.h"
 #include "chromeos/assistant/internal/util_headers.h"
 #include "chromeos/services/libassistant/public/mojom/media_controller.mojom.h"
+#include "chromeos/services/libassistant/test_support/fake_assistant_client.h"
+#include "libassistant/shared/internal_api/assistant_manager_internal.h"
 #include "libassistant/shared/public/media_manager.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -114,12 +116,18 @@ class AssistantMediaControllerTest : public testing::Test {
       : media_controller_(std::make_unique<MediaController>()) {
     media_controller_->Bind(client_.BindNewPipeAndPassReceiver(),
                             delegate_.BindNewPipeAndPassRemote());
+    auto fake_assistant_manager =
+        std::make_unique<assistant::FakeAssistantManager>();
+    auto* fake_assistant_manager_internal =
+        &(fake_assistant_manager->assistant_manager_internal());
+
+    assistant_client_ = std::make_unique<FakeAssistantClient>(
+        std::move(fake_assistant_manager), fake_assistant_manager_internal);
   }
 
   void SetUp() override {
-    assistant_manager_.SetMediaManager(&media_manager_);
-    media_controller_->OnAssistantManagerRunning(
-        &assistant_manager_, &assistant_manager_.assistant_manager_internal());
+    assistant_client_->assistant_manager()->SetMediaManager(&media_manager_);
+    media_controller_->OnAssistantManagerRunning(assistant_client_.get());
   }
 
   mojo::Remote<mojom::MediaController>& client() { return client_; }
@@ -135,8 +143,8 @@ class AssistantMediaControllerTest : public testing::Test {
 
   void CallFallbackMediaHandler(const std::string& action,
                                 const std::string& action_proto) {
-    auto handler =
-        assistant_manager_.assistant_manager_internal().media_action_fallback();
+    auto handler = assistant_client_->assistant_manager_internal()
+                       ->media_action_fallback();
     handler(action, action_proto);
   }
 
@@ -146,15 +154,14 @@ class AssistantMediaControllerTest : public testing::Test {
   }
 
   void RemoveAssistantManager() {
-    media_controller_->OnDestroyingAssistantManager(
-        &assistant_manager_, &assistant_manager_.assistant_manager_internal());
+    media_controller_->OnDestroyingAssistantManager(assistant_client_.get());
   }
 
  private:
   base::test::SingleThreadTaskEnvironment environment_;
 
   MediaManagerMock media_manager_;
-  assistant::FakeAssistantManager assistant_manager_;
+  std::unique_ptr<FakeAssistantClient> assistant_client_;
   mojo::Remote<mojom::MediaController> client_;
   testing::StrictMock<MediaDelegateMock> delegate_;
   std::unique_ptr<MediaController> media_controller_;

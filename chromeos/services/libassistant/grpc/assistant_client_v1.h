@@ -1,0 +1,28 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROMEOS_SERVICES_LIBASSISTANT_GRPC_ASSISTANT_CLIENT_V1_H_
+#define CHROMEOS_SERVICES_LIBASSISTANT_GRPC_ASSISTANT_CLIENT_V1_H_
+
+#include "chromeos/services/libassistant/grpc/assistant_client.h"
+
+namespace chromeos {
+namespace libassistant {
+
+class AssistantClientV1 : public AssistantClient {
+ public:
+  AssistantClientV1(
+      std::unique_ptr<assistant_client::AssistantManager> assistant_manager,
+      assistant_client::AssistantManagerInternal* assistant_manager_internal);
+  ~AssistantClientV1() override;
+
+  // chromeos::libassistant::AssistantClient:
+  bool StartGrpcServices() override;
+  void AddExperimentIds(const std::vector<std::string>& exp_ids) override;
+};
+
+}  // namespace libassistant
+}  // namespace chromeos
+
+#endif  // CHROMEOS_SERVICES_LIBASSISTANT_GRPC_ASSISTANT_CLIENT_V1_H_

@@ -35,14 +35,8 @@ class MediaController : public mojom::MediaController,
   void SetExternalPlaybackState(mojom::MediaStatePtr state) override;
 
   // AssistantManagerObserver implementation:
-  void OnAssistantManagerRunning(
-      assistant_client::AssistantManager* assistant_manager,
-      assistant_client::AssistantManagerInternal* assistant_manager_internal)
-      override;
-  void OnDestroyingAssistantManager(
-      assistant_client::AssistantManager* assistant_manager,
-      assistant_client::AssistantManagerInternal* assistant_manager_internal)
-      override;
+  void OnAssistantManagerRunning(AssistantClient* assistant_client) override;
+  void OnDestroyingAssistantManager(AssistantClient* assistant_client) override;
   void OnAssistantManagerDestroyed() override;
 
  private:

@@ -14,6 +14,11 @@
 #include "chromeos/services/libassistant/public/mojom/settings_controller.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
+namespace assistant_client {
+class AssistantManager;
+class AssistantManagerInternal;
+}  // namespace assistant_client
+
 namespace chromeos {
 namespace libassistant {
 
@@ -40,18 +45,9 @@ class SettingsController : public AssistantManagerObserver,
                       UpdateSettingsCallback callback) override;
 
   // AssistantManagerObserver:
-  void OnAssistantManagerCreated(
-      assistant_client::AssistantManager* assistant_manager,
-      assistant_client::AssistantManagerInternal* assistant_manager_internal)
-      override;
-  void OnAssistantManagerStarted(
-      assistant_client::AssistantManager* assistant_manager,
-      assistant_client::AssistantManagerInternal* assistant_manager_internal)
-      override;
-  void OnDestroyingAssistantManager(
-      assistant_client::AssistantManager* assistant_manager,
-      assistant_client::AssistantManagerInternal* assistant_manager_internal)
-      override;
+  void OnAssistantManagerCreated(AssistantClient* assistant_client) override;
+  void OnAssistantManagerStarted(AssistantClient* assistant_client) override;
+  void OnDestroyingAssistantManager(AssistantClient* assistant_client) override;
 
  private:
   class DeviceSettingsUpdater;

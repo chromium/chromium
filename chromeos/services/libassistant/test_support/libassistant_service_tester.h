@@ -24,6 +24,7 @@
 namespace chromeos {
 namespace libassistant {
 
+class AssistantClient;
 class FakeLibassistantFactory;
 
 // Helper class that makes it easier to test |LibassistantService|.
@@ -40,6 +41,7 @@ class LibassistantServiceTester {
 
   LibassistantService& service() { return *service_; }
 
+  AssistantClient& assistant_client();
   assistant::FakeAssistantManager& assistant_manager();
   assistant::FakeAssistantManagerInternal& assistant_manager_internal();
 

@@ -70,9 +70,9 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) LibassistantService
     return conversation_controller_;
   }
 
- private:
   ServiceController& service_controller() { return service_controller_; }
 
+ private:
   mojo::Receiver<mojom::LibassistantService> receiver_;
   mojo::Remote<mojom::PlatformDelegate> platform_delegate_;
 

@@ -80,26 +80,18 @@ class AssistantManagerObserverMock : public AssistantManagerObserver {
   ~AssistantManagerObserverMock() override = default;
 
   // AssistantManagerObserver implementation:
-  MOCK_METHOD(
-      void,
-      OnAssistantManagerCreated,
-      (assistant_client::AssistantManager * assistant_manager,
-       assistant_client::AssistantManagerInternal* assistant_manager_internal));
-  MOCK_METHOD(
-      void,
-      OnAssistantManagerStarted,
-      (assistant_client::AssistantManager * assistant_manager,
-       assistant_client::AssistantManagerInternal* assistant_manager_internal));
-  MOCK_METHOD(
-      void,
-      OnAssistantManagerRunning,
-      (assistant_client::AssistantManager * assistant_manager,
-       assistant_client::AssistantManagerInternal* assistant_manager_internal));
-  MOCK_METHOD(
-      void,
-      OnDestroyingAssistantManager,
-      (assistant_client::AssistantManager * assistant_manager,
-       assistant_client::AssistantManagerInternal* assistant_manager_internal));
+  MOCK_METHOD(void,
+              OnAssistantManagerCreated,
+              (AssistantClient * assistant_client));
+  MOCK_METHOD(void,
+              OnAssistantManagerStarted,
+              (AssistantClient * assistant_client));
+  MOCK_METHOD(void,
+              OnAssistantManagerRunning,
+              (AssistantClient * assistant_client));
+  MOCK_METHOD(void,
+              OnDestroyingAssistantManager,
+              (AssistantClient * assistant_client));
   MOCK_METHOD(void, OnAssistantManagerDestroyed, ());
 };
 
@@ -440,13 +432,9 @@ TEST_F(AssistantServiceControllerTest,
   AddAndFireAssistantManagerObserver(&observer);
 
   EXPECT_CALL(observer, OnAssistantManagerCreated)
-      .WillOnce([&controller = service_controller()](
-                    assistant_client::AssistantManager* assistant_manager,
-                    assistant_client::AssistantManagerInternal*
-                        assistant_manager_internal) {
-        EXPECT_EQ(assistant_manager, controller.assistant_manager());
-        EXPECT_EQ(assistant_manager_internal,
-                  controller.assistant_manager_internal());
+      .WillOnce([&controller =
+                     service_controller()](AssistantClient* assistant_client) {
+        EXPECT_EQ(assistant_client, controller.assistant_client());
       });
 
   Initialize();
@@ -461,13 +449,9 @@ TEST_F(AssistantServiceControllerTest,
   StrictMock<AssistantManagerObserverMock> observer;
 
   EXPECT_CALL(observer, OnAssistantManagerCreated)
-      .WillOnce([&controller = service_controller()](
-                    assistant_client::AssistantManager* assistant_manager,
-                    assistant_client::AssistantManagerInternal*
-                        assistant_manager_internal) {
-        EXPECT_EQ(assistant_manager, controller.assistant_manager());
-        EXPECT_EQ(assistant_manager_internal,
-                  controller.assistant_manager_internal());
+      .WillOnce([&controller =
+                     service_controller()](AssistantClient* assistant_client) {
+        EXPECT_EQ(assistant_client, controller.assistant_client());
       });
 
   AddAndFireAssistantManagerObserver(&observer);
@@ -484,13 +468,9 @@ TEST_F(AssistantServiceControllerTest,
   Initialize();
 
   EXPECT_CALL(observer, OnAssistantManagerStarted)
-      .WillOnce([&controller = service_controller()](
-                    assistant_client::AssistantManager* assistant_manager,
-                    assistant_client::AssistantManagerInternal*
-                        assistant_manager_internal) {
-        EXPECT_EQ(assistant_manager, controller.assistant_manager());
-        EXPECT_EQ(assistant_manager_internal,
-                  controller.assistant_manager_internal());
+      .WillOnce([&controller =
+                     service_controller()](AssistantClient* assistant_client) {
+        EXPECT_EQ(assistant_client, controller.assistant_client());
       });
 
   Start();
@@ -506,23 +486,15 @@ TEST_F(AssistantServiceControllerTest,
   StrictMock<AssistantManagerObserverMock> observer;
 
   EXPECT_CALL(observer, OnAssistantManagerCreated)
-      .WillOnce([&controller = service_controller()](
-                    assistant_client::AssistantManager* assistant_manager,
-                    assistant_client::AssistantManagerInternal*
-                        assistant_manager_internal) {
-        EXPECT_EQ(assistant_manager, controller.assistant_manager());
-        EXPECT_EQ(assistant_manager_internal,
-                  controller.assistant_manager_internal());
+      .WillOnce([&controller =
+                     service_controller()](AssistantClient* assistant_client) {
+        EXPECT_EQ(assistant_client, controller.assistant_client());
       });
 
   EXPECT_CALL(observer, OnAssistantManagerStarted)
-      .WillOnce([&controller = service_controller()](
-                    assistant_client::AssistantManager* assistant_manager,
-                    assistant_client::AssistantManagerInternal*
-                        assistant_manager_internal) {
-        EXPECT_EQ(assistant_manager, controller.assistant_manager());
-        EXPECT_EQ(assistant_manager_internal,
-                  controller.assistant_manager_internal());
+      .WillOnce([&controller =
+                     service_controller()](AssistantClient* assistant_client) {
+        EXPECT_EQ(assistant_client, controller.assistant_client());
       });
 
   AddAndFireAssistantManagerObserver(&observer);
@@ -541,13 +513,9 @@ TEST_F(AssistantServiceControllerTest,
   Start();
 
   EXPECT_CALL(observer, OnAssistantManagerRunning)
-      .WillOnce([&controller = service_controller()](
-                    assistant_client::AssistantManager* assistant_manager,
-                    assistant_client::AssistantManagerInternal*
-                        assistant_manager_internal) {
-        EXPECT_EQ(assistant_manager, controller.assistant_manager());
-        EXPECT_EQ(assistant_manager_internal,
-                  controller.assistant_manager_internal());
+      .WillOnce([&controller =
+                     service_controller()](AssistantClient* assistant_client) {
+        EXPECT_EQ(assistant_client, controller.assistant_client());
       });
 
   SendOnStartFinished();
@@ -564,33 +532,21 @@ TEST_F(AssistantServiceControllerTest,
   StrictMock<AssistantManagerObserverMock> observer;
 
   EXPECT_CALL(observer, OnAssistantManagerCreated)
-      .WillOnce([&controller = service_controller()](
-                    assistant_client::AssistantManager* assistant_manager,
-                    assistant_client::AssistantManagerInternal*
-                        assistant_manager_internal) {
-        EXPECT_EQ(assistant_manager, controller.assistant_manager());
-        EXPECT_EQ(assistant_manager_internal,
-                  controller.assistant_manager_internal());
+      .WillOnce([&controller =
+                     service_controller()](AssistantClient* assistant_client) {
+        EXPECT_EQ(assistant_client, controller.assistant_client());
       });
 
   EXPECT_CALL(observer, OnAssistantManagerStarted)
-      .WillOnce([&controller = service_controller()](
-                    assistant_client::AssistantManager* assistant_manager,
-                    assistant_client::AssistantManagerInternal*
-                        assistant_manager_internal) {
-        EXPECT_EQ(assistant_manager, controller.assistant_manager());
-        EXPECT_EQ(assistant_manager_internal,
-                  controller.assistant_manager_internal());
+      .WillOnce([&controller =
+                     service_controller()](AssistantClient* assistant_client) {
+        EXPECT_EQ(assistant_client, controller.assistant_client());
       });
 
   EXPECT_CALL(observer, OnAssistantManagerRunning)
-      .WillOnce([&controller = service_controller()](
-                    assistant_client::AssistantManager* assistant_manager,
-                    assistant_client::AssistantManagerInternal*
-                        assistant_manager_internal) {
-        EXPECT_EQ(assistant_manager, controller.assistant_manager());
-        EXPECT_EQ(assistant_manager_internal,
-                  controller.assistant_manager_internal());
+      .WillOnce([&controller =
+                     service_controller()](AssistantClient* assistant_client) {
+        EXPECT_EQ(assistant_client, controller.assistant_client());
       });
 
   AddAndFireAssistantManagerObserver(&observer);
@@ -607,18 +563,10 @@ TEST_F(AssistantServiceControllerTest,
   Initialize();
   Start();
 
-  const auto* expected_assistant_manager =
-      service_controller().assistant_manager();
-  const auto* expected_assistant_manager_internal =
-      service_controller().assistant_manager_internal();
-
   EXPECT_CALL(observer, OnDestroyingAssistantManager)
-      .WillOnce([&](assistant_client::AssistantManager* assistant_manager,
-                    assistant_client::AssistantManagerInternal*
-                        assistant_manager_internal) {
-        EXPECT_EQ(assistant_manager, expected_assistant_manager);
-        EXPECT_EQ(assistant_manager_internal,
-                  expected_assistant_manager_internal);
+      .WillOnce([&controller =
+                     service_controller()](AssistantClient* assistant_client) {
+        EXPECT_EQ(assistant_client, controller.assistant_client());
       });
   EXPECT_CALL(observer, OnAssistantManagerDestroyed);
 

@@ -12,6 +12,10 @@
 #include "chromeos/services/libassistant/public/mojom/speaker_id_enrollment_controller.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
+namespace assistant_client {
+class AssistantManagerInternal;
+}  // namespace assistant_client
+
 namespace chromeos {
 namespace libassistant {
 
@@ -40,14 +44,8 @@ class SpeakerIdEnrollmentController
       GetSpeakerIdEnrollmentStatusCallback callback) override;
 
   // AssistantManagerObserver implementation:
-  void OnAssistantManagerStarted(
-      assistant_client::AssistantManager* assistant_manager,
-      assistant_client::AssistantManagerInternal* assistant_manager_internal)
-      override;
-  void OnDestroyingAssistantManager(
-      assistant_client::AssistantManager* assistant_manager,
-      assistant_client::AssistantManagerInternal* assistant_manager_internal)
-      override;
+  void OnAssistantManagerStarted(AssistantClient* assistant_client) override;
+  void OnDestroyingAssistantManager(AssistantClient* assistant_client) override;
 
  private:
   class EnrollmentSession;

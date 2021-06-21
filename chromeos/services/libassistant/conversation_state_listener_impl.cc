@@ -5,6 +5,7 @@
 #include "chromeos/services/libassistant/conversation_state_listener_impl.h"
 #include "chromeos/services/assistant/public/cpp/assistant_enums.h"
 #include "chromeos/services/libassistant/audio_input_controller.h"
+#include "chromeos/services/libassistant/grpc/assistant_client.h"
 #include "chromeos/services/libassistant/public/mojom/conversation_observer.mojom.h"
 #include "chromeos/services/libassistant/public/mojom/speech_recognition_observer.mojom.h"
 #include "libassistant/shared/public/assistant_manager.h"
@@ -42,9 +43,8 @@ ConversationStateListenerImpl::ConversationStateListenerImpl(
 ConversationStateListenerImpl::~ConversationStateListenerImpl() = default;
 
 void ConversationStateListenerImpl::OnAssistantManagerCreated(
-    assistant_client::AssistantManager* assistant_manager,
-    assistant_client::AssistantManagerInternal* assistant_manager_internal) {
-  assistant_manager->AddConversationStateListener(this);
+    AssistantClient* assistant_client) {
+  assistant_client->assistant_manager()->AddConversationStateListener(this);
 }
 
 void ConversationStateListenerImpl::OnRecognitionStateChanged(

@@ -19,6 +19,11 @@ source_set("grpc_client") {
     "//base",
     "//third_party/protobuf:protobuf_lite",
   ]
+
+  # Make grpc_config as all dependent to avoid adding public deps
+  # for any top-level targets that are not immediate dependents and
+  # indirectly includes headers from grpc through grpc_libassistant_client header.
+  all_dependent_configs = [ "//third_party/grpc:grpc_config" ]
 }
 
 source_set("libassistant_client") {
@@ -50,14 +55,20 @@ source_set("grpc_util") {
 
 source_set("assistant_client") {
   sources = [
+    "assistant_client.cc",
     "assistant_client.h",
     "assistant_client_impl.cc",
     "assistant_client_impl.h",
+    "assistant_client_v1.cc",
+    "assistant_client_v1.h",
   ]
 
   deps = [
     ":libassistant_client",
     "//base",
+    "//chromeos/services/assistant/public/cpp",
     "//chromeos/services/libassistant/grpc/external_services:grpc_services_initializer",
+    "//libassistant/shared/internal_api:assistant_manager_internal",
+    "//libassistant/shared/public",
   ]
 }

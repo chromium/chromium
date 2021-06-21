@@ -13,6 +13,7 @@
 #include "chromeos/services/assistant/public/proto/assistant_device_settings_ui.pb.h"
 #include "chromeos/services/assistant/public/proto/settings_ui.pb.h"
 #include "chromeos/services/libassistant/callback_utils.h"
+#include "chromeos/services/libassistant/grpc/assistant_client.h"
 #include "libassistant/shared/internal_api/assistant_manager_internal.h"
 #include "libassistant/shared/public/assistant_manager.h"
 #include "third_party/icu/source/common/unicode/locid.h"
@@ -310,10 +311,9 @@ void SettingsController::UpdateDeviceSettings(
 }
 
 void SettingsController::OnAssistantManagerCreated(
-    assistant_client::AssistantManager* assistant_manager,
-    assistant_client::AssistantManagerInternal* assistant_manager_internal) {
-  assistant_manager_ = assistant_manager;
-  assistant_manager_internal_ = assistant_manager_internal;
+    AssistantClient* assistant_client) {
+  assistant_manager_ = assistant_client->assistant_manager();
+  assistant_manager_internal_ = assistant_client->assistant_manager_internal();
 
   // Note we do not enable the device settings updater here, as it requires
   // Libassistant to be started.
@@ -323,17 +323,15 @@ void SettingsController::OnAssistantManagerCreated(
 }
 
 void SettingsController::OnAssistantManagerStarted(
-    assistant_client::AssistantManager* assistant_manager,
-    assistant_client::AssistantManagerInternal* assistant_manager_internal) {
-  device_settings_updater_ =
-      std::make_unique<DeviceSettingsUpdater>(this, assistant_manager);
+    AssistantClient* assistant_client) {
+  device_settings_updater_ = std::make_unique<DeviceSettingsUpdater>(
+      this, assistant_client->assistant_manager());
 
   UpdateDeviceSettings(locale_, hotword_enabled_);
 }
 
 void SettingsController::OnDestroyingAssistantManager(
-    assistant_client::AssistantManager* assistant_manager,
-    assistant_client::AssistantManagerInternal* assistant_manager_internal) {
+    AssistantClient* assistant_client) {
   assistant_manager_ = nullptr;
   assistant_manager_internal_ = nullptr;
   device_settings_updater_ = nullptr;

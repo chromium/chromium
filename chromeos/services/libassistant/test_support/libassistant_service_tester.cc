@@ -6,6 +6,7 @@
 
 #include "base/base_paths.h"
 #include "chromeos/services/libassistant/public/mojom/notification_delegate.mojom-forward.h"
+#include "chromeos/services/libassistant/service_controller.h"
 #include "chromeos/services/libassistant/test_support/fake_libassistant_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 
@@ -36,6 +37,10 @@ LibassistantServiceTester::LibassistantServiceTester()
 }
 
 LibassistantServiceTester::~LibassistantServiceTester() = default;
+
+AssistantClient& LibassistantServiceTester::assistant_client() {
+  return *(service_->service_controller().assistant_client());
+}
 
 assistant::FakeAssistantManager&
 LibassistantServiceTester::assistant_manager() {

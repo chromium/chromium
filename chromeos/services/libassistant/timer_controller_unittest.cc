@@ -11,6 +11,7 @@
 #include "chromeos/assistant/internal/test_support/fake_assistant_manager.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "chromeos/services/libassistant/public/mojom/timer_controller.mojom-forward.h"
+#include "chromeos/services/libassistant/test_support/fake_assistant_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -80,24 +81,30 @@ class AssistantTimerControllerTest : public ::testing::Test {
   void SetUp() override {
     controller_.Bind(client_.BindNewPipeAndPassReceiver(),
                      delegate_.BindNewPipeAndPassRemote());
-    assistant_manager_ = std::make_unique<assistant::FakeAssistantManager>();
+    Init();
+  }
+
+  void Init() {
+    auto assistant_manager =
+        std::make_unique<assistant::FakeAssistantManager>();
+    auto* assistant_manager_internal =
+        &assistant_manager->assistant_manager_internal();
+    assistant_client_ = std::make_unique<FakeAssistantClient>(
+        std::move(assistant_manager), assistant_manager_internal);
   }
 
   void StartLibassistant() {
-    if (!assistant_manager_)
-      assistant_manager_ = std::make_unique<assistant::FakeAssistantManager>();
-    controller_.OnAssistantManagerRunning(
-        assistant_manager_.get(),
-        &assistant_manager_->assistant_manager_internal());
+    if (!assistant_client_) {
+      Init();
+    }
+    controller_.OnAssistantManagerRunning(assistant_client_.get());
   }
 
   void StopLibassistant() {
-    controller_.OnDestroyingAssistantManager(
-        assistant_manager_.get(),
-        &assistant_manager_->assistant_manager_internal());
+    controller_.OnDestroyingAssistantManager(assistant_client_.get());
 
     // Delete the assistant manager so we crash on use-after-free.
-    assistant_manager_.reset();
+    assistant_client_.reset();
   }
 
   TimerDelegateMock& delegate() { return delegate_; }
@@ -106,13 +113,13 @@ class AssistantTimerControllerTest : public ::testing::Test {
 
   assistant::FakeAlarmTimerManager& fake_alarm_timer_manager() {
     return *static_cast<assistant::FakeAlarmTimerManager*>(
-        assistant_manager_->assistant_manager_internal()
-            .GetAlarmTimerManager());
+        assistant_client_->assistant_manager_internal()
+            ->GetAlarmTimerManager());
   }
 
  private:
   base::test::SingleThreadTaskEnvironment environment_;
-  std::unique_ptr<assistant::FakeAssistantManager> assistant_manager_;
+  std::unique_ptr<FakeAssistantClient> assistant_client_;
   mojo::Remote<mojom::TimerController> client_;
   testing::StrictMock<TimerDelegateMock> delegate_;
   TimerController controller_;

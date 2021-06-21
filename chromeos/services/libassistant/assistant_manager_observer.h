@@ -8,13 +8,10 @@
 #include "base/component_export.h"
 #include "base/observer_list_types.h"
 
-namespace assistant_client {
-class AssistantManager;
-class AssistantManagerInternal;
-}  // namespace assistant_client
-
 namespace chromeos {
 namespace libassistant {
+
+class AssistantClient;
 
 // Observer informed when the |AssistantManager| is created or destroyed.
 // This is used internally in our mojom service implementation, to allow our
@@ -28,33 +25,26 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) AssistantManagerObserver
   // been created, but not started yet.
   // The pointers are guaranteed to remain valid until after
   // OnDestroyingAssistantManager() is called.
-  virtual void OnAssistantManagerCreated(
-      assistant_client::AssistantManager* assistant_manager,
-      assistant_client::AssistantManagerInternal* assistant_manager_internal) {}
+  virtual void OnAssistantManagerCreated(AssistantClient* assistant_client) {}
 
   // Called when Start() has been called on the |AssistantManager|.
   // The pointers are guaranteed to remain valid until after
   // OnDestroyingAssistantManager() is called.
-  virtual void OnAssistantManagerStarted(
-      assistant_client::AssistantManager* assistant_manager,
-      assistant_client::AssistantManagerInternal* assistant_manager_internal) {}
+  virtual void OnAssistantManagerStarted(AssistantClient* assistant_client) {}
 
   // Called when |AssistantManager| has finished its start logic and is ready
   // to handle queries.
   // The pointers are guaranteed to remain valid until after
   // OnDestroyingAssistantManager() is called.
-  virtual void OnAssistantManagerRunning(
-      assistant_client::AssistantManager* assistant_manager,
-      assistant_client::AssistantManagerInternal* assistant_manager_internal) {}
+  virtual void OnAssistantManagerRunning(AssistantClient* assistant_client) {}
 
   // Called just before the |AssistantManager| and |AssistantManagerInternal|
   // will be destroyed. They should not be used anymore after this has been
   // called. The pointers passed in are guaranteed to be the same as passed to
   // the last call to OnAssistantManagerCreated() (and are just passed in again
   // for the implementer's convenience).
-  virtual void OnDestroyingAssistantManager(
-      assistant_client::AssistantManager* assistant_manager,
-      assistant_client::AssistantManagerInternal* assistant_manager_internal) {}
+  virtual void OnDestroyingAssistantManager(AssistantClient* assistant_client) {
+  }
 
   // Called when the |AssistantManager| and |AssistantManagerInternal| have
   // been destroyed.

@@ -8,6 +8,7 @@
 #include "base/test/task_environment.h"
 #include "chromeos/assistant/internal/test_support/fake_assistant_manager.h"
 #include "chromeos/assistant/internal/test_support/fake_assistant_manager_internal.h"
+#include "chromeos/services/libassistant/test_support/fake_assistant_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/icu/source/common/unicode/locid.h"
@@ -67,11 +68,8 @@ class AssistantManagerMock : public assistant::FakeAssistantManager {
 
 class AssistantSettingsControllerTest : public testing::Test {
  public:
-  AssistantSettingsControllerTest()
-      : assistant_manager_(std::make_unique<AssistantManagerMock>()),
-        assistant_manager_internal_(
-            std::make_unique<
-                testing::StrictMock<AssistantManagerInternalMock>>()) {}
+  AssistantSettingsControllerTest() { Init(); }
+
   AssistantSettingsControllerTest(const AssistantSettingsControllerTest&) =
       delete;
   AssistantSettingsControllerTest& operator=(
@@ -81,25 +79,17 @@ class AssistantSettingsControllerTest : public testing::Test {
   SettingsController& controller() { return controller_; }
 
   void CreateLibassistant() {
-    controller().OnAssistantManagerCreated(assistant_manager_.get(),
-                                           assistant_manager_internal_.get());
+    controller().OnAssistantManagerCreated(assistant_client_.get());
   }
 
   void StartLibassistant() {
-    controller().OnAssistantManagerStarted(assistant_manager_.get(),
-                                           assistant_manager_internal_.get());
+    controller().OnAssistantManagerStarted(assistant_client_.get());
   }
 
   void DestroyLibassistant() {
-    controller().OnDestroyingAssistantManager(
-        assistant_manager_.get(), assistant_manager_internal_.get());
+    controller().OnDestroyingAssistantManager(assistant_client_.get());
 
-    assistant_manager_ = nullptr;
-    assistant_manager_internal_ = nullptr;
-
-    assistant_manager_ = std::make_unique<AssistantManagerMock>();
-    assistant_manager_internal_ =
-        std::make_unique<testing::StrictMock<AssistantManagerInternalMock>>();
+    Init();
   }
 
   void CreateAndStartLibassistant() {
@@ -107,18 +97,32 @@ class AssistantSettingsControllerTest : public testing::Test {
     StartLibassistant();
   }
 
+  void Init() {
+    assistant_client_ = nullptr;
+    assistant_manager_internal_ = nullptr;
+
+    auto assistant_manager = std::make_unique<AssistantManagerMock>();
+    assistant_manager_internal_ =
+        std::make_unique<testing::StrictMock<AssistantManagerInternalMock>>();
+    assistant_client_ = std::make_unique<FakeAssistantClient>(
+        std::move(assistant_manager), assistant_manager_internal_.get());
+  }
+
   AssistantManagerInternalMock& assistant_manager_internal_mock() {
     return *assistant_manager_internal_;
   }
 
-  AssistantManagerMock& assistant_manager_mock() { return *assistant_manager_; }
+  AssistantManagerMock& assistant_manager_mock() {
+    return *reinterpret_cast<AssistantManagerMock*>(
+        assistant_client_->assistant_manager());
+  }
 
  private:
   base::test::SingleThreadTaskEnvironment environment_;
 
   SettingsController controller_;
-  std::unique_ptr<AssistantManagerMock> assistant_manager_;
   std::unique_ptr<AssistantManagerInternalMock> assistant_manager_internal_;
+  std::unique_ptr<FakeAssistantClient> assistant_client_;
 };
 
 TEST_F(AssistantSettingsControllerTest,

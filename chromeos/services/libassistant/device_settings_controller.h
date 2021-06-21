@@ -27,6 +27,10 @@ class GetDeviceSettingsArgs;
 }  // namespace api
 }  // namespace assistant
 
+namespace assistant_client {
+class AssistantManagerInternal;
+}  // namespace assistant_client
+
 namespace chromeos {
 namespace assistant {
 struct DeviceSetting;
@@ -58,14 +62,8 @@ class DeviceSettingsController
       override;
 
   // AssistantManagerObserver implementation:
-  void OnAssistantManagerCreated(
-      assistant_client::AssistantManager* assistant_manager,
-      assistant_client::AssistantManagerInternal* assistant_manager_internal)
-      override;
-  void OnDestroyingAssistantManager(
-      assistant_client::AssistantManager* assistant_manager,
-      assistant_client::AssistantManagerInternal* assistant_manager_internal)
-      override;
+  void OnAssistantManagerCreated(AssistantClient* assistant_client) override;
+  void OnDestroyingAssistantManager(AssistantClient* assistant_client) override;
 
   // Returns which of the given device settings are supported or not.
   std::vector<chromeos::assistant::DeviceSetting> GetSupportedDeviceSettings(

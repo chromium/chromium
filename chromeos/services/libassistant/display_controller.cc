@@ -10,6 +10,7 @@
 #include "chromeos/assistant/internal/internal_util.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "chromeos/services/libassistant/display_connection_impl.h"
+#include "chromeos/services/libassistant/grpc/assistant_client.h"
 #include "chromeos/services/libassistant/public/mojom/speech_recognition_observer.mojom.h"
 #include "chromeos/services/libassistant/util.h"
 #include "libassistant/shared/internal_api/assistant_manager_internal.h"
@@ -92,17 +93,13 @@ void DisplayController::SetAndroidAppList(
 }
 
 void DisplayController::OnAssistantManagerCreated(
-    assistant_client::AssistantManager* assistant_manager,
-    assistant_client::AssistantManagerInternal* assistant_manager_internal) {
-  DCHECK(assistant_manager_internal);
-  assistant_manager_internal->SetDisplayConnection(display_connection_.get());
-
-  assistant_manager_internal_ = assistant_manager_internal;
+    AssistantClient* assistant_client) {
+  assistant_manager_internal_ = assistant_client->assistant_manager_internal();
+  assistant_manager_internal_->SetDisplayConnection(display_connection_.get());
 }
 
 void DisplayController::OnDestroyingAssistantManager(
-    assistant_client::AssistantManager* assistant_manager,
-    assistant_client::AssistantManagerInternal* assistant_manager_internal) {
+    AssistantClient* assistant_client) {
   assistant_manager_internal_ = nullptr;
 }
 

@@ -22,6 +22,11 @@
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace assistant_client {
+class AssistantManager;
+class AssistantManagerInternal;
+}  // namespace assistant_client
+
 namespace chromeos {
 namespace assistant {
 namespace action {
@@ -57,18 +62,9 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ConversationController
           chromeos::libassistant::mojom::AuthenticationStateObserver> observer);
 
   // AssistantManagerObserver:
-  void OnAssistantManagerCreated(
-      assistant_client::AssistantManager* assistant_manager,
-      assistant_client::AssistantManagerInternal* assistant_manager_internal)
-      override;
-  void OnAssistantManagerRunning(
-      assistant_client::AssistantManager* assistant_manager,
-      assistant_client::AssistantManagerInternal* assistant_manager_internal)
-      override;
-  void OnDestroyingAssistantManager(
-      assistant_client::AssistantManager* assistant_manager,
-      assistant_client::AssistantManagerInternal* assistant_manager_internal)
-      override;
+  void OnAssistantManagerCreated(AssistantClient* assistant_client) override;
+  void OnAssistantManagerRunning(AssistantClient* assistant_client) override;
+  void OnDestroyingAssistantManager(AssistantClient* assistant_client) override;
 
   // mojom::ConversationController implementation:
   void SendTextQuery(const std::string& query,

@@ -9,7 +9,7 @@
 #include "base/check.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
-#include "chromeos/assistant/internal/libassist_util.h"
+#include "chromeos/assistant/internal/libassistant_util.h"
 
 namespace chromeos {
 namespace libassistant {

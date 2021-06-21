@@ -129,9 +129,7 @@ class AssistantConversationObserverTest : public ::testing::Test {
 
     service_tester_.Start();
 
-    controller().OnAssistantManagerRunning(
-        &service_tester_.assistant_manager(),
-        &service_tester_.assistant_manager_internal());
+    controller().OnAssistantManagerRunning(&service_tester_.assistant_client());
 
     action_module_helper_ = std::make_unique<CrosActionModuleHelper>(
         static_cast<assistant::action::CrosActionModule*>(
