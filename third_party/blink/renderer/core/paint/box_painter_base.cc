@@ -397,29 +397,6 @@ BoxPainterBase::FillLayerInfo::FillLayerInfo(
 
 namespace {
 
-// Compute the image subset, in intrinsic image coordinates, that gets mapped
-// onto the |subset|, when the whole image would be drawn with phase and size
-// given by |phase_and_size|. Assumes |phase_and_size| contains |subset|. The
-// location of the requested subset should be the painting snapped location, or
-// whatever was used as a destination_offset in ComputePhaseForBackground.
-//
-// It is used to undo the offset added in ComputePhaseForBackground. The size
-// of requested subset should be the unsnapped size so that the computed
-// scale and location in the source image can be correctly determined.
-FloatRect ComputeSubsetForBackground(const PhysicalRect& phase_and_size,
-                                     const PhysicalRect& subset,
-                                     const FloatSize& intrinsic_size) {
-  // TODO(schenney): Re-enable this after determining why it fails for
-  // CAP, and maybe other cases.
-  // DCHECK(phase_and_size.Contains(subset));
-  const PhysicalOffset offset_in_tile = subset.offset - phase_and_size.offset;
-  const FloatSize scale(phase_and_size.Width() / intrinsic_size.Width(),
-                        phase_and_size.Height() / intrinsic_size.Height());
-  return FloatRect(
-      offset_in_tile.left / scale.Width(), offset_in_tile.top / scale.Height(),
-      subset.Width() / scale.Width(), subset.Height() / scale.Height());
-}
-
 FloatRect SnapSourceRectIfNearIntegral(const FloatRect src_rect) {
   // Round to avoid filtering pulling in neighboring pixels, for the
   // common case of sprite maps, but only if we're close to an integral size.
@@ -434,9 +411,90 @@ FloatRect SnapSourceRectIfNearIntegral(const FloatRect src_rect) {
           LayoutUnit::Epsilon() &&
       std::abs(std::round(src_rect.MaxY()) - src_rect.MaxY()) <=
           LayoutUnit::Epsilon()) {
-    return FloatRect(RoundedIntRect(src_rect));
+    IntRect rounded_src_rect = RoundedIntRect(src_rect);
+    // If we have snapped the image size to 0, revert the rounding.
+    if (rounded_src_rect.IsEmpty())
+      return src_rect;
+    return FloatRect(rounded_src_rect);
   }
   return src_rect;
+}
+
+absl::optional<FloatRect> OptimizeToSingleTileDraw(
+    const BackgroundImageGeometry& geometry,
+    const PhysicalRect& dest_rect,
+    Image* image,
+    RespectImageOrientationEnum respect_orientation) {
+  const PhysicalOffset dest_phase = geometry.ComputeDestPhase();
+
+  // Phase calculation uses the actual painted location, given by the
+  // border-snapped destination rect.
+  const PhysicalRect one_tile_rect(dest_phase, geometry.TileSize());
+
+  // We cannot optimize if the tile is misaligned.
+  if (!one_tile_rect.Contains(dest_rect))
+    return absl::nullopt;
+
+  const PhysicalOffset offset_in_tile =
+      geometry.SnappedDestRect().offset - dest_phase;
+  if (!image->HasIntrinsicSize()) {
+    // This is a generated image sized according to the tile size so we can use
+    // the snapped dest rect directly.
+    const PhysicalRect offset_tile(offset_in_tile,
+                                   geometry.SnappedDestRect().size);
+    return FloatRect(offset_tile);
+  }
+
+  // Compute the image subset, in intrinsic image coordinates, that gets mapped
+  // onto the |dest_rect|, when the whole image would be drawn with phase and
+  // size given by |one_tile_rect|. Assumes |one_tile_rect| contains
+  // |dest_rect|. The location of the requested subset should be the painting
+  // snapped location.
+  //
+  // The size of requested subset should be the unsnapped size so that the
+  // computed scale and location in the source image can be correctly
+  // determined.
+  //
+  // image-resolution information is baked into the given parameters, but we
+  // need oriented size.
+  FloatSize intrinsic_tile_size(image->Size(respect_orientation));
+  // TODO(crbug.com/1042783): This is not checking for real empty image (for
+  // which we have checked and skipped the whole FillLayer), but for that a
+  // subpixel image size is rounded to empty, to avoid infinite tile scale that
+  // would be calculated in the |else| part. We should probably support subpixel
+  // size here.
+  if (intrinsic_tile_size.IsEmpty())
+    intrinsic_tile_size = FloatSize(geometry.TileSize());
+
+  // Subset computation needs the same location as was used above, but needs the
+  // unsnapped destination size to correctly calculate sprite subsets in the
+  // presence of zoom.
+  // TODO(schenney): Re-enable this after determining why it fails for
+  // CAP, and maybe other cases.
+  // DCHECK(one_tile_rect.Contains(dest_rect_for_subset));
+  const FloatSize scale(
+      geometry.TileSize().width / intrinsic_tile_size.Width(),
+      geometry.TileSize().height / intrinsic_tile_size.Height());
+  FloatRect visible_src_rect(
+      offset_in_tile.left / scale.Width(), offset_in_tile.top / scale.Height(),
+      geometry.UnsnappedDestRect().Width() / scale.Width(),
+      geometry.UnsnappedDestRect().Height() / scale.Height());
+
+  // Content providers almost always choose source pixels at integer locations,
+  // so snap to integers. This is particularly important for sprite maps.
+  // Calculation up to this point, in LayoutUnits, can lead to small variations
+  // from integer size, so it is safe to round without introducing major issues.
+  visible_src_rect = SnapSourceRectIfNearIntegral(visible_src_rect);
+
+  // When respecting image orientation, the drawing code expects the source
+  // rect to be in the unrotated image space, but we have computed it here in
+  // the rotated space in order to position and size the background. Undo the
+  // src rect rotation if necessary.
+  if (respect_orientation && !image->HasDefaultOrientation()) {
+    visible_src_rect = image->CorrectSrcRectForImageOrientation(
+        intrinsic_tile_size, visible_src_rect);
+  }
+  return visible_src_rect;
 }
 
 // The unsnapped_subset_size should be the target painting area implied by the
@@ -455,8 +513,6 @@ void DrawTiledBackground(GraphicsContext& context,
                          RespectImageOrientationEnum respect_orientation) {
   DCHECK(!geometry.TileSize().IsEmpty());
 
-  const PhysicalOffset dest_phase = geometry.ComputeDestPhase();
-
   // Check and see if a single draw of the image can cover the entire area we
   // are supposed to tile. The dest_rect_for_subset must use the same
   // location that was used in ComputePhaseForBackground and the unsnapped
@@ -464,38 +520,10 @@ void DrawTiledBackground(GraphicsContext& context,
   // location in the presence of border snapping and zoom.
   const PhysicalRect dest_rect_for_subset(geometry.SnappedDestRect().offset,
                                           geometry.UnsnappedDestRect().size);
-  const PhysicalRect one_tile_rect(dest_phase, geometry.TileSize());
-  if (one_tile_rect.Contains(dest_rect_for_subset)) {
-    // Use the intrinsic size of the image if it has one, otherwise force the
-    // generated image to be the tile size.
-    // image-resolution information is baked into the given parameters, but we
-    // need oriented size.
-    FloatSize intrinsic_tile_size(image->Size(respect_orientation));
-    if (!image->HasIntrinsicSize() ||
-        // TODO(crbug.com/1042783): This is not checking for real empty image
-        // (for which we have checked and skipped the whole FillLayer), but for
-        // that a subpixel image size is rounded to empty, to avoid infinite
-        // tile scale that would be calculated in the |else| part. We should
-        // probably support subpixel size here.
-        intrinsic_tile_size.IsEmpty()) {
-      intrinsic_tile_size = FloatSize(geometry.TileSize());
-    }
-
-    FloatRect visible_src_rect = ComputeSubsetForBackground(
-        one_tile_rect, dest_rect_for_subset, intrinsic_tile_size);
-    visible_src_rect = SnapSourceRectIfNearIntegral(visible_src_rect);
-
-    // When respecting image orientation, the drawing code expects the source
-    // rect to be in the unrotated image space, but we have computed it here in
-    // the rotated space in order to position and size the background. Undo the
-    // src rect rotation if necessary.
-    if (respect_orientation && !image->HasDefaultOrientation()) {
-      visible_src_rect = image->CorrectSrcRectForImageOrientation(
-          intrinsic_tile_size, visible_src_rect);
-    }
-
+  if (absl::optional<FloatRect> single_tile_src = OptimizeToSingleTileDraw(
+          geometry, dest_rect_for_subset, image, respect_orientation)) {
     context.DrawImage(image, Image::kSyncDecode,
-                      FloatRect(geometry.SnappedDestRect()), &visible_src_rect,
+                      FloatRect(geometry.SnappedDestRect()), &*single_tile_src,
                       has_filter_property, op, respect_orientation);
     return;
   }
@@ -522,7 +550,7 @@ void DrawTiledBackground(GraphicsContext& context,
 
   // At this point we have decided to tile the image to fill the dest rect.
   // Note that this tile rect uses the image's pre-scaled size.
-  FloatRect tile_rect(FloatPoint(), intrinsic_tile_size);
+  const FloatRect tile_rect(FloatPoint(), intrinsic_tile_size);
 
   // Farther down the pipeline we will use the scaled tile size to determine
   // which dimensions to clamp or repeat in. We do not want to repeat when the
@@ -546,10 +574,10 @@ void DrawTiledBackground(GraphicsContext& context,
   // This call takes the unscaled image, applies the given scale, and paints
   // it into the snapped_dest_rect using phase from one_tile_rect and the
   // given repeat spacing. Note the phase is already scaled.
-  context.DrawImageTiled(image, FloatRect(geometry.SnappedDestRect()),
-                         tile_rect, scale, FloatPoint(dest_phase),
-                         FloatSize(geometry.SpaceSize()), has_filter_property,
-                         op, respect_orientation);
+  context.DrawImageTiled(
+      image, FloatRect(geometry.SnappedDestRect()), tile_rect, scale,
+      FloatPoint(geometry.ComputeDestPhase()), FloatSize(geometry.SpaceSize()),
+      has_filter_property, op, respect_orientation);
 }
 
 // Returning false meaning that we cannot paint background color with
@@ -643,9 +671,9 @@ inline bool PaintFastBottomLayer(const Document* document,
   // tile. The border for painting images may not be the same as the color due
   // to optimizations for the image painting destination that avoid painting
   // under the border.
-  PhysicalRect image_tile;
+  FloatRect src_rect;
   FloatRoundedRect image_border;
-  if (info.should_paint_image) {
+  if (info.should_paint_image && image) {
     // Avoid image shaders when printing (poorly supported in PDF).
     if (info.is_rounded_fill && info.is_printing)
       return false;
@@ -656,31 +684,32 @@ inline bool PaintFastBottomLayer(const Document* document,
             ? color_border
             : FloatRoundedRect(FloatRect(geometry.SnappedDestRect()));
 
-    if (!image_border.Rect().IsEmpty()) {
+    const FloatRect& image_rect = image_border.Rect();
+    if (!image_rect.IsEmpty()) {
       // We cannot optimize if the tile is too small.
-      if (geometry.TileSize().width < image_border.Rect().Width() ||
-          geometry.TileSize().height < image_border.Rect().Height())
+      if (geometry.TileSize().width < image_rect.Width() ||
+          geometry.TileSize().height < image_rect.Height())
         return false;
-
-      // Phase calculation uses the actual painted location, given by the
-      // border-snapped destination rect.
-      image_tile =
-          PhysicalRect(geometry.ComputeDestPhase(), geometry.TileSize());
 
       // Use FastAndLossyFromFloatRect when converting the image border rect.
       // At this point it should have been derived from a snapped rectangle, so
       // the conversion from float should be as precise as it can be.
+      const PhysicalRect dest_rect =
+          PhysicalRect::FastAndLossyFromFloatRect(image_rect);
 
-      // We cannot optimize if the tile is misaligned.
-      if (!image_tile.Contains(
-              PhysicalRect::FastAndLossyFromFloatRect(image_border.Rect())))
+      absl::optional<FloatRect> single_tile_src = OptimizeToSingleTileDraw(
+          geometry, dest_rect, image, info.respect_image_orientation);
+      if (!single_tile_src)
         return false;
+      src_rect = *single_tile_src;
     }
   }
 
   // At this point we're committed to the fast path: the destination (r)rect
   // fits within a single tile, and we can paint it using direct draw(R)Rect()
-  // calls.
+  // calls. Furthermore, if an image should be painted, |src_rect| has been
+  // updated to account for positioning and size parameters by
+  // OptimizeToSingleTileDraw() in the above code block.
   absl::optional<RoundedInnerRectClipper> clipper;
   if (info.is_rounded_fill && !color_border.IsRenderable()) {
     // When the rrect is not renderable, we resort to clipping.
@@ -702,46 +731,8 @@ inline bool PaintFastBottomLayer(const Document* document,
   }
 
   // Paint the image if needed.
-  if (!info.should_paint_image || !image || image_tile.IsEmpty())
+  if (!info.should_paint_image || src_rect.IsEmpty())
     return true;
-
-  // Generated images will be created at the desired tile size, so assume their
-  // intrinsic size is the requested tile size.
-  bool has_intrinsic_size = image->HasIntrinsicSize();
-  const FloatSize intrinsic_tile_size =
-      !has_intrinsic_size
-          ? FloatSize(image_tile.size)
-          : FloatSize(image->Size(info.respect_image_orientation));
-
-  // Subset computation needs the same location as was used with
-  // ComputePhaseForBackground above, but needs the unsnapped destination
-  // size to correctly calculate sprite subsets in the presence of zoom. But if
-  // this is a generated image sized according to the tile size (which is a
-  // snapped value), use the snapped dest rect instead.
-  const PhysicalRect dest_rect_for_subset(
-      geometry.SnappedDestRect().offset,
-      !has_intrinsic_size ? geometry.SnappedDestRect().size
-                          : geometry.UnsnappedDestRect().size);
-  // Content providers almost always choose source pixels at integer locations,
-  // so snap to integers. This is particuarly important for sprite maps.
-  // Calculation up to this point, in LayoutUnits, can lead to small variations
-  // from integer size, so it is safe to round without introducing major issues.
-  const FloatRect unrounded_subset = ComputeSubsetForBackground(
-      image_tile, dest_rect_for_subset, intrinsic_tile_size);
-  FloatRect src_rect = SnapSourceRectIfNearIntegral(unrounded_subset);
-
-  // If we have snapped the image size to 0, revert the rounding.
-  if (src_rect.IsEmpty())
-    src_rect = unrounded_subset;
-
-  // When respecting image orientation, the drawing code expects the source rect
-  // to be in the unrotated image space, but we have computed it here in the
-  // rotated space in order to position and size the background. Undo the src
-  // rect rotation if necessaary.
-  if (info.respect_image_orientation && !image->HasDefaultOrientation()) {
-    src_rect =
-        image->CorrectSrcRectForImageOrientation(intrinsic_tile_size, src_rect);
-  }
 
   DEVTOOLS_TIMELINE_TRACE_EVENT_WITH_CATEGORIES(
       TRACE_DISABLED_BY_DEFAULT("devtools.timeline"), "PaintImage",
