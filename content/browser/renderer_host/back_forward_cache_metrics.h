@@ -101,7 +101,8 @@ class BackForwardCacheMetrics
     kBrowsingInstanceNotSwapped = 47,
     kBackForwardCacheDisabledForDelegate = 48,
     kOptInUnloadHeaderNotPresent = 49,
-    kUnloadHandlerExistsInMainFrame = 50,
+    // 50: kUnloadHandlerExistsInMainFrame = 50 was removed, such cases would
+    // report kOptInUnloadHeaderNotPresent.
     kUnloadHandlerExistsInSubFrame = 51,
     kServiceWorkerUnregistration = 52,
     kMaxValue = kServiceWorkerUnregistration,

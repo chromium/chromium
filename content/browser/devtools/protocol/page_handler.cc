@@ -1395,9 +1395,6 @@ Page::BackForwardCacheNotRestoredReason NotRestoredReasonToProtocol(
     case Reason::kOptInUnloadHeaderNotPresent:
       return Page::BackForwardCacheNotRestoredReasonEnum::
           OptInUnloadHeaderNotPresent;
-    case Reason::kUnloadHandlerExistsInMainFrame:
-      return Page::BackForwardCacheNotRestoredReasonEnum::
-          UnloadHandlerExistsInMainFrame;
     case Reason::kUnloadHandlerExistsInSubFrame:
       return Page::BackForwardCacheNotRestoredReasonEnum::
           UnloadHandlerExistsInSubFrame;
@@ -1577,7 +1574,6 @@ Page::BackForwardCacheNotRestoredReasonType MapNotRestoredReasonToType(
     case Reason::kServiceWorkerUnregistration:
       return Page::BackForwardCacheNotRestoredReasonTypeEnum::Circumstantial;
     case Reason::kOptInUnloadHeaderNotPresent:
-    case Reason::kUnloadHandlerExistsInMainFrame:
     case Reason::kUnloadHandlerExistsInSubFrame:
       return Page::BackForwardCacheNotRestoredReasonTypeEnum::PageSupportNeeded;
     case Reason::kNetworkRequestDatapipeDrainedAsBytesConsumer:
