@@ -28,6 +28,7 @@ void OverlayDialog::Show(aura::Window* base_window,
 
   exo::ShellSurfaceBase::OverlayParams params(std::move(dialog));
   params.translucent = true;
+  params.overlaps_frame = false;
   shell_surface_base->AddOverlay(std::move(params));
 }
 
