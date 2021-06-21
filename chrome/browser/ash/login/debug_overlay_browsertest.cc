@@ -34,7 +34,7 @@ std::string ElementsInPanel(const std::string& panel) {
 
 class DebugOverlayTest : public OobeBaseTest {
  public:
-  DebugOverlayTest() {}
+  DebugOverlayTest() = default;
 
   ~DebugOverlayTest() override = default;
 
@@ -64,7 +64,22 @@ IN_PROC_BROWSER_TEST_F(DebugOverlayTest, HideAndShow) {
   test::OobeJS().CreateVisibilityWaiter(false, kDebugOverlay)->Wait();
 }
 
-IN_PROC_BROWSER_TEST_F(DebugOverlayTest, ExpectScreenButtonsCount) {
+class DebugOverlayScreensTest : public DebugOverlayTest,
+                                /* IsOsInstallAllowed */
+                                public ::testing::WithParamInterface<bool> {
+ public:
+  DebugOverlayScreensTest() = default;
+  ~DebugOverlayScreensTest() override = default;
+  // DebugOverlayTest:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    DebugOverlayTest::SetUpCommandLine(command_line);
+    if (!GetParam())
+      return;
+    command_line->AppendSwitch(switches::kAllowOsInstall);
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(DebugOverlayScreensTest, ExpectScreenButtonsCount) {
   test::OobeJS().ExpectHidden(kDebugOverlay);
   test::OobeJS().ExpectVisible(kDebugButton);
   test::OobeJS().ClickOn(kDebugButton);
@@ -76,6 +91,8 @@ IN_PROC_BROWSER_TEST_F(DebugOverlayTest, ExpectScreenButtonsCount) {
 
   test::OobeJS().ExpectEQ(ElementsInPanel(kScreensPanel), screens_count);
 }
+
+INSTANTIATE_TEST_SUITE_P(All, DebugOverlayScreensTest, testing::Bool());
 
 IN_PROC_BROWSER_TEST_F(DebugOverlayOnLoginTest, ExpectScreenButtonsCount) {
   ASSERT_TRUE(ash::LoginScreenTestApi::ClickAddUserButton());
