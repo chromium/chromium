@@ -29,6 +29,7 @@ namespace blink {
 class WebAssociatedURLLoader;
 class WebElement;
 class WebLocalFrame;
+class WebLocalFrameClient;
 class WebPluginContainer;
 class WebURL;
 class WebURLRequest;
@@ -92,6 +93,10 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
 
     // Returns the local frame to which the web plugin container belongs.
     virtual blink::WebLocalFrame* GetFrame() = 0;
+
+    // Returns the local frame's client (render frame). May be null in unit
+    // tests.
+    virtual blink::WebLocalFrameClient* GetWebLocalFrameClient() = 0;
 
     // Returns the blink web plugin container pointer that's wrapped inside this
     // object. Returns nullptr if this object is for test only.
@@ -219,8 +224,8 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
       const AccessibilityViewportInfo& viewport_info) override;
   void SetContentRestrictions(int content_restrictions) override;
   void SetPluginCanSave(bool can_save) override;
-  void DidStartLoading() override;
-  void DidStopLoading() override;
+  void PluginDidStartLoading() override;
+  void PluginDidStopLoading() override;
   void InvokePrintDialog() override;
   void NotifySelectionChanged(const gfx::PointF& left,
                               int left_height,

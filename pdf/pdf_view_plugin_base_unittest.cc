@@ -148,9 +148,9 @@ class FakePdfViewPluginBase : public PdfViewPluginBase {
 
   MOCK_METHOD(void, SetPluginCanSave, (bool), (override));
 
-  MOCK_METHOD(void, DidStartLoading, (), (override));
+  MOCK_METHOD(void, PluginDidStartLoading, (), (override));
 
-  MOCK_METHOD(void, DidStopLoading, (), (override));
+  MOCK_METHOD(void, PluginDidStopLoading, (), (override));
 
   MOCK_METHOD(void, InvokePrintDialog, (), (override));
 

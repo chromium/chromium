@@ -58,6 +58,7 @@
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/public/web/web_plugin_container.h"
 #include "third_party/blink/public/web/web_plugin_params.h"
 #include "third_party/blink/public/web/web_print_preset_options.h"
@@ -175,6 +176,10 @@ class BlinkContainerWrapper final : public PdfViewWebPlugin::ContainerWrapper {
 
   blink::WebLocalFrame* GetFrame() override {
     return container_->GetDocument().GetFrame();
+  }
+
+  blink::WebLocalFrameClient* GetWebLocalFrameClient() override {
+    return GetFrame()->Client();
   }
 
   blink::WebPluginContainer* Container() override { return container_; }
@@ -684,12 +689,20 @@ void PdfViewWebPlugin::SetPluginCanSave(bool can_save) {
   service->SetPluginCanSave(can_save);
 }
 
-void PdfViewWebPlugin::DidStartLoading() {
-  NOTIMPLEMENTED();
+void PdfViewWebPlugin::PluginDidStartLoading() {
+  auto* client = container_wrapper_->GetWebLocalFrameClient();
+  if (!client)
+    return;
+
+  client->DidStartLoading();
 }
 
-void PdfViewWebPlugin::DidStopLoading() {
-  NOTIMPLEMENTED();
+void PdfViewWebPlugin::PluginDidStopLoading() {
+  auto* client = container_wrapper_->GetWebLocalFrameClient();
+  if (!client)
+    return;
+
+  client->DidStopLoading();
 }
 
 void PdfViewWebPlugin::InvokePrintDialog() {

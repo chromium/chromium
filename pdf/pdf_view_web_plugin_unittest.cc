@@ -124,6 +124,10 @@ class FakeContainerWrapper final : public PdfViewWebPlugin::ContainerWrapper {
 
   blink::WebLocalFrame* GetFrame() override { return nullptr; }
 
+  blink::WebLocalFrameClient* GetWebLocalFrameClient() override {
+    return nullptr;
+  }
+
   // TODO(https://crbug.com/1207575): Container() should not be used for testing
   // since it doesn't have a valid blink::WebPluginContainer. Make this method
   // fail once ContainerWrapper instead of blink::WebPluginContainer is used for

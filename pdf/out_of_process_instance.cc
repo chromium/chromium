@@ -1008,20 +1008,12 @@ void OutOfProcessInstance::ScheduleTaskOnMainThread(
       PPCompletionCallbackFromResultCallback(std::move(callback)), result);
 }
 
-void OutOfProcessInstance::DidStartLoading() {
-  if (did_call_start_loading_)
-    return;
-
+void OutOfProcessInstance::PluginDidStartLoading() {
   pp::PDF::DidStartLoading(this);
-  did_call_start_loading_ = true;
 }
 
-void OutOfProcessInstance::DidStopLoading() {
-  if (!did_call_start_loading_)
-    return;
-
+void OutOfProcessInstance::PluginDidStopLoading() {
   pp::PDF::DidStopLoading(this);
-  did_call_start_loading_ = false;
 }
 
 void OutOfProcessInstance::InvokePrintDialog() {

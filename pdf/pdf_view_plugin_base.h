@@ -303,10 +303,8 @@ class PdfViewPluginBase : public PDFEngine::Client,
   virtual void SetPluginCanSave(bool can_save) = 0;
 
   // Sends start/stop loading notifications to the plugin's render frame.
-  // TODO(crbug.com/702993): Evaluate whether these methods are needed when the
-  // plugin is moved into a renderer process.
-  virtual void DidStartLoading() = 0;
-  virtual void DidStopLoading() = 0;
+  virtual void PluginDidStartLoading() = 0;
+  virtual void PluginDidStopLoading() = 0;
 
   // Requests the plugin's render frame to set up a print dialog for the
   // document.
@@ -403,6 +401,11 @@ class PdfViewPluginBase : public PDFEngine::Client,
   void HandleStopScrollingMessage(const base::Value& /*message*/);
   void HandleUpdateScrollMessage(const base::Value& message);
   void HandleViewportMessage(const base::Value& message);
+
+  // Sends start/stop loading notifications to the plugin's render frame
+  // depending on `did_call_start_loading_`.
+  void DidStartLoading();
+  void DidStopLoading();
 
   // Saves the document to a file.
   void SaveToFile(const std::string& token);
@@ -555,6 +558,11 @@ class PdfViewPluginBase : public PDFEngine::Client,
 
   // The current state of document load.
   DocumentLoadState document_load_state_ = DocumentLoadState::kLoading;
+
+  // If true, the render frame has been notified that we're starting a network
+  // request so that it can start the throbber. It will be notified again once
+  // the document finishes loading.
+  bool did_call_start_loading_ = false;
 
   // The current state of accessibility.
   AccessibilityState accessibility_state_ = AccessibilityState::kOff;

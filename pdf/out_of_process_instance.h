@@ -137,8 +137,8 @@ class OutOfProcessInstance : public PdfViewPluginBase,
       const AccessibilityViewportInfo& viewport_info) override;
   void SetContentRestrictions(int content_restrictions) override;
   void SetPluginCanSave(bool can_save) override;
-  void DidStartLoading() override;
-  void DidStopLoading() override;
+  void PluginDidStartLoading() override;
+  void PluginDidStopLoading() override;
   void InvokePrintDialog() override;
   void NotifySelectionChanged(const gfx::PointF& left,
                               int left_height,
@@ -174,11 +174,6 @@ class OutOfProcessInstance : public PdfViewPluginBase,
 
   // The tickmarks.
   std::vector<pp::Rect> tickmarks_;
-
-  // If true, this means we told the RenderView that we're starting a network
-  // request so that it can start the throbber. We will tell it again once the
-  // document finishes loading.
-  bool did_call_start_loading_ = false;
 
   base::WeakPtrFactory<OutOfProcessInstance> weak_factory_{this};
 };
