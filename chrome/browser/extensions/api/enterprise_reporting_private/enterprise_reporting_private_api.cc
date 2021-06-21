@@ -68,6 +68,8 @@ api::enterprise_reporting_private::ContextInfo ToContextInfo(
       break;
   }
   info.browser_version = signals.browser_version;
+  info.built_in_dns_client_enabled = signals.built_in_dns_client_enabled;
+
   switch (signals.safe_browsing_protection_level) {
     case safe_browsing::NO_SAFE_BROWSING:
       info.safe_browsing_protection_level = extensions::api::

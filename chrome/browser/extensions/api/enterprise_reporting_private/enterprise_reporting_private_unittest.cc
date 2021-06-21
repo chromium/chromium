@@ -4,6 +4,7 @@
 
 #include <tuple>
 
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/signals/device_info_fetcher.h"
 #include "chrome/browser/extensions/api/enterprise_reporting_private/enterprise_reporting_private_api.h"
 
@@ -14,7 +15,9 @@
 #include "chrome/browser/extensions/api/enterprise_reporting_private/chrome_desktop_report_request_helper.h"
 #include "chrome/browser/extensions/extension_api_unittest.h"
 #include "chrome/browser/extensions/extension_function_test_utils.h"
+#include "chrome/browser/net/stub_resolver_config_reader.h"
 #include "chrome/browser/policy/dm_token_utils.h"
+#include "chrome/common/pref_names.h"
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -357,6 +360,16 @@ TEST_F(EnterpriseReportingPrivateGetDeviceInfoTest, GetDeviceInfoConversion) {
 class EnterpriseReportingPrivateGetContextInfoTest
     : public ExtensionApiUnittest {
  public:
+  void SetUp() override {
+    ExtensionApiUnittest::SetUp();
+    // Only used to set the right default BuiltInDnsClientEnabled preference
+    // value according to the OS. DnsClient and DoH default preferences are
+    // updated when the object is created, making the object unnecessary outside
+    // this scope.
+    StubResolverConfigReader stub_resolver_config_reader(
+        g_browser_process->local_state());
+  }
+
   enterprise_reporting_private::ContextInfo GetContextInfo() {
     auto function = base::MakeRefCounted<
         EnterpriseReportingPrivateGetContextInfoFunction>();
@@ -369,6 +382,14 @@ class EnterpriseReportingPrivateGetContextInfoTest
         *context_info_value, &info));
 
     return info;
+  }
+
+  bool BuiltInDnsClientPlatformDefault() {
+#if defined(OS_CHROMEOS) || defined(OS_MAC) || defined(OS_ANDROID)
+    return true;
+#else
+    return false;
+#endif
   }
 };
 
@@ -388,6 +409,8 @@ TEST_F(EnterpriseReportingPrivateGetContextInfoTest, NoSpecialContext) {
   EXPECT_EQ(version_info::GetVersionNumber(), info.browser_version);
   EXPECT_EQ(enterprise_reporting_private::SAFE_BROWSING_LEVEL_STANDARD,
             info.safe_browsing_protection_level);
+  EXPECT_EQ(BuiltInDnsClientPlatformDefault(),
+            info.built_in_dns_client_enabled);
 }
 
 class EnterpriseReportingPrivateGetContextInfoSafeBrowsingTest
@@ -404,7 +427,6 @@ TEST_P(EnterpriseReportingPrivateGetContextInfoSafeBrowsingTest, Test) {
                                     safe_browsing_enabled);
   profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced,
                                     safe_browsing_enhanced_enabled);
-
   enterprise_reporting_private::ContextInfo info = GetContextInfo();
 
   EXPECT_TRUE(info.browser_affiliation_ids.empty());
@@ -428,6 +450,8 @@ TEST_P(EnterpriseReportingPrivateGetContextInfoSafeBrowsingTest, Test) {
     EXPECT_EQ(enterprise_reporting_private::SAFE_BROWSING_LEVEL_DISABLED,
               info.safe_browsing_protection_level);
   }
+  EXPECT_EQ(BuiltInDnsClientPlatformDefault(),
+            info.built_in_dns_client_enabled);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -436,6 +460,37 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(std::make_tuple(false, false),
                     std::make_tuple(true, false),
                     std::make_tuple(true, true)));
+
+class EnterpriseReportingPrivateGetContextInfoBuiltInDnsClientTest
+    : public EnterpriseReportingPrivateGetContextInfoTest,
+      public testing::WithParamInterface<bool> {};
+
+TEST_P(EnterpriseReportingPrivateGetContextInfoBuiltInDnsClientTest, Test) {
+  bool policyValue = GetParam();
+
+  g_browser_process->local_state()->SetBoolean(prefs::kBuiltInDnsClientEnabled,
+                                               policyValue);
+
+  enterprise_reporting_private::ContextInfo info = GetContextInfo();
+
+  EXPECT_TRUE(info.browser_affiliation_ids.empty());
+  EXPECT_TRUE(info.profile_affiliation_ids.empty());
+  EXPECT_TRUE(info.on_file_attached_providers.empty());
+  EXPECT_TRUE(info.on_file_downloaded_providers.empty());
+  EXPECT_TRUE(info.on_bulk_data_entry_providers.empty());
+  EXPECT_EQ(enterprise_reporting_private::REALTIME_URL_CHECK_MODE_DISABLED,
+            info.realtime_url_check_mode);
+  EXPECT_TRUE(info.on_security_event_providers.empty());
+  EXPECT_EQ(version_info::GetVersionNumber(), info.browser_version);
+  EXPECT_EQ(enterprise_reporting_private::SAFE_BROWSING_LEVEL_STANDARD,
+            info.safe_browsing_protection_level);
+  EXPECT_EQ(policyValue, info.built_in_dns_client_enabled);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    EnterpriseReportingPrivateGetContextInfoBuiltInDnsClientTest,
+    testing::Bool());
 
 class EnterpriseReportingPrivateGetContextInfoRealTimeURLCheckTest
     : public EnterpriseReportingPrivateGetContextInfoTest,
@@ -462,7 +517,6 @@ TEST_P(EnterpriseReportingPrivateGetContextInfoRealTimeURLCheckTest, Test) {
   profile()->GetPrefs()->SetInteger(
       prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckScope,
       policy::POLICY_SCOPE_MACHINE);
-
   enterprise_reporting_private::ContextInfo info = GetContextInfo();
 
   if (url_check_enabled()) {
@@ -483,6 +537,8 @@ TEST_P(EnterpriseReportingPrivateGetContextInfoRealTimeURLCheckTest, Test) {
   EXPECT_EQ(version_info::GetVersionNumber(), info.browser_version);
   EXPECT_EQ(enterprise_reporting_private::SAFE_BROWSING_LEVEL_STANDARD,
             info.safe_browsing_protection_level);
+  EXPECT_EQ(BuiltInDnsClientPlatformDefault(),
+            info.built_in_dns_client_enabled);
 }
 
 }  // namespace extensions

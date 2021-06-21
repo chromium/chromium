@@ -62,6 +62,7 @@ namespace enterprise.reportingPrivate {
     DOMString browserVersion;
     SafeBrowsingLevel safeBrowsingProtectionLevel;
     boolean siteIsolationEnabled;
+    boolean builtInDnsClientEnabled;
   };
 
   // Invoked by <code>getContextInfo</code> to return context information.

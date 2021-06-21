@@ -39,6 +39,7 @@ struct ContextInfo {
   std::string browser_version;
   safe_browsing::SafeBrowsingState safe_browsing_protection_level;
   bool site_isolation_enabled;
+  bool built_in_dns_client_enabled;
 };
 
 // Interface used by the chrome.enterprise.reportingPrivate.getContextInfo()
@@ -83,6 +84,8 @@ class ContextInfoFetcher {
   std::vector<std::string> GetOnSecurityEventProviders();
 
   safe_browsing::SafeBrowsingState GetSafeBrowsingProtectionLevel();
+
+  bool GetBuiltInDnsClientEnabled();
 
   content::BrowserContext* browser_context_;
 
