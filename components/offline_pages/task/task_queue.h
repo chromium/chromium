@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/containers/queue.h"
+#include "base/containers/circular_deque.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -56,12 +56,15 @@ class TaskQueue {
   bool HasRunningTask() const;
 
  private:
+  friend Task;
+  struct Entry;
   // Checks whether there are any tasks to run, as well as whether no task is
   // currently running. When both are met, it will start the next task in the
   // queue.
   void StartTaskIfAvailable();
 
   void RunCurrentTask();
+  void ResumeCurrentTask(base::OnceClosure on_resume);
 
   // Callback for informing the queue that a task was completed. Can be called
   // from any thread.
@@ -70,6 +73,8 @@ class TaskQueue {
       base::WeakPtr<TaskQueue> task_queue,
       Task* task);
 
+  void SuspendTask(Task* task);
+  void ResumeTask(Task* task, base::OnceClosure on_resume);
   void TaskCompleted(Task* task);
 
   void InformTaskQueueIsIdle();
@@ -85,7 +90,10 @@ class TaskQueue {
   std::unique_ptr<Task> current_task_;
 
   // A FIFO queue of tasks that will be run using this task queue.
-  base::queue<std::unique_ptr<Task>> tasks_;
+  base::circular_deque<Entry> tasks_;
+
+  // A set of tasks which are suspended.
+  std::vector<std::unique_ptr<Task>> suspended_tasks_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

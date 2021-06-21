@@ -6,14 +6,71 @@
 
 #include <memory>
 #include <utility>
+#include "base/logging.h"
 
 #include "base/bind.h"
+#include "base/callback_forward.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/offline_pages/task/test_task.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace offline_pages {
+
+class SimpleTask : public Task {
+ public:
+  SimpleTask(const std::string& name, std::vector<std::string>* events)
+      : events_(events), name_(name) {}
+
+  void Run() override {
+    events_->push_back("Run " + name_);
+    TaskComplete();
+  }
+  using Task::TaskComplete;
+
+ protected:
+  std::vector<std::string>* events_;
+  std::string name_;
+};
+
+// A test task which suspends and waits for something to complete before
+// resuming.
+class SuspendingTask : public SimpleTask {
+ public:
+  SuspendingTask(const std::string& name,
+                 std::vector<std::string>* events,
+                 int suspend_count = 1)
+      : SimpleTask(name, events), suspend_count_(suspend_count) {}
+  ~SuspendingTask() override { events_->push_back("Destroy " + name_); }
+  void Run() override {
+    events_->push_back("Run " + name_);
+    DoWork();
+  }
+
+  void DoResume() {
+    events_->push_back("DoResume " + name_);
+    Resume(
+        base::BindOnce(&SuspendingTask::TaskResumed, base::Unretained(this)));
+  }
+
+  void TaskResumed() {
+    events_->push_back("TaskResumed " + name_);
+    DoWork();
+  }
+
+  void Done() { TaskComplete(); }
+
+ private:
+  void DoWork() {
+    if (suspend_count_ > 0) {
+      --suspend_count_;
+      Suspend();
+      return;
+    }
+    Done();
+  }
+  int suspend_count_ = 0;
+};
 
 using TaskState = TestTask::TaskState;
 
@@ -135,6 +192,98 @@ TEST_F(OfflineTaskQueueTest, LeaveEarly) {
   EXPECT_TRUE(on_idle_called());
   EXPECT_FALSE(queue.HasPendingTasks());
   EXPECT_FALSE(queue.HasRunningTask());
+}
+
+TEST_F(OfflineTaskQueueTest, SuspendAndResume) {
+  TaskQueue queue(this);
+  std::vector<std::string> events;
+  queue.AddTask(std::make_unique<SimpleTask>("T1", &events));
+  SuspendingTask* t2;
+  {
+    auto task = std::make_unique<SuspendingTask>("T2", &events);
+    t2 = task.get();
+    queue.AddTask(std::move(task));
+  }
+  PumpLoop();
+  queue.AddTask(std::make_unique<SimpleTask>("T3", &events));
+  PumpLoop();
+  queue.AddTask(std::make_unique<SimpleTask>("T4", &events));
+  t2->DoResume();
+  queue.AddTask(std::make_unique<SimpleTask>("T5", &events));
+  PumpLoop();
+
+  EXPECT_EQ(std::vector<std::string>({"Run T1", "Run T2", "Run T3",
+                                      "DoResume T2", "Run T4", "TaskResumed T2",
+                                      "Destroy T2", "Run T5"}),
+            events);
+}
+
+TEST_F(OfflineTaskQueueTest, SuspendResumeSuspend) {
+  TaskQueue queue(this);
+  std::vector<std::string> events;
+  queue.AddTask(std::make_unique<SimpleTask>("T1", &events));
+  SuspendingTask* t2;
+  {
+    auto task =
+        std::make_unique<SuspendingTask>("T2", &events, /*suspend_count=*/2);
+    t2 = task.get();
+    queue.AddTask(std::move(task));
+  }
+  PumpLoop();
+  t2->DoResume();
+  PumpLoop();
+  t2->DoResume();
+  PumpLoop();
+
+  EXPECT_EQ(std::vector<std::string>({"Run T1", "Run T2", "DoResume T2",
+                                      "TaskResumed T2", "DoResume T2",
+                                      "TaskResumed T2", "Destroy T2"}),
+            events);
+}
+
+TEST_F(OfflineTaskQueueTest, SuspendAndResumeNoOtherTasksRunning) {
+  TaskQueue queue(this);
+  std::vector<std::string> events;
+
+  SuspendingTask* t1;
+  {
+    auto task = std::make_unique<SuspendingTask>("T1", &events);
+    t1 = task.get();
+    queue.AddTask(std::move(task));
+  }
+  PumpLoop();
+  t1->DoResume();
+  PumpLoop();
+
+  EXPECT_EQ(std::vector<std::string>(
+                {"Run T1", "DoResume T1", "TaskResumed T1", "Destroy T1"}),
+            events);
+}
+
+TEST_F(OfflineTaskQueueTest, SuspendAndNeverResume) {
+  std::vector<std::string> events;
+  {
+    TaskQueue queue(this);
+    queue.AddTask(std::make_unique<SuspendingTask>("T1", &events));
+    PumpLoop();
+  }
+
+  EXPECT_EQ(std::vector<std::string>({"Run T1", "Destroy T1"}), events);
+}
+
+TEST_F(OfflineTaskQueueTest, CompleteWhileSuspended) {
+  TaskQueue queue(this);
+  std::vector<std::string> events;
+  SuspendingTask* t1;
+  {
+    auto task = std::make_unique<SuspendingTask>("T1", &events);
+    t1 = task.get();
+    queue.AddTask(std::move(task));
+  }
+  PumpLoop();
+  t1->Done();
+  PumpLoop();
+  EXPECT_EQ(std::vector<std::string>({"Run T1", "Destroy T1"}), events);
 }
 
 }  // namespace offline_pages
