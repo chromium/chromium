@@ -702,7 +702,7 @@ const base::Feature kNotificationDurationLongForRequireInteraction{
 #if defined(OS_MAC)
 // Shows alert notifications via a helper app in a utility process.
 const base::Feature kNotificationsViaHelperApp{
-    "NotificationsViaHelperApp", base::FEATURE_DISABLED_BY_DEFAULT};
+    "NotificationsViaHelperApp", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif  // OS_MAC
 
 #if defined(OS_POSIX)
