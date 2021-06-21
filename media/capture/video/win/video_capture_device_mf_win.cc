@@ -17,6 +17,7 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
@@ -1716,9 +1717,11 @@ void VideoCaptureDeviceMFWin::OnEvent(IMFMediaEvent* media_event) {
     capture_initialize_.Signal();
   }
 
-  if (FAILED(hr))
+  if (FAILED(hr)) {
+    base::UmaHistogramSparse("Media.VideoCapture.Win.ErrorEvent", hr);
     OnError(VideoCaptureError::kWinMediaFoundationGetMediaEventStatusFailed,
             FROM_HERE, hr);
+  }
 }
 
 void VideoCaptureDeviceMFWin::OnError(VideoCaptureError error,
