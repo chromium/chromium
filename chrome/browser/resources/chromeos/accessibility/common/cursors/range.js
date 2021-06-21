@@ -301,5 +301,15 @@ cursors.Range = class {
     }
     return this;
   }
+
+  /**
+   * Returns true if this range was created after wrapping. For example, moving
+   * from a range at the end of a web contents to [this] range at the beginning
+   * of the document.
+   * @return {boolean}
+   */
+  get wrapped() {
+    return this.start_.wrapped || this.end_.wrapped;
+  }
 };
 });  // goog.scope

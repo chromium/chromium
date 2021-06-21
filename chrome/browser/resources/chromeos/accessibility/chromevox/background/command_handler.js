@@ -1257,6 +1257,11 @@ CommandHandler.onCommand = function(command) {
   }
 
   if (current) {
+    if (current.wrapped) {
+      ChromeVox.earcons.playEarcon(Earcon.WRAP);
+    }
+
+
     ChromeVoxState.instance.navigateToRange(
         current, undefined, speechProps, shouldSetSelection);
   }

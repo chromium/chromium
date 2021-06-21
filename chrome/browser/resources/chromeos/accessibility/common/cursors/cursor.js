@@ -77,8 +77,9 @@ cursors.Cursor = class {
    * accessible name. An index of |cursors.NODE_INDEX| means the node as a
    * whole is pointed to and covers the case where the accessible text is
    * empty.
+   * @param {{wrapped: (boolean|undefined)}} args
    */
-  constructor(node, index) {
+  constructor(node, index, args = {}) {
     // Compensate for specific issues in Blink.
     // TODO(dtseng): Pass through affinity; if upstream, skip below.
     if (node.role === RoleType.STATIC_TEXT && node.name.length === index) {
@@ -98,6 +99,8 @@ cursors.Cursor = class {
     this.index_ = index;
     /** @type {RecoveryStrategy} */
     this.recovery_ = new AncestryRecoveryStrategy(node);
+    /** @private {boolean} */
+    this.wrapped_ = args.wrapped || false;
   }
 
   /**
@@ -601,6 +604,16 @@ cursors.Cursor = class {
 
     return ret;
   }
+
+  /**
+   * Returns true if this cursor was created after wrapping. For example, moving
+   * from a cursor at the end of a web contents to [this] range at the beginning
+   * of the document.
+   * @return {boolean}
+   */
+  get wrapped() {
+    return this.wrapped_;
+  }
 };
 
 
@@ -615,9 +628,10 @@ cursors.WrappingCursor = class extends cursors.Cursor {
    * accessible name. An index of |cursors.NODE_INDEX| means the node as a
    * whole is pointed to and covers the case where the accessible text is
    * empty.
+   * @param {{wrapped: (boolean|undefined)}} args
    */
-  constructor(node, index) {
-    super(node, index);
+  constructor(node, index, args = {}) {
+    super(node, index, args);
   }
 
   /**
@@ -686,20 +700,17 @@ cursors.WrappingCursor = class extends cursors.Cursor {
         return new cursors.WrappingCursor(directedFocus, cursors.NODE_INDEX);
       }
 
-      // Always play a wrap earcon when moving forward.
-      let playEarcon = dir === Dir.FORWARD;
+      // Always consider this cursor wrapped when moving forward.
+      let wrapped = dir === Dir.FORWARD;
 
       // Case 2: backward (sync downwards to a leaf), if already on the root.
       if (dir === Dir.BACKWARD && endpoint === this.node) {
-        playEarcon = true;
+        wrapped = true;
         endpoint = AutomationUtil.findLastNode(endpoint, pred) || endpoint;
       }
 
-      if (playEarcon) {
-        ChromeVox.earcons.playEarcon(Earcon.WRAP);
-      }
-
-      return new cursors.WrappingCursor(endpoint, cursors.NODE_INDEX);
+      return new cursors.WrappingCursor(
+          endpoint, cursors.NODE_INDEX, {wrapped});
     }
     return new cursors.WrappingCursor(result.node, result.index);
   }
