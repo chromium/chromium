@@ -146,15 +146,16 @@ void ServiceVideoCaptureDeviceLauncher::LaunchDeviceAsync(
 
   // GpuMemoryBuffer-based VideoCapture buffer works only on the Chrome OS
   // and Windows VideoCaptureDevice implementations.
+#if defined(OS_WIN)
+  if (base::FeatureList::IsEnabled(media::kMediaFoundationD3D11VideoCapture) &&
+      params.requested_format.pixel_format == media::PIXEL_FORMAT_NV12) {
+    new_params.buffer_type = media::VideoCaptureBufferType::kGpuMemoryBuffer;
+  }
+#else
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableVideoCaptureUseGpuMemoryBuffer) &&
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kVideoCaptureUseGpuMemoryBuffer)) {
-    new_params.buffer_type = media::VideoCaptureBufferType::kGpuMemoryBuffer;
-  }
-#if defined(OS_WIN)
-  else if (base::FeatureList::IsEnabled(
-               media::kMediaFoundationD3D11VideoCapture)) {
     new_params.buffer_type = media::VideoCaptureBufferType::kGpuMemoryBuffer;
   }
 #endif
