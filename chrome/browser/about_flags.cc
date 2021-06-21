@@ -2659,11 +2659,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWebrtcUseMinMaxVEADimensionsName,
      flag_descriptions::kWebrtcUseMinMaxVEADimensionsDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kWebRtcUseMinMaxVEADimensions)},
-#if defined(OS_ANDROID)
-    {"clear-old-browsing-data", flag_descriptions::kClearOldBrowsingDataName,
-     flag_descriptions::kClearOldBrowsingDataDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(features::kClearOldBrowsingData)},
-#endif  // OS_ANDROID
 #if BUILDFLAG(ENABLE_NACL)
     {"enable-nacl", flag_descriptions::kNaclName,
      flag_descriptions::kNaclDescription, kOsAll,

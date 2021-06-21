@@ -955,9 +955,6 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_CLEAR_BROWSING_DATA_TAB_PERIOD_FOUR_WEEKS" desc="The option to delete browsing data from the last 4 weeks.">
         Last 4 weeks
       </message>
-      <message name="IDS_CLEAR_BROWSING_DATA_TAB_PERIOD_OLDER_THAN_30_DAYS" desc="The option to delete browsing data older than 30 days.">
-        Older than 30 days
-      </message>
       <message name="IDS_CLEAR_BROWSING_DATA_TAB_PERIOD_EVERYTHING" desc="The option to delete browsing data from the beginning of time.">
         All time
       </message>

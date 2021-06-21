@@ -2970,11 +2970,6 @@ const char kClipboardSuggestionContentHiddenDescription[] =
     "Prevents the Clipboard suggestion from proactively retrieving the "
     "clipboard content.";
 
-const char kClearOldBrowsingDataName[] = "Clear older browsing data";
-const char kClearOldBrowsingDataDescription[] =
-    "Enables clearing of browsing data which is older than a given time "
-    "period.";
-
 const char kCloseTabSuggestionsName[] = "Suggest to close Tabs";
 const char kCloseTabSuggestionsDescription[] =
     "Suggests to the user to close Tabs that haven't been used beyond a "

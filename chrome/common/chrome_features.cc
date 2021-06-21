@@ -106,12 +106,6 @@ const base::Feature kChromeCleanupScanCompletedNotification{
     base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
-#if defined(OS_ANDROID)
-// Enables clearing of browsing data which is older than given time period.
-const base::Feature kClearOldBrowsingData{"ClearOldBrowsingData",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
-#endif
-
 const base::Feature kClientStorageAccessContextAuditing{
     "ClientStorageAccessContextAuditing", base::FEATURE_DISABLED_BY_DEFAULT};
 

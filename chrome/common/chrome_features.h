@@ -86,11 +86,6 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kChromeCleanupScanCompletedNotification;
 #endif
 
-#if defined(OS_ANDROID)
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::Feature kClearOldBrowsingData;
-#endif
-
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kClientStorageAccessContextAuditing;
 

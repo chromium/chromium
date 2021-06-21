@@ -28,7 +28,6 @@ import org.chromium.base.CollectionUtil;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataCounterBridge.BrowsingDataCounterCallback;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.historyreport.AppIndexingReporter;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -394,11 +393,6 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
                 activity.getString(R.string.clear_browsing_data_tab_period_7_days)));
         options.add(new TimePeriodSpinnerOption(TimePeriod.FOUR_WEEKS,
                 activity.getString(R.string.clear_browsing_data_tab_period_four_weeks)));
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CLEAR_OLD_BROWSING_DATA)) {
-            options.add(new TimePeriodSpinnerOption(TimePeriod.OLDER_THAN_30_DAYS,
-                    activity.getString(
-                            R.string.clear_browsing_data_tab_period_older_than_30_days)));
-        }
         options.add(new TimePeriodSpinnerOption(TimePeriod.ALL_TIME,
                 activity.getString(R.string.clear_browsing_data_tab_period_everything)));
         return options.toArray(new TimePeriodSpinnerOption[0]);

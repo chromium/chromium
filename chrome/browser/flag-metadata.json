@@ -623,11 +623,6 @@
     "expiry_milestone": 94
   },
   {
-    "name": "clear-old-browsing-data",
-    "owners": [ "dullweber" ],
-    "expiry_milestone": 78
-  },
-  {
     "name": "client-storage-access-context-auditing",
     "owners": [
       "sauski",
