@@ -192,27 +192,39 @@ bool CullRect::ApplyPaintProperties(
   // this class. The client has to use infinite cull rect in the case.
   // TODO(wangxianzhu): support clip rect expansion for pixel-moving filters.
   const auto& effect_root = EffectPaintPropertyNode::Root();
-  auto scroll_translation_it = scroll_translations.rbegin();
-  for (const auto* clip : base::Reversed(clips)) {
-    if (scroll_translation_it == scroll_translations.rend())
+  auto clip_it = clips.rbegin();
+  for (const auto* scroll_translation : base::Reversed(scroll_translations)) {
+    if (clip_it == clips.rend())
       break;
 
-    const auto* scroll_translation = *scroll_translation_it;
-    if (&clip->LocalTransformSpace() != scroll_translation->Parent())
-      continue;
-    ++scroll_translation_it;
+    // Skip clips until we find one in the same space as |scroll_translation|.
+    while (clip_it != clips.rend() &&
+           &(*clip_it)->LocalTransformSpace() != scroll_translation->Parent()) {
+      clip_it++;
+    }
 
-    if (!ApplyPaintPropertiesWithoutExpansion(
-            PropertyTreeState(*last_transform, *last_clip, effect_root),
-            PropertyTreeState(*scroll_translation->UnaliasedParent(), *clip,
-                              effect_root)))
-      return false;
+    // Find the last clip in the same space as |scroll_translation|.
+    const ClipPaintPropertyNode* updated_last_clip = nullptr;
+    while (clip_it != clips.rend() &&
+           &(*clip_it)->LocalTransformSpace() == scroll_translation->Parent()) {
+      updated_last_clip = *clip_it;
+      clip_it++;
+    }
+
+    // Process all clips in the same space as |scroll_translation|.
+    if (updated_last_clip) {
+      if (!ApplyPaintPropertiesWithoutExpansion(
+              PropertyTreeState(*last_transform, *last_clip, effect_root),
+              PropertyTreeState(*scroll_translation->UnaliasedParent(),
+                                *updated_last_clip, effect_root))) {
+        return false;
+      }
+      last_clip = updated_last_clip;
+    }
 
     last_scroll_translation_result =
         ApplyScrollTranslation(root.Transform(), *scroll_translation);
-
     last_transform = scroll_translation;
-    last_clip = clip;
   }
 
   if (!ApplyPaintPropertiesWithoutExpansion(

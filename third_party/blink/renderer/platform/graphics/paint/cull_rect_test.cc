@@ -751,7 +751,7 @@ TEST_F(CullRectTest, ClipAndCompositedScrollAndClip) {
                                  absl::nullopt);
   EXPECT_EQ(IntRect(-4000, -3700, 8100, 8100), cull_rect.Rect());
 
-  // c2b is out of the expansion are of the composited scroll.
+  // c2b is out of the expansion area of the composited scroll.
   cull_rect = CullRect::Infinite();
   cull_rect.ApplyPaintProperties(
       root, root, PropertyTreeState(*scroll_translation, *c2b, e0()),
@@ -762,6 +762,27 @@ TEST_F(CullRectTest, ClipAndCompositedScrollAndClip) {
   cull_rect.ApplyPaintProperties(root, root, PropertyTreeState(*t2, *c2b, e0()),
                                  absl::nullopt);
   EXPECT_EQ(IntRect(), cull_rect.Rect());
+}
+
+// Test for multiple clips (e.g., overflow clip and inner border radius)
+// associated with the same scroll translation.
+TEST_F(CullRectTest, MultipleClips) {
+  ScopedCullRectUpdateForTest cull_rect_update(true);
+
+  auto t1 = Create2DTranslation(t0(), 0, 0);
+  auto scroll_translation = CreateCompositedScrollTranslation(
+      *t1, 0, 0, IntRect(0, 0, 100, 100), IntSize(100, 2000));
+  auto border_radius_clip =
+      CreateClip(c0(), *t1, FloatRoundedRect(0, 0, 100, 100));
+  auto scroll_clip =
+      CreateClip(*border_radius_clip, *t1, FloatRoundedRect(0, 0, 100, 100));
+
+  PropertyTreeState root = PropertyTreeState::Root();
+  PropertyTreeState source(*t1, c0(), e0());
+  PropertyTreeState destination(*scroll_translation, *scroll_clip, e0());
+  CullRect cull_rect(IntRect(0, 0, 800, 600));
+  cull_rect.ApplyPaintProperties(root, source, destination, absl::nullopt);
+  EXPECT_EQ(IntRect(0, 0, 100, 2000), cull_rect.Rect());
 }
 
 TEST_F(CullRectTest, IntersectsVerticalRange) {
