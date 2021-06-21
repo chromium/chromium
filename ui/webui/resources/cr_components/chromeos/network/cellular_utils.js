@@ -82,7 +82,6 @@
 
 /**
  * Determines if the current network is on the active sim slot.
- * TODO(cvandermerwe): Use this function in network-siminfo.
  * @param {?chromeos.networkConfig.mojom.NetworkStateProperties} networkState
  * @param {?chromeos.networkConfig.mojom.DeviceStateProperties} deviceState
  */

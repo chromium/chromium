@@ -255,21 +255,7 @@ Polymer({
    * @private
    */
   computeIsActiveSim_() {
-    const mojom = chromeos.networkConfig.mojom;
-    if (!this.networkState ||
-        this.networkState.type !== mojom.NetworkType.kCellular) {
-      return false;
-    }
-
-    const iccid = this.networkState.typeState.cellular.iccid;
-    if (!iccid || !this.deviceState || !this.deviceState.simInfos) {
-      return false;
-    }
-    const isActiveSim = this.deviceState.simInfos.find(simInfo => {
-      return simInfo.iccid === iccid && simInfo.isPrimary;
-    });
-
-    return !!isActiveSim;
+    return isActiveSim(this.networkState, this.deviceState);
   },
 
   /**
