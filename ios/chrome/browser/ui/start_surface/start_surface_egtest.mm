@@ -25,6 +25,9 @@
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  config.additional_args.push_back(
+      std::string("--force-fieldtrial-params=StartSurface.ShrinkLogo:"
+                  "ReturnToStartSurfaceInactiveDurationInSeconds/0"));
   return config;
 }
 
