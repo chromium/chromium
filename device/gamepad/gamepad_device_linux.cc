@@ -27,7 +27,7 @@
 #include "device/udev_linux/udev.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/dbus/permission_broker/permission_broker_client.h"  // nogncheck
+#include "chromeos/dbus/permission_broker/permission_broker_client.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace device {

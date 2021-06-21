@@ -72,7 +72,6 @@ source_set("api") {
       "clipboard/clipboard_api.h",
     ]
     deps += [
-      "//chromeos/dbus/permission_broker",
       "//components/prefs:prefs",
       "//ui/base/clipboard",
     ]
@@ -104,6 +103,7 @@ source_set("api") {
       "//chromeos/dbus",
       "//chromeos/dbus/media_analytics",
       "//chromeos/dbus/media_analytics:media_perception_proto",
+      "//chromeos/dbus/permission_broker",
       "//chromeos/dbus/upstart",
       "//chromeos/login/login_state",
       "//chromeos/services/media_perception/public/mojom",
