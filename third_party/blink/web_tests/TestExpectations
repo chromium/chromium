@@ -6591,10 +6591,6 @@ crbug.com/1208173 [ Mac ] external/wpt/css/css-paint-api/background-image-alpha.
 crbug.com/1208173 [ Mac ] external/wpt/css/filter-effects/backdrop-filter-basic-opacity-2.html [ Failure ]
 crbug.com/1208173 [ Mac ] external/wpt/css/filter-effects/css-filters-animation-opacity.html [ Failure ]
 crbug.com/1208173 [ Mac ] svg/custom/svg-root-with-opacity.html [ Failure ]
-crbug.com/1208173 [ Mac10.12 ] virtual/gpu/fast/canvas/canvas-composite-image.html [ Failure ]
-crbug.com/1208173 [ Mac10.13 ] virtual/gpu/fast/canvas/canvas-composite-image.html [ Failure ]
-crbug.com/1208173 [ Mac10.14 ] virtual/gpu/fast/canvas/canvas-composite-image.html [ Failure ]
-crbug.com/1208173 [ Mac10.15 ] virtual/gpu/fast/canvas/canvas-composite-image.html [ Failure ]
 crbug.com/1208173 [ Mac ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/background-image-alpha.https.html [ Failure ]
 crbug.com/1208173 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-composite-image.html [ Failure ]
 crbug.com/1208173 [ Mac ] virtual/oopr-canvas2d/fast/canvas/color-space/canvas-createImageBitmap-p3.html [ Failure ]
@@ -6945,7 +6941,6 @@ crbug.com/1201406 [ Mac11.0 ] http/tests/inspector-protocol/webauthn/webauthn-se
 crbug.com/1201406 [ Mac11.0 ] http/tests/inspector-protocol/webauthn/webauthn-user-verification.js [ Crash Timeout ]
 crbug.com/1201406 [ Mac11.0 ] plugins/focus-change-4-change-focus-and-blur.html [ Timeout ]
 crbug.com/1201406 [ Mac11.0 ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/iframe-navigation/parent-no-1-no-same-2-yes-port.sub.https.html [ Timeout ]
-crbug.com/1201406 [ Mac11.0 ] virtual/gpu/fast/canvas/canvas-composite-image.html [ Pass Timeout ]
 crbug.com/1201406 [ Mac11.0 ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-gradient-over-image.html [ Timeout ]
 crbug.com/1201406 [ Mac11.0 ] virtual/synchronous_html_parser/http/tests/inspector-protocol/webauthn/webauthn-clear-credentials.js [ Crash Timeout ]
 crbug.com/1201406 [ Mac11.0 ] virtual/synchronous_html_parser/http/tests/inspector-protocol/webauthn/webauthn-get-credentials.js [ Crash ]
@@ -6996,6 +6991,11 @@ crbug.com/1208389 http/tests/devtools/sources/debugger/debugger-scope-minified-v
 crbug.com/1208389 http/tests/devtools/sources/snippet-module.js [ Pass Failure ]
 crbug.com/1208389 http/tests/devtools/portals/portals-console.js [ Pass Failure ]
 crbug.com/1208389 virtual/portals/http/tests/devtools/portals/portals-console.js [ Pass Failure ]
+
+# Some flaky gpu canvas compositing
+crbug.com/1221326 virtual/gpu/fast/canvas/canvas-composite-image.html [ Pass Failure ]
+crbug.com/1221327 virtual/gpu/fast/canvas/canvas-composite-canvas.html [ Pass Failure ]
+crbug.com/1221420 virtual/gpu/fast/canvas/canvas-ellipse-zero-lineto.html [ Pass Failure ]
 
 # Temporarily disabled for https://crrev.com/c/2960211
 crbug.com/v8/11365 external/wpt/animation-worklet/idlharness.any.worker.html [ Pass Failure ]
