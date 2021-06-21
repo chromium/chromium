@@ -24,8 +24,12 @@ class FrameProcessingTimeEstimator {
   // calling FinishFrame() will deprecate last record.
   void StartFrame();
 
-  // Marks the finish of encoding a frame. Ignored if there is no
-  // corresponding StartFrame() call.
+  // Marks the finish of encoding a frame. If the frame has a link to a
+  // FrameStats object, the capture-started and encode-finished times will be
+  // taken from there instead of using TimeTicks::Now() in
+  // StartFrame()/FinishFrame().
+  // TODO(crbug.com/1192865): Remove StartFrame() and always use the frame's
+  // FrameStats.
   void FinishFrame(const WebrtcVideoEncoder::EncodedFrame& frame);
 
   // Sets the estimated network bandwidth. Negative |bandwidth_kbps| will be
