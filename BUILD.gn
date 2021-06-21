@@ -292,7 +292,10 @@ group("gn_all") {
   }
 
   if (enable_pdf) {
-    deps += [ "//third_party/pdfium/samples:pdfium_test" ]
+    deps += [
+      "//pdf/pdfium/fuzzers",
+      "//third_party/pdfium/samples:pdfium_test",
+    ]
   }
 
   if (enable_remoting) {
