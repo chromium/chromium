@@ -19,6 +19,7 @@
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -399,7 +400,8 @@ pp::PDF::PrivateAccessibilityPageObjects ToPrivateAccessibilityPageObjects(
   pp_page_objects.links.reserve(page_objects.links.size());
   for (const auto& link_info : page_objects.links) {
     pp_page_objects.links.push_back(
-        {link_info.url, link_info.index_in_page, link_info.text_range.index,
+        {link_info.url, link_info.index_in_page,
+         base::checked_cast<uint32_t>(link_info.text_range.index),
          link_info.text_range.count, PPFloatRectFromRectF(link_info.bounds)});
   }
 
@@ -414,7 +416,8 @@ pp::PDF::PrivateAccessibilityPageObjects ToPrivateAccessibilityPageObjects(
   for (const auto& highlight_info : page_objects.highlights) {
     pp_page_objects.highlights.push_back(
         {highlight_info.note_text, highlight_info.index_in_page,
-         highlight_info.text_range.index, highlight_info.text_range.count,
+         base::checked_cast<uint32_t>(highlight_info.text_range.index),
+         highlight_info.text_range.count,
          PPFloatRectFromRectF(highlight_info.bounds), highlight_info.color});
   }
 
