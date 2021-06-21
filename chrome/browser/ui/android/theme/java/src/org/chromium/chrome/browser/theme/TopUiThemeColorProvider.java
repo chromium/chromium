@@ -51,6 +51,9 @@ public class TopUiThemeColorProvider extends ThemeColorProvider {
     /** Whether the theme should apply while in dark mode. */
     private final boolean mAllowThemingInNightMode;
 
+    /** Whether bright theme colors are allowed. */
+    private final boolean mAllowBrightThemeColors;
+
     /** Whether or not the default color is used. */
     private boolean mIsDefaultColorUsed;
 
@@ -61,10 +64,11 @@ public class TopUiThemeColorProvider extends ThemeColorProvider {
      * @param isTabletSupplier Supplier of a boolean indicating we're on a tablet device.
      * @param allowThemingInNightMode Whether the tab theme should be used when the device is in
      *                                night mode.
+     * @param allowBrightThemeColors Whether the tab allows bright theme colors.
      */
     public TopUiThemeColorProvider(Context context, ObservableSupplier<Tab> tabSupplier,
             Supplier<Integer> activityThemeColorSupplier, BooleanSupplier isTabletSupplier,
-            boolean allowThemingInNightMode) {
+            boolean allowThemingInNightMode, boolean allowBrightThemeColors) {
         super(context);
         mTabObserver = new CurrentTabObserver(tabSupplier,
                 new EmptyTabObserver() {
@@ -84,6 +88,7 @@ public class TopUiThemeColorProvider extends ThemeColorProvider {
         mActivityThemeColorSupplier = activityThemeColorSupplier;
         mIsTabletSupplier = isTabletSupplier;
         mAllowThemingInNightMode = allowThemingInNightMode;
+        mAllowBrightThemeColors = allowBrightThemeColors;
     }
 
     /**
@@ -108,14 +113,10 @@ public class TopUiThemeColorProvider extends ThemeColorProvider {
     public int calculateColor(Tab tab, int themeColor) {
         // This method is used not only for the current tab but also for
         // any given tab. Therefore it should not alter any class state.
-        boolean isThemingAllowed = isThemingAllowed(tab);
-        boolean isUsingTabThemeColor = isThemingAllowed
-                && themeColor != TabState.UNSPECIFIED_THEME_COLOR
-                && ColorUtils.isValidThemeColor(themeColor);
-        if (!isUsingTabThemeColor) {
+        if (!isUsingTabThemeColor(tab, themeColor)) {
             themeColor = ChromeColors.getDefaultThemeColor(
                     tab.getContext().getResources(), tab.isIncognito());
-            if (isThemingAllowed) {
+            if (isThemingAllowed(tab)) {
                 int customThemeColor = mActivityThemeColorSupplier.get();
                 if (customThemeColor != TabState.UNSPECIFIED_THEME_COLOR) {
                     themeColor = customThemeColor;
@@ -131,12 +132,8 @@ public class TopUiThemeColorProvider extends ThemeColorProvider {
     private boolean isUsingDefaultColor(Tab tab, int themeColor) {
         // This method is used not only for the current tab but also for
         // any given tab. Therefore it should not alter any class state.
-        boolean isThemingAllowed = isThemingAllowed(tab);
-        boolean isUsingTabThemeColor = isThemingAllowed
-                && themeColor != TabState.UNSPECIFIED_THEME_COLOR
-                && ColorUtils.isValidThemeColor(themeColor);
-        return !(isUsingTabThemeColor
-                || (isThemingAllowed
+        return !(isUsingTabThemeColor(tab, themeColor)
+                || (isThemingAllowed(tab)
                         && mActivityThemeColorSupplier.get() != TabState.UNSPECIFIED_THEME_COLOR));
     }
 
@@ -149,6 +146,16 @@ public class TopUiThemeColorProvider extends ThemeColorProvider {
     public int getBackgroundColor(Tab tab) {
         // This method makes it easy to mock, test-friendly.
         return ThemeUtils.getBackgroundColor(tab);
+    }
+
+    /**
+     * @param tab Tab to get the theme color for.
+     * @param themeColor Initial color to calculate the theme color with.
+     * @return Whether the given tab is using the tab theme color.
+     */
+    private boolean isUsingTabThemeColor(Tab tab, int themeColor) {
+        return isThemingAllowed(tab) && themeColor != TabState.UNSPECIFIED_THEME_COLOR
+                && (mAllowBrightThemeColors || !ColorUtils.isThemeColorTooBright(themeColor));
     }
 
     /**

@@ -122,12 +122,13 @@ public class ColorUtils {
     }
 
     /**
-     * Determine if a theme color is valid. A theme color is invalid if its luminance is > 0.94.
+     * Determine if a theme color is too bright. A theme color is too bright if its luminance is >
+     * 0.94.
      * @param color The color to test.
-     * @return True if the theme color is valid.
+     * @return True if the theme color is too bright.
      */
-    public static boolean isValidThemeColor(int color) {
-        return ColorUtils.getLightnessForColor(color) <= MAX_LUMINANCE_FOR_VALID_THEME_COLOR;
+    public static boolean isThemeColorTooBright(int color) {
+        return ColorUtils.getLightnessForColor(color) > MAX_LUMINANCE_FOR_VALID_THEME_COLOR;
     }
 
     /**

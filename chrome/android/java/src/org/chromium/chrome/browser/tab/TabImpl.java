@@ -907,7 +907,7 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
                 appId = CriticalPersistedTabData.from(this).getOpenerAppId();
                 themeColor = CriticalPersistedTabData.from(this).getThemeColor();
                 hasThemeColor = themeColor != TabState.UNSPECIFIED_THEME_COLOR
-                        && ColorUtils.isValidThemeColor(themeColor);
+                        && !ColorUtils.isThemeColorTooBright(themeColor);
             } else if (tabState != null) {
                 appId = tabState.openerAppId;
                 themeColor = tabState.getThemeColor();

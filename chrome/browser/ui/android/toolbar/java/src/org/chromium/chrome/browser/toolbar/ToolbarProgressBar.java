@@ -450,7 +450,7 @@ public class ToolbarProgressBar extends ClipDrawableProgressBar {
         }
 
         // The default toolbar has specific colors to use.
-        if ((isDefaultTheme || !ColorUtils.isValidThemeColor(color)) && !isIncognito) {
+        if ((isDefaultTheme || ColorUtils.isThemeColorTooBright(color)) && !isIncognito) {
             setForegroundColor(ApiCompatibilityUtils.getColor(
                     getResources(), R.color.progress_bar_foreground));
             setBackgroundColor(ApiCompatibilityUtils.getColor(

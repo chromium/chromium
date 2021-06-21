@@ -79,4 +79,12 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         return activityType == ActivityType.TRUSTED_WEB_ACTIVITY
                 || activityType == ActivityType.WEB_APK;
     }
+
+    @Override
+    protected boolean shouldAllowBrightThemeColors() {
+        @ActivityType
+        int activityType = mActivity.getActivityType();
+        return activityType == ActivityType.TRUSTED_WEB_ACTIVITY
+                || activityType == ActivityType.WEB_APK;
+    }
 }

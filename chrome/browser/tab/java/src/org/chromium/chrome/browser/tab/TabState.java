@@ -50,6 +50,7 @@ public class TabState {
 
     /** @return True if the tab has a theme color set. */
     public boolean hasThemeColor() {
-        return themeColor != UNSPECIFIED_THEME_COLOR && ColorUtils.isValidThemeColor(themeColor);
+        return themeColor != UNSPECIFIED_THEME_COLOR
+                && !ColorUtils.isThemeColorTooBright(themeColor);
     }
 }

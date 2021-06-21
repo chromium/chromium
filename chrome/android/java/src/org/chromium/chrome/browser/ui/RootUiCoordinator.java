@@ -281,7 +281,7 @@ public class RootUiCoordinator
 
         mTopUiThemeColorProvider = new TopUiThemeColorProvider(mActivity, mActivityTabProvider,
                 mActivity::getActivityThemeColor, mActivity::isTablet,
-                shouldAllowThemingInNightMode());
+                shouldAllowThemingInNightMode(), shouldAllowBrightThemeColors());
     }
 
     // TODO(pnoland, crbug.com/865801): remove this in favor of wiring it directly.
@@ -905,6 +905,13 @@ public class RootUiCoordinator
      * device is in night mode.
      */
     protected boolean shouldAllowThemingInNightMode() {
+        return false;
+    }
+
+    /**
+     * Whether the top toolbar theme color provider should allow bright theme colors.
+     */
+    protected boolean shouldAllowBrightThemeColors() {
         return false;
     }
 
