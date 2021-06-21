@@ -29,6 +29,7 @@ struct KeyboardInfo {
   ConnectionType connection_type;
   string name;
   PhysicalLayout physical_layout;
+  bool has_assistant_key;
 };
 
 enum TouchDeviceType {

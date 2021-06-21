@@ -81,6 +81,8 @@ class TestInputDataProvider : public InputDataProvider {
       device_caps = ui::kHpUsbKeyboard;
     } else if (base_name == "event5") {
       device_caps = ui::kSarienKeyboard;
+    } else if (base_name == "event6") {
+      device_caps = ui::kEveKeyboard;
     }
 
     EXPECT_TRUE(ui::CapabilitiesToDeviceInfo(device_caps, dev_info.get()));
@@ -266,6 +268,31 @@ TEST_F(InputDataProviderTest, KeyboardPhysicalLayoutDetection) {
         run_loop.Quit();
       }));
   run_loop.Run();
+}
+
+TEST_F(InputDataProviderTest, KeyboardAssistantKeyDetection) {
+  base::RunLoop run_loop;
+  ui::DeviceEvent link_event(ui::DeviceEvent::DeviceType::INPUT,
+                             ui::DeviceEvent::ActionType::ADD,
+                             base::FilePath("/dev/input/event0"));
+  ui::DeviceEvent eve_event(ui::DeviceEvent::DeviceType::INPUT,
+                            ui::DeviceEvent::ActionType::ADD,
+                            base::FilePath("/dev/input/event6"));
+  provider_->OnDeviceEvent(link_event);
+  provider_->OnDeviceEvent(eve_event);
+
+  provider_->GetConnectedDevices(base::BindLambdaForTesting(
+      [&](std::vector<mojom::KeyboardInfoPtr> keyboards,
+          std::vector<mojom::TouchDeviceInfoPtr> touch_devices) {
+        EXPECT_EQ(2ul, keyboards.size());
+
+        mojom::KeyboardInfoPtr link_keyboard = keyboards[0].Clone();
+        EXPECT_EQ(0u, link_keyboard->id);
+        EXPECT_FALSE(link_keyboard->has_assistant_key);
+        mojom::KeyboardInfoPtr eve_keyboard = keyboards[1].Clone();
+        EXPECT_EQ(6u, eve_keyboard->id);
+        EXPECT_TRUE(eve_keyboard->has_assistant_key);
+      }));
 }
 
 TEST_F(InputDataProviderTest, ObserveConnectedDevices_Keyboards) {

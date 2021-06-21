@@ -3,7 +3,12 @@
   <ul id="keyboardList">
     <dom-repeat items="[[keyboards_]]" as="keyboard">
       <template>
-        <li>[[keyboard.name]] ([[keyboard.physicalLayout]])</li>
+        <li>
+          [[keyboard.name]] ([[keyboard.physicalLayout]])
+          <template is="dom-if" if="[[keyboard.hasAssistantKey]]">
+            (with Assistant key)
+          </template>
+        </li>
       </template>
     </dom-repeat>
   </ul>

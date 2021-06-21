@@ -1110,6 +1110,29 @@ const DeviceCapabilities kDrawciaStylusGarage = {
     /* ff */ "0",
 };
 
+// The built-in keyboard for Eve, which has an Assistant key.
+const DeviceCapabilities kEveKeyboard = {
+    /* path */ "/sys/devices/platform/i8042/serio0/input/input3/event3",
+    /* name */ "AT Translated Set 2 keyboard",
+    /* phys */ "isa0060/serio0/input0",
+    /* uniq */ "",
+    /* bustype */ "0011",
+    /* vendor */ "0001",
+    /* product */ "0001",
+    /* version */ "ab83",
+    /* prop */ "0",
+    /* ev */ "120013",
+    /* key */
+    "88 0 0 0 0 0 402000000 3003078f800d001 feffffdfffefffff "
+    "fffffffffffffffe",
+    /* rel */ "0",
+    /* abs */ "0",
+    /* msc */ "10",
+    /* sw */ "0",
+    /* led */ "7",
+    /* ff */ "0",
+};
+
 // The built-in keyboard on Sarien, which has a few more keys than normal.
 const DeviceCapabilities kSarienKeyboard = {
     /* path */ "/sys/devices/platform/i8042/serio0/input/input2/event2",

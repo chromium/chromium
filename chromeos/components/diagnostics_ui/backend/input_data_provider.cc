@@ -194,6 +194,8 @@ void InputDataProvider::AddKeyboard(int id,
     // and Dell KM713 Chrome keyboard.
   }
 
+  keyboards_[id]->has_assistant_key = device_info->HasKeyEvent(KEY_ASSISTANT);
+
   for (auto& observer : connected_devices_observers_) {
     observer->OnKeyboardConnected(keyboards_[id]->Clone());
   }

@@ -67,6 +67,7 @@ export function inputListTestSuite() {
       connectionType: ConnectionType.kUsb,
       name: 'Sample USB keyboard',
       physicalLayout: PhysicalLayout.kUnknown,
+      hasAssistantKey: false,
     };
     return initializeInputList()
         .then(() => {

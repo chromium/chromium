@@ -93,6 +93,7 @@ extern const DeviceCapabilities kDrallionStylus;
 extern const DeviceCapabilities kDellActivePenButton;
 extern const DeviceCapabilities kPuffMicrophoneMuteSwitch;
 extern const DeviceCapabilities kDrawciaStylusGarage;
+extern const DeviceCapabilities kEveKeyboard;
 extern const DeviceCapabilities kSarienKeyboard;
 }  // namspace ui
 
