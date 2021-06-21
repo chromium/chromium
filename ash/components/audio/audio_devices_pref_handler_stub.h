@@ -57,7 +57,7 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) AudioDevicesPrefHandlerStub
   AudioDeviceVolumeGain audio_device_volume_gain_map_;
   AudioDeviceStateMap audio_device_state_map_;
 
-  bool noise_cancellation_state_ = false;
+  bool noise_cancellation_state_ = true;
 
   DISALLOW_COPY_AND_ASSIGN(AudioDevicesPrefHandlerStub);
 };

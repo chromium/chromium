@@ -463,7 +463,7 @@ const base::Feature kInstantTethering{"InstantTethering",
 
 // Enables or disables noise cancellation UI toggle.
 const base::Feature kEnableInputNoiseCancellationUi{
-    "EnableInputNoiseCancellationUi", base::FEATURE_DISABLED_BY_DEFAULT};
+    "EnableInputNoiseCancellationUi", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables the Kerberos Section in ChromeOS settings. When disabled, Kerberos
 // settings will stay under People Section. https://crbug.com/983041
