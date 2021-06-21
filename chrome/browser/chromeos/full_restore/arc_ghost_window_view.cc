@@ -82,6 +82,7 @@ void ArcGhostWindowView::InitLayout(uint32_t theme_color, int diameter) {
   auto* throbber = AddChildView(std::make_unique<Throbber>(
       color_utils::GetColorWithMaxContrast(theme_color)));
   throbber->SetPreferredSize({diameter, diameter});
+  throbber->GetViewAccessibility().OverrideRole(ax::mojom::Role::kImage);
 
   // TODO(sstan): Set window title and accessible name from saved data.
 }
