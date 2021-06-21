@@ -51,9 +51,7 @@ void QuotaManagerHost::AddChangeListener(
     mojo::PendingRemote<blink::mojom::QuotaChangeListener> mojo_listener,
     AddChangeListenerCallback callback) {
   if (quota_change_dispatcher_) {
-    // TODO(crbug.com/1215208): Change to StorageKey instead of an Origin when
-    // the QuotaChangeDispatcher interface has changed.
-    quota_change_dispatcher_->AddChangeListener(storage_key_.origin(),
+    quota_change_dispatcher_->AddChangeListener(storage_key_,
                                                 std::move(mojo_listener));
   }
   std::move(callback).Run();
