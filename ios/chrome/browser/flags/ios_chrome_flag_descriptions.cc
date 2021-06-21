@@ -180,6 +180,10 @@ const char kEnableCloseAllTabsConfirmationDescription[] =
     "Enable showing an action sheet that asks for confirmation when 'Close "
     "All' button is tapped on the tab grid to avoid unwanted clearing.";
 
+const char kEnableDiscoverFeedPreviewName[] = "Enable discover feed preview";
+const char kEnableDiscoverFeedPreviewDescription[] =
+    "Enable showing a live preview for discover feed long-press menu.";
+
 const char kEnableExtendedSyncPromosCapabilityName[] =
     "Enables reading the extended sync promo account capability";
 const char kEnableExtendedSyncPromosCapabilityDescription[] =

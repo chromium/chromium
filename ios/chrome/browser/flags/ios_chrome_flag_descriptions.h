@@ -159,6 +159,11 @@ extern const char kEnableAutofillAddressSavePromptDescription[];
 extern const char kEnableCloseAllTabsConfirmationName[];
 extern const char kEnableCloseAllTabsConfirmationDescription[];
 
+// Title and description for the flag to enable the discover feed live preview
+// in long-press feed context menu.
+extern const char kEnableDiscoverFeedPreviewName[];
+extern const char kEnableDiscoverFeedPreviewDescription[];
+
 // Title and description for the flag to enable reading the extended sync promo
 // account capability from IdentityKit libraries.
 extern const char kEnableExtendedSyncPromosCapabilityName[];
