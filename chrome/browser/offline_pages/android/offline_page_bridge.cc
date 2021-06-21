@@ -159,11 +159,14 @@ void ValidateFileCallback(
     const base::FilePath& file_path,
     bool is_trusted) {
   // If trusted, the launch url will be the http/https url of the offline
-  // page. Otherwise, the launch url will be the file URL pointing to the
-  // archive file of the offline page.
+  // page. If the file path is content URI, directly open it. Otherwise, the
+  // launch url will be the file URL pointing to the archive file of the offline
+  // page.
   GURL launch_url;
   if (is_trusted)
     launch_url = url;
+  else if (file_path.IsContentUri())
+    launch_url = GURL(file_path.value());
   else
     launch_url = net::FilePathToFileURL(file_path);
   offline_pages::OfflinePageHeader offline_header;
