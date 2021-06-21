@@ -89,9 +89,13 @@ CSSParserContext::CSSParserContext(CSSParserMode mode,
                        ResourceFetchRestriction::kNone) {}
 
 CSSParserContext::CSSParserContext(const Document& document)
+    : CSSParserContext(document, document.BaseURL()) {}
+
+CSSParserContext::CSSParserContext(const Document& document,
+                                   const KURL& base_url_override)
     : CSSParserContext(
           document,
-          document.BaseURL(),
+          base_url_override,
           true /* origin_clean */,
           Referrer(document.GetExecutionContext()
                        ? document.GetExecutionContext()->OutgoingReferrer()

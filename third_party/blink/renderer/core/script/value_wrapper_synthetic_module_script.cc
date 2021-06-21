@@ -47,8 +47,13 @@ ValueWrapperSyntheticModuleScript::CreateCSSWrapperSyntheticModuleScript(
         ScriptFetchOptions(), error);
   }
   CSSStyleSheetInit* init = CSSStyleSheetInit::Create();
-  CSSStyleSheet* style_sheet =
-      CSSStyleSheet::Create(*context_window->document(), init, exception_state);
+  // The base URL used to construct the CSSStyleSheet is also used for
+  // DevTools as the CSS source URL. This is fine since these two values
+  // are always the same for CSS module scripts.
+  DCHECK_EQ(params.BaseURL(), params.SourceURL());
+  CSSStyleSheet* style_sheet = CSSStyleSheet::Create(
+      *context_window->document(), params.BaseURL(), init, exception_state);
+  style_sheet->SetIsForCSSModuleScript();
   if (exception_state.HadException()) {
     v8::Local<v8::Value> error = exception_state.GetException();
     exception_state.ClearException();

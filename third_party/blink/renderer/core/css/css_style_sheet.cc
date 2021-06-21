@@ -95,37 +95,21 @@ const Document* CSSStyleSheet::SingleOwnerDocument(
 CSSStyleSheet* CSSStyleSheet::Create(Document& document,
                                      const CSSStyleSheetInit* options,
                                      ExceptionState& exception_state) {
-  auto* parser_context = MakeGarbageCollected<CSSParserContext>(document);
+  return CSSStyleSheet::Create(document, document.BaseURL(), options,
+                               exception_state);
+}
+
+CSSStyleSheet* CSSStyleSheet::Create(Document& document,
+                                     const KURL& base_url,
+                                     const CSSStyleSheetInit* options,
+                                     ExceptionState& exception_state) {
+  auto* parser_context =
+      MakeGarbageCollected<CSSParserContext>(document, base_url);
   if (AdTracker::IsAdScriptExecutingInDocument(&document))
     parser_context->SetIsAdRelated();
 
-  // Following steps at spec draft
-  // https://wicg.github.io/construct-stylesheets/#dom-cssstylesheet-cssstylesheet
   auto* contents = MakeGarbageCollected<StyleSheetContents>(parser_context);
-  CSSStyleSheet* sheet = MakeGarbageCollected<CSSStyleSheet>(contents, nullptr);
-  sheet->SetConstructorDocument(document);
-  sheet->SetTitle(options->title());
-  sheet->ClearOwnerNode();
-  sheet->ClearOwnerRule();
-  contents->RegisterClient(sheet);
-  scoped_refptr<MediaQuerySet> media_query_set;
-  switch (options->media()->GetContentType()) {
-    case V8UnionMediaListOrString::ContentType::kMediaList:
-      media_query_set = options->media()->GetAsMediaList()->Queries()->Copy();
-      break;
-    case V8UnionMediaListOrString::ContentType::kString:
-      media_query_set = MediaQuerySet::Create(options->media()->GetAsString(),
-                                              document.GetExecutionContext());
-      break;
-  }
-  auto* media_list = MakeGarbageCollected<MediaList>(
-      media_query_set, const_cast<CSSStyleSheet*>(sheet));
-  sheet->SetMedia(media_list);
-  if (options->alternate())
-    sheet->SetAlternateFromConstructor(true);
-  if (options->disabled())
-    sheet->setDisabled(true);
-  return sheet;
+  return MakeGarbageCollected<CSSStyleSheet>(contents, document, options);
 }
 
 CSSStyleSheet* CSSStyleSheet::CreateInline(StyleSheetContents* sheet,
@@ -167,6 +151,36 @@ CSSStyleSheet::CSSStyleSheet(StyleSheetContents* contents,
       owner_rule_(owner_rule),
       start_position_(TextPosition::MinimumPosition()) {
   contents_->RegisterClient(this);
+}
+
+CSSStyleSheet::CSSStyleSheet(StyleSheetContents* contents,
+                             Document& document,
+                             const CSSStyleSheetInit* options)
+    : CSSStyleSheet(contents, nullptr) {
+  // Following steps at spec draft
+  // https://wicg.github.io/construct-stylesheets/#dom-cssstylesheet-cssstylesheet
+  SetConstructorDocument(document);
+  SetTitle(options->title());
+  ClearOwnerNode();
+  ClearOwnerRule();
+  Contents()->RegisterClient(this);
+  scoped_refptr<MediaQuerySet> media_query_set;
+  switch (options->media()->GetContentType()) {
+    case V8UnionMediaListOrString::ContentType::kMediaList:
+      media_query_set = options->media()->GetAsMediaList()->Queries()->Copy();
+      break;
+    case V8UnionMediaListOrString::ContentType::kString:
+      media_query_set = MediaQuerySet::Create(options->media()->GetAsString(),
+                                              document.GetExecutionContext());
+      break;
+  }
+  auto* media_list = MakeGarbageCollected<MediaList>(
+      media_query_set, const_cast<CSSStyleSheet*>(this));
+  SetMedia(media_list);
+  if (options->alternate())
+    SetAlternateFromConstructor(true);
+  if (options->disabled())
+    setDisabled(true);
 }
 
 CSSStyleSheet::CSSStyleSheet(StyleSheetContents* contents,

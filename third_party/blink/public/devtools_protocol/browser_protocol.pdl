@@ -1265,7 +1265,9 @@ experimental domain CSS
       StyleSheetId styleSheetId
       # Owner frame identifier.
       Page.FrameId frameId
-      # Stylesheet resource URL.
+      # Stylesheet resource URL. Empty if this is a constructed stylesheet created using
+      # new CSSStyleSheet() (but non-empty if this is a constructed sylesheet imported
+      # as a CSS module script).
       string sourceURL
       # URL of source map associated with the stylesheet (if any).
       optional string sourceMapURL
@@ -1287,7 +1289,8 @@ experimental domain CSS
       # <link> element's stylesheets become mutable only if DevTools modifies them.
       # Constructed stylesheets (new CSSStyleSheet()) are mutable immediately after creation.
       boolean isMutable
-      # Whether this stylesheet is a constructed stylesheet (created using new CSSStyleSheet()).
+      # True if this stylesheet is created through new CSSStyleSheet() or imported as a
+      # CSS module script.
       boolean isConstructed
       # Line offset of the stylesheet within the resource (zero based).
       number startLine

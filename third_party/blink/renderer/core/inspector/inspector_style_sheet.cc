@@ -1613,12 +1613,25 @@ InspectorStyleSheet::BuildObjectForStyleSheetInfo() {
         text_length, *line_endings, start);
   }
 
+  // DevTools needs to be able to distinguish between constructed
+  // stylesheets created with `new` and constructed stylesheets
+  // imported as a CSS module. Only the latter have a separate
+  // source file to display.
+  // For constructed stylesheets created with `new`, Url()
+  // returns the URL of the document in which the sheet was created,
+  // which may confuse the client. Only set the URL if we have a
+  // proper URL of the source of the stylesheet.
+  const String& source_url =
+      (style_sheet->IsConstructed() && !style_sheet->IsForCSSModuleScript())
+          ? String()
+          : Url();
+
   std::unique_ptr<protocol::CSS::CSSStyleSheetHeader> result =
       protocol::CSS::CSSStyleSheetHeader::create()
           .setStyleSheetId(Id())
           .setOrigin(origin_)
           .setDisabled(style_sheet->disabled())
-          .setSourceURL(Url())
+          .setSourceURL(source_url)
           .setTitle(style_sheet->title())
           .setFrameId(frame ? IdentifiersFactory::FrameId(frame) : "")
           .setIsInline(style_sheet->IsInline() && !StartsAtZero())

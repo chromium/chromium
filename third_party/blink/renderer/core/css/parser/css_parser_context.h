@@ -58,6 +58,7 @@ class CORE_EXPORT CSSParserContext final
                    SelectorProfile = kLiveProfile,
                    const Document* use_counter_document = nullptr);
   explicit CSSParserContext(const Document&);
+  CSSParserContext(const Document&, const KURL& base_url_override);
   CSSParserContext(const Document&,
                    const KURL& base_url_override,
                    bool origin_clean,

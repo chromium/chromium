@@ -60,7 +60,10 @@ class CORE_EXPORT CSSStyleSheet final : public StyleSheet {
   static CSSStyleSheet* Create(Document&,
                                const CSSStyleSheetInit*,
                                ExceptionState&);
-
+  static CSSStyleSheet* Create(Document&,
+                               const KURL& base_url,
+                               const CSSStyleSheetInit*,
+                               ExceptionState&);
   static CSSStyleSheet* CreateInline(
       Node&,
       const KURL&,
@@ -73,6 +76,7 @@ class CORE_EXPORT CSSStyleSheet final : public StyleSheet {
 
   explicit CSSStyleSheet(StyleSheetContents*,
                          CSSImportRule* owner_rule = nullptr);
+  CSSStyleSheet(StyleSheetContents*, Document&, const CSSStyleSheetInit*);
   CSSStyleSheet(
       StyleSheetContents*,
       Node& owner_node,
@@ -209,6 +213,8 @@ class CORE_EXPORT CSSStyleSheet final : public StyleSheet {
   void SetAlternateFromConstructor(bool);
   bool CanBeActivated(const String& current_preferrable_name) const;
   bool IsConstructed() const { return ConstructorDocument(); }
+  void SetIsForCSSModuleScript() { is_for_css_module_script_ = true; }
+  bool IsForCSSModuleScript() const { return is_for_css_module_script_; }
 
   void Trace(Visitor*) const override;
 
@@ -247,6 +253,7 @@ class CORE_EXPORT CSSStyleSheet final : public StyleSheet {
 
   Member<StyleSheetContents> contents_;
   bool is_inline_stylesheet_ = false;
+  bool is_for_css_module_script_ = false;
   bool is_disabled_ = false;
   bool load_completed_ = false;
   // This alternate variable is only used for constructed CSSStyleSheet.
