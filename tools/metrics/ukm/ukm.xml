@@ -2247,6 +2247,11 @@ be describing additional metrics about the same event.
       The minimum number of tokens parsed as a chunk.
     </summary>
   </metric>
+  <metric name="TokensParsedTotal">
+    <summary>
+      The total number of tokens parsed across all chunks.
+    </summary>
+  </metric>
   <metric name="YieldedTimeAverage">
     <summary>
       The average time between parsing of two chunks, in microseconds. Will be

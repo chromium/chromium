@@ -1327,8 +1327,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>dom-dev@chromium.org</owner>
   <summary>
     While parsing a page, the average number of tokens parsed across all chunks.
-    This version is for Forced Synchronous HTML Parsing. This version is for
-    Forced Synchronous HTML Parsing.
+    This version is for Forced Synchronous HTML Parsing.
 
     This histogram does not record metrics on machines with low-resolution
     clocks.
@@ -1379,6 +1378,31 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     While parsing a page, the minimum number of tokens parsed as a chunk. This
     version is for Forced Synchronous HTML Parsing.
+
+    This histogram does not record metrics on machines with low-resolution
+    clocks.
+  </summary>
+</histogram>
+
+<histogram name="Blink.HTMLParsing.TokensParsedTotal" units="tokens"
+    expires_after="2021-10-04">
+  <owner>schenney@chromium.org</owner>
+  <owner>dom-dev@chromium.org</owner>
+  <summary>
+    While parsing a page, the total number of tokens parsed across all chunks.
+
+    This histogram does not record metrics on machines with low-resolution
+    clocks.
+  </summary>
+</histogram>
+
+<histogram name="Blink.HTMLParsing.TokensParsedTotal2" units="tokens"
+    expires_after="2021-10-04">
+  <owner>schenney@chromium.org</owner>
+  <owner>dom-dev@chromium.org</owner>
+  <summary>
+    While parsing a page, the total number of tokens parsed across all chunks.
+    This version is for Forced Synchronous HTML Parsing.
 
     This histogram does not record metrics on machines with low-resolution
     clocks.

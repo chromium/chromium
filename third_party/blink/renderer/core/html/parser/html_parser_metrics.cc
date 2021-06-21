@@ -68,6 +68,8 @@ void HTMLParserMetrics::ReportBackgroundParsingUMA() {
                              min_tokens_parsed_);
   UMA_HISTOGRAM_COUNTS_1M("Blink.HTMLParsing.TokensParsedAverage",
                           total_tokens_parsed_ / chunk_count_);
+  UMA_HISTOGRAM_COUNTS_10M("Blink.HTMLParsing.TokensParsedTotal",
+                           total_tokens_parsed_);
 
   // Only report yield data if we actually yielded.
   if (max_yield_interval_ != base::TimeDelta()) {
@@ -107,6 +109,8 @@ void HTMLParserMetrics::ReportForcedSynchronousParsingUMA() {
                              min_tokens_parsed_);
   UMA_HISTOGRAM_COUNTS_1M("Blink.HTMLParsing.TokensParsedAverage2",
                           total_tokens_parsed_ / chunk_count_);
+  UMA_HISTOGRAM_COUNTS_10M("Blink.HTMLParsing.TokensParsedTotal2",
+                           total_tokens_parsed_);
 
   // Only report yield data if we actually yielded.
   if (max_yield_interval_ != base::TimeDelta()) {
@@ -147,6 +151,7 @@ void HTMLParserMetrics::ReportMetricsAtParseEnd(bool background_parsing) {
   builder.SetTokensParsedMax(max_tokens_parsed_);
   builder.SetTokensParsedMin(min_tokens_parsed_);
   builder.SetTokensParsedAverage(total_tokens_parsed_ / chunk_count_);
+  builder.SetTokensParsedTotal(total_tokens_parsed_);
   if (accumulated_yield_intervals_ != base::TimeDelta()) {
     builder.SetYieldedTimeMax(max_yield_interval_.InMicroseconds());
     builder.SetYieldedTimeMin(min_yield_interval_.InMicroseconds());
