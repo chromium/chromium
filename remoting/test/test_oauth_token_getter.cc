@@ -116,7 +116,7 @@ void TestOAuthTokenGetter::InvalidateCache() {
   is_authenticating_ = true;
 
   printf(
-      "Is your account whitelisted to use 1P scope in consent page? [Y/n]: ");
+      "Is your account allowlisted to use 1P scope in consent page? [Y/n]: ");
   bool show_consent_page = test::ReadYNBool(true);
 
   static const std::string read_auth_code_prompt = base::StringPrintf(

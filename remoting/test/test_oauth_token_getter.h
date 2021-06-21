@@ -24,7 +24,7 @@ class TestTokenStorage;
 
 // An OAuthTokenGetter implementation for testing that runs the authentication
 // flow on the console.
-// If the account is whitelisted to use 1P scope with consent page then it will
+// If the account is allowlisted to use 1P scope with consent page then it will
 // store the refresh token, otherwise it will just cache the access token, which
 // will expire in ~1h.
 class TestOAuthTokenGetter final : public OAuthTokenGetter {

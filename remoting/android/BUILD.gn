@@ -25,7 +25,7 @@ generate_jni("jni_headers") {
 _raw_resources_base_dir = "$target_gen_dir/credits_resources_raw/res"
 
 # The target is named this way, instead of "..._raw_resources", specifically
-# to avoid matching any of the _java_target_whitelist items in
+# to avoid matching any of the _java_resource_patterns items in
 # build/config/android/internal_rules.gni
 remoting_credits("credits_resources_raw") {
   credits_gen_dir = "$_raw_resources_base_dir/raw"
