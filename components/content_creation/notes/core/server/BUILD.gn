@@ -27,6 +27,8 @@ static_library("server") {
     "//services/network/public/cpp",
     "//url",
   ]
+
+  public_deps = [ "//components/version_info" ]
 }
 
 proto_library("proto") {

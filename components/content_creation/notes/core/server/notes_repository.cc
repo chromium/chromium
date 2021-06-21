@@ -4,6 +4,9 @@
 
 #include "components/content_creation/notes/core/server/notes_repository.h"
 
+#include "base/check.h"
+#include "base/notreached.h"
+#include "components/content_creation/notes/core/note_features.h"
 #include "components/content_creation/notes/core/server/notes_server_saver.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -12,14 +15,21 @@ namespace content_creation {
 
 NotesRepository::NotesRepository(
     signin::IdentityManager* identity_manager,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    version_info::Channel channel)
     : identity_manager_(identity_manager),
-      url_loader_factory_(url_loader_factory) {}
+      url_loader_factory_(url_loader_factory),
+      channel_(channel) {}
 
 NotesRepository::~NotesRepository() = default;
 
 void NotesRepository::PublishNote(const NoteData& note_data,
                                   PublishNoteCallback callback) {
+  // Only start publishing if the functionality is available.
+  if (!IsPublishAvailable()) {
+    return;
+  }
+
   notes_saver_ = std::make_unique<NotesServerSaver>(
       url_loader_factory_, identity_manager_, note_data,
       base::BindOnce(&NotesRepository::OnNotePublished,
@@ -28,11 +38,17 @@ void NotesRepository::PublishNote(const NoteData& note_data,
   notes_saver_->Start();
 }
 
+bool NotesRepository::IsPublishAvailable() const {
+  return channel_ == version_info::Channel::CANARY && IsPublishEnabled();
+}
+
 // Used for tests.
-NotesRepository::NotesRepository() = default;
+NotesRepository::NotesRepository() : channel_(version_info::Channel::UNKNOWN) {}
 
 void NotesRepository::OnNotePublished(PublishNoteCallback callback,
                                       SaveNoteResponse save_response) {
+  DCHECK(IsPublishAvailable());
+
   notes_saver_.reset();
 
   NOTIMPLEMENTED();

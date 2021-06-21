@@ -7,6 +7,7 @@
 #include "base/memory/singleton.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/common/channel_info.h"
 #include "components/content_creation/notes/core/note_service.h"
 #include "components/content_creation/notes/core/server/notes_repository.h"
 #include "components/content_creation/notes/core/templates/template_store.h"
@@ -45,7 +46,8 @@ KeyedService* NoteServiceFactory::BuildServiceInstanceFor(
                          std::make_unique<NotesRepository>(
                              IdentityManagerFactory::GetForProfile(profile),
                              context->GetDefaultStoragePartition()
-                                 ->GetURLLoaderFactoryForBrowserProcess()));
+                                 ->GetURLLoaderFactoryForBrowserProcess(),
+                             chrome::GetChannel()));
 }
 
 }  // namespace content_creation

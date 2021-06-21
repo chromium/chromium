@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/content_creation/notes/core/server/note_data.h"
 #include "components/content_creation/notes/core/server/save_note_response.h"
+#include "components/version_info/channel.h"
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -28,9 +29,10 @@ class NotesServerSaver;
 // Instance in charge of saving and publishing the notes to the server.
 class NotesRepository {
  public:
-  explicit NotesRepository(
+  NotesRepository(
       signin::IdentityManager* identity_manager,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      version_info::Channel channel);
   virtual ~NotesRepository();
 
   // Not copyable or movable.
@@ -41,6 +43,9 @@ class NotesRepository {
   // results and URL to access the published note.
   virtual void PublishNote(const NoteData& note_data,
                            PublishNoteCallback callback);
+
+  // Returns whether the publishing functionality is available.
+  bool IsPublishAvailable() const;
 
  protected:
   // Used for tests.
@@ -53,6 +58,7 @@ class NotesRepository {
   signin::IdentityManager* identity_manager_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<NotesServerSaver> notes_saver_;
+  const version_info::Channel channel_;
 
   base::WeakPtrFactory<NotesRepository> weak_ptr_factory_{this};
 };
