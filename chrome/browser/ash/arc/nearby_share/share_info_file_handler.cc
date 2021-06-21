@@ -123,11 +123,13 @@ void ShareInfoFileHandler::StartPreparingFiles(CompletedCallback callback) {
   if (!base::PathExists(file_config_.directory)) {
     LOG(ERROR) << "Share directory does not exist: " << file_config_.directory;
     std::move(callback).Run(false);
+    return;
   }
 
   if (!g_browser_process) {
     LOG(ERROR) << "Unexpected null g_browser_process";
     std::move(callback).Run(false);
+    return;
   }
 
   // |profile_| needs to be checked with ProfileManager::IsValidProfile
@@ -136,11 +138,13 @@ void ShareInfoFileHandler::StartPreparingFiles(CompletedCallback callback) {
       !g_browser_process->profile_manager()->IsValidProfile(profile_)) {
     LOG(ERROR) << "Invalid profile: " << profile_->GetProfileUserName();
     std::move(callback).Run(false);
+    return;
   }
 
   if (file_config_.directory.empty()) {
     LOG(ERROR) << "Base directory is empty.";
     std::move(callback).Run(false);
+    return;
   }
 
   VLOG(1) << "Creating unique directory for share and converting URLs to files";
@@ -248,6 +252,7 @@ void ShareInfoFileHandler::OnCreatedDirectoryAndStreamedFiles(
   if (!result) {
     LOG(ERROR) << "Failed to prepare temp directory and stream files.";
     std::move(callback).Run(false);
+    return;
   }
 
   std::move(callback).Run(true);
