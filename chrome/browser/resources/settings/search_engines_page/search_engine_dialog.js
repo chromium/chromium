@@ -10,62 +10,80 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 
 import {SearchEngine, SearchEnginesBrowserProxy, SearchEnginesBrowserProxyImpl, SearchEnginesInfo} from './search_engines_browser_proxy.js';
 
-Polymer({
-  is: 'settings-search-engine-dialog',
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {WebUIListenerBehaviorInterface}
+ */
+const SettingsSearchEngineDialogElementBase =
+    mixinBehaviors([WebUIListenerBehavior], PolymerElement);
 
-  behaviors: [WebUIListenerBehavior],
+/** @polymer */
+class SettingsSearchEngineDialogElement extends
+    SettingsSearchEngineDialogElementBase {
+  static get is() {
+    return 'settings-search-engine-dialog';
+  }
 
-  properties: {
-    /**
-     * The search engine to be edited. If not populated a new search engine
-     * should be added.
-     * @type {?SearchEngine}
-     */
-    model: Object,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /** @private {string} */
-    searchEngine_: String,
+  static get properties() {
+    return {
+      /**
+       * The search engine to be edited. If not populated a new search engine
+       * should be added.
+       * @type {?SearchEngine}
+       */
+      model: Object,
 
-    /** @private {string} */
-    keyword_: String,
+      /** @private {string} */
+      searchEngine_: String,
 
-    /** @private {string} */
-    queryUrl_: String,
+      /** @private {string} */
+      keyword_: String,
 
-    /** @private {string} */
-    dialogTitle_: String,
+      /** @private {string} */
+      queryUrl_: String,
 
-    /** @private {string} */
-    actionButtonText_: String,
-  },
+      /** @private {string} */
+      dialogTitle_: String,
 
-  /** @private {SearchEnginesBrowserProxy} */
-  browserProxy_: null,
+      /** @private {string} */
+      actionButtonText_: String,
 
-  /**
-   * The |modelIndex| to use when a new search engine is added. Must match with
-   * kNewSearchEngineIndex constant specified at
-   * chrome/browser/ui/webui/settings/search_engines_handler.cc
-   * @type {number}
-   */
-  DEFAULT_MODEL_INDEX: -1,
+    };
+  }
 
   /** @override */
-  created() {
+  constructor() {
+    super();
+
+    /** @private {SearchEnginesBrowserProxy} */
     this.browserProxy_ = SearchEnginesBrowserProxyImpl.getInstance();
-  },
+
+    /**
+     * The |modelIndex| to use when a new search engine is added. Must match
+     * with kNewSearchEngineIndex constant specified at
+     * chrome/browser/ui/webui/settings/search_engines_handler.cc
+     * @type {number}
+     */
+    this.DEFAULT_MODEL_INDEX = -1;
+  }
 
   /** @override */
   ready() {
+    super.ready();
+
     if (this.model) {
       this.dialogTitle_ =
           loadTimeData.getString('searchEnginesEditSearchEngine');
@@ -87,15 +105,17 @@ Polymer({
 
     this.addWebUIListener(
         'search-engines-changed', this.enginesChanged_.bind(this));
-  },
+  }
 
   /** @override */
-  attached() {
-    this.async(this.updateActionButtonState_.bind(this));
+  connectedCallback() {
+    super.connectedCallback();
+
+    window.setTimeout(this.updateActionButtonState_.bind(this), 0);
     this.browserProxy_.searchEngineEditStarted(
         this.model ? this.model.modelIndex : this.DEFAULT_MODEL_INDEX);
     this.$.dialog.showModal();
-  },
+  }
 
   /**
    * @param {!SearchEnginesInfo} searchEnginesInfo
@@ -115,19 +135,19 @@ Polymer({
 
     [this.$.searchEngine, this.$.keyword, this.$.queryUrl].forEach(
         element => this.validateElement_(element));
-  },
+  }
 
   /** @private */
   cancel_() {
     /** @type {!CrDialogElement} */ (this.$.dialog).cancel();
-  },
+  }
 
   /** @private */
   onActionButtonTap_() {
     this.browserProxy_.searchEngineEditCompleted(
         this.searchEngine_, this.keyword_, this.queryUrl_);
     this.$.dialog.close();
-  },
+  }
 
   /**
    * @param {!Element} inputElement
@@ -148,7 +168,7 @@ Polymer({
           inputElement.invalid = !isValid;
           this.updateActionButtonState_();
         });
-  },
+  }
 
   /**
    * @param {!Event} event
@@ -157,7 +177,7 @@ Polymer({
   validate_(event) {
     const inputElement = /** @type {!Element} */ (event.target);
     this.validateElement_(inputElement);
-  },
+  }
 
   /** @private */
   updateActionButtonState_() {
@@ -167,5 +187,8 @@ Polymer({
       return !inputElement.invalid && inputElement.value.length > 0;
     });
     this.$.actionButton.disabled = !allValid;
-  },
-});
+  }
+}
+
+customElements.define(
+    SettingsSearchEngineDialogElement.is, SettingsSearchEngineDialogElement);

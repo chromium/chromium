@@ -15,42 +15,58 @@ import '../site_favicon.js';
 
 import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {FocusRowBehavior} from 'chrome://resources/js/cr/ui/focus_row_behavior.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {FocusRowBehavior, FocusRowBehaviorInterface} from 'chrome://resources/js/cr/ui/focus_row_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SearchEngine, SearchEnginesBrowserProxy, SearchEnginesBrowserProxyImpl} from './search_engines_browser_proxy.js';
 
-Polymer({
-  is: 'settings-search-engine-entry',
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {FocusRowBehaviorInterface}
+ */
+const SettingsSearchEngineEntryElementBase =
+    mixinBehaviors([FocusRowBehavior], PolymerElement);
 
-  behaviors: [FocusRowBehavior],
+/** @polymer */
+class SettingsSearchEngineEntryElement extends
+    SettingsSearchEngineEntryElementBase {
+  static get is() {
+    return 'settings-search-engine-entry';
+  }
 
-  properties: {
-    /** @type {!SearchEngine} */
-    engine: Object,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /** @type {boolean} */
-    isDefault: {
-      reflectToAttribute: true,
-      type: Boolean,
-      computed: 'computeIsDefault_(engine)'
-    },
-  },
+  static get properties() {
+    return {
+      /** @type {!SearchEngine} */
+      engine: Object,
 
-  /** @private {SearchEnginesBrowserProxy} */
-  browserProxy_: null,
+      /** @type {boolean} */
+      isDefault: {
+        reflectToAttribute: true,
+        type: Boolean,
+        computed: 'computeIsDefault_(engine)'
+      },
+
+    };
+  }
 
   /** @override */
-  created() {
+  constructor() {
+    super();
+
+    /** @private {!SearchEnginesBrowserProxy} */
     this.browserProxy_ = SearchEnginesBrowserProxyImpl.getInstance();
-  },
+  }
 
   /** @private */
   closePopupMenu_() {
-    this.$$('cr-action-menu').close();
-  },
+    this.shadowRoot.querySelector('cr-action-menu').close();
+  }
 
   /**
    * @return {boolean}
@@ -58,21 +74,22 @@ Polymer({
    */
   computeIsDefault_() {
     return this.engine.default;
-  },
+  }
 
   /** @private */
   onDeleteTap_() {
     this.browserProxy_.removeSearchEngine(this.engine.modelIndex);
     this.closePopupMenu_();
-  },
+  }
 
   /** @private */
   onDotsTap_() {
-    /** @type {!CrActionMenuElement} */ (this.$$('cr-action-menu'))
-        .showAt(assert(this.$$('cr-icon-button')), {
+    /** @type {!CrActionMenuElement} */ (
+        this.shadowRoot.querySelector('cr-action-menu'))
+        .showAt(assert(this.shadowRoot.querySelector('cr-icon-button')), {
           anchorAlignmentY: AnchorAlignment.AFTER_END,
         });
-  },
+  }
 
   /**
    * @param {!Event} e
@@ -81,15 +98,22 @@ Polymer({
   onEditTap_(e) {
     e.preventDefault();
     this.closePopupMenu_();
-    this.fire('edit-search-engine', {
-      engine: this.engine,
-      anchorElement: assert(this.$$('cr-icon-button')),
-    });
-  },
+    this.dispatchEvent(new CustomEvent('edit-search-engine', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        engine: this.engine,
+        anchorElement: assert(this.shadowRoot.querySelector('cr-icon-button')),
+      },
+    }));
+  }
 
   /** @private */
   onMakeDefaultTap_() {
     this.closePopupMenu_();
     this.browserProxy_.setDefaultSearchEngine(this.engine.modelIndex);
-  },
-});
+  }
+}
+
+customElements.define(
+    SettingsSearchEngineEntryElement.is, SettingsSearchEngineEntryElement);

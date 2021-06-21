@@ -14,55 +14,75 @@ import '../site_favicon.js';
 
 import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {FocusRowBehavior} from 'chrome://resources/js/cr/ui/focus_row_behavior.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {FocusRowBehavior, FocusRowBehaviorInterface} from 'chrome://resources/js/cr/ui/focus_row_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ExtensionControlBrowserProxy, ExtensionControlBrowserProxyImpl} from '../extension_control_browser_proxy.js';
 
 import {SearchEngine} from './search_engines_browser_proxy.js';
 
-Polymer({
-  is: 'settings-omnibox-extension-entry',
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {FocusRowBehaviorInterface}
+ */
+const SettingsOmniboxExtensionEntryElementBase =
+    mixinBehaviors([FocusRowBehavior], PolymerElement);
 
-  properties: {
-    /** @type {!SearchEngine} */
-    engine: Object,
-  },
+/** @polymer */
+class SettingsOmniboxExtensionEntryElement extends
+    SettingsOmniboxExtensionEntryElementBase {
+  static get is() {
+    return 'settings-omnibox-extension-entry';
+  }
 
-  behaviors: [FocusRowBehavior],
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  /** @private {?ExtensionControlBrowserProxy} */
-  browserProxy_: null,
+  static get properties() {
+    return {
+      /** @type {!SearchEngine} */
+      engine: Object,
+    };
+  }
 
   /** @override */
-  created() {
+  constructor() {
+    super();
+
+    /** @private {!ExtensionControlBrowserProxy} */
     this.browserProxy_ = ExtensionControlBrowserProxyImpl.getInstance();
-  },
+  }
 
   /** @private */
   onManageTap_() {
     this.closePopupMenu_();
     this.browserProxy_.manageExtension(this.engine.extension.id);
-  },
+  }
 
   /** @private */
   onDisableTap_() {
     this.closePopupMenu_();
     this.browserProxy_.disableExtension(this.engine.extension.id);
-  },
+  }
 
   /** @private */
   closePopupMenu_() {
-    this.$$('cr-action-menu').close();
-  },
+    this.shadowRoot.querySelector('cr-action-menu').close();
+  }
 
   /** @private */
   onDotsTap_() {
-    /** @type {!CrActionMenuElement} */ (this.$$('cr-action-menu'))
-        .showAt(assert(this.$$('cr-icon-button')), {
+    /** @type {!CrActionMenuElement} */ (
+        this.shadowRoot.querySelector('cr-action-menu'))
+        .showAt(assert(this.shadowRoot.querySelector('cr-icon-button')), {
           anchorAlignmentY: AnchorAlignment.AFTER_END,
         });
-  },
-});
+  }
+}
+
+customElements.define(
+    SettingsOmniboxExtensionEntryElement.is,
+    SettingsOmniboxExtensionEntryElement);

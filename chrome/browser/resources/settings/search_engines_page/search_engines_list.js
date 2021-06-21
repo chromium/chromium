@@ -12,38 +12,50 @@ import '../settings_shared_css.js';
 import '../settings_vars_css.js';
 import './search_engine_entry.js';
 
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SearchEngine} from './search_engines_browser_proxy.js';
 
-Polymer({
-  is: 'settings-search-engines-list',
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+class SettingsSearchEnginesListElement extends PolymerElement {
+  static get is() {
+    return 'settings-search-engines-list';
+  }
 
-  properties: {
-    /** @type {!Array<!SearchEngine>} */
-    engines: Array,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /**
-     * The scroll target that this list should use.
-     * @type {?HTMLElement}
-     */
-    scrollTarget: Object,
+  static get properties() {
+    return {
+      /** @type {!Array<!SearchEngine>} */
+      engines: Array,
 
-    /** Used to fix scrolling glitch when list is not top most element. */
-    scrollOffset: Number,
+      /**
+       * The scroll target that this list should use.
+       * @type {?HTMLElement}
+       */
+      scrollTarget: Object,
 
-    /** @private {Object}*/
-    lastFocused_: Object,
+      /** Used to fix scrolling glitch when list is not top most element. */
+      scrollOffset: Number,
 
-    /** @private */
-    listBlurred_: Boolean,
+      /** @private {Object}*/
+      lastFocused_: Object,
 
-    fixedHeight: {
-      type: Boolean,
-      value: false,
-      reflectToAttribute: true,
-    },
-  },
-});
+      /** @private */
+      listBlurred_: Boolean,
+
+      fixedHeight: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
+
+    };
+  }
+}
+
+customElements.define(
+    SettingsSearchEnginesListElement.is, SettingsSearchEnginesListElement);
