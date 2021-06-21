@@ -1163,17 +1163,6 @@ def main():
       test_targets = [ 'check-llvm', 'check-clang', 'check-lld' ]
     RunCommand(['ninja', '-C', LLVM_BUILD_DIR] + test_targets, msvc_arch='x64')
 
-  if sys.platform == 'darwin':
-    for dylib in glob.glob(os.path.join(rt_lib_dst_dir, '*.dylib')):
-      # Fix LC_ID_DYLIB for the ASan dynamic libraries to be relative to
-      # @executable_path.
-      # Has to happen after running tests.
-      # TODO(glider): this is transitional. We'll need to fix the dylib
-      # name either in our build system, or in Clang. See also
-      # http://crbug.com/344836.
-      subprocess.call(['install_name_tool', '-id',
-                       '@executable_path/' + os.path.basename(dylib), dylib])
-
   WriteStampFile(PACKAGE_VERSION, STAMP_FILE)
   WriteStampFile(PACKAGE_VERSION, FORCE_HEAD_REVISION_FILE)
   print('Clang build was successful.')
