@@ -16,7 +16,7 @@ ExternalInstallOptions GetConfigForGoogleChat() {
       /*install_source=*/ExternalInstallSource::kExternalDefault);
 
   // Exclude managed users until we have a way for admins to block the app.
-  options.user_type_allowlist = {"unmanaged", "child"};
+  options.user_type_allowlist = {"unmanaged"};
   options.gate_on_feature = kDefaultChatWebApp.name;
   options.only_for_new_users = true;
   options.add_to_quick_launch_bar = false;
