@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/public/common/common_sandbox_support_linux.h"
+#include "pdf/font_table_linux.h"
 
 #include <sys/stat.h>
 
@@ -13,11 +13,10 @@
 #include "base/posix/eintr_wrapper.h"
 #include "base/sys_byteorder.h"
 
-namespace content {
+namespace pdf {
 
-// TODO(drott): This should be removed once we don't need to support PPAPI
-// TrueType functionality anymore, and before that, it should be replaced with
-// using FreeType for the purpose instead of reimplementing table parsing.
+// TODO(drott): This should be should be replaced with using FreeType for the
+// purpose instead of reimplementing table parsing.
 bool GetFontTable(int fd,
                   uint32_t table_tag,
                   off_t offset,
@@ -93,4 +92,4 @@ bool GetFontTable(int fd,
   return true;
 }
 
-}  // namespace content
+}  // namespace pdf

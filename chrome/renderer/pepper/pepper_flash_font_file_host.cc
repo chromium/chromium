@@ -18,7 +18,7 @@
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_OPENBSD)
 #include "components/services/font/public/cpp/font_loader.h"
-#include "content/public/common/common_sandbox_support_linux.h"
+#include "pdf/font_table_linux.h"
 #elif defined(OS_WIN)
 #include "third_party/skia/include/core/SkFontMgr.h"
 #endif
@@ -77,9 +77,9 @@ bool PepperFlashFontFileHost::GetFontData(uint32_t table,
   bool result = false;
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
   if (font_file_.IsValid()) {
-    result = content::GetFontTable(font_file_.GetPlatformFile(), table,
-                                   0 /* offset */,
-                                   reinterpret_cast<uint8_t*>(buffer), length);
+    result =
+        pdf::GetFontTable(font_file_.GetPlatformFile(), table, /*offset=*/0,
+                          reinterpret_cast<uint8_t*>(buffer), length);
   }
 #elif defined(OS_WIN)
   if (typeface_) {

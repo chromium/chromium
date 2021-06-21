@@ -280,6 +280,10 @@ static_library("renderer") {
       "//components/pdf/renderer",
       "//pdf/mojom",
     ]
+
+    if (is_linux || is_chromeos) {
+      deps += [ "//pdf:font_table_linux" ]
+    }
   }
 
   if (is_chromeos_ash) {

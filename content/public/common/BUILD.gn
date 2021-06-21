@@ -176,10 +176,6 @@ source_set("common_sources") {
     ]
   }
 
-  if (is_linux || is_chromeos) {
-    sources += [ "common_sandbox_support_linux.h" ]
-  }
-
   configs += [
     "//build/config:precompiled_headers",
     "//content:content_implementation",

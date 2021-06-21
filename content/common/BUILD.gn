@@ -340,7 +340,6 @@ source_set("common") {
 
   if (is_linux || is_chromeos) {
     sources += [
-      "common_sandbox_support_linux.cc",
       "sandbox_init_linux.cc",
       "zygote/sandbox_support_linux.cc",
       "zygote/send_zygote_child_ping_linux.cc",
