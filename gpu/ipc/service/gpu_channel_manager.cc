@@ -444,6 +444,16 @@ GpuChannel* GpuChannelManager::EstablishChannel(
   return gpu_channel_ptr;
 }
 
+void GpuChannelManager::SetChannelClientPid(int client_id,
+                                            base::ProcessId client_pid) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  GpuChannel* gpu_channel = LookupChannel(client_id);
+  if (gpu_channel) {
+    DCHECK_EQ(gpu_channel->client_pid(), base::kNullProcessId);
+    gpu_channel->set_client_pid(client_pid);
+  }
+}
+
 void GpuChannelManager::InternalDestroyGpuMemoryBuffer(
     gfx::GpuMemoryBufferId id,
     int client_id) {
@@ -541,12 +551,12 @@ void GpuChannelManager::GetVideoMemoryUsageStats(
   uint64_t total_size = 0;
   for (const auto& entry : gpu_channels_) {
     const GpuChannel* channel = entry.second.get();
-    if (!channel->IsConnected())
+    if (channel->client_pid() == base::kNullProcessId)
       continue;
     uint64_t size = channel->GetMemoryUsage();
     total_size += size;
-    video_memory_usage_stats->process_map[channel->GetClientPID()]
-        .video_memory += size;
+    video_memory_usage_stats->process_map[channel->client_pid()].video_memory +=
+        size;
   }
 
   if (shared_context_state_ && !shared_context_state_->context_lost())

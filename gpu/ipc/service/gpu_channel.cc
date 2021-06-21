@@ -628,23 +628,10 @@ base::WeakPtr<GpuChannel> GpuChannel::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
-base::ProcessId GpuChannel::GetClientPID() const {
-  DCHECK(IsConnected());
-  return peer_pid_;
-}
-
-bool GpuChannel::IsConnected() const {
-  return peer_pid_ != base::kNullProcessId;
-}
-
 bool GpuChannel::OnMessageReceived(const IPC::Message& msg) {
   // All messages should be pushed to channel_messages_ and handled separately.
   NOTREACHED();
   return false;
-}
-
-void GpuChannel::OnChannelConnected(int32_t peer_pid) {
-  peer_pid_ = peer_pid;
 }
 
 void GpuChannel::OnChannelError() {

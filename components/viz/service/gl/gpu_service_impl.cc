@@ -1009,6 +1009,21 @@ void GpuServiceImpl::EstablishGpuChannel(int32_t client_id,
                           gpu_feature_info_);
 }
 
+void GpuServiceImpl::SetChannelClientPid(int32_t client_id,
+                                         base::ProcessId client_pid) {
+  if (io_runner_->BelongsToCurrentThread()) {
+    main_runner_->PostTask(FROM_HERE,
+                           base::BindOnce(&GpuServiceImpl::SetChannelClientPid,
+                                          weak_ptr_, client_id, client_pid));
+    return;
+  }
+
+  // Note that the GpuService client must be trusted by definition, so DCHECKing
+  // this condition is reasonable.
+  DCHECK_NE(client_pid, base::kNullProcessId);
+  gpu_channel_manager_->SetChannelClientPid(client_id, client_pid);
+}
+
 void GpuServiceImpl::CloseChannel(int32_t client_id) {
   if (io_runner_->BelongsToCurrentThread()) {
     main_runner_->PostTask(

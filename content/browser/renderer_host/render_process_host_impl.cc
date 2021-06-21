@@ -1884,9 +1884,9 @@ RenderProcessHostImpl::~RenderProcessHostImpl() {
 
   // Manually delete here in order to avoid DeleteOnIOThread trait when
   // kProcessHostOnUI is enabled.
-  if (base::FeatureList::IsEnabled(features::kProcessHostOnUI) && gpu_client_) {
+  DCHECK(gpu_client_);
+  if (base::FeatureList::IsEnabled(features::kProcessHostOnUI))
     delete gpu_client_.release();
-  }
 
   // "Cleanup in progress"
   TRACE_EVENT_END("shutdown", perfetto::Track::FromPointer(this),
@@ -1929,8 +1929,7 @@ bool RenderProcessHostImpl::Init() {
   is_dead_ = false;
   sent_render_process_ready_ = false;
 
-  if (gpu_client_)
-    gpu_client_->PreEstablishGpuChannel();
+  gpu_client_->PreEstablishGpuChannel();
 
   // We may reach Init() during process death notification (e.g.
   // RenderProcessExited on some observer). In this case the Channel may be
@@ -2542,18 +2541,16 @@ void RenderProcessHostImpl::RegisterMojoInterfaces() {
       base::BindRepeating(&FileSystemManagerImpl::BindReceiver,
                           base::Unretained(file_system_manager_impl_.get())));
 
-  if (gpu_client_) {
-    // |gpu_client_| outlives the registry, because its destruction is posted to
-    // IO thread from the destructor of |this|.
-    if (base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
-      AddUIThreadInterface(
-          registry.get(),
-          base::BindRepeating(&viz::GpuClient::Add,
-                              base::Unretained(gpu_client_.get())));
-    } else {
-      registry->AddInterface(base::BindRepeating(
-          &viz::GpuClient::Add, base::Unretained(gpu_client_.get())));
-    }
+  // |gpu_client_| outlives the registry, because its destruction is posted to
+  // IO thread from the destructor of |this|.
+  if (base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
+    AddUIThreadInterface(
+        registry.get(),
+        base::BindRepeating(&viz::GpuClient::Add,
+                            base::Unretained(gpu_client_.get())));
+  } else {
+    registry->AddInterface(base::BindRepeating(
+        &viz::GpuClient::Add, base::Unretained(gpu_client_.get())));
   }
 
   registry->AddInterface(
@@ -5028,6 +5025,8 @@ void RenderProcessHostImpl::OnProcessLaunched() {
     // done in response to NOTIFICATION_RENDER_PROCESS_CREATED; see below)
     // preempt already queued messages.
     channel_->Unpause(false /* flush */);
+
+    gpu_client_->SetClientPid(GetProcess().Pid());
 
     if (coordinator_connector_receiver_.is_bound())
       coordinator_connector_receiver_.Resume();

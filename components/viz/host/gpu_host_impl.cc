@@ -279,11 +279,17 @@ void GpuHostImpl::EstablishGpuChannel(int client_id,
     CreateChannelCache(client_id);
 }
 
+void GpuHostImpl::SetChannelClientPid(int client_id,
+                                      base::ProcessId client_pid) {
+  gpu_service_remote_->SetChannelClientPid(client_id, client_pid);
+}
+
 void GpuHostImpl::CloseChannel(int client_id) {
   gpu_service_remote_->CloseChannel(client_id);
 
   channel_requests_.erase(client_id);
 }
+
 #if BUILDFLAG(USE_VIZ_DEBUGGER)
 void GpuHostImpl::FilterVisualDebugStream(base::Value json) {
   viz_main_->FilterDebugStream(std::move(json));

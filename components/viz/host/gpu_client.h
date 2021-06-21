@@ -9,6 +9,7 @@
 
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/process/process_handle.h"
 #include "build/chromeos_buildflags.h"
 #include "components/viz/host/gpu_client_delegate.h"
 #include "components/viz/host/gpu_host_impl.h"
@@ -37,6 +38,10 @@ class VIZ_HOST_EXPORT GpuClient : public mojom::GpuMemoryBufferFactory,
   void Add(mojo::PendingReceiver<mojom::Gpu> receiver);
 
   void PreEstablishGpuChannel();
+
+  // Sets the PID of the client that will use this channel once the PID is
+  // known.
+  void SetClientPid(base::ProcessId client_pid);
 
   void SetConnectionErrorHandler(
       ConnectionErrorHandlerClosure connection_error_handler);

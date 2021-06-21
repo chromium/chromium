@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/location.h"
+#include "base/process/process_handle.h"
 #include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread_restrictions.h"
@@ -181,6 +182,8 @@ void BrowserGpuChannelHostFactory::EstablishRequest::Establish(bool sync) {
       base::BindOnce(
           &BrowserGpuChannelHostFactory::EstablishRequest::OnEstablished,
           this));
+  host->gpu_host()->SetChannelClientPid(gpu_client_id_,
+                                        base::GetCurrentProcId());
 }
 
 void BrowserGpuChannelHostFactory::EstablishRequest::OnEstablished(

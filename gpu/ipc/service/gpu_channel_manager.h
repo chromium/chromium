@@ -16,6 +16,7 @@
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/process/process_handle.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "base/unguessable_token.h"
@@ -110,6 +111,8 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelManager
                                uint64_t client_tracing_id,
                                bool is_gpu_host,
                                bool cache_shaders_on_disk);
+
+  void SetChannelClientPid(int client_id, base::ProcessId client_pid);
 
   void PopulateShaderCache(int32_t client_id,
                            const std::string& key,

@@ -66,14 +66,27 @@ void GpuClient::OnError(ErrorReason reason) {
 }
 
 void GpuClient::PreEstablishGpuChannel() {
-  if (task_runner_->RunsTasksInCurrentSequence()) {
-    EstablishGpuChannel(EstablishGpuChannelCallback());
-  } else {
-    task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&GpuClient::EstablishGpuChannel, base::Unretained(this),
-                       EstablishGpuChannelCallback()));
+  if (!task_runner_->RunsTasksInCurrentSequence()) {
+    task_runner_->PostTask(FROM_HERE,
+                           base::BindOnce(&GpuClient::EstablishGpuChannel,
+                                          weak_factory_.GetWeakPtr(),
+                                          EstablishGpuChannelCallback()));
+    return;
   }
+
+  EstablishGpuChannel(EstablishGpuChannelCallback());
+}
+
+void GpuClient::SetClientPid(base::ProcessId client_pid) {
+  if (!task_runner_->RunsTasksInCurrentSequence()) {
+    task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&GpuClient::SetClientPid,
+                                  weak_factory_.GetWeakPtr(), client_pid));
+    return;
+  }
+
+  if (GpuHostImpl* gpu_host = delegate_->EnsureGpuHost())
+    gpu_host->SetChannelClientPid(client_id_, client_pid);
 }
 
 void GpuClient::SetConnectionErrorHandler(

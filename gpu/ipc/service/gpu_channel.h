@@ -17,7 +17,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/process/process.h"
+#include "base/process/process_handle.h"
 #include "base/single_thread_task_runner.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "base/unguessable_token.h"
@@ -111,8 +111,8 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener,
     return task_runner_;
   }
 
-  base::ProcessId GetClientPID() const;
-  bool IsConnected() const;
+  void set_client_pid(base::ProcessId pid) { client_pid_ = pid; }
+  base::ProcessId client_pid() const { return client_pid_; }
 
   int client_id() const { return client_id_; }
 
@@ -126,7 +126,6 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener,
 
   // IPC::Listener implementation:
   bool OnMessageReceived(const IPC::Message& msg) override;
-  void OnChannelConnected(int32_t peer_pid) override;
   void OnChannelError() override;
 
   // IPC::Sender implementation:
@@ -241,7 +240,7 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener,
   std::unique_ptr<IPC::SyncChannel> sync_channel_;  // nullptr in tests.
   IPC::Sender* channel_;  // Same as sync_channel_.get() except in tests.
 
-  base::ProcessId peer_pid_ = base::kNullProcessId;
+  base::ProcessId client_pid_ = base::kNullProcessId;
 
   // The message filter on the io thread.
   scoped_refptr<GpuChannelMessageFilter> filter_;

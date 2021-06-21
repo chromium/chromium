@@ -128,6 +128,8 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl : public gpu::GpuChannelManagerDelegate,
                            bool is_gpu_host,
                            bool cache_shaders_on_disk,
                            EstablishGpuChannelCallback callback) override;
+  void SetChannelClientPid(int32_t client_id,
+                           base::ProcessId client_pid) override;
   void CloseChannel(int32_t client_id) override;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void CreateArcVideoDecodeAccelerator(
