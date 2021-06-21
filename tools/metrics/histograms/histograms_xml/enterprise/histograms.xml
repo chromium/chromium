@@ -917,7 +917,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Enterprise.EnterCriticalPolicySectionError"
-    units="WinGetLastError" expires_after="2021-12-31">
+    enum="WinGetLastError" expires_after="2021-12-31">
   <owner>grt@chromium.org</owner>
   <owner>zmin@chromium.org</owner>
   <summary>
