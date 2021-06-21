@@ -12,15 +12,15 @@ import {getCaller, pending, repeatUntil, sendTestMessage} from './test_util.js';
  * that if step() is defined at the time of this call, invoke it to start the
  * test auto-stepping ball rolling.
  */
-export function autoStep() {
+window.autoStep = () => {
   window.autostep = window.autostep || false;
   if (!window.autostep) {
     window.autostep = true;
   }
-  if (window.autostep && typeof window.step == 'function') {
+  if (window.autostep && typeof window.step === 'function') {
     window.step();
   }
-}
+};
 
 /**
  * Class to manipulate the window in the remote extension.
