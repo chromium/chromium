@@ -26,15 +26,7 @@ class MediaCapsImpl : public mojom::MediaCaps {
 
   void Initialize();
   void AddReceiver(mojo::PendingReceiver<mojom::MediaCaps> receiver);
-
-  void ScreenResolutionChanged(unsigned width, unsigned height);
-  void ScreenInfoChanged(int hdcp_version,
-                         int supported_eotfs,
-                         int dolby_vision_flags,
-                         int screen_width_mm,
-                         int screen_height_mm,
-                         bool current_mode_supports_hdr,
-                         bool current_mode_supports_dv);
+  mojo::PendingRemote<mojom::MediaCaps> GetPendingRemote();
   void AddSupportedCodecProfileLevel(
       const CodecProfileLevel& codec_profile_level);
 
@@ -42,12 +34,20 @@ class MediaCapsImpl : public mojom::MediaCaps {
   // chromecast::mojom::MediaCaps implementation.
   void AddObserver(
       mojo::PendingRemote<mojom::MediaCapsObserver> observer) override;
+  void ScreenResolutionChanged(uint32_t width, uint32_t height) override;
+  void ScreenInfoChanged(int32_t hdcp_version,
+                         int32_t supported_eotfs,
+                         int32_t dolby_vision_flags,
+                         int32_t screen_width_mm,
+                         int32_t screen_height_mm,
+                         bool current_mode_supports_hdr,
+                         bool current_mode_supports_dv) override;
 
-  int hdcp_version_;
-  int supported_eotfs_;
-  int dolby_vision_flags_;
-  int screen_width_mm_;
-  int screen_height_mm_;
+  int32_t hdcp_version_;
+  int32_t supported_eotfs_;
+  int32_t dolby_vision_flags_;
+  int32_t screen_width_mm_;
+  int32_t screen_height_mm_;
   bool current_mode_supports_hdr_;
   bool current_mode_supports_dv_;
   gfx::Size screen_resolution_;
