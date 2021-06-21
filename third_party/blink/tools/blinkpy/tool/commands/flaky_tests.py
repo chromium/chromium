@@ -26,6 +26,8 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+from __future__ import print_function
+
 import logging
 
 from blinkpy.web_tests.layout_package.bot_test_expectations import BotTestExpectationsFactory
@@ -121,5 +123,5 @@ class FlakyTests(Command):
             ','.join(test_names)
         expectations_string = '\n'.join(line.to_string() for line in lines)
 
-        print self.OUTPUT % (self.HEADER, expectations_string,
-                             flakiness_dashboard_url)
+        print(self.OUTPUT %
+              (self.HEADER, expectations_string, flakiness_dashboard_url))

@@ -31,6 +31,8 @@ Scripts in tools/ can use this module to start servers that are normally used
 for web tests, outside of the web test runner.
 """
 
+from __future__ import print_function
+
 import logging
 import optparse
 import os
@@ -102,7 +104,7 @@ def main(server_constructor,
     server = server_constructor(port_obj, options.output_dir, **kwargs)
     server.start()
 
-    print 'Press Ctrl-C or `kill {}` to stop the server'.format(os.getpid())
+    print('Press Ctrl-C or `kill {}` to stop the server'.format(os.getpid()))
     try:
         while True:
             sleep_fn()

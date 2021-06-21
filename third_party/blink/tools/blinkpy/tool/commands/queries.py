@@ -28,6 +28,8 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+from __future__ import print_function
+
 import fnmatch
 import re
 
@@ -53,7 +55,7 @@ and PID and prints it to stdout."""
         pid = None
         if len(args) > 1:
             pid = int(args[1])
-        print crash_logs.find_newest_log(args[0], pid)
+        print(crash_logs.find_newest_log(args[0], pid))
 
 
 class PrintExpectations(Command):
@@ -103,7 +105,7 @@ class PrintExpectations(Command):
 
     def execute(self, options, args, tool):
         if not options.paths and not args and not options.all:
-            print 'You must either specify one or more test paths or --all.'
+            print('You must either specify one or more test paths or --all.')
             return
 
         if options.platform:
@@ -114,7 +116,7 @@ class PrintExpectations(Command):
                 if default_port:
                     port_names = [default_port.name()]
                 else:
-                    print "No port names match '%s'" % options.platform
+                    print("No port names match '%s'" % options.platform)
                     return
             else:
                 default_port = tool.port_factory.get(port_names[0])
@@ -129,7 +131,7 @@ class PrintExpectations(Command):
                 if file.startswith(web_tests_dir):
                     file = file.replace(web_tests_dir,
                                         WEB_TESTS_LAST_COMPONENT)
-                print file
+                print(file)
             return
 
         tests = set(default_port.tests(args))
@@ -143,8 +145,8 @@ class PrintExpectations(Command):
                 for test in sorted(tests_to_print)
             ]
             if port_name != port_names[0]:
-                print
-            print '\n'.join(self._format_lines(options, port_name, lines))
+                print('')
+            print('\n'.join(self._format_lines(options, port_name, lines)))
 
     @staticmethod
     def _test_set_for_keyword(keyword, test_expectations, tests):
@@ -220,7 +222,7 @@ class PrintBaselines(Command):
 
     def execute(self, options, args, tool):
         if not args and not options.all:
-            print 'You must either specify one or more test paths or --all.'
+            print('You must either specify one or more test paths or --all.')
             return
 
         default_port = tool.port_factory.get()
@@ -228,7 +230,7 @@ class PrintBaselines(Command):
             port_names = fnmatch.filter(tool.port_factory.all_port_names(),
                                         options.platform)
             if not port_names:
-                print "No port names match '%s'" % options.platform
+                print("No port names match '%s'" % options.platform)
         else:
             port_names = [default_port.name()]
 
@@ -239,9 +241,9 @@ class PrintBaselines(Command):
 
         for port_name in port_names:
             if port_name != port_names[0]:
-                print
+                print('')
             if not options.csv:
-                print '// For %s' % port_name
+                print('// For %s' % port_name)
             port = tool.port_factory.get(port_name)
             for test_name in tests:
                 self._print_baselines(
@@ -253,13 +255,13 @@ class PrintBaselines(Command):
             baseline_location = baselines[extension]
             if baseline_location:
                 if options.csv:
-                    print '%s,%s,%s,%s,%s,%s' % (
-                        port_name, test_name,
-                        self._platform_for_path(test_name), extension[1:],
-                        baseline_location,
-                        self._platform_for_path(baseline_location))
+                    print('%s,%s,%s,%s,%s,%s' %
+                          (port_name, test_name,
+                           self._platform_for_path(test_name), extension[1:],
+                           baseline_location,
+                           self._platform_for_path(baseline_location)))
                 else:
-                    print baseline_location
+                    print(baseline_location)
 
     def _platform_for_path(self, relpath):
         platform_matchobj = self._platform_regexp.match(relpath)

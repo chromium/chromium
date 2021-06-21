@@ -26,6 +26,8 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+from __future__ import print_function
+
 import optparse
 
 from blinkpy.tool.commands.command import Command
@@ -83,7 +85,7 @@ class HelpCommand(Command):
         if args:
             command = self._tool.command_by_name(args[0])
             if command:
-                print command.standalone_help()
+                print(command.standalone_help())
                 return 0
 
         self.show_all_commands = options.show_all_commands

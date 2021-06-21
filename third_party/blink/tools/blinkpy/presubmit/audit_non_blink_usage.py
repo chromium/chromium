@@ -14,6 +14,8 @@ $ git ls-files third_party/blink \
     | python third_party/blink/tools/blinkpy/presubmit/audit_non_blink_usage.py
 """
 
+from __future__ import print_function
+
 import os
 import re
 import sys
@@ -1640,11 +1642,11 @@ def main():
                     path,
                     [(i + 1, l) for i, l in enumerate(contents.splitlines())])
                 if disallowed_identifiers:
-                    print '%s uses disallowed identifiers:' % path
+                    print('%s uses disallowed identifiers:' % path)
                     for i in disallowed_identifiers:
                         print(i.line, i.identifier, i.advice)
         except IOError as e:
-            print 'could not open %s: %s' % (path, e)
+            print('could not open %s: %s' % (path, e))
 
 
 if __name__ == '__main__':

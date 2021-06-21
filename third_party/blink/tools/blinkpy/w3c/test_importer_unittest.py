@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import print_function
+
 import json
 import unittest
 
@@ -430,7 +432,7 @@ class TestImporterTest(LoggingTestCase):
             'No-Export: true\n'
             'Cq-Include-Trybots: luci.chromium.try:linux-wpt-identity-fyi-rel,'
             'linux-wpt-input-fyi-rel')
-        print host.executive.calls
+        print(host.executive.calls)
         self.assertEqual(host.executive.calls,
                          [MANIFEST_INSTALL_CMD] +
                          [['git', 'log', '-1', '--format=%B']])
