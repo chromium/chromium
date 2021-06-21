@@ -1221,6 +1221,10 @@ void MouseEventManager::SetMousePressNode(Node* node) {
   mouse_press_node_ = node;
 }
 
+Element* MouseEventManager::MouseDownElement() {
+  return mouse_down_element_;
+}
+
 void MouseEventManager::SetClickElement(Element* element) {
   SetDocument(element ? element->ownerDocument() : nullptr);
   click_element_ = element;

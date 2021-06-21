@@ -77,7 +77,10 @@ class CORE_EXPORT PointerEventManager final
 
   void ElementRemoved(Element*);
 
-  bool SetPointerCapture(PointerId, Element*);
+  // Starts capturing of all events with the given |PointerId| to the given
+  // |Element|.  The paramenter |explicit_capture| identifies if this call was
+  // triggered by an explicit |elem.setPointerCapture()| call from JS.
+  bool SetPointerCapture(PointerId, Element*, bool explicit_capture);
   bool ReleasePointerCapture(PointerId, Element*);
   void ReleaseMousePointerCapture();
 

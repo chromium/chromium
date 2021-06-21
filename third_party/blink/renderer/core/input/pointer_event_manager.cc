@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/events/event_path.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
+#include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
 #include "third_party/blink/renderer/core/frame/event_handler_registry.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -45,6 +46,7 @@ const char kSkipTouchEventFilterTrialTypeParamName[] = "type";
 size_t ToPointerTypeIndex(WebPointerProperties::PointerType t) {
   return static_cast<size_t>(t);
 }
+
 bool HasPointerEventListener(const EventHandlerRegistry& registry) {
   return registry.HasEventHandlers(EventHandlerRegistry::kPointerEvent) ||
          registry.HasEventHandlers(
@@ -449,7 +451,7 @@ PointerEventManager::ComputePointerEventTarget(
     }
   } else {
     // Set the target of pointer event to the captured element as this
-    // pointer is captured otherwise it would have gone to the if block
+    // pointer is captured otherwise it would have gone to the |if| block
     // and perform a hit-test.
     pointer_event_target.target_element =
         pending_pointer_capture_target_.at(pointer_id);
@@ -518,8 +520,10 @@ WebInputEventResult PointerEventManager::SendTouchPointerEvent(
   ProcessCaptureAndPositionOfPointerEvent(pointer_event, target);
 
   // Setting the implicit capture for touch
-  if (pointer_event->type() == event_type_names::kPointerdown)
-    SetPointerCapture(pointer_event->pointerId(), target);
+  if (pointer_event->type() == event_type_names::kPointerdown) {
+    SetPointerCapture(pointer_event->pointerId(), target,
+                      /* explicit_capture */ false);
+  }
 
   WebInputEventResult result = DispatchPointerEvent(
       GetEffectiveTargetForPointerEvent(target, pointer_event->pointerId()),
@@ -1028,8 +1032,17 @@ void PointerEventManager::ElementRemoved(Element* target) {
 }
 
 bool PointerEventManager::SetPointerCapture(PointerId pointer_id,
-                                            Element* target) {
-  UseCounter::Count(frame_->GetDocument(), WebFeature::kPointerEventSetCapture);
+                                            Element* target,
+                                            bool explicit_capture) {
+  if (explicit_capture) {
+    UseCounter::Count(frame_->GetDocument(),
+                      WebFeature::kPointerEventSetCapture);
+    if (pointer_id == PointerEventFactory::kMouseId &&
+        target != mouse_event_manager_->MouseDownElement()) {
+      UseCounter::Count(frame_->GetDocument(),
+                        WebFeature::kExplicitPointerCaptureClickTargetDiff);
+    }
+  }
   if (pointer_event_factory_.IsActiveButtonsState(pointer_id)) {
     if (pointer_id != dispatching_pointer_id_) {
       UseCounter::Count(frame_->GetDocument(),

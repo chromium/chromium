@@ -143,6 +143,8 @@ class CORE_EXPORT MouseEventManager final
   Node* MousePressNode();
   void SetMousePressNode(Node*);
 
+  Element* MouseDownElement();
+
   void SetClickElement(Element*);
   void SetClickCount(int);
 
@@ -234,6 +236,8 @@ class CORE_EXPORT MouseEventManager final
   unsigned captures_dragging_ : 1;
   unsigned mouse_down_may_start_drag_ : 1;
 
+  // TODO(crbug.com/1220669): Do we need both |mouse_press_node_| and
+  // |mouse_down_element_|?
   Member<Node> mouse_press_node_;
 
   int click_count_;
