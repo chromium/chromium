@@ -48,7 +48,7 @@ void AppListBubblePresenter::Show(int64_t display_id) {
       views::BubbleDialogDelegateView::CreateBubble(std::move(bubble_view));
   bubble_widget_->AddObserver(this);
   bubble_widget_->Show();
-  // TODO(https://crbug.com/1205494): Focus search box.
+  bubble_view_->FocusSearchBox();  // Must happen after widget creation.
 
   // Set up event filter to close the bubble for clicks outside the bubble that
   // don't cause window activation changes (e.g. clicks on wallpaper or blank

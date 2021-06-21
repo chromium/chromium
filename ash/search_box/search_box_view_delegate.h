@@ -27,7 +27,7 @@ class SearchBoxViewDelegate {
   virtual void SearchBoxFocusChanged(SearchBoxViewBase* sender) = 0;
 
  protected:
-  virtual ~SearchBoxViewDelegate() {}
+  virtual ~SearchBoxViewDelegate() = default;
 };
 
 }  // namespace ash

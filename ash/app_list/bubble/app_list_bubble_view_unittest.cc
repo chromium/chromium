@@ -8,7 +8,10 @@
 
 #include "ash/app_list/app_list_bubble_presenter.h"
 #include "ash/app_list/app_list_controller_impl.h"
+#include "ash/app_list/bubble/app_list_bubble_apps_page.h"
+#include "ash/app_list/bubble/app_list_bubble_search_page.h"
 #include "ash/app_list/model/app_list_item.h"
+#include "ash/app_list/views/search_box_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
@@ -20,6 +23,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/vector2d.h"
+#include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/widget/widget.h"
 
 using views::Widget;
@@ -57,16 +61,30 @@ void AddAppItems(int num_apps) {
   }
 }
 
+AppListBubblePresenter* GetBubblePresenter() {
+  return Shell::Get()->app_list_controller()->bubble_presenter_for_test();
+}
+
+SearchBoxView* GetSearchBoxView() {
+  return GetBubblePresenter()
+      ->bubble_view_for_test()
+      ->search_box_view_for_test();
+}
+
+AppListBubbleAppsPage* GetAppsPage() {
+  return GetBubblePresenter()->bubble_view_for_test()->apps_page_for_test();
+}
+
+AppListBubbleSearchPage* GetSearchPage() {
+  return GetBubblePresenter()->bubble_view_for_test()->search_page_for_test();
+}
+
 class AppListBubbleViewTest : public AshTestBase {
  public:
   AppListBubbleViewTest() {
     scoped_features_.InitAndEnableFeature(features::kAppListBubble);
   }
   ~AppListBubbleViewTest() override = default;
-
-  AppListBubblePresenter* GetBubblePresenter() {
-    return Shell::Get()->app_list_controller()->bubble_presenter_for_test();
-  }
 
   base::test::ScopedFeatureList scoped_features_;
 };
@@ -114,6 +132,48 @@ TEST_F(AppListBubbleViewTest, BubbleOpensInBottomRightForBottomShelfRTL) {
   Widget* widget = presenter->bubble_widget_for_test();
   EXPECT_TRUE(IsNear(widget->GetWindowBoundsInScreen().bottom_right(),
                      GetPrimaryDisplay().work_area().bottom_right()));
+}
+
+TEST_F(AppListBubbleViewTest, OpeningBubbleFocusesSearchBox) {
+  AppListBubblePresenter* presenter = GetBubblePresenter();
+  presenter->Show(GetPrimaryDisplay().id());
+
+  SearchBoxView* search_box_view = GetSearchBoxView();
+  EXPECT_TRUE(search_box_view->search_box()->HasFocus());
+  EXPECT_TRUE(search_box_view->is_search_box_active());
+}
+
+TEST_F(AppListBubbleViewTest, AppsPageShownByDefault) {
+  AppListBubblePresenter* presenter = GetBubblePresenter();
+  presenter->Show(GetPrimaryDisplay().id());
+
+  EXPECT_TRUE(GetAppsPage()->GetVisible());
+  EXPECT_FALSE(GetSearchPage()->GetVisible());
+}
+
+TEST_F(AppListBubbleViewTest, TypingTextShowsSearchPage) {
+  AppListBubblePresenter* presenter = GetBubblePresenter();
+  presenter->Show(GetPrimaryDisplay().id());
+
+  AppListBubbleAppsPage* apps_page = GetAppsPage();
+  AppListBubbleSearchPage* search_page = GetSearchPage();
+
+  // Type some text.
+  auto* generator = GetEventGenerator();
+  generator->PressKey(ui::VKEY_A, ui::EF_NONE);
+  generator->ReleaseKey(ui::VKEY_A, ui::EF_NONE);
+
+  // Search page is shown.
+  EXPECT_FALSE(apps_page->GetVisible());
+  EXPECT_TRUE(search_page->GetVisible());
+
+  // Backspace to remove the text.
+  generator->PressKey(ui::VKEY_BACK, ui::EF_NONE);
+  generator->ReleaseKey(ui::VKEY_BACK, ui::EF_NONE);
+
+  // Apps page is shown.
+  EXPECT_TRUE(apps_page->GetVisible());
+  EXPECT_FALSE(search_page->GetVisible());
 }
 
 TEST_F(AppListBubbleViewTest, BubbleSizedForDisplay) {

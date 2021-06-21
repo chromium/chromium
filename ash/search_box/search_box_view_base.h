@@ -171,7 +171,7 @@ class SearchBoxViewBase : public views::View,
 
   void OnEnabledChanged();
 
-  SearchBoxViewDelegate* delegate_;  // Not owned.
+  SearchBoxViewDelegate* const delegate_;
 
   // Owned by views hierarchy.
   views::View* content_container_;

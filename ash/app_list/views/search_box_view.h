@@ -169,11 +169,13 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   // The key most recently pressed.
   ui::KeyboardCode last_key_pressed_ = ui::VKEY_UNKNOWN;
 
-  AppListViewDelegate* view_delegate_;   // Not owned.
+  AppListViewDelegate* const view_delegate_;
   SearchModel* search_model_ = nullptr;  // Owned by the profile-keyed service.
 
-  // Owned by views hierarchy.
-  AppListView* app_list_view_;
+  // Owned by views hierarchy. May be null for bubble launcher.
+  AppListView* const app_list_view_;
+
+  // Owned by views hierarchy. May be null for bubble launcher.
   ContentsView* contents_view_ = nullptr;
 
   // Whether tablet mode is active.

@@ -34,6 +34,7 @@
 #include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
+#include "base/notreached.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/ime/composition_text.h"
@@ -126,13 +127,18 @@ void SearchBoxView::ResetForShow() {
 void SearchBoxView::ClearSearch() {
   SearchBoxViewBase::ClearSearch();
   current_query_.clear();
-  app_list_view_->SetStateFromSearchBoxView(
-      true, false /*triggered_by_contents_change*/);
+  // Peeking/fullscreen launcher needs explicit state changes.
+  if (app_list_view_) {
+    app_list_view_->SetStateFromSearchBoxView(
+        /*search_box_is_empty=*/true, /*triggered_by_contents_change=*/false);
+  }
 }
 
 void SearchBoxView::HandleSearchBoxEvent(ui::LocatedEvent* located_event) {
   if (located_event->type() == ui::ET_MOUSEWHEEL) {
-    if (!app_list_view_->HandleScroll(
+    // TODO(crbug.com/1216082): Forward scroll events for bubble launcher.
+    if (app_list_view_ &&
+        !app_list_view_->HandleScroll(
             located_event->location(),
             located_event->AsMouseWheelEvent()->offset(), ui::ET_MOUSEWHEEL)) {
       return;
@@ -302,6 +308,12 @@ void SearchBoxView::OnSearchBoxActiveChanged(bool active) {
 }
 
 void SearchBoxView::OnKeyEvent(ui::KeyEvent* event) {
+  // TODO(crbug.com/1216082): Keyboard navigation for bubble launcher.
+  if (!app_list_view_) {
+    NOTIMPLEMENTED_LOG_ONCE();
+    return;
+  }
+
   app_list_view_->RedirectKeyEventToSearchBox(event);
 
   if (!IsUnhandledUpDownKeyEvent(*event))
@@ -382,7 +394,7 @@ void SearchBoxView::UpdateLayout(double progress,
 
 int SearchBoxView::GetSearchBoxBorderCornerRadiusForState(
     AppListState state) const {
-  if (state == AppListState::kStateSearchResults &&
+  if (state == AppListState::kStateSearchResults && app_list_view_ &&
       !app_list_view_->is_in_drag()) {
     return kSearchBoxBorderCornerRadiusSearchResult;
   }
@@ -423,6 +435,12 @@ void SearchBoxView::OnWallpaperColorsChanged() {
 void SearchBoxView::ProcessAutocomplete() {
   if (!ShouldProcessAutocomplete())
     return;
+
+  // TODO(crbug.com/1216082): Inject the result view.
+  if (!contents_view_) {
+    NOTIMPLEMENTED_LOG_ONCE();
+    return;
+  }
 
   SearchResultBaseView* const first_result_view =
       contents_view_->search_result_page_view()->first_result_view();
@@ -537,8 +555,10 @@ void SearchBoxView::ContentsChanged(views::Textfield* sender,
   if (ShouldProcessAutocomplete())
     ResetHighlightRange();
   SearchBoxViewBase::ContentsChanged(sender, new_contents);
-  app_list_view_->SetStateFromSearchBoxView(
-      IsSearchBoxTrimmedQueryEmpty(), true /*triggered_by_contents_change*/);
+  if (app_list_view_) {
+    app_list_view_->SetStateFromSearchBoxView(
+        IsSearchBoxTrimmedQueryEmpty(), true /*triggered_by_contents_change*/);
+  }
 }
 
 void SearchBoxView::SetAutocompleteText(
@@ -592,9 +612,12 @@ void SearchBoxView::ClearSearchAndDeactivateSearchBox() {
   if (!is_search_box_active())
     return;
 
-  contents_view_->search_result_page_view()
-      ->result_selection_controller()
-      ->ClearSelection();
+  // TODO(crbug.com/1216082): Inject the result controller.
+  if (contents_view_) {
+    contents_view_->search_result_page_view()
+        ->result_selection_controller()
+        ->ClearSelection();
+  }
   a11y_selection_on_search_result_ = false;
   ClearSearch();
   SetSearchBoxActive(false, ui::ET_UNKNOWN);
@@ -617,6 +640,12 @@ bool SearchBoxView::HandleKeyEvent(views::Textfield* sender,
       return ProcessLeftRightKeyTraversalForTextfield(search_box(), key_event);
     }
 
+    return false;
+  }
+
+  // TODO(crbug.com/1216082): Inject the result controller and result view.
+  if (!contents_view_) {
+    NOTIMPLEMENTED_LOG_ONCE();
     return false;
   }
 
@@ -738,6 +767,11 @@ bool SearchBoxView::HandleKeyEvent(views::Textfield* sender,
 bool SearchBoxView::HandleMouseEvent(views::Textfield* sender,
                                      const ui::MouseEvent& mouse_event) {
   if (mouse_event.type() == ui::ET_MOUSEWHEEL) {
+    // TODO(crbug.com/1216082): Forward scroll events for bubble launcher.
+    if (!app_list_view_) {
+      NOTIMPLEMENTED_LOG_ONCE();
+      return false;
+    }
     return app_list_view_->HandleScroll(
         mouse_event.location(), (&mouse_event)->AsMouseWheelEvent()->offset(),
         ui::ET_MOUSEWHEEL);

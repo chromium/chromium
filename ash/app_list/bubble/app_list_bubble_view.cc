@@ -10,6 +10,7 @@
 #include "ash/app_list/bubble/app_list_bubble_apps_page.h"
 #include "ash/app_list/bubble/app_list_bubble_assistant_page.h"
 #include "ash/app_list/bubble/app_list_bubble_search_page.h"
+#include "ash/app_list/views/search_box_view.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -17,16 +18,15 @@
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/tray_constants.h"
-#include "base/bind.h"
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/i18n/rtl.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/bubble/bubble_border.h"
-#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/scroll_view.h"
-#include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/box_layout.h"
 
 using views::BoxLayout;
@@ -106,14 +106,9 @@ AppListBubbleView::AppListBubbleView(AppListViewDelegate* view_delegate,
       std::make_unique<BoxLayout>(BoxLayout::Orientation::kVertical));
   layout->set_cross_axis_alignment(BoxLayout::CrossAxisAlignment::kStretch);
 
-  // TODO(https://crbug.com/1204551): Replace with real search box.
-  textfield_ = AddChildView(std::make_unique<views::Textfield>());
-  SetInitiallyFocusedView(textfield_);
-
-  // TODO(https://crbug.com/1204551): Remove when search box is hooked up.
-  text_button_ = AddChildView(std::make_unique<views::MdTextButton>(
-      base::BindRepeating(&AppListBubbleView::FlipPage, base::Unretained(this)),
-      u"Flip page"));
+  search_box_view_ = AddChildView(std::make_unique<SearchBoxView>(
+      /*delegate=*/this, view_delegate, /*app_list_view=*/nullptr));
+  search_box_view_->Init(/*is_tablet_mode=*/false);
 
   apps_page_ =
       AddChildView(std::make_unique<AppListBubbleAppsPage>(view_delegate));
@@ -127,6 +122,11 @@ AppListBubbleView::AppListBubbleView(AppListViewDelegate* view_delegate,
 }
 
 AppListBubbleView::~AppListBubbleView() = default;
+
+void AppListBubbleView::FocusSearchBox() {
+  DCHECK(GetWidget());
+  search_box_view_->SetSearchBoxActive(true, /*event_type=*/ui::ET_UNKNOWN);
+}
 
 gfx::Size AppListBubbleView::CalculatePreferredSize() const {
   int height = kDefaultHeight - margins().height();
@@ -143,8 +143,7 @@ gfx::Size AppListBubbleView::CalculatePreferredSize() const {
     // with no scrolling.
     int height_to_fit_all_apps =
         apps_page_->scroll_view()->contents()->bounds().height() +
-        textfield_->GetPreferredSize().height() +
-        text_button_->GetPreferredSize().height();
+        search_box_view_->GetPreferredSize().height();
 
     int max_height =
         (display.work_area().height() - margins().height() -
@@ -159,12 +158,13 @@ gfx::Size AppListBubbleView::CalculatePreferredSize() const {
   return gfx::Size(width, height);
 }
 
-void AppListBubbleView::FlipPage() {
-  ++visible_page_;
-  visible_page_ %= 3;
-  apps_page_->SetVisible(visible_page_ == 0);
-  search_page_->SetVisible(visible_page_ == 1);
-  assistant_page_->SetVisible(visible_page_ == 2);
+void AppListBubbleView::QueryChanged(SearchBoxViewBase* sender) {
+  DCHECK_EQ(sender, search_box_view_);
+  // TODO(https://crbug.com/1204551): Animated transitions.
+  // TODO(https://crbug.com/1204551): Handle assistant view.
+  const bool has_search = search_box_view_->HasSearch();
+  apps_page_->SetVisible(!has_search);
+  search_page_->SetVisible(has_search);
 }
 
 }  // namespace ash
