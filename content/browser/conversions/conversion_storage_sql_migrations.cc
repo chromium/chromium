@@ -29,9 +29,7 @@ struct ImpressionIdAndConversionOrigin {
 
 std::vector<ImpressionIdAndConversionOrigin>
 GetImpressionIdAndConversionOrigins(sql::Database* db,
-                                    int64_t start_impression_id,
-                                    int num_impressions) {
-  DCHECK_GE(num_impressions, 0);
+                                    int64_t start_impression_id) {
   const char kGetImpressionsSql[] =
       "SELECT impression_id, conversion_origin "
       "FROM impressions "
@@ -42,7 +40,9 @@ GetImpressionIdAndConversionOrigins(sql::Database* db,
   sql::Statement statement(
       db->GetCachedStatement(SQL_FROM_HERE, kGetImpressionsSql));
   statement.BindInt64(0, start_impression_id);
-  statement.BindInt(1, num_impressions);
+
+  const int kNumImpressions = 100;
+  statement.BindInt(1, kNumImpressions);
 
   std::vector<ImpressionIdAndConversionOrigin> impressions;
   while (statement.Step()) {
@@ -64,9 +64,7 @@ struct ImpressionIdAndImpressionOrigin {
 
 std::vector<ImpressionIdAndImpressionOrigin>
 GetImpressionIdAndImpressionOrigins(sql::Database* db,
-                                    int64_t start_impression_id,
-                                    int num_impressions) {
-  DCHECK_GE(num_impressions, 0);
+                                    int64_t start_impression_id) {
   const char kGetImpressionsSql[] =
       "SELECT impression_id, impression_origin "
       "FROM impressions "
@@ -77,7 +75,9 @@ GetImpressionIdAndImpressionOrigins(sql::Database* db,
   sql::Statement statement(
       db->GetCachedStatement(SQL_FROM_HERE, kGetImpressionsSql));
   statement.BindInt64(0, start_impression_id);
-  statement.BindInt(1, num_impressions);
+
+  const int kNumImpressions = 100;
+  statement.BindInt(1, kNumImpressions);
 
   std::vector<ImpressionIdAndImpressionOrigin> impressions;
   while (statement.Step()) {
@@ -190,13 +190,10 @@ bool ConversionStorageSqlMigrations::MigrateToVersion2(
   // the column is only used for matching impressions to conversions, but we
   // update all impressions regardless.
   //
-  // We update `kNumImpressionsPerUpdate` rows at a time, to avoid pulling the
-  // entire impressions table into memory.
-  int64_t start_impression_id = 0;
-  const size_t kNumImpressionsPerUpdate = 100u;
+  // We update a subset of rows at a time to avoid pulling the entire
+  // impressions table into memory.
   std::vector<ImpressionIdAndConversionOrigin> impressions =
-      GetImpressionIdAndConversionOrigins(db, start_impression_id,
-                                          kNumImpressionsPerUpdate);
+      GetImpressionIdAndConversionOrigins(db, /*start_impression_id=*/0);
 
   const char kUpdateDestinationSql[] =
       "UPDATE impressions SET conversion_destination = ? WHERE impression_id = "
@@ -215,17 +212,11 @@ bool ConversionStorageSqlMigrations::MigrateToVersion2(
           0, net::SchemefulSite(impression.conversion_origin).Serialize());
       update_destination_statement.BindInt64(1, impression.impression_id);
       update_destination_statement.Run();
-
-      // Track the largest row id. This is more efficient than sorting all the
-      // rows.
-      if (impression.impression_id > start_impression_id)
-        start_impression_id = impression.impression_id;
     }
 
     // Fetch the next batch of rows from the database.
-    start_impression_id += 1;
-    impressions = GetImpressionIdAndConversionOrigins(db, start_impression_id,
-                                                      kNumImpressionsPerUpdate);
+    impressions = GetImpressionIdAndConversionOrigins(
+        db, impressions.back().impression_id + 1);
   }
 
   // Create the pre-existing impression table indices on the new table.
@@ -515,13 +506,10 @@ bool ConversionStorageSqlMigrations::MigrateToVersion7(
   // Update each of the impression rows to have the correct associated
   // impression_site.
   //
-  // We update `kNumImpressionsPerUpdate` rows at a time, to avoid pulling the
-  // entire impressions table into memory.
-  int64_t start_impression_id = 0;
-  const size_t kNumImpressionsPerUpdate = 100u;
+  // We update a subset of rows at a time to avoid pulling the entire
+  // impressions table into memory.
   std::vector<ImpressionIdAndImpressionOrigin> impressions =
-      GetImpressionIdAndImpressionOrigins(db, start_impression_id,
-                                          kNumImpressionsPerUpdate);
+      GetImpressionIdAndImpressionOrigins(db, /*start_impression_id=*/0);
 
   const char kUpdateImpressionSiteSql[] =
       "UPDATE impressions SET impression_site = ? WHERE impression_id = ?";
@@ -539,17 +527,11 @@ bool ConversionStorageSqlMigrations::MigrateToVersion7(
       update_impression_site_statement.BindInt64(1, impression.impression_id);
       if (!update_impression_site_statement.Run())
         return false;
-
-      // Track the largest row id. This is more efficient than sorting all the
-      // rows.
-      if (impression.impression_id > start_impression_id)
-        start_impression_id = impression.impression_id;
     }
 
     // Fetch the next batch of rows from the database.
-    start_impression_id += 1;
-    impressions = GetImpressionIdAndImpressionOrigins(db, start_impression_id,
-                                                      kNumImpressionsPerUpdate);
+    impressions = GetImpressionIdAndImpressionOrigins(
+        db, impressions.back().impression_id + 1);
   }
 
   // Create the pre-existing impression table indices on the new table.
