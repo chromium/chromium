@@ -690,8 +690,15 @@ void TableView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 }
 
 bool TableView::HandleAccessibleAction(const ui::AXActionData& action_data) {
-  if (!GetRowCount())
+  const int row_count = GetRowCount();
+  if (!row_count)
     return false;
+
+  // On CrOS, the table wrapper node is not a AXVirtualView
+  // and thus |ax_view| will be null.
+  AXVirtualView* ax_view = AXVirtualView::GetFromId(action_data.target_node_id);
+  bool focus_on_row =
+      ax_view ? ax_view->GetData().role == ax::mojom::Role::kRow : false;
 
   int active_row = selection_model_.active();
   if (active_row == ui::ListSelectionModel::kUnselectedIndex)
@@ -700,9 +707,23 @@ bool TableView::HandleAccessibleAction(const ui::AXActionData& action_data) {
   switch (action_data.action) {
     case ax::mojom::Action::kDoDefault:
       RequestFocus();
-      SelectByViewIndex(ModelToView(active_row));
-      if (observer_)
-        observer_->OnDoubleClick();
+      if (focus_on_row) {
+        // If the ax focus is on a row, select this row.
+        DCHECK(ax_view);
+        int row_index = ax_view->GetData().GetIntAttribute(
+            ax::mojom::IntAttribute::kTableRowIndex);
+        SelectByViewIndex(row_index);
+        GetViewAccessibility().AnnounceText(l10n_util::GetStringFUTF16(
+            IDS_TABLE_VIEW_AX_ANNOUNCE_ROW_SELECTED,
+            model_->GetText(ViewToModel(row_index),
+                            GetVisibleColumn(0).column.id)));
+      } else {
+        // If the ax focus is on the full table, select the row as indicated by
+        // the model.
+        SelectByViewIndex(ModelToView(active_row));
+        if (observer_)
+          observer_->OnDoubleClick();
+      }
       break;
 
     case ax::mojom::Action::kFocus:
