@@ -807,6 +807,12 @@ void PaintOpWriter::Write(const RecordPaintFilter& filter,
   // from the cache).
   auto scaled_filter = filter.CreateScaledPaintRecord(
       current_ctm.asM33(), options_.max_texture_size);
+  if (!scaled_filter) {
+    WriteSimple(false);
+    return;
+  }
+
+  WriteSimple(true);
   WriteSimple(scaled_filter->record_bounds());
   WriteSimple(scaled_filter->raster_scale());
   WriteSimple(scaled_filter->scaling_behavior());

@@ -791,7 +791,7 @@ sk_sp<RecordPaintFilter> RecordPaintFilter::CreateScaledPaintRecord(
 size_t RecordPaintFilter::SerializedSize() const {
   base::CheckedNumeric<size_t> total_size =
       BaseSerializedSize() + sizeof(record_bounds_) + sizeof(raster_scale_) +
-      sizeof(scaling_behavior_);
+      sizeof(scaling_behavior_) + sizeof(bool);
   total_size += PaintOpWriter::GetRecordSize(record_.get());
   return total_size.ValueOrDefault(0u);
 }
