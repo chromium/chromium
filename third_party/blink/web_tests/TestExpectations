@@ -4786,6 +4786,13 @@ crbug.com/785955 http/tests/credentialmanager/tools/virtual-authenticator-enviro
 # Sheriff 2018-04-11
 crbug.com/831796 fast/events/autoscroll-in-textfield.html [ Failure Pass ]
 
+# DevTools underscore migration
+crbug.com/1207342 http/tests/devtools/tracing/frame-model-instrumentation.js [ Pass Failure ]
+crbug.com/1207342 http/tests/devtools/tracing/frame-model.js [ Pass Failure ]
+crbug.com/1207342 http/tests/devtools/profiler/heap-snapshot.js [ Pass Failure ]
+crbug.com/1207342 http/tests/inspector-protocol/cpu-profiler/record-cpu-profile-with-cpu-throttling.js [ Pass Failure ]
+crbug.com/1207342 http/tests/inspector-protocol/page/frameScheduledNavigation.js [ Pass Failure ]
+
 # Sheriff 2018-04-13
 crbug.com/833655 [ Linux ] media/controls/closed-captions-dynamic-update.html [ Skip ]
 crbug.com/833658 media/video-controls-focus-movement-on-hide.html [ Pass Failure ]
