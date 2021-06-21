@@ -31,8 +31,12 @@ about:version template page
 <if expr="not is_android and not is_ios">
         <!-- Version for themes. -->
         <picture>
-          <source srcset="chrome://theme/IDR_PRODUCT_LOGO_WHITE" media="(prefers-color-scheme: dark)">
-          <source srcset="chrome://theme/IDR_PRODUCT_LOGO" media="(prefers-color-scheme: light), (prefers-color-scheme: no-preference)">
+          <source srcset="chrome://theme/IDR_PRODUCT_LOGO_WHITE,
+                          chrome://theme/IDR_PRODUCT_LOGO_WHITE@2x 2x"
+                  media="(prefers-color-scheme: dark)">
+          <source srcset="chrome://theme/IDR_PRODUCT_LOGO,
+                          chrome://theme/IDR_PRODUCT_LOGO@2x 2x"
+                  media="(prefers-color-scheme: light), (prefers-color-scheme: no-preference)">
           <img alt="$i18n{logo_alt_text}" src="chrome://theme/IDR_PRODUCT_LOGO">
         </picture>
 </if>
