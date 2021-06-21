@@ -11,12 +11,17 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/chromeos/android_sms/android_sms_urls.h"
 #include "chrome/browser/chromeos/android_sms/fake_android_sms_app_manager.h"
+#include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
+#include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
+#include "chrome/test/base/testing_profile.h"
 #include "chromeos/components/multidevice/remote_device_test_util.h"
 #include "chromeos/components/phonehub/fake_notification_access_manager.h"
 #include "chromeos/services/multidevice_setup/public/cpp/fake_android_sms_pairing_state_tracker.h"
 #include "chromeos/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/prefs/testing_pref_service.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -76,7 +81,8 @@ void VerifyPageContentDict(
     multidevice_setup::mojom::HostStatus expected_host_status,
     const absl::optional<multidevice::RemoteDeviceRef>& expected_host_device,
     const multidevice_setup::MultiDeviceSetupClient::FeatureStatesMap&
-        feature_states_map) {
+        feature_states_map,
+    bool expected_is_nearby_share_disallowed_by_policy_) {
   const base::DictionaryValue* page_content_dict;
   EXPECT_TRUE(value->GetAsDictionary(&page_content_dict));
 
@@ -142,6 +148,13 @@ void VerifyPageContentDict(
     EXPECT_FALSE(
         page_content_dict->GetString("hostDeviceName", &host_device_name));
   }
+
+  bool is_nearby_share_disallowed_by_policy;
+  EXPECT_TRUE(
+      page_content_dict->GetBoolean("isNearbyShareDisallowedByPolicy",
+                                    &is_nearby_share_disallowed_by_policy));
+  EXPECT_EQ(expected_is_nearby_share_disallowed_by_policy_,
+            is_nearby_share_disallowed_by_policy);
 }
 
 }  // namespace
@@ -154,8 +167,6 @@ class MultideviceHandlerTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
-    test_web_ui_ = std::make_unique<content::TestWebUI>();
-
     fake_multidevice_setup_client_ =
         std::make_unique<multidevice_setup::FakeMultiDeviceSetupClient>();
     fake_notification_access_manager_ =
@@ -168,13 +179,23 @@ class MultideviceHandlerTest : public testing::Test {
         std::make_unique<android_sms::FakeAndroidSmsAppManager>();
 
     prefs_ = std::make_unique<TestingPrefServiceSimple>();
+    RegisterNearbySharingPrefs(prefs_->registry());
+    prefs_->SetBoolean(::prefs::kNearbySharingEnabledPrefName, true);
+    NearbySharingServiceFactory::
+        SetIsNearbyShareSupportedForBrowserContextForTesting(true);
 
     handler_ = std::make_unique<TestMultideviceHandler>(
         prefs_.get(), fake_multidevice_setup_client_.get(),
         fake_notification_access_manager_.get(),
         fake_android_sms_pairing_state_tracker_.get(),
         fake_android_sms_app_manager_.get());
+
+    test_web_contents_ = content::WebContents::Create(
+        content::WebContents::CreateParams(&test_profile_));
+    test_web_ui_ = std::make_unique<content::TestWebUI>();
+    test_web_ui_->set_web_contents(test_web_contents_.get());
     handler_->set_web_ui(test_web_ui_.get());
+
     handler_->RegisterMessages();
     handler_->AllowJavascript();
 
@@ -298,6 +319,52 @@ class MultideviceHandlerTest : public testing::Test {
     VerifyPageContent(call_data.arg2());
   }
 
+  void SimulateNearbyShareEnabledPrefChange(bool is_enabled, bool is_managed) {
+    size_t call_data_count_before_call = test_web_ui()->call_data().size();
+    size_t expected_call_count = call_data_count_before_call;
+    bool did_managed_change =
+        is_managed !=
+        prefs_->IsManagedPreference(::prefs::kNearbySharingEnabledPrefName);
+    bool did_enabled_change =
+        is_enabled !=
+        prefs_->GetBoolean(::prefs::kNearbySharingEnabledPrefName);
+
+    if (is_managed) {
+      prefs_->SetManagedPref(::prefs::kNearbySharingEnabledPrefName,
+                             std::make_unique<base::Value>(is_enabled));
+      EXPECT_TRUE(
+          prefs_->IsManagedPreference(::prefs::kNearbySharingEnabledPrefName));
+      if (did_managed_change)
+        ++expected_call_count;
+    } else {
+      prefs_->RemoveManagedPref(::prefs::kNearbySharingEnabledPrefName);
+      EXPECT_FALSE(
+          prefs_->IsManagedPreference(::prefs::kNearbySharingEnabledPrefName));
+      if (did_managed_change)
+        ++expected_call_count;
+
+      prefs_->SetBoolean(::prefs::kNearbySharingEnabledPrefName, is_enabled);
+      if (did_enabled_change)
+        ++expected_call_count;
+    }
+    EXPECT_EQ(is_enabled,
+              prefs_->GetBoolean(::prefs::kNearbySharingEnabledPrefName));
+
+    EXPECT_EQ(expected_call_count, test_web_ui()->call_data().size());
+
+    if (expected_call_count == call_data_count_before_call)
+      return;
+
+    const content::TestWebUI::CallData& call_data =
+        CallDataAtIndex(expected_call_count - 1);
+    EXPECT_EQ("cr.webUIListenerCallback", call_data.function_name());
+    EXPECT_EQ("settings.updateMultidevicePageContentData",
+              call_data.arg1()->GetString());
+
+    expected_is_nearby_share_disallowed_by_policy_ = !is_enabled && is_managed;
+    VerifyPageContent(call_data.arg2());
+  }
+
   void CallRetryPendingHostSetup(bool success) {
     base::ListValue empty_args;
     test_web_ui()->HandleReceivedMessage("retryPendingHostSetup", &empty_args);
@@ -388,15 +455,21 @@ class MultideviceHandlerTest : public testing::Test {
 
   const multidevice::RemoteDeviceRef test_device_;
 
+  bool expected_is_nearby_share_disallowed_by_policy_ = false;
+
  private:
   void VerifyPageContent(const base::Value* value) {
     VerifyPageContentDict(
         value, fake_multidevice_setup_client_->GetHostStatus().first,
         fake_multidevice_setup_client_->GetHostStatus().second,
-        fake_multidevice_setup_client_->GetFeatureStates());
+        fake_multidevice_setup_client_->GetFeatureStates(),
+        expected_is_nearby_share_disallowed_by_policy_);
   }
 
+  content::BrowserTaskEnvironment task_environment_;
+  TestingProfile test_profile_;
   std::unique_ptr<TestingPrefServiceSimple> prefs_;
+  std::unique_ptr<content::WebContents> test_web_contents_;
   std::unique_ptr<content::TestWebUI> test_web_ui_;
   std::unique_ptr<multidevice_setup::FakeMultiDeviceSetupClient>
       fake_multidevice_setup_client_;
@@ -495,6 +568,17 @@ TEST_F(MultideviceHandlerTest, PageContentData) {
   SimulateFeatureStatesUpdate(feature_states_map);
 
   SimulatePairingStateUpdate(/*is_android_sms_pairing_complete=*/true);
+
+  SimulateNearbyShareEnabledPrefChange(/*is_enabled=*/true,
+                                       /*is_managed=*/false);
+  SimulateNearbyShareEnabledPrefChange(/*is_enabled=*/true,
+                                       /*is_managed=*/true);
+  SimulateNearbyShareEnabledPrefChange(/*is_enabled=*/false,
+                                       /*is_managed=*/false);
+  SimulateNearbyShareEnabledPrefChange(/*is_enabled=*/false,
+                                       /*is_managed=*/true);
+  SimulateNearbyShareEnabledPrefChange(/*is_enabled=*/false,
+                                       /*is_managed=*/true);
 }
 
 TEST_F(MultideviceHandlerTest, RetryPendingHostSetup) {

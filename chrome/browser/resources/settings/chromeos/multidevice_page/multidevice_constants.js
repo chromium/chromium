@@ -102,7 +102,8 @@ cr.define('settings', function() {
    *   phoneHubTaskContinuationState: !settings.MultiDeviceFeatureState,
    *   wifiSyncState: !settings.MultiDeviceFeatureState,
    *   isAndroidSmsPairingComplete: boolean,
-   *   notificationAccessStatus: !settings.PhoneHubNotificationAccessStatus
+   *   notificationAccessStatus: !settings.PhoneHubNotificationAccessStatus,
+   *   isNearbyShareDisallowedByPolicy: boolean
    * }}
    */
   /* #export */ let MultiDevicePageContentData;
