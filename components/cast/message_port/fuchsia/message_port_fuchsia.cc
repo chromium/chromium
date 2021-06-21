@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/cast/message_port/message_port_fuchsia.h"
+#include "components/cast/message_port/fuchsia/message_port_fuchsia.h"
 
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/memory/weak_ptr.h"
@@ -210,8 +210,8 @@ class MessagePortFuchsiaServer : public MessagePortFuchsia,
 }  // namespace
 
 // static
-void MessagePort::CreatePair(std::unique_ptr<MessagePort>* client,
-                             std::unique_ptr<MessagePort>* server) {
+void MessagePortFuchsia::CreatePair(std::unique_ptr<MessagePort>* client,
+                                    std::unique_ptr<MessagePort>* server) {
   fidl::InterfaceHandle<fuchsia::web::MessagePort> port0;
   fidl::InterfaceRequest<fuchsia::web::MessagePort> port1 = port0.NewRequest();
   *client = MessagePortFuchsia::Create(std::move(port0));

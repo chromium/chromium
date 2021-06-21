@@ -4,7 +4,7 @@
 
 #include "fuchsia/runners/cast/create_web_message.h"
 
-#include "components/cast/message_port/message_port_fuchsia.h"
+#include "components/cast/message_port/fuchsia/message_port_fuchsia.h"
 #include "fuchsia/base/mem_buffer_util.h"
 
 fuchsia::web::WebMessage CreateWebMessage(

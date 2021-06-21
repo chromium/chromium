@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_CAST_MESSAGE_PORT_MESSAGE_PORT_FUCHSIA_H_
-#define COMPONENTS_CAST_MESSAGE_PORT_MESSAGE_PORT_FUCHSIA_H_
+#ifndef COMPONENTS_CAST_MESSAGE_PORT_FUCHSIA_MESSAGE_PORT_FUCHSIA_H_
+#define COMPONENTS_CAST_MESSAGE_PORT_FUCHSIA_MESSAGE_PORT_FUCHSIA_H_
 
 #include <fuchsia/web/cpp/fidl.h>
 #include <lib/fidl/cpp/binding.h>
@@ -25,6 +25,10 @@ class MessagePortFuchsia : public cast_api_bindings::MessagePort {
   MessagePortFuchsia(const MessagePortFuchsia&) = delete;
   MessagePortFuchsia& operator=(const MessagePortFuchsia&) = delete;
 
+  // Creates a pair of message ports. Clients must respect |client| and
+  // |server| semantics because they matter for some implementations.
+  static void CreatePair(std::unique_ptr<MessagePort>* client,
+                         std::unique_ptr<MessagePort>* server);
   static std::unique_ptr<MessagePort> Create(
       fidl::InterfaceHandle<::fuchsia::web::MessagePort> port);
   static std::unique_ptr<MessagePort> Create(
@@ -87,4 +91,4 @@ class MessagePortFuchsia : public cast_api_bindings::MessagePort {
 
 }  // namespace cast_api_bindings
 
-#endif  // COMPONENTS_CAST_MESSAGE_PORT_MESSAGE_PORT_FUCHSIA_H_
+#endif  // COMPONENTS_CAST_MESSAGE_PORT_FUCHSIA_MESSAGE_PORT_FUCHSIA_H_

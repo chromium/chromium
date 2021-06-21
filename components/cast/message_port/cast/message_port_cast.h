@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_CAST_MESSAGE_PORT_MESSAGE_PORT_CAST_H_
-#define COMPONENTS_CAST_MESSAGE_PORT_MESSAGE_PORT_CAST_H_
+#ifndef COMPONENTS_CAST_MESSAGE_PORT_CAST_MESSAGE_PORT_CAST_H_
+#define COMPONENTS_CAST_MESSAGE_PORT_CAST_MESSAGE_PORT_CAST_H_
 
 #include "components/cast/message_port/message_port.h"
 #include "third_party/blink/public/common/messaging/web_message_port.h"
@@ -25,6 +25,10 @@ class MessagePortCast : public cast_api_bindings::MessagePort,
   MessagePortCast(const MessagePortCast&) = delete;
   MessagePortCast& operator=(const MessagePortCast&) = delete;
 
+  // Creates a pair of message ports. Clients must respect |client| and
+  // |server| semantics because they matter for some implementations.
+  static void CreatePair(std::unique_ptr<MessagePort>* client,
+                         std::unique_ptr<MessagePort>* server);
   static std::unique_ptr<MessagePort> Create(blink::WebMessagePort&& port);
   static std::unique_ptr<MessagePort> Create(
       blink::MessagePortDescriptor&& port_descriptor);
@@ -55,4 +59,4 @@ class MessagePortCast : public cast_api_bindings::MessagePort,
 
 }  // namespace cast_api_bindings
 
-#endif  // COMPONENTS_CAST_MESSAGE_PORT_MESSAGE_PORT_CAST_H_
+#endif  // COMPONENTS_CAST_MESSAGE_PORT_CAST_MESSAGE_PORT_CAST_H_

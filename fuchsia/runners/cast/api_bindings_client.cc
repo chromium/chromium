@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/strings/string_piece.h"
-#include "components/cast/message_port/message_port_fuchsia.h"
+#include "components/cast/message_port/fuchsia/message_port_fuchsia.h"
 
 namespace {
 

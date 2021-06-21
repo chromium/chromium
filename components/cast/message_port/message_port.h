@@ -33,11 +33,6 @@ class CAST_COMPONENT_EXPORT MessagePort {
 
   virtual ~MessagePort();
 
-  // Creates a pair of message ports. Clients must respect |client| and
-  // |server| semantics because they matter for some implementations.
-  static void CreatePair(std::unique_ptr<MessagePort>* client,
-                         std::unique_ptr<MessagePort>* server);
-
   // Sends a |message| from the port.
   virtual bool PostMessage(base::StringPiece message) = 0;
 

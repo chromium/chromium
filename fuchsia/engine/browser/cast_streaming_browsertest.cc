@@ -4,7 +4,8 @@
 
 #include "base/callback_helpers.h"
 #include "base/threading/platform_thread.h"
-#include "components/cast/message_port/message_port_fuchsia.h"
+#include "components/cast/message_port/fuchsia/message_port_fuchsia.h"
+#include "components/cast/message_port/platform_message_port.h"
 #include "components/cast_streaming/browser/test/cast_streaming_test_sender.h"
 #include "content/public/test/browser_test.h"
 #include "fuchsia/base/mem_buffer_util.h"
@@ -122,8 +123,8 @@ IN_PROC_BROWSER_TEST_F(CastStreamingTest, LoadSuccess) {
 
   std::unique_ptr<cast_api_bindings::MessagePort> sender_message_port;
   std::unique_ptr<cast_api_bindings::MessagePort> receiver_message_port;
-  cast_api_bindings::MessagePort::CreatePair(&sender_message_port,
-                                             &receiver_message_port);
+  cast_api_bindings::CreatePlatformMessagePortPair(&sender_message_port,
+                                                   &receiver_message_port);
 
   fidl::InterfaceRequest<::fuchsia::web::MessagePort> message_port_request =
       cast_api_bindings::MessagePortFuchsia::FromMessagePort(

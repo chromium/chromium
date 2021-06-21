@@ -10,7 +10,7 @@
 #include "base/macros.h"
 #include "base/path_service.h"
 #include "base/strings/string_piece.h"
-#include "components/cast/message_port/message_port_fuchsia.h"
+#include "components/cast/message_port/fuchsia/message_port_fuchsia.h"
 #include "components/cast/message_port/test_message_port_receiver.h"
 #include "content/public/test/browser_test.h"
 #include "fuchsia/base/mem_buffer_util.h"

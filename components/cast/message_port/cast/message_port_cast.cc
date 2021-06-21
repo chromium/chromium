@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/cast/message_port/message_port_cast.h"
+#include "components/cast/message_port/cast/message_port_cast.h"
 
 #include <utility>
 
@@ -13,8 +13,8 @@
 namespace cast_api_bindings {
 
 // static
-void MessagePort::CreatePair(std::unique_ptr<MessagePort>* client,
-                             std::unique_ptr<MessagePort>* server) {
+void MessagePortCast::CreatePair(std::unique_ptr<MessagePort>* client,
+                                 std::unique_ptr<MessagePort>* server) {
   auto pair_raw = blink::WebMessagePort::CreatePair();
   *client = MessagePortCast::Create(std::move(pair_raw.first));
   *server = MessagePortCast::Create(std::move(pair_raw.second));

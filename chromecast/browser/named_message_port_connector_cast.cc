@@ -10,7 +10,7 @@
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromecast/browser/cast_web_contents.h"
-#include "components/cast/message_port/message_port_cast.h"
+#include "components/cast/message_port/cast/message_port_cast.h"
 #include "components/cast/named_message_port_connector/grit/named_message_port_connector_resources.h"
 #include "ui/base/resource/resource_bundle.h"
 

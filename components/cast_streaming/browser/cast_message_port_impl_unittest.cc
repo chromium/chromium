@@ -8,6 +8,7 @@
 #include "base/json/json_writer.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "components/cast/message_port/platform_message_port.h"
 #include "components/cast/message_port/test_message_port_receiver.h"
 #include "components/cast_streaming/browser/message_serialization.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -29,8 +30,8 @@ class CastMessagePortImplTest : public testing::Test,
 
   void SetUp() override {
     std::unique_ptr<cast_api_bindings::MessagePort> receiver;
-    cast_api_bindings::MessagePort::CreatePair(&sender_message_port_,
-                                               &receiver);
+    cast_api_bindings::CreatePlatformMessagePortPair(&sender_message_port_,
+                                                     &receiver);
 
     sender_message_port_->SetReceiver(&sender_message_port_receiver_);
     receiver_message_port_ = std::make_unique<CastMessagePortImpl>(

@@ -16,7 +16,8 @@
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/path_service.h"
 #include "base/task/current_thread.h"
-#include "components/cast/message_port/message_port_fuchsia.h"
+#include "components/cast/message_port/fuchsia/message_port_fuchsia.h"
+#include "components/cast/message_port/platform_message_port.h"
 #include "fuchsia/base/agent_manager.h"
 #include "fuchsia/base/mem_buffer_util.h"
 #include "fuchsia/fidl/chromium/cast/cpp/fidl.h"
@@ -161,8 +162,8 @@ void CastComponent::StartComponent() {
     // Register the MessagePort for the Cast Streaming Receiver.
     std::unique_ptr<cast_api_bindings::MessagePort> message_port_for_web_engine;
     std::unique_ptr<cast_api_bindings::MessagePort> message_port_for_agent;
-    cast_api_bindings::MessagePort::CreatePair(&message_port_for_agent,
-                                               &message_port_for_web_engine);
+    cast_api_bindings::CreatePlatformMessagePortPair(
+        &message_port_for_agent, &message_port_for_web_engine);
     frame()->PostMessage(
         kCastStreamingMessagePortOrigin,
         CreateWebMessage("", std::move(message_port_for_web_engine)),

@@ -5,7 +5,7 @@
 #include "fuchsia/engine/browser/receiver_session_client.h"
 
 #include "base/bind.h"
-#include "components/cast/message_port/message_port_fuchsia.h"
+#include "components/cast/message_port/fuchsia/message_port_fuchsia.h"
 #include "components/cast_streaming/public/config_conversions.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/video_decoder_config.h"

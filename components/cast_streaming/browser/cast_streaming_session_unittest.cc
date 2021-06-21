@@ -7,6 +7,7 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "components/cast/message_port/platform_message_port.h"
 #include "components/cast_streaming/browser/test/cast_streaming_test_receiver.h"
 #include "components/cast_streaming/browser/test/cast_streaming_test_sender.h"
 #include "media/base/media_util.h"
@@ -68,8 +69,8 @@ class CastStreamingSessionTest : public testing::Test {
   void StartSession() {
     std::unique_ptr<cast_api_bindings::MessagePort> sender_message_port;
     std::unique_ptr<cast_api_bindings::MessagePort> receiver_message_port;
-    cast_api_bindings::MessagePort::CreatePair(&sender_message_port,
-                                               &receiver_message_port);
+    cast_api_bindings::CreatePlatformMessagePortPair(&sender_message_port,
+                                                     &receiver_message_port);
 
     receiver_.Start(std::move(receiver_message_port));
     EXPECT_TRUE(sender_.Start(
