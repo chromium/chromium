@@ -8,18 +8,30 @@ static_library("feature_status_tracker") {
   sources = [
     "base_enabled_provider.cc",
     "base_enabled_provider.h",
+    "bluetooth_enabled_provider.cc",
+    "bluetooth_enabled_provider.h",
   ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//device/bluetooth",
+  ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "base_enabled_provider_unittest.cc" ]
+
+  sources = [
+    "base_enabled_provider_unittest.cc",
+    "bluetooth_enabled_provider_unittest.cc",
+    "fake_bluetooth_adapter.h",
+  ]
 
   deps = [
     ":feature_status_tracker",
     "//base/test:test_support",
+    "//device/bluetooth",
+    "//device/bluetooth:mocks",
     "//testing/gtest",
   ]
 }
