@@ -8,6 +8,7 @@
 #include "base/sequence_checker.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace storage {
 
@@ -42,9 +43,9 @@ void QuotaOverrideHandle::OverrideQuotaForOrigin(
         origin, quota_size, std::move(callback)));
     return;
   }
-  quota_manager_proxy_->OverrideQuotaForOrigin(
-      id_.value(), origin, quota_size, base::SequencedTaskRunnerHandle::Get(),
-      std::move(callback));
+  quota_manager_proxy_->OverrideQuotaForStorageKey(
+      id_.value(), blink::StorageKey(origin), quota_size,
+      base::SequencedTaskRunnerHandle::Get(), std::move(callback));
 }
 
 void QuotaOverrideHandle::DidGetOverrideHandleId(int id) {

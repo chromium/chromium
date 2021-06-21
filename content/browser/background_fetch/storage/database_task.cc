@@ -87,10 +87,8 @@ void DatabaseTask::IsQuotaAvailable(const blink::StorageKey& storage_key,
   DCHECK(quota_manager_proxy());
   DCHECK_GT(size, 0);
 
-  // TODO(https://crbug.com/1199077): Pass `storage_key` directly once the quota
-  // manager supports StorageKey.
   quota_manager_proxy()->GetUsageAndQuota(
-      storage_key.origin(), blink::mojom::StorageType::kTemporary,
+      storage_key, blink::mojom::StorageType::kTemporary,
       base::ThreadTaskRunnerHandle::Get(),
       base::BindOnce(&DidGetUsageAndQuota, std::move(callback), size));
 }

@@ -699,7 +699,7 @@ void LegacyCacheStorageCache::WriteSideData(ErrorCallback callback,
   // GetUsageAndQuota is called before entering a scheduled operation since it
   // can call Size, another scheduled operation.
   quota_manager_proxy_->GetUsageAndQuota(
-      storage_key_.origin(), blink::mojom::StorageType::kTemporary,
+      storage_key_, blink::mojom::StorageType::kTemporary,
       scheduler_task_runner_,
       base::BindOnce(&LegacyCacheStorageCache::WriteSideDataDidGetQuota,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback), url,
@@ -787,7 +787,7 @@ void LegacyCacheStorageCache::BatchOperation(
     // Put runs, the cache might already be full and the usage will be larger
     // than it's supposed to be.
     quota_manager_proxy_->GetUsageAndQuota(
-        storage_key_.origin(), blink::mojom::StorageType::kTemporary,
+        storage_key_, blink::mojom::StorageType::kTemporary,
         scheduler_task_runner_,
         base::BindOnce(&LegacyCacheStorageCache::BatchDidGetUsageAndQuota,
                        weak_ptr_factory_.GetWeakPtr(), std::move(operations),
@@ -1004,7 +1004,7 @@ size_t LegacyCacheStorageCache::EstimatedStructSize(
 }
 
 LegacyCacheStorageCache::~LegacyCacheStorageCache() {
-  quota_manager_proxy_->NotifyOriginNoLongerInUse(storage_key_.origin());
+  quota_manager_proxy_->NotifyStorageKeyNoLongerInUse(storage_key_);
 }
 
 void LegacyCacheStorageCache::SetSchedulerForTesting(
@@ -1051,7 +1051,7 @@ LegacyCacheStorageCache::LegacyCacheStorageCache(
     last_reported_size_ = cache_size_ + cache_padding_;
   }
 
-  quota_manager_proxy_->NotifyOriginInUse(storage_key_.origin());
+  quota_manager_proxy_->NotifyStorageKeyInUse(storage_key_);
 }
 
 void LegacyCacheStorageCache::QueryCache(
@@ -1874,7 +1874,7 @@ void LegacyCacheStorageCache::PutDidCreateEntry(
   put_context->cache_entry.reset(result.ReleaseEntry());
 
   if (rv != net::OK) {
-    quota_manager_proxy_->NotifyWriteFailed(storage_key_.origin());
+    quota_manager_proxy_->NotifyWriteFailed(storage_key_);
     PutComplete(std::move(put_context), CacheStorageError::kErrorExists);
     return;
   }
@@ -1962,7 +1962,7 @@ void LegacyCacheStorageCache::PutDidWriteHeaders(
                          TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
 
   if (rv != expected_bytes) {
-    quota_manager_proxy_->NotifyWriteFailed(storage_key_.origin());
+    quota_manager_proxy_->NotifyWriteFailed(storage_key_);
     PutComplete(
         std::move(put_context),
         MakeErrorStorage(ErrorStorageType::kPutDidWriteHeadersWrongBytes));
@@ -2197,9 +2197,9 @@ void LegacyCacheStorageCache::UpdateCacheSizeGotSize(
   last_reported_size_ = PaddedCacheSize();
 
   quota_manager_proxy_->NotifyStorageModified(
-      CacheStorageQuotaClient::GetClientTypeFromOwner(owner_),
-      storage_key_.origin(), blink::mojom::StorageType::kTemporary, size_delta,
-      base::Time::Now(), scheduler_task_runner_,
+      CacheStorageQuotaClient::GetClientTypeFromOwner(owner_), storage_key_,
+      blink::mojom::StorageType::kTemporary, size_delta, base::Time::Now(),
+      scheduler_task_runner_,
       base::BindOnce(
           &LegacyCacheStorageCache::UpdateCacheSizeNotifiedStorageModified,
           weak_ptr_factory_.GetWeakPtr(), std::move(callback)));

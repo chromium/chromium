@@ -94,7 +94,7 @@ void CacheStorageBlobToDiskCache::ReadFromBlob() {
 void CacheStorageBlobToDiskCache::DidWriteDataToEntry(int expected_bytes,
                                                       int rv) {
   if (rv != expected_bytes) {
-    quota_manager_proxy_->NotifyWriteFailed(storage_key_.origin());
+    quota_manager_proxy_->NotifyWriteFailed(storage_key_);
     RunCallback(false /* success */);
     return;
   }

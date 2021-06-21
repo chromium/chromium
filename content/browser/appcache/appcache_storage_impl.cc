@@ -40,6 +40,7 @@
 #include "storage/browser/quota/quota_manager.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/appcache/appcache_info.mojom.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 
@@ -670,7 +671,8 @@ void AppCacheStorageImpl::StoreGroupAndCacheTask::GetQuotaThenSchedule() {
   // We have to ask the quota manager for the value.
   storage_->pending_quota_queries_.insert(this);
   storage_->service()->quota_manager_proxy()->GetUsageAndQuota(
-      group_record_.origin, blink::mojom::StorageType::kTemporary,
+      blink::StorageKey(group_record_.origin),
+      blink::mojom::StorageType::kTemporary,
       base::ThreadTaskRunnerHandle::Get(),
       base::BindOnce(&StoreGroupAndCacheTask::OnQuotaCallback, this));
 }

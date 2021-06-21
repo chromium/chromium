@@ -15,6 +15,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -43,7 +44,8 @@ void MockQuotaClient::AddOriginAndNotify(const url::Origin& origin,
   DCHECK_GE(size, 0);
   origin_data_[{origin, storage_type}] = size;
   quota_manager_proxy_->NotifyStorageModified(
-      client_type_, origin, storage_type, size, IncrementMockTime());
+      client_type_, blink::StorageKey(origin), storage_type, size,
+      IncrementMockTime());
 }
 
 void MockQuotaClient::ModifyOriginAndNotify(
@@ -57,14 +59,15 @@ void MockQuotaClient::ModifyOriginAndNotify(
 
   // TODO(tzik): Check quota to prevent usage exceed
   quota_manager_proxy_->NotifyStorageModified(
-      client_type_, origin, storage_type, delta, IncrementMockTime());
+      client_type_, blink::StorageKey(origin), storage_type, delta,
+      IncrementMockTime());
 }
 
 void MockQuotaClient::TouchAllOriginsAndNotify() {
   for (const auto& origin_type : origin_data_) {
     quota_manager_proxy_->NotifyStorageModified(
-        client_type_, origin_type.first.first, origin_type.first.second, 0,
-        IncrementMockTime());
+        client_type_, blink::StorageKey(origin_type.first.first),
+        origin_type.first.second, 0, IncrementMockTime());
   }
 }
 
@@ -168,7 +171,8 @@ void MockQuotaClient::RunDeleteOriginData(
   if (it != origin_data_.end()) {
     int64_t delta = it->second;
     quota_manager_proxy_->NotifyStorageModified(
-        client_type_, origin, storage_type, -delta, base::Time::Now());
+        client_type_, blink::StorageKey(origin), storage_type, -delta,
+        base::Time::Now());
     origin_data_.erase(it);
   }
 

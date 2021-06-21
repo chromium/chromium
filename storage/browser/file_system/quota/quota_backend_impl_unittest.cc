@@ -50,16 +50,17 @@ class MockQuotaManagerProxy : public QuotaManagerProxy {
         quota_(0) {}
 
   // We don't mock them.
-  void NotifyOriginInUse(const url::Origin& origin) override {}
-  void NotifyOriginNoLongerInUse(const url::Origin& origin) override {}
+  void NotifyStorageKeyInUse(const blink::StorageKey& storage_key) override {}
+  void NotifyStorageKeyNoLongerInUse(
+      const blink::StorageKey& storage_key) override {}
   void SetUsageCacheEnabled(QuotaClientType client_id,
-                            const url::Origin& origin,
+                            const blink::StorageKey& storage_key,
                             blink::mojom::StorageType type,
                             bool enabled) override {}
 
   void NotifyStorageModified(
       QuotaClientType client_id,
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       blink::mojom::StorageType type,
       int64_t delta,
       base::Time modification_time,
@@ -73,7 +74,7 @@ class MockQuotaManagerProxy : public QuotaManagerProxy {
   }
 
   void GetUsageAndQuota(
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       blink::mojom::StorageType type,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       UsageAndQuotaCallback callback) override {

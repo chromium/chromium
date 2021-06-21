@@ -19,6 +19,7 @@
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/common/file_system/file_system_util.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
 
 namespace storage {
@@ -47,7 +48,8 @@ void QuotaBackendImpl::ReserveQuota(const url::Origin& origin,
   }
   DCHECK(quota_manager_proxy_.get());
   quota_manager_proxy_->GetUsageAndQuota(
-      origin, FileSystemTypeToQuotaStorageType(type), file_task_runner_,
+      blink::StorageKey(origin), FileSystemTypeToQuotaStorageType(type),
+      file_task_runner_,
       base::BindOnce(&QuotaBackendImpl::DidGetUsageAndQuotaForReserveQuota,
                      weak_ptr_factory_.GetWeakPtr(),
                      QuotaReservationInfo(origin, type, delta),
@@ -140,7 +142,7 @@ void QuotaBackendImpl::ReserveQuotaInternal(const QuotaReservationInfo& info) {
   DCHECK(!info.origin.opaque());
   DCHECK(quota_manager_proxy_.get());
   quota_manager_proxy_->NotifyStorageModified(
-      QuotaClientType::kFileSystem, info.origin,
+      QuotaClientType::kFileSystem, blink::StorageKey(info.origin),
       FileSystemTypeToQuotaStorageType(info.type), info.delta,
       base::Time::Now());
 }

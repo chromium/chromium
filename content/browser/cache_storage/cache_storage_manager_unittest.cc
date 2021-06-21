@@ -753,7 +753,7 @@ class CacheStorageManagerTest : public testing::Test {
     int64_t usage(CacheStorage::kSizeUnknown);
     base::RunLoop loop;
     quota_manager_proxy_->GetUsageAndQuota(
-        storage_key.origin(), StorageType::kTemporary,
+        storage_key, StorageType::kTemporary,
         base::ThreadTaskRunnerHandle::Get(),
         base::BindOnce(&CacheStorageManagerTest::DidGetQuotaOriginUsage,
                        base::Unretained(this), base::Unretained(&usage),

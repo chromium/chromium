@@ -802,11 +802,8 @@ void IndexedDBContextImpl::ConnectionOpened(
     const blink::StorageKey& storage_key,
     IndexedDBConnection* connection) {
   DCHECK(IDBTaskRunner()->RunsTasksInCurrentSequence());
-  // TODO(crbug.com/1215208): Migrate to use StorageKey when the QuotaClient
-  // is migrated to use StorageKey instead of Origin.
   quota_manager_proxy()->NotifyStorageAccessed(
-      storage_key.origin(), blink::mojom::StorageType::kTemporary,
-      base::Time::Now());
+      storage_key, blink::mojom::StorageType::kTemporary, base::Time::Now());
   if (GetStorageKeySet()->insert(storage_key).second) {
     // A newly created db, notify the quota system.
     QueryDiskAndUpdateQuotaUsage(storage_key);
@@ -819,11 +816,8 @@ void IndexedDBContextImpl::ConnectionClosed(
     const blink::StorageKey& storage_key,
     IndexedDBConnection* connection) {
   DCHECK(IDBTaskRunner()->RunsTasksInCurrentSequence());
-  // TODO(crbug.com/1215208): Migrate to use StorageKey when the QuotaClient
-  // is migrated to use StorageKey instead of Origin.
   quota_manager_proxy()->NotifyStorageAccessed(
-      storage_key.origin(), blink::mojom::StorageType::kTemporary,
-      base::Time::Now());
+      storage_key, blink::mojom::StorageType::kTemporary, base::Time::Now());
   if (indexeddb_factory_.get() &&
       indexeddb_factory_->GetConnectionCount(storage_key) == 0)
     QueryDiskAndUpdateQuotaUsage(storage_key);
@@ -946,10 +940,8 @@ void IndexedDBContextImpl::QueryDiskAndUpdateQuotaUsage(
   int64_t difference = current_disk_usage - former_disk_usage;
   if (difference) {
     storage_key_size_map_[storage_key] = current_disk_usage;
-    // TODO(crbug.com/1215208): Migrate to use StorageKey when the QuotaClient
-    // is migrated to use StorageKey instead of Origin.
     quota_manager_proxy()->NotifyStorageModified(
-        storage::QuotaClientType::kIndexedDatabase, storage_key.origin(),
+        storage::QuotaClientType::kIndexedDatabase, storage_key,
         blink::mojom::StorageType::kTemporary, difference, base::Time::Now());
     NotifyIndexedDBListChanged(storage_key);
   }

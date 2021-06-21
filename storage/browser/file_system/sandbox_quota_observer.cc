@@ -14,6 +14,7 @@
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/common/file_system/file_system_util.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace storage {
 
@@ -42,7 +43,7 @@ void SandboxQuotaObserver::OnUpdate(const FileSystemURL& url, int64_t delta) {
 
   if (quota_manager_proxy_.get()) {
     quota_manager_proxy_->NotifyStorageModified(
-        QuotaClientType::kFileSystem, url.origin(),
+        QuotaClientType::kFileSystem, blink::StorageKey(url.origin()),
         FileSystemTypeToQuotaStorageType(url.type()), delta, base::Time::Now());
   }
 
@@ -79,8 +80,8 @@ void SandboxQuotaObserver::OnEndUpdate(const FileSystemURL& url) {
 void SandboxQuotaObserver::OnAccess(const FileSystemURL& url) {
   if (quota_manager_proxy_.get()) {
     quota_manager_proxy_->NotifyStorageAccessed(
-        url.origin(), FileSystemTypeToQuotaStorageType(url.type()),
-        base::Time::Now());
+        blink::StorageKey(url.origin()),
+        FileSystemTypeToQuotaStorageType(url.type()), base::Time::Now());
   }
 }
 
@@ -89,7 +90,7 @@ void SandboxQuotaObserver::SetUsageCacheEnabled(const url::Origin& origin,
                                                 bool enabled) {
   if (quota_manager_proxy_.get()) {
     quota_manager_proxy_->SetUsageCacheEnabled(
-        QuotaClientType::kFileSystem, origin,
+        QuotaClientType::kFileSystem, blink::StorageKey(origin),
         FileSystemTypeToQuotaStorageType(type), enabled);
   }
 }

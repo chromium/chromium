@@ -32,55 +32,57 @@ void MockQuotaManagerProxy::RegisterClient(
 }
 
 void MockQuotaManagerProxy::GetUsageAndQuota(
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     blink::mojom::StorageType type,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     QuotaManager::UsageAndQuotaCallback callback) {
   if (mock_quota_manager_) {
-    mock_quota_manager_->GetUsageAndQuota(blink::StorageKey(origin), type,
+    mock_quota_manager_->GetUsageAndQuota(storage_key, type,
                                           std::move(callback));
   }
 }
 
 void MockQuotaManagerProxy::NotifyStorageAccessed(
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     blink::mojom::StorageType type,
     base::Time access_time) {
   ++storage_accessed_count_;
-  last_notified_origin_ = origin;
+  last_notified_storage_key_ = storage_key;
   last_notified_type_ = type;
 }
 
 void MockQuotaManagerProxy::NotifyStorageModified(
     storage::QuotaClientType client_id,
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     blink::mojom::StorageType type,
     int64_t delta,
     base::Time modification_time,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     base::OnceClosure callback) {
   ++storage_modified_count_;
-  last_notified_origin_ = origin;
+  last_notified_storage_key_ = storage_key;
   last_notified_type_ = type;
   last_notified_delta_ = delta;
   if (mock_quota_manager_) {
-    mock_quota_manager_->UpdateUsage(blink::StorageKey(origin), type, delta);
+    mock_quota_manager_->UpdateUsage(storage_key, type, delta);
   }
   if (callback)
     callback_task_runner->PostTask(FROM_HERE, std::move(callback));
 }
 
-void MockQuotaManagerProxy::NotifyOriginInUse(const url::Origin& origin) {
-  origins_in_use_.insert(origin);
+void MockQuotaManagerProxy::NotifyStorageKeyInUse(
+    const blink::StorageKey& storage_key) {
+  storage_keys_in_use_.insert(storage_key);
 }
 
-void MockQuotaManagerProxy::NotifyOriginNoLongerInUse(
-    const url::Origin& origin) {
-  origins_in_use_.erase(origin);
+void MockQuotaManagerProxy::NotifyStorageKeyNoLongerInUse(
+    const blink::StorageKey& storage_key) {
+  storage_keys_in_use_.erase(storage_key);
 }
 
-bool MockQuotaManagerProxy::OriginInUse(const url::Origin& origin) const {
-  return origins_in_use_.contains(origin);
+bool MockQuotaManagerProxy::StorageKeyInUse(
+    const blink::StorageKey& storage_key) const {
+  return storage_keys_in_use_.contains(storage_key);
 }
 
 MockQuotaManagerProxy::~MockQuotaManagerProxy() = default;

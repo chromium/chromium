@@ -111,16 +111,16 @@ class TestQuotaManagerProxy : public QuotaManagerProxy {
     registered_client_.Bind(std::move(client));
   }
 
-  void NotifyStorageAccessed(const url::Origin& origin,
+  void NotifyStorageAccessed(const blink::StorageKey& storage_key,
                              blink::mojom::StorageType type,
                              base::Time access_time) override {
     EXPECT_EQ(blink::mojom::StorageType::kTemporary, type);
-    accesses_[origin] += 1;
+    accesses_[storage_key] += 1;
   }
 
   void NotifyStorageModified(
       QuotaClientType client_id,
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       blink::mojom::StorageType type,
       int64_t delta,
       base::Time modification_time,
@@ -128,32 +128,34 @@ class TestQuotaManagerProxy : public QuotaManagerProxy {
       base::OnceClosure callback) override {
     EXPECT_EQ(QuotaClientType::kDatabase, client_id);
     EXPECT_EQ(blink::mojom::StorageType::kTemporary, type);
-    modifications_[origin].first += 1;
-    modifications_[origin].second += delta;
+    modifications_[storage_key].first += 1;
+    modifications_[storage_key].second += delta;
     if (callback)
       callback_task_runner->PostTask(FROM_HERE, std::move(callback));
   }
 
   // Not needed for our tests.
-  void NotifyOriginInUse(const url::Origin& origin) override {}
-  void NotifyOriginNoLongerInUse(const url::Origin& origin) override {}
+  void NotifyStorageKeyInUse(const blink::StorageKey& storage_key) override {}
+  void NotifyStorageKeyNoLongerInUse(
+      const blink::StorageKey& storage_key) override {}
   void SetUsageCacheEnabled(QuotaClientType client_id,
-                            const url::Origin& origin,
+                            const blink::StorageKey& storage_key,
                             blink::mojom::StorageType type,
                             bool enabled) override {}
   void GetUsageAndQuota(
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       blink::mojom::StorageType type,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       UsageAndQuotaCallback callback) override {}
 
-  bool WasAccessNotified(const url::Origin& origin) {
-    return accesses_[origin] != 0;
+  bool WasAccessNotified(const blink::StorageKey& storage_key) {
+    return accesses_[storage_key] != 0;
   }
 
-  bool WasModificationNotified(const url::Origin& origin, int64_t amount) {
-    return modifications_[origin].first != 0 &&
-           modifications_[origin].second == amount;
+  bool WasModificationNotified(const blink::StorageKey& storage_key,
+                               int64_t amount) {
+    return modifications_[storage_key].first != 0 &&
+           modifications_[storage_key].second == amount;
   }
 
   void ResetRecordedTestState() {
@@ -163,11 +165,11 @@ class TestQuotaManagerProxy : public QuotaManagerProxy {
 
   mojo::Remote<mojom::QuotaClient> registered_client_;
 
-  // Map from origin to count of access notifications.
-  std::map<url::Origin, int> accesses_;
+  // Map from storage key to count of access notifications.
+  std::map<blink::StorageKey, int> accesses_;
 
-  // Map from origin to <count, sum of deltas>
-  std::map<url::Origin, std::pair<int, int64_t>> modifications_;
+  // Map from storage key to <count, sum of deltas>
+  std::map<blink::StorageKey, std::pair<int, int64_t>> modifications_;
 
  protected:
   ~TestQuotaManagerProxy() override = default;
@@ -445,8 +447,9 @@ class DatabaseTracker_TestHelper_Test {
   }
 
   static void DatabaseTrackerQuotaIntegration(bool incognito_mode) {
-    const url::Origin kOrigin(url::Origin::Create(GURL(kOrigin1Url)));
-    const std::string kOriginId = GetIdentifierFromOrigin(kOrigin);
+    const blink::StorageKey kStorageKey =
+        blink::StorageKey::CreateFromStringForTesting(kOrigin1Url);
+    const std::string kOriginId = GetIdentifierFromOrigin(kStorageKey.origin());
     const std::u16string kName = u"name";
     const std::u16string kDescription = u"description";
 
@@ -473,7 +476,7 @@ class DatabaseTracker_TestHelper_Test {
           int64_t database_size = 0;
           tracker->DatabaseOpened(kOriginId, kName, kDescription,
                                   &database_size);
-          EXPECT_TRUE(test_quota_proxy->WasAccessNotified(kOrigin));
+          EXPECT_TRUE(test_quota_proxy->WasAccessNotified(kStorageKey));
           test_quota_proxy->ResetRecordedTestState();
 
           base::FilePath db_file(tracker->GetFullDBFilePath(kOriginId, kName));
@@ -483,22 +486,25 @@ class DatabaseTracker_TestHelper_Test {
           EXPECT_TRUE(EnsureFileOfSize(db_file, 10));
           EXPECT_TRUE(base::PathExists(tracker->GetOriginDirectory(kOriginId)));
           tracker->DatabaseModified(kOriginId, kName);
-          EXPECT_TRUE(test_quota_proxy->WasModificationNotified(kOrigin, 10));
+          EXPECT_TRUE(
+              test_quota_proxy->WasModificationNotified(kStorageKey, 10));
           test_quota_proxy->ResetRecordedTestState();
 
           EXPECT_TRUE(EnsureFileOfSize(db_file, 100));
           tracker->DatabaseModified(kOriginId, kName);
-          EXPECT_TRUE(test_quota_proxy->WasModificationNotified(kOrigin, 90));
+          EXPECT_TRUE(
+              test_quota_proxy->WasModificationNotified(kStorageKey, 90));
           test_quota_proxy->ResetRecordedTestState();
 
           tracker->DatabaseClosed(kOriginId, kName);
-          EXPECT_TRUE(test_quota_proxy->WasAccessNotified(kOrigin));
+          EXPECT_TRUE(test_quota_proxy->WasAccessNotified(kStorageKey));
           net::TestCompletionCallback delete_database_callback;
           tracker->DeleteDatabase(kOriginId, kName,
                                   delete_database_callback.callback());
           EXPECT_TRUE(delete_database_callback.have_result());
           EXPECT_EQ(net::OK, delete_database_callback.WaitForResult());
-          EXPECT_TRUE(test_quota_proxy->WasModificationNotified(kOrigin, -100));
+          EXPECT_TRUE(
+              test_quota_proxy->WasModificationNotified(kStorageKey, -100));
           test_quota_proxy->ResetRecordedTestState();
 
           EXPECT_FALSE(
@@ -510,7 +516,7 @@ class DatabaseTracker_TestHelper_Test {
 
           tracker->DatabaseOpened(kOriginId, kName, kDescription,
                                   &database_size);
-          EXPECT_TRUE(test_quota_proxy->WasAccessNotified(kOrigin));
+          EXPECT_TRUE(test_quota_proxy->WasAccessNotified(kStorageKey));
           test_quota_proxy->ResetRecordedTestState();
 
           db_file = tracker->GetFullDBFilePath(kOriginId, kName);
@@ -520,7 +526,8 @@ class DatabaseTracker_TestHelper_Test {
           EXPECT_TRUE(EnsureFileOfSize(db_file, 100));
           EXPECT_TRUE(base::PathExists(tracker->GetOriginDirectory(kOriginId)));
           tracker->DatabaseModified(kOriginId, kName);
-          EXPECT_TRUE(test_quota_proxy->WasModificationNotified(kOrigin, 100));
+          EXPECT_TRUE(
+              test_quota_proxy->WasModificationNotified(kStorageKey, 100));
           test_quota_proxy->ResetRecordedTestState();
 
           net::TestCompletionCallback delete_database_callback2;
@@ -528,12 +535,13 @@ class DatabaseTracker_TestHelper_Test {
                                   delete_database_callback2.callback());
           EXPECT_FALSE(delete_database_callback2.have_result());
           EXPECT_FALSE(
-              test_quota_proxy->WasModificationNotified(kOrigin, -100));
+              test_quota_proxy->WasModificationNotified(kStorageKey, -100));
           EXPECT_TRUE(base::PathExists(tracker->GetOriginDirectory(kOriginId)));
 
           tracker->DatabaseClosed(kOriginId, kName);
-          EXPECT_TRUE(test_quota_proxy->WasAccessNotified(kOrigin));
-          EXPECT_TRUE(test_quota_proxy->WasModificationNotified(kOrigin, -100));
+          EXPECT_TRUE(test_quota_proxy->WasAccessNotified(kStorageKey));
+          EXPECT_TRUE(
+              test_quota_proxy->WasModificationNotified(kStorageKey, -100));
           EXPECT_FALSE(
               base::PathExists(tracker->GetOriginDirectory(kOriginId)));
           EXPECT_TRUE(delete_database_callback2.have_result());
@@ -547,7 +555,7 @@ class DatabaseTracker_TestHelper_Test {
 
           tracker->DatabaseOpened(kOriginId, kName, kDescription,
                                   &database_size);
-          EXPECT_TRUE(test_quota_proxy->WasAccessNotified(kOrigin));
+          EXPECT_TRUE(test_quota_proxy->WasAccessNotified(kStorageKey));
           test_quota_proxy->ResetRecordedTestState();
           db_file = tracker->GetFullDBFilePath(kOriginId, kName);
           EXPECT_FALSE(
@@ -557,9 +565,11 @@ class DatabaseTracker_TestHelper_Test {
           EXPECT_TRUE(EnsureFileOfSize(db_file, 100));
           DatabaseConnections crashed_renderer_connections;
           crashed_renderer_connections.AddConnection(kOriginId, kName);
-          EXPECT_FALSE(test_quota_proxy->WasModificationNotified(kOrigin, 100));
+          EXPECT_FALSE(
+              test_quota_proxy->WasModificationNotified(kStorageKey, 100));
           tracker->CloseDatabases(crashed_renderer_connections);
-          EXPECT_TRUE(test_quota_proxy->WasModificationNotified(kOrigin, 100));
+          EXPECT_TRUE(
+              test_quota_proxy->WasModificationNotified(kStorageKey, 100));
 
           // Cleanup.
           crashed_renderer_connections.RemoveAllConnections();

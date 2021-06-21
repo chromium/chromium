@@ -31,6 +31,7 @@
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/appcache/appcache.mojom.h"
 #include "third_party/blink/public/mojom/appcache/appcache_info.mojom.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
@@ -40,7 +41,7 @@ namespace content {
 
 namespace {
 const int64_t kUnsetCacheId = -222;
-}
+}  // namespace
 
 class AppCacheHostTest : public testing::Test {
  public:
@@ -121,12 +122,12 @@ class AppCacheHostTest : public testing::Test {
         mojo::PendingRemote<storage::mojom::QuotaClient> client,
         storage::QuotaClientType client_type,
         const std::vector<blink::mojom::StorageType>& storage_types) override {}
-    void NotifyStorageAccessed(const url::Origin& origin,
+    void NotifyStorageAccessed(const blink::StorageKey& storage_key,
                                blink::mojom::StorageType type,
                                base::Time access_time) override {}
     void NotifyStorageModified(
         storage::QuotaClientType client_id,
-        const url::Origin& origin,
+        const blink::StorageKey& storage_key,
         blink::mojom::StorageType type,
         int64_t delta,
         base::Time modification_time,
@@ -136,30 +137,33 @@ class AppCacheHostTest : public testing::Test {
         callback_task_runner->PostTask(FROM_HERE, std::move(callback));
     }
     void SetUsageCacheEnabled(storage::QuotaClientType client_id,
-                              const url::Origin& origin,
+                              const blink::StorageKey& storage_key,
                               blink::mojom::StorageType type,
                               bool enabled) override {}
     void GetUsageAndQuota(
-        const url::Origin& origin,
+        const blink::StorageKey& storage_key,
         blink::mojom::StorageType type,
         scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
         UsageAndQuotaCallback callback) override {}
 
-    void NotifyOriginInUse(const url::Origin& origin) override {
-      inuse_[origin] += 1;
+    void NotifyStorageKeyInUse(const blink::StorageKey& storage_key) override {
+      inuse_[storage_key] += 1;
     }
 
-    void NotifyOriginNoLongerInUse(const url::Origin& origin) override {
-      inuse_[origin] -= 1;
+    void NotifyStorageKeyNoLongerInUse(
+        const blink::StorageKey& storage_key) override {
+      inuse_[storage_key] -= 1;
     }
 
-    int GetInUseCount(const url::Origin& origin) { return inuse_[origin]; }
+    int GetInUseCount(const blink::StorageKey& storage_key) {
+      return inuse_[storage_key];
+    }
 
     bool is_empty() const { return inuse_.empty(); }
     void reset() { inuse_.clear(); }
 
-    // Map from origin to count of inuse notifications.
-    std::map<url::Origin, int> inuse_;
+    // Map from storage key to count of inuse notifications.
+    std::map<blink::StorageKey, int> inuse_;
 
    protected:
     ~MockQuotaManagerProxy() override = default;
@@ -255,7 +259,7 @@ TEST_F(AppCacheHostTest, SelectNoCache) {
     mock_frontend_.last_status_ =
         blink::mojom::AppCacheStatus::APPCACHE_STATUS_OBSOLETE;
 
-    const url::Origin kOrigin(url::Origin::Create(document_url));
+    const blink::StorageKey kStorageKey(url::Origin::Create(document_url));
     {
       AppCacheHost host(
           kHostIdForTest, kProcessIdForTest, kRenderFrameIdForTest,
@@ -273,10 +277,10 @@ TEST_F(AppCacheHostTest, SelectNoCache) {
         EXPECT_FALSE(bad_message_observer.got_bad_message());
       }
 
-      if (kOrigin.opaque()) {
+      if (kStorageKey.origin().opaque()) {
         EXPECT_TRUE(mock_quota_proxy->is_empty());
       } else {
-        EXPECT_EQ(1, mock_quota_proxy->GetInUseCount(kOrigin))
+        EXPECT_EQ(1, mock_quota_proxy->GetInUseCount(kStorageKey))
             << " document_url " << document_url;
       }
 
@@ -293,7 +297,7 @@ TEST_F(AppCacheHostTest, SelectNoCache) {
       EXPECT_FALSE(host.is_selection_pending());
       EXPECT_TRUE(host.preferred_manifest_url().is_empty());
     }
-    EXPECT_EQ(0, mock_quota_proxy->GetInUseCount(kOrigin));
+    EXPECT_EQ(0, mock_quota_proxy->GetInUseCount(kStorageKey));
     service_.set_quota_manager_proxy(nullptr);
   }
 }
@@ -540,8 +544,9 @@ TEST_F(AppCacheHostTest, SelectCacheAllowed) {
   mock_frontend_.content_blocked_ = false;
   mock_frontend_.appcache_accessed_ = false;
 
-  const GURL kDocAndOriginUrl("http://whatever/");
-  const url::Origin kOrigin(url::Origin::Create(kDocAndOriginUrl));
+  const GURL kDocAndStorageKeyUrl("http://whatever/");
+  const blink::StorageKey kStorageKey(
+      url::Origin::Create(kDocAndStorageKeyUrl));
   const GURL kManifestUrl("http://whatever/cache.manifest");
   {
     AppCacheHost host(
@@ -551,10 +556,10 @@ TEST_F(AppCacheHostTest, SelectCacheAllowed) {
         mojo::NullRemote(), &service_);
     host.set_frontend_for_testing(&mock_frontend_);
     host.SetSiteForCookiesForTesting(
-        net::SiteForCookies::FromUrl(kDocAndOriginUrl));
-    host.SelectCache(kDocAndOriginUrl, blink::mojom::kAppCacheNoCacheId,
+        net::SiteForCookies::FromUrl(kDocAndStorageKeyUrl));
+    host.SelectCache(kDocAndStorageKeyUrl, blink::mojom::kAppCacheNoCacheId,
                      kManifestUrl);
-    EXPECT_EQ(1, mock_quota_proxy->GetInUseCount(kOrigin));
+    EXPECT_EQ(1, mock_quota_proxy->GetInUseCount(kStorageKey));
 
     // MockAppCacheService::LoadOrCreateGroup is asynchronous, so we shouldn't
     // have received an OnCacheSelected msg yet.
@@ -572,7 +577,7 @@ TEST_F(AppCacheHostTest, SelectCacheAllowed) {
     EXPECT_FALSE(mock_frontend_.content_blocked_);
     EXPECT_TRUE(mock_frontend_.appcache_accessed_);
   }
-  EXPECT_EQ(0, mock_quota_proxy->GetInUseCount(kOrigin));
+  EXPECT_EQ(0, mock_quota_proxy->GetInUseCount(kStorageKey));
   service_.set_quota_manager_proxy(nullptr);
 }
 
@@ -593,8 +598,9 @@ TEST_F(AppCacheHostTest, SelectCacheBlocked) {
   mock_frontend_.content_blocked_ = false;
   mock_frontend_.appcache_accessed_ = false;
 
-  const GURL kDocAndOriginUrl(GURL("http://whatever/").GetOrigin());
-  const url::Origin kOrigin(url::Origin::Create(kDocAndOriginUrl));
+  const GURL kDocAndStorageKeyUrl(GURL("http://whatever/").GetOrigin());
+  const blink::StorageKey kStorageKey(
+      url::Origin::Create(kDocAndStorageKeyUrl));
   const GURL kManifestUrl(GURL("http://whatever/cache.manifest"));
   {
     AppCacheHost host(
@@ -604,10 +610,10 @@ TEST_F(AppCacheHostTest, SelectCacheBlocked) {
         mojo::NullRemote(), &service_);
     host.set_frontend_for_testing(&mock_frontend_);
     host.SetSiteForCookiesForTesting(
-        net::SiteForCookies::FromUrl(kDocAndOriginUrl));
-    host.SelectCache(kDocAndOriginUrl, blink::mojom::kAppCacheNoCacheId,
+        net::SiteForCookies::FromUrl(kDocAndStorageKeyUrl));
+    host.SelectCache(kDocAndStorageKeyUrl, blink::mojom::kAppCacheNoCacheId,
                      kManifestUrl);
-    EXPECT_EQ(1, mock_quota_proxy->GetInUseCount(kOrigin));
+    EXPECT_EQ(1, mock_quota_proxy->GetInUseCount(kStorageKey));
 
     // We should have received an OnCacheSelected msg
     EXPECT_EQ(blink::mojom::kAppCacheNoCacheId, mock_frontend_.last_cache_id_);
@@ -629,12 +635,12 @@ TEST_F(AppCacheHostTest, SelectCacheBlocked) {
     EXPECT_TRUE(mock_frontend_.content_blocked_);
     EXPECT_TRUE(mock_frontend_.appcache_accessed_);
   }
-  EXPECT_EQ(0, mock_quota_proxy->GetInUseCount(kOrigin));
+  EXPECT_EQ(0, mock_quota_proxy->GetInUseCount(kStorageKey));
   service_.set_quota_manager_proxy(nullptr);
 }
 
 TEST_F(AppCacheHostTest, SelectCacheTwice) {
-  const GURL kDocAndOriginUrl(GURL("http://whatever/").GetOrigin());
+  const GURL kDocAndStorageKeyUrl(GURL("http://whatever/").GetOrigin());
   AppCacheHost host(kHostIdForTest, kProcessIdForTest, kRenderFrameIdForTest,
                     ChildProcessSecurityPolicyImpl::GetInstance()->CreateHandle(
                         kProcessIdForTest),
@@ -645,8 +651,8 @@ TEST_F(AppCacheHostTest, SelectCacheTwice) {
 
   {
     mojo::test::BadMessageObserver bad_message_observer;
-    host_remote->SelectCache(kDocAndOriginUrl, blink::mojom::kAppCacheNoCacheId,
-                             GURL());
+    host_remote->SelectCache(kDocAndStorageKeyUrl,
+                             blink::mojom::kAppCacheNoCacheId, GURL());
 
     base::RunLoop().RunUntilIdle();
     EXPECT_FALSE(bad_message_observer.got_bad_message());
@@ -655,8 +661,8 @@ TEST_F(AppCacheHostTest, SelectCacheTwice) {
   // Select methods should bail if cache has already been selected.
   {
     mojo::test::BadMessageObserver bad_message_observer;
-    host_remote->SelectCache(kDocAndOriginUrl, blink::mojom::kAppCacheNoCacheId,
-                             GURL());
+    host_remote->SelectCache(kDocAndStorageKeyUrl,
+                             blink::mojom::kAppCacheNoCacheId, GURL());
     EXPECT_EQ("ACH_SELECT_CACHE", bad_message_observer.WaitForBadMessage());
   }
   {
@@ -667,7 +673,7 @@ TEST_F(AppCacheHostTest, SelectCacheTwice) {
   }
   {
     mojo::test::BadMessageObserver bad_message_observer;
-    host_remote->MarkAsForeignEntry(kDocAndOriginUrl,
+    host_remote->MarkAsForeignEntry(kDocAndStorageKeyUrl,
                                     blink::mojom::kAppCacheNoCacheId);
     EXPECT_EQ("ACH_MARK_AS_FOREIGN_ENTRY",
               bad_message_observer.WaitForBadMessage());
@@ -675,7 +681,7 @@ TEST_F(AppCacheHostTest, SelectCacheTwice) {
 }
 
 TEST_F(AppCacheHostTest, SelectCacheInvalidCacheId) {
-  const GURL kDocAndOriginUrl(GURL("http://whatever/").GetOrigin());
+  const GURL kDocAndStorageKeyUrl(GURL("http://whatever/").GetOrigin());
 
   // A cache that the document wasn't actually loaded from. Trying to select it
   // should cause a BadMessage.
@@ -692,7 +698,7 @@ TEST_F(AppCacheHostTest, SelectCacheInvalidCacheId) {
 
   {
     mojo::test::BadMessageObserver bad_message_observer;
-    host_remote->SelectCache(kDocAndOriginUrl, kCacheId, GURL());
+    host_remote->SelectCache(kDocAndStorageKeyUrl, kCacheId, GURL());
 
     EXPECT_EQ("ACH_SELECT_CACHE_ID_NOT_OWNED",
               bad_message_observer.WaitForBadMessage());

@@ -35,6 +35,7 @@
 #include "storage/browser/file_system/sandbox_quota_observer.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/common/file_system/file_system_util.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
 
 namespace storage {
@@ -257,7 +258,7 @@ void SandboxFileSystemBackendDelegate::OpenFileSystem(
   base::OnceClosure quota_callback =
       (quota_manager_proxy_.get())
           ? base::BindOnce(&QuotaManagerProxy::NotifyStorageAccessed,
-                           quota_manager_proxy_, origin,
+                           quota_manager_proxy_, blink::StorageKey(origin),
                            FileSystemTypeToQuotaStorageType(type),
                            base::Time::Now())
           : base::DoNothing();
@@ -336,9 +337,9 @@ SandboxFileSystemBackendDelegate::DeleteOriginDataOnFileTaskRunner(
   bool result = obfuscated_file_util()->DeleteDirectoryForOriginAndType(
       origin, GetTypeString(type));
   if (result && proxy && usage) {
-    proxy->NotifyStorageModified(QuotaClientType::kFileSystem, origin,
-                                 FileSystemTypeToQuotaStorageType(type), -usage,
-                                 base::Time::Now());
+    proxy->NotifyStorageModified(
+        QuotaClientType::kFileSystem, blink::StorageKey(origin),
+        FileSystemTypeToQuotaStorageType(type), -usage, base::Time::Now());
   }
 
   if (result)

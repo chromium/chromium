@@ -399,7 +399,7 @@ class LegacyCacheStorage::SimpleCacheLoader
     int bytes_written = base::WriteFile(tmp_path, data.c_str(), data.size());
     if (bytes_written != base::checked_cast<int>(data.size())) {
       base::DeleteFile(tmp_path);
-      quota_manager_proxy->NotifyWriteFailed(storage_key.origin());
+      quota_manager_proxy->NotifyWriteFailed(storage_key);
       return false;
     }
 
@@ -651,7 +651,7 @@ void LegacyCacheStorage::OpenCache(const std::string& cache_name,
     LazyInit();
 
   quota_manager_proxy_->NotifyStorageAccessed(
-      storage_key_.origin(), StorageType::kTemporary, base::Time::Now());
+      storage_key_, StorageType::kTemporary, base::Time::Now());
 
   // TODO: Hold a handle to this CacheStorage instance while executing
   //       operations to better support use by internal code that may
@@ -676,7 +676,7 @@ void LegacyCacheStorage::HasCache(const std::string& cache_name,
     LazyInit();
 
   quota_manager_proxy_->NotifyStorageAccessed(
-      storage_key_.origin(), StorageType::kTemporary, base::Time::Now());
+      storage_key_, StorageType::kTemporary, base::Time::Now());
 
   auto id = scheduler_->CreateId();
   scheduler_->ScheduleOperation(
@@ -697,7 +697,7 @@ void LegacyCacheStorage::DoomCache(const std::string& cache_name,
     LazyInit();
 
   quota_manager_proxy_->NotifyStorageAccessed(
-      storage_key_.origin(), StorageType::kTemporary, base::Time::Now());
+      storage_key_, StorageType::kTemporary, base::Time::Now());
 
   auto id = scheduler_->CreateId();
   scheduler_->ScheduleOperation(
@@ -717,7 +717,7 @@ void LegacyCacheStorage::EnumerateCaches(int64_t trace_id,
     LazyInit();
 
   quota_manager_proxy_->NotifyStorageAccessed(
-      storage_key_.origin(), StorageType::kTemporary, base::Time::Now());
+      storage_key_, StorageType::kTemporary, base::Time::Now());
 
   auto id = scheduler_->CreateId();
   scheduler_->ScheduleOperation(
@@ -742,7 +742,7 @@ void LegacyCacheStorage::MatchCache(
     LazyInit();
 
   quota_manager_proxy_->NotifyStorageAccessed(
-      storage_key_.origin(), StorageType::kTemporary, base::Time::Now());
+      storage_key_, StorageType::kTemporary, base::Time::Now());
 
   auto id = scheduler_->CreateId();
   scheduler_->ScheduleOperation(
@@ -767,7 +767,7 @@ void LegacyCacheStorage::MatchAllCaches(
     LazyInit();
 
   quota_manager_proxy_->NotifyStorageAccessed(
-      storage_key_.origin(), StorageType::kTemporary, base::Time::Now());
+      storage_key_, StorageType::kTemporary, base::Time::Now());
 
   auto id = scheduler_->CreateId();
   scheduler_->ScheduleOperation(
@@ -792,7 +792,7 @@ void LegacyCacheStorage::WriteToCache(
     LazyInit();
 
   quota_manager_proxy_->NotifyStorageAccessed(
-      storage_key_.origin(), StorageType::kTemporary, base::Time::Now());
+      storage_key_, StorageType::kTemporary, base::Time::Now());
 
   // Note, this is a shared operation since it only reads CacheStorage data.
   // The CacheStorageCache is responsible for making its put operation
@@ -1179,9 +1179,8 @@ void LegacyCacheStorage::DeleteCacheDidGetSize(
     LegacyCacheStorageCache* doomed_cache,
     int64_t cache_size) {
   quota_manager_proxy_->NotifyStorageModified(
-      CacheStorageQuotaClient::GetClientTypeFromOwner(owner_),
-      storage_key_.origin(), StorageType::kTemporary, -cache_size,
-      base::Time::Now());
+      CacheStorageQuotaClient::GetClientTypeFromOwner(owner_), storage_key_,
+      StorageType::kTemporary, -cache_size, base::Time::Now());
 
   cache_loader_->CleanUpDeletedCache(doomed_cache);
   auto doomed_caches_iter = doomed_caches_.find(doomed_cache);

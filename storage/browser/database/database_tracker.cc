@@ -41,6 +41,7 @@
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/quota/special_storage_policy.h"
 #include "storage/common/database/database_identifier.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 #include "third_party/sqlite/sqlite3.h"
 #include "url/gurl.h"
@@ -169,7 +170,7 @@ void DatabaseTracker::DatabaseOpened(const std::string& origin_identifier,
 
   if (quota_manager_proxy_.get())
     quota_manager_proxy_->NotifyStorageAccessed(
-        GetOriginFromIdentifier(origin_identifier),
+        blink::StorageKey(GetOriginFromIdentifier(origin_identifier)),
         blink::mojom::StorageType::kTemporary, base::Time::Now());
 
   InsertOrUpdateDatabaseDetails(origin_identifier, database_name,
@@ -205,7 +206,7 @@ void DatabaseTracker::DatabaseClosed(const std::string& origin_identifier,
   // closed because we don't call it for read while open.
   if (quota_manager_proxy_.get())
     quota_manager_proxy_->NotifyStorageAccessed(
-        GetOriginFromIdentifier(origin_identifier),
+        blink::StorageKey(GetOriginFromIdentifier(origin_identifier)),
         blink::mojom::StorageType::kTemporary, base::Time::Now());
 
   UpdateOpenDatabaseSizeAndNotify(origin_identifier, database_name);
@@ -414,7 +415,8 @@ bool DatabaseTracker::DeleteClosedDatabase(
 
   if (quota_manager_proxy_.get() && db_file_size)
     quota_manager_proxy_->NotifyStorageModified(
-        QuotaClientType::kDatabase, GetOriginFromIdentifier(origin_identifier),
+        QuotaClientType::kDatabase,
+        blink::StorageKey(GetOriginFromIdentifier(origin_identifier)),
         blink::mojom::StorageType::kTemporary, -db_file_size,
         base::Time::Now());
 
@@ -492,7 +494,8 @@ bool DatabaseTracker::DeleteOrigin(const std::string& origin_identifier,
 
   if (quota_manager_proxy_.get() && deleted_size) {
     quota_manager_proxy_->NotifyStorageModified(
-        QuotaClientType::kDatabase, GetOriginFromIdentifier(origin_identifier),
+        QuotaClientType::kDatabase,
+        blink::StorageKey(GetOriginFromIdentifier(origin_identifier)),
         blink::mojom::StorageType::kTemporary, -deleted_size,
         base::Time::Now());
   }
@@ -690,7 +693,8 @@ int64_t DatabaseTracker::UpdateOpenDatabaseInfoAndNotify(
       info->SetDatabaseSize(name, new_size);
     if (quota_manager_proxy_.get())
       quota_manager_proxy_->NotifyStorageModified(
-          QuotaClientType::kDatabase, GetOriginFromIdentifier(origin_id),
+          QuotaClientType::kDatabase,
+          blink::StorageKey(GetOriginFromIdentifier(origin_id)),
           blink::mojom::StorageType::kTemporary, new_size - old_size,
           base::Time::Now());
     for (auto& observer : observers_)

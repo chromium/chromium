@@ -90,7 +90,7 @@ void MaybeNotifyWriteFailed(
 
   if (status == storage::mojom::ServiceWorkerDatabaseStatus::kErrorFailed ||
       status == storage::mojom::ServiceWorkerDatabaseStatus::kErrorIOError) {
-    quota_manager_proxy->NotifyWriteFailed(key.origin());
+    quota_manager_proxy->NotifyWriteFailed(key);
   }
 }
 
@@ -741,8 +741,8 @@ void ServiceWorkerRegistry::FindRegistrationForIdInternal(
       if (quota_manager_proxy_) {
         // Can be nullptr in tests.
         quota_manager_proxy_->NotifyStorageAccessed(
-            (*registration)->key().origin(),
-            blink::mojom::StorageType::kTemporary, base::Time::Now());
+            (*registration)->key(), blink::mojom::StorageType::kTemporary,
+            base::Time::Now());
       }
     }
 
@@ -941,7 +941,7 @@ void ServiceWorkerRegistry::DidFindRegistrationForClientUrl(
     if (quota_manager_proxy_) {
       // Can be nullptr in tests.
       quota_manager_proxy_->NotifyStorageAccessed(
-          registration->key().origin(), blink::mojom::StorageType::kTemporary,
+          registration->key(), blink::mojom::StorageType::kTemporary,
           base::Time::Now());
     }
   }
@@ -978,7 +978,7 @@ void ServiceWorkerRegistry::DidFindRegistrationForScope(
     if (quota_manager_proxy_) {
       // Can be nullptr in tests.
       quota_manager_proxy_->NotifyStorageAccessed(
-          registration->key().origin(), blink::mojom::StorageType::kTemporary,
+          registration->key(), blink::mojom::StorageType::kTemporary,
           base::Time::Now());
     }
   }
@@ -1023,7 +1023,7 @@ void ServiceWorkerRegistry::DidFindRegistrationForId(
     if (quota_manager_proxy_) {
       // Can be nullptr in tests.
       quota_manager_proxy_->NotifyStorageAccessed(
-          registration->key().origin(), blink::mojom::StorageType::kTemporary,
+          registration->key(), blink::mojom::StorageType::kTemporary,
           base::Time::Now());
     }
   }
@@ -1189,7 +1189,6 @@ void ServiceWorkerRegistry::DidStoreRegistration(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   blink::ServiceWorkerStatusCode status =
       DatabaseStatusToStatusCode(database_status);
-  url::Origin origin = key.origin();
 
   MaybeNotifyWriteFailed(quota_manager_proxy_, database_status, key);
 
@@ -1202,7 +1201,7 @@ void ServiceWorkerRegistry::DidStoreRegistration(
   if (quota_manager_proxy_) {
     // Can be nullptr in tests.
     quota_manager_proxy_->NotifyStorageModified(
-        storage::QuotaClientType::kServiceWorker, origin,
+        storage::QuotaClientType::kServiceWorker, key,
         blink::mojom::StorageType::kTemporary,
         stored_resources_total_size_bytes - deleted_resources_size,
         base::Time::Now());
@@ -1218,7 +1217,7 @@ void ServiceWorkerRegistry::DidStoreRegistration(
   context_->NotifyRegistrationStored(stored_registration_id, stored_scope);
 
   if (storage_policy_observer_)
-    storage_policy_observer_->StartTrackingOrigin(origin);
+    storage_policy_observer_->StartTrackingOrigin(key.origin());
 
   std::move(callback).Run(status);
 }
@@ -1243,7 +1242,7 @@ void ServiceWorkerRegistry::DidDeleteRegistration(
   if (quota_manager_proxy_) {
     // Can be nullptr in tests.
     quota_manager_proxy_->NotifyStorageModified(
-        storage::QuotaClientType::kServiceWorker, key.origin(),
+        storage::QuotaClientType::kServiceWorker, key,
         blink::mojom::StorageType::kTemporary, -deleted_resources_size,
         base::Time::Now());
   }

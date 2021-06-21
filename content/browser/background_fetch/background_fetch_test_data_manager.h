@@ -8,7 +8,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "content/browser/background_fetch/background_fetch_data_manager.h"
 #include "content/browser/background_fetch/background_fetch_request_info.h"
-#include "url/origin.h"
 
 namespace storage {
 class MockQuotaManager;

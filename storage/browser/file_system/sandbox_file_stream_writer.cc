@@ -24,6 +24,7 @@
 #include "storage/browser/file_system/plugin_private_file_system_backend.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/common/file_system/file_system_util.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace storage {
 
@@ -177,7 +178,8 @@ void SandboxFileStreamWriter::DidCreateSnapshotFile(
 
   DCHECK(quota_manager_proxy);
   quota_manager_proxy->GetUsageAndQuota(
-      url_.origin(), FileSystemTypeToQuotaStorageType(url_.type()),
+      blink::StorageKey(url_.origin()),
+      FileSystemTypeToQuotaStorageType(url_.type()),
       base::SequencedTaskRunnerHandle::Get(),
       base::BindOnce(&SandboxFileStreamWriter::DidGetUsageAndQuota,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
@@ -228,7 +230,7 @@ void SandboxFileStreamWriter::DidWrite(int write_response) {
     QuotaManagerProxy* quota_manager_proxy =
         file_system_context_->quota_manager_proxy();
     if (quota_manager_proxy) {
-      quota_manager_proxy->NotifyWriteFailed(url_.origin());
+      quota_manager_proxy->NotifyWriteFailed(blink::StorageKey(url_.origin()));
     }
     if (CancelIfRequested())
       return;

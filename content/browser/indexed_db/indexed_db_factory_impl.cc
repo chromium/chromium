@@ -733,9 +733,7 @@ IndexedDBFactoryImpl::GetOrOpenStorageKeyFactory(
                      storage_key);
 
     if (disk_full) {
-      // TODO(crbug.com/1215208): Migrate to use StorageKey when the QuotaClient
-      // is migrated to use StorageKey instead of Origin.
-      context_->quota_manager_proxy()->NotifyWriteFailed(storage_key.origin());
+      context_->quota_manager_proxy()->NotifyWriteFailed(storage_key);
       return {IndexedDBStorageKeyStateHandle(), s,
               IndexedDBDatabaseError(blink::mojom::IDBException::kQuotaError,
                                      u"Encountered full disk while opening "
@@ -978,9 +976,7 @@ void IndexedDBFactoryImpl::OnDatabaseError(const blink::StorageKey& storage_key,
     HandleBackingStoreCorruption(storage_key, error);
   } else {
     if (status.IsIOError()) {
-      // TODO(crbug.com/1215208): Migrate to use StorageKey when the QuotaClient
-      // is migrated to use StorageKey instead of Origin.
-      context_->quota_manager_proxy()->NotifyWriteFailed(storage_key.origin());
+      context_->quota_manager_proxy()->NotifyWriteFailed(storage_key);
     }
     HandleBackingStoreFailure(storage_key);
   }

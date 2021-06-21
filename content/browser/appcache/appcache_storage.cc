@@ -14,6 +14,7 @@
 #include "content/browser/appcache/appcache_service_impl.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 
 namespace content {
@@ -114,7 +115,7 @@ void AppCacheStorage::UpdateUsageMapAndNotify(const url::Origin& origin,
     usage_map_.erase(origin);
   if (new_usage != old_usage && service()->quota_manager_proxy()) {
     service()->quota_manager_proxy()->NotifyStorageModified(
-        storage::QuotaClientType::kAppcache, origin,
+        storage::QuotaClientType::kAppcache, blink::StorageKey(origin),
         blink::mojom::StorageType::kTemporary, new_usage - old_usage,
         base::Time::Now());
   }
@@ -124,7 +125,7 @@ void AppCacheStorage::ClearUsageMapAndNotify() {
   if (service()->quota_manager_proxy()) {
     for (const auto& pair : usage_map_) {
       service()->quota_manager_proxy()->NotifyStorageModified(
-          storage::QuotaClientType::kAppcache, pair.first,
+          storage::QuotaClientType::kAppcache, blink::StorageKey(pair.first),
           blink::mojom::StorageType::kTemporary, -(pair.second),
           base::Time::Now());
     }
@@ -136,7 +137,8 @@ void AppCacheStorage::NotifyStorageAccessed(const url::Origin& origin) {
   if (service()->quota_manager_proxy() &&
       usage_map_.find(origin) != usage_map_.end())
     service()->quota_manager_proxy()->NotifyStorageAccessed(
-        origin, blink::mojom::StorageType::kTemporary, base::Time::Now());
+        blink::StorageKey(origin), blink::mojom::StorageType::kTemporary,
+        base::Time::Now());
 }
 
 }  // namespace content

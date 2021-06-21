@@ -281,8 +281,7 @@ void TransactionImpl::Commit(int64_t num_errors_handled) {
   }
 
   indexed_db_context_->quota_manager_proxy()->GetUsageAndQuota(
-      // TODO(crbug.com/1199077): Migrate QuotaManagerProxy to StorageKey.
-      storage_key_.origin(), blink::mojom::StorageType::kTemporary,
+      storage_key_, blink::mojom::StorageType::kTemporary,
       indexed_db_context_->IDBTaskRunner(),
       base::BindOnce(&TransactionImpl::OnGotUsageAndQuotaForCommit,
                      weak_factory_.GetWeakPtr()));

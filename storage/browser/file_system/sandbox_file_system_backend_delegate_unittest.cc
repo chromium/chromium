@@ -16,6 +16,7 @@
 #include "storage/browser/test/mock_quota_manager_proxy.h"
 #include "storage/browser/test/test_file_system_options.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -131,8 +132,8 @@ TEST_F(SandboxFileSystemBackendDelegateTest, OpenFileSystemAccessesStorage) {
   EXPECT_EQ(callback_count(), 1);
   EXPECT_EQ(last_error(), base::File::FILE_OK);
   EXPECT_EQ(quota_manager_proxy()->notify_storage_accessed_count(), 1);
-  EXPECT_EQ(quota_manager_proxy()->last_notified_origin(),
-            url::Origin::Create(origin));
+  EXPECT_EQ(quota_manager_proxy()->last_notified_storage_key(),
+            blink::StorageKey(url::Origin::Create(origin)));
   EXPECT_EQ(quota_manager_proxy()->last_notified_type(),
             blink::mojom::StorageType::kTemporary);
 }

@@ -26,6 +26,7 @@
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/common/native_io/native_io_utils.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/native_io/native_io.mojom.h"
 
 using blink::mojom::NativeIOError;
@@ -376,7 +377,8 @@ void NativeIOHost::DeleteFile(const std::string& name,
   }
 
   manager_->quota_manager_proxy()->NotifyStorageAccessed(
-      origin_, blink::mojom::StorageType::kTemporary, base::Time::Now());
+      blink::StorageKey(origin_), blink::mojom::StorageType::kTemporary,
+      base::Time::Now());
 
   // The deletion task runs on the file_task_runner and is skipped on shutdown,
   // as is ok for origin data deletion.
@@ -400,7 +402,8 @@ void NativeIOHost::GetAllFileNames(GetAllFileNamesCallback callback) {
   }
 
   manager_->quota_manager_proxy()->NotifyStorageAccessed(
-      origin_, blink::mojom::StorageType::kTemporary, base::Time::Now());
+      blink::StorageKey(origin_), blink::mojom::StorageType::kTemporary,
+      base::Time::Now());
 
   file_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&DoGetAllFileNames, root_path_),
@@ -540,7 +543,7 @@ void NativeIOHost::DidOpenFile(
   // DoOpenFile may create a file if none exists, which justifies
   // NotifyStorageModified.
   manager_->quota_manager_proxy()->NotifyStorageModified(
-      storage::QuotaClientType::kNativeIO, origin_,
+      storage::QuotaClientType::kNativeIO, blink::StorageKey(origin_),
       blink::mojom::StorageType::kTemporary, 0, base::Time::Now());
 
   open_file_hosts_.insert({
@@ -566,7 +569,7 @@ void NativeIOHost::DidDeleteFile(
   io_pending_files_.erase(name);
 
   manager_->quota_manager_proxy()->NotifyStorageModified(
-      storage::QuotaClientType::kNativeIO, origin_,
+      storage::QuotaClientType::kNativeIO, blink::StorageKey(origin_),
       blink::mojom::StorageType::kTemporary, 0, base::Time::Now());
 
   std::move(callback).Run(std::move(delete_result.first), delete_result.second);
@@ -585,7 +588,7 @@ void NativeIOHost::DidRenameFile(const std::string& old_name,
   io_pending_files_.erase(new_name);
 
   manager_->quota_manager_proxy()->NotifyStorageModified(
-      storage::QuotaClientType::kNativeIO, origin_,
+      storage::QuotaClientType::kNativeIO, blink::StorageKey(origin_),
       blink::mojom::StorageType::kTemporary, 0, base::Time::Now());
 
   std::move(callback).Run(std::move(rename_error));

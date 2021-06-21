@@ -27,17 +27,13 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 
+namespace blink {
+class StorageKey;
+}  // namespace blink
+
 namespace base {
-
 class SequencedTaskRunner;
-
 }  // namespace base
-
-namespace url {
-
-class Origin;
-
-}  // namespace url
 
 namespace storage {
 
@@ -70,59 +66,60 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
       QuotaClientType client_type,
       const std::vector<blink::mojom::StorageType>& storage_types);
 
-  // Creates a bucket for `origin` with `bucket_name` and returns the
+  // Creates a bucket for `storage_key` with `bucket_name` and returns the
   // BucketInfo to the callback. Will return a QuotaError to the callback
   // on operation failure.
   virtual void CreateBucket(
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       const std::string& bucket_name,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback);
 
   // Retrieves the BucketInfo of the bucket with `bucket_name` for
-  // `origin` and returns it to the callback. Will return a QuotaError if a
+  // `storage_key` and returns it to the callback. Will return a QuotaError if a
   // bucket does not exist or on operation failure.
   virtual void GetBucket(
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       const std::string& bucket_name,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback);
 
-  virtual void NotifyStorageAccessed(const url::Origin& origin,
+  virtual void NotifyStorageAccessed(const blink::StorageKey& storage_key,
                                      blink::mojom::StorageType type,
                                      base::Time access_time);
 
   // Notify the quota manager that storage has been modified for the given
-  // client.  A |callback| may be optionally provided to be invoked on the
+  // client.  A `callback` may be optionally provided to be invoked on the
   // given task runner when the quota system's state in memory has been
-  // updated.  If a |callback| is provided then |callback_task_runner| must
-  // also be provided.  If the quota manager runs on |callback_task_runner|,
-  // then the |callback| may be invoked synchronously.
+  // updated.  If a `callback` is provided then `callback_task_runner` must
+  // also be provided.  If the quota manager runs on `callback_task_runner`,
+  // then the `callback` may be invoked synchronously.
   virtual void NotifyStorageModified(
       QuotaClientType client_id,
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       blink::mojom::StorageType type,
       int64_t delta,
       base::Time modification_time,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner = nullptr,
       base::OnceClosure callback = base::OnceClosure());
 
-  virtual void NotifyOriginInUse(const url::Origin& origin);
-  virtual void NotifyOriginNoLongerInUse(const url::Origin& origin);
-  virtual void NotifyWriteFailed(const url::Origin& origin);
+  virtual void NotifyStorageKeyInUse(const blink::StorageKey& storage_key);
+  virtual void NotifyStorageKeyNoLongerInUse(
+      const blink::StorageKey& storage_key);
+  virtual void NotifyWriteFailed(const blink::StorageKey& storage_key);
 
   virtual void SetUsageCacheEnabled(QuotaClientType client_id,
-                                    const url::Origin& origin,
+                                    const blink::StorageKey& storage_key,
                                     blink::mojom::StorageType type,
                                     bool enabled);
   virtual void GetUsageAndQuota(
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       blink::mojom::StorageType type,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       UsageAndQuotaCallback callback);
 
   virtual void IsStorageUnlimited(
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       blink::mojom::StorageType type,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       base::OnceCallback<void(bool)> callback);
@@ -134,9 +131,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
   void GetOverrideHandleId(
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       base::OnceCallback<void(int)> callback);
-  void OverrideQuotaForOrigin(
+  void OverrideQuotaForStorageKey(
       int handle_id,
-      url::Origin origin,
+      const blink::StorageKey& storage_key,
       absl::optional<int64_t> quota_size,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       base::OnceClosure callback);

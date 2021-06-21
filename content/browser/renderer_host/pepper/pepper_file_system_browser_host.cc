@@ -29,6 +29,7 @@
 #include "storage/browser/file_system/isolated_context.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/common/file_system/file_system_util.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
 
 namespace content {
@@ -315,7 +316,7 @@ void PepperFileSystemBrowserHost::IOThreadState::ShouldCreateQuotaReservation(
   storage::FileSystemType file_system_type =
       PepperFileSystemTypeToFileSystemType(type_);
   quota_manager_proxy->IsStorageUnlimited(
-      url::Origin::Create(root_url_),
+      blink::StorageKey(url::Origin::Create(root_url_)),
       storage::FileSystemTypeToQuotaStorageType(file_system_type),
       base::SequencedTaskRunnerHandle::Get(),
       base::BindOnce(
