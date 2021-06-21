@@ -305,6 +305,7 @@ if (include_js_tests) {
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/permission_item_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/pin_to_shelf_item_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/pwa_detail_view_test.m.js",
+        "$root_gen_dir/chrome/test/data/webui/settings/chromeos/supported_links_item_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/toggle_row_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/managed_apps_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/test_plugin_vm_browser_proxy.m.js",

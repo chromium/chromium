@@ -1,0 +1,37 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+<link rel="import" href="chrome://resources/html/assert.html">
+
+<link rel="import" href="browser_proxy.html">
+<link rel="import" href="constants.html">
+<link rel="import" href="store_client.html">
+<link rel="import" href="util.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_radio_group/cr_radio_group.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_radio_button/cr_radio_button.html">
+<link rel="import" href="../../metrics_recorder.html">
+
+<dom-module id="app-management-supported-links-item">
+  <template>
+    <style include="app-management-shared-css settings-shared"></style>
+    <template is="dom-if" if="[[appManagementIntentSettingsEnabled_]]">
+      <div class="permission-section-header">
+        <div class="header-text">
+          $i18n{appManagementIntentSharingLabel}
+        </div>
+      </div>
+      <div class="list-frame">
+        <cr-radio-group id="isSupportedRadioGroup"
+          selected="[[getSelectedRadioButtonName_(app)]]">
+          <cr-radio-button id="preferred"
+            name="preferred"
+            label="[[getAppNameRadioButtonLabel_(app)]]">
+          </cr-radio-button>
+          <cr-radio-button id="browser"
+            name="browser"
+            label="$i18n{appManagementIntentSharingOpenBrowserLabel}">
+          </cr-radio-button>
+        </cr-radio-group>
+      </div>
+    </template>
+  </template>
+  <script src="supported_links_item.js"></script>
+</dom-module>

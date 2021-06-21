@@ -8,7 +8,7 @@
 // #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 // #import {Route, Router} from '../../../router.js';
 // #import {routes} from '../../os_route.m.js';
-// #import {AppType, AppManagementUserAction, ArcPermissionType, OptionalBool, PermissionValueType, Bool, PwaPermissionType, TriState, PluginVmPermissionType} from "./constants.m.js";
+// #import {AppType, AppManagementUserAction, ArcPermissionType, OptionalBool, PermissionValueType, Bool, PwaPermissionType, TriState, PluginVmPermissionType, WindowMode} from "./constants.m.js";
 // clang-format on
 
 /**

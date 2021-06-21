@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/webui/settings/browser_lifetime_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_features_util.h"
 #include "chrome/browser/ui/webui/webui_util.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
@@ -172,6 +173,10 @@ void MainSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 
   html_source->AddBoolean("isDeepLinkingEnabled",
                           chromeos::features::IsDeepLinkingEnabled());
+
+  html_source->AddBoolean(
+      "appManagementIntentSettingsEnabled",
+      base::FeatureList::IsEnabled(::features::kAppManagementIntentSettings));
 
   // Add the System Web App resources for Settings.
   html_source->AddResourcePath("icon-192.png", IDR_SETTINGS_LOGO_192);

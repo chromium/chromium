@@ -50,6 +50,7 @@ js_modulizer("modulize") {
     "app_management/managed_apps_test.js",
     "app_management/reducers_test.js",
     "app_management/resize_lock_item_test.js",
+    "app_management/supported_links_item_test.js",
     "app_management/test_plugin_vm_browser_proxy.js",
     "app_management/toggle_row_test.js",
     "app_management/test_store.js",
@@ -165,20 +166,21 @@ js_modulizer("modulize") {
     "tts_subpage_test.js",
     "user_page_tests.js",
   ]
-  namespace_rewrites = os_settings_namespace_rewrites +
-                       os_test_namespace_rewrites +
-                       nearby_shared_namespace_rewrites + [
-                         "nearby_share.FakeNearbyShareSettings|FakeNearbyShareSettings",
-                         "nearby_share.setReceiveManagerForTesting|setReceiveManagerForTesting",
-                         "nearby_share.FakeReceiveManager|FakeReceiveManager",
-                         "nearby_share.FakeContactManager|FakeContactManager",
-                         "test_util.isVisible|isVisible",
-                         "test_util.waitAfterNextRender|waitAfterNextRender",
-                         "app_management.TestAppManagementStore|TestAppManagementStore",
-                         "cr.ui.TestStore|TestStore",
-                         "app_management.util.conveapp_management.convertOptionalBoolToBool|convertOptionalBoolToBool",
-                         "app_management.actions.changePage|changePage",
-                         "settings.FakeSystemDisplay|FakeSystemDisplay",
-                         "settings.setDisplayApiForTesting|setDisplayApiForTesting",
-                       ]
+  namespace_rewrites =
+      os_settings_namespace_rewrites + os_test_namespace_rewrites +
+      nearby_shared_namespace_rewrites +
+      [
+        "nearby_share.FakeNearbyShareSettings|FakeNearbyShareSettings",
+        "nearby_share.setReceiveManagerForTesting|setReceiveManagerForTesting",
+        "nearby_share.FakeReceiveManager|FakeReceiveManager",
+        "nearby_share.FakeContactManager|FakeContactManager",
+        "test_util.isVisible|isVisible",
+        "test_util.waitAfterNextRender|waitAfterNextRender",
+        "app_management.TestAppManagementStore|TestAppManagementStore",
+        "cr.ui.TestStore|TestStore",
+        "app_management.convertOptionalBoolToBool|convertOptionalBoolToBool",
+        "app_management.actions.changePage|changePage",
+        "settings.FakeSystemDisplay|FakeSystemDisplay",
+        "settings.setDisplayApiForTesting|setDisplayApiForTesting",
+      ]
 }

@@ -58,6 +58,8 @@
 
 /* #export */ const InstallSource = apps.mojom.InstallSource;
 
+/* #export */ const WindowMode = apps.mojom.WindowMode;
+
 // This histogram is also declared and used at chrome/browser/ui/webui/settings/
 // chromeos/app_management/app_management_uma.h.
 /* #export */ const AppManagementEntryPointsHistogramName =
@@ -110,4 +112,6 @@
   PrintingTurnedOff: 18,
   ResizeLockTurnedOn: 19,
   ResizeLockTurnedOff: 20,
+  PreferredAppTurnedOn: 21,
+  PreferredAppTurnedOff: 22,
 };

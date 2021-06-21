@@ -49,4 +49,13 @@
   <message name="IDS_APP_MANAGEMENT_POLICY_APP_POLICY_STRING" desc="Tooltip label explaining that an app cannot be uninstalled as it has been installed by an adminstrator.">
     This app has been installed by your administrator.
   </message>
+  <message name="IDS_APP_MANAGEMENT_INTENT_SHARING" desc="Label for the intent sharing settings section.">
+    Opening supported links
+  </message>
+  <message name="IDS_APP_MANAGEMENT_INTENT_SHARING_APP_OPEN" desc="Label for the intent sharing option to open in a specified app.">
+    Open in <ph name="APP_NAME">$1<ex>Chrome browser</ex></ph>
+  </message>
+  <message name="IDS_APP_MANAGEMENT_INTENT_SHARING_BROWSER_OPEN" desc="Label for the intent sharing option to open in the browser.">
+    Open in Chrome browser
+  </message>
 </grit-part>

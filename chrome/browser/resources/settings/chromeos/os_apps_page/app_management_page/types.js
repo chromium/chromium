@@ -34,3 +34,8 @@ let AppMap;
  * }}
  */
 let AppManagementPageState;
+
+/**
+ * @typedef {apps.mojom.WindowMode}
+ */
+let WindowMode;

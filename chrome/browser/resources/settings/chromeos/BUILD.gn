@@ -397,6 +397,7 @@ preprocess_if_expr("preprocess_gen_v3") {
     "chromeos/os_apps_page/app_management_page/shared_vars.m.js",
     "chromeos/os_apps_page/app_management_page/store.m.js",
     "chromeos/os_apps_page/app_management_page/store_client.m.js",
+    "chromeos/os_apps_page/app_management_page/supported_links_item.m.js",
     "chromeos/os_apps_page/app_management_page/toggle_row.m.js",
     "chromeos/os_apps_page/app_management_page/types.m.js",
     "chromeos/os_apps_page/app_management_page/uninstall_button.m.js",
