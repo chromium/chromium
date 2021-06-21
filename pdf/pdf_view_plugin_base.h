@@ -123,6 +123,10 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // Handle invoked accessibility actions.
   void HandleAccessibilityAction(const AccessibilityActionData& action_data);
 
+  bool GetDidCallStartLoadingForTesting() const {
+    return did_call_start_loading_;
+  }
+
   bool UnsupportedFeatureIsReportedForTesting(const std::string& feature) const;
 
   bool GetNotifiedBrowserAboutUnsupportedFeatureForTesting() const {

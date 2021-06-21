@@ -14,6 +14,7 @@
 #include "base/values.h"
 #include "pdf/accessibility_structs.h"
 #include "pdf/buildflags.h"
+#include "pdf/content_restriction.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/ppapi_migration/callback.h"
 #include "pdf/ppapi_migration/graphics.h"
@@ -77,8 +78,6 @@ class FakePdfViewPluginBase : public PdfViewPluginBase {
               Prompt,
               (const std::string&, const std::string&),
               (override));
-
-  MOCK_METHOD(std::unique_ptr<UrlLoader>, CreateUrlLoader, (), (override));
 
   MOCK_METHOD(std::vector<PDFEngine::Client::SearchStringResult>,
               SearchString,
@@ -210,6 +209,32 @@ class PdfViewPluginBaseSaveTest : public PdfViewPluginBaseTest {
     fake_plugin_.InitializeEngine(std::move(engine));
   }
 };
+
+TEST_F(PdfViewPluginBaseTest, CreateUrlLoaderInFullFrame) {
+  fake_plugin_.set_full_frame(true);
+  ASSERT_TRUE(fake_plugin_.full_frame());
+
+  EXPECT_FALSE(fake_plugin_.GetDidCallStartLoadingForTesting());
+  EXPECT_CALL(fake_plugin_, SetContentRestrictions(kContentRestrictionSave |
+                                                   kContentRestrictionPrint));
+  EXPECT_CALL(fake_plugin_, PluginDidStartLoading());
+  EXPECT_CALL(fake_plugin_, CreateUrlLoaderInternal());
+  fake_plugin_.CreateUrlLoader();
+  EXPECT_TRUE(fake_plugin_.GetDidCallStartLoadingForTesting());
+}
+
+TEST_F(PdfViewPluginBaseTest, CreateUrlLoaderWithoutFullFrame) {
+  ASSERT_FALSE(fake_plugin_.full_frame());
+
+  EXPECT_FALSE(fake_plugin_.GetDidCallStartLoadingForTesting());
+  EXPECT_CALL(fake_plugin_, SetContentRestrictions(kContentRestrictionSave |
+                                                   kContentRestrictionPrint))
+      .Times(0);
+  EXPECT_CALL(fake_plugin_, PluginDidStartLoading()).Times(0);
+  EXPECT_CALL(fake_plugin_, CreateUrlLoaderInternal());
+  fake_plugin_.CreateUrlLoader();
+  EXPECT_FALSE(fake_plugin_.GetDidCallStartLoadingForTesting());
+}
 
 TEST_F(PdfViewPluginBaseTest, DocumentHasUnsupportedFeatureInFullFrame) {
   fake_plugin_.set_full_frame(true);
