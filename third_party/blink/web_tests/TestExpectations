@@ -6185,6 +6185,11 @@ crbug.com/1163793 http/tests/inspector-protocol/page/page-events-associated.js [
 # Sheriff 2021-01-13
 crbug.com/1164459 [ Mac10.15 ] external/wpt/preload/download-resources.html [ Pass Failure Timeout ]
 
+# Temporarily disabled to unblock https://crrev.com/c/2975279
+crbug.com/1217595 http/tests/devtools/sources/debugger-ui/debugger-expand-scope.js [ Pass Failure ]
+crbug.com/1217595 http/tests/devtools/sources/debugger/debugger-es6-harmony-scopes.js [ Pass Failure ]
+crbug.com/1217595 http/tests/devtools/sources/debugger/debugger-scope-resolve-identifiers.js [ Pass Failure ]
+
 # Sheriff 2021-01-15
 crbug.com/1167222 http/tests/websocket/multiple-connections-throttled.html [ Pass Failure ]
 crbug.com/1167309 fast/canvas/canvas-createImageBitmap-drawImage.html [ Pass Failure ]
