@@ -540,7 +540,7 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
   settings.enable_occlusion &= !settings.allow_de_jelly_effect;
 
   settings.enable_backface_visibility_interop =
-      base::FeatureList::IsEnabled(features::kBackfaceVisibilityInterop);
+      RuntimeEnabledFeatures::BackfaceVisibilityInteropEnabled();
 
   return settings;
 }
