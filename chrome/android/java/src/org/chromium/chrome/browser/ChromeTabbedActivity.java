@@ -857,17 +857,24 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             setupCompositorContentPostNative();
 
             // All this initialization can be expensive so it's split into multiple tasks.
-            PostTask.postTask(UiThreadTaskTraits.DEFAULT, this::refreshSignIn);
-            PostTask.postTask(UiThreadTaskTraits.DEFAULT, this::initializeToolbarManager);
-            PostTask.postTask(
-                    UiThreadTaskTraits.DEFAULT, this::maybeCreateIncognitoTabSnapshotController);
-            PostTask.postTask(
-                    UiThreadTaskTraits.DEFAULT, this::onAccessibilityTabSwitcherModeChanged);
+            PostTask.postTask(UiThreadTaskTraits.DEFAULT,
+                    mCallbackController.makeCancelable(this::refreshSignIn));
+            PostTask.postTask(UiThreadTaskTraits.DEFAULT,
+                    mCallbackController.makeCancelable(this::initializeToolbarManager));
+            PostTask.postTask(UiThreadTaskTraits.DEFAULT,
+                    mCallbackController.makeCancelable(
+                            this::maybeCreateIncognitoTabSnapshotController));
+            PostTask.postTask(UiThreadTaskTraits.DEFAULT,
+                    mCallbackController.makeCancelable(
+                            this::onAccessibilityTabSwitcherModeChanged));
 
             PostTask.postTask(UiThreadTaskTraits.DEFAULT,
-                    this::maybeGetFeedAppLifecycleAndMaybeCreatePageViewObserver);
-            PostTask.postTask(UiThreadTaskTraits.DEFAULT, this::initJourneyManager);
-            PostTask.postTask(UiThreadTaskTraits.DEFAULT, this::finishNativeInitialization);
+                    mCallbackController.makeCancelable(
+                            this::maybeGetFeedAppLifecycleAndMaybeCreatePageViewObserver));
+            PostTask.postTask(UiThreadTaskTraits.DEFAULT,
+                    mCallbackController.makeCancelable(this::initJourneyManager));
+            PostTask.postTask(UiThreadTaskTraits.DEFAULT,
+                    mCallbackController.makeCancelable(this::finishNativeInitialization));
             ChromeAccessibilityUtil.get().addObserver(this);
         }
     }
