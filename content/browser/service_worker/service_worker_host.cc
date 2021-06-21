@@ -126,13 +126,34 @@ const base::UnguessableToken& ServiceWorkerHost::GetReportingSource() const {
 
 void ServiceWorkerHost::CreateCodeCacheHost(
     mojo::PendingReceiver<blink::mojom::CodeCacheHost> receiver) {
+  auto embedded_worker_status = version_->embedded_worker()->status();
+  // Due to IPC races it is possible that we receive code cache host requests
+  // when the worker is stopping. For ex:
+  // 1) Browser starts trying to stop, sends the Stop() IPC.
+  // 2) Renderer sends a CreateCodeCacheHost() IPC.
+  // 3) Renderer gets the Stop() IPC and realize it should try to stop the
+  // worker.
+  // Given the worker is stopping it is safe to ignore these messages.
+  if (embedded_worker_status == EmbeddedWorkerStatus::STOPPING)
+    return;
+
   // Create a new CodeCacheHostImpl and bind it to the given receiver.
   auto* process =
       RenderProcessHost::FromID(version_->embedded_worker()->process_id());
+  // TODO(crbug:1221042): Remove the following checks once the investigation of
+  // the crashes is done.
+  if (process == nullptr) {
+    SCOPED_CRASH_KEY_STRING32(
+        "SWHost::CreateCodeCacheHost", "info",
+        base::StringPrintf("status:%d,pid:%d", embedded_worker_status,
+                           version_->embedded_worker()->process_id()));
+    CHECK(false);
+  }
+  StoragePartition* storage_partition = process->GetStoragePartition();
   code_cache_host_receivers_.Add(
       std::make_unique<CodeCacheHostImpl>(
           version_->embedded_worker()->process_id(), process,
-          process->GetStoragePartition()->GetGeneratedCodeCacheContext()),
+          storage_partition->GetGeneratedCodeCacheContext()),
       std::move(receiver));
 }
 
