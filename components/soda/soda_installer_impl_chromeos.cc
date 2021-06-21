@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
+#include "base/numerics/safe_conversions.h"
 #include "chromeos/dbus/dlcservice/dlcservice_client.h"
 #include "components/live_caption/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -168,7 +169,7 @@ void SodaInstallerImplChromeOS::OnSodaCombinedProgress() {
   // e.g.: (1) starting progress from 0% if we are downloading language
   // only (2) weighting download progress proportionally to DLC binary size.
   const double progress = (soda_progress_ + language_progress_) / 2;
-  NotifyOnSodaProgress(int{100 * progress});
+  NotifyOnSodaProgress(base::ClampFloor(100 * progress));
 }
 
 void SodaInstallerImplChromeOS::OnDlcUninstalled(const std::string& dlc_id,
