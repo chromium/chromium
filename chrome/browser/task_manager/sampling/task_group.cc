@@ -306,8 +306,11 @@ void TaskGroup::RefreshWindowsHandles() {
 #if BUILDFLAG(ENABLE_NACL)
 void TaskGroup::RefreshNaClDebugStubPort(int child_process_unique_id) {
   if (base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
-    OnRefreshNaClDebugStubPortDone(
-        GetNaClDebugStubPortOnProcessThread(child_process_unique_id));
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(&TaskGroup::OnRefreshNaClDebugStubPortDone,
+                                  weak_ptr_factory_.GetWeakPtr(),
+                                  GetNaClDebugStubPortOnProcessThread(
+                                      child_process_unique_id)));
   } else {
     content::GetIOThreadTaskRunner({})->PostTaskAndReplyWithResult(
         FROM_HERE,
