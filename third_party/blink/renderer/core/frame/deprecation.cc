@@ -581,15 +581,16 @@ DeprecationInfo GetDeprecationInfo(WebFeature feature) {
               "for more details."};
 
     case WebFeature::kRTCPeerConnectionSdpSemanticsPlanBWithReverseOriginTrial:
-      return {"RTCPeerConnectionSdpSemanticsPlanBWithReverseOriginTrial", kM97,
+      return {"RTCPeerConnectionSdpSemanticsPlanBWithReverseOriginTrial", kM96,
               "Plan B SDP semantics, which is used when constructing an "
               "RTCPeerConnection with {sdpSemantics:\"plan-b\"}, is a legacy "
               "version of the Session Description Protocol that has severe "
               "compatibility issues on modern browsers. The standardized SDP "
               "format, \"unified-plan\", has been used by default since M72 "
               "(January, 2019). Dropping support for Plan B is targeted for "
-              "M93, but this page may extend the deadline until M97 due to the "
-              "'RTCPeerConnection Plan B SDP Semantics' deprecation trial."};
+              "M93, but this page may extend the deadline until the End Date "
+              "of the 'RTCPeerConnection Plan B SDP Semantics' deprecation "
+              "trial."};
 
     case WebFeature::kAddressSpaceUnknownNonSecureContextEmbeddedPrivate:
     case WebFeature::kAddressSpaceUnknownNonSecureContextEmbeddedLocal:
