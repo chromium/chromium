@@ -1192,7 +1192,11 @@ void LayoutBox::UpdateAfterLayout() {
   // We also want to make sure that if our entrance point into layout changes,
   // e.g. an OOF-positioned object is laid out by an NG containing block, then
   // Legacy, then NG again, NG won't use a stale layout result.
-  if (IsOutOfFlowPositioned() && !IsLayoutNGObject())
+  if (IsOutOfFlowPositioned() && !IsLayoutNGObject() &&
+      // When side effects are disabled, it's not possible to disable side
+      // effects completely for |RunLegacyLayout|, but at least keep the
+      // fragment tree unaffected.
+      !NGDisableSideEffectsScope::IsDisabled())
     ClearLayoutResults();
 
   Document& document = GetDocument();
