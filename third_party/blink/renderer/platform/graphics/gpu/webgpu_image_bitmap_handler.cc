@@ -75,7 +75,8 @@ bool CopyBytesFromImageBitmapForWebGPU(
     scoped_refptr<StaticBitmapImage> image,
     base::span<uint8_t> dst,
     const IntRect& rect,
-    const WGPUTextureFormat destination_format) {
+    const WGPUTextureFormat destination_format,
+    bool premultipliedAlpha) {
   DCHECK(image);
   DCHECK_GT(dst.size(), static_cast<size_t>(0));
   DCHECK(image->width() - rect.X() >= rect.Width());
@@ -95,11 +96,10 @@ bool CopyBytesFromImageBitmapForWebGPU(
   PaintImage paint_image = image->PaintImageForCurrentFrame();
 
   // Read pixel request dst info.
-  // Keep premulalpha config and color space from imageBitmap and using dest
-  // texture color type. This can help do conversions in ReadPixels.
+  // TODO(crbug.com/1217153): Convert to user-provided color space.
   SkImageInfo info = SkImageInfo::Make(
       rect.Width(), rect.Height(), sk_color_type,
-      image->IsPremultiplied() ? kPremul_SkAlphaType : kUnpremul_SkAlphaType,
+      premultipliedAlpha ? kPremul_SkAlphaType : kUnpremul_SkAlphaType,
       paint_image.GetSkImageInfo().refColorSpace());
 
   bool read_pixels_successful = paint_image.readPixels(

@@ -29,7 +29,8 @@ bool PLATFORM_EXPORT
 CopyBytesFromImageBitmapForWebGPU(scoped_refptr<StaticBitmapImage> image,
                                   base::span<uint8_t> dst,
                                   const IntRect& rect,
-                                  const WGPUTextureFormat destination_format);
+                                  const WGPUTextureFormat destination_format,
+                                  bool premultipliedAlpha);
 
 uint64_t PLATFORM_EXPORT
 DawnTextureFormatBytesPerPixel(const WGPUTextureFormat color_type);

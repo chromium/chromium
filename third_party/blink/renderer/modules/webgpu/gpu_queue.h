@@ -20,6 +20,7 @@ class GPUCommandBuffer;
 class GPUImageCopyImageBitmap;
 class GPUImageCopyExternalImage;
 class GPUImageCopyTexture;
+class GPUImageCopyTextureTagged;
 class GPUImageDataLayout;
 class ScriptPromiseResolver;
 class ScriptState;
@@ -67,7 +68,7 @@ class GPUQueue : public DawnObject<WGPUQueue> {
                     const V8GPUExtent3D* write_size,
                     ExceptionState& exception_state);
   void copyExternalImageToTexture(GPUImageCopyExternalImage* copyImage,
-                                  GPUImageCopyTexture* destination,
+                                  GPUImageCopyTextureTagged* destination,
                                   const V8GPUExtent3D* copySize,
                                   ExceptionState& exception_state);
   void copyImageBitmapToTexture(GPUImageCopyImageBitmap* source,
@@ -83,11 +84,14 @@ class GPUQueue : public DawnObject<WGPUQueue> {
                           const WGPUOrigin3D& origin,
                           const WGPUExtent3D& copy_size,
                           const WGPUTextureCopyView& destination,
-                          const WGPUTextureFormat dest_texture_format);
+                          const WGPUTextureFormat dest_texture_format,
+                          bool premultiplied_alpha);
   bool CopyContentFromGPU(StaticBitmapImage* image,
                           const WGPUOrigin3D& origin,
                           const WGPUExtent3D& copy_size,
-                          const WGPUTextureCopyView& destination);
+                          const WGPUTextureCopyView& destination,
+                          const WGPUTextureFormat dest_texture_format,
+                          bool premultiplied_alpha);
   void WriteBufferImpl(GPUBuffer* buffer,
                        uint64_t buffer_offset,
                        uint64_t data_byte_length,

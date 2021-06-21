@@ -240,7 +240,7 @@ class WebGPUImageBitmapHandlerTest : public testing::Test {
     std::vector<uint8_t> results(result_length, 0);
     bool success = CopyBytesFromImageBitmapForWebGPU(
         image, base::span<uint8_t>(results.data(), result_length), copy_rect,
-        color_type);
+        color_type, image->IsPremultiplied());
     ASSERT_EQ(success, true);
 
     // Compare content and results

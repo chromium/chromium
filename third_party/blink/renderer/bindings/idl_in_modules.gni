@@ -959,6 +959,7 @@ static_idl_files_in_modules = get_path_info(
           "//third_party/blink/renderer/modules/webgpu/gpu_image_copy_external_image.idl",
           "//third_party/blink/renderer/modules/webgpu/gpu_image_copy_image_bitmap.idl",
           "//third_party/blink/renderer/modules/webgpu/gpu_image_copy_texture.idl",
+          "//third_party/blink/renderer/modules/webgpu/gpu_image_copy_texture_tagged.idl",
           "//third_party/blink/renderer/modules/webgpu/gpu_image_data_layout.idl",
           "//third_party/blink/renderer/modules/webgpu/gpu_map_mode.idl",
           "//third_party/blink/renderer/modules/webgpu/gpu_multisample_state.idl",

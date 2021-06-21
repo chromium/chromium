@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_image_copy_external_image.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_image_copy_image_bitmap.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_image_copy_texture.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_image_copy_texture_tagged.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_origin_2d_dict.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context_host.h"
@@ -125,13 +126,6 @@ bool IsValidCopyTextureForBrowserFormats(SkColorType src_color_type,
   }
 
   return true;
-}
-
-bool CanUploadThroughGPU(StaticBitmapImage* image, GPUTexture* dest_texture) {
-  // Check src/dst texture formats are supported by CopyTextureForBrowser
-  SkImageInfo image_info = image->PaintImageForCurrentFrame().GetSkImageInfo();
-  return IsValidCopyTextureForBrowserFormats(image_info.colorType(),
-                                             dest_texture->Format());
 }
 
 scoped_refptr<Image> GetImageFromExternalImage(
@@ -395,10 +389,14 @@ void GPUQueue::WriteTextureImpl(GPUImageCopyTexture* destination,
   return;
 }
 
-void GPUQueue::copyExternalImageToTexture(GPUImageCopyExternalImage* copyImage,
-                                          GPUImageCopyTexture* destination,
-                                          const V8GPUExtent3D* copy_size,
-                                          ExceptionState& exception_state) {
+void GPUQueue::copyExternalImageToTexture(
+    GPUImageCopyExternalImage* copyImage,
+    GPUImageCopyTextureTagged* destination,
+    const V8GPUExtent3D* copy_size,
+    ExceptionState& exception_state) {
+  // "srgb" is the only valid color space for now.
+  DCHECK_EQ(destination->colorSpace(), "srgb");
+
   scoped_refptr<Image> image =
       GetImageFromExternalImage(copyImage->source(), exception_state);
 
@@ -493,21 +491,21 @@ void GPUQueue::copyExternalImageToTexture(GPUImageCopyExternalImage* copyImage,
   // Try GPU path first and delegate noop copy to CPU path.
   if (static_bitmap_image->IsTextureBacked() &&
       !isNoopCopy) {  // Try GPU uploading path.
-    if (CanUploadThroughGPU(static_bitmap_image.get(),
-                            destination->texture())) {
-      if (CopyContentFromGPU(static_bitmap_image.get(),
-                             origin_in_external_image, dawn_copy_size,
-                             dawn_destination)) {
-        return;
-      }
+    if (CopyContentFromGPU(static_bitmap_image.get(), origin_in_external_image,
+                           dawn_copy_size, dawn_destination,
+                           destination->texture()->Format(),
+                           destination->premultipliedAlpha())) {
+      return;
     }
-    // GPU path failed, fallback to CPU path
-    static_bitmap_image = static_bitmap_image->MakeUnaccelerated();
   }
+  // GPU path failed, fallback to CPU path
+  static_bitmap_image = static_bitmap_image->MakeUnaccelerated();
+
   // CPU path is the fallback path and should always work.
   if (!CopyContentFromCPU(static_bitmap_image.get(), origin_in_external_image,
                           dawn_copy_size, dawn_destination,
-                          destination->texture()->Format())) {
+                          destination->texture()->Format(),
+                          destination->premultipliedAlpha())) {
     exception_state.ThrowTypeError(
         "Failed to copy content from external image.");
     return;
@@ -590,7 +588,8 @@ void GPUQueue::copyImageBitmapToTexture(GPUImageCopyImageBitmap* source,
   }
   // CPU path is the fallback path and should always work.
   if (!CopyContentFromCPU(image.get(), origin_in_image_bitmap, dawn_copy_size,
-                          dawn_destination, destination->texture()->Format())) {
+                          dawn_destination, destination->texture()->Format(),
+                          image->IsPremultiplied())) {
     exception_state.ThrowTypeError("Failed to copy content from imageBitmap.");
     return;
   }
@@ -600,7 +599,8 @@ bool GPUQueue::CopyContentFromCPU(StaticBitmapImage* image,
                                   const WGPUOrigin3D& origin,
                                   const WGPUExtent3D& copy_size,
                                   const WGPUTextureCopyView& destination,
-                                  const WGPUTextureFormat dest_texture_format) {
+                                  const WGPUTextureFormat dest_texture_format,
+                                  bool premultiplied_alpha) {
   // Prepare for uploading CPU data.
   IntRect image_data_rect(origin.x, origin.y, copy_size.width,
                           copy_size.height);
@@ -632,7 +632,7 @@ bool GPUQueue::CopyContentFromCPU(StaticBitmapImage* image,
 
     if (!CopyBytesFromImageBitmapForWebGPU(
             image, base::span<uint8_t>(static_cast<uint8_t*>(data), size),
-            image_data_rect, dest_texture_format)) {
+            image_data_rect, dest_texture_format, premultiplied_alpha)) {
       // Release the buffer.
       GetProcs().bufferRelease(buffer);
       return false;
@@ -672,7 +672,17 @@ bool GPUQueue::CopyContentFromCPU(StaticBitmapImage* image,
 bool GPUQueue::CopyContentFromGPU(StaticBitmapImage* image,
                                   const WGPUOrigin3D& origin,
                                   const WGPUExtent3D& copy_size,
-                                  const WGPUTextureCopyView& destination) {
+                                  const WGPUTextureCopyView& destination,
+                                  const WGPUTextureFormat dest_texture_format,
+                                  bool premultiplied_alpha) {
+  // Check src/dst texture formats are supported by CopyTextureForBrowser
+  SkImageInfo image_info = image->PaintImageForCurrentFrame().GetSkImageInfo();
+  if (!IsValidCopyTextureForBrowserFormats(image_info.colorType(),
+                                           dest_texture_format) ||
+      (image->IsPremultiplied() != premultiplied_alpha)) {
+    return false;
+  }
+
   scoped_refptr<WebGPUMailboxTexture> mailbox_texture =
       WebGPUMailboxTexture::FromStaticBitmapImage(
           GetDawnControlClient(), device_->GetHandle(),
