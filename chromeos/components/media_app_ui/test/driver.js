@@ -67,11 +67,22 @@ export async function runTestInGuest(testCase) {
 }
 
 /**
+ * @param {!Object=} data
+ * @return {!Promise<!TestMessageResponseData>}
+ */
+export async function sendTestMessage(data = undefined) {
+  await testMessageHandlersReady;
+  return /** @type {!Promise<!TestMessageResponseData>} */ (
+      guestMessagePipe.sendMessage('test', data));
+}
+
+/**
  * Gets a concatenated list of errors on the currently loaded files. Note the
  * currently open file is always at index 0.
  * @return {!Promise<string>}
  */
 export async function getFileErrors() {
+  await testMessageHandlersReady;
   const message = {getFileErrors: true};
   const response = /** @type {!TestMessageResponseData} */ (
       await guestMessagePipe.sendMessage('test', message));
@@ -336,6 +347,8 @@ export function handlesToLaunchParams(files) {
  */
 export async function launchWithHandles(
     directoryContents, multiSelectionFiles = []) {
+  await testMessageHandlersReady;
+
   /** @type {?FakeFileSystemFileHandle} */
   let focusFile = multiSelectionFiles[0];
   if (!focusFile) {

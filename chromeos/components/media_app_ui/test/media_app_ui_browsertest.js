@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertFilenamesToBe, assertFilesLoaded, assertFilesToBe, assertMatch, assertSingleFileLaunch, createMockTestDirectory, FakeFileSystemFileHandle, fileToFileHandle, getFileErrors, getLoadedFiles, GuestDriver, launchWithFiles, launchWithFocusFile, launchWithHandles, loadFilesWithoutSendingToGuest, runTestInGuest, simulateLosingAccessToDirectory} from './driver.js';
+import {assertFilenamesToBe, assertFilesLoaded, assertFilesToBe, assertMatch, assertSingleFileLaunch, createMockTestDirectory, FakeFileSystemFileHandle, fileToFileHandle, getFileErrors, getLoadedFiles, GuestDriver, launchWithFiles, launchWithFocusFile, launchWithHandles, loadFilesWithoutSendingToGuest, runTestInGuest, sendTestMessage, simulateLosingAccessToDirectory} from './driver.js';
 import {TEST_ONLY} from './launch.js';
 
 const {
@@ -11,7 +11,6 @@ const {
   advance,
   currentFiles,
   fileHandleForToken,
-  globalLaunchNumber,
   guestMessagePipe,
   launchWithDirectory,
   loadOtherRelatedFiles,
@@ -89,15 +88,6 @@ async function createMultipleImageFiles(filenames) {
   const filePromise = name => createTestImageFile(1, 1, `${name}.png`);
   const files = await Promise.all(filenames.map(filePromise));
   return files;
-}
-
-/**
- * @param {!Object=} data
- * @return {!Promise<!TestMessageResponseData>}
- */
-function sendTestMessage(data = undefined) {
-  return /** @type {!Promise<!TestMessageResponseData>} */ (
-      guestMessagePipe.sendMessage('test', data));
 }
 
 /** @return {!HTMLIFrameElement} */
