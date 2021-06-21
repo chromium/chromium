@@ -506,6 +506,7 @@ void ClientControlledShellSurface::CommitPendingScale() {
   transform.Scale(1.0 / pending_scale_, 1.0 / pending_scale_);
   host_window()->SetTransform(transform);
   scale_ = pending_scale_;
+  UpdateCornerRadius();
 }
 
 void ClientControlledShellSurface::SetTopInset(int height) {
@@ -1185,16 +1186,6 @@ bool ClientControlledShellSurface::OnPreWidgetCommit() {
       break;
   }
 
-  if (ash::features::IsPipRoundedCornersEnabled()) {
-    // The host window's transform scales by |1/scale_| but we do not want the
-    // rounded corners scaled that way. So we multiply the radius by |scale_|.
-    ash::SetCornerRadius(
-        window_state->window(), host_window()->layer(),
-        pending_window_state_ == chromeos::WindowStateType::kPip
-            ? base::ClampRound(scale_ * ash::kPipRoundedCornerRadius)
-            : 0);
-  }
-
   bool wasPip = window_state->IsPip();
 
   // As the bounds of the widget is updated later, ensure that no bounds change
@@ -1204,6 +1195,7 @@ bool ClientControlledShellSurface::OnPreWidgetCommit() {
                                                pending_window_state_)) {
     client_controlled_state_->set_next_bounds_change_animation_type(
         animation_type);
+    UpdateCornerRadius();
   }
 
   if (wasPip && !window_state->IsMinimized()) {
@@ -1401,6 +1393,22 @@ void ClientControlledShellSurface::UpdateFrameType() {
 
   if (suppress_mouse_event)
     UpdateSurfaceBounds();
+}
+
+void ClientControlledShellSurface::UpdateCornerRadius() {
+  if (!widget_)
+    return;
+  if (!ash::features::IsPipRoundedCornersEnabled())
+    return;
+
+  ash::WindowState* window_state = GetWindowState();
+  // The host window's transform scales by |1/scale_| but we do not want the
+  // rounded corners scaled that way. So we multiply the radius by |scale_|.
+  ash::SetCornerRadius(
+      window_state->window(), host_window()->layer(),
+      window_state->IsPip()
+          ? base::ClampRound(scale_ * ash::kPipRoundedCornerRadius)
+          : 0);
 }
 
 void ClientControlledShellSurface::

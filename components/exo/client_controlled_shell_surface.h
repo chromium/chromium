@@ -280,6 +280,8 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
 
   void UpdateFrameType() override;
 
+  void UpdateCornerRadius();
+
   void AttemptToStartDrag(int component, const gfx::PointF& location);
 
   // Lock the compositor if it's not already locked, or extends the
