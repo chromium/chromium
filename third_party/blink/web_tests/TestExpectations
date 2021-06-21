@@ -5798,6 +5798,9 @@ crbug.com/1007228 [ Mac ] external/wpt/fullscreen/api/element-request-fullscreen
 # Disabled for landing DevTools change
 crbug.com/1011811 http/tests/devtools/persistence/automapping-sourcemap.js [ Pass Failure ]
 
+# Disabled for landing a DevTools cleanup
+crbug.com/1222043 http/tests/devtools/sources/debugger-breakpoints/breakpoint-manager-listeners-count.js [ Pass Failure ]
+
 # Sheriff 2020-06-05
 crbug.com/1091829 [ Mac ] fast/scrolling/scroll-non-composited-scroller.html [ Pass Failure ]
 crbug.com/1091829 [ Linux ] virtual/threaded-prefer-compositing/fast/scrolling/scroll-non-composited-scroller.html [ Pass Failure ]
