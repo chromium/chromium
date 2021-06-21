@@ -118,7 +118,15 @@ DatabaseTracker::DatabaseTracker(
       quota_manager_proxy_(std::move(quota_manager_proxy)),
       task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
-           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})),
+           // SKIP_ON_SHUTDOWN cannot be used because Shutdown() needs to run
+           // before the destructor, and Shutdown() is ran by PostTask()ing to
+           // this sequence. See https://crbug.com/1220191.
+           //
+           // We may be able to switch to SKIP_ON_SHUTDOWN if we get
+           // DatabaseTracker to be used entirely on the database sequence, so
+           // the destructor can absorb the logic that is currently in
+           // Shutdown().
+           base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),
       quota_client_(std::make_unique<DatabaseQuotaClient>(*this)),
       quota_client_wrapper_(
           std::make_unique<QuotaClientCallbackWrapper>(quota_client_.get())),

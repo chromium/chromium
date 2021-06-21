@@ -1076,10 +1076,13 @@ StoragePartitionImpl::~StoragePartitionImpl() {
     shared_url_loader_factory_for_browser_process_with_corb_->Shutdown();
   }
 
-  if (GetDatabaseTracker()) {
-    GetDatabaseTracker()->task_runner()->PostTask(
+  scoped_refptr<storage::DatabaseTracker> database_tracker(
+      GetDatabaseTracker());
+  if (database_tracker) {
+    storage::DatabaseTracker* database_tracker_ptr = database_tracker.get();
+    database_tracker_ptr->task_runner()->PostTask(
         FROM_HERE, base::BindOnce(&storage::DatabaseTracker::Shutdown,
-                                  GetDatabaseTracker()));
+                                  std::move(database_tracker)));
   }
 
   if (GetFileSystemContext())
