@@ -44,9 +44,8 @@ public class AutocompleteController {
     private static final int MAX_VOICE_SUGGESTION_COUNT = 3;
 
     private final @NonNull Profile mProfile;
-    private final @NonNull Runnable mControllerDestroyedCallback;
     private final @NonNull Set<OnSuggestionsReceivedListener> mListeners = new HashSet<>();
-    private final long mNativeController;
+    private long mNativeController;
     private @NonNull AutocompleteResult mAutocompleteResult = AutocompleteResult.EMPTY_RESULT;
 
     /** Listener for receiving OmniboxSuggestions. */
@@ -55,18 +54,10 @@ public class AutocompleteController {
                 AutocompleteResult autocompleteResult, String inlineAutocompleteText);
     }
 
-    protected AutocompleteController(@NonNull Profile profile,
-            @NonNull Runnable controllerDestroyedCallback) {
-        assert profile != null : "Invalid profile used to construct AutocompleteController";
+    @CalledByNative
+    private AutocompleteController(@NonNull Profile profile, long nativeController) {
         mProfile = profile;
-        mNativeController =
-                AutocompleteControllerJni.get().init(AutocompleteController.this, mProfile);
-
-        // Note: this may fire when building integration tests that mock JNI calls.
-        // When mocking JNI calls, please make sure to supply a Mock AutocompleteController to
-        // AutocompleteControllerFactory.
-        assert mNativeController != 0 : "Could not acquire Native Controller.";
-        mControllerDestroyedCallback = controllerDestroyedCallback;
+        mNativeController = nativeController;
     }
 
     /** @param listener The listener to be notified when new suggestions are available. */
@@ -95,6 +86,7 @@ public class AutocompleteController {
     void start(@NonNull String url, int pageClassification, @NonNull String text,
             int cursorPosition, boolean preventInlineAutocomplete, @Nullable String queryTileId,
             boolean isQueryStartedFromTiles) {
+        if (mNativeController == 0) return;
         assert !TextUtils.isEmpty(url);
         if (TextUtils.isEmpty(url)) return;
 
@@ -119,6 +111,7 @@ public class AutocompleteController {
      *         be null if the input is invalid.
      */
     AutocompleteMatch classify(@NonNull String text, boolean focusedFromFakebox) {
+        if (mNativeController == 0) return null;
         return AutocompleteControllerJni.get().classify(
                 mNativeController, text, focusedFromFakebox);
     }
@@ -134,6 +127,7 @@ public class AutocompleteController {
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public void startZeroSuggest(@NonNull String omniboxText, @NonNull String url,
             int pageClassification, @NonNull String title) {
+        if (mNativeController == 0) return;
         assert !TextUtils.isEmpty(url);
         if (TextUtils.isEmpty(url)) return;
 
@@ -150,6 +144,7 @@ public class AutocompleteController {
      *         empty result set.
      */
     void stop(boolean clear) {
+        if (mNativeController == 0) return;
         AutocompleteControllerJni.get().stop(mNativeController, clear);
     }
 
@@ -158,6 +153,7 @@ public class AutocompleteController {
      * new input into the omnibox.
      */
     void resetSession() {
+        if (mNativeController == 0) return;
         AutocompleteControllerJni.get().resetSession(mNativeController);
     }
 
@@ -166,6 +162,7 @@ public class AutocompleteController {
      * @param position The position at which the suggestion is located.
      */
     void deleteSuggestion(int position) {
+        if (mNativeController == 0) return;
         if (!mAutocompleteResult.verifyCoherency()) return;
         AutocompleteControllerJni.get().deleteSuggestion(mNativeController, position);
     }
@@ -182,7 +179,7 @@ public class AutocompleteController {
 
     @CalledByNative
     private void notifyNativeDestroyed() {
-        mControllerDestroyedCallback.run();
+        mNativeController = 0;
     }
 
     /**
@@ -203,6 +200,7 @@ public class AutocompleteController {
     public void onSuggestionSelected(int selectedIndex, int disposition, int type,
             @NonNull String currentPageUrl, int pageClassification, long elapsedTimeSinceModified,
             int completedLength, @Nullable WebContents webContents) {
+        if (mNativeController == 0) return;
         if (!mAutocompleteResult.verifyCoherency()) return;
         AutocompleteControllerJni.get().onSuggestionSelected(mNativeController, selectedIndex,
                 disposition, currentPageUrl, pageClassification, elapsedTimeSinceModified,
@@ -214,6 +212,7 @@ public class AutocompleteController {
      * @param results A list containing the results of a voice recognition.
      */
     void onVoiceResults(@Nullable List<VoiceResult> results) {
+        if (mNativeController == 0) return;
         if (results == null || results.size() == 0) return;
         final int count = Math.min(results.size(), MAX_VOICE_SUGGESTION_COUNT);
         String[] voiceMatches = new String[count];
@@ -234,9 +233,10 @@ public class AutocompleteController {
      * @param elapsedTimeSinceInputChange The number of ms between the time the user started
      *         typing in the omnibox and the time the user has selected a suggestion.
      */
-    @NonNull
+    @Nullable
     GURL updateMatchDestinationUrlWithQueryFormulationTime(
             int selectedIndex, long elapsedTimeSinceInputChange) {
+        if (mNativeController == 0) return null;
         if (!mAutocompleteResult.verifyCoherency()) return null;
         return updateMatchDestinationUrlWithQueryFormulationTime(
                 selectedIndex, elapsedTimeSinceInputChange, null, null);
@@ -264,10 +264,11 @@ public class AutocompleteController {
      * @return The url to navigate to for this match with aqs parameter, query string and parameters
      *         updated, if we are making a Google search query.
      */
-    @NonNull
+    @Nullable
     GURL updateMatchDestinationUrlWithQueryFormulationTime(int selectedIndex,
             long elapsedTimeSinceInputChange, @Nullable String newQueryText,
             @Nullable List<String> newQueryParams) {
+        if (mNativeController == 0) return null;
         if (!mAutocompleteResult.verifyCoherency()) return null;
         return AutocompleteControllerJni.get().updateMatchDestinationURLWithQueryFormulationTime(
                 mNativeController, selectedIndex, elapsedTimeSinceInputChange, newQueryText,
@@ -283,13 +284,24 @@ public class AutocompleteController {
      */
     @Nullable
     Tab findMatchingTabWithUrl(@NonNull GURL url) {
+        if (mNativeController == 0) return null;
         return AutocompleteControllerJni.get().findMatchingTabWithUrl(mNativeController, url);
     }
 
+    /**
+     * Acquire an instance of AutocompleteController associated with the supplied Profile.
+     *
+     * @param profile The profile to get the AutocompleteController for.
+     * @return An existing (if one is available) or new (otherwise) instance of the
+     *         AutocompleteController associated with the supplied profile.
+     */
+    static AutocompleteController getForProfile(Profile profile) {
+        return AutocompleteControllerJni.get().getForProfile(profile);
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @NativeMethods
-    interface Natives {
-        long init(AutocompleteController caller, Profile profile);
-        void releaseJavaObject(long nativeAutocompleteControllerAndroid);
+    public interface Natives {
         void start(long nativeAutocompleteControllerAndroid, String text, int cursorPosition,
                 String desiredTld, String currentUrl, int pageClassification,
                 boolean preventInlineAutocomplete, boolean preferKeyword,
@@ -326,5 +338,10 @@ public class AutocompleteController {
          * Sends a zero suggest request to the server in order to pre-populate the result cache.
          */
         void prefetchZeroSuggestResults();
+
+        /**
+         * Acquire an instance of AutocompleteController associated with the supplied profile.
+         */
+        AutocompleteController getForProfile(Profile profile);
     }
 }

@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/android/jni_android.h"
-#include "base/android/jni_weak_ref.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
@@ -16,9 +15,7 @@
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "content/public/browser/browser_context.h"
-#include "third_party/metrics_proto/omnibox_event.pb.h"
 
-class AutocompleteController;
 class AutocompleteResult;
 class ChromeAutocompleteProviderClient;
 class Profile;
@@ -32,7 +29,9 @@ struct DefaultSingletonTraits;
 class AutocompleteControllerAndroid : public AutocompleteController::Observer,
                                       public KeyedService {
  public:
-  explicit AutocompleteControllerAndroid(Profile* profile);
+  AutocompleteControllerAndroid(
+      Profile* profile,
+      std::unique_ptr<ChromeAutocompleteProviderClient> client);
 
   // Methods that forward to AutocompleteController:
   void Start(JNIEnv* env,
@@ -81,19 +80,20 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& j_gurl);
 
-  // Break the association between the AutocompleteController java and
-  // native instances.
-  void ReleaseJavaObject(JNIEnv* env);
-
   // KeyedService:
   void Shutdown() override;
 
+  // Pass detected voice matches down to VoiceSuggestionsProvider.
+  void SetVoiceMatches(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobjectArray>& j_voice_matches,
+      const base::android::JavaParamRef<jfloatArray>& j_confidence_scores);
+
+  base::android::ScopedJavaLocalRef<jobject> GetJavaObject() const;
+
   class Factory : public BrowserContextKeyedServiceFactory {
    public:
-    static AutocompleteControllerAndroid* GetForProfile(Profile* profile,
-                                             JNIEnv* env,
-                                             jobject obj);
-
+    static AutocompleteControllerAndroid* GetForProfile(Profile* profile);
     static Factory* GetInstance();
 
    protected:
@@ -111,15 +111,8 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
         content::BrowserContext* profile) const override;
   };
 
-  // Pass detected voice matches down to VoiceSuggestionsProvider.
-  void SetVoiceMatches(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobjectArray>& j_voice_matches,
-      const base::android::JavaParamRef<jfloatArray>& j_confidence_scores);
-
  private:
   ~AutocompleteControllerAndroid() override;
-  void InitJNI(JNIEnv* env, jobject obj);
 
   // AutocompleteController::Observer implementation.
   void OnResultChanged(AutocompleteController* controller,
@@ -135,24 +128,47 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
   // Omnibox - these requests are deduplicated down the call chain.
   void WarmUpRenderProcess() const;
 
-  std::unique_ptr<AutocompleteController> autocomplete_controller_;
-
   // Last input we sent to the autocomplete controller.
-  AutocompleteInput input_;
+  AutocompleteInput input_{};
 
   // Whether we're currently inside a call to Start() that's called
   // from Classify().
-  bool inside_synchronous_start_;
-
-  JavaObjectWeakGlobalRef weak_java_autocomplete_controller_android_;
-  Profile* profile_;
-  ChromeAutocompleteProviderClient* provider_client_;
+  bool inside_synchronous_start_{false};
 
   // Whether the omnibox input is a query that starts building
   // by clicking on an image tile.
-  bool is_query_started_from_tiles_ = false;
+  bool is_query_started_from_tiles_{false};
 
-  base::WeakPtrFactory<AutocompleteControllerAndroid> weak_ptr_factory_{this};
+  // The Profile associated with this instance of AutocompleteControllerAndroid.
+  // There should be only one instance of AutocompleteControllerAndroid per
+  // Profile. This is orchestrated by AutocompleteControllerFactory java class.
+  // Guaranteed to be non-null.
+  Profile* const profile_;
+
+  // Direct reference to AutocompleteController java class. Kept for as long as
+  // this instance of AutocompleteControllerAndroid lives: until corresponding
+  // Profile gets destroyed.
+  // Destruction of Profile triggers destruction of both
+  // C++ AutocompleteControllerAndroid and Java AutocompleteController objects.
+  // Guaranteed to be non-null.
+  const base::android::ScopedJavaGlobalRef<jobject> java_controller_;
+
+  // Associated AutocompleteProviderClient.
+  // Guaranteed to be non-null.
+  ChromeAutocompleteProviderClient* const provider_client_;
+
+  // AutocompleteController associated with this client. As this is directly
+  // associated with the |provider_client_| and indirectly with |profile_|
+  // there is exactly one instance per class.
+  // Retained throughout the lifetime of the AutocompleteControllerAndroid.
+  // Invalidated only immediately before the AutocompleteControllerAndroid is
+  // destroyed.
+  std::unique_ptr<AutocompleteController> autocomplete_controller_;
+
+  // Factory used to create asynchronously invoked callbacks.
+  // Retained throughout the lifetime of the AutocompleteControllerAndroid.
+  const base::WeakPtrFactory<AutocompleteControllerAndroid> weak_ptr_factory_{
+      this};
 
   DISALLOW_COPY_AND_ASSIGN(AutocompleteControllerAndroid);
 };

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.omnibox.suggestions.mostvisited;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.verify;
 
@@ -33,6 +34,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -40,7 +42,7 @@ import org.chromium.chrome.browser.omnibox.LocationBarLayout;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
-import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteControllerFactory;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteControllerJni;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionView;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -90,6 +92,9 @@ public class MostVisitedTilesTest {
     public static DisableAnimationsTestRule sNoAnimationsRule = new DisableAnimationsTestRule();
 
     @Rule
+    public JniMocker mJniMocker = new JniMocker();
+
+    @Rule
     public final BlankCTATabInitialStateRule mInitialStateRule =
             new BlankCTATabInitialStateRule(sActivityTestRule, false);
 
@@ -98,6 +103,9 @@ public class MostVisitedTilesTest {
 
     @Mock
     private AutocompleteController mController;
+
+    @Mock
+    private AutocompleteController.Natives mControllerJniMock;
 
     @Captor
     private ArgumentCaptor<AutocompleteController.OnSuggestionsReceivedListener> mListener;
@@ -118,6 +126,8 @@ public class MostVisitedTilesTest {
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
+        mJniMocker.mock(AutocompleteControllerJni.TEST_HOOKS, mControllerJniMock);
+        doReturn(mController).when(mControllerJniMock).getForProfile(any());
         sActivityTestRule.waitForActivityNativeInitializationComplete();
         mActivity = sActivityTestRule.getActivity();
         mLocationBarLayout = mActivity.findViewById(R.id.location_bar);
@@ -128,9 +138,6 @@ public class MostVisitedTilesTest {
         ChromeTabUtils.waitForInteractable(mTab);
         ChromeTabUtils.loadUrlOnUiThread(mTab, PAGE_URL);
         ChromeTabUtils.waitForTabPageLoaded(mTab, null);
-
-        // Set up a fake AutocompleteController that will supply the suggestions.
-        AutocompleteControllerFactory.setControllerForTesting(mController);
 
         // clang-format off
         TestThreadUtils.runOnUiThreadBlocking(() -> {

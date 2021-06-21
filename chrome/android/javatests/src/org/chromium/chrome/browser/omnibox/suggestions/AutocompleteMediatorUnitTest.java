@@ -40,6 +40,7 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
@@ -165,6 +166,9 @@ public class AutocompleteMediatorUnitTest {
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
 
+    @Rule
+    public JniMocker mJniMocker = new JniMocker();
+
     @Mock
     AutocompleteDelegateForTest mAutocompleteDelegate;
 
@@ -179,6 +183,9 @@ public class AutocompleteMediatorUnitTest {
 
     @Mock
     AutocompleteController mAutocompleteController;
+
+    @Mock
+    AutocompleteController.Natives mAutocompleteControllerJniMock;
 
     @Mock
     LocationBarDataProvider mLocationBarDataProvider;
@@ -209,7 +216,9 @@ public class AutocompleteMediatorUnitTest {
         mListModel = new PropertyModel(SuggestionListProperties.ALL_KEYS);
         mListModel.set(SuggestionListProperties.SUGGESTION_MODELS, mSuggestionModels);
 
-        AutocompleteControllerFactory.setControllerForTesting(mAutocompleteController);
+        mJniMocker.mock(AutocompleteControllerJni.TEST_HOOKS, mAutocompleteControllerJniMock);
+        doReturn(mAutocompleteController).when(mAutocompleteControllerJniMock).getForProfile(any());
+
         // clang-format off
         mMediator = new AutocompleteMediator(ContextUtils.getApplicationContext(),
                 mAutocompleteDelegate, mTextStateProvider, mListModel,

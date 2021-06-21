@@ -372,7 +372,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
             stopAutocomplete(true);
             mAutocomplete.removeOnSuggestionsReceivedListener(this);
         }
-        mAutocomplete = AutocompleteControllerFactory.getController(profile);
+        mAutocomplete = AutocompleteController.getForProfile(profile);
 
         mAutocomplete.addOnSuggestionsReceivedListener(this);
         mDropdownViewInfoListBuilder.setProfile(profile);
@@ -1002,6 +1002,10 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
         if (suggestion == null) return;
         GURL updatedUrl = mAutocomplete.updateMatchDestinationUrlWithQueryFormulationTime(position,
                 getElapsedTimeSinceInputChange(), queryTile.queryText, queryTile.searchParams);
+
+        // Abort if the Autocomplete has just become invalid/profile was destroyed.
+        if (updatedUrl == null) return;
+
         // RecordMetrics has to be called before loadUrl, or otherwise the native AutocompleteResult
         // object will be reset and the suggestion will fail validation.
         recordMetrics(position, WindowOpenDisposition.CURRENT_TAB, suggestion);

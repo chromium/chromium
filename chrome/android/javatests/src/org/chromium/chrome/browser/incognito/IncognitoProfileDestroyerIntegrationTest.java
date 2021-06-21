@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
@@ -25,7 +26,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
-import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteControllerFactory;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteControllerJni;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
@@ -45,7 +46,7 @@ public class IncognitoProfileDestroyerIntegrationTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
     @Rule
-    public JniMocker jniMocker = new JniMocker();
+    public JniMocker mJniMocker = new JniMocker();
 
     private TabModel mIncognitoTabModel;
 
@@ -55,11 +56,14 @@ public class IncognitoProfileDestroyerIntegrationTest {
     @Mock
     AutocompleteController mAutocompleteController;
 
+    @Mock
+    AutocompleteController.Natives mAutocompleteControllerJniMock;
+
     @Before
     public void setUp() throws InterruptedException {
         MockitoAnnotations.initMocks(this);
-
-        AutocompleteControllerFactory.setControllerForTesting(mAutocompleteController);
+        mJniMocker.mock(AutocompleteControllerJni.TEST_HOOKS, mAutocompleteControllerJniMock);
+        doReturn(mAutocompleteController).when(mAutocompleteControllerJniMock).getForProfile(any());
 
         mActivityTestRule.startMainActivityOnBlankPage();
         ProfileManager.addObserver(mMockProfileManagerObserver);
