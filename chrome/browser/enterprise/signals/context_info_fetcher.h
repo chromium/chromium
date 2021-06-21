@@ -38,6 +38,7 @@ struct ContextInfo {
   safe_browsing::EnterpriseRealTimeUrlCheckMode realtime_url_check_mode;
   std::string browser_version;
   safe_browsing::SafeBrowsingState safe_browsing_protection_level;
+  bool site_isolation_enabled;
 };
 
 // Interface used by the chrome.enterprise.reportingPrivate.getContextInfo()

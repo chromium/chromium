@@ -55,6 +55,7 @@ api::enterprise_reporting_private::ContextInfo ToContextInfo(
   info.on_file_downloaded_providers = signals.on_file_downloaded_providers;
   info.on_bulk_data_entry_providers = signals.on_bulk_data_entry_providers;
   info.on_security_event_providers = signals.on_security_event_providers;
+  info.site_isolation_enabled = signals.site_isolation_enabled;
   switch (signals.realtime_url_check_mode) {
     case safe_browsing::REAL_TIME_CHECK_DISABLED:
       info.realtime_url_check_mode = extensions::api::

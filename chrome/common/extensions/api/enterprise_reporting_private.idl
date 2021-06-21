@@ -61,6 +61,7 @@ namespace enterprise.reportingPrivate {
     DOMString[] onSecurityEventProviders;
     DOMString browserVersion;
     SafeBrowsingLevel safeBrowsingProtectionLevel;
+    boolean siteIsolationEnabled;
   };
 
   // Invoked by <code>getContextInfo</code> to return context information.

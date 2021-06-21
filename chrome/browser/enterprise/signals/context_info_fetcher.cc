@@ -14,6 +14,7 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/version_info/version_info.h"
+#include "content/public/browser/site_isolation_policy.h"
 #include "device_management_backend.pb.h"
 
 namespace enterprise_signals {
@@ -57,6 +58,8 @@ void ContextInfoFetcher::Fetch(ContextInfoCallback callback) {
   info.on_security_event_providers = GetOnSecurityEventProviders();
   info.browser_version = version_info::GetVersionNumber();
   info.safe_browsing_protection_level = GetSafeBrowsingProtectionLevel();
+  info.site_isolation_enabled =
+      content::SiteIsolationPolicy::UseDedicatedProcessesForAllSites();
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(info)));
@@ -108,5 +111,4 @@ ContextInfoFetcher::GetSafeBrowsingProtectionLevel() {
     return safe_browsing::NO_SAFE_BROWSING;
   }
 }
-
 }  // namespace enterprise_signals

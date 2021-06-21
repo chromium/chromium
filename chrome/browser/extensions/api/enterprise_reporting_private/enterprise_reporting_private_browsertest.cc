@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 #include "chrome/browser/extensions/api/enterprise_reporting_private/enterprise_reporting_private_api.h"
 
+#include "base/command_line.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
@@ -14,6 +16,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_test_utils.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/common/extensions/api/enterprise_reporting_private.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/pref_names.h"
@@ -24,6 +27,7 @@
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
@@ -191,9 +195,55 @@ class EnterpriseReportingPrivateGetContextInfoBrowserTest
   }
 };
 
+class EnterpriseReportingPrivateGetContextInfoSiteIsolationTest
+    : public EnterpriseReportingPrivateGetContextInfoBaseBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  bool site_isolation_enabled() { return GetParam(); }
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    if (site_isolation_enabled()) {
+      command_line->AppendSwitch(switches::kSitePerProcess);
+    } else {
+      command_line->RemoveSwitch(switches::kSitePerProcess);
+      command_line->AppendSwitch(switches::kDisableSiteIsolation);
+    }
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    EnterpriseReportingPrivateGetContextInfoSiteIsolationTest,
+    testing::Bool());
+
 INSTANTIATE_TEST_SUITE_P(,
                          EnterpriseReportingPrivateGetContextInfoBrowserTest,
                          testing::Combine(testing::Bool(), testing::Bool()));
+
+IN_PROC_BROWSER_TEST_P(
+    EnterpriseReportingPrivateGetContextInfoSiteIsolationTest,
+    Test) {
+  auto function =
+      base::MakeRefCounted<EnterpriseReportingPrivateGetContextInfoFunction>();
+  auto context_info_value = std::unique_ptr<base::Value>(
+      extension_function_test_utils::RunFunctionAndReturnSingleResult(
+          function.get(),
+          /*args*/ "[]", browser()));
+
+  enterprise_reporting_private::ContextInfo info;
+  ASSERT_TRUE(enterprise_reporting_private::ContextInfo::Populate(
+      *context_info_value, &info));
+
+  EXPECT_TRUE(info.browser_affiliation_ids.empty());
+  EXPECT_TRUE(info.profile_affiliation_ids.empty());
+  EXPECT_TRUE(info.on_file_attached_providers.empty());
+  EXPECT_TRUE(info.on_file_downloaded_providers.empty());
+  EXPECT_TRUE(info.on_bulk_data_entry_providers.empty());
+  EXPECT_EQ(enterprise_reporting_private::REALTIME_URL_CHECK_MODE_DISABLED,
+            info.realtime_url_check_mode);
+  EXPECT_TRUE(info.on_security_event_providers.empty());
+  EXPECT_EQ(version_info::GetVersionNumber(), info.browser_version);
+  EXPECT_EQ(site_isolation_enabled(), info.site_isolation_enabled);
+}
 
 IN_PROC_BROWSER_TEST_P(EnterpriseReportingPrivateGetContextInfoBrowserTest,
                        AffiliationIDs) {
