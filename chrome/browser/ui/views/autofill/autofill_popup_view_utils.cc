@@ -6,6 +6,10 @@
 
 #include <algorithm>
 
+#include "chrome/browser/platform_util.h"
+#include "content/public/browser/web_contents.h"
+#include "ui/views/widget/widget.h"
+
 // Returns:
 //    |value| if |lower_bound| < |value| < |upper_bound|
 //    |lower_bound| if |value| < |lower_bound| < |upper_bound|
@@ -109,4 +113,24 @@ bool CanShowDropdownHere(int item_height,
           element_top_is_within_content_area_bounds) ||
          (enough_space_for_one_item_in_content_area_below_element &&
           element_bottom_is_within_content_area_bounds);
+}
+
+bool BoundsOverlapWithAnyOpenPrompt(const gfx::Rect& screen_bounds,
+                                    content::WebContents* web_contents) {
+  gfx::NativeView top_level_view =
+      platform_util::GetViewForWindow(web_contents->GetTopLevelNativeWindow());
+  if (!top_level_view)
+    return false;
+  // On Aura-based systems, prompts are siblings to the top level native window,
+  // and hence we need to go one level up to start searching from the root
+  // window.
+  top_level_view = platform_util::GetParent(top_level_view)
+                       ? platform_util::GetParent(top_level_view)
+                       : top_level_view;
+  views::Widget::Widgets all_widgets;
+  views::Widget::GetAllChildWidgets(top_level_view, &all_widgets);
+  return base::ranges::any_of(all_widgets, [&screen_bounds](views::Widget* w) {
+    return w->IsDialogBox() &&
+           w->GetWindowBoundsInScreen().Intersects(screen_bounds);
+  });
 }

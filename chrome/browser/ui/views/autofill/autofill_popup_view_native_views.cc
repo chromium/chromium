@@ -1424,6 +1424,12 @@ bool AutofillPopupViewNativeViews::DoUpdateBoundsAndRedrawPopup() {
   CalculatePopupXAndWidth(preferred_size.width(), window_bounds, element_bounds,
                           controller_->IsRTL(), &popup_bounds);
 
+  if (BoundsOverlapWithAnyOpenPrompt(popup_bounds,
+                                     controller_->GetWebContents())) {
+    controller_->Hide(PopupHidingReason::kInsufficientSpace);
+    return false;
+  }
+
   SetSize(preferred_size);
 
   popup_bounds.Inset(-GetWidget()->GetRootView()->border()->GetInsets());

@@ -7,6 +7,10 @@
 
 #include "ui/gfx/geometry/rect.h"
 
+namespace content {
+class WebContents;
+}  // namespace content
+
 // Sets the |x| and |width| components of |popup_bounds| as the x-coordinate
 // of the starting point and the width of the popup, taking into account the
 // direction it's supposed to grow (either to the left or to the right).
@@ -39,5 +43,10 @@ gfx::Rect CalculatePopupBounds(const gfx::Size& desired_size,
 bool CanShowDropdownHere(int item_height,
                          const gfx::Rect& content_area_bounds,
                          const gfx::Rect& element_bounds);
+
+// Returns whether there is any open prompt in |web_contents| with bounds that
+// overlap |screen_bounds|.
+bool BoundsOverlapWithAnyOpenPrompt(const gfx::Rect& screen_bounds,
+                                    content::WebContents* web_contents);
 
 #endif  // CHROME_BROWSER_UI_VIEWS_AUTOFILL_AUTOFILL_POPUP_VIEW_UTILS_H_
