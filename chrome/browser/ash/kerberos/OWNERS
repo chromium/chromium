@@ -4,7 +4,6 @@ per-file BUILD.gn=*
 
 # Current owners (prefer)
 fsandrade@chromium.org
-tomdobro@chromium.org
 
 # Previous owners (ask if current owners are not available)
 # Commented out so automatic tools don't prefer.
