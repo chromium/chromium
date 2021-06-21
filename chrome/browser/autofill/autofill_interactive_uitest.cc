@@ -847,8 +847,15 @@ class AutofillInteractiveTestWithHistogramTester
   std::unique_ptr<URLLoaderInterceptor> url_loader_interceptor_;
 };
 
+// Test is flaky on Linux TSAN, see http://crbug.com/1045709.
+#if defined(THREAD_SANITIZER)
+#define MAYBE_BasicFormFill DISABLED_BasicFormFill
+#else
+#define MAYBE_BasicFormFill BasicFormFill
+#endif  // THREAD_SANITIZER
+// Test that basic form fill is working.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestWithHistogramTester,
-                       BasicFormFill) {
+                       MAYBE_BasicFormFill) {
   CreateTestProfile();
 
   // Load the test page.
