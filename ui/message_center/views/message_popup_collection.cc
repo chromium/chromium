@@ -77,6 +77,7 @@ void MessagePopupCollection::Update() {
                                 ? kMoveDownDuration
                                 : kFadeInFadeOutDuration);
     animation_->Start();
+    AnimationStarted();
     UpdateByAnimation();
   }
 
@@ -201,6 +202,7 @@ void MessagePopupCollection::OnBlockingStateChanged(
 
 void MessagePopupCollection::AnimationEnded(const gfx::Animation* animation) {
   Update();
+  AnimationFinished();
 }
 
 void MessagePopupCollection::AnimationProgressed(

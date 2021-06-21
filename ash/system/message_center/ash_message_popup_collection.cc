@@ -19,6 +19,8 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/work_area_insets.h"
 #include "base/i18n/rtl.h"
+#include "base/metrics/histogram_functions.h"
+#include "ui/compositor/compositor.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect.h"
@@ -31,6 +33,11 @@ namespace ash {
 namespace {
 
 const int kToastMarginX = 7;
+
+void ReportPopupAnimationSmoothness(int smoothness) {
+  base::UmaHistogramPercentage("Ash.NotificationPopup.AnimationSmoothness",
+                               smoothness);
+}
 
 }  // namespace
 
@@ -161,12 +168,35 @@ void AshMessagePopupCollection::NotifyPopupAdded(
   MessagePopupCollection::NotifyPopupAdded(popup);
   popup->message_view()->AddObserver(this);
   metrics_utils::LogPopupShown(popup->message_view()->notification_id());
+  last_pop_up_added_ = popup;
 }
 
 void AshMessagePopupCollection::NotifyPopupClosed(
     message_center::MessagePopupView* popup) {
   MessagePopupCollection::NotifyPopupClosed(popup);
   popup->message_view()->RemoveObserver(this);
+}
+
+void AshMessagePopupCollection::AnimationStarted() {
+  if (popups_animating_ == 0) {
+    // Since all the popup widgets use the same compositor, we only need to set
+    // this when the first popup shows in the animation sequence.
+    animation_tracker_.emplace(last_pop_up_added_->GetWidget()
+                                   ->GetCompositor()
+                                   ->RequestNewThroughputTracker());
+    animation_tracker_->Start(metrics_util::ForSmoothness(
+        base::BindRepeating(&ReportPopupAnimationSmoothness)));
+  }
+  ++popups_animating_;
+}
+
+void AshMessagePopupCollection::AnimationFinished() {
+  --popups_animating_;
+  // Stop when all animations are finished.
+  if (animation_tracker_ && popups_animating_ == 0) {
+    animation_tracker_->Stop();
+    animation_tracker_.reset();
+  }
 }
 
 void AshMessagePopupCollection::OnSlideOut(const std::string& notification_id) {
