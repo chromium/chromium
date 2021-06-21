@@ -15,7 +15,7 @@
 class SimpleFactoryKey;
 
 namespace download {
-class DownloadService;
+class BackgroundDownloadService;
 }  // namespace download
 
 namespace content {
@@ -52,7 +52,7 @@ class WebTestBackgroundFetchDelegate : public BackgroundFetchDelegate {
   std::unique_ptr<SimpleFactoryKey> simple_factory_key_;
 
   // In-memory instance of the Download Service lazily created by the delegate.
-  std::unique_ptr<download::DownloadService> download_service_;
+  std::unique_ptr<download::BackgroundDownloadService> download_service_;
 
   // Weak reference to an instance of our download client.
   WebTestBackgroundFetchDownloadClient* background_fetch_client_;

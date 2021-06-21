@@ -15,14 +15,15 @@
 
 namespace download {
 
-class DownloadService;
+class BackgroundDownloadService;
 
 // A TaskScheduler implementation that doesn't do anything but posts the task
 // after the specified delay.
 class BasicTaskScheduler : public download::TaskScheduler {
  public:
   explicit BasicTaskScheduler(
-      const base::RepeatingCallback<DownloadService*()>& get_download_service);
+      const base::RepeatingCallback<BackgroundDownloadService*()>&
+          get_download_service);
   BasicTaskScheduler(const BasicTaskScheduler& other) = delete;
   BasicTaskScheduler& operator=(const BasicTaskScheduler& other) = delete;
   ~BasicTaskScheduler() override;
@@ -44,7 +45,7 @@ class BasicTaskScheduler : public download::TaskScheduler {
   std::map<download::DownloadTaskType, base::CancelableOnceClosure>
       scheduled_tasks_;
 
-  base::RepeatingCallback<DownloadService*()> get_download_service_;
+  base::RepeatingCallback<BackgroundDownloadService*()> get_download_service_;
 
   base::WeakPtrFactory<BasicTaskScheduler> weak_factory_{this};
 };

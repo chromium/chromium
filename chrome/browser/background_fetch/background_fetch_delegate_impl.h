@@ -72,7 +72,7 @@ class BackgroundFetchDelegateImpl
 
  protected:
   // BackgroundFetchDelegateBase:
-  download::DownloadService* GetDownloadService() override;
+  download::BackgroundDownloadService* GetDownloadService() override;
   void OnJobDetailsCreated(const std::string& job_id) override;
   void DoShowUi(const std::string& job_id) override;
   void DoUpdateUi(const std::string& job_id) override;

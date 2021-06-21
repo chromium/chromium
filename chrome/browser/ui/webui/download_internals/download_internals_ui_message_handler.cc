@@ -7,11 +7,11 @@
 #include "base/bind.h"
 #include "base/guid.h"
 #include "base/values.h"
-#include "chrome/browser/download/download_service_factory.h"
+#include "chrome/browser/download/background_download_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
+#include "components/download/public/background_service/background_download_service.h"
 #include "components/download/public/background_service/download_params.h"
-#include "components/download/public/background_service/download_service.h"
 #include "content/public/browser/web_ui.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
@@ -44,7 +44,7 @@ void DownloadInternalsUIMessageHandler::RegisterMessages() {
 
   Profile* profile = Profile::FromWebUI(web_ui());
   download_service_ =
-      DownloadServiceFactory::GetForKey(profile->GetProfileKey());
+      BackgroundDownloadServiceFactory::GetForKey(profile->GetProfileKey());
   download_service_->GetLogger()->AddObserver(this);
 }
 

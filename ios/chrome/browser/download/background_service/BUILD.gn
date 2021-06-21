@@ -4,8 +4,8 @@
 
 source_set("background_service") {
   sources = [
-    "download_service_factory.cc",
-    "download_service_factory.h",
+    "background_download_service_factory.cc",
+    "background_download_service_factory.h",
   ]
 
   deps = [

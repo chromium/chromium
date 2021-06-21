@@ -25,12 +25,12 @@
 #include "chrome/browser/ash/plugin_vm/plugin_vm_pref_names.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/download/download_service_factory.h"
+#include "chrome/browser/download/background_download_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
+#include "components/download/public/background_service/background_download_service.h"
 #include "components/download/public/background_service/download_metadata.h"
-#include "components/download/public/background_service/download_service.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -107,8 +107,8 @@ PluginVmSetupResult BucketForCancelledInstall(
 
 PluginVmInstaller::PluginVmInstaller(Profile* profile)
     : profile_(profile),
-      download_service_(
-          DownloadServiceFactory::GetForKey(profile->GetProfileKey())) {}
+      download_service_(BackgroundDownloadServiceFactory::GetForKey(
+          profile->GetProfileKey())) {}
 
 absl::optional<PluginVmInstaller::FailureReason> PluginVmInstaller::Start() {
   LOG_FUNCTION_CALL();
@@ -312,7 +312,7 @@ int64_t PluginVmInstaller::RequiredFreeDiskSpace() {
 }
 
 void PluginVmInstaller::SetDownloadServiceForTesting(
-    download::DownloadService* download_service) {
+    download::BackgroundDownloadService* download_service) {
   download_service_ = download_service;
 }
 

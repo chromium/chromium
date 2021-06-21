@@ -8,11 +8,11 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_installer.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_installer_factory.h"
-#include "chrome/browser/download/download_service_factory.h"
+#include "chrome/browser/download/background_download_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
+#include "components/download/public/background_service/background_download_service.h"
 #include "components/download/public/background_service/download_metadata.h"
-#include "components/download/public/background_service/download_service.h"
 #include "services/network/public/cpp/resource_request_body.h"
 
 namespace plugin_vm {
@@ -35,8 +35,9 @@ void PluginVmImageDownloadClient::OnServiceInitialized(
   // TODO(timloh): It appears that only completed downloads (aka previous
   // successful installations) surface here, so this logic might not be needed.
   for (const auto& download : downloads) {
-    VLOG(1) << "Download tracked by DownloadService: " << download.guid;
-    DownloadServiceFactory::GetForKey(profile_->GetProfileKey())
+    VLOG(1) << "Download tracked by BackgroundDownloadService: "
+            << download.guid;
+    BackgroundDownloadServiceFactory::GetForKey(profile_->GetProfileKey())
         ->CancelDownload(download.guid);
   }
 }
@@ -51,7 +52,7 @@ void PluginVmImageDownloadClient::OnDownloadStarted(
   // We do not want downloads that are tracked by download service from its
   // initialization to proceed.
   if (!IsCurrentDownload(guid)) {
-    DownloadServiceFactory::GetForKey(profile_->GetProfileKey())
+    BackgroundDownloadServiceFactory::GetForKey(profile_->GetProfileKey())
         ->CancelDownload(guid);
     return;
   }

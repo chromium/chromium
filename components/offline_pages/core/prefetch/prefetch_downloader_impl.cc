@@ -10,8 +10,8 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "components/download/public/background_service/background_download_service.h"
 #include "components/download/public/background_service/download_params.h"
-#include "components/download/public/background_service/download_service.h"
 #include "components/download/public/background_service/service_config.h"
 #include "components/offline_pages/core/offline_clock.h"
 #include "components/offline_pages/core/offline_event_logger.h"
@@ -37,7 +37,7 @@ void NotifyDispatcher(PrefetchService* service, PrefetchDownloadResult result) {
 }  // namespace
 
 PrefetchDownloaderImpl::PrefetchDownloaderImpl(
-    download::DownloadService* download_service,
+    download::BackgroundDownloadService* download_service,
     version_info::Channel channel,
     PrefService* prefs)
     : download_service_(download_service), channel_(channel), prefs_(prefs) {

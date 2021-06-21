@@ -15,8 +15,8 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
+#include "weblayer/browser/background_download_service_factory.h"
 #include "weblayer/browser/browser_context_impl.h"
-#include "weblayer/browser/download_service_factory.h"
 #include "weblayer/browser/profile_impl.h"
 #include "weblayer/browser/system_network_context_manager.h"
 #include "weblayer/public/download_delegate.h"
@@ -77,8 +77,9 @@ void BackgroundFetchDelegateImpl::UpdateUI(
     client->OnUIUpdated(job_id);
 }
 
-download::DownloadService* BackgroundFetchDelegateImpl::GetDownloadService() {
-  return DownloadServiceFactory::GetForBrowserContext(context());
+download::BackgroundDownloadService*
+BackgroundFetchDelegateImpl::GetDownloadService() {
+  return BackgroundDownloadServiceFactory::GetForBrowserContext(context());
 }
 
 void BackgroundFetchDelegateImpl::OnJobDetailsCreated(

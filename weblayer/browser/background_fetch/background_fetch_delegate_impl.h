@@ -24,7 +24,8 @@ class BrowserContext;
 
 namespace weblayer {
 
-// Implementation of BackgroundFetchDelegate using the DownloadService.
+// Implementation of BackgroundFetchDelegate using the
+// BackgroundDownloadService.
 class BackgroundFetchDelegateImpl
     : public background_fetch::BackgroundFetchDelegateBase,
       public KeyedService {
@@ -43,7 +44,7 @@ class BackgroundFetchDelegateImpl
 
  protected:
   // BackgroundFetchDelegateBase:
-  download::DownloadService* GetDownloadService() override;
+  download::BackgroundDownloadService* GetDownloadService() override;
   void OnJobDetailsCreated(const std::string& job_id) override;
   void DoShowUi(const std::string& job_id) override;
   void DoUpdateUi(const std::string& job_id) override;

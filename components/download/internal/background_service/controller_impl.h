@@ -45,7 +45,7 @@ struct DownloadMetaData;
 struct SchedulingParams;
 
 // The internal Controller implementation.  This class does all of the heavy
-// lifting for the DownloadService.
+// lifting for the BackgroundDownloadService.
 class ControllerImpl : public Controller,
                        public DownloadDriver::Client,
                        public Model::Client,

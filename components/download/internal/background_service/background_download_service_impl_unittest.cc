@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/download/internal/background_service/download_service_impl.h"
+#include "components/download/internal/background_service/background_download_service_impl.h"
 
 #include <memory>
 
@@ -25,47 +25,50 @@ using testing::Return;
 namespace download {
 namespace {
 
-class DownloadServiceImplTest : public testing::Test {
+class BackgroundDownloadServiceImplTest : public testing::Test {
  public:
-  DownloadServiceImplTest()
+  BackgroundDownloadServiceImplTest()
       : controller_(nullptr),
         task_runner_(new base::TestSimpleTaskRunner),
         handle_(task_runner_) {}
-  ~DownloadServiceImplTest() override = default;
+  ~BackgroundDownloadServiceImplTest() override = default;
 
   void SetUp() override {
     auto config = std::make_unique<Configuration>();
     auto logger = std::make_unique<test::EmptyLogger>();
     auto controller = std::make_unique<test::MockController>();
     controller_ = controller.get();
-    service_ = std::make_unique<DownloadServiceImpl>(
+    service_ = std::make_unique<BackgroundDownloadServiceImpl>(
         std::move(config), std::move(logger), std::move(controller));
   }
 
  protected:
   test::MockController* controller_;
-  std::unique_ptr<DownloadServiceImpl> service_;
+  std::unique_ptr<BackgroundDownloadServiceImpl> service_;
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
   base::ThreadTaskRunnerHandle handle_;
 
-  DISALLOW_COPY_AND_ASSIGN(DownloadServiceImplTest);
+  DISALLOW_COPY_AND_ASSIGN(BackgroundDownloadServiceImplTest);
 };
 
 }  // namespace
 
-TEST_F(DownloadServiceImplTest, TestGetStatus) {
+TEST_F(BackgroundDownloadServiceImplTest, TestGetStatus) {
   StartupStatus startup_status;
   EXPECT_CALL(*controller_, GetState())
       .WillOnce(Return(Controller::State::INITIALIZING))
       .WillOnce(Return(Controller::State::READY))
       .WillOnce(Return(Controller::State::UNAVAILABLE));
 
-  EXPECT_EQ(DownloadService::ServiceStatus::STARTING_UP, service_->GetStatus());
-  EXPECT_EQ(DownloadService::ServiceStatus::READY, service_->GetStatus());
-  EXPECT_EQ(DownloadService::ServiceStatus::UNAVAILABLE, service_->GetStatus());
+  EXPECT_EQ(BackgroundDownloadService::ServiceStatus::STARTING_UP,
+            service_->GetStatus());
+  EXPECT_EQ(BackgroundDownloadService::ServiceStatus::READY,
+            service_->GetStatus());
+  EXPECT_EQ(BackgroundDownloadService::ServiceStatus::UNAVAILABLE,
+            service_->GetStatus());
 }
 
-TEST_F(DownloadServiceImplTest, TestApiPassThrough) {
+TEST_F(BackgroundDownloadServiceImplTest, TestApiPassThrough) {
   DownloadParams params = test::BuildBasicDownloadParams();
   auto guid = params.guid;
   SchedulingParams scheduling_params;

@@ -7,10 +7,10 @@
 #include "base/bind.h"
 #include "base/no_destructor.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "components/download/public/background_service/background_download_service.h"
 #include "components/download/public/background_service/client.h"
 #include "components/download/public/background_service/download_metadata.h"
 #include "components/download/public/background_service/download_params.h"
-#include "components/download/public/background_service/download_service.h"
 #include "components/download/public/background_service/service_config.h"
 #include "components/download/public/background_service/test/empty_logger.h"
 
@@ -61,9 +61,9 @@ bool TestDownloadService::OnStopScheduledTask(DownloadTaskType task_type) {
   return true;
 }
 
-DownloadService::ServiceStatus TestDownloadService::GetStatus() {
-  return is_ready_ ? DownloadService::ServiceStatus::READY
-                   : DownloadService::ServiceStatus::STARTING_UP;
+BackgroundDownloadService::ServiceStatus TestDownloadService::GetStatus() {
+  return is_ready_ ? BackgroundDownloadService::ServiceStatus::READY
+                   : BackgroundDownloadService::ServiceStatus::STARTING_UP;
 }
 
 void TestDownloadService::StartDownload(DownloadParams params) {

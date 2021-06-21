@@ -2,37 +2,39 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef WEBLAYER_BROWSER_DOWNLOAD_SERVICE_FACTORY_H_
-#define WEBLAYER_BROWSER_DOWNLOAD_SERVICE_FACTORY_H_
+#ifndef WEBLAYER_BROWSER_BACKGROUND_DOWNLOAD_SERVICE_FACTORY_H_
+#define WEBLAYER_BROWSER_BACKGROUND_DOWNLOAD_SERVICE_FACTORY_H_
 
 #include "base/no_destructor.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 namespace download {
-class DownloadService;
-}
+class BackgroundDownloadService;
+}  // namespace download
 
 namespace weblayer {
 
 // Unlike Chrome, which can operate outside of full browser mode, WebLayer can
 // assume the full BrowserContext is available. For that reason this class is a
 // BrowserContextKeyedService rather than a SimpleKeyedServiceFactory.
-class DownloadServiceFactory : public BrowserContextKeyedServiceFactory {
+class BackgroundDownloadServiceFactory
+    : public BrowserContextKeyedServiceFactory {
  public:
-  static DownloadServiceFactory* GetInstance();
+  static BackgroundDownloadServiceFactory* GetInstance();
 
-  static download::DownloadService* GetForBrowserContext(
+  static download::BackgroundDownloadService* GetForBrowserContext(
       content::BrowserContext* context);
 
-  DownloadServiceFactory(const DownloadServiceFactory& other) = delete;
-  DownloadServiceFactory& operator=(const DownloadServiceFactory& other) =
-      delete;
+  BackgroundDownloadServiceFactory(
+      const BackgroundDownloadServiceFactory& other) = delete;
+  BackgroundDownloadServiceFactory& operator=(
+      const BackgroundDownloadServiceFactory& other) = delete;
 
  private:
-  friend class base::NoDestructor<DownloadServiceFactory>;
+  friend class base::NoDestructor<BackgroundDownloadServiceFactory>;
 
-  DownloadServiceFactory();
-  ~DownloadServiceFactory() override = default;
+  BackgroundDownloadServiceFactory();
+  ~BackgroundDownloadServiceFactory() override = default;
 
   // BrowserContextKeyedService:
   KeyedService* BuildServiceInstanceFor(
@@ -43,4 +45,4 @@ class DownloadServiceFactory : public BrowserContextKeyedServiceFactory {
 
 }  // namespace weblayer
 
-#endif  // WEBLAYER_BROWSER_DOWNLOAD_SERVICE_FACTORY_H_
+#endif  // WEBLAYER_BROWSER_BACKGROUND_DOWNLOAD_SERVICE_FACTORY_H_

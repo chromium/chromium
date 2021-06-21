@@ -7,7 +7,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/background_fetch/background_fetch_delegate_impl.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/download/download_service_factory.h"
+#include "chrome/browser/download/background_download_service_factory.h"
 #include "chrome/browser/metrics/ukm_background_recorder_service.h"
 #include "chrome/browser/offline_items_collection/offline_content_aggregator_factory.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
@@ -31,7 +31,7 @@ BackgroundFetchDelegateFactory::BackgroundFetchDelegateFactory()
     : BrowserContextKeyedServiceFactory(
           "BackgroundFetchService",
           BrowserContextDependencyManager::GetInstance()) {
-  DependsOn(DownloadServiceFactory::GetInstance());
+  DependsOn(BackgroundDownloadServiceFactory::GetInstance());
   DependsOn(HostContentSettingsMapFactory::GetInstance());
   DependsOn(OfflineContentAggregatorFactory::GetInstance());
   DependsOn(ukm::UkmBackgroundRecorderFactory::GetInstance());

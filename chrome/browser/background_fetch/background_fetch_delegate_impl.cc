@@ -14,13 +14,13 @@
 #include "base/strings/string_util.h"
 #include "base/task/post_task.h"
 #include "build/build_config.h"
-#include "chrome/browser/download/download_service_factory.h"
+#include "chrome/browser/download/background_download_service_factory.h"
 #include "chrome/browser/metrics/ukm_background_recorder_service.h"
 #include "chrome/browser/offline_items_collection/offline_content_aggregator_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "components/background_fetch/job_details.h"
-#include "components/download/public/background_service/download_service.h"
+#include "components/download/public/background_service/background_download_service.h"
 #include "components/download/public/common/download_features.h"
 #include "components/offline_items_collection/core/offline_content_aggregator.h"
 #include "components/offline_items_collection/core/offline_item.h"
@@ -214,8 +214,9 @@ void BackgroundFetchDelegateImpl::ChangeSchedule(
   NOTIMPLEMENTED();
 }
 
-download::DownloadService* BackgroundFetchDelegateImpl::GetDownloadService() {
-  return DownloadServiceFactory::GetInstance()->GetForKey(
+download::BackgroundDownloadService*
+BackgroundFetchDelegateImpl::GetDownloadService() {
+  return BackgroundDownloadServiceFactory::GetInstance()->GetForKey(
       profile_->GetProfileKey());
 }
 

@@ -9,6 +9,7 @@ if (is_android) {
 
 source_set("public") {
   sources = [
+    "background_download_service.h",
     "client.cc",
     "client.h",
     "clients.h",
@@ -16,7 +17,6 @@ source_set("public") {
     "download_metadata.h",
     "download_params.cc",
     "download_params.h",
-    "download_service.h",
     "features.cc",
     "features.h",
     "service_config.h",

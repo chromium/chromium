@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_DOWNLOAD_INTERNAL_BACKGROUND_SERVICE_IOS_DOWNLOAD_SERVICE_IMPL_H_
-#define COMPONENTS_DOWNLOAD_INTERNAL_BACKGROUND_SERVICE_IOS_DOWNLOAD_SERVICE_IMPL_H_
+#ifndef COMPONENTS_DOWNLOAD_INTERNAL_BACKGROUND_SERVICE_IOS_BACKGROUND_DOWNLOAD_SERVICE_IMPL_H_
+#define COMPONENTS_DOWNLOAD_INTERNAL_BACKGROUND_SERVICE_IOS_BACKGROUND_DOWNLOAD_SERVICE_IMPL_H_
 
 #include <memory>
 #include <string>
 
 #include "components/download/internal/background_service/service_config_impl.h"
-#include "components/download/public/background_service/download_service.h"
+#include "components/download/public/background_service/background_download_service.h"
 #include "components/download/public/task/download_task_types.h"
 
 namespace download {
@@ -18,10 +18,10 @@ struct Configuration;
 struct DownloadParams;
 struct SchedulingParams;
 
-class DownloadServiceImpl : public DownloadService {
+class BackgroundDownloadServiceImpl : public BackgroundDownloadService {
  public:
-  DownloadServiceImpl();
-  ~DownloadServiceImpl() override;
+  BackgroundDownloadServiceImpl();
+  ~BackgroundDownloadServiceImpl() override;
 
  private:
   // DownloadService implementation.
@@ -44,4 +44,4 @@ class DownloadServiceImpl : public DownloadService {
 
 }  // namespace download
 
-#endif  // COMPONENTS_DOWNLOAD_INTERNAL_BACKGROUND_SERVICE_IOS_DOWNLOAD_SERVICE_IMPL_H_
+#endif  // COMPONENTS_DOWNLOAD_INTERNAL_BACKGROUND_SERVICE_IOS_BACKGROUND_DOWNLOAD_SERVICE_IMPL_H_

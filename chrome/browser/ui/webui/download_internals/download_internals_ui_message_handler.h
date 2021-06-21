@@ -11,8 +11,8 @@
 #include "content/public/browser/web_ui_message_handler.h"
 
 namespace download {
-class DownloadService;
-}
+class BackgroundDownloadService;
+}  // namespace download
 
 namespace download_internals {
 
@@ -42,7 +42,7 @@ class DownloadInternalsUIMessageHandler : public content::WebUIMessageHandler,
   // Starts a background download.
   void HandleStartDownload(const base::ListValue* args);
 
-  download::DownloadService* download_service_;
+  download::BackgroundDownloadService* download_service_;
 
   base::WeakPtrFactory<DownloadInternalsUIMessageHandler> weak_ptr_factory_{
       this};

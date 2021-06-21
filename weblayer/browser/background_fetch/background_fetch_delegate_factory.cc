@@ -8,8 +8,8 @@
 #include "build/build_config.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/background_fetch_delegate.h"
+#include "weblayer/browser/background_download_service_factory.h"
 #include "weblayer/browser/background_fetch/background_fetch_delegate_impl.h"
-#include "weblayer/browser/download_service_factory.h"
 #include "weblayer/browser/host_content_settings_map_factory.h"
 
 #if defined(OS_ANDROID)
@@ -47,7 +47,7 @@ BackgroundFetchDelegateFactory::BackgroundFetchDelegateFactory()
     : BrowserContextKeyedServiceFactory(
           "BackgroundFetchService",
           BrowserContextDependencyManager::GetInstance()) {
-  DependsOn(DownloadServiceFactory::GetInstance());
+  DependsOn(BackgroundDownloadServiceFactory::GetInstance());
   DependsOn(HostContentSettingsMapFactory::GetInstance());
 }
 

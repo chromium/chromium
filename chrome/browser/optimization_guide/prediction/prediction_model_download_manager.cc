@@ -19,7 +19,7 @@
 #include "chrome/browser/optimization_guide/prediction/prediction_model_download_observer.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/crx_file/crx_verifier.h"
-#include "components/download/public/background_service/download_service.h"
+#include "components/download/public/background_service/background_download_service.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
@@ -97,7 +97,7 @@ void RecordPredictionModelDownloadStatus(PredictionModelDownloadStatus status) {
 }  // namespace
 
 PredictionModelDownloadManager::PredictionModelDownloadManager(
-    download::DownloadService* download_service,
+    download::BackgroundDownloadService* download_service,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner)
     : download_service_(download_service),
       is_available_for_downloads_(true),

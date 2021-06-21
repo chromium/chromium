@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_DOWNLOAD_DOWNLOAD_SERVICE_FACTORY_H_
-#define CHROME_BROWSER_DOWNLOAD_DOWNLOAD_SERVICE_FACTORY_H_
+#ifndef CHROME_BROWSER_DOWNLOAD_BACKGROUND_DOWNLOAD_SERVICE_FACTORY_H_
+#define CHROME_BROWSER_DOWNLOAD_BACKGROUND_DOWNLOAD_SERVICE_FACTORY_H_
 
 #include <memory>
 
@@ -18,31 +18,31 @@ struct DefaultSingletonTraits;
 }  // namespace base
 
 namespace download {
-class DownloadService;
+class BackgroundDownloadService;
 }  // namespace download
 
-// DownloadServiceFactory is the main client class for interaction with the
-// download component.
-class DownloadServiceFactory : public SimpleKeyedServiceFactory {
+// BackgroundDownloadServiceFactory is the main client class for interaction
+// with the download component.
+class BackgroundDownloadServiceFactory : public SimpleKeyedServiceFactory {
  public:
   // Returns singleton instance of DownloadServiceFactory.
-  static DownloadServiceFactory* GetInstance();
+  static BackgroundDownloadServiceFactory* GetInstance();
 
   // Returns the DownloadService associated with |key|.
-  static download::DownloadService* GetForKey(SimpleFactoryKey* key);
+  static download::BackgroundDownloadService* GetForKey(SimpleFactoryKey* key);
 
  private:
-  friend struct base::DefaultSingletonTraits<DownloadServiceFactory>;
+  friend struct base::DefaultSingletonTraits<BackgroundDownloadServiceFactory>;
 
-  DownloadServiceFactory();
-  ~DownloadServiceFactory() override;
+  BackgroundDownloadServiceFactory();
+  ~BackgroundDownloadServiceFactory() override;
 
   // SimpleKeyedServiceFactory overrides:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       SimpleFactoryKey* key) const override;
   SimpleFactoryKey* GetKeyToUse(SimpleFactoryKey* key) const override;
 
-  DISALLOW_COPY_AND_ASSIGN(DownloadServiceFactory);
+  DISALLOW_COPY_AND_ASSIGN(BackgroundDownloadServiceFactory);
 };
 
-#endif  // CHROME_BROWSER_DOWNLOAD_DOWNLOAD_SERVICE_FACTORY_H_
+#endif  // CHROME_BROWSER_DOWNLOAD_BACKGROUND_DOWNLOAD_SERVICE_FACTORY_H_

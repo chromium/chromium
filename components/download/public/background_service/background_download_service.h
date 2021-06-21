@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_DOWNLOAD_PUBLIC_BACKGROUND_SERVICE_DOWNLOAD_SERVICE_H_
-#define COMPONENTS_DOWNLOAD_PUBLIC_BACKGROUND_SERVICE_DOWNLOAD_SERVICE_H_
+#ifndef COMPONENTS_DOWNLOAD_PUBLIC_BACKGROUND_SERVICE_BACKGROUND_DOWNLOAD_SERVICE_H_
+#define COMPONENTS_DOWNLOAD_PUBLIC_BACKGROUND_SERVICE_BACKGROUND_DOWNLOAD_SERVICE_H_
 
 #include <memory>
 #include <string>
@@ -29,13 +29,13 @@ using TaskFinishedCallback = base::OnceCallback<void(bool)>;
 // A service responsible for helping facilitate the scheduling and downloading
 // of file content from the web.  See |DownloadParams| for more details on the
 // types of scheduling that can be achieved and the required input parameters
-// for starting a download.  Note that DownloadServices with a valid storage
-// directory will persist the requests across restarts.  This means that any
-// feature requesting a download will have to implement a download::Client
+// for starting a download.  Note that BackgroundDownloadService with a valid
+// storage directory will persist the requests across restarts.  This means that
+// any feature requesting a download will have to implement a download::Client
 // interface so this class knows who to contact when a download completes after
 // a process restart.
 // See the embedder specific factories for creation options.
-class DownloadService : public KeyedService {
+class BackgroundDownloadService : public KeyedService {
  public:
   // The current status of the Service.
   enum class ServiceStatus {
@@ -69,8 +69,8 @@ class DownloadService : public KeyedService {
   // method directly.
   virtual bool OnStopScheduledTask(DownloadTaskType task_type) = 0;
 
-  // Whether or not the DownloadService is currently available, initialized
-  // successfully, and ready to be used.
+  // Whether or not the BackgroundDownloadService is currently available,
+  // initialized successfully, and ready to be used.
   virtual ServiceStatus GetStatus() = 0;
 
   // Sends the download to the service.  A callback to
@@ -98,15 +98,15 @@ class DownloadService : public KeyedService {
   // components in the larger system.
   virtual Logger* GetLogger() = 0;
 
-  ~DownloadService() override = default;
+  ~BackgroundDownloadService() override = default;
 
  protected:
-  DownloadService() = default;
+  BackgroundDownloadService() = default;
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(DownloadService);
+  DISALLOW_COPY_AND_ASSIGN(BackgroundDownloadService);
 };
 
 }  // namespace download
 
-#endif  // COMPONENTS_DOWNLOAD_PUBLIC_BACKGROUND_SERVICE_DOWNLOAD_SERVICE_H_
+#endif  // COMPONENTS_DOWNLOAD_PUBLIC_BACKGROUND_SERVICE_BACKGROUND_DOWNLOAD_SERVICE_H_

@@ -87,9 +87,10 @@ bool TestDownloadService::OnStopScheduledTask(
   NOTIMPLEMENTED();
   return false;
 }
-download::DownloadService::ServiceStatus TestDownloadService::GetStatus() {
+download::BackgroundDownloadService::ServiceStatus
+TestDownloadService::GetStatus() {
   NOTIMPLEMENTED();
-  return DownloadService::ServiceStatus();
+  return BackgroundDownloadService::ServiceStatus();
 }
 void TestDownloadService::PauseDownload(const std::string& guid) {
   NOTIMPLEMENTED();

@@ -18,7 +18,7 @@
 #import "ios/chrome/browser/device_sharing/device_sharing_manager_factory.h"
 #include "ios/chrome/browser/discover_feed/discover_feed_service_factory.h"
 #include "ios/chrome/browser/dom_distiller/dom_distiller_service_factory.h"
-#include "ios/chrome/browser/download/background_service/download_service_factory.h"
+#include "ios/chrome/browser/download/background_service/background_download_service_factory.h"
 #include "ios/chrome/browser/download/browser_download_service_factory.h"
 #include "ios/chrome/browser/favicon/favicon_service_factory.h"
 #include "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
@@ -122,7 +122,7 @@ void EnsureBrowserStateKeyedServiceFactoriesBuilt() {
   DeviceSharingManagerFactory::GetInstance();
   DiscoverFeedServiceFactory::GetInstance();
   DomainDiversityReporterFactory::GetInstance();
-  DownloadServiceFactory::GetInstance();
+  BackgroundDownloadServiceFactory::GetInstance();
   GoogleLogoServiceFactory::GetInstance();
   IdentityManagerFactory::GetInstance();
   IOSChromeContentSuggestionsServiceFactory::GetInstance();

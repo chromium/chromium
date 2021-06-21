@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_DOWNLOAD_INTERNAL_BACKGROUND_SERVICE_DOWNLOAD_SERVICE_IMPL_H_
-#define COMPONENTS_DOWNLOAD_INTERNAL_BACKGROUND_SERVICE_DOWNLOAD_SERVICE_IMPL_H_
+#ifndef COMPONENTS_DOWNLOAD_INTERNAL_BACKGROUND_SERVICE_BACKGROUND_DOWNLOAD_SERVICE_IMPL_H_
+#define COMPONENTS_DOWNLOAD_INTERNAL_BACKGROUND_SERVICE_BACKGROUND_DOWNLOAD_SERVICE_IMPL_H_
 
 #include <map>
 #include <memory>
@@ -14,7 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/download/internal/background_service/config.h"
 #include "components/download/internal/background_service/service_config_impl.h"
-#include "components/download/public/background_service/download_service.h"
+#include "components/download/public/background_service/background_download_service.h"
 
 namespace download {
 
@@ -24,15 +24,15 @@ class Logger;
 struct DownloadParams;
 struct SchedulingParams;
 
-// The internal implementation of the DownloadService.
-class DownloadServiceImpl : public DownloadService {
+// The internal implementation of the BackgroundDownloadService.
+class BackgroundDownloadServiceImpl : public BackgroundDownloadService {
  public:
-  DownloadServiceImpl(std::unique_ptr<Configuration> config,
-                      std::unique_ptr<Logger> logger,
-                      std::unique_ptr<Controller> controller);
-  ~DownloadServiceImpl() override;
+  BackgroundDownloadServiceImpl(std::unique_ptr<Configuration> config,
+                                std::unique_ptr<Logger> logger,
+                                std::unique_ptr<Controller> controller);
+  ~BackgroundDownloadServiceImpl() override;
 
-  // DownloadService implementation.
+  // BackgroundDownloadService implementation.
   const ServiceConfig& GetConfig() override;
   void OnStartScheduledTask(DownloadTaskType task_type,
                             TaskFinishedCallback callback) override;
@@ -61,11 +61,11 @@ class DownloadServiceImpl : public DownloadService {
   std::map<DownloadTaskType, base::OnceClosure> pending_tasks_;
   bool startup_completed_;
 
-  base::WeakPtrFactory<DownloadServiceImpl> weak_ptr_factory_{this};
+  base::WeakPtrFactory<BackgroundDownloadServiceImpl> weak_ptr_factory_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(DownloadServiceImpl);
+  DISALLOW_COPY_AND_ASSIGN(BackgroundDownloadServiceImpl);
 };
 
 }  // namespace download
 
-#endif  // COMPONENTS_DOWNLOAD_INTERNAL_BACKGROUND_SERVICE_DOWNLOAD_SERVICE_IMPL_H_
+#endif  // COMPONENTS_DOWNLOAD_INTERNAL_BACKGROUND_SERVICE_BACKGROUND_DOWNLOAD_SERVICE_IMPL_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/download/internal/background_service/download_service_impl.h"
+#include "components/download/internal/background_service/background_download_service_impl.h"
 
 #include <utility>
 
@@ -15,27 +15,29 @@
 
 namespace download {
 
-DownloadServiceImpl::DownloadServiceImpl(std::unique_ptr<Configuration> config,
-                                         std::unique_ptr<Logger> logger,
-                                         std::unique_ptr<Controller> controller)
+BackgroundDownloadServiceImpl::BackgroundDownloadServiceImpl(
+    std::unique_ptr<Configuration> config,
+    std::unique_ptr<Logger> logger,
+    std::unique_ptr<Controller> controller)
     : config_(std::move(config)),
       logger_(std::move(logger)),
       controller_(std::move(controller)),
       service_config_(config_.get()),
       startup_completed_(false) {
   controller_->Initialize(
-      base::BindOnce(&DownloadServiceImpl::OnControllerInitialized,
+      base::BindOnce(&BackgroundDownloadServiceImpl::OnControllerInitialized,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-DownloadServiceImpl::~DownloadServiceImpl() = default;
+BackgroundDownloadServiceImpl::~BackgroundDownloadServiceImpl() = default;
 
-const ServiceConfig& DownloadServiceImpl::GetConfig() {
+const ServiceConfig& BackgroundDownloadServiceImpl::GetConfig() {
   return service_config_;
 }
 
-void DownloadServiceImpl::OnStartScheduledTask(DownloadTaskType task_type,
-                                               TaskFinishedCallback callback) {
+void BackgroundDownloadServiceImpl::OnStartScheduledTask(
+    DownloadTaskType task_type,
+    TaskFinishedCallback callback) {
   if (startup_completed_) {
     controller_->OnStartScheduledTask(task_type, std::move(callback));
     return;
@@ -46,7 +48,8 @@ void DownloadServiceImpl::OnStartScheduledTask(DownloadTaskType task_type,
       task_type, std::move(callback));
 }
 
-bool DownloadServiceImpl::OnStopScheduledTask(DownloadTaskType task_type) {
+bool BackgroundDownloadServiceImpl::OnStopScheduledTask(
+    DownloadTaskType task_type) {
   if (startup_completed_) {
     return controller_->OnStopScheduledTask(task_type);
   }
@@ -62,21 +65,23 @@ bool DownloadServiceImpl::OnStopScheduledTask(DownloadTaskType task_type) {
   return true;
 }
 
-DownloadService::ServiceStatus DownloadServiceImpl::GetStatus() {
+BackgroundDownloadService::ServiceStatus
+BackgroundDownloadServiceImpl::GetStatus() {
   switch (controller_->GetState()) {
     case Controller::State::CREATED:       // Intentional fallthrough.
     case Controller::State::INITIALIZING:  // Intentional fallthrough.
     case Controller::State::RECOVERING:
-      return DownloadService::ServiceStatus::STARTING_UP;
+      return BackgroundDownloadService::ServiceStatus::STARTING_UP;
     case Controller::State::READY:
-      return DownloadService::ServiceStatus::READY;
+      return BackgroundDownloadService::ServiceStatus::READY;
     case Controller::State::UNAVAILABLE:  // Intentional fallthrough.
     default:
-      return DownloadService::ServiceStatus::UNAVAILABLE;
+      return BackgroundDownloadService::ServiceStatus::UNAVAILABLE;
   }
 }
 
-void DownloadServiceImpl::StartDownload(DownloadParams download_params) {
+void BackgroundDownloadServiceImpl::StartDownload(
+    DownloadParams download_params) {
   stats::LogServiceApiAction(download_params.client,
                              stats::ServiceApiAction::START_DOWNLOAD);
   if (startup_completed_) {
@@ -88,7 +93,7 @@ void DownloadServiceImpl::StartDownload(DownloadParams download_params) {
   }
 }
 
-void DownloadServiceImpl::PauseDownload(const std::string& guid) {
+void BackgroundDownloadServiceImpl::PauseDownload(const std::string& guid) {
   if (startup_completed_) {
     controller_->PauseDownload(guid);
   } else {
@@ -97,7 +102,7 @@ void DownloadServiceImpl::PauseDownload(const std::string& guid) {
   }
 }
 
-void DownloadServiceImpl::ResumeDownload(const std::string& guid) {
+void BackgroundDownloadServiceImpl::ResumeDownload(const std::string& guid) {
   if (startup_completed_) {
     controller_->ResumeDownload(guid);
   } else {
@@ -107,7 +112,7 @@ void DownloadServiceImpl::ResumeDownload(const std::string& guid) {
   }
 }
 
-void DownloadServiceImpl::CancelDownload(const std::string& guid) {
+void BackgroundDownloadServiceImpl::CancelDownload(const std::string& guid) {
   if (startup_completed_) {
     controller_->CancelDownload(guid);
   } else {
@@ -117,7 +122,7 @@ void DownloadServiceImpl::CancelDownload(const std::string& guid) {
   }
 }
 
-void DownloadServiceImpl::ChangeDownloadCriteria(
+void BackgroundDownloadServiceImpl::ChangeDownloadCriteria(
     const std::string& guid,
     const SchedulingParams& params) {
   if (startup_completed_) {
@@ -129,11 +134,11 @@ void DownloadServiceImpl::ChangeDownloadCriteria(
   }
 }
 
-Logger* DownloadServiceImpl::GetLogger() {
+Logger* BackgroundDownloadServiceImpl::GetLogger() {
   return logger_.get();
 }
 
-void DownloadServiceImpl::OnControllerInitialized() {
+void BackgroundDownloadServiceImpl::OnControllerInitialized() {
   while (!pending_actions_.empty()) {
     auto callback = std::move(pending_actions_.front());
     pending_actions_.pop_front();

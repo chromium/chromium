@@ -6,10 +6,10 @@
 #include "base/bind.h"
 #include "chrome/android/chrome_jni_headers/DownloadBackgroundTask_jni.h"
 #include "chrome/browser/download/android/download_manager_service.h"
-#include "chrome/browser/download/download_service_factory.h"
+#include "chrome/browser/download/background_download_service_factory.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/profiles/profile_key_android.h"
-#include "components/download/public/background_service/download_service.h"
+#include "components/download/public/background_service/background_download_service.h"
 #include "components/download/public/common/auto_resumption_handler.h"
 #include "content/public/browser/browser_context.h"
 
@@ -18,10 +18,11 @@ using base::android::JavaParamRef;
 namespace download {
 namespace android {
 
-DownloadService* GetDownloadService(const JavaParamRef<jobject>& jkey) {
+BackgroundDownloadService* GetDownloadService(
+    const JavaParamRef<jobject>& jkey) {
   ProfileKey* key = ProfileKeyAndroid::FromProfileKeyAndroid(jkey);
   DCHECK(key);
-  return DownloadServiceFactory::GetForKey(key);
+  return BackgroundDownloadServiceFactory::GetForKey(key);
 }
 
 AutoResumptionHandler* GetAutoResumptionHandler() {

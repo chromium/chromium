@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/plugin_vm/plugin_vm_installer_factory.h"
 
 #include "chrome/browser/ash/plugin_vm/plugin_vm_installer.h"
-#include "chrome/browser/download/download_service_factory.h"
+#include "chrome/browser/download/background_download_service_factory.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -27,7 +27,7 @@ PluginVmInstallerFactory::PluginVmInstallerFactory()
     : BrowserContextKeyedServiceFactory(
           "PluginVmInstaller",
           BrowserContextDependencyManager::GetInstance()) {
-  DependsOn(DownloadServiceFactory::GetInstance());
+  DependsOn(BackgroundDownloadServiceFactory::GetInstance());
 }
 
 PluginVmInstallerFactory::~PluginVmInstallerFactory() = default;

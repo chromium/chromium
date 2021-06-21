@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "weblayer/browser/download_service_factory.h"
+#include "weblayer/browser/background_download_service_factory.h"
 
 #include "base/files/file_path.h"
 #include "base/sequenced_task_runner.h"
@@ -12,10 +12,10 @@
 #include "components/background_fetch/download_client.h"
 #include "components/download/content/factory/download_service_factory_helper.h"
 #include "components/download/content/factory/navigation_monitor_factory.h"
+#include "components/download/public/background_service/background_download_service.h"
 #include "components/download/public/background_service/basic_task_scheduler.h"
 #include "components/download/public/background_service/blob_context_getter_factory.h"
 #include "components/download/public/background_service/clients.h"
-#include "components/download/public/background_service/download_service.h"
 #include "components/download/public/common/simple_download_manager_coordinator.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
@@ -33,8 +33,9 @@ namespace weblayer {
 
 namespace {
 
-// Like DownloadServiceFactory, this is a BrowserContextKeyedServiceFactory
-// although the Chrome version is a SimpleKeyedServiceFactory.
+// Like BackgroundDownloadServiceFactory, this is a
+// BrowserContextKeyedServiceFactory although the Chrome version is a
+// SimpleKeyedServiceFactory.
 class SimpleDownloadManagerCoordinatorFactory
     : public BrowserContextKeyedServiceFactory {
  public:
@@ -108,28 +109,30 @@ class DownloadBlobContextGetterFactory
 }  // namespace
 
 // static
-download::DownloadService* DownloadServiceFactory::GetForBrowserContext(
+download::BackgroundDownloadService*
+BackgroundDownloadServiceFactory::GetForBrowserContext(
     content::BrowserContext* browser_context) {
-  return static_cast<download::DownloadService*>(
+  return static_cast<download::BackgroundDownloadService*>(
       GetInstance()->GetServiceForBrowserContext(browser_context,
                                                  /*create=*/true));
 }
 
 // static
-DownloadServiceFactory* DownloadServiceFactory::GetInstance() {
-  static base::NoDestructor<DownloadServiceFactory> factory;
+BackgroundDownloadServiceFactory*
+BackgroundDownloadServiceFactory::GetInstance() {
+  static base::NoDestructor<BackgroundDownloadServiceFactory> factory;
   return factory.get();
 }
 
-DownloadServiceFactory::DownloadServiceFactory()
+BackgroundDownloadServiceFactory::BackgroundDownloadServiceFactory()
     : BrowserContextKeyedServiceFactory(
-          "DownloadServiceFactory",
+          "BackgroundDownloadServiceFactory",
           BrowserContextDependencyManager::GetInstance()) {
   DependsOn(SimpleDownloadManagerCoordinatorFactory::GetInstance());
   DependsOn(download::NavigationMonitorFactory::GetInstance());
 }
 
-KeyedService* DownloadServiceFactory::BuildServiceInstanceFor(
+KeyedService* BackgroundDownloadServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   SimpleFactoryKey* key = ProfileImpl::FromBrowserContext(context)
                               ->GetBrowserContext()
@@ -176,13 +179,15 @@ KeyedService* DownloadServiceFactory::BuildServiceInstanceFor(
              proto_db_provider, background_task_runner,
              std::make_unique<download::BasicTaskScheduler>(base::BindRepeating(
                  [](content::BrowserContext* context) {
-                   return DownloadServiceFactory::GetForBrowserContext(context);
+                   return BackgroundDownloadServiceFactory::
+                       GetForBrowserContext(context);
                  },
                  context)))
       .release();
 }
 
-content::BrowserContext* DownloadServiceFactory::GetBrowserContextToUse(
+content::BrowserContext*
+BackgroundDownloadServiceFactory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
   return context;
 }

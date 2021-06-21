@@ -10,12 +10,13 @@
 #include "base/task/task_traits.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
-#include "components/download/public/background_service/download_service.h"
+#include "components/download/public/background_service/background_download_service.h"
 
 namespace download {
 
 BasicTaskScheduler::BasicTaskScheduler(
-    const base::RepeatingCallback<DownloadService*()>& get_download_service)
+    const base::RepeatingCallback<BackgroundDownloadService*()>&
+        get_download_service)
     : get_download_service_(get_download_service) {}
 
 BasicTaskScheduler::~BasicTaskScheduler() = default;

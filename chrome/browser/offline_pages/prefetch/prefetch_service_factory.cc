@@ -14,7 +14,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "chrome/browser/download/download_service_factory.h"
+#include "chrome/browser/download/background_download_service_factory.h"
 #include "chrome/browser/image_fetcher/image_fetcher_service_factory.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/offline_pages/offline_page_model_factory.h"
@@ -91,7 +91,7 @@ void OnProfileCreated(PrefetchServiceImpl* prefetch_service, Profile* profile) {
 PrefetchServiceFactory::PrefetchServiceFactory()
     : SimpleKeyedServiceFactory("OfflinePagePrefetchService",
                                 SimpleDependencyManager::GetInstance()) {
-  DependsOn(DownloadServiceFactory::GetInstance());
+  DependsOn(BackgroundDownloadServiceFactory::GetInstance());
   DependsOn(OfflinePageModelFactory::GetInstance());
   DependsOn(ImageFetcherServiceFactory::GetInstance());
 }
@@ -149,8 +149,8 @@ std::unique_ptr<KeyedService> PrefetchServiceFactory::BuildServiceInstanceFor(
       profile_key, image_fetcher::ImageFetcherConfig::kReducedMode);
 
   auto prefetch_downloader = std::make_unique<PrefetchDownloaderImpl>(
-      DownloadServiceFactory::GetForKey(profile_key), chrome::GetChannel(),
-      profile_key->GetPrefs());
+      BackgroundDownloadServiceFactory::GetForKey(profile_key),
+      chrome::GetChannel(), profile_key->GetPrefs());
 
   auto prefetch_importer = std::make_unique<PrefetchImporterImpl>(
       prefetch_dispatcher.get(), offline_page_model, background_task_runner);

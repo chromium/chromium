@@ -5,8 +5,8 @@
 source_set("background_service") {
   assert(is_ios)
   sources = [
-    "download_service_impl.cc",
-    "download_service_impl.h",
+    "background_download_service_impl.cc",
+    "background_download_service_impl.h",
   ]
 
   visibility = [

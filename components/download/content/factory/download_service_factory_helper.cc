@@ -10,10 +10,10 @@
 #include "build/build_config.h"
 #include "components/download/content/factory/navigation_monitor_factory.h"
 #include "components/download/content/internal/download_driver_impl.h"
+#include "components/download/internal/background_service/background_download_service_impl.h"
 #include "components/download/internal/background_service/client_set.h"
 #include "components/download/internal/background_service/config.h"
 #include "components/download/internal/background_service/controller_impl.h"
-#include "components/download/internal/background_service/download_service_impl.h"
 #include "components/download/internal/background_service/download_store.h"
 #include "components/download/internal/background_service/empty_file_monitor.h"
 #include "components/download/internal/background_service/file_monitor_impl.h"
@@ -48,7 +48,7 @@ const base::FilePath::CharType kFilesStorageDir[] = FILE_PATH_LITERAL("Files");
 
 // Helper function to create download service with different implementation
 // details.
-std::unique_ptr<DownloadService> CreateDownloadServiceInternal(
+std::unique_ptr<BackgroundDownloadService> CreateDownloadServiceInternal(
     SimpleFactoryKey* simple_factory_key,
     std::unique_ptr<DownloadClientMap> clients,
     std::unique_ptr<Configuration> config,
@@ -91,12 +91,12 @@ std::unique_ptr<DownloadService> CreateDownloadServiceInternal(
       files_storage_dir);
   logger->SetLogSource(controller.get());
 
-  return std::make_unique<DownloadServiceImpl>(
+  return std::make_unique<BackgroundDownloadServiceImpl>(
       std::move(config), std::move(logger), std::move(controller));
 }
 
 // Create download service for normal profile.
-std::unique_ptr<DownloadService> BuildDownloadService(
+std::unique_ptr<BackgroundDownloadService> BuildDownloadService(
     SimpleFactoryKey* simple_factory_key,
     std::unique_ptr<DownloadClientMap> clients,
     network::NetworkConnectionTracker* network_connection_tracker,
@@ -128,7 +128,7 @@ std::unique_ptr<DownloadService> BuildDownloadService(
 }
 
 // Create download service for incognito mode without any database or file IO.
-std::unique_ptr<DownloadService> BuildInMemoryDownloadService(
+std::unique_ptr<BackgroundDownloadService> BuildInMemoryDownloadService(
     SimpleFactoryKey* simple_factory_key,
     std::unique_ptr<DownloadClientMap> clients,
     network::NetworkConnectionTracker* network_connection_tracker,

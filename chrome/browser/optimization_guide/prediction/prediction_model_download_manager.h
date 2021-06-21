@@ -16,7 +16,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace download {
-class DownloadService;
+class BackgroundDownloadService;
 }  // namespace download
 
 namespace optimization_guide {
@@ -32,7 +32,7 @@ class PredictionModel;
 class PredictionModelDownloadManager {
  public:
   PredictionModelDownloadManager(
-      download::DownloadService* download_service,
+      download::BackgroundDownloadService* download_service,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner);
   virtual ~PredictionModelDownloadManager();
   PredictionModelDownloadManager(const PredictionModelDownloadManager&) =
@@ -74,7 +74,7 @@ class PredictionModelDownloadManager {
   void OnDownloadServiceUnavailable();
 
   // Invoked when the download has been accepted and persisted by the
-  // DownloadService.
+  // BackgroundDownloadService.
   void OnDownloadStarted(const std::string& guid,
                          download::DownloadParams::StartResult start_result);
 
@@ -122,7 +122,7 @@ class PredictionModelDownloadManager {
   // The Download Service to schedule model downloads with.
   //
   // Guaranteed to outlive |this|.
-  download::DownloadService* download_service_;
+  download::BackgroundDownloadService* download_service_;
 
   // The directory to store verified models in.
   absl::optional<base::FilePath> models_dir_;

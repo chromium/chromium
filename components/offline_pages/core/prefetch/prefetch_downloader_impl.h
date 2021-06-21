@@ -21,7 +21,7 @@
 class PrefService;
 
 namespace download {
-class DownloadService;
+class BackgroundDownloadService;
 }  // namespace download
 
 namespace offline_pages {
@@ -31,7 +31,7 @@ class PrefetchService;
 // Asynchronously downloads the archive.
 class PrefetchDownloaderImpl : public PrefetchDownloader {
  public:
-  PrefetchDownloaderImpl(download::DownloadService* download_service,
+  PrefetchDownloaderImpl(download::BackgroundDownloadService* download_service,
                          version_info::Channel channel,
                          PrefService* prefs);
   ~PrefetchDownloaderImpl() override;
@@ -75,7 +75,7 @@ class PrefetchDownloaderImpl : public PrefetchDownloader {
           success_downloads);
 
   // Unowned. It is valid until |this| instance is disposed.
-  download::DownloadService* download_service_;
+  download::BackgroundDownloadService* download_service_;
 
   // Unowned, owns |this|.
   PrefetchService* prefetch_service_ = nullptr;

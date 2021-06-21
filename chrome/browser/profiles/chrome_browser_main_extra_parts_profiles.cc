@@ -28,8 +28,8 @@
 #include "chrome/browser/device_api/managed_configuration_api_factory.h"
 #include "chrome/browser/dom_distiller/dom_distiller_service_factory.h"
 #include "chrome/browser/domain_reliability/service_factory.h"
+#include "chrome/browser/download/background_download_service_factory.h"
 #include "chrome/browser/download/download_core_service_factory.h"
-#include "chrome/browser/download/download_service_factory.h"
 #include "chrome/browser/engagement/site_engagement_service_factory.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/favicon/history_ui_favicon_request_handler_factory.h"
@@ -304,7 +304,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   DomainDiversityReporterFactory::GetInstance();
   dom_distiller::DomDistillerServiceFactory::GetInstance();
   DownloadCoreServiceFactory::GetInstance();
-  DownloadServiceFactory::GetInstance();
+  BackgroundDownloadServiceFactory::GetInstance();
 #if defined(OS_ANDROID)
   explore_sites::ExploreSitesServiceFactory::GetInstance();
 #endif

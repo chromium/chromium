@@ -27,7 +27,7 @@ class ProtoDatabaseProvider;
 
 namespace download {
 
-class DownloadService;
+class BackgroundDownloadService;
 class SimpleDownloadManagerCoordinator;
 class TaskScheduler;
 
@@ -41,7 +41,7 @@ class TaskScheduler;
 // will act as an in-memory only service (this means no auto-retries after
 // restarts, no files written on completion, etc.).
 // |background_task_runner| will be used for all disk reads and writes.
-std::unique_ptr<DownloadService> BuildDownloadService(
+std::unique_ptr<BackgroundDownloadService> BuildDownloadService(
     SimpleFactoryKey* simple_factory_key,
     std::unique_ptr<DownloadClientMap> clients,
     network::NetworkConnectionTracker* network_connection_tracker,
@@ -53,7 +53,7 @@ std::unique_ptr<DownloadService> BuildDownloadService(
 
 // Create download service used in incognito mode, without any database or
 // download file IO.
-std::unique_ptr<DownloadService> BuildInMemoryDownloadService(
+std::unique_ptr<BackgroundDownloadService> BuildInMemoryDownloadService(
     SimpleFactoryKey* simple_factory_key,
     std::unique_ptr<DownloadClientMap> clients,
     network::NetworkConnectionTracker* network_connection_tracker,

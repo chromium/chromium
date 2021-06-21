@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/download/download_service_factory.h"
+#include "chrome/browser/download/background_download_service_factory.h"
 
 #include <memory>
 #include <utility>
@@ -14,6 +14,7 @@
 #include "base/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_image_download_client.h"
 #include "chrome/browser/download/deferred_client_wrapper.h"
@@ -29,10 +30,10 @@
 #include "components/background_fetch/download_client.h"
 #include "components/download/content/factory/download_service_factory_helper.h"
 #include "components/download/content/factory/navigation_monitor_factory.h"
+#include "components/download/public/background_service/background_download_service.h"
 #include "components/download/public/background_service/basic_task_scheduler.h"
 #include "components/download/public/background_service/blob_context_getter_factory.h"
 #include "components/download/public/background_service/clients.h"
-#include "components/download/public/background_service/download_service.h"
 #include "components/download/public/background_service/features.h"
 #include "components/download/public/common/simple_download_manager_coordinator.h"
 #include "components/keyed_service/core/simple_dependency_manager.h"
@@ -106,27 +107,29 @@ class DownloadBlobContextGetterFactory
 }  // namespace
 
 // static
-DownloadServiceFactory* DownloadServiceFactory::GetInstance() {
-  return base::Singleton<DownloadServiceFactory>::get();
+BackgroundDownloadServiceFactory*
+BackgroundDownloadServiceFactory::GetInstance() {
+  return base::Singleton<BackgroundDownloadServiceFactory>::get();
 }
 
 // static
-download::DownloadService* DownloadServiceFactory::GetForKey(
-    SimpleFactoryKey* key) {
-  return static_cast<download::DownloadService*>(
+download::BackgroundDownloadService*
+BackgroundDownloadServiceFactory::GetForKey(SimpleFactoryKey* key) {
+  return static_cast<download::BackgroundDownloadService*>(
       GetInstance()->GetServiceForKey(key, true));
 }
 
-DownloadServiceFactory::DownloadServiceFactory()
-    : SimpleKeyedServiceFactory("download::DownloadService",
+BackgroundDownloadServiceFactory::BackgroundDownloadServiceFactory()
+    : SimpleKeyedServiceFactory("download::BackgroundDownloadService",
                                 SimpleDependencyManager::GetInstance()) {
   DependsOn(SimpleDownloadManagerCoordinatorFactory::GetInstance());
   DependsOn(download::NavigationMonitorFactory::GetInstance());
 }
 
-DownloadServiceFactory::~DownloadServiceFactory() = default;
+BackgroundDownloadServiceFactory::~BackgroundDownloadServiceFactory() = default;
 
-std::unique_ptr<KeyedService> DownloadServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+BackgroundDownloadServiceFactory::BuildServiceInstanceFor(
     SimpleFactoryKey* key) const {
   auto clients = std::make_unique<download::DownloadClientMap>();
   ProfileKey* profile_key = ProfileKey::FromSimpleFactoryKey(key);
@@ -196,7 +199,7 @@ std::unique_ptr<KeyedService> DownloadServiceFactory::BuildServiceInstanceFor(
     task_scheduler =
         std::make_unique<download::BasicTaskScheduler>(base::BindRepeating(
             [](SimpleFactoryKey* key) {
-              return DownloadServiceFactory::GetForKey(key);
+              return BackgroundDownloadServiceFactory::GetForKey(key);
             },
             key));
 #endif
@@ -214,7 +217,7 @@ std::unique_ptr<KeyedService> DownloadServiceFactory::BuildServiceInstanceFor(
   }
 }
 
-SimpleFactoryKey* DownloadServiceFactory::GetKeyToUse(
+SimpleFactoryKey* BackgroundDownloadServiceFactory::GetKeyToUse(
     SimpleFactoryKey* key) const {
   return key;
 }

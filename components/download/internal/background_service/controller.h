@@ -8,8 +8,8 @@
 #include <string>
 
 #include "base/macros.h"
+#include "components/download/public/background_service/background_download_service.h"
 #include "components/download/public/background_service/clients.h"
-#include "components/download/public/background_service/download_service.h"
 #include "components/download/public/task/download_task_types.h"
 
 namespace download {
@@ -42,8 +42,8 @@ enum class CompletionType {
   COUNT = 9,
 };
 
-// The core Controller responsible for gluing various DownloadService components
-// together to manage the active downloads.
+// The core Controller responsible for gluing various BackgroundDownloadService
+// components together to manage the active downloads.
 class Controller {
  public:
   enum class State {
@@ -100,11 +100,11 @@ class Controller {
   // Otherwise returns DownloadClient::INVALID for an unowned entry.
   virtual DownloadClient GetOwnerOfDownload(const std::string& guid) = 0;
 
-  // See DownloadService::OnStartScheduledTask.
+  // See BackgroundDownloadService::OnStartScheduledTask.
   virtual void OnStartScheduledTask(DownloadTaskType task_type,
                                     TaskFinishedCallback callback) = 0;
 
-  // See DownloadService::OnStopScheduledTask.
+  // See BackgroundDownloadService::OnStopScheduledTask.
   virtual bool OnStopScheduledTask(DownloadTaskType task_type) = 0;
 
  private:

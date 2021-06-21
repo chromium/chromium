@@ -13,8 +13,8 @@
 #include "chrome/browser/background_fetch/background_fetch_delegate_impl.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/download/background_download_service_factory.h"
 #include "chrome/browser/download/download_request_limiter.h"
-#include "chrome/browser/download/download_service_factory.h"
 #include "chrome/browser/offline_items_collection/offline_content_aggregator_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
@@ -25,7 +25,7 @@
 #include "components/background_fetch/job_details.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_types.h"
-#include "components/download/public/background_service/download_service.h"
+#include "components/download/public/background_service/background_download_service.h"
 #include "components/download/public/background_service/logger.h"
 #include "components/offline_items_collection/core/offline_content_aggregator.h"
 #include "components/offline_items_collection/core/offline_content_provider.h"
@@ -250,7 +250,7 @@ class BackgroundFetchBrowserTest : public InProcessBrowserTest {
     download_observer_ = std::make_unique<WaitableDownloadLoggerObserver>();
 
     download_service_ =
-        DownloadServiceFactory::GetForKey(profile->GetProfileKey());
+        BackgroundDownloadServiceFactory::GetForKey(profile->GetProfileKey());
     download_service_->GetLogger()->AddObserver(download_observer_.get());
 
     // Register our observer for the offline items collection.
@@ -449,7 +449,7 @@ class BackgroundFetchBrowserTest : public InProcessBrowserTest {
 
  protected:
   BackgroundFetchDelegateImpl* delegate_ = nullptr;
-  download::DownloadService* download_service_ = nullptr;
+  download::BackgroundDownloadService* download_service_ = nullptr;
   base::OnceClosure click_event_closure_;
 
   std::unique_ptr<WaitableDownloadLoggerObserver> download_observer_;
