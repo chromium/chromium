@@ -10,11 +10,11 @@
 #include <string>
 
 #include "base/logging.h"
-#include "base/memory/aligned_memory.h"
 #include "base/memory/page_size.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "chromeos/memory/aligned_memory.h"
 
 namespace chromeos {
 namespace memory {
@@ -45,8 +45,8 @@ bool Pagemap::GetEntries(uint64_t address,
   DCHECK(entries);
 
   const size_t kPageSize = base::GetPageSize();
-  DCHECK(base::IsPageAligned(address));
-  DCHECK(base::IsPageAligned(length));
+  DCHECK(IsPageAligned(address));
+  DCHECK(IsPageAligned(length));
 
   // The size of each pagemap entry to calculate our offset in the file.
   uint64_t num_pages = length / kPageSize;

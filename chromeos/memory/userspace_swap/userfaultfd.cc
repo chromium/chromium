@@ -19,7 +19,6 @@
 #include "base/files/file_descriptor_watcher_posix.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
-#include "base/memory/aligned_memory.h"
 #include "base/memory/ptr_util.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/sequenced_task_runner.h"
@@ -28,6 +27,7 @@
 #include "base/threading/platform_thread.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "chromeos/memory/aligned_memory.h"
 
 namespace chromeos {
 namespace memory {
@@ -66,8 +66,8 @@ bool UserfaultFD::RegisterRange(RegisterMode mode,
                                 uintptr_t range_start,
                                 uint64_t len) {
 #if defined(HAS_USERFAULTFD)
-  CHECK(base::IsPageAligned(range_start));
-  CHECK(base::IsPageAligned(len));
+  CHECK(IsPageAligned(range_start));
+  CHECK(IsPageAligned(len));
 
   uffdio_register reg = {};
   reg.range.start = range_start;
@@ -99,8 +99,8 @@ bool UserfaultFD::RegisterRange(RegisterMode mode,
 
 bool UserfaultFD::UnregisterRange(uintptr_t range_start, uint64_t len) {
 #if defined(HAS_USERFAULTFD)
-  CHECK(base::IsPageAligned(range_start));
-  CHECK(base::IsPageAligned(len));
+  CHECK(IsPageAligned(range_start));
+  CHECK(IsPageAligned(len));
 
   uffdio_range range = {};
   range.start = range_start;
@@ -123,8 +123,8 @@ bool UserfaultFD::CopyToRange(uintptr_t dest_range_start,
                               int64_t* copied) {
 #if defined(HAS_USERFAULTFD)
   // NOTE: The source doesn't need to be page aligned.
-  CHECK(base::IsPageAligned(dest_range_start));
-  CHECK(base::IsPageAligned(len));
+  CHECK(IsPageAligned(dest_range_start));
+  CHECK(IsPageAligned(len));
   CHECK(copied);
 
   uffdio_copy fault_copy = {};
@@ -149,8 +149,8 @@ bool UserfaultFD::ZeroRange(uintptr_t range_start,
                             uint64_t len,
                             int64_t* zeroed) {
 #if defined(HAS_USERFAULTFD)
-  CHECK(base::IsPageAligned(range_start));
-  CHECK(base::IsPageAligned(len));
+  CHECK(IsPageAligned(range_start));
+  CHECK(IsPageAligned(len));
   CHECK(zeroed);
 
   uffdio_zeropage zp = {};
@@ -172,8 +172,8 @@ bool UserfaultFD::ZeroRange(uintptr_t range_start,
 
 bool UserfaultFD::WakeRange(uintptr_t range_start, uint64_t len) {
 #if defined(HAS_USERFAULTFD)
-  CHECK(base::IsPageAligned(range_start));
-  CHECK(base::IsPageAligned(len));
+  CHECK(IsPageAligned(range_start));
+  CHECK(IsPageAligned(len));
 
   uffdio_range range = {};
   range.start = range_start;

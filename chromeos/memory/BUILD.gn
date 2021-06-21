@@ -29,6 +29,7 @@ component("memory") {
     "//services/resource_coordinator/public/cpp/memory_instrumentation",
   ]
   sources = [
+    "aligned_memory.h",
     "kstaled.cc",
     "kstaled.h",
     "memory.cc",
