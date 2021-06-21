@@ -299,6 +299,8 @@ buildflag_header("buildflags") {
       use_backup_ref_ptr_fake && use_partition_alloc && !is_nacl
   _enable_runtime_backup_ref_ptr_control =
       enable_runtime_backup_ref_ptr_control && _use_backup_ref_ptr
+  _enable_backup_ref_ptr_in_renderer_process =
+      enable_backup_ref_ptr_in_renderer_process && _use_backup_ref_ptr
   _put_ref_count_in_previous_slot =
       put_ref_count_in_previous_slot && _use_backup_ref_ptr
   _enable_brp_directmap_support =
@@ -329,6 +331,7 @@ buildflag_header("buildflags") {
     "USE_BACKUP_REF_PTR=$_use_backup_ref_ptr",
     "USE_BACKUP_REF_PTR_FAKE=$_use_backup_ref_ptr_fake",
     "ENABLE_RUNTIME_BACKUP_REF_PTR_CONTROL=$_enable_runtime_backup_ref_ptr_control",
+    "ENABLE_BACKUP_REF_PTR_IN_RENDERER_PROCESS=$_enable_backup_ref_ptr_in_renderer_process",
     "ENABLE_BACKUP_REF_PTR_SLOW_CHECKS=$_enable_backup_ref_ptr_slow_checks",
     "PUT_REF_COUNT_IN_PREVIOUS_SLOT=$_put_ref_count_in_previous_slot",
     "ENABLE_BRP_DIRECTMAP_SUPPORT=$_enable_brp_directmap_support",

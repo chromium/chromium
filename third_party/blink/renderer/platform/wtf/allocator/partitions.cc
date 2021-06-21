@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
 
+#include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/memory_reclaimer.h"
 #include "base/allocator/partition_allocator/oom.h"
 #include "base/allocator/partition_allocator/page_allocator.h"
@@ -75,12 +76,17 @@ void Partitions::Initialize() {
 bool Partitions::InitializeOnce() {
 #if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   static base::NoDestructor<base::PartitionAllocator> fast_malloc_allocator{};
-  fast_malloc_allocator->init(
-      {base::PartitionOptions::AlignedAlloc::kDisallowed,
-       base::PartitionOptions::ThreadCache::kEnabled,
-       base::PartitionOptions::Quarantine::kAllowed,
-       base::PartitionOptions::Cookies::kAllowed,
-       base::PartitionOptions::RefCount::kDisallowed});
+  fast_malloc_allocator->init({
+    base::PartitionOptions::AlignedAlloc::kDisallowed,
+        base::PartitionOptions::ThreadCache::kEnabled,
+        base::PartitionOptions::Quarantine::kAllowed,
+        base::PartitionOptions::Cookies::kAllowed,
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_IN_RENDERER_PROCESS)
+        base::PartitionOptions::RefCount::kAllowed
+#else
+        base::PartitionOptions::RefCount::kDisallowed
+#endif
+  });
 
   fast_malloc_root_ = fast_malloc_allocator->root();
 #endif  // !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
@@ -92,22 +98,39 @@ bool Partitions::InitializeOnce() {
 
   base::PartitionAllocGlobalInit(&Partitions::HandleOutOfMemory);
 
-  array_buffer_allocator->init(
-      {base::PartitionOptions::AlignedAlloc::kDisallowed,
-       base::PartitionOptions::ThreadCache::kDisabled,
-       base::PartitionOptions::Quarantine::kAllowed,
-       base::PartitionOptions::Cookies::kAllowed,
-       base::PartitionOptions::RefCount::kDisallowed});
-  buffer_allocator->init({base::PartitionOptions::AlignedAlloc::kDisallowed,
-                          base::PartitionOptions::ThreadCache::kDisabled,
-                          base::PartitionOptions::Quarantine::kAllowed,
-                          base::PartitionOptions::Cookies::kAllowed,
-                          base::PartitionOptions::RefCount::kDisallowed});
-  layout_allocator->init({base::PartitionOptions::AlignedAlloc::kDisallowed,
-                          base::PartitionOptions::ThreadCache::kDisabled,
-                          base::PartitionOptions::Quarantine::kAllowed,
-                          base::PartitionOptions::Cookies::kAllowed,
-                          base::PartitionOptions::RefCount::kDisallowed});
+  array_buffer_allocator->init({
+    base::PartitionOptions::AlignedAlloc::kDisallowed,
+        base::PartitionOptions::ThreadCache::kDisabled,
+        base::PartitionOptions::Quarantine::kAllowed,
+        base::PartitionOptions::Cookies::kAllowed,
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_IN_RENDERER_PROCESS)
+        base::PartitionOptions::RefCount::kAllowed
+#else
+        base::PartitionOptions::RefCount::kDisallowed
+#endif
+  });
+  buffer_allocator->init({
+    base::PartitionOptions::AlignedAlloc::kDisallowed,
+        base::PartitionOptions::ThreadCache::kDisabled,
+        base::PartitionOptions::Quarantine::kAllowed,
+        base::PartitionOptions::Cookies::kAllowed,
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_IN_RENDERER_PROCESS)
+        base::PartitionOptions::RefCount::kAllowed
+#else
+        base::PartitionOptions::RefCount::kDisallowed
+#endif
+  });
+  layout_allocator->init({
+    base::PartitionOptions::AlignedAlloc::kDisallowed,
+        base::PartitionOptions::ThreadCache::kDisabled,
+        base::PartitionOptions::Quarantine::kAllowed,
+        base::PartitionOptions::Cookies::kAllowed,
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_IN_RENDERER_PROCESS)
+        base::PartitionOptions::RefCount::kAllowed
+#else
+        base::PartitionOptions::RefCount::kDisallowed
+#endif
+  });
 
   array_buffer_root_ = array_buffer_allocator->root();
   buffer_root_ = buffer_allocator->root();

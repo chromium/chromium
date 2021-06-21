@@ -213,6 +213,7 @@ component("wtf") {
 
   deps = [
     ":buildflags",
+    "//base/allocator:buildflags",
     "//build:chromeos_buildflags",
 
     # TODO(tkent): WTF should not depend on it.

@@ -84,6 +84,7 @@ declare_args() {
   # - enable_backup_ref_ptr_slow_checks: enable additional safety checks that
   #   are too expensive to have on by default.
   enable_runtime_backup_ref_ptr_control = false
+  enable_backup_ref_ptr_in_renderer_process = false
   put_ref_count_in_previous_slot = false
   enable_brp_directmap_support = false
   use_brp_pool_blocklist = false
@@ -129,6 +130,13 @@ if (!is_nacl) {
 # is true.
 assert(use_backup_ref_ptr || !enable_runtime_backup_ref_ptr_control,
        "Can't control BackupRefPtr at run-time if it isn't enabled at all")
+
+# enable_backup_ref_ptr_in_renderer_process can only be used if
+# enable_runtime_backup_ref_ptr_control is true.
+assert(
+    enable_runtime_backup_ref_ptr_control ||
+        !enable_backup_ref_ptr_in_renderer_process,
+    "Can't enable BackupRefPtr in renderer process if runtime control isn't enabled")
 
 # put_ref_count_in_previous_slot can only be used if use_backup_ref_ptr
 # is true.
