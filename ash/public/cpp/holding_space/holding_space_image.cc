@@ -111,33 +111,6 @@ HoldingSpaceImage::HoldingSpaceImage(
 HoldingSpaceImage::~HoldingSpaceImage() = default;
 
 // static
-gfx::Size HoldingSpaceImage::GetMaxSizeForType(HoldingSpaceItem::Type type) {
-  gfx::Size size;
-  switch (type) {
-    case HoldingSpaceItem::Type::kArcDownload:
-    case HoldingSpaceItem::Type::kDiagnosticsLog:
-    case HoldingSpaceItem::Type::kDownload:
-    case HoldingSpaceItem::Type::kLacrosDownload:
-    case HoldingSpaceItem::Type::kNearbyShare:
-    case HoldingSpaceItem::Type::kPinnedFile:
-    case HoldingSpaceItem::Type::kPrintedPdf:
-    case HoldingSpaceItem::Type::kScan:
-      size = gfx::Size(kHoldingSpaceChipIconSize, kHoldingSpaceChipIconSize);
-      break;
-    case HoldingSpaceItem::Type::kScreenRecording:
-    case HoldingSpaceItem::Type::kScreenshot:
-      size = kHoldingSpaceScreenCaptureSize;
-      break;
-  }
-  // To avoid pixelation, ensure that the holding space image size is at least
-  // as large as the default tray icon preview size. The image will be scaled
-  // down elsewhere if needed.
-  size.SetToMax(gfx::Size(kHoldingSpaceTrayIconDefaultPreviewSize,
-                          kHoldingSpaceTrayIconDefaultPreviewSize));
-  return size;
-}
-
-// static
 void HoldingSpaceImage::SetUseZeroInvalidationDelayForTesting(bool value) {
   g_use_zero_invalidation_delay_for_testing = value;
 }

@@ -42,9 +42,6 @@ class ASH_PUBLIC_EXPORT HoldingSpaceImage {
   HoldingSpaceImage& operator=(const HoldingSpaceImage&) = delete;
   ~HoldingSpaceImage();
 
-  // Returns the maximum size required for a holding space item of `type`.
-  static gfx::Size GetMaxSizeForType(HoldingSpaceItem::Type type);
-
   static void SetUseZeroInvalidationDelayForTesting(bool value);
 
   static gfx::ImageSkia SuperimposeOverEmptyImage(const gfx::ImageSkia& icon,

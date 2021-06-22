@@ -11,6 +11,7 @@
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/public/cpp/holding_space/holding_space_test_api.h"
+#include "ash/public/cpp/holding_space/holding_space_util.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "base/scoped_observation.h"
@@ -184,7 +185,7 @@ HoldingSpaceItem* HoldingSpaceBrowserTestBase::AddItem(
       base::BindLambdaForTesting(
           [&](HoldingSpaceItem::Type type, const base::FilePath& path) {
             return std::make_unique<HoldingSpaceImage>(
-                HoldingSpaceImage::GetMaxSizeForType(type), path,
+                holding_space_util::GetMaxImageSizeForType(type), path,
                 /*async_bitmap_resolver=*/base::DoNothing());
           }));
 

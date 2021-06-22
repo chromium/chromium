@@ -70,8 +70,7 @@ export function ImageLoader() {
   });
 
   chrome.runtime['onConnectNative'].addListener((port) => {
-    if (port.sender.nativeApplication !=
-        'com.google.holding_space_thumbnail_loader') {
+    if (port.sender.nativeApplication != 'com.google.ash_thumbnail_loader') {
       port.disconnect();
       return;
     }

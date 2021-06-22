@@ -24,10 +24,10 @@ class FilePath;
 
 namespace ash {
 
-// Loader for file-backed holding space items' thumbnails. It opens a native
-// connection to the image loader extension (also used to generate thumbnails
-// for the file manager), and sends it an image request for a file path.
-// It decodes data returned by the extension into a bitmap.
+// Loader for file-backed thumbnails. It opens a native connection to the image
+// loader extension (also used to generate thumbnails for the file manager), and
+// sends it an image request for a file path. It decodes data returned by the
+// extension into a bitmap.
 class ThumbnailLoader {
  public:
   explicit ThumbnailLoader(Profile* profile);

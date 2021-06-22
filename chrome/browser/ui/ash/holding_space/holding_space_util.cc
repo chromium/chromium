@@ -6,6 +6,7 @@
 
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_image.h"
+#include "ash/public/cpp/holding_space/holding_space_util.h"
 #include "base/barrier_closure.h"
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
@@ -156,7 +157,7 @@ std::unique_ptr<HoldingSpaceImage> ResolveImage(
     HoldingSpaceItem::Type type,
     const base::FilePath& file_path) {
   return std::make_unique<HoldingSpaceImage>(
-      HoldingSpaceImage::GetMaxSizeForType(type), file_path,
+      GetMaxImageSizeForType(type), file_path,
       base::BindRepeating(
           [](const base::WeakPtr<ThumbnailLoader>& thumbnail_loader,
              const base::FilePath& file_path, const gfx::Size& size,

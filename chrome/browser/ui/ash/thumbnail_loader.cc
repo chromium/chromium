@@ -40,10 +40,9 @@ namespace ash {
 
 namespace {
 
-// The native host name that will identify the holding space thumbnail loader to
-// the image loader extension.
-constexpr char kNativeMessageHostName[] =
-    "com.google.holding_space_thumbnail_loader";
+// The native host name that will identify the thumbnail loader to the image
+// loader extension.
+constexpr char kNativeMessageHostName[] = "com.google.ash_thumbnail_loader";
 
 using ThumbnailDataCallback = base::OnceCallback<void(const std::string& data)>;
 
