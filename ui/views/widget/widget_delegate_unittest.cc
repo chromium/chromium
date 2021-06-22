@@ -20,20 +20,6 @@ namespace {
 
 using WidgetDelegateTest = views::ViewsTestBase;
 
-TEST_F(WidgetDelegateTest, ClientOwnedContentsViewOwnershipNotHeld) {
-  std::unique_ptr<View> view = std::make_unique<View>();
-  view->set_owned_by_client();
-  ViewTracker tracker(view.get());
-
-  auto delegate = std::make_unique<WidgetDelegate>();
-  delegate->SetContentsView(view.get());
-  delegate.reset();
-
-  ASSERT_TRUE(tracker.view());
-  view.reset();
-  EXPECT_FALSE(tracker.view());
-}
-
 TEST_F(WidgetDelegateTest, ContentsViewOwnershipHeld) {
   std::unique_ptr<View> view = std::make_unique<View>();
   ViewTracker tracker(view.get());

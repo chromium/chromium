@@ -431,18 +431,14 @@ IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest, TableView) {
   columns.push_back(TestTableColumn(2, "Origin"));
   columns.push_back(TestTableColumn(3, "Price"));
   auto model = std::make_unique<TestTableModel>(4);  // Create 4 rows.
-  auto table = std::make_unique<views::TableView>(
-      model.get(), columns, views::TEXT_ONLY, /* single_selection = */ true);
-  // Note: normally views are owned by their parent view, but we get a
-  // possible crash if the table outlives the table model (which is scoped
-  // to this function). So we make the table owned by client, and that
-  // ensures that both the table and model are destroyed when they go out
-  // of scope.
-  table->set_owned_by_client();
 
   // Add the TableView to our Widget's root view and give it bounds.
-  views::View* root_view = widget->GetRootView();
-  root_view->AddChildView(table.get());
+  // WARNING: This holds a raw pointer to `model`. To ensure the table doesn't
+  // outlive its model, it must be manually deleted at the bottom of this
+  // function.
+  views::TableView* const table = widget->GetRootView()->AddChildView(
+      std::make_unique<views::TableView>(model.get(), columns, views::TEXT_ONLY,
+                                         /* single_selection = */ true));
   table->SetBounds(0, 0, 200, 200);
 
   // Show the widget.
@@ -498,6 +494,9 @@ IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest, TableView) {
     EXPECT_GT(cell_bounds.height(), 0);
     EXPECT_LT(cell_bounds.height(), window_bounds.height() / 2);
   }
+  // Remove and destroy the TableView, it refers to `model` which is about to go
+  // out of scope.
+  widget->GetRootView()->RemoveChildViewT(table);
 }
 
 IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest, EventFromAction) {

@@ -144,8 +144,8 @@ TEST_F(ViewAXPlatformNodeDelegateAuraLinuxTest, AuraChildWidgets) {
   g_object_unref(second_child);
 }
 
-// Tests if atk_object_get_index_in_parent doesn't DCHECK when a widget is
-// destroyed while still owning its content view.
+// Tests if atk_object_get_index_in_parent doesn't DCHECK after the
+// corresponding View is removed from a Widget.
 TEST_F(ViewAXPlatformNodeDelegateAuraLinuxTest, IndexInParent) {
   // Create the Widget that will represent the application
   Widget parent_widget;
@@ -164,16 +164,13 @@ TEST_F(ViewAXPlatformNodeDelegateAuraLinuxTest, IndexInParent) {
   widget->Init(std::move(child_init_params));
   widget->Show();
 
-  View contents;
-  // Set it as owned by client in order to keep |contents| even though |widget|
-  // is destroyed.
-  contents.set_owned_by_client();
-  widget->SetContentsView(&contents);
+  View* const contents = widget->SetContentsView(std::make_unique<View>());
 
-  AtkObject* atk_object = contents.GetNativeViewAccessible();
+  AtkObject* atk_object = contents->GetNativeViewAccessible();
   EXPECT_EQ(0, atk_object_get_index_in_parent(atk_object));
 
-  widget.reset();
+  std::unique_ptr<View> contents_unique =
+      widget->GetRootView()->RemoveChildViewT(contents);
   EXPECT_EQ(-1, atk_object_get_index_in_parent(atk_object));
 }
 
