@@ -103,11 +103,7 @@ bool Partitions::InitializeOnce() {
         base::PartitionOptions::ThreadCache::kDisabled,
         base::PartitionOptions::Quarantine::kAllowed,
         base::PartitionOptions::Cookies::kAllowed,
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_IN_RENDERER_PROCESS)
-        base::PartitionOptions::RefCount::kAllowed
-#else
         base::PartitionOptions::RefCount::kDisallowed
-#endif
   });
   buffer_allocator->init({
     base::PartitionOptions::AlignedAlloc::kDisallowed,
