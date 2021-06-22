@@ -647,17 +647,8 @@ constexpr ProfileMenuViewBase::ActionableItem
         // there are no other buttons at the end.
         ProfileMenuViewBase::ActionableItem::kEditProfileButton};
 
-// Flaky (crbug.com/1025493).
-#if defined(OS_LINUX)
-#define MAYBE_ProfileMenuClickTest_SingleProfileWithCustomName \
-  DISABLED_ProfileMenuClickTest_SingleProfileWithCustomName
-#else
-#define MAYBE_ProfileMenuClickTest_SingleProfileWithCustomName \
-  ProfileMenuClickTest_SingleProfileWithCustomName
-#endif
-PROFILE_MENU_CLICK_TEST(
-    kActionableItems_SingleProfileWithCustomName,
-    MAYBE_ProfileMenuClickTest_SingleProfileWithCustomName) {
+PROFILE_MENU_CLICK_TEST(kActionableItems_SingleProfileWithCustomName,
+                        ProfileMenuClickTest_SingleProfileWithCustomName) {
   profiles::UpdateProfileName(browser()->profile(), u"Custom name");
   RunTest();
 }
