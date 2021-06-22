@@ -90,6 +90,33 @@ void ReportLoadLatencies(std::unique_ptr<LoadLatencyTimes> latencies) {
   }
 }
 
+base::StringPiece NetworkRequestTypeUmaName(NetworkRequestType type) {
+  switch (type) {
+    case NetworkRequestType::kFeedQuery:
+      return "FeedQuery";
+    case NetworkRequestType::kUploadActions:
+      return "UploadActions";
+    case NetworkRequestType::kNextPage:
+      return "NextPage";
+    case NetworkRequestType::kListWebFeeds:
+      return "ListFollowedWebFeeds";
+    case NetworkRequestType::kUnfollowWebFeed:
+      return "UnfollowWebFeed";
+    case NetworkRequestType::kFollowWebFeed:
+      return "FollowWebFeed";
+    case NetworkRequestType::kListRecommendedWebFeeds:
+      return "ListRecommendedWebFeeds";
+    case NetworkRequestType::kWebFeedListContents:
+      return "WebFeedListContents";
+    case NetworkRequestType::kQueryInteractiveFeed:
+      return "QueryInteractiveFeed";
+    case NetworkRequestType::kQueryBackgroundFeed:
+      return "QueryBackgroundFeed";
+    case NetworkRequestType::kQueryNextPage:
+      return "QueryNextPage";
+  }
+}
+
 }  // namespace
 
 MetricsReporter::SurfaceWaiting::SurfaceWaiting() = default;
@@ -487,65 +514,16 @@ void MetricsReporter::ReportCardOpenEndIfNeeded(bool success) {
 }
 
 void MetricsReporter::NetworkRequestComplete(NetworkRequestType type,
-                                             int http_status_code) {
-  switch (type) {
-    case NetworkRequestType::kFeedQuery:
-      base::UmaHistogramSparse(
-          "ContentSuggestions.Feed.Network.ResponseStatus.FeedQuery",
-          http_status_code);
-      return;
-    case NetworkRequestType::kUploadActions:
-      base::UmaHistogramSparse(
-          "ContentSuggestions.Feed.Network.ResponseStatus.UploadActions",
-          http_status_code);
-      return;
-    case NetworkRequestType::kNextPage:
-      base::UmaHistogramSparse(
-          "ContentSuggestions.Feed.Network.ResponseStatus.NextPage",
-          http_status_code);
-      return;
-    case NetworkRequestType::kListWebFeeds:
-      base::UmaHistogramSparse(
-          "ContentSuggestions.Feed.Network.ResponseStatus.ListFollowedWebFeeds",
-          http_status_code);
-      return;
-    case NetworkRequestType::kUnfollowWebFeed:
-      base::UmaHistogramSparse(
-          "ContentSuggestions.Feed.Network.ResponseStatus.UnfollowWebFeed",
-          http_status_code);
-      return;
-    case NetworkRequestType::kFollowWebFeed:
-      base::UmaHistogramSparse(
-          "ContentSuggestions.Feed.Network.ResponseStatus.FollowWebFeed",
-          http_status_code);
-      return;
-    case NetworkRequestType::kListRecommendedWebFeeds:
-      base::UmaHistogramSparse(
-          "ContentSuggestions.Feed.Network.ResponseStatus."
-          "ListRecommendedWebFeeds",
-          http_status_code);
-      return;
-    case NetworkRequestType::kWebFeedListContents:
-      base::UmaHistogramSparse(
-          "ContentSuggestions.Feed.Network.ResponseStatus.WebFeedListContents",
-          http_status_code);
-      return;
-    case NetworkRequestType::kQueryInteractiveFeed:
-      base::UmaHistogramSparse(
-          "ContentSuggestions.Feed.Network.ResponseStatus.QueryInteractiveFeed",
-          http_status_code);
-      return;
-    case NetworkRequestType::kQueryBackgroundFeed:
-      base::UmaHistogramSparse(
-          "ContentSuggestions.Feed.Network.ResponseStatus.QueryBackgroundFeed",
-          http_status_code);
-      return;
-    case NetworkRequestType::kQueryNextPage:
-      base::UmaHistogramSparse(
-          "ContentSuggestions.Feed.Network.ResponseStatus.QueryNextPage",
-          http_status_code);
-      return;
-  }
+                                             int http_status_code,
+                                             base::TimeDelta latency) {
+  base::StringPiece request_name = NetworkRequestTypeUmaName(type);
+  base::UmaHistogramSparse(
+      base::StrCat(
+          {"ContentSuggestions.Feed.Network.ResponseStatus.", request_name}),
+      http_status_code);
+  base::UmaHistogramMediumTimes(
+      base::StrCat({"ContentSuggestions.Feed.Network.Duration.", request_name}),
+      latency);
 }
 
 void MetricsReporter::OnLoadStream(

@@ -936,8 +936,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
-    The amount of time fetching articles takes, regardless of success. This
-    includes the time it takes to get an auth token for signed in users.
+    The duration of a network request made by the Feed component. Recorded when
+    each network request is completed. This includes the time it takes to get an
+    auth token for signed in users.
   </summary>
 </histogram>
 

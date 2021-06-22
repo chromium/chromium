@@ -93,7 +93,8 @@ void ParseAndForwardQueryResponse(
     base::OnceCallback<void(FeedNetwork::QueryRequestResult)> result_callback,
     RawResponse raw_response) {
   MetricsReporter::NetworkRequestComplete(
-      request_type, raw_response.response_info.status_code);
+      request_type, raw_response.response_info.status_code,
+      raw_response.response_info.fetch_duration);
   FeedNetwork::QueryRequestResult result;
   result.response_info = raw_response.response_info;
   if (result.response_info.status_code == 200) {

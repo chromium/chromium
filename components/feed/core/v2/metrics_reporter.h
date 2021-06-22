@@ -58,7 +58,8 @@ class MetricsReporter {
   // Network metrics.
 
   static void NetworkRequestComplete(NetworkRequestType type,
-                                     int http_status_code);
+                                     int http_status_code,
+                                     base::TimeDelta latency);
 
   // Stream events.
 

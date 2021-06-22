@@ -27,7 +27,8 @@ void FeedNetwork::ParseAndForwardApiResponseBegin(
     NetworkRequestType request_type,
     const RawResponse& raw_response) {
   MetricsReporter::NetworkRequestComplete(
-      request_type, raw_response.response_info.status_code);
+      request_type, raw_response.response_info.status_code,
+      raw_response.response_info.fetch_duration);
 }
 
 }  // namespace feed

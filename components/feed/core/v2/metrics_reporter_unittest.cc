@@ -695,4 +695,16 @@ TEST_F(MetricsReporterTest, TurnOffAction) {
                                 FeedUserActionType::kTappedTurnOff, 1);
 }
 
+TEST_F(MetricsReporterTest, NetworkRequestCompleteReportsUma) {
+  MetricsReporter::NetworkRequestComplete(NetworkRequestType::kListWebFeeds,
+                                          200, base::TimeDelta::FromSeconds(2));
+
+  histogram_.ExpectUniqueSample(
+      "ContentSuggestions.Feed.Network.ResponseStatus.ListFollowedWebFeeds",
+      200, 1);
+  histogram_.ExpectUniqueTimeSample(
+      "ContentSuggestions.Feed.Network.Duration.ListFollowedWebFeeds",
+      base::TimeDelta::FromSeconds(2), 1);
+}
+
 }  // namespace feed
