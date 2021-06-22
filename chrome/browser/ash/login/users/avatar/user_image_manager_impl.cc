@@ -85,8 +85,7 @@ bool SaveAndDeleteImage(scoped_refptr<base::RefCountedBytes> image_bytes,
 }
 
 // Returns the codec enum for the given image path's extension.
-ImageDecoder::ImageCodec ChooseCodecFromPath(
-    const base::FilePath& image_path) {
+ImageDecoder::ImageCodec ChooseCodecFromPath(const base::FilePath& image_path) {
   if (image_path.Extension() == FILE_PATH_LITERAL(".png"))
     return ImageDecoder::PNG_CODEC;
 
@@ -347,7 +346,6 @@ void UserImageManagerImpl::Job::UpdateUser(
   user_manager::User* user = parent_->GetUserAndModify();
   if (!user)
     return;
-
   if (!user_image->image().isNull()) {
     user->SetImage(std::move(user_image), image_index_);
   } else {
@@ -449,6 +447,8 @@ void UserImageManagerImpl::Job::UpdateLocalState() {
   if (parent_->user_manager_->IsUserNonCryptohomeDataEphemeral(account_id()))
     return;
 
+  PrefService* local_state = g_browser_process->local_state();
+
   std::unique_ptr<base::DictionaryValue> entry(new base::DictionaryValue);
   entry->Set(kImagePathNodeName,
              std::make_unique<base::Value>(image_path_.value()));
@@ -456,8 +456,17 @@ void UserImageManagerImpl::Job::UpdateLocalState() {
   if (!image_url_.is_empty())
     entry->Set(kImageURLNodeName,
                std::make_unique<base::Value>(image_url_.spec()));
-  DictionaryPrefUpdate update(g_browser_process->local_state(),
-                              kUserImageProperties);
+
+  const base::Value* existing_value =
+      local_state->GetDictionary(kUserImageProperties)
+          ->FindDictKey(account_id().GetUserEmail());
+
+  if (existing_value && *existing_value == *entry) {
+    return;
+  }
+
+  DictionaryPrefUpdate update(local_state, kUserImageProperties);
+
   update->SetKey(account_id().GetUserEmail(),
                  base::Value::FromUniquePtrValue(std::move(entry)));
 
