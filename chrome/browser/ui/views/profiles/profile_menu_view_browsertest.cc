@@ -814,17 +814,8 @@ constexpr ProfileMenuViewBase::ActionableItem
         // there are no other buttons at the end.
         ProfileMenuViewBase::ActionableItem::kEditProfileButton};
 
-// Flaky (crbug.com/1021930).
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
-#define MAYBE_ProfileMenuClickTest_WithUnconsentedPrimaryAccount \
-  DISABLED_ProfileMenuClickTest_WithUnconsentedPrimaryAccount
-#else
-#define MAYBE_ProfileMenuClickTest_WithUnconsentedPrimaryAccount \
-  ProfileMenuClickTest_WithUnconsentedPrimaryAccount
-#endif
-PROFILE_MENU_CLICK_TEST(
-    kActionableItems_WithUnconsentedPrimaryAccount,
-    MAYBE_ProfileMenuClickTest_WithUnconsentedPrimaryAccount) {
+PROFILE_MENU_CLICK_TEST(kActionableItems_WithUnconsentedPrimaryAccount,
+                        ProfileMenuClickTest_WithUnconsentedPrimaryAccount) {
   secondary_account_helper::SignInSecondaryAccount(
       browser()->profile(), &test_url_loader_factory_, "user@example.com");
   UnconsentedPrimaryAccountChecker(identity_manager()).Wait();
