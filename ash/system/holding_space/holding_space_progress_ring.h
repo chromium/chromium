@@ -24,7 +24,8 @@ class HoldingSpaceProgressRing : public ui::LayerOwner,
                                  public ui::LayerDelegate,
                                  public HoldingSpaceModelObserver {
  public:
-  explicit HoldingSpaceProgressRing(const HoldingSpaceItem* item);
+  HoldingSpaceProgressRing(const HoldingSpaceItem* item,
+                           bool use_light_mode_as_default);
   HoldingSpaceProgressRing(const HoldingSpaceProgressRing&) = delete;
   HoldingSpaceProgressRing& operator=(const HoldingSpaceProgressRing&) = delete;
   ~HoldingSpaceProgressRing() override;
@@ -45,6 +46,11 @@ class HoldingSpaceProgressRing : public ui::LayerOwner,
   // The associated holding space `item` for which to indicate progress.
   // NOTE: May temporarily be `nullptr` during the `item`s destruction sequence.
   const HoldingSpaceItem* item_ = nullptr;
+
+  // If `true`, the progress ring should be painted with light mode as the
+  // default color mode. NOTE: This will have no effect if the dark/light mode
+  // feature is enabled.
+  const bool use_light_mode_as_default_;
 
   base::ScopedObservation<HoldingSpaceModel, HoldingSpaceModelObserver>
       model_observation_{this};

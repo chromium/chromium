@@ -13,6 +13,7 @@
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/shelf/shelf.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/scoped_light_mode_as_default.h"
 #include "ash/system/holding_space/holding_space_tray_icon.h"
 #include "ash/system/tray/tray_constants.h"
 #include "base/bind.h"
@@ -161,6 +162,7 @@ HoldingSpaceTrayIconPreview::HoldingSpaceTrayIconPreview(
     : shelf_(shelf),
       container_(container),
       item_(item),
+      progress_ring_(item_, /*use_light_mode_by_default=*/true),
       use_small_previews_(ShouldUseSmallPreviews()) {
   // Initialize the `contents_image_`.
   OnHoldingSpaceItemImageChanged();
@@ -416,6 +418,10 @@ void HoldingSpaceTrayIconPreview::OnThemeChanged() {
   // trigger `layer()` invalidation at which time the background will be painted
   // in the appropriate color for the current theme.
   OnHoldingSpaceItemImageChanged();
+
+  // Invalidate the `progress_ring_` layer so that it gets repainted with colors
+  // that are appropriately themed.
+  progress_ring_.InvalidateLayer();
 }
 
 void HoldingSpaceTrayIconPreview::OnPaintLayer(
@@ -431,15 +437,16 @@ void HoldingSpaceTrayIconPreview::OnPaintLayer(
   // Background.
   // NOTE: The background radius is shrunk by a single pixel to avoid being
   // painted outside `contents_image_` bounds as might otherwise occur due to
-  // pixel rounding. Failure to do so could result in paint artifacts. Also
-  // note that the background is white when dark/light mode feature is disabled.
+  // pixel rounding. Failure to do so could result in paint artifacts.
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
-  flags.setColor(features::IsDarkLightModeEnabled()
-                     ? AshColorProvider::Get()->GetBaseLayerColor(
-                           AshColorProvider::BaseLayerType::kOpaque)
-                     : SK_ColorWHITE);
   flags.setLooper(gfx::CreateShadowDrawLooper(GetShadowDetails().values));
+  {
+    // Holding space tray icon previews use light mode by default.
+    ScopedLightModeAsDefault scoped_light_mode_as_default;
+    flags.setColor(AshColorProvider::Get()->GetBaseLayerColor(
+        AshColorProvider::BaseLayerType::kOpaque));
+  }
   canvas->DrawCircle(
       gfx::PointF(contents_bounds.CenterPoint()),
       std::min(contents_bounds.width(), contents_bounds.height()) / 2.f - 0.5f,
@@ -504,10 +511,12 @@ void HoldingSpaceTrayIconPreview::CreateLayer(
     const gfx::Transform& initial_transform) {
   DCHECK(!layer());
   DCHECK(!layer_owner_.OwnsLayer());
+
   auto new_layer = std::make_unique<ui::Layer>(ui::LAYER_TEXTURED);
+  new_layer->set_delegate(this);
   new_layer->SetFillsBoundsOpaquely(false);
   new_layer->SetTransform(initial_transform);
-  new_layer->set_delegate(this);
+  new_layer->Add(progress_ring_.layer());
   layer_owner_.Reset(std::move(new_layer));
 
   UpdateLayerBounds();
@@ -560,10 +569,19 @@ void HoldingSpaceTrayIconPreview::UpdateLayerBounds() {
       origin = container_bounds.top_right() - gfx::Vector2d(size.width(), 0);
     origin.Offset(0, (container_bounds.height() - size.height()) / 2);
   }
+
   AdjustOriginForShadowMargins(origin, shelf_);
   gfx::Rect bounds(origin, size);
-  if (bounds != layer()->bounds())
-    layer()->SetBounds(bounds);
+  if (bounds == layer()->bounds())
+    return;
+
+  layer()->SetBounds(bounds);
+
+  // The `layer()` was enlarged so that the shadow would be painted outside of
+  // desired preview bounds. Progress ring bounds are clamped to preview size.
+  gfx::Rect progress_ring_bounds(layer()->size());
+  progress_ring_bounds.ClampToCenteredSize(GetPreviewSize());
+  progress_ring_.layer()->SetBounds(progress_ring_bounds);
 }
 
 }  // namespace ash

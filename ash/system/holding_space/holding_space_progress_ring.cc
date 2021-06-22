@@ -9,6 +9,7 @@
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/scoped_light_mode_as_default.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/gfx/canvas.h"
@@ -37,9 +38,12 @@ float CalculateSweepAngle(const HoldingSpaceItem* item) {
 
 // HoldingSpaceProgressRing ----------------------------------------------------
 
-HoldingSpaceProgressRing::HoldingSpaceProgressRing(const HoldingSpaceItem* item)
+HoldingSpaceProgressRing::HoldingSpaceProgressRing(
+    const HoldingSpaceItem* item,
+    bool use_light_mode_as_default)
     : ui::LayerOwner(std::make_unique<ui::Layer>(ui::LAYER_TEXTURED)),
-      item_(item) {
+      item_(item),
+      use_light_mode_as_default_(use_light_mode_as_default) {
   layer()->set_delegate(this);
   layer()->SetFillsBoundsOpaquely(false);
   model_observation_.Observe(HoldingSpaceController::Get()->model());
@@ -76,6 +80,10 @@ void HoldingSpaceProgressRing::OnPaintLayer(const ui::PaintContext& context) {
   flags.setStrokeCap(cc::PaintFlags::Cap::kRound_Cap);
   flags.setStrokeWidth(kStrokeWidth);
   flags.setStyle(cc::PaintFlags::Style::kStroke_Style);
+
+  std::unique_ptr<ScopedLightModeAsDefault> scoped_light_mode_as_default =
+      use_light_mode_as_default_ ? std::make_unique<ScopedLightModeAsDefault>()
+                                 : nullptr;
 
   const SkColor color = AshColorProvider::Get()->GetControlsLayerColor(
       AshColorProvider::ControlsLayerType::kFocusRingColor);

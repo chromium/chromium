@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_HOLDING_SPACE_HOLDING_SPACE_TRAY_ICON_PREVIEW_H_
 
 #include "ash/ash_export.h"
+#include "ash/system/holding_space/holding_space_progress_ring.h"
 #include "base/callback.h"
 #include "base/scoped_observation.h"
 #include "ui/compositor/layer_animation_observer.h"
@@ -139,6 +140,11 @@ class ASH_EXPORT HoldingSpaceTrayIconPreview
   // The holding space item this preview represents - may be null if the item
   // gets deleted before the preview.
   const HoldingSpaceItem* item_;
+
+  // Owns the `ui::Layer` which paints a ring to indicate progress of the
+  // associated holding space `item_`. NOTE: The `ui::Layer` is *not* painted if
+  // the holding space `item` is not in-progress.
+  HoldingSpaceProgressRing progress_ring_;
 
   // Whether or not this preview is currently using small dimensions. This is
   // done when in tablet mode and an app is in use.
