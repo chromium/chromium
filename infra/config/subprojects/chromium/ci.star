@@ -4069,7 +4069,6 @@ ci.fyi_builder(
     ),
     goma_backend = None,
     reclient_instance = rbe_instance.DEFAULT,
-    reclient_profiler_service = "reclient-cros",
     configure_kitchen = True,
     kitchen_emulate_gce = True,
     os = os.LINUX_BIONIC_REMOVE,
