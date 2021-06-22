@@ -79,14 +79,15 @@ void PluginVmServiceProvider::GetLicenseData(
   std::unique_ptr<dbus::Response> response =
       dbus::Response::FromMethodCall(method_call);
   plugin_vm_service::GetLicenseDataResponse payload;
+
   if (plugin_vm::FakeLicenseKeyIsSet()) {
     payload.set_device_id(kFakeUUID);
+    payload.set_license_key(plugin_vm::GetFakeLicenseKey());
   } else {
     payload.set_device_id(g_browser_process->platform_part()
                               ->browser_policy_connector_chromeos()
                               ->GetDirectoryApiID());
   }
-  payload.set_license_key(plugin_vm::GetPluginVmLicenseKey());
   dbus::MessageWriter writer(response.get());
   writer.AppendProtoAsArrayOfBytes(payload);
   std::move(response_sender).Run(std::move(response));

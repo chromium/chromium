@@ -84,16 +84,6 @@ TEST_F(PluginVmUtilTest, PluginVmShouldBeConfiguredOnceAllConditionsAreMet) {
   EXPECT_TRUE(PluginVmFeatures::Get()->IsConfigured(testing_profile_.get()));
 }
 
-TEST_F(PluginVmUtilTest, GetPluginVmLicenseKey) {
-  // If no license key is set, the method should return the empty string.
-  EXPECT_EQ(std::string(), GetPluginVmLicenseKey());
-
-  const std::string kLicenseKey = "LICENSE_KEY";
-  testing_profile_->ScopedCrosSettingsTestHelper()->SetString(
-      chromeos::kPluginVmLicenseKey, kLicenseKey);
-  EXPECT_EQ(kLicenseKey, GetPluginVmLicenseKey());
-}
-
 TEST_F(PluginVmUtilTest, AddPluginVmPolicyObserver) {
   const std::unique_ptr<PluginVmPolicySubscription> subscription =
       std::make_unique<plugin_vm::PluginVmPolicySubscription>(
@@ -105,17 +95,6 @@ TEST_F(PluginVmUtilTest, AddPluginVmPolicyObserver) {
 
   EXPECT_CALL(*this, OnPolicyChanged(true));
   test_helper_->AllowPluginVm();
-  testing::Mock::VerifyAndClearExpectations(this);
-
-  EXPECT_CALL(*this, OnPolicyChanged(false));
-  testing_profile_->ScopedCrosSettingsTestHelper()->SetString(
-      chromeos::kPluginVmLicenseKey, "");
-  testing::Mock::VerifyAndClearExpectations(this);
-
-  EXPECT_CALL(*this, OnPolicyChanged(true));
-  const std::string kLicenseKey = "LICENSE_KEY";
-  testing_profile_->ScopedCrosSettingsTestHelper()->SetString(
-      chromeos::kPluginVmLicenseKey, kLicenseKey);
   testing::Mock::VerifyAndClearExpectations(this);
 
   EXPECT_CALL(*this, OnPolicyChanged(false));
@@ -131,6 +110,23 @@ TEST_F(PluginVmUtilTest, AddPluginVmPolicyObserver) {
   EXPECT_CALL(*this, OnPolicyChanged(false));
   testing_profile_->GetPrefs()->SetBoolean(plugin_vm::prefs::kPluginVmAllowed,
                                            false);
+  testing::Mock::VerifyAndClearExpectations(this);
+
+  EXPECT_CALL(*this, OnPolicyChanged(true));
+  testing_profile_->GetPrefs()->SetBoolean(plugin_vm::prefs::kPluginVmAllowed,
+                                           true);
+  testing::Mock::VerifyAndClearExpectations(this);
+
+  EXPECT_CALL(*this, OnPolicyChanged(false));
+  testing_profile_->GetPrefs()->SetString(plugin_vm::prefs::kPluginVmUserId,
+                                          "");
+  testing::Mock::VerifyAndClearExpectations(this);
+
+  EXPECT_CALL(*this, OnPolicyChanged(true));
+  const std::string kPluginVmUserId = "fancy-user-id";
+  testing_profile_->GetPrefs()->SetString(plugin_vm::prefs::kPluginVmUserId,
+                                          kPluginVmUserId);
+  testing::Mock::VerifyAndClearExpectations(this);
 }
 
 TEST_F(PluginVmUtilTest, DriveUrlNonMatches) {

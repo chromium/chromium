@@ -173,6 +173,7 @@ class PluginVmInstallerTestBase : public testing::Test {
     installer_ = PluginVmInstallerFactory::GetForProfile(profile_.get());
     observer_ = std::make_unique<StrictMock<MockObserver>>();
     installer_->SetObserver(observer_.get());
+    installer_->SkipLicenseCheckForTesting();
     installer_->SetFreeDiskSpaceForTesting(std::numeric_limits<int64_t>::max());
     installer_->SetDownloadedImageForTesting(CreateZipFile());
 

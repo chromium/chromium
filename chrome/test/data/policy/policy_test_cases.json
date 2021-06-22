@@ -6613,7 +6613,7 @@
   },
 
   "PluginVmLicenseKey": {
-    "reason_for_missing_test": "Maps into CrosSettings"
+    "note": "This policy has been removed since Chrome 94."
   },
 
   "ParentAccessCodeConfig": {

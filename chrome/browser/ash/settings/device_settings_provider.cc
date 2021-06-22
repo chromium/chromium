@@ -112,7 +112,6 @@ const char* const kKnownSettings[] = {
     kLoginAuthenticationBehavior,
     kLoginVideoCaptureAllowedUrls,
     kPluginVmAllowed,
-    kPluginVmLicenseKey,
     kPolicyMissingMitigationMode,
     kRebootOnShutdown,
     kReleaseChannel,
@@ -902,15 +901,6 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
     if (container.has_plugin_vm_allowed()) {
       new_values_cache->SetValue(kPluginVmAllowed,
                                  base::Value(container.plugin_vm_allowed()));
-    }
-  }
-
-  if (policy.has_plugin_vm_license_key()) {
-    const em::PluginVmLicenseKeyProto& container(
-        policy.plugin_vm_license_key());
-    if (container.has_plugin_vm_license_key()) {
-      new_values_cache->SetValue(
-          kPluginVmLicenseKey, base::Value(container.plugin_vm_license_key()));
     }
   }
 

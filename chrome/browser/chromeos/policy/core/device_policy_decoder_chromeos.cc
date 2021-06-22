@@ -1733,16 +1733,6 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
     }
   }
 
-  if (policy.has_plugin_vm_license_key()) {
-    const em::PluginVmLicenseKeyProto& container(
-        policy.plugin_vm_license_key());
-    if (container.has_plugin_vm_license_key()) {
-      policies->Set(key::kPluginVmLicenseKey, POLICY_LEVEL_MANDATORY,
-                    POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
-                    base::Value(container.plugin_vm_license_key()), nullptr);
-    }
-  }
-
   if (policy.has_device_wilco_dtc_allowed() &&
       policy.device_wilco_dtc_allowed().has_device_wilco_dtc_allowed()) {
     VLOG(2) << "Set Wilco DTC allowed to "
