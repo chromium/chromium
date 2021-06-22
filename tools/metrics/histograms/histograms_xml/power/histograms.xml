@@ -505,60 +505,6 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
   </summary>
 </histogram>
 
-<histogram name="Power.ForegroundBatteryDrain" units="0.1 mAh"
-    expires_after="2021-11-07">
-  <owner>eseckler@chromium.org</owner>
-  <owner>skyostil@chromium.org</owner>
-  <summary>
-    Records a sample for every 0.1 milliampere-hours of battery capacity that
-    are drained while Chrome is the foreground app and the device is on battery
-    power. Only supported on Android. The histogram thus shows the total sum of
-    battery capacity consumed across all users.
-
-    For a histogram of daily per-user values, see the computed histogram
-    Power.DailyForegroundBatteryDrain.
-  </summary>
-</histogram>
-
-<histogram name="Power.ForegroundBatteryDrain.30Seconds" units="uAh"
-    expires_after="2021-11-07">
-  <owner>eseckler@chromium.org</owner>
-  <owner>skyostil@chromium.org</owner>
-  <summary>
-    Periodically samples the battery capacity drained while Chrome is the
-    foreground app and the device is on battery power. Sampled every 30 seconds
-    and when Chrome is backgrounded or the device connects to a charger. Sample
-    values are reported as provided by the battery capacity counter (in
-    microampere-hours). Because the resolution of this counter is rather coarse
-    (usually between .5 and 50 mAh), the uAh value may have been drained over a
-    longer time period than 30 seconds. See also
-    Power.ForegroundBatteryDrain.30SecondsAvg, which averages the values over
-    successive sampling points without change in counter values.
-
-    Only supported on Android.
-  </summary>
-</histogram>
-
-<histogram name="Power.ForegroundBatteryDrain.30Seconds.Exclusive" units="uAh"
-    expires_after="2021-11-07">
-  <owner>eseckler@chromium.org</owner>
-  <owner>skyostil@chromium.org</owner>
-  <summary>
-    Periodically samples the battery capacity drained while Chrome is the
-    foreground app and the device is on battery power. Sampled every 30 seconds
-    and when Chrome is backgrounded or the device connects to a charger. Sample
-    values are reported as provided by the battery capacity counter (in
-    microampere-hours). Because the resolution of this counter is rather coarse
-    (usually between .5 and 50 mAh), the uAh value may have been drained over a
-    longer time period than 30 seconds. Only time intervals where Chrome was the
-    only foreground app are reported. See also
-    Power.ForegroundBatteryDrain.30SecondsAvg.Exclusive, which averages the
-    values over successive sampling points without change in counter values.
-
-    Only supported on Android.
-  </summary>
-</histogram>
-
 <histogram
     name="Power.ForegroundBatteryDrain.30SecondsAvg{Exclusive}{DarkeningType}"
     units="uAh" expires_after="2021-11-07">
@@ -567,22 +513,31 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
   <summary>
     Periodically samples the battery capacity drained while Chrome is the
     foreground app and the device is on battery power {DarkeningType}. Sampled
-    every 30 seconds and when Chrome is backgrounded or the device connects to a
-    charger. Sample values are reported in microampere-hours and averaged over
-    successive sampling points without a change in capacity counter values.
-    Since the capacity counter resolution differs between device models,
-    averaging the values allows us to make comparisons between frequent small
-    capacity drops and infrequent large drops. For example, a 20 mAh drop over
-    two successive periods of 30 seconds will be reported as two samples of 10
-    mAh. {Exclusive}
+    every 30 seconds while foregrounded. Also sampled when Chrome is
+    backgrounded or the device connects to a charger. {Exclusive}
 
-    Only supported on Android.
+    Sample values are reported in microampere-hours and averaged over successive
+    sampling points without a change in capacity counter values. Since the
+    capacity counter resolution differs between device models, averaging the
+    values allows us to make comparisons between frequent small capacity drops
+    and infrequent large drops. For example, a 20,000 uAh drop over two
+    successive periods of 30 seconds will be reported as two samples of 10,000
+    uAh.
+
+    For more details, see http://bit.ly/chrome-android-foreground-battery-drain.
+
+    Only supported on Android. For WebView, the metric considers the time during
+    in which at least one WebView is visible on the screen as
+    &quot;foreground&quot; time.
   </summary>
   <token key="Exclusive">
     <variant name="" summary=""/>
     <variant name=".Exclusive"
-        summary="Only time intervals where Chrome was the only foreground app
-                 are reported."/>
+        summary="However, only battery drain that can be attributed
+                 exclusively to Chrome is reported: The first drain after
+                 becoming the foreground app is not reported. As a result,
+                 this metric typically doesn't include drain related to app
+                 startup."/>
   </token>
   <token key="DarkeningType">
     <variant name="" summary=""/>
@@ -601,20 +556,36 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
   </token>
 </histogram>
 
-<histogram name="Power.ForegroundBatteryDrain.Exclusive" units="0.1 mAh"
+<histogram name="Power.ForegroundBatteryDrain.30Seconds{Exclusive}" units="uAh"
     expires_after="2021-11-07">
   <owner>eseckler@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>
   <summary>
-    Records a sample for every 0.1 milliampere-hours of battery capacity that
-    are drained while Chrome is the foreground app and the device is on battery
-    power. Only supported on Android. The histogram thus shows the total sum of
-    battery capacity consumed across all users. Only time intervals where Chrome
-    was the only foreground app are reported.
+    Periodically samples the battery capacity drained while Chrome is the
+    foreground app and the device is on battery power. Sampled every 30 seconds
+    while foregrounded. Also sampled when Chrome is backgrounded or the device
+    connects to a charger. {Exclusive}
 
-    For a histogram of daily per-user values, see the computed histogram
-    Power.DailyForegroundBatteryDrain.Exclusive.
+    Sample values are reported as provided by the battery capacity counter (in
+    microampere-hours). Because the resolution of this counter is rather coarse
+    (usually between 500 and 50,000 uAh), the uAh value may have been drained
+    over a longer time period than 30 seconds. See also
+    Power.ForegroundBatteryDrain.30SecondsAvg, which averages the values over
+    successive sampling points without change in counter values.
+
+    Only supported on Android. For WebView, the metric considers the time during
+    in which at least one WebView is visible on the screen as
+    &quot;foreground&quot; time.
   </summary>
+  <token key="Exclusive">
+    <variant name="" summary=""/>
+    <variant name=".Exclusive"
+        summary="However, only battery drain that can be attributed
+                 exclusively to Chrome is reported: The first drain after
+                 becoming the foreground app is not reported. As a result,
+                 this metric typically doesn't include drain related to app
+                 startup."/>
+  </token>
 </histogram>
 
 <histogram name="Power.ForegroundBatteryDrain.TimeBetweenEvents" units="ms"
@@ -631,6 +602,36 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
 
     Only supported on Android.
   </summary>
+</histogram>
+
+<histogram name="Power.ForegroundBatteryDrain{Exclusive}" units="0.1 mAh"
+    expires_after="2021-11-07">
+  <owner>eseckler@chromium.org</owner>
+  <owner>skyostil@chromium.org</owner>
+  <summary>
+    Records a sample for every 0.1 milliampere-hours of battery capacity that
+    are drained while Chrome is the foreground app and the device is on battery
+    power. The battery counter is inspected every 30 seconds while foregrounded.
+    It is also inspected when Chrome is backgrounded or the device connects to a
+    charger. The histogram thus shows the total sum of battery capacity consumed
+    across all users. {Exclusive}
+
+    Only supported on Android. For WebView, the metric considers the time during
+    in which at least one WebView is visible on the screen as
+    &quot;foreground&quot; time.
+
+    For a histogram of daily per-user values, see the computed histogram
+    Power.DailyForegroundBatteryDrain.
+  </summary>
+  <token key="Exclusive">
+    <variant name="" summary=""/>
+    <variant name=".Exclusive"
+        summary="However, only battery drain that can be attributed
+                 exclusively to Chrome is reported: The first drain after
+                 becoming the foreground app is not reported. As a result,
+                 this metric typically doesn't include drain related to app
+                 startup."/>
+  </token>
 </histogram>
 
 <histogram name="Power.ForegroundRadio.SignalLevel.{NetworkType}"
