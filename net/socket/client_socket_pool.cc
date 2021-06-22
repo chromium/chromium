@@ -10,6 +10,7 @@
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "net/base/features.h"
+#include "net/base/host_port_pair.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/http/http_proxy_connect_job.h"
 #include "net/log/net_log_event_type.h"
@@ -20,6 +21,9 @@
 #include "net/socket/stream_socket.h"
 #include "net/spdy/spdy_session.h"
 #include "net/spdy/spdy_session_pool.h"
+#include "url/gurl.h"
+#include "url/scheme_host_port.h"
+#include "url/url_constants.h"
 
 namespace net {
 
@@ -66,23 +70,27 @@ ClientSocketPool::SocketParams::CreateForHttpForTesting() {
 }
 
 ClientSocketPool::GroupId::GroupId()
-    : socket_type_(SocketType::kHttp),
-      privacy_mode_(PrivacyMode::PRIVACY_MODE_DISABLED) {}
+    : privacy_mode_(PrivacyMode::PRIVACY_MODE_DISABLED) {}
 
-ClientSocketPool::GroupId::GroupId(const HostPortPair& destination,
-                                   SocketType socket_type,
+ClientSocketPool::GroupId::GroupId(url::SchemeHostPort destination,
                                    PrivacyMode privacy_mode,
                                    NetworkIsolationKey network_isolation_key,
                                    SecureDnsPolicy secure_dns_policy)
-    : destination_(destination),
-      socket_type_(socket_type),
+    : destination_(std::move(destination)),
       privacy_mode_(privacy_mode),
       network_isolation_key_(
           base::FeatureList::IsEnabled(
               features::kPartitionConnectionsByNetworkIsolationKey)
-              ? network_isolation_key
+              ? std::move(network_isolation_key)
               : NetworkIsolationKey()),
-      secure_dns_policy_(secure_dns_policy) {}
+      secure_dns_policy_(secure_dns_policy) {
+  DCHECK(destination_.IsValid());
+
+  // ClientSocketPool only expected to be used for HTTP/HTTPS/WS/WSS cases, and
+  // "ws"/"wss" schemes should be converted to "http"/"https" equivalent first.
+  DCHECK(destination_.scheme() == url::kHttpScheme ||
+         destination_.scheme() == url::kHttpsScheme);
+}
 
 ClientSocketPool::GroupId::GroupId(const GroupId& group_id) = default;
 
@@ -95,15 +103,8 @@ ClientSocketPool::GroupId& ClientSocketPool::GroupId::operator=(
     GroupId&& group_id) = default;
 
 std::string ClientSocketPool::GroupId::ToString() const {
-  std::string result = destination_.ToString();
-  switch (socket_type_) {
-    case ClientSocketPool::SocketType::kHttp:
-      break;
+  std::string result = destination_.Serialize();
 
-    case ClientSocketPool::SocketType::kSsl:
-      result = "ssl/" + result;
-      break;
-  }
   if (privacy_mode_)
     result = "pm/" + result;
 
@@ -166,7 +167,7 @@ std::unique_ptr<ConnectJob> ClientSocketPool::CreateConnectJob(
     RequestPriority request_priority,
     SocketTag socket_tag,
     ConnectJob::Delegate* delegate) {
-  bool using_ssl = group_id.socket_type() == ClientSocketPool::SocketType::kSsl;
+  bool using_ssl = GURL::SchemeIsCryptographic(group_id.destination().scheme());
 
   // If applicable, set up a callback to handle checking for H2 IP pooling
   // opportunities.
@@ -174,10 +175,12 @@ std::unique_ptr<ConnectJob> ClientSocketPool::CreateConnectJob(
   if (using_ssl && proxy_server.is_direct()) {
     resolution_callback = base::BindRepeating(
         &OnHostResolution, common_connect_job_params->spdy_session_pool,
-        SpdySessionKey(
-            group_id.destination(), proxy_server, group_id.privacy_mode(),
-            SpdySessionKey::IsProxySession::kFalse, socket_tag,
-            group_id.network_isolation_key(), group_id.secure_dns_policy()),
+        // TODO(crbug.com/1206799): Pass along as SchemeHostPort.
+        SpdySessionKey(HostPortPair::FromSchemeHostPort(group_id.destination()),
+                       proxy_server, group_id.privacy_mode(),
+                       SpdySessionKey::IsProxySession::kFalse, socket_tag,
+                       group_id.network_isolation_key(),
+                       group_id.secure_dns_policy()),
         is_for_websockets);
   } else if (proxy_server.is_https()) {
     resolution_callback = base::BindRepeating(
@@ -190,8 +193,10 @@ std::unique_ptr<ConnectJob> ClientSocketPool::CreateConnectJob(
         is_for_websockets);
   }
 
+  // TODO(crbug.com/1206799): Pass along as SchemeHostPort.
   return ConnectJob::CreateConnectJob(
-      using_ssl, group_id.destination(), proxy_server, proxy_annotation_tag,
+      using_ssl, HostPortPair::FromSchemeHostPort(group_id.destination()),
+      proxy_server, proxy_annotation_tag,
       socket_params->ssl_config_for_origin(),
       socket_params->ssl_config_for_proxy(), is_for_websockets,
       group_id.privacy_mode(), resolution_callback, request_priority,

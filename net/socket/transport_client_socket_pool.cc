@@ -24,12 +24,14 @@
 #include "base/trace_event/memory_allocator_dump.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "base/values.h"
+#include "net/base/host_port_pair.h"
 #include "net/base/net_errors.h"
 #include "net/base/proxy_server.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_source.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "url/gurl.h"
 
 using base::TimeDelta;
 
@@ -865,6 +867,7 @@ void TransportClientSocketPool::OnSSLConfigChanged(
   }
 }
 
+// TODO(crbug.com/1206799): Get `server` as SchemeHostPort?
 void TransportClientSocketPool::OnSSLConfigForServerChanged(
     const HostPortPair& server) {
   // Current time value. Retrieving it once at the function start rather than
@@ -883,8 +886,10 @@ void TransportClientSocketPool::OnSSLConfigForServerChanged(
   bool refreshed_any = false;
   for (auto it = group_map_.begin(); it != group_map_.end();) {
     auto to_refresh = it++;
-    if (proxy_matches || (to_refresh->first.socket_type() == SocketType::kSsl &&
-                          to_refresh->first.destination() == server)) {
+    if (proxy_matches || (GURL::SchemeIsCryptographic(
+                              to_refresh->first.destination().scheme()) &&
+                          HostPortPair::FromSchemeHostPort(
+                              to_refresh->first.destination()) == server)) {
       refreshed_any = true;
       // Note this call may destroy the group and invalidate |to_refresh|.
       RefreshGroup(to_refresh, now, kSslConfigChanged);

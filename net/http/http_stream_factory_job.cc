@@ -820,13 +820,12 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
   if (job_type_ == PRECONNECT) {
     DCHECK(!is_websocket_);
     DCHECK(request_info_.socket_tag == SocketTag());
-    // TODO(crbug.com/1206799): Pass scheme to socket connection.
+
     return PreconnectSocketsForHttpRequest(
-        GetSocketGroup(), HostPortPair::FromSchemeHostPort(destination_),
-        request_info_.load_flags, priority_, session_, proxy_info_,
-        server_ssl_config_, proxy_ssl_config_, request_info_.privacy_mode,
-        request_info_.network_isolation_key, request_info_.secure_dns_policy,
-        net_log_, num_streams_);
+        destination_, request_info_.load_flags, priority_, session_,
+        proxy_info_, server_ssl_config_, proxy_ssl_config_,
+        request_info_.privacy_mode, request_info_.network_isolation_key,
+        request_info_.secure_dns_policy, net_log_, num_streams_);
   }
 
   ClientSocketPool::ProxyAuthCallback proxy_auth_callback =
@@ -837,19 +836,15 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
     DCHECK_EQ(SecureDnsPolicy::kAllow, request_info_.secure_dns_policy);
     SSLConfig websocket_server_ssl_config = server_ssl_config_;
     websocket_server_ssl_config.alpn_protos.clear();
-    // TODO(crbug.com/1206799): Pass scheme to socket connection.
     return InitSocketHandleForWebSocketRequest(
-        GetSocketGroup(), HostPortPair::FromSchemeHostPort(destination_),
-        request_info_.load_flags, priority_, session_, proxy_info_,
-        websocket_server_ssl_config, proxy_ssl_config_,
+        destination_, request_info_.load_flags, priority_, session_,
+        proxy_info_, websocket_server_ssl_config, proxy_ssl_config_,
         request_info_.privacy_mode, request_info_.network_isolation_key,
         net_log_, connection_.get(), io_callback_, proxy_auth_callback);
   }
 
-  // TODO(crbug.com/1206799): Pass scheme to socket connection.
   return InitSocketHandleForHttpRequest(
-      GetSocketGroup(), HostPortPair::FromSchemeHostPort(destination_),
-      request_info_.load_flags, priority_, session_, proxy_info_,
+      destination_, request_info_.load_flags, priority_, session_, proxy_info_,
       server_ssl_config_, proxy_ssl_config_, request_info_.privacy_mode,
       request_info_.network_isolation_key, request_info_.secure_dns_policy,
       request_info_.socket_tag, net_log_, connection_.get(), io_callback_,
@@ -1242,17 +1237,6 @@ int HttpStreamFactory::Job::ReconsiderProxyAfterError(int error) {
 
   should_reconsider_proxy_ = true;
   return error;
-}
-
-ClientSocketPoolManager::SocketGroupType
-HttpStreamFactory::Job::GetSocketGroup() const {
-  std::string scheme = origin_url_.scheme();
-
-  if (scheme == url::kHttpsScheme || scheme == url::kWssScheme)
-    return ClientSocketPoolManager::SSL_GROUP;
-
-  DCHECK(scheme == url::kHttpScheme || scheme == url::kWsScheme);
-  return ClientSocketPoolManager::NORMAL_GROUP;
 }
 
 // If the connection succeeds, failed connection attempts leading up to the

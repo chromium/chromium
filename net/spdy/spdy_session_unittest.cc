@@ -61,6 +61,8 @@
 #include "testing/platform_test.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
+#include "url/scheme_host_port.h"
+#include "url/url_constants.h"
 
 using net::test::IsError;
 using net::test::IsOk;
@@ -3630,12 +3632,11 @@ TEST_F(SpdySessionTest, CloseOneIdleConnection) {
   // Trying to create a new connection should cause the pool to be stalled, and
   // post a task asynchronously to try and close the session.
   TestCompletionCallback callback2;
-  HostPortPair host_port2("2.com", 80);
   auto connection2 = std::make_unique<ClientSocketHandle>();
   EXPECT_EQ(ERR_IO_PENDING,
             connection2->Init(
                 ClientSocketPool::GroupId(
-                    host_port2, ClientSocketPool::SocketType::kHttp,
+                    url::SchemeHostPort(url::kHttpScheme, "2.com", 80),
                     PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
                     SecureDnsPolicy::kAllow),
                 ClientSocketPool::SocketParams::CreateForHttpForTesting(),
@@ -3720,12 +3721,11 @@ TEST_F(SpdySessionTest, CloseOneIdleConnectionWithAlias) {
   // Trying to create a new connection should cause the pool to be stalled, and
   // post a task asynchronously to try and close the session.
   TestCompletionCallback callback3;
-  HostPortPair host_port3("3.com", 80);
   auto connection3 = std::make_unique<ClientSocketHandle>();
   EXPECT_EQ(ERR_IO_PENDING,
             connection3->Init(
                 ClientSocketPool::GroupId(
-                    host_port3, ClientSocketPool::SocketType::kHttp,
+                    url::SchemeHostPort(url::kHttpScheme, "3.com", 80),
                     PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
                     SecureDnsPolicy::kAllow),
                 ClientSocketPool::SocketParams::CreateForHttpForTesting(),
@@ -3801,12 +3801,11 @@ TEST_F(SpdySessionTest, CloseSessionOnIdleWhenPoolStalled) {
   // Trying to create a new connection should cause the pool to be stalled, and
   // post a task asynchronously to try and close the session.
   TestCompletionCallback callback2;
-  HostPortPair host_port2("2.com", 80);
   auto connection2 = std::make_unique<ClientSocketHandle>();
   EXPECT_EQ(ERR_IO_PENDING,
             connection2->Init(
                 ClientSocketPool::GroupId(
-                    host_port2, ClientSocketPool::SocketType::kHttp,
+                    url::SchemeHostPort(url::kHttpScheme, "2.com", 80),
                     PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
                     SecureDnsPolicy::kAllow),
                 ClientSocketPool::SocketParams::CreateForHttpForTesting(),

@@ -33,6 +33,7 @@
 #include "net/url_request/url_request_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
+#include "url/scheme_host_port.h"
 
 namespace net {
 namespace {
@@ -254,8 +255,7 @@ TEST_F(HttpWithDnsOverHttpsTest, EndToEnd) {
   loop.Run();
 
   ClientSocketPool::GroupId group_id(
-      HostPortPair(request_info.url.host(), request_info.url.IntPort()),
-      ClientSocketPool::SocketType::kHttp, PrivacyMode::PRIVACY_MODE_DISABLED,
+      url::SchemeHostPort(request_info.url), PrivacyMode::PRIVACY_MODE_DISABLED,
       NetworkIsolationKey(), SecureDnsPolicy::kAllow);
   EXPECT_EQ(network_session
                 ->GetSocketPool(HttpNetworkSession::NORMAL_SOCKET_POOL,

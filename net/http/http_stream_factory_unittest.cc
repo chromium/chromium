@@ -86,6 +86,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
+#include "url/scheme_host_port.h"
+#include "url/url_constants.h"
 
 // This file can be included from net/http even though
 // it is in net/websockets because it doesn't
@@ -402,12 +404,12 @@ void PreconnectHelper(const TestCase& test, HttpNetworkSession* session) {
 ClientSocketPool::GroupId GetGroupId(const TestCase& test) {
   if (test.ssl) {
     return ClientSocketPool::GroupId(
-        HostPortPair("www.google.com", 443), ClientSocketPool::SocketType::kSsl,
+        url::SchemeHostPort(url::kHttpsScheme, "www.google.com", 443),
         PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
         SecureDnsPolicy::kAllow);
   }
   return ClientSocketPool::GroupId(
-      HostPortPair("www.google.com", 80), ClientSocketPool::SocketType::kHttp,
+      url::SchemeHostPort(url::kHttpScheme, "www.google.com", 80),
       PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
       SecureDnsPolicy::kAllow);
 }
@@ -434,7 +436,8 @@ class CapturePreconnectsTransportSocketPool : public TransportClientSocketPool {
     last_num_streams_ = -1;
     // Group ID that shouldn't match much.
     last_group_id_ = ClientSocketPool::GroupId(
-        HostPortPair(), ClientSocketPool::SocketType::kSsl,
+        url::SchemeHostPort(url::kHttpsScheme,
+                            "unexpected.to.conflict.with.anything.test", 9999),
         PrivacyMode::PRIVACY_MODE_ENABLED, NetworkIsolationKey(),
         SecureDnsPolicy::kAllow);
   }
@@ -1763,7 +1766,7 @@ TEST_F(HttpStreamFactoryTest, NewSpdySessionCloseIdleH2Sockets) {
   std::unique_ptr<HttpNetworkSession> session(
       SpdySessionDependencies::SpdyCreateSession(&session_deps));
 
-  HostPortPair host_port_pair("www.google.com", 443);
+  url::SchemeHostPort destination(url::kHttpsScheme, "www.google.com", 443);
 
   // Create some HTTP/2 sockets.
   std::vector<std::unique_ptr<ClientSocketHandle>> handles;
@@ -1776,8 +1779,7 @@ TEST_F(HttpStreamFactoryTest, NewSpdySessionCloseIdleH2Sockets) {
             std::make_unique<SSLConfig>() /* ssl_config_for_origin */,
             nullptr /* ssl_config_for_proxy */);
     ClientSocketPool::GroupId group_id(
-        host_port_pair, ClientSocketPool::SocketType::kSsl,
-        PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
+        destination, PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
         SecureDnsPolicy::kAllow);
     int rv = connection->Init(
         group_id, socket_params, absl::nullopt /* proxy_annotation_tag */,

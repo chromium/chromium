@@ -58,6 +58,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+#include "url/scheme_host_port.h"
 
 using ::testing::_;
 using ::testing::Contains;
@@ -2449,16 +2450,13 @@ TEST_F(JobControllerLimitMultipleH2Requests,
       reinterpret_cast<TransportClientSocketPool*>(session_->GetSocketPool(
           HttpNetworkSession::NORMAL_SOCKET_POOL, ProxyServer::Direct()));
   ClientSocketPool::GroupId group_id0(
-      HostPortPair::FromURL(request_info.url),
-      ClientSocketPool::SocketType::kSsl, request_info.privacy_mode,
+      url::SchemeHostPort(request_info.url), request_info.privacy_mode,
       NetworkIsolationKey(), SecureDnsPolicy::kAllow);
   ClientSocketPool::GroupId group_id1(
-      HostPortPair::FromURL(request_info.url),
-      ClientSocketPool::SocketType::kSsl, request_info.privacy_mode,
+      url::SchemeHostPort(request_info.url), request_info.privacy_mode,
       kNetworkIsolationKey1, SecureDnsPolicy::kAllow);
   ClientSocketPool::GroupId group_id2(
-      HostPortPair::FromURL(request_info.url),
-      ClientSocketPool::SocketType::kSsl, request_info.privacy_mode,
+      url::SchemeHostPort(request_info.url), request_info.privacy_mode,
       kNetworkIsolationKey2, SecureDnsPolicy::kAllow);
   EXPECT_EQ(static_cast<uint32_t>(kNumRequests),
             socket_pool->NumConnectJobsInGroupForTesting(group_id0));

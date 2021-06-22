@@ -46,7 +46,7 @@ int ClientSocketHandle::Init(
     const NetLogWithSource& net_log) {
   requesting_source_ = net_log.source();
 
-  CHECK(!group_id.destination().IsEmpty());
+  CHECK(group_id.destination().IsValid());
   ResetInternal(true /* cancel */, false /* cancel_connect_job */);
   ResetErrorState();
   pool_ = pool;
@@ -90,7 +90,7 @@ void ClientSocketHandle::ResetAndCloseSocket() {
 
 LoadState ClientSocketHandle::GetLoadState() const {
   CHECK(!is_initialized());
-  CHECK(!group_id_.destination().IsEmpty());
+  CHECK(group_id_.destination().IsValid());
   // Because of http://crbug.com/37810  we may not have a pool, but have
   // just a raw socket.
   if (!pool_)
@@ -211,7 +211,7 @@ void ClientSocketHandle::ResetInternal(bool cancel, bool cancel_connect_job) {
   DCHECK(cancel || !cancel_connect_job);
 
   // Was Init called?
-  if (!group_id_.destination().IsEmpty()) {
+  if (group_id_.destination().IsValid()) {
     // If so, we must have a pool.
     CHECK(pool_);
     if (is_initialized()) {

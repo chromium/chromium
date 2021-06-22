@@ -340,8 +340,6 @@ class HttpStreamFactory::Job
   // code is simply returned.
   int ReconsiderProxyAfterError(int error);
 
-  ClientSocketPoolManager::SocketGroupType GetSocketGroup() const;
-
   void MaybeCopyConnectionAttemptsFromSocketOrHandle();
 
   // Returns true if the request should be throttled to allow for only one

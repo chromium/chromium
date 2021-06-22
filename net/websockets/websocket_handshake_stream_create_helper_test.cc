@@ -48,6 +48,8 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+#include "url/scheme_host_port.h"
+#include "url/url_constants.h"
 
 using ::net::test::IsError;
 using ::net::test::IsOk;
@@ -92,7 +94,7 @@ class MockClientSocketHandleFactory {
     auto socket_handle = std::make_unique<ClientSocketHandle>();
     socket_handle->Init(
         ClientSocketPool::GroupId(
-            HostPortPair("a", 80), ClientSocketPool::SocketType::kHttp,
+            url::SchemeHostPort(url::kHttpScheme, "a", 80),
             PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
             SecureDnsPolicy::kAllow),
         scoped_refptr<ClientSocketPool::SocketParams>(),

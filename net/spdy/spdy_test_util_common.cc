@@ -47,6 +47,8 @@
 #include "net/url_request/url_request_job_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/scheme_host_port.h"
+#include "url/url_constants.h"
 
 using net::test::IsError;
 using net::test::IsOk;
@@ -510,7 +512,9 @@ base::WeakPtr<SpdySession> CreateSpdySessionHelper(
           nullptr /* ssl_config_for_proxy */);
   int rv = connection->Init(
       ClientSocketPool::GroupId(
-          key.host_port_pair(), ClientSocketPool::SocketType::kSsl,
+          url::SchemeHostPort(url::kHttpsScheme,
+                              key.host_port_pair().HostForURL(),
+                              key.host_port_pair().port()),
           key.privacy_mode(), NetworkIsolationKey(), SecureDnsPolicy::kAllow),
       socket_params, absl::nullopt /* proxy_annotation_tag */, MEDIUM,
       key.socket_tag(), ClientSocketPool::RespectLimits::ENABLED,

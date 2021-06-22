@@ -24,6 +24,7 @@
 #include "net/socket/connect_job.h"
 #include "net/socket/socket_tag.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/scheme_host_port.h"
 
 namespace base {
 class Value;
@@ -97,21 +98,12 @@ class NET_EXPORT ClientSocketPool : public LowerLayeredPool {
       base::OnceClosure restart_with_auth_callback)>
       ProxyAuthCallback;
 
-  enum class SocketType {
-    kHttp,
-
-    // This is a connection that uses an SSL connection to the final
-    // destination, though not necessarily to the proxy, if there is one.
-    kSsl,
-  };
-
   // Group ID for a socket request. Requests with the same group ID are
   // considered indistinguishable.
   class NET_EXPORT GroupId {
    public:
     GroupId();
-    GroupId(const HostPortPair& destination,
-            SocketType socket_type,
+    GroupId(url::SchemeHostPort destination,
             PrivacyMode privacy_mode,
             NetworkIsolationKey network_isolation_key,
             SecureDnsPolicy secure_dns_policy);
@@ -122,9 +114,7 @@ class NET_EXPORT ClientSocketPool : public LowerLayeredPool {
     GroupId& operator=(const GroupId& group_id);
     GroupId& operator=(GroupId&& group_id);
 
-    const HostPortPair& destination() const { return destination_; }
-
-    SocketType socket_type() const { return socket_type_; }
+    const url::SchemeHostPort& destination() const { return destination_; }
 
     PrivacyMode privacy_mode() const { return privacy_mode_; }
 
@@ -138,26 +128,22 @@ class NET_EXPORT ClientSocketPool : public LowerLayeredPool {
     std::string ToString() const;
 
     bool operator==(const GroupId& other) const {
-      return std::tie(destination_, socket_type_, privacy_mode_,
-                      network_isolation_key_, secure_dns_policy_) ==
-             std::tie(other.destination_, other.socket_type_,
-                      other.privacy_mode_, other.network_isolation_key_,
-                      other.secure_dns_policy_);
+      return std::tie(destination_, privacy_mode_, network_isolation_key_,
+                      secure_dns_policy_) ==
+             std::tie(other.destination_, other.privacy_mode_,
+                      other.network_isolation_key_, other.secure_dns_policy_);
     }
 
     bool operator<(const GroupId& other) const {
-      return std::tie(destination_, socket_type_, privacy_mode_,
-                      network_isolation_key_, secure_dns_policy_) <
-             std::tie(other.destination_, other.socket_type_,
-                      other.privacy_mode_, other.network_isolation_key_,
-                      other.secure_dns_policy_);
+      return std::tie(destination_, privacy_mode_, network_isolation_key_,
+                      secure_dns_policy_) <
+             std::tie(other.destination_, other.privacy_mode_,
+                      other.network_isolation_key_, other.secure_dns_policy_);
     }
 
    private:
-    // The host and port of the final destination (not the proxy).
-    HostPortPair destination_;
-
-    SocketType socket_type_;
+    // The endpoint of the final destination (not the proxy).
+    url::SchemeHostPort destination_;
 
     // If this request is for a privacy mode / uncredentialed connection.
     PrivacyMode privacy_mode_;

@@ -456,7 +456,7 @@ class NetworkContextTest : public testing::Test {
   }
 
   int GetSocketCountForGroup(NetworkContext* context,
-                             const std::string& group_name) {
+                             const net::ClientSocketPool::GroupId& group) {
     base::Value pool_info =
         context->url_request_context()
             ->http_transaction_factory()
@@ -469,19 +469,19 @@ class NetworkContextTest : public testing::Test {
     int count = 0;
     base::Value* active_socket_count = pool_info.FindPathOfType(
         base::span<const base::StringPiece>{
-            {"groups", group_name, "active_socket_count"}},
+            {"groups", group.ToString(), "active_socket_count"}},
         base::Value::Type::INTEGER);
     if (active_socket_count)
       count += active_socket_count->GetInt();
     base::Value* idle_sockets = pool_info.FindPathOfType(
         base::span<const base::StringPiece>{
-            {"groups", group_name, "idle_sockets"}},
+            {"groups", group.ToString(), "idle_sockets"}},
         base::Value::Type::LIST);
     if (idle_sockets)
       count += idle_sockets->GetList().size();
     base::Value* connect_jobs = pool_info.FindPathOfType(
         base::span<const base::StringPiece>{
-            {"groups", group_name, "connect_jobs"}},
+            {"groups", group.ToString(), "connect_jobs"}},
         base::Value::Type::LIST);
     if (connect_jobs)
       count += connect_jobs->GetList().size();
@@ -4223,21 +4223,29 @@ TEST_F(NetworkContextTest, PreconnectHSTS) {
     test_server.SetConnectionListener(&connection_listener);
     ASSERT_TRUE(test_server.Start());
 
-    const GURL server_http_url = GetHttpUrlFromHttps(test_server.base_url());
+    ASSERT_TRUE(test_server.base_url().SchemeIs(url::kHttpsScheme));
+    net::ClientSocketPool::GroupId ssl_group(
+        url::SchemeHostPort(test_server.base_url()),
+        net::PrivacyMode::PRIVACY_MODE_ENABLED,
+        partition_connections ? network_isolation_key
+                              : net::NetworkIsolationKey(),
+        net::SecureDnsPolicy::kAllow);
 
-    std::string group_suffix =
-        net::HostPortPair::FromURL(server_http_url).ToString();
-    if (partition_connections)
-      group_suffix += " <" + network_isolation_key.ToDebugString() + ">";
-    std::string group_name = "pm/" + group_suffix;
-    std::string ssl_group_name = "pm/ssl/" + group_suffix;
+    const GURL server_http_url = GetHttpUrlFromHttps(test_server.base_url());
+    ASSERT_TRUE(server_http_url.SchemeIs(url::kHttpScheme));
+    net::ClientSocketPool::GroupId group(url::SchemeHostPort(server_http_url),
+                                         net::PrivacyMode::PRIVACY_MODE_ENABLED,
+                                         partition_connections
+                                             ? network_isolation_key
+                                             : net::NetworkIsolationKey(),
+                                         net::SecureDnsPolicy::kAllow);
 
     network_context->PreconnectSockets(1, server_http_url,
                                        /*allow_credentials=*/false,
                                        network_isolation_key);
     connection_listener.WaitForAcceptedConnections(1u);
 
-    int num_sockets = GetSocketCountForGroup(network_context.get(), group_name);
+    int num_sockets = GetSocketCountForGroup(network_context.get(), group);
     EXPECT_EQ(num_sockets, 1);
 
     const base::Time expiry =
@@ -4250,7 +4258,7 @@ TEST_F(NetworkContextTest, PreconnectHSTS) {
     connection_listener.WaitForAcceptedConnections(1u);
 
     // If HSTS weren't respected, the initial connection would have been reused.
-    num_sockets = GetSocketCountForGroup(network_context.get(), ssl_group_name);
+    num_sockets = GetSocketCountForGroup(network_context.get(), ssl_group);
     EXPECT_EQ(num_sockets, 1);
   }
 }
@@ -4371,18 +4379,15 @@ TEST_F(NetworkContextTest, PreconnectNetworkIsolationKey) {
                                      /*allow_credentials=*/false, kKey2);
   connection_listener.WaitForAcceptedConnections(3u);
 
+  url::SchemeHostPort destination(test_server.base_url());
   net::ClientSocketPool::GroupId group_id1(
-      test_server.host_port_pair(), net::ClientSocketPool::SocketType::kHttp,
-      net::PrivacyMode::PRIVACY_MODE_ENABLED, kKey1,
+      destination, net::PrivacyMode::PRIVACY_MODE_ENABLED, kKey1,
       net::SecureDnsPolicy::kAllow);
-  EXPECT_EQ(
-      1, GetSocketCountForGroup(network_context.get(), group_id1.ToString()));
+  EXPECT_EQ(1, GetSocketCountForGroup(network_context.get(), group_id1));
   net::ClientSocketPool::GroupId group_id2(
-      test_server.host_port_pair(), net::ClientSocketPool::SocketType::kHttp,
-      net::PrivacyMode::PRIVACY_MODE_ENABLED, kKey2,
+      destination, net::PrivacyMode::PRIVACY_MODE_ENABLED, kKey2,
       net::SecureDnsPolicy::kAllow);
-  EXPECT_EQ(
-      2, GetSocketCountForGroup(network_context.get(), group_id2.ToString()));
+  EXPECT_EQ(2, GetSocketCountForGroup(network_context.get(), group_id2));
 }
 
 // This tests both ClostAllConnetions and CloseIdleConnections.

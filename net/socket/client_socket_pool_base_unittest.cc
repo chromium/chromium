@@ -26,6 +26,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "net/base/features.h"
+#include "net/base/host_port_pair.h"
 #include "net/base/load_timing_info.h"
 #include "net/base/load_timing_info_test_util.h"
 #include "net/base/net_errors.h"
@@ -62,6 +63,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/scheme_host_port.h"
+#include "url/url_constants.h"
 
 using net::test::IsError;
 using net::test::IsOk;
@@ -79,13 +82,12 @@ constexpr base::TimeDelta kUnusedIdleSocketTimeout =
     base::TimeDelta::FromSeconds(10);
 
 ClientSocketPool::GroupId TestGroupId(
-    const std::string& host,
+    base::StringPiece host,
     int port = 80,
-    ClientSocketPool::SocketType socket_type =
-        ClientSocketPool::SocketType::kHttp,
+    base::StringPiece scheme = url::kHttpScheme,
     PrivacyMode privacy_mode = PrivacyMode::PRIVACY_MODE_DISABLED,
     NetworkIsolationKey network_isolation_key = NetworkIsolationKey()) {
-  return ClientSocketPool::GroupId(HostPortPair(host, port), socket_type,
+  return ClientSocketPool::GroupId(url::SchemeHostPort(scheme, host, port),
                                    privacy_mode, network_isolation_key,
                                    SecureDnsPolicy::kAllow);
 }
@@ -856,9 +858,9 @@ TEST_F(ClientSocketPoolBaseTest, GroupSeparation) {
       {"b", 80},
   };
 
-  const ClientSocketPool::SocketType kSocketTypes[] = {
-      ClientSocketPool::SocketType::kHttp,
-      ClientSocketPool::SocketType::kSsl,
+  const char* const kSchemes[] = {
+      url::kHttpScheme,
+      url::kHttpsScheme,
   };
 
   const PrivacyMode kPrivacyModes[] = {PrivacyMode::PRIVACY_MODE_DISABLED,
@@ -880,8 +882,8 @@ TEST_F(ClientSocketPoolBaseTest, GroupSeparation) {
   // group does not return a previously connected socket for another group.
   for (const auto& host_port_pair : kHostPortPairs) {
     SCOPED_TRACE(host_port_pair.ToString());
-    for (const auto& socket_type : kSocketTypes) {
-      SCOPED_TRACE(static_cast<int>(socket_type));
+    for (const char* scheme : kSchemes) {
+      SCOPED_TRACE(scheme);
       for (const auto& privacy_mode : kPrivacyModes) {
         SCOPED_TRACE(privacy_mode);
         for (const auto& network_isolation_key : kNetworkIsolationKeys) {
@@ -892,8 +894,9 @@ TEST_F(ClientSocketPoolBaseTest, GroupSeparation) {
             connect_job_factory_->set_job_type(TestConnectJob::kMockPendingJob);
 
             ClientSocketPool::GroupId group_id(
-                host_port_pair, socket_type, privacy_mode,
-                network_isolation_key, secure_dns_policy);
+                url::SchemeHostPort(scheme, host_port_pair.host(),
+                                    host_port_pair.port()),
+                privacy_mode, network_isolation_key, secure_dns_policy);
 
             EXPECT_FALSE(pool_->HasGroupForTesting(group_id));
 
@@ -1301,13 +1304,13 @@ TEST_F(ClientSocketPoolBaseTest, CancelStalledSocketAtSocketLimit) {
     ClientSocketHandle handles[kDefaultMaxSockets];
     TestCompletionCallback callbacks[kDefaultMaxSockets];
     for (int i = 0; i < kDefaultMaxSockets; ++i) {
-      EXPECT_EQ(OK,
-                handles[i].Init(TestGroupId(base::NumberToString(i)), params_,
-                                absl::nullopt, DEFAULT_PRIORITY, SocketTag(),
-                                ClientSocketPool::RespectLimits::ENABLED,
-                                callbacks[i].callback(),
-                                ClientSocketPool::ProxyAuthCallback(),
-                                pool_.get(), NetLogWithSource()));
+      EXPECT_EQ(OK, handles[i].Init(TestGroupId("a" + base::NumberToString(i)),
+                                    params_, absl::nullopt, DEFAULT_PRIORITY,
+                                    SocketTag(),
+                                    ClientSocketPool::RespectLimits::ENABLED,
+                                    callbacks[i].callback(),
+                                    ClientSocketPool::ProxyAuthCallback(),
+                                    pool_.get(), NetLogWithSource()));
     }
 
     // Force a stalled group.
@@ -1342,12 +1345,12 @@ TEST_F(ClientSocketPoolBaseTest, CancelPendingSocketAtSocketLimit) {
     for (int i = 0; i < kDefaultMaxSockets; ++i) {
       TestCompletionCallback callback;
       EXPECT_EQ(ERR_IO_PENDING,
-                handles[i].Init(TestGroupId(base::NumberToString(i)), params_,
-                                absl::nullopt, DEFAULT_PRIORITY, SocketTag(),
-                                ClientSocketPool::RespectLimits::ENABLED,
-                                callback.callback(),
-                                ClientSocketPool::ProxyAuthCallback(),
-                                pool_.get(), NetLogWithSource()));
+                handles[i].Init(
+                    TestGroupId("a" + base::NumberToString(i)), params_,
+                    absl::nullopt, DEFAULT_PRIORITY, SocketTag(),
+                    ClientSocketPool::RespectLimits::ENABLED,
+                    callback.callback(), ClientSocketPool::ProxyAuthCallback(),
+                    pool_.get(), NetLogWithSource()));
     }
 
     // Force a stalled group.
@@ -1409,7 +1412,7 @@ TEST_F(ClientSocketPoolBaseTest, WaitForStalledSocketAtSocketLimit) {
       TestCompletionCallback callback;
       EXPECT_EQ(
           OK, handles[i].Init(
-                  TestGroupId(base::StringPrintf("Take 2: %d", i)), params_,
+                  TestGroupId(base::StringPrintf("take-2-%d", i)), params_,
                   absl::nullopt, DEFAULT_PRIORITY, SocketTag(),
                   ClientSocketPool::RespectLimits::ENABLED, callback.callback(),
                   ClientSocketPool::ProxyAuthCallback(), pool_.get(),
@@ -1449,12 +1452,13 @@ TEST_F(ClientSocketPoolBaseTest, CloseIdleSocketAtSocketLimitDeleteGroup) {
   for (int i = 0; i < kDefaultMaxSockets; ++i) {
     ClientSocketHandle handle;
     TestCompletionCallback callback;
-    EXPECT_EQ(OK, handle.Init(TestGroupId(base::NumberToString(i)), params_,
-                              absl::nullopt, DEFAULT_PRIORITY, SocketTag(),
-                              ClientSocketPool::RespectLimits::ENABLED,
-                              callback.callback(),
-                              ClientSocketPool::ProxyAuthCallback(),
-                              pool_.get(), NetLogWithSource()));
+    EXPECT_EQ(
+        OK,
+        handle.Init(TestGroupId("a" + base::NumberToString(i)), params_,
+                    absl::nullopt, DEFAULT_PRIORITY, SocketTag(),
+                    ClientSocketPool::RespectLimits::ENABLED,
+                    callback.callback(), ClientSocketPool::ProxyAuthCallback(),
+                    pool_.get(), NetLogWithSource()));
   }
 
   // Flush all the DoReleaseSocket tasks.
@@ -1466,11 +1470,11 @@ TEST_F(ClientSocketPoolBaseTest, CloseIdleSocketAtSocketLimitDeleteGroup) {
   ClientSocketHandle handle;
   TestCompletionCallback callback;
 
-  // "0" is special here, since it should be the first entry in the sorted map,
+  // "a0" is special here, since it should be the first entry in the sorted map,
   // which is the one which we would close an idle socket for.  We shouldn't
   // close an idle socket though, since we should reuse the idle socket.
   EXPECT_EQ(OK, handle.Init(
-                    TestGroupId("0"), params_, absl::nullopt, DEFAULT_PRIORITY,
+                    TestGroupId("a0"), params_, absl::nullopt, DEFAULT_PRIORITY,
                     SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
                     callback.callback(), ClientSocketPool::ProxyAuthCallback(),
                     pool_.get(), NetLogWithSource()));
@@ -5651,7 +5655,7 @@ class ClientSocketPoolBaseRefreshTest
   }
 
   static ClientSocketPool::GroupId GetGroupId() {
-    return TestGroupId("a", 443, ClientSocketPool::SocketType::kSsl);
+    return TestGroupId("a", 443, url::kHttpsScheme);
   }
 
   static ClientSocketPool::GroupId GetGroupIdInPartition() {
@@ -5659,7 +5663,7 @@ class ClientSocketPoolBaseRefreshTest
     // kPartitionConnectionsByNetworkIsolationKey is enabled.
     const SchemefulSite kSite(GURL("https://b/"));
     const NetworkIsolationKey kNetworkIsolationKey(kSite, kSite);
-    return TestGroupId("a", 443, ClientSocketPool::SocketType::kSsl,
+    return TestGroupId("a", 443, url::kHttpsScheme,
                        PrivacyMode::PRIVACY_MODE_DISABLED,
                        kNetworkIsolationKey);
   }
@@ -5740,9 +5744,9 @@ TEST_F(ClientSocketPoolBaseTest,
        RefreshGroupDoesNotCloseIdleConnectJobsInOtherGroup) {
   CreatePool(kDefaultMaxSockets, kDefaultMaxSocketsPerGroup);
   const ClientSocketPool::GroupId kGroupId =
-      TestGroupId("a", 443, ClientSocketPool::SocketType::kSsl);
+      TestGroupId("a", 443, url::kHttpsScheme);
   const ClientSocketPool::GroupId kOtherGroupId =
-      TestGroupId("b", 443, ClientSocketPool::SocketType::kSsl);
+      TestGroupId("b", 443, url::kHttpsScheme);
 
   pool_->RequestSockets(kOtherGroupId, params_, absl::nullopt, 2,
                         NetLogWithSource());
@@ -5782,9 +5786,9 @@ TEST_F(ClientSocketPoolBaseTest,
        RefreshGroupDoesNotPreventSocketReuseInOtherGroup) {
   CreatePool(kDefaultMaxSockets, kDefaultMaxSocketsPerGroup);
   const ClientSocketPool::GroupId kGroupId =
-      TestGroupId("a", 443, ClientSocketPool::SocketType::kSsl);
+      TestGroupId("a", 443, url::kHttpsScheme);
   const ClientSocketPool::GroupId kOtherGroupId =
-      TestGroupId("b", 443, ClientSocketPool::SocketType::kSsl);
+      TestGroupId("b", 443, url::kHttpsScheme);
 
   ClientSocketHandle handle;
   TestCompletionCallback callback;
@@ -5852,11 +5856,11 @@ TEST_F(ClientSocketPoolBaseTest, RefreshProxyRefreshesAllGroups) {
                              ProxyServer::FromPacString("HTTPS myproxy:70"));
 
   const ClientSocketPool::GroupId kGroupId1 =
-      TestGroupId("a", 443, ClientSocketPool::SocketType::kSsl);
+      TestGroupId("a", 443, url::kHttpsScheme);
   const ClientSocketPool::GroupId kGroupId2 =
-      TestGroupId("b", 443, ClientSocketPool::SocketType::kSsl);
+      TestGroupId("b", 443, url::kHttpsScheme);
   const ClientSocketPool::GroupId kGroupId3 =
-      TestGroupId("c", 443, ClientSocketPool::SocketType::kSsl);
+      TestGroupId("c", 443, url::kHttpsScheme);
 
   // Make three sockets in three different groups. The third socket is released
   // to the pool as idle.
@@ -5924,14 +5928,12 @@ TEST_F(ClientSocketPoolBaseTest, RefreshProxyRefreshesAllGroups) {
 TEST_F(ClientSocketPoolBaseTest, RefreshBothPrivacyAndNormalSockets) {
   CreatePool(kDefaultMaxSockets, kDefaultMaxSocketsPerGroup);
 
-  const ClientSocketPool::GroupId kGroupId =
-      TestGroupId("a", 443, ClientSocketPool::SocketType::kSsl,
-                  PrivacyMode::PRIVACY_MODE_DISABLED);
-  const ClientSocketPool::GroupId kGroupIdPrivacy =
-      TestGroupId("a", 443, ClientSocketPool::SocketType::kSsl,
-                  PrivacyMode::PRIVACY_MODE_ENABLED);
+  const ClientSocketPool::GroupId kGroupId = TestGroupId(
+      "a", 443, url::kHttpsScheme, PrivacyMode::PRIVACY_MODE_DISABLED);
+  const ClientSocketPool::GroupId kGroupIdPrivacy = TestGroupId(
+      "a", 443, url::kHttpsScheme, PrivacyMode::PRIVACY_MODE_ENABLED);
   const ClientSocketPool::GroupId kOtherGroupId =
-      TestGroupId("b", 443, ClientSocketPool::SocketType::kSsl);
+      TestGroupId("b", 443, url::kHttpsScheme);
 
   // Make a socket in each groups.
   ClientSocketHandle handle1, handle2, handle3;

@@ -42,6 +42,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/scheme_host_port.h"
+#include "url/url_constants.h"
 
 using testing::Test;
 using testing::StrictMock;
@@ -54,8 +56,7 @@ namespace test {
 class WebSocketClientSocketHandleAdapterTest : public TestWithTaskEnvironment {
  protected:
   WebSocketClientSocketHandleAdapterTest()
-      : host_port_pair_("www.example.org", 443),
-        network_session_(
+      : network_session_(
             SpdySessionDependencies::SpdyCreateSession(&session_deps_)),
         websocket_endpoint_lock_manager_(
             network_session_->websocket_endpoint_lock_manager()) {}
@@ -70,7 +71,7 @@ class WebSocketClientSocketHandleAdapterTest : public TestWithTaskEnvironment {
     TestCompletionCallback callback;
     int rv = connection->Init(
         ClientSocketPool::GroupId(
-            host_port_pair_, ClientSocketPool::SocketType::kSsl,
+            url::SchemeHostPort(url::kHttpsScheme, "www.example.org", 443),
             PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
             SecureDnsPolicy::kAllow),
         socks_params, TRAFFIC_ANNOTATION_FOR_TESTS /* proxy_annotation_tag */,
@@ -83,7 +84,6 @@ class WebSocketClientSocketHandleAdapterTest : public TestWithTaskEnvironment {
     return rv == OK;
   }
 
-  const HostPortPair host_port_pair_;
   SpdySessionDependencies session_deps_;
   std::unique_ptr<HttpNetworkSession> network_session_;
   WebSocketEndpointLockManager* websocket_endpoint_lock_manager_;
