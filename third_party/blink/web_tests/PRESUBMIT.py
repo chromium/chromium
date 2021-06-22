@@ -12,6 +12,9 @@ import filecmp
 import inspect
 import sys
 
+USE_PYTHON3 = True
+
+
 def _CheckTestharnessResults(input_api, output_api):
     """Checks for all-PASS generic baselines for testharness.js tests.
 

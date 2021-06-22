@@ -46,6 +46,7 @@ def PresubmitCheckTestExpectations(input_api, output_api):
             output_api.PresubmitError("lint_test_expectations.py failed "
                                       "to produce output; check by hand. ")
         ]
+    errs = errs.decode('utf-8')
     if errs.strip() == 'Lint succeeded.':
         return []
     if errs.rstrip().endswith('Lint succeeded with warnings.'):
