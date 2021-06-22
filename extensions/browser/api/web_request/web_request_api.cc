@@ -2553,6 +2553,8 @@ void ClearCacheQuotaHeuristic::OnPageLoad(Bucket* bucket) {
 
 ExtensionFunction::ResponseAction
 WebRequestInternalAddEventListenerFunction::Run() {
+  base::Value::ConstListView args_list = args_->GetList();
+
   // Argument 0 is the callback, which we don't use here.
   ExtensionWebRequestEventRouter::RequestFilter filter;
   base::DictionaryValue* value = NULL;
@@ -2566,10 +2568,8 @@ WebRequestInternalAddEventListenerFunction::Run() {
 
   int extra_info_spec = 0;
   if (HasOptionalArgument(2)) {
-    base::ListValue* value = NULL;
-    EXTENSION_FUNCTION_VALIDATE(args_->GetList(2, &value));
     EXTENSION_FUNCTION_VALIDATE(ExtraInfoSpec::InitFromValue(
-        browser_context(), *value, &extra_info_spec));
+        browser_context(), args_list[2], &extra_info_spec));
   }
 
   std::string event_name;

@@ -27,8 +27,8 @@
 #include "url/gurl.h"
 
 namespace base {
-class ListValue;
 class DictionaryValue;
+class Value;
 }  // namespace base
 
 namespace content {
@@ -198,7 +198,7 @@ struct ExtraInfoSpec {
   };
 
   static bool InitFromValue(content::BrowserContext* browser_context,
-                            const base::ListValue& value,
+                            const base::Value& value,
                             int* extra_info_spec);
 };
 

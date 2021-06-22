@@ -621,24 +621,28 @@ class IdentityGetAccountsFunctionTest : public IdentityTestWithSignin {
         ExtensionBuilder("Test").SetID(kExtensionId).Build().get());
     if (!utils::RunFunction(func.get(), std::string("[]"), browser(),
                             api_test_utils::NONE)) {
-      return GenerateFailureResult(gaia_ids, NULL)
+      return GenerateFailureResult(gaia_ids, absl::nullopt)
              << "getAccounts did not return a result.";
     }
     const base::ListValue* callback_arguments = func->GetResultList();
     if (!callback_arguments)
-      return GenerateFailureResult(gaia_ids, NULL) << "NULL result";
+      return GenerateFailureResult(gaia_ids, absl::nullopt) << "NULL result";
+    base::Value::ConstListView callback_arguments_list =
+        callback_arguments->GetList();
 
-    if (callback_arguments->GetSize() != 1) {
-      return GenerateFailureResult(gaia_ids, NULL)
-             << "Expected 1 argument but got " << callback_arguments->GetSize();
+    if (callback_arguments_list.size() != 1u) {
+      return GenerateFailureResult(gaia_ids, absl::nullopt)
+             << "Expected 1 argument but got "
+             << callback_arguments_list.size();
     }
 
-    const base::ListValue* results;
-    if (!callback_arguments->GetList(0, &results))
-      GenerateFailureResult(gaia_ids, NULL) << "Result was not an array";
+    if (!callback_arguments_list[0].is_list())
+      GenerateFailureResult(gaia_ids, absl::nullopt)
+          << "Result was not an array";
+    base::Value::ConstListView results = callback_arguments_list[0].GetList();
 
     std::set<std::string> result_ids;
-    for (const base::Value& item : results->GetList()) {
+    for (const base::Value& item : results) {
       std::unique_ptr<api::identity::AccountInfo> info =
           api::identity::AccountInfo::FromValue(item);
       if (info.get())
@@ -657,16 +661,16 @@ class IdentityGetAccountsFunctionTest : public IdentityTestWithSignin {
 
   testing::AssertionResult GenerateFailureResult(
       const ::std::vector<std::string>& gaia_ids,
-      const base::ListValue* results) {
+      absl::optional<base::Value::ConstListView> results) {
     testing::Message msg("Expected: ");
     for (const std::string& gaia_id : gaia_ids) {
       msg << gaia_id << " ";
     }
     msg << "Actual: ";
-    if (!results) {
+    if (!results.has_value()) {
       msg << "NULL";
     } else {
-      for (const auto& result : results->GetList()) {
+      for (const auto& result : results.value()) {
         std::unique_ptr<api::identity::AccountInfo> info =
             api::identity::AccountInfo::FromValue(result);
         if (info.get())

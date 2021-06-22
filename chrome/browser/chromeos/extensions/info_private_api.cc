@@ -266,18 +266,21 @@ ChromeosInfoPrivateGetFunction::~ChromeosInfoPrivateGetFunction() {
 }
 
 ExtensionFunction::ResponseAction ChromeosInfoPrivateGetFunction::Run() {
-  base::ListValue* list = nullptr;
-  EXTENSION_FUNCTION_VALIDATE(args_->GetList(0, &list));
-  auto result = std::make_unique<base::DictionaryValue>();
-  for (size_t i = 0; i < list->GetSize(); ++i) {
-    std::string property_name;
-    EXTENSION_FUNCTION_VALIDATE(list->GetString(i, &property_name));
+  base::Value::ConstListView args_list = args_->GetList();
+  EXTENSION_FUNCTION_VALIDATE(!args_list.empty() && args_list[0].is_list());
+  base::Value::ConstListView list = args_list[0].GetList();
+
+  base::Value result(base::Value::Type::DICTIONARY);
+  for (size_t i = 0; i < list.size(); ++i) {
+    EXTENSION_FUNCTION_VALIDATE(list[i].is_string());
+    std::string property_name = list[i].GetString();
     std::unique_ptr<base::Value> value = GetValue(property_name);
-    if (value)
-      result->Set(property_name, std::move(value));
+    if (value) {
+      result.SetPath(property_name,
+                     base::Value::FromUniquePtrValue(std::move(value)));
+    }
   }
-  return RespondNow(
-      OneArgument(base::Value::FromUniquePtrValue(std::move(result))));
+  return RespondNow(OneArgument(std::move(result)));
 }
 
 std::unique_ptr<base::Value> ChromeosInfoPrivateGetFunction::GetValue(
