@@ -736,7 +736,7 @@ def make_v8_to_blink_value(blink_var_name,
         else:
             default_expr = None
         exception_exit_node = CxxUnlikelyIfNode(
-            cond="${exception_state}.HadException()",
+            cond="UNLIKELY(${exception_state}.HadException())",
             body=T(error_exit_return_statement))
 
         if not (default_expr or fast_path_cond):

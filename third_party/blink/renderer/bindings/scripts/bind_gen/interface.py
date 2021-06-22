@@ -2378,8 +2378,9 @@ def make_no_alloc_direct_call_callback_def(cg_context, function_name,
           blink_arguments=", ".join(blink_arguments)))
     if cg_context.may_throw_exception:
         body.append(
-            CxxUnlikelyIfNode(cond="${exception_state}.HadException()",
-                              body=T("return;")))
+            CxxUnlikelyIfNode(
+                cond="UNLIKELY(${exception_state}.HadException())",
+                body=T("return;")))
 
     return func_def
 
