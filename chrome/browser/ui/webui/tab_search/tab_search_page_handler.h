@@ -97,14 +97,14 @@ class TabSearchPageHandler : public tab_search::mojom::PageHandler,
       std::vector<tab_search::mojom::TabGroupPtr>& tab_groups,
       std::set<std::string>& tab_urls);
 
-  // Tries to add a single recently closed tab to a flattened list. Returns
-  // whether the the tab fits within |max_tab_count|.
+  // Tries to add a single recently closed tab to a flattened list. Returns true
+  // if a recently closed tab was added to `recently_closed_tabs`.
   bool AddRecentlyClosedTab(
+      sessions::TabRestoreService::Tab* tab,
+      int32_t session_id,
       std::vector<tab_search::mojom::RecentlyClosedTabPtr>&
           recently_closed_tabs,
-      sessions::TabRestoreService::Tab* tab,
-      std::set<std::string>& tab_urls,
-      int32_t session_id);
+      std::set<std::string>& tab_urls);
 
   tab_search::mojom::TabPtr GetTab(TabStripModel* tab_strip_model,
                                    content::WebContents* contents,

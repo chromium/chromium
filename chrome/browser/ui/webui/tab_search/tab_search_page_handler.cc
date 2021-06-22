@@ -258,9 +258,11 @@ void TabSearchPageHandler::AddRecentlyClosedEntries(
         sessions::TabRestoreService::Window* window =
             static_cast<sessions::TabRestoreService::Window*>(entry.get());
         for (auto& tab : window->tabs) {
-          AddRecentlyClosedTab(recently_closed_tabs, tab.get(), tab_urls, 0);
-          recently_closed_tab_count += 1;
-          recently_closed_item_count += 1;
+          if (AddRecentlyClosedTab(tab.get(), 0, recently_closed_tabs,
+                                   tab_urls)) {
+            recently_closed_tab_count += 1;
+            recently_closed_item_count += 1;
+          }
 
           if (recently_closed_item_count >=
                   kMinRecentlyClosedItemDisplayCount &&
@@ -289,9 +291,10 @@ void TabSearchPageHandler::AddRecentlyClosedEntries(
           tab_groups.push_back(std::move(tab_group));
         }
 
-        AddRecentlyClosedTab(recently_closed_tabs, tab, tab_urls, 0);
-        recently_closed_tab_count += 1;
-        recently_closed_item_count += 1;
+        if (AddRecentlyClosedTab(tab, 0, recently_closed_tabs, tab_urls)) {
+          recently_closed_tab_count += 1;
+          recently_closed_item_count += 1;
+        }
       } else if (entry->type == sessions::TabRestoreService::Type::GROUP) {
         sessions::TabRestoreService::Group* group =
             static_cast<sessions::TabRestoreService::Group*>(entry.get());
@@ -312,9 +315,10 @@ void TabSearchPageHandler::AddRecentlyClosedEntries(
             std::move(recently_closed_tab_group));
 
         for (auto& tab : group->tabs) {
-          AddRecentlyClosedTab(recently_closed_tabs, tab.get(), tab_urls,
-                               group->id.id());
-          recently_closed_tab_count += 1;
+          if (AddRecentlyClosedTab(tab.get(), group->id.id(),
+                                   recently_closed_tabs, tab_urls)) {
+            recently_closed_tab_count += 1;
+          }
         }
         // Restored recently closed tab groups map to a single display item.
         recently_closed_item_count += 1;
@@ -324,23 +328,22 @@ void TabSearchPageHandler::AddRecentlyClosedEntries(
 }
 
 bool TabSearchPageHandler::AddRecentlyClosedTab(
-    std::vector<tab_search::mojom::RecentlyClosedTabPtr>& recently_closed_tabs,
     sessions::TabRestoreService::Tab* tab,
-    std::set<std::string>& tab_urls,
-    int32_t session_id) {
+    int32_t session_id,
+    std::vector<tab_search::mojom::RecentlyClosedTabPtr>& recently_closed_tabs,
+    std::set<std::string>& tab_urls) {
   if (tab->navigations.size() == 0)
-    return true;
+    return false;
 
   tab_search::mojom::RecentlyClosedTabPtr recently_closed_tab =
       GetRecentlyClosedTab(tab);
 
-  // New tab page entries may exist inside a window and should be
-  // ignored.
-  if (recently_closed_tab->url == GURL(chrome::kChromeUINewTabPageURL))
-    return true;
-
-  if (tab_urls.count(recently_closed_tab->url))
-    return true;
+  // Ignore NTP entries, duplicate entries and and tabs with empty URLs.
+  if (base::Contains(tab_urls, recently_closed_tab->url) ||
+      recently_closed_tab->url == GURL(chrome::kChromeUINewTabPageURL) ||
+      recently_closed_tab->url.empty()) {
+    return false;
+  }
 
   if (session_id)
     recently_closed_tab->session_id = session_id;
