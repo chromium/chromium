@@ -404,6 +404,12 @@ IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewWindowControlsOverlayTest,
   EXPECT_EQ(glass_frame_view_->NonClientHitTest(kPoint), HTCAPTION);
   EXPECT_FALSE(browser_view_->ShouldDescendIntoChildForEventHandling(
       browser_view_->GetNativeWindow(), kPoint));
+
+  // Validate that a point at the border is not marked as draggable.
+  constexpr gfx::Point kBorderPoint(50, 1);
+  EXPECT_NE(glass_frame_view_->NonClientHitTest(kBorderPoint), HTCAPTION);
+  EXPECT_TRUE(browser_view_->ShouldDescendIntoChildForEventHandling(
+      browser_view_->GetWidget()->GetNativeView(), kBorderPoint));
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewWindowControlsOverlayTest,

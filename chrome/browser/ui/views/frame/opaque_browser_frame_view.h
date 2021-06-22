@@ -122,6 +122,7 @@ class OpaqueBrowserFrameView : public BrowserNonClientFrameView,
 
  private:
   friend class WebAppOpaqueBrowserFrameViewTest;
+  friend class WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest;
 
   // Creates and returns a FrameCaptionButton with |this| as its listener.
   // Memory is owned by the caller.

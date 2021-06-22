@@ -196,8 +196,9 @@ gfx::Rect OpaqueBrowserFrameViewLayout::IconBounds() const {
 gfx::Rect OpaqueBrowserFrameViewLayout::CalculateClientAreaBounds(
     int width,
     int height) const {
-  int top_height =
-      is_window_controls_overlay_enabled_ ? 0 : NonClientTopHeight(false);
+  int top_height = is_window_controls_overlay_enabled_
+                       ? FrameBorderThickness(/*restored=*/false)
+                       : NonClientTopHeight(false);
   int border_thickness = FrameBorderThickness(false);
   return gfx::Rect(border_thickness, top_height,
                    std::max(0, width - (2 * border_thickness)),
@@ -602,7 +603,6 @@ OpaqueBrowserFrameViewLayout::GetTopAreaPadding() const {
 
 void OpaqueBrowserFrameViewLayout::LayoutTitleBarForWindowControlsOverlay(
     const views::View* host) {
-  int y = 0;
   int height = NonClientTopHeight(false);
   int container_x = 0;
   int x = available_space_leading_x_;
@@ -619,15 +619,19 @@ void OpaqueBrowserFrameViewLayout::LayoutTitleBarForWindowControlsOverlay(
   }
 
   caption_button_placeholder_container_->SetBounds(
-      container_x, y, minimum_size_for_buttons_, height);
+      container_x, FrameBorderThickness(/*restored=*/false),
+      minimum_size_for_buttons_, height);
 
   web_app_frame_toolbar_->LayoutForWindowControlsOverlay(
-      gfx::Rect(x, y, web_app_frame_toolbar_view_width, height));
+      gfx::Rect(x, FrameBorderThickness(/*restored=*/false),
+                web_app_frame_toolbar_view_width, height));
 
   int bounding_rect_width =
       web_app_frame_toolbar_->bounds().x() - available_space_leading_x_;
+  // Set y to 0 for the bounding_rect as this is web contents coordinates and
+  // so, FrameBorderThickness should not be included.
   delegate_->UpdateWindowControlsOverlay(
-      host->GetMirroredRect(gfx::Rect(x, y, bounding_rect_width, height)));
+      host->GetMirroredRect(gfx::Rect(x, 0, bounding_rect_width, height)));
 }
 
 ///////////////////////////////////////////////////////////////////////////////

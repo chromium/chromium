@@ -359,6 +359,10 @@ class WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest
     return EvalJs(web_contents, "overlay_visible_from_event").ExtractBool();
   }
 
+  int GetFrameTopBorder() {
+    return opaque_browser_frame_view_->layout()->FrameBorderThickness(false);
+  }
+
   BrowserView* browser_view_ = nullptr;
   OpaqueBrowserFrameView* opaque_browser_frame_view_ = nullptr;
 
@@ -375,6 +379,9 @@ IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest,
   // Toggle overlay on, and validate JS API reflects the expected
   // values.
   ToggleWindowControlsOverlayEnabledAndWait();
+
+  // Validate there is a top border so the window is resizable.
+  EXPECT_EQ(GetFrameTopBorder(), browser_view_->bounds().y());
 
   gfx::Rect bounds = GetWindowControlOverlayBoundingClientRect();
   EXPECT_TRUE(GetWindowControlOverlayVisibility());
@@ -470,6 +477,13 @@ IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest,
   EXPECT_EQ(opaque_browser_frame_view_->NonClientHitTest(kPoint), HTCAPTION);
   EXPECT_FALSE(browser_view_->ShouldDescendIntoChildForEventHandling(
       browser_view_->GetWidget()->GetNativeView(), kPoint));
+
+  // Validate that a point at the border is not marked as draggable.
+  constexpr gfx::Point kBorderPoint(50, 1);
+  EXPECT_NE(opaque_browser_frame_view_->NonClientHitTest(kBorderPoint),
+            HTCAPTION);
+  EXPECT_TRUE(browser_view_->ShouldDescendIntoChildForEventHandling(
+      browser_view_->GetWidget()->GetNativeView(), kBorderPoint));
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest,

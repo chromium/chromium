@@ -270,7 +270,8 @@ int BrowserViewLayout::NonClientHitTest(const gfx::Point& point) {
       browser_view_->browser()->app_controller();
   if (controller && controller->IsWindowControlsOverlayEnabled() &&
       controller->draggable_region().has_value() &&
-      controller->draggable_region()->contains(point.x(), point.y())) {
+      controller->draggable_region()->contains(
+          point_in_browser_view_coords.x(), point_in_browser_view_coords.y())) {
     return HTCAPTION;
   }
 
