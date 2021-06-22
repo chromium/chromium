@@ -33,6 +33,7 @@ config("runtime_library") {
   cflags = []
   cflags_cc = []
   defines = []
+  include_dirs = []
   ldflags = []
   libs = []
 
@@ -60,12 +61,9 @@ config("runtime_library") {
     }
   }
 
-  defines += [
-    "_LIBCPP_ENABLE_NODISCARD",
+  defines += [ "_LIBCPP_ENABLE_NODISCARD" ]
 
-    # TODO(crbug.com/1166707): libc++ requires this macro.
-    "_LIBCPP_HAS_NO_VENDOR_AVAILABILITY_ANNOTATIONS",
-  ]
+  include_dirs += [ "//buildtools/third_party/libc++" ]
 
   # Work around a symbol conflict between GRPC and the Fuchsia SDK.
   # TODO(crbug.com/1166970): Remove this when resolved.

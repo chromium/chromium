@@ -103,13 +103,11 @@ if (enable_nocompile_tests) {
         "-Wthread-safety",
         "-I" + rebase_path("//", root_build_dir),
         "-I" + rebase_path("//third_party/abseil-cpp/", root_build_dir),
+        "-I" + rebase_path("//buildtools/third_party/libc++/", root_build_dir),
         "-I" + rebase_path(root_gen_dir, root_build_dir),
 
         # TODO(https://crbug.com/989932): Track build/config/compiler/BUILD.gn
         "-Wno-implicit-int-float-conversion",
-
-        # TODO(crbug.com/1166707): libc++ now requires this macro to be defined.
-        "-D_LIBCPP_HAS_NO_VENDOR_AVAILABILITY_ANNOTATIONS",
       ]
 
       if (is_apple && host_os != "mac") {
