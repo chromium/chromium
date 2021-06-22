@@ -18,6 +18,10 @@
 - (void)manageSyncSettingsCoordinatorWasRemoved:
     (ManageSyncSettingsCoordinator*)coordinator;
 
+// Title for the Sync Settings coordinator.
+// TODO(crbug.com/1222632): Remove property following the MICE Settings launch.
+@property(nonatomic, readonly) NSString* manageSyncSettingsCoordinatorTitle;
+
 @end
 
 // Coordinator for the Manage Sync Settings TableView Controller.

@@ -303,4 +303,8 @@ using l10n_util::GetNSString;
   self.syncSettingsCoordinator = nil;
 }
 
+- (NSString*)manageSyncSettingsCoordinatorTitle {
+  return l10n_util::GetNSString(IDS_IOS_MANAGE_SYNC_SETTINGS_TITLE);
+}
+
 @end

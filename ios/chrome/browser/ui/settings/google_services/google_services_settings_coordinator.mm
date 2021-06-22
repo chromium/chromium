@@ -422,4 +422,8 @@ using signin_metrics::PromoAction;
   self.manageSyncSettingsCoordinator = nil;
 }
 
+- (NSString*)manageSyncSettingsCoordinatorTitle {
+  return l10n_util::GetNSString(IDS_IOS_MANAGE_SYNC_SETTINGS_TITLE);
+}
+
 @end

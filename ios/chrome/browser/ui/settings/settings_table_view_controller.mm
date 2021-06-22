@@ -2075,4 +2075,8 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   _manageSyncSettingsCoordinator = nil;
 }
 
+- (NSString*)manageSyncSettingsCoordinatorTitle {
+  return l10n_util::GetNSString(IDS_IOS_GOOGLE_SYNC_SETTINGS_TITLE);
+}
+
 @end
