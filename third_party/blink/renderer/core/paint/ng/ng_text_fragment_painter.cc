@@ -340,6 +340,10 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
   if (UNLIKELY(highlight_painter.Selection())) {
     PhysicalRect before_rotation =
         highlight_painter.Selection()->ComputeSelectionRect(box_rect.offset);
+    if (scaling_factor != 1.0f) {
+      before_rotation.offset.Scale(1 / scaling_factor);
+      before_rotation.size.Scale(1 / scaling_factor);
+    }
 
     // The selection rect is given in physical coordinates, so we need to map
     // them into our now-possibly-rotated space before calling any methods
