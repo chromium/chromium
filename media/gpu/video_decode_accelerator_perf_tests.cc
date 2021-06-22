@@ -15,6 +15,7 @@
 #include "media/gpu/test/video_player/video_decoder_client.h"
 #include "media/gpu/test/video_player/video_player.h"
 #include "media/gpu/test/video_player/video_player_test_environment.h"
+#include "sandbox/linux/services/resource_limits.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
@@ -369,6 +370,42 @@ TEST_F(VideoDecoderTest, MeasureCappedPerformance) {
 
   EXPECT_EQ(tvp->GetFlushDoneCount(), 1u);
   EXPECT_EQ(tvp->GetFrameDecodedCount(), g_env->Video()->NumFrames());
+}
+
+// Play multiple videos simultaneously from start to finish.
+TEST_F(VideoDecoderTest,
+       MeasureUncappedPerformance_MultipleConcurrentDecoders) {
+  // Set RLIMIT_NOFILE soft limit to its hard limit value.
+  if (sandbox::ResourceLimits::AdjustCurrent(
+          RLIMIT_NOFILE, std::numeric_limits<long long int>::max())) {
+    DPLOG(ERROR) << "Unable to increase soft limit of RLIMIT_NOFILE";
+  }
+
+// The minimal number of concurrent decoders we expect to be supported on
+// platforms.
+#if defined(ARCH_CPU_X86_FAMILY)
+  constexpr size_t kMinSupportedConcurrentDecoders = 25;
+#elif defined(ARCH_CPU_ARM_FAMILY)
+  constexpr size_t kMinSupportedConcurrentDecoders = 10;
+#endif
+
+  std::vector<std::unique_ptr<VideoPlayer>> players(
+      kMinSupportedConcurrentDecoders);
+  for (auto&& player : players)
+    player = CreateVideoPlayer(g_env->Video());
+
+  performance_evaluator_->StartMeasuring();
+
+  for (auto&& player : players)
+    player->Play();
+
+  for (auto&& player : players) {
+    EXPECT_TRUE(player->WaitForFlushDone());
+    EXPECT_EQ(player->GetFlushDoneCount(), 1u);
+    EXPECT_EQ(player->GetFrameDecodedCount(), g_env->Video()->NumFrames());
+  }
+  performance_evaluator_->StopMeasuring();
+  performance_evaluator_->WriteMetricsToFile();
 }
 
 }  // namespace test

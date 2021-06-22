@@ -565,6 +565,7 @@ if (use_v4l2_codec || use_vaapi) {
       "test:video_player",
       "test:video_player_test_environment",
       "//media:test_support",
+      "//sandbox/linux:sandbox_services",
       "//testing/gtest",
     ]
   }
