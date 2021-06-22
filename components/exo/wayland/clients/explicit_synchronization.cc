@@ -113,7 +113,7 @@ void ExplicitSynchronizationClient::Run() {
     SkCanvas* canvas = buffer->sk_surface->getCanvas();
     float draw_step_percent = static_cast<float>(draw_step) / kMaxDrawStep;
     canvas->clear(
-        SkColor4f{0.0, draw_step_percent, 1.0 - draw_step_percent, 1.0}
+        SkColor4f{0.0f, draw_step_percent, 1.0f - draw_step_percent, 1.0f}
             .toSkColor());
 
     // Create an EGLSyncKHR object to signal when rendering is done.

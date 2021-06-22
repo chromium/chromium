@@ -52,7 +52,7 @@ class WaylandPositionerTest : public testing::Test {
       return *this;
     }
 
-    TestCaseBuilder& SetSize(uint32_t w, uint32_t h) {
+    TestCaseBuilder& SetSize(int w, int h) {
       positioner.SetSize({w, h});
       return *this;
     }

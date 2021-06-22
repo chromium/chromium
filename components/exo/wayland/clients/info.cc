@@ -136,7 +136,7 @@ void AuraOutputScale(void* data,
                      uint32_t scale) {
   Info* info = static_cast<Info*>(data);
 
-  info->next_scales.push_back({flags, scale});
+  info->next_scales.push_back({flags, static_cast<int32_t>(scale)});
 }
 
 void AuraOutputConnection(void* data,

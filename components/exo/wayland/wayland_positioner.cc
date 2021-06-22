@@ -141,7 +141,8 @@ ConstraintAdjustment MaskToConstraintAdjustment(uint32_t field,
                                                 uint32_t flip_mask,
                                                 uint32_t slide_mask,
                                                 uint32_t resize_mask) {
-  return {field & flip_mask, field & slide_mask, field & resize_mask};
+  return {!!(field & flip_mask), !!(field & slide_mask),
+          !!(field & resize_mask)};
 }
 
 // A 1-dimensional projection of a range (a.k.a. a segment), used to solve the
@@ -213,7 +214,7 @@ Range1D Calculate(const ConstraintAdjustment& adjustments,
     case WaylandPositioner::Direction::kPositive:
       break;
   }
-  return {start, start + size};
+  return {start, static_cast<int32_t>(start + size)};
 }
 
 // Determines which adjustments (subject to them being a subset of the allowed

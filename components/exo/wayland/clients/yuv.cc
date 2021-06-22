@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/message_loop/message_pump_type.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_executor.h"
 #include "components/exo/wayland/clients/client_base.h"
 #include "components/exo/wayland/clients/client_helper.h"
@@ -50,12 +51,15 @@ bool YuvClient::WriteSolidColor(gbm_bo* bo, SkColor color) {
     }
     uint8_t* data = static_cast<uint8_t*>(void_data) + offset;
     uint8_t yuv[] = {
-        (0.257 * SkColorGetR(color)) + (0.504 * SkColorGetG(color)) +
-            (0.098 * SkColorGetB(color)) + 16,
-        -(0.148 * SkColorGetR(color)) - (0.291 * SkColorGetG(color)) +
-            (0.439 * SkColorGetB(color)) + 128,
-        (0.439 * SkColorGetR(color)) - (0.368 * SkColorGetG(color)) -
-            (0.071 * SkColorGetB(color)) + 128};
+        base::ClampRound<uint8_t>((0.257 * SkColorGetR(color)) +
+                                  (0.504 * SkColorGetG(color)) +
+                                  (0.098 * SkColorGetB(color)) + 16),
+        base::ClampRound<uint8_t>(-(0.148 * SkColorGetR(color)) -
+                                  (0.291 * SkColorGetG(color)) +
+                                  (0.439 * SkColorGetB(color)) + 128),
+        base::ClampRound<uint8_t>((0.439 * SkColorGetR(color)) -
+                                  (0.368 * SkColorGetG(color)) -
+                                  (0.071 * SkColorGetB(color)) + 128)};
     if (i == 0) {
       for (int y = 0; y < size_.height(); ++y) {
         for (int x = 0; x < size_.width(); ++x) {

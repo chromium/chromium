@@ -1019,13 +1019,13 @@ std::unique_ptr<ClientBase::Buffer> ClientBase::CreateDrmBuffer(
         EGL_LINUX_DRM_FOURCC_EXT,
         drm_format,
         EGL_DMA_BUF_PLANE0_PITCH_EXT,
-        gbm_bo_get_stride_for_plane(buffer->bo.get(), 0),
+        static_cast<EGLint>(gbm_bo_get_stride_for_plane(buffer->bo.get(), 0)),
         EGL_DMA_BUF_PLANE0_OFFSET_EXT,
         0,
         EGL_DMA_BUF_PLANE0_MODIFIER_LO_EXT,
-        modifier,
+        static_cast<EGLint>(modifier),
         EGL_DMA_BUF_PLANE0_MODIFIER_HI_EXT,
-        modifier >> 32,
+        static_cast<EGLint>(modifier >> 32),
         EGL_NONE};
     EGLImageKHR image = eglCreateImageKHR(
         eglGetCurrentDisplay(), EGL_NO_CONTEXT, EGL_LINUX_DMA_BUF_EXT,
@@ -1088,7 +1088,8 @@ std::unique_ptr<ClientBase::Buffer> ClientBase::CreateDrmBuffer(
             VK_STRUCTURE_TYPE_DMA_BUF_IMAGE_CREATE_INFO_INTEL),
         .fd = vk_image_fd.release(),
         .format = VK_FORMAT_A8B8G8R8_UNORM_PACK32,
-        .extent = (VkExtent3D){size.width(), size.height(), 1},
+        .extent = (VkExtent3D){static_cast<uint32_t>(size.width()),
+                               static_cast<uint32_t>(size.height()), 1},
         .strideInBytes = gbm_bo_get_stride(buffer->bo.get()),
     };
 
@@ -1141,8 +1142,8 @@ std::unique_ptr<ClientBase::Buffer> ClientBase::CreateDrmBuffer(
         .renderPass = vk_render_pass_->get(),
         .attachmentCount = 1,
         .pAttachments = &buffer->vk_image_view->get(),
-        .width = size.width(),
-        .height = size.height(),
+        .width = static_cast<uint32_t>(size.width()),
+        .height = static_cast<uint32_t>(size.height()),
         .layers = 1,
     };
     buffer->vk_framebuffer.reset(

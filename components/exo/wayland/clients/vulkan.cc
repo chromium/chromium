@@ -86,8 +86,9 @@ class ScopedVulkanRenderFrame {
         .renderArea =
             (VkRect2D){
                 .offset = {0, 0},
-                .extent = {client_->surface_size_.width(),
-                           client_->surface_size_.height()},
+                .extent =
+                    {static_cast<uint32_t>(client_->surface_size_.width()),
+                     static_cast<uint32_t>(client_->surface_size_.height())},
             },
         .clearValueCount = 1,
         .pClearValues = &clear_value,

@@ -11,6 +11,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/unsafe_shared_memory_region.h"
+#include "base/numerics/safe_conversions.h"
 #include "components/exo/wayland/serial_tracker.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
@@ -139,7 +140,7 @@ int32_t GetWaylandRepeatRate(bool enabled, base::TimeDelta interval) {
   if (enabled) {
     // Most of ChromeOS's interval options divide perfectly into 1000,
     // but a few do need rounding.
-    rate = int32_t{std::lround(1000.0 / interval.InMillisecondsF())};
+    rate = base::ClampRound<int32_t>(interval.ToHz());
 
     // Avoid disabling key repeat if the interval is >2000ms.
     rate = std::max(1, rate);
@@ -166,7 +167,7 @@ void WaylandKeyboardDelegate::OnKeyRepeatSettingsChanged(
   if (version >= WL_KEYBOARD_REPEAT_INFO_SINCE_VERSION) {
     wl_keyboard_send_repeat_info(keyboard_resource_,
                                  GetWaylandRepeatRate(enabled, interval),
-                                 int32_t{delay.InMilliseconds()});
+                                 static_cast<int32_t>(delay.InMilliseconds()));
   }
 }
 
