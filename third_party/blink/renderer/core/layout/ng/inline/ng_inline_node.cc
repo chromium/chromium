@@ -57,7 +57,8 @@ float CalculateWidthForTextCombine(const NGInlineItemsData& data) {
   return std::accumulate(
       data.items.begin(), data.items.end(), 0.0f,
       [](float sum, const NGInlineItem& item) {
-        DCHECK_EQ(item.Type(), NGInlineItem::kText);
+        DCHECK(item.Type() == NGInlineItem::kText ||
+               item.Type() == NGInlineItem::kBidiControl);
         if (auto* const shape_result = item.TextShapeResult())
           return shape_result->Width() + sum;
         return 0.0f;

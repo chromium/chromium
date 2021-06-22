@@ -1034,6 +1034,26 @@ LayoutNGBlockFlow BODY
             ToSimpleLayoutTree(root_layout_object));
 }
 
+// http://crbug.com/1222069
+TEST_F(LayoutNGTextCombineTest, WithBidiControl) {
+  InsertStyleElement(
+      "c { text-combine-upright: all; -webkit-rtl-ordering: visual; }"
+      "div { writing-mode: vertical-rl; }");
+  SetBodyInnerHTML("<div id=root>ab<c id=combine>XY</c>de</div>");
+  const auto& root_layout_object =
+      *To<LayoutNGBlockFlow>(GetElementById("root")->GetLayoutObject());
+
+  EXPECT_EQ(R"DUMP(
+LayoutNGBlockFlow DIV id="root"
+  +--LayoutText #text "ab"
+  +--LayoutInline C id="combine"
+  |  +--LayoutNGTextCombine (anonymous)
+  |  |  +--LayoutText #text "XY"
+  +--LayoutText #text "de"
+)DUMP",
+            ToSimpleLayoutTree(root_layout_object));
+}
+
 TEST_F(LayoutNGTextCombineTest, WithBR) {
   InsertStyleElement(
       "c { text-combine-upright: all; }"
