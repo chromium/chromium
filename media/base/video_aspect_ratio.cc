@@ -29,8 +29,9 @@ VideoAspectRatio::VideoAspectRatio(const gfx::Rect& visible_rect,
   // The size of a pixel is:
   //   (natural_width / visible_width) by (natural_height / visible_height).
   // Both are multiplied by (visible_width * visible_height) to avoid division.
-  double w = visible_rect.height() * natural_size.width();
-  double h = visible_rect.width() * natural_size.height();
+  // WARNING: Cast before multiply is necessary to prevent overflow.
+  double w = static_cast<double>(visible_rect.height()) * natural_size.width();
+  double h = static_cast<double>(visible_rect.width()) * natural_size.height();
 
   type_ = Type::kPixel;
   aspect_ratio_ = h != 0.0 ? w / h : 0.0;
@@ -45,8 +46,11 @@ gfx::Size VideoAspectRatio::GetNaturalSize(
   if (!IsValid() || visible_rect.IsEmpty())
     return visible_rect.size();
 
+  // Cast up front to simplify expressions.
+  // WARNING: Some aspect ratios can result in sizes that exceed INT_MAX.
   double w = visible_rect.width();
   double h = visible_rect.height();
+
   switch (type_) {
     case Type::kDisplay:
       if (aspect_ratio_ >= w / h) {
@@ -69,13 +73,16 @@ gfx::Size VideoAspectRatio::GetNaturalSize(
       break;
   }
 
+  // A valid natural size is positive (at least 1 after truncation) and fits in
+  // an int. Underflow should only be possible if the input sizes were already
+  // invalid, because the mutations above only increase the size.
   w = std::round(w);
   h = std::round(h);
   if (w < 1.0 || w > std::numeric_limits<int>::max() || h < 1.0 ||
       h > std::numeric_limits<int>::max()) {
     return visible_rect.size();
   }
-  return gfx::Size(w, h);
+  return gfx::Size(static_cast<int>(w), static_cast<int>(h));
 }
 
 }  // namespace media
