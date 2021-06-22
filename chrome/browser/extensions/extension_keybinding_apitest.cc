@@ -979,13 +979,7 @@ IN_PROC_BROWSER_TEST_F(CommandsApiTest, MAYBE_ContinuePropagation) {
 
 // Test is only applicable on Chrome OS.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-// http://crbug.com/410534
-#if defined(USE_OZONE)
-#define MAYBE_ChromeOSConversions DISABLED_ChromeOSConversions
-#else
-#define MAYBE_ChromeOSConversions ChromeOSConversions
-#endif
-IN_PROC_BROWSER_TEST_F(CommandsApiTest, MAYBE_ChromeOSConversions) {
+IN_PROC_BROWSER_TEST_F(CommandsApiTest, ChromeOSConversions) {
   RunChromeOSConversionTest("keybinding/chromeos_conversions");
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
