@@ -4,6 +4,8 @@
 
 #include "pdf/accessibility_structs.h"
 #include "pdf/content_restriction.h"
+#include "pdf/ppapi_migration/result_codes.h"
+#include "ppapi/c/pp_errors.h"
 #include "ppapi/c/private/ppb_pdf.h"
 #include "ppapi/c/private/ppp_pdf.h"
 
@@ -102,5 +104,11 @@ STATIC_ASSERT_ENUM(kContentRestrictionCut, PP_CONTENT_RESTRICTION_CUT);
 STATIC_ASSERT_ENUM(kContentRestrictionPaste, PP_CONTENT_RESTRICTION_PASTE);
 STATIC_ASSERT_ENUM(kContentRestrictionPrint, PP_CONTENT_RESTRICTION_PRINT);
 STATIC_ASSERT_ENUM(kContentRestrictionSave, PP_CONTENT_RESTRICTION_SAVE);
+
+STATIC_ASSERT_ENUM(Result::kSuccess, PP_OK);
+STATIC_ASSERT_ENUM(Result::kErrorFailed, PP_ERROR_FAILED);
+STATIC_ASSERT_ENUM(Result::kErrorAborted, PP_ERROR_ABORTED);
+STATIC_ASSERT_ENUM(Result::kErrorBadArgument, PP_ERROR_BADARGUMENT);
+STATIC_ASSERT_ENUM(Result::kErrorNoAccess, PP_ERROR_NOACCESS);
 
 }  // namespace chrome_pdf

@@ -37,8 +37,8 @@
 #include "pdf/post_message_receiver.h"
 #include "pdf/ppapi_migration/bitmap.h"
 #include "pdf/ppapi_migration/graphics.h"
+#include "pdf/ppapi_migration/result_codes.h"
 #include "pdf/ppapi_migration/url_loader.h"
-#include "ppapi/c/pp_errors.h"
 #include "printing/metafile_skia.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -619,7 +619,7 @@ std::unique_ptr<UrlLoader> PdfViewWebPlugin::CreateUrlLoaderInternal() {
 // Modeled on `OutOfProcessInstance::DidOpen()`.
 void PdfViewWebPlugin::DidOpen(std::unique_ptr<UrlLoader> loader,
                                int32_t result) {
-  if (result == PP_OK) {
+  if (result == Result::kSuccess) {
     if (!engine()->HandleDocumentLoad(std::move(loader)))
       DocumentLoadFailed();
   } else {

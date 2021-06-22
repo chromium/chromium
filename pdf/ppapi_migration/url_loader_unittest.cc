@@ -22,7 +22,7 @@
 #include "net/base/net_errors.h"
 #include "net/cookies/site_for_cookies.h"
 #include "pdf/ppapi_migration/callback.h"
-#include "ppapi/c/pp_errors.h"
+#include "pdf/ppapi_migration/result_codes.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-shared.h"
@@ -219,7 +219,7 @@ TEST_F(BlinkUrlLoaderTest, Open) {
 
 TEST_F(BlinkUrlLoaderTest, OpenWithInvalidatedClientWeakPtr) {
   EXPECT_CALL(*mock_url_loader_, LoadAsynchronously).Times(0);
-  EXPECT_CALL(mock_callback_, Run(PP_ERROR_FAILED));
+  EXPECT_CALL(mock_callback_, Run(Result::kErrorFailed));
 
   fake_client_.InvalidateWeakPtrs();
   loader_->Open(UrlRequest(), mock_callback_.Get());
@@ -227,7 +227,7 @@ TEST_F(BlinkUrlLoaderTest, OpenWithInvalidatedClientWeakPtr) {
 
 TEST_F(BlinkUrlLoaderTest, OpenWithInvalidatedClient) {
   EXPECT_CALL(*mock_url_loader_, LoadAsynchronously).Times(0);
-  EXPECT_CALL(mock_callback_, Run(PP_ERROR_FAILED));
+  EXPECT_CALL(mock_callback_, Run(Result::kErrorFailed));
 
   fake_client_.Invalidate();
   loader_->Open(UrlRequest(), mock_callback_.Get());
@@ -308,7 +308,7 @@ TEST_F(BlinkUrlLoaderTest, WillFollowRedirectWhileIgnoringRedirects) {
 
 TEST_F(BlinkUrlLoaderTest, DidReceiveResponse) {
   loader_->Open(UrlRequest(), mock_callback_.Get());
-  EXPECT_CALL(mock_callback_, Run(PP_OK));
+  EXPECT_CALL(mock_callback_, Run(Result::kSuccess));
 
   blink::WebURLResponse response;
   response.SetHttpStatusCode(204);
@@ -424,7 +424,7 @@ TEST_F(BlinkUrlLoaderTest, ReadResponseBodyWithoutData) {
 TEST_F(BlinkUrlLoaderTest, ReadResponseBodyWithEmptyBuffer) {
   loader_->Open(UrlRequest(), mock_callback_.Get());
   loader_->DidReceiveResponse(blink::WebURLResponse());
-  EXPECT_CALL(mock_callback_, Run(PP_ERROR_BADARGUMENT));
+  EXPECT_CALL(mock_callback_, Run(Result::kErrorBadArgument));
 
   loader_->ReadResponseBody(base::span<char>(), mock_callback_.Get());
 }
@@ -504,7 +504,7 @@ TEST_F(BlinkUrlLoaderTest, ReadResponseBodyWhileLoadCompleteWithError) {
   loader_->DidReceiveResponse(blink::WebURLResponse());
   loader_->DidReceiveData(kFakeData.data(), kFakeData.size());
   loader_->DidFail(MakeWebURLError(net::ERR_FAILED));
-  EXPECT_CALL(mock_callback_, Run(PP_ERROR_FAILED));
+  EXPECT_CALL(mock_callback_, Run(Result::kErrorFailed));
 
   char buffer[kFakeData.size()] = {};
   loader_->ReadResponseBody(buffer, mock_callback_.Get());
@@ -571,7 +571,7 @@ TEST_F(BlinkUrlLoaderTest, DidFinishLoadingWithPendingCallback) {
 
 TEST_F(BlinkUrlLoaderTest, DidFailWhileOpening) {
   loader_->Open(UrlRequest(), mock_callback_.Get());
-  EXPECT_CALL(mock_callback_, Run(PP_ERROR_FAILED));
+  EXPECT_CALL(mock_callback_, Run(Result::kErrorFailed));
 
   loader_->DidFail(MakeWebURLError(net::ERR_FAILED));
 }
@@ -581,7 +581,7 @@ TEST_F(BlinkUrlLoaderTest, DidFailWhileStreamingData) {
   loader_->Open(UrlRequest(), mock_callback_.Get());
   loader_->DidReceiveResponse(blink::WebURLResponse());
   loader_->ReadResponseBody(buffer, mock_callback_.Get());
-  EXPECT_CALL(mock_callback_, Run(PP_ERROR_FAILED));
+  EXPECT_CALL(mock_callback_, Run(Result::kErrorFailed));
 
   loader_->DidFail(MakeWebURLError(net::ERR_FAILED));
 }
@@ -589,14 +589,14 @@ TEST_F(BlinkUrlLoaderTest, DidFailWhileStreamingData) {
 TEST_F(BlinkUrlLoaderTest, DidFailWithErrorAccessDenied) {
   int32_t result = DidFailWithError(MakeWebURLError(net::ERR_ACCESS_DENIED));
 
-  EXPECT_EQ(PP_ERROR_NOACCESS, result);
+  EXPECT_EQ(Result::kErrorNoAccess, result);
 }
 
 TEST_F(BlinkUrlLoaderTest, DidFailWithErrorNetworkAccessDenied) {
   int32_t result =
       DidFailWithError(MakeWebURLError(net::ERR_NETWORK_ACCESS_DENIED));
 
-  EXPECT_EQ(PP_ERROR_NOACCESS, result);
+  EXPECT_EQ(Result::kErrorNoAccess, result);
 }
 
 TEST_F(BlinkUrlLoaderTest, DidFailWithWebSecurityViolationError) {
@@ -606,7 +606,7 @@ TEST_F(BlinkUrlLoaderTest, DidFailWithWebSecurityViolationError) {
 
   int32_t result = DidFailWithError(error);
 
-  EXPECT_EQ(PP_ERROR_NOACCESS, result);
+  EXPECT_EQ(Result::kErrorNoAccess, result);
 }
 
 TEST_F(BlinkUrlLoaderTest, CloseWhileWaitingToOpen) {
@@ -617,7 +617,7 @@ TEST_F(BlinkUrlLoaderTest, CloseWhileWaitingToOpen) {
 
 TEST_F(BlinkUrlLoaderTest, CloseWhileOpening) {
   loader_->Open(UrlRequest(), mock_callback_.Get());
-  EXPECT_CALL(mock_callback_, Run(PP_ERROR_ABORTED));
+  EXPECT_CALL(mock_callback_, Run(Result::kErrorAborted));
 
   loader_->Close();
 }
@@ -635,7 +635,7 @@ TEST_F(BlinkUrlLoaderTest, CloseWhileStreamingDataWithPendingCallback) {
   loader_->Open(UrlRequest(), mock_callback_.Get());
   loader_->DidReceiveResponse(blink::WebURLResponse());
   loader_->ReadResponseBody(buffer, mock_callback_.Get());
-  EXPECT_CALL(mock_callback_, Run(PP_ERROR_ABORTED));
+  EXPECT_CALL(mock_callback_, Run(Result::kErrorAborted));
 
   loader_->Close();
 }

@@ -17,7 +17,7 @@
 #include "pdf/ppapi_migration/callback.h"
 #include "pdf/ppapi_migration/geometry_conversions.h"
 #include "pdf/ppapi_migration/image.h"
-#include "ppapi/c/pp_errors.h"
+#include "pdf/ppapi_migration/result_codes.h"
 #include "ppapi/cpp/completion_callback.h"
 #include "ppapi/cpp/instance_handle.h"
 #include "ppapi/cpp/point.h"
@@ -53,7 +53,7 @@ bool PepperGraphics::Flush(ResultCallback callback) {
   // Should only happen if pp::Graphics2D::Flush() is called while a callback is
   // still pending, which should never happen if PaintManager is managing all
   // flushes.
-  DCHECK_EQ(PP_OK, result);
+  DCHECK_EQ(Result::kSuccess, result);
   pp_callback.Run(result);
   return false;
 }

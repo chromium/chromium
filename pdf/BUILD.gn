@@ -276,6 +276,7 @@ if (enable_pdf) {
       "ppapi_migration/input_event_conversions.h",
       "ppapi_migration/printing_conversions.cc",
       "ppapi_migration/printing_conversions.h",
+      "ppapi_migration/result_codes.h",
       "ppapi_migration/url_loader.cc",
       "ppapi_migration/url_loader.h",
       "ppapi_migration/value_conversions.cc",

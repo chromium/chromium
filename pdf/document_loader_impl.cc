@@ -18,8 +18,8 @@
 #include "base/numerics/safe_math.h"
 #include "base/strings/string_util.h"
 #include "pdf/pdf_features.h"
+#include "pdf/ppapi_migration/result_codes.h"
 #include "pdf/url_loader_wrapper.h"
-#include "ppapi/c/pp_errors.h"
 #include "ui/gfx/range/range.h"
 
 namespace chrome_pdf {
@@ -260,9 +260,8 @@ void DocumentLoaderImpl::ContinueDownload() {
 }
 
 void DocumentLoaderImpl::DidOpenPartial(int32_t result) {
-  if (result != PP_OK) {
+  if (result != Result::kSuccess)
     return ReadComplete();
-  }
 
   if (!ResponseStatusSuccess(loader_.get()))
     return ReadComplete();

@@ -46,6 +46,7 @@
 #include "pdf/pdf_features.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/ppapi_migration/image.h"
+#include "pdf/ppapi_migration/result_codes.h"
 #include "pdf/ppapi_migration/url_loader.h"
 #include "pdf/ui/document_properties.h"
 #include "pdf/ui/file_name.h"
@@ -1545,7 +1546,7 @@ void PdfViewPluginBase::HistogramCustomCounts(const char* name,
 
 void PdfViewPluginBase::DidOpenPreview(std::unique_ptr<UrlLoader> loader,
                                        int32_t result) {
-  DCHECK_EQ(result, PP_OK);
+  DCHECK_EQ(result, Result::kSuccess);
   preview_client_ = std::make_unique<PreviewModeClient>(this);
   preview_engine_ = std::make_unique<PDFiumEngine>(
       preview_client_.get(), PDFiumFormFiller::ScriptOption::kNoJavaScript);
