@@ -33,7 +33,7 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
 </variants>
 
 <histogram name="Power.ApproxCpuTimeSecondsPerCoreTypeAndFrequency"
-    units="50 MHz" expires_after="2021-10-17">
+    units="50 MHz" expires_after="2021-12-19">
   <owner>eseckler@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>
   <summary>
@@ -1325,7 +1325,7 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
 </histogram>
 
 <histogram name="PowerML.SmartDimModel.Result"
-    enum="PowerMLSmartDimModelResult" expires_after="2021-10-17">
+    enum="PowerMLSmartDimModelResult" expires_after="2021-12-19">
   <owner>napper@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>

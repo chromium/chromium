@@ -287,7 +287,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="CryptAuth.DeviceSyncV2.DeviceNotifier.ApiCallResult.NotifyGroupDevices"
-    enum="CryptAuthApiCallResult" expires_after="2021-10-06">
+    enum="CryptAuthApiCallResult" expires_after="2021-12-19">
   <owner>nohle@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -1781,7 +1781,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="MultiDevice.SecureChannel.BLE.ReceiveAdvertisementToAuthentication.EffectiveSuccessRateWithRetries"
-    enum="BooleanSuccess" expires_after="2021-10-17">
+    enum="BooleanSuccess" expires_after="2021-12-19">
   <owner>vecore@google.com</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>

@@ -1498,7 +1498,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NewTabPage.ShoppingTasks.RelatedSearchDownloadCount"
-    units="count" expires_after="2021-10-17">
+    units="count" expires_after="2021-12-19">
   <owner>tiborg@chromium.org</owner>
   <owner>yyushkina@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>

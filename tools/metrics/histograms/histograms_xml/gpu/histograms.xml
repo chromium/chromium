@@ -969,7 +969,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.OopRaster.GlyphCacheMiss"
-    enum="OopRasterGlyphCacheMissType" expires_after="2021-10-17">
+    enum="OopRasterGlyphCacheMissType" expires_after="2021-12-19">
   <owner>khushalsagar@chromium.org</owner>
   <summary>
     During OutOfProcess(Oop) raster, the renderer generates and sends the
