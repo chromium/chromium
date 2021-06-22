@@ -530,15 +530,6 @@ SharedImageBackingFactory* SharedImageFactory::GetFactoryByUsage(
     return gl_texture_backing_factory_.get();
   }
 
-  // check if GpuMemoryBufferType is empty. If empty prefer
-  // |gl_image_backing_factory_| first
-  if (gmb_type == gfx::EMPTY_BUFFER && gl_image_backing_factory_ &&
-      gl_image_backing_factory_->IsSupported(
-          usage, format, share_between_threads, gmb_type, gr_context_type_,
-          allow_legacy_mailbox)) {
-    return gl_image_backing_factory_.get();
-  }
-
 #if defined(OS_ANDROID)
   if (egl_backing_factory_ &&
       egl_backing_factory_->IsSupported(usage, format, share_between_threads,
@@ -565,7 +556,7 @@ SharedImageBackingFactory* SharedImageFactory::GetFactoryByUsage(
     return external_vk_image_factory_.get();
 #endif  // !defined(OS_ANDROID)
 
-  if (gmb_type != gfx::EMPTY_BUFFER && gl_image_backing_factory_ &&
+  if (gl_image_backing_factory_ &&
       gl_image_backing_factory_->IsSupported(
           usage, format, share_between_threads, gmb_type, gr_context_type_,
           allow_legacy_mailbox)) {
