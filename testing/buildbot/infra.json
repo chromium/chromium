@@ -3,22 +3,27 @@
   "AAAAA2 See generate_buildbot_json.py to make changes": {},
   "linux-component-rel": {
     "additional_compile_targets": [
-      "chrome"
+      "all"
     ]
   },
   "linux-control-rel": {
     "additional_compile_targets": [
-      "chrome"
+      "all"
     ]
   },
   "linux-local-ssd-nvme-rel": {
     "additional_compile_targets": [
-      "chrome"
+      "all"
     ]
   },
   "linux-local-ssd-scsi-rel": {
     "additional_compile_targets": [
-      "chrome"
+      "all"
+    ]
+  },
+  "linux-pd-ssd-rel": {
+    "additional_compile_targets": [
+      "all"
     ]
   }
 }

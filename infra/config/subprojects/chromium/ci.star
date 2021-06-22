@@ -5575,6 +5575,7 @@ ci.infra_builder(
 ci.infra_builder(
     name = "linux-local-ssd-nvme-rel",
     console_view_entry = consoles.console_view_entry(
+        category = "local|ssd",
         short_name = "nvme",
     ),
     builderless = False,
@@ -5583,7 +5584,17 @@ ci.infra_builder(
 ci.infra_builder(
     name = "linux-local-ssd-scsi-rel",
     console_view_entry = consoles.console_view_entry(
+        category = "local|ssd",
         short_name = "scsi",
+    ),
+    builderless = False,
+)
+
+ci.infra_builder(
+    name = "linux-pd-ssd-rel",
+    console_view_entry = consoles.console_view_entry(
+        category = "persistent|ssd",
+        short_name = "pd",
     ),
     builderless = False,
 )
