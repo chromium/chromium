@@ -860,7 +860,10 @@ void BaseAudioContext::UpdateWorkletGlobalScopeOnRenderingThread() {
   DCHECK(!IsMainThread());
 
   if (TryLock()) {
-    if (audio_worklet_thread_) {
+    // Even when |audio_worklet_thread_| is successfully assigned, the current
+    // render thread could still be a thread of AudioOutputDevice.  Updates the
+    // the global scope only when the thread affinity is correct.
+    if (audio_worklet_thread_ && audio_worklet_thread_->IsCurrentThread()) {
       AudioWorkletGlobalScope* global_scope =
           To<AudioWorkletGlobalScope>(audio_worklet_thread_->GlobalScope());
       DCHECK(global_scope);
