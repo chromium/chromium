@@ -106,6 +106,7 @@ void RecordFirstRunSignInMetrics(
 }
 
 void FinishFirstRun(ChromeBrowserState* browserState,
+                    ChromeBrowserState* mainBrowserState,
                     web::WebState* web_state,
                     FirstRunConfiguration* config,
                     id<SyncPresenter> presenter) {
@@ -117,7 +118,7 @@ void FinishFirstRun(ChromeBrowserState* browserState,
       postNotificationName:kChromeFirstRunUIWillFinishNotification
                     object:nil];
   WriteFirstRunSentinelAndRecordMetrics(
-      browserState, config.signInAttemptStatus, config.hasSSOAccount);
+      mainBrowserState, config.signInAttemptStatus, config.hasSSOAccount);
 
   // Display the sync errors infobar.
   DisplaySyncErrors(browserState, web_state, presenter);

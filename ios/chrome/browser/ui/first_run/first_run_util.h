@@ -39,6 +39,7 @@ void WriteFirstRunSentinel();
 
 // Methods for writing sentinel and recording metrics and posting notifications
 void FinishFirstRun(ChromeBrowserState* browserState,
+                    ChromeBrowserState* mainBrowserState,
                     web::WebState* web_state,
                     FirstRunConfiguration* config,
                     id<SyncPresenter> presenter);

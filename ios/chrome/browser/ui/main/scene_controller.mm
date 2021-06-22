@@ -1205,14 +1205,15 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
              name:kChromeFirstRunUIDidFinishNotification
            object:nil];
 
-  Browser* browser = self.mainInterface.browser;
+  Browser* mainBrowser = self.mainInterface.browser;
   id<ApplicationCommands, BrowsingDataCommands> welcomeHandler =
       static_cast<id<ApplicationCommands, BrowsingDataCommands>>(
-          browser->GetCommandDispatcher());
+          mainBrowser->GetCommandDispatcher());
 
   WelcomeToChromeViewController* welcomeToChrome =
       [[WelcomeToChromeViewController alloc]
-          initWithBrowser:browser
+          initWithBrowser:self.currentInterface.browser
+              mainBrowser:mainBrowser
                 presenter:self.currentInterface.bvc
                dispatcher:welcomeHandler];
   self.welcomeToChromeController = welcomeToChrome;
@@ -1237,8 +1238,9 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   FirstRunScreenProvider* provider = [[FirstRunScreenProvider alloc] init];
 
   self.firstRunCoordinator = [[FirstRunCoordinator alloc]
-      initWithBaseViewController:self.mainInterface.bvc
-                         browser:self.mainInterface.browser
+      initWithBaseViewController:self.currentInterface.bvc
+                         browser:self.currentInterface.browser
+                     mainBrowser:self.mainInterface.browser
                    syncPresenter:self.mainInterface.bvc
                   screenProvider:provider];
   self.firstRunCoordinator.delegate = self;

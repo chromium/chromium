@@ -45,6 +45,7 @@ class WelcomeToChromeViewControllerTest : public PlatformTest {
                                              web_state_list);
     controller_ =
         [[WelcomeToChromeViewController alloc] initWithBrowser:browser_.get()
+                                                   mainBrowser:browser_.get()
                                                      presenter:nil
                                                     dispatcher:nil];
     [controller_ loadView];
