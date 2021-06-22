@@ -80,14 +80,6 @@ void SendTabToSelfBubbleViewImpl::WindowClosing() {
   }
 }
 
-void SendTabToSelfBubbleViewImpl::OnPaint(gfx::Canvas* canvas) {
-  views::BubbleDialogDelegateView::OnPaint(canvas);
-}
-
-void SendTabToSelfBubbleViewImpl::Show(DisplayReason reason) {
-  ShowForReason(reason);
-}
-
 void SendTabToSelfBubbleViewImpl::DeviceButtonPressed(
     SendTabToSelfBubbleDeviceButton* device_button) {
   if (!controller_)

@@ -15,10 +15,6 @@
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 
-namespace gfx {
-class Canvas;
-}  // namespace gfx
-
 namespace content {
 class WebContents;
 }  // namespace content
@@ -52,12 +48,6 @@ class SendTabToSelfBubbleViewImpl : public SendTabToSelfBubbleView,
   bool ShouldShowCloseButton() const override;
   std::u16string GetWindowTitle() const override;
   void WindowClosing() override;
-
-  // LocationBarBubbleDelegateView:
-  void OnPaint(gfx::Canvas* canvas) override;
-
-  // Shows the bubble view.
-  void Show(DisplayReason reason);
 
   void DeviceButtonPressed(SendTabToSelfBubbleDeviceButton* device_button);
 
