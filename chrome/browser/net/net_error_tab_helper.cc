@@ -72,7 +72,7 @@ void NetErrorTabHelper::RenderFrameCreated(
 
 void NetErrorTabHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInMainFrame())
+  if (!navigation_handle->IsInPrimaryMainFrame())
     return;
 
   if (net::IsHostnameResolutionError(navigation_handle->GetNetErrorCode())) {

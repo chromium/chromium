@@ -147,6 +147,7 @@ class NetErrorTabHelperTest : public ChromeRenderViewHostTestHarness {
       net_error = net::ERR_TIMED_OUT;
     content::MockNavigationHandle navigation_handle(
         bogus_url_, (main_frame == MAIN_FRAME) ? main_rfh() : subframe_);
+    navigation_handle.set_is_in_primary_main_frame(main_frame == MAIN_FRAME);
     navigation_handle.set_net_error_code(net_error);
     navigation_handle.set_has_committed(true);
     navigation_handle.set_is_error_page(true);

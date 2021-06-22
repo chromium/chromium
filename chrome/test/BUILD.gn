@@ -1543,6 +1543,7 @@ if (!is_android) {
       "../browser/net/ftp_browsertest.cc",
       "../browser/net/load_timing_browsertest.cc",
       "../browser/net/log_net_log_browsertest.cc",
+      "../browser/net/net_error_tab_helper_browsertest.cc",
       "../browser/net/netinfo_network_quality_estimator_holdback_browsertest.cc",
       "../browser/net/network_connection_tracker_browsertest.cc",
       "../browser/net/network_context_configuration_browsertest.cc",
