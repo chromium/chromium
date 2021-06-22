@@ -8883,7 +8883,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, WebMidiNotCached) {
 #if defined(OS_ANDROID)
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                        ChildImportanceTestForBackForwardCachedPagesTest) {
-  web_contents()->SetMainFrameImportance(ChildProcessImportance::MODERATE);
+  web_contents()->SetPrimaryMainFrameImportance(
+      ChildProcessImportance::MODERATE);
 
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));

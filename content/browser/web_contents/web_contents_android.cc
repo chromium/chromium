@@ -464,9 +464,9 @@ void WebContentsAndroid::OnShow(JNIEnv* env, const JavaParamRef<jobject>& obj) {
 void WebContentsAndroid::SetImportance(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj,
-    jint main_frame_importance) {
-  web_contents_->SetMainFrameImportance(
-      static_cast<ChildProcessImportance>(main_frame_importance));
+    jint primary_main_frame_importance) {
+  web_contents_->SetPrimaryMainFrameImportance(
+      static_cast<ChildProcessImportance>(primary_main_frame_importance));
 }
 
 void WebContentsAndroid::SuspendAllMediaPlayers(

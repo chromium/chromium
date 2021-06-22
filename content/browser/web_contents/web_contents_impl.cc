@@ -2237,7 +2237,7 @@ void WebContentsImpl::WriteIntoTrace(perfetto::TracedValue context) {
 }
 
 #if defined(OS_ANDROID)
-void WebContentsImpl::SetMainFrameImportance(
+void WebContentsImpl::SetPrimaryMainFrameImportance(
     ChildProcessImportance importance) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::SetMainFrameImportance",
                         "importance", static_cast<int>(importance));

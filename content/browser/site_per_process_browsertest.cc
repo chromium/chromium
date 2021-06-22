@@ -10042,7 +10042,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, TestChildProcessImportance) {
-  web_contents()->SetMainFrameImportance(ChildProcessImportance::MODERATE);
+  web_contents()->SetPrimaryMainFrameImportance(
+      ChildProcessImportance::MODERATE);
 
   // Construct root page with one child in different domain.
   GURL main_url(embedded_test_server()->GetURL(
@@ -10061,13 +10062,14 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, TestChildProcessImportance) {
       child->current_frame_host()->GetProcess()->GetEffectiveImportance());
 
   // Check setting importance.
-  web_contents()->SetMainFrameImportance(ChildProcessImportance::NORMAL);
+  web_contents()->SetPrimaryMainFrameImportance(ChildProcessImportance::NORMAL);
   EXPECT_EQ(ChildProcessImportance::NORMAL,
             root->current_frame_host()->GetProcess()->GetEffectiveImportance());
   EXPECT_EQ(
       ChildProcessImportance::NORMAL,
       child->current_frame_host()->GetProcess()->GetEffectiveImportance());
-  web_contents()->SetMainFrameImportance(ChildProcessImportance::IMPORTANT);
+  web_contents()->SetPrimaryMainFrameImportance(
+      ChildProcessImportance::IMPORTANT);
   EXPECT_EQ(ChildProcessImportance::IMPORTANT,
             root->current_frame_host()->GetProcess()->GetEffectiveImportance());
   EXPECT_EQ(

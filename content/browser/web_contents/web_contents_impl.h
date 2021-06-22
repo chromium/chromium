@@ -333,7 +333,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   bool HasAccessedInitialDocument();
 
 #if defined(OS_ANDROID)
-  void SetMainFrameImportance(ChildProcessImportance importance);
+  void SetPrimaryMainFrameImportance(ChildProcessImportance importance);
 #endif
 
   // WebContents ------------------------------------------------------

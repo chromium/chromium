@@ -580,10 +580,10 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
     }
 
     @Override
-    public void setImportance(@ChildProcessImportance int mainFrameImportance) {
+    public void setImportance(@ChildProcessImportance int primaryMainFrameImportance) {
         checkNotDestroyed();
         WebContentsImplJni.get().setImportance(
-                mNativeWebContentsAndroid, WebContentsImpl.this, mainFrameImportance);
+                mNativeWebContentsAndroid, WebContentsImpl.this, primaryMainFrameImportance);
     }
 
     @Override
