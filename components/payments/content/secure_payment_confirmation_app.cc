@@ -321,31 +321,31 @@ void SecurePaymentConfirmationApp::OnGetAssertion(
   // Serialize response into a JSON string. Browser will pass this string over
   // Mojo IPC into Blink, which will parse it into a JavaScript object for the
   // merchant.
-  auto info_json = std::make_unique<base::DictionaryValue>();
+  base::DictionaryValue info_json;
   if (response->info) {
-    info_json->SetString("id", response->info->id);
-    info_json->SetString("client_data_json",
-                         EncodeSecurePaymentConfirmationString(
-                             response->info->client_data_json));
-    info_json->SetString("authenticator_data",
-                         EncodeSecurePaymentConfirmationString(
-                             response->info->authenticator_data));
+    info_json.SetString("id", response->info->id);
+    info_json.SetString("client_data_json",
+                        EncodeSecurePaymentConfirmationString(
+                            response->info->client_data_json));
+    info_json.SetString("authenticator_data",
+                        EncodeSecurePaymentConfirmationString(
+                            response->info->authenticator_data));
   }
 
-  auto prf_results_json = std::make_unique<base::DictionaryValue>();
+  base::DictionaryValue prf_results_json;
   if (response->prf_results) {
     DCHECK(!response->prf_results->id.has_value());
-    prf_results_json->SetString("first", EncodeSecurePaymentConfirmationString(
-                                             response->prf_results->first));
+    prf_results_json.SetString("first", EncodeSecurePaymentConfirmationString(
+                                            response->prf_results->first));
     if (response->prf_results->second) {
-      prf_results_json->SetString("second",
-                                  EncodeSecurePaymentConfirmationString(
-                                      *response->prf_results->second));
+      prf_results_json.SetString("second",
+                                 EncodeSecurePaymentConfirmationString(
+                                     *response->prf_results->second));
     }
   }
 
   base::DictionaryValue json;
-  json.Set("info", std::move(info_json));
+  json.SetKey("info", std::move(info_json));
   json.SetString("challenge", challenge_);
   json.SetString("signature",
                  EncodeSecurePaymentConfirmationString(response->signature));
@@ -356,7 +356,7 @@ void SecurePaymentConfirmationApp::OnGetAssertion(
   json.SetBoolean("echo_appid_extension", response->echo_appid_extension);
   json.SetBoolean("appid_extension", response->appid_extension);
   json.SetBoolean("echo_prf", response->echo_prf);
-  json.Set("prf_results", std::move(prf_results_json));
+  json.SetKey("prf_results", std::move(prf_results_json));
   json.SetBoolean("prf_not_evaluated", response->echo_prf);
 
   std::string json_serialized_response;

@@ -26,13 +26,13 @@ TEST(PaymentRequestTest, PaymentDetailsFromDictionaryValueSuccess) {
   expected.total->amount->currency = "GBP";
   expected.total->amount->value = "6.66";
 
-  auto total_dict = std::make_unique<base::DictionaryValue>();
-  total_dict->SetString("label", "TOTAL");
-  auto amount_dict = std::make_unique<base::DictionaryValue>();
-  amount_dict->SetString("currency", "GBP");
-  amount_dict->SetString("value", "6.66");
-  total_dict->Set("amount", std::move(amount_dict));
-  details_dict.Set("total", std::move(total_dict));
+  base::DictionaryValue total_dict;
+  total_dict.SetString("label", "TOTAL");
+  base::DictionaryValue amount_dict;
+  amount_dict.SetString("currency", "GBP");
+  amount_dict.SetString("value", "6.66");
+  total_dict.SetKey("amount", std::move(amount_dict));
+  details_dict.SetKey("total", std::move(total_dict));
 
   EXPECT_TRUE(
       actual.FromDictionaryValue(details_dict, /*requires_total=*/false));

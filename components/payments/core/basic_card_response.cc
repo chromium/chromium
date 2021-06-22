@@ -47,8 +47,9 @@ std::unique_ptr<base::DictionaryValue> BasicCardResponse::ToDictionaryValue()
   result->SetString(kCardExpiryMonth, expiry_month);
   result->SetString(kCardExpiryYear, expiry_year);
   result->SetString(kCardCardSecurityCode, card_security_code);
-  result->Set(kCardBillingAddress,
-              PaymentAddressToDictionaryValue(*billing_address));
+  result->SetKey(kCardBillingAddress,
+                 base::Value::FromUniquePtrValue(
+                     PaymentAddressToDictionaryValue(*billing_address)));
 
   return result;
 }

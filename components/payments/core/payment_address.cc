@@ -29,12 +29,12 @@ std::unique_ptr<base::DictionaryValue> PaymentAddressToDictionaryValue(
     const mojom::PaymentAddress& address) {
   auto result = std::make_unique<base::DictionaryValue>();
   result->SetString(kAddressCountry, address.country);
-  auto address_line_list = std::make_unique<base::ListValue>();
+  base::ListValue address_line_list;
   for (const std::string& address_line_string : address.address_line) {
     if (!address_line_string.empty())
-      address_line_list->AppendString(address_line_string);
+      address_line_list.AppendString(address_line_string);
   }
-  result->Set(kAddressAddressLine, std::move(address_line_list));
+  result->SetKey(kAddressAddressLine, std::move(address_line_list));
   result->SetString(kAddressRegion, address.region);
   result->SetString(kAddressCity, address.city);
   result->SetString(kAddressDependentLocality, address.dependent_locality);
