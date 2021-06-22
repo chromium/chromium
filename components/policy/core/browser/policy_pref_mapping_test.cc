@@ -33,9 +33,9 @@ namespace policy {
 
 namespace {
 
-// The name of the template example in policy_test_cases.json that does not need
+// The name of the instructions key in policy_test_cases.json that does not need
 // to be parsed.
-const char kTemplateSampleTest[] = "-- Template --";
+const char kInstructionKeyName[] = "-- Instructions --";
 
 enum class PrefLocation {
   kUserProfile,
@@ -385,7 +385,7 @@ class PolicyTestCases {
     }
     for (const auto& it : dict->DictItems()) {
       const std::string policy_name = GetPolicyName(it.first);
-      if (policy_name == kTemplateSampleTest)
+      if (policy_name == kInstructionKeyName)
         continue;
       auto policy_test_case =
           std::make_unique<PolicyTestCase>(it.first, it.second);

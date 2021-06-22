@@ -1,30 +1,5 @@
 {
-  "-- Template --": {
-    "intro": "This file is interpreted by ios/chrome/browser/policy/policy_unittest.cc",
-    "intro": "Tests that policies map to prefs properly.",
-    "intro": "Top-level entries map a policy name to its test parameters, described below. The name of the top level entry should be of the form <policy name>[.suffix]. The optional suffix is used for defining multiple test cases for a single policy.",
-    "intro": "To run tests from this file run ios_chrome_unittests and pass '--gtest_filter=PolicyTest*'.",
-
-
-    "intro": "The schema below is a subset of the schema in chrome/test/data/policy/policy_test_cases.json",
-    "can_be_recommended": "Whether a recommended value may be set for the policy. Defaults to |false| if not specified. Use |check_for_mandatory| and |check_for_recommended| if you want to provide separate test cases for mandatory/recommended. Otherwise, the same pref mapping is checked for both mandatory+recommended modes when enabled or only as mandatory if disabled.",
-    "note": "If the policy affects any preferences, the following array should be specified with one entry per such preference.",
-
-    "policy_pref_mapping_tests": [
-      {
-        "policies": "A policy dictionary that should affect |prefs| when set as mandatory or recommended policy.",
-        "prefs": {
-          "${pref}": {
-            "value": "If set, the |pref| is controlled by policy (not user modifiable) and should have this value. Either this or |default_value| should be set. Otherwise, if only one policy is specified |value| falls back to that policy's value.",
-            "default_value": "If set, the |pref| is not controlled by policy (user modifiable) and should have this value. Either this or |value| should be set.",
-            "location": "The location where the pref is registered, possible values are ['user_profile', 'signin_profile', 'local_state']. Defaults to 'user_profile' if not specified.",
-            "check_for_mandatory": "Should the preference be tested when a mandatory value is set for the policy? Defaults to |true| if not specified. See |can_be_recommended|.",
-            "check_for_recommended": "Should the preference be tested when a recommended value is set for the policy? Defaults to |true| if not specified. See |can_be_recommended|."
-          }
-        }
-      }
-    ]
-  },
+  "-- Instructions --": "See https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/enterprise/policy_pref_mapping_test.md (This file is interpreted by //ios/chrome/browser/policy/policy_unittest.mm)",
 
   "AutofillAddressEnabled": {
     "os": [ "ios" ],

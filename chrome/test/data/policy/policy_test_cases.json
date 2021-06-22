@@ -1,47 +1,5 @@
 {
-  "-- Template --": {
-    "intro": "This file is interpreted by chrome/browser/policy/policy_prefs_browsertest.cc",
-    "intro": "Tests that policies map to prefs properly and whether the corresponding Chrome settings UI behaves properly, e.g. if a policy is managed, the UI should be readonly and an icon with a properly worded tooltip should show up.",
-    "intro": "Top-level entries map a policy name to its test parameters, described below. The name of the top level entry should be of the form <policy name>[.suffix]. The optional suffix is used for defining multiple test cases for a single policy.",
-    "intro": "If a policy does not map into a pref (e.g. maps into CrosSettings or only read by daemon on CrOS) or can't be tested (e.g. external data policy), you have to add a |reason_for_missing_test| as explanation.",
-    "intro": "To run tests from this file use 'browser_tests --gtest_filter=*PolicyPrefsTest*' command.",
-    "os": [
-      "List of operating systems that support this policy. Valid values:",
-      "win",
-      "linux",
-      "mac",
-      "chromeos",
-      "android",
-      "Defaults to empty if not specified."
-    ],
-    "official_only": "Whether this policy exists in official builds only. Defaults to |false| if not specified.",
-    "can_be_recommended": "Whether a recommended value may be set for the policy. Defaults to |false| if not specified. Use |check_for_mandatory| and |check_for_recommended| if you want to provide separate test cases for mandatory/recommended. Otherwise, the same pref mapping is checked for both mandatory+recommended modes when enabled or only as mandatory if disabled.",
-    "note": "If the policy affects any preferences, the following array should be specified with one entry per such preference.",
-    "policy_pref_mapping_tests": [
-      {
-        "policies": "A policy dictionary that should affect |prefs| when set as mandatory or recommended policy.",
-        "policies_settings": {
-          "${policy}": {
-            "scope": "The scope of the policy, possible values are ['user', 'machine'] and the default value is 'user'",
-            "source": "The source of the policy, possible values are ['enterprise_default', 'command_line', 'cloud', 'active_directory', 'local_account_override', 'platform', 'priority_cloud', 'merged', 'cloud_from_ash'], the default value is 'cloud'"
-          }
-        },
-        "required_preprocessor_macros": [
-          "List of preprocessor macros that must be defined for the test to make sense. Macros are mapped into strings by PreprocessorMacroChecker in policy_prefs_browsertest.cc. If a test depends on a new macro, please add it there and to this list. Currently supported macros:",
-          "USE_CUPS"
-        ],
-        "prefs": {
-            "${pref}": {
-              "value": "If set, the |pref| is controlled by policy (not user modifiable) and should have this value. Either this or |default_value| should be set. Otherwise, if only one policy is specified |value| falls back to that policy's value.",
-              "default_value": "If set, the |pref| is not controlled by policy (user modifiable) and should have this value. Either this or |value| should be set.",
-              "location": "The location where the pref is registered, possible values are ['user_profile', 'signin_profile', 'local_state']. Defaults to 'user_profile' if not specified.",
-              "check_for_mandatory": "Should the preference be tested when a mandatory value is set for the policy? Defaults to |true| if not specified. See |can_be_recommended|.",
-              "check_for_recommended": "Should the preference be tested when a recommended value is set for the policy? Defaults to |true| if not specified. See |can_be_recommended|."
-            }
-          }
-      }
-    ]
-  },
+  "-- Instructions --": "See https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/enterprise/policy_pref_mapping_test.md (This file is interpreted by //chrome/browser/policy/policy_prefs_browsertest.cc)",
 
   "OverrideSecurityRestrictionsOnInsecureOrigin": {
     "os": ["win", "linux", "mac", "android", "chromeos"],
