@@ -32,6 +32,7 @@ import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.RenderCoordinates;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.url.GURL;
 
 /**
@@ -71,10 +72,12 @@ public class EphemeralTabSheetContent implements BottomSheetContent {
      * @param openNewTabCallback Callback invoked to open a new tab.
      * @param toolbarClickCallback Callback invoked when user clicks on the toolbar.
      * @param closeButtonCallback Callback invoked when user clicks on the close button.
-     * @param maxSheetHeight The height of the sheet in full height position.
+     * @param maxViewHeight The height of the sheet in full height position.
+     * @param intentRequestTracker The {@link IntentRequestTracker} of the current activity.
      */
     public EphemeralTabSheetContent(Context context, Runnable openNewTabCallback,
-            Runnable toolbarClickCallback, Runnable closeButtonCallback, int maxViewHeight) {
+            Runnable toolbarClickCallback, Runnable closeButtonCallback, int maxViewHeight,
+            IntentRequestTracker intentRequestTracker) {
         mContext = context;
         mOpenNewTabCallback = openNewTabCallback;
         mToolbarClickCallback = toolbarClickCallback;
@@ -82,7 +85,7 @@ public class EphemeralTabSheetContent implements BottomSheetContent {
         mToolbarHeightPx =
                 mContext.getResources().getDimensionPixelSize(R.dimen.sheet_tab_toolbar_height);
 
-        createThinWebView((int) (maxViewHeight * FULL_HEIGHT_RATIO));
+        createThinWebView((int) (maxViewHeight * FULL_HEIGHT_RATIO), intentRequestTracker);
         createToolbarView();
     }
 
@@ -106,8 +109,9 @@ public class EphemeralTabSheetContent implements BottomSheetContent {
      * Create a ThinWebView, add it to the view hierarchy, which represents the contents of the
      * bottom sheet.
      */
-    private void createThinWebView(int maxSheetHeight) {
-        mThinWebView = ThinWebViewFactory.create(mContext, new ThinWebViewConstraints());
+    private void createThinWebView(int maxSheetHeight, IntentRequestTracker intentRequestTracker) {
+        mThinWebView = ThinWebViewFactory.create(
+                mContext, new ThinWebViewConstraints(), intentRequestTracker);
 
         mSheetContentView = new FrameLayout(mContext);
         mThinWebView.getView().setLayoutParams(new FrameLayout.LayoutParams(

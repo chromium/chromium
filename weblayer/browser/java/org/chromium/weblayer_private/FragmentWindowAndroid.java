@@ -16,7 +16,9 @@ import androidx.fragment.app.FragmentManager;
 
 import org.chromium.ui.base.ActivityKeyboardVisibilityDelegate;
 import org.chromium.ui.base.ImmutableWeakReference;
-import org.chromium.ui.base.IntentWindowAndroid;
+import org.chromium.ui.base.IntentRequestTracker;
+import org.chromium.ui.base.IntentRequestTracker.Delegate;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.lang.ref.WeakReference;
@@ -25,16 +27,58 @@ import java.lang.ref.WeakReference;
  * Implements intent sending for a fragment based window. This should be created when
  * onAttach() is called on the fragment, and destroyed when onDetach() is called.
  */
-public class FragmentWindowAndroid extends IntentWindowAndroid {
-    private BrowserFragmentImpl mFragment;
+public class FragmentWindowAndroid extends WindowAndroid {
+    private final BrowserFragmentImpl mFragment;
     private ModalDialogManager mModalDialogManager;
 
-    // This WeakReference is purely to avoid gc churn of creating a new WeakReference in
-    // every getActivity call. It is not needed for correctness.
-    private ImmutableWeakReference<Activity> mActivityWeakRefHolder;
+    /**
+     * WebLayer's implementation of the delegate of a IntentRequestTracker.
+     */
+    private static class TrackerDelegateImpl implements Delegate {
+        private final RemoteFragmentImpl mFragment;
+        // This WeakReference is purely to avoid gc churn of creating a new WeakReference in
+        // every getActivity call. It is not needed for correctness.
+        private ImmutableWeakReference<Activity> mActivityWeakRefHolder;
 
-    FragmentWindowAndroid(Context context, BrowserFragmentImpl fragment) {
-        super(context);
+        /**
+         * Create an instance of delegate for the given fragment that will own the
+         * IntentRequestTracker.
+         * @param fragment The fragment that owns the IntentRequestTracker.
+         */
+        private TrackerDelegateImpl(RemoteFragmentImpl fragment) {
+            mFragment = fragment;
+        }
+
+        @Override
+        public boolean startActivityForResult(Intent intent, int requestCode) {
+            return mFragment.startActivityForResult(intent, requestCode, null);
+        }
+
+        @Override
+        public boolean startIntentSenderForResult(IntentSender intentSender, int requestCode) {
+            return mFragment.startIntentSenderForResult(
+                    intentSender, requestCode, new Intent(), 0, 0, 0, null);
+        }
+
+        @Override
+        public void finishActivity(int requestCode) {
+            Activity activity = getActivity().get();
+            if (activity == null) return;
+            activity.finishActivity(requestCode);
+        }
+
+        @Override
+        public final WeakReference<Activity> getActivity() {
+            if (mActivityWeakRefHolder == null
+                    || mActivityWeakRefHolder.get() != mFragment.getActivity()) {
+                mActivityWeakRefHolder = new ImmutableWeakReference<>(mFragment.getActivity());
+            }
+            return mActivityWeakRefHolder;
+        }
+    }
+
+    /* package */ FragmentWindowAndroid(Context context, BrowserFragmentImpl fragment) {
+        super(context, IntentRequestTracker.createFromDelegate(new TrackerDelegateImpl(fragment)));
         mFragment = fragment;
 
         setKeyboardDelegate(new ActivityKeyboardVisibilityDelegate(getActivity()));
@@ -42,23 +86,8 @@ public class FragmentWindowAndroid extends IntentWindowAndroid {
     }
 
     @Override
-    protected final boolean startIntentSenderForResult(IntentSender intentSender, int requestCode) {
-        return mFragment.startIntentSenderForResult(
-                intentSender, requestCode, new Intent(), 0, 0, 0, null);
-    }
-
-    @Override
-    protected final boolean startActivityForResult(Intent intent, int requestCode) {
-        return mFragment.startActivityForResult(intent, requestCode, null);
-    }
-
-    @Override
     public final WeakReference<Activity> getActivity() {
-        if (mActivityWeakRefHolder == null
-                || mActivityWeakRefHolder.get() != mFragment.getActivity()) {
-            mActivityWeakRefHolder = new ImmutableWeakReference<>(mFragment.getActivity());
-        }
-        return mActivityWeakRefHolder;
+        return getIntentRequestTracker().getActivity();
     }
 
     @Override

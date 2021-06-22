@@ -20,6 +20,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
@@ -41,11 +42,13 @@ public class MerchantTrustSignalsCoordinator {
     public MerchantTrustSignalsCoordinator(Context context, WindowAndroid windowAndroid,
             BottomSheetController bottomSheetController, View layoutView,
             MessageDispatcher messageDispatcher, ObservableSupplier<Tab> tabSupplier,
-            ObservableSupplier<Profile> profileSupplier, MerchantTrustMetrics metrics) {
+            ObservableSupplier<Profile> profileSupplier, MerchantTrustMetrics metrics,
+            IntentRequestTracker intentRequestTracker) {
         this(context, new MerchantTrustMessageScheduler(messageDispatcher, metrics), tabSupplier,
                 new MerchantTrustSignalsDataProvider(), metrics,
                 new MerchantTrustBottomSheetCoordinator(context, windowAndroid,
-                        bottomSheetController, tabSupplier, layoutView, metrics),
+                        bottomSheetController, tabSupplier, layoutView, metrics,
+                        intentRequestTracker),
                 new MerchantTrustSignalsStorageFactory(profileSupplier));
     }
 

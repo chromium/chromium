@@ -24,6 +24,7 @@ import org.chromium.components.thinwebview.ThinWebViewConstraints;
 import org.chromium.components.thinwebview.ThinWebViewFactory;
 import org.chromium.content_public.browser.MediaSession;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -48,16 +49,17 @@ public class VideoPlayerCoordinatorImpl implements VideoPlayerCoordinator {
      * @param webContentsFactory A supplier to supply WebContents and ContentView.
      * @param tryNowCallback Callback to be invoked when try now button is clicked.
      * @param closeCallback Callback to be invoked when this UI is closed.
+     * @param intentRequestTracker The {@link IntentRequestTracker} of the current activity.
      */
     public VideoPlayerCoordinatorImpl(Context context, VideoTutorialService videoTutorialService,
             Supplier<Pair<WebContents, ContentView>> webContentsFactory,
             LanguageInfoProvider languageInfoProvider, Callback<Tutorial> tryNowCallback,
-            Runnable closeCallback) {
+            Runnable closeCallback, IntentRequestTracker intentRequestTracker) {
         mContext = context;
         mVideoTutorialService = videoTutorialService;
         mModel = new PropertyModel(VideoPlayerProperties.ALL_KEYS);
 
-        ThinWebView thinWebView = createThinWebView(webContentsFactory);
+        ThinWebView thinWebView = createThinWebView(webContentsFactory, intentRequestTracker);
         mView = new VideoPlayerView(context, mModel, thinWebView);
         mLanguagePicker =
                 new LanguagePickerCoordinator(mView.getView().findViewById(R.id.language_picker),
@@ -91,7 +93,8 @@ public class VideoPlayerCoordinatorImpl implements VideoPlayerCoordinator {
     }
 
     private ThinWebView createThinWebView(
-            Supplier<Pair<WebContents, ContentView>> webContentsFactory) {
+            Supplier<Pair<WebContents, ContentView>> webContentsFactory,
+            IntentRequestTracker intentRequestTracker) {
         Pair<WebContents, ContentView> pair = webContentsFactory.get();
         mWebContents = pair.first;
         ContentView webContentView = pair.second;
@@ -101,7 +104,8 @@ public class VideoPlayerCoordinatorImpl implements VideoPlayerCoordinator {
 
         ThinWebViewConstraints constraints = new ThinWebViewConstraints();
         constraints.backgroundColor = Color.BLACK;
-        ThinWebView thinWebView = ThinWebViewFactory.create(mContext, constraints);
+        ThinWebView thinWebView =
+                ThinWebViewFactory.create(mContext, constraints, intentRequestTracker);
         thinWebView.attachWebContents(mWebContents, webContentView, mWebContentsDelegate);
         return thinWebView;
     }

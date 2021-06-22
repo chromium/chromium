@@ -47,6 +47,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.payments.mojom.PaymentDetailsModifier;
 import org.chromium.payments.mojom.PaymentMethodData;
 import org.chromium.ui.base.ActivityWindowAndroid;
+import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.test.util.DummyUiActivityTestCase;
 import org.chromium.url.GURL;
@@ -85,7 +86,8 @@ public class AndroidPaymentAppFinderUnitTest extends DummyUiActivityTestCase {
         MockitoAnnotations.initMocks(this);
 
         mWindowAndroid = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-            return new ActivityWindowAndroid(getActivity(), /* listenToActivityState= */ true);
+            return new ActivityWindowAndroid(getActivity(), /* listenToActivityState= */ true,
+                    IntentRequestTracker.createFromActivity(getActivity()));
         });
 
         NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();

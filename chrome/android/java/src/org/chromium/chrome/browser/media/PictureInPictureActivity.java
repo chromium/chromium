@@ -201,7 +201,8 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
 
     @Override
     protected ActivityWindowAndroid createWindowAndroid() {
-        return new ActivityWindowAndroid(this, /* listenToActivityState= */ true);
+        return new ActivityWindowAndroid(
+                this, /* listenToActivityState= */ true, getIntentRequestTracker());
     }
 
     @SuppressLint("NewApi")

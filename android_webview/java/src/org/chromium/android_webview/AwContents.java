@@ -6,6 +6,7 @@ package org.chromium.android_webview;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.ComponentCallbacks2;
 import android.content.Context;
 import android.content.Intent;
@@ -112,6 +113,7 @@ import org.chromium.network.mojom.ReferrerPolicy;
 import org.chromium.ui.VSyncMonitor;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.Clipboard;
+import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
@@ -1325,13 +1327,14 @@ public class AwContents implements SmartClipProvider {
         if (wrapper != null) return wrapper;
 
         try (ScopedSysTraceEvent e = ScopedSysTraceEvent.scoped("AwContents.getWindowAndroid")) {
-            boolean contextWrapsActivity = ContextUtils.activityFromContext(context) != null;
-            if (contextWrapsActivity) {
+            Activity activity = ContextUtils.activityFromContext(context);
+            if (activity != null) {
                 ActivityWindowAndroid activityWindow;
                 try (ScopedSysTraceEvent e2 =
                                 ScopedSysTraceEvent.scoped("AwContents.createActivityWindow")) {
                     final boolean listenToActivityState = false;
-                    activityWindow = new ActivityWindowAndroid(context, listenToActivityState);
+                    activityWindow = new ActivityWindowAndroid(context, listenToActivityState,
+                            IntentRequestTracker.createFromActivity(activity));
                 }
                 wrapper = new WindowAndroidWrapper(activityWindow);
             } else {

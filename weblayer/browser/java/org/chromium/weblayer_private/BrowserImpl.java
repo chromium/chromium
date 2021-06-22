@@ -23,6 +23,7 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.weblayer_private.interfaces.APICallException;
 import org.chromium.weblayer_private.interfaces.BrowserEmbeddabilityMode;
@@ -149,7 +150,9 @@ public class BrowserImpl extends IBrowser.Stub implements View.OnAttachStateChan
                 ? savedInstanceState.getByteArray(SAVED_STATE_MINIMAL_PERSISTENCE_STATE_KEY)
                 : null;
 
-        windowAndroid.restoreInstanceState(savedInstanceState);
+        IntentRequestTracker tracker = windowAndroid.getIntentRequestTracker();
+        assert tracker != null : "FragmentWindowAndroid must have an IntentRequestTracker";
+        tracker.restoreInstanceState(savedInstanceState);
 
         createAttachmentState(embedderAppContext, windowAndroid);
         mNativeBrowser = BrowserImplJni.get().createBrowser(profile.getNativeProfile(), this);
@@ -209,13 +212,17 @@ public class BrowserImpl extends IBrowser.Stub implements View.OnAttachStateChan
         }
 
         if (mWindowAndroid != null) {
-            mWindowAndroid.saveInstanceState(outState);
+            IntentRequestTracker tracker = mWindowAndroid.getIntentRequestTracker();
+            assert tracker != null;
+            tracker.saveInstanceState(outState);
         }
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (mWindowAndroid != null) {
-            mWindowAndroid.onActivityResult(requestCode, resultCode, data);
+            IntentRequestTracker tracker = mWindowAndroid.getIntentRequestTracker();
+            assert tracker != null;
+            tracker.onActivityResult(requestCode, resultCode, data, mWindowAndroid);
         }
     }
 

@@ -26,6 +26,7 @@ import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.version_info.VersionConstants;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ActivityWindowAndroid;
+import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -46,10 +47,12 @@ public class VideoPlayerActivity extends SynchronousInitializationActivity {
 
         VideoTutorialService videoTutorialService =
                 VideoTutorialServiceFactory.getForProfile(Profile.getLastUsedRegularProfile());
-        mWindowAndroid = new ActivityWindowAndroid(this, /* listenToActivityState= */ true);
+        IntentRequestTracker intentRequestTracker = IntentRequestTracker.createFromActivity(this);
+        mWindowAndroid = new ActivityWindowAndroid(
+                this, /* listenToActivityState= */ true, intentRequestTracker);
         mCoordinator = VideoTutorialServiceFactory.createVideoPlayerCoordinator(this,
                 videoTutorialService, this::createWebContents, new ChromeLanguageInfoProvider(),
-                this::tryNow, this::finish);
+                this::tryNow, this::finish, intentRequestTracker);
         setContentView(mCoordinator.getView());
 
         int featureType =

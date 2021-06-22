@@ -120,6 +120,7 @@ if (is_android) {
       "//components/embedder_support/android:content_view_java",
       "//content/public/android:content_java",
       "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+      "//ui/android:ui_no_recycler_view_java",
     ]
 
     # This internal file will be replaced by a generated file so the resulting

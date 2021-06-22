@@ -19,6 +19,7 @@ import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.embedder_support.view.ContentViewRenderView;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ActivityWindowAndroid;
+import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.WindowAndroid;
 
 class CastWebContentsScopes {
@@ -33,7 +34,8 @@ class CastWebContentsScopes {
             Activity activity, FrameLayout layout, @ColorInt int backgroundColor) {
         layout.setBackgroundColor(backgroundColor);
         return onLayoutInternal(activity, layout, () -> {
-            return new ActivityWindowAndroid(activity, /* listenToActivityState= */ true);
+            return new ActivityWindowAndroid(activity, /* listenToActivityState= */ true,
+                    IntentRequestTracker.createFromActivity(activity));
         }, backgroundColor);
     }
 

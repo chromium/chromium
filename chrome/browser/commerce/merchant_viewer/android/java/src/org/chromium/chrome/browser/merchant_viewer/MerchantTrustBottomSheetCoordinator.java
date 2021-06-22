@@ -23,6 +23,7 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.thinwebview.ThinWebView;
 import org.chromium.components.thinwebview.ThinWebViewConstraints;
 import org.chromium.components.thinwebview.ThinWebViewFactory;
+import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -43,6 +44,7 @@ public class MerchantTrustBottomSheetCoordinator implements View.OnLayoutChangeL
     private BottomSheetToolbarView mToolbarView;
     private PropertyModel mToolbarModel;
     private PropertyModelChangeProcessor mModelChangeProcessor;
+    private final IntentRequestTracker mIntentRequestTracker;
 
     /**
      * Creates a new instance.
@@ -51,14 +53,16 @@ public class MerchantTrustBottomSheetCoordinator implements View.OnLayoutChangeL
      * @param bottomSheetController {@BottomSheetController} instance.
      * @param tabSupplier provider to obtain {@link Tab}.
      * @param layoutView decor view.
+     * @param intentRequestTracker The {@link IntentRequestTracker} of the current activity.
      */
     public MerchantTrustBottomSheetCoordinator(Context context, WindowAndroid windowAndroid,
             BottomSheetController bottomSheetController, Supplier<Tab> tabSupplier, View layoutView,
-            MerchantTrustMetrics metrics) {
+            MerchantTrustMetrics metrics, IntentRequestTracker intentRequestTracker) {
         mContext = context;
         mBottomSheetController = bottomSheetController;
         mLayoutView = layoutView;
         mMetrics = metrics;
+        mIntentRequestTracker = intentRequestTracker;
 
         mMediator = new MerchantTrustBottomSheetMediator(context, windowAndroid, metrics);
     }
@@ -155,7 +159,8 @@ public class MerchantTrustBottomSheetCoordinator implements View.OnLayoutChangeL
     }
 
     private void createThinWebView() {
-        mThinWebView = ThinWebViewFactory.create(mContext, new ThinWebViewConstraints());
+        mThinWebView = ThinWebViewFactory.create(
+                mContext, new ThinWebViewConstraints(), mIntentRequestTracker);
         mThinWebView.getView().setLayoutParams(new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 (int) (getMaxViewHeight() * MerchantTrustBottomSheetContent.FULL_HEIGHT_RATIO)

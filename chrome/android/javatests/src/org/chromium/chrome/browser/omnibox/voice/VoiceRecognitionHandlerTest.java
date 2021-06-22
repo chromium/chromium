@@ -14,7 +14,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -70,6 +69,7 @@ import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.AndroidPermissionDelegate;
+import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.PermissionCallback;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.base.WindowAndroid.IntentCallback;
@@ -478,8 +478,9 @@ public class VoiceRecognitionHandlerTest {
         private Intent mCancelableIntent;
         private IntentCallback mCallback;
 
-        public TestWindowAndroid(Context context) {
-            super(context, /* listenToActivityState= */ true);
+        public TestWindowAndroid(Activity activity) {
+            super(activity, /* listenToActivityState= */ true,
+                    IntentRequestTracker.createFromActivity(activity));
         }
 
         public void setCancelableIntentSuccess(boolean success) {

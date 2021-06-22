@@ -30,6 +30,7 @@ import org.chromium.components.thinwebview.ThinWebViewConstraints;
 import org.chromium.components.thinwebview.ThinWebViewFactory;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -47,6 +48,7 @@ public class ContextualSearchPanelCoordinator implements ContextualSearchPanelIn
     private final float mFullHeightFraction;
 
     private final ContextualSearchPanelMetrics mPanelMetrics;
+    private final IntentRequestTracker mIntentRequestTracker;
 
     private ContextualSearchSheetContent mSheetContent;
     private ViewGroup mSheetContentView;
@@ -65,9 +67,11 @@ public class ContextualSearchPanelCoordinator implements ContextualSearchPanelIn
      * @param windowAndroid The associated {@link WindowAndroid}.
      * @param bottomSheetController The {@link BottomSheetController} that will manage the sheet.
      * @param tabHeightSupplier The {@link Supplier} for the tab height.
+     * @param intentRequestTracker The {@link IntentRequestTracker} of the current activity.
      */
     public ContextualSearchPanelCoordinator(Context context, WindowAndroid windowAndroid,
-            BottomSheetController bottomSheetController, Supplier<Integer> tabHeightSupplier) {
+            BottomSheetController bottomSheetController, Supplier<Integer> tabHeightSupplier,
+            IntentRequestTracker intentRequestTracker) {
         mContext = context;
         mWindowAndroid = windowAndroid;
         mPanelMetrics = new ContextualSearchPanelMetrics();
@@ -79,6 +83,7 @@ public class ContextualSearchPanelCoordinator implements ContextualSearchPanelIn
                 org.chromium.chrome.R.dimen.sheet_tab_toolbar_height);
         mFullHeightFraction = ResourcesCompat.getFloat(resources,
                 org.chromium.chrome.R.dimen.contextual_search_sheet_full_height_fraction);
+        mIntentRequestTracker = intentRequestTracker;
     }
 
     private void createWebContents() {
@@ -111,7 +116,8 @@ public class ContextualSearchPanelCoordinator implements ContextualSearchPanelIn
         }
 
         final int maxHeight = (int) (mTabHeightSupplier.get() * mFullHeightFraction);
-        mThinWebView = ThinWebViewFactory.create(mContext, new ThinWebViewConstraints());
+        mThinWebView = ThinWebViewFactory.create(
+                mContext, new ThinWebViewConstraints(), mIntentRequestTracker);
         mThinWebView.getView().setLayoutParams(new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, maxHeight - mToolbarHeightPx));
         mThinWebView.attachWebContents(mWebContents, mWebContentView, null);

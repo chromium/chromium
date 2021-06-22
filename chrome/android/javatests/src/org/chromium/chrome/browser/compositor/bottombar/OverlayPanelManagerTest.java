@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.ActivityWindowAndroid;
+import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 import org.chromium.ui.test.util.DummyUiActivityTestCase;
@@ -147,7 +148,8 @@ public class OverlayPanelManagerTest extends DummyUiActivityTestCase {
     @Before
     public void setUp() {
         mWindowAndroid = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-            return new ActivityWindowAndroid(getActivity(), /* listenToActivityState= */ true);
+            return new ActivityWindowAndroid(getActivity(), /* listenToActivityState= */ true,
+                    IntentRequestTracker.createFromActivity(getActivity()));
         });
     }
 

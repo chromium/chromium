@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.ActivityWindowAndroid;
+import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.test.util.DummyUiActivityTestCase;
 /**
@@ -249,7 +250,8 @@ public class OverlayPanelEventFilterTest extends DummyUiActivityTestCase {
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mWindowAndroid =
-                    new ActivityWindowAndroid(getActivity(), /* listenToActivityState= */ true);
+                    new ActivityWindowAndroid(getActivity(), /* listenToActivityState= */ true,
+                            IntentRequestTracker.createFromActivity(getActivity()));
             mActivity = getActivity();
 
             mPanel = new MockOverlayPanel(context, mLayoutManager, new OverlayPanelManager(),

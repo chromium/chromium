@@ -42,6 +42,7 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.ActivityWindowAndroid;
+import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.url.GURL;
@@ -180,8 +181,11 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
                 }
             };
             mBottomSheetController.addObserver(mSheetObserver);
+            IntentRequestTracker intentRequestTracker = mWindow.getIntentRequestTracker();
+            assert intentRequestTracker
+                    != null : "ActivityWindowAndroid must have a IntentRequestTracker.";
             mSheetContent = new EphemeralTabSheetContent(mContext, this::openInNewTab,
-                    this::onToolbarClick, this::close, getMaxViewHeight());
+                    this::onToolbarClick, this::close, getMaxViewHeight(), intentRequestTracker);
             mMediator.init(mWebContents, mContentView, mSheetContent, profile);
             mLayoutView.addOnLayoutChangeListener(this);
         }

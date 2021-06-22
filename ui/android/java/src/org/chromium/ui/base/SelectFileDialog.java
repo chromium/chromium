@@ -740,7 +740,7 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
         }
 
         onFileNotSelected();
-        window.showError(R.string.opening_file_error);
+        WindowAndroid.showError(R.string.opening_file_error);
     }
 
     private void onFileNotSelected() {
@@ -920,7 +920,7 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
         protected void onPostExecute(Boolean result) {
             if (result) {
                 onFileSelected(mNativeSelectFileDialog, mFilePath, "");
-                mWindow.showError(R.string.opening_file_error);
+                WindowAndroid.showError(R.string.opening_file_error);
             } else {
                 onFileNotSelected();
             }

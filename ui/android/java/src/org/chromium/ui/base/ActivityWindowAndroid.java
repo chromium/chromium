@@ -5,11 +5,7 @@
 package org.chromium.ui.base;
 
 import android.app.Activity;
-import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentSender;
-import android.content.IntentSender.SendIntentException;
 
 import androidx.annotation.NonNull;
 
@@ -25,8 +21,8 @@ import java.lang.ref.WeakReference;
  * Only instantiate this class when you need the implemented features.
  */
 public class ActivityWindowAndroid
-        extends IntentWindowAndroid implements ApplicationStatus.ActivityStateListener {
-    private boolean mListenToActivityState;
+        extends WindowAndroid implements ApplicationStatus.ActivityStateListener {
+    private final boolean mListenToActivityState;
 
     // Just create one ImmutableWeakReference object to avoid gc churn.
     private ImmutableWeakReference<Activity> mActivityWeakRefHolder;
@@ -35,13 +31,16 @@ public class ActivityWindowAndroid
      * Creates an Activity-specific WindowAndroid with associated intent functionality.
      * @param context Context wrapping an activity associated with the WindowAndroid.
      * @param listenToActivityState Whether to listen to activity state changes.
+     * @param intentRequestTracker The {@link IntentRequestTracker} of the current activity.
      */
-    public ActivityWindowAndroid(Context context, boolean listenToActivityState) {
+    public ActivityWindowAndroid(Context context, boolean listenToActivityState,
+            IntentRequestTracker intentRequestTracker) {
         this(context, listenToActivityState,
                 new ActivityAndroidPermissionDelegate(
                         new WeakReference<Activity>(ContextUtils.activityFromContext(context))),
                 new ActivityKeyboardVisibilityDelegate(
-                        new WeakReference<Activity>(ContextUtils.activityFromContext(context))));
+                        new WeakReference<Activity>(ContextUtils.activityFromContext(context))),
+                intentRequestTracker);
     }
 
     /**
@@ -49,13 +48,15 @@ public class ActivityWindowAndroid
      * @param context Context wrapping an activity associated with the WindowAndroid.
      * @param listenToActivityState Whether to listen to activity state changes.
      * @param keyboardVisibilityDelegate Delegate which handles keyboard visibility.
+     * @param intentRequestTracker The {@link IntentRequestTracker} of the current activity.
      */
     public ActivityWindowAndroid(Context context, boolean listenToActivityState,
-            @NonNull ActivityKeyboardVisibilityDelegate keyboardVisibilityDelegate) {
+            @NonNull ActivityKeyboardVisibilityDelegate keyboardVisibilityDelegate,
+            IntentRequestTracker intentRequestTracker) {
         this(context, listenToActivityState,
                 new ActivityAndroidPermissionDelegate(
                         new WeakReference<Activity>(ContextUtils.activityFromContext(context))),
-                keyboardVisibilityDelegate);
+                keyboardVisibilityDelegate, intentRequestTracker);
     }
 
     /**
@@ -63,12 +64,13 @@ public class ActivityWindowAndroid
      * @param context Context wrapping an activity associated with the WindowAndroid.
      * @param listenToActivityState Whether to listen to activity state changes.
      * @param activityAndroidPermissionDelegate Delegates which handles android permissions.
-     * @param keyboardVisibilityDelegate Delegate which handles keyboard visibility.
+     * @param intentRequestTracker The {@link IntentRequestTracker} of the current activity.
      */
-    public ActivityWindowAndroid(Context context, boolean listenToActivityState,
+    private ActivityWindowAndroid(Context context, boolean listenToActivityState,
             ActivityAndroidPermissionDelegate activityAndroidPermissionDelegate,
-            ActivityKeyboardVisibilityDelegate activityKeyboardVisibilityDelegate) {
-        super(context);
+            ActivityKeyboardVisibilityDelegate activityKeyboardVisibilityDelegate,
+            IntentRequestTracker intentRequestTracker) {
+        super(context, intentRequestTracker);
         Activity activity = ContextUtils.activityFromContext(context);
         if (activity == null) {
             throw new IllegalArgumentException("Context is not and does not wrap an Activity");
@@ -85,32 +87,6 @@ public class ActivityWindowAndroid
     @Override
     public ActivityKeyboardVisibilityDelegate getKeyboardDelegate() {
         return (ActivityKeyboardVisibilityDelegate) super.getKeyboardDelegate();
-    }
-
-    @Override
-    protected final boolean startIntentSenderForResult(IntentSender intentSender, int requestCode) {
-        Activity activity = getActivity().get();
-        if (activity == null) return false;
-
-        try {
-            activity.startIntentSenderForResult(intentSender, requestCode, new Intent(), 0, 0, 0);
-        } catch (SendIntentException e) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    protected final boolean startActivityForResult(Intent intent, int requestCode) {
-        Activity activity = getActivity().get();
-        if (activity == null) return false;
-
-        try {
-            activity.startActivityForResult(intent, requestCode);
-        } catch (ActivityNotFoundException e) {
-            return false;
-        }
-        return true;
     }
 
     @Override

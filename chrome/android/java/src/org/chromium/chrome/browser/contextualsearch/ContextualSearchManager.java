@@ -78,6 +78,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.contextual_search.mojom.OverlayPosition;
 import org.chromium.net.NetworkChangeNotifier;
+import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.touch_selection.SelectionEventType;
 import org.chromium.url.GURL;
@@ -326,11 +327,13 @@ public class ContextualSearchManager
      * @param toolbarHeightDp The height of the toolbar in dp.
      * @param toolbarManager The manager of the toolbar, used to query toolbar state.
      * @param activityType The type of the current activity.
+     * @param intentRequestTracker The {@link IntentRequestTracker} of the current activity.
      */
     public void initialize(@NonNull ViewGroup parentView, @NonNull LayoutManagerImpl layoutManager,
             @NonNull BottomSheetController bottomSheetController,
             @NonNull CompositorViewHolder compositorViewHolder, float toolbarHeightDp,
-            @NonNull ToolbarManager toolbarManager, @ActivityType int activityType) {
+            @NonNull ToolbarManager toolbarManager, @ActivityType int activityType,
+            @NonNull IntentRequestTracker intentRequestTracker) {
         mNativeContextualSearchManagerPtr = ContextualSearchManagerJni.get().init(this);
 
         mParentView = parentView;
@@ -341,8 +344,8 @@ public class ContextualSearchManager
         ContextualSearchPanelInterface panel;
         if (ChromeFeatureList.isEnabled(
                     ChromeFeatureList.CONTEXTUAL_SEARCH_THIN_WEB_VIEW_IMPLEMENTATION)) {
-            panel = new ContextualSearchPanelCoordinator(
-                    mActivity, mWindowAndroid, bottomSheetController, this::getBasePageHeight);
+            panel = new ContextualSearchPanelCoordinator(mActivity, mWindowAndroid,
+                    bottomSheetController, this::getBasePageHeight, intentRequestTracker);
         } else {
             panel = new ContextualSearchPanel(mActivity, mLayoutManager,
                     mLayoutManager.getOverlayPanelManager(), mBrowserControlsStateProvider,

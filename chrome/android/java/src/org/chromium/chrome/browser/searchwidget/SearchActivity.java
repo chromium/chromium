@@ -146,7 +146,8 @@ public class SearchActivity extends AsyncInitializationActivity
     @Override
     protected ActivityWindowAndroid createWindowAndroid() {
         return new ActivityWindowAndroid(this, /* listenToActivityState= */ true,
-                new SingleWindowKeyboardVisibilityDelegate(new WeakReference(this))) {
+                new SingleWindowKeyboardVisibilityDelegate(new WeakReference(this)),
+                getIntentRequestTracker()) {
             @Override
             public ModalDialogManager getModalDialogManager() {
                 return SearchActivity.this.getModalDialogManager();

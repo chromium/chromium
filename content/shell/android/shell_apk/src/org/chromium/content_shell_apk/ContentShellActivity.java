@@ -22,6 +22,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_shell.Shell;
 import org.chromium.content_shell.ShellManager;
 import org.chromium.ui.base.ActivityWindowAndroid;
+import org.chromium.ui.base.IntentRequestTracker;
 
 /**
  * Activity for managing the Content Shell.
@@ -40,6 +41,7 @@ public class ContentShellActivity extends Activity {
     private ActivityWindowAndroid mWindowAndroid;
     private Intent mLastSentIntent;
     private String mStartupUrl;
+    private IntentRequestTracker mIntentRequestTracker;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -61,8 +63,10 @@ public class ContentShellActivity extends Activity {
         setContentView(R.layout.content_shell_activity);
         mShellManager = findViewById(R.id.shell_container);
         final boolean listenToActivityState = true;
-        mWindowAndroid = new ActivityWindowAndroid(this, listenToActivityState);
-        mWindowAndroid.restoreInstanceState(savedInstanceState);
+        mIntentRequestTracker = IntentRequestTracker.createFromActivity(this);
+        mWindowAndroid =
+                new ActivityWindowAndroid(this, listenToActivityState, mIntentRequestTracker);
+        mIntentRequestTracker.restoreInstanceState(savedInstanceState);
         mShellManager.setWindow(mWindowAndroid);
         // Set up the animation placeholder to be the SurfaceView. This disables the
         // SurfaceView's 'hole' clipping during animations that are notified to the window.
@@ -126,7 +130,7 @@ public class ContentShellActivity extends Activity {
             outState.putString(ACTIVE_SHELL_URL_KEY, webContents.getLastCommittedUrl().getSpec());
         }
 
-        mWindowAndroid.saveInstanceState(outState);
+        mIntentRequestTracker.saveInstanceState(outState);
     }
 
     @Override
@@ -170,7 +174,7 @@ public class ContentShellActivity extends Activity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        mWindowAndroid.onActivityResult(requestCode, resultCode, data);
+        mIntentRequestTracker.onActivityResult(requestCode, resultCode, data, mWindowAndroid);
     }
 
     @Override

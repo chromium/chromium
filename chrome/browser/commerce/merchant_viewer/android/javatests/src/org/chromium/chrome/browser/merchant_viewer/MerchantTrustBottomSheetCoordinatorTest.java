@@ -41,6 +41,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Stat
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.thinwebview.ThinWebView;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
@@ -99,7 +100,8 @@ public class MerchantTrustBottomSheetCoordinatorTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { mWindowAndroid = new WindowAndroid(mActivity); });
         mDetailsTabCoordinator = new MerchantTrustBottomSheetCoordinator(mActivity, mWindowAndroid,
-                mMockBottomSheetController, mMockTabProvider, mMockDecorView, mMockMetrics);
+                mMockBottomSheetController, mMockTabProvider, mMockDecorView, mMockMetrics,
+                IntentRequestTracker.createFromActivity(mActivity));
         mDetailsTabCoordinator.setMediatorForTesting(mMockMediator);
         requestOpenSheetAndVerify();
     }

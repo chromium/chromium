@@ -15,7 +15,6 @@ import androidx.annotation.Nullable;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ApplicationStatus;
-import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.ui.base.AndroidPermissionDelegate;
@@ -56,12 +55,6 @@ public class VrWindowAndroid
 
     @Override
     public int showCancelableIntent(Intent intent, IntentCallback callback, Integer errorId) {
-        return START_INTENT_FAILURE;
-    }
-
-    @Override
-    public int showCancelableIntent(
-            Callback<Integer> intentTrigger, IntentCallback callback, Integer errorId) {
         return START_INTENT_FAILURE;
     }
 

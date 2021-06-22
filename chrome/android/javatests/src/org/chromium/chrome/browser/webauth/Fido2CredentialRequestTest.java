@@ -62,6 +62,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.ActivityWindowAndroid;
+import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
@@ -166,7 +167,8 @@ public class Fido2CredentialRequestTest {
          * @param activity The app activity.
          */
         public MockActivityWindowAndroid(Activity activity) {
-            super(activity, /* listenToActivityState= */ true);
+            super(activity, /* listenToActivityState= */ true,
+                    IntentRequestTracker.createFromActivity(activity));
         }
 
         /**

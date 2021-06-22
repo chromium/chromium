@@ -430,11 +430,12 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             return;
         }
 
-        mMerchantTrustSignalsCoordinator = new MerchantTrustSignalsCoordinator(mActivity,
-                mActivity.getWindowAndroid(), getBottomSheetController(),
-                mActivity.getWindow().getDecorView(),
-                MessageDispatcherProvider.from(mActivity.getWindowAndroid()),
-                mActivity.getActivityTabProvider(), mProfileSupplier, new MerchantTrustMetrics());
+        mMerchantTrustSignalsCoordinator =
+                new MerchantTrustSignalsCoordinator(mActivity, mActivity.getWindowAndroid(),
+                        getBottomSheetController(), mActivity.getWindow().getDecorView(),
+                        MessageDispatcherProvider.from(mActivity.getWindowAndroid()),
+                        mActivity.getActivityTabProvider(), mProfileSupplier,
+                        new MerchantTrustMetrics(), mActivity.getIntentRequestTracker());
     }
 
     // Protected class methods

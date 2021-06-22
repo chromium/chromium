@@ -28,6 +28,7 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.SelectionClient;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -107,7 +108,10 @@ public class PaymentHandlerCoordinator {
         mPaymentHandlerWebContents.addObserver(mediator);
 
         mToolbarCoordinator.setCloseButtonOnClickCallback(mediator::onToolbarCloseButtonClicked);
-        ThinWebView thinWebView = ThinWebViewFactory.create(activity, new ThinWebViewConstraints());
+        IntentRequestTracker intentRequestTracker = windowAndroid.getIntentRequestTracker();
+        assert intentRequestTracker != null;
+        ThinWebView thinWebView = ThinWebViewFactory.create(
+                activity, new ThinWebViewConstraints(), intentRequestTracker);
         assert webContentView.getParent() == null;
         thinWebView.attachWebContents(mPaymentHandlerWebContents, webContentView, null);
         PaymentHandlerView view = new PaymentHandlerView(activity, mPaymentHandlerWebContents,

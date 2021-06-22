@@ -47,8 +47,10 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcherImp
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
+import org.chromium.ui.base.ActivityIntentRequestTrackerDelegate;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayUtil;
@@ -74,6 +76,7 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
             new ActivityLifecycleDispatcherImpl(this);
     private final MultiWindowModeStateDispatcherImpl mMultiWindowModeStateDispatcher =
             new MultiWindowModeStateDispatcherImpl(this);
+    private final IntentRequestTracker mIntentRequestTracker;
 
     /** Time at which onCreate is called. This is realtime, counted in ms since device boot. */
     private long mOnCreateTimestampMs;
@@ -104,6 +107,18 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
 
     public AsyncInitializationActivity() {
         mHandler = new Handler();
+        mIntentRequestTracker = IntentRequestTracker.createFromDelegate(
+                new ActivityIntentRequestTrackerDelegate(this) {
+                    @Override
+                    public boolean onCallbackNotFoundError(String error) {
+                        return onIntentCallbackNotFoundError(error);
+                    }
+                });
+    }
+
+    /** Get the tracker of this activity's intents. */
+    public IntentRequestTracker getIntentRequestTracker() {
+        return mIntentRequestTracker;
     }
 
     @CallSuper
@@ -344,13 +359,20 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
         mSavedInstanceState = savedInstanceState;
 
         mWindowAndroid = createWindowAndroid();
-        if (mWindowAndroid != null) {
-            getWindowAndroid().restoreInstanceState(getSavedInstanceState());
-        }
+        mIntentRequestTracker.restoreInstanceState(getSavedInstanceState());
         mModalDialogManagerSupplier.set(createModalDialogManager());
 
         mStartupDelayed = shouldDelayBrowserStartup();
         ChromeBrowserInitializer.getInstance().handlePreNativeStartupAndLoadLibraries(this);
+    }
+
+    /**
+     * A custom error handler for {@link IntentRequestTracker}. When false, the tracker will use
+     * the default error handler. Derived classes can override this method to customize the error
+     * handling.
+     */
+    protected boolean onIntentCallbackNotFoundError(String error) {
+        return false;
     }
 
     /**
@@ -662,8 +684,8 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
     @CallSuper
     @Override
     public boolean onActivityResultWithNative(int requestCode, int resultCode, Intent intent) {
-        if (mWindowAndroid != null
-                && mWindowAndroid.onActivityResult(requestCode, resultCode, intent)) {
+        if (mIntentRequestTracker.onActivityResult(
+                    requestCode, resultCode, intent, mWindowAndroid)) {
             return true;
         }
         mLifecycleDispatcher.dispatchOnActivityResultWithNative(requestCode, resultCode, intent);
@@ -687,7 +709,7 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        if (mWindowAndroid != null) mWindowAndroid.saveInstanceState(outState);
+        mIntentRequestTracker.saveInstanceState(outState);
 
         mLifecycleDispatcher.dispatchOnSaveInstanceState(outState);
     }

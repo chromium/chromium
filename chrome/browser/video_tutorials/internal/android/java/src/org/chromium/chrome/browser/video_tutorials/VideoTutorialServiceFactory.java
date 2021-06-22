@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.video_tutorials.player.VideoPlayerCoordinator
 import org.chromium.chrome.browser.video_tutorials.player.VideoPlayerCoordinatorImpl;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.IntentRequestTracker;
 
 /**
  * Basic factory that creates and returns an {@link VideoTutorialService} that is attached
@@ -54,9 +55,9 @@ public class VideoTutorialServiceFactory {
             VideoTutorialService videoTutorialService,
             Supplier<Pair<WebContents, ContentView>> webContentsFactory,
             LanguageInfoProvider languageInfoProvider, Callback<Tutorial> tryNowCallback,
-            Runnable closeCallback) {
+            Runnable closeCallback, IntentRequestTracker intentRequestTracker) {
         return new VideoPlayerCoordinatorImpl(context, videoTutorialService, webContentsFactory,
-                languageInfoProvider, tryNowCallback, closeCallback);
+                languageInfoProvider, tryNowCallback, closeCallback, intentRequestTracker);
     }
 
     /** See {@link TutorialListCoordinator}.*/

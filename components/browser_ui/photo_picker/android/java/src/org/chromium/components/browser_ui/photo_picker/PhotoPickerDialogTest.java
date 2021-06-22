@@ -42,6 +42,7 @@ import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.ui.base.ActivityWindowAndroid;
+import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.PhotoPickerListener;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
@@ -132,7 +133,8 @@ public class PhotoPickerDialogTest extends DummyUiActivityTestCase
     public void setUp() throws Exception {
         NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
         mWindowAndroid = TestThreadUtils.runOnUiThreadBlocking(() -> {
-            return new ActivityWindowAndroid(getActivity(), /* listenToActivityState= */ true);
+            return new ActivityWindowAndroid(getActivity(), /* listenToActivityState= */ true,
+                    IntentRequestTracker.createFromActivity(getActivity()));
         });
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             DecoderServiceHost.setIntentSupplier(

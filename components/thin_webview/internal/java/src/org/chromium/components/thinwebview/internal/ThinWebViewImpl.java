@@ -21,6 +21,7 @@ import org.chromium.components.thinwebview.ThinWebView;
 import org.chromium.components.thinwebview.ThinWebViewConstraints;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ActivityWindowAndroid;
+import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
@@ -29,7 +30,7 @@ import org.chromium.ui.base.WindowAndroid;
 @JNINamespace("thin_webview::android")
 public class ThinWebViewImpl extends FrameLayout implements ThinWebView {
     private final CompositorView mCompositorView;
-    private WindowAndroid mWindowAndroid;
+    private final WindowAndroid mWindowAndroid;
     private long mNativeThinWebViewImpl;
     private WebContents mWebContents;
     private View mContentView;
@@ -41,14 +42,15 @@ public class ThinWebViewImpl extends FrameLayout implements ThinWebView {
     /**
      * Creates a {@link ThinWebViewImpl} backed by a {@link Surface}.
      * @param context The Context to create this view.
-     * @param windowAndroid The associated {@code WindowAndroid} on which the view is to be
-     *         displayed.
      * @param constraints A set of constraints associated with this view.
+     * @param intentRequestTracker The {@link IntentRequestTracker} of the current activity.
      */
-    public ThinWebViewImpl(Context context, ThinWebViewConstraints constraints) {
+    public ThinWebViewImpl(Context context, ThinWebViewConstraints constraints,
+            IntentRequestTracker intentRequestTracker) {
         super(context);
         if (ContextUtils.activityFromContext(context) != null) {
-            mWindowAndroid = new ActivityWindowAndroid(context, /* listenToActivityState= */ true);
+            mWindowAndroid = new ActivityWindowAndroid(
+                    context, /* listenToActivityState= */ true, intentRequestTracker);
         } else {
             mWindowAndroid = new WindowAndroid(context);
         }
