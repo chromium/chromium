@@ -19,9 +19,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
-// TODO(nyquist): Change to optimization target for segmentation once available.
 const auto kOptimizationTarget = optimization_guide::proto::OptimizationTarget::
-    OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD;
+    OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
 }  // namespace
 
 namespace segmentation_platform {

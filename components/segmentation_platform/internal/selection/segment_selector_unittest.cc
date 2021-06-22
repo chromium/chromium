@@ -90,7 +90,7 @@ class SegmentSelectorTest : public testing::Test {
 
 TEST_F(SegmentSelectorTest, CheckDiscreteMapping) {
   OptimizationTarget segment_id =
-      OptimizationTarget::OPTIMIZATION_TARGET_PAGE_TOPICS;
+      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
   float mapping[][2] = {{0.2, 1}, {0.5, 3}, {0.7, 4}};
   segment_database_->AddDiscreteMapping(segment_id, mapping, 3);
   proto::SegmentInfo* segment_info =
@@ -112,12 +112,12 @@ TEST_F(SegmentSelectorTest, CheckDiscreteMapping) {
 
 TEST_F(SegmentSelectorTest, FindBestSegmentFlowWithTwoSegments) {
   OptimizationTarget segment_id =
-      OptimizationTarget::OPTIMIZATION_TARGET_PAGE_TOPICS;
+      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
   float mapping[][2] = {{0.2, 1}, {0.5, 3}, {0.7, 4}};
   segment_database_->AddDiscreteMapping(segment_id, mapping, 3);
 
   OptimizationTarget segment_id2 =
-      OptimizationTarget::OPTIMIZATION_TARGET_LANGUAGE_DETECTION;
+      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE;
   float mapping2[][2] = {{0.3, 1}, {0.4, 4}};
   segment_database_->AddDiscreteMapping(segment_id2, mapping2, 2);
 
@@ -137,7 +137,7 @@ TEST_F(SegmentSelectorTest, FindBestSegmentFlowWithTwoSegments) {
 
 TEST_F(SegmentSelectorTest, NewSegmentResultOverridesThePreviousBest) {
   OptimizationTarget segment_id1 =
-      OptimizationTarget::OPTIMIZATION_TARGET_PAGE_TOPICS;
+      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
   float mapping1[][2] = {{0.2, 1}, {0.5, 3}, {0.7, 4}};
   segment_database_->AddDiscreteMapping(segment_id1, mapping1, 3);
 
@@ -155,7 +155,7 @@ TEST_F(SegmentSelectorTest, NewSegmentResultOverridesThePreviousBest) {
 
   // Another model completes execution. The selection should update.
   OptimizationTarget segment_id2 =
-      OptimizationTarget::OPTIMIZATION_TARGET_LANGUAGE_DETECTION;
+      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE;
   float mapping2[][2] = {{0.3, 1}, {0.4, 4}};
   segment_database_->AddDiscreteMapping(segment_id2, mapping2, 2);
 
@@ -173,7 +173,7 @@ TEST_F(SegmentSelectorTest,
        GetSelectedSegmentReturnsResultFromPreviousSession) {
   // Initialize segment selector. It should read selected segment from prefs.
   OptimizationTarget segment_id0 =
-      OptimizationTarget::OPTIMIZATION_TARGET_LANGUAGE_DETECTION;
+      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE;
   SelectedSegment from_history(segment_id0);
   EXPECT_CALL(*prefs_, ReadSegmentationResultFromPref())
       .WillRepeatedly(Return(from_history));
@@ -186,7 +186,7 @@ TEST_F(SegmentSelectorTest,
 
   // Add results for a new segment.
   OptimizationTarget segment_id1 =
-      OptimizationTarget::OPTIMIZATION_TARGET_PAGE_TOPICS;
+      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
   float mapping1[][2] = {{0.2, 1}, {0.5, 3}, {0.7, 4}};
   segment_database_->AddDiscreteMapping(segment_id1, mapping1, 3);
 
