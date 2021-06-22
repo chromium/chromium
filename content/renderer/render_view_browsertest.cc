@@ -3282,7 +3282,7 @@ namespace {
 // trial features. Trial tokens for use in tests can be created with the
 // tool in /tools/origin_trials/generate_token.py, using the private key
 // contained in /tools/origin_trials/eftest.key.
-static const uint8_t kOriginTrialPublicKey[] = {
+static const blink::OriginTrialPublicKey kOriginTrialPublicKey = {
     0x75, 0x10, 0xac, 0xf9, 0x3a, 0x1c, 0xb8, 0xa9, 0x28, 0x70, 0xd2,
     0x9a, 0xd0, 0x0b, 0x59, 0xe1, 0xac, 0x2b, 0xb7, 0xd5, 0xca, 0x1f,
     0x64, 0x90, 0x08, 0x8e, 0xa8, 0xe0, 0x56, 0x3a, 0x04, 0xd0,
@@ -3294,19 +3294,18 @@ static const uint8_t kOriginTrialPublicKey[] = {
 // can be validated.
 class TestOriginTrialPolicy : public blink::OriginTrialPolicy {
  public:
-  TestOriginTrialPolicy() {
-    public_keys_.emplace_back(
-        reinterpret_cast<const char*>(kOriginTrialPublicKey),
-        base::size(kOriginTrialPublicKey));
-  }
+  TestOriginTrialPolicy() = default;
+
   bool IsOriginTrialsSupported() const override { return true; }
-  std::vector<base::StringPiece> GetPublicKeys() const override {
+  const std::vector<blink::OriginTrialPublicKey>& GetPublicKeys()
+      const override {
     return public_keys_;
   }
   bool IsOriginSecure(const GURL& url) const override { return true; }
 
  private:
-  std::vector<base::StringPiece> public_keys_;
+  std::vector<blink::OriginTrialPublicKey> public_keys_ = {
+      kOriginTrialPublicKey};
 };
 
 TEST_F(RenderViewImplTest, OriginTrialDisabled) {

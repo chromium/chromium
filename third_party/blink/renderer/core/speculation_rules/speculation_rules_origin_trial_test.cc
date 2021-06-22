@@ -24,7 +24,7 @@
 namespace blink {
 namespace {
 
-constexpr uint8_t kOriginTrialPublicKey[] = {
+constexpr OriginTrialPublicKey kOriginTrialPublicKey = {
     0x75, 0x10, 0xac, 0xf9, 0x3a, 0x1c, 0xb8, 0xa9, 0x28, 0x70, 0xd2,
     0x9a, 0xd0, 0x0b, 0x59, 0xe1, 0xac, 0x2b, 0xb7, 0xd5, 0xca, 0x1f,
     0x64, 0x90, 0x08, 0x8e, 0xa8, 0xe0, 0x56, 0x3a, 0x04, 0xd0,
@@ -68,11 +68,15 @@ class ScopedOriginTrialPolicy : public OriginTrialPolicy {
     TrialTokenValidator::ResetOriginTrialPolicyGetter();
   }
   bool IsOriginTrialsSupported() const override { return true; }
-  std::vector<base::StringPiece> GetPublicKeys() const override {
-    return {{reinterpret_cast<const char*>(kOriginTrialPublicKey),
-             base::size(kOriginTrialPublicKey)}};
+  const std::vector<blink::OriginTrialPublicKey>& GetPublicKeys()
+      const override {
+    return public_keys_;
   }
   bool IsOriginSecure(const GURL& url) const override { return true; }
+
+ private:
+  std::vector<blink::OriginTrialPublicKey> public_keys_ = {
+      kOriginTrialPublicKey};
 };
 
 // Similar to SpeculationRuleSettest.PropagatesToDocument.

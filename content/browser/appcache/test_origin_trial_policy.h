@@ -15,11 +15,12 @@ class TestOriginTrialPolicy : public blink::OriginTrialPolicy {
   ~TestOriginTrialPolicy() override;
 
   bool IsOriginTrialsSupported() const override;
-  std::vector<base::StringPiece> GetPublicKeys() const override;
+  const std::vector<blink::OriginTrialPublicKey>& GetPublicKeys()
+      const override;
   bool IsOriginSecure(const GURL& url) const override;
 
  private:
-  std::vector<base::StringPiece> public_keys_;
+  std::vector<blink::OriginTrialPublicKey> public_keys_;
 };
 
 }  // namespace content

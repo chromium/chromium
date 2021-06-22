@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_ORIGIN_TRIALS_ORIGIN_TRIAL_POLICY_H_
 
 #include "base/strings/string_piece.h"
+#include "third_party/blink/public/common/origin_trials/origin_trial_public_key.h"
 #include "url/gurl.h"
 
 namespace blink {
@@ -17,9 +18,7 @@ class OriginTrialPolicy {
   virtual ~OriginTrialPolicy() = default;
 
   virtual bool IsOriginTrialsSupported() const { return false; }
-  virtual std::vector<base::StringPiece> GetPublicKeys() const {
-    return std::vector<base::StringPiece>();
-  }
+  virtual const std::vector<OriginTrialPublicKey>& GetPublicKeys() const = 0;
   virtual bool IsFeatureDisabled(base::StringPiece feature) const {
     return false;
   }

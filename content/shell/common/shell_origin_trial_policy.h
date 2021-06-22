@@ -18,11 +18,12 @@ class ShellOriginTrialPolicy : public blink::OriginTrialPolicy {
 
   // blink::OriginTrialPolicy interface
   bool IsOriginTrialsSupported() const override;
-  std::vector<base::StringPiece> GetPublicKeys() const override;
+  const std::vector<blink::OriginTrialPublicKey>& GetPublicKeys()
+      const override;
   bool IsOriginSecure(const GURL& url) const override;
 
  private:
-  std::vector<base::StringPiece> public_keys_;
+  std::vector<blink::OriginTrialPublicKey> public_keys_;
 
   DISALLOW_COPY_AND_ASSIGN(ShellOriginTrialPolicy);
 };

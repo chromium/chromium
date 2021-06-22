@@ -23,7 +23,8 @@ class OriginTrialPolicyImpl : public blink::OriginTrialPolicy {
 
   // blink::OriginTrialPolicy interface
   bool IsOriginTrialsSupported() const override;
-  std::vector<base::StringPiece> GetPublicKeys() const override;
+  const std::vector<blink::OriginTrialPublicKey>& GetPublicKeys()
+      const override;
   bool IsFeatureDisabled(base::StringPiece feature) const override;
   bool IsFeatureDisabledForUser(base::StringPiece feature) const override;
   bool IsTokenDisabled(base::StringPiece token_signature) const override;
@@ -34,7 +35,7 @@ class OriginTrialPolicyImpl : public blink::OriginTrialPolicy {
   bool SetDisabledTokens(const std::string& disabled_token_list);
 
  private:
-  std::vector<std::string> public_keys_;
+  std::vector<blink::OriginTrialPublicKey> public_keys_;
   std::set<std::string> disabled_features_;
   std::set<std::string> disabled_tokens_;
 

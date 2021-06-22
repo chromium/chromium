@@ -59,13 +59,13 @@ TrialTokenResult TrialTokenValidator::ValidateToken(
   if (!policy || !policy->IsOriginTrialsSupported())
     return TrialTokenResult(OriginTrialTokenStatus::kNotSupported);
 
-  std::vector<base::StringPiece> public_keys = policy->GetPublicKeys();
+  std::vector<OriginTrialPublicKey> public_keys = policy->GetPublicKeys();
   if (public_keys.size() == 0)
     return TrialTokenResult(OriginTrialTokenStatus::kNotSupported);
 
   OriginTrialTokenStatus status;
   std::unique_ptr<TrialToken> trial_token;
-  for (auto& key : public_keys) {
+  for (OriginTrialPublicKey& key : public_keys) {
     trial_token = TrialToken::From(token, key, &status);
     if (status == OriginTrialTokenStatus::kSuccess)
       break;

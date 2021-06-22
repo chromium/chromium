@@ -11,6 +11,7 @@
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/common/common_export.h"
+#include "third_party/blink/public/common/origin_trials/origin_trial_public_key.h"
 #include "url/origin.h"
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size);
@@ -61,9 +62,10 @@ class BLINK_COMMON_EXPORT TrialToken {
   // appropriate for a given origin / feature. It only means that it is
   // correctly formatted and signed by the supplied public key, and can be
   // parsed.
-  static std::unique_ptr<TrialToken> From(base::StringPiece token_text,
-                                          base::StringPiece public_key,
-                                          OriginTrialTokenStatus* out_status);
+  static std::unique_ptr<TrialToken> From(
+      base::StringPiece token_text,
+      const OriginTrialPublicKey& public_key,
+      OriginTrialTokenStatus* out_status);
 
   // Returns success if this token is appropriate for use by the given origin
   // and has not yet expired. Otherwise, the return value indicates why the
@@ -102,7 +104,7 @@ class BLINK_COMMON_EXPORT TrialToken {
   // wrong with the string, and |out_token_payload|, |out_token_signature| and
   // |out_token_version| are unchanged.
   static OriginTrialTokenStatus Extract(base::StringPiece token_text,
-                                        base::StringPiece public_key,
+                                        const OriginTrialPublicKey& public_key,
                                         std::string* out_token_payload,
                                         std::string* out_token_signature,
                                         uint8_t* out_token_version);
@@ -118,7 +120,7 @@ class BLINK_COMMON_EXPORT TrialToken {
 
   static bool ValidateSignature(base::StringPiece signature_text,
                                 const std::string& data,
-                                base::StringPiece public_key);
+                                const OriginTrialPublicKey& public_key);
 
  private:
   TrialToken(const url::Origin& origin,
