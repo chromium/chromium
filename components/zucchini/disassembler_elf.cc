@@ -55,13 +55,17 @@ int JudgeSection(size_t image_size, const typename Traits::Elf_Shdr* section) {
   }
 
   // Examine RVA range: Reject if numerical overflow may happen.
-  if (!BufferRegion{section->sh_addr, section->sh_size}.FitsIn(kSizeBound))
+  if (!BufferRegion{static_cast<size_t>(section->sh_addr),
+                    static_cast<size_t>(section->sh_size)}
+           .FitsIn(kSizeBound))
     return SECTION_IS_MALFORMED;
 
   // Examine offset range: If section takes up |image| data then be stricter.
   size_t offset_bound =
       (section->sh_type == elf::SHT_NOBITS) ? kSizeBound : image_size;
-  if (!BufferRegion{section->sh_offset, section->sh_size}.FitsIn(offset_bound))
+  if (!BufferRegion{static_cast<size_t>(section->sh_offset),
+                    static_cast<size_t>(section->sh_size)}
+           .FitsIn(offset_bound))
     return SECTION_IS_MALFORMED;
 
   // Empty sections don't contribute to offset-RVA mapping. For consistency, it
@@ -283,7 +287,8 @@ bool DisassemblerElf<Traits>::ParseHeader() {
     base::CheckedNumeric<offset_t> checked_segment_end = segment->p_offset;
     checked_segment_end += segment->p_filesz;
     if (!checked_segment_end.AssignIfValid(&segment_end) ||
-        !image_.covers({segment->p_offset, segment->p_filesz})) {
+        !image_.covers({static_cast<size_t>(segment->p_offset),
+                        static_cast<size_t>(segment->p_filesz)})) {
       return false;
     }
     offset_bound = std::max(offset_bound, segment_end);
