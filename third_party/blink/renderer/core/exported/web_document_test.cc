@@ -8,8 +8,7 @@
 
 #include "base/cxx17_backports.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/origin_trials/origin_trial_policy.h"
-#include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
+#include "third_party/blink/public/common/origin_trials/scoped_test_origin_trial_policy.h"
 #include "third_party/blink/public/web/web_origin_trials.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
@@ -128,72 +127,23 @@ TEST_F(WebDocumentTest, InsertAndRemoveStyleSheet) {
             style_after_removing.VisitedDependentColor(GetCSSPropertyColor()));
 }
 
-namespace {
-
-// This is the public key which the test below will use to enable origin
-// trial features. Trial tokens for use in tests can be created with the
-// tool in /tools/origin_trials/generate_token.py, using the private key
-// contained in /tools/origin_trials/eftest.key.
-static const OriginTrialPublicKey kOriginTrialPublicKey = {
-    0x75, 0x10, 0xac, 0xf9, 0x3a, 0x1c, 0xb8, 0xa9, 0x28, 0x70, 0xd2,
-    0x9a, 0xd0, 0x0b, 0x59, 0xe1, 0xac, 0x2b, 0xb7, 0xd5, 0xca, 0x1f,
-    0x64, 0x90, 0x08, 0x8e, 0xa8, 0xe0, 0x56, 0x3a, 0x04, 0xd0,
-};
-
-}  // anonymous namespace
-
-// Origin Trial Policy which vends the test public key so that the token
-// can be validated.
-class TestOriginTrialPolicy : public blink::OriginTrialPolicy {
- public:
-  TestOriginTrialPolicy() {
-  }
-  bool IsOriginTrialsSupported() const override { return true; }
-  const std::vector<blink::OriginTrialPublicKey>& GetPublicKeys()
-      const override {
-    return public_keys_;
-  }
-  bool IsOriginSecure(const GURL& url) const override { return true; }
-
- private:
-  std::vector<blink::OriginTrialPublicKey> public_keys_ = {
-      kOriginTrialPublicKey};
-};
-
 TEST_F(WebDocumentTest, OriginTrialDisabled) {
-  // Set an origin trial policy.
-  TestOriginTrialPolicy policy;
-  blink::TrialTokenValidator::SetOriginTrialPolicyGetter(WTF::BindRepeating(
-      [](TestOriginTrialPolicy* policy_ptr) -> blink::OriginTrialPolicy* {
-        return policy_ptr;
-      },
-      base::Unretained(&policy)));
+  blink::ScopedTestOriginTrialPolicy policy;
 
   // Load a document with no origin trial token.
   LoadURL(std::string(kDefaultOrigin) + kNoOriginTrialDummyFilePath);
   WebDocument web_doc = TopWebDocument();
   EXPECT_FALSE(WebOriginTrials::isTrialEnabled(&web_doc, "Frobulate"));
-  // Reset the origin trial policy.
-  TrialTokenValidator::ResetOriginTrialPolicyGetter();
 }
 
 TEST_F(WebDocumentTest, OriginTrialEnabled) {
-  // Set an origin trial policy.
-  TestOriginTrialPolicy policy;
-  blink::TrialTokenValidator::SetOriginTrialPolicyGetter(WTF::BindRepeating(
-      [](TestOriginTrialPolicy* policy_ptr) -> blink::OriginTrialPolicy* {
-        return policy_ptr;
-      },
-      base::Unretained(&policy)));
-
+  blink::ScopedTestOriginTrialPolicy policy;
   // Load a document with a valid origin trial token for the test trial.
   LoadURL(std::string(kDefaultOrigin) + kOriginTrialDummyFilePath);
   WebDocument web_doc = TopWebDocument();
   EXPECT_TRUE(WebOriginTrials::isTrialEnabled(&web_doc, "Frobulate"));
   // Ensure that other trials are not also enabled
   EXPECT_FALSE(WebOriginTrials::isTrialEnabled(&web_doc, "NotATrial"));
-  // Reset the origin trial policy.
-  TrialTokenValidator::ResetOriginTrialPolicyGetter();
 }
 
 namespace {

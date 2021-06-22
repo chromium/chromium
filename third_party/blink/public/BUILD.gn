@@ -31,6 +31,7 @@ group("test_support") {
   testonly = true
   public_deps = [
     ":test_headers",
+    "//third_party/blink/common:test_support",
     "//third_party/blink/renderer/core/exported:test_support",
     "//third_party/blink/renderer/modules/exported:test_support",
     "//third_party/blink/renderer/modules/mediastream:test_support",
@@ -93,6 +94,7 @@ if (is_android) {
 source_set("test_headers") {
   testonly = true
   sources = [
+    "common/origin_trials/scoped_test_origin_trial_policy.h",
     "platform/scheduler/test/renderer_scheduler_test_support.h",
     "platform/scheduler/test/web_fake_thread_scheduler.h",
     "platform/scheduler/test/web_mock_thread_scheduler.h",

@@ -365,3 +365,13 @@ source_set("common_unittests_sources") {
 group("common_unittests_data") {
   data = [ "page_state/test_data/" ]
 }
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [ "origin_trials/scoped_test_origin_trial_policy.cc" ]
+
+  deps = [ "//third_party/blink/public:test_headers" ]
+
+  visibility = [ "//third_party/blink/public:test_support" ]
+}

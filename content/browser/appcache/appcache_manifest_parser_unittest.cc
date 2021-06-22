@@ -12,23 +12,15 @@
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "content/browser/appcache/appcache_manifest_parser.h"
-#include "content/browser/appcache/test_origin_trial_policy.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
+#include "third_party/blink/public/common/origin_trials/scoped_test_origin_trial_policy.h"
 #include "url/gurl.h"
 
 namespace content {
 
-static TestOriginTrialPolicy g_origin_trial_policy;
-
 class AppCacheManifestParserTest : public testing::Test {
-  void SetUp() override {
-    blink::TrialTokenValidator::SetOriginTrialPolicyGetter(base::BindRepeating(
-        []() -> blink::OriginTrialPolicy* { return &g_origin_trial_policy; }));
-  }
-  void TearDown() override {
-    blink::TrialTokenValidator::ResetOriginTrialPolicyGetter();
-  }
+ private:
+  blink::ScopedTestOriginTrialPolicy origin_trial_policy_;
 };
 
 TEST_F(AppCacheManifestParserTest, NoData) {
