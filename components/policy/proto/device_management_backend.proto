@@ -1337,6 +1337,14 @@ message BluetoothAdapterInfo {
   optional uint32 num_connected_devices = 4;
 }
 
+// Information from the device's SMBIOS. This is used to determine
+// info such as the device's vendor and product name/version.
+message SmbiosInfo {
+  optional string sys_vendor = 1;
+  optional string product_name = 2;
+  optional string product_version = 3;
+}
+
 // Report device level status.
 message DeviceStatusReportRequest {
   reserved 4, 7, 13, 20;
@@ -1456,6 +1464,9 @@ message DeviceStatusReportRequest {
 
   // Information about the device's Bluetooth adapters.
   repeated BluetoothAdapterInfo bluetooth_adapter_info = 40;
+
+  // Information from the device's SMBIOS.
+  optional SmbiosInfo smbios_info = 41;
 }
 
 message OsUpdateStatus {
