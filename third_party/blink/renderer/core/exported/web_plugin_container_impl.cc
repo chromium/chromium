@@ -176,10 +176,10 @@ void WebPluginContainerImpl::Paint(GraphicsContext& context,
   IntRect visual_rect = FrameRect();
   visual_rect.Move(paint_offset);
 
-  if (WantsWheelEvents()) {
-    context.GetPaintController().RecordScrollHitTestData(
-        *GetLayoutEmbeddedContent(), DisplayItem::kPluginScrollHitTest, nullptr,
-        visual_rect);
+  if (WantsWheelEvents() &&
+      base::FeatureList::IsEnabled(::features::kWheelEventRegions)) {
+    context.GetPaintController().RecordHitTestData(
+        *GetLayoutEmbeddedContent(), visual_rect, TouchAction::kAuto, true);
   }
 
   if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled() && layer_) {

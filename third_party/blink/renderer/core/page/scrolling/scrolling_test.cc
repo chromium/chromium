@@ -1319,9 +1319,9 @@ TEST_P(ScrollingTest, PluginBecomesLayoutInline) {
   ForceFullCompositingUpdate();
 }
 
-// Ensure NonFastScrollableRegions are correctly generated for both fixed and
-// in-flow plugins that need them.
-TEST_P(ScrollingTest, NonFastScrollableRegionsForPlugins) {
+// Ensure blocking wheel event regions are correctly generated for both fixed
+// and in-flow plugins that need them.
+TEST_P(ScrollingTest, WheelEventRegionsForPlugins) {
   LoadHTML(R"HTML(
     <style>
       body {
@@ -1351,23 +1351,23 @@ TEST_P(ScrollingTest, NonFastScrollableRegionsForPlugins) {
       GetFrame()->GetDocument()->getElementById("plugin"));
   auto* plugin_fixed = To<HTMLObjectElement>(
       GetFrame()->GetDocument()->getElementById("pluginfixed"));
-  // NonFastScrollableRegions are generated for plugins that require wheel
+  // Wheel event regions are generated for plugins that require wheel
   // events.
   plugin->OwnedPlugin()->SetWantsWheelEvents(true);
   plugin_fixed->OwnedPlugin()->SetWantsWheelEvents(true);
 
   ForceFullCompositingUpdate();
 
-  // The non-fixed plugin should create a non-fast scrollable region in the
+  // The non-fixed plugin should create a wheel event region in the
   // scrolling contents layer of the LayoutView.
   auto* viewport_non_fast_layer = MainFrameScrollingContentsLayer();
-  EXPECT_EQ(viewport_non_fast_layer->non_fast_scrollable_region().bounds(),
+  EXPECT_EQ(viewport_non_fast_layer->wheel_event_region().bounds(),
             gfx::Rect(0, 0, 300, 300));
 
-  // The fixed plugin should create a non-fast scrollable region in a fixed
+  // The fixed plugin should create a wheel event region in a fixed
   // cc::Layer.
   auto* fixed_layer = LayerByDOMElementId("fixed");
-  EXPECT_EQ(fixed_layer->non_fast_scrollable_region().bounds(),
+  EXPECT_EQ(fixed_layer->wheel_event_region().bounds(),
             gfx::Rect(0, 0, 200, 200));
 }
 
