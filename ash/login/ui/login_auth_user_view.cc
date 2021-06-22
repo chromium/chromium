@@ -42,6 +42,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/l10n/time_format.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/compositor/callback_layer_animation_observer.h"
 #include "ui/compositor/layer.h"
@@ -344,16 +345,9 @@ LockScreenMessage GetUsageLimitMessage(const base::TimeDelta& used_time) {
     // The usage limit is over.
     message.title = l10n_util::GetStringUTF16(IDS_ASH_LOGIN_TIME_IS_UP_MESSAGE);
 
-    // TODO(933973): Stop displaying the hours part of the string when duration
-    // is less than 1 hour. Example: change "0 hours, 7 minutes" to "7 minutes".
-    std::u16string used_time_string;
-    if (!base::TimeDurationFormat(
-            used_time, base::DurationFormatWidth::DURATION_WIDTH_WIDE,
-            &used_time_string)) {
-      LOG(ERROR) << "Failed to generate time duration string.";
-      return message;
-    }
-
+    const std::u16string used_time_string = ui::TimeFormat::Detailed(
+        ui::TimeFormat::Format::FORMAT_DURATION,
+        ui::TimeFormat::Length::LENGTH_LONG, /*cutoff=*/3, used_time);
     message.content = l10n_util::GetStringFUTF16(
         IDS_ASH_LOGIN_SCREEN_TIME_USED_MESSAGE, used_time_string);
   }

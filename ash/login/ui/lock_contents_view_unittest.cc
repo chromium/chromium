@@ -39,6 +39,7 @@
 #include "ash/shelf/shelf_navigation_widget.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/power/backlights_forced_off_setter.h"
 #include "ash/system/power/power_button_controller.h"
@@ -55,6 +56,7 @@
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/events/test/event_generator.h"
@@ -2038,6 +2040,61 @@ TEST_F(LockContentsViewUnitTest, OnAuthEnabledForUserChanged) {
   EXPECT_TRUE(password_view->GetVisible());
   EXPECT_TRUE(pin_view->GetVisible());
   EXPECT_FALSE(disabled_auth_message->GetVisible());
+}
+
+TEST_F(LockContentsViewUnitTest, ShowReasonOnAuthDisabled) {
+  auto* contents = new LockContentsView(
+      mojom::TrayActionState::kAvailable, LockScreen::ScreenType::kLock,
+      DataDispatcher(),
+      std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
+  SetUserCount(1);
+  SetWidget(CreateWidgetWithContent(contents));
+
+  const AccountId& kFirstUserAccountId = users()[0].basic_user_info.account_id;
+  LockContentsView::TestApi contents_test_api(contents);
+  LoginAuthUserView::TestApi auth_test_api(
+      contents_test_api.primary_big_view()->auth_user());
+  LoginPasswordView* password_view = auth_test_api.password_view();
+  LoginPinView* pin_view = auth_test_api.pin_view();
+  views::View* disabled_auth_message = auth_test_api.disabled_auth_message();
+
+  // The password field is shown by default.
+  EXPECT_TRUE(password_view->GetVisible());
+  EXPECT_FALSE(pin_view->GetVisible());
+  EXPECT_FALSE(disabled_auth_message->GetVisible());
+  // Setting auth disabled due to time window limit.
+  DataDispatcher()->DisableAuthForUser(
+      kFirstUserAccountId,
+      AuthDisabledData(
+          ash::AuthDisabledReason::kTimeWindowLimit,
+          base::Time::Now().LocalMidnight() + base::TimeDelta::FromHours(8),
+          base::TimeDelta::FromHours(1), true /*disable_lock_screen_media*/));
+  EXPECT_FALSE(password_view->GetVisible());
+  EXPECT_FALSE(pin_view->GetVisible());
+  EXPECT_EQ(
+      l10n_util::GetStringFUTF16(IDS_ASH_LOGIN_COME_BACK_MESSAGE, u"8:00 AM"),
+      auth_test_api.GetDisabledAuthMessageContent());
+  // Setting auth disabled due to time usage limit.
+  DataDispatcher()->DisableAuthForUser(
+      kFirstUserAccountId,
+      AuthDisabledData(ash::AuthDisabledReason::kTimeUsageLimit,
+                       base::Time::Now(), base::TimeDelta::FromMinutes(30),
+                       true /*disable_lock_screen_media*/));
+  EXPECT_FALSE(password_view->GetVisible());
+  EXPECT_FALSE(pin_view->GetVisible());
+  EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_ASH_LOGIN_SCREEN_TIME_USED_MESSAGE,
+                                       u"30 minutes"),
+            auth_test_api.GetDisabledAuthMessageContent());
+  // Setting auth disabled due to time limit override.
+  DataDispatcher()->DisableAuthForUser(
+      kFirstUserAccountId,
+      AuthDisabledData(ash::AuthDisabledReason::kTimeLimitOverride,
+                       base::Time::Now(), base::TimeDelta::FromMinutes(30),
+                       true /*disable_lock_screen_media*/));
+  EXPECT_FALSE(password_view->GetVisible());
+  EXPECT_FALSE(pin_view->GetVisible());
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_ASH_LOGIN_MANUAL_LOCK_MESSAGE),
+            auth_test_api.GetDisabledAuthMessageContent());
 }
 
 TEST_F(LockContentsViewUnitTest,
