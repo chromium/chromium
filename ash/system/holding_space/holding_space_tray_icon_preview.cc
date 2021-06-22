@@ -14,6 +14,7 @@
 #include "ash/shelf/shelf.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/scoped_light_mode_as_default.h"
+#include "ash/system/holding_space/holding_space_progress_ring.h"
 #include "ash/system/holding_space/holding_space_tray_icon.h"
 #include "ash/system/tray/tray_constants.h"
 #include "base/bind.h"
@@ -162,7 +163,9 @@ HoldingSpaceTrayIconPreview::HoldingSpaceTrayIconPreview(
     : shelf_(shelf),
       container_(container),
       item_(item),
-      progress_ring_(item_, /*use_light_mode_by_default=*/true),
+      progress_ring_(HoldingSpaceProgressRing::CreateForItem(
+          item_,
+          /*use_light_mode_by_default=*/true)),
       use_small_previews_(ShouldUseSmallPreviews()) {
   // Initialize the `contents_image_`.
   OnHoldingSpaceItemImageChanged();
@@ -421,7 +424,7 @@ void HoldingSpaceTrayIconPreview::OnThemeChanged() {
 
   // Invalidate the `progress_ring_` layer so that it gets repainted with colors
   // that are appropriately themed.
-  progress_ring_.InvalidateLayer();
+  progress_ring_->InvalidateLayer();
 }
 
 void HoldingSpaceTrayIconPreview::OnPaintLayer(
@@ -516,7 +519,7 @@ void HoldingSpaceTrayIconPreview::CreateLayer(
   new_layer->set_delegate(this);
   new_layer->SetFillsBoundsOpaquely(false);
   new_layer->SetTransform(initial_transform);
-  new_layer->Add(progress_ring_.layer());
+  new_layer->Add(progress_ring_->layer());
   layer_owner_.Reset(std::move(new_layer));
 
   UpdateLayerBounds();
@@ -581,7 +584,7 @@ void HoldingSpaceTrayIconPreview::UpdateLayerBounds() {
   // desired preview bounds. Progress ring bounds are clamped to preview size.
   gfx::Rect progress_ring_bounds(layer()->size());
   progress_ring_bounds.ClampToCenteredSize(GetPreviewSize());
-  progress_ring_.layer()->SetBounds(progress_ring_bounds);
+  progress_ring_->layer()->SetBounds(progress_ring_bounds);
 }
 
 }  // namespace ash

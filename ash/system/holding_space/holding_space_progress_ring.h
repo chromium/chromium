@@ -5,11 +5,10 @@
 #ifndef ASH_SYSTEM_HOLDING_SPACE_HOLDING_SPACE_PROGRESS_RING_H_
 #define ASH_SYSTEM_HOLDING_SPACE_HOLDING_SPACE_PROGRESS_RING_H_
 
+#include <memory>
 #include <vector>
 
-#include "ash/public/cpp/holding_space/holding_space_model.h"
-#include "ash/public/cpp/holding_space/holding_space_model_observer.h"
-#include "base/scoped_observation.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/compositor/layer_delegate.h"
 #include "ui/compositor/layer_owner.h"
 
@@ -17,43 +16,42 @@ namespace ash {
 
 class HoldingSpaceItem;
 
-// A class owning a `ui::Layer` which paints a ring to indicate progress of its
-// associated holding space `item`. NOTE: The `ui::Layer` is not painted if the
-// holding space `item` is not in-progress.
+// A class owning a `ui::Layer` which paints a ring to indicate progress.
+// NOTE: The owned `layer()` is not painted if progress == `1.f`.
 class HoldingSpaceProgressRing : public ui::LayerOwner,
-                                 public ui::LayerDelegate,
-                                 public HoldingSpaceModelObserver {
+                                 public ui::LayerDelegate {
  public:
-  HoldingSpaceProgressRing(const HoldingSpaceItem* item,
-                           bool use_light_mode_as_default);
   HoldingSpaceProgressRing(const HoldingSpaceProgressRing&) = delete;
   HoldingSpaceProgressRing& operator=(const HoldingSpaceProgressRing&) = delete;
   ~HoldingSpaceProgressRing() override;
 
+  // Returns an instance which paints a ring to indicate progress of the
+  // specified holding space `item`.
+  static std::unique_ptr<HoldingSpaceProgressRing> CreateForItem(
+      const HoldingSpaceItem* item,
+      bool use_light_mode_as_default);
+
   // Invoke to schedule repaint of the entire `layer()`.
   void InvalidateLayer();
+
+ protected:
+  explicit HoldingSpaceProgressRing(bool use_light_mode_as_default);
+
+  // Returns the progress to paint to the owned `layer()`.
+  // NOTE: If absent, progress is indeterminate.
+  // NOTE: If present, progress must be >= `0.f` and <= `1.f`.
+  // NOTE: If progress == `1.f`, progress is complete and will not be painted.
+  virtual absl::optional<float> GetProgress() const = 0;
 
  private:
   // ui::LayerDelegate:
   void OnDeviceScaleFactorChanged(float old_scale, float new_scale) override;
   void OnPaintLayer(const ui::PaintContext& context) override;
 
-  // HoldingSpaceModelObserver:
-  void OnHoldingSpaceItemUpdated(const HoldingSpaceItem* item) override;
-  void OnHoldingSpaceItemsRemoved(
-      const std::vector<const HoldingSpaceItem*>& items) override;
-
-  // The associated holding space `item` for which to indicate progress.
-  // NOTE: May temporarily be `nullptr` during the `item`s destruction sequence.
-  const HoldingSpaceItem* item_ = nullptr;
-
   // If `true`, the progress ring should be painted with light mode as the
   // default color mode. NOTE: This will have no effect if the dark/light mode
   // feature is enabled.
   const bool use_light_mode_as_default_;
-
-  base::ScopedObservation<HoldingSpaceModel, HoldingSpaceModelObserver>
-      model_observation_{this};
 };
 
 }  // namespace ash

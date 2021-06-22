@@ -4,12 +4,13 @@
 
 #include "ash/system/holding_space/holding_space_progress_ring.h"
 
-#include <memory>
-
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
+#include "ash/public/cpp/holding_space/holding_space_model.h"
+#include "ash/public/cpp/holding_space/holding_space_model_observer.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/scoped_light_mode_as_default.h"
+#include "base/scoped_observation.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/gfx/canvas.h"
@@ -26,30 +27,81 @@ constexpr float kTrackOpacity = 0.3f;
 
 // Helpers ---------------------------------------------------------------------
 
-// Returns the sweep angle to represent progress of the specified `item`.
-// NOTE: This method may only be called if `item` has determinate progress.
-float CalculateSweepAngle(const HoldingSpaceItem* item) {
-  DCHECK(item->IsInProgress());
-  DCHECK(item->progress().has_value());
-  return 360.f * item->progress().value();
+// Returns the sweep angle to use to represent the specified `progress`.
+// NOTE: The specified `progress` must be >= `0.f` and < `1.f`.
+float CalculateSweepAngle(float progress) {
+  DCHECK_GE(progress, 0.f);
+  DCHECK_LT(progress, 1.f);
+  return 360.f * progress;
 }
+
+// HoldingSpaceItemProgressRing ------------------------------------------------
+
+// A class owning a `ui::Layer` which paints a ring to indicate progress of an
+// associated holding space `item_`. NOTE: The owned `layer()` is not painted if
+// the associated `item_` is not in progress.
+class HoldingSpaceItemProgressRing : public HoldingSpaceProgressRing,
+                                     public HoldingSpaceModelObserver {
+ public:
+  HoldingSpaceItemProgressRing(const HoldingSpaceItem* item,
+                               bool use_light_mode_as_default)
+      : HoldingSpaceProgressRing(use_light_mode_as_default), item_(item) {
+    model_observation_.Observe(HoldingSpaceController::Get()->model());
+  }
+
+ private:
+  // HoldingSpaceProgressRing:
+  absl::optional<float> GetProgress() const override {
+    // If `item_` is `nullptr` it is being destroyed. Return `1.f` in that case
+    // so that no progress ring will be painted.
+    return item_ ? item_->progress() : 1.f;
+  }
+
+  // HoldingSpaceModelObserver:
+  void OnHoldingSpaceItemUpdated(const HoldingSpaceItem* item) override {
+    if (item_ == item)
+      InvalidateLayer();
+  }
+
+  void OnHoldingSpaceItemsRemoved(
+      const std::vector<const HoldingSpaceItem*>& items) override {
+    for (const HoldingSpaceItem* item : items) {
+      if (item_ == item) {
+        item_ = nullptr;
+        return;
+      }
+    }
+  }
+
+  // The associated holding space `item` for which to indicate progress.
+  // NOTE: May temporarily be `nullptr` during the `item`s destruction sequence.
+  const HoldingSpaceItem* item_ = nullptr;
+
+  base::ScopedObservation<HoldingSpaceModel, HoldingSpaceModelObserver>
+      model_observation_{this};
+};
 
 }  // namespace
 
 // HoldingSpaceProgressRing ----------------------------------------------------
 
 HoldingSpaceProgressRing::HoldingSpaceProgressRing(
-    const HoldingSpaceItem* item,
     bool use_light_mode_as_default)
     : ui::LayerOwner(std::make_unique<ui::Layer>(ui::LAYER_TEXTURED)),
-      item_(item),
       use_light_mode_as_default_(use_light_mode_as_default) {
   layer()->set_delegate(this);
   layer()->SetFillsBoundsOpaquely(false);
-  model_observation_.Observe(HoldingSpaceController::Get()->model());
 }
 
 HoldingSpaceProgressRing::~HoldingSpaceProgressRing() = default;
+
+// static
+std::unique_ptr<HoldingSpaceProgressRing>
+HoldingSpaceProgressRing::CreateForItem(const HoldingSpaceItem* item,
+                                        bool use_light_mode_as_default) {
+  return std::make_unique<HoldingSpaceItemProgressRing>(
+      item, use_light_mode_as_default);
+}
 
 void HoldingSpaceProgressRing::InvalidateLayer() {
   layer()->SchedulePaint(gfx::Rect(layer()->size()));
@@ -62,8 +114,12 @@ void HoldingSpaceProgressRing::OnDeviceScaleFactorChanged(float old_scale,
 
 // TODO(crbug.com/1184438): Handle indeterminate progress.
 void HoldingSpaceProgressRing::OnPaintLayer(const ui::PaintContext& context) {
-  if (!item_ || !item_->IsInProgress() || !item_->progress().has_value())
+  const absl::optional<float> progress(GetProgress());
+  if (!progress.has_value() || progress.value() == 1.f)
     return;
+
+  DCHECK_GE(progress.value(), 0.f);
+  DCHECK_LT(progress.value(), 1.f);
 
   ui::PaintRecorder recorder(context, layer()->size());
   gfx::Canvas* canvas = recorder.canvas();
@@ -97,25 +153,9 @@ void HoldingSpaceProgressRing::OnPaintLayer(const ui::PaintContext& context) {
   flags.setColor(color);
   canvas->DrawPath(
       SkPath().arcTo(/*oval=*/gfx::RectToSkRect(bounds), /*start_angle=*/-90,
-                     /*sweep_angle=*/CalculateSweepAngle(item_),
+                     /*sweep_angle=*/CalculateSweepAngle(progress.value()),
                      /*forceMoveTo=*/false),
       flags);
-}
-
-void HoldingSpaceProgressRing::OnHoldingSpaceItemUpdated(
-    const HoldingSpaceItem* item) {
-  if (item_ == item)
-    InvalidateLayer();
-}
-
-void HoldingSpaceProgressRing::OnHoldingSpaceItemsRemoved(
-    const std::vector<const HoldingSpaceItem*>& items) {
-  for (const HoldingSpaceItem* item : items) {
-    if (item_ == item) {
-      item_ = nullptr;
-      return;
-    }
-  }
 }
 
 }  // namespace ash
