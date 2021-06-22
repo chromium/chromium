@@ -8,12 +8,16 @@
 
 import("//build/config/chromeos/args.gni")
 import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/gclient_args.gni")
 import("//build/config/rts.gni")
 import("//build_overrides/build.gni")
 
 declare_args() {
-  # Some component repos (e.g. ANGLE) import //testing but do not have "location_tags.json"
-  tests_have_location_tags = true
+  # Some component repos (e.g. ANGLE) import //testing but do not have
+  # "location_tags.json", and so we don't want to try and upload the tags
+  # for their tests.
+  # And, some build configs may simply turn off generation altogether.
+  tests_have_location_tags = generate_location_tags
 }
 
 if (is_android) {
