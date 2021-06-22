@@ -24,6 +24,7 @@ ScopedJavaLocalRef<jstring> ConvertToJstring(base::StringPiece text,
   ScopedJavaLocalRef<jobject> java_byte_buffer(
       env,
       env->NewDirectByteBuffer(const_cast<char*>(text.data()), text.length()));
+  base::android::CheckException(env);
   base::android::ScopedJavaLocalRef<jstring> java_charset =
       base::android::ConvertUTF8ToJavaString(env, base::StringPiece(charset));
   ScopedJavaLocalRef<jstring> java_result =
@@ -41,6 +42,7 @@ ScopedJavaLocalRef<jstring> ConvertToNormalizedJstring(base::StringPiece text,
   ScopedJavaLocalRef<jobject> java_byte_buffer(
       env,
       env->NewDirectByteBuffer(const_cast<char*>(text.data()), text.length()));
+  base::android::CheckException(env);
   base::android::ScopedJavaLocalRef<jstring> java_charset =
       base::android::ConvertUTF8ToJavaString(env, base::StringPiece(charset));
   ScopedJavaLocalRef<jstring> java_result =
@@ -58,6 +60,7 @@ ScopedJavaLocalRef<jstring> ConvertToJstringWithSubstitutions(
   ScopedJavaLocalRef<jobject> java_byte_buffer(
       env,
       env->NewDirectByteBuffer(const_cast<char*>(text.data()), text.length()));
+  base::android::CheckException(env);
   base::android::ScopedJavaLocalRef<jstring> java_charset =
       base::android::ConvertUTF8ToJavaString(env, base::StringPiece(charset));
   ScopedJavaLocalRef<jstring> java_result =

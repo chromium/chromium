@@ -214,6 +214,7 @@ static ScopedJavaLocalRef<jobject> JNI_CoreImpl_BeginReadData(
   if (result == MOJO_RESULT_OK) {
     ScopedJavaLocalRef<jobject> byte_buffer(
         env, env->NewDirectByteBuffer(const_cast<void*>(buffer), buffer_size));
+    base::android::CheckException(env);
     return Java_CoreImpl_newResultAndBuffer(env, result, byte_buffer);
   } else {
     return Java_CoreImpl_newResultAndBuffer(env, result, nullptr);
@@ -264,6 +265,7 @@ static ScopedJavaLocalRef<jobject> JNI_CoreImpl_BeginWriteData(
   if (result == MOJO_RESULT_OK) {
     ScopedJavaLocalRef<jobject> byte_buffer(
         env, env->NewDirectByteBuffer(buffer, buffer_size));
+    base::android::CheckException(env);
     return Java_CoreImpl_newResultAndBuffer(env, result, byte_buffer);
   } else {
     return Java_CoreImpl_newResultAndBuffer(env, result, nullptr);
@@ -313,6 +315,7 @@ static ScopedJavaLocalRef<jobject> JNI_CoreImpl_Map(
   if (result == MOJO_RESULT_OK) {
     ScopedJavaLocalRef<jobject> byte_buffer(
         env, env->NewDirectByteBuffer(buffer, num_bytes));
+    base::android::CheckException(env);
     return Java_CoreImpl_newResultAndBuffer(env, result, byte_buffer);
   } else {
     return Java_CoreImpl_newResultAndBuffer(env, result, nullptr);

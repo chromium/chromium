@@ -66,6 +66,7 @@ void InternalAuthenticatorAndroid::MakeCredential(
       blink::mojom::PublicKeyCredentialCreationOptions::Serialize(&options);
   ScopedJavaLocalRef<jobject> byte_buffer = ScopedJavaLocalRef<jobject>(
       env, env->NewDirectByteBuffer(byte_vector.data(), byte_vector.size()));
+  base::android::CheckException(env);
 
   Java_InternalAuthenticator_makeCredential(env, obj, byte_buffer);
 }
@@ -83,6 +84,7 @@ void InternalAuthenticatorAndroid::GetAssertion(
       blink::mojom::PublicKeyCredentialRequestOptions::Serialize(&options);
   ScopedJavaLocalRef<jobject> byte_buffer = ScopedJavaLocalRef<jobject>(
       env, env->NewDirectByteBuffer(byte_vector.data(), byte_vector.size()));
+  base::android::CheckException(env);
 
   Java_InternalAuthenticator_getAssertion(env, obj, byte_buffer);
 }
