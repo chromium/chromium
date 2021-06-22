@@ -60,8 +60,10 @@ void OutOfMemoryReporter::SetTickClockForTest(
 
 void OutOfMemoryReporter::DidFinishNavigation(
     content::NavigationHandle* handle) {
-  // Only care about main frame navigations that commit to another document.
-  if (!handle->IsInMainFrame() || !handle->HasCommitted() ||
+  // Ignore navigations to documents not in the primary main frame, as they will
+  // never show up as a visible top document. In particular, prerendered pages
+  // will navigate again in the primary main frame when they are activated.
+  if (!handle->IsInPrimaryMainFrame() || !handle->HasCommitted() ||
       handle->IsSameDocument()) {
     return;
   }
