@@ -26,15 +26,12 @@ class MEDIA_EXPORT MediaFoundationCdmModule {
   // activate the IMFContentDecryptionModuleFactory from the CDM later. If the
   // CDM is an OS or store CDM, `cdm_path` could be empty. See implementation
   // details in ActivateCdmFactory() for how OS or store CDMs are handled.
-  // The caller should check `initialized()` and only call this function once.
+  // Must only be called once.
   void Initialize(const base::FilePath& cdm_path);
 
   HRESULT GetCdmFactory(
       const std::string& key_system,
       Microsoft::WRL::ComPtr<IMFContentDecryptionModuleFactory>& cdm_factory);
-
-  bool initialized() const { return initialized_; }
-  const base::FilePath& cdm_path() const { return cdm_path_; }
 
  private:
   MediaFoundationCdmModule();

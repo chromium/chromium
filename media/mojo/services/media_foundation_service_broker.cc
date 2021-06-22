@@ -29,22 +29,11 @@ void MediaFoundationServiceBroker::GetService(
     return;
   }
 
-  InitializeAndEnsureSandboxed(cdm_path);
+  MediaFoundationCdmModule::GetInstance()->Initialize(cdm_path);
+  std::move(ensure_sandboxed_cb_).Run();
 
   media_foundation_service_ = std::make_unique<MediaFoundationService>(
       std::move(service_receiver), user_data_dir_);
-}
-
-void MediaFoundationServiceBroker::InitializeAndEnsureSandboxed(
-    const base::FilePath& cdm_path) {
-  auto* instance = MediaFoundationCdmModule::GetInstance();
-  if (instance->initialized()) {
-    DCHECK_EQ(cdm_path, instance->cdm_path());
-    return;
-  }
-
-  instance->Initialize(cdm_path);
-  std::move(ensure_sandboxed_cb_).Run();
 }
 
 }  // namespace media

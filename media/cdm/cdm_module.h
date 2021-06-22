@@ -48,10 +48,6 @@ class MEDIA_EXPORT CdmModule {
   // within the sandbox!
   void InitializeCdmModule();
 
-  base::FilePath GetCdmPath() const;
-
-  bool was_initialize_called() const { return was_initialize_called_; }
-
  private:
   using InitializeCdmModuleFunc = decltype(&::INITIALIZE_CDM_MODULE);
   using DeinitializeCdmModuleFunc = decltype(&::DeinitializeCdmModule);
@@ -59,7 +55,7 @@ class MEDIA_EXPORT CdmModule {
 
   CdmModule();
 
-  bool was_initialize_called_ = false;
+  bool initialized_ = false;
   base::FilePath cdm_path_;
   base::ScopedNativeLibrary library_;
   CreateCdmFunc create_cdm_func_ = nullptr;

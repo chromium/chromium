@@ -321,8 +321,9 @@ void MediaInterfaceProxy::CreateCdm(const std::string& key_system,
   DCHECK(thread_checker_.CalledOnValidThread());
   DVLOG(1) << __func__ << ": key_system=" << key_system;
 
-  // The remote process may drop the callback (e.g. in case of crash). Doing it
-  // here instead of in the renderer process because the browser is trusted.
+  // The remote process may drop the callback (e.g. in case of crash, or CDM
+  // loading/initialization failure). Doing it here instead of in the renderer
+  // process because the browser is trusted.
   auto callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
       std::move(create_cdm_cb), mojo::NullRemote(), nullptr,
       "CDM creation failed");

@@ -33,10 +33,10 @@ MediaFoundationCdmModule::~MediaFoundationCdmModule() = default;
 
 void MediaFoundationCdmModule::Initialize(const base::FilePath& cdm_path) {
   DVLOG(1) << __func__ << ": cdm_path=" << cdm_path.value();
+  CHECK(!initialized_)
+      << "MediaFoundationCdmModule can only be initialized once!";
 
-  DCHECK(!initialized_);
   initialized_ = true;
-
   cdm_path_ = cdm_path;
 
   // If `cdm_path_` is not empty, load the CDM before the sandbox is sealed.

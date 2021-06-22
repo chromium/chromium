@@ -35,14 +35,14 @@ class MEDIA_MOJO_EXPORT CdmServiceBroker final
       mojo::PendingReceiver<mojom::CdmService> service_receiver) final;
 
  private:
+  // Initializes CdmModule and make sure the sandbox is sealed. Returns whether
+  // the initialization succeeded or not. In all cases, the process is sandboxed
+  // after this call.
+  bool InitializeAndEnsureSandboxed(
 #if defined(OS_MAC)
-  void InitializeAndEnsureSandboxed(
-      const base::FilePath& cdm_path,
-      mojo::PendingRemote<mojom::SeatbeltExtensionTokenProvider>
-          token_provider);
-#else
-  void InitializeAndEnsureSandboxed(const base::FilePath& cdm_path);
+      mojo::PendingRemote<mojom::SeatbeltExtensionTokenProvider> token_provider,
 #endif  // defined(OS_MAC)
+      const base::FilePath& cdm_path);
 
   std::unique_ptr<CdmService::Client> client_;
   mojo::Receiver<mojom::CdmServiceBroker> receiver_;

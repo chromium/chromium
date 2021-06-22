@@ -42,33 +42,29 @@ void CdmServiceBroker::GetService(
     return;
   }
 
+  bool success = InitializeAndEnsureSandboxed(
 #if defined(OS_MAC)
-  InitializeAndEnsureSandboxed(cdm_path, std::move(token_provider));
-#else
-  InitializeAndEnsureSandboxed(cdm_path);
+      std::move(token_provider),
 #endif  // defined(OS_MAC)
+      cdm_path);
+
+  if (!success) {
+    client_.reset();
+    return;
+  }
 
   DCHECK(!cdm_service_);
   cdm_service_ = std::make_unique<CdmService>(std::move(client_),
                                               std::move(service_receiver));
 }
 
+bool CdmServiceBroker::InitializeAndEnsureSandboxed(
 #if defined(OS_MAC)
-void CdmServiceBroker::InitializeAndEnsureSandboxed(
-    const base::FilePath& cdm_path,
-    mojo::PendingRemote<mojom::SeatbeltExtensionTokenProvider> token_provider) {
-#else
-void CdmServiceBroker::InitializeAndEnsureSandboxed(
-    const base::FilePath& cdm_path) {
+    mojo::PendingRemote<mojom::SeatbeltExtensionTokenProvider> token_provider,
 #endif  // defined(OS_MAC)
+    const base::FilePath& cdm_path) {
   DVLOG(1) << __func__ << ": cdm_path = " << cdm_path.value();
   DCHECK(client_);
-
-  CdmModule* instance = CdmModule::GetInstance();
-  if (instance->was_initialize_called()) {
-    DCHECK_EQ(cdm_path, instance->GetCdmPath());
-    return;
-  }
 
 #if defined(OS_MAC)
   std::vector<std::unique_ptr<sandbox::SeatbeltExtension>> extensions;
@@ -91,6 +87,8 @@ void CdmServiceBroker::InitializeAndEnsureSandboxed(
   }
 #endif  // defined(OS_MAC)
 
+  CdmModule* instance = CdmModule::GetInstance();
+
 #if BUILDFLAG(ENABLE_CDM_HOST_VERIFICATION)
   std::vector<CdmHostFilePath> cdm_host_file_paths;
   client_->AddCdmHostFilePaths(&cdm_host_file_paths);
@@ -99,7 +97,8 @@ void CdmServiceBroker::InitializeAndEnsureSandboxed(
   bool success = instance->Initialize(cdm_path);
 #endif  // BUILDFLAG(ENABLE_CDM_HOST_VERIFICATION)
 
-  // This may trigger the sandbox to be sealed.
+  // This may trigger the sandbox to be sealed. After this call, the process is
+  // sandboxed.
   client_->EnsureSandboxed();
 
 #if defined(OS_MAC)
@@ -110,6 +109,8 @@ void CdmServiceBroker::InitializeAndEnsureSandboxed(
   // Always called within the sandbox.
   if (success)
     instance->InitializeCdmModule();
+
+  return success;
 }
 
 }  // namespace media
