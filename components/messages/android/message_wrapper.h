@@ -71,12 +71,16 @@ class MessageWrapper {
 
   const base::android::JavaRef<jobject>& GetJavaMessageWrapper() const;
 
+  // Called by bridge when message is successfully enqueued.
+  void SetMessageEnqueued();
+
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_message_wrapper_;
   base::OnceClosure action_callback_;
   base::OnceClosure secondary_action_callback_;
   DismissCallback dismiss_callback_;
-  bool message_dismissed_;
+  // True if message is in queue.
+  bool message_enqueued_;
 };
 
 }  // namespace messages

@@ -14,13 +14,19 @@ import org.chromium.content_public.browser.WebContents;
  */
 @JNINamespace("messages")
 public class MessageDispatcherBridge {
+    /**
+     * Return false if it fails to enqueue message, which usually happens when
+     * activity is being recreated or destroyed; otherwise, return true.
+     */
     @CalledByNative
-    private static void enqueueMessage(MessageWrapper message, WebContents webContents,
+    private static boolean enqueueMessage(MessageWrapper message, WebContents webContents,
             @MessageScopeType int scopeType, boolean highPriority) {
         MessageDispatcher messageDispatcher =
                 MessageDispatcherProvider.from(webContents.getTopLevelNativeWindow());
+        if (messageDispatcher == null) return false;
         messageDispatcher.enqueueMessage(
                 message.getMessageProperties(), webContents, scopeType, highPriority);
+        return true;
     }
 
     @CalledByNative

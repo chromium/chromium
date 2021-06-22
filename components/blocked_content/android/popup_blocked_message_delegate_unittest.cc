@@ -42,7 +42,9 @@ class PopupBlockedMessageDelegateTest
     return base::BindRepeating(ResourceMap);
   }
 
-  void EnqueueMessage(int num_pops, base::OnceClosure on_accept_callback);
+  bool EnqueueMessage(int num_pops,
+                      base::OnceClosure on_accept_callback,
+                      bool success);
 
   messages::MessageWrapper* GetMessageWrapper();
   void TriggerMessageDismissedCallback(messages::DismissReason dismiss_reason);
@@ -98,12 +100,15 @@ messages::MessageWrapper* PopupBlockedMessageDelegateTest::GetMessageWrapper() {
   return popup_blocked_message_delegate_->message_for_testing();
 }
 
-void PopupBlockedMessageDelegateTest::EnqueueMessage(
+bool PopupBlockedMessageDelegateTest::EnqueueMessage(
     int num_pops,
-    base::OnceClosure on_accept_callback) {
-  EXPECT_CALL(message_dispatcher_bridge_, EnqueueMessage).Times(1);
-  GetDelegate()->ShowMessage(num_pops, settings_map(), GetResourceIdMapper(),
-                             std::move(on_accept_callback));
+    base::OnceClosure on_accept_callback,
+    bool success) {
+  EXPECT_CALL(message_dispatcher_bridge_, EnqueueMessage)
+      .WillOnce(testing::Return(success));
+  return GetDelegate()->ShowMessage(num_pops, settings_map(),
+                                    GetResourceIdMapper(),
+                                    std::move(on_accept_callback));
 }
 
 void PopupBlockedMessageDelegateTest::TriggerActionClick() {
@@ -121,7 +126,7 @@ void PopupBlockedMessageDelegateTest::TriggerMessageDismissedCallback(
 // set correctly.
 TEST_F(PopupBlockedMessageDelegateTest, MessagePropertyValues) {
   int num_popups = 3;
-  EnqueueMessage(num_popups, base::NullCallback());
+  EnqueueMessage(num_popups, base::NullCallback(), true);
   EXPECT_EQ(l10n_util::GetPluralStringFUTF16(IDS_POPUPS_BLOCKED_INFOBAR_TEXT,
                                              num_popups),
             GetMessageWrapper()->GetTitle());
@@ -141,14 +146,31 @@ TEST_F(PopupBlockedMessageDelegateTest, MessagePropertyValues) {
 // is already on the screen.
 TEST_F(PopupBlockedMessageDelegateTest, ShowsBlockedPopups) {
   bool on_accept_called = false;
-  EnqueueMessage(1, base::BindLambdaForTesting(
-                        [&on_accept_called] { on_accept_called = true; }));
+  bool result =
+      EnqueueMessage(1, base::BindLambdaForTesting([&on_accept_called] {
+                       on_accept_called = true;
+                     }),
+                     true);
+  EXPECT_TRUE(result);
   TriggerActionClick();
   EXPECT_TRUE(on_accept_called);
   TriggerMessageDismissedCallback(messages::DismissReason::UNKNOWN);
   EXPECT_EQ(settings_map()->GetContentSetting(GURL(kPageUrl), GURL(kPageUrl),
                                               ContentSettingsType::POPUPS),
             CONTENT_SETTING_ALLOW);
+}
+
+// Tests that title updated when another popup is blocked and a message
+// is already on the screen.
+TEST_F(PopupBlockedMessageDelegateTest, FailToShowMessage) {
+  bool on_accept_called = false;
+  bool result =
+      EnqueueMessage(1, base::BindLambdaForTesting([&on_accept_called] {
+                       on_accept_called = true;
+                     }),
+                     false);
+  EXPECT_FALSE(result);
+  EXPECT_FALSE(on_accept_called);
 }
 
 }  // namespace blocked_content
