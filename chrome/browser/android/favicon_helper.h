@@ -48,7 +48,7 @@ class FaviconHelper {
       favicon_base::FaviconRawBitmapCallback callback_runner);
   void GetComposedFaviconImageInternal(
       favicon::FaviconService* favicon_service,
-      std::vector<std::string> urls,
+      std::vector<GURL> urls,
       int desired_size_in_pixel,
       favicon_base::FaviconResultsCallback callback_runner);
   void OnJobFinished(int job_id);

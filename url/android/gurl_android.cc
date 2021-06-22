@@ -57,6 +57,17 @@ static void InitFromGURL(JNIEnv* env,
                                     gurl.parsed_for_possibly_invalid_spec()));
 }
 
+// As |GetArrayLength| makes no guarantees about the returned value (e.g., it
+// may be -1 if |array| is not a valid Java array), provide a safe wrapper
+// that always returns a valid, non-negative size.
+template <typename JavaArrayType>
+size_t SafeGetArrayLength(JNIEnv* env, const JavaRef<JavaArrayType>& jarray) {
+  DCHECK(jarray);
+  jsize length = env->GetArrayLength(jarray.obj());
+  DCHECK_GE(length, 0) << "Invalid array length: " << length;
+  return static_cast<size_t>(std::max(0, length));
+}
+
 }  // namespace
 
 // static
@@ -65,6 +76,23 @@ std::unique_ptr<GURL> GURLAndroid::ToNativeGURL(
     const base::android::JavaRef<jobject>& j_gurl) {
   return base::WrapUnique<GURL>(
       reinterpret_cast<GURL*>(Java_GURL_toNativeGURL(env, j_gurl)));
+}
+
+void GURLAndroid::JavaGURLArrayToGURLVector(
+    JNIEnv* env,
+    const base::android::JavaRef<jobjectArray>& array,
+    std::vector<GURL>* out) {
+  DCHECK(out);
+  DCHECK(out->empty());
+  if (!array)
+    return;
+  size_t len = SafeGetArrayLength(env, array);
+  for (size_t i = 0; i < len; ++i) {
+    ScopedJavaLocalRef<jobject> j_gurl(
+        env, static_cast<jobject>(env->GetObjectArrayElement(array.obj(), i)));
+    out->emplace_back(
+        *reinterpret_cast<GURL*>(Java_GURL_toNativeGURL(env, j_gurl)));
+  }
 }
 
 // static

@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiUnitTestUtils;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.testing.local.LocalRobolectricTestRunner;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -90,9 +91,9 @@ public class TabGroupUtilsUnitTest {
 
         MockitoAnnotations.initMocks(this);
 
-        mTab1 = TabUiUnitTestUtils.prepareTab(TAB1_ID, TAB1_TITLE, "");
-        mTab2 = TabUiUnitTestUtils.prepareTab(TAB2_ID, TAB2_TITLE, "");
-        mTab3 = TabUiUnitTestUtils.prepareTab(TAB3_ID, TAB3_TITLE, "");
+        mTab1 = TabUiUnitTestUtils.prepareTab(TAB1_ID, TAB1_TITLE, GURL.emptyGURL());
+        mTab2 = TabUiUnitTestUtils.prepareTab(TAB2_ID, TAB2_TITLE, GURL.emptyGURL());
+        mTab3 = TabUiUnitTestUtils.prepareTab(TAB3_ID, TAB3_TITLE, GURL.emptyGURL());
 
         doReturn(mTabModelFilterProvider).when(mTabModelSelector).getTabModelFilterProvider();
         doReturn(mTabGroupModelFilter).when(mTabModelFilterProvider).getCurrentTabModelFilter();
