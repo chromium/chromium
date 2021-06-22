@@ -108,6 +108,7 @@ source_set("unit_tests") {
   sources = [
     "add_to_homescreen_data_fetcher_unittest.cc",
     "shortcut_info_unittest.cc",
+    "webapk/webapk_icon_hasher_unittest.cc",
     "webapps_utils_unittest.cc",
   ]
   deps = [
@@ -118,6 +119,7 @@ source_set("unit_tests") {
     "//components/webapps/common:mojo_bindings",
     "//content/public/browser",
     "//content/test:test_support",
+    "//services/network:test_support",
     "//testing/gtest",
     "//third_party/blink/public/common:common",
     "//third_party/blink/public/mojom:mojom_platform",

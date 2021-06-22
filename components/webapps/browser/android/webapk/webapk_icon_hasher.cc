@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/android/webapk/webapk_icon_hasher.h"
+#include "components/webapps/browser/android/webapk/webapk_icon_hasher.h"
 
 #include <utility>
 
@@ -18,6 +18,7 @@
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "third_party/smhasher/src/MurmurHash2.h"
 
+namespace webapps {
 namespace {
 
 // The seed to use when taking the murmur2 hash of the icon.
@@ -176,3 +177,5 @@ void WebApkIconHasher::RunCallback(Icon icon) {
   std::move(callback_).Run(std::move(icon));
   delete this;
 }
+
+}  // namespace webapps

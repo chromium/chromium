@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ANDROID_WEBAPK_WEBAPK_TYPES_H_
-#define CHROME_BROWSER_ANDROID_WEBAPK_WEBAPK_TYPES_H_
+#ifndef COMPONENTS_WEBAPPS_BROWSER_ANDROID_WEBAPK_WEBAPK_TYPES_H_
+#define COMPONENTS_WEBAPPS_BROWSER_ANDROID_WEBAPK_WEBAPK_TYPES_H_
+
+namespace webapps {
 
 // A Java counterpart will be generated for this enum.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.webapps
@@ -42,4 +44,6 @@ enum class WebApkDistributor {
   OTHER = 2,
 };
 
-#endif  // CHROME_BROWSER_ANDROID_WEBAPK_WEBAPK_TYPES_H_
+}  // namespace webapps
+
+#endif  // COMPONENTS_WEBAPPS_BROWSER_ANDROID_WEBAPK_WEBAPK_TYPES_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/android/webapk/webapk_proto_builder.h"
+#include "components/webapps/browser/android/webapk/webapk_proto_builder.h"
 
 #include <string>
 
@@ -11,17 +11,18 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "chrome/browser/android/webapk/webapk_icon_hasher.h"
-#include "chrome/browser/android/webapk/webapk_types.h"
 #include "components/version_info/version_info.h"
 #include "components/webapk/webapk.pb.h"
 #include "components/webapps/browser/android/shortcut_info.h"
+#include "components/webapps/browser/android/webapk/webapk_icon_hasher.h"
+#include "components/webapps/browser/android/webapk/webapk_types.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/android/color_helpers.h"
 #include "ui/gfx/codec/png_codec.h"
 
+namespace webapps {
 namespace {
 
 // Limit the icon size to 512KB.
@@ -93,8 +94,6 @@ void SetImageData(webapk::Image* image, const SkBitmap& icon) {
 }
 
 }  // namespace
-
-namespace webapps {
 
 std::unique_ptr<std::string> BuildProtoInBackground(
     const webapps::ShortcutInfo& shortcut_info,

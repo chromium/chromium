@@ -28,7 +28,7 @@ android_library("java") {
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_browser_browser_java",
   ]
-  srcjar_deps = [ "//chrome/browser/android/webapk:enums_srcjar" ]
+  srcjar_deps = [ "//components/webapps/browser/android/webapk:enums_srcjar" ]
 }
 
 android_library("junit") {

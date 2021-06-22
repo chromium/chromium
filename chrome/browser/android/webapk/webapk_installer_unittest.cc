@@ -166,8 +166,9 @@ class UpdateRequestStorer {
     quit_closure_ = run_loop.QuitClosure();
     WebApkInstaller::StoreUpdateRequestToFile(
         update_request_path, webapps::ShortcutInfo((GURL())), SkBitmap(), false,
-        SkBitmap(), "", "", std::map<std::string, WebApkIconHasher::Icon>(),
-        false, {WebApkUpdateReason::PRIMARY_ICON_HASH_DIFFERS},
+        SkBitmap(), "", "",
+        std::map<std::string, webapps::WebApkIconHasher::Icon>(), false,
+        {webapps::WebApkUpdateReason::PRIMARY_ICON_HASH_DIFFERS},
         base::BindOnce(&UpdateRequestStorer::OnComplete,
                        base::Unretained(this)));
     run_loop.Run();
@@ -205,12 +206,12 @@ class BuildProtoRunner {
   BuildProtoRunner() {}
   ~BuildProtoRunner() {}
 
-  void BuildSync(
-      const GURL& best_primary_icon_url,
-      const GURL& splash_image_url,
-      std::map<std::string, WebApkIconHasher::Icon> icon_url_to_murmur2_hash,
-      bool is_manifest_stale,
-      const std::vector<GURL>& best_shortcut_icon_urls) {
+  void BuildSync(const GURL& best_primary_icon_url,
+                 const GURL& splash_image_url,
+                 std::map<std::string, webapps::WebApkIconHasher::Icon>
+                     icon_url_to_murmur2_hash,
+                 bool is_manifest_stale,
+                 const std::vector<GURL>& best_shortcut_icon_urls) {
     webapps::ShortcutInfo info(GURL::EmptyGURL());
     info.best_primary_icon_url = best_primary_icon_url;
     info.splash_image_url = splash_image_url;
@@ -530,7 +531,8 @@ TEST_F(WebApkInstallerTest, StoreUpdateRequestToFileCreatesDirectories) {
 TEST_F(WebApkInstallerTest, BuildWebApkProtoWhenManifestIsObsolete) {
   std::string icon_url_1 = test_server()->GetURL("/icon1.png").spec();
   std::string icon_url_2 = test_server()->GetURL("/icon2.png").spec();
-  std::map<std::string, WebApkIconHasher::Icon> icon_url_to_murmur2_hash;
+  std::map<std::string, webapps::WebApkIconHasher::Icon>
+      icon_url_to_murmur2_hash;
   icon_url_to_murmur2_hash[icon_url_1] = {"data1", "1"};
   icon_url_to_murmur2_hash[icon_url_2] = {"data2", "2"};
 
@@ -574,7 +576,8 @@ TEST_F(WebApkInstallerTest, BuildWebApkProtoWhenManifestIsAvailable) {
       test_server()->GetURL(kBestSplashIconUrl).spec();
   std::string best_shortcut_icon_url =
       test_server()->GetURL(kBestShortcutIconUrl).spec();
-  std::map<std::string, WebApkIconHasher::Icon> icon_url_to_murmur2_hash;
+  std::map<std::string, webapps::WebApkIconHasher::Icon>
+      icon_url_to_murmur2_hash;
   icon_url_to_murmur2_hash[icon_url_1] = {"data0", "0"};
   icon_url_to_murmur2_hash[best_primary_icon_url] = {"data1", "1"};
   icon_url_to_murmur2_hash[best_splash_icon_url] = {"data2", "2"};
@@ -627,7 +630,8 @@ TEST_F(WebApkInstallerTest, BuildWebApkProtoWhenManifestIsAvailable) {
 TEST_F(WebApkInstallerTest, BuildWebApkProtoPrimaryIconAndSplashIconSameUrl) {
   std::string icon_url_1 = test_server()->GetURL("/icon.png").spec();
   std::string best_icon_url = test_server()->GetURL(kBestPrimaryIconUrl).spec();
-  std::map<std::string, WebApkIconHasher::Icon> icon_url_to_murmur2_hash;
+  std::map<std::string, webapps::WebApkIconHasher::Icon>
+      icon_url_to_murmur2_hash;
   icon_url_to_murmur2_hash[icon_url_1] = {"data1", "1"};
   icon_url_to_murmur2_hash[best_icon_url] = {"data0", "0"};
 
@@ -678,7 +682,8 @@ TEST_F(WebApkInstallerTest, BuildWebApkProtoWhenWithMultipleShortcuts) {
       test_server()->GetURL(kBestShortcutIconUrl).spec();
   std::string best_shortcut_icon_url2 =
       test_server()->GetURL(kBestPrimaryIconUrl).spec();
-  std::map<std::string, WebApkIconHasher::Icon> icon_url_to_murmur2_hash;
+  std::map<std::string, webapps::WebApkIconHasher::Icon>
+      icon_url_to_murmur2_hash;
   icon_url_to_murmur2_hash[best_shortcut_icon_url1] = {"data1", "1"};
   icon_url_to_murmur2_hash[best_shortcut_icon_url2] = {"data2", "2"};
 
@@ -712,7 +717,8 @@ TEST_F(WebApkInstallerTest,
        BuildWebApkProtoWhenWithMultipleShortcutsAndSameIcons) {
   std::string best_shortcut_icon_url =
       test_server()->GetURL(kBestShortcutIconUrl).spec();
-  std::map<std::string, WebApkIconHasher::Icon> icon_url_to_murmur2_hash;
+  std::map<std::string, webapps::WebApkIconHasher::Icon>
+      icon_url_to_murmur2_hash;
   icon_url_to_murmur2_hash[best_shortcut_icon_url] = {"data1", "1"};
 
   std::unique_ptr<BuildProtoRunner> runner = CreateBuildProtoRunner();
@@ -744,7 +750,8 @@ TEST_F(WebApkInstallerTest,
 TEST_F(WebApkInstallerTest, BuildWebApkProtoSplashIconAndShortcutIconSameUrl) {
   std::string icon_url_1 = test_server()->GetURL("/icon.png").spec();
   std::string best_icon_url = test_server()->GetURL(kBestPrimaryIconUrl).spec();
-  std::map<std::string, WebApkIconHasher::Icon> icon_url_to_murmur2_hash;
+  std::map<std::string, webapps::WebApkIconHasher::Icon>
+      icon_url_to_murmur2_hash;
   icon_url_to_murmur2_hash[icon_url_1] = {"data1", "1"};
   icon_url_to_murmur2_hash[best_icon_url] = {"data0", "0"};
 

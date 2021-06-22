@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/android/webapk/webapk_icon_hasher.h"
+#include "components/webapps/browser/android/webapk/webapk_icon_hasher.h"
 
 #include <limits>
 #include <set>
@@ -78,7 +78,8 @@ void OnDownloadedManifestIcon(base::OnceClosure callback,
 
 void OnGotMurmur2Hash(
     base::OnceClosure callback,
-    absl::optional<std::map<std::string, WebApkIconHasher::Icon>> hashes) {
+    absl::optional<std::map<std::string, webapps::WebApkIconHasher::Icon>>
+        hashes) {
   std::move(callback).Run();
 }
 
@@ -113,7 +114,7 @@ IN_PROC_BROWSER_TEST_F(WebApkIconHasherBrowserTest,
             ->GetURLLoaderFactoryForBrowserProcess();
 
     base::RunLoop run_loop;
-    WebApkIconHasher::DownloadAndComputeMurmur2Hash(
+    webapps::WebApkIconHasher::DownloadAndComputeMurmur2Hash(
         url_loader_factory.get(), url::Origin::Create(kIconUrl), {kIconUrl},
         base::BindOnce(&OnGotMurmur2Hash, run_loop.QuitClosure()));
     run_loop.Run();

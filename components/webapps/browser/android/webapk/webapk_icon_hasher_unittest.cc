@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/android/webapk/webapk_icon_hasher.h"
+#include "components/webapps/browser/android/webapk/webapk_icon_hasher.h"
 
 #include <string>
 
@@ -25,6 +25,7 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+namespace webapps {
 namespace {
 
 // Murmur2 hash for |icon_url| in Success test.
@@ -33,8 +34,10 @@ const char kIconMurmur2Hash[] = "2081059568551351877";
 // Runs WebApkIconHasher and blocks till the murmur2 hash is computed.
 class WebApkIconHasherRunner {
  public:
-  WebApkIconHasherRunner() {}
-  ~WebApkIconHasherRunner() {}
+  WebApkIconHasherRunner() = default;
+  ~WebApkIconHasherRunner() = default;
+  WebApkIconHasherRunner(const WebApkIconHasherRunner&) = delete;
+  WebApkIconHasherRunner& operator=(const WebApkIconHasherRunner&) = delete;
 
   void Run(network::mojom::URLLoaderFactory* url_loader_factory,
            const GURL& icon_url) {
@@ -82,8 +85,6 @@ class WebApkIconHasherRunner {
 
   // Computed Murmur2 hash.
   WebApkIconHasher::Icon icon_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebApkIconHasherRunner);
 };
 
 }  // anonymous namespace
@@ -92,7 +93,9 @@ class WebApkIconHasherTest : public ::testing::Test {
  public:
   WebApkIconHasherTest()
       : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP) {}
-  ~WebApkIconHasherTest() override {}
+  ~WebApkIconHasherTest() override = default;
+  WebApkIconHasherTest(const WebApkIconHasherTest&) = delete;
+  WebApkIconHasherTest& operator=(const WebApkIconHasherTest&) = delete;
 
  protected:
   network::TestURLLoaderFactory* test_url_loader_factory() {
@@ -102,8 +105,6 @@ class WebApkIconHasherTest : public ::testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   network::TestURLLoaderFactory test_url_loader_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebApkIconHasherTest);
 };
 
 TEST_F(WebApkIconHasherTest, Success) {
@@ -112,10 +113,10 @@ TEST_F(WebApkIconHasherTest, Success) {
   base::FilePath source_path;
   base::FilePath icon_path;
   ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &source_path));
-  icon_path = source_path.AppendASCII("chrome")
+  icon_path = source_path.AppendASCII("components")
                   .AppendASCII("test")
                   .AppendASCII("data")
-                  .AppendASCII("android")
+                  .AppendASCII("webapps")
                   .AppendASCII("google.png");
   std::string icon_data;
   ASSERT_TRUE(base::ReadFileToString(icon_path, &icon_data));
@@ -128,7 +129,8 @@ TEST_F(WebApkIconHasherTest, Success) {
 }
 
 TEST_F(WebApkIconHasherTest, DataUri) {
-  GURL icon_url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA"
+  GURL icon_url(
+      "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA"
       "AAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO"
       "9TXL0Y4OHwAAAABJRU5ErkJggg==");
   WebApkIconHasherRunner runner;
@@ -143,10 +145,10 @@ TEST_F(WebApkIconHasherTest, MultipleIconUrls) {
   base::FilePath source_path;
   base::FilePath icon_path;
   ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &source_path));
-  icon_path = source_path.AppendASCII("chrome")
+  icon_path = source_path.AppendASCII("components")
                   .AppendASCII("test")
                   .AppendASCII("data")
-                  .AppendASCII("android")
+                  .AppendASCII("webapps")
                   .AppendASCII("google.png");
   std::string icon_data;
   ASSERT_TRUE(base::ReadFileToString(icon_path, &icon_data));
@@ -221,3 +223,5 @@ TEST_F(WebApkIconHasherTest, HTTPError) {
   EXPECT_TRUE(runner.icon().hash.empty());
   EXPECT_TRUE(runner.icon().unsafe_data.empty());
 }
+
+}  // namespace webapps

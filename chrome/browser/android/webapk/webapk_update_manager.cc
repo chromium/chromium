@@ -149,10 +149,11 @@ static void JNI_WebApkUpdateManager_StoreWebApkUpdateRequestToFile(
   base::android::AppendJavaStringArrayToStringVector(env, java_icon_hashes,
                                                      &icon_hashes);
 
-  std::map<std::string, WebApkIconHasher::Icon> icon_url_to_murmur2_hash;
+  std::map<std::string, webapps::WebApkIconHasher::Icon>
+      icon_url_to_murmur2_hash;
   for (size_t i = 0; i < info.icon_urls.size(); ++i) {
     icon_url_to_murmur2_hash[info.icon_urls[i]] =
-        WebApkIconHasher::Icon{/* data= */ "", icon_hashes[i]};
+        webapps::WebApkIconHasher::Icon{/* data= */ "", icon_hashes[i]};
   }
 
   gfx::JavaBitmap java_primary_icon_bitmap_lock(java_primary_icon_bitmap);
@@ -189,9 +190,10 @@ static void JNI_WebApkUpdateManager_StoreWebApkUpdateRequestToFile(
     shortcut_item.icons.push_back(std::move(icon));
 
     if (icon_src.is_valid()) {
-      icon_url_to_murmur2_hash[icon_src.spec()] = WebApkIconHasher::Icon{
-          /* data= */ base::UTF16ToUTF8(shortcut_data[5]),
-          /* hash= */ base::UTF16ToUTF8(shortcut_data[4])};
+      icon_url_to_murmur2_hash[icon_src.spec()] =
+          webapps::WebApkIconHasher::Icon{
+              /* data= */ base::UTF16ToUTF8(shortcut_data[5]),
+              /* hash= */ base::UTF16ToUTF8(shortcut_data[4])};
     }
     info.best_shortcut_icon_urls.push_back(std::move(icon_src));
     info.shortcut_items.push_back(std::move(shortcut_item));
@@ -200,9 +202,10 @@ static void JNI_WebApkUpdateManager_StoreWebApkUpdateRequestToFile(
   std::vector<int> int_update_reasons;
   base::android::JavaIntArrayToIntVector(env, java_update_reasons,
                                          &int_update_reasons);
-  std::vector<WebApkUpdateReason> update_reasons;
+  std::vector<webapps::WebApkUpdateReason> update_reasons;
   for (int update_reason : int_update_reasons)
-    update_reasons.push_back(static_cast<WebApkUpdateReason>(update_reason));
+    update_reasons.push_back(
+        static_cast<webapps::WebApkUpdateReason>(update_reason));
 
   WebApkInstaller::StoreUpdateRequestToFile(
       base::FilePath(update_request_path), info, primary_icon,

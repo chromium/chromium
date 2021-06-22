@@ -174,7 +174,7 @@ void WebApkUpdateDataFetcher::OnDidGetInstallableData(
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
 
-  WebApkIconHasher::DownloadAndComputeMurmur2Hash(
+  webapps::WebApkIconHasher::DownloadAndComputeMurmur2Hash(
       profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess()
           .get(),
@@ -184,7 +184,8 @@ void WebApkUpdateDataFetcher::OnDidGetInstallableData(
 }
 
 void WebApkUpdateDataFetcher::OnGotIconMurmur2Hashes(
-    absl::optional<std::map<std::string, WebApkIconHasher::Icon>> hashes) {
+    absl::optional<std::map<std::string, webapps::WebApkIconHasher::Icon>>
+        hashes) {
   if (!hashes)
     return;
 

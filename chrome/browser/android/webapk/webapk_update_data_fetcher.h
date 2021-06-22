@@ -9,8 +9,8 @@
 #include "base/android/jni_weak_ref.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/android/webapk/webapk_icon_hasher.h"
 #include "components/webapps/browser/android/shortcut_info.h"
+#include "components/webapps/browser/android/webapk/webapk_icon_hasher.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -64,7 +64,8 @@ class WebApkUpdateDataFetcher : public content::WebContentsObserver {
 
   // Called with the computed Murmur2 hashes for the icons.
   void OnGotIconMurmur2Hashes(
-      absl::optional<std::map<std::string, WebApkIconHasher::Icon>> hashes);
+      absl::optional<std::map<std::string, webapps::WebApkIconHasher::Icon>>
+          hashes);
 
   // Called when a page has no Web Manifest or the Web Manifest is not WebAPK
   // compatible.

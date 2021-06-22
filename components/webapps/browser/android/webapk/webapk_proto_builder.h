@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ANDROID_WEBAPK_WEBAPK_PROTO_BUILDER_H_
-#define CHROME_BROWSER_ANDROID_WEBAPK_WEBAPK_PROTO_BUILDER_H_
+#ifndef COMPONENTS_WEBAPPS_BROWSER_ANDROID_WEBAPK_WEBAPK_PROTO_BUILDER_H_
+#define COMPONENTS_WEBAPPS_BROWSER_ANDROID_WEBAPK_WEBAPK_PROTO_BUILDER_H_
 
 #include <map>
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "chrome/browser/android/webapk/webapk_icon_hasher.h"
-#include "chrome/browser/android/webapk/webapk_types.h"
 #include "components/webapk/webapk.pb.h"
 #include "components/webapps/browser/android/shortcut_info.h"
+#include "components/webapps/browser/android/webapk/webapk_icon_hasher.h"
+#include "components/webapps/browser/android/webapk/webapk_types.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace webapps {
@@ -51,4 +51,4 @@ bool StoreUpdateRequestToFileInBackground(
 
 }  // namespace webapps
 
-#endif  // CHROME_BROWSER_ANDROID_WEBAPK_WEBAPK_PROTO_BUILDER_H_
+#endif  // COMPONENTS_WEBAPPS_BROWSER_ANDROID_WEBAPK_WEBAPK_PROTO_BUILDER_H_

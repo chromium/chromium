@@ -33,7 +33,6 @@
 #include "chrome/android/chrome_jni_headers/WebApkInstaller_jni.h"
 #include "chrome/browser/android/webapk/webapk_install_service.h"
 #include "chrome/browser/android/webapk/webapk_metrics.h"
-#include "chrome/browser/android/webapk/webapk_proto_builder.h"
 #include "chrome/browser/android/webapk/webapk_ukm_recorder.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/profiles/profile.h"
@@ -41,6 +40,8 @@
 #include "components/version_info/version_info.h"
 #include "components/webapk/webapk.pb.h"
 #include "components/webapps/browser/android/shortcut_info.h"
+#include "components/webapps/browser/android/webapk/webapk_proto_builder.h"
+#include "components/webapps/browser/android/webapk/webapk_types.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/browsing_data_remover.h"
@@ -183,7 +184,8 @@ void WebApkInstaller::BuildProto(
     const SkBitmap& splash_icon,
     const std::string& package_name,
     const std::string& version,
-    std::map<std::string, WebApkIconHasher::Icon> icon_url_to_murmur2_hash,
+    std::map<std::string, webapps::WebApkIconHasher::Icon>
+        icon_url_to_murmur2_hash,
     bool is_manifest_stale,
     base::OnceCallback<void(std::unique_ptr<std::string>)> callback) {
   base::PostTaskAndReplyWithResult(
@@ -191,7 +193,8 @@ void WebApkInstaller::BuildProto(
       base::BindOnce(&webapps::BuildProtoInBackground, shortcut_info,
                      primary_icon, is_primary_icon_maskable, splash_icon,
                      package_name, version, std::move(icon_url_to_murmur2_hash),
-                     is_manifest_stale, std::vector<WebApkUpdateReason>()),
+                     is_manifest_stale,
+                     std::vector<webapps::WebApkUpdateReason>()),
       std::move(callback));
 }
 
@@ -204,9 +207,10 @@ void WebApkInstaller::StoreUpdateRequestToFile(
     const SkBitmap& splash_icon,
     const std::string& package_name,
     const std::string& version,
-    std::map<std::string, WebApkIconHasher::Icon> icon_url_to_murmur2_hash,
+    std::map<std::string, webapps::WebApkIconHasher::Icon>
+        icon_url_to_murmur2_hash,
     bool is_manifest_stale,
-    std::vector<WebApkUpdateReason> update_reasons,
+    std::vector<webapps::WebApkUpdateReason> update_reasons,
     base::OnceCallback<void(bool)> callback) {
   base::PostTaskAndReplyWithResult(
       GetBackgroundTaskRunner().get(), FROM_HERE,
@@ -428,7 +432,7 @@ void WebApkInstaller::OnHaveSufficientSpaceForInstall() {
       icons.insert(shortcut_icon);
   }
 
-  WebApkIconHasher::DownloadAndComputeMurmur2Hash(
+  webapps::WebApkIconHasher::DownloadAndComputeMurmur2Hash(
       GetURLLoaderFactory(browser_context_),
       url::Origin::Create(install_shortcut_info_->url), icons,
       base::BindOnce(&WebApkInstaller::OnGotIconMurmur2Hashes,
@@ -436,7 +440,8 @@ void WebApkInstaller::OnHaveSufficientSpaceForInstall() {
 }
 
 void WebApkInstaller::OnGotIconMurmur2Hashes(
-    absl::optional<std::map<std::string, WebApkIconHasher::Icon>> hashes) {
+    absl::optional<std::map<std::string, webapps::WebApkIconHasher::Icon>>
+        hashes) {
   if (!hashes) {
     OnResult(WebApkInstallResult::FAILURE);
     return;

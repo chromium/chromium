@@ -9,7 +9,7 @@
 #include "base/android/jni_string.h"
 #include "base/numerics/ranges.h"
 #include "chrome/android/chrome_jni_headers/WebApkUkmRecorder_jni.h"
-#include "chrome/browser/android/webapk/webapk_types.h"
+#include "components/webapps/browser/android/webapk/webapk_types.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "url/gurl.h"
@@ -40,7 +40,7 @@ void WebApkUkmRecorder::RecordInstall(const GURL& manifest_url,
   // All installs through this method are browser-installs (ie, they should all
   // use the "browser" distributor).
   ukm::builders::WebAPK_Install(source_id)
-      .SetDistributor(static_cast<int64_t>(WebApkDistributor::BROWSER))
+      .SetDistributor(static_cast<int64_t>(webapps::WebApkDistributor::BROWSER))
       .SetAppVersion(version_code)
       .SetInstall(1)
       .Record(ukm::UkmRecorder::Get());

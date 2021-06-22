@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ANDROID_WEBAPK_WEBAPK_ICON_HASHER_H_
-#define CHROME_BROWSER_ANDROID_WEBAPK_WEBAPK_ICON_HASHER_H_
+#ifndef COMPONENTS_WEBAPPS_BROWSER_ANDROID_WEBAPK_WEBAPK_ICON_HASHER_H_
+#define COMPONENTS_WEBAPPS_BROWSER_ANDROID_WEBAPK_WEBAPK_ICON_HASHER_H_
 
 #include <map>
 #include <memory>
@@ -24,6 +24,8 @@ class URLLoaderFactory;
 }  // namespace mojom
 }  // namespace network
 
+namespace webapps {
+
 // Downloads an icon and takes a Murmur2 hash of the downloaded image.
 class WebApkIconHasher {
  public:
@@ -40,6 +42,9 @@ class WebApkIconHasher {
   using Murmur2HashCallback = base::OnceCallback<void(Icon)>;
   using Murmur2HashMultipleCallback =
       base::OnceCallback<void(absl::optional<std::map<std::string, Icon>>)>;
+
+  WebApkIconHasher(const WebApkIconHasher&) = delete;
+  WebApkIconHasher& operator=(const WebApkIconHasher&) = delete;
 
   // Creates a self-owned WebApkIconHasher instance. The instance downloads all
   // the |icon_urls| and calls |callback| with the Murmur2 hash of the
@@ -82,8 +87,8 @@ class WebApkIconHasher {
 
   // Fails WebApkIconHasher if the download takes too long.
   base::OneShotTimer download_timeout_timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebApkIconHasher);
 };
 
-#endif  // CHROME_BROWSER_ANDROID_WEBAPK_WEBAPK_ICON_HASHER_H_
+}  // namespace webapps
+
+#endif  // COMPONENTS_WEBAPPS_BROWSER_ANDROID_WEBAPK_WEBAPK_ICON_HASHER_H_
