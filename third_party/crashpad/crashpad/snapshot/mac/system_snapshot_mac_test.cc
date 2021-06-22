@@ -80,7 +80,13 @@ TEST_F(SystemSnapshotMacTest, CPUCount) {
   EXPECT_GE(system_snapshot().CPUCount(), 1);
 }
 
-TEST_F(SystemSnapshotMacTest, CPUVendor) {
+#if defined(ARCH_CPU_ARM64)
+// https://crbug.com/1222625
+#define MAYBE_CPUVendor DISABLED_CPUVendor
+#else
+#define MAYBE_CPUVendor CPUVendor
+#endif
+TEST_F(SystemSnapshotMacTest, MAYBE_CPUVendor) {
   std::string cpu_vendor = system_snapshot().CPUVendor();
 
 #if defined(ARCH_CPU_X86_FAMILY)
