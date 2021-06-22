@@ -65,10 +65,21 @@ std::string GetPolicyName(const std::string& policy_name_decorated) {
 // TODO(https://crbug.com/1192629): Revisit it after all chromeos policies
 // touching lacros will get their handlers in place.
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
-void CheckPrefHasValue(const PrefService::Preference* pref,
-                       const base::Value* expected_value) {
-  EXPECT_TRUE(pref->GetValue()->Equals(expected_value))
-      << *pref->GetValue() << " != " << *expected_value;
+PrefService* GetPrefServiceForLocation(PrefLocation location,
+                                       PrefService* local_state,
+                                       PrefService* user_prefs,
+                                       PrefService* signin_profile_prefs) {
+  switch (location) {
+    case PrefLocation::kUserProfile:
+      return user_prefs;
+    case PrefLocation::kSigninProfile:
+      return signin_profile_prefs;
+    case PrefLocation::kLocalState:
+      return local_state;
+    default:
+      NOTREACHED() << "Unhandled pref location: " << static_cast<int>(location);
+  }
+  return nullptr;
 }
 
 void CheckPrefHasDefaultValue(const PrefService::Preference* pref,
@@ -79,7 +90,7 @@ void CheckPrefHasDefaultValue(const PrefService::Preference* pref,
   EXPECT_FALSE(pref->IsManaged());
   EXPECT_FALSE(pref->IsRecommended());
   if (expected_value)
-    CheckPrefHasValue(pref, expected_value);
+    EXPECT_EQ(*pref->GetValue(), *expected_value);
 }
 
 void CheckPrefHasRecommendedValue(const PrefService::Preference* pref,
@@ -90,7 +101,7 @@ void CheckPrefHasRecommendedValue(const PrefService::Preference* pref,
   EXPECT_FALSE(pref->IsManaged());
   EXPECT_TRUE(pref->IsRecommended());
   if (expected_value)
-    CheckPrefHasValue(pref, expected_value);
+    EXPECT_EQ(*pref->GetValue(), *expected_value);
 }
 
 void CheckPrefHasMandatoryValue(const PrefService::Preference* pref,
@@ -101,7 +112,7 @@ void CheckPrefHasMandatoryValue(const PrefService::Preference* pref,
   EXPECT_TRUE(pref->IsManaged());
   EXPECT_FALSE(pref->IsRecommended());
   if (expected_value)
-    CheckPrefHasValue(pref, expected_value);
+    EXPECT_EQ(*pref->GetValue(), *expected_value);
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -468,7 +479,7 @@ void VerifyAllPoliciesHaveATestCase(const base::FilePath& test_case_path) {
     for (const auto& test_case : policy->second) {
       EXPECT_TRUE(test_case->has_reason_for_missing_test() ||
                   !test_case->policy_pref_mapping_tests().empty())
-          << "Policy " << policy->first
+          << "Test case " << test_case->name()
           << " has empty list of test cases (policy_pref_mapping_tests). Add "
              "tests or use reason_for_missing_test.";
 
@@ -528,53 +539,42 @@ void VerifyPolicyToPrefMappings(const base::FilePath& test_case_path,
 // TODO(https://crbug.com/1192629): Revisit it after all chromeos policies
 // touching lacros will get their handlers in place.
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
-      for (const auto& pref_mapping : test_case->policy_pref_mapping_tests()) {
+      for (size_t i = 0; i < test_case->policy_pref_mapping_tests().size();
+           ++i) {
+        const auto& pref_mapping = test_case->policy_pref_mapping_tests()[i];
+
         EXPECT_FALSE(pref_mapping->prefs().empty())
-            << "Policy " << policy.first
-            << " does not check the pref value after setting policies.";
+            << "Test #" << i << " for " << test_case->name()
+            << " is missing pref values to check for";
+
+        if (!preprocessor_macros_checker.SupportsTest(pref_mapping.get())) {
+          LOG(INFO) << "Test #" << i << " for " << test_case->name()
+                    << " skipped due to preprocessor macros";
+          continue;
+        }
 
         for (const auto& pref_case : pref_mapping->prefs()) {
-          const bool check_recommended = test_case->can_be_recommended() &&
-                                         pref_case->check_for_recommended();
-          const bool check_mandatory = pref_case->check_for_mandatory();
-
-          EXPECT_TRUE(check_recommended || check_mandatory)
-              << "pref mapping test for " << policy.first << "(pref "
-              << pref_case->pref()
-              << ") has to either be for recommended/mandatory or both";
-
-          PrefService* prefs = nullptr;
-          switch (pref_case->location()) {
-            case PrefLocation::kUserProfile:
-              prefs = user_prefs;
-              break;
-            case PrefLocation::kSigninProfile:
-              prefs = signin_profile_prefs;
-              break;
-            case PrefLocation::kLocalState:
-              prefs = local_state;
-              break;
-            default:
-              NOTREACHED() << "Unhandled pref location: "
-                           << static_cast<int>(pref_case->location());
-          }
-
+          PrefService* prefs =
+              GetPrefServiceForLocation(pref_case->location(), local_state,
+                                        user_prefs, signin_profile_prefs);
           // Skip preference mapping if required PrefService was not provided.
           if (!prefs)
             continue;
 
-          LOG(INFO) << "Testing policy " << policy.first << " (pref "
-                    << pref_case->pref() << " with "
-                    << ((check_recommended) ? "recommended" : "")
-                    << ((check_recommended && check_mandatory) ? " & " : "")
-                    << ((check_mandatory) ? "mandatory" : "")
-                    << " policy values)";
+          const bool check_recommended = test_case->can_be_recommended() &&
+                                         pref_case->check_for_recommended();
+          const bool check_mandatory = pref_case->check_for_mandatory();
 
-          if (!preprocessor_macros_checker.SupportsTest(pref_mapping.get())) {
-            LOG(INFO) << " Skipping policy_pref_mapping_test because of "
-                      << "preprocessor macros";
-            continue;
-          }
+          LOG(INFO) << "policy: " << test_case->name()
+                    << "\t test_case_index: " << i
+                    << "\t pref_name: " << pref_case->pref()
+                    << "\t check_mandatory: " << check_mandatory
+                    << "\t check_recommended: " << check_recommended;
+
+          EXPECT_TRUE(check_recommended || check_mandatory)
+              << "pref has to be checked for recommended and/or mandatory "
+                 "values";
+
           // The preference must have been registered.
           const PrefService::Preference* pref =
               prefs->FindPreference(pref_case->pref());
