@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/print_preview/print_preview_ui.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -42,6 +43,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/prerender_test_util.h"
 #include "extensions/common/extension.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "net/dns/mock_host_resolver.h"
@@ -50,6 +52,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
 
 namespace printing {
@@ -1141,6 +1144,84 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest, PDFPluginNotKeyboardFocusable) {
   // Pressing <shift-tab> should focus the last toolbar element
   // (zoom-out-button) instead of PDF plugin.
   EXPECT_EQ("\"zoom-out-button\"", reply);
+}
+
+class PrintPrerenderBrowserTest : public PrintBrowserTest {
+ public:
+  PrintPrerenderBrowserTest()
+      : prerender_helper_(
+            base::BindRepeating(&PrintPrerenderBrowserTest::web_contents,
+                                base::Unretained(this))) {}
+
+  void SetUpCommandLine(base::CommandLine* cmd_line) override {
+    cmd_line->AppendSwitch(switches::kDisablePrintPreview);
+    PrintBrowserTest::SetUpCommandLine(cmd_line);
+  }
+
+  void SetUpOnMainThread() override {
+    prerender_helper_.SetUpOnMainThread(embedded_test_server());
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+  content::WebContents* web_contents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+ protected:
+  content::test::PrerenderTestHelper prerender_helper_;
+};
+
+// Test that print() is silently ignored.
+// https://jeremyroman.github.io/alternate-loading-modes/#patch-modals
+IN_PROC_BROWSER_TEST_F(PrintPrerenderBrowserTest, QuietBlockWithWindowPrint) {
+  // Navigate to an initial page.
+  const GURL kUrl(embedded_test_server()->GetURL("/empty.html"));
+  ui_test_utils::NavigateToURL(browser(), kUrl);
+
+  // Start a prerender.
+  GURL prerender_url =
+      embedded_test_server()->GetURL("/printing/prerendering.html");
+
+  content::WebContentsConsoleObserver console_observer(web_contents());
+  int prerender_id = prerender_helper_.AddPrerender(prerender_url);
+  content::RenderFrameHost* prerender_host =
+      prerender_helper_.GetPrerenderedMainFrameHost(prerender_id);
+  EXPECT_EQ(0u, console_observer.messages().size());
+
+  // Try to print by JS during prerendering.
+  EXPECT_EQ(true, content::ExecJs(prerender_host, "window.print();",
+                                  content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  EXPECT_EQ(false, content::EvalJs(prerender_host, "firedBeforePrint"));
+  EXPECT_EQ(false, content::EvalJs(prerender_host, "firedAfterPrint"));
+  EXPECT_EQ(1u, console_observer.messages().size());
+}
+
+// Test that execCommand('print') is silently ignored.
+// execCommand() is not specced, but
+// https://jeremyroman.github.io/alternate-loading-modes/#patch-modals indicates
+// the intent to silently ignore print APIs.
+IN_PROC_BROWSER_TEST_F(PrintPrerenderBrowserTest,
+                       QuietBlockWithDocumentExecCommand) {
+  // Navigate to an initial page.
+  const GURL kUrl(embedded_test_server()->GetURL("/empty.html"));
+  ui_test_utils::NavigateToURL(browser(), kUrl);
+
+  // Start a prerender.
+  GURL prerender_url =
+      embedded_test_server()->GetURL("/printing/prerendering.html");
+
+  content::WebContentsConsoleObserver console_observer(web_contents());
+  int prerender_id = prerender_helper_.AddPrerender(prerender_url);
+  content::RenderFrameHost* prerender_host =
+      prerender_helper_.GetPrerenderedMainFrameHost(prerender_id);
+  EXPECT_EQ(0u, console_observer.messages().size());
+
+  // Try to print by JS during prerendering.
+  EXPECT_EQ(false,
+            content::EvalJs(prerender_host, "document.execCommand('print');"));
+  EXPECT_EQ(false, content::EvalJs(prerender_host, "firedBeforePrint"));
+  EXPECT_EQ(false, content::EvalJs(prerender_host, "firedAfterPrint"));
+  EXPECT_EQ(1u, console_observer.messages().size());
 }
 
 }  // namespace printing

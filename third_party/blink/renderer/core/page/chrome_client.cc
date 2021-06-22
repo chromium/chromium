@@ -326,6 +326,16 @@ bool ChromeClient::Print(LocalFrame* frame) {
     return false;
   }
 
+  // print() returns quietly during prerendering.
+  // https://jeremyroman.github.io/alternate-loading-modes/#patch-modals
+  if (frame->GetDocument()->IsPrerendering()) {
+    frame->Console().AddMessage(MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kJavaScript,
+        mojom::blink::ConsoleMessageLevel::kError,
+        "Ignored call to 'print()' during prerendering."));
+    return false;
+  }
+
   // Suspend pages in case the client method runs a new event loop that would
   // otherwise cause the load to continue while we're in the middle of
   // executing JavaScript.
