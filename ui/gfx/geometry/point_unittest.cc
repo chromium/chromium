@@ -233,4 +233,23 @@ TEST(PointTest, IntegerOverflow) {
   EXPECT_EQ(test, min_point);
 }
 
+TEST(PointTest, IsWithinDistance) {
+  PointF pt(10.f, 10.f);
+  EXPECT_TRUE(pt.IsWithinDistance(PointF(10.f, 10.f),
+                                  /*allowed_distance=*/0.0000000000001f));
+  EXPECT_FALSE(pt.IsWithinDistance(PointF(8.f, 8.f), /*allowed_distance=*/1.f));
+
+  pt = PointF(-10.f, -10.f);
+  EXPECT_FALSE(
+      pt.IsWithinDistance(PointF(10.f, 10.f), /*allowed_distance=*/10.f));
+  EXPECT_TRUE(pt.IsWithinDistance(PointF(-9.9988f, -10.0013f),
+                                  /*epsallowed_distanceilon=*/0.0017689f));
+
+  pt = PointF(std::numeric_limits<float>::max(),
+              std::numeric_limits<float>::max());
+  EXPECT_FALSE(pt.IsWithinDistance(PointF(std::numeric_limits<float>::min(),
+                                          std::numeric_limits<float>::min()),
+                                   /*allowed_distance=*/100.f));
+}
+
 }  // namespace gfx

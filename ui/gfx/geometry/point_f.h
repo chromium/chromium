@@ -74,6 +74,11 @@ class GEOMETRY_EXPORT PointF {
     SetPoint(x() * x_scale, y() * y_scale);
   }
 
+  // Uses the Pythagorean theorem to determine the straight line distance
+  // between the two points, and returns true if it is less than
+  // |allowed_distance|.
+  bool IsWithinDistance(const PointF& rhs, const float allowed_distance) const;
+
   // Returns a string representation of point.
   std::string ToString() const;
 

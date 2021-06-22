@@ -39,7 +39,8 @@ class VIZ_SERVICE_EXPORT DelegatedInkTrailData {
   void PredictPoints(std::vector<gfx::DelegatedInkPoint>* ink_points_to_draw,
                      gfx::DelegatedInkMetadata* metadata);
   void Reset();
-  bool ContainsMatchingPoint(gfx::DelegatedInkMetadata* metadata) const;
+  bool ContainsAlmostMatchingPoint(gfx::DelegatedInkMetadata* metadata,
+                                   const float epsilon) const;
   void ErasePointsOlderThanMetadata(gfx::DelegatedInkMetadata* metadata);
   void UpdateMetrics(gfx::DelegatedInkMetadata* metadata);
 

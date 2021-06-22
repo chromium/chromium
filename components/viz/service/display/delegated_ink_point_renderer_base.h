@@ -23,6 +23,17 @@ class DelegatedInkPoint;
 
 namespace viz {
 
+// The maximum difference allowed when comparing a DelegatedInkPoint |point_| to
+// the |point_| on a DelegatedInkMetadata. Some precision loss can occur when
+// moving between coordinate spaces in the browser and renderer, particularly
+// when the device scale factor is not a whole number. This can result in a
+// DelegatedInkMetadata and DelegatedInkPoint having been created from the same
+// point, but having a very small difference. When this occurs, we can safely
+// ignore that they are slightly different and use the point for a delegated ink
+// trail anyway, since it is a very small difference and will only be visible
+// for a single frame.
+constexpr float kEpsilon = 0.05f;
+
 // This is the base class used for rendering delegated ink trails on the end of
 // strokes to reduce user perceived latency. On initialization, it binds the
 // mojo interface required for receiving delegated ink points that are made and

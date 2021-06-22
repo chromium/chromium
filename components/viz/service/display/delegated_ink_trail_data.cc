@@ -124,13 +124,14 @@ void DelegatedInkTrailData::Reset() {
   }
 }
 
-bool DelegatedInkTrailData::ContainsMatchingPoint(
-    gfx::DelegatedInkMetadata* metadata) const {
+bool DelegatedInkTrailData::ContainsAlmostMatchingPoint(
+    gfx::DelegatedInkMetadata* metadata,
+    const float epsilon) const {
   auto point = points_.find(metadata->timestamp());
   if (point == points_.end())
     return false;
 
-  return point->second == metadata->point();
+  return point->second.IsWithinDistance(metadata->point(), epsilon);
 }
 
 void DelegatedInkTrailData::ErasePointsOlderThanMetadata(

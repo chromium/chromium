@@ -38,14 +38,14 @@ void DelegatedInkPointRendererBase::SetDelegatedInkMetadata(
   // If we already have a cached pointer ID, check if the same pointer ID
   // matches the new metadata.
   if (pointer_id_.has_value() &&
-      pointer_ids_[pointer_id_.value()].ContainsMatchingPoint(
-          metadata_.get())) {
+      pointer_ids_[pointer_id_.value()].ContainsAlmostMatchingPoint(
+          metadata_.get(), kEpsilon)) {
     return;
   }
 
   // If not, find the pointer ID that does match it, if any, and cache it.
   for (auto& it : pointer_ids_) {
-    if (it.second.ContainsMatchingPoint(metadata_.get())) {
+    if (it.second.ContainsAlmostMatchingPoint(metadata_.get(), kEpsilon)) {
       pointer_id_ = it.first;
       return;
     }
@@ -104,7 +104,8 @@ DelegatedInkPointRendererBase::FilterPoints() {
   for (auto it : trail_data.GetPoints())
     points_to_draw.emplace_back(it.second, it.first, pointer_id_.value());
 
-  DCHECK(points_to_draw.front().point() == metadata_->point() &&
+  DCHECK(points_to_draw.front().point().IsWithinDistance(metadata_->point(),
+                                                         kEpsilon) &&
          points_to_draw.front().timestamp() == metadata_->timestamp());
 
   return points_to_draw;
