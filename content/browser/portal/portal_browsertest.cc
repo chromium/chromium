@@ -353,8 +353,14 @@ IN_PROC_BROWSER_TEST_F(PortalDefaultActivationBrowserTest,
   VerifyActivationTraceEvents(StopTracing());
 }
 
+#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+// https://crbug.com/1222682
+#define MAYBE_AdoptPredecessor DISABLED_AdoptPredecessor
+#else
+#define MAYBE_AdoptPredecessor AdoptPredecessor
+#endif
 // Tests if a portal can be activated and the predecessor can be adopted.
-IN_PROC_BROWSER_TEST_F(PortalBrowserTest, AdoptPredecessor) {
+IN_PROC_BROWSER_TEST_F(PortalBrowserTest, MAYBE_AdoptPredecessor) {
   StartTracing();
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("portal.test", "/title1.html")));
