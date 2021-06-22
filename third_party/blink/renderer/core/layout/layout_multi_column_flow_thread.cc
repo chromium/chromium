@@ -1350,6 +1350,9 @@ void LayoutMultiColumnFlowThread::FlowThreadDescendantStyleWillChange(
   if (NeedsToRemoveFromFlowThread(*descendant, descendant->StyleRef(),
                                   new_style)) {
     FlowThreadDescendantWillBeRemoved(descendant);
+#if DCHECK_IS_ON()
+    style_changed_box_ = nullptr;
+#endif
     return;
   }
 #if DCHECK_IS_ON()
@@ -1369,6 +1372,12 @@ void LayoutMultiColumnFlowThread::FlowThreadDescendantStyleDidChange(
     StyleDifference diff,
     const ComputedStyle& old_style) {
   NOT_DESTROYED();
+
+#if DCHECK_IS_ON()
+  const auto* style_changed_box = style_changed_box_;
+  style_changed_box_ = nullptr;
+#endif
+
   bool toggle_spanners_if_needed = toggle_spanners_if_needed_;
   toggle_spanners_if_needed_ = false;
 
@@ -1395,16 +1404,20 @@ void LayoutMultiColumnFlowThread::FlowThreadDescendantStyleDidChange(
 
   if (!toggle_spanners_if_needed)
     return;
+
+  if (could_contain_spanners_ ==
+      CanContainSpannerInParentFragmentationContext(*descendant))
+    return;
+
 #if DCHECK_IS_ON()
   // Make sure that we were preceded by a call to
   // flowThreadDescendantStyleWillChange() with the same descendant as we have
   // now.
-  DCHECK_EQ(style_changed_box_, descendant);
+  if (style_changed_box)
+    DCHECK_EQ(style_changed_box, descendant);
 #endif
 
-  if (could_contain_spanners_ !=
-      CanContainSpannerInParentFragmentationContext(*descendant))
-    ToggleSpannersInSubtree(descendant);
+  ToggleSpannersInSubtree(descendant);
 }
 
 void LayoutMultiColumnFlowThread::ToggleSpannersInSubtree(
