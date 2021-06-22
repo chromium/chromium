@@ -683,10 +683,17 @@ bool PaintArtifactCompositor::PendingLayer::CanMerge(
 
   FloatRect merged_bounds =
       UnionRect(new_home_bounds.Rect(), new_guest_bounds.Rect());
-  float sum_area = new_home_bounds.Rect().Size().Area() +
-                   new_guest_bounds.Rect().Size().Area();
-  if (merged_bounds.Size().Area() > kMergeSparsityTolerance * sum_area)
-    return false;
+  // Don't check for sparcity if we may further decomposite the effect, so that
+  // the merged layer may be merged to other layers with the decomposited
+  // effect, which is often better than not merging even if the merged layer is
+  // sparse because we may create less composited effects and render surfaces.
+  if (guest_state.Effect().IsRoot() ||
+      guest_state.Effect().HasDirectCompositingReasons()) {
+    float sum_area = new_home_bounds.Rect().Size().Area() +
+                     new_guest_bounds.Rect().Size().Area();
+    if (merged_bounds.Size().Area() > kMergeSparsityTolerance * sum_area)
+      return false;
+  }
 
   if (out_merged_state)
     *out_merged_state = *merged_state;

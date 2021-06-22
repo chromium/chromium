@@ -2091,7 +2091,11 @@ TEST_P(PaintArtifactCompositorTest,
   PaintChunkSubset chunks(artifact.Build());
 
   PendingLayer pending_layer(chunks, chunks.begin());
-  ASSERT_FALSE(pending_layer.Merge(PendingLayer(chunks, chunks.begin() + 1)));
+  ASSERT_TRUE(pending_layer.Merge(PendingLayer(chunks, chunks.begin() + 1)));
+  EXPECT_EQ(FloatRect(20, 25, 1030, 1035), pending_layer.bounds);
+  EXPECT_EQ(PropertyTreeState(t0(), c0(), *e1),
+            pending_layer.property_tree_state);
+  EXPECT_THAT(ChunkIndices(pending_layer), ElementsAre(0, 1));
 }
 
 TEST_P(PaintArtifactCompositorTest, PendingLayerKnownOpaque) {
