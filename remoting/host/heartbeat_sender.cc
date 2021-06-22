@@ -35,6 +35,9 @@
 
 #if defined(OS_WIN)
 #include "base/strings/utf_string_conversions.h"
+
+// Needed for GetComputerNameExW/ComputerNameDnsFullyQualified.
+#include <windows.h>
 #endif
 
 namespace remoting {
