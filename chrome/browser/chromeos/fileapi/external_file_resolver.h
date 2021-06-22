@@ -12,7 +12,7 @@
 #include "base/files/file.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/chromeos/file_manager/fileapi_util.h"
+#include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_byte_range.h"
 #include "storage/browser/file_system/file_system_url.h"

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/chromeos/file_manager/file_manager_browsertest_base.h"
+#include "chrome/browser/ash/file_manager/file_manager_browsertest_base.h"
 #include "content/public/test/browser_test.h"
 #include "media/base/media_switches.h"
 

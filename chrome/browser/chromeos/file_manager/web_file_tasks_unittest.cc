@@ -10,7 +10,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/chromeos/file_manager/file_tasks.h"
+#include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"

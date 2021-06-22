@@ -64,7 +64,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/apps/app_service/app_icon_factory.h"
-#include "chrome/browser/chromeos/file_manager/file_manager_test_util.h"
+#include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/chromeos/policy/handlers/system_features_disable_list_policy_handler.h"
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
 #include "chrome/browser/ui/app_list/app_list_model_updater.h"

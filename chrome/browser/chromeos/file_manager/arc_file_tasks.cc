@@ -19,9 +19,9 @@
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/fileapi/arc_content_file_system_url_util.h"
+#include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/file_manager/app_id.h"
-#include "chrome/browser/chromeos/file_manager/fileapi_util.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -50,7 +50,7 @@ constexpr char kAppIdSeparator = '/';
 
 // Converts an Android intent action (see kIntentAction* in
 // components/arc/intent_helper/intent_constants.h) to a file task action ID
-// (see chrome/browser/chromeos/file_manager/file_tasks.h).
+// (see chrome/browser/ash/file_manager/file_tasks.h).
 std::string ArcActionToFileTaskActionId(const std::string& action) {
   if (action == arc::kIntentActionView)
     return kActionIdView;

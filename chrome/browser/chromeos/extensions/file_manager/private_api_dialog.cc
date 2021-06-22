@@ -8,9 +8,9 @@
 
 #include "base/bind.h"
 #include "chrome/browser/ash/arc/fileapi/arc_select_files_util.h"
+#include "chrome/browser/ash/file_manager/file_tasks_notifier.h"
 #include "chrome/browser/chromeos/extensions/file_manager/private_api_util.h"
 #include "chrome/browser/chromeos/extensions/file_manager/select_file_dialog_extension_user_data.h"
-#include "chrome/browser/chromeos/file_manager/file_tasks_notifier.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/select_file_dialog_extension.h"
 #include "chrome/common/extensions/api/file_manager_private.h"

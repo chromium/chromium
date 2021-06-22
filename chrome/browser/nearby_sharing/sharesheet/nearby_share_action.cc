@@ -9,8 +9,8 @@
 
 #include "base/files/file_path.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/chromeos/file_manager/app_id.h"
-#include "chrome/browser/chromeos/file_manager/fileapi_util.h"
 #include "chrome/browser/nearby_sharing/attachment.h"
 #include "chrome/browser/nearby_sharing/file_attachment.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"

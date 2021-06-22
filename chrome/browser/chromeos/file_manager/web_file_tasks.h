@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "chrome/browser/chromeos/file_manager/file_tasks.h"
+#include "chrome/browser/ash/file_manager/file_tasks.h"
 
 class Profile;
 

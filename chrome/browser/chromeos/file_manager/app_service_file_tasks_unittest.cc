@@ -12,7 +12,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
-#include "chrome/browser/chromeos/file_manager/file_tasks.h"
+#include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"

@@ -393,7 +393,7 @@ def update_buid_gn_unittest_dependencies(build_gn_path, js_file_path,
             raise ValueError(e)
         os.rename(original_js_file_path, js_file_path)
 
-    # Update chrome/browser/chromeos/file_manager/file_manager_jstest.cc
+    # Update chrome/browser/ash/file_manager/file_manager_jstest.cc
     # by updating RunTestURL for the unittest being converted.
     # [...]_unittest_gen.html -> [...]_unittest.m_gen.html.
     index = get_index_substr(file_manager_jstest_lines, file_name + '.m')

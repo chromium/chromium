@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/values.h"
-#include "chrome/browser/chromeos/file_manager/file_manager_string_util.h"
+#include "chrome/browser/ash/file_manager/file_manager_string_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "extensions/common/extension_l10n_util.h"
 

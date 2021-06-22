@@ -7,7 +7,7 @@
 #include <string>
 #include <utility>
 
-#include "chrome/browser/chromeos/file_manager/filesystem_api_util.h"
+#include "chrome/browser/ash/file_manager/filesystem_api_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_context.h"
 

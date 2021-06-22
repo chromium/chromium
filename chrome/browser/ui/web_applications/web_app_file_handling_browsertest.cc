@@ -51,7 +51,7 @@
 #include "third_party/blink/public/mojom/web_launch/file_handling_expiry.mojom-test-utils.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/file_manager/file_manager_test_util.h"
+#include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #endif
 
 namespace web_app {

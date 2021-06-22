@@ -7,8 +7,8 @@
 #include <memory.h>
 
 #include "base/values.h"
+#include "chrome/browser/ash/file_manager/file_manager_string_util.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/file_manager/file_manager_string_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/web_ui_data_source.h"
 
