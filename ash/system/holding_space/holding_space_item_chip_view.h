@@ -52,6 +52,7 @@ class ASH_EXPORT HoldingSpaceItemChipView : public HoldingSpaceItemView {
   void OnSecondaryActionPressed();
 
   void UpdateImage();
+  void UpdateImageTransform();
   void UpdateLabels();
   void UpdateSecondaryAction();
 
