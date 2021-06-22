@@ -2243,6 +2243,65 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   }
 }
 
+// Test starting a main frame navigation after the initial
+// prerender navigation when activation has already started.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+                       MainFrameNavigationDuringActivation) {
+  const GURL kInitialUrl = GetUrl("/empty.html");
+  const GURL kPrerenderingUrl = GetUrl("/empty.html?1");
+  const GURL kPrerenderingUrl2 = GetUrl("/empty.html?2");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Start a prerender.
+  int prerender_host_id = AddPrerender(kPrerenderingUrl);
+  RenderFrameHostImpl* prerendered_rfh =
+      GetPrerenderedMainFrameHost(prerender_host_id);
+  test::PrerenderHostObserver prerender_observer(*web_contents(),
+                                                 prerender_host_id);
+  auto* prerender_ftn = prerendered_rfh->frame_tree_node();
+  EXPECT_FALSE(prerender_ftn->HasNavigation());
+
+  // Now navigate the primary page to the prerendered URL so that we activate
+  // the prerender. Use a CommitDeferringCondition to pause activation
+  // before it completes.
+  TestNavigationManager activation_observer(shell()->web_contents(),
+                                            kPrerenderingUrl);
+  MockCommitDeferringConditionWrapper condition(/*is_ready_to_commit=*/false);
+  {
+    MockCommitDeferringConditionInstaller installer(web_contents(),
+                                                    condition.PassToDelegate());
+    ASSERT_TRUE(ExecJs(web_contents()->GetMainFrame(),
+                       JsReplace("location = $1", kPrerenderingUrl)));
+
+    ASSERT_TRUE(activation_observer.WaitForResponse());
+    activation_observer.ResumeNavigation();
+
+    // The prerender host should have been reserved.
+    ASSERT_TRUE(
+        web_contents_impl()->GetPrerenderHostRegistry()->FindReservedHostById(
+            prerender_host_id));
+  }
+  // Wait for the condition to pause the activation.
+  condition.WaitUntilInvoked();
+  EXPECT_EQ(web_contents()->GetURL(), kInitialUrl);
+
+  // Make a navigation in the prerendered page. This navigation should
+  // be cancelled by PrerenderNavigationThrottle.
+  TestNavigationManager bad_nav_observer(web_contents(), kPrerenderingUrl2);
+  ASSERT_TRUE(
+      ExecJs(prerendered_rfh, JsReplace("location = $1", kPrerenderingUrl2)));
+  bad_nav_observer.WaitForNavigationFinished();
+  EXPECT_FALSE(bad_nav_observer.was_successful());
+  EXPECT_EQ(prerendered_rfh->GetLastCommittedURL(), kPrerenderingUrl);
+
+  // Finish activation. It should work as normal.
+  condition.CallResumeClosure();
+  prerender_observer.WaitForActivation();
+  EXPECT_EQ(shell()->web_contents()->GetURL(), kPrerenderingUrl);
+}
+
 // Ensures WebContents::OpenURL to a frame in a currently activating (i.e.
 // "reserved") prerendering host navigates the frame.
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,

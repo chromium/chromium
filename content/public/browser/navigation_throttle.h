@@ -206,7 +206,7 @@ class CONTENT_EXPORT NavigationThrottle {
   virtual void CancelDeferredNavigation(ThrottleCheckResult result);
 
  private:
-  NavigationHandle* navigation_handle_;
+  NavigationHandle* const navigation_handle_;
 
   // Used in tests.
   base::RepeatingClosure resume_callback_;

@@ -46,7 +46,31 @@ PrerenderNavigationThrottle::WillRedirectRequest() {
 
 PrerenderNavigationThrottle::PrerenderNavigationThrottle(
     NavigationHandle* navigation_handle)
-    : NavigationThrottle(navigation_handle) {}
+    : NavigationThrottle(navigation_handle) {
+  auto* navigation_request = NavigationRequest::From(navigation_handle);
+  FrameTreeNode* ftn = navigation_request->frame_tree_node();
+  PrerenderHostRegistry* prerender_host_registry =
+      ftn->current_frame_host()->delegate()->GetPrerenderHostRegistry();
+  int ftn_id = ftn->frame_tree_node_id();
+  PrerenderHost* prerender_host =
+      prerender_host_registry->FindNonReservedHostById(ftn_id);
+  if (!prerender_host) {
+    prerender_host = prerender_host_registry->FindReservedHostById(ftn_id);
+  }
+  DCHECK(prerender_host);
+
+  // This throttle is responsible for setting the initial navigation id on the
+  // PrerenderHost, since the PrerenderHost obtains the NavigationRequest,
+  // which has the ID, only after the navigation throttles run.
+  if (prerender_host->GetInitialNavigationId().has_value()) {
+    // If the host already has an initial navigation id, this throttle
+    // will later cancel the navigation in Will*Request(). Just do nothing
+    // until then.
+  } else {
+    prerender_host->SetInitialNavigationId(
+        navigation_handle->GetNavigationId());
+  }
+}
 
 NavigationThrottle::ThrottleCheckResult
 PrerenderNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
@@ -58,7 +82,8 @@ PrerenderNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
   DCHECK(frame_tree_node->IsMainFrame());
   DCHECK(frame_tree_node->frame_tree()->is_prerendering());
 
-  // Get the prerender host of the prerendering page.
+  // Get the prerender host of the prerendering page. It might be a reserved
+  // host if activation already started.
   PrerenderHostRegistry* prerender_host_registry =
       frame_tree_node->current_frame_host()
           ->delegate()
@@ -66,39 +91,29 @@ PrerenderNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
   PrerenderHost* prerender_host =
       prerender_host_registry->FindNonReservedHostById(
           frame_tree_node->frame_tree_node_id());
+  bool activation_started = false;
   if (!prerender_host) {
-    // If there is no host, we are already reserved for activation. Just let the
-    // navigation proceed, since abandoning prerendering now might break the
-    // activation navigation and cancelling the request while continuing the
-    // activation will break compatibility. We also cannot defer because the
-    // activation machinery waits for the navigation to commit before
-    // activating.
-    // TODO(https://crbug.com/1198395): Somehow handle this, probably by
-    // deferring after support is added to activate while the main frame is
-    // still being navigated; or else cancelling prerendering.
-    DCHECK(prerender_host_registry->FindReservedHostById(
-        frame_tree_node->frame_tree_node_id()));
-    return PROCEED;
+    prerender_host = prerender_host_registry->FindReservedHostById(
+        frame_tree_node->frame_tree_node_id());
+    activation_started = true;
   }
+  DCHECK(prerender_host);
 
-  // Navigation after the initial prerendering navigation are disallowed.
-  absl::optional<int64_t> initial_navigation_id =
-      prerender_host->GetInitialNavigationId();
-  if (!initial_navigation_id.has_value()) {
-    // If the PrerenderHost has no initial navigation ID yet, this must be the
-    // initial one, so set it here. This throttle is responsible for setting it
-    // since the PrerenderHost obtains the NavigationRequest, which has the ID,
-    // only after the navigation throttles run.
-    prerender_host->SetInitialNavigationId(
-        navigation_request->GetNavigationId());
-  } else if (*initial_navigation_id != navigation_request->GetNavigationId()) {
-    // If this is not the initial prerendering navigation, cancel the navigation
-    // and cancel prerendering. Same document navigation is exceptionally
-    // allowed but we do nothing here as throttles don't run against the same
-    // document navigation. It should just work.
-    prerender_host_registry->CancelHost(
-        frame_tree_node->frame_tree_node_id(),
-        PrerenderHost::FinalStatus::kMainFrameNavigation);
+  // `activation_started` determines whether prerendering can be cancelled.
+  // If activation already started, we cannot safely cancel prerendering, but
+  // we still block the navigation to preserve the restrictions that this
+  // throttle is intended to impose.
+  // TODO(https://crbug.com/1198395): Cancel prerendering even after
+  // activation started when support is added to do so.
+
+  // Navigations after the initial prerendering navigation are disallowed.
+  if (*prerender_host->GetInitialNavigationId() !=
+      navigation_request->GetNavigationId()) {
+    if (!activation_started) {
+      prerender_host_registry->CancelHost(
+          frame_tree_node->frame_tree_node_id(),
+          PrerenderHost::FinalStatus::kMainFrameNavigation);
+    }
     return CANCEL;
   }
 
@@ -106,23 +121,28 @@ PrerenderNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
   // https://jeremyroman.github.io/alternate-loading-modes/#no-bad-navs
   GURL prerendering_url = navigation_handle()->GetURL();
   if (!prerendering_url.SchemeIsHTTPOrHTTPS()) {
-    prerender_host_registry->CancelHost(
-        frame_tree_node->frame_tree_node_id(),
-        is_redirection ? PrerenderHost::FinalStatus::kInvalidSchemeRedirect
-                       : PrerenderHost::FinalStatus::kInvalidSchemeNavigation);
+    if (!activation_started) {
+      prerender_host_registry->CancelHost(
+          frame_tree_node->frame_tree_node_id(),
+          is_redirection
+              ? PrerenderHost::FinalStatus::kInvalidSchemeRedirect
+              : PrerenderHost::FinalStatus::kInvalidSchemeNavigation);
+    }
     return CANCEL;
   }
 
   // Cancel prerendering if this is cross-origin prerendering, cross-origin
   // redirection during prerendering, or cross-origin navigation from a
   // prerendered page.
+  // TODO(https://crbug.com/1176120): Fallback to NoStatePrefetch.
   url::Origin prerendering_origin = url::Origin::Create(prerendering_url);
   if (prerendering_origin != prerender_host->initiator_origin()) {
-    prerender_host_registry->CancelHost(
-        frame_tree_node->frame_tree_node_id(),
-        is_redirection ? PrerenderHost::FinalStatus::kCrossOriginRedirect
-                       : PrerenderHost::FinalStatus::kCrossOriginNavigation);
-    // TODO(https://crbug.com/1176120): Fallback to NoStatePrefetch.
+    if (!activation_started) {
+      prerender_host_registry->CancelHost(
+          frame_tree_node->frame_tree_node_id(),
+          is_redirection ? PrerenderHost::FinalStatus::kCrossOriginRedirect
+                         : PrerenderHost::FinalStatus::kCrossOriginNavigation);
+    }
     return CANCEL;
   }
 

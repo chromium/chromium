@@ -22,8 +22,6 @@ class NavigationRequest;
 // This implementation assumes that there are no new navigations happening in
 // the main frame during prerender activation i.e., between the ongoing
 // navigation commit until the prerender activates.
-// TODO(https://crbug.com/1194414): Cancel all new navigations when the
-// activation is in progress.
 class PrerenderCommitDeferringCondition : public CommitDeferringCondition,
                                           public WebContentsObserver {
  public:

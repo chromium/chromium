@@ -42,10 +42,20 @@ bool MockCommitDeferringConditionWrapper::IsDestroyed() const {
   return !static_cast<bool>(weak_condition_);
 }
 
+void MockCommitDeferringConditionWrapper::WaitUntilInvoked() {
+  if (WasInvoked())
+    return;
+  base::RunLoop loop;
+  invoked_closure_ = loop.QuitClosure();
+  loop.Run();
+}
+
 void MockCommitDeferringConditionWrapper::WillCommitNavigationCalled(
     base::OnceClosure resume_closure) {
   did_call_will_commit_navigation_ = true;
   resume_closure_ = std::move(resume_closure);
+  if (invoked_closure_)
+    std::move(invoked_closure_).Run();
 }
 
 MockCommitDeferringCondition::MockCommitDeferringCondition(

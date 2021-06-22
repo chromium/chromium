@@ -26,6 +26,7 @@ class MockCommitDeferringConditionWrapper {
   void CallResumeClosure();
   bool WasInvoked() const;
   bool IsDestroyed() const;
+  void WaitUntilInvoked();
 
  private:
   void WillCommitNavigationCalled(base::OnceClosure resume_closure);
@@ -34,6 +35,7 @@ class MockCommitDeferringConditionWrapper {
   base::WeakPtr<MockCommitDeferringCondition> weak_condition_;
 
   base::OnceClosure resume_closure_;
+  base::OnceClosure invoked_closure_;
 
   bool did_call_will_commit_navigation_ = false;
 

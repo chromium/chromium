@@ -121,6 +121,9 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
+  // The initial navigation id is set by the PrerenderNavigationThrottle
+  // when the PrerenderHost is first navigated, which happens immediately
+  // after creation.
   absl::optional<int64_t> GetInitialNavigationId() const;
   void SetInitialNavigationId(int64_t navigation_id);
 

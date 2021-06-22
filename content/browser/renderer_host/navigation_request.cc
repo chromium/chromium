@@ -3082,7 +3082,14 @@ void NavigationRequest::OnRequestFailedInternal(
       final_status = PrerenderHost::FinalStatus::kNavigationRequestBlockedByCsp;
     }
     GetPrerenderHostRegistry().CancelHost(GetFrameTreeNodeId(), final_status);
-    return;
+    // We must continue with this function because CancelHost() does
+    // not necessarily cancel the host if activation already started,
+    // so this NavigationRequest remains live and the DidFinishNavigation()
+    // method is not called and callers waiting for this navigation to finish
+    // will never know it was cancelled.
+    // TODO(falken): Figure out what to do after
+    // https://chromium-review.googlesource.com/c/chromium/src/+/2830778 lands,
+    // which will restart the navigation request in CancelHost().
   }
 
   if (MaybeCancelFailedNavigation())

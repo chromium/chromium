@@ -87,6 +87,10 @@ void PrerenderCommitDeferringCondition::DidFinishNavigation(
   // Since the prerender navigation finished, and
   // PrerenderNavigationThrottle disallows another navigation after the
   // initial commit, there should not be another navigation starting.
+  //
+  // The old navigation might not yet have cleaned up yet, so try that
+  // first.
+  prerender_frame_tree_node->render_manager()->MaybeCleanUpNavigation();
   DCHECK(!prerender_frame_tree_node->HasNavigation());
 
   if (done_closure_) {

@@ -114,10 +114,8 @@ TEST_F(PrerenderHostTest, DontActivate) {
   ExpectFinalStatus(PrerenderHost::FinalStatus::kDestroyed);
 }
 
-// Tests that main frame navigations in a prerendered page can occur if they
-// start after the prerendered page has been reserved for activation.
-//
-// Regression test for https://crbug.com/1190262.
+// Tests that main frame navigations in a prerendered page cannot occur even if
+// they start after the prerendered page has been reserved for activation.
 TEST_F(PrerenderHostTest, MainFrameNavigationForReservedHost) {
   std::unique_ptr<TestWebContents> web_contents =
       CreateWebContents(GURL("https://example.com/"));
@@ -131,7 +129,10 @@ TEST_F(PrerenderHostTest, MainFrameNavigationForReservedHost) {
   const int prerender_ftn_id = prerender_rfh->GetFrameTreeNodeId();
   PrerenderHost* prerender_host =
       registry->FindNonReservedHostById(prerender_ftn_id);
+  FrameTreeNode* ftn = prerender_rfh->frame_tree_node();
+  EXPECT_FALSE(ftn->HasNavigation());
 
+  // Start trying to activate the prerendered page.
   std::unique_ptr<NavigationSimulatorImpl> navigation =
       NavigationSimulatorImpl::CreateRendererInitiated(kPrerenderingUrl,
                                                        initiator_rfh);
@@ -141,16 +142,22 @@ TEST_F(PrerenderHostTest, MainFrameNavigationForReservedHost) {
 
   EXPECT_EQ(navigation_request->prerender_frame_tree_node_id(),
             prerender_ftn_id);
+  EXPECT_FALSE(ftn->HasNavigation());
 
-  // Start a cross-origin navigation in the prerendered page. It should not
-  // be deferred.
-  // TODO(https://crbug.com/1198395): Defer or cancel in this case, which will
-  // change this expectation.
-  auto navigation_2 = NavigationSimulatorImpl::CreateRendererInitiated(
-      GURL("https://example2.test/"), prerender_rfh);
+  const GURL kBadUrl("https://example2.test/");
+  TestNavigationManager tno(web_contents.get(), kBadUrl);
+
+  // Start a cross-origin navigation in the prerendered page. It should be
+  // cancelled.
+  auto navigation_2 =
+      NavigationSimulatorImpl::CreateRendererInitiated(kBadUrl, prerender_rfh);
   navigation_2->Start();
-  EXPECT_FALSE(navigation_2->IsDeferred());
-  navigation_2->Commit();
+  EXPECT_EQ(NavigationThrottle::CANCEL,
+            navigation_2->GetLastThrottleCheckResult());
+
+  tno.WaitForNavigationFinished();
+  EXPECT_FALSE(tno.was_committed());
+  EXPECT_FALSE(ftn->HasNavigation());
 
   // Activate the prerendered page.
   prerender_host->Activate(*navigation->GetNavigationHandle());
