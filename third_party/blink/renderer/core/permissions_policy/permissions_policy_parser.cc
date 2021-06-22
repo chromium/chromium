@@ -562,18 +562,30 @@ ParsedPermissionsPolicy PermissionsPolicyParser::ParseHeader(
         observer.FeatureObserved(policy_declaration.feature);
     DCHECK(!feature_observed);
   }
+
+  std::vector<std::string> overlap_features;
+
   for (const auto& policy_declaration : feature_policy) {
     if (!observer.FeatureObserved(policy_declaration.feature)) {
       permissions_policy.push_back(policy_declaration);
     } else {
-      feature_policy_logger.Warn(String::Format(
-          "Feature %s has been specified in both Feature-Policy and "
-          "Permissions-Policy header. Value defined in Permissions-Policy "
-          "header will be used.",
-          GetNameForFeature(policy_declaration.feature).Ascii().c_str()));
+      overlap_features.push_back(
+          GetNameForFeature(policy_declaration.feature).Ascii().c_str());
     }
   }
 
+  if (!overlap_features.empty()) {
+    std::ostringstream features_stream;
+    std::copy(overlap_features.begin(), overlap_features.end() - 1,
+              std::ostream_iterator<std::string>(features_stream, ", "));
+    features_stream << overlap_features.back();
+
+    feature_policy_logger.Warn(String::Format(
+        "Some features are specified in both Feature-Policy and "
+        "Permissions-Policy header: %s. Values defined in Permissions-Policy "
+        "header will be used.",
+        features_stream.str().c_str()));
+  }
   return permissions_policy;
 }
 
