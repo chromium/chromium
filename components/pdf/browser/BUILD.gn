@@ -31,6 +31,8 @@ if (enable_pdf) {
     sources = [
       "pdf_navigation_throttle.cc",
       "pdf_navigation_throttle.h",
+      "pdf_stream_delegate.cc",
+      "pdf_stream_delegate.h",
       "pdf_url_loader_request_interceptor.cc",
       "pdf_url_loader_request_interceptor.h",
     ]
@@ -38,7 +40,6 @@ if (enable_pdf) {
     deps = [
       "//base",
       "//content/public/browser",
-      "//extensions/common:common_constants",
       "//pdf:features",
       "//services/network/public/cpp:cpp_base",
       "//ui/base",

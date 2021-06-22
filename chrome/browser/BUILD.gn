@@ -6197,6 +6197,8 @@ static_library("browser") {
 
   if (enable_pdf) {
     sources += [
+      "pdf/chrome_pdf_stream_delegate.cc",
+      "pdf/chrome_pdf_stream_delegate.h",
       "pdf/pdf_extension_util.cc",
       "pdf/pdf_extension_util.h",
     ]

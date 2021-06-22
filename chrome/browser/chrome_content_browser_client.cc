@@ -6,6 +6,7 @@
 
 #include <iterator>
 #include <map>
+#include <memory>
 #include <set>
 #include <utility>
 #include <vector>
@@ -618,6 +619,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_PDF)
+#include "chrome/browser/pdf/chrome_pdf_stream_delegate.h"
 #include "components/pdf/browser/pdf_navigation_throttle.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
 
@@ -4097,7 +4099,8 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
   MaybeAddThrottle(PDFIFrameNavigationThrottle::MaybeCreateThrottleFor(handle),
                    &throttles);
 #if BUILDFLAG(ENABLE_PDF)
-  MaybeAddThrottle(pdf::PdfNavigationThrottle::MaybeCreateThrottleFor(handle),
+  MaybeAddThrottle(pdf::PdfNavigationThrottle::MaybeCreateThrottleFor(
+                       handle, std::make_unique<ChromePdfStreamDelegate>()),
                    &throttles);
 #endif  // BUILDFLAG(ENABLE_PDF)
 

@@ -8,18 +8,20 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/feature_list.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "components/pdf/browser/pdf_stream_delegate.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
-#include "extensions/common/constants.h"
 #include "pdf/pdf_features.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
@@ -63,19 +65,25 @@ WEB_CONTENTS_USER_DATA_KEY_IMPL(WebContentsLifetimeHelper)
 // static
 std::unique_ptr<content::NavigationThrottle>
 PdfNavigationThrottle::MaybeCreateThrottleFor(
-    content::NavigationHandle* navigation_handle) {
+    content::NavigationHandle* navigation_handle,
+    std::unique_ptr<PdfStreamDelegate> stream_delegate) {
   if (!base::FeatureList::IsEnabled(chrome_pdf::features::kPdfUnseasoned))
     return nullptr;
 
   if (navigation_handle->IsInMainFrame())
     return nullptr;
 
-  return std::make_unique<PdfNavigationThrottle>(navigation_handle);
+  return std::make_unique<PdfNavigationThrottle>(navigation_handle,
+                                                 std::move(stream_delegate));
 }
 
 PdfNavigationThrottle::PdfNavigationThrottle(
-    content::NavigationHandle* navigation_handle)
-    : content::NavigationThrottle(navigation_handle) {}
+    content::NavigationHandle* navigation_handle,
+    std::unique_ptr<PdfStreamDelegate> stream_delegate)
+    : content::NavigationThrottle(navigation_handle),
+      stream_delegate_(std::move(stream_delegate)) {
+  DCHECK(stream_delegate_);
+}
 
 PdfNavigationThrottle::~PdfNavigationThrottle() = default;
 
@@ -85,31 +93,31 @@ const char* PdfNavigationThrottle::GetNameForLogging() {
 
 content::NavigationThrottle::ThrottleCheckResult
 PdfNavigationThrottle::WillStartRequest() {
-  // Quickly ignore URLs that do not look like stream URLs. The path check does
-  // not need to be precise, it just needs to not match any legitimate PDF
-  // extension URL. We'll assume such URLs contain multiple path components, or
-  // a file extension.
-  const GURL& url = navigation_handle()->GetURL();
-  if (!url.SchemeIs(extensions::kExtensionScheme) ||
-      url.host_piece() != extension_misc::kPdfExtensionId ||
-      url.path_piece().find_last_of("/.") != 0) {
+  // Ignore unless navigating to the stream URL.
+  content::WebContents* contents = navigation_handle()->GetWebContents();
+  if (!contents)
     return PROCEED;
-  }
 
-  // TODO(crbug.com/1123621): Enqueue navigation to stream's original URL.
+  const absl::optional<PdfStreamDelegate::StreamInfo> stream =
+      stream_delegate_->GetStreamInfo(contents);
+  if (!stream.has_value())
+    return PROCEED;
+
+  if (navigation_handle()->GetURL() != stream->stream_url)
+    return PROCEED;
+
+  // Uses the same pattern as `PDFIFrameNavigationThrottle` to redirect
+  // navigation to the original URL. We'll use this to navigate to the correct
+  // origin, while `PdfURLLoaderRequestInterceptor` will intercept the request
+  // and replace its content.
   content::OpenURLParams params =
       content::OpenURLParams::FromNavigationHandle(navigation_handle());
-  params.url = GURL("chrome://about");
+  params.url = stream->original_url;
   params.transition = ui::PAGE_TRANSITION_AUTO_SUBFRAME;
 
-  // Uses same pattern as `PDFIFrameNavigationThrottle` to redirect navigation.
-  content::WebContents* web_contents = navigation_handle()->GetWebContents();
-  if (!web_contents)
-    return CANCEL_AND_IGNORE;
-
-  WebContentsLifetimeHelper::CreateForWebContents(web_contents);
+  WebContentsLifetimeHelper::CreateForWebContents(contents);
   WebContentsLifetimeHelper* helper =
-      WebContentsLifetimeHelper::FromWebContents(web_contents);
+      WebContentsLifetimeHelper::FromWebContents(contents);
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(&WebContentsLifetimeHelper::OpenUrl,
                                 helper->GetWeakPtr(), std::move(params)));
