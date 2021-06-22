@@ -9,8 +9,14 @@
 
 #include "base/callback.h"
 #include "base/feature_list.h"
+#include "base/supports_user_data.h"
+#include "build/build_config.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+#if defined(OS_ANDROID)
+#include "base/android/jni_android.h"
+#endif  // defined(OS_ANDROID)
 
 class PrefRegistrySimple;
 
@@ -23,8 +29,16 @@ struct SegmentSelectionResult;
 
 // The core class of segmentation platform that integrates all the required
 // pieces on the client side.
-class SegmentationPlatformService : public KeyedService {
+class SegmentationPlatformService : public KeyedService,
+                                    public base::SupportsUserData {
  public:
+#if defined(OS_ANDROID)
+  // Returns a Java object of the type SegmentationPlatformService for the given
+  // SegmentationPlatformService.
+  static base::android::ScopedJavaLocalRef<jobject> GetJavaObject(
+      SegmentationPlatformService* segmentation_platform_service);
+#endif  // defined(OS_ANDROID)
+
   SegmentationPlatformService() = default;
   ~SegmentationPlatformService() override = default;
 
