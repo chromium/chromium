@@ -123,7 +123,7 @@ void TestHarness::InstallBooleanPolicy(const std::string& policy_name,
 void TestHarness::InstallStringListPolicy(const std::string& policy_name,
                                           const base::ListValue* policy_value) {
   base::DictionaryValue dict;
-  dict.Set(policy_name, std::make_unique<base::Value>(policy_value->Clone()));
+  dict.SetKey(policy_name, policy_value->Clone());
   WriteConfigFile(dict, NextConfigFileName());
 }
 
@@ -131,7 +131,7 @@ void TestHarness::InstallDictionaryPolicy(
     const std::string& policy_name,
     const base::DictionaryValue* policy_value) {
   base::DictionaryValue dict;
-  dict.Set(policy_name, std::make_unique<base::Value>(policy_value->Clone()));
+  dict.SetKey(policy_name, policy_value->Clone());
   WriteConfigFile(dict, NextConfigFileName());
 }
 
