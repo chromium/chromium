@@ -90,6 +90,7 @@
 #import "ios/chrome/browser/ui/default_promo/default_promo_non_modal_presentation_delegate.h"
 #import "ios/chrome/browser/ui/download/download_manager_coordinator.h"
 #import "ios/chrome/browser/ui/elements/activity_overlay_coordinator.h"
+#import "ios/chrome/browser/ui/first_run/first_run_screen_view_controller.h"
 #import "ios/chrome/browser/ui/first_run/first_run_util.h"
 #import "ios/chrome/browser/ui/first_run/welcome_to_chrome_view_controller.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_animator.h"
@@ -1795,7 +1796,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
             viewControllerToPresent);
     if ([navController.topViewController
             isMemberOfClass:[WelcomeToChromeViewController class]] ||
-        base::FeatureList::IsEnabled(kEnableFREUIModuleIOS)) {
+        [navController.topViewController
+            isKindOfClass:[FirstRunScreenViewController class]]) {
       self.hideStatusBar = YES;
 
       // Load view from Launch Screen and add it to window.
