@@ -223,7 +223,7 @@ public class VoiceToolbarButtonController
     /** Returns whether the feature flags allow showing the mic icon in the toolbar. */
     public static boolean isToolbarMicEnabled() {
         if (!FeatureList.isInitialized()) return false;
-        if (AdaptiveToolbarFeatures.isEnabled()) {
+        if (AdaptiveToolbarFeatures.isSingleVariantModeEnabled()) {
             return AdaptiveToolbarFeatures.getSingleVariantMode()
                     == AdaptiveToolbarButtonVariant.VOICE;
         } else {

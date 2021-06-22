@@ -9,17 +9,20 @@ import android.util.AttributeSet;
 import android.widget.RadioGroup;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures.AdaptiveToolbarButtonVariant;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarStatePredictor;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout;
 
 /**
- * Fragment that allows the user to configure toolbar shorcut preferences.
+ * Fragment that allows the user to configure toolbar shortcut preferences.
  */
 public class RadioButtonGroupAdaptiveToolbarPreference
         extends Preference implements RadioGroup.OnCheckedChangeListener {
@@ -29,6 +32,8 @@ public class RadioButtonGroupAdaptiveToolbarPreference
     private @NonNull RadioButtonWithDescription mShareButton;
     private @NonNull RadioButtonWithDescription mVoiceSearchButton;
     private @AdaptiveToolbarButtonVariant int mSelected;
+    private final AdaptiveToolbarStatePredictor mStatePredictor =
+            new AdaptiveToolbarStatePredictor();
 
     public RadioButtonGroupAdaptiveToolbarPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -50,13 +55,18 @@ public class RadioButtonGroupAdaptiveToolbarPreference
         mVoiceSearchButton =
                 (RadioButtonWithDescription) holder.findViewById(R.id.adaptive_option_voice_search);
 
-        // TODO(crbug.com/1211392): Get the recommendation shortcut from backend.
-        String recommendedVariation = getContext().getString(R.string.button_new_tab);
-        mAutoButton.setDescriptionText(getContext().getString(
-                R.string.adaptive_toolbar_button_preference_based_on_your_usage_description,
-                recommendedVariation));
+        initializeRadioButtonSelection();
+    }
 
-        setRadioButtonSelection(mSelected);
+    private void initializeRadioButtonSelection() {
+        mStatePredictor.recomputeUiState(uiState -> {
+            mSelected = uiState.preferenceSelection;
+            RadioButtonWithDescription selectedButton = getButton(mSelected);
+            if (selectedButton != null) selectedButton.setChecked(true);
+            mAutoButton.setDescriptionText(getContext().getString(
+                    R.string.adaptive_toolbar_button_preference_based_on_your_usage_description,
+                    getButtonString(uiState.autoButtonCaption)));
+        });
     }
 
     @Override
@@ -75,12 +85,6 @@ public class RadioButtonGroupAdaptiveToolbarPreference
         callChangeListener(mSelected);
     }
 
-    /** @param setting The initial setting for this Preference. */
-    public void initialize(@AdaptiveToolbarButtonVariant int selected) {
-        mSelected = selected;
-        setRadioButtonSelection(mSelected);
-    }
-
     /**
      * Returns the {@link AdaptiveToolbarButtonVariant} assosicated with the currently selected
      * option.
@@ -92,6 +96,7 @@ public class RadioButtonGroupAdaptiveToolbarPreference
     }
 
     @VisibleForTesting
+    @Nullable
     RadioButtonWithDescription getButton(@AdaptiveToolbarButtonVariant int variant) {
         switch (variant) {
             case AdaptiveToolbarButtonVariant.AUTO:
@@ -106,10 +111,22 @@ public class RadioButtonGroupAdaptiveToolbarPreference
         return null;
     }
 
-    private void setRadioButtonSelection(@AdaptiveToolbarButtonVariant int selection) {
-        RadioButtonWithDescription selectedButton = getButton(selection);
-        if (selectedButton != null) {
-            selectedButton.setChecked(true);
+    private String getButtonString(@AdaptiveToolbarButtonVariant int variant) {
+        @StringRes
+        int stringRes = -1;
+        switch (variant) {
+            case AdaptiveToolbarButtonVariant.NEW_TAB:
+                stringRes = R.string.adaptive_toolbar_button_preference_new_tab;
+                break;
+            case AdaptiveToolbarButtonVariant.SHARE:
+                stringRes = R.string.adaptive_toolbar_button_preference_share;
+                break;
+            case AdaptiveToolbarButtonVariant.VOICE:
+                stringRes = R.string.adaptive_toolbar_button_preference_voice_search;
+                break;
+            default:
+                assert false : "Unknown variant " + variant;
         }
+        return stringRes == -1 ? "" : getContext().getString(stringRes);
     }
 }

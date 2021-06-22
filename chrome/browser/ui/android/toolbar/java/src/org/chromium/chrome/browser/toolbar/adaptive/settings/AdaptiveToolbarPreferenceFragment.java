@@ -45,8 +45,6 @@ public class AdaptiveToolbarPreferenceFragment extends PreferenceFragmentCompat 
 
         mRadioButtonGroup = (RadioButtonGroupAdaptiveToolbarPreference) findPreference(
                 PREF_ADAPTIVE_RADIO_GROUP);
-
-        mRadioButtonGroup.initialize(AdaptiveToolbarPrefs.getCustomizationSetting());
         mRadioButtonGroup.setOnPreferenceChangeListener((preference, newValue) -> {
             AdaptiveToolbarPrefs.saveToolbarButtonManualOverride((int) newValue);
             return true;
