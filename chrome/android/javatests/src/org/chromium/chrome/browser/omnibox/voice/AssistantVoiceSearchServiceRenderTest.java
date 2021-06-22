@@ -107,6 +107,7 @@ public class AssistantVoiceSearchServiceRenderTest {
     @MediumTest
     @CommandLineFlags.Add({"force-fieldtrial-params=Study.Group:colorful_mic/false"})
     @Feature({"RenderTest"})
+    @DisabledTest(message = "crbug.com/1221496")
     public void testAssistantMic() throws IOException {
         mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
 
