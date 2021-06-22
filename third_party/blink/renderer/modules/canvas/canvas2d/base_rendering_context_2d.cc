@@ -140,6 +140,14 @@ void BaseRenderingContext2D::restore() {
   ValidateStateStack();
 }
 
+void BaseRenderingContext2D::beginLayer() {
+  // TODO(crbug.com/1220266): Implementation coming later.
+}
+
+void BaseRenderingContext2D::endLayer() {
+  // TODO(crbug.com/1220266): Implementation coming later.
+}
+
 void BaseRenderingContext2D::RestoreMatrixClipStack(cc::PaintCanvas* c) const {
   if (!c)
     return;

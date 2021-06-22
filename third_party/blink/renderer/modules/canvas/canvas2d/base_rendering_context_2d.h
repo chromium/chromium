@@ -87,6 +87,10 @@ class MODULES_EXPORT BaseRenderingContext2D : public GarbageCollectedMixin,
 
   void save();
   void restore();
+  // Push state on state stack and creates bitmap for subsequent draw ops.
+  void beginLayer();
+  // Pop state stack if top state was pushed by beginLayer, restore state and draw the bitmap.
+  void endLayer();
   void reset();
 
   void scale(double sx, double sy);
