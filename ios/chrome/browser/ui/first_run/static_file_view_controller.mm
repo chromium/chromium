@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/ui/first_run/welcome/static_file_view_controller.h"
+#include "ios/chrome/browser/ui/first_run/static_file_view_controller.h"
 
 #import <WebKit/WebKit.h>
 

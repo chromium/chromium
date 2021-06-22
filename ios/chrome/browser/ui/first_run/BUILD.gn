@@ -46,6 +46,7 @@ source_set("first_run") {
     ":field_trial",
     ":first_run_ui",
     ":screen_delegate",
+    ":static_file_ui",
     ":utils",
     "resources:checkbox",
     "resources:checkbox_checked",
@@ -80,7 +81,6 @@ source_set("first_run") {
     "//ios/chrome/browser/ui/first_run/signin",
     "//ios/chrome/browser/ui/first_run/sync",
     "//ios/chrome/browser/ui/first_run/welcome",
-    "//ios/chrome/browser/ui/first_run/welcome:static_file_ui",
     "//ios/chrome/browser/ui/settings/resources:enterprise_icon",
     "//ios/chrome/browser/ui/settings/sync/utils",
     "//ios/chrome/browser/ui/settings/utils",
@@ -152,6 +152,25 @@ source_set("first_run_ui") {
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
     "//ui/base",
+  ]
+}
+
+source_set("static_file_ui") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "static_file_view_controller.h",
+    "static_file_view_controller.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/ui/icons",
+    "//ios/chrome/browser/ui/material_components",
+    "//ios/chrome/browser/ui/util",
+    "//ios/chrome/common/ui/colors",
+    "//ios/third_party/material_components_ios",
+    "//ios/web/common:web_view_creation_util",
   ]
 }
 
