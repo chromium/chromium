@@ -37,8 +37,6 @@ const CGFloat kButtonLength = 44;
 // The overlay that shows number of results in format "1 of 13".
 @property(nonatomic, strong) UILabel* resultsCountLabel;
 
-@property(nonatomic, assign) BOOL darkMode;
-
 @end
 
 @implementation FindBarView
@@ -48,15 +46,11 @@ const CGFloat kButtonLength = 44;
 @synthesize nextButton = _nextButton;
 @synthesize closeButton = _closeButton;
 @synthesize resultsCountLabel = _resultsCountLabel;
-@synthesize darkMode = _darkMode;
 
 #pragma mark - Public
 
-- (instancetype)initWithDarkAppearance:(BOOL)darkAppearance {
+- (instancetype)init {
   self = [super initWithFrame:CGRectZero];
-  if (self) {
-    _darkMode = darkAppearance;
-  }
   return self;
 }
 
@@ -142,23 +136,16 @@ const CGFloat kButtonLength = 44;
   ]];
 }
 
-// Sets the colors for the different subviews, based on the |darkMode|.
+// Sets the colors for the different subviews.
 - (void)setupColors {
-  UIColor* inputFieldBackground = color::DarkModeDynamicColor(
-      [UIColor colorNamed:kTextfieldBackgroundColor], self.darkMode,
-      [UIColor colorNamed:kTextfieldBackgroundDarkColor]);
-  UIColor* inputFieldPlaceHolderTextColor = color::DarkModeDynamicColor(
-      [UIColor colorNamed:kTextfieldPlaceholderColor], self.darkMode,
-      [UIColor colorNamed:kTextfieldPlaceholderDarkColor]);
-  UIColor* inputFieldTextColor = color::DarkModeDynamicColor(
-      [UIColor colorNamed:kTextPrimaryColor], self.darkMode,
-      [UIColor colorNamed:kTextPrimaryDarkColor]);
-  UIColor* resultsCountLabelTextColor = color::DarkModeDynamicColor(
-      [UIColor colorNamed:kTextfieldPlaceholderColor], self.darkMode,
-      [UIColor colorNamed:kTextfieldPlaceholderDarkColor]);
-  UIColor* buttonTintColor = color::DarkModeDynamicColor(
-      [UIColor colorNamed:kBlueColor], self.darkMode,
-      [UIColor colorNamed:kBlueDarkColor]);
+  UIColor* inputFieldBackground =
+      [UIColor colorNamed:kTextfieldBackgroundColor];
+  UIColor* inputFieldPlaceHolderTextColor =
+      [UIColor colorNamed:kTextfieldPlaceholderColor];
+  UIColor* inputFieldTextColor = [UIColor colorNamed:kTextPrimaryColor];
+  UIColor* resultsCountLabelTextColor =
+      [UIColor colorNamed:kTextfieldPlaceholderColor];
+  UIColor* buttonTintColor = [UIColor colorNamed:kBlueColor];
 
   self.inputField.backgroundColor = inputFieldBackground;
   NSString* placeholder = [self.inputField placeholder];

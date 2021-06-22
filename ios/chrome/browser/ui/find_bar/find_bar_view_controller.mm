@@ -21,7 +21,9 @@
 
 - (instancetype)initWithDarkAppearance:(BOOL)darkAppearance {
   if (self = [super initWithNibName:nil bundle:nil]) {
-    _darkAppearance = darkAppearance;
+    self.overrideUserInterfaceStyle = darkAppearance
+                                          ? UIUserInterfaceStyleDark
+                                          : UIUserInterfaceStyleUnspecified;
   }
   return self;
 }
@@ -29,7 +31,7 @@
 #pragma mark - UIView
 
 - (void)loadView {
-  self.view = [[FindBarView alloc] initWithDarkAppearance:self.darkAppearance];
+  self.view = [[FindBarView alloc] init];
   self.view.translatesAutoresizingMaskIntoConstraints = NO;
 }
 
