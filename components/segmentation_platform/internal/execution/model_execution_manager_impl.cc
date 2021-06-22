@@ -5,7 +5,6 @@
 #include "components/segmentation_platform/internal/execution/model_execution_manager_impl.h"
 
 #include <deque>
-#include <format>
 #include <map>
 #include <memory>
 #include <vector>
