@@ -85,7 +85,7 @@ class SegmentSelectorImpl : public SegmentSelector {
 
   // These values are read from prefs or db on init and used for serving the
   // clients in the current session.
-  base::Optional<OptimizationTarget> selected_segment_last_session_;
+  absl::optional<OptimizationTarget> selected_segment_last_session_;
   std::map<OptimizationTarget, float> segment_score_last_session_;
 
   // Whether the initialization is complete through an Initialize call.

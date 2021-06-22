@@ -24,8 +24,8 @@ class MockSegmentationResultPrefs : public SegmentationResultPrefs {
   MockSegmentationResultPrefs() = default;
   MOCK_METHOD(void,
               SaveSegmentationResultToPref,
-              (const base::Optional<SelectedSegment>&));
-  MOCK_METHOD(base::Optional<SelectedSegment>,
+              (const absl::optional<SelectedSegment>&));
+  MOCK_METHOD(absl::optional<SelectedSegment>,
               ReadSegmentationResultFromPref,
               ());
 };
@@ -65,7 +65,7 @@ class SegmentSelectorTest : public testing::Test {
                                                      score, metadata);
   }
 
-  void GetSelectedSegment(base::Optional<OptimizationTarget> expected) {
+  void GetSelectedSegment(absl::optional<OptimizationTarget> expected) {
     base::RunLoop loop;
     segment_selector_->GetSelectedSegment(base::BindOnce(
         &SegmentSelectorTest::OnGetSelectedSegment, base::Unretained(this),
@@ -74,8 +74,8 @@ class SegmentSelectorTest : public testing::Test {
   }
 
   void OnGetSelectedSegment(base::RepeatingClosure closure,
-                            base::Optional<OptimizationTarget> expected,
-                            base::Optional<OptimizationTarget> actual) {
+                            absl::optional<OptimizationTarget> expected,
+                            absl::optional<OptimizationTarget> actual) {
     ASSERT_EQ(expected.has_value(), actual.has_value());
     ASSERT_EQ(expected.value(), actual.value());
     std::move(closure).Run();
@@ -125,7 +125,7 @@ TEST_F(SegmentSelectorTest, FindBestSegmentFlowWithTwoSegments) {
   segment_database_->AddPredictionResult(segment_id, 0.6, result_timestamp);
   segment_database_->AddPredictionResult(segment_id2, 0.5, result_timestamp);
 
-  base::Optional<SelectedSegment> selected_segment;
+  absl::optional<SelectedSegment> selected_segment;
   EXPECT_CALL(*prefs_, SaveSegmentationResultToPref(_))
       .Times(1)
       .WillOnce(SaveArg<0>(&selected_segment));
@@ -144,7 +144,7 @@ TEST_F(SegmentSelectorTest, NewSegmentResultOverridesThePreviousBest) {
   base::Time result_timestamp = base::Time::Now();
   segment_database_->AddPredictionResult(segment_id1, 0.6, result_timestamp);
 
-  base::Optional<SelectedSegment> selected_segment;
+  absl::optional<SelectedSegment> selected_segment;
   EXPECT_CALL(*prefs_, SaveSegmentationResultToPref(_))
       .Times(1)
       .WillOnce(SaveArg<0>(&selected_segment));
@@ -193,7 +193,7 @@ TEST_F(SegmentSelectorTest,
   base::Time result_timestamp = base::Time::Now();
   segment_database_->AddPredictionResult(segment_id1, 0.6, result_timestamp);
 
-  base::Optional<SelectedSegment> selected_segment;
+  absl::optional<SelectedSegment> selected_segment;
   EXPECT_CALL(*prefs_, SaveSegmentationResultToPref(_))
       .Times(1)
       .WillOnce(SaveArg<0>(&selected_segment));
