@@ -55,6 +55,10 @@ VaapiH264Picture* H264Picture::AsVaapiH264Picture() {
   return nullptr;
 }
 
+D3D11H264Picture* H264Picture::AsD3D11H264Picture() {
+  return nullptr;
+}
+
 H264DPB::H264DPB() : max_num_pics_(0) {}
 H264DPB::~H264DPB() = default;
 

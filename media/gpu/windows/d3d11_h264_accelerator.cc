@@ -54,6 +54,8 @@ class D3D11H264Picture : public H264Picture {
   D3D11PictureBuffer* picture;
   size_t picture_index_;
 
+  D3D11H264Picture* AsD3D11H264Picture() override { return this; }
+
  protected:
   ~D3D11H264Picture() override;
 };
@@ -104,10 +106,12 @@ DecoderStatus D3D11H264Accelerator::SubmitFrameMetadata(
 
   HRESULT hr;
   for (;;) {
+    D3D11H264Picture* d3d11_pic = pic->AsD3D11H264Picture();
+    if (!d3d11_pic)
+      return DecoderStatus::kFail;
     hr = video_context_->DecoderBeginFrame(
-        video_decoder_.Get(),
-        static_cast<D3D11H264Picture*>(pic.get())->picture->output_view().Get(),
-        0, nullptr);
+        video_decoder_.Get(), d3d11_pic->picture->output_view().Get(), 0,
+        nullptr);
 
     if (hr == E_PENDING || hr == D3DERR_WASSTILLDRAWING) {
       // Hardware is busy.  We should make the call again.
@@ -123,7 +127,7 @@ DecoderStatus D3D11H264Accelerator::SubmitFrameMetadata(
   }
 
   sps_ = *sps;
-  for (size_t i = 0; i < 16; i++) {
+  for (size_t i = 0; i < media::kRefFrameMaxCount; i++) {
     ref_frame_list_[i].bPicEntry = 0xFF;
     field_order_cnt_list_[i][0] = 0;
     field_order_cnt_list_[i][1] = 0;
@@ -136,8 +140,19 @@ DecoderStatus D3D11H264Accelerator::SubmitFrameMetadata(
 
   int i = 0;
   for (auto it = dpb.begin(); it != dpb.end(); i++, it++) {
-    D3D11H264Picture* our_ref_pic = static_cast<D3D11H264Picture*>(it->get());
-    if (!our_ref_pic->ref)
+    // The DPB is supposed to have a maximum of 16 pictures in it, but there's
+    // nothing actually stopping it from having more. If we run into this case,
+    // something is clearly wrong, and we should just fail decoding rather than
+    // try to sort out which pictures really shouldn't be included.
+    if (i >= media::kRefFrameMaxCount)
+      return DecoderStatus::kFail;
+
+    D3D11H264Picture* our_ref_pic = it->get()->AsD3D11H264Picture();
+    // How does a non-d3d11 picture get here you might ask? The decoder
+    // inserts blank H264Picture objects that we can't use as part of filling
+    // gaps in frame numbers. If we see one, it's not a reference picture
+    // anyway, so skip it.
+    if (!our_ref_pic || !our_ref_pic->ref)
       continue;
     ref_frame_list_[i].Index7Bits = our_ref_pic->picture_index_;
     ref_frame_list_[i].AssociatedFlag = our_ref_pic->long_term;
@@ -284,9 +299,8 @@ void D3D11H264Accelerator::PicParamsFromSliceHeader(
 }
 
 void D3D11H264Accelerator::PicParamsFromPic(DXVA_PicParams_H264* pic_param,
-                                            scoped_refptr<H264Picture> pic) {
-  pic_param->CurrPic.Index7Bits =
-      static_cast<D3D11H264Picture*>(pic.get())->picture_index_;
+                                            D3D11H264Picture* pic) {
+  pic_param->CurrPic.Index7Bits = pic->picture_index_;
   pic_param->RefPicFlag = pic->ref;
   pic_param->frame_num = pic->frame_num;
 
@@ -319,7 +333,11 @@ DecoderStatus D3D11H264Accelerator::SubmitSlice(
   if (!PicParamsFromPPS(&pic_param, pps))
     return DecoderStatus::kFail;
   PicParamsFromSliceHeader(&pic_param, slice_hdr);
-  PicParamsFromPic(&pic_param, std::move(pic));
+
+  D3D11H264Picture* d3d11_pic = pic->AsD3D11H264Picture();
+  if (!d3d11_pic)
+    return DecoderStatus::kFail;
+  PicParamsFromPic(&pic_param, d3d11_pic);
 
   memcpy(pic_param.RefFrameList, ref_frame_list_,
          sizeof pic_param.RefFrameList);
@@ -582,9 +600,8 @@ void D3D11H264Accelerator::Reset() {
 }
 
 bool D3D11H264Accelerator::OutputPicture(scoped_refptr<H264Picture> pic) {
-  D3D11H264Picture* our_pic = static_cast<D3D11H264Picture*>(pic.get());
-
-  return client_->OutputResult(our_pic, our_pic->picture);
+  D3D11H264Picture* our_pic = pic->AsD3D11H264Picture();
+  return our_pic && client_->OutputResult(our_pic, our_pic->picture);
 }
 
 void D3D11H264Accelerator::RecordFailure(const std::string& reason,
