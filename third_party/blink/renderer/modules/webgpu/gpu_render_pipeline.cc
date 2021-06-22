@@ -376,7 +376,7 @@ GPURenderPipeline* GPURenderPipeline::Create(
   }
 
   pipeline = MakeGarbageCollected<GPURenderPipeline>(
-      device, device->GetProcs().deviceCreateRenderPipeline2(
+      device, device->GetProcs().deviceCreateRenderPipeline(
                   device->GetHandle(), &dawn_desc_info.dawn_desc));
   if (webgpu_desc->hasLabel())
     pipeline->setLabel(webgpu_desc->label());
