@@ -264,8 +264,7 @@ void DlpClipboardNotifier::OnWidgetClosing(views::Widget* widget) {
 }
 
 void DlpClipboardNotifier::WebContentsDestroyed() {
-  // TODO(crbug.com/1217717): Investigate and remove.
-  (void)std::move(blink_paste_cb_);
+  std::move(blink_paste_cb_);
   CloseWidget(widget_.get(), views::Widget::ClosedReason::kUnspecified);
 }
 
