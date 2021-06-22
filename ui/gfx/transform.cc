@@ -65,13 +65,11 @@ Transform::Transform(SkScalar col1row1,
                      SkScalar col2row2,
                      SkScalar x_translation,
                      SkScalar y_translation)
-    : matrix_(SkMatrix44::kIdentity_Constructor) {
-  matrix_.set(0, 0, col1row1);
-  matrix_.set(1, 0, col1row2);
-  matrix_.set(0, 1, col2row1);
-  matrix_.set(1, 1, col2row2);
-  matrix_.set(0, 3, x_translation);
-  matrix_.set(1, 3, y_translation);
+    : matrix_(SkMatrix44::kUninitialized_Constructor) {
+  matrix_.set4x4(col1row1, col1row2, 0, 0,
+                 col2row1, col2row2, 0, 0,
+                 0, 0, 1, 0,
+                 x_translation, y_translation, 0, 1);
 }
 
 Transform::Transform(const Quaternion& q)
