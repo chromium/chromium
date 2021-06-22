@@ -575,9 +575,11 @@ void DlpContentManager::CheckRunningScreenCaptures() {
     if (is_reported && capture.is_running) {
       SYSLOG(INFO) << "DLP " << (is_allowed ? "resumed" : "paused")
                    << " running screen share";
-      ReportEvent(restriction_info.url,
-                  DlpRulesManager::Restriction::kScreenShare,
-                  restriction_info.level, reporting_manager_);
+      if (reporting_manager_) {
+        ReportEvent(restriction_info.url,
+                    DlpRulesManager::Restriction::kScreenShare,
+                    restriction_info.level, reporting_manager_);
+      }
     }
     if (is_allowed != capture.is_running) {
       DlpBooleanHistogram(dlp::kScreenSharePausedOrResumedUMA, !is_allowed);
