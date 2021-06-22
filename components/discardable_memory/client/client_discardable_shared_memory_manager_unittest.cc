@@ -10,6 +10,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace discardable_memory {
@@ -505,8 +506,16 @@ TEST_F(ClientDiscardableSharedMemoryManagerTest, MarkDirtyFreelistPages) {
   ASSERT_EQ(0u, client->GetDirtyFreedMemoryPageCount());
 }
 
+#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+// https://crbug.com/1222628
+#define MAYBE_MarkDirtyFreelistPagesReleaseFreeListPages \
+  DISABLED_MarkDirtyFreelistPagesReleaseFreeListPages
+#else
+#define MAYBE_MarkDirtyFreelistPagesReleaseFreeListPages \
+  MarkDirtyFreelistPagesReleaseFreeListPages
+#endif
 TEST_F(ClientDiscardableSharedMemoryManagerTest,
-       MarkDirtyFreelistPagesReleaseFreeListPages) {
+       MAYBE_MarkDirtyFreelistPagesReleaseFreeListPages) {
   base::test::ScopedFeatureList fl;
   fl.InitAndEnableFeature(discardable_memory::kReleaseDiscardableFreeListPages);
   auto client =
