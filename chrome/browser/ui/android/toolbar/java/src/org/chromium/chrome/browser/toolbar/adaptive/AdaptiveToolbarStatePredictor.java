@@ -159,6 +159,7 @@ public class AdaptiveToolbarStatePredictor {
         }
         // TODO(shaktisahu): Hookup to backend which would pass in the segmentation result and
         // whether the backend is ready with valid results.
+        callback.onResult(new Pair(true, AdaptiveToolbarButtonVariant.UNKNOWN));
     }
 
     /** For testing only. */
