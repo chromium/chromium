@@ -510,6 +510,7 @@ content::WebContents* WebAppPublisherHelper::LaunchAppWithIntent(
     apps::mojom::IntentPtr intent,
     apps::mojom::LaunchSource launch_source,
     apps::mojom::WindowInfoPtr window_info) {
+  CHECK(intent);
   content::WebContents* web_contents = LaunchAppWithIntentImpl(
       app_id, event_flags, std::move(intent), launch_source,
       window_info ? window_info->display_id : display::kInvalidDisplayId);
@@ -916,7 +917,12 @@ content::WebContents* WebAppPublisherHelper::LaunchAppWithIntentImpl(
     return nullptr;
   }
 
-  if (registrar().GetAppById(app_id)->capture_links() ==
+  const WebApp* web_app = GetWebApp(app_id);
+  if (!web_app) {
+    return nullptr;
+  }
+
+  if (web_app->capture_links() ==
       blink::mojom::CaptureLinks::kExistingClientNavigate) {
     content::WebContents* web_contents =
         provider_->ui_manager().NavigateExistingWindow(

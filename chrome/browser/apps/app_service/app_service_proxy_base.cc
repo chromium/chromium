@@ -250,6 +250,7 @@ void AppServiceProxyBase::LaunchAppWithIntent(
     apps::mojom::IntentPtr intent,
     apps::mojom::LaunchSource launch_source,
     apps::mojom::WindowInfoPtr window_info) {
+  CHECK(intent);
   if (app_service_.is_connected()) {
     app_registry_cache_.ForOneApp(
         app_id, [this, event_flags, &intent, launch_source,
