@@ -528,10 +528,6 @@ PdfViewWebPlugin::SearchString(const char16_t* string,
   return results;
 }
 
-pp::Instance* PdfViewWebPlugin::GetPluginInstance() {
-  return nullptr;
-}
-
 void PdfViewWebPlugin::SetSelectedText(const std::string& selected_text) {
   selected_text_ = blink::WebString::FromUTF8(selected_text);
   container_wrapper_->TextSelectionChanged(

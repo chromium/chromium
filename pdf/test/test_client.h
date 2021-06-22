@@ -34,7 +34,6 @@ class TestClient : public PDFEngine::Client {
   std::vector<SearchStringResult> SearchString(const char16_t* string,
                                                const char16_t* term,
                                                bool case_sensitive) override;
-  pp::Instance* GetPluginInstance() override;
   bool IsPrintPreview() override;
   SkColor GetBackgroundColor() override;
   void SetSelectedText(const std::string& selected_text) override;

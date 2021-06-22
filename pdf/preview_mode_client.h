@@ -63,7 +63,6 @@ class PreviewModeClient : public PDFEngine::Client {
                                                bool case_sensitive) override;
   void DocumentLoadComplete() override;
   void DocumentLoadFailed() override;
-  pp::Instance* GetPluginInstance() override;
   void DocumentHasUnsupportedFeature(const std::string& feature) override;
   void FormTextFieldFocusChange(bool in_focus) override;
   bool IsPrintPreview() override;

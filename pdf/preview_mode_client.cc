@@ -141,10 +141,6 @@ void PreviewModeClient::DocumentLoadFailed() {
   client_->PreviewDocumentLoadFailed();
 }
 
-pp::Instance* PreviewModeClient::GetPluginInstance() {
-  return nullptr;
-}
-
 void PreviewModeClient::DocumentHasUnsupportedFeature(
     const std::string& feature) {
   NOTREACHED();

@@ -24,6 +24,7 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "net/base/escape.h"
 #include "pdf/accessibility.h"
@@ -70,6 +71,10 @@
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#include "pdf/ppapi_migration/pdfium_font_linux.h"
+#endif
 
 namespace chrome_pdf {
 
@@ -513,7 +518,7 @@ bool OutOfProcessInstance::Init(uint32_t argc,
   DCHECK(!edit_mode());
 #endif  // !BUILDFLAG(ENABLE_INK)
 
-  pp::PDF::SetCrashData(GetPluginInstance(), original_url, top_level_url);
+  pp::PDF::SetCrashData(this, original_url, top_level_url);
   return engine()->New(original_url, headers);
 }
 
@@ -651,7 +656,7 @@ pp::Resource OutOfProcessInstance::PrintPages(
   // Convert buffer to Pepper type.
   pp::Buffer_Dev buffer;
   if (!pdf_data.empty()) {
-    buffer = pp::Buffer_Dev(GetPluginInstance(), pdf_data.size());
+    buffer = pp::Buffer_Dev(this, pdf_data.size());
     if (!buffer.is_null())
       memcpy(buffer.data(), pdf_data.data(), pdf_data.size());
   }
@@ -841,8 +846,10 @@ void OutOfProcessInstance::RotateCounterclockwise() {
   engine()->RotateCounterclockwise();
 }
 
-pp::Instance* OutOfProcessInstance::GetPluginInstance() {
-  return this;
+void OutOfProcessInstance::SetLastPluginInstance() {
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+  SetLastPepperInstance(this);
+#endif
 }
 
 void OutOfProcessInstance::ResetRecentlySentFindUpdate(int32_t /* unused */) {
@@ -858,7 +865,7 @@ void OutOfProcessInstance::SetAccessibilityDocInfo(
   PP_PrivateAccessibilityDocInfo pp_doc_info = {
       doc_info.page_count, PP_FromBool(doc_info.text_accessible),
       PP_FromBool(doc_info.text_copyable)};
-  pp::PDF::SetAccessibilityDocInfo(GetPluginInstance(), &pp_doc_info);
+  pp::PDF::SetAccessibilityDocInfo(this, &pp_doc_info);
 }
 
 void OutOfProcessInstance::SetAccessibilityPageInfo(
@@ -874,8 +881,8 @@ void OutOfProcessInstance::SetAccessibilityPageInfo(
       ToPrivateAccessibilityCharInfo(text_runs);
   pp::PDF::PrivateAccessibilityPageObjects pp_page_objects =
       ToPrivateAccessibilityPageObjects(page_objects);
-  pp::PDF::SetAccessibilityPageInfo(GetPluginInstance(), &pp_page_info,
-                                    pp_text_runs, pp_chars, pp_page_objects);
+  pp::PDF::SetAccessibilityPageInfo(this, &pp_page_info, pp_text_runs, pp_chars,
+                                    pp_page_objects);
 }
 
 void OutOfProcessInstance::SetAccessibilityViewportInfo(
@@ -893,7 +900,7 @@ void OutOfProcessInstance::SetAccessibilityViewportInfo(
            viewport_info.focus_info.focused_object_type),
        viewport_info.focus_info.focused_object_page_index,
        viewport_info.focus_info.focused_annotation_index_in_page}};
-  pp::PDF::SetAccessibilityViewportInfo(GetPluginInstance(), &pp_viewport_info);
+  pp::PDF::SetAccessibilityViewportInfo(this, &pp_viewport_info);
 }
 
 void OutOfProcessInstance::SetPluginCanSave(bool can_save) {
@@ -965,9 +972,8 @@ void OutOfProcessInstance::NotifySelectionChanged(const gfx::PointF& left,
                                                   int left_height,
                                                   const gfx::PointF& right,
                                                   int right_height) {
-  pp::PDF::SelectionChanged(GetPluginInstance(), PPFloatPointFromPointF(left),
-                            left_height, PPFloatPointFromPointF(right),
-                            right_height);
+  pp::PDF::SelectionChanged(this, PPFloatPointFromPointF(left), left_height,
+                            PPFloatPointFromPointF(right), right_height);
 }
 
 void OutOfProcessInstance::NotifyUnsupportedFeature() {

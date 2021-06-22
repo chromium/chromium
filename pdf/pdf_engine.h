@@ -19,9 +19,7 @@
 #include "build/chromeos_buildflags.h"
 #include "pdf/document_layout.h"
 #include "pdf/ppapi_migration/callback.h"
-#include "ppapi/cpp/completion_callback.h"
 #include "ppapi/cpp/private/pdf.h"
-#include "ppapi/cpp/url_loader.h"
 #include "printing/mojom/print.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -247,7 +245,9 @@ class PDFEngine {
     // Notifies the client that the document has failed to load.
     virtual void DocumentLoadFailed() {}
 
-    virtual pp::Instance* GetPluginInstance() = 0;
+    // Asks the client to set the last plugin instance when applicable.
+    // TODO(crbug.com/702993): Remove after migrating away from PPAPI.
+    virtual void SetLastPluginInstance() {}
 
     // Notifies that an unsupported feature in the PDF was encountered.
     virtual void DocumentHasUnsupportedFeature(const std::string& feature) {}

@@ -50,7 +50,6 @@
 #include "pdf/pdfium/pdfium_unsupported_features.h"
 #include "pdf/ppapi_migration/bitmap.h"
 #include "pdf/ppapi_migration/geometry_conversions.h"
-#include "pdf/ppapi_migration/pdfium_font_linux.h"
 #include "pdf/ppapi_migration/url_loader.h"
 #include "pdf/url_loader_wrapper_impl.h"
 #include "ppapi/cpp/instance.h"
@@ -4230,9 +4229,7 @@ void PDFiumEngine::RequestThumbnail(int page_index,
 }
 
 void PDFiumEngine::SetLastInstance() {
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
-  SetLastPepperInstance(client_->GetPluginInstance());
-#endif
+  client_->SetLastPluginInstance();
 }
 
 PDFiumEngine::ProgressivePaint::ProgressivePaint(int index,

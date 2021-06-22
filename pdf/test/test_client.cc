@@ -49,10 +49,6 @@ std::vector<PDFEngine::Client::SearchStringResult> TestClient::SearchString(
   return std::vector<SearchStringResult>();
 }
 
-pp::Instance* TestClient::GetPluginInstance() {
-  return nullptr;
-}
-
 bool TestClient::IsPrintPreview() {
   return false;
 }
