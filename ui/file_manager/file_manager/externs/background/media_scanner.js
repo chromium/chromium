@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #import {importer} from '../../common/js/importer_common.m.js';
+import {importer} from '../../common/js/importer_common.m.js';
 
-/* #export */ const mediaScannerInterfaces = {};
+export const mediaScannerInterfaces = {};
 /**
  * Class representing the results of a scan operation.
  *

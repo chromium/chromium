@@ -92,7 +92,7 @@ js_library("app_util.m") {
   deps = [
     "//ui/file_manager/file_manager/externs:file_manager_private",
     "//ui/file_manager/file_manager/externs:volume_manager.m",
-    "//ui/file_manager/file_manager/externs/background:background_base.m",
+    "//ui/file_manager/file_manager/externs/background:background_base",
   ]
   externs_list =
       [ "//ui/file_manager/file_manager/externs/app_window_common.js" ]

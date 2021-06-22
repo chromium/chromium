@@ -12,7 +12,7 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {metrics} from '../../common/js/metrics.m.js';
 import {util} from '../../common/js/util.m.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
-import {BackgroundBase} from '../../externs/background/background_base.m.js';
+import {BackgroundBase} from '../../externs/background/background_base.js';
 import {test} from './test_util_base.js';
 
 /** @type {!BackgroundBase} */

@@ -6,8 +6,8 @@
 // #import {Menu} from 'chrome://resources/js/cr/ui/menu.m.js';
 // #import {MultiMenuButton} from './ui/multi_menu_button.js';
 // #import {VolumeInfo} from '../../externs/volume_info.m.js';
-// #import {ProgressCenter} from '../../externs/background/progress_center.m.js';
-// #import {Crostini} from '../../externs/background/crostini.m.js';
+// #import {ProgressCenter} from '../../externs/background/progress_center.js';
+// #import {Crostini} from '../../externs/background/crostini.js';
 // #import {NamingController} from './naming_controller.m.js';
 // #import {TaskHistory} from './task_history.m.js';
 // #import {FileManagerUI} from './ui/file_manager_ui.js';

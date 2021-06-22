@@ -23,8 +23,7 @@ js_library("background_window.m") {
     "$root_gen_dir/ui/file_manager/file_manager/externs/background_window.m.js",
   ]
 
-  deps =
-      [ "//ui/file_manager/file_manager/externs/background:background_base.m" ]
+  deps = [ "//ui/file_manager/file_manager/externs/background:background_base" ]
 
   extra_deps = [ ":modulize" ]
 }
@@ -34,9 +33,9 @@ js_library("command_handler_deps.m") {
   deps = [
     ":files_app_entry_interfaces.m",
     ":volume_manager.m",
-    "background:crostini.m",
-    "background:file_operation_manager.m",
-    "background:progress_center.m",
+    "background:crostini",
+    "background:file_operation_manager",
+    "background:progress_center",
     "//ui/file_manager/file_manager/foreground/js:actions_controller.m",
     "//ui/file_manager/file_manager/foreground/js:dialog_type.m",
     "//ui/file_manager/file_manager/foreground/js:directory_contents.m",

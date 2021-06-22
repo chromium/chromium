@@ -8,15 +8,16 @@
  * of its media import unittest and caller sites.
  */
 
-// #import {DriveSyncHandler} from './drive_sync_handler.m.js';
-// #import {importer} from '../../common/js/importer_common.m.js';
-// #import {importerHistoryInterfaces} from './import_history.m.js';
-// #import {duplicateFinderInterfaces} from './duplicate_finder.m.js';
-// #import {mediaScannerInterfaces} from './media_scanner.m.js';
-// #import {taskQueueInterfaces} from './task_queue.m.js';
-// #import {ProgressCenter} from './progress_center.m.js';
+import {importer} from '../../common/js/importer_common.m.js';
 
-/* #export */ const mediaImportInterfaces = {};
+import {DriveSyncHandler} from './drive_sync_handler.js';
+import {duplicateFinderInterfaces} from './duplicate_finder.js';
+import {importerHistoryInterfaces} from './import_history.js';
+import {mediaScannerInterfaces} from './media_scanner.js';
+import {ProgressCenter} from './progress_center.js';
+import {taskQueueInterfaces} from './task_queue.js';
+
+export const mediaImportInterfaces = {};
 
 /**
  * Interface providing access to information about active import processes.

@@ -8,7 +8,7 @@
 // #import {ListSelectionModel} from 'chrome://resources/js/cr/ui/list_selection_model.m.js';
 // #import {VolumeInfo} from '../../externs/volume_info.m.js';
 // #import {FilesAppDirEntry, FakeEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.m.js';
-// #import {FileOperationManager} from '../../externs/background/file_operation_manager.m.js';
+// #import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
 // #import {VolumeManager} from '../../externs/volume_manager.m.js';
 // #import {MetadataModel} from './metadata/metadata_model.js';
 // #import {FileListSingleSelectionModel, FileListSelectionModel} from './ui/file_list_selection_model.js';

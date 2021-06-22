@@ -2,15 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * @fileoverview
- * @suppress {uselessCode, externsValidation} Temporary suppress because of the
- * line exporting.
- */
-
-// clang-format off
-// #import {importer} from '../../common/js/importer_common.m.js';
-// clang-format on
+import {importer} from '../../common/js/importer_common.m.js';
 
 const taskQueueInterfaces = {};
 
@@ -104,5 +96,4 @@ taskQueueInterfaces.BaseTask = class extends taskQueueInterfaces.Task {
  */
 taskQueueInterfaces.Task.Observer;
 
-// eslint-disable-next-line semi,no-extra-semi
-/* #export */ {taskQueueInterfaces};
+export {taskQueueInterfaces};

@@ -58,7 +58,7 @@ js_library("background") {
     "//ui/file_manager/file_manager/background/js:app_window_wrapper",
     "//ui/file_manager/file_manager/background/js:background_base",
     "//ui/file_manager/file_manager/common/js:util.m",
-    "//ui/file_manager/file_manager/externs/background:background_base.m",
+    "//ui/file_manager/file_manager/externs/background:background_base",
     "//ui/webui/resources/js:assert.m",
   ]
 }
@@ -119,7 +119,7 @@ js_test_gen_html("js_test_gen_html_modules") {
                     "generate_exports=false",
                     "js_module_root=gen/ui/file_manager/",
                     "js_module_root=./gen/ui",
-                    "js_module_root=../../ui",
+                    "js_module_root=../../ui/file_manager/",
                     "browser_resolver_prefix_replacements=\"chrome://test/=./\"",
                     "browser_resolver_prefix_replacements=\"chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/=./file_manager/\"",
                     "browser_resolver_prefix_replacements=\"chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/=./image_loader/\"",

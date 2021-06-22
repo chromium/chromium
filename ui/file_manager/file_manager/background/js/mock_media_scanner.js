@@ -5,7 +5,7 @@
 import {assertEquals, assertTrue} from 'chrome://test/chai_assert.js';
 
 import {importer} from '../../common/js/importer_common.m.js';
-import {mediaScannerInterfaces} from '../../externs/background/media_scanner.m.js';
+import {mediaScannerInterfaces} from '../../externs/background/media_scanner.js';
 
 import {mediaScanner} from './media_scanner.js';
 

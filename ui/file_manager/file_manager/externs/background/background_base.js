@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #import {VolumeManager} from '../volume_manager.m.js';
+import {VolumeManager} from '../volume_manager.m.js';
 
 /** @typedef {function(!Array<string>):!Promise} */
-/* #export */ let LaunchHandler;
+export let LaunchHandler;
 
 /**
  * Interface exposed in window.background in the background page. Used for
@@ -19,7 +19,7 @@
  *
  * @interface
  */
-/* #export */ class BackgroundBase {
+export class BackgroundBase {
   constructor() {
     /** @type {!Object<!Window>} */
     this.dialogs;

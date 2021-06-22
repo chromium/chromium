@@ -2,14 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * @fileoverview
- * @suppress {uselessCode} Temporary suppress because of the line exporting.
- */
-
 import {assertTrue} from 'chrome://test/chai_assert.js';
 import {importer} from '../../common/js/importer_common.m.js';
-import {importerHistoryInterfaces} from '../../externs/background/import_history.m.js';
+import {importerHistoryInterfaces} from '../../externs/background/import_history.js';
 
 // Namespace
 // eslint-disable-next-line no-var
@@ -156,5 +151,4 @@ importerTestHistory.TestImportHistory = class {
   removeObserver() {}
 };
 
-// eslint-disable-next-line semi,no-extra-semi
 export {importerTestHistory};

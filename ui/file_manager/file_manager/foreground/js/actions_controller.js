@@ -4,7 +4,7 @@
 
 // clang-format off
 // #import {FileManagerUI} from './ui/file_manager_ui.js';
-// #import {DriveSyncHandler} from '../../externs/background/drive_sync_handler.m.js';
+// #import {DriveSyncHandler} from '../../externs/background/drive_sync_handler.js';
 // #import {FolderShortcutsDataModel} from './folder_shortcuts_data_model.m.js';
 // #import {DirectoryModel} from './directory_model.m.js';
 // #import {MetadataModel} from './metadata/metadata_model.js';

@@ -31,6 +31,7 @@ generate_grd("build_static_grdp") {
 
     # For some unittests:
     "foreground/js/metadata/image_orientation.js",
+    "externs/background/background_base.js",
 
     # CSS:
     "foreground/css/combobutton.css",

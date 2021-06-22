@@ -4,7 +4,7 @@
 
 
 import {ProgressCenterItem, ProgressItemState} from '../../common/js/progress_center_common.m.js';
-import {ProgressCenter} from '../../externs/background/progress_center.m.js';
+import {ProgressCenter} from '../../externs/background/progress_center.js';
 
 
 /**

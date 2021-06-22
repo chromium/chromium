@@ -12,7 +12,7 @@ import {MockFileEntry, MockFileSystem} from '../../common/js/mock_entry.m.js';
 import {ProgressItemState} from '../../common/js/progress_center_common.m.js';
 import {reportPromise} from '../../common/js/test_error_reporting.m.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
-import {ProgressCenter} from '../../externs/background/progress_center.m.js';
+import {ProgressCenter} from '../../externs/background/progress_center.js';
 import {EntryLocation} from '../../externs/entry_location.m.js';
 import {VolumeManager} from '../../externs/volume_manager.m.js';
 import {FilesPasswordDialog} from '../elements/files_password_dialog.js';

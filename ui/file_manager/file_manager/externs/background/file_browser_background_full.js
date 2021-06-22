@@ -2,25 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * @fileoverview
- * @suppress {externsValidation} this file is used as externs and also
- * as JS module, Closure fails to compile as JS module.
- */
-
-// #import {DriveSyncHandler} from './drive_sync_handler.m.js';
-// #import {ProgressCenter} from './progress_center.m.js';
-// #import {FileOperationManager} from './file_operation_manager.m.js';
-// #import {mediaImportInterfaces} from './media_import_handler.m.js';
-// #import {mediaScannerInterfaces} from './media_scanner.m.js';
-// #import {importerHistoryInterfaces} from './import_history.m.js';
-// #import {Crostini} from './crostini.m.js';
-// #import {BackgroundBase} from './background_base.m.js';
+import {BackgroundBase} from './background_base.js';
+import {Crostini} from './crostini.js';
+import {DriveSyncHandler} from './drive_sync_handler.js';
+import {FileOperationManager} from './file_operation_manager.js';
+import {importerHistoryInterfaces} from './import_history.js';
+import {mediaImportInterfaces} from './media_import_handler.js';
+import {mediaScannerInterfaces} from './media_scanner.js';
+import {ProgressCenter} from './progress_center.js';
 
 /**
  * @interface
  */
-/* #export */ class FileBrowserBackgroundFull extends BackgroundBase {
+export class FileBrowserBackgroundFull extends BackgroundBase {
   constructor() {
     super();
 

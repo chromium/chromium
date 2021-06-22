@@ -11,7 +11,7 @@ import {installMockChrome} from '../../common/js/mock_chrome.m.js';
 import { joinPath, MockDirectoryEntry, MockEntry, MockFileEntry,MockFileSystem} from '../../common/js/mock_entry.m.js';
 import {reportPromise, waitUntil} from '../../common/js/test_error_reporting.m.js';
 import {util} from '../../common/js/util.m.js';
-import {FileOperationManager} from '../../externs/background/file_operation_manager.m.js';
+import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
 import {EntryLocation} from '../../externs/entry_location.m.js';
 
 import {FileOperationManagerImpl} from './file_operation_manager.js';

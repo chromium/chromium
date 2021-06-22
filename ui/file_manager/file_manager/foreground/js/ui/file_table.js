@@ -12,7 +12,7 @@ import {AsyncUtil} from '../../../common/js/async_util.m.js';
 import {FileType} from '../../../common/js/file_type.m.js';
 import {importer} from '../../../common/js/importer_common.m.js';
 import {str, strf, util} from '../../../common/js/util.m.js';
-import {importerHistoryInterfaces} from '../../../externs/background/import_history.m.js';
+import {importerHistoryInterfaces} from '../../../externs/background/import_history.js';
 import {EntryLocation} from '../../../externs/entry_location.m.js';
 import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.m.js';
 import {VolumeManager} from '../../../externs/volume_manager.m.js';

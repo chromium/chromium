@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {importer} from '../../common/js/importer_common.m.js';
-import {taskQueueInterfaces} from '../../externs/background/task_queue.m.js';
+import {taskQueueInterfaces} from '../../externs/background/task_queue.js';
 
 // Namespace
 const taskQueue = {};

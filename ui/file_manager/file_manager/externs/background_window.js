@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #import {BackgroundBase} from './background/background_base.m.js';
+// #import {BackgroundBase} from './background/background_base.js';
 
 /**
  * @extends {Window}

@@ -9,7 +9,7 @@ import {FileOperationError, FileOperationProgressEvent} from '../../common/js/fi
 import {TrashEntry, TrashRootEntry} from '../../common/js/trash.js';
 import {util} from '../../common/js/util.m.js';
 import {xfm} from '../../common/js/xfm.m.js';
-import {FileOperationManager} from '../../externs/background/file_operation_manager.m.js';
+import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
 import {EntryLocation} from '../../externs/entry_location.m.js';
 import {FakeEntry} from '../../externs/files_app_entry_interfaces.m.js';
 import {VolumeManager} from '../../externs/volume_manager.m.js';

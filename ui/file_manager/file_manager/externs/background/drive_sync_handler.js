@@ -2,9 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {DriveDialogControllerInterface} from '../drive_dialog_controller.m.js';
-// clang-format on
+import {DriveDialogControllerInterface} from '../drive_dialog_controller.m.js';
 
 /**
  * Handler of the background page for the Drive sync events. Implementations
@@ -12,7 +10,7 @@
  *
  * @interface
  */
-/* #export */ class DriveSyncHandler extends EventTarget {
+export class DriveSyncHandler extends EventTarget {
   /**
    * Returns the completed event name.
    * @return {string}

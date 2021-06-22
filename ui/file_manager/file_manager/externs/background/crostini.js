@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #import {VolumeManager} from '../volume_manager.m.js';
+import {VolumeManager} from '../volume_manager.m.js';
 
 /**
  * Crostini shared path state handler.
  *
  * @interface
  */
-/* #export */ class Crostini {
+export class Crostini {
   /**
    * Initialize enabled settings and register for any shared path changes.
    * Must be done after loadTimeData is available.

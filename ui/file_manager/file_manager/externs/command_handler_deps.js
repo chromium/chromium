@@ -5,18 +5,18 @@
 // clang-format off
 // #import {ActionsController} from '../foreground/js/actions_controller.m.js';
 // #import {FilesAppEntry} from './files_app_entry_interfaces.m.js';
-// #import {Crostini} from './background/crostini.m.js';
+// #import {Crostini} from './background/crostini.js';
 // #import {MetadataModel} from '../foreground/js/metadata/metadata_model.js';
 // #import {VolumeManager} from './volume_manager.m.js';
 // #import {FileManagerUI} from '../foreground/js/ui/file_manager_ui.js';
 // #import {TaskController} from '../foreground/js/task_controller.m.js';
 // #import {SpinnerController} from '../foreground/js/spinner_controller.m.js';
 // #import {ProvidersModel} from '../foreground/js/providers_model.m.js';
-// #import {ProgressCenter} from './background/progress_center.m.js';
+// #import {ProgressCenter} from './background/progress_center.js';
 // #import {NamingController} from '../foreground/js/naming_controller.m.js';
 // #import {FileSelectionHandler, FileSelection} from '../foreground/js/file_selection.m.js';
 // #import {FileTransferController} from '../foreground/js/file_transfer_controller.m.js';
-// #import {FileOperationManager} from './background/file_operation_manager.m.js';
+// #import {FileOperationManager} from './background/file_operation_manager.js';
 // #import {FileFilter} from '../foreground/js/directory_contents.m.js';
 // #import {DirectoryTreeNamingController} from '../foreground/js/directory_tree_naming_controller.m.js';
 // #import {DirectoryTree} from '../foreground/js/ui/directory_tree.js';

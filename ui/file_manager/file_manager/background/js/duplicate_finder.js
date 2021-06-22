@@ -2,17 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * @fileoverview
- * @suppress {uselessCode} Temporary suppress because of the line exporting.
- */
-
 import {importer} from '../../common/js/importer_common.m.js';
 import {LRUCache} from '../../common/js/lru_cache.m.js';
 import {metrics} from '../../common/js/metrics.m.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
-import {duplicateFinderInterfaces} from '../../externs/background/duplicate_finder.m.js';
-import {importerHistoryInterfaces} from '../../externs/background/import_history.m.js';
+import {duplicateFinderInterfaces} from '../../externs/background/duplicate_finder.js';
+import {importerHistoryInterfaces} from '../../externs/background/import_history.js';
 import {VolumeManager} from '../../externs/volume_manager.m.js';
 
 import {importerHistory} from './import_history.js';
@@ -289,5 +284,4 @@ duplicateFinder.DispositionCheckerImpl = class {
   }
 };
 
-// eslint-disable-next-line semi,no-extra-semi
 export {duplicateFinder};

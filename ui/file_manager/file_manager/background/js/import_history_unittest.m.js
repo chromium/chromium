@@ -11,7 +11,7 @@ import {MockFileEntry,MockFileSystem} from '../../common/js/mock_entry.m.js';
 import {reportPromise} from '../../common/js/test_error_reporting.m.js';
 import {importerTest} from '../../common/js/test_importer_common.m.js';
 import {TestCallRecorder} from '../../common/js/unittest_util.m.js';
-import {importerHistoryInterfaces} from '../../externs/background/import_history.m.js';
+import {importerHistoryInterfaces} from '../../externs/background/import_history.js';
 
 import {importerHistory} from './import_history.js';
 // clang-format on
