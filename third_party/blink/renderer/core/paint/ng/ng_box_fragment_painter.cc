@@ -391,12 +391,14 @@ void NGBoxFragmentPainter::PaintInternal(const PaintInfo& paint_info) {
     if (text_combine->NeedsAffineTransformInPaint()) {
       if (original_phase == PaintPhase::kForeground)
         PaintCaretsIfNeeded(paint_state, paint_info, paint_offset);
-      if (DrawingRecorder::UseCachedDrawingIfPossible(
-              paint_info.context, GetDisplayItemClient(), paint_info.phase))
-        return;
-      recorder.emplace(paint_info.context, GetDisplayItemClient(),
-                       paint_info.phase,
-                       text_combine->VisualRectForPaint(paint_offset));
+      if (!paint_info.context.InDrawingRecorder()) {
+        if (DrawingRecorder::UseCachedDrawingIfPossible(
+                paint_info.context, GetDisplayItemClient(), paint_info.phase))
+          return;
+        recorder.emplace(paint_info.context, GetDisplayItemClient(),
+                         paint_info.phase,
+                         text_combine->VisualRectForPaint(paint_offset));
+      }
       graphics_context_state_saver.emplace(paint_info.context);
       paint_info.context.ConcatCTM(
           text_combine->ComputeAffineTransformForPaint(paint_offset));
@@ -477,8 +479,7 @@ void NGBoxFragmentPainter::PaintInternal(const PaintInfo& paint_info) {
       // Paint text decorations and emphasis marks without scaling and share.
       DCHECK(text_combine->NeedsAffineTransformInPaint());
       graphics_context_state_saver->Restore();
-    } else {
-      DCHECK(!text_combine->NeedsAffineTransformInPaint());
+    } else if (!paint_info.context.InDrawingRecorder()) {
       if (DrawingRecorder::UseCachedDrawingIfPossible(
               paint_info.context, GetDisplayItemClient(), paint_info.phase))
         return;
