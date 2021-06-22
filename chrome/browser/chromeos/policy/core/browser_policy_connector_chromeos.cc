@@ -45,8 +45,8 @@
 #include "chrome/browser/chromeos/policy/handlers/adb_sideloading_allowance_mode_policy_handler.h"
 #include "chrome/browser/chromeos/policy/handlers/bluetooth_policy_handler.h"
 #include "chrome/browser/chromeos/policy/handlers/device_dock_mac_address_source_handler.h"
+#include "chrome/browser/chromeos/policy/handlers/device_name_policy_handler.h"
 #include "chrome/browser/chromeos/policy/handlers/device_wifi_allowed_handler.h"
-#include "chrome/browser/chromeos/policy/handlers/hostname_handler.h"
 #include "chrome/browser/chromeos/policy/handlers/minimum_version_policy_handler.h"
 #include "chrome/browser/chromeos/policy/handlers/minimum_version_policy_handler_delegate_impl.h"
 #include "chrome/browser/chromeos/policy/handlers/system_proxy_handler.h"
@@ -253,8 +253,8 @@ void BrowserPolicyConnectorChromeOS::Init(
   bluetooth_policy_handler_ =
       std::make_unique<BluetoothPolicyHandler>(ash::CrosSettings::Get());
 
-  hostname_handler_ =
-      std::make_unique<HostnameHandler>(ash::CrosSettings::Get());
+  device_name_policy_handler_ =
+      std::make_unique<DeviceNamePolicyHandler>(ash::CrosSettings::Get());
 
   minimum_version_policy_handler_delegate_ =
       std::make_unique<MinimumVersionPolicyHandlerDelegateImpl>();
@@ -350,8 +350,8 @@ void BrowserPolicyConnectorChromeOS::Shutdown() {
   // handler here so that it can de-register itself as an observer.
   minimum_version_policy_handler_.reset();
 
-  if (hostname_handler_)
-    hostname_handler_->Shutdown();
+  if (device_name_policy_handler_)
+    device_name_policy_handler_->Shutdown();
 
   for (auto& device_cloud_external_data_policy_handler :
        device_cloud_external_data_policy_handlers_) {

@@ -10,7 +10,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/policy/core/browser_policy_connector_chromeos.h"
-#include "chrome/browser/chromeos/policy/handlers/hostname_handler.h"
+#include "chrome/browser/chromeos/policy/handlers/device_name_policy_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/crosapi/mojom/device_attributes.mojom.h"
@@ -118,7 +118,7 @@ void DeviceAttributesAsh::GetDeviceHostname(
   }
   std::string result = g_browser_process->platform_part()
                            ->browser_policy_connector_chromeos()
-                           ->GetHostnameHandler()
+                           ->GetDeviceNamePolicyHandler()
                            ->GetDeviceHostname();
   if (result.empty()) {
     std::move(callback).Run(StringResult::NewErrorMessage(kAccessDenied));

@@ -9,7 +9,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/policy/core/browser_policy_connector_chromeos.h"
-#include "chrome/browser/chromeos/policy/handlers/hostname_handler.h"
+#include "chrome/browser/chromeos/policy/handlers/device_name_policy_handler.h"
 #include "chromeos/system/statistics_provider.h"
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/lacros/lacros_chrome_service_impl.h"
@@ -70,7 +70,7 @@ void GetHostname(DeviceAPIService::GetHostnameCallback callback) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   const std::string attribute = g_browser_process->platform_part()
                                     ->browser_policy_connector_chromeos()
-                                    ->GetHostnameHandler()
+                                    ->GetDeviceNamePolicyHandler()
                                     ->GetDeviceHostname();
   if (attribute.empty())
     std::move(callback).Run(

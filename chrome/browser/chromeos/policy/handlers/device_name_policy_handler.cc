@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/policy/handlers/hostname_handler.h"
+#include "chrome/browser/chromeos/policy/handlers/device_name_policy_handler.h"
 
 #include "base/bind.h"
 #include "base/strings/string_util.h"
@@ -48,12 +48,14 @@ bool IsValidHostname(const std::string& hostname) {
 
 namespace policy {
 
-HostnameHandler::HostnameHandler(ash::CrosSettings* cros_settings)
+DeviceNamePolicyHandler::DeviceNamePolicyHandler(
+    ash::CrosSettings* cros_settings)
     : cros_settings_(cros_settings) {
   policy_subscription_ = cros_settings_->AddSettingsObserver(
       chromeos::kDeviceHostnameTemplate,
-      base::BindRepeating(&HostnameHandler::OnDeviceHostnamePropertyChanged,
-                          weak_factory_.GetWeakPtr()));
+      base::BindRepeating(
+          &DeviceNamePolicyHandler::OnDeviceHostnamePropertyChanged,
+          weak_factory_.GetWeakPtr()));
   chromeos::NetworkHandler::Get()->network_state_handler()->AddObserver(
       this, FROM_HERE);
 
@@ -61,26 +63,27 @@ HostnameHandler::HostnameHandler(ash::CrosSettings* cros_settings)
   OnDeviceHostnamePropertyChanged();
 }
 
-HostnameHandler::~HostnameHandler() {}
+DeviceNamePolicyHandler::~DeviceNamePolicyHandler() {}
 
-void HostnameHandler::Shutdown() {
+void DeviceNamePolicyHandler::Shutdown() {
   if (chromeos::NetworkHandler::IsInitialized()) {
     chromeos::NetworkHandler::Get()->network_state_handler()->RemoveObserver(
         this, FROM_HERE);
   }
 }
 
-const std::string& HostnameHandler::GetDeviceHostname() const {
+const std::string& DeviceNamePolicyHandler::GetDeviceHostname() const {
   return hostname_;
 }
 
 // static
-std::string HostnameHandler::FormatHostname(const std::string& name_template,
-                                            const std::string& asset_id,
-                                            const std::string& serial,
-                                            const std::string& mac,
-                                            const std::string& machine_name,
-                                            const std::string& location) {
+std::string DeviceNamePolicyHandler::FormatHostname(
+    const std::string& name_template,
+    const std::string& asset_id,
+    const std::string& serial,
+    const std::string& mac,
+    const std::string& machine_name,
+    const std::string& location) {
   std::string result = name_template;
   base::ReplaceSubstringsAfterOffset(&result, 0, kAssetIDPlaceholder, asset_id);
   base::ReplaceSubstringsAfterOffset(&result, 0, kSerialNumPlaceholder, serial);
@@ -95,28 +98,28 @@ std::string HostnameHandler::FormatHostname(const std::string& name_template,
   return result;
 }
 
-void HostnameHandler::DefaultNetworkChanged(
+void DeviceNamePolicyHandler::DefaultNetworkChanged(
     const chromeos::NetworkState* network) {
   OnDeviceHostnamePropertyChanged();
 }
 
-void HostnameHandler::OnDeviceHostnamePropertyChanged() {
+void DeviceNamePolicyHandler::OnDeviceHostnamePropertyChanged() {
   chromeos::CrosSettingsProvider::TrustedStatus status =
-      cros_settings_->PrepareTrustedValues(
-          base::BindOnce(&HostnameHandler::OnDeviceHostnamePropertyChanged,
-                         weak_factory_.GetWeakPtr()));
+      cros_settings_->PrepareTrustedValues(base::BindOnce(
+          &DeviceNamePolicyHandler::OnDeviceHostnamePropertyChanged,
+          weak_factory_.GetWeakPtr()));
   if (status != chromeos::CrosSettingsProvider::TRUSTED)
     return;
 
   // Continue when machine statistics are loaded, to avoid blocking.
   chromeos::system::StatisticsProvider::GetInstance()
       ->ScheduleOnMachineStatisticsLoaded(base::BindOnce(
-          &HostnameHandler::
+          &DeviceNamePolicyHandler::
               OnDeviceHostnamePropertyChangedAndMachineStatisticsLoaded,
           weak_factory_.GetWeakPtr()));
 }
 
-void HostnameHandler::
+void DeviceNamePolicyHandler::
     OnDeviceHostnamePropertyChangedAndMachineStatisticsLoaded() {
   std::string hostname_template;
   if (!cros_settings_->GetString(chromeos::kDeviceHostnameTemplate,

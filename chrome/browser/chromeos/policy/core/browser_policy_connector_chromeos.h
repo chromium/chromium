@@ -48,10 +48,10 @@ class DeviceCloudPolicyInitializer;
 class DeviceCloudStateKeysUploader;
 class DeviceDockMacAddressHandler;
 class DeviceLocalAccountPolicyService;
+class DeviceNamePolicyHandler;
 class DeviceNetworkConfigurationUpdater;
 class DeviceWiFiAllowedHandler;
 struct EnrollmentConfig;
-class HostnameHandler;
 class MinimumVersionPolicyHandler;
 class MinimumVersionPolicyHandlerDelegateImpl;
 class ProxyPolicyProvider;
@@ -188,8 +188,8 @@ class BrowserPolicyConnectorChromeOS
     return system_proxy_handler_.get();
   }
 
-  HostnameHandler* GetHostnameHandler() const {
-    return hostname_handler_.get();
+  DeviceNamePolicyHandler* GetDeviceNamePolicyHandler() const {
+    return device_name_policy_handler_.get();
   }
 
   AdbSideloadingAllowanceModePolicyHandler*
@@ -286,7 +286,7 @@ class BrowserPolicyConnectorChromeOS
       device_remote_commands_invalidator_;
 
   std::unique_ptr<BluetoothPolicyHandler> bluetooth_policy_handler_;
-  std::unique_ptr<HostnameHandler> hostname_handler_;
+  std::unique_ptr<DeviceNamePolicyHandler> device_name_policy_handler_;
   std::unique_ptr<MinimumVersionPolicyHandler> minimum_version_policy_handler_;
   std::unique_ptr<MinimumVersionPolicyHandlerDelegateImpl>
       minimum_version_policy_handler_delegate_;

@@ -10,7 +10,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/policy/core/browser_policy_connector_chromeos.h"
-#include "chrome/browser/chromeos/policy/handlers/hostname_handler.h"
+#include "chrome/browser/chromeos/policy/handlers/device_name_policy_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/enterprise_device_attributes.h"
 #include "chromeos/system/statistics_provider.h"
@@ -129,7 +129,7 @@ EnterpriseDeviceAttributesGetDeviceHostnameFunction::Run() {
   if (CanGetDeviceAttributesForBrowserContext(browser_context())) {
     hostname = g_browser_process->platform_part()
                    ->browser_policy_connector_chromeos()
-                   ->GetHostnameHandler()
+                   ->GetDeviceNamePolicyHandler()
                    ->GetDeviceHostname();
   }
   return RespondNow(ArgumentList(
