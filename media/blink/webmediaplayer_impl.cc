@@ -3085,7 +3085,7 @@ WebMediaPlayerImpl::UpdatePlayState_ComputePlayState(bool is_flinging,
   // TODO(sandersd): Make the delegate suspend idle players immediately when
   // hidden.
   bool idle_suspended = can_auto_suspend && is_stale && paused_ && !seeking_ &&
-                        !overlay_enabled_ && !needs_first_frame_;
+                        !overlay_info_.is_fullscreen && !needs_first_frame_;
 
   // If we're already suspended, see if we can wait for user interaction. Prior
   // to kReadyStateHaveMetadata, we require |is_stale| to remain suspended.

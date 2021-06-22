@@ -500,6 +500,7 @@ class WebMediaPlayerImplTest
 
   void SetFullscreen(bool is_fullscreen) {
     wmpi_->overlay_enabled_ = is_fullscreen;
+    wmpi_->overlay_info_.is_fullscreen = is_fullscreen;
   }
 
   void SetMetadata(bool has_audio, bool has_video) {
