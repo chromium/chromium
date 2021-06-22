@@ -11,7 +11,7 @@ namespace web_app {
 // Please maintain the alphabetical order when adding new app IDs.
 
 // TODO(crbug.com/1198418): Update when app URL is finalized.
-const char kA4AppId[] = "ihckehilkadhemjaebeicgkdhdbfehcg";
+const char kA4AppId[] = "apignacaigpffemhdbhmnajajaccbckh";
 
 // Generated as: web_app::GenerateAppIdFromURL(GURL(
 //     "chrome://camera-app/views/main.html"))
