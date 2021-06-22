@@ -19,11 +19,11 @@ namespace objects_movable = test::api::objects_movable;
 
 TEST(JsonSchemaCompilerObjectsTest, ObjectParamParamsCreate) {
   {
-    auto strings = std::make_unique<base::ListValue>();
-    strings->AppendString("one");
-    strings->AppendString("two");
+    base::ListValue strings;
+    strings.AppendString("one");
+    strings.AppendString("two");
     auto info_value = std::make_unique<base::DictionaryValue>();
-    info_value->Set("strings", std::move(strings));
+    info_value->SetKey("strings", std::move(strings));
     info_value->SetInteger("integer", 5);
     info_value->SetBoolean("boolean", true);
 
@@ -39,11 +39,11 @@ TEST(JsonSchemaCompilerObjectsTest, ObjectParamParamsCreate) {
     EXPECT_TRUE(params->info.boolean);
   }
   {
-    auto strings = std::make_unique<base::ListValue>();
-    strings->AppendString("one");
-    strings->AppendString("two");
+    base::ListValue strings;
+    strings.AppendString("one");
+    strings.AppendString("two");
     auto info_value = std::make_unique<base::DictionaryValue>();
-    info_value->Set("strings", std::move(strings));
+    info_value->SetKey("strings", std::move(strings));
     info_value->SetInteger("integer", 5);
 
     auto params_value = std::make_unique<base::ListValue>();

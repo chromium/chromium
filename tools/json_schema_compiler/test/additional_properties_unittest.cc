@@ -15,13 +15,13 @@ namespace ap = test::api::additional_properties;
 TEST(JsonSchemaCompilerAdditionalPropertiesTest,
     AdditionalPropertiesTypePopulate) {
   {
-    auto list_value = std::make_unique<base::ListValue>();
-    list_value->AppendString("asdf");
-    list_value->AppendInteger(4);
+    base::ListValue list_value;
+    list_value.AppendString("asdf");
+    list_value.AppendInteger(4);
     auto type_value = std::make_unique<base::DictionaryValue>();
     type_value->SetString("string", "value");
     type_value->SetInteger("other", 9);
-    type_value->Set("another", std::move(list_value));
+    type_value->SetKey("another", std::move(list_value));
     auto type = std::make_unique<ap::AdditionalPropertiesType>();
     ASSERT_TRUE(
         ap::AdditionalPropertiesType::Populate(*type_value, type.get()));

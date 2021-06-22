@@ -110,13 +110,13 @@ TEST(JsonSchemaCompilerChoicesTest, PopulateChoiceType) {
                                             std::string("of"),
                                             std::string("strings"));
 
-  auto strings_value = std::make_unique<base::ListValue>();
-  for (size_t i = 0; i < strings.size(); ++i)
-    strings_value->AppendString(strings[i]);
+  base::ListValue strings_value;
+  for (const auto& string : strings)
+    strings_value.AppendString(string);
 
   base::DictionaryValue value;
   value.SetInteger("integers", 4);
-  value.Set("strings", std::move(strings_value));
+  value.SetKey("strings", std::move(strings_value));
 
   choices::ChoiceType out;
   ASSERT_TRUE(choices::ChoiceType::Populate(value, &out));
@@ -130,14 +130,14 @@ TEST(JsonSchemaCompilerChoicesTest, PopulateChoiceType) {
 }
 
 TEST(JsonSchemaCompilerChoicesTest, ChoiceTypeToValue) {
-  auto strings_value = std::make_unique<base::ListValue>();
-  strings_value->AppendString("list");
-  strings_value->AppendString("of");
-  strings_value->AppendString("strings");
+  base::ListValue strings_value;
+  strings_value.AppendString("list");
+  strings_value.AppendString("of");
+  strings_value.AppendString("strings");
 
   base::DictionaryValue value;
   value.SetInteger("integers", 5);
-  value.Set("strings", std::move(strings_value));
+  value.SetKey("strings", std::move(strings_value));
 
   choices::ChoiceType out;
   ASSERT_TRUE(choices::ChoiceType::Populate(value, &out));
