@@ -469,11 +469,6 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
       const base::UnguessableToken& guid,
       RenderFrameHostImpl* render_frame_host) {}
 
-  // Updates the Picture-in-Picture controller with the relevant viz::SurfaceId
-  // of the video to be in Picture-in-Picture mode.
-  virtual void UpdatePictureInPictureSurfaceId(const viz::SurfaceId& surface_id,
-                                               const gfx::Size& natural_size) {}
-
   // Returns a copy of the current WebPreferences associated with this
   // RenderFrameHost's WebContents. If it does not exist, this will create one
   // and send the newly computed value to all renderers.
