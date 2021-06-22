@@ -606,10 +606,10 @@ bool BatteryStatusManagerLinux::StartNotifierThreadIfNecessary() {
   if (notifier_thread_)
     return true;
 
-  base::Thread::Options thread_options(base::MessagePumpType::IO, 0);
   auto notifier_thread =
       std::make_unique<BatteryStatusNotificationThread>(callback_);
-  if (!notifier_thread->StartWithOptions(thread_options)) {
+  if (!notifier_thread->StartWithOptions(
+          base::Thread::Options(base::MessagePumpType::IO, 0))) {
     LOG(ERROR) << "Could not start the " << kBatteryNotifierThreadName
                << " thread";
     return false;
