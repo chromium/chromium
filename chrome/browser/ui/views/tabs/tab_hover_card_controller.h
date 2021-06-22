@@ -105,6 +105,8 @@ class TabHoverCardController : public views::ViewObserver,
   TabHoverCardBubbleView* hover_card_ = nullptr;
   base::ScopedObservation<views::View, views::ViewObserver>
       hover_card_observation_{this};
+  base::ScopedObservation<views::View, views::ViewObserver>
+      target_tab_observation_{this};
   std::unique_ptr<EventSniffer> event_sniffer_;
 
   // Handles metrics around cards being seen by the user.
