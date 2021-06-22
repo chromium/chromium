@@ -444,8 +444,8 @@ class ChromeProvidedSharingOptionsProvider {
                 .setFeatureNameForMetrics("SharingHubAndroid.WebnotesStylize")
                 .setOnClickCallback((view) -> {
                     NoteCreationCoordinator coordinator = NoteCreationCoordinatorFactory.create(
-                            mActivity, mTabProvider.get(), mUrl, title, mShareParams.getText(),
-                            mChromeOptionShareCallback);
+                            mActivity, mTabProvider.get(), mUrl, title,
+                            mShareParams.getRawText().trim(), mChromeOptionShareCallback);
                     coordinator.showDialog();
                 })
                 .build();

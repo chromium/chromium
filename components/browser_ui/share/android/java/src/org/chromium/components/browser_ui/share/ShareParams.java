@@ -29,6 +29,9 @@ public class ShareParams {
     /** The text to be shared. */
     private final String mText;
 
+    /** A format to be used when sharing |mText|. */
+    private final String mTextFormat;
+
     /** The URL of the page to be shared. */
     private final String mUrl;
 
@@ -53,13 +56,14 @@ public class ShareParams {
      */
     private TargetChosenCallback mCallback;
 
-    private ShareParams(WindowAndroid window, String title, String text, String url,
-            @Nullable String fileContentType, @Nullable ArrayList<Uri> fileUris,
+    private ShareParams(WindowAndroid window, String title, String text, String textFormat,
+            String url, @Nullable String fileContentType, @Nullable ArrayList<Uri> fileUris,
             @Nullable Uri offlineUri, @Nullable Uri screenshotUri,
             @Nullable TargetChosenCallback callback, @Nullable Boolean linkToTextSuccessful) {
         mWindow = window;
         mTitle = title;
         mText = text;
+        mTextFormat = textFormat;
         mUrl = url;
         mFileContentType = fileContentType;
         mFileUris = fileUris;
@@ -87,20 +91,30 @@ public class ShareParams {
      * @return The text concatenated with the url.
      */
     public String getTextAndUrl() {
-        if (TextUtils.isEmpty(mUrl)) {
-            return mText;
+        String text = getText();
+        String url = getUrl();
+
+        if (TextUtils.isEmpty(url)) {
+            return text;
         }
-        if (TextUtils.isEmpty(mText)) {
-            return mUrl;
+        if (TextUtils.isEmpty(text)) {
+            return url;
         }
         // Concatenate text and URL with a space.
-        return mText + " " + mUrl;
+        return text + " " + url;
     }
 
     /**
-     * @return The text to be shared.
+     * @return The text to be shared in the format it is meant to be shared.
      */
     public String getText() {
+        return mTextFormat == null ? mText : String.format(mTextFormat, mText);
+    }
+
+    /**
+     * @return The text to be shared, but without additional formatting.
+     */
+    public String getRawText() {
         return mText;
     }
 
@@ -171,6 +185,7 @@ public class ShareParams {
         private WindowAndroid mWindow;
         private String mTitle;
         private String mText;
+        private String mTextFormat;
         private String mUrl;
         private String mFileContentType;
         private ArrayList<Uri> mFileUris;
@@ -191,6 +206,14 @@ public class ShareParams {
         public Builder setText(@NonNull String text) {
             mText = text;
             return this;
+        }
+
+        /**
+         * Sets the text to be shared and its format to be used before sharing it.
+         */
+        public Builder setText(@NonNull String text, @NonNull String format) {
+            mTextFormat = format;
+            return setText(text);
         }
 
         /**
@@ -246,8 +269,8 @@ public class ShareParams {
             if (!TextUtils.isEmpty(mUrl)) {
                 mUrl = DomDistillerUrlUtils.getOriginalUrlFromDistillerUrl(mUrl);
             }
-            return new ShareParams(mWindow, mTitle, mText, mUrl, mFileContentType, mFileUris,
-                    mOfflineUri, mScreenshotUri, mCallback, mLinkToTextSuccessful);
+            return new ShareParams(mWindow, mTitle, mText, mTextFormat, mUrl, mFileContentType,
+                    mFileUris, mOfflineUri, mScreenshotUri, mCallback, mLinkToTextSuccessful);
         }
     }
 

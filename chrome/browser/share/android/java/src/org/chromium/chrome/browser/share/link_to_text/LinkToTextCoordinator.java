@@ -113,7 +113,7 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
                     : new ShareParams
                               .Builder(mTab.getWindowAndroid(), /*title=*/"",
                                       getUrlToShare(selector))
-                              .setText(String.format(SHARE_TEXT_TEMPLATE, mSelectedText))
+                              .setText(mSelectedText, SHARE_TEXT_TEMPLATE)
                               .setLinkToTextSuccessful(true)
                               .build();
             mShareTextParams =
@@ -132,7 +132,7 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
         ShareParams params =
                 new ShareParams
                         .Builder(mTab.getWindowAndroid(), /*title=*/"", getUrlToShare(selector))
-                        .setText(String.format(SHARE_TEXT_TEMPLATE, mSelectedText))
+                        .setText(mSelectedText, SHARE_TEXT_TEMPLATE)
                         .build();
 
         mChromeOptionShareCallback.showThirdPartyShareSheet(params,
