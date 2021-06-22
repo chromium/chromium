@@ -11,9 +11,11 @@ import subprocess
 USE_PYTHON3 = True
 
 
-def RunCmdAndCheck(cmd, err_string, output_api, cwd=None, warning=False):
+def RunCmdAndCheck(cmd, err_string, output_api, cwd=None, warning=False,
+                   shell=False):
   results = []
   p = subprocess.Popen(cmd, cwd=cwd,
+                       shell=shell,
                        stdout=subprocess.PIPE,
                        stderr=subprocess.PIPE)
   (_, p_stderr) = p.communicate()
@@ -38,12 +40,16 @@ def RunUnittests(input_api, output_api):
     if name_parts[0:2] == ['ppapi', 'generators']:
       generator_files.append(filename)
   if generator_files != []:
+    # TODO(crbug.com/1222512): Use sys.executable instead of
+    # input_api.python_executable once idl_tests.py is py3 compatible, drop
+    # shell=True in RunCmdAndCheck.
     cmd = [input_api.python_executable, 'idl_tests.py']
     ppapi_dir = input_api.PresubmitLocalPath()
     results.extend(RunCmdAndCheck(cmd,
                                   'PPAPI IDL unittests failed.',
                                   output_api,
-                                  os.path.join(ppapi_dir, 'generators')))
+                                  os.path.join(ppapi_dir, 'generators'),
+                                  shell=input_api.is_windows))
   return results
 
 
@@ -148,6 +154,9 @@ def CheckUpdatedNaClSDK(input_api, output_api):
   verify_ppapi_py = os.path.join(input_api.change.RepositoryRoot(),
                                  'native_client_sdk', 'src', 'build_tools',
                                  'verify_ppapi.py')
+  # TODO(crbug.com/1222512): Use sys.executable instead of
+  # input_api.python_executable once idl_tests.py is py3 compatible, drop
+  # shell=True.
   cmd = [input_api.python_executable, verify_ppapi_py] + nacl_sdk_files
   return RunCmdAndCheck(cmd,
                         'PPAPI Interface modified without updating NaCl SDK.\n'
@@ -156,7 +165,8 @@ def CheckUpdatedNaClSDK(input_api, output_api):
                         'To ignore a file, add it to IGNORED_FILES in '
                         'native_client_sdk/src/build_tools/verify_ppapi.py)',
                         output_api,
-                        warning=True)
+                        warning=True,
+                        shell=input_api.is_windows)
 
 # Verify that changes to ppapi/thunk/interfaces_* files have a corresponding
 # change to tools/metrics/histograms/enums.xml for UMA tracking.
@@ -328,6 +338,9 @@ def CheckChange(input_api, output_api):
   #   --diff to generate a unified diff
   #   --out to pick which files to examine (only the ones in the CL)
   ppapi_dir = input_api.PresubmitLocalPath()
+  # TODO(crbug.com/1222512): Use sys.executable instead of
+  # input_api.python_executable once idl_tests.py is py3 compatible, drop
+  # shell=True in RunCmdAndCheck.
   cmd = [input_api.python_executable, 'generator.py',
          '--wnone', '--diff', '--test','--cgen', '--range=start,end']
 
@@ -336,7 +349,8 @@ def CheckChange(input_api, output_api):
   cmd_results = RunCmdAndCheck(cmd,
                                'PPAPI IDL Diff detected: Run the generator.',
                                output_api,
-                               os.path.join(ppapi_dir, 'generators'))
+                               os.path.join(ppapi_dir, 'generators'),
+                               shell=input_api.is_windows)
   if cmd_results:
     results.extend(cmd_results)
 
