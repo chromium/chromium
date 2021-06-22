@@ -97,6 +97,13 @@ class AccessContextAuditDatabase
   // Removes all records from the the database.
   void RemoveAllRecords();
 
+  // Remove all records from the database from a history deletion.
+  // Unlike RemoveAllRecords, this method keeps a record of cross-site storage
+  // access but replaces the top-level origin with an opaque origin. This is due
+  // to the fact that we use cross-site storage access records to clear
+  // third-party storage when a user manually clears third-party cookies.
+  void RemoveAllRecordsHistory();
+
   // Removes all records where |begin| <= record.last_access_time <= |end|.
   void RemoveAllRecordsForTimeRange(base::Time begin, base::Time end);
 

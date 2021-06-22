@@ -319,8 +319,9 @@ void AccessContextAuditService::OnURLsDeleted(
     const history::DeletionInfo& deletion_info) {
   if (deletion_info.IsAllHistory()) {
     database_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&AccessContextAuditDatabase::RemoveAllRecords,
-                                  database_));
+        FROM_HERE,
+        base::BindOnce(&AccessContextAuditDatabase::RemoveAllRecordsHistory,
+                       database_));
     return;
   }
 
