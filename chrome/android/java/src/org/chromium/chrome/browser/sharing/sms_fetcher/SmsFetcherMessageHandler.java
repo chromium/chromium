@@ -95,13 +95,14 @@ public class SmsFetcherMessageHandler {
                 PendingIntent.FLAG_UPDATE_CURRENT);
         Resources resources = context.getResources();
         String notificationTitle = TextUtils.isEmpty(clientName)
-                ? resources.getString(R.string.sms_fetcher_notification_title_unknown_device)
-                : resources.getString(R.string.sms_fetcher_notification_title, clientName);
+                ? resources.getString(
+                        R.string.sms_fetcher_notification_title_unknown_device, oneTimeCode)
+                : resources.getString(
+                        R.string.sms_fetcher_notification_title, oneTimeCode, clientName);
         String notificationText = embeddedOrigin != null
                 ? resources.getString(R.string.sms_fetcher_notification_text_for_embedded_frame,
-                        oneTimeCode, topOrigin, embeddedOrigin)
-                : resources.getString(
-                        R.string.sms_fetcher_notification_text, oneTimeCode, topOrigin);
+                        topOrigin, embeddedOrigin)
+                : resources.getString(R.string.sms_fetcher_notification_text, topOrigin);
         SharingNotificationUtil.showNotification(
                 NotificationUmaTracker.SystemNotificationType.SMS_FETCHER,
                 NotificationConstants.GROUP_SMS_FETCHER,

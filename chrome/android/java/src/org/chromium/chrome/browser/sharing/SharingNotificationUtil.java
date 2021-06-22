@@ -84,7 +84,7 @@ public final class SharingNotificationUtil {
             builder.setDeleteIntent(deleteIntent);
         }
         if (confirmIntent != null) {
-            builder.addAction(R.drawable.ic_checkmark_24dp, resources.getString(R.string.ok),
+            builder.addAction(R.drawable.ic_checkmark_24dp, resources.getString(R.string.submit),
                     confirmIntent, NotificationUmaTracker.ActionType.SHARING_CONFIRM);
         }
         if (cancelIntent != null) {

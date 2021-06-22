@@ -4210,17 +4210,17 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       </message>
 
       <!-- Sms Fetcher -->
-      <message name="IDS_SMS_FETCHER_NOTIFICATION_TITLE_UNKNOWN_DEVICE" translateable="false" desc="Title text shown when the browser has received an SMS on the user's behalf when the source device name is unknown.">
-        Verify your phone number on other device
+      <message name="IDS_SMS_FETCHER_NOTIFICATION_TITLE_UNKNOWN_DEVICE" desc="Title text shown when the Android Chrome receives a ONE_TIME_CODE from an incoming SMS and ask users for permission to submit the code to their linked Desktop Chrome when the desktop device name is unknown.">
+        Submit <ph name="ONE_TIME_CODE">%1$s<ex>123</ex></ph> on other device?
       </message>
-      <message name="IDS_SMS_FETCHER_NOTIFICATION_TITLE" translateable="false" desc="Title text shown when the browser has received an SMS on the user's behalf.">
-        Verify your phone number on <ph name="CLIENT_NAME">%1$s<ex>Zoe's Macbook</ex></ph>
+      <message name="IDS_SMS_FETCHER_NOTIFICATION_TITLE" desc="Title text shown when the Android Chrome receives a ONE_TIME_CODE from an incoming SMS and ask users for permission to submit the code to their linked Desktop Chrome">
+        Submit <ph name="ONE_TIME_CODE">%1$s<ex>123</ex></ph> on <ph name="CLIENT_NAME">%2$s<ex>Zoe's Macbook</ex></ph>?
       </message>
-      <message name="IDS_SMS_FETCHER_NOTIFICATION_TEXT" translateable="false" desc="Content text shown when the browser has received an SMS on the user's behalf.">
-        Let Chrome submit <ph name="ONE_TIME_CODE">%1$s<ex>123</ex></ph> on <ph name="ORIGIN">%2$s<ex>example.com</ex></ph>
+      <message name="IDS_SMS_FETCHER_NOTIFICATION_TEXT" desc="Content text shown to let users know that the submitted code will be received by ORIGIN for verification purpose.">
+        Let <ph name="ORIGIN">%1$s<ex>example.com</ex></ph> verify it's you
       </message>
-      <message name="IDS_SMS_FETCHER_NOTIFICATION_TEXT_FOR_EMBEDDED_FRAME" translateable="false" desc="Content text shown when the browser has received an SMS on the user's behalf. User is on TOP_ORIGIN and they need to use service provided by EMBEDDED_ORIGIN. EMBEDDED_ORIGIN sends out an SMS to verify user identity.">
-        Tap OK to submit <ph name="ONE_TIME_CODE">%1$s<ex>123</ex></ph> on <ph name="EMBEDDED_ORIGIN">%3$s<ex>payment.com</ex></ph> to continue on <ph name="TOP_ORIGIN">%2$s<ex>shopping.com</ex></ph>
+      <message name="IDS_SMS_FETCHER_NOTIFICATION_TEXT_FOR_EMBEDDED_FRAME" desc="Content text shown to let users know that the submitted code will be received by EMBEDDED_ORIGIN for verification purpose. User is on TOP_ORIGIN and they need to use service provided by EMBEDDED_ORIGIN. EMBEDDED_ORIGIN sends out an SMS to verify the user identity.">
+        Let <ph name="EMBEDDED_ORIGIN">%1$s<ex>payment.com</ex></ph> verify it's you for <ph name="TOP_ORIGIN">%2$s<ex>shopping.com</ex></ph>
       </message>
 
       <!-- Interventions -->
