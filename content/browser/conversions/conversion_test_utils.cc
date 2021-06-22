@@ -84,10 +84,10 @@ void ConfigurableConversionTestBrowserClient::
 ConfigurableStorageDelegate::ConfigurableStorageDelegate() = default;
 ConfigurableStorageDelegate::~ConfigurableStorageDelegate() = default;
 
-void ConfigurableStorageDelegate::ProcessNewConversionReport(
-    ConversionReport& report) {
-  report.report_time = report.impression.impression_time() +
-                       base::TimeDelta::FromMilliseconds(report_time_ms_);
+base::Time ConfigurableStorageDelegate::GetReportTime(
+    const ConversionReport& report) const {
+  return report.impression.impression_time() +
+         base::TimeDelta::FromMilliseconds(report_time_ms_);
 }
 int ConfigurableStorageDelegate::GetMaxConversionsPerImpression(
     StorableImpression::SourceType source_type) const {

@@ -315,9 +315,7 @@ bool ConversionStorageSql::MaybeCreateAndStoreConversionReport(
                           /*report_time=*/current_time,
                           /*conversion_id=*/absl::nullopt);
 
-  // Allow the delegate to make arbitrary changes to the new conversion report
-  // before we add it storage.
-  delegate_->ProcessNewConversionReport(report);
+  report.report_time = delegate_->GetReportTime(report);
 
   if (!rate_limit_table_.IsAttributionAllowed(db_.get(), report, current_time))
     return false;

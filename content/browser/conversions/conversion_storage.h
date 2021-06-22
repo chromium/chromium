@@ -29,13 +29,13 @@ class ConversionStorage {
    public:
     virtual ~Delegate() = default;
 
-    // New conversion reports will be sent through this callback for
-    // pruning/modification before they are added to storage. This will be
-    // called during the execution of
+    // New conversion reports will be sent through this callback to determine
+    // their report time before they are added to storage. This will be called
+    // during the execution of
     // `ConversionStorage::MaybeCreateAndStoreConversionReport()`.
     // The report will be pre-populated from storage with the conversion
     // event data.
-    virtual void ProcessNewConversionReport(ConversionReport& report) = 0;
+    virtual base::Time GetReportTime(const ConversionReport& report) const = 0;
 
     // This limit is used to determine if an impression is allowed to schedule
     // a new conversion reports. When an impression reaches this limit it is

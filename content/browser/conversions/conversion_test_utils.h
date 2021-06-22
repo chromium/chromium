@@ -79,7 +79,7 @@ class ConfigurableStorageDelegate : public ConversionStorage::Delegate {
   ~ConfigurableStorageDelegate() override;
 
   // ConversionStorage::Delegate
-  void ProcessNewConversionReport(ConversionReport& report) override;
+  base::Time GetReportTime(const ConversionReport& report) const override;
   int GetMaxConversionsPerImpression(
       StorableImpression::SourceType source_type) const override;
   int GetMaxImpressionsPerOrigin() const override;

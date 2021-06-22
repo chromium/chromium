@@ -11,12 +11,6 @@ ConversionStorageDelegateImpl::ConversionStorageDelegateImpl(bool debug_mode)
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
-void ConversionStorageDelegateImpl::ProcessNewConversionReport(
-    ConversionReport& report) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  report.report_time = GetReportTimeForConversion(report);
-}
-
 int ConversionStorageDelegateImpl::GetMaxConversionsPerImpression(
     StorableImpression::SourceType source_type) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -57,7 +51,7 @@ ConversionStorageDelegateImpl::SelectAttributionLogic(
   return StorableImpression::AttributionLogic::kTruthfully;
 }
 
-base::Time ConversionStorageDelegateImpl::GetReportTimeForConversion(
+base::Time ConversionStorageDelegateImpl::GetReportTime(
     const ConversionReport& report) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   //  |report.report_time| is roughly ~now, for newly created conversion
