@@ -423,10 +423,23 @@ void GetFormField(autofill::FormFieldData* field,
       _popupDelegate->DidAcceptSuggestion(SysNSStringToUTF16(suggestion.value),
                                           suggestion.identifier, 0);
     }
-  } else if (suggestion.identifier ==
-             autofill::POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY) {
-    web::WebFrame* frame =
-        web::GetWebFrameWithId(_webState, SysNSStringToUTF8(frameID));
+    return;
+  }
+
+  web::WebFrame* frame =
+      web::GetWebFrameWithId(_webState, SysNSStringToUTF8(frameID));
+  if (!frame) {
+    // The frame no longer exists, so the field can not be filled.
+    if (_suggestionHandledCompletion) {
+      SuggestionHandledCompletion suggestionHandledCompletionCopy =
+          [_suggestionHandledCompletion copy];
+      _suggestionHandledCompletion = nil;
+      suggestionHandledCompletionCopy();
+    }
+    return;
+  }
+
+  if (suggestion.identifier == autofill::POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY) {
     // FormSuggestion is a simple, single value that can be filled out now.
     [self fillField:SysNSStringToUTF8(fieldIdentifier)
         uniqueFieldID:uniqueFieldID
@@ -434,8 +447,6 @@ void GetFormField(autofill::FormFieldData* field,
                 value:SysNSStringToUTF16(suggestion.value)
               inFrame:frame];
   } else if (suggestion.identifier == autofill::POPUP_ITEM_ID_CLEAR_FORM) {
-    web::WebFrame* frame =
-        web::GetWebFrameWithId(_webState, SysNSStringToUTF8(frameID));
     __weak AutofillAgent* weakSelf = self;
     SuggestionHandledCompletion suggestionHandledCompletionCopy =
         [_suggestionHandledCompletion copy];
@@ -453,8 +464,6 @@ void GetFormField(autofill::FormFieldData* field,
 
   } else if (suggestion.identifier ==
              autofill::POPUP_ITEM_ID_SHOW_ACCOUNT_CARDS) {
-    web::WebFrame* frame =
-        GetWebFrameWithId(_webState, SysNSStringToUTF8(frameID));
     autofill::BrowserAutofillManager* autofillManager =
         [self autofillManagerFromWebState:_webState webFrame:frame];
     if (autofillManager) {
