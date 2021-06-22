@@ -327,7 +327,7 @@ bool WebSocketChannelImpl::Connect(const KURL& url, const String& protocol) {
     message.Append(url.GetString());
     message.Append("' failed: Insufficient resources");
     execution_context_->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-        mojom::blink::ConsoleMessageSource::kJavaScript,
+        mojom::blink::ConsoleMessageSource::kNetwork,
         mojom::blink::ConsoleMessageLevel::kError, message.ToString()));
     execution_context_->GetTaskRunner(TaskType::kNetworking)
         ->PostTask(FROM_HERE,
@@ -487,7 +487,7 @@ void WebSocketChannelImpl::Fail(const String& reason,
   }
 
   execution_context_->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-      mojom::ConsoleMessageSource::kJavaScript, level, message,
+      mojom::ConsoleMessageSource::kNetwork, level, message,
       std::move(location)));
   // |reason| is only for logging and should not be provided for scripts,
   // hence close reason must be empty in tearDownFailedConnection.

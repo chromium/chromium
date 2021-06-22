@@ -1,4 +1,3 @@
-CONSOLE ERROR: line 14: WebSocket connection to 'ws://127.0.0.1:8880/too-long-payload' failed: Invalid frame header
 Tests whether WebSocket correctly aborts the connection when it receives a frame with too long payload.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
