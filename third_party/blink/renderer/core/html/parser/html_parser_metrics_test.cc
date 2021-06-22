@@ -6,6 +6,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_mock_time_task_runner.h"
+#include "build/build_config.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
@@ -118,7 +119,13 @@ TEST_F(HTMLBackgroundParserMetricsTest, ReportSingleChunk) {
   EXPECT_GT(parsing_time_total_buckets[0].min, 0);
 }
 
-TEST_F(HTMLBackgroundParserMetricsTest, HistogramReportsTwoChunks) {
+#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+// https://crbug.com/1222653
+#define MAYBE_HistogramReportsTwoChunks DISABLED_HistogramReportsTwoChunks
+#else
+#define MAYBE_HistogramReportsTwoChunks HistogramReportsTwoChunks
+#endif
+TEST_F(HTMLBackgroundParserMetricsTest, MAYBE_HistogramReportsTwoChunks) {
   // Although the tests use a mock clock, the metrics recorder checks if the
   // system has a high resolution clock before recording results. As a result,
   // the tests will fail if the system does not have a high resolution clock.
@@ -199,7 +206,13 @@ TEST_F(HTMLBackgroundParserMetricsTest, HistogramReportsTwoChunks) {
   EXPECT_GT(yield_time_average_buckets[0].min, 0);
 }
 
-TEST_F(HTMLForceSynchronousParserMetricsTest, ReportSingleChunk) {
+#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+// https://crbug.com/1222653
+#define MAYBE_ReportSingleChunk DISABLED_ReportSingleChunk
+#else
+#define MAYBE_ReportSingleChunk ReportSingleChunk
+#endif
+TEST_F(HTMLForceSynchronousParserMetricsTest, MAYBE_ReportSingleChunk) {
   // Although the tests use a mock clock, the metrics recorder checks if the
   // system has a high resolution clock before recording results. As a result,
   // the tests will fail if the system does not have a high resolution clock.
@@ -258,7 +271,7 @@ TEST_F(HTMLForceSynchronousParserMetricsTest, ReportSingleChunk) {
                                       19, 1);
 }
 
-TEST_F(HTMLForceSynchronousParserMetricsTest, HistogramReportsTwoChunks) {
+TEST_F(HTMLForceSynchronousParserMetricsTest, MAYBE_HistogramReportsTwoChunks) {
   // Although the tests use a mock clock, the metrics recorder checks if the
   // system has a high resolution clock before recording results. As a result,
   // the tests will fail if the system does not have a high resolution clock.
