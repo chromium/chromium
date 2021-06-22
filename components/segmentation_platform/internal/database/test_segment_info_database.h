@@ -18,7 +18,13 @@ class TestSegmentInfoDatabase : public SegmentInfoDatabase {
   ~TestSegmentInfoDatabase() override;
 
   // SegmentInfoDatabase overrides.
+  void Initialize(SuccessCallback callback) override;
   void GetAllSegmentInfo(AllSegmentInfoCallback callback) override;
+  void GetSegmentInfo(OptimizationTarget segment_id,
+                      SegmentInfoCallback callback) override;
+  void UpdateSegment(OptimizationTarget segment_id,
+                     absl::optional<proto::SegmentInfo> segment_info,
+                     SuccessCallback callback) override;
   void SaveSegmentResult(OptimizationTarget segment_id,
                          proto::PredictionResult* result,
                          SuccessCallback callback) override;

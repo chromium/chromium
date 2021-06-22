@@ -11,13 +11,51 @@ namespace segmentation_platform {
 
 namespace test {
 
-TestSegmentInfoDatabase::TestSegmentInfoDatabase() = default;
+TestSegmentInfoDatabase::TestSegmentInfoDatabase()
+    : SegmentInfoDatabase(nullptr) {}
 
 TestSegmentInfoDatabase::~TestSegmentInfoDatabase() = default;
+
+void TestSegmentInfoDatabase::Initialize(SuccessCallback callback) {
+  std::move(callback).Run(true);
+}
 
 void TestSegmentInfoDatabase::GetAllSegmentInfo(
     AllSegmentInfoCallback callback) {
   std::move(callback).Run(segment_infos_);
+}
+
+void TestSegmentInfoDatabase::GetSegmentInfo(OptimizationTarget segment_id,
+                                             SegmentInfoCallback callback) {
+  auto result = std::find_if(
+      segment_infos_.begin(), segment_infos_.end(),
+      [segment_id](std::pair<OptimizationTarget, proto::SegmentInfo> pair) {
+        return pair.first == segment_id;
+      });
+
+  std::move(callback).Run(result == segment_infos_.end()
+                              ? absl::nullopt
+                              : absl::make_optional(result->second));
+}
+
+void TestSegmentInfoDatabase::UpdateSegment(
+    OptimizationTarget segment_id,
+    absl::optional<proto::SegmentInfo> segment_info,
+    SuccessCallback callback) {
+  if (segment_info.has_value()) {
+    proto::SegmentInfo* info = FindOrCreateSegment(segment_id);
+    info->CopyFrom(segment_info.value());
+  } else {
+    // Delete the segment.
+    auto new_end = std::remove_if(
+        segment_infos_.begin(), segment_infos_.end(),
+        [segment_id](
+            const std::pair<OptimizationTarget, proto::SegmentInfo>& pair) {
+          return pair.first == segment_id;
+        });
+    segment_infos_.erase(new_end, segment_infos_.end());
+  }
+  std::move(callback).Run(true);
 }
 
 void TestSegmentInfoDatabase::SaveSegmentResult(OptimizationTarget segment_id,

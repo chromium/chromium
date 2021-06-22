@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "components/leveldb_proto/public/proto_database.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
@@ -31,20 +32,59 @@ class SegmentInfoDatabase {
   using SuccessCallback = base::OnceCallback<void(bool)>;
   using AllSegmentInfoCallback = base::OnceCallback<void(
       std::vector<std::pair<OptimizationTarget, proto::SegmentInfo>>)>;
+  using SegmentInfoCallback =
+      base::OnceCallback<void(absl::optional<proto::SegmentInfo>)>;
+  using SegmentInfoProtoDb = leveldb_proto::ProtoDatabase<proto::SegmentInfo>;
 
-  virtual ~SegmentInfoDatabase() = default;
+  explicit SegmentInfoDatabase(std::unique_ptr<SegmentInfoProtoDb> database);
+  virtual ~SegmentInfoDatabase();
 
-  // TODO(shaktisahu): Initialize DB before instantiating dependent classes.
+  // Disallow copy/assign.
+  SegmentInfoDatabase(const SegmentInfoDatabase&) = delete;
+  SegmentInfoDatabase& operator=(const SegmentInfoDatabase&) = delete;
+
+  virtual void Initialize(SuccessCallback callback);
 
   // Convenient method to return combined info for all the segments in the
   // database.
-  virtual void GetAllSegmentInfo(AllSegmentInfoCallback callback) = 0;
+  virtual void GetAllSegmentInfo(AllSegmentInfoCallback callback);
 
-  // Called to write the model execution results for a given segment. If
-  // |result| is null, the existing results will be deleted.
+  // Called to get the metadata for a given segment.
+  virtual void GetSegmentInfo(OptimizationTarget segment_id,
+                              SegmentInfoCallback callback);
+
+  // Called to save or update metadata for a segment. The previous data is
+  // overwritten. If |segment_info| is empty, the segment will be deleted.
+  // TODO(shaktisahu): How does the client know if a segment is to be deleted?
+  virtual void UpdateSegment(OptimizationTarget segment_id,
+                             absl::optional<proto::SegmentInfo> segment_info,
+                             SuccessCallback callback);
+
+  // Called to write the model execution results for a given segment. It will
+  // first read the currently stored result, and then overwrite it with
+  // |result|. If |result| is null, the existing result will be deleted.
   virtual void SaveSegmentResult(OptimizationTarget segment_id,
                                  proto::PredictionResult* result,
-                                 SuccessCallback callback) = 0;
+                                 SuccessCallback callback);
+
+ private:
+  void OnDatabaseInitialized(SuccessCallback callback,
+                             leveldb_proto::Enums::InitStatus status);
+  void OnAllSegmentInfoLoaded(
+      AllSegmentInfoCallback callback,
+      bool success,
+      std::unique_ptr<std::vector<proto::SegmentInfo>> all_infos);
+  void OnGetSegmentInfo(SegmentInfoCallback callback,
+                        bool success,
+                        std::unique_ptr<proto::SegmentInfo> info);
+  void OnGetSegmentInfoForUpdatingResults(
+      proto::PredictionResult* result,
+      SuccessCallback callback,
+      absl::optional<proto::SegmentInfo> segment_info);
+
+  std::unique_ptr<SegmentInfoProtoDb> database_;
+
+  base::WeakPtrFactory<SegmentInfoDatabase> weak_ptr_factory_{this};
 };
 
 }  // namespace segmentation_platform
