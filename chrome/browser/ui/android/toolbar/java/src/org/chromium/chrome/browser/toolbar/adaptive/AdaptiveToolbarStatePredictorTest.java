@@ -60,6 +60,20 @@ public class AdaptiveToolbarStatePredictorTest {
 
     @Test
     @SmallTest
+    @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR})
+    @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION})
+    public void testWorksWithDataCollectionFeatureFlag() {
+        AdaptiveToolbarFeatures.MODE_PARAM.setForTesting(AdaptiveToolbarFeatures.ALWAYS_VOICE);
+
+        AdaptiveToolbarStatePredictor statePredictor = buildStatePredictor(
+                true, AdaptiveToolbarButtonVariant.VOICE, true, AdaptiveToolbarButtonVariant.SHARE);
+        UiState expected = new UiState(true, AdaptiveToolbarButtonVariant.VOICE,
+                AdaptiveToolbarButtonVariant.UNKNOWN, AdaptiveToolbarButtonVariant.UNKNOWN);
+        statePredictor.recomputeUiState(verifyResultCallback(expected));
+    }
+
+    @Test
+    @SmallTest
     public void testManualOverride() {
         AdaptiveToolbarFeatures.setDefaultSegmentForTesting(AdaptiveToolbarFeatures.SHARE);
         AdaptiveToolbarFeatures.setIgnoreSegmentationResultsForTesting(false);

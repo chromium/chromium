@@ -58,13 +58,16 @@ public class AdaptiveToolbarStatePredictor {
     /**
      * Called to get the updated state of the UI based on various signals.
      *
-     * @param callback The callback containing the result. TODO(shaktisahu): Maybe pass a boolean to
-     * use cached result, but seems unnecessary.
+     * @param callback The callback containing the result.
      */
     public void recomputeUiState(Callback<UiState> callback) {
         // Early return if the feature isn't enabled.
         if (!AdaptiveToolbarFeatures.isCustomizationEnabled()) {
-            callback.onResult(new UiState(false, AdaptiveToolbarButtonVariant.UNKNOWN,
+            boolean canShowUi = AdaptiveToolbarFeatures.isSingleVariantModeEnabled();
+            int toolbarButtonState = AdaptiveToolbarFeatures.isSingleVariantModeEnabled()
+                    ? AdaptiveToolbarFeatures.getSingleVariantMode()
+                    : AdaptiveToolbarButtonVariant.UNKNOWN;
+            callback.onResult(new UiState(canShowUi, toolbarButtonState,
                     AdaptiveToolbarButtonVariant.UNKNOWN, AdaptiveToolbarButtonVariant.UNKNOWN));
             return;
         }
