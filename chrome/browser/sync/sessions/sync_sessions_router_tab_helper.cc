@@ -13,6 +13,7 @@
 #include "components/sync_sessions/synced_tab_delegate.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -62,8 +63,7 @@ void SyncSessionsRouterTabHelper::DidFinishLoad(
   // Only notify when the main frame finishes loading; only the main frame
   // doesn't have a parent.
   if (render_frame_host && !render_frame_host->GetParent() &&
-      render_frame_host->GetLifecycleState() ==
-          content::RenderFrameHost::LifecycleState::kActive) {
+      render_frame_host->GetPage().IsPrimary()) {
     NotifyRouter(true);
   }
 }

@@ -31,6 +31,7 @@ class PageImpl : public Page {
   // Page implementation.
   const absl::optional<GURL>& GetManifestURL() override;
   void GetManifest(GetManifestCallback callback) override;
+  bool IsPrimary() override;
 
   RenderFrameHostImpl* main_document() { return &main_document_; }
 

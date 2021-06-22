@@ -70,6 +70,13 @@ class CONTENT_EXPORT Page {
   // Requests the manifest URL and the Manifest of the main frame's document.
   virtual void GetManifest(GetManifestCallback callback) = 0;
 
+  // Returns true iff this Page is primary for the associated `WebContents`
+  // (i.e. web_contents->GetPrimaryPage() == this_page). Non-primary pages
+  // include pages in bfcache, portal, prerendering, fenced frames, pending
+  // commit and pending deletion pages. See WebContents::GetPrimaryPage for more
+  // details.
+  virtual bool IsPrimary() = 0;
+
  private:
   // This interface should only be implemented inside content.
   friend class PageImpl;

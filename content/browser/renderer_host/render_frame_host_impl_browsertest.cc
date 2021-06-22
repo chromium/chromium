@@ -4341,7 +4341,9 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
       rfh_a->lifecycle_state(),
       testing::AnyOf(testing::Eq(LifecycleStateImpl::kRunningUnloadHandlers),
                      testing::Eq(LifecycleStateImpl::kInBackForwardCache)));
+  EXPECT_FALSE(rfh_a->GetPage().IsPrimary());
   EXPECT_EQ(LifecycleStateImpl::kActive, rfh_b->lifecycle_state());
+  EXPECT_TRUE(rfh_b->GetPage().IsPrimary());
 }
 
 // Test the LifecycleStateImpl is updated correctly for a subframe.
@@ -4400,6 +4402,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
       EXPECT_EQ(rfh->lifecycle_state(), LifecycleStateImpl::kPendingCommit);
       EXPECT_EQ(rfh->GetLifecycleState(),
                 RenderFrameHost::LifecycleState::kPendingCommit);
+      EXPECT_FALSE(rfh->GetPage().IsPrimary());
     }
   };
 

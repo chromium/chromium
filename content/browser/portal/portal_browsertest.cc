@@ -207,14 +207,19 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, CreatePortal) {
       shell(), embedded_test_server()->GetURL("portal.test", "/title1.html")));
   WebContentsImpl* web_contents_impl =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  RenderFrameHostImpl* main_frame = web_contents_impl->GetMainFrame();
+  RenderFrameHostImpl* primary_rfh = web_contents_impl->GetMainFrame();
 
-  PortalCreatedObserver portal_created_observer(main_frame);
+  PortalCreatedObserver portal_created_observer(primary_rfh);
   EXPECT_TRUE(
-      ExecJs(main_frame,
+      ExecJs(primary_rfh,
              "document.body.appendChild(document.createElement('portal'));"));
   Portal* portal = portal_created_observer.WaitUntilPortalCreated();
   EXPECT_NE(nullptr, portal);
+
+  RenderFrameHostImpl* portal_rfh = portal->GetPortalContents()->GetMainFrame();
+  EXPECT_NE(&primary_rfh->GetPage(), &portal_rfh->GetPage());
+  EXPECT_TRUE(primary_rfh->GetPage().IsPrimary());
+  EXPECT_FALSE(portal_rfh->GetPage().IsPrimary());
 }
 
 // Tests the the renderer can navigate a Portal.
