@@ -174,9 +174,7 @@
   /* Colors for icons in non-menu contexts. */                                 \
   OP(kColorId_DefaultIconColor),                                               \
   OP(kColorId_DisabledIconColor),                                              \
-  OP(kColorId_SecondaryIconColor),                                             \
-  /* Color fills inside the focus ring. */                                     \
-  OP(kColorId_FocusAuraColor)
+  OP(kColorId_SecondaryIconColor)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #define NATIVE_THEME_CHROMEOS_COLOR_IDS                                        \

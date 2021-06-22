@@ -593,12 +593,6 @@ SkColor GetDefaultColor(NativeTheme::ColorId color_id,
       // switch enumeration.
       NOTREACHED();
       return gfx::kPlaceholderColor;
-
-    // Focus ring
-    case NativeTheme::kColorId_FocusAuraColor:
-      const SkColor focus_color = base_theme->GetUnprocessedSystemColor(
-          NativeTheme::kColorId_ProminentButtonColor, color_scheme);
-      return SkColorSetA(focus_color, 0x3D);
   }
 }
 

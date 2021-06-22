@@ -152,11 +152,6 @@ void FocusRing::SetColor(absl::optional<SkColor> color) {
   SchedulePaint();
 }
 
-void FocusRing::SetShouldPaintFocusAura(bool should_paint_focus_aura) {
-  should_paint_focus_aura_ = should_paint_focus_aura;
-  SchedulePaint();
-}
-
 void FocusRing::Layout() {
   // The focus ring handles its own sizing, which is simply to fill the parent
   // and extend a little beyond its borders.
@@ -206,25 +201,13 @@ void FocusRing::OnPaint(gfx::Canvas* canvas) {
     return;
   }
 
-  const SkRRect ring_rect = GetRingRoundRect();
-
-  if (should_paint_focus_aura_) {
-    cc::PaintFlags flags;
-    flags.setAntiAlias(true);
-    flags.setColor(GetNativeTheme()->GetSystemColor(
-        ui::NativeTheme::kColorId_FocusAuraColor));
-    flags.setStyle(cc::PaintFlags::kFill_Style);
-
-    canvas->sk_canvas()->drawRRect(ring_rect, flags);
-  }
-
   cc::PaintFlags paint;
   paint.setAntiAlias(true);
   paint.setColor(color_.value_or(GetColor(this, !invalid_)));
   paint.setStyle(cc::PaintFlags::kStroke_Style);
   paint.setStrokeWidth(PlatformStyle::kFocusHaloThickness);
 
-  canvas->sk_canvas()->drawRRect(ring_rect, paint);
+  canvas->sk_canvas()->drawRRect(GetRingRoundRect(), paint);
 }
 
 SkRRect FocusRing::GetRingRoundRect() const {

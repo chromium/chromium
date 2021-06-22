@@ -77,7 +77,6 @@
   E(kColorFocusableBorderFocused, NativeTheme::kColorId_FocusedBorderColor) \
   E(kColorFocusableBorderUnfocused, \
     NativeTheme::kColorId_UnfocusedBorderColor) \
-  E(kColorFocusAura, NativeTheme::kColorId_FocusAuraColor) \
   E(kColorFrameActive, NativeTheme::kColorId_CustomFrameActiveColor) \
   E(kColorFrameInactive, NativeTheme::kColorId_CustomFrameInactiveColor) \
   E(kColorHelpIconActive, NativeTheme::kColorId_TooltipIconHovered) \

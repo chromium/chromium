@@ -30,7 +30,6 @@ constexpr int kFocusRingRadius = 16;
 RadioButton::RadioButton(const std::u16string& label, int group_id)
     : Checkbox(label) {
   SetGroup(group_id);
-  FocusRing::Get(this)->SetShouldPaintFocusAura(true);
 }
 
 RadioButton::~RadioButton() = default;

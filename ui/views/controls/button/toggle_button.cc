@@ -137,7 +137,8 @@ ToggleButton::ToggleButton(PressedCallback callback)
   // Do not set a clip, allow the ink drop to burst out.
   // TODO(pbos): Consider an explicit InkDrop API to not use a clip rect / mask.
   views::InstallEmptyHighlightPathGenerator(this);
-  SetHasInkDropActionOnClick(true);
+  // InkDrop event triggering is handled in NotifyClick().
+  SetHasInkDropActionOnClick(false);
   InkDrop::UseInkDropForSquareRipple(InkDrop::Get(this),
                                      /*highlight_on_hover=*/false);
   InkDrop::Get(this)->SetCreateRippleCallback(base::BindRepeating(
@@ -156,7 +157,6 @@ ToggleButton::ToggleButton(PressedCallback callback)
   SetInstallFocusRingOnFocus(true);
   FocusRing::Get(this)->SetPathGenerator(
       std::make_unique<FocusRingHighlightPathGenerator>());
-  FocusRing::Get(this)->SetShouldPaintFocusAura(true);
 }
 
 ToggleButton::~ToggleButton() {
@@ -339,9 +339,13 @@ void ToggleButton::OnBlur() {
 void ToggleButton::NotifyClick(const ui::Event& event) {
   AnimateIsOn(!GetIsOn());
 
-  // Skip over Button::NotifyClick, to customize the ink drop animation.
-  // Leave the ripple in place when the button is activated via the keyboard.
-  if (!event.IsKeyEvent()) {
+  // Only trigger the action when we don't have focus. This lets the InkDrop
+  // remain and match the focus ring.
+  // TODO(pbos): Investigate triggering the ripple but returning back to the
+  // focused state correctly. This is set up to highlight on focus, but the
+  // highlight does not come back after the ripple is triggered. Then remove
+  // this and add back SetHasInkDropActionOnClick(true) in the constructor.
+  if (!HasFocus()) {
     InkDrop::Get(this)->AnimateToState(InkDropState::ACTION_TRIGGERED,
                                        ui::LocatedEvent::FromIfValid(&event));
   }
