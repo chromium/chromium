@@ -546,16 +546,6 @@ WebGLRenderingContextBase::CreateWebGraphicsContext3DProvider(
     const CanvasContextCreationAttributesCore& attributes,
     Platform::ContextType context_type,
     Platform::GraphicsInfo* graphics_info) {
-  // The host might block creation of a new WebGL context despite the
-  // page settings; in particular, if WebGL contexts were lost one or
-  // more times via the GL_ARB_robustness extension.
-  if (host->IsWebGLBlocked()) {
-    host->SetContextCreationWasBlocked();
-    host->HostDispatchEvent(WebGLContextEvent::Create(
-        event_type_names::kWebglcontextcreationerror,
-        "Web page caused context loss and was blocked"));
-    return nullptr;
-  }
   if ((context_type == Platform::kWebGL1ContextType &&
        !host->IsWebGL1Enabled()) ||
       (context_type == Platform::kWebGL2ContextType &&
@@ -566,8 +556,25 @@ WebGLRenderingContextBase::CreateWebGraphicsContext3DProvider(
     return nullptr;
   }
 
-  return CreateContextProviderInternal(host, attributes, context_type,
-                                       graphics_info);
+  // We create a context *before* checking whether WebGL is blocked. This is
+  // because new context creation is effectively synchronized against the
+  // browser having a working GPU process connection, and that is in turn
+  // synchronized against any updates to the browser's set of blocked domains.
+  // See https://crbug.com/1215907#c10 for more details.
+  auto provider = CreateContextProviderInternal(host, attributes, context_type,
+                                                graphics_info);
+
+  // The host might block creation of a new WebGL context despite the
+  // page settings; in particular, if WebGL contexts were lost one or
+  // more times via the GL_ARB_robustness extension.
+  if (!host->IsWebGLBlocked())
+    return provider;
+
+  host->SetContextCreationWasBlocked();
+  host->HostDispatchEvent(WebGLContextEvent::Create(
+      event_type_names::kWebglcontextcreationerror,
+      "Web page caused context loss and was blocked"));
+  return nullptr;
 }
 
 void WebGLRenderingContextBase::ForceNextWebGLContextCreationToFail() {
