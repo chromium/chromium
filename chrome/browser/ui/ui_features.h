@@ -53,6 +53,8 @@ extern const base::Feature kProminentDarkModeActiveTabTitle;
 
 extern const base::Feature kReadLaterNewBadgePromo;
 
+extern const base::Feature kReadLaterAddFromDialog;
+
 extern const base::Feature kScrollableTabStrip;
 extern const char kMinimumTabWidthFeatureParameterName[];
 

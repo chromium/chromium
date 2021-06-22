@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bubble_view.h"
 #include "chrome/browser/ui/views/chrome_view_class_properties.h"
@@ -119,7 +120,8 @@ void StarView::OnExecuting(PageActionIconView::ExecuteSource execute_source) {
 
 void StarView::ExecuteCommand(ExecuteSource source) {
   OnExecuting(source);
-  if (base::FeatureList::IsEnabled(reading_list::switches::kReadLater)) {
+  if (base::FeatureList::IsEnabled(reading_list::switches::kReadLater) &&
+      !base::FeatureList::IsEnabled(features::kReadLaterAddFromDialog)) {
     FeaturePromoController* feature_promo_controller =
         browser_->window()->GetFeaturePromoController();
     if (feature_promo_controller &&

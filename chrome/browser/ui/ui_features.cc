@@ -74,6 +74,9 @@ const base::Feature kProminentDarkModeActiveTabTitle{
 const base::Feature kReadLaterNewBadgePromo{"ReadLaterNewBadgePromo",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kReadLaterAddFromDialog{"ReadLaterAddFromDialog",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables tabs to scroll in the tabstrip. https://crbug.com/951078
 const base::Feature kScrollableTabStrip{"ScrollableTabStrip",
                                         base::FEATURE_DISABLED_BY_DEFAULT};

@@ -58,15 +58,19 @@ ReadLaterUI::ReadLaterUI(content::WebUI* web_ui)
   for (const auto& str : kLocalizedStrings)
     AddLocalizedString(source, str.name, str.id);
 
+  const bool show_side_panel =
+      base::FeatureList::IsEnabled(features::kSidePanel);
+
+  source->AddBoolean(
+      "addButtonEnabled",
+      base::FeatureList::IsEnabled(features::kReadLaterAddFromDialog) ||
+          show_side_panel);
   source->AddBoolean("useRipples", views::PlatformStyle::kUseRipples);
 
   Profile* profile = Profile::FromWebUI(web_ui);
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(
                    profile, chrome::FaviconUrlFormat::kFavicon2));
-
-  const bool show_side_panel =
-      base::FeatureList::IsEnabled(features::kSidePanel);
   webui::SetupWebUIDataSource(
       source, base::make_span(kReadLaterResources, kReadLaterResourcesSize),
       show_side_panel ? IDR_READ_LATER_SIDE_PANEL_SIDE_PANEL_HTML
