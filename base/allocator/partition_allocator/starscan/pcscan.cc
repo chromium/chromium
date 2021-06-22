@@ -51,6 +51,10 @@ bool PCScan::IsStackScanningEnabled() {
   return PCScanInternal::Instance().IsStackScanningEnabled();
 }
 
+void PCScan::EnableImmediateFreeing() {
+  PCScanInternal::Instance().EnableImmediateFreeing();
+}
+
 void PCScan::NotifyThreadCreated(void* stack_top) {
   PCScanInternal::Instance().NotifyThreadCreated(stack_top);
 }

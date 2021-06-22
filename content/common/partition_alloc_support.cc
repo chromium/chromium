@@ -231,6 +231,10 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
           base::internal::GetStackTop());
 #endif
     }
+    if (base::FeatureList::IsEnabled(
+            base::features::kPartitionAllocPCScanImmediateFreeing)) {
+      base::internal::PCScan::EnableImmediateFreeing();
+    }
     SetProcessNameForPCScan(process_type);
   }
 }

@@ -506,6 +506,7 @@ class PCScanTask final : public base::RefCountedThreadSafe<PCScanTask>,
   std::atomic<size_t> number_of_scanning_threads_{0u};
   // We can unprotect only once to reduce context-switches.
   std::once_flag unprotect_once_flag_;
+  bool immediatelly_free_objects_{false};
   PCScan& pcscan_;
 };
 
@@ -567,6 +568,9 @@ PCScanTask::TryMarkObjectInNormalBuckets(uintptr_t maybe_ptr) const {
   const size_t usable_size = target_slot_span->GetUsableSize(root);
   // Range check for inner pointers.
   if (maybe_ptr >= base + usable_size)
+    return 0;
+
+  if (UNLIKELY(immediatelly_free_objects_))
     return 0;
 
   // Now we are certain that |maybe_ptr| is a dangling pointer. Mark it again in
@@ -686,6 +690,8 @@ class PCScanTask::StackVisitor final : public internal::StackVisitor {
 PCScanTask::PCScanTask(PCScan& pcscan, size_t quarantine_last_size)
     : pcscan_epoch_(pcscan.epoch()),
       stats_(PCScanInternal::Instance().process_name(), quarantine_last_size),
+      immediatelly_free_objects_(
+          PCScanInternal::Instance().IsImmediateFreeingEnabled()),
       pcscan_(pcscan) {}
 
 void PCScanTask::ScanStack() {

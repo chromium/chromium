@@ -94,6 +94,8 @@ class BASE_EXPORT PCScan final {
   static void DisableStackScanning();
   static bool IsStackScanningEnabled();
 
+  static void EnableImmediateFreeing();
+
   // Notify PCScan that a new thread was created/destroyed. Can be called for
   // uninitialized PCScan (before Initialize()).
   static void NotifyThreadCreated(void* stack_top);

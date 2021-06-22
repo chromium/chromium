@@ -44,6 +44,11 @@ const Feature kPartitionAllocLazyCommit{"PartitionAllocLazyCommit",
 const Feature kPartitionAllocPCScanMUAwareScheduler{
     "PartitionAllocPCScanMUAwareScheduler", FEATURE_ENABLED_BY_DEFAULT};
 
+// If enabled, PCScan frees unconditionally all quarantined objects.
+// This is a performance testing feature.
+const Feature kPartitionAllocPCScanImmediateFreeing{
+    "PartitionAllocPCScanImmediateFreeing", FEATURE_DISABLED_BY_DEFAULT};
+
 // In addition to heap, scan also the stack of the current mutator.
 const Feature kPartitionAllocPCScanStackScanning {
   "PartitionAllocPCScanStackScanning",

@@ -103,6 +103,9 @@ class PCScanInternal final {
   void DisableStackScanning();
   bool IsStackScanningEnabled() const;
 
+  void EnableImmediateFreeing() { immediate_freeing_enabled_ = true; }
+  bool IsImmediateFreeingEnabled() const { return immediate_freeing_enabled_; }
+
   void NotifyThreadCreated(void* stack_top);
   void NotifyThreadDestroyed();
 
@@ -138,6 +141,8 @@ class PCScanInternal final {
   // non-quarantinable partition, using it from safepoints is safe.
   StackTops stack_tops_;
   mutable std::mutex stack_tops_mutex_;
+
+  bool immediate_freeing_enabled_{false};
 
   const char* process_name_ = nullptr;
   const SimdSupport simd_support_;
