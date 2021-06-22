@@ -78,18 +78,8 @@
         margin: 4px;
       }
 
-      .radio-button label {
-        padding-inline-start: 20px;
-      }
-
-      .radio-button {
-        padding-bottom: 16px;
-      }
-
       .radio-button-description {
-        margin: 0;
-        padding: 0;
-        padding-inline-start: 44px;
+        padding-bottom: 16px;
       }
 
       #bluetooth {
@@ -121,39 +111,33 @@
         </div>
         <div id="choose-switch-count" class="flex" hidden>
           <div class="sa-setup-contents">
-            <div class="radio-button">
-              <input type="radio" aria-labelledby="switch-count-of-1"
-                     name="switch-count" value=1>
-              <label id="switch-count-of-1">
+            <cr-radio-group id="switch-count-group" selected="one-switch"
+                on-selected-changed="onSwitchCountChanged_">
+              <cr-radio-button name="one-switch" class="list-item"
+                  aria-label="$i18n{switchAccessSetupChoose1Switch}">
                 <span class="cr-title-text">
                   $i18n{switchAccessSetupChoose1Switch}
-                </span>
-              </label>
-            </div>
-            <div class="radio-button">
-              <input type="radio" aria-labelledby="switch-count-of-2"
-                     name="switch-count" value=2>
-              <label id="switch-count-of-2">
+                <span>
+              </cr-radio-button>
+              <cr-radio-button name="two-switches" class="list-item"
+                  aria-label="$i18n{switchAccessSetupChoose2Switches}">
                 <span class="cr-title-text">
                   $i18n{switchAccessSetupChoose2Switches}
                 </span>
                 <div class="radio-button-description">
                   $i18n{switchAccessSetupChoose2SwitchesDescription}
                 </div>
-              </label>
-            </div>
-            <div class="radio-button">
-              <input type="radio" aria-labelledby="switch-count-of-3"
-                     name="switch-count" value=3>
-              <label id="switch-count-of-3">
+              </cr-radio-button>
+              <cr-radio-button name="three-switches" class=list-item"
+                  aria-label="$i18n{switchAccessSetupChoose3Switches}">
                 <span class="cr-title-text">
                   $i18n{switchAccessSetupChoose3Switches}
                 </span>
                 <div class="radio-button-description">
                   $i18n{switchAccessSetupChoose3SwitchesDescription}
                 </div>
-              </label>
-            </div>
+              </cr-radio-button>
+            </cr-radio-button-group>
           </div>
           <div class="illustration"></div>
         </div>

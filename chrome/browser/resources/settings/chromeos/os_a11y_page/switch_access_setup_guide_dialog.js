@@ -118,6 +118,7 @@ Polymer({
       notify: true,
     },
 
+    /** @private */
     autoScanPreviouslyEnabled_: {type: Boolean, value: false},
 
     /** @private {!Array<!cr_slider.SliderTick>} */
@@ -126,6 +127,7 @@ Polymer({
       value: [],
     },
 
+    /** @private */
     currentPageId_: {
       type: Number,
       value: SASetupPageId.INTRO,
@@ -146,12 +148,14 @@ Polymer({
       },
     },
 
+    /** @private */
     maxScanSpeedMs_: {
       readOnly: true,
       type: Number,
       value: AUTO_SCAN_SPEED_RANGE_MS[AUTO_SCAN_SPEED_RANGE_MS.length - 1]
     },
 
+    /** @private */
     maxScanSpeedLabelSec_: {
       readOnly: true,
       type: String,
@@ -160,15 +164,23 @@ Polymer({
       },
     },
 
+    /** @private */
     minScanSpeedMs_:
         {readOnly: true, type: Number, value: AUTO_SCAN_SPEED_RANGE_MS[0]},
 
+    /** @private */
     minScanSpeedLabelSec_: {
       readOnly: true,
       type: String,
       value() {
         return this.scanSpeedStringInSec_(this.minScanSpeedMs_);
       },
+    },
+
+    /** @private */
+    switchCount_: {
+      type: Number,
+      value: 1,
     },
   },
 
@@ -302,6 +314,18 @@ Polymer({
     chrome.settingsPrivate.setPref(
         'settings.a11y.switch_access.auto_scan.speed_ms',
         AUTO_SCAN_SPEED_RANGE_MS[index - 1]);
+  },
+
+  /** @private */
+  onSwitchCountChanged_() {
+    const selected = this['$']['switch-count-group'].selected;
+    if (selected === 'one-switch') {
+      this.switchCount_ = 1;
+    } else if (selected === 'two-switches') {
+      this.switchCount_ = 2;
+    } else if (selected === 'three-switches') {
+      this.switchCount_ = 3;
+    }
   },
 
   /**
