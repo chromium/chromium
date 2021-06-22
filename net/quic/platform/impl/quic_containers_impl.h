@@ -5,11 +5,10 @@
 #ifndef NET_QUIC_PLATFORM_IMPL_QUIC_CONTAINERS_IMPL_H_
 #define NET_QUIC_PLATFORM_IMPL_QUIC_CONTAINERS_IMPL_H_
 
-#include <memory>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "net/third_party/quiche/src/common/quiche_linked_hash_map.h"
-#include "third_party/abseil-cpp/absl/container/btree_set.h"
 
 namespace quic {
 
@@ -25,7 +24,7 @@ template <typename T, size_t N, typename A = std::allocator<T>>
 using QuicInlinedVectorImpl = std::vector<T, A>;
 
 template <typename Key, typename Compare>
-using QuicSmallOrderedSetImpl = absl::btree_set<Key, Compare>;
+using QuicSmallOrderedSetImpl = base::flat_set<Key, Compare>;
 
 }  // namespace quic
 
