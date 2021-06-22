@@ -700,6 +700,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Autofill.ErrorDialogShown" enum="AutofillErrorDialogType"
+    expires_after="2022-02-01">
+  <owner>siashah@chromium.org</owner>
+  <owner>jsaul@google.com</owner>
+  <summary>
+    Log when an autofill error dialog is shown to the user along with its type.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.ExpirationDateFixFlowPrompt.Events"
     enum="AutofillExpirationDateFixFlowPromptEvent" expires_after="2021-10-04">
   <owner>siashah@google.com</owner>

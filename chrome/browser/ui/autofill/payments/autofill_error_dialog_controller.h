@@ -19,6 +19,7 @@ namespace autofill {
 // Note: This is only used for virtual card related errors.
 class AutofillErrorDialogController {
  public:
+  // Keep in sync with `AutofillErrorDialogType` in enums.xml
   enum AutofillErrorDialogType {
     // Error shown when the server returns a temporary error for unmasking a
     // virtual card.
@@ -28,7 +29,9 @@ class AutofillErrorDialogController {
     VIRTUAL_CARD_PERMANENT_ERROR,
     // Error shown when the server says that the virtual card being unmasked is
     // not eligible for the virtual card feature.
-    VIRTUAL_CARD_NOT_ELIGIBLE_ERROR
+    VIRTUAL_CARD_NOT_ELIGIBLE_ERROR,
+    // kMaxValue is required for logging histograms.
+    kMaxValue = VIRTUAL_CARD_NOT_ELIGIBLE_ERROR,
   };
 
   // Callback received when the error dialog is dismissed.

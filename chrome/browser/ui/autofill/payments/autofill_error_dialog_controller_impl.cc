@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/autofill/payments/autofill_error_dialog_controller_impl.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -27,6 +28,7 @@ void AutofillErrorDialogControllerImpl::Show(
   autofill_error_dialog_view_ = std::move(autofill_error_dialog_view);
   error_dialog_type_ = error_dialog_type;
   autofill_error_dialog_view_->Show();
+  base::UmaHistogramEnumeration("Autofill.ErrorDialogShown", error_dialog_type);
 }
 
 void AutofillErrorDialogControllerImpl::OnDismissed() {

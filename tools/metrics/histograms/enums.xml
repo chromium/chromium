@@ -5616,6 +5616,12 @@ others/histograms.xml -->
   <int value="1857" label="ADDRESS_HOME_FLOOR: accepted"/>
 </enum>
 
+<enum name="AutofillErrorDialogType">
+  <int value="0" label="VIRTUAL_CARD_TEMPORARY_ERROR"/>
+  <int value="1" label="VIRTUAL_CARD_PERMANENT_ERROR"/>
+  <int value="2" label="VIRTUAL_CARD_NOT_ELIGIBLE_ERROR"/>
+</enum>
+
 <enum name="AutofillExperimentId">
   <int value="0" label="No Experiment"/>
   <int value="1" label="Unknown"/>
