@@ -22,14 +22,4 @@ public interface PrivacySandboxHelpers {
          */
         Intent createCustomTabActivityIntent(Context context, Intent intent);
     }
-
-    /**
-     * Functional interface to append trusted extras to the given intent, e.g. by using
-     * {@link org.chromium.chrome.browser.IntentUtils.addTrustedIntentExtras(Intent)}.
-     * TODO(crbug.com/1181700): Update when IntentHandler is (partially-)modularized.
-     */
-    interface TrustedIntentHelper {
-        /** @see org.chromium.chrome.browser.IntentUtils.addTrustedIntentExtras(Intent) */
-        void addTrustedIntentExtras(Intent intent);
-    }
 }

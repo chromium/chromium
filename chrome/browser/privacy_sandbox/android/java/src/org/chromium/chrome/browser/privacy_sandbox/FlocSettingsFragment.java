@@ -41,7 +41,6 @@ public class FlocSettingsFragment extends PreferenceFragmentCompat
     public static final String RESET_FLOC_BUTTON = "reset_floc_button";
 
     private PrivacySandboxHelpers.CustomTabIntentHelper mCustomTabHelper;
-    private PrivacySandboxHelpers.TrustedIntentHelper mTrustedIntentHelper;
     private ButtonCompat mResetButton;
 
     /**
@@ -98,10 +97,8 @@ public class FlocSettingsFragment extends PreferenceFragmentCompat
      * Set the necessary CCT helpers to be able to natively open links. This is needed because the
      * helpers are not modularized.
      */
-    public void setCctHelpers(PrivacySandboxHelpers.CustomTabIntentHelper tabHelper,
-            PrivacySandboxHelpers.TrustedIntentHelper intentHelper) {
+    public void setCustomTabIntentHelper(PrivacySandboxHelpers.CustomTabIntentHelper tabHelper) {
         mCustomTabHelper = tabHelper;
-        mTrustedIntentHelper = intentHelper;
     }
 
     private void updateInformation() {
@@ -128,7 +125,6 @@ public class FlocSettingsFragment extends PreferenceFragmentCompat
 
     private void openUrlInCct(String url) {
         assert (mCustomTabHelper != null)
-                && (mTrustedIntentHelper != null)
             : "CCT helpers must be set on PrivacySandboxSettingsFragment before opening a link.";
         CustomTabsIntent customTabIntent =
                 new CustomTabsIntent.Builder().setShowTitle(true).build();
@@ -137,7 +133,7 @@ public class FlocSettingsFragment extends PreferenceFragmentCompat
                 getContext(), customTabIntent.intent);
         intent.setPackage(getContext().getPackageName());
         intent.putExtra(Browser.EXTRA_APPLICATION_ID, getContext().getPackageName());
-        mTrustedIntentHelper.addTrustedIntentExtras(intent);
+        IntentUtils.addTrustedIntentExtras(intent);
         IntentUtils.safeStartActivity(getContext(), intent);
     }
 }

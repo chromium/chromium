@@ -50,7 +50,6 @@ public class PrivacySandboxSettingsFragment
 
     private @PrivacySandboxReferrer int mPrivacySandboxReferrer;
     private PrivacySandboxHelpers.CustomTabIntentHelper mCustomTabHelper;
-    private PrivacySandboxHelpers.TrustedIntentHelper mTrustedIntentHelper;
 
     public static CharSequence getStatusString(Context context) {
         return context.getString(PrivacySandboxBridge.isPrivacySandboxEnabled()
@@ -154,10 +153,8 @@ public class PrivacySandboxSettingsFragment
      * Set the necessary CCT helpers to be able to natively open links. This is needed because the
      * helpers are not modularized.
      */
-    public void setCctHelpers(PrivacySandboxHelpers.CustomTabIntentHelper tabHelper,
-            PrivacySandboxHelpers.TrustedIntentHelper intentHelper) {
+    public void setCustomTabIntentHelper(PrivacySandboxHelpers.CustomTabIntentHelper tabHelper) {
         mCustomTabHelper = tabHelper;
-        mTrustedIntentHelper = intentHelper;
     }
 
     private ChromeManagedPreferenceDelegate createManagedPreferenceDelegate() {
@@ -177,7 +174,6 @@ public class PrivacySandboxSettingsFragment
 
     private void openUrlInCct(String url) {
         assert (mCustomTabHelper != null)
-                && (mTrustedIntentHelper != null)
             : "CCT helpers must be set on PrivacySandboxSettingsFragment before opening a link.";
         CustomTabsIntent customTabIntent =
                 new CustomTabsIntent.Builder().setShowTitle(true).build();
@@ -186,7 +182,7 @@ public class PrivacySandboxSettingsFragment
                 getContext(), customTabIntent.intent);
         intent.setPackage(getContext().getPackageName());
         intent.putExtra(Browser.EXTRA_APPLICATION_ID, getContext().getPackageName());
-        mTrustedIntentHelper.addTrustedIntentExtras(intent);
+        IntentUtils.addTrustedIntentExtras(intent);
         IntentUtils.safeStartActivity(getContext(), intent);
     }
 

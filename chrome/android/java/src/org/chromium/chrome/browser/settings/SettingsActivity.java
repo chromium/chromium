@@ -362,13 +362,13 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         }
         if (fragment instanceof PrivacySandboxSettingsFragment) {
             ((PrivacySandboxSettingsFragment) fragment)
-                    .setCctHelpers(LaunchIntentDispatcher::createCustomTabActivityIntent,
-                            IntentUtils::addTrustedIntentExtras);
+                    .setCustomTabIntentHelper(
+                            LaunchIntentDispatcher::createCustomTabActivityIntent);
         }
         if (fragment instanceof FlocSettingsFragment) {
             ((FlocSettingsFragment) fragment)
-                    .setCctHelpers(LaunchIntentDispatcher::createCustomTabActivityIntent,
-                            IntentUtils::addTrustedIntentExtras);
+                    .setCustomTabIntentHelper(
+                            LaunchIntentDispatcher::createCustomTabActivityIntent);
         }
         if (fragment instanceof LanguageSettings) {
             ((LanguageSettings) fragment).setRestartAction(() -> {
