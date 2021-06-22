@@ -10,17 +10,40 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
-PushableMediaStreamAudioSource::LivenessBroker::LivenessBroker(
-    PushableMediaStreamAudioSource* source)
-    : source_(source) {}
 
-void PushableMediaStreamAudioSource::LivenessBroker::
-    OnSourceDestroyedOrStopped() {
-  WTF::MutexLocker locker(mutex_);
-  source_ = nullptr;
+PushableMediaStreamAudioSource::Broker::Broker(
+    PushableMediaStreamAudioSource* source)
+    : source_(source), main_task_runner_(source->GetTaskRunner()) {
+  DCHECK(main_task_runner_);
 }
 
-void PushableMediaStreamAudioSource::LivenessBroker::PushAudioData(
+bool PushableMediaStreamAudioSource::Broker::IsRunning() {
+  WTF::MutexLocker locker(mutex_);
+  return is_running_;
+}
+
+void PushableMediaStreamAudioSource::Broker::PushAudioData(
+    scoped_refptr<media::AudioBuffer> data) {
+  WTF::MutexLocker locker(mutex_);
+  if (!source_)
+    return;
+
+  source_->PushAudioData(std::move(data));
+}
+
+void PushableMediaStreamAudioSource::Broker::StopSource() {
+  if (main_task_runner_->RunsTasksInCurrentSequence()) {
+    StopSourceOnMain();
+  } else {
+    PostCrossThreadTask(
+        *main_task_runner_, FROM_HERE,
+        CrossThreadBindOnce(
+            &PushableMediaStreamAudioSource::Broker::StopSourceOnMain,
+            WrapRefCounted(this)));
+  }
+}
+
+void PushableMediaStreamAudioSource::Broker::DeliverData(
     scoped_refptr<media::AudioBuffer> data) {
   WTF::MutexLocker locker(mutex_);
   if (!source_)
@@ -29,17 +52,39 @@ void PushableMediaStreamAudioSource::LivenessBroker::PushAudioData(
   source_->DeliverData(std::move(data));
 }
 
+void PushableMediaStreamAudioSource::Broker::OnSourceStarted() {
+  DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
+  if (!source_)
+    return;
+
+  WTF::MutexLocker locker(mutex_);
+  is_running_ = true;
+}
+
+void PushableMediaStreamAudioSource::Broker::OnSourceDestroyedOrStopped() {
+  DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
+  WTF::MutexLocker locker(mutex_);
+  source_ = nullptr;
+  is_running_ = false;
+}
+
+void PushableMediaStreamAudioSource::Broker::StopSourceOnMain() {
+  DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
+  if (!source_)
+    return;
+
+  source_->StopSource();
+}
+
 PushableMediaStreamAudioSource::PushableMediaStreamAudioSource(
     scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
     scoped_refptr<base::SequencedTaskRunner> audio_task_runner)
     : MediaStreamAudioSource(std::move(main_task_runner), /* is_local */ true),
       audio_task_runner_(std::move(audio_task_runner)),
-      liveness_broker_(
-          base::MakeRefCounted<PushableMediaStreamAudioSource::LivenessBroker>(
-              this)) {}
+      broker_(AdoptRef(new Broker(this))) {}
 
 PushableMediaStreamAudioSource::~PushableMediaStreamAudioSource() {
-  liveness_broker_->OnSourceDestroyedOrStopped();
+  broker_->OnSourceDestroyedOrStopped();
 }
 
 void PushableMediaStreamAudioSource::PushAudioData(
@@ -53,9 +98,8 @@ void PushableMediaStreamAudioSource::PushAudioData(
 
   PostCrossThreadTask(
       *audio_task_runner_, FROM_HERE,
-      CrossThreadBindOnce(
-          &PushableMediaStreamAudioSource::LivenessBroker::PushAudioData,
-          liveness_broker_, std::move(data)));
+      CrossThreadBindOnce(&PushableMediaStreamAudioSource::Broker::DeliverData,
+                          broker_, std::move(data)));
 }
 
 void PushableMediaStreamAudioSource::DeliverData(
@@ -91,14 +135,13 @@ void PushableMediaStreamAudioSource::DeliverData(
 
 bool PushableMediaStreamAudioSource::EnsureSourceIsStarted() {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-  is_running_ = true;
+  broker_->OnSourceStarted();
   return true;
 }
 
 void PushableMediaStreamAudioSource::EnsureSourceIsStopped() {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-  liveness_broker_->OnSourceDestroyedOrStopped();
-  is_running_ = false;
+  broker_->OnSourceDestroyedOrStopped();
 }
 
 }  // namespace blink

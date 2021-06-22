@@ -51,7 +51,7 @@ class MediaStreamAudioTrackUnderlyingSinkTest : public testing::Test {
   MediaStreamAudioTrackUnderlyingSink* CreateUnderlyingSink(
       ScriptState* script_state) {
     return MakeGarbageCollected<MediaStreamAudioTrackUnderlyingSink>(
-        pushable_audio_source_);
+        pushable_audio_source_->GetBroker());
   }
 
   void CreateTrackAndConnectToSource() {

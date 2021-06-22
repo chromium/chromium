@@ -18,6 +18,46 @@ namespace blink {
 class MODULES_EXPORT PushableMediaStreamAudioSource
     : public MediaStreamAudioSource {
  public:
+  // Helper class that facilitates interacting with a
+  // PushableMediaStreamAudioSource from multiple threads. This also includes
+  // safely posting tasks to/from outside the main thread.
+  // The public methods of this class can be called on any thread.
+  class MODULES_EXPORT Broker : public WTF::ThreadSafeRefCounted<Broker> {
+   public:
+    Broker(const Broker&) = delete;
+    Broker& operator=(const Broker&) = delete;
+
+    bool IsRunning();
+    void PushAudioData(scoped_refptr<media::AudioBuffer> data);
+    void StopSource();
+
+   private:
+    friend class PushableMediaStreamAudioSource;
+
+    explicit Broker(PushableMediaStreamAudioSource* source);
+
+    // Must be called on the audio task runner of |source_|.
+    void DeliverData(scoped_refptr<media::AudioBuffer> data);
+
+    // These functions must be called on |main_task_runner_|.
+    void OnSourceStarted();
+    void OnSourceDestroyedOrStopped();
+    void StopSourceOnMain();
+
+    WTF::Mutex mutex_;
+    // Source can only change its value on |main_task_runner_|. We use |mutex_|
+    // to guard it for value changes and for reads outside |main_task_runner_|.
+    // It is not necessary to guard it with |mutex_| to read its value on
+    // |main_task_runner_|. This helps avoid deadlocks in
+    // Stop()/OnSourceDestroyedOrStopped() interactions.
+    PushableMediaStreamAudioSource* source_;
+    // The same apples to |is_running_|, but since it does not have complex
+    // interactions with owners, like |source_| does, we always guard it for
+    // simplicity.
+    bool is_running_ GUARDED_BY(mutex_) = false;
+    scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
+  };
+
   PushableMediaStreamAudioSource(
       scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
       scoped_refptr<base::SequencedTaskRunner> audio_task_runner);
@@ -28,26 +68,12 @@ class MODULES_EXPORT PushableMediaStreamAudioSource
   // |audio_task_runner_|
   void PushAudioData(scoped_refptr<media::AudioBuffer> data);
 
-  bool running() const {
-    DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-    return is_running_;
-  }
+  // These functions can be called on any thread.
+  bool IsRunning() const { return broker_->IsRunning(); }
+  scoped_refptr<Broker> GetBroker() const { return broker_; }
 
  private:
-  // Helper class that facilitates the jump to |audio_task_runner_|, by
-  // outliving the given |source| if there is a pending task.
-  class LivenessBroker : public WTF::ThreadSafeRefCounted<LivenessBroker> {
-   public:
-    explicit LivenessBroker(PushableMediaStreamAudioSource* source);
-
-    void OnSourceDestroyedOrStopped();
-    void PushAudioData(scoped_refptr<media::AudioBuffer> data);
-
-   private:
-    WTF::Mutex mutex_;
-    PushableMediaStreamAudioSource* source_ GUARDED_BY(mutex_);
-  };
-
+  friend class Broker;
   // Actually push data to the audio tracks. Only called on
   // |audio_task_runner_|.
   void DeliverData(scoped_refptr<media::AudioBuffer> data);
@@ -56,14 +82,12 @@ class MODULES_EXPORT PushableMediaStreamAudioSource
   bool EnsureSourceIsStarted() final;
   void EnsureSourceIsStopped() final;
 
-  bool is_running_ = false;
-
   int last_channels_ = 0;
   int last_frames_ = 0;
   int last_sample_rate_ = 0;
 
-  scoped_refptr<base::SequencedTaskRunner> audio_task_runner_;
-  scoped_refptr<LivenessBroker> liveness_broker_;
+  const scoped_refptr<base::SequencedTaskRunner> audio_task_runner_;
+  const scoped_refptr<Broker> broker_;
 };
 
 }  // namespace blink

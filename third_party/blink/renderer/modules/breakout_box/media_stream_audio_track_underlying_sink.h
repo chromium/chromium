@@ -6,13 +6,12 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_BREAKOUT_BOX_MEDIA_STREAM_AUDIO_TRACK_UNDERLYING_SINK_H_
 
 #include "third_party/blink/renderer/core/streams/underlying_sink_base.h"
+#include "third_party/blink/renderer/modules/breakout_box/pushable_media_stream_audio_source.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webcodecs/audio_data.h"
 
 namespace blink {
 
-class MediaStreamAudioSource;
-class PushableMediaStreamAudioSource;
 class WritableStreamTransferringOptimizer;
 
 class MODULES_EXPORT MediaStreamAudioTrackUnderlyingSink
@@ -20,7 +19,7 @@ class MODULES_EXPORT MediaStreamAudioTrackUnderlyingSink
  public:
   // |source| must outlive this MediaStreamAudioTrackUnderlyingSink.
   explicit MediaStreamAudioTrackUnderlyingSink(
-      PushableMediaStreamAudioSource* source);
+      scoped_refptr<PushableMediaStreamAudioSource::Broker> source_broker);
 
   // UnderlyingSinkBase overrides.
   ScriptPromise start(ScriptState* script_state,
@@ -40,7 +39,8 @@ class MODULES_EXPORT MediaStreamAudioTrackUnderlyingSink
   GetTransferringOptimizer();
 
  private:
-  base::WeakPtr<MediaStreamAudioSource> source_;
+  const scoped_refptr<PushableMediaStreamAudioSource::Broker> source_broker_;
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace blink

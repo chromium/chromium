@@ -29,8 +29,9 @@ class PlaceholderTransferringOptimizer
 }  // namespace
 
 MediaStreamAudioTrackUnderlyingSink::MediaStreamAudioTrackUnderlyingSink(
-    PushableMediaStreamAudioSource* source)
-    : source_(source->GetWeakPtr()) {
+    scoped_refptr<PushableMediaStreamAudioSource::Broker> source_broker)
+    : source_broker_(std::move(source_broker)) {
+  DCHECK(source_broker_);
   RecordBreakoutBoxUsage(BreakoutBoxUsage::kWritableAudio);
 }
 
@@ -38,6 +39,7 @@ ScriptPromise MediaStreamAudioTrackUnderlyingSink::start(
     ScriptState* script_state,
     WritableStreamDefaultController* controller,
     ExceptionState& exception_state) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return ScriptPromise::CastUndefined(script_state);
 }
 
@@ -46,6 +48,7 @@ ScriptPromise MediaStreamAudioTrackUnderlyingSink::write(
     ScriptValue chunk,
     WritableStreamDefaultController* controller,
     ExceptionState& exception_state) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   AudioData* audio_data = V8AudioData::ToImplWithTypeCheck(
       script_state->GetIsolate(), chunk.V8Value());
   if (!audio_data) {
@@ -58,15 +61,13 @@ ScriptPromise MediaStreamAudioTrackUnderlyingSink::write(
     return ScriptPromise();
   }
 
-  PushableMediaStreamAudioSource* pushable_source =
-      static_cast<PushableMediaStreamAudioSource*>(source_.get());
-  if (!pushable_source || !pushable_source->running()) {
+  if (!source_broker_->IsRunning()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Stream closed");
     return ScriptPromise();
   }
 
-  pushable_source->PushAudioData(audio_data->data());
+  source_broker_->PushAudioData(audio_data->data());
   audio_data->close();
 
   return ScriptPromise::CastUndefined(script_state);
@@ -76,21 +77,22 @@ ScriptPromise MediaStreamAudioTrackUnderlyingSink::abort(
     ScriptState* script_state,
     ScriptValue reason,
     ExceptionState& exception_state) {
-  if (source_)
-    source_->StopSource();
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  source_broker_->StopSource();
   return ScriptPromise::CastUndefined(script_state);
 }
 
 ScriptPromise MediaStreamAudioTrackUnderlyingSink::close(
     ScriptState* script_state,
     ExceptionState& exception_state) {
-  if (source_)
-    source_->StopSource();
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  source_broker_->StopSource();
   return ScriptPromise::CastUndefined(script_state);
 }
 
 std::unique_ptr<WritableStreamTransferringOptimizer>
 MediaStreamAudioTrackUnderlyingSink::GetTransferringOptimizer() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return std::make_unique<PlaceholderTransferringOptimizer>();
 }
 

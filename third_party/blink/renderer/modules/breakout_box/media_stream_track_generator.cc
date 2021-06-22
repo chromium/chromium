@@ -218,7 +218,8 @@ void MediaStreamTrackGenerator::CreateAudioStream(ScriptState* script_state) {
       static_cast<PushableMediaStreamAudioSource*>(
           Component()->Source()->GetPlatformSource());
   audio_underlying_sink_ =
-      MakeGarbageCollected<MediaStreamAudioTrackUnderlyingSink>(source);
+      MakeGarbageCollected<MediaStreamAudioTrackUnderlyingSink>(
+          source->GetBroker());
   writable_ = WritableStream::CreateWithCountQueueingStrategy(
       script_state, audio_underlying_sink_, /*high_water_mark=*/1,
       audio_underlying_sink_->GetTransferringOptimizer());
