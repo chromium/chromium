@@ -41,6 +41,14 @@ export {ResetBrowserProxyImpl} from './reset_page/reset_browser_proxy.js';
 export {buildRouter, routes} from './route.js';
 export {Route, Router} from './router.js';
 export {SafetyCheckBrowserProxy, SafetyCheckBrowserProxyImpl, SafetyCheckCallbackConstants, SafetyCheckChromeCleanerStatus, SafetyCheckExtensionsStatus, SafetyCheckParentStatus, SafetyCheckPasswordsStatus, SafetyCheckSafeBrowsingStatus, SafetyCheckUpdatesStatus} from './safety_check_page/safety_check_browser_proxy.js';
-export {SafetyCheckIconStatus} from './safety_check_page/safety_check_child.js';
+export {SafetyCheckIconStatus, SettingsSafetyCheckChildElement} from './safety_check_page/safety_check_child.js';
+// <if expr="_google_chrome and is_win">
+export {SettingsSafetyCheckChromeCleanerChildElement} from './safety_check_page/safety_check_chrome_cleaner_child.js';
+// </if>
+export {SettingsSafetyCheckExtensionsChildElement} from './safety_check_page/safety_check_extensions_child.js';
+export {SettingsSafetyCheckPageElement} from './safety_check_page/safety_check_page.js';
+export {SettingsSafetyCheckPasswordsChildElement} from './safety_check_page/safety_check_passwords_child.js';
+export {SettingsSafetyCheckSafeBrowsingChildElement} from './safety_check_page/safety_check_safe_browsing_child.js';
+export {SettingsSafetyCheckUpdatesChildElement} from './safety_check_page/safety_check_updates_child.js';
 export {SearchEngine, SearchEnginesBrowserProxy, SearchEnginesBrowserProxyImpl, SearchEnginesInfo} from './search_engines_page/search_engines_browser_proxy.js';
 export {getSearchManager, SearchRequest, setSearchManagerForTesting} from './search_settings.js';

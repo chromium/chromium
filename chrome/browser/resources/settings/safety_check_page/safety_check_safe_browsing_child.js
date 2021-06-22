@@ -8,9 +8,9 @@
  * safety check child showing the Safe Browsing status.
  */
 import {assertNotReached} from 'chrome://resources/js/assert.m.js';
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {MetricsBrowserProxy, MetricsBrowserProxyImpl, SafetyCheckInteractions} from '../metrics_browser_proxy.js';
 import {routes} from '../route.js';
@@ -27,77 +27,97 @@ import {SafetyCheckIconStatus} from './safety_check_child.js';
  */
 let SafeBrowsingChangedEvent;
 
-Polymer({
-  is: 'settings-safety-check-safe-browsing-child',
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ * @implements {WebUIListenerBehaviorInterface}
+ */
+const SettingsSafetyCheckSafeBrowsingChildElementBase =
+    mixinBehaviors([I18nBehavior, WebUIListenerBehavior], PolymerElement);
 
-  behaviors: [
-    I18nBehavior,
-    WebUIListenerBehavior,
-  ],
+/** @polymer */
+export class SettingsSafetyCheckSafeBrowsingChildElement extends
+    SettingsSafetyCheckSafeBrowsingChildElementBase {
+  static get is() {
+    return 'settings-safety-check-safe-browsing-child';
+  }
 
-  properties: {
-    /**
-     * Current state of the safety check safe browsing child.
-     * @private {!SafetyCheckSafeBrowsingStatus}
-     */
-    status_: {
-      type: Number,
-      value: SafetyCheckSafeBrowsingStatus.CHECKING,
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /**
-     * UI string to display for this child, received from the backend.
-     * @private
-     */
-    displayString_: String,
+  static get properties() {
+    return {
+      /**
+       * Current state of the safety check safe browsing child.
+       * @private {!SafetyCheckSafeBrowsingStatus}
+       */
+      status_: {
+        type: Number,
+        value: SafetyCheckSafeBrowsingStatus.CHECKING,
+      },
 
-    /**
-     * A set of statuses that the entire row is clickable.
-     * @type {!Set<!SafetyCheckSafeBrowsingStatus>}
-     * @private
-     */
-    rowClickableStatuses: {
-      readOnly: true,
-      type: Object,
-      value: () => new Set([
-        SafetyCheckSafeBrowsingStatus.ENABLED_STANDARD,
-        SafetyCheckSafeBrowsingStatus.ENABLED_ENHANCED,
-        SafetyCheckSafeBrowsingStatus.ENABLED_STANDARD_AVAILABLE_ENHANCED,
-        SafetyCheckSafeBrowsingStatus.DISABLED_BY_ADMIN,
-        SafetyCheckSafeBrowsingStatus.DISABLED_BY_EXTENSION,
-      ]),
-    },
-  },
+      /**
+       * UI string to display for this child, received from the backend.
+       * @private
+       */
+      displayString_: String,
 
-  /** @private {?MetricsBrowserProxy} */
-  metricsBrowserProxy_: null,
+      /**
+       * A set of statuses that the entire row is clickable.
+       * @type {!Set<!SafetyCheckSafeBrowsingStatus>}
+       * @private
+       */
+      rowClickableStatuses: {
+        readOnly: true,
+        type: Object,
+        value: () => new Set([
+          SafetyCheckSafeBrowsingStatus.ENABLED_STANDARD,
+          SafetyCheckSafeBrowsingStatus.ENABLED_ENHANCED,
+          SafetyCheckSafeBrowsingStatus.ENABLED_STANDARD_AVAILABLE_ENHANCED,
+          SafetyCheckSafeBrowsingStatus.DISABLED_BY_ADMIN,
+          SafetyCheckSafeBrowsingStatus.DISABLED_BY_EXTENSION,
+        ]),
+      },
+
+    };
+  }
+
+  constructor() {
+    super();
+
+    /** @private {?MetricsBrowserProxy} */
+    this.metricsBrowserProxy_ = null;
+  }
 
   /** @override */
-  attached: function() {
+  connectedCallback() {
+    super.connectedCallback();
+
     this.metricsBrowserProxy_ = MetricsBrowserProxyImpl.getInstance();
 
     // Register for safety check status updates.
     this.addWebUIListener(
         SafetyCheckCallbackConstants.SAFE_BROWSING_CHANGED,
         this.onSafetyCheckSafeBrowsingChanged_.bind(this));
-  },
+  }
 
   /**
    * @param {!SafeBrowsingChangedEvent} event
    * @private
    */
-  onSafetyCheckSafeBrowsingChanged_: function(event) {
+  onSafetyCheckSafeBrowsingChanged_(event) {
     this.displayString_ = event.displayString;
     this.status_ = event.newState;
-  },
+  }
 
   /**
    * @return {SafetyCheckIconStatus}
    * @private
    */
-  getIconStatus_: function() {
+  getIconStatus_() {
     switch (this.status_) {
       case SafetyCheckSafeBrowsingStatus.CHECKING:
         return SafetyCheckIconStatus.RUNNING;
@@ -115,36 +135,36 @@ Polymer({
       default:
         assertNotReached();
     }
-  },
+  }
 
   /**
    * @private
    * @return {?string}
    */
-  getButtonLabel_: function() {
+  getButtonLabel_() {
     switch (this.status_) {
       case SafetyCheckSafeBrowsingStatus.DISABLED:
         return this.i18n('safetyCheckSafeBrowsingButton');
       default:
         return null;
     }
-  },
+  }
 
   /** @private */
-  onButtonClick_: function() {
+  onButtonClick_() {
     // Log click both in action and histogram.
     this.metricsBrowserProxy_.recordSafetyCheckInteractionHistogram(
         SafetyCheckInteractions.SAFE_BROWSING_MANAGE);
     this.metricsBrowserProxy_.recordAction(
         'Settings.SafetyCheck.ManageSafeBrowsing');
     this.openSecurityPage_();
-  },
+  }
 
   /**
    * @private
    * @return {?string}
    */
-  getManagedIcon_: function() {
+  getManagedIcon_() {
     switch (this.status_) {
       case SafetyCheckSafeBrowsingStatus.DISABLED_BY_ADMIN:
         return 'cr20:domain';
@@ -153,18 +173,18 @@ Polymer({
       default:
         return null;
     }
-  },
+  }
 
   /**
    * @private
    * @return {?boolean}
    */
-  isRowClickable_: function() {
+  isRowClickable_() {
     return this.rowClickableStatuses.has(this.status_);
-  },
+  }
 
   /** @private */
-  onRowClick_: function() {
+  onRowClick_() {
     if (this.isRowClickable_()) {
       // Log click both in action and histogram.
       this.metricsBrowserProxy_.recordSafetyCheckInteractionHistogram(
@@ -173,14 +193,18 @@ Polymer({
           'Settings.SafetyCheck.ManageSafeBrowsingThroughCaretNavigation');
       this.openSecurityPage_();
     }
-  },
+  }
 
   /** @private */
-  openSecurityPage_: function() {
+  openSecurityPage_() {
     this.metricsBrowserProxy_.recordAction(
         'SafeBrowsing.Settings.ShowedFromSafetyCheck');
     Router.getInstance().navigateTo(
         routes.SECURITY, /* dynamicParams= */ null,
         /* removeSearch= */ true);
-  },
-});
+  }
+}
+
+customElements.define(
+    SettingsSafetyCheckSafeBrowsingChildElement.is,
+    SettingsSafetyCheckSafeBrowsingChildElement);

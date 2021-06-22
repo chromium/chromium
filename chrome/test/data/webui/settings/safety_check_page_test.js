@@ -6,7 +6,7 @@
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {HatsBrowserProxyImpl, LifetimeBrowserProxyImpl, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PasswordManagerImpl, PasswordManagerProxy, Router, routes, SafetyCheckBrowserProxy, SafetyCheckBrowserProxyImpl, SafetyCheckCallbackConstants, SafetyCheckChromeCleanerStatus, SafetyCheckExtensionsStatus, SafetyCheckIconStatus, SafetyCheckInteractions, SafetyCheckParentStatus, SafetyCheckPasswordsStatus, SafetyCheckSafeBrowsingStatus, SafetyCheckUpdatesStatus} from 'chrome://settings/settings.js';
+import {HatsBrowserProxyImpl, LifetimeBrowserProxyImpl, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PasswordManagerImpl, PasswordManagerProxy, Router, routes, SafetyCheckBrowserProxy, SafetyCheckBrowserProxyImpl, SafetyCheckCallbackConstants, SafetyCheckChromeCleanerStatus, SafetyCheckExtensionsStatus, SafetyCheckIconStatus, SafetyCheckInteractions, SafetyCheckParentStatus, SafetyCheckPasswordsStatus, SafetyCheckSafeBrowsingStatus, SafetyCheckUpdatesStatus, SettingsSafetyCheckChildElement, SettingsSafetyCheckExtensionsChildElement, SettingsSafetyCheckPageElement, SettingsSafetyCheckPasswordsChildElement, SettingsSafetyCheckSafeBrowsingChildElement, SettingsSafetyCheckUpdatesChildElement} from 'chrome://settings/settings.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
 import {TestBrowserProxy} from '../test_browser_proxy.m.js';
@@ -100,7 +100,7 @@ function fireSafetyCheckChromeCleanerEvent(state) {
  * Verify that the safety check child inside the page has been configured as
  * specified.
  * @param {!{
- *   page: !PolymerElement,
+ *   page: !HTMLElement,
  *   iconStatus: !SafetyCheckIconStatus,
  *   label: string,
  *   buttonLabel: (string|undefined),
@@ -120,7 +120,7 @@ function assertSafetyCheckChild({
   managedIcon,
   rowClickable
 }) {
-  const safetyCheckChild = page.$$('#safetyCheckChild');
+  const safetyCheckChild = page.shadowRoot.querySelector('#safetyCheckChild');
   assertTrue(safetyCheckChild.iconStatus === iconStatus);
   assertTrue(safetyCheckChild.label === label);
   assertTrue(safetyCheckChild.subLabel === testDisplayString);
@@ -193,15 +193,17 @@ suite('SafetyCheckPageUiTests', function() {
   /** Tests parent element and collapse.from start to completion */
   test('testParentAndCollapse', async function() {
     // Before the check, only the text button is present.
-    assertTrue(!!page.$$('#safetyCheckParentButton'));
-    assertFalse(!!page.$$('#safetyCheckParentIconButton'));
+    assertTrue(!!page.shadowRoot.querySelector('#safetyCheckParentButton'));
+    assertFalse(
+        !!page.shadowRoot.querySelector('#safetyCheckParentIconButton'));
     // Collapse is not opened.
     const collapse =
-        /** @type {!IronCollapseElement} */ (page.$$('#safetyCheckCollapse'));
+        /** @type {!IronCollapseElement} */ (
+            page.shadowRoot.querySelector('#safetyCheckCollapse'));
     assertFalse(collapse.opened);
 
     // User starts check.
-    page.$$('#safetyCheckParentButton').click();
+    page.shadowRoot.querySelector('#safetyCheckParentButton').click();
     // Ensure UMA is logged.
     assertEquals(
         SafetyCheckInteractions.RUN_SAFETY_CHECK,
@@ -223,8 +225,8 @@ suite('SafetyCheckPageUiTests', function() {
 
     flush();
     // Only the icon button is present.
-    assertFalse(!!page.$$('#safetyCheckParentButton'));
-    assertTrue(!!page.$$('#safetyCheckParentIconButton'));
+    assertFalse(!!page.shadowRoot.querySelector('#safetyCheckParentButton'));
+    assertTrue(!!page.shadowRoot.querySelector('#safetyCheckParentIconButton'));
     // Collapse is opened.
     assertTrue(collapse.opened);
 
@@ -240,10 +242,10 @@ suite('SafetyCheckPageUiTests', function() {
 
     flush();
     // Only the icon button is present.
-    assertFalse(!!page.$$('#safetyCheckParentButton'));
-    assertTrue(!!page.$$('#safetyCheckParentIconButton'));
+    assertFalse(!!page.shadowRoot.querySelector('#safetyCheckParentButton'));
+    assertTrue(!!page.shadowRoot.querySelector('#safetyCheckParentIconButton'));
     // Collapse is opened.
-    assertTrue(page.$$('#safetyCheckCollapse').opened);
+    assertTrue(page.shadowRoot.querySelector('#safetyCheckCollapse').opened);
 
     // Ensure the automatic browser proxy calls are started.
     return safetyCheckBrowserProxy.whenCalled('getParentRanDisplayString');
@@ -252,7 +254,7 @@ suite('SafetyCheckPageUiTests', function() {
   test('HappinessTrackingSurveysTest', function() {
     const testHatsBrowserProxy = new TestHatsBrowserProxy();
     HatsBrowserProxyImpl.instance_ = testHatsBrowserProxy;
-    page.$$('#safetyCheckParentButton').click();
+    page.shadowRoot.querySelector('#safetyCheckParentButton').click();
     return testHatsBrowserProxy.whenCalled('tryShowSurvey');
   });
 });
@@ -275,7 +277,7 @@ suite('SafetyCheckChildTests', function() {
   test('testIconStatusRunning', function() {
     page.iconStatus = SafetyCheckIconStatus.RUNNING;
     flush();
-    const statusIconElem = page.$$('#statusIcon');
+    const statusIconElem = page.shadowRoot.querySelector('#statusIcon');
     assertTrue(!!statusIconElem);
     assertTrue(statusIconElem.classList.contains('icon-blue'));
     assertFalse(statusIconElem.classList.contains('icon-red'));
@@ -285,7 +287,7 @@ suite('SafetyCheckChildTests', function() {
   test('testIconStatusSafe', function() {
     page.iconStatus = SafetyCheckIconStatus.SAFE;
     flush();
-    const statusIconElem = page.$$('#statusIcon');
+    const statusIconElem = page.shadowRoot.querySelector('#statusIcon');
     assertTrue(!!statusIconElem);
     assertTrue(statusIconElem.classList.contains('icon-blue'));
     assertFalse(statusIconElem.classList.contains('icon-red'));
@@ -295,7 +297,7 @@ suite('SafetyCheckChildTests', function() {
   test('testIconStatusInfo', function() {
     page.iconStatus = SafetyCheckIconStatus.INFO;
     flush();
-    const statusIconElem = page.$$('#statusIcon');
+    const statusIconElem = page.shadowRoot.querySelector('#statusIcon');
     assertTrue(!!statusIconElem);
     assertFalse(statusIconElem.classList.contains('icon-blue'));
     assertFalse(statusIconElem.classList.contains('icon-red'));
@@ -305,7 +307,7 @@ suite('SafetyCheckChildTests', function() {
   test('testIconStatusWarning', function() {
     page.iconStatus = SafetyCheckIconStatus.WARNING;
     flush();
-    const statusIconElem = page.$$('#statusIcon');
+    const statusIconElem = page.shadowRoot.querySelector('#statusIcon');
     assertTrue(!!statusIconElem);
     assertFalse(statusIconElem.classList.contains('icon-blue'));
     assertTrue(statusIconElem.classList.contains('icon-red'));
@@ -315,7 +317,7 @@ suite('SafetyCheckChildTests', function() {
   test('testLabelText', function() {
     page.label = 'Main label test text';
     flush();
-    const label = page.$$('#label');
+    const label = page.shadowRoot.querySelector('#label');
     assertTrue(!!label);
     assertEquals('Main label test text', label.textContent.trim());
   });
@@ -323,14 +325,14 @@ suite('SafetyCheckChildTests', function() {
   test('testSubLabelText', function() {
     page.subLabel = 'Sub label test text';
     flush();
-    const subLabel = page.$$('#subLabel');
+    const subLabel = page.shadowRoot.querySelector('#subLabel');
     assertTrue(!!subLabel);
     assertEquals('Sub label test text', subLabel.textContent.trim());
   });
 
   test('testSubLabelNoText', function() {
     // sublabel not set -> empty sublabel in element
-    const subLabel = page.$$('#subLabel');
+    const subLabel = page.shadowRoot.querySelector('#subLabel');
     assertTrue(!!subLabel);
     assertEquals('', subLabel.textContent.trim());
   });
@@ -339,7 +341,7 @@ suite('SafetyCheckChildTests', function() {
     page.buttonLabel = 'Button label';
     page.buttonAriaLabel = 'Aria label';
     flush();
-    const button = page.$$('#button');
+    const button = page.shadowRoot.querySelector('#button');
     assertTrue(!!button);
     assertEquals('Button label', button.textContent.trim());
     assertEquals('Aria label', button.getAttribute('aria-label'));
@@ -351,7 +353,7 @@ suite('SafetyCheckChildTests', function() {
     page.buttonAriaLabel = 'Aria label';
     page.buttonClass = 'action-button';
     flush();
-    const button = page.$$('#button');
+    const button = page.shadowRoot.querySelector('#button');
     assertTrue(!!button);
     assertEquals('Button label', button.textContent.trim());
     assertEquals('Aria label', button.getAttribute('aria-label'));
@@ -360,42 +362,44 @@ suite('SafetyCheckChildTests', function() {
 
   test('testNoButton', function() {
     // Button label not set -> no button.
-    assertFalse(!!page.$$('#button'));
+    assertFalse(!!page.shadowRoot.querySelector('#button'));
   });
 
   test('testManagedIcon', function() {
     page.managedIcon = 'cr20:domain';
     flush();
-    assertTrue(!!page.$$('#managedIcon'));
+    assertTrue(!!page.shadowRoot.querySelector('#managedIcon'));
   });
 
   test('testNoManagedIcon', function() {
     // Managed icon not set -> no managed icon.
-    assertFalse(!!page.$$('#managedIcon'));
+    assertFalse(!!page.shadowRoot.querySelector('#managedIcon'));
   });
 
   test('testRowClickableIndicator', function() {
     page.rowClickable = true;
     flush();
-    assertTrue(!!page.$$('#rowClickableIndicator'));
+    assertTrue(!!page.shadowRoot.querySelector('#rowClickableIndicator'));
     assertEquals(
         'cr:arrow-right',
-        page.$$('#rowClickableIndicator').getAttribute('iron-icon'));
+        page.shadowRoot.querySelector('#rowClickableIndicator')
+            .getAttribute('iron-icon'));
   });
 
   test('testExternalRowClickableIndicator', function() {
     page.rowClickable = true;
     page.external = true;
     flush();
-    assertTrue(!!page.$$('#rowClickableIndicator'));
+    assertTrue(!!page.shadowRoot.querySelector('#rowClickableIndicator'));
     assertEquals(
         'cr:open-in-new',
-        page.$$('#rowClickableIndicator').getAttribute('iron-icon'));
+        page.shadowRoot.querySelector('#rowClickableIndicator')
+            .getAttribute('iron-icon'));
   });
 
   test('testNoRowClickableIndicator', function() {
     // rowClickable not set -> no RowClickableIndicator.
-    assertFalse(!!page.$$('#rowClickableIndicator'));
+    assertFalse(!!page.shadowRoot.querySelector('#rowClickableIndicator'));
   });
 });
 
@@ -469,7 +473,9 @@ suite('SafetyCheckUpdatesChildUiTests', function() {
     });
 
     // User clicks the relaunch button.
-    page.$$('#safetyCheckChild').$$('#button').click();
+    page.shadowRoot.querySelector('#safetyCheckChild')
+        .shadowRoot.querySelector('#button')
+        .click();
     // Ensure UMA is logged.
     assertEquals(
         SafetyCheckInteractions.UPDATES_RELAUNCH,
@@ -568,7 +574,7 @@ suite('SafetyCheckPasswordsChildUiTests', function() {
     });
 
     // User clicks the row.
-    page.$$('#safetyCheckChild').click();
+    page.shadowRoot.querySelector('#safetyCheckChild').click();
     // Ensure UMA is logged.
     assertEquals(
         SafetyCheckInteractions.PASSWORDS_CARET_NAVIGATION,
@@ -598,7 +604,9 @@ suite('SafetyCheckPasswordsChildUiTests', function() {
     PasswordManagerImpl.instance_ = passwordManager;
 
     // User clicks the manage passwords button.
-    page.$$('#safetyCheckChild').$$('#button').click();
+    page.shadowRoot.querySelector('#safetyCheckChild')
+        .shadowRoot.querySelector('#button')
+        .click();
     // Ensure UMA is logged.
     assertEquals(
         SafetyCheckInteractions.PASSWORDS_MANAGE_COMPROMISED_PASSWORDS,
@@ -630,7 +638,7 @@ suite('SafetyCheckPasswordsChildUiTests', function() {
     });
 
     // User clicks the manage passwords button.
-    page.$$('#safetyCheckChild').click();
+    page.shadowRoot.querySelector('#safetyCheckChild').click();
     // Ensure UMA is logged.
     assertEquals(
         SafetyCheckInteractions.PASSWORDS_MANAGE_WEAK_PASSWORDS,
@@ -724,7 +732,7 @@ suite('SafetyCheckSafeBrowsingChildUiTests', function() {
     });
 
     // User clicks the row.
-    page.$$('#safetyCheckChild').click();
+    page.shadowRoot.querySelector('#safetyCheckChild').click();
     // Ensure UMA is logged.
     assertEquals(
         SafetyCheckInteractions.SAFE_BROWSING_CARET_NAVIGATION,
@@ -774,7 +782,9 @@ suite('SafetyCheckSafeBrowsingChildUiTests', function() {
     });
 
     // User clicks the manage safe browsing button.
-    page.$$('#safetyCheckChild').$$('#button').click();
+    page.shadowRoot.querySelector('#safetyCheckChild')
+        .shadowRoot.querySelector('#button')
+        .click();
     // Ensure UMA is logged.
     assertEquals(
         SafetyCheckInteractions.SAFE_BROWSING_MANAGE,
@@ -844,7 +854,9 @@ suite('SafetyCheckExtensionsChildUiTests', function() {
   /** @return {!Promise} */
   async function expectExtensionsButtonClickActions() {
     // User clicks review extensions button.
-    page.$$('#safetyCheckChild').$$('#button').click();
+    page.shadowRoot.querySelector('#safetyCheckChild')
+        .shadowRoot.querySelector('#button')
+        .click();
     // Ensure UMA is logged.
     assertEquals(
         SafetyCheckInteractions.EXTENSIONS_REVIEW,
@@ -891,7 +903,7 @@ suite('SafetyCheckExtensionsChildUiTests', function() {
     });
 
     // User clicks the row.
-    page.$$('#safetyCheckChild').click();
+    page.shadowRoot.querySelector('#safetyCheckChild').click();
     // Ensure UMA is logged.
     assertEquals(
         SafetyCheckInteractions.EXTENSIONS_CARET_NAVIGATION,
@@ -917,7 +929,7 @@ suite('SafetyCheckExtensionsChildUiTests', function() {
     });
 
     // User clicks the row.
-    page.$$('#safetyCheckChild').click();
+    page.shadowRoot.querySelector('#safetyCheckChild').click();
     // Ensure the browser proxy call is done.
     const url = await openWindowProxy.whenCalled('openURL');
     assertEquals('chrome://extensions', url);

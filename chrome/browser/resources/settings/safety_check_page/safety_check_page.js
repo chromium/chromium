@@ -25,10 +25,10 @@ import './safety_check_updates_child.js';
 import './safety_check_chrome_cleaner_child.js';
 // </if>
 
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
-import {flush, html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {flush, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {HatsBrowserProxyImpl} from '../hats_browser_proxy.js';
 import {loadTimeData} from '../i18n_setup.js';
@@ -46,47 +46,67 @@ import {SafetyCheckBrowserProxy, SafetyCheckBrowserProxyImpl, SafetyCheckCallbac
  */
 let ParentChangedEvent;
 
-Polymer({
-  is: 'settings-safety-check-page',
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ * @implements {WebUIListenerBehaviorInterface}
+ */
+const SettingsSafetyCheckPageElementBase =
+    mixinBehaviors([WebUIListenerBehavior, I18nBehavior], PolymerElement);
 
-  behaviors: [
-    WebUIListenerBehavior,
-    I18nBehavior,
-  ],
+/** @polymer */
+export class SettingsSafetyCheckPageElement extends
+    SettingsSafetyCheckPageElementBase {
+  static get is() {
+    return 'settings-safety-check-page';
+  }
 
-  properties: {
+  static get template() {
+    return html`{__html_template__}`;
+  }
+
+  static get properties() {
+    return {
+      /**
+       * Current state of the safety check parent element.
+       * @private {!SafetyCheckParentStatus}
+       */
+      parentStatus_: {
+        type: Number,
+        value: SafetyCheckParentStatus.BEFORE,
+      },
+
+      /**
+       * UI string to display for the parent status.
+       * @private
+       */
+      parentDisplayString_: String,
+
+    };
+  }
+
+  constructor() {
+    super();
+
+    /** @private {?SafetyCheckBrowserProxy} */
+    this.safetyCheckBrowserProxy_ = null;
+
+    /** @private {?MetricsBrowserProxy} */
+    this.metricsBrowserProxy_ = null;
+
     /**
-     * Current state of the safety check parent element.
-     * @private {!SafetyCheckParentStatus}
+     * Timer ID for periodic update.
+     * @private {number}
      */
-    parentStatus_: {
-      type: Number,
-      value: SafetyCheckParentStatus.BEFORE,
-    },
-
-    /**
-     * UI string to display for the parent status.
-     * @private
-     */
-    parentDisplayString_: String,
-  },
-
-  /** @private {?SafetyCheckBrowserProxy} */
-  safetyCheckBrowserProxy_: null,
-
-  /** @private {?MetricsBrowserProxy} */
-  metricsBrowserProxy_: null,
-
-  /**
-   * Timer ID for periodic update.
-   * @private {number}
-   */
-  updateTimerId_: -1,
+    this.updateTimerId_ = -1;
+  }
 
   /** @override */
-  attached: function() {
+  connectedCallback() {
+    super.connectedCallback();
+
     this.safetyCheckBrowserProxy_ = SafetyCheckBrowserProxyImpl.getInstance();
     this.metricsBrowserProxy_ = MetricsBrowserProxyImpl.getInstance();
 
@@ -103,13 +123,13 @@ Polymer({
         Router.getInstance().getQueryParameters().has('activateSafetyCheck')) {
       this.runSafetyCheck_();
     }
-  },
+  }
 
   /**
    * Triggers the safety check.
    * @private
    */
-  runSafetyCheck_: function() {
+  runSafetyCheck_() {
     // Log click both in action and histogram.
     this.metricsBrowserProxy_.recordSafetyCheckInteractionHistogram(
         SafetyCheckInteractions.RUN_SAFETY_CHECK);
@@ -118,16 +138,14 @@ Polymer({
     // Trigger safety check.
     this.safetyCheckBrowserProxy_.runSafetyCheck();
     // Readout new safety check status via accessibility.
-    this.fire('iron-announce', {
-      text: this.i18n('safetyCheckAriaLiveRunning'),
-    });
-  },
+    this.fireIronAnnounce_(this.i18n('safetyCheckAriaLiveRunning'));
+  }
 
   /**
    * @param {!ParentChangedEvent} event
    * @private
    */
-  onSafetyCheckParentChanged_: function(event) {
+  onSafetyCheckParentChanged_(event) {
     this.parentStatus_ = event.newState;
     this.parentDisplayString_ = event.displayString;
     if (this.parentStatus_ === SafetyCheckParentStatus.CHECKING) {
@@ -145,47 +163,58 @@ Polymer({
       // Run initial safety check parent ran string update now.
       update();
       // Readout new safety check status via accessibility.
-      this.fire('iron-announce', {
-        text: this.i18n('safetyCheckAriaLiveAfter'),
-      });
+      this.fireIronAnnounce_(this.i18n('safetyCheckAriaLiveAfter'));
     }
-  },
+  }
+
+  /**
+   * @param {string} text
+   * @private
+   */
+  fireIronAnnounce_(text) {
+    this.dispatchEvent(new CustomEvent(
+        'iron-announce', {bubbles: true, composed: true, detail: {text}}));
+  }
 
   /**
    * @private
    * @return {boolean}
    */
-  shouldShowParentButton_: function() {
+  shouldShowParentButton_() {
     return this.parentStatus_ === SafetyCheckParentStatus.BEFORE;
-  },
+  }
 
   /**
    * @private
    * @return {boolean}
    */
-  shouldShowParentIconButton_: function() {
+  shouldShowParentIconButton_() {
     return this.parentStatus_ !== SafetyCheckParentStatus.BEFORE;
-  },
+  }
 
   /** @private */
-  onRunSafetyCheckClick_: function() {
+  onRunSafetyCheckClick_() {
     HatsBrowserProxyImpl.getInstance().tryShowSurvey();
 
     this.runSafetyCheck_();
-  },
+  }
 
   /** @private */
   focusIconButton_() {
     const element =
-        /** @type {!Element} */ (this.$$('#safetyCheckParentIconButton'));
+        /** @type {!Element} */ (
+            this.shadowRoot.querySelector('#safetyCheckParentIconButton'));
     element.focus();
-  },
+  }
 
   /**
    * @private
    * @return {boolean}
    */
-  shouldShowChildren_: function() {
+  shouldShowChildren_() {
     return this.parentStatus_ !== SafetyCheckParentStatus.BEFORE;
-  },
-});
+  }
+}
+
+customElements.define(
+    SettingsSafetyCheckPageElement.is, SettingsSafetyCheckPageElement);

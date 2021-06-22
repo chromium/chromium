@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {ChromeCleanupProxy, ChromeCleanupProxyImpl} from 'chrome://settings/lazy_load.js';
-import {MetricsBrowserProxyImpl, Router, routes, SafetyCheckCallbackConstants, SafetyCheckChromeCleanerStatus, SafetyCheckIconStatus, SafetyCheckInteractions} from 'chrome://settings/settings.js';
+import {MetricsBrowserProxyImpl, Router, routes, SafetyCheckCallbackConstants, SafetyCheckChromeCleanerStatus, SafetyCheckIconStatus, SafetyCheckInteractions, SettingsSafetyCheckChromeCleanerChildElement} from 'chrome://settings/settings.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
 import {TestBrowserProxy} from '../test_browser_proxy.m.js';
@@ -35,7 +35,7 @@ function fireSafetyCheckChromeCleanerEvent(state) {
  * Verify that the safety check child inside the page has been configured as
  * specified.
  * @param {!{
- *   page: !PolymerElement,
+ *   page: !HTMLElement,
  *   iconStatus: !SafetyCheckIconStatus,
  *   label: string,
  *   buttonLabel: (string|undefined),
@@ -54,7 +54,7 @@ function assertSafetyCheckChild({
   managedIcon,
   rowClickable
 }) {
-  const safetyCheckChild = page.$$('#safetyCheckChild');
+  const safetyCheckChild = page.shadowRoot.querySelector('#safetyCheckChild');
   assertTrue(!!safetyCheckChild, 'safetyCheckChild is null');
   assertTrue(
       safetyCheckChild.iconStatus === iconStatus,
@@ -141,7 +141,7 @@ suite('SafetyCheckChromeCleanerUiTests', function() {
     fireSafetyCheckChromeCleanerEvent(SafetyCheckChromeCleanerStatus.HIDDEN);
     flush();
     // There is no Chrome cleaner child in safety check.
-    assertFalse(!!page.$$('#safetyCheckChild'));
+    assertFalse(!!page.shadowRoot.querySelector('#safetyCheckChild'));
   });
 
   test('chromeCleanerCheckingUiTest', function() {
@@ -166,7 +166,9 @@ suite('SafetyCheckChromeCleanerUiTests', function() {
       buttonClass: 'action-button',
     });
     // User clicks the button.
-    page.$$('#safetyCheckChild').$$('#button').click();
+    page.shadowRoot.querySelector('#safetyCheckChild')
+        .shadowRoot.querySelector('#button')
+        .click();
     await expectLogging(
         SafetyCheckInteractions.CHROME_CLEANER_REVIEW_INFECTED_STATE,
         'Settings.SafetyCheck.ChromeCleanerReviewInfectedState');
@@ -187,7 +189,9 @@ suite('SafetyCheckChromeCleanerUiTests', function() {
       buttonClass: 'action-button',
     });
     // User clicks the button.
-    page.$$('#safetyCheckChild').$$('#button').click();
+    page.shadowRoot.querySelector('#safetyCheckChild')
+        .shadowRoot.querySelector('#button')
+        .click();
     await expectLogging(
         SafetyCheckInteractions.CHROME_CLEANER_REBOOT,
         'Settings.SafetyCheck.ChromeCleanerReboot');
@@ -206,7 +210,7 @@ suite('SafetyCheckChromeCleanerUiTests', function() {
       rowClickable: true,
     });
     // User clicks the row.
-    page.$$('#safetyCheckChild').click();
+    page.shadowRoot.querySelector('#safetyCheckChild').click();
     // Ensure UMA is logged.
     await expectLogging(
         SafetyCheckInteractions.CHROME_CLEANER_CARET_NAVIGATION,
@@ -226,7 +230,7 @@ suite('SafetyCheckChromeCleanerUiTests', function() {
       rowClickable: true,
     });
     // User clicks the row.
-    page.$$('#safetyCheckChild').click();
+    page.shadowRoot.querySelector('#safetyCheckChild').click();
     // Ensure UMA is logged.
     await expectLogging(
         SafetyCheckInteractions.CHROME_CLEANER_CARET_NAVIGATION,
@@ -257,7 +261,7 @@ suite('SafetyCheckChromeCleanerUiTests', function() {
       rowClickable: true,
     });
     // User clicks the row.
-    page.$$('#safetyCheckChild').click();
+    page.shadowRoot.querySelector('#safetyCheckChild').click();
     // Ensure UMA is logged.
     await expectLogging(
         SafetyCheckInteractions.CHROME_CLEANER_CARET_NAVIGATION,
@@ -277,7 +281,7 @@ suite('SafetyCheckChromeCleanerUiTests', function() {
       rowClickable: true,
     });
     // User clicks the row.
-    page.$$('#safetyCheckChild').click();
+    page.shadowRoot.querySelector('#safetyCheckChild').click();
     // Ensure UMA is logged.
     await expectLogging(
         SafetyCheckInteractions.CHROME_CLEANER_CARET_NAVIGATION,
@@ -297,7 +301,7 @@ suite('SafetyCheckChromeCleanerUiTests', function() {
       rowClickable: true,
     });
     // User clicks the row.
-    page.$$('#safetyCheckChild').click();
+    page.shadowRoot.querySelector('#safetyCheckChild').click();
     // Ensure UMA is logged.
     await expectLogging(
         SafetyCheckInteractions.CHROME_CLEANER_CARET_NAVIGATION,
@@ -334,6 +338,6 @@ suite('SafetyCheckChromeCleanerFlagDisabledTests', function() {
     fireSafetyCheckChromeCleanerEvent(SafetyCheckChromeCleanerStatus.INFECTED);
     flush();
     // The UI is not visible.
-    assertFalse(!!page.$$('#safetyCheckChild'));
+    assertFalse(!!page.shadowRoot.querySelector('#safetyCheckChild'));
   });
 });
