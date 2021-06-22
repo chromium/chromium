@@ -238,6 +238,12 @@ def main():
     want.extend([
       'bin/clang',
 
+      # Add LLD.
+      'bin/lld',
+
+      # Add llvm-ar for LTO.
+      'bin/llvm-ar',
+
       # Include libclang_rt.builtins.a for Fuchsia targets.
       'lib/clang/$V/lib/aarch64-unknown-fuchsia/libclang_rt.builtins.a',
       'lib/clang/$V/lib/x86_64-unknown-fuchsia/libclang_rt.builtins.a',
@@ -273,12 +279,6 @@ def main():
     want.extend([
         # Copy the stdlibc++.so.6 we linked the binaries against.
         'lib/libstdc++.so.6',
-
-        # Add LLD.
-        'bin/lld',
-
-        # Add llvm-ar for LTO.
-        'bin/llvm-ar',
 
         # Add llvm-objcopy for partition extraction on Android.
         'bin/llvm-objcopy',
@@ -426,11 +426,11 @@ def main():
   if sys.platform != 'win32':
     os.symlink('clang', os.path.join(pdir, 'bin', 'clang++'))
     os.symlink('clang', os.path.join(pdir, 'bin', 'clang-cl'))
-
-  if sys.platform.startswith('linux'):
     os.symlink('lld', os.path.join(pdir, 'bin', 'ld.lld'))
     os.symlink('lld', os.path.join(pdir, 'bin', 'ld64.lld'))
     os.symlink('lld', os.path.join(pdir, 'bin', 'lld-link'))
+
+  if sys.platform.startswith('linux'):
     os.symlink('llvm-objcopy', os.path.join(pdir, 'bin', 'llvm-strip'))
 
   # Copy libc++ headers.
@@ -501,7 +501,8 @@ def main():
             filter=PrintTarProgress)
   MaybeUpload(args.upload, clang_tidy_dir + '.tgz', gcs_platform)
 
-  # On Mac, lld isn't part of the main zip.  Upload it in a separate zip.
+  # On Mac, lld wasn't part of the main zip.  Upload it in a separate zip
+  # until everything uses the version in the default package.
   if sys.platform == 'darwin':
     llddir = 'lld-' + stamp
     shutil.rmtree(llddir, ignore_errors=True)
@@ -514,7 +515,6 @@ def main():
                 os.path.join(llddir, 'bin'))
     os.symlink('lld', os.path.join(llddir, 'bin', 'ld.lld'))
     os.symlink('lld', os.path.join(llddir, 'bin', 'ld64.lld'))
-    os.symlink('lld', os.path.join(llddir, 'bin', 'ld64.lld.darwinnew'))
     os.symlink('lld', os.path.join(llddir, 'bin', 'lld-link'))
     os.symlink('llvm-objcopy', os.path.join(llddir, 'bin', 'llvm-strip'))
     with tarfile.open(llddir + '.tgz', 'w:gz') as tar:
