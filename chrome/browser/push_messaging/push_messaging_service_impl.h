@@ -68,6 +68,7 @@ class InstanceIDDriver;
 namespace {
 struct PendingMessage {
   PendingMessage(std::string app_id, gcm::IncomingMessage message);
+  PendingMessage(const PendingMessage& other);
   PendingMessage(PendingMessage&& other);
   ~PendingMessage();
 

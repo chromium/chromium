@@ -191,6 +191,7 @@ PendingMessage::PendingMessage(std::string app_id, gcm::IncomingMessage message)
     : app_id(std::move(app_id)),
       message(std::move(message)),
       received_time(base::Time::Now()) {}
+PendingMessage::PendingMessage(const PendingMessage& other) = default;
 PendingMessage::PendingMessage(PendingMessage&& other) = default;
 PendingMessage& PendingMessage::operator=(PendingMessage&& other) = default;
 PendingMessage::~PendingMessage() = default;
