@@ -29,10 +29,11 @@ class ArcSplashScreenDialogView : public views::BubbleDialogDelegateView {
   // TestApi is used for tests to get internal implementation details.
   class TestApi {
    public:
-    explicit TestApi(ArcSplashScreenDialogView* view);
-    ~TestApi();
+    explicit TestApi(ArcSplashScreenDialogView* view) : view_(view) {}
+    ~TestApi() = default;
 
-    views::Button* close_button() const;
+    views::MdTextButton* close_button() const { return view_->close_button_; }
+    views::View* highlight_border() const { return view_->highlight_border_; }
 
    private:
     ArcSplashScreenDialogView* const view_;
@@ -55,6 +56,9 @@ class ArcSplashScreenDialogView : public views::BubbleDialogDelegateView {
 
  private:
   void OnCloseButtonClicked();
+
+  views::View* const anchor_;
+  views::View* highlight_border_{nullptr};
 
   base::OnceClosure close_callback_;
   views::MdTextButton* close_button_ = nullptr;

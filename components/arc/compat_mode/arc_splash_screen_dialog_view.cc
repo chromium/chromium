@@ -9,6 +9,7 @@
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "chromeos/ui/frame/default_frame_header.h"
 #include "components/arc/compat_mode/overlay_dialog.h"
 #include "components/arc/compat_mode/style/arc_color_provider.h"
 #include "components/arc/vector_icons/vector_icons.h"
@@ -17,12 +18,14 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/rrect_f.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/button/md_text_button.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
@@ -30,25 +33,62 @@
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/style/platform_style.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
 namespace arc {
 
-ArcSplashScreenDialogView::TestApi::TestApi(ArcSplashScreenDialogView* view)
-    : view_(view) {}
+namespace {
 
-ArcSplashScreenDialogView::TestApi::~TestApi() = default;
+// Draws the blue-ish highlight border to the parent view according to the
+// highlight path.
+class HighlightBorder : public views::View {
+ public:
+  HighlightBorder() = default;
+  HighlightBorder(const HighlightBorder&) = delete;
+  HighlightBorder& operator=(const HighlightBorder&) = delete;
+  ~HighlightBorder() override = default;
 
-views::Button* ArcSplashScreenDialogView::TestApi::close_button() const {
-  return view_->close_button_;
-}
+  // views::View:
+  void OnThemeChanged() override {
+    views::View::OnThemeChanged();
+    InvalidateLayout();
+    SchedulePaint();
+  }
+
+  void Layout() override {
+    auto bounds = parent()->GetLocalBounds();
+    bounds.Inset(gfx::Insets(views::PlatformStyle::kFocusHaloInset));
+    SetBoundsRect(bounds);
+  }
+
+  void OnPaint(gfx::Canvas* canvas) override {
+    views::View::OnPaint(canvas);
+
+    const auto rrect =
+        views::HighlightPathGenerator::GetRoundRectForView(parent());
+    if (!rrect)
+      return;
+    auto rect = (*rrect).rect();
+    View::ConvertRectToTarget(parent(), this, &rect);
+    cc::PaintFlags flags;
+    flags.setAntiAlias(true);
+    flags.setColor(GetNativeTheme()->GetSystemColor(
+        ui::NativeTheme::kColorId_FocusedBorderColor));
+    flags.setStyle(cc::PaintFlags::kStroke_Style);
+    flags.setStrokeWidth(views::PlatformStyle::kFocusHaloThickness);
+    canvas->DrawRoundRect(rect, (*rrect).GetSimpleRadius(), flags);
+  }
+};
+
+}  // namespace
 
 ArcSplashScreenDialogView::ArcSplashScreenDialogView(
     base::OnceClosure close_callback,
     aura::Window* parent,
     views::View* anchor)
-    : close_callback_(std::move(close_callback)) {
+    : anchor_(anchor), close_callback_(std::move(close_callback)) {
   const auto background_color = GetDialogBackgroundBaseColor();
 
   // Setup delegate.
@@ -57,7 +97,7 @@ ArcSplashScreenDialogView::ArcSplashScreenDialogView(
   set_parent_window(parent);
   set_title_margins(gfx::Insets());
   set_margins(gfx::Insets());
-  SetAnchorView(anchor);
+  SetAnchorView(anchor_);
   SetTitle(l10n_util::GetStringUTF16(IDS_ARC_COMPAT_MODE_SPLASH_SCREEN_TITLE));
   SetShowTitle(false);
   SetAccessibleRole(ax::mojom::Role::kDialog);
@@ -114,6 +154,10 @@ ArcSplashScreenDialogView::ArcSplashScreenDialogView(
                    .SetIsDefault(true)
                    .SetProperty(views::kMarginsKey, gfx::Insets(12, 0, 0, 0))
                    .Build());
+
+  // Setup highlight border.
+  highlight_border_ =
+      anchor_->AddChildView(std::make_unique<HighlightBorder>());
 }
 
 ArcSplashScreenDialogView::~ArcSplashScreenDialogView() = default;
@@ -146,6 +190,9 @@ void ArcSplashScreenDialogView::AddedToWidget() {
 void ArcSplashScreenDialogView::OnCloseButtonClicked() {
   if (!close_callback_)
     return;
+
+  anchor_->RemoveChildViewT(highlight_border_);
+
   std::move(close_callback_).Run();
   GetWidget()->CloseWithReason(
       views::Widget::ClosedReason::kCloseButtonClicked);
@@ -154,7 +201,15 @@ void ArcSplashScreenDialogView::OnCloseButtonClicked() {
 void ArcSplashScreenDialogView::Show(aura::Window* parent) {
   auto* const frame_view = ash::NonClientFrameViewAsh::Get(parent);
   DCHECK(frame_view);
-  auto* const anchor_view = frame_view->GetHeaderView();
+  auto* const anchor_view =
+      frame_view->GetHeaderView()->GetFrameHeader()->GetCenterButton();
+
+  if (!anchor_view) {
+    LOG(ERROR) << "Failed to show the compat mode splash screen because the "
+                  "center button is missing.";
+    return;
+  }
+
   auto dialog_view = std::make_unique<ArcSplashScreenDialogView>(
       base::BindOnce(&OverlayDialog::CloseIfAny, base::Unretained(parent)),
       parent, anchor_view);

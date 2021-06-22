@@ -123,23 +123,26 @@ void ArcResizeLockManager::OnWindowDestroying(aura::Window* window) {
 }
 
 void ArcResizeLockManager::EnableResizeLock(aura::Window* window) {
+  bool is_first_launch = false;
+
   const std::string* app_id = window->GetProperty(ash::kAppIDKey);
   // The state is |ArcResizeLockState::READY| only when we enable the resize
   // lock for an app for the first time.
   if (app_id && pref_delegate_->GetResizeLockState(*app_id) ==
                     mojom::ArcResizeLockState::READY) {
     pref_delegate_->SetResizeLockState(*app_id, mojom::ArcResizeLockState::ON);
-
-    // Show the splash screen in current window. The splash screen is an
-    // overlay covering the entire window. User can only remove the overlay
-    // before closing the window.
-    MayShowSplashScreen(window);
+    is_first_launch = true;
   }
 
   UpdateCompatModeButton(window);
   // Show lock shadow effect on window. ash::Shell may not exist in tests.
   if (ash::Shell::HasInstance())
     ash::Shell::Get()->resize_shadow_controller()->ShowShadow(window);
+
+  // Because we use the compat mode button as the "anchor" in the splash, we
+  // need to show it after the setup of the compat mode button.
+  if (is_first_launch)
+    MayShowSplashScreen(window);
 }
 
 void ArcResizeLockManager::DisableResizeLock(aura::Window* window) {
