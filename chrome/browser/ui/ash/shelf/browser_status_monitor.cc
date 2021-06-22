@@ -34,7 +34,6 @@ bool IsAppBrowser(const Browser* browser) {
          !web_app::GetAppIdFromApplicationName(browser->app_name()).empty();
 }
 
-#if DCHECK_IS_ON()
 Browser* GetBrowserWithTabStripModel(TabStripModel* tab_strip_model) {
   for (auto* browser : *BrowserList::GetInstance()) {
     if (browser->tab_strip_model() == tab_strip_model)
@@ -42,7 +41,6 @@ Browser* GetBrowserWithTabStripModel(TabStripModel* tab_strip_model) {
   }
   return nullptr;
 }
-#endif  // DCHECK_IS_ON()
 
 }  // namespace
 
@@ -220,11 +218,9 @@ void BrowserStatusMonitor::OnTabStripModelChanged(
     const TabStripSelectionChange& selection) {
   // OnBrowserAdded() must be invoked before OnTabStripModelChanged(). See
   // comment in constructor.
+  Browser* browser = GetBrowserWithTabStripModel(tab_strip_model);
 #if DCHECK_IS_ON()
-  {
-    Browser* browser = GetBrowserWithTabStripModel(tab_strip_model);
-    DCHECK(base::Contains(known_browsers_, browser));
-  }
+  DCHECK(base::Contains(known_browsers_, browser));
 #endif
 
   if (change.type() == TabStripModelChange::kInserted) {
@@ -234,8 +230,22 @@ void BrowserStatusMonitor::OnTabStripModelChanged(
   } else if (change.type() == TabStripModelChange::kRemoved) {
     auto* remove = change.GetRemove();
     for (const auto& contents : remove->contents) {
-      if (contents.remove_reason == TabStripModelChange::RemoveReason::kDeleted)
-        OnTabClosing(contents.contents);
+      switch (contents.remove_reason) {
+        case TabStripModelChange::RemoveReason::kDeleted:
+        case TabStripModelChange::RemoveReason::kCached:
+          OnTabClosing(contents.contents);
+          break;
+        case TabStripModelChange::RemoveReason::kInsertedIntoOtherTabStrip:
+          // The tab will be reinserted immediately into another browser, so
+          // this event is ignored.
+          if (browser->is_type_devtools()) {
+            // TODO(crbug.com/1221967): when a dev tools window is docked, and
+            // its WebContents is removed, it will not be reinserted into
+            // another tab strip, so it should be treated as closed.
+            OnTabClosing(contents.contents);
+          }
+          break;
+      }
     }
   } else if (change.type() == TabStripModelChange::kReplaced) {
     auto* replace = change.GetReplace();
