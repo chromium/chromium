@@ -3,15 +3,15 @@ PASS dedicatedworker-script-src
 PASS Cross-origin `importScripts()` blocked in http: with script-src 'self'
 PASS `eval()` blocked in http: with script-src 'self'
 PASS `setTimeout([string])` blocked in http: with script-src 'self'
-FAIL Reports are sent for http: with script-src 'self' assert_array_equals: Reports do not match lengths differ, expected array ["eval", "eval", "eval", "https://www.web-platform.test:8445/content-security-policy/support/var-a.js"] length 4, got [] length 0
+PASS Reports are sent for http: with script-src 'self'
 PASS Cross-origin `importScripts()` blocked in blob: with script-src 'self'
 PASS `eval()` blocked in blob: with script-src 'self'
 PASS `setTimeout([string])` blocked in blob: with script-src 'self'
-FAIL Reports are sent for blob: with script-src 'self' assert_array_equals: Reports do not match lengths differ, expected array ["eval", "eval", "eval", "https://www.web-platform.test:8445/content-security-policy/support/var-a.js"] length 4, got [] length 0
+PASS Reports are sent for blob: with script-src 'self'
 PASS Cross-origin `importScripts()` blocked in filesystem: with script-src 'self'
 PASS `eval()` blocked in filesystem: with script-src 'self'
 PASS `setTimeout([string])` blocked in filesystem: with script-src 'self'
-FAIL Reports are sent for filesystem: with script-src 'self' assert_array_equals: Reports do not match lengths differ, expected array ["eval", "eval", "eval", "https://www.web-platform.test:8445/content-security-policy/support/var-a.js"] length 4, got [] length 0
+PASS Reports are sent for filesystem: with script-src 'self'
 FAIL Cross-origin `importScripts()` not blocked in http: withour CSP Failed to execute 'importScripts' on 'WorkerGlobalScope': The script at 'https://www.web-platform.test:8445/content-security-policy/support/testharness-helper.js' failed to load.
 FAIL `eval()` not blocked in http: without CSP Refused to evaluate a string as JavaScript because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: "script-src 'self' 'nonce-a' blob: filesystem:".
 FAIL `setTimeout([string])` not blocked in http: without CSP assert_unreached: callback not called. Reached unreachable code

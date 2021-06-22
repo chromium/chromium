@@ -294,7 +294,7 @@ void PingLoader::SendLinkAuditPing(LocalFrame* frame,
   RawResource::Fetch(params, frame->DomWindow()->Fetcher(), nullptr);
 }
 
-void PingLoader::SendViolationReport(LocalFrame* frame,
+void PingLoader::SendViolationReport(ExecutionContext* execution_context,
                                      const KURL& report_url,
                                      scoped_refptr<EncodedFormData> report) {
   ResourceRequest request(report_url);
@@ -305,15 +305,17 @@ void PingLoader::SendViolationReport(LocalFrame* frame,
   request.SetCredentialsMode(network::mojom::CredentialsMode::kSameOrigin);
   request.SetRequestContext(mojom::blink::RequestContextType::CSP_REPORT);
   request.SetRequestDestination(network::mojom::RequestDestination::kReport);
-  request.SetRequestorOrigin(frame->DomWindow()->GetSecurityOrigin());
+  request.SetRequestorOrigin(execution_context->GetSecurityOrigin());
   request.SetRedirectMode(network::mojom::RedirectMode::kError);
   FetchParameters params(std::move(request),
-                         frame->DomWindow()->GetCurrentWorld());
+                         execution_context->GetCurrentWorld());
   params.MutableOptions().initiator_info.name =
       fetch_initiator_type_names::kViolationreport;
 
-  frame->Client()->DidDispatchPingLoader(report_url);
-  RawResource::Fetch(params, frame->DomWindow()->Fetcher(), nullptr);
+  auto* window = DynamicTo<LocalDOMWindow>(execution_context);
+  if (window && window->GetFrame())
+    window->GetFrame()->Client()->DidDispatchPingLoader(report_url);
+  RawResource::Fetch(params, execution_context->Fetcher(), nullptr);
 }
 
 bool PingLoader::SendBeacon(const ScriptState& state,

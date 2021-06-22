@@ -45,6 +45,7 @@ class Blob;
 class DOMArrayBufferView;
 class DOMArrayBuffer;
 class EncodedFormData;
+class ExecutionContext;
 class FormData;
 class LocalFrame;
 class KURL;
@@ -66,7 +67,7 @@ class CORE_EXPORT PingLoader {
   static void SendLinkAuditPing(LocalFrame*,
                                 const KURL& ping_url,
                                 const KURL& destination_url);
-  static void SendViolationReport(LocalFrame*,
+  static void SendViolationReport(ExecutionContext* execution_context,
                                   const KURL& report_url,
                                   scoped_refptr<EncodedFormData> report);
 

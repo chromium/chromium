@@ -34,7 +34,7 @@
         window.webkitRequestFileSystem(window.TEMPORARY, 1024*1024, resolve));
 
       let fs_entry = await new Promise(resolve =>
-        fs.root.getFile('dedicated-inheritance-worker.js',
+        fs.root.getFile('dedicated-connect-src.js',
                         { create: true }, resolve));
 
       let writer = await new Promise(resolve => fs_entry.createWriter(resolve));
@@ -46,6 +46,8 @@
 
       let fs_url = fs_entry.toURL();
       await fetch_tests_from_worker(new Worker(fs_url));
+
+      await new Promise(resolve => fs_entry.remove(resolve));
     }
 
     // Dedicated workers do not inherit CSP in general.

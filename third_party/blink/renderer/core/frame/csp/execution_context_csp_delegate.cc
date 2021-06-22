@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/loader/ping_loader.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
+#include "third_party/blink/renderer/core/workers/worklet_global_scope.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/network/encoded_form_data.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
@@ -167,13 +168,12 @@ void ExecutionContextCSPDelegate::PostViolationReport(
                 ContentSecurityPolicy::GetDirectiveType(
                     violation_data.effectiveDirective()));
 
-  // TODO(crbug/929370): Support POSTing violation reports from a Worker.
-  Document* document = GetDocument();
-  if (!document)
-    return;
-
-  LocalFrame* frame = document->GetFrame();
-  if (!frame)
+  // We do not support reporting for worklets, since they don't have a
+  // ResourceFetcher.
+  //
+  // TODO(https://crbug.com/1222576): Send CSP reports for worklets using the
+  // owner document's ResourceFetcher.
+  if (DynamicTo<WorkletGlobalScope>(execution_context_.Get()))
     return;
 
   scoped_refptr<EncodedFormData> report =
@@ -195,7 +195,8 @@ void ExecutionContextCSPDelegate::PostViolationReport(
     return;
 
   for (const auto& report_endpoint : report_endpoints) {
-    PingLoader::SendViolationReport(frame, KURL(report_endpoint), report);
+    PingLoader::SendViolationReport(execution_context_.Get(),
+                                    KURL(report_endpoint), report);
   }
 }
 
