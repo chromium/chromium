@@ -405,7 +405,6 @@ void SyncEngineBackend::DoFinishConfigureDataTypes(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Update the enabled types for the bridge and sync manager.
-  // TODO(crbug.com/1140938): track |enabled_types| directly in SyncEngineImpl.
   ModelTypeSet enabled_types = sync_manager_->GetEnabledTypes();
   enabled_types.RemoveAll(ProxyTypes());
 
