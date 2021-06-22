@@ -9,6 +9,7 @@
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/desk_template.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -829,7 +830,7 @@ std::unique_ptr<DeskTemplate> DesksController::CaptureActiveDeskAsTemplate()
     const {
   std::unique_ptr<DeskTemplate> desk_template =
       std::make_unique<DeskTemplate>();
-  desk_template->set_desk_name(active_desk_->name());
+  desk_template->set_template_name(active_desk_->name());
 
   // Construct |restore_data| for |desk_template|.
   std::unique_ptr<full_restore::RestoreData> restore_data =

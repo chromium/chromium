@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/public/cpp/desk_template.h"
 #include "ash/public/cpp/desks_helper.h"
 #include "ash/wm/desks/desks_test_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -165,7 +166,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, CaptureActiveDeskAsTemplateTest) {
 
   // Test the default template's name is the current desk's name.
   auto* desks_helper = ash::DesksHelper::Get();
-  EXPECT_EQ(desk_template->desk_name(),
+  EXPECT_EQ(desk_template->template_name(),
             desks_helper->GetDeskName(desks_helper->GetActiveDeskIndex()));
 
   full_restore::RestoreData* restore_data = desk_template->desk_restore_data();
@@ -225,7 +226,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchEmptyDeskTemplate) {
   ASSERT_EQ(0, desks_helper->GetActiveDeskIndex());
 
   auto desk_template = std::make_unique<ash::DeskTemplate>(kDeskUuid);
-  desk_template->set_desk_name(kDeskName);
+  desk_template->set_template_name(kDeskName);
   SetLaunchTemplate(std::move(desk_template));
   ash::DeskSwitchAnimationWaiter waiter;
   desks_client->LaunchDeskTemplate(kDeskUuid);

@@ -112,6 +112,8 @@ component("cpp") {
     "clipboard_image_model_factory.h",
     "default_scale_factor_retriever.cc",
     "default_scale_factor_retriever.h",
+    "desk_template.cc",
+    "desk_template.h",
     "desks_helper.cc",
     "desks_helper.h",
     "esim_manager.cc",

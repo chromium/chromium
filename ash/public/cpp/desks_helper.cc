@@ -5,17 +5,12 @@
 #include "ash/public/cpp/desks_helper.h"
 
 #include "base/check_op.h"
-#include "base/time/time.h"
 
 namespace ash {
 
 namespace {
 DesksHelper* g_instance = nullptr;
 }  // namespace
-
-DeskTemplate::DeskTemplate() : uuid_(base::Time::Now().ToDoubleT()) {}
-DeskTemplate::DeskTemplate(double uuid) : uuid_(uuid) {}
-DeskTemplate::~DeskTemplate() = default;
 
 // static
 DesksHelper* DesksHelper::Get() {

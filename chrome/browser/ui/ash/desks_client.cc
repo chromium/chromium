@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/desks_client.h"
 
+#include "ash/public/cpp/desk_template.h"
 #include "ash/public/cpp/desks_helper.h"
 #include "base/bind.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -43,7 +44,7 @@ void DesksClient::LaunchDeskTemplate(double template_uuid) {
 
   // Launch the windows as specified in the template to a new desk.
   desks_helper_->CreateAndActivateNewDeskForTemplate(
-      launch_template_for_test_->desk_name(),
+      launch_template_for_test_->template_name(),
       base::BindOnce(&DesksClient::OnCreateAndActivateNewDesk,
                      weak_ptr_factory_.GetWeakPtr(),
                      launch_template_for_test_.get()));

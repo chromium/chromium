@@ -8,8 +8,8 @@
 #include <string>
 
 #include "ash/public/cpp/ash_public_export.h"
+#include "base/callback.h"
 #include "base/macros.h"
-#include "components/full_restore/restore_data.h"
 
 namespace aura {
 class Window;
@@ -17,38 +17,7 @@ class Window;
 
 namespace ash {
 
-// Class to represent a desk template. It can be used to create a desk with
-// a certain set of application windows specified in |desk_restore_data_|.
-class ASH_PUBLIC_EXPORT DeskTemplate {
- public:
-  DeskTemplate();
-  explicit DeskTemplate(double uuid);
-  DeskTemplate(const DeskTemplate&) = delete;
-  DeskTemplate& operator=(const DeskTemplate&) = delete;
-  ~DeskTemplate();
-
-  double uuid() const { return uuid_; }
-  std::u16string desk_name() const { return desk_name_; }
-  void set_desk_name(const std::u16string& desk_name) {
-    desk_name_ = desk_name;
-  }
-  full_restore::RestoreData* desk_restore_data() {
-    return desk_restore_data_.get();
-  }
-  void set_desk_restore_data(
-      std::unique_ptr<full_restore::RestoreData> restore_data) {
-    desk_restore_data_ = std::move(restore_data);
-  }
-
- private:
-  const double uuid_;  // we'll use the current time in seconds to uniquely
-                       // identify the template.
-  std::u16string desk_name_;
-
-  // Contains the app launching and window information that can be used to
-  // re-launch/restore this desk.
-  std::unique_ptr<full_restore::RestoreData> desk_restore_data_;
-};
+class DeskTemplate;
 
 // Interface for an ash client (e.g. Chrome) to interact with the Virtual Desks
 // feature.
