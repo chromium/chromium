@@ -174,7 +174,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="OfflineIndicator.ShownDurationV2.InBackground" units="ms"
-    expires_after="2021-08-01">
+    expires_after="2021-12-05">
   <owner>curranmax@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
@@ -190,7 +190,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="OfflineIndicator.ShownDurationV2.InForeground" units="ms"
-    expires_after="2021-08-01">
+    expires_after="2021-12-05">
   <owner>curranmax@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
@@ -205,7 +205,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="OfflineIndicator.ShownDurationV2.InForegroundWithoutBeingBackgrounded"
-    units="ms" expires_after="2021-08-01">
+    units="ms" expires_after="2021-12-05">
   <owner>curranmax@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
@@ -221,7 +221,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="OfflineIndicator.ShownDurationV2.NumTimesBackgrounded"
-    units="times backgrounded" expires_after="2021-08-01">
+    units="times backgrounded" expires_after="2021-12-05">
   <owner>curranmax@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
@@ -235,7 +235,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="OfflineIndicator.ShownDurationV2.UntilFirstTimeBackgrounded"
-    units="ms" expires_after="2021-08-01">
+    units="ms" expires_after="2021-12-05">
   <owner>curranmax@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
