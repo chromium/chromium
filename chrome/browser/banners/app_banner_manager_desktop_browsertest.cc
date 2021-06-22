@@ -290,7 +290,7 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest,
     EXPECT_EQ(State::PENDING_PROMPT, manager->state());
   }
 
-  EXPECT_EQ(AppBannerManager::InstallableWebAppCheckResult::kPromotable,
+  EXPECT_EQ(AppBannerManager::InstallableWebAppCheckResult::kYes_Promotable,
             manager->GetInstallableWebAppCheckResultForTesting());
   EXPECT_TRUE(manager->IsPromptAvailableForTesting());
 }
@@ -334,7 +334,7 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest,
     EXPECT_EQ(State::PENDING_PROMPT, manager->state());
   }
 
-  EXPECT_EQ(AppBannerManager::InstallableWebAppCheckResult::kPromotable,
+  EXPECT_EQ(AppBannerManager::InstallableWebAppCheckResult::kYes_Promotable,
             manager->GetInstallableWebAppCheckResultForTesting());
   EXPECT_TRUE(manager->IsPromptAvailableForTesting());
 }
@@ -433,7 +433,7 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest,
     EXPECT_EQ(State::PENDING_PROMPT, manager->state());
   }
 
-  EXPECT_EQ(AppBannerManager::InstallableWebAppCheckResult::kPromotable,
+  EXPECT_EQ(AppBannerManager::InstallableWebAppCheckResult::kYes_Promotable,
             manager->GetInstallableWebAppCheckResultForTesting());
   EXPECT_TRUE(manager->IsPromptAvailableForTesting());
 }

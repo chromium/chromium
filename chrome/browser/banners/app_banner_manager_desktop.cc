@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
@@ -202,6 +203,21 @@ void AppBannerManagerDesktop::OnWebAppInstalled(
     OnInstall(registrar().GetEffectiveDisplayModeFromManifest(*app_id));
     SetInstallableWebAppCheckResult(InstallableWebAppCheckResult::kNo);
   }
+}
+
+void AppBannerManagerDesktop::OnWebAppWillBeUninstalled(
+    const web_app::AppId& app_id) {
+  // WebAppTabHelper has a app_id but it is reset during
+  // OnWebAppWillBeUninstalled so using FindAppWithUrlInScope.
+  auto local_app_id = registrar().FindAppWithUrlInScope(validated_url());
+  if (app_id == local_app_id)
+    uninstalling_app_id_ = app_id;
+}
+
+void AppBannerManagerDesktop::OnWebAppUninstalled(
+    const web_app::AppId& app_id) {
+  if (uninstalling_app_id_ == app_id)
+    RecheckInstallabilityForLoadedPage(validated_url());
 }
 
 void AppBannerManagerDesktop::OnAppRegistrarDestroyed() {

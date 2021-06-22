@@ -105,9 +105,9 @@ class AppBannerManager : public content::WebContentsObserver,
   enum class InstallableWebAppCheckResult {
     kUnknown,
     kNo,
-    kNoAlreadyInstalled,
-    kByUserRequest,
-    kPromotable,
+    kNo_AlreadyInstalled,
+    kYes_ByUserRequest,
+    kYes_Promotable,
   };
 
   // Retrieves the platform specific instance of AppBannerManager from
@@ -345,6 +345,7 @@ class AppBannerManager : public content::WebContentsObserver,
   bool IsRunning() const;
 
   void SetInstallableWebAppCheckResult(InstallableWebAppCheckResult result);
+  void RecheckInstallabilityForLoadedPage(const GURL& url);
 
   // The URL for which the banner check is being conducted.
   GURL validated_url_;

@@ -402,19 +402,20 @@ void AppBannerManager::OnDidPerformInstallableWebAppCheck(
   if (IsWebAppConsideredInstalled() && !ShouldAllowWebAppReplacementInstall()) {
     TrackDisplayEvent(DISPLAY_EVENT_INSTALLED_PREVIOUSLY);
     SetInstallableWebAppCheckResult(
-        InstallableWebAppCheckResult::kNoAlreadyInstalled);
+        InstallableWebAppCheckResult::kNo_AlreadyInstalled);
     Stop(ALREADY_INSTALLED);
     return;
   }
 
   if (ShouldDeferToRelatedNonWebApp()) {
     SetInstallableWebAppCheckResult(
-        InstallableWebAppCheckResult::kByUserRequest);
+        InstallableWebAppCheckResult::kYes_ByUserRequest);
     Stop(PREFER_RELATED_APPLICATIONS);
     return;
   }
 
-  SetInstallableWebAppCheckResult(InstallableWebAppCheckResult::kPromotable);
+  SetInstallableWebAppCheckResult(
+      InstallableWebAppCheckResult::kYes_Promotable);
 
   DCHECK(data.has_worker && data.valid_manifest);
   DCHECK(!data.primary_icon_url.is_empty());
@@ -512,7 +513,7 @@ void AppBannerManager::SetInstallableWebAppCheckResult(
   switch (result) {
     case InstallableWebAppCheckResult::kUnknown:
       break;
-    case InstallableWebAppCheckResult::kPromotable:
+    case InstallableWebAppCheckResult::kYes_Promotable:
       last_promotable_web_app_scope_ = manifest_.scope;
       DCHECK(!last_promotable_web_app_scope_.is_empty());
       last_already_installed_web_app_scope_ = GURL();
@@ -520,13 +521,13 @@ void AppBannerManager::SetInstallableWebAppCheckResult(
           AppBannerSettingsHelper::CanShowInstallTextAnimation(
               web_contents(), last_promotable_web_app_scope_);
       break;
-    case InstallableWebAppCheckResult::kNoAlreadyInstalled:
+    case InstallableWebAppCheckResult::kNo_AlreadyInstalled:
       last_already_installed_web_app_scope_ = manifest_.scope;
       DCHECK(!last_already_installed_web_app_scope_.is_empty());
       last_promotable_web_app_scope_ = GURL();
       install_animation_pending_ = false;
       break;
-    case InstallableWebAppCheckResult::kByUserRequest:
+    case InstallableWebAppCheckResult::kYes_ByUserRequest:
     case InstallableWebAppCheckResult::kNo:
       last_promotable_web_app_scope_ = GURL();
       last_already_installed_web_app_scope_ = GURL();
@@ -536,6 +537,11 @@ void AppBannerManager::SetInstallableWebAppCheckResult(
 
   for (Observer& observer : observer_list_)
     observer.OnInstallableWebAppStatusUpdated();
+}
+
+void AppBannerManager::RecheckInstallabilityForLoadedPage(const GURL& url) {
+  ResetCurrentPageData();
+  DidFinishLoad(nullptr, url);
 }
 
 void AppBannerManager::TrackInstallPath(bool bottom_sheet,
@@ -670,8 +676,7 @@ void AppBannerManager::DidUpdateWebManifestURL(
         // re-compute that, instead of calling RequestAppBanner, DidFinishLoad
         // is called. That method will re-fetch the engagement data and re-set
         // that field.
-        ResetCurrentPageData();
-        DidFinishLoad(nullptr, url);
+        RecheckInstallabilityForLoadedPage(url);
       }
       return;
   }
@@ -747,10 +752,10 @@ std::u16string AppBannerManager::GetInstallableWebAppName(
   switch (manager->installable_web_app_check_result_) {
     case InstallableWebAppCheckResult::kUnknown:
     case InstallableWebAppCheckResult::kNo:
-    case InstallableWebAppCheckResult::kNoAlreadyInstalled:
+    case InstallableWebAppCheckResult::kNo_AlreadyInstalled:
       return std::u16string();
-    case InstallableWebAppCheckResult::kByUserRequest:
-    case InstallableWebAppCheckResult::kPromotable:
+    case InstallableWebAppCheckResult::kYes_ByUserRequest:
+    case InstallableWebAppCheckResult::kYes_Promotable:
       return manager->GetAppName();
   }
 }
@@ -772,11 +777,11 @@ bool AppBannerManager::IsProbablyPromotableWebApp(
       return in_promotable_scope ||
              (ignore_existing_installations && in_already_installed_scope);
     case InstallableWebAppCheckResult::kNo:
-    case InstallableWebAppCheckResult::kNoAlreadyInstalled:
+    case InstallableWebAppCheckResult::kNo_AlreadyInstalled:
       return ignore_existing_installations;
-    case InstallableWebAppCheckResult::kByUserRequest:
+    case InstallableWebAppCheckResult::kYes_ByUserRequest:
       return false;
-    case InstallableWebAppCheckResult::kPromotable:
+    case InstallableWebAppCheckResult::kYes_Promotable:
       return true;
   }
 }
@@ -785,10 +790,10 @@ bool AppBannerManager::IsPromotableWebApp() const {
   switch (installable_web_app_check_result_) {
     case InstallableWebAppCheckResult::kUnknown:
     case InstallableWebAppCheckResult::kNo:
-    case InstallableWebAppCheckResult::kNoAlreadyInstalled:
-    case InstallableWebAppCheckResult::kByUserRequest:
+    case InstallableWebAppCheckResult::kNo_AlreadyInstalled:
+    case InstallableWebAppCheckResult::kYes_ByUserRequest:
       return false;
-    case InstallableWebAppCheckResult::kPromotable:
+    case InstallableWebAppCheckResult::kYes_Promotable:
       return true;
   }
 }

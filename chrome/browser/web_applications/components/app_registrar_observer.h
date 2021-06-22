@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_COMPONENTS_APP_REGISTRAR_OBSERVER_H_
 
 #include "base/observer_list_types.h"
+#include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 
 namespace base {
