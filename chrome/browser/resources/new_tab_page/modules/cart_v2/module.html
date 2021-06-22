@@ -59,29 +59,37 @@
   #consentCard,
   .cart-item {
     border: 1px solid var(--ntp-border-color);
-    border-radius: 4px;
     display: inline-flex;
     flex-direction: column;
-    height: 140px;
     margin: 0 4px;
   }
 
   .cart-item {
+    border-radius: 4px;
     cursor: pointer;
+    height: 140px;
   }
 
   #consentCard {
-    width: 244px;
+    align-items: center;
+    border-radius: 8px;
+    box-sizing: border-box;
+    height: 146px;
+    width: 329px;
   }
 
   #consentIconContainer {
+    align-items: center;
     background: var(--discount-chip-background);
     border-radius: 4px;
-    height: 24px;
+    display: flex;
+    height: 26px;
+    justify-content: center;
     margin-inline-end: auto;
     margin-inline-start: auto;
     margin-top: 16px;
-    width: 24px;
+    opacity: 80%;
+    width: 26px;
   }
 
   #consentIcon {
@@ -90,9 +98,6 @@
     -webkit-mask-size: 100%;
     background-color: var(--discount-chip-text-color);
     height: 15px;
-    margin-inline-end: auto;
-    margin-inline-start: auto;
-    margin-top: 4.5px;
     width: 15px;
   }
 
@@ -102,17 +107,15 @@
     font-weight: 400;
     height: 40px;
     line-height: 20px;
-    margin-inline-end: auto;
-    margin-inline-start: auto;
-    margin-top: 4px;
+    margin-top: 8px;
     text-align: center;
     white-space: normal;
-    width: 220px;
+    width: 223px;
   }
 
   #consentButtonContainer {
-    display: inline-block;
-    margin-inline-start: 16px;
+    display: flex;
+    justify-content: center;
     margin-top: 8px;
   }
 
