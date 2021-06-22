@@ -2323,6 +2323,9 @@ extern const char kBluetoothFixA2dpPacketSizeDescription[];
 extern const char kBluetoothWbsDogfoodName[];
 extern const char kBluetoothWbsDogfoodDescription[];
 
+extern const char kButtonARCNetworkDiagnosticsName[];
+extern const char kButtonARCNetworkDiagnosticsDescription[];
+
 extern const char kPreferConstantFrameRateName[];
 extern const char kPreferConstantFrameRateDescription[];
 

@@ -185,6 +185,11 @@ const base::Feature kBluetoothPhoneFilter{"BluetoothPhoneFilter",
 const base::Feature kBluetoothWbsDogfood{"BluetoothWbsDogfood",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enable display of button on Arc provisioning failure dialog for network
+// tests.
+const base::Feature kButtonARCNetworkDiagnostics{
+    "ButtonARCNetworkDiagnostics", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls whether the camera privacy switch toasts and notification should be
 // displayed.
 const base::Feature kCameraPrivacySwitchNotifications{

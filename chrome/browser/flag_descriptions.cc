@@ -4059,6 +4059,11 @@ const char kBluetoothWbsDogfoodDescription[] =
     "or fully launched. Only on the few models that Bluetooth WBS is "
     "still stablizing this flag will take effect.";
 
+const char kButtonARCNetworkDiagnosticsName[] = "ARC Network Tests Button";
+const char kButtonARCNetworkDiagnosticsDescription[] =
+    "Enables the display of a button on the ARC Provisioning failure dialog "
+    "that opens the connectivity section of the diagnostics app.";
+
 const char kPreferConstantFrameRateName[] = "Prefer Constant Frame Rate";
 const char kPreferConstantFrameRateDescription[] =
     "Enables this flag to prefer using constant frame rate for camera when "
