@@ -616,7 +616,11 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "autodismiss_duration_ms": "20000"
+                    },
                     "enable_features": [
+                        "MessagesForAndroidInfrastructure",
                         "MessagesForAndroidPasswords"
                     ]
                 }
