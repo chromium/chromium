@@ -8,7 +8,7 @@ import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.endsWith;
 import static org.mockito.Mockito.verify;
 
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,7 @@ import androidx.test.filters.MediumTest;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -49,7 +50,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.chrome.test.util.WaitForFocusHelper;
@@ -60,7 +60,6 @@ import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.content_public.browser.test.util.KeyUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
-import org.chromium.net.test.EmbeddedTestServerRule;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.url.GURL;
 
@@ -79,24 +78,18 @@ public class MostVisitedTilesTest {
     // A dummy URL used in the Omnibox for factual correctness.
     // The MV tiles are meant to be shown when the user is currently on any website.
     // Note: since we use the TestAutocompleteController, this could be any string.
-    private static final String PAGE_URL = "chrome://version";
+    private static final String START_PAGE_LOCATION = "/echo/start.html";
     private static final String SEARCH_QUERY = "related search query";
 
     @ClassRule
     public static final ChromeTabbedActivityTestRule sActivityTestRule =
             new ChromeTabbedActivityTestRule();
-    @ClassRule
-    public static EmbeddedTestServerRule sTestServerRule = new EmbeddedTestServerRule();
 
     @ClassRule
     public static DisableAnimationsTestRule sNoAnimationsRule = new DisableAnimationsTestRule();
 
     @Rule
     public JniMocker mJniMocker = new JniMocker();
-
-    @Rule
-    public final BlankCTATabInitialStateRule mInitialStateRule =
-            new BlankCTATabInitialStateRule(sActivityTestRule, false);
 
     @Mock
     private Profile mProfile;
@@ -118,25 +111,32 @@ public class MostVisitedTilesTest {
     private EmbeddedTestServer mTestServer;
     private Tab mTab;
     private BaseCarouselSuggestionView mCarousel;
+    private String mStartUrl;
 
     private NavsuggestTile mTile1;
     private NavsuggestTile mTile2;
     private NavsuggestTile mTile3;
+
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        sActivityTestRule.startMainActivityOnBlankPage();
+        sActivityTestRule.waitForActivityNativeInitializationComplete();
+    }
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         mJniMocker.mock(AutocompleteControllerJni.TEST_HOOKS, mControllerJniMock);
         doReturn(mController).when(mControllerJniMock).getForProfile(any());
-        sActivityTestRule.waitForActivityNativeInitializationComplete();
         mActivity = sActivityTestRule.getActivity();
         mLocationBarLayout = mActivity.findViewById(R.id.location_bar);
         mUrlBar = mActivity.findViewById(R.id.url_bar);
         mAutocomplete = mLocationBarLayout.getAutocompleteCoordinator();
         mTab = mActivity.getActivityTab();
+        mStartUrl = sActivityTestRule.getTestServer().getURL(START_PAGE_LOCATION);
 
         ChromeTabUtils.waitForInteractable(mTab);
-        ChromeTabUtils.loadUrlOnUiThread(mTab, PAGE_URL);
+        ChromeTabUtils.loadUrlOnUiThread(mTab, mStartUrl);
         ChromeTabUtils.waitForTabPageLoaded(mTab, null);
 
         // clang-format off
@@ -160,21 +160,20 @@ public class MostVisitedTilesTest {
      */
     private void setUpSuggestionsToShow() {
         // Set up basic AutocompleteResult hosting a MostVisitedTiles suggestion.
-        mTestServer = sTestServerRule.getServer();
-        mTile1 = new NavsuggestTile(
-                "About", new GURL(mTestServer.getURL("/chrome/test/data/android/about.html")));
+        mTestServer = sActivityTestRule.getTestServer();
+        mTile1 = new NavsuggestTile("About", new GURL(mTestServer.getURL("/echo/tile1.html")));
         mTile2 = new NavsuggestTile(
-                "Happy Server", new GURL(mTestServer.getURL("/chrome/test/data/android/ok.txt")));
-        mTile3 = new NavsuggestTile(
-                "Test Server", new GURL(mTestServer.getURL("/chrome/test/data/android/test.html")));
+                "Happy Server", new GURL(mTestServer.getURL("/echo/tile2.html")));
+        mTile3 =
+                new NavsuggestTile("Test Server", new GURL(mTestServer.getURL("/echo/tile3.html")));
 
         AutocompleteResult autocompleteResult = AutocompleteResult.fromCache(null, null);
         AutocompleteMatchBuilder builder = new AutocompleteMatchBuilder();
 
         // First suggestion is the current content of the Omnibox.
         builder.setType(OmniboxSuggestionType.NAVSUGGEST);
-        builder.setDisplayText(PAGE_URL);
-        builder.setUrl(new GURL(PAGE_URL));
+        builder.setDisplayText(START_PAGE_LOCATION);
+        builder.setUrl(new GURL(mStartUrl));
         autocompleteResult.getSuggestionsList().add(builder.build());
         builder.reset();
 
@@ -196,11 +195,11 @@ public class MostVisitedTilesTest {
                 1, new AutocompleteResult.GroupDetails("See also", false));
 
         doAnswer(invocation -> {
-            mListener.getValue().onSuggestionsReceived(autocompleteResult, PAGE_URL);
+            mListener.getValue().onSuggestionsReceived(autocompleteResult, mStartUrl);
             return null;
         })
                 .when(mController)
-                .startZeroSuggest(eq(PAGE_URL), any(), anyInt(), any());
+                .startZeroSuggest(endsWith(START_PAGE_LOCATION), any(), anyInt(), any());
     }
 
     private void focusOmniboxAndWaitForSuggestions() {
