@@ -8,13 +8,17 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_document_transition_prepare_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_document_transition_start_options.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/dom_node_ids.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 namespace {
@@ -260,13 +264,23 @@ void DocumentTransition::VerifySharedElements() {
     auto* object = active_element->GetLayoutObject();
 
     // TODO(vmpstr): Should this work for replaced elements as well?
-    if (object && object->ShouldApplyPaintContainment())
-      continue;
+    if (object) {
+      if (object->ShouldApplyPaintContainment())
+        continue;
+
+      auto* console_message = MakeGarbageCollected<ConsoleMessage>(
+          mojom::ConsoleMessageSource::kRendering,
+          mojom::ConsoleMessageLevel::kError,
+          "Dropping element from transition. Shared element must have "
+          "containt:paint");
+      console_message->SetNodes(document_->GetFrame(),
+                                {DOMNodeIds::IdForNode(active_element)});
+      document_->AddConsoleMessage(console_message);
+    }
 
     // Clear the shared element. Note that we don't remove the element from the
     // vector, since we need to preserve the order of the elements and we
     // support nulls as a valid active element.
-    // TODO(vmpstr): We should issue a console warning here.
 
     // Invalidate the element since we should no longer be compositing it.
     auto* box = active_element->GetLayoutBox();
