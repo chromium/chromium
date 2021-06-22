@@ -44,6 +44,12 @@ namespace {
 // known.
 constexpr uint64_t kMaxAvifFileSize = 0x10000000;  // 256 MB
 
+const char* AvifDecoderErrorMessage(const avifDecoder* decoder) {
+  // decoder->diag.error is a char array that stores a null-terminated C string.
+  return *decoder->diag.error != '\0' ? decoder->diag.error
+                                      : "(no error message)";
+}
+
 // Builds a gfx::ColorSpace from the ITU-T H.273 (CICP) color description in the
 // image. This color space is used to create the gfx::ColorTransform for the
 // YUV-to-RGB conversion. If the image does not have an ICC profile, this color
@@ -823,8 +829,14 @@ avifResult AVIFImageDecoder::DecodeImage(size_t index) {
   // |index| should be less than what DecodeFrameCount() returns, so we should
   // not get the AVIF_RESULT_NO_IMAGES_REMAINING error.
   DCHECK_NE(ret, AVIF_RESULT_NO_IMAGES_REMAINING);
-  if (ret != AVIF_RESULT_OK)
+  if (ret != AVIF_RESULT_OK) {
+    if (ret != AVIF_RESULT_WAITING_ON_IO) {
+      DVLOG(1) << "avifDecoderNthImage(" << index
+               << ") failed: " << avifResultToString(ret) << ": "
+               << AvifDecoderErrorMessage(decoder_.get());
+    }
     return ret;
+  }
 
   const auto* image = decoder_->image;
   // Frame size must be equal to container size.
