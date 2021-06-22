@@ -2194,10 +2194,10 @@
     Not allowed to send pop-ups or use redirects
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_PROTECTED_CONTENT_DESCRIPTION" desc="Description of the protected content content setting.">
-    When a site plays content protected by copyright, it might ask to recognize your device
+    To play content protected by copyright, sites may need to use a content protection service
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_PROTECTED_CONTENT_ALLOWED" desc="Label for the enabled option of the protected content content setting.">
-    Sites can ask to play protected content
+    Sites can play protected content
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_PROTECTED_CONTENT_BLOCKED" desc="Label for the disabled option of the protected content content setting.">
     Don't allow sites to play protected content
@@ -2205,12 +2205,23 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_PROTECTED_CONTENT_BLOCKED_SUB_LABEL" desc="Sub label for the disabled option of the protected content content setting.">
     Media with a copyright might not play
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_PROTECTED_CONTENT_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the protected content content setting.">
-    Allowed to play protected content
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_PROTECTED_CONTENT_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the protected content content setting.">
-    Not allowed to play protected content
-  </message>
+  <if expr="chromeos or is_win">
+    <message name="IDS_SETTINGS_SITE_SETTINGS_PROTECTED_CONTENT_IDENTIFIERS_ALLOWED" desc="Label for the enabled option of the protected content content setting.">
+      Sites can use identifiers to play protected content
+    </message>
+    <message name="IDS_SETTINGS_SITE_SETTINGS_PROTECTED_CONTENT_IDENTIFIERS_BLOCKED" desc="Label for the disabled option of the protected content content setting.">
+      Don't allow sites to use identifiers to play protected content
+    </message>
+    <message name="IDS_SETTINGS_SITE_SETTINGS_PROTECTED_CONTENT_IDENTIFIERS_BLOCKED_SUB_LABEL" desc="Sub label for the disabled option of the protected content content setting.">
+      Media quality may be reduced
+    </message>
+    <message name="IDS_SETTINGS_SITE_SETTINGS_PROTECTED_CONTENT_IDENTIFIERS_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the protected content content setting.">
+      Allowed to use identifiers to play protected content
+    </message>
+    <message name="IDS_SETTINGS_SITE_SETTINGS_PROTECTED_CONTENT_IDENTIFIERS_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the protected content content setting.">
+      Not allowed to use identifiers to play protected content
+    </message>
+  </if>
   <message name="IDS_SETTINGS_SITE_SETTINGS_PROTOCOL_HANDLERS_DESCRIPTION" desc="Description of the protocol handlers content setting.">
     Sites can handle special tasks when you click on certain types of links, like creating a new message in your email client or adding new events to your online calendar
   </message>
@@ -2497,8 +2508,8 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_PROTECTED_CONTENT_MID_SENTENCE" desc="Label for the protected content site settings when used mid-sentence.">
     protected content
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_PROTECTED_CONTENT_IDENTIFIERS" desc="Label for the permission to allow a site to use unique identifiers to access protected content in site details.">
-    Protected content identifiers
+  <message name="IDS_SETTINGS_SITE_SETTINGS_PROTECTED_CONTENT_IDENTIFIERS" desc="Label for the protected content identifier permission that controls content controlled by DRM (e.g. paid subscriptions). Protected content refers to DRM-controlled content. IDs is short for identifiers; use abbreviation to avoid truncation.">
+    Protected content IDs
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_PROTECTED_CONTENT_ENABLE" desc="Label for the toggle enabling protected content.">
     Allow sites to play protected content (recommended)
@@ -2520,7 +2531,7 @@
   </message>
   <if expr="chromeos or is_win">
     <message name="IDS_SETTINGS_SITE_SETTINGS_PROTECTED_CONTENT_IDENTIFIERS_EXPLANATION" desc="Text that is displayed on the Protected Content section of Content Settings. This text explains that enabling protected content may require using a uniquely identifiable machine identifier.">
-      Some content services use unique identifiers for the purposes of authorizing access to protected content
+      Sites may also need to recognize your device using an identifier
     </message>
     <message name="IDS_SETTINGS_SITE_SETTINGS_PROTECTED_CONTENT_ENABLE_IDENTIFIERS" desc="The label of the checkbox for enabling machine identifiers to uniquely identiy the user for protected content.">
       Allow identifiers for protected content (computer restart may be required)
