@@ -119,9 +119,7 @@ CGFloat kRotationAngleInRadians = 20.0 / 180 * M_PI;
   [super didMoveToSuperview];
 
   if (self.subviews.count == 0) {
-    self.backgroundColor = color::DarkModeDynamicColor(
-        [UIColor colorNamed:kBackgroundColor], self.incognito,
-        [UIColor colorNamed:kBackgroundDarkColor]);
+    self.backgroundColor = [UIColor colorNamed:kBackgroundColor];
     self.layer.shadowRadius = 20;
     self.layer.shadowOpacity = 0.4;
     self.layer.shadowOffset = CGSizeMake(0, 3);
@@ -131,9 +129,7 @@ CGFloat kRotationAngleInRadians = 20.0 / 180 * M_PI;
             [[UIImage imageNamed:@"open_new_tab_background"]
                 imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]];
     linkImage.translatesAutoresizingMaskIntoConstraints = NO;
-    linkImage.tintColor = color::DarkModeDynamicColor(
-        [UIColor colorNamed:kToolbarButtonColor], self.incognito,
-        [UIColor colorNamed:kToolbarButtonDarkColor]);
+    linkImage.tintColor = [UIColor colorNamed:kToolbarButtonColor];
 
     [self addSubview:linkImage];
 

@@ -284,9 +284,7 @@ const CGFloat kAnimationDuration = 0.15;
         self.isIncognito ? UIUserInterfaceStyleDark
                          : UIUserInterfaceStyleUnspecified;
   }
-  backgroundView.backgroundColor = color::DarkModeDynamicColor(
-      [UIColor colorNamed:kBackgroundColor], self.isIncognito,
-      [UIColor colorNamed:kBackgroundDarkColor]);
+  backgroundView.backgroundColor = [UIColor colorNamed:kBackgroundColor];
 
   [backgroundView addSubview:self.presentedViewController.view];
 

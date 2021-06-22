@@ -28,42 +28,27 @@
 }
 
 - (UIColor*)NTPBackgroundColor {
-  return color::DarkModeDynamicColor(ntp_home::kNTPBackgroundColor(),
-                                     self.style == INCOGNITO,
-                                     [UIColor colorNamed:kBackgroundDarkColor]);
+  return ntp_home::kNTPBackgroundColor();
 }
 
 - (UIColor*)backgroundColor {
-  return color::DarkModeDynamicColor([UIColor colorNamed:kBackgroundColor],
-                                     self.style == INCOGNITO,
-                                     [UIColor colorNamed:kBackgroundDarkColor]);
+  return [UIColor colorNamed:kBackgroundColor];
 }
 
 - (UIColor*)buttonsTintColor {
-  return color::DarkModeDynamicColor(
-      [UIColor colorNamed:kToolbarButtonColor], self.style == INCOGNITO,
-      [UIColor colorNamed:kToolbarButtonDarkColor]);
+  return [UIColor colorNamed:kToolbarButtonColor];
 }
 
 - (UIColor*)buttonsTintColorHighlighted {
-  return color::DarkModeDynamicColor(
-      [UIColor colorNamed:@"tab_toolbar_button_color_highlighted"],
-      self.style == INCOGNITO,
-      [UIColor colorNamed:@"tab_toolbar_button_color_highlighted_incognito"]);
+  return [UIColor colorNamed:@"tab_toolbar_button_color_highlighted"];
 }
 
 - (UIColor*)buttonsSpotlightColor {
-  return color::DarkModeDynamicColor(
-      [UIColor colorNamed:@"tab_toolbar_button_halo_color"],
-      self.style == INCOGNITO,
-      [UIColor colorNamed:@"tab_toolbar_button_halo_color_incognito"]);
+  return [UIColor colorNamed:@"tab_toolbar_button_halo_color"];
 }
 
 - (UIColor*)dimmedButtonsSpotlightColor {
-  return color::DarkModeDynamicColor(
-      [UIColor colorNamed:@"tab_toolbar_button_halo_color"],
-      self.style == INCOGNITO,
-      [UIColor colorNamed:@"tab_toolbar_button_halo_color_incognito"]);
+  return [UIColor colorNamed:@"tab_toolbar_button_halo_color"];
 }
 
 - (UIColor*)locationBarBackgroundColorWithVisibility:(CGFloat)visibilityFactor {

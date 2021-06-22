@@ -192,9 +192,7 @@
 - (UIButton*)cancelButton {
   UIButton* cancelButton = [UIButton buttonWithType:UIButtonTypeSystem];
   cancelButton.titleLabel.font = [UIFont systemFontOfSize:kLocationBarFontSize];
-  cancelButton.tintColor = color::DarkModeDynamicColor(
-      [UIColor colorNamed:kBlueColor], self.style == INCOGNITO,
-      [UIColor colorNamed:kBlueDarkColor]);
+  cancelButton.tintColor = [UIColor colorNamed:kBlueColor];
   [cancelButton setTitle:l10n_util::GetNSString(IDS_CANCEL)
                 forState:UIControlStateNormal];
   [cancelButton setContentHuggingPriority:UILayoutPriorityRequired
