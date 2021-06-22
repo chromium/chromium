@@ -2172,53 +2172,80 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowDifferentDomains) {
   EXPECT_TRUE(form_manager_->GetPendingCredentials().username_value.empty());
 }
 
-// Tests that username is taken during username first flow.
+// Tests that username is taken during username first flow both on password
+// saving and updating.
 TEST_P(PasswordFormManagerTest, UsernameFirstFlowVotes) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kUsernameFirstFlow);
 
-  CreateFormManager(observed_form_only_password_fields_);
-  fetcher_->NotifyFetchCompleted();
-  const std::u16string possible_username = u"possible_username";
-  constexpr autofill::FieldRendererId kUsernameFieldRendererId(101);
-  const std::u16string field_name = u"username_field";
-  PossibleUsernameData possible_username_data(
-      saved_match_.signon_realm, kUsernameFieldRendererId, field_name,
-      possible_username, base::Time::Now(), 0 /* driver_id */);
+  for (bool is_password_update : {false, true}) {
+    CreateFormManager(observed_form_only_password_fields_);
+    if (!is_password_update) {
+      fetcher_->NotifyFetchCompleted();
+    } else {
+      SetNonFederatedAndNotifyFetchCompleted({&saved_match_});
+    }
 
-  // Create form predictions and set them to |possible_username_data|.
-  constexpr autofill::FormSignature kUsernameFormSignature(1000);
-  possible_username_data.form_predictions = MakeSingleUsernamePredictions(
-      kUsernameFormSignature, kUsernameFieldRendererId);
+    const std::u16string possible_username = u"possible_username";
+    constexpr autofill::FieldRendererId kUsernameFieldRendererId(101);
+    const std::u16string field_name = u"username_field";
+    PossibleUsernameData possible_username_data(
+        saved_match_.signon_realm, kUsernameFieldRendererId, field_name,
+        possible_username, base::Time::Now(), 0 /* driver_id */);
 
-  MockFieldInfoManager mock_field_manager;
-  ON_CALL(mock_field_manager, GetFieldType(_, _))
-      .WillByDefault(Return(UNKNOWN_TYPE));
-  ON_CALL(client_, GetFieldInfoManager())
-      .WillByDefault(Return(&mock_field_manager));
+    // Create form predictions and set them to |possible_username_data|.
+    constexpr autofill::FormSignature kUsernameFormSignature(1000);
+    possible_username_data.form_predictions = MakeSingleUsernamePredictions(
+        kUsernameFormSignature, kUsernameFieldRendererId);
 
-  // Simulate submitting a form without a username. Data from
-  // |possible_username_data| will be taken for setting username.
-  FormData submitted_form = observed_form_only_password_fields_;
-  submitted_form.fields[0].value = u"strongpassword";
+    MockFieldInfoManager mock_field_manager;
+    ON_CALL(mock_field_manager, GetFieldType(_, _))
+        .WillByDefault(Return(UNKNOWN_TYPE));
+    ON_CALL(client_, GetFieldInfoManager())
+        .WillByDefault(Return(&mock_field_manager));
 
-  ASSERT_TRUE(form_manager_->ProvisionallySave(submitted_form, &driver_,
-                                               &possible_username_data));
+    // Simulate submitting a form without a username. Data from
+    // |possible_username_data| will be taken for setting username.
+    FormData submitted_form = observed_form_only_password_fields_;
+    submitted_form.fields[0].value = u"strongpassword";
 
-  // Check that uploads for both username and password form happen.
-  testing::InSequence in_sequence;
-  // Upload for the password form.
-  EXPECT_CALL(mock_autofill_download_manager_,
-              StartUploadRequest(_, false, _, _, true, nullptr));
+    ASSERT_TRUE(form_manager_->ProvisionallySave(submitted_form, &driver_,
+                                                 &possible_username_data));
 
-  // Upload for the username form.
-  EXPECT_CALL(mock_autofill_download_manager_,
-              StartUploadRequest(SignatureIs(kUsernameFormSignature), false,
-                                 ServerFieldTypeSet{SINGLE_USERNAME}, _, true,
-                                 nullptr));
+    // Check that uploads for both username and password form happen.
+    testing::InSequence in_sequence;
 
-  form_manager_->Save();
+    if (!is_password_update) {
+      // Upload for the password form.
+      EXPECT_CALL(mock_autofill_download_manager_,
+                  StartUploadRequest(
+                      SignatureIs(CalculateFormSignature(submitted_form)),
+                      false, _, _, true, nullptr));
+    }
+
+    // Upload for the username form.
+    EXPECT_CALL(mock_autofill_download_manager_,
+                StartUploadRequest(SignatureIs(kUsernameFormSignature), false,
+                                   ServerFieldTypeSet{SINGLE_USERNAME}, _, true,
+                                   nullptr));
+
+    if (is_password_update) {
+      // Upload for the password form.
+      EXPECT_CALL(mock_autofill_download_manager_,
+                  StartUploadRequest(
+                      SignatureIs(CalculateFormSignature(submitted_form)),
+                      false, _, _, true, nullptr));
+    }
+
+    if (!is_password_update) {
+      form_manager_->Save();
+    } else {
+      form_manager_->Update(saved_match_);
+    }
+    Mock::VerifyAndClearExpectations(&mock_autofill_download_manager_);
+  }
 }
+
 // Tests that username is taken during username first flow.
 TEST_P(PasswordFormManagerTest, NegativeUsernameFirstFlowVotes) {
   constexpr char16_t kPossibleUsername[] = u"possible_username";

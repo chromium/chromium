@@ -374,6 +374,7 @@ void PasswordFormManager::OnNopeUpdateClicked() {
   votes_uploader_.UploadPasswordVote(*parsed_submitted_form_,
                                      *parsed_submitted_form_,
                                      autofill::NOT_NEW_PASSWORD, std::string());
+  votes_uploader_.MaybeSendSingleUsernameVote(false /* credentials_saved */);
 }
 
 void PasswordFormManager::OnNeverClicked() {
