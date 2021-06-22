@@ -123,15 +123,6 @@ XRAnchorSet* XRFrame::trackedAnchors() const {
 XRPlaneSet* XRFrame::detectedPlanes(ExceptionState& exception_state) const {
   DVLOG(3) << __func__;
 
-  if (!session_->IsFeatureEnabled(
-          device::mojom::XRSessionFeature::PLANE_DETECTION)) {
-    DVLOG(2) << __func__
-             << ": plane detection feature not enabled on a session";
-    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                      XRSession::kPlanesFeatureNotSupported);
-    return {};
-  }
-
   if (!is_active_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kInactiveFrame);

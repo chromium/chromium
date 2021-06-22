@@ -1553,7 +1553,9 @@ void ArCoreGl::ProcessFrame(
   }
 
   // Get anchors data, including anchors created this frame.
-  frame_data->anchors_data = arcore_->GetAnchorsData();
+  if (IsFeatureEnabled(device::mojom::XRSessionFeature::ANCHORS)) {
+    frame_data->anchors_data = arcore_->GetAnchorsData();
+  }
 
   // Get planes data if it was requested.
   if (IsFeatureEnabled(device::mojom::XRSessionFeature::PLANE_DETECTION)) {

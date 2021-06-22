@@ -859,7 +859,7 @@ struct XRFrameData {
   // Detected plane information. Only present if plane detection is enabled.
   XRPlaneDetectionData? detected_planes_data;
 
-  // Tracked anchors information.
+  // Tracked anchors information. Only present if anchors are enabled.
   XRAnchorsData? anchors_data;
 
   // Lighting estimation data. Only present if lighting estimation is enabled.

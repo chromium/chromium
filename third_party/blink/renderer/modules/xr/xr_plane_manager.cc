@@ -24,8 +24,9 @@ void XRPlaneManager::ProcessPlaneInformation(
     DVLOG(3) << __func__ << ": detected_planes_data is null";
 
     // We have received a nullopt - plane detection is not supported or
-    // disabled. Mark detected_planes as null & clear stored planes.
-    is_detected_planes_null_ = true;
+    // disabled. Clear stored planes (if any).
+    // The device can send either null or empty data - in both cases, it means
+    // that there are no planes available.
     plane_ids_to_planes_.clear();
     return;
   }
@@ -38,8 +39,6 @@ void XRPlaneManager::ProcessPlaneInformation(
            << detected_planes_data->updated_planes_data.size()
            << ", all planes size="
            << detected_planes_data->all_planes_ids.size();
-
-  is_detected_planes_null_ = false;
 
   HeapHashMap<uint64_t, Member<XRPlane>> updated_planes;
 
@@ -75,8 +74,10 @@ void XRPlaneManager::ProcessPlaneInformation(
 }
 
 XRPlaneSet* XRPlaneManager::GetDetectedPlanes() const {
-  if (is_detected_planes_null_)
-    return nullptr;
+  if (!session_->IsFeatureEnabled(
+          device::mojom::XRSessionFeature::PLANE_DETECTION)) {
+    return MakeGarbageCollected<XRPlaneSet>(HeapHashSet<Member<XRPlane>>{});
+  }
 
   HeapHashSet<Member<XRPlane>> result;
   for (auto& plane_id_and_plane : plane_ids_to_planes_) {

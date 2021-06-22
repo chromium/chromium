@@ -419,11 +419,11 @@ const String XRSession::visibilityState() const {
 XRAnchorSet* XRSession::TrackedAnchors() const {
   DVLOG(3) << __func__;
 
+  if (!IsFeatureEnabled(device::mojom::XRSessionFeature::ANCHORS)) {
+    return MakeGarbageCollected<XRAnchorSet>(HeapHashSet<Member<XRAnchor>>{});
+  }
+
   HeapHashSet<Member<XRAnchor>> result;
-
-  if (is_tracked_anchors_null_)
-    return nullptr;
-
   for (auto& anchor_id_and_anchor : anchor_ids_to_anchors_) {
     result.insert(anchor_id_and_anchor.value);
   }
@@ -1018,9 +1018,9 @@ void XRSession::ProcessAnchorsData(
   if (!tracked_anchors_data) {
     DVLOG(3) << __func__ << ": tracked_anchors_data is null";
 
-    // We have received a null ptr. Mark tracked_anchors as null & clear stored
-    // anchors.
-    is_tracked_anchors_null_ = true;
+    // We have received a nullptr. Clear stored anchors.
+    // The device can send either null or empty data - in both cases, it means
+    // that there are no anchors available.
     anchor_ids_to_anchors_.clear();
     return;
   }
@@ -1034,8 +1034,6 @@ void XRSession::ProcessAnchorsData(
            << tracked_anchors_data->updated_anchors_data.size()
            << ", all anchors size="
            << tracked_anchors_data->all_anchors_ids.size();
-
-  is_tracked_anchors_null_ = false;
 
   HeapHashMap<uint64_t, Member<XRAnchor>> updated_anchors;
 

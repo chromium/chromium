@@ -509,7 +509,6 @@ class XRSession final
   // |anchor_ids_to_pending_anchor_promises_|, and anchors that got created in
   // phase 3 live in |anchor_ids_to_anchors_|.
 
-  bool is_tracked_anchors_null_ = true;
   HeapHashMap<uint64_t, Member<XRAnchor>> anchor_ids_to_anchors_;
 
   // Set of promises returned from CreateAnchor that are still in-flight to the
