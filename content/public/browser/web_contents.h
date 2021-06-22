@@ -24,6 +24,7 @@
 #include "content/public/browser/invalidate_type.h"
 #include "content/public/browser/mhtml_generation_result.h"
 #include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/page.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/save_page_type.h"
 #include "content/public/browser/visibility.h"
@@ -321,6 +322,39 @@ class WebContents : public PageNavigator,
   // primary main frame. This WebContents may have additional main frames for
   // prerendered pages, bfcached pages, etc.
   virtual RenderFrameHost* GetMainFrame() = 0;
+
+  // Returns the current page in the primary frame tree of this WebContents.
+  // If this WebContents is associated with an omnibox, usually the URL of the
+  // main document of this page will be displayed in it.
+  //
+  // Primary page can change as a result of a navigation, both to a new page
+  // (navigation loading a new main document) and an existing one (when
+  // restoring the page from back/forward cache or activating a prerendering
+  // page). This change can be observed using
+  // WebContentsObserver::PrimaryPageChanged, see the comments there for more
+  // details.
+  //
+  // The primary page's lifetime corresponds to its main document's lifetime
+  // and may differ from a RenderFrameHost's lifetime (for cross-document same
+  // RenderFrameHost navigations).
+  //
+  // Apart from the primary page, additional pages might be associated with this
+  // WebContents:
+  // - Pending commit pages (which will become primary after-and-if the ongoing
+  //   main frame navigation successfully commits).
+  // - Pending deletion pages (pages the user has navigated from, but which are
+  //   still alive as they are running unload handlers in background).
+  // - Pages in back/forward cache (which can be navigated to later).
+  // - Prerendered pages (pages which are loading in the background in
+  //   anticipation of user navigating to them).
+  //
+  // Given the existence of multiple pages, in many cases (especially when
+  // handling IPCs from the renderer process), calling GetPrimaryPage would not
+  // be appropriate as it might return a wrong page. If the code already has a
+  // reference to RenderFrameHost or a Page (e.g. each IPC from the renderer
+  // process should be associated with a particular RenderFrameHost), it should
+  // be used instead of getting the primary page from the WebContents.
+  virtual Page& GetPrimaryPage() = 0;
 
   // Returns the focused frame for the currently active view. Might be nullptr
   // if nothing is focused.

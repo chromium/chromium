@@ -34,6 +34,7 @@
 #include "content/browser/renderer_host/navigation_controller_delegate.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/navigator_delegate.h"
+#include "content/browser/renderer_host/page_impl.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_manager.h"
 #include "content/browser/renderer_host/render_view_host_delegate.h"
@@ -345,6 +346,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   const GURL& GetVisibleURL() override;
   const GURL& GetLastCommittedURL() override;
   RenderFrameHostImpl* GetMainFrame() override;
+  PageImpl& GetPrimaryPage() override;
   RenderFrameHostImpl* GetFocusedFrame() override;
   RenderFrameHostImpl* FindFrameByFrameTreeNodeId(int frame_tree_node_id,
                                                   int process_id) override;

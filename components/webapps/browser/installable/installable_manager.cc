@@ -627,7 +627,7 @@ void InstallableManager::FetchManifest() {
 
   // This uses DidFinishNavigation to abort when the primary page changes.
   // Therefore this should always be the correct page.
-  web_contents->GetMainFrame()->GetPage().GetManifest(base::BindOnce(
+  web_contents->GetPrimaryPage().GetManifest(base::BindOnce(
       &InstallableManager::OnDidGetManifest, weak_factory_.GetWeakPtr()));
 }
 

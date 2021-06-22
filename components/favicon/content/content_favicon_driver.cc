@@ -108,7 +108,7 @@ void ContentFaviconDriver::DownloadManifest(const GURL& url,
   // than the primary page. This code should likely be refactored so that either
   // this is unreachable from other pages, or the correct page is plumbed in
   // here.
-  web_contents()->GetMainFrame()->GetPage().GetManifest(
+  web_contents()->GetPrimaryPage().GetManifest(
       base::BindOnce(&ContentFaviconDriver::OnDidDownloadManifest,
                      base::Unretained(this), std::move(callback)));
 }

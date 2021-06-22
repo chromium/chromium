@@ -519,8 +519,7 @@ class ChromeServiceWorkerLinkFetchTest : public ChromeServiceWorkerFetchTest {
     browser()
         ->tab_strip_model()
         ->GetActiveWebContents()
-        ->GetMainFrame()
-        ->GetPage()
+        ->GetPrimaryPage()
         .GetManifest(
             base::BindOnce(&ManifestCallbackAndRun, run_loop.QuitClosure()));
     run_loop.Run();

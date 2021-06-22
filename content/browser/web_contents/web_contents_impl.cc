@@ -1249,6 +1249,16 @@ RenderFrameHostImpl* WebContentsImpl::GetMainFrame() {
   return frame_tree_.root()->current_frame_host();
 }
 
+PageImpl& WebContentsImpl::GetPrimaryPage() {
+  // We should not be accessing Page during the destruction of this WebContents,
+  // as the Page has already been cleared.
+  //
+  // Please note that IsBeingDestroyed() should be checked to ensure that we
+  // don't access Page related data that is going to be destroyed.
+  CHECK(frame_tree_.root()->current_frame_host());
+  return frame_tree_.root()->current_frame_host()->GetPage();
+}
+
 RenderFrameHostImpl* WebContentsImpl::GetFocusedFrame() {
   FrameTreeNode* focused_node = frame_tree_.GetFocusedFrame();
   if (!focused_node)
