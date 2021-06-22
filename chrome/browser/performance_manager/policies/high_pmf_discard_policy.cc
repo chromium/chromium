@@ -5,17 +5,21 @@
 #include "chrome/browser/performance_manager/policies/high_pmf_discard_policy.h"
 
 #include "base/bind.h"
-#include "base/memory/memory_pressure_monitor.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/process/process_metrics.h"
 #include "base/task/post_task.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
 #include "chrome/browser/performance_manager/policies/policy_features.h"
 #include "components/performance_manager/public/graph/process_node.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+
+#if !defined(OS_LINUX)
+#include "base/memory/memory_pressure_monitor.h"
+#endif
 
 namespace performance_manager {
 namespace policies {
@@ -118,6 +122,7 @@ void HighPMFDiscardPolicy::OnProcessMemoryMetricsAvailable(
 
   if (should_discard) {
     discard_attempt_in_progress_ = true;
+#if !defined(OS_LINUX)
     // Record the memory pressure level before discarding a tab.
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce([]() {
@@ -125,6 +130,7 @@ void HighPMFDiscardPolicy::OnProcessMemoryMetricsAvailable(
               "Discarding.HighPMFPolicy.MemoryPressureLevel",
               base::MemoryPressureMonitor::Get()->GetCurrentPressureLevel());
         }));
+#endif
     intervention_details_.emplace(
         InterventionDetails{.total_pmf_kb_before_intervention = total_pmf_kb});
     PageDiscardingHelper::GetFromGraph(graph_)->UrgentlyDiscardAPage(

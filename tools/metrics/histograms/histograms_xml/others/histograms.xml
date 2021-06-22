@@ -4409,6 +4409,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>catan-team@chromium.org</owner>
   <summary>
     The memory pressure level when the High-PMF policy decides to discard a tab.
+    Windows and Mac only.
   </summary>
 </histogram>
 
