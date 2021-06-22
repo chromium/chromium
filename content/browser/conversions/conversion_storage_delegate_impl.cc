@@ -23,21 +23,25 @@ int ConversionStorageDelegateImpl::GetMaxConversionsPerImpression(
 }
 
 int ConversionStorageDelegateImpl::GetMaxImpressionsPerOrigin() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return 1024;
 }
 
 int ConversionStorageDelegateImpl::GetMaxConversionsPerOrigin() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return 1024;
 }
 
 int ConversionStorageDelegateImpl::GetMaxAttributionDestinationsPerEventSource()
     const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // TODO(apaseltiner): Finalize a value for this.
   return INT_MAX;
 }
 
 ConversionStorage::Delegate::RateLimitConfig
 ConversionStorageDelegateImpl::GetRateLimits() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // TODO(csharrison): Finalize max_attributions_per_window value.
   return {
       .time_window = base::TimeDelta::FromDays(30),
@@ -48,6 +52,7 @@ ConversionStorageDelegateImpl::GetRateLimits() const {
 StorableImpression::AttributionLogic
 ConversionStorageDelegateImpl::SelectAttributionLogic(
     const StorableImpression& impression) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return StorableImpression::AttributionLogic::kTruthfully;
 }
 
