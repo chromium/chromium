@@ -5,6 +5,8 @@
 """Presubmit checks for SafeBrowsing download_file_types.
 """
 
+USE_PYTHON3 = True
+
 def CheckVersionUpdatedInDownloadFileTypeList(input_api, output_api):
   def IsDownloadFileTypeList(x):
     return (input_api.os_path.basename(x.LocalPath()) ==
