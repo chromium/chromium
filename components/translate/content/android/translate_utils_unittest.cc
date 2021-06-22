@@ -77,9 +77,10 @@ TEST_F(TranslateUtilsTest, GetJavaLangauges) {
       {"en", u"English"}, {"de", u"German"}, {"pl", u"Polish"}};
   std::vector<std::u16string> expectedLanguageNames = {u"English", u"German",
                                                        u"Polish"};
-  std::vector<int> expectedHashCodes = {metrics::MetricsLog::Hash("en"),
-                                        metrics::MetricsLog::Hash("de"),
-                                        metrics::MetricsLog::Hash("pl")};
+  std::vector<int> expected_hash_codes = {
+      static_cast<int>(metrics::MetricsLog::Hash("en")),
+      static_cast<int>(metrics::MetricsLog::Hash("de")),
+      static_cast<int>(metrics::MetricsLog::Hash("pl"))};
 
   delegate_->SetTranslateLanguagesForTest(translate_languages);
   // Test that all languages in Java format are returned property.
@@ -102,7 +103,7 @@ TEST_F(TranslateUtilsTest, GetJavaLangauges) {
   std::vector<int> actual_hash_codes;
   base::android::JavaIntArrayToIntVector(env_, contentLanguages.java_hash_codes,
                                          &actual_hash_codes);
-  EXPECT_THAT(actual_hash_codes, ::testing::ContainerEq(expectedHashCodes));
+  EXPECT_THAT(actual_hash_codes, ::testing::ContainerEq(expected_hash_codes));
 }
 
 }  // namespace translate
