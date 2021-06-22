@@ -899,6 +899,8 @@ void LockContentsView::OnUsersChanged(const std::vector<LoginUserInfo>& users) {
   // Removing child views can change focus, which may result in LockContentsView
   // getting focused. Make sure to clear internal references before that happens
   // so there is not stale-pointer usage. See crbug.com/884402.
+  // TODO(crbug.com/1222096): We should figure out a better way of handling
+  // avatar changes. They should not cause view re-layouting.
   main_view_->RemoveAllChildViews(true /*delete_children*/);
 
   // Build user state list. Preserve previous state if the user already exists.
