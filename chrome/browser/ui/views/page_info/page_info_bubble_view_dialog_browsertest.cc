@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 
+#include "build/build_config.h"
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -347,15 +348,27 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewDialogBrowserTest,
 
 // Shows the Page Info bubble with all the permissions displayed with 'Allow'
 // set. All permissions will show regardless of its factory default value.
+// Flaky: https://crbug.com/1221423
+#if defined(OS_WIN)
+#define MAYBE_InvokeUi_AllowAllPermissions DISABLED_InvokeUi_AllowAllPermissions
+#else
+#define MAYBE_InvokeUi_AllowAllPermissions InvokeUi_AllowAllPermissions
+#endif
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewDialogBrowserTest,
-                       InvokeUi_AllowAllPermissions) {
+                       MAYBE_InvokeUi_AllowAllPermissions) {
   ShowAndVerifyUi();
 }
 
 // Shows the Page Info bubble with all the permissions displayed with 'Block'
 // set. All permissions will show regardless of its factory default value.
+// Flaky: https://crbug.com/1221423
+#if defined(OS_WIN)
+#define MAYBE_InvokeUi_BlockAllPermissions DISABLED_InvokeUi_BlockAllPermissions
+#else
+#define MAYBE_InvokeUi_BlockAllPermissions InvokeUi_BlockAllPermissions
+#endif
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewDialogBrowserTest,
-                       InvokeUi_BlockAllPermissions) {
+                       MAYBE_InvokeUi_BlockAllPermissions) {
   ShowAndVerifyUi();
 }
 
