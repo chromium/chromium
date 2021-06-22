@@ -58,11 +58,6 @@ class MockPasswordStore : public PasswordStore {
       const PasswordFormDigest& form) override {
     return std::vector<std::unique_ptr<PasswordForm>>();
   }
-  void FillMatchingLoginsAsync(
-      LoginsReply callback,
-      const std::vector<PasswordFormDigest>& forms) override {
-    std::move(callback).Run(std::vector<std::unique_ptr<PasswordForm>>());
-  }
   MOCK_METHOD1(
       FillMatchingLoginsByPassword,
       std::vector<std::unique_ptr<PasswordForm>>(const std::u16string&));

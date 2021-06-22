@@ -247,16 +247,20 @@ void PasswordStore::GetLogins(const PasswordFormDigest& form,
       new GetLoginsWithAffiliationsRequestHandler(consumer->GetWeakPtr(), this);
 
   if (affiliated_match_helper_) {
+    // The backend *is* the password_store and can therefore be passed with
+    // base::Unretained.
     affiliated_match_helper_->GetAffiliatedAndroidAndWebRealms(
         form,
         base::BindOnce(ConvertToForms)
-            .Then(base::BindOnce(&PasswordStore::FillMatchingLoginsAsync, this,
+            .Then(base::BindOnce(&PasswordStoreBackend::FillMatchingLoginsAsync,
+                                 base::Unretained(backend_),
                                  request_handler->AffiliatedLoginsClosure())));
   } else {
     request_handler->AffiliatedLoginsClosure().Run({});
   }
 
-  FillMatchingLoginsAsync(request_handler->LoginsForFormClosure(), {form});
+  backend_->FillMatchingLoginsAsync(request_handler->LoginsForFormClosure(),
+                                    {form});
 }
 
 void PasswordStore::GetLoginsByPassword(

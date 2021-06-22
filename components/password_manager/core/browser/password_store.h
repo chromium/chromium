@@ -28,6 +28,7 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_reuse_detector.h"
 #include "components/password_manager/core/browser/password_reuse_detector_consumer.h"
+#include "components/password_manager/core/browser/password_store_backend.h"
 #include "components/password_manager/core/browser/password_store_change.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/browser/password_store_sync.h"
@@ -423,13 +424,6 @@ class PasswordStore : protected PasswordStoreSync,
   virtual std::vector<std::unique_ptr<PasswordForm>> FillMatchingLogins(
       const PasswordFormDigest& form) = 0;
 
-  // Returns all PasswordForms with the same signon_realm as a form in the
-  // |forms|. If multiple forms are given, those will be concatenated. Callback
-  // is called on the main sequence.
-  virtual void FillMatchingLoginsAsync(
-      LoginsReply callback,
-      const std::vector<PasswordFormDigest>& forms) = 0;
-
   // Finds and returns all not-blocklisted PasswordForms with the specified
   // |plain_text_password| stored in the credential database.
   virtual std::vector<std::unique_ptr<PasswordForm>>
@@ -559,6 +553,11 @@ class PasswordStore : protected PasswordStoreSync,
   scoped_refptr<base::SequencedTaskRunner> background_task_runner() const {
     return background_task_runner_;
   }
+
+  // This member is called to perform the actual interaction with the storage.
+  // TODO(crbug.com/1217071): Make private std::unique_ptr as soon as the
+  // backend is passed into the store instead of it being the store(_impl).
+  PasswordStoreBackend* backend_ = nullptr;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(PasswordStoreTest,

@@ -33,7 +33,8 @@ MATCHER_P(MatchesFormExceptStore, expected, "") {
 // in memory and does all its manipulations on the main thread. Since this
 // is only used for testing, only the parts of the interface that are needed
 // for testing have been implemented.
-class TestPasswordStore : public PasswordStore {
+// TODO(crbug.com/1222591): Implement only the PasswordStoreInterface.
+class TestPasswordStore : public PasswordStore, public PasswordStoreBackend {
  public:
   // We need to qualify password_manager::IsAccountStore with the full
   // namespace, otherwise, it's confused with the method
@@ -78,6 +79,11 @@ class TestPasswordStore : public PasswordStore {
   scoped_refptr<base::SequencedTaskRunner> CreateBackgroundTaskRunner()
       const override;
 
+  // PasswordStoreBackend interface
+  void FillMatchingLoginsAsync(
+      LoginsReply callback,
+      const std::vector<PasswordFormDigest>& forms) override;
+
   // PasswordStore interface
   PasswordStoreChangeList AddLoginImpl(const PasswordForm& form,
                                        AddLoginError* error) override;
@@ -86,9 +92,6 @@ class TestPasswordStore : public PasswordStore {
   PasswordStoreChangeList RemoveLoginImpl(const PasswordForm& form) override;
   std::vector<std::unique_ptr<PasswordForm>> FillMatchingLogins(
       const PasswordFormDigest& form) override;
-  void FillMatchingLoginsAsync(
-      LoginsReply callback,
-      const std::vector<PasswordFormDigest>& forms) override;
   std::vector<std::unique_ptr<PasswordForm>> FillMatchingLoginsByPassword(
       const std::u16string& plain_text_password) override;
   bool FillAutofillableLogins(

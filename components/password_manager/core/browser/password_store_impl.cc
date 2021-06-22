@@ -33,7 +33,9 @@ PasswordStoreChangeList BuildPasswordChangeListForInsecureCredentialsUpdate(
 }  // namespace
 
 PasswordStoreImpl::PasswordStoreImpl(std::unique_ptr<LoginDatabase> login_db)
-    : login_db_(std::move(login_db)) {}
+    : login_db_(std::move(login_db)) {
+  backend_ = this;
+}
 
 PasswordStoreImpl::~PasswordStoreImpl() = default;
 
@@ -184,21 +186,6 @@ PasswordStoreImpl::FillMatchingLogins(const PasswordFormDigest& form) {
   if (login_db_ && !login_db_->GetLogins(form, &matched_forms))
     return std::vector<std::unique_ptr<PasswordForm>>();
   return matched_forms;
-}
-
-void PasswordStoreImpl::FillMatchingLoginsAsync(
-    LoginsReply callback,
-    const std::vector<PasswordFormDigest>& forms) {
-  if (forms.empty()) {
-    std::move(callback).Run({});
-    return;
-  }
-
-  background_task_runner()->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(&PasswordStoreImpl::FillMatchingLoginsInternal, this,
-                     forms),
-      std::move(callback));
 }
 
 std::vector<std::unique_ptr<PasswordForm>>
@@ -398,6 +385,21 @@ bool PasswordStoreImpl::IsAccountStore() const {
 
 bool PasswordStoreImpl::DeleteAndRecreateDatabaseFile() {
   return login_db_ && login_db_->DeleteAndRecreateDatabaseFile();
+}
+
+void PasswordStoreImpl::FillMatchingLoginsAsync(
+    LoginsReply callback,
+    const std::vector<PasswordFormDigest>& forms) {
+  if (forms.empty()) {
+    std::move(callback).Run({});
+    return;
+  }
+
+  background_task_runner()->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&PasswordStoreImpl::FillMatchingLoginsInternal, this,
+                     forms),
+      std::move(callback));
 }
 
 void PasswordStoreImpl::ResetLoginDB() {

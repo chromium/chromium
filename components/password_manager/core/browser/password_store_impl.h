@@ -18,7 +18,9 @@ namespace password_manager {
 
 // Simple password store implementation that delegates everything to
 // the LoginDatabase.
-class PasswordStoreImpl : public PasswordStore {
+// TODO(crbug.com/1217071): Currently, only implicitly inherits from protected
+// PasswordStoreSync but should be explicit.
+class PasswordStoreImpl : public PasswordStore, public PasswordStoreBackend {
  public:
   // The |login_db| must not have been Init()-ed yet. It will be initialized in
   // a deferred manner on the background sequence.
@@ -60,9 +62,6 @@ class PasswordStoreImpl : public PasswordStore {
       base::Time delete_end) override;
   std::vector<std::unique_ptr<PasswordForm>> FillMatchingLogins(
       const PasswordFormDigest& form) override;
-  void FillMatchingLoginsAsync(
-      LoginsReply callback,
-      const std::vector<PasswordFormDigest>& forms) override;
   std::vector<std::unique_ptr<PasswordForm>> FillMatchingLoginsByPassword(
       const std::u16string& plain_text_password) override;
   bool FillAutofillableLogins(
@@ -107,6 +106,11 @@ class PasswordStoreImpl : public PasswordStore {
   bool DeleteAndRecreateDatabaseFile() override;
 
  private:
+  // Implements PasswordStoreBackend interface.
+  void FillMatchingLoginsAsync(
+      LoginsReply callback,
+      const std::vector<PasswordFormDigest>& forms) override;
+
   // Resets |login_db_| on the background sequence.
   void ResetLoginDB();
 

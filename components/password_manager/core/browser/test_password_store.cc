@@ -113,9 +113,9 @@ bool TestPasswordSyncMetadataStore::HasUnsyncedDeletions() {
 TestPasswordStore::TestPasswordStore(
     password_manager::IsAccountStore is_account_store)
     : is_account_store_(is_account_store),
-      metadata_store_(std::make_unique<TestPasswordSyncMetadataStore>()) {}
-
-TestPasswordStore::~TestPasswordStore() = default;
+      metadata_store_(std::make_unique<TestPasswordSyncMetadataStore>()) {
+  backend_ = this;
+}
 
 const TestPasswordStore::PasswordMap& TestPasswordStore::stored_passwords()
     const {
@@ -137,9 +137,21 @@ bool TestPasswordStore::IsEmpty() {
   return number_of_passwords == 0u;
 }
 
+TestPasswordStore::~TestPasswordStore() = default;
+
 scoped_refptr<base::SequencedTaskRunner>
 TestPasswordStore::CreateBackgroundTaskRunner() const {
   return base::SequencedTaskRunnerHandle::Get();
+}
+
+void TestPasswordStore::FillMatchingLoginsAsync(
+    LoginsReply callback,
+    const std::vector<PasswordFormDigest>& forms) {
+  background_task_runner()->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&TestPasswordStore::FillMatchingLoginsBulk,
+                     base::Unretained(this), forms),
+      std::move(callback));
 }
 
 PasswordStoreChangeList TestPasswordStore::AddLoginImpl(
@@ -237,15 +249,6 @@ TestPasswordStore::FillMatchingLogins(const PasswordFormDigest& form) {
     }
   }
   return matched_forms;
-}
-
-void TestPasswordStore::FillMatchingLoginsAsync(
-    LoginsReply callback,
-    const std::vector<PasswordFormDigest>& forms) {
-  background_task_runner()->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(&TestPasswordStore::FillMatchingLoginsBulk, this, forms),
-      std::move(callback));
 }
 
 std::vector<std::unique_ptr<PasswordForm>>
