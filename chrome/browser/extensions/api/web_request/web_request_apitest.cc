@@ -501,7 +501,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, WebRequestPublicSession) {
 
 // Test that a request to an OpenSearch description document (OSDD) generates
 // an event with the expected details.
-IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, WebRequestTestOSDD) {
+// Flaky on Windows: https://crbug.com/1218893
+#if defined(OS_WIN)
+#define MAYBE_WebRequestTestOSDD DISABLED_WebRequestTestOSDD
+#else
+#define MAYBE_WebRequestTestOSDD WebRequestTestOSDD
+#endif
+IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, MAYBE_WebRequestTestOSDD) {
   // An OSDD request is only generated when a main frame at is loaded at /, so
   // serve osdd/index.html from the root of the test server:
   embedded_test_server()->ServeFilesFromDirectory(
