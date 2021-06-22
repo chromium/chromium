@@ -7,12 +7,11 @@
 
 #import "ios/chrome/browser/ui/first_run/first_run_screen_view_controller.h"
 
+@protocol TOSCommands;
+
 // Extends the base delegate protocol to handle taps on the custom button.
 @protocol
     WelcomeScreenViewControllerDelegate <FirstRunScreenViewControllerDelegate>
-
-// Called when the user taps to see the terms and services page.
-- (void)didTapTOSLink;
 
 // Returns whether the metrics reporting consent checkbox should be selected or
 // not by default.
@@ -27,6 +26,17 @@
 
 // Whether the metrics reporting checkbox is selected.
 @property(nonatomic, readonly, assign) BOOL checkBoxSelected;
+
+// Init with the handler used to manage the display of TOS.
+- (instancetype)initWithTOSHandler:(id<TOSCommands>)TOSHandler
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
+
+- (instancetype)initWithNibName:(NSString*)nibNameOrNil
+                         bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;
+
+- (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
 
 @end
 

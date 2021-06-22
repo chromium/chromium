@@ -6,6 +6,7 @@
 
 #import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "ios/chrome/browser/ui/first_run/welcome/checkbox_button.h"
+#import "ios/chrome/browser/ui/first_run/welcome/tos_commands.h"
 #import "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -34,11 +35,21 @@ NSString* const kEnterpriseIconImageName = @"enterprise_icon";
 
 @property(nonatomic, strong) CheckboxButton* metricsConsentButton;
 @property(nonatomic, strong) UITextView* termsOfServiceTextView;
+@property(nonatomic, weak) id<TOSCommands> TOSHandler;
 
 @end
 
 @implementation WelcomeScreenViewController
 @dynamic delegate;
+
+- (instancetype)initWithTOSHandler:(id<TOSCommands>)TOSHandler {
+  DCHECK(TOSHandler);
+  self = [super initWithNibName:nil bundle:nil];
+  if (self) {
+    _TOSHandler = TOSHandler;
+  }
+  return self;
+}
 
 - (void)viewDidLoad {
   [self configureLabels];
@@ -220,9 +231,9 @@ NSString* const kEnterpriseIconImageName = @"enterprise_icon";
                   inRange:(NSRange)characterRange
               interaction:(UITextItemInteraction)interaction {
   DCHECK(textView == self.termsOfServiceTextView);
-  [self.delegate didTapTOSLink];
+  [self.TOSHandler showTOSPage];
 
-  // The delegate is already handling the tap.
+  // The handler is already handling the tap.
   return NO;
 }
 

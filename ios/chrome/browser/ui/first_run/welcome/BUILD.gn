@@ -5,6 +5,8 @@
 source_set("welcome") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "tos_coordinator.h",
+    "tos_coordinator.mm",
     "welcome_screen_coordinator.h",
     "welcome_screen_coordinator.mm",
   ]
@@ -14,10 +16,13 @@ source_set("welcome") {
     "//base",
     "//components/metrics",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/first_run:screen_delegate",
     "//ios/chrome/browser/ui/util:terms_util",
+    "//ios/web/common:web_view_creation_util",
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
@@ -28,6 +33,9 @@ source_set("welcome_ui") {
   sources = [
     "checkbox_button.h",
     "checkbox_button.mm",
+    "tos_commands.h",
+    "tos_view_controller.h",
+    "tos_view_controller.mm",
     "welcome_screen_mediator.h",
     "welcome_screen_mediator.mm",
     "welcome_screen_view_controller.h",
