@@ -8183,10 +8183,14 @@ void Document::ActivateForPrerendering(base::TimeTicks activation_start) {
 
   // https://jeremyroman.github.io/alternate-loading-modes/#prerendering-browsing-context-activate
   // Step 8.3.4 "Fire an event named prerenderingchange at doc."
-  // TODO(crbug.com/1215103): Consider showing a warning message on DevTools
-  // when the feature is disabled.
   if (RuntimeEnabledFeatures::Prerender2Enabled(GetExecutionContext())) {
     DispatchEvent(*Event::Create(event_type_names::kPrerenderingchange));
+  } else {
+    AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kJavaScript,
+        mojom::blink::ConsoleMessageLevel::kWarning,
+        "Failed to dispatch 'prerenderingchange' event: Prerender2 feature is "
+        "not enabled on the document."));
   }
 
   // Step 8.3.5 "For each steps in doc’s post-prerendering activation steps

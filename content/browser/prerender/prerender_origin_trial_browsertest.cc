@@ -163,6 +163,16 @@ class PrerenderOriginTrialBrowserTest
         *web_contents(), GetUrl("/prerender"));
     EXPECT_TRUE(prerender_requested_);
 
+    std::unique_ptr<WebContentsConsoleObserver> console_observer;
+    if (!enabled_on_prerendered_page) {
+      const char* kConsolePattern =
+          "Failed to dispatch 'prerenderingchange' event: Prerender2 feature "
+          "is not enabled on the document.";
+      console_observer =
+          std::make_unique<WebContentsConsoleObserver>(web_contents());
+      console_observer->SetPattern(kConsolePattern);
+    }
+
     test::PrerenderTestHelper::NavigatePrimaryPage(*web_contents(),
                                                    GetUrl("/prerender"));
     EXPECT_EQ(enabled_on_prerendered_page,
@@ -173,6 +183,8 @@ class PrerenderOriginTrialBrowserTest
       EXPECT_EQ(true, EvalJs(web_contents(),
                              "onprerenderingchange_observed_promise"));
     } else {
+      console_observer->Wait();
+      EXPECT_EQ(1u, console_observer->messages().size());
       EXPECT_EQ(false, EvalJs(web_contents(), "onprerenderingchange_observed"));
     }
   }
