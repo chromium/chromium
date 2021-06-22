@@ -1833,8 +1833,8 @@ and applied correctly. -->
 </histogram>
 
 <histogram name="SafeBrowsing.V4Store.IsStoreValid" enum="BooleanValid"
-    expires_after="2021-08-05">
-  <owner>vakh@chromium.org</owner>
+    expires_after="2022-08-05">
+  <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Records whether a store has valid data, when it is queried. This is logged
