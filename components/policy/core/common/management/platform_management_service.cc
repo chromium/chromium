@@ -27,8 +27,9 @@ PlatformManagementService& PlatformManagementService::GetInstance() {
 void PlatformManagementService::InitManagementStatusProviders() {
   std::vector<std::unique_ptr<ManagementStatusProvider>> providers;
 #if defined(OS_WIN)
-  providers.emplace_back(std::make_unique<DomainEnrollmentStatusProvider>());
-  providers.emplace_back(
+  providers.push_back(std::make_unique<DomainEnrollmentStatusProvider>());
+  providers.push_back(std::make_unique<AzureActiveDirectoryStatusProvider>());
+  providers.push_back(
       std::make_unique<EnterpriseMDMManagementStatusProvider>());
 #endif
   SetManagementStatusProvider(std::move(providers));

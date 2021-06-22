@@ -15,8 +15,8 @@ namespace policy {
 class POLICY_EXPORT DomainEnrollmentStatusProvider
     : public ManagementStatusProvider {
  public:
-  DomainEnrollmentStatusProvider();
-  ~DomainEnrollmentStatusProvider() final;
+  DomainEnrollmentStatusProvider() = default;
+  ~DomainEnrollmentStatusProvider() final = default;
 
   // ManagementStatusProvider impl
   bool IsManaged() final;
@@ -24,13 +24,24 @@ class POLICY_EXPORT DomainEnrollmentStatusProvider
 
   static bool IsEnrolledToDomain();
 };
+
+class POLICY_EXPORT AzureActiveDirectoryStatusProvider final
+    : public ManagementStatusProvider {
+ public:
+  AzureActiveDirectoryStatusProvider() = default;
+  ~AzureActiveDirectoryStatusProvider() override = default;
+
+  // ManagementStatusProvider impl
+  bool IsManaged() override;
+  EnterpriseManagementAuthority GetAuthority() override;
+};
 #endif
 
 class POLICY_EXPORT EnterpriseMDMManagementStatusProvider
     : public ManagementStatusProvider {
  public:
-  EnterpriseMDMManagementStatusProvider();
-  ~EnterpriseMDMManagementStatusProvider() final;
+  EnterpriseMDMManagementStatusProvider() = default;
+  ~EnterpriseMDMManagementStatusProvider() final = default;
 
   // ManagementStatusProvider impl
   bool IsManaged() final;

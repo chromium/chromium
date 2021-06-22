@@ -12,10 +12,6 @@
 
 namespace policy {
 #if defined(OS_WIN)
-DomainEnrollmentStatusProvider::DomainEnrollmentStatusProvider() = default;
-
-DomainEnrollmentStatusProvider::~DomainEnrollmentStatusProvider() = default;
-
 bool DomainEnrollmentStatusProvider::IsManaged() {
   return DomainEnrollmentStatusProvider::IsEnrolledToDomain();
 }
@@ -27,13 +23,16 @@ EnterpriseManagementAuthority DomainEnrollmentStatusProvider::GetAuthority() {
 bool DomainEnrollmentStatusProvider::IsEnrolledToDomain() {
   return base::win::IsEnrolledToDomain();
 }
+
+bool AzureActiveDirectoryStatusProvider::IsManaged() {
+  return base::win::IsJoinedToAzureAD();
+}
+
+EnterpriseManagementAuthority
+AzureActiveDirectoryStatusProvider::GetAuthority() {
+  return EnterpriseManagementAuthority::CLOUD_DOMAIN;
+}
 #endif
-
-EnterpriseMDMManagementStatusProvider::EnterpriseMDMManagementStatusProvider() =
-    default;
-
-EnterpriseMDMManagementStatusProvider::
-    ~EnterpriseMDMManagementStatusProvider() = default;
 
 bool EnterpriseMDMManagementStatusProvider::IsManaged() {
 #if defined(OS_WIN)

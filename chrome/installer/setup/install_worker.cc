@@ -519,12 +519,12 @@ void AddUpdateBrandCodeWorkItem(const InstallerState& installer_state,
 
   // Only update if this machine is:
   // - domain joined, or
+  // - Azure Active Directory joined, or
   // - registered with MDM and is not windows home edition
-  bool is_enterprise_version =
-      base::win::OSInfo::GetInstance()->version_type() != base::win::SUITE_HOME;
-  if (!(base::win::IsEnrolledToDomain() ||
-        (base::win::IsDeviceRegisteredWithManagement() &&
-         is_enterprise_version))) {
+  if (!(base::win::IsEnrolledToDomain() || base::win::IsJoinedToAzureAD() ||
+        (base::win::OSInfo::GetInstance()->version_type() !=
+             base::win::SUITE_HOME &&
+         base::win::IsDeviceRegisteredWithManagement()))) {
     return;
   }
 

@@ -1096,11 +1096,10 @@ mojo::PendingRemote<prerender::mojom::PrerenderCanceler> GetPrerenderCanceler(
 // as a new central class to replace those checks is in the making.
 bool ShouldHonorPolicies() {
 #if defined(OS_WIN)
-  bool is_enterprise_version =
-      base::win::OSInfo::GetInstance()->version_type() != base::win::SUITE_HOME;
-  return base::win::IsEnrolledToDomain() ||
-         (base::win::IsDeviceRegisteredWithManagement() &&
-          is_enterprise_version);
+  return base::win::IsEnrolledToDomain() || base::win::IsJoinedToAzureAD() ||
+         (base::win::OSInfo::GetInstance()->version_type() !=
+              base::win::SUITE_HOME &&
+          base::win::IsDeviceRegisteredWithManagement());
 #else   // defined(OS_WIN)
   // TODO(pastarmovj): Replace this with check for MacOS and the new management
   // service once it is ready.
