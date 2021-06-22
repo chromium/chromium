@@ -2651,8 +2651,9 @@
             ],
             "experiments": [
                 {
-                    "name": "RecipeTasksChromeCart_Enabled",
+                    "name": "RecipeTasksChromeCartImprovement_Enabled",
                     "params": {
+                        "NtpChromeCartModuleHeuristicsImprovementParam": "true",
                         "NtpModulesLoadTimeoutMillisecondsParam": "3000"
                     },
                     "enable_features": [
