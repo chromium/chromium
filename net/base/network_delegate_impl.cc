@@ -68,7 +68,9 @@ bool NetworkDelegateImpl::OnCanSetCookie(const URLRequest& request,
 bool NetworkDelegateImpl::OnForcePrivacyMode(
     const GURL& url,
     const SiteForCookies& site_for_cookies,
-    const absl::optional<url::Origin>& top_frame_origin) const {
+    const absl::optional<url::Origin>& top_frame_origin,
+    CookieOptions::SamePartyCookieContextType same_party_cookie_context_type)
+    const {
   return false;
 }
 

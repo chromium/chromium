@@ -262,7 +262,8 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
 
   // The party_context_ of this leg of the request. This gets updated on
   // redirects.
-  CookieOptions::SamePartyCookieContextType same_party_cookie_context_type() {
+  CookieOptions::SamePartyCookieContextType same_party_cookie_context_type()
+      const {
     return same_party_cookie_context_type_;
   }
   void set_same_party_cookie_context_type(

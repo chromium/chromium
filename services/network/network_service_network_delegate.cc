@@ -253,11 +253,13 @@ bool NetworkServiceNetworkDelegate::OnCanSetCookie(
 bool NetworkServiceNetworkDelegate::OnForcePrivacyMode(
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
-    const absl::optional<url::Origin>& top_frame_origin) const {
+    const absl::optional<url::Origin>& top_frame_origin,
+    net::CookieOptions::SamePartyCookieContextType
+        same_party_cookie_context_type) const {
   return network_context_->cookie_manager()
       ->cookie_settings()
       .IsPrivacyModeEnabled(url, site_for_cookies.RepresentativeUrl(),
-                            top_frame_origin);
+                            top_frame_origin, same_party_cookie_context_type);
 }
 
 bool NetworkServiceNetworkDelegate::

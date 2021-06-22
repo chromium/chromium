@@ -356,6 +356,13 @@ NET_EXPORT extern const base::Feature kUdpSocketPosixAlwaysUpdateBytesReceived;
 // See spec changes in https://github.com/httpwg/http-extensions/pull/1348
 NET_EXPORT extern const base::Feature kCookieSameSiteConsidersRedirectChain;
 
+// When enabled, cookies with the SameParty attribute are treated as
+// "first-party" when in same-party contexts, for the purposes of third-party
+// cookie blocking. (Note that as a consequence, some cookies may be blocked
+// while others are allowed on a cross-site, same-party request. Additionally,
+// privacy mode is disabled in same-party contexts.)
+NET_EXPORT extern const base::Feature kSamePartyCookiesConsideredFirstParty;
+
 }  // namespace features
 }  // namespace net
 

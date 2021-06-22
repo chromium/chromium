@@ -75,10 +75,11 @@ class NET_EXPORT NetworkDelegateImpl : public NetworkDelegate {
                       CookieOptions* options,
                       bool allowed_from_caller) override;
 
-  bool OnForcePrivacyMode(
-      const GURL& url,
-      const SiteForCookies& site_for_cookies,
-      const absl::optional<url::Origin>& top_frame_origin) const override;
+  bool OnForcePrivacyMode(const GURL& url,
+                          const SiteForCookies& site_for_cookies,
+                          const absl::optional<url::Origin>& top_frame_origin,
+                          CookieOptions::SamePartyCookieContextType
+                              same_party_cookie_context_type) const override;
 
   bool OnCancelURLRequestWithPolicyViolatingReferrerHeader(
       const URLRequest& request,

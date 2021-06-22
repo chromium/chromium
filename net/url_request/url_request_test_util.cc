@@ -620,7 +620,9 @@ bool TestNetworkDelegate::OnAnnotateAndMoveUserBlockedCookies(
 bool TestNetworkDelegate::OnForcePrivacyMode(
     const GURL& url,
     const SiteForCookies& site_for_cookies,
-    const absl::optional<url::Origin>& top_frame_origin) const {
+    const absl::optional<url::Origin>& top_frame_origin,
+    CookieOptions::SamePartyCookieContextType same_party_cookie_context_type)
+    const {
   return false;
 }
 
@@ -682,12 +684,14 @@ bool FilteringTestNetworkDelegate::OnCanSetCookie(
 bool FilteringTestNetworkDelegate::OnForcePrivacyMode(
     const GURL& url,
     const SiteForCookies& site_for_cookies,
-    const absl::optional<url::Origin>& top_frame_origin) const {
+    const absl::optional<url::Origin>& top_frame_origin,
+    CookieOptions::SamePartyCookieContextType same_party_cookie_context_type)
+    const {
   if (force_privacy_mode_)
     return true;
 
-  return TestNetworkDelegate::OnForcePrivacyMode(url, site_for_cookies,
-                                                 top_frame_origin);
+  return TestNetworkDelegate::OnForcePrivacyMode(
+      url, site_for_cookies, top_frame_origin, same_party_cookie_context_type);
 }
 
 bool FilteringTestNetworkDelegate::OnAnnotateAndMoveUserBlockedCookies(

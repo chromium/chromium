@@ -2181,6 +2181,12 @@ const char kSafetyTipDescription[] =
     "If enabled, a Safety Tip UI may be displayed when visiting or interacting "
     "with a site Chrome believes may be suspicious.";
 
+const char kSamePartyCookiesConsideredFirstPartyName[] =
+    "Consider SameParty cookies to be first-party.";
+const char kSamePartyCookiesConsideredFirstPartyDescription[] =
+    "If enabled, SameParty cookies will not be blocked even if third-party "
+    "cookies are blocked.";
+
 const char kSchemefulSameSiteName[] = "Schemeful Same-Site";
 const char kSchemefulSameSiteDescription[] =
     "Modify the same-site computation such that origins with the same "

@@ -9,6 +9,7 @@
 #include "base/debug/task_trace.h"
 #include "base/feature_list.h"
 #include "base/notreached.h"
+#include "base/stl_util.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/common/features.h"
 #include "net/base/net_errors.h"
@@ -25,6 +26,13 @@ bool CookieSettingsBase::IsThirdPartyRequest(const GURL& url,
       net::StaticCookiePolicy::BLOCK_ALL_THIRD_PARTY_COOKIES);
   return policy.CanAccessCookies(
              url, net::SiteForCookies::FromUrl(site_for_cookies)) != net::OK;
+}
+
+// static
+GURL CookieSettingsBase::GetFirstPartyURL(const GURL& site_for_cookies,
+                                          const url::Origin* top_frame_origin) {
+  return top_frame_origin != nullptr ? top_frame_origin->GetURL()
+                                     : site_for_cookies;
 }
 
 bool CookieSettingsBase::ShouldDeleteCookieOnExit(
@@ -85,7 +93,9 @@ bool CookieSettingsBase::IsFullCookieAccessAllowed(
     const GURL& site_for_cookies,
     const absl::optional<url::Origin>& top_frame_origin) const {
   ContentSetting setting = GetCookieSettingInternal(
-      url, top_frame_origin ? top_frame_origin->GetURL() : site_for_cookies,
+      url,
+      GetFirstPartyURL(site_for_cookies,
+                       base::OptionalOrNullptr(top_frame_origin)),
       IsThirdPartyRequest(url, site_for_cookies), nullptr);
   return IsAllowed(setting);
 }

@@ -81,10 +81,11 @@ class NET_EXPORT NetworkDelegate {
                     const net::CanonicalCookie& cookie,
                     CookieOptions* options,
                     bool allowed_from_caller);
-  bool ForcePrivacyMode(
-      const GURL& url,
-      const SiteForCookies& site_for_cookies,
-      const absl::optional<url::Origin>& top_frame_origin) const;
+  bool ForcePrivacyMode(const GURL& url,
+                        const SiteForCookies& site_for_cookies,
+                        const absl::optional<url::Origin>& top_frame_origin,
+                        CookieOptions::SamePartyCookieContextType
+                            same_party_cookie_context_type) const;
 
   bool CancelURLRequestWithPolicyViolatingReferrerHeader(
       const URLRequest& request,
@@ -247,7 +248,9 @@ class NET_EXPORT NetworkDelegate {
   virtual bool OnForcePrivacyMode(
       const GURL& url,
       const SiteForCookies& site_for_cookies,
-      const absl::optional<url::Origin>& top_frame_origin) const = 0;
+      const absl::optional<url::Origin>& top_frame_origin,
+      CookieOptions::SamePartyCookieContextType same_party_cookie_context_type)
+      const = 0;
 
   // Called when the |referrer_url| for requesting |target_url| during handling
   // of the |request| is does not comply with the referrer policy (e.g. a

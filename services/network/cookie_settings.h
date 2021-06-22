@@ -6,8 +6,10 @@
 #define SERVICES_NETWORK_COOKIE_SETTINGS_H_
 
 #include "base/component_export.h"
+#include "base/feature_list.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/cookie_settings_base.h"
+#include "net/base/features.h"
 #include "net/cookies/canonical_cookie.h"
 #include "services/network/public/cpp/session_cookie_delete_predicate.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -84,13 +86,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
       const GURL& url,
       const GURL& site_for_cookies) const override;
 
-  // Returns true if the resource identified by (`url`, `site_for_cookies`,
-  // `top_frame_origin`) is not allowed to access cookies in this context, and
-  // "privacy mode" should be enabled for the URL request in question.
-  bool IsPrivacyModeEnabled(
-      const GURL& url,
-      const GURL& site_for_cookies,
-      const absl::optional<url::Origin>& top_frame_origin) const;
+  // Returns true iff "privacy mode" should be enabled for the URL request in
+  // question, according to the user's settings.
+  bool IsPrivacyModeEnabled(const GURL& url,
+                            const GURL& site_for_cookies,
+                            const absl::optional<url::Origin>& top_frame_origin,
+                            net::CookieOptions::SamePartyCookieContextType
+                                same_party_cookie_context_type) const;
 
   // Returns true if the given cookie is accessible according to user
   // cookie-blocking settings. Assumes that the cookie is otherwise accessible
@@ -134,6 +136,44 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
       bool is_third_party_request,
       content_settings::SettingSource* source) const override;
 
+  struct CookieSettingWithMetadata {
+    ContentSetting cookie_setting;
+    bool blocked_by_third_party_setting;
+  };
+
+  // Returns the cookie setting for the given request, along with metadata
+  // associated with the lookup. Namely, whether the setting is due to
+  // third-party cookie blocking settings or not.
+  CookieSettingWithMetadata GetCookieSettingWithMetadata(
+      const GURL& url,
+      const GURL& first_party_url,
+      bool is_third_party_request) const;
+
+  // An overload of the above, which determines `first_party_url` and
+  // `is_third_party_request` appropriately.
+  CookieSettingWithMetadata GetCookieSettingWithMetadata(
+      const GURL& url,
+      const GURL& site_for_cookies,
+      const url::Origin* top_frame_origin) const;
+
+  // Returns whether the given cookie should be allowed to be sent, according to
+  // the user's settings. Assumes that the `cookie.access_result` has been
+  // correctly filled in by the cookie store. Note that the cookie may be
+  // "excluded" for other reasons, even if this method returns true.
+  bool IsCookieAllowed(
+      const CookieSettings::CookieSettingWithMetadata& setting_with_metadata,
+      const net::CookieWithAccessResult& cookie) const;
+
+  // Returns whether *some* cookie would be allowed to be sent in this context,
+  // according to the user's settings. Note that cookies may still be "excluded"
+  // for other reasons, even if this method returns true.
+  //
+  // `is_same_party` should reflect whether the context is same-party *and*
+  // whether the (real or hypothetical) cookie is SameParty.
+  bool IsHypotheticalCookieAllowed(
+      const CookieSettings::CookieSettingWithMetadata& setting_with_metadata,
+      bool is_same_party) const;
+
   // Returns true if at least one content settings is session only.
   bool HasSessionOnlyOrigins() const;
 
@@ -147,6 +187,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
   // Will only be populated when the StorageAccessAPI feature is enabled
   // https://crbug.com/989663.
   ContentSettingsForOneType storage_access_grants_;
+  const bool sameparty_cookies_considered_first_party_ =
+      base::FeatureList::IsEnabled(
+          net::features::kSamePartyCookiesConsideredFirstParty);
 
   DISALLOW_COPY_AND_ASSIGN(CookieSettings);
 };

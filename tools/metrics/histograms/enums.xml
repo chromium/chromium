@@ -48411,6 +48411,7 @@ from previous Chrome versions.
   <int value="623796513" label="AndroidLayoutChangeTabReparenting:disabled"/>
   <int value="624317932" label="print-pdf-as-image"/>
   <int value="624368375" label="OmniboxEntitySuggestions:enabled"/>
+  <int value="624783596" label="SamePartyCookiesConsideredFirstParty:enabled"/>
   <int value="625273056" label="disable-boot-animation"/>
   <int value="625725485" label="FilesTrash:enabled"/>
   <int value="626605468" label="FilesZipUnpack:enabled"/>
@@ -49263,6 +49264,8 @@ from previous Chrome versions.
   <int value="1330264457" label="OmniboxUIExperimentVerticalLayout:disabled"/>
   <int value="1331098784" label="ReducedReferrerGranularity:enabled"/>
   <int value="1332120969" label="ChromeDuet:disabled"/>
+  <int value="1332891404"
+      label="SamePartyCookiesConsideredFirstParty:disabled"/>
   <int value="1333847867" label="NoScriptPreviews:enabled"/>
   <int value="1338356182" label="AutofillAssistantChromeEntry:disabled"/>
   <int value="1338510325" label="lacros-selection"/>

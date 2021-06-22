@@ -1072,7 +1072,8 @@ PrivacyMode URLRequest::DeterminePrivacyMode() const {
   bool enable_privacy_mode = !g_default_can_use_cookies;
   if (network_delegate()) {
     enable_privacy_mode = network_delegate()->ForcePrivacyMode(
-        url(), site_for_cookies_, isolation_info_.top_frame_origin());
+        url(), site_for_cookies_, isolation_info_.top_frame_origin(),
+        same_party_cookie_context_type());
   }
   return enable_privacy_mode ? PRIVACY_MODE_ENABLED : PRIVACY_MODE_DISABLED;
 }

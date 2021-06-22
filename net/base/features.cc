@@ -244,5 +244,8 @@ const base::Feature kUdpSocketPosixAlwaysUpdateBytesReceived{
 const base::Feature kCookieSameSiteConsidersRedirectChain{
     "CookieSameSiteConsidersRedirectChain", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kSamePartyCookiesConsideredFirstParty{
+    "SamePartyCookiesConsideredFirstParty", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace net

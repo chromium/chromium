@@ -175,6 +175,12 @@ class CookieSettingsBase {
   static bool IsThirdPartyRequest(const GURL& url,
                                   const GURL& site_for_cookies);
 
+  // Returns the URL to be considered "first-party" for the given request. If
+  // the `top_frame_origin` is non-empty, it is chosen; otherwise, the
+  // `site_for_cookies` is used.
+  static GURL GetFirstPartyURL(const GURL& site_for_cookies,
+                               const url::Origin* top_frame_origin);
+
  private:
   virtual ContentSetting GetCookieSettingInternal(
       const GURL& url,
