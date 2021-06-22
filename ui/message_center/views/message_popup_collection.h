@@ -126,10 +126,6 @@ class MESSAGE_CENTER_EXPORT MessagePopupCollection
   // Called with |notification_id| when a popup is marked to be removed.
   virtual void NotifyPopupRemoved(const std::string& notification_id) {}
 
-  // Called when popup animation is started/finished.
-  virtual void AnimationStarted() {}
-  virtual void AnimationFinished() {}
-
   // virtual for testing.
   virtual MessagePopupView* CreatePopup(const Notification& notification);
   virtual void RestartPopupTimers();

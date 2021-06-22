@@ -12,7 +12,6 @@
 #include "ash/shelf/shelf_observer.h"
 #include "ash/shell_observer.h"
 #include "base/macros.h"
-#include "ui/compositor/throughput_tracker.h"
 #include "ui/display/display_observer.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/message_center/views/message_popup_collection.h"
@@ -67,8 +66,6 @@ class ASH_EXPORT AshMessagePopupCollection
       const message_center::Notification& notification) const override;
   void NotifyPopupAdded(message_center::MessagePopupView* popup) override;
   void NotifyPopupClosed(message_center::MessagePopupView* popup) override;
-  void AnimationStarted() override;
-  void AnimationFinished() override;
 
   // Returns the current tray bubble height or 0 if there is no bubble.
   int tray_bubble_height_for_test() const { return tray_bubble_height_; }
@@ -110,18 +107,6 @@ class ASH_EXPORT AshMessagePopupCollection
   int tray_bubble_height_;
 
   std::set<views::Widget*> tracked_widgets_;
-
-  // Tracks the smoothness of popup animation.
-  absl::optional<ui::ThroughputTracker> animation_tracker_;
-
-  // Keeps track of number of items that are animating. This is used when we
-  // have more than one popup appear in the screen and different animations are
-  // performed at the same time (fade in, move up, etc.), making sure that we
-  // stop the throughput tracker only when all of these animations are finished.
-  int popups_animating_;
-
-  // Keeps track the last pop up added, used by throughout tracker.
-  message_center::MessagePopupView* last_pop_up_added_;
 
   DISALLOW_COPY_AND_ASSIGN(AshMessagePopupCollection);
 };
