@@ -781,7 +781,7 @@ void GpuServiceImpl::CreateGpuMemoryBuffer(
 void GpuServiceImpl::DestroyGpuMemoryBuffer(gfx::GpuMemoryBufferId id,
                                             int client_id,
                                             const gpu::SyncToken& sync_token) {
-  if (io_runner_->BelongsToCurrentThread()) {
+  if (!main_runner_->BelongsToCurrentThread()) {
     main_runner_->PostTask(
         FROM_HERE, base::BindOnce(&GpuServiceImpl::DestroyGpuMemoryBuffer,
                                   weak_ptr_, id, client_id, sync_token));
@@ -1025,7 +1025,7 @@ void GpuServiceImpl::SetChannelClientPid(int32_t client_id,
 }
 
 void GpuServiceImpl::CloseChannel(int32_t client_id) {
-  if (io_runner_->BelongsToCurrentThread()) {
+  if (!main_runner_->BelongsToCurrentThread()) {
     main_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&GpuServiceImpl::CloseChannel, weak_ptr_, client_id));
@@ -1037,7 +1037,7 @@ void GpuServiceImpl::CloseChannel(int32_t client_id) {
 void GpuServiceImpl::LoadedShader(int32_t client_id,
                                   const std::string& key,
                                   const std::string& data) {
-  if (io_runner_->BelongsToCurrentThread()) {
+  if (!main_runner_->BelongsToCurrentThread()) {
     main_runner_->PostTask(
         FROM_HERE, base::BindOnce(&GpuServiceImpl::LoadedShader, weak_ptr_,
                                   client_id, key, data));
@@ -1047,7 +1047,7 @@ void GpuServiceImpl::LoadedShader(int32_t client_id,
 }
 
 void GpuServiceImpl::WakeUpGpu() {
-  if (io_runner_->BelongsToCurrentThread()) {
+  if (!main_runner_->BelongsToCurrentThread()) {
     main_runner_->PostTask(
         FROM_HERE, base::BindOnce(&GpuServiceImpl::WakeUpGpu, weak_ptr_));
     return;
@@ -1060,21 +1060,23 @@ void GpuServiceImpl::WakeUpGpu() {
 }
 
 void GpuServiceImpl::GpuSwitched(gl::GpuPreference active_gpu_heuristic) {
+  if (!main_runner_->BelongsToCurrentThread()) {
+    main_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&GpuServiceImpl::GpuSwitched, weak_ptr_,
+                                  active_gpu_heuristic));
+    return;
+  }
   DVLOG(1) << "GPU: GPU has switched";
+
   if (!in_host_process()) {
     ui::GpuSwitchingManager::GetInstance()->NotifyGpuSwitched(
         active_gpu_heuristic);
-  }
-  if (io_runner_->BelongsToCurrentThread()) {
-    main_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&GpuServiceImpl::UpdateGPUInfoGL, weak_ptr_));
-    return;
   }
   GpuServiceImpl::UpdateGPUInfoGL();
 }
 
 void GpuServiceImpl::DisplayAdded() {
-  if (io_runner_->BelongsToCurrentThread()) {
+  if (!main_runner_->BelongsToCurrentThread()) {
     main_runner_->PostTask(
         FROM_HERE, base::BindOnce(&GpuServiceImpl::DisplayAdded, weak_ptr_));
     return;
@@ -1086,7 +1088,7 @@ void GpuServiceImpl::DisplayAdded() {
 }
 
 void GpuServiceImpl::DisplayRemoved() {
-  if (io_runner_->BelongsToCurrentThread()) {
+  if (!main_runner_->BelongsToCurrentThread()) {
     main_runner_->PostTask(
         FROM_HERE, base::BindOnce(&GpuServiceImpl::DisplayRemoved, weak_ptr_));
     return;
@@ -1098,7 +1100,7 @@ void GpuServiceImpl::DisplayRemoved() {
 }
 
 void GpuServiceImpl::DisplayMetricsChanged() {
-  if (io_runner_->BelongsToCurrentThread()) {
+  if (!main_runner_->BelongsToCurrentThread()) {
     main_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&GpuServiceImpl::DisplayMetricsChanged, weak_ptr_));
@@ -1111,7 +1113,7 @@ void GpuServiceImpl::DisplayMetricsChanged() {
 }
 
 void GpuServiceImpl::DestroyAllChannels() {
-  if (io_runner_->BelongsToCurrentThread()) {
+  if (!main_runner_->BelongsToCurrentThread()) {
     main_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&GpuServiceImpl::DestroyAllChannels, weak_ptr_));
@@ -1124,7 +1126,7 @@ void GpuServiceImpl::DestroyAllChannels() {
 void GpuServiceImpl::OnBackgroundCleanup() {
 // Currently only called on Android.
 #if defined(OS_ANDROID)
-  if (io_runner_->BelongsToCurrentThread()) {
+  if (!main_runner_->BelongsToCurrentThread()) {
     main_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&GpuServiceImpl::OnBackgroundCleanup, weak_ptr_));
