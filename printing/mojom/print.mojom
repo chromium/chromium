@@ -135,3 +135,14 @@ enum ResultCode {
   // Insufficient permissions to perform the operation.
   kAccessDenied,
 };
+
+// Matches print_preview.PrinterType in
+// chrome/browser/resources/print_preview/data/destination_match.js
+[Stable, Extensible]
+enum PrinterType {
+  kPrivet,
+  kExtension,
+  kPdf,
+  kLocal,
+  kCloud
+};

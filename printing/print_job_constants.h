@@ -9,6 +9,9 @@
 
 #include "base/component_export.h"
 
+// TODO(crbug.com/1222453): Remove once migration is complete.
+#include "printing/mojom/print.mojom.h"
+
 namespace printing {
 
 COMPONENT_EXPORT(PRINTING_BASE) extern const char kIsFirstRequest[];
@@ -186,9 +189,8 @@ enum ScalingType {
   SCALING_TYPE_LAST = CUSTOM
 };
 
-// Must match print_preview.PrinterType in
-// chrome/browser/resources/print_preview/data/destination_match.js
-enum class PrinterType { kPrivet, kExtension, kPdf, kLocal, kCloud };
+// TODO(crbug.com/1222453): Remove once migration is complete.
+using PrinterType = printing::mojom::PrinterType;
 
 }  // namespace printing
 
