@@ -82,7 +82,6 @@ public class DownloadLocationChangeEnd2EndTest implements CustomMainActivityStar
     @Test
     @MediumTest
     @Feature({"Downloads"})
-    @Features.EnableFeatures(ChromeFeatureList.DOWNLOADS_LOCATION_CHANGE)
     public void testDefaultDialogPositiveButtonClickThrough() {
         startDownload(/*hasSDCard=*/true);
 
@@ -130,7 +129,6 @@ public class DownloadLocationChangeEnd2EndTest implements CustomMainActivityStar
     @Test
     @MediumTest
     @Feature({"Downloads"})
-    @Features.EnableFeatures(ChromeFeatureList.DOWNLOADS_LOCATION_CHANGE)
     public void testDefaultDialogShowSpinner() {
         startDownload(/*hasSDCard=*/true);
 
@@ -156,7 +154,6 @@ public class DownloadLocationChangeEnd2EndTest implements CustomMainActivityStar
     @Test
     @MediumTest
     @Feature({"Downloads"})
-    @Features.EnableFeatures(ChromeFeatureList.DOWNLOADS_LOCATION_CHANGE)
     @Features.DisableFeatures(ChromeFeatureList.SMART_SUGGESTION_FOR_LARGE_DOWNLOADS)
     public void testNoDialogWithoutSDCard() {
         int currentCallCount = mDownloadTestRule.getChromeDownloadCallCount();

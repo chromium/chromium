@@ -1756,9 +1756,6 @@ TEST_F(ChromeDownloadManagerDelegateTest, RequestConfirmation_Android) {
   SetContents(CreateTestWebContents());
 
   base::test::ScopedFeatureList scoped_list;
-  scoped_list.InitAndEnableFeature(features::kDownloadsLocationChange);
-  EXPECT_TRUE(base::FeatureList::IsEnabled(features::kDownloadsLocationChange));
-
   profile()->GetTestingPrefService()->SetInteger(
       prefs::kPromptForDownloadAndroid,
       static_cast<int>(DownloadPromptStatus::SHOW_PREFERENCE));

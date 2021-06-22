@@ -954,7 +954,6 @@ void ChromeDownloadManagerDelegate::RequestConfirmation(
 #if defined(OS_ANDROID)
   content::WebContents* web_contents =
       content::DownloadItemUtils::GetWebContents(download);
-  if (base::FeatureList::IsEnabled(features::kDownloadsLocationChange)) {
     if (reason == DownloadConfirmationReason::SAVE_AS) {
       // If this is a 'Save As' download, just run without confirmation.
       std::move(callback).Run(
@@ -1054,58 +1053,6 @@ void ChromeDownloadManagerDelegate::RequestConfirmation(
         ShouldShowDownloadLaterDialog(download),
         base::BindOnce(&OnDownloadDialogClosed, std::move(callback)));
     return;
-  }
-
-  switch (reason) {
-    case DownloadConfirmationReason::NONE:
-      NOTREACHED();
-      return;
-
-    case DownloadConfirmationReason::TARGET_PATH_NOT_WRITEABLE:
-      OnDownloadCanceled(download, true /* has_no_external_storage */);
-      std::move(callback).Run(DownloadConfirmationResult::CANCELED,
-                              base::FilePath(),
-                              absl::nullopt /*download_schedule*/);
-      return;
-
-    case DownloadConfirmationReason::PREFERENCE:
-    case DownloadConfirmationReason::NAME_TOO_LONG:
-    case DownloadConfirmationReason::TARGET_NO_SPACE:
-      // These are errors. But rather than cancel the download we are going
-      // to continue with the current path so that the download will get
-      // interrupted again.
-      //
-      // Ideally we'd allow the user to try another location, but on
-      // Android, the user doesn't have much of a choice (currently). So we
-      // skip the prompt and try the same location.
-
-    case DownloadConfirmationReason::SAVE_AS:
-      std::move(callback).Run(
-          DownloadConfirmationResult::CONTINUE_WITHOUT_CONFIRMATION,
-          suggested_path, absl::nullopt /*download_schedule*/);
-      return;
-
-    case DownloadConfirmationReason::TARGET_CONFLICT:
-      if (web_contents) {
-        android::ChromeDuplicateDownloadInfoBarDelegate::Create(
-            infobars::ContentInfoBarManager::FromWebContents(web_contents),
-            download, suggested_path, std::move(callback));
-        return;
-      }
-      FALLTHROUGH;
-
-    // If we cannot reserve the path and the WebContent is already gone,
-    // there is no way to prompt user for an infobar. This could happen
-    // after chrome gets killed, and user tries to resume a download while
-    // another app has created the target file (not the temporary
-    // .crdownload file).
-    case DownloadConfirmationReason::UNEXPECTED:
-      OnDownloadCanceled(download, false /* has_no_external_storage */);
-      std::move(callback).Run(DownloadConfirmationResult::CANCELED,
-                              base::FilePath(),
-                              absl::nullopt /*download_schedule*/);
-      return;
-  }
 
 #else   // !OS_ANDROID
   // Desktop Chrome displays a file picker for all confirmation needs. We can do

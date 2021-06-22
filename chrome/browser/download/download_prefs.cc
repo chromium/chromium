@@ -208,15 +208,6 @@ DownloadPrefs::DownloadPrefs(Profile* profile) : profile_(profile) {
         static_cast<DownloadLaterPromptStatus>(*prompt_for_download_later_));
   }
 
-  // If |kDownloadsLocationChange| is not enabled, always uses the default
-  // download location, in case that the feature is enabled and then disabled
-  // from finch config and the user may stuck at other download locations.
-  if (!base::FeatureList::IsEnabled(features::kDownloadsLocationChange)) {
-    prefs->SetFilePath(prefs::kDownloadDefaultDirectory,
-                       GetDefaultDownloadDirectoryForProfile());
-    prefs->SetFilePath(prefs::kSaveFileDefaultDirectory,
-                       GetDefaultDownloadDirectoryForProfile());
-  }
 #endif
   download_path_.Init(prefs::kDownloadDefaultDirectory, prefs);
   save_file_path_.Init(prefs::kSaveFileDefaultDirectory, prefs);
@@ -307,9 +298,8 @@ void DownloadPrefs::RegisterProfilePrefs(
 #endif
 #if defined(OS_ANDROID)
   DownloadPromptStatus download_prompt_status =
-      base::FeatureList::IsEnabled(features::kDownloadsLocationChange)
-          ? DownloadPromptStatus::SHOW_INITIAL
-          : DownloadPromptStatus::DONT_SHOW;
+      DownloadPromptStatus::SHOW_INITIAL;
+
   registry->RegisterIntegerPref(
       prefs::kPromptForDownloadAndroid,
       static_cast<int>(download_prompt_status),
@@ -322,9 +312,7 @@ void DownloadPrefs::RegisterProfilePrefs(
         user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   }
 
-  registry->RegisterBooleanPref(
-      prefs::kShowMissingSdCardErrorAndroid,
-      base::FeatureList::IsEnabled(features::kDownloadsLocationChange));
+  registry->RegisterBooleanPref(prefs::kShowMissingSdCardErrorAndroid, true);
 #endif
 }
 

@@ -100,7 +100,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &embedder_support::kShowTrustedPublisherURL,
     &features::kContinuousFeeds,
     &features::kContinuousSearch,
-    &features::kDownloadsLocationChange,
     &features::kEarlyLibraryLoad,
     &features::kGenericSensorExtraClasses,
     &features::kLinkDoctorDeprecationAndroid,

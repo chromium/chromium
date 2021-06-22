@@ -355,12 +355,6 @@ const base::Feature kDnsProxyEnableDOH{"DnsProxyEnableDOH",
 #endif
 
 #if defined(OS_ANDROID)
-// Enable changing default downloads storage location on Android.
-const base::Feature kDownloadsLocationChange{"DownloadsLocationChange",
-                                             base::FEATURE_ENABLED_BY_DEFAULT};
-#endif
-
-#if defined(OS_ANDROID)
 // Enable loading native libraries earlier in startup on Android.
 const base::Feature kEarlyLibraryLoad{"EarlyLibraryLoad",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
