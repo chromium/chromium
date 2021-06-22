@@ -47,6 +47,8 @@ class SearchBoxViewBinder
         } else if (SearchBoxProperties.VOICE_SEARCH_COLOR_STATE_LIST == propertyKey) {
             ApiCompatibilityUtils.setImageTintList(voiceSearchButton,
                     model.get(SearchBoxProperties.VOICE_SEARCH_COLOR_STATE_LIST));
+            ApiCompatibilityUtils.setImageTintList(
+                    lensButton, model.get(SearchBoxProperties.VOICE_SEARCH_COLOR_STATE_LIST));
         } else if (SearchBoxProperties.VOICE_SEARCH_DRAWABLE == propertyKey) {
             voiceSearchButton.setImageDrawable(
                     model.get(SearchBoxProperties.VOICE_SEARCH_DRAWABLE));

@@ -884,10 +884,20 @@ class LocationBarMediator
                 mAssistantVoiceSearchServiceSupplier.get();
         if (assistantVoiceSearchService == null) return;
 
-        mLocationBarLayout.setMicButtonTint(assistantVoiceSearchService.getMicButtonColorStateList(
+        mLocationBarLayout.setMicButtonTint(assistantVoiceSearchService.getButtonColorStateList(
                 getPrimaryBackgroundColor(), mContext));
         mLocationBarLayout.setMicButtonDrawable(
                 assistantVoiceSearchService.getCurrentMicDrawable());
+    }
+
+    @VisibleForTesting
+    /* package */ void updateLensButtonColors() {
+        AssistantVoiceSearchService assistantVoiceSearchService =
+                mAssistantVoiceSearchServiceSupplier.get();
+        if (assistantVoiceSearchService == null) return;
+
+        mLocationBarLayout.setLensButtonTint(assistantVoiceSearchService.getButtonColorStateList(
+                getPrimaryBackgroundColor(), mContext));
     }
 
     /**
@@ -1108,6 +1118,7 @@ class LocationBarMediator
     @Override
     public void onPrimaryColorChanged() {
         updateAssistantVoiceSearchDrawableAndColors();
+        updateLensButtonColors();
         updateUseDarkColors();
     }
 
@@ -1214,6 +1225,7 @@ class LocationBarMediator
     @Override
     public void onAssistantVoiceSearchServiceChanged() {
         updateAssistantVoiceSearchDrawableAndColors();
+        updateLensButtonColors();
     }
 
     // VoiceRecognitionHandler.Delegate implementation.

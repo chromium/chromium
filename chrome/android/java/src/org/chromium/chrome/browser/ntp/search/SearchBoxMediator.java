@@ -109,7 +109,7 @@ class SearchBoxMediator
         final @ColorInt int primaryColor = ChromeColors.getDefaultThemeColor(
                 mContext.getResources(), false /* forceDarkBgColor= */);
         ColorStateList colorStateList =
-                mAssistantVoiceSearchService.getMicButtonColorStateList(primaryColor, mContext);
+                mAssistantVoiceSearchService.getButtonColorStateList(primaryColor, mContext);
         mModel.set(SearchBoxProperties.VOICE_SEARCH_COLOR_STATE_LIST, colorStateList);
     }
 

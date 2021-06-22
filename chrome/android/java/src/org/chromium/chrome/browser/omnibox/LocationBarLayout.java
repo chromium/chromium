@@ -153,6 +153,10 @@ public class LocationBarLayout extends FrameLayout {
         ApiCompatibilityUtils.setImageTintList(mDeleteButton, colorStateList);
     }
 
+    /* package */ void setLensButtonTint(ColorStateList colorStateList) {
+        ApiCompatibilityUtils.setImageTintList(mLensButton, colorStateList);
+    }
+
     /**
      * Override the default LocationBarDataProvider in tests. Production code should use the
      * {@link #initialize} method instead.

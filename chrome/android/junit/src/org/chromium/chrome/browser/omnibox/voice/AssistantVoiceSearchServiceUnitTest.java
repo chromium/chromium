@@ -282,13 +282,13 @@ public class AssistantVoiceSearchServiceUnitTest {
         mAssistantVoiceSearchService.onAccountsChanged();
 
         // Colorful mic should be returned when only 1 account is present.
-        Assert.assertNull(mAssistantVoiceSearchService.getMicButtonColorStateList(0, mContext));
+        Assert.assertNull(mAssistantVoiceSearchService.getButtonColorStateList(0, mContext));
 
         // Adding new account would trigger onAccountsChanged() automatically
         mAccountManagerTestRule.addAccount(TEST_ACCOUNT_EMAIL2);
 
         // Colorful mic should be returned when only 1 account is present.
-        Assert.assertNotNull(mAssistantVoiceSearchService.getMicButtonColorStateList(0, mContext));
+        Assert.assertNotNull(mAssistantVoiceSearchService.getButtonColorStateList(0, mContext));
     }
 
     @Test
@@ -306,9 +306,9 @@ public class AssistantVoiceSearchServiceUnitTest {
 
     @Test
     @Feature("OmniboxAssistantVoiceSearch")
-    public void getMicButtonColorStateList_ColorfulMicEnabled() {
+    public void getButtonColorStateList_ColorfulMicEnabled() {
         mAssistantVoiceSearchService.setColorfulMicEnabledForTesting(true);
-        Assert.assertNull(mAssistantVoiceSearchService.getMicButtonColorStateList(0, mContext));
+        Assert.assertNull(mAssistantVoiceSearchService.getButtonColorStateList(0, mContext));
     }
 
     @Test

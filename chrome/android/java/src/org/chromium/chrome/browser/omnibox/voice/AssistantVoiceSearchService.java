@@ -122,7 +122,7 @@ public class AssistantVoiceSearchService implements TemplateUrlService.TemplateU
     private boolean mIsDefaultSearchEngineGoogle;
     private boolean mIsAssistantVoiceSearchEnabled;
     private boolean mIsColorfulMicEnabled;
-    private boolean mShouldShowColorfulMic;
+    private boolean mShouldShowColorfulButtons;
     private boolean mIsMultiAccountCheckEnabled;
     private String mMinAgsaVersion;
 
@@ -177,7 +177,7 @@ public class AssistantVoiceSearchService implements TemplateUrlService.TemplateU
 
         mIsDefaultSearchEngineGoogle = mTemplateUrlService.isDefaultSearchEngineGoogle();
 
-        mShouldShowColorfulMic = isColorfulMicEnabled();
+        mShouldShowColorfulButtons = isColorfulMicEnabled();
     }
 
     /** @return Whether the user has had a chance to enable the feature. */
@@ -211,14 +211,14 @@ public class AssistantVoiceSearchService implements TemplateUrlService.TemplateU
      *         exist or reuse the existing Drawable's ConstantState if it does already exist.
      **/
     public Drawable getCurrentMicDrawable() {
-        return AppCompatResources.getDrawable(
-                mContext, mShouldShowColorfulMic ? R.drawable.ic_colorful_mic : R.drawable.btn_mic);
+        return AppCompatResources.getDrawable(mContext,
+                mShouldShowColorfulButtons ? R.drawable.ic_colorful_mic : R.drawable.btn_mic);
     }
 
     /** @return The correct ColorStateList for the current theme. */
-    public @Nullable ColorStateList getMicButtonColorStateList(
+    public @Nullable ColorStateList getButtonColorStateList(
             @ColorInt int primaryColor, Context context) {
-        if (mShouldShowColorfulMic) return null;
+        if (mShouldShowColorfulButtons) return null;
 
         final boolean useLightColors =
                 ColorUtils.shouldUseLightForegroundOnBackground(primaryColor);
@@ -401,11 +401,11 @@ public class AssistantVoiceSearchService implements TemplateUrlService.TemplateU
         new AsyncTask<Boolean>() {
             @Override
             protected Boolean doInBackground() {
-                return mShouldShowColorfulMic != shouldShowColorfulMic;
+                return mShouldShowColorfulButtons != shouldShowColorfulMic;
             }
             @Override
             protected void onPostExecute(Boolean notify) {
-                mShouldShowColorfulMic = shouldShowColorfulMic;
+                mShouldShowColorfulButtons = shouldShowColorfulMic;
                 if (notify) notifyObserver();
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -428,7 +428,7 @@ public class AssistantVoiceSearchService implements TemplateUrlService.TemplateU
         if (mIsDefaultSearchEngineGoogle == searchEngineGoogle) return;
 
         mIsDefaultSearchEngineGoogle = searchEngineGoogle;
-        mShouldShowColorfulMic = isColorfulMicEnabled();
+        mShouldShowColorfulButtons = isColorfulMicEnabled();
         notifyObserver();
     }
 
@@ -451,7 +451,7 @@ public class AssistantVoiceSearchService implements TemplateUrlService.TemplateU
     /** Enable the colorful mic for testing purposes. */
     void setColorfulMicEnabledForTesting(boolean enabled) {
         mIsColorfulMicEnabled = enabled;
-        mShouldShowColorfulMic = enabled;
+        mShouldShowColorfulButtons = enabled;
     }
 
     void setMultiAccountCheckEnabledForTesting(boolean enabled) {
