@@ -375,8 +375,10 @@ ClientSideDetectionHost::~ClientSideDetectionHost() {
 
 void ClientSideDetectionHost::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInMainFrame() || !navigation_handle->HasCommitted())
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
+      !navigation_handle->HasCommitted()) {
     return;
+  }
 
   // TODO(noelutz): move this DCHECK to WebContents and fix all the unit tests
   // that don't call this method on the UI thread.

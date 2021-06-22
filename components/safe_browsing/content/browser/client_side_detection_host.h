@@ -111,6 +111,8 @@ class ClientSideDetectionHost : public content::WebContentsObserver {
   friend class ShouldClassifyUrlRequest;
   FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostBrowserTest,
                            VerifyVisualFeatureCollection);
+  FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostPrerenderBrowserTest,
+                           PrerenderShouldNotAffectClientSideDetection);
 
   // Called when pre-classification checks are done for the phishing
   // classifiers.

@@ -16,6 +16,10 @@
 #include "components/safe_browsing/content/browser/client_side_detection_service.h"
 #include "components/safe_browsing/core/proto/client_model.pb.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/mock_navigation_handle.h"
+#include "content/public/test/prerender_test_util.h"
+#include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -85,7 +89,6 @@ class ClientSideDetectionHostBrowserTest : public InProcessBrowserTest {
   ~ClientSideDetectionHostBrowserTest() override = default;
 };
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
 IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostBrowserTest,
                        VerifyVisualFeatureCollection) {
   FakeClientSideDetectionService fake_csd_service;
@@ -143,6 +146,105 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostBrowserTest,
   EXPECT_CALL(*mock_ui_manager, DisplayBlockingPage(_));
   std::move(fake_csd_service.saved_callback()).Run(page_url, true);
 }
-#endif
+
+class ClientSideDetectionHostPrerenderBrowserTest
+    : public ClientSideDetectionHostBrowserTest {
+ public:
+  ClientSideDetectionHostPrerenderBrowserTest()
+      : prerender_helper_(base::BindRepeating(
+            &ClientSideDetectionHostPrerenderBrowserTest::GetWebContents,
+            base::Unretained(this))) {}
+  ~ClientSideDetectionHostPrerenderBrowserTest() override = default;
+  ClientSideDetectionHostPrerenderBrowserTest(
+      const ClientSideDetectionHostPrerenderBrowserTest&) = delete;
+  ClientSideDetectionHostPrerenderBrowserTest& operator=(
+      const ClientSideDetectionHostPrerenderBrowserTest&) = delete;
+
+  void SetUpOnMainThread() override {
+    prerender_helper_.SetUpOnMainThread(embedded_test_server());
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(embedded_test_server()->Start());
+    ClientSideDetectionHostBrowserTest::SetUpOnMainThread();
+  }
+
+  content::test::PrerenderTestHelper& prerender_helper() {
+    return prerender_helper_;
+  }
+
+  content::WebContents* GetWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+ private:
+  content::test::PrerenderTestHelper prerender_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostPrerenderBrowserTest,
+                       PrerenderShouldNotAffectClientSideDetection) {
+  FakeClientSideDetectionService fake_csd_service;
+
+  ClientSideModel model;
+  model.set_version(123);
+  model.set_max_words_per_term(1);
+  VisualTarget* target = model.mutable_vision_model()->add_targets();
+
+  target->set_digest("target1_digest");
+  // Create a hash corresponding to a blank screen.
+  std::string hash = "\x30";
+  for (int i = 0; i < 288; i++)
+    hash += "\xff";
+  target->set_hash(hash);
+  target->set_dimension_size(48);
+  MatchRule* match_rule = target->mutable_match_config()->add_match_rule();
+  // The actual hash distance is 76, so set the distance to 200 for safety. A
+  // completely random bitstring would expect a Hamming distance of 1152.
+  match_rule->set_hash_distance(200);
+
+  fake_csd_service.SetModel(model);
+
+  scoped_refptr<StrictMock<MockSafeBrowsingUIManager>> mock_ui_manager =
+      new StrictMock<MockSafeBrowsingUIManager>();
+
+  std::unique_ptr<ClientSideDetectionHost> csd_host =
+      ClientSideDetectionHostDelegate::CreateHost(
+          browser()->tab_strip_model()->GetActiveWebContents());
+  csd_host->set_client_side_detection_service(&fake_csd_service);
+  csd_host->SendModelToRenderFrame();
+  csd_host->set_ui_manager(mock_ui_manager.get());
+
+  GURL page_url(embedded_test_server()->GetURL("/safe_browsing/malware.html"));
+  ui_test_utils::NavigateToURL(browser(), page_url);
+
+  base::RunLoop run_loop;
+  fake_csd_service.SetRequestCallback(run_loop.QuitClosure());
+
+  // Bypass the pre-classification checks
+  csd_host->OnPhishingPreClassificationDone(/*should_classify=*/true);
+
+  // A prerendered navigation committing should not cancel classification.
+  // We simulate the commit of a prerendered navigation to avoid races
+  // between the completion of phishing detection in the primary
+  // main frame's renderer and the commit of a real prerendered navigation.
+  // TODO(mcnee): Use a real prerendered navigation here and make sure the
+  // navigation doesn't race with the classification.
+  content::MockNavigationHandle prerendered_navigation_handle;
+  prerendered_navigation_handle.set_has_committed(true);
+  prerendered_navigation_handle.set_is_in_primary_main_frame(false);
+  csd_host->DidFinishNavigation(&prerendered_navigation_handle);
+
+  run_loop.Run();
+
+  ASSERT_FALSE(fake_csd_service.saved_callback_is_null());
+
+  EXPECT_EQ(fake_csd_service.saved_request().model_version(), 123);
+  ASSERT_EQ(fake_csd_service.saved_request().vision_match_size(), 1);
+  EXPECT_EQ(
+      fake_csd_service.saved_request().vision_match(0).matched_target_digest(),
+      "target1_digest");
+
+  // Expect an interstitial to be shown
+  EXPECT_CALL(*mock_ui_manager, DisplayBlockingPage(_));
+  std::move(fake_csd_service.saved_callback()).Run(page_url, true);
+}
 
 }  // namespace safe_browsing
