@@ -283,6 +283,11 @@ bool ForceInstalledTracker::IsMisconfiguration(
     }
   }
 
+  if (installation_data.failure_reason ==
+      InstallStageTracker::FailureReason::OVERRIDDEN_BY_SETTINGS) {
+    return true;
+  }
+
   return false;
 }
 

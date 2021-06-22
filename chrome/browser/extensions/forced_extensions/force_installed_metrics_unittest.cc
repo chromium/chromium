@@ -1200,6 +1200,26 @@ TEST_F(ForceInstalledMetricsTest,
                                       1);
 }
 
+// This test verifies that failure OVERRIDDEN_BY_SETTINGS in case of offstore
+// extensions is considered as misconfiguration.
+TEST_F(ForceInstalledMetricsTest,
+       ExtensionOverridenBySettingsFailureIsMisconfiguration) {
+  SetupForceList(/*is_from_store=*/true);
+  scoped_refptr<const Extension> ext1 = CreateNewExtension(
+      kExtensionName1, kExtensionId1, ExtensionStatus::kLoaded);
+  install_stage_tracker()->ReportFailure(
+      kExtensionId2,
+      InstallStageTracker::FailureReason::OVERRIDDEN_BY_SETTINGS);
+  // ForceInstalledMetrics shuts down timer because all extension are either
+  // loaded or failed.
+  EXPECT_FALSE(fake_timer_->IsRunning());
+  histogram_tester_.ExpectUniqueSample(
+      kFailureReasonsCWS,
+      InstallStageTracker::FailureReason::OVERRIDDEN_BY_SETTINGS, 1);
+  histogram_tester_.ExpectBucketCount(kPossibleNonMisconfigurationFailures, 0,
+                                      1);
+}
+
 // Error Codes in case of self hosted extensions stuck in
 // DOWNLOADING_MANIFEST_RETRY stage.
 TEST_F(ForceInstalledMetricsTest, ExtensionManifestFetchRetrySelfHosted) {
