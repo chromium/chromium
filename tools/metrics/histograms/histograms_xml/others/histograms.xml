@@ -1696,8 +1696,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Bookmarks.BottomSheet.DestinationFolder" enum="BookmarkType"
-    expires_after="M91">
-  <owner>shaktisahu@chromium.org</owner>
+    expires_after="2022-06-01">
+  <owner>wylieb@chromium.org</owner>
   <owner>xingliu@chromium.org</owner>
   <component>UI&gt;Browser&gt;Bookmarks</component>
   <summary>
