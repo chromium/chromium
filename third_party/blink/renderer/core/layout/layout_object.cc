@@ -540,6 +540,10 @@ void LayoutObject::AddChild(LayoutObject* new_child,
     } else if (auto* const last_child =
                    DynamicTo<LayoutNGTextCombine>(SlowLastChild())) {
       last_child->AddChild(new_child);
+    } else if (UNLIKELY(IsHorizontalWritingMode())) {
+      // In case of <br style="writing-mode:vertical-rl">
+      // See http://crbug.com/1222121
+      children->InsertChildNode(this, new_child, before_child);
     } else {
       children->AppendChildNode(this, LayoutNGTextCombine::CreateAnonymous(
                                           To<LayoutText>(new_child)));

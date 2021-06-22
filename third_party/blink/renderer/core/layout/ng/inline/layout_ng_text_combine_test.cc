@@ -1004,6 +1004,36 @@ LayoutNGBlockFlow DIV id="root" style="writing-mode: vertical-rl"
             ToSimpleLayoutTree(root_layout_object));
 }
 
+// http://crbug.com/1222121
+TEST_F(LayoutNGTextCombineTest, VerticalWritingModeByBR) {
+  InsertStyleElement(
+      "#sample {  text-combine-upright: all; writing-mode: vertical-rl; }");
+  SetBodyInnerHTML("<br id=sample>");
+  const auto& root_layout_object =
+      *To<LayoutNGBlockFlow>(GetDocument().body()->GetLayoutObject());
+
+  EXPECT_EQ(R"DUMP(
+LayoutNGBlockFlow BODY
+  +--LayoutBR BR id="sample"
+)DUMP",
+            ToSimpleLayoutTree(root_layout_object));
+}
+
+// http://crbug.com/1222121
+TEST_F(LayoutNGTextCombineTest, VerticalWritingModeByWBR) {
+  InsertStyleElement(
+      "#sample {  text-combine-upright: all; writing-mode: vertical-rl; }");
+  SetBodyInnerHTML("<wbr id=sample>");
+  const auto& root_layout_object =
+      *To<LayoutNGBlockFlow>(GetDocument().body()->GetLayoutObject());
+
+  EXPECT_EQ(R"DUMP(
+LayoutNGBlockFlow BODY
+  +--LayoutWordBreak WBR id="sample"
+)DUMP",
+            ToSimpleLayoutTree(root_layout_object));
+}
+
 TEST_F(LayoutNGTextCombineTest, WithBR) {
   InsertStyleElement(
       "c { text-combine-upright: all; }"
