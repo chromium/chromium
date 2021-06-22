@@ -83,37 +83,50 @@ PrefService* GetPrefServiceForLocation(PrefLocation location,
   return nullptr;
 }
 
+void CheckPrefHasValue(const PrefService::Preference* pref,
+                       const base::Value* expected_value) {
+  ASSERT_TRUE(pref);
+
+  const base::Value* pref_value = pref->GetValue();
+  ASSERT_TRUE(pref->GetValue());
+  ASSERT_TRUE(expected_value);
+  EXPECT_EQ(*pref_value, *expected_value);
+}
+
 void CheckPrefHasDefaultValue(const PrefService::Preference* pref,
                               const base::Value* expected_value = nullptr) {
+  ASSERT_TRUE(pref);
   EXPECT_TRUE(pref->IsDefaultValue());
   EXPECT_TRUE(pref->IsUserModifiable());
   EXPECT_FALSE(pref->IsUserControlled());
   EXPECT_FALSE(pref->IsManaged());
   EXPECT_FALSE(pref->IsRecommended());
   if (expected_value)
-    EXPECT_EQ(*pref->GetValue(), *expected_value);
+    CheckPrefHasValue(pref, expected_value);
 }
 
 void CheckPrefHasRecommendedValue(const PrefService::Preference* pref,
-                                  const base::Value* expected_value = nullptr) {
+                                  const base::Value* expected_value) {
+  ASSERT_TRUE(pref);
+  ASSERT_TRUE(expected_value);
   EXPECT_FALSE(pref->IsDefaultValue());
   EXPECT_TRUE(pref->IsUserModifiable());
   EXPECT_FALSE(pref->IsUserControlled());
   EXPECT_FALSE(pref->IsManaged());
   EXPECT_TRUE(pref->IsRecommended());
-  if (expected_value)
-    EXPECT_EQ(*pref->GetValue(), *expected_value);
+  CheckPrefHasValue(pref, expected_value);
 }
 
 void CheckPrefHasMandatoryValue(const PrefService::Preference* pref,
-                                const base::Value* expected_value = nullptr) {
+                                const base::Value* expected_value) {
+  ASSERT_TRUE(pref);
+  ASSERT_TRUE(expected_value);
   EXPECT_FALSE(pref->IsDefaultValue());
   EXPECT_FALSE(pref->IsUserModifiable());
   EXPECT_FALSE(pref->IsUserControlled());
   EXPECT_TRUE(pref->IsManaged());
   EXPECT_FALSE(pref->IsRecommended());
-  if (expected_value)
-    EXPECT_EQ(*pref->GetValue(), *expected_value);
+  CheckPrefHasValue(pref, expected_value);
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -157,7 +170,6 @@ class PrefTestCase {
   PrefLocation location() const { return location_; }
 
   bool check_for_mandatory() const { return check_for_mandatory_; }
-
   bool check_for_recommended() const { return check_for_recommended_; }
 
  private:
@@ -190,6 +202,9 @@ class PolicyPrefMappingTest {
       for (const auto& pref_setting : prefs->DictItems())
         prefs_.push_back(std::make_unique<PrefTestCase>(pref_setting.first,
                                                         pref_setting.second));
+    }
+    if (prefs_.empty()) {
+      ADD_FAILURE() << "missing |prefs|";
     }
     const base::Value* required_preprocessor_macros_value =
         mapping.FindListKey("required_preprocessor_macros");
@@ -596,17 +611,26 @@ void VerifyPolicyToPrefMappings(const base::FilePath& test_case_path,
           prefs->ClearPref(pref_case->pref());
           CheckPrefHasDefaultValue(pref);
 
+          const base::Value& policies = pref_mapping->policies();
+
           const base::Value* expected_value = pref_case->value();
           bool expect_value_to_be_default = false;
           if (!expected_value && pref_case->default_value()) {
             expected_value = pref_case->default_value();
             expect_value_to_be_default = true;
           }
+          if (!expected_value && policies.DictSize() == 1) {
+            // If no value/default value is specified, fall back to the policy
+            // value (if only one policy is set).
+            expected_value = &policies.DictItems().begin()->second;
+            expect_value_to_be_default = false;
+          }
+          ASSERT_TRUE(expected_value);
 
           if (check_recommended) {
             ASSERT_NO_FATAL_FAILURE(SetProviderPolicy(
-                provider, pref_mapping->policies(),
-                pref_mapping->policies_settings(), POLICY_LEVEL_RECOMMENDED));
+                provider, policies, pref_mapping->policies_settings(),
+                POLICY_LEVEL_RECOMMENDED));
             if (expect_value_to_be_default) {
               CheckPrefHasDefaultValue(pref, expected_value);
             } else {
@@ -616,8 +640,8 @@ void VerifyPolicyToPrefMappings(const base::FilePath& test_case_path,
 
           if (check_mandatory) {
             ASSERT_NO_FATAL_FAILURE(SetProviderPolicy(
-                provider, pref_mapping->policies(),
-                pref_mapping->policies_settings(), POLICY_LEVEL_MANDATORY));
+                provider, policies, pref_mapping->policies_settings(),
+                POLICY_LEVEL_MANDATORY));
             if (expect_value_to_be_default) {
               CheckPrefHasDefaultValue(pref, expected_value);
             } else {

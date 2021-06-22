@@ -32,7 +32,7 @@
         ],
         "prefs": {
             "${pref}": {
-              "value": "If set, the |pref| is controlled by policy (not user modifiable) and should have this value. Either this or |default_value| should be set.",
+              "value": "If set, the |pref| is controlled by policy (not user modifiable) and should have this value. Either this or |default_value| should be set. Otherwise, if only one policy is specified |value| falls back to that policy's value.",
               "default_value": "If set, the |pref| is not controlled by policy (user modifiable) and should have this value. Either this or |value| should be set.",
               "location": "The location where the pref is registered, possible values are ['user_profile', 'signin_profile', 'local_state']. Defaults to 'user_profile' if not specified.",
               "check_for_mandatory": "Should the preference be tested when a mandatory value is set for the policy? Defaults to |true| if not specified. See |can_be_recommended|.",
@@ -53,7 +53,12 @@
             "*.example.com"
           ]
         },
-        "prefs": { "unsafely_treat_insecure_origin_as_secure": { "location": "local_state" } }
+        "prefs": {
+          "unsafely_treat_insecure_origin_as_secure": {
+            "location": "local_state",
+            "value": "http://example.com/,*.example.com"
+          }
+        }
       }
     ]
   },
@@ -68,7 +73,12 @@
             "*.example.com"
           ]
         },
-        "prefs": { "unsafely_treat_insecure_origin_as_secure": { "location": "local_state" } }
+        "prefs": {
+          "unsafely_treat_insecure_origin_as_secure": {
+            "location": "local_state",
+            "value": "http://example.com/,*.example.com"
+          }
+        }
       }
     ]
   },
@@ -79,7 +89,9 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "HomepageLocation": "http://chromium.org" },
-        "prefs": { "homepage": {} }
+        "prefs": { "homepage": {
+          "value": "http://chromium.org/"
+        } }
       }
     ]
   },
@@ -181,7 +193,12 @@
           "DnsOverHttpsMode": "automatic",
           "DnsOverHttpsTemplates": "https://cloudflare-dns.com/dns-query https://dns.quad9.net/dns-query{?dns}"
         },
-        "prefs": { "dns_over_https.templates": { "location": "local_state" } }
+        "prefs": {
+          "dns_over_https.templates": {
+            "location": "local_state",
+            "value": "https://cloudflare-dns.com/dns-query https://dns.quad9.net/dns-query{?dns}"
+          }
+        }
       }
     ]
   },
@@ -222,7 +239,13 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "DisabledSchemes": ["file"] },
-        "prefs": { "policy.url_blocklist": {} }
+        "prefs": {
+          "policy.url_blocklist": {
+            "value": [
+              "file://*"
+            ]
+          }
+        }
       }
     ]
   },
@@ -234,7 +257,11 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "JavascriptEnabled": false },
-        "prefs": { "profile.managed_default_content_settings.javascript": {}}
+        "prefs": {
+          "profile.managed_default_content_settings.javascript": {
+            "value": 2
+          }
+        }
       }
     ]
   },
@@ -244,7 +271,11 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "IncognitoEnabled": false },
-        "prefs": { "incognito.mode_availability": {} }
+        "prefs": {
+          "incognito.mode_availability": {
+            "value": 1
+          }
+        }
       }
     ]
   },
@@ -426,7 +457,9 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "PrintingAllowedColorModes": "monochrome" },
-        "prefs": { "printing.allowed_color_modes": {} }
+        "prefs": { "printing.allowed_color_modes": {
+          "value": 1
+        } }
       }
     ]
   },
@@ -436,7 +469,9 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "PrintingAllowedDuplexModes": "duplex" },
-        "prefs": { "printing.allowed_duplex_modes": {} }
+        "prefs": { "printing.allowed_duplex_modes": {
+          "value": 6
+        } }
       }
     ]
   },
@@ -446,7 +481,9 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "PrintingAllowedPinModes": "pin" },
-        "prefs": { "printing.allowed_pin_modes": {} }
+        "prefs": { "printing.allowed_pin_modes": {
+          "value": 1
+        } }
       }
     ]
   },
@@ -456,7 +493,9 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "PrintingAllowedBackgroundGraphicsModes": "enabled" },
-        "prefs": { "printing.allowed_background_graphics_modes": {} }
+        "prefs": { "printing.allowed_background_graphics_modes": {
+          "value": 1
+        } }
       }
     ]
   },
@@ -466,7 +505,9 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "PrintingColorDefault": "monochrome" },
-        "prefs": { "printing.color_default": {} }
+        "prefs": { "printing.color_default": {
+          "value": 1
+        } }
       }
     ]
   },
@@ -476,7 +517,9 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "PrintingDuplexDefault": "long-edge" },
-        "prefs": { "printing.duplex_default": {} }
+        "prefs": { "printing.duplex_default": {
+          "value": 2
+        } }
       }
     ]
   },
@@ -486,7 +529,9 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "PrintingPinDefault": "pin" },
-        "prefs": { "printing.pin_default": {} }
+        "prefs": { "printing.pin_default": {
+          "value": 1
+        } }
       }
     ]
   },
@@ -496,7 +541,9 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "PrintingBackgroundGraphicsDefault": "enabled" },
-        "prefs": { "printing.background_graphics_default": {} }
+        "prefs": { "printing.background_graphics_default": {
+          "value": 1
+        } }
       }
     ]
   },
@@ -1062,8 +1109,13 @@
       {
         "policies": { "DownloadDirectory": "${user_home}/test-downloads" },
         "prefs": {
-          "download.default_directory": {},
-          "download.prompt_for_download": { "check_for_recommended": false }
+          "download.default_directory": {
+            "value": "${user_home}/test-downloads"
+          },
+          "download.prompt_for_download": {
+            "check_for_recommended": false,
+            "value": false
+          }
         }
       }
     ]
@@ -1074,7 +1126,9 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "DownloadDirectory": "${google_drive}/downloads" },
-        "prefs": { "gdata.disabled": {} }
+        "prefs": { "gdata.disabled": {
+          "value": false
+        } }
       }
     ]
   },
@@ -1121,8 +1175,16 @@
     "os": ["win", "mac", "linux", "android", "chromeos"],
     "policy_pref_mapping_tests": [
       {
-        "policies": { "ProxyMode": "direct" },
-        "prefs": { "proxy": {} }
+        "policies": {
+          "ProxyMode": "direct"
+        },
+        "prefs": {
+          "proxy": {
+            "value": {
+              "mode": "direct"
+            }
+          }
+        }
       }
     ]
   },
@@ -1131,8 +1193,16 @@
     "os": ["win", "mac", "linux", "android", "chromeos"],
     "policy_pref_mapping_tests": [
       {
-        "policies": { "ProxyServerMode": 0 },
-        "prefs": { "proxy": {} }
+        "policies": {
+          "ProxyServerMode": 0
+        },
+        "prefs": {
+          "proxy": {
+            "value": {
+              "mode": "direct"
+            }
+          }
+        }
       }
     ]
   },
@@ -1142,7 +1212,12 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "ProxyMode": "fixed_servers", "ProxyServer": "http://localhost:8080" },
-        "prefs": { "proxy": {} }
+        "prefs": { "proxy": {
+          "value": {
+            "mode": "fixed_servers",
+            "server": "http://localhost:8080"
+          }
+        } }
       }
     ]
   },
@@ -1151,8 +1226,19 @@
     "os": ["win", "mac", "linux", "android", "chromeos"],
     "policy_pref_mapping_tests": [
       {
-        "policies": { "ProxyMode": "pac_script", "ProxyPacUrl": "http://localhost:8080/proxy.pac" },
-        "prefs": { "proxy": {} }
+        "policies": {
+          "ProxyMode": "pac_script",
+          "ProxyPacUrl": "http://localhost:8080/proxy.pac"
+        },
+        "prefs": {
+          "proxy": {
+            "value": {
+              "mode": "pac_script",
+              "pac_mandatory": false,
+              "pac_url": "http://localhost:8080/proxy.pac"
+            }
+          }
+        }
       }
     ]
   },
@@ -1161,8 +1247,20 @@
     "os": ["win", "mac", "linux", "android", "chromeos"],
     "policy_pref_mapping_tests": [
       {
-        "policies": { "ProxyMode": "fixed_servers", "ProxyServer": "http://localhost:8080", "ProxyBypassList": "localhost" },
-        "prefs": { "proxy": {} }
+        "policies": {
+          "ProxyMode": "fixed_servers",
+          "ProxyServer": "http://localhost:8080",
+          "ProxyBypassList": "localhost"
+        },
+        "prefs": {
+          "proxy": {
+            "value": {
+              "bypass_list": "localhost",
+              "mode": "fixed_servers",
+              "server": "http://localhost:8080"
+            }
+          }
+        }
       }
     ]
   },
@@ -1171,8 +1269,18 @@
     "os": ["linux", "win", "android", "chromeos"],
     "policy_pref_mapping_tests": [
       {
-        "policies": { "ProxySettings": { "ProxyMode": "direct" } },
-        "prefs": { "proxy": {} }
+        "policies": {
+          "ProxySettings": {
+            "ProxyMode": "direct"
+          }
+        },
+        "prefs": {
+          "proxy": {
+            "value": {
+              "mode": "direct"
+            }
+          }
+        }
       }
     ]
   },
@@ -1591,8 +1699,19 @@
     "os": ["win", "linux", "mac", "chromeos"],
     "policy_pref_mapping_tests": [
       {
-        "policies": { "ExtensionInstallForcelist": ["lcncmkcnkcdbbanbjakcencbaoegdjlp;https://clients2.google.com/service/update2/crx"] },
-        "prefs": { "extensions.install.forcelist": {} }
+        "policies": { "ExtensionInstallForcelist": [
+            "lcncmkcnkcdbbanbjakcencbaoegdjlp;https://clients2.google.com/service/update2/crx"
+          ]
+        },
+        "prefs": {
+          "extensions.install.forcelist": {
+            "value": {
+              "lcncmkcnkcdbbanbjakcencbaoegdjlp": {
+                "external_update_url": "https://clients2.google.com/service/update2/crx"
+              }
+            }
+          }
+        }
       }
     ]
   },
@@ -1611,8 +1730,18 @@
     "os": ["win", "linux", "mac", "chromeos"],
     "policy_pref_mapping_tests": [
       {
-        "policies": { "ExtensionAllowedTypes": ["hosted_app"]},
-        "prefs": { "extensions.allowed_types": {} }
+        "policies": {
+          "ExtensionAllowedTypes": [
+            "hosted_app"
+          ]
+        },
+        "prefs": {
+          "extensions.allowed_types": {
+            "value": [
+              4
+            ]
+          }
+        }
       }
     ]
   },
@@ -1763,94 +1892,27 @@
   },
 
   "DefaultSearchProviderContextMenuAccessAllowed": {
-    "os": ["win", "linux", "mac", "chromeos"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DefaultSearchProviderEnabled": true,
-          "DefaultSearchProviderSearchURL": "http://www.google.com/?q={searchTerms}",
-          "DefaultSearchProviderKeyword": "google",
-          "DefaultSearchProviderContextMenuAccessAllowed": true
-        },
-        "prefs": { "default_search_provider_data.template_url_data": {} }
-      }
-    ]
+    "reason_for_missing_test": "complex mapping that includes timestamps as well, see PolicyTest.DefaultSearchProvider for a full policy browser test"
   },
 
   "DefaultSearchProviderEnabled": {
-    "os": ["win", "linux", "mac", "chromeos", "android"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": { "DefaultSearchProviderEnabled": false },
-        "prefs": { "default_search_provider_data.template_url_data": {} }
-      },
-      {
-        "policies": {
-          "DefaultSearchProviderEnabled": true,
-          "DefaultSearchProviderSearchURL": "http://www.google.com/?q={searchTerms}",
-          "DefaultSearchProviderKeyword": "google"
-        },
-        "prefs": { "default_search_provider_data.template_url_data": {} }
-      }
-    ]
+    "reason_for_missing_test": "complex mapping that includes timestamps as well, see PolicyTest.DefaultSearchProvider for a full policy browser test"
   },
 
   "DefaultSearchProviderName": {
-    "os": ["win", "linux", "mac", "chromeos", "android"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DefaultSearchProviderEnabled": true,
-          "DefaultSearchProviderSearchURL": "http://www.google.com/?q={searchTerms}",
-          "DefaultSearchProviderKeyword": "google",
-          "DefaultSearchProviderName": "google.com"
-        },
-        "prefs": { "default_search_provider_data.template_url_data": {} }
-      }
-    ]
+    "reason_for_missing_test": "complex mapping that includes timestamps as well, see PolicyTest.DefaultSearchProvider for a full policy browser test"
   },
 
   "DefaultSearchProviderKeyword": {
-    "os": ["win", "linux", "mac", "chromeos", "android"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DefaultSearchProviderEnabled": true,
-          "DefaultSearchProviderKeyword": "google",
-          "DefaultSearchProviderSearchURL": "http://www.google.com/?q={searchTerms}"
-        },
-        "prefs": { "default_search_provider_data.template_url_data": {} }
-      }
-    ]
+    "reason_for_missing_test": "complex mapping that includes timestamps as well, see PolicyTest.DefaultSearchProvider for a full policy browser test"
   },
 
   "DefaultSearchProviderSearchURL": {
-    "os": ["win", "linux", "mac", "chromeos", "android"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DefaultSearchProviderEnabled": true,
-          "DefaultSearchProviderSearchURL": "http://www.google.com/?q={searchTerms}",
-          "DefaultSearchProviderKeyword": "google"
-        },
-        "prefs": { "default_search_provider_data.template_url_data": {} }
-      }
-    ]
+    "reason_for_missing_test": "complex mapping that includes timestamps as well, see PolicyTest.DefaultSearchProvider for a full policy browser test"
   },
 
   "DefaultSearchProviderSuggestURL": {
-    "os": ["win", "linux", "mac", "chromeos", "android"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DefaultSearchProviderEnabled": true,
-          "DefaultSearchProviderSearchURL": "http://www.google.com/?q={searchTerms}",
-          "DefaultSearchProviderKeyword": "google",
-          "DefaultSearchProviderSuggestURL": "http://www.google.com/suggest?q={searchTerms}"
-        },
-        "prefs": { "default_search_provider_data.template_url_data": {} }
-      }
-    ]
+    "reason_for_missing_test": "complex mapping that includes timestamps as well, see PolicyTest.DefaultSearchProvider for a full policy browser test"
   },
 
   "DefaultSearchProviderInstantURL": {
@@ -1858,68 +1920,19 @@
   },
 
   "DefaultSearchProviderNewTabURL": {
-    "os": ["win", "linux", "mac", "chromeos", "android"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DefaultSearchProviderEnabled": true,
-          "DefaultSearchProviderSearchURL": "http://www.google.com/?q={searchTerms}",
-          "DefaultSearchProviderKeyword": "google",
-          "DefaultSearchProviderNewTabURL": "http://www.google.com/newtab"
-        },
-        "prefs": { "default_search_provider_data.template_url_data": {} }
-      }
-    ]
+    "reason_for_missing_test": "complex mapping that includes timestamps as well, see PolicyTest.DefaultSearchProvider for a full policy browser test"
   },
 
   "DefaultSearchProviderIconURL": {
-    "os": ["win", "linux", "mac", "chromeos", "android"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DefaultSearchProviderEnabled": true,
-          "DefaultSearchProviderSearchURL": "http://www.google.com/?q={searchTerms}",
-          "DefaultSearchProviderKeyword": "google",
-          "DefaultSearchProviderIconURL": "http://www.google.com/favicon.ico"
-        },
-        "prefs": { "default_search_provider_data.template_url_data": {} }
-      }
-    ]
+    "reason_for_missing_test": "complex mapping that includes timestamps as well, see PolicyTest.DefaultSearchProvider for a full policy browser test"
   },
 
   "DefaultSearchProviderEncodings": {
-    "os": ["win", "linux", "mac", "chromeos", "android"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DefaultSearchProviderEnabled": true,
-          "DefaultSearchProviderSearchURL": "http://www.google.com/?q={searchTerms}",
-          "DefaultSearchProviderKeyword": "google",
-          "DefaultSearchProviderEncodings": [
-            "UTF-8"
-          ]
-        },
-        "prefs": { "default_search_provider_data.template_url_data": {} }
-      }
-    ]
+    "reason_for_missing_test": "complex mapping that includes timestamps as well, see PolicyTest.DefaultSearchProvider for a full policy browser test"
   },
 
   "DefaultSearchProviderAlternateURLs": {
-    "os": ["win", "linux", "mac", "chromeos", "android"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DefaultSearchProviderEnabled": true,
-          "DefaultSearchProviderSearchURL": "http://www.google.com/?q={searchTerms}",
-          "DefaultSearchProviderKeyword": "google",
-          "DefaultSearchProviderAlternateURLs": [
-            "http://www.google.com/#q={searchTerms}",
-            "http://www.google.com/search#q={searchTerms}"
-          ]
-        },
-        "prefs": { "default_search_provider_data.template_url_data": {} }
-      }
-    ]
+    "reason_for_missing_test": "complex mapping that includes timestamps as well, see PolicyTest.DefaultSearchProvider for a full policy browser test"
   },
 
   "DefaultSearchProviderSearchTermsReplacementKey": {
@@ -1927,48 +1940,15 @@
   },
 
   "DefaultSearchProviderImageURL": {
-    "os": ["win", "linux", "mac", "chromeos", "android"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DefaultSearchProviderEnabled": true,
-          "DefaultSearchProviderSearchURL": "http://www.google.com/?q={searchTerms}",
-          "DefaultSearchProviderKeyword": "google",
-          "DefaultSearchProviderImageURL": "http://www.google.com/searchbyimage/upload"
-        },
-        "prefs": { "default_search_provider_data.template_url_data": {} }
-      }
-    ]
+    "reason_for_missing_test": "complex mapping that includes timestamps as well, see PolicyTest.DefaultSearchProvider for a full policy browser test"
   },
 
   "DefaultSearchProviderSearchURLPostParams": {
-    "os": ["win", "linux", "mac", "chromeos", "android"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DefaultSearchProviderEnabled": true,
-          "DefaultSearchProviderSearchURL": "http://www.google.com/?q={searchTerms}",
-          "DefaultSearchProviderKeyword": "google",
-          "DefaultSearchProviderSearchURLPostParams": ""
-        },
-        "prefs": { "default_search_provider_data.template_url_data": {} }
-      }
-    ]
+    "reason_for_missing_test": "complex mapping that includes timestamps as well, see PolicyTest.DefaultSearchProvider for a full policy browser test"
   },
 
   "DefaultSearchProviderSuggestURLPostParams": {
-    "os": ["win", "linux", "mac", "chromeos", "android"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DefaultSearchProviderEnabled": true,
-          "DefaultSearchProviderSearchURL": "http://www.google.com/?q={searchTerms}",
-          "DefaultSearchProviderKeyword": "google",
-          "DefaultSearchProviderSuggestURLPostParams": ""
-        },
-        "prefs": { "default_search_provider_data.template_url_data": {}}
-      }
-    ]
+    "reason_for_missing_test": "complex mapping that includes timestamps as well, see PolicyTest.DefaultSearchProvider for a full policy browser test"
   },
 
   "DefaultSearchProviderInstantURLPostParams": {
@@ -1976,18 +1956,7 @@
   },
 
   "DefaultSearchProviderImageURLPostParams": {
-    "os": ["win", "linux", "mac", "chromeos", "android"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DefaultSearchProviderEnabled": true,
-          "DefaultSearchProviderSearchURL": "http://www.google.com/?q={searchTerms}",
-          "DefaultSearchProviderKeyword": "google",
-          "DefaultSearchProviderImageURLPostParams": "image_content={imageThumbnail},image_url={imageURL},sbisrc={imageSearchSource}"
-        },
-        "prefs": { "default_search_provider_data.template_url_data": {} }
-      }
-    ]
+    "reason_for_missing_test": "complex mapping that includes timestamps as well, see PolicyTest.DefaultSearchProvider for a full policy browser test"
   },
 
   "DefaultCookiesSetting": {
@@ -3248,56 +3217,70 @@
         "policies": {
           "BrowserSignin": 1
         },
-        "prefs": { "signin.allowed_on_next_startup": {} }
+        "prefs": {
+          "signin.allowed_on_next_startup": {
+            "value": true
+          }
+        }
       }
     ]
   },
 
   "BrowserSignin.DesktopForce": {
-    "os": [
-      "win",
-      "mac"
-    ],
+    "os": ["win", "mac"],
     "policy_pref_mapping_tests": [
       {
         "policies": {
           "BrowserSignin": 2
         },
         "prefs": {
-          "signin.allowed_on_next_startup": {},
-          "profile.force_browser_signin": { "location": "local_state" },
-          "profile.browser_guest_enabled": { "location": "local_state" }
+          "signin.allowed_on_next_startup": {
+            "value": true
+          },
+          "profile.force_browser_signin": {
+            "location": "local_state",
+            "value": true
+          },
+          "profile.browser_guest_enabled": {
+            "location": "local_state",
+            "value": false
           }
+        }
       }
     ]
   },
 
   "BrowserSignin.LinuxForceNotSupported": {
-    "os": [
-      "linux"
-    ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "BrowserSignin": 2
-        },
-        "prefs": { "signin.allowed_on_next_startup": {} }
-      }
-    ]
-  },
-
-  "BrowserSignin.AndroidForce": {
-    "os": [
-      "android"
-    ],
+    "os": ["linux"],
     "policy_pref_mapping_tests": [
       {
         "policies": {
           "BrowserSignin": 2
         },
         "prefs": {
-          "signin.allowed": {},
-          "profile.force_browser_signin": { "location": "local_state" }
+          "signin.allowed_on_next_startup": {
+            "value": true
+          }
+        }
+      }
+    ]
+  },
+
+  "BrowserSignin.AndroidForce": {
+    "os": ["android"],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "BrowserSignin": 2
+        },
+        "prefs": {
+          "signin.allowed": {
+            "value": true
+          },
+          "profile.force_browser_signin": {
+            "location": "local_state",
+            "value": true
+          }
         }
       }
     ]
@@ -3520,7 +3503,9 @@
         "policies": {
           "NTPCustomBackgroundEnabled": false
         },
-        "prefs": { "ntp.custom_background_dict": {} }
+        "prefs": { "ntp.custom_background_dict": {
+          "value": {}
+        } }
       }
     ]
   },
@@ -3577,13 +3562,33 @@
   },
 
   "RoamingProfileLocation": {
-    "os": ["win", "linux", "mac"],
+    "os": ["win"],
     "policy_pref_mapping_tests": [
       {
         "policies": {
           "RoamingProfileLocation": "${roaming_app_data}"
         },
-        "prefs": { "sync.local_sync_backend_dir": {} }
+        "prefs": {
+          "sync.local_sync_backend_dir": {
+            "value": "C:\\Users\\chrome-bot\\AppData\\Roaming"
+          }
+        }
+      }
+    ]
+  },
+
+  "RoamingProfileLocation.NonWindows": {
+    "os": ["linux", "mac"],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "RoamingProfileLocation": "/Users/${user_name}/chrome_roaming_profile_dir"
+        },
+        "prefs": {
+          "sync.local_sync_backend_dir": {
+            "value": "/Users/chrome-bot/chrome_roaming_profile_dir"
+          }
+        }
       }
     ]
   },
@@ -4057,10 +4062,21 @@
     "policy_pref_mapping_tests": [
       {
         "policies": {
-          "SystemFeaturesDisableList": ["os_settings", "scanning"]
+          "SystemFeaturesDisableList": [
+            "os_settings",
+            "scanning"
+          ]
         },
-        "prefs": { "policy.system_features_disable_list": { "location": "local_state" },
-                   "os_settings_enabled": { "location": "local_state" } }
+        "prefs": {
+          "policy.system_features_disable_list": {
+            "location": "local_state",
+            "value": [3, 4]
+          },
+          "os_settings_enabled": {
+            "location": "local_state",
+            "value": false
+          }
+        }
       }
     ]
   },
@@ -4272,7 +4288,9 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "PresentationScreenDimDelayScale": 200 },
-        "prefs": { "power.presentation_screen_dim_delay_factor": {} }
+        "prefs": { "power.presentation_screen_dim_delay_factor": {
+          "value": 2.0
+        } }
       }
     ]
   },
@@ -4301,8 +4319,14 @@
     "os": ["chromeos"],
     "policy_pref_mapping_tests": [
       {
-        "policies": { "UserActivityScreenDimDelayScale": 200 },
-        "prefs": { "power.user_activity_screen_dim_delay_factor": {} }
+        "policies": {
+          "UserActivityScreenDimDelayScale": 200
+        },
+        "prefs": {
+          "power.user_activity_screen_dim_delay_factor": {
+            "value": 2.0
+          }
+        }
       }
     ]
   },
@@ -4349,14 +4373,30 @@
           }
         },
         "prefs": {
-          "power.ac_screen_dim_delay_ms": {},
-          "power.ac_screen_off_delay_ms": {},
-          "power.ac_idle_warning_delay_ms": {},
-          "power.ac_idle_delay_ms": {},
-          "power.battery_screen_dim_delay_ms": {},
-          "power.battery_screen_off_delay_ms": {},
-          "power.battery_idle_warning_delay_ms": {},
-          "power.battery_idle_delay_ms": {}
+          "power.ac_screen_dim_delay_ms": {
+            "value": 5000
+          },
+          "power.ac_screen_off_delay_ms": {
+            "value": 7000
+          },
+          "power.ac_idle_warning_delay_ms": {
+            "value": 8000
+          },
+          "power.ac_idle_delay_ms": {
+            "value": 9000
+          },
+          "power.battery_screen_dim_delay_ms": {
+            "value": 1000
+          },
+          "power.battery_screen_off_delay_ms": {
+            "value": 3000
+          },
+          "power.battery_idle_warning_delay_ms": {
+            "value": 4000
+          },
+          "power.battery_idle_delay_ms": {
+            "value": 5000
+          }
         }
       }
     ]
@@ -4373,8 +4413,12 @@
           }
         },
         "prefs": {
-          "power.ac_screen_lock_delay_ms": {},
-          "power.battery_screen_lock_delay_ms": {}
+          "power.ac_screen_lock_delay_ms": {
+            "value": 6000
+          },
+          "power.battery_screen_lock_delay_ms": {
+            "value": 2000
+          }
         }
       }
     ]
@@ -4580,8 +4624,12 @@
       {
         "policies": { "ScreenMagnifierType": 1 },
         "prefs": {
-          "settings.a11y.screen_magnifier": {},
-          "ash.docked_magnifier.enabled": {}
+          "settings.a11y.screen_magnifier": {
+            "value": true
+          },
+          "ash.docked_magnifier.enabled": {
+            "value": false
+          }
         }
       }
     ]
@@ -4641,8 +4689,8 @@
       {
         "policies": {
           "AttestationExtensionAllowlist": [
-            "test_ext_id1",
-            "test_ext_id2"
+            "abcdefghijklmnopabcdefghijklmnop",
+            "aabbccddeeffgghhiijjkkllmmnnoopp"
           ]
         },
         "prefs": { "attestation.extension_allowlist": {} }
@@ -4656,8 +4704,8 @@
       {
         "policies": {
           "AttestationExtensionWhitelist": [
-            "test_ext_id1",
-            "test_ext_id2"
+            "abcdefghijklmnopabcdefghijklmnop",
+            "aabbccddeeffgghhiijjkkllmmnnoopp"
           ]
         },
         "prefs": { "attestation.extension_allowlist": {} }
@@ -5286,8 +5334,12 @@
           }
         },
         "prefs": {
-          "power.ac_screen_brightness_percent": {},
-          "power.battery_screen_brightness_percent": {}
+          "power.ac_screen_brightness_percent": {
+            "value": 100
+          },
+          "power.battery_screen_brightness_percent": {
+            "value": 90
+          }
         }
       }
     ]
@@ -7292,7 +7344,11 @@
         "policies": {
           "ArcBackupRestoreServiceEnabled": 0
         },
-        "prefs": { "arc.backup_restore.enabled": {} }
+        "prefs": {
+          "arc.backup_restore.enabled": {
+            "value": false
+          }
+        }
       }
     ]
   },
@@ -7304,7 +7360,9 @@
         "policies": {
           "ArcGoogleLocationServicesEnabled": 0
         },
-        "prefs": { "arc.location_service.enabled": {} }
+        "prefs": { "arc.location_service.enabled": {
+          "value": false
+        } }
       }
     ]
   },

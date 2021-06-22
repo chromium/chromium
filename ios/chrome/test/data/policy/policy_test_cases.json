@@ -15,9 +15,9 @@
         "policies": "A policy dictionary that should affect |prefs| when set as mandatory or recommended policy.",
         "prefs": {
           "${pref}": {
-            "value": "If set, the |pref| is controlled by policy (not user modifiable) and should have this value. Either this or |default_value| should be set.",
+            "value": "If set, the |pref| is controlled by policy (not user modifiable) and should have this value. Either this or |default_value| should be set. Otherwise, if only one policy is specified |value| falls back to that policy's value.",
             "default_value": "If set, the |pref| is not controlled by policy (user modifiable) and should have this value. Either this or |value| should be set.",
-            "location": "The location where the pref is registered, possible values are ['user_profile', 'local_state']. Defaults to 'user_profile' if not specified.",
+            "location": "The location where the pref is registered, possible values are ['user_profile', 'signin_profile', 'local_state']. Defaults to 'user_profile' if not specified.",
             "check_for_mandatory": "Should the preference be tested when a mandatory value is set for the policy? Defaults to |true| if not specified. See |can_be_recommended|.",
             "check_for_recommended": "Should the preference be tested when a recommended value is set for the policy? Defaults to |true| if not specified. See |can_be_recommended|."
           }
@@ -49,13 +49,17 @@
   },
 
   "BrowserSignin.SigninDisabled": {
-    "os": [
-      "ios"
-    ],
+    "os": ["ios"],
     "policy_pref_mapping_tests": [
       {
-        "policies": { "BrowserSignin": 0 },
-        "prefs": { "signin.allowed_by_policy": {} }
+        "policies": {
+          "BrowserSignin": 0
+        },
+        "prefs": {
+          "signin.allowed_by_policy": {
+            "value": false
+          }
+        }
       }
     ]
   },
@@ -106,204 +110,55 @@
   },
 
   "DefaultSearchProviderEnabled": {
-    "os": [ "ios" ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": { "DefaultSearchProviderEnabled": false },
-        "prefs": { "default_search_provider_data.template_url_data": {} }
-      },
-      {
-        "policies": {
-          "DefaultSearchProviderEnabled": true,
-          "DefaultSearchProviderSearchURL": "http://www.google.com/?q={searchTerms}",
-          "DefaultSearchProviderKeyword": "google"
-        },
-        "prefs": { "default_search_provider_data.template_url_data": {} }
-      }
-    ]
+    "reason_for_missing_test": "complex mapping that includes timestamps as well, see PolicyTest.DefaultSearchProvider for a full policy browser test"
   },
 
   "DefaultSearchProviderName": {
-    "os": [ "ios" ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DefaultSearchProviderEnabled": true,
-          "DefaultSearchProviderSearchURL": "http://www.google.com/?q={searchTerms}",
-          "DefaultSearchProviderKeyword": "google",
-          "DefaultSearchProviderName": "google.com"
-        },
-        "prefs": { "default_search_provider_data.template_url_data": {} }
-      }
-    ]
+    "reason_for_missing_test": "complex mapping that includes timestamps as well, see PolicyTest.DefaultSearchProvider for a full policy browser test"
   },
 
   "DefaultSearchProviderKeyword": {
-    "os": [ "ios" ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DefaultSearchProviderEnabled": true,
-          "DefaultSearchProviderKeyword": "google",
-          "DefaultSearchProviderSearchURL": "http://www.google.com/?q={searchTerms}"
-        },
-        "prefs": { "default_search_provider_data.template_url_data": {} }
-      }
-    ]
+    "reason_for_missing_test": "complex mapping that includes timestamps as well, see PolicyTest.DefaultSearchProvider for a full policy browser test"
   },
 
   "DefaultSearchProviderSearchURL": {
-    "os": [ "ios" ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DefaultSearchProviderEnabled": true,
-          "DefaultSearchProviderSearchURL": "http://www.google.com/?q={searchTerms}",
-          "DefaultSearchProviderKeyword": "google"
-        },
-        "prefs": { "default_search_provider_data.template_url_data": {} }
-      }
-    ]
+    "reason_for_missing_test": "complex mapping that includes timestamps as well, see PolicyTest.DefaultSearchProvider for a full policy browser test"
   },
 
   "DefaultSearchProviderSuggestURL": {
-    "os": [ "ios" ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DefaultSearchProviderEnabled": true,
-          "DefaultSearchProviderSearchURL": "http://www.google.com/?q={searchTerms}",
-          "DefaultSearchProviderKeyword": "google",
-          "DefaultSearchProviderSuggestURL": "http://www.google.com/suggest?q={searchTerms}"
-        },
-        "prefs": { "default_search_provider_data.template_url_data": {} }
-      }
-    ]
+    "reason_for_missing_test": "complex mapping that includes timestamps as well, see PolicyTest.DefaultSearchProvider for a full policy browser test"
   },
 
   "DefaultSearchProviderIconURL": {
-    "os": [ "ios" ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DefaultSearchProviderEnabled": true,
-          "DefaultSearchProviderSearchURL": "http://www.google.com/?q={searchTerms}",
-          "DefaultSearchProviderKeyword": "google",
-          "DefaultSearchProviderIconURL": "http://www.google.com/favicon.ico"
-        },
-        "prefs": { "default_search_provider_data.template_url_data": {} }
-      }
-    ]
+    "reason_for_missing_test": "complex mapping that includes timestamps as well, see PolicyTest.DefaultSearchProvider for a full policy browser test"
   },
 
   "DefaultSearchProviderEncodings": {
-    "os": [ "ios" ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DefaultSearchProviderEnabled": true,
-          "DefaultSearchProviderSearchURL": "http://www.google.com/?q={searchTerms}",
-          "DefaultSearchProviderKeyword": "google",
-          "DefaultSearchProviderEncodings": [
-            "UTF-8"
-          ]
-        },
-        "prefs": { "default_search_provider_data.template_url_data": {} }
-      }
-    ]
+    "reason_for_missing_test": "complex mapping that includes timestamps as well, see PolicyTest.DefaultSearchProvider for a full policy browser test"
   },
 
   "DefaultSearchProviderAlternateURLs": {
-    "os": [ "ios" ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DefaultSearchProviderEnabled": true,
-          "DefaultSearchProviderSearchURL": "http://www.google.com/?q={searchTerms}",
-          "DefaultSearchProviderKeyword": "google",
-          "DefaultSearchProviderAlternateURLs": [
-            "http://www.google.com/#q={searchTerms}",
-            "http://www.google.com/search#q={searchTerms}"
-          ]
-        },
-        "prefs": { "default_search_provider_data.template_url_data": {} }
-      }
-    ]
+    "reason_for_missing_test": "complex mapping that includes timestamps as well, see PolicyTest.DefaultSearchProvider for a full policy browser test"
   },
 
   "DefaultSearchProviderImageURL": {
-    "os": [ "ios" ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DefaultSearchProviderEnabled": true,
-          "DefaultSearchProviderSearchURL": "http://www.google.com/?q={searchTerms}",
-          "DefaultSearchProviderKeyword": "google",
-          "DefaultSearchProviderImageURL": "http://www.google.com/searchbyimage/upload"
-        },
-        "prefs": { "default_search_provider_data.template_url_data": {} }
-      }
-    ]
+    "reason_for_missing_test": "complex mapping that includes timestamps as well, see PolicyTest.DefaultSearchProvider for a full policy browser test"
   },
 
   "DefaultSearchProviderNewTabURL": {
-    "os": [ "ios" ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DefaultSearchProviderEnabled": true,
-          "DefaultSearchProviderSearchURL": "http://www.google.com/?q={searchTerms}",
-          "DefaultSearchProviderKeyword": "google",
-          "DefaultSearchProviderNewTabURL": "http://www.google.com/newtab"
-        },
-        "prefs": { "default_search_provider_data.template_url_data": {} }
-      }
-    ]
+    "reason_for_missing_test": "complex mapping that includes timestamps as well, see PolicyTest.DefaultSearchProvider for a full policy browser test"
   },
 
   "DefaultSearchProviderSearchURLPostParams": {
-    "os": [ "ios" ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DefaultSearchProviderEnabled": true,
-          "DefaultSearchProviderSearchURL": "http://www.google.com/?q={searchTerms}",
-          "DefaultSearchProviderKeyword": "google",
-          "DefaultSearchProviderSearchURLPostParams": ""
-        },
-        "prefs": { "default_search_provider_data.template_url_data": {} }
-      }
-    ]
+    "reason_for_missing_test": "complex mapping that includes timestamps as well, see PolicyTest.DefaultSearchProvider for a full policy browser test"
   },
 
   "DefaultSearchProviderSuggestURLPostParams": {
-    "os": [ "ios" ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DefaultSearchProviderEnabled": true,
-          "DefaultSearchProviderSearchURL": "http://www.google.com/?q={searchTerms}",
-          "DefaultSearchProviderKeyword": "google",
-          "DefaultSearchProviderSuggestURLPostParams": ""
-        },
-        "prefs": { "default_search_provider_data.template_url_data": {}}
-      }
-    ]
+    "reason_for_missing_test": "complex mapping that includes timestamps as well, see PolicyTest.DefaultSearchProvider for a full policy browser test"
   },
 
   "DefaultSearchProviderImageURLPostParams": {
-    "os": [ "ios" ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DefaultSearchProviderEnabled": true,
-          "DefaultSearchProviderSearchURL": "http://www.google.com/?q={searchTerms}",
-          "DefaultSearchProviderKeyword": "google",
-          "DefaultSearchProviderImageURLPostParams": "image_content={imageThumbnail},image_url={imageURL},sbisrc={imageSearchSource}"
-        },
-        "prefs": { "default_search_provider_data.template_url_data": {} }
-      }
-    ]
+    "reason_for_missing_test": "complex mapping that includes timestamps as well, see PolicyTest.DefaultSearchProvider for a full policy browser test"
   },
 
   "DisableSafeBrowsingProceedAnyway": {
