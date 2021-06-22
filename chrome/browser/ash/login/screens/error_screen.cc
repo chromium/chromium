@@ -27,11 +27,9 @@
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/chrome_notification_types.h"
-#include "chrome/browser/extensions/component_loader.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/webui/chromeos/connectivity_diagnostics_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/login/error_screen_handler.h"
-#include "chrome/common/extensions/extension_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
@@ -42,8 +40,6 @@
 #include "components/session_manager/core/session_manager.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/notification_service.h"
-#include "extensions/browser/extension_system.h"
-#include "extensions/common/constants.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -345,24 +341,7 @@ void ErrorScreen::OnConfigureCerts() {
 }
 
 void ErrorScreen::OnDiagnoseButtonClicked() {
-  Profile* profile = GetAppProfile();
-  extensions::ExtensionService* extension_service =
-      extensions::ExtensionSystem::Get(profile)->extension_service();
-
-  std::string extension_id = extension_service->component_loader()->Add(
-      IDR_CONNECTIVITY_DIAGNOSTICS_MANIFEST,
-      base::FilePath(extension_misc::kConnectivityDiagnosticsPath));
-
-  apps::AppServiceProxyFactory::GetForProfile(profile)
-      ->BrowserAppLauncher()
-      ->LaunchAppWithParams(apps::AppLaunchParams(
-          extension_id, apps::mojom::LaunchContainer::kLaunchContainerWindow,
-          WindowOpenDisposition::NEW_WINDOW,
-          apps::mojom::AppLaunchSource::kSourceChromeInternal));
-  KioskAppManager::Get()->InitSession(profile, extension_id);
-
-  LoginDisplayHost::default_host()->Finalize(base::BindOnce(
-      [] { session_manager::SessionManager::Get()->SessionStarted(); }));
+  chromeos::ConnectivityDiagnosticsDialog::ShowDialog();
 }
 
 void ErrorScreen::OnLaunchOobeGuestSession() {

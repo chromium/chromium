@@ -2288,6 +2288,8 @@ static_library("ui") {
       "webui/chromeos/certificate_manager_dialog_ui.h",
       "webui/chromeos/chrome_url_disabled/chrome_url_disabled_ui.cc",
       "webui/chromeos/chrome_url_disabled/chrome_url_disabled_ui.h",
+      "webui/chromeos/connectivity_diagnostics_dialog.cc",
+      "webui/chromeos/connectivity_diagnostics_dialog.h",
       "webui/chromeos/crostini_installer/crostini_installer_dialog.cc",
       "webui/chromeos/crostini_installer/crostini_installer_dialog.h",
       "webui/chromeos/crostini_installer/crostini_installer_page_handler.cc",

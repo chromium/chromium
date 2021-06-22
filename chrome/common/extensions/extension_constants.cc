@@ -102,10 +102,6 @@ const char kSwitchAccessManifestFilename[] = "switch_access_manifest.json";
 const char kSwitchAccessGuestManifestFilename[] =
     "switch_access_manifest_guest.json";
 const char kGuestManifestFilename[] = "manifest_guest.json";
-const char kConnectivityDiagnosticsPath[] =
-    "/usr/share/chromeos-assets/connectivity_diagnostics";
-const char kConnectivityDiagnosticsLauncherPath[] =
-    "/usr/share/chromeos-assets/connectivity_diagnostics_launcher";
 const char kFirstRunDialogId[] = "jdgcneonijmofocbhmijhacgchbihela";
 const char kEspeakSpeechSynthesisExtensionPath[] =
     "/usr/share/chromeos-assets/speech_synthesis/espeak-ng";
