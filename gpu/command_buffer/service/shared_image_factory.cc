@@ -48,6 +48,7 @@
 
 #if defined(OS_WIN)
 #include "gpu/command_buffer/service/shared_image_backing_factory_d3d.h"
+#include "ui/gfx/buffer_format_util.h"
 #endif  // OS_WIN
 
 #if defined(OS_FUCHSIA)
@@ -424,6 +425,30 @@ bool SharedImageFactory::OnMemoryDump(
 
   return true;
 }
+
+#if defined(OS_WIN)
+bool SharedImageFactory::CreateSharedImageVideoPlanes(
+    base::span<const Mailbox> mailboxes,
+    gfx::GpuMemoryBufferHandle handle,
+    gfx::BufferFormat format,
+    const gfx::Size& size,
+    uint32_t usage) {
+  if (!interop_backing_factory_)
+    return false;
+
+  auto backings = interop_backing_factory_->CreateSharedImageVideoPlanes(
+      mailboxes, std::move(handle), format, size, usage);
+
+  if (backings.size() != gfx::NumberOfPlanesForLinearBufferFormat(format))
+    return false;
+
+  for (auto& backing : backings) {
+    if (!RegisterBacking(std::move(backing), /*allow_legacy_mailbox=*/false))
+      return false;
+  }
+  return true;
+}
+#endif
 
 #if defined(OS_ANDROID)
 bool SharedImageFactory::CreateSharedImageWithAHB(const Mailbox& out_mailbox,

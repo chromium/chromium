@@ -128,6 +128,14 @@ class GPU_GLES2_EXPORT SharedImageFactory {
     return shared_context_state_;
   }
 
+#if defined(OS_WIN)
+  bool CreateSharedImageVideoPlanes(base::span<const Mailbox> mailboxes,
+                                    gfx::GpuMemoryBufferHandle handle,
+                                    gfx::BufferFormat format,
+                                    const gfx::Size& size,
+                                    uint32_t usage);
+#endif
+
 #if defined(OS_ANDROID)
   bool CreateSharedImageWithAHB(const Mailbox& out_mailbox,
                                 const Mailbox& in_mailbox,

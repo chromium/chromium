@@ -101,6 +101,8 @@ class GPU_IPC_SERVICE_EXPORT SharedImageStub
   void OnDestroySharedImage(const Mailbox& mailbox);
   void OnRegisterSharedImageUploadBuffer(base::ReadOnlySharedMemoryRegion shm);
 #if defined(OS_WIN)
+  void OnCreateSharedImageVideoPlanes(
+      mojom::CreateSharedImageVideoPlanesParamsPtr params);
   void OnCreateSwapChain(mojom::CreateSwapChainParamsPtr params);
   void OnPresentSwapChain(const Mailbox& mailbox, uint32_t release_id);
 #endif  // OS_WIN

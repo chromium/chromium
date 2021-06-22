@@ -14,7 +14,10 @@
 #include "gpu/ipc/common/command_buffer_id.h"
 #include "gpu/ipc/common/gpu_messages.h"
 #include "gpu/ipc/common/gpu_param_traits_macros.h"
+#include "ui/gfx/buffer_format_util.h"
+#include "ui/gfx/buffer_types.h"
 #include "ui/gfx/gpu_fence.h"
+#include "ui/gfx/gpu_memory_buffer.h"
 
 namespace gpu {
 namespace {
@@ -213,6 +216,46 @@ Mailbox SharedImageInterfaceProxy::CreateSharedImage(
   AddMailbox(mailbox, usage);
   return mailbox;
 }
+
+#if defined(OS_WIN)
+std::vector<Mailbox> SharedImageInterfaceProxy::CreateSharedImageVideoPlanes(
+    gfx::GpuMemoryBuffer* gpu_memory_buffer,
+    GpuMemoryBufferManager* gpu_memory_buffer_manager,
+    uint32_t usage) {
+  DCHECK(gpu_memory_buffer_manager);
+  DCHECK(gpu_memory_buffer);
+  DCHECK_EQ(gpu_memory_buffer->GetType(),
+            gfx::GpuMemoryBufferType::DXGI_SHARED_HANDLE);
+  DCHECK_EQ(gpu_memory_buffer->GetFormat(),
+            gfx::BufferFormat::YUV_420_BIPLANAR);
+
+  const size_t num_planes =
+      gfx::NumberOfPlanesForLinearBufferFormat(gpu_memory_buffer->GetFormat());
+  std::vector<Mailbox> mailboxes(num_planes);
+  for (auto& mailbox : mailboxes)
+    mailbox = Mailbox::GenerateForSharedImage();
+
+  auto params = mojom::CreateSharedImageVideoPlanesParams::New();
+  params->mailboxes = mailboxes;
+  params->gmb_handle = gpu_memory_buffer->CloneHandle();
+  params->size = gpu_memory_buffer->GetSize();
+  params->format = gpu_memory_buffer->GetFormat();
+  params->usage = usage;
+  {
+    base::AutoLock lock(lock_);
+
+    for (const auto& mailbox : mailboxes)
+      AddMailbox(mailbox, usage);
+
+    params->release_id = ++next_release_id_;
+    last_flush_id_ = host_->EnqueueDeferredMessage(
+        mojom::DeferredRequestParams::NewSharedImageRequest(
+            mojom::DeferredSharedImageRequest::NewCreateSharedImageVideoPlanes(
+                std::move(params))));
+  }
+  return mailboxes;
+}
+#endif
 
 #if defined(OS_ANDROID)
 Mailbox SharedImageInterfaceProxy::CreateSharedImageWithAHB(

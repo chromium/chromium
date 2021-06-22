@@ -6,6 +6,7 @@
 
 #include "gpu/ipc/client/shared_image_interface_proxy.h"
 #include "ui/gfx/gpu_fence.h"
+#include "ui/gfx/gpu_memory_buffer.h"
 
 namespace gpu {
 
@@ -114,6 +115,21 @@ Mailbox ClientSharedImageInterface::CreateSharedImage(
       gpu_memory_buffer, gpu_memory_buffer_manager, plane, color_space,
       surface_origin, alpha_type, usage));
 }
+
+#if defined(OS_WIN)
+std::vector<Mailbox> ClientSharedImageInterface::CreateSharedImageVideoPlanes(
+    gfx::GpuMemoryBuffer* gpu_memory_buffer,
+    GpuMemoryBufferManager* gpu_memory_buffer_manager,
+    uint32_t usage) {
+  DCHECK_EQ(gpu_memory_buffer->GetType(), gfx::DXGI_SHARED_HANDLE);
+  auto mailboxes = proxy_->CreateSharedImageVideoPlanes(
+      gpu_memory_buffer, gpu_memory_buffer_manager, usage);
+  for (const auto& mailbox : mailboxes) {
+    AddMailbox(mailbox);
+  }
+  return mailboxes;
+}
+#endif
 
 #if defined(OS_ANDROID)
 Mailbox ClientSharedImageInterface::CreateSharedImageWithAHB(

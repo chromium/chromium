@@ -91,6 +91,12 @@ class GPU_GLES2_EXPORT SharedImageBackingFactoryD3D
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
       uint32_t usage) override;
+  std::vector<std::unique_ptr<SharedImageBacking>> CreateSharedImageVideoPlanes(
+      base::span<const Mailbox> mailboxes,
+      gfx::GpuMemoryBufferHandle handle,
+      gfx::BufferFormat format,
+      const gfx::Size& size,
+      uint32_t usage) override;
 
   // Returns true if the specified GpuMemoryBufferType can be imported using
   // this factory.
@@ -102,23 +108,6 @@ class GPU_GLES2_EXPORT SharedImageBackingFactoryD3D
   }
 
  private:
-  // Wraps the optional swap chain buffer (front buffer/back buffer) and texture
-  // into GLimage and gles2::TexturePassthrough in the backing that is created.
-  // The backing isn't assumed to be cleared so it's the caller's responsibility
-  // to mark the backing as cleared using SetCleared()/SetClearedRect().
-  std::unique_ptr<SharedImageBacking> MakeBacking(
-      const Mailbox& mailbox,
-      viz::ResourceFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      uint32_t usage,
-      Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain,
-      size_t buffer_index,
-      const Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
-      base::win::ScopedHandle shared_handle);
-
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_;
   DISALLOW_COPY_AND_ASSIGN(SharedImageBackingFactoryD3D);
 };

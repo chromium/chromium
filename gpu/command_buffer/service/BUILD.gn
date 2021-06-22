@@ -224,6 +224,7 @@ target(link_target_type, "gles2_sources") {
     "shared_context_state.h",
     "shared_image_backing.cc",
     "shared_image_backing.h",
+    "shared_image_backing_factory.cc",
     "shared_image_backing_factory.h",
     "shared_image_backing_factory_gl_texture.cc",
     "shared_image_backing_factory_gl_texture.h",

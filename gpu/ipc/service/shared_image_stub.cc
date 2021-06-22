@@ -7,6 +7,7 @@
 #include <inttypes.h>
 
 #include <memory>
+#include <utility>
 
 #include "base/memory/ptr_util.h"
 #include "base/strings/stringprintf.h"
@@ -107,6 +108,11 @@ void SharedImageStub::ExecuteDeferredRequest(
       break;
 
 #if defined(OS_WIN)
+    case mojom::DeferredSharedImageRequest::Tag::kCreateSharedImageVideoPlanes:
+      OnCreateSharedImageVideoPlanes(
+          std::move(request->get_create_shared_image_video_planes()));
+      break;
+
     case mojom::DeferredSharedImageRequest::Tag::kCreateSwapChain:
       OnCreateSwapChain(std::move(request->get_create_swap_chain()));
       break;
@@ -378,6 +384,32 @@ void SharedImageStub::OnDestroySharedImage(const Mailbox& mailbox) {
 }
 
 #if defined(OS_WIN)
+void SharedImageStub::OnCreateSharedImageVideoPlanes(
+    mojom::CreateSharedImageVideoPlanesParamsPtr params) {
+  TRACE_EVENT0("gpu", "SharedImageStub::CreateSharedImageVideoPlanes");
+  for (const auto& mailbox : params->mailboxes) {
+    if (!mailbox.IsSharedImage()) {
+      DLOG(ERROR) << "SharedImageStub: Trying to create a SharedImage video "
+                     "plane with a non-SharedImage mailbox.";
+      OnError();
+      return;
+    }
+  }
+  if (!MakeContextCurrent()) {
+    OnError();
+    return;
+  }
+  if (!factory_->CreateSharedImageVideoPlanes(
+          std::move(params->mailboxes), std::move(params->gmb_handle),
+          params->format, params->size, params->usage)) {
+    DLOG(ERROR)
+        << "SharedImageStub: Failed to create shared image video planes";
+    OnError();
+    return;
+  }
+  sync_point_client_state_->ReleaseFenceSync(params->release_id);
+}
+
 void SharedImageStub::OnCreateSwapChain(
     mojom::CreateSwapChainParamsPtr params) {
   TRACE_EVENT0("gpu", "SharedImageStub::OnCreateSwapChain");

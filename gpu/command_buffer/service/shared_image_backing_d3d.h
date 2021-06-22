@@ -77,7 +77,7 @@ class GPU_GLES2_EXPORT SharedImageBackingD3D
       Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
       scoped_refptr<gles2::TexturePassthrough> gl_texture);
 
-  static std::vector<std::unique_ptr<SharedImageBackingD3D>>
+  static std::vector<std::unique_ptr<SharedImageBacking>>
   CreateFromVideoTexture(
       base::span<const Mailbox> mailboxes,
       DXGI_FORMAT dxgi_format,
