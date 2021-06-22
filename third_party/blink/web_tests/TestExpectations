@@ -460,6 +460,7 @@ crbug.com/1044742 [ Linux ] external/wpt/css/compositing/mix-blend-mode/mix-blen
 
 crbug.com/1052202 external/wpt/svg/linking/scripted/href-mpath-element.html [ Timeout ]
 crbug.com/1052202 external/wpt/svg/linking/scripted/href-animate-element.html [ Timeout ]
+crbug.com/1222395 external/wpt/svg/path/property/mpath.svg [ Failure ]
 
 crbug.com/785246 external/wpt/svg/struct/reftests/use-inheritance-001.svg [ Failure ]
 crbug.com/785246 external/wpt/svg/linking/reftests/use-descendant-combinator-003.html [ Failure ]
@@ -2548,13 +2549,9 @@ crbug.com/626703 [ Win ] external/wpt/websockets/Create-blocked-port.any.worker.
 crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/fetch/api/request/request-bad-port.any.sharedworker.html [ Timeout ]
 crbug.com/626703 external/wpt/fetch/api/request/request-bad-port.any.html [ Timeout ]
 crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/fetch/api/request/request-bad-port.any.html [ Timeout ]
-crbug.com/626703 [ Linux ] virtual/layout_ng_svg_text/external/wpt/svg/path/property/mpath.svg [ Failure ]
-crbug.com/626703 [ Mac10.15 ] virtual/layout_ng_svg_text/external/wpt/svg/path/property/mpath.svg [ Failure ]
-crbug.com/626703 [ Win10 ] virtual/layout_ng_svg_text/external/wpt/svg/path/property/mpath.svg [ Failure ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/webauthn/createcredential-getpublickey.https.html [ Crash Timeout ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/webauthn/credblob-not-supported.https.html [ Crash Timeout ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/webauthn/createcredential-badargs-authnrselection.https.html [ Crash Timeout ]
-crbug.com/626703 external/wpt/svg/path/property/mpath.svg [ Failure ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/webauthn/getcredential-timeout.https.html [ Crash ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/webauthn/createcredential-timeout.https.html [ Crash ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/webauthn/getcredential-large-blob-supported.https.html [ Crash Timeout ]
