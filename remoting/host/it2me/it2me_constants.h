@@ -24,6 +24,10 @@ enum class It2MeHostState {
 // use it for service requests (e.g. ICE config, signaling, host registration).
 extern const char kFeatureAccessTokenAuth[];
 
+// Indicates that the host supports delegated signaling (i.e. allow the client
+// to act as a signaling proxy).
+extern const char kFeatureDelegatedSignaling[];
+
 // ID used to identify the current message. Must be included in the response if
 // the sender includes it.
 extern const char kMessageId[];

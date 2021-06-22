@@ -189,8 +189,10 @@ void It2MeNativeMessagingHost::ProcessHello(
 
   response->SetString(kHostVersion, STRINGIZE(VERSION));
 
-  // This list will be populated when new features are added.
-  response->Set(kSupportedFeatures, std::make_unique<base::ListValue>());
+  base::Value features(base::Value::Type::LIST);
+  features.Append(kFeatureAccessTokenAuth);
+  features.Append(kFeatureDelegatedSignaling);
+  response->SetKey(kSupportedFeatures, std::move(features));
 
   SendMessageToClient(std::move(response));
 }

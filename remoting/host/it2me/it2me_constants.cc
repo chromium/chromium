@@ -7,6 +7,7 @@
 namespace remoting {
 
 const char kFeatureAccessTokenAuth[] = "accessTokenAuth";
+const char kFeatureDelegatedSignaling[] = "delegatedSignaling";
 
 const char kMessageId[] = "id";
 const char kMessageType[] = "type";
