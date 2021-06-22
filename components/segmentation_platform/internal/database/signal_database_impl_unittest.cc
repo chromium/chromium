@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/segmentation_platform/internal/database/signal_database.h"
+#include "components/segmentation_platform/internal/database/signal_database_impl.h"
 
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
@@ -35,10 +35,10 @@ void CheckVectorsEqual(
   EXPECT_EQ(equal_count, actual_list.size());
 }
 
-class SignalDatabaseTest : public testing::Test {
+class SignalDatabaseImplTest : public testing::Test {
  public:
-  SignalDatabaseTest() = default;
-  ~SignalDatabaseTest() override = default;
+  SignalDatabaseImplTest() = default;
+  ~SignalDatabaseImplTest() override = default;
 
   void OnGetSamples(
       std::vector<std::pair<base::Time, absl::optional<int32_t>>> samples) {
@@ -53,7 +53,7 @@ class SignalDatabaseTest : public testing::Test {
     auto db = std::make_unique<leveldb_proto::test::FakeDB<proto::SignalData>>(
         &db_entries_);
     db_ = db.get();
-    signal_db_ = std::make_unique<SignalDatabase>(std::move(db));
+    signal_db_ = std::make_unique<SignalDatabaseImpl>(std::move(db));
 
     signal_db_->Initialize(base::DoNothing());
     db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
@@ -74,10 +74,10 @@ class SignalDatabaseTest : public testing::Test {
       get_samples_result_;
   std::map<std::string, proto::SignalData> db_entries_;
   leveldb_proto::test::FakeDB<proto::SignalData>* db_{nullptr};
-  std::unique_ptr<SignalDatabase> signal_db_;
+  std::unique_ptr<SignalDatabaseImpl> signal_db_;
 };
 
-TEST_F(SignalDatabaseTest, WriteSampleAndRead) {
+TEST_F(SignalDatabaseImplTest, WriteSampleAndRead) {
   SetUpDB();
   base::Time now =
       base::Time::Now().UTCMidnight() + base::TimeDelta::FromHours(8);
@@ -87,7 +87,7 @@ TEST_F(SignalDatabaseTest, WriteSampleAndRead) {
 
   // No entries to begin with.
   signal_db_->GetSamples(signal_type, name_hash, now.UTCMidnight(), now,
-                         base::BindOnce(&SignalDatabaseTest::OnGetSamples,
+                         base::BindOnce(&SignalDatabaseImplTest::OnGetSamples,
                                         base::Unretained(this)));
   db_->LoadCallback(true);
   CheckVectorsEqual({}, get_samples_result_);
@@ -101,14 +101,14 @@ TEST_F(SignalDatabaseTest, WriteSampleAndRead) {
 
   // Read back the sample and verify.
   signal_db_->GetSamples(signal_type, name_hash, now.UTCMidnight(), now,
-                         base::BindOnce(&SignalDatabaseTest::OnGetSamples,
+                         base::BindOnce(&SignalDatabaseImplTest::OnGetSamples,
                                         base::Unretained(this)));
   db_->LoadCallback(true);
   CheckVectorsEqual({{timestamp, value}}, get_samples_result_);
   EXPECT_EQ(1u, db_entries_.size());
 }
 
-TEST_F(SignalDatabaseTest, DeleteSamples) {
+TEST_F(SignalDatabaseImplTest, DeleteSamples) {
   SetUpDB();
 
   SignalType signal_type = SignalType::USER_ACTION;
@@ -150,7 +150,7 @@ TEST_F(SignalDatabaseTest, DeleteSamples) {
   EXPECT_EQ(0u, db_entries_.size());
 }
 
-TEST_F(SignalDatabaseTest, WriteMultipleSamplesAndRunCompaction) {
+TEST_F(SignalDatabaseImplTest, WriteMultipleSamplesAndRunCompaction) {
   // Set up three consecutive date timestamps, each at 8:00AM.
   base::Time day1 = base::Time::Now().UTCMidnight() +
                     base::TimeDelta::FromHours(8) -
@@ -186,7 +186,7 @@ TEST_F(SignalDatabaseTest, WriteMultipleSamplesAndRunCompaction) {
   // Verify samples for the day1. There should be two of them.
   signal_db_->GetSamples(signal_type, name_hash, day1.UTCMidnight(),
                          day2.UTCMidnight(),
-                         base::BindOnce(&SignalDatabaseTest::OnGetSamples,
+                         base::BindOnce(&SignalDatabaseImplTest::OnGetSamples,
                                         base::Unretained(this)));
   db_->LoadCallback(true);
   CheckVectorsEqual(
@@ -202,7 +202,7 @@ TEST_F(SignalDatabaseTest, WriteMultipleSamplesAndRunCompaction) {
 
   signal_db_->GetSamples(signal_type, name_hash, day1.UTCMidnight(),
                          day2.UTCMidnight(),
-                         base::BindOnce(&SignalDatabaseTest::OnGetSamples,
+                         base::BindOnce(&SignalDatabaseImplTest::OnGetSamples,
                                         base::Unretained(this)));
   db_->LoadCallback(true);
   CheckVectorsEqual(
@@ -219,7 +219,7 @@ TEST_F(SignalDatabaseTest, WriteMultipleSamplesAndRunCompaction) {
 
   signal_db_->GetSamples(signal_type, name_hash, day2.UTCMidnight(),
                          day3.UTCMidnight(),
-                         base::BindOnce(&SignalDatabaseTest::OnGetSamples,
+                         base::BindOnce(&SignalDatabaseImplTest::OnGetSamples,
                                         base::Unretained(this)));
   db_->LoadCallback(true);
   CheckVectorsEqual({{timestamp_day2_1, absl::nullopt}}, get_samples_result_);
@@ -234,7 +234,7 @@ TEST_F(SignalDatabaseTest, WriteMultipleSamplesAndRunCompaction) {
 
   signal_db_->GetSamples(signal_type, name_hash, day3.UTCMidnight(),
                          day3.UTCMidnight() + base::TimeDelta::FromDays(1),
-                         base::BindOnce(&SignalDatabaseTest::OnGetSamples,
+                         base::BindOnce(&SignalDatabaseImplTest::OnGetSamples,
                                         base::Unretained(this)));
   db_->LoadCallback(true);
   CheckVectorsEqual({}, get_samples_result_);

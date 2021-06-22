@@ -29,3 +29,12 @@ contains ML models used for testing.
 *   `adder.tflite`: Takes two floats as input in a single tensor. Outputs a
     single tensor with a single element which is the sum of the two floats given
     as input.
+
+## Testing
+
+To run all the relevant C++ unit tests, you can run the `components_unittests`
+target and give the `segmentation_platform` filter file as an argument:
+
+```
+./out/Default/components_unittests --test-launcher-filter-file=components/segmentation_platform/components_unittests.filter
+```
