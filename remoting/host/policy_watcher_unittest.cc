@@ -95,11 +95,10 @@ class PolicyWatcherTest : public testing::Test {
     nat_false_.SetBoolean(key::kRemoteAccessHostFirewallTraversal, false);
     nat_one_.SetInteger(key::kRemoteAccessHostFirewallTraversal, 1);
     nat_one_domain_full_.SetInteger(key::kRemoteAccessHostFirewallTraversal, 1);
-    nat_one_domain_full_.SetPath(key::kRemoteAccessHostDomainList,
-                                 host_domain.Clone());
-    domain_empty_.Set(key::kRemoteAccessHostDomainList,
-                      std::make_unique<base::ListValue>());
-    domain_full_.SetPath(key::kRemoteAccessHostDomainList, host_domain.Clone());
+    nat_one_domain_full_.SetKey(key::kRemoteAccessHostDomainList,
+                                host_domain.Clone());
+    domain_empty_.SetKey(key::kRemoteAccessHostDomainList, base::ListValue());
+    domain_full_.SetKey(key::kRemoteAccessHostDomainList, host_domain.Clone());
     SetDefaults(nat_true_others_default_);
     nat_true_others_default_.SetBoolean(key::kRemoteAccessHostFirewallTraversal,
                                         true);
@@ -107,32 +106,32 @@ class PolicyWatcherTest : public testing::Test {
     nat_false_others_default_.SetBoolean(
         key::kRemoteAccessHostFirewallTraversal, false);
     SetDefaults(domain_empty_others_default_);
-    domain_empty_others_default_.Set(key::kRemoteAccessHostDomainList,
-                                     std::make_unique<base::ListValue>());
+    domain_empty_others_default_.SetKey(key::kRemoteAccessHostDomainList,
+                                        base::ListValue());
     SetDefaults(domain_full_others_default_);
-    domain_full_others_default_.SetPath(key::kRemoteAccessHostDomainList,
-                                        host_domain.Clone());
+    domain_full_others_default_.SetKey(key::kRemoteAccessHostDomainList,
+                                       host_domain.Clone());
     nat_true_domain_empty_.SetBoolean(key::kRemoteAccessHostFirewallTraversal,
                                       true);
-    nat_true_domain_empty_.Set(key::kRemoteAccessHostDomainList,
-                               std::make_unique<base::ListValue>());
+    nat_true_domain_empty_.SetKey(key::kRemoteAccessHostDomainList,
+                                  base::ListValue());
     nat_true_domain_full_.SetBoolean(key::kRemoteAccessHostFirewallTraversal,
                                      true);
-    nat_true_domain_full_.SetPath(key::kRemoteAccessHostDomainList,
-                                  host_domain.Clone());
+    nat_true_domain_full_.SetKey(key::kRemoteAccessHostDomainList,
+                                 host_domain.Clone());
     nat_false_domain_empty_.SetBoolean(key::kRemoteAccessHostFirewallTraversal,
                                        false);
-    nat_false_domain_empty_.Set(key::kRemoteAccessHostDomainList,
-                                std::make_unique<base::ListValue>());
+    nat_false_domain_empty_.SetKey(key::kRemoteAccessHostDomainList,
+                                   base::ListValue());
     nat_false_domain_full_.SetBoolean(key::kRemoteAccessHostFirewallTraversal,
                                       false);
-    nat_false_domain_full_.SetPath(key::kRemoteAccessHostDomainList,
-                                   host_domain.Clone());
+    nat_false_domain_full_.SetKey(key::kRemoteAccessHostDomainList,
+                                  host_domain.Clone());
     SetDefaults(nat_true_domain_empty_others_default_);
     nat_true_domain_empty_others_default_.SetBoolean(
         key::kRemoteAccessHostFirewallTraversal, true);
-    nat_true_domain_empty_others_default_.Set(
-        key::kRemoteAccessHostDomainList, std::make_unique<base::ListValue>());
+    nat_true_domain_empty_others_default_.SetKey(
+        key::kRemoteAccessHostDomainList, base::ListValue());
     unknown_policies_.SetString("UnknownPolicyOne", std::string());
     unknown_policies_.SetString("UnknownPolicyTwo", std::string());
     unknown_policies_.SetBoolean("RemoteAccessHostUnknownPolicyThree", true);
@@ -150,8 +149,8 @@ class PolicyWatcherTest : public testing::Test {
     port_range_malformed_.SetString(key::kRemoteAccessHostUdpPortRange,
                                     "malformed");
     port_range_malformed_domain_full_.MergeDictionary(&port_range_malformed_);
-    port_range_malformed_domain_full_.SetPath(key::kRemoteAccessHostDomainList,
-                                              host_domain.Clone());
+    port_range_malformed_domain_full_.SetKey(key::kRemoteAccessHostDomainList,
+                                             host_domain.Clone());
 
     curtain_true_.SetBoolean(key::kRemoteAccessHostRequireCurtain, true);
     curtain_false_.SetBoolean(key::kRemoteAccessHostRequireCurtain, false);
@@ -178,24 +177,24 @@ class PolicyWatcherTest : public testing::Test {
                                    kClientDomain);
     // Deprecated policies should get converted if new ones aren't present.
     SetDefaults(deprecated_policies_expected_);
-    deprecated_policies_expected_.SetPath(key::kRemoteAccessHostDomainList,
-                                          host_domain.Clone());
-    deprecated_policies_expected_.SetPath(
-        key::kRemoteAccessHostClientDomainList, client_domain.Clone());
+    deprecated_policies_expected_.SetKey(key::kRemoteAccessHostDomainList,
+                                         host_domain.Clone());
+    deprecated_policies_expected_.SetKey(key::kRemoteAccessHostClientDomainList,
+                                         client_domain.Clone());
 
     deprecated_and_new_policies_.SetString(key::kRemoteAccessHostDomain,
                                            kHostDomain);
     deprecated_and_new_policies_.SetString(key::kRemoteAccessHostClientDomain,
                                            kClientDomain);
-    deprecated_and_new_policies_.SetPath(key::kRemoteAccessHostDomainList,
-                                         multiple_host_domains.Clone());
-    deprecated_and_new_policies_.SetPath(key::kRemoteAccessHostClientDomainList,
-                                         multiple_client_domains.Clone());
+    deprecated_and_new_policies_.SetKey(key::kRemoteAccessHostDomainList,
+                                        multiple_host_domains.Clone());
+    deprecated_and_new_policies_.SetKey(key::kRemoteAccessHostClientDomainList,
+                                        multiple_client_domains.Clone());
     // Deprecated policies should just be dropped in new ones are present.
     SetDefaults(deprecated_and_new_policies_expected_);
-    deprecated_and_new_policies_expected_.SetPath(
+    deprecated_and_new_policies_expected_.SetKey(
         key::kRemoteAccessHostDomainList, multiple_host_domains.Clone());
-    deprecated_and_new_policies_expected_.SetPath(
+    deprecated_and_new_policies_expected_.SetKey(
         key::kRemoteAccessHostClientDomainList,
         multiple_client_domains.Clone());
 
@@ -305,10 +304,8 @@ class PolicyWatcherTest : public testing::Test {
     dict.SetBoolean(key::kRemoteAccessHostFirewallTraversal, true);
     dict.SetBoolean(key::kRemoteAccessHostAllowRelayedConnection, true);
     dict.SetString(key::kRemoteAccessHostUdpPortRange, "");
-    dict.Set(key::kRemoteAccessHostClientDomainList,
-             std::make_unique<base::ListValue>());
-    dict.Set(key::kRemoteAccessHostDomainList,
-             std::make_unique<base::ListValue>());
+    dict.SetKey(key::kRemoteAccessHostClientDomainList, base::ListValue());
+    dict.SetKey(key::kRemoteAccessHostDomainList, base::ListValue());
     dict.SetBoolean(key::kRemoteAccessHostMatchUsername, false);
     dict.SetBoolean(key::kRemoteAccessHostRequireCurtain, false);
     dict.SetString(key::kRemoteAccessHostTokenUrl, "");

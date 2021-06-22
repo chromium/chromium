@@ -197,11 +197,11 @@ void SecurityKeyExtensionSession::SendMessageToClient(
   request.SetString(kMessageType, kDataMessage);
   request.SetInteger(kConnectionId, connection_id);
 
-  auto bytes = std::make_unique<base::ListValue>();
-  for (std::string::const_iterator i = data.begin(); i != data.end(); ++i) {
-    bytes->AppendInteger(static_cast<unsigned char>(*i));
+  base::ListValue bytes;
+  for (auto& byte : data) {
+    bytes.AppendInteger(static_cast<unsigned char>(byte));
   }
-  request.Set(kDataPayload, std::move(bytes));
+  request.SetKey(kDataPayload, std::move(bytes));
 
   std::string request_json;
   CHECK(base::JSONWriter::Write(request, &request_json));

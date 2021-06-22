@@ -94,10 +94,11 @@ base::DictionaryValue CreateConnectMessage(int id) {
   connect_message.SetString(kMessageType, kConnectMessage);
   connect_message.SetString(kUserName, kTestClientUsername);
   connect_message.SetString(kAuthServiceWithToken, "oauth2:sometoken");
-  connect_message.Set(kIceConfig,
-                      base::JSONReader::ReadDeprecated(
-                          "{ \"iceServers\": [ { \"urls\": [ \"stun:" +
-                          std::string(kTestStunServer) + "\" ] } ] }"));
+  connect_message.SetKey(
+      kIceConfig,
+      base::Value::FromUniquePtrValue(base::JSONReader::ReadDeprecated(
+          "{ \"iceServers\": [ { \"urls\": [ \"stun:" +
+          std::string(kTestStunServer) + "\" ] } ] }")));
 
   return connect_message;
 }
