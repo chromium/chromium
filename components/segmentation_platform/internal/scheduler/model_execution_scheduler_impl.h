@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "components/optimization_guide/proto/models.pb.h"
+#include "components/segmentation_platform/internal/execution/model_execution_manager.h"
 #include "components/segmentation_platform/internal/execution/model_execution_status.h"
 
 namespace segmentation_platform {
@@ -21,24 +22,11 @@ class SegmentInfo;
 
 class SegmentInfoDatabase;
 
-// TODO(shaktisahu): Replace this with the real class once it is available.
-class ModelExecutor {
- public:
-  virtual ~ModelExecutor() = default;
-
-  using ModelExecutionCallback =
-      base::OnceCallback<void(const std::pair<float, ModelExecutionStatus>&)>;
-
-  // Called to execute a given mode.
-  virtual void ExecuteModel(OptimizationTarget segment_id,
-                            ModelExecutionCallback callback) = 0;
-};
-
 class ModelExecutionSchedulerImpl : public ModelExecutionScheduler {
  public:
   ModelExecutionSchedulerImpl(Observer* observer,
                               SegmentInfoDatabase* segment_database,
-                              ModelExecutor* model_executor);
+                              ModelExecutionManager* model_execution_manager);
   ~ModelExecutionSchedulerImpl() override;
 
   // Disallow copy/assign.
@@ -70,13 +58,13 @@ class ModelExecutionSchedulerImpl : public ModelExecutionScheduler {
   SegmentInfoDatabase* segment_database_;
 
   // The class that executes the models.
-  ModelExecutor* model_executor_;
+  ModelExecutionManager* model_execution_manager_;
 
   // In-flight model execution requests. Will be killed if we get a model
   // update.
   std::map<OptimizationTarget,
            base::CancelableOnceCallback<
-               ModelExecutor::ModelExecutionCallback::RunType>>
+               ModelExecutionManager::ModelExecutionCallback::RunType>>
       outstanding_requests_;
 
   base::WeakPtrFactory<ModelExecutionSchedulerImpl> weak_ptr_factory_{this};

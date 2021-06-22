@@ -50,6 +50,9 @@ static_library("internal") {
 
   if (build_with_tflite_lib) {
     sources += [
+      "execution/model_execution_manager.h",
+      "execution/model_execution_manager_impl.cc",
+      "execution/model_execution_manager_impl.h",
       "execution/segmentation_model_executor.cc",
       "execution/segmentation_model_executor.h",
       "execution/segmentation_model_handler.cc",
@@ -97,7 +100,10 @@ source_set("unit_tests") {
   if (build_with_tflite_lib) {
     # IMPORTANT NOTE: When adding new tests, also remember to update the list of
     # tests in //components/segmentation_platform/components_unittests.filter
-    sources += [ "execution/segmentation_model_executor_unittest.cc" ]
+    sources += [
+      "execution/model_execution_manager_impl_unittest.cc",
+      "execution/segmentation_model_executor_unittest.cc",
+    ]
 
     deps += [
       "//base",
