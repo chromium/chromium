@@ -16,6 +16,8 @@
 #include "extensions/common/permissions/permissions_data.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/components/enhanced_network_tts/mojom/enhanced_network_tts.mojom.h"
+#include "chrome/browser/ash/enhanced_network_tts/enhanced_network_tts_impl.h"
 #include "chrome/browser/ash/remote_apps/remote_apps_impl.h"
 #include "chrome/browser/ash/remote_apps/remote_apps_manager.h"
 #include "chrome/browser/ash/remote_apps/remote_apps_manager_factory.h"
@@ -31,6 +33,7 @@
 #include "extensions/browser/api/media_perception_private/media_perception_api_delegate.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "ui/accessibility/accessibility_features.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chromeos/services/ime/public/mojom/input_engine.mojom.h"
@@ -90,6 +93,13 @@ void BindRemoteAppsFactory(
           Profile::FromBrowserContext(render_frame_host->GetBrowserContext()));
   DCHECK(remote_apps_manager);
   remote_apps_manager->BindInterface(std::move(pending_receiver));
+}
+
+void BindEnhancedNetworkTts(
+    content::RenderFrameHost* render_frame_host,
+    mojo::PendingReceiver<ash::enhanced_network_tts::mojom::EnhancedNetworkTts>
+        receiver) {
+  ash::EnhancedNetworkTtsImpl::GetInstance().BindReceiver(std::move(receiver));
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -162,6 +172,12 @@ void PopulateChromeFrameBindersForExtension(
   if (ash::RemoteAppsImpl::IsAllowed(render_frame_host, extension)) {
     binder_map->Add<chromeos::remote_apps::mojom::RemoteAppsFactory>(
         base::BindRepeating(&BindRemoteAppsFactory));
+  }
+
+  if (features::IsEnhancedNetworkVoicesEnabled()) {
+    // TODO(crbug.com/1217301): Add a permission check for the binding.
+    binder_map->Add<ash::enhanced_network_tts::mojom::EnhancedNetworkTts>(
+        base::BindRepeating(&BindEnhancedNetworkTts));
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }

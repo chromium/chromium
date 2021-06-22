@@ -201,6 +201,11 @@ void ChromeExtensionsDispatcherDelegate::PopulateSourceMap(
                              IDR_REMOTE_APPS_BINDINGS_JS);
   source_map->RegisterSource("url/mojom/url.mojom-lite",
                              IDR_MOJO_URL_MOJOM_LITE_JS);
+
+  source_map->RegisterSource("ash.enhanced_network_tts.mojom-lite",
+                             IDR_ENHANCED_NETWORK_TTS_MOJOM_LITE_JS);
+  source_map->RegisterSource("ash.enhanced_network_tts",
+                             IDR_ENHANCED_NETWORK_TTS_BINDINGS_JS);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   source_map->RegisterSource(

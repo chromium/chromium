@@ -1093,6 +1093,7 @@ static_library("extensions") {
     }
     deps += [
       "//ash",
+      "//ash/components/enhanced_network_tts/mojom",
       "//ash/constants",
       "//ash/keyboard/ui:resources_grit_grit",
       "//ash/public/cpp",
@@ -1136,6 +1137,7 @@ static_library("extensions") {
       "//media/capture:capture_lib",
       "//media/capture/video/chromeos/mojom:cros_camera",
       "//third_party/protobuf:protobuf_lite",
+      "//ui/accessibility",
       "//ui/base/ime/chromeos",
       "//ui/chromeos",
       "//ui/chromeos/events",
