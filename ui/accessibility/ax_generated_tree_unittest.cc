@@ -7,6 +7,7 @@
 
 #include "base/cxx17_backports.h"
 #include "base/strings/string_number_conversions.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_event_generator.h"
 #include "ui/accessibility/ax_node.h"
@@ -204,7 +205,13 @@ TEST(AXGeneratedTreeTest, TestTreeGeneratorWithPermutations) {
 // that the destination tree can unserialize it and create a valid tree,
 // and that after updating all nodes the resulting tree now matches the
 // intended tree.
-TEST(AXGeneratedTreeTest, SerializeGeneratedTrees) {
+// TODO(crbug.com/1222741): Flaky on Linux CFI.
+#if defined(OS_LINUX)
+#define MAYBE_SerializeGeneratedTrees DISABLED_SerializeGeneratedTrees
+#else
+#define MAYBE_SerializeGeneratedTrees SerializeGeneratedTrees
+#endif
+TEST(AXGeneratedTreeTest, MAYBE_SerializeGeneratedTrees) {
   // Do a more exhaustive test in release mode. If you're modifying
   // the algorithm you may want to try even larger tree sizes if you
   // can afford the time.
