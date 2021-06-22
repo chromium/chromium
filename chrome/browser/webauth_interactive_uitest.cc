@@ -73,7 +73,8 @@ class WebAuthFocusTest : public InProcessBrowserTest,
   DISALLOW_COPY_AND_ASSIGN(WebAuthFocusTest);
 };
 
-IN_PROC_BROWSER_TEST_F(WebAuthFocusTest, Focus) {
+// TODO(crbug.com/1222768): Disabled for being flaky.
+IN_PROC_BROWSER_TEST_F(WebAuthFocusTest, DISABLED_Focus) {
   // Web Authentication requests will often trigger machine-wide indications,
   // such as a Security Key flashing for a touch. If background tabs were able
   // to trigger this, there would be a risk of user confusion since the user
