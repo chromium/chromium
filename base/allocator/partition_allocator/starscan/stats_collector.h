@@ -107,7 +107,7 @@ class StatsCollector final {
   using ScannerScope = Scope<Context::kScanner>;
   using MutatorScope = Scope<Context::kMutator>;
 
-  explicit StatsCollector(const char* process_name);
+  StatsCollector(const char* process_name, size_t quarantine_last_size);
 
   StatsCollector(const StatsCollector&) = delete;
   StatsCollector& operator=(const StatsCollector&) = delete;
@@ -165,6 +165,7 @@ class StatsCollector final {
   std::atomic<size_t> survived_quarantine_size_{0u};
   size_t swept_size_ = 0u;
   const char* process_name_ = nullptr;
+  const size_t quarantine_last_size_ = 0u;
 };
 
 template <Context context>

@@ -169,12 +169,6 @@ using MetadataHashMap =
                        std::equal_to<>,
                        MetadataAllocator<std::pair<const K, V>>>;
 
-void LogStats(size_t swept_bytes, size_t last_size, size_t new_size) {
-  VLOG(2) << "quarantine size: " << last_size << " -> " << new_size
-          << ", swept bytes: " << swept_bytes
-          << ", survival rate: " << static_cast<double>(new_size) / last_size;
-}
-
 ALWAYS_INLINE uintptr_t GetObjectStartInSuperPage(uintptr_t maybe_ptr,
                                                   const PCScan::Root& root) {
   char* allocation_start =
@@ -367,7 +361,7 @@ class PCScanTask final : public base::RefCountedThreadSafe<PCScanTask>,
                          public AllocatedOnPCScanMetadataPartition {
  public:
   // Creates and initializes a PCScan state.
-  explicit PCScanTask(PCScan& pcscan);
+  PCScanTask(PCScan& pcscan, size_t quarantine_last_size);
 
   PCScanTask(PCScanTask&&) noexcept = delete;
   PCScanTask& operator=(PCScanTask&&) noexcept = delete;
@@ -689,9 +683,9 @@ class PCScanTask::StackVisitor final : public internal::StackVisitor {
   size_t quarantine_size_ = 0;
 };
 
-PCScanTask::PCScanTask(PCScan& pcscan)
+PCScanTask::PCScanTask(PCScan& pcscan, size_t quarantine_last_size)
     : pcscan_epoch_(pcscan.epoch()),
-      stats_(PCScanInternal::Instance().process_name()),
+      stats_(PCScanInternal::Instance().process_name(), quarantine_last_size),
       pcscan_(pcscan) {}
 
 void PCScanTask::ScanStack() {
@@ -797,10 +791,6 @@ void PCScanTask::SweepQuarantine() {
 
 void PCScanTask::FinishScanner() {
   stats_.ReportTracesAndHists();
-  LogStats(
-      stats_.swept_size(),
-      pcscan_.scheduler_.scheduling_backend().GetQuarantineData().last_size,
-      stats_.survived_quarantine_size());
 
   pcscan_.scheduler_.scheduling_backend().UpdateScheduleAfterScan(
       stats_.survived_quarantine_size(), stats_.GetOverallTime(),
@@ -1033,10 +1023,11 @@ void PCScanInternal::PerformScan(PCScan::InvocationMode invocation_mode) {
       return;
   }
 
-  frontend.scheduler_.scheduling_backend().ScanStarted();
+  const size_t last_quarantine_size =
+      frontend.scheduler_.scheduling_backend().ScanStarted();
 
   // Create PCScan task and set it as current.
-  auto task = base::MakeRefCounted<PCScanTask>(frontend);
+  auto task = base::MakeRefCounted<PCScanTask>(frontend, last_quarantine_size);
   PCScanInternal::Instance().SetCurrentPCScanTask(task);
 
   if (UNLIKELY(invocation_mode ==

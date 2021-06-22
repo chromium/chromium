@@ -4,13 +4,24 @@
 
 #include "base/allocator/partition_allocator/starscan/stats_collector.h"
 
+#include "base/logging.h"
 #include "base/time/time.h"
 
 namespace base {
 namespace internal {
 
-StatsCollector::StatsCollector(const char* process_name)
-    : process_name_(process_name) {}
+namespace {
+void LogStats(size_t swept_bytes, size_t last_size, size_t new_size) {
+  VLOG(2) << "quarantine size: " << last_size << " -> " << new_size
+          << ", swept bytes: " << swept_bytes
+          << ", survival rate: " << static_cast<double>(new_size) / last_size;
+}
+}  // namespace
+
+StatsCollector::StatsCollector(const char* process_name,
+                               size_t quarantine_last_size)
+    : process_name_(process_name),
+      quarantine_last_size_(quarantine_last_size) {}
 
 StatsCollector::~StatsCollector() = default;
 
@@ -24,6 +35,7 @@ base::TimeDelta StatsCollector::GetOverallTime() const {
 void StatsCollector::ReportTracesAndHists() const {
   ReportTracesAndHistsImpl<Context::kMutator>(mutator_trace_events_);
   ReportTracesAndHistsImpl<Context::kScanner>(scanner_trace_events_);
+  LogStats(swept_size(), quarantine_last_size_, survived_quarantine_size());
 }
 
 template <Context context>

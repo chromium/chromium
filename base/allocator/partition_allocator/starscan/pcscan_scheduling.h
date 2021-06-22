@@ -32,7 +32,6 @@ struct QuarantineData final {
   std::atomic<size_t> current_size{0u};
   std::atomic<size_t> size_limit{kQuarantineSizeMinLimit};
   std::atomic<size_t> epoch{0u};
-  size_t last_size{0u};
 };
 
 class BASE_EXPORT PCScanSchedulingBackend {
@@ -50,8 +49,8 @@ class BASE_EXPORT PCScanSchedulingBackend {
   // signals the caller to invoke a scan.
   virtual bool LimitReached() = 0;
 
-  // Invoked on starting a scan.
-  virtual void ScanStarted();
+  // Invoked on starting a scan. Returns current quarantine size.
+  virtual size_t ScanStarted();
 
   // Invoked at the end of a scan to compute a new limit.
   virtual void UpdateScheduleAfterScan(size_t survived_bytes,
@@ -92,7 +91,7 @@ class BASE_EXPORT MUAwareTaskBasedBackend final
   ~MUAwareTaskBasedBackend();
 
   bool LimitReached() final;
-  void ScanStarted() final;
+  size_t ScanStarted() final;
   void UpdateScheduleAfterScan(size_t, base::TimeDelta, size_t) final;
   TimeDelta UpdateDelayedSchedule() final;
 

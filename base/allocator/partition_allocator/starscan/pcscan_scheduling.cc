@@ -26,10 +26,10 @@ void PCScanScheduler::SetNewSchedulingBackend(
   backend_ = &backend;
 }
 
-void PCScanSchedulingBackend::ScanStarted() {
+size_t PCScanSchedulingBackend::ScanStarted() {
   auto& data = GetQuarantineData();
   data.epoch.fetch_add(1, std::memory_order_relaxed);
-  data.last_size = data.current_size.exchange(0, std::memory_order_relaxed);
+  return data.current_size.exchange(0, std::memory_order_relaxed);
 }
 
 TimeDelta PCScanSchedulingBackend::UpdateDelayedSchedule() {
@@ -109,10 +109,10 @@ bool MUAwareTaskBasedBackend::LimitReached() {
   return true;
 }
 
-void MUAwareTaskBasedBackend::ScanStarted() {
+size_t MUAwareTaskBasedBackend::ScanStarted() {
   base::AutoLock guard(scheduler_lock_);
 
-  PCScanSchedulingBackend::ScanStarted();
+  return PCScanSchedulingBackend::ScanStarted();
 }
 
 void MUAwareTaskBasedBackend::UpdateScheduleAfterScan(
