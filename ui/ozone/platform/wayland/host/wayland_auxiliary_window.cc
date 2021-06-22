@@ -90,7 +90,7 @@ void WaylandAuxiliaryWindow::CreateSubsurface() {
   wl_subsurface_set_position(subsurface_.get(), subsurface_bounds_dip.x(),
                              subsurface_bounds_dip.y());
   wl_subsurface_set_desync(subsurface_.get());
-  parent_window()->root_surface()->Commit();
+  root_surface()->Commit();
   connection()->ScheduleFlush();
 
   // Notify the observers the window has been configured. Please note that
