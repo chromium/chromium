@@ -7,6 +7,8 @@
       "fuchsia.accessibility.semantics.SemanticsManager",
       "fuchsia.camera3.DeviceWatcher",
       "fuchsia.device.NameProvider",
+      "fuchsia.feedback.ComponentDataRegister",
+      "fuchsia.feedback.CrashReportingProductRegister",
       "fuchsia.fonts.Provider",
       "fuchsia.input.virtualkeyboard.ControllerCreator",
       "fuchsia.intl.PropertyProvider",
