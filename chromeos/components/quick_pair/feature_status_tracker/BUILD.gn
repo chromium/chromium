@@ -12,6 +12,9 @@ static_library("feature_status_tracker") {
     "bluetooth_enabled_provider.h",
     "fast_pair_enabled_provider.cc",
     "fast_pair_enabled_provider.h",
+    "quick_pair_feature_status_tracker.h",
+    "quick_pair_feature_status_tracker_impl.cc",
+    "quick_pair_feature_status_tracker_impl.h",
   ]
 
   deps = [
@@ -21,20 +24,38 @@ static_library("feature_status_tracker") {
   ]
 }
 
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "fake_bluetooth_adapter.h",
+    "mock_bluetooth_enabled_provider.cc",
+    "mock_bluetooth_enabled_provider.h",
+    "mock_quick_pair_feature_status_tracker.cc",
+    "mock_quick_pair_feature_status_tracker.h",
+    "quick_pair_feature_status_tracker.h",
+  ]
+
+  deps = [
+    ":feature_status_tracker",
+    "//base/test:test_support",
+    "//device/bluetooth:mocks",
+    "//testing/gtest",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
 
   sources = [
     "base_enabled_provider_unittest.cc",
     "bluetooth_enabled_provider_unittest.cc",
-    "fake_bluetooth_adapter.h",
     "fast_pair_enabled_provider_unittest.cc",
-    "mock_bluetooth_enabled_provider.cc",
-    "mock_bluetooth_enabled_provider.h",
   ]
 
   deps = [
     ":feature_status_tracker",
+    ":test_support",
     "//base/test:test_support",
     "//chromeos/components/quick_pair/common",
     "//device/bluetooth",
