@@ -106,7 +106,11 @@ class ShellSurfaceForceCloseDelegate : public ForceCloseWatcher::Delegate,
 
   ~ShellSurfaceForceCloseDelegate() override;
 
+  // Callback for the "Force close" button in the dialog.
   void ForceClose();
+
+  // Closes shell surface's widget. See implementation for details.
+  void ForceCloseNow();
 
   // ForceCloseWatcher::Delegate overrides.
   views::Widget* GetClosableWidget() override;
