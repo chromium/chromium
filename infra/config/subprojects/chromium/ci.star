@@ -4243,6 +4243,17 @@ ci.fyi_windows_builder(
 )
 
 ci.fyi_windows_builder(
+    name = "Win10 Tests x64 20h2",
+    console_view_entry = consoles.console_view_entry(
+        category = "win10|20h2",
+    ),
+    goma_backend = None,
+    main_console_view = None,
+    os = os.WINDOWS_10,
+    triggered_by = ["ci/Win x64 Builder"],
+)
+
+ci.fyi_windows_builder(
     name = "win32-arm64-rel",
     console_view_entry = consoles.console_view_entry(
         category = "win32|arm64",

@@ -1818,9 +1818,9 @@ try_.chromium_win_builder(
 )
 
 try_.chromium_win_builder(
-    name = "win10_chromium_x64_1909_fyi_rel_ng",
+    name = "win10_chromium_x64_20h2_fyi_rel_ng",
     builderless = False,
-    os = os.WINDOWS_10_1909,
+    os = os.WINDOWS_10_20h2,
 )
 
 try_.chromium_win_builder(

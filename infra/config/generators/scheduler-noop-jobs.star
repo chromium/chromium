@@ -33,6 +33,11 @@ _NON_BRANCHED_TESTERS = {
     # capacity, so we do not need to run it on the branches
     "mac-arm64-rel-tests": branches.STANDARD_MILESTONE,
 
+    # This tester is triggered by 'Win x64 Builder', but it is an FYI builder
+    # and not mirrored by any branched try builders, so we do not need to run it
+    # on the branches
+    "Win10 Tests x64 20h2": branches.STANDARD_MILESTONE,
+
     # These Android testers are triggered by 'Android arm Builder (dbg)', but we
     # don't have sufficient capacity of devices with older Android versions, so
     # we do not run them on the branches
