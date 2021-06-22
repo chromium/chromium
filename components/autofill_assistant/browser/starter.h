@@ -55,8 +55,6 @@ class Starter : public content::WebContentsObserver {
   void Start(std::unique_ptr<TriggerContext> trigger_context);
 
   // content::WebContentsObserver:
-  void DidStartNavigation(
-      content::NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
 
@@ -135,10 +133,8 @@ class Starter : public content::WebContentsObserver {
   // |trigger_script_coordinator_|.
   TriggerContext* GetPendingTriggerContext() const;
 
-  // The UKM source id to use for UKM metrics. This usually points to the last
-  // committed URL, except during navigations, in which case it will point to
-  // the source id that the finished navigation will eventually have.
-  ukm::SourceId next_ukm_source_id_ = ukm::kInvalidSourceId;
+  // The UKM source id to use for UKM metrics.
+  ukm::SourceId current_ukm_source_id_ = ukm::kInvalidSourceId;
 
   // Pointer to the global cache of trigger script requests that failed (one
   // entry per organization-identifying domain), along with the time of entry.
