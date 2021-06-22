@@ -3687,7 +3687,7 @@ scoped_refptr<const NGLayoutResult> LayoutBox::CachedLayoutResult(
                                         end_margin_strut, bfc_line_offset,
                                         bfc_block_offset, block_offset_delta));
 
-  if (needs_cached_result_update)
+  if (needs_cached_result_update && !NGDisableSideEffectsScope::IsDisabled())
     SetCachedLayoutResult(new_result);
 
   return new_result;
