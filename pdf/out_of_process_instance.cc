@@ -75,18 +75,6 @@ namespace chrome_pdf {
 
 namespace {
 
-// Constants used in handling postMessage() messages.
-constexpr char kType[] = "type";
-// Name of identifier field passed from JS to the plugin and back, to associate
-// Page->Plugin messages to Plugin->Page responses.
-constexpr char kJSMessageId[] = "messageId";
-// Save attachment (Page -> Plugin)
-constexpr char kJSSaveAttachmentType[] = "saveAttachment";
-constexpr char kJSAttachmentIndex[] = "attachmentIndex";
-// Save attachment data (Plugin -> Page)
-constexpr char kJSSaveAttachmentDataType[] = "saveAttachmentData";
-constexpr char kJSAttachmentDataToSave[] = "dataToSave";
-
 constexpr base::TimeDelta kFindResultCooldown =
     base::TimeDelta::FromMilliseconds(100);
 
@@ -530,19 +518,7 @@ bool OutOfProcessInstance::Init(uint32_t argc,
 }
 
 void OutOfProcessInstance::HandleMessage(const pp::Var& message) {
-  pp::VarDictionary dict(message);
-  if (!dict.Get(kType).is_string()) {
-    NOTREACHED();
-    return;
-  }
-
-  std::string type = dict.Get(kType).AsString();
-
-  if (type == kJSSaveAttachmentType) {
-    HandleSaveAttachmentMessage(dict);
-  } else {
-    PdfViewPluginBase::HandleMessage(ValueFromVar(message));
-  }
+  PdfViewPluginBase::HandleMessage(ValueFromVar(message));
 }
 
 bool OutOfProcessInstance::HandleInputEvent(const pp::InputEvent& event) {
@@ -863,44 +839,6 @@ void OutOfProcessInstance::RotateClockwise() {
 
 void OutOfProcessInstance::RotateCounterclockwise() {
   engine()->RotateCounterclockwise();
-}
-
-void OutOfProcessInstance::HandleSaveAttachmentMessage(
-    const pp::VarDictionary& dict) {
-  if (!dict.Get(pp::Var(kJSMessageId)).is_string() ||
-      !dict.Get(pp::Var(kJSAttachmentIndex)).is_int() ||
-      dict.Get(pp::Var(kJSAttachmentIndex)).AsInt() < 0) {
-    NOTREACHED();
-    return;
-  }
-
-  int index = dict.Get(pp::Var(kJSAttachmentIndex)).AsInt();
-  const std::vector<DocumentAttachmentInfo>& list =
-      engine()->GetDocumentAttachmentInfoList();
-  if (static_cast<size_t>(index) >= list.size() || !list[index].is_readable ||
-      !IsSaveDataSizeValid(list[index].size_bytes)) {
-    NOTREACHED();
-    return;
-  }
-
-  pp::VarDictionary message;
-  message.Set(kType, kJSSaveAttachmentDataType);
-  message.Set(kJSMessageId, dict.Get(pp::Var(kJSMessageId)));
-  // This will be overwritten if the save is successful.
-  message.Set(kJSAttachmentDataToSave, pp::Var(pp::Var::Null()));
-
-  std::vector<uint8_t> data = engine()->GetAttachmentData(index);
-  if (data.size() != list[index].size_bytes) {
-    NOTREACHED();
-    return;
-  }
-
-  if (IsSaveDataSizeValid(data.size())) {
-    pp::VarArrayBuffer buffer(data.size());
-    std::copy(data.begin(), data.end(), reinterpret_cast<char*>(buffer.Map()));
-    message.Set(kJSAttachmentDataToSave, buffer);
-  }
-  PostMessage(message);
 }
 
 pp::Instance* OutOfProcessInstance::GetPluginInstance() {

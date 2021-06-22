@@ -523,6 +523,7 @@ void PdfViewPluginBase::HandleMessage(const base::Value& message) {
           {"rotateCounterclockwise",
            &PdfViewPluginBase::HandleRotateCounterclockwiseMessage},
           {"save", &PdfViewPluginBase::HandleSaveMessage},
+          {"saveAttachment", &PdfViewPluginBase::HandleSaveAttachmentMessage},
           {"selectAll", &PdfViewPluginBase::HandleSelectAllMessage},
           {"setBackgroundColor",
            &PdfViewPluginBase::HandleSetBackgroundColorMessage},
@@ -533,15 +534,7 @@ void PdfViewPluginBase::HandleMessage(const base::Value& message) {
           {"viewport", &PdfViewPluginBase::HandleViewportMessage},
       });
 
-  // TODO(crbug.com/1109796): Use `fixed_flat_map<>::at()` when migration is
-  // complete to CHECK out-of-bounds lookups.
-  const auto* it = kMessageHandlers.find(*message.FindStringKey("type"));
-  if (it == kMessageHandlers.end()) {
-    NOTIMPLEMENTED() << message;
-    return;
-  }
-
-  MessageHandler handler = it->second;
+  MessageHandler handler = kMessageHandlers.at(*message.FindStringKey("type"));
   (this->*handler)(message);
 }
 
@@ -1082,6 +1075,26 @@ void PdfViewPluginBase::HandleSaveMessage(const base::Value& message) {
       SaveToBuffer(token);
       break;
   }
+}
+
+void PdfViewPluginBase::HandleSaveAttachmentMessage(
+    const base::Value& message) {
+  const int index = message.FindIntKey("attachmentIndex").value();
+
+  const std::vector<DocumentAttachmentInfo>& list =
+      engine()->GetDocumentAttachmentInfoList();
+  DCHECK_GE(index, 0);
+  DCHECK_LT(static_cast<size_t>(index), list.size());
+  DCHECK(list[index].is_readable);
+  DCHECK(IsSaveDataSizeValid(list[index].size_bytes));
+
+  std::vector<uint8_t> data = engine()->GetAttachmentData(index);
+  base::Value data_to_save(
+      IsSaveDataSizeValid(data.size()) ? data : std::vector<uint8_t>());
+
+  base::Value reply = PrepareReplyMessage("saveAttachmentReply", message);
+  reply.SetKey("dataToSave", std::move(data_to_save));
+  SendMessage(std::move(reply));
 }
 
 void PdfViewPluginBase::HandleSelectAllMessage(const base::Value& /*message*/) {

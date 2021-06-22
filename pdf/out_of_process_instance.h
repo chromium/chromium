@@ -30,7 +30,6 @@ class Size;
 namespace pp {
 class Size;
 class TextInput_Dev;
-class VarDictionary;
 }  // namespace pp
 
 namespace chrome_pdf {
@@ -148,9 +147,6 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   void UserMetricsRecordAction(const std::string& action) override;
 
  private:
-  // Message handlers.
-  void HandleSaveAttachmentMessage(const pp::VarDictionary& dict);
-
   void ResetRecentlySentFindUpdate(int32_t);
 
   bool CanSaveEdits() const;

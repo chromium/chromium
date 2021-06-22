@@ -406,6 +406,7 @@ class PdfViewPluginBase : public PDFEngine::Client,
   void HandleRotateClockwiseMessage(const base::Value& /*message*/);
   void HandleRotateCounterclockwiseMessage(const base::Value& /*message*/);
   void HandleSaveMessage(const base::Value& message);
+  void HandleSaveAttachmentMessage(const base::Value& message);
   void HandleSelectAllMessage(const base::Value& /*message*/);
   void HandleSetBackgroundColorMessage(const base::Value& message);
   void HandleSetReadOnlyMessage(const base::Value& message);

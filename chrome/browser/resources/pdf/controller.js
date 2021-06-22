@@ -20,7 +20,7 @@ export let MessageData;
  *   messageId: string,
  * }}
  */
-let SaveAttachmentDataMessageData;
+let SaveAttachmentMessageData;
 
 /**
  * @typedef {{
@@ -112,7 +112,7 @@ export class ContentController {
   /**
    * Requests that the attachment at a certain index be saved.
    * @param {number} index The index of the attachment to be saved.
-   * @return {Promise<{type: string, dataToSave: Array, messageId: string}>}
+   * @return {!Promise<!SaveAttachmentMessageData>}
    * @abstract
    */
   saveAttachment(index) {}
