@@ -281,6 +281,8 @@ class CrasAudioClientImpl : public CrasAudioClient {
   }
 
   void SetNoiseCancellationEnabled(bool noise_cancellation_on) override {
+    VLOG(1) << "cras_audio_client: Setting noise cancellation state: "
+            << noise_cancellation_on;
     dbus::MethodCall method_call(cras::kCrasControlInterface,
                                  cras::kSetNoiseCancellationEnabled);
     dbus::MessageWriter writer(&method_call);
@@ -292,6 +294,7 @@ class CrasAudioClientImpl : public CrasAudioClient {
 
   void GetNoiseCancellationSupported(
       DBusMethodCallback<bool> callback) override {
+    VLOG(1) << "cras_audio_client: Requesting noise cancellation support.";
     dbus::MethodCall method_call(cras::kCrasControlInterface,
                                  cras::kIsNoiseCancellationSupported);
     cras_proxy_->CallMethod(
@@ -941,6 +944,8 @@ class CrasAudioClientImpl : public CrasAudioClient {
       return;
     }
     std::move(callback).Run(is_noise_cancellation_supported);
+    VLOG(1) << "cras_audio_client: Retrieved noise cancellation support: "
+            << is_noise_cancellation_supported;
   }
 
   bool GetAudioNode(dbus::Response* response,
