@@ -132,19 +132,6 @@ class NativeInputMethodEngine
     // mojom::InputChannel:
     void ProcessMessage(const std::vector<uint8_t>& message,
                         ProcessMessageCallback callback) override;
-    void OnInputMethodChanged(const std::string& engine_id) override {}
-    void OnFocus(ime::mojom::InputFieldInfoPtr input_field_info) override {}
-    void OnBlur() override {}
-    void OnSurroundingTextChanged(
-        const std::string& text,
-        uint32_t offset,
-        ime::mojom::SelectionRangePtr selection_range) override {}
-    void OnCompositionCanceledBySystem() override {}
-    void ProcessKeypressForRulebased(
-        ime::mojom::PhysicalKeyEventPtr event,
-        ProcessKeypressForRulebasedCallback callback) override {}
-    void OnKeyEvent(ime::mojom::PhysicalKeyEventPtr event,
-                    OnKeyEventCallback callback) override {}
     void CommitText(
         const std::string& text,
         ime::mojom::CommitTextCursorBehavior cursor_behavior) override;
@@ -170,7 +157,7 @@ class NativeInputMethodEngine
     void FlushForTesting();
 
     // Returns whether this is connected to the input engine.
-    bool IsConnectedForTesting() const { return remote_to_engine_.is_bound(); }
+    bool IsConnectedForTesting() const { return input_method_.is_bound(); }
 
     void OnProfileWillBeDestroyed();
 
@@ -186,7 +173,7 @@ class NativeInputMethodEngine
     std::unique_ptr<InputMethodEngineBase::Observer> ime_base_observer_;
     mojo::Remote<ime::mojom::InputEngineManager> remote_manager_;
     mojo::Receiver<ime::mojom::InputChannel> receiver_from_engine_;
-    mojo::Remote<ime::mojom::InputChannel> remote_to_engine_;
+    mojo::Remote<ime::mojom::InputMethod> input_method_;
 
     std::unique_ptr<AssistiveSuggester> assistive_suggester_;
     std::unique_ptr<AutocorrectManager> autocorrect_manager_;

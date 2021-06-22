@@ -9,10 +9,10 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "chromeos/services/ime/decoder/system_engine.h"
 #include "chromeos/services/ime/ime_decoder.h"
 #include "chromeos/services/ime/mock_input_channel.h"
 #include "chromeos/services/ime/public/mojom/input_engine.mojom.h"
+#include "chromeos/services/ime/public/mojom/input_method.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -28,7 +28,7 @@ namespace ime {
 namespace {
 
 const char kInvalidImeSpec[] = "ime_spec_never_support";
-constexpr char kArabicImeSpec[] = "m17n:ar";
+constexpr char kValidImeSpec[] = "valid_spec";
 const std::vector<uint8_t> extra{0x66, 0x77, 0x88};
 
 void ConnectCallback(bool* success, bool result) {
@@ -113,7 +113,7 @@ TEST_F(ImeServiceTest, ConnectToValidEngineConnectsRemote) {
   mojo::Remote<mojom::InputChannel> remote_engine;
 
   remote_manager_->ConnectToImeEngine(
-      kArabicImeSpec, remote_engine.BindNewPipeAndPassReceiver(),
+      kValidImeSpec, remote_engine.BindNewPipeAndPassReceiver(),
       test_channel.CreatePendingRemote(), {},
       base::BindOnce(&ConnectCallback, &success));
   remote_manager_.FlushForTesting();
@@ -122,18 +122,17 @@ TEST_F(ImeServiceTest, ConnectToValidEngineConnectsRemote) {
   EXPECT_TRUE(remote_engine.is_connected());
 }
 
-TEST_F(ImeServiceTest,
-       ConnectWithEmptyExtraCanOverrideExistingConnectionWithEmptyExtra) {
+TEST_F(ImeServiceTest, ConnectToImeEngineWillOverrideExistingImeEngine) {
   bool success1, success2 = true;
   MockInputChannel test_channel1, test_channel2;
   mojo::Remote<mojom::InputChannel> remote_engine1, remote_engine2;
 
   remote_manager_->ConnectToImeEngine(
-      kArabicImeSpec, remote_engine1.BindNewPipeAndPassReceiver(),
+      kValidImeSpec, remote_engine1.BindNewPipeAndPassReceiver(),
       test_channel1.CreatePendingRemote(), /*extra=*/{},
       base::BindOnce(&ConnectCallback, &success1));
   remote_manager_->ConnectToImeEngine(
-      kArabicImeSpec, remote_engine2.BindNewPipeAndPassReceiver(),
+      kValidImeSpec, remote_engine2.BindNewPipeAndPassReceiver(),
       test_channel2.CreatePendingRemote(), /*extra=*/{},
       base::BindOnce(&ConnectCallback, &success2));
   remote_manager_.FlushForTesting();
@@ -145,41 +144,46 @@ TEST_F(ImeServiceTest,
 }
 
 TEST_F(ImeServiceTest,
-       ConnectWithEmptyExtraCannotOverrideExistingConnectionWithExtra) {
+       ConnectToImeEngineCannotConnectIfInputMethodIsConnected) {
   bool success1, success2 = true;
-  MockInputChannel test_channel1, test_channel2;
-  mojo::Remote<mojom::InputChannel> remote_engine1, remote_engine2;
+  MockInputChannel test_channel;
+  MockInputChannel delegate;
+  mojo::Remote<mojom::InputMethod> input_method;
+  mojo::Remote<mojom::InputChannel> remote_engine;
 
-  remote_manager_->ConnectToImeEngine(
-      kArabicImeSpec, remote_engine1.BindNewPipeAndPassReceiver(),
-      test_channel1.CreatePendingRemote(), /*extra=*/{0},
+  remote_manager_->ConnectToInputMethod(
+      kValidImeSpec, input_method.BindNewPipeAndPassReceiver(),
+      delegate.CreatePendingRemote(),
       base::BindOnce(&ConnectCallback, &success1));
   remote_manager_->ConnectToImeEngine(
-      kArabicImeSpec, remote_engine2.BindNewPipeAndPassReceiver(),
-      test_channel2.CreatePendingRemote(), /*extra=*/{},
+      kValidImeSpec, remote_engine.BindNewPipeAndPassReceiver(),
+      test_channel.CreatePendingRemote(), /*extra=*/{},
       base::BindOnce(&ConnectCallback, &success2));
   remote_manager_.FlushForTesting();
 
   // The second connection should have failed.
   EXPECT_TRUE(success1);
   EXPECT_FALSE(success2);
-  EXPECT_TRUE(remote_engine1.is_connected());
-  EXPECT_FALSE(remote_engine2.is_connected());
+  EXPECT_TRUE(input_method.is_connected());
+  EXPECT_FALSE(remote_engine.is_connected());
 }
 
-TEST_F(ImeServiceTest, ConnectWithEmptyExtraCanConnectIfDisconnected) {
+TEST_F(ImeServiceTest,
+       ConnectToImeEngineCanConnectIfInputMethodIsDisconnected) {
   bool success1, success2 = true;
-  MockInputChannel test_channel1, test_channel2;
-  mojo::Remote<mojom::InputChannel> remote_engine1, remote_engine2;
+  MockInputChannel test_channel;
+  MockInputChannel delegate;
+  mojo::Remote<mojom::InputMethod> input_method;
+  mojo::Remote<mojom::InputChannel> remote_engine;
 
-  remote_manager_->ConnectToImeEngine(
-      kArabicImeSpec, remote_engine1.BindNewPipeAndPassReceiver(),
-      test_channel1.CreatePendingRemote(), /*extra=*/{0},
+  remote_manager_->ConnectToInputMethod(
+      kValidImeSpec, input_method.BindNewPipeAndPassReceiver(),
+      delegate.CreatePendingRemote(),
       base::BindOnce(&ConnectCallback, &success1));
-  remote_engine1.reset();
+  input_method.reset();
   remote_manager_->ConnectToImeEngine(
-      kArabicImeSpec, remote_engine2.BindNewPipeAndPassReceiver(),
-      test_channel2.CreatePendingRemote(), /*extra=*/{},
+      kValidImeSpec, remote_engine.BindNewPipeAndPassReceiver(),
+      test_channel.CreatePendingRemote(), /*extra=*/{},
       base::BindOnce(&ConnectCallback, &success2));
   remote_manager_.FlushForTesting();
 
@@ -187,44 +191,47 @@ TEST_F(ImeServiceTest, ConnectWithEmptyExtraCanConnectIfDisconnected) {
   // disconnected.
   EXPECT_TRUE(success1);
   EXPECT_TRUE(success2);
-  EXPECT_FALSE(remote_engine1.is_bound());
-  EXPECT_TRUE(remote_engine2.is_connected());
+  EXPECT_FALSE(input_method.is_bound());
+  EXPECT_TRUE(remote_engine.is_connected());
 }
 
-TEST_F(ImeServiceTest, ConnectWithExtraCanOverrideExistingConnection) {
+TEST_F(ImeServiceTest, ConnectToInputMethodCanOverrideAnyConnection) {
   bool success1, success2, success3 = true;
-  MockInputChannel test_channel1, test_channel2, test_channel3;
-  mojo::Remote<mojom::InputChannel> remote_engine1, remote_engine2,
-      remote_engine3;
+  MockInputChannel test_channel;
+  MockInputChannel delegate1, delegate2;
+  mojo::Remote<mojom::InputMethod> input_method1, input_method2;
+  mojo::Remote<mojom::InputChannel> remote_engine;
 
   remote_manager_->ConnectToImeEngine(
-      kArabicImeSpec, remote_engine1.BindNewPipeAndPassReceiver(),
-      test_channel1.CreatePendingRemote(), /*extra=*/{},
+      kValidImeSpec, remote_engine.BindNewPipeAndPassReceiver(),
+      test_channel.CreatePendingRemote(), /*extra=*/{},
       base::BindOnce(&ConnectCallback, &success1));
-  remote_manager_->ConnectToImeEngine(
-      kArabicImeSpec, remote_engine2.BindNewPipeAndPassReceiver(),
-      test_channel2.CreatePendingRemote(), /*extra=*/{0},
+  remote_manager_->ConnectToInputMethod(
+      kValidImeSpec, input_method1.BindNewPipeAndPassReceiver(),
+      delegate1.CreatePendingRemote(),
       base::BindOnce(&ConnectCallback, &success2));
-  remote_manager_->ConnectToImeEngine(
-      kArabicImeSpec, remote_engine3.BindNewPipeAndPassReceiver(),
-      test_channel3.CreatePendingRemote(), /*extra=*/{0},
+  remote_manager_->ConnectToInputMethod(
+      kValidImeSpec, input_method2.BindNewPipeAndPassReceiver(),
+      delegate2.CreatePendingRemote(),
       base::BindOnce(&ConnectCallback, &success3));
   remote_manager_.FlushForTesting();
 
   EXPECT_TRUE(success1);
   EXPECT_TRUE(success2);
   EXPECT_TRUE(success3);
-  EXPECT_FALSE(remote_engine1.is_connected());
-  EXPECT_FALSE(remote_engine2.is_connected());
-  EXPECT_TRUE(remote_engine3.is_connected());
+  EXPECT_FALSE(remote_engine.is_connected());
+  EXPECT_FALSE(input_method1.is_connected());
+  EXPECT_TRUE(input_method2.is_connected());
 }
 
 TEST_F(ImeServiceTest, RuleBasedDoesNotHandleModifierKeys) {
   bool success = false;
-  mojo::Remote<mojom::InputChannel> input_method;
+  mojo::Remote<mojom::InputMethod> input_method;
+  MockInputChannel delegate;
 
   remote_manager_->ConnectToInputMethod(
       "m17n:ar", input_method.BindNewPipeAndPassReceiver(),
+      delegate.CreatePendingRemote(),
       base::BindOnce(&ConnectCallback, &success));
   remote_manager_.FlushForTesting();
   EXPECT_TRUE(success);
@@ -249,10 +256,12 @@ TEST_F(ImeServiceTest, RuleBasedDoesNotHandleModifierKeys) {
 
 TEST_F(ImeServiceTest, RuleBasedDoesNotHandleCtrlShortCut) {
   bool success = false;
-  mojo::Remote<mojom::InputChannel> input_method;
+  mojo::Remote<mojom::InputMethod> input_method;
+  MockInputChannel delegate;
 
   remote_manager_->ConnectToInputMethod(
       "m17n:ar", input_method.BindNewPipeAndPassReceiver(),
+      delegate.CreatePendingRemote(),
       base::BindOnce(&ConnectCallback, &success));
   remote_manager_.FlushForTesting();
   EXPECT_TRUE(success);
@@ -277,10 +286,12 @@ TEST_F(ImeServiceTest, RuleBasedDoesNotHandleCtrlShortCut) {
 
 TEST_F(ImeServiceTest, RuleBasedDoesNotHandleAltShortCut) {
   bool success = false;
-  mojo::Remote<mojom::InputChannel> input_method;
+  mojo::Remote<mojom::InputMethod> input_method;
+  MockInputChannel delegate;
 
   remote_manager_->ConnectToInputMethod(
       "m17n:ar", input_method.BindNewPipeAndPassReceiver(),
+      delegate.CreatePendingRemote(),
       base::BindOnce(&ConnectCallback, &success));
   remote_manager_.FlushForTesting();
   EXPECT_TRUE(success);
@@ -305,10 +316,12 @@ TEST_F(ImeServiceTest, RuleBasedDoesNotHandleAltShortCut) {
 
 TEST_F(ImeServiceTest, RuleBasedHandlesAltRight) {
   bool success = false;
-  mojo::Remote<mojom::InputChannel> input_method;
+  mojo::Remote<mojom::InputMethod> input_method;
+  MockInputChannel delegate;
 
   remote_manager_->ConnectToInputMethod(
       "m17n:ar", input_method.BindNewPipeAndPassReceiver(),
+      delegate.CreatePendingRemote(),
       base::BindOnce(&ConnectCallback, &success));
   remote_manager_.FlushForTesting();
   EXPECT_TRUE(success);
@@ -334,10 +347,12 @@ TEST_F(ImeServiceTest, RuleBasedHandlesAltRight) {
 // Tests that the rule-based Arabic keyboard can work correctly.
 TEST_F(ImeServiceTest, RuleBasedArabic) {
   bool success = false;
-  mojo::Remote<mojom::InputChannel> input_method;
+  mojo::Remote<mojom::InputMethod> input_method;
+  MockInputChannel delegate;
 
   remote_manager_->ConnectToInputMethod(
       "m17n:ar", input_method.BindNewPipeAndPassReceiver(),
+      delegate.CreatePendingRemote(),
       base::BindOnce(&ConnectCallback, &success));
   remote_manager_.FlushForTesting();
   EXPECT_TRUE(success);
@@ -403,10 +418,12 @@ TEST_F(ImeServiceTest, RuleBasedArabic) {
 // Tests that the rule-based DevaPhone keyboard can work correctly.
 TEST_F(ImeServiceTest, RuleBasedDevaPhone) {
   bool success = false;
-  mojo::Remote<mojom::InputChannel> input_method;
+  mojo::Remote<mojom::InputMethod> input_method;
+  MockInputChannel delegate;
 
   remote_manager_->ConnectToInputMethod(
       "m17n:deva_phone", input_method.BindNewPipeAndPassReceiver(),
+      delegate.CreatePendingRemote(),
       base::BindOnce(&ConnectCallback, &success));
   remote_manager_.FlushForTesting();
   EXPECT_TRUE(success);
@@ -479,10 +496,12 @@ TEST_F(ImeServiceTest, RuleBasedDevaPhone) {
 // Tests escapable characters. See https://crbug.com/1014384.
 TEST_F(ImeServiceTest, RuleBasedDoesNotEscapeCharacters) {
   bool success = false;
-  mojo::Remote<mojom::InputChannel> input_method;
+  mojo::Remote<mojom::InputMethod> input_method;
+  MockInputChannel delegate;
 
   remote_manager_->ConnectToInputMethod(
       "m17n:deva_phone", input_method.BindNewPipeAndPassReceiver(),
+      delegate.CreatePendingRemote(),
       base::BindOnce(&ConnectCallback, &success));
   remote_manager_.FlushForTesting();
   EXPECT_TRUE(success);
@@ -535,10 +554,12 @@ TEST_F(ImeServiceTest, RuleBasedDoesNotEscapeCharacters) {
 // Tests that AltGr works with rule-based. See crbug.com/1035145.
 TEST_F(ImeServiceTest, KhmerKeyboardAltGr) {
   bool success = false;
-  mojo::Remote<mojom::InputChannel> input_method;
+  mojo::Remote<mojom::InputMethod> input_method;
+  MockInputChannel delegate;
 
   remote_manager_->ConnectToInputMethod(
       "m17n:km", input_method.BindNewPipeAndPassReceiver(),
+      delegate.CreatePendingRemote(),
       base::BindOnce(&ConnectCallback, &success));
   remote_manager_.FlushForTesting();
   EXPECT_TRUE(success);

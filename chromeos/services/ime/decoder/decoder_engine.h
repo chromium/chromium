@@ -39,19 +39,6 @@ class DecoderEngine : public InputEngine, public mojom::InputChannel {
   // mojom::InputChannel:
   void ProcessMessage(const std::vector<uint8_t>& message,
                       ProcessMessageCallback callback) override;
-  void OnInputMethodChanged(const std::string& engine_id) override {}
-  void OnFocus(mojom::InputFieldInfoPtr input_field_info) override {}
-  void OnBlur() override {}
-  void OnKeyEvent(mojom::PhysicalKeyEventPtr event,
-                  OnKeyEventCallback callback) override {}
-  void OnSurroundingTextChanged(
-      const std::string& text,
-      uint32_t offset,
-      mojom::SelectionRangePtr selection_range) override {}
-  void OnCompositionCanceledBySystem() override {}
-  void ProcessKeypressForRulebased(
-      mojom::PhysicalKeyEventPtr event,
-      ProcessKeypressForRulebasedCallback callback) override {}
   void CommitText(const std::string& text,
                   mojom::CommitTextCursorBehavior cursor_behavior) override {}
   void SetComposition(const std::string& text) override {}

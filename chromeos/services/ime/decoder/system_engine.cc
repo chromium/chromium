@@ -98,7 +98,7 @@ bool SystemEngine::TryLoadDecoder() {
 
 bool SystemEngine::BindRequest(
     const std::string& ime_spec,
-    mojo::PendingReceiver<mojom::InputChannel> receiver,
+    mojo::PendingReceiver<mojom::InputMethod> receiver,
     mojo::PendingRemote<mojom::InputChannel> delegate,
     base::OnceCallback<void()> disconnect_callback) {
   if (!IsImeSupportedByDecoder(ime_spec)) {
@@ -118,20 +118,14 @@ bool SystemEngine::BindRequest(
 
   receiver_.Bind(std::move(receiver));
   receiver_.set_disconnect_handler(std::move(disconnect_callback));
+
+  OnInputMethodChanged(ime_spec);
   return true;
 }
 
 bool SystemEngine::IsImeSupportedByDecoder(const std::string& ime_spec) {
   return decoder_entry_points_ &&
          decoder_entry_points_->supports(ime_spec.c_str());
-}
-
-void SystemEngine::OnInputMethodChanged(const std::string& engine_id) {
-  const uint64_t seq_id = current_seq_id_;
-  ++current_seq_id_;
-
-  ProcessMessage(
-      WrapAndSerializeMessage(OnInputMethodChangedToProto(seq_id, engine_id)));
 }
 
 void SystemEngine::OnFocus(mojom::InputFieldInfoPtr input_field_info) {
@@ -186,17 +180,18 @@ void SystemEngine::OnSuggestionsReturned(
       SuggestionsResponseToProto(seq_id, std::move(response))));
 }
 
-void SystemEngine::ProcessMessage(const std::vector<uint8_t>& message,
-                                  ProcessMessageCallback callback) {
+void SystemEngine::ProcessMessage(const std::vector<uint8_t>& message) {
   // Handle message via corresponding functions of loaded decoder.
   if (decoder_entry_points_)
     decoder_entry_points_->process(message.data(), message.size());
-
-  std::move(callback).Run({});
 }
 
-void SystemEngine::ProcessMessage(const std::vector<uint8_t>& message) {
-  ProcessMessage(message, base::DoNothing());
+void SystemEngine::OnInputMethodChanged(const std::string& engine_id) {
+  const uint64_t seq_id = current_seq_id_;
+  ++current_seq_id_;
+
+  ProcessMessage(
+      WrapAndSerializeMessage(OnInputMethodChangedToProto(seq_id, engine_id)));
 }
 
 void SystemEngine::OnReply(const std::vector<uint8_t>& message,

@@ -50,6 +50,10 @@ std::string ResolveDownloadPath(const base::FilePath& file) {
   return target.MaybeAsASCII();
 }
 
+bool IsRuleBasedInputMethod(const std::string& engine_id) {
+  return base::StartsWith(engine_id, "m17n:", base::CompareCase::SENSITIVE);
+}
+
 }  // namespace
 
 ImeService::ImeService(mojo::PendingReceiver<mojom::ImeService> receiver)
@@ -82,50 +86,49 @@ void ImeService::ConnectToImeEngine(
   // conditions), so we must prevent the extension from taking over the
   // NativeInputMethodEngine connection.
   //
-  // This is a hack to to determine whether a connection came from
-  // NativeInputMethodEngine or the extension. NativeInputMethodEngine will
-  // send some extra bytes, whereas the extension doesn't. Thus, we can
-  // prevent the extension from taking over the NativeInputMethodEngine's
-  // connection to the decoder. NativeInputMethodEngine will voluntarily give
-  // up its connection when tswitching to tablet mode, allowing the extension
-  // to connect again.
-  // TODO(b/184115850): Create a separate Mojo API for NativeInputMethodEngine
-  // so that we don't need to inspect `extra` to distinguish the client.
-  if (is_privileged_connection_ && extra.size() == 0) {
+  // The extension will only use ConnectToImeEngine, and NativeInputMethodEngine
+  // will only use ConnectToInputMethod.
+  if (is_privileged_connection_) {
     std::move(callback).Run(/*bound=*/false);
     return;
   }
 
-  if (base::FeatureList::IsEnabled(
-          chromeos::features::kSystemLatinPhysicalTyping)) {
-    auto system_engine = std::make_unique<SystemEngine>(this);
-    bool bound = system_engine->BindRequest(
-        ime_spec, std::move(to_engine_request), std::move(from_engine),
-        base::BindOnce(
-            [](bool& is_decoder_receiver_connected) {
-              is_decoder_receiver_connected = false;
-            },
-            std::ref(is_privileged_connection_)));
-    if (bound) {
-      is_privileged_connection_ = extra.size() > 0;
-    }
-    input_engine_ = std::move(system_engine);
-    std::move(callback).Run(bound);
-  } else {
-    auto decoder_engine = std::make_unique<DecoderEngine>(this);
-    bool bound = decoder_engine->BindRequest(
-        ime_spec, std::move(to_engine_request), std::move(from_engine), extra);
-    input_engine_ = std::move(decoder_engine);
-    std::move(callback).Run(bound);
-  }
+  auto decoder_engine = std::make_unique<DecoderEngine>(this);
+  bool bound = decoder_engine->BindRequest(
+      ime_spec, std::move(to_engine_request), std::move(from_engine), extra);
+  input_engine_ = std::move(decoder_engine);
+  std::move(callback).Run(bound);
 }
 
 void ImeService::ConnectToInputMethod(
     const std::string& ime_spec,
-    mojo::PendingReceiver<mojom::InputChannel> to_engine,
+    mojo::PendingReceiver<mojom::InputMethod> input_method,
+    mojo::PendingRemote<mojom::InputChannel> delegate,
     ConnectToInputMethodCallback callback) {
-  input_engine_ = RuleBasedEngine::Create(ime_spec, std::move(to_engine));
-  std::move(callback).Run(/*bound=*/input_engine_ != nullptr);
+  if (IsRuleBasedInputMethod(ime_spec)) {
+    input_engine_ = RuleBasedEngine::Create(ime_spec, std::move(input_method));
+    std::move(callback).Run(/*bound=*/input_engine_ != nullptr);
+    return;
+  }
+  if (!base::FeatureList::IsEnabled(
+          chromeos::features::kSystemLatinPhysicalTyping)) {
+    std::move(callback).Run(/*bound=*/false);
+    return;
+  }
+
+  auto system_engine = std::make_unique<SystemEngine>(this);
+  bool bound = system_engine->BindRequest(
+      ime_spec, std::move(input_method), std::move(delegate),
+      base::BindOnce(
+          [](bool& is_privileged_connection_) {
+            is_privileged_connection_ = false;
+          },
+          std::ref(is_privileged_connection_)));
+  if (bound) {
+    is_privileged_connection_ = bound;
+  }
+  input_engine_ = std::move(system_engine);
+  std::move(callback).Run(bound);
 }
 
 const char* ImeService::GetImeBundleDir() {

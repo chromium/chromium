@@ -45,7 +45,8 @@ class ImeService : public mojom::ImeService,
       ConnectToImeEngineCallback callback) override;
   void ConnectToInputMethod(
       const std::string& ime_spec,
-      mojo::PendingReceiver<mojom::InputChannel> to_engine,
+      mojo::PendingReceiver<mojom::InputMethod> input_method,
+      mojo::PendingRemote<mojom::InputChannel> delegate,
       ConnectToInputMethodCallback callback) override;
 
   // ImeCrosPlatform overrides:
@@ -85,8 +86,8 @@ class ImeService : public mojom::ImeService,
   mojo::Remote<mojom::PlatformAccessProvider> platform_access_;
   mojo::ReceiverSet<mojom::InputEngineManager> manager_receivers_;
 
-  // If the current connection is privileged, then `ConnectToImeEngine` must be
-  // called with a non-empty `extra` in order to override the connection.
+  // If the current connection is privileged, then `ConnectToImeEngine` cannot
+  // override the connection.
   bool is_privileged_connection_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(ImeService);

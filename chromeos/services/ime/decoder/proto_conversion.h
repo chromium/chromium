@@ -14,23 +14,23 @@
 namespace chromeos {
 namespace ime {
 
-// Converts arguments of a Mojo call to InputChannel::OnInputMethodChanged into
+// Converts arguments of a Mojo call to InputMethod::OnInputMethodChanged into
 // a proto.
 ime::PublicMessage OnInputMethodChangedToProto(uint64_t seq_id,
                                                const std::string& engine_id);
 
-// Converts arguments of a Mojo call to InputChannel::OnFocus into a proto.
+// Converts arguments of a Mojo call to InputMethod::OnFocus into a proto.
 ime::PublicMessage OnFocusToProto(uint64_t seq_id,
                                   mojom::InputFieldInfoPtr input_field_info);
 
-// Converts arguments of a Mojo call to InputChannel::OnBlur into a proto.
+// Converts arguments of a Mojo call to InputMethod::OnBlur into a proto.
 ime::PublicMessage OnBlurToProto(uint64_t seq_id);
 
-// Converts arguments of a Mojo call to InputChannel::OnKeyEvent into a proto.
+// Converts arguments of a Mojo call to InputMethod::OnKeyEvent into a proto.
 ime::PublicMessage OnKeyEventToProto(uint64_t seq_id,
                                      mojom::PhysicalKeyEventPtr event);
 
-// Converts arguments of a Mojo call to InputChannel::OnSurroundingTextChanged
+// Converts arguments of a Mojo call to InputMethod::OnSurroundingTextChanged
 // into a proto.
 ime::PublicMessage OnSurroundingTextChangedToProto(
     uint64_t seq_id,
@@ -38,7 +38,7 @@ ime::PublicMessage OnSurroundingTextChangedToProto(
     uint32_t focus,
     mojom::SelectionRangePtr selection_range);
 
-// Converts arguments of a Mojo call to InputChannel::OnCompositionCanceled into
+// Converts arguments of a Mojo call to InputMethod::OnCompositionCanceled into
 // a proto.
 ime::PublicMessage OnCompositionCanceledToProto(uint64_t seq_id);
 

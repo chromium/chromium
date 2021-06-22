@@ -271,7 +271,7 @@ void NativeInputMethodEngine::ImeObserver::OnActivate(
   if (ShouldRouteToFstMojoEngine(engine_id) &&
       !IsPhysicalKeyboardAutocorrectEnabled(prefs_, engine_id)) {
     remote_manager_.reset();
-    remote_to_engine_.reset();
+    input_method_.reset();
     receiver_from_engine_.reset();
     return;
   }
@@ -289,11 +289,12 @@ void NativeInputMethodEngine::ImeObserver::OnActivate(
     const auto new_engine_id = NormalizeRuleBasedEngineId(engine_id);
 
     // Deactivate any existing engine.
-    remote_to_engine_.reset();
+    input_method_.reset();
     receiver_from_engine_.reset();
 
     remote_manager_->ConnectToInputMethod(
-        new_engine_id, remote_to_engine_.BindNewPipeAndPassReceiver(),
+        new_engine_id, input_method_.BindNewPipeAndPassReceiver(),
+        receiver_from_engine_.BindNewPipeAndPassRemote(),
         base::BindOnce(&OnConnected));
 
     // Notify the virtual keyboard extension that the IME has changed.
@@ -309,22 +310,18 @@ void NativeInputMethodEngine::ImeObserver::OnActivate(
     }
 
     // Deactivate any existing engine.
-    remote_to_engine_.reset();
+    input_method_.reset();
     receiver_from_engine_.reset();
 
-    remote_manager_->ConnectToImeEngine(
-        engine_id, remote_to_engine_.BindNewPipeAndPassReceiver(),
-        receiver_from_engine_.BindNewPipeAndPassRemote(), /*extra=*/{0},
+    remote_manager_->ConnectToInputMethod(
+        engine_id, input_method_.BindNewPipeAndPassReceiver(),
+        receiver_from_engine_.BindNewPipeAndPassRemote(),
         base::BindOnce(&OnConnected));
-
-    // `ConnectToImeEngine` doesn't actually activate the IME in the IME
-    // service. We must call `OnInputMethodChanged` as well.
-    remote_to_engine_->OnInputMethodChanged(engine_id);
   } else {
     // Release the IME service.
     // TODO(b/147709499): A better way to cleanup all.
     remote_manager_.reset();
-    remote_to_engine_.reset();
+    input_method_.reset();
     receiver_from_engine_.reset();
 
     ime_base_observer_->OnActivate(engine_id);
@@ -350,8 +347,8 @@ void NativeInputMethodEngine::ImeObserver::OnFocus(
     grammar_manager_->OnFocus(context_id);
   }
   if (ShouldRouteToFstMojoEngine(engine_id)) {
-    if (remote_to_engine_.is_bound()) {
-      remote_to_engine_->OnFocus(ime::mojom::InputFieldInfo::New(
+    if (input_method_.is_bound()) {
+      input_method_->OnFocus(ime::mojom::InputFieldInfo::New(
           TextInputTypeToMojoType(context.type),
           AutocorrectFlagsToMojoType(context.flags),
           context.should_do_learning
@@ -369,8 +366,8 @@ void NativeInputMethodEngine::ImeObserver::OnBlur(const std::string& engine_id,
     assistive_suggester_->OnBlur();
 
   if (ShouldRouteToFstMojoEngine(engine_id)) {
-    if (remote_to_engine_.is_bound()) {
-      remote_to_engine_->OnBlur();
+    if (input_method_.is_bound()) {
+      input_method_->OnBlur();
     }
   } else {
     ime_base_observer_->OnBlur(engine_id, context_id);
@@ -397,14 +394,14 @@ void NativeInputMethodEngine::ImeObserver::OnKeyEvent(
     return;
   }
 
-  if (ShouldRouteToRuleBasedEngine(engine_id) && remote_to_engine_.is_bound()) {
-    remote_to_engine_->ProcessKeypressForRulebased(
+  if (ShouldRouteToRuleBasedEngine(engine_id) && input_method_.is_bound()) {
+    input_method_->ProcessKeypressForRulebased(
         CreatePhysicalKeyEventFromKeyEvent(event),
         base::BindOnce(&ImeObserver::OnRuleBasedKeyEventResponse,
                        base::Unretained(this), base::Time::Now(),
                        std::move(callback)));
   } else if (ShouldRouteToFstMojoEngine(engine_id)) {
-    if (remote_to_engine_.is_bound()) {
+    if (input_method_.is_bound()) {
       // CharacterComposer only takes KEY_PRESSED events.
       const bool filtered = event.type() == ui::ET_KEY_PRESSED &&
                             character_composer_.FilterKeyPress(event);
@@ -424,7 +421,7 @@ void NativeInputMethodEngine::ImeObserver::OnKeyEvent(
             base::UTF16ToUTF8(character_composer_.composed_character());
       }
 
-      remote_to_engine_->OnKeyEvent(std::move(key_event), std::move(callback));
+      input_method_->OnKeyEvent(std::move(key_event), std::move(callback));
     } else {
       std::move(callback).Run(false);
     }
@@ -437,8 +434,8 @@ void NativeInputMethodEngine::ImeObserver::OnReset(
     const std::string& engine_id) {
   if (ShouldRouteToFstMojoEngine(engine_id) ||
       ShouldRouteToRuleBasedEngine(engine_id)) {
-    if (remote_to_engine_.is_bound()) {
-      remote_to_engine_->OnCompositionCanceledBySystem();
+    if (input_method_.is_bound()) {
+      input_method_->OnCompositionCanceledBySystem();
     }
   } else {
     ime_base_observer_->OnReset(engine_id);
@@ -448,7 +445,7 @@ void NativeInputMethodEngine::ImeObserver::OnReset(
 void NativeInputMethodEngine::ImeObserver::OnDeactivated(
     const std::string& engine_id) {
   if (ShouldRouteToRuleBasedEngine(engine_id)) {
-    remote_to_engine_.reset();
+    input_method_.reset();
   }
   ime_base_observer_->OnDeactivated(engine_id);
 }
@@ -475,7 +472,7 @@ void NativeInputMethodEngine::ImeObserver::OnSurroundingTextChanged(
     grammar_manager_->OnSurroundingTextChanged(text, cursor_pos, anchor_pos);
   }
   if (ShouldRouteToFstMojoEngine(engine_id)) {
-    if (remote_to_engine_.is_bound()) {
+    if (input_method_.is_bound()) {
       std::vector<size_t> selection_indices = {anchor_pos, cursor_pos};
       std::string utf8_text =
           base::UTF16ToUTF8AndAdjustOffsets(text, &selection_indices);
@@ -484,8 +481,8 @@ void NativeInputMethodEngine::ImeObserver::OnSurroundingTextChanged(
       selection->anchor = selection_indices[0];
       selection->focus = selection_indices[1];
 
-      remote_to_engine_->OnSurroundingTextChanged(
-          std::move(utf8_text), offset_pos, std::move(selection));
+      input_method_->OnSurroundingTextChanged(std::move(utf8_text), offset_pos,
+                                              std::move(selection));
     }
   } else {
     ime_base_observer_->OnSurroundingTextChanged(engine_id, text, cursor_pos,
@@ -663,8 +660,8 @@ void NativeInputMethodEngine::ImeObserver::FlushForTesting() {
   remote_manager_.FlushForTesting();
   if (receiver_from_engine_.is_bound())
     receiver_from_engine_.FlushForTesting();
-  if (remote_to_engine_.is_bound())
-    remote_to_engine_.FlushForTesting();
+  if (input_method_.is_bound())
+    input_method_.FlushForTesting();
 }
 
 void NativeInputMethodEngine::ImeObserver::OnRuleBasedKeyEventResponse(

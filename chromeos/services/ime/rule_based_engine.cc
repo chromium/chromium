@@ -74,7 +74,7 @@ bool IsImeSupportedByRulebased(const std::string& ime_spec) {
 
 std::unique_ptr<RuleBasedEngine> RuleBasedEngine::Create(
     const std::string& ime_spec,
-    mojo::PendingReceiver<mojom::InputChannel> receiver) {
+    mojo::PendingReceiver<mojom::InputMethod> receiver) {
   // RuleBasedEngine constructor is private, so have to use WrapUnique here.
   return IsImeSupportedByRulebased(ime_spec)
              ? base::WrapUnique(
@@ -130,7 +130,7 @@ void RuleBasedEngine::ProcessKeypressForRulebased(
 
 RuleBasedEngine::RuleBasedEngine(
     const std::string& ime_spec,
-    mojo::PendingReceiver<mojom::InputChannel> receiver)
+    mojo::PendingReceiver<mojom::InputMethod> receiver)
     : receiver_(this, std::move(receiver)) {
   DCHECK(IsImeSupportedByRulebased(ime_spec));
 

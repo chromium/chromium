@@ -7,6 +7,7 @@ module chromeos.ime.mojom;
 import "mojo/public/mojom/base/file_path.mojom";
 import "url/mojom/url.mojom";
 import "chromeos/services/ime/public/mojom/input_engine.mojom";
+import "chromeos/services/ime/public/mojom/input_method.mojom";
 
 // IME on ChromeOS consists of three parts:
 // - The IME running in an extension to provide a soft keyboard
@@ -21,25 +22,30 @@ import "chromeos/services/ime/public/mojom/input_engine.mojom";
 // the connection between the IME service and the IME extension, but does not
 // otherwise participate.
 interface InputEngineManager {
-  // Sets up the connection by binding the |to_engine_request| to the input
-  // engine identified by the |ime_spec|. The |extra| is an optional serialized
-  // protobuf data for setting up the IME engine. On success, return |success|
-  // as true, and the input data can be sent to the engine by the channel using
-  // the interface of |to_engine_request|. The channel interface |from_engine|
-  // is implemented on the client and used to receive data sent from the engine.
+  // Sets up a bidirectional binary connection with the input engine identified
+  // by |ime_spec|. On success, |success| is true and binary input data can be
+  // sent to the engine by the channel using |to_engine_request|. The channel
+  // interface |from_engine| is implemented on the client and used to receive
+  // data sent from the engine.
   // On failure (e.g. input engine is not found), |success| is false.
+  // |extra| is an optional serialized data for setting up the IME engine. It is
+  // serialized as binary because the engine is a shared library and |extra|
+  // needs to be passed to it via a C interface.
   ConnectToImeEngine(string ime_spec,
                      pending_receiver<InputChannel> to_engine_request,
                      pending_remote<InputChannel> from_engine,
                      array<uint8> extra)
                      => (bool success);
 
-  // Connects to the native input method identified by |ime_spec|.
-  // On success, return |success| as true, and |to_engine| can be used to
+  // Connects to the input method identified by |ime_spec|.
+  // |delegate| runs in the browser process and is used by the input method to
+  // communicate with the text field and the system.
+  // On success, return |success| as true, and |input_method| can be used to
   // interact with the input method.
   // On failure (e.g. |ime_spec| is not valid), |success| is false.
   ConnectToInputMethod(string ime_spec,
-                       pending_receiver<InputChannel> to_engine)
+                       pending_receiver<InputMethod> input_method,
+                       pending_remote<InputChannel> delegate)
                        => (bool success);
 };
 

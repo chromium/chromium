@@ -90,43 +90,43 @@ class SystemEngineTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(SystemEngineTest, BindRequestBindsInterfaces) {
+TEST_F(SystemEngineTest, BindRequestConnectsInputMethod) {
   SystemEngine engine(/*platform=*/nullptr);
-
   MockInputChannel mock_delegate;
-  mojo::Remote<mojom::InputChannel> input_method;
+
+  mojo::Remote<mojom::InputMethod> input_method;
   EXPECT_TRUE(engine.BindRequest(
       kImeSpec, input_method.BindNewPipeAndPassReceiver(),
       mock_delegate.CreatePendingRemote(), base::DoNothing()));
 
-  EXPECT_TRUE(input_method.is_bound());
-  EXPECT_TRUE(mock_delegate.IsBound());
+  ASSERT_TRUE(input_method.is_bound());
+  EXPECT_TRUE(input_method.is_connected());
 }
 
-TEST_F(SystemEngineTest, OnInputMethodChangedSendsMessageToSharedLib) {
+TEST_F(SystemEngineTest, BindRequestSendsMessageToSharedLib) {
   SystemEngine engine(/*platform=*/nullptr);
   MockInputChannel mock_delegate;
-  mojo::Remote<mojom::InputChannel> input_method;
-  ASSERT_TRUE(engine.BindRequest(
-      kImeSpec, input_method.BindNewPipeAndPassReceiver(),
-      mock_delegate.CreatePendingRemote(), base::DoNothing()));
+  mojo::Remote<mojom::InputMethod> input_method;
   ime::Wrapper expected_proto;
   *expected_proto.mutable_public_message() =
       OnInputMethodChangedToProto(/*seq_id=*/0, "xkb:us::eng");
 
   EXPECT_CALL(decoder_entry_points_, Process).With(EqualsProto(expected_proto));
 
-  input_method->OnInputMethodChanged("xkb:us::eng");
+  ASSERT_TRUE(engine.BindRequest(
+      kImeSpec, input_method.BindNewPipeAndPassReceiver(),
+      mock_delegate.CreatePendingRemote(), base::DoNothing()));
   input_method.FlushForTesting();
 }
 
 TEST_F(SystemEngineTest, OnFocusSendsMessageToSharedLib) {
   SystemEngine engine(/*platform=*/nullptr);
+  mojo::Remote<mojom::InputMethod> input_method;
   MockInputChannel mock_delegate;
-  mojo::Remote<mojom::InputChannel> input_method;
   ASSERT_TRUE(engine.BindRequest(
       kImeSpec, input_method.BindNewPipeAndPassReceiver(),
       mock_delegate.CreatePendingRemote(), base::DoNothing()));
+  input_method.FlushForTesting();
 
   auto info = mojom::InputFieldInfo::New(mojom::InputFieldType::kNumber,
                                          mojom::AutocorrectMode::kEnabled,
@@ -134,7 +134,7 @@ TEST_F(SystemEngineTest, OnFocusSendsMessageToSharedLib) {
 
   ime::Wrapper expected_proto;
   *expected_proto.mutable_public_message() =
-      OnFocusToProto(/*seq_id=*/0, info.Clone());
+      OnFocusToProto(/*seq_id=*/1, info.Clone());
 
   EXPECT_CALL(decoder_entry_points_, Process).With(EqualsProto(expected_proto));
 
@@ -145,12 +145,14 @@ TEST_F(SystemEngineTest, OnFocusSendsMessageToSharedLib) {
 TEST_F(SystemEngineTest, OnBlurSendsMessageToSharedLib) {
   SystemEngine engine(/*platform=*/nullptr);
   MockInputChannel mock_delegate;
-  mojo::Remote<mojom::InputChannel> input_method;
+  mojo::Remote<mojom::InputMethod> input_method;
   ASSERT_TRUE(engine.BindRequest(
       kImeSpec, input_method.BindNewPipeAndPassReceiver(),
       mock_delegate.CreatePendingRemote(), base::DoNothing()));
+  input_method.FlushForTesting();
+
   ime::Wrapper expected_proto;
-  *expected_proto.mutable_public_message() = OnBlurToProto(/*seq_id=*/0);
+  *expected_proto.mutable_public_message() = OnBlurToProto(/*seq_id=*/1);
 
   EXPECT_CALL(decoder_entry_points_, Process).With(EqualsProto(expected_proto));
 
@@ -160,16 +162,18 @@ TEST_F(SystemEngineTest, OnBlurSendsMessageToSharedLib) {
 
 TEST_F(SystemEngineTest, OnKeyEventRepliesWithCallback) {
   SystemEngine engine(/*platform=*/nullptr);
+  mojo::Remote<mojom::InputMethod> input_method;
   MockInputChannel mock_delegate;
-  mojo::Remote<mojom::InputChannel> input_method;
   ASSERT_TRUE(engine.BindRequest(
       kImeSpec, input_method.BindNewPipeAndPassReceiver(),
       mock_delegate.CreatePendingRemote(), base::DoNothing()));
+  input_method.FlushForTesting();
+
   auto key_event = mojom::PhysicalKeyEvent::New(
       mojom::KeyEventType::kKeyDown, "KeyA", "A", mojom::ModifierState::New());
   ime::Wrapper expected_proto;
   *expected_proto.mutable_public_message() =
-      OnKeyEventToProto(/*seq_id=*/0, key_event.Clone());
+      OnKeyEventToProto(/*seq_id=*/1, key_event.Clone());
 
   // Set up the mock shared library to reply to the key event.
   bool consumed_by_test = false;
@@ -177,6 +181,7 @@ TEST_F(SystemEngineTest, OnKeyEventRepliesWithCallback) {
       .With(EqualsProto(expected_proto))
       .WillOnce([this]() {
         ime::Wrapper wrapper;
+        wrapper.mutable_public_message()->set_seq_id(1);
         wrapper.mutable_public_message()
             ->mutable_on_key_event_reply()
             ->set_consumed(true);
@@ -196,15 +201,16 @@ TEST_F(SystemEngineTest, OnKeyEventRepliesWithCallback) {
 
 TEST_F(SystemEngineTest, OnSurroundingTextChangedSendsMessageToSharedLib) {
   SystemEngine engine(/*platform=*/nullptr);
+  mojo::Remote<mojom::InputMethod> input_method;
   MockInputChannel mock_delegate;
-  mojo::Remote<mojom::InputChannel> input_method;
   ASSERT_TRUE(engine.BindRequest(
       kImeSpec, input_method.BindNewPipeAndPassReceiver(),
       mock_delegate.CreatePendingRemote(), base::DoNothing()));
+  input_method.FlushForTesting();
   const auto selection = mojom::SelectionRange::New(/*anchor=*/3, /*focus=*/2);
   ime::Wrapper expected_proto;
   *expected_proto.mutable_public_message() = OnSurroundingTextChangedToProto(
-      /*seq_id=*/0, "hello", /*offset=*/1, selection->Clone());
+      /*seq_id=*/1, "hello", /*offset=*/1, selection->Clone());
 
   EXPECT_CALL(decoder_entry_points_, Process).With(EqualsProto(expected_proto));
 
@@ -215,14 +221,15 @@ TEST_F(SystemEngineTest, OnSurroundingTextChangedSendsMessageToSharedLib) {
 
 TEST_F(SystemEngineTest, OnCompositionCanceledSendsMessageToSharedLib) {
   SystemEngine engine(/*platform=*/nullptr);
+  mojo::Remote<mojom::InputMethod> input_method;
   MockInputChannel mock_delegate;
-  mojo::Remote<mojom::InputChannel> input_method;
   ASSERT_TRUE(engine.BindRequest(
       kImeSpec, input_method.BindNewPipeAndPassReceiver(),
       mock_delegate.CreatePendingRemote(), base::DoNothing()));
+  input_method.FlushForTesting();
   ime::Wrapper expected_proto;
   *expected_proto.mutable_public_message() =
-      OnCompositionCanceledToProto(/*seq_id=*/0);
+      OnCompositionCanceledToProto(/*seq_id=*/1);
 
   EXPECT_CALL(decoder_entry_points_, Process).With(EqualsProto(expected_proto));
 
@@ -232,11 +239,12 @@ TEST_F(SystemEngineTest, OnCompositionCanceledSendsMessageToSharedLib) {
 
 TEST_F(SystemEngineTest, CommitTextSendsMessageToReceiver) {
   SystemEngine engine(/*platform=*/nullptr);
+  mojo::Remote<mojom::InputMethod> input_method;
   MockInputChannel mock_delegate;
-  mojo::Remote<mojom::InputChannel> input_method;
   ASSERT_TRUE(engine.BindRequest(
       kImeSpec, input_method.BindNewPipeAndPassReceiver(),
       mock_delegate.CreatePendingRemote(), base::DoNothing()));
+  input_method.FlushForTesting();
   ime::Wrapper proto;
 
   proto.mutable_public_message()->mutable_commit_text()->set_text("hello");
@@ -258,10 +266,11 @@ TEST_F(SystemEngineTest, CommitTextSendsMessageToReceiver) {
 TEST_F(SystemEngineTest, SetCompositionSendsMessageToReceiver) {
   SystemEngine engine(/*platform=*/nullptr);
   MockInputChannel mock_delegate;
-  mojo::Remote<mojom::InputChannel> input_method;
+  mojo::Remote<mojom::InputMethod> input_method;
   ASSERT_TRUE(engine.BindRequest(
       kImeSpec, input_method.BindNewPipeAndPassReceiver(),
       mock_delegate.CreatePendingRemote(), base::DoNothing()));
+  input_method.FlushForTesting();
   ime::Wrapper proto;
   proto.mutable_public_message()->mutable_set_composition()->set_text("hello");
 
@@ -276,10 +285,11 @@ TEST_F(SystemEngineTest, SetCompositionSendsMessageToReceiver) {
 TEST_F(SystemEngineTest, SetCompositionRangeSendsMessageToReceiver) {
   SystemEngine engine(/*platform=*/nullptr);
   MockInputChannel mock_delegate;
-  mojo::Remote<mojom::InputChannel> input_method;
+  mojo::Remote<mojom::InputMethod> input_method;
   ASSERT_TRUE(engine.BindRequest(
       kImeSpec, input_method.BindNewPipeAndPassReceiver(),
       mock_delegate.CreatePendingRemote(), base::DoNothing()));
+  input_method.FlushForTesting();
   ime::Wrapper proto;
   proto.mutable_public_message()
       ->mutable_set_composition_range()
@@ -299,10 +309,11 @@ TEST_F(SystemEngineTest, SetCompositionRangeSendsMessageToReceiver) {
 TEST_F(SystemEngineTest, FinishCompositionSendsMessageToReceiver) {
   SystemEngine engine(/*platform=*/nullptr);
   MockInputChannel mock_delegate;
-  mojo::Remote<mojom::InputChannel> input_method;
+  mojo::Remote<mojom::InputMethod> input_method;
   ASSERT_TRUE(engine.BindRequest(
       kImeSpec, input_method.BindNewPipeAndPassReceiver(),
       mock_delegate.CreatePendingRemote(), base::DoNothing()));
+  input_method.FlushForTesting();
   ime::Wrapper proto;
   *proto.mutable_public_message()->mutable_finish_composition() =
       ime::FinishComposition();
@@ -318,10 +329,11 @@ TEST_F(SystemEngineTest, FinishCompositionSendsMessageToReceiver) {
 TEST_F(SystemEngineTest, DeleteSurroundingTextSendsMessageToReceiver) {
   SystemEngine engine(/*platform=*/nullptr);
   MockInputChannel mock_delegate;
-  mojo::Remote<mojom::InputChannel> input_method;
+  mojo::Remote<mojom::InputMethod> input_method;
   ASSERT_TRUE(engine.BindRequest(
       kImeSpec, input_method.BindNewPipeAndPassReceiver(),
       mock_delegate.CreatePendingRemote(), base::DoNothing()));
+  input_method.FlushForTesting();
   ime::Wrapper proto;
   proto.mutable_public_message()
       ->mutable_delete_surrounding_text()
@@ -344,10 +356,11 @@ using RequestSuggestionsCallback =
 TEST_F(SystemEngineTest, SuggestionsRequestSendsMessageToReceiver) {
   SystemEngine engine(/*platform=*/nullptr);
   MockInputChannel mock_delegate;
-  mojo::Remote<mojom::InputChannel> input_method;
+  mojo::Remote<mojom::InputMethod> input_method;
   ASSERT_TRUE(engine.BindRequest(
       kImeSpec, input_method.BindNewPipeAndPassReceiver(),
       mock_delegate.CreatePendingRemote(), base::DoNothing()));
+  input_method.FlushForTesting();
 
   ime::Wrapper proto;
   auto* suggestions_request =
@@ -382,15 +395,16 @@ TEST_F(SystemEngineTest, SuggestionsRequestSendsMessageToReceiver) {
 TEST_F(SystemEngineTest, SuggestionsRequestReturnsResponseToSharedLib) {
   SystemEngine engine(/*platform=*/nullptr);
   MockInputChannel mock_delegate;
-  mojo::Remote<mojom::InputChannel> input_method;
+  mojo::Remote<mojom::InputMethod> input_method;
   ASSERT_TRUE(engine.BindRequest(
       kImeSpec, input_method.BindNewPipeAndPassReceiver(),
       mock_delegate.CreatePendingRemote(), base::DoNothing()));
+  input_method.FlushForTesting();
 
   ime::Wrapper expected_response_proto;
   ime::PublicMessage* expected_message =
       expected_response_proto.mutable_public_message();
-  expected_message->set_seq_id(0);
+  expected_message->set_seq_id(1);
   auto* candidate =
       expected_message->mutable_suggestions_response()->add_candidates();
   candidate->set_mode(ime::SuggestionMode::SUGGESTION_MODE_PREDICTION);
@@ -431,10 +445,11 @@ TEST_F(SystemEngineTest, SuggestionsRequestReturnsResponseToSharedLib) {
 TEST_F(SystemEngineTest, DisplaySuggestionsSendsMessageToReceiver) {
   SystemEngine engine(/*platform=*/nullptr);
   MockInputChannel mock_delegate;
-  mojo::Remote<mojom::InputChannel> input_method;
+  mojo::Remote<mojom::InputMethod> input_method;
   ASSERT_TRUE(engine.BindRequest(
       kImeSpec, input_method.BindNewPipeAndPassReceiver(),
       mock_delegate.CreatePendingRemote(), base::DoNothing()));
+  input_method.FlushForTesting();
 
   ime::Wrapper proto;
   auto* candidate = proto.mutable_public_message()
@@ -464,10 +479,11 @@ TEST_F(SystemEngineTest, DisplaySuggestionsSendsMessageToReceiver) {
 TEST_F(SystemEngineTest, RecordUkmSendsMessageToReceiver) {
   SystemEngine engine(/*platform=*/nullptr);
   MockInputChannel mock_delegate;
-  mojo::Remote<mojom::InputChannel> input_method;
+  mojo::Remote<mojom::InputMethod> input_method;
   ASSERT_TRUE(engine.BindRequest(
       kImeSpec, input_method.BindNewPipeAndPassReceiver(),
       mock_delegate.CreatePendingRemote(), base::DoNothing()));
+  input_method.FlushForTesting();
   Wrapper proto;
   proto.mutable_public_message()
       ->mutable_record_ukm()
