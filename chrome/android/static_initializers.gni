@@ -43,7 +43,7 @@ if (current_toolchain == default_toolchain &&
     expected_static_initializer_count += 1
   }
 
-  if (use_static_angle) {
+  if (use_static_angle && !is_official_build) {
     # TODO(https://crbug.com/1172451): remove global variables from ANGLE:
     #
     # doc.cpp (initializer offset 0xcf9c6c size 0x138)
