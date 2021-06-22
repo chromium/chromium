@@ -19,8 +19,10 @@ namespace {
 // ResizeShadow and NinePatchLayer.
 class ResizeShadowImageSource : public gfx::CanvasImageSource {
  public:
-  ResizeShadowImageSource(int width)
-      : gfx::CanvasImageSource(gfx::Size(width, width)) {}
+  ResizeShadowImageSource(int width, int corner_radius, SkColor color)
+      : gfx::CanvasImageSource(gfx::Size(width, width)),
+        shadow_corner_radius_(corner_radius),
+        color_(color) {}
   ResizeShadowImageSource(const ResizeShadowImageSource&) = delete;
   ResizeShadowImageSource& operator=(const ResizeShadowImageSource&) = delete;
   ~ResizeShadowImageSource() override = default;
@@ -51,12 +53,44 @@ const gfx::Insets CalculateOutsets(int hit, int thickness) {
                      show_bottom ? outset : 0, show_right ? outset : 0);
 }
 
+// static
+const gfx::ImageSkia& MakeShadowImageOnce(
+    ash::ResizeShadowType type,
+    const ash::ResizeShadow::InitParams& params) {
+  //  The image has to have enough space to depict the visual thickness
+  //  (left and right) plus an inset for extending beneath the window's
+  //  rounded corner plus one pixel for the center of the nine patch.
+  int image_side = 2 * (params.thickness + params.window_corner_radius) + 1;
+  switch (type) {
+    case ash::ResizeShadowType::kLock: {
+      static base::NoDestructor<gfx::ImageSkia> lock_shadow_image;
+      if (lock_shadow_image->isNull()) {
+        *lock_shadow_image =
+            gfx::CanvasImageSource::MakeImageSkia<ResizeShadowImageSource>(
+                image_side, params.shadow_corner_radius, params.color);
+      }
+      return *lock_shadow_image;
+    }
+    case ash::ResizeShadowType::kUnlock: {
+      static base::NoDestructor<gfx::ImageSkia> unlock_shadow_image;
+      if (unlock_shadow_image->isNull()) {
+        *unlock_shadow_image =
+            gfx::CanvasImageSource::MakeImageSkia<ResizeShadowImageSource>(
+                image_side, params.shadow_corner_radius, params.color);
+      }
+      return *unlock_shadow_image;
+    }
+  }
+}
+
 }  // namespace
 
 namespace ash {
 
-ResizeShadow::ResizeShadow(aura::Window* window, const InitParams& params)
-    : window_(window), params_(params) {
+ResizeShadow::ResizeShadow(aura::Window* window,
+                           const InitParams& params,
+                           ResizeShadowType type)
+    : window_(window), params_(params), type_(type) {
   // Use a NinePatchLayer to tile the shadow image (which is simply a
   // roundrect).
   gfx::Insets aperture_insets(params_.thickness + params_.window_corner_radius);
@@ -65,22 +99,9 @@ ResizeShadow::ResizeShadow(aura::Window* window, const InitParams& params)
   layer_->SetFillsBoundsOpaquely(false);
   layer_->SetOpacity(0.f);
   layer_->SetVisible(false);
-
-  static base::NoDestructor<gfx::ImageSkia> shadow_image;
-
-  if (shadow_image->isNull()) {
-    // The image has to have enough space to depict the visual thickness (left
-    // and right) plus an inset for extending beneath the window's rounded
-    // corner plus one pixel for the center of the nine patch.
-    int image_side = 2 * (params_.thickness + params_.window_corner_radius) + 1;
-    auto source = std::make_unique<ResizeShadowImageSource>(image_side);
-    source->shadow_corner_radius_ = params.shadow_corner_radius;
-    source->color_ = params.color;
-    const gfx::Size source_size = source->size();
-    *shadow_image = gfx::ImageSkia(std::move(source), source_size);
-  }
-  layer_->UpdateNinePatchLayerImage(*shadow_image);
-  gfx::Rect aperture(shadow_image->size());
+  auto shadow_image = MakeShadowImageOnce(type, params);
+  layer_->UpdateNinePatchLayerImage(shadow_image);
+  gfx::Rect aperture(shadow_image.size());
   aperture.Inset(aperture_insets);
   layer_->UpdateNinePatchLayerAperture(aperture);
   layer_->UpdateNinePatchLayerBorder(

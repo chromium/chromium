@@ -43,7 +43,9 @@ class ResizeShadow {
     int hide_duration_ms = 100;
   };
 
-  ResizeShadow(aura::Window* window, const InitParams& params);
+  ResizeShadow(aura::Window* window,
+               const InitParams& params,
+               ResizeShadowType type);
   ResizeShadow(const ResizeShadow&) = delete;
   ResizeShadow& operator=(const ResizeShadow&) = delete;
   ~ResizeShadow();
@@ -82,11 +84,11 @@ class ResizeShadow {
   // repeatedly triggering the same animations for the same hit.
   int last_hit_test_ = HTNOWHERE;
 
+  InitParams params_;
+
   // The type of the resize shadow. Used to identify variations of resize
   // shadow.
   ResizeShadowType type_;
-
-  InitParams params_;
 
   bool visible_;
 };

@@ -127,8 +127,7 @@ ResizeShadow* ResizeShadowController::CreateShadow(aura::Window* window) {
   if (type == ResizeShadowType::kLock)
     params = kLockParams;
 
-  auto new_shadow = std::make_unique<ResizeShadow>(window, params);
-  new_shadow->type_ = type;
+  auto new_shadow = std::make_unique<ResizeShadow>(window, params, type);
 
   ResizeShadow* raw_shadow = new_shadow.get();
   auto it = window_shadows_.find(window);
