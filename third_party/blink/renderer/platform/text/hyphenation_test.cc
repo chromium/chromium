@@ -105,7 +105,7 @@ TEST_F(HyphenationTest, MapLocale) {
   EXPECT_EQ(HyphenationMinikin::MapLocale("de-de-xyz"), "de-1996");
   EXPECT_EQ(HyphenationMinikin::MapLocale("de-li"), "de-1996");
   EXPECT_EQ(HyphenationMinikin::MapLocale("de-li-1901"), "de-ch-1901");
-  EXPECT_EQ(HyphenationMinikin::MapLocale("en"), "en-gb");
+  EXPECT_EQ(HyphenationMinikin::MapLocale("en"), "en-us");
   EXPECT_EQ(HyphenationMinikin::MapLocale("en-gu"), "en-us");
   EXPECT_EQ(HyphenationMinikin::MapLocale("en-gu-xyz"), "en-us");
   EXPECT_EQ(HyphenationMinikin::MapLocale("en-xyz"), "en-gb");

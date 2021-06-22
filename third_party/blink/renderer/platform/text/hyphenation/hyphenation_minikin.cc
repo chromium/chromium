@@ -181,71 +181,81 @@ Vector<wtf_size_t, 8> HyphenationMinikin::HyphenLocations(
   return hyphen_locations;
 }
 
-using LocaleMap = HashMap<AtomicString, AtomicString, CaseFoldingHash>;
+struct HyphenatorLocaleData {
+  const char* locale = nullptr;
+  const char* locale_for_exact_match = nullptr;
+};
+
+using LocaleMap =
+    HashMap<AtomicString, const HyphenatorLocaleData*, CaseFoldingHash>;
 
 static LocaleMap CreateLocaleFallbackMap() {
   // This data is from CLDR, compiled by AOSP.
   // https://android.googlesource.com/platform/frameworks/base/+/master/core/jni/android_text_Hyphenator.cpp
-  using LocaleFallback = const char * [2];
+  struct LocaleFallback {
+    const char* locale;
+    HyphenatorLocaleData data;
+  };
   static LocaleFallback locale_fallback_data[] = {
       // English locales that fall back to en-US. The data is from CLDR. It's
       // all English locales,
       // minus the locales whose parent is en-001 (from supplementalData.xml,
       // under <parentLocales>).
-      {"en-AS", "en-us"},  // English (American Samoa)
-      {"en-GU", "en-us"},  // English (Guam)
-      {"en-MH", "en-us"},  // English (Marshall Islands)
-      {"en-MP", "en-us"},  // English (Northern Mariana Islands)
-      {"en-PR", "en-us"},  // English (Puerto Rico)
-      {"en-UM", "en-us"},  // English (United States Minor Outlying Islands)
-      {"en-VI", "en-us"},  // English (Virgin Islands)
+      {"en-AS", {"en-us"}},  // English (American Samoa)
+      {"en-GU", {"en-us"}},  // English (Guam)
+      {"en-MH", {"en-us"}},  // English (Marshall Islands)
+      {"en-MP", {"en-us"}},  // English (Northern Mariana Islands)
+      {"en-PR", {"en-us"}},  // English (Puerto Rico)
+      {"en-UM", {"en-us"}},  // English (United States Minor Outlying Islands)
+      {"en-VI", {"en-us"}},  // English (Virgin Islands)
       // All English locales other than those falling back to en-US are mapped
-      // to en-GB.
-      {"en", "en-gb"},
+      // to en-GB, except that "en" is mapped to "en-us" for interoperability
+      // with other browsers.
+      {"en", {"en-gb", "en-us"}},
       // For German, we're assuming the 1996 (and later) orthography by default.
-      {"de", "de-1996"},
+      {"de", {"de-1996"}},
       // Liechtenstein uses the Swiss hyphenation rules for the 1901
       // orthography.
-      {"de-LI-1901", "de-ch-1901"},
+      {"de-LI-1901", {"de-ch-1901"}},
       // Norwegian is very probably Norwegian Bokmål.
-      {"no", "nb"},
+      {"no", {"nb"}},
       // Use mn-Cyrl. According to CLDR's likelySubtags.xml, mn is most likely
       // to be mn-Cyrl.
-      {"mn", "mn-cyrl"},  // Mongolian
+      {"mn", {"mn-cyrl"}},  // Mongolian
       // Fall back to Ethiopic script for languages likely to be written in
       // Ethiopic.
       // Data is from CLDR's likelySubtags.xml.
-      {"am", "und-ethi"},   // Amharic
-      {"byn", "und-ethi"},  // Blin
-      {"gez", "und-ethi"},  // Geʻez
-      {"ti", "und-ethi"},   // Tigrinya
-      {"wal", "und-ethi"},  // Wolaytta
+      {"am", {"und-ethi"}},   // Amharic
+      {"byn", {"und-ethi"}},  // Blin
+      {"gez", {"und-ethi"}},  // Geʻez
+      {"ti", {"und-ethi"}},   // Tigrinya
+      {"wal", {"und-ethi"}},  // Wolaytta
       // Use Hindi as a fallback hyphenator for all languages written in
       // Devanagari, etc. This makes
       // sense because our Indic patterns are not really linguistic, but
       // script-based.
-      {"und-Beng", "bn"},  // Bengali
-      {"und-Deva", "hi"},  // Devanagari -> Hindi
-      {"und-Gujr", "gu"},  // Gujarati
-      {"und-Guru", "pa"},  // Gurmukhi -> Punjabi
-      {"und-Knda", "kn"},  // Kannada
-      {"und-Mlym", "ml"},  // Malayalam
-      {"und-Orya", "or"},  // Oriya
-      {"und-Taml", "ta"},  // Tamil
-      {"und-Telu", "te"},  // Telugu
+      {"und-Beng", {"bn"}},  // Bengali
+      {"und-Deva", {"hi"}},  // Devanagari -> Hindi
+      {"und-Gujr", {"gu"}},  // Gujarati
+      {"und-Guru", {"pa"}},  // Gurmukhi -> Punjabi
+      {"und-Knda", {"kn"}},  // Kannada
+      {"und-Mlym", {"ml"}},  // Malayalam
+      {"und-Orya", {"or"}},  // Oriya
+      {"und-Taml", {"ta"}},  // Tamil
+      {"und-Telu", {"te"}},  // Telugu
 
       // List of locales with hyphens not to fall back.
-      {"de-1901", nullptr},
-      {"de-1996", nullptr},
-      {"de-ch-1901", nullptr},
-      {"en-gb", nullptr},
-      {"en-us", nullptr},
-      {"mn-cyrl", nullptr},
-      {"und-ethi", nullptr},
+      {"de-1901", {"de-1901"}},
+      {"de-1996", {"de-1996"}},
+      {"de-ch-1901", {"de-ch-1901"}},
+      {"en-gb", {"en-gb"}},
+      {"en-us", {"en-us"}},
+      {"mn-cyrl", {"mn-cyrl"}},
+      {"und-ethi", {"und-ethi"}},
   };
   LocaleMap map;
   for (const auto& it : locale_fallback_data)
-    map.insert(AtomicString(it[0]), it[1]);
+    map.insert(AtomicString(it.locale), &it.data);
   return map;
 }
 
@@ -255,9 +265,9 @@ AtomicString HyphenationMinikin::MapLocale(const AtomicString& locale) {
   for (AtomicString mapped_locale = locale;;) {
     const auto& it = locale_fallback.find(mapped_locale);
     if (it != locale_fallback.end()) {
-      if (it->value)
-        return it->value;
-      return mapped_locale;
+      if (it->value->locale_for_exact_match && locale == mapped_locale)
+        return it->value->locale_for_exact_match;
+      return it->value->locale;
     }
     const wtf_size_t last_hyphen = mapped_locale.ReverseFind('-');
     if (last_hyphen == kNotFound || !last_hyphen)
@@ -269,7 +279,7 @@ AtomicString HyphenationMinikin::MapLocale(const AtomicString& locale) {
 scoped_refptr<Hyphenation> Hyphenation::PlatformGetHyphenation(
     const AtomicString& locale) {
   const AtomicString mapped_locale = HyphenationMinikin::MapLocale(locale);
-  if (mapped_locale.Impl() != locale.Impl())
+  if (!EqualIgnoringASCIICase(mapped_locale, locale))
     return LayoutLocale::Get(mapped_locale)->GetHyphenation();
 
   scoped_refptr<HyphenationMinikin> hyphenation(
