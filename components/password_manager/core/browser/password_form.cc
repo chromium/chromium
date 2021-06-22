@@ -12,6 +12,7 @@
 #include "base/json/json_writer.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/util/values/values_util.h"
 #include "base/values.h"
 
 namespace password_manager {
@@ -73,6 +74,19 @@ std::string ToString(PasswordForm::GenerationUploadStatus status) {
 
   NOTREACHED();
   return std::string();
+}
+
+std::string ToString(InsecureType insecure_type) {
+  switch (insecure_type) {
+    case InsecureType::kLeaked:
+      return "Leaked";
+    case InsecureType::kPhished:
+      return "Phished";
+    case InsecureType::kWeak:
+      return "Weak";
+    case InsecureType::kReused:
+      return "Reused";
+  }
 }
 
 // Utility function that creates a std::string from an object supporting the
@@ -154,10 +168,33 @@ void PasswordFormToJSON(const PasswordForm& form,
   for (const auto& gaia_id_hash : form.moving_blocked_for_list) {
     hashes.push_back(gaia_id_hash.ToBase64());
   }
+
+  std::vector<base::Value> password_issues;
+  password_issues.reserve(form.password_issues.size());
+  for (const auto& issue : form.password_issues) {
+    base::Value issue_value(base::Value::Type::DICTIONARY);
+    issue_value.SetStringPath("insecurity_type", ToString(issue.first));
+    issue_value.SetPath("create_time",
+                        util::TimeToValue(issue.second.create_time));
+    issue_value.SetBoolPath("is_muted",
+                            static_cast<bool>(issue.second.is_muted));
+    password_issues.push_back(std::move(issue_value));
+  }
   target->SetString("moving_blocked_for_list", base::JoinString(hashes, ", "));
+  target->SetPath("password_issues ", base::Value(password_issues));
 }
 
 }  // namespace
+
+InsecurityMetadata::InsecurityMetadata() = default;
+InsecurityMetadata::InsecurityMetadata(base::Time create_time, IsMuted is_muted)
+    : create_time(create_time), is_muted(is_muted) {}
+InsecurityMetadata::InsecurityMetadata(const InsecurityMetadata& rhs) = default;
+InsecurityMetadata::~InsecurityMetadata() = default;
+
+bool operator==(const InsecurityMetadata& lhs, const InsecurityMetadata& rhs) {
+  return lhs.create_time == rhs.create_time && *lhs.is_muted == *rhs.is_muted;
+}
 
 PasswordForm::PasswordForm() = default;
 
@@ -266,7 +303,8 @@ bool operator==(const PasswordForm& lhs, const PasswordForm& rhs) {
          lhs.only_for_fallback == rhs.only_for_fallback &&
          lhs.is_new_password_reliable == rhs.is_new_password_reliable &&
          lhs.in_store == rhs.in_store &&
-         lhs.moving_blocked_for_list == rhs.moving_blocked_for_list;
+         lhs.moving_blocked_for_list == rhs.moving_blocked_for_list &&
+         lhs.password_issues == rhs.password_issues;
 }
 
 bool operator!=(const PasswordForm& lhs, const PasswordForm& rhs) {

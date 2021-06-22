@@ -122,20 +122,20 @@ CREATE TABLE sync_model_metadata (
 CREATE TABLE insecure_credentials (
 parent_id INTEGER REFERENCES logins ON UPDATE CASCADE ON DELETE CASCADE
   DEFERRABLE INITIALLY DEFERRED,
-compromise_type INTEGER NOT NULL,
+insecurity_type INTEGER NOT NULL,
 create_time INTEGER NOT NULL,
 is_muted INTEGER NOT NULL DEFAULT 0,
-UNIQUE (parent_id, compromise_type));
+UNIQUE (parent_id, insecurity_type));
 CREATE INDEX foreign_key_index ON insecure_credentials (parent_id);
 INSERT INTO "insecure_credentials"
-  (parent_id,compromise_type,create_time,is_muted) VALUES(
+  (parent_id,insecurity_type,create_time,is_muted) VALUES(
 1, /* parent_id */
 0, /* compromise_type */
 13047423600000000, /* create_time */
 0 /* is_muted */
 );
 INSERT INTO "insecure_credentials"
-  (parent_id,compromise_type,create_time,is_muted) VALUES(
+  (parent_id,insecurity_type,create_time,is_muted) VALUES(
 1, /* parent_id */
 1, /* compromise_type */
 13047423600000000, /* create_time */

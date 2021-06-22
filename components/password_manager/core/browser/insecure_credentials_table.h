@@ -20,21 +20,6 @@ class Database;
 namespace password_manager {
 
 using BulkCheckDone = base::StrongAlias<class BulkCheckDoneTag, bool>;
-using IsMuted = base::StrongAlias<class IsMutedTag, bool>;
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class InsecureType {
-  // If the credentials was leaked by a data breach.
-  kLeaked = 0,
-  // If the credentials was entered on a phishing site.
-  kPhished = 1,
-  // If the password is weak.
-  kWeak = 2,
-  // If the password is reused for other accounts.
-  kReused = 3,
-  kMaxValue = kReused
-};
 
 enum class RemoveInsecureCredentialsReason {
   // If the password was updated in the password store.

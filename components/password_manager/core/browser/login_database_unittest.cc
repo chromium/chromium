@@ -2588,6 +2588,28 @@ TEST_F(LoginDatabaseTest, GetLoginsEncryptedPassword) {
   ASSERT_FALSE(forms[0]->encrypted_password.empty());
 }
 
+TEST_F(LoginDatabaseTest, RetrievesInsecureDataWithLogins) {
+  PasswordForm form = GenerateExamplePasswordForm();
+  ignore_result(db().AddLogin(form));
+
+  InsecureCredential credential1{form.signon_realm, form.username_value,
+                                 base::Time(), InsecureType::kLeaked,
+                                 IsMuted(false)};
+  InsecureCredential credential2 = credential1;
+  credential2.insecure_type = InsecureType::kPhished;
+  form.password_issues[InsecureType::kLeaked] =
+      InsecurityMetadata(credential1.create_time, credential1.is_muted);
+  form.password_issues[InsecureType::kPhished] =
+      InsecurityMetadata(credential2.create_time, credential2.is_muted);
+
+  db().insecure_credentials_table().AddRow(credential1);
+  db().insecure_credentials_table().AddRow(credential2);
+
+  std::vector<std::unique_ptr<PasswordForm>> result;
+  EXPECT_TRUE(db().GetLogins(PasswordFormDigest(form), &result));
+  EXPECT_THAT(result, UnorderedElementsAre(Pointee(form)));
+}
+
 TEST_F(LoginDatabaseTest, RemovingLoginRemovesInsecureCredentials) {
   PasswordForm form = GenerateExamplePasswordForm();
 

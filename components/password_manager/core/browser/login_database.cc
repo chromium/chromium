@@ -545,7 +545,6 @@ bool MigrateDatabase(unsigned current_version,
           current_version, db,
           base::BindRepeating(&LoginsTablePostMigrationStepCallback)))
     return false;
-
   if (!builders.insecure_credentials->MigrateFrom(
           current_version, db,
           base::BindRepeating(&InsecureCredentialsPostMigrationStepCallback,
@@ -1514,6 +1513,15 @@ LoginDatabase::EncryptionResult LoginDatabase::InitPasswordFormFromStatement(
         s.ColumnByteLength(COLUMN_MOVING_BLOCKED_FOR));
     form->moving_blocked_for_list = DeserializeGaiaIdHashVector(pickle);
   }
+
+  std::vector<InsecureCredential> insecure_credentials =
+      insecure_credentials_table_.GetRows(FormPrimaryKey(*primary_key));
+  for (const auto& insecure_credential : insecure_credentials) {
+    form->password_issues[insecure_credential.insecure_type] =
+        InsecurityMetadata(insecure_credential.create_time,
+                           insecure_credential.is_muted);
+  }
+
   return ENCRYPTION_RESULT_SUCCESS;
 }
 
