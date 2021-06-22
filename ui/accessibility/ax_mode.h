@@ -56,17 +56,23 @@ class AX_BASE_EXPORT AXMode {
   // for all accessibility nodes that come from web content.
   static constexpr uint32_t kHTML = 1 << 4;
 
+  // The accessibility tree will contain some metadata from the
+  // HTML HEAD, such as <meta> tags, in AXTreeData. Only supported
+  // when doing a tree snapshot, there's no support for keeping these
+  // in sync if a page changes them dynamically.
+  static constexpr uint32_t kHTMLMetadata = 1 << 5;
+
   // The accessibility tree will contain automatic image annotations.
-  static constexpr uint32_t kLabelImages = 1 << 5;
+  static constexpr uint32_t kLabelImages = 1 << 6;
 
   // The accessibility tree will contain enough information to export
   // an accessible PDF.
-  static constexpr uint32_t kPDF = 1 << 6;
+  static constexpr uint32_t kPDF = 1 << 7;
 
   // Update this to include the last supported mode flag. If you add
   // another, be sure to update the stream insertion operator for
   // logging and debugging.
-  static constexpr uint32_t kLastModeFlag = 1 << 6;
+  static constexpr uint32_t kLastModeFlag = 1 << 7;
 
   constexpr AXMode() : flags_(0) {}
   constexpr AXMode(uint32_t flags) : flags_(flags) {}

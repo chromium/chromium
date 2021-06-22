@@ -57,8 +57,9 @@ const AXMode = {
   kInlineTextBoxes: 1 << 2,
   kScreenReader: 1 << 3,
   kHTML: 1 << 4,
-  kLabelImages: 1 << 5,
-  kPDF: 1 << 6,
+  kHTMLMetadata: 1 << 5,
+  kLabelImages: 1 << 6,
+  kPDF: 1 << 7,
 
   get kAXModeBasic() {
     return AXMode.kNativeAPIs | AXMode.kWebContents;
@@ -299,6 +300,7 @@ function formatRow(row, data, requestType) {
     row.appendChild(createModeElement(AXMode.kInlineTextBoxes, data, 'web'));
     row.appendChild(createModeElement(AXMode.kScreenReader, data, 'web'));
     row.appendChild(createModeElement(AXMode.kHTML, data, 'web'));
+    row.appendChild(createModeElement(AXMode.kHTMLMetadata, data, 'metadata'));
     row.appendChild(
         createModeElement(AXMode.kLabelImages, data, 'labelImages'));
     row.appendChild(createModeElement(AXMode.kPDF, data, 'pdf'));
@@ -385,6 +387,8 @@ function getNameForAccessibilityMode(mode) {
       return 'Screen reader';
     case AXMode.kHTML:
       return 'HTML';
+    case AXMode.kHTMLMetadata:
+      return 'HTML Metadata';
     case AXMode.kLabelImages:
       return 'Label images';
     case AXMode.kPDF:

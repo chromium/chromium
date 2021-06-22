@@ -357,6 +357,32 @@ bool BlinkAXTreeSource::GetTreeData(ui::AXTreeData* tree_data) const {
 
   tree_data->root_scroller_id = root().RootScroller().AxID();
 
+  if (accessibility_mode_.has_mode(ui::AXMode::kHTMLMetadata)) {
+    WebElement head = GetMainDocument().Head();
+    for (WebNode child = head.FirstChild(); !child.IsNull();
+         child = child.NextSibling()) {
+      if (!child.IsElementNode())
+        continue;
+      WebElement elem = child.To<WebElement>();
+      if (elem.HasHTMLTagName("SCRIPT")) {
+        if (elem.GetAttribute("type") != "application/ld+json")
+          continue;
+      } else if (!elem.HasHTMLTagName("LINK") &&
+                 !elem.HasHTMLTagName("TITLE") &&
+                 !elem.HasHTMLTagName("META")) {
+        continue;
+      }
+      std::string tag = base::ToLowerASCII(elem.TagName().Utf8());
+      std::string html = "<" + tag;
+      for (unsigned i = 0; i < elem.AttributeCount(); i++) {
+        html += " " + elem.AttributeLocalName(i).Utf8() + "=" +
+                elem.AttributeValue(i).Utf8();
+      }
+      html += ">" + elem.InnerHTML().Utf8() + "</" + tag + ">";
+      tree_data->metadata.push_back(html);
+    }
+  }
+
   return true;
 }
 

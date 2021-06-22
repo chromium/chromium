@@ -45,6 +45,9 @@ std::string AXMode::ToString() const {
       case AXMode::kPDF:
         flag_name = "kPDF";
         break;
+      case AXMode::kHTMLMetadata:
+        flag_name = "kHTMLMetadata";
+        break;
     }
 
     DCHECK(!flag_name.empty());

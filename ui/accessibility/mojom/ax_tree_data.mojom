@@ -28,4 +28,5 @@ struct AXTreeData {
   int32 sel_focus_offset;
   ax.mojom.TextAffinity sel_focus_affinity;
   int32 root_scroller_id;
+  [MinVersion=2] array<string>? metadata;
 };

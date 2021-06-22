@@ -14,6 +14,7 @@
 #include "content/test/content_browser_test_utils_internal.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_tree.h"
@@ -520,6 +521,42 @@ IN_PROC_BROWSER_TEST_F(SnapshotAXTreeBrowserTest, Timeout) {
   }
 
   EXPECT_LT(nodes_with_timeout, actual_nodes);
+}
+
+IN_PROC_BROWSER_TEST_F(SnapshotAXTreeBrowserTest, Metadata) {
+  GURL url(R"HTML(data:text/html,
+                  <head>
+                    <title>Hello World</title>
+                    <script>console.log("Skip me!");</script>
+                    <meta charset="utf-8">
+                    <link ref="canonical" href="https://abc.com">
+                    <script type="application/ld+json">{}</script>
+                  </head>
+                  <body>
+                    Hello, world!
+                  </body>)HTML");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+
+  ui::AXMode mode(ui::AXMode::kWebContents | ui::AXMode::kHTMLMetadata);
+
+  AXTreeSnapshotWaiter waiter;
+  web_contents->RequestAXTreeSnapshot(
+      base::BindOnce(&AXTreeSnapshotWaiter::ReceiveSnapshot,
+                     base::Unretained(&waiter)),
+      mode,
+      /* exclude_offscreen= */ false,
+      /* max_nodes= */ 0,
+      /* timeout= */ {});
+  waiter.Wait();
+
+  EXPECT_THAT(waiter.snapshot().tree_data.metadata,
+              testing::ElementsAre(
+                  "<title>Hello World</title>", "<meta charset=utf-8></meta>",
+                  "<link ref=canonical href=https://abc.com></link>",
+                  "<script type=application/ld+json>{}</script>"));
 }
 
 }  // namespace content
