@@ -36,10 +36,15 @@ class MEDIA_EXPORT MediaFoundationCdm : public ContentDecryptionModule,
   using CreateMFCdmCB = base::RepeatingCallback<
       void(HRESULT&, Microsoft::WRL::ComPtr<IMFContentDecryptionModule>&)>;
 
+  // Callback to IMFMediaFoundataionCdmFactory's IsTypeSupported.
+  using IsTypeSupportedCB =
+      base::RepeatingCallback<void(const std::string&, bool&)>;
+
   // Constructs `MediaFoundationCdm`. Note that `Initialize()` must be called
   // before calling any other methods.
   MediaFoundationCdm(
       const CreateMFCdmCB& create_mf_cdm_cb,
+      const IsTypeSupportedCB& is_type_supported_cb,
       const SessionMessageCB& session_message_cb,
       const SessionClosedCB& session_closed_cb,
       const SessionKeysChangeCB& session_keys_change_cb,
@@ -97,6 +102,9 @@ class MEDIA_EXPORT MediaFoundationCdm : public ContentDecryptionModule,
 
   // Callback to create `mf_cdm_`.
   CreateMFCdmCB create_mf_cdm_cb_;
+
+  // Callback to MFCdmFactory's IsTypeSupported().
+  IsTypeSupportedCB is_type_supported_cb_;
 
   // Callbacks for firing session events.
   SessionMessageCB session_message_cb_;

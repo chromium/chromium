@@ -64,6 +64,10 @@ class MEDIA_EXPORT MediaFoundationCdmFactory : public CdmFactory {
       const std::string& key_system,
       Microsoft::WRL::ComPtr<IMFContentDecryptionModuleFactory>& cdm_factory);
 
+  void IsTypeSupported(const std::string& key_system,
+                       const std::string& content_type,
+                       bool& result);
+
   HRESULT CreateMfCdmInternal(
       const std::string& key_system,
       const CdmConfig& cdm_config,
@@ -85,8 +89,8 @@ class MEDIA_EXPORT MediaFoundationCdmFactory : public CdmFactory {
   base::win::ScopedCOMInitializer com_initializer_{
       base::win::ScopedCOMInitializer::kMTA};
 
-  // Key system to CreateCdmFactoryCB mapping.
-  std::map<std::string, CreateCdmFactoryCB> create_cdm_factory_cbs_;
+  // Key system to CreateCdmFactoryCB mapping. This is for testing only.
+  std::map<std::string, CreateCdmFactoryCB> create_cdm_factory_cbs_for_testing_;
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<MediaFoundationCdmFactory> weak_factory_{this};

@@ -25,6 +25,7 @@ using ::testing::IsEmpty;
 using ::testing::NotNull;
 using ::testing::Return;
 using ::testing::SetArgPointee;
+using ::testing::SetArgReferee;
 using ::testing::StrEq;
 using ::testing::StrictMock;
 using ::testing::WithoutArgs;
@@ -53,6 +54,7 @@ class MediaFoundationCdmTest : public testing::Test {
         cdm_(base::MakeRefCounted<MediaFoundationCdm>(
             base::BindRepeating(&MediaFoundationCdmTest::CreateMFCdm,
                                 base::Unretained(this)),
+            is_type_supported_cb_.Get(),
             base::BindRepeating(&MockCdmClient::OnSessionMessage,
                                 base::Unretained(&cdm_client_)),
             base::BindRepeating(&MockCdmClient::OnSessionClosed,
@@ -143,6 +145,8 @@ class MediaFoundationCdmTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
 
   StrictMock<MockCdmClient> cdm_client_;
+  StrictMock<base::MockCallback<MediaFoundationCdm::IsTypeSupportedCB>>
+      is_type_supported_cb_;
   ComPtr<MockMFCdm> mf_cdm_;
   ComPtr<MockMFCdmSession> mf_cdm_session_;
   ComPtr<IMFContentDecryptionModuleSessionCallbacks> mf_cdm_session_callbacks_;
@@ -174,6 +178,42 @@ TEST_F(MediaFoundationCdmTest, SetServerCertificate_Failure) {
 
   cdm_->SetServerCertificate(
       certificate, std::make_unique<MockCdmPromise>(/*expect_success=*/false));
+}
+
+TEST_F(MediaFoundationCdmTest, GetStatusForPolicy_HdcpNone_KeyStatusUsable) {
+  Initialize();
+  CdmKeyInformation::KeyStatus key_status;
+  cdm_->GetStatusForPolicy(HdcpVersion::kHdcpVersionNone,
+                           std::make_unique<MockCdmKeyStatusPromise>(
+                               /*expect_success=*/true, &key_status));
+  EXPECT_EQ(CdmKeyInformation::KeyStatus::USABLE, key_status);
+}
+
+TEST_F(MediaFoundationCdmTest, GetStatusForPolicy_HdcpV1_1_KeyStatusUsable) {
+  Initialize();
+  EXPECT_CALL(is_type_supported_cb_,
+              Run("video/mp4;codecs=\"avc1\";features=\"hdcp=1\"", _))
+      .WillOnce(SetArgReferee<1>(/*is_supported=*/true));
+
+  CdmKeyInformation::KeyStatus key_status;
+  cdm_->GetStatusForPolicy(HdcpVersion::kHdcpVersion1_1,
+                           std::make_unique<MockCdmKeyStatusPromise>(
+                               /*expect_success=*/true, &key_status));
+  EXPECT_EQ(CdmKeyInformation::KeyStatus::USABLE, key_status);
+}
+
+TEST_F(MediaFoundationCdmTest,
+       GetStatusForPolicy_HdcpV2_3_KeyStatusOutputRestricted) {
+  Initialize();
+  EXPECT_CALL(is_type_supported_cb_,
+              Run("video/mp4;codecs=\"avc1\";features=\"hdcp=2\"", _))
+      .WillOnce(SetArgReferee<1>(/*is_supported=*/false));
+
+  CdmKeyInformation::KeyStatus key_status;
+  cdm_->GetStatusForPolicy(HdcpVersion::kHdcpVersion2_3,
+                           std::make_unique<MockCdmKeyStatusPromise>(
+                               /*expect_success=*/true, &key_status));
+  EXPECT_EQ(CdmKeyInformation::KeyStatus::OUTPUT_RESTRICTED, key_status);
 }
 
 TEST_F(MediaFoundationCdmTest, CreateSessionAndGenerateRequest) {

@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
+#include "base/strings/stringprintf.h"
 #include "base/win/scoped_co_mem.h"
 #include "base/win/scoped_propvariant.h"
 #include "base/win/win_util.h"
@@ -95,6 +96,29 @@ HRESULT RefreshDecryptor(IMFTransform* decryptor,
   RETURN_IF_FAILED(
       decryptor->ProcessEvent(/*dwInputStreamID=*/0, key_rotation_event.Get()));
   return S_OK;
+}
+
+// The HDCP value follows the feature value in
+// https://docs.microsoft.com/en-us/uwp/api/windows.media.protection.protectioncapabilities.istypesupported?view=winrt-19041
+// - 0 (off)
+// - 1 (on without HDCP 2.2 Type 1 restriction)
+// - 2 (on with HDCP 2.2 Type 1 restriction)
+int GetHdcpValue(HdcpVersion hdcp_version) {
+  switch (hdcp_version) {
+    case HdcpVersion::kHdcpVersionNone:
+      return 0;
+    case HdcpVersion::kHdcpVersion1_0:
+    case HdcpVersion::kHdcpVersion1_1:
+    case HdcpVersion::kHdcpVersion1_2:
+    case HdcpVersion::kHdcpVersion1_3:
+    case HdcpVersion::kHdcpVersion1_4:
+    case HdcpVersion::kHdcpVersion2_0:
+    case HdcpVersion::kHdcpVersion2_1:
+      return 1;
+    case HdcpVersion::kHdcpVersion2_2:
+    case HdcpVersion::kHdcpVersion2_3:
+      return 2;
+  }
 }
 
 class CdmProxyImpl : public MediaFoundationCdmProxy {
@@ -249,17 +273,20 @@ bool MediaFoundationCdm::IsAvailable() {
 
 MediaFoundationCdm::MediaFoundationCdm(
     const CreateMFCdmCB& create_mf_cdm_cb,
+    const IsTypeSupportedCB& is_type_supported_cb,
     const SessionMessageCB& session_message_cb,
     const SessionClosedCB& session_closed_cb,
     const SessionKeysChangeCB& session_keys_change_cb,
     const SessionExpirationUpdateCB& session_expiration_update_cb)
     : create_mf_cdm_cb_(create_mf_cdm_cb),
+      is_type_supported_cb_(is_type_supported_cb),
       session_message_cb_(session_message_cb),
       session_closed_cb_(session_closed_cb),
       session_keys_change_cb_(session_keys_change_cb),
       session_expiration_update_cb_(session_expiration_update_cb) {
   DVLOG_FUNC(1);
   DCHECK(create_mf_cdm_cb_);
+  DCHECK(is_type_supported_cb_);
   DCHECK(session_message_cb_);
   DCHECK(session_closed_cb_);
   DCHECK(session_keys_change_cb_);
@@ -302,7 +329,6 @@ void MediaFoundationCdm::SetServerCertificate(
   promise->resolve();
 }
 
-// TODO(hmchen): Implement this method.
 void MediaFoundationCdm::GetStatusForPolicy(
     HdcpVersion min_hdcp_version,
     std::unique_ptr<KeyStatusCdmPromise> promise) {
@@ -311,9 +337,25 @@ void MediaFoundationCdm::GetStatusForPolicy(
     return;
   }
 
-  NOTIMPLEMENTED();
-  promise->reject(CdmPromise::Exception::NOT_SUPPORTED_ERROR, 0,
-                  "GetStatusForPolicy() is not supported.");
+  // Keys should be always usable when there is no HDCP requirement.
+  if (min_hdcp_version == HdcpVersion::kHdcpVersionNone) {
+    promise->resolve(CdmKeyInformation::KeyStatus::USABLE);
+    return;
+  }
+
+  // HDCP is independent to the codec. So query H.264, which is always supported
+  // by MFCDM.
+  const std::string content_type =
+      base::StringPrintf("video/mp4;codecs=\"avc1\";features=\"hdcp=%d\"",
+                         GetHdcpValue(min_hdcp_version));
+  bool is_supported = false;
+  is_type_supported_cb_.Run(content_type, is_supported);
+
+  if (is_supported) {
+    promise->resolve(CdmKeyInformation::KeyStatus::USABLE);
+  } else {
+    promise->resolve(CdmKeyInformation::KeyStatus::OUTPUT_RESTRICTED);
+  }
 }
 
 void MediaFoundationCdm::CreateSessionAndGenerateRequest(

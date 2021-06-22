@@ -161,8 +161,9 @@ MediaFoundationCdmFactory::~MediaFoundationCdmFactory() = default;
 void MediaFoundationCdmFactory::SetCreateCdmFactoryCallbackForTesting(
     const std::string& key_system,
     CreateCdmFactoryCB create_cdm_factory_cb) {
-  DCHECK(!create_cdm_factory_cbs_.count(key_system));
-  create_cdm_factory_cbs_[key_system] = std::move(create_cdm_factory_cb);
+  DCHECK(!create_cdm_factory_cbs_for_testing_.count(key_system));
+  create_cdm_factory_cbs_for_testing_[key_system] =
+      std::move(create_cdm_factory_cb);
 }
 
 void MediaFoundationCdmFactory::Create(
@@ -207,6 +208,8 @@ void MediaFoundationCdmFactory::OnCdmOriginIdObtained(
       base::BindRepeating(&MediaFoundationCdmFactory::CreateMfCdm,
                           weak_factory_.GetWeakPtr(), key_system, cdm_config,
                           cdm_origin_id),
+      base::BindRepeating(&MediaFoundationCdmFactory::IsTypeSupported,
+                          weak_factory_.GetWeakPtr(), key_system),
       session_message_cb, session_closed_cb, session_keys_change_cb,
       session_expiration_update_cb);
 
@@ -225,8 +228,8 @@ HRESULT MediaFoundationCdmFactory::GetCdmFactory(
     const std::string& key_system,
     Microsoft::WRL::ComPtr<IMFContentDecryptionModuleFactory>& cdm_factory) {
   // Use key system specific `create_cdm_factory_cb` if there's one registered.
-  auto itr = create_cdm_factory_cbs_.find(key_system);
-  if (itr != create_cdm_factory_cbs_.end()) {
+  auto itr = create_cdm_factory_cbs_for_testing_.find(key_system);
+  if (itr != create_cdm_factory_cbs_for_testing_.end()) {
     auto& create_cdm_factory_cb = itr->second;
     if (!create_cdm_factory_cb)
       return E_FAIL;
@@ -239,6 +242,21 @@ HRESULT MediaFoundationCdmFactory::GetCdmFactory(
   RETURN_IF_FAILED(MediaFoundationCdmModule::GetInstance()->GetCdmFactory(
       key_system, cdm_factory));
   return S_OK;
+}
+
+void MediaFoundationCdmFactory::IsTypeSupported(const std::string& key_system,
+                                                const std::string& content_type,
+                                                bool& result) {
+  ComPtr<IMFContentDecryptionModuleFactory> cdm_factory;
+  HRESULT hr = GetCdmFactory(key_system, cdm_factory);
+  if (FAILED(hr)) {
+    DLOG(ERROR) << "Failed to GetCdmFactory. hr=" << hr;
+    result = false;
+    return;
+  }
+
+  result = cdm_factory->IsTypeSupported(base::UTF8ToWide(key_system).c_str(),
+                                        base::UTF8ToWide(content_type).c_str());
 }
 
 HRESULT MediaFoundationCdmFactory::CreateMfCdmInternal(
