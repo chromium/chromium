@@ -12,6 +12,8 @@
 #include "components/session_manager/core/session_manager_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+class Profile;
+
 class UserTypeByDeviceTypeMetricsProvider
     : public metrics::MetricsProvider,
       public session_manager::SessionManagerObserver {
@@ -55,6 +57,9 @@ class UserTypeByDeviceTypeMetricsProvider
 
   // session_manager::SessionManagerObserver:
   void OnUserSessionStarted(bool is_primary_user) override;
+
+  // Returns user's segment for metrics logging.
+  static UserSegment GetUserSegment(Profile* profile);
 
   static const char* GetHistogramNameForTesting();
 
