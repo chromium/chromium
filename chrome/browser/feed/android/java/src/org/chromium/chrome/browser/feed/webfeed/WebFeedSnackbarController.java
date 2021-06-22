@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.feed.webfeed;
 import android.content.Context;
 
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.feed.FeedServiceBridge;
+import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -71,7 +73,8 @@ public class WebFeedSnackbarController {
             // TODO(crbug/1152592): Add snackbars for specific failures.
             // Show follow failure snackbar.
             FollowActionSnackbarController snackbarController =
-                    new FollowActionSnackbarController(followId, url, fallbackTitle);
+                    new FollowActionSnackbarController(followId, url, fallbackTitle,
+                            FeedUserActionType.TAPPED_FOLLOW_TRY_AGAIN_ON_SNACKBAR);
             int actionStringId = 0;
             if (canRetryFollow(tab, followId, url)) {
                 actionStringId = R.string.web_feed_generic_failure_snackbar_action;
@@ -119,7 +122,8 @@ public class WebFeedSnackbarController {
 
     private void showUnfollowSuccessSnackbar(byte[] followId, GURL url, String title) {
         showSnackbar(mContext.getString(R.string.web_feed_unfollow_success_snackbar_message, title),
-                new FollowActionSnackbarController(followId, url, title),
+                new FollowActionSnackbarController(followId, url, title,
+                        FeedUserActionType.TAPPED_REFOLLOW_AFTER_UNFOLLOW_ON_SNACKBAR),
                 Snackbar.UMA_WEB_FEED_UNFOLLOW_SUCCESS,
                 R.string.web_feed_unfollow_success_snackbar_action);
     }
@@ -128,12 +132,12 @@ public class WebFeedSnackbarController {
         SnackbarController snackbarController = new SnackbarController() {
             @Override
             public void onAction(Object actionData) {
+                FeedServiceBridge.reportOtherUserAction(
+                        FeedUserActionType.TAPPED_UNFOLLOW_TRY_AGAIN_ON_SNACKBAR);
                 WebFeedBridge.unfollow(followId, result -> {
-                    if (result.requestStatus == WebFeedSubscriptionRequestStatus.SUCCESS) {
-                        showUnfollowSuccessSnackbar(followId, url, title);
-                    } else {
-                        showUnfollowFailureSnackbar(followId, url, title);
-                    }
+                    showSnackbarForUnfollow(
+                            result.requestStatus == WebFeedSubscriptionRequestStatus.SUCCESS,
+                            followId, url, title);
                 });
             }
         };
@@ -163,14 +167,17 @@ public class WebFeedSnackbarController {
         private final byte[] mFollowId;
         private final GURL mUrl;
         private final String mTitle;
+        private final @FeedUserActionType int mUserActionType;
 
         private Tab mTab;
         private TabObserver mTabObserver;
 
-        FollowActionSnackbarController(byte[] followId, GURL url, String title) {
+        FollowActionSnackbarController(
+                byte[] followId, GURL url, String title, @FeedUserActionType int userActionType) {
             mFollowId = followId;
             mUrl = url;
             mTitle = title;
+            mUserActionType = userActionType;
         }
 
         /**
@@ -210,6 +217,7 @@ public class WebFeedSnackbarController {
         public void onAction(Object actionData) {
             // The snackbar should not be showing if canRetryFollow() returns false.
             assert canRetryFollow(mTab, mFollowId, mUrl);
+            FeedServiceBridge.reportOtherUserAction(mUserActionType);
 
             if (!isFollowIdValid(mFollowId)) {
                 WebFeedBridge.followFromUrl(mTab, mUrl, result -> {

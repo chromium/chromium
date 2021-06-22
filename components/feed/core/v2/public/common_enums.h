@@ -90,8 +90,28 @@ enum class FeedUserActionType {
   kTappedManageReactions = 28,
   // User tapped on share.
   kShare = 29,
-  // Highest enumerator. Recommended by Histogram metrics best practices.
-  kMaxValue = kShare,
+  // Tapped the 'Following' option inside the Feed's 'Manage' interstitial.
+  kTappedManageFollowing = 30,
+  // User tapped to follow a web feed on the management surface.
+  kTappedFollowOnManagementSurface = 31,
+  // User tapped to unfollow a web feed on the management surface.
+  kTappedUnfollowOnManagementSurface = 32,
+  // User tapped to follow using the follow accelerator.
+  kTappedFollowOnFollowAccelerator = 33,
+  // User tapped to follow using the snackbar 'try again' option.
+  kTappedFollowTryAgainOnSnackbar = 34,
+  // User tapped to refollow using the snackbar, after successfully unfollowing.
+  kTappedRefollowAfterUnfollowOnSnackbar = 35,
+  // User tapped to unfollow using the snackbar 'try again' option.
+  kTappedUnfollowTryAgainOnSnackbar = 36,
+  // After following an active web feed, the user tapped to go to feed using the
+  // post-follow help dialog.
+  kTappedGoToFeedPostFollowActiveHelp = 37,
+  // After following an active web feed, the user tapped to dismiss the
+  // post-follow help dialog.
+  kTappedDismissPostFollowActiveHelp = 38,
+
+  kMaxValue = kTappedDismissPostFollowActiveHelp,
 };
 
 }  // namespace feed

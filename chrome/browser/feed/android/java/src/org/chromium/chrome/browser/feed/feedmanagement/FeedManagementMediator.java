@@ -19,6 +19,8 @@ import androidx.browser.customtabs.CustomTabsIntent;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.compat.ApiHelperForM;
+import org.chromium.chrome.browser.feed.FeedServiceBridge;
+import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
 import org.chromium.chrome.browser.feed.webfeed.R;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.ModelListAdapter;
@@ -138,6 +140,7 @@ public class FeedManagementMediator {
 
     private void handleFollowingClick(View view) {
         Log.d(TAG, "Following click caught.");
+        FeedServiceBridge.reportOtherUserAction(FeedUserActionType.TAPPED_MANAGE_FOLLOWING);
         mFollowManagementLauncher.launch(mContext);
     }
 }

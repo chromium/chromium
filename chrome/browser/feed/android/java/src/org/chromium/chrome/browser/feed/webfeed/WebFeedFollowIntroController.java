@@ -14,6 +14,8 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.feed.FeedServiceBridge;
+import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSnackbarController.FeedLauncher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -221,6 +223,9 @@ public class WebFeedFollowIntroController {
 
         mWebFeedFollowIntroView.showLoadingUI();
         Tab currentTab = mTabSupplier.get();
+        FeedServiceBridge.reportOtherUserAction(
+                FeedUserActionType.TAPPED_FOLLOW_ON_FOLLOW_ACCELERATOR);
+
         WebFeedBridge.followFromId(mWebFeedId,
                 results -> mWebFeedFollowIntroView.hideLoadingUI(new LoadingView.Observer() {
                     @Override

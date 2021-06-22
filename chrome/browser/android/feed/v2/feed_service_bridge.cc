@@ -114,6 +114,15 @@ static jlong JNI_FeedServiceBridge_AddUnreadContentObserver(
   return reinterpret_cast<jlong>(observer);
 }
 
+static void JNI_FeedServiceBridge_ReportOtherUserAction(JNIEnv* env,
+                                                        jint action) {
+  FeedApi* api = GetFeedApi();
+  if (!api)
+    return;
+  api->ReportOtherUserAction(StreamType(),
+                             static_cast<FeedUserActionType>(action));
+}
+
 std::string FeedServiceBridge::GetLanguageTag() {
   JNIEnv* env = base::android::AttachCurrentThread();
   return ConvertJavaStringToUTF8(env,

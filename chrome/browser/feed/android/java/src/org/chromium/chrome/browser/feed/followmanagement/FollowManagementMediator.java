@@ -16,6 +16,8 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView.Adapter;
 
 import org.chromium.base.Callback;
+import org.chromium.chrome.browser.feed.FeedServiceBridge;
+import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
 import org.chromium.chrome.browser.feed.webfeed.R;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge.WebFeedMetadata;
@@ -68,10 +70,14 @@ class FollowManagementMediator {
             // If we were subscribed, unfollow, and vice versa.  The checkbox is already in its
             // intended new state, so make the reality match the checkbox state.
             if (itemView.isSubscribed()) {
+                FeedServiceBridge.reportOtherUserAction(
+                        FeedUserActionType.TAPPED_FOLLOW_ON_MANAGEMENT_SURFACE);
                 // The lambda will set the item as subscribed if the follow operation succeeds.
                 WebFeedBridge.followFromId(
                         mId, results -> itemView.setSubscribed(results.requestStatus == SUCCESS));
             } else {
+                FeedServiceBridge.reportOtherUserAction(
+                        FeedUserActionType.TAPPED_UNFOLLOW_ON_MANAGEMENT_SURFACE);
                 // The lambda will set the item as unsubscribed if the unfollow operation succeeds.
                 WebFeedBridge.unfollow(
                         mId, results -> itemView.setSubscribed(results.requestStatus != SUCCESS));

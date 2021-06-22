@@ -13,6 +13,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 
 import org.chromium.base.Callback;
+import org.chromium.chrome.browser.feed.FeedServiceBridge;
+import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSnackbarController.FeedLauncher;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -73,7 +75,12 @@ class WebFeedDialogCoordinator {
             secondaryButtonText = mContext.getString(R.string.close);
             buttonClickCallback = dismissalCause -> {
                 if (dismissalCause.equals(DialogDismissalCause.POSITIVE_BUTTON_CLICKED)) {
+                    FeedServiceBridge.reportOtherUserAction(
+                            FeedUserActionType.TAPPED_GO_TO_FEED_POST_FOLLOW_ACTIVE_HELP);
                     feedLauncher.openFollowingFeed();
+                } else {
+                    FeedServiceBridge.reportOtherUserAction(
+                            FeedUserActionType.TAPPED_DISMISS_POST_FOLLOW_ACTIVE_HELP);
                 }
             };
         } else {

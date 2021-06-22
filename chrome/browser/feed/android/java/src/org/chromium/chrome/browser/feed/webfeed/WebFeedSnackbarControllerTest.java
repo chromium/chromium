@@ -40,6 +40,8 @@ import org.robolectric.shadows.ShadowLog;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.feed.FeedServiceBridge;
+import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSnackbarController.FeedLauncher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -75,6 +77,8 @@ public final class WebFeedSnackbarControllerTest {
     private Tracker mTracker;
     @Mock
     public WebFeedBridge.Natives mWebFeedBridgeJniMock;
+    @Mock
+    public FeedServiceBridge.Natives mFeedServideBridgeJniMock;
     private Context mContext;
     @Mock
     private Profile mProfile;
@@ -101,6 +105,7 @@ public final class WebFeedSnackbarControllerTest {
         Profile.setLastUsedProfileForTesting(mProfile);
         MockitoAnnotations.initMocks(this);
         mJniMocker.mock(WebFeedBridge.getTestHooksForTesting(), mWebFeedBridgeJniMock);
+        mJniMocker.mock(FeedServiceBridge.getTestHooksForTesting(), mFeedServideBridgeJniMock);
         mContext = Robolectric.setupActivity(Activity.class);
         when(mTracker.shouldTriggerHelpUI(FeatureConstants.IPH_WEB_FEED_POST_FOLLOW_DIALOG_FEATURE))
                 .thenReturn(false);
@@ -269,6 +274,8 @@ public final class WebFeedSnackbarControllerTest {
                 .followWebFeed(mPageInformationCaptor.capture(), any());
         assertEquals(sTestUrl, mPageInformationCaptor.getValue().mUrl);
         assertEquals(mTab, mPageInformationCaptor.getValue().mTab);
+        verify(mFeedServideBridgeJniMock)
+                .reportOtherUserAction(FeedUserActionType.TAPPED_FOLLOW_TRY_AGAIN_ON_SNACKBAR);
     }
 
     @Test
@@ -341,6 +348,8 @@ public final class WebFeedSnackbarControllerTest {
                 description(
                         "FollowFromId should be called on follow try again when ID is available."))
                 .followWebFeedById(eq(sFollowId), any());
+        verify(mFeedServideBridgeJniMock)
+                .reportOtherUserAction(FeedUserActionType.TAPPED_FOLLOW_TRY_AGAIN_ON_SNACKBAR);
     }
 
     @Test
@@ -357,6 +366,9 @@ public final class WebFeedSnackbarControllerTest {
         snackbar.getController().onAction(null);
         verify(mWebFeedBridgeJniMock, description("Follow should be called on refollow."))
                 .followWebFeedById(eq(sFollowId), any());
+        verify(mFeedServideBridgeJniMock)
+                .reportOtherUserAction(
+                        FeedUserActionType.TAPPED_REFOLLOW_AFTER_UNFOLLOW_ON_SNACKBAR);
     }
 
     @Test
@@ -374,6 +386,8 @@ public final class WebFeedSnackbarControllerTest {
         verify(mWebFeedBridgeJniMock,
                 description("Unfollow should be called on unfollow try again."))
                 .unfollowWebFeed(eq(sFollowId), any());
+        verify(mFeedServideBridgeJniMock)
+                .reportOtherUserAction(FeedUserActionType.TAPPED_UNFOLLOW_TRY_AGAIN_ON_SNACKBAR);
     }
 
     @Test

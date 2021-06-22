@@ -1314,9 +1314,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>carlosk@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
-    Counts of user actions within the feed surface (Feed v2 only). Recorded
-    whenever a user has taken an explicit action in the Feed. e.g. (Open a Card,
-    Hide the Feed, etc.)
+    Counts of Feed user actions. e.g. (Open a Card, Hide the Feed, etc.).
+    Recorded when the user takes an explicit action related to the Feed.
   </summary>
 </histogram>
 

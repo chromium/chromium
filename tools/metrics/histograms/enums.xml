@@ -33339,6 +33339,27 @@ Called by update_permissions_policy_enum.py.-->
   <int value="27" label="Closed native back-of-card pulldown menu. (iOS Only)"/>
   <int value="28" label="Tapped manage reactions"/>
   <int value="29" label="Tapped on share for an article"/>
+  <int value="30"
+      label="Tapped the 'Following' option inside the Feed's 'Manage'
+             interstitial."/>
+  <int value="31"
+      label="User tapped to follow a web feed on the management surface."/>
+  <int value="32"
+      label="User tapped to unfollow a web feed on the management surface."/>
+  <int value="33" label="User tapped to follow using the follow accelerator."/>
+  <int value="34"
+      label="User tapped to follow using the snackbar 'try again' option."/>
+  <int value="35"
+      label="User tapped to follow using the snackbar, after successfully
+             unfollowing."/>
+  <int value="36"
+      label="User tapped to unfollow using the snackbar 'try again' option."/>
+  <int value="37"
+      label="After following an active web feed, the user tapped to go to
+             feed using the post-follow help dialog."/>
+  <int value="38"
+      label="After following an active web feed, the user tapped to dismiss
+             the post-follow help dialog."/>
 </enum>
 
 <enum name="FeedUserCommandType">

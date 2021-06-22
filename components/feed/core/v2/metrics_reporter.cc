@@ -357,7 +357,6 @@ void MetricsReporter::OtherUserAction(const StreamType& stream_type,
       RecordInteraction(stream_type);
       break;
     case FeedUserActionType::kEphemeralChange:
-      FALLTHROUGH;
     case FeedUserActionType::kEphemeralChangeRejected:
     case FeedUserActionType::kTappedTurnOn:
     case FeedUserActionType::kTappedTurnOff:
@@ -372,8 +371,18 @@ void MetricsReporter::OtherUserAction(const StreamType& stream_type,
     case FeedUserActionType::kClosedNativeContextMenu:
     case FeedUserActionType::kOpenedNativePulldownMenu:
     case FeedUserActionType::kClosedNativePulldownMenu:
+    case FeedUserActionType::kTappedManageFollowing:
+    case FeedUserActionType::kTappedFollowOnManagementSurface:
+    case FeedUserActionType::kTappedUnfollowOnManagementSurface:
+    case FeedUserActionType::kTappedFollowOnFollowAccelerator:
+    case FeedUserActionType::kTappedFollowTryAgainOnSnackbar:
+    case FeedUserActionType::kTappedRefollowAfterUnfollowOnSnackbar:
+    case FeedUserActionType::kTappedUnfollowTryAgainOnSnackbar:
+    case FeedUserActionType::kTappedGoToFeedPostFollowActiveHelp:
+    case FeedUserActionType::kTappedDismissPostFollowActiveHelp:
       // Nothing additional for these actions. Note that some of these are iOS
       // only.
+
       break;
   }
 }
