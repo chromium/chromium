@@ -321,6 +321,7 @@ export let fakeKeyboards = [
     connectionType: ConnectionType.kInternal,
     name: 'AT Translated Set 2 keyboard',
     physicalLayout: PhysicalLayout.kChromeOS,
+    hasAssistantKey: true,
   },
 ];
 
