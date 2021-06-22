@@ -103,19 +103,17 @@ bool PaintChunker::IncrementDisplayItemIndex(const DisplayItem& item) {
     ProcessBackgroundColorCandidate(chunk.id, item_color, item_area);
   }
 
-  constexpr wtf_size_t kMaxRegionComplexity = 10;
   if (should_compute_contents_opaque_ && item.IsDrawing()) {
     const DrawingDisplayItem& drawing = To<DrawingDisplayItem>(item);
-    if (drawing.KnownToBeOpaque() &&
-        last_chunk_known_to_be_opaque_region_.Complexity() <
-            kMaxRegionComplexity) {
-      last_chunk_known_to_be_opaque_region_.Unite(item.VisualRect());
+    if (drawing.KnownToBeOpaque()) {
+      chunk.rect_known_to_be_opaque =
+          MaximumCoveredRect(chunk.rect_known_to_be_opaque, item.VisualRect());
     }
-    if (last_chunk_text_known_to_be_on_opaque_background_) {
+    if (chunk.text_known_to_be_on_opaque_background) {
       if (const auto* paint_record = drawing.GetPaintRecord().get()) {
         if (paint_record->has_draw_text_ops()) {
-          last_chunk_text_known_to_be_on_opaque_background_ =
-              last_chunk_known_to_be_opaque_region_.Contains(item.VisualRect());
+          chunk.text_known_to_be_on_opaque_background =
+              chunk.rect_known_to_be_opaque.Contains(item.VisualRect());
         }
       }
     }
@@ -257,15 +255,6 @@ void PaintChunker::FinalizeLastChunkProperties() {
     return;
 
   auto& chunk = chunks_->back();
-  if (should_compute_contents_opaque_) {
-    chunk.known_to_be_opaque =
-        last_chunk_known_to_be_opaque_region_.Contains(chunk.bounds);
-    chunk.text_known_to_be_on_opaque_background =
-        last_chunk_text_known_to_be_on_opaque_background_;
-    last_chunk_known_to_be_opaque_region_ = Region();
-    last_chunk_text_known_to_be_on_opaque_background_ = true;
-  }
-
   if (candidate_background_color_ != Color::kTransparent) {
     chunk.background_color = candidate_background_color_;
     chunk.background_color_area = candidate_background_area_;

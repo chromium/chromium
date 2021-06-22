@@ -109,8 +109,8 @@ TestPaintArtifact& TestPaintArtifact::SetRasterEffectOutset(
   return *this;
 }
 
-TestPaintArtifact& TestPaintArtifact::KnownToBeOpaque() {
-  paint_artifact_->PaintChunks().back().known_to_be_opaque = true;
+TestPaintArtifact& TestPaintArtifact::RectKnownToBeOpaque(const IntRect& r) {
+  paint_artifact_->PaintChunks().back().rect_known_to_be_opaque = r;
   return *this;
 }
 

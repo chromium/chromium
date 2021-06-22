@@ -39,7 +39,7 @@
       "name": "LayoutNGBlockFlow (relative positioned) DIV class='scroller'",
       "position": [5, 5],
       "bounds": [220, 236],
-      "contentsOpaqueForText": true,
+      "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
       "transform": 2
     },

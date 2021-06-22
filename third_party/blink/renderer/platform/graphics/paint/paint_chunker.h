@@ -8,7 +8,6 @@
 #include "base/dcheck_is_on.h"
 #include "cc/input/layer_selection_bound.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/renderer/platform/geometry/region.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_artifact.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_chunk.h"
@@ -106,9 +105,6 @@ class PLATFORM_EXPORT PaintChunker final {
 
   PropertyTreeStateOrAlias current_properties_ =
       PropertyTreeState::Uninitialized();
-
-  Region last_chunk_known_to_be_opaque_region_;
-  bool last_chunk_text_known_to_be_on_opaque_background_ = true;
 
   // True when an item forces a new chunk (e.g., foreign display items), and for
   // the item following a forced chunk. PaintController also forces new chunks

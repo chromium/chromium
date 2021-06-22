@@ -49,7 +49,7 @@
       "name": "LayoutNGBlockFlow (relative positioned) DIV class='main box'",
       "position": [40, 40],
       "bounds": [200, 200],
-      "contentsOpaqueForText": true,
+      "contentsOpaque": true,
       "backgroundColor": "#008000",
       "transform": 4
     },

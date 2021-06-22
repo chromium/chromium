@@ -136,6 +136,7 @@ TEST_F(PaintChunkerTest, BuildMultipleChunksWithSinglePropertyChanging) {
   chunker.UpdateCurrentPaintChunkProperties(&id3, another_transform);
   chunker.IncrementDisplayItemIndex(TestChunkerDisplayItem(client_));
 
+  chunker.ResetChunks(nullptr);
   EXPECT_THAT(chunks, ElementsAre(IsPaintChunk(0, 2, id1,
                                                DefaultPaintChunkProperties()),
                                   IsPaintChunk(2, 3, id2, simple_transform),
@@ -191,6 +192,7 @@ TEST_F(PaintChunkerTest, BuildMultipleChunksWithDifferentPropertyChanges) {
   chunker.IncrementDisplayItemIndex(item_after_restore);
   chunker.IncrementDisplayItemIndex(TestChunkerDisplayItem(client_));
 
+  chunker.ResetChunks(nullptr);
   EXPECT_THAT(
       chunks,
       ElementsAre(
@@ -234,6 +236,7 @@ TEST_F(PaintChunkerTest, BuildChunksFromNestedTransforms) {
   TestChunkerDisplayItem item_after_restore(client_, DisplayItemType(10));
   chunker.IncrementDisplayItemIndex(item_after_restore);
 
+  chunker.ResetChunks(nullptr);
   EXPECT_THAT(chunks, ElementsAre(IsPaintChunk(0, 1, id1,
                                                DefaultPaintChunkProperties()),
                                   IsPaintChunk(1, 3, id2, simple_transform),
@@ -265,6 +268,8 @@ TEST_F(PaintChunkerTest, ChangingPropertiesWithoutItems) {
   chunker.UpdateCurrentPaintChunkProperties(&id3, second_transform);
 
   chunker.IncrementDisplayItemIndex(TestChunkerDisplayItem(client_));
+
+  chunker.ResetChunks(nullptr);
   EXPECT_THAT(chunks, ElementsAre(IsPaintChunk(0, 1, id1,
                                                DefaultPaintChunkProperties()),
                                   IsPaintChunk(1, 2, id3, second_transform)));
@@ -295,6 +300,7 @@ TEST_F(PaintChunkerTest, CreatesSeparateChunksWhenRequested) {
                                             DefaultPaintChunkProperties());
   chunker.IncrementDisplayItemIndex(i3);
 
+  chunker.ResetChunks(nullptr);
   EXPECT_THAT(
       chunks,
       ElementsAre(
@@ -341,6 +347,7 @@ TEST_F(PaintChunkerTest, ForceNewChunkWithNewId) {
   EXPECT_FALSE(chunker.WillForceNewChunk());
   chunker.IncrementDisplayItemIndex(TestChunkerDisplayItem(client_));
 
+  chunker.ResetChunks(nullptr);
   EXPECT_THAT(
       chunks,
       ElementsAre(IsPaintChunk(0, 2, id0, DefaultPaintChunkProperties()),
@@ -384,6 +391,7 @@ TEST_F(PaintChunkerTest, ForceNewChunkWithoutNewId) {
   chunker.IncrementDisplayItemIndex(
       TestChunkerDisplayItem(client_, DisplayItemType(4)));
 
+  chunker.ResetChunks(nullptr);
   EXPECT_THAT(
       chunks,
       ElementsAre(IsPaintChunk(0, 2, id0, DefaultPaintChunkProperties()),
@@ -412,8 +420,9 @@ TEST_F(PaintChunkerTest, SetAndImmediatelyUnSetWillForceNewChunk) {
   EXPECT_FALSE(chunker.WillForceNewChunk());
   chunker.IncrementDisplayItemIndex(
       TestChunkerDisplayItem(client_, DisplayItemType(1)));
-  EXPECT_EQ(1u, chunks.size());
 
+  chunker.ResetChunks(nullptr);
+  EXPECT_EQ(1u, chunks.size());
   EXPECT_THAT(chunks, ElementsAre(IsPaintChunk(0, 3, id0,
                                                DefaultPaintChunkProperties())));
 }
@@ -438,6 +447,7 @@ TEST_F(PaintChunkerTest, NoNewChunkForSamePropertyDifferentIds) {
   chunker.IncrementDisplayItemIndex(TestChunkerDisplayItem(client_));
   chunker.IncrementDisplayItemIndex(TestChunkerDisplayItem(client_));
 
+  chunker.ResetChunks(nullptr);
   EXPECT_THAT(chunks, ElementsAre(IsPaintChunk(0, 6, id0,
                                                DefaultPaintChunkProperties())));
 }
@@ -466,6 +476,7 @@ TEST_F(PaintChunkerTest, ChunksFollowingForcedChunk) {
   chunker.IncrementDisplayItemIndex(after_forced1);
   chunker.IncrementDisplayItemIndex(after_forced2);
 
+  chunker.ResetChunks(nullptr);
   EXPECT_THAT(
       chunks,
       ElementsAre(
@@ -511,6 +522,7 @@ TEST_F(PaintChunkerTest, ChunkIdsSkippingCache) {
   TestChunkerDisplayItem after_restore(client_, DisplayItemType(4));
   chunker.IncrementDisplayItemIndex(after_restore);
 
+  chunker.ResetChunks(nullptr);
   EXPECT_THAT(
       chunks,
       ElementsAre(
@@ -557,6 +569,7 @@ TEST_F(PaintChunkerTest, AddHitTestDataToCurrentChunk) {
   chunker.IncrementDisplayItemIndex(TestChunkerDisplayItem(
       client_, DisplayItemType(5), IntRect(0, 0, 10, 10)));
 
+  chunker.ResetChunks(nullptr);
   HitTestData hit_test_data;
   hit_test_data.touch_action_rects = {
       {IntRect(20, 30, 40, 50), TouchAction::kPan}};
@@ -615,6 +628,7 @@ TEST_F(PaintChunkerTest, AddHitTestDataToCurrentChunkWheelRegionsEnabled) {
   chunker.IncrementDisplayItemIndex(TestChunkerDisplayItem(
       client_, DisplayItemType(5), IntRect(0, 0, 10, 10)));
 
+  chunker.ResetChunks(nullptr);
   HitTestData hit_test_data;
   hit_test_data.touch_action_rects = {
       {IntRect(20, 30, 40, 50), TouchAction::kPan}};
@@ -667,6 +681,7 @@ TEST_F(PaintChunkerTest, ChunkBoundsAndKnownToBeOpaqueAllOpaqueItems) {
   chunker.IncrementDisplayItemIndex(TestChunkerOpaqueDisplayItem(
       client3, DisplayItemType(4), IntRect(50, 50, 100, 100)));
 
+  chunker.ResetChunks(nullptr);
   EXPECT_THAT(
       chunks,
       ElementsAre(
@@ -677,9 +692,9 @@ TEST_F(PaintChunkerTest, ChunkBoundsAndKnownToBeOpaqueAllOpaqueItems) {
           IsPaintChunk(3, 5, PaintChunk::Id(client1, DisplayItemType(3)),
                        properties, nullptr, IntRect(0, 0, 150, 150))));
   ASSERT_EQ(3u, chunks.size());
-  EXPECT_TRUE(chunks[0].known_to_be_opaque);
-  EXPECT_TRUE(chunks[1].known_to_be_opaque);
-  EXPECT_FALSE(chunks[2].known_to_be_opaque);
+  EXPECT_EQ(IntRect(0, 0, 100, 100), chunks[0].rect_known_to_be_opaque);
+  EXPECT_EQ(IntRect(0, 0, 100, 150), chunks[1].rect_known_to_be_opaque);
+  EXPECT_EQ(IntRect(0, 0, 100, 100), chunks[2].rect_known_to_be_opaque);
 }
 
 TEST_F(PaintChunkerTest, ChunkBoundsAndKnownToBeOpaqueWithHitTest) {
@@ -719,6 +734,8 @@ TEST_F(PaintChunkerTest, ChunkBoundsAndKnownToBeOpaqueWithHitTest) {
       PaintChunk::Id(client1, DisplayItemType(6)), IntRect(0, 100, 200, 100),
       TouchAction::kAuto, false);
 
+  chunker.ResetChunks(nullptr);
+
   EXPECT_THAT(
       chunks,
       ElementsAre(
@@ -731,10 +748,10 @@ TEST_F(PaintChunkerTest, ChunkBoundsAndKnownToBeOpaqueWithHitTest) {
           IsPaintChunk(2, 3, PaintChunk::Id(client1, DisplayItemType(5)),
                        properties, nullptr, IntRect(0, 0, 200, 200))));
   ASSERT_EQ(4u, chunks.size());
-  EXPECT_FALSE(chunks[0].known_to_be_opaque);
-  EXPECT_TRUE(chunks[1].known_to_be_opaque);
-  EXPECT_TRUE(chunks[2].known_to_be_opaque);
-  EXPECT_FALSE(chunks[3].known_to_be_opaque);
+  EXPECT_EQ(IntRect(), chunks[0].rect_known_to_be_opaque);
+  EXPECT_EQ(IntRect(0, 0, 100, 100), chunks[1].rect_known_to_be_opaque);
+  EXPECT_EQ(IntRect(0, 0, 100, 100), chunks[2].rect_known_to_be_opaque);
+  EXPECT_EQ(IntRect(0, 0, 100, 100), chunks[3].rect_known_to_be_opaque);
 }
 
 TEST_F(PaintChunkerTest, ChunkBoundsAndKnownToBeOpaqueMixedOpaquenessItems) {
@@ -773,7 +790,6 @@ TEST_F(PaintChunkerTest, ChunkBoundsAndKnownToBeOpaqueMixedOpaquenessItems) {
       TestChunkerDisplayItem(client2, DisplayItemType(7), visual_rect2));
 
   chunker.ResetChunks(nullptr);
-
   EXPECT_THAT(
       chunks,
       ElementsAre(
@@ -786,10 +802,10 @@ TEST_F(PaintChunkerTest, ChunkBoundsAndKnownToBeOpaqueMixedOpaquenessItems) {
           IsPaintChunk(5, 7, PaintChunk::Id(client1, DisplayItemType(6)),
                        properties, nullptr, IntRect(0, 0, 100, 100))));
   ASSERT_EQ(4u, chunks.size());
-  EXPECT_FALSE(chunks[0].known_to_be_opaque);
-  EXPECT_FALSE(chunks[1].known_to_be_opaque);
-  EXPECT_TRUE(chunks[2].known_to_be_opaque);
-  EXPECT_TRUE(chunks[3].known_to_be_opaque);
+  EXPECT_EQ(IntRect(), chunks[0].rect_known_to_be_opaque);
+  EXPECT_EQ(IntRect(50, 50, 50, 50), chunks[1].rect_known_to_be_opaque);
+  EXPECT_EQ(IntRect(0, 0, 100, 100), chunks[2].rect_known_to_be_opaque);
+  EXPECT_EQ(IntRect(0, 0, 100, 100), chunks[3].rect_known_to_be_opaque);
 }
 
 }  // namespace

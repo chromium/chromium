@@ -44,8 +44,7 @@ struct PLATFORM_EXPORT PaintChunk {
         background_color_area(0u),
         id(id),
         properties(props),
-        known_to_be_opaque(false),
-        text_known_to_be_on_opaque_background(false),
+        text_known_to_be_on_opaque_background(true),
         is_cacheable(id.client.IsCacheable()),
         client_is_just_created(id.client.IsJustCreated()),
         is_moved_from_cached_subsequence(false) {}
@@ -62,8 +61,8 @@ struct PLATFORM_EXPORT PaintChunk {
         layer_selection_data(std::move(other.layer_selection_data)),
         bounds(other.bounds),
         drawable_bounds(other.drawable_bounds),
+        rect_known_to_be_opaque(other.rect_known_to_be_opaque),
         raster_effect_outset(other.raster_effect_outset),
-        known_to_be_opaque(other.known_to_be_opaque),
         text_known_to_be_on_opaque_background(
             other.text_known_to_be_on_opaque_background),
         is_cacheable(other.is_cacheable),
@@ -156,13 +155,13 @@ struct PLATFORM_EXPORT PaintChunk {
   // chunk.
   IntRect drawable_bounds;
 
+  IntRect rect_known_to_be_opaque;
+
   // Some raster effects can exceed |bounds| in the rasterization space. This
   // is the maximum DisplayItemClient::VisualRectOutsetForRasterEffects() of
   // all clients of items in this chunk.
   RasterEffectOutset raster_effect_outset = RasterEffectOutset::kNone;
 
-  // True if the bounds are filled entirely with opaque contents.
-  bool known_to_be_opaque : 1;
   // True if all text is known to be on top of an opaque background.
   bool text_known_to_be_on_opaque_background : 1;
 

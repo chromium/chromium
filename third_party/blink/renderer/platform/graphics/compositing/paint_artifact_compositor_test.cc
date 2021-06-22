@@ -1969,9 +1969,15 @@ TEST_P(PaintArtifactCompositorTest, MightOverlapCommonClipAncestor) {
 
 TEST_P(PaintArtifactCompositorTest, PendingLayer) {
   TestPaintArtifact artifact;
-  artifact.Chunk().Bounds(IntRect(0, 0, 30, 40)).KnownToBeOpaque();
-  artifact.Chunk().Bounds(IntRect(10, 20, 30, 40)).KnownToBeOpaque();
-  artifact.Chunk().Bounds(IntRect(-5, -25, 20, 20)).KnownToBeOpaque();
+  artifact.Chunk()
+      .Bounds(IntRect(0, 0, 30, 40))
+      .RectKnownToBeOpaque(IntRect(0, 0, 30, 40));
+  artifact.Chunk()
+      .Bounds(IntRect(10, 20, 30, 40))
+      .RectKnownToBeOpaque(IntRect(10, 20, 30, 40));
+  artifact.Chunk()
+      .Bounds(IntRect(-5, -25, 20, 20))
+      .RectKnownToBeOpaque(IntRect(-5, -25, 20, 20));
   PaintChunkSubset chunks(artifact.Build());
 
   PendingLayer pending_layer(chunks, chunks.begin());
@@ -2036,8 +2042,12 @@ TEST_P(PaintArtifactCompositorTest, PendingLayerMergeWithBothTransforms) {
 
 TEST_P(PaintArtifactCompositorTest, PendingLayerDontMergeSparse) {
   TestPaintArtifact artifact;
-  artifact.Chunk().Bounds(IntRect(0, 0, 30, 40)).KnownToBeOpaque();
-  artifact.Chunk().Bounds(IntRect(200, 200, 30, 40)).KnownToBeOpaque();
+  artifact.Chunk()
+      .Bounds(IntRect(0, 0, 30, 40))
+      .RectKnownToBeOpaque(IntRect(0, 0, 30, 40));
+  artifact.Chunk()
+      .Bounds(IntRect(200, 200, 30, 40))
+      .RectKnownToBeOpaque(IntRect(200, 200, 30, 40));
   PaintChunkSubset chunks(artifact.Build());
 
   PendingLayer pending_layer(chunks, chunks.begin());
@@ -2101,8 +2111,12 @@ TEST_P(PaintArtifactCompositorTest,
 TEST_P(PaintArtifactCompositorTest, PendingLayerKnownOpaque) {
   TestPaintArtifact artifact;
   artifact.Chunk().Bounds(IntRect(0, 0, 30, 40));
-  artifact.Chunk().Bounds(IntRect(0, 0, 25, 35)).KnownToBeOpaque();
-  artifact.Chunk().Bounds(IntRect(0, 0, 50, 60)).KnownToBeOpaque();
+  artifact.Chunk()
+      .Bounds(IntRect(0, 0, 25, 35))
+      .RectKnownToBeOpaque(IntRect(0, 0, 25, 35));
+  artifact.Chunk()
+      .Bounds(IntRect(0, 0, 50, 60))
+      .RectKnownToBeOpaque(IntRect(0, 0, 50, 60));
   PaintChunkSubset chunks(artifact.Build());
 
   PendingLayer pending_layer(chunks, chunks.begin());
@@ -3937,7 +3951,7 @@ TEST_P(PaintArtifactCompositorTest, ContentsOpaque) {
   TestPaintArtifact artifact;
   artifact.Chunk()
       .RectDrawing(IntRect(100, 100, 200, 200), Color::kBlack)
-      .KnownToBeOpaque();
+      .RectKnownToBeOpaque(IntRect(100, 100, 200, 200));
   Update(artifact.Build());
   ASSERT_EQ(1u, LayerCount());
   EXPECT_TRUE(LayerAt(0)->contents_opaque());
@@ -3947,10 +3961,10 @@ TEST_P(PaintArtifactCompositorTest, ContentsOpaqueUnitedNonOpaque) {
   TestPaintArtifact artifact;
   artifact.Chunk()
       .RectDrawing(IntRect(100, 100, 210, 210), Color::kBlack)
-      .KnownToBeOpaque()
+      .RectKnownToBeOpaque(IntRect(100, 100, 210, 210))
       .Chunk()
       .RectDrawing(IntRect(200, 200, 200, 200), Color::kBlack)
-      .KnownToBeOpaque();
+      .RectKnownToBeOpaque(IntRect(200, 200, 200, 200));
   Update(artifact.Build());
   ASSERT_EQ(1u, LayerCount());
   EXPECT_EQ(gfx::Size(300, 300), LayerAt(0)->bounds());
@@ -3963,11 +3977,11 @@ TEST_P(PaintArtifactCompositorTest, ContentsOpaqueUnitedClippedToOpaque) {
   auto clip1 = CreateClip(c0(), t0(), FloatRoundedRect(175, 175, 100, 100));
   TestPaintArtifact artifact;
   artifact.Chunk(t0(), *clip1, e0())
-      .RectDrawing(IntRect(100, 100, 210, 210), Color::kBlack)
-      .KnownToBeOpaque()
+      .RectDrawing(IntRect(100, 100, 250, 250), Color::kBlack)
+      .RectKnownToBeOpaque(IntRect(100, 100, 210, 210))
       .Chunk(t0(), *clip1, e0())
-      .RectDrawing(IntRect(200, 200, 200, 200), Color::kBlack)
-      .KnownToBeOpaque();
+      .RectDrawing(IntRect(200, 200, 300, 300), Color::kBlack)
+      .RectKnownToBeOpaque(IntRect(200, 200, 200, 200));
   Update(artifact.Build());
   ASSERT_EQ(1u, LayerCount());
   EXPECT_EQ(gfx::Size(100, 100), LayerAt(0)->bounds());
@@ -3978,10 +3992,10 @@ TEST_P(PaintArtifactCompositorTest, ContentsOpaqueUnitedOpaque1) {
   TestPaintArtifact artifact;
   artifact.Chunk()
       .RectDrawing(IntRect(100, 100, 300, 300), Color::kBlack)
-      .KnownToBeOpaque()
+      .RectKnownToBeOpaque(IntRect(100, 100, 300, 300))
       .Chunk()
       .RectDrawing(IntRect(200, 200, 200, 200), Color::kBlack)
-      .KnownToBeOpaque();
+      .RectKnownToBeOpaque(IntRect(200, 200, 200, 200));
   Update(artifact.Build());
   ASSERT_EQ(1u, LayerCount());
   EXPECT_EQ(gfx::Size(300, 300), LayerAt(0)->bounds());
@@ -3998,10 +4012,10 @@ TEST_P(PaintArtifactCompositorTest, ContentsOpaqueUnitedWithRoundedClip) {
   TestPaintArtifact artifact;
   artifact.Chunk(t0(), *clip1, e0())
       .RectDrawing(IntRect(100, 100, 210, 210), Color::kBlack)
-      .KnownToBeOpaque()
+      .RectKnownToBeOpaque(IntRect(100, 100, 210, 210))
       .Chunk(t0(), c0(), e0())
       .RectDrawing(IntRect(200, 200, 100, 100), Color::kBlack)
-      .KnownToBeOpaque();
+      .RectKnownToBeOpaque(IntRect(200, 200, 100, 100));
   Update(artifact.Build());
   ASSERT_EQ(1u, LayerCount());
   EXPECT_EQ(gfx::Size(125, 125), LayerAt(0)->bounds());
@@ -4012,10 +4026,10 @@ TEST_P(PaintArtifactCompositorTest, ContentsOpaqueUnitedOpaque2) {
   TestPaintArtifact artifact;
   artifact.Chunk()
       .RectDrawing(IntRect(100, 100, 200, 200), Color::kBlack)
-      .KnownToBeOpaque()
+      .RectKnownToBeOpaque(IntRect(100, 100, 200, 200))
       .Chunk()
       .RectDrawing(IntRect(100, 100, 300, 300), Color::kBlack)
-      .KnownToBeOpaque();
+      .RectKnownToBeOpaque(IntRect(100, 100, 300, 300));
   Update(artifact.Build());
   ASSERT_EQ(1u, LayerCount());
   EXPECT_EQ(gfx::Size(300, 300), LayerAt(0)->bounds());

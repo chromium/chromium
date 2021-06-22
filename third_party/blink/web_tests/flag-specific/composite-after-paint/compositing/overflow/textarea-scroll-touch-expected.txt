@@ -24,6 +24,7 @@
       "name": "LayoutNGTextControlMultiLine TEXTAREA",
       "position": [1, 1],
       "bounds": [189, 328],
+      "contentsOpaque": true,
       "backgroundColor": "#CCCCCC",
       "transform": 2
     },
@@ -51,6 +52,7 @@
       "name": "LayoutNGTextControlMultiLine TEXTAREA",
       "position": [1, 1],
       "bounds": [189, 328],
+      "contentsOpaque": true,
       "backgroundColor": "#CCCCCC",
       "transform": 4
     },

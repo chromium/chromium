@@ -356,7 +356,8 @@ bool NeedsFullUpdateAfterPaintingChunk(
 
   if (repainted.is_moved_from_cached_subsequence) {
     DCHECK_EQ(previous.bounds, repainted.bounds);
-    DCHECK_EQ(previous.known_to_be_opaque, repainted.known_to_be_opaque);
+    DCHECK_EQ(previous.rect_known_to_be_opaque,
+              repainted.rect_known_to_be_opaque);
     DCHECK_EQ(previous.text_known_to_be_on_opaque_background,
               repainted.text_known_to_be_on_opaque_background);
     // Not checking ForeignLayer() here because the old ForeignDisplayItem
@@ -381,7 +382,7 @@ bool NeedsFullUpdateAfterPaintingChunk(
 
   // Opaqueness of individual chunks is used to set the cc::Layer's contents
   // opaque property.
-  if (previous.known_to_be_opaque != repainted.known_to_be_opaque)
+  if (previous.rect_known_to_be_opaque != repainted.rect_known_to_be_opaque)
     return true;
   // Similar to opaqueness, opaqueness for text is used to set the cc::Layer's
   // contents opaque for text property.
@@ -456,8 +457,7 @@ PaintArtifactCompositor::PendingLayer::PendingLayer(
     CompositingType compositing_type,
     bool is_effectively_invisible)
     : bounds(first_chunk->bounds),
-      rect_known_to_be_opaque(first_chunk->known_to_be_opaque ? bounds
-                                                              : FloatRect()),
+      rect_known_to_be_opaque(first_chunk->rect_known_to_be_opaque),
       text_known_to_be_on_opaque_background(
           first_chunk->text_known_to_be_on_opaque_background),
       effectively_invisible(is_effectively_invisible),
