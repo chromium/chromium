@@ -35,9 +35,6 @@ const char kCL[] = "cl";
 const char kCommandLine[] = "command_line";
 const char kCommandLineName[] = "command_line_name";
 const char kCompany[] = "company";
-#if defined(OS_IOS)
-const char kCompiler[] = "compiler";
-#endif
 #if defined(OS_WIN)
 const char kUpdateCohortName[] = "update_cohort_name";
 #endif
