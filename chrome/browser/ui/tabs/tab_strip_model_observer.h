@@ -363,7 +363,8 @@ class TabStripModelObserver {
   // CloseAllTabsStopped() is sent with reason 'CANCELED'. On the other hand if
   // the close does finish then CloseAllTabsStopped() is sent with reason
   // 'COMPLETED'. Also note that if the last tab is detached
-  // (DetachWebContentsAt()) then this is not sent.
+  // (DetachAndDeleteWebContentsAt()/DetachWebContentsAtForInsertion()) then
+  // this is not sent.
   virtual void WillCloseAllTabs(TabStripModel* tab_strip_model);
   virtual void CloseAllTabsStopped(TabStripModel* tab_strip_model,
                                    CloseAllStoppedReason reason);

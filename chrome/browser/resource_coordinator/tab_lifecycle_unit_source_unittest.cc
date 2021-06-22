@@ -259,7 +259,7 @@ class TabLifecycleUnitSourceTest : public ChromeRenderViewHostTestHarness {
     // Detach the non-active tab. Verify that it can no longer be discarded.
     ExpectCanDiscardTrueAllReasons(first_lifecycle_unit);
     std::unique_ptr<content::WebContents> owned_contents =
-        tab_strip_model_->DetachWebContentsAt(0);
+        tab_strip_model_->DetachWebContentsAtForInsertion(0);
     ExpectCanDiscardFalseTrivialAllReasons(first_lifecycle_unit);
 
     // Create a second tab strip.
@@ -524,7 +524,7 @@ TEST_F(TabLifecycleUnitSourceTest, DetachAndDeleteWebContents) {
   // Detach and destroy the non-active tab. Verify that the LifecycleUnit is
   // destroyed.
   std::unique_ptr<content::WebContents> web_contents =
-      tab_strip_model_->DetachWebContentsAt(0);
+      tab_strip_model_->DetachWebContentsAtForInsertion(0);
   EXPECT_CALL(observer, OnLifecycleUnitDestroyed(first_lifecycle_unit));
   web_contents.reset();
   ::testing::Mock::VerifyAndClear(&observer);

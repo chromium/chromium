@@ -476,7 +476,7 @@ TEST_F(TabMetricsLoggerTest, CreateWindowFeaturesTestMoveTabToOtherWindow) {
 
   // Drag the tab out of its window.
   std::unique_ptr<content::WebContents> dragged_tab =
-      starting_browser->tab_strip_model()->DetachWebContentsAt(1);
+      starting_browser->tab_strip_model()->DetachWebContentsAtForInsertion(1);
   starting_browser_metrics.tab_count--;
   EXPECT_EQ(TabMetricsLogger::CreateWindowFeatures(starting_browser.get()),
             starting_browser_metrics);

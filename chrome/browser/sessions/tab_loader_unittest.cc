@@ -429,7 +429,7 @@ TEST_F(TabLoaderTest, RemoveFromTabStrip) {
 
   // Remove the second tab from the tab strip model.
   std::unique_ptr<content::WebContents> contents =
-      browser()->tab_strip_model()->DetachWebContentsAt(1);
+      browser()->tab_strip_model()->DetachWebContentsAtForInsertion(1);
 
   // The tab being removed won't be noticed by the loader until some state
   // change it cares about occurs. Simulate the first tab finishing loading, at

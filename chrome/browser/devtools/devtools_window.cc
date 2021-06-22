@@ -1465,7 +1465,7 @@ void DevToolsWindow::SetIsDocked(bool dock_requested) {
     browser_ = nullptr;
 
     owned_main_web_contents_ = std::make_unique<OwnedMainWebContents>(
-        tab_strip_model->DetachWebContentsAt(
+        tab_strip_model->DetachWebContentsAtForInsertion(
             tab_strip_model->GetIndexOfWebContents(main_web_contents_)));
   } else if (!dock_requested && was_docked) {
     UpdateBrowserWindow();

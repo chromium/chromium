@@ -244,7 +244,7 @@ TEST_F(TabsApiUnitTest, IsTabStripEditable) {
 
   // Clean up.
   while (!browser()->tab_strip_model()->empty())
-    browser()->tab_strip_model()->DetachWebContentsAt(0);
+    browser()->tab_strip_model()->DetachAndDeleteWebContentsAt(0);
 }
 
 TEST_F(TabsApiUnitTest, QueryWithoutTabsPermission) {
@@ -305,7 +305,7 @@ TEST_F(TabsApiUnitTest, QueryWithoutTabsPermission) {
   EXPECT_EQ(ExtensionTabUtil::GetTabId(web_contentses[2]), third_tab_id);
 
   while (!browser()->tab_strip_model()->empty())
-    browser()->tab_strip_model()->DetachWebContentsAt(0);
+    browser()->tab_strip_model()->DetachAndDeleteWebContentsAt(0);
 }
 
 TEST_F(TabsApiUnitTest, QueryWithHostPermission) {
@@ -389,7 +389,7 @@ TEST_F(TabsApiUnitTest, QueryWithHostPermission) {
     EXPECT_TRUE(base::Contains(expected_tabs_ids, third_tab_id));
   }
   while (!browser()->tab_strip_model()->empty())
-    browser()->tab_strip_model()->DetachWebContentsAt(0);
+    browser()->tab_strip_model()->DetachAndDeleteWebContentsAt(0);
 }
 
 // Test that using the PDF extension for tab updates is treated as a

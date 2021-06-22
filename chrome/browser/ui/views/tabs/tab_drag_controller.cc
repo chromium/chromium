@@ -1361,7 +1361,8 @@ std::unique_ptr<TabDragController> TabDragController::Detach(
     // Hide the tab so that the user doesn't see it animate closed.
     drag_data_[i].attached_view->SetVisible(false);
     drag_data_[i].attached_view->set_detached();
-    drag_data_[i].owned_contents = attached_model->DetachWebContentsAt(index);
+    drag_data_[i].owned_contents =
+        attached_model->DetachWebContentsAtForInsertion(index);
 
     // Detaching may end up deleting the tab, drop references to it.
     drag_data_[i].attached_view = nullptr;
@@ -1781,7 +1782,8 @@ void TabDragController::RevertDragAt(size_t drag_index) {
       // The Tab was inserted into another TabDragContext. We need to
       // put it back into the original one.
       std::unique_ptr<content::WebContents> detached_web_contents =
-          attached_context_->GetTabStripModel()->DetachWebContentsAt(index);
+          attached_context_->GetTabStripModel()
+              ->DetachWebContentsAtForInsertion(index);
       // TODO(beng): (Cleanup) seems like we should use Attach() for this
       //             somehow.
       source_context_->GetTabStripModel()->InsertWebContentsAt(

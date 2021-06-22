@@ -123,7 +123,7 @@ TEST_F(TabStripModelStatsRecorderTest, ObserveMultipleTabStrips) {
       static_cast<int>(TabStripModelStatsRecorder::TabState::INACTIVE), 2);
 
   // Move the first tab in strip 1 to strip 2
-  tabstrip2.InsertWebContentsAt(2, tabstrip1.DetachWebContentsAt(0),
+  tabstrip2.InsertWebContentsAt(2, tabstrip1.DetachWebContentsAtForInsertion(0),
                                 TabStripModel::ADD_ACTIVE);
 
   tester.ExpectUniqueSample(

@@ -181,7 +181,7 @@ IN_PROC_BROWSER_TEST_F(ConstrainedWindowViewTest, TabMoveTest) {
   // That prevents the first browser window from closing when its tab is moved.
   chrome::NewTab(browser());
   std::unique_ptr<content::WebContents> owned_web_contents =
-      browser()->tab_strip_model()->DetachWebContentsAt(
+      browser()->tab_strip_model()->DetachWebContentsAtForInsertion(
           browser()->tab_strip_model()->GetIndexOfWebContents(web_contents));
   Browser* browser2 = CreateBrowser(browser()->profile());
   browser2->tab_strip_model()->AppendWebContents(std::move(owned_web_contents),

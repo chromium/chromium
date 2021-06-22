@@ -869,7 +869,8 @@ void MoveTabsToNewWindow(Browser* browser,
     int adjusted_index = tab_indices[i] - i;
     bool pinned = browser->tab_strip_model()->IsTabPinned(adjusted_index);
     std::unique_ptr<WebContents> contents_move =
-        browser->tab_strip_model()->DetachWebContentsAt(adjusted_index);
+        browser->tab_strip_model()->DetachWebContentsAtForInsertion(
+            adjusted_index);
 
     int add_types = pinned ? TabStripModel::ADD_PINNED : 0;
     // The last tab made active takes precedence, so activate the last active
@@ -944,7 +945,8 @@ void MoveTabsToExistingWindow(Browser* source,
     int adjusted_index = tab_indices[i] - i;
     bool pinned = source->tab_strip_model()->IsTabPinned(adjusted_index);
     std::unique_ptr<WebContents> contents_move =
-        source->tab_strip_model()->DetachWebContentsAt(adjusted_index);
+        source->tab_strip_model()->DetachWebContentsAtForInsertion(
+            adjusted_index);
     int add_types = TabStripModel::ADD_ACTIVE |
                     (pinned ? TabStripModel::ADD_PINNED : 0);
     target->tab_strip_model()->AddWebContents(
@@ -1009,7 +1011,7 @@ void ConvertPopupToTabbedBrowser(Browser* browser) {
   base::RecordAction(UserMetricsAction("ShowAsTab"));
   TabStripModel* tab_strip = browser->tab_strip_model();
   std::unique_ptr<content::WebContents> contents =
-      tab_strip->DetachWebContentsAt(tab_strip->active_index());
+      tab_strip->DetachWebContentsAtForInsertion(tab_strip->active_index());
   Browser* b = Browser::Create(Browser::CreateParams(browser->profile(), true));
   b->tab_strip_model()->AppendWebContents(std::move(contents), true);
   b->window()->Show();
@@ -1667,7 +1669,8 @@ Browser* OpenInChrome(Browser* hosted_app_browser) {
   }
 
   target_browser->tab_strip_model()->AppendWebContents(
-      source_tabstrip->DetachWebContentsAt(source_tabstrip->active_index()),
+      source_tabstrip->DetachWebContentsAtForInsertion(
+          source_tabstrip->active_index()),
       true);
   target_browser->window()->Show();
   return target_browser;

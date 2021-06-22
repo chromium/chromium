@@ -103,7 +103,7 @@ void SafeBrowsingPrivateApiUnitTest::SetUp() {
 
 void SafeBrowsingPrivateApiUnitTest::TearDown() {
   while (!browser()->tab_strip_model()->empty())
-    browser()->tab_strip_model()->DetachWebContentsAt(0);
+    browser()->tab_strip_model()->DetachAndDeleteWebContentsAt(0);
   browser_window_.reset();
 
   // Make sure the NetworkContext owned by SafeBrowsingService is destructed

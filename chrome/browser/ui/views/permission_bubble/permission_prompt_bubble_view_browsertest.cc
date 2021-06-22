@@ -262,7 +262,7 @@ IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleViewBrowserTest,
   // detachTabsToNewWindow:..].
   std::vector<TabStripModelDelegate::NewStripContents> contentses(1);
   contentses.back().add_types = TabStripModel::ADD_ACTIVE;
-  contentses.back().web_contents = strip->DetachWebContentsAt(0);
+  contentses.back().web_contents = strip->DetachWebContentsAtForInsertion(0);
   Browser* dragging_browser = strip->delegate()->CreateNewStripWithContents(
       std::move(contentses), gfx::Rect(100, 100, 640, 480), false);
 
@@ -270,7 +270,7 @@ IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleViewBrowserTest,
   // [BrowserWindowController moveTabViews:..].
   TabStripModel* drag_strip = dragging_browser->tab_strip_model();
   std::unique_ptr<content::WebContents> removed_contents =
-      drag_strip->DetachWebContentsAt(0);
+      drag_strip->DetachWebContentsAtForInsertion(0);
   strip->InsertWebContentsAt(0, std::move(removed_contents),
                              TabStripModel::ADD_ACTIVE);
 

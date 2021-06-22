@@ -100,7 +100,7 @@ class CurrentTabDesktopMediaListTest : public testing::Test {
     // necessary.
     TabStripModel* tab_strip_model = browser_->tab_strip_model();
     for (WebContents* contents : all_web_contents_) {
-      tab_strip_model->DetachWebContentsAt(
+      tab_strip_model->DetachAndDeleteWebContentsAt(
           tab_strip_model->GetIndexOfWebContents(contents));
     }
     all_web_contents_.clear();
@@ -137,7 +137,7 @@ class CurrentTabDesktopMediaListTest : public testing::Test {
 
   void RemoveWebContents(WebContents* web_contents) {
     TabStripModel* tab_strip_model = browser_->tab_strip_model();
-    tab_strip_model->DetachWebContentsAt(
+    tab_strip_model->DetachAndDeleteWebContentsAt(
         tab_strip_model->GetIndexOfWebContents(web_contents));
     all_web_contents_.erase(std::remove(all_web_contents_.begin(),
                                         all_web_contents_.end(), web_contents),

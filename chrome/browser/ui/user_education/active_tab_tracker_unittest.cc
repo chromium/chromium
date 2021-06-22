@@ -89,7 +89,7 @@ TEST_F(ActiveTabTrackerTest, NotifiesOnActiveTabClosed) {
 
   tracker.RemoveTabStripModel(&model);
 
-  model.DetachWebContentsAt(0);
+  model.DetachAndDeleteWebContentsAt(0);
 }
 
 TEST_F(ActiveTabTrackerTest, UpdatesTimes) {
@@ -114,7 +114,7 @@ TEST_F(ActiveTabTrackerTest, UpdatesTimes) {
 
   tracker.RemoveTabStripModel(&model);
 
-  model.DetachWebContentsAt(0);
+  model.DetachAndDeleteWebContentsAt(0);
 }
 
 TEST_F(ActiveTabTrackerTest, IgnoresInactiveTabs) {
@@ -134,7 +134,7 @@ TEST_F(ActiveTabTrackerTest, IgnoresInactiveTabs) {
 
   tracker.RemoveTabStripModel(&model);
 
-  model.DetachWebContentsAt(0);
+  model.DetachAndDeleteWebContentsAt(0);
 }
 
 TEST_F(ActiveTabTrackerTest, TracksMultipleTabStripModels) {
@@ -170,8 +170,8 @@ TEST_F(ActiveTabTrackerTest, TracksMultipleTabStripModels) {
   tracker.RemoveTabStripModel(&model_1);
   tracker.RemoveTabStripModel(&model_2);
 
-  model_1.DetachWebContentsAt(0);
-  model_2.DetachWebContentsAt(0);
+  model_1.DetachAndDeleteWebContentsAt(0);
+  model_2.DetachAndDeleteWebContentsAt(0);
 }
 
 TEST_F(ActiveTabTrackerTest, StopsObservingUponRemove) {
@@ -190,5 +190,5 @@ TEST_F(ActiveTabTrackerTest, StopsObservingUponRemove) {
   EXPECT_CALL(cb, Run(_, _)).Times(0);
   CloseTabAt(&model, 0);
 
-  model.DetachWebContentsAt(0);
+  model.DetachAndDeleteWebContentsAt(0);
 }

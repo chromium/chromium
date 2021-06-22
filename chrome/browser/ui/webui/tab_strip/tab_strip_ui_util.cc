@@ -64,7 +64,8 @@ void MoveTabAcrossWindows(Browser* source_browser,
   bool was_pinned = source_browser->tab_strip_model()->IsTabPinned(from_index);
 
   std::unique_ptr<content::WebContents> detached_contents =
-      source_browser->tab_strip_model()->DetachWebContentsAt(from_index);
+      source_browser->tab_strip_model()->DetachWebContentsAtForInsertion(
+          from_index);
 
   int add_types = TabStripModel::ADD_NONE;
   if (was_active) {

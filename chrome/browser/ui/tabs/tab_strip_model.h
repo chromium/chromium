@@ -230,11 +230,13 @@ class TabStripModel : public TabGroupController {
       int index,
       std::unique_ptr<content::WebContents> new_contents);
 
-  // Detaches the WebContents at the specified index from this strip. The
-  // WebContents is not destroyed, just removed from display. The caller
-  // is responsible for doing something with it (e.g. stuffing it into another
-  // strip). Returns the detached WebContents.
-  std::unique_ptr<content::WebContents> DetachWebContentsAt(int index);
+  // Detaches the WebContents at the specified index for reinsertion into
+  // another tab strip. Returns the detached WebContents.
+  std::unique_ptr<content::WebContents> DetachWebContentsAtForInsertion(
+      int index);
+
+  // Detaches the WebContents at the specified index and immediately deletes it.
+  void DetachAndDeleteWebContentsAt(int index);
 
   // User gesture type that triggers ActivateTabAt. kNone indicates that it was
   // not triggered by a user gesture, but by a by-product of some other action.
@@ -606,6 +608,14 @@ class TabStripModel : public TabGroupController {
   class WebContentsData;
   struct DetachedWebContents;
   struct DetachNotifications;
+
+  // Detaches the WebContents at the specified |index| from this strip. |reason|
+  // is used to indicate to observers what is going to happen to the WebContents
+  // (i.e. deleted or reinserted into another tab strip). Returns the detached
+  // WebContents.
+  std::unique_ptr<content::WebContents> DetachWebContentsWithReasonAt(
+      int index,
+      TabStripModelChange::RemoveReason reason);
 
   // Performs all the work to detach a WebContents instance but avoids sending
   // most notifications. TabClosingAt() and TabDetachedAt() are sent because

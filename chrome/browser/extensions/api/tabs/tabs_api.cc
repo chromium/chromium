@@ -326,7 +326,7 @@ int MoveTabToWindow(ExtensionFunction* function,
   }
 
   std::unique_ptr<content::WebContents> web_contents =
-      source_tab_strip->DetachWebContentsAt(source_index);
+      source_tab_strip->DetachWebContentsAtForInsertion(source_index);
   if (!web_contents) {
     *error = ErrorUtils::FormatErrorMessage(tabs_constants::kTabNotFoundError,
                                             base::NumberToString(tab_id));
@@ -704,7 +704,7 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
   if (window_type == Browser::TYPE_NORMAL || urls.empty()) {
     if (source_tab_strip) {
       std::unique_ptr<content::WebContents> detached_tab =
-          source_tab_strip->DetachWebContentsAt(tab_index);
+          source_tab_strip->DetachWebContentsAtForInsertion(tab_index);
       contents = detached_tab.get();
       TabStripModel* target_tab_strip =
           ExtensionTabUtil::GetEditableTabStripModel(new_window);

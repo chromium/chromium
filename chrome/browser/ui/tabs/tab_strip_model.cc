@@ -430,8 +430,22 @@ std::unique_ptr<content::WebContents> TabStripModel::ReplaceWebContentsAt(
   return old_contents;
 }
 
-std::unique_ptr<content::WebContents> TabStripModel::DetachWebContentsAt(
-    int index) {
+std::unique_ptr<content::WebContents>
+TabStripModel::DetachWebContentsAtForInsertion(int index) {
+  return DetachWebContentsWithReasonAt(
+      index, TabStripModelChange::RemoveReason::kInsertedIntoOtherTabStrip);
+}
+
+void TabStripModel::DetachAndDeleteWebContentsAt(int index) {
+  // Drops the returned unique pointer.
+  DetachWebContentsWithReasonAt(index,
+                                TabStripModelChange::RemoveReason::kDeleted);
+}
+
+std::unique_ptr<content::WebContents>
+TabStripModel::DetachWebContentsWithReasonAt(
+    int index,
+    TabStripModelChange::RemoveReason reason) {
   ReentrancyCheck reentrancy_check(&reentrancy_guard_);
 
   DCHECK_NE(active_index(), kNoTab) << "Activate the TabStripModel by "
@@ -446,9 +460,7 @@ std::unique_ptr<content::WebContents> TabStripModel::DetachWebContentsAt(
       std::make_unique<DetachedWebContents>(
           index, index,
           DetachWebContentsImpl(index, /*create_historical_tab=*/false),
-          // TODO(https://crbug.com/2564529): Add case for kCached once the
-          // hooking logic is implemented.
-          TabStripModelChange::RemoveReason::kInsertedIntoOtherTabStrip);
+          reason);
   notifications.detached_web_contents.push_back(std::move(dwc));
   SendDetachWebContentsNotifications(&notifications);
   return std::move(notifications.detached_web_contents[0]->contents);

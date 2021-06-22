@@ -985,7 +985,7 @@ IN_PROC_BROWSER_TEST_F(DeclarativeContentApiTest,
 
   // Remove the second tab, then trigger a rule evaluation for the remaining
   // tab.
-  browser()->tab_strip_model()->DetachWebContentsAt(
+  browser()->tab_strip_model()->DetachAndDeleteWebContentsAt(
       browser()->tab_strip_model()->GetIndexOfWebContents(tab2));
   NavigateInRenderer(tab1, GURL("http://test1/"));
   EXPECT_TRUE(action->GetIsVisible(ExtensionTabUtil::GetTabId(tab1)));

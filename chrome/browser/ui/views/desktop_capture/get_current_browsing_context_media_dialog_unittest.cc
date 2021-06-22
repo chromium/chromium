@@ -67,7 +67,8 @@ class GetCurrentBrowsingContextMediaDialogTest
     DesktopMediaPickerManager::Get()->AddObserver(&mock_dialog_observer_);
     AddTab(browser(), GURL(url::kAboutBlankURL));
 
-    web_contents_ = browser()->tab_strip_model()->DetachWebContentsAt(0);
+    web_contents_ =
+        browser()->tab_strip_model()->DetachWebContentsAtForInsertion(0);
     web_contents_->SetDelegate(&web_delegate_);
 
     // Creates the parent widget which is needed for creating child widgets.

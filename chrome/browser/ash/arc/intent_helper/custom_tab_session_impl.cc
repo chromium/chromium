@@ -70,7 +70,7 @@ CustomTabSessionImpl::~CustomTabSessionImpl() {
     tab_strip_model->RemoveObserver(this);
     int index = tab_strip_model->GetIndexOfWebContents(
         tab_strip_model->GetActiveWebContents());
-    tab_strip_model->DetachWebContentsAt(index);
+    tab_strip_model->DetachAndDeleteWebContentsAt(index);
   }
 }
 

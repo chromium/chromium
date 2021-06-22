@@ -230,10 +230,9 @@ void AuthSessionRequest::DestroyWebContents() {
   // has no tabs left. Close the tab this way (as opposed to, say,
   // TabStripModel::CloseWebContentsAt) so that the web page will no longer be
   // able to show any dialogs, particularly a `beforeunload` one.
-  std::unique_ptr<content::WebContents> this_contents =
-      browser_->tab_strip_model()->DetachWebContentsAt(0);
-  // Leaving this function will cause the destruction of the WebContents,
-  // triggering a call to WebContentsDestroyed() below.
+  browser_->tab_strip_model()->DetachAndDeleteWebContentsAt(0);
+  // The destruction of the WebContents triggers a call to
+  // WebContentsDestroyed() below.
 }
 
 void AuthSessionRequest::CancelAuthSession() {

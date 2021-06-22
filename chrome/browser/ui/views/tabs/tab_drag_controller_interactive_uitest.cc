@@ -1824,7 +1824,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   ASSERT_TRUE(TabDragController::IsActive());
 
   // Delete the tab being dragged.
-  browser()->tab_strip_model()->DetachWebContentsAt(0);
+  browser()->tab_strip_model()->DetachWebContentsAtForInsertion(0);
 
   // Should have canceled dragging.
   ASSERT_FALSE(tab_strip->GetDragContext()->IsDragSessionActive());
@@ -1876,7 +1876,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   ASSERT_TRUE(TabDragController::IsActive());
 
   // Delete the tab being dragged.
-  browser()->tab_strip_model()->DetachWebContentsAt(0);
+  browser()->tab_strip_model()->DetachWebContentsAtForInsertion(0);
 
   // Should have canceled dragging.
   ASSERT_FALSE(tab_strip->GetDragContext()->IsDragSessionActive());

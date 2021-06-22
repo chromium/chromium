@@ -165,7 +165,7 @@ void MoveTab(int from_browser_index, int to_browser_index, int tab_index) {
       test()
           ->GetBrowser(from_browser_index)
           ->tab_strip_model()
-          ->DetachWebContentsAt(tab_index);
+          ->DetachWebContentsAtForInsertion(tab_index);
 
   TabStripModel* target_strip =
       test()->GetBrowser(to_browser_index)->tab_strip_model();

@@ -54,7 +54,7 @@ Browser* ReparentWebContentsIntoAppBrowser(content::WebContents* contents,
   if (source_tabstrip->count() == 1)
     chrome::NewTab(source_browser);
   target_browser->tab_strip_model()->AppendWebContents(
-      source_tabstrip->DetachWebContentsAt(
+      source_tabstrip->DetachWebContentsAtForInsertion(
           source_tabstrip->GetIndexOfWebContents(contents)),
       true);
   target_browser->window()->Show();

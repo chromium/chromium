@@ -411,7 +411,7 @@ void ExtensionContextMenuModelTest::TearDown() {
   // Remove any tabs in the tab strip; else the test crashes.
   if (browser_) {
     while (!browser_->tab_strip_model()->empty())
-      browser_->tab_strip_model()->DetachWebContentsAt(0);
+      browser_->tab_strip_model()->DetachAndDeleteWebContentsAt(0);
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

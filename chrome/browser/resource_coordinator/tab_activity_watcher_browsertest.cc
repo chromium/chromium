@@ -368,7 +368,7 @@ IN_PROC_BROWSER_TEST_F(TabActivityWatcherTest, TabDrag) {
   content::WebContents* dragged_contents =
       browser()->tab_strip_model()->GetWebContentsAt(1);
   std::unique_ptr<content::WebContents> owned_dragged_contents =
-      browser()->tab_strip_model()->DetachWebContentsAt(1);
+      browser()->tab_strip_model()->DetachWebContentsAtForInsertion(1);
   dragged_contents->WasHidden();
   // The other tab in the browser is now foregrounded.
   ExpectNewForegroundedEntry(kBrowserStartUrl);

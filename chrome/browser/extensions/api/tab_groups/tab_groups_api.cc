@@ -291,7 +291,7 @@ bool TabGroupsMoveFunction::MoveGroup(int group_id,
         // Detach tabs from the same index each time, since each detached tab is
         // removed from the model, and groups are always contiguous.
         std::unique_ptr<content::WebContents> web_contents =
-            source_tab_strip->DetachWebContentsAt(tabs.start());
+            source_tab_strip->DetachWebContentsAtForInsertion(tabs.start());
 
         // Attach tabs in consecutive indices, to insert them in the same order.
         target_tab_strip->InsertWebContentsAt(new_index + i,

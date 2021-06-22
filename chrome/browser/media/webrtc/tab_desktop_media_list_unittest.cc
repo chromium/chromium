@@ -169,7 +169,7 @@ class TabDesktopMediaListTest : public testing::Test {
     // necessary. https://crbug.com/832879.
     TabStripModel* tab_strip_model = browser_->tab_strip_model();
     for (WebContents* contents : manually_added_web_contents_) {
-      tab_strip_model->DetachWebContentsAt(
+      tab_strip_model->DetachAndDeleteWebContentsAt(
           tab_strip_model->GetIndexOfWebContents(contents));
     }
     manually_added_web_contents_.clear();
@@ -266,7 +266,7 @@ TEST_F(TabDesktopMediaListTest, RemoveTab) {
   TabStripModel* tab_strip_model = browser_->tab_strip_model();
   ASSERT_TRUE(tab_strip_model);
   std::unique_ptr<WebContents> released_web_contents =
-      tab_strip_model->DetachWebContentsAt(kDefaultSourceCount - 1);
+      tab_strip_model->DetachWebContentsAtForInsertion(kDefaultSourceCount - 1);
   base::Erase(manually_added_web_contents_, released_web_contents.get());
 
   EXPECT_CALL(observer_, OnSourceRemoved(list_.get(), 0))

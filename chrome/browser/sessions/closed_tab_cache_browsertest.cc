@@ -47,7 +47,7 @@ IN_PROC_BROWSER_TEST_F(ClosedTabCacheTest, StoreEntryWhenEmpty) {
   ASSERT_EQ(browser()->tab_strip_model()->count(), 2);
 
   std::unique_ptr<WebContents> wc =
-      browser()->tab_strip_model()->DetachWebContentsAt(0);
+      browser()->tab_strip_model()->DetachWebContentsAtForInsertion(0);
 
   ASSERT_TRUE(cache.IsEmpty())
       << "Expected cache to be empty at the start of the test.";
@@ -68,9 +68,9 @@ IN_PROC_BROWSER_TEST_F(ClosedTabCacheTest, StoreEntryBasic) {
   ASSERT_EQ(browser()->tab_strip_model()->count(), 3);
 
   std::unique_ptr<WebContents> wc1 =
-      browser()->tab_strip_model()->DetachWebContentsAt(0);
+      browser()->tab_strip_model()->DetachWebContentsAtForInsertion(0);
   std::unique_ptr<WebContents> wc2 =
-      browser()->tab_strip_model()->DetachWebContentsAt(0);
+      browser()->tab_strip_model()->DetachWebContentsAtForInsertion(0);
 
   ASSERT_TRUE(cache.IsEmpty())
       << "Expected cache to be empty at the start of the test.";
@@ -93,9 +93,9 @@ IN_PROC_BROWSER_TEST_F(ClosedTabCacheTest, StoreEntryWhenFull) {
   ASSERT_EQ(browser()->tab_strip_model()->count(), 3);
 
   std::unique_ptr<WebContents> wc1 =
-      browser()->tab_strip_model()->DetachWebContentsAt(0);
+      browser()->tab_strip_model()->DetachWebContentsAtForInsertion(0);
   std::unique_ptr<WebContents> wc2 =
-      browser()->tab_strip_model()->DetachWebContentsAt(0);
+      browser()->tab_strip_model()->DetachWebContentsAtForInsertion(0);
   SessionID id1 = SessionID::NewUnique();
 
   ASSERT_TRUE(cache.IsEmpty())
@@ -131,7 +131,7 @@ IN_PROC_BROWSER_TEST_F(ClosedTabCacheTest, RestoreEntryWhenNotFound) {
   ASSERT_EQ(browser()->tab_strip_model()->count(), 2);
 
   std::unique_ptr<WebContents> wc =
-      browser()->tab_strip_model()->DetachWebContentsAt(0);
+      browser()->tab_strip_model()->DetachWebContentsAtForInsertion(0);
 
   ASSERT_TRUE(cache.IsEmpty())
       << "Expected cache to be empty at the start of the test.";
@@ -152,7 +152,7 @@ IN_PROC_BROWSER_TEST_F(ClosedTabCacheTest, RestoreEntryWhenFound) {
   ASSERT_EQ(browser()->tab_strip_model()->count(), 2);
 
   std::unique_ptr<WebContents> wc =
-      browser()->tab_strip_model()->DetachWebContentsAt(0);
+      browser()->tab_strip_model()->DetachWebContentsAtForInsertion(0);
 
   ASSERT_TRUE(cache.IsEmpty())
       << "Expected cache to be empty at the start of the test.";
@@ -176,7 +176,7 @@ IN_PROC_BROWSER_TEST_F(ClosedTabCacheTest, EvictEntryOnTimeout) {
   ASSERT_EQ(browser()->tab_strip_model()->count(), 2);
 
   std::unique_ptr<WebContents> wc =
-      browser()->tab_strip_model()->DetachWebContentsAt(0);
+      browser()->tab_strip_model()->DetachWebContentsAtForInsertion(0);
 
   ASSERT_TRUE(cache.IsEmpty())
       << "Expected cache to be empty at the start of the test.";
@@ -209,7 +209,7 @@ IN_PROC_BROWSER_TEST_F(ClosedTabCacheTest, MemoryPressureLevelCritical) {
   ASSERT_EQ(browser()->tab_strip_model()->count(), 2);
 
   std::unique_ptr<WebContents> wc =
-      browser()->tab_strip_model()->DetachWebContentsAt(0);
+      browser()->tab_strip_model()->DetachWebContentsAtForInsertion(0);
 
   ASSERT_TRUE(cache.IsEmpty())
       << "Expected cache to be empty at the start of the test.";
@@ -238,7 +238,7 @@ IN_PROC_BROWSER_TEST_F(ClosedTabCacheTest, MemoryPressureLevelModerate) {
   ASSERT_EQ(browser()->tab_strip_model()->count(), 2);
 
   std::unique_ptr<WebContents> wc =
-      browser()->tab_strip_model()->DetachWebContentsAt(0);
+      browser()->tab_strip_model()->DetachWebContentsAtForInsertion(0);
 
   ASSERT_TRUE(cache.IsEmpty())
       << "Expected cache to be empty at the start of the test.";

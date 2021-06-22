@@ -143,7 +143,7 @@ class TabLifecycleUnitTest : public ChromeRenderViewHostTestHarness {
 
   void TearDown() override {
     while (!tab_strip_model_->empty())
-      tab_strip_model_->DetachWebContentsAt(0);
+      tab_strip_model_->DetachAndDeleteWebContentsAt(0);
     tab_strip_model_.reset();
     usage_clock_.reset();
     metrics::DesktopSessionDurationTracker::CleanupForTesting();
