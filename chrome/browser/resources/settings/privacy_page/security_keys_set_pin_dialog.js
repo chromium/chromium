@@ -16,9 +16,9 @@ import 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import '../settings_shared_css.js';
 
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 
@@ -35,166 +35,188 @@ export const SetPINDialogPage = {
   SUCCESS: 'success',
 };
 
-Polymer({
-  is: 'settings-security-keys-set-pin-dialog',
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const SettingsSecurityKeysSetPinDialogElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
 
-  behaviors: [I18nBehavior],
+/** @polymer */
+class SettingsSecurityKeysSetPinDialogElement extends
+    SettingsSecurityKeysSetPinDialogElementBase {
+  static get is() {
+    return 'settings-security-keys-set-pin-dialog';
+  }
 
-  properties: {
-    /**
-     * Whether the value of the current PIN textbox is a valid PIN or not.
-     * @private
-     */
-    currentPINValid_: Boolean,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /** @private */
-    newPINValid_: Boolean,
+  static get properties() {
+    return {
+      /**
+       * Whether the value of the current PIN textbox is a valid PIN or not.
+       * @private
+       */
+      currentPINValid_: Boolean,
 
-    /** @private */
-    confirmPINValid_: Boolean,
+      /** @private */
+      newPINValid_: Boolean,
 
-    /**
-     * Whether the dialog is in a state where the Set PIN button should be
-     * enabled. Read by Polymer.
-     * @private
-     */
-    setPINButtonValid_: {
-      type: Boolean,
-      value: false,
-    },
+      /** @private */
+      confirmPINValid_: Boolean,
 
-    /**
-     * The value of the new PIN textbox. Read/write by Polymer.
-     * @private
-     */
-    newPIN_: {
-      type: String,
-      value: '',
-    },
+      /**
+       * Whether the dialog is in a state where the Set PIN button should be
+       * enabled. Read by Polymer.
+       * @private
+       */
+      setPINButtonValid_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /** @private */
-    confirmPIN_: {
-      type: String,
-      value: '',
-    },
+      /**
+       * The value of the new PIN textbox. Read/write by Polymer.
+       * @private
+       */
+      newPIN_: {
+        type: String,
+        value: '',
+      },
 
-    /** @private */
-    currentPIN_: {
-      type: String,
-      value: '',
-    },
+      /** @private */
+      confirmPIN_: {
+        type: String,
+        value: '',
+      },
 
-    /**
-     * The minimum length for the currently set PIN.
-     * @type {number|undefined}
-     * @private
-     */
-    currentMinPinLength_: Number,
+      /** @private */
+      currentPIN_: {
+        type: String,
+        value: '',
+      },
 
-    /**
-     * The minimum length to set a new PIN.
-     * @type {number|undefined}
-     * @private
-     */
-    newMinPinLength_: {
-      type: Number,
-      observer: 'newMinPinLengthChanged_',
-    },
+      /**
+       * The minimum length for the currently set PIN.
+       * @type {number|undefined}
+       * @private
+       */
+      currentMinPinLength_: Number,
 
-    /**
-     * The number of PIN attempts remaining.
-     * @type {number|undefined}
-     * @private
-     */
-    retries_: Number,
+      /**
+       * The minimum length to set a new PIN.
+       * @type {number|undefined}
+       * @private
+       */
+      newMinPinLength_: {
+        type: Number,
+        observer: 'newMinPinLengthChanged_',
+      },
 
-    /**
-     * A CTAP error code when we don't recognise the specific error. Read by
-     * Polymer.
-     * @type {number|undefined}
-     * @private
-     */
-    errorCode_: Number,
+      /**
+       * The number of PIN attempts remaining.
+       * @type {number|undefined}
+       * @private
+       */
+      retries_: Number,
 
-    /**
-     * Whether an entry for the current PIN should be displayed. (If no PIN
-     * has been set then it won't be shown.)
-     * @private
-     */
-    showCurrentEntry_: {
-      type: Boolean,
-      value: false,
-    },
+      /**
+       * A CTAP error code when we don't recognise the specific error. Read by
+       * Polymer.
+       * @type {number|undefined}
+       * @private
+       */
+      errorCode_: Number,
 
-    /**
-     * Error string to display under the current PIN entry, or empty.
-     * @private
-     */
-    currentPINError_: {
-      type: String,
-      value: '',
-    },
+      /**
+       * Whether an entry for the current PIN should be displayed. (If no PIN
+       * has been set then it won't be shown.)
+       * @private
+       */
+      showCurrentEntry_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /**
-     * Error string to display under the new PIN entry, or empty.
-     * @private
-     */
-    newPINError_: {
-      type: String,
-      value: '',
-    },
+      /**
+       * Error string to display under the current PIN entry, or empty.
+       * @private
+       */
+      currentPINError_: {
+        type: String,
+        value: '',
+      },
 
-    /**
-     * Error string to display under the confirmation PIN entry, or empty.
-     * @private
-     */
-    confirmPINError_: {
-      type: String,
-      value: '',
-    },
+      /**
+       * Error string to display under the new PIN entry, or empty.
+       * @private
+       */
+      newPINError_: {
+        type: String,
+        value: '',
+      },
 
-    /**
-     * Whether the dialog process has completed, successfully or otherwise.
-     * @private
-     */
-    complete_: {
-      type: Boolean,
-      value: false,
-    },
+      /**
+       * Error string to display under the confirmation PIN entry, or empty.
+       * @private
+       */
+      confirmPINError_: {
+        type: String,
+        value: '',
+      },
 
-    /**
-     * The id of an element on the page that is currently shown.
-     * @private {!SetPINDialogPage}
-     */
-    shown_: {
-      type: String,
-      value: SetPINDialogPage.INITIAL,
-    },
+      /**
+       * Whether the dialog process has completed, successfully or otherwise.
+       * @private
+       */
+      complete_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /**
-     * Whether the contents of the PIN entries are visible, or are displayed
-     * like passwords.
-     * @private
-     */
-    pinsVisible_: {
-      type: Boolean,
-      value: false,
-    },
+      /**
+       * The id of an element on the page that is currently shown.
+       * @private {!SetPINDialogPage}
+       */
+      shown_: {
+        type: String,
+        value: SetPINDialogPage.INITIAL,
+      },
 
-    /** @private */
-    title_: String,
+      /**
+       * Whether the contents of the PIN entries are visible, or are displayed
+       * like passwords.
+       * @private
+       */
+      pinsVisible_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /** @private */
-    newPINDialogDescription_: String,
-  },
+      /** @private */
+      title_: String,
 
-  /** @private {?SecurityKeysPINBrowserProxy} */
-  browserProxy_: null,
+      /** @private */
+      newPINDialogDescription_: String,
+
+    };
+  }
+
+  constructor() {
+    super();
+
+    /** @private {?SecurityKeysPINBrowserProxy} */
+    this.browserProxy_ = null;
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     this.title_ = this.i18n('securityKeysSetPINInitialTitle');
     this.browserProxy_ = SecurityKeysPINBrowserProxyImpl.getInstance();
     this.$.dialog.showModal();
@@ -253,16 +275,26 @@ Polymer({
             window.setTimeout(function() {
               focusTarget.focus();
             }, 0);
-            this.fire('ui-ready');  // for test synchronization.
+            this.fire_('ui-ready');  // for test synchronization.
           }
         });
-  },
+  }
+
+  /**
+   * @param {string} eventName
+   * @param {*=} detail
+   * @private
+   */
+  fire_(eventName, detail) {
+    this.dispatchEvent(
+        new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
+  }
 
   /** @private */
   closeDialog_() {
     this.$.dialog.close();
     this.finish_();
-  },
+  }
 
   /** @private */
   finish_() {
@@ -276,7 +308,7 @@ Polymer({
     // handled by cr-dialog itself. Re-focusing manually fixes this.
     this.$.dialog.focus();
     this.browserProxy_.close();
-  },
+  }
 
   /**
    * @param {!Event} e
@@ -286,28 +318,28 @@ Polymer({
     // Prevent this event from bubbling since it is unnecessarily triggering
     // the listener within settings-animated-pages.
     e.stopPropagation();
-  },
+  }
 
   /** @private */
   onCurrentPINInput_() {
     // Typing in the current PIN box after an error makes the error message
     // disappear.
     this.currentPINError_ = '';
-  },
+  }
 
   /** @private */
   onNewPINInput_() {
     // Typing in the new PIN box after an error makes the error message
     // disappear.
     this.newPINError_ = '';
-  },
+  }
 
   /** @private */
   onConfirmPINInput_() {
     // Typing in the confirm PIN box after an error makes the error message
     // disappear.
     this.confirmPINError_ = '';
-  },
+  }
 
   /**
     @param {string} pin A candidate PIN.
@@ -345,7 +377,7 @@ Polymer({
     }
 
     return '';
-  },
+  }
 
   /**
    * @param {number} retries The number of PIN attempts remaining.
@@ -361,7 +393,7 @@ Polymer({
       return this.i18n('securityKeysPINIncorrectRetriesSin');
     }
     return this.i18n('securityKeysPINIncorrect');
-  },
+  }
 
   /**
    * Called to set focus from inside a callback.
@@ -380,7 +412,7 @@ Polymer({
       preFocusTarget.focus();
       focusTarget.focus();
     }, 0);
-  },
+  }
 
   /**
    * Called by Polymer when the Set PIN button is activated.
@@ -392,7 +424,7 @@ Polymer({
           this.isValidPIN_(this.currentPIN_, this.currentMinPinLength_);
       if (this.currentPINError_ !== '') {
         this.focusOn_(this.$.currentPIN);
-        this.fire('ui-ready');  // for test synchronization.
+        this.fire_('ui-ready');  // for test synchronization.
         return;
       }
     }
@@ -400,21 +432,21 @@ Polymer({
     this.newPINError_ = this.isValidPIN_(this.newPIN_, this.newMinPinLength_);
     if (this.newPINError_ !== '') {
       this.focusOn_(this.$.newPIN);
-      this.fire('ui-ready');  // for test synchronization.
+      this.fire_('ui-ready');  // for test synchronization.
       return;
     }
 
     if (this.newPIN_ !== this.confirmPIN_) {
       this.confirmPINError_ = this.i18n('securityKeysPINMismatch');
       this.focusOn_(this.$.confirmPIN);
-      this.fire('ui-ready');  // for test synchronization.
+      this.fire_('ui-ready');  // for test synchronization.
       return;
     }
 
     if (this.newPIN_ === this.currentPIN_) {
       this.newPINError_ = this.i18n('securityKeysSamePINAsCurrent');
       this.focusOn_(this.$.newPIN);
-      this.fire('ui-ready');  // for test synchronization.
+      this.fire_('ui-ready');  // for test synchronization.
       return;
     }
 
@@ -440,7 +472,7 @@ Polymer({
                 this.mismatchError_(/** @type {number} */ (this.retries_));
             this.setPINButtonValid_ = true;
             this.focusOn_(this.$.currentPIN);
-            this.fire('ui-ready');  // for test synchronization.
+            this.fire_('ui-ready');  // for test synchronization.
           } else {
             // Unknown error.
             this.errorCode_ = error;
@@ -448,7 +480,7 @@ Polymer({
             this.finish_();
           }
         });
-  },
+  }
 
   /**
    * onClick handler for the show/hide icon.
@@ -456,7 +488,7 @@ Polymer({
    */
   showPINsClick_() {
     this.pinsVisible_ = !this.pinsVisible_;
-  },
+  }
 
   /**
    * Polymer helper function to detect when an error string is empty.
@@ -466,7 +498,7 @@ Polymer({
    */
   isNonEmpty_(s) {
     return s !== '';
-  },
+  }
 
   /**
    * Called by Polymer when |errorCode_| changes to set the error string.
@@ -477,7 +509,7 @@ Polymer({
       return '';
     }
     return this.i18n('securityKeysPINError', this.errorCode_.toString());
-  },
+  }
 
   /**
    * @return {string} The class of the Ok / Cancel button.
@@ -485,7 +517,7 @@ Polymer({
    */
   maybeActionButton_() {
     return this.complete_ ? 'action-button' : 'cancel-button';
-  },
+  }
 
   /**
    * @return {string} The label of the Ok / Cancel button.
@@ -493,7 +525,7 @@ Polymer({
    */
   closeText_() {
     return this.i18n(this.complete_ ? 'ok' : 'cancel');
-  },
+  }
 
   /**
    * @private
@@ -503,7 +535,7 @@ Polymer({
         .getPluralString('securityKeysNewPIN',
                          /** @type {number} */ (this.newMinPinLength_))
         .then(string => this.newPINDialogDescription_ = string);
-  },
+  }
 
   /**
    * @return {string} The class (and thus icon) to be displayed.
@@ -511,7 +543,7 @@ Polymer({
    */
   showPINsClass_() {
     return 'icon-visibility' + (this.pinsVisible_ ? '-off' : '');
-  },
+  }
 
   /**
    * @return {string} The tooltip for the icon.
@@ -520,7 +552,7 @@ Polymer({
   showPINsTitle_() {
     return this.i18n(
         this.pinsVisible_ ? 'securityKeysHidePINs' : 'securityKeysShowPINs');
-  },
+  }
 
   /**
    * @return {string} The PIN-input element type.
@@ -528,5 +560,9 @@ Polymer({
    */
   inputType_() {
     return this.pinsVisible_ ? 'text' : 'password';
-  },
-});
+  }
+}
+
+customElements.define(
+    SettingsSecurityKeysSetPinDialogElement.is,
+    SettingsSecurityKeysSetPinDialogElement);

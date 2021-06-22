@@ -11,9 +11,9 @@ import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import '../settings_shared_css.js';
 
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
-import {afterNextRender, html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 
@@ -26,48 +26,66 @@ import {loadTimeData} from '../i18n_setup.js';
 let PINFieldSubmitFunc;
 
 
-Polymer({
-  is: 'settings-security-keys-pin-field',
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const SettingsSecurityKeysPinFieldElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
 
-  behaviors: [
-    I18nBehavior,
-  ],
+/** @polymer */
+export class SettingsSecurityKeysPinFieldElement extends
+    SettingsSecurityKeysPinFieldElementBase {
+  static get is() {
+    return 'settings-security-keys-pin-field';
+  }
 
-  properties: {
-    minPinLength: {
-      value: 4,
-      type: Number,
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /* @private */
-    error_: {
-      type: String,
-      observer: 'errorChanged_',
-    },
+  static get properties() {
+    return {
+      minPinLength: {
+        value: 4,
+        type: Number,
+      },
 
-    /* @private */
-    value_: String,
+      /* @private */
+      error_: {
+        type: String,
+        observer: 'errorChanged_',
+      },
 
-    /* @private */
-    inputVisible_: {
-      type: Boolean,
-      value: false,
-    },
-  },
+      /* @private */
+      value_: String,
+
+      /* @private */
+      inputVisible_: {
+        type: Boolean,
+        value: false,
+      },
+
+    };
+  }
+
+
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     afterNextRender(this, function() {
       IronA11yAnnouncer.requestAvailability();
     });
-  },
+  }
 
   /** Focuses the PIN input field. */
   focus() {
     this.$.pin.focus();
-  },
+  }
 
   /**
    * Validates the PIN and sets the validation error if it is not valid.
@@ -81,7 +99,7 @@ Polymer({
       return false;
     }
     return true;
-  },
+  }
 
   /**
    * Attempts submission of the PIN by invoking |submitFunc|. Updates the UI
@@ -101,7 +119,7 @@ Polymer({
         return Promise.reject();
       }
     });
-  },
+  }
 
   /**
    * Sets the validation error to indicate the PIN was incorrect.
@@ -120,14 +138,14 @@ Polymer({
       error = this.i18n('securityKeysPINIncorrect');
     }
     this.error_ = error;
-  },
+  }
 
   /** @private */
   onPINInput_() {
     // Typing in the PIN box after an error makes the error message
     // disappear.
     this.error_ = '';
-  },
+  }
 
   /**
    * Polymer helper function to detect when an error string is empty.
@@ -137,7 +155,7 @@ Polymer({
    */
   isNonEmpty_(s) {
     return s !== '';
-  },
+  }
 
   /**
    * @return {string} The PIN-input element type.
@@ -145,7 +163,7 @@ Polymer({
    */
   inputType_() {
     return this.inputVisible_ ? 'text' : 'password';
-  },
+  }
 
   /**
    * @return {string} The class (and thus icon) to be displayed.
@@ -153,7 +171,7 @@ Polymer({
    */
   showButtonClass_() {
     return 'icon-visibility' + (this.inputVisible_ ? '-off' : '');
-  },
+  }
 
   /**
    * @return {string} The tooltip for the icon.
@@ -162,7 +180,7 @@ Polymer({
   showButtonTitle_() {
     return this.i18n(
         this.inputVisible_ ? 'securityKeysHidePINs' : 'securityKeysShowPINs');
-  },
+  }
 
   /**
    * onClick handler for the show/hide icon.
@@ -170,7 +188,7 @@ Polymer({
    */
   showButtonClick_() {
     this.inputVisible_ = !this.inputVisible_;
-  },
+  }
 
   /**
    * @param {string} pin A candidate PIN.
@@ -208,12 +226,18 @@ Polymer({
     }
 
     return '';
-  },
+  }
 
   /** @private */
   errorChanged_() {
     // Make screen readers announce changes to the PIN validation error
     // label.
-    this.fire('iron-announce', {text: this.error_});
-  },
-});
+    this.dispatchEvent(new CustomEvent(
+        'iron-announce',
+        {bubbles: true, composed: true, detail: {text: this.error_}}));
+  }
+}
+
+customElements.define(
+    SettingsSecurityKeysPinFieldElement.is,
+    SettingsSecurityKeysPinFieldElement);
