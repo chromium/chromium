@@ -37,6 +37,11 @@ class COMPONENT_EXPORT(SQL) MetaTable {
   // Returns true if the 'meta' table exists.
   static bool DoesTableExist(Database* db);
 
+  // Deletes the 'meta' table if it exists, returning false if an internal error
+  // occurred during the deletion and true otherwise (no matter whether the
+  // table existed).
+  static bool DeleteTableForTesting(Database* db);
+
   // If the current version of the database is less than or equal to
   // |deprecated_version|, raze the database. Must be called outside of a
   // transaction.

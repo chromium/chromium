@@ -42,6 +42,14 @@ TEST_F(SQLMetaTableTest, DoesTableExist) {
   EXPECT_TRUE(MetaTable::DoesTableExist(&db_));
 }
 
+TEST_F(SQLMetaTableTest, DeleteTableForTesting) {
+  MetaTable meta_table;
+  EXPECT_TRUE(meta_table.Init(&db_, 1, 1));
+
+  EXPECT_TRUE(MetaTable::DeleteTableForTesting(&db_));
+  EXPECT_FALSE(MetaTable::DoesTableExist(&db_));
+}
+
 TEST_F(SQLMetaTableTest, RazeIfDeprecated) {
   const int kDeprecatedVersion = 1;
   const int kVersion = 2;

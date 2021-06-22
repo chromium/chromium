@@ -37,6 +37,12 @@ bool MetaTable::DoesTableExist(sql::Database* db) {
 }
 
 // static
+bool MetaTable::DeleteTableForTesting(sql::Database* db) {
+  DCHECK(db);
+  return db->Execute("DROP TABLE IF EXISTS meta");
+}
+
+// static
 bool MetaTable::GetMmapStatus(Database* db, int64_t* status) {
   const char* kMmapStatusSql = "SELECT value FROM meta WHERE key = ?";
   Statement s(db->GetUniqueStatement(kMmapStatusSql));
