@@ -284,11 +284,10 @@ Vector<Color> InspectorContrast::GetBackgroundColors(Element* element,
 }
 
 // Get the elements which overlap the given rectangle.
-std::vector<Member<Node>> InspectorContrast::ElementsFromRect(
-    const PhysicalRect& rect,
-    Document& document) {
+std::vector<Node*> InspectorContrast::ElementsFromRect(const PhysicalRect& rect,
+                                                       Document& document) {
   CollectNodesAndBuildRTreeIfNeeded();
-  std::vector<Member<Node>> overlapping_elements;
+  std::vector<Node*> overlapping_elements;
   rtree_.Search(PixelSnappedIntRect(rect), &overlapping_elements);
   return overlapping_elements;
 }
@@ -298,8 +297,7 @@ bool InspectorContrast::GetColorsFromRect(PhysicalRect rect,
                                           Element* top_element,
                                           Vector<Color>& colors,
                                           float* text_opacity) {
-  std::vector<Member<Node>> elements_under_rect =
-      ElementsFromRect(rect, document);
+  std::vector<Node*> elements_under_rect = ElementsFromRect(rect, document);
 
   bool found_opaque_color = false;
   bool found_top_element = false;
@@ -308,7 +306,7 @@ bool InspectorContrast::GetColorsFromRect(PhysicalRect rect,
 
   for (auto e = elements_under_rect.begin();
        !found_top_element && e != elements_under_rect.end(); ++e) {
-    const Element* element = To<Element>(e->Get());
+    const Element* element = To<Element>(*e);
     if (element == top_element)
       found_top_element = true;
 
@@ -366,7 +364,7 @@ bool InspectorContrast::GetColorsFromRect(PhysicalRect rect,
     AddColorsFromImageStyle(*style, *layout_object, colors, found_opaque_color,
                             found_non_transparent_color);
 
-    bool contains = found_top_element || GetNodeRect(e->Get()).Contains(rect);
+    bool contains = found_top_element || GetNodeRect(*e).Contains(rect);
     if (!contains && found_non_transparent_color) {
       // Only return colors if some opaque element covers up this one.
       colors.clear();
