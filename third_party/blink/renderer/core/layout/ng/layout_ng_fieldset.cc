@@ -107,7 +107,7 @@ void LayoutNGFieldset::UpdateAnonymousChildStyle(
   child_style.SetPaddingBottom(StyleRef().PaddingBottom());
   child_style.SetPaddingLeft(StyleRef().PaddingLeft());
 
-  if (StyleRef().SpecifiesColumns()) {
+  if (StyleRef().SpecifiesColumns() && AllowsColumns()) {
     child_style.SetColumnCount(StyleRef().ColumnCount());
     child_style.SetColumnWidth(StyleRef().ColumnWidth());
   } else {

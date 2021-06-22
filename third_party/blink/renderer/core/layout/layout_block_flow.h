@@ -363,6 +363,9 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
   void ComputeInlinePreferredLogicalWidths(LayoutUnit& min_logical_width,
                                            LayoutUnit& max_logical_width);
 
+  // Return true if this object is allowed to establish a multicol container.
+  bool AllowsColumns() const;
+
   bool AllowsPaginationStrut() const;
   // Pagination strut caused by the first line or child block inside this
   // block-level object.
