@@ -111,7 +111,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest, CloseWithKeyboard) {
   // Open a new picker.
   ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileMenuManageProfiles);
   WaitForLayoutWithoutToolbar();
-  WaitForFirstPaint(web_contents(), GURL("chrome://profile-picker"));
+  WaitForLoadStop(web_contents(), GURL("chrome://profile-picker"));
   EXPECT_TRUE(ProfilePicker::IsOpen());
   SendCloseWindowKeyboardCommand();
   WaitForPickerClosed();
@@ -126,7 +126,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest, ExitWithKeyboard) {
   // Open a new picker.
   ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileMenuManageProfiles);
   WaitForLayoutWithoutToolbar();
-  WaitForFirstPaint(web_contents(), GURL("chrome://profile-picker"));
+  WaitForLoadStop(web_contents(), GURL("chrome://profile-picker"));
   EXPECT_TRUE(ProfilePicker::IsOpen());
 
   content::WindowedNotificationObserver terminate_observer(
@@ -155,7 +155,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
   // Open a new picker.
   ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileMenuManageProfiles);
   WaitForLayoutWithoutToolbar();
-  WaitForFirstPaint(web_contents(), GURL("chrome://profile-picker"));
+  WaitForLoadStop(web_contents(), GURL("chrome://profile-picker"));
   EXPECT_TRUE(ProfilePicker::IsOpen());
 
   EXPECT_FALSE(widget()->IsFullscreen());
@@ -194,8 +194,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
 
   // Switch to the signin webview.
   WaitForLayoutWithToolbar();
-  WaitForFirstPaint(web_contents(),
-                    GaiaUrls::GetInstance()->signin_chrome_sync_dice());
+  WaitForLoadStop(web_contents(),
+                  GaiaUrls::GetInstance()->signin_chrome_sync_dice());
 
   // Close the picker with the keyboard.
   EXPECT_TRUE(ProfilePicker::IsOpen());
@@ -212,12 +212,11 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
   // back to the picker makes sense.
   ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileMenuManageProfiles);
   WaitForLayoutWithoutToolbar();
-  WaitForFirstPaint(web_contents(), GURL("chrome://profile-picker"));
+  WaitForLoadStop(web_contents(), GURL("chrome://profile-picker"));
   web_contents()->GetController().LoadURL(
       GURL("chrome://profile-picker/new-profile"), content::Referrer(),
       ui::PAGE_TRANSITION_AUTO_TOPLEVEL, std::string());
-  WaitForFirstPaint(web_contents(),
-                    GURL("chrome://profile-picker/new-profile"));
+  WaitForLoadStop(web_contents(), GURL("chrome://profile-picker/new-profile"));
 
   // Simulate a click on the signin button.
   base::MockCallback<base::OnceCallback<void(bool)>> switch_finished_callback;
@@ -226,19 +225,18 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
 
   // Switch to the signin webview.
   WaitForLayoutWithToolbar();
-  WaitForFirstPaint(web_contents(),
-                    GaiaUrls::GetInstance()->signin_chrome_sync_dice());
+  WaitForLoadStop(web_contents(),
+                  GaiaUrls::GetInstance()->signin_chrome_sync_dice());
 
   // Navigate back with the keyboard.
   SendBackKeyboardCommand();
 
   WaitForLayoutWithoutToolbar();
-  WaitForFirstPaint(web_contents(),
-                    GURL("chrome://profile-picker/new-profile"));
+  WaitForLoadStop(web_contents(), GURL("chrome://profile-picker/new-profile"));
 
   // Navigate again back with the keyboard.
   SendBackKeyboardCommand();
-  WaitForFirstPaint(web_contents(), GURL("chrome://profile-picker"));
+  WaitForLoadStop(web_contents(), GURL("chrome://profile-picker"));
 
   // Navigating back once again does nothing.
   SendBackKeyboardCommand();

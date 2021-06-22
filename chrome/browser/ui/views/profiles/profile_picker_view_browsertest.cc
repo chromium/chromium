@@ -278,8 +278,8 @@ class ProfilePickerCreationFlowBrowserTest : public ProfilePickerTestBase {
     // The DICE navigation happens in a new web contents (for the profile being
     // created), wait for it.
     WaitForLayoutWithToolbar();
-    WaitForFirstPaint(web_contents(),
-                      GaiaUrls::GetInstance()->signin_chrome_sync_dice());
+    WaitForLoadStop(web_contents(),
+                    GaiaUrls::GetInstance()->signin_chrome_sync_dice());
     return static_cast<Profile*>(web_contents()->GetBrowserContext());
   }
 
@@ -397,7 +397,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest, ShowPicker) {
   // loads and after it loads.
   views::WidgetDelegate* delegate = widget()->widget_delegate();
   EXPECT_NE(delegate->GetWindowTitle(), delegate->GetAccessibleWindowTitle());
-  WaitForFirstPaint(web_contents(), GURL("chrome://profile-picker"));
+  WaitForLoadStop(web_contents(), GURL("chrome://profile-picker"));
   EXPECT_NE(delegate->GetWindowTitle(), delegate->GetAccessibleWindowTitle());
 }
 
@@ -409,8 +409,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest, ShowChoice) {
   // loads and after it loads.
   views::WidgetDelegate* delegate = widget()->widget_delegate();
   EXPECT_NE(delegate->GetWindowTitle(), delegate->GetAccessibleWindowTitle());
-  WaitForFirstPaint(web_contents(),
-                    GURL("chrome://profile-picker/new-profile"));
+  WaitForLoadStop(web_contents(), GURL("chrome://profile-picker/new-profile"));
   EXPECT_NE(delegate->GetWindowTitle(), delegate->GetAccessibleWindowTitle());
 }
 
@@ -424,14 +423,14 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 
   // Wait for the sign-in to propagate to the flow, resulting in sync
   // confirmation screen getting displayed.
-  WaitForFirstPaint(web_contents(), GURL("chrome://sync-confirmation/"));
+  WaitForLoadStop(web_contents(), GURL("chrome://sync-confirmation/"));
 
   // Simulate closing the UI with "No, thanks".
   LoginUIServiceFactory::GetForProfile(profile_being_created)
       ->SyncConfirmationUIClosed(LoginUIService::ABORT_SYNC);
   Browser* new_browser = BrowserAddedWaiter(2u).Wait();
-  WaitForFirstPaint(new_browser->tab_strip_model()->GetActiveWebContents(),
-                    GURL("chrome://newtab/"));
+  WaitForLoadStop(new_browser->tab_strip_model()->GetActiveWebContents(),
+                  GURL("chrome://newtab/"));
 
   // Check expectations when the profile creation flow is done.
   WaitForPickerClosed();
@@ -461,7 +460,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 
   // Wait for the sign-in to propagate to the flow, resulting in sync
   // confirmation screen getting displayed.
-  WaitForFirstPaint(web_contents(), GURL("chrome://sync-confirmation/"));
+  WaitForLoadStop(web_contents(), GURL("chrome://sync-confirmation/"));
 
   // Close the flow with the [X] button.
   widget()->CloseWithReason(views::Widget::ClosedReason::kCloseButtonClicked);
@@ -473,14 +472,14 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 
   // As the flow for `profile_to_cancel` got aborted, it's disregarded. Instead
   // of the profile switch screen, the normal sync confirmation should appear.
-  WaitForFirstPaint(web_contents(), GURL("chrome://sync-confirmation/"));
+  WaitForLoadStop(web_contents(), GURL("chrome://sync-confirmation/"));
 
   // Simulate closing the UI with "No, thanks".
   LoginUIServiceFactory::GetForProfile(profile_being_created)
       ->SyncConfirmationUIClosed(LoginUIService::ABORT_SYNC);
   Browser* new_browser = BrowserAddedWaiter(2u).Wait();
-  WaitForFirstPaint(new_browser->tab_strip_model()->GetActiveWebContents(),
-                    GURL("chrome://newtab/"));
+  WaitForLoadStop(new_browser->tab_strip_model()->GetActiveWebContents(),
+                  GURL("chrome://newtab/"));
 
   // Check expectations when the profile creation flow is done.
   WaitForPickerClosed();
@@ -517,14 +516,14 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 
   // Wait for the sign-in to propagate to the flow, resulting in sync
   // confirmation screen getting displayed.
-  WaitForFirstPaint(web_contents(), GURL("chrome://sync-confirmation/"));
+  WaitForLoadStop(web_contents(), GURL("chrome://sync-confirmation/"));
 
   // Simulate closing the UI with "No, thanks".
   LoginUIServiceFactory::GetForProfile(profile_being_created)
       ->SyncConfirmationUIClosed(LoginUIService::ABORT_SYNC);
   Browser* new_browser = BrowserAddedWaiter(2u).Wait();
-  WaitForFirstPaint(new_browser->tab_strip_model()->GetActiveWebContents(),
-                    GURL("chrome://newtab/"));
+  WaitForLoadStop(new_browser->tab_strip_model()->GetActiveWebContents(),
+                  GURL("chrome://newtab/"));
 
   // Check expectations when the profile creation flow is done.
   WaitForPickerClosed();
@@ -553,14 +552,14 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 
   // Wait for the sign-in to propagate to the flow, resulting in sync
   // confirmation screen getting displayed.
-  WaitForFirstPaint(web_contents(), GURL("chrome://sync-confirmation/"));
+  WaitForLoadStop(web_contents(), GURL("chrome://sync-confirmation/"));
 
   // Simulate closing the UI with "Yes, I'm in".
   LoginUIServiceFactory::GetForProfile(profile_being_created)
       ->SyncConfirmationUIClosed(LoginUIService::CONFIGURE_SYNC_FIRST);
   Browser* new_browser = BrowserAddedWaiter(2u).Wait();
-  WaitForFirstPaint(new_browser->tab_strip_model()->GetActiveWebContents(),
-                    GURL("chrome://settings/syncSetup"));
+  WaitForLoadStop(new_browser->tab_strip_model()->GetActiveWebContents(),
+                  GURL("chrome://settings/syncSetup"));
 
   // Check expectations when the profile creation flow is done.
   WaitForPickerClosed();
@@ -599,8 +598,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   // A new pppup browser is displayed (with the specified URL).
   Browser* new_browser = BrowserAddedWaiter(2u).Wait();
   EXPECT_EQ(new_browser->type(), Browser::TYPE_POPUP);
-  WaitForFirstPaint(new_browser->tab_strip_model()->GetActiveWebContents(),
-                    kURL);
+  WaitForLoadStop(new_browser->tab_strip_model()->GetActiveWebContents(), kURL);
 }
 
 // Regression test for crbug.com/1219980.
@@ -639,14 +637,14 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 
   // Wait for the sign-in to propagate to the flow, resulting in sync
   // confirmation screen getting displayed.
-  WaitForFirstPaint(web_contents(), GURL("chrome://sync-confirmation/"));
+  WaitForLoadStop(web_contents(), GURL("chrome://sync-confirmation/"));
 
   // Simulate closing the UI with "Yes, I'm in".
   LoginUIServiceFactory::GetForProfile(profile_being_created)
       ->SyncConfirmationUIClosed(LoginUIService::ABORT_SYNC);
   Browser* new_browser = BrowserAddedWaiter(2u).Wait();
-  WaitForFirstPaint(new_browser->tab_strip_model()->GetActiveWebContents(),
-                    GURL("chrome://newtab/"));
+  WaitForLoadStop(new_browser->tab_strip_model()->GetActiveWebContents(),
+                  GURL("chrome://newtab/"));
 
   // Check expectations when the profile creation flow is done.
   WaitForPickerClosed();
@@ -678,7 +676,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   wc->GetController().LoadURL(kNonGaiaURL, content::Referrer(),
                               ui::PAGE_TRANSITION_AUTO_TOPLEVEL, std::string());
   Browser* new_browser = BrowserAddedWaiter(2u).Wait();
-  WaitForFirstPaint(wc, kNonGaiaURL);
+  WaitForLoadStop(wc, kNonGaiaURL);
   WaitForPickerClosed();
 
   // Check that the web contents got actually moved to the browser.
@@ -801,8 +799,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest, OpenProfile) {
   OpenProfileFromPicker(other_path, /*open_settings=*/false);
   // Browser for the profile is displayed.
   Browser* new_browser = BrowserAddedWaiter(2u).Wait();
-  WaitForFirstPaint(new_browser->tab_strip_model()->GetActiveWebContents(),
-                    GURL("chrome://newtab/"));
+  WaitForLoadStop(new_browser->tab_strip_model()->GetActiveWebContents(),
+                  GURL("chrome://newtab/"));
   EXPECT_EQ(new_browser->profile()->GetPath(), other_path);
   WaitForPickerClosed();
   // IPH is shown.
@@ -823,8 +821,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   OpenProfileFromPicker(other_path, /*open_settings=*/true);
   // Browser for the profile is displayed.
   Browser* new_browser = BrowserAddedWaiter(2u).Wait();
-  WaitForFirstPaint(new_browser->tab_strip_model()->GetActiveWebContents(),
-                    GURL("chrome://settings/manageProfile"));
+  WaitForLoadStop(new_browser->tab_strip_model()->GetActiveWebContents(),
+                  GURL("chrome://settings/manageProfile"));
   EXPECT_EQ(new_browser->profile()->GetPath(), other_path);
   WaitForPickerClosed();
   // IPH is not shown.
@@ -845,8 +843,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   OpenProfileFromPicker(profile_path, /*open_settings=*/false);
   // Browser for the profile is displayed.
   Browser* new_browser = BrowserAddedWaiter(2u).Wait();
-  WaitForFirstPaint(new_browser->tab_strip_model()->GetActiveWebContents(),
-                    kTargetURL);
+  WaitForLoadStop(new_browser->tab_strip_model()->GetActiveWebContents(),
+                  kTargetURL);
   EXPECT_EQ(new_browser->profile()->GetPath(), profile_path);
   WaitForPickerClosed();
 }
@@ -867,8 +865,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   OpenProfileFromPicker(profile_path, /*open_settings=*/false);
   // Browser for the profile is displayed.
   Browser* new_browser = BrowserAddedWaiter(2u).Wait();
-  WaitForFirstPaint(new_browser->tab_strip_model()->GetActiveWebContents(),
-                    kTargetURL);
+  WaitForLoadStop(new_browser->tab_strip_model()->GetActiveWebContents(),
+                  kTargetURL);
   EXPECT_EQ(new_browser->profile()->GetPath(), profile_path);
   WaitForPickerClosed();
 }
@@ -888,8 +886,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   OpenGuestFromPicker();
   // Browser for the guest profile is displayed.
   Browser* new_browser = BrowserAddedWaiter(2u).Wait();
-  WaitForFirstPaint(new_browser->tab_strip_model()->GetActiveWebContents(),
-                    GURL("chrome://newtab"));
+  WaitForLoadStop(new_browser->tab_strip_model()->GetActiveWebContents(),
+                  GURL("chrome://newtab"));
   EXPECT_TRUE(new_browser->profile()->IsGuestSession() ||
               new_browser->profile()->IsEphemeralGuestProfile());
   WaitForPickerClosed();
@@ -923,8 +921,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowEphemeralGuestBrowserTest,
   OpenGuestFromPicker();
   // Browser for the guest profile is displayed.
   Browser* new_browser = BrowserAddedWaiter(2u).Wait();
-  WaitForFirstPaint(new_browser->tab_strip_model()->GetActiveWebContents(),
-                    GURL("chrome://newtab"));
+  WaitForLoadStop(new_browser->tab_strip_model()->GetActiveWebContents(),
+                  GURL("chrome://newtab"));
   EXPECT_TRUE(new_browser->profile()->IsGuestSession() ||
               new_browser->profile()->IsEphemeralGuestProfile());
   WaitForPickerClosed();
@@ -988,8 +986,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerSeparateEnterpriseCreationFlowBrowserTest,
   // The picker should be closed even before the enterprise confirmation but it
   // is closed asynchronously after opening the browser so after the NTP
   // renders, it is safe to check.
-  WaitForFirstPaint(new_browser->tab_strip_model()->GetActiveWebContents(),
-                    GURL("chrome://newtab/"));
+  WaitForLoadStop(new_browser->tab_strip_model()->GetActiveWebContents(),
+                  GURL("chrome://newtab/"));
   WaitForPickerClosed();
 
   // Now the sync consent screen is shown, simulate closing the UI with "No,
@@ -1031,8 +1029,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerSeparateEnterpriseCreationFlowBrowserTest,
   // Wait for the sign-in to propagate to the flow, resulting in new browser
   // getting opened.
   Browser* new_browser = BrowserAddedWaiter(2u).Wait();
-  WaitForFirstPaint(new_browser->tab_strip_model()->GetActiveWebContents(),
-                    GURL("chrome://newtab/"));
+  WaitForLoadStop(new_browser->tab_strip_model()->GetActiveWebContents(),
+                  GURL("chrome://newtab/"));
 
   WaitForPickerClosed();
 
@@ -1092,8 +1090,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerSeparateEnterpriseCreationFlowBrowserTest,
   // The picker should be closed even before the enterprise confirmation but it
   // is closed asynchronously after opening the browser so after the NTP
   // renders, it is safe to check.
-  WaitForFirstPaint(new_browser->tab_strip_model()->GetActiveWebContents(),
-                    GURL("chrome://newtab/"));
+  WaitForLoadStop(new_browser->tab_strip_model()->GetActiveWebContents(),
+                  GURL("chrome://newtab/"));
   WaitForPickerClosed();
 
   // Now the sync disabled screen is shown, simulate closing the UI with "Stay
@@ -1143,8 +1141,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerSeparateEnterpriseCreationFlowBrowserTest,
   // "Configure sync".
   LoginUIServiceFactory::GetForProfile(profile_being_created)
       ->SyncConfirmationUIClosed(LoginUIService::CONFIGURE_SYNC_FIRST);
-  WaitForFirstPaint(new_browser->tab_strip_model()->GetActiveWebContents(),
-                    GURL("chrome://settings/syncSetup"));
+  WaitForLoadStop(new_browser->tab_strip_model()->GetActiveWebContents(),
+                  GURL("chrome://settings/syncSetup"));
 
   // Check expectations when the profile creation flow is done.
   WaitForPickerClosed();
@@ -1197,22 +1195,21 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerIntegratedEnterpriseCreationFlowBrowserTest,
 
   // Wait for the sign-in to propagate to the flow, resulting in enterprise
   // welcome screen getting displayed.
-  WaitForFirstPaint(web_contents(),
-                    GURL("chrome://enterprise-profile-welcome/"));
+  WaitForLoadStop(web_contents(), GURL("chrome://enterprise-profile-welcome/"));
 
   ExpectEnterpriseScreenTypeAndProceed(
       /*expected_type=*/EnterpriseProfileWelcomeUI::ScreenType::
           kEntepriseAccountSyncEnabled,
       /*proceed=*/true);
 
-  WaitForFirstPaint(web_contents(), GURL("chrome://sync-confirmation/"));
+  WaitForLoadStop(web_contents(), GURL("chrome://sync-confirmation/"));
   // Simulate finishing the flow with "No, thanks".
   LoginUIServiceFactory::GetForProfile(profile_being_created)
       ->SyncConfirmationUIClosed(LoginUIService::ABORT_SYNC);
 
   Browser* new_browser = BrowserAddedWaiter(2u).Wait();
-  WaitForFirstPaint(new_browser->tab_strip_model()->GetActiveWebContents(),
-                    GURL("chrome://newtab/"));
+  WaitForLoadStop(new_browser->tab_strip_model()->GetActiveWebContents(),
+                  GURL("chrome://newtab/"));
   WaitForPickerClosed();
 
   // Check expectations when the profile creation flow is done.
@@ -1250,8 +1247,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerIntegratedEnterpriseCreationFlowBrowserTest,
 
   // Wait for the sign-in to propagate to the flow, resulting in enterprise
   // welcome screen getting displayed.
-  WaitForFirstPaint(web_contents(),
-                    GURL("chrome://enterprise-profile-welcome/"));
+  WaitForLoadStop(web_contents(), GURL("chrome://enterprise-profile-welcome/"));
 
   ExpectEnterpriseScreenTypeAndProceed(
       /*expected_type=*/EnterpriseProfileWelcomeUI::ScreenType::
@@ -1259,8 +1255,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerIntegratedEnterpriseCreationFlowBrowserTest,
       /*proceed=*/true);
 
   Browser* new_browser = BrowserAddedWaiter(2u).Wait();
-  WaitForFirstPaint(new_browser->tab_strip_model()->GetActiveWebContents(),
-                    GURL("chrome://newtab/"));
+  WaitForLoadStop(new_browser->tab_strip_model()->GetActiveWebContents(),
+                  GURL("chrome://newtab/"));
   WaitForPickerClosed();
 
   // Check expectations when the profile creation flow is done.
@@ -1295,22 +1291,21 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerIntegratedEnterpriseCreationFlowBrowserTest,
 
   // Wait for the sign-in to propagate to the flow, resulting in enterprise
   // welcome screen getting displayed.
-  WaitForFirstPaint(web_contents(),
-                    GURL("chrome://enterprise-profile-welcome/"));
+  WaitForLoadStop(web_contents(), GURL("chrome://enterprise-profile-welcome/"));
 
   ExpectEnterpriseScreenTypeAndProceed(
       /*expected_type=*/EnterpriseProfileWelcomeUI::ScreenType::
           kEntepriseAccountSyncEnabled,
       /*proceed=*/true);
 
-  WaitForFirstPaint(web_contents(), GURL("chrome://sync-confirmation/"));
+  WaitForLoadStop(web_contents(), GURL("chrome://sync-confirmation/"));
   // Simulate finishing the flow with "Configure sync".
   LoginUIServiceFactory::GetForProfile(profile_being_created)
       ->SyncConfirmationUIClosed(LoginUIService::CONFIGURE_SYNC_FIRST);
 
   Browser* new_browser = BrowserAddedWaiter(2u).Wait();
-  WaitForFirstPaint(new_browser->tab_strip_model()->GetActiveWebContents(),
-                    GURL("chrome://settings/syncSetup"));
+  WaitForLoadStop(new_browser->tab_strip_model()->GetActiveWebContents(),
+                  GURL("chrome://settings/syncSetup"));
   WaitForPickerClosed();
 
   // Check expectations when the profile creation flow is done.
@@ -1346,8 +1341,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerIntegratedEnterpriseCreationFlowBrowserTest,
 
   // Wait for the sign-in to propagate to the flow, resulting in enterprise
   // welcome screen getting displayed.
-  WaitForFirstPaint(web_contents(),
-                    GURL("chrome://enterprise-profile-welcome/"));
+  WaitForLoadStop(web_contents(), GURL("chrome://enterprise-profile-welcome/"));
 
   ProfileDeletionObserver observer;
   ExpectEnterpriseScreenTypeAndProceed(
@@ -1392,8 +1386,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerIntegratedEnterpriseCreationFlowBrowserTest,
 
   // The profile switch screen should be displayed.
   WaitForLayoutWithoutToolbar();
-  WaitForFirstPaint(web_contents(),
-                    GURL("chrome://profile-picker/profile-switch"));
+  WaitForLoadStop(web_contents(),
+                  GURL("chrome://profile-picker/profile-switch"));
   EXPECT_EQ(ProfilePicker::GetSwitchProfilePath(), other_path);
 
   // Simulate clicking on the confirm switch button.
@@ -1408,8 +1402,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerIntegratedEnterpriseCreationFlowBrowserTest,
 
   // Browser for a pre-existing profile is displayed.
   Browser* new_browser = BrowserAddedWaiter(2u).Wait();
-  WaitForFirstPaint(new_browser->tab_strip_model()->GetActiveWebContents(),
-                    GURL("chrome://newtab/"));
+  WaitForLoadStop(new_browser->tab_strip_model()->GetActiveWebContents(),
+                  GURL("chrome://newtab/"));
   EXPECT_EQ(new_browser->profile()->GetPath(), other_path);
 
   // Check expectations when the profile creation flow is done.
@@ -1447,8 +1441,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerIntegratedEnterpriseCreationFlowBrowserTest,
 
   // The profile switch screen should be displayed.
   WaitForLayoutWithoutToolbar();
-  WaitForFirstPaint(web_contents(),
-                    GURL("chrome://profile-picker/profile-switch"));
+  WaitForLoadStop(web_contents(),
+                  GURL("chrome://profile-picker/profile-switch"));
   EXPECT_EQ(ProfilePicker::GetSwitchProfilePath(), other_path);
 
   // Simulate clicking on the cancel button.
@@ -1577,14 +1571,14 @@ IN_PROC_BROWSER_TEST_P(ProfilePickerCreationFlowEphemeralProfileBrowserTest,
 
   // Wait for the sign-in to propagate to the flow, resulting in sync
   // confirmation screen getting displayed.
-  WaitForFirstPaint(web_contents(), GURL("chrome://sync-confirmation/"));
+  WaitForLoadStop(web_contents(), GURL("chrome://sync-confirmation/"));
 
   // Simulate closing the UI with "No, thanks".
   LoginUIServiceFactory::GetForProfile(profile_being_created)
       ->SyncConfirmationUIClosed(LoginUIService::ABORT_SYNC);
   Browser* new_browser = BrowserAddedWaiter(2u).Wait();
-  WaitForFirstPaint(new_browser->tab_strip_model()->GetActiveWebContents(),
-                    GURL("chrome://newtab/"));
+  WaitForLoadStop(new_browser->tab_strip_model()->GetActiveWebContents(),
+                  GURL("chrome://newtab/"));
 
   WaitForPickerClosed();
   EXPECT_EQ(2u, profile_manager()->GetNumberOfProfiles());

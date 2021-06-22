@@ -38,8 +38,8 @@ class ProfilePickerTestBase : public InProcessBrowserTest {
   void WaitForLayoutWithToolbar();
   void WaitForLayoutWithoutToolbar();
 
-  // Waits until the web contents does the first non-empty paint for `url`.
-  void WaitForFirstPaint(content::WebContents* contents, const GURL& url);
+  // Waits until the web contents stops loading `url`.
+  void WaitForLoadStop(content::WebContents* contents, const GURL& url);
 
   // Waits until the picker gets closed.
   void WaitForPickerClosed();
