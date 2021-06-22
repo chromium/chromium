@@ -649,7 +649,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InputMethod.NextWordPrediction" enum="BooleanEnabled"
-    expires_after="2021-10-17">
+    expires_after="2021-12-19">
   <owner>myy@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>

@@ -768,7 +768,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ServiceWorker.ScriptCachedMetadataSize" units="bytes"
-    expires_after="2021-10-17">
+    expires_after="2021-12-19">
   <owner>falken@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>

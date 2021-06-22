@@ -517,7 +517,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.Audio.EchoCanceller.DelayChanges"
-    enum="WebRTCEventFrequency" expires_after="2021-10-19">
+    enum="WebRTCEventFrequency" expires_after="2021-12-19">
   <owner>peah@chromium.org</owner>
   <owner>saza@chromium.org</owner>
   <summary>
@@ -727,7 +727,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.Audio.EchoCanceller.RenderOverruns"
-    enum="WebRTCEventFrequency" expires_after="2021-10-19">
+    enum="WebRTCEventFrequency" expires_after="2021-12-19">
   <owner>peah@chromium.org</owner>
   <owner>saza@chromium.org</owner>
   <summary>
@@ -738,7 +738,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.Audio.EchoCanceller.RenderUnderruns"
-    enum="WebRTCEventFrequency" expires_after="2021-10-19">
+    enum="WebRTCEventFrequency" expires_after="2021-12-19">
   <owner>peah@chromium.org</owner>
   <owner>saza@chromium.org</owner>
   <summary>

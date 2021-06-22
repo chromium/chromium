@@ -45,7 +45,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Cookie.CommitProblem" enum="CookieCommitProblem"
-    expires_after="2021-10-17">
+    expires_after="2021-12-19">
   <owner>morlovich@chromium.org</owner>
   <summary>
     Recorded when a problem occurs trying to commit changes to the cookie store
@@ -282,7 +282,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Cookie.LoadProblem" enum="CookieLoadProblem"
-    expires_after="2021-10-17">
+    expires_after="2021-12-19">
   <owner>morlovich@chromium.org</owner>
   <summary>
     Recorded when a problem is recorded when loading the persistent cookie
@@ -595,7 +595,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Cookie.SameSiteContextAffectedByBugfix1166211"
-    enum="BooleanAffected" expires_after="2021-10-17">
+    enum="BooleanAffected" expires_after="2021-12-19">
   <owner>chlily@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>
   <summary>
@@ -645,7 +645,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Cookie.SameSiteCookieInclusionChangedByBugfix1166211"
-    enum="BooleanChanged" expires_after="2021-10-17">
+    enum="BooleanChanged" expires_after="2021-12-19">
   <owner>chlily@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>
   <summary>
