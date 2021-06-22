@@ -7,7 +7,6 @@ import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.m.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import './collapse_radio_button.js';
-import './disable_safebrowsing_dialog.js';
 import './secure_dns.js';
 import '../controls/settings_toggle_button.js';
 import '../icons.js';
@@ -25,6 +24,7 @@ import {PrefsBehavior} from '../prefs/prefs_behavior.js';
 import {routes} from '../route.js';
 import {Route, RouteObserverBehavior, Router} from '../router.js';
 
+import {SettingsDisableSafebrowsingDialogElement} from './disable_safebrowsing_dialog.js';
 import {PrivacyPageBrowserProxy, PrivacyPageBrowserProxyImpl} from './privacy_page_browser_proxy.js';
 
 /**

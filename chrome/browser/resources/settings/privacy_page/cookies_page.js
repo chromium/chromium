@@ -21,14 +21,14 @@ import './do_not_track_toggle.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyElementInteractions} from '../metrics_browser_proxy.js';
-import {PrefsBehavior} from '../prefs/prefs_behavior.js';
+import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs/prefs_behavior.js';
 import {routes} from '../route.js';
-import {Route, RouteObserverBehavior, Router} from '../router.js';
+import {Route, RouteObserverBehavior, RouteObserverBehaviorInterface, Router} from '../router.js';
 import {ContentSetting, ContentSettingsTypes} from '../site_settings/constants.js';
 
 /**
@@ -56,109 +56,131 @@ const NetworkPredictionOptions = {
   DEFAULT: 1,
 };
 
-Polymer({
-  is: 'settings-cookies-page',
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {PrefsBehaviorInterface}
+ * @implements {RouteObserverBehaviorInterface}
+ * @implements {WebUIListenerBehaviorInterface}
+ */
+const SettingsCookiesPageElementBase = mixinBehaviors(
+    [PrefsBehavior, RouteObserverBehavior, WebUIListenerBehavior],
+    PolymerElement);
 
-  behaviors: [
-    PrefsBehavior,
-    RouteObserverBehavior,
-    WebUIListenerBehavior,
-  ],
+/** @polymer */
+export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
+  static get is() {
+    return 'settings-cookies-page';
+  }
 
-  properties: {
-    /**
-     * Preferences state.
-     */
-    prefs: {
-      type: Object,
-      notify: true,
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /**
-     * Current search term.
-     */
-    searchTerm: {
-      type: String,
-      notify: true,
-      value: '',
-    },
-
-    /**
-     * Primary cookie control states for use in bindings.
-     * @private
-     */
-    cookiePrimarySettingEnum_: {
-      type: Object,
-      value: CookiePrimarySetting,
-    },
-
-    /** @private */
-    enableContentSettingsRedesign_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('enableContentSettingsRedesign');
-      }
-    },
-
-    /**
-     * Used for HTML bindings. This is defined as a property rather than
-     * within the ready callback, because the value needs to be available
-     * before local DOM initialization - otherwise, the toggle has unexpected
-     * behavior.
-     * @private {!NetworkPredictionOptions}
-     */
-    networkPredictionUncheckedValue_: {
-      type: Number,
-      value: NetworkPredictionOptions.NEVER,
-    },
-
-    /** @private */
-    contentSetting_: {
-      type: Object,
-      value: ContentSetting,
-    },
-
-    /**
-     * @private {!ContentSettingsTypes}
-     */
-    cookiesContentSettingType_: {
-      type: String,
-      value: ContentSettingsTypes.COOKIES,
-    },
-
-    /** @private */
-    exceptionListsReadOnly_: {
-      type: Boolean,
-      value: false,
-    },
-
-    /** @private {!chrome.settingsPrivate.PrefObject} */
-    blockAllPref_: {
-      type: Object,
-      value() {
-        return /** @type {chrome.settingsPrivate.PrefObject} */ ({});
+  static get properties() {
+    return {
+      /**
+       * Preferences state.
+       */
+      prefs: {
+        type: Object,
+        notify: true,
       },
-    },
 
-    /** @type {!Map<string, (string|Function)>} */
-    focusConfig: {
-      type: Object,
-      observer: 'focusConfigChanged_',
-    },
-  },
+      /**
+       * Current search term.
+       */
+      searchTerm: {
+        type: String,
+        notify: true,
+        value: '',
+      },
 
-  observers: [`onGeneratedPrefsUpdated_(prefs.generated.cookie_session_only,
-      prefs.generated.cookie_primary_setting)`],
+      /**
+       * Primary cookie control states for use in bindings.
+       * @private
+       */
+      cookiePrimarySettingEnum_: {
+        type: Object,
+        value: CookiePrimarySetting,
+      },
 
-  /** @type {?MetricsBrowserProxy} */
-  metricsBrowserProxy_: null,
+      /** @private */
+      enableContentSettingsRedesign_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('enableContentSettingsRedesign');
+        }
+      },
+
+      /**
+       * Used for HTML bindings. This is defined as a property rather than
+       * within the ready callback, because the value needs to be available
+       * before local DOM initialization - otherwise, the toggle has unexpected
+       * behavior.
+       * @private {!NetworkPredictionOptions}
+       */
+      networkPredictionUncheckedValue_: {
+        type: Number,
+        value: NetworkPredictionOptions.NEVER,
+      },
+
+      /** @private */
+      contentSetting_: {
+        type: Object,
+        value: ContentSetting,
+      },
+
+      /**
+       * @private {!ContentSettingsTypes}
+       */
+      cookiesContentSettingType_: {
+        type: String,
+        value: ContentSettingsTypes.COOKIES,
+      },
+
+      /** @private */
+      exceptionListsReadOnly_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /** @private {!chrome.settingsPrivate.PrefObject} */
+      blockAllPref_: {
+        type: Object,
+        value() {
+          return /** @type {chrome.settingsPrivate.PrefObject} */ ({});
+        },
+      },
+
+      /** @type {!Map<string, (string|Function)>} */
+      focusConfig: {
+        type: Object,
+        observer: 'focusConfigChanged_',
+      },
+
+    };
+  }
+
+  static get observers() {
+    return [`onGeneratedPrefsUpdated_(prefs.generated.cookie_session_only,
+        prefs.generated.cookie_primary_setting)`];
+  }
+
+  constructor() {
+    super();
+
+    /** @type {?MetricsBrowserProxy} */
+    this.metricsBrowserProxy_ = null;
+  }
 
   /** @override */
   ready() {
+    super.ready();
+
     this.metricsBrowserProxy_ = MetricsBrowserProxyImpl.getInstance();
-  },
+  }
 
   /*
    * @param {!Map<string, string>} newConfig
@@ -169,25 +191,22 @@ Polymer({
     assert(!oldConfig);
     assert(routes.SITE_SETTINGS_SITE_DATA);
     this.focusConfig.set(routes.SITE_SETTINGS_SITE_DATA.path, () => {
-      focusWithoutInk(assert(this.$$('#site-data-trigger')));
+      focusWithoutInk(
+          assert(this.shadowRoot.querySelector('#site-data-trigger')));
     });
-  },
+  }
 
-  /**
-   * RouteObserverBehavior
-   * @param {!Route} route
-   * @protected
-   */
+  /** @override */
   currentRouteChanged(route) {
     if (route !== routes.COOKIES) {
       this.$.toast.hide();
     }
-  },
+  }
 
   /** @private */
   onSiteDataClick_() {
     Router.getInstance().navigateTo(routes.SITE_SETTINGS_SITE_DATA);
-  },
+  }
 
   /** @private */
   onGeneratedPrefsUpdated_() {
@@ -210,7 +229,7 @@ Polymer({
           controlledBy: sessionOnlyPref.controlledBy,
           controlledByName: sessionOnlyPref.controlledByName
         }));
-  },
+  }
 
   /**
    * Record interaction metrics for the primary cookie radio setting.
@@ -254,13 +273,13 @@ Polymer({
     }
 
     this.$.primarySettingGroup.sendPrefChange();
-  },
+  }
 
   /** @private */
   onClearOnExitChange_() {
     this.metricsBrowserProxy_.recordSettingsPageHistogram(
         PrivacyElementInteractions.COOKIES_SESSION);
-  },
+  }
 
   /**
    * Records changes made to the network prediction setting for logging, the
@@ -271,7 +290,7 @@ Polymer({
   onNetworkPredictionChange_() {
     this.metricsBrowserProxy_.recordSettingsPageHistogram(
         PrivacyElementInteractions.NETWORK_PREDICTION);
-  },
+  }
 
   /** @private */
   onPrivacySandboxClick_() {
@@ -280,5 +299,8 @@ Polymer({
     this.$.toast.hide();
     // TODO(crbug/1159942): Replace this with an ordinary OpenWindowProxy call.
     this.shadowRoot.getElementById('privacySandboxLink').click();
-  },
-});
+  }
+}
+
+customElements.define(
+    SettingsCookiesPageElement.is, SettingsCookiesPageElement);

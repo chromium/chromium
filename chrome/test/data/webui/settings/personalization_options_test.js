@@ -60,21 +60,21 @@ suite('PersonalizationOptionsTests_AllBuilds', function() {
   });
 
   test('DriveSearchSuggestControl', function() {
-    assertFalse(!!testElement.$$('#driveSuggestControl'));
+    assertFalse(!!testElement.shadowRoot.querySelector('#driveSuggestControl'));
 
     testElement.syncStatus = {
       signedIn: true,
       statusAction: StatusAction.NO_ACTION
     };
     flush();
-    assertTrue(!!testElement.$$('#driveSuggestControl'));
+    assertTrue(!!testElement.shadowRoot.querySelector('#driveSuggestControl'));
 
     testElement.syncStatus = {
       signedIn: true,
       statusAction: StatusAction.REAUTHENTICATE
     };
     flush();
-    assertFalse(!!testElement.$$('#driveSuggestControl'));
+    assertFalse(!!testElement.shadowRoot.querySelector('#driveSuggestControl'));
   });
 
   if (!isChromeOS) {
@@ -114,7 +114,8 @@ suite('PersonalizationOptionsTests_AllBuilds', function() {
       testElement.syncStatus = {signedIn: true};
       // When the user is signed in, clicking the toggle should open the
       // sign-out dialog.
-      assertFalse(!!testElement.$$('settings-signout-dialog'));
+      assertFalse(
+          !!testElement.shadowRoot.querySelector('settings-signout-dialog'));
       toggle.click();
       return eventToPromise('cr-dialog-open', testElement)
           .then(function() {
@@ -124,19 +125,22 @@ suite('PersonalizationOptionsTests_AllBuilds', function() {
             assertTrue(testElement.prefs.signin.allowed_on_next_startup.value);
             assertFalse(testElement.$.toast.open);
 
-            const signoutDialog = testElement.$$('settings-signout-dialog');
+            const signoutDialog =
+                testElement.shadowRoot.querySelector('settings-signout-dialog');
             assertTrue(!!signoutDialog);
-            assertTrue(signoutDialog.$$('#dialog').open);
+            assertTrue(signoutDialog.shadowRoot.querySelector('#dialog').open);
 
             // The user clicks cancel.
-            const cancel = signoutDialog.$$('#disconnectCancel');
+            const cancel =
+                signoutDialog.shadowRoot.querySelector('#disconnectCancel');
             cancel.click();
 
             return eventToPromise('close', signoutDialog);
           })
           .then(function() {
             flush();
-            assertFalse(!!testElement.$$('settings-signout-dialog'));
+            assertFalse(!!testElement.shadowRoot.querySelector(
+                'settings-signout-dialog'));
 
             // After the dialog is closed, the toggle remains turned on.
             assertTrue(toggle.checked);
@@ -149,12 +153,14 @@ suite('PersonalizationOptionsTests_AllBuilds', function() {
           })
           .then(function() {
             flush();
-            const signoutDialog = testElement.$$('settings-signout-dialog');
+            const signoutDialog =
+                testElement.shadowRoot.querySelector('settings-signout-dialog');
             assertTrue(!!signoutDialog);
-            assertTrue(signoutDialog.$$('#dialog').open);
+            assertTrue(signoutDialog.shadowRoot.querySelector('#dialog').open);
 
             // The user clicks confirm, which signs them out.
-            const disconnectConfirm = signoutDialog.$$('#disconnectConfirm');
+            const disconnectConfirm =
+                signoutDialog.shadowRoot.querySelector('#disconnectConfirm');
             disconnectConfirm.click();
 
             return eventToPromise('close', signoutDialog);

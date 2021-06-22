@@ -9,53 +9,61 @@
  */
 import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 
 import {PrivacyPageBrowserProxy, PrivacyPageBrowserProxyImpl} from './privacy_page_browser_proxy.js';
 
-Polymer({
-  is: 'secure-dns-input',
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+class SecureDnsInputElement extends PolymerElement {
+  static get is() {
+    return 'secure-dns-input';
+  }
 
-  properties: {
-    /*
-     * The value of the input field.
-     */
-    value: String,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /*
-     * Whether |errorText| should be displayed beneath the input field.
-     * @private
-     */
-    showError_: Boolean,
+  static get properties() {
+    return {
+      /*
+       * The value of the input field.
+       */
+      value: String,
 
-    /**
-     * The error text to display beneath the input field when |showError_| is
-     * true.
-     * @private
-     */
-    errorText_: String,
-  },
+      /*
+       * Whether |errorText| should be displayed beneath the input field.
+       * @private
+       */
+      showError_: Boolean,
 
-  /** @private {?PrivacyPageBrowserProxy} */
-  browserProxy_: null,
+      /**
+       * The error text to display beneath the input field when |showError_| is
+       * true.
+       * @private
+       */
+      errorText_: String,
 
-  /** @override */
-  created: function() {
+    };
+  }
+
+  constructor() {
+    super();
+
+    /** @private {!PrivacyPageBrowserProxy} */
     this.browserProxy_ = PrivacyPageBrowserProxyImpl.getInstance();
-  },
+  }
 
   /**
    * This function ensures that while the user is entering input, especially
    * after pressing Enter, the input is not prematurely marked as invalid.
    * @private
    */
-  onInput_: function() {
+  onInput_() {
     this.showError_ = false;
-  },
+  }
 
   /**
    * When the custom input field loses focus, validate the current value and
@@ -65,7 +73,7 @@ Polymer({
    * query.
    * @private
    */
-  validate: async function() {
+  async validate() {
     this.showError_ = false;
     const valueToValidate = this.value;
     const templates =
@@ -88,21 +96,27 @@ Polymer({
                   'secureDnsCustomFormatError');
       this.showError_ = true;
     }
-    this.fire('value-update', {isValid: valid, text: valueToValidate});
-  },
+    this.dispatchEvent(new CustomEvent('value-update', {
+      bubbles: true,
+      composed: true,
+      detail: {isValid: valid, text: valueToValidate}
+    }));
+  }
 
   /**
    * Focus the custom dns input field.
    */
-  focus: function() {
+  focus() {
     this.$.input.focus();
-  },
+  }
 
   /**
    * Returns whether an error is being shown.
    * @return {boolean}
    */
-  isInvalid: function() {
+  isInvalid() {
     return !!this.showError_;
-  },
-});
+  }
+}
+
+customElements.define(SecureDnsInputElement.is, SecureDnsInputElement);

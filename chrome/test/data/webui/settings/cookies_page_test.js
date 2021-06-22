@@ -5,7 +5,7 @@
 // clang-format off
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {ContentSetting, ContentSettingsTypes, CookieControlsMode, SiteSettingSource, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {ContentSetting, ContentSettingsTypes, CookieControlsMode, SettingsCookiesPageElement, SiteSettingSource, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {MetricsBrowserProxyImpl, PrivacyElementInteractions, Router, routes} from 'chrome://settings/settings.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
@@ -70,38 +70,38 @@ suite('CrSettingsCookiesPageTest', function() {
   });
 
   test('NetworkPredictionClickRecorded', async function() {
-    page.$$('#networkPrediction').click();
+    page.shadowRoot.querySelector('#networkPrediction').click();
     const result =
         await testMetricsBrowserProxy.whenCalled('recordSettingsPageHistogram');
     assertEquals(PrivacyElementInteractions.NETWORK_PREDICTION, result);
   });
 
   test('CookiesSiteDataSubpageRoute', function() {
-    page.$$('#site-data-trigger').click();
+    page.shadowRoot.querySelector('#site-data-trigger').click();
     assertEquals(
         Router.getInstance().getCurrentRoute(), routes.SITE_SETTINGS_SITE_DATA);
   });
 
   test('CookiesRadioClicksRecorded', async function() {
-    page.$$('#blockAll').click();
+    page.shadowRoot.querySelector('#blockAll').click();
     let result =
         await testMetricsBrowserProxy.whenCalled('recordSettingsPageHistogram');
     assertEquals(PrivacyElementInteractions.COOKIES_BLOCK, result);
     testMetricsBrowserProxy.reset();
 
-    page.$$('#blockThirdParty').click();
+    page.shadowRoot.querySelector('#blockThirdParty').click();
     result =
         await testMetricsBrowserProxy.whenCalled('recordSettingsPageHistogram');
     assertEquals(PrivacyElementInteractions.COOKIES_THIRD, result);
     testMetricsBrowserProxy.reset();
 
-    page.$$('#blockThirdPartyIncognito').click();
+    page.shadowRoot.querySelector('#blockThirdPartyIncognito').click();
     result =
         await testMetricsBrowserProxy.whenCalled('recordSettingsPageHistogram');
     assertEquals(PrivacyElementInteractions.COOKIES_INCOGNITO, result);
     testMetricsBrowserProxy.reset();
 
-    page.$$('#allowAll').click();
+    page.shadowRoot.querySelector('#allowAll').click();
     result =
         await testMetricsBrowserProxy.whenCalled('recordSettingsPageHistogram');
     assertEquals(PrivacyElementInteractions.COOKIES_ALL, result);
@@ -109,7 +109,7 @@ suite('CrSettingsCookiesPageTest', function() {
   });
 
   test('CookiesSessionOnlyClickRecorded', async function() {
-    page.$$('#clearOnExit').click();
+    page.shadowRoot.querySelector('#clearOnExit').click();
     const result =
         await testMetricsBrowserProxy.whenCalled('recordSettingsPageHistogram');
     assertEquals(PrivacyElementInteractions.COOKIES_SESSION, result);
@@ -182,7 +182,7 @@ suite('CrSettingsCookiesPageTest', function() {
   test('BlockAll_ManagementSource', async function() {
     // Test that controlledBy for the blockAll_ preference is set to
     // the same value as the generated.cookie_session_only preference.
-    const blockAll = page.$$('#blockAll');
+    const blockAll = page.shadowRoot.querySelector('#blockAll');
     page.set('prefs.generated.cookie_session_only', {
       value: true,
       enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
@@ -207,17 +207,17 @@ suite('CrSettingsCookiesPageTest', function() {
     // Check that the privacy sandbox toast is not shown while the feature is
     // disabled.
     page.set('prefs.privacy_sandbox.apis_enabled.value', true);
-    page.$$('#blockAll').click();
+    page.shadowRoot.querySelector('#blockAll').click();
 
     await flushTasks();
-    assertFalse(page.$$('#toast').open);
+    assertFalse(page.shadowRoot.querySelector('#toast').open);
 
     // Reset the primary preference as the previous click will have changed it.
     page.set('prefs.generated.cookie_primary_setting.value', 0);
-    page.$$('#blockThirdParty').click();
+    page.shadowRoot.querySelector('#blockThirdParty').click();
 
     await flushTasks();
-    assertFalse(page.$$('#toast').open);
+    assertFalse(page.shadowRoot.querySelector('#toast').open);
   });
 });
 
@@ -288,61 +288,61 @@ suite('PrivacySandboxEnabled', function() {
   });
 
   test('privacySandboxToast', async function() {
-    assertFalse(page.$$('#toast').open);
+    assertFalse(page.shadowRoot.querySelector('#toast').open);
 
     // Disabling all cookies should display the privacy sandbox toast.
-    page.$$('#blockAll').click();
+    page.shadowRoot.querySelector('#blockAll').click();
     assertEquals(
         'Settings.PrivacySandbox.Block3PCookies',
         await testMetricsBrowserProxy.whenCalled('recordAction'));
     testMetricsBrowserProxy.resetResolver('recordAction');
-    assertTrue(page.$$('#toast').open);
+    assertTrue(page.shadowRoot.querySelector('#toast').open);
 
     // Clicking the toast link should be recorded in UMA and should dismiss
     // the toast.
-    page.$$('#toast').querySelector('cr-button').click();
+    page.shadowRoot.querySelector('#toast').querySelector('cr-button').click();
     assertEquals(
         'Settings.PrivacySandbox.OpenedFromCookiesPageToast',
         await testMetricsBrowserProxy.whenCalled('recordAction'));
     testMetricsBrowserProxy.resetResolver('recordAction');
-    assertFalse(page.$$('#toast').open);
+    assertFalse(page.shadowRoot.querySelector('#toast').open);
 
     // Renabling 3P cookies for regular sessions should not display the toast.
-    page.$$('#blockThirdPartyIncognito').click();
+    page.shadowRoot.querySelector('#blockThirdPartyIncognito').click();
     await flushTasks();
-    assertFalse(page.$$('#toast').open);
+    assertFalse(page.shadowRoot.querySelector('#toast').open);
     assertEquals(0, testMetricsBrowserProxy.getCallCount('recordAction'));
 
     // The toast should not be displayed if the user has the privacy sandbox
     // APIs disabled.
     page.set('prefs.privacy_sandbox.apis_enabled.value', false);
-    page.$$('#blockAll').click();
+    page.shadowRoot.querySelector('#blockAll').click();
     await flushTasks();
-    assertFalse(page.$$('#toast').open);
+    assertFalse(page.shadowRoot.querySelector('#toast').open);
     assertEquals(0, testMetricsBrowserProxy.getCallCount('recordAction'));
 
     // Disabling only 3P cookies should display the toast.
     page.set('prefs.privacy_sandbox.apis_enabled.value', true);
     page.set('prefs.generated.cookie_primary_setting.value', 0);
-    page.$$('#blockThirdParty').click();
+    page.shadowRoot.querySelector('#blockThirdParty').click();
     assertEquals(
         'Settings.PrivacySandbox.Block3PCookies',
         await testMetricsBrowserProxy.whenCalled('recordAction'));
-    assertTrue(page.$$('#toast').open);
+    assertTrue(page.shadowRoot.querySelector('#toast').open);
 
     // Reselecting a non-3P cookie blocking setting should hide the toast.
-    page.$$('#allowAll').click();
+    page.shadowRoot.querySelector('#allowAll').click();
     await flushTasks();
-    assertFalse(page.$$('#toast').open);
+    assertFalse(page.shadowRoot.querySelector('#toast').open);
 
     // Navigating away from the page should hide the toast, even if navigated
     // back to.
-    page.$$('#blockAll').click();
+    page.shadowRoot.querySelector('#blockAll').click();
     await flushTasks();
-    assertTrue(page.$$('#toast').open);
+    assertTrue(page.shadowRoot.querySelector('#toast').open);
     Router.getInstance().navigateTo(routes.BASIC);
     Router.getInstance().navigateTo(routes.COOKIES);
     await flushTasks();
-    assertFalse(page.$$('#toast').open);
+    assertFalse(page.shadowRoot.querySelector('#toast').open);
   });
 });

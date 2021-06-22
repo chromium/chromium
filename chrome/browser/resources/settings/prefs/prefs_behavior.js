@@ -73,3 +73,18 @@ export const PrefsBehavior = {
     this.arrayDelete('prefs.' + key + '.value', item);
   },
 };
+
+/** @interface */
+export class PrefsBehaviorInterface {
+  /**
+   * @param {string} prefPath
+   * @return {!chrome.settingsPrivate.PrefObject}
+   */
+  getPref(prefPath) {}
+
+  /*
+   * @param {string} prefPath
+   * @param {*} value
+   */
+  setPrefValue(prefPath, value) {}
+}

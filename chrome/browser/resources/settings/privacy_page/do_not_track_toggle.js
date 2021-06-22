@@ -8,37 +8,48 @@ import '../settings_shared_css.js';
 import '../controls/settings_toggle_button.js';
 
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {MetricsBrowserProxyImpl, PrivacyElementInteractions} from '../metrics_browser_proxy.js';
 
-Polymer({
-  is: 'settings-do-not-track-toggle',
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+export class SettingsDoNotTrackToggleElement extends PolymerElement {
+  static get is() {
+    return 'settings-do-not-track-toggle';
+  }
 
-  properties: {
-    /**
-     * Preferences state.
-     */
-    prefs: {
-      type: Object,
-      notify: true,
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /** @private */
-    showDialog_: {
-      type: Boolean,
-      value: false,
-    },
-  },
+  static get properties() {
+    return {
+      /**
+       * Preferences state.
+       */
+      prefs: {
+        type: Object,
+        notify: true,
+      },
+
+      /** @private */
+      showDialog_: {
+        type: Boolean,
+        value: false,
+      },
+
+    };
+  }
+
+
 
   /** @private */
   onDomChange_() {
     if (this.showDialog_) {
-      this.$$('#confirmDialog').showModal();
+      this.shadowRoot.querySelector('#confirmDialog').showModal();
     }
-  },
+  }
 
   /**
    * Handles the change event for the do-not-track toggle. Shows a
@@ -57,18 +68,18 @@ Polymer({
     }
 
     this.showDialog_ = true;
-  },
+  }
 
   /** @private */
   closeDialog_() {
-    this.$$('#confirmDialog').close();
+    this.shadowRoot.querySelector('#confirmDialog').close();
     this.showDialog_ = false;
-  },
+  }
 
   /** @private */
   onDialogClosed_() {
     focusWithoutInk(this.$.toggle);
-  },
+  }
 
   /**
    * Handles the shared proxy confirmation dialog 'Confirm' button.
@@ -78,7 +89,7 @@ Polymer({
     /** @type {!SettingsToggleButtonElement} */ (this.$.toggle)
         .sendPrefChange();
     this.closeDialog_();
-  },
+  }
 
   /**
    * Handles the shared proxy confirmation dialog 'Cancel' button or a cancel
@@ -89,5 +100,8 @@ Polymer({
     /** @type {!SettingsToggleButtonElement} */ (this.$.toggle)
         .resetToPrefValue();
     this.closeDialog_();
-  },
-});
+  }
+}
+
+customElements.define(
+    SettingsDoNotTrackToggleElement.is, SettingsDoNotTrackToggleElement);

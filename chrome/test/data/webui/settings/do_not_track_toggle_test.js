@@ -4,7 +4,7 @@
 
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import 'chrome://settings/lazy_load.js';
+import {SettingsDoNotTrackToggleElement} from 'chrome://settings/lazy_load.js';
 import {MetricsBrowserProxyImpl, PrivacyElementInteractions} from 'chrome://settings/settings.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
@@ -49,14 +49,14 @@ suite('CrSettingsDoNotTrackToggleTest', function() {
     flush();
     assertTrue(testElement.$.toggle.checked);
 
-    testElement.$$('.cancel-button').click();
+    testElement.shadowRoot.querySelector('.cancel-button').click();
     assertFalse(testElement.$.toggle.checked);
     assertFalse(testElement.prefs.enable_do_not_track.value);
 
     testElement.$.toggle.click();
     flush();
     assertTrue(testElement.$.toggle.checked);
-    testElement.$$('.action-button').click();
+    testElement.shadowRoot.querySelector('.action-button').click();
     assertTrue(testElement.$.toggle.checked);
     assertTrue(testElement.prefs.enable_do_not_track.value);
   });

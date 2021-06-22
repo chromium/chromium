@@ -16,7 +16,6 @@ import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import './sync_account_control.js';
 import './sync_encryption_options.js';
-import '../privacy_page/personalization_options.js';
 import '../settings_shared_css.js';
 import '../settings_vars_css.js';
 // <if expr="not chromeos">
@@ -30,6 +29,7 @@ import {flush, html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bun
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 
 import {loadTimeData} from '../i18n_setup.js';
+import {SettingsPersonalizationOptionsElement} from '../privacy_page/personalization_options.js';
 import {Route, RouteObserverBehavior, Router} from '../router.js';
 
 import {PageStatus, StatusAction, SyncBrowserProxy, SyncBrowserProxyImpl, SyncPrefs, SyncStatus} from './sync_browser_proxy.js';
