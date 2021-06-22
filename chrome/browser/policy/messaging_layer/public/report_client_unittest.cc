@@ -83,10 +83,15 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
       decryptor_ = std::move(decryptor_result.ValueOrDie());
       // Prepare the key.
       signed_encryption_key_ = GenerateAndSignKey();
+      // Disable connection to daemon.
+      scoped_feature_list_.InitFromCommandLine(
+          "EncryptedReportingPipeline,ProvideUploader,EncryptedReporting",
+          "ConnectMissiveDaemon");
     } else {
-      // Disable encryption.
-      scoped_feature_list_.InitFromCommandLine("EncryptedReportingPipeline",
-                                               "EncryptedReporting");
+      // Disable connection to daemon and encryption.
+      scoped_feature_list_.InitFromCommandLine(
+          "EncryptedReportingPipeline,ProvideUploader",
+          "ConnectMissiveDaemon,EncryptedReporting");
     }
 
     // Provide a mock cloud policy client.
