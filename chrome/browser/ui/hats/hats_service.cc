@@ -35,6 +35,11 @@ constexpr char kHatsSurveyTriggerPrivacySandbox[] = "privacy-sandbox";
 constexpr char kHatsSurveyTriggerSettings[] = "settings";
 constexpr char kHatsSurveyTriggerSettingsPrivacy[] = "settings-privacy";
 constexpr char kHatsSurveyTriggerNtpModules[] = "ntp-modules";
+constexpr char kHatsSurveyTriggerTrustSafetyPrivacySettings[] =
+    "ts-privacy-settings";
+constexpr char kHatsSurveyTriggerTrustSafetyTrustedSurface[] =
+    "ts-trusted-surface";
+constexpr char kHatsSurveyTriggerTrustSafetyTransactions[] = "ts-transactions";
 
 constexpr char kHatsNextSurveyTriggerIDTesting[] =
     "zishSVViB0kPN8UwQ150VGjBKuBP";
@@ -136,6 +141,23 @@ std::vector<HatsService::SurveyConfig> GetSurveyConfigs() {
   survey_configs.emplace_back(
       &features::kHappinessTrackingSurveysForDesktopNtpModules,
       kHatsSurveyTriggerNtpModules);
+
+  // Trust & Safety Sentiment surveys.
+  survey_configs.emplace_back(
+      &features::kTrustSafetySentimentSurvey,
+      kHatsSurveyTriggerTrustSafetyPrivacySettings,
+      features::kTrustSafetySentimentSurveyPrivacySettingsTriggerId.Get(),
+      std::vector<std::string>{"Non default setting", "Ran safety check"});
+  survey_configs.emplace_back(
+      &features::kTrustSafetySentimentSurvey,
+      kHatsSurveyTriggerTrustSafetyTrustedSurface,
+      features::kTrustSafetySentimentSurveyTrustedSurfaceTriggerId.Get(),
+      std::vector<std::string>{"Interacted with Page Info"});
+  survey_configs.emplace_back(
+      &features::kTrustSafetySentimentSurvey,
+      kHatsSurveyTriggerTrustSafetyTransactions,
+      features::kTrustSafetySentimentSurveyTransactionsTriggerId.Get(),
+      std::vector<std::string>{"Saved password"});
 
   return survey_configs;
 }

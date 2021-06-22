@@ -961,6 +961,46 @@ const base::Feature kTreatUnsafeDownloadsAsActive{
 // Enables surveying of users of Trust & Safety features with HaTS.
 const base::Feature kTrustSafetySentimentSurvey{
     "TrustSafetySentimentSurvey", base::FEATURE_ENABLED_BY_DEFAULT};
+// The minimum and maximum time after a user has interacted with a Trust and
+// Safety they are eligible to be surveyed.
+const base::FeatureParam<base::TimeDelta>
+    kTrustSafetySentimentSurveyMinTimeToPrompt{&kTrustSafetySentimentSurvey,
+                                               "min-time-to-prompt",
+                                               base::TimeDelta::FromMinutes(2)};
+const base::FeatureParam<base::TimeDelta>
+    kTrustSafetySentimentSurveyMaxTimeToPrompt{
+        &kTrustSafetySentimentSurvey, "max-time-to-prompt",
+        base::TimeDelta::FromMinutes(60)};
+// The maximum and minimum range for the random number of NTPs that the user
+// must at least visit after interacting with a Trust and Safety feature to be
+// eligible for a survey.
+const base::FeatureParam<int> kTrustSafetySentimentSurveyNtpVisitsMinRange{
+    &kTrustSafetySentimentSurvey, "ntp-visits-min-range", 2};
+const base::FeatureParam<int> kTrustSafetySentimentSurveyNtpVisitsMaxRange{
+    &kTrustSafetySentimentSurvey, "ntp-visits-max-range", 4};
+// The feature area probabilities for each feature area considered as part of
+// the Trust & Safety sentiment survey.
+const base::FeatureParam<double>
+    kTrustSafetySentimentSurveyPrivacySettingsProbability{
+        &kTrustSafetySentimentSurvey, "privacy-settings-probability", 0.6};
+const base::FeatureParam<double>
+    kTrustSafetySentimentSurveyTrustedSurfaceProbability{
+        &kTrustSafetySentimentSurvey, "trusted-surface-probability", 0.4};
+const base::FeatureParam<double>
+    kTrustSafetySentimentSurveyTransactionsProbability{
+        &kTrustSafetySentimentSurvey, "transactions-probability", 0.05};
+// The HaTS trigger IDs, which determine which survey is delivered from the HaTS
+// backend.
+const base::FeatureParam<std::string>
+    kTrustSafetySentimentSurveyPrivacySettingsTriggerId{
+        &kTrustSafetySentimentSurvey, "privacy-settings-trigger-id", ""};
+const base::FeatureParam<std::string>
+    kTrustSafetySentimentSurveyTrustedSurfaceTriggerId{
+        &kTrustSafetySentimentSurvey, "trusted-surface-trigger-id", ""};
+extern const base::FeatureParam<std::string>
+    kTrustSafetySentimentSurveyTransactionsTriggerId{
+        &kTrustSafetySentimentSurvey, "transactions-trigger-id", ""};
+
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
