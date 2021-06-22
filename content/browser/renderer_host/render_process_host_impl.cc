@@ -2250,8 +2250,10 @@ void RenderProcessHostImpl::BindQuotaManagerHost(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto* storage_partition =
       static_cast<StoragePartitionImpl*>(GetStoragePartition());
+  // TODO(crbug.com/1215208): Pass the StorageKey from the function arguments,
+  // once migrated.
   storage_partition->GetQuotaContext()->BindQuotaManagerHost(
-      GetID(), render_frame_id, origin, std::move(receiver));
+      GetID(), render_frame_id, blink::StorageKey(origin), std::move(receiver));
 }
 
 void RenderProcessHostImpl::CreateLockManager(
