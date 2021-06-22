@@ -9,6 +9,9 @@ for more details about the presubmit API built into depot_tools.
 """
 
 
+USE_PYTHON3 = True
+
+
 def python3_command(input_api):
     if not input_api.is_windows:
         return 'python3'
@@ -18,7 +21,7 @@ def python3_command(input_api):
     # find the working one.
     input_api.logging.debug('Searching for Python 3 command name')
 
-    exts = filter(len, input_api.environ.get('PATHEXT', '').split(';'))
+    exts = list(filter(len, input_api.environ.get('PATHEXT', '').split(';')))
     for ext in [''] + exts:
         python = 'python3%s' % ext
         input_api.logging.debug('Trying "%s"' % python)
