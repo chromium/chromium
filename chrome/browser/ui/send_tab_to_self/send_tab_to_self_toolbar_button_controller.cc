@@ -19,7 +19,9 @@ void SendTabToSelfToolbarButtonController::DisplayNewEntries(
   // TODO(crbug/1206381): Any entries that were never shown are lost.
   // This is consistent with current behavior and we don't have UI for
   // showing multiple entries with this iteration.
-  ShowToolbarButton(*new_entries.at(0));
+  if (!new_entries.empty()) {
+    ShowToolbarButton(*new_entries.at(0));
+  }
 }
 
 void SendTabToSelfToolbarButtonController::DismissEntries(
