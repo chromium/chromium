@@ -2933,6 +2933,12 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, DisplayLockingAllCommitted) {
 //
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AddChildOfNotIncludedInTreeChain) {
+  RunRegressionTest(
+      FILE_PATH_LITERAL("add-child-of-not-included-in-tree-chain.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        ContentVisibilityWithPseudoElement) {
   RunRegressionTest(
       FILE_PATH_LITERAL("content-visibility-with-pseudo-element.html"));

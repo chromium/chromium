@@ -63,7 +63,7 @@ class MockAXObject : public AXObject {
       : AXObject(ax_object_cache) {}
   static unsigned num_children_changed_calls_;
 
-  void ChildrenChanged() final { num_children_changed_calls_++; }
+  void ChildrenChangedWithCleanLayout() final { num_children_changed_calls_++; }
   Document* GetDocument() const final { return &AXObjectCache().GetDocument(); }
   void AddChildren() final {}
   ax::mojom::blink::Role NativeRoleIgnoringAria() const override {

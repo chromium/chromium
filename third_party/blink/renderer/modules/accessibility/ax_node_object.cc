@@ -4192,11 +4192,11 @@ bool AXNodeObject::OnNativeSetSequentialFocusNavigationStartingPointAction() {
   return true;
 }
 
-void AXNodeObject::ChildrenChanged() {
+void AXNodeObject::ChildrenChangedWithCleanLayout() {
   if (!GetNode() && !GetLayoutObject())
     return;
 
-  DCHECK(!IsDetached()) << "Avoid ChildrenChanged() on detached node: "
+  DCHECK(!IsDetached()) << "Don't call on detached node: "
                         << ToString(true, true);
 
   // When children changed on a <map> that means we need to forward the
@@ -4208,38 +4208,37 @@ void AXNodeObject::ChildrenChanged() {
     if (image_element) {
       AXObject* ax_image = AXObjectCache().Get(image_element);
       if (ax_image) {
-        ax_image->ChildrenChanged();
+        ax_image->ChildrenChangedWithCleanLayout();
         return;
       }
     }
   }
 
-  // Always update current object, in case it wasn't included in the tree but
-  // now is. In that case, the LastKnownIsIncludedInTreeValue() won't have been
-  // updated yet, so we can't use that. Unfortunately, this is not a safe time
-  // to get the current included in tree value, therefore, we'll play it safe
-  // and update the children in two places sometimes.
+  // Always invalidate |children_| even if it was invalidated before, because
+  // now layout is clean.
   SetNeedsToUpdateChildren();
 
-  // If this node is not in the tree, update the children of the first ancesor
-  // that is included in the tree.
+  // If this object is not included in the tree, then our parent needs to
+  // recompute its included-in-the-tree children vector. (And if our parent
+  // isn't included in the tree either, it will recursively update its parent
+  // and so on.)
+  //
+  // The first ancestor that's included in the tree will
+  // be the one that actually fires the ChildrenChanged
+  // event notification.
   if (!LastKnownIsIncludedInTreeValue()) {
-    // The first object (this or ancestor) that is included in the tree is the
-    // one whose children may have changed.
-    // Can be null, e.g. if <title> contents change
-    if (AXObject* node_to_update = ParentObjectIncludedInTree())
-      node_to_update->SetNeedsToUpdateChildren();
+    if (AXObject* ax_parent = CachedParentObject()) {
+      ax_parent->ChildrenChangedWithCleanLayout();
+      return;
+    }
   }
 
+  // TODO(accessibility) Move this up.
   if (!CanHaveChildren())
     return;
 
-  // TODO(aleventhal) Consider removing.
-  if (IsDetached()) {
-    NOTREACHED() << "None of the above calls should be able to detach |this|: "
-                 << ToString(true, true);
-    return;
-  }
+  DCHECK(!IsDetached()) << "None of the above should be able to detach |this|: "
+                        << ToString(true, true);
 
   AXObjectCache().PostNotification(this,
                                    ax::mojom::blink::Event::kChildrenChanged);

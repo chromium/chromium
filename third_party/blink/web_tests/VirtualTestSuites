@@ -1022,7 +1022,8 @@
     "prefix": "force-renderer-accessibility",
     "bases": ["accessibility/slot-poison.html",
               "accessibility/details-summary-crash.html",
-              "external/wpt/accessibility/crashtests/content-visibility-generated-content-removal.html"],
+              "external/wpt/accessibility/crashtests/content-visibility-generated-content-removal.html",
+              "external/wpt/accessibility/crashtests/included-descendant-dom-removal.html"],
     "args": ["--force-renderer-accessibility"]
   },
   {

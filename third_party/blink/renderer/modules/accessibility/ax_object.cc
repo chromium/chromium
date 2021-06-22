@@ -2102,9 +2102,10 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
       //    "not handle a signal and call ChilldrenChanged() earlier."
       //     << "\nChild: " << ToString(true)
       //     << "\nParent: " << parent->ToString(true);
-      // Defer this ChildrenChanged(), otherwise it can cause reentry into
+      // Defers a ChildrenChanged() on the first included ancestor.
+      // Must defer it, otherwise it can cause reentry into
       // UpdateCachedAttributeValuesIfNeeded() on |this|.
-      AXObjectCache().ChildrenChanged(parent);
+      AXObjectCache().ChildrenChangedOnAncestorOf(const_cast<AXObject*>(this));
     }
   }
 

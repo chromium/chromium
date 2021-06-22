@@ -1108,7 +1108,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
 
   // Get the current unignored children without refreshing them, even if
   // children_dirty_ aka NeedsToUpdateChildren() is true.
-  const AXObjectVector& CachedUChildrenIncludingIgnored() const {
+  const AXObjectVector& CachedChildrenIncludingIgnored() const {
     return children_;
   }
 
@@ -1312,7 +1312,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   bool OnNativeShowContextMenuAction();
 
   // Notifications that this object may have changed.
-  virtual void ChildrenChanged() {}
+  virtual void ChildrenChangedWithCleanLayout() {}
   virtual void HandleActiveDescendantChanged() {}
   virtual void HandleAutofillStateChanged(WebAXAutofillState) {}
   virtual void HandleAriaExpandedChanged() {}
