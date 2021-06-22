@@ -96,7 +96,7 @@ std::unique_ptr<base::DictionaryValue> OverlayUserPrefStore::GetValues() const {
     std::unique_ptr<base::Value> out_value;
     persistent_values->Remove(key, &out_value);
     if (out_value) {
-      values->Set(key, std::move(out_value));
+      values->SetPath(key, std::move(*out_value));
     }
   }
   return values;
