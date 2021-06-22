@@ -68,17 +68,19 @@ int32_t FontMessageFilter::OnHostMsgGetFontFamilies(
   // OK to use "slow blocking" version since we're on the blocking pool.
   std::unique_ptr<base::ListValue> list(GetFontList_SlowBlocking());
 
+  base::Value::ConstListView list_view = list->GetList();
   std::string output;
-  for (size_t i = 0; i < list->GetSize(); i++) {
-    base::ListValue* cur_font;
-    if (!list->GetList(i, &cur_font))
+  for (const auto& i : list_view) {
+    if (!i.is_list())
       continue;
+
+    base::Value::ConstListView cur_font = i.GetList();
 
     // Each entry is actually a list of (font name, localized name).
     // We only care about the regular name.
-    std::string font_name;
-    if (!cur_font->GetString(0, &font_name))
+    if (cur_font.empty() || !cur_font[0].is_string())
       continue;
+    std::string font_name = cur_font[0].GetString();
 
     // Font names are separated with nulls. We also want an explicit null at
     // the end of the string (Pepper strings aren't null terminated so since
