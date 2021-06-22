@@ -19,7 +19,7 @@ namespace ime {
 class MockInputChannel : public mojom::InputChannel {
  public:
   MockInputChannel();
-  ~MockInputChannel();
+  ~MockInputChannel() override;
   MockInputChannel(const MockInputChannel&) = delete;
   MockInputChannel& operator=(const MockInputChannel&) = delete;
 
@@ -29,39 +29,7 @@ class MockInputChannel : public mojom::InputChannel {
 
   // mojom::InputChannel:
   void ProcessMessage(const std::vector<uint8_t>& message,
-                      ProcessMessageCallback callback) override {
-    std::move(callback).Run({});
-  }
-  MOCK_METHOD(void,
-              CommitText,
-              (const std::string& text,
-               mojom::CommitTextCursorBehavior cursor_behavior),
-              (override));
-  MOCK_METHOD(void, SetComposition, (const std::string& text), (override));
-  MOCK_METHOD(void,
-              SetCompositionRange,
-              (uint32_t start_byte_index, uint32_t end_byte_index),
-              (override));
-  MOCK_METHOD(void, FinishComposition, (), (override));
-  MOCK_METHOD(void,
-              DeleteSurroundingText,
-              (uint32_t num_bytes_before_cursor,
-               uint32_t num_bytes_after_cursor),
-              (override));
-  MOCK_METHOD(void,
-              HandleAutocorrect,
-              (mojom::AutocorrectSpanPtr autocorrect_span),
-              (override));
-  MOCK_METHOD(void,
-              RequestSuggestions,
-              (mojom::SuggestionsRequestPtr request,
-               RequestSuggestionsCallback callback),
-              (override));
-  MOCK_METHOD(void,
-              DisplaySuggestions,
-              (const std::vector<ime::TextSuggestion>& suggestions),
-              (override));
-  MOCK_METHOD(void, RecordUkm, (mojom::UkmEntryPtr entry), (override));
+                      ProcessMessageCallback callback) override;
 
  private:
   mojo::Receiver<mojom::InputChannel> receiver_;

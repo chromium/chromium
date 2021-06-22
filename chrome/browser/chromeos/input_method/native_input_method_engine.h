@@ -82,7 +82,7 @@ class NativeInputMethodEngine
 
  private:
   class ImeObserver : public InputMethodEngineBase::Observer,
-                      public ime::mojom::InputChannel {
+                      public ime::mojom::InputMethodHost {
    public:
     // |ime_base_observer| is to forward events to extension during this
     // migration. It will be removed when the official extension is completely
@@ -129,9 +129,7 @@ class NativeInputMethodEngine
         const std::vector<std::string>& suggestions) override;
     void OnInputMethodOptionsChanged(const std::string& engine_id) override;
 
-    // mojom::InputChannel:
-    void ProcessMessage(const std::vector<uint8_t>& message,
-                        ProcessMessageCallback callback) override;
+    // ime::mojom::InputMethodHost:
     void CommitText(
         const std::string& text,
         ime::mojom::CommitTextCursorBehavior cursor_behavior) override;
@@ -172,8 +170,8 @@ class NativeInputMethodEngine
 
     std::unique_ptr<InputMethodEngineBase::Observer> ime_base_observer_;
     mojo::Remote<ime::mojom::InputEngineManager> remote_manager_;
-    mojo::Receiver<ime::mojom::InputChannel> receiver_from_engine_;
     mojo::Remote<ime::mojom::InputMethod> input_method_;
+    mojo::Receiver<ime::mojom::InputMethodHost> host_receiver_{this};
 
     std::unique_ptr<AssistiveSuggester> assistive_suggester_;
     std::unique_ptr<AutocorrectManager> autocorrect_manager_;

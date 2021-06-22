@@ -11,7 +11,6 @@
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client_test_helper.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/services/ime/mock_input_channel.h"
 #include "chromeos/services/ime/public/mojom/input_engine.mojom.h"
 #include "chromeos/services/ime/public/mojom/input_method.mojom.h"
 #include "chromeos/services/machine_learning/public/cpp/fake_service_connection.h"
@@ -52,9 +51,9 @@ constexpr char kEngineIdUs[] = "xkb:us::eng";
 class MockInputMethod : public ime::mojom::InputMethod {
  public:
   void Bind(mojo::PendingReceiver<ime::mojom::InputMethod> receiver,
-            mojo::PendingRemote<ime::mojom::InputChannel> pending_delegate) {
+            mojo::PendingRemote<ime::mojom::InputMethodHost> pending_host) {
     receiver_.Bind(std::move(receiver));
-    delegate.Bind(std::move(pending_delegate));
+    host.Bind(std::move(pending_host));
   }
 
   // ime::mojom::InputMethod:
@@ -80,7 +79,7 @@ class MockInputMethod : public ime::mojom::InputMethod {
               (override));
   MOCK_METHOD(void, OnCompositionCanceledBySystem, (), (override));
 
-  mojo::Remote<ime::mojom::InputChannel> delegate;
+  mojo::Remote<ime::mojom::InputMethodHost> host;
 
  private:
   mojo::Receiver<ime::mojom::InputMethod> receiver_{this};
@@ -113,9 +112,9 @@ class TestInputEngineManager : public ime::mojom::InputEngineManager {
   void ConnectToInputMethod(
       const std::string& ime_spec,
       mojo::PendingReceiver<ime::mojom::InputMethod> input_method,
-      mojo::PendingRemote<ime::mojom::InputChannel> delegate,
+      mojo::PendingRemote<ime::mojom::InputMethodHost> host,
       ConnectToInputMethodCallback callback) override {
-    mock_input_method_->Bind(std::move(input_method), std::move(delegate));
+    mock_input_method_->Bind(std::move(input_method), std::move(host));
     std::move(callback).Run(/*bound=*/true);
   }
 
@@ -241,7 +240,7 @@ TEST_F(NativeInputMethodEngineTest, EnableInitializesConnection) {
   engine.FlushForTesting();
 
   EXPECT_TRUE(engine.IsConnectedForTesting());
-  EXPECT_TRUE(mock_input_method.delegate.is_bound());
+  EXPECT_TRUE(mock_input_method.host.is_bound());
 
   InputMethodManager::Shutdown();
 }
@@ -297,9 +296,9 @@ TEST_F(NativeInputMethodEngineTest, HandleAutocorrectChangesAutocorrectRange) {
   ui::MockIMEInputContextHandler mock_handler;
   ui::IMEBridge::Get()->SetInputContextHandler(&mock_handler);
 
-  mock_input_method.delegate->HandleAutocorrect(
+  mock_input_method.host->HandleAutocorrect(
       ime::mojom::AutocorrectSpan::New(gfx::Range(0, 5), "teh", "the"));
-  mock_input_method.delegate.FlushForTesting();
+  mock_input_method.host.FlushForTesting();
 
   EXPECT_EQ(mock_handler.GetAutocorrectRange(), gfx::Range(0, 5));
 
@@ -478,8 +477,8 @@ TEST_F(NativeInputMethodEngineWithRenderViewHostTest,
   metric->non_compliant_operation =
       ime::mojom::InputMethodApiOperation::kSetCompositionText;
   entry->set_non_compliant_api(std::move(metric));
-  mock_input_method.delegate->RecordUkm(std::move(entry));
-  mock_input_method.delegate.FlushForTesting();
+  mock_input_method.host->RecordUkm(std::move(entry));
+  mock_input_method.host.FlushForTesting();
 
   EXPECT_EQ(0u, test_recorder.sources_count());
   EXPECT_EQ(1u, test_recorder.entries_count());

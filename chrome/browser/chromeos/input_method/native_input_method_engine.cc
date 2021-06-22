@@ -256,7 +256,6 @@ NativeInputMethodEngine::ImeObserver::ImeObserver(
     std::unique_ptr<GrammarManager> grammar_manager)
     : prefs_(prefs),
       ime_base_observer_(std::move(ime_base_observer)),
-      receiver_from_engine_(this),
       assistive_suggester_(std::move(assistive_suggester)),
       autocorrect_manager_(std::move(autocorrect_manager)),
       suggestions_collector_(std::move(suggestions_collector)),
@@ -272,7 +271,7 @@ void NativeInputMethodEngine::ImeObserver::OnActivate(
       !IsPhysicalKeyboardAutocorrectEnabled(prefs_, engine_id)) {
     remote_manager_.reset();
     input_method_.reset();
-    receiver_from_engine_.reset();
+    host_receiver_.reset();
     return;
   }
 
@@ -290,11 +289,11 @@ void NativeInputMethodEngine::ImeObserver::OnActivate(
 
     // Deactivate any existing engine.
     input_method_.reset();
-    receiver_from_engine_.reset();
+    host_receiver_.reset();
 
     remote_manager_->ConnectToInputMethod(
         new_engine_id, input_method_.BindNewPipeAndPassReceiver(),
-        receiver_from_engine_.BindNewPipeAndPassRemote(),
+        host_receiver_.BindNewPipeAndPassRemote(),
         base::BindOnce(&OnConnected));
 
     // Notify the virtual keyboard extension that the IME has changed.
@@ -311,28 +310,21 @@ void NativeInputMethodEngine::ImeObserver::OnActivate(
 
     // Deactivate any existing engine.
     input_method_.reset();
-    receiver_from_engine_.reset();
+    host_receiver_.reset();
 
     remote_manager_->ConnectToInputMethod(
         engine_id, input_method_.BindNewPipeAndPassReceiver(),
-        receiver_from_engine_.BindNewPipeAndPassRemote(),
+        host_receiver_.BindNewPipeAndPassRemote(),
         base::BindOnce(&OnConnected));
   } else {
     // Release the IME service.
     // TODO(b/147709499): A better way to cleanup all.
     remote_manager_.reset();
     input_method_.reset();
-    receiver_from_engine_.reset();
+    host_receiver_.reset();
 
     ime_base_observer_->OnActivate(engine_id);
   }
-}
-void NativeInputMethodEngine::ImeObserver::ProcessMessage(
-    const std::vector<uint8_t>& message,
-    ProcessMessageCallback callback) {
-  // NativeInputMethodEngine doesn't use binary messages, but it must run the
-  // callback to avoid dropping the connection.
-  std::move(callback).Run(std::vector<uint8_t>());
 }
 
 void NativeInputMethodEngine::ImeObserver::OnFocus(
@@ -658,8 +650,8 @@ void NativeInputMethodEngine::ImeObserver::RecordUkm(
 
 void NativeInputMethodEngine::ImeObserver::FlushForTesting() {
   remote_manager_.FlushForTesting();
-  if (receiver_from_engine_.is_bound())
-    receiver_from_engine_.FlushForTesting();
+  if (host_receiver_.is_bound())
+    host_receiver_.FlushForTesting();
   if (input_method_.is_bound())
     input_method_.FlushForTesting();
 }

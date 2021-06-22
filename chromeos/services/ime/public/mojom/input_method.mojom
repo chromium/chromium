@@ -125,8 +125,8 @@ struct InputFieldInfo {
 
 // An input method that is provided natively by the IME Service.
 // The browser process uses this interface to communicate with IMEs hosted in
-// a Chrome utility process, and this interface uses the InputChannel interface
-// to communicate back to the browser process.
+// a Chrome utility process, and this interface uses the InputMethodHost
+// interface to communicate back to the browser process.
 interface InputMethod {
   // Called when there's a new focused input field.
   OnFocus(InputFieldInfo input_field_info);

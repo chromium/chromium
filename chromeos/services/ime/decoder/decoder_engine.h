@@ -39,20 +39,6 @@ class DecoderEngine : public InputEngine, public mojom::InputChannel {
   // mojom::InputChannel:
   void ProcessMessage(const std::vector<uint8_t>& message,
                       ProcessMessageCallback callback) override;
-  void CommitText(const std::string& text,
-                  mojom::CommitTextCursorBehavior cursor_behavior) override {}
-  void SetComposition(const std::string& text) override {}
-  void SetCompositionRange(uint32_t start_byte_index,
-                           uint32_t end_byte_index) override {}
-  void FinishComposition() override {}
-  void DeleteSurroundingText(uint32_t num_bytes_before_cursor,
-                             uint32_t num_bytes_after_cursor) override {}
-  void HandleAutocorrect(mojom::AutocorrectSpanPtr autocorrect_span) override {}
-  void RequestSuggestions(mojom::SuggestionsRequestPtr request,
-                          RequestSuggestionsCallback callback) override {}
-  void DisplaySuggestions(
-      const std::vector<TextSuggestion>& suggestions) override {}
-  void RecordUkm(mojom::UkmEntryPtr entry) override {}
 
  private:
   // Try to load the decoding functions from some decoder shared library.

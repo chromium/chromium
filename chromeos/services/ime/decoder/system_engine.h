@@ -11,6 +11,7 @@
 #include "chromeos/services/ime/public/cpp/shared_lib/interfaces.h"
 #include "chromeos/services/ime/public/mojom/input_engine.mojom.h"
 #include "chromeos/services/ime/public/mojom/input_method.mojom.h"
+#include "chromeos/services/ime/public/mojom/input_method_host.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -33,7 +34,7 @@ class SystemEngine : public InputEngine, public mojom::InputMethod {
   // the given ime_spec is supported by the engine.
   bool BindRequest(const std::string& ime_spec,
                    mojo::PendingReceiver<mojom::InputMethod> receiver,
-                   mojo::PendingRemote<mojom::InputChannel> delegate,
+                   mojo::PendingRemote<mojom::InputMethodHost> host,
                    base::OnceCallback<void()> disconnect_callback);
 
   // mojom::InputChannel:
@@ -68,7 +69,7 @@ class SystemEngine : public InputEngine, public mojom::InputMethod {
   // Called when there's a reply from the shared library.
   // Deserializes |message| and converts it into Mojo calls to the receiver.
   void OnReply(const std::vector<uint8_t>& message,
-               mojo::Remote<mojom::InputChannel>& delegate);
+               mojo::Remote<mojom::InputMethodHost>& host);
 
   ImeCrosPlatform* platform_ = nullptr;
 

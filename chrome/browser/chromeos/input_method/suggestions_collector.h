@@ -11,7 +11,7 @@
 #include "base/callback.h"
 #include "chrome/browser/chromeos/input_method/suggestions_source.h"
 #include "chromeos/services/ime/public/cpp/suggestions.h"
-#include "chromeos/services/ime/public/mojom/input_engine.mojom.h"
+#include "chromeos/services/ime/public/mojom/input_method_host.mojom.h"
 
 namespace chromeos {
 

@@ -20,22 +20,20 @@ namespace {
 
 using ReplyCallback =
     base::RepeatingCallback<void(const std::vector<uint8_t>&,
-                                 mojo::Remote<mojom::InputChannel>& delegate)>;
+                                 mojo::Remote<mojom::InputMethodHost>& host)>;
 
 // A client delegate passed to the shared library in order for the
 // shared library to send replies back to the engine.
 class ClientDelegate : public ImeClientDelegate {
  public:
-  // All replies from the shared library will be sent to both |delegate| and
-  // |callback|.
+  // All replies from the shared library will be sent to |host| as
+  // well as |callback|.
   ClientDelegate(const std::string& ime_spec,
-                 mojo::PendingRemote<mojom::InputChannel> delegate,
+                 mojo::PendingRemote<mojom::InputMethodHost> host,
                  ReplyCallback callback)
-      : ime_spec_(ime_spec),
-        delegate_(std::move(delegate)),
-        callback_(callback) {
-    delegate_.set_disconnect_handler(base::BindOnce(
-        &ClientDelegate::OnDisconnected, base::Unretained(this)));
+      : ime_spec_(ime_spec), host_(std::move(host)), callback_(callback) {
+    host_.set_disconnect_handler(base::BindOnce(&ClientDelegate::OnDisconnected,
+                                                base::Unretained(this)));
   }
 
   ~ClientDelegate() override {}
@@ -43,10 +41,9 @@ class ClientDelegate : public ImeClientDelegate {
   const char* ImeSpec() override { return ime_spec_.c_str(); }
 
   void Process(const uint8_t* data, size_t size) override {
-    if (delegate_.is_bound()) {
+    if (host_.is_bound()) {
       std::vector<uint8_t> msg(data, data + size);
-      delegate_->ProcessMessage(msg, base::DoNothing());
-      callback_.Run(msg, delegate_);
+      callback_.Run(msg, host_);
     }
   }
 
@@ -54,15 +51,14 @@ class ClientDelegate : public ImeClientDelegate {
 
  private:
   void OnDisconnected() {
-    delegate_.reset();
+    host_.reset();
     LOG(ERROR) << "Client remote is disconnected." << ime_spec_;
   }
 
   // The ime specification which is unique in the scope of engine.
   std::string ime_spec_;
 
-  // The InputChannel used to talk to Chrome.
-  mojo::Remote<mojom::InputChannel> delegate_;
+  mojo::Remote<mojom::InputMethodHost> host_;
 
   ReplyCallback callback_;
 };
@@ -99,7 +95,7 @@ bool SystemEngine::TryLoadDecoder() {
 bool SystemEngine::BindRequest(
     const std::string& ime_spec,
     mojo::PendingReceiver<mojom::InputMethod> receiver,
-    mojo::PendingRemote<mojom::InputChannel> delegate,
+    mojo::PendingRemote<ime::mojom::InputMethodHost> host,
     base::OnceCallback<void()> disconnect_callback) {
   if (!IsImeSupportedByDecoder(ime_spec)) {
     return false;
@@ -110,7 +106,7 @@ bool SystemEngine::BindRequest(
   // make safe calls on the client.
   if (!decoder_entry_points_->activate_ime(
           ime_spec.c_str(),
-          new ClientDelegate(ime_spec, std::move(delegate),
+          new ClientDelegate(ime_spec, std::move(host),
                              base::BindRepeating(&SystemEngine::OnReply,
                                                  base::Unretained(this))))) {
     return false;
@@ -195,7 +191,7 @@ void SystemEngine::OnInputMethodChanged(const std::string& engine_id) {
 }
 
 void SystemEngine::OnReply(const std::vector<uint8_t>& message,
-                           mojo::Remote<mojom::InputChannel>& delegate) {
+                           mojo::Remote<mojom::InputMethodHost>& host) {
   ime::Wrapper wrapper;
   if (!wrapper.ParseFromArray(message.data(), message.size()) ||
       !wrapper.has_public_message()) {
@@ -214,27 +210,27 @@ void SystemEngine::OnReply(const std::vector<uint8_t>& message,
       break;
     }
     case ime::PublicMessage::kSetComposition: {
-      delegate->SetComposition(reply.set_composition().text());
+      host->SetComposition(reply.set_composition().text());
       break;
     }
     case ime::PublicMessage::kSetCompositionRange: {
-      delegate->SetCompositionRange(
+      host->SetCompositionRange(
           reply.set_composition_range().start_byte_index(),
           reply.set_composition_range().end_byte_index());
       break;
     }
     case ime::PublicMessage::kFinishComposition: {
-      delegate->FinishComposition();
+      host->FinishComposition();
       break;
     }
     case ime::PublicMessage::kDeleteSurroundingText: {
-      delegate->DeleteSurroundingText(
+      host->DeleteSurroundingText(
           reply.delete_surrounding_text().num_bytes_before_cursor(),
           reply.delete_surrounding_text().num_bytes_after_cursor());
       break;
     }
     case ime::PublicMessage::kCommitText: {
-      delegate->CommitText(
+      host->CommitText(
           reply.commit_text().text(),
           reply.commit_text().cursor_behavior() ==
                   ime::CommitTextCursorBehavior::
@@ -244,26 +240,26 @@ void SystemEngine::OnReply(const std::vector<uint8_t>& message,
       break;
     }
     case ime::PublicMessage::kHandleAutocorrect: {
-      delegate->HandleAutocorrect(ProtoToAutocorrectSpan(
+      host->HandleAutocorrect(ProtoToAutocorrectSpan(
           reply.handle_autocorrect().autocorrect_span()));
       break;
     }
     case ime::PublicMessage::kSuggestionsRequest: {
-      delegate->RequestSuggestions(
+      host->RequestSuggestions(
           ProtoToSuggestionsRequest(reply.suggestions_request()),
           base::BindOnce(&SystemEngine::OnSuggestionsReturned,
                          base::Unretained(this)));
       break;
     }
     case ime::PublicMessage::kDisplaySuggestions: {
-      delegate->DisplaySuggestions(
+      host->DisplaySuggestions(
           ProtoToTextSuggestions(reply.display_suggestions()));
       break;
     }
     case ime::PublicMessage::kRecordUkm: {
       auto ukm = ProtoToUkmEntry(reply.record_ukm());
       if (ukm)
-        delegate->RecordUkm(std::move(ukm));
+        host->RecordUkm(std::move(ukm));
       break;
     }
     default:

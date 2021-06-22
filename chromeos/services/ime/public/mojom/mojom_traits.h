@@ -6,7 +6,7 @@
 #define CHROMEOS_SERVICES_IME_PUBLIC_MOJOM_MOJOM_TRAITS_H_
 
 #include "chromeos/services/ime/public/cpp/suggestions.h"
-#include "chromeos/services/ime/public/mojom/input_engine.mojom-shared.h"
+#include "chromeos/services/ime/public/mojom/input_method_host.mojom-shared.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 

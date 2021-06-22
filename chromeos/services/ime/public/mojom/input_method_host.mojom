@@ -106,5 +106,73 @@ struct NonCompliantApiMetric {
   InputMethodApiOperation non_compliant_operation;
 };
 
-// TODO(crbug.com/1194372): Create a InputMethodHost interface for InputMethod
-// to call back into Chrome.
+// Interface for InputMethod to interact with Chrome.
+// Provides a way for the InputMethod, which lives in a Chrome utility process,
+// to communicate back to the browser process.
+interface InputMethodHost {
+  // ========================================================
+  // The following methods operate on the focused text field.
+  // If there's no focus, then they don't do anything.
+  // ========================================================
+
+  // Asks the focused input field to commit `text`. If there is a
+  // composition, then that composition is removed and `text` is inserted.
+  // Otherwise, `text` is inserted at the current cursor position, deleting any
+  // text in the current selection if any. In both cases, the cursor moves to
+  // the end of `text`.
+  CommitText(string text, CommitTextCursorBehavior cursor_behavior);
+
+  // Asks the focused input field to set composition with `text`.
+  // Replaces the current composition if there is one. Otherwise, start a
+  // new composition at the current cursor position, deleting any text in the
+  // current selection if any. The cursor is moved to the end of `text`.
+  SetComposition(string text);
+
+  // Asks the focused input field to mark the range of text spanned by
+  // `start_byte_index` and `end_byte_index` as the current composition,
+  // where index 0 indicates the beginning of the input field contents.
+  // If there was already a composition, then that composition is committed
+  // first, as if FinishComposition was called.
+  // The order of `start_byte_index` and `end_byte_index` does not matter.
+  // If both `start_byte_index` and `end_byte_index` are the same, then this i
+  // the same as calling `FinishComposition`.
+  // The composition range does not have to overlap with the cursor selection.
+  // The cursor position remains unchanged.
+  SetCompositionRange(uint32 start_byte_index, uint32 end_byte_index);
+
+  // Asks the focused input field to commit the current composition text. If
+  // there is composition, this is equivalent to calling `CommitText` with the
+  // composition text. If there is no current composition then this is a no-op.
+  // The cursor position remains unchanged.
+  FinishComposition();
+
+  // Asks the input field to delete text around the cursor.
+  // This operation fails if there is currently a composition.
+  // TODO(b/161490915): Determine the right behaviour when there is a selection.
+  DeleteSurroundingText(uint32 num_bytes_before_cursor,
+                        uint32 num_bytes_after_cursor);
+
+  // Asks the input field to mark the region represented by `autocorrect_span`
+  // as having been autocorrected. This usually involves showing some UI
+  // (e.g. flashing the text or showing an underline).
+  // There can only be at most one active autocorrect span. If this method is
+  // called when there is already an active autocorrect span, any UI related to
+  // the old span is removed first.
+  // This method does not modify the input field text.
+  HandleAutocorrect(AutocorrectSpan autocorrect_span);
+
+  // Asks the system to display the given suggestions to the user.
+  DisplaySuggestions(array<SuggestionCandidate> suggestions);
+
+  // ===========================================
+  // The following methods do not require focus.
+  // ===========================================
+
+  // Asks the system to generate and return suggestions for the given
+  // prediction context.
+  RequestSuggestions(SuggestionsRequest request)
+    => (SuggestionsResponse response);
+
+  // Record a Url-Keyed Metric (UKM).
+  RecordUkm(UkmEntry entry);
+};

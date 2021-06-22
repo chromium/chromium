@@ -103,7 +103,7 @@ void ImeService::ConnectToImeEngine(
 void ImeService::ConnectToInputMethod(
     const std::string& ime_spec,
     mojo::PendingReceiver<mojom::InputMethod> input_method,
-    mojo::PendingRemote<mojom::InputChannel> delegate,
+    mojo::PendingRemote<mojom::InputMethodHost> input_method_host,
     ConnectToInputMethodCallback callback) {
   if (IsRuleBasedInputMethod(ime_spec)) {
     input_engine_ = RuleBasedEngine::Create(ime_spec, std::move(input_method));
@@ -118,7 +118,7 @@ void ImeService::ConnectToInputMethod(
 
   auto system_engine = std::make_unique<SystemEngine>(this);
   bool bound = system_engine->BindRequest(
-      ime_spec, std::move(input_method), std::move(delegate),
+      ime_spec, std::move(input_method), std::move(input_method_host),
       base::BindOnce(
           [](bool& is_privileged_connection_) {
             is_privileged_connection_ = false;

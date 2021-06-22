@@ -24,5 +24,10 @@ void MockInputChannel::FlushForTesting() {
   return receiver_.FlushForTesting();
 }
 
+void MockInputChannel::ProcessMessage(const std::vector<uint8_t>& message,
+                                      ProcessMessageCallback callback) {
+  std::move(callback).Run({});
+}
+
 }  // namespace ime
 }  // namespace chromeos

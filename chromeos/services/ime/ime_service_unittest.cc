@@ -57,13 +57,25 @@ void TestProcessKeypressForRulebasedCallback(
     res_out->operations.push_back(std::move(response->operations[i]));
   }
 }
-class ImeServiceTest : public testing::Test {
+class ImeServiceTest : public testing::Test, public mojom::InputMethodHost {
  public:
   ImeServiceTest() : service_(remote_service_.BindNewPipeAndPassReceiver()) {}
   ~ImeServiceTest() override = default;
 
-  MOCK_METHOD1(SentTextCallback, void(const std::string&));
-  MOCK_METHOD1(SentMessageCallback, void(const std::vector<uint8_t>&));
+  void CommitText(const std::string& text,
+                  mojom::CommitTextCursorBehavior cursor_behavior) override {}
+  void SetComposition(const std::string& text) override {}
+  void SetCompositionRange(uint32_t start_byte_index,
+                           uint32_t end_byte_index) override {}
+  void FinishComposition() override {}
+  void DeleteSurroundingText(uint32_t num_bytes_before_cursor,
+                             uint32_t num_bytes_after_cursor) override {}
+  void HandleAutocorrect(mojom::AutocorrectSpanPtr autocorrect_span) override {}
+  void RequestSuggestions(mojom::SuggestionsRequestPtr request,
+                          RequestSuggestionsCallback callback) override {}
+  void DisplaySuggestions(const std::vector<::chromeos::ime::TextSuggestion>&
+                              suggestions) override {}
+  void RecordUkm(mojom::UkmEntryPtr entry) override {}
 
  protected:
   void SetUp() override {
@@ -147,13 +159,13 @@ TEST_F(ImeServiceTest,
        ConnectToImeEngineCannotConnectIfInputMethodIsConnected) {
   bool success1, success2 = true;
   MockInputChannel test_channel;
-  MockInputChannel delegate;
   mojo::Remote<mojom::InputMethod> input_method;
+  mojo::Receiver<mojom::InputMethodHost> host(this);
   mojo::Remote<mojom::InputChannel> remote_engine;
 
   remote_manager_->ConnectToInputMethod(
       kValidImeSpec, input_method.BindNewPipeAndPassReceiver(),
-      delegate.CreatePendingRemote(),
+      host.BindNewPipeAndPassRemote(),
       base::BindOnce(&ConnectCallback, &success1));
   remote_manager_->ConnectToImeEngine(
       kValidImeSpec, remote_engine.BindNewPipeAndPassReceiver(),
@@ -172,13 +184,13 @@ TEST_F(ImeServiceTest,
        ConnectToImeEngineCanConnectIfInputMethodIsDisconnected) {
   bool success1, success2 = true;
   MockInputChannel test_channel;
-  MockInputChannel delegate;
   mojo::Remote<mojom::InputMethod> input_method;
+  mojo::Receiver<mojom::InputMethodHost> host(this);
   mojo::Remote<mojom::InputChannel> remote_engine;
 
   remote_manager_->ConnectToInputMethod(
       kValidImeSpec, input_method.BindNewPipeAndPassReceiver(),
-      delegate.CreatePendingRemote(),
+      host.BindNewPipeAndPassRemote(),
       base::BindOnce(&ConnectCallback, &success1));
   input_method.reset();
   remote_manager_->ConnectToImeEngine(
@@ -198,7 +210,7 @@ TEST_F(ImeServiceTest,
 TEST_F(ImeServiceTest, ConnectToInputMethodCanOverrideAnyConnection) {
   bool success1, success2, success3 = true;
   MockInputChannel test_channel;
-  MockInputChannel delegate1, delegate2;
+  mojo::Receiver<mojom::InputMethodHost> host1(this), host2(this);
   mojo::Remote<mojom::InputMethod> input_method1, input_method2;
   mojo::Remote<mojom::InputChannel> remote_engine;
 
@@ -208,11 +220,11 @@ TEST_F(ImeServiceTest, ConnectToInputMethodCanOverrideAnyConnection) {
       base::BindOnce(&ConnectCallback, &success1));
   remote_manager_->ConnectToInputMethod(
       kValidImeSpec, input_method1.BindNewPipeAndPassReceiver(),
-      delegate1.CreatePendingRemote(),
+      host1.BindNewPipeAndPassRemote(),
       base::BindOnce(&ConnectCallback, &success2));
   remote_manager_->ConnectToInputMethod(
       kValidImeSpec, input_method2.BindNewPipeAndPassReceiver(),
-      delegate2.CreatePendingRemote(),
+      host2.BindNewPipeAndPassRemote(),
       base::BindOnce(&ConnectCallback, &success3));
   remote_manager_.FlushForTesting();
 
@@ -227,11 +239,11 @@ TEST_F(ImeServiceTest, ConnectToInputMethodCanOverrideAnyConnection) {
 TEST_F(ImeServiceTest, RuleBasedDoesNotHandleModifierKeys) {
   bool success = false;
   mojo::Remote<mojom::InputMethod> input_method;
-  MockInputChannel delegate;
+  mojo::Receiver<mojom::InputMethodHost> host(this);
 
   remote_manager_->ConnectToInputMethod(
       "m17n:ar", input_method.BindNewPipeAndPassReceiver(),
-      delegate.CreatePendingRemote(),
+      host.BindNewPipeAndPassRemote(),
       base::BindOnce(&ConnectCallback, &success));
   remote_manager_.FlushForTesting();
   EXPECT_TRUE(success);
@@ -257,11 +269,11 @@ TEST_F(ImeServiceTest, RuleBasedDoesNotHandleModifierKeys) {
 TEST_F(ImeServiceTest, RuleBasedDoesNotHandleCtrlShortCut) {
   bool success = false;
   mojo::Remote<mojom::InputMethod> input_method;
-  MockInputChannel delegate;
+  mojo::Receiver<mojom::InputMethodHost> host(this);
 
   remote_manager_->ConnectToInputMethod(
       "m17n:ar", input_method.BindNewPipeAndPassReceiver(),
-      delegate.CreatePendingRemote(),
+      host.BindNewPipeAndPassRemote(),
       base::BindOnce(&ConnectCallback, &success));
   remote_manager_.FlushForTesting();
   EXPECT_TRUE(success);
@@ -287,11 +299,11 @@ TEST_F(ImeServiceTest, RuleBasedDoesNotHandleCtrlShortCut) {
 TEST_F(ImeServiceTest, RuleBasedDoesNotHandleAltShortCut) {
   bool success = false;
   mojo::Remote<mojom::InputMethod> input_method;
-  MockInputChannel delegate;
+  mojo::Receiver<mojom::InputMethodHost> host(this);
 
   remote_manager_->ConnectToInputMethod(
       "m17n:ar", input_method.BindNewPipeAndPassReceiver(),
-      delegate.CreatePendingRemote(),
+      host.BindNewPipeAndPassRemote(),
       base::BindOnce(&ConnectCallback, &success));
   remote_manager_.FlushForTesting();
   EXPECT_TRUE(success);
@@ -317,11 +329,11 @@ TEST_F(ImeServiceTest, RuleBasedDoesNotHandleAltShortCut) {
 TEST_F(ImeServiceTest, RuleBasedHandlesAltRight) {
   bool success = false;
   mojo::Remote<mojom::InputMethod> input_method;
-  MockInputChannel delegate;
+  mojo::Receiver<mojom::InputMethodHost> host(this);
 
   remote_manager_->ConnectToInputMethod(
       "m17n:ar", input_method.BindNewPipeAndPassReceiver(),
-      delegate.CreatePendingRemote(),
+      host.BindNewPipeAndPassRemote(),
       base::BindOnce(&ConnectCallback, &success));
   remote_manager_.FlushForTesting();
   EXPECT_TRUE(success);
@@ -348,11 +360,11 @@ TEST_F(ImeServiceTest, RuleBasedHandlesAltRight) {
 TEST_F(ImeServiceTest, RuleBasedArabic) {
   bool success = false;
   mojo::Remote<mojom::InputMethod> input_method;
-  MockInputChannel delegate;
+  mojo::Receiver<mojom::InputMethodHost> host(this);
 
   remote_manager_->ConnectToInputMethod(
       "m17n:ar", input_method.BindNewPipeAndPassReceiver(),
-      delegate.CreatePendingRemote(),
+      host.BindNewPipeAndPassRemote(),
       base::BindOnce(&ConnectCallback, &success));
   remote_manager_.FlushForTesting();
   EXPECT_TRUE(success);
@@ -419,11 +431,11 @@ TEST_F(ImeServiceTest, RuleBasedArabic) {
 TEST_F(ImeServiceTest, RuleBasedDevaPhone) {
   bool success = false;
   mojo::Remote<mojom::InputMethod> input_method;
-  MockInputChannel delegate;
+  mojo::Receiver<mojom::InputMethodHost> host(this);
 
   remote_manager_->ConnectToInputMethod(
       "m17n:deva_phone", input_method.BindNewPipeAndPassReceiver(),
-      delegate.CreatePendingRemote(),
+      host.BindNewPipeAndPassRemote(),
       base::BindOnce(&ConnectCallback, &success));
   remote_manager_.FlushForTesting();
   EXPECT_TRUE(success);
@@ -497,11 +509,11 @@ TEST_F(ImeServiceTest, RuleBasedDevaPhone) {
 TEST_F(ImeServiceTest, RuleBasedDoesNotEscapeCharacters) {
   bool success = false;
   mojo::Remote<mojom::InputMethod> input_method;
-  MockInputChannel delegate;
+  mojo::Receiver<mojom::InputMethodHost> host(this);
 
   remote_manager_->ConnectToInputMethod(
       "m17n:deva_phone", input_method.BindNewPipeAndPassReceiver(),
-      delegate.CreatePendingRemote(),
+      host.BindNewPipeAndPassRemote(),
       base::BindOnce(&ConnectCallback, &success));
   remote_manager_.FlushForTesting();
   EXPECT_TRUE(success);
@@ -555,11 +567,11 @@ TEST_F(ImeServiceTest, RuleBasedDoesNotEscapeCharacters) {
 TEST_F(ImeServiceTest, KhmerKeyboardAltGr) {
   bool success = false;
   mojo::Remote<mojom::InputMethod> input_method;
-  MockInputChannel delegate;
+  mojo::Receiver<mojom::InputMethodHost> host(this);
 
   remote_manager_->ConnectToInputMethod(
       "m17n:km", input_method.BindNewPipeAndPassReceiver(),
-      delegate.CreatePendingRemote(),
+      host.BindNewPipeAndPassRemote(),
       base::BindOnce(&ConnectCallback, &success));
   remote_manager_.FlushForTesting();
   EXPECT_TRUE(success);
