@@ -72,7 +72,7 @@ class VIZ_COMMON_EXPORT CompositorFrameTransitionDirective {
   Effect effect() const { return effect_; }
 
   // Shared element render passes.
-  const std::vector<CompositorRenderPassId> shared_render_pass_ids() const {
+  const std::vector<CompositorRenderPassId>& shared_render_pass_ids() const {
     return shared_render_pass_ids_;
   }
 

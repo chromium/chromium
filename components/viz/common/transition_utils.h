@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_VIZ_COMMON_TRANSITION_UTILS_H_
 #define COMPONENTS_VIZ_COMMON_TRANSITION_UTILS_H_
 
+#include "base/callback_forward.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/viz_common_export.h"
 
@@ -21,6 +22,22 @@ class VIZ_COMMON_EXPORT TransitionUtils {
   static float ComputeAccumulatedOpacity(
       const CompositorRenderPassList& render_passes,
       CompositorRenderPassId target_id);
+
+  // Creates a deep copy of |source_pass| retaining all state except copy
+  // requests. |filter_callback| is invoked for each render pass draw quad to
+  // let the caller modify the copy of these quads. If the callback returns true
+  // the quad is skipped otherwise it is copied as-is.
+  using FilterCallback =
+      base::RepeatingCallback<bool(const CompositorRenderPassDrawQuad&,
+                                   CompositorRenderPass&)>;
+  static std::unique_ptr<CompositorRenderPass> CopyPassWithRenderPassFiltering(
+      const CompositorRenderPass& source_pass,
+      FilterCallback filter_callback);
+
+  static CompositorRenderPassId NextRenderPassId(
+      const CompositorRenderPassId& id) {
+    return CompositorRenderPassId(id.GetUnsafeValue() + 1);
+  }
 };
 
 }  // namespace viz

@@ -9,9 +9,12 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
+#include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/quads/compositor_frame_transition_directive.h"
+#include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/resources/release_callback.h"
 #include "components/viz/service/viz_service_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -90,6 +93,7 @@ class VIZ_SERVICE_EXPORT SurfaceSavedFrame {
   // Appends copy output requests to the needed render passes in the active
   // frame.
   void RequestCopyOfOutput(Surface* surface);
+  void ReleaseSurface();
 
   absl::optional<FrameResult> TakeResult() WARN_UNUSED_RESULT;
 
@@ -99,12 +103,48 @@ class VIZ_SERVICE_EXPORT SurfaceSavedFrame {
  private:
   enum class ResultType { kRoot, kShared };
 
+  class ScopedInterpolatedSurface {
+   public:
+    ScopedInterpolatedSurface(Surface* surface, CompositorFrame frame);
+    ~ScopedInterpolatedSurface();
+
+   private:
+    Surface* surface_;
+  };
+
   void NotifyCopyOfOutputComplete(ResultType type,
                                   size_t shared_index,
                                   const RenderPassDrawData& info,
                                   std::unique_ptr<CopyOutputResult> result);
 
   size_t ExpectedResultCount() const;
+
+  // Collects metadata to create a copy of the source CompositorFrame for shared
+  // element snapshots.
+  // |render_passes| is the render pass list from the source frame.
+  // |max_id| returns the maximum render pass id in the list above.
+  // |tainted_to_clean_pass_ids| populates the set of render passes which
+  // include shared elements and need clean render passes for snapshots.
+  void PrepareForCopy(
+      const CompositorRenderPassList& render_passes,
+      CompositorRenderPassId& max_id,
+      base::flat_map<CompositorRenderPassId, CompositorRenderPassId>&
+          tainted_to_clean_pass_ids) const;
+
+  // Used to filter render pass draw quads when copying render passes for shared
+  // element snapshots.
+  // |tained_to_clean_pass_ids| is used to replace tainted quads with the
+  // equivalent clean render passes.
+  // |pass_quad| is the quad from the source pass being copied.
+  // |copy_pass| is the new clean pass being created.
+  bool FilterSharedElementAndTaintedQuads(
+      const base::flat_map<CompositorRenderPassId, CompositorRenderPassId>*
+          tainted_to_clean_pass_ids,
+      const CompositorRenderPassDrawQuad& pass_quad,
+      CompositorRenderPass& copy_pass) const;
+
+  // Returns true if |pass_id|'s content is 1:1 with a shared element.
+  bool IsSharedElementRenderPass(CompositorRenderPassId pass_id) const;
 
   CompositorFrameTransitionDirective directive_;
   TransitionDirectiveCompleteCallback directive_finished_callback_;
@@ -121,6 +161,8 @@ class VIZ_SERVICE_EXPORT SurfaceSavedFrame {
   // smaller than the number of requests we made. This is used to determine
   // whether the SurfaceSavedFrame is "valid".
   size_t valid_result_count_ = 0;
+
+  absl::optional<ScopedInterpolatedSurface> surface_;
 
   base::WeakPtrFactory<SurfaceSavedFrame> weak_factory_{this};
 };
