@@ -393,7 +393,7 @@ TEST_P(HintsFetcherTest, HintsFetchSuccessfulHostsRecorded) {
   if (!ShouldPersistHintsToDisk())
     return;
 
-  const base::DictionaryValue* hosts_fetched = pref_service()->GetDictionary(
+  const base::Value* hosts_fetched = pref_service()->GetDictionary(
       prefs::kHintsFetcherHostsSuccessfullyFetched);
   absl::optional<double> value;
   for (const std::string& host : hosts) {
@@ -421,7 +421,7 @@ TEST_P(HintsFetcherTest, HintsFetchFailsHostNotRecorded) {
   if (!ShouldPersistHintsToDisk())
     return;
 
-  const base::DictionaryValue* hosts_fetched = pref_service()->GetDictionary(
+  const base::Value* hosts_fetched = pref_service()->GetDictionary(
       prefs::kHintsFetcherHostsSuccessfullyFetched);
   for (const std::string& host : hosts) {
     EXPECT_FALSE(hosts_fetched->FindDoubleKey(HashHostForDictionary(host)));
@@ -440,7 +440,7 @@ TEST_P(HintsFetcherTest, HintsFetchClearHostsSuccessfullyFetched) {
   if (!ShouldPersistHintsToDisk())
     return;
 
-  const base::DictionaryValue* hosts_fetched = pref_service()->GetDictionary(
+  const base::Value* hosts_fetched = pref_service()->GetDictionary(
       prefs::kHintsFetcherHostsSuccessfullyFetched);
   for (const std::string& host : hosts) {
     EXPECT_TRUE(hosts_fetched->FindDoubleKey(HashHostForDictionary(host)));
@@ -466,7 +466,7 @@ TEST_P(HintsFetcherTest, HintsFetchClearSingleFetchedHost) {
   if (!ShouldPersistHintsToDisk())
     return;
 
-  const base::DictionaryValue* hosts_fetched = pref_service()->GetDictionary(
+  const base::Value* hosts_fetched = pref_service()->GetDictionary(
       prefs::kHintsFetcherHostsSuccessfullyFetched);
   for (const std::string& host : hosts) {
     EXPECT_TRUE(hosts_fetched->FindDoubleKey(HashHostForDictionary(host)));
