@@ -33,7 +33,7 @@ namespace net {
 
 namespace {
 
-const char kCertData[] = {
+const uint8_t kCertData[] = {
 #include "net/data/ssl/certificates/wildcard.inc"
 };
 
@@ -59,7 +59,8 @@ struct Env {
     crypto_client_stream_factory.set_use_mock_crypter(true);
     cert_verifier = std::make_unique<MockCertVerifier>();
     verify_details.cert_verify_result.verified_cert =
-        X509Certificate::CreateFromBytes(kCertData, base::size(kCertData));
+        X509Certificate::CreateFromBytes(
+            reinterpret_cast<const char*>(kCertData), base::size(kCertData));
     CHECK(verify_details.cert_verify_result.verified_cert);
     verify_details.cert_verify_result.is_issued_by_known_root = true;
   }

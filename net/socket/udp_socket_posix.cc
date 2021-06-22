@@ -832,7 +832,7 @@ int UDPSocketPosix::InternalRecvFromNonConnectedSocket(IOBuffer* buf,
   SockaddrStorage storage;
   struct iovec iov = {
       .iov_base = buf->data(),
-      .iov_len = buf_len,
+      .iov_len = static_cast<size_t>(buf_len),
   };
   struct msghdr msg = {
       .msg_name = storage.addr,

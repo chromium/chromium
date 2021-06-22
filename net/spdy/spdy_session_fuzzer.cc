@@ -24,7 +24,7 @@
 
 namespace {
 
-const char kCertData[] = {
+const uint8_t kCertData[] = {
 #include "net/data/ssl/certificates/spdy_pooling.inc"
 };
 
@@ -110,8 +110,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   socket_factory.set_fuzz_connect_result(false);
 
   net::SSLSocketDataProvider ssl_provider(net::ASYNC, net::OK);
-  ssl_provider.ssl_info.cert =
-      net::X509Certificate::CreateFromBytes(kCertData, base::size(kCertData));
+  ssl_provider.ssl_info.cert = net::X509Certificate::CreateFromBytes(
+      reinterpret_cast<const char*>(kCertData), base::size(kCertData));
   CHECK(ssl_provider.ssl_info.cert);
   socket_factory.AddSSLSocketDataProvider(&ssl_provider);
 

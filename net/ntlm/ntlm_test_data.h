@@ -41,7 +41,7 @@ constexpr char kUserAscii[] = "User";
 constexpr char kHostnameAscii[] = "COMPUTER";
 
 // Test data obtained from [2].
-constexpr char kChannelBindings[] = {
+constexpr uint8_t kChannelBindings[] = {
     't',  'l',  's',  '-',  's',  'e',  'r',  'v',  'e',  'r',  '-',
     'e',  'n',  'd',  '-',  'p',  'o',  'i',  'n',  't',  ':',  0xea,
     0x05, 0xfe, 0xfe, 0xcc, 0x6b, 0x0b, 0xd5, 0x71, 0xdb, 0xbc, 0x5b,

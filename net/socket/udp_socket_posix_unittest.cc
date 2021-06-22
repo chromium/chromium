@@ -224,8 +224,9 @@ class UDPSocketPosixTest : public TestWithTaskEnvironment {
   bool callback_fired_;
   int rv_;
   std::string msgs_[kNumMsgs] = {kHelloMsg, kSecondMsg, kThirdMsg};
-  int lengths_[kNumMsgs] = {kHelloMsg.length(), kSecondMsg.length(),
-                            kThirdMsg.length()};
+  int lengths_[kNumMsgs] = {static_cast<int>(kHelloMsg.length()),
+                            static_cast<int>(kSecondMsg.length()),
+                            static_cast<int>(kThirdMsg.length())};
   int total_lengths_ =
       kHelloMsg.length() + kSecondMsg.length() + kThirdMsg.length();
   DatagramBuffer* buffer_ptrs_[kNumMsgs];
