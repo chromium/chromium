@@ -673,7 +673,6 @@ html element iframe
     property scrolling
     property src
     property srcdoc
-    property trustToken
     property width
 html element img
     property align

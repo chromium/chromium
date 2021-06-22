@@ -247,6 +247,12 @@ interface AppHistory : EventTarget
     setter onnavigate
     setter onnavigateerror
     setter onnavigatesuccess
+interface AppHistoryDestination
+    attribute @@toStringTag
+    getter sameDocument
+    getter url
+    method constructor
+    method getState
 interface AppHistoryEntry : EventTarget
     attribute @@toStringTag
     getter id
@@ -1939,7 +1945,6 @@ interface Document : Node
     method getSelection
     method hasFocus
     method hasStorageAccess
-    method hasTrustToken
     method importNode
     method open
     method prepend
@@ -3567,7 +3572,6 @@ interface HTMLIFrameElement : HTMLElement
     getter scrolling
     getter src
     getter srcdoc
-    getter trustToken
     getter width
     method constructor
     method getSVGDocument
@@ -3589,7 +3593,6 @@ interface HTMLIFrameElement : HTMLElement
     setter scrolling
     setter src
     setter srcdoc
-    setter trustToken
     setter width
 interface HTMLImageElement : HTMLElement
     attribute @@toStringTag
@@ -5438,6 +5441,7 @@ interface MediaStreamTrack : EventTarget
     method clone
     method constructor
     method getCapabilities
+    method getCaptureHandle
     method getConstraints
     method getSettings
     method stop
@@ -9096,6 +9100,7 @@ interface VideoEncoder
 interface VideoFrame
     attribute @@toStringTag
     getter codedHeight
+    getter codedRect
     getter codedRegion
     getter codedWidth
     getter cropHeight
@@ -9108,12 +9113,13 @@ interface VideoFrame
     getter format
     getter planes
     getter timestamp
+    getter visibleRect
     getter visibleRegion
     method allocationSize
     method clone
     method close
     method constructor
-    method readInto
+    method copyTo
 interface VideoPlaybackQuality
     attribute @@toStringTag
     getter corruptedVideoFrames
@@ -10668,7 +10674,6 @@ interface XMLHttpRequest : XMLHttpRequestEventTarget
     getter status
     getter statusText
     getter timeout
-    getter trustTokenOperationError
     getter upload
     getter withCredentials
     method abort
@@ -10679,7 +10684,6 @@ interface XMLHttpRequest : XMLHttpRequestEventTarget
     method overrideMimeType
     method send
     method setRequestHeader
-    method setTrustToken
     setter onreadystatechange
     setter responseType
     setter timeout

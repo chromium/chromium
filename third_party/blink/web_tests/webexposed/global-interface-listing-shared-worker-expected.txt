@@ -2935,7 +2935,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter status
 [Worker]     getter statusText
 [Worker]     getter timeout
-[Worker]     getter trustTokenOperationError
 [Worker]     getter upload
 [Worker]     getter withCredentials
 [Worker]     method abort
@@ -2946,7 +2945,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method overrideMimeType
 [Worker]     method send
 [Worker]     method setRequestHeader
-[Worker]     method setTrustToken
 [Worker]     setter onreadystatechange
 [Worker]     setter responseType
 [Worker]     setter timeout

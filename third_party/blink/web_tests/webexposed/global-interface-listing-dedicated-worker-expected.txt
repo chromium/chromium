@@ -1817,6 +1817,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker] interface VideoFrame
 [Worker]     attribute @@toStringTag
 [Worker]     getter codedHeight
+[Worker]     getter codedRect
 [Worker]     getter codedRegion
 [Worker]     getter codedWidth
 [Worker]     getter cropHeight
@@ -1829,12 +1830,13 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter format
 [Worker]     getter planes
 [Worker]     getter timestamp
+[Worker]     getter visibleRect
 [Worker]     getter visibleRegion
 [Worker]     method allocationSize
 [Worker]     method clone
 [Worker]     method close
 [Worker]     method constructor
-[Worker]     method readInto
+[Worker]     method copyTo
 [Worker] interface WakeLock
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor
@@ -3292,7 +3294,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter status
 [Worker]     getter statusText
 [Worker]     getter timeout
-[Worker]     getter trustTokenOperationError
 [Worker]     getter upload
 [Worker]     getter withCredentials
 [Worker]     method abort
@@ -3303,7 +3304,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method overrideMimeType
 [Worker]     method send
 [Worker]     method setRequestHeader
-[Worker]     method setTrustToken
 [Worker]     setter onreadystatechange
 [Worker]     setter responseType
 [Worker]     setter timeout

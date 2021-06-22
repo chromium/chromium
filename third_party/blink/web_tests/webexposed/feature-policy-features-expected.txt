@@ -52,7 +52,6 @@ serial
 shared-autofill
 storage-access-api
 sync-xhr
-trust-token-redemption
 usb
 vertical-scroll
 window-placement
