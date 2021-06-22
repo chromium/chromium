@@ -345,7 +345,9 @@ bool IsShadowContentRelevantForAccessibility(const Node* node) {
   // For some reason the iframe tests hang, waiting for content to change. In
   // other words, returning true here causes some tree updates not to occur.
   return node->GetDocument().IsFlatTreeTraversalForbidden() ||
-         node->GetDocument().IsSlotAssignmentRecalcForbidden() ||
+         node->GetDocument()
+             .GetSlotAssignmentEngine()
+             .HasPendingSlotAssignmentRecalc() ||
          LayoutTreeBuilderTraversal::FirstChild(*slot_element);
 }
 

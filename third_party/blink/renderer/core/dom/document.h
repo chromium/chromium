@@ -1533,8 +1533,6 @@ class CORE_EXPORT Document : public ContainerNode,
   bool IsSlotAssignmentRecalcForbidden() {
     return slot_assignment_recalc_forbidden_recursion_depth_ > 0;
   }
-#else
-  bool IsSlotAssignmentRecalcForbidden() { return false; }
 #endif
 
   unsigned& FlatTreeTraversalForbiddenRecursionDepth() {
