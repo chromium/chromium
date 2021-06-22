@@ -408,7 +408,7 @@ void WebHistoryService::ExpireHistory(
     ExpireWebHistoryCallback callback,
     const net::PartialNetworkTrafficAnnotationTag& partial_traffic_annotation) {
   base::DictionaryValue delete_request;
-  std::unique_ptr<base::ListValue> deletions(new base::ListValue);
+  base::ListValue deletions;
   base::Time now = base::Time::Now();
 
   for (const auto& expire : expire_list) {
@@ -421,14 +421,13 @@ void WebHistoryService::ExpireHistory(
     std::string max_timestamp = ServerTimeString(end_time);
 
     for (const auto& url : expire.urls) {
-      deletions->Append(
-          CreateDeletion(min_timestamp, max_timestamp, url));
+      deletions.Append(CreateDeletion(min_timestamp, max_timestamp, url));
     }
     // If no URLs were specified, delete everything in the time range.
     if (expire.urls.empty())
-      deletions->Append(CreateDeletion(min_timestamp, max_timestamp, GURL()));
+      deletions.Append(CreateDeletion(min_timestamp, max_timestamp, GURL()));
   }
-  delete_request.Set("del", std::move(deletions));
+  delete_request.SetKey("del", std::move(deletions));
   std::string post_data;
   base::JSONWriter::Write(delete_request, &post_data);
 

@@ -86,29 +86,27 @@ void DumpDistillability(content::RenderFrame* render_frame,
   base::DictionaryValue dict;
   std::string msg;
 
-  std::unique_ptr<base::DictionaryValue> raw_features(
-      new base::DictionaryValue);
-  raw_features->SetInteger("is_mobile_friendly", features.is_mobile_friendly);
-  raw_features->SetInteger("open_graph", features.open_graph);
-  raw_features->SetInteger("element_count", features.element_count);
-  raw_features->SetInteger("anchor_count", features.anchor_count);
-  raw_features->SetInteger("form_count", features.form_count);
-  raw_features->SetInteger("text_input_count", features.text_input_count);
-  raw_features->SetInteger("password_input_count",
-                           features.password_input_count);
-  raw_features->SetInteger("p_count", features.p_count);
-  raw_features->SetInteger("pre_count", features.pre_count);
-  raw_features->SetDouble("moz_score", features.moz_score);
-  raw_features->SetDouble("moz_score_all_sqrt", features.moz_score_all_sqrt);
-  raw_features->SetDouble("moz_score_all_linear",
-                          features.moz_score_all_linear);
-  dict.Set("features", std::move(raw_features));
+  base::DictionaryValue raw_features;
+  raw_features.SetInteger("is_mobile_friendly", features.is_mobile_friendly);
+  raw_features.SetInteger("open_graph", features.open_graph);
+  raw_features.SetInteger("element_count", features.element_count);
+  raw_features.SetInteger("anchor_count", features.anchor_count);
+  raw_features.SetInteger("form_count", features.form_count);
+  raw_features.SetInteger("text_input_count", features.text_input_count);
+  raw_features.SetInteger("password_input_count",
+                          features.password_input_count);
+  raw_features.SetInteger("p_count", features.p_count);
+  raw_features.SetInteger("pre_count", features.pre_count);
+  raw_features.SetDouble("moz_score", features.moz_score);
+  raw_features.SetDouble("moz_score_all_sqrt", features.moz_score_all_sqrt);
+  raw_features.SetDouble("moz_score_all_linear", features.moz_score_all_linear);
+  dict.SetKey("features", std::move(raw_features));
 
-  std::unique_ptr<base::ListValue> derived_features(new base::ListValue());
+  base::ListValue derived_features;
   for (double value : derived) {
-    derived_features->Append(value);
+    derived_features.Append(value);
   }
-  dict.Set("derived_features", std::move(derived_features));
+  dict.SetKey("derived_features", std::move(derived_features));
 
   dict.SetDouble("score", score);
   dict.SetInteger("distillable", distillable);

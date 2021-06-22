@@ -575,9 +575,9 @@ void FlagsState::GetFlagFeatureEntries(
     data->SetString("description",
                     base::StringPiece(entry.visible_description));
 
-    auto supported_platforms = std::make_unique<base::ListValue>();
-    AddOsStrings(entry.supported_platforms, supported_platforms.get());
-    data->Set("supported_platforms", std::move(supported_platforms));
+    base::ListValue supported_platforms;
+    AddOsStrings(entry.supported_platforms, &supported_platforms);
+    data->SetKey("supported_platforms", std::move(supported_platforms));
     // True if the switch is not currently passed.
     bool is_default_value = IsDefaultValue(entry, enabled_entries);
     data->SetBoolean("is_default", is_default_value);
@@ -602,7 +602,8 @@ void FlagsState::GetFlagFeatureEntries(
       case FeatureEntry::ENABLE_DISABLE_VALUE:
       case FeatureEntry::FEATURE_VALUE:
       case FeatureEntry::FEATURE_WITH_PARAMS_VALUE:
-        data->Set("options", CreateOptionsData(entry, enabled_entries));
+        data->SetKey("options", base::Value::FromUniquePtrValue(
+                                    CreateOptionsData(entry, enabled_entries)));
         break;
     }
 

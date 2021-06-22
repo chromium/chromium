@@ -269,12 +269,12 @@ void TranslateInternalsHandler::SendSupportedLanguagesToJs() {
   base::Time last_updated =
       translate::TranslateDownloadManager::GetSupportedLanguagesLastUpdated();
 
-  auto languages_list = std::make_unique<base::ListValue>();
+  base::ListValue languages_list;
   for (const std::string& lang : languages)
-    languages_list->AppendString(lang);
+    languages_list.AppendString(lang);
 
   base::DictionaryValue dict;
-  dict.Set("languages", std::move(languages_list));
+  dict.SetKey("languages", std::move(languages_list));
   dict.SetDouble("last_updated", last_updated.ToJsTime());
   SendMessageToJs("supportedLanguagesUpdated", dict);
 }

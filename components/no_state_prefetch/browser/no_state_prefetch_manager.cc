@@ -377,8 +377,10 @@ std::unique_ptr<base::DictionaryValue> NoStatePrefetchManager::CopyAsValue()
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   auto dict_value = std::make_unique<base::DictionaryValue>();
-  dict_value->Set("history", prerender_history_->CopyEntriesAsValue());
-  dict_value->Set("active", GetActivePrerendersAsValue());
+  dict_value->SetKey("history", base::Value::FromUniquePtrValue(
+                                    prerender_history_->CopyEntriesAsValue()));
+  dict_value->SetKey(
+      "active", base::Value::FromUniquePtrValue(GetActivePrerendersAsValue()));
   dict_value->SetBoolean("enabled",
                          delegate_->IsNetworkPredictionPreferenceEnabled());
   dict_value->SetString("disabled_note",

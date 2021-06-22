@@ -140,8 +140,7 @@ void DataUseTracker::RemoveExpiredEntriesForPref(const std::string& pref_name) {
     base::Time key_date;
     if (base::Time::FromUTCString(it.key().c_str(), &key_date) &&
         key_date > week_ago)
-      user_pref_new_dict.Set(it.key(),
-                             base::Value::ToUniquePtrValue(it.value().Clone()));
+      user_pref_new_dict.SetPath(it.key(), it.value().Clone());
   }
   local_state_->Set(pref_name, user_pref_new_dict);
 }

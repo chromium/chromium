@@ -97,7 +97,8 @@ class ManagedBookmarksTrackerTest : public testing::Test {
       std::unique_ptr<base::ListValue> children) {
     std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
     dict->SetString("name", title);
-    dict->Set("children", std::move(children));
+    dict->SetKey("children",
+                 base::Value::FromUniquePtrValue(std::move(children)));
     return dict;
   }
 
