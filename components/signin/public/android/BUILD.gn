@@ -41,6 +41,7 @@ android_library("java") {
     "java/src/org/chromium/components/signin/base/GoogleServiceAuthError.java",
     "java/src/org/chromium/components/signin/identitymanager/AccountInfoService.java",
     "java/src/org/chromium/components/signin/identitymanager/AccountInfoServiceImpl.java",
+    "java/src/org/chromium/components/signin/identitymanager/AccountInfoServiceProvider.java",
     "java/src/org/chromium/components/signin/identitymanager/AccountTrackerService.java",
     "java/src/org/chromium/components/signin/identitymanager/IdentityManager.java",
     "java/src/org/chromium/components/signin/identitymanager/IdentityMutator.java",

@@ -36,7 +36,7 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.signin.ProfileDataSource;
-import org.chromium.components.signin.identitymanager.AccountInfoServiceImpl;
+import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
 import org.chromium.components.signin.identitymanager.AccountTrackerService;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.test.util.FakeProfileDataSource;
@@ -87,7 +87,7 @@ public class ProfileDataCacheWithBadgeRenderTest extends DummyUiActivityTestCase
 
     @Before
     public void setUp() {
-        AccountInfoServiceImpl.init(mIdentityManager, mAccountTrackerServiceMock);
+        AccountInfoServiceProvider.init(mIdentityManager, mAccountTrackerServiceMock);
         final ProfileDataSource.ProfileData profileData = new ProfileDataSource.ProfileData(
                 TEST_ACCOUNT_NAME, createAvatar(), "Full Name", "Given Name");
         mAccountManagerTestRule.addAccount(profileData);
@@ -104,7 +104,7 @@ public class ProfileDataCacheWithBadgeRenderTest extends DummyUiActivityTestCase
 
     @After
     public void tearDown() {
-        AccountInfoServiceImpl.resetForTests();
+        AccountInfoServiceProvider.resetForTests();
     }
 
     @Test

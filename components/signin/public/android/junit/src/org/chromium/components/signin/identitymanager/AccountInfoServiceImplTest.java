@@ -50,19 +50,19 @@ public class AccountInfoServiceImplTest {
 
     @Before
     public void setUp() {
-        AccountInfoServiceImpl.init(mIdentityManagerMock, mAccountTrackerServiceMock);
-        mService = (AccountInfoServiceImpl) AccountInfoServiceImpl.get();
+        AccountInfoServiceProvider.init(mIdentityManagerMock, mAccountTrackerServiceMock);
+        mService = (AccountInfoServiceImpl) AccountInfoServiceProvider.get();
     }
 
     @After
     public void tearDown() {
-        AccountInfoServiceImpl.resetForTests();
+        AccountInfoServiceProvider.resetForTests();
     }
 
     @Test(expected = RuntimeException.class)
     public void testGetInstanceBeforeInitialization() {
-        AccountInfoServiceImpl.resetForTests();
-        AccountInfoServiceImpl.get();
+        AccountInfoServiceProvider.resetForTests();
+        AccountInfoServiceProvider.get();
     }
 
     @Test

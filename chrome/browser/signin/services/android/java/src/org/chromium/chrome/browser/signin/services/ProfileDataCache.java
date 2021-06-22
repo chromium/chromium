@@ -35,7 +35,7 @@ import org.chromium.components.signin.ProfileDataSource;
 import org.chromium.components.signin.ProfileDataSource.ProfileData;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.identitymanager.AccountInfoService;
-import org.chromium.components.signin.identitymanager.AccountInfoServiceImpl;
+import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -113,7 +113,7 @@ public class ProfileDataCache implements ProfileDataSource.Observer, AccountInfo
         mProfileDataSource = ChromeFeatureList.isEnabled(ChromeFeatureList.DEPRECATE_MENAGERIE_API)
                 ? null
                 : AccountManagerFacadeProvider.getInstance().getProfileDataSource();
-        mAccountInfoService = AccountInfoServiceImpl.get();
+        mAccountInfoService = AccountInfoServiceProvider.get();
         if (mProfileDataSource == null) {
             populateCache();
         }

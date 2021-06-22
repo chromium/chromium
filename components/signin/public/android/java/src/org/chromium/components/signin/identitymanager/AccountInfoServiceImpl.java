@@ -4,9 +4,6 @@
 
 package org.chromium.components.signin.identitymanager;
 
-import androidx.annotation.GuardedBy;
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.ObserverList;
 import org.chromium.base.Promise;
 import org.chromium.components.signin.base.AccountInfo;
@@ -14,50 +11,16 @@ import org.chromium.components.signin.base.AccountInfo;
 /**
  * This class handles the {@link AccountInfo} fetch on Java side.
  */
-public final class AccountInfoServiceImpl implements IdentityManager.Observer, AccountInfoService {
-    private static final Object LOCK = new Object();
-
-    @GuardedBy("LOCK")
-    private static AccountInfoServiceImpl sInstance;
-
+final class AccountInfoServiceImpl implements IdentityManager.Observer, AccountInfoService {
     private final IdentityManager mIdentityManager;
     private final AccountTrackerService mAccountTrackerService;
     private final ObserverList<Observer> mObservers = new ObserverList<>();
 
-    private AccountInfoServiceImpl(
+    AccountInfoServiceImpl(
             IdentityManager identityManager, AccountTrackerService accountTrackerService) {
         mIdentityManager = identityManager;
         mAccountTrackerService = accountTrackerService;
-    }
-
-    /**
-     * Initializes the singleton object.
-     */
-    public static void init(
-            IdentityManager identityManager, AccountTrackerService accountTrackerService) {
-        synchronized (LOCK) {
-            sInstance = new AccountInfoServiceImpl(identityManager, accountTrackerService);
-            identityManager.addObserver(sInstance);
-        }
-    }
-
-    /**
-     * Gets the singleton instance.
-     */
-    public static AccountInfoService get() {
-        synchronized (LOCK) {
-            if (sInstance == null) {
-                throw new RuntimeException("The AccountInfoService is not yet initialized!");
-            }
-            return sInstance;
-        }
-    }
-
-    @VisibleForTesting
-    public static void resetForTests() {
-        synchronized (LOCK) {
-            sInstance = null;
-        }
+        identityManager.addObserver(this);
     }
 
     /**

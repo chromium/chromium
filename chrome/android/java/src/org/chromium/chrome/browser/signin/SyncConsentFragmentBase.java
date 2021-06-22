@@ -46,7 +46,7 @@ import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.ChildAccountStatus;
-import org.chromium.components.signin.identitymanager.AccountInfoServiceImpl;
+import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -416,7 +416,7 @@ public abstract class SyncConsentFragmentBase
     }
 
     private void seedAccountsAndSignin(boolean settingsClicked, View confirmationView) {
-        AccountInfoServiceImpl.get()
+        AccountInfoServiceProvider.get()
                 .getAccountInfoByEmail(mSelectedAccountName)
                 .then(accountInfo -> {
                     assert accountInfo != null : "The seeded CoreAccountInfo shouldn't be null";

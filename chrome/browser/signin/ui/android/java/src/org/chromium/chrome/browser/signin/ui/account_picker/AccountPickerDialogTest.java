@@ -40,7 +40,7 @@ import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.signin.ProfileDataSource;
-import org.chromium.components.signin.identitymanager.AccountInfoServiceImpl;
+import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
 import org.chromium.components.signin.identitymanager.AccountTrackerService;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.test.util.FakeProfileDataSource;
@@ -92,7 +92,7 @@ public class AccountPickerDialogTest extends DummyUiActivityTestCase {
 
     @Before
     public void setUp() {
-        AccountInfoServiceImpl.init(mIdentityManagerMock, mAccountTrackerServiceMock);
+        AccountInfoServiceProvider.init(mIdentityManagerMock, mAccountTrackerServiceMock);
         addAccount(mAccountName1, mFullName1);
         addAccount(mAccountName2, "");
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -105,7 +105,7 @@ public class AccountPickerDialogTest extends DummyUiActivityTestCase {
     @After
     public void tearDown() {
         TestThreadUtils.runOnUiThreadBlocking(mCoordinator::dismissDialog);
-        AccountInfoServiceImpl.resetForTests();
+        AccountInfoServiceProvider.resetForTests();
     }
 
     @Test

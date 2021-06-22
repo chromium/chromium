@@ -23,7 +23,7 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountId;
-import org.chromium.components.signin.identitymanager.AccountInfoServiceImpl;
+import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
 import org.chromium.components.signin.identitymanager.AccountTrackerService;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.IdentityManagerJni;
@@ -66,14 +66,14 @@ public class ProfileDataCacheUnitTest {
     @Before
     public void setUp() {
         mocker.mock(IdentityManagerJni.TEST_HOOKS, mIdentityManagerNativeMock);
-        AccountInfoServiceImpl.init(mIdentityManager, mAccountTrackerServiceMock);
+        AccountInfoServiceProvider.init(mIdentityManager, mAccountTrackerServiceMock);
         mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
                 RuntimeEnvironment.application.getApplicationContext());
     }
 
     @After
     public void tearDown() {
-        AccountInfoServiceImpl.resetForTests();
+        AccountInfoServiceProvider.resetForTests();
     }
 
     @Test
