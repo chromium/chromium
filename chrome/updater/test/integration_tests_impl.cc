@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -39,6 +40,14 @@
 
 namespace updater {
 namespace test {
+
+int CountDirectoryFiles(const base::FilePath& dir) {
+  base::FileEnumerator it(dir, false, base::FileEnumerator::FILES);
+  int res = 0;
+  for (base::FilePath name = it.Next(); !name.empty(); name = it.Next())
+    ++res;
+  return res;
+}
 
 void RegisterApp(const std::string& app_id) {
   scoped_refptr<UpdateService> update_service = CreateUpdateService();

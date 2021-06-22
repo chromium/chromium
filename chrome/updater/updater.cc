@@ -55,8 +55,7 @@ namespace updater {
 namespace {
 
 // The log file is created in DIR_LOCAL_APP_DATA or DIR_APP_DATA.
-void InitLogging(UpdaterScope updater_scope,
-                 const base::CommandLine& command_line) {
+void InitLogging(UpdaterScope updater_scope) {
   logging::LoggingSettings settings;
   const absl::optional<base::FilePath> log_dir =
       GetBaseDirectory(updater_scope);
@@ -72,6 +71,17 @@ void InitLogging(UpdaterScope updater_scope,
                        true,    // enable_thread_id
                        true,    // enable_timestamp
                        false);  // enable_tickcount
+}
+
+void ReinitializeLoggingAfterCrashHandler(UpdaterScope updater_scope) {
+  // Initializing the logging more than two times is not supported. In this
+  // case, logging has been initialized once in the updater main, and the
+  // the second time by the crash handler.
+  // Reinitializing the log is not possible if the vlog switch is
+  // already present on the command line. The code in this function relies
+  // on undocumented behavior of the logging object, and it could break.
+  base::CommandLine::ForCurrentProcess()->RemoveSwitch(kLoggingModuleSwitch);
+  InitLogging(updater_scope);
 }
 
 void InitializeCrashReporting(UpdaterScope updater_scope) {
@@ -93,8 +103,14 @@ int HandleUpdaterCommands(UpdaterScope updater_scope,
     return 0;
 
   // Start the crash handler as early as possible.
-  if (command_line->HasSwitch(kCrashHandlerSwitch))
-    return CrashReporterMain();
+  if (command_line->HasSwitch(kCrashHandlerSwitch)) {
+    const int retval = CrashReporterMain();
+
+    // The crash handler mutates the logging object, so the updater process
+    // stops logging to the log file.
+    ReinitializeLoggingAfterCrashHandler(updater_scope);
+    return retval;
+  }
 
   InitializeCrashReporting(updater_scope);
   base::SingleThreadTaskExecutor main_task_executor(base::MessagePumpType::UI);
@@ -176,7 +192,7 @@ int UpdaterMain(int argc, const char* const* argv) {
       base::CommandLine::ForCurrentProcess();
 
   const UpdaterScope updater_scope = GetUpdaterScope();
-  InitLogging(updater_scope, *command_line);
+  InitLogging(updater_scope);
 
   VLOG(1) << "Version " << kUpdaterVersion
           << ", command line: " << command_line->GetCommandLineString();

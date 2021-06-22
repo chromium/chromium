@@ -305,7 +305,7 @@ bool DeleteFolder(const absl::optional<base::FilePath>& installed_path) {
   if (!installed_path)
     return false;
   if (!base::DeletePathRecursively(*installed_path)) {
-    LOG(ERROR) << "Deleting " << installed_path << " failed";
+    PLOG(ERROR) << "Deleting " << installed_path << " failed";
     return false;
   }
   return true;
@@ -441,11 +441,13 @@ int Uninstall(UpdaterScope scope) {
 
   UninstallOtherVersions(scope);
 
-  if (!DeleteDataFolder(scope))
-    return setup_exit_codes::kFailedToDeleteDataFolder;
-
   if (!DeleteInstallFolder(scope))
     return setup_exit_codes::kFailedToDeleteFolder;
+
+  // Deleting the data folder is best-effort. Current running processes such as
+  // the crash handler process may still write to the updater log file, thus
+  // it is not always possible to delete the data folder.
+  DeleteDataFolder(scope);
 
   return setup_exit_codes::kSuccess;
 }

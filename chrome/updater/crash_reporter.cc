@@ -101,26 +101,26 @@ void StartCrashReporter(UpdaterScope updater_scope,
 }
 
 int CrashReporterMain() {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  DCHECK(command_line->HasSwitch(kCrashHandlerSwitch));
+  base::CommandLine command_line = *base::CommandLine::ForCurrentProcess();
+  DCHECK(command_line.HasSwitch(kCrashHandlerSwitch));
 
   // Disable rate-limiting until this is fixed:
   //   https://bugs.chromium.org/p/crashpad/issues/detail?id=23
-  command_line->AppendSwitch(kNoRateLimitSwitch);
+  command_line.AppendSwitch(kNoRateLimitSwitch);
 
   // Because of https://bugs.chromium.org/p/crashpad/issues/detail?id=82,
   // Crashpad fails on the presence of flags it doesn't handle.
-  command_line->RemoveSwitch(kCrashHandlerSwitch);
-  command_line->RemoveSwitch(kSystemSwitch);
-  command_line->RemoveSwitch(kEnableLoggingSwitch);
-  command_line->RemoveSwitch(kLoggingModuleSwitch);
+  command_line.RemoveSwitch(kCrashHandlerSwitch);
+  command_line.RemoveSwitch(kSystemSwitch);
+  command_line.RemoveSwitch(kEnableLoggingSwitch);
+  command_line.RemoveSwitch(kLoggingModuleSwitch);
 
-  const std::vector<base::CommandLine::StringType> argv = command_line->argv();
+  const std::vector<base::CommandLine::StringType> argv = command_line.argv();
 
   // |storage| must be declared before |argv_as_utf8|, to ensure it outlives
   // |argv_as_utf8|, which will hold pointers into |storage|.
   std::vector<std::string> storage;
-  std::unique_ptr<char*[]> argv_as_utf8(new char*[argv.size() + 1]);
+  auto argv_as_utf8 = std::make_unique<char*[]>(argv.size() + 1);
   storage.reserve(argv.size());
   for (size_t i = 0; i < argv.size(); ++i) {
 #if defined(OS_WIN)

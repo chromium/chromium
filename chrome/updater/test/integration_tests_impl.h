@@ -130,6 +130,10 @@ void WaitForServerExit(UpdaterScope scope);
 void ExpectInterfacesRegistered(UpdaterScope scope);
 #endif  // OS_WIN
 
+// Returns the number of files in the directory, not including directories,
+// links, or dot dot.
+int CountDirectoryFiles(const base::FilePath& dir);
+
 }  // namespace test
 }  // namespace updater
 

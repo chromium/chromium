@@ -38,7 +38,6 @@
 
 namespace updater {
 namespace test {
-
 namespace {
 
 Launchd::Domain LaunchdDomain(UpdaterScope scope) {
@@ -90,8 +89,9 @@ absl::optional<base::FilePath> GetProductPath(UpdaterScope scope) {
       .AppendASCII(PRODUCT_FULLNAME_STRING);
 }
 
-absl::optional<base::FilePath> GetActiveFile(UpdaterScope scope,
+absl::optional<base::FilePath> GetActiveFile(UpdaterScope /*scope*/,
                                              const std::string& id) {
+  // The active user is always managaged in the updater scope for the user.
   const absl::optional<base::FilePath> path =
       GetLibraryFolderPath(UpdaterScope::kUser);
   if (!path)
@@ -190,9 +190,11 @@ void ExpectClean(UpdaterScope scope) {
 
   path = GetDataDirPath(scope);
   EXPECT_TRUE(path);
-  if (path)
-    EXPECT_FALSE(base::PathExists(*path));
-
+  if (path && base::PathExists(*path)) {
+    // If the path exists, then expect only the log file to be present.
+    EXPECT_EQ(CountDirectoryFiles(*path), 1);
+    EXPECT_TRUE(base::PathExists(path->AppendASCII("updater.log")));
+  }
   ExpectServiceAbsent(scope, GetUpdateServiceLaunchdName());
   ExpectServiceAbsent(scope, GetUpdateServiceInternalLaunchdName());
 }
