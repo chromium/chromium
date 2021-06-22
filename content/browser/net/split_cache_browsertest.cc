@@ -508,6 +508,7 @@ IN_PROC_BROWSER_TEST_P(SplitCacheContentBrowserTestEnabled, MAYBE_SplitCache) {
 #else
 #define MAYBE_SplitCache SplitCache
 #endif
+
 IN_PROC_BROWSER_TEST_F(SplitCacheRegistrableDomainContentBrowserTest,
                        MAYBE_SplitCache) {
   // Load a cacheable resource for the first time, and it's not cached.
@@ -548,6 +549,19 @@ IN_PROC_BROWSER_TEST_F(SplitCacheRegistrableDomainContentBrowserTest,
   // seen the object before but the top frame hasn't. It should not be cached.
   EXPECT_FALSE(TestResourceLoad(GenURL("f.com", "/title1.html"),
                                 GenURL("a.com", "/title1.html")));
+}
+
+#if defined(THREAD_SANITIZER)
+// Flaky under TSan: https://crbug.com/1185462
+#define MAYBE_SplitCacheAndDataUrl DISABLED_SplitCacheAndDataUrl
+#else
+#define MAYBE_SplitCacheAndDataUrl SplitCacheAndDataUrl
+#endif
+
+IN_PROC_BROWSER_TEST_F(SplitCacheRegistrableDomainContentBrowserTest,
+                       MAYBE_SplitCacheAndDataUrl) {
+  // Load a cacheable resource for the first time, and it's not cached.
+  EXPECT_FALSE(TestResourceLoad(GenURL("a.com", "/title1.html"), GURL()));
 
   // Load the resource from a data url which has an opaque origin. It shouldn't
   // be cached.
@@ -557,6 +571,19 @@ IN_PROC_BROWSER_TEST_F(SplitCacheRegistrableDomainContentBrowserTest,
   // Load the same resource from the same data url, it shouldn't be cached
   // because the origin should be unique.
   EXPECT_FALSE(TestResourceLoad(GenURL("a.com", "/title1.html"), data_url));
+}
+
+#if defined(THREAD_SANITIZER)
+// Flaky under TSan: https://crbug.com/1185462
+#define MAYBE_SplitCacheAndAboutBlank DISABLED_SplitCacheAndAboutBlank
+#else
+#define MAYBE_SplitCacheAndAboutBlank SplitCacheAndAboutBlank
+#endif
+
+IN_PROC_BROWSER_TEST_F(SplitCacheRegistrableDomainContentBrowserTest,
+                       MAYBE_SplitCacheAndAboutBlank) {
+  // Load a cacheable resource for the first time, and it's not cached.
+  EXPECT_FALSE(TestResourceLoad(GenURL("a.com", "/title1.html"), GURL()));
 
   // Load the resource from a subframe document that points to about:blank. The
   // resource is cached because the resource load is using the main frame's
@@ -571,6 +598,19 @@ IN_PROC_BROWSER_TEST_F(SplitCacheRegistrableDomainContentBrowserTest,
   // set to (a.com, a.com) which is already in the cache.
   EXPECT_TRUE(
       TestResourceLoadFromPopup(GenURL("a.com", "/title1.html"), blank_url));
+}
+
+#if defined(THREAD_SANITIZER)
+// Flaky under TSan: https://crbug.com/1185462
+#define MAYBE_SplitCacheAndPopup DISABLED_SplitCacheAndPopup
+#else
+#define MAYBE_SplitCacheAndPopup SplitCacheAndPopup
+#endif
+
+IN_PROC_BROWSER_TEST_F(SplitCacheRegistrableDomainContentBrowserTest,
+                       MAYBE_SplitCacheAndPopup) {
+  // Load a cacheable resource for the first time, and it's not cached.
+  EXPECT_FALSE(TestResourceLoad(GenURL("a.com", "/title1.html"), GURL()));
 
   // Load the resource from a popup window that points to a new origin. The
   // resource is not cached because the resource load is using a NIK set to
