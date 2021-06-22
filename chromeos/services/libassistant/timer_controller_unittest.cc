@@ -97,11 +97,11 @@ class AssistantTimerControllerTest : public ::testing::Test {
     if (!assistant_client_) {
       Init();
     }
-    controller_.OnAssistantManagerRunning(assistant_client_.get());
+    controller_.OnAssistantClientRunning(assistant_client_.get());
   }
 
   void StopLibassistant() {
-    controller_.OnDestroyingAssistantManager(assistant_client_.get());
+    controller_.OnDestroyingAssistantClient(assistant_client_.get());
 
     // Delete the assistant manager so we crash on use-after-free.
     assistant_client_.reset();

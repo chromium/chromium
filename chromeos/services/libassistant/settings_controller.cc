@@ -67,7 +67,7 @@ assistant_client::InternalOptions* WARN_UNUSED_RESULT CreateInternalOptions(
 // The device settings can not be updated earlier, as they require the
 // device-id that is only assigned by Libassistant when it starts.
 class SettingsController::DeviceSettingsUpdater
-    : public AssistantManagerObserver {
+    : public AssistantClientObserver {
  public:
   DeviceSettingsUpdater(SettingsController* parent,
                         assistant_client::AssistantManager* assistant_manager)
@@ -310,7 +310,7 @@ void SettingsController::UpdateDeviceSettings(
   }
 }
 
-void SettingsController::OnAssistantManagerCreated(
+void SettingsController::OnAssistantClientCreated(
     AssistantClient* assistant_client) {
   assistant_manager_ = assistant_client->assistant_manager();
   assistant_manager_internal_ = assistant_client->assistant_manager_internal();
@@ -322,7 +322,7 @@ void SettingsController::OnAssistantManagerCreated(
   UpdateListeningEnabled(listening_enabled_);
 }
 
-void SettingsController::OnAssistantManagerStarted(
+void SettingsController::OnAssistantClientStarted(
     AssistantClient* assistant_client) {
   device_settings_updater_ = std::make_unique<DeviceSettingsUpdater>(
       this, assistant_client->assistant_manager());
@@ -330,7 +330,7 @@ void SettingsController::OnAssistantManagerStarted(
   UpdateDeviceSettings(locale_, hotword_enabled_);
 }
 
-void SettingsController::OnDestroyingAssistantManager(
+void SettingsController::OnDestroyingAssistantClient(
     AssistantClient* assistant_client) {
   assistant_manager_ = nullptr;
   assistant_manager_internal_ = nullptr;

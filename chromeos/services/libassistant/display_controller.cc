@@ -92,13 +92,13 @@ void DisplayController::SetAndroidAppList(
   display_connection_->OnAndroidAppListRefreshed(apps);
 }
 
-void DisplayController::OnAssistantManagerCreated(
+void DisplayController::OnAssistantClientCreated(
     AssistantClient* assistant_client) {
   assistant_manager_internal_ = assistant_client->assistant_manager_internal();
   assistant_manager_internal_->SetDisplayConnection(display_connection_.get());
 }
 
-void DisplayController::OnDestroyingAssistantManager(
+void DisplayController::OnDestroyingAssistantClient(
     AssistantClient* assistant_client) {
   assistant_manager_internal_ = nullptr;
 }

@@ -5,7 +5,7 @@
 #ifndef CHROMEOS_SERVICES_LIBASSISTANT_MEDIA_CONTROLLER_H_
 #define CHROMEOS_SERVICES_LIBASSISTANT_MEDIA_CONTROLLER_H_
 
-#include "chromeos/services/libassistant/assistant_manager_observer.h"
+#include "chromeos/services/libassistant/assistant_client_observer.h"
 #include "chromeos/services/libassistant/public/mojom/media_controller.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -19,7 +19,7 @@ namespace chromeos {
 namespace libassistant {
 
 class MediaController : public mojom::MediaController,
-                        public AssistantManagerObserver {
+                        public AssistantClientObserver {
  public:
   MediaController();
   MediaController(const MediaController&) = delete;
@@ -34,9 +34,9 @@ class MediaController : public mojom::MediaController,
   void PauseInternalMediaPlayer() override;
   void SetExternalPlaybackState(mojom::MediaStatePtr state) override;
 
-  // AssistantManagerObserver implementation:
-  void OnAssistantManagerRunning(AssistantClient* assistant_client) override;
-  void OnDestroyingAssistantManager(AssistantClient* assistant_client) override;
+  // AssistantClientObserver implementation:
+  void OnAssistantClientRunning(AssistantClient* assistant_client) override;
+  void OnDestroyingAssistantClient(AssistantClient* assistant_client) override;
   void OnAssistantManagerDestroyed() override;
 
  private:

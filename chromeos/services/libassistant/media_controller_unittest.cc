@@ -127,7 +127,7 @@ class AssistantMediaControllerTest : public testing::Test {
 
   void SetUp() override {
     assistant_client_->assistant_manager()->SetMediaManager(&media_manager_);
-    media_controller_->OnAssistantManagerRunning(assistant_client_.get());
+    media_controller_->OnAssistantClientRunning(assistant_client_.get());
   }
 
   mojo::Remote<mojom::MediaController>& client() { return client_; }
@@ -154,7 +154,7 @@ class AssistantMediaControllerTest : public testing::Test {
   }
 
   void RemoveAssistantManager() {
-    media_controller_->OnDestroyingAssistantManager(assistant_client_.get());
+    media_controller_->OnDestroyingAssistantClient(assistant_client_.get());
   }
 
  private:

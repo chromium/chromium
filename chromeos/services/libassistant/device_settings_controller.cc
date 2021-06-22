@@ -324,12 +324,12 @@ void DeviceSettingsController::OnGetDeviceSettings(
       /*description=*/"get_settings_result", voiceless_options, [](auto) {});
 }
 
-void DeviceSettingsController::OnAssistantManagerCreated(
+void DeviceSettingsController::OnAssistantClientCreated(
     AssistantClient* assistant_client) {
   assistant_manager_internal_ = assistant_client->assistant_manager_internal();
 }
 
-void DeviceSettingsController::OnDestroyingAssistantManager(
+void DeviceSettingsController::OnDestroyingAssistantClient(
     AssistantClient* assistant_client) {
   assistant_manager_internal_ = nullptr;
 }

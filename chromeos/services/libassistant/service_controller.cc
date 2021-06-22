@@ -167,8 +167,8 @@ void ServiceController::Initialize(
 
   SetServerExperiments(assistant_client_.get());
 
-  for (auto& observer : assistant_manager_observers_) {
-    observer.OnAssistantManagerCreated(assistant_client_.get());
+  for (auto& observer : assistant_client_observers_) {
+    observer.OnAssistantClientCreated(assistant_client_.get());
   }
 }
 
@@ -183,8 +183,8 @@ void ServiceController::Start() {
 
   SetStateAndInformObservers(ServiceState::kStarted);
 
-  for (auto& observer : assistant_manager_observers_) {
-    observer.OnAssistantManagerStarted(assistant_client_.get());
+  for (auto& observer : assistant_client_observers_) {
+    observer.OnAssistantClientStarted(assistant_client_.get());
   }
 
   DVLOG(1) << "Started Libassistant service";
@@ -197,15 +197,15 @@ void ServiceController::Stop() {
   DVLOG(1) << "Stopping Libassistant service";
   SetStateAndInformObservers(ServiceState::kStopped);
 
-  for (auto& observer : assistant_manager_observers_) {
-    observer.OnDestroyingAssistantManager(assistant_client_.get());
+  for (auto& observer : assistant_client_observers_) {
+    observer.OnDestroyingAssistantClient(assistant_client_.get());
   }
 
   assistant_client_ = nullptr;
   chromium_api_delegate_ = nullptr;
   device_state_listener_ = nullptr;
 
-  for (auto& observer : assistant_manager_observers_)
+  for (auto& observer : assistant_client_observers_)
     observer.OnAssistantManagerDestroyed();
 
   DVLOG(1) << "Stopped Libassistant service";
@@ -228,34 +228,34 @@ void ServiceController::AddAndFireStateObserver(
   state_observers_.Add(std::move(observer));
 }
 
-void ServiceController::AddAndFireAssistantManagerObserver(
-    AssistantManagerObserver* observer) {
+void ServiceController::AddAndFireAssistantClientObserver(
+    AssistantClientObserver* observer) {
   DCHECK(observer);
 
-  assistant_manager_observers_.AddObserver(observer);
+  assistant_client_observers_.AddObserver(observer);
 
   if (IsInitialized()) {
-    observer->OnAssistantManagerCreated(assistant_client_.get());
+    observer->OnAssistantClientCreated(assistant_client_.get());
   }
-  // Note we do send the |OnAssistantManagerStarted| event even if the service
+  // Note we do send the |OnAssistantClientStarted| event even if the service
   // is currently running, to ensure that an observer that only observes
-  // |OnAssistantManagerStarted| will not miss a currently running instance
+  // |OnAssistantClientStarted| will not miss a currently running instance
   // when it is being added.
   if (IsStarted()) {
-    observer->OnAssistantManagerStarted(assistant_client_.get());
+    observer->OnAssistantClientStarted(assistant_client_.get());
   }
   if (IsRunning()) {
-    observer->OnAssistantManagerRunning(assistant_client_.get());
+    observer->OnAssistantClientRunning(assistant_client_.get());
   }
 }
 
-void ServiceController::RemoveAssistantManagerObserver(
-    AssistantManagerObserver* observer) {
-  assistant_manager_observers_.RemoveObserver(observer);
+void ServiceController::RemoveAssistantClientObserver(
+    AssistantClientObserver* observer) {
+  assistant_client_observers_.RemoveObserver(observer);
 }
 
-void ServiceController::RemoveAllAssistantManagerObservers() {
-  assistant_manager_observers_.Clear();
+void ServiceController::RemoveAllAssistantClientObservers() {
+  assistant_client_observers_.Clear();
 }
 
 bool ServiceController::IsStarted() const {
@@ -300,8 +300,8 @@ void ServiceController::OnStartFinished() {
   DVLOG(1) << "Libassistant start is finished";
   SetStateAndInformObservers(mojom::ServiceState::kRunning);
 
-  for (auto& observer : assistant_manager_observers_) {
-    observer.OnAssistantManagerRunning(assistant_client_.get());
+  for (auto& observer : assistant_client_observers_) {
+    observer.OnAssistantClientRunning(assistant_client_.get());
   }
 }
 

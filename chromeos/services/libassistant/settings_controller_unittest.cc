@@ -79,15 +79,15 @@ class AssistantSettingsControllerTest : public testing::Test {
   SettingsController& controller() { return controller_; }
 
   void CreateLibassistant() {
-    controller().OnAssistantManagerCreated(assistant_client_.get());
+    controller().OnAssistantClientCreated(assistant_client_.get());
   }
 
   void StartLibassistant() {
-    controller().OnAssistantManagerStarted(assistant_client_.get());
+    controller().OnAssistantClientStarted(assistant_client_.get());
   }
 
   void DestroyLibassistant() {
-    controller().OnDestroyingAssistantManager(assistant_client_.get());
+    controller().OnDestroyingAssistantClient(assistant_client_.get());
 
     Init();
   }

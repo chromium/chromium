@@ -42,7 +42,7 @@ ConversationStateListenerImpl::ConversationStateListenerImpl(
 
 ConversationStateListenerImpl::~ConversationStateListenerImpl() = default;
 
-void ConversationStateListenerImpl::OnAssistantManagerCreated(
+void ConversationStateListenerImpl::OnAssistantClientCreated(
     AssistantClient* assistant_client) {
   assistant_client->assistant_manager()->AddConversationStateListener(this);
 }

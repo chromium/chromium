@@ -318,7 +318,7 @@ void MediaController::SetExternalPlaybackState(mojom::MediaStatePtr state) {
     media_manager()->SetExternalPlaybackState(ToMediaStatus(*state));
 }
 
-void MediaController::OnAssistantManagerRunning(
+void MediaController::OnAssistantClientRunning(
     AssistantClient* assistant_client) {
   assistant_manager_ = assistant_client->assistant_manager();
 
@@ -331,7 +331,7 @@ void MediaController::OnAssistantManagerRunning(
   media_manager()->AddListener(listener_.get());
 }
 
-void MediaController::OnDestroyingAssistantManager(
+void MediaController::OnDestroyingAssistantClient(
     AssistantClient* assistant_client) {
   assistant_manager_ = nullptr;
 }

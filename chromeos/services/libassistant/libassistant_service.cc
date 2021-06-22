@@ -69,18 +69,18 @@ LibassistantService::LibassistantService(
           &audio_input_controller_),
       display_controller_(&speech_recognition_observers_),
       speaker_id_enrollment_controller_(&audio_input_controller_) {
-  service_controller_.AddAndFireAssistantManagerObserver(
+  service_controller_.AddAndFireAssistantClientObserver(
       &conversation_controller_);
-  service_controller_.AddAndFireAssistantManagerObserver(
+  service_controller_.AddAndFireAssistantClientObserver(
       &conversation_state_listener_);
-  service_controller_.AddAndFireAssistantManagerObserver(
+  service_controller_.AddAndFireAssistantClientObserver(
       &device_settings_controller_);
-  service_controller_.AddAndFireAssistantManagerObserver(&display_controller_);
-  service_controller_.AddAndFireAssistantManagerObserver(&media_controller_);
-  service_controller_.AddAndFireAssistantManagerObserver(
+  service_controller_.AddAndFireAssistantClientObserver(&display_controller_);
+  service_controller_.AddAndFireAssistantClientObserver(&media_controller_);
+  service_controller_.AddAndFireAssistantClientObserver(
       &speaker_id_enrollment_controller_);
-  service_controller_.AddAndFireAssistantManagerObserver(&settings_controller_);
-  service_controller_.AddAndFireAssistantManagerObserver(&timer_controller_);
+  service_controller_.AddAndFireAssistantClientObserver(&settings_controller_);
+  service_controller_.AddAndFireAssistantClientObserver(&timer_controller_);
 
   conversation_controller_.AddActionObserver(&device_settings_controller_);
   conversation_controller_.AddActionObserver(&display_controller_);
@@ -93,7 +93,7 @@ LibassistantService::~LibassistantService() {
   // We explicitly stop the Libassistant service before destroying anything,
   // to prevent use-after-free bugs.
   service_controller_.Stop();
-  service_controller_.RemoveAllAssistantManagerObservers();
+  service_controller_.RemoveAllAssistantClientObservers();
 }
 
 void LibassistantService::Bind(

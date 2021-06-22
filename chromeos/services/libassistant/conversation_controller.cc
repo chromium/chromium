@@ -245,7 +245,7 @@ void ConversationController::AddAuthenticationStateObserver(
   authentication_state_observers_.Add(std::move(observer));
 }
 
-void ConversationController::OnAssistantManagerCreated(
+void ConversationController::OnAssistantClientCreated(
     AssistantClient* assistant_client) {
   // Registers ActionModule when AssistantManagerInternal has been created
   // but not yet started.
@@ -256,7 +256,7 @@ void ConversationController::OnAssistantManagerCreated(
       assistant_manager_delegate_.get());
 }
 
-void ConversationController::OnAssistantManagerRunning(
+void ConversationController::OnAssistantClientRunning(
     AssistantClient* assistant_client) {
   // Only when Libassistant is running we can start sending queries.
   assistant_manager_ = assistant_client->assistant_manager();
@@ -264,7 +264,7 @@ void ConversationController::OnAssistantManagerRunning(
   requests_are_allowed_ = true;
 }
 
-void ConversationController::OnDestroyingAssistantManager(
+void ConversationController::OnDestroyingAssistantClient(
     AssistantClient* assistant_client) {
   assistant_manager_ = nullptr;
   assistant_manager_internal_ = nullptr;

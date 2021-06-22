@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/time/time.h"
-#include "chromeos/services/libassistant/assistant_manager_observer.h"
+#include "chromeos/services/libassistant/assistant_client_observer.h"
 #include "chromeos/services/libassistant/public/mojom/timer_controller.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -21,7 +21,7 @@ namespace chromeos {
 namespace libassistant {
 
 class TimerController : public mojom::TimerController,
-                        public AssistantManagerObserver {
+                        public AssistantClientObserver {
  public:
   TimerController();
   TimerController(const TimerController&) = delete;
@@ -38,17 +38,17 @@ class TimerController : public mojom::TimerController,
   void RemoveTimer(const std::string& id) override;
   void ResumeTimer(const std::string& id) override;
 
-  // AssistantManagerObserver implementation:
-  void OnAssistantManagerRunning(AssistantClient* assistant_client) override;
-  void OnDestroyingAssistantManager(AssistantClient* assistant_client) override;
+  // AssistantClientObserver implementation:
+  void OnAssistantClientRunning(AssistantClient* assistant_client) override;
+  void OnDestroyingAssistantClient(AssistantClient* assistant_client) override;
 
  private:
   class TimerListener;
 
   // Created when Libassistant is running, and destroyed when it stops.
   std::unique_ptr<TimerListener> timer_listener_;
-  // Owned by |ServiceController|, set in OnAssistantManagerRunning() and reset
-  // in OnDestroyingAssistantManager().
+  // Owned by |ServiceController|, set in OnAssistantClientRunning() and reset
+  // in OnDestroyingAssistantClient().
   assistant_client::AlarmTimerManager* alarm_timer_manager_ = nullptr;
 
   mojo::Receiver<mojom::TimerController> receiver_{this};

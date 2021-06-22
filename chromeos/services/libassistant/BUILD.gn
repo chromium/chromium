@@ -62,7 +62,7 @@ source_set("internal") {
   sources = [
     "abortable_task_list.cc",
     "abortable_task_list.h",
-    "assistant_manager_observer.h",
+    "assistant_client_observer.h",
     "audio_input_controller.cc",
     "audio_input_controller.h",
     "callback_utils.h",

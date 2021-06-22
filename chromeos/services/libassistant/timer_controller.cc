@@ -185,7 +185,7 @@ void TimerController::ResumeTimer(const std::string& id) {
     alarm_timer_manager_->ResumeTimer(id);
 }
 
-void TimerController::OnAssistantManagerRunning(
+void TimerController::OnAssistantClientRunning(
     AssistantClient* assistant_client) {
   alarm_timer_manager_ =
       assistant_client->assistant_manager_internal()->GetAlarmTimerManager();
@@ -195,7 +195,7 @@ void TimerController::OnAssistantManagerRunning(
   timer_listener_->Start();
 }
 
-void TimerController::OnDestroyingAssistantManager(
+void TimerController::OnDestroyingAssistantClient(
     AssistantClient* assistant_client) {
   alarm_timer_manager_ = nullptr;
 

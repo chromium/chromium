@@ -10,7 +10,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #include "chromeos/services/libassistant/abortable_task_list.h"
-#include "chromeos/services/libassistant/assistant_manager_observer.h"
+#include "chromeos/services/libassistant/assistant_client_observer.h"
 #include "chromeos/services/libassistant/public/mojom/settings_controller.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
@@ -22,7 +22,7 @@ class AssistantManagerInternal;
 namespace chromeos {
 namespace libassistant {
 
-class SettingsController : public AssistantManagerObserver,
+class SettingsController : public AssistantClientObserver,
                            public mojom::SettingsController {
  public:
   SettingsController();
@@ -44,10 +44,10 @@ class SettingsController : public AssistantManagerObserver,
   void UpdateSettings(const std::string& settings,
                       UpdateSettingsCallback callback) override;
 
-  // AssistantManagerObserver:
-  void OnAssistantManagerCreated(AssistantClient* assistant_client) override;
-  void OnAssistantManagerStarted(AssistantClient* assistant_client) override;
-  void OnDestroyingAssistantManager(AssistantClient* assistant_client) override;
+  // AssistantClientObserver:
+  void OnAssistantClientCreated(AssistantClient* assistant_client) override;
+  void OnAssistantClientStarted(AssistantClient* assistant_client) override;
+  void OnDestroyingAssistantClient(AssistantClient* assistant_client) override;
 
  private:
   class DeviceSettingsUpdater;
@@ -69,8 +69,8 @@ class SettingsController : public AssistantManagerObserver,
   // Contains all pending callbacks for get/update setting requests.
   AbortableTaskList pending_response_waiters_;
 
-  // Set in |OnAssistantManagerCreated| and unset in
-  // |OnDestroyingAssistantManager|.
+  // Set in |OnAssistantClientCreated| and unset in
+  // |OnDestroyingAssistantClient|.
   assistant_client::AssistantManagerInternal* assistant_manager_internal_ =
       nullptr;
   assistant_client::AssistantManager* assistant_manager_ = nullptr;

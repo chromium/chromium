@@ -8,7 +8,7 @@
 #include "base/component_export.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
-#include "chromeos/services/libassistant/assistant_manager_observer.h"
+#include "chromeos/services/libassistant/assistant_client_observer.h"
 #include "chromeos/services/libassistant/grpc/assistant_client.h"
 #include "chromeos/services/libassistant/public/mojom/service.mojom.h"
 #include "chromeos/services/libassistant/public/mojom/service_controller.mojom.h"
@@ -51,9 +51,9 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ServiceController
   void AddAndFireStateObserver(
       mojo::PendingRemote<mojom::StateObserver> observer) override;
 
-  void AddAndFireAssistantManagerObserver(AssistantManagerObserver* observer);
-  void RemoveAssistantManagerObserver(AssistantManagerObserver* observer);
-  void RemoveAllAssistantManagerObservers();
+  void AddAndFireAssistantClientObserver(AssistantClientObserver* observer);
+  void RemoveAssistantClientObserver(AssistantClientObserver* observer);
+  void RemoveAllAssistantClientObservers();
 
   bool IsInitialized() const;
   // Note this is true even when the service is running (as it is still started
@@ -94,14 +94,14 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ServiceController
 
   mojo::Receiver<mojom::ServiceController> receiver_{this};
   mojo::RemoteSet<mojom::StateObserver> state_observers_;
-  base::ObserverList<AssistantManagerObserver> assistant_manager_observers_;
+  base::ObserverList<AssistantClientObserver> assistant_client_observers_;
 };
 
-using ScopedAssistantManagerObserver = base::ScopedObservation<
+using ScopedAssistantClientObserver = base::ScopedObservation<
     ServiceController,
-    AssistantManagerObserver,
-    &ServiceController::AddAndFireAssistantManagerObserver,
-    &ServiceController::RemoveAssistantManagerObserver>;
+    AssistantClientObserver,
+    &ServiceController::AddAndFireAssistantClientObserver,
+    &ServiceController::RemoveAssistantClientObserver>;
 
 }  // namespace libassistant
 }  // namespace chromeos

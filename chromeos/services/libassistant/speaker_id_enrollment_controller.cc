@@ -213,12 +213,12 @@ void SpeakerIdEnrollmentController::GetSpeakerIdEnrollmentStatus(
   waiter->Start(assistant_manager_internal_, user_gaia_id, std::move(callback));
 }
 
-void SpeakerIdEnrollmentController::OnAssistantManagerStarted(
+void SpeakerIdEnrollmentController::OnAssistantClientStarted(
     AssistantClient* assistant_client) {
   assistant_manager_internal_ = assistant_client->assistant_manager_internal();
 }
 
-void SpeakerIdEnrollmentController::OnDestroyingAssistantManager(
+void SpeakerIdEnrollmentController::OnDestroyingAssistantClient(
     AssistantClient* assistant_client) {
   active_enrollment_session_ = nullptr;
   assistant_manager_internal_ = nullptr;

@@ -8,7 +8,7 @@
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
 #include "chromeos/assistant/internal/action/assistant_action_observer.h"
-#include "chromeos/services/libassistant/assistant_manager_observer.h"
+#include "chromeos/services/libassistant/assistant_client_observer.h"
 #include "chromeos/services/libassistant/public/mojom/display_controller.mojom.h"
 #include "libassistant/shared/internal_api/assistant_manager_internal.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -35,7 +35,7 @@ class DisplayConnectionImpl;
 
 class DisplayController
     : public mojom::DisplayController,
-      public AssistantManagerObserver,
+      public AssistantClientObserver,
       public chromeos::assistant::action::AssistantActionObserver {
  public:
   explicit DisplayController(mojo::RemoteSet<mojom::SpeechRecognitionObserver>*
@@ -56,9 +56,9 @@ class DisplayController
   void SetAndroidAppList(
       const std::vector<::chromeos::assistant::AndroidAppInfo>& apps) override;
 
-  // AssistantManagerObserver implementation:
-  void OnAssistantManagerCreated(AssistantClient* assistant_client) override;
-  void OnDestroyingAssistantManager(AssistantClient* assistant_client) override;
+  // AssistantClientObserver implementation:
+  void OnAssistantClientCreated(AssistantClient* assistant_client) override;
+  void OnDestroyingAssistantClient(AssistantClient* assistant_client) override;
 
   // chromeos::assistant::action::AssistantActionObserver:
   void OnVerifyAndroidApp(

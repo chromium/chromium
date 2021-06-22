@@ -76,7 +76,7 @@ class DisplayControllerTest : public ::testing::Test {
   }
 
   void StartLibassistant() {
-    controller_->OnAssistantManagerCreated(&assistant_client_);
+    controller_->OnAssistantClientCreated(&assistant_client_);
   }
 
   DisplayController* controller() { return controller_.get(); }

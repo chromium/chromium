@@ -64,7 +64,7 @@ class ConversationControllerTest : public ::testing::Test {
   ~ConversationControllerTest() override = default;
 
   void StartLibassistant() {
-    controller_.OnAssistantManagerRunning(assistant_client_.get());
+    controller_.OnAssistantClientRunning(assistant_client_.get());
   }
 
   ConversationController& controller() { return controller_; }
