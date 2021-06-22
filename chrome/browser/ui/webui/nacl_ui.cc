@@ -320,17 +320,17 @@ void NaClDomHandler::OnGotPlugins(
 void NaClDomHandler::PopulatePageInformation(base::DictionaryValue* naclInfo) {
   DCHECK(pnacl_path_validated_);
   // Store Key-Value pairs of about-information.
-  std::unique_ptr<base::ListValue> list(new base::ListValue());
+  base::ListValue list;
   // Display the operating system and chrome version information.
-  AddOperatingSystemInfo(list.get());
+  AddOperatingSystemInfo(&list);
   // Display the list of plugins serving NaCl.
-  AddPluginList(list.get());
+  AddPluginList(&list);
   // Display information relevant to PNaCl.
-  AddPnaclInfo(list.get());
+  AddPnaclInfo(&list);
   // Display information relevant to NaCl (non-portable.
-  AddNaClInfo(list.get());
+  AddNaClInfo(&list);
   // naclInfo will take ownership of list, and clean it up on destruction.
-  naclInfo->Set("naclInfo", std::move(list));
+  naclInfo->SetKey("naclInfo", std::move(list));
 }
 
 void NaClDomHandler::DidCheckPathAndVersion(const std::string* version,

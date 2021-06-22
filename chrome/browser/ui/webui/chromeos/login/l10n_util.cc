@@ -497,11 +497,10 @@ std::string FindMostRelevantLocale(
   return fallback_locale;
 }
 
-std::unique_ptr<base::ListValue> GetAndActivateLoginKeyboardLayouts(
-    const std::string& locale,
-    const std::string& selected,
-    bool activate_keyboards) {
-  std::unique_ptr<base::ListValue> input_methods_list(new base::ListValue);
+base::ListValue GetAndActivateLoginKeyboardLayouts(const std::string& locale,
+                                                   const std::string& selected,
+                                                   bool activate_keyboards) {
+  base::ListValue input_methods_list;
   input_method::InputMethodManager* manager =
       input_method::InputMethodManager::Get();
   input_method::InputMethodUtil* util = manager->GetInputMethodUtil();
@@ -529,7 +528,7 @@ std::unique_ptr<base::ListValue> GetAndActivateLoginKeyboardLayouts(
     // Do not crash in case of misconfiguration.
     if (ime) {
       input_methods_added.insert(*i);
-      input_methods_list->Append(CreateInputMethodsEntry(*ime, selected));
+      input_methods_list.Append(CreateInputMethodsEntry(*ime, selected));
     } else {
       NOTREACHED();
     }
@@ -543,9 +542,9 @@ std::unique_ptr<base::ListValue> GetAndActivateLoginKeyboardLayouts(
       continue;
     if (!optgroup_added) {
       optgroup_added = true;
-      AddOptgroupOtherLayouts(input_methods_list.get());
+      AddOptgroupOtherLayouts(&input_methods_list);
     }
-    input_methods_list->Append(
+    input_methods_list.Append(
         CreateInputMethodsEntry((*input_methods)[i], selected));
   }
 
@@ -558,9 +557,9 @@ std::unique_ptr<base::ListValue> GetAndActivateLoginKeyboardLayouts(
     DCHECK(us_eng_descriptor);
     if (!optgroup_added) {
       optgroup_added = true;
-      AddOptgroupOtherLayouts(input_methods_list.get());
+      AddOptgroupOtherLayouts(&input_methods_list);
     }
-    input_methods_list->Append(
+    input_methods_list.Append(
         CreateInputMethodsEntry(*us_eng_descriptor, selected));
     manager->GetActiveIMEState()->EnableInputMethod(us_keyboard_id);
   }

@@ -859,7 +859,7 @@ void CupsPrintersHandler::HandleGetCupsPrinterModels(
   if (manufacturer.empty()) {
     base::DictionaryValue response;
     response.SetBoolean("success", true);
-    response.Set("models", std::make_unique<base::ListValue>());
+    response.SetKey("models", base::ListValue());
     ResolveJavascriptCallback(base::Value(callback_id), response);
     return;
   }
@@ -900,15 +900,15 @@ void CupsPrintersHandler::ResolveManufacturersDone(
     const std::string& callback_id,
     PpdProvider::CallbackResultCode result_code,
     const std::vector<std::string>& manufacturers) {
-  auto manufacturers_value = std::make_unique<base::ListValue>();
+  base::ListValue manufacturers_value;
   if (result_code == PpdProvider::SUCCESS) {
     for (const std::string& manufacturer : manufacturers) {
-      manufacturers_value->Append(manufacturer);
+      manufacturers_value.Append(manufacturer);
     }
   }
   base::DictionaryValue response;
   response.SetBoolean("success", result_code == PpdProvider::SUCCESS);
-  response.Set("manufacturers", std::move(manufacturers_value));
+  response.SetKey("manufacturers", std::move(manufacturers_value));
   ResolveJavascriptCallback(base::Value(callback_id), response);
 }
 
@@ -917,16 +917,16 @@ void CupsPrintersHandler::ResolvePrintersDone(
     const std::string& callback_id,
     PpdProvider::CallbackResultCode result_code,
     const PpdProvider::ResolvedPrintersList& printers) {
-  auto printers_value = std::make_unique<base::ListValue>();
+  base::ListValue printers_value;
   if (result_code == PpdProvider::SUCCESS) {
     resolved_printers_[manufacturer] = printers;
     for (const auto& printer : printers) {
-      printers_value->AppendString(printer.name);
+      printers_value.AppendString(printer.name);
     }
   }
   base::DictionaryValue response;
   response.SetBoolean("success", result_code == PpdProvider::SUCCESS);
-  response.Set("models", std::move(printers_value));
+  response.SetKey("models", std::move(printers_value));
   ResolveJavascriptCallback(base::Value(callback_id), response);
 }
 

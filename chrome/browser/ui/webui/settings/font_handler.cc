@@ -73,7 +73,7 @@ void FontHandler::FontListHasLoaded(std::string callback_id,
   }
 
   base::DictionaryValue response;
-  response.Set("fontList", std::move(list));
+  response.SetKey("fontList", base::Value::FromUniquePtrValue(std::move(list)));
 
   ResolveJavascriptCallback(base::Value(callback_id), response);
 }

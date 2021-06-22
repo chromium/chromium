@@ -188,7 +188,8 @@ SetTimeUI::SetTimeUI(content::WebUI* web_ui) : WebDialogUI(web_ui) {
 
   base::DictionaryValue values;
   // List of list of strings: [[ID, name], [ID, name], ...]
-  values.Set("timezoneList", chromeos::system::GetTimezoneList());
+  values.SetPath("timezoneList", base::Value::FromUniquePtrValue(
+                                     chromeos::system::GetTimezoneList()));
 
   // If we are not logged in, we need to show the time zone dropdown.
   values.SetBoolean("showTimezone", SetTimeDialog::ShouldShowTimezone());

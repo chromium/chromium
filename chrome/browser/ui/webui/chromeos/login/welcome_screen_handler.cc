@@ -287,13 +287,13 @@ void WelcomeScreenHandler::GetAdditionalParameters(
 
   const bool enable_layouts = true;
 
-  dict->Set("languageList", std::move(language_list));
-  dict->Set("inputMethodsList",
-            GetAndActivateLoginKeyboardLayouts(
-                application_locale, selected_input_method, enable_layouts));
-  dict->Set("timezoneList", GetTimezoneList());
-  dict->Set("demoModeCountryList",
-            base::Value::ToUniquePtrValue(DemoSession::GetCountryList()));
+  dict->SetKey("languageList",
+               base::Value::FromUniquePtrValue(std::move(language_list)));
+  dict->SetKey("inputMethodsList",
+               GetAndActivateLoginKeyboardLayouts(
+                   application_locale, selected_input_method, enable_layouts));
+  dict->SetKey("timezoneList", GetTimezoneList());
+  dict->SetKey("demoModeCountryList", DemoSession::GetCountryList());
 
   // This switch is set by the session manager if the OS install
   // service is enabled and the OS is running from a USB installer.
@@ -384,11 +384,11 @@ void WelcomeScreenHandler::UpdateA11yState() {
 }
 
 // static
-std::unique_ptr<base::ListValue> WelcomeScreenHandler::GetTimezoneList() {
+base::ListValue WelcomeScreenHandler::GetTimezoneList() {
   std::string current_timezone_id;
   CrosSettings::Get()->GetString(kSystemTimezone, &current_timezone_id);
 
-  std::unique_ptr<base::ListValue> timezone_list(new base::ListValue);
+  base::ListValue timezone_list;
   std::unique_ptr<base::ListValue> timezones = system::GetTimezoneList();
   for (size_t i = 0; i < timezones->GetSize(); ++i) {
     const base::ListValue* timezone = NULL;
@@ -405,7 +405,7 @@ std::unique_ptr<base::ListValue> WelcomeScreenHandler::GetTimezoneList() {
     timezone_option->SetString("value", timezone_id);
     timezone_option->SetString("title", timezone_name);
     timezone_option->SetBoolean("selected", timezone_id == current_timezone_id);
-    timezone_list->Append(std::move(timezone_option));
+    timezone_list.Append(std::move(timezone_option));
   }
 
   return timezone_list;

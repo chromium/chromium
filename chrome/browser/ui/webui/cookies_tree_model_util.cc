@@ -274,16 +274,16 @@ bool CookiesTreeModelUtil::GetCookieTreeNodeDictionary(
   const extensions::ExtensionSet* protecting_apps =
       node.GetModel()->ExtensionsProtectingNode(node);
   if (protecting_apps && !protecting_apps->is_empty()) {
-    auto app_infos = std::make_unique<base::ListValue>();
+    base::ListValue app_infos;
     for (extensions::ExtensionSet::const_iterator it = protecting_apps->begin();
          it != protecting_apps->end(); ++it) {
       std::unique_ptr<base::DictionaryValue> app_info(
           new base::DictionaryValue());
       app_info->SetString(kKeyId, (*it)->id());
       app_info->SetString(kKeyName, (*it)->name());
-      app_infos->Append(std::move(app_info));
+      app_infos.Append(std::move(app_info));
     }
-    dict->Set(kKeyAppsProtectingThis, std::move(app_infos));
+    dict->SetKey(kKeyAppsProtectingThis, std::move(app_infos));
   }
 #endif
 

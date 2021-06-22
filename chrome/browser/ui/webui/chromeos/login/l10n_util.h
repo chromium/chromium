@@ -74,10 +74,9 @@ std::string FindMostRelevantLocale(
 // activates them if `activate_keyboards` is true, so that they can be selected
 // by the user (e.g. by cycling through keyboard layouts via keyboard
 // shortcuts).
-std::unique_ptr<base::ListValue> GetAndActivateLoginKeyboardLayouts(
-    const std::string& locale,
-    const std::string& selected,
-    bool activate_keyboards);
+base::ListValue GetAndActivateLoginKeyboardLayouts(const std::string& locale,
+                                                   const std::string& selected,
+                                                   bool activate_keyboards);
 
 // Invokes `callback` with a list of keyboard layouts that can be used for
 // `locale`. Each list entry is a dictionary that contains data such as an ID

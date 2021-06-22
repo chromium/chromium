@@ -156,7 +156,8 @@ void ChangePictureHandler::SendDefaultImages() {
   result.SetInteger("first", default_user_image::GetFirstDefaultImage());
   std::unique_ptr<base::ListValue> default_images =
       default_user_image::GetAsDictionary(true /* all */);
-  result.Set("images", std::move(default_images));
+  result.SetKey("images",
+                base::Value::FromUniquePtrValue(std::move(default_images)));
   FireWebUIListener("default-images-changed", result);
 }
 

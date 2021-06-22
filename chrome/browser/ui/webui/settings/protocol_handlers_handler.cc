@@ -93,10 +93,10 @@ void ProtocolHandlersHandler::GetHandlersForProtocol(
                             ProtocolHandler::GetProtocolDisplayName(protocol));
   handlers_value->SetString("protocol", protocol);
 
-  auto handlers_list = std::make_unique<base::ListValue>();
+  base::ListValue handlers_list;
   GetHandlersAsListValue(*registry, registry->GetHandlersFor(protocol),
-                         handlers_list.get());
-  handlers_value->Set("handlers", std::move(handlers_list));
+                         &handlers_list);
+  handlers_value->SetKey("handlers", std::move(handlers_list));
 }
 
 void ProtocolHandlersHandler::GetIgnoredHandlers(base::ListValue* handlers) {

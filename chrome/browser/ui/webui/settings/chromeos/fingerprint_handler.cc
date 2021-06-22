@@ -36,17 +36,17 @@ constexpr int kMaxAllowedFingerprints = 3;
 std::unique_ptr<base::DictionaryValue> GetFingerprintsInfo(
     const std::vector<std::string>& fingerprints_list) {
   auto response = std::make_unique<base::DictionaryValue>();
-  auto fingerprints = std::make_unique<base::ListValue>();
+  base::ListValue fingerprints;
 
   DCHECK_LE(static_cast<int>(fingerprints_list.size()),
             kMaxAllowedFingerprints);
   for (auto& fingerprint_name: fingerprints_list) {
     std::unique_ptr<base::Value> str =
         std::make_unique<base::Value>(fingerprint_name);
-    fingerprints->Append(std::move(str));
+    fingerprints.Append(std::move(str));
   }
 
-  response->Set("fingerprintsList", std::move(fingerprints));
+  response->SetKey("fingerprintsList", std::move(fingerprints));
   response->SetBoolean("isMaxed", static_cast<int>(fingerprints_list.size()) >=
                                       kMaxAllowedFingerprints);
   return response;
@@ -146,19 +146,19 @@ void FingerprintHandler::OnAuthScanDone(
   if (it == matches.end() || it->second.size() < 1)
     return;
 
-  auto fingerprint_ids = std::make_unique<base::ListValue>();
+  base::ListValue fingerprint_ids;
 
   for (const std::string& matched_path : it->second) {
     auto path_it = std::find(fingerprints_paths_.begin(),
                              fingerprints_paths_.end(), matched_path);
     DCHECK(path_it != fingerprints_paths_.end());
-    fingerprint_ids->AppendInteger(
+    fingerprint_ids.AppendInteger(
         static_cast<int>(path_it - fingerprints_paths_.begin()));
   }
 
   auto fingerprint_attempt = std::make_unique<base::DictionaryValue>();
   fingerprint_attempt->SetInteger("result", static_cast<int>(scan_result));
-  fingerprint_attempt->Set("indexes", std::move(fingerprint_ids));
+  fingerprint_attempt->SetKey("indexes", std::move(fingerprint_ids));
 
   FireWebUIListener("on-fingerprint-attempt-received", *fingerprint_attempt);
 }

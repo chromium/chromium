@@ -184,12 +184,12 @@ void SyncInternalsMessageHandler::HandleRequestListOfTypes(
   AllowJavascript();
 
   DictionaryValue event_details;
-  auto type_list = std::make_unique<ListValue>();
+  ListValue type_list;
   syncer::ModelTypeSet protocol_types = syncer::ProtocolTypes();
   for (syncer::ModelType type : protocol_types) {
-    type_list->AppendString(ModelTypeToString(type));
+    type_list.AppendString(ModelTypeToString(type));
   }
-  event_details.Set(syncer::sync_ui_util::kTypes, std::move(type_list));
+  event_details.SetKey(syncer::sync_ui_util::kTypes, std::move(type_list));
   FireWebUIListener(syncer::sync_ui_util::kOnReceivedListOfTypes,
                     event_details);
 }
@@ -377,8 +377,8 @@ void SyncInternalsMessageHandler::OnGotEntityCounts(
   }
 
   DictionaryValue event_details;
-  event_details.SetPath(syncer::sync_ui_util::kEntityCounts,
-                        std::move(count_list));
+  event_details.SetKey(syncer::sync_ui_util::kEntityCounts,
+                       std::move(count_list));
   FireWebUIListener(syncer::sync_ui_util::kOnEntityCountsUpdated,
                     std::move(event_details));
 }

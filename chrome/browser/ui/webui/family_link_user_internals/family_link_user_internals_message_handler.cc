@@ -209,21 +209,21 @@ void FamilyLinkUserInternalsMessageHandler::HandleTryURL(
 }
 
 void FamilyLinkUserInternalsMessageHandler::SendBasicInfo() {
-  std::unique_ptr<base::ListValue> section_list(new base::ListValue);
+  base::ListValue section_list;
 
-  base::ListValue* section_general = AddSection(section_list.get(), "General");
+  base::ListValue* section_general = AddSection(&section_list, "General");
   AddSectionEntry(section_general, "Child detection enabled",
                   ChildAccountService::IsChildAccountDetectionEnabled());
 
   Profile* profile = Profile::FromWebUI(web_ui());
 
-  base::ListValue* section_profile = AddSection(section_list.get(), "Profile");
+  base::ListValue* section_profile = AddSection(&section_list, "Profile");
   AddSectionEntry(section_profile, "Account", profile->GetProfileUserName());
   AddSectionEntry(section_profile, "Child", profile->IsChild());
 
   SupervisedUserURLFilter* filter = GetSupervisedUserService()->GetURLFilter();
 
-  base::ListValue* section_filter = AddSection(section_list.get(), "Filter");
+  base::ListValue* section_filter = AddSection(&section_list, "Filter");
   AddSectionEntry(section_filter, "Denylist active", filter->HasDenylist());
   AddSectionEntry(section_filter, "Online checks active",
                   filter->HasAsyncURLChecker());
@@ -239,7 +239,7 @@ void FamilyLinkUserInternalsMessageHandler::SendBasicInfo() {
          identity_manager
              ->GetExtendedAccountInfoForAccountsWithRefreshToken()) {
       base::ListValue* section_user = AddSection(
-          section_list.get(), "User Information for " + account.full_name);
+          &section_list, "User Information for " + account.full_name);
       AddSectionEntry(section_user, "Account id",
                       account.account_id.ToString());
       AddSectionEntry(section_user, "Gaia", account.gaia);
@@ -253,7 +253,7 @@ void FamilyLinkUserInternalsMessageHandler::SendBasicInfo() {
   }
 
   base::DictionaryValue result;
-  result.Set("sections", std::move(section_list));
+  result.SetKey("sections", std::move(section_list));
   FireWebUIListener("basic-info-received", result);
 
   // Trigger retrieval of the user settings

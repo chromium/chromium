@@ -208,13 +208,12 @@ void PowerMessageHandler::GetJsStateOccupancyData(
       js_sample->SetDouble("time", sample.time.ToJsTime());
       js_sample->SetBoolean("cpuOnline", sample.cpu_online);
 
-      std::unique_ptr<base::DictionaryValue> state_dict(
-          new base::DictionaryValue);
+      base::DictionaryValue state_dict;
       for (size_t index = 0; index < sample.time_in_state.size(); ++index) {
-        state_dict->SetDouble(state_names[index],
-                              sample.time_in_state[index].InMillisecondsF());
+        state_dict.SetDouble(state_names[index],
+                             sample.time_in_state[index].InMillisecondsF());
       }
-      js_sample->Set("timeInState", std::move(state_dict));
+      js_sample->SetKey("timeInState", std::move(state_dict));
 
       js_sample_list->Append(std::move(js_sample));
     }

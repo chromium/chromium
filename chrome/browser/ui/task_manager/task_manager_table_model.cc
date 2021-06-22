@@ -868,8 +868,7 @@ void TaskManagerTableModel::StoreColumnsSettings() {
 
   base::DictionaryValue::Iterator it(*columns_settings_);
   while (!it.IsAtEnd()) {
-    dict_update->Set(it.key(),
-                     base::Value::ToUniquePtrValue(it.value().Clone()));
+    dict_update->SetPath(it.key(), it.value().Clone());
     it.Advance();
   }
 

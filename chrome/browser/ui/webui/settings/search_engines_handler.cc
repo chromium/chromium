@@ -108,7 +108,7 @@ SearchEnginesHandler::GetSearchEnginesList() {
       list_controller_.table_model()->IndexOfTemplateURL(default_engine);
 
   // Build the first list (default search engines).
-  auto defaults = std::make_unique<base::ListValue>();
+  base::ListValue defaults;
   int last_default_engine_index =
       list_controller_.table_model()->last_search_engine_index();
 
@@ -117,12 +117,12 @@ SearchEnginesHandler::GetSearchEnginesList() {
 
   for (int i = 0; i < last_default_engine_index; ++i) {
     // Third argument is false, as the engine is not from an extension.
-    defaults->Append(CreateDictionaryForEngine(i, i == default_index));
+    defaults.Append(CreateDictionaryForEngine(i, i == default_index));
   }
 
   // Build the second list (active search engines). This will not have any
   // entries if the new Search Engines page is not enabled.
-  auto actives = std::make_unique<base::ListValue>();
+  base::ListValue actives;
   int last_active_engine_index =
       list_controller_.table_model()->last_active_engine_index();
 
@@ -130,11 +130,11 @@ SearchEnginesHandler::GetSearchEnginesList() {
   for (int i = std::max(last_default_engine_index, 0);
        i < last_active_engine_index; ++i) {
     // Third argument is false, as the engine is not from an extension.
-    actives->Append(CreateDictionaryForEngine(i, i == default_index));
+    actives.Append(CreateDictionaryForEngine(i, i == default_index));
   }
 
-  // Build the third list (other search engines).
-  auto others = std::make_unique<base::ListValue>();
+  // Build the second list (other search engines).
+  base::ListValue others;
   int last_other_engine_index =
       list_controller_.table_model()->last_other_engine_index();
 
@@ -143,25 +143,25 @@ SearchEnginesHandler::GetSearchEnginesList() {
 
   for (int i = std::max(last_active_engine_index, 0);
        i < last_other_engine_index; ++i) {
-    others->Append(CreateDictionaryForEngine(i, i == default_index));
+    others.Append(CreateDictionaryForEngine(i, i == default_index));
   }
 
   // Build the third list (omnibox extensions).
-  auto extensions = std::make_unique<base::ListValue>();
+  base::ListValue extensions;
   int engine_count = list_controller_.table_model()->RowCount();
 
   // Sanity check for https://crbug.com/781703.
   CHECK_LE(last_other_engine_index, engine_count);
 
   for (int i = std::max(last_other_engine_index, 0); i < engine_count; ++i) {
-    extensions->Append(CreateDictionaryForEngine(i, i == default_index));
+    extensions.Append(CreateDictionaryForEngine(i, i == default_index));
   }
 
   auto search_engines_info = std::make_unique<base::DictionaryValue>();
-  search_engines_info->Set("defaults", std::move(defaults));
-  search_engines_info->Set("actives", std::move(actives));
-  search_engines_info->Set("others", std::move(others));
-  search_engines_info->Set("extensions", std::move(extensions));
+  search_engines_info->SetKey("defaults", std::move(defaults));
+  search_engines_info->SetKey("actives", std::move(actives));
+  search_engines_info->SetKey("others", std::move(others));
+  search_engines_info->SetKey("extensions", std::move(extensions));
   return search_engines_info;
 }
 
@@ -229,13 +229,12 @@ SearchEnginesHandler::CreateDictionaryForEngine(int index, bool is_default) {
             template_url->GetExtensionId(),
             extensions::ExtensionRegistry::EVERYTHING);
     if (extension) {
-      std::unique_ptr<base::DictionaryValue> ext_info =
-          extensions::util::GetExtensionInfo(extension);
-      ext_info->SetBoolean("canBeDisabled",
-                           !extensions::ExtensionSystem::Get(profile)
-                                ->management_policy()
-                                ->MustRemainEnabled(extension, nullptr));
-      dict->Set("extension", std::move(ext_info));
+      base::DictionaryValue ext_info;
+      ext_info.SetBoolean("canBeDisabled",
+                          !extensions::ExtensionSystem::Get(profile)
+                               ->management_policy()
+                               ->MustRemainEnabled(extension, nullptr));
+      dict->SetKey("extension", std::move(ext_info));
     }
   }
   return dict;

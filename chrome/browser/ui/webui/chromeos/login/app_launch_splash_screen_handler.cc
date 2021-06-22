@@ -87,9 +87,9 @@ void AppLaunchSplashScreenHandler::Show() {
   data.SetBoolean("shortcutEnabled",
                   !KioskAppManager::Get()->GetDisableBailoutShortcut());
 
-  auto app_info = std::make_unique<base::DictionaryValue>();
-  PopulateAppInfo(app_info.get());
-  data.Set("appInfo", std::move(app_info));
+  base::DictionaryValue app_info;
+  PopulateAppInfo(&app_info);
+  data.SetKey("appInfo", std::move(app_info));
 
   SetLaunchText(l10n_util::GetStringUTF8(GetProgressMessageFromState(state_)));
   ShowScreenWithData(kScreenId, &data);

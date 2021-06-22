@@ -47,7 +47,8 @@ void ComponentsHandler::HandleRequestComponentsData(
   const base::Value& callback_id = args->GetList()[0];
 
   base::DictionaryValue result;
-  result.Set("components", LoadComponents());
+  result.SetKey("components",
+                base::Value::FromUniquePtrValue(LoadComponents()));
   ResolveJavascriptCallback(callback_id, result);
 }
 
