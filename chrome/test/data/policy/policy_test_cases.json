@@ -32,8 +32,8 @@
         ],
         "prefs": {
             "${pref}": {
-              "value": "The value that |pref| should take on.",
-              "expect_default": "Whether or not the pref value should be the default one (i.e. unmanaged and user-modifiable). Defaults to false if not specified.",
+              "value": "If set, the |pref| is controlled by policy (not user modifiable) and should have this value. Either this or |default_value| should be set.",
+              "default_value": "If set, the |pref| is not controlled by policy (user modifiable) and should have this value. Either this or |value| should be set.",
               "location": "The location where the pref is registered, possible values are ['user_profile', 'signin_profile', 'local_state']. Defaults to 'user_profile' if not specified.",
               "check_for_mandatory": "Should the preference be tested when a mandatory value is set for the policy? Defaults to |true| if not specified. See |can_be_recommended|.",
               "check_for_recommended": "Should the preference be tested when a recommended value is set for the policy? Defaults to |true| if not specified. See |can_be_recommended|."
@@ -965,11 +965,11 @@
       },
       {
         "policies": { "SyncDisabled": false },
-        "prefs": { "sync.managed": { "value": false, "expect_default": true } }
+        "prefs": { "sync.managed": { "default_value": false } }
       },
       {
         "policies": { },
-        "prefs": { "sync.managed": { "value": false, "expect_default": true } }
+        "prefs": { "sync.managed": { "default_value": false } }
       }
     ]
   },
@@ -1467,8 +1467,7 @@
         "policies": {},
         "prefs": {
           "profile.shared_array_buffer_unrestricted_access_allowed": {
-            "value": false,
-            "expect_default": true
+            "default_value": false
           }
         }
       }
@@ -2093,15 +2092,31 @@
     "policy_pref_mapping_tests": [
       {
         "policies": {},
-        "prefs": { "profile.managed_default_content_settings.insecure_private_network": { "expect_default": true } }
+        "prefs": {
+          "profile.managed_default_content_settings.insecure_private_network": {
+            "default_value": 0
+          }
+        }
       },
       {
-        "policies": { "InsecurePrivateNetworkRequestsAllowed": false },
-        "prefs": { "profile.managed_default_content_settings.insecure_private_network": { "value": 2 } }
+        "policies": {
+          "InsecurePrivateNetworkRequestsAllowed": false
+        },
+        "prefs": {
+          "profile.managed_default_content_settings.insecure_private_network": {
+            "value": 2
+          }
+        }
       },
       {
-        "policies": { "InsecurePrivateNetworkRequestsAllowed": true },
-        "prefs": { "profile.managed_default_content_settings.insecure_private_network": { "value": 1 } }
+        "policies": {
+          "InsecurePrivateNetworkRequestsAllowed": true
+        },
+        "prefs": {
+          "profile.managed_default_content_settings.insecure_private_network": {
+            "value": 1
+          }
+        }
       }
     ]
   },
@@ -2196,16 +2211,36 @@
     "os": ["win", "linux", "mac", "chromeos"],
     "policy_pref_mapping_tests": [
       {
-        "policies": { "AudioCaptureAllowed": false },
-        "prefs": { "profile.managed_default_content_settings.media_stream": { "value": 0, "expect_default": true } }
+        "policies": {
+          "AudioCaptureAllowed": false
+        },
+        "prefs": {
+          "profile.managed_default_content_settings.media_stream": {
+            "default_value": 0
+          }
+        }
       },
       {
-        "policies": { "DefaultMediaStreamSetting": 2, "AudioCaptureAllowed": true },
-        "prefs": { "profile.managed_default_content_settings.media_stream": { "value": 2 } }
+        "policies": {
+          "DefaultMediaStreamSetting": 2,
+          "AudioCaptureAllowed": true
+        },
+        "prefs": {
+          "profile.managed_default_content_settings.media_stream": {
+            "value": 2
+          }
+        }
       },
       {
-        "policies": { "DefaultMediaStreamSetting": 3, "AudioCaptureAllowed": true },
-        "prefs": { "profile.managed_default_content_settings.media_stream": { "value": 3 } }
+        "policies": {
+          "DefaultMediaStreamSetting": 3,
+          "AudioCaptureAllowed": true
+        },
+        "prefs": {
+          "profile.managed_default_content_settings.media_stream": {
+            "value": 3
+          }
+        }
       }
     ]
   },
@@ -2214,18 +2249,37 @@
     "os": ["win", "linux", "mac", "chromeos"],
     "policy_pref_mapping_tests": [
       {
-        "policies": { "VideoCaptureAllowed": false },
-        "prefs": { "profile.managed_default_content_settings.media_stream": { "value": 0, "expect_default": true }}
+        "policies": {
+          "VideoCaptureAllowed": false
+        },
+        "prefs": {
+          "profile.managed_default_content_settings.media_stream": {
+            "default_value": 0
+          }
+        }
       },
       {
-        "policies": { "DefaultMediaStreamSetting": 2, "VideoCaptureAllowed": true },
-        "prefs": { "profile.managed_default_content_settings.media_stream": { "value": 2 } }
+        "policies": {
+          "DefaultMediaStreamSetting": 2,
+          "VideoCaptureAllowed": true
+        },
+        "prefs": {
+          "profile.managed_default_content_settings.media_stream": {
+            "value": 2
+          }
+        }
       },
       {
-        "policies": { "DefaultMediaStreamSetting": 3, "VideoCaptureAllowed": true },
-        "prefs": { "profile.managed_default_content_settings.media_stream": { "value": 3 } }
+        "policies": {
+          "DefaultMediaStreamSetting": 3,
+          "VideoCaptureAllowed": true
+        },
+        "prefs": {
+          "profile.managed_default_content_settings.media_stream": {
+            "value": 3
+          }
+        }
       }
-
     ]
   },
 
@@ -4341,8 +4395,7 @@
         "policies": {},
         "prefs": {
           "security_token_session_behavior": {
-            "value": "IGNORE",
-            "expect_default": true
+            "default_value": "IGNORE"
           }
         }
       }
@@ -4364,8 +4417,7 @@
         "policies": {},
         "prefs": {
           "security_token_session_notification_seconds": {
-            "value": 0,
-            "expect_default": true
+            "default_value": 0
           }
         }
       }
@@ -7306,7 +7358,7 @@
         },
         "prefs": {
           "enterprise_reporting.extension_request.enabled": {
-            "expect_default": true
+            "default_value": false
           }
         }
       },
@@ -7316,7 +7368,7 @@
         },
         "prefs": {
           "enterprise_reporting.extension_request.enabled": {
-            "expect_default": true
+            "default_value": false
           }
         }
       },
@@ -7326,7 +7378,7 @@
         },
         "prefs": {
           "enterprise_reporting.extension_request.enabled": {
-            "expect_default": true
+            "default_value": false
           }
         }
       },
@@ -7337,7 +7389,7 @@
         },
         "prefs": {
           "enterprise_reporting.extension_request.enabled": {
-            "expect_default": true
+            "default_value": false
           }
         }
       },
@@ -7348,7 +7400,7 @@
         },
         "prefs": {
           "enterprise_reporting.extension_request.enabled": {
-            "expect_default": true
+            "default_value": false
           }
         }
       },
@@ -7869,8 +7921,7 @@
         "policies": {},
         "prefs": {
           "profile.force_logout_unauthenticated_user_enabled": {
-            "value": false,
-            "expect_default": true
+            "default_value": false
           }
         }
       }
@@ -8320,9 +8371,8 @@
         "policies": {},
         "prefs": {
           "device_system_wide_tracing_enabled": {
-            "value": true,
             "location": "local_state",
-            "expect_default": true
+            "default_value": true
           }
         }
       },
@@ -8381,15 +8431,13 @@
         "policies": {},
         "prefs": { "fetch_keepalive_duration_on_shutdown": {
           "location": "user_profile",
-          "expect_default": true,
-          "value": 0
+          "default_value": 0
         }}
       },
       {
         "policies": {"FetchKeepaliveDurationSecondsOnShutdown": 0},
         "prefs": { "fetch_keepalive_duration_on_shutdown": {
           "location": "user_profile",
-          "expect_default": false,
           "value": 0
         }}
       },
@@ -8397,7 +8445,6 @@
         "policies": {"FetchKeepaliveDurationSecondsOnShutdown": 1},
         "prefs": { "fetch_keepalive_duration_on_shutdown": {
           "location": "user_profile",
-          "expect_default": false,
           "value": 1
         }}
       },
@@ -8405,7 +8452,6 @@
         "policies": {"FetchKeepaliveDurationSecondsOnShutdown": 5},
         "prefs": { "fetch_keepalive_duration_on_shutdown": {
           "location": "user_profile",
-          "expect_default": false,
           "value": 5
         }}
       }
@@ -8485,8 +8531,7 @@
         "policies": { "WebRtcIPHandling": "default_public_interface_only" },
         "prefs": { "webrtc.ip_handling_policy": {
           "location": "user_profile",
-          "value": "default_public_interface_only",
-          "expect_default": false
+          "value": "default_public_interface_only"
         } }
       }
     ]
@@ -8523,8 +8568,7 @@
         "policies": {},
         "prefs": {
           "suggest_logout_after_closing_last_window": {
-            "value": true,
-            "expect_default": true
+            "default_value": true
           }
         }
       },
@@ -8599,12 +8643,10 @@
         "policies": {},
         "prefs": {
           "profile.managed_accounts.restriction.value": {
-            "value": "",
-            "expect_default": true
+            "default_value": ""
           },
           "profile.managed_accounts.restriction.all_managed_accounts": {
-            "value": false,
-            "expect_default": true
+            "default_value": false
           }
         }
       },

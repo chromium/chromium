@@ -51,7 +51,7 @@ PrefLocation GetPrefLocation(const base::Value& settings) {
     return PrefLocation::kLocalState;
   if (*location == "signin_profile")
     return PrefLocation::kSigninProfile;
-  NOTREACHED() << "Unknown pref location: " << *location;
+  ADD_FAILURE() << "Unknown pref location: " << *location;
   return PrefLocation::kUserProfile;
 }
 
@@ -77,7 +77,8 @@ PrefService* GetPrefServiceForLocation(PrefLocation location,
     case PrefLocation::kLocalState:
       return local_state;
     default:
-      NOTREACHED() << "Unhandled pref location: " << static_cast<int>(location);
+      ADD_FAILURE() << "Unhandled pref location: "
+                    << static_cast<int>(location);
   }
   return nullptr;
 }
@@ -124,16 +125,24 @@ class PrefTestCase {
  public:
   explicit PrefTestCase(const std::string& name, const base::Value& settings) {
     const base::Value* value = settings.FindKey("value");
+    const base::Value* default_value = settings.FindKey("default_value");
     location_ = GetPrefLocation(settings);
     check_for_mandatory_ =
         settings.FindBoolKey("check_for_mandatory").value_or(true);
     check_for_recommended_ =
         settings.FindBoolKey("check_for_recommended").value_or(true);
-    expect_default_ = settings.FindBoolKey("expect_default").value_or(false);
 
     pref_ = name;
     if (value)
       value_ = value->CreateDeepCopy();
+    if (default_value)
+      default_value_ = default_value->CreateDeepCopy();
+
+    if (value && default_value) {
+      ADD_FAILURE()
+          << "only one of |value| or |default_value| should be used for pref "
+          << name;
+    }
   }
 
   ~PrefTestCase() = default;
@@ -141,7 +150,9 @@ class PrefTestCase {
   PrefTestCase& operator=(const PrefTestCase& other) = delete;
 
   const std::string& pref() const { return pref_; }
+
   const base::Value* value() const { return value_.get(); }
+  const base::Value* default_value() const { return default_value_.get(); }
 
   PrefLocation location() const { return location_; }
 
@@ -149,15 +160,15 @@ class PrefTestCase {
 
   bool check_for_recommended() const { return check_for_recommended_; }
 
-  bool expect_default() const { return expect_default_; }
-
  private:
   std::string pref_;
-  std::unique_ptr<base::Value> value_;
   PrefLocation location_;
   bool check_for_mandatory_;
   bool check_for_recommended_;
-  bool expect_default_;
+
+  // At most one of these will be set.
+  std::unique_ptr<base::Value> value_;
+  std::unique_ptr<base::Value> default_value_;
 };
 
 // Contains the testing details for a single pref affected by a policy. This is
@@ -586,12 +597,17 @@ void VerifyPolicyToPrefMappings(const base::FilePath& test_case_path,
           CheckPrefHasDefaultValue(pref);
 
           const base::Value* expected_value = pref_case->value();
+          bool expect_value_to_be_default = false;
+          if (!expected_value && pref_case->default_value()) {
+            expected_value = pref_case->default_value();
+            expect_value_to_be_default = true;
+          }
 
           if (check_recommended) {
             ASSERT_NO_FATAL_FAILURE(SetProviderPolicy(
                 provider, pref_mapping->policies(),
                 pref_mapping->policies_settings(), POLICY_LEVEL_RECOMMENDED));
-            if (pref_case->expect_default()) {
+            if (expect_value_to_be_default) {
               CheckPrefHasDefaultValue(pref, expected_value);
             } else {
               CheckPrefHasRecommendedValue(pref, expected_value);
@@ -602,7 +618,7 @@ void VerifyPolicyToPrefMappings(const base::FilePath& test_case_path,
             ASSERT_NO_FATAL_FAILURE(SetProviderPolicy(
                 provider, pref_mapping->policies(),
                 pref_mapping->policies_settings(), POLICY_LEVEL_MANDATORY));
-            if (pref_case->expect_default()) {
+            if (expect_value_to_be_default) {
               CheckPrefHasDefaultValue(pref, expected_value);
             } else {
               CheckPrefHasMandatoryValue(pref, expected_value);
