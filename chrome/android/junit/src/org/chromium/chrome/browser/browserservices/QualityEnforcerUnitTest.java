@@ -256,7 +256,8 @@ public class QualityEnforcerUnitTest {
 
         NavigationHandle navigation = new NavigationHandle(0 /* navigationHandleProxy */, url,
                 true /* isInPrimaryMainFrame */, false /* isSameDocument */,
-                false /* isRendererInitiated */);
+                false /* isRendererInitiated */, null /* initiatorOrigin */,
+                null /* impressionData */);
         navigation.didFinish(url, false /* isErrorPage */, true /* hasCommitted */,
                 false /* isFragmentNavigation */, false /* isDownload */,
                 false /* isValidSearchFormUrl */, 0 /* pageTransition */, errorCode,

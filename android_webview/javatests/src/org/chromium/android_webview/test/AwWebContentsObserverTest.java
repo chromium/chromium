@@ -199,7 +199,7 @@ public class AwWebContentsObserverTest {
             boolean isSameDocument, boolean isFragmentNavigation, boolean isRendererInitiated,
             int transition) {
         NavigationHandle navigation = new NavigationHandle(0 /* navigationHandleProxy */, gurl,
-                isInPrimaryMainFrame, isSameDocument, isRendererInitiated);
+                isInPrimaryMainFrame, isSameDocument, isRendererInitiated, null, null);
         mWebContentsObserver.didStartNavigation(navigation);
 
         navigation.didFinish(gurl, isErrorPage, true /* hasCommitted */, isFragmentNavigation,

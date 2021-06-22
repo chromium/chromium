@@ -19,12 +19,18 @@ public class AttributionIntentHandlerFactory {
     // also be correct, but probably overkill as we only allow recent InputEvents.
     private static Predicate<InputEvent> sValidator = new InputEventValidator();
 
+    // Static to track AttributionParameters across Activity launches.
+    private static AttributionIntentHandler sIntentHandler;
+
     /**
-     * @return a AttributionIntentHandler instance.
+     * @return an AttributionIntentHandler instance.
      */
-    public static AttributionIntentHandler create() {
+    public static AttributionIntentHandler getInstance() {
         if (CachedFeatureFlags.isEnabled(ChromeFeatureList.APP_TO_WEB_ATTRIBUTION)) {
-            return new AttributionIntentHandlerImpl(sValidator);
+            if (sIntentHandler == null) {
+                sIntentHandler = new AttributionIntentHandlerImpl(sValidator);
+            }
+            return sIntentHandler;
         } else {
             return new NoopAttributionIntentHandler();
         }
@@ -32,5 +38,6 @@ public class AttributionIntentHandlerFactory {
 
     public static void setInputEventValidatorForTesting(Predicate<InputEvent> validator) {
         sValidator = validator;
+        sIntentHandler = null;
     }
 }

@@ -6019,6 +6019,15 @@ bool NavigationRequest::IsNavigationStarted() const {
 }
 
 bool NavigationRequest::RequiresInitiatorBasedSourceSiteInstance() const {
+  // Browser-initiated navigations can supply an initiator origin without having
+  // an associated source SiteInstance (e.g. Android intents handled by Chrome).
+  // However, the context menu is a case in which we should have one, so it
+  // should still require a source SiteInstance.
+  if (commit_params_->is_browser_initiated &&
+      !common_params().started_from_context_menu) {
+    return false;
+  }
+
   const bool is_data_or_about =
       common_params_->url.SchemeIs(url::kDataScheme) ||
       common_params_->url.IsAboutBlank();

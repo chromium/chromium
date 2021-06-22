@@ -9,8 +9,12 @@ import androidx.annotation.NonNull;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.blink.mojom.Impression;
 import org.chromium.net.NetError;
 import org.chromium.url.GURL;
+import org.chromium.url.Origin;
+
+import java.nio.ByteBuffer;
 
 /**
  * JNI bridge with content::NavigationHandle
@@ -30,15 +34,20 @@ public class NavigationHandle {
     private boolean mIsValidSearchFormUrl;
     private @NetError int mErrorCode;
     private int mHttpStatusCode;
+    private final Origin mInitiatorOrigin;
+    private final Impression mImpression;
 
     @CalledByNative
     public NavigationHandle(long nativeNavigationHandleProxy, GURL url,
-            boolean isInPrimaryMaimFrame, boolean isSameDocument, boolean isRendererInitiated) {
+            boolean isInPrimaryMaimFrame, boolean isSameDocument, boolean isRendererInitiated,
+            Origin initiatorOrigin, ByteBuffer impressionData) {
         mNativeNavigationHandleProxy = nativeNavigationHandleProxy;
         mUrl = url;
         mIsInPrimaryMainFrame = isInPrimaryMaimFrame;
         mIsSameDocument = isSameDocument;
         mIsRendererInitiated = isRendererInitiated;
+        mInitiatorOrigin = initiatorOrigin;
+        mImpression = impressionData != null ? Impression.deserialize(impressionData) : null;
     }
 
     /**
@@ -214,6 +223,21 @@ public class NavigationHandle {
      */
     public void removeRequestHeader(String headerName) {
         NavigationHandleJni.get().removeRequestHeader(mNativeNavigationHandleProxy, headerName);
+    }
+
+    /**
+     * Get the Origin that initiated this navigation. May be null in the case of navigations
+     * originating from the browser.
+     */
+    public Origin getInitiatorOrigin() {
+        return mInitiatorOrigin;
+    }
+
+    /**
+     * Return the blink::Impression associated with this navigation, if any.
+     */
+    public Impression getImpression() {
+        return mImpression;
     }
 
     @NativeMethods

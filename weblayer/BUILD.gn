@@ -681,7 +681,6 @@ source_set("weblayer_lib_base") {
       "//components/embedder_support/android:context_menu",
       "//components/embedder_support/android:util",
       "//components/embedder_support/android:web_contents_delegate",
-      "//components/embedder_support/android/common:url_constants",
       "//components/embedder_support/android/metrics",
       "//components/external_intents/android",
       "//components/favicon/android",

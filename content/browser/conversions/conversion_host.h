@@ -14,6 +14,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_receiver_set.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/conversions/conversions.mojom.h"
 
 namespace content {
@@ -38,6 +39,15 @@ class CONTENT_EXPORT ConversionHost
   ConversionHost(const ConversionHost& other) = delete;
   ConversionHost& operator=(const ConversionHost& other) = delete;
   ~ConversionHost() override;
+
+  static absl::optional<blink::Impression> ParseImpressionFromApp(
+      const std::string& attribution_source_event_id,
+      const std::string& attribution_destination,
+      const std::string& attribution_report_to,
+      int64_t attribution_expiry);
+
+  static blink::mojom::ImpressionPtr MojoImpressionFromImpression(
+      const blink::Impression& impression);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ConversionHostTest,

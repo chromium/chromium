@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.attribution_reporting;
 
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.text.TextUtils;
 import android.view.InputEvent;
 
 import androidx.annotation.VisibleForTesting;
@@ -155,8 +156,8 @@ public class AttributionIntentHandlerImpl implements AttributionIntentHandler {
     public boolean isValidAttributionIntent(AttributionParameters params, byte[] packageMac,
             Intent originalIntent, InputEvent inputEvent) {
         if (params.getSourcePackageName() == null || packageMac == null || originalIntent == null
-                || params.getSourceEventId() == null || params.getDestination() == null
-                || inputEvent == null) {
+                || TextUtils.isEmpty(params.getSourceEventId())
+                || TextUtils.isEmpty(params.getDestination()) || inputEvent == null) {
             Log.d(TAG, "Attribution intent missing attributes.");
             return false;
         }

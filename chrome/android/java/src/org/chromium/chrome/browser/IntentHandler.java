@@ -37,6 +37,8 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.chrome.browser.attribution_reporting.AttributionIntentHandlerFactory;
+import org.chromium.chrome.browser.attribution_reporting.AttributionParameters;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
@@ -1530,6 +1532,15 @@ public class IntentHandler {
         loadUrlParams.setIsRendererInitiated(
                 metadata == null ? false : metadata.isRendererInitiated());
         loadUrlParams.setInitiatorOrigin(metadata == null ? null : metadata.getInitiatorOrigin());
+
+        AttributionParameters attributionParams =
+                AttributionIntentHandlerFactory.getInstance()
+                        .getAndClearPendingAttributionParameters(intent);
+        if (attributionParams != null) {
+            loadUrlParams.setAttributionParameters(attributionParams.getSourcePackageName(),
+                    attributionParams.getSourceEventId(), attributionParams.getDestination(),
+                    attributionParams.getReportTo(), attributionParams.getExpiry());
+        }
         return loadUrlParams;
     }
 

@@ -162,9 +162,23 @@ public class AttributionIntentHandlerImplTest {
     }
 
     @Test
+    public void testIsValidAttributionIntent_emptyEventId() {
+        Assert.assertFalse(mAttributionIntentHandlerImpl.isValidAttributionIntent(
+                new AttributionParameters(mPackageName, "", "https://example.com", null, 0),
+                mPackageMac, new Intent(), mInputEvent));
+    }
+
+    @Test
     public void testIsValidAttributionIntent_noAttributionDestitation() {
         Assert.assertFalse(mAttributionIntentHandlerImpl.isValidAttributionIntent(
                 new AttributionParameters(mPackageName, "event", null, null, 0), mPackageMac,
+                new Intent(), mInputEvent));
+    }
+
+    @Test
+    public void testIsValidAttributionIntent_emptyAttributionDestitation() {
+        Assert.assertFalse(mAttributionIntentHandlerImpl.isValidAttributionIntent(
+                new AttributionParameters(mPackageName, "event", "", null, 0), mPackageMac,
                 new Intent(), mInputEvent));
     }
 

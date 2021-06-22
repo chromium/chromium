@@ -39,9 +39,9 @@
 #if defined(OS_ANDROID)
 #include "components/android_system_error_page/error_page_populator.h"
 #include "components/cdm/renderer/android_key_systems.h"
-#include "components/embedder_support/android/common/url_constants.h"
 #include "components/spellcheck/renderer/spellcheck.h"           // nogncheck
 #include "components/spellcheck/renderer/spellcheck_provider.h"  // nogncheck
+#include "content/public/common/url_constants.h"
 #include "content/public/renderer/render_thread.h"
 #include "services/service_manager/public/cpp/local_interface_provider.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
@@ -87,7 +87,7 @@ void ContentRendererClientImpl::RenderThreadStarted() {
     spellcheck_ = std::make_unique<SpellCheck>(local_interface_provider_.get());
   }
   blink::WebSecurityPolicy::RegisterURLSchemeAsAllowedForReferrer(
-      blink::WebString::FromUTF8(embedder_support::kAndroidAppScheme));
+      blink::WebString::FromUTF8(content::kAndroidAppScheme));
 #endif
 
   content::RenderThread* thread = content::RenderThread::Get();

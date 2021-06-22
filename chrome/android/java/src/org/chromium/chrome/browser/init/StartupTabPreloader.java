@@ -39,7 +39,7 @@ import org.chromium.url.GURL;
  * is created. This is done to improve startup latency.
  */
 public class StartupTabPreloader implements ProfileManager.Observer, DestroyObserver {
-    private static final String EXTRA_DISABLE_STARTUP_TAB_PRELOADER =
+    public static final String EXTRA_DISABLE_STARTUP_TAB_PRELOADER =
             "org.chromium.chrome.browser.init.DISABLE_STARTUP_TAB_PRELOADER";
 
     private final Supplier<Intent> mIntentSupplier;

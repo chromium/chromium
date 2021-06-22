@@ -410,7 +410,6 @@ static_library("common") {
       "media/chrome_media_drm_bridge_client.cc",
       "media/chrome_media_drm_bridge_client.h",
     ]
-    deps += [ "//components/embedder_support/android/common:url_constants" ]
   } else {
     # Non-Android.
     public_deps += [ "//chrome/common/importer" ]

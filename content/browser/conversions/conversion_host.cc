@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/string_number_conversions.h"
 #include "content/browser/conversions/conversion_manager.h"
 #include "content/browser/conversions/conversion_manager_impl.h"
 #include "content/browser/conversions/conversion_page_metrics.h"
@@ -28,6 +29,7 @@
 #include "net/base/schemeful_site.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace content {
@@ -295,6 +297,45 @@ void ConversionHost::RegisterImpression(const blink::Impression& impression) {
 void ConversionHost::SetCurrentTargetFrameForTesting(
     RenderFrameHost* render_frame_host) {
   receiver_.SetCurrentTargetFrameForTesting(render_frame_host);
+}
+
+// static
+absl::optional<blink::Impression> ConversionHost::ParseImpressionFromApp(
+    const std::string& source_event_id,
+    const std::string& destination,
+    const std::string& report_to,
+    int64_t expiry) {
+  // Java API should have rejected these already.
+  DCHECK(!source_event_id.empty() && !destination.empty());
+
+  blink::Impression impression;
+  if (!base::StringToUint64(source_event_id, &impression.impression_data))
+    return absl::nullopt;
+
+  impression.conversion_destination = url::Origin::Create(GURL(destination));
+  if (!network::IsOriginPotentiallyTrustworthy(
+          impression.conversion_destination)) {
+    return absl::nullopt;
+  }
+
+  if (!report_to.empty()) {
+    impression.reporting_origin = url::Origin::Create(GURL(report_to));
+    if (!network::IsOriginPotentiallyTrustworthy(*impression.reporting_origin))
+      return absl::nullopt;
+  }
+
+  if (expiry != 0)
+    impression.expiry = base::TimeDelta::FromMilliseconds(expiry);
+
+  return impression;
+}
+
+// static
+blink::mojom::ImpressionPtr ConversionHost::MojoImpressionFromImpression(
+    const blink::Impression& impression) {
+  return blink::mojom::Impression::New(
+      impression.conversion_destination, impression.reporting_origin,
+      impression.impression_data, impression.expiry, impression.priority);
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ConversionHost)

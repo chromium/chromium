@@ -82,7 +82,6 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
     private Intent mIntent;
     private final boolean mIsCustomTabIntent;
     private final boolean mIsVrIntent;
-    private final AttributionIntentHandler mAttributionIntentHandler;
 
     @IntDef({Action.CONTINUE, Action.FINISH_ACTIVITY, Action.FINISH_ACTIVITY_REMOVE_TASK})
     @Retention(RetentionPolicy.SOURCE)
@@ -133,7 +132,6 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
     private LaunchIntentDispatcher(Activity activity, Intent intent) {
         mActivity = activity;
         mIntent = IntentUtils.sanitizeIntent(intent);
-        mAttributionIntentHandler = AttributionIntentHandlerFactory.create();
 
         // Needs to be called as early as possible, to accurately capture the
         // time at which the intent was received.
@@ -543,9 +541,10 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
     }
 
     private boolean handleAppAttributionIntent() {
-        if (mAttributionIntentHandler.handleOuterAttributionIntent(mIntent)) return true;
+        AttributionIntentHandler intentHandler = AttributionIntentHandlerFactory.getInstance();
+        if (intentHandler.handleOuterAttributionIntent(mIntent)) return true;
 
-        Intent launchIntent = mAttributionIntentHandler.handleInnerAttributionIntent(mIntent);
+        Intent launchIntent = intentHandler.handleInnerAttributionIntent(mIntent);
         if (launchIntent != null) mIntent = IntentUtils.sanitizeIntent(launchIntent);
         return false;
     }

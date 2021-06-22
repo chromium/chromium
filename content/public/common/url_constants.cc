@@ -20,6 +20,9 @@ const char kViewSourceScheme[] = "view-source";
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kExternalFileScheme[] = "externalfile";
 #endif
+#if defined(OS_ANDROID)
+const char kAndroidAppScheme[] = "android-app";
+#endif
 const char kGoogleChromeScheme[] = "googlechrome";
 
 const char kChromeUIAppCacheInternalsHost[] = "appcache-internals";
