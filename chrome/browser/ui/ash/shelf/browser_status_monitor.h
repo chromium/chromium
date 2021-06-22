@@ -87,6 +87,9 @@ class BrowserStatusMonitor : public BrowserListObserver,
   void OnTabInserted(TabStripModel* tab_strip_model,
                      content::WebContents* contents);
   void OnTabClosing(content::WebContents* contents);
+  // Tab is moved between browsers
+  void OnTabMoved(TabStripModel* tab_strip_model,
+                  content::WebContents* contents);
 
   // Called by LocalWebContentsObserver.
   void OnTabNavigationFinished(content::WebContents* contents);
@@ -117,6 +120,9 @@ class BrowserStatusMonitor : public BrowserListObserver,
   // Used to validate that OnBrowserAdded() is invoked before
   // OnTabStripModelChanged().
   std::set<Browser*> known_browsers_;
+  // Tabs that are removed from one browser and are getting reinserted into
+  // another.
+  std::set<content::WebContents*> tabs_in_transit_;
 #endif
 
   DISALLOW_COPY_AND_ASSIGN(BrowserStatusMonitor);

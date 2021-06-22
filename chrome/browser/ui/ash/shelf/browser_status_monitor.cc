@@ -224,8 +224,23 @@ void BrowserStatusMonitor::OnTabStripModelChanged(
 #endif
 
   if (change.type() == TabStripModelChange::kInserted) {
-    for (const auto& contents : change.GetInsert()->contents)
-      OnTabInserted(tab_strip_model, contents.contents);
+    for (const auto& contents : change.GetInsert()->contents) {
+      if (base::Contains(webcontents_to_observer_map_, contents.contents)) {
+#if DCHECK_IS_ON()
+        {
+          // The tab must be in the set of tabs in transit.
+          size_t num_removed = tabs_in_transit_.erase(contents.contents);
+          DCHECK_EQ(num_removed, 1);
+        }
+#endif
+        OnTabMoved(tab_strip_model, contents.contents);
+      } else {
+#if DCHECK_IS_ON()
+        DCHECK(!base::Contains(tabs_in_transit_, contents.contents));
+#endif
+        OnTabInserted(tab_strip_model, contents.contents);
+      }
+    }
     UpdateBrowserItemState();
   } else if (change.type() == TabStripModelChange::kRemoved) {
     auto* remove = change.GetRemove();
@@ -233,6 +248,9 @@ void BrowserStatusMonitor::OnTabStripModelChanged(
       switch (contents.remove_reason) {
         case TabStripModelChange::RemoveReason::kDeleted:
         case TabStripModelChange::RemoveReason::kCached:
+#if DCHECK_IS_ON()
+          DCHECK(!base::Contains(tabs_in_transit_, contents.contents));
+#endif
           OnTabClosing(contents.contents);
           break;
         case TabStripModelChange::RemoveReason::kInsertedIntoOtherTabStrip:
@@ -243,6 +261,11 @@ void BrowserStatusMonitor::OnTabStripModelChanged(
             // its WebContents is removed, it will not be reinserted into
             // another tab strip, so it should be treated as closed.
             OnTabClosing(contents.contents);
+          } else {
+#if DCHECK_IS_ON()
+            // The tab must not be already in the set of tabs in transit.
+            DCHECK(tabs_in_transit_.insert(contents.contents).second);
+#endif
           }
           break;
       }
@@ -385,6 +408,12 @@ void BrowserStatusMonitor::OnTabClosing(content::WebContents* contents) {
   RemoveWebContentsObserver(contents);
   if (app_service_instance_helper_)
     app_service_instance_helper_->OnTabClosing(contents);
+}
+
+void BrowserStatusMonitor::OnTabMoved(TabStripModel* tab_strip_model,
+                                      content::WebContents* contents) {
+  // TODO(crbug.com/1203992): split this into inserted and moved cases.
+  OnTabInserted(tab_strip_model, contents);
 }
 
 void BrowserStatusMonitor::OnTabNavigationFinished(
