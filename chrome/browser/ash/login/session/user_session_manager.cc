@@ -1900,8 +1900,8 @@ void UserSessionManager::ShowNotificationsIfNeeded(Profile* profile) {
   // Show legacy U2F notification if applicable.
   MaybeShowU2FNotification();
 
-  // Show a Help app notification if applicable.
-  MaybeShowHelpAppNotification(profile);
+  // Show the Help app Release Notes notification if applicable.
+  MaybeShowHelpAppReleaseNotesNotification(profile);
 
   g_browser_process->platform_part()
       ->browser_policy_connector_chromeos()
@@ -2355,12 +2355,12 @@ void UserSessionManager::MaybeShowU2FNotification() {
   }
 }
 
-void UserSessionManager::MaybeShowHelpAppNotification(Profile* profile) {
+void UserSessionManager::MaybeShowHelpAppReleaseNotesNotification(
+    Profile* profile) {
   if (!ProfileHelper::IsPrimaryProfile(profile))
     return;
-  // The help app controller takes responsibility of ensuring it doesn't
-  // show a notification twice.
-  GetHelpAppNotificationController(profile)->MaybeShowNotification();
+  GetHelpAppNotificationController(profile)
+      ->MaybeShowReleaseNotesNotification();
 }
 
 void UserSessionManager::MaybeShowHelpAppDiscoverNotification(

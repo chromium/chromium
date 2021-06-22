@@ -32,13 +32,13 @@ class HelpAppNotificationController {
       const HelpAppNotificationController&) = delete;
   ~HelpAppNotificationController();
 
-  // Determines which notification to show to the user, if any at all. This will
-  // never show more than 1 notification, to avoid spamming the user.
-  void MaybeShowNotification();
+  // Determines if the Release Notes notification should be shown to the user
+  // and shows it if so.
+  void MaybeShowReleaseNotesNotification();
 
   // Determines if the discover notification should be shown to the user and
   // shows it if so. Will produce an additional notification on top of
-  // |MaybeShowNotification|.
+  // |MaybeShowReleaseNotesNotification|.
   void MaybeShowDiscoverNotification();
 
  private:

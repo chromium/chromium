@@ -348,11 +348,10 @@ class UserSessionManager
   // Shows U2F notification if necessary.
   void MaybeShowU2FNotification();
 
-  // Shows Help App notification if necessary.
-  void MaybeShowHelpAppNotification(Profile* profile);
+  // Shows Help App release notes notification if necessary.
+  void MaybeShowHelpAppReleaseNotesNotification(Profile* profile);
 
-  // Shows Help App discover notification if necessary. Must be called after
-  // MaybeShowHelpAppNotification() which constructs a notification controller.
+  // Shows Help App discover notification if necessary.
   void MaybeShowHelpAppDiscoverNotification(Profile* profile);
 
  protected:

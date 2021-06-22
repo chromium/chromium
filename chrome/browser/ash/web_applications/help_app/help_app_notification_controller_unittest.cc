@@ -135,7 +135,7 @@ TEST_F(HelpAppNotificationControllerTest,
   std::unique_ptr<HelpAppNotificationController> controller =
       std::make_unique<HelpAppNotificationController>(profile.get());
 
-  controller->MaybeShowNotification();
+  controller->MaybeShowReleaseNotesNotification();
 
   EXPECT_EQ(0, notification_count_);
   EXPECT_EQ(false, HasReleaseNotesNotification());
@@ -153,7 +153,7 @@ TEST_F(HelpAppNotificationControllerTest,
   std::unique_ptr<HelpAppNotificationController> controller =
       std::make_unique<HelpAppNotificationController>(profile.get());
 
-  controller->MaybeShowNotification();
+  controller->MaybeShowReleaseNotesNotification();
 
   EXPECT_EQ(1, notification_count_);
   EXPECT_EQ(true, HasReleaseNotesNotification());
@@ -169,7 +169,7 @@ TEST_F(HelpAppNotificationControllerTest,
   std::unique_ptr<HelpAppNotificationController> controller =
       std::make_unique<HelpAppNotificationController>(profile.get());
 
-  controller->MaybeShowNotification();
+  controller->MaybeShowReleaseNotesNotification();
 
   EXPECT_EQ(0, notification_count_);
   EXPECT_EQ(false, HasDiscoverTabNotification());
@@ -196,7 +196,7 @@ TEST_F(HelpAppNotificationControllerTest,
   std::unique_ptr<HelpAppNotificationController> controller =
       std::make_unique<HelpAppNotificationController>(profile.get());
 
-  controller->MaybeShowNotification();
+  controller->MaybeShowReleaseNotesNotification();
 
   EXPECT_EQ(0, notification_count_);
   EXPECT_EQ(false, HasReleaseNotesNotification());
@@ -276,7 +276,7 @@ TEST_F(HelpAppNotificationControllerTest,
   EXPECT_EQ(0, profile->GetPrefs()->GetInteger(
                    prefs::kReleaseNotesSuggestionChipTimesLeftToShow));
 
-  controller->MaybeShowNotification();
+  controller->MaybeShowReleaseNotesNotification();
 
   EXPECT_EQ(3, profile->GetPrefs()->GetInteger(
                    prefs::kReleaseNotesSuggestionChipTimesLeftToShow));

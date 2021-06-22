@@ -106,7 +106,7 @@ void HelpAppNotificationController::MaybeShowDiscoverNotification() {
   }
 }
 
-void HelpAppNotificationController::MaybeShowNotification() {
+void HelpAppNotificationController::MaybeShowReleaseNotesNotification() {
   if (!release_notes_notification_) {
     release_notes_notification_ =
         std::make_unique<ash::ReleaseNotesNotification>(profile_);
