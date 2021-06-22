@@ -44,8 +44,7 @@ void PasswordStoreImpl::ShutdownOnUIThread() {
   ScheduleTask(base::BindOnce(&PasswordStoreImpl::ResetLoginDB, this));
 }
 
-bool PasswordStoreImpl::InitOnBackgroundSequence(
-    bool upload_phished_credentials_to_sync) {
+bool PasswordStoreImpl::InitOnBackgroundSequence() {
   DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
   DCHECK(login_db_);
   bool success = true;
@@ -60,9 +59,7 @@ bool PasswordStoreImpl::InitOnBackgroundSequence(
     login_db_->SetDeletionsHaveSyncedCallback(base::BindRepeating(
         &PasswordStoreImpl::NotifyDeletionsHaveSynced, base::Unretained(this)));
   }
-  return PasswordStore::InitOnBackgroundSequence(
-             upload_phished_credentials_to_sync) &&
-         success;
+  return PasswordStore::InitOnBackgroundSequence() && success;
 }
 
 void PasswordStoreImpl::ReportMetricsImpl(const std::string& sync_username,

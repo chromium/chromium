@@ -23,8 +23,6 @@ namespace password_manager {
 struct PasswordForm;
 struct InsecureCredential;
 
-using ForceInitialSyncCycle =
-    base::StrongAlias<class ForceInitialSyncCycleTag, bool>;
 using PrimaryKeyToFormMap =
     std::map<FormPrimaryKey, std::unique_ptr<PasswordForm>>;
 

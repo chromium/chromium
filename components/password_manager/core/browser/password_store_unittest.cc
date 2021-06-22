@@ -190,12 +190,6 @@ PasswordForm MakePasswordForm(const std::string& signon_realm) {
   return form;
 }
 
-InsecureCredential MakeInsecureCredential(const PasswordForm& form,
-                                          const InsecureType& type) {
-  return InsecureCredential(form.signon_realm, form.username_value,
-                            base::Time(), type, IsMuted(false));
-}
-
 }  // namespace
 
 class PasswordStoreTest : public testing::Test {
@@ -211,8 +205,6 @@ class PasswordStoreTest : public testing::Test {
     feature_list_.InitWithFeatures({features::kPasswordReuseDetectionEnabled,
                                     features::kSyncingCompromisedCredentials},
                                    {});
-    pref_service_.registry()->RegisterBooleanPref(
-        password_manager::prefs::kWasPhishedCredentialsUploadedToSync, false);
     pref_service_.registry()->RegisterBooleanPref(
         password_manager::prefs::kWereOldGoogleLoginsRemoved, false);
   }
@@ -1798,81 +1790,6 @@ TEST_F(PasswordStoreTest, UpdateInsecureCredentialsSync) {
   store->GetAllInsecureCredentials(&consumer);
   WaitForPasswordStore();
 
-  store->ShutdownOnUIThread();
-}
-
-TEST_F(PasswordStoreTest, TestSyncMetaDataDroppedToSyncPhishedCredentials) {
-  {
-    auto db = std::make_unique<LoginDatabase>(
-        test_login_db_file_path(), password_manager::IsAccountStore(false));
-    db->Init();
-
-    const PasswordForm form = MakePasswordForm(kTestWebRealm1);
-    ASSERT_EQ(AddChangeForForm(form), db->AddLogin(form, nullptr));
-    db->insecure_credentials_table().AddRow(
-        MakeInsecureCredential(form, InsecureType::kPhished));
-  }
-  // The LoginDatabase gets destroyed here, later it will be initialized with
-  // data.
-  WaitForPasswordStore();
-
-  scoped_refptr<PasswordStoreWithMockedMetadataStore> store =
-      CreatePasswordStoreWithMockedMetaData();
-  EXPECT_CALL(store->GetMockedMetadataStore(), DeleteAllSyncMetadata())
-      .Times(1);
-  store->Init(pref_service());
-  WaitForPasswordStore();
-  store->ShutdownOnUIThread();
-}
-
-TEST_F(PasswordStoreTest, TestDoNotDropMetaDataWhenNoPhishedCredentials) {
-  {
-    auto db = std::make_unique<LoginDatabase>(
-        test_login_db_file_path(), password_manager::IsAccountStore(false));
-    db->Init();
-
-    const PasswordForm form = MakePasswordForm(kTestWebRealm1);
-    ASSERT_EQ(AddChangeForForm(form), db->AddLogin(form, nullptr));
-    db->insecure_credentials_table().AddRow(
-        MakeInsecureCredential(form, InsecureType::kLeaked));
-    db->insecure_credentials_table().AddRow(
-        MakeInsecureCredential(form, InsecureType::kReused));
-  }
-  // The LoginDatabase gets destroyed here, later it will be initialized with
-  // data.
-  WaitForPasswordStore();
-
-  scoped_refptr<PasswordStoreWithMockedMetadataStore> store =
-      CreatePasswordStoreWithMockedMetaData();
-  EXPECT_CALL(store->GetMockedMetadataStore(), DeleteAllSyncMetadata())
-      .Times(0);
-  store->Init(pref_service());
-  WaitForPasswordStore();
-  store->ShutdownOnUIThread();
-}
-
-TEST_F(PasswordStoreTest, TestDoNotDropMetaDataWhenAlreadyUploaded) {
-  {
-    auto db = std::make_unique<LoginDatabase>(
-        test_login_db_file_path(), password_manager::IsAccountStore(false));
-    db->Init();
-
-    const PasswordForm form = MakePasswordForm(kTestWebRealm1);
-    ASSERT_EQ(AddChangeForForm(form), db->AddLogin(form, nullptr));
-    db->insecure_credentials_table().AddRow(
-        MakeInsecureCredential(form, InsecureType::kPhished));
-  }
-  // The LoginDatabase gets destroyed here, later it will be initialized with
-  // data.
-  WaitForPasswordStore();
-
-  scoped_refptr<PasswordStoreWithMockedMetadataStore> store =
-      CreatePasswordStoreWithMockedMetaData();
-  EXPECT_CALL(store->GetMockedMetadataStore(), DeleteAllSyncMetadata())
-      .Times(0);
-  pref_service()->SetBoolean(prefs::kWasPhishedCredentialsUploadedToSync, true);
-  store->Init(pref_service());
-  WaitForPasswordStore();
   store->ShutdownOnUIThread();
 }
 

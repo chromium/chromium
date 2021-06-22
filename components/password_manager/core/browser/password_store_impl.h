@@ -35,8 +35,7 @@ class PasswordStoreImpl : public PasswordStore, public PasswordStoreBackend {
   ~PasswordStoreImpl() override;
 
   // Opens |login_db_| on the background sequence.
-  bool InitOnBackgroundSequence(
-      bool upload_phished_credentials_to_sync) override;
+  bool InitOnBackgroundSequence() override;
 
   // Implements PasswordStore interface.
   void ReportMetricsImpl(const std::string& sync_username,

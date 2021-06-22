@@ -51,8 +51,6 @@ class StoreMetricsReporterTest : public SyncUsernameTestBase {
                                            false);
     prefs_.registry()->RegisterBooleanPref(
         password_manager::prefs::kWasAutoSignInFirstRunExperienceShown, false);
-    prefs_.registry()->RegisterBooleanPref(
-        prefs::kWasPhishedCredentialsUploadedToSync, false);
     prefs_.registry()->RegisterBooleanPref(prefs::kWereOldGoogleLoginsRemoved,
                                            false);
   }

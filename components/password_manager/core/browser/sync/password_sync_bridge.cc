@@ -324,8 +324,7 @@ class ScopedStoreTransaction {
 PasswordSyncBridge::PasswordSyncBridge(
     std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
     PasswordStoreSync* password_store_sync,
-    const base::RepeatingClosure& sync_enabled_or_disabled_cb,
-    ForceInitialSyncCycle force_initial_sync)
+    const base::RepeatingClosure& sync_enabled_or_disabled_cb)
     : ModelTypeSyncBridge(std::move(change_processor)),
       password_store_sync_(password_store_sync),
       sync_enabled_or_disabled_cb_(sync_enabled_or_disabled_cb) {
@@ -340,17 +339,14 @@ PasswordSyncBridge::PasswordSyncBridge(
         {FROM_HERE, "Password metadata store isn't available."});
     sync_metadata_read_error = SyncMetadataReadError::kDbNotAvailable;
   } else {
-    if (!force_initial_sync) {
-      batch = password_store_sync_->GetMetadataStore()->GetAllSyncMetadata();
-    }
+    batch = password_store_sync_->GetMetadataStore()->GetAllSyncMetadata();
     if (!batch) {
       // If the metadata cannot be read, it's either a persistent error or force
       // initial sync has been requested. In both cases, we drop the metadata to
       // go through the initial sync flow.
       password_store_sync_->GetMetadataStore()->DeleteAllSyncMetadata();
       batch = std::make_unique<syncer::MetadataBatch>();
-      if (!force_initial_sync)
-        sync_metadata_read_error = SyncMetadataReadError::kReadFailed;
+      sync_metadata_read_error = SyncMetadataReadError::kReadFailed;
     }
   }
   base::UmaHistogramEnumeration("PasswordManager.SyncMetadataReadError",

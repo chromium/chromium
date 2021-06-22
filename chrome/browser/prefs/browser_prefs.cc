@@ -592,6 +592,10 @@ const char kDataReductionProxy[] = "auth.spdyproxy.origin";
 const char kQuickAnswersConsented[] = "settings.quick_answers.user_consented";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+// Deprecated 06/2021.
+const char kWasPhishedCredentialsUploadedToSync[] =
+    "profile.was_phished_credentials_uploaded_to_sync";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -742,6 +746,8 @@ void RegisterProfilePrefsForMigration(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterBooleanPref(kQuickAnswersConsented, false);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  registry->RegisterBooleanPref(kWasPhishedCredentialsUploadedToSync, true);
 }
 
 }  // namespace
@@ -1487,6 +1493,9 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   // Added 06/2021
   profile_prefs->ClearPref(kQuickAnswersConsented);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  // Added 06/2021
+  profile_prefs->ClearPref(kWasPhishedCredentialsUploadedToSync);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

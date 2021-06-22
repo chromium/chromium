@@ -220,8 +220,6 @@ void PasswordManager::RegisterProfilePrefs(
                              base::Time());
   registry->RegisterTimePref(prefs::kAccountStoreDateLastUsedForFilling,
                              base::Time());
-  registry->RegisterBooleanPref(prefs::kWasPhishedCredentialsUploadedToSync,
-                                false);
   registry->RegisterBooleanPref(prefs::kWereOldGoogleLoginsRemoved, false);
 
 #if defined(OS_APPLE)

@@ -67,22 +67,6 @@ void CloseTraceAndCallBack(
   std::move(callback).Run(std::move(results));
 }
 
-// Returns whether one-time upload of phished credentials happened.
-bool ShouldPhishedCredentialsBeUploadedToSync(const PrefService* prefs) {
-  if (!base::FeatureList::IsEnabled(features::kSyncingCompromisedCredentials)) {
-    return false;
-  }
-
-  return prefs &&
-         !prefs->GetBoolean(prefs::kWasPhishedCredentialsUploadedToSync);
-}
-
-// Returns if credentials contains Phished issues.
-bool HasPhishedCredentials(const std::vector<InsecureCredential>& credentials) {
-  return base::Contains(credentials, InsecureType::kPhished,
-                        &InsecureCredential::insecure_type);
-}
-
 std::vector<PasswordFormDigest> ConvertToForms(
     const std::vector<std::string>& realms) {
   std::vector<PasswordFormDigest> forms;
@@ -138,21 +122,11 @@ bool PasswordStore::Init(PrefService* prefs,
     hash_password_manager_.set_prefs(prefs);
   }
   if (background_task_runner_) {
-    // TODO(crbug.com/1137775): Remove this when enough number of clients switch
-    // to the new version of Chrome.
-    bool upload_phished_credentials_to_sync =
-        ShouldPhishedCredentialsBeUploadedToSync(prefs_);
-
-    if (upload_phished_credentials_to_sync) {
-      prefs_->SetBoolean(prefs::kWasPhishedCredentialsUploadedToSync, true);
-    }
-
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
         "passwords", "PasswordStore::InitOnBackgroundSequence", this);
     background_task_runner_->PostTaskAndReplyWithResult(
         FROM_HERE,
-        base::BindOnce(&PasswordStore::InitOnBackgroundSequence, this,
-                       upload_phished_credentials_to_sync),
+        base::BindOnce(&PasswordStore::InitOnBackgroundSequence, this),
         base::BindOnce(&PasswordStore::OnInitCompleted, this));
   }
 
@@ -623,19 +597,13 @@ PasswordStore::CreateBackgroundTaskRunner() const {
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
 }
 
-bool PasswordStore::InitOnBackgroundSequence(
-    bool upload_phished_credentials_to_sync) {
+bool PasswordStore::InitOnBackgroundSequence() {
   DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
-
-  ForceInitialSyncCycle force_initial_sync_cycle(
-      upload_phished_credentials_to_sync &&
-      HasPhishedCredentials(GetAllInsecureCredentialsImpl()));
 
   sync_bridge_ = base::WrapUnique(new PasswordSyncBridge(
       std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
           syncer::PASSWORDS, base::DoNothing()),
-      /*password_store_sync=*/this, sync_enabled_or_disabled_cb_,
-      force_initial_sync_cycle));
+      /*password_store_sync=*/this, sync_enabled_or_disabled_cb_));
 
   if (IsPasswordReuseDetectionEnabled()) {
     reuse_detector_ = new PasswordReuseDetector;
