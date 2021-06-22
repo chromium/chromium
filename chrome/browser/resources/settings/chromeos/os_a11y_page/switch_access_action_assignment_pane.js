@@ -86,6 +86,8 @@ let SwitchAccessKeyAssignmentInfoMapping;
   });
 }
 
+// TODO(crbug.com/1222452): Convert to use Polymer's class based syntax (e.g.
+// https://crrev.com/c/2808034).
 Polymer({
   is: 'settings-switch-access-action-assignment-pane',
 
@@ -101,11 +103,6 @@ Polymer({
      */
     action: {
       type: String,
-    },
-
-    isAttached: {
-      type: Boolean,
-      observer: 'onAttachedChanged_',
     },
 
     /**
@@ -183,15 +180,8 @@ Polymer({
         SwitchAccessSubpageBrowserProxyImpl.getInstance();
   },
 
-  onAttachedChanged_() {
-    if (this.isAttached) {
-      this.handleAttached_();
-    } else {
-      this.handleDetached_();
-    }
-  },
-
-  handleAttached_() {
+  /** @override */
+  attached() {
     // Save all existing prefs.
     for (const action in actionToPref) {
       chrome.settingsPrivate.getPref(actionToPref[action], (pref) => {
@@ -209,7 +199,8 @@ Polymer({
         .notifySwitchAccessActionAssignmentPaneActive();
   },
 
-  handleDetached_() {
+  /** @override */
+  detached() {
     this.switchAccessBrowserProxy_
         .notifySwitchAccessActionAssignmentPaneInactive();
 

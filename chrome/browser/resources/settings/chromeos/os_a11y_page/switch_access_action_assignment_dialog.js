@@ -26,12 +26,6 @@ Polymer({
       type: String,
     },
 
-    /** @private */
-    isAttached_: {
-      type: Boolean,
-      value: false,
-    },
-
     /**
      * The localized action label.
      * @private {string}
@@ -50,16 +44,6 @@ Polymer({
   created() {
     this.switchAccessBrowserProxy_ =
         SwitchAccessSubpageBrowserProxyImpl.getInstance();
-  },
-
-  /** @override */
-  attached() {
-    this.isAttached_ = true;
-  },
-
-  /** @override */
-  detached() {
-    this.isAttached_ = false;
   },
 
   /** @private */
