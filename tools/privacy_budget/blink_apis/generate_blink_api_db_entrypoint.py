@@ -7,9 +7,10 @@ import sys
 import os
 
 if __name__ == "__main__":
-  shell = (os.name == 'nt')
-  subprocess.call([
-      "vpython",
-      os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                   "generate_blink_api_db.py")
-  ] + sys.argv[1:], shell=shell)
+    shell = (os.name == 'nt')
+    subprocess.check_call([
+        "vpython3",
+        os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                     "generate_blink_api_db.py")
+    ] + sys.argv[1:],
+                          shell=shell)
