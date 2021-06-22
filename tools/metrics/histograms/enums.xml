@@ -32991,6 +32991,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3943" label="ControlledNonBlobURLWorkerWillBeUncontrolled"/>
   <int value="3944" label="MediaMetaThemeColor"/>
   <int value="3945" label="ClientHintsUABitness"/>
+  <int value="3946" label="DifferentPerspectiveCBOrParent"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

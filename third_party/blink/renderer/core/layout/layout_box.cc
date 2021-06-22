@@ -1989,9 +1989,17 @@ bool LayoutBox::MapVisualRectToContainer(
 
   bool has_perspective = container_object && container_object->HasLayer() &&
                          container_object->StyleRef().HasPerspective();
-  if (has_perspective && RuntimeEnabledFeatures::TransformInteropEnabled() &&
-      container_object != NearestAncestorForElement())
-    has_perspective = false;
+  if (has_perspective && container_object != NearestAncestorForElement()) {
+    if (RuntimeEnabledFeatures::TransformInteropEnabled()) {
+      has_perspective = false;
+    }
+
+    if (StyleRef().Preserves3D() || transform.M13() != 0.0 ||
+        transform.M23() != 0.0 || transform.M43() != 0.0) {
+      UseCounter::Count(GetDocument(),
+                        WebFeature::kDifferentPerspectiveCBOrParent);
+    }
+  }
 
   // d) Perspective applied by container.
   if (has_perspective) {

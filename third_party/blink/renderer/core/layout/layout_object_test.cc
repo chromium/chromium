@@ -41,6 +41,17 @@ class LayoutObjectTest : public RenderingTest {
   void ExpectAnonymousInlineWrapperFor(Node*);
 };
 
+class LayoutObjectTestWithCompositing : public LayoutObjectTest {
+ public:
+  LayoutObjectTestWithCompositing() = default;
+
+ protected:
+  void SetUp() override {
+    EnableCompositing();
+    LayoutObjectTest::SetUp();
+  }
+};
+
 template <bool should_have_wrapper>
 void LayoutObjectTest::ExpectAnonymousInlineWrapperFor(Node* node) {
   ASSERT_TRUE(node);
@@ -1588,6 +1599,85 @@ TEST_F(LayoutObjectTest,
 
   EXPECT_EQ(PhysicalRect(0, 1800, 100, 100),
             target->LocalToAncestorRect(rect, nullptr, 0));
+}
+
+static const char* const kTransformsWith3D[] = {"transform: rotateX(20deg)",
+                                                "transform: translateZ(30px)"};
+static const char kTransformWithout3D[] =
+    "transform: matrix(2, 2, 0, 2, 2, 2, 0, 2, 2, 2, 2, 2, 2, 2, 0, 2)";
+static const char kPreserve3D[] = "transform-style: preserve-3d";
+
+TEST_F(LayoutObjectTestWithCompositing,
+       UseCountDifferentPerspectiveCBOrParent) {
+  // Start with a case that has no containing block / parent difference.
+  SetBodyInnerHTML(R"HTML(
+    <div style='perspective: 200px'>
+      <div id=target></div>
+    </div>
+  )HTML");
+
+  auto* target = GetDocument().getElementById("target");
+
+  target->setAttribute(html_names::kStyleAttr, kTransformsWith3D[0]);
+  UpdateAllLifecyclePhasesForTest();
+  target->scrollIntoView();
+  EXPECT_FALSE(
+      GetDocument().IsUseCounted(WebFeature::kDifferentPerspectiveCBOrParent));
+
+  target->setAttribute(html_names::kStyleAttr, kPreserve3D);
+  UpdateAllLifecyclePhasesForTest();
+  target->scrollIntoView();
+  EXPECT_FALSE(
+      GetDocument().IsUseCounted(WebFeature::kDifferentPerspectiveCBOrParent));
+
+  target = nullptr;
+
+  // Switch to a case that has a difference between containing block and parent.
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      .abs { position: absolute; top: 0; left: 0; }
+    </style>
+    <div style='perspective: 200px; position: relative'>
+      <div>
+        <div class=abs id=target></div>
+      </div>
+    </div>
+  )HTML");
+
+  target = GetDocument().getElementById("target");
+
+  target->setAttribute(html_names::kStyleAttr, kTransformWithout3D);
+  UpdateAllLifecyclePhasesForTest();
+  target->scrollIntoView();
+  EXPECT_FALSE(
+      GetDocument().IsUseCounted(WebFeature::kDifferentPerspectiveCBOrParent));
+
+  target->setAttribute(html_names::kStyleAttr, kTransformsWith3D[0]);
+  UpdateAllLifecyclePhasesForTest();
+  target->scrollIntoView();
+  EXPECT_TRUE(
+      GetDocument().IsUseCounted(WebFeature::kDifferentPerspectiveCBOrParent));
+  GetDocument().ClearUseCounterForTesting(
+      WebFeature::kDifferentPerspectiveCBOrParent);
+
+  EXPECT_FALSE(
+      GetDocument().IsUseCounted(WebFeature::kDifferentPerspectiveCBOrParent));
+
+  target->setAttribute(html_names::kStyleAttr, kTransformsWith3D[1]);
+  UpdateAllLifecyclePhasesForTest();
+  target->scrollIntoView();
+  EXPECT_TRUE(
+      GetDocument().IsUseCounted(WebFeature::kDifferentPerspectiveCBOrParent));
+  GetDocument().ClearUseCounterForTesting(
+      WebFeature::kDifferentPerspectiveCBOrParent);
+
+  target->setAttribute(html_names::kStyleAttr, kPreserve3D);
+  UpdateAllLifecyclePhasesForTest();
+  target->scrollIntoView();
+  EXPECT_TRUE(
+      GetDocument().IsUseCounted(WebFeature::kDifferentPerspectiveCBOrParent));
+  GetDocument().ClearUseCounterForTesting(
+      WebFeature::kDifferentPerspectiveCBOrParent);
 }
 
 }  // namespace blink
