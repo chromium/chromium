@@ -5,9 +5,9 @@ Script execution paused.
 
 Scope variables sidebar pane:
 Local
+    this: Window
     pos: 10
     pos: 0
-    this: Window
 WindowGlobal
     <section collapsed>
 Script execution resumed.
