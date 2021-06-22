@@ -469,9 +469,9 @@ interface mixin WebGLRenderingContextBase {
     void attachShader(WebGLProgram program, WebGLShader shader);
     void bindAttribLocation(WebGLProgram program, GLuint index, DOMString name);
     [NoAllocDirectCall] void bindBuffer(GLenum target, WebGLBuffer? buffer);
-    void bindFramebuffer(GLenum target, WebGLFramebuffer? framebuffer);
+    [NoAllocDirectCall] void bindFramebuffer(GLenum target, WebGLFramebuffer? framebuffer);
     void bindRenderbuffer(GLenum target, WebGLRenderbuffer? renderbuffer);
-    void bindTexture(GLenum target, WebGLTexture? texture);
+    [NoAllocDirectCall] void bindTexture(GLenum target, WebGLTexture? texture);
     void blendColor(GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha);
     void blendEquation(GLenum mode);
     void blendEquationSeparate(GLenum modeRGB, GLenum modeAlpha);
@@ -486,11 +486,11 @@ interface mixin WebGLRenderingContextBase {
     void bufferSubData(GLenum target, GLintptr offset, ArrayBuffer data);
 
     GLenum checkFramebufferStatus(GLenum target);
-    void clear(GLbitfield mask);
-    void clearColor(GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha);
-    void clearDepth(GLclampf depth);
-    void clearStencil(GLint s);
-    void colorMask(GLboolean red, GLboolean green, GLboolean blue, GLboolean alpha);
+    [NoAllocDirectCall] void clear(GLbitfield mask);
+    [NoAllocDirectCall] void clearColor(GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha);
+    [NoAllocDirectCall] void clearDepth(GLclampf depth);
+    [NoAllocDirectCall] void clearStencil(GLint s);
+    [NoAllocDirectCall] void colorMask(GLboolean red, GLboolean green, GLboolean blue, GLboolean alpha);
     void compileShader(WebGLShader shader);
 
     void compressedTexImage2D(GLenum target, GLint level, GLenum internalformat,
@@ -522,12 +522,12 @@ interface mixin WebGLRenderingContextBase {
     void depthRange(GLclampf zNear, GLclampf zFar);
     void detachShader(WebGLProgram program, WebGLShader shader);
     void disable(GLenum cap);
-    void disableVertexAttribArray(GLuint index);
+    [NoAllocDirectCall] void disableVertexAttribArray(GLuint index);
     [NoAllocDirectCall] void drawArrays(GLenum mode, GLint first, GLsizei count);
     [NoAllocDirectCall] void drawElements(GLenum mode, GLsizei count, GLenum type, GLintptr offset);
 
     void enable(GLenum cap);
-    void enableVertexAttribArray(GLuint index);
+    [NoAllocDirectCall] void enableVertexAttribArray(GLuint index);
     void finish();
     void flush();
     void framebufferRenderbuffer(GLenum target, GLenum attachment, GLenum renderbuffertarget, WebGLRenderbuffer? renderbuffer);
@@ -593,7 +593,7 @@ interface mixin WebGLRenderingContextBase {
 
     void renderbufferStorage(GLenum target, GLenum internalformat, GLsizei width, GLsizei height);
     void sampleCoverage(GLclampf value, GLboolean invert);
-    void scissor(GLint x, GLint y, GLsizei width, GLsizei height);
+    [NoAllocDirectCall] void scissor(GLint x, GLint y, GLsizei width, GLsizei height);
     void shaderSource(WebGLShader shader, DOMString string);
     void stencilFunc(GLenum func, GLint ref, GLuint mask);
     void stencilFuncSeparate(GLenum face, GLenum func, GLint ref, GLuint mask);
@@ -660,28 +660,28 @@ interface mixin WebGLRenderingContextBase {
         GLenum target, GLint level, GLint xoffset, GLint yoffset,
         GLenum format, GLenum type, VideoFrame frame);
 
-    void uniform1f(WebGLUniformLocation? location, GLfloat x);
+    [NoAllocDirectCall] void uniform1f(WebGLUniformLocation? location, GLfloat x);
     void uniform1fv(WebGLUniformLocation? location, [AllowShared, FlexibleArrayBufferView] Float32Array v);
     void uniform1fv(WebGLUniformLocation? location, sequence<GLfloat> v);
-    void uniform1i(WebGLUniformLocation? location, GLint x);
+    [NoAllocDirectCall] void uniform1i(WebGLUniformLocation? location, GLint x);
     void uniform1iv(WebGLUniformLocation? location, [AllowShared, FlexibleArrayBufferView] Int32Array v);
     void uniform1iv(WebGLUniformLocation? location, sequence<GLint> v);
-    void uniform2f(WebGLUniformLocation? location, GLfloat x, GLfloat y);
+    [NoAllocDirectCall] void uniform2f(WebGLUniformLocation? location, GLfloat x, GLfloat y);
     void uniform2fv(WebGLUniformLocation? location, [AllowShared, FlexibleArrayBufferView] Float32Array v);
     void uniform2fv(WebGLUniformLocation? location, sequence<GLfloat> v);
-    void uniform2i(WebGLUniformLocation? location, GLint x, GLint y);
+    [NoAllocDirectCall] void uniform2i(WebGLUniformLocation? location, GLint x, GLint y);
     void uniform2iv(WebGLUniformLocation? location, [AllowShared, FlexibleArrayBufferView] Int32Array v);
     void uniform2iv(WebGLUniformLocation? location, sequence<GLint> v);
-    void uniform3f(WebGLUniformLocation? location, GLfloat x, GLfloat y, GLfloat z);
+    [NoAllocDirectCall] void uniform3f(WebGLUniformLocation? location, GLfloat x, GLfloat y, GLfloat z);
     void uniform3fv(WebGLUniformLocation? location, [AllowShared, FlexibleArrayBufferView] Float32Array v);
     void uniform3fv(WebGLUniformLocation? location, sequence<GLfloat> v);
-    void uniform3i(WebGLUniformLocation? location, GLint x, GLint y, GLint z);
+    [NoAllocDirectCall] void uniform3i(WebGLUniformLocation? location, GLint x, GLint y, GLint z);
     void uniform3iv(WebGLUniformLocation? location, [AllowShared, FlexibleArrayBufferView] Int32Array v);
     void uniform3iv(WebGLUniformLocation? location, sequence<GLint> v);
-    void uniform4f(WebGLUniformLocation? location, GLfloat x, GLfloat y, GLfloat z, GLfloat w);
+    [NoAllocDirectCall] void uniform4f(WebGLUniformLocation? location, GLfloat x, GLfloat y, GLfloat z, GLfloat w);
     void uniform4fv(WebGLUniformLocation? location, [AllowShared, FlexibleArrayBufferView] Float32Array v);
     void uniform4fv(WebGLUniformLocation? location, sequence<GLfloat> v);
-    void uniform4i(WebGLUniformLocation? location, GLint x, GLint y, GLint z, GLint w);
+    [NoAllocDirectCall] void uniform4i(WebGLUniformLocation? location, GLint x, GLint y, GLint z, GLint w);
     void uniform4iv(WebGLUniformLocation? location, [AllowShared, FlexibleArrayBufferView] Int32Array v);
     void uniform4iv(WebGLUniformLocation? location, sequence<GLint> v);
 
@@ -695,22 +695,22 @@ interface mixin WebGLRenderingContextBase {
     void useProgram(WebGLProgram? program);
     void validateProgram(WebGLProgram program);
 
-    void vertexAttrib1f(GLuint indx, GLfloat x);
+    [NoAllocDirectCall] void vertexAttrib1f(GLuint indx, GLfloat x);
     void vertexAttrib1fv(GLuint indx, [AllowShared] Float32Array values);
     void vertexAttrib1fv(GLuint indx, sequence<GLfloat> values);
-    void vertexAttrib2f(GLuint indx, GLfloat x, GLfloat y);
+    [NoAllocDirectCall] void vertexAttrib2f(GLuint indx, GLfloat x, GLfloat y);
     void vertexAttrib2fv(GLuint indx, [AllowShared] Float32Array values);
     void vertexAttrib2fv(GLuint indx, sequence<GLfloat> values);
-    void vertexAttrib3f(GLuint indx, GLfloat x, GLfloat y, GLfloat z);
+    [NoAllocDirectCall] void vertexAttrib3f(GLuint indx, GLfloat x, GLfloat y, GLfloat z);
     void vertexAttrib3fv(GLuint indx, [AllowShared] Float32Array values);
     void vertexAttrib3fv(GLuint indx, sequence<GLfloat> values);
-    void vertexAttrib4f(GLuint indx, GLfloat x, GLfloat y, GLfloat z, GLfloat w);
+    [NoAllocDirectCall] void vertexAttrib4f(GLuint indx, GLfloat x, GLfloat y, GLfloat z, GLfloat w);
     void vertexAttrib4fv(GLuint indx, [AllowShared] Float32Array values);
     void vertexAttrib4fv(GLuint indx, sequence<GLfloat> values);
     void vertexAttribPointer(GLuint indx, GLint size, GLenum type, GLboolean normalized,
                                                     GLsizei stride, GLintptr offset);
 
-    void viewport(GLint x, GLint y, GLsizei width, GLsizei height);
+    [NoAllocDirectCall] void viewport(GLint x, GLint y, GLsizei width, GLsizei height);
 
     [RuntimeEnabled=OffscreenCanvasCommit] void commit();
 
