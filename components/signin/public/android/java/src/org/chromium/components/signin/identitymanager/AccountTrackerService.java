@@ -146,7 +146,7 @@ public class AccountTrackerService {
             accountManagerFacade.addObserver(mAccountsChangeObserver);
         }
 
-        accountManagerFacade.tryGetGoogleAccounts(accounts -> {
+        accountManagerFacade.getAccounts().then(accounts -> {
             final List<String> emails = AccountUtils.toAccountNames(accounts);
             new AsyncTask<List<String>>() {
                 @Override

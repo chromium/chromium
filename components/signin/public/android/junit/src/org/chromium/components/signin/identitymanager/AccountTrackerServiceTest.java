@@ -23,7 +23,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.AdditionalAnswers;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -31,10 +30,9 @@ import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
-import org.mockito.stubbing.VoidAnswer1;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.Callback;
+import org.chromium.base.Promise;
 import org.chromium.base.task.test.CustomShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
@@ -213,24 +211,25 @@ public class AccountTrackerServiceTest {
     public void testSeedAccountsWhenGaiaIdIsNull() {
         // When gaia ID is null, seedAccounts() will be called recursively in the
         // current code, the test sets a limit number for this invocation artificially
-        // by mocking AccountManagerFacade#tryGetGoogleAccounts(Callable).
+        // by mocking AccountManagerFacade#getAccounts().
         when(mFakeAccountManagerFacade.getAccountGaiaId(anyString())).thenReturn(null);
         final int expectedNumberOfInvocations = 3;
         final AtomicInteger invocationCount = new AtomicInteger(0);
-        doAnswer(AdditionalAnswers.answerVoid((VoidAnswer1<Callback<List<Account>>>) argument0 -> {
-            if (invocationCount.incrementAndGet() < expectedNumberOfInvocations) {
-                argument0.onResult(mFakeAccountManagerFacade.getAccounts().getResult());
-            }
-        }))
+        // This will cause mock counts for getAccounts() method to be 1 greater than
+        // expectedNumberOfInvocations
+        final List<Account> accounts = mFakeAccountManagerFacade.getAccounts().getResult();
+        doAnswer(invocationMock
+                -> invocationCount.incrementAndGet() < expectedNumberOfInvocations
+                        ? Promise.fulfilled(accounts)
+                        : new Promise<>())
                 .when(mFakeAccountManagerFacade)
-                .tryGetGoogleAccounts(any());
+                .getAccounts();
 
         mService.seedAccountsIfNeeded(mRunnableMock);
 
         verify(mFakeAccountManagerFacade).addObserver(notNull());
-        // The fact that returned gaia ID is null will trigger the seeding again
-        verify(mFakeAccountManagerFacade, times(expectedNumberOfInvocations))
-                .tryGetGoogleAccounts(notNull());
+        // The fact that returned gaia ID is null will trigger the seeding again.
+        verify(mFakeAccountManagerFacade, times(expectedNumberOfInvocations + 1)).getAccounts();
         verify(mNativeMock, never()).seedAccountsInfo(anyLong(), any(), any());
         verify(mRunnableMock, never()).run();
     }
