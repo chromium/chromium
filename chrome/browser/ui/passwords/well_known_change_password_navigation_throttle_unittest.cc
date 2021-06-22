@@ -4,6 +4,7 @@
 #include "chrome/browser/ui/passwords/well_known_change_password_navigation_throttle.h"
 
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/variations/scoped_variations_ids_provider.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/mock_navigation_handle.h"
@@ -52,6 +53,8 @@ class WellKnownChangePasswordNavigationThrottleTest
   }
 
  private:
+  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+      variations::VariationsIdsProvider::Mode::kUseSignedInState};
   content::RenderFrameHost* subframe_ = nullptr;
 };
 

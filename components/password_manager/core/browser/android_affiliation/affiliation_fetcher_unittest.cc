@@ -15,10 +15,11 @@
 #include "base/test/null_task_runner.h"
 #include "base/test/task_environment.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_api.pb.h"
-#include "components/password_manager/core/browser/android_affiliation/affiliation_fetcher_interface.h"
 #include "components/password_manager/core/browser/android_affiliation/mock_affiliation_fetcher_delegate.h"
 #include "components/password_manager/core/browser/site_affiliation/affiliation_fetcher_factory_impl.h"
+#include "components/password_manager/core/browser/site_affiliation/hash_affiliation_fetcher.h"
 #include "components/variations/scoped_variations_ids_provider.h"
+#include "crypto/sha2.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -43,8 +44,25 @@ const char kExampleWebFacet1ChangePasswordURI[] =
 const char kExampleWebFacet2ChangePasswordURI[] =
     "https://www.example.org/settings/passwords";
 
+uint64_t ComputeHashPrefix(const password_manager::FacetURI& uri) {
+  uint8_t hash[2];
+  crypto::SHA256HashString(uri.canonical_spec(), hash, 2);
+  uint64_t result = ((uint64_t)hash[0] << (7 * 8));
+  result |= ((uint64_t)hash[1] << (6 * 8));
+
+  return result;
+}
+
+std::vector<uint64_t> ComputeHashes(const std::vector<FacetURI>& facet_uris) {
+  std::vector<uint64_t> hashes;
+  for (const FacetURI& uri : facet_uris)
+    hashes.push_back(ComputeHashPrefix(uri));
+  return hashes;
+}
+
 }  // namespace
 
+// TODO(vsemeniuk): Move tests to has_affiliation_fetcher_unittest.cc
 class AffiliationFetcherTest : public testing::Test {
  public:
   AffiliationFetcherTest() {
@@ -56,21 +74,23 @@ class AffiliationFetcherTest : public testing::Test {
   }
 
  protected:
-  void VerifyRequestPayload(const std::vector<FacetURI>& expected_facet_uris,
-                            AffiliationFetcher::RequestInfo request_info) {
-    affiliation_pb::LookupAffiliationRequest request;
+  void VerifyRequestPayload(
+      const std::vector<uint64_t>& expected_hashes,
+      AffiliationFetcherInterface::RequestInfo request_info) {
+    affiliation_pb::LookupAffiliationByHashPrefixRequest request;
     ASSERT_TRUE(request.ParseFromString(intercepted_body_));
 
-    std::vector<FacetURI> actual_uris;
-    for (int i = 0; i < request.facet_size(); ++i)
-      actual_uris.push_back(FacetURI::FromCanonicalSpec(request.facet(i)));
+    std::vector<uint64_t> actual_hashes;
+    for (int i = 0; i < request.hash_prefixes_size(); ++i) {
+      actual_hashes.push_back(request.hash_prefixes(i));
+    }
 
     std::string content_type;
     intercepted_headers_.GetHeader(net::HttpRequestHeaders::kContentType,
                                    &content_type);
     EXPECT_EQ("application/x-protobuf", content_type);
-    EXPECT_THAT(actual_uris,
-                testing::UnorderedElementsAreArray(expected_facet_uris));
+    EXPECT_THAT(actual_hashes,
+                testing::UnorderedElementsAreArray(expected_hashes));
 
     EXPECT_EQ(request.mask().branding_info(), request_info.branding_info);
     // Change password info requires grouping info enabled.
@@ -80,7 +100,7 @@ class AffiliationFetcherTest : public testing::Test {
               request_info.change_password_info);
   }
 
-  GURL interception_url() { return AffiliationFetcher::BuildQueryURL(); }
+  GURL interception_url() { return HashAffiliationFetcher::BuildQueryURL(); }
 
   void SetupSuccessfulResponse(const std::string& response) {
     test_url_loader_factory_.AddResponse(interception_url().spec(), response);
@@ -126,7 +146,7 @@ TEST_F(AffiliationFetcherTest, BasicReqestAndResponse) {
   const char kNotExampleAndroidFacetURI[] =
       "android://hash1234@com.example.not";
   const char kNotExampleWebFacetURI[] = "https://not.example.com";
-  AffiliationFetcher::RequestInfo request_info{.branding_info = true};
+  AffiliationFetcherInterface::RequestInfo request_info{.branding_info = true};
 
   affiliation_pb::LookupAffiliationResponse test_response;
   affiliation_pb::Affiliation* eq_class1 = test_response.add_affiliation();
@@ -152,7 +172,8 @@ TEST_F(AffiliationFetcherTest, BasicReqestAndResponse) {
   fetcher->StartRequest(requested_uris, request_info);
   WaitForResponse();
 
-  ASSERT_NO_FATAL_FAILURE(VerifyRequestPayload(requested_uris, request_info));
+  ASSERT_NO_FATAL_FAILURE(
+      VerifyRequestPayload(ComputeHashes(requested_uris), request_info));
   ASSERT_TRUE(testing::Mock::VerifyAndClearExpectations(&mock_delegate));
 
   ASSERT_EQ(2u, result->affiliations.size());
@@ -194,7 +215,8 @@ TEST_F(AffiliationFetcherTest, AndroidBrandingInfoIsReturnedIfPresent) {
   fetcher->StartRequest(requested_uris, request_info);
   WaitForResponse();
 
-  ASSERT_NO_FATAL_FAILURE(VerifyRequestPayload(requested_uris, request_info));
+  ASSERT_NO_FATAL_FAILURE(
+      VerifyRequestPayload(ComputeHashes(requested_uris), request_info));
   ASSERT_TRUE(testing::Mock::VerifyAndClearExpectations(&mock_delegate));
 
   ASSERT_EQ(1u, result->affiliations.size());
@@ -238,7 +260,8 @@ TEST_F(AffiliationFetcherTest, ChangePasswordInfoIsReturnedIfPresent) {
   fetcher->StartRequest(requested_uris, request_info);
   WaitForResponse();
 
-  ASSERT_NO_FATAL_FAILURE(VerifyRequestPayload(requested_uris, request_info));
+  ASSERT_NO_FATAL_FAILURE(
+      VerifyRequestPayload(ComputeHashes(requested_uris), request_info));
   ASSERT_TRUE(testing::Mock::VerifyAndClearExpectations(&mock_delegate));
 
   ASSERT_EQ(1u, result->groupings.size());
@@ -274,7 +297,8 @@ TEST_F(AffiliationFetcherTest, MissingEquivalenceClassesAreCreated) {
   fetcher->StartRequest(requested_uris, request_info);
   WaitForResponse();
 
-  ASSERT_NO_FATAL_FAILURE(VerifyRequestPayload(requested_uris, request_info));
+  ASSERT_NO_FATAL_FAILURE(
+      VerifyRequestPayload(ComputeHashes(requested_uris), request_info));
   ASSERT_TRUE(testing::Mock::VerifyAndClearExpectations(&mock_delegate));
 
   ASSERT_EQ(1u, result->affiliations.size());

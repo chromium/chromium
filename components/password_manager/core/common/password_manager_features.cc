@@ -19,7 +19,7 @@ const base::Feature kBiometricTouchToFill = {"BiometricTouchToFill",
 // Enables creating Affiliation Service and prefetching change password info for
 // requested sites.
 const base::Feature kChangePasswordAffiliationInfo = {
-    "ChangePasswordAffiliationInfo", base::FEATURE_DISABLED_BY_DEFAULT};
+    "ChangePasswordAffiliationInfo", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables submission detection for forms dynamically cleared but not removed
 // from the page.
@@ -167,7 +167,7 @@ const base::Feature kUseNewHeaderForSavePasswordWithAccountStoreBubble{
 
 // Enables use of Hash Affiliation fetcher for all requests.
 const base::Feature kUseOfHashAffiliationFetcher = {
-    "UseOfHashAffiliationFetcher", base::FEATURE_DISABLED_BY_DEFAULT};
+    "UseOfHashAffiliationFetcher", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables support of sending votes on username first flow.
 const base::Feature kUsernameFirstFlow = {"UsernameFirstFlow",

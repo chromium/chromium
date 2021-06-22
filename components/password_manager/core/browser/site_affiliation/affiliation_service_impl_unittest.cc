@@ -285,20 +285,24 @@ TEST_F(AffiliationServiceImplTest,
   service()->PrefetchChangePasswordURLs(origins, base::DoNothing());
 }
 
-TEST_F(AffiliationServiceImplTest, ExplicitPassphraseSetPreventsFetch) {
+TEST_F(AffiliationServiceImplTest, PassphraseSetDoesNotPreventFetch) {
   SetSyncServiceStates(/*is_setup_completed=*/true, /*is_passphrase_set=*/true);
 
-  EXPECT_CALL(mock_fetcher_factory(), CreateInstance).Times(0);
+  auto mock_fetcher = std::make_unique<MockAffiliationFetcher>();
+  EXPECT_CALL(mock_fetcher_factory(), CreateInstance)
+      .WillOnce(Return(ByMove(std::move(mock_fetcher))));
 
   service()->PrefetchChangePasswordURLs(
       {GURL(k1ExampleURL), GURL(k2ExampleURL)}, base::DoNothing());
 }
 
-TEST_F(AffiliationServiceImplTest, SetupNotCompletedPreventsFetch) {
+TEST_F(AffiliationServiceImplTest, SetupNotCompletedDoesNotPreventFetch) {
   SetSyncServiceStates(/*is_setup_completed=*/false,
                        /*is_passphrase_set=*/false);
 
-  EXPECT_CALL(mock_fetcher_factory(), CreateInstance).Times(0);
+  auto mock_fetcher = std::make_unique<MockAffiliationFetcher>();
+  EXPECT_CALL(mock_fetcher_factory(), CreateInstance)
+      .WillOnce(Return(ByMove(std::move(mock_fetcher))));
 
   service()->PrefetchChangePasswordURLs(
       {GURL(k1ExampleURL), GURL(k2ExampleURL)}, base::DoNothing());

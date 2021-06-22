@@ -1603,28 +1603,6 @@
             ]
         }
     ],
-    "ChangePasswordURLUsingAffiliations": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "ChangePasswordURLUsingAffiliations",
-                    "enable_features": [
-                        "ChangePasswordAffiliationInfo",
-                        "UseOfHashAffiliationFetcher"
-                    ]
-                }
-            ]
-        }
-    ],
     "ChimeAndroidSDK": [
         {
             "platforms": [
