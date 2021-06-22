@@ -429,6 +429,7 @@ def main():
     os.symlink('lld', os.path.join(pdir, 'bin', 'ld.lld'))
     os.symlink('lld', os.path.join(pdir, 'bin', 'ld64.lld'))
     os.symlink('lld', os.path.join(pdir, 'bin', 'lld-link'))
+    os.symlink('lld', os.path.join(pdir, 'bin', 'wasm-ld'))
 
   if sys.platform.startswith('linux'):
     os.symlink('llvm-objcopy', os.path.join(pdir, 'bin', 'llvm-strip'))
@@ -516,6 +517,7 @@ def main():
     os.symlink('lld', os.path.join(llddir, 'bin', 'ld.lld'))
     os.symlink('lld', os.path.join(llddir, 'bin', 'ld64.lld'))
     os.symlink('lld', os.path.join(llddir, 'bin', 'lld-link'))
+    os.symlink('lld', os.path.join(llddir, 'bin', 'wasm-ld'))
     os.symlink('llvm-objcopy', os.path.join(llddir, 'bin', 'llvm-strip'))
     with tarfile.open(llddir + '.tgz', 'w:gz') as tar:
       tar.add(os.path.join(llddir, 'bin'), arcname='bin',
