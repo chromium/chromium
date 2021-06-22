@@ -34,6 +34,7 @@
 
 #include "base/bits.h"
 #include "base/macros.h"
+#include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_optional_effect_timing.h"
@@ -2278,7 +2279,14 @@ TEST_P(AnimationAnimationTestCompositing,
             CompositorAnimations::kTimelineSourceHasInvalidCompositingState);
 }
 
-TEST_P(AnimationAnimationTestCompositing, ContentVisibleDisplayLockTest) {
+#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+// https://crbug.com/1222646
+#define MAYBE_ContentVisibleDisplayLockTest \
+  DISABLED_ContentVisibleDisplayLockTest
+#else
+#define MAYBE_ContentVisibleDisplayLockTest ContentVisibleDisplayLockTest
+#endif
+TEST_P(AnimationAnimationTestCompositing, MAYBE_ContentVisibleDisplayLockTest) {
   animation->cancel();
   RunDocumentLifecycle();
 
