@@ -489,6 +489,13 @@ bool MediaStreamDevicesController::PermissionIsBlockedForReason(
 
 void MediaStreamDevicesController::PromptAnsweredGroupedRequest(
     const std::vector<ContentSetting>& responses) {
+  if (content::RenderFrameHost::FromID(request_.render_process_id,
+                                       request_.render_frame_id) == nullptr) {
+    // The frame requesting media devices was removed while we were waiting for
+    // a user response on permissions. Nothing more to do.
+    return;
+  }
+
   bool need_audio = ShouldRequestAudio();
   bool need_video = ShouldRequestVideo();
   bool blocked_by_permissions_policy = need_audio || need_video;
