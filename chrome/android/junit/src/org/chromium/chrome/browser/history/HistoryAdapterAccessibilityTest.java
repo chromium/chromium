@@ -18,7 +18,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.browser_ui.widget.MoreProgressButton;
 import org.chromium.components.browser_ui.widget.MoreProgressButton.State;
-import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
@@ -37,6 +36,8 @@ public class HistoryAdapterAccessibilityTest {
 
     @Mock
     private MoreProgressButton mMockButton;
+    @Mock
+    private HistoryManager mHistoryManager;
 
     @Before
     public void setUp() {
@@ -44,7 +45,7 @@ public class HistoryAdapterAccessibilityTest {
         mHistoryProvider = new StubbedHistoryProvider();
         mHistoryProvider.setPaging(PAGING);
 
-        mAdapter = new HistoryAdapter(new SelectionDelegate<HistoryItem>(), null, mHistoryProvider);
+        mAdapter = new HistoryAdapter(mHistoryManager, mHistoryProvider);
         mAdapter.generateHeaderItemsForTest();
         mAdapter.generateFooterItemsForTest(mMockButton);
         mAdapter.setScrollToLoadDisabledForTest(true);

@@ -24,6 +24,7 @@ import androidx.appcompat.widget.Toolbar.OnMenuItemClickListener;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
+import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
@@ -55,6 +56,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.Snackbar
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.util.ConversionUtils;
+import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemViewHolder;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListLayout;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar.SearchDelegate;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
@@ -154,7 +156,7 @@ public class HistoryManager implements OnMenuItemClickListener, SignInStateObser
         // History service is not keyed for Incognito profiles and {@link HistoryServiceFactory}
         // explicitly redirects to use regular profile for Incognito case.
         Profile profile = Profile.getLastUsedRegularProfile();
-        mHistoryAdapter = new HistoryAdapter(mSelectionDelegate, this,
+        mHistoryAdapter = new HistoryAdapter(this,
                 sProviderForTests != null ? sProviderForTests : new BrowsingHistoryBridge(profile));
 
         // 1. Create SelectableListLayout.
@@ -408,9 +410,7 @@ public class HistoryManager implements OnMenuItemClickListener, SignInStateObser
         }
     }
 
-    /**
-     * @return Whether the HistoryManager is displaying history for the incognito profile.
-     */
+    /** @return Whether the HistoryManager is displaying history for the incognito profile. */
     public boolean isIncognito() {
         return mIsIncognito;
     }
@@ -453,9 +453,7 @@ public class HistoryManager implements OnMenuItemClickListener, SignInStateObser
         return viewIntent;
     }
 
-    /**
-     * Opens the clear browsing data preference.
-     */
+    /** Opens the clear browsing data preference. */
     public void openClearBrowsingDataPreference() {
         recordUserAction("ClearBrowsingData");
         recordClearBrowsingDataMetric();
@@ -475,9 +473,7 @@ public class HistoryManager implements OnMenuItemClickListener, SignInStateObser
         mIsSearching = false;
     }
 
-    /**
-     * @return The {@link LargeIconBridge} used to fetch large favicons.
-     */
+    /** @return The {@link LargeIconBridge} used to fetch large favicons. */
     public LargeIconBridge getLargeIconBridge() {
         return mLargeIconBridge;
     }
@@ -579,10 +575,8 @@ public class HistoryManager implements OnMenuItemClickListener, SignInStateObser
                 && !mSelectionDelegate.isSelectionEnabled();
     }
 
-    /**
-     * Called to notify when privacy disclaimers visibility has changed.
-     */
-    void onHasPrivacyDisclaimersChanged() {
+    /** Called to notify when the privacy disclaimer visibility has changed. */
+    void onPrivacyDisclaimerHasChanged() {
         mToolbar.updateInfoMenuItem(shouldShowInfoButton(), shouldShowInfoHeaderIfAvailable());
     }
 
@@ -594,16 +588,11 @@ public class HistoryManager implements OnMenuItemClickListener, SignInStateObser
         return mShouldShowInfoHeader;
     }
 
-    /**
-     * Check if we want to enable the scrolling to load for recycled view. Noting this function
-     * will be called during testing with RecycledView == null. Will return False in such case.
-     * @return True if accessibility is enabled or a hardware keyboard is attached.
-     */
+    /** @return Whether scrolling to load is disabled for the recycled view. */
     boolean isScrollToLoadDisabled() {
         if (sIsScrollToLoadDisabledForTests != null) {
             return sIsScrollToLoadDisabledForTests.booleanValue();
         }
-
         return mIsScrollToLoadDisabled;
     }
 
@@ -627,7 +616,7 @@ public class HistoryManager implements OnMenuItemClickListener, SignInStateObser
 
     @Override
     public void onSelectionStateChange(List<HistoryItem> selectedItems) {
-        mHistoryAdapter.onSelectionStateChange(mSelectionDelegate.isSelectionEnabled());
+        mHistoryAdapter.setSelectionActive(mSelectionDelegate.isSelectionEnabled());
     }
 
     @Override
@@ -638,6 +627,33 @@ public class HistoryManager implements OnMenuItemClickListener, SignInStateObser
     @Override
     public void onDismissNoAction(Object actionData) {
         // Handler for the link copied snackbar. Do nothing.
+    }
+
+    /** @return The ViewHolder for the HistoryItem. */
+    ViewHolder getHistoryItemViewHolder(View v) {
+        return new SelectableItemViewHolder<>(v, mSelectionDelegate);
+    }
+
+    /** Binds the ViewHolder with the given HistoryItem. */
+    void bindViewHolderForHistoryItem(ViewHolder holder, HistoryItem item) {
+        SelectableItemViewHolder<HistoryItem> selectableHolder =
+                (SelectableItemViewHolder<HistoryItem>) holder;
+        selectableHolder.displayItem(item);
+    }
+
+    /** @return Whether to show the remove button in a HistoryItemView. */
+    boolean shouldShowRemoveItemButton() {
+        return !mSelectionDelegate.isSelectionEnabled();
+    }
+
+    /** Called to force clear all selected items. */
+    void clearSelection() {
+        mSelectionDelegate.clearSelection();
+    }
+
+    /** @return The Context for the associated history view. */
+    Context getContext() {
+        return mActivity;
     }
 
     @VisibleForTesting
