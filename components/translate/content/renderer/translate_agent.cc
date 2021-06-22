@@ -179,8 +179,6 @@ void TranslateAgent::PageCaptured(const std::u16string& contents) {
     return;
   }
 
-  page_contents_length_ = contents.size();
-
   WebLanguageDetectionDetails web_detection_details =
       WebLanguageDetectionDetails::CollectLanguageDetectionDetails(document);
   std::string content_language = web_detection_details.content_language.Utf8();
@@ -493,7 +491,6 @@ void TranslateAgent::CheckTranslateStatus() {
     // Check JavaScript performance counters for UMA reports.
     ReportTimeToTranslate(
         ExecuteScriptAndGetDoubleResult("cr.googleTranslate.translationTime"));
-    ReportTranslatedLanguageDetectionContentLength(page_contents_length_);
 
     // Notify the browser we are done.
     std::move(translate_callback_pending_)
@@ -575,7 +572,6 @@ void TranslateAgent::ResetPage() {
   receiver_.reset();
   translate_callback_pending_.Reset();
   CancelPendingTranslation();
-  page_contents_length_ = 0;
 }
 
 void TranslateAgent::OnDestruct() {

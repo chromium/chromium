@@ -175,8 +175,6 @@ class TranslateAgent : public content::RenderFrameObserver,
   // The URL scheme for translate extensions.
   std::string extension_scheme_;
 
-  size_t page_contents_length_;
-
   // The task runner responsible for the translation task, freezing it
   // when the frame is backgrounded.
   scoped_refptr<base::SingleThreadTaskRunner> translate_task_runner_;
