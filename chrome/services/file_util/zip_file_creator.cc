@@ -144,6 +144,7 @@ void ZipFileCreator::CreateZipFile(
     PendingDirectory src_dir,
     const std::vector<base::FilePath>& relative_paths,
     base::File zip_file,
+    PendingListener listener,
     CreateZipFileCallback callback) {
   DCHECK(zip_file.IsValid());
 
@@ -159,29 +160,31 @@ void ZipFileCreator::CreateZipFile(
   runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&ZipFileCreator::WriteZipFile, this, std::move(src_dir),
-                     std::move(relative_paths), std::move(zip_file)),
+                     std::move(relative_paths), std::move(zip_file),
+                     std::move(listener)),
       std::move(callback));
 }
 
 bool ZipFileCreator::WriteZipFile(
     PendingDirectory src_dir,
     const std::vector<base::FilePath>& relative_paths,
-    base::File zip_file) const {
+    base::File zip_file,
+    PendingListener listener) const {
   MojoFileAccessor file_accessor(std::move(src_dir));
   return zip::Zip({
       .file_accessor = &file_accessor,
       .dest_fd = zip_file.GetPlatformFile(),
       .src_files = relative_paths,
-      .progress_callback =
-          base::BindRepeating(&ZipFileCreator::OnProgress, this),
+      .progress_callback = base::BindRepeating(
+          &ZipFileCreator::OnProgress, this, Listener(std::move(listener))),
       .progress_period = base::TimeDelta::FromMilliseconds(1000),
       .recursive = true,
   });
 }
 
-bool ZipFileCreator::OnProgress(const zip::Progress& progress) const {
-  // TODO(fdegros): Do something with this progress information.
-  VLOG(0) << "ZIP Progress: " << progress;
+bool ZipFileCreator::OnProgress(const Listener& listener,
+                                const zip::Progress& progress) const {
+  listener->OnProgress(progress.bytes, progress.files, progress.directories);
   return !cancelled_.IsSet();
 }
 

@@ -78,6 +78,7 @@ void ZipFileCreator::CreateZipFile(
 
   remote_zip_file_creator_->CreateZipFile(
       std::move(directory), src_relative_paths_, std::move(file),
+      listener_.BindNewPipeAndPassRemote(),
       base::BindOnce(&ZipFileCreator::ReportDone, this));
 }
 
@@ -107,6 +108,7 @@ void ZipFileCreator::BindDirectory(
 void ZipFileCreator::ReportDone(bool success) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
+  listener_.reset();
   remote_zip_file_creator_.reset();
 
   // In case of error, remove the partially created ZIP file.
@@ -117,4 +119,13 @@ void ZipFileCreator::ReportDone(bool success) {
 
   if (result_callback_)
     std::move(result_callback_).Run(success);
+}
+
+void ZipFileCreator::OnProgress(const uint64_t bytes,
+                                const uint32_t files,
+                                const uint32_t directories) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  // TODO(fdegros) Do something with progress information
+  VLOG(0) << "ZIP progress: " << bytes << " bytes, " << files << " files, "
+          << directories << " directories";
 }

@@ -15,6 +15,7 @@
 #include "chrome/services/file_util/public/mojom/file_util_service.mojom.h"
 #include "chrome/services/file_util/public/mojom/zip_file_creator.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
@@ -22,7 +23,8 @@
 // directories under a common parent directory. This is done in a sandboxed
 // utility process to protect the browser process from handling arbitrary
 // input data from untrusted sources.
-class ZipFileCreator : public base::RefCountedThreadSafe<ZipFileCreator> {
+class ZipFileCreator : public base::RefCountedThreadSafe<ZipFileCreator>,
+                       private chrome::mojom::ZipListener {
  public:
   // Callback reporting the success or failure of the ZIP creation.
   using ResultCallback = base::OnceCallback<void(bool)>;
@@ -42,7 +44,7 @@ class ZipFileCreator : public base::RefCountedThreadSafe<ZipFileCreator> {
  private:
   friend class base::RefCountedThreadSafe<ZipFileCreator>;
 
-  ~ZipFileCreator();
+  ~ZipFileCreator() override;
 
   // Called after the dest_file |file| is opened on the blocking pool to
   // create the ZIP file in it using a sandboxed utility process.
@@ -54,9 +56,14 @@ class ZipFileCreator : public base::RefCountedThreadSafe<ZipFileCreator> {
   void BindDirectory(
       mojo::PendingReceiver<filesystem::mojom::Directory> receiver) const;
 
-  // Notifies by calling |callback| specified in the constructor the end of the
-  // ZIP operation. Deletes this.
+  // Notifies by calling |result_callback| specified in the constructor the end
+  // of the ZIP operation.
   void ReportDone(bool success);
+
+  // ZIP progress report.
+  void OnProgress(uint64_t bytes,
+                  uint32_t files,
+                  uint32_t directories) override;
 
   // The final result callback.
   ResultCallback result_callback_;
@@ -74,6 +81,9 @@ class ZipFileCreator : public base::RefCountedThreadSafe<ZipFileCreator> {
   // Remote interfaces to the file util service. Only used from the UI thread.
   mojo::Remote<chrome::mojom::FileUtilService> service_;
   mojo::Remote<chrome::mojom::ZipFileCreator> remote_zip_file_creator_;
+
+  // Listener receiver.
+  mojo::Receiver<chrome::mojom::ZipListener> listener_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ZipFileCreator);
 };
