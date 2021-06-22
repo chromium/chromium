@@ -136,7 +136,7 @@ def _remove_unused_ash_chrome_versions(version_to_skip):
       # them to keep the directory clean.
       os.remove(p)
       continue
-    chrome_path = os.path.join(p, 'chrome')
+    chrome_path = os.path.join(p, 'test_ash_chrome')
     if not os.path.exists(chrome_path):
       chrome_path = p
     age = time.time() - os.path.getatime(chrome_path)
@@ -187,7 +187,7 @@ def _DownloadAshChromeIfNecessary(version):
     # runner process gets killed in the middle of unzipping (~2 seconds), but
     # it's unlikely for the assumption to break in practice.
     return os.path.isdir(ash_chrome_dir) and os.path.isfile(
-        os.path.join(ash_chrome_dir, 'chrome'))
+        os.path.join(ash_chrome_dir, 'test_ash_chrome'))
 
   ash_chrome_dir = _GetAshChromeDirPath(version)
   if IsAshChromeDirValid(ash_chrome_dir):
@@ -283,7 +283,7 @@ def _RunTestWithAshChrome(args, forward_args):
     logging.info('Ash-chrome version: %s', ash_chrome_version)
 
     ash_chrome_file = os.path.join(_GetAshChromeDirPath(ash_chrome_version),
-                                   'chrome')
+                                   'test_ash_chrome')
   try:
     # Starts Ash-Chrome.
     tmp_xdg_dir_name = tempfile.mkdtemp()
@@ -442,7 +442,8 @@ def Main():
   version_group.add_argument(
       '--ash-chrome-path',
       type=str,
-      help='Path to an locally built ash-chrome to use for testing.')
+      help='Path to an locally built ash-chrome to use for testing. '
+      'In general you should build //chrome/test:test_ash_chrome.')
 
   # This is for version skew testing. The current CI/CQ builder builds
   # an ash chrome and pass it using --ash-chrome-path. In order to use the same
