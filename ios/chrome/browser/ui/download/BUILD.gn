@@ -81,10 +81,12 @@ source_set("unit_tests") {
     "download_manager_coordinator_unittest.mm",
     "download_manager_mediator_unittest.mm",
     "download_manager_view_controller_unittest.mm",
+    "mobileconfig_coordinator_unittest.mm",
     "pass_kit_coordinator_unittest.mm",
   ]
   deps = [
     ":download",
+    ":features",
     "//base",
     "//base/test:test_support",
     "//ios/chrome/app/strings:ios_strings_grit",

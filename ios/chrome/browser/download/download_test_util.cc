@@ -11,6 +11,8 @@
 
 namespace testing {
 
+const char kMobileConfigFilePath[] =
+    "ios/testing/data/http_server_files/sample.mobileconfig";
 const char kPkPassFilePath[] =
     "ios/testing/data/http_server_files/generic.pkpass";
 const char kUsdzFilePath[] = "ios/testing/data/http_server_files/redchair.usdz";

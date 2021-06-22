@@ -69,10 +69,13 @@
 }
 
 - (void)stop {
+  _scopedWebStateListObserver.reset();
+
   for (int i = 0; i < self.webStateList->count(); i++) {
     web::WebState* webState = self.webStateList->GetWebStateAt(i);
     [self uninstallDelegatesForWebState:webState];
   }
+
   self.safariViewController = nil;
   [self.alertCoordinator stop];
 }
@@ -132,6 +135,10 @@
 #pragma mark - MobileConfigTabHelperDelegate
 
 - (void)presentMobileConfigAlertFromURL:(NSURL*)fileURL {
+  if (!fileURL) {
+    return;
+  }
+
   self.alertCoordinator = [[AlertCoordinator alloc]
       initWithBaseViewController:self.baseViewController
                          browser:self.browser
