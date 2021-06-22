@@ -2356,6 +2356,16 @@ BluetoothDevice* WebBluetoothServiceImpl::GetCachedDevice(
   return query_result.device;
 }
 
+blink::WebBluetoothDeviceId WebBluetoothServiceImpl::GetDescriptorDeviceId(
+    const std::string& descriptor_instance_id) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  auto iter = descriptor_id_to_characteristic_id_.find(descriptor_instance_id);
+  if (iter == descriptor_id_to_characteristic_id_.end())
+    return blink::WebBluetoothDeviceId();
+
+  return GetCharacteristicDeviceID(iter->second);
+}
+
 void WebBluetoothServiceImpl::PairDevice(
     const blink::WebBluetoothDeviceId& device_id,
     BluetoothDevice::PairingDelegate* pairing_delegate,

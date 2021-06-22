@@ -47,6 +47,18 @@ class CONTENT_EXPORT WebBluetoothPairingManager
       blink::mojom::WebBluetoothService::RemoteCharacteristicReadValueCallback
           read_callback);
 
+  // Initiate pairing for the descriptor value specified by
+  // |descriptor_instance_id|. |num_pair_attempts| represents the number of
+  // attempts at pairing that have been made so far for this read operation.
+  //
+  // If pairing is successful the descriptor value will be read. Success or
+  // failure |read_callback| will be run with the appropriate result.
+  void PairForDescriptorReadValue(
+      const std::string& descriptor_instance_id,
+      int num_pair_attempts,
+      blink::mojom::WebBluetoothService::RemoteDescriptorReadValueCallback
+          read_callback);
+
  private:
   void OnReadCharacteristicValuePairSuccess(
       std::string characteristic_instance_id,
@@ -59,6 +71,20 @@ class CONTENT_EXPORT WebBluetoothPairingManager
       blink::WebBluetoothDeviceId device_id,
       int num_pair_attempts,
       blink::mojom::WebBluetoothService::RemoteCharacteristicReadValueCallback
+          read_callback,
+      device::BluetoothDevice::ConnectErrorCode error_code);
+
+  void OnReadDescriptorValuePairSuccess(
+      std::string descriptor_instance_id,
+      blink::WebBluetoothDeviceId device_id,
+      blink::mojom::WebBluetoothService::RemoteDescriptorReadValueCallback
+          read_callback);
+
+  void OnReadDescriptorValuePairFailure(
+      std::string descriptor_instance_id,
+      blink::WebBluetoothDeviceId device_id,
+      int num_pair_attempts,
+      blink::mojom::WebBluetoothService::RemoteDescriptorReadValueCallback
           read_callback,
       device::BluetoothDevice::ConnectErrorCode error_code);
 

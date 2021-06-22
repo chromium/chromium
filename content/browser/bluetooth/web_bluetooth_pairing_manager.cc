@@ -103,6 +103,71 @@ void WebBluetoothPairingManager::OnReadCharacteristicValuePairFailure(
            /*value=*/absl::nullopt);
 }
 
+void WebBluetoothPairingManager::PairForDescriptorReadValue(
+    const std::string& descriptor_instance_id,
+    int num_pair_attempts,
+    WebBluetoothService::RemoteDescriptorReadValueCallback read_callback) {
+  blink::WebBluetoothDeviceId device_id =
+      pairing_manager_delegate_->GetDescriptorDeviceId(descriptor_instance_id);
+  if (!device_id.IsValid()) {
+    std::move(read_callback)
+        .Run(WebBluetoothServiceImpl::TranslateConnectErrorAndRecord(
+                 BluetoothDevice::ConnectErrorCode::ERROR_UNKNOWN),
+             /*value=*/absl::nullopt);
+    return;
+  }
+
+  if (pending_pair_device_ids_.contains(device_id)) {
+    // Pairing already in progress.
+    std::move(read_callback)
+        .Run(WebBluetoothServiceImpl::TranslateConnectErrorAndRecord(
+                 BluetoothDevice::ConnectErrorCode::ERROR_AUTH_CANCELED),
+             /*value=*/absl::nullopt);
+    return;
+  }
+  pending_pair_device_ids_.insert(device_id);
+
+  auto split_read_callback = base::SplitOnceCallback(std::move(read_callback));
+  pairing_manager_delegate_->PairDevice(
+      device_id, this,
+      base::BindOnce(
+          &WebBluetoothPairingManager::OnReadDescriptorValuePairSuccess,
+          weak_ptr_factory_.GetWeakPtr(), descriptor_instance_id, device_id,
+          std::move(split_read_callback.first)),
+      base::BindOnce(
+          &WebBluetoothPairingManager::OnReadDescriptorValuePairFailure,
+          weak_ptr_factory_.GetWeakPtr(), descriptor_instance_id, device_id,
+          num_pair_attempts + 1, std::move(split_read_callback.second)));
+}
+
+void WebBluetoothPairingManager::OnReadDescriptorValuePairSuccess(
+    std::string descriptor_instance_id,
+    blink::WebBluetoothDeviceId device_id,
+    WebBluetoothService::RemoteDescriptorReadValueCallback read_callback) {
+  pending_pair_device_ids_.erase(device_id);
+  pairing_manager_delegate_->RemoteDescriptorReadValue(
+      descriptor_instance_id, std::move(read_callback));
+}
+
+void WebBluetoothPairingManager::OnReadDescriptorValuePairFailure(
+    std::string descriptor_instance_id,
+    blink::WebBluetoothDeviceId device_id,
+    int num_pair_attempts,
+    WebBluetoothService::RemoteDescriptorReadValueCallback read_callback,
+    BluetoothDevice::ConnectErrorCode error_code) {
+  pending_pair_device_ids_.erase(device_id);
+  if (error_code == BluetoothDevice::ConnectErrorCode::ERROR_AUTH_REJECTED &&
+      num_pair_attempts < kMaxPairAttempts) {
+    PairForDescriptorReadValue(descriptor_instance_id, num_pair_attempts,
+                               std::move(read_callback));
+    return;
+  }
+
+  std::move(read_callback)
+      .Run(WebBluetoothServiceImpl::TranslateConnectErrorAndRecord(error_code),
+           /*value=*/absl::nullopt);
+}
+
 void WebBluetoothPairingManager::RequestPinCode(BluetoothDevice* device) {
   NOTIMPLEMENTED();
   // Upcoming CL will replace the hardcoded cancel with UI PIN prompt.

@@ -216,7 +216,7 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
       const absl::optional<device::BluetoothUUID>& characteristics_uuid,
       RemoteCharacteristicGetDescriptorsCallback callback) override;
   void RemoteDescriptorReadValue(
-      const std::string& characteristic_instance_id,
+      const std::string& descriptor_instance_id,
       RemoteDescriptorReadValueCallback callback) override;
   void RemoteDescriptorWriteValue(
       const std::string& descriptor_instance_id,
@@ -407,6 +407,8 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
   // WebBluetoothPairingManagerDelegate implementation:
   blink::WebBluetoothDeviceId GetCharacteristicDeviceID(
       const std::string& characteristic_instance_id) override;
+  blink::WebBluetoothDeviceId GetDescriptorDeviceId(
+      const std::string& descriptor_instance_id) override;
   void PairDevice(
       const blink::WebBluetoothDeviceId& device_id,
       device::BluetoothDevice::PairingDelegate* pairing_delegate,

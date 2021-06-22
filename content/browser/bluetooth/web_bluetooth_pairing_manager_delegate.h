@@ -24,6 +24,11 @@ class WebBluetoothPairingManagerDelegate {
   virtual blink::WebBluetoothDeviceId GetCharacteristicDeviceID(
       const std::string& characteristic_instance_id) = 0;
 
+  // Return the cached device ID for the given descriptor instance ID.
+  // The returned device may be invalid - check before use.
+  virtual blink::WebBluetoothDeviceId GetDescriptorDeviceId(
+      const std::string& descriptor_instance_id) = 0;
+
   // Pair the device identified by |device_id|. If successful, |callback| will
   // be run. If unsuccessful |error_callback| wil be run with the corresponding
   // error code.
@@ -45,6 +50,16 @@ class WebBluetoothPairingManagerDelegate {
   virtual void RemoteCharacteristicReadValue(
       const std::string& characteristic_instance_id,
       blink::mojom::WebBluetoothService::RemoteCharacteristicReadValueCallback
+          callback) = 0;
+
+  // Reads the value for the descriptor identified by |descriptor_instance_id|.
+  // If successfully read |callback| will be run with
+  // WebBluetoothResult::SUCCESS and the descriptor value. If the value is not
+  // successfully read the callback with be run with the corresponding error
+  // and nullptr for value.
+  virtual void RemoteDescriptorReadValue(
+      const std::string& descriptor_instance_id,
+      blink::mojom::WebBluetoothService::RemoteDescriptorReadValueCallback
           callback) = 0;
 };
 
