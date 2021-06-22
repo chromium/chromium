@@ -849,3 +849,8 @@ ci = struct(
     updater_builder = updater_builder,
     win_builder = win_builder,
 )
+
+rbe_instance = struct(
+    DEFAULT = "rbe-chromium-trusted",
+    GVISOR_SHADOW = "rbe-chromium-gvisor-shadow",
+)
