@@ -2,21 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {ContentMetadataProvider} from './content_metadata_provider.m.js';
-// #import {ExternalMetadataProvider} from './external_metadata_provider.js';
-// #import {FileSystemMetadataProvider} from './file_system_metadata_provider.js';
-// #import {MetadataItem} from './metadata_item.m.js';
-// #import {MetadataProvider} from './metadata_provider.m.js';
-// #import {MetadataRequest} from './metadata_request.m.js';
-// #import * as wrappedVolumeManagerCommon from '../../../common/js/volume_manager_types.m.js'; const {VolumeManagerCommon} = wrappedVolumeManagerCommon;
-// #import {VolumeManager} from '../../../externs/volume_manager.m.js';
-// #import {util} from '../../../common/js/util.m.js';
-// #import {assert} from 'chrome://resources/js/assert.m.js';
-// clang-format on
+import {assert} from 'chrome://resources/js/assert.m.js';
+
+import {util} from '../../../common/js/util.m.js';
+import {VolumeManagerCommon} from '../../../common/js/volume_manager_types.m.js';
+import {VolumeManager} from '../../../externs/volume_manager.m.js';
+
+import {ContentMetadataProvider} from './content_metadata_provider.js';
+import {ExternalMetadataProvider} from './external_metadata_provider.js';
+import {FileSystemMetadataProvider} from './file_system_metadata_provider.js';
+import {MetadataItem} from './metadata_item.js';
+import {MetadataProvider} from './metadata_provider.js';
+import {MetadataRequest} from './metadata_request.js';
 
 /** @final */
-/* #export */ class MultiMetadataProvider extends MetadataProvider {
+export class MultiMetadataProvider extends MetadataProvider {
   /**
    * @param {!FileSystemMetadataProvider} fileSystemMetadataProvider
    * @param {!ExternalMetadataProvider} externalMetadataProvider

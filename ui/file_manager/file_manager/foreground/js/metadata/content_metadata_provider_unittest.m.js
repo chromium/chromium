@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 import {assertEquals} from 'chrome://test/chai_assert.js';
+
 import {reportPromise} from '../../../common/js/test_error_reporting.m.js';
-import {ContentMetadataProvider} from './content_metadata_provider.m.js';
-import {MetadataRequest} from './metadata_request.m.js';
+
+import {ContentMetadataProvider} from './content_metadata_provider.js';
+import {MetadataRequest} from './metadata_request.js';
 
 function makeFileEntryFromDataURL(name, dataUrl) {
   const mimeString = dataUrl.split(',')[0].split(':')[1].split(';')[0];

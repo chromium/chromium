@@ -12,7 +12,7 @@
 // #import {TaskHistory} from './task_history.m.js';
 // #import {FileManagerUI} from './ui/file_manager_ui.js';
 // #import {DirectoryModel} from './directory_model.m.js';
-// #import {MetadataModel} from './metadata/metadata_model.m.js';
+// #import {MetadataModel} from './metadata/metadata_model.js';
 // #import {VolumeManager} from '../../externs/volume_manager.m.js';
 // #import {FilesMenuItem} from './ui/files_menu.js';
 // #import {decorate} from 'chrome://resources/js/cr/ui.m.js';

@@ -86,6 +86,17 @@ preprocess_if_expr("preprocess_static") {
     "audio_player/js/test_util.js",
 
     # Metadata:
+    "file_manager/foreground/js/metadata/content_metadata_provider.js",
+    "file_manager/foreground/js/metadata/byte_reader.js",
+    "file_manager/foreground/js/metadata/thumbnail_model.js",
+    "file_manager/foreground/js/metadata/multi_metadata_provider.js",
+    "file_manager/foreground/js/metadata/mpeg_parser.js",
+    "file_manager/foreground/js/metadata/mock_metadata.js",
+    "file_manager/foreground/js/metadata/metadata_request.js",
+    "file_manager/foreground/js/metadata/metadata_provider.js",
+    "file_manager/foreground/js/metadata/metadata_parser.js",
+    "file_manager/foreground/js/metadata/metadata_model.js",
+    "file_manager/foreground/js/metadata/metadata_item.js",
     "file_manager/foreground/js/metadata/metadata_dispatcher.js",
     "file_manager/foreground/js/metadata/metadata_cache_set.js",
     "file_manager/foreground/js/metadata/metadata_cache_item.js",
@@ -365,16 +376,6 @@ preprocess_if_expr("preprocess_generated") {
     "file_manager/foreground/elements/files_tooltip.js",
 
     # Metadata:
-    "file_manager/foreground/js/metadata/byte_reader.m.js",
-    "file_manager/foreground/js/metadata/content_metadata_provider.m.js",
-    "file_manager/foreground/js/metadata/metadata_item.m.js",
-    "file_manager/foreground/js/metadata/metadata_model.m.js",
-    "file_manager/foreground/js/metadata/metadata_parser.m.js",
-    "file_manager/foreground/js/metadata/metadata_provider.m.js",
-    "file_manager/foreground/js/metadata/metadata_request.m.js",
-    "file_manager/foreground/js/metadata/mpeg_parser.m.js",
-    "file_manager/foreground/js/metadata/multi_metadata_provider.m.js",
-    "file_manager/foreground/js/metadata/thumbnail_model.m.js",
   ]
 
   deps = [
@@ -385,7 +386,6 @@ preprocess_if_expr("preprocess_generated") {
     "//ui/file_manager/file_manager/foreground/elements:elements",
     "//ui/file_manager/file_manager/foreground/elements:web_components",
     "//ui/file_manager/file_manager/foreground/js:modulize",
-    "//ui/file_manager/file_manager/foreground/js/metadata:modulize",
   ]
 }
 

@@ -4,9 +4,9 @@
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 
-import {MetadataItem} from './metadata_item.m.js';
-import {MetadataProvider} from './metadata_provider.m.js';
-import {MetadataRequest} from './metadata_request.m.js';
+import {MetadataItem} from './metadata_item.js';
+import {MetadataProvider} from './metadata_provider.js';
+import {MetadataRequest} from './metadata_request.js';
 
 /**
  * Metadata provider for FileEntry#getMetadata.

@@ -8,11 +8,11 @@ import {reportPromise} from '../../../common/js/test_error_reporting.m.js';
 import {VolumeManagerCommon} from '../../../common/js/volume_manager_types.m.js';
 import {VolumeManager} from '../../../externs/volume_manager.m.js';
 
-import {ContentMetadataProvider} from './content_metadata_provider.m.js';
+import {ContentMetadataProvider} from './content_metadata_provider.js';
 import {ExternalMetadataProvider} from './external_metadata_provider.js';
 import {FileSystemMetadataProvider} from './file_system_metadata_provider.js';
-import {MetadataRequest} from './metadata_request.m.js';
-import {MultiMetadataProvider} from './multi_metadata_provider.m.js';
+import {MetadataRequest} from './metadata_request.js';
+import {MultiMetadataProvider} from './multi_metadata_provider.js';
 
 const entryA = /** @type {!Entry} */ ({
   toURL: function() {

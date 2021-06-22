@@ -14,8 +14,8 @@ import {MediaSessionPlaybackState} from '../../file_manager/common/js/mediasessi
 import {util} from '../../file_manager/common/js/util.m.js';
 import {AllowedPaths} from '../../file_manager/common/js/volume_manager_types.m.js';
 import {ExternallyUnmountedEvent} from '../../file_manager/externs/volume_manager.m.js';
-import {ContentMetadataProvider} from '../../file_manager/foreground/js/metadata/content_metadata_provider.m.js';
-import {MetadataModel} from '../../file_manager/foreground/js/metadata/metadata_model.m.js';
+import {ContentMetadataProvider} from '../../file_manager/foreground/js/metadata/content_metadata_provider.js';
+import {MetadataModel} from '../../file_manager/foreground/js/metadata/metadata_model.js';
 
 /**
  * @param {Element} container Container element.

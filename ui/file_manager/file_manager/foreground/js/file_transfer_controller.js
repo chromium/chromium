@@ -10,7 +10,7 @@
 // #import {Command} from 'chrome://resources/js/cr/ui/command.m.js';
 // #import {VolumeManager} from '../../externs/volume_manager.m.js';
 // #import {DirectoryModel} from './directory_model.m.js';
-// #import {MetadataModel} from './metadata/metadata_model.m.js';
+// #import {MetadataModel} from './metadata/metadata_model.js';
 // #import {FileOperationManager} from '../../externs/background/file_operation_manager.m.js';
 // #import {ProgressCenter} from '../../externs/background/progress_center.m.js';
 // #import {ListContainer} from './ui/list_container.js';

@@ -7,7 +7,7 @@
 // #import {NamingController} from './naming_controller.m.js';
 // #import {FileFilter} from './directory_contents.m.js';
 // #import {VolumeManager} from '../../externs/volume_manager.m.js';
-// #import {MetadataModel} from './metadata/metadata_model.m.js';
+// #import {MetadataModel} from './metadata/metadata_model.js';
 // #import {DirectoryModel} from './directory_model.m.js';
 // #import {DialogFooter} from './ui/dialog_footer.js';
 // #import {util, str} from '../../common/js/util.m.js';

@@ -4,7 +4,7 @@
 
 import {assertArrayEquals, assertEquals} from 'chrome://test/chai_assert.js';
 import {FileListModel} from './file_list_model.m.js';
-import {MetadataModel} from './metadata/metadata_model.m.js';
+import {MetadataModel} from './metadata/metadata_model.js';
 
 const TEST_METADATA = {
   'a.txt': {

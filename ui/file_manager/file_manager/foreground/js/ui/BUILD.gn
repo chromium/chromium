@@ -226,7 +226,7 @@ js_library("directory_tree") {
     "//ui/file_manager/file_manager/foreground/js:directory_contents.m",
     "//ui/file_manager/file_manager/foreground/js:directory_model.m",
     "//ui/file_manager/file_manager/foreground/js:navigation_list_model.m",
-    "//ui/file_manager/file_manager/foreground/js/metadata:metadata_model.m",
+    "//ui/file_manager/file_manager/foreground/js/metadata:metadata_model",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js/cr/ui:command.m",
@@ -256,7 +256,7 @@ js_unittest("directory_tree_unittest.m") {
     "//ui/file_manager/file_manager/foreground/js:mock_folder_shortcut_data_model.m",
     "//ui/file_manager/file_manager/foreground/js:mock_navigation_list_model.m",
     "//ui/file_manager/file_manager/foreground/js:navigation_list_model.m",
-    "//ui/file_manager/file_manager/foreground/js/metadata:metadata_model.m",
+    "//ui/file_manager/file_manager/foreground/js/metadata:metadata_model",
     "//ui/webui/resources/js:assert.m",
   ]
 }
@@ -284,7 +284,7 @@ js_library("file_grid") {
     "//ui/file_manager/file_manager/externs:volume_manager.m",
     "//ui/file_manager/file_manager/externs/background:import_history.m",
     "//ui/file_manager/file_manager/foreground/js:list_thumbnail_loader.m",
-    "//ui/file_manager/file_manager/foreground/js/metadata:metadata_model.m",
+    "//ui/file_manager/file_manager/foreground/js/metadata:metadata_model",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:util.m",
@@ -402,7 +402,7 @@ js_library("file_table") {
     "//ui/file_manager/file_manager/externs/background:import_history.m",
     "//ui/file_manager/file_manager/foreground/js:file_list_model.m",
     "//ui/file_manager/file_manager/foreground/js:list_thumbnail_loader.m",
-    "//ui/file_manager/file_manager/foreground/js/metadata:metadata_model.m",
+    "//ui/file_manager/file_manager/foreground/js/metadata:metadata_model",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js/cr/ui:list.m",
@@ -429,7 +429,7 @@ js_library("file_table_list") {
     "//ui/file_manager/file_manager/common/js:util.m",
     "//ui/file_manager/file_manager/externs:entry_location.m",
     "//ui/file_manager/file_manager/externs:files_app_entry_interfaces.m",
-    "//ui/file_manager/file_manager/foreground/js/metadata:metadata_model.m",
+    "//ui/file_manager/file_manager/foreground/js/metadata:metadata_model",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js/cr/ui:list.m",
@@ -452,8 +452,8 @@ js_unittest("file_table_list_unittest.m") {
     "//ui/file_manager/file_manager/externs/background:import_history.m",
     "//ui/file_manager/file_manager/foreground/js:directory_model.m",
     "//ui/file_manager/file_manager/foreground/js:file_list_model.m",
-    "//ui/file_manager/file_manager/foreground/js/metadata:metadata_model.m",
-    "//ui/file_manager/file_manager/foreground/js/metadata:mock_metadata.m",
+    "//ui/file_manager/file_manager/foreground/js/metadata:metadata_model",
+    "//ui/file_manager/file_manager/foreground/js/metadata:mock_metadata",
   ]
 }
 

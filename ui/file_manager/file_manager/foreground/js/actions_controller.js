@@ -7,7 +7,7 @@
 // #import {DriveSyncHandler} from '../../externs/background/drive_sync_handler.m.js';
 // #import {FolderShortcutsDataModel} from './folder_shortcuts_data_model.m.js';
 // #import {DirectoryModel} from './directory_model.m.js';
-// #import {MetadataModel} from './metadata/metadata_model.m.js';
+// #import {MetadataModel} from './metadata/metadata_model.js';
 // #import {VolumeManager} from '../../externs/volume_manager.m.js';
 // #import {Action, ActionsModel} from './actions_model.m.js';
 // #import {contextMenuHandler} from 'chrome://resources/js/cr/ui/context_menu_handler.m.js';

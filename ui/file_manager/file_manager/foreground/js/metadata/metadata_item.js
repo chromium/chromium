@@ -16,7 +16,7 @@ let ImageTransformation;
  * @unrestricted to allow access for properties via '.' or '[]', useful for
  * computed properties.
  */
-/* #export */ class MetadataItem {
+export class MetadataItem {
   constructor() {
     /**
      * Size of the file. -1 for directory.

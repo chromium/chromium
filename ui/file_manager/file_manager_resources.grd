@@ -34,9 +34,6 @@
 
       <!-- Scripts required by the metadata parser worker. -->
       <include name="IDR_FILE_MANAGER_UTIL" file="file_manager/common/js/util.js" type="BINDATA" />
-      <include name="IDR_FILE_MANAGER_METADATA_READER" file="file_manager/foreground/js/metadata/byte_reader.js" type="BINDATA" />
-      <include name="IDR_FILE_MANAGER_METADATA_PARSER" file="file_manager/foreground/js/metadata/metadata_parser.js" type="BINDATA" />
-      <include name="IDR_FILE_MANAGER_MPEG_PARSER" file="file_manager/foreground/js/metadata/mpeg_parser.js" type="BINDATA" />
 
       <!-- Images referenced from the manifest or the code -->
       <include name="IDR_FILE_MANAGER_ICON_16" file="file_manager/common/images/icon16.png" type="BINDATA" />

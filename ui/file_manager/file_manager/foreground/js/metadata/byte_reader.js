@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 /** @final */
-/* #export */ class ByteReader {
+export class ByteReader {
   /**
    * @param {ArrayBuffer} arrayBuffer An array of buffers to be read from.
    * @param {number=} opt_offset Offset to read bytes at.

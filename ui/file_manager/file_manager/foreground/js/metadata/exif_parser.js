@@ -5,9 +5,9 @@
 import {ExifEntry} from '../../../externs/exif_entry.m.js';
 import {MetadataParserLogger} from '../../../externs/metadata_worker_window.m.js';
 
-import {ByteReader} from './byte_reader.m.js';
+import {ByteReader} from './byte_reader.js';
 import {Exif} from './exif_constants.js';
-import {ImageParser} from './metadata_parser.m.js';
+import {ImageParser} from './metadata_parser.js';
 
 
 /** @final */

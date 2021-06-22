@@ -4,8 +4,8 @@
 
 import {MetadataParserLogger} from '../../../externs/metadata_worker_window.m.js';
 
-import {ByteReader} from './byte_reader.m.js';
-import {ImageParser, MetadataParser} from './metadata_parser.m.js';
+import {ByteReader} from './byte_reader.js';
+import {ImageParser, MetadataParser} from './metadata_parser.js';
 
 /**
  * Base class for image metadata parsers that only need to look at a short

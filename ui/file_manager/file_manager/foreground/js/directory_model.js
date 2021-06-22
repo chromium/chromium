@@ -10,7 +10,7 @@
 // #import {FilesAppDirEntry, FakeEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.m.js';
 // #import {FileOperationManager} from '../../externs/background/file_operation_manager.m.js';
 // #import {VolumeManager} from '../../externs/volume_manager.m.js';
-// #import {MetadataModel} from './metadata/metadata_model.m.js';
+// #import {MetadataModel} from './metadata/metadata_model.js';
 // #import {FileListSingleSelectionModel, FileListSelectionModel} from './ui/file_list_selection_model.js';
 // #import {FileWatcher} from './file_watcher.m.js';
 // #import {FileListModel} from './file_list_model.m.js';

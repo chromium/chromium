@@ -4,7 +4,7 @@
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 
-import {MetadataItem} from './metadata_item.m.js';
+import {MetadataItem} from './metadata_item.js';
 
 /**
  * Cache of metadata for a FileEntry.

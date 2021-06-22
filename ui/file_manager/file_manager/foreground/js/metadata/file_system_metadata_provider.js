@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {MetadataItem} from './metadata_item.m.js';
-import {MetadataProvider} from './metadata_provider.m.js';
+import {MetadataItem} from './metadata_item.js';
+import {MetadataProvider} from './metadata_provider.js';
 
 /**
  * Metadata provider for FileEntry#getMetadata.

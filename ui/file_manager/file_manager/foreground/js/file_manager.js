@@ -48,9 +48,9 @@
 // #import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
 // #import {FileFilter} from './directory_contents.m.js';
 // #import {ProvidersModel} from './providers_model.m.js';
-// #import {ThumbnailModel} from './metadata/thumbnail_model.m.js';
-// #import {MetadataModel} from './metadata/metadata_model.m.js';
-// #import {ContentMetadataProvider} from './metadata/content_metadata_provider.m.js';
+// #import {ThumbnailModel} from './metadata/thumbnail_model.js';
+// #import {MetadataModel} from './metadata/metadata_model.js';
+// #import {ContentMetadataProvider} from './metadata/content_metadata_provider.js';
 // #import {FilteredVolumeManager} from '../../common/js/filtered_volume_manager.m.js';
 // #import {LaunchParam} from './launch_param.m.js';
 // #import {contextMenuHandler} from 'chrome://resources/js/cr/ui/context_menu_handler.m.js';

@@ -217,10 +217,7 @@
     "background/js/volume_manager_factory.js",
     "background/js/volume_manager_impl.js",
     "background/js/volume_manager_util.js",
-    "foreground/js/metadata/byte_reader.js",
-    "foreground/js/metadata/image_orientation.js",
-    "foreground/js/metadata/metadata_parser.js",
-    "foreground/js/metadata/mpeg_parser.js"
+    "foreground/js/metadata/image_orientation.js"
   ],
   "app": {
     "background": {

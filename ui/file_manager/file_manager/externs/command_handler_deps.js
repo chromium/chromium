@@ -6,7 +6,7 @@
 // #import {ActionsController} from '../foreground/js/actions_controller.m.js';
 // #import {FilesAppEntry} from './files_app_entry_interfaces.m.js';
 // #import {Crostini} from './background/crostini.m.js';
-// #import {MetadataModel} from '../foreground/js/metadata/metadata_model.m.js';
+// #import {MetadataModel} from '../foreground/js/metadata/metadata_model.js';
 // #import {VolumeManager} from './volume_manager.m.js';
 // #import {FileManagerUI} from '../foreground/js/ui/file_manager_ui.js';
 // #import {TaskController} from '../foreground/js/task_controller.m.js';

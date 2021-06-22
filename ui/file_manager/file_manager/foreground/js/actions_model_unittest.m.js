@@ -16,7 +16,7 @@ import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
 
 import {ActionsModel} from './actions_model.m.js';
 import {FolderShortcutsDataModel} from './folder_shortcuts_data_model.m.js';
-import {MockMetadataModel} from './metadata/mock_metadata.m.js';
+import {MockMetadataModel} from './metadata/mock_metadata.js';
 import {ActionModelUI} from './ui/action_model_ui.js';
 import {FilesAlertDialog} from './ui/files_alert_dialog.js';
 import {ListContainer} from './ui/list_container.js';

@@ -4,10 +4,10 @@
 
 import {MetadataParserLogger} from '../../../externs/metadata_worker_window.m.js';
 
-import {ByteReader} from './byte_reader.m.js';
+import {ByteReader} from './byte_reader.js';
 import {FunctionParallel} from './function_parallel.js';
 import {FunctionSequence} from './function_sequence.js';
-import {MetadataParser} from './metadata_parser.m.js';
+import {MetadataParser} from './metadata_parser.js';
 
 
 /**

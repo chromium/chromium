@@ -17,7 +17,7 @@ import {VolumeManagerCommon} from '../../../common/js/volume_manager_types.m.js'
 import {FileOperationManager} from '../../../externs/background/file_operation_manager.m.js';
 import {DirectoryModel} from '../directory_model.m.js';
 import {createFakeAndroidAppListModel} from '../fake_android_app_list_model.m.js';
-import {MetadataModel} from '../metadata/metadata_model.m.js';
+import {MetadataModel} from '../metadata/metadata_model.js';
 import {createFakeDirectoryModel} from '../mock_directory_model.m.js';
 import {MockFolderShortcutDataModel} from '../mock_folder_shortcut_data_model.m.js';
 import {MockNavigationListModel} from '../mock_navigation_list_model.m.js';

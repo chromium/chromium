@@ -9,7 +9,7 @@
 // #import {NamingController} from './naming_controller.m.js';
 // #import {MetadataUpdateController} from './metadata_update_controller.m.js';
 // #import {DirectoryModel} from './directory_model.m.js';
-// #import {MetadataModel} from './metadata/metadata_model.m.js';
+// #import {MetadataModel} from './metadata/metadata_model.js';
 // #import {FileManagerUI} from './ui/file_manager_ui.js';
 // #import {VolumeManager} from '../../externs/volume_manager.m.js';
 // #import {DialogType} from './dialog_type.m.js';

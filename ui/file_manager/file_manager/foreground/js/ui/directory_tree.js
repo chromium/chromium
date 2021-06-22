@@ -20,7 +20,7 @@ import {VolumeManager} from '../../../externs/volume_manager.m.js';
 import {constants} from '../constants.m.js';
 import {FileFilter} from '../directory_contents.m.js';
 import {DirectoryModel} from '../directory_model.m.js';
-import {MetadataModel} from '../metadata/metadata_model.m.js';
+import {MetadataModel} from '../metadata/metadata_model.js';
 import {NavigationListModel, NavigationModelAndroidAppItem, NavigationModelFakeItem, NavigationModelItem, NavigationModelItemType, NavigationModelShortcutItem, NavigationModelVolumeItem, NavigationSection} from '../navigation_list_model.m.js';
 
 // Namespace

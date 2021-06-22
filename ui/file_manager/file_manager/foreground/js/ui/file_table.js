@@ -18,7 +18,7 @@ import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.m.js';
 import {VolumeManager} from '../../../externs/volume_manager.m.js';
 import {FileListModel} from '../file_list_model.m.js';
 import {ListThumbnailLoader} from '../list_thumbnail_loader.m.js';
-import {MetadataModel} from '../metadata/metadata_model.m.js';
+import {MetadataModel} from '../metadata/metadata_model.js';
 
 import {A11yAnnounce} from './a11y_announce.js';
 import {DragSelector} from './drag_selector.js';

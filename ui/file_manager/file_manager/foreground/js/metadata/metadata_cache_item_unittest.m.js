@@ -4,7 +4,7 @@
 
 import {assertEquals, assertFalse, assertThrows, assertTrue} from 'chrome://test/chai_assert.js';
 import {MetadataCacheItem} from './metadata_cache_item.js';
-import {MetadataItem} from './metadata_item.m.js';
+import {MetadataItem} from './metadata_item.js';
 
 /**
  * @type {!MetadataItem}

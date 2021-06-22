@@ -7,8 +7,8 @@ import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_t
 import {util} from '../../../common/js/util.m.js';
 
 import {MetadataCacheItem} from './metadata_cache_item.js';
-import {MetadataItem} from './metadata_item.m.js';
-import {MetadataRequest} from './metadata_request.m.js';
+import {MetadataItem} from './metadata_item.js';
+import {MetadataRequest} from './metadata_request.js';
 
 /**
  * Set of MetadataCacheItem.

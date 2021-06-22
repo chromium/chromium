@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/* #export */ class MetadataRequest {
+export class MetadataRequest {
   /**
    * @param {!Entry} entry Entry
    * @param {!Array<string>} names Property name list to be requested.

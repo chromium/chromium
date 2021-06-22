@@ -14,8 +14,8 @@ import {VolumeManager} from '../../externs/volume_manager.m.js';
 import {DirectoryModel} from './directory_model.m.js';
 import {FileListModel} from './file_list_model.m.js';
 import {ListThumbnailLoader} from './list_thumbnail_loader.m.js';
-import {MetadataModel} from './metadata/metadata_model.m.js';
-import {ThumbnailModel} from './metadata/thumbnail_model.m.js';
+import {MetadataModel} from './metadata/metadata_model.js';
+import {ThumbnailModel} from './metadata/thumbnail_model.js';
 import {MockThumbnailLoader} from './mock_thumbnail_loader.m.js';
 
 /** @type {string} */

@@ -13,7 +13,7 @@ import {FileType} from '../../../common/js/file_type.m.js';
 import {str, strf, util} from '../../../common/js/util.m.js';
 import {EntryLocation} from '../../../externs/entry_location.m.js';
 import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.m.js';
-import {MetadataModel} from '../metadata/metadata_model.m.js';
+import {MetadataModel} from '../metadata/metadata_model.js';
 
 import {A11yAnnounce} from './a11y_announce.js';
 import {FileListSelectionModel, FileListSingleSelectionModel} from './file_list_selection_model.js';

@@ -5,7 +5,7 @@
 // clang-format off
 // #import {FileListModel} from './file_list_model.m.js';
 // #import {VolumeManager} from '../../externs/volume_manager.m.js';
-// #import {ThumbnailModel} from './metadata/thumbnail_model.m.js';
+// #import {ThumbnailModel} from './metadata/thumbnail_model.js';
 // #import {DirectoryModel} from './directory_model.m.js';
 // #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
 // #import {LRUCache} from '../../common/js/lru_cache.m.js';

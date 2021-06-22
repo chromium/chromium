@@ -22,7 +22,7 @@ import {FakeFileSelectionHandler} from './fake_file_selection_handler.m.js';
 import {FileListModel} from './file_list_model.m.js';
 import {FileSelectionHandler} from './file_selection.m.js';
 import {FileTransferController} from './file_transfer_controller.m.js';
-import {MockMetadataModel} from './metadata/mock_metadata.m.js';
+import {MockMetadataModel} from './metadata/mock_metadata.js';
 import {createFakeDirectoryModel} from './mock_directory_model.m.js';
 import {A11yAnnounce} from './ui/a11y_announce.js';
 import {DirectoryTree} from './ui/directory_tree.js';

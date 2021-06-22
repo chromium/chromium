@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {MetadataParser} from './metadata_parser.m.js';
+import {MetadataParser} from './metadata_parser.js';
 
 /**
  * @class FunctionParallel to invoke steps in parallel.

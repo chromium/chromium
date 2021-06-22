@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {MetadataModel} from './metadata/metadata_model.m.js';
+// #import {MetadataModel} from './metadata/metadata_model.js';
 // #import {VolumeManager} from '../../externs/volume_manager.m.js';
 // #import {FilesAppDirEntry, FakeEntry} from '../../externs/files_app_entry_interfaces.m.js';
 // #import {FileListModel} from './file_list_model.m.js';
