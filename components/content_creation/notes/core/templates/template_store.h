@@ -12,6 +12,7 @@
 #include "base/sequenced_task_runner.h"
 #include "base/supports_user_data.h"
 #include "components/content_creation/notes/core/templates/note_template.h"
+#include "components/prefs/pref_service.h"
 
 namespace content_creation {
 
@@ -22,7 +23,7 @@ using GetTemplatesCallback =
 // offered to the user.
 class TemplateStore {
  public:
-  explicit TemplateStore();
+  explicit TemplateStore(PrefService* pref_service);
   virtual ~TemplateStore();
 
   // Not copyable or movable.
@@ -45,6 +46,8 @@ class TemplateStore {
 
   // Task runner delegating tasks to the ThreadPool.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
+
+  PrefService* pref_service_;
 
   base::WeakPtrFactory<TemplateStore> weak_ptr_factory_{this};
 };

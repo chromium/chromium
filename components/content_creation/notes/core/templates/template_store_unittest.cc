@@ -14,6 +14,7 @@
 #include "components/content_creation/notes/core/note_features.h"
 #include "components/content_creation/notes/core/templates/note_template.h"
 #include "components/content_creation/notes/core/templates/template_types.h"
+#include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content_creation {
@@ -21,7 +22,7 @@ namespace content_creation {
 class TemplateStoreTest : public testing::Test {
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(kWebNotesStylizeEnabled);
-    template_store_ = std::make_unique<TemplateStore>();
+    template_store_ = std::make_unique<TemplateStore>(&testing_pref_service_);
   }
 
  protected:
@@ -45,6 +46,7 @@ class TemplateStoreTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   base::test::ScopedFeatureList scoped_feature_list_;
+  TestingPrefServiceSimple testing_pref_service_;
   std::unique_ptr<TemplateStore> template_store_;
 };
 

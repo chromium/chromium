@@ -220,6 +220,7 @@
 #include "chrome/browser/ssl/known_interception_disclosure_infobar_delegate.h"
 #include "chrome/browser/video_tutorials/prefs.h"
 #include "components/cdm/browser/media_drm_storage_impl.h"  // nogncheck crbug.com/1125897
+#include "components/content_creation/notes/core/note_prefs.h"
 #include "components/feed/buildflags.h"
 #include "components/feed/core/common/pref_names.h"
 #include "components/feed/core/shared_prefs/pref_names.h"
@@ -1099,6 +1100,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
 
 #if defined(OS_ANDROID)
   cdm::MediaDrmStorageImpl::RegisterProfilePrefs(registry);
+  content_creation::prefs::RegisterProfilePrefs(registry);
   explore_sites::HistoryStatisticsReporter::RegisterPrefs(registry);
   permissions::GeolocationPermissionContextAndroid::RegisterProfilePrefs(
       registry);

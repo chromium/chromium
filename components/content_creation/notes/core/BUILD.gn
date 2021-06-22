@@ -26,6 +26,19 @@ static_library("features") {
   deps = [ "//base" ]
 }
 
+static_library("prefs") {
+  sources = [
+    "note_prefs.cc",
+    "note_prefs.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/content_creation/notes/core/templates:types",
+    "//components/prefs",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
 
@@ -42,7 +55,9 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/content_creation/notes/core/server",
     "//components/content_creation/notes/core/templates",
+    "//components/content_creation/notes/core/templates:types",
     "//components/content_creation/notes/core/test:test_support",
+    "//components/prefs:test_support",
     "//components/version_info",
     "//services/network/public/cpp",
     "//testing/gmock",
