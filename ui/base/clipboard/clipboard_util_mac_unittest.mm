@@ -6,6 +6,7 @@
 
 #include "base/mac/scoped_nsobject.h"
 #include "base/memory/ref_counted.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
 #include "testing/platform_test.h"
@@ -115,7 +116,13 @@ TEST_F(ClipboardUtilMacTest, CheckForLeak) {
   }
 }
 
-TEST_F(ClipboardUtilMacTest, CompareToWriteToPasteboard) {
+#if defined(ARCH_CPU_ARM64)
+// https://crbug.com/1222623
+#define MAYBE_CompareToWriteToPasteboard DISABLED_CompareToWriteToPasteboard
+#else
+#define MAYBE_CompareToWriteToPasteboard CompareToWriteToPasteboard
+#endif
+TEST_F(ClipboardUtilMacTest, MAYBE_CompareToWriteToPasteboard) {
   NSString* urlString = @"https://www.cnn.com/";
 
   base::scoped_nsobject<NSPasteboardItem> item(
