@@ -3810,16 +3810,6 @@ hooks = [
                '--package=clang-tidy'],
   },
   {
-    # Mac doesn't use lld so it's not included in the default clang bundle
-    # there.  lld is however needed in win and Fuchsia cross builds, so
-    # download it there. Should run after the clang hook.
-    'name': 'lld/mac',
-    'pattern': '.',
-    'condition': 'host_os == "mac" and (checkout_win or checkout_fuchsia)',
-    'action': ['python3', 'src/tools/clang/scripts/update.py',
-               '--package=lld_mac'],
-  },
-  {
     # Should run after the clang hook.
     'name': 'objdump/mac',
     'pattern': '.',

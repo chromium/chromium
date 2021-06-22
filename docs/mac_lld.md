@@ -73,14 +73,14 @@ a mostly-working Chromium.app, but there are open issues and missing features:
 
 1. First, obtain lld. Do either of:
 
-   1. run `src/tools/clang/scripts/update.py --package=lld_mac` to download a
-      prebuilt lld binary.
+   1. Do nothing. Chromium's hooks already downloaded a prebuilt lld binary
+      for you.
    2. build `lld` and `llvm-ar` locally and copy it to
       `third_party/llvm-build/Release+Asserts/bin`. Also run
       `ln -s lld third_party/llvm-build/Release+Asserts/bin/ld64.lld`.
 
-   You have to do this again every time `runhooks` updates the clang
-   package.
+      You have to do this again every time `runhooks` updates the clang
+      package.
 
    The prebuilt might work less well than a more up-to-date, locally-built
    version -- see the list of open issues above for details. If anything is
