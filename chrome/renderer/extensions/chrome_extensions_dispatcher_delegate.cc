@@ -182,6 +182,10 @@ void ChromeExtensionsDispatcherDelegate::PopulateSourceMap(
                              IDR_IME_SERVICE_MOJOM_JS);
   source_map->RegisterSource("chromeos.ime.mojom.input_engine.mojom",
                              IDR_IME_SERVICE_INPUT_ENGINE_MOJOM_JS);
+  source_map->RegisterSource("chromeos.ime.mojom.input_method.mojom",
+                             IDR_IME_SERVICE_INPUT_METHOD_MOJOM_JS);
+  source_map->RegisterSource("chromeos.ime.mojom.input_method_host.mojom",
+                             IDR_IME_SERVICE_INPUT_METHOD_HOST_MOJOM_JS);
   source_map->RegisterSource("chromeos.ime.service",
                              IDR_IME_SERVICE_BINDINGS_JS);
 

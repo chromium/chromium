@@ -9,6 +9,8 @@
 #include "chromeos/services/ime/public/cpp/rulebased/engine.h"
 #include "chromeos/services/ime/public/cpp/suggestions.h"
 #include "chromeos/services/ime/public/mojom/input_engine.mojom.h"
+#include "chromeos/services/ime/public/mojom/input_method.mojom.h"
+#include "chromeos/services/ime/public/mojom/input_method_host.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"

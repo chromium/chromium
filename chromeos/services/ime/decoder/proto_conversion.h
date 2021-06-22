@@ -7,7 +7,8 @@
 
 #include <vector>
 
-#include "chromeos/services/ime/public/mojom/input_engine.mojom.h"
+#include "chromeos/services/ime/public/mojom/input_method.mojom.h"
+#include "chromeos/services/ime/public/mojom/input_method_host.mojom.h"
 #include "chromeos/services/ime/public/proto/messages.pb.h"
 
 namespace chromeos {

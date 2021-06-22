@@ -11,6 +11,8 @@ mojo.config.autoLoadMojomDeps = false;
 
 loadScript('chromeos.ime.mojom.ime_service.mojom');
 loadScript('chromeos.ime.mojom.input_engine.mojom');
+loadScript('chromeos.ime.mojom.input_method.mojom');
+loadScript('chromeos.ime.mojom.input_method_host.mojom');
 
 /**
  * Empty result to keep Mojo pipe from disconnection.

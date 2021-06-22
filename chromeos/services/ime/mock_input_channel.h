@@ -6,6 +6,8 @@
 #define CHROMEOS_SERVICES_IME_MOCK_INPUT_CHANNEL_H_
 
 #include "chromeos/services/ime/public/mojom/input_engine.mojom.h"
+#include "chromeos/services/ime/public/mojom/input_method.mojom.h"
+#include "chromeos/services/ime/public/mojom/input_method_host.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"

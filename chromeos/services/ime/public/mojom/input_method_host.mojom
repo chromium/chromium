@@ -1,0 +1,110 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chromeos.ime.mojom;
+
+import "ui/gfx/range/mojom/range.mojom";
+
+enum CommitTextCursorBehavior {
+  kMoveCursorAfterText = 0,
+  kMoveCursorBeforeText = 1,
+};
+
+struct AutocorrectSpan {
+  // The range to set the autocorrect span to, currently having `current_text`.
+  gfx.mojom.Range autocorrect_range;
+
+  // The original text that was replaced by autocorrect.
+  string original_text;
+
+  // The current text that replaced `original_text` and is now located at
+  // `autocorrect_range` in the text field.
+  // NOTE: Technically redundant to require client to supply `current_text` as
+  // it can be retrieved from current text editing state known to IMF. However,
+  // due to async situation between browser-process IMF and render-process
+  // TextInputClient, it may just be a stale value if obtained that way.
+  // TODO(crbug/1194424): Remove technically redundant `current_text` param to
+  // avoid situation with multiple conflicting sources of truth.
+  string current_text;
+};
+
+// Proposed candidate for completing some text.
+struct CompletionCandidate {
+  // The candidate text
+  string text;
+
+  // Normalized confidence scoring for the candidate
+  float normalized_score;
+};
+
+enum SuggestionMode {
+  // A completion suggestion is text that completes an incomplete word. For
+  // example, the text "hello wor" may have a completion candidate like the
+  // following "hello world".
+  kCompletion = 0,
+
+  // A prediction suggestion is text that we predict may come after some other
+  // text that contains completed words. For example, the text "hello " may
+  // produce a prediction suggestion such as "hello world".
+  kPrediction = 1,
+};
+
+enum SuggestionType {
+  // Personal info suggestions from the assistive framework
+  kAssistivePersonalInfo = 0,
+
+  // Emoji suggestions from the assistive framework
+  kAssistiveEmoji = 1,
+
+  // Multi word suggestions from the system
+  kMultiWord = 2,
+};
+
+// Single request to generate suggestion candidates from the given context.
+struct SuggestionsRequest {
+  // The mode of suggestions that should be generated.
+  SuggestionMode mode;
+
+  // The preceding text used to produced the suggestions.
+  string text;
+
+  // Optional: any candidates generated to complete the current text.
+  array<CompletionCandidate> completion_candidates;
+};
+
+// The text candidate to use as a suggestion to the user
+struct SuggestionCandidate {
+  // How should a consumer use this suggestion.
+  SuggestionMode mode;
+
+  // What kind of suggestion is this.
+  SuggestionType type;
+
+  // The text to suggest
+  string text;
+};
+
+// Encapsulates the results of a suggestions request.
+struct SuggestionsResponse {
+  // A list of suggestion candidates generated.
+  array<SuggestionCandidate> candidates;
+};
+
+// A URL-Keyed Metric (UKM) entry.
+union UkmEntry {
+  NonCompliantApiMetric non_compliant_api;
+};
+
+enum InputMethodApiOperation {
+  kCommitText = 0,
+  kSetCompositionText = 1,
+  kDeleteSurroundingText = 2,
+};
+
+struct NonCompliantApiMetric {
+  InputMethodApiOperation non_compliant_operation;
+};
+
+// TODO(crbug.com/1194372): Create a InputMethodHost interface for InputMethod
+// to call back into Chrome.

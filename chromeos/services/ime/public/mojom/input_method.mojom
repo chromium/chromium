@@ -1,0 +1,127 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chromeos.ime.mojom;
+
+// Method of an operation to apply to a text field.
+enum OperationMethodForRulebased {
+  COMMIT_TEXT = 0,
+  SET_COMPOSITION = 1,
+};
+
+// Operation to apply to a text field, in response to a Keypress.
+struct OperationForRulebased {
+  // The operation we wish to apply to the text field.
+  OperationMethodForRulebased method;
+
+  // Additional arguments of the method to apply to the text field.
+  string arguments;
+};
+
+// KeypressResponse represents the Rulebased engine response to a keypress.
+struct KeypressResponseForRulebased {
+  // result indicates if the function call was successful
+  // There must be a valid engine and the keypress must be valid for
+  // this to be the case.
+  bool result;
+
+  // An array of operations to apply to the text field in respoonse to
+  // the Keypress.
+  array<OperationForRulebased> operations;
+};
+
+enum KeyEventType {
+  kKeyDown = 0,
+  kKeyUp = 1,
+};
+
+// Whether modifier keys are held down or not.
+// Modifier keys are specified by:
+// https://www.w3.org/TR/uievents-key/#keys-modifier
+struct ModifierState {
+  bool alt;
+  bool alt_graph;
+  bool caps_lock;
+  bool control;
+  bool meta;
+  bool shift;
+};
+
+// Information about a physical key event.
+struct PhysicalKeyEvent {
+  // Whether this is a key down or key up event.
+  KeyEventType type;
+
+  // The physical key event code, as specified by:
+  // https://www.w3.org/TR/uievents/#dom-keyboardevent-code
+  //
+  // A full list of valid key codes can be found in:
+  // https://www.w3.org/TR/uievents-code/
+  string code;
+
+  // A string corresponding to the character the user typed, or a special
+  // value for special keys (e.g. Shift), as specified by:
+  // https://www.w3.org/TR/uievents/#dom-keyboardevent-key
+  //
+  // If this information is not available, it is set to "Unidentifed":
+  // https://www.w3.org/TR/uievents-key/#key-Unidentified
+  string key;
+
+  ModifierState modifier_state;
+};
+
+// Represents a directional text selection range.
+// |anchor| is the index of where the selection began and |focus| is where the
+// selection ended. The |anchor| can be before |focus| or vice versa depending
+// on the direction the selection is in.
+// See https://developer.mozilla.org/en-US/docs/Web/API/Selection
+struct SelectionRange {
+   uint32 anchor;
+   uint32 focus;
+};
+
+// Type of input field.
+// Based off ui::TextInputType in ui/base/ime/text_input_type.h.
+enum InputFieldType {
+  // Does not support IME editing. IMEs should only send physical key events,
+  // and not perform complex operations such as composition.
+  kNoIME = 0,
+  // Supports general text input.
+  kText = 1,
+  kSearch = 2,
+  kTelephone = 3,
+  kURL = 4,
+  kEmail = 5,
+  kNumber = 6,
+  // Input represents a password. IMEs should ensure the password is not stored
+  // without the user's permission.
+  kPassword = 7,
+};
+
+enum AutocorrectMode {
+  // The IME must not perform autocorrect.
+  kDisabled = 0,
+  // The IME may perform autocorrect as the user is typing.
+  kEnabled = 1,
+};
+
+enum PersonalizationMode {
+  // The IME should not use anything from the input field to update any
+  // personalized data (e.g. to improve suggestions quality). Personalization
+  // may be disabled if the content is privacy-sensitive (e.g. incognito mode in
+  // Chrome browser), or if using personalization does not make sense (e.g.
+  // playing a typing game may pollute the IME dictionary with uncommon words).
+  kDisabled = 0,
+  // The IME may use the input field contents for personalization.
+  kEnabled = 1,
+};
+
+struct InputFieldInfo {
+  InputFieldType type;
+  AutocorrectMode autocorrect;
+  PersonalizationMode personalization;
+};
+
+// TODO(crbug.com/1194372): Create an InputMethod interface for Chrome to
+// interact with an InputMethod.

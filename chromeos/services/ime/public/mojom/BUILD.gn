@@ -8,6 +8,8 @@ mojom("mojom") {
   sources = [
     "ime_service.mojom",
     "input_engine.mojom",
+    "input_method.mojom",
+    "input_method_host.mojom",
   ]
 
   public_deps = [
