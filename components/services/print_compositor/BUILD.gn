@@ -14,12 +14,8 @@ static_library("print_compositor") {
     "//base",
     "//components/crash/core/common:crash_key",
     "//components/discardable_memory/client",
-    "//components/discardable_memory/public/mojom",
-    "//components/services/print_compositor/public/cpp",
     "//content/public/utility",
-    "//printing/buildflags",
     "//printing/common",
-    "//skia",
     "//third_party/blink/public:blink_headers",
     "//ui/accessibility",
   ]
@@ -28,7 +24,12 @@ static_library("print_compositor") {
     deps += [ "//content/public/child" ]
   }
 
-  public_deps = [ "//components/services/print_compositor/public/mojom" ]
+  public_deps = [
+    "//components/services/print_compositor/public/cpp",
+    "//components/services/print_compositor/public/mojom",
+    "//printing/buildflags",
+    "//skia",
+  ]
 }
 
 if (enable_basic_printing) {
@@ -36,21 +37,11 @@ if (enable_basic_printing) {
     testonly = true
     sources = [ "print_compositor_impl_unittest.cc" ]
 
-    include_dirs = [
-      "//skia/config",
-      "//testing/gmock/include",
-      "//third_party/skia/include/core",
-    ]
-
     deps = [
       ":print_compositor",
-      "//base",
       "//base/test:test_support",
-      "//cc/paint:paint",
       "//components/crash/core/common:crash_key",
       "//components/services/print_compositor/public/cpp",
-      "//components/services/print_compositor/public/mojom",
-      "//skia",
       "//testing/gmock",
       "//testing/gtest",
     ]
