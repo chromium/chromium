@@ -32,6 +32,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 using base::test::ParseJson;
+using testing::NiceMock;
 
 namespace media_router {
 
@@ -108,7 +109,8 @@ std::unique_ptr<CastSessionClient> CastActivityTestBase::MakeClientForTest(
     const std::string& client_id,
     const url::Origin& origin,
     int tab_id) {
-  return std::make_unique<MockCastSessionClient>(client_id, origin, tab_id);
+  return std::make_unique<NiceMock<MockCastSessionClient>>(client_id, origin,
+                                                           tab_id);
 }
 
 MockCastSessionClient* CastActivityTestBase::AddMockClient(

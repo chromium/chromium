@@ -4,6 +4,9 @@
 
 #include "chrome/browser/media/router/providers/cast/mirroring_activity.h"
 
+#include <memory>
+#include <utility>
+
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/test/bind.h"
@@ -21,6 +24,7 @@
 
 using base::test::IsJson;
 using testing::_;
+using testing::NiceMock;
 using testing::WithArg;
 
 namespace media_router {
@@ -121,7 +125,7 @@ class MirroringActivityTest
   bool route_is_local_ = true;
   MockCastMessageChannel* channel_to_service_ = nullptr;
   MockMirroringServiceHost* mirroring_service_ = nullptr;
-  MockMojoMediaRouter media_router_;
+  NiceMock<MockMojoMediaRouter> media_router_;
   base::MockCallback<MirroringActivity::OnStopCallback> on_stop_;
   std::unique_ptr<MirroringActivity> activity_;
 };
