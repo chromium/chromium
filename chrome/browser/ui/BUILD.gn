@@ -672,6 +672,8 @@ static_library("ui") {
       "android/device_dialog/bluetooth_chooser_android.h",
       "android/device_dialog/bluetooth_scanning_prompt_android.cc",
       "android/device_dialog/bluetooth_scanning_prompt_android.h",
+      "android/device_dialog/chrome_bluetooth_chooser_android_delegate.cc",
+      "android/device_dialog/chrome_bluetooth_chooser_android_delegate.h",
       "android/device_dialog/usb_chooser_dialog_android.cc",
       "android/device_dialog/usb_chooser_dialog_android.h",
       "android/external_protocol_dialog_android.cc",

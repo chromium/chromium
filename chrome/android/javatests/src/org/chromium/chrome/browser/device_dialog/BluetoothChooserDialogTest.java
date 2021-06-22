@@ -138,6 +138,7 @@ public class BluetoothChooserDialogTest {
                     mWindowAndroid = sActivityTestRule.getActivity().getWindowAndroid();
                     BluetoothChooserDialog dialog = new BluetoothChooserDialog(mWindowAndroid,
                             "https://origin.example.com/", ConnectionSecurityLevel.SECURE,
+                            new ChromeBluetoothChooserAndroidDelegate(),
                             /*nativeBluetoothChooserDialogPtr=*/42);
                     dialog.show();
                     return dialog;

@@ -3507,6 +3507,7 @@ generate_jni("chrome_jni_headers") {
     "java/src/org/chromium/chrome/browser/customtabs/CustomTabsConnection.java",
     "java/src/org/chromium/chrome/browser/device_dialog/BluetoothChooserDialog.java",
     "java/src/org/chromium/chrome/browser/device_dialog/BluetoothScanningPermissionDialog.java",
+    "java/src/org/chromium/chrome/browser/device_dialog/ChromeBluetoothChooserAndroidDelegate.java",
     "java/src/org/chromium/chrome/browser/device_dialog/UsbChooserDialog.java",
     "java/src/org/chromium/chrome/browser/document/DocumentWebContentsDelegate.java",
     "java/src/org/chromium/chrome/browser/dom_distiller/DomDistillerServiceFactory.java",

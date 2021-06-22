@@ -9,13 +9,17 @@
 #include "content/public/browser/bluetooth_chooser.h"
 #include "content/public/browser/web_contents.h"
 
+class BluetoothChooserAndroidDelegate;
+
 // Represents a way to ask the user to select a Bluetooth device from a list of
 // options.
 class BluetoothChooserAndroid : public content::BluetoothChooser {
  public:
   // Both frame and event_handler must outlive the BluetoothChooserAndroid.
-  BluetoothChooserAndroid(content::RenderFrameHost* frame,
-                          const EventHandler& event_handler);
+  BluetoothChooserAndroid(
+      content::RenderFrameHost* frame,
+      const EventHandler& event_handler,
+      std::unique_ptr<BluetoothChooserAndroidDelegate> delegate);
   ~BluetoothChooserAndroid() override;
 
   // content::BluetoothChooser:
@@ -49,6 +53,7 @@ class BluetoothChooserAndroid : public content::BluetoothChooser {
 
   content::WebContents* web_contents_;
   BluetoothChooser::EventHandler event_handler_;
+  std::unique_ptr<BluetoothChooserAndroidDelegate> delegate_;
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_DEVICE_DIALOG_BLUETOOTH_CHOOSER_ANDROID_H_

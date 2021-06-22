@@ -29,9 +29,8 @@ import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifier;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.location.LocationUtils;
+import org.chromium.components.omnibox.AutocompleteSchemeClassifier;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizer;
 import org.chromium.content_public.browser.bluetooth.BluetoothChooserEvent;
 import org.chromium.ui.base.PermissionCallback;
@@ -77,11 +76,14 @@ public class BluetoothChooserDialog
     ItemChooserDialog mItemChooserDialog;
 
     // The origin for the site wanting to pair with the bluetooth devices.
-    String mOrigin;
+    final String mOrigin;
 
     // The security level of the connection to the site wanting to pair with the
     // bluetooth devices. For valid values see SecurityStateModel::SecurityLevel.
-    int mSecurityLevel;
+    final int mSecurityLevel;
+
+    // The embedder-provided delegate.
+    final BluetoothChooserAndroidDelegate mDelegate;
 
     @VisibleForTesting
     Drawable mConnectedIcon;
@@ -137,12 +139,13 @@ public class BluetoothChooserDialog
      */
     @VisibleForTesting
     BluetoothChooserDialog(WindowAndroid windowAndroid, String origin, int securityLevel,
-            long nativeBluetoothChooserDialogPtr) {
+            BluetoothChooserAndroidDelegate delegate, long nativeBluetoothChooserDialogPtr) {
         mWindowAndroid = windowAndroid;
         mActivity = windowAndroid.getActivity().get();
         assert mActivity != null;
         mOrigin = origin;
         mSecurityLevel = securityLevel;
+        mDelegate = delegate;
         mNativeBluetoothChooserDialogPtr = nativeBluetoothChooserDialogPtr;
         mAdapter = BluetoothAdapter.getDefaultAdapter();
 
@@ -180,20 +183,15 @@ public class BluetoothChooserDialog
      */
     @VisibleForTesting
     void show() {
-        // Emphasize the origin.
-        // TODO (https://crbug.com/1048632): Use the current profile (i.e., regular profile or
-        // incognito profile) instead of always using regular profile. It works correctly now, but
-        // it is not safe.
-        Profile profile = Profile.getLastUsedRegularProfile();
         SpannableString origin = new SpannableString(mOrigin);
 
         final boolean useDarkColors = !ColorUtils.inNightMode(mActivity);
-        ChromeAutocompleteSchemeClassifier chromeAutocompleteSchemeClassifier =
-                new ChromeAutocompleteSchemeClassifier(profile);
+        AutocompleteSchemeClassifier autocompleteSchemeClassifier =
+                mDelegate.createAutocompleteSchemeClassifier();
 
         OmniboxUrlEmphasizer.emphasizeUrl(origin, mActivity.getResources(),
-                chromeAutocompleteSchemeClassifier, mSecurityLevel, false, useDarkColors, true);
-        chromeAutocompleteSchemeClassifier.destroy();
+                autocompleteSchemeClassifier, mSecurityLevel, false, useDarkColors, true);
+        autocompleteSchemeClassifier.destroy();
         // Construct a full string and replace the origin text with emphasized version.
         SpannableString title =
                 new SpannableString(mActivity.getString(R.string.bluetooth_dialog_title, mOrigin));
@@ -420,14 +418,15 @@ public class BluetoothChooserDialog
 
     @CalledByNative
     private static BluetoothChooserDialog create(WindowAndroid windowAndroid, String origin,
-            int securityLevel, long nativeBluetoothChooserDialogPtr) {
+            int securityLevel, BluetoothChooserAndroidDelegate delegate,
+            long nativeBluetoothChooserDialogPtr) {
         if (!hasSystemPermissions(windowAndroid) && !canRequestSystemPermissions(windowAndroid)) {
             // If we can't even ask for enough permission to scan for Bluetooth devices, don't open
             // the dialog.
             return null;
         }
         BluetoothChooserDialog dialog = new BluetoothChooserDialog(
-                windowAndroid, origin, securityLevel, nativeBluetoothChooserDialogPtr);
+                windowAndroid, origin, securityLevel, delegate, nativeBluetoothChooserDialogPtr);
         dialog.show();
         return dialog;
     }

@@ -8,9 +8,8 @@
 #include "base/android/jni_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/android/chrome_jni_headers/BluetoothChooserDialog_jni.h"
-#include "chrome/browser/ssl/security_state_tab_helper.h"
+#include "chrome/browser/ui/android/device_dialog/bluetooth_chooser_android_delegate.h"
 #include "chrome/common/url_constants.h"
-#include "components/security_state/core/security_state.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/render_frame_host.h"
 #include "ui/android/window_android.h"
@@ -25,18 +24,16 @@ using base::android::ScopedJavaLocalRef;
 
 BluetoothChooserAndroid::BluetoothChooserAndroid(
     content::RenderFrameHost* frame,
-    const EventHandler& event_handler)
+    const EventHandler& event_handler,
+    std::unique_ptr<BluetoothChooserAndroidDelegate> delegate)
     : web_contents_(content::WebContents::FromRenderFrameHost(frame)),
-      event_handler_(event_handler) {
+      event_handler_(event_handler),
+      delegate_(std::move(delegate)) {
   const url::Origin origin = frame->GetLastCommittedOrigin();
   DCHECK(!origin.opaque());
 
   base::android::ScopedJavaLocalRef<jobject> window_android =
       web_contents_->GetNativeView()->GetWindowAndroid()->GetJavaObject();
-
-  SecurityStateTabHelper* helper =
-      SecurityStateTabHelper::FromWebContents(web_contents_);
-  DCHECK(helper);
 
   // Create (and show) the BluetoothChooser dialog.
   JNIEnv* env = AttachCurrentThread();
@@ -44,7 +41,8 @@ BluetoothChooserAndroid::BluetoothChooserAndroid(
       base::android::ConvertUTF16ToJavaString(
           env, url_formatter::FormatOriginForSecurityDisplay(origin));
   java_dialog_.Reset(Java_BluetoothChooserDialog_create(
-      env, window_android, origin_string, helper->GetSecurityLevel(),
+      env, window_android, origin_string,
+      delegate_->GetSecurityLevel(web_contents_), delegate_->GetJavaObject(),
       reinterpret_cast<intptr_t>(this)));
 }
 
