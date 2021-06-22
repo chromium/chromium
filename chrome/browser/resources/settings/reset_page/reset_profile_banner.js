@@ -10,41 +10,46 @@
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {routes} from '../route.js';
 import {Router} from '../router.js';
 
 import {ResetBrowserProxyImpl} from './reset_browser_proxy.js';
 
-Polymer({
-  // TODO(dpapad): Rename to settings-reset-warning-dialog.
-  is: 'settings-reset-profile-banner',
+/** @polymer */
+class SettingsResetProfileBannerElement extends PolymerElement {
+  static get is() {
+    return 'settings-reset-profile-banner';
+  }
 
-  _template: html`{__html_template__}`,
-
-  listeners: {
-    'cancel': 'onCancel_',
-  },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     /** @type {!CrDialogElement} */ (this.$.dialog).showModal();
-  },
+  }
 
   /** @private */
   onOkTap_() {
     /** @type {!CrDialogElement} */ (this.$.dialog).cancel();
-  },
+  }
 
   /** @private */
   onCancel_() {
     ResetBrowserProxyImpl.getInstance().onHideResetProfileBanner();
-  },
+  }
 
   /** @private */
   onResetTap_() {
     this.$.dialog.close();
     Router.getInstance().navigateTo(routes.RESET_DIALOG);
-  },
-});
+  }
+}
+
+customElements.define(
+    SettingsResetProfileBannerElement.is, SettingsResetProfileBannerElement);

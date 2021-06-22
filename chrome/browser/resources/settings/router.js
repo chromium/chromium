@@ -371,10 +371,10 @@ import './i18n_setup.js';
     },
 
     /**
-     * @param {!Route|undefined} opt_newRoute
-     * @param {!Route|undefined} opt_oldRoute
+     * @param {!Route} newRoute
+     * @param {!Route=} opt_oldRoute
      */
-    currentRouteChanged(opt_newRoute, opt_oldRoute) {
+    currentRouteChanged(newRoute, opt_oldRoute) {
       assertNotReached();
     },
   };
@@ -382,8 +382,8 @@ import './i18n_setup.js';
   /** @interface */
   export class RouteObserverBehaviorInterface {
     /**
-     * @param {!Route|undefined} opt_newRoute
-     * @param {!Route|undefined} opt_oldRoute
+     * @param {!Route} newRoute
+     * @param {!Route=} opt_oldRoute
      */
-    currentRouteChanged(opt_newRoute, opt_oldRoute) {}
+    currentRouteChanged(newRoute, opt_oldRoute) {}
   }

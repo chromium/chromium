@@ -1,5 +1,6 @@
     <style include="settings-shared"></style>
-    <cr-dialog id="dialog" close-text="$i18n{close}" ignore-popstate>
+    <cr-dialog id="dialog" close-text="$i18n{close}" ignore-popstate
+        on-cancel="onCancel_">
       <div slot="title">$i18n{resetAutomatedDialogTitle}</div>
       <div slot="body">
         <span id="description">

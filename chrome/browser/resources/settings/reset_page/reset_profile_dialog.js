@@ -18,9 +18,8 @@ import 'chrome://resources/cr_elements/action_link_css.m.js';
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import '../settings_shared_css.js';
 
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
@@ -28,44 +27,60 @@ import {Router} from '../router.js';
 
 import {ResetBrowserProxy, ResetBrowserProxyImpl} from './reset_browser_proxy.js';
 
-Polymer({
-  is: 'settings-reset-profile-dialog',
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const SettingsResetProfileDialogElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
 
-  behaviors: [
-    WebUIListenerBehavior,
-    I18nBehavior,
-  ],
+/** @polymer */
+export class SettingsResetProfileDialogElement extends
+    SettingsResetProfileDialogElementBase {
+  static get is() {
+    return 'settings-reset-profile-dialog';
+  }
 
-  properties: {
-    // TODO(dpapad): Evaluate whether this needs to be synced across different
-    // settings tabs.
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /** @private */
-    isTriggered_: {
-      type: Boolean,
-      value: false,
-    },
+  static get properties() {
+    return {
+      // TODO(dpapad): Evaluate whether this needs to be synced across different
+      // settings tabs.
 
-    /** @private */
-    triggeredResetToolName_: {
-      type: String,
-      value: '',
-    },
+      /** @private */
+      isTriggered_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /** @private */
-    resetRequestOrigin_: String,
+      /** @private */
+      triggeredResetToolName_: {
+        type: String,
+        value: '',
+      },
 
-    /** @private */
-    clearingInProgress_: {
-      type: Boolean,
-      value: false,
-    },
-  },
+      /** @private */
+      resetRequestOrigin_: String,
 
-  /** @private {?ResetBrowserProxy} */
-  browserProxy_: null,
+      /** @private */
+      clearingInProgress_: {
+        type: Boolean,
+        value: false,
+      },
+    };
+  }
+
+  constructor() {
+    super();
+
+    /** @private {?ResetBrowserProxy} */
+    this.browserProxy_ = null;
+  }
 
   /**
    * @private
@@ -85,7 +100,7 @@ Polymer({
     }
 
     return loadTimeData.getStringF('resetPageExplanation');
-  },
+  }
 
   /**
    * @private
@@ -97,19 +112,21 @@ Polymer({
           'triggeredResetPageTitle', this.triggeredResetToolName_);
     }
     return loadTimeData.getStringF('resetDialogTitle');
-  },
+  }
 
   /** @override */
   ready() {
+    super.ready();
+
     this.browserProxy_ = ResetBrowserProxyImpl.getInstance();
 
     this.addEventListener('cancel', () => {
       this.browserProxy_.onHideResetProfileDialog();
     });
 
-    this.$$('cr-checkbox a')
+    this.shadowRoot.querySelector('cr-checkbox a')
         .addEventListener('click', this.onShowReportedSettingsTap_.bind(this));
-  },
+  }
 
   /** @private */
   showDialog_() {
@@ -117,7 +134,7 @@ Polymer({
       this.$.dialog.showModal();
     }
     this.browserProxy_.onShowResetProfileDialog();
-  },
+  }
 
   show() {
     this.isTriggered_ = Router.getInstance().getCurrentRoute() ===
@@ -138,18 +155,18 @@ Polymer({
       this.resetRequestOrigin_ = origin || '';
       this.showDialog_();
     }
-  },
+  }
 
   /** @private */
   onCancelTap_() {
     this.cancel();
-  },
+  }
 
   cancel() {
     if (this.$.dialog.open) {
       this.$.dialog.cancel();
     }
-  },
+  }
 
   /** @private */
   onResetTap_() {
@@ -162,9 +179,10 @@ Polymer({
           if (this.$.dialog.open) {
             this.$.dialog.close();
           }
-          this.fire('reset-done');
+          this.dispatchEvent(
+              new CustomEvent('reset-done', {bubbles: true, composed: true}));
         });
-  },
+  }
 
   /**
    * Displays the settings that will be reported in a new tab.
@@ -174,5 +192,8 @@ Polymer({
   onShowReportedSettingsTap_(e) {
     this.browserProxy_.showReportedSettings();
     e.stopPropagation();
-  },
-});
+  }
+}
+
+customElements.define(
+    SettingsResetProfileDialogElement.is, SettingsResetProfileDialogElement);
