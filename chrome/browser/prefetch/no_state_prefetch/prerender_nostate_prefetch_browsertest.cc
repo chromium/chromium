@@ -1362,16 +1362,17 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest,
 
   base::RunLoop run_loop;
   bool prefetch_canceled_histogram_added = false;
-  EXPECT_TRUE(base::StatisticsRecorder::SetCallback(
-      kPrefetchCanceledHistogram,
-      base::BindRepeating(
-          [](base::RepeatingClosure quit_closure, bool* called,
-             const char* histogram_name, uint64_t name_hash,
-             base::HistogramBase::Sample sample) {
-            *called = true;
-            quit_closure.Run();
-          },
-          run_loop.QuitClosure(), &prefetch_canceled_histogram_added)));
+  auto histogram_observer =
+      std::make_unique<base::StatisticsRecorder::ScopedHistogramSampleObserver>(
+          kPrefetchCanceledHistogram,
+          base::BindRepeating(
+              [](base::RepeatingClosure quit_closure, bool* called,
+                 const char* histogram_name, uint64_t name_hash,
+                 base::HistogramBase::Sample sample) {
+                *called = true;
+                quit_closure.Run();
+              },
+              run_loop.QuitClosure(), &prefetch_canceled_histogram_added));
 
   std::unique_ptr<TestPrerender> prerender =
       PrefetchFromFile(kPrefetchPage, FINAL_STATUS_NOSTATE_PREFETCH_FINISHED);
@@ -1383,8 +1384,6 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest,
   // unsafe prefetch, which corresponded to the subresource.
   run_loop.Run();
   EXPECT_TRUE(prefetch_canceled_histogram_added);
-
-  base::StatisticsRecorder::ClearCallback(kPrefetchCanceledHistogram);
 }
 
 // Checks that prefetching a page does not add it to browsing history.

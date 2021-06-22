@@ -14,6 +14,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/metrics/histogram_base.h"
+#include "base/metrics/statistics_recorder.h"
 #include "base/metrics/user_metrics.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
@@ -273,10 +274,11 @@ class COMPONENT_EXPORT(TRACING_CPP) TraceEventDataSource
   // delta when we go to LogHistograms.
   std::map<std::string, std::unique_ptr<base::HistogramSamples>>
       startup_histogram_samples_;
-  // Stores all histogram names for which OnMetricsSampleCallback was set as an
-  // OnSampleCallback. This is done in order to avoid clearing callbacks for the
-  // other histograms.
-  std::vector<std::string> monitored_histograms_;
+  // Stores the registered histogram callbacks for which OnMetricsSampleCallback
+  // was set individually.
+  std::vector<
+      std::unique_ptr<base::StatisticsRecorder::ScopedHistogramSampleObserver>>
+      monitored_histograms_;
   bool privacy_filtering_enabled_ = false;
   std::string process_name_;
   int process_id_ = base::kNullProcessId;

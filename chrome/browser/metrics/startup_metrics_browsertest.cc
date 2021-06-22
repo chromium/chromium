@@ -55,12 +55,12 @@ IN_PROC_BROWSER_TEST_F(StartupMetricsTest, ReportsValues) {
 
     // Else, wait until the histogram is recorded.
     base::RunLoop run_loop;
-    base::StatisticsRecorder::SetCallback(
+    auto histogram_observer = std::make_unique<
+        base::StatisticsRecorder::ScopedHistogramSampleObserver>(
         histogram,
         base::BindLambdaForTesting(
             [&](const char* histogram_name, uint64_t name_hash,
                 base::HistogramBase::Sample sample) { run_loop.Quit(); }));
     run_loop.Run();
-    base::StatisticsRecorder::ClearCallback(histogram);
   }
 }

@@ -296,9 +296,9 @@ class BASE_EXPORT HistogramBase {
                              double scaled_sum,
                              std::string* output) const;
 
-  // Retrieves the callback for this histogram, if one exists, and runs it
-  // passing |sample| as the parameter.
-  void FindAndRunCallback(Sample sample) const;
+  // Retrieves the registered callbacks for this histogram, if any, and runs
+  // them passing |sample| as the parameter.
+  void FindAndRunCallbacks(Sample sample) const;
 
   // Gets a permanent string that can be used for histogram objects when the
   // original is not a code constant or held in persistent memory.

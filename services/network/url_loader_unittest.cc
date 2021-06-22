@@ -471,15 +471,14 @@ mojom::ClientSecurityStatePtr NewSecurityState() {
   return result;
 }
 
-// Returns whether monitoring was successfully set up. If yes,
-// StopMonitorBodyReadFromNetBeforePausedHistogram() needs to be called later to
-// stop monitoring.
-//
+// Returns whether monitoring was successfully set up.
 // |*output_sample| needs to stay valid until monitoring is stopped.
-WARN_UNUSED_RESULT bool StartMonitorBodyReadFromNetBeforePausedHistogram(
+std::unique_ptr<base::StatisticsRecorder::ScopedHistogramSampleObserver>
+StartMonitorBodyReadFromNetBeforePausedHistogram(
     const base::RepeatingClosure& quit_closure,
     base::HistogramBase::Sample* output_sample) {
-  return base::StatisticsRecorder::SetCallback(
+  return std::make_unique<
+      base::StatisticsRecorder::ScopedHistogramSampleObserver>(
       kBodyReadFromNetBeforePausedHistogram,
       base::BindRepeating(
           [](const base::RepeatingClosure& quit_closure,
@@ -489,11 +488,6 @@ WARN_UNUSED_RESULT bool StartMonitorBodyReadFromNetBeforePausedHistogram(
             quit_closure.Run();
           },
           quit_closure, output_sample));
-}
-
-void StopMonitorBodyReadFromNetBeforePausedHistogram() {
-  base::StatisticsRecorder::ClearCallback(
-      kBodyReadFromNetBeforePausedHistogram);
 }
 
 std::string CookieOrLineToString(const mojom::CookieOrLinePtr& cookie_or_line) {
@@ -1869,8 +1863,8 @@ TEST_F(URLLoaderTest, PauseReadingBodyFromNetBeforeResponseHeaders) {
 
   base::HistogramBase::Sample output_sample = -1;
   base::RunLoop histogram_run_loop;
-  EXPECT_TRUE(StartMonitorBodyReadFromNetBeforePausedHistogram(
-      histogram_run_loop.QuitClosure(), &output_sample));
+  auto histogram_callback = StartMonitorBodyReadFromNetBeforePausedHistogram(
+      histogram_run_loop.QuitClosure(), &output_sample);
 
   net::EmbeddedTestServer server;
   net::test_server::ControllableHttpResponse response_controller(&server,
@@ -1942,7 +1936,6 @@ TEST_F(URLLoaderTest, PauseReadingBodyFromNetBeforeResponseHeaders) {
   client()->Unbind();
   histogram_run_loop.Run();
   EXPECT_EQ(0, output_sample);
-  StopMonitorBodyReadFromNetBeforePausedHistogram();
 }
 
 TEST_F(URLLoaderTest, PauseReadingBodyFromNetWhenReadIsPending) {
@@ -1952,8 +1945,8 @@ TEST_F(URLLoaderTest, PauseReadingBodyFromNetWhenReadIsPending) {
 
   base::HistogramBase::Sample output_sample = -1;
   base::RunLoop histogram_run_loop;
-  EXPECT_TRUE(StartMonitorBodyReadFromNetBeforePausedHistogram(
-      histogram_run_loop.QuitClosure(), &output_sample));
+  auto histogram_callback = StartMonitorBodyReadFromNetBeforePausedHistogram(
+      histogram_run_loop.QuitClosure(), &output_sample);
 
   net::EmbeddedTestServer server;
   net::test_server::ControllableHttpResponse response_controller(&server,
@@ -2015,7 +2008,6 @@ TEST_F(URLLoaderTest, PauseReadingBodyFromNetWhenReadIsPending) {
   client()->Unbind();
   histogram_run_loop.Run();
   EXPECT_LE(0, output_sample);
-  StopMonitorBodyReadFromNetBeforePausedHistogram();
 }
 
 TEST_F(URLLoaderTest, ResumeReadingBodyFromNetAfterClosingConsumer) {
@@ -2024,8 +2016,8 @@ TEST_F(URLLoaderTest, ResumeReadingBodyFromNetAfterClosingConsumer) {
 
   base::HistogramBase::Sample output_sample = -1;
   base::RunLoop histogram_run_loop;
-  EXPECT_TRUE(StartMonitorBodyReadFromNetBeforePausedHistogram(
-      histogram_run_loop.QuitClosure(), &output_sample));
+  auto histogram_callback = StartMonitorBodyReadFromNetBeforePausedHistogram(
+      histogram_run_loop.QuitClosure(), &output_sample);
 
   net::EmbeddedTestServer server;
   net::test_server::ControllableHttpResponse response_controller(&server,
@@ -2081,7 +2073,6 @@ TEST_F(URLLoaderTest, ResumeReadingBodyFromNetAfterClosingConsumer) {
   delete_run_loop.Run();
   histogram_run_loop.Run();
   EXPECT_EQ(0, output_sample);
-  StopMonitorBodyReadFromNetBeforePausedHistogram();
 }
 
 TEST_F(URLLoaderTest, MultiplePauseResumeReadingBodyFromNet) {
@@ -2091,8 +2082,8 @@ TEST_F(URLLoaderTest, MultiplePauseResumeReadingBodyFromNet) {
 
   base::HistogramBase::Sample output_sample = -1;
   base::RunLoop histogram_run_loop;
-  EXPECT_TRUE(StartMonitorBodyReadFromNetBeforePausedHistogram(
-      histogram_run_loop.QuitClosure(), &output_sample));
+  auto histogram_callback = StartMonitorBodyReadFromNetBeforePausedHistogram(
+      histogram_run_loop.QuitClosure(), &output_sample);
 
   net::EmbeddedTestServer server;
   net::test_server::ControllableHttpResponse response_controller(&server,
@@ -2161,7 +2152,6 @@ TEST_F(URLLoaderTest, MultiplePauseResumeReadingBodyFromNet) {
   client()->Unbind();
   histogram_run_loop.Run();
   EXPECT_LE(0, output_sample);
-  StopMonitorBodyReadFromNetBeforePausedHistogram();
 }
 
 TEST_F(URLLoaderTest, UploadBytes) {
