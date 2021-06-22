@@ -428,6 +428,9 @@ be describing additional metrics about the same event.
   </metric>
   <metric
       name="SubFrame.LayoutInstability.AverageCumulativeShiftScore.SessionWindow.Gap5000ms">
+    <obsolete>
+      Deprecated 06/2021.
+    </obsolete>
     <summary>
       Measures the average cumulative layout shift (bit.ly/cls-explainer) that
       has occurred in a session window, in the AMP subframe. The gap between two
@@ -455,6 +458,9 @@ be describing additional metrics about the same event.
   </metric>
   <metric
       name="SubFrame.LayoutInstability.MaxCumulativeShiftScore.SessionWindow.Gap1000ms">
+    <obsolete>
+      Deprecated 06/2021.
+    </obsolete>
     <summary>
       Measures the maximum cumulative layout shift (bit.ly/cls-explainer) that
       has occurred in a session window, in the AMP subframe. The gap between two
@@ -475,6 +481,9 @@ be describing additional metrics about the same event.
   </metric>
   <metric
       name="SubFrame.LayoutInstability.MaxCumulativeShiftScore.SessionWindowByInputs.Gap1000ms.Max5000ms">
+    <obsolete>
+      Deprecated 06/2021.
+    </obsolete>
     <summary>
       Measures the maximum cumulative layout shift (bit.ly/cls-explainer) that
       has occurred in a session window, in the AMP subframe. The gap between two
@@ -486,6 +495,9 @@ be describing additional metrics about the same event.
   </metric>
   <metric
       name="SubFrame.LayoutInstability.MaxCumulativeShiftScore.SlidingWindow.Duration1000ms">
+    <obsolete>
+      Deprecated 06/2021.
+    </obsolete>
     <summary>
       Measures the maximum cumulative layout shift (bit.ly/cls-explainer) that
       has occurred in a 1000ms sliding window, in the AMP subframe. This
@@ -495,6 +507,9 @@ be describing additional metrics about the same event.
   </metric>
   <metric
       name="SubFrame.LayoutInstability.MaxCumulativeShiftScore.SlidingWindow.Duration300ms">
+    <obsolete>
+      Deprecated 06/2021.
+    </obsolete>
     <summary>
       Measures the maximum cumulative layout shift (bit.ly/cls-explainer) that
       has occurred in a 300ms sliding window, in the AMP subframe. This metric's
@@ -7128,6 +7143,9 @@ be describing additional metrics about the same event.
   </summary>
   <metric
       name="AverageCumulativeShiftScoreAfterBackForwardCacheRestore.SessionWindow.Gap5000ms">
+    <obsolete>
+      Deprecated 06/2021.
+    </obsolete>
     <summary>
       Measures the average cumulative layout shift (bit.ly/cls-explainer) that
       has occurred in a session window, after the page is restored from the
@@ -7228,6 +7246,9 @@ be describing additional metrics about the same event.
   </metric>
   <metric
       name="MaxCumulativeShiftScoreAfterBackForwardCacheRestore.SessionWindow.Gap1000ms">
+    <obsolete>
+      Deprecated 06/2021.
+    </obsolete>
     <summary>
       Measures the maximum cumulative layout shift (bit.ly/cls-explainer) that
       has occurred in a session window, after the page is restored from the
@@ -7249,6 +7270,9 @@ be describing additional metrics about the same event.
   </metric>
   <metric
       name="MaxCumulativeShiftScoreAfterBackForwardCacheRestore.SessionWindowByInputs.Gap1000ms.Max5000ms">
+    <obsolete>
+      Deprecated 06/2021.
+    </obsolete>
     <summary>
       Measures the maximum cumulative layout shift (bit.ly/cls-explainer) that
       has occurred in a session window, after the page is restored from the
@@ -7261,6 +7285,9 @@ be describing additional metrics about the same event.
   </metric>
   <metric
       name="MaxCumulativeShiftScoreAfterBackForwardCacheRestore.SlidingWindow.Duration1000ms">
+    <obsolete>
+      Deprecated 06/2021.
+    </obsolete>
     <summary>
       Measures the maximum cumulative layout shift (bit.ly/cls-explainer) that
       has occurred in a 1000ms sliding window, after the page is restored from
@@ -7270,6 +7297,9 @@ be describing additional metrics about the same event.
   </metric>
   <metric
       name="MaxCumulativeShiftScoreAfterBackForwardCacheRestore.SlidingWindow.Duration300ms">
+    <obsolete>
+      Deprecated 06/2021.
+    </obsolete>
     <summary>
       Measures the maximum cumulative layout shift (bit.ly/cls-explainer) that
       has occurred in a 300ms sliding window, after the page is restored from
@@ -11294,6 +11324,9 @@ be describing additional metrics about the same event.
   </metric>
   <metric
       name="LayoutInstability.AverageCumulativeShiftScore.SessionWindow.Gap5000ms">
+    <obsolete>
+      Deprecated 06/2021.
+    </obsolete>
     <summary>
       Measures the average cumulative layout shift (bit.ly/cls-explainer) that
       has occurred in a session window. The gap between two consecutive shifts
@@ -11352,6 +11385,9 @@ be describing additional metrics about the same event.
   </metric>
   <metric
       name="LayoutInstability.MaxCumulativeShiftScore.SessionWindow.Gap1000ms">
+    <obsolete>
+      Deprecated 06/2021.
+    </obsolete>
     <summary>
       Measures the maximum cumulative layout shift (bit.ly/cls-explainer) that
       has occurred in a session window. The gap between two consecutive shifts
@@ -11379,6 +11415,9 @@ be describing additional metrics about the same event.
   </metric>
   <metric
       name="LayoutInstability.MaxCumulativeShiftScore.SessionWindowByInputs.Gap1000ms.Max5000ms">
+    <obsolete>
+      Deprecated 06/2021.
+    </obsolete>
     <summary>
       Measures the maximum cumulative layout shift (bit.ly/cls-explainer) that
       has occurred in a session window. The gap between two consecutive shifts
@@ -11396,6 +11435,9 @@ be describing additional metrics about the same event.
   </metric>
   <metric
       name="LayoutInstability.MaxCumulativeShiftScore.SlidingWindow.Duration1000ms">
+    <obsolete>
+      Deprecated 06/2021.
+    </obsolete>
     <summary>
       Measures the maximum cumulative layout shift (bit.ly/cls-explainer) that
       has occurred in a 1000ms sliding window. This metric's integral value is
@@ -11405,6 +11447,9 @@ be describing additional metrics about the same event.
   </metric>
   <metric
       name="LayoutInstability.MaxCumulativeShiftScore.SlidingWindow.Duration300ms">
+    <obsolete>
+      Deprecated 06/2021.
+    </obsolete>
     <summary>
       Measures the maximum cumulative layout shift (bit.ly/cls-explainer) that
       has occurred in a 300ms sliding window. This metric's integral value is
