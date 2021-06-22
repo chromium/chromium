@@ -7671,7 +7671,7 @@ class RenderFrameHostManagerUnloadBrowserTest
  public:
   RenderFrameHostManagerUnloadBrowserTest() = default;
 
-  // Starts monitoring requests made to the embedded_http_server() looking for
+  // Starts monitoring requests made to the embedded_test_server() looking for
   // one made to |url|.  To be used together with WaitForMonitoredRequest().
   void StartMonitoringRequestsFor(const GURL& url) {
     base::AutoLock lock(lock_);
