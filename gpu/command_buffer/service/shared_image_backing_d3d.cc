@@ -8,6 +8,7 @@
 #include "base/trace_event/memory_dump_manager.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/resources/resource_sizes.h"
+#include "gpu/command_buffer/common/constants.h"
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_image_representation_d3d.h"
@@ -169,8 +170,7 @@ SharedImageBackingD3D::SharedState::~SharedState() {
   shared_handle_.Close();
 }
 
-bool SharedImageBackingD3D::SharedState::BeginAccessD3D12(
-    uint64_t* acquire_key) {
+bool SharedImageBackingD3D::SharedState::BeginAccessD3D12() {
   if (!dxgi_keyed_mutex_) {
     DLOG(ERROR) << "D3D12 access not supported without keyed mutex";
     return false;
@@ -179,8 +179,6 @@ bool SharedImageBackingD3D::SharedState::BeginAccessD3D12(
     DLOG(ERROR) << "Recursive BeginAccess not supported";
     return false;
   }
-  *acquire_key = acquire_key_;
-  acquire_key_++;
   acquired_for_d3d12_ = true;
   return true;
 }
@@ -202,12 +200,12 @@ bool SharedImageBackingD3D::SharedState::BeginAccessD3D11() {
     acquired_for_d3d11_count_++;
     return true;
   }
-  const HRESULT hr = dxgi_keyed_mutex_->AcquireSync(acquire_key_, INFINITE);
+  const HRESULT hr =
+      dxgi_keyed_mutex_->AcquireSync(kDXGIKeyedMutexAcquireKey, INFINITE);
   if (FAILED(hr)) {
     DLOG(ERROR) << "Unable to acquire the keyed mutex " << std::hex << hr;
     return false;
   }
-  acquire_key_++;
   acquired_for_d3d11_count_++;
   return true;
 }
@@ -220,7 +218,8 @@ void SharedImageBackingD3D::SharedState::EndAccessD3D11() {
   DCHECK_GT(acquired_for_d3d11_count_, 0);
   acquired_for_d3d11_count_--;
   if (acquired_for_d3d11_count_ == 0) {
-    const HRESULT hr = dxgi_keyed_mutex_->ReleaseSync(acquire_key_);
+    const HRESULT hr =
+        dxgi_keyed_mutex_->ReleaseSync(kDXGIKeyedMutexAcquireKey);
     if (FAILED(hr))
       DLOG(ERROR) << "Unable to release the keyed mutex " << std::hex << hr;
   }
@@ -494,8 +493,8 @@ void SharedImageBackingD3D::OnMemoryDump(
   GetGLImage()->OnMemoryDump(pmd, client_tracing_id, dump_name);
 }
 
-bool SharedImageBackingD3D::BeginAccessD3D12(uint64_t* acquire_key) {
-  return shared_state_->BeginAccessD3D12(acquire_key);
+bool SharedImageBackingD3D::BeginAccessD3D12() {
+  return shared_state_->BeginAccessD3D12();
 }
 
 void SharedImageBackingD3D::EndAccessD3D12() {
