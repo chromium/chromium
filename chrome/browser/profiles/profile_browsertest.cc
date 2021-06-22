@@ -402,11 +402,9 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, CreateOldProfileSynchronous) {
   FlushIoTaskRunnerAndSpinThreads();
 }
 
-// Flaky: http://crbug.com/393177
 // Test OnProfileCreate is called with is_new_profile set to true when
 // creating a new profile asynchronously.
-IN_PROC_BROWSER_TEST_F(ProfileBrowserTest,
-                       DISABLED_CreateNewProfileAsynchronous) {
+IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, CreateNewProfileAsynchronous) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -418,24 +416,20 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest,
                             Profile::CREATE_MODE_ASYNCHRONOUS, true, true))
       .WillOnce(testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
 
-  {
-    std::unique_ptr<Profile> profile(CreateProfile(
-        temp_dir.GetPath(), &delegate, Profile::CREATE_MODE_ASYNCHRONOUS));
+  std::unique_ptr<Profile> profile(CreateProfile(
+      temp_dir.GetPath(), &delegate, Profile::CREATE_MODE_ASYNCHRONOUS));
 
-    // Wait for the profile to be created.
-    run_loop.Run();
-    CheckChromeVersion(profile.get(), true);
-  }
+  // Wait for the profile to be created.
+  run_loop.Run();
+  CheckChromeVersion(profile.get(), true);
 
+  // Let all posted tasks complete before the profile is destroyed.
   FlushIoTaskRunnerAndSpinThreads();
 }
 
-
-// Flaky: http://crbug.com/393177
 // Test OnProfileCreate is called with is_new_profile set to false when
 // creating a profile asynchronously with an existing prefs file.
-IN_PROC_BROWSER_TEST_F(ProfileBrowserTest,
-                       DISABLED_CreateOldProfileAsynchronous) {
+IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, CreateOldProfileAsynchronous) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -448,21 +442,19 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest,
                             Profile::CREATE_MODE_ASYNCHRONOUS, true, false))
       .WillOnce(testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
 
-  {
-    std::unique_ptr<Profile> profile(CreateProfile(
-        temp_dir.GetPath(), &delegate, Profile::CREATE_MODE_ASYNCHRONOUS));
+  std::unique_ptr<Profile> profile(CreateProfile(
+      temp_dir.GetPath(), &delegate, Profile::CREATE_MODE_ASYNCHRONOUS));
 
-    // Wait for the profile to be created.
-    run_loop.Run();
-    CheckChromeVersion(profile.get(), false);
-  }
+  // Wait for the profile to be created.
+  run_loop.Run();
+  CheckChromeVersion(profile.get(), false);
 
+  // Let all posted tasks complete before the profile is destroyed.
   FlushIoTaskRunnerAndSpinThreads();
 }
 
-// Flaky: http://crbug.com/393177
 // Test that a README file is created for profiles that didn't have it.
-IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, DISABLED_ProfileReadmeCreated) {
+IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, ProfileReadmeCreated) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -474,19 +466,18 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, DISABLED_ProfileReadmeCreated) {
                             Profile::CREATE_MODE_ASYNCHRONOUS, true, true))
       .WillOnce(testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
 
-  {
-    std::unique_ptr<Profile> profile(CreateProfile(
-        temp_dir.GetPath(), &delegate, Profile::CREATE_MODE_ASYNCHRONOUS));
+  std::unique_ptr<Profile> profile(CreateProfile(
+      temp_dir.GetPath(), &delegate, Profile::CREATE_MODE_ASYNCHRONOUS));
 
-    // Wait for the profile to be created.
-    run_loop.Run();
+  // Wait for the profile to be created.
+  run_loop.Run();
 
-    // Verify that README exists.
-    EXPECT_TRUE(
-        base::PathExists(temp_dir.GetPath().Append(chrome::kReadmeFilename)));
-  }
-
+  // Wait until README is created on a background thread.
   FlushIoTaskRunnerAndSpinThreads();
+
+  // Verify that README exists.
+  EXPECT_TRUE(
+      base::PathExists(temp_dir.GetPath().Append(chrome::kReadmeFilename)));
 }
 
 // Test that repeated setting of exit type is handled correctly.
