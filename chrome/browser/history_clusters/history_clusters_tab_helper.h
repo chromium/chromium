@@ -74,7 +74,7 @@ class HistoryClustersTabHelper
   void WebContentsDestroyed() override;
 
   // Helper functions to return the memories and history services.
-  // `GetHistoryClustersService()` will never return nullptr.
+  // `GetHistoryClustersService()` may return nullptr (in tests).
   history_clusters::HistoryClustersService* GetHistoryClustersService();
   // `GetHistoryService()` may return nullptr.
   history::HistoryService* GetHistoryService();

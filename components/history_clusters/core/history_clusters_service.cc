@@ -117,6 +117,8 @@ HistoryClustersService::HistoryClustersService(
     history::HistoryService* history_service,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : history_service_(history_service) {
+  DCHECK(history_service_);
+
   backend_ = std::make_unique<RemoteClusteringBackend>(
       url_loader_factory,
       base::BindRepeating(&HistoryClustersService::NotifyDebugMessage,

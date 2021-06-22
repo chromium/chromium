@@ -120,12 +120,18 @@ void HistoryClustersTabHelper::OnOmniboxUrlCopied() {
   // were opened in a new tab (e.g. chrome://crash or chrome://invalid-page).
   if (navigation_ids_.empty())
     return;
+
   auto* history_clusters_service = GetHistoryClustersService();
+  if (!history_clusters_service)
+    return;
+
   // It's possible that the last navigation is complete if the tab crashed and a
   // new navigation hasn't began.
   if (!history_clusters_service->HasIncompleteVisitContextAnnotations(
-          navigation_ids_.back()))
+          navigation_ids_.back())) {
     return;
+  }
+
   history_clusters_service
       ->GetIncompleteVisitContextAnnotations(navigation_ids_.back())
       .context_annotations.omnibox_url_copied = true;
@@ -139,8 +145,12 @@ void HistoryClustersTabHelper::OnOmniboxUrlShared() {
 void HistoryClustersTabHelper::OnUpdatedHistoryForNavigation(
     int64_t navigation_id,
     const GURL& url) {
-  StartNewNavigationIfNeeded(navigation_id);
   auto* history_clusters_service = GetHistoryClustersService();
+  if (!history_clusters_service)
+    return;
+
+  StartNewNavigationIfNeeded(navigation_id);
+
   auto& incomplete_visit_context_annotations =
       history_clusters_service->GetOrCreateIncompleteVisitContextAnnotations(
           navigation_id);
@@ -198,7 +208,11 @@ void HistoryClustersTabHelper::OnUpdatedHistoryForNavigation(
 
 void HistoryClustersTabHelper::TagNavigationAsExpectingUkmNavigationComplete(
     int64_t navigation_id) {
-  GetHistoryClustersService()
+  auto* history_clusters_service = GetHistoryClustersService();
+  if (!history_clusters_service)
+    return;
+
+  history_clusters_service
       ->GetOrCreateIncompleteVisitContextAnnotations(navigation_id)
       .status.expect_ukm_page_end_signals = true;
   StartNewNavigationIfNeeded(navigation_id);
@@ -209,6 +223,9 @@ HistoryClustersTabHelper::OnUkmNavigationComplete(
     int64_t navigation_id,
     const page_load_metrics::PageEndReason page_end_reason) {
   auto* history_clusters_service = GetHistoryClustersService();
+  if (!history_clusters_service)
+    return history::VisitContextAnnotations();
+
   auto& incomplete_visit_context_annotations =
       history_clusters_service->GetIncompleteVisitContextAnnotations(
           navigation_id);
@@ -250,6 +267,9 @@ void HistoryClustersTabHelper::StartNewNavigationIfNeeded(
 void HistoryClustersTabHelper::RecordPageEndMetricsIfNeeded(
     int64_t navigation_id) {
   auto* history_clusters_service = GetHistoryClustersService();
+  if (!history_clusters_service)
+    return;
+
   if (!history_clusters_service->HasIncompleteVisitContextAnnotations(
           navigation_id))
     return;
@@ -308,10 +328,8 @@ HistoryClustersTabHelper::GetHistoryClustersService() {
     NOTREACHED();
     return nullptr;
   }
-  auto* service = HistoryClustersServiceFactory::GetForBrowserContext(
+  return HistoryClustersServiceFactory::GetForBrowserContext(
       web_contents()->GetBrowserContext());
-  DCHECK(service);
-  return service;
 }
 
 history::HistoryService* HistoryClustersTabHelper::GetHistoryService() {

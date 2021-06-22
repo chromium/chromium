@@ -39,6 +39,12 @@ KeyedService* HistoryClustersServiceFactory::BuildServiceInstanceFor(
   auto* profile = Profile::FromBrowserContext(context);
   auto* history_service = HistoryServiceFactory::GetForProfile(
       profile, ServiceAccessType::EXPLICIT_ACCESS);
+
+  // The clusters service can't function without a HistoryService. This happens
+  // in some unit tests.
+  if (!history_service)
+    return nullptr;
+
   auto url_loader_factory = context->GetDefaultStoragePartition()
                                 ->GetURLLoaderFactoryForBrowserProcess();
   return new history_clusters::HistoryClustersService(history_service,

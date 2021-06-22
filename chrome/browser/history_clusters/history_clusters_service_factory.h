@@ -17,6 +17,7 @@ class HistoryClustersService;
 // Chrome history into useful Memories to be surfaced in UI.
 class HistoryClustersServiceFactory : public BrowserContextKeyedServiceFactory {
  public:
+  // This can return nullptr in tests.
   static history_clusters::HistoryClustersService* GetForBrowserContext(
       content::BrowserContext* browser_context);
 

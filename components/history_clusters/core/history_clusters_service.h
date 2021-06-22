@@ -117,7 +117,8 @@ class HistoryClustersService : public KeyedService {
   std::map<int64_t, IncompleteVisitContextAnnotations>
       incomplete_visit_context_annotations_;
 
-  history::HistoryService* history_service_;
+  // Non-owning pointer, but never nullptr.
+  history::HistoryService* const history_service_;
 
   // Helper service to handle communicating with the remote model. This will be
   // used for debugging only; the launch ready feature will use a local model
