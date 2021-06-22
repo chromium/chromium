@@ -38,7 +38,10 @@ MerchantViewerDataManagerFactory::GetInstance() {
 MerchantViewerDataManagerFactory::MerchantViewerDataManagerFactory()
     : BrowserContextKeyedServiceFactory(
           "MerchantViewerDataManager",
-          BrowserContextDependencyManager::GetInstance()) {}
+          BrowserContextDependencyManager::GetInstance()) {
+  DependsOn(ProfileProtoDBFactory<
+            MerchantViewerDataManager::MerchantSignalProto>::GetInstance());
+}
 
 MerchantViewerDataManagerFactory::~MerchantViewerDataManagerFactory() = default;
 

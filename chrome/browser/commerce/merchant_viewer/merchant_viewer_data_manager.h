@@ -41,7 +41,6 @@ class MerchantViewerDataManager : public KeyedService {
   ProfileProtoDB<merchant_signal_db::MerchantSignalContentProto>* GetDB();
 
  private:
-  ProfileProtoDB<merchant_signal_db::MerchantSignalContentProto>* proto_db_;
   void OnLoadCallbackSingleEntry(bool success, MerchantSignals data);
   void OnLoadAllEntriesForOriginsCallback(
       const base::flat_set<std::string>& deleted_hostnames,
@@ -51,6 +50,8 @@ class MerchantViewerDataManager : public KeyedService {
                                             base::Time end,
                                             bool success,
                                             MerchantSignals data);
+
+  ProfileProtoDB<merchant_signal_db::MerchantSignalContentProto>* proto_db_;
   base::WeakPtrFactory<MerchantViewerDataManager> weak_ptr_factory_{this};
 };
 
