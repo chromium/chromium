@@ -448,10 +448,19 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   // Resolves m_multisampleFBO into m_fbo, if multisampling.
   void ResolveIfNeeded();
 
-  // This method checks if the context or the resource has been destroyed,
-  // ensures that there are changes in the content, check that the context is
-  // not lost and resolve the multisampled buffer if needed.
-  bool CheckForDestructionChangeAndResolveIfNeeded();
+  enum CheckForDestructionResult {
+    DestroyedOrLost,
+    ContentsUnchanged,
+    ContentsResolvedIfNeeded
+  };
+
+  // This method:
+  //  - Checks if the context or the resource has been destroyed
+  //  - Checks whether there are changes in the content
+  //  - Checks whether the context has been lost
+  // If all of the above checks pass, resolves the multisampled
+  // renderbuffer if needed.
+  CheckForDestructionResult CheckForDestructionAndChangeAndResolveIfNeeded();
 
   bool PrepareTransferableResourceInternal(
       cc::SharedBitmapIdRegistrar* bitmap_registrar,

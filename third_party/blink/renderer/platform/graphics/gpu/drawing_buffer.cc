@@ -346,7 +346,8 @@ bool DrawingBuffer::PrepareTransferableResource(
       bitmap_registrar, out_resource, out_release_callback, force_gpu_result);
 }
 
-bool DrawingBuffer::CheckForDestructionChangeAndResolveIfNeeded() {
+DrawingBuffer::CheckForDestructionResult
+DrawingBuffer::CheckForDestructionAndChangeAndResolveIfNeeded() {
   DCHECK(state_restorer_);
   if (destruction_in_progress_) {
     // It can be hit in the following sequence.
@@ -354,7 +355,7 @@ bool DrawingBuffer::CheckForDestructionChangeAndResolveIfNeeded() {
     // 2. The compositor begins the frame.
     // 3. Javascript makes a context lost using WEBGL_lose_context extension.
     // 4. Here.
-    return false;
+    return DestroyedOrLost;
   }
 
   // There used to be a DCHECK(!is_hidden_) here, but in some tab
@@ -362,20 +363,20 @@ bool DrawingBuffer::CheckForDestructionChangeAndResolveIfNeeded() {
   // backgrounded tabs.
 
   if (!contents_changed_)
-    return false;
+    return ContentsUnchanged;
 
   // If the context is lost, we don't know if we should be producing GPU or
   // software frames, until we get a new context, since the compositor will
   // be trying to get a new context and may change modes.
   if (gl_->GetGraphicsResetStatusKHR() != GL_NO_ERROR)
-    return false;
+    return DestroyedOrLost;
 
   TRACE_EVENT0("blink,rail", "DrawingBuffer::prepareMailbox");
 
   // Resolve the multisampled buffer into the texture attached to fbo_.
   ResolveIfNeeded();
 
-  return true;
+  return ContentsResolvedIfNeeded;
 }
 
 bool DrawingBuffer::PrepareTransferableResourceInternal(
@@ -383,7 +384,8 @@ bool DrawingBuffer::PrepareTransferableResourceInternal(
     viz::TransferableResource* out_resource,
     viz::ReleaseCallback* out_release_callback,
     bool force_gpu_result) {
-  if (!CheckForDestructionChangeAndResolveIfNeeded())
+  if (CheckForDestructionAndChangeAndResolveIfNeeded() !=
+      ContentsResolvedIfNeeded)
     return false;
 
   if (!IsUsingGpuCompositing() && !force_gpu_result) {
@@ -399,7 +401,7 @@ scoped_refptr<StaticBitmapImage>
 DrawingBuffer::GetUnacceleratedStaticBitmapImage(bool flip_y) {
   ScopedStateRestorer scoped_state_restorer(this);
 
-  if (!CheckForDestructionChangeAndResolveIfNeeded())
+  if (CheckForDestructionAndChangeAndResolveIfNeeded() == DestroyedOrLost)
     return nullptr;
 
   SkBitmap bitmap;
