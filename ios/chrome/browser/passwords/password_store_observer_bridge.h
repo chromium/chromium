@@ -7,7 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-
 #include "components/password_manager/core/browser/password_store.h"
 
 // Protocol to observe changes on the Password Store.
@@ -20,7 +19,7 @@
 
 // Objective-C bridge to observe changes in the Password Store.
 class PasswordStoreObserverBridge
-    : public password_manager::PasswordStore::Observer {
+    : public password_manager::PasswordStoreInterface::Observer {
  public:
   explicit PasswordStoreObserverBridge(id<PasswordStoreObserver> observer);
 
@@ -29,8 +28,14 @@ class PasswordStoreObserverBridge
   PasswordStoreObserverBridge& operator=(const PasswordStoreObserverBridge&) =
       delete;
 
+  // PasswordStoreInterface::Observer:
   void OnLoginsChanged(
+      password_manager::PasswordStoreInterface* store,
       const password_manager::PasswordStoreChangeList& changes) override;
+  void OnLoginsRetained(password_manager::PasswordStoreInterface* store,
+                        const std::vector<password_manager::PasswordForm>&
+                            retained_passwords) override;
+
   __weak id<PasswordStoreObserver> observer_ = nil;
 };
 

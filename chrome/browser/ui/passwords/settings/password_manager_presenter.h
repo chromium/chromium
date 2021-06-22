@@ -29,7 +29,7 @@
 namespace password_manager {
 class PasswordManagerClient;
 struct PasswordForm;
-}
+}  // namespace password_manager
 
 class PasswordUIView;
 
@@ -37,7 +37,7 @@ class PasswordUIView;
 // interact with PasswordStore. It provides completion callbacks for
 // PasswordStore operations and updates the view on PasswordStore changes.
 class PasswordManagerPresenter
-    : public password_manager::PasswordStore::Observer,
+    : public password_manager::PasswordStoreInterface::Observer,
       public password_manager::PasswordStoreConsumer,
       public password_manager::CredentialProviderInterface {
  public:
@@ -47,9 +47,13 @@ class PasswordManagerPresenter
 
   void Initialize();
 
-  // PasswordStore::Observer implementation.
+  // PasswordStoreInterface::Observer implementation.
   void OnLoginsChanged(
+      password_manager::PasswordStoreInterface* store,
       const password_manager::PasswordStoreChangeList& changes) override;
+  void OnLoginsRetained(password_manager::PasswordStoreInterface* store,
+                        const std::vector<password_manager::PasswordForm>&
+                            retained_passwords) override;
 
   // Repopulates the password and exception entries.
   void UpdatePasswordLists();

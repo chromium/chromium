@@ -75,8 +75,9 @@ TYPED_TEST_P(PasswordStoreOriginTest,
   base::RepeatingCallback<bool(const GURL&)> filter =
       base::BindRepeating(&matchesOrigin, origin);
   base::RunLoop run_loop;
-  EXPECT_CALL(observer, OnLoginsChanged(ElementsAre(PasswordStoreChange(
-                            PasswordStoreChange::REMOVE, *form))));
+  EXPECT_CALL(observer,
+              OnLoginsChanged(_, ElementsAre(PasswordStoreChange(
+                                     PasswordStoreChange::REMOVE, *form))));
   this->delegate_.store()->RemoveLoginsByURLAndTime(
       filter, base::Time(), base::Time::Max(), run_loop.QuitClosure());
   run_loop.Run();
@@ -104,8 +105,9 @@ TYPED_TEST_P(PasswordStoreOriginTest,
   base::RepeatingCallback<bool(const GURL&)> filter =
       base::BindRepeating(&matchesOrigin, fitting_origin);
   base::RunLoop run_loop;
-  EXPECT_CALL(observer, OnLoginsChanged(ElementsAre(PasswordStoreChange(
-                            PasswordStoreChange::REMOVE, *form))));
+  EXPECT_CALL(observer,
+              OnLoginsChanged(_, ElementsAre(PasswordStoreChange(
+                                     PasswordStoreChange::REMOVE, *form))));
   this->delegate_.store()->RemoveLoginsByURLAndTime(
       filter, base::Time(), base::Time::Max(), run_loop.QuitClosure());
   run_loop.Run();
@@ -129,7 +131,7 @@ TYPED_TEST_P(PasswordStoreOriginTest,
   base::RepeatingCallback<bool(const GURL&)> filter =
       base::BindRepeating(&matchesOrigin, other_origin);
   base::RunLoop run_loop;
-  EXPECT_CALL(observer, OnLoginsChanged(_)).Times(0);
+  EXPECT_CALL(observer, OnLoginsChanged).Times(0);
   this->delegate_.store()->RemoveLoginsByURLAndTime(
       filter, base::Time(), base::Time::Max(), run_loop.QuitClosure());
   run_loop.Run();
@@ -154,7 +156,7 @@ TYPED_TEST_P(PasswordStoreOriginTest,
   base::Time time_after_creation_date =
       form->date_created + base::TimeDelta::FromDays(1);
   base::RunLoop run_loop;
-  EXPECT_CALL(observer, OnLoginsChanged(_)).Times(0);
+  EXPECT_CALL(observer, OnLoginsChanged).Times(0);
   this->delegate_.store()->RemoveLoginsByURLAndTime(
       filter, time_after_creation_date, base::Time::Max(),
       run_loop.QuitClosure());

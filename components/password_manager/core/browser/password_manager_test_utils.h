@@ -99,12 +99,21 @@ MATCHER_P(UnorderedPasswordFormElementsAre, expectations, "") {
                                              result_listener->stream());
 }
 
-class MockPasswordStoreObserver : public PasswordStore::Observer {
+class MockPasswordStoreObserver : public PasswordStoreInterface::Observer {
  public:
   MockPasswordStoreObserver();
   ~MockPasswordStoreObserver() override;
 
-  MOCK_METHOD1(OnLoginsChanged, void(const PasswordStoreChangeList& changes));
+  MOCK_METHOD((void),
+              OnLoginsChanged,
+              (PasswordStoreInterface * store,
+               const PasswordStoreChangeList& changes),
+              (override));
+  MOCK_METHOD((void),
+              OnLoginsRetained,
+              (PasswordStoreInterface * store,
+               const std::vector<PasswordForm>& retained_passwords),
+              (override));
 };
 
 class MockPasswordReuseDetectorConsumer : public PasswordReuseDetectorConsumer {
@@ -112,12 +121,14 @@ class MockPasswordReuseDetectorConsumer : public PasswordReuseDetectorConsumer {
   MockPasswordReuseDetectorConsumer();
   ~MockPasswordReuseDetectorConsumer() override;
 
-  MOCK_METHOD5(OnReuseCheckDone,
-               void(bool,
-                    size_t,
-                    absl::optional<PasswordHashData>,
-                    const std::vector<MatchingReusedCredential>&,
-                    int));
+  MOCK_METHOD((void),
+              OnReuseCheckDone,
+              (bool,
+               size_t,
+               absl::optional<PasswordHashData>,
+               const std::vector<MatchingReusedCredential>&,
+               int),
+              (override));
 };
 
 // Matcher class used to compare PasswordHashData in tests.

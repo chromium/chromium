@@ -30,7 +30,7 @@ struct PasswordForm;
 // in the new password to be checked, whereas other password edit operations
 // (such as visiting a change password form and then updating the password in
 // Chrome) should not trigger a check.
-class SavedPasswordsPresenter : public PasswordStore::Observer,
+class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
                                 public PasswordStoreConsumer {
  public:
   using SavedPasswordsView = base::span<const PasswordForm>;
@@ -114,10 +114,12 @@ class SavedPasswordsPresenter : public PasswordStore::Observer,
 
  private:
   using DuplicatePasswordsMap = std::multimap<std::string, PasswordForm>;
-  // PasswordStore::Observer
-  void OnLoginsChanged(const PasswordStoreChangeList& changes) override;
-  void OnLoginsChangedIn(PasswordStoreInterface* store,
-                         const PasswordStoreChangeList& changes) override;
+  // PasswordStoreInterface::Observer
+  void OnLoginsChanged(PasswordStoreInterface* store,
+                       const PasswordStoreChangeList& changes) override;
+  void OnLoginsRetained(
+      PasswordStoreInterface* store,
+      const std::vector<PasswordForm>& retained_passwords) override;
 
   // PasswordStoreConsumer:
   void OnGetPasswordStoreResults(

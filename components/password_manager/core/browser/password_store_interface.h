@@ -34,24 +34,19 @@ class PasswordStoreInterface : public RefcountedKeyedService {
     // Notifies the observer that password data changed (e.g. added or changed).
     // Don't rely on `changes` containing REMOVED entries. Certain stores don't
     // propagate that information as soon as the unified password manager works.
+    // The passed `store` issued the observer notification in case there might
+    // be multiple ones.
     // Instead, use `OnLoginsRetained` to validate tracked/shown passwords.
-    virtual void OnLoginsChanged(const PasswordStoreChangeList& changes) = 0;
-
-    // Like OnLoginsChanged(), but also receives the originating
-    // PasswordStoreCore as a parameter. This is useful for observers that
-    // observe changes in both the profile-scoped and the account-scoped store.
-    // The default implementation simply calls OnLoginsChanged(), so observers
-    // that don't care about the store can just ignore this.
-    // TODO(https://crbug.com/1218897): Merge into OnLoginsChanged.
-    virtual void OnLoginsChangedIn(PasswordStoreInterface* store,
-                                   const PasswordStoreChangeList& changes);
+    virtual void OnLoginsChanged(PasswordStoreInterface* store,
+                                 const PasswordStoreChangeList& changes) = 0;
 
     // Notifies the observer that password data changed. Will be called from
     // the UI thread. The `retained_passwords` are a complete list of passwords
-    // and blocklisted sites.
-    // TODO(https://crbug.com/1218897): Make pure virtual.
+    // and blocklisted sites. The passed `store` issued the observer
+    // notification in case there might be multiple ones.
     virtual void OnLoginsRetained(
-        const std::vector<PasswordForm>& retained_passwords);
+        PasswordStoreInterface* store,
+        const std::vector<PasswordForm>& retained_passwords) = 0;
 
    protected:
     virtual ~Observer() = default;

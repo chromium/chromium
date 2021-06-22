@@ -738,7 +738,7 @@ TEST_F(ManagePasswordsUIControllerTest, BlocklistedElsewhere) {
   password_manager::PasswordStoreChange change(
       password_manager::PasswordStoreChange::ADD, test_local_form());
   password_manager::PasswordStoreChangeList list(1, change);
-  controller()->OnLoginsChanged(list);
+  controller()->OnLoginsChanged(/*unused source store:*/ nullptr, list);
 
   EXPECT_EQ(url::Origin::Create(test_local_form().url),
             controller()->GetOrigin());

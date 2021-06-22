@@ -281,6 +281,7 @@ void CredentialProviderService::OnPrimaryAccountChanged(
 }
 
 void CredentialProviderService::OnLoginsChanged(
+    password_manager::PasswordStoreInterface* /*store*/,
     const PasswordStoreChangeList& changes) {
   std::vector<std::unique_ptr<PasswordForm>> forms_to_add;
   std::vector<std::unique_ptr<PasswordForm>> forms_to_remove;
@@ -322,6 +323,11 @@ void CredentialProviderService::OnLoginsChanged(
   } else {
     std::move(callback).Run(std::move(forms_to_add));
   }
+}
+
+void CredentialProviderService::OnLoginsRetained(
+    password_manager::PasswordStoreInterface* /*store*/,
+    const std::vector<password_manager::PasswordForm>& /*retained_passwords*/) {
 }
 
 void CredentialProviderService::OnInjectedAffiliationAfterLoginsChanged(

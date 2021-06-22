@@ -25,7 +25,7 @@ class SyncService;
 class CredentialProviderService
     : public KeyedService,
       public password_manager::PasswordStoreConsumer,
-      public password_manager::PasswordStore::Observer,
+      public password_manager::PasswordStoreInterface::Observer,
       public signin::IdentityManager::Observer,
       public syncer::SyncServiceObserver {
  public:
@@ -78,9 +78,13 @@ class CredentialProviderService
       std::vector<std::unique_ptr<password_manager::PasswordForm>> results)
       override;
 
-  // PasswordStore::Observer:
+  // PasswordStoreInterface::Observer:
   void OnLoginsChanged(
+      password_manager::PasswordStoreInterface* store,
       const password_manager::PasswordStoreChangeList& changes) override;
+  void OnLoginsRetained(password_manager::PasswordStoreInterface* store,
+                        const std::vector<password_manager::PasswordForm>&
+                            retained_passwords) override;
 
   // Completion called after the affiliations are injected in the added forms.
   // If no affiliation matcher is available, it is called right away.

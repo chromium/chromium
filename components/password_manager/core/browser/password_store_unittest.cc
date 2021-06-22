@@ -292,7 +292,7 @@ TEST_F(PasswordStoreTest, UpdateLoginPrimaryKeyFields) {
 
   std::unique_ptr<PasswordForm> new_form(
       FillPasswordFormWithData(kTestCredentials[1]));
-  EXPECT_CALL(mock_observer, OnLoginsChanged(testing::SizeIs(2u)));
+  EXPECT_CALL(mock_observer, OnLoginsChanged(_, testing::SizeIs(2u)));
   PasswordForm old_primary_key;
   old_primary_key.signon_realm = old_form->signon_realm;
   old_primary_key.url = old_form->url;
@@ -341,7 +341,7 @@ TEST_F(PasswordStoreTest, RemoveLoginsCreatedBetweenCallbackIsCalled) {
   MockPasswordStoreObserver mock_observer;
   store->AddObserver(&mock_observer);
 
-  EXPECT_CALL(mock_observer, OnLoginsChanged(testing::SizeIs(1u)));
+  EXPECT_CALL(mock_observer, OnLoginsChanged(_, testing::SizeIs(1u)));
   base::RunLoop run_loop;
   store->RemoveLoginsCreatedBetween(base::Time::FromDoubleT(0),
                                     base::Time::FromDoubleT(2),
@@ -893,9 +893,9 @@ TEST_F(PasswordStoreTest, UpdatePasswordsStoredForAffiliatedWebsites) {
     //       normally be trigger by Sync.
     MockPasswordStoreObserver mock_observer;
     store->AddObserver(&mock_observer);
-    EXPECT_CALL(
-        mock_observer,
-        OnLoginsChanged(testing::SizeIs(kExpectedNumberOfPropagatedUpdates)));
+    EXPECT_CALL(mock_observer,
+                OnLoginsChanged(
+                    _, testing::SizeIs(kExpectedNumberOfPropagatedUpdates)));
     if (test_remove_and_add_login) {
       store->ScheduleTask(
           base::BindOnce(IgnoreResult(&PasswordStore::RemoveLoginSync), store,
@@ -1137,7 +1137,7 @@ TEST_F(PasswordStoreTest, Unblocklisting) {
   store->AddObserver(&mock_observer);
 
   // Only the related non-PSL match should be deleted.
-  EXPECT_CALL(mock_observer, OnLoginsChanged(testing::SizeIs(1u)));
+  EXPECT_CALL(mock_observer, OnLoginsChanged(_, testing::SizeIs(1u)));
   base::RunLoop run_loop;
   PasswordFormDigest observed_form_digest = {
       PasswordForm::Scheme::kHtml, kTestWebRealm1, GURL(kTestWebOrigin1)};

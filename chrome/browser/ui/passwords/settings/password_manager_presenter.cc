@@ -261,7 +261,15 @@ void PasswordManagerPresenter::Initialize() {
 }
 
 void PasswordManagerPresenter::OnLoginsChanged(
-    const password_manager::PasswordStoreChangeList& changes) {
+    password_manager::PasswordStoreInterface* /*store*/,
+    const password_manager::PasswordStoreChangeList& /*changes*/) {
+  // Entire maps are updated for convenience.
+  UpdatePasswordLists();
+}
+
+void PasswordManagerPresenter::OnLoginsRetained(
+    password_manager::PasswordStoreInterface* /*store*/,
+    const std::vector<password_manager::PasswordForm>& /*retained_passwords*/) {
   // Entire maps are updated for convenience.
   UpdatePasswordLists();
 }

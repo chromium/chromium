@@ -17,8 +17,9 @@ namespace login_detection {
 
 // Maintains the sites that are saved in password store. These sites will be
 // treated as logged-in.
-class PasswordStoreSites : public password_manager::PasswordStore::Observer,
-                           public password_manager::PasswordStoreConsumer {
+class PasswordStoreSites
+    : public password_manager::PasswordStoreInterface::Observer,
+      public password_manager::PasswordStoreConsumer {
  public:
   explicit PasswordStoreSites(
       scoped_refptr<password_manager::PasswordStore> store);
@@ -30,9 +31,13 @@ class PasswordStoreSites : public password_manager::PasswordStore::Observer,
   bool IsSiteInPasswordStore(const GURL& url) const;
 
  private:
-  // PasswordStore::Observer:
+  // PasswordStoreInterface::Observer:
   void OnLoginsChanged(
+      password_manager::PasswordStoreInterface* store,
       const password_manager::PasswordStoreChangeList& changes) override;
+  void OnLoginsRetained(password_manager::PasswordStoreInterface* store,
+                        const std::vector<password_manager::PasswordForm>&
+                            retained_passwords) override;
 
   // PasswordStoreConsumer:
   void OnGetPasswordStoreResults(

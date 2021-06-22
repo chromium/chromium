@@ -28,7 +28,16 @@ PasswordStoreSites::~PasswordStoreSites() {
 }
 
 void PasswordStoreSites::OnLoginsChanged(
-    const password_manager::PasswordStoreChangeList& changes) {
+    password_manager::PasswordStoreInterface* /*store*/,
+    const password_manager::PasswordStoreChangeList& /*changes*/) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Fetch the login list again.
+  password_store_->GetAllLogins(this);
+}
+
+void PasswordStoreSites::OnLoginsRetained(
+    password_manager::PasswordStoreInterface* /*store*/,
+    const std::vector<password_manager::PasswordForm>& /*retained_passwords*/) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Fetch the login list again.
   password_store_->GetAllLogins(this);

@@ -220,16 +220,14 @@ void SavedPasswordsPresenter::NotifySavedPasswordsChanged() {
 }
 
 void SavedPasswordsPresenter::OnLoginsChanged(
-    const PasswordStoreChangeList& changes) {
-  // This class overrides OnLoginsChangedIn() (the version of this
-  // method that also receives the originating store), so the store-less version
-  // never gets called.
-  NOTREACHED();
-}
-
-void SavedPasswordsPresenter::OnLoginsChangedIn(
     PasswordStoreInterface* store,
     const PasswordStoreChangeList& changes) {
+  store->GetAllLoginsWithAffiliationAndBrandingInformation(this);
+}
+
+void SavedPasswordsPresenter::OnLoginsRetained(
+    PasswordStoreInterface* store,
+    const std::vector<PasswordForm>& retained_passwords) {
   store->GetAllLoginsWithAffiliationAndBrandingInformation(this);
 }
 

@@ -313,6 +313,7 @@ void ManagePasswordsUIController::NotifyUnsyncedCredentialsWillBeDeleted(
 }
 
 void ManagePasswordsUIController::OnLoginsChanged(
+    password_manager::PasswordStoreInterface* /*store*/,
     const password_manager::PasswordStoreChangeList& changes) {
   password_manager::ui::State current_state = GetState();
   passwords_data_.ProcessLoginsChanged(changes);
@@ -320,6 +321,11 @@ void ManagePasswordsUIController::OnLoginsChanged(
     ClearPopUpFlagForBubble();
     UpdateBubbleAndIconVisibility();
   }
+}
+
+void ManagePasswordsUIController::OnLoginsRetained(
+    password_manager::PasswordStoreInterface* /*store*/,
+    const std::vector<password_manager::PasswordForm>& /*retained_passwords*/) {
 }
 
 void ManagePasswordsUIController::UpdateIconAndBubbleState(

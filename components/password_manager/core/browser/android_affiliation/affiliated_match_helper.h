@@ -31,14 +31,14 @@ struct PasswordForm;
 // realms affiliated with the web site containing the observed form. This is
 // achieved by implementing the "proactive fetching" strategy for interacting
 // with the AndroidAffiliationService (see android_affiliation_service.h for
-// details), with Android applications and web realms playing the role of 
+// details), with Android applications and web realms playing the role of
 // facet Y.
 //
 // More specifically, this class prefetches affiliation information on start-up
 // for all credentials stored in the PasswordStore. Then, the actual GetLogins()
 // can be restricted to the cache, so that realms of the observed web forms will
 // never be looked up against the Affiliation API.
-class AffiliatedMatchHelper : public PasswordStore::Observer,
+class AffiliatedMatchHelper : public PasswordStoreInterface::Observer,
                               public PasswordStoreConsumer {
  public:
   // Callback to returns the list of affiliated signon_realms (as per defined in
@@ -136,8 +136,12 @@ class AffiliatedMatchHelper : public PasswordStore::Observer,
       const AffiliatedFacets& results,
       bool success);
 
-  // PasswordStore::Observer:
-  void OnLoginsChanged(const PasswordStoreChangeList& changes) override;
+  // PasswordStoreInterface::Observer:
+  void OnLoginsChanged(PasswordStoreInterface* store,
+                       const PasswordStoreChangeList& changes) override;
+  void OnLoginsRetained(
+      PasswordStoreInterface* store,
+      const std::vector<PasswordForm>& retained_passwords) override;
 
   // PasswordStoreConsumer:
   void OnGetPasswordStoreResults(

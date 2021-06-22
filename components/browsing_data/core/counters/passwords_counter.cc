@@ -36,8 +36,9 @@ bool IsPasswordSyncEnabled(const syncer::SyncService* sync_service) {
 // PasswordStoreFetcher ----------------------------------
 
 // Fetches passswords and observes a PasswordStore.
-class PasswordStoreFetcher : public password_manager::PasswordStoreConsumer,
-                             public password_manager::PasswordStore::Observer {
+class PasswordStoreFetcher
+    : public password_manager::PasswordStoreConsumer,
+      public password_manager::PasswordStoreInterface::Observer {
  public:
   PasswordStoreFetcher(scoped_refptr<password_manager::PasswordStore> store,
                        base::RepeatingClosure logins_changed_closure);
@@ -52,8 +53,13 @@ class PasswordStoreFetcher : public password_manager::PasswordStoreConsumer,
 
   // Called when the contents of the password store change. Triggers new
   // counting.
+  // PasswordStoreInterface::Observer:
   void OnLoginsChanged(
+      password_manager::PasswordStoreInterface* store,
       const password_manager::PasswordStoreChangeList& changes) override;
+  void OnLoginsRetained(password_manager::PasswordStoreInterface* store,
+                        const std::vector<password_manager::PasswordForm>&
+                            retained_passwords) override;
 
   int num_passwords() { return num_passwords_; }
   const std::vector<std::string>& domain_examples() { return domain_examples_; }
@@ -83,7 +89,14 @@ PasswordStoreFetcher::~PasswordStoreFetcher() {
 }
 
 void PasswordStoreFetcher::OnLoginsChanged(
-    const password_manager::PasswordStoreChangeList& changes) {
+    password_manager::PasswordStoreInterface* /*store*/,
+    const password_manager::PasswordStoreChangeList& /*changes*/) {
+  logins_changed_closure_.Run();
+}
+
+void PasswordStoreFetcher::OnLoginsRetained(
+    password_manager::PasswordStoreInterface* /*store*/,
+    const std::vector<password_manager::PasswordForm>& /*retained_passwords*/) {
   logins_changed_closure_.Run();
 }
 

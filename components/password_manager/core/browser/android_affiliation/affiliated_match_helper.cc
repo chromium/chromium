@@ -201,6 +201,7 @@ void AffiliatedMatchHelper::CompleteGetAffiliatedWebRealms(
 }
 
 void AffiliatedMatchHelper::OnLoginsChanged(
+    PasswordStoreInterface* /*store*/,
     const PasswordStoreChangeList& changes) {
   std::vector<FacetURI> facet_uris_to_trim;
   for (const PasswordStoreChange& change : changes) {
@@ -235,6 +236,10 @@ void AffiliatedMatchHelper::OnLoginsChanged(
   for (const FacetURI& facet_uri : facet_uris_to_trim)
     affiliation_service_->TrimCacheForFacetURI(facet_uri);
 }
+
+void AffiliatedMatchHelper::OnLoginsRetained(
+    PasswordStoreInterface* /*store*/,
+    const std::vector<PasswordForm>& retained_passwords) {}
 
 void AffiliatedMatchHelper::OnGetPasswordStoreResults(
     std::vector<std::unique_ptr<PasswordForm>> results) {

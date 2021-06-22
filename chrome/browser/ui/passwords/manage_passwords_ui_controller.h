@@ -50,7 +50,7 @@ class PasswordBaseDialogController;
 class ManagePasswordsUIController
     : public content::WebContentsObserver,
       public content::WebContentsUserData<ManagePasswordsUIController>,
-      public password_manager::PasswordStore::Observer,
+      public password_manager::PasswordStoreInterface::Observer,
       public PasswordsLeakDialogDelegate,
       public PasswordsModelDelegate,
       public PasswordsClientUIDelegate {
@@ -101,9 +101,13 @@ class ManagePasswordsUIController
   virtual void NotifyUnsyncedCredentialsWillBeDeleted(
       std::vector<password_manager::PasswordForm> unsynced_credentials);
 
-  // PasswordStore::Observer:
+  // PasswordStoreInterface::Observer:
   void OnLoginsChanged(
+      password_manager::PasswordStoreInterface* store,
       const password_manager::PasswordStoreChangeList& changes) override;
+  void OnLoginsRetained(password_manager::PasswordStoreInterface* store,
+                        const std::vector<password_manager::PasswordForm>&
+                            retained_passwords) override;
 
   // Set the state of the Omnibox icon, and possibly show the associated bubble
   // without user interaction.
