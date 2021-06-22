@@ -6,13 +6,14 @@ package org.chromium.chrome.browser.share;
 
 import android.content.Context;
 import android.content.res.Configuration;
+import android.graphics.drawable.Drawable;
 import android.view.View.OnClickListener;
 
-import androidx.appcompat.content.res.AppCompatResources;
-
+import org.chromium.base.FeatureList;
 import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -25,6 +26,12 @@ import org.chromium.chrome.browser.toolbar.ButtonDataImpl;
 import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures.AdaptiveToolbarButtonVariant;
+import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
+import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
+import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
+import org.chromium.components.feature_engagement.EventConstants;
+import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -46,6 +53,8 @@ public class ShareButtonController implements ButtonDataProvider, ConfigurationC
 
     private final ObservableSupplier<ShareDelegate> mShareDelegateSupplier;
 
+    private final Supplier<Tracker> mTrackerSupplier;
+
     private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
 
     // The activity tab provider.
@@ -66,8 +75,10 @@ public class ShareButtonController implements ButtonDataProvider, ConfigurationC
     /**
      * Creates ShareButtonController object.
      * @param context The Context for retrieving resources, etc.
+     * @param buttonDrawable Drawable for the new tab button.
      * @param tabProvider The {@link ActivityTabProvider} used for accessing the tab.
      * @param shareDelegateSupplier The supplier to get a handle on the share delegate.
+     * @param trackerSupplier  Supplier for the current profile tracker.
      * @param shareUtils The share utility functions used by this class.
      * @param activityLifecycleDispatcher Dispatcher for activity lifecycle events, e.g.
      * configuration changes.
@@ -76,8 +87,10 @@ public class ShareButtonController implements ButtonDataProvider, ConfigurationC
      *                        does not actually handle sharing, but can provide supplemental
      *                        functionality when the share button is pressed.
      */
-    public ShareButtonController(Context context, ActivityTabProvider tabProvider,
-            ObservableSupplier<ShareDelegate> shareDelegateSupplier, ShareUtils shareUtils,
+    public ShareButtonController(Context context, Drawable buttonDrawable,
+            ActivityTabProvider tabProvider,
+            ObservableSupplier<ShareDelegate> shareDelegateSupplier,
+            Supplier<Tracker> trackerSupplier, ShareUtils shareUtils,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             ModalDialogManager modalDialogManager, Runnable onShareRunnable) {
         mContext = context;
@@ -88,6 +101,7 @@ public class ShareButtonController implements ButtonDataProvider, ConfigurationC
         mShareUtils = shareUtils;
 
         mShareDelegateSupplier = shareDelegateSupplier;
+        mTrackerSupplier = trackerSupplier;
         mOnClickListener = ((view) -> {
             ShareDelegate shareDelegate = mShareDelegateSupplier.get();
             assert shareDelegate
@@ -99,6 +113,11 @@ public class ShareButtonController implements ButtonDataProvider, ConfigurationC
             if (onShareRunnable != null) onShareRunnable.run();
             RecordUserAction.record("MobileTopToolbarShareButton");
             shareDelegate.share(tab, /*shareDirectly=*/false, ShareOrigin.TOP_TOOLBAR);
+
+            if (mTrackerSupplier.hasValue()) {
+                mTrackerSupplier.get().notifyEvent(
+                        EventConstants.ADAPTIVE_TOOLBAR_CUSTOMIZATION_SHARE_OPENED);
+            }
         });
 
         mModalDialogManagerObserver = new ModalDialogManagerObserver() {
@@ -117,9 +136,8 @@ public class ShareButtonController implements ButtonDataProvider, ConfigurationC
         mModalDialogManager = modalDialogManager;
         mModalDialogManager.addObserver(mModalDialogManagerObserver);
 
-        mButtonData = new ButtonDataImpl(/*canShow=*/false,
-                AppCompatResources.getDrawable(mContext, R.drawable.ic_toolbar_share_offset_24dp),
-                mOnClickListener, R.string.share, /*supportsTinting=*/true,
+        mButtonData = new ButtonDataImpl(/*canShow=*/false, buttonDrawable, mOnClickListener,
+                R.string.share, /*supportsTinting=*/true,
                 /*iphCommandBuilder=*/null, /*isEnabled=*/true, AdaptiveToolbarButtonVariant.SHARE);
 
         mScreenWidthDp = mContext.getResources().getConfiguration().screenWidthDp;
@@ -161,6 +179,7 @@ public class ShareButtonController implements ButtonDataProvider, ConfigurationC
     @Override
     public ButtonData get(Tab tab) {
         updateButtonVisibility(tab);
+        maybeSetIphCommandBuilder(tab);
         return mButtonData;
     }
 
@@ -199,5 +218,34 @@ public class ShareButtonController implements ButtonDataProvider, ConfigurationC
         for (ButtonDataObserver observer : mObservers) {
             observer.buttonDataChanged(hint);
         }
+    }
+
+    /**
+     * Since Features are not yet initialized when ButtonData is created, use the
+     * fist available opportunity to create and set IPHCommandBuilder. Once set it's
+     * never updated.
+     */
+    private void maybeSetIphCommandBuilder(Tab tab) {
+        if (mButtonData.getButtonSpec().getIPHCommandBuilder() != null || tab == null
+                || !FeatureList.isInitialized()
+                || !AdaptiveToolbarFeatures.isCustomizationEnabled()) {
+            return;
+        }
+
+        HighlightParams params = new HighlightParams(HighlightShape.CIRCLE);
+        params.setBoundsRespectPadding(true);
+        IPHCommandBuilder iphCommandBuilder = new IPHCommandBuilder(tab.getContext().getResources(),
+                FeatureConstants.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_SHARE_FEATURE,
+                /* stringId = */ R.string.adaptive_toolbar_button_share_iph,
+                /* accessibilityStringId = */ R.string.adaptive_toolbar_button_share_iph)
+                                                      .setHighlightParams(params);
+
+        ButtonData.ButtonSpec currentSpec = mButtonData.getButtonSpec();
+        ButtonData.ButtonSpec newSpec = new ButtonData.ButtonSpec(currentSpec.getDrawable(),
+                currentSpec.getOnClickListener(), currentSpec.getContentDescriptionResId(),
+                currentSpec.getSupportsTinting(), iphCommandBuilder,
+                currentSpec.getButtonVariant());
+
+        mButtonData.setButtonSpec(newSpec);
     }
 }

@@ -16,6 +16,9 @@ namespace {
 const base::Feature* const kAllFeatures[] = {
     &kIPHDummyFeature,  // Ensures non-empty array for all platforms.
 #if defined(OS_ANDROID)
+    &kIPHAdaptiveButtonInTopToolbarCustomizationNewTabFeature,
+    &kIPHAdaptiveButtonInTopToolbarCustomizationShareFeature,
+    &kIPHAdaptiveButtonInTopToolbarCustomizationVoiceSearchFeature,
     &kIPHAddToHomescreenMessageFeature,
     &kIPHAddToHomescreenTextBubbleFeature,
     &kIPHDataSaverDetailFeature,

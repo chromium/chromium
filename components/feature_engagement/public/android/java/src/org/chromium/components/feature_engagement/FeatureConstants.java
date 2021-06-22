@@ -13,7 +13,10 @@ import java.lang.annotation.RetentionPolicy;
  * FeatureConstants contains the String name of all base::Feature in-product help features declared
  * in //components/feature_engagement/public/feature_constants.h.
  */
-@StringDef({FeatureConstants.ADD_TO_HOMESCREEN_MESSAGE_FEATURE,
+@StringDef({FeatureConstants.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_NEW_TAB_FEATURE,
+        FeatureConstants.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_SHARE_FEATURE,
+        FeatureConstants.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_VOICE_SEARCH_FEATURE,
+        FeatureConstants.ADD_TO_HOMESCREEN_MESSAGE_FEATURE,
         FeatureConstants.ADD_TO_HOMESCREEN_TEXT_BUBBLE_FEATURE,
         FeatureConstants.DOWNLOAD_PAGE_FEATURE, FeatureConstants.DOWNLOAD_PAGE_SCREENSHOT_FEATURE,
         FeatureConstants.DOWNLOAD_HOME_FEATURE, FeatureConstants.DOWNLOAD_INDICATOR_FEATURE,
@@ -54,6 +57,12 @@ import java.lang.annotation.RetentionPolicy;
         FeatureConstants.SHARED_HIGHLIGHTING_BUILDER_FEATURE})
 @Retention(RetentionPolicy.SOURCE)
 public @interface FeatureConstants {
+    String ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_NEW_TAB_FEATURE =
+            "IPH_AdaptiveButtonInTopToolbarCustomization_NewTab";
+    String ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_SHARE_FEATURE =
+            "IPH_AdaptiveButtonInTopToolbarCustomization_Share";
+    String ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_VOICE_SEARCH_FEATURE =
+            "IPH_AdaptiveButtonInTopToolbarCustomization_VoiceSearch";
     String ADD_TO_HOMESCREEN_MESSAGE_FEATURE = "IPH_AddToHomescreenMessage";
     String ADD_TO_HOMESCREEN_TEXT_BUBBLE_FEATURE = "IPH_AddToHomescreenTextBubble";
     String DOWNLOAD_PAGE_FEATURE = "IPH_DownloadPage";

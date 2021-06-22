@@ -46,6 +46,13 @@ namespace {
 // Defines a flags_ui::FeatureEntry::FeatureParam for each feature.
 DEFINE_VARIATION_PARAM(kIPHDummyFeature, "IPH_Dummy");
 #if defined(OS_ANDROID)
+DEFINE_VARIATION_PARAM(kIPHAdaptiveButtonInTopToolbarCustomizationNewTabFeature,
+                       "IPH_AdaptiveButtonInTopToolbarCustomization_NewTab");
+DEFINE_VARIATION_PARAM(kIPHAdaptiveButtonInTopToolbarCustomizationShareFeature,
+                       "IPH_AdaptiveButtonInTopToolbarCustomization_Share");
+DEFINE_VARIATION_PARAM(
+    kIPHAdaptiveButtonInTopToolbarCustomizationVoiceSearchFeature,
+    "IPH_AdaptiveButtonInTopToolbarCustomization_VoiceSearch");
 DEFINE_VARIATION_PARAM(kIPHAddToHomescreenMessageFeature,
                        "IPH_AddToHomescreenMessage");
 DEFINE_VARIATION_PARAM(kIPHAddToHomescreenTextBubbleFeature,
@@ -190,6 +197,12 @@ DEFINE_VARIATION_PARAM(kIPHUpdatedConnectionSecurityIndicatorsFeature,
 constexpr flags_ui::FeatureEntry::FeatureVariation
     kIPHDemoModeChoiceVariations[] = {
 #if defined(OS_ANDROID)
+        VARIATION_ENTRY(
+            kIPHAdaptiveButtonInTopToolbarCustomizationNewTabFeature),
+        VARIATION_ENTRY(
+            kIPHAdaptiveButtonInTopToolbarCustomizationShareFeature),
+        VARIATION_ENTRY(
+            kIPHAdaptiveButtonInTopToolbarCustomizationVoiceSearchFeature),
         VARIATION_ENTRY(kIPHAddToHomescreenMessageFeature),
         VARIATION_ENTRY(kIPHAddToHomescreenTextBubbleFeature),
         VARIATION_ENTRY(kIPHDataSaverDetailFeature),
