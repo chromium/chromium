@@ -125,6 +125,8 @@ class CONTENT_EXPORT PrerenderHostRegistry {
   // the URL doesn't match any non-reserved host.
   PrerenderHost* FindHostByUrlForTesting(const GURL& prerendering_url);
 
+  base::WeakPtr<PrerenderHostRegistry> GetWeakPtr();
+
  private:
   void ScheduleToDeleteAbandonedHost(
       std::unique_ptr<PrerenderHost> prerender_host,

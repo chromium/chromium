@@ -9,13 +9,13 @@
 
 #include "content/common/content_export.h"
 #include "content/public/browser/document_service_base.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/speculation_host_delegate.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom.h"
 
 namespace content {
-class RenderFrameHost;
-class PrerenderProcessor;
+class PrerenderHostRegistry;
 
 // Receiver for speculation rules from the web platform. See
 // third_party/blink/renderer/core/speculation_rules/README.md
@@ -42,8 +42,12 @@ class CONTENT_EXPORT SpeculationHostImpl final
   void UpdateSpeculationCandidates(
       std::vector<blink::mojom::SpeculationCandidatePtr> candidates) override;
 
+  void ProcessCandidatesForPrerender(
+      const std::vector<blink::mojom::SpeculationCandidatePtr>& candidates);
+
+  int started_prerender_host_id_ = RenderFrameHost::kNoFrameTreeNodeId;
   std::unique_ptr<SpeculationHostDelegate> delegate_;
-  std::unique_ptr<PrerenderProcessor> prerender_processor_;
+  base::WeakPtr<PrerenderHostRegistry> registry_;
 };
 
 }  // namespace content

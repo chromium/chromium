@@ -272,6 +272,10 @@ PrerenderHost* PrerenderHostRegistry::FindHostByUrlForTesting(
   return nullptr;
 }
 
+base::WeakPtr<PrerenderHostRegistry> PrerenderHostRegistry::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 void PrerenderHostRegistry::ScheduleToDeleteAbandonedHost(
     std::unique_ptr<PrerenderHost> prerender_host,
     PrerenderHost::FinalStatus final_status) {

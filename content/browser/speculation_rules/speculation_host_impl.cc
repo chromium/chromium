@@ -4,7 +4,8 @@
 
 #include "content/browser/speculation_rules/speculation_host_impl.h"
 
-#include "content/browser/prerender/prerender_processor.h"
+#include "content/browser/prerender/prerender_host_registry.h"
+#include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -61,9 +62,19 @@ SpeculationHostImpl::SpeculationHostImpl(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   delegate_ = GetContentClient()->browser()->CreateSpeculationHostDelegate(
       *render_frame_host());
+  if (blink::features::IsPrerender2Enabled()) {
+    auto* rfhi = static_cast<RenderFrameHostImpl*>(frame_host);
+    registry_ = rfhi->delegate()->GetPrerenderHostRegistry()->GetWeakPtr();
+  }
 }
 
-SpeculationHostImpl::~SpeculationHostImpl() = default;
+SpeculationHostImpl::~SpeculationHostImpl() {
+  // Inform PrerenderHostRegistry of the destruction.
+  if (registry_ &&
+      started_prerender_host_id_ != RenderFrameHost::kNoFrameTreeNodeId) {
+    registry_->OnTriggerDestroyed(started_prerender_host_id_);
+  }
+}
 
 void SpeculationHostImpl::UpdateSpeculationCandidates(
     std::vector<blink::mojom::SpeculationCandidatePtr> candidates) {
@@ -81,8 +92,14 @@ void SpeculationHostImpl::UpdateSpeculationCandidates(
   if (delegate_)
     delegate_->ProcessCandidates(candidates);
 
-  if (!blink::features::IsPrerender2Enabled() || candidates.empty())
+  ProcessCandidatesForPrerender(candidates);
+}
+
+void SpeculationHostImpl::ProcessCandidatesForPrerender(
+    const std::vector<blink::mojom::SpeculationCandidatePtr>& candidates) {
+  if (!registry_ || candidates.empty())
     return;
+  DCHECK(blink::features::IsPrerender2Enabled());
   WebContentsDelegate* web_contents_delegate =
       content::WebContents::FromRenderFrameHost(render_frame_host())
           ->GetDelegate();
@@ -92,12 +109,15 @@ void SpeculationHostImpl::UpdateSpeculationCandidates(
   }
 
   // Limit the number of started prerenders to one. If
-  // `prerender_processor_` is not null, it means `this` has started a
-  // prerender, and should ignore other prerender candidates.
+  // `started_prerender_host_id_` does not equal kNoFrameTreeNodeId, it means
+  // `this` has started a prerender, and should ignore other prerender
+  // candidates.
   // TODO(crbug.com/1197133): Cancel the started prerender and start a new
   // one if the score of the new candidate is higher than the started one's.
   // TODO(crbug.com/1197133): Record the cancellation reason via UMA.
-  if (prerender_processor_) {
+  // TODO(crbug.com/1173298): Let PrerenderHostRegistry control the maximum
+  // number of started prerenders.
+  if (started_prerender_host_id_ != RenderFrameHost::kNoFrameTreeNodeId) {
     return;
   }
 
@@ -117,10 +137,7 @@ void SpeculationHostImpl::UpdateSpeculationCandidates(
   if (candidate_it == candidates.end())
     return;
 
-  auto* rfhi = static_cast<RenderFrameHostImpl*>(render_frame_host());
-  prerender_processor_ = std::make_unique<PrerenderProcessor>(*rfhi);
   const blink::mojom::SpeculationCandidatePtr& candidate = *candidate_it;
-
   // TODO(https://crbug.com/1197133): Set up the field of size.
   auto attributes = blink::mojom::PrerenderAttributes::New();
   attributes->url = candidate->url;
@@ -128,7 +145,11 @@ void SpeculationHostImpl::UpdateSpeculationCandidates(
   attributes->trigger_type =
       blink::mojom::PrerenderTriggerType::kSpeculationRule;
 
-  prerender_processor_->Start(std::move(attributes));
+  auto* rfhi = static_cast<RenderFrameHostImpl*>(render_frame_host());
+  if (registry_) {
+    started_prerender_host_id_ =
+        registry_->CreateAndStartHost(std::move(attributes), *rfhi);
+  }
 }
 
 }  // namespace content
