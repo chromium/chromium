@@ -31,6 +31,7 @@ const string kLocationCamera = "camera";
 const string kAccelerometerChannel = "accel";
 const string kGyroscopeChannel = "anglvel";
 const string kMagnetometerChannel = "magn";
+const string kGravityChannel = "gravity";
 
 // The light sensor may have not only channel "illuminance", but three color
 // channels: illuminance_red, illuminance_green, and illuminance_blue.
@@ -41,7 +42,7 @@ const string kTimestampChannel = "timestamp";
 
 [Stable, Extensible]
 enum DeviceType {
-  NONE = 0,  // invalid device type
+  [Default] NONE = 0,  // invalid device type
   ACCEL = 1,
   ANGLVEL = 2,
   LIGHT = 3,
@@ -52,12 +53,12 @@ enum DeviceType {
   ACCEL_UNCALIBRATED = 8,
   ANGLVEL_UNCALIBRATED = 9,
   MAGN_UNCALIBRATED = 10,
-  MAX = 11,
+  GRAVITY = 11,
 };
 
 [Stable, Extensible]
 enum ObserverErrorType {
-  ALREADY_STARTED = 0,
+  [Default] ALREADY_STARTED = 0,
   SET_FREQUENCY_IO_FAILED = 1,
   FREQUENCY_INVALID = 2,
   NO_ENABLED_CHANNELS = 3,
