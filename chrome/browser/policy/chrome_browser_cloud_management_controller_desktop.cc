@@ -219,6 +219,15 @@ void ChromeBrowserCloudManagementControllerDesktop::SetGaiaURLLoaderFactory(
   gaia_url_loader_factory_ = url_loader_factory;
 }
 
+bool ChromeBrowserCloudManagementControllerDesktop::
+    ReadyToCreatePolicyManager() {
+  return true;
+}
+
+bool ChromeBrowserCloudManagementControllerDesktop::ReadyToInit() {
+  return true;
+}
+
 void ChromeBrowserCloudManagementControllerDesktop::StartInvalidations() {
   DCHECK(
       base::FeatureList::IsEnabled(policy::features::kCBCMPolicyInvalidations));

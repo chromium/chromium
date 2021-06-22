@@ -12,6 +12,7 @@
 #include "components/policy/core/common/chrome_schema.h"
 #include "components/policy/core/common/configuration_policy_provider.h"
 #include "components/policy/core/common/policy_namespace.h"
+#include "components/policy/core/common/policy_service.h"
 #include "components/policy/core/common/policy_service_impl.h"
 #include "ui/base/resource/resource_bundle.h"
 
@@ -22,6 +23,7 @@ namespace {
 // Used in BrowserPolicyConnectorBase::SetPolicyProviderForTesting.
 bool g_created_policy_service = false;
 ConfigurationPolicyProvider* g_testing_provider = nullptr;
+PolicyService* g_testing_policy_service = nullptr;
 
 }  // namespace
 
@@ -73,6 +75,9 @@ CombinedSchemaRegistry* BrowserPolicyConnectorBase::GetSchemaRegistry() {
 }
 
 PolicyService* BrowserPolicyConnectorBase::GetPolicyService() {
+  if (g_testing_policy_service)
+    return g_testing_policy_service;
+
   if (policy_service_)
     return policy_service_.get();
 
@@ -91,6 +96,10 @@ PolicyService* BrowserPolicyConnectorBase::GetPolicyService() {
   policy_service_ =
       std::make_unique<PolicyServiceImpl>(GetProvidersForPolicyService());
   return policy_service_.get();
+}
+
+bool BrowserPolicyConnectorBase::HasPolicyService() {
+  return g_testing_policy_service || policy_service_;
 }
 
 const ConfigurationPolicyHandlerList*
@@ -114,6 +123,12 @@ void BrowserPolicyConnectorBase::SetPolicyProviderForTesting(
   // browser is created, and GetPolicyService() gets called.
   CHECK(!g_created_policy_service);
   g_testing_provider = provider;
+}
+
+// static
+void BrowserPolicyConnectorBase::SetPolicyServiceForTesting(
+    PolicyService* policy_service) {
+  g_testing_policy_service = policy_service;
 }
 
 void BrowserPolicyConnectorBase::NotifyWhenResourceBundleReady(

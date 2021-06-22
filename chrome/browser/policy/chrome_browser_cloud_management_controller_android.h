@@ -7,6 +7,8 @@
 
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
 
+#include <memory>
+
 #include "chrome/browser/enterprise/reporting/reporting_delegate_factory_desktop.h"
 
 namespace policy {
@@ -46,9 +48,16 @@ class ChromeBrowserCloudManagementControllerAndroid
       override;
   scoped_refptr<base::SingleThreadTaskRunner> GetBestEffortTaskRunner()
       override;
-
   void SetGaiaURLLoaderFactory(scoped_refptr<network::SharedURLLoaderFactory>
                                    url_loader_factory) override;
+  bool ReadyToCreatePolicyManager() override;
+  bool ReadyToInit() override;
+  void DeferInitialization(base::OnceClosure callback) override;
+
+ private:
+  // Active while it can't be determined if enrollment token is set by non-CBCM
+  // policies.
+  std::unique_ptr<PolicyService::Observer> policy_service_observer_;
 };
 
 }  // namespace policy

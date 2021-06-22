@@ -51,6 +51,9 @@ class POLICY_EXPORT BrowserPolicyConnectorBase {
   // whole browser.
   PolicyService* GetPolicyService();
 
+  // Returns true if the PolicyService object has already been created.
+  bool HasPolicyService();
+
   const ConfigurationPolicyHandlerList* GetHandlerList() const;
 
   std::vector<ConfigurationPolicyProvider*> GetPolicyProviders() const;
@@ -64,6 +67,9 @@ class POLICY_EXPORT BrowserPolicyConnectorBase {
   static void SetPolicyProviderForTesting(
       ConfigurationPolicyProvider* provider);
   ConfigurationPolicyProvider* GetPolicyProviderForTesting();
+
+  // Sets the policy service to be returned by |GetPolicyService| during tests.
+  static void SetPolicyServiceForTesting(PolicyService* policy_service);
 
   // Adds a callback that is notified the the ResourceBundle is loaded.
   void NotifyWhenResourceBundleReady(base::OnceClosure closure);

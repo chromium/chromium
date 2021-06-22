@@ -1311,11 +1311,10 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   //
   // Note that this protects against multiple browser process starts in
   // the same user data dir and not multiple starts across user data dirs.
-  browser_process_->browser_policy_connector()
-      ->chrome_browser_cloud_management_controller()
-      ->Init(browser_process_->local_state(),
-             browser_process_->system_network_context_manager()
-                 ->GetSharedURLLoaderFactory());
+  browser_process_->browser_policy_connector()->InitCloudManagementController(
+      browser_process_->local_state(),
+      browser_process_->system_network_context_manager()
+          ->GetSharedURLLoaderFactory());
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)

@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/callback_forward.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
@@ -16,10 +17,11 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
+#include "components/policy/core/common/policy_service.h"
 
 #if !defined(OS_ANDROID)
 #include "components/enterprise/browser/reporting/reporting_delegate_factory.h"
-#endif
+#endif  // !defined(OS_ANDROID)
 
 class PrefService;
 
@@ -144,6 +146,21 @@ class ChromeBrowserCloudManagementController
     // requests to GAIA.
     virtual void SetGaiaURLLoaderFactory(
         scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) = 0;
+
+    // Returns true if the cloud policy manager can be created rightaway of if
+    // it should be deferred for some reason depending on the platform (e.g. on
+    // Android it should wait for PolicyService initialization).
+    virtual bool ReadyToCreatePolicyManager() = 0;
+
+    // Returns true if controller initialization can proceed, and false it it
+    // needs to be deferred. On platforms where controller initialization isn't
+    // blocked, this method should return true.
+    virtual bool ReadyToInit() = 0;
+
+    // Postpones controller initialization until |ReadyToInit()| is true.
+    // Implemented in the delegate because the reason why initialization needs
+    // to be deferred may vary across platforms.
+    virtual void DeferInitialization(base::OnceClosure init_callback);
   };
 
   class Observer {
@@ -176,11 +193,28 @@ class ChromeBrowserCloudManagementController
   // development purpose.
   bool IsEnabled();
 
+  // Returns a MachineLevelUserCloudPolicyManager instance if cloud management
+  // is enabled, or nullptr otherwise.
+  // TODO(http://crbug.com/1221173): Consider deprecating this method (still
+  // used on iOS) in favor of DeferrableCreatePolicyManager.
   std::unique_ptr<MachineLevelUserCloudPolicyManager> CreatePolicyManager(
       ConfigurationPolicyProvider* platform_provider);
 
+  // Invokes |callback| with a MachineLevelUserCloudPolicyManager instance if
+  // cloud management is enabled, or with nullptr otherwise. Callback invocation
+  // may be deferred if it can't be determined rightaway if cloud management
+  // is enabled (e.g. on Android).
+  void DeferrableCreatePolicyManager(
+      ConfigurationPolicyProvider* platform_provider,
+      base::OnceCallback<
+          void(std::unique_ptr<MachineLevelUserCloudPolicyManager>)> callback);
+
   void Init(PrefService* local_state,
             scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
+  void MaybeInit(
+      PrefService* local_state,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
   bool WaitUntilPolicyEnrollmentFinished();
 
@@ -228,6 +262,13 @@ class ChromeBrowserCloudManagementController
   void CreateReportScheduler();
 #endif
 
+  // Implementation of |DeferrableCreatePolicyManager| that can be invoked right
+  // away or bound to a callback to be executed later.
+  void DeferrableCreatePolicyManagerImpl(
+      ConfigurationPolicyProvider* platform_provider,
+      base::OnceCallback<
+          void(std::unique_ptr<MachineLevelUserCloudPolicyManager>)> callback);
+
   base::ObserverList<Observer, true>::Unchecked observers_;
 
   std::unique_ptr<Delegate> delegate_;
@@ -241,9 +282,15 @@ class ChromeBrowserCloudManagementController
 
 #if !defined(OS_ANDROID)
   std::unique_ptr<enterprise_reporting::ReportScheduler> report_scheduler_;
-#endif
+#endif  // !defined(OS_ANDROID)
 
   std::unique_ptr<policy::CloudPolicyClient> cloud_policy_client_;
+
+  // Holds a callback to the function that will consume the
+  // MachineLevelUserCloudPolicyManager object once it's created.
+  // This allows creation to be deferred on platforms in which the enrollment
+  // token may not be immediately available (e.g. Android).
+  base::OnceClosure create_cloud_policy_manager_callback_;
 
   base::WeakPtrFactory<ChromeBrowserCloudManagementController> weak_factory_{
       this};

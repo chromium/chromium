@@ -141,6 +141,8 @@ source_set("internal") {
     "policy_service_impl.h",
     "policy_statistics_collector.cc",
     "policy_statistics_collector.h",
+    "proxy_policy_provider.cc",
+    "proxy_policy_provider.h",
     "remote_commands/remote_command_job.cc",
     "remote_commands/remote_command_job.h",
     "remote_commands/remote_commands_factory.cc",
@@ -276,8 +278,6 @@ source_set("internal") {
     sources += [
       "policy_scheduler.cc",
       "policy_scheduler.h",
-      "proxy_policy_provider.cc",
-      "proxy_policy_provider.h",
     ]
     sources -= [
       "cloud/chrome_browser_cloud_management_metrics.h",

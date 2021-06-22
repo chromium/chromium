@@ -10,9 +10,13 @@
 #include "base/android/jni_string.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/android/cloud_management_shared_preferences.h"
 #include "chrome/browser/policy/android/jni_headers/CloudManagementAndroidConnection_jni.h"
+#include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "components/policy/core/common/policy_pref_names.h"
+#include "components/policy/core/common/policy_service.h"
+#include "components/policy/policy_constants.h"
 
 namespace policy {
 
@@ -38,7 +42,15 @@ std::string BrowserDMTokenStorageAndroid::InitClientId() {
 }
 
 std::string BrowserDMTokenStorageAndroid::InitEnrollmentToken() {
-  return std::string();
+  PolicyService* policy_service =
+      g_browser_process->browser_policy_connector()->GetPolicyService();
+  DCHECK(policy_service);
+
+  const base::Value* value =
+      policy_service
+          ->GetPolicies(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))
+          .GetValue(key::kCloudManagementEnrollmentToken);
+  return value && value->is_string() ? value->GetString() : std::string();
 }
 
 std::string BrowserDMTokenStorageAndroid::InitDMToken() {

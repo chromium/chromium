@@ -9,19 +9,25 @@
 #include "base/run_loop.h"
 #include "base/task_runner_util.h"
 #include "chrome/browser/policy/android/cloud_management_shared_preferences.h"
+#include "components/policy/core/browser/browser_policy_connector_base.h"
+#include "components/policy/core/common/mock_policy_service.h"
+#include "components/policy/policy_constants.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using ::testing::_;
 using ::testing::Eq;
 using ::testing::Invoke;
 using ::testing::IsEmpty;
+using ::testing::ReturnRef;
 
 namespace policy {
 
 namespace {
 
-const char kDMToken[] = "fake-dm-token";
+constexpr char kDMToken[] = "fake-dm-token";
+constexpr char kEnrollmentToken[] = "fake-enrollment-token";
 
 }  // namespace
 
@@ -41,8 +47,20 @@ TEST_F(BrowserDMTokenStorageAndroidTest, InitClientId) {
 }
 
 TEST_F(BrowserDMTokenStorageAndroidTest, InitEnrollmentToken) {
+  MockPolicyService mock_policy_service;
+  BrowserPolicyConnectorBase::SetPolicyServiceForTesting(&mock_policy_service);
+
+  PolicyMap policy_map;
+  policy_map.Set(key::kCloudManagementEnrollmentToken, POLICY_LEVEL_MANDATORY,
+                 POLICY_SCOPE_MACHINE, POLICY_SOURCE_PLATFORM,
+                 base::Value(kEnrollmentToken), nullptr);
+  EXPECT_CALL(mock_policy_service, GetPolicies(_))
+      .WillOnce(ReturnRef(policy_map));
+
   BrowserDMTokenStorageAndroid storage;
-  EXPECT_THAT(storage.InitEnrollmentToken(), IsEmpty());
+  EXPECT_THAT(storage.InitEnrollmentToken(), Eq(kEnrollmentToken));
+
+  BrowserPolicyConnectorBase::SetPolicyServiceForTesting(nullptr);
 }
 
 TEST_F(BrowserDMTokenStorageAndroidTest, InitDMToken) {

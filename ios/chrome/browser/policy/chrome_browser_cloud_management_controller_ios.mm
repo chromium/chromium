@@ -131,4 +131,12 @@ void ChromeBrowserCloudManagementControllerIOS::SetGaiaURLLoaderFactory(
   // Policy invalidations aren't currently supported on iOS.
 }
 
+bool ChromeBrowserCloudManagementControllerIOS::ReadyToCreatePolicyManager() {
+  return true;
+}
+
+bool ChromeBrowserCloudManagementControllerIOS::ReadyToInit() {
+  return true;
+}
+
 }  // namespace policy
