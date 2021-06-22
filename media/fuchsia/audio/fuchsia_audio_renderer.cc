@@ -224,6 +224,9 @@ void FuchsiaAudioRenderer::InitializeStreamSink() {
       std::move(vmos_for_stream_sink), std::move(stream_type),
       std::move(compression).value(), stream_sink_.NewRequest());
 
+  if (GetPlaybackState() == PlaybackState::kStartPending)
+    StartAudioConsumer();
+
   ScheduleReadDemuxerStream();
 }
 
@@ -267,13 +270,35 @@ void FuchsiaAudioRenderer::SetAutoplayInitiated(bool autoplay_initiated) {}
 void FuchsiaAudioRenderer::StartTicking() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
+  // If StreamSink hasn't been created yet, then delay starting AudioConsumer
+  // until StreamSink is created.
+  if (!stream_sink_) {
+    base::AutoLock lock(timeline_lock_);
+    SetPlaybackState(PlaybackState::kStartPending);
+    return;
+  }
+
+  StartAudioConsumer();
+}
+
+void FuchsiaAudioRenderer::StartAudioConsumer() {
+  DCHECK(stream_sink_);
+
   fuchsia::media::AudioConsumerStartFlags flags{};
   if (demuxer_stream_->liveness() == DemuxerStream::LIVENESS_LIVE) {
     flags = fuchsia::media::AudioConsumerStartFlags::LOW_LATENCY;
   }
 
-  if (GetPlaybackState() != PlaybackState::kStopped) {
-    audio_consumer_->Stop();
+  // Stop the AudioConsumer if it's been started.
+  switch (GetPlaybackState()) {
+    case PlaybackState::kStopped:
+    case PlaybackState::kStartPending:
+      break;
+
+    case PlaybackState::kStarting:
+    case PlaybackState::kPlaying:
+      audio_consumer_->Stop();
+      break;
   }
 
   base::TimeDelta media_pos;
