@@ -231,7 +231,13 @@ IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearHighBitDepthVP9) {
   PlayVideo("bear-320x180-hi10p-vp9.webm", GetParam());
 }
 
-IN_PROC_BROWSER_TEST_P(MediaTest, VideoBear12DepthVP9) {
+// TODO(crbug.com/1222748): Flaky on Mac.
+#if defined(OS_MAC)
+#define MAYBE_VideoBear12DepthVP9 DISABLED_VideoBear12DepthVP9
+#else
+#define MAYBE_VideoBear12DepthVP9 VideoBear12DepthVP9
+#endif
+IN_PROC_BROWSER_TEST_P(MediaTest, MAYBE_VideoBear12DepthVP9) {
   PlayVideo("bear-320x180-hi12p-vp9.webm", GetParam());
 }
 #endif
