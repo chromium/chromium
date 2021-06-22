@@ -2,7 +2,7 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <video id="target"
-       onloadeddata="loaded()" src="/media/test.ogv"></video>
+       onloadstart="loadstart()" src="/media/test.ogv"></video>
 <script>
 
 assert_true(document.prerendering);
@@ -11,12 +11,11 @@ async function requestPictureInPicture() {
   const bc = new BroadcastChannel('prerender-channel');
 
   try {
-    document.pictureInPictureEnabled = true;
     await target.requestPictureInPicture();
     bc.postMessage('unexpected success');
   } catch (err) {
-    if (err.name == 'NotAllowedError')
-      bc.postMessage('request failed for a user gesture');
+    if (err.name == 'InvalidStateError')
+      bc.postMessage('Metadata for the video element are not loaded yet');
     else
       bc.postMessage(err.message);
   } finally {
@@ -24,7 +23,8 @@ async function requestPictureInPicture() {
   }
 }
 
-function loaded() {
-  requestPictureInPicture();
+function loadstart() {
+  // Wait some time to give the test a chance to load the data and fail the test.
+  setTimeout(() => { requestPictureInPicture(); }, 100);
 }
 </script>

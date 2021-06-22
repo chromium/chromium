@@ -142,6 +142,14 @@ class WebDocument : public WebNode {
 
   BLINK_EXPORT bool IsLoaded();
 
+  // Returns true if the document is in prerendering.
+  BLINK_EXPORT bool IsPrerendering();
+
+  // Adds `callback` to the post-prerendering activation steps.
+  // https://jeremyroman.github.io/alternate-loading-modes/#document-post-prerendering-activation-steps-list
+  BLINK_EXPORT void AddPostPrerenderingActivationStep(
+      base::OnceClosure callback);
+
 #if INSIDE_BLINK
   BLINK_EXPORT WebDocument(Document*);
   BLINK_EXPORT WebDocument& operator=(Document*);

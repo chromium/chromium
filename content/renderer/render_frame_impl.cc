@@ -1135,6 +1135,17 @@ void PropagatePageZoomToNewlyAttachedFrame(blink::WebView* web_view,
     web_view->SetZoomLevel(web_view->ZoomLevel());
 }
 
+void CallClientDeferMediaLoad(base::WeakPtr<RenderFrameImpl> frame,
+                              bool has_played_media_before,
+                              base::OnceClosure closure) {
+  DCHECK(blink::features::IsPrerender2Enabled());
+
+  if (!frame)
+    return;
+  GetContentClient()->renderer()->DeferMediaLoad(
+      frame.get(), has_played_media_before, std::move(closure));
+}
+
 }  // namespace
 
 RenderFrameImpl::AssertNavigationCommits::AssertNavigationCommits(
@@ -5968,6 +5979,20 @@ void RenderFrameImpl::ConvertViewportToWindow(gfx::Rect* rect) {
 
 float RenderFrameImpl::GetDeviceScaleFactor() {
   return GetLocalRootWebFrameWidget()->GetScreenInfo().device_scale_factor;
+}
+
+bool RenderFrameImpl::DeferMediaLoad(bool has_played_media_before,
+                                     base::OnceClosure closure) {
+  if (blink::features::IsPrerender2Enabled() &&
+      frame_->GetDocument().IsPrerendering()) {
+    frame_->GetDocument().AddPostPrerenderingActivationStep(
+        base::BindOnce(CallClientDeferMediaLoad, weak_factory_.GetWeakPtr(),
+                       has_played_media_before, std::move(closure)));
+    return true;
+  }
+
+  return GetContentClient()->renderer()->DeferMediaLoad(
+      this, has_played_media_before, std::move(closure));
 }
 
 }  // namespace content

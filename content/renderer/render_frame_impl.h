@@ -637,6 +637,22 @@ class CONTENT_EXPORT RenderFrameImpl
   blink::WebURL LastCommittedUrlForUKM() override;
   void ScriptedPrint() override;
 
+  // Possibly defers the loading of media resources.
+  //
+  // This function defers in two cases:
+  // - In the normal case, it calls ContentRendererClient::DeferMediaLoad()
+  //   to give the embedder a chance to defer.
+  // - If the frame is prerendering, this function defers the load. It
+  //   calls ContentRendererClient::DeferMediaLoad() once activation
+  //   occurs.
+  //
+  // `closure` is run when loading should proceed. Returns true if running
+  // of |closure| is deferred; false if run immediately.
+  //
+  // If `has_played_media_before` is true, the render frame has previously
+  // started media playback (i.e. played audio and video).
+  bool DeferMediaLoad(bool has_played_media_before, base::OnceClosure closure);
+
   // Binds to the MHTML file generation service in the browser.
   void BindMhtmlFileWriter(
       mojo::PendingAssociatedReceiver<mojom::MhtmlFileWriter> receiver);

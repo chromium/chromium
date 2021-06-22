@@ -28,7 +28,7 @@ promise_test(async t => {
   startPrerendering(`resources/request-picture-in-picture.html`);
 
   const result = await gotMessage;
-  assert_equals(result, 'request failed for a user gesture');
+  assert_equals(result, 'Metadata for the video element are not loaded yet');
 }, 'prerendering page cannot invoke' +
    'HTMLVideoElement.requestPictureInPicture');
 </script>

@@ -542,9 +542,8 @@ blink::WebMediaPlayer* MediaFactory::CreateMediaPlayer(
   std::unique_ptr<media::WebMediaPlayerParams> params(
       new media::WebMediaPlayerParams(
           std::move(media_log),
-          base::BindRepeating(&ContentRendererClient::DeferMediaLoad,
-                              base::Unretained(GetContentClient()->renderer()),
-                              static_cast<RenderFrame*>(render_frame_),
+          base::BindRepeating(&RenderFrameImpl::DeferMediaLoad,
+                              base::Unretained(render_frame_),
                               delegate->has_played_media()),
           audio_renderer_sink, media_task_runner,
           render_thread->GetWorkerTaskRunner(),

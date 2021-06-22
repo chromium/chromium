@@ -291,6 +291,16 @@ bool WebDocument::IsLoaded() {
   return !ConstUnwrap<Document>()->Parser();
 }
 
+bool WebDocument::IsPrerendering() {
+  return ConstUnwrap<Document>()->IsPrerendering();
+}
+
+void WebDocument::AddPostPrerenderingActivationStep(
+    base::OnceClosure callback) {
+  return Unwrap<Document>()->AddPostPrerenderingActivationStep(
+      std::move(callback));
+}
+
 WebDocument::WebDocument(Document* elem) : WebNode(elem) {}
 
 DEFINE_WEB_NODE_TYPE_CASTS(WebDocument, ConstUnwrap<Node>()->IsDocumentNode())
