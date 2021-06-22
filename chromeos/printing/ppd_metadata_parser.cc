@@ -66,15 +66,15 @@ Restrictions ParseRestrictionsFromValue(const base::Value& value) {
   auto max_as_double = value.FindDoubleKey("maxMilestone");
 
   if (min_as_double.has_value()) {
-    base::Version min_milestone =
-        base::Version(base::NumberToString(int{min_as_double.value()}));
+    base::Version min_milestone = base::Version(
+        base::NumberToString(static_cast<int>(min_as_double.value())));
     if (min_milestone.IsValid()) {
       restrictions.min_milestone = min_milestone;
     }
   }
   if (max_as_double.has_value()) {
-    base::Version max_milestone =
-        base::Version(base::NumberToString(int{max_as_double.value()}));
+    base::Version max_milestone = base::Version(
+        base::NumberToString(static_cast<int>(max_as_double.value())));
     if (max_milestone.IsValid()) {
       restrictions.max_milestone = max_milestone;
     }

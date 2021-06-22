@@ -27,20 +27,22 @@ MATCHER_P(RestrictionsWithMinMilestone,
           integral_min_milestone,
           "is a Restrictions with min_milestone ``" +
               base::NumberToString(integral_min_milestone) + "''") {
-  return ExplainMatchResult(Field(&Restrictions::min_milestone,
-                                  Optional(base::Version(base::NumberToString(
-                                      double{integral_min_milestone})))),
-                            arg, result_listener);
+  return ExplainMatchResult(
+      Field(&Restrictions::min_milestone,
+            Optional(base::Version(base::NumberToString(
+                static_cast<double>(integral_min_milestone))))),
+      arg, result_listener);
 }
 
 MATCHER_P(RestrictionsWithMaxMilestone,
           integral_max_milestone,
           "is a Restrictions with max_milestone ``" +
               base::NumberToString(integral_max_milestone) + "''") {
-  return ExplainMatchResult(Field(&Restrictions::max_milestone,
-                                  Optional(base::Version(base::NumberToString(
-                                      double{integral_max_milestone})))),
-                            arg, result_listener);
+  return ExplainMatchResult(
+      Field(&Restrictions::max_milestone,
+            Optional(base::Version(base::NumberToString(
+                static_cast<double>(integral_max_milestone))))),
+      arg, result_listener);
 }
 
 MATCHER_P2(RestrictionsWithMinAndMaxMilestones,

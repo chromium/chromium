@@ -856,9 +856,9 @@ TEST_F(SystemDataProviderTest, CpuUsageObserverTemp) {
   system_data_provider_->SetCpuUsageTimerForTesting(std::move(timer));
 
   // Setup initial data
-  uint32_t temp_1 = 40;
-  uint32_t temp_2 = 50;
-  uint32_t temp_3 = 15;
+  int temp_1 = 40;
+  int temp_2 = 50;
+  int temp_3 = 15;
 
   SetCrosHealthdCpuTemperatureResponse({temp_1, temp_2, temp_3});
 
