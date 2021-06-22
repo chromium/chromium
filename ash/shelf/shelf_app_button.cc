@@ -796,8 +796,15 @@ void ShelfAppButton::OnGestureEvent(ui::GestureEvent* event) {
     case ui::ET_GESTURE_LONG_TAP:
       views::InkDrop::Get(this)->GetInkDrop()->AnimateToState(
           views::InkDropState::ACTIVATED);
-      // Handle LONG_TAP to avoid opening the context menu twice.
-      event->SetHandled();
+
+      // The context menu may not show (for example, a mouse click which occurs
+      // before the end of gesture could close the context menu). In this case,
+      // let the overridden function handles the event to show the context menu
+      // (see https://crbug.com/1126491).
+      if (shelf_view_->IsShowingMenu()) {
+        // Handle LONG_TAP to avoid opening the context menu twice.
+        event->SetHandled();
+      }
       break;
     case ui::ET_GESTURE_TWO_FINGER_TAP:
       views::InkDrop::Get(this)->GetInkDrop()->AnimateToState(
