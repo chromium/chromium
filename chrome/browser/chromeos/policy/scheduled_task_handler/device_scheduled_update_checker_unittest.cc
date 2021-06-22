@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/policy/scheduled_update_checker/device_scheduled_update_checker.h"
+#include "chrome/browser/chromeos/policy/scheduled_task_handler/device_scheduled_update_checker.h"
 
 #include <algorithm>
 #include <sstream>
@@ -22,8 +22,8 @@
 #include "base/values.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
-#include "chrome/browser/chromeos/policy/scheduled_update_checker/os_and_policies_update_checker.h"
-#include "chrome/browser/chromeos/policy/scheduled_update_checker/scoped_wake_lock.h"
+#include "chrome/browser/chromeos/policy/scheduled_task_handler/os_and_policies_update_checker.h"
+#include "chrome/browser/chromeos/policy/scheduled_task_handler/scoped_wake_lock.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/fake_update_engine_client.h"

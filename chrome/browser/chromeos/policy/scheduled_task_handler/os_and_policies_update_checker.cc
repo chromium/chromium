@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/policy/scheduled_update_checker/os_and_policies_update_checker.h"
+#include "chrome/browser/chromeos/policy/scheduled_task_handler/os_and_policies_update_checker.h"
 
 #include <utility>
 

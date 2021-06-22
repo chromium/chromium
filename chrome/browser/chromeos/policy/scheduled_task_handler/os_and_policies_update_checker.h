@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_POLICY_SCHEDULED_UPDATE_CHECKER_OS_AND_POLICIES_UPDATE_CHECKER_H_
-#define CHROME_BROWSER_CHROMEOS_POLICY_SCHEDULED_UPDATE_CHECKER_OS_AND_POLICIES_UPDATE_CHECKER_H_
+#ifndef CHROME_BROWSER_CHROMEOS_POLICY_SCHEDULED_TASK_HANDLER_OS_AND_POLICIES_UPDATE_CHECKER_H_
+#define CHROME_BROWSER_CHROMEOS_POLICY_SCHEDULED_TASK_HANDLER_OS_AND_POLICIES_UPDATE_CHECKER_H_
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/chromeos/policy/scheduled_update_checker/task_executor_with_retries.h"
+#include "chrome/browser/chromeos/policy/scheduled_task_handler/task_executor_with_retries.h"
 #include "chromeos/dbus/update_engine_client.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_state_handler_observer.h"
@@ -136,4 +136,4 @@ class OsAndPoliciesUpdateChecker
 
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_CHROMEOS_POLICY_SCHEDULED_UPDATE_CHECKER_OS_AND_POLICIES_UPDATE_CHECKER_H_
+#endif  // CHROME_BROWSER_CHROMEOS_POLICY_SCHEDULED_TASK_HANDLER_OS_AND_POLICIES_UPDATE_CHECKER_H_

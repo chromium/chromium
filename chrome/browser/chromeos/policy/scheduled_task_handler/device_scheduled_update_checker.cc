@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/policy/scheduled_update_checker/device_scheduled_update_checker.h"
+#include "chrome/browser/chromeos/policy/scheduled_task_handler/device_scheduled_update_checker.h"
 
 #include <time.h>
 
@@ -16,7 +16,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chrome/browser/chromeos/policy/scheduled_update_checker/task_executor_with_retries.h"
+#include "chrome/browser/chromeos/policy/scheduled_task_handler/task_executor_with_retries.h"
 #include "chromeos/settings/cros_settings_names.h"
 #include "chromeos/settings/timezone_settings.h"
 #include "third_party/icu/source/i18n/unicode/gregocal.h"

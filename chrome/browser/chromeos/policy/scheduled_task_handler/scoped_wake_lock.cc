@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/policy/scheduled_update_checker/scoped_wake_lock.h"
+#include "chrome/browser/chromeos/policy/scheduled_task_handler/scoped_wake_lock.h"
 
 #include "base/no_destructor.h"
 #include "content/public/browser/device_service.h"

@@ -56,7 +56,7 @@
 #include "chrome/browser/chromeos/policy/invalidation/affiliated_invalidation_service_provider_impl.h"
 #include "chrome/browser/chromeos/policy/networking/device_network_configuration_updater.h"
 #include "chrome/browser/chromeos/policy/remote_commands/affiliated_remote_commands_invalidator.h"
-#include "chrome/browser/chromeos/policy/scheduled_update_checker/device_scheduled_update_checker.h"
+#include "chrome/browser/chromeos/policy/scheduled_task_handler/device_scheduled_update_checker.h"
 #include "chrome/browser/chromeos/policy/server_backed_state/device_cloud_state_keys_uploader.h"
 #include "chrome/browser/chromeos/policy/server_backed_state/server_backed_state_keys_broker.h"
 #include "chrome/browser/chromeos/printing/bulk_printers_calculator_factory.h"
