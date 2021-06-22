@@ -19,6 +19,9 @@ const base::Feature kSharedHighlightingUseBlocklist{
 const base::Feature kSharedHighlightingV2{"SharedHighlightingV2",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kSharedHighlightingAmp{"SharedHighlightingAmp",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+
 int GetPreemptiveLinkGenTimeoutLengthMs() {
   return kPreemptiveLinkGenTimeoutLengthMs.Get();
 }

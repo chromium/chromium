@@ -1605,6 +1605,9 @@ extern const char kSharedHighlightingUseBlocklistDescription[];
 extern const char kSharedHighlightingV2Name[];
 extern const char kSharedHighlightingV2Description[];
 
+extern const char kSharedHighlightingAmpName[];
+extern const char kSharedHighlightingAmpDescription[];
+
 extern const char kPreemptiveLinkToTextGenerationName[];
 extern const char kPreemptiveLinkToTextGenerationDescription[];
 

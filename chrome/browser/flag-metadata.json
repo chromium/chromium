@@ -4824,6 +4824,11 @@
     "expiry_milestone": 90
   },
   {
+    "name": "shared-highlighting-amp",
+    "owners": ["cheickcisse@google.com"],
+    "expiry_milestone": 95
+  },
+  {
     "name": "shared-highlighting-ios",
     "owners": ["tmartino"],
     "expiry_milestone": 94

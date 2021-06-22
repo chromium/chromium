@@ -2804,6 +2804,10 @@ const char kSharedHighlightingV2Description[] =
     "Improvements to Shared Highlighting. Including ability to reshare or "
     "remove a highlight.";
 
+const char kSharedHighlightingAmpName[] = "Shared Highlighting for AMP Viewers";
+const char kSharedHighlightingAmpDescription[] =
+    "Enables Shared Highlighting for AMP Viwers.";
+
 const char kPreemptiveLinkToTextGenerationName[] =
     "Preemptive generation of link to text";
 const char kPreemptiveLinkToTextGenerationDescription[] =
