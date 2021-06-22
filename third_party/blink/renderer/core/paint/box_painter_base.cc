@@ -530,13 +530,11 @@ void DrawTiledBackground(GraphicsContext& context,
 
   // Use the intrinsic size of the image if it has one, otherwise force the
   // generated image to be the tile size.
-  FloatSize intrinsic_tile_size(image->Size());
   // image-resolution information is baked into the given parameters, but we
   // need oriented size. That requires explicitly applying orientation here.
-  if (respect_orientation &&
-      image->CurrentFrameOrientation().UsesWidthAsHeight()) {
-    intrinsic_tile_size = intrinsic_tile_size.TransposedSize();
-  }
+  Image::SizeConfig size_config;
+  size_config.apply_orientation = respect_orientation;
+  FloatSize intrinsic_tile_size(image->SizeWithConfig(size_config));
 
   if (!image->HasIntrinsicSize() ||
       // TODO(crbug.com/1042783): This is not checking for real empty image
