@@ -976,11 +976,6 @@ void OutOfProcessInstance::SetSelectedText(const std::string& selected_text) {
   pp::PDF::SetSelectedText(this, selected_text.c_str());
 }
 
-void OutOfProcessInstance::SetLinkUnderCursor(
-    const std::string& link_under_cursor) {
-  pp::PDF::SetLinkUnderCursor(this, link_under_cursor.c_str());
-}
-
 bool OutOfProcessInstance::IsValidLink(const std::string& url) {
   return pp::Var(url).is_string();
 }
@@ -1022,6 +1017,10 @@ void OutOfProcessInstance::InvokePrintDialog() {
 
 void OutOfProcessInstance::SetContentRestrictions(int content_restrictions) {
   pp::PDF::SetContentRestriction(this, content_restrictions);
+}
+
+void OutOfProcessInstance::NotifyLinkUnderCursor() {
+  pp::PDF::SetLinkUnderCursor(this, link_under_cursor().c_str());
 }
 
 void OutOfProcessInstance::NotifySelectionChanged(const gfx::PointF& left,

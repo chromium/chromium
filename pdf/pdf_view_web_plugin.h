@@ -152,6 +152,7 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   bool CanRedo() const override;
   bool ExecuteEditCommand(const blink::WebString& name,
                           const blink::WebString& value) override;
+  blink::WebURL LinkAtPosition(const gfx::Point& /*position*/) const override;
   bool StartFind(const blink::WebString& search_text,
                  bool case_sensitive,
                  int /*identifier*/) override;
@@ -176,7 +177,6 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
                                                bool case_sensitive) override;
   pp::Instance* GetPluginInstance() override;
   void SetSelectedText(const std::string& selected_text) override;
-  void SetLinkUnderCursor(const std::string& link_under_cursor) override;
   bool IsValidLink(const std::string& url) override;
   std::unique_ptr<Graphics> CreatePaintGraphics(const gfx::Size& size) override;
   bool BindPaintGraphics(Graphics& graphics) override;

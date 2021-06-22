@@ -541,6 +541,7 @@ class TabbingTestClient : public TestClient {
 
   // Mock PDFEngine::Client methods.
   MOCK_METHOD(void, DocumentFocusChanged, (bool), (override));
+  MOCK_METHOD(void, SetLinkUnderCursor, (const std::string&), (override));
 };
 
 class PDFiumEngineTabbingTest : public PDFiumTestBase {
@@ -579,10 +580,6 @@ class PDFiumEngineTabbingTest : public PDFiumTestBase {
     return engine->selection_.size();
   }
 
-  const std::string& GetLinkUnderCursor(PDFiumEngine* engine) {
-    return engine->link_under_cursor_;
-  }
-
   void ScrollFocusedAnnotationIntoView(PDFiumEngine* engine) {
     engine->ScrollFocusedAnnotationIntoView();
   }
@@ -603,28 +600,34 @@ TEST_F(PDFiumEngineTabbingTest, LinkUnderCursorTest) {
   scoped_feature_list.InitAndEnableFeature(
       chrome_pdf::features::kTabAcrossPDFAnnotations);
 
-  TestClient client;
+  TabbingTestClient client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("annots.pdf"));
   ASSERT_TRUE(engine);
 
-  // Initial value of link under cursor.
-  EXPECT_EQ("", GetLinkUnderCursor(engine.get()));
+  // Tab to right before the first non-link annotation.
+  EXPECT_CALL(client, DocumentFocusChanged(true));
+  ASSERT_TRUE(HandleTabEvent(engine.get(), /*modifiers=*/0));
 
   // Tab through non-link annotations and validate link under cursor.
-  for (int i = 0; i < 4; i++) {
-    ASSERT_TRUE(HandleTabEvent(engine.get(), 0));
-    EXPECT_EQ("", GetLinkUnderCursor(engine.get()));
+  {
+    InSequence sequence;
+    EXPECT_CALL(client, SetLinkUnderCursor(""));
+    EXPECT_CALL(client, DocumentFocusChanged(false));
+    EXPECT_CALL(client, SetLinkUnderCursor("")).Times(2);
   }
 
+  for (int i = 0; i < 3; i++)
+    ASSERT_TRUE(HandleTabEvent(engine.get(), /*modifiers=*/0));
+
   // Tab to Link annotation.
-  ASSERT_TRUE(HandleTabEvent(engine.get(), 0));
-  EXPECT_EQ("https://www.google.com/", GetLinkUnderCursor(engine.get()));
+  EXPECT_CALL(client, SetLinkUnderCursor("https://www.google.com/"));
+  ASSERT_TRUE(HandleTabEvent(engine.get(), /*modifiers=*/0));
 
   // Tab to previous annotation.
+  EXPECT_CALL(client, SetLinkUnderCursor(""));
   ASSERT_TRUE(
       HandleTabEvent(engine.get(), blink::WebInputEvent::Modifiers::kShiftKey));
-  EXPECT_EQ("", GetLinkUnderCursor(engine.get()));
 }
 
 TEST_F(PDFiumEngineTabbingTest, TabbingSupportedAnnots) {
@@ -693,7 +696,7 @@ TEST_F(PDFiumEngineTabbingTest, TabbingForwardTest) {
    * ++ Page 2
    * ++++ Annotation
    */
-  TabbingTestClient client;
+  NiceMock<TabbingTestClient> client;
   std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
       &client, FILE_PATH_LITERAL("annotation_form_fields.pdf"));
   ASSERT_TRUE(engine);
@@ -745,7 +748,7 @@ TEST_F(PDFiumEngineTabbingTest, TabbingBackwardTest) {
    * ++ Page 2
    * ++++ Annotation
    */
-  TabbingTestClient client;
+  NiceMock<TabbingTestClient> client;
   std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
       &client, FILE_PATH_LITERAL("annotation_form_fields.pdf"));
   ASSERT_TRUE(engine);
@@ -852,7 +855,7 @@ TEST_F(PDFiumEngineTabbingTest, NoFocusableItemTabbingTest) {
    * ++ Page 1
    * ++ Page 2
    */
-  TabbingTestClient client;
+  NiceMock<TabbingTestClient> client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
@@ -901,7 +904,7 @@ TEST_F(PDFiumEngineTabbingTest, RestoringDocumentFocusTest) {
    * ++ Page 2
    * ++++ Annotation
    */
-  TabbingTestClient client;
+  NiceMock<TabbingTestClient> client;
   std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
       &client, FILE_PATH_LITERAL("annotation_form_fields.pdf"));
   ASSERT_TRUE(engine);
@@ -946,7 +949,7 @@ TEST_F(PDFiumEngineTabbingTest, RestoringAnnotFocusTest) {
    * ++ Page 2
    * ++++ Annotation
    */
-  TabbingTestClient client;
+  NiceMock<TabbingTestClient> client;
   std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
       &client, FILE_PATH_LITERAL("annotation_form_fields.pdf"));
   ASSERT_TRUE(engine);

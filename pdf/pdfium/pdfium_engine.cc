@@ -4206,11 +4206,7 @@ void PDFiumEngine::UpdatePageCount() {
 #endif  // defined(PDF_ENABLE_XFA)
 
 void PDFiumEngine::UpdateLinkUnderCursor(const std::string& target_url) {
-  if (link_under_cursor_ == target_url)
-    return;
-
-  link_under_cursor_ = target_url;
-  client_->SetLinkUnderCursor(link_under_cursor_);
+  client_->SetLinkUnderCursor(target_url);
 }
 
 void PDFiumEngine::SetLinkUnderCursorForAnnotation(FPDF_ANNOTATION annot,

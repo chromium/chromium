@@ -107,6 +107,7 @@ class PdfViewPluginBase : public PDFEngine::Client,
   void SelectionChanged(const gfx::Rect& left, const gfx::Rect& right) override;
   void EnteredEditMode() override;
   void DocumentFocusChanged(bool document_has_focus) override;
+  void SetLinkUnderCursor(const std::string& link_under_cursor) override;
 
   // PaintManager::Client:
   void OnPaint(const std::vector<gfx::Rect>& paint_rects,
@@ -314,6 +315,11 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // document.
   virtual void InvokePrintDialog() = 0;
 
+  // Notifies the embedder about a new link under the cursor.
+  // TODO(crbug.com/702993): This is only needed by `OutOfProcessInstance`.
+  // Remove this method when that class ceases to exist.
+  virtual void NotifyLinkUnderCursor() {}
+
   // Notifies the embedder of the top-left and bottom-right coordinates of the
   // current selection.
   virtual void NotifySelectionChanged(const gfx::PointF& left,
@@ -334,6 +340,8 @@ class PdfViewPluginBase : public PDFEngine::Client,
   void set_cursor_type(ui::mojom::CursorType cursor_type) {
     cursor_type_ = cursor_type;
   }
+
+  const std::string& link_under_cursor() const { return link_under_cursor_; }
 
   bool full_frame() const { return full_frame_; }
   void set_full_frame(bool full_frame) { full_frame_ = full_frame; }
@@ -488,6 +496,9 @@ class PdfViewPluginBase : public PDFEngine::Client,
 
   // The current cursor type.
   ui::mojom::CursorType cursor_type_ = ui::mojom::CursorType::kPointer;
+
+  // The URL currently under the cursor.
+  std::string link_under_cursor_;
 
   // True if the plugin occupies the entire frame (not embedded).
   bool full_frame_ = false;

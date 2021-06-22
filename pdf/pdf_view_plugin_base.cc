@@ -464,6 +464,15 @@ void PdfViewPluginBase::DocumentFocusChanged(bool document_has_focus) {
   SendMessage(std::move(message));
 }
 
+void PdfViewPluginBase::SetLinkUnderCursor(
+    const std::string& link_under_cursor) {
+  if (link_under_cursor_ == link_under_cursor)
+    return;
+
+  link_under_cursor_ = link_under_cursor;
+  NotifyLinkUnderCursor();
+}
+
 // TODO(crbug.com/1191817): Add tests for input events. Unit testing should be
 // feasible now that the Pepper dependency is removed for input events.
 bool PdfViewPluginBase::HandleInputEvent(const blink::WebInputEvent& event) {

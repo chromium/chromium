@@ -776,9 +776,6 @@ class PDFiumEngine : public PDFEngine,
   // Whether to render PDF annotations.
   bool render_annots_ = true;
 
-  // The link currently under the cursor.
-  std::string link_under_cursor_;
-
   // Pending progressive paints.
   class ProgressivePaint {
    public:

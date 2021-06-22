@@ -71,6 +71,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/range/range.h"
 #include "ui/gfx/skia_util.h"
+#include "url/gurl.h"
 #include "v8/include/v8.h"
 
 namespace chrome_pdf {
@@ -454,6 +455,11 @@ bool PdfViewWebPlugin::ExecuteEditCommand(const blink::WebString& name,
   return false;
 }
 
+blink::WebURL PdfViewWebPlugin::LinkAtPosition(
+    const gfx::Point& /*position*/) const {
+  return GURL(link_under_cursor());
+}
+
 bool PdfViewWebPlugin::StartFind(const blink::WebString& search_text,
                                  bool case_sensitive,
                                  int /*identifier*/) {
@@ -530,11 +536,6 @@ void PdfViewWebPlugin::SetSelectedText(const std::string& selected_text) {
   selected_text_ = blink::WebString::FromUTF8(selected_text);
   container_wrapper_->TextSelectionChanged(
       selected_text_, /*offset=*/0, gfx::Range(0, selected_text_.length()));
-}
-
-void PdfViewWebPlugin::SetLinkUnderCursor(
-    const std::string& link_under_cursor) {
-  NOTIMPLEMENTED();
 }
 
 bool PdfViewWebPlugin::IsValidLink(const std::string& url) {
