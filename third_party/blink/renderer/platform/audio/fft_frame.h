@@ -41,7 +41,7 @@
 #if defined(WTF_USE_WEBAUDIO_FFMPEG)
 struct RDFTContext;
 #elif defined(WTF_USE_WEBAUDIO_PFFFT)
-#include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/pffft/src/pffft.h"
 #elif defined(OS_MAC)
 #include <Accelerate/Accelerate.h>
@@ -113,8 +113,14 @@ class PLATFORM_EXPORT FFTFrame {
                                       const FFTFrame& frame2,
                                       double x);
 
-  unsigned fft_size_;
-  unsigned log2fft_size_;
+  unsigned fft_size_ = 0;
+
+  // When using PFFFT, this slot is not irrelevant and not used because PFFFT
+  // supports sizes that aren't a power of 2.
+  // TODO(https://crbug.com/988121) Look into whether Mac vDSP really needs
+  // this.
+  unsigned log2fft_size_ = 0;
+
   // These two arrays contain the transformed data.  Instead of a single array
   // of complex numbers, we split the complex data into an array of the real
   // part and the imaginary part.
@@ -188,10 +194,10 @@ class PLATFORM_EXPORT FFTFrame {
     PFFFT_Setup* setup_;
   };
 
-  // Returns the vector that holds all of the possible FFTSetup objects.  This
+  // Returns the HashMap that holds all of the possible FFTSetup objects.  This
   // should be setup in the |Initialize()| method that is called when a context
   // is created.
-  static Vector<std::unique_ptr<FFTSetup>>& FFTSetups();
+  static HashMap<unsigned, std::unique_ptr<FFTSetup>>& FFTSetups();
 
   // Initialize an entry in FFTSetups for an FFT of order |fft_order|.  This can
   // be called from any thread, but if a new FFTSetup needs to be allocated,
