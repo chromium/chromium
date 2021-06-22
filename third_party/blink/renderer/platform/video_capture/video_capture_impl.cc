@@ -444,44 +444,76 @@ bool VideoCaptureImpl::VideoFrameBufferPreparer::BindVideoFrameOnMediaThread(
   }
   // Don't check VideoFrameOutputFormat until we ensure the context has not
   // been lost (if it is lost, then the format will be UNKNOWN).
-  DCHECK_EQ(buffer_context_->gpu_factories()->VideoFrameOutputFormat(
-                frame_info_->pixel_format),
-            media::GpuVideoAcceleratorFactories::OutputFormat::NV12_SINGLE_GMB);
-  unsigned texture_target =
+  const auto output_format =
+      buffer_context_->gpu_factories()->VideoFrameOutputFormat(
+          frame_info_->pixel_format);
+  DCHECK(
+      output_format ==
+          media::GpuVideoAcceleratorFactories::OutputFormat::NV12_SINGLE_GMB ||
+      output_format ==
+          media::GpuVideoAcceleratorFactories::OutputFormat::NV12_DUAL_GMB);
+
+  std::vector<gfx::BufferPlane> planes;
+
+  uint32_t usage =
+      gpu::SHARED_IMAGE_USAGE_GLES2 | gpu::SHARED_IMAGE_USAGE_RASTER |
+      gpu::SHARED_IMAGE_USAGE_DISPLAY | gpu::SHARED_IMAGE_USAGE_SCANOUT;
+#if defined(OS_MAC)
+  usage |= gpu::SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX;
+#endif
+
+#if defined(OS_WIN)
+  if (output_format ==
+      media::GpuVideoAcceleratorFactories::OutputFormat::NV12_DUAL_GMB) {
+    planes.push_back(gfx::BufferPlane::Y);
+    planes.push_back(gfx::BufferPlane::UV);
+    if (should_recreate_shared_image ||
+        buffer_context_->gmb_resources()->mailboxes[0].IsZero()) {
+      auto plane_mailboxes = sii->CreateSharedImageVideoPlanes(
+          gpu_memory_buffer_.get(),
+          buffer_context_->gpu_factories()->GpuMemoryBufferManager(), usage);
+      DCHECK_EQ(plane_mailboxes.size(), planes.size());
+      for (size_t plane = 0; plane < planes.size(); ++plane) {
+        buffer_context_->gmb_resources()->mailboxes[plane] =
+            plane_mailboxes[plane];
+      }
+    }
+  }
+#endif  // defined(OS_WIN)
+  if (planes.empty()) {
+    if (base::FeatureList::IsEnabled(kMultiPlaneSharedImageCapture)) {
+      planes.push_back(gfx::BufferPlane::Y);
+      planes.push_back(gfx::BufferPlane::UV);
+    } else {
+      planes.push_back(gfx::BufferPlane::DEFAULT);
+    }
+    for (size_t plane = 0; plane < planes.size(); ++plane) {
+      if (should_recreate_shared_image ||
+          buffer_context_->gmb_resources()->mailboxes[plane].IsZero()) {
+        buffer_context_->gmb_resources()->mailboxes[plane] =
+            sii->CreateSharedImage(
+                gpu_memory_buffer_.get(),
+                buffer_context_->gpu_factories()->GpuMemoryBufferManager(),
+                planes[plane], *(frame_info_->color_space),
+                kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage);
+      } else {
+        sii->UpdateSharedImage(
+            buffer_context_->gmb_resources()->release_sync_token,
+            buffer_context_->gmb_resources()->mailboxes[plane]);
+      }
+    }
+  }
+
+  const gpu::SyncToken sync_token = sii->GenVerifiedSyncToken();
+
+  const unsigned texture_target =
       buffer_context_->gpu_factories()->ImageTextureTarget(
           gpu_memory_buffer_->GetFormat());
 
-  std::vector<gfx::BufferPlane> planes;
-  if (base::FeatureList::IsEnabled(kMultiPlaneSharedImageCapture)) {
-    planes.push_back(gfx::BufferPlane::Y);
-    planes.push_back(gfx::BufferPlane::UV);
-  } else {
-    planes.push_back(gfx::BufferPlane::DEFAULT);
-  }
-  for (size_t plane = 0; plane < planes.size(); ++plane) {
-    if (should_recreate_shared_image ||
-        buffer_context_->gmb_resources()->mailboxes[plane].IsZero()) {
-      uint32_t usage =
-          gpu::SHARED_IMAGE_USAGE_GLES2 | gpu::SHARED_IMAGE_USAGE_RASTER |
-          gpu::SHARED_IMAGE_USAGE_DISPLAY | gpu::SHARED_IMAGE_USAGE_SCANOUT |
-          gpu::SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX;
-      buffer_context_->gmb_resources()->mailboxes[plane] =
-          sii->CreateSharedImage(
-              gpu_memory_buffer_.get(),
-              buffer_context_->gpu_factories()->GpuMemoryBufferManager(),
-              planes[plane], *(frame_info_->color_space),
-              kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage);
-    } else {
-      sii->UpdateSharedImage(
-          buffer_context_->gmb_resources()->release_sync_token,
-          buffer_context_->gmb_resources()->mailboxes[plane]);
-    }
-    CHECK(!buffer_context_->gmb_resources()->mailboxes[plane].IsZero());
-    CHECK(buffer_context_->gmb_resources()->mailboxes[plane].IsSharedImage());
-  }
-  gpu::SyncToken sync_token = sii->GenVerifiedSyncToken();
   gpu::MailboxHolder mailbox_holder_array[media::VideoFrame::kMaxPlanes];
   for (size_t plane = 0; plane < planes.size(); ++plane) {
+    DCHECK(!buffer_context_->gmb_resources()->mailboxes[plane].IsZero());
+    DCHECK(buffer_context_->gmb_resources()->mailboxes[plane].IsSharedImage());
     mailbox_holder_array[plane] =
         gpu::MailboxHolder(buffer_context_->gmb_resources()->mailboxes[plane],
                            sync_token, texture_target);
