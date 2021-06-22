@@ -20,26 +20,27 @@ SegmentSelectorImpl::SegmentSelectorImpl(SegmentInfoDatabase* segment_database,
     : segment_database_(segment_database),
       result_prefs_(result_prefs),
       segmentation_key_(segmentation_key),
-      initialized_(false) {}
+      initialized_(false) {
+  // Read selected segment from prefs.
+  const auto& selected_segment =
+      result_prefs_->ReadSegmentationResultFromPref(segmentation_key_);
+  if (selected_segment.has_value()) {
+    selected_segment_last_session_.segment = selected_segment->segment_id;
+    selected_segment_last_session_.is_ready = true;
+  }
+}
 
 SegmentSelectorImpl::~SegmentSelectorImpl() = default;
 
 void SegmentSelectorImpl::Initialize(base::OnceClosure callback) {
-  // Read selected segment from prefs.
-  const auto& selected_segment =
-      result_prefs_->ReadSegmentationResultFromPref(segmentation_key_);
-  if (selected_segment.has_value())
-    selected_segment_last_session_ = selected_segment->segment_id;
-
   // Read model results from DB.
   segment_database_->GetAllSegmentInfo(
       base::BindOnce(&SegmentSelectorImpl::ReadScoresFromLastSession,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void SegmentSelectorImpl::GetSelectedSegment(SelectedSegmentCallback callback) {
-  DCHECK(initialized_);
-
+void SegmentSelectorImpl::GetSelectedSegment(
+    SegmentSelectionCallback callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), selected_segment_last_session_));

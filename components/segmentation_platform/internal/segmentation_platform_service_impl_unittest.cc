@@ -4,6 +4,38 @@
 
 #include "components/segmentation_platform/internal/segmentation_platform_service_impl.h"
 
+#include <string>
+
+#include "base/bind.h"
+#include "base/files/file_path.h"
+#include "base/metrics/user_metrics.h"
+#include "base/run_loop.h"
+#include "base/test/simple_test_clock.h"
+#include "base/test/task_environment.h"
+#include "base/test/test_simple_task_runner.h"
+#include "components/leveldb_proto/public/proto_database_provider.h"
+#include "components/leveldb_proto/public/shared_proto_database_client_list.h"
+#include "components/leveldb_proto/testing/fake_db.h"
+#include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/scoped_user_pref_update.h"
+#include "components/prefs/testing_pref_service.h"
+#include "components/segmentation_platform/internal/constants.h"
+#include "components/segmentation_platform/internal/database/segment_info_database.h"
+#include "components/segmentation_platform/internal/database/signal_database_impl.h"
+#include "components/segmentation_platform/internal/database/signal_storage_config.h"
+#include "components/segmentation_platform/internal/execution/feature_aggregator_impl.h"
+#include "components/segmentation_platform/internal/execution/model_execution_manager.h"
+#include "components/segmentation_platform/internal/execution/model_execution_manager_factory.h"
+#include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
+#include "components/segmentation_platform/internal/proto/signal.pb.h"
+#include "components/segmentation_platform/internal/proto/signal_storage_config.pb.h"
+#include "components/segmentation_platform/internal/scheduler/model_execution_scheduler_impl.h"
+#include "components/segmentation_platform/internal/selection/segment_selector_impl.h"
+#include "components/segmentation_platform/internal/selection/segmentation_result_prefs.h"
+#include "components/segmentation_platform/internal/signals/histogram_signal_handler.h"
+#include "components/segmentation_platform/internal/signals/signal_filter_processor.h"
+#include "components/segmentation_platform/internal/signals/user_action_signal_handler.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace segmentation_platform {
@@ -14,15 +46,99 @@ class SegmentationPlatformServiceImplTest : public testing::Test {
   ~SegmentationPlatformServiceImplTest() override = default;
 
   void SetUp() override {
+    task_runner_ = base::MakeRefCounted<base::TestSimpleTaskRunner>();
+    base::SetRecordActionTaskRunner(
+        task_environment_.GetMainThreadTaskRunner());
+
+    auto segment_db =
+        std::make_unique<leveldb_proto::test::FakeDB<proto::SegmentInfo>>(
+            &segment_db_entries_);
+    auto signal_db =
+        std::make_unique<leveldb_proto::test::FakeDB<proto::SignalData>>(
+            &signal_db_entries_);
+    auto segment_storage_config_db = std::make_unique<
+        leveldb_proto::test::FakeDB<proto::SignalStorageConfigs>>(
+        &segment_storage_config_db_entries_);
+    segment_db_ = segment_db.get();
+    signal_db_ = signal_db.get();
+    segment_storage_config_db_ = segment_storage_config_db.get();
+
+    SegmentationPlatformService::RegisterProfilePrefs(pref_service_.registry());
+    SetUpPrefs(OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE);
+
     segmentation_platform_service_impl_ =
-        std::make_unique<SegmentationPlatformServiceImpl>();
+        std::make_unique<SegmentationPlatformServiceImpl>(
+            std::move(segment_db), std::move(signal_db),
+            std::move(segment_storage_config_db), &model_provider_,
+            &pref_service_, task_runner_, &test_clock_);
   }
 
- private:
+  void TearDown() override {
+    segmentation_platform_service_impl_.reset();
+    // Allow for the SegmentationModelExecutor owned by SegmentationModelHandler
+    // to be destroyed.
+    task_runner_->RunUntilIdle();
+  }
+
+  void SetUpPrefs(OptimizationTarget segment_id) {
+    DictionaryPrefUpdate update(&pref_service_, kSegmentationResultPref);
+    base::DictionaryValue* dictionary = update.Get();
+
+    base::Value segmentation_result(base::Value::Type::DICTIONARY);
+    segmentation_result.SetIntKey("segment_id", segment_id);
+    dictionary->SetKey(kAdaptiveToolbarSegmentationKey,
+                       std::move(segmentation_result));
+  }
+
+  void OnGetSelectedSegment(base::RepeatingClosure closure,
+                            const SegmentSelectionResult& expected,
+                            const SegmentSelectionResult& actual) {
+    ASSERT_EQ(expected, actual);
+    std::move(closure).Run();
+  }
+
+ protected:
+  base::test::TaskEnvironment task_environment_;
+  scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
+  std::map<std::string, proto::SegmentInfo> segment_db_entries_;
+  std::map<std::string, proto::SignalData> signal_db_entries_;
+  std::map<std::string, proto::SignalStorageConfigs>
+      segment_storage_config_db_entries_;
+  leveldb_proto::test::FakeDB<proto::SegmentInfo>* segment_db_;
+  leveldb_proto::test::FakeDB<proto::SignalData>* signal_db_;
+  leveldb_proto::test::FakeDB<proto::SignalStorageConfigs>*
+      segment_storage_config_db_;
+  optimization_guide::TestOptimizationGuideModelProvider model_provider_;
+  TestingPrefServiceSimple pref_service_;
+  base::SimpleTestClock test_clock_;
   std::unique_ptr<SegmentationPlatformServiceImpl>
       segmentation_platform_service_impl_;
 };
 
-TEST_F(SegmentationPlatformServiceImplTest, DummyTest) {}
+TEST_F(SegmentationPlatformServiceImplTest, InitializationFlow) {
+  // Let the DB loading complete successfully.
+  segment_db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
+  signal_db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
+  segment_storage_config_db_->InitStatusCallback(
+      leveldb_proto::Enums::InitStatus::kOK);
+  segment_storage_config_db_->LoadCallback(true);
+
+  // If initialization is succeeded, model execution scheduler should start
+  // querying segment db.
+  segment_db_->LoadCallback(true);
+}
+
+TEST_F(SegmentationPlatformServiceImplTest,
+       GetSelectedSegmentBeforeInitialization) {
+  SegmentSelectionResult expected;
+  expected.is_ready = true;
+  expected.segment = OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE;
+  base::RunLoop loop;
+  segmentation_platform_service_impl_->GetSelectedSegment(
+      kAdaptiveToolbarSegmentationKey,
+      base::BindOnce(&SegmentationPlatformServiceImplTest::OnGetSelectedSegment,
+                     base::Unretained(this), loop.QuitClosure(), expected));
+  loop.Run();
+}
 
 }  // namespace segmentation_platform

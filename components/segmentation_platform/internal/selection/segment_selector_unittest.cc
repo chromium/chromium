@@ -66,19 +66,18 @@ class SegmentSelectorTest : public testing::Test {
                                                      score, metadata);
   }
 
-  void GetSelectedSegment(absl::optional<OptimizationTarget> expected) {
+  void GetSelectedSegment(const SegmentSelectionResult& expected) {
     base::RunLoop loop;
-    segment_selector_->GetSelectedSegment(base::BindOnce(
-        &SegmentSelectorTest::OnGetSelectedSegment, base::Unretained(this),
-        loop.QuitClosure(), std::move(expected)));
+    segment_selector_->GetSelectedSegment(
+        base::BindOnce(&SegmentSelectorTest::OnGetSelectedSegment,
+                       base::Unretained(this), loop.QuitClosure(), expected));
     loop.Run();
   }
 
   void OnGetSelectedSegment(base::RepeatingClosure closure,
-                            absl::optional<OptimizationTarget> expected,
-                            absl::optional<OptimizationTarget> actual) {
-    ASSERT_EQ(expected.has_value(), actual.has_value());
-    ASSERT_EQ(expected.value(), actual.value());
+                            const SegmentSelectionResult& expected,
+                            const SegmentSelectionResult& actual) {
+    ASSERT_EQ(expected, actual);
     std::move(closure).Run();
   }
 
@@ -178,18 +177,26 @@ TEST_F(SegmentSelectorTest, NewSegmentResultOverridesThePreviousBest) {
 
 TEST_F(SegmentSelectorTest,
        GetSelectedSegmentReturnsResultFromPreviousSession) {
-  // Initialize segment selector. It should read selected segment from prefs.
+  // Set up a selected segment in prefs.
   OptimizationTarget segment_id0 =
       OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE;
   SelectedSegment from_history(segment_id0);
   EXPECT_CALL(*prefs_, ReadSegmentationResultFromPref(_))
       .WillRepeatedly(Return(from_history));
 
+  // Construct a segment selector. It should read result from last session.
+  segment_selector_ = std::make_unique<SegmentSelectorImpl>(
+      segment_database_.get(), prefs_.get(), kAdaptiveToolbarSegmentationKey);
+  segment_selector_->set_model_execution_scheduler(&model_execution_scheduler_);
+
   base::RunLoop loop;
   segment_selector_->Initialize(loop.QuitClosure());
   loop.Run();
 
-  GetSelectedSegment(segment_id0);
+  SegmentSelectionResult result;
+  result.segment = segment_id0;
+  result.is_ready = true;
+  GetSelectedSegment(result);
 
   // Add results for a new segment.
   OptimizationTarget segment_id1 =
@@ -211,7 +218,7 @@ TEST_F(SegmentSelectorTest,
   ASSERT_EQ(segment_id1, selected_segment->segment_id);
 
   // GetSelectedSegment should still return value from previous session.
-  GetSelectedSegment(segment_id0);
+  GetSelectedSegment(result);
 }
 
 }  // namespace segmentation_platform

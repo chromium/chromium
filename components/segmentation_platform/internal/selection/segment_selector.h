@@ -14,6 +14,7 @@
 using optimization_guide::proto::OptimizationTarget;
 
 namespace segmentation_platform {
+struct SegmentSelectionResult;
 
 // Central class for segment selection that can be used by clients to find the
 // best selected segment or result of a particular segment. Listens for model
@@ -24,18 +25,22 @@ class SegmentSelector : public ModelExecutionScheduler::Observer {
  public:
   virtual ~SegmentSelector() = default;
 
-  using SelectedSegmentCallback =
-      base::OnceCallback<void(absl::optional<OptimizationTarget>)>;
+  using SegmentSelectionCallback =
+      base::OnceCallback<void(const SegmentSelectionResult&)>;
   using SingleSegmentResultCallback =
       base::OnceCallback<void(absl::optional<float>)>;
 
   // Called to initialize the selector. Reads results from last session into
-  // memory. Must be invoked before calling any other method.
+  // memory. Must be invoked before calling any other method except
+  // GetSelectedSegment which is served from prefs.
+  // TODO(shaktisahu): Remove this method. Save model scores to prefs, and read
+  // them back in constructor. After that, none of the public methods will need
+  // to wait for the segment DB loading.
   virtual void Initialize(base::OnceClosure callback) = 0;
 
   // Client API. Returns the selected segment from the last session. If none,
   // returns empty result.
-  virtual void GetSelectedSegment(SelectedSegmentCallback callback) = 0;
+  virtual void GetSelectedSegment(SegmentSelectionCallback callback) = 0;
 
   // Client API to get the score for a single segment. Returns the cached score
   // from the last session.

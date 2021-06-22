@@ -5,25 +5,33 @@
 #ifndef CHROME_BROWSER_SEGMENTATION_PLATFORM_SEGMENTATION_PLATFORM_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_SEGMENTATION_PLATFORM_SEGMENTATION_PLATFORM_SERVICE_FACTORY_H_
 
-#include <memory>
-
 #include "base/macros.h"
-#include "components/keyed_service/core/simple_keyed_service_factory.h"
+#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 namespace base {
 template <typename T>
 struct DefaultSingletonTraits;
 }  // namespace base
 
+namespace content {
+class BrowserContext;
+}  // namespace content
+
+class Profile;
+
 namespace segmentation_platform {
 class SegmentationPlatformService;
 
 // A factory to create a unique SegmentationPlatformService.
-class SegmentationPlatformServiceFactory : public SimpleKeyedServiceFactory {
+class SegmentationPlatformServiceFactory
+    : public BrowserContextKeyedServiceFactory {
  public:
-  // Returns singleton instance of SegmentationPlatformServiceFactory.
+  // Gets the SegmentationPlatformService for the profile. Returns a dummy one
+  // if the feature isn't enabled.
+  static SegmentationPlatformService* GetForProfile(Profile* profile);
+
+  // Gets the lazy singleton instance of SegmentationPlatformService.
   static SegmentationPlatformServiceFactory* GetInstance();
-  static SegmentationPlatformService* GetForKey(SimpleFactoryKey* key);
 
   // Disallow copy/assign.
   SegmentationPlatformServiceFactory(
@@ -38,9 +46,9 @@ class SegmentationPlatformServiceFactory : public SimpleKeyedServiceFactory {
   SegmentationPlatformServiceFactory();
   ~SegmentationPlatformServiceFactory() override;
 
-  // SimpleKeyedServiceFactory overrides.
-  std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      SimpleFactoryKey* key) const override;
+  // BrowserContextKeyedServiceFactory overrides.
+  KeyedService* BuildServiceInstanceFor(
+      content::BrowserContext* context) const override;
 };
 
 }  // namespace segmentation_platform

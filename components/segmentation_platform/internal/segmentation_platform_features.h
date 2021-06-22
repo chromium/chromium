@@ -5,13 +5,10 @@
 #ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_SEGMENTATION_PLATFORM_FEATURES_H_
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_SEGMENTATION_PLATFORM_FEATURES_H_
 
-#include "base/feature_list.h"
 #include "base/time/time.h"
 
 namespace segmentation_platform {
 namespace features {
-
-extern const base::Feature kSegmentationPlatformFeature;
 
 // Used to determine if the model was executed too recently to run again.
 base::TimeDelta GetMinDelayForModelRerun();
