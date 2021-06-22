@@ -31,14 +31,6 @@ import xml.etree.ElementTree
 LLDBINIT_PATH = '$(PROJECT_DIR)/.lldbinit'
 
 
-PRODUCT_TYPES_WITH_SCHEME = {
-    'com.apple.product-type.app-extension',
-    'com.apple.product-type.application',
-    'com.apple.product-type.bundle.ui-testing',
-    'com.apple.product-type.framework',
-}
-
-
 class Template(string.Template):
 
   """A subclass of string.Template that changes delimiter."""
@@ -227,7 +219,10 @@ def UpdateXcodeProject(project_dir, old_project_dir, configurations, root_dir):
     # Create scheme files for application, extensions and framework targets.
     if isa == 'PBXNativeTarget':
       product_type = value['productType']
-      if product_type not in PRODUCT_TYPES_WITH_SCHEME:
+      if product_type not in (
+          'com.apple.product-type.app-extension',
+          'com.apple.product-type.application',
+          'com.apple.product-type.framework'):
         continue
 
       if schemes_template is None:
