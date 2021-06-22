@@ -55,8 +55,10 @@ class CartService : public history::HistoryServiceObserver,
   void AddCart(const std::string& domain,
                const absl::optional<GURL>& cart_url,
                const cart_db::ChromeCartContentProto& proto);
-  // Delete the cart from certain domain in the cart service.
-  void DeleteCart(const std::string& domain);
+  // Delete the cart from certain domain in the cart service. When not
+  // |ignore_remove_status|, we keep the cart if it has been permanently
+  // removed.
+  void DeleteCart(const std::string& domain, bool ignore_remove_status);
   // Only load carts with fake data in the database.
   void LoadCartsWithFakeData(CartDB::LoadCallback callback);
   // Gets called when discounts are available for the given cart_url.
@@ -179,6 +181,8 @@ class CartService : public history::HistoryServiceObserver,
   bool ShouldSkip(const GURL& url);
   void CacheUsedDiscounts(const cart_db::ChromeCartContentProto& proto);
   void CleanUpDiscounts(cart_db::ChromeCartContentProto proto);
+  // A callback to to keep entries of removed carts when deletion.
+  void OnDeleteCart(bool success, std::vector<CartDB::KeyAndValue> proto_pairs);
 
   Profile* profile_;
   std::unique_ptr<CartDB> cart_db_;
