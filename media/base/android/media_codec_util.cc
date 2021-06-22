@@ -57,8 +57,8 @@ static CodecProfileLevel MediaCodecProfileLevelToChromiumProfileLevel(
       Java_CodecProfileLevelAdapter_getCodec(env, j_codec_profile_level));
   VideoCodecProfile profile = static_cast<VideoCodecProfile>(
       Java_CodecProfileLevelAdapter_getProfile(env, j_codec_profile_level));
-  int level =
-      Java_CodecProfileLevelAdapter_getLevel(env, j_codec_profile_level);
+  auto level = static_cast<VideoCodecLevel>(
+      Java_CodecProfileLevelAdapter_getLevel(env, j_codec_profile_level));
   return {codec, profile, level};
 }
 

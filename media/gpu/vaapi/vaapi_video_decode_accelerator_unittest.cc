@@ -334,15 +334,16 @@ class VaapiVideoDecodeAcceleratorTest : public TestWithParam<TestParams>,
         .WillOnce(RunClosure(run_loop.QuitClosure()));
 
     const auto tex_target = mock_vaapi_picture_factory_->GetGLTextureTarget();
-    int irrelevant_id = 2;
+    int32_t irrelevant_id = 2;
     std::vector<PictureBuffer> picture_buffers;
     for (size_t picture = 0; picture < num_pictures; ++picture) {
       // The picture buffer id, client id and service texture ids are
       // arbitrarily chosen.
-      picture_buffers.push_back({irrelevant_id++, picture_size,
-                                 PictureBuffer::TextureIds{irrelevant_id++},
-                                 PictureBuffer::TextureIds{irrelevant_id++},
-                                 tex_target, PIXEL_FORMAT_XRGB});
+      picture_buffers.push_back(
+          {irrelevant_id++, picture_size,
+           PictureBuffer::TextureIds{static_cast<uint32_t>(irrelevant_id++)},
+           PictureBuffer::TextureIds{static_cast<uint32_t>(irrelevant_id++)},
+           tex_target, PIXEL_FORMAT_XRGB});
     }
 
     AssignPictureBuffers(picture_buffers);

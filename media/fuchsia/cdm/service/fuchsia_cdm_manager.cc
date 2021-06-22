@@ -41,7 +41,7 @@ struct CdmDirectoryInfo {
 // addition of most-recently-modified calculation, and inclusion of directory
 // node sizes toward the total.
 CdmDirectoryInfo GetCdmDirectoryInfo(const base::FilePath& path) {
-  int64_t directory_size = 0;
+  uint64_t directory_size = 0;
   base::Time last_used;
   base::FileEnumerator enumerator(
       path, true /* recursive */,

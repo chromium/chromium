@@ -8,6 +8,7 @@
 #include <limits>
 
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -38,8 +39,7 @@ Status SetUpOpenH264Params(const VideoEncoder::Options& options,
 
   if (options.bitrate.has_value()) {
     params->iRCMode = RC_BITRATE_MODE;
-    params->iTargetBitrate = int{std::min(
-        options.bitrate.value(), uint64_t{std::numeric_limits<int>::max()})};
+    params->iTargetBitrate = base::saturated_cast<int>(options.bitrate.value());
   } else {
     params->iRCMode = RC_OFF_MODE;
   }

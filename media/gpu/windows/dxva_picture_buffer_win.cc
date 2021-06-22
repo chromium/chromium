@@ -516,7 +516,9 @@ bool EGLStreamPictureBuffer::BindSampleToTexture(
   dxgi_buffer->GetSubresourceIndex(&subresource);
 
   EGLAttrib frame_attributes[] = {
-      EGL_D3D_TEXTURE_SUBRESOURCE_ID_ANGLE, subresource, EGL_NONE,
+      EGL_D3D_TEXTURE_SUBRESOURCE_ID_ANGLE,
+      static_cast<EGLAttrib>(subresource),
+      EGL_NONE,
   };
 
   EGLBoolean result = eglStreamPostD3DTextureANGLE(

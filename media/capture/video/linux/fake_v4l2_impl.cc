@@ -424,7 +424,7 @@ int FakeV4L2Impl::ioctl(int fd, int request, void* argp) {
     return EBADF;
   auto* opened_device = device_iter->second.get();
 
-  switch (request) {
+  switch (static_cast<uint32_t>(request)) {
     case VIDIOC_ENUM_FMT:
       return opened_device->enum_fmt(reinterpret_cast<v4l2_fmtdesc*>(argp));
     case VIDIOC_QUERYCAP:

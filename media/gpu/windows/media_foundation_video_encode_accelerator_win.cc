@@ -929,7 +929,7 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PopulateInputSampleBuffer(
       frame->row_bytes(VideoFrame::kYPlane) * frame->rows(VideoFrame::kYPlane);
   uint8_t* end = dst_uv + frame->row_bytes(VideoFrame::kUVPlane) *
                               frame->rows(VideoFrame::kUVPlane);
-  DCHECK_GE(std::ptrdiff_t{scoped_buffer.max_length()},
+  DCHECK_GE(static_cast<ptrdiff_t>(scoped_buffer.max_length()),
             end - scoped_buffer.get());
 
   if (frame->format() == PIXEL_FORMAT_NV12) {

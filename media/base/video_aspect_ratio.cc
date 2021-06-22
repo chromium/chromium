@@ -11,7 +11,7 @@ namespace media {
 
 VideoAspectRatio::VideoAspectRatio(Type type, int width, int height) {
   type_ = type;
-  aspect_ratio_ = height ? double{width} / height : 0.0;
+  aspect_ratio_ = height ? static_cast<double>(width) / height : 0.0;
 }
 
 // static
@@ -29,8 +29,8 @@ VideoAspectRatio::VideoAspectRatio(const gfx::Rect& visible_rect,
   // The size of a pixel is:
   //   (natural_width / visible_width) by (natural_height / visible_height).
   // Both are multiplied by (visible_width * visible_height) to avoid division.
-  double w = double{visible_rect.height()} * natural_size.width();
-  double h = double{visible_rect.width()} * natural_size.height();
+  double w = visible_rect.height() * natural_size.width();
+  double h = visible_rect.width() * natural_size.height();
 
   type_ = Type::kPixel;
   aspect_ratio_ = h != 0.0 ? w / h : 0.0;

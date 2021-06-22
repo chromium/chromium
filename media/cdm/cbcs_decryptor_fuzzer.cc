@@ -56,8 +56,10 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   // only set |subsamples| if |clear_bytes| <= |size|. If |subsamples| is
   // empty, the complete buffer is treated as encrypted.
   std::vector<media::SubsampleEntry> subsamples;
-  if (clear_bytes <= size)
-    subsamples.push_back({clear_bytes, size - clear_bytes});
+  if (clear_bytes <= size) {
+    subsamples.push_back(
+        {clear_bytes, static_cast<uint32_t>(size - clear_bytes)});
+  }
 
   // |encryption_pattern| is used to determine the encryption pattern. Since
   // |crypt_byte_block| must be > 0, use 1 for it. |skip_byte_block| can be 0.

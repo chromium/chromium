@@ -68,7 +68,7 @@ uint32_t GetDefaultTargetBitrate(const gfx::Size& resolution,
     gfx::Size resolution;
     uint32_t bitrate;
   } kDefaultTargetBitrates[] = {
-      {gfx::Size(640, 360), 1 * Mbps},    {gfx::Size(854, 480), 2.5 * Mbps},
+      {gfx::Size(640, 360), 1 * Mbps},    {gfx::Size(854, 480), 5 * Mbps / 2},
       {gfx::Size(1280, 720), 5 * Mbps},   {gfx::Size(1920, 1080), 8 * Mbps},
       {gfx::Size(3840, 2160), 18 * Mbps},
   };

@@ -1189,7 +1189,7 @@ TEST_F(WebMClusterParserTest, PreferOpusDurationsOverBlockDurations) {
         std::string(), std::string(), kCodecOpus));
 
     // Setting BlockDuration != Opus duration to see which one the parser uses.
-    int block_duration_ms = packet_ptr->duration_ms() + 10;
+    double block_duration_ms = packet_ptr->duration_ms() + 10;
     if (packet_ptr->duration_ms() > 120) {
       EXPECT_MEDIA_LOG(OpusPacketDurationTooHigh(packet_ptr->duration_ms()));
     }

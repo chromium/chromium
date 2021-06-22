@@ -170,7 +170,7 @@ HRESULT GetAacAudioType(const AudioDecoderConfig decoder_config,
   aac_wave_format->wfx.nBlockAlign = 1;
 
   size_t extra_size = wave_format_size - sizeof(WAVEFORMATEX);
-  aac_wave_format->wfx.cbSize = WORD{extra_size};
+  aac_wave_format->wfx.cbSize = static_cast<WORD>(extra_size);
   aac_wave_format->wPayloadType = 0;  // RAW AAC
   aac_wave_format->wAudioProfileLevelIndication =
       0xFE;                          // no audio profile specified

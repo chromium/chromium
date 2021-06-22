@@ -23,6 +23,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
@@ -249,8 +250,9 @@ bool CreateVideoToolboxSession(
   // output size for a 1:1 ratio. (Note though that VideoToolbox does not handle
   // top or left crops correctly.) We expect the visible rect to be integral.
   CGRect visible_rect = CMVideoFormatDescriptionGetCleanAperture(format, true);
-  CMVideoDimensions visible_dimensions = {visible_rect.size.width,
-                                          visible_rect.size.height};
+  CMVideoDimensions visible_dimensions = {
+      base::ClampFloor(visible_rect.size.width),
+      base::ClampFloor(visible_rect.size.height)};
   base::ScopedCFTypeRef<CFMutableDictionaryRef> image_config(
       BuildImageConfig(visible_dimensions, is_hbd));
   if (!image_config) {
