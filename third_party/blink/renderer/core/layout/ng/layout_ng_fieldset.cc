@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_fieldset.h"
 
+#include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/layout/layout_fieldset.h"
 #include "third_party/blink/renderer/core/layout/layout_object_factory.h"
 
@@ -29,10 +30,20 @@ LayoutBlock* LayoutNGFieldset::FindAnonymousFieldsetContentBox() const {
 
 void LayoutNGFieldset::AddChild(LayoutObject* new_child,
                                 LayoutObject* before_child) {
-  // Adding a child LayoutObject always causes reattach of <fieldset>. So
-  // |before_child| is always nullptr.
-  // See HTMLFieldSetElement::DidRecalcStyle().
-  DCHECK(!before_child);
+  if (!new_child->IsText()) {
+    // Adding a child LayoutObject always causes reattach of <fieldset>. So
+    // |before_child| is always nullptr.
+    // See HTMLFieldSetElement::DidRecalcStyle().
+    DCHECK(!before_child);
+  } else if (before_child && before_child->IsRenderedLegend()) {
+    // Whitespace changes resulting from removed nodes are handled in
+    // MarkForWhitespaceReattachment(), and don't trigger
+    // HTMLFieldSetElement::DidRecalcStyle(). So the fieldset is not
+    // reattached. We adjust |before_child| instead.
+    Node* before_node =
+        LayoutTreeBuilderTraversal::NextLayoutSibling(*before_child->GetNode());
+    before_child = before_node ? before_node->GetLayoutObject() : nullptr;
+  }
 
   // https://html.spec.whatwg.org/C/#the-fieldset-and-legend-elements
   // > * If the element has a rendered legend, then that element is expected

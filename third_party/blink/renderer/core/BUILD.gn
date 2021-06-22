@@ -1382,6 +1382,7 @@ source_set("unit_tests") {
     "layout/ng/inline/ng_line_breaker_test.cc",
     "layout/ng/inline/ng_offset_mapping_test.cc",
     "layout/ng/inline/ng_physical_line_box_fragment_test.cc",
+    "layout/ng/layout_ng_fieldset_test.cc",
     "layout/ng/list/layout_ng_list_item_test.cc",
     "layout/ng/ng_absolute_utils_test.cc",
     "layout/ng/ng_base_layout_algorithm_test.cc",
