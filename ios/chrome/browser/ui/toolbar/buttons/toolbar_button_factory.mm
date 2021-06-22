@@ -225,7 +225,7 @@
       [button.widthAnchor constraintEqualToConstant:width];
   constraint.priority = UILayoutPriorityRequired - 1;
   constraint.active = YES;
-  button.configuration = self.toolbarConfiguration;
+  button.toolbarConfiguration = self.toolbarConfiguration;
   button.exclusiveTouch = YES;
   if (@available(iOS 13.4, *)) {
       button.pointerInteractionEnabled = YES;

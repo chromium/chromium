@@ -16,7 +16,7 @@
 @interface ToolbarButton : UIButton
 
 // Configuration object used to get colors.
-@property(nonatomic, weak) ToolbarConfiguration* configuration;
+@property(nonatomic, weak) ToolbarConfiguration* toolbarConfiguration;
 // Bitmask used for SizeClass visibility.
 @property(nonatomic, assign) ToolbarComponentVisibility visibilityMask;
 // Returns true if the ToolbarButton should be hidden in the current SizeClass.
