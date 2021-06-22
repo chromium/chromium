@@ -12,7 +12,10 @@ import android.widget.TextView;
 
 import androidx.annotation.StringRes;
 
+import org.chromium.base.CollectionUtil;
+import org.chromium.base.annotations.CalledByNative;
 import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.ui.base.AndroidPermissionDelegate;
 import org.chromium.ui.base.PermissionCallback;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -21,10 +24,7 @@ import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -41,40 +41,58 @@ public class AndroidPermissionRequester {
         void onAndroidPermissionCanceled();
     }
 
-    private static SparseArray<String[]> generatePermissionsMapping(
-            WindowAndroid windowAndroid, int[] contentSettingsTypes) {
-        SparseArray<String[]> permissionsToRequest = new SparseArray<>();
-        for (int i = 0; i < contentSettingsTypes.length; i++) {
-            String[] permissions =
-                    PermissionUtil.getAndroidPermissionsForContentSetting(contentSettingsTypes[i]);
-            if (permissions == null) continue;
-            List<String> missingPermissions = new ArrayList<>();
-            for (int j = 0; j < permissions.length; j++) {
-                String permission = permissions[j];
-                if (!windowAndroid.hasPermission(permission)) missingPermissions.add(permission);
-            }
-            if (!missingPermissions.isEmpty()) {
-                permissionsToRequest.append(contentSettingsTypes[i],
-                        missingPermissions.toArray(new String[missingPermissions.size()]));
+    private static Set<String> filterPermissionsKeepMissing(
+            AndroidPermissionDelegate permissionDelegate, String[] androidPermissions) {
+        Set<String> missingAndroidPermissions = new HashSet<String>();
+        for (String permission : androidPermissions) {
+            if (!permissionDelegate.hasPermission(permission)) {
+                missingAndroidPermissions.add(permission);
             }
         }
-        return permissionsToRequest;
+        return missingAndroidPermissions;
     }
 
     private static int getContentSettingType(
-            SparseArray<String[]> contentSettingsTypesToPermissionsMap, String permission) {
+            SparseArray<Set<String>> contentSettingsTypesToPermissionsMap, String permission) {
         // SparseArray#indexOfValue uses == instead of .equals, so we need to manually iterate
         // over the list.
         for (int i = 0; i < contentSettingsTypesToPermissionsMap.size(); i++) {
-            String[] contentSettingPermissions = contentSettingsTypesToPermissionsMap.valueAt(i);
-            for (int j = 0; j < contentSettingPermissions.length; j++) {
-                if (permission.equals(contentSettingPermissions[j])) {
-                    return contentSettingsTypesToPermissionsMap.keyAt(i);
-                }
+            final Set<String> contentSettingPermissions =
+                    contentSettingsTypesToPermissionsMap.valueAt(i);
+            if (contentSettingPermissions.contains(permission)) {
+                return contentSettingsTypesToPermissionsMap.keyAt(i);
             }
         }
 
         return -1;
+    }
+
+    /**
+     * Determines whether the minimum required Android permissions are granted for the specified
+     * content setting.
+     *
+     * @param permissionDelegate The AndroidPermissionDelegate used to determine permission status.
+     * @param contentSettingsType The content setting whose permissions are being checked.
+     * @return Whether the necessary permissions are granted for the given content setting.
+     */
+    @CalledByNative
+    public static boolean hasRequiredAndroidPermissionsForContentSetting(
+            AndroidPermissionDelegate permissionDelegate,
+            @ContentSettingsType int contentSettingsType) {
+        Set<String> missingPermissions = filterPermissionsKeepMissing(permissionDelegate,
+                PermissionUtil.getRequiredAndroidPermissionsForContentSetting(contentSettingsType));
+
+        // TODO(crbug.com/1206673): AndroidPermissionDelegate.hasPermission has side effects that
+        // allows users to recover from states where they had previously denied the permission, by
+        // virtue of clearing a Chrome-side shared preference instructing Chrome not to prompt again
+        // again. Ensure here that these prefs get cleared for optional permissions as well.
+        String[] optionalPermissions =
+                PermissionUtil.getOptionalAndroidPermissionsForContentSetting(contentSettingsType);
+        for (String permission : optionalPermissions) {
+            boolean unused_result = permissionDelegate.hasPermission(permission);
+        }
+
+        return missingPermissions.isEmpty();
     }
 
     /**
@@ -88,10 +106,29 @@ public class AndroidPermissionRequester {
             final int[] contentSettingsTypes, final RequestDelegate delegate) {
         if (windowAndroid == null) return false;
 
-        final SparseArray<String[]> contentSettingsTypesToPermissionsMap =
-                generatePermissionsMapping(windowAndroid, contentSettingsTypes);
+        SparseArray<Set<String>> contentSettingsTypesToRequiredPermissionsMap = new SparseArray<>();
+        Set<String> allPermissionsToRequest = new HashSet<>();
+        for (int contentSettingType : contentSettingsTypes) {
+            if (hasRequiredAndroidPermissionsForContentSetting(windowAndroid, contentSettingType)) {
+                continue;
+            }
 
-        if (contentSettingsTypesToPermissionsMap.size() == 0) return false;
+            final Set<String> requiredPermissions = CollectionUtil.newHashSet(
+                    PermissionUtil.getRequiredAndroidPermissionsForContentSetting(
+                            contentSettingType));
+            final Set<String> optionalPermissions = CollectionUtil.newHashSet(
+                    PermissionUtil.getOptionalAndroidPermissionsForContentSetting(
+                            contentSettingType));
+
+            contentSettingsTypesToRequiredPermissionsMap.append(
+                    contentSettingType, requiredPermissions);
+            allPermissionsToRequest.addAll(requiredPermissions);
+            allPermissionsToRequest.addAll(optionalPermissions);
+        }
+
+        if (allPermissionsToRequest.isEmpty()) {
+            return false;
+        }
 
         PermissionCallback callback = new PermissionCallback() {
             @Override
@@ -101,9 +138,13 @@ public class AndroidPermissionRequester {
 
                 for (int i = 0; i < grantResults.length; i++) {
                     if (grantResults[i] == PackageManager.PERMISSION_DENIED) {
-                        deniedContentSettings.add(getContentSettingType(
-                                contentSettingsTypesToPermissionsMap, permissions[i]));
-
+                        final int deniedContentSetting = getContentSettingType(
+                                contentSettingsTypesToRequiredPermissionsMap, permissions[i]);
+                        // Never mind if an optional Android permission was denied.
+                        if (deniedContentSetting == -1) {
+                            continue;
+                        }
+                        deniedContentSettings.add(deniedContentSetting);
                         if (!windowAndroid.canRequestPermission(permissions[i])) {
                             allRequestable = false;
                         }
@@ -151,14 +192,9 @@ public class AndroidPermissionRequester {
             }
         };
 
-        Set<String> permissionsToRequest = new HashSet<>();
-        for (int i = 0; i < contentSettingsTypesToPermissionsMap.size(); i++) {
-            Collections.addAll(
-                    permissionsToRequest, contentSettingsTypesToPermissionsMap.valueAt(i));
-        }
-        String[] permissions =
-                permissionsToRequest.toArray(new String[permissionsToRequest.size()]);
-        windowAndroid.requestPermissions(permissions, callback);
+        windowAndroid.requestPermissions(
+                allPermissionsToRequest.toArray(new String[allPermissionsToRequest.size()]),
+                callback);
         return true;
     }
 

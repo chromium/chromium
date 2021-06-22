@@ -450,10 +450,10 @@ bool MediaStreamDevicesController::IsUserAcceptAllowed(
   if (!window_android)
     return false;
 
-  std::vector<std::string> android_permissions;
-  permissions::GetAndroidPermissionsForContentSetting(content_type,
-                                                      &android_permissions);
-  for (const auto& android_permission : android_permissions) {
+  std::vector<std::string> required_android_permissions;
+  permissions::AppendRequiredAndroidPermissionsForContentSetting(
+      content_type, &required_android_permissions);
+  for (const auto& android_permission : required_android_permissions) {
     if (!window_android->HasPermission(android_permission) &&
         !window_android->CanRequestPermission(android_permission)) {
       return false;

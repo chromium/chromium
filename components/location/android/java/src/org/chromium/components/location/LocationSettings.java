@@ -24,6 +24,7 @@ public class LocationSettings {
 
     @CalledByNative
     private static boolean canPromptForAndroidLocationPermission(WindowAndroid windowAndroid) {
+        // TODO(crbug.com/1206673): Investigate if this should be ACCESS_COARSE_LOCATION.
         return windowAndroid.canRequestPermission(Manifest.permission.ACCESS_FINE_LOCATION);
     }
 

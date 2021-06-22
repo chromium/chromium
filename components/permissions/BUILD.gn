@@ -114,6 +114,8 @@ source_set("permissions") {
       "android/permission_dialog_delegate.h",
       "android/permission_prompt_android.cc",
       "android/permission_prompt_android.h",
+      "android/permissions_android_feature_list.cc",
+      "android/permissions_android_feature_list.h",
       "contexts/geolocation_permission_context_android.cc",
       "contexts/geolocation_permission_context_android.h",
       "contexts/nfc_permission_context_android.cc",

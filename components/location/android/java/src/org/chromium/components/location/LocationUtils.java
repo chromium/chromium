@@ -58,8 +58,8 @@ public class LocationUtils {
     /**
      * Returns true if Chromium has permission to access location.
      *
-     * Check both hasAndroidLocationPermission() and isSystemLocationSettingEnabled() to determine
-     * if Chromium's location requests will return results.
+     * Callers should check both hasAndroidLocationPermission() and isSystemLocationSettingEnabled()
+     * to determine if Chromium's location requests will return results.
      */
     public boolean hasAndroidLocationPermission() {
         return hasPermission(Manifest.permission.ACCESS_COARSE_LOCATION)

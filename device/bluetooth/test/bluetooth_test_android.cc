@@ -35,8 +35,8 @@ BluetoothTestAndroid::~BluetoothTestAndroid() {
 
 void BluetoothTestAndroid::SetUp() {
   // Set the permission to true so that we can use the API.
-  Java_Fakes_setLocationServicesState(
-      AttachCurrentThread(), true /* hasPermission */, true /* isEnabled */);
+  Java_Fakes_setLocationServicesState(AttachCurrentThread(),
+                                      true /* isEnabled */);
   Java_Fakes_initFakeThreadUtilsWrapper(AttachCurrentThread(),
                                         reinterpret_cast<intptr_t>(this));
 }
@@ -94,8 +94,8 @@ void BluetoothTestAndroid::InitWithFakeAdapter() {
 }
 
 bool BluetoothTestAndroid::DenyPermission() {
-  Java_Fakes_setLocationServicesState(
-      AttachCurrentThread(), false /* hasPermission */, true /* isEnabled */);
+  Java_FakeBluetoothAdapter_setFakeContextLocationPermission(
+      AttachCurrentThread(), j_fake_bluetooth_adapter_, false);
   return true;
 }
 
@@ -117,8 +117,8 @@ void BluetoothTestAndroid::RememberDeviceForSubsequentAction(
 }
 
 void BluetoothTestAndroid::SimulateLocationServicesOff() {
-  Java_Fakes_setLocationServicesState(
-      AttachCurrentThread(), true /* hasPermission */, false /* isEnabled */);
+  Java_Fakes_setLocationServicesState(AttachCurrentThread(),
+                                      false /* isEnabled */);
 }
 
 void BluetoothTestAndroid::ForceIllegalStateException() {

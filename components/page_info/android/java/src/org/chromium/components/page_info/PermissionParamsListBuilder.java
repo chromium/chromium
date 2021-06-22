@@ -14,7 +14,7 @@ import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.location.LocationUtils;
 import org.chromium.components.page_info.PageInfoPermissionsController.PermissionObject;
-import org.chromium.components.permissions.PermissionUtil;
+import org.chromium.components.permissions.AndroidPermissionRequester;
 import org.chromium.components.permissions.nfc.NfcSystemLevelSetting;
 import org.chromium.ui.base.AndroidPermissionDelegate;
 
@@ -76,7 +76,8 @@ public class PermissionParamsListBuilder {
                     && !NfcSystemLevelSetting.isNfcSystemLevelSettingEnabled()) {
                 permissionParams.warningTextResource =
                         R.string.page_info_android_permission_blocked;
-            } else if (!hasAndroidPermission(permission.type)) {
+            } else if (!AndroidPermissionRequester.hasRequiredAndroidPermissionsForContentSetting(
+                               mPermissionDelegate, permission.type)) {
                 if (permission.type == ContentSettingsType.AR) {
                     permissionParams.warningTextResource =
                             R.string.page_info_android_ar_camera_blocked;
@@ -107,18 +108,6 @@ public class PermissionParamsListBuilder {
         }
 
         return permissionParams;
-    }
-
-    private boolean hasAndroidPermission(int contentSettingType) {
-        String[] androidPermissions =
-                PermissionUtil.getAndroidPermissionsForContentSetting(contentSettingType);
-        if (androidPermissions == null) return true;
-        for (int i = 0; i < androidPermissions.length; i++) {
-            if (!mPermissionDelegate.hasPermission(androidPermissions[i])) {
-                return false;
-            }
-        }
-        return true;
     }
 
     /**

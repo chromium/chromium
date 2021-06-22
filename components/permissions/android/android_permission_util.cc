@@ -5,6 +5,7 @@
 #include "components/permissions/android/android_permission_util.h"
 
 #include "base/android/jni_array.h"
+#include "components/permissions/android/jni_headers/AndroidPermissionRequester_jni.h"
 #include "components/permissions/android/jni_headers/PermissionUtil_jni.h"
 #include "components/permissions/permission_uma_util.h"
 #include "content/public/browser/web_contents.h"
@@ -12,15 +13,35 @@
 
 namespace permissions {
 
-void GetAndroidPermissionsForContentSetting(
+void AppendRequiredAndroidPermissionsForContentSetting(
     ContentSettingsType content_settings_type,
     std::vector<std::string>* out) {
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::AppendJavaStringArrayToStringVector(
       env,
-      Java_PermissionUtil_getAndroidPermissionsForContentSetting(
+      Java_PermissionUtil_getRequiredAndroidPermissionsForContentSetting(
           env, static_cast<int>(content_settings_type)),
       out);
+}
+
+void AppendOptionalAndroidPermissionsForContentSetting(
+    ContentSettingsType content_settings_type,
+    std::vector<std::string>* out) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  base::android::AppendJavaStringArrayToStringVector(
+      env,
+      Java_PermissionUtil_getOptionalAndroidPermissionsForContentSetting(
+          env, static_cast<int>(content_settings_type)),
+      out);
+}
+
+bool HasRequiredAndroidPermissionsForContentSetting(
+    ui::WindowAndroid* window_android,
+    ContentSettingsType content_settings_type) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return Java_AndroidPermissionRequester_hasRequiredAndroidPermissionsForContentSetting(
+      env, window_android->GetJavaObject(),
+      static_cast<int>(content_settings_type));
 }
 
 PermissionRepromptState ShouldRepromptUserForPermissions(
@@ -34,16 +55,11 @@ PermissionRepromptState ShouldRepromptUserForPermissions(
     return PermissionRepromptState::kCannotShow;
 
   for (ContentSettingsType content_settings_type : content_settings_types) {
-    std::vector<std::string> android_permissions;
-    GetAndroidPermissionsForContentSetting(content_settings_type,
-                                           &android_permissions);
-
-    for (const auto& android_permission : android_permissions) {
-      if (!window_android->HasPermission(android_permission)) {
-        PermissionUmaUtil::RecordMissingPermissionInfobarShouldShow(
-            true, content_settings_types);
-        return PermissionRepromptState::kShow;
-      }
+    if (!HasRequiredAndroidPermissionsForContentSetting(
+            window_android, content_settings_type)) {
+      PermissionUmaUtil::RecordMissingPermissionInfobarShouldShow(
+          true, content_settings_types);
+      return PermissionRepromptState::kShow;
     }
   }
 
