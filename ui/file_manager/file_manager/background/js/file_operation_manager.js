@@ -10,9 +10,9 @@ import {TrashEntry, TrashRootEntry} from '../../common/js/trash.js';
 import {util} from '../../common/js/util.m.js';
 import {xfm} from '../../common/js/xfm.m.js';
 import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
-import {EntryLocation} from '../../externs/entry_location.m.js';
-import {FakeEntry} from '../../externs/files_app_entry_interfaces.m.js';
-import {VolumeManager} from '../../externs/volume_manager.m.js';
+import {EntryLocation} from '../../externs/entry_location.js';
+import {FakeEntry} from '../../externs/files_app_entry_interfaces.js';
+import {VolumeManager} from '../../externs/volume_manager.js';
 
 import {fileOperationUtil} from './file_operation_util.js';
 import {metadataProxy} from './metadata_proxy.js';

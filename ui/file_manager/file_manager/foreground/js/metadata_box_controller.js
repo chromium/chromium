@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // #import {MetadataItem} from './metadata/metadata_item.js';
-// #import {VolumeManager} from '../../externs/volume_manager.m.js';
+// #import {VolumeManager} from '../../externs/volume_manager.js';
 // #import {FileMetadataFormatter} from './ui/file_metadata_formatter.js';
 // #import {QuickViewModel} from './quick_view_model.m.js';
 // #import {MetadataModel} from './metadata/metadata_model.js';

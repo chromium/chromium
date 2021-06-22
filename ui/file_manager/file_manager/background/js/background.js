@@ -16,8 +16,8 @@ import {importerHistoryInterfaces} from '../../externs/background/import_history
 import {mediaImportInterfaces} from '../../externs/background/media_import_handler.js';
 import {mediaScannerInterfaces} from '../../externs/background/media_scanner.js';
 import {ProgressCenter} from '../../externs/background/progress_center.js';
-import {VolumeInfo} from '../../externs/volume_info.m.js';
-import {VolumeManager} from '../../externs/volume_manager.m.js';
+import {VolumeInfo} from '../../externs/volume_info.js';
+import {VolumeManager} from '../../externs/volume_manager.js';
 
 import {BackgroundBaseImpl} from './background_base.js';
 import {CrostiniImpl} from './crostini.js';

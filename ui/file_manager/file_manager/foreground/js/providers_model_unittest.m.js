@@ -10,7 +10,7 @@ import {installMockChrome, MockCommandLinePrivate} from '../../common/js/mock_ch
 import {MockDirectoryEntry, MockFileSystem} from '../../common/js/mock_entry.m.js';
 import {reportPromise} from '../../common/js/test_error_reporting.m.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
-import {VolumeManager} from '../../externs/volume_manager.m.js';
+import {VolumeManager} from '../../externs/volume_manager.js';
 
 import {ProvidersModel} from './providers_model.m.js';
 

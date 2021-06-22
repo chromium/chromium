@@ -6,7 +6,7 @@
 // #import {ActionModelUI} from './ui/action_model_ui.js';
 // #import {FolderShortcutsDataModel} from './folder_shortcuts_data_model.m.js';
 // #import {DriveSyncHandler} from '../../externs/background/drive_sync_handler.js';
-// #import {VolumeManager} from '../../externs/volume_manager.m.js';
+// #import {VolumeManager} from '../../externs/volume_manager.js';
 // #import {MetadataModel} from './metadata/metadata_model.js';
 // #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
 // #import {util, str, strf} from '../../common/js/util.m.js';

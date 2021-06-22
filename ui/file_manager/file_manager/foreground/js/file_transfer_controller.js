@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {EntryLocation} from '../../externs/entry_location.m.js';
-// #import {VolumeInfo} from '../../externs/volume_info.m.js';
+// #import {EntryLocation} from '../../externs/entry_location.js';
+// #import {VolumeInfo} from '../../externs/volume_info.js';
 // #import {List} from 'chrome://resources/js/cr/ui/list.m.js';
-// #import {FilesAppDirEntry, FakeEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.m.js';
+// #import {FilesAppDirEntry, FakeEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 // #import {Command} from 'chrome://resources/js/cr/ui/command.m.js';
-// #import {VolumeManager} from '../../externs/volume_manager.m.js';
+// #import {VolumeManager} from '../../externs/volume_manager.js';
 // #import {DirectoryModel} from './directory_model.m.js';
 // #import {MetadataModel} from './metadata/metadata_model.js';
 // #import {FileOperationManager} from '../../externs/background/file_operation_manager.js';

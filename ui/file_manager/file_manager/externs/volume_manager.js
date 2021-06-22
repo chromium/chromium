@@ -2,19 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {EntryLocation} from './entry_location.m.js';
-// #import {VolumeInfo} from './volume_info.m.js';
-// #import {VolumeInfoList} from './volume_info_list.m.js';
-// #import {FilesAppEntry, FilesAppDirEntry} from './files_app_entry_interfaces.m.js';
-// #import {VolumeManagerCommon} from '../common/js/volume_manager_types.m.js';
-// clang-format on
+import {VolumeManagerCommon} from '../common/js/volume_manager_types.m.js';
+
+import {EntryLocation} from './entry_location.js';
+import {FilesAppDirEntry, FilesAppEntry} from './files_app_entry_interfaces.js';
+import {VolumeInfo} from './volume_info.js';
+import {VolumeInfoList} from './volume_info_list.js';
 
 /**
  * VolumeManager is responsible for tracking list of mounted volumes.
  * @interface
  */
-/* #export */ class VolumeManager {
+export class VolumeManager {
   constructor() {
     /**
      * The list of VolumeInfo instances for each mounted volume.
@@ -138,4 +137,4 @@
  * Event object which is dispached with 'externally-unmounted' event.
  * @typedef {!CustomEvent<!VolumeInfo>}
  */
-/* #export */ let ExternallyUnmountedEvent;
+export let ExternallyUnmountedEvent;

@@ -2,17 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import * as wrappedVolumeManagerCommon from '../common/js/volume_manager_types.m.js'; const {VolumeManagerCommon} = wrappedVolumeManagerCommon;
-// #import {VolumeInfo} from './volume_info.m.js';
-// clang-format on
+import {VolumeManagerCommon} from '../common/js/volume_manager_types.m.js';
+import {VolumeInfo} from './volume_info.js';
 
 /**
  * Location information which shows where the path points in FileManager's
  * file system.
  * @interface
  */
-/* #export */ class EntryLocation {
+export class EntryLocation {
   constructor() {
     /**
      * Volume information.

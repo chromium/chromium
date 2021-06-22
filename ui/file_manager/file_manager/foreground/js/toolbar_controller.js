@@ -5,7 +5,7 @@
 // clang-format off
 // #import {FileListSelectionModel} from './ui/file_list_selection_model.js';
 // #import {A11yAnnounce} from './ui/a11y_announce.js';
-// #import {VolumeManager} from '../../externs/volume_manager.m.js';
+// #import {VolumeManager} from '../../externs/volume_manager.js';
 // #import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
 // #import {DirectoryModel} from './directory_model.m.js';
 // #import {LocationLine} from './ui/location_line.js';

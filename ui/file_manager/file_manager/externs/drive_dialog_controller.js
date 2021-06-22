@@ -7,7 +7,7 @@
  * show dialogs originating from Drive to the user.
  * @interface
  */
-/* #export */ class DriveDialogControllerInterface {
+export class DriveDialogControllerInterface {
   /**
    * @return {boolean} Whether the dialog is open or not
    */

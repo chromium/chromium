@@ -10,7 +10,7 @@ import {str, strf} from '../../common/js/util.m.js';
 import {xfm} from '../../common/js/xfm.m.js';
 import {DriveSyncHandler} from '../../externs/background/drive_sync_handler.js';
 import {ProgressCenter} from '../../externs/background/progress_center.js';
-import {DriveDialogControllerInterface} from '../../externs/drive_dialog_controller.m.js';
+import {DriveDialogControllerInterface} from '../../externs/drive_dialog_controller.js';
 
 import {fileOperationUtil} from './file_operation_util.js';
 import {launcher, LaunchType} from './launcher.js';

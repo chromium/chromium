@@ -11,7 +11,7 @@
 // #import {DirectoryModel} from './directory_model.m.js';
 // #import {MetadataModel} from './metadata/metadata_model.js';
 // #import {FileManagerUI} from './ui/file_manager_ui.js';
-// #import {VolumeManager} from '../../externs/volume_manager.m.js';
+// #import {VolumeManager} from '../../externs/volume_manager.js';
 // #import {DialogType} from './dialog_type.m.js';
 // #import {strf, util, str} from '../../common/js/util.m.js';
 // #import {FileTasks} from './file_tasks.m.js';

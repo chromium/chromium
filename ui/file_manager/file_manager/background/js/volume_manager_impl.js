@@ -9,8 +9,8 @@ import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_t
 import {AsyncUtil} from '../../common/js/async_util.m.js';
 import {util} from '../../common/js/util.m.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
-import {VolumeInfo} from '../../externs/volume_info.m.js';
-import {VolumeManager} from '../../externs/volume_manager.m.js';
+import {VolumeInfo} from '../../externs/volume_info.js';
+import {VolumeManager} from '../../externs/volume_manager.js';
 
 import {EntryLocationImpl} from './entry_location_impl.js';
 import {VolumeInfoListImpl} from './volume_info_list_impl.js';

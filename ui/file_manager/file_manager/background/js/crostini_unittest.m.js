@@ -9,8 +9,8 @@ import {installMockChrome} from '../../common/js/mock_chrome.m.js';
 import {MockDirectoryEntry, MockEntry, MockFileSystem} from '../../common/js/mock_entry.m.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
 import {Crostini} from '../../externs/background/crostini.js';
-import {EntryLocation} from '../../externs/entry_location.m.js';
-import {VolumeManager} from '../../externs/volume_manager.m.js';
+import {EntryLocation} from '../../externs/entry_location.js';
+import {VolumeManager} from '../../externs/volume_manager.js';
 
 import {createCrostiniForTest} from './mock_crostini.js';
 

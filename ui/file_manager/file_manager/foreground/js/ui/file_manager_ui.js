@@ -13,7 +13,7 @@ import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
 
 import {str, strf, util} from '../../../common/js/util.m.js';
 import {AllowedPaths} from '../../../common/js/volume_manager_types.m.js';
-import {VolumeManager} from '../../../externs/volume_manager.m.js';
+import {VolumeManager} from '../../../externs/volume_manager.js';
 import {FilesPasswordDialog} from '../../elements/files_password_dialog.js';
 import {FilesToast} from '../../elements/files_toast.js';
 import {FilesTooltip} from '../../elements/files_tooltip.js';

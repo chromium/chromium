@@ -4,8 +4,8 @@
 
 import {ArrayDataModel} from 'chrome://resources/js/cr/ui/array_data_model.m.js';
 
-import {VolumeInfo} from '../../externs/volume_info.m.js';
-import {VolumeInfoList} from '../../externs/volume_info_list.m.js';
+import {VolumeInfo} from '../../externs/volume_info.js';
+import {VolumeInfoList} from '../../externs/volume_info_list.js';
 
 /**
  * The container of the VolumeInfo for each mounted volume.

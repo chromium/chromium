@@ -7,7 +7,7 @@
 // #import {ListContainer} from './ui/list_container.js';
 // #import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
 // #import {DirectoryModel} from './directory_model.m.js';
-// #import {VolumeManager} from '../../externs/volume_manager.m.js';
+// #import {VolumeManager} from '../../externs/volume_manager.js';
 // #import {AllowedPaths} from '../../common/js/volume_manager_types.m.js';
 // #import {util} from '../../common/js/util.m.js';
 // #import {constants} from './constants.m.js';

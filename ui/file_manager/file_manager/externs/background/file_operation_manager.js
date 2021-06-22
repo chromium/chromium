@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {FakeEntry, FilesAppEntry} from '../files_app_entry_interfaces.m.js';
-import {VolumeManager} from '../volume_manager.m.js';
+import {FakeEntry, FilesAppEntry} from '../files_app_entry_interfaces.js';
+import {VolumeManager} from '../volume_manager.js';
 
 /**
  * FileOperationManager: manager of file operations. Implementations of this

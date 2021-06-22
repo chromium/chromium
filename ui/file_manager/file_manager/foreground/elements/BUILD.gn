@@ -75,7 +75,7 @@ js_library("files_format_dialog") {
     "//ui/file_manager/file_manager/common/js:files_app_entry_types.m",
     "//ui/file_manager/file_manager/common/js:util.m",
     "//ui/file_manager/file_manager/common/js:volume_manager_types.m",
-    "//ui/file_manager/file_manager/externs:volume_info.m",
+    "//ui/file_manager/file_manager/externs:volume_info",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
     "//ui/webui/resources/cr_elements/cr_input:cr_input.m",

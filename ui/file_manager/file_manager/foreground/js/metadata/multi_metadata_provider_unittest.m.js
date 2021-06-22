@@ -6,7 +6,7 @@ import {assertArrayEquals, assertEquals, assertNotReached, assertTrue} from 'chr
 
 import {reportPromise} from '../../../common/js/test_error_reporting.m.js';
 import {VolumeManagerCommon} from '../../../common/js/volume_manager_types.m.js';
-import {VolumeManager} from '../../../externs/volume_manager.m.js';
+import {VolumeManager} from '../../../externs/volume_manager.js';
 
 import {ContentMetadataProvider} from './content_metadata_provider.js';
 import {ExternalMetadataProvider} from './external_metadata_provider.js';

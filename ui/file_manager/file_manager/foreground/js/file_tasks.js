@@ -5,7 +5,7 @@
 // clang-format off
 // #import {Menu} from 'chrome://resources/js/cr/ui/menu.m.js';
 // #import {MultiMenuButton} from './ui/multi_menu_button.js';
-// #import {VolumeInfo} from '../../externs/volume_info.m.js';
+// #import {VolumeInfo} from '../../externs/volume_info.js';
 // #import {ProgressCenter} from '../../externs/background/progress_center.js';
 // #import {Crostini} from '../../externs/background/crostini.js';
 // #import {NamingController} from './naming_controller.m.js';
@@ -13,7 +13,7 @@
 // #import {FileManagerUI} from './ui/file_manager_ui.js';
 // #import {DirectoryModel} from './directory_model.m.js';
 // #import {MetadataModel} from './metadata/metadata_model.js';
-// #import {VolumeManager} from '../../externs/volume_manager.m.js';
+// #import {VolumeManager} from '../../externs/volume_manager.js';
 // #import {FilesMenuItem} from './ui/files_menu.js';
 // #import {decorate} from 'chrome://resources/js/cr/ui.m.js';
 // #import {FilesPasswordDialog} from '../elements/files_password_dialog.js';

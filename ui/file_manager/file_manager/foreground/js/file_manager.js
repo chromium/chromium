@@ -9,15 +9,15 @@
 // #import {FileListSelectionModel} from './ui/file_list_selection_model.js';
 // #import {A11yAnnounce} from './ui/a11y_announce.js';
 // #import {ProgressCenter} from '../../externs/background/progress_center.js';
-// #import {FakeEntry, FilesAppDirEntry} from '../../externs/files_app_entry_interfaces.m.js';
+// #import {FakeEntry, FilesAppDirEntry} from '../../externs/files_app_entry_interfaces.js';
 // #import {FileBrowserBackgroundFull} from '../../externs/background/file_browser_background_full.js';
-// #import {BackgroundWindow} from '../../externs/background_window.m.js';
+// #import {BackgroundWindow} from '../../externs/background_window.js';
 // #import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
 // #import {mediaImportInterfaces} from '../../externs/background/media_import_handler.js';
 // #import {mediaScannerInterfaces} from '../../externs/background/media_scanner.js';
 // #import {Crostini} from '../../externs/background/crostini.js';
 // #import {importerHistoryInterfaces} from '../../externs/background/import_history.js';
-// #import {CommandHandlerDeps} from '../../externs/command_handler_deps.m.js';
+// #import {CommandHandlerDeps} from '../../externs/command_handler_deps.js';
 // #import {ProgressItemState} from '../../common/js/progress_center_common.m.js';
 // #import {xfm} from '../../common/js/xfm.m.js';
 // #import {crossoverSearchUtils} from './crossover_search_utils.m.js';

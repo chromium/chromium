@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {EntryLocation} from '../../externs/entry_location.m.js';
-// #import {VolumeManager} from '../../externs/volume_manager.m.js';
+// #import {EntryLocation} from '../../externs/entry_location.js';
+// #import {VolumeManager} from '../../externs/volume_manager.js';
 // #import {FileManagerUI} from './ui/file_manager_ui.js';
 // #import {TaskController} from './task_controller.m.js';
 // #import {DirectoryModel} from './directory_model.m.js';

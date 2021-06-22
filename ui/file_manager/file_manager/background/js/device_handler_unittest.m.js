@@ -11,7 +11,7 @@ import {installMockChrome, MockChromeStorageAPI} from '../../common/js/mock_chro
 import {MockFileSystem} from '../../common/js/mock_entry.m.js';
 import {reportPromise} from '../../common/js/test_error_reporting.m.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
-import {VolumeInfo} from '../../externs/volume_info.m.js';
+import {VolumeInfo} from '../../externs/volume_info.js';
 
 import {DeviceHandler} from './device_handler.js';
 import {MockProgressCenter} from './mock_progress_center.js';

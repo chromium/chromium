@@ -7,11 +7,11 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {MockEntry, MockFileSystem} from '../../common/js/mock_entry.m.js';
 import {str, util} from '../../common/js/util.m.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
-import {EntryLocation} from '../../externs/entry_location.m.js';
-import {FakeEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.m.js';
-import {VolumeInfo} from '../../externs/volume_info.m.js';
-import {VolumeInfoList} from '../../externs/volume_info_list.m.js';
-import {VolumeManager} from '../../externs/volume_manager.m.js';
+import {EntryLocation} from '../../externs/entry_location.js';
+import {FakeEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
+import {VolumeInfo} from '../../externs/volume_info.js';
+import {VolumeInfoList} from '../../externs/volume_info_list.js';
+import {VolumeManager} from '../../externs/volume_manager.js';
 
 import {EntryLocationImpl} from './entry_location_impl.js';
 import {VolumeInfoImpl} from './volume_info_impl.js';

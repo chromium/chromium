@@ -2,9 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {ProgressCenterItem, ProgressItemState} from '../common/js/progress_center_common.m.js';
-// clang-format on
+import {ProgressCenterItem, ProgressItemState} from '../common/js/progress_center_common.m.js';
 
 /**
  * Interface implemented in foreground page that the background page uses to
@@ -12,7 +10,7 @@
  * and dismiss events from the foreground page.
  * @interface
  */
-/* #export */ class ProgressCenterPanelInterface {
+export class ProgressCenterPanelInterface {
   constructor() {
     /**
      * Callback to be called with the ID of the progress item when the cancel

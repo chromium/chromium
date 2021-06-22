@@ -61,7 +61,7 @@ js_library("audio_player") {
     "//ui/file_manager/file_manager/common/js:mediasession_types.m",
     "//ui/file_manager/file_manager/common/js:util.m",
     "//ui/file_manager/file_manager/common/js:volume_manager_types.m",
-    "//ui/file_manager/file_manager/externs:volume_manager.m",
+    "//ui/file_manager/file_manager/externs:volume_manager",
     "//ui/file_manager/file_manager/foreground/js/metadata:content_metadata_provider",
     "//ui/file_manager/file_manager/foreground/js/metadata:metadata_model",
     "//ui/webui/resources/js:load_time_data.m",

@@ -15,7 +15,7 @@ import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
 import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
 import {importerHistoryInterfaces} from '../../externs/background/import_history.js';
 import {ProgressCenter} from '../../externs/background/progress_center.js';
-import {VolumeManager} from '../../externs/volume_manager.m.js';
+import {VolumeManager} from '../../externs/volume_manager.js';
 
 import {DialogType} from './dialog_type.m.js';
 import {FakeFileSelectionHandler} from './fake_file_selection_handler.m.js';

@@ -70,15 +70,17 @@ js_type_check("test_support_modules_type_check") {
   ]
 
   closure_flags =
-      strict_error_checking_closure_args +
-      [ "browser_resolver_prefix_replacements=\"chrome://test/=./\"" ]
+      strict_error_checking_closure_args + [
+        "js_module_root=./gen/ui",
+        "js_module_root=../../ui",
+        "browser_resolver_prefix_replacements=\"chrome://test/=./\"",
+      ]
 }
 
 js_library("app_util") {
   deps = [
     ":volume_manager_types",
     ":xfm",
-    "//ui/file_manager/file_manager/externs:volume_manager",
   ]
   externs_list = [
     "//ui/file_manager/file_manager/externs/app_window_common.js",
@@ -91,7 +93,7 @@ js_library("app_util.m") {
       [ "$root_gen_dir/ui/file_manager/file_manager/common/js/app_util.m.js" ]
   deps = [
     "//ui/file_manager/file_manager/externs:file_manager_private",
-    "//ui/file_manager/file_manager/externs:volume_manager.m",
+    "//ui/file_manager/file_manager/externs:volume_manager",
     "//ui/file_manager/file_manager/externs/background:background_base",
   ]
   externs_list =
@@ -135,7 +137,7 @@ js_unittest("files_app_entry_types_unittest.m") {
     ":mock_entry.m",
     "//chrome/test/data/webui:chai_assert",
     "//ui/file_manager/file_manager/common/js:test_error_reporting.m",
-    "//ui/file_manager/file_manager/externs:volume_info.m",
+    "//ui/file_manager/file_manager/externs:volume_info",
     "//ui/webui/resources/js:assert.m",
   ]
 }
@@ -144,7 +146,7 @@ js_library("files_app_entry_types.m") {
   sources = [ "$root_gen_dir/ui/file_manager/file_manager/common/js/files_app_entry_types.m.js" ]
   deps = [
     "//ui/file_manager/file_manager/common/js:volume_manager_types.m",
-    "//ui/file_manager/file_manager/externs:volume_info.m",
+    "//ui/file_manager/file_manager/externs:volume_info",
   ]
 
   extra_deps = [ ":modulize" ]
@@ -163,7 +165,7 @@ js_library("file_type.m") {
   deps = [
     ":files_app_entry_types.m",
     "//ui/file_manager/file_manager/common/js:volume_manager_types.m",
-    "//ui/file_manager/file_manager/externs:files_app_entry_interfaces.m",
+    "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
     "//ui/webui/resources/js:assert.m",
   ]
 
@@ -189,7 +191,7 @@ js_library("file_operation_common.m") {
   sources = [ "$root_gen_dir/ui/file_manager/file_manager/common/js/file_operation_common.m.js" ]
   deps = [
     ":util.m",
-    "//ui/file_manager/file_manager/externs:files_app_entry_interfaces.m",
+    "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
   ]
 
   extra_deps = [ ":modulize" ]
@@ -201,7 +203,6 @@ js_library("filtered_volume_manager") {
     "//ui/file_manager/file_manager/common/js:files_app_entry_types",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:file_manager_private",
-    "//ui/file_manager/file_manager/externs:volume_manager",
     "//ui/webui/resources/js:cr",
     "//ui/webui/resources/js/cr/ui:array_data_model",
   ]
@@ -213,11 +214,11 @@ js_library("filtered_volume_manager.m") {
   deps = [
     "//ui/file_manager/file_manager/common/js:files_app_entry_types.m",
     "//ui/file_manager/file_manager/common/js:volume_manager_types.m",
-    "//ui/file_manager/file_manager/externs:entry_location.m",
-    "//ui/file_manager/file_manager/externs:files_app_entry_interfaces.m",
-    "//ui/file_manager/file_manager/externs:volume_info.m",
-    "//ui/file_manager/file_manager/externs:volume_info_list.m",
-    "//ui/file_manager/file_manager/externs:volume_manager.m",
+    "//ui/file_manager/file_manager/externs:entry_location",
+    "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
+    "//ui/file_manager/file_manager/externs:volume_info",
+    "//ui/file_manager/file_manager/externs:volume_info_list",
+    "//ui/file_manager/file_manager/externs:volume_manager",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js/cr:event_target.m",
@@ -237,7 +238,6 @@ js_library("importer_common") {
     ":file_type",
     ":xfm",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
-    "//ui/file_manager/file_manager/externs:volume_manager",
   ]
 }
 
@@ -248,9 +248,9 @@ js_library("importer_common.m") {
   deps = [
     ":file_type.m",
     "//ui/file_manager/file_manager/common/js:volume_manager_types.m",
-    "//ui/file_manager/file_manager/externs:files_app_entry_interfaces.m",
-    "//ui/file_manager/file_manager/externs:volume_info.m",
-    "//ui/file_manager/file_manager/externs:volume_manager.m",
+    "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
+    "//ui/file_manager/file_manager/externs:volume_info",
+    "//ui/file_manager/file_manager/externs:volume_manager",
   ]
 
   extra_deps = [ ":modulize" ]
@@ -288,7 +288,7 @@ js_unittest("importer_common_unittest.m") {
     "//ui/file_manager/file_manager/common/js:mock_chrome.m",
     "//ui/file_manager/file_manager/common/js:test_error_reporting.m",
     "//ui/file_manager/file_manager/common/js:volume_manager_types.m",
-    "//ui/file_manager/file_manager/externs:volume_info.m",
+    "//ui/file_manager/file_manager/externs:volume_info",
   ]
 }
 
@@ -451,8 +451,8 @@ js_library("trash") {
     ":files_app_entry_types.m",
     ":util.m",
     "//ui/file_manager/file_manager/common/js:volume_manager_types.m",
-    "//ui/file_manager/file_manager/externs:files_app_entry_interfaces.m",
-    "//ui/file_manager/file_manager/externs:volume_manager.m",
+    "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
+    "//ui/file_manager/file_manager/externs:volume_manager",
     "//ui/webui/resources/js:assert.m",
   ]
 }
@@ -507,11 +507,11 @@ js_library("util.m") {
     ":files_app_entry_types.m",
     "//ui/file_manager/file_manager/common/js:files_app_entry_types.m",
     "//ui/file_manager/file_manager/common/js:volume_manager_types.m",
-    "//ui/file_manager/file_manager/externs:entry_location.m",
+    "//ui/file_manager/file_manager/externs:entry_location",
     "//ui/file_manager/file_manager/externs:file_manager_private",
-    "//ui/file_manager/file_manager/externs:files_app_entry_interfaces.m",
-    "//ui/file_manager/file_manager/externs:volume_info.m",
-    "//ui/file_manager/file_manager/externs:volume_manager.m",
+    "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
+    "//ui/file_manager/file_manager/externs:volume_info",
+    "//ui/file_manager/file_manager/externs:volume_manager",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:load_time_data.m",
     "//ui/webui/resources/js:util.m",

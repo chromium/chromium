@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {MetadataParserLogger} from '../../../externs/metadata_worker_window.m.js';
+import {MetadataParserLogger} from '../../../externs/metadata_worker_window.js';
 
 import {ExifParser} from './exif_parser.js';
 import {Id3Parser} from './id3_parser.js';

@@ -10,7 +10,7 @@
 // #import {GearMenu} from './ui/gear_menu.js';
 // #import {MultiMenuButton} from './ui/multi_menu_button.js';
 // #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
-// #import {DirectoryChangeEvent} from '../../externs/directory_change_event.m.js';
+// #import {DirectoryChangeEvent} from '../../externs/directory_change_event.js';
 // #import {str, util} from '../../common/js/util.m.js';
 // clang-format on
 

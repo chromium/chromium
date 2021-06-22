@@ -7,7 +7,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {util} from '../../common/js/util.m.js';
 import {BackgroundBase, LaunchHandler} from '../../externs/background/background_base.js';
-import {VolumeManager} from '../../externs/volume_manager.m.js';
+import {VolumeManager} from '../../externs/volume_manager.js';
 
 import {volumeManagerFactory} from './volume_manager_factory.js';
 

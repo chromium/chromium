@@ -14,7 +14,7 @@ import {xfm} from '../../common/js/xfm.m.js';
 import {duplicateFinderInterfaces} from '../../externs/background/duplicate_finder.js';
 import {importerHistoryInterfaces} from '../../externs/background/import_history.js';
 import {mediaImportInterfaces} from '../../externs/background/media_import_handler.js';
-import {VolumeInfo} from '../../externs/volume_info.m.js';
+import {VolumeInfo} from '../../externs/volume_info.js';
 
 import {fileOperationUtil} from './file_operation_util.js';
 import {mediaImport} from './media_import_handler.js';

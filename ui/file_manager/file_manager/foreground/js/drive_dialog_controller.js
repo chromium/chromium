@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {DriveDialogControllerInterface} from '../../externs/drive_dialog_controller.m.js';
+// #import {DriveDialogControllerInterface} from '../../externs/drive_dialog_controller.js';
 // #import {FileManagerUI} from './ui/file_manager_ui.js';
 // #import {FilesConfirmDialog} from './ui/files_confirm_dialog.js';
 // #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';

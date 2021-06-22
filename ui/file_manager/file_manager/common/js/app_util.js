@@ -10,7 +10,7 @@
 
 // clang-format off
 // #import {BackgroundBase} from '../../externs/background/background_base.js';
-// #import {VolumeManager} from '../../externs/volume_manager.m.js';
+// #import {VolumeManager} from '../../externs/volume_manager.js';
 // #import {xfm} from './xfm.m.js';
 // clang-format on
 

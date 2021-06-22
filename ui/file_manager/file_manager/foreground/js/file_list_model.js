@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {EntryLocation} from '../../externs/entry_location.m.js';
-// #import {VolumeManager} from '../../externs/volume_manager.m.js';
+// #import {EntryLocation} from '../../externs/entry_location.js';
+// #import {VolumeManager} from '../../externs/volume_manager.js';
 // #import {MetadataModel} from './metadata/metadata_model.js';
 // #import {FileType} from '../../common/js/file_type.m.js';
 // #import {strf, str, util} from '../../common/js/util.m.js';

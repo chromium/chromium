@@ -4,7 +4,7 @@
 
 // clang-format off
 // #import * as wrappedVolumeManagerCommon from './volume_manager_types.m.js'; const {VolumeManagerCommon} = wrappedVolumeManagerCommon;
-// #import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.m.js';
+// #import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 // #import {VolumeEntry} from './files_app_entry_types.m.js';
 // #import {assert} from 'chrome://resources/js/assert.m.js';
 // clang-format on

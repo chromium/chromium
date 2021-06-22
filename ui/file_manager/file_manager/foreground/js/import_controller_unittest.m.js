@@ -13,8 +13,8 @@ import {reportPromise} from '../../common/js/test_error_reporting.m.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
 import {mediaImportInterfaces} from '../../externs/background/media_import_handler.js';
 import {mediaScannerInterfaces} from '../../externs/background/media_scanner.js';
-import {VolumeInfo} from '../../externs/volume_info.m.js';
-import {VolumeManager} from '../../externs/volume_manager.m.js';
+import {VolumeInfo} from '../../externs/volume_info.js';
+import {VolumeManager} from '../../externs/volume_manager.js';
 
 import {importer} from './import_controller.m.js';
 

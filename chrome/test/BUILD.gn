@@ -2150,7 +2150,6 @@ if (!is_android) {
         "//testing/buildbot/filters:chromeos_filters",
         "//ui/file_manager:unit_test_data",
         "//ui/file_manager/file_manager/common/js:modulize_runtime_data",
-        "//ui/file_manager/file_manager/externs:modulize_runtime_data",
         "//ui/file_manager/file_manager/foreground/js:modulize_runtime_data",
       ]
 

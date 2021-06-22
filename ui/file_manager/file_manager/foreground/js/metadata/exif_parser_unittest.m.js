@@ -4,8 +4,8 @@
 
 import {assertEquals, assertTrue} from 'chrome://test/chai_assert.js';
 
-import {ExifEntry} from '../../../externs/exif_entry.m.js';
-import {MetadataParserLogger} from '../../../externs/metadata_worker_window.m.js';
+import {ExifEntry} from '../../../externs/exif_entry.js';
+import {MetadataParserLogger} from '../../../externs/metadata_worker_window.js';
 
 import {ByteReader} from './byte_reader.js';
 import {Exif} from './exif_constants.js';

@@ -4,7 +4,7 @@
 
 // clang-format off
 // #import {util} from './util.m.js';
-// #import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.m.js'
+// #import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js'
 // clang-format on
 
 /* #export */ class FileOperationProgressEvent extends Event {

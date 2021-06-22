@@ -4,8 +4,8 @@
 
 // clang-format off
 // #import {MetadataModel} from './metadata/metadata_model.js';
-// #import {VolumeManager} from '../../externs/volume_manager.m.js';
-// #import {FilesAppDirEntry, FakeEntry} from '../../externs/files_app_entry_interfaces.m.js';
+// #import {VolumeManager} from '../../externs/volume_manager.js';
+// #import {FilesAppDirEntry, FakeEntry} from '../../externs/files_app_entry_interfaces.js';
 // #import {FileListModel} from './file_list_model.m.js';
 // #import {AsyncUtil} from '../../common/js/async_util.m.js';
 // #import {constants} from './constants.m.js';

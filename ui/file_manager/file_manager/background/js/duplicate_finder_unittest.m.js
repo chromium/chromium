@@ -10,7 +10,7 @@ import {MockFileSystem} from '../../common/js/mock_entry.m.js';
 import {reportPromise} from '../../common/js/test_error_reporting.m.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
 import {duplicateFinderInterfaces} from '../../externs/background/duplicate_finder.js';
-import {VolumeInfo} from '../../externs/volume_info.m.js';
+import {VolumeInfo} from '../../externs/volume_info.js';
 
 import {duplicateFinder} from './duplicate_finder.js';
 import {MockVolumeManager} from './mock_volume_manager.js';

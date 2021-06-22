@@ -2,17 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import * as wrappedVolumeManagerCommon from '../common/js/volume_manager_types.m.js'; const {VolumeManagerCommon} = wrappedVolumeManagerCommon;
-// #import {FilesAppEntry, FakeEntry} from './files_app_entry_interfaces.m.js';
-// clang-format on
+import {VolumeManagerCommon} from '../common/js/volume_manager_types.m.js';
+
+import {FakeEntry, FilesAppEntry} from './files_app_entry_interfaces.js';
 
 /**
  * Represents each volume, such as "drive", "download directory", each "USB
  * flush storage", or "mounted zip archive" etc.
  * @interface
  */
-/* #export */ class VolumeInfo {
+export class VolumeInfo {
   constructor() {
     /** @type {VolumeManagerCommon.VolumeType} */
     this.volumeType;

@@ -7,7 +7,7 @@ import {ProgressCenterItem, ProgressItemState} from '../../common/js/progress_ce
 import {str} from '../../common/js/util.m.js';
 import {xfm} from '../../common/js/xfm.m.js';
 import {ProgressCenter} from '../../externs/background/progress_center.js';
-import {ProgressCenterPanelInterface} from '../../externs/progress_center_panel.m.js';
+import {ProgressCenterPanelInterface} from '../../externs/progress_center_panel.js';
 
 /**
  * Implementation of {ProgressCenter} at the background page.

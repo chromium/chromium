@@ -11,8 +11,8 @@ import {ListSelectionModel} from 'chrome://resources/js/cr/ui/list_selection_mod
 
 import {FileType} from '../../../common/js/file_type.m.js';
 import {str, strf, util} from '../../../common/js/util.m.js';
-import {EntryLocation} from '../../../externs/entry_location.m.js';
-import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.m.js';
+import {EntryLocation} from '../../../externs/entry_location.js';
+import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.js';
 import {MetadataModel} from '../metadata/metadata_model.js';
 
 import {A11yAnnounce} from './a11y_announce.js';

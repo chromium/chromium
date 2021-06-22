@@ -13,7 +13,7 @@ import { MockFileEntry,MockFileSystem} from '../../common/js/mock_entry.m.js';
 import {reportPromise, waitUntil} from '../../common/js/test_error_reporting.m.js';
 import {util} from '../../common/js/util.m.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
-import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.m.js';
+import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 
 import {AndroidAppListModel} from './android_app_list_model.m.js';
 import {DirectoryModel} from './directory_model.m.js';

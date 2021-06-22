@@ -4,11 +4,11 @@
 
 // clang-format off
 // #import {assert} from 'chrome://resources/js/assert.m.js';
-// #import {VolumeInfo} from '../../externs/volume_info.m.js';
-// #import {VolumeInfoList} from '../../externs/volume_info_list.m.js';
-// #import {VolumeManager, ExternallyUnmountedEvent} from '../../externs/volume_manager.m.js';
-// #import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.m.js';
-// #import {EntryLocation} from '../../externs/entry_location.m.js';
+// #import {VolumeInfo} from '../../externs/volume_info.js';
+// #import {VolumeInfoList} from '../../externs/volume_info_list.js';
+// #import {VolumeManager, ExternallyUnmountedEvent} from '../../externs/volume_manager.js';
+// #import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
+// #import {EntryLocation} from '../../externs/entry_location.js';
 // #import {VolumeManagerCommon, AllowedPaths} from './volume_manager_types.m.js';
 // #import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
 // #import {ArrayDataModel} from 'chrome://resources/js/cr/ui/array_data_model.m.js';

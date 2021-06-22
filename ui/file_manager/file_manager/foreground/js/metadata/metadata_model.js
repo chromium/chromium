@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {util} from '../../../common/js/util.m.js';
-import {VolumeManager} from '../../../externs/volume_manager.m.js';
+import {VolumeManager} from '../../../externs/volume_manager.js';
 
 import {ContentMetadataProvider} from './content_metadata_provider.js';
 import {ExternalMetadataProvider} from './external_metadata_provider.js';

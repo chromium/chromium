@@ -13,7 +13,7 @@ import {FilteredVolumeManager} from '../../file_manager/common/js/filtered_volum
 import {MediaSessionPlaybackState} from '../../file_manager/common/js/mediasession_types.m.js';
 import {util} from '../../file_manager/common/js/util.m.js';
 import {AllowedPaths} from '../../file_manager/common/js/volume_manager_types.m.js';
-import {ExternallyUnmountedEvent} from '../../file_manager/externs/volume_manager.m.js';
+import {ExternallyUnmountedEvent} from '../../file_manager/externs/volume_manager.js';
 import {ContentMetadataProvider} from '../../file_manager/foreground/js/metadata/content_metadata_provider.js';
 import {MetadataModel} from '../../file_manager/foreground/js/metadata/metadata_model.js';
 

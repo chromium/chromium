@@ -8,7 +8,7 @@ import {metrics} from '../../common/js/metrics.m.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
 import {duplicateFinderInterfaces} from '../../externs/background/duplicate_finder.js';
 import {importerHistoryInterfaces} from '../../externs/background/import_history.js';
-import {VolumeManager} from '../../externs/volume_manager.m.js';
+import {VolumeManager} from '../../externs/volume_manager.js';
 
 import {importerHistory} from './import_history.js';
 import {volumeManagerFactory} from './volume_manager_factory.js';

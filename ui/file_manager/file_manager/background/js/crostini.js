@@ -7,7 +7,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
 import {Crostini} from '../../externs/background/crostini.js';
-import {VolumeManager} from '../../externs/volume_manager.m.js';
+import {VolumeManager} from '../../externs/volume_manager.js';
 
 /**
  * Implementation of Crostini shared path state handler.

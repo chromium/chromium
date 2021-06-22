@@ -11,8 +11,8 @@ import {ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../com
 import {str, strf, util} from '../../common/js/util.m.js';
 import {xfm} from '../../common/js/xfm.m.js';
 import {ProgressCenter} from '../../externs/background/progress_center.js';
-import {VolumeInfo} from '../../externs/volume_info.m.js';
-import {VolumeManager} from '../../externs/volume_manager.m.js';
+import {VolumeInfo} from '../../externs/volume_info.js';
+import {VolumeManager} from '../../externs/volume_manager.js';
 
 import {volumeManagerFactory} from './volume_manager_factory.js';
 

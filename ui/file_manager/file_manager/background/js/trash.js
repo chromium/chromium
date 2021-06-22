@@ -11,7 +11,7 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {TrashConfig, TrashDirs, TrashEntry} from '../../common/js/trash.js';
-import {VolumeManager} from '../../externs/volume_manager.m.js';
+import {VolumeManager} from '../../externs/volume_manager.js';
 
 import {fileOperationUtil} from './file_operation_util.js';
 

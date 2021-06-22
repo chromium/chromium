@@ -4,8 +4,8 @@
 
 import {util} from '../../common/js/util.m.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
-import {EntryLocation} from '../../externs/entry_location.m.js';
-import {VolumeInfo} from '../../externs/volume_info.m.js';
+import {EntryLocation} from '../../externs/entry_location.js';
+import {VolumeInfo} from '../../externs/volume_info.js';
 
 /**
  * Location information which shows where the path points in FileManager's
