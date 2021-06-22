@@ -1535,5 +1535,35 @@ TEST_F(NGOutOfFlowLayoutPartTest, PositionedObjectsInMulticol) {
   EXPECT_TRUE(rel->PositionedObjects()->Contains(abs));
   EXPECT_EQ(rel->PositionedObjects()->size(), 1u);
 }
+
+TEST_F(NGOutOfFlowLayoutPartTest, PositionedObjectsInMulticolWithInline) {
+  SetBodyInnerHTML(
+      R"HTML(
+      <style>
+        #multicol {
+          column-count: 2; column-fill: auto; column-gap: 0px;
+        }
+      </style>
+      <div id="multicol">
+        <div id="target">
+          <span style="position: relative;">
+            <div id="abs1" style="position:absolute;"></div>
+            <div id="abs2" style="position:absolute;"></div>
+          </span>
+        </div>
+      </div>
+      )HTML");
+  Element* multicol_element = GetDocument().getElementById("multicol");
+  auto* multicol = To<LayoutBlockFlow>(multicol_element->GetLayoutObject());
+  EXPECT_FALSE(multicol->PositionedObjects());
+
+  Element* target_element = GetDocument().getElementById("target");
+  auto* target = To<LayoutBlockFlow>(target_element->GetLayoutObject());
+  auto* abs1 = GetLayoutBoxByElementId("abs1");
+  auto* abs2 = GetLayoutBoxByElementId("abs2");
+  EXPECT_TRUE(target->PositionedObjects()->Contains(abs1));
+  EXPECT_TRUE(target->PositionedObjects()->Contains(abs2));
+  EXPECT_EQ(target->PositionedObjects()->size(), 2u);
+}
 }  // namespace
 }  // namespace blink

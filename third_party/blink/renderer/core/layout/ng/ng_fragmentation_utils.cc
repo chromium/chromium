@@ -846,4 +846,20 @@ NGConstraintSpace CreateConstraintSpaceForMulticol(
   return space_builder.ToConstraintSpace();
 }
 
+const NGBlockBreakToken* PreviousFragmentainerBreakToken(
+    const NGBoxFragmentBuilder& container_builder,
+    wtf_size_t index) {
+  const NGBlockBreakToken* previous_break_token = nullptr;
+  for (wtf_size_t i = index; i > 0; --i) {
+    auto* previous_fragment =
+        container_builder.Children()[i - 1].fragment.get();
+    if (previous_fragment->IsFragmentainerBox()) {
+      previous_break_token = To<NGBlockBreakToken>(
+          To<NGPhysicalBoxFragment>(previous_fragment)->BreakToken());
+      break;
+    }
+  }
+  return previous_break_token;
+}
+
 }  // namespace blink

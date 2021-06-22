@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_static_position.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/inline_containing_block_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_absolute_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
@@ -188,6 +189,12 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
 
   void ComputeInlineContainingBlocks(
       const Vector<NGLogicalOutOfFlowPositionedNode>&);
+  void ComputeInlineContainingBlocksForFragmentainer(
+      const Vector<NGLogicalOutOfFlowPositionedNode>&);
+  void AddInlineContainingBlockInfo(
+      const InlineContainingBlockUtils::InlineContainingBlockMap&,
+      const WritingDirectionMode container_writing_direction,
+      PhysicalSize container_builder_size);
 
   void LayoutCandidates(Vector<NGLogicalOutOfFlowPositionedNode>* candidates,
                         const LayoutBox* only_layout,
@@ -268,10 +275,7 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
                                            LayoutUnit column_inline_progression,
                                            bool create_new_fragment);
   NGConstraintSpace GetFragmentainerConstraintSpace(wtf_size_t index);
-  const NGBlockBreakToken* PreviousFragmentainerBreakToken(
-      wtf_size_t index) const;
   void ComputeStartFragmentIndexAndRelativeOffset(
-      const ContainingBlockInfo& container_info,
       WritingMode default_writing_mode,
       LayoutUnit block_estimate,
       wtf_size_t* start_index,

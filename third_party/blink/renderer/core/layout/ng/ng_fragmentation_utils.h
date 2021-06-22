@@ -344,6 +344,13 @@ inline LayoutUnit AdjustedMarginAfterFinalChildFragment(
   return std::min(block_end_margin, space_left.ClampNegativeToZero());
 }
 
+// Note: This should only be used for a builder that represents a
+// fragmentation context root. Returns the the break token of the
+// previous fragmentainer to the child at |index|.
+const NGBlockBreakToken* PreviousFragmentainerBreakToken(
+    const NGBoxFragmentBuilder& container_builder,
+    wtf_size_t index);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_FRAGMENTATION_UTILS_H_

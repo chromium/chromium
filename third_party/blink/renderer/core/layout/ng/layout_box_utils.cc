@@ -170,6 +170,17 @@ bool LayoutBoxUtils::SkipContainingBlockForPercentHeightCalculation(
   return LayoutBox::SkipContainingBlockForPercentHeightCalculation(cb);
 }
 
+LayoutUnit LayoutBoxUtils::InlineSize(const LayoutBox& box) {
+  DCHECK_GT(box.PhysicalFragmentCount(), 0u);
+
+  // TODO(almaher): We can't assume all fragments will have the same inline
+  // size.
+  return box.GetPhysicalFragment(0u)
+      ->Size()
+      .ConvertToLogical(box.StyleRef().GetWritingMode())
+      .inline_size;
+}
+
 LayoutUnit LayoutBoxUtils::TotalBlockSize(const LayoutBox& box) {
   wtf_size_t num_fragments = box.PhysicalFragmentCount();
   DCHECK_GT(num_fragments, 0u);
