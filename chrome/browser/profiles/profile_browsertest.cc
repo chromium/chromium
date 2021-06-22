@@ -861,19 +861,25 @@ class ProfileBrowserTestWithDestroyProfile : public ProfileBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Flaky on macOS when combined with UpdateHistoryEntryPointsInIncognito.
-#if defined(OS_MAC)
-#define MAYBE_OTRProfileKeepsRegularProfileAlive \
-  DISABLED_OTRProfileKeepsRegularProfileAlive
-#else
-#define MAYBE_OTRProfileKeepsRegularProfileAlive \
-  OTRProfileKeepsRegularProfileAlive
-#endif  // defined(OS_MAC)
 // Verifies the regular Profile doesn't get destroyed as long as there's an OTR
 // Profile around.
 IN_PROC_BROWSER_TEST_F(ProfileBrowserTestWithDestroyProfile,
-                       MAYBE_OTRProfileKeepsRegularProfileAlive) {
+                       OTRProfileKeepsRegularProfileAlive) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
+
+#if defined(OS_MAC)
+  // On macOS, deleting the OTR profile is not enough. Because Chrome doesn't
+  // exit when you close all windows, Chrome always keeps the last Profile*
+  // alive. See ProfileKeepAliveOrigin::kAppControllerMac.
+  //
+  // By creating a second Profile*, we allow the first one to get deleted
+  // earlier.
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  Profile* profile2 = profile_manager->GetProfile(
+      profile_manager->user_data_dir().AppendASCII("Profile 2"));
+  CreateBrowser(profile2);
+#endif  // defined(OS_MAC)
+
   Profile* regular_profile = browser()->profile();
   EXPECT_FALSE(profile_manager->HasKeepAliveForTesting(
       regular_profile, ProfileKeepAliveOrigin::kOffTheRecordProfile));
@@ -903,7 +909,8 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTestWithDestroyProfile,
 
   // Destroy the OTR profile. *Now* the regular Profile should get deleted.
   ProfileDestroyer::DestroyProfileWhenAppropriate(otr_profile);
-  base::RunLoop().RunUntilIdle();
+  otr_watcher.WaitForDestruction();
+  regular_watcher.WaitForDestruction();
 
   EXPECT_TRUE(regular_watcher.destroyed());
   EXPECT_TRUE(otr_watcher.destroyed());
