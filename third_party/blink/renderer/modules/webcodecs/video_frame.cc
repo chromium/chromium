@@ -1016,7 +1016,8 @@ FloatSize VideoFrame::ElementSize(
     const auto orientation_enum = VideoTransformationToImageOrientation(
         local_frame->metadata().transformation.value_or(
             media::kNoTransformation));
-    auto orientation_adjusted_size = FloatSize(local_frame->natural_size());
+    auto orientation_adjusted_size =
+        FloatSize(local_frame->visible_rect().size());
     if (ImageOrientation(orientation_enum).UsesWidthAsHeight())
       return orientation_adjusted_size.TransposedSize();
     return orientation_adjusted_size;
@@ -1049,7 +1050,7 @@ IntSize VideoFrame::BitmapSourceSize() const {
     return IntSize();
 
   // ImageBitmaps should always return the size w/o respecting orientation.
-  return IntSize(local_frame->natural_size());
+  return IntSize(local_frame->visible_rect().size());
 }
 
 ScriptPromise VideoFrame::CreateImageBitmap(ScriptState* script_state,
