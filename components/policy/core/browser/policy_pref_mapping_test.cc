@@ -243,6 +243,8 @@ class PolicyTestCase {
     is_official_only_ = test_case.FindBoolKey("official_only").value_or(false);
     can_be_recommended_ =
         test_case.FindBoolKey("can_be_recommended").value_or(false);
+    has_reason_for_missing_test_ =
+        test_case.FindStringKey("reason_for_missing_test") != nullptr;
 
     const base::Value* os_list = test_case.FindListKey("os");
     if (os_list) {
@@ -257,7 +259,7 @@ class PolicyTestCase {
     if (policy_pref_mapping_tests) {
       for (const auto& mapping : policy_pref_mapping_tests->GetList()) {
         if (mapping.is_dict()) {
-          policy_pref_mapping_test_.push_back(
+          policy_pref_mapping_tests_.push_back(
               std::make_unique<PolicyPrefMappingTest>(mapping));
         }
       }
@@ -273,6 +275,10 @@ class PolicyTestCase {
   bool is_official_only() const { return is_official_only_; }
 
   bool can_be_recommended() const { return can_be_recommended_; }
+
+  bool has_reason_for_missing_test() const {
+    return has_reason_for_missing_test_;
+  }
 
   bool IsOsSupported() const {
 #if defined(OS_ANDROID)
@@ -292,7 +298,6 @@ class PolicyTestCase {
 #endif
     return base::Contains(supported_os_, os);
   }
-  void AddSupportedOs(const std::string& os) { supported_os_.push_back(os); }
 
   bool IsSupported() const {
 #if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -303,16 +308,20 @@ class PolicyTestCase {
   }
 
   const std::vector<std::unique_ptr<PolicyPrefMappingTest>>&
-  policy_pref_mapping_test() const {
-    return policy_pref_mapping_test_;
+  policy_pref_mapping_tests() const {
+    return policy_pref_mapping_tests_;
   }
+
+  bool HasSupportedOs() const { return !supported_os_.empty(); }
 
  private:
   std::string name_;
   bool is_official_only_;
   bool can_be_recommended_;
+  bool has_reason_for_missing_test_;
   std::vector<std::string> supported_os_;
-  std::vector<std::unique_ptr<PolicyPrefMappingTest>> policy_pref_mapping_test_;
+  std::vector<std::unique_ptr<PolicyPrefMappingTest>>
+      policy_pref_mapping_tests_;
 };
 
 // Parses all policy test cases and makes them available in a map.
@@ -454,21 +463,27 @@ void VerifyAllPoliciesHaveATestCase(const base::FilePath& test_case_path) {
       continue;
     }
 
-    bool has_test_case_for_this_os = false;
+    bool has_test_case_or_reason_for_this_os = false;
+    bool has_reason_for_all_os = false;
     for (const auto& test_case : policy->second) {
-      has_test_case_for_this_os |= test_case->IsSupported();
-      if (has_test_case_for_this_os)
-        break;
+      EXPECT_TRUE(test_case->has_reason_for_missing_test() ||
+                  !test_case->policy_pref_mapping_tests().empty())
+          << "Policy " << policy->first
+          << " has empty list of test cases (policy_pref_mapping_tests). Add "
+             "tests or use reason_for_missing_test.";
+
+      if (test_case->HasSupportedOs()) {
+        has_test_case_or_reason_for_this_os |= test_case->IsOsSupported();
+      } else {
+        has_reason_for_all_os |= test_case->has_reason_for_missing_test();
+      }
     }
 
-    // This can only be a warning as many policies are not really testable
-    // this way and only present as a single line in the file.
-    // Although they could at least contain the "os" fields.
-    // See http://crbug.com/791125.
-    LOG_IF(WARNING, !has_test_case_for_this_os)
+    EXPECT_TRUE(has_test_case_or_reason_for_this_os || has_reason_for_all_os)
         << "Policy " << policy->first
-        << " is marked as supported on this OS in policy_templates.json but "
-        << "there is no test for this platform in policy_test_cases.json.";
+        << " should either provide a test case for all supported operating "
+           "systems (see policy_templates.json) or provide a "
+           "reason_for_missing_test.";
   }
 }
 
@@ -486,7 +501,6 @@ void VerifyPolicyToPrefMappings(const base::FilePath& test_case_path,
   const PolicyTestCases test_cases(test_case_path);
   for (const auto& policy : test_cases) {
     for (const auto& test_case : policy.second) {
-      const auto& pref_mappings = test_case->policy_pref_mapping_test();
       if (!chrome_schema.GetKnownProperty(policy.first).valid()) {
         // If the policy is supported on this platform according to the test it
         // should be known otherwise we signal this as a failure.
@@ -495,8 +509,9 @@ void VerifyPolicyToPrefMappings(const base::FilePath& test_case_path,
         // probably the mentioned policy was deprecated and deleted. Verify this
         // in policy_templates.json and remove the corresponding test entry
         // in policy_test_cases.json. Don't completely delete it from there just
-        // replace it's definition with a single "note" value stating its
-        // deprecation date (see other examples present in the file already).
+        // replace it's definition with a single "reason_for_missing_test" value
+        // with "Policy was removed" (see other examples present in the file
+        // already).
         // =====================================================================
         EXPECT_FALSE(test_case->IsSupported())
             << "Policy " << policy.first
@@ -505,13 +520,19 @@ void VerifyPolicyToPrefMappings(const base::FilePath& test_case_path,
         continue;
       }
 
-      if (!test_case->IsSupported() || pref_mappings.empty())
+      if (!test_case->IsSupported() ||
+          test_case->has_reason_for_missing_test()) {
         continue;
+      }
 
 // TODO(https://crbug.com/1192629): Revisit it after all chromeos policies
 // touching lacros will get their handlers in place.
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
-      for (const auto& pref_mapping : pref_mappings) {
+      for (const auto& pref_mapping : test_case->policy_pref_mapping_tests()) {
+        EXPECT_FALSE(pref_mapping->prefs().empty())
+            << "Policy " << policy.first
+            << " does not check the pref value after setting policies.";
+
         for (const auto& pref_case : pref_mapping->prefs()) {
           const bool check_recommended = test_case->can_be_recommended() &&
                                          pref_case->check_for_recommended();

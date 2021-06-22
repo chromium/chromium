@@ -3,6 +3,7 @@
     "intro": "This file is interpreted by chrome/browser/policy/policy_prefs_browsertest.cc",
     "intro": "Tests that policies map to prefs properly and whether the corresponding Chrome settings UI behaves properly, e.g. if a policy is managed, the UI should be readonly and an icon with a properly worded tooltip should show up.",
     "intro": "Top-level entries map a policy name to its test parameters, described below. The name of the top level entry should be of the form <policy name>[.suffix]. The optional suffix is used for defining multiple test cases for a single policy.",
+    "intro": "If a policy does not map into a pref (e.g. maps into CrosSettings or only read by daemon on CrOS) or can't be tested (e.g. external data policy), you have to add a |reason_for_missing_test| as explanation.",
     "intro": "To run tests from this file use 'browser_tests --gtest_filter=*PolicyPrefsTest*' command.",
     "os": [
       "List of operating systems that support this policy. Valid values:",
@@ -58,7 +59,6 @@
   },
 
   "UnsafelyTreatInsecureOriginAsSecure": {
-    "note": "This policy is deprecated.",
     "os": ["win", "linux", "mac"],
     "policy_pref_mapping_tests": [
       {
@@ -89,7 +89,14 @@
     "can_be_recommended": true,
     "policy_pref_mapping_tests": [
       {
-        "policies": { "HomepageIsNewTabPage": true }
+        "policies": {
+          "HomepageIsNewTabPage": true
+        },
+        "prefs": {
+          "homepage_is_newtabpage": {
+            "value": true
+          }
+        }
       }
     ]
   },
@@ -127,7 +134,6 @@
   },
 
   "AlternateErrorPagesEnabled": {
-    "note": "TODO(http://crbug.com/1141521): enable this policy test on Android",
     "os": ["win", "linux", "mac", "chromeos"],
     "can_be_recommended": true,
     "policy_pref_mapping_tests": [
@@ -136,6 +142,10 @@
         "prefs": { "alternate_error_pages.enabled": {} }
       }
     ]
+  },
+  "AlternateErrorPagesEnabled.Android": {
+    "os": ["android"],
+    "reason_for_missing_test": "TODO(http://crbug.com/1141521): enable this policy test on Android"
   },
 
   "SearchSuggestEnabled": {
@@ -150,7 +160,7 @@
   },
 
   "DnsPrefetchingEnabled": {
-    "note": "This policy has been removed. See https://bugs.chromium.org/p/chromium/issues/detail?id=624095"
+    "reason_for_missing_test": "Policy was removed"
   },
 
   "DnsOverHttpsMode": {
@@ -188,12 +198,23 @@
   },
 
   "DisableSpdy": {
-    "note": "This policy has been removed. See https://bugs.chromium.org/p/chromium/issues/detail?id=624095"
+    "reason_for_missing_test": "Policy was removed"
   },
 
   "QuicAllowed": {
     "os": ["win", "linux", "mac", "chromeos"],
-    "policy_pref_mapping_tests": [{ "policies": { "QuicAllowed": true } }]
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "QuicAllowed": true
+        },
+        "prefs": {
+          "net.quic_allowed": {
+            "value": true
+          }
+        }
+      }
+    ]
   },
 
   "DisabledSchemes": {
@@ -258,51 +279,97 @@
     ]
   },
 
-  "RemoteAccessClientFirewallTraversal": {},
+  "RemoteAccessClientFirewallTraversal": {
+    "reason_for_missing_test": "Policy was removed"
+  },
 
-  "RemoteAccessHostClientDomain": {},
+  "RemoteAccessHostClientDomain": {
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+  },
 
-  "RemoteAccessHostClientDomainList": {},
+  "RemoteAccessHostClientDomainList": {
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+  },
 
-  "RemoteAccessHostFirewallTraversal": {},
+  "RemoteAccessHostFirewallTraversal": {
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+  },
 
-  "RemoteAccessHostRequireTwoFactor": {},
+  "RemoteAccessHostRequireTwoFactor": {
+    "reason_for_missing_test": "Policy was removed"
+  },
 
-  "RemoteAccessHostDomain": {},
+  "RemoteAccessHostDomain": {
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+  },
 
-  "RemoteAccessHostDomainList": {},
+  "RemoteAccessHostDomainList": {
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+  },
 
-  "RemoteAccessHostTalkGadgetPrefix": {},
+  "RemoteAccessHostTalkGadgetPrefix": {
+    "reason_for_missing_test": "Policy was removed"
+  },
 
-  "RemoteAccessHostRequireCurtain": {},
+  "RemoteAccessHostRequireCurtain": {
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+  },
 
-  "RemoteAccessHostAllowClientPairing": {},
+  "RemoteAccessHostAllowClientPairing": {
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+  },
 
-  "RemoteAccessHostAllowGnubbyAuth": {},
+  "RemoteAccessHostAllowGnubbyAuth": {
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+  },
 
-  "RemoteAccessHostAllowRelayedConnection": {},
+  "RemoteAccessHostAllowRelayedConnection": {
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+  },
 
-  "RemoteAccessHostUdpPortRange": {},
+  "RemoteAccessHostUdpPortRange": {
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+  },
 
-  "RemoteAccessHostMatchUsername": {},
+  "RemoteAccessHostMatchUsername": {
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+  },
 
-  "RemoteAccessHostTokenUrl": {},
+  "RemoteAccessHostTokenUrl": {
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+  },
 
-  "RemoteAccessHostTokenValidationUrl": {},
+  "RemoteAccessHostTokenValidationUrl": {
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+  },
 
-  "RemoteAccessHostTokenValidationCertificateIssuer": {},
+  "RemoteAccessHostTokenValidationCertificateIssuer": {
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+  },
 
-  "RemoteAccessHostDebugOverridePolicies": {},
+  "RemoteAccessHostDebugOverridePolicies": {
+    "reason_for_missing_test": "Policy was removed"
+  },
 
-  "RemoteAccessHostAllowUiAccessForRemoteAssistance": {},
+  "RemoteAccessHostAllowUiAccessForRemoteAssistance": {
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+  },
 
-  "RemoteAccessHostAllowFileTransfer": {},
+  "RemoteAccessHostAllowFileTransfer": {
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+  },
 
-  "RemoteAccessHostEnableUserInterface": {},
+  "RemoteAccessHostEnableUserInterface": {
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+  },
 
-  "RemoteAccessHostAllowRemoteAccessConnections": {},
+  "RemoteAccessHostAllowRemoteAccessConnections": {
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+  },
 
-  "RemoteAccessHostMaximumSessionDurationMinutes": {},
+  "RemoteAccessHostMaximumSessionDurationMinutes": {
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+  },
 
   "PrintingEnabled": {
     "os": ["win", "linux", "mac", "chromeos", "android"],
@@ -345,7 +412,7 @@
   },
 
   "CloudPrintProxyEnabled": {
-    "os": [],
+    "os": ["win", "linux", "mac"],
     "policy_pref_mapping_tests": [
       {
         "policies": { "CloudPrintProxyEnabled": true },
@@ -385,7 +452,7 @@
   },
 
   "PrintingAllowedBackgroundGraphicsModes": {
-    "os": ["chromeos"],
+    "os": ["win", "linux", "mac", "chromeos"],
     "policy_pref_mapping_tests": [
       {
         "policies": { "PrintingAllowedBackgroundGraphicsModes": "enabled" },
@@ -425,7 +492,7 @@
   },
 
   "PrintingBackgroundGraphicsDefault": {
-    "os": ["chromeos"],
+    "os": ["win", "linux", "mac", "chromeos"],
     "policy_pref_mapping_tests": [
       {
         "policies": { "PrintingBackgroundGraphicsDefault": "enabled" },
@@ -435,7 +502,7 @@
   },
 
   "PrintingPaperSizeDefault": {
-    "os": ["chromeos"],
+    "os": ["win", "linux", "mac", "chromeos"],
     "policy_pref_mapping_tests": [
       {
         "policies": {
@@ -493,7 +560,6 @@
   },
 
   "PrintingAPIExtensionsWhitelist": {
-    "note": "This policy is deprecated, see http://crbug.com/1119444.",
     "os": ["chromeos"],
     "policy_pref_mapping_tests": [
       {
@@ -526,7 +592,7 @@
   },
 
   "CloudPrintWarningsSuppressed": {
-    "note": "This policy is deprecated."
+    "reason_for_missing_test": "Policy was removed"
   },
 
   "EnableDeprecatedPrivetPrinting": {
@@ -540,24 +606,11 @@
     ]
   },
 
-
   "ExternalPrintServers": {
-    "os": ["chromeos"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "ExternalPrintServers": {
-            "id": "id123",
-            "url": "https://example.com/policyfile",
-            "hash": "deadbeefdeadbeefdeadbeef"
-          }
-        }
-      }
-    ]
+    "reason_for_missing_test": "TODO(crbug.com/1213475) external data policy not supported yet"
   },
 
   "ExternalPrintServersWhitelist": {
-    "note": "This policy is deprecated, see http://crbug.com/1098046.",
     "os": ["chromeos"],
     "policy_pref_mapping_tests": [
       {
@@ -589,7 +642,7 @@
 
   "AllowSystemNotifications" : {
     "os": ["linux"],
-    "policy_pref_mapping_test": [
+    "policy_pref_mapping_tests": [
       {
         "policies": { "AllowSystemNotifications": true },
         "prefs": { "system_notifications.allowed": {} }
@@ -598,7 +651,6 @@
   },
 
   "NativePrinters": {
-    "note": "This policy is deprecated by 'Printers' policy. See http://crbug.com/1113362.",
     "os": ["chromeos"],
     "policy_pref_mapping_tests": [
       {
@@ -649,36 +701,14 @@
   },
 
   "NativePrintersBulkConfiguration": {
-    "note": "This policy is deprecated, see http://crbug.com/1113366.",
-    "os": ["chromeos"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "NativePrintersBulkConfiguration": {
-            "url": "https://example.com/policyfile",
-            "hash": "deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef"
-          }
-        }
-      }
-    ]
+    "reason_for_missing_test": "TODO(crbug.com/1213475) external data policy not supported yet"
   },
 
   "PrintersBulkConfiguration": {
-    "os": ["chromeos"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "PrintersBulkConfiguration": {
-            "url": "https://example.com/policyfile",
-            "hash": "deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef"
-          }
-        }
-      }
-    ]
+    "reason_for_missing_test": "TODO(crbug.com/1213475) external data policy not supported yet"
   },
 
   "NativePrintersBulkAccessMode": {
-    "note": "This policy is deprecated, see http://crbug.com/1113370.",
     "os": ["chromeos"],
     "policy_pref_mapping_tests": [
       {
@@ -699,7 +729,6 @@
   },
 
   "NativePrintersBulkBlacklist": {
-    "note": "This policy is deprecated, see http://crbug.com/1098049.",
     "os": ["chromeos"],
     "policy_pref_mapping_tests": [
       {
@@ -720,7 +749,6 @@
   },
 
   "NativePrintersBulkWhitelist": {
-    "note": "This policy is deprecated, see http://crbug.com/1098047.",
     "os": ["chromeos"],
     "policy_pref_mapping_tests": [
       {
@@ -741,7 +769,6 @@
   },
 
   "UserNativePrintersAllowed": {
-    "note": "This policy is deprecated, see http://crbug.com/1113371.",
     "os": ["chromeos"],
     "policy_pref_mapping_tests": [
       {
@@ -761,8 +788,8 @@
     ]
   },
 
-  "LocalDiscoveryEnabled" : {
-    "note": "This policy is deprecated."
+  "LocalDiscoveryEnabled": {
+    "reason_for_missing_test": "Policy was removed"
   },
 
   "SafeBrowsingEnabled": {
@@ -791,12 +818,7 @@
   },
 
   "ForceSafeSearch": {
-    "os": ["win", "linux", "mac", "chromeos", "android"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": { "ForceSafeSearch": true }
-      }
-    ]
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
   },
 
   "ForceGoogleSafeSearch": {
@@ -810,20 +832,14 @@
   },
 
   "ForceLegacyDefaultReferrerPolicy": {
-     "note": "This policy is deprecated. This test tests its migration path."
+    "reason_for_missing_test": "Policy was removed"
   },
 
   "ForceYouTubeSafetyMode": {
-    "os": ["win", "linux", "mac", "chromeos", "android"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": { "ForceYouTubeSafetyMode": true }
-      }
-    ]
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
   },
 
   "ForceYouTubeRestrict": {
-    "note": "TODO(http://crbug.com/1141521): enable this policy test on Android",
     "os": ["win", "linux", "mac", "chromeos"],
     "policy_pref_mapping_tests": [
       {
@@ -831,6 +847,10 @@
         "prefs": { "settings.force_youtube_restrict": {} }
       }
     ]
+  },
+  "ForceYouTubeRestrict.Android": {
+    "os": ["android"],
+    "reason_for_missing_test": "TODO(http://crbug.com/1141521): enable this policy test on Android"
   },
 
   "MetricsReportingEnabled": {
@@ -857,7 +877,7 @@
   },
 
   "PasswordManagerAllowShowPasswords": {
-    "note": "This policy is retired, see http://crbug.com/598698."
+    "reason_for_missing_test": "Policy was removed"
   },
 
   "PasswordLeakDetectionEnabled": {
@@ -872,9 +892,8 @@
   },
 
   "ContextualSearchEnabled": {
-    "os": [
-      "android"
-    ]
+    "os": ["android"],
+    "reason_for_missing_test": "TODO(http://crbug.com/1141521): enable this policy test on Android"
   },
 
   "AutoFillEnabled": {
@@ -910,24 +929,16 @@
     ]
   },
 
-  "DisabledPlugins.0": {
-    "note": "This policy is deprecated. This test tests its migration path."
+  "DisabledPlugins": {
+    "reason_for_missing_test": "Policy was removed"
   },
 
-  "DisabledPlugins.1": {
-    "note": "This policy is deprecated. This test tests its migration path."
-  },
-
-  "EnabledPlugins.0": {
-    "note": "This policy is deprecated. This test tests its migration path."
-  },
-
-  "EnabledPlugins.1": {
-    "note": "This policy is deprecated. This test tests its migration path."
+  "EnabledPlugins": {
+    "reason_for_missing_test": "Policy was removed"
   },
 
   "DisabledPluginsExceptions": {
-    "note": "This policy is deprecated it doesn't map to a pref value anymore."
+    "reason_for_missing_test": "Policy was removed"
   },
 
   "AlwaysOpenPdfExternally": {
@@ -942,7 +953,7 @@
   },
 
   "DisablePluginFinder": {
-    "note": "This policy is not in use anymore since Chrome 65."
+    "reason_for_missing_test": "Policy was removed"
   },
 
   "SyncDisabled": {
@@ -977,7 +988,6 @@
   },
 
   "SigninAllowed": {
-    "note": "TODO(http://crbug.com/1141521): enable this policy test on Android",
     "os": ["win", "linux", "mac"],
     "policy_pref_mapping_tests": [
       {
@@ -986,13 +996,17 @@
       }
     ]
   },
+  "SigninAllowed.Android": {
+    "os": ["android"],
+    "reason_for_missing_test": "TODO(http://crbug.com/1141521): enable this policy test on Android"
+  },
 
   "EnableDeprecatedWebBasedSignin": {
-    "note": "This policy has been removed in Chrome 42."
+    "reason_for_missing_test": "Policy was removed"
   },
 
   "UserDataDir": {
-    "note": "TODO(joaodasilva): To test that this policy works correctly, it would need to be set before the browser is launched. PolicyPrefsTest should be refactored to support this and a test for this policy added."
+    "reason_for_missing_test": "TODO(joaodasilva): To test that this policy works correctly, it would need to be set before the browser is launched. PolicyPrefsTest should be refactored to support this and a test for this policy added."
   },
 
   "DiskCacheDir": {
@@ -1016,7 +1030,7 @@
   },
 
   "MediaCacheSize": {
-    "note": "This policy has been removed, see https://crbug.com/974387."
+    "reason_for_missing_test": "Policy was removed"
   },
 
   "DownloadRestrictions": {
@@ -1090,7 +1104,7 @@
   },
 
   "ClearSiteDataOnExit": {
-    "note": "This policy is retired, see http://crbug.com/133291."
+    "reason_for_missing_test": "Policy was removed"
   },
 
   "CaptivePortalAuthenticationIgnoresProxy": {
@@ -1104,7 +1118,7 @@
   },
 
   "ProxyMode": {
-    "os": ["win", "mac", "linux", "android"],
+    "os": ["win", "mac", "linux", "android", "chromeos"],
     "policy_pref_mapping_tests": [
       {
         "policies": { "ProxyMode": "direct" },
@@ -1114,7 +1128,7 @@
   },
 
   "ProxyServerMode": {
-    "os": ["win", "mac", "linux", "android"],
+    "os": ["win", "mac", "linux", "android", "chromeos"],
     "policy_pref_mapping_tests": [
       {
         "policies": { "ProxyServerMode": 0 },
@@ -1124,7 +1138,7 @@
   },
 
   "ProxyServer": {
-    "os": ["win", "mac", "linux", "android"],
+    "os": ["win", "mac", "linux", "android", "chromeos"],
     "policy_pref_mapping_tests": [
       {
         "policies": { "ProxyMode": "fixed_servers", "ProxyServer": "http://localhost:8080" },
@@ -1134,7 +1148,7 @@
   },
 
   "ProxyPacUrl": {
-    "os": ["win", "mac", "linux", "android"],
+    "os": ["win", "mac", "linux", "android", "chromeos"],
     "policy_pref_mapping_tests": [
       {
         "policies": { "ProxyMode": "pac_script", "ProxyPacUrl": "http://localhost:8080/proxy.pac" },
@@ -1144,7 +1158,7 @@
   },
 
   "ProxyBypassList": {
-    "os": ["win", "mac", "linux", "android"],
+    "os": ["win", "mac", "linux", "android", "chromeos"],
     "policy_pref_mapping_tests": [
       {
         "policies": { "ProxyMode": "fixed_servers", "ProxyServer": "http://localhost:8080", "ProxyBypassList": "localhost" },
@@ -1154,7 +1168,7 @@
   },
 
   "ProxySettings": {
-    "os": ["linux", "win", "android"],
+    "os": ["linux", "win", "android", "chromeos"],
     "policy_pref_mapping_tests": [
       {
         "policies": { "ProxySettings": { "ProxyMode": "direct" } },
@@ -1164,7 +1178,7 @@
   },
 
   "DisableSSLRecordSplitting": {
-    "note": "This policy is retired, see https://bugs.chromium.org/p/chromium/issues/detail?id=485097#c17."
+    "reason_for_missing_test": "Policy was removed"
   },
 
   "EnableOnlineRevocationChecks": {
@@ -1194,15 +1208,15 @@
   },
 
   "EnableSha1ForLocalAnchors": {
-    "note": "This policy is deprecated and removed since Chrome 72."
+    "reason_for_missing_test": "Policy was removed"
   },
 
   "EnableCommonNameFallbackForLocalAnchors": {
-    "note": "This policy is deprecated and removed since Chrome 66."
+    "reason_for_missing_test": "Policy was removed"
   },
 
   "EnableSymantecLegacyInfrastructure": {
-    "note": "This policy is deprecated and removed since Chrome 75."
+    "reason_for_missing_test": "Policy was removed"
   },
 
   "BuiltinCertificateVerifierEnabled": {
@@ -1326,7 +1340,7 @@
   },
 
   "AllowCrossOriginAuthPrompt": {
-    "os": ["win", "mac", "linux"],
+    "os": ["win", "mac", "linux", "chromeos"],
     "policy_pref_mapping_tests": [
       {
         "policies": { "AllowCrossOriginAuthPrompt": true },
@@ -1415,45 +1429,19 @@
   },
 
   "IsolateOrigins": {
-    "os": ["win", "linux", "mac", "chromeos"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": { "IsolateOrigins": "" },
-        "note": "There is a pref behind this setting, but due to the fact that tests override the default with a command-line flag on some trybots, this setting cannot be verified with the common test."
-      }
-    ]
+    "reason_for_missing_test": "There is a pref behind this setting, but due to the fact that tests override the default with a command-line flag on some trybots, this setting cannot be verified with the common test."
   },
 
   "SitePerProcess": {
-    "os": ["win", "linux", "mac", "chromeos"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": { "SitePerProcess": false },
-        "note": "There is a pref behind this setting, but due to the fact that tests override the default with a command-line flag on some trybots, this setting cannot be verified with the common test."
-      }
-    ]
+    "reason_for_missing_test": "There is a pref behind this setting, but due to the fact that tests override the default with a command-line flag on some trybots, this setting cannot be verified with the common test."
   },
 
   "IsolateOriginsAndroid": {
-    "os": [
-      "android"
-    ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": { "IsolateOriginsAndroid": "" },
-        "note": "There is a pref behind this setting, but due to the fact that tests override the default with a command-line flag on some trybots, this setting cannot be verified with the common test."
-      }
-    ]
+    "reason_for_missing_test": "There is a pref behind this setting, but due to the fact that tests override the default with a command-line flag on some trybots, this setting cannot be verified with the common test."
   },
 
   "SitePerProcessAndroid": {
-    "os": ["android"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": { "SitePerProcessAndroid": false },
-        "note": "There is a pref behind this setting, but due to the fact that tests override the default with a command-line flag on some trybots, this setting cannot be verified with the common test."
-      }
-    ]
+    "reason_for_missing_test": "There is a pref behind this setting, but due to the fact that tests override the default with a command-line flag on some trybots, this setting cannot be verified with the common test."
   },
 
   "SharedArrayBufferUnrestrictedAccessAllowed": {
@@ -1488,7 +1476,7 @@
   },
 
   "WebDriverOverridesIncompatiblePolicies": {
-    "note": "This policy has been removed since Chrome 79."
+    "reason_for_missing_test": "Policy was removed"
   },
 
   "DefaultDownloadDirectory": {
@@ -1557,7 +1545,7 @@
   },
 
   "ExtensionAllowInsecureUpdates": {
-    "note": "Deprecated since Chrome 78."
+    "reason_for_missing_test": "Policy was removed"
   },
 
   "ExtensionInstallBlacklist": {
@@ -1718,7 +1706,9 @@
     ]
   },
 
-  "HeadlessMode": {},
+  "HeadlessMode": {
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+  },
 
   "RestoreOnStartup": {
     "os": ["win", "linux", "mac", "chromeos"],
@@ -1865,7 +1855,7 @@
   },
 
   "DefaultSearchProviderInstantURL": {
-    "note": "Deprecated since Chrome 63. See https://crbug.com/476079"
+    "reason_for_missing_test": "Policy was removed"
   },
 
   "DefaultSearchProviderNewTabURL": {
@@ -1934,7 +1924,7 @@
   },
 
   "DefaultSearchProviderSearchTermsReplacementKey": {
-    "note": "Deprecated since Chrome 63. See https://crbug.com/476079"
+    "reason_for_missing_test": "Policy was removed"
   },
 
   "DefaultSearchProviderImageURL": {
@@ -1983,7 +1973,7 @@
   },
 
   "DefaultSearchProviderInstantURLPostParams": {
-    "note": "Deprecated since Chrome 63. See https://crbug.com/476079"
+    "reason_for_missing_test": "Policy was removed"
   },
 
   "DefaultSearchProviderImageURLPostParams": {
@@ -2081,11 +2071,11 @@
   },
 
   "DefaultKeygenSetting": {
-    "note": "This policy is retired, see https://crbug.com/568184."
+    "reason_for_missing_test": "Policy was removed"
   },
 
   "LegacySameSiteCookieBehaviorEnabled": {
-    "note": "This policy is deprecated, https://crbug.com/1214078."
+    "reason_for_missing_test": "Policy was removed"
   },
 
   "LegacySameSiteCookieBehaviorEnabledForDomainList": {
@@ -2131,7 +2121,7 @@
   },
 
   "DefaultPluginsSetting": {
-    "note": "Deprecated since Chrome 88. See https://crbug.com/1083496"
+    "reason_for_missing_test": "Policy was removed"
   },
 
   "DefaultPopupsSetting": {
@@ -2240,7 +2230,7 @@
   },
 
   "DefaultSensorsSetting": {
-    "os": ["win", "linux", "mac", "android"],
+    "os": ["win", "linux", "mac", "android", "chromeos"],
     "note": "TODO(http://crbug.com/106682): Flag this with can_be_recommended when bug is fixed.",
     "policy_pref_mapping_tests": [
       {
@@ -2484,19 +2474,19 @@
   },
 
   "KeygenAllowedForUrls": {
-    "note": "This policy is retired, see https://crbug.com/568184."
+    "reason_for_missing_test": "Policy was removed"
   },
 
   "KeygenBlockedForUrls": {
-    "note": "This policy is retired, see https://crbug.com/568184."
+    "reason_for_missing_test": "Policy was removed"
   },
 
   "PluginsAllowedForUrls": {
-    "note": "Deprecated since Chrome 88. See https://crbug.com/1083496"
+    "reason_for_missing_test": "Policy was removed"
   },
 
   "PluginsBlockedForUrls": {
-    "note": "Deprecated since Chrome 88. See https://crbug.com/1083496"
+    "reason_for_missing_test": "Policy was removed"
   },
 
   "PopupsAllowedForUrls": {
@@ -2544,7 +2534,7 @@
   },
 
   "SensorsAllowedForUrls": {
-    "os": ["win", "linux", "mac", "android"],
+    "os": ["win", "linux", "mac", "android", "chromeos"],
     "note": "TODO(http://crbug.com/106682): Flag this with can_be_recommended when bug is fixed.",
     "policy_pref_mapping_tests": [
       {
@@ -2555,7 +2545,7 @@
   },
 
   "SensorsBlockedForUrls": {
-    "os": ["win", "linux", "mac", "android"],
+    "os": ["win", "linux", "mac", "android", "chromeos"],
     "note": "TODO(http://crbug.com/106682): Flag this with can_be_recommended when bug is fixed.",
     "policy_pref_mapping_tests": [
       {
@@ -2714,9 +2704,7 @@
   },
 
   "AppRecommendationZeroStateEnabled": {
-    "os:": [
-      "chromeos"
-    ],
+    "os": ["chromeos"],
     "policy_pref_mapping_tests": [
       {
         "policies": {"AppRecommendationZeroStateEnabled": false},
@@ -2726,15 +2714,15 @@
   },
 
   "AllowOutdatedPlugins": {
-    "note": "Deprecated since Chrome 88. See https://crbug.com/1083496"
+    "reason_for_missing_test": "Policy was removed"
   },
 
   "AlwaysAuthorizePlugins": {
-    "note": "This policy has been removed since Chrome 65."
+    "reason_for_missing_test": "Policy was removed"
   },
 
   "RunAllFlashInAllowMode": {
-    "note": "This policy has been removed since Chrome 88."
+    "reason_for_missing_test": "Policy was removed"
   },
 
   "BookmarkBarEnabled": {
@@ -2874,7 +2862,6 @@
   "HideWebStorePromo": {},
 
   "URLBlacklist": {
-    "note": "This policy is deprecated, see http://crbug.com/1095230.",
     "os": ["win", "linux", "mac", "chromeos", "android"],
     "policy_pref_mapping_tests": [
       {
@@ -2895,7 +2882,6 @@
   },
 
   "URLWhitelist": {
-    "note": "This policy is deprecated, see http://crbug.com/1095230.",
     "os": ["win", "linux", "mac", "chromeos", "android"],
     "policy_pref_mapping_tests": [
       {
@@ -2916,27 +2902,27 @@
   },
 
   "PolicyListMultipleSourceMergeList": {
-    "note": "This policy has no pref as it is only directly read by the policy system."
+    "reason_for_missing_test": "This policy has no pref as it is only directly read by the policy system."
   },
 
   "PolicyDictionaryMultipleSourceMergeList": {
-    "note": "This policy has no pref as it is only directly read by the policy system."
+    "reason_for_missing_test": "This policy has no pref as it is only directly read by the policy system."
   },
 
   "EnableExperimentalPolicies":{
-    "note": "This policy has no pref as it is only directly read by the policy system."
+    "reason_for_missing_test": "This policy has no pref as it is only directly read by the policy system."
   },
 
   "PolicyAtomicGroupsEnabled": {
-    "note": "This policy has no pref as it is only directly read by the policy system."
+    "reason_for_missing_test": "This policy has no pref as it is only directly read by the policy system."
   },
 
   "EnterpriseWebStoreURL": {
-    "note": "This policy is retired, see http://crbug.com/178938."
+    "reason_for_missing_test": "Policy was removed"
   },
 
   "EnterpriseWebStoreName": {
-    "note": "This policy is retired, see http://crbug.com/178938."
+    "reason_for_missing_test": "Policy was removed"
   },
 
   "DisablePrintPreview": {
@@ -3006,12 +2992,11 @@
   },
 
   "SafeBrowsingExtendedReportingOptInAllowed": {
-    "note": "This policy has been removed."
+    "reason_for_missing_test": "Policy was removed"
   },
 
   "SpellCheckServiceEnabled": {
     "os": ["win", "linux", "mac", "chromeos"],
-    "official_only": true,
     "can_be_recommended": true,
     "policy_pref_mapping_tests": [
       {
@@ -3032,7 +3017,7 @@
   },
 
   "BuiltInDnsClientEnabled": {
-    "os": ["win", "linux", "mac", "android"],
+    "os": ["win", "linux", "mac", "android", "chromeos"],
     "policy_pref_mapping_tests": [
       {
         "policies": {
@@ -3068,7 +3053,7 @@
   },
 
   "PacHttpsUrlStrippingEnabled": {
-    "note": "This policy has been removed, see https://crbug.com/939760."
+    "reason_for_missing_test": "Policy was removed"
   },
 
   "RegisteredProtocolHandlers": {
@@ -3103,7 +3088,7 @@
   },
 
   "VariationsRestrictParameter": {
-    "note": "TODO(http://crbug.com/1141521): enable this policy test on Android",
+    "os": ["win", "linux", "mac"],
     "policy_pref_mapping_tests": [
       {
         "policies": {
@@ -3112,6 +3097,10 @@
         "prefs": { "variations_restrict_parameter": { "location": "local_state" } }
       }
     ]
+  },
+  "VariationsRestrictParameter.Android": {
+    "os": ["android"],
+    "reason_for_missing_test": "TODO(http://crbug.com/1141521): enable this policy test on Android"
   },
 
   "ChromeVariations": {
@@ -3127,9 +3116,7 @@
   },
 
   "DataCompressionProxyEnabled": {
-    "os": [
-      "android"
-    ],
+    "os": ["android"],
     "policy_pref_mapping_tests": [
       {
         "policies": {
@@ -3140,34 +3127,16 @@
     ]
   },
 
-  "ForceEphemeralProfiles": {},
+  "ForceEphemeralProfiles": {
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+  },
 
   "UserAvatarImage": {
-    "os": ["chromeos"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "UserAvatarImage": {
-            "url": "http://localhost/",
-            "hash": "deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef"
-          }
-        }
-      }
-    ]
+    "reason_for_missing_test": "TODO(crbug.com/1213475) external data policy not supported yet"
   },
 
   "WallpaperImage": {
-    "os": ["chromeos"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "WallpaperImage": {
-            "url": "http://localhost/",
-            "hash": "baddecafbaddecafbaddecafbaddecafbaddecafbaddecafbaddecafbaddecaf"
-          }
-        }
-      }
-    ]
+    "reason_for_missing_test": "TODO(crbug.com/1213475) external data policy not supported yet"
   },
 
   "BrowserGuestModeEnabled": {
@@ -3281,10 +3250,12 @@
   },
 
   "MachineLevelUserCloudPolicyEnrollmentToken": {
-    "note": "This policy was replaced with CloudManagementEnrollmentToken in Chrome 72 and has been removed altogether in Chrome 81"
+    "reason_for_missing_test": "Policy was removed"
   },
 
-  "CloudManagementEnrollmentToken": {},
+  "CloudManagementEnrollmentToken": {
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+  },
 
   "CloudManagementEnrollmentMandatory": {
     "os": ["win", "linux", "mac"],
@@ -3307,11 +3278,11 @@
   },
 
   "SSLVersionFallbackMin": {
-    "note": "This policy is retired, see https://crbug.com/621780."
+    "reason_for_missing_test": "Policy was removed"
   },
 
   "SSLVersionMax": {
-    "note": "This policy has been removed, see https://crbug.com/939760."
+    "reason_for_missing_test": "Policy was removed"
   },
 
   "CECPQ2Enabled": {
@@ -3385,15 +3356,15 @@
   },
 
   "RC4Enabled": {
-    "note": "This policy is retired, see https://crbug.com/375342."
+    "reason_for_missing_test": "Policy was removed"
   },
 
   "DHEEnabled": {
-    "note": "This policy is retired, see https://crbug.com/619194."
+    "reason_for_missing_test": "Policy was removed"
   },
 
   "WelcomePageOnOSUpgradeEnabled": {
-    "note": "This policy is retired, see https://crbug.com/978349."
+    "reason_for_missing_test": "Policy was removed"
   },
 
   "SuppressUnsupportedOSWarning": {
@@ -3414,6 +3385,7 @@
   },
 
   "AllowedDomainsForApps": {
+    "os": ["win", "linux", "mac", "chromeos", "android"],
     "policy_pref_mapping_tests": [
       {
         "os": ["win", "linux", "mac", "chromeos", "android"],
@@ -3633,7 +3605,7 @@
   },
 
   "AllowPopupsDuringPageUnload": {
-    "note": "This policy has been removed, as of M88."
+    "reason_for_missing_test": "Policy was removed"
   },
 
   "CommandLineFlagSecurityWarningsEnabled": {
@@ -3700,11 +3672,11 @@
   },
 
   "WebComponentsV0Enabled": {
-    "note": "This policy has been removed, as of M85."
+    "reason_for_missing_test": "Policy was removed"
   },
 
   "UseLegacyFormControls": {
-    "note": "This policy has been removed, as of M85."
+    "reason_for_missing_test": "Policy was removed"
   },
 
   "ScrollToTextFragmentEnabled": {
@@ -3810,8 +3782,6 @@
     ]
   },
 
-  "----- Chrome OS policies ------------------------------------------------": {},
-
   "ChromeOsLockOnIdleSuspend": {
     "os": ["chromeos"],
     "can_be_recommended": true,
@@ -3826,7 +3796,7 @@
   },
 
   "PolicyRefreshRate": {
-    "os": ["chromeos"],
+    "os": ["chromeos", "linux", "mac", "win"],
     "policy_pref_mapping_tests": [
       {
         "policies": {
@@ -3838,17 +3808,12 @@
   },
 
   "MaxInvalidationFetchDelay": {
-    "os": ["win", "linux", "mac", "chromeos"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "PolicyRefreshRate": 15000
-        }
-      }
-    ]
+    "reason_for_missing_test": "Policy is read by policy stack, but not mapped to a pref"
   },
 
-  "OpenNetworkConfiguration": {},
+  "OpenNetworkConfiguration": {
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+  },
 
   "GaiaOfflineSigninTimeLimitDays": {
     "os": ["chromeos"],
@@ -4008,7 +3973,7 @@
   },
 
   "ManagedGuestSessionAutoLaunchNotificationReduced": {
-    "note": "This policy has been removed."
+    "reason_for_missing_test": "Policy was removed"
   },
 
   "ManagedGuestSessionPrivacyWarningsEnabled": {
@@ -4026,18 +3991,11 @@
   },
 
   "FloatingAccessibilityMenuEnabled": {
-    "os": ["chromeos"],
-    "pref_mappings": [
-      {
-        "pref": "settings.a11y.floating_menu"
-      }
-    ]
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
   },
 
   "UserDisplayName": {
-    "os": [
-      "chromeos"
-    ]
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
   },
 
   "SystemFeaturesDisableList": {
@@ -4655,7 +4613,9 @@
     ]
   },
 
-  "ManagedBookmarks": {},
+  "ManagedBookmarks": {
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+  },
 
   "FullscreenAllowed": {
     "os": ["win", "linux", "chromeos"],
@@ -4741,7 +4701,7 @@
   },
 
   "EnableDeprecatedWebPlatformFeatures": {
-    "note": "This policy has been removed, as of M88."
+    "reason_for_missing_test": "Policy was removed"
   },
 
   "TouchVirtualKeyboardEnabled": {
@@ -4765,8 +4725,7 @@
   },
 
   "SessionLocales": {
-    "os": ["chromeos"],
-    "can_be_recommended": true
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
   },
 
   "ForceMaximizeOnFirstRun": {
@@ -4821,7 +4780,9 @@
     ]
   },
 
-  "KeyPermissions": {},
+  "KeyPermissions": {
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+  },
 
   "HardwareAccelerationModeEnabled": {
     "os": ["win", "linux", "mac"],
@@ -4864,12 +4825,7 @@
   },
 
   "ArcPolicy": {
-    "os": ["chromeos"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": { "ArcPolicy": "" }
-      }
-    ]
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
   },
 
   "AllowScreenLock": {
@@ -4956,20 +4912,15 @@
   },
 
   "ArcCertificatesSyncMode": {
-    "os": ["chromeos"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": { "ArcCertificatesSyncMode": 0 }
-      }
-    ]
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
   },
 
   "ArcBackupRestoreEnabled": {
-    "note": "This policy has been removed. See https://bugs.chromium.org/p/chromium/issues/detail?id=845962"
+    "reason_for_missing_test": "Policy was removed"
   },
 
   "ArcLocationServiceEnabled": {
-    "note": "This policy has been removed. See https://bugs.chromium.org/p/chromium/issues/detail?id=845962"
+    "reason_for_missing_test": "Policy was removed"
   },
 
   "ReportArcStatusEnabled": {
@@ -5077,7 +5028,7 @@
   },
 
   "EcryptfsMigrationStrategy": {
-    "note": "This policy is deprecated and removed since Chrome 88."
+    "reason_for_missing_test": "Policy was removed"
   },
 
   "SchedulerConfiguration": {
@@ -5378,7 +5329,7 @@
   },
 
   "SamlInSessionPasswordChangeEnabled": {
-    "os": [],
+    "os": ["chromeos"],
     "policy_pref_mapping_tests": [
       {
         "policies": {
@@ -5390,7 +5341,7 @@
   },
 
   "SamlPasswordExpirationAdvanceWarningDays": {
-    "os": [],
+    "os": ["chromeos"],
     "policy_pref_mapping_tests": [
       {
         "policies": {
@@ -5436,7 +5387,6 @@
   },
 
   "SharedClipboardEnabled": {
-    "note": "TODO(http://crbug.com/1141521): enable this policy test on Android",
     "os": ["win", "linux", "mac", "chromeos"],
     "policy_pref_mapping_tests": [
       {
@@ -5446,6 +5396,10 @@
         "prefs": { "browser.shared_clipboard_enabled": {} }
       }
     ]
+  },
+  "SharedClipboardEnabled.Android": {
+    "os": ["android"],
+    "reason_for_missing_test": "TODO(http://crbug.com/1141521): enable this policy test on Android"
   },
 
   "ClickToCallEnabled" : {
@@ -5465,11 +5419,11 @@
   },
 
   "AudioSandboxEnabled": {
-    "note": "This policy is used directly through the policy service instead of through a pref."
+    "reason_for_missing_test": "This policy is used directly through the policy service instead of through a pref."
   },
 
   "AudioProcessHighPriorityEnabled": {
-    "note": "This policy is used directly through the policy service instead of through a pref."
+    "reason_for_missing_test": "This policy is used directly through the policy service instead of through a pref."
   },
 
   "LoginDisplayPasswordButtonEnabled": {
@@ -5527,277 +5481,473 @@
   },
 
   "DisplayRotationDefault": {
-    "os": ["chromeos"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DisplayRotationDefault": 1
-        }
-      }
-    ]
+    "reason_for_missing_test": "Maps into CrosSettings"
   },
 
   "DeviceDisplayResolution": {
-    "os": ["chromeos"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DeviceDisplayResolution": {
-            "external_width": 1920,
-            "external_height": 1080,
-            "external_scale_percentage": 100,
-            "internal_scale_percentage": 50,
-            "recommended": true
-          }
-        }
-      }
-    ]
+    "reason_for_missing_test": "Maps into CrosSettings"
   },
 
-  "ChromeOsReleaseChannel": {},
+  "ChromeOsReleaseChannel": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
 
-  "ChromeOsReleaseChannelDelegated": {},
+  "ChromeOsReleaseChannelDelegated": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
 
-  "DeviceReleaseLtsTag": {},
+  "DeviceReleaseLtsTag": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
 
-  "DeviceOpenNetworkConfiguration": {},
+  "DeviceOpenNetworkConfiguration": {
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+  },
 
-  "HeartbeatEnabled": {},
+  "HeartbeatEnabled": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
 
-  "HeartbeatFrequency": {},
+  "HeartbeatFrequency": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
 
-  "LogUploadEnabled": {},
+  "LogUploadEnabled": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
 
-  "ReportDeviceVersionInfo": {},
+  "ReportDeviceVersionInfo": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
 
-  "ReportDeviceActivityTimes": {},
+  "ReportDeviceActivityTimes": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
 
-  "ReportDeviceBootMode": {},
+  "ReportDeviceBootMode": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
 
-  "ReportDeviceNetworkInterfaces": {},
+  "ReportDeviceNetworkInterfaces": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
 
-  "ReportDeviceUsers": {},
+  "ReportDeviceUsers": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
 
-  "ReportDeviceHardwareStatus": {},
+  "ReportDeviceHardwareStatus": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
 
-  "ReportDeviceOsUpdateStatus": {},
+  "ReportDeviceOsUpdateStatus": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
 
-  "ReportDeviceSessionStatus": {},
+  "ReportDeviceSessionStatus": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
 
-  "ReportDeviceGraphicsStatus": {},
+  "ReportDeviceGraphicsStatus": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
 
-  "ReportDeviceCrashReportInfo": {},
+  "ReportDeviceCrashReportInfo": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
 
-  "ReportDevicePowerStatus": {},
+  "ReportDevicePowerStatus": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
 
-  "ReportDeviceStorageStatus": {},
+  "ReportDeviceStorageStatus": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
 
-  "ReportDeviceBoardStatus": {},
+  "ReportDeviceBoardStatus": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
 
-  "ReportDeviceCpuInfo": {},
+  "ReportDeviceCpuInfo": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
 
-  "ReportDeviceTimezoneInfo": {},
+  "ReportDeviceTimezoneInfo": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
 
-  "ReportDeviceMemoryInfo": {},
+  "ReportDeviceMemoryInfo": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
 
-  "ReportDeviceBacklightInfo": {},
+  "ReportDeviceBacklightInfo": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
 
-  "ReportDeviceAppInfo": {},
+  "ReportDeviceAppInfo": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
 
-  "ReportDeviceBluetoothInfo": {},
+  "ReportDeviceBluetoothInfo": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
 
-  "ReportDeviceFanInfo": {},
+  "ReportDeviceFanInfo": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
 
-  "ReportDeviceVpdInfo": {},
+  "ReportDeviceVpdInfo": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
 
-  "ReportDeviceSystemInfo": {},
+  "ReportDeviceSystemInfo": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
 
-  "ReportDevicePrintJobs": {},
+  "ReportDeviceLoginLogout": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
 
-  "ReportDeviceLoginLogout": {},
+  "ReportDevicePrintJobs": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
 
-  "ReportUploadFrequency": {},
+  "ReportUploadFrequency": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
 
-  "DeviceAllowNewUsers": {},
+  "DeviceAllowNewUsers": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
 
-  "DeviceUserWhitelist": {},
+  "DeviceUserWhitelist": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
 
-  "DeviceUserAllowlist": {},
+  "DeviceUserAllowlist": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
 
-  "DeviceGuestModeEnabled": {},
+  "DeviceGuestModeEnabled": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
 
-  "DeviceShowUserNamesOnSignin": {},
+  "DeviceShowUserNamesOnSignin": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
 
-  "DeviceFamilyLinkAccountsAllowed": {},
+  "DeviceFamilyLinkAccountsAllowed": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
 
-  "DeviceDataRoamingEnabled": {},
+  "DeviceDataRoamingEnabled": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
 
-  "DevicePciPeripheralDataAccessEnabled": {},
+  "DevicePciPeripheralDataAccessEnabled": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
 
   "DeviceMetricsReportingEnabled": {
     "reason_for_missing_test": "Maps into CrosSettings"
   },
 
-  "DeviceEphemeralUsersEnabled": {},
+  "DeviceEphemeralUsersEnabled": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
 
-  "DeviceRebootOnShutdown": {},
+  "DeviceRebootOnShutdown": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
 
-  "DeviceIdleLogoutTimeout": {},
+  "DeviceAutoUpdateDisabled": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
 
-  "DeviceIdleLogoutWarningDuration": {},
+  "DeviceAutoUpdateP2PEnabled": {
+    "reason_for_missing_test": "Chrome OS device policy used by update_engine only, not used in Chrome."
+  },
 
-  "DeviceLoginScreenSaverId": {},
+  "DeviceIdleLogoutTimeout": {
+    "reason_for_missing_test": "Policy was removed"
+  },
 
-  "DeviceLoginScreenSaverTimeout": {},
+  "DeviceIdleLogoutWarningDuration": {
+    "reason_for_missing_test": "Policy was removed"
+  },
 
-  "DeviceStartUpUrls": {},
+  "DeviceLoginScreenSaverId": {
+    "reason_for_missing_test": "Policy was removed"
+  },
 
-  "DeviceAppPack": {},
+  "DeviceLoginScreenSaverTimeout": {
+    "reason_for_missing_test": "Policy was removed"
+  },
 
-  "DeviceAutoUpdateDisabled": {},
+  "DeviceAppPack": {
+    "reason_for_missing_test": "Policy was removed"
+  },
 
-  "DeviceAutoUpdateP2PEnabled": {},
+  "DeviceStartUpUrls": {
+    "reason_for_missing_test": "Policy was removed"
+  },
 
   "DeviceRollbackAllowedMilestones": {
-    "os": ["chromeos"],
-    "note": "Chrome OS device policy used by update_engine only, not used in Chrome."
+    "reason_for_missing_test": "Chrome OS device policy used by update_engine only, not used in Chrome."
   },
 
   "DeviceRollbackToTargetVersion": {
-    "os": ["chromeos"],
-    "note": "Chrome OS device policy used by update_engine only, not used in Chrome."
+    "reason_for_missing_test": "Chrome OS device policy used by update_engine only, not used in Chrome."
   },
 
-  "DeviceTargetVersionPrefix": {},
+  "DeviceTargetVersionPrefix": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
 
-  "DeviceUpdateScatterFactor": {},
+  "DeviceUpdateScatterFactor": {
+    "reason_for_missing_test": "Chrome OS device policy used by update_engine only, not used in Chrome."
+  },
 
-  "DeviceUpdateAllowedConnectionTypes": {},
+  "DeviceUpdateAllowedConnectionTypes": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
 
-  "DeviceUpdateHttpDownloadsEnabled": {},
+  "DeviceUpdateHttpDownloadsEnabled": {
+    "reason_for_missing_test": "Chrome OS device policy used by update_engine only, not used in Chrome."
+  },
 
-  "ReportDeviceLocation": {},
+  "ReportDeviceLocation": {
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+  },
 
-  "SystemTimezone": {},
+  "SystemTimezone": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
 
-  "SystemUse24HourClock": {},
+  "SystemUse24HourClock": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
 
-  "DeviceLocalAccounts": {},
+  "DeviceLocalAccounts": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
 
-  "DeviceLocalAccountAutoLoginId": {},
+  "DeviceLocalAccountAutoLoginId": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
 
-  "DeviceLocalAccountAutoLoginDelay": {},
+  "DeviceLocalAccountAutoLoginDelay": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
 
-  "DeviceLocalAccountAutoLoginBailoutEnabled": {},
+  "DeviceLocalAccountAutoLoginBailoutEnabled": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
 
-  "DeviceLocalAccountManagedSessionEnabled": {},
+  "DeviceLocalAccountManagedSessionEnabled": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
 
-  "DeviceLocalAccountPromptForNetworkWhenOffline": {},
+  "DeviceLocalAccountPromptForNetworkWhenOffline": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
 
-  "DeviceBlockDevmode": {},
+  "DeviceBlockDevmode": {
+    "reason_for_missing_test": "Only read by system deamons"
+  },
 
-  "DeviceLoginScreenPowerManagement": {},
+  "DeviceLoginScreenPowerManagement": {
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+  },
 
-  "DeviceAllowRedeemChromeOsRegistrationOffers": {},
+  "DeviceAllowRedeemChromeOsRegistrationOffers": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
 
-  "DeviceStartUpFlags": {},
+  "DeviceStartUpFlags": {
+    "reason_for_missing_test": "Policy was removed"
+  },
 
-  "DeviceVariationsRestrictParameter": {},
+  "DeviceVariationsRestrictParameter": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
 
-  "DeviceLoginScreenDefaultLargeCursorEnabled": {},
+  "DeviceLoginScreenDefaultLargeCursorEnabled": {
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+  },
 
-  "DeviceLoginScreenLargeCursorEnabled": {},
+  "DeviceLoginScreenLargeCursorEnabled": {
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+  },
 
-  "DeviceLoginScreenShowOptionsInSystemTrayMenu" : {},
+  "DeviceLoginScreenShowOptionsInSystemTrayMenu" : {
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+  },
 
-  "DeviceLoginScreenDefaultSpokenFeedbackEnabled" : {},
+  "DeviceLoginScreenDefaultSpokenFeedbackEnabled" : {
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+  },
 
-  "DeviceLoginScreenPrimaryMouseButtonSwitch" : {},
+  "DeviceLoginScreenPrimaryMouseButtonSwitch" : {
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+  },
 
-  "DeviceLoginScreenSpokenFeedbackEnabled": {},
+  "DeviceLoginScreenSpokenFeedbackEnabled": {
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+  },
 
-  "DeviceLoginScreenDefaultHighContrastEnabled": {},
+  "DeviceLoginScreenDefaultHighContrastEnabled": {
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+  },
 
-  "DeviceLoginScreenHighContrastEnabled": {},
+  "DeviceLoginScreenHighContrastEnabled": {
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+  },
 
-  "DeviceLoginScreenAccessibilityShortcutsEnabled": {},
+  "DeviceLoginScreenAccessibilityShortcutsEnabled": {
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+  },
 
-  "DeviceLoginScreenDefaultScreenMagnifierType": {},
+  "DeviceLoginScreenDefaultScreenMagnifierType": {
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+  },
 
-  "DeviceLoginScreenScreenMagnifierType": {},
+  "DeviceLoginScreenScreenMagnifierType": {
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+  },
 
-  "DeviceLoginScreenDefaultVirtualKeyboardEnabled": {},
+  "DeviceLoginScreenDefaultVirtualKeyboardEnabled": {
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+  },
 
-  "DeviceLoginScreenVirtualKeyboardEnabled": {},
+  "DeviceLoginScreenVirtualKeyboardEnabled": {
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+  },
 
-  "DeviceLoginScreenDictationEnabled": {},
+  "DeviceLoginScreenDictationEnabled": {
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+  },
 
-  "DeviceLoginScreenSelectToSpeakEnabled": {},
+  "DeviceLoginScreenSelectToSpeakEnabled": {
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+  },
 
-  "DeviceLoginScreenCursorHighlightEnabled": {},
+  "DeviceLoginScreenCursorHighlightEnabled": {
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+  },
 
-  "DeviceLoginScreenCaretHighlightEnabled": {},
+  "DeviceLoginScreenCaretHighlightEnabled": {
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+  },
 
-  "DeviceLoginScreenMonoAudioEnabled": {},
+  "DeviceLoginScreenMonoAudioEnabled": {
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+  },
 
-  "DeviceLoginScreenAutoclickEnabled": {},
+  "DeviceLoginScreenAutoclickEnabled": {
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+  },
 
-  "DeviceLoginScreenStickyKeysEnabled": {},
+  "DeviceLoginScreenStickyKeysEnabled": {
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+  },
 
-  "DeviceLoginScreenKeyboardFocusHighlightEnabled": {},
+  "DeviceLoginScreenKeyboardFocusHighlightEnabled": {
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+  },
 
-  "DeviceLoginScreenLocales": {},
+  "DeviceLoginScreenLocales": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
 
-  "DeviceLoginScreenInputMethods": {},
+  "DeviceLoginScreenInputMethods": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
 
-  "DeviceLoginScreenSystemInfoEnforced": {},
+  "DeviceLoginScreenSystemInfoEnforced": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
 
-  "DeviceChromeVariations": {},
+  "DeviceChromeVariations": {
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+  },
 
-  "DeviceShowNumericKeyboardForPassword": {},
+  "DeviceShowNumericKeyboardForPassword": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
 
-  "UptimeLimit": {},
+  "UptimeLimit": {
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+  },
 
-  "RebootAfterUpdate": {},
+  "RebootAfterUpdate": {
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+  },
 
   "DeviceScheduledReboot": {
     "os": ["chromeos"],
-    "test_policy": { "DeviceScheduledReboot": {"reboot_time" : {"hour": 22, "minute": 30}, "frequency": "WEEKLY", "day_of_week": "TUESDAY" }}
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
   },
 
-  "AttestationEnabledForDevice": {},
+  "AttestationEnabledForDevice": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
 
-  "AttestationForContentProtectionEnabled": {},
+  "AttestationForContentProtectionEnabled": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
 
-  "SupervisedUsersEnabled": {},
+  "SupervisedUsersEnabled": {
+    "reason_for_missing_test": "Policy was removed"
+  },
 
-  "SupervisedUserCreationEnabled": {},
+  "SupervisedUserCreationEnabled": {
+    "reason_for_missing_test": "Policy was removed"
+  },
 
-  "SupervisedUserContentProviderEnabled": {},
+  "SupervisedUserContentProviderEnabled": {
+    "reason_for_missing_test": "Policy was removed"
+  },
 
-  "AutoCleanUpStrategy": {},
+  "AutoCleanUpStrategy": {
+    "reason_for_missing_test": "Policy was removed"
+  },
 
-  "DeviceTransferSAMLCookies": {},
+  "DeviceTransferSAMLCookies": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
 
-  "ExtensionCacheSize": {},
+  "ExtensionCacheSize": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
 
   "DeviceShowLowDiskSpaceNotification": {
     "reason_for_missing_test": "Maps into CrosSettings"
   },
 
-  "DeviceLoginScreenDomainAutoComplete": {},
+  "DeviceLoginScreenDomainAutoComplete": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
 
-  "AllowKioskAppControlChromeVersion": {},
+  "AllowKioskAppControlChromeVersion": {
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+  },
 
   "LoginAuthenticationBehavior": {
     "reason_for_missing_test": "Maps into CrosSettings"
   },
 
-  "UsbDetachableWhitelist": {},
+  "UsbDetachableWhitelist": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
 
-  "UsbDetachableAllowlist": {},
+  "UsbDetachableAllowlist": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
 
-  "DeviceAllowBluetooth": {},
+  "DeviceAllowBluetooth": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
 
   "DeviceWiFiAllowed": {
     "reason_for_missing_test": "Maps into CrosSettings"
@@ -5811,7 +5961,9 @@
     "reason_for_missing_test": "Maps into CrosSettings"
   },
 
-  "WebRestrictionsAuthority": {},
+  "WebRestrictionsAuthority": {
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+  },
 
   "TaskManagerEndProcessEnabled": {
     "os": ["win", "linux", "mac", "chromeos"],
@@ -5901,17 +6053,14 @@
   },
 
   "DeviceSecondFactorAuthentication": {
-    "os": [
-      "chromeos"
-    ]
+    "reason_for_missing_test": "Maps into CrosSettings"
   },
 
   "DeviceEcryptfsMigrationStrategy": {
-    "note": "This policy is deprecated and removed since Chrome 61."
+    "reason_for_missing_test": "Policy was removed"
   },
 
   "NoteTakingAppsLockScreenWhitelist": {
-    "note": "This policy is deprecated, see http://crbug.com/1095910.",
     "os": ["chromeos"],
     "policy_pref_mapping_tests": [
       {
@@ -5952,17 +6101,7 @@
   },
 
   "DeviceNativePrinters": {
-    "os": ["chromeos"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DeviceNativePrinters": {
-            "url": "https://example.com/policyfile",
-            "hash": "deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef"
-          }
-        }
-      }
-    ]
+    "reason_for_missing_test": "TODO(crbug.com/1213475) external data policy not supported yet"
   },
 
   "DeviceNativePrintersAccessMode": {
@@ -5978,17 +6117,7 @@
   },
 
   "DeviceExternalPrintServers": {
-    "os": ["chromeos"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DeviceExternalPrintServers": {
-            "url": "https://example.com/policyfile",
-            "hash": "deadbeefdeadbeefdeadbeef"
-          }
-        }
-      }
-    ]
+    "reason_for_missing_test": "TODO(crbug.com/1213475) external data policy not supported yet"
   },
 
   "DeviceExternalPrintServersAllowlist": {
@@ -6007,17 +6136,7 @@
   },
 
   "DevicePrinters": {
-    "os": ["chromeos"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DevicePrinters": {
-            "url": "https://example.com/policyfile",
-            "hash": "deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef"
-          }
-        }
-      }
-    ]
+    "reason_for_missing_test": "TODO(crbug.com/1213475) external data policy not supported yet"
   },
 
   "DevicePrintersAccessMode": {
@@ -6037,7 +6156,7 @@
   },
 
   "MinimumRequiredChromeVersion": {
-    "note": "This policy is deprecated in M82 and doesn't map to a pref value anymore."
+    "reason_for_missing_test": "Policy was removed"
   },
 
   "DeviceMinimumVersion": {
@@ -6048,7 +6167,9 @@
     "reason_for_missing_test": "Maps into CrosSettings"
   },
 
-  "DeviceLoginScreenAutoSelectCertificateForUrls": {},
+  "DeviceLoginScreenAutoSelectCertificateForUrls": {
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+  },
 
   "UnaffiliatedArcAllowed": {
     "reason_for_missing_test": "Maps into CrosSettings"
@@ -6069,14 +6190,7 @@
   },
 
   "DeviceQuickFixBuildToken": {
-    "os": ["chromeos"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DeviceQuickFixBuildToken": "sometoken"
-        }
-      }
-    ]
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
   },
 
   "AbusiveExperienceInterventionEnforce": {
@@ -6117,70 +6231,44 @@
     ]
   },
 
-  "RestrictAccountsToPatterns": {},
+  "RestrictAccountsToPatterns": {
+    "reason_for_missing_test": "Policy was removed"
+  },
 
-  "PasswordProtectionWarningTrigger": {},
+  "PasswordProtectionWarningTrigger": {
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+  },
 
   "DeviceOffHours": {
-    "os": ["chromeos"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DeviceOffHours": {
-            "intervals": [
-              {
-                "start": {
-                  "day_of_week": 1,
-                  "time": 12840000
-                },
-                "end": {
-                  "day_of_week": 1,
-                  "time": 21720000
-                }
-              }
-            ],
-            "timezone": "GMT",
-            "ignored_policy_proto_tags": [
-              8,
-              3
-            ]
-          }
-        }
-      }
-    ]
+    "reason_for_missing_test": "Maps into CrosSettings"
   },
 
   "DeviceKerberosEncryptionTypes": {
-    "os": ["chromeos"],
-    "note": "Chrome OS device policy used by authpolicyd only, not used in Chrome"
+    "reason_for_missing_test": "Chrome OS device policy used by authpolicyd only, not used in Chrome"
   },
 
   "DeviceUserPolicyLoopbackProcessingMode": {
-    "os": ["chromeos"],
-    "note": "Chrome OS device policy used by authpolicyd only, not used in Chrome"
+    "reason_for_missing_test": "Chrome OS device policy used by authpolicyd only, not used in Chrome"
   },
 
   "DeviceMachinePasswordChangeRate": {
-    "os": ["chromeos"],
-    "note": "Chrome OS device policy used by authpolicyd only, not used in Chrome"
+    "reason_for_missing_test": "Chrome OS device policy used by authpolicyd only, not used in Chrome"
   },
 
   "DeviceGpoCacheLifetime": {
-    "os": ["chromeos"],
-    "note": "Chrome OS device policy used by authpolicyd only, not used in Chrome"
+    "reason_for_missing_test": "Chrome OS device policy used by authpolicyd only, not used in Chrome"
   },
 
   "DeviceAuthDataCacheLifetime": {
-    "os": ["chromeos"],
-    "note": "Chrome OS device policy used by authpolicyd only, not used in Chrome"
+    "reason_for_missing_test": "Chrome OS device policy used by authpolicyd only, not used in Chrome"
   },
 
   "DeviceLoginScreenIsolateOrigins": {
-    "note": "This policy has been removed in Chrome 77, see https://crbug.com/964068 ."
+    "reason_for_missing_test": "Policy was removed"
   },
 
   "DeviceLoginScreenSitePerProcess": {
-    "note": "This policy has been removed in Chrome 77, see https://crbug.com/964068 ."
+    "reason_for_missing_test": "Policy was removed"
   },
 
   "VirtualMachinesAllowed": {
@@ -6228,17 +6316,7 @@
   },
 
   "CrostiniAnsiblePlaybook": {
-    "os": ["chromeos"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "CrostiniAnsiblePlaybook": {
-            "url": "https://example.com/ansibleplaybook",
-            "hash": "deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef"
-          }
-        }
-      }
-    ]
+    "reason_for_missing_test": "TODO(crbug.com/1213475) external data policy not supported yet"
   },
 
   "CrostiniArcAdbSideloadingAllowed": {
@@ -6266,28 +6344,15 @@
   },
 
   "DeviceCrostiniArcAdbSideloadingAllowed": {
-    "os": ["chromeos"],
-    "policy_pref_mapping_tests": []
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
   },
 
-  "DeviceSamlLoginAuthenticationType": {},
+  "DeviceSamlLoginAuthenticationType": {
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+  },
 
   "DeviceScheduledUpdateCheck": {
-    "os": ["chromeos"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DeviceScheduledUpdateCheck": {
-            "update_check_time": {
-              "hour": 23,
-              "minute": 35
-            },
-            "frequency": "WEEKLY",
-            "day_of_week": "MONDAY"
-          }
-        }
-      }
-    ]
+    "reason_for_missing_test": "Maps into CrosSettings"
   },
 
   "ChromeCleanupEnabled": {
@@ -6338,9 +6403,13 @@
     ]
   },
 
-  "PasswordProtectionLoginURLs": {},
+  "PasswordProtectionLoginURLs": {
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+  },
 
-  "PasswordProtectionChangePasswordURL": {},
+  "PasswordProtectionChangePasswordURL": {
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+  },
 
   "AutoplayAllowed": {
     "os": ["win", "linux", "mac", "chromeos"],
@@ -6397,7 +6466,7 @@
   },
 
   "TabUnderAllowed": {
-    "note": "This policy is deprecated and removed since Chrome 68."
+    "reason_for_missing_test": "Policy was removed"
   },
 
   "ArcAppInstallEventLoggingEnabled": {
@@ -6501,48 +6570,15 @@
   },
 
   "ContextualSuggestionsEnabled": {
-    "note": "This policy has been removed. See https://crbug.com/938050"
+    "reason_for_missing_test": "Policy was removed"
   },
 
   "DeviceAutoUpdateTimeRestrictions": {
-    "os": ["chromeos"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "UpdateTimeRestrictions": [
-            {
-              "start": {
-                "day_of_week": "Wednesday",
-                "minutes": 30,
-                "hours": 3
-              },
-              "end": {
-                "day_of_week": "Thursday",
-                "minutes": 20,
-                "hours": 13
-              }
-            },
-            {
-              "start": {
-                "day_of_week": "Monday",
-                "minutes": 45,
-                "hours": 1
-              },
-              "end": {
-                "day_of_week": "Monday",
-                "minutes": 50,
-                "hours": 15
-              }
-            }
-          ]
-        }
-      }
-    ]
+    "reason_for_missing_test": "Maps into CrosSettings"
   },
 
   "DeviceUpdateStagingSchedule": {
-    "os": ["chromeos"],
-    "note": "Chrome OS device policy used by update_engine only, not used in Chrome."
+    "reason_for_missing_test": "Chrome OS device policy used by update_engine only, not used in Chrome."
   },
 
   "ManagedConfigurationPerOrigin": {
@@ -6613,7 +6649,7 @@
   },
 
   "PluginVmLicenseKey": {
-    "note": "This policy has been removed since Chrome 94."
+    "reason_for_missing_test": "Policy was removed"
   },
 
   "ParentAccessCodeConfig": {
@@ -6699,7 +6735,7 @@
   },
 
   "VoiceInteractionQuickAnswersEnabled": {
-    "note": "This policy is deprecated."
+    "reason_for_missing_test": "Policy was removed"
   },
 
   "DeviceRebootOnUserSignout": {
@@ -6707,7 +6743,7 @@
   },
 
   "ForceNetworkInProcess": {
-    "note": "This policy is deprecated."
+    "reason_for_missing_test": "Policy was removed"
   },
 
   "DeviceWilcoDtcAllowed": {
@@ -6715,17 +6751,7 @@
   },
 
   "DeviceWilcoDtcConfiguration": {
-    "os": ["chromeos"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DeviceWilcoDtcCOnfiguration": {
-            "url": "https://example.com/wilcodtcconfiguration",
-            "hash": "deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef"
-          }
-        }
-      }
-    ]
+    "reason_for_missing_test": "TODO(crbug.com/1213475) external data policy not supported yet"
   },
 
   "DevicePowerPeakShiftEnabled": {
@@ -6979,7 +7005,6 @@
   },
 
   "PerAppTimeLimitsWhitelist" : {
-    "note": "This policy is deprecated, see http://crbug.com/1103812.",
     "os": ["chromeos"],
     "policy_pref_mapping_tests": [
       {
@@ -7172,25 +7197,41 @@
     "reason_for_missing_test": "Maps into CrosSettings"
   },
 
-  "DeviceDebugPacketCaptureAllowed": {},
+  "DeviceDebugPacketCaptureAllowed": {
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+  },
 
-  "----- Chrome Frame policies -------------------------------------------": {},
+  "ChromeFrameRendererSettings": {
+    "reason_for_missing_test": "Policy was removed"
+  },
 
-  "ChromeFrameRendererSettings": {},
+  "RenderInChromeFrameList": {
+    "reason_for_missing_test": "Policy was removed"
+  },
 
-  "RenderInChromeFrameList": {},
+  "RenderInHostList": {
+    "reason_for_missing_test": "Policy was removed"
+  },
 
-  "RenderInHostList": {},
+  "ChromeFrameContentTypes": {
+    "reason_for_missing_test": "Policy was removed"
+  },
 
-  "ChromeFrameContentTypes": {},
+  "GCFUserDataDir": {
+    "reason_for_missing_test": "Policy was removed"
+  },
 
-  "GCFUserDataDir": {},
+  "AdditionalLaunchParameters": {
+    "reason_for_missing_test": "Policy was removed"
+  },
 
-  "AdditionalLaunchParameters": {},
+  "SuppressChromeFrameTurndownPrompt": {
+    "reason_for_missing_test": "Policy was removed"
+  },
 
-  "SuppressChromeFrameTurndownPrompt": {},
-
-  "SkipMetadataCheck": {},
+  "SkipMetadataCheck": {
+    "reason_for_missing_test": "Policy was removed"
+  },
 
   "ArcBackupRestoreServiceEnabled": {
     "os": ["chromeos"],
@@ -7223,23 +7264,37 @@
         "policies": {
           "SafeSitesFilterBehavior": 0
         },
-        "note": "prefs cannot be tested here as the code where the pref will be registered is not yet ready."
+        "prefs": {
+          "policy.safe_sites_filter_behavior": {
+            "value": 0
+          }
+        }
       }
     ]
   },
 
-  "ReportVersionData": {},
+  "ReportVersionData": {
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+  },
 
-  "ReportPolicyData": {},
+  "ReportPolicyData": {
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+  },
 
-  "ReportMachineIDData": {},
+  "ReportMachineIDData": {
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+  },
 
-  "ReportUserIDData": {},
+  "ReportUserIDData": {
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+  },
 
-  "ReportExtensionsAndPluginsData": {},
+  "ReportExtensionsAndPluginsData": {
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+  },
 
   "ReportSafeBrowsingData": {
-    "note": "This policy has been removed. See https://bugs.chromium.org/p/chromium/issues/detail?id=1083085"
+    "reason_for_missing_test": "Policy was removed"
   },
 
   "CloudExtensionRequestEnabled": {
@@ -7323,7 +7378,6 @@
   },
 
   "CloudReportingEnabled": {
-    "note": "TODO(http://crbug.com/1141521): enable this policy test on Android",
     "os": ["win", "linux", "mac", "chromeos"],
     "policy_pref_mapping_tests": [
       {
@@ -7333,6 +7387,10 @@
         "prefs": { "enterprise_reporting.chrome_cloud_reporting": { "location": "local_state" } }
       }
     ]
+  },
+  "CloudReportingEnabled.Android": {
+    "os": ["android"],
+    "reason_for_missing_test": "TODO(http://crbug.com/1141521): enable this policy test on Android"
   },
 
   "VpnConfigAllowed": {
@@ -7455,7 +7513,7 @@
   },
 
   "BrowserSwitcherExternalGreylistUrl": {
-    "os": [],
+    "os": ["win", "linux", "mac"],
     "policy_pref_mapping_tests": [
       {
         "policies": {
@@ -7763,19 +7821,19 @@
   },
 
   "TLS13HardeningForLocalAnchorsEnabled": {
-    "note": "This policy is retired, see https://crbug.com/1012400."
+    "reason_for_missing_test": "Policy was removed"
   },
 
   "CorsMitigationList": {
-    "note": "This policy has been removed, as of M84."
+    "reason_for_missing_test": "Policy was removed"
   },
 
   "CorsLegacyModeEnabled": {
-    "note": "This policy has been removed, as of M84."
+    "reason_for_missing_test": "Policy was removed"
   },
 
   "StricterMixedContentTreatmentEnabled" : {
-    "note": "This policy has been removed, as of M85."
+    "reason_for_missing_test": "Policy was removed"
   },
   "UserDataSnapshotRetentionLimit" : {
     "os": ["win", "linux", "mac"],
@@ -7819,7 +7877,7 @@
     ]
   },
   "AdvancedProtectionDeepScanningEnabled": {
-    "note": "This policy was replaced with AdvancedProtectionAllowed in M82"
+    "reason_for_missing_test": "Policy was removed"
   },
   "AdvancedProtectionAllowed": {
     "os": ["win", "linux", "mac", "chromeos"],
@@ -7857,7 +7915,9 @@
       }
     ]
   },
-  "TabFreezingEnabled":  {},
+  "TabFreezingEnabled":  {
+    "reason_for_missing_test": "Polic was removed"
+  },
   "AccessibilityImageLabelsEnabled": {
     "os": ["win", "linux", "mac", "chromeos"],
     "policy_pref_mapping_tests": [
@@ -7951,7 +8011,6 @@
     "reason_for_missing_test": "Maps into CrosSettings"
   },
   "BackForwardCacheEnabled": {
-    "note": "TODO(http://crbug.com/1141521): enable this policy test on Android",
     "policy_pref_mapping_tests": [
       {
         "policies": { "BackForwardCacheEnabled": true },
@@ -7964,8 +8023,12 @@
       }
     ]
   },
+  "BackForwardCacheEnabled.Android": {
+    "os": ["android"],
+    "reason_for_missing_test": "TODO(http://crbug.com/1141521): enable this policy test on Android"
+  },
   "CCTToSDialogEnabled": {
-    "note": "This policy has been removed. See https://crbug.com/1141198"
+    "reason_for_missing_test": "Policy was removed"
   },
   "TosDialogBehavior": {
     "os": ["android"],
@@ -8153,7 +8216,7 @@
     ]
   },
   "MediaRecommendationsEnabled": {
-    "note": "This policy has been removed since Chrome 89."
+    "reason_for_missing_test": "Policy was removed"
   },
   "EduCoexistenceToSVersion": {
     "os": ["chromeos"],
@@ -8165,7 +8228,6 @@
     ]
   },
   "BrowsingDataLifetime": {
-    "note": "TODO(http://crbug.com/1141521): enable this policy test on Android",
     "os": ["win", "linux", "mac", "chromeos"],
     "policy_pref_mapping_tests": [
       {
@@ -8173,6 +8235,10 @@
         "prefs": { "browser.clear_data.browsing_data_lifetime": { "value": [{"data_types": ["browsing_history"], "time_to_live_in_hours": 2}]} }
       }
     ]
+  },
+  "BrowsingDataLifetime.Android": {
+    "os": ["android"],
+    "reason_for_missing_test": "TODO(http://crbug.com/1141521): enable this policy test on Android"
   },
   "LacrosAllowed": {
     "os": ["chromeos"],
@@ -8186,18 +8252,9 @@
     ]
   },
   "IntegratedWebAuthenticationAllowed": {
-    "os": ["chromeos"],
-    "policy_pref_mapping_test": [
-      {
-        "policies": { "IntegratedWebAuthenticationAllowed": false },
-        "prefs": {
-          "auth.integrated_web_authentication_allowed": { "local_state": true }
-        }
-      }
-    ]
+    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
   },
   "ClearBrowsingDataOnExitList": {
-    "note": "TODO(http://crbug.com/1141521): enable this policy test on Android",
     "os": ["win", "linux", "mac", "chromeos"],
     "policy_pref_mapping_tests": [
       {
@@ -8205,6 +8262,10 @@
         "prefs": { "browser.clear_data.clear_on_exit": { "value": ["browsing_history"]}}
       }
     ]
+  },
+  "ClearBrowsingDataOnExitList.Android": {
+    "os": ["android"],
+    "reason_for_missing_test": "TODO(http://crbug.com/1141521): enable this policy test on Android"
   },
   "ProfilePickerOnStartupAvailability": {
     "os": ["win", "linux", "mac"],
@@ -8227,7 +8288,7 @@
     ]
   },
   "BrowserLabsEnabled": {
-    "os": ["win", "linux", "mac"],
+    "os": ["win", "linux", "mac", "chromeos"],
     "policy_pref_mapping_tests":[
       {
         "policies": {"BrowserLabsEnabled": false},
@@ -8236,7 +8297,8 @@
     ]
   },
   "WebXRImmersiveArEnabled": {
-    "note": "TODO(http://crbug.com/1141521): enable this policy test on Android",
+    "os": ["android"],
+    "reason_for_missing_test": "TODO(http://crbug.com/1141521): enable this policy test on Android",
     "policy_pref_mapping_tests": [
       {
         "policies": {
@@ -8351,7 +8413,7 @@
   },
   "SuppressDifferentOriginSubframeDialogs": {
     "os": ["win", "linux", "mac", "chromeos", "android"],
-    "policy_pref_mapping_test": [
+    "policy_pref_mapping_tests": [
       {
         "policies": { "SuppressDifferentOriginSubframeDialogs": true },
         "prefs": { "suppress_different_origin_subframe_js_dialogs": {} }
@@ -8440,12 +8502,16 @@
   },
   "ExplicitlyAllowedNetworkPorts": {
     "os": ["win", "linux", "mac", "chromeos", "android"],
-    "policy_pref_mapping_test": [
+    "policy_pref_mapping_tests": [
       {
-        "policies": { "ExplicitlyAllowedNetworkPorts": "554,10080" },
+        "policies": {
+          "ExplicitlyAllowedNetworkPorts": ["554", "10080" ]
+        },
         "prefs": {
-          "net.explicitly_allowed_network_ports": "10080",
-          "location": "local_state"
+          "net.explicitly_allowed_network_ports": {
+            "value": [554, 10080],
+            "location": "local_state"
+          }
         }
       }
     ]
@@ -8523,7 +8589,7 @@
     ]
   },
   "CloudUserPolicyMerge": {
-    "note": "This policy has no pref as it is only directly read by the policy system."
+    "reason_for_missing_test": "This policy has no pref as it is only directly read by the policy system."
   },
 
   "ManagedAccountsSigninRestriction": {
@@ -8599,5 +8665,9 @@
         }
       }
     ]
+  },
+  "ManagedAccountsSigninRestriction.CrOS": {
+    "os": ["chromeos"],
+    "reason_for_missing_test": "TODO(crbug.com/1213429) future policy"
   }
 }
