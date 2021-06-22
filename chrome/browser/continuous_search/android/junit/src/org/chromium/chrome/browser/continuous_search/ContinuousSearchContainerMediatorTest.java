@@ -282,23 +282,40 @@ public class ContinuousSearchContainerMediatorTest {
         updateBrowserControlParamsAndAssertModel(DEFAULT_CONTAINER_HEIGHT + JAVA_HEIGHT, 0, true, 0,
                 DEFAULT_CONTAINER_HEIGHT, true, View.VISIBLE);
 
+        CallbackHelper heightObserverCallback = new CallbackHelper();
+        HeightObserver heightObserver = (result, animate) -> {
+            Assert.assertEquals(
+                    "Height provided by mediator doesn't match java height.", 0, result);
+            Assert.assertFalse("Height change shouldn't be animated", animate);
+            heightObserverCallback.notifyCalled();
+        };
+        mMediator.addHeightObserver(heightObserver);
         mMediator.updateTabObscured(true);
-        Assert.assertTrue("Tab obscurity shouldn't change mMediator.mIsVisible.",
-                mMediator.isVisibleForTesting());
-        Assert.assertTrue("Composited view should be visible.",
-                mModel.get(ContinuousSearchContainerProperties.COMPOSITED_VIEW_VISIBLE));
-        Assert.assertEquals("Android view should be View.INVISIBLE when tab is obscured.",
-                View.INVISIBLE,
-                mModel.get(ContinuousSearchContainerProperties.ANDROID_VIEW_VISIBILITY));
+        mMediator.removeHeightObserver(heightObserver);
+        Assert.assertEquals(
+                "Height observer should've been called.", 1, heightObserverCallback.getCallCount());
+        updateBrowserControlParamsAndAssertModel(DEFAULT_CONTAINER_HEIGHT, 0, false,
+                -DEFAULT_CONTAINER_HEIGHT, -0, false, View.INVISIBLE);
 
-        mMediator.updateTabObscured(false);
-        Assert.assertTrue("Tab obscurity shouldn't change mMediator.mIsVisible.",
+        Assert.assertFalse("Tab obscurity should change mMediator.mIsVisible.",
                 mMediator.isVisibleForTesting());
-        Assert.assertTrue("Composited view should be visible.",
-                mModel.get(ContinuousSearchContainerProperties.COMPOSITED_VIEW_VISIBLE));
-        Assert.assertEquals("Android view should be View.VISIBLE when tab is not obscured",
-                View.VISIBLE,
-                mModel.get(ContinuousSearchContainerProperties.ANDROID_VIEW_VISIBILITY));
+
+        heightObserver = (result, animate) -> {
+            Assert.assertEquals(
+                    "Height provided by mediator doesn't match java height.", JAVA_HEIGHT, result);
+            Assert.assertFalse("Height change shouldn't be animated", animate);
+            heightObserverCallback.notifyCalled();
+        };
+        mMediator.addHeightObserver(heightObserver);
+        mMediator.updateTabObscured(false);
+        mMediator.removeHeightObserver(heightObserver);
+        Assert.assertEquals(
+                "Height observer should've been called.", 2, heightObserverCallback.getCallCount());
+        updateBrowserControlParamsAndAssertModel(DEFAULT_CONTAINER_HEIGHT + JAVA_HEIGHT, 0, true, 0,
+                DEFAULT_CONTAINER_HEIGHT, true, View.VISIBLE);
+
+        Assert.assertTrue("Tab obscurity should change mMediator.mIsVisible.",
+                mMediator.isVisibleForTesting());
     }
 
     /**
@@ -307,42 +324,74 @@ public class ContinuousSearchContainerMediatorTest {
      */
     @Test
     public void testTabObscured_whileAnimating() {
+        // Start the animation.
         triggerShow();
 
-        mMediator.updateTabObscured(true);
-        // When tab is obscured, Android view should be View.INVISIBLE and composited view should
-        // be invisible.
-
-        // State 1. All top controls are offset-ed above the screen.
-        updateBrowserControlParamsAndAssertModel(DEFAULT_CONTAINER_HEIGHT + JAVA_HEIGHT, 0, true,
-                -(DEFAULT_CONTAINER_HEIGHT + JAVA_HEIGHT), -JAVA_HEIGHT, false, View.INVISIBLE);
-
-        // State 2. Top controls are half-visible.
-        updateBrowserControlParamsAndAssertModel(DEFAULT_CONTAINER_HEIGHT + JAVA_HEIGHT, 0, true,
-                -(DEFAULT_CONTAINER_HEIGHT + JAVA_HEIGHT) / 2,
-                (DEFAULT_CONTAINER_HEIGHT - JAVA_HEIGHT) / 2, false, View.INVISIBLE);
-
-        // State 3. Top controls are fully visible.
-        updateBrowserControlParamsAndAssertModel(DEFAULT_CONTAINER_HEIGHT + JAVA_HEIGHT, 0, true, 0,
-                DEFAULT_CONTAINER_HEIGHT, false, View.INVISIBLE);
-
-        // ===========================================
-        mMediator.updateTabObscured(false);
-        // Tab is no longer is obscured. Android view should be View.GONE and composited view should
-        // be visible during animation.
-
-        // State 1. All top controls are offset-ed above the screen.
-        updateBrowserControlParamsAndAssertModel(DEFAULT_CONTAINER_HEIGHT + JAVA_HEIGHT, 0, true,
-                -(DEFAULT_CONTAINER_HEIGHT + JAVA_HEIGHT), -JAVA_HEIGHT, false, View.GONE);
-
-        // State 2. Top controls are half-visible.
+        // Pretend the animation is half started.
         updateBrowserControlParamsAndAssertModel(DEFAULT_CONTAINER_HEIGHT + JAVA_HEIGHT, 0, true,
                 -(DEFAULT_CONTAINER_HEIGHT + JAVA_HEIGHT) / 2,
                 (DEFAULT_CONTAINER_HEIGHT - JAVA_HEIGHT) / 2, true, View.GONE);
 
-        // State 3. Top controls are fully visible.
+        // Obscure the tab. This will cancel the current animation and set the height to 0.
+        CallbackHelper heightObserverCallback = new CallbackHelper();
+        HeightObserver heightObserver = (result, animate) -> {
+            Assert.assertEquals(
+                    "Height provided by mediator doesn't match java height.", 0, result);
+            Assert.assertFalse("Height change shouldn't be animated", animate);
+            heightObserverCallback.notifyCalled();
+        };
+        mMediator.addHeightObserver(heightObserver);
+        mMediator.updateTabObscured(true);
+        mMediator.removeHeightObserver(heightObserver);
+        Assert.assertEquals(
+                "Height observer should've been called.", 1, heightObserverCallback.getCallCount());
+        updateBrowserControlParamsAndAssertModel(DEFAULT_CONTAINER_HEIGHT, 0, false,
+                -DEFAULT_CONTAINER_HEIGHT, -0, false, View.INVISIBLE);
+
+        Assert.assertFalse("Tab obscurity should change mMediator.mIsVisible.",
+                mMediator.isVisibleForTesting());
+
+        heightObserver = (result, animate) -> {
+            Assert.assertEquals(
+                    "Height provided by mediator doesn't match java height.", JAVA_HEIGHT, result);
+            Assert.assertFalse("Height change shouldn't be animated", animate);
+            heightObserverCallback.notifyCalled();
+        };
+        mMediator.addHeightObserver(heightObserver);
+        mMediator.updateTabObscured(false);
+        mMediator.removeHeightObserver(heightObserver);
+        Assert.assertEquals(
+                "Height observer should've been called.", 2, heightObserverCallback.getCallCount());
         updateBrowserControlParamsAndAssertModel(DEFAULT_CONTAINER_HEIGHT + JAVA_HEIGHT, 0, true, 0,
                 DEFAULT_CONTAINER_HEIGHT, true, View.VISIBLE);
+
+        Assert.assertTrue("Tab obscurity should change mMediator.mIsVisible.",
+                mMediator.isVisibleForTesting());
+
+        // Now do this opposite for hide.
+        triggerHide();
+
+        // TODO(crbug/1184913): Show/hide animations driven by native and mid-state animation is
+        // difficult to simulate due to some existing bugs. Update this when that behavior is fixed.
+        updateBrowserControlParamsAndAssertModel(
+                DEFAULT_CONTAINER_HEIGHT, 0, true, 0, DEFAULT_CONTAINER_HEIGHT, false, View.GONE);
+
+        // This should no-op as the view is no longer visible.
+        heightObserver = (result, animate) -> {
+            heightObserverCallback.notifyCalled();
+        };
+        mMediator.addHeightObserver(heightObserver);
+        mMediator.updateTabObscured(true);
+        mMediator.removeHeightObserver(heightObserver);
+        Assert.assertEquals("Height observer shouldn't have been called.", 2,
+                heightObserverCallback.getCallCount());
+
+        // This should no-op as the view is no longer visible.
+        mMediator.addHeightObserver(heightObserver);
+        mMediator.updateTabObscured(false);
+        mMediator.removeHeightObserver(heightObserver);
+        Assert.assertEquals("Height observer shouldn't have been called.", 2,
+                heightObserverCallback.getCallCount());
     }
 
     private void triggerShow() {

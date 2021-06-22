@@ -36,6 +36,7 @@ class ContinuousSearchContainerMediator implements BrowserControlsStateProvider.
     private Runnable mOnFinishedHide;
     private boolean mInitialized;
     private boolean mIsVisible;
+    private boolean mWantVisible;
     private boolean mIsTabObscured;
     private int mJavaLayoutHeight;
 
@@ -65,8 +66,13 @@ class ContinuousSearchContainerMediator implements BrowserControlsStateProvider.
         mIsTabObscured = isObscured;
         if (mModel == null) return;
 
-        mModel.set(ContinuousSearchContainerProperties.ANDROID_VIEW_VISIBILITY,
-                !mIsTabObscured && mIsVisible ? View.VISIBLE : View.INVISIBLE);
+        // Avoid showing on unobscure if the UI should be hidden.
+        if (!mWantVisible && !isObscured) return;
+
+        // Avoid obscuring if already in the correct state.
+        if (mIsVisible == !isObscured) return;
+
+        updateVisibility(!isObscured, true);
     }
 
     /**
@@ -75,6 +81,7 @@ class ContinuousSearchContainerMediator implements BrowserControlsStateProvider.
      */
     void show() {
         mOnFinishedHide = null;
+        mWantVisible = true;
 
         if (mIsVisible) return;
 
@@ -83,7 +90,7 @@ class ContinuousSearchContainerMediator implements BrowserControlsStateProvider.
         if (mJavaLayoutHeight == 0) {
             mRequestLayout.run();
         } else {
-            updateVisibility(true);
+            updateVisibility(true, false);
         }
     }
 
@@ -93,23 +100,24 @@ class ContinuousSearchContainerMediator implements BrowserControlsStateProvider.
      */
     void hide(Runnable onFinishedHide) {
         mOnFinishedHide = onFinishedHide;
+        mWantVisible = false;
 
         if (!mInitialized || !mIsVisible) {
             runOnFinishedHide();
             return;
         }
 
-        updateVisibility(false);
+        updateVisibility(false, false);
     }
 
     void setJavaHeight(int javaHeight) {
         if (mJavaLayoutHeight > 0 || javaHeight <= 0) return;
 
         mJavaLayoutHeight = javaHeight;
-        updateVisibility(true);
+        updateVisibility(true, false);
     }
 
-    private void updateVisibility(boolean isVisible) {
+    private void updateVisibility(boolean isVisible, boolean forceNoAnimation) {
         mIsVisible = isVisible;
         mBrowserControlsStateProvider.addObserver(this);
         if (isVisible) {
@@ -118,7 +126,7 @@ class ContinuousSearchContainerMediator implements BrowserControlsStateProvider.
 
         for (HeightObserver observer : mObservers) {
             observer.onHeightChange(isVisible ? mJavaLayoutHeight : 0,
-                    mLayoutStateProvider.isLayoutVisible(LayoutType.BROWSING));
+                    !forceNoAnimation && mLayoutStateProvider.isLayoutVisible(LayoutType.BROWSING));
         }
     }
 
