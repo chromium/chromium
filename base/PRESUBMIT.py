@@ -8,6 +8,10 @@ See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details on the presubmit API built into depot_tools.
 """
 
+
+USE_PYTHON3 = True
+
+
 def _CheckNoInterfacesInBase(input_api, output_api):
   """Checks to make sure no files in libbase.a have |@interface|."""
   pattern = input_api.re.compile(r'^\s*@interface', input_api.re.MULTILINE)
