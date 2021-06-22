@@ -19,6 +19,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Feature;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.toolbar.R;
@@ -26,6 +27,7 @@ import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures.Adap
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarPrefs;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarStatePredictor;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -34,6 +36,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
  * Tests for {@link AdaptiveToolbarPreferenceFragment}.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION})
 public class AdaptiveToolbarPreferenceFragmentTest {
     @Rule
     public SettingsActivityTestRule<AdaptiveToolbarPreferenceFragment> mSettingsActivityTestRule =

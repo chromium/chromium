@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarStatePredictor.UiState;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 
 /** Unit tests for the {@code AdaptiveToolbarStatePredictor} */
@@ -41,6 +42,20 @@ public class AdaptiveToolbarStatePredictorTest {
     @After
     public void tearDown() {
         AdaptiveToolbarFeatures.clearParsedParamsForTesting();
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION})
+    public void testDisableFeature() {
+        AdaptiveToolbarFeatures.setDefaultSegmentForTesting(AdaptiveToolbarFeatures.SHARE);
+        AdaptiveToolbarFeatures.setIgnoreSegmentationResultsForTesting(false);
+
+        AdaptiveToolbarStatePredictor statePredictor = buildStatePredictor(
+                true, AdaptiveToolbarButtonVariant.VOICE, true, AdaptiveToolbarButtonVariant.SHARE);
+        UiState expected = new UiState(false, AdaptiveToolbarButtonVariant.UNKNOWN,
+                AdaptiveToolbarButtonVariant.UNKNOWN, AdaptiveToolbarButtonVariant.UNKNOWN);
+        statePredictor.recomputeUiState(verifyResultCallback(expected));
     }
 
     @Test

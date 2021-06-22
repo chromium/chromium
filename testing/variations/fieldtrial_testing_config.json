@@ -5572,8 +5572,7 @@
                         "mode": "always-new-tab"
                     },
                     "enable_features": [
-                        "AdaptiveButtonInTopToolbar",
-                        "AdaptiveButtonInTopToolbarCustomization"
+                        "AdaptiveButtonInTopToolbar"
                     ]
                 },
                 {
@@ -5582,8 +5581,7 @@
                         "mode": "always-share"
                     },
                     "enable_features": [
-                        "AdaptiveButtonInTopToolbar",
-                        "AdaptiveButtonInTopToolbarCustomization"
+                        "AdaptiveButtonInTopToolbar"
                     ]
                 },
                 {
@@ -5592,8 +5590,7 @@
                         "mode": "always-voice"
                     },
                     "enable_features": [
-                        "AdaptiveButtonInTopToolbar",
-                        "AdaptiveButtonInTopToolbarCustomization"
+                        "AdaptiveButtonInTopToolbar"
                     ]
                 },
                 {
