@@ -83,10 +83,27 @@ void IntRect::Intersect(const IntRect& other) {
     bottom = 0;
   }
 
-  location_.SetX(left);
-  location_.SetY(top);
-  size_.SetWidth(base::ClampSub(right, left));
-  size_.SetHeight(base::ClampSub(bottom, top));
+  SetLocationAndSizeFromEdges(left, top, right, bottom);
+}
+
+bool IntRect::InclusiveIntersect(const IntRect& other) {
+  int left = std::max(X(), other.X());
+  int top = std::max(Y(), other.Y());
+  int right = std::min(MaxX(), other.MaxX());
+  int bottom = std::min(MaxY(), other.MaxY());
+
+  // Return a clean empty rectangle for non-intersecting cases.
+  if (left > right || top > bottom) {
+    left = 0;
+    top = 0;
+    right = 0;
+    bottom = 0;
+    SetLocationAndSizeFromEdges(left, top, right, bottom);
+    return false;
+  }
+
+  SetLocationAndSizeFromEdges(left, top, right, bottom);
+  return true;
 }
 
 void IntRect::Unite(const IntRect& other) {
@@ -119,10 +136,7 @@ void IntRect::UniteEvenIfEmpty(const IntRect& other) {
   int right = std::max(MaxX(), other.MaxX());
   int bottom = std::max(MaxY(), other.MaxY());
 
-  location_.SetX(left);
-  location_.SetY(top);
-  size_.SetWidth(base::ClampSub(right, left));
-  size_.SetHeight(base::ClampSub(bottom, top));
+  SetLocationAndSizeFromEdges(left, top, right, bottom);
 }
 
 void IntRect::Scale(float s) {
@@ -165,6 +179,39 @@ IntRect UnionRectEvenIfEmpty(const Vector<IntRect>& rects) {
     result.UniteEvenIfEmpty(rects[i]);
 
   return result;
+}
+
+IntRect MaximumCoveredRect(const IntRect& a, const IntRect& b) {
+  // Check a or b by itself.
+  IntRect maximum(a);
+  auto maximum_area = a.Size().Area();
+  if (b.Size().Area() > maximum_area) {
+    maximum = b;
+    maximum_area = b.Size().Area();
+  }
+  // Check the regions that include the intersection of a and b. This can be
+  // done by taking the intersection and expanding it vertically and
+  // horizontally. These expanded intersections will both still be covered by
+  // a or b.
+  IntRect intersection = a;
+  intersection.InclusiveIntersect(b);
+  if (!intersection.Size().IsZero()) {
+    IntRect vert_expanded_intersection(intersection);
+    vert_expanded_intersection.ShiftYEdgeTo(std::min(a.Y(), b.Y()));
+    vert_expanded_intersection.ShiftMaxYEdgeTo(std::max(a.MaxY(), b.MaxY()));
+    if (vert_expanded_intersection.Size().Area() > maximum_area) {
+      maximum = vert_expanded_intersection;
+      maximum_area = vert_expanded_intersection.Size().Area();
+    }
+    IntRect horiz_expanded_intersection(intersection);
+    horiz_expanded_intersection.ShiftXEdgeTo(std::min(a.X(), b.X()));
+    horiz_expanded_intersection.ShiftMaxXEdgeTo(std::max(a.MaxX(), b.MaxX()));
+    if (horiz_expanded_intersection.Size().Area() > maximum_area) {
+      maximum = horiz_expanded_intersection;
+      maximum_area = horiz_expanded_intersection.Size().Area();
+    }
+  }
+  return maximum;
 }
 
 std::ostream& operator<<(std::ostream& ostream, const IntRect& rect) {

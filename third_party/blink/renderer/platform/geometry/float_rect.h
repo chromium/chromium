@@ -230,6 +230,10 @@ inline FloatRect UnionRect(const FloatRect& a, const FloatRect& b) {
 
 PLATFORM_EXPORT FloatRect UnionRect(const Vector<FloatRect>&);
 
+// Return a maximum rectangle in which any point is covered by either a or b.
+PLATFORM_EXPORT FloatRect MaximumCoveredRect(const FloatRect& a,
+                                             const FloatRect& b);
+
 inline FloatRect& operator+=(FloatRect& a, const FloatRect& b) {
   a.Move(b.X(), b.Y());
   a.SetWidth(a.Width() + b.Width());

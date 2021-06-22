@@ -282,4 +282,46 @@ TEST(FloatRectTest, InclusiveIntersect) {
   EXPECT_EQ(EnclosingIntRect(rect), IntRect());
 }
 
+TEST(FloatRectTest, MaximumCoveredRect) {
+  // X aligned and intersect: unite.
+  EXPECT_EQ(
+      FloatRect(10, 20, 30, 60),
+      MaximumCoveredRect(FloatRect(10, 20, 30, 40), FloatRect(10, 30, 30, 50)));
+  // X aligned and adjacent: unite.
+  EXPECT_EQ(
+      FloatRect(10, 20, 30, 90),
+      MaximumCoveredRect(FloatRect(10, 20, 30, 40), FloatRect(10, 60, 30, 50)));
+  // X aligned and separate: choose the bigger one.
+  EXPECT_EQ(
+      FloatRect(10, 61, 30, 50),
+      MaximumCoveredRect(FloatRect(10, 20, 30, 40), FloatRect(10, 61, 30, 50)));
+  // Y aligned and intersect: unite.
+  EXPECT_EQ(
+      FloatRect(10, 20, 60, 40),
+      MaximumCoveredRect(FloatRect(10, 20, 30, 40), FloatRect(30, 20, 40, 40)));
+  // Y aligned and adjacent: unite.
+  EXPECT_EQ(
+      FloatRect(10, 20, 70, 40),
+      MaximumCoveredRect(FloatRect(10, 20, 30, 40), FloatRect(40, 20, 40, 40)));
+  // Y aligned and separate: choose the bigger one.
+  EXPECT_EQ(
+      FloatRect(41, 20, 40, 40),
+      MaximumCoveredRect(FloatRect(10, 20, 30, 40), FloatRect(41, 20, 40, 40)));
+  // Get the biggest expanded intersection.
+  EXPECT_EQ(FloatRect(0, 0, 9, 19), MaximumCoveredRect(FloatRect(0, 0, 10, 10),
+                                                       FloatRect(0, 9, 9, 10)));
+  EXPECT_EQ(FloatRect(0, 0, 19, 9), MaximumCoveredRect(FloatRect(0, 0, 10, 10),
+                                                       FloatRect(9, 0, 10, 9)));
+  // Otherwise choose the bigger one.
+  EXPECT_EQ(
+      FloatRect(20, 30, 40, 50),
+      MaximumCoveredRect(FloatRect(10, 20, 30, 40), FloatRect(20, 30, 40, 50)));
+  EXPECT_EQ(
+      FloatRect(10, 20, 40, 50),
+      MaximumCoveredRect(FloatRect(10, 20, 40, 50), FloatRect(20, 30, 30, 40)));
+  EXPECT_EQ(
+      FloatRect(10, 20, 40, 50),
+      MaximumCoveredRect(FloatRect(10, 20, 40, 50), FloatRect(20, 30, 40, 50)));
+}
+
 }  // namespace blink

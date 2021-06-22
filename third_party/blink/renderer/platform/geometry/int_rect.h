@@ -148,6 +148,16 @@ class PLATFORM_EXPORT IntRect {
   }
 
   void Intersect(const IntRect&);
+
+  // Set this rect to be the intersection of itself and the argument rect
+  // using edge-inclusive geometry.  If the two rectangles overlap but the
+  // overlap region is zero-area (either because one of the two rectangles
+  // is zero-area, or because the rectangles overlap at an edge or a corner),
+  // the result is the zero-area intersection.  The return value indicates
+  // whether the two rectangle actually have an intersection, since checking
+  // the result for isEmpty() is not conclusive.
+  bool InclusiveIntersect(const IntRect&);
+
   void Unite(const IntRect&);
   void UniteIfNonZero(const IntRect&);
 
@@ -197,6 +207,13 @@ class PLATFORM_EXPORT IntRect {
   bool IsValid() const;
 
  private:
+  void SetLocationAndSizeFromEdges(int left, int top, int right, int bottom) {
+    location_.SetX(left);
+    location_.SetY(top);
+    size_.SetWidth(base::ClampSub(right, left));
+    size_.SetHeight(base::ClampSub(bottom, top));
+  }
+
   IntPoint location_;
   IntSize size_;
 };
@@ -222,6 +239,9 @@ inline IntRect UnionRectEvenIfEmpty(const IntRect& a, const IntRect& b) {
 }
 
 PLATFORM_EXPORT IntRect UnionRectEvenIfEmpty(const Vector<IntRect>&);
+
+// Return a maximum rectangle that is covered by the a or b.
+PLATFORM_EXPORT IntRect MaximumCoveredRect(const IntRect& a, const IntRect& b);
 
 constexpr IntRect SaturatedRect(const IntRect& r) {
   return IntRect(r.X(), r.Y(), base::ClampAdd(r.X(), r.Width()) - r.X(),
