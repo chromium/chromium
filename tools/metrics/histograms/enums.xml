@@ -6576,6 +6576,13 @@ others/histograms.xml -->
   <int value="2" label="IBAN"/>
 </enum>
 
+<enum name="AutofillVirtualCardManualFallbackBubbleResult">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="User closed bubble via corner X"/>
+  <int value="2" label="User did not interact with the bubble"/>
+  <int value="3" label="Bubble lost focus and was deactivated"/>
+</enum>
+
 <enum name="AutofillWalletAddressConversionType">
   <int value="0" label="Merged with existing local profile"/>
   <int value="1" label="Added as a new local profile"/>

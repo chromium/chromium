@@ -337,6 +337,24 @@ class AutofillMetrics {
     NUM_MANAGE_CARDS_PROMPT_METRICS
   };
 
+  // Metrics to measure user interaction with the virtual card manual fallback
+  // bubble after it has appeared upon unmasking and filling a virtual card.
+  enum class VirtualCardManualFallbackBubbleResultMetric {
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+
+    // The reason why the bubble is closed is not clear. Possible reason is the
+    // logging function is invoked before the closed reason is correctly set.
+    VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_RESULT_UNKNOWN = 0,
+    // The user explicitly closed the bubble with the close button or ESC.
+    VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_CLOSED = 1,
+    // The user did not interact with the bubble.
+    VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_NOT_INTERACTED = 2,
+    // The bubble lost focus and was deactivated.
+    VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LOST_FOCUS = 3,
+    kMaxValue = VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LOST_FOCUS,
+  };
+
   // Metrics measuring how well we predict field types.  These metric values are
   // logged for each field in a submitted form for:
   //     - the heuristic prediction
@@ -1179,6 +1197,10 @@ class AutofillMetrics {
   static void LogOfferNotificationInfoBarResultMetric(
       OfferNotificationInfoBarResultMetric metric);
   static void LogOfferNotificationInfoBarShown();
+  static void LogVirtualCardManualFallbackBubbleShown(bool is_reshow);
+  static void LogVirtualCardManualFallbackBubbleResultMetric(
+      VirtualCardManualFallbackBubbleResultMetric metric,
+      bool is_reshow);
 
   // Should be called when credit card scan is finished. |duration| should be
   // the time elapsed between launching the credit card scanner and getting back

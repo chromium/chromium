@@ -1232,6 +1232,23 @@ void AutofillMetrics::LogOfferNotificationInfoBarShown() {
 }
 
 // static
+void AutofillMetrics::LogVirtualCardManualFallbackBubbleShown(bool is_reshow) {
+  base::UmaHistogramBoolean("Autofill.VirtualCardManualFallbackBubble.Shown",
+                            is_reshow);
+}
+
+// static
+void AutofillMetrics::LogVirtualCardManualFallbackBubbleResultMetric(
+    VirtualCardManualFallbackBubbleResultMetric metric,
+    bool is_reshow) {
+  static const char first_show[] =
+      "Autofill.VirtualCardManualFallbackBubble.Result.FirstShow";
+  static const char reshows[] =
+      "Autofill.VirtualCardManualFallbackBubble.Result.Reshows";
+  base::UmaHistogramEnumeration(is_reshow ? reshows : first_show, metric);
+}
+
+// static
 void AutofillMetrics::LogSaveCardWithFirstAndLastNameOffered(bool is_local) {
   std::string histogram_name = "Autofill.SaveCardWithFirstAndLastNameOffered.";
   histogram_name += is_local ? "Local" : "Server";

@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "components/autofill/core/browser/autofill_metrics.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
@@ -130,11 +131,37 @@ bool VirtualCardManualFallbackBubbleControllerImpl::ShouldIconBeVisible()
 void VirtualCardManualFallbackBubbleControllerImpl::OnBubbleClosed(
     PaymentsBubbleClosedReason closed_reason) {
   set_bubble_view(nullptr);
+
+  // Log bubble result according to the closed reason.
+  AutofillMetrics::VirtualCardManualFallbackBubbleResultMetric metric;
+  switch (closed_reason) {
+    case PaymentsBubbleClosedReason::kClosed:
+      metric = AutofillMetrics::VirtualCardManualFallbackBubbleResultMetric::
+          VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_CLOSED;
+      break;
+    case PaymentsBubbleClosedReason::kNotInteracted:
+      metric = AutofillMetrics::VirtualCardManualFallbackBubbleResultMetric::
+          VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_NOT_INTERACTED;
+      break;
+    case PaymentsBubbleClosedReason::kLostFocus:
+      metric = AutofillMetrics::VirtualCardManualFallbackBubbleResultMetric::
+          VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LOST_FOCUS;
+      break;
+    default:
+      metric = AutofillMetrics::VirtualCardManualFallbackBubbleResultMetric::
+          VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_RESULT_UNKNOWN;
+      break;
+  }
+  AutofillMetrics::LogVirtualCardManualFallbackBubbleResultMetric(
+      metric, is_user_gesture_);
+
   UpdatePageActionIcon();
 }
 
 void VirtualCardManualFallbackBubbleControllerImpl::UpdateClipboard(
     const std::u16string& text) const {
+  // TODO(crbug.com/1196021): Add metrics for user interaction with manual
+  // fallback bubble UI elements.
   ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste).WriteText(text);
 }
 
@@ -169,6 +196,8 @@ void VirtualCardManualFallbackBubbleControllerImpl::DoShowBubble() {
                       ->ShowVirtualCardManualFallbackBubble(
                           web_contents(), this, is_user_gesture_));
   DCHECK(bubble_view());
+
+  AutofillMetrics::LogVirtualCardManualFallbackBubbleShown(is_user_gesture_);
 
   if (observer_for_test_)
     observer_for_test_->OnBubbleShown();
