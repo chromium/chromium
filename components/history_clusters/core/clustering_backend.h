@@ -19,7 +19,9 @@ class ClusteringBackend {
   virtual ~ClusteringBackend() = default;
 
   // The backend clusters `visits` and returns the results asynchronously via
-  // `callback`.
+  // `callback`. `visits` can be passed in arbitrary order, and the resulting
+  // clusters can be in arbitrary order too. Caller is responsible for sorting
+  // the output however they want it.
   virtual void GetClusters(
       ClustersCallback callback,
       const std::vector<history::AnnotatedVisit>& visits) = 0;

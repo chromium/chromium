@@ -104,6 +104,9 @@ class HistoryClustersService : public KeyedService {
  private:
   friend class HistoryClustersServiceTestApi;
 
+  using IncompleteVisitMap =
+      std::map<int64_t, IncompleteVisitContextAnnotations>;
+
   // This is a callback used for the `QueryMemories()` call from
   // `DoesQueryMatchAnyCluster()`. Populates the cluster keyword cache from the
   // clusters in `response`.
@@ -114,8 +117,7 @@ class HistoryClustersService : public KeyedService {
   // `VisitContextAnnotations`s are constructed stepwise; they're initially
   // placed in `incomplete_visit_context_annotations_` and saved to the history
   // database once completed (if persistence is enabled).
-  std::map<int64_t, IncompleteVisitContextAnnotations>
-      incomplete_visit_context_annotations_;
+  IncompleteVisitMap incomplete_visit_context_annotations_;
 
   // Non-owning pointer, but never nullptr.
   history::HistoryService* const history_service_;

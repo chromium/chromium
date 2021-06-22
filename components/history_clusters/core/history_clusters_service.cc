@@ -4,14 +4,17 @@
 
 #include "components/history_clusters/core/history_clusters_service.h"
 
+#include <algorithm>
 #include <numeric>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
+#include "base/memory/weak_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/memories_features.h"
 #include "components/history_clusters/core/remote_clustering_backend.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -54,11 +57,10 @@ std::vector<history::Cluster> FilterClustersMatchingQuery(
 }
 
 // TODO(manukh): Move mojom translation to `HistoryClustersHandler` once we've
-// created
-//  a mirror cpp struct the `MemoryService` can return instead. There's no need
-//  to do this yet, since the `HistoryClustersHandler` is the only consumer of
-//  `HistoryClustersService`, but once the omnibox comes into play, we'll need a
-//  common non-mojom response.
+//  created a mirror cpp struct the `MemoryService` can return instead. There's
+//  no need to do this yet, since the `HistoryClustersHandler` is the only
+//  consumer of `HistoryClustersService`, but once the omnibox comes into play,
+//  we'll need a common non-mojom response.
 // TODO(crbug.com/1179069): fill out the remaining Memories mojom fields.
 // Translate a `AnnotatedVisit` to `mojom::VisitPtr`.
 history_clusters::mojom::URLVisitPtr VisitToMojom(
@@ -92,11 +94,41 @@ std::vector<history_clusters::mojom::ClusterPtr> ClustersToMojom(
 // params meant to be used in a follow-up request. `query_params` are the params
 // used to get `clusters` from `QueryClusters()`.
 // TODO(tommycli): At the moment, the recency threshold of `query_params` is
-// ignored and continuation query params is set to nullptr. The service does
-// not support paging.
+//  ignored and continuation query params is set to nullptr. The service does
+//  not support paging.
 HistoryClustersService::QueryMemoriesResponse FormQueryMemoriesResponse(
     mojom::QueryParamsPtr query_params,
-    const std::vector<history::Cluster>& clusters) {
+    std::vector<history::Cluster> clusters) {
+  // First sort the clusters by the most recent visit in each cluster,
+  // in reverse chronological order. We must do this to fulfill the contract of
+  // QueryMemories.
+  // TODO(tommycli): Once clusters are persisted we should investigate sorting
+  //  this in SQL rather than in-application.
+  auto get_max_visit_time = [](const history::Cluster& cluster) {
+    // TODO(tommycli): Replace this with a DCHECK once we can use the SQL to
+    // guarantee that we will never get an empty cluster back.
+    if (cluster.annotated_visits.empty())
+      return base::Time();
+
+    // TODO(tommycli): Once cluster persistence is done, we no longer need to
+    //  search for the max_element, as visits will be ordered by SQL.
+    const history::AnnotatedVisit& representative_visit = *std::max_element(
+        cluster.annotated_visits.begin(), cluster.annotated_visits.end(),
+        [](auto& v1, auto& v2) {
+          // TODO(tommycli): Use the highest scoring element rather that the
+          //  most recent element once `score` is available.
+          return v1.visit_row.visit_time < v2.visit_row.visit_time;
+        });
+    return representative_visit.visit_row.visit_time;
+  };
+
+  std::sort(clusters.begin(), clusters.end(),
+            [&](auto& clusters_a, auto& clusters_b) {
+              // Note we return a > b to get REVERSE chronological order.
+              return get_max_visit_time(clusters_a) >
+                     get_max_visit_time(clusters_b);
+            });
+
   return {nullptr, ClustersToMojom(clusters)};
 }
 
@@ -211,9 +243,32 @@ void HistoryClustersService::QueryMemories(
   history_service_->GetAnnotatedVisits(
       kMaxVisitsToCluster.Get(),
       base::BindOnce(
-          // This echo callback is necessary to copy the `AnnotatedVisit`
-          // refs.
-          [](std::vector<history::AnnotatedVisit> visits) { return visits; })
+          [](const IncompleteVisitMap& incomplete_visit_context_annotations,
+             std::vector<history::AnnotatedVisit> visits) {
+            // Append incomplete visits to `visits` too, as otherwise they will
+            // be mysteriously missing from the Clusters UI. They haven't
+            // recorded the page end metrics yet, but that's fine.
+            for (const auto& item : incomplete_visit_context_annotations) {
+              auto& incomplete_visit_context_annotation = item.second;
+              if (incomplete_visit_context_annotation.url_row.id() == 0 ||
+                  incomplete_visit_context_annotation.visit_row.visit_id == 0) {
+                // Discard incomplete visits that don't have visit_ids yet.
+                continue;
+              }
+
+              visits.push_back(history::AnnotatedVisit{
+                  incomplete_visit_context_annotation.url_row,
+                  incomplete_visit_context_annotation.visit_row,
+                  incomplete_visit_context_annotation.context_annotations,
+                  // Content annotations not provided, but it's not provided
+                  // for complete visits either.
+                  {},
+              });
+            }
+
+            return visits;
+          },
+          incomplete_visit_context_annotations_)
           .Then(std::move(on_visits_callback)),
       task_tracker);
 }
