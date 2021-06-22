@@ -19,6 +19,8 @@ static_library("internal") {
     "database/metadata_utils.h",
     "database/segment_info_database.cc",
     "database/segment_info_database.h",
+    "database/signal_database.cc",
+    "database/signal_database.h",
     "database/signal_key.cc",
     "database/signal_key.h",
     "database/signal_key_internal.cc",
@@ -82,6 +84,7 @@ source_set("unit_tests") {
   sources = [
     "database/metadata_utils_unittest.cc",
     "database/segment_info_database_unittest.cc",
+    "database/signal_database_unittest.cc",
     "database/signal_key_internal_unittest.cc",
     "database/signal_key_unittest.cc",
     "database/test_segment_info_database.cc",

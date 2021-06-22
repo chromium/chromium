@@ -75,6 +75,13 @@ std::string SignalKey::ToBinary() const {
   return SignalKeyInternalToBinary(internal_key);
 }
 
+std::string SignalKey::GetPrefixInBinary() const {
+  SignalKeyInternal::Prefix prefix;
+  prefix.kind = ToInternalSignalKindRepresentation(kind_);
+  prefix.name_hash = name_hash_;
+  return SignalKeyInternalPrefixToBinary(prefix);
+}
+
 // static
 void SignalKey::FromBinary(const std::string& input, SignalKey* output) {
   SignalKeyInternal internal_key;

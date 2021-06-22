@@ -70,6 +70,8 @@ class SignalKey {
   // Parses a machine readable representation of a SignalKeyInternal into
   // a SignalKey. Use IsValid() to check that the resulting SignalKey is valid.
   static void FromBinary(const std::string& input, SignalKey* output);
+  // The SignalKey prefix in binary format.
+  std::string GetPrefixInBinary() const;
   // Returns a human readable representation of the SignalKey.
   std::string ToDebugString() const;
 
@@ -84,6 +86,8 @@ class SignalKey {
   // The latest record timestamp this key refers to.
   base::Time range_end_;
 };
+
+typedef SignalKey::Kind SignalType;
 
 std::ostream& operator<<(std::ostream& os, const SignalKey& key);
 
