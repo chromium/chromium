@@ -28,6 +28,14 @@ public class PasswordChangeFixtureParameters {
      */
     private String mUsername;
     /**
+     * Url list for initial set of credentials. The urls should be separated by space. The
+     * number of urls should correspond to the number of passwords provided via
+     * --seed-passwords. Ex: "https://www.example.com https://app.example.com".
+     *
+     * Provided via --seed-urls.
+     */
+    private String mSeedUrls;
+    /**
      * Username list for initial set of credentials. The usernames should be separated by space. The
      * number of usernames should correspond to the number of passwords provided via
      * --seed-passwords. Ex: "username1@example.com username2@example2.com username3@example3.com".
@@ -72,6 +80,7 @@ public class PasswordChangeFixtureParameters {
                 CommandLine.getInstance().getSwitchValue("autofill-assistant-url");
         params.mDomainUrl = new GURL(CommandLine.getInstance().getSwitchValue("domain-url"));
         params.mUsername = CommandLine.getInstance().getSwitchValue("run-for-username");
+        params.mSeedUrls = CommandLine.getInstance().getSwitchValue("seed-urls", "");
         params.mSeedUsernames = CommandLine.getInstance().getSwitchValue("seed-usernames", "");
         params.mSeedPasswords = CommandLine.getInstance().getSwitchValue("seed-passwords", "");
         params.mDebugBundleId = CommandLine.getInstance().getSwitchValue("debug-bundle-id");
@@ -79,16 +88,21 @@ public class PasswordChangeFixtureParameters {
         params.mNumRuns =
                 Integer.parseInt(CommandLine.getInstance().getSwitchValue("num-runs", "1"));
 
+        String[] seedUrls = params.mSeedUrls.trim().split("\\s+");
         String[] seedUsernames = params.mSeedUsernames.trim().split("\\s+");
         String[] seedPasswords = params.mSeedPasswords.trim().split("\\s+");
         assert seedUsernames.length
                 == seedPasswords.length
             : "Number of usernames and passwords provided must be equal.";
+        assert seedUrls.length
+                == seedPasswords.length : "Number of urls and passwords provided must be equal.";
 
         params.mSeedCredentials = new PasswordStoreCredential[seedPasswords.length];
         for (int i = 0; i < seedUsernames.length; i++) {
-            params.mSeedCredentials[i] = new PasswordStoreCredential(
-                    params.mDomainUrl, seedUsernames[i], seedPasswords[i]);
+            GURL url = new GURL(seedUrls[i]);
+            assert !GURL.isEmptyOrInvalid(url) : "--seed-urls should only contain valid urls.";
+            params.mSeedCredentials[i] =
+                    new PasswordStoreCredential(url, seedUsernames[i], seedPasswords[i]);
         }
 
         assert params.mAutofillAssistantUrl != null : "--autofill-assistant-url must be provided.";

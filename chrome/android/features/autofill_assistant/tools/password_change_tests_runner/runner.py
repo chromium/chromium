@@ -72,6 +72,11 @@ def main(args):
       default='',
       help='Defines which username to run the script for.')
   parser.add_argument(
+      '--seed-urls',
+      dest='seed_urls',
+      default='',
+      help='Urls list for initial set of credetials.')
+  parser.add_argument(
       '--seed-usernames',
       dest='seed_usernames',
       default='',
