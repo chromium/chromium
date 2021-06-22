@@ -381,6 +381,10 @@ void InputDeviceFactoryEvdev::ApplyInputDeviceSettings() {
   SetBoolPropertyForOneType(DT_TOUCHPAD, "Tap Paused",
                             input_device_settings_.tap_to_click_paused);
 
+  SetBoolPropertyForOneType(
+      DT_ALL, "Event Logging Enable",
+      base::FeatureList::IsEnabled(ui::kEnableInputEventLogging));
+
   for (const auto& it : converters_) {
     EventConverterEvdev* converter = it.second.get();
 
