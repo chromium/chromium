@@ -1164,6 +1164,9 @@ SharedImageBackingFactoryD3DTest::CreateVideoImages(const gfx::Size& size,
 
 void SharedImageBackingFactoryD3DTest::RunVideoTest(bool use_shared_handle,
                                                     bool use_factory) {
+  if (!IsD3DSharedImageSupported())
+    return;
+
   const gfx::Size size(32, 32);
 
   const unsigned char kYFillValue = 0x12;
@@ -1333,6 +1336,9 @@ TEST_F(SharedImageBackingFactoryD3DTest, CreateSharedImageVideoPlanes) {
 
 void SharedImageBackingFactoryD3DTest::RunOverlayTest(bool use_shared_handle,
                                                       bool use_factory) {
+  if (!IsD3DSharedImageSupported())
+    return;
+
   const gfx::Size size(32, 32);
 
   const unsigned char kYFillValue = 0x12;
