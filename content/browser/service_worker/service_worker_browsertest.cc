@@ -286,39 +286,57 @@ void StoreString(std::string* result,
   std::move(callback).Run();
 }
 
-int GetInt(const base::DictionaryValue& dict, base::StringPiece path) {
-  int out = 0;
-  EXPECT_TRUE(dict.GetInteger(path, &out));
-  return out;
+int GetInt(const base::DictionaryValue& dict, base::StringPiece key) {
+  absl::optional<int> out = dict.FindIntKey(key);
+  EXPECT_TRUE(out.has_value());
+  return out.value_or(0);
 }
 
 std::string GetString(const base::DictionaryValue& dict,
-                      base::StringPiece path) {
-  std::string out;
-  EXPECT_TRUE(dict.GetString(path, &out));
-  return out;
+                      base::StringPiece key) {
+  const std::string* out = dict.FindStringKey(key);
+  EXPECT_TRUE(out);
+  return out ? *out : std::string();
 }
 
-bool GetBoolean(const base::DictionaryValue& dict, base::StringPiece path) {
-  bool out = false;
-  EXPECT_TRUE(dict.GetBoolean(path, &out));
-  return out;
+bool GetBoolean(const base::DictionaryValue& dict, base::StringPiece key) {
+  absl::optional<bool> out = dict.FindBoolKey(key);
+  EXPECT_TRUE(out.has_value());
+  return out.value_or(false);
 }
 
 bool CheckHeader(const base::DictionaryValue& dict,
                  base::StringPiece header_name,
                  base::StringPiece header_value) {
-  const base::ListValue* headers = nullptr;
-  EXPECT_TRUE(dict.GetList("headers", &headers));
-  for (size_t i = 0; i < headers->GetSize(); ++i) {
-    const base::ListValue* name_value_pair = nullptr;
-    EXPECT_TRUE(headers->GetList(i, &name_value_pair));
-    EXPECT_EQ(2u, name_value_pair->GetSize());
-    std::string name;
-    EXPECT_TRUE(name_value_pair->GetString(0, &name));
-    std::string value;
-    EXPECT_TRUE(name_value_pair->GetString(1, &value));
-    if (name == header_name && value == header_value)
+  const base::Value* headers = dict.FindListKey("headers");
+  if (!headers) {
+    ADD_FAILURE();
+    return false;
+  }
+
+  for (const auto& header : headers->GetList()) {
+    if (!header.is_list()) {
+      ADD_FAILURE();
+      return false;
+    }
+    base::Value::ConstListView name_value_pair = header.GetList();
+    if (name_value_pair.size() != 2u) {
+      ADD_FAILURE();
+      return false;
+    }
+    const std::string* name = name_value_pair[0].GetIfString();
+    if (!name) {
+      ADD_FAILURE();
+      return false;
+    }
+
+    const std::string* value = name_value_pair[1].GetIfString();
+    if (!value) {
+      ADD_FAILURE();
+      return false;
+    }
+
+    if (*name == header_name && *value == header_value)
       return true;
   }
   return false;
@@ -326,15 +344,29 @@ bool CheckHeader(const base::DictionaryValue& dict,
 
 bool HasHeader(const base::DictionaryValue& dict,
                base::StringPiece header_name) {
-  const base::ListValue* headers = nullptr;
-  EXPECT_TRUE(dict.GetList("headers", &headers));
-  for (size_t i = 0; i < headers->GetSize(); ++i) {
-    const base::ListValue* name_value_pair = nullptr;
-    EXPECT_TRUE(headers->GetList(i, &name_value_pair));
-    EXPECT_EQ(2u, name_value_pair->GetSize());
-    std::string name;
-    EXPECT_TRUE(name_value_pair->GetString(0, &name));
-    if (name == header_name)
+  const base::Value* headers = dict.FindListKey("headers");
+  if (!headers) {
+    ADD_FAILURE();
+    return false;
+  }
+
+  for (const auto& header : headers->GetList()) {
+    if (!header.is_list()) {
+      ADD_FAILURE();
+      return false;
+    }
+    base::Value::ConstListView name_value_pair = header.GetList();
+    if (name_value_pair.size() != 2u) {
+      ADD_FAILURE();
+      return false;
+    }
+    const std::string* name = name_value_pair[0].GetIfString();
+    if (!name) {
+      ADD_FAILURE();
+      return false;
+    }
+
+    if (*name == header_name)
       return true;
   }
   return false;
