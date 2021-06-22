@@ -52,9 +52,6 @@ class ASH_EXPORT UnifiedSystemTrayBubble
   // True if the bubble is active.
   bool IsBubbleActive() const;
 
-  // Close the bubble immediately.
-  void CloseNow();
-
   // Collapse the message center bubble.
   void CollapseMessageCenter();
 

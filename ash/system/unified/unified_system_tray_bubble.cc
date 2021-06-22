@@ -119,10 +119,18 @@ UnifiedSystemTrayBubble::~UnifiedSystemTrayBubble() {
     Shell::Get()->tablet_mode_controller()->RemoveObserver(this);
   tray_->tray_event_filter()->RemoveBubble(this);
   tray_->shelf()->RemoveObserver(this);
+
+  // Unified view children depend on `controller_` which is about to go away.
+  // Remove child views synchronously to ensure they don't try to access
+  // `controller_` after `this` goes out of scope.
+  bubble_view_->RemoveAllChildViews(true);
+  bubble_view_->ResetDelegate();
+
   if (bubble_widget_) {
     bubble_widget_->RemoveObserver(this);
     bubble_widget_->Close();
   }
+
   CHECK(!IsInObserverList());
 }
 
@@ -133,15 +141,6 @@ gfx::Rect UnifiedSystemTrayBubble::GetBoundsInScreen() const {
 
 bool UnifiedSystemTrayBubble::IsBubbleActive() const {
   return bubble_widget_ && bubble_widget_->IsActive();
-}
-
-void UnifiedSystemTrayBubble::CloseNow() {
-  if (!bubble_widget_)
-    return;
-
-  bubble_widget_->RemoveObserver(this);
-  bubble_widget_->CloseNow();
-  bubble_widget_ = nullptr;
 }
 
 void UnifiedSystemTrayBubble::EnsureCollapsed() {
@@ -259,6 +258,8 @@ void UnifiedSystemTrayBubble::OnWidgetDestroying(views::Widget* widget) {
   CHECK_EQ(bubble_widget_, widget);
   bubble_widget_->RemoveObserver(this);
   bubble_widget_ = nullptr;
+
+  // `tray_->CloseBubble()` will delete `this`.
   tray_->CloseBubble();
 }
 

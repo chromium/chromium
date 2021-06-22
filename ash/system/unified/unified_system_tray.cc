@@ -177,9 +177,6 @@ UnifiedSystemTray::~UnifiedSystemTray() {
   ShelfConfig::Get()->RemoveObserver(this);
 
   message_center_bubble_.reset();
-  // Close bubble immediately when the bubble is closed on dtor.
-  if (bubble_)
-    bubble_->CloseNow();
   bubble_.reset();
 
   // Reset the view to remove its dependency from |model_|, since this view is
