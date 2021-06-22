@@ -53,7 +53,9 @@
 
 namespace {
 
-constexpr char kGoogleGIconResourceName[] = "realbox/icons/google_g.png";
+constexpr char kGoogleGIconResourceName[] = "google_g.png";
+constexpr char kSearchIconResourceName[] = "search.svg";
+
 constexpr char kBookmarkIconResourceName[] =
     "chrome://resources/images/icon_bookmark.svg";
 constexpr char kCalculatorIconResourceName[] = "realbox/icons/calculator.svg";
@@ -74,7 +76,6 @@ constexpr char kDriveVideoIconResourceName[] = "realbox/icons/drive_video.svg";
 constexpr char kExtensionAppIconResourceName[] =
     "realbox/icons/extension_app.svg";
 constexpr char kPageIconResourceName[] = "realbox/icons/page.svg";
-constexpr char kSearchIconResourceName[] = "realbox/icons/search.svg";
 constexpr char kTrendingUpIconResourceName[] = "realbox/icons/trending_up.svg";
 
 base::flat_map<int32_t, realbox::mojom::SuggestionGroupPtr>
