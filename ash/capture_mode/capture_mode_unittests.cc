@@ -62,6 +62,8 @@
 #include "ui/aura/window_tracker.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
+#include "ui/base/cursor/cursor_factory.h"
+#include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -72,10 +74,12 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/image/image_unittest_util.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/message_center_observer.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
+#include "ui/ozone/public/ozone_platform.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget_observer.h"
@@ -3885,6 +3889,72 @@ TEST_F(CaptureModeCursorOverlayTest, OverlayHidesWhenOutOfBounds) {
   generator->ClickLeftButton();
   FlushOverlay();
   EXPECT_TRUE(fake_overlay()->IsHidden());
+}
+
+// Verifies that the cursor overlay bounds calculation takes into account the
+// cursor image scale factor. https://crbug.com/1222494.
+TEST_F(CaptureModeCursorOverlayTest, OverlayBoundsAccountForCursorScaleFactor) {
+  UpdateDisplay("400x400");
+  StartRecordingAndSetupFakeOverlay(CaptureModeSource::kFullscreen);
+  EXPECT_FALSE(fake_overlay()->IsHidden());
+
+  auto* cursor_manager = Shell::Get()->cursor_manager();
+  auto set_cursor = [cursor_manager](const gfx::Size& cursor_image_size,
+                                     float cursor_image_scale_factor) {
+    const auto cursor_type = ui::mojom::CursorType::kCustom;
+    gfx::NativeCursor cursor{cursor_type};
+    SkBitmap cursor_image;
+    cursor_image.allocN32Pixels(cursor_image_size.width(),
+                                cursor_image_size.height());
+    cursor.set_image_scale_factor(cursor_image_scale_factor);
+    cursor.set_custom_bitmap(cursor_image);
+    auto* platform_cursor_factory =
+        ui::OzonePlatform::GetInstance()->GetCursorFactory();
+    cursor.SetPlatformCursor(platform_cursor_factory->CreateImageCursor(
+        cursor_type, cursor_image, cursor.custom_hotspot()));
+    cursor_manager->SetCursor(cursor);
+  };
+
+  struct {
+    gfx::Size cursor_size;
+    float cursor_image_scale_factor;
+  } kTestCases[] = {
+      {
+          gfx::Size(50, 50),
+          /*cursor_image_scale_factor=*/2.f,
+      },
+      {
+          gfx::Size(25, 25),
+          /*cursor_image_scale_factor=*/1.f,
+      },
+  };
+
+  // Both of the above test cases should yield the same cursor overlay relative
+  // bounds when the cursor is at the center of the screen.
+  // Origin is 200/400 = 0.5f.
+  // Size is 25 (cursor image dip size) / 400 = 0.0625f.
+  const gfx::RectF expected_overlay_bounds{0.5f, 0.5f, 0.0625f, 0.0625f};
+
+  const gfx::Point screen_center =
+      window()->GetRootWindow()->bounds().CenterPoint();
+  auto* generator = GetEventGenerator();
+
+  for (const auto& test_case : kTestCases) {
+    set_cursor(test_case.cursor_size, test_case.cursor_image_scale_factor);
+    // Lock the cursor to prevent mouse events from changing it back to a
+    // default kPointer cursor type.
+    cursor_manager->LockCursor();
+
+    // Generate a click event to overcome throttling.
+    generator->MoveMouseTo(screen_center);
+    generator->ClickLeftButton();
+    FlushOverlay();
+    EXPECT_FALSE(fake_overlay()->IsHidden());
+    EXPECT_EQ(expected_overlay_bounds, fake_overlay()->last_bounds());
+
+    // Unlock the cursor back.
+    cursor_manager->UnlockCursor();
+  }
 }
 
 // TODO(afakhry): Add more cursor overlay tests.
