@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/callback_helpers.h"
+#include "base/logging.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
@@ -461,7 +462,15 @@ class SharedImageBackingFactoryD3DTest
     }
   }
 
+  std::vector<std::unique_ptr<SharedImageRepresentationFactoryRef>>
+  CreateVideoImages(const gfx::Size& size,
+                    unsigned char y_fill_value,
+                    unsigned char u_fill_value,
+                    unsigned char v_fill_value,
+                    bool use_shared_handle,
+                    bool use_factory);
   void RunVideoTest(bool use_shared_handle, bool use_factory);
+  void RunOverlayTest(bool use_shared_handle, bool use_factory);
 
   scoped_refptr<SharedContextState> context_state_;
 };
@@ -1049,28 +1058,26 @@ TEST_F(SharedImageBackingFactoryD3DTest, Dawn_ReuseExternalImage) {
 }
 #endif  // BUILDFLAG(USE_DAWN)
 
-void SharedImageBackingFactoryD3DTest::RunVideoTest(bool use_shared_handle,
+std::vector<std::unique_ptr<SharedImageRepresentationFactoryRef>>
+SharedImageBackingFactoryD3DTest::CreateVideoImages(const gfx::Size& size,
+                                                    unsigned char y_fill_value,
+                                                    unsigned char u_fill_value,
+                                                    unsigned char v_fill_value,
+                                                    bool use_shared_handle,
                                                     bool use_factory) {
-  if (!IsD3DSharedImageSupported())
-    return;
+  DCHECK(IsD3DSharedImageSupported());
 
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
       shared_image_factory_->GetDeviceForTesting();
-
-  const gfx::Size size(32, 32);
-
-  const unsigned kYFillValue = 0x12;
-  const unsigned kUFillValue = 0x23;
-  const unsigned kVFillValue = 0x34;
 
   const size_t kYPlaneSize = size.width() * size.height();
 
   std::vector<unsigned char> video_data;
   video_data.resize(kYPlaneSize * 3 / 2);
-  memset(video_data.data(), kYFillValue, kYPlaneSize);
+  memset(video_data.data(), y_fill_value, kYPlaneSize);
   for (size_t i = 0; i < kYPlaneSize / 2; i += 2) {
-    video_data[kYPlaneSize + i] = kUFillValue;
-    video_data[kYPlaneSize + i + 1] = kVFillValue;
+    video_data[kYPlaneSize + i] = u_fill_value;
+    video_data[kYPlaneSize + i + 1] = v_fill_value;
   }
 
   D3D11_SUBRESOURCE_DATA data = {};
@@ -1086,7 +1093,8 @@ void SharedImageBackingFactoryD3DTest::RunVideoTest(bool use_shared_handle,
 
   Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture;
   HRESULT hr = d3d11_device->CreateTexture2D(&desc, &data, &d3d11_texture);
-  ASSERT_TRUE(SUCCEEDED(hr));
+  if (FAILED(hr))
+    return {};
 
   uint32_t usage =
       gpu::SHARED_IMAGE_USAGE_VIDEO_DECODE | gpu::SHARED_IMAGE_USAGE_GLES2 |
@@ -1097,16 +1105,17 @@ void SharedImageBackingFactoryD3DTest::RunVideoTest(bool use_shared_handle,
   if (use_shared_handle) {
     Microsoft::WRL::ComPtr<IDXGIResource1> dxgi_resource;
     hr = d3d11_texture.As(&dxgi_resource);
-    ASSERT_TRUE(SUCCEEDED(hr));
+    DCHECK_EQ(hr, S_OK);
 
     HANDLE handle;
     hr = dxgi_resource->CreateSharedHandle(
         nullptr, DXGI_SHARED_RESOURCE_READ | DXGI_SHARED_RESOURCE_WRITE,
         nullptr, &handle);
-    ASSERT_TRUE(SUCCEEDED(hr));
+    if (FAILED(hr))
+      return {};
 
     shared_handle.Set(handle);
-    ASSERT_TRUE(shared_handle.IsValid());
+    DCHECK(shared_handle.IsValid());
 
     usage |= gpu::SHARED_IMAGE_USAGE_WEBGPU;
   }
@@ -1127,7 +1136,7 @@ void SharedImageBackingFactoryD3DTest::RunVideoTest(bool use_shared_handle,
         mailboxes, DXGI_FORMAT_NV12, size, usage, d3d11_texture,
         /*array_slice=*/0, std::move(shared_handle));
   }
-  ASSERT_EQ(shared_image_backings.size(), 2u);
+  EXPECT_EQ(shared_image_backings.size(), 2u);
 
   const gfx::Size plane_sizes[] = {
       size, gfx::Size(size.width() / 2, size.height() / 2)};
@@ -1150,6 +1159,25 @@ void SharedImageBackingFactoryD3DTest::RunVideoTest(bool use_shared_handle,
     shared_image_refs.push_back(shared_image_manager_.Register(
         std::move(backing), memory_type_tracker_.get()));
   }
+
+  return shared_image_refs;
+}
+
+void SharedImageBackingFactoryD3DTest::RunVideoTest(bool use_shared_handle,
+                                                    bool use_factory) {
+  if (!IsD3DSharedImageSupported())
+    return;
+
+  const gfx::Size size(32, 32);
+
+  const unsigned char kYFillValue = 0x12;
+  const unsigned char kUFillValue = 0x23;
+  const unsigned char kVFillValue = 0x34;
+
+  auto shared_image_refs =
+      CreateVideoImages(size, kYFillValue, kUFillValue, kVFillValue,
+                        use_shared_handle, use_factory);
+  ASSERT_EQ(shared_image_refs.size(), 2u);
 
   // Setup GL shaders, framebuffers, uniforms, etc.
   static const char* kVideoFragmentShaderSrc =
@@ -1245,12 +1273,12 @@ void SharedImageBackingFactoryD3DTest::RunVideoTest(bool use_shared_handle,
   {
     auto y_texture =
         shared_image_representation_factory_->ProduceGLTexturePassthrough(
-            mailboxes[0]);
+            shared_image_refs[0]->mailbox());
     ASSERT_NE(y_texture, nullptr);
 
     auto uv_texture =
         shared_image_representation_factory_->ProduceGLTexturePassthrough(
-            mailboxes[1]);
+            shared_image_refs[1]->mailbox());
     ASSERT_NE(uv_texture, nullptr);
 
     auto y_texture_access = y_texture->BeginScopedAccess(
@@ -1305,6 +1333,86 @@ TEST_F(SharedImageBackingFactoryD3DTest, CreateFromVideoTextureSharedHandle) {
 
 TEST_F(SharedImageBackingFactoryD3DTest, CreateSharedImageVideoPlanes) {
   RunVideoTest(/*use_shared_handle=*/true, /*use_factory=*/true);
+}
+
+void SharedImageBackingFactoryD3DTest::RunOverlayTest(bool use_shared_handle,
+                                                      bool use_factory) {
+  if (!IsD3DSharedImageSupported())
+    return;
+
+  const gfx::Size size(32, 32);
+
+  const unsigned char kYFillValue = 0x12;
+  const unsigned char kUFillValue = 0x23;
+  const unsigned char kVFillValue = 0x34;
+
+  auto shared_image_refs =
+      CreateVideoImages(size, kYFillValue, kUFillValue, kVFillValue,
+                        use_shared_handle, use_factory);
+  ASSERT_EQ(shared_image_refs.size(), 2u);
+
+  auto overlay_representation =
+      shared_image_representation_factory_->ProduceOverlay(
+          shared_image_refs[0]->mailbox());
+
+  auto scoped_read_access =
+      overlay_representation->BeginScopedReadAccess(/*needs_gl_image=*/true);
+  ASSERT_TRUE(scoped_read_access);
+
+  auto* gl_image_d3d =
+      gl::GLImageD3D::FromGLImage(scoped_read_access->gl_image());
+  ASSERT_TRUE(gl_image_d3d);
+
+  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
+      shared_image_factory_->GetDeviceForTesting();
+
+  CD3D11_TEXTURE2D_DESC staging_desc(
+      DXGI_FORMAT_NV12, size.width(), size.height(), 1, 1, 0,
+      D3D11_USAGE_STAGING, D3D11_CPU_ACCESS_READ);
+
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> staging_texture;
+  HRESULT hr =
+      d3d11_device->CreateTexture2D(&staging_desc, nullptr, &staging_texture);
+  ASSERT_EQ(hr, S_OK);
+
+  Microsoft::WRL::ComPtr<ID3D11DeviceContext> device_context;
+  d3d11_device->GetImmediateContext(&device_context);
+
+  device_context->CopyResource(staging_texture.Get(),
+                               gl_image_d3d->texture().Get());
+  D3D11_MAPPED_SUBRESOURCE mapped_resource = {};
+  hr = device_context->Map(staging_texture.Get(), 0, D3D11_MAP_READ, 0,
+                           &mapped_resource);
+  ASSERT_EQ(hr, S_OK);
+
+  const unsigned char* pixels =
+      static_cast<const unsigned char*>(mapped_resource.pData);
+  const size_t stride = mapped_resource.RowPitch;
+  const size_t kYPlaneSize = stride * size.height();
+  for (size_t i = 0; i < size.height(); i++) {
+    for (size_t j = 0; j < size.width(); j++) {
+      EXPECT_EQ(*(pixels + i * stride + j), kYFillValue);
+      if (i < size.height() / 2 && j % 2 == 0) {
+        EXPECT_EQ(*(pixels + kYPlaneSize + i * stride + j), kUFillValue);
+        EXPECT_EQ(*(pixels + kYPlaneSize + i * stride + j + 1), kVFillValue);
+      }
+    }
+  }
+
+  device_context->Unmap(staging_texture.Get(), 0);
+}
+
+TEST_F(SharedImageBackingFactoryD3DTest, CreateFromVideoTextureOverlay) {
+  RunOverlayTest(/*use_shared_handle=*/false, /*use_factory=*/false);
+}
+
+TEST_F(SharedImageBackingFactoryD3DTest,
+       CreateFromVideoTextureSharedHandleOverlay) {
+  RunOverlayTest(/*use_shared_handle=*/true, /*use_factory=*/false);
+}
+
+TEST_F(SharedImageBackingFactoryD3DTest, CreateSharedImageVideoPlanesOverlay) {
+  RunOverlayTest(/*use_shared_handle=*/true, /*use_factory=*/true);
 }
 
 }  // anonymous namespace
