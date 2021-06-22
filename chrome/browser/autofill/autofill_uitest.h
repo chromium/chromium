@@ -10,6 +10,7 @@
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/browser_autofill_manager_test_delegate.h"
 #include "components/autofill/core/browser/test_event_waiter.h"
+#include "components/autofill/core/common/dense_set.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/test_utils.h"
@@ -26,6 +27,7 @@ enum class ObservedUiEvents {
   kFormDataFilled,
   kSuggestionShown,
   kNoEvent,
+  kMaxValue = kNoEvent
 };
 
 class BrowserAutofillManagerTestDelegateImpl
@@ -33,6 +35,12 @@ class BrowserAutofillManagerTestDelegateImpl
  public:
   BrowserAutofillManagerTestDelegateImpl();
   ~BrowserAutofillManagerTestDelegateImpl() override;
+
+  // Controls whether back-to-back events of |type|, except for the first one,
+  // are ignored. This is useful for cross-iframe forms, where events such as
+  // ObservedUiEvents::kFormDataFilled are triggered by each filled renderer
+  // form.
+  void SetIgnoreBackToBackMessages(ObservedUiEvents type, bool ignore);
 
   // autofill::BrowserAutofillManagerTestDelegate:
   void DidPreviewFormData() override;
@@ -50,8 +58,12 @@ class BrowserAutofillManagerTestDelegateImpl
   }
 
  private:
-  bool is_expecting_dynamic_refill_;
+  void FireEvent(ObservedUiEvents event);
+
+  bool is_expecting_dynamic_refill_ = false;
   std::unique_ptr<EventWaiter<ObservedUiEvents>> event_waiter_;
+  DenseSet<ObservedUiEvents> ignore_back_to_back_event_types_;
+  ObservedUiEvents last_event_ = ObservedUiEvents::kNoEvent;
 
   DISALLOW_COPY_AND_ASSIGN(BrowserAutofillManagerTestDelegateImpl);
 };
