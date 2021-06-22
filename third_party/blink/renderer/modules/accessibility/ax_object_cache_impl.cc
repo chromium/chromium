@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_lifecycle.h"
+#include "third_party/blink/renderer/core/dom/slot_assignment_engine.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/events/event_util.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -137,7 +138,9 @@ bool IsDisplayLocked(const Node* node) {
   // might call AssignedSlot, so if we're in a slot assignment recalc
   // forbidden scope, return false.
   if (node->GetDocument().IsFlatTreeTraversalForbidden() ||
-      node->GetDocument().IsSlotAssignmentRecalcForbidden()) {
+      node->GetDocument()
+          .GetSlotAssignmentEngine()
+          .HasPendingSlotAssignmentRecalc()) {
     return false;  // Cannot safely perform this check now.
   }
   return DisplayLockUtilities::NearestLockedExclusiveAncestor(*node);
