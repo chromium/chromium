@@ -78,8 +78,11 @@ class LoginItemsFileList {
           reinterpret_cast<LSSharedFileListItemRef>(login_item);
 #pragma clang diagnostic push  // https://crbug.com/1154377
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-      ScopedCFTypeRef<CFURLRef> item_url(
-          LSSharedFileListItemCopyResolvedURL(item, 0, nullptr));
+      // kLSSharedFileListDoNotMountVolumes is used so that we don't trigger
+      // mounting when it's not expected by a user. Just listing the login
+      // items should not cause any side-effects.
+      ScopedCFTypeRef<CFURLRef> item_url(LSSharedFileListItemCopyResolvedURL(
+          item, kLSSharedFileListDoNotMountVolumes, nullptr));
 #pragma clang diagnostic pop
 
       if (item_url && CFEqual(item_url, url)) {
