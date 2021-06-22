@@ -420,6 +420,18 @@ int PropertyTreeManager::EnsureCompositorTransformNode(
       EnsureCompositorTransformNode(transform_node.Parent()->Unalias());
   id = GetTransformTree().Insert(cc::TransformNode(), parent_id);
 
+  // ScrollUnification creates the entire scroll tree and will already have done
+  // this.
+  if (!RuntimeEnabledFeatures::ScrollUnificationEnabled()) {
+    if (auto* scroll_translation_for_fixed =
+            transform_node.ScrollTranslationForFixed()) {
+      // Fixed-position can cause different topologies of the transform tree and
+      // the scroll tree. This ensures the ancestor scroll nodes of the scroll
+      // node for a descendant transform node below is created.
+      EnsureCompositorTransformNode(*scroll_translation_for_fixed);
+    }
+  }
+
   cc::TransformNode& compositor_node = *GetTransformTree().Node(id);
   UpdateCcTransformLocalMatrix(compositor_node, transform_node);
   compositor_node.transform_changed = transform_node.NodeChangeAffectsRaster();
@@ -479,18 +491,6 @@ int PropertyTreeManager::EnsureCompositorTransformNode(
     property_trees_.element_id_to_transform_node_index[compositor_element_id] =
         id;
     compositor_node.element_id = compositor_element_id;
-  }
-
-  // ScrollUnification creates the entire scroll tree and will already have done
-  // this.
-  if (!RuntimeEnabledFeatures::ScrollUnificationEnabled()) {
-    if (auto* scroll_translation_for_fixed =
-            transform_node.ScrollTranslationForFixed()) {
-      // Fixed-position can cause different topologies of the transform tree and
-      // the scroll tree. This ensures the ancestor scroll nodes of the scroll
-      // node for a descendant transform node below is created.
-      EnsureCompositorTransformNode(*scroll_translation_for_fixed);
-    }
   }
 
   // If this transform is a scroll offset translation, create the associated
