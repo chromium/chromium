@@ -74,6 +74,7 @@ are (or were) large and widely included.
 
 - Good examples of -Wmax-tokens preventing regressions:
 
-  - [https://chromium-review.googlesource.com/c/chromium/src/+/2795166](CL
-    2795166): The CQ caught a size increase in render_frame_host.h, and the
-    code was easily adjusted to avoid the increase.
+  - [CL 2795166](
+    https://chromium-review.googlesource.com/c/chromium/src/+/2795166): The CQ
+    caught a size increase in render_frame_host.h, and the code was easily
+    adjusted to avoid the increase.
