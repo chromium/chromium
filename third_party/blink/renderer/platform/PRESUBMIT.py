@@ -11,6 +11,7 @@ import difflib
 import os
 import re
 
+USE_PYTHON3 = True
 RUNTIMEENABLED_NAME = re.compile(r'\s*name\s*:\s*"([^"]*)"')
 
 
