@@ -5,7 +5,6 @@
 #include "chromeos/components/quick_pair/feature_status_tracker/base_enabled_provider.h"
 
 #include "base/callback.h"
-#include "base/logging.h"
 
 namespace chromeos {
 namespace quick_pair {

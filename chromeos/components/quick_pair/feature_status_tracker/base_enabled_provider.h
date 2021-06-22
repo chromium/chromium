@@ -27,13 +27,13 @@ class BaseEnabledProvider {
   virtual ~BaseEnabledProvider();
 
   virtual bool is_enabled();
-  void SetCallback(base::RepeatingCallback<void(bool)> callback);
+  virtual void SetCallback(base::RepeatingCallback<void(bool)> callback);
 
  protected:
   void SetEnabledAndInvokeCallback(bool new_value);
 
  private:
-  bool is_enabled_;
+  bool is_enabled_ = false;
   base::RepeatingCallback<void(bool)> callback_;
 };
 
