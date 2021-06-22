@@ -78,15 +78,26 @@ bool SupportsSharedWorker() {
 
 }  // namespace
 
-// These tests are parameterized on whether kPlzDedicatedWorker is enabled.
+// These tests are parameterized on following options:
+// 0 => Base
+// 1 => kPlzDedicatedWorker enabled
+// 2 => kCoepForSharedWorker enabled
 class WorkerTest : public ContentBrowserTest,
-                   public testing::WithParamInterface<bool> {
+                   public testing::WithParamInterface<int> {
  public:
   WorkerTest() : select_certificate_count_(0) {
-    if (GetParam()) {
-      feature_list_.InitAndEnableFeature(blink::features::kPlzDedicatedWorker);
-    } else {
-      feature_list_.InitAndDisableFeature(blink::features::kPlzDedicatedWorker);
+    switch (GetParam()) {
+      case 0:
+        feature_list_.InitAndDisableFeature(
+            blink::features::kPlzDedicatedWorker);
+        break;
+      case 1:
+        feature_list_.InitAndEnableFeature(
+            blink::features::kPlzDedicatedWorker);
+        break;
+      default:
+        feature_list_.InitAndEnableFeature(
+            blink::features::kCOEPForSharedWorker);
     }
   }
 
@@ -280,7 +291,7 @@ class WorkerTest : public ContentBrowserTest,
   base::test::ScopedFeatureList feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All, WorkerTest, testing::ValuesIn({false, true}));
+INSTANTIATE_TEST_SUITE_P(All, WorkerTest, testing::Range(0, 3));
 
 IN_PROC_BROWSER_TEST_P(WorkerTest, SingleWorker) {
   RunTest(GetTestURL("single_worker.html", std::string()));
@@ -300,7 +311,7 @@ class WorkerTestWithAllowFileAccessFromFiles : public WorkerTest {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          WorkerTestWithAllowFileAccessFromFiles,
-                         testing::ValuesIn({false, true}));
+                         testing::Range(0, 3));
 
 IN_PROC_BROWSER_TEST_P(WorkerTestWithAllowFileAccessFromFiles,
                        SingleWorkerFromFile) {
@@ -326,9 +337,8 @@ IN_PROC_BROWSER_TEST_P(WorkerTest, SingleSharedWorker) {
   RunTest(GetTestURL("single_worker.html", "shared=true"));
 }
 
-// Confirm shared worker without COEP is in a different process from a page that
-// is protected by COOP and COEP.
-IN_PROC_BROWSER_TEST_P(WorkerTest, SharedWorkerWithoutCoepInDifferentProcess) {
+// Create shared worker in COEP:required-corp site.
+IN_PROC_BROWSER_TEST_P(WorkerTest, SharedWorkerInCOEPRequireCorpSite) {
   if (!SupportsSharedWorker())
     return;
 
@@ -345,18 +355,151 @@ IN_PROC_BROWSER_TEST_P(WorkerTest, SharedWorkerWithoutCoepInDifferentProcess) {
   // Create a shared worker from the cross-origin-isolated page.
   // The worker must be in a different process because shared workers isn't
   // protected by COEP header.
+  // COEP:unsafe-none
+  EXPECT_EQ(base::FeatureList::IsEnabled(blink::features::kCOEPForSharedWorker)
+                ? "Worker blocked."
+                : "Worker connected.",
+            EvalJs(shell(), R"(
+    new Promise(resolve => {
+      const worker =
+        new SharedWorker("/workers/messageport_worker.js");
+      worker.onerror = (e) => resolve("Worker blocked.");
+      worker.port.onmessage = (e) => resolve(e.data);
+    })
+  )"));
+  if (base::FeatureList::IsEnabled(blink::features::kCOEPForSharedWorker)) {
+    auto* host = GetSharedWorkerHost(
+        ssl_server()->GetURL("a.test", "/workers/messageport_worker.js"));
+    RenderProcessHost* worker_rph = host->GetProcessHost();
+    EXPECT_NE(worker_rph, page_rfh->GetProcess());
+    auto worker_lock = host->site_instance()->GetProcessLock();
+    EXPECT_FALSE(worker_lock.web_exposed_isolation_info().is_isolated());
+  }
+
+  // COEP:credentialless
+  EXPECT_EQ(base::FeatureList::IsEnabled(blink::features::kCOEPForSharedWorker)
+                ? "Worker blocked."
+                : "Worker connected.",
+            EvalJs(shell(), R"(
+    new Promise(resolve => {
+      const worker =
+        new SharedWorker("/workers/messageport_worker_coep_credentialless.js");
+      worker.onerror = (e) => resolve("Worker blocked.");
+      worker.port.onmessage = (e) => resolve(e.data);
+    })
+  )"));
+  if (base::FeatureList::IsEnabled(blink::features::kCOEPForSharedWorker)) {
+    auto* host_credentialless = GetSharedWorkerHost(ssl_server()->GetURL(
+        "a.test", "/workers/messageport_worker_coep_credentialless.js"));
+    RenderProcessHost* worker_rph_credentialless =
+        host_credentialless->GetProcessHost();
+    EXPECT_NE(worker_rph_credentialless, page_rfh->GetProcess());
+    auto worker_lock_credentialless =
+        host_credentialless->site_instance()->GetProcessLock();
+    // Cross-origin isolation is not yet supported in COEP:credentialless
+    // SharedWorker.
+    EXPECT_FALSE(
+        worker_lock_credentialless.web_exposed_isolation_info().is_isolated());
+  }
+
+  // COEP:require-corp
   EXPECT_EQ("Worker connected.", EvalJs(shell(), R"(
     new Promise(resolve => {
-      const worker = new SharedWorker("/workers/messageport_worker.js");
+      const worker =
+        new SharedWorker("/workers/messageport_worker_coep_require_corp.js");
+      worker.onerror = (e) => resolve("Worker blocked.");
+      worker.port.onmessage = (e) => resolve(e.data);
+    })
+  )"));
+  auto* host_require_corp = GetSharedWorkerHost(ssl_server()->GetURL(
+      "a.test", "/workers/messageport_worker_coep_require_corp.js"));
+  RenderProcessHost* worker_rph_require_corp =
+      host_require_corp->GetProcessHost();
+  EXPECT_NE(worker_rph_require_corp, page_rfh->GetProcess());
+  auto worker_lock_require_corp =
+      host_require_corp->site_instance()->GetProcessLock();
+  // Cross-origin isolation is not yet supported in COEP:require-corp
+  // SharedWorker.
+  EXPECT_FALSE(
+      worker_lock_require_corp.web_exposed_isolation_info().is_isolated());
+}
+
+// Create shared worker in COEP:credentialless site.
+// TODO(crbug.com/1221507): COEP:credentialless should work the same as
+// COEP:require-corp.
+IN_PROC_BROWSER_TEST_P(WorkerTest, SharedWorkerInCOEPCredentiallessSite) {
+  if (!SupportsSharedWorker())
+    return;
+
+  // Navigate to a page living in an isolated process.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), ssl_server()->GetURL(
+                   "a.test", "/cross-origin-isolated-credentialless.html")));
+  RenderFrameHostImpl* page_rfh = static_cast<RenderFrameHostImpl*>(
+      shell()->web_contents()->GetMainFrame());
+  auto page_lock = page_rfh->GetSiteInstance()->GetProcessLock();
+  EXPECT_FALSE(page_lock.web_exposed_isolation_info().is_isolated());
+
+  // Create a shared worker from the cross-origin-isolated page.
+  // The worker must be in a different process because shared workers isn't
+  // protected by COEP header.
+  // COEP:unsafe-none
+  EXPECT_EQ("Worker connected.", EvalJs(shell(), R"(
+    new Promise(resolve => {
+      const worker =
+        new SharedWorker("/workers/messageport_worker.js");
+      worker.onerror = (e) => resolve("Worker blocked.");
       worker.port.onmessage = (e) => resolve(e.data);
     })
   )"));
   auto* host = GetSharedWorkerHost(
       ssl_server()->GetURL("a.test", "/workers/messageport_worker.js"));
   RenderProcessHost* worker_rph = host->GetProcessHost();
-  EXPECT_NE(worker_rph, page_rfh->GetProcess());
+  EXPECT_EQ(worker_rph, page_rfh->GetProcess());
   auto worker_lock = host->site_instance()->GetProcessLock();
   EXPECT_FALSE(worker_lock.web_exposed_isolation_info().is_isolated());
+
+  // COEP:credentialless
+  EXPECT_EQ("Worker connected.", EvalJs(shell(), R"(
+    new Promise(resolve => {
+      const worker =
+        new SharedWorker("/workers/messageport_worker_coep_credentialless.js");
+      worker.onerror = (e) => resolve("Worker blocked.");
+      worker.port.onmessage = (e) => resolve(e.data);
+    })
+  )"));
+  auto* host_credentialless = GetSharedWorkerHost(ssl_server()->GetURL(
+      "a.test", "/workers/messageport_worker_coep_credentialless.js"));
+  RenderProcessHost* worker_rph_credentialless =
+      host_credentialless->GetProcessHost();
+  EXPECT_EQ(worker_rph_credentialless, page_rfh->GetProcess());
+  auto worker_lock_credentialless =
+      host_credentialless->site_instance()->GetProcessLock();
+  // Cross-origin isolation is not yet supported in COEP:credentialless
+  // SharedWorker.
+  EXPECT_FALSE(
+      worker_lock_credentialless.web_exposed_isolation_info().is_isolated());
+
+  // COEP:require-corp
+  EXPECT_EQ("Worker connected.", EvalJs(shell(), R"(
+    new Promise(resolve => {
+      const worker =
+        new SharedWorker("/workers/messageport_worker_coep_require_corp.js");
+      worker.onerror = (e) => resolve("Worker blocked.");
+      worker.port.onmessage = (e) => resolve(e.data);
+    })
+  )"));
+  auto* host_require_corp = GetSharedWorkerHost(ssl_server()->GetURL(
+      "a.test", "/workers/messageport_worker_coep_require_corp.js"));
+  RenderProcessHost* worker_rph_require_corp =
+      host_require_corp->GetProcessHost();
+  EXPECT_EQ(worker_rph_require_corp, page_rfh->GetProcess());
+  auto worker_lock_require_corp =
+      host_require_corp->site_instance()->GetProcessLock();
+  // Cross-origin isolation is not yet supported in COEP:require-corp
+  // SharedWorker.
+  EXPECT_FALSE(
+      worker_lock_require_corp.web_exposed_isolation_info().is_isolated());
 }
 
 // http://crbug.com/96435

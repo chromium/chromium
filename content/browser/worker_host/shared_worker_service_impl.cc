@@ -325,7 +325,8 @@ SharedWorkerHost* SharedWorkerServiceImpl::CreateWorker(
   auto insertion_result =
       worker_hosts_.insert(std::make_unique<SharedWorkerHost>(
           this, instance, std::move(site_instance),
-          std::move(content_security_policies)));
+          std::move(content_security_policies),
+          creator.cross_origin_embedder_policy()));
   DCHECK(insertion_result.second);
   SharedWorkerHost* host = insertion_result.first->get();
 

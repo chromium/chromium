@@ -544,6 +544,11 @@
               "external/wpt/html/cross-origin-embedder-policy"],
     "args": ["--enable-features=PlzServiceWorker"]
   },
+  {
+    "prefix": "coep-for-shared-worker",
+    "bases": ["external/wpt/html/cross-origin-embedder-policy"],
+    "args": ["--enable-features=COEPForSharedWorker"]
+  },
 
   {
     "prefix": "direct-sockets",

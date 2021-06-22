@@ -29,6 +29,7 @@
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "net/base/network_isolation_key.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/appcache/appcache.mojom.h"
@@ -69,7 +70,9 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
                    const SharedWorkerInstance& instance,
                    scoped_refptr<SiteInstanceImpl> site_instance,
                    std::vector<network::mojom::ContentSecurityPolicyPtr>
-                       content_security_policies);
+                       content_security_policies,
+                   const network::CrossOriginEmbedderPolicy&
+                       creator_cross_origin_embedder_policy);
   ~SharedWorkerHost() override;
 
   // Returns the RenderProcessHost where this shared worker lives.
@@ -150,6 +153,11 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
 
   const SharedWorkerInstance& instance() const { return instance_; }
 
+  const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy()
+      const {
+    return worker_cross_origin_embedder_policy_.value();
+  }
+
   const std::vector<network::mojom::ContentSecurityPolicyPtr>&
   content_security_policies() const {
     return content_security_policies_;
@@ -199,6 +207,12 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
   };
 
   using ClientList = std::list<ClientInfo>;
+
+  // Returns true if the COEP policy of the worker and the creator are
+  // compatible.
+  bool CheckCrossOriginEmbedderPolicy(
+      network::CrossOriginEmbedderPolicy creator_cross_origin_embedder_policy,
+      network::CrossOriginEmbedderPolicy worker_cross_origin_embedder_policy);
 
   // blink::mojom::SharedWorkerHost methods:
   void OnConnected(int connection_request_id) override;
@@ -290,6 +304,16 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
   const ukm::SourceId ukm_source_id_;
 
   const base::UnguessableToken reporting_source_;
+
+  // The frame/worker's Cross-Origin-Embedder-Policy (COEP) that directly starts
+  // this worker.
+  const network::CrossOriginEmbedderPolicy
+      creator_cross_origin_embedder_policy_;
+
+  // The SharedWorker's Cross-Origin-Embedder-Policy (COEP). This is set when
+  // the script's response head is loaded.
+  absl::optional<network::CrossOriginEmbedderPolicy>
+      worker_cross_origin_embedder_policy_;
 
   base::WeakPtrFactory<SharedWorkerHost> weak_factory_{this};
 

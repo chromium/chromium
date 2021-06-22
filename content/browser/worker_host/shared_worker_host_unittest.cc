@@ -30,6 +30,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/not_implemented_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -81,7 +82,8 @@ class SharedWorkerHostTest : public testing::Test {
         blink::mojom::SharedWorkerCreationContextType::kSecure);
     auto host = std::make_unique<SharedWorkerHost>(
         &service_, instance, site_instance_,
-        std::vector<network::mojom::ContentSecurityPolicyPtr>());
+        std::vector<network::mojom::ContentSecurityPolicyPtr>(),
+        network::CrossOriginEmbedderPolicy());
     auto weak_host = host->AsWeakPtr();
     service_.worker_hosts_.insert(std::move(host));
     return weak_host;

@@ -1,8 +1,8 @@
 This is a testharness.js-based test.
 PASS shared-worker
-FAIL fetch same-origin assert_equals: coep:credentialless =>  expected "Worker blocked" but got "same_origin"
+PASS fetch same-origin
 PASS fetch same-origin + credentialless worker
-FAIL fetch cross-origin assert_equals: coep:credentialless =>  expected "Worker blocked" but got "cross_origin"
+PASS fetch cross-origin
 FAIL fetch cross-origin + credentialless worker assert_equals: coep:none =>  expected (undefined) undefined but got (string) "cross_origin"
 Harness: the test ran to completion.
 
