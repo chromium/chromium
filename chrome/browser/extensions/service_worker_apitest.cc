@@ -479,6 +479,28 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, UndefinedVariable) {
                         "undefined_variable is not defined"));
 }
 
+// Tests that an error is generated if console.error() is called from an
+// extension's service worker.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, ConsoleError) {
+  ErrorConsole* error_console = ErrorConsole::Get(profile());
+  // Error is observed on extension UI for developer mode only.
+  profile()->GetPrefs()->SetBoolean(prefs::kExtensionsUIDeveloperMode, true);
+  const size_t kErrorsExpected = 1u;
+  ErrorObserver observer(kErrorsExpected, error_console);
+
+  ASSERT_TRUE(
+      RunExtensionTest("service_worker/worker_based_background/console_error"))
+      << message_;
+
+  observer.WaitForErrors();
+  const ErrorList& error_list = error_console->GetErrorsForExtension(
+      ExtensionBrowserTest::last_loaded_extension_id());
+  ASSERT_EQ(kErrorsExpected, error_list.size());
+  EXPECT_EQ(ExtensionError::RUNTIME_ERROR, error_list[0]->type());
+  EXPECT_THAT(base::UTF16ToUTF8(error_list[0]->message()),
+              HasSubstr("Logged from MV3 service worker"));
+}
+
 // Tests chrome.runtime.onInstalled fires for extension service workers.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, OnInstalledEvent) {
   ASSERT_TRUE(RunExtensionTest(

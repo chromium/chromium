@@ -204,6 +204,16 @@ class ServiceWorkerTaskQueue : public KeyedService,
 
   WorkerState* GetWorkerState(const SequencedContextId& context_id);
 
+  content::ServiceWorkerContext* GetServiceWorkerContext(
+      const ExtensionId& extension_id);
+
+  // Starts and stops observing |service_worker_context|.
+  //
+  // The methods ensure that many:1 relationship of SWContext:SWContextObserver
+  // is preserved correctly.
+  void StartObserving(content::ServiceWorkerContext* service_worker_context);
+  void StopObserving(content::ServiceWorkerContext* service_worker_context);
+
   int next_activation_sequence_ = 0;
 
   std::multiset<content::ServiceWorkerContext*> observing_worker_contexts_;

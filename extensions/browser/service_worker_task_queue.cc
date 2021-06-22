@@ -233,18 +233,6 @@ void ServiceWorkerTaskQueue::DidStartServiceWorkerContext(
       LazyContextId(browser_context_, extension_id, service_worker_scope),
       activation_sequence);
 
-  content::StoragePartition* partition =
-      util::GetStoragePartitionForExtensionId(extension_id, browser_context_);
-
-  content::ServiceWorkerContext* service_worker_context =
-      partition->GetServiceWorkerContext();
-
-  if (observing_worker_contexts_.find(service_worker_context) ==
-      observing_worker_contexts_.end()) {
-    service_worker_context->AddObserver(this);
-  }
-  observing_worker_contexts_.insert(service_worker_context);
-
   const WorkerId worker_id = {extension_id, render_process_id,
                               service_worker_version_id, thread_id};
   WorkerState* worker_state = GetWorkerState(context_id);
@@ -285,22 +273,6 @@ void ServiceWorkerTaskQueue::DidStopServiceWorkerContext(
   SequencedContextId context_id(
       LazyContextId(browser_context_, extension_id, service_worker_scope),
       activation_sequence);
-
-  content::StoragePartition* partition =
-      util::GetStoragePartitionForExtensionId(extension_id, browser_context_);
-
-  content::ServiceWorkerContext* service_worker_context =
-      partition->GetServiceWorkerContext();
-
-  if (observing_worker_contexts_.find(service_worker_context) !=
-      observing_worker_contexts_.end()) {
-    observing_worker_contexts_.erase(service_worker_context);
-  }
-
-  if (observing_worker_contexts_.find(service_worker_context) ==
-      observing_worker_contexts_.end()) {
-    service_worker_context->RemoveObserver(this);
-  }
 
   WorkerState* worker_state = GetWorkerState(context_id);
   DCHECK(worker_state);
@@ -394,13 +366,15 @@ void ServiceWorkerTaskQueue::ActivateExtension(const Extension* extension) {
       BackgroundServiceWorkerType::kModule)
     option.type = blink::mojom::ScriptType::kModule;
   option.scope = extension->url();
-  util::GetStoragePartitionForExtensionId(extension->id(), browser_context_)
-      ->GetServiceWorkerContext()
-      ->RegisterServiceWorker(
-          script_url, option,
-          base::BindOnce(&ServiceWorkerTaskQueue::DidRegisterServiceWorker,
-                         weak_factory_.GetWeakPtr(), context_id,
-                         base::Time::Now()));
+  content::ServiceWorkerContext* service_worker_context =
+      GetServiceWorkerContext(extension->id());
+
+  service_worker_context->RegisterServiceWorker(
+      script_url, option,
+      base::BindOnce(&ServiceWorkerTaskQueue::DidRegisterServiceWorker,
+                     weak_factory_.GetWeakPtr(), context_id,
+                     base::Time::Now()));
+  StartObserving(service_worker_context);
 }
 
 void ServiceWorkerTaskQueue::DeactivateExtension(const Extension* extension) {
@@ -423,12 +397,15 @@ void ServiceWorkerTaskQueue::DeactivateExtension(const Extension* extension) {
   worker_state->pending_tasks_.clear();
   worker_state_map_.erase(context_id);
 
-  util::GetStoragePartitionForExtensionId(extension->id(), browser_context_)
-      ->GetServiceWorkerContext()
-      ->UnregisterServiceWorker(
-          extension->url(),
-          base::BindOnce(&ServiceWorkerTaskQueue::DidUnregisterServiceWorker,
-                         weak_factory_.GetWeakPtr(), extension_id, *sequence));
+  content::ServiceWorkerContext* service_worker_context =
+      GetServiceWorkerContext(extension->id());
+
+  service_worker_context->UnregisterServiceWorker(
+      extension->url(),
+      base::BindOnce(&ServiceWorkerTaskQueue::DidUnregisterServiceWorker,
+                     weak_factory_.GetWeakPtr(), extension_id, *sequence));
+
+  StopObserving(service_worker_context);
 }
 
 void ServiceWorkerTaskQueue::RunTasksAfterStartWorker(
@@ -654,6 +631,29 @@ ServiceWorkerTaskQueue::WorkerState* ServiceWorkerTaskQueue::GetWorkerState(
   auto worker_iter = worker_state_map_.find(context_id);
   return worker_iter == worker_state_map_.end() ? nullptr
                                                 : &worker_iter->second;
+}
+
+content::ServiceWorkerContext* ServiceWorkerTaskQueue::GetServiceWorkerContext(
+    const ExtensionId& extension_id) {
+  return util::GetStoragePartitionForExtensionId(extension_id, browser_context_)
+      ->GetServiceWorkerContext();
+}
+
+void ServiceWorkerTaskQueue::StartObserving(
+    content::ServiceWorkerContext* service_worker_context) {
+  if (observing_worker_contexts_.count(service_worker_context) == 0u)
+    service_worker_context->AddObserver(this);
+  observing_worker_contexts_.insert(service_worker_context);
+}
+
+void ServiceWorkerTaskQueue::StopObserving(
+    content::ServiceWorkerContext* service_worker_context) {
+  // TODO(crbug.com/1222759): Investigate when the DCHECK's condition can be
+  // false.
+  DCHECK(observing_worker_contexts_.count(service_worker_context) > 0u);
+  observing_worker_contexts_.erase(service_worker_context);
+  if (!observing_worker_contexts_.count(service_worker_context))
+    service_worker_context->RemoveObserver(this);
 }
 
 }  // namespace extensions
