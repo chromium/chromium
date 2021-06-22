@@ -702,6 +702,10 @@ void DesksBarView::OnDeskRemoved(const Desk* desk) {
 
   // Switch to zero state if there is a single desk after removing.
   if (mini_views_.size() == 1) {
+    // Hiding the button immediately instead of the ends of the animation while
+    // switching from expanded state to zero state.
+    if (vertical_dots_button_)
+      vertical_dots_button_->SetVisible(false);
     std::vector<DeskMiniView*> removed_mini_views;
     removed_mini_views.push_back(removed_mini_view);
     removed_mini_views.push_back(mini_views_[0]);
@@ -916,6 +920,8 @@ void DesksBarView::UpdateDeskButtonsVisibility() {
   zero_state_default_desk_button_->SetVisible(is_zero_state);
   zero_state_new_desk_button_->SetVisible(is_zero_state);
   expanded_state_new_desk_button_->SetVisible(!is_zero_state);
+  if (vertical_dots_button_)
+    vertical_dots_button_->SetVisible(!is_zero_state);
 }
 
 void DesksBarView::UpdateScrollButtonsVisibility() {
