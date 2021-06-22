@@ -20,6 +20,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/web_ui/safe_browsing_ui.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/common/utils.h"
 #include "components/safe_browsing/core/features.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -336,8 +337,10 @@ void SafeBrowsingNavigationObserverManager::SanitizeReferrerChain(
   }
 }
 
-SafeBrowsingNavigationObserverManager::SafeBrowsingNavigationObserverManager()
-    : navigation_event_list_(kNavigationRecordMaxSize) {
+SafeBrowsingNavigationObserverManager::SafeBrowsingNavigationObserverManager(
+    PrefService* pref_service)
+    : navigation_event_list_(kNavigationRecordMaxSize),
+      pref_service_(pref_service) {
   // Schedule clean up in 2 minutes.
   ScheduleNextCleanUpAfterInterval(
       base::TimeDelta::FromSecondsD(kNavigationFootprintTTLInSecond));
@@ -456,6 +459,8 @@ SafeBrowsingNavigationObserverManager::IdentifyReferrerChainByEventURL(
   GetRemainingReferrerChain(nav_event, user_gesture_count,
                             user_gesture_count_limit, out_referrer_chain,
                             &result);
+
+  RemoveSafeBrowsingAllowlistDomains(out_referrer_chain);
   return result;
 }
 
@@ -480,6 +485,8 @@ SafeBrowsingNavigationObserverManager::IdentifyReferrerChainByPendingEventURL(
   GetRemainingReferrerChain(nav_event, user_gesture_count,
                             user_gesture_count_limit, out_referrer_chain,
                             &result);
+
+  RemoveSafeBrowsingAllowlistDomains(out_referrer_chain);
   return result;
 }
 
@@ -539,6 +546,8 @@ SafeBrowsingNavigationObserverManager::IdentifyReferrerChainByHostingPage(
   GetRemainingReferrerChain(nav_event, user_gesture_count,
                             user_gesture_count_limit, out_referrer_chain,
                             &result);
+
+  RemoveSafeBrowsingAllowlistDomains(out_referrer_chain);
   return result;
 }
 
@@ -630,6 +639,8 @@ void SafeBrowsingNavigationObserverManager::AppendRecentNavigations(
     }
     it++;
   }
+
+  RemoveSafeBrowsingAllowlistDomains(out_referrer_chain);
 }
 
 void SafeBrowsingNavigationObserverManager::CleanUpNavigationEvents() {
@@ -775,6 +786,26 @@ void SafeBrowsingNavigationObserverManager::GetRemainingReferrerChain(
     if (out_referrer_chain->size() == kReferrerChainMaxLength)
       return;
     last_main_frame_url_traced = last_nav_event_traced->source_main_frame_url;
+  }
+}
+
+void SafeBrowsingNavigationObserverManager::RemoveSafeBrowsingAllowlistDomains(
+    ReferrerChain* out_referrer_chain) {
+  for (ReferrerChainEntry& entry : *out_referrer_chain) {
+    if (IsURLAllowlistedByPolicy(GURL(entry.url()), *pref_service_)) {
+      entry.clear_url();
+    }
+    if (IsURLAllowlistedByPolicy(GURL(entry.main_frame_url()),
+                                 *pref_service_)) {
+      entry.clear_main_frame_url();
+    }
+    if (IsURLAllowlistedByPolicy(GURL(entry.referrer_url()), *pref_service_)) {
+      entry.clear_referrer_url();
+    }
+    if (IsURLAllowlistedByPolicy(GURL(entry.referrer_main_frame_url()),
+                                 *pref_service_)) {
+      entry.clear_referrer_main_frame_url();
+    }
   }
 }
 

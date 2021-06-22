@@ -174,7 +174,8 @@ class TestNavigationObserverManager
     : public SafeBrowsingNavigationObserverManager,
       public TabStripModelObserver {
  public:
-  explicit TestNavigationObserverManager(Browser* browser) {
+  explicit TestNavigationObserverManager(Browser* browser)
+      : SafeBrowsingNavigationObserverManager(browser->profile()->GetPrefs()) {
     browser->tab_strip_model()->AddObserver(this);
   }
 
@@ -2864,6 +2865,125 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
   navigation_manager.ResumeNavigation();
   navigation_manager.WaitForNavigationFinished();
   ASSERT_EQ(0U, nav_list->PendingNavigationEventsSize());
+}
+
+// Verify URLs that match the Safe Browsing allowlist domains (a.k.a
+// prefs::kSafeBrowsingAllowlistDomains) are removed from the referrer chain.
+IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
+                       AllowlistDomainsRemoved_ReferrerChain) {
+  ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(kSingleFrameTestURL));
+  GURL initial_url = embedded_test_server()->GetURL(kSingleFrameTestURL);
+  ClickTestLink("sub_frame_download_attribution", 1, initial_url);
+  GURL multi_frame_test_url =
+      embedded_test_server()->GetURL(kMultiFrameTestURL);
+  GURL iframe_url = embedded_test_server()->GetURL(kIframeDirectDownloadURL);
+  ClickTestLink("iframe_direct_download", 1, iframe_url, 0);
+  GURL iframe_retargeting_url =
+      embedded_test_server()->GetURL(kIframeRetargetingURL);
+  GURL download_url = embedded_test_server()->GetURL(kDownloadItemURL);
+  std::string test_server_ip(embedded_test_server()->host_port_pair().host());
+
+  // Add URLs to the Safe Browsing allowlist.
+  base::ListValue allowlist;
+  allowlist.AppendString(initial_url.host());
+  allowlist.AppendString(multi_frame_test_url.host());
+  allowlist.AppendString(iframe_url.host());
+  allowlist.AppendString(iframe_retargeting_url.host());
+  allowlist.AppendString(download_url.host());
+  browser()->profile()->GetPrefs()->Set(prefs::kSafeBrowsingAllowlistDomains,
+                                        allowlist);
+
+  ReferrerChain referrer_chain;
+  IdentifyReferrerChainForDownload(GetDownload(), &referrer_chain);
+  ASSERT_EQ(4, referrer_chain.size());
+  // All URL fields should be empty because they all match the allowlist.
+  VerifyReferrerChainEntry(
+      GURL(),                         // url
+      GURL(),                         // main_frame_url
+      ReferrerChainEntry::EVENT_URL,  // type
+      test_server_ip,                 // ip_address
+      GURL(),                         // referrer_url
+      GURL(),                         // referrer_main_frame_url
+      false,                          // is_retargeting
+      std::vector<GURL>(),            // server redirects
+      ReferrerChainEntry::RENDERER_INITIATED_WITH_USER_GESTURE,
+      referrer_chain.Get(0));
+  VerifyReferrerChainEntry(
+      GURL(),                            // url
+      GURL(),                            // main_frame_url
+      ReferrerChainEntry::LANDING_PAGE,  // type
+      test_server_ip,                    // ip_address
+      GURL(),                            // referrer_url
+      GURL(),                            // referrer_main_frame_url
+      false,                             // is_retargeting
+      std::vector<GURL>(),               // server redirects
+      ReferrerChainEntry::RENDERER_INITIATED_WITHOUT_USER_GESTURE,
+      referrer_chain.Get(1));
+  VerifyReferrerChainEntry(
+      GURL(),                               // url
+      GURL(),                               // main_frame_url
+      ReferrerChainEntry::CLIENT_REDIRECT,  // type
+      test_server_ip,                       // ip_address
+      GURL(),                               // referrer_url
+      GURL(),                               // referrer_main_frame_url
+      false,                                // is_retargeting
+      std::vector<GURL>(),                  // server redirects
+      ReferrerChainEntry::RENDERER_INITIATED_WITH_USER_GESTURE,
+      referrer_chain.Get(2));
+  VerifyReferrerChainEntry(GURL(),  // url
+                           GURL(),  // main_frame_url
+                           ReferrerChainEntry::LANDING_REFERRER,  // type
+                           test_server_ip,                        // ip_address
+                           GURL(),               // referrer_url
+                           GURL(),               // referrer_main_frame_url
+                           false,                // is_retargeting
+                           std::vector<GURL>(),  // server redirects
+                           ReferrerChainEntry::BROWSER_INITIATED,
+                           referrer_chain.Get(3));
+}
+
+IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
+                       AllowlistDomainsRemoved_RecentNavigation) {
+  ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(kSingleFrameTestURL));
+  GURL initial_url = embedded_test_server()->GetURL(kSingleFrameTestURL);
+  ClickTestLink("direct_download", 1, initial_url);
+  GURL download_url = embedded_test_server()->GetURL(kDownloadItemURL);
+  std::string test_server_ip(embedded_test_server()->host_port_pair().host());
+
+  // Add URLs to the Safe Browsing allowlist.
+  base::ListValue allowlist;
+  allowlist.AppendString(initial_url.host());
+  allowlist.AppendString(download_url.host());
+  browser()->profile()->GetPrefs()->Set(prefs::kSafeBrowsingAllowlistDomains,
+                                        allowlist);
+
+  ReferrerChain referrer_chain;
+  AppendRecentNavigations(/*recent_navigation_count=*/2, &referrer_chain);
+  EXPECT_EQ(2, referrer_chain.size());
+  // All URL fields should be empty because they all match the allowlist.
+  VerifyReferrerChainEntry(
+      GURL(),                                 // url
+      GURL(),                                 // main_frame_url
+      ReferrerChainEntry::RECENT_NAVIGATION,  // type
+      test_server_ip,                         // ip_address
+      GURL(),                                 // referrer_url
+      GURL(),                                 // referrer_main_frame_url
+      false,                                  // is_retargeting
+      std::vector<GURL>(),                    // server redirects
+      ReferrerChainEntry::RENDERER_INITIATED_WITH_USER_GESTURE,
+      referrer_chain.Get(0));
+  VerifyReferrerChainEntry(GURL(),  // url
+                           GURL(),  // main_frame_url
+                           ReferrerChainEntry::RECENT_NAVIGATION,  // type
+                           test_server_ip,                         // ip_address
+                           GURL(),               // referrer_url
+                           GURL(),               // referrer_main_frame_url
+                           false,                // is_retargeting
+                           std::vector<GURL>(),  // server redirects
+                           ReferrerChainEntry::BROWSER_INITIATED,
+                           referrer_chain.Get(1));
 }
 
 class SBNavigationObserverPortalBrowserTest

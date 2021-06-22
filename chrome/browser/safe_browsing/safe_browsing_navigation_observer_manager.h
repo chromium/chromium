@@ -19,6 +19,7 @@
 #include "third_party/protobuf/src/google/protobuf/repeated_field.h"
 #include "url/gurl.h"
 
+class PrefService;
 class Profile;
 
 namespace content {
@@ -175,7 +176,7 @@ class SafeBrowsingNavigationObserverManager : public ReferrerChainProvider,
   // Sanitize referrer chain by only keeping origin information of all URLs.
   static void SanitizeReferrerChain(ReferrerChain* referrer_chain);
 
-  SafeBrowsingNavigationObserverManager();
+  explicit SafeBrowsingNavigationObserverManager(PrefService* pref_service);
 
   // Adds |nav_event| to |navigation_event_list_|. Object pointed to by
   // |nav_event| will be no longer accessible after this function.
@@ -326,6 +327,10 @@ class SafeBrowsingNavigationObserverManager : public ReferrerChainProvider,
                                  ReferrerChain* out_referrer_chain,
                                  AttributionResult* out_result);
 
+  // Removes URLs in |out_referrer_chain| that match the Safe Browsing allowlist
+  // domains.
+  void RemoveSafeBrowsingAllowlistDomains(ReferrerChain* out_referrer_chain);
+
   // navigation_event_list_ keeps track of all the observed navigations. Since
   // the same url can be requested multiple times across different tabs and
   // frames, this list of NavigationEvents are ordered by navigation finish
@@ -344,6 +349,9 @@ class SafeBrowsingNavigationObserverManager : public ReferrerChainProvider,
   // than one IP in even a short period of time, we map a single host to a
   // vector of ResolvedIPAddresss.
   HostToIpMap host_to_ip_map_;
+
+  // Unowned object used for getting preference settings.
+  PrefService* pref_service_;
 
   base::OneShotTimer cleanup_timer_;
 
