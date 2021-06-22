@@ -131,10 +131,13 @@ source_set("eg2_tests") {
   sources = [
     "ar_quick_look_egtest.mm",
     "download_manager_egtest.mm",
+    "mobileconfig_egtest.mm",
     "pass_kit_egtest.mm",
   ]
 
   deps = [
+    ":features",
+    "//components/strings:components_strings_grit",
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser:chrome_url_constants",
     "//ios/chrome/browser/download:mime_types",

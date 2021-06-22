@@ -12,7 +12,7 @@
 #import "base/test/ios/wait_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "ios/chrome/browser/download/download_directory_util.h"
-#include "ios/chrome/browser/download/usdz_mime_type.h"
+#include "ios/chrome/browser/download/mime_type_util.h"
 #import "ios/chrome/test/fakes/fake_ar_quick_look_tab_helper_delegate.h"
 #import "ios/web/public/test/fakes/fake_download_task.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"

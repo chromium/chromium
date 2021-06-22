@@ -17,7 +17,7 @@
 #include "base/task/thread_pool.h"
 #import "ios/chrome/browser/download/ar_quick_look_tab_helper_delegate.h"
 #include "ios/chrome/browser/download/download_directory_util.h"
-#include "ios/chrome/browser/download/usdz_mime_type.h"
+#include "ios/chrome/browser/download/mime_type_util.h"
 #import "ios/web/public/download/download_task.h"
 #include "net/base/net_errors.h"
 #include "net/url_request/url_fetcher_response_writer.h"

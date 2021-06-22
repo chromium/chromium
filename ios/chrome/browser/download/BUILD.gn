@@ -62,10 +62,8 @@ source_set("download") {
 
 source_set("mime_types") {
   sources = [
-    "pass_kit_mime_type.cc",
-    "pass_kit_mime_type.h",
-    "usdz_mime_type.cc",
-    "usdz_mime_type.h",
+    "mime_type_util.cc",
+    "mime_type_util.h",
   ]
 
   deps = [ "//base" ]

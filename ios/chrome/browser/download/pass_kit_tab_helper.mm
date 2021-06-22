@@ -11,7 +11,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
-#include "ios/chrome/browser/download/pass_kit_mime_type.h"
+#include "ios/chrome/browser/download/mime_type_util.h"
 #import "ios/chrome/browser/download/pass_kit_tab_helper_delegate.h"
 #import "ios/web/public/download/download_task.h"
 #include "net/url_request/url_fetcher_response_writer.h"

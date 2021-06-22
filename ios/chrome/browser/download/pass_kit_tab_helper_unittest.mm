@@ -11,7 +11,7 @@
 #include "base/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "ios/chrome/browser/download/download_test_util.h"
-#include "ios/chrome/browser/download/pass_kit_mime_type.h"
+#include "ios/chrome/browser/download/mime_type_util.h"
 #import "ios/chrome/test/fakes/fake_pass_kit_tab_helper_delegate.h"
 #import "ios/web/public/test/fakes/fake_download_task.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"

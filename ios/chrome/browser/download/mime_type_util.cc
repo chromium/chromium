@@ -1,12 +1,14 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/download/usdz_mime_type.h"
+#include "ios/chrome/browser/download/mime_type_util.h"
 
 #include "base/files/file_path.h"
 #include "base/strings/utf_string_conversions.h"
 
+char kMobileConfigurationType[] = "application/x-apple-aspen-config";
+char kPkPassMimeType[] = "application/vnd.apple.pkpass";
 char kUsdzFileExtension[] = ".usdz";
 char kUsdzMimeType[] = "model/vnd.usdz+zip";
 char kLegacyUsdzMimeType[] = "model/usd";
