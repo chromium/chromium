@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 """Script that runs tests before uploading a patch."""
 
+USE_PYTHON3 = True
+
 
 def _RunTests(input_api, output_api):
     """Runs all test files in the directory."""
@@ -11,7 +13,7 @@ def _RunTests(input_api, output_api):
     test_cmd = input_api.Command(
         name=cmd_name, cmd=cmd, kwargs={}, message=output_api.PresubmitError)
     if input_api.verbose:
-        print 'Running ' + cmd_name
+        print('Running ' + cmd_name)
     return input_api.RunTests([test_cmd])
 
 
