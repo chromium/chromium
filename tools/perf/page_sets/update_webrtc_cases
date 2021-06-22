@@ -35,7 +35,7 @@ TEST_PAGES_LOCATION_BY_REPO = {
             'src/content/insertable-streams/video-processing',
             'src/content/peerconnection/negotiate-timing',
             ],
-        'revision': '04dbb2ecacb2f3af7c1941824089a77150dc2ae3',
+        'revision': '2c807a20a3d5fca2436ca6608ddd42c22f15be26',
     },
 }
 
