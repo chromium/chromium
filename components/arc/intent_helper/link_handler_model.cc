@@ -155,7 +155,8 @@ void LinkHandlerModel::NotifyObserver(
     if (it != icons_.end())
       icon = it->second.icon16;
     // Use the handler's index as an ID.
-    LinkHandlerInfo handler = {base::UTF8ToUTF16(handlers_[i]->name), icon, i};
+    LinkHandlerInfo handler = {base::UTF8ToUTF16(handlers_[i]->name), icon,
+                               static_cast<uint32_t>(i)};
     handlers.push_back(handler);
   }
   for (auto& observer : observer_list_)
