@@ -11,14 +11,14 @@
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
-#include "url/origin.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace storage {
 
 class QuotaManagerProxy;
 
 // Used by DevTools clients and exposes the API to override and/or
-// manage an active override for storage quota on a per-origin basis.
+// manage an active override for storage quota on a per-storage-key basis.
 // QuotaOverrideHandle instances are owned by StorageHandler (DevTools client),
 // and each DevTools session will have at most 1 instance.
 // This class is not thread-safe. An instance must always be used from the same
@@ -30,9 +30,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaOverrideHandle {
   ~QuotaOverrideHandle();
   QuotaOverrideHandle(const QuotaOverrideHandle&) = delete;
 
-  void OverrideQuotaForOrigin(url::Origin origin,
-                              absl::optional<int64_t> quota_size,
-                              base::OnceClosure callback);
+  void OverrideQuotaForStorageKey(const blink::StorageKey& storage_key,
+                                  absl::optional<int64_t> quota_size,
+                                  base::OnceClosure callback);
 
  private:
   void GetUniqueId();

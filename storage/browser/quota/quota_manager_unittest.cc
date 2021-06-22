@@ -2795,8 +2795,8 @@ TEST_F(QuotaManagerImplTest, OverrideQuotaForStorageKey) {
   std::unique_ptr<QuotaOverrideHandle> handle = GetQuotaOverrideHandle();
 
   base::RunLoop run_loop;
-  handle->OverrideQuotaForOrigin(
-      storage_key.origin(), 5000,
+  handle->OverrideQuotaForStorageKey(
+      storage_key, 5000,
       base::BindLambdaForTesting([&]() { run_loop.Quit(); }));
   run_loop.Run();
 
@@ -2813,8 +2813,8 @@ TEST_F(QuotaManagerImplTest, OverrideQuotaForStorageKey_Disable) {
   std::unique_ptr<QuotaOverrideHandle> handle2 = GetQuotaOverrideHandle();
 
   base::RunLoop run_loop1;
-  handle1->OverrideQuotaForOrigin(
-      storage_key.origin(), 5000,
+  handle1->OverrideQuotaForStorageKey(
+      storage_key, 5000,
       base::BindLambdaForTesting([&]() { run_loop1.Quit(); }));
   run_loop1.Run();
 
@@ -2824,8 +2824,8 @@ TEST_F(QuotaManagerImplTest, OverrideQuotaForStorageKey_Disable) {
   EXPECT_EQ(5000, quota());
 
   base::RunLoop run_loop2;
-  handle2->OverrideQuotaForOrigin(
-      storage_key.origin(), 9000,
+  handle2->OverrideQuotaForStorageKey(
+      storage_key, 9000,
       base::BindLambdaForTesting([&]() { run_loop2.Quit(); }));
   run_loop2.Run();
 
@@ -2835,8 +2835,8 @@ TEST_F(QuotaManagerImplTest, OverrideQuotaForStorageKey_Disable) {
   EXPECT_EQ(9000, quota());
 
   base::RunLoop run_loop3;
-  handle2->OverrideQuotaForOrigin(
-      storage_key.origin(), absl::nullopt,
+  handle2->OverrideQuotaForStorageKey(
+      storage_key, absl::nullopt,
       base::BindLambdaForTesting([&]() { run_loop3.Quit(); }));
   run_loop3.Run();
 
@@ -2852,8 +2852,8 @@ TEST_F(QuotaManagerImplTest, WithdrawQuotaOverride) {
   std::unique_ptr<QuotaOverrideHandle> handle2 = GetQuotaOverrideHandle();
 
   base::RunLoop run_loop1;
-  handle1->OverrideQuotaForOrigin(
-      storage_key.origin(), 5000,
+  handle1->OverrideQuotaForStorageKey(
+      storage_key, 5000,
       base::BindLambdaForTesting([&]() { run_loop1.Quit(); }));
   run_loop1.Run();
 
@@ -2863,8 +2863,8 @@ TEST_F(QuotaManagerImplTest, WithdrawQuotaOverride) {
   EXPECT_EQ(5000, quota());
 
   base::RunLoop run_loop2;
-  handle1->OverrideQuotaForOrigin(
-      storage_key.origin(), 8000,
+  handle1->OverrideQuotaForStorageKey(
+      storage_key, 8000,
       base::BindLambdaForTesting([&]() { run_loop2.Quit(); }));
   run_loop2.Run();
 

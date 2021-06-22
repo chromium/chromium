@@ -440,8 +440,8 @@ void StorageHandler::OverrideQuotaForOrigin(
     quota_override_handle_ = manager_proxy->GetQuotaOverrideHandle();
   }
 
-  quota_override_handle_->OverrideQuotaForOrigin(
-      origin,
+  quota_override_handle_->OverrideQuotaForStorageKey(
+      blink::StorageKey(origin),
       quota_size.isJust() ? absl::make_optional(quota_size.fromJust())
                           : absl::nullopt,
       base::BindOnce(&OverrideQuotaForOriginCallback::sendSuccess,
