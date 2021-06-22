@@ -91,16 +91,7 @@ void SelfDeletingRequestDelegate::WebContentsDestroyed() {
 
 SelfDeletingRequestDelegate::SelfDeletingRequestDelegate(
     content::WebContents* web_contents)
-    : WebContentsObserver(web_contents) {
-  // Disable back-forward cache when the distillation is in progress as it would
-  // be cancelled and would not be restarted when the page is restored from the
-  // cache.
-  content::BackForwardCache::DisableForRenderFrameHost(
-      web_contents->GetMainFrame(),
-      back_forward_cache::DisabledReason(
-          back_forward_cache::DisabledReasonId::
-              kDomDistiller_SelfDeletingRequestDelegate));
-}
+    : WebContentsObserver(web_contents) {}
 
 SelfDeletingRequestDelegate::~SelfDeletingRequestDelegate() {}
 
@@ -128,16 +119,24 @@ void StartNavigationToDistillerViewer(content::WebContents* web_contents,
 }
 
 void MaybeStartDistillation(
-    std::unique_ptr<SourcePageHandleWebContents> source_page_handle) {
+    std::unique_ptr<SourcePageHandleWebContents> source_page_handle,
+    SelfDeletingRequestDelegate* view_request_delegate) {
   const GURL& last_committed_url =
       source_page_handle->web_contents()->GetLastCommittedURL();
   if (!dom_distiller::url_utils::IsUrlDistillable(last_committed_url))
     return;
 
+  // Disable back-forward cache when the distillation is in progress as it would
+  // be cancelled and would not be restarted when the page is restored from the
+  // cache.
+  content::BackForwardCache::DisableForRenderFrameHost(
+      source_page_handle->web_contents()->GetMainFrame(),
+      back_forward_cache::DisabledReason(
+          back_forward_cache::DisabledReasonId::
+              kDomDistiller_SelfDeletingRequestDelegate));
+
   // Start distillation using |source_page_handle|, and ensure ViewerHandle
   // stays around until the viewer requests distillation.
-  SelfDeletingRequestDelegate* view_request_delegate =
-      new SelfDeletingRequestDelegate(source_page_handle->web_contents());
   DomDistillerService* dom_distiller_service =
       DomDistillerServiceFactory::GetForBrowserContext(
           source_page_handle->web_contents()->GetBrowserContext());
@@ -178,6 +177,21 @@ void DistillCurrentPageAndView(content::WebContents* old_web_contents) {
   StartNavigationToDistillerViewer(new_web_contents.get(),
                                    old_web_contents->GetLastCommittedURL());
 
+  // This is used to start distillation and keep task_tracker alive till
+  // main viewer is created.
+  // Observes |new_web_contents| and is self deleted in the following cases
+  // (whichever happens first).
+  // 1. After navigation to distiller viewer is completed
+  // 2. When |new_web_contents| is destroyed
+  // 3. When render process attached to |new_web_contents| is gone
+  // Observing new_web_contents instead of |old_web_contents| will make sure
+  // that the destruction of |old_web_contents| will happen along with other
+  // web_contents else we might end up caching it till browser close which will
+  // lead to improper shutdown.
+  // For more details refer - https://crbug.com/1221168
+  SelfDeletingRequestDelegate* view_request_delegate =
+      new SelfDeletingRequestDelegate(new_web_contents.get());
+
   std::unique_ptr<content::WebContents> old_web_contents_owned =
       CoreTabHelper::FromWebContents(old_web_contents)
           ->SwapWebContents(std::move(new_web_contents), false, false);
@@ -185,7 +199,7 @@ void DistillCurrentPageAndView(content::WebContents* old_web_contents) {
   std::unique_ptr<SourcePageHandleWebContents> source_page_handle(
       new SourcePageHandleWebContents(old_web_contents_owned.release(), true));
 
-  MaybeStartDistillation(std::move(source_page_handle));
+  MaybeStartDistillation(std::move(source_page_handle), view_request_delegate);
 }
 
 void DistillCurrentPage(content::WebContents* source_web_contents) {
@@ -194,7 +208,10 @@ void DistillCurrentPage(content::WebContents* source_web_contents) {
   std::unique_ptr<SourcePageHandleWebContents> source_page_handle(
       new SourcePageHandleWebContents(source_web_contents, false));
 
-  MaybeStartDistillation(std::move(source_page_handle));
+  SelfDeletingRequestDelegate* view_request_delegate =
+      new SelfDeletingRequestDelegate(source_web_contents);
+
+  MaybeStartDistillation(std::move(source_page_handle), view_request_delegate);
 }
 
 void DistillAndView(content::WebContents* source_web_contents,
