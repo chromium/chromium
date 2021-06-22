@@ -764,6 +764,18 @@
   <message name="IDS_OS_SETTINGS_DARK_MODE_OFF" desc="Label for the toggle row in dark mode settings page when it is disabled.">
     Off
   </message>
+  <message name="IDS_OS_SETTINGS_DARK_MODE_THEMED_RADIO_GROUP_TITLE" desc="The title of the radio group that allows the user to configure the accent color of the dark mode.">
+    Accent color
+  </message>
+  <message name="IDS_OS_SETTINGS_DARK_MODE_THEMED_RADIO_GROUP_DESCRIPTION" desc="The description of the radio group that allows the user to configure the accent color of the dark mode.">
+    Choose the color theme for Launcher, shelf, Quick Settings, and more
+  </message>
+  <message name="IDS_OS_SETTINGS_DARK_MODE_THEMED_ON" desc="Label for the checkbox which set the color mode is computed based on the user's wallpaper.">
+    Based on your wallpaper
+  </message>
+  <message name="IDS_OS_SETTINGS_DARK_MODE_THEMED_OFF" desc="Label for the checkbox which set the color mode to default color than calculated from the current wallpaper.">
+    Neutral
+  </message>
 
   <!-- Search and Assistant section. -->
   <message name="IDS_OS_SETTINGS_SEARCH_ENGINE_LABEL" desc="Label in OS settings describing search engine behavior.">

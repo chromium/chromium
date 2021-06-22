@@ -50,6 +50,7 @@ js_library("dark_mode_subpage.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/personalization_page/dark_mode_subpage.m.js" ]
 
   deps = [
+    "../../controls:settings_toggle_button",
     "../../prefs:prefs",
     "../../prefs:prefs_behavior",
     "//ui/webui/resources/js:load_time_data",

@@ -22,8 +22,15 @@ function createDarkModePage() {
     ash: {
       dark_mode: {
         enabled: {
+          key: 'ash.dark_mode.enabled',
+          type: chrome.settingsPrivate.PrefType.BOOLEAN,
           value: false,
-        }
+        },
+        color_mode_themed: {
+          key: 'ash.dark_mode.color_mode_themed',
+          type: chrome.settingsPrivate.PrefType.BOOLEAN,
+          value: false,
+        },
       }
     }
   });
@@ -57,7 +64,6 @@ suite('DarkModeHandler', function() {
     const button = darkModePage.$$('#darkModeToggleButton');
     assertTrue(!!button);
     assertFalse(button.disabled);
-    const dark_mode_pref_string = 'ash.dark_mode.enabled.value';
 
     const getPrefValue = () => {
       return darkModePage.getPref('ash.dark_mode.enabled').value;
@@ -74,6 +80,42 @@ suite('DarkModeHandler', function() {
 
     // Click the button again to disable dark mode again.
     button.click();
+    Polymer.dom.flush();
+    assertFalse(getPrefValue());
+  });
+
+  test('toggleDarkModeThemed', () => {
+    const darkModeThemedRadioGroup =
+        darkModePage.$$('#darkModeThemedRadioGroup');
+    assertTrue(!!darkModeThemedRadioGroup);
+
+    const getPrefValue = () => {
+      return darkModePage.getPref('ash.dark_mode.color_mode_themed').value;
+    };
+
+    // Dark mode themed starts disabled.
+    assertFalse(getPrefValue());
+    assertEquals('false', darkModeThemedRadioGroup.selected);
+
+    // Enable theming from pref and expect an update to a radio button group.
+    darkModePage.setPrefValue('ash.dark_mode.color_mode_themed', true);
+    Polymer.dom.flush();
+    assertEquals('true', darkModeThemedRadioGroup.selected);
+
+    // Disable theming from pref and expect an update to a radio button group.
+    darkModePage.setPrefValue('ash.dark_mode.color_mode_themed', false);
+    Polymer.dom.flush();
+    assertEquals('false', darkModeThemedRadioGroup.selected);
+
+    // Clicking the 'on' radio should updates the theming pref to on.
+    const darkModeThemedOn = darkModePage.$$('#darkModeThemedOn');
+    darkModeThemedOn.click();
+    Polymer.dom.flush();
+    assertTrue(getPrefValue());
+
+    // Clicking the 'off' radio should updates the theming pref to off.
+    const darkModeThemedOff = darkModePage.$$('#darkModeThemedOff');
+    darkModeThemedOff.click();
     Polymer.dom.flush();
     assertFalse(getPrefValue());
   });

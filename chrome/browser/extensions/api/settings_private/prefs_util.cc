@@ -592,6 +592,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   // Dark Mode.
   (*s_allowlist)[ash::prefs::kDarkModeEnabled] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
+  (*s_allowlist)[ash::prefs::kColorModeThemed] =
+      settings_api::PrefType::PREF_TYPE_BOOLEAN;
 
   // Google Assistant.
   (*s_allowlist)[chromeos::assistant::prefs::kAssistantConsentStatus] =
