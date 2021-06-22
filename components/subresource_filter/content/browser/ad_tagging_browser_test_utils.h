@@ -15,6 +15,10 @@ class RenderFrameHost;
 class ToRenderFrameHost;
 }  // namespace content
 
+namespace testing {
+class AssertionResult;
+}  // namespace testing
+
 namespace subresource_filter {
 
 // Used for giving identifiers to frames that can easily be searched for
@@ -33,15 +37,15 @@ content::RenderFrameHost* CreateSrcFrame(
     const content::ToRenderFrameHost& adapter,
     const GURL& url);
 
-// Verifies that the ad evidence associated with the frame matches the
+// Returns whether the ad evidence associated with the frame is composed of the
 // provided values. The first signature assumes that the most restrictive and
 // latest filter list results are the same.
-void ExpectFrameAdEvidence(
+::testing::AssertionResult EvidenceForFrameComprises(
     content::RenderFrameHost* frame_host,
     bool parent_is_ad,
     blink::mojom::FilterListResult filter_list_result,
     blink::mojom::FrameCreationStackEvidence created_by_ad_script);
-void ExpectFrameAdEvidence(
+::testing::AssertionResult EvidenceForFrameComprises(
     content::RenderFrameHost* frame_host,
     bool parent_is_ad,
     blink::mojom::FilterListResult latest_filter_list_result,

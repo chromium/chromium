@@ -114,29 +114,29 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest, FramesByURL) {
   content::RenderFrameHost* ad_child = subresource_filter::CreateSrcFrame(
       web_contents(), GetURL("frame_factory.html?2&ad=true"));
   EXPECT_TRUE(observer.GetIsAdSubframe(ad_child->GetFrameTreeNodeId()));
-  subresource_filter::ExpectFrameAdEvidence(
+  EXPECT_TRUE(subresource_filter::EvidenceForFrameComprises(
       ad_child, /*parent_is_ad=*/false,
       blink::mojom::FilterListResult::kMatchedBlockingRule,
-      blink::mojom::FrameCreationStackEvidence::kNotCreatedByAdScript);
+      blink::mojom::FrameCreationStackEvidence::kNotCreatedByAdScript));
 
   // (3) Ad child of 2.
   content::RenderFrameHost* ad_child_2 = subresource_filter::CreateSrcFrame(
       ad_child, GetURL("frame_factory.html?sub=1&3&ad=true"));
   EXPECT_TRUE(observer.GetIsAdSubframe(ad_child_2->GetFrameTreeNodeId()));
-  subresource_filter::ExpectFrameAdEvidence(
+  EXPECT_TRUE(subresource_filter::EvidenceForFrameComprises(
       ad_child_2, /*parent_is_ad=*/true,
       blink::mojom::FilterListResult::kMatchedBlockingRule,
-      blink::mojom::FrameCreationStackEvidence::kCreatedByAdScript);
+      blink::mojom::FrameCreationStackEvidence::kCreatedByAdScript));
 
   // (4) Vanilla child of 2.
   content::RenderFrameHost* vanilla_child_2 =
       subresource_filter::CreateSrcFrame(ad_child,
                                          GetURL("frame_factory.html?4"));
   EXPECT_TRUE(observer.GetIsAdSubframe(vanilla_child_2->GetFrameTreeNodeId()));
-  subresource_filter::ExpectFrameAdEvidence(
+  EXPECT_TRUE(subresource_filter::EvidenceForFrameComprises(
       vanilla_child_2, /*parent_is_ad=*/true,
       blink::mojom::FilterListResult::kMatchedNoRules,
-      blink::mojom::FrameCreationStackEvidence::kCreatedByAdScript);
+      blink::mojom::FrameCreationStackEvidence::kCreatedByAdScript));
 
   // (5) Vanilla child of 1. This tests something subtle.
   // frame_factory.html?ad=true loads the same script that frame_factory.html

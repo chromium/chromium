@@ -56,16 +56,16 @@ content::RenderFrameHost* CreateSrcFrame(
   return CreateFrameImpl(adapter, url, false /* ad_script */);
 }
 
-void ExpectFrameAdEvidence(
+testing::AssertionResult EvidenceForFrameComprises(
     content::RenderFrameHost* frame_host,
     bool parent_is_ad,
     blink::mojom::FilterListResult filter_list_result,
     blink::mojom::FrameCreationStackEvidence created_by_ad_script) {
-  ExpectFrameAdEvidence(frame_host, parent_is_ad, filter_list_result,
-                        filter_list_result, created_by_ad_script);
+  return EvidenceForFrameComprises(frame_host, parent_is_ad, filter_list_result,
+                                   filter_list_result, created_by_ad_script);
 }
 
-void ExpectFrameAdEvidence(
+testing::AssertionResult EvidenceForFrameComprises(
     content::RenderFrameHost* frame_host,
     bool parent_is_ad,
     blink::mojom::FilterListResult latest_filter_list_result,
@@ -76,14 +76,36 @@ void ExpectFrameAdEvidence(
           content::WebContents::FromRenderFrameHost(frame_host));
   absl::optional<blink::FrameAdEvidence> ad_evidence =
       throttle_manager->GetAdEvidenceForFrame(frame_host);
-  ASSERT_TRUE(ad_evidence.has_value());
-  EXPECT_TRUE(ad_evidence->is_complete());
-  EXPECT_EQ(ad_evidence->parent_is_ad(), parent_is_ad);
-  EXPECT_EQ(ad_evidence->latest_filter_list_result(),
-            latest_filter_list_result);
-  EXPECT_EQ(ad_evidence->most_restrictive_filter_list_result(),
-            most_restrictive_filter_list_result);
-  EXPECT_EQ(ad_evidence->created_by_ad_script(), created_by_ad_script);
+
+  if (!ad_evidence.has_value())
+    return testing::AssertionFailure() << "Expected ad evidence to exist.";
+  if (!ad_evidence->is_complete())
+    return testing::AssertionFailure() << "Expect ad evidence to be complete.";
+  if (ad_evidence->parent_is_ad() != parent_is_ad) {
+    return testing::AssertionFailure()
+           << "Expected: " << parent_is_ad
+           << " for parent_is_ad, actual: " << ad_evidence->parent_is_ad();
+  }
+  if (ad_evidence->latest_filter_list_result() != latest_filter_list_result) {
+    return testing::AssertionFailure()
+           << "Expected: " << latest_filter_list_result
+           << " for latest_filter_list_result, actual: "
+           << ad_evidence->latest_filter_list_result();
+  }
+  if (ad_evidence->most_restrictive_filter_list_result() !=
+      most_restrictive_filter_list_result) {
+    return testing::AssertionFailure()
+           << "Expected: " << most_restrictive_filter_list_result
+           << " for most_restrictive_filter_list_result, actual: "
+           << ad_evidence->most_restrictive_filter_list_result();
+  }
+  if (ad_evidence->created_by_ad_script() != created_by_ad_script) {
+    return testing::AssertionFailure() << "Expected: " << created_by_ad_script
+                                       << " for created_by_ad_script, actual: "
+                                       << ad_evidence->created_by_ad_script();
+  }
+
+  return testing::AssertionSuccess();
 }
 
 }  // namespace subresource_filter
