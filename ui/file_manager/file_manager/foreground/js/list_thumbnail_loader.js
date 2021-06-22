@@ -8,7 +8,7 @@
 // #import {ThumbnailModel} from './metadata/thumbnail_model.js';
 // #import {DirectoryModel} from './directory_model.m.js';
 // #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
-// #import {LRUCache} from '../../common/js/lru_cache.m.js';
+// #import {LRUCache} from '../../common/js/lru_cache.js';
 // #import {ThumbnailLoader} from './thumbnail_loader.m.js';
 // #import {assert} from 'chrome://resources/js/assert.m.js';
 // #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';

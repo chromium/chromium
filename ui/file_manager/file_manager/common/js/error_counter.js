@@ -5,7 +5,6 @@
 
 (function() {
 
-/* #ignore */ 'use strict';
 
 /**
  * This variable is checked in several integration and unit tests, to make sure

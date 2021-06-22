@@ -2,19 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * @fileoverview
- * @suppress {uselessCode} Temporary suppress because of the line exporting.
- */
-
-// clang-format off
-// #import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
-// #import {VolumeInfo} from '../../externs/volume_info.js';
-// #import {VolumeManager} from '../../externs/volume_manager.js';
-// #import {FileType} from './file_type.m.js';
-// #import {VolumeManagerCommon} from './volume_manager_types.m.js';
-// #import {xfm} from './xfm.m.js';
-// clang-format on
+import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
+import {VolumeInfo} from '../../externs/volume_info.js';
+import {VolumeManager} from '../../externs/volume_manager.js';
+import {FileType} from './file_type.js';
+import {VolumeManagerCommon} from './volume_manager_types.m.js';
+import {xfm} from './xfm.m.js';
 
 // Namespace
 // eslint-disable-next-line no-var
@@ -983,5 +976,4 @@ importer.ChromeLocalStorage = class {
 /** @private @const {!importer.ChromeLocalStorage} */
 importer.ChromeLocalStorage.INSTANCE_ = new importer.ChromeLocalStorage();
 
-// eslint-disable-next-line semi,no-extra-semi
-/* #export */ {importer};
+export {importer};

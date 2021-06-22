@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {FileType} from '../../../common/js/file_type.m.js';
+import {FileType} from '../../../common/js/file_type.js';
 
 import {MetadataModel} from './metadata_model.js';
 

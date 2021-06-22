@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {LRUCache} from '../../common/js/lru_cache.m.js';
+import {LRUCache} from '../../common/js/lru_cache.js';
 
 // Namespace
 const metadataProxy = {};

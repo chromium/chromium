@@ -6,7 +6,7 @@ import {ImageLoaderClient} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeop
 import {LoadImageRequest, LoadImageResponseStatus} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/load_image_request.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 
-import {FileType} from '../../../common/js/file_type.m.js';
+import {FileType} from '../../../common/js/file_type.js';
 import {util} from '../../../common/js/util.m.js';
 import {ThumbnailLoader} from '../thumbnail_loader.m.js';
 

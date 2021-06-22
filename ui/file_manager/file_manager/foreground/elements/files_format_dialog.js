@@ -14,7 +14,7 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {EntryList, VolumeEntry} from '../../common/js/files_app_entry_types.m.js';
+import {EntryList, VolumeEntry} from '../../common/js/files_app_entry_types.js';
 import {util} from '../../common/js/util.m.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
 import {VolumeInfo} from '../../externs/volume_info.js';

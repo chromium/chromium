@@ -37,7 +37,7 @@
 // #import {ColumnVisibilityController} from './column_visibility_controller.m.js';
 // #import {ListThumbnailLoader} from './list_thumbnail_loader.m.js';
 // #import {FileSelectionHandler, FileSelection} from './file_selection.m.js';
-// #import {FakeEntryImpl} from '../../common/js/files_app_entry_types.m.js';
+// #import {FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
 // #import {AndroidAppListModel} from './android_app_list_model.m.js';
 // #import {FolderShortcutsDataModel} from './folder_shortcuts_data_model.m.js';
 // #import {DirectoryModel} from './directory_model.m.js';
@@ -51,7 +51,7 @@
 // #import {ThumbnailModel} from './metadata/thumbnail_model.js';
 // #import {MetadataModel} from './metadata/metadata_model.js';
 // #import {ContentMetadataProvider} from './metadata/content_metadata_provider.js';
-// #import {FilteredVolumeManager} from '../../common/js/filtered_volume_manager.m.js';
+// #import {FilteredVolumeManager} from '../../common/js/filtered_volume_manager.js';
 // #import {LaunchParam} from './launch_param.m.js';
 // #import {contextMenuHandler} from 'chrome://resources/js/cr/ui/context_menu_handler.m.js';
 // #import {CommandButton} from './ui/commandbutton.js';

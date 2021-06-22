@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {EntryList, FakeEntryImpl, VolumeEntry} from './files_app_entry_types.m.js';
-import {MockFileSystem} from './mock_entry.m.js';
-import * as wrappedUtil from './util.m.js';
-const {util} = wrappedUtil;
-import * as wrappedVolumeManagerCommon from './volume_manager_types.m.js';
-const {VolumeManagerCommon} = wrappedVolumeManagerCommon;
+import {assertEquals, assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
+
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
-import {assertEquals, assertTrue, assertFalse} from 'chrome://test/chai_assert.js';
+
+import {EntryList, FakeEntryImpl, VolumeEntry} from './files_app_entry_types.js';
+import {MockFileSystem} from './mock_entry.m.js';
+import {util} from './util.m.js';
+import {VolumeManagerCommon} from './volume_manager_types.m.js';
 
 let fileSystem;
 

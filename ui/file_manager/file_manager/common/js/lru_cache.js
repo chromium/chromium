@@ -84,7 +84,7 @@ class LRUCacheList {
  * Cache management class implementing LRU algorithm.
  * @template T
  */
-/* #export */ class LRUCache {
+export class LRUCache {
   /**
    * @param {number} maxSize Maximum total size of items this cache can hold.
    *     When items are put without specifying their sizes, their sizes are

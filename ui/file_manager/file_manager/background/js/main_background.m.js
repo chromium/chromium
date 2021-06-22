@@ -7,7 +7,7 @@
  */
 
 import './metrics_start.js';
-import '../../common/js/error_counter.m.js';
+import '../../common/js/error_counter.js';
 
 import './background.js';
 import './test_util.js';

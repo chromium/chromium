@@ -21,11 +21,10 @@
  * https://developer.mozilla.org/en-US/docs/Web/API/FileSystemDirectoryReader
  */
 
-// clang-format off
-// #import * as wrappedVolumeManagerCommon from './volume_manager_types.m.js'; const {VolumeManagerCommon} = wrappedVolumeManagerCommon;
-// #import {FilesAppEntry, FilesAppDirEntry, FakeEntry} from '../../externs/files_app_entry_interfaces.js';
-// #import {VolumeInfo} from '../../externs/volume_info.js';
-// clang-format on
+import {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
+import {VolumeInfo} from '../../externs/volume_info.js';
+
+import {VolumeManagerCommon} from './volume_manager_types.m.js';
 
 /**
  * A reader compatible with DirectoryEntry.createReader (from Web Standards)
@@ -35,7 +34,7 @@
  * entries.
  * @extends {DirectoryReader}
  */
-/* #export */ class StaticReader {
+export class StaticReader {
   /**
    * @param {!Array<!Entry|!FilesAppEntry>} entries: Array of Entry-like
    * instances that will be returned/read by this reader.
@@ -70,7 +69,7 @@
  * entries from all readers.
  * @extends {DirectoryReader}
  */
-/* #export */ class CombinedReaders {
+export class CombinedReaders {
   /**
    * @param {!Array<!DirectoryReader>} readers Array of all readers that will
    * have their entries combined.
@@ -128,7 +127,7 @@
  *
  * @implements FilesAppDirEntry
  */
-/* #export */ class EntryList {
+export class EntryList {
   /**
    * @param {string} label: Label to be used when displaying to user, it should
    *    already translated.
@@ -325,7 +324,7 @@
  *
  * @implements FilesAppDirEntry
  */
-/* #export */ class VolumeEntry {
+export class VolumeEntry {
   /**
    * @param {!VolumeInfo} volumeInfo: VolumeInfo for this entry.
    */
@@ -593,7 +592,7 @@
  *
  * @implements FakeEntry
  */
-/* #export */ class FakeEntryImpl {
+export class FakeEntryImpl {
   /**
    * @param {string} label Translated text to be displayed to user.
    * @param {!VolumeManagerCommon.RootType} rootType Root type of this entry.

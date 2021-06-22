@@ -21,10 +21,10 @@
 // #import {FileTransferController} from './file_transfer_controller.m.js';
 // #import {FilesConfirmDialog} from './ui/files_confirm_dialog.js';
 // #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
-// #import {FileType} from '../../common/js/file_type.m.js';
+// #import {FileType} from '../../common/js/file_type.js';
 // #import {constants} from './constants.m.js';
 // #import {util, strf, str} from '../../common/js/util.m.js';
-// #import {AsyncUtil} from '../../common/js/async_util.m.js'
+// #import {AsyncUtil} from '../../common/js/async_util.js'
 // #import {metrics} from '../../common/js/metrics.m.js';
 // #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 // #import {assert} from 'chrome://resources/js/assert.m.js';

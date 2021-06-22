@@ -44,7 +44,7 @@ js_library("drive_sync_handler") {
 js_library("duplicate_finder") {
   deps = [
     ":import_history",
-    "//ui/file_manager/file_manager/common/js:importer_common.m",
+    "//ui/file_manager/file_manager/common/js:importer_common",
   ]
 }
 
@@ -60,7 +60,7 @@ js_library("file_operation_manager") {
 }
 
 js_library("import_history") {
-  deps = [ "//ui/file_manager/file_manager/common/js:importer_common.m" ]
+  deps = [ "//ui/file_manager/file_manager/common/js:importer_common" ]
 }
 
 js_library("media_import_handler") {
@@ -71,12 +71,12 @@ js_library("media_import_handler") {
     ":media_scanner",
     ":progress_center",
     ":task_queue",
-    "//ui/file_manager/file_manager/common/js:importer_common.m",
+    "//ui/file_manager/file_manager/common/js:importer_common",
   ]
 }
 
 js_library("media_scanner") {
-  deps = [ "//ui/file_manager/file_manager/common/js:importer_common.m" ]
+  deps = [ "//ui/file_manager/file_manager/common/js:importer_common" ]
 }
 
 js_library("progress_center") {
@@ -87,5 +87,5 @@ js_library("progress_center") {
 }
 
 js_library("task_queue") {
-  deps = [ "//ui/file_manager/file_manager/common/js:importer_common.m" ]
+  deps = [ "//ui/file_manager/file_manager/common/js:importer_common" ]
 }

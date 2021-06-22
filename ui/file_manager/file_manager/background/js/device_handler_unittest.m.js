@@ -5,7 +5,7 @@
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
 
-import {importer} from '../../common/js/importer_common.m.js';
+import {importer} from '../../common/js/importer_common.js';
 import {metrics} from '../../common/js/metrics.m.js';
 import {installMockChrome, MockChromeStorageAPI} from '../../common/js/mock_chrome.m.js';
 import {MockFileSystem} from '../../common/js/mock_entry.m.js';

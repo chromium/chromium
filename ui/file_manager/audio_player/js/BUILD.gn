@@ -55,10 +55,10 @@ js_library("audio_player") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/file_manager/audio_player/elements:audio_player",
-    "//ui/file_manager/file_manager/common/js:app_util.m",
-    "//ui/file_manager/file_manager/common/js:async_util.m",
-    "//ui/file_manager/file_manager/common/js:filtered_volume_manager.m",
-    "//ui/file_manager/file_manager/common/js:mediasession_types.m",
+    "//ui/file_manager/file_manager/common/js:app_util",
+    "//ui/file_manager/file_manager/common/js:async_util",
+    "//ui/file_manager/file_manager/common/js:filtered_volume_manager",
+    "//ui/file_manager/file_manager/common/js:mediasession_types",
     "//ui/file_manager/file_manager/common/js:util.m",
     "//ui/file_manager/file_manager/common/js:volume_manager_types.m",
     "//ui/file_manager/file_manager/externs:volume_manager",
@@ -77,7 +77,7 @@ js_library("background") {
   deps = [
     "//ui/file_manager/file_manager/background/js:app_window_wrapper",
     "//ui/file_manager/file_manager/background/js:background_base",
-    "//ui/file_manager/file_manager/common/js:file_type.m",
+    "//ui/file_manager/file_manager/common/js:file_type",
     "//ui/file_manager/file_manager/common/js:util.m",
   ]
 }

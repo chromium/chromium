@@ -4,8 +4,8 @@
 
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
 
-import {AsyncUtil} from '../../common/js/async_util.m.js';
-import {importer} from '../../common/js/importer_common.m.js';
+import {AsyncUtil} from '../../common/js/async_util.js';
+import {importer} from '../../common/js/importer_common.js';
 import {metrics} from '../../common/js/metrics.m.js';
 import {ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../common/js/progress_center_common.m.js';
 import {str, strf, util} from '../../common/js/util.m.js';

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {AsyncUtil} from '../../common/js/async_util.m.js';
+import {AsyncUtil} from '../../common/js/async_util.js';
 
 /**
  * FilesPasswordDialog template.

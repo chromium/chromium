@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #import {importer} from './importer_common.m.js';
-// #import {TestCallRecorder} from './unittest_util.m.js';
+import {importer} from './importer_common.js';
+import {TestCallRecorder} from './unittest_util.m.js';
 
 // Namespace
-/* #export */ const importerTest = {};
+export const importerTest = {};
 
 /**
  * Sets up a logger for use in unit tests.  The test logger doesn't attempt to

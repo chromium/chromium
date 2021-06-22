@@ -20,7 +20,7 @@
 // #import {ThumbnailLoader} from './thumbnail_loader.m.js';
 // #import {ImageLoaderClient} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/image_loader_client.js';
 // #import {LoadImageResponseStatus, LoadImageRequest} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/load_image_request.js';
-// #import {FileType} from '../../common/js/file_type.m.js';
+// #import {FileType} from '../../common/js/file_type.js';
 // #import {CommandHandler} from './file_manager_commands.m.js';
 // #import {FilesConfirmDialog} from './ui/files_confirm_dialog.js';
 // #import {constants} from './constants.m.js';

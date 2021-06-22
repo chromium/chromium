@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {assert} from 'chrome://resources/js/assert.m.js';
-// #import {VolumeInfo} from '../../externs/volume_info.js';
-// #import {VolumeInfoList} from '../../externs/volume_info_list.js';
-// #import {VolumeManager, ExternallyUnmountedEvent} from '../../externs/volume_manager.js';
-// #import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
-// #import {EntryLocation} from '../../externs/entry_location.js';
-// #import {VolumeManagerCommon, AllowedPaths} from './volume_manager_types.m.js';
-// #import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
-// #import {ArrayDataModel} from 'chrome://resources/js/cr/ui/array_data_model.m.js';
-// #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
-// clang-format on
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
+import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
+import {ArrayDataModel} from 'chrome://resources/js/cr/ui/array_data_model.m.js';
+
+import {EntryLocation} from '../../externs/entry_location.js';
+import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
+import {VolumeInfo} from '../../externs/volume_info.js';
+import {VolumeInfoList} from '../../externs/volume_info_list.js';
+import {ExternallyUnmountedEvent, VolumeManager} from '../../externs/volume_manager.js';
+
+import {AllowedPaths, VolumeManagerCommon} from './volume_manager_types.m.js';
 
 /**
  * Implementation of VolumeInfoList for FilteredVolumeManager.
@@ -25,9 +25,9 @@
  * @final
  * @implements {VolumeInfoList}
  */
-/* #export */ class FilteredVolumeInfoList {
+export class FilteredVolumeInfoList {
   /**
-   * @param {!cr.ui.ArrayDataModel} list
+   * @param {!ArrayDataModel} list
    */
   constructor(list) {
     /** @private @const */
@@ -73,7 +73,7 @@
  *
  * @implements {VolumeManager}
  */
-/* #export */ class FilteredVolumeManager extends cr.EventTarget {
+export class FilteredVolumeManager extends EventTarget {
   /**
    *
    * @param {!AllowedPaths} allowedPaths Which paths are supported in the Files
@@ -89,7 +89,7 @@
     this.writableOnly_ = writableOnly;
     // Internal list holds filtered VolumeInfo instances.
     /** @private */
-    this.list_ = new cr.ui.ArrayDataModel([]);
+    this.list_ = new ArrayDataModel([]);
     // Public VolumeManager.volumeInfoList property accessed by callers.
     this.volumeInfoList = new FilteredVolumeInfoList(this.list_);
 
@@ -174,7 +174,7 @@
     // Dispatch 'drive-connection-changed' to listeners, since the return value
     // of FilteredVolumeManager.getDriveConnectionState() can be changed by
     // setting this.volumeManager_.
-    cr.dispatchSimpleEvent(this, 'drive-connection-changed');
+    dispatchSimpleEvent(this, 'drive-connection-changed');
 
     // Cache volumeInfoList.
     const volumeInfoList = [];
@@ -226,7 +226,7 @@
     switch (event.type) {
       case 'drive-connection-changed':
         if (this.isAllowedVolumeType_(VolumeManagerCommon.VolumeType.DRIVE)) {
-          cr.dispatchSimpleEvent(this, 'drive-connection-changed');
+          dispatchSimpleEvent(this, 'drive-connection-changed');
         }
         break;
       case 'externally-unmounted':

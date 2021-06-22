@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {FileType} from './file_type.m.js';
-import {MockFileSystem} from './mock_entry.m.js';
-import * as wrappedVolumeManagerCommon from './volume_manager_types.m.js';
-
-const {VolumeManagerCommon} = wrappedVolumeManagerCommon;
 import {assertEquals} from 'chrome://test/chai_assert.js';
+
+import {FileType} from './file_type.js';
+import {MockFileSystem} from './mock_entry.m.js';
+import {VolumeManagerCommon} from './volume_manager_types.m.js';
 
 /*
  * Tests that Downloads icon is customized within Downloads root, but not in

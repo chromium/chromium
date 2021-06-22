@@ -11,7 +11,7 @@
 // #import {VolumeInfo} from '../../externs/volume_info.js';
 // #import {TrashRootEntry} from '../../common/js/trash.js';
 // #import {util, str} from '../../common/js/util.m.js';
-// #import {FakeEntryImpl, VolumeEntry, EntryList} from '../../common/js/files_app_entry_types.m.js';
+// #import {FakeEntryImpl, VolumeEntry, EntryList} from '../../common/js/files_app_entry_types.js';
 // #import {assertNotReached} from 'chrome://resources/js/assert.m.js';
 // #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
 // #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';

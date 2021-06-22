@@ -8,7 +8,7 @@
  * of its media import unittest and caller sites.
  */
 
-import {importer} from '../../common/js/importer_common.m.js';
+import {importer} from '../../common/js/importer_common.js';
 
 import {DriveSyncHandler} from './drive_sync_handler.js';
 import {duplicateFinderInterfaces} from './duplicate_finder.js';

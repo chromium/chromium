@@ -10,7 +10,7 @@ import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_t
 import {ListItem} from 'chrome://resources/js/cr/ui/list_item.m.js';
 import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
 
-import {FileType} from '../../../common/js/file_type.m.js';
+import {FileType} from '../../../common/js/file_type.js';
 import {metrics} from '../../../common/js/metrics.m.js';
 import {strf, util} from '../../../common/js/util.m.js';
 

@@ -9,7 +9,7 @@
 
 import {assertNotReached} from 'chrome://resources/js/assert.m.js';
 
-import {importer} from '../../common/js/importer_common.m.js';
+import {importer} from '../../common/js/importer_common.js';
 import {util} from '../../common/js/util.m.js';
 import {importerHistoryInterfaces} from '../../externs/background/import_history.js';
 

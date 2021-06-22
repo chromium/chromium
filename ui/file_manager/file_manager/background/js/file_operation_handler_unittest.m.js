@@ -5,7 +5,7 @@
 // clang-format off
 import { assertArrayEquals,assertEquals, assertTrue} from 'chrome://test/chai_assert.js';
 
-import {FileOperationProgressEvent} from '../../common/js/file_operation_common.m.js';
+import {FileOperationProgressEvent} from '../../common/js/file_operation_common.js';
 import {ProgressItemState} from '../../common/js/progress_center_common.m.js';
 import {util} from '../../common/js/util.m.js';
 

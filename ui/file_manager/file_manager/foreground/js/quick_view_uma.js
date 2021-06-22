@@ -8,7 +8,7 @@
 // #import {metrics} from '../../common/js/metrics.m.js';
 // #import {DialogType} from './dialog_type.m.js';
 // #import {FileTasks} from './file_tasks.m.js';
-// #import {FileType} from '../../common/js/file_type.m.js';
+// #import {FileType} from '../../common/js/file_type.js';
 // #import {assert} from 'chrome://resources/js/assert.m.js';
 // clang-format on
 

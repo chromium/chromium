@@ -9,7 +9,7 @@
 
 // clang-format off
 // #import {TrashEntry} from '../../common/js/trash.js';
-// #import {FileOperationProgressEvent} from '../../common/js/file_operation_common.m.js';
+// #import {FileOperationProgressEvent} from '../../common/js/file_operation_common.js';
 // #import {FilesConfirmDialog} from './ui/files_confirm_dialog.js';
 // #import {VolumeManager} from '../../externs/volume_manager.js';
 // #import {FileSelection, FileSelectionHandler} from './file_selection.m.js';
@@ -17,14 +17,14 @@
 // #import {DirectoryModel} from './directory_model.m.js';
 // #import {FakeEntry, FilesAppEntry, FilesAppDirEntry} from '../../externs/files_app_entry_interfaces.js';
 // #import {CommandHandlerDeps} from '../../externs/command_handler_deps.js';
-// #import {FileType} from '../../common/js/file_type.m.js';
+// #import {FileType} from '../../common/js/file_type.js';
 // #import {constants} from './constants.m.js';
 // #import {ProgressCenterItem, ProgressItemState} from '../../common/js/progress_center_common.m.js';
 // #import {ActionsModel} from './actions_model.m.js';
 // #import {PathComponent} from './path_component.m.js';
 // #import {HoldingSpaceUtil} from './holding_space_util.m.js';
 // #import {DirectoryTree, DirectoryItem} from './ui/directory_tree.js';
-// #import {EntryList} from '../../common/js/files_app_entry_types.m.js';
+// #import {EntryList} from '../../common/js/files_app_entry_types.js';
 // #import {contextMenuHandler} from 'chrome://resources/js/cr/ui/context_menu_handler.m.js';
 // #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
 // #import {util, str, strf} from '../../common/js/util.m.js';

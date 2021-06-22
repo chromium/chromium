@@ -11,7 +11,7 @@
 // #import {AllowedPaths} from '../../common/js/volume_manager_types.m.js';
 // #import {util} from '../../common/js/util.m.js';
 // #import {constants} from './constants.m.js';
-// #import {FileType} from '../../common/js/file_type.m.js';
+// #import {FileType} from '../../common/js/file_type.js';
 // #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
 // #import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
 // #import {assert} from 'chrome://resources/js/assert.m.js';

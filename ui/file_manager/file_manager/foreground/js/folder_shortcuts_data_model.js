@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {FilteredVolumeManager} from '../../common/js/filtered_volume_manager.m.js';
+// #import {FilteredVolumeManager} from '../../common/js/filtered_volume_manager.js';
 // #import {util} from '../../common/js/util.m.js';
 // #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
-// #import {AsyncUtil} from '../../common/js/async_util.m.js';
+// #import {AsyncUtil} from '../../common/js/async_util.js';
 // #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
 // #import {metrics} from '../../common/js/metrics.m.js';
 // #import {xfm} from '../../common/js/xfm.m.js';

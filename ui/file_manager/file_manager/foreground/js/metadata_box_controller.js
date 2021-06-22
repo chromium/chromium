@@ -8,7 +8,7 @@
 // #import {QuickViewModel} from './quick_view_model.m.js';
 // #import {MetadataModel} from './metadata/metadata_model.js';
 // #import {PathComponent} from './path_component.m.js';
-// #import {FileType} from '../../common/js/file_type.m.js';
+// #import {FileType} from '../../common/js/file_type.js';
 // #import {util} from '../../common/js/util.m.js';
 // #import {FilesQuickView} from '../elements/files_quick_view.js';
 // #import {assert} from 'chrome://resources/js/assert.m.js';

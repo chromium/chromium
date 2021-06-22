@@ -143,15 +143,15 @@
   // enough that anything is passed to web_accessible_resources. If there is
   // at least any file, then all files are allowed. http://crbug.com/179127.
   "web_accessible_resources": [
-    "common/js/app_util.m.js",
-    "common/js/async_util.m.js",
-    "common/js/file_operation_common.m.js",
-    "common/js/file_type.m.js",
-    "common/js/files_app_entry_types.m.js",
-    "common/js/filtered_volume_manager.m.js",
-    "common/js/lru_cache.m.js",
+    "common/js/app_util.js",
+    "common/js/async_util.js",
+    "common/js/file_operation_common.js",
+    "common/js/file_type.js",
+    "common/js/files_app_entry_types.js",
+    "common/js/filtered_volume_manager.js",
+    "common/js/lru_cache.js",
     "common/js/metrics.m.js",
-    "common/js/importer_common.m.js",
+    "common/js/importer_common.js",
     "common/js/metrics_base.m.js",
     "common/js/mock_chrome.m.js",
     "common/js/notifications_browser_proxy.js",

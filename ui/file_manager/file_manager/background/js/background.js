@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {importer} from '../../common/js/importer_common.m.js';
+import {importer} from '../../common/js/importer_common.js';
 import {metrics} from '../../common/js/metrics.m.js';
 import {str, util} from '../../common/js/util.m.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';

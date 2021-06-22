@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AsyncUtil} from '../../common/js/async_util.m.js';
+import {AsyncUtil} from '../../common/js/async_util.js';
 import {ProgressCenterItem, ProgressItemState} from '../../common/js/progress_center_common.m.js';
 import {str} from '../../common/js/util.m.js';
 import {xfm} from '../../common/js/xfm.m.js';

@@ -22,7 +22,7 @@
 // #import {DirectoryItem, DirectoryTree} from './ui/directory_tree.js';
 // #import {TreeItem} from 'chrome://resources/js/cr/ui/tree.js';
 // #import {ProgressCenterItem, ProgressItemType, ProgressItemState} from '../../common/js/progress_center_common.m.js';
-// #import {FileType} from '../../common/js/file_type.m.js';
+// #import {FileType} from '../../common/js/file_type.js';
 // #import {util, strf} from '../../common/js/util.m.js';
 // #import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
 // clang-format on

@@ -4,7 +4,7 @@
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 
-import {importer} from '../../common/js/importer_common.m.js';
+import {importer} from '../../common/js/importer_common.js';
 import {mediaScannerInterfaces} from '../../externs/background/media_scanner.js';
 
 import {fileOperationUtil} from './file_operation_util.js';

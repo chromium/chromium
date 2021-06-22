@@ -10,7 +10,7 @@
  * @see https://wicg.github.io/mediasession/#enumdef-mediasessionplaybackstate
  * @enum {string}
  */
-/* #export */ const MediaSessionPlaybackState = {
+export const MediaSessionPlaybackState = {
   NONE: 'none',
   PAUSED: 'paused',
   PLAYING: 'playing'

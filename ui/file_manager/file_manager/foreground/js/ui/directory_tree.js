@@ -9,7 +9,7 @@ import {contextMenuHandler} from 'chrome://resources/js/cr/ui/context_menu_handl
 import {Menu} from 'chrome://resources/js/cr/ui/menu.m.js';
 import {Tree, TreeItem} from 'chrome://resources/js/cr/ui/tree.js';
 
-import {FileType} from '../../../common/js/file_type.m.js';
+import {FileType} from '../../../common/js/file_type.js';
 import {metrics} from '../../../common/js/metrics.m.js';
 import {str, util} from '../../../common/js/util.m.js';
 import {VolumeManagerCommon} from '../../../common/js/volume_manager_types.m.js';

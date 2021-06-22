@@ -13,10 +13,10 @@
 // #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 // #import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
 // #import {assert} from 'chrome://resources/js/assert.m.js';
-// #import * as wrappedVolumeManagerCommon from './volume_manager_types.m.js'; const {VolumeManagerCommon} = wrappedVolumeManagerCommon;
+// #import {VolumeManagerCommon} from './volume_manager_types.m.js';
 // #import {decorate} from 'chrome://resources/js/cr/ui.m.js';
 // #import {FilesAppEntry, FakeEntry} from '../../externs/files_app_entry_interfaces.js';
-// #import {EntryList} from './files_app_entry_types.m.js';
+// #import {EntryList} from './files_app_entry_types.js';
 // #import {VolumeInfo} from '../../externs/volume_info.js';
 // #import {EntryLocation} from '../../externs/entry_location.js';
 // #import {VolumeManager} from '../../externs/volume_manager.js';

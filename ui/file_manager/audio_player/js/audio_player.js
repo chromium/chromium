@@ -7,10 +7,10 @@ import '../elements/audio_player.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {dashToCamelCase} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {appUtil} from '../../file_manager/common/js/app_util.m.js';
-import {AsyncUtil} from '../../file_manager/common/js/async_util.m.js';
-import {FilteredVolumeManager} from '../../file_manager/common/js/filtered_volume_manager.m.js';
-import {MediaSessionPlaybackState} from '../../file_manager/common/js/mediasession_types.m.js';
+import {appUtil} from '../../file_manager/common/js/app_util.js';
+import {AsyncUtil} from '../../file_manager/common/js/async_util.js';
+import {FilteredVolumeManager} from '../../file_manager/common/js/filtered_volume_manager.js';
+import {MediaSessionPlaybackState} from '../../file_manager/common/js/mediasession_types.js';
 import {util} from '../../file_manager/common/js/util.m.js';
 import {AllowedPaths} from '../../file_manager/common/js/volume_manager_types.m.js';
 import {ExternallyUnmountedEvent} from '../../file_manager/externs/volume_manager.js';

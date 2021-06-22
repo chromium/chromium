@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assertEquals, assertTrue} from 'chrome://test/chai_assert.js';
-import {LRUCache} from './lru_cache.m.js';
+import {LRUCache} from './lru_cache.js';
 
 export function testLRUCache() {
   const cache = new LRUCache(3);

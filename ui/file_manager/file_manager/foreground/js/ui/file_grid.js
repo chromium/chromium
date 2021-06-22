@@ -10,9 +10,9 @@ import {ListItem} from 'chrome://resources/js/cr/ui/list_item.m.js';
 import {ListSelectionModel} from 'chrome://resources/js/cr/ui/list_selection_model.m.js';
 import {isRTL} from 'chrome://resources/js/util.m.js';
 
-import {AsyncUtil} from '../../../common/js/async_util.m.js';
-import {FileType} from '../../../common/js/file_type.m.js';
-import {importer} from '../../../common/js/importer_common.m.js';
+import {AsyncUtil} from '../../../common/js/async_util.js';
+import {FileType} from '../../../common/js/file_type.js';
+import {importer} from '../../../common/js/importer_common.js';
 import {str, util} from '../../../common/js/util.m.js';
 import {importerHistoryInterfaces} from '../../../externs/background/import_history.js';
 import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.js';

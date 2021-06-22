@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import * as wrappedVolumeManagerCommon from './volume_manager_types.m.js'; const {VolumeManagerCommon} = wrappedVolumeManagerCommon;
-// #import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
-// #import {VolumeEntry} from './files_app_entry_types.m.js';
-// #import {assert} from 'chrome://resources/js/assert.m.js';
-// clang-format on
+import {assert} from 'chrome://resources/js/assert.m.js';
+
+import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
+
+import {VolumeEntry} from './files_app_entry_types.js';
+import {VolumeManagerCommon} from './volume_manager_types.m.js';
 
 /**
  * Namespace object for file type utility functions.
  */
-/* #export */ function FileType() {}
+export function FileType() {}
 
 /**
  * @typedef {{

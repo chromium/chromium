@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {importer} from '../../common/js/importer_common.m.js';
-import {LRUCache} from '../../common/js/lru_cache.m.js';
+import {importer} from '../../common/js/importer_common.js';
+import {LRUCache} from '../../common/js/lru_cache.js';
 import {metrics} from '../../common/js/metrics.m.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
 import {duplicateFinderInterfaces} from '../../externs/background/duplicate_finder.js';

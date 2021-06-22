@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {util} from './util.m.js';
-// #import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js'
-// clang-format on
+import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 
-/* #export */ class FileOperationProgressEvent extends Event {
+import {util} from './util.m.js';
+
+export class FileOperationProgressEvent extends Event {
   /** @param {string} eventName */
   constructor(eventName) {
     super(eventName);
@@ -56,7 +55,7 @@ FileOperationProgressEvent.EventType = {
  * If the code is TARGET_EXISTS, data should be the existing Entry.
  * If the code is FILESYSTEM_ERROR, data should be the FileError.
  */
-/* #export */ class FileOperationError {
+export class FileOperationError {
   /**
    * @param {util.FileOperationErrorType} code Error type.
    * @param {string|Entry|DOMError} data Additional data.

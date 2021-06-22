@@ -4,7 +4,7 @@
 
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.m.js';
 
-import {appUtil} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/common/js/app_util.m.js';
+import {appUtil} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/common/js/app_util.js';
 import {assertInstanceof} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {getRequiredElement, queryRequiredElement} from 'chrome://resources/js/util.m.js';

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assertTrue} from 'chrome://test/chai_assert.js';
-import {importer} from '../../common/js/importer_common.m.js';
+import {importer} from '../../common/js/importer_common.js';
 import {importerHistoryInterfaces} from '../../externs/background/import_history.js';
 
 // Namespace

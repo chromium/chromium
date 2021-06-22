@@ -2,17 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * @fileoverview Utility functions for creating and operating on the packaged
- * AppWindow API.
- * @suppress {uselessCode} Temporary suppress because of the line exporting.
- */
-
-// clang-format off
-// #import {BackgroundBase} from '../../externs/background/background_base.js';
-// #import {VolumeManager} from '../../externs/volume_manager.js';
-// #import {xfm} from './xfm.m.js';
-// clang-format on
+import {BackgroundBase} from '../../externs/background/background_base.js';
+import {VolumeManager} from '../../externs/volume_manager.js';
+import {xfm} from './xfm.m.js';
 
 const appUtil = {};
 
@@ -196,5 +188,4 @@ appUtil.getVolumeManager = async () => {
   return backgroundPage.getVolumeManager();
 };
 
-// eslint-disable-next-line semi,no-extra-semi
-/* #export */ {appUtil};
+export {appUtil};

@@ -4,8 +4,8 @@
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 
-import {AsyncUtil} from '../../common/js/async_util.m.js';
-import {FileOperationError, FileOperationProgressEvent} from '../../common/js/file_operation_common.m.js';
+import {AsyncUtil} from '../../common/js/async_util.js';
+import {FileOperationError, FileOperationProgressEvent} from '../../common/js/file_operation_common.js';
 import {TrashEntry, TrashRootEntry} from '../../common/js/trash.js';
 import {util} from '../../common/js/util.m.js';
 import {xfm} from '../../common/js/xfm.m.js';

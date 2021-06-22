@@ -6,7 +6,7 @@
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import { assertArrayEquals, assertEquals, assertFalse,assertTrue} from 'chrome://test/chai_assert.js';
 
-import {FileOperationProgressEvent} from '../../common/js/file_operation_common.m.js';
+import {FileOperationProgressEvent} from '../../common/js/file_operation_common.js';
 import {installMockChrome} from '../../common/js/mock_chrome.m.js';
 import { joinPath, MockDirectoryEntry, MockEntry, MockFileEntry,MockFileSystem} from '../../common/js/mock_entry.m.js';
 import {reportPromise, waitUntil} from '../../common/js/test_error_reporting.m.js';
