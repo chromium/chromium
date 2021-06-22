@@ -27,8 +27,8 @@ void SolidSourceBackground::Paint(gfx::Canvas* canvas,
     canvas->DrawColor(get_color(), SkBlendMode::kSrc);
   } else {
     const SkScalar circle_size = top_rounding_radius_ * 2;
-    const int right_edge = view->width();
-    const int bottom_edge = view->height();
+    const SkScalar right_edge = view->width();
+    const SkScalar bottom_edge = view->height();
 
     SkPath path;
     path.moveTo(0, bottom_edge);

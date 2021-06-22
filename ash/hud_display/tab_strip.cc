@@ -112,9 +112,9 @@ void HUDTabButton::PaintButtonContents(gfx::Canvas* canvas) {
                      (float)kTabOverlayCornerRadius) /
                M_PI;
 
-  const int kCircleSize = kTabOverlayCornerRadius * 2;
-  const int right_edge = width();
-  const int bottom_edge = height();
+  constexpr SkScalar kCircleSize = kTabOverlayCornerRadius * 2;
+  const SkScalar right_edge = width();
+  const SkScalar bottom_edge = height();
 
   SkPath path;
 

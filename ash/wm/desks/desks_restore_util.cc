@@ -62,7 +62,8 @@ PrefService* GetPrimaryUserPrefService() {
 // DesksController.
 bool IsValidDeskIndex(int desk_index) {
   return desk_index >= 0 &&
-         desk_index < int{DesksController::Get()->desks().size()} &&
+         desk_index <
+             static_cast<int>(DesksController::Get()->desks().size()) &&
          desk_index < int{desks_util::kMaxNumberOfDesks};
 }
 

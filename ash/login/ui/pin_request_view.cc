@@ -556,12 +556,14 @@ bool PinRequestView::PinKeyboardVisible() const {
 }
 
 gfx::Size PinRequestView::GetPinRequestViewSize() const {
-  int height = kPinRequestViewMinimumHeightDp +
-               std::min(int{title_label_->GetRequiredLines()}, kTitleMaxLines) *
-                   kTitleLineHeightDp +
-               std::min(int{description_label_->GetRequiredLines()},
-                        kDescriptionMaxLines) *
-                   kDescriptionTextLineHeightDp;
+  int height =
+      kPinRequestViewMinimumHeightDp +
+      std::min(static_cast<int>(title_label_->GetRequiredLines()),
+               kTitleMaxLines) *
+          kTitleLineHeightDp +
+      std::min(static_cast<int>(description_label_->GetRequiredLines()),
+               kDescriptionMaxLines) *
+          kDescriptionTextLineHeightDp;
   if (PinKeyboardVisible())
     height += kPinKeyboardHeightDp;
   return gfx::Size(kPinRequestViewWidthDp, height);

@@ -139,8 +139,9 @@ void Grid::OnPaint(gfx::Canvas* canvas) {
   SkPath solid_path;
 
   // Draw 50% dotted line.
-  dotted_path.moveTo({0, bounds().height() / 2});
-  dotted_path.lineTo({bounds().width(), bounds().height() / 2});
+  dotted_path.moveTo({0, bounds().height() / 2.0f});
+  dotted_path.lineTo(
+      {static_cast<SkScalar>(bounds().width()), bounds().height() / 2.0f});
 
   // Draw outside rectangle and ticks
   solid_path.addRect(SkRect::MakeXYWH(bounds().x(), bounds().y(),
@@ -159,7 +160,7 @@ void Grid::OnPaint(gfx::Canvas* canvas) {
         solid_path.lineTo({tick_length, line_y});
 
         solid_path.moveTo({bounds().width() - tick_length, line_y});
-        solid_path.lineTo({bounds().width(), line_y});
+        solid_path.lineTo({static_cast<SkScalar>(bounds().width()), line_y});
       }
       tick_bottom_offset += vertical_ticks_interval_;
     }
@@ -181,7 +182,7 @@ void Grid::OnPaint(gfx::Canvas* canvas) {
       solid_path.lineTo({line_x, tick_length});
 
       solid_path.moveTo({line_x, bounds().height() - tick_length});
-      solid_path.lineTo({line_x, bounds().height()});
+      solid_path.lineTo({line_x, static_cast<SkScalar>(bounds().height())});
     }
   }
 

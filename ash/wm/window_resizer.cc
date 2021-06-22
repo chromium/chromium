@@ -326,9 +326,10 @@ gfx::Point WindowResizer::GetOriginForDrag(int delta_x,
 
   // The ratios that should match is the (drag location x - bounds origin x) /
   // bounds width.
-  const float ratio = (details().initial_location_in_parent.x() -
-                       float{details().initial_bounds_in_parent.x()}) /
-                      details().initial_bounds_in_parent.width();
+  const float ratio =
+      (details().initial_location_in_parent.x() -
+       static_cast<float>(details().initial_bounds_in_parent.x())) /
+      details().initial_bounds_in_parent.width();
   int new_origin_x =
       base::ClampRound(event_location.x() - ratio * restore_bounds.width());
   origin.set_x(new_origin_x);

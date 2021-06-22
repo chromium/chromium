@@ -540,7 +540,7 @@ class AppListBackgroundShieldView : public views::View {
       AppListViewState state,
       bool shelf_has_rounded_corners,
       absl::optional<base::TimeTicks> animation_end_timestamp) {
-    const double target_corner_radius =
+    const float target_corner_radius =
         (state == AppListViewState::kClosed && !shelf_has_rounded_corners)
             ? 0
             : shelf_background_corner_radius_;
@@ -563,7 +563,7 @@ class AppListBackgroundShieldView : public views::View {
     SetBackgroundRadius(target_corner_radius);
   }
 
-  void SetBackgroundRadius(double corner_radius) {
+  void SetBackgroundRadius(float corner_radius) {
     corner_radius_ = corner_radius;
     layer()->SetRoundedCornerRadius({corner_radius, corner_radius, 0, 0});
   }
@@ -599,7 +599,7 @@ class AppListBackgroundShieldView : public views::View {
   // The blur radius to use for blur when blur is enabled.
   double preferred_blur_radius_ = 0;
 
-  double corner_radius_ = 0.f;
+  float corner_radius_ = 0.0f;
 
   SkColor color_;
 

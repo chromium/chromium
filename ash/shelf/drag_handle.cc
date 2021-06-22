@@ -85,7 +85,7 @@ class HideNudgeObserver : public ui::ImplicitAnimationObserver {
 
 }  // namespace
 
-DragHandle::DragHandle(int drag_handle_corner_radius, Shelf* shelf)
+DragHandle::DragHandle(float drag_handle_corner_radius, Shelf* shelf)
     : views::Button(base::BindRepeating(&DragHandle::ButtonPressed,
                                         base::Unretained(this))),
       shelf_(shelf) {

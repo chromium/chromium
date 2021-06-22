@@ -4507,9 +4507,9 @@ TEST_F(SplitViewOverviewSessionTest, Clipping) {
     DCHECK_GT(rect2.height(), 0);
     constexpr float kEpsilon = 0.05f;
     const float rect1_aspect_ratio =
-        float{rect1.width()} / float{rect1.height()};
+        static_cast<float>(rect1.width()) / rect1.height();
     const float rect2_aspect_ratio =
-        float{rect2.width()} / float{rect2.height()};
+        static_cast<float>(rect2.width()) / rect2.height();
     return std::abs(rect2_aspect_ratio - rect1_aspect_ratio) < kEpsilon;
   };
 

@@ -469,7 +469,7 @@ void TrayBackgroundView::UpdateAfterStatusAreaCollapseChange() {
 void TrayBackgroundView::BubbleResized(const TrayBubbleView* bubble_view) {}
 
 void TrayBackgroundView::UpdateBackground() {
-  const int radius = ShelfConfig::Get()->control_border_radius();
+  const float radius = ShelfConfig::Get()->control_border_radius();
   gfx::RoundedCornersF rounded_corners = {radius, radius, radius, radius};
   layer()->SetRoundedCornerRadius(rounded_corners);
   layer()->SetIsFastRoundedCorner(true);

@@ -23,7 +23,7 @@ DeskAnimationBase::DeskAnimationBase(DesksController* controller,
           desks_util::GetSelectedCompositorForPerformanceMetrics()
               ->RequestNewThroughputTracker()) {
   DCHECK(controller_);
-  DCHECK_LE(ending_desk_index_, int{controller_->desks().size()});
+  DCHECK_LE(ending_desk_index_, static_cast<int>(controller_->desks().size()));
   DCHECK_GE(ending_desk_index_, 0);
 }
 

@@ -262,10 +262,11 @@ void PagedAppsGridView::UpdateOpacity(bool restore_opacity) {
   const int selected_page = pagination_model_.selected_page();
   // Logging for https://crbug.com/1194639. We suspect |selected_page| is
   // sometimes off the end of the view structure pages array.
-  if (selected_page >= int{view_structure_.pages().size()}) {
+  if (selected_page >= static_cast<int>(view_structure_.pages().size())) {
     // Use concise log so it fits in a crash key.
     LOG(FATAL) << "crbug.com/1194639 " << pagination_model_.total_pages() << " "
-               << selected_page << " " << int{view_structure_.pages().size()};
+               << selected_page << " "
+               << static_cast<int>(view_structure_.pages().size());
   }
   auto current_page = view_structure_.pages()[selected_page];
 

@@ -27,7 +27,8 @@ ShelfApplicationMenuModel::ShelfApplicationMenuModel(
                     ui::ImageModel::FromImageSkia(item.icon));
   }
   AddSeparator(ui::SPACING_SEPARATOR);
-  DCHECK_EQ(GetItemCount(), int{items.size() + 2}) << "Update metrics |- 2|";
+  DCHECK_EQ(GetItemCount(), static_cast<int>(items.size() + 2))
+      << "Update metrics |- 2|";
 }
 
 ShelfApplicationMenuModel::~ShelfApplicationMenuModel() = default;

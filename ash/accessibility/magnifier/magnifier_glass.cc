@@ -202,7 +202,8 @@ void MagnifierGlass::CreateMagnifierWindow(aura::Window* root_window,
 
   // Create a rounded rect clip, so that only we see a circle of the zoomed
   // content. This circle radius should match that of the drawn border.
-  const gfx::RoundedCornersF kRoundedCorners{params_.radius};
+  const gfx::RoundedCornersF kRoundedCorners{
+      static_cast<float>(params_.radius)};
   zoom_layer_->SetRoundedCornerRadius(kRoundedCorners);
   gfx::Rect clip_rect = window_bounds;
   clip_rect.ClampToCenteredSize(

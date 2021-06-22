@@ -97,7 +97,7 @@ void UnifiedMessageCenterBubble::ShowBubble() {
   tray_->bubble()->unified_view()->AddObserver(this);
 
   ui::Layer* widget_layer = bubble_widget_->GetLayer();
-  int radius = kUnifiedTrayCornerRadius;
+  float radius = kUnifiedTrayCornerRadius;
   widget_layer->SetRoundedCornerRadius({radius, radius, radius, radius});
   widget_layer->SetIsFastRoundedCorner(true);
   widget_layer->Add(border_->layer());

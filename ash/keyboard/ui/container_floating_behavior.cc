@@ -8,6 +8,7 @@
 
 #include "ash/keyboard/ui/display_util.h"
 #include "ash/keyboard/ui/drag_descriptor.h"
+#include "base/numerics/safe_conversions.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
@@ -185,8 +186,8 @@ gfx::Point ContainerFloatingBehavior::GetPositionForShowingKeyboard(
                   position->left_padding_allotment_ratio;
     double top = (display_bounds.height() - keyboard_size.height()) *
                  position->top_padding_allotment_ratio;
-    top_left_offset.set_x(int{left});
-    top_left_offset.set_y(int{top});
+    top_left_offset.set_x(base::ClampFloor(left));
+    top_left_offset.set_y(base::ClampFloor(top));
   }
 
   // Make sure that this location is valid according to the current size of the
@@ -205,7 +206,8 @@ gfx::Point ContainerFloatingBehavior::GetPositionForShowingKeyboard(
 bool ContainerFloatingBehavior::HandlePointerEvent(
     const ui::LocatedEvent& event,
     const display::Display& current_display) {
-  const gfx::Vector2d kb_offset(int{event.x()}, int{event.y()});
+  const gfx::Vector2d kb_offset(base::ClampFloor(event.x()),
+                                base::ClampFloor(event.y()));
 
   const gfx::Rect& keyboard_bounds_in_screen = delegate_->GetBoundsInScreen();
 

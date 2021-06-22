@@ -63,9 +63,9 @@ TEST(ShelfApplicationMenuModelTest, VerifyContentsWithMenuItems) {
   std::u16string title1 = u"title1";
   std::u16string title2 = u"title2";
   std::u16string title3 = u"title3";
-  items.push_back({items.size(), title1, gfx::ImageSkia()});
-  items.push_back({items.size(), title2, gfx::ImageSkia()});
-  items.push_back({items.size(), title3, gfx::ImageSkia()});
+  items.push_back({static_cast<int>(items.size()), title1, gfx::ImageSkia()});
+  items.push_back({static_cast<int>(items.size()), title2, gfx::ImageSkia()});
+  items.push_back({static_cast<int>(items.size()), title3, gfx::ImageSkia()});
 
   std::u16string title = u"title";
   ShelfApplicationMenuModel menu(title, std::move(items), nullptr);

@@ -75,7 +75,7 @@ OverviewHighlightController::~OverviewHighlightController() = default;
 void OverviewHighlightController::MoveHighlight(bool reverse) {
   const std::vector<OverviewHighlightableView*> traversable_views =
       GetTraversableViews();
-  const int count = int{traversable_views.size()};
+  const int count = static_cast<int>(traversable_views.size());
 
   // |count| can be zero when there are no overview items and no desk views (eg.
   // "No recent items" or PIP windows are shown but they aren't traversable).

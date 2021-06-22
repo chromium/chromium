@@ -233,9 +233,9 @@ void PageIndicatorView::SelectedPageChanged(int old_selected,
                                             int new_selected) {
   size_t total_children = buttons_container_->children().size();
 
-  if (old_selected >= 0 && size_t{old_selected} < total_children)
+  if (old_selected >= 0 && static_cast<size_t>(old_selected) < total_children)
     GetButtonByIndex(old_selected)->SetSelected(false);
-  if (new_selected >= 0 && size_t{old_selected} < total_children)
+  if (new_selected >= 0 && static_cast<size_t>(new_selected) < total_children)
     GetButtonByIndex(new_selected)->SetSelected(true);
 }
 

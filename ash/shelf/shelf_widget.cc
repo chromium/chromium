@@ -333,7 +333,7 @@ void ShelfWidget::DelegateView::UpdateOpaqueBackground() {
   // when dragged away.
   // To achieve this, we extend the layer in the same direction where the shelf
   // is aligned (downwards for a bottom shelf, etc.).
-  const int radius = ShelfConfig::Get()->shelf_size() / 2;
+  const float radius = ShelfConfig::Get()->shelf_size() / 2.0f;
   // We can easily round only 2 corners out of 4 which means we don't need as
   // much extra shelf height.
   const int safety_margin = kShelfMaxOvershootHeight;
@@ -350,10 +350,10 @@ void ShelfWidget::DelegateView::UpdateOpaqueBackground() {
     opaque_background()->SetRoundedCornerRadius({0, 0, 0, 0});
   } else {
     opaque_background()->SetRoundedCornerRadius({
-        shelf->SelectValueForShelfAlignment(radius, 0, radius),
-        shelf->SelectValueForShelfAlignment(radius, radius, 0),
-        shelf->SelectValueForShelfAlignment(0, radius, 0),
-        shelf->SelectValueForShelfAlignment(0, 0, radius),
+        shelf->SelectValueForShelfAlignment(radius, 0.0f, radius),
+        shelf->SelectValueForShelfAlignment(radius, radius, 0.0f),
+        shelf->SelectValueForShelfAlignment(0.0f, radius, 0.0f),
+        shelf->SelectValueForShelfAlignment(0.0f, 0.0f, radius),
     });
   }
   opaque_background()->SetBounds(opaque_background_bounds);

@@ -205,12 +205,12 @@ class LockDebugView::DebugDataDispatcherTransformer
     count = std::max(count, 0);
 
     // Trim any extra debug users.
-    if (debug_users_.size() > size_t{count})
+    if (debug_users_.size() > static_cast<size_t>(count))
       debug_users_.erase(debug_users_.begin() + count, debug_users_.end());
 
     // Build |users|, add any new users to |debug_users|.
     std::vector<LoginUserInfo> users;
-    for (size_t i = 0; i < size_t{count}; ++i) {
+    for (size_t i = 0; i < static_cast<size_t>(count); ++i) {
       users.push_back(root_users_[i % root_users_.size()]);
       if (i >= root_users_.size()) {
         users[i].basic_user_info.account_id = AccountId::FromUserEmailGaiaId(

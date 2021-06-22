@@ -34,7 +34,7 @@ class ASH_EXPORT DragHandle : public views::Button,
                               public SplitViewObserver,
                               public ShelfObserver {
  public:
-  DragHandle(int drag_handle_corner_radius, Shelf* shelf);
+  DragHandle(float drag_handle_corner_radius, Shelf* shelf);
   DragHandle(const DragHandle&) = delete;
   ~DragHandle() override;
 

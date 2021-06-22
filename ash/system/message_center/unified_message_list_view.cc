@@ -285,7 +285,7 @@ std::vector<Notification*> UnifiedMessageListView::GetNotificationsAboveY(
 }
 
 int UnifiedMessageListView::GetTotalNotificationCount() const {
-  return int{children().size()};
+  return static_cast<int>(children().size());
 }
 
 int UnifiedMessageListView::GetTotalPinnedNotificationCount() const {

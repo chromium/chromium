@@ -32,7 +32,7 @@ views::View* QuickAnswersFocusSearch::FindNextFocusableView(
 
   int delta =
       search_direction == FocusSearch::SearchDirection::kForwards ? 1 : -1;
-  int focusable_views_size = int{focusable_views.size()};
+  int focusable_views_size = static_cast<int>(focusable_views.size());
   for (int i = 0; i < focusable_views_size; ++i) {
     // If current view from the set is found to be focused, return the view
     // next (or previous) to it as next focusable view.

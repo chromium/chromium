@@ -239,9 +239,11 @@ absl::optional<int> RootWindowDeskSwitchAnimator::UpdateSwipeAnimation(
   auto* animation_layer = animation_layer_owner_->root();
   float translation_x =
       animation_layer->transform().To2dTranslation().x() + translation_delta_x;
-  translation_x = base::ClampToRange(
-      translation_x,
-      float{-animation_layer->bounds().width() + visible_bounds_width}, 0.f);
+  translation_x =
+      base::ClampToRange(translation_x,
+                         static_cast<float>(-animation_layer->bounds().width() +
+                                            visible_bounds_width),
+                         0.f);
   gfx::Transform transform;
   transform.Translate(translation_x, 0.f);
   base::AutoReset<bool> auto_reset(&setting_new_transform_, true);
@@ -287,7 +289,8 @@ absl::optional<int> RootWindowDeskSwitchAnimator::UpdateSwipeAnimation(
       GetIndexOfMostVisibleDeskScreenshot() + (moving_left ? 1 : -1);
 
   if (new_desk_index < 0 ||
-      new_desk_index >= int{DesksController::Get()->desks().size()}) {
+      new_desk_index >=
+          static_cast<int>(DesksController::Get()->desks().size())) {
     return absl::nullopt;
   }
 
@@ -363,7 +366,7 @@ int RootWindowDeskSwitchAnimator::GetIndexOfMostVisibleDeskScreenshot() const {
   // origin (0, 0).
   const gfx::Transform transform = animation_layer_owner_->root()->transform();
   int min_distance = INT_MAX;
-  for (int i = 0; i < int{screenshot_layers_.size()}; ++i) {
+  for (int i = 0; i < static_cast<int>(screenshot_layers_.size()); ++i) {
     ui::Layer* layer = screenshot_layers_[i];
     if (!layer)
       continue;
@@ -379,7 +382,7 @@ int RootWindowDeskSwitchAnimator::GetIndexOfMostVisibleDeskScreenshot() const {
 
   // TODO(crbug.com/1134390): Convert back to DCHECK when the issue is fixed.
   CHECK_GE(index, 0);
-  CHECK_LT(index, int{DesksController::Get()->desks().size()});
+  CHECK_LT(index, static_cast<int>(DesksController::Get()->desks().size()));
   return index;
 }
 

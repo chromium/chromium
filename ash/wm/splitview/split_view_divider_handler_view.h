@@ -36,7 +36,7 @@ class ASH_EXPORT SplitViewDividerHandlerView : public views::View {
 
   // Updates the corner radius of the handler bar to |radius|. Happens during
   // the animation of starting and ending dragging.
-  void UpdateCornerRadius(int radius);
+  void UpdateCornerRadius(float radius);
 
  private:
   class SelectionAnimation;

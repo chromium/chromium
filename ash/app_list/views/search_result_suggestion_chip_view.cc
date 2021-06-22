@@ -260,7 +260,7 @@ void SearchResultSuggestionChipView::OnButtonPressed(const ui::Event& event) {
 }
 
 void SearchResultSuggestionChipView::SetRoundedCornersForLayer(
-    int corner_radius) {
+    float corner_radius) {
   layer()->SetRoundedCornerRadius(
       {corner_radius, corner_radius, corner_radius, corner_radius});
   layer()->SetIsFastRoundedCorner(true);

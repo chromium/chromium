@@ -44,7 +44,7 @@ class BottomLeftOuterBackground : public views::Background {
   // views::Background
   void Paint(gfx::Canvas* canvas, views::View* view) const override {
     const SkScalar circle_size = inner_radius_ * 2;
-    const int bottom_edge = view->height();
+    const SkScalar bottom_edge = view->height();
 
     SkPath path;
     path.moveTo(0, bottom_edge);

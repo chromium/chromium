@@ -557,7 +557,7 @@ void HotseatWidget::DelegateView::SetTranslucentBackground(
     DoScopedAnimationSetting(&bounds_animation_setter.value());
   }
 
-  const int radius = hotseat_widget_->GetHotseatSize() / 2;
+  const float radius = hotseat_widget_->GetHotseatSize() / 2.0f;
   gfx::RoundedCornersF rounded_corners = {radius, radius, radius, radius};
   if (translucent_background_.rounded_corner_radii() != rounded_corners)
     translucent_background_.SetRoundedCornerRadius(rounded_corners);

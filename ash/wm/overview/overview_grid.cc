@@ -1786,7 +1786,7 @@ std::vector<gfx::RectF> OverviewGrid::GetWindowRectsForTabletModeLayout(
                       ? right_edge_map[y]
                       : total_bounds.x() + scroll_offset_;
     right_edge_map[y] = x + width;
-    DCHECK_LE(int{right_edge_map.size()}, kTabletLayoutRow);
+    DCHECK_LE(static_cast<int>(right_edge_map.size()), kTabletLayoutRow);
 
     const gfx::RectF bounds(x, y, width, height);
     rects.push_back(bounds);

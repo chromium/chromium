@@ -108,7 +108,7 @@ bool DeskActivationAnimation::Replace(bool moving_left,
   const int new_ending_desk_index = ending_desk_index_ + (moving_left ? -1 : 1);
   // Already at the leftmost or rightmost desk, nothing to replace.
   if (new_ending_desk_index < 0 ||
-      new_ending_desk_index >= int{controller_->desks().size()}) {
+      new_ending_desk_index >= static_cast<int>(controller_->desks().size())) {
     return false;
   }
 

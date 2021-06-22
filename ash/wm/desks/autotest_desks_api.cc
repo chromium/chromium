@@ -152,7 +152,7 @@ bool AutotestDesksApi::ActivateDeskAtIndex(int index,
     return false;
 
   auto* controller = DesksController::Get();
-  if (index >= int{controller->desks().size()})
+  if (index >= static_cast<int>(controller->desks().size()))
     return false;
 
   const Desk* target_desk = controller->desks()[index].get();
@@ -186,7 +186,7 @@ bool AutotestDesksApi::ActivateAdjacentDesksToTargetIndex(
     return false;
 
   auto* controller = DesksController::Get();
-  if (index >= int{controller->desks().size()})
+  if (index >= static_cast<int>(controller->desks().size()))
     return false;
 
   const Desk* target_desk = controller->desks()[index].get();

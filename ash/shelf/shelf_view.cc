@@ -2438,7 +2438,7 @@ void ShelfView::SetDragImageBlur(const gfx::Size& size, int blur_radius) {
   DragImageView* drag_image = GetDragImage();
   drag_image->SetPaintToLayer();
   drag_image->layer()->SetFillsBoundsOpaquely(false);
-  const uint32_t radius = std::round(size.width() / 2.f);
+  const float radius = size.width() / 2.0f;
   drag_image->layer()->SetRoundedCornerRadius({radius, radius, radius, radius});
   drag_image->layer()->SetBackgroundBlur(blur_radius);
 }

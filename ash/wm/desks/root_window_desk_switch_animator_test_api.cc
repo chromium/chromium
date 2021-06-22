@@ -29,7 +29,7 @@ RootWindowDeskSwitchAnimatorTestApi::GetScreenshotLayerOfDeskWithIndex(
   auto screenshot_layers = animator_->screenshot_layers_;
 
   DCHECK_GE(desk_index, 0);
-  DCHECK_LT(desk_index, int{screenshot_layers.size()});
+  DCHECK_LT(desk_index, static_cast<int>(screenshot_layers.size()));
 
   ui::Layer* layer = screenshot_layers[desk_index];
   DCHECK(layer);

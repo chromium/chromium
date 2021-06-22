@@ -143,7 +143,7 @@ void SplitViewDividerHandlerView::Refresh(bool is_resizing) {
     selection_animation_->Hide();
 }
 
-void SplitViewDividerHandlerView::UpdateCornerRadius(int radius) {
+void SplitViewDividerHandlerView::UpdateCornerRadius(float radius) {
   layer()->SetRoundedCornerRadius(gfx::RoundedCornersF{radius});
 }
 

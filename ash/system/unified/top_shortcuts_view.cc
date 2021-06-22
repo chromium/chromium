@@ -92,7 +92,7 @@ void TopShortcutButtonContainer::Layout() {
   int spacing = 0;
   if (visible_children.size() > 1) {
     spacing = (child_area.width() - visible_child_width) /
-              (int{visible_children.size()} - 1);
+              (static_cast<int>(visible_children.size()) - 1);
     spacing = base::ClampToRange(spacing, kUnifiedTopShortcutButtonMinSpacing,
                                  kUnifiedTopShortcutButtonDefaultSpacing);
   }
@@ -108,9 +108,10 @@ void TopShortcutButtonContainer::Layout() {
       child_y -= kUnifiedCircularButtonFocusPadding.bottom();
     } else if (child == sign_out_button_) {
       // When there's not enough space, shrink the sign-out button.
-      const int remainder = child_area.width() -
-                            (int{visible_children.size()} - 1) * spacing -
-                            (visible_child_width - width);
+      const int remainder =
+          child_area.width() -
+          (static_cast<int>(visible_children.size()) - 1) * spacing -
+          (visible_child_width - width);
       width = base::ClampToRange(width, 0, remainder);
     }
 

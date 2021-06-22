@@ -299,10 +299,14 @@ void PageSwitcher::TotalPagesChanged(int previous_page_count,
 }
 
 void PageSwitcher::SelectedPageChanged(int old_selected, int new_selected) {
-  if (old_selected >= 0 && size_t{old_selected} < buttons_->children().size())
-    GetButtonByIndex(buttons_, size_t{old_selected})->SetSelected(false);
-  if (new_selected >= 0 && size_t{new_selected} < buttons_->children().size())
-    GetButtonByIndex(buttons_, size_t{new_selected})->SetSelected(true);
+  if (old_selected >= 0 &&
+      static_cast<size_t>(old_selected) < buttons_->children().size())
+    GetButtonByIndex(buttons_, static_cast<size_t>(old_selected))
+        ->SetSelected(false);
+  if (new_selected >= 0 &&
+      static_cast<size_t>(new_selected) < buttons_->children().size())
+    GetButtonByIndex(buttons_, static_cast<size_t>(new_selected))
+        ->SetSelected(true);
 }
 
 }  // namespace ash

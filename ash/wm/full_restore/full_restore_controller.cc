@@ -111,7 +111,7 @@ aura::Window* GetSiblingToStackBelow(aura::Window* window) {
       window->GetProperty(full_restore::kActivationIndexKey);
   DCHECK(restore_activation_key);
 
-  for (int i = 0; i < int{siblings.size()} - 1; ++i) {
+  for (int i = 0; i < static_cast<int>(siblings.size()) - 1; ++i) {
     int32_t* sibling_restore_activation_key =
         siblings[i]->GetProperty(full_restore::kActivationIndexKey);
 
@@ -399,7 +399,7 @@ void FullRestoreController::UpdateAndObserveWindow(aura::Window* window) {
 void FullRestoreController::SaveAllWindows() {
   auto mru_windows =
       Shell::Get()->mru_window_tracker()->BuildMruWindowList(kAllDesks);
-  for (int i = 0; i < int{mru_windows.size()}; ++i) {
+  for (int i = 0; i < static_cast<int>(mru_windows.size()); ++i) {
     // Provide the activation index here since we need to loop through |windows|
     // anyhow. Otherwise we need to loop again to get the same value in
     // SaveWindowImpl().

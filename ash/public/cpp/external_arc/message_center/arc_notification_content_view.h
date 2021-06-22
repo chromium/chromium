@@ -58,7 +58,7 @@ class ArcNotificationContentView
   void Update(const message_center::Notification& notification);
   message_center::NotificationControlButtonsView* GetControlButtonsView();
   void UpdateControlButtonsVisibility();
-  void UpdateCornerRadius(int top_radius, int bottom_radius);
+  void UpdateCornerRadius(float top_radius, float bottom_radius);
   void OnSlideChanged(bool in_progress);
   void OnContainerAnimationStarted();
   void OnContainerAnimationEnded();
@@ -198,8 +198,8 @@ class ArcNotificationContentView
   bool activate_on_attach_ = false;
 
   // Radiuses of rounded corners. These values are used in UpdateMask().
-  int top_radius_ = 0;
-  int bottom_radius_ = 0;
+  float top_radius_ = 0;
+  float bottom_radius_ = 0;
 
   // Current insets of mask layer.
   absl::optional<gfx::Insets> mask_insets_;

@@ -65,7 +65,7 @@ class ASH_EXPORT SearchResultSuggestionChipView : public SearchResultBaseView {
   void OnButtonPressed(const ui::Event& event);
 
   // Sets rounded corners for the layer with |corner_radius| to clip the chip.
-  void SetRoundedCornersForLayer(int corner_radius);
+  void SetRoundedCornersForLayer(float corner_radius);
 
   AppListViewDelegate* const view_delegate_;  // Owned by AppListView.
 

@@ -220,9 +220,10 @@ class WindowCycleItemView : public WindowMiniView {
     gfx::Size preview_pref_size = preview_view()->GetPreferredSize();
     if (preview_pref_size.width() > kMaxPreviewWidthDp ||
         preview_pref_size.height() > kFixedPreviewHeightDp) {
-      const float scale =
-          std::min(kMaxPreviewWidthDp / float{preview_pref_size.width()},
-                   kFixedPreviewHeightDp / float{preview_pref_size.height()});
+      const float scale = std::min(
+          kMaxPreviewWidthDp / static_cast<float>(preview_pref_size.width()),
+          kFixedPreviewHeightDp /
+              static_cast<float>(preview_pref_size.height()));
       preview_pref_size =
           gfx::ScaleToFlooredSize(preview_pref_size, scale, scale);
     }
@@ -1026,7 +1027,7 @@ bool WindowCycleList::ShouldShowUi() {
   int total_window_in_all_desks = GetNumberOfWindowsAllDesks();
   return windows_.size() > 1u ||
          (windows_.size() <= 1u &&
-          size_t{total_window_in_all_desks} > windows_.size());
+          static_cast<size_t>(total_window_in_all_desks) > windows_.size());
 }
 
 void WindowCycleList::OnModePrefsChanged() {
@@ -1107,7 +1108,7 @@ void WindowCycleList::InitWindowCycleView() {
 
   // Only set target window and scroll to the window when alt-tab is not empty.
   if (!windows_.empty()) {
-    DCHECK(int{windows_.size()} > current_index_);
+    DCHECK(static_cast<int>(windows_.size()) > current_index_);
     cycle_view_->SetTargetWindow(windows_[current_index_]);
     cycle_view_->ScrollToWindow(windows_[current_index_]);
   }

@@ -339,7 +339,7 @@ void ShelfNavigationWidget::Delegate::UpdateOpaqueBackground() {
 
   opaque_background_.SetVisible(true);
 
-  int radius = ShelfConfig::Get()->control_border_radius();
+  float radius = ShelfConfig::Get()->control_border_radius();
   gfx::RoundedCornersF rounded_corners = {radius, radius, radius, radius};
   if (opaque_background_.rounded_corner_radii() != rounded_corners)
     opaque_background_.SetRoundedCornerRadius(rounded_corners);

@@ -302,7 +302,7 @@ DesksController::GetVisibleOnAllDesksWindowsOnRoot(
 
 void DesksController::RestorePrimaryUserActiveDeskIndex(int active_desk_index) {
   DCHECK_GE(active_desk_index, 0);
-  DCHECK_LT(active_desk_index, int{desks_.size()});
+  DCHECK_LT(active_desk_index, static_cast<int>(desks_.size()));
   user_to_active_desk_index_[Shell::Get()
                                  ->session_controller()
                                  ->GetPrimaryUserSession()
@@ -433,8 +433,8 @@ void DesksController::ReorderDesk(int old_index, int new_index) {
   DCHECK_NE(old_index, new_index);
   DCHECK_GE(old_index, 0);
   DCHECK_GE(new_index, 0);
-  DCHECK_LT(old_index, int{desks_.size()});
-  DCHECK_LT(new_index, int{desks_.size()});
+  DCHECK_LT(old_index, static_cast<int>(desks_.size()));
+  DCHECK_LT(new_index, static_cast<int>(desks_.size()));
   desks_util::ReorderItem(desks_, old_index, new_index);
 
   for (auto& observer : observers_)
@@ -783,7 +783,7 @@ int DesksController::GetDeskIndex(const Desk* desk) const {
 
 aura::Window* DesksController::GetDeskContainer(aura::Window* target_root,
                                                 int desk_index) {
-  if (desk_index < 0 || desk_index >= int{desks_.size()})
+  if (desk_index < 0 || desk_index >= static_cast<int>(desks_.size()))
     return nullptr;
   return desks_[desk_index]->GetDeskContainerForRoot(target_root);
 }
@@ -1025,7 +1025,8 @@ void DesksController::RemoveDeskInternal(const Desk* desk,
   const int removed_desk_index = std::distance(desks_.begin(), iter);
   // Update workspaces of windows in desks that have higher indices than the
   // removed desk since indices of those desks shift by one.
-  for (int i = removed_desk_index + 1; i < int{desks_.size()}; i++) {
+  for (int i = removed_desk_index + 1; i < static_cast<int>(desks_.size());
+       i++) {
     for (auto* window : desks_[i]->windows())
       window->SetProperty(aura::client::kWindowWorkspaceKey, i - 1);
   }

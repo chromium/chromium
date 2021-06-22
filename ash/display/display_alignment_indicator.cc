@@ -203,7 +203,7 @@ class IndicatorHighlightView : public views::View {
  private:
   // Radius for the rounded rectangle highlight. Determined by display
   // resolution.
-  int corner_radius_;
+  float corner_radius_;
 };
 
 // -----------------------------------------------------------------------------
