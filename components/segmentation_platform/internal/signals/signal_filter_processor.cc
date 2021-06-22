@@ -7,6 +7,7 @@
 #include <set>
 
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
+#include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
 #include "components/segmentation_platform/internal/signals/user_action_signal_handler.h"
 
 namespace segmentation_platform {

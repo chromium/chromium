@@ -13,16 +13,20 @@
 #include "base/sequenced_task_runner.h"
 #include "components/optimization_guide/core/model_executor.h"
 #include "components/optimization_guide/proto/models.pb.h"
+#include "components/segmentation_platform/internal/database/segment_info_database.h"
 #include "components/segmentation_platform/internal/execution/model_execution_manager.h"
 #include "components/segmentation_platform/internal/execution/segmentation_model_handler.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace optimization_guide {
 class OptimizationGuideModelProvider;
+using proto::OptimizationTarget;
 }  // namespace optimization_guide
-using optimization_guide::proto::OptimizationTarget;
 
 namespace segmentation_platform {
+namespace proto {
+class SegmentInfo;
+}  // namespace proto
 
 // The ModelExecutionManagerImpl is the core implementation of the
 // ModelExecutionManager that hooks up the SegmentInfoDatabase (metadata) and
@@ -42,7 +46,8 @@ class ModelExecutionManagerImpl : public ModelExecutionManager {
   explicit ModelExecutionManagerImpl(
       optimization_guide::OptimizationGuideModelProvider* model_provider,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner,
-      std::vector<OptimizationTarget> segment_ids);
+      std::vector<OptimizationTarget> segment_ids,
+      SegmentInfoDatabase* segment_database);
   ~ModelExecutionManagerImpl() override;
 
   // Disallow copy/assign.
@@ -57,12 +62,17 @@ class ModelExecutionManagerImpl : public ModelExecutionManager {
  private:
   struct ExecutionState;
 
+  void OnSegmentInfoFetched(std::unique_ptr<ExecutionState> state,
+                            absl::optional<proto::SegmentInfo> segment_info);
+  void ProcessFeatures(std::unique_ptr<ExecutionState> state);
+
   void RunModelExecutionCallback(ModelExecutionCallback callback,
                                  float result,
                                  ModelExecutionStatus status);
 
   std::map<OptimizationTarget, std::unique_ptr<SegmentationModelHandler>>
       model_handlers_;
+  SegmentInfoDatabase* segment_database_;
   base::WeakPtrFactory<ModelExecutionManagerImpl> weak_ptr_factory_{this};
 };
 

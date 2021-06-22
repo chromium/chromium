@@ -16,6 +16,24 @@ constexpr base::TimeDelta kFreshResultsDurationThreshold =
 
 }  // namespace
 
+ValidationResult ValidateSegmentInfo(const proto::SegmentInfo& segment_info) {
+  if (!segment_info.has_segment_id())
+    return ValidationResult::SEGMENT_ID_NOT_FOUND;
+
+  if (!segment_info.has_model_metadata())
+    return ValidationResult::METADATA_NOT_FOUND;
+
+  return ValidateMetadata(segment_info.model_metadata());
+}
+
+ValidationResult ValidateMetadata(
+    const proto::SegmentationModelMetadata& model_metadata) {
+  if (model_metadata.time_unit() == proto::TimeUnit::UNKNOWN_TIME_UNIT)
+    return ValidationResult::TIME_UNIT_INVALID;
+
+  return ValidationResult::VALIDATION_SUCCESS;
+}
+
 bool HasExpiredOrUnavailableResult(const proto::SegmentInfo& segment_info) {
   if (!segment_info.has_prediction_result())
     return true;

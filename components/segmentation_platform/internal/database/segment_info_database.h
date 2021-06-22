@@ -12,6 +12,7 @@
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using optimization_guide::proto::OptimizationTarget;
 
