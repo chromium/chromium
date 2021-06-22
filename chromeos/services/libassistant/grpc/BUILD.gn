@@ -2,6 +2,26 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("assistant_client") {
+  sources = [
+    "assistant_client.cc",
+    "assistant_client.h",
+    "assistant_client_impl.cc",
+    "assistant_client_impl.h",
+    "assistant_client_v1.cc",
+    "assistant_client_v1.h",
+  ]
+
+  deps = [
+    ":libassistant_client",
+    "external_services:grpc_services_initializer",
+    "//base",
+    "//chromeos/services/assistant/public/cpp",
+    "//libassistant/shared/internal_api:assistant_manager_internal",
+    "//libassistant/shared/public",
+  ]
+}
+
 source_set("grpc_client") {
   sources = [
     "grpc_client_cq_tag.h",
@@ -26,17 +46,17 @@ source_set("grpc_client") {
   all_dependent_configs = [ "//third_party/grpc:grpc_config" ]
 }
 
-source_set("libassistant_client") {
+source_set("grpc_service") {
   sources = [
-    "grpc_libassistant_client.cc",
-    "grpc_libassistant_client.h",
+    "async_service_driver.h",
+    "services_initializer_base.cc",
+    "services_initializer_base.h",
   ]
 
-  public_deps = [ "//chromeos/assistant/internal:support" ]
-
   deps = [
-    ":grpc_client",
+    ":grpc_util",
     "//base",
+    "//third_party/grpc:grpc++",
   ]
 }
 
@@ -53,22 +73,21 @@ source_set("grpc_util") {
   ]
 }
 
-source_set("assistant_client") {
+source_set("libassistant_client") {
   sources = [
-    "assistant_client.cc",
-    "assistant_client.h",
-    "assistant_client_impl.cc",
-    "assistant_client_impl.h",
-    "assistant_client_v1.cc",
-    "assistant_client_v1.h",
+    "grpc_libassistant_client.cc",
+    "grpc_libassistant_client.h",
   ]
 
+  public_deps = [ "//chromeos/assistant/internal:support" ]
+
   deps = [
-    ":libassistant_client",
+    ":grpc_client",
     "//base",
-    "//chromeos/services/assistant/public/cpp",
-    "//chromeos/services/libassistant/grpc/external_services:grpc_services_initializer",
-    "//libassistant/shared/internal_api:assistant_manager_internal",
-    "//libassistant/shared/public",
   ]
+
+  # Make grpc_config as all dependent to avoid adding public deps
+  # for any top-level targets that are not immediate dependents and
+  # indirectly includes headers from grpc through grpc_libassistant_client header.
+  all_dependent_configs = [ "//third_party/grpc:grpc_config" ]
 }

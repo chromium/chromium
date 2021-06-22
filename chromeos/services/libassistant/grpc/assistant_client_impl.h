@@ -22,14 +22,15 @@ class GrpcLibassistantClient;
 // ChromeOS to use.
 class AssistantClientImpl : public AssistantClient {
  public:
-  explicit AssistantClientImpl(
+  AssistantClientImpl(
       std::unique_ptr<assistant_client::AssistantManager> assistant_manager,
       assistant_client::AssistantManagerInternal* assistant_manager_internal,
-      const std::string& libassistant_service_address);
+      const std::string& libassistant_service_address,
+      const std::string& assistant_service_address);
 
   ~AssistantClientImpl() override;
 
-  // chromeos::libassistant::AssistantClient:
+  // chromeos::libassistant::AssistantClient overrides:
   bool StartGrpcServices() override;
   void AddExperimentIds(const std::vector<std::string>& exp_ids) override;
 

@@ -19,9 +19,10 @@ namespace libassistant {
 AssistantClientImpl::AssistantClientImpl(
     std::unique_ptr<assistant_client::AssistantManager> assistant_manager,
     assistant_client::AssistantManagerInternal* assistant_manager_internal,
-    const std::string& libassistant_service_address)
+    const std::string& libassistant_service_address,
+    const std::string& assistant_service_address)
     : AssistantClient(std::move(assistant_manager), assistant_manager_internal),
-      grpc_services_(libassistant_service_address),
+      grpc_services_(libassistant_service_address, assistant_service_address),
       client_(grpc_services_.GrpcLibassistantClient()),
       task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
 
@@ -30,8 +31,7 @@ AssistantClientImpl::~AssistantClientImpl() {
 }
 
 bool AssistantClientImpl::StartGrpcServices() {
-  NOTIMPLEMENTED();
-  return false;
+  return grpc_services_.Start();
 }
 
 void AssistantClientImpl::AddExperimentIds(

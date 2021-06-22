@@ -12,7 +12,8 @@ namespace chromeos {
 namespace libassistant {
 
 // Represents a pending asynchronous client call as a tag that can be
-// stored in a |grpc::CompletionQueue|.
+// stored in a |grpc::CompletionQueue|. Note that each |GrpcClientCQTag|
+// will be responsible for deleting itself after an RPC is finished.
 class GrpcClientCQTag {
  public:
   enum class State {
