@@ -12,6 +12,7 @@
 #include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/notifications/platform_notification_service_factory.h"
 #include "chrome/browser/notifications/platform_notification_service_impl.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/test_history_database.h"
@@ -30,9 +32,12 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/notifications/notification_resources.h"
 #include "third_party/blink/public/common/notifications/platform_notification_data.h"
 #include "third_party/blink/public/mojom/notifications/notification.mojom.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -43,6 +48,16 @@
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/value_builder.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+#if !defined(OS_ANDROID)
+#include "chrome/browser/web_applications/components/web_app_icon_generator.h"
+#include "chrome/browser/web_applications/test/test_web_app_provider.h"
+#include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
+#include "chrome/browser/web_applications/test/web_app_test_utils.h"
+#include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_icon_manager.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
+#endif
 
 using blink::NotificationResources;
 using blink::PlatformNotificationData;
@@ -361,7 +376,8 @@ TEST_F(PlatformNotificationServiceTest, CreateNotificationFromData) {
   GURL origin("https://chrome.com/");
 
   Notification notification = service()->CreateNotificationFromData(
-      origin, "id", notification_data, NotificationResources());
+      origin, "id", notification_data, NotificationResources(),
+      /*web_app_hint_url=*/GURL());
   EXPECT_TRUE(notification.context_message().empty());
 
   // Create a mocked extension.
@@ -382,9 +398,67 @@ TEST_F(PlatformNotificationServiceTest, CreateNotificationFromData) {
 
   notification = service()->CreateNotificationFromData(
       GURL("chrome-extension://honijodknafkokifofgiaalefdiedpko/main.html"),
-      "id", notification_data, NotificationResources());
+      "id", notification_data, NotificationResources(),
+      /*web_app_hint_url=*/GURL());
   EXPECT_EQ("NotificationTest",
             base::UTF16ToUTF8(notification.context_message()));
 }
 
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+#if !defined(OS_ANDROID)
+
+class PlatformNotificationServiceTest_WebAppNotificationIconAndTitle
+    : public PlatformNotificationServiceTest {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kDesktopPWAsNotificationIconAndTitle};
+};
+
+TEST_F(PlatformNotificationServiceTest_WebAppNotificationIconAndTitle,
+       FindWebAppIconAndTitle_NoApp) {
+  web_app::TestWebAppProvider* provider =
+      web_app::TestWebAppProvider::Get(&profile_);
+  provider->Start();
+
+  const GURL web_app_url{"https://example.org/"};
+  EXPECT_FALSE(service()->FindWebAppIconAndTitle(web_app_url).has_value());
+}
+
+TEST_F(PlatformNotificationServiceTest_WebAppNotificationIconAndTitle,
+       FindWebAppIconAndTitle) {
+  web_app::TestWebAppProvider* provider =
+      web_app::TestWebAppProvider::Get(&profile_);
+  web_app::WebAppIconManager& icon_manager = provider->GetIconManager();
+
+  std::unique_ptr<web_app::WebApp> web_app =
+      web_app::test::CreateMinimalWebApp();
+  const GURL web_app_url = web_app->start_url();
+  const web_app::AppId app_id = web_app->app_id();
+  web_app->SetName("Web App Title");
+
+  IconManagerWriteGeneratedIcons(icon_manager, app_id,
+                                 {{IconPurpose::MONOCHROME,
+                                   {web_app::icon_size::k16},
+                                   {SK_ColorTRANSPARENT}}});
+  web_app->SetDownloadedIconSizes(IconPurpose::MONOCHROME,
+                                  {web_app::icon_size::k16});
+
+  provider->GetRegistrarMutable().registry().emplace(app_id,
+                                                     std::move(web_app));
+
+  IconManagerStartAndAwaitFaviconMonochrome(icon_manager, app_id);
+  provider->Start();
+
+  absl::optional<PlatformNotificationServiceImpl::WebAppIconAndTitle>
+      icon_and_title = service()->FindWebAppIconAndTitle(web_app_url);
+
+  ASSERT_TRUE(icon_and_title.has_value());
+  EXPECT_EQ(u"Web App Title", icon_and_title->title);
+  EXPECT_FALSE(icon_and_title->icon.isNull());
+  EXPECT_EQ(
+      SK_ColorTRANSPARENT,
+      icon_and_title->icon.GetRepresentation(1.0f).GetBitmap().getColor(0, 0));
+}
+
+#endif  // !defined(OS_ANDROID)

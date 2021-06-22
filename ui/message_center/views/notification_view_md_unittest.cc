@@ -1465,6 +1465,29 @@ TEST_F(NotificationViewMDTest, AppNameWebNotification) {
             notification_view()->header_row_->app_name_for_testing());
 }
 
+TEST_F(NotificationViewMDTest, AppNameWebAppNotification) {
+  const GURL web_app_url("http://example.com");
+
+  NotifierId notifier_id(web_app_url, /*title=*/u"web app title");
+
+  RichNotificationData data;
+  data.settings_button_handler = SettingsButtonHandler::INLINE;
+
+  std::unique_ptr<Notification> notification = std::make_unique<Notification>(
+      NOTIFICATION_TYPE_BASE_FORMAT, std::string(kDefaultNotificationId),
+      u"title", u"message", CreateTestImage(80, 80), u"display source", GURL(),
+      notifier_id, data, delegate_);
+  notification->set_small_image(CreateTestImage(16, 16));
+  notification->set_image(CreateTestImage(320, 240));
+
+  notification->set_origin_url(web_app_url);
+
+  UpdateNotificationViews(*notification);
+
+  EXPECT_EQ(u"web app title",
+            notification_view()->header_row_->app_name_for_testing());
+}
+
 TEST_F(NotificationViewMDTest, ShowProgress) {
   std::unique_ptr<Notification> notification = CreateSimpleNotification();
   notification->set_type(NOTIFICATION_TYPE_PROGRESS);
