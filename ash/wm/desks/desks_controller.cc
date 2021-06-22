@@ -40,15 +40,12 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/containers/unique_ptr_adapters.h"
-#include "base/files/file_path.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/numerics/ranges.h"
 #include "base/timer/timer.h"
 #include "components/full_restore/app_launch_info.h"
-#include "components/full_restore/app_restore_data.h"
-#include "components/full_restore/full_restore_save_handler.h"
 #include "components/full_restore/full_restore_utils.h"
 #include "components/full_restore/restore_data.h"
 #include "components/full_restore/window_info.h"
@@ -828,55 +825,28 @@ void DesksController::SendToDeskAtIndex(aura::Window* window, int desk_index) {
                              DesksMoveWindowFromActiveDeskSource::kSendToDesk);
 }
 
-std::unique_ptr<DeskTemplate> DesksController::CaptureActiveDeskAsTemplate(
-    const base::FilePath& profile_path) {
-  DCHECK(!profile_path.empty());
-
-  // Get |full_restore_data| from FullRestoreSaveHandler which contains all
-  // restoring information for all apps running on the device.
-  const ::full_restore::RestoreData* full_restore_data =
-      ::full_restore::FullRestoreSaveHandler::GetInstance()->GetRestoreData(
-          profile_path);
-  DCHECK(full_restore_data);
-
+std::unique_ptr<DeskTemplate> DesksController::CaptureActiveDeskAsTemplate()
+    const {
   std::unique_ptr<DeskTemplate> desk_template =
       std::make_unique<DeskTemplate>();
   desk_template->set_desk_name(active_desk_->name());
 
-  // Construct |restore_data| for |desk_template| from |full_restore_data|.
+  // Construct |restore_data| for |desk_template|.
   std::unique_ptr<full_restore::RestoreData> restore_data =
       std::make_unique<full_restore::RestoreData>();
   auto* shell = Shell::Get();
   auto mru_windows =
       shell->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
   for (auto* window : mru_windows) {
-    const std::string* const app_id = window->GetProperty(kAppIDKey);
-    if (!app_id)
+    std::unique_ptr<full_restore::AppLaunchInfo> app_launch_info =
+        shell->shell_delegate()->GetAppLaunchDataForDeskTemplate(window);
+    if (!app_launch_info)
       continue;
 
+    // We need to copy |app_launch_info->app_id| to |app_id| as the below
+    // function AddAppLaunchInfo() will destroy |app_launch_info|.
+    const std::string app_id = app_launch_info->app_id;
     const int32_t window_id = window->GetProperty(full_restore::kWindowIdKey);
-
-    std::unique_ptr<full_restore::AppLaunchInfo> app_launch_info =
-        std::make_unique<full_restore::AppLaunchInfo>(*app_id, window_id);
-    // Use the latest urls for the window instead of reading it from
-    // |full_restore_data| as urls may have changed after app launch and
-    // currently urls are not tracked in |full_restore_data| anyway.
-    app_launch_info->urls =
-        shell->shell_delegate()->GetURLsIfApplicable(window);
-    // Read all other relevant app launching information from
-    // |full_restore_data| to |app_launch_info|.
-    const full_restore::AppRestoreData* app_restore_data =
-        full_restore_data->GetAppRestoreData(*app_id, window_id);
-    if (app_restore_data) {
-      app_launch_info->event_flag = app_restore_data->event_flag;
-      app_launch_info->container = app_restore_data->container;
-      app_launch_info->disposition = app_restore_data->disposition;
-      app_launch_info->file_paths = app_restore_data->file_paths;
-      if (app_restore_data->intent.has_value() &&
-          app_restore_data->intent.value()) {
-        app_launch_info->intent = app_restore_data->intent.value()->Clone();
-      }
-    }
     restore_data->AddAppLaunchInfo(std::move(app_launch_info));
 
     std::unique_ptr<full_restore::WindowInfo> window_info = BuildWindowInfo(
@@ -884,7 +854,7 @@ std::unique_ptr<DeskTemplate> DesksController::CaptureActiveDeskAsTemplate(
     // Clear WindowInfo's |desk_id| as a window in template will always launch
     // to a newly created desk.
     window_info->desk_id.reset();
-    restore_data->ModifyWindowInfo(*app_id, window_id, *window_info);
+    restore_data->ModifyWindowInfo(app_id, window_id, *window_info);
   }
   desk_template->set_desk_restore_data(std::move(restore_data));
 

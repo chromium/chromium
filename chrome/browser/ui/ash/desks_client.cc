@@ -31,17 +31,7 @@ DesksClient* DesksClient::Get() {
 }
 
 std::unique_ptr<ash::DeskTemplate> DesksClient::CaptureActiveDeskAsTemplate() {
-  const user_manager::User* primary_user =
-      user_manager::UserManager::Get()->GetPrimaryUser();
-  if (!primary_user)
-    return nullptr;
-
-  Profile* user_profile =
-      ash::ProfileHelper::Get()->GetProfileByUser(primary_user);
-  if (!user_profile)
-    return nullptr;
-
-  return desks_helper_->CaptureActiveDeskAsTemplate(user_profile->GetPath());
+  return desks_helper_->CaptureActiveDeskAsTemplate();
 }
 
 void DesksClient::LaunchDeskTemplate(double template_uuid) {

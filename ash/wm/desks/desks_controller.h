@@ -238,8 +238,7 @@ class ASH_EXPORT DesksController : public DesksHelper,
   std::u16string GetDeskName(int index) const override;
   int GetNumberOfDesks() const override;
   void SendToDeskAtIndex(aura::Window* window, int desk_index) override;
-  std::unique_ptr<DeskTemplate> CaptureActiveDeskAsTemplate(
-      const base::FilePath& profile_path) override;
+  std::unique_ptr<DeskTemplate> CaptureActiveDeskAsTemplate() const override;
   void CreateAndActivateNewDeskForTemplate(
       const std::u16string& desk_name,
       base::OnceCallback<void(bool)> callback) override;

@@ -54,8 +54,9 @@ class TestShellDelegate : public ShellDelegate {
   void SetSessionRestoreInProgress(bool in_progress);
   bool IsLoggingRedirectDisabled() const override;
   base::FilePath GetPrimaryUserDownloadsFolder() const override;
-  std::vector<GURL> GetURLsIfApplicable(aura::Window* window) override;
   void OpenFeedbackPageForPersistentDesksBar() override {}
+  std::unique_ptr<full_restore::AppLaunchInfo> GetAppLaunchDataForDeskTemplate(
+      aura::Window* window) const override;
 
  private:
   // True if the current top window can go back.

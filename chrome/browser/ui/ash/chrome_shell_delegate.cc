@@ -8,8 +8,10 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/window_properties.h"
 #include "ash/screenshot_delegate.h"
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/command_line.h"
 #include "cc/input/touch_action.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -42,6 +44,11 @@
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_util.h"
 #include "chrome/common/chrome_switches.h"
 #include "chromeos/services/multidevice_setup/multidevice_setup_service.h"
+#include "components/full_restore/app_launch_info.h"
+#include "components/full_restore/app_restore_data.h"
+#include "components/full_restore/full_restore_save_handler.h"
+#include "components/full_restore/full_restore_utils.h"
+#include "components/full_restore/restore_data.h"
 #include "components/ui_devtools/devtools_server.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/device_service.h"
@@ -60,15 +67,31 @@ const char kKeyboardShortcutHelpPageUrl[] =
 // independent option here.
 absl::optional<bool> disable_logging_redirect_for_testing;
 
+// Returns the TabStripModel that associates with |window| if the given |window|
+// contains a browser frame, otherwise returns nullptr.
+TabStripModel* GetTabstripModelForWindowIfAny(aura::Window* window) {
+  BrowserView* browser_view =
+      BrowserView::GetBrowserViewForNativeWindow(window);
+  return browser_view ? browser_view->browser()->tab_strip_model() : nullptr;
+}
+
 content::WebContents* GetActiveWebContentsForNativeBrowserWindow(
     gfx::NativeWindow window) {
   if (!window)
     return nullptr;
-  BrowserView* browser_view =
-      BrowserView::GetBrowserViewForNativeWindow(window);
-  if (!browser_view)
-    return nullptr;
-  return browser_view->browser()->tab_strip_model()->GetActiveWebContents();
+
+  TabStripModel* tab_strip_model = GetTabstripModelForWindowIfAny(window);
+  return tab_strip_model ? tab_strip_model->GetActiveWebContents() : nullptr;
+}
+
+// Returns the list of URLs that are open in |tab_strip_model|.
+std::vector<GURL> GetURLsIfApplicable(TabStripModel* tab_strip_model) {
+  DCHECK(tab_strip_model);
+
+  std::vector<GURL> urls;
+  for (int i = 0; i < tab_strip_model->count(); ++i)
+    urls.push_back(tab_strip_model->GetWebContentsAt(i)->GetLastCommittedURL());
+  return urls;
 }
 
 }  // namespace
@@ -258,27 +281,64 @@ base::FilePath ChromeShellDelegate::GetPrimaryUserDownloadsFolder() const {
   if (!primary_user)
     return base::FilePath();
 
-  Profile* user_profile = ash::ProfileHelper::Get()->GetProfileByUser(
-      user_manager::UserManager::Get()->GetPrimaryUser());
+  Profile* user_profile =
+      ash::ProfileHelper::Get()->GetProfileByUser(primary_user);
   if (user_profile)
     return file_manager::util::GetDownloadsFolderForProfile(user_profile);
 
   return base::FilePath();
 }
 
-std::vector<GURL> ChromeShellDelegate::GetURLsIfApplicable(
-    aura::Window* window) {
-  BrowserView* browser_view =
-      BrowserView::GetBrowserViewForNativeWindow(window);
-  if (!browser_view)
-    return std::vector<GURL>();
+std::unique_ptr<full_restore::AppLaunchInfo>
+ChromeShellDelegate::GetAppLaunchDataForDeskTemplate(
+    aura::Window* window) const {
+  const std::string* const app_id = window->GetProperty(ash::kAppIDKey);
+  if (!app_id)
+    return nullptr;
 
-  TabStripModel* tab_strip_model = browser_view->browser()->tab_strip_model();
-  std::vector<GURL> urls;
-  for (int i = 0; i < tab_strip_model->count(); ++i)
-    urls.push_back(tab_strip_model->GetWebContentsAt(i)->GetLastCommittedURL());
+  // TODO: Handle multi-profile scenario.
+  const user_manager::User* primary_user =
+      user_manager::UserManager::Get()->GetPrimaryUser();
+  if (!primary_user)
+    return nullptr;
 
-  return urls;
+  Profile* user_profile =
+      ash::ProfileHelper::Get()->GetProfileByUser(primary_user);
+  if (!user_profile)
+    return nullptr;
+
+  // Get |full_restore_data| from FullRestoreSaveHandler which contains all
+  // restoring information for all apps running on the device.
+  const ::full_restore::RestoreData* full_restore_data =
+      ::full_restore::FullRestoreSaveHandler::GetInstance()->GetRestoreData(
+          user_profile->GetPath());
+  DCHECK(full_restore_data);
+
+  const int32_t window_id = window->GetProperty(full_restore::kWindowIdKey);
+  std::unique_ptr<full_restore::AppLaunchInfo> app_launch_info =
+      std::make_unique<full_restore::AppLaunchInfo>(*app_id, window_id);
+  auto* tab_strip_model = GetTabstripModelForWindowIfAny(window);
+  if (tab_strip_model) {
+    app_launch_info->urls = GetURLsIfApplicable(tab_strip_model);
+    app_launch_info->active_tab_index = tab_strip_model->active_index();
+  }
+
+  // Read all other relevant app launching information from
+  // |app_restore_data| to |app_launch_info|.
+  const full_restore::AppRestoreData* app_restore_data =
+      full_restore_data->GetAppRestoreData(*app_id, window_id);
+  if (app_restore_data) {
+    app_launch_info->event_flag = app_restore_data->event_flag;
+    app_launch_info->container = app_restore_data->container;
+    app_launch_info->disposition = app_restore_data->disposition;
+    app_launch_info->file_paths = app_restore_data->file_paths;
+    if (app_restore_data->intent.has_value() &&
+        app_restore_data->intent.value()) {
+      app_launch_info->intent = app_restore_data->intent.value()->Clone();
+    }
+  }
+
+  return app_launch_info;
 }
 
 void ChromeShellDelegate::OpenFeedbackPageForPersistentDesksBar() {

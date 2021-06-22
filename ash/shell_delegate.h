@@ -18,7 +18,6 @@
 #include "services/device/public/mojom/fingerprint.mojom-forward.h"
 #include "services/media_session/public/cpp/media_session_service.h"
 #include "ui/gfx/native_widget_types.h"
-#include "url/gurl.h"
 
 namespace aura {
 class Window;
@@ -26,6 +25,10 @@ class Window;
 
 namespace ui {
 class OSExchangeData;
+}
+
+namespace full_restore {
+struct AppLaunchInfo;
 }
 
 namespace ash {
@@ -126,14 +129,18 @@ class ASH_EXPORT ShellDelegate {
   // primary user Downloads folder if user has already logged in.
   virtual base::FilePath GetPrimaryUserDownloadsFolder() const = 0;
 
-  // Returns the list of URLs that open in the tabs of |window| if the given
-  // given |window| contains a browser frame, otherwise returns an empty list.
-  virtual std::vector<GURL> GetURLsIfApplicable(aura::Window* window) = 0;
-
   // Opens the feedback page with pre-populated description #BentoBar for
   // persistent desks bar. Note, this will be removed once the feature is fully
   // launched or removed.
   virtual void OpenFeedbackPageForPersistentDesksBar() = 0;
+
+  // Returns the app launch data that's associated with a particular |window| in
+  // order to construct a desk template. Return nullptr if no such app launch
+  // data can be constructed, which can happen if the |window| does not have
+  // an app id associated with it, or we're not in the primary active user
+  // session.
+  virtual std::unique_ptr<full_restore::AppLaunchInfo>
+  GetAppLaunchDataForDeskTemplate(aura::Window* window) const = 0;
 };
 
 }  // namespace ash
