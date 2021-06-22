@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.subscriptions.CommerceSubscriptionsServiceCon
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.browser.tasks.ConditionalTabStripUtils;
 import org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil;
+import org.chromium.chrome.browser.tasks.tab_management.PriceTrackingUtilities;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
@@ -142,12 +143,12 @@ public class ChromeCachedFlags {
                 StartupPaintPreviewHelper.ACCESSIBILITY_SUPPORT_PARAM,
                 CommerceSubscriptionsServiceConfig.STALE_TAB_LOWER_BOUND_SECONDS,
                 CommerceSubscriptionsServiceConfig.SUBSCRIPTIONS_SERVICE_BASE_URL,
+                PriceTrackingUtilities.ENABLE_PRICE_NOTIFICATION,
+                PriceTrackingUtilities.ENABLE_PRICE_TRACKING,
                 TabContentManager.ALLOW_TO_REFETCH_TAB_THUMBNAIL_VARIATION,
                 TabUiFeatureUtilities.ENABLE_LAUNCH_BUG_FIX,
                 TabUiFeatureUtilities.ENABLE_LAUNCH_POLISH,
                 TabUiFeatureUtilities.ENABLE_SEARCH_CHIP,
-                TabUiFeatureUtilities.ENABLE_PRICE_NOTIFICATION,
-                TabUiFeatureUtilities.ENABLE_PRICE_TRACKING,
                 TabUiFeatureUtilities.ENABLE_SEARCH_CHIP_ADAPTIVE,
                 TabUiFeatureUtilities.ENABLE_TAB_GROUP_AUTO_CREATION,
                 TabUiFeatureUtilities.ZOOMING_MIN_MEMORY,

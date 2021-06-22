@@ -43,7 +43,7 @@ import java.util.concurrent.Semaphore;
  * Legacy test relating to {@link ShoppingPersistedTabData} and {@link PageAnnotationService}
  */
 @RunWith(BaseJUnit4ClassRunner.class)
-@EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID + "<Study"})
+@EnableFeatures({ChromeFeatureList.COMMERCE_PRICE_TRACKING + "<Study"})
 @CommandLineFlags.
 Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "force-fieldtrials=Study/Group"})
 public class ShoppingPersistedTabDataLegacyWithPASTest {

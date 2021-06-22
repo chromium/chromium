@@ -45,7 +45,7 @@ import java.util.concurrent.TimeUnit;
  * Test relating to {@link ShoppingPersistedTabData}
  */
 @RunWith(BaseJUnit4ClassRunner.class)
-@EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID + "<Study"})
+@EnableFeatures({ChromeFeatureList.COMMERCE_PRICE_TRACKING + "<Study"})
 @CommandLineFlags.
 Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "force-fieldtrials=Study/Group"})
 public class ShoppingPersistedTabDataTest {

@@ -21,9 +21,9 @@ public class CommerceSubscriptionsServiceConfig {
 
     public static final StringCachedFieldTrialParameter SUBSCRIPTIONS_SERVICE_BASE_URL =
             new StringCachedFieldTrialParameter(
-                    ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID, BASE_URL_PARAM, DEFAULT_BASE_URL);
+                    ChromeFeatureList.COMMERCE_PRICE_TRACKING, BASE_URL_PARAM, DEFAULT_BASE_URL);
 
     public static final IntCachedFieldTrialParameter STALE_TAB_LOWER_BOUND_SECONDS =
-            new IntCachedFieldTrialParameter(ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,
+            new IntCachedFieldTrialParameter(ChromeFeatureList.COMMERCE_PRICE_TRACKING,
                     STALE_TAB_LOWER_BOUND_SECONDS_PARAM, (int) TimeUnit.DAYS.toSeconds(1));
 }

@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
@@ -13,6 +15,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.sync.ProfileSyncService;
+import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.components.sync.ModelType;
 
 /**
@@ -22,6 +25,16 @@ import org.chromium.components.sync.ModelType;
  * TabUiFeatureUtilities#ENABLE_PRICE_TRACKING}.
  */
 public class PriceTrackingUtilities {
+    private static final String PRICE_TRACKING_PARAM = "enable_price_tracking";
+    public static final BooleanCachedFieldTrialParameter ENABLE_PRICE_TRACKING =
+            new BooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.COMMERCE_PRICE_TRACKING, PRICE_TRACKING_PARAM, false);
+
+    private static final String PRICE_NOTIFICATION_PARAM = "enable_price_notification";
+    public static final BooleanCachedFieldTrialParameter ENABLE_PRICE_NOTIFICATION =
+            new BooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.COMMERCE_PRICE_TRACKING, PRICE_NOTIFICATION_PARAM, false);
+
     @VisibleForTesting
     public static final String TRACK_PRICES_ON_TABS =
             ChromePreferenceKeys.PRICE_TRACKING_TRACK_PRICES_ON_TABS;
@@ -51,11 +64,21 @@ public class PriceTrackingUtilities {
      */
     public static boolean isPriceTrackingEligible() {
         if (sIsSignedInAndSyncEnabledForTesting != null) {
-            return TabUiFeatureUtilities.isPriceTrackingEnabled()
-                    && sIsSignedInAndSyncEnabledForTesting;
+            return isPriceTrackingEnabled() && sIsSignedInAndSyncEnabledForTesting;
         }
-        return TabUiFeatureUtilities.isPriceTrackingEnabled() && isSignedIn()
-                && isAnonymizedUrlDataCollectionEnabled() && isOpenTabsSyncEnabled();
+        return isPriceTrackingEnabled() && isSignedIn() && isAnonymizedUrlDataCollectionEnabled()
+                && isOpenTabsSyncEnabled();
+    }
+
+    /**
+     * @return Whether the price tracking feature is enabled and available for use.
+     */
+    public static boolean isPriceTrackingEnabled() {
+        // TODO(crbug.com/1152925): Now PriceTracking feature is broken if StartSurface is enabled,
+        // we need to remove !StartSurfaceConfiguration.isStartSurfaceEnabled() when the bug is
+        // fixed.
+        return (ENABLE_PRICE_TRACKING.getValue() || ENABLE_PRICE_NOTIFICATION.getValue())
+                && !StartSurfaceConfiguration.isStartSurfaceEnabled();
     }
 
     /**
@@ -63,7 +86,7 @@ public class PriceTrackingUtilities {
      */
     public static void flipTrackPricesOnTabs() {
         final boolean enableTrackPricesOnTabs = SHARED_PREFERENCES_MANAGER.readBoolean(
-                TRACK_PRICES_ON_TABS, TabUiFeatureUtilities.isPriceTrackingEnabled());
+                TRACK_PRICES_ON_TABS, isPriceTrackingEnabled());
         SHARED_PREFERENCES_MANAGER.writeBoolean(TRACK_PRICES_ON_TABS, !enableTrackPricesOnTabs);
     }
 
@@ -73,7 +96,7 @@ public class PriceTrackingUtilities {
     public static boolean isTrackPricesOnTabsEnabled() {
         return isPriceTrackingEligible()
                 && SHARED_PREFERENCES_MANAGER.readBoolean(
-                        TRACK_PRICES_ON_TABS, TabUiFeatureUtilities.isPriceTrackingEnabled());
+                        TRACK_PRICES_ON_TABS, isPriceTrackingEnabled());
     }
 
     /**
@@ -89,7 +112,7 @@ public class PriceTrackingUtilities {
     public static boolean isPriceWelcomeMessageCardEnabled() {
         return isPriceTrackingEligible()
                 && SHARED_PREFERENCES_MANAGER.readBoolean(
-                        PRICE_WELCOME_MESSAGE_CARD, TabUiFeatureUtilities.isPriceTrackingEnabled());
+                        PRICE_WELCOME_MESSAGE_CARD, isPriceTrackingEnabled());
     }
 
     /**
@@ -111,8 +134,7 @@ public class PriceTrackingUtilities {
      * @return Whether the price drop notification is eligible to work.
      */
     public static boolean isPriceDropNotificationEligible() {
-        return isPriceTrackingEligible()
-                && TabUiFeatureUtilities.ENABLE_PRICE_NOTIFICATION.getValue();
+        return isPriceTrackingEligible() && ENABLE_PRICE_NOTIFICATION.getValue();
     }
 
     /**
@@ -130,7 +152,7 @@ public class PriceTrackingUtilities {
     public static boolean isPriceAlertsMessageCardEnabled() {
         return isPriceDropNotificationEligible()
                 && SHARED_PREFERENCES_MANAGER.readBoolean(
-                        PRICE_ALERTS_MESSAGE_CARD, TabUiFeatureUtilities.isPriceTrackingEnabled())
+                        PRICE_ALERTS_MESSAGE_CARD, isPriceTrackingEnabled())
                 && (!(new PriceDropNotificationManager()).canPostNotification());
     }
 

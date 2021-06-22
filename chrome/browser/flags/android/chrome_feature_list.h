@@ -52,7 +52,6 @@ extern const base::Feature kChromeSharingHub;
 extern const base::Feature kChromeStartupDelegate;
 extern const base::Feature kChromeSurveyNextAndroid;
 extern const base::Feature kCommandLineOnNonRooted;
-extern const base::Feature kCommerceMerchantViewer;
 extern const base::Feature kConditionalTabStripAndroid;
 extern const base::Feature kContextMenuEnableLensShoppingAllowlist;
 extern const base::Feature kContextMenuGoogleLensChip;

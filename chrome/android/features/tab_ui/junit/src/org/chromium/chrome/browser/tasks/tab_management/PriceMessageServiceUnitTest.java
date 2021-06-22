@@ -74,7 +74,7 @@ public class PriceMessageServiceUnitTest {
         doNothing().when(mMessageObserver).messageReady(anyInt(), any());
         doNothing().when(mMessageObserver).messageInvalidate(anyInt());
 
-        TabUiFeatureUtilities.ENABLE_PRICE_NOTIFICATION.setForTesting(true);
+        PriceTrackingUtilities.ENABLE_PRICE_NOTIFICATION.setForTesting(true);
         PriceTrackingUtilities.setIsSignedInAndSyncEnabledForTesting(true);
         PriceTrackingUtilities.SHARED_PREFERENCES_MANAGER.writeBoolean(
                 PriceTrackingUtilities.PRICE_WELCOME_MESSAGE_CARD, true);
