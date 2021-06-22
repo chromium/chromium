@@ -41,6 +41,13 @@ enum class BlinkSubresourceRedirectIneligibility {
 bool ShouldEnableSubresourceRedirect(HTMLImageElement* image_element,
                                      const KURL& url);
 
+// Returns whether CSP check should be disabled for this resource request for
+// |url| with the given |request_context| and |redirect_status|.
+bool ShouldDisableCSPCheckForSubresourceRedirectOrigin(
+    mojom::blink::RequestContextType request_context,
+    ResourceRequest::RedirectStatus redirect_status,
+    const KURL& url);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_SUBRESOURCE_REDIRECT_UTIL_H_
