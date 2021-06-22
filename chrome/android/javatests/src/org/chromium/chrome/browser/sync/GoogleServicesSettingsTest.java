@@ -33,7 +33,6 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.settings.GoogleServicesSettings;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
@@ -83,7 +82,6 @@ public class GoogleServicesSettingsTest {
 
     @Test
     @LargeTest
-    @Features.EnableFeatures(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
     public void signOutUserWithoutShowingSignOutDialog() {
         mAccountManagerTestRule.addTestAccountThenSignin();
         final GoogleServicesSettings googleServicesSettings = startGoogleServicesSettings();
@@ -109,7 +107,6 @@ public class GoogleServicesSettingsTest {
 
     @Test
     @LargeTest
-    @Features.EnableFeatures(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
     public void showSignOutDialogBeforeSigningUserOut() {
         mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
         final GoogleServicesSettings googleServicesSettings = startGoogleServicesSettings();

@@ -367,7 +367,6 @@ public abstract class ChromeFeatureList {
     public static final String MARK_HTTP_AS = "MarkHttpAs";
     public static final String MESSAGES_FOR_ANDROID_INFRASTRUCTURE =
             "MessagesForAndroidInfrastructure";
-    public static final String MOBILE_IDENTITY_CONSISTENCY = "MobileIdentityConsistency";
     public static final String MOBILE_IDENTITY_CONSISTENCY_VAR = "MobileIdentityConsistencyVar";
     public static final String MOBILE_IDENTITY_CONSISTENCY_M2 = "MobileIdentityConsistencyFRE";
     public static final String MOBILE_IDENTITY_CONSISTENCY_PROMOS =
