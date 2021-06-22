@@ -7,6 +7,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "build/build_config.h"
 
 namespace switches {
 
@@ -15,6 +16,11 @@ namespace switches {
 // This function can be called from any thread, and the implementation doesn't
 // assume it's running on the UI thread.
 bool IsSyncAllowedByFlag();
+
+#if defined(OS_IOS)
+// Returns whether RPC is enabled.
+bool IsSyncTrustedVaultPassphraseiOSRPCEnabled();
+#endif  // defined(OS_IOS)
 
 // Defines all the command-line switches used by sync driver. All switches in
 // alphabetical order. The switches should be documented alongside the
@@ -34,6 +40,10 @@ extern const base::Feature kDecoupleSyncFromAndroidMasterSync;
 
 extern const base::Feature kSyncRequiresPoliciesLoaded;
 extern const base::FeatureParam<base::TimeDelta> kSyncPolicyLoadTimeout;
+
+#if defined(OS_IOS)
+extern const base::Feature kSyncTrustedVaultPassphraseiOSRPC;
+#endif  // defined(OS_IOS)
 
 extern const base::Feature kSyncTrustedVaultPassphraseRecovery;
 

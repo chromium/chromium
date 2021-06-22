@@ -5037,6 +5037,11 @@
     "expiry_milestone": 84
   },
   {
+    "name": "sync-trusted-vault-passphrase-ios-rpc",
+    "owners": [ "mastiz", "jlebel" ],
+    "expiry_milestone": 100
+  },
+  {
     "name": "sync-trusted-vault-passphrase-promo",
     "owners": [ "mastiz", "mmoskvitin" ],
     "expiry_milestone": 100

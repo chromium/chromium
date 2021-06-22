@@ -444,6 +444,12 @@ const char kSyncSandboxName[] = "Use Chrome Sync sandbox";
 const char kSyncSandboxDescription[] =
     "Connects to the testing server for Chrome Sync.";
 
+const char kSyncTrustedVaultPassphraseiOSRPCName[] =
+    "Enable RPC for sync trusted vault passphrase.";
+const char kSyncTrustedVaultPassphraseiOSRPCDescription[] =
+    "Enables RPC for an experimental sync passphrase type, referred to as "
+    "trusted vault.";
+
 const char kSyncTrustedVaultPassphrasePromoName[] =
     "Enable promos for sync trusted vault passphrase.";
 const char kSyncTrustedVaultPassphrasePromoDescription[] =
