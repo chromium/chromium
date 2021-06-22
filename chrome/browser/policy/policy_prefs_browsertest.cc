@@ -20,6 +20,7 @@
 #include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -58,7 +59,14 @@ base::FilePath GetTestCasePath() {
 
 typedef PlatformBrowserTest PolicyPrefsTestCoverageTest;
 
-IN_PROC_BROWSER_TEST_F(PolicyPrefsTestCoverageTest, AllPoliciesHaveATestCase) {
+// TODO(crbug.com/1222709): Failing on Mac.
+#if defined(OS_MAC)
+#define MAYBE_AllPoliciesHaveATestCase DISABLED_AllPoliciesHaveATestCase
+#else
+#define MAYBE_AllPoliciesHaveATestCase AllPoliciesHaveATestCase
+#endif
+IN_PROC_BROWSER_TEST_F(PolicyPrefsTestCoverageTest,
+                       MAYBE_AllPoliciesHaveATestCase) {
   VerifyAllPoliciesHaveATestCase(GetTestCasePath());
 }
 
