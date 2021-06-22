@@ -32,6 +32,7 @@
 using testing::_;
 using testing::Invoke;
 using testing::Mock;
+using testing::NiceMock;
 using testing::WithArg;
 
 namespace media_router {
@@ -141,7 +142,7 @@ class CastDialogViewTest : public ChromeViewsTestBase {
   }
 
   std::unique_ptr<views::Widget> anchor_widget_;
-  MockCastDialogController controller_;
+  NiceMock<MockCastDialogController> controller_;
   CastDialogView* dialog_ = nullptr;
   TestingProfile profile_;
 };

@@ -49,6 +49,7 @@ using testing::ByRef;
 using testing::ElementsAre;
 using testing::Invoke;
 using testing::IsEmpty;
+using testing::NiceMock;
 using testing::Not;
 using testing::Return;
 using testing::WithArg;
@@ -192,7 +193,7 @@ class CastActivityManagerTest : public testing::Test,
   std::unique_ptr<AppActivity> MakeAppActivity(
       const MediaRoute& route,
       const std::string& app_id) override {
-    auto activity = std::make_unique<MockAppActivity>(route, app_id);
+    auto activity = std::make_unique<NiceMock<MockAppActivity>>(route, app_id);
     app_activity_ = activity.get();
     app_activity_callback_.Run(activity.get());
     return activity;
@@ -203,8 +204,8 @@ class CastActivityManagerTest : public testing::Test,
       const MediaRoute& route,
       const std::string& app_id,
       MirroringActivity::OnStopCallback on_stop) override {
-    auto activity = std::make_unique<MockMirroringActivity>(route, app_id,
-                                                            std::move(on_stop));
+    auto activity = std::make_unique<NiceMock<MockMirroringActivity>>(
+        route, app_id, std::move(on_stop));
     mirroring_activity_ = activity.get();
     mirroring_activity_callback_.Run(activity.get());
     return activity;
@@ -475,12 +476,12 @@ class CastActivityManagerTest : public testing::Test,
  protected:
   content::BrowserTaskEnvironment task_environment_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
-  MockMojoMediaRouter mock_router_;
+  NiceMock<MockMojoMediaRouter> mock_router_;
   mojo::Remote<mojom::MediaRouter> router_remote_;
   std::unique_ptr<mojo::Receiver<mojom::MediaRouter>> router_receiver_;
   cast_channel::MockCastSocketService socket_service_;
   cast_channel::MockCastSocket socket_;
-  cast_channel::MockCastMessageHandler message_handler_;
+  NiceMock<cast_channel::MockCastMessageHandler> message_handler_;
   MediaSinkInternal sink_ = CreateCastSink(kChannelId);
   MediaSinkInternal sink2_ = CreateCastSink(kChannelId2);
   std::unique_ptr<MediaRoute> route_;
@@ -498,7 +499,7 @@ class CastActivityManagerTest : public testing::Test,
   const MediaSource::Id route_query_ = "theRouteQuery";
   absl::optional<MediaRoute> updated_route_;
   cast_channel::Result stop_session_callback_arg_ = cast_channel::Result::kOk;
-  MockLogger logger_;
+  NiceMock<MockLogger> logger_;
   mojom::RoutePresentationConnectionPtr presentation_connections_;
 };
 

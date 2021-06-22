@@ -39,6 +39,7 @@ using testing::AllOf;
 using testing::AnyNumber;
 using testing::HasSubstr;
 using testing::IsEmpty;
+using testing::NiceMock;
 using testing::Not;
 using testing::Return;
 using testing::WithArg;
@@ -55,6 +56,9 @@ class MockPresentationConnection : public blink::mojom::PresentationConnection {
       : connection_receiver_(this,
                              std::move(connections->connection_receiver)) {}
 
+  MockPresentationConnection(MockPresentationConnection&) = delete;
+  MockPresentationConnection& operator=(MockPresentationConnection&) = delete;
+
   ~MockPresentationConnection() override = default;
 
   MOCK_METHOD1(OnMessage, void(blink::mojom::PresentationConnectionMessagePtr));
@@ -65,8 +69,6 @@ class MockPresentationConnection : public blink::mojom::PresentationConnection {
   // NOTE: This member doesn't look like it's used for anything, but it needs to
   // exist in order for Mojo magic to work correctly.
   mojo::Receiver<blink::mojom::PresentationConnection> connection_receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockPresentationConnection);
 };
 
 }  // namespace
@@ -101,7 +103,7 @@ class CastSessionClientImplTest : public testing::Test {
                                               AutoJoinPolicy::kPageScoped,
                                               &activity_);
   std::unique_ptr<MockPresentationConnection> mock_connection_ =
-      std::make_unique<MockPresentationConnection>(client_->Init());
+      std::make_unique<NiceMock<MockPresentationConnection>>(client_->Init());
   base::test::MockLog log_;
 };
 

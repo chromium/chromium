@@ -117,7 +117,7 @@ class CastSessionTrackerTest : public testing::Test {
   TestMediaSinkService media_sink_service_;
   CastSessionTracker session_tracker_;
 
-  MockCastSessionObserver observer_;
+  NiceMock<MockCastSessionObserver> observer_;
 
   MediaSinkInternal sink_ = CreateCastSink(1);
   CastSession* session_;
