@@ -170,9 +170,14 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
   //
   // `is_same_party` should reflect whether the context is same-party *and*
   // whether the (real or hypothetical) cookie is SameParty.
+  //
+  // `record_metrics` indicates whether metrics should be recorded for this
+  // call. I.e., whether we are checking access to a real cookie, or a
+  // hypothetical one.
   bool IsHypotheticalCookieAllowed(
       const CookieSettings::CookieSettingWithMetadata& setting_with_metadata,
-      bool is_same_party) const;
+      bool is_same_party,
+      bool record_metrics) const;
 
   // Returns true if at least one content settings is session only.
   bool HasSessionOnlyOrigins() const;

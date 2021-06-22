@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/containers/contains.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -109,7 +110,7 @@ bool CookieSettings::IsCookieAccessible(
           GetFirstPartyURL(site_for_cookies,
                            base::OptionalOrNullptr(top_frame_origin)),
           IsThirdPartyRequest(url, site_for_cookies)),
-      cookie.IsSameParty());
+      cookie.IsSameParty(), /*record_metrics=*/true);
 }
 
 bool CookieSettings::ShouldAlwaysAllowCookies(
@@ -137,10 +138,13 @@ bool CookieSettings::IsPrivacyModeEnabled(
   //
   // * if cookie settings block 3P cookies, and the context is same-party, but
   // SameParty cookies aren't considered 1P.
+  //
+  // We don't record metrics here, since this isn't actually accessing a cookie.
   return !IsHypotheticalCookieAllowed(
       GetCookieSettingWithMetadata(url, site_for_cookies,
                                    base::OptionalOrNullptr(top_frame_origin)),
-      same_party_cookie_context_type == SamePartyCookieContextType::kSameParty);
+      same_party_cookie_context_type == SamePartyCookieContextType::kSameParty,
+      /*record_metrics=*/false);
 }
 
 CookieSettings::CookieSettingWithMetadata
@@ -291,15 +295,27 @@ bool CookieSettings::IsCookieAllowed(
       cookie.cookie.IsSameParty() &&
           !cookie.access_result.status.HasExclusionReason(
               net::CookieInclusionStatus::
-                  EXCLUDE_SAMEPARTY_CROSS_PARTY_CONTEXT));
+                  EXCLUDE_SAMEPARTY_CROSS_PARTY_CONTEXT),
+      /*record_metrics=*/true);
 }
 
 bool CookieSettings::IsHypotheticalCookieAllowed(
     const CookieSettings::CookieSettingWithMetadata& setting_with_metadata,
-    bool is_same_party) const {
-  return IsAllowed(setting_with_metadata.cookie_setting) ||
-         (setting_with_metadata.blocked_by_third_party_setting &&
-          sameparty_cookies_considered_first_party_ && is_same_party);
+    bool is_same_party,
+    bool record_metrics) const {
+  if (IsAllowed(setting_with_metadata.cookie_setting))
+    return true;
+
+  bool blocked_by_3p_but_same_party =
+      setting_with_metadata.blocked_by_third_party_setting && is_same_party;
+  if (record_metrics && blocked_by_3p_but_same_party) {
+    UMA_HISTOGRAM_BOOLEAN(
+        "Cookie.SameParty.BlockedByThirdPartyCookieBlockingSetting",
+        !sameparty_cookies_considered_first_party_);
+  }
+
+  return blocked_by_3p_but_same_party &&
+         sameparty_cookies_considered_first_party_;
 }
 
 bool CookieSettings::HasSessionOnlyOrigins() const {
