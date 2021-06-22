@@ -70,6 +70,12 @@ export class FakeShimlessRmaService {
      */
     this.setSkuResult_ = RmadErrorCode.kOk;
 
+    /**
+     * Control automatically triggering a HWWP disable observation.
+     * @private {boolean}
+     */
+    this.automaticallyTriggerDisableWriteProtectionObservation_ = false;
+
     this.reset();
   }
 
@@ -569,6 +575,16 @@ export class FakeShimlessRmaService {
           remote.onHardwareWriteProtectionStateChanged(
               /** @type {boolean} */ (enabled));
         });
+    if (this.automaticallyTriggerDisableWriteProtectionObservation_) {
+      this.triggerHardwareWriteProtectionObserver(false, 3000);
+    }
+  }
+
+  /**
+   * Trigger a disable write protection obseration when an observer is added.
+   */
+  automaticallyTriggerDisableWriteProtectionObservation() {
+    this.automaticallyTriggerDisableWriteProtectionObservation_ = true;
   }
 
   /**

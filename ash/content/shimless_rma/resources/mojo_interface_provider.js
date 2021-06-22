@@ -27,6 +27,7 @@ function setupFakeShimlessRmaService_() {
   service.setCheckForChromeUpdatesResult(false);
   service.setGetComponentListResult(fakeComponents);
   service.setReimageRequiredResult(false);
+  service.automaticallyTriggerDisableWriteProtectionObservation();
 
   // Set the fake service.
   setShimlessRmaServiceForTesting(service);

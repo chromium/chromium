@@ -88,6 +88,22 @@ export let HardwareWriteProtectionStateObserverRemote =
     ash.shimlessRma.mojom.HardwareWriteProtectionStateObserverRemote;
 
 /**
+ * Type alias for HardwareWriteProtectionStateObserverReceiver.
+ * @typedef {ash.shimlessRma.mojom.HardwareWriteProtectionStateObserverReceiver}
+ */
+export let HardwareWriteProtectionStateObserverReceiver =
+    ash.shimlessRma.mojom.HardwareWriteProtectionStateObserverReceiver;
+
+/**
+ * Type alias for HardwareWriteProtectionStateObserverInterface.
+ * @typedef {
+ *    ash.shimlessRma.mojom.HardwareWriteProtectionStateObserverInterface
+ * }
+ */
+export let HardwareWriteProtectionStateObserverInterface =
+    ash.shimlessRma.mojom.HardwareWriteProtectionStateObserverInterface;
+
+/**
  * Type alias for PowerCableStateObserverRemote.
  * @typedef {ash.shimlessRma.mojom.PowerCableStateObserverRemote}
  */
