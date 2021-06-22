@@ -5,7 +5,7 @@
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_key_pair.h"
 
 #include "base/base64.h"
-#include "base/base64url.h"
+#include "base/containers/span.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
@@ -24,181 +24,92 @@
 
 namespace enterprise_connectors {
 
-namespace {
-
-const char kBeginPrivateKey[] = "-----BEGIN PRIVATE KEY-----\n";
-const char kEndPrivateKey[] = "-----END PRIVATE KEY-----\n";
-const char kBeginPublicKey[] = "-----BEGIN PUBLIC KEY-----\n";
-const char kEndPublicKey[] = "-----END PUBLIC KEY-----\n";
-
-enum class KeyType { PRIVATE_KEY, PUBLIC_KEY };
-
-std::string BytesToEncodedString(const std::vector<uint8_t>& bytes) {
-  std::string encoded_string = "";
-  base::Base64UrlEncode(std::string(bytes.begin(), bytes.end()),
-                        base::Base64UrlEncodePolicy::INCLUDE_PADDING,
-                        &encoded_string);
-  return encoded_string;
-}
-
-std::vector<uint8_t> EncodedStringToBytes(
-    const base::StringPiece& encoded_string) {
-  std::string decoded_string;
-  if (!base::Base64UrlDecode(encoded_string,
-                             base::Base64UrlDecodePolicy::REQUIRE_PADDING,
-                             &decoded_string)) {
-    return std::vector<uint8_t>();
-  }
-  return std::vector<uint8_t>(decoded_string.begin(), decoded_string.end());
-}
-
-bool CreatePEMKey(const base::StringPiece& raw_key,
-                  KeyType key_type,
-                  std::string& pem) {
-  std::string encoded_key;
-  base::Base64UrlEncode(raw_key, base::Base64UrlEncodePolicy::INCLUDE_PADDING,
-                        &encoded_key);
-  pem = "";
-  switch (key_type) {
-    case KeyType::PRIVATE_KEY:
-      pem += kBeginPrivateKey;
-      pem += encoded_key + "\n";
-      pem += kEndPrivateKey;
-      break;
-    case KeyType::PUBLIC_KEY:
-      pem += kBeginPublicKey;
-      pem += encoded_key + "\n";
-      pem += kEndPublicKey;
-      break;
-  }
-  return true;
-}
-
-}  // namespace
-
 DeviceTrustKeyPair::DeviceTrustKeyPair() = default;
 
 DeviceTrustKeyPair::~DeviceTrustKeyPair() = default;
 
 bool DeviceTrustKeyPair::Init() {
-  PrefService* const local_state = g_browser_process->local_state();
-
-  std::string base64_encrypted_private_key_info =
-      local_state->GetString(enterprise_connectors::kDeviceTrustPrivateKeyPref);
-
   // No key pair stored.
-  if (base64_encrypted_private_key_info.empty()) {
+  if (!LoadKeyPair()) {
     key_pair_ = crypto::ECPrivateKey::Create();
     return StoreKeyPair();
   }
-
-  std::string decoded;
-  if (!base::Base64Decode(base64_encrypted_private_key_info, &decoded)) {
-    // TODO(crbug/1176175): Handle error for when it can't get the private
-    // key.
-    LOG(ERROR) << "[Init] error while decoding the private key";
-    return false;
-  }
-
-  std::string decrypted_private_key_info;
-  bool success = OSCrypt::DecryptString(decoded, &decrypted_private_key_info);
-  if (!success) {
-    // TODO(crbug/1176175): Handle error for when it can't get the private
-    // key.
-    LOG(ERROR) << "[Init] error while decrypting the private key";
-    return false;
-  }
-
-  key_pair_ = LoadFromPrivateKeyInfo(decrypted_private_key_info);
-  if (!key_pair_)
-    return false;
   return true;
 }
 
 bool DeviceTrustKeyPair::StoreKeyPair() {
   if (!key_pair_) {
-    LOG(ERROR) << "[StoreKeyPair] no `key_pair_` member";
+    LOG(ERROR) << "No `key_pair_` member";
     return false;
   }
 
   PrefService* const local_state = g_browser_process->local_state();
-  // Add private encoded encrypted private key to local_state.
+  // Add encoded encrypted private key to local_state.
   std::vector<uint8_t> private_key;
-  if (!key_pair_->ExportPrivateKey(&private_key))
-    return false;
-
-  std::string encoded_private_key = BytesToEncodedString(private_key);
-  std::string encrypted_key;
-  bool encrypted = OSCrypt::EncryptString(encoded_private_key, &encrypted_key);
-  if (!encrypted) {
-    LOG(ERROR) << "[StoreKeyPair] error while encrypting the private key.";
+  if (!key_pair_->ExportPrivateKey(&private_key)) {
+    LOG(ERROR) << "Could not export the private key.";
     return false;
   }
-  // The string must be encoded as base64 for storage in local state.
-  std::string encoded;
-  base::Base64Encode(encrypted_key, &encoded);
+  std::string encrypted_key;
+  bool encrypted = OSCrypt::EncryptString(
+      std::string(private_key.begin(), private_key.end()), &encrypted_key);
+  if (!encrypted) {
+    LOG(ERROR) << "Error while encrypting the private key.";
+    return false;
+  }
+  std::string encoded_encrypted_key;
+  base::Base64Encode(encrypted_key, &encoded_encrypted_key);
   local_state->SetString(enterprise_connectors::kDeviceTrustPrivateKeyPref,
-                         encoded);
-
-  // Add public key to local_state.
-  local_state->SetString(enterprise_connectors::kDeviceTrustPublicKeyPref,
-                         ExportPEMPublicKey());
-
+                         encoded_encrypted_key);
   return true;
 }
 
-std::unique_ptr<crypto::ECPrivateKey>
-DeviceTrustKeyPair::LoadFromPrivateKeyInfo(
-    const std::string& private_key_info_block) {
-  std::vector<uint8_t> private_key_info =
-      EncodedStringToBytes(private_key_info_block);
-  return crypto::ECPrivateKey::CreateFromPrivateKeyInfo(private_key_info);
-}
+bool DeviceTrustKeyPair::LoadKeyPair() {
+  PrefService* const local_state = g_browser_process->local_state();
+  std::string base64_encrypted_private_key_info =
+      local_state->GetString(enterprise_connectors::kDeviceTrustPrivateKeyPref);
+  // No key pair stored.
+  if (base64_encrypted_private_key_info.empty())
+    return false;
 
-std::string DeviceTrustKeyPair::ExportPEMPrivateKey() {
-  std::vector<uint8_t> private_key_pkcs8;
-  key_pair_->ExportPrivateKey(&private_key_pkcs8);
-  std::string private_key;
-  if (!CreatePEMKey(BytesToEncodedString(private_key_pkcs8),
-                    KeyType::PRIVATE_KEY, private_key))
-    return std::string();
-  return private_key;
+  std::string decoded_encrypted_key;
+  if (!base::Base64Decode(base64_encrypted_private_key_info,
+                          &decoded_encrypted_key))
+    LOG(ERROR) << "Error while decoding base64 encrypted key.";
+
+  std::string decrypted_private_key_info;
+  if (!OSCrypt::DecryptString(decoded_encrypted_key,
+                              &decrypted_private_key_info)) {
+    LOG(ERROR) << "Error while decrypting the private key";
+    return false;
+  }
+
+  // Load private key from a PrivateKeyInfo value.
+  std::vector<uint8_t> private_key_info(decrypted_private_key_info.begin(),
+                                        decrypted_private_key_info.end());
+  key_pair_ = crypto::ECPrivateKey::CreateFromPrivateKeyInfo(private_key_info);
+  if (!key_pair_) {
+    LOG(ERROR) << "Could not create from private key info";
+    return false;
+  }
+  return true;
 }
 
 bool DeviceTrustKeyPair::ExportPublicKey(std::vector<uint8_t>* public_key) {
-  if (!key_pair_->ExportPublicKey(public_key))
-    return false;
-  return true;
-}
-
-std::string DeviceTrustKeyPair::ExportPEMPublicKey() {
-  std::string raw_public_key;
-  // TODO(crbug/1212786): Use ExportPublickey and remove PEM code.
-  if (!key_pair_->ExportRawPublicKey(&raw_public_key))
-    return std::string();
-  // This is intentionally using a non-standard format for the uncompressed
-  // point length, so we trim the leading 0x04 byte. See
-  // https://crbug.com/1212786
-  raw_public_key.erase(0, 1);
-  std::string public_key;
-  if (!CreatePEMKey(raw_public_key, KeyType::PUBLIC_KEY, public_key))
-    return std::string();
-  return public_key;
+  return key_pair_->ExportPublicKey(public_key);
 }
 
 bool DeviceTrustKeyPair::SignMessage(const std::string& message,
-                                     std::vector<uint8_t>& signature) {
+                                     std::string* signature) {
+  std::vector<uint8_t> signature_bytes;
+  // Create the signer which uses SHA256.
   std::unique_ptr<crypto::ECSignatureCreator> signer(
       crypto::ECSignatureCreator::Create(key_pair_.get()));
-  return signer->Sign(reinterpret_cast<const uint8_t*>(message.c_str()),
-                      message.size(), &signature);
-}
-bool DeviceTrustKeyPair::GetSignatureInBase64(const std::string& message,
-                                              std::string* signature) {
-  std::vector<uint8_t> signature_vector;
-  if (!SignMessage(message, signature_vector))
+  // Make the signature.
+  if (!signer->Sign(reinterpret_cast<const uint8_t*>(message.c_str()),
+                    message.size(), &signature_bytes))
     return false;
-  *signature = BytesToEncodedString(signature_vector);
+  *signature = std::string(signature_bytes.begin(), signature_bytes.end());
   return true;
 }
 

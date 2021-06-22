@@ -28,6 +28,7 @@ message DeviceTrustReportEvent {
     // The format of the credential field.
     enum CredentialFormat {
       INVALID = 0;
+      // EC P-256 public key in a DER SubjectPublicKeyInfo.
       EC_NID_X9_62_PRIME256V1_PUBLIC_DER = 1;
     }
     optional CredentialFormat format = 1;  // Required.
