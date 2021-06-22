@@ -48,7 +48,6 @@ public class UndoBarController implements SnackbarManager.SnackbarController {
     private final TabModelObserver mTabModelObserver;
     private final SnackbarManager.SnackbarManageable mSnackbarManagable;
     private final Context mContext;
-    private boolean mIsInitialized;
     private CallbackController mCallbackController = new CallbackController();
     private OverviewModeBehavior mOverviewModeBehavior;
 
@@ -150,14 +149,7 @@ public class UndoBarController implements SnackbarManager.SnackbarController {
      * Carry out native library dependent operations like registering observers and notifications.
      */
     public void initialize() {
-        assert !mIsInitialized;
-        mIsInitialized = true;
         mTabModelSelector.getModel(false).addObserver(mTabModelObserver);
-    }
-
-    /** Returns whether the {@link initialize} method has been called for this instance. */
-    public boolean isInitialized() {
-        return mIsInitialized;
     }
 
     /**
