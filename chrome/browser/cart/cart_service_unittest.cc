@@ -28,6 +28,20 @@ cart_db::ChromeCartContentProto BuildProto(const char* domain,
   return proto;
 }
 
+cart_db::ChromeCartContentProto BuildProtoWithProducts(
+    const char* domain,
+    const char* cart_url,
+    const std::vector<const char*>& product_urls) {
+  cart_db::ChromeCartContentProto proto;
+  proto.set_key(domain);
+  proto.set_merchant_cart_url(cart_url);
+  proto.set_timestamp(base::Time::Now().ToDoubleT());
+  for (const auto* const v : product_urls) {
+    proto.add_product_image_urls(v);
+  }
+  return proto;
+}
+
 cart_db::ChromeCartProductProto BuildProductProto(
     const std::string& product_id) {
   cart_db::ChromeCartProductProto proto;
@@ -64,10 +78,15 @@ const char kMockMerchantB[] = "bar.com";
 const char kMockMerchantURLB[] = "https://www.bar.com";
 const char kMockMerchantC[] = "baz.com";
 const char kMockMerchantURLC[] = "https://www.baz.com";
+const char kProductURL[] = "https://www.product.com";
 const cart_db::ChromeCartContentProto kMockProtoA =
     BuildProto(kMockMerchantA, kMockMerchantURLA);
 const cart_db::ChromeCartContentProto kMockProtoB =
     BuildProto(kMockMerchantB, kMockMerchantURLB);
+const cart_db::ChromeCartContentProto kMockProtoC =
+    BuildProto(kMockMerchantC, kMockMerchantURLC);
+const cart_db::ChromeCartContentProto kMockProtoCWithProduct =
+    BuildProtoWithProducts(kMockMerchantC, kMockMerchantURLC, {kProductURL});
 using ShoppingCarts =
     std::vector<ProfileProtoDB<cart_db::ChromeCartContentProto>::KeyAndValue>;
 using ProductInfos = std::vector<cart_db::ChromeCartProductProto>;
@@ -77,6 +96,9 @@ const ShoppingCarts kExpectedAB = {
     {kMockMerchantB, kMockProtoB},
     {kMockMerchantA, kMockProtoA},
 };
+const ShoppingCarts kExpectedC = {{kMockMerchantC, kMockProtoC}};
+const ShoppingCarts kExpectedCWithProduct = {
+    {kMockMerchantC, kMockProtoCWithProduct}};
 
 const ShoppingCarts kEmptyExpected = {};
 
@@ -1408,4 +1430,68 @@ TEST_F(CartServiceDiscountTest, TestFetchInvalidFallback) {
                      base::Unretained(this), run_loop[1].QuitClosure(),
                      default_cart_url));
   run_loop[1].Run();
+}
+
+class CartServiceSkipExtractionTest : public CartServiceTest {
+ public:
+  // Features need to be initialized before CartServiceTest::SetUp runs, in
+  // order to avoid tsan data race error on FeatureList.
+  CartServiceSkipExtractionTest() {
+    features_.InitAndEnableFeatureWithParameters(
+        ntp_features::kNtpChromeCartModule,
+        {{"skip-cart-extraction-pattern", kMockMerchantC}});
+  }
+};
+
+TEST_F(CartServiceSkipExtractionTest, TestAddCartForSkippedMerchants) {
+  base::RunLoop run_loop[4];
+  CartDB* cart_db_ = service_->GetDB();
+  // Product images are not stored for skipped merchants.
+  service_->AddCart(kMockMerchantC, absl::nullopt, kMockProtoCWithProduct);
+  task_environment_.RunUntilIdle();
+  cart_db_->LoadAllCarts(base::BindOnce(&CartServiceTest::GetEvaluationURL,
+                                        base::Unretained(this),
+                                        run_loop[0].QuitClosure(), kExpectedC));
+  run_loop[0].Run();
+
+  // Product images are overwritten for skipped merchants.
+  cart_db_->AddCart(
+      kMockMerchantC, kMockProtoCWithProduct,
+      base::BindOnce(&CartServiceTest::OperationEvaluation,
+                     base::Unretained(this), run_loop[1].QuitClosure(), true));
+  run_loop[1].Run();
+  cart_db_->LoadAllCarts(
+      base::BindOnce(&CartServiceTest::GetEvaluationURL, base::Unretained(this),
+                     run_loop[2].QuitClosure(), kExpectedCWithProduct));
+  run_loop[2].Run();
+  service_->AddCart(kMockMerchantC, absl::nullopt, kMockProtoCWithProduct);
+  task_environment_.RunUntilIdle();
+  cart_db_->LoadAllCarts(base::BindOnce(&CartServiceTest::GetEvaluationURL,
+                                        base::Unretained(this),
+                                        run_loop[3].QuitClosure(), kExpectedC));
+  run_loop[3].Run();
+}
+
+TEST_F(CartServiceSkipExtractionTest, TestLoadCartForSkippedMerchants) {
+  base::RunLoop run_loop[4];
+  CartDB* cart_db_ = service_->GetDB();
+  cart_db_->AddCart(
+      kMockMerchantC, kMockProtoCWithProduct,
+      base::BindOnce(&CartServiceTest::OperationEvaluation,
+                     base::Unretained(this), run_loop[0].QuitClosure(), true));
+  run_loop[0].Run();
+  cart_db_->LoadAllCarts(
+      base::BindOnce(&CartServiceTest::GetEvaluationURL, base::Unretained(this),
+                     run_loop[1].QuitClosure(), kExpectedCWithProduct));
+  run_loop[1].Run();
+  // Skipped carts will not show product images when loading, and the existing
+  // product images in skipped carts will also be cleared.
+  service_->LoadAllActiveCarts(
+      base::BindOnce(&CartServiceTest::GetEvaluationURL, base::Unretained(this),
+                     run_loop[2].QuitClosure(), kExpectedC));
+  run_loop[2].Run();
+  cart_db_->LoadAllCarts(base::BindOnce(&CartServiceTest::GetEvaluationURL,
+                                        base::Unretained(this),
+                                        run_loop[3].QuitClosure(), kExpectedC));
+  run_loop[3].Run();
 }
