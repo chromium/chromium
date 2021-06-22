@@ -15,12 +15,9 @@ use_browser_spellchecker and use_renderer_spellchecker are mutually
 exclusive for most operating systems except Windows.
 
 For Windows OS, the decision to use the platform spellchecker or Hunspell
-spellchecker is made during runtime. Therefore, we include both build
-flags if the platform is Windows.
-
-We also need to create the runtime feature flag kWinUseBrowserSpellChecker
-for Windows OS. The feature flag is used to choose between the platform or
-Hunspell spellchecker at runtime.
+spellchecker is made at runtime, based on whether the current Windows version
+supports the native spell checker (> Windows 8). Therefore, we include both
+build flags if the platform is Windows.
 
 ### Note on the Windows Hybrid spellchecker
 On Windows, the platform spell checker relies on user-installed language packs.

@@ -3871,16 +3871,6 @@ const char kUseXpsForPrintingFromPdfDescription[] =
     "printing PDF documents.";
 #endif  // BUILDFLAG(ENABLE_PRINTING)
 
-#if BUILDFLAG(ENABLE_SPELLCHECK)
-const char kWinUseBrowserSpellCheckerName[] =
-    "Use the Windows OS spell checker";
-const char kWinUseBrowserSpellCheckerDescription[] =
-    "For supported languages, use the Windows OS spell checker to find "
-    "spelling mistakes and provide spelling suggestions. Additional languages "
-    "can be installed in the Windows OS settings to improve Windows spell "
-    "check support.";
-#endif  // BUILDFLAG(ENABLE_SPELLCHECK)
-
 #endif  // defined(OS_WIN)
 
 // Mac -------------------------------------------------------------------------

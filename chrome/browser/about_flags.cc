@@ -5724,13 +5724,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) ||
         // defined(OS_CHROMEOS)
 
-#if BUILDFLAG(ENABLE_SPELLCHECK) && defined(OS_WIN)
-    {"win-use-native-spellchecker",
-     flag_descriptions::kWinUseBrowserSpellCheckerName,
-     flag_descriptions::kWinUseBrowserSpellCheckerDescription, kOsWin,
-     FEATURE_VALUE_TYPE(spellcheck::kWinUseBrowserSpellChecker)},
-#endif  // BUILDFLAG(ENABLE_SPELLCHECK) && defined(OS_WIN)
-
     {"safety-tips", flag_descriptions::kSafetyTipName,
      flag_descriptions::kSafetyTipDescription, kOsAll,
      FEATURE_VALUE_TYPE(security_state::features::kSafetyTipUI)},

@@ -2213,12 +2213,6 @@ extern const char kUseXpsForPrintingFromPdfName[];
 extern const char kUseXpsForPrintingFromPdfDescription[];
 #endif  // BUILDFLAG(ENABLE_PRINTING)
 
-#if BUILDFLAG(ENABLE_SPELLCHECK)
-extern const char kWinUseBrowserSpellCheckerName[];
-extern const char kWinUseBrowserSpellCheckerDescription[];
-
-#endif  // BUILDFLAG(ENABLE_SPELLCHECK)
-
 #endif  // defined(OS_WIN)
 
 // Mac ------------------------------------------------------------------------
