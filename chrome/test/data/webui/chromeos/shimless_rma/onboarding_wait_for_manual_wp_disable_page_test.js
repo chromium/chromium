@@ -6,8 +6,8 @@ import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
 import {OnboardingWaitForManualWpDisablePageElement} from 'chrome://shimless-rma/onboarding_wait_for_manual_wp_disable_page.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
-import {flushTasks} from 'chrome://test/test_util.m.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {flushTasks} from '../../test_util.m.js';
 
 export function onboardingWaitForManualWpDisablePageTest() {
   /** @type {?OnboardingWaitForManualWpDisablePageElement} */

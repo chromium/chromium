@@ -13,8 +13,12 @@ js_type_check("closure_compile") {
                   ]
   deps = [
     ":fake_shimless_rma_service_test",
+    ":onboarding_choose_destination_page_test",
+    ":onboarding_choose_wp_disable_method_page_test",
+    ":onboarding_enter_rsu_wp_disable_code_page_test",
     ":onboarding_select_components_page_test",
     ":onboarding_update_page_test",
+    ":onboarding_wait_for_manual_wp_disable_page_test",
     ":reimaging_firmware_update_page_test",
     ":shimless_rma_app_test",
     ":shimless_rma_unified_test",
