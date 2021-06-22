@@ -31,7 +31,7 @@ import java.lang.annotation.RetentionPolicy;
 /** Implementation of {@link SyncConsentFragmentBase} for {@link SyncConsentActivity}. */
 public class SyncConsentFragment extends SyncConsentFragmentBase {
     private static final String ARGUMENT_PERSONALIZED_PROMO_ACTION =
-            "SigninFragment.PersonalizedPromoAction";
+            "SyncConsentFragment.PersonalizedPromoAction";
 
     @IntDef({PromoAction.NONE, PromoAction.WITH_DEFAULT, PromoAction.NOT_DEFAULT,
             PromoAction.NEW_ACCOUNT})

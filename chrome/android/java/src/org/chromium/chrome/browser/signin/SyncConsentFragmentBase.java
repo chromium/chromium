@@ -68,15 +68,16 @@ import java.util.List;
  */
 public abstract class SyncConsentFragmentBase
         extends Fragment implements AccountPickerCoordinator.Listener, AccountsChangeObserver {
-    private static final String ARGUMENT_ACCESS_POINT = "SigninFragmentBase.AccessPoint";
+    private static final String ARGUMENT_ACCESS_POINT = "SyncConsentFragmentBase.AccessPoint";
 
     private static final String SETTINGS_LINK_OPEN = "<LINK1>";
     private static final String SETTINGS_LINK_CLOSE = "</LINK1>";
 
-    private static final String ARGUMENT_ACCOUNT_NAME = "SigninFragmentBase.AccountName";
+    private static final String ARGUMENT_ACCOUNT_NAME = "SyncConsentFragmentBase.AccountName";
     private static final String ARGUMENT_CHILD_ACCOUNT_STATUS =
-            "SigninFragmentBase.ChildAccountStatus";
-    private static final String ARGUMENT_SIGNIN_FLOW_TYPE = "SigninFragmentBase.SigninFlowType";
+            "SyncConsentFragmentBase.ChildAccountStatus";
+    private static final String ARGUMENT_SIGNIN_FLOW_TYPE =
+            "SyncConsentFragmentBase.SigninFlowType";
 
     private static final int ADD_ACCOUNT_REQUEST_CODE = 1;
 
