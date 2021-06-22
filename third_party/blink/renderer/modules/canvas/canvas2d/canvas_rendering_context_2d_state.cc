@@ -70,7 +70,8 @@ CanvasRenderingContext2DState::CanvasRenderingContext2DState()
 
 CanvasRenderingContext2DState::CanvasRenderingContext2DState(
     const CanvasRenderingContext2DState& other,
-    ClipListCopyMode mode)
+    ClipListCopyMode mode,
+    SaveType save_type)
     : unparsed_stroke_color_(other.unparsed_stroke_color_),
       unparsed_fill_color_(other.unparsed_fill_color_),
       stroke_style_(other.stroke_style_),
@@ -117,7 +118,8 @@ CanvasRenderingContext2DState::CanvasRenderingContext2DState(
       stroke_style_dirty_(other.stroke_style_dirty_),
       line_dash_dirty_(other.line_dash_dirty_),
       image_smoothing_enabled_(other.image_smoothing_enabled_),
-      image_smoothing_quality_(other.image_smoothing_quality_) {
+      image_smoothing_quality_(other.image_smoothing_quality_),
+      save_type_(save_type) {
   if (mode == kCopyClipList) {
     clip_list_ = other.clip_list_;
   }

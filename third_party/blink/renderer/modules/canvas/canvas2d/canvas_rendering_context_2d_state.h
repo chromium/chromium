@@ -36,10 +36,14 @@ class CanvasRenderingContext2DState final
       public FontSelectorClient {
  public:
   enum ClipListCopyMode { kCopyClipList, kDontCopyClipList };
+  // SaveType indicates whether the state was pushed to the state stack by Save
+  // or by BeginLayer. By default, it is set to kSaveRestore.
+  enum class SaveType { kSaveRestore, kBeginEndLayer };
 
   CanvasRenderingContext2DState();
   CanvasRenderingContext2DState(const CanvasRenderingContext2DState&,
-                                ClipListCopyMode);
+                                ClipListCopyMode,
+                                SaveType);
   ~CanvasRenderingContext2DState() override;
 
   void Trace(Visitor*) const override;
@@ -223,6 +227,8 @@ class CanvasRenderingContext2DState final
   // Opaque.
   const PaintFlags* GetFlags(PaintType, ShadowMode, ImageType = kNoImage) const;
 
+  SaveType GetSaveType() const { return save_type_; }
+
  private:
   void UpdateLineDash() const;
   void UpdateStrokeStyle() const;
@@ -299,6 +305,8 @@ class CanvasRenderingContext2DState final
   SkFilterQuality image_smoothing_quality_;
 
   ClipList clip_list_;
+
+  const SaveType save_type_ = SaveType::kSaveRestore;
 
   DISALLOW_COPY_AND_ASSIGN(CanvasRenderingContext2DState);
 };

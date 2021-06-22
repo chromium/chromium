@@ -104,7 +104,8 @@ void BaseRenderingContext2D::save() {
   cc::PaintCanvas* canvas = GetOrCreatePaintCanvas();
 
   state_stack_.push_back(MakeGarbageCollected<CanvasRenderingContext2DState>(
-      GetState(), CanvasRenderingContext2DState::kDontCopyClipList));
+      GetState(), CanvasRenderingContext2DState::kDontCopyClipList,
+      CanvasRenderingContext2DState::SaveType::kSaveRestore));
 
   if (canvas)
     canvas->save();
