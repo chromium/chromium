@@ -56,6 +56,7 @@
 #include "chrome/browser/web_applications/components/url_handler_manager.h"
 #include "chrome/browser/web_applications/components/url_handler_manager_impl.h"
 #include "chrome/browser/web_applications/test/fake_web_app_origin_association_manager.h"
+#include "chrome/browser/web_applications/test/test_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_constants.h"
@@ -913,32 +914,14 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuBrowserTest,
 
 class StartupWebAppUrlHandlingBrowserTest : public InProcessBrowserTest {
  protected:
-  StartupWebAppUrlHandlingBrowserTest() = default;
-
-  void SetUpOnMainThread() override {
-    InProcessBrowserTest::SetUpOnMainThread();
-    OverrideAssociationManager();
-  }
-
-  web_app::WebAppProviderBase* provider() {
-    return web_app::WebAppProviderBase::GetProviderBase(browser()->profile());
-  }
+  StartupWebAppUrlHandlingBrowserTest()
+      : test_web_app_provider_creator_(base::BindRepeating(
+            &StartupWebAppUrlHandlingBrowserTest::CreateTestWebAppProvider)) {}
 
   web_app::AppId InstallWebAppWithUrlHandlers(
       const std::vector<apps::UrlHandlerInfo>& url_handlers) {
     return web_app::test::InstallWebAppWithUrlHandlers(
         browser()->profile(), GURL(kStartUrl), kAppName, url_handlers);
-  }
-
-  void OverrideAssociationManager() {
-    auto association_manager =
-        std::make_unique<web_app::FakeWebAppOriginAssociationManager>();
-    association_manager->set_pass_through(true);
-
-    auto& url_handler_manager =
-        provider()->os_integration_manager().url_handler_manager_for_testing();
-    url_handler_manager.SetAssociationManagerForTesting(
-        std::move(association_manager));
   }
 
   // Check that there are two browsers. Find the one that is not |browser|.
@@ -954,6 +937,23 @@ class StartupWebAppUrlHandlingBrowserTest : public InProcessBrowserTest {
     }
     return other_browser;
   }
+
+ private:
+  static std::unique_ptr<KeyedService> CreateTestWebAppProvider(
+      Profile* profile) {
+    auto provider = std::make_unique<web_app::TestWebAppProvider>(profile);
+    provider->Start();
+    auto association_manager =
+        std::make_unique<web_app::FakeWebAppOriginAssociationManager>();
+    association_manager->set_pass_through(true);
+    auto& url_handler_manager =
+        provider->os_integration_manager().url_handler_manager_for_testing();
+    url_handler_manager.SetAssociationManagerForTesting(
+        std::move(association_manager));
+    return provider;
+  }
+
+  web_app::TestWebAppProviderCreator test_web_app_provider_creator_;
 };
 
 IN_PROC_BROWSER_TEST_F(StartupWebAppUrlHandlingBrowserTest,
@@ -971,9 +971,6 @@ IN_PROC_BROWSER_TEST_F(StartupWebAppUrlHandlingBrowserTest,
   // The waiter will get the dialog when it shows up and close it.
   waiter.WaitIfNeededAndGet()->CloseWithReason(
       views::Widget::ClosedReason::kEscKeyPressed);
-
-  // Wait for app launch task to complete.
-  content::RunAllTasksUntilIdle();
 
   // When dialog is closed, nothing will happen.
   ASSERT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
@@ -995,9 +992,6 @@ IN_PROC_BROWSER_TEST_F(StartupWebAppUrlHandlingBrowserTest,
       extensions::ScopedTestDialogAutoConfirm::ACCEPT_AND_OPTION, 0);
   SendAppleEventToOpenUrlToAppController(GURL(kStartUrl));
   AutoCloseDialog(waiter.WaitIfNeededAndGet());
-
-  // Wait for browser launch task to complete.
-  content::RunAllTasksUntilIdle();
 
   ASSERT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
   ASSERT_FALSE(web_app::AppBrowserController::IsForWebApp(browser(), app_id));
@@ -1028,9 +1022,6 @@ IN_PROC_BROWSER_TEST_F(StartupWebAppUrlHandlingBrowserTest,
   SendAppleEventToOpenUrlToAppController(GURL(kStartUrl));
   AutoCloseDialog(waiter.WaitIfNeededAndGet());
 
-  // Wait for browser launch task to complete.
-  content::RunAllTasksUntilIdle();
-
   // When dialog is closed, URL will be launched in a browser tab.
   // Check for new tab.
   ASSERT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
@@ -1051,7 +1042,6 @@ IN_PROC_BROWSER_TEST_F(StartupWebAppUrlHandlingBrowserTest,
 
   // Start with the same URL again. A new tab should be opened directly.
   SendAppleEventToOpenUrlToAppController(GURL(kStartUrl));
-  content::RunAllTasksUntilIdle();
   // Verify a new tab is launched.
   ASSERT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
   ASSERT_FALSE(web_app::AppBrowserController::IsForWebApp(browser(), app_id));
@@ -1081,9 +1071,6 @@ IN_PROC_BROWSER_TEST_F(StartupWebAppUrlHandlingBrowserTest,
   SendAppleEventToOpenUrlToAppController(GURL(kStartUrl));
   AutoCloseDialog(waiter.WaitIfNeededAndGet());
 
-  // Wait for app launch task to complete.
-  content::RunAllTasksUntilIdle();
-
   // Check for new app window.
   ASSERT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
   Browser* app_browser;
@@ -1106,7 +1093,7 @@ IN_PROC_BROWSER_TEST_F(StartupWebAppUrlHandlingBrowserTest,
   CloseBrowserSynchronously(app_browser);
   ASSERT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
   SendAppleEventToOpenUrlToAppController(GURL(kStartUrl));
-  content::RunAllTasksUntilIdle();
+  ui_test_utils::WaitForBrowserToOpen();
   // Verify app window is launched.
   ASSERT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
   app_browser = FindOneOtherBrowser(browser());
@@ -1129,9 +1116,6 @@ IN_PROC_BROWSER_TEST_F(StartupWebAppUrlHandlingBrowserTest,
   // kStartUrl is in app scope.
   SendAppleEventToOpenUrlToAppController(GURL(kStartUrl));
   AutoCloseDialog(waiter.WaitIfNeededAndGet());
-
-  // Wait for app launch task to complete.
-  content::RunAllTasksUntilIdle();
 
   // Check for new app window.
   ASSERT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
@@ -1162,9 +1146,6 @@ IN_PROC_BROWSER_TEST_F(StartupWebAppUrlHandlingBrowserTest,
   SendAppleEventToOpenUrlToAppController(GURL("https://example.com/abc/def"));
   AutoCloseDialog(waiter.WaitIfNeededAndGet());
 
-  // Wait for app launch task to complete.
-  content::RunAllTasksUntilIdle();
-
   // Check for new app window.
   ASSERT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
   Browser* app_browser;
@@ -1179,6 +1160,85 @@ IN_PROC_BROWSER_TEST_F(StartupWebAppUrlHandlingBrowserTest,
   EXPECT_EQ(GURL(kStartUrl), web_contents->GetVisibleURL());
 }
 
+IN_PROC_BROWSER_TEST_F(
+    StartupWebAppUrlHandlingBrowserTest,
+    MultipleProfiles_DialogAccepted_WebAppLaunch_InScopeUrl) {
+  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                       "WebAppUrlHandlerIntentPickerView");
+
+  // Create profiles and install URL Handling apps.
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  base::FilePath dest_path = profile_manager->user_data_dir();
+  Profile* profile1 = nullptr;
+  Profile* profile2 = nullptr;
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    profile1 = profile_manager->GetProfile(
+        dest_path.Append(FILE_PATH_LITERAL("New Profile 1")));
+    ASSERT_TRUE(profile1);
+
+    profile2 = profile_manager->GetProfile(
+        dest_path.Append(FILE_PATH_LITERAL("New Profile 2")));
+    ASSERT_TRUE(profile2);
+  }
+
+  apps::UrlHandlerInfo url_handler;
+  url_handler.origin = url::Origin::Create(GURL(kStartUrl));
+
+  web_app::AppId app_id_1 = web_app::test::InstallWebAppWithUrlHandlers(
+      profile1, GURL(kStartUrl), kAppName, {url_handler});
+  web_app::AppId app_id_2 = web_app::test::InstallWebAppWithUrlHandlers(
+      profile2, GURL(kStartUrl), kAppName, {url_handler});
+
+  // Test that we should be able to select the 3rd option.
+  extensions::ScopedTestDialogAutoConfirm auto_confirm(
+      extensions::ScopedTestDialogAutoConfirm::ACCEPT_AND_OPTION, 2);
+  // kStartUrl is in app scope for both apps.
+  SendAppleEventToOpenUrlToAppController(GURL(kStartUrl));
+  AutoCloseDialog(waiter.WaitIfNeededAndGet());
+
+  // There should be one app window. No deterministic ordering of apps, so find
+  // which profile app is launched.
+  ASSERT_EQ(1u, chrome::GetBrowserCount(profile1) +
+                    chrome::GetBrowserCount(profile2));
+  Profile* app_profile =
+      (chrome::GetBrowserCount(profile1) == 1) ? profile1 : profile2;
+  Browser* app_browser = chrome::FindBrowserWithProfile(app_profile);
+  ASSERT_TRUE(app_browser);
+  ASSERT_TRUE(
+      web_app::AppBrowserController::IsForWebApp(app_browser, app_id_1) ||
+      web_app::AppBrowserController::IsForWebApp(app_browser, app_id_2));
+
+  TabStripModel* tab_strip = app_browser->tab_strip_model();
+  ASSERT_EQ(1, tab_strip->count());
+  content::WebContents* web_contents = tab_strip->GetWebContentsAt(0);
+  EXPECT_EQ(GURL(kStartUrl), web_contents->GetVisibleURL());
+}
+
+IN_PROC_BROWSER_TEST_F(StartupWebAppUrlHandlingBrowserTest,
+                       CheckHistogramsFired) {
+  base::HistogramTester histogram_tester;
+
+  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                       "WebAppUrlHandlerIntentPickerView");
+
+  apps::UrlHandlerInfo url_handler;
+  url_handler.origin = url::Origin::Create(GURL(kStartUrl));
+
+  web_app::AppId app_id = InstallWebAppWithUrlHandlers({url_handler});
+
+  SendAppleEventToOpenUrlToAppController(GURL(kStartUrl));
+
+  // The waiter will get the dialog when it shows up and close it.
+  waiter.WaitIfNeededAndGet()->CloseWithReason(
+      views::Widget::ClosedReason::kEscKeyPressed);
+
+  histogram_tester.ExpectTotalCount(
+      "WebApp.UrlHandling.GetValidProfilesAtStartUp", 1);
+  histogram_tester.ExpectTotalCount(
+      "WebApp.UrlHandling.LoadWebAppRegistrarsAtStartUp", 1);
+}
+
 IN_PROC_BROWSER_TEST_F(StartupWebAppUrlHandlingBrowserTest, UrlNotCaptured) {
   apps::UrlHandlerInfo url_handler;
   url_handler.origin = url::Origin::Create(GURL("https://example.com"));
@@ -1187,8 +1247,6 @@ IN_PROC_BROWSER_TEST_F(StartupWebAppUrlHandlingBrowserTest, UrlNotCaptured) {
   // This URL is not in scope of installed app and does not match url_handlers.
   SendAppleEventToOpenUrlToAppController(
       GURL("https://en.example.com/abc/def"));
-
-  content::RunAllTasksUntilIdle();
 
   ASSERT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
   ASSERT_FALSE(web_app::AppBrowserController::IsForWebApp(browser(), app_id));

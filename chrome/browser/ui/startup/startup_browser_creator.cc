@@ -491,7 +491,7 @@ bool MaybeLaunchUrlHandlerWebAppFromCmd(
       last_opened_profiles);
 
   return web_app::startup::MaybeLaunchUrlHandlerWebAppFromCmd(
-      command_line, cur_dir, last_used_profile, std::move(on_urls_unhandled_cb),
+      command_line, cur_dir, std::move(on_urls_unhandled_cb),
       base::BindOnce(&FinalizeWebAppLaunch,
                      std::make_unique<LaunchModeRecorder>()));
 }

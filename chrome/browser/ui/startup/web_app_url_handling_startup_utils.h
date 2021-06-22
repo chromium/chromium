@@ -17,7 +17,6 @@ class FilePath;
 
 class Browser;
 class GURL;
-class Profile;
 
 namespace web_app {
 namespace startup {
@@ -33,7 +32,6 @@ using FinalizeWebAppLaunchCallback =
 bool MaybeLaunchUrlHandlerWebAppFromCmd(
     const base::CommandLine& command_line,
     const base::FilePath& cur_dir,
-    Profile* last_used_profile,
     base::OnceClosure on_urls_unhandled_cb,
     FinalizeWebAppLaunchCallback app_launched_callback);
 

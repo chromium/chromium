@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/callback_helpers.h"
+#include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
@@ -212,6 +213,33 @@ IN_PROC_BROWSER_TEST_F(WebAppUrlHandlerIntentPickerDialogInProcessBrowserTest,
   // Select the second choice - the app.
   EXPECT_TRUE(dialog_accepted);
   EXPECT_EQ(result_launch_params, launch_params_list[0]);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppUrlHandlerIntentPickerDialogInProcessBrowserTest,
+                       FilterOutInvalidProfiles) {
+  // Test valid profile path is kept.
+  base::FilePath current_profile_path = browser()->profile()->GetPath();
+  std::vector<web_app::UrlHandlerLaunchParams> launch_params_list =
+      CreateUrlHandlerLaunchParams(current_profile_path, "app id 1");
+  auto valid_profiles =
+      WebAppUrlHandlerIntentPickerView::GetUrlHandlingValidProfiles(
+          launch_params_list);
+  EXPECT_EQ(1u, valid_profiles.size());
+  EXPECT_EQ(1u, launch_params_list.size());
+  EXPECT_EQ(launch_params_list.front().profile_path, current_profile_path);
+
+  // Add an invalid profile path.
+  launch_params_list.emplace_back(
+      current_profile_path.Append(FILE_PATH_LITERAL("Nonexistent")), "app id 2",
+      GURL(kStartUrl), web_app::UrlHandlerSavedChoice::kNone,
+      base::Time::Now());
+  // Verify the invalid profile is not returned.
+  auto new_valid_profiles =
+      WebAppUrlHandlerIntentPickerView::GetUrlHandlingValidProfiles(
+          launch_params_list);
+  EXPECT_EQ(1u, launch_params_list.size());
+  EXPECT_EQ(1u, new_valid_profiles.size());
+  EXPECT_EQ(valid_profiles, new_valid_profiles);
 }
 
 class WebAppUrlHandlerIntentPickerDialogInteractiveBrowserTest

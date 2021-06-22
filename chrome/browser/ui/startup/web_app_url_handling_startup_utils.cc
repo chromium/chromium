@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/startup/web_app_url_handling_startup_utils.h"
 
-#include <algorithm>
 #include <utility>
 #include <vector>
 
@@ -69,20 +68,6 @@ void OnUrlHandlerIntentPickerDialogCompleted(
   }
 }
 
-std::vector<UrlHandlerLaunchParams> GetValidUrlHandlerMatches(
-    std::vector<UrlHandlerLaunchParams> url_handler_matches,
-    const base::FilePath& last_used_profile) {
-  // TODO(crbug.com/1200951): Save matches from all valid profiles, not just
-  // the last used profile.
-  url_handler_matches.erase(
-      std::remove_if(url_handler_matches.begin(), url_handler_matches.end(),
-                     [&last_used_profile](const UrlHandlerLaunchParams& match) {
-                       return match.profile_path != last_used_profile;
-                     }),
-      url_handler_matches.end());
-  return url_handler_matches;
-}
-
 bool ShouldLaunchSavedChoice(
     const std::vector<UrlHandlerLaunchParams>& url_handler_matches) {
   return url_handler_matches.size() == 1 &&
@@ -102,29 +87,37 @@ void LaunchSavedChoice(
             cur_dir, saved_choice.url, std::move(app_launched_callback));
 }
 
-// Check if there is a saved choice and launch it directly if there is. If not,
-// show the dialog.
-// `url` is the URL to launch, and `url_handler_matches` contains launch info
-// of all the options to show in the dialog. There needs to be at least one
-// match to run this function.
-void MaybeLaunchIntentPickerDialog(
+// Returns true if `url` is handled, either by launching an app or showing a
+// dialog with all matching URL Handling apps. Returns false otherwise.
+// If `should_process_unhandled_url` is true, `on_urls_unhandled_cb` will be
+// run to handle `url`.
+bool MaybeHandleUrl(
     const GURL& url,
-    std::vector<UrlHandlerLaunchParams> url_handler_matches,
     const base::CommandLine& command_line,
     const base::FilePath& cur_dir,
-    base::OnceCallback<void()> open_urls_in_browser,
+    bool should_process_unhandled_url,
+    base::OnceClosure on_urls_unhandled_cb,
     startup::FinalizeWebAppLaunchCallback app_launched_callback) {
-  if (ShouldLaunchSavedChoice(url_handler_matches)) {
-    LaunchSavedChoice(url_handler_matches, command_line, cur_dir,
+  auto matches = UrlHandlerManagerImpl::GetUrlHandlerMatches(url);
+  if (matches.empty()) {
+    if (should_process_unhandled_url)
+      std::move(on_urls_unhandled_cb).Run();
+    return false;
+  }
+
+  if (ShouldLaunchSavedChoice(matches)) {
+    // TODO(crbug.com/1217419): Verify if site permission is enabled.
+    LaunchSavedChoice(matches, command_line, cur_dir,
                       std::move(app_launched_callback));
-    return;
+    return true;
   }
 
   chrome::ShowWebAppUrlHandlerIntentPickerDialog(
-      url, std::move(url_handler_matches),
+      url, std::move(matches),
       base::BindOnce(&OnUrlHandlerIntentPickerDialogCompleted, command_line,
-                     cur_dir, std::move(open_urls_in_browser),
+                     cur_dir, std::move(on_urls_unhandled_cb),
                      std::move(app_launched_callback)));
+  return true;
 }
 
 }  // namespace
@@ -134,7 +127,6 @@ namespace startup {
 bool MaybeLaunchUrlHandlerWebAppFromCmd(
     const base::CommandLine& command_line,
     const base::FilePath& cur_dir,
-    Profile* last_used_profile,
     base::OnceClosure on_urls_unhandled_cb,
     FinalizeWebAppLaunchCallback app_launched_callback) {
   absl::optional<GURL> url =
@@ -142,41 +134,25 @@ bool MaybeLaunchUrlHandlerWebAppFromCmd(
   if (!url)
     return false;
 
-  auto valid_matches = GetValidUrlHandlerMatches(
-      UrlHandlerManagerImpl::GetUrlHandlerMatches(url.value()),
-      last_used_profile->GetPath());
-  if (valid_matches.empty())
-    return false;
-
-  MaybeLaunchIntentPickerDialog(
-      url.value(), std::move(valid_matches), command_line, cur_dir,
-      std::move(on_urls_unhandled_cb), std::move(app_launched_callback));
-  return true;
+  return MaybeHandleUrl(url.value(), command_line, cur_dir,
+                        /*should_process_unhandled_url=*/false,
+                        std::move(on_urls_unhandled_cb),
+                        std::move(app_launched_callback));
 }
 
 void MaybeLaunchUrlHandlerWebAppFromUrls(
     const std::vector<GURL>& urls,
     base::OnceClosure on_urls_unhandled_cb,
     FinalizeWebAppLaunchCallback app_launched_callback) {
-  if (urls.size() != 1 || !g_browser_process->profile_manager()) {
+  if (urls.size() != 1) {
     std::move(on_urls_unhandled_cb).Run();
     return;
   }
 
-  auto valid_matches = GetValidUrlHandlerMatches(
-      UrlHandlerManagerImpl::GetUrlHandlerMatches(urls.front()),
-      g_browser_process->profile_manager()
-          ->GetLastUsedProfileAllowedByPolicy()
-          ->GetPath());
-  if (valid_matches.empty()) {
-    std::move(on_urls_unhandled_cb).Run();
-    return;
-  }
-
-  MaybeLaunchIntentPickerDialog(
-      urls.front(), std::move(valid_matches),
-      base::CommandLine(base::CommandLine::NO_PROGRAM), base::FilePath(),
-      std::move(on_urls_unhandled_cb), std::move(app_launched_callback));
+  MaybeHandleUrl(urls.front(), base::CommandLine(base::CommandLine::NO_PROGRAM),
+                 base::FilePath(), /*should_process_unhandled_url=*/true,
+                 std::move(on_urls_unhandled_cb),
+                 std::move(app_launched_callback));
 }
 
 }  // namespace startup

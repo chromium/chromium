@@ -9,13 +9,21 @@
 #include <utility>
 #include <vector>
 
+#include "base/barrier_closure.h"
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/containers/flat_set.h"
 #include "base/location.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/stl_util.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/timer/elapsed_timer.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/ui/browser_dialogs.h"
@@ -78,6 +86,42 @@ std::unique_ptr<views::Separator> CreateHorizontalSeparator() {
 }
 
 }  // namespace
+
+// static
+base::flat_set<Profile*>
+WebAppUrlHandlerIntentPickerView::GetUrlHandlingValidProfiles(
+    std::vector<web_app::UrlHandlerLaunchParams>& launch_params_list) {
+  ProfileManager* const profile_manager = g_browser_process->profile_manager();
+  if (!profile_manager)
+    return {};
+
+  std::vector<Profile*> profiles;
+  // A predicate function for base::EraseIf that returns true if `params`
+  // references an invalid Profile. Otherwise, adds the corresponding profile to
+  // `profiles` and returns false.
+  // TODO(crbug.com/1217419): Verify if site permission is enabled.
+  auto remove_pred = [profile_manager, &profiles](
+                         const web_app::UrlHandlerLaunchParams& params) {
+    if (!profile_manager->GetProfileAttributesStorage()
+             .GetProfileAttributesWithPath(params.profile_path)) {
+      return true;  // Profile deleted or path otherwise invalid.
+    }
+
+    Profile* const profile = profile_manager->GetProfile(params.profile_path);
+    if (!profile)
+      return true;  // Failed to load profile.
+
+    profiles.push_back(profile);
+    return false;
+  };
+
+  profiles.reserve(launch_params_list.size());
+  base::ElapsedTimer timer;
+  base::EraseIf(launch_params_list, std::move(remove_pred));
+  base::UmaHistogramMicrosecondsTimes(
+      "WebApp.UrlHandling.GetValidProfilesAtStartUp", timer.Elapsed());
+  return std::move(profiles);
+}
 
 void WebAppUrlHandlerIntentPickerView::Show(
     const GURL& url,
@@ -355,20 +399,42 @@ void ShowWebAppUrlHandlerIntentPickerDialog(
     std::vector<web_app::UrlHandlerLaunchParams> launch_params_list,
     WebAppUrlHandlerAcceptanceCallback dialog_close_callback) {
   DCHECK(dialog_close_callback);
-
-  // TODO(crbug.com/1200951): Update the following accordingly for multi-
-  // profile URL handler launch support.
-  auto* provider = web_app::WebAppProvider::Get(
-      g_browser_process->profile_manager()->GetProfileByPath(
-          launch_params_list.front().profile_path));
-  DCHECK(provider);
   auto keep_alive = std::make_unique<ScopedKeepAlive>(
       KeepAliveOrigin::WEB_APP_INTENT_PICKER, KeepAliveRestartOption::DISABLED);
-  provider->on_registry_ready().Post(
-      FROM_HERE,
-      base::BindOnce(&WebAppUrlHandlerIntentPickerView::Show, url,
-                     std::move(launch_params_list), std::move(keep_alive),
-                     std::move(dialog_close_callback)));
+
+  base::flat_set<Profile*> profiles =
+      WebAppUrlHandlerIntentPickerView::GetUrlHandlingValidProfiles(
+          launch_params_list);
+
+  auto show_dialog_callback = base::BindOnce(
+      [](const GURL& url, std::unique_ptr<ScopedKeepAlive> keep_alive,
+         base::ElapsedTimer timer,
+         std::vector<web_app::UrlHandlerLaunchParams> launch_params_list,
+         WebAppUrlHandlerAcceptanceCallback dialog_close_callback) {
+        // Record registrar loading time before showing the dialog.
+        base::UmaHistogramMicrosecondsTimes(
+            "WebApp.UrlHandling.LoadWebAppRegistrarsAtStartUp",
+            timer.Elapsed());
+
+        // TODO(crbug.com/1217419): Check if site permission is enabled once
+        // all profiles and registrars are loaded.
+
+        WebAppUrlHandlerIntentPickerView::Show(
+            url, std::move(launch_params_list), std::move(keep_alive),
+            std::move(dialog_close_callback));
+      },
+      url, std::move(keep_alive), base::ElapsedTimer(),
+      std::move(launch_params_list), std::move(dialog_close_callback));
+
+  auto on_registrar_ready_callback =
+      base::BarrierClosure(profiles.size(), std::move(show_dialog_callback));
+
+  for (Profile* profile : profiles) {
+    auto* provider = web_app::WebAppProvider::Get(profile);
+    DCHECK(provider);
+
+    provider->on_registry_ready().Post(FROM_HERE, on_registrar_ready_callback);
+  }
 }
 
 }  // namespace chrome

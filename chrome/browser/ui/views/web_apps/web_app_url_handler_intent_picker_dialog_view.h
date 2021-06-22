@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/web_applications/components/url_handler_launch_params.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
@@ -16,6 +17,7 @@
 #include "ui/views/window/dialog_delegate.h"
 #include "url/gurl.h"
 
+class Profile;
 class ScopedKeepAlive;
 class WebAppUrlHandlerHoverButton;
 
@@ -48,6 +50,12 @@ class WebAppUrlHandlerIntentPickerView : public views::DialogDelegateView {
   WebAppUrlHandlerIntentPickerView& operator=(
       const WebAppUrlHandlerIntentPickerView&) = delete;
   ~WebAppUrlHandlerIntentPickerView() override;
+
+  // Returns the set of profiles referenced by `launch_params_list` (loading
+  // them if necessary) and removes any items in `launch_params_list` that
+  // reference invalid or unloadable profiles.
+  static base::flat_set<Profile*> GetUrlHandlingValidProfiles(
+      std::vector<web_app::UrlHandlerLaunchParams>& launch_params_list);
 
   static void Show(
       const GURL& url,
