@@ -394,6 +394,9 @@ crbug.com/angleproject/2192 [ win angle-d3d9 passthrough ] conformance/textures/
 crbug.com/angleproject/2192 [ win angle-d3d9 passthrough ] conformance/textures/webgl_canvas/tex-2d-luminance_alpha-luminance_alpha-unsigned_byte.html [ Failure ]
 crbug.com/1191456 [ win angle-d3d9 passthrough ] conformance/textures/misc/video-rotation.html [ Failure ]
 
+# D3D11 / Passthrough command decoder
+crbug.com/1215624 [ win angle-d3d11 passthrough ] conformance/textures/video/* [ RetryOnFailure ]
+
 # D3D9 / AMD RX 5500 XT / Passthrough command decoder
 crbug.com/1159126 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/more/glsl/uniformOutOfBounds.html [ RetryOnFailure ]
 crbug.com/1159126 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/more/glsl/arrayOutOfBounds.html [ RetryOnFailure ]
