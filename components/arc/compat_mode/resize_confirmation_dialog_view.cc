@@ -77,6 +77,12 @@ void ResizeConfirmationDialogView::AddedToWidget() {
       l10n_util::GetStringUTF16(IDS_ASH_ARC_APP_COMPAT_RESIZE_CONFIRM_TITLE));
 }
 
+void ResizeConfirmationDialogView::OnThemeChanged() {
+  views::BoxLayoutView::OnThemeChanged();
+  do_not_ask_checkbox_->SetEnabledTextColors(GetNativeTheme()->GetSystemColor(
+      ui::NativeTheme::kColorId_DialogForeground));
+}
+
 std::unique_ptr<views::View> ResizeConfirmationDialogView::MakeContentsView() {
   return views::Builder<views::BoxLayoutView>()
       .SetOrientation(views::BoxLayout::Orientation::kVertical)
@@ -87,6 +93,7 @@ std::unique_ptr<views::View> ResizeConfirmationDialogView::MakeContentsView() {
                .SetText(l10n_util::GetStringUTF16(
                    IDS_ASH_ARC_APP_COMPAT_RESIZE_CONFIRM_BODY))
                .SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT)
+               .SetTextStyle(views::style::STYLE_SECONDARY)
                .SetHorizontalAlignment(gfx::ALIGN_LEFT)
                .SetMultiLine(true),
            views::Builder<views::Checkbox>()

@@ -55,6 +55,7 @@ class ResizeConfirmationDialogView : public views::BoxLayoutView {
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
   void AddedToWidget() override;
+  void OnThemeChanged() override;
 
  private:
   std::unique_ptr<views::View> MakeContentsView();
