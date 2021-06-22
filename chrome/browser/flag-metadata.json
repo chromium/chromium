@@ -2441,11 +2441,6 @@
     "expiry_milestone": 93
   },
   {
-    "name": "enable-speculative-service-worker-start-on-query-input",
-    "owners": [ "jdonnelly" ],
-    "expiry_milestone": 78
-  },
-  {
     "name": "enable-start-surface",
     "owners": [ "hanxi", "wychen" ],
     "expiry_milestone": 100
