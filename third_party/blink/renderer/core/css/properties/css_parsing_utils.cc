@@ -2226,6 +2226,7 @@ static CSSValue* ConsumeImageSet(CSSParserTokenRange& range,
   } while (ConsumeCommaIncludingWhitespace(args));
   if (!args.AtEnd())
     return nullptr;
+  context.Count(WebFeature::kWebkitImageSet);
   range = range_copy;
   return image_set;
 }
