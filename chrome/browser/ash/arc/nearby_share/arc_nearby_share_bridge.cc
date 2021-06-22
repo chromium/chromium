@@ -73,7 +73,7 @@ ArcNearbyShareBridge::~ArcNearbyShareBridge() {
   session_map_.clear();
 }
 
-// TODO(b/191430761): Tie this to Nearbyshare transfer complete/abort/cancel
+// TODO(b/191430761): Tie this to Nearby Share transfer complete/abort/cancel
 // so that cache files are not wiped prematurely.
 void ArcNearbyShareBridge::OnNearbyShareSessionFinished(int32_t task_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -89,7 +89,7 @@ void ArcNearbyShareBridge::StartNearbyShare(
     StartNearbyShareCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  VLOG(1) << "Creating NearbyShare session";
+  VLOG(1) << "Creating Nearby Share session";
   if (!session_instance) {
     LOG(ERROR) << "instance is null. Unable to create NearbyShareSessionImpl";
     std::move(callback).Run(mojo::NullRemote());

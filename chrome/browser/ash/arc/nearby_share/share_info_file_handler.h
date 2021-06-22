@@ -69,7 +69,7 @@ class ShareInfoFileHandler : public base::RefCountedThreadSafe<
   uint64_t GetTotalSizeOfFiles() const;
 
   // Start streaming virtual files to destination file descriptors in
-  // preparation for NearbyShare.
+  // preparation for Nearby Share.
   void StartPreparingFiles(CompletedCallback callback);
 
  private:
@@ -85,7 +85,7 @@ class ShareInfoFileHandler : public base::RefCountedThreadSafe<
   // Create file with create and write flags and return scoped fd.
   base::ScopedFD CreateFileForWrite(const base::FilePath& file_path);
 
-  // Called when temp directory for NearbyShare cached files is created and
+  // Called when temp directory for Nearby Share cached files is created and
   // raw bytes of files are streamed from ARC VFS to Chrome local path.
   void OnCreatedDirectoryAndStreamedFiles(CompletedCallback callback,
                                           bool result);
