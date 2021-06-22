@@ -21,7 +21,7 @@ DiskUnmounterMac::DiskUnmounterMac() : cf_thread_("ImageWriterDiskArb") {
   base::Thread::Options options;
   options.message_pump_type = base::MessagePumpType::UI;
 
-  cf_thread_.StartWithOptions(options);
+  cf_thread_.StartWithOptions(std::move(options));
 }
 
 DiskUnmounterMac::~DiskUnmounterMac() {
