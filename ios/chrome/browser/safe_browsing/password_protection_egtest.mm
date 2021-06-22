@@ -65,12 +65,13 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   config.additional_args.push_back(
       std::string("--mark_as_allowlisted_for_phish_guard=") +
       _allowlistedURL.spec());
-
+  // TODO(crbug.com/1221635) testPasswordReuseDetectionWarning is disabled
+  /*
   if ([self isRunningTest:@selector(testPasswordReuseDetectionWarning)]) {
     // Use commandline args to save a fake phishing cached verdict.
     config.additional_args.push_back(
         std::string("--mark_as_phish_guard_phishing=") + _phishingURL.spec());
-  }
+  }*/
 
   return config;
 }
@@ -119,7 +120,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 
 // Tests that password protection UI is shown when saved password is reused on
 // phishing site.
-- (void)testPasswordReuseDetectionWarning {
+// TODO(crbug.com/1221635) This fails on iPad 14.4 and iPhone 14.5+
+- (void)DISABLED_testPasswordReuseDetectionWarning {
   // PhishGuard is only available on iOS 14.0 or above.
   if (!base::ios::IsRunningOnIOS14OrLater()) {
     return;
