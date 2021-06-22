@@ -3680,6 +3680,11 @@
     "expiry_milestone": 83
   },
   {
+    "name": "metrickit-crash-reports",
+    "owners": [ "olivierrobin", "bling-flags@google.com" ],
+    "expiry_milestone": 99
+  },
+  {
     "name": "metrics-settings-android",
     "owners": [
       "andzaytsev",

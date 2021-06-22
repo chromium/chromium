@@ -318,6 +318,10 @@ const char kLockBottomToolbarDescription[] =
     "When enabled, the bottom toolbar will not get collapsed when scrolling "
     "into fullscreen mode.";
 
+const char kMetrickitCrashReportName[] = "Metrickit crash reports";
+const char kMetrickitCrashReportDescription[] =
+    "Enables sending Metrickit crash reports";
+
 const char kMICEWebSignInName[] = "MICE Web Sign-in";
 const char kMICEWebSignInDescription[] =
     "Enables MICE web sign-in. Requires #mobile-identity-consistency.";

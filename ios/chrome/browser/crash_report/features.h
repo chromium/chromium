@@ -9,6 +9,8 @@
 
 extern const base::Feature kCrashpadIOS;
 
+extern const base::Feature kMetrickitCrashReport;
+
 extern const base::Feature kSyntheticCrashReportsForUte;
 
 // Returns true if kSyntheticCrashReportsForUte and kLogBreadcrumbs features are

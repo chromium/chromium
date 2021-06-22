@@ -134,7 +134,9 @@ source_set("metric_kit_subscriber") {
   frameworks = [ "MetricKit.framework" ]
   deps = [
     "//base",
+    "//components/crash/core/common:reporter_running_ios",
     "//components/version_info",
+    "//ios/chrome/browser/crash_report",
   ]
 }
 

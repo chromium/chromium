@@ -268,6 +268,11 @@ extern const char kLocationPermissionsPromptDescription[];
 extern const char kLockBottomToolbarName[];
 extern const char kLockBottomToolbarDescription[];
 
+// Title and description for the flag that controls sending metrickit crash
+// reports.
+extern const char kMetrickitCrashReportName[];
+extern const char kMetrickitCrashReportDescription[];
+
 // Title and description for the flag to enable MICE web sign-in.
 extern const char kMICEWebSignInName[];
 extern const char kMICEWebSignInDescription[];

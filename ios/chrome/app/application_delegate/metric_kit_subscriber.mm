@@ -9,11 +9,15 @@
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/path_service.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/version.h"
+#import "components/crash/core/common/reporter_running_ios.h"
 #include "components/version_info/version_info.h"
+#include "ios/chrome/browser/crash_report/features.h"
+#include "ios/chrome/browser/crash_report/synthetic_crash_report_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -139,6 +143,67 @@ void WriteDiagnosticPayloads(NSArray<MXDiagnosticPayload*>* payloads)
     NSData* file_data = payload.JSONRepresentation;
     base::WriteFile(file_path, static_cast<const char*>(file_data.bytes),
                     file_data.length);
+  }
+}
+
+void SendDiagnostic(MXDiagnostic* diagnostic, const std::string& type)
+    API_AVAILABLE(ios(14.0)) {
+  if (!crash_reporter::IsBreakpadRunning()) {
+    return;
+  }
+  base::FilePath cache_dir_path;
+  if (!base::PathService::Get(base::DIR_CACHE, &cache_dir_path)) {
+    return;
+  }
+  NSDictionary* info_dict = NSBundle.mainBundle.infoDictionary;
+  NSError* error = nil;
+  // Deflate the payload.
+  NSData* payload = [diagnostic.JSONRepresentation
+      compressedDataUsingAlgorithm:NSDataCompressionAlgorithmZlib
+                             error:&error];
+  if (!payload) {
+    return;
+  }
+  std::string stringpayload(reinterpret_cast<const char*>(payload.bytes),
+                            payload.length);
+
+  CreateSyntheticCrashReportForMetrickit(
+      cache_dir_path.Append(FILE_PATH_LITERAL("Breakpad")),
+      base::SysNSStringToUTF8(info_dict[@"BreakpadProductDisplay"]),
+      base::SysNSStringToUTF8([NSString
+          stringWithFormat:@"%@_MetricKit", info_dict[@"BreakpadProduct"]]),
+      base::SysNSStringToUTF8(diagnostic.metaData.applicationBuildVersion),
+      base::SysNSStringToUTF8(info_dict[@"BreakpadURL"]), type, stringpayload);
+}
+
+void SendDiagnosticPayloads(NSArray<MXDiagnosticPayload*>* payloads)
+    API_AVAILABLE(ios(14.0)) {
+  for (MXDiagnosticPayload* payload in payloads) {
+    for (MXCrashDiagnostic* diagnostic in payload.crashDiagnostics) {
+      SendDiagnostic(diagnostic, "crash");
+    }
+    for (MXCPUExceptionDiagnostic* diagnostic in payload
+             .cpuExceptionDiagnostics) {
+      SendDiagnostic(diagnostic, "cpu-exception");
+    }
+    for (MXHangDiagnostic* diagnostic in payload.hangDiagnostics) {
+      SendDiagnostic(diagnostic, "hang");
+    }
+    for (MXDiskWriteExceptionDiagnostic* diagnostic in payload
+             .diskWriteExceptionDiagnostics) {
+      SendDiagnostic(diagnostic, "diskwrite-exception");
+    }
+  }
+}
+
+void ProcessDiagnosticPayloads(NSArray<MXDiagnosticPayload*>* payloads,
+                               bool write_payloads,
+                               bool send_payloads) API_AVAILABLE(ios(14.0)) {
+  if (write_payloads) {
+    WriteDiagnosticPayloads(payloads);
+  }
+  if (send_payloads) {
+    SendDiagnosticPayloads(payloads);
   }
 }
 #endif
@@ -321,13 +386,17 @@ void WriteDiagnosticPayloads(NSArray<MXDiagnosticPayload*>* payloads)
 - (void)didReceiveDiagnosticPayloads:(NSArray<MXDiagnosticPayload*>*)payloads
     API_AVAILABLE(ios(14.0)) {
   NSUserDefaults* standard_defaults = [NSUserDefaults standardUserDefaults];
-  if ([standard_defaults boolForKey:kEnableMetricKit]) {
+  BOOL writePayloadsToDisk = [standard_defaults boolForKey:kEnableMetricKit];
+  bool sendPayloads = base::FeatureList::IsEnabled(kMetrickitCrashReport);
+
+  if (writePayloadsToDisk || sendPayloads) {
     base::ThreadPool::PostTask(
         FROM_HERE,
         {base::TaskPriority::BEST_EFFORT,
          base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN,
          base::ThreadPolicy::PREFER_BACKGROUND, base::MayBlock()},
-        base::BindOnce(WriteDiagnosticPayloads, payloads));
+        base::BindOnce(ProcessDiagnosticPayloads, payloads, writePayloadsToDisk,
+                       sendPayloads));
   }
 }
 #endif

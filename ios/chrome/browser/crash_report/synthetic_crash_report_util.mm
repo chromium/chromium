@@ -71,7 +71,7 @@ void CreateSyntheticCrashReportForUte(
   AppendConfig(config, "MinidumpID", minidump_id);
   AppendConfig(config, "BreakpadProductDisplay", breakpad_product_display);
   AppendConfig(config, "BreakpadProduct", breakpad_product);
-  // UTE is not reported if app was upgrated, so the previous session had the
+  // UTE is not reported if app was upgraded, so the previous session had the
   // same version.
   AppendConfig(config, "BreakpadVersion", breakpad_version);
   AppendConfig(config, "BreakpadURL", breakpad_url);
@@ -141,6 +141,55 @@ void CreateSyntheticCrashReportForUte(
   base::File minidump_file(
       path.Append(minidump_id).AddExtension("dmp"),
       base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
+
+  base::FilePath config_file_path = path.Append("Config-XXXXXX");
+  // const_cast is OK since mkstemp just replaces characters in place.
+  base::ScopedFD config_fd(
+      mkstemp(const_cast<char*>(config_file_path.value().c_str())));
+
+  std::string config_string = base::JoinString(config, "\n");
+
+  // Write config into memory mapped file after minidump is written, otherwise
+  // Breakpad may fail to upload config without minidump.
+  base::MemoryMappedFile mapped_config_file;
+  const base::MemoryMappedFile::Region region = {0, config_string.size()};
+  bool created_config =
+      mapped_config_file.Initialize(base::File(std::move(config_fd)), region,
+                                    base::MemoryMappedFile::READ_WRITE_EXTEND);
+  if (created_config) {
+    std::strcpy(reinterpret_cast<char*>(mapped_config_file.data()),
+                config_string.data());
+  }
+}
+
+void CreateSyntheticCrashReportForMetrickit(
+    const base::FilePath& path,
+    const std::string& breakpad_product_display,
+    const std::string& breakpad_product,
+    const std::string& breakpad_version,
+    const std::string& breakpad_url,
+    const std::string& kind,
+    const std::string& payload) {
+  std::vector<std::string> config;
+
+  AppendConfig(config, "MinidumpDir", path.value());
+  std::string minidump_id = ios::device_util::GetRandomId();
+  AppendConfig(config, "MinidumpID", minidump_id);
+  AppendConfig(config, "BreakpadProductDisplay", breakpad_product_display);
+  AppendConfig(config, "BreakpadProduct", breakpad_product);
+  // UTE is not reported if app was upgraded, so the previous session had the
+  // same version.
+  AppendConfig(config, "BreakpadVersion", breakpad_version);
+  AppendConfig(config, "BreakpadURL", breakpad_url);
+  AppendConfig(config, "BreakpadMinidumpLocation", path.value());
+  AppendConfigWithBreakpadServerParam(config, "metrickit_type", kind);
+
+  // Write empty minidump file, as Breakpad can't upload config without the
+  // minidump.
+  base::File minidump_file(
+      path.Append(minidump_id).AddExtension("dmp"),
+      base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
+  minidump_file.Write(0, payload.data(), payload.size());
 
   base::FilePath config_file_path = path.Append("Config-XXXXXX");
   // const_cast is OK since mkstemp just replaces characters in place.
