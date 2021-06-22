@@ -1398,13 +1398,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Sync.URLFetchResponse"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2021-11-07">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2022-07-31">
   <owner>mastiz@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <component>Services&gt;Sync</component>
   <summary>
     Counts of responses (both http code and net error code) for Sync URL
-    fetches.
+    fetches. Note that requests that timed out are not covered by this
+    histogram; see Sync.URLFetchTimedOut for that.
   </summary>
 </histogram>
 
@@ -1421,7 +1422,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Sync.URLFetchTimedOut" enum="BooleanTimedOut"
-    expires_after="2021-07-31">
+    expires_after="2022-07-31">
   <owner>mastiz@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <component>Services&gt;Sync</component>
