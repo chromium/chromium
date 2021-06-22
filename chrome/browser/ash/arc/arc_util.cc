@@ -287,6 +287,10 @@ void ResetArcAllowedCheckForTesting(const Profile* profile) {
   g_profile_status_check.Get().erase(profile);
 }
 
+void ClearArcAllowedCheckForTesting() {
+  g_profile_status_check.Get().clear();
+}
+
 bool IsArcBlockedDueToIncompatibleFileSystem(const Profile* profile) {
   const user_manager::User* user =
       chromeos::ProfileHelper::Get()->GetUserByProfile(profile);

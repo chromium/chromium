@@ -38,6 +38,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_paths.h"
+#include "chrome/browser/ash/arc/arc_util.h"
 #include "chromeos/dbus/constants/dbus_paths.h"
 #endif
 
@@ -108,6 +109,9 @@ class ChromeUnitTestSuiteInitializer : public testing::EmptyTestEventListener {
     DCHECK(ui::AXPlatformNode::GetAccessibilityMode() == 0)
         << "Please use ScopedAxModeSetter, or add a call to "
            "AXPlatformNode::ResetAxModeForTesting() at the end of your test.";
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    arc::ClearArcAllowedCheckForTesting();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 
  private:
