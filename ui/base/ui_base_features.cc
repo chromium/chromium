@@ -219,7 +219,7 @@ bool IsUseCommonSelectPopupEnabled() {
 
 // Enables keyboard accessible tooltip.
 const base::Feature kKeyboardAccessibleTooltip{
-    "KeyboardAccessibleTooltip", base::FEATURE_ENABLED_BY_DEFAULT};
+    "KeyboardAccessibleTooltip", base::FEATURE_DISABLED_BY_DEFAULT};
 
 bool IsKeyboardAccessibleTooltipEnabled() {
   static const bool keyboard_accessible_tooltip_enabled =
