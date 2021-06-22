@@ -63,11 +63,14 @@ v8::Local<v8::Value> ClassicScript::RunScriptInIsolatedWorldAndReturnValue(
   // Unlike other methods, RunScriptInIsolatedWorldAndReturnValue()'s
   // default policy is kExecuteScriptWhenScriptsDisabled, to keep existing
   // behavior.
+  ScriptState* script_state = nullptr;
+  if (window->GetFrame()) {
+    script_state = ToScriptState(window->GetFrame(),
+                                 *DOMWrapperWorld::EnsureIsolatedWorld(
+                                     ToIsolate(window->GetFrame()), world_id));
+  }
   ScriptEvaluationResult result = RunScriptOnScriptStateAndReturnValue(
-      ToScriptState(window->GetFrame(),
-                    *DOMWrapperWorld::EnsureIsolatedWorld(
-                        ToIsolate(window->GetFrame()), world_id)),
-      ExecuteScriptPolicy::kExecuteScriptWhenScriptsDisabled);
+      script_state, ExecuteScriptPolicy::kExecuteScriptWhenScriptsDisabled);
 
   if (result.GetResultType() == ScriptEvaluationResult::ResultType::kSuccess)
     return result.GetSuccessValue();

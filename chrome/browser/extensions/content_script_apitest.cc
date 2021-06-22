@@ -290,6 +290,47 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest,
   ASSERT_TRUE(scripts_injected_twice);
 }
 
+// Tests that content scripts detaching its Window during evaluation shouldn't
+// crash. Regression test for https://crbug.com/1220761.
+IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, DetachDuringEvaluation) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  GURL url(embedded_test_server()->GetURL(
+      "document-end.example.com", "/extensions/detach_during_evaluation.html"));
+
+  ASSERT_TRUE(LoadExtension(
+      test_data_dir_.AppendASCII("content_scripts/detach_during_evaluation")));
+
+  ui_test_utils::NavigateToURL(browser(), url);
+
+  // The iframe is removed by `detach.js`.
+  bool iframe_removed = false;
+  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
+      browser()->tab_strip_model()->GetActiveWebContents(),
+      "window.domAutomationController.send("
+      "document.getElementById('injected') === null)",
+      &iframe_removed));
+  EXPECT_TRUE(iframe_removed);
+
+  // `detach.js` is evaluated, and detaches the iframe.
+  bool detach_evaluated = false;
+  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
+      browser()->tab_strip_model()->GetActiveWebContents(),
+      "window.domAutomationController.send("
+      "document.getElementById('detach-evaluated') !== null)",
+      &detach_evaluated));
+  EXPECT_TRUE(detach_evaluated);
+
+  // `detach2.js` isn't evaluated because the iframe is detached.
+  bool detach2_evaluated = false;
+  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
+      browser()->tab_strip_model()->GetActiveWebContents(),
+      "window.domAutomationController.send("
+      "document.getElementById('detach2-evaluated') !== null)",
+      &detach2_evaluated));
+  EXPECT_FALSE(detach2_evaluated);
+}
+
 // Tests that fetches made by content scripts are exempt from the page's CSP.
 // Regression test for crbug.com/934819.
 IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, FetchExemptFromCSP) {
