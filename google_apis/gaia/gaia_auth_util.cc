@@ -124,42 +124,46 @@ bool ParseListAccountsData(const std::string& data,
   if (!value)
     return false;
 
-  base::ListValue* list;
-  if (!value->GetAsList(&list) || list->GetSize() < 2)
+  if (!value->is_list())
+    return false;
+  base::Value::ConstListView list = value->GetList();
+  if (list.size() < 2u)
     return false;
 
   // Get list of account info.
-  base::ListValue* account_list;
-  if (!list->GetList(1, &account_list))
+  if (!list[1].is_list())
     return false;
+  base::Value::ConstListView account_list = list[1].GetList();
 
   // Build a vector of accounts from the cookie.  Order is important: the first
   // account in the list is the primary account.
-  for (size_t i = 0; i < account_list->GetSize(); ++i) {
-    base::ListValue* account;
-    if (account_list->GetList(i, &account) && account != nullptr) {
+  for (size_t i = 0; i < account_list.size(); ++i) {
+    if (account_list[i].is_list()) {
+      base::Value::ConstListView account = account_list[i].GetList();
       std::string email;
       // Canonicalize the email since ListAccounts returns "display email".
-      if (account->GetString(3, &email) && !email.empty()) {
+      if (3u < account.size() && account[3].is_string() &&
+          !(email = account[3].GetString()).empty()) {
         // New version if ListAccounts indicates whether the email's session
         // is still valid or not.  If this value is present and false, assume
         // its invalid.  Otherwise assume it's valid to remain compatible with
         // old version.
         int is_email_valid = 1;
-        if (!account->GetInteger(9, &is_email_valid))
-          is_email_valid = 1;
+        if (9u < account.size() && account[9].is_int())
+          is_email_valid = account[9].GetInt();
 
         int signed_out = 0;
-        if (!account->GetInteger(14, &signed_out))
-          signed_out = 0;
+        if (14u < account.size() && account[14].is_int())
+          signed_out = account[14].GetInt();
 
         int verified = 1;
-        if (!account->GetInteger(15, &verified))
-          verified = 1;
+        if (15u < account.size() && account[15].is_int())
+          verified = account[15].GetInt();
 
         std::string gaia_id;
         // ListAccounts must also return the Gaia Id.
-        if (account->GetString(10, &gaia_id) && !gaia_id.empty()) {
+        if (10u < account.size() && account[10].is_string() &&
+            !(gaia_id = account[10].GetString()).empty()) {
           ListedAccount listed_account;
           listed_account.email = CanonicalizeEmail(email);
           listed_account.gaia_id = gaia_id;
