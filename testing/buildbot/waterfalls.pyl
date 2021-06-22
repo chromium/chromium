@@ -1715,7 +1715,7 @@
         'mixins': [
           'arm64',
           'docker',
-          'linux-xenial',
+          'linux-xenial-or-focal',
         ],
       },
       'ToTLinux': {
@@ -2783,7 +2783,7 @@
         'mixins': [
           'arm64',
           'docker',
-          'linux-xenial',
+          'linux-xenial-or-focal',
         ],
       },
       'fuchsia-fyi-arm64-femu': {
@@ -4733,7 +4733,7 @@
         'mixins': [
           'arm64',
           'docker',
-          'linux-xenial',
+          'linux-xenial-or-focal',
         ],
       },
       'Fuchsia x64': {
