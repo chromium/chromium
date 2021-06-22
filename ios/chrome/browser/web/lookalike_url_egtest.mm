@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/strings/stringprintf.h"
 #include "components/strings/grit/components_strings.h"
-#include "ios/chrome/browser/web/features.h"
 #import "ios/chrome/browser/web/lookalike_url_app_interface.h"
 #import "ios/chrome/browser/web/lookalike_url_constants.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -67,16 +66,6 @@ const char kLookalikeInNewTabContent[] = "New tab";
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.relaunch_policy = NoForceRelaunchAndResetState;
-  if ([self
-          isRunningTest:@selector(testRestoreToWarningPagePreservesHistory)]) {
-    // TOOD(crbug.com/1221250): Re-enable this test when iOS 15 native session
-    // restore is fixed. The issue is likely that
-    // -triggerRestoreViaTabGridRemoveAllUndo does not clear the cache to force
-    // a reload, or that error pages do not re-load correctly.
-    if (@available(iOS 15, *)) {
-      config.features_disabled.push_back(web::kRestoreSessionFromCache);
-    }
-  }
   return config;
 }
 
@@ -353,10 +342,13 @@ const char kLookalikeInNewTabContent[] = "New tab";
 
   // Do a session restoration and verify that all navigation history is
   // preserved. For this test, the policy decider doesn't get installed for
-  // the first page load, so expect the page content instead of the warning.
+  // the first page load, so goForward first and install the policy decider
+  // after a load.
+  [ChromeEarlGrey goForward];
   [ChromeEarlGrey triggerRestoreViaTabGridRemoveAllUndo];
-  [ChromeEarlGrey waitForWebStateContainingText:kLookalikeContent];
   [LookalikeUrlAppInterface setUpLookalikeUrlDeciderForWebState];
+  [ChromeEarlGrey goBack];
+  [ChromeEarlGrey waitForWebStateContainingText:_lookalikeBlockingPageContent];
 
   [ChromeEarlGrey goBack];
   [ChromeEarlGrey waitForWebStateContainingText:safeContent2];

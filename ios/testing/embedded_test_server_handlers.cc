@@ -116,6 +116,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleEchoQueryOrCloseSocket(
   auto response = std::make_unique<net::test_server::BasicHttpResponse>();
   response->set_content_type("text/html");
   response->set_content(request.GetURL().query());
+  response->AddCustomHeader("Cache-Control", "no-store");
   return std::move(response);
 }
 
