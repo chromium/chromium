@@ -104,8 +104,7 @@ class GC_PLUGIN_IGNORE(
   BitField bit_field_;
 };
 
-class GC_PLUGIN_IGNORE("Manual dispatch implemented in NodeData.")
-    NodeRenderingData final : public NodeData {
+class NodeRenderingData final : public NodeData {
  public:
   NodeRenderingData(LayoutObject*,
                     scoped_refptr<const ComputedStyle> computed_style);

@@ -129,9 +129,7 @@ EmbedderNode* NodeBuilder::GraphNode(Traceable traceable,
 // into its own subgraph to identify and filter subgraphs that only consist of
 // internals. Roots, which are potentially Blink only, are transitively
 // traversed after handling JavaScript related objects.
-class GC_PLUGIN_IGNORE(
-    "This class is not managed by Oilpan but GC plugin recognizes it as such "
-    "due to Trace methods.") V8EmbedderGraphBuilder
+class V8EmbedderGraphBuilder
     : public Visitor,
       public v8::PersistentHandleVisitor,
       public v8::EmbedderHeapTracer::TracedGlobalHandleVisitor {
