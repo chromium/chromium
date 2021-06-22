@@ -15,6 +15,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/ukm/content/source_url_recorder.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/common/url_constants.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -53,7 +54,9 @@ void SoundContentSettingObserver::ReadyToCommitNavigation(
 
   GURL url = navigation_handle->IsInMainFrame()
                  ? navigation_handle->GetURL()
-                 : navigation_handle->GetWebContents()->GetLastCommittedURL();
+                 : navigation_handle->GetRenderFrameHost()
+                       ->GetMainFrame()
+                       ->GetLastCommittedURL();
 
   content_settings::SettingInfo setting_info;
   std::unique_ptr<base::Value> setting =
