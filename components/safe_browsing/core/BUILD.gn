@@ -106,7 +106,6 @@ source_set("verdict_cache_manager") {
     "//components/keyed_service/core:core",
     "//components/password_manager/core/browser:browser",
     "//components/safe_browsing/core/common",
-    "//components/safe_browsing/core/common:thread_utils",
     "//components/safe_browsing/core/db:v4_protocol_manager_util",
     "//url",
   ]

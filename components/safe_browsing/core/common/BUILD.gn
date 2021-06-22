@@ -16,7 +16,6 @@ static_library("safe_browsing_prefs") {
     "//components/pref_registry:pref_registry",
     "//components/prefs",
     "//components/safe_browsing/core:features",
-    "//components/safe_browsing/core/common:thread_utils",
     "//net:net",
   ]
 
@@ -112,20 +111,6 @@ mojom("interfaces") {
   sources = [ "safe_browsing_url_checker.mojom" ]
 
   public_deps = [ "//url/mojom:url_mojom_gurl" ]
-}
-
-source_set("thread_utils") {
-  sources = [ "thread_utils.h" ]
-
-  deps = [ "//base" ]
-
-  if (is_ios) {
-    sources += [ "//components/safe_browsing/ios/thread_utils_ios.cc" ]
-    deps += [ "//ios/web/public/thread" ]
-  } else {
-    sources += [ "//components/safe_browsing/content/common/thread_utils.cc" ]
-    deps += [ "//content/public/browser" ]
-  }
 }
 
 source_set("test_support") {

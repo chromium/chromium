@@ -25,7 +25,6 @@ source_set("password_protection") {
     "//components/safe_browsing/core/browser/sync",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
-    "//components/safe_browsing/core/common:thread_utils",
     "//components/safe_browsing/core/db:allowlist_checker_client",
     "//components/safe_browsing/core/db:database_manager",
     "//components/safe_browsing/core/db:v4_protocol_manager_util",

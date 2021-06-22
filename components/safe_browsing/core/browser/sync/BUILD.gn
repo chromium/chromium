@@ -15,7 +15,6 @@ source_set("sync") {
   deps = [
     "//base",
     "//components/safe_browsing/core/browser:token_fetcher",
-    "//components/safe_browsing/core/common:thread_utils",
     "//components/signin/public/identity_manager",
     "//components/sync/driver",
     "//google_apis",

@@ -9,7 +9,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #import "base/test/ios/wait_util.h"
-#include "components/safe_browsing/core/common/thread_utils.h"
 #include "components/safe_browsing/core/db/database_manager.h"
 #import "components/safe_browsing/ios/browser/safe_browsing_url_allow_list.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
