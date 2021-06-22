@@ -83,6 +83,7 @@ proto::SegmentInfo* TestSegmentInfoDatabase::FindOrCreateSegment(
   if (info == nullptr) {
     segment_infos_.emplace_back(segment_id, proto::SegmentInfo());
     info = &segment_infos_.back().second;
+    info->set_segment_id(segment_id);
   }
 
   return info;
