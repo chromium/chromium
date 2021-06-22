@@ -5580,10 +5580,10 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, Bug1210234) {
   // Since we committed a navigation, the next cross-origin navigation will
   // create a speculative RenderFrameHost.
 
-  // We use ASSERT_FALSE here since this will be redirected to "c.com".
-  ASSERT_FALSE(NavigateToURL(
-      shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
-
+  NavigateToURLBlockUntilNavigationsComplete(
+      web_contents(), initial_url, /*number_of_navigations=*/1,
+      /*ignore_uncommitted_navigations=*/true);
+  EXPECT_TRUE(IsLastCommittedEntryOfPageType(web_contents(), PAGE_TYPE_NORMAL));
   EXPECT_EQ(redirection_url, web_contents()->GetLastCommittedURL());
 }
 
