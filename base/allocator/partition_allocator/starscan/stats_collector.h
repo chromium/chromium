@@ -16,7 +16,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
-#include "base/trace_event/base_tracing.h"
 
 namespace base {
 namespace internal {
@@ -158,6 +157,8 @@ class StatsCollector final {
   template <Context context>
   void ReportTracesAndHistsImpl(
       const DeferredTraceEventMap<context>& event_map) const;
+
+  void ReportSurvivalRate() const;
 
   DeferredTraceEventMap<Context::kMutator> mutator_trace_events_;
   DeferredTraceEventMap<Context::kScanner> scanner_trace_events_;

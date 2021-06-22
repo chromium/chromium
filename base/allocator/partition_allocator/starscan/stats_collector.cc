@@ -6,17 +6,10 @@
 
 #include "base/logging.h"
 #include "base/time/time.h"
+#include "base/trace_event/base_tracing.h"
 
 namespace base {
 namespace internal {
-
-namespace {
-void LogStats(size_t swept_bytes, size_t last_size, size_t new_size) {
-  VLOG(2) << "quarantine size: " << last_size << " -> " << new_size
-          << ", swept bytes: " << swept_bytes
-          << ", survival rate: " << static_cast<double>(new_size) / last_size;
-}
-}  // namespace
 
 StatsCollector::StatsCollector(const char* process_name,
                                size_t quarantine_last_size)
@@ -35,7 +28,7 @@ base::TimeDelta StatsCollector::GetOverallTime() const {
 void StatsCollector::ReportTracesAndHists() const {
   ReportTracesAndHistsImpl<Context::kMutator>(mutator_trace_events_);
   ReportTracesAndHistsImpl<Context::kScanner>(scanner_trace_events_);
-  LogStats(swept_size(), quarantine_last_size_, survived_quarantine_size());
+  ReportSurvivalRate();
 }
 
 template <Context context>
@@ -85,6 +78,21 @@ void StatsCollector::ReportTracesAndHistsImpl(
     UmaHistogramTimes(ToUMAString(static_cast<IdType<context>>(id)).c_str(),
                       accumulated_events[id]);
   }
+}
+
+void StatsCollector::ReportSurvivalRate() const {
+  const double survived_rate =
+      static_cast<double>(survived_quarantine_size()) / quarantine_last_size_;
+  TRACE_COUNTER1(kTraceCategory, "PCScan.SurvivedQuarantineSize",
+                 survived_quarantine_size());
+  // Multiply by 1000 since TRACE_COUNTER1 expects integer. In catapult, divide
+  // back.
+  // TODO(bikineev): Remove after switching to perfetto.
+  TRACE_COUNTER1(kTraceCategory, "PCScan.SurvivedQuarantinePercent",
+                 1000 * survived_rate);
+  VLOG(2) << "quarantine size: " << quarantine_last_size_ << " -> "
+          << survived_quarantine_size() << ", swept bytes: " << swept_size()
+          << ", survival rate: " << survived_rate;
 }
 
 template base::TimeDelta StatsCollector::GetTimeImpl(
