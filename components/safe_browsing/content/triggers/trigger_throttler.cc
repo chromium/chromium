@@ -15,12 +15,8 @@
 #include "components/safe_browsing/core/features.h"
 
 namespace safe_browsing {
-const size_t kAdPopupTriggerDefaultQuota = 1;
-const size_t kAdRedirectTriggerDefaultQuota = 1;
 const size_t kAdSamplerTriggerDefaultQuota = 10;
 const size_t kSuspiciousSiteTriggerDefaultQuota = 5;
-const char kAdPopupTriggerQuotaParam[] = "ad_popup_trigger_quota";
-const char kAdRedirectTriggerQuotaParam[] = "ad_redirect_trigger_quota";
 const char kSuspiciousSiteTriggerQuotaParam[] = "suspicious_site_trigger_quota";
 const char kTriggerTypeAndQuotaParam[] = "trigger_type_and_quota_csv";
 
@@ -52,22 +48,6 @@ void ParseTriggerTypeAndQuotaParam(
   if (suspicious_site_quota > 0) {
     trigger_type_and_quota_list->push_back(
         std::make_pair(TriggerType::SUSPICIOUS_SITE, suspicious_site_quota));
-  }
-
-  int ad_popup_quota = base::GetFieldTrialParamByFeatureAsInt(
-      kAdPopupTriggerFeature, kAdPopupTriggerQuotaParam,
-      kAdPopupTriggerDefaultQuota);
-  if (ad_popup_quota > 0) {
-    trigger_type_and_quota_list->push_back(
-        std::make_pair(TriggerType::AD_POPUP, ad_popup_quota));
-  }
-
-  int ad_redirect_quota = base::GetFieldTrialParamByFeatureAsInt(
-      kAdRedirectTriggerFeature, kAdRedirectTriggerQuotaParam,
-      kAdRedirectTriggerDefaultQuota);
-  if (ad_redirect_quota > 0) {
-    trigger_type_and_quota_list->push_back(
-        std::make_pair(TriggerType::AD_REDIRECT, ad_redirect_quota));
   }
 
   // If the feature is disabled we just use the default list. Otherwise the list
@@ -267,20 +247,11 @@ size_t TriggerThrottler::GetDailyQuotaForTrigger(
     case TriggerType::GAIA_PASSWORD_REUSE:
     case TriggerType::APK_DOWNLOAD:
       return kUnlimitedTriggerQuota;
-    case TriggerType::AD_POPUP:
-      // Ad Popup reports are disabled unless they are configured through Finch.
-      if (TryFindQuotaForTrigger(trigger_type, trigger_type_and_quota_list_,
-                                 &quota_from_finch)) {
-        return quota_from_finch;
-      }
-      break;
-    case TriggerType::AD_REDIRECT:
-      // Ad Redirects are disabled unless they are configured through Finch.
-      if (TryFindQuotaForTrigger(trigger_type, trigger_type_and_quota_list_,
-                                 &quota_from_finch)) {
-        return quota_from_finch;
-      }
-      break;
+
+    case TriggerType::DEPRECATED_AD_POPUP:
+    case TriggerType::DEPRECATED_AD_REDIRECT:
+      return 0;
+
     case TriggerType::AD_SAMPLE:
       // Ad Samples have a non-zero default quota, but it can be overwritten
       // through Finch.

@@ -499,8 +499,6 @@ static_library("ui") {
     "//components/renderer_context_menu",
     "//components/resources",
     "//components/safe_browsing/content/password_protection",
-    "//components/safe_browsing/content/triggers:ad_popup_trigger",
-    "//components/safe_browsing/content/triggers:ad_redirect_trigger",
     "//components/safe_browsing/content/web_ui",
     "//components/safe_browsing/core:csd_proto",
     "//components/safe_browsing/core:features",

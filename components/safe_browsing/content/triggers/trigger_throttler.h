@@ -40,10 +40,12 @@ enum class TriggerType {
   GAIA_PASSWORD_REUSE = 3,
   SUSPICIOUS_SITE = 4,
   APK_DOWNLOAD = 5,
-  AD_POPUP = 6,
-  AD_REDIRECT = 7,
+  // Deprecated in M93.
+  DEPRECATED_AD_POPUP = 6,
+  // Deprecated in M93.
+  DEPRECATED_AD_REDIRECT = 7,
   kMinTriggerType = SECURITY_INTERSTITIAL,
-  kMaxTriggerType = AD_REDIRECT,
+  kMaxTriggerType = DEPRECATED_AD_REDIRECT,
 };
 
 struct TriggerTypeHash {

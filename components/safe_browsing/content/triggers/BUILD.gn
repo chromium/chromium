@@ -52,39 +52,6 @@ source_set("trigger_util") {
   ]
 }
 
-source_set("ad_popup_trigger") {
-  sources = [
-    "ad_popup_trigger.cc",
-    "ad_popup_trigger.h",
-  ]
-  deps = [
-    ":trigger_throttler",
-    ":trigger_util",
-    ":triggers",
-    "//base:base",
-    "//components/safe_browsing/core:features",
-    "//components/safe_browsing/core/browser:referrer_chain_provider",
-    "//content/public/browser",
-  ]
-}
-
-source_set("ad_redirect_trigger") {
-  sources = [
-    "ad_redirect_trigger.cc",
-    "ad_redirect_trigger.h",
-  ]
-  deps = [
-    ":trigger_throttler",
-    ":trigger_util",
-    ":triggers",
-    "//base:base",
-    "//components/safe_browsing/core:features",
-    "//components/safe_browsing/core/browser:referrer_chain_provider",
-    "//content/public/browser",
-    "//content/public/common",
-  ]
-}
-
 source_set("ad_sampler_trigger") {
   sources = [
     "ad_sampler_trigger.cc",
@@ -122,7 +89,6 @@ source_set("suspicious_site_trigger") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "ad_popup_trigger_unittest.cc",
     "ad_sampler_trigger_unittest.cc",
     "mock_trigger_manager.cc",
     "mock_trigger_manager.h",
@@ -131,7 +97,6 @@ source_set("unit_tests") {
     "trigger_throttler_unittest.cc",
   ]
   deps = [
-    ":ad_popup_trigger",
     ":ad_sampler_trigger",
     ":suspicious_site_trigger",
     ":trigger_throttler",

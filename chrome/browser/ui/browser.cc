@@ -179,7 +179,6 @@
 #include "components/paint_preview/buildflags/buildflags.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/prefs/pref_service.h"
-#include "components/safe_browsing/content/triggers/ad_redirect_trigger.h"
 #include "components/search/search.h"
 #include "components/security_state/content/content_utils.h"
 #include "components/security_state/core/security_state.h"
@@ -1429,10 +1428,6 @@ void Browser::OnDidBlockNavigation(
       };
       framebust_helper->AddBlockedUrl(blocked_url, base::BindOnce(on_click));
     }
-  }
-  if (auto* trigger =
-          safe_browsing::AdRedirectTrigger::FromWebContents(web_contents)) {
-    trigger->OnDidBlockNavigation(initiator_url);
   }
 }
 

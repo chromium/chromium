@@ -1445,6 +1445,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="SafeBrowsing.Triggers.AdPopup.Action"
     enum="AdPopupTriggerAction" expires_after="2021-07-01">
+  <obsolete>
+    Feature removed in M93.
+  </obsolete>
   <owner>vakh@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -1454,6 +1457,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="SafeBrowsing.Triggers.AdRedirect.Action"
     enum="AdPopupTriggerAction" expires_after="2021-07-01">
+  <obsolete>
+    Feature removed in M93.
+  </obsolete>
   <owner>vakh@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>

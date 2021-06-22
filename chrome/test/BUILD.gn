@@ -1110,7 +1110,6 @@ if (!is_android) {
       "//components/safe_browsing/content/renderer",
       "//components/safe_browsing/content/renderer/phishing_classifier",
       "//components/safe_browsing/content/renderer/phishing_classifier:unit_tests_support",
-      "//components/safe_browsing/content/triggers:ad_redirect_trigger",
       "//components/safe_browsing/content/web_ui",
       "//components/safe_browsing/core:client_model_proto",
       "//components/safe_browsing/core:features",
@@ -3535,7 +3534,6 @@ if (!is_android) {
     }
     if (safe_browsing_mode == 1) {
       sources += [
-        "../browser/safe_browsing/ad_redirect_trigger_browsertest.cc",
         "../browser/safe_browsing/certificate_reporting_service_browsertest.cc",
         "../browser/safe_browsing/chrome_password_protection_service_browsertest.cc",
         "../browser/safe_browsing/chrome_password_protection_service_sync_browsertest.cc",

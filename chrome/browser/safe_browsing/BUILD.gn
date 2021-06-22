@@ -162,8 +162,6 @@ static_library("safe_browsing") {
       "//components/safe_browsing/content/browser:safe_browsing_service",
       "//components/safe_browsing/content/password_protection",
       "//components/safe_browsing/content/triggers",
-      "//components/safe_browsing/content/triggers:ad_popup_trigger",
-      "//components/safe_browsing/content/triggers:ad_redirect_trigger",
       "//components/safe_browsing/content/triggers:ad_sampler_trigger",
       "//components/safe_browsing/content/triggers:suspicious_site_trigger",
       "//components/safe_browsing/content/triggers:trigger_throttler",

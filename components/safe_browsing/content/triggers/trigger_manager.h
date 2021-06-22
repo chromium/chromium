@@ -71,9 +71,11 @@ enum class TriggerManagerReason {
   NO_REPORT_TO_FINISH = 3,
   // No report is started because the user has exceeded their daily quota.
   DAILY_QUOTA_EXCEEDED = 4,
+  // The report type has been deprecated so report can't be sent.
+  REPORT_TYPE_DEPRECATED = 5,
   // New reasons must be added before kMaxValue and the value of kMaxValue
   // updated.
-  kMaxValue = DAILY_QUOTA_EXCEEDED
+  kMaxValue = REPORT_TYPE_DEPRECATED
 };
 
 // This class manages SafeBrowsing data-reporting triggers. Triggers are

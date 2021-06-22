@@ -21,23 +21,13 @@ namespace safe_browsing {
 // Please define any new SafeBrowsing related features in this file, and add
 // them to the ExperimentalFeaturesList below to start displaying their status
 // on the chrome://safe-browsing page.
-const base::Feature kAdPopupTriggerFeature{"SafeBrowsingAdPopupTrigger",
-                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kAdRedirectTriggerFeature{
-    "SafeBrowsingAdRedirectTrigger", base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Controls various parameters related to occasionally collecting ad samples,
-// for example to control how often collection should occur.
 const base::Feature kAdSamplerTriggerFeature{"SafeBrowsingAdSamplerTrigger",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kBetterTelemetryAcrossReports{
     "SafeBrowsingBetterTelemetryAcrossReports",
     base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kCaptureInlineJavascriptForGoogleAds{
-    "CaptureInlineJavascriptForGoogleAds", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kClientSideDetectionForAndroid{
     "ClientSideDetectionModelOnAndroid", base::FEATURE_DISABLED_BY_DEFAULT};
@@ -155,11 +145,8 @@ constexpr struct {
   // True if the feature's state should be listed on chrome://safe-browsing.
   bool show_state;
 } kExperimentalFeatures[]{
-    {&kAdPopupTriggerFeature, true},
-    {&kAdRedirectTriggerFeature, true},
     {&kAdSamplerTriggerFeature, false},
     {&kBetterTelemetryAcrossReports, true},
-    {&kCaptureInlineJavascriptForGoogleAds, true},
     {&kClientSideDetectionForAndroid, true},
     {&kClientSideDetectionModelIsFlatBuffer, true},
     {&kClientSideDetectionModelVersion, true},

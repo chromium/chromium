@@ -14,7 +14,6 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/embedder_support/switches.h"
-#include "components/safe_browsing/content/triggers/ad_popup_trigger.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -74,28 +73,6 @@ PopupBlockType ShouldBlockPopup(content::WebContents* web_contents,
   return PopupBlockType::kNotBlocked;
 }
 
-// Tries to get the opener from either the |params| or |open_url_params|,
-// otherwise uses the focused frame from |web_contents| as a proxy.
-content::RenderFrameHost* GetSourceFrameForPopup(
-    PopupNavigationDelegate* params,
-    const content::OpenURLParams* open_url_params,
-    content::WebContents* web_contents) {
-  if (params->GetOpener())
-    return params->GetOpener();
-  // Make sure the source render frame host is alive before we attempt to
-  // retrieve it from |open_url_params|.
-  if (open_url_params) {
-    content::RenderFrameHost* source = content::RenderFrameHost::FromID(
-        open_url_params->source_render_frame_id,
-        open_url_params->source_render_process_id);
-    if (source)
-      return source;
-  }
-  // The focused frame is not always the frame initiating the popup navigation
-  // and is used as a fallback in case opener information is not available.
-  return web_contents->GetFocusedFrame();
-}
-
 }  // namespace
 
 bool ConsiderForPopupBlocking(WindowOpenDisposition disposition) {
@@ -128,16 +105,8 @@ std::unique_ptr<PopupNavigationDelegate> MaybeBlockPopup(
   if (block_type == PopupBlockType::kNotBlocked)
     return delegate;
 
-  // AddBlockedPopup() takes ownership of the delegate, so grab the source frame
-  // first.
-  content::RenderFrameHost* source_frame =
-      GetSourceFrameForPopup(delegate.get(), open_url_params, web_contents);
   popup_blocker->AddBlockedPopup(std::move(delegate), window_features,
                                  block_type);
-  auto* trigger = safe_browsing::AdPopupTrigger::FromWebContents(web_contents);
-  if (trigger) {
-    trigger->PopupWasBlocked(source_frame);
-  }
   return nullptr;
 }
 

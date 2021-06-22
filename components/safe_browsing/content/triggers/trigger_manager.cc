@@ -28,8 +28,6 @@ bool TriggerNeedsOptInForCollection(const TriggerType trigger_type) {
       // For security interstitials, users can change the opt-in while the
       // trigger runs, so collection can begin without opt-in.
       return false;
-    case TriggerType::AD_POPUP:
-    case TriggerType::AD_REDIRECT:
     case TriggerType::AD_SAMPLE:
       // Ad samples happen in the background so the user must already be opted
       // in before the trigger is allowed to run.
@@ -46,6 +44,11 @@ bool TriggerNeedsOptInForCollection(const TriggerType trigger_type) {
     case TriggerType::APK_DOWNLOAD:
       // APK download collection happens in the background so the user must
       // already be opted in before the trigger is allowed to run.
+      return true;
+    case TriggerType::DEPRECATED_AD_POPUP:
+    case TriggerType::DEPRECATED_AD_REDIRECT:
+      NOTREACHED() << "These triggers have been handled in "
+                      "CanStartDataCollectionWithReason()";
       return true;
   }
   // By default, require opt-in for all triggers.
@@ -107,6 +110,12 @@ bool TriggerManager::CanStartDataCollectionWithReason(
     const SBErrorOptions& error_display_options,
     const TriggerType trigger_type,
     TriggerManagerReason* out_reason) {
+  if (trigger_type == TriggerType::DEPRECATED_AD_POPUP ||
+      trigger_type == TriggerType::DEPRECATED_AD_REDIRECT) {
+    *out_reason = TriggerManagerReason::REPORT_TYPE_DEPRECATED;
+    return false;
+  }
+
   *out_reason = TriggerManagerReason::NO_REASON;
 
   // Some triggers require that the user be opted-in to extended reporting in
@@ -166,9 +175,7 @@ bool TriggerManager::StartCollectingThreatDetailsWithReason(
   if (collectors->threat_details != nullptr)
     return false;
 
-  bool should_trim_threat_details = (trigger_type == TriggerType::AD_POPUP ||
-                                     trigger_type == TriggerType::AD_SAMPLE ||
-                                     trigger_type == TriggerType::AD_REDIRECT);
+  bool should_trim_threat_details = trigger_type == TriggerType::AD_SAMPLE;
   collectors->threat_details = ThreatDetails::NewThreatDetails(
       ui_manager_, web_contents, resource, url_loader_factory, history_service,
       referrer_chain_provider, should_trim_threat_details,
