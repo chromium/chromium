@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser;
 
-import static org.chromium.chrome.features.start_surface.StartSurfaceConfiguration.shouldIntentShowNewTabOmniboxFocused;
-
 import android.annotation.TargetApi;
 import android.app.ActivityManager;
 import android.content.ComponentName;
@@ -1110,7 +1108,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         // {@link OMNIBOX_FOCUSED_ON_NEW_TAB} is enabled, a new Tab with omnibox focused will be
         // shown on Startup.
         boolean isCanonicalizedNTPUrl = UrlUtilities.isCanonicalizedNTPUrl(intentUrl);
-        if (shouldIntentShowNewTabOmniboxFocused(getIntent())) {
+        if (IntentHandler.shouldIntentShowNewTabOmniboxFocused(getIntent())) {
             return false;
         }
 
@@ -2219,7 +2217,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             //                showing the overview list before going to the start surface.
             mOverviewModeController.showOverview(false);
         } else if (mStartSurfaceSupplier.get() != null) {
-            if (StartSurfaceConfiguration.shouldHideStartSurfaceWithAccessibilityOn()) {
+            if (ReturnToChromeExperimentsUtil.shouldHideStartSurfaceWithAccessibilityOn()) {
                 state = StartSurfaceState.SHOWING_TABSWITCHER;
             }
             mStartSurfaceSupplier.get().getController().setOverviewState(state, launchOrigin);

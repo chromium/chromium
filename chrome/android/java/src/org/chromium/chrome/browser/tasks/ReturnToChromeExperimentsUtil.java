@@ -32,6 +32,8 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
+import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -388,9 +390,21 @@ public final class ReturnToChromeExperimentsUtil {
         return StartSurfaceConfiguration.isStartSurfaceSinglePaneEnabled()
                 && (TextUtils.isEmpty(homePageUrl)
                         || UrlUtilities.isCanonicalizedNTPUrl(homePageUrl))
-                && !StartSurfaceConfiguration.shouldHideStartSurfaceWithAccessibilityOn()
+                && !shouldHideStartSurfaceWithAccessibilityOn()
                 && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(
                         ContextUtils.getApplicationContext());
+    }
+
+    /**
+     * @return Whether start surface should be hidden when accessibility is enabled. If it's true,
+     *         NTP is shown as homepage. Also, when time threshold is reached, grid tab switcher or
+     *         overview list layout is shown instead of start surface.
+     */
+    public static boolean shouldHideStartSurfaceWithAccessibilityOn() {
+        // TODO(crbug.com/1127732): Move this method back to StartSurfaceConfiguration.
+        return ChromeAccessibilityUtil.get().isAccessibilityEnabled()
+                && !(StartSurfaceConfiguration.SUPPORT_ACCESSIBILITY.getValue()
+                        && TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled());
     }
 
     /**

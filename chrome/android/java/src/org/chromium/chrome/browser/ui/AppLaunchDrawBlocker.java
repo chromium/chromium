@@ -27,7 +27,6 @@ import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.ActiveTabState;
-import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 
 import java.lang.annotation.Retention;
@@ -161,8 +160,7 @@ public class AppLaunchDrawBlocker {
                 tabState, HomepageManager.isHomepageNonNtpPreNative(), singleUrlBarMode);
 
         if (shouldBlockDrawForNtpOnColdStartWithIntent(hasValidIntentUrl, isNtpUrl,
-                    StartSurfaceConfiguration.shouldIntentShowNewTabOmniboxFocused(
-                            mIntentSupplier.get()),
+                    IntentHandler.shouldIntentShowNewTabOmniboxFocused(mIntentSupplier.get()),
                     IncognitoTabLauncher.didCreateIntent(mIntentSupplier.get()),
                     shouldBlockWithoutIntent)) {
             mTimeStartedBlockingDrawForInitialTab = SystemClock.elapsedRealtime();
@@ -222,8 +220,8 @@ public class AppLaunchDrawBlocker {
         boolean searchEngineHasLogo = TemplateUrlServiceFactory.doesDefaultSearchEngineHaveLogo();
         boolean singleUrlBarMode =
                 NewTabPage.isInSingleUrlBarMode(mIsTabletSupplier.get(), searchEngineHasLogo);
-        boolean focusedOmnibox = StartSurfaceConfiguration.shouldIntentShowNewTabOmniboxFocused(
-                mIntentSupplier.get());
+        boolean focusedOmnibox =
+                IntentHandler.shouldIntentShowNewTabOmniboxFocused(mIntentSupplier.get());
         boolean singleUrlBarNtp = isTabRegularNtp && singleUrlBarMode;
         long durationDrawBlocked =
                 SystemClock.elapsedRealtime() - mTimeStartedBlockingDrawForInitialTab;

@@ -2,9 +2,5 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-start_surface_public_java_sources = [
-  "//chrome/android/features/start_surface/public/java/src/org/chromium/chrome/features/start_surface/StartSurface.java",
-  "//chrome/android/features/start_surface/public/java/src/org/chromium/chrome/features/start_surface/StartSurfaceConfiguration.java",
-  "//chrome/android/features/start_surface/public/java/src/org/chromium/chrome/features/start_surface/StartSurfaceState.java",
-  "//chrome/android/features/start_surface/public/java/src/org/chromium/chrome/features/start_surface/StartSurfaceUserData.java",
-]
+# TODO: Move this to the target public_java too.
+start_surface_public_java_sources = [ "//chrome/android/features/start_surface/public/java/src/org/chromium/chrome/features/start_surface/StartSurface.java" ]
