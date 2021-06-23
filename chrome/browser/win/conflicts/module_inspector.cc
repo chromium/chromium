@@ -93,7 +93,7 @@ ModuleInspector::ModuleInspector(
               base::Unretained(this))),
       has_new_inspection_results_(false),
       connection_error_retry_count_(kConnectionErrorRetryCount),
-      is_inspecting_module_(false) {
+      is_waiting_on_util_win_service_(false) {
   // Use BEST_EFFORT as those will only run after startup is finished.
   content::BrowserThread::PostBestEffortTask(
       FROM_HERE, base::SequencedTaskRunnerHandle::Get(),
@@ -200,16 +200,17 @@ void ModuleInspector::OnUtilWinServiceConnectionError() {
   // Disconnect from the service.
   remote_util_win_.reset();
 
-  is_inspecting_module_ = false;
-
   // If the retry limit was reached, give up.
   if (connection_error_retry_count_ == 0)
     return;
-
   --connection_error_retry_count_;
 
-  // Restart the inspection if there is still work to do.
-  if (!queue_.empty())
+  bool was_waiting_on_util_win_service = is_waiting_on_util_win_service_;
+  is_waiting_on_util_win_service_ = false;
+
+  // If this connection error happened while the ModuleInspector was waiting on
+  // the service, restart the inspection process.
+  if (was_waiting_on_util_win_service)
     StartInspectingModule();
 }
 
@@ -217,10 +218,6 @@ void ModuleInspector::StartInspectingModule() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(inspection_results_cache_read_);
   DCHECK(!queue_.empty());
-  // TODO(https://crbug.com/1213241): Change to DCHECK once the issue is
-  // resolved.
-  CHECK(!is_inspecting_module_);
-  is_inspecting_module_ = true;
 
   const ModuleInfoKey& module_key = queue_.front();
 
@@ -238,6 +235,7 @@ void ModuleInspector::StartInspectingModule() {
 
   EnsureUtilWinServiceBound();
 
+  is_waiting_on_util_win_service_ = true;
   remote_util_win_->InspectModule(
       module_key.module_path,
       base::BindOnce(&ModuleInspector::OnModuleNewlyInspected,
@@ -248,6 +246,8 @@ void ModuleInspector::OnModuleNewlyInspected(
     const ModuleInfoKey& module_key,
     ModuleInspectionResult inspection_result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  is_waiting_on_util_win_service_ = false;
 
   // Convert the prefix of known Windows directories to their environment
   // variable mappings (ie, %systemroot$). This makes i18n localized paths
@@ -268,13 +268,8 @@ void ModuleInspector::OnInspectionFinished(
     ModuleInspectionResult inspection_result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  CHECK(is_inspecting_module_);
-  is_inspecting_module_ = false;
-
-  // TODO(https://crbug.com/1213241): Change to DCHECKs once the issue is
-  // resolved.
-  CHECK(!queue_.empty());
-  CHECK(queue_.front() == module_key);
+  DCHECK(!queue_.empty());
+  DCHECK(queue_.front() == module_key);
 
   // Pop first, because the callback may want to know if there is any work left
   // to be done, which is caracterized by a non-empty queue.

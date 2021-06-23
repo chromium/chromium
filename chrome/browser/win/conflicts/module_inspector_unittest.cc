@@ -309,3 +309,51 @@ TEST_F(ModuleInspectorTest, MojoConnectionError) {
   // No modules were inspected.
   EXPECT_EQ(0u, inspected_modules().size());
 }
+
+// This test case ensure that if a random connection error happens while the
+// ModuleInspector is asynchronously waiting on the inspection result retrieved
+// from the cache, StartInspectingModule() is not erroneously re-invoked from
+// the connection error handler.
+// Regression test for https://crbug.com/1213241.
+TEST_F(ModuleInspectorTest, WaitingOnCacheConnectionError) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kInspectionResultsCache);
+
+  base::ScopedTempDir scoped_temp_dir;
+  ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
+
+  base::ScopedPathOverride scoped_user_data_dir_override(
+      chrome::DIR_USER_DATA, scoped_temp_dir.GetPath());
+
+  // First create a cache with bogus data and create the cache file.
+  ModuleInfoKey module_key(GetKernel32DllFilePath(), 0, 0);
+  ModuleInspectionResult inspection_result;
+  inspection_result.location = u"BogusLocation";
+  inspection_result.basename = u"BogusBasename";
+
+  ASSERT_TRUE(
+      CreateInspectionResultsCacheWithEntry(module_key, inspection_result));
+
+  auto module_inspector = CreateModuleInspector();
+
+  // Inspect a module not in the cache to ensure the UtilWin service is started.
+  module_inspector->AddModule(ModuleInfoKey(base::FilePath(), 0, 0));
+  RunUntilIdle();
+
+  // Now destroy the UtilWin service. This will queue up a task to handle the
+  // connection error.
+  util_win_impl_.reset();
+
+  // Before handling the connection error, start inspecting a module that exists
+  // in the inspection results cache. This will queue up OnInspectionFinished()
+  // with the result from the cache.
+  module_inspector->AddModule(module_key);
+
+  // Now run all queued tasks. The connection error handler will run but will
+  // not cause StartInspectingModule() to be invoked.
+  RunUntilIdle();
+
+  // 2 modules were added to the inspection queue and thus 2 results were
+  // correctly received.
+  ASSERT_EQ(2u, inspected_modules().size());
+}
