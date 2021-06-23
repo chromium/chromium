@@ -30,13 +30,13 @@
 #include "ui/gfx/overlay_transform.h"
 
 namespace viz {
-class AggregatedFrame;
-class CompositorFrame;
 class DisplayResourceProvider;
 class Surface;
 class SurfaceClient;
 class SurfaceDrawQuad;
 class SurfaceManager;
+
+struct MaskFilterInfoExt;
 
 class VIZ_SERVICE_EXPORT SurfaceAggregator {
  public:
@@ -94,8 +94,6 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
 
  private:
   struct PrewalkResult;
-  struct ChildSurfaceInfo;
-  struct MaskFilterInfoExt;
 
   struct AggregateStatistics {
     int prewalked_surface_count = 0;
@@ -113,11 +111,6 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
   const ResolvedFrameData* GetResolvedFrame(const SurfaceRange& range);
   const ResolvedFrameData* GetResolvedFrame(const SurfaceId& surface_id);
   const ResolvedFrameData* GetResolvedFrame(Surface* surface);
-
-  absl::optional<gfx::Rect> CalculateClipRect(
-      const absl::optional<gfx::Rect>& surface_clip,
-      const absl::optional<gfx::Rect>& quad_clip,
-      const gfx::Transform& target_transform);
 
   void HandleSurfaceQuad(const SurfaceDrawQuad* surface_quad,
                          float parent_device_scale_factor,
@@ -155,23 +148,6 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
       const absl::optional<gfx::Rect>& clip_rect,
       SkColor background_color,
       AggregatedRenderPass* dest_pass,
-      const MaskFilterInfoExt& mask_filter_info_pair);
-
-  SharedQuadState* CopySharedQuadState(
-      const SharedQuadState* source_sqs,
-      const gfx::Transform& target_transform,
-      const absl::optional<gfx::Rect>& clip_rect,
-      AggregatedRenderPass* dest_render_pass,
-      const MaskFilterInfoExt& mask_filter_info_pair);
-
-  SharedQuadState* CopyAndScaleSharedQuadState(
-      const SharedQuadState* source_sqs,
-      const gfx::Transform& scaled_quad_to_target_transform,
-      const gfx::Transform& target_transform,
-      const gfx::Rect& quad_layer_rect,
-      const gfx::Rect& visible_quad_layer_rect,
-      const absl::optional<gfx::Rect>& clip_rect,
-      AggregatedRenderPass* dest_render_pass,
       const MaskFilterInfoExt& mask_filter_info_pair);
 
   void CopyQuadsToPass(const ResolvedPassData& resolved_pass,
@@ -236,8 +212,7 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
   void ProcessResolvedFrame(ResolvedFrameData& resolved_frame);
 
   void CopyUndrawnSurfaces(PrewalkResult* prewalk);
-  void CopyPasses(const ResolvedFrameData& resolved_frame,
-                  const CompositorFrame& frame);
+  void CopyPasses(const ResolvedFrameData& resolved_frame);
   void AddColorConversionPass();
   void AddDisplayTransformPass();
 
@@ -251,13 +226,7 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
 
   bool CheckFrameSinksChanged(const Surface* surface);
 
-  // Returns true if the quad list from the render pass provided can be merged
-  // with its target render pass based on mask filter info.
-  bool CanMergeMaskFilterInfo(const MaskFilterInfoExt& mask_filter_info_pair,
-                              const CompositorRenderPass& root_render_pass);
-
   int ChildIdForSurface(Surface* surface);
-  bool IsSurfaceFrameIndexSameAsPrevious(const Surface* surface) const;
   gfx::Rect DamageRectForSurface(const ResolvedFrameData& resolved_frame,
                                  bool include_per_quad_damage) const;
 
@@ -403,14 +372,12 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
   FrameSinkIdMap previous_contained_frame_sinks_;
   FrameSinkIdMap contained_frame_sinks_;
 
-  // After surface validation, every Surface in this set is valid.
-  base::flat_set<SurfaceId> valid_surfaces_;
-
   // This is the pass list for the aggregated frame.
   AggregatedRenderPassList* dest_pass_list_ = nullptr;
 
   // The target display time for the aggregated frame.
   base::TimeTicks expected_display_time_;
+  int64_t display_trace_id_ = -1;
 
   // This is the set of aggregated pass ids that are affected by filters that
   // move pixels.
@@ -466,9 +433,6 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
   // Used to annotate the aggregated frame for debugging.
   std::unique_ptr<FrameAnnotator> frame_annotator_;
 
-  int64_t display_trace_id_ = -1;
-  base::flat_set<SurfaceId> undrawn_surfaces_;
-
   // Variables used for de-jelly:
   // The set of surfacees being drawn for the first time. Used to determine if
   // de-jelly skew should be applied to a surface.
@@ -506,8 +470,6 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
   // A helper class used to remap render pass IDs from the surface namespace to
   // a common space, to avoid collisions.
   RenderPassIdRemapper pass_id_remapper_;
-
-  base::WeakPtrFactory<SurfaceAggregator> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SurfaceAggregator);
 };
