@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "net/cert_net/cert_net_fetcher_url_request.h"
 #include "net/url_request/url_request_context_getter.h"
 
 namespace base {
@@ -37,6 +38,7 @@ class URLRequestContextGetter : public net::URLRequestContextGetter {
   scoped_refptr<base::SingleThreadTaskRunner> network_task_runner_;
   std::unique_ptr<net::ProxyConfigService> proxy_config_service_;
   std::unique_ptr<net::URLRequestContext> url_request_context_;
+  scoped_refptr<net::CertNetFetcherURLRequest> cert_net_fetcher_;
 
   DISALLOW_COPY_AND_ASSIGN(URLRequestContextGetter);
 };

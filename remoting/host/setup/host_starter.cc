@@ -81,10 +81,9 @@ void HostStarter::StartHost(const std::string& host_id,
                                        kMaxGetTokensRetries, this);
 }
 
-void HostStarter::OnGetTokensResponse(
-    const std::string& refresh_token,
-    const std::string& access_token,
-    int expires_in_seconds) {
+void HostStarter::OnGetTokensResponse(const std::string& refresh_token,
+                                      const std::string& access_token,
+                                      int expires_in_seconds) {
   if (!main_task_runner_->BelongsToCurrentThread()) {
     main_task_runner_->PostTask(
         FROM_HERE,
@@ -108,9 +107,8 @@ void HostStarter::OnGetTokensResponse(
   oauth_client_->GetUserEmail(access_token, 1, this);
 }
 
-void HostStarter::OnRefreshTokenResponse(
-    const std::string& access_token,
-    int expires_in_seconds) {
+void HostStarter::OnRefreshTokenResponse(const std::string& access_token,
+                                         int expires_in_seconds) {
   // We never request a refresh token, so this call is not expected.
   NOTREACHED();
 }
@@ -177,14 +175,12 @@ void HostStarter::OnHostRegistered(const std::string& authorization_code) {
   pending_get_tokens_ = GET_TOKENS_HOST;
 
   oauth_client_info_.client_id =
-      google_apis::GetOAuth2ClientID(
-          google_apis::CLIENT_REMOTING_HOST);
+      google_apis::GetOAuth2ClientID(google_apis::CLIENT_REMOTING_HOST);
   oauth_client_info_.client_secret =
-      google_apis::GetOAuth2ClientSecret(
-          google_apis::CLIENT_REMOTING_HOST);
+      google_apis::GetOAuth2ClientSecret(google_apis::CLIENT_REMOTING_HOST);
   oauth_client_info_.redirect_uri = "oob";
-  oauth_client_->GetTokensFromAuthCode(
-      oauth_client_info_, authorization_code, kMaxGetTokensRetries, this);
+  oauth_client_->GetTokensFromAuthCode(oauth_client_info_, authorization_code,
+                                       kMaxGetTokensRetries, this);
 }
 
 void HostStarter::StartHostProcess() {
