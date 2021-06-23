@@ -31,7 +31,6 @@
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
-#include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -210,8 +209,6 @@ void CardUnmaskPromptViews::SetRetriableErrorMessage(
 
 void CardUnmaskPromptViews::SetInputsEnabled(bool enabled) {
   cvc_input_->SetEnabled(enabled);
-  if (storage_checkbox_)
-    storage_checkbox_->SetEnabled(enabled);
   month_input_->SetEnabled(enabled);
   year_input_->SetEnabled(enabled);
 }
@@ -289,7 +286,7 @@ bool CardUnmaskPromptViews::Accept() {
       year_input_->GetVisible()
           ? year_input_->GetTextForRow(year_input_->GetSelectedIndex())
           : std::u16string(),
-      storage_checkbox_ ? storage_checkbox_->GetChecked() : false,
+      /*should_store_pan=*/false,
       /*enable_fido_auth=*/false);
   return false;
 }
