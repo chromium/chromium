@@ -31,6 +31,7 @@
 #include "components/ukm/content/source_url_recorder.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -710,6 +711,17 @@ TEST_F(BlockTabUnderTest,
             simulator->GetLastThrottleCheckResult());
   simulator->Commit();
   ExpectUIShown(false);
+}
+
+TEST_F(BlockTabUnderTest, OnlyCreateThrottleForPrimaryMainframe) {
+  content::MockNavigationHandle handle(GURL("http://example.com"), main_rfh());
+  handle.set_is_in_primary_main_frame(true);
+  auto throttle = TabUnderNavigationThrottle::MaybeCreate(&handle);
+  EXPECT_NE(throttle, nullptr);
+
+  handle.set_is_in_primary_main_frame(false);
+  auto throttle2 = TabUnderNavigationThrottle::MaybeCreate(&handle);
+  EXPECT_EQ(throttle2, nullptr);
 }
 
 class BlockTabUnderDisabledTest : public BlockTabUnderTest {

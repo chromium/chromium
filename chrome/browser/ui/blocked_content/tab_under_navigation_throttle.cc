@@ -106,7 +106,13 @@ const base::Feature TabUnderNavigationThrottle::kBlockTabUnders{
 // static
 std::unique_ptr<content::NavigationThrottle>
 TabUnderNavigationThrottle::MaybeCreate(content::NavigationHandle* handle) {
-  if (handle->IsInMainFrame())
+  // TODO(crbug.com/1222367): TabUnderNavigationThrottle doesn't block
+  // prerendering activations. However, currently prerender is same-origin only
+  // so a prerendered activation could never be classified as a tab-under.
+  // Otherwise, it should be safe to avoid creating a throttle in non primary
+  // pages because prerendered pages should not be able to open popups. A
+  // tab-under could therefore never occur within the non-primary page.
+  if (handle->IsInPrimaryMainFrame())
     return base::WrapUnique(new TabUnderNavigationThrottle(handle));
   return nullptr;
 }
