@@ -763,6 +763,17 @@ bool X11Window::ShouldUseNativeFrame() const {
 void X11Window::SetCursor(scoped_refptr<PlatformCursor> cursor) {
   DCHECK(cursor);
 
+  // When a DnD loop is running, DesktopDragDropClientOzone may change the
+  // cursor type based on the current dnd operation. Setting cursor type with
+  // the current window that is involved in the DnD is no-op as
+  // X11WholeScreenMoveLoop grabs the pointer and is responsible for changing
+  // current pointer's bitmap. Thus, pass the changed cursor to the drag loop so
+  // that it handles the change.
+  if (drag_loop_) {
+    drag_loop_->UpdateCursor(X11Cursor::FromPlatformCursor(cursor));
+    return;
+  }
+
   last_cursor_ = X11Cursor::FromPlatformCursor(cursor);
   on_cursor_loaded_.Reset(base::BindOnce(DefineCursor, xwindow_));
   last_cursor_->OnCursorLoaded(on_cursor_loaded_.callback());
