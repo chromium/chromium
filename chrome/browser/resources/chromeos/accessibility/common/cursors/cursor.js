@@ -175,7 +175,7 @@ cursors.Cursor = class {
   /**
    * Returns the node. If the node is invalid since the last time it
    * was accessed, moves the cursor to the nearest valid ancestor first.
-   * @return {AutomationNode}
+   * @return {!AutomationNode}
    */
   get node() {
     if (this.requiresRecovery()) {

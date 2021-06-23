@@ -24,24 +24,54 @@ ChromeVoxIntentHandlerTest = class extends ChromeVoxNextE2ETest {
 };
 
 SYNC_TEST_F('ChromeVoxIntentHandlerTest', 'MoveByCharacter', function() {
-  let lastSpoken;
-  ChromeVox.tts.speak = (text) => lastSpoken = text;
+  let calls = [];
+  const fakeLine = class {
+    constructor(startOffset) {
+      this.startOffset_ = startOffset;
+    }
+
+    createCharRange() {
+      calls.push(['createCharRange']);
+      return {};
+    }
+
+    get startOffset() {
+      return this.startOffset_;
+    }
+
+    get text() {
+      return 'hello';
+    }
+  };
+
+  Output.prototype.withRichSpeechAndBraille = function(...args) {
+    calls.push(['withRichSpeechAndBraille', ...args]);
+    return this;
+  };
+
+  Output.prototype.go = function() {
+    calls.push(['go']);
+  };
 
   const intent = {textBoundary: IntentTextBoundaryType.CHARACTER};
   const move = IntentHandler.onMoveSelection.bind(null, intent);
 
-  move({text: 'hello', startOffset: 0});
-  assertEquals('h', lastSpoken);
-  move({text: 'hello', startOffset: 1});
-  assertEquals('e', lastSpoken);
-  move({text: 'hello', startOffset: 2});
-  assertEquals('l', lastSpoken);
-  move({text: 'hello', startOffset: 3});
-  assertEquals('l', lastSpoken);
-  move({text: 'hello', startOffset: 4});
-  assertEquals('o', lastSpoken);
-  move({text: 'hello', startOffset: 5});
-  assertEquals('\n', lastSpoken);
+  move(new fakeLine(0));
+  assertEquals(3, calls.length);
+  assertArraysEquals(['createCharRange'], calls[0]);
+  assertArraysEquals(
+      ['withRichSpeechAndBraille', {}, null, OutputEventType.NAVIGATE],
+      calls[1]);
+  assertArraysEquals(['go'], calls[2]);
+
+  calls = [];
+  move(new fakeLine(1), new fakeLine(0));
+  assertEquals(4, calls.length);
+  assertArraysEquals(['createCharRange'], calls[0]);
+  assertArraysEquals(['createCharRange'], calls[1]);
+  assertArraysEquals(
+      ['withRichSpeechAndBraille', {}, {}, OutputEventType.NAVIGATE], calls[2]);
+  assertArraysEquals(['go'], calls[3]);
 });
 
 SYNC_TEST_F('ChromeVoxIntentHandlerTest', 'MoveByWord', function() {
@@ -49,12 +79,9 @@ SYNC_TEST_F('ChromeVoxIntentHandlerTest', 'MoveByWord', function() {
   const fakeLine = new class {
     constructor() {}
 
-    get startCursor() {
-      return new class {
-        move(...args) {
-          calls.push(['move', ...args]);
-        }
-      };
+    createWordRange(...args) {
+      calls.push(['createWordRange', ...args]);
+      return {};
     }
   };
 
@@ -69,26 +96,20 @@ SYNC_TEST_F('ChromeVoxIntentHandlerTest', 'MoveByWord', function() {
 
   let intent = {textBoundary: IntentTextBoundaryType.WORD_END};
   IntentHandler.onMoveSelection(intent, fakeLine);
-  assertEquals(4, calls.length);
+  assertEquals(3, calls.length);
+  assertArraysEquals(['createWordRange', true], calls[0]);
   assertArraysEquals(
-      ['move', Unit.WORD, Movement.DIRECTIONAL, Dir.BACKWARD], calls[0]);
-  assertArraysEquals(
-      ['move', Unit.WORD, Movement.BOUND, Dir.FORWARD], calls[1]);
-  assertArraysEquals(
-      ['withSpeech', {}, null, OutputEventType.NAVIGATE], calls[2]);
-  assertArraysEquals(['go'], calls[3]);
+      ['withSpeech', {}, null, OutputEventType.NAVIGATE], calls[1]);
+  assertArraysEquals(['go'], calls[2]);
 
   calls = [];
   intent = {textBoundary: IntentTextBoundaryType.WORD_START};
   IntentHandler.onMoveSelection(intent, fakeLine);
-  assertEquals(4, calls.length);
+  assertEquals(3, calls.length);
+  assertArraysEquals(['createWordRange', false], calls[0]);
   assertArraysEquals(
-      ['move', Unit.WORD, Movement.BOUND, Dir.BACKWARD], calls[0]);
-  assertArraysEquals(
-      ['move', Unit.WORD, Movement.BOUND, Dir.FORWARD], calls[1]);
-  assertArraysEquals(
-      ['withSpeech', {}, null, OutputEventType.NAVIGATE], calls[2]);
-  assertArraysEquals(['go'], calls[3]);
+      ['withSpeech', {}, null, OutputEventType.NAVIGATE], calls[1]);
+  assertArraysEquals(['go'], calls[2]);
 
   calls = [];
   intent = {textBoundary: IntentTextBoundaryType.WORD_START_OR_END};
@@ -106,7 +127,7 @@ SYNC_TEST_F('ChromeVoxIntentHandlerTest', 'MoveByLine', function() {
       this.speakLineCount++;
     }
 
-    get startCursor() {
+    get start() {
       return new class {
         move() {}
       };
@@ -127,10 +148,6 @@ SYNC_TEST_F('ChromeVoxIntentHandlerTest', 'MoveByLine', function() {
   assertEquals(2, fakeLine.speakLineCount);
 
   intent = {textBoundary: IntentTextBoundaryType.LINE_START_OR_END};
-  IntentHandler.onMoveSelection(intent, fakeLine);
-  assertEquals(3, fakeLine.speakLineCount);
-
-  intent = {textBoundary: IntentTextBoundaryType.WORD_START};
   IntentHandler.onMoveSelection(intent, fakeLine);
   assertEquals(3, fakeLine.speakLineCount);
 });

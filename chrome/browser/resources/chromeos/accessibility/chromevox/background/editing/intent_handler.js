@@ -14,6 +14,7 @@ goog.require('Output');
 
 goog.scope(function() {
 const AutomationIntent = chrome.automation.AutomationIntent;
+const Cursor = cursors.Cursor;
 const Dir = constants.Dir;
 const IntentCommandType = chrome.automation.IntentCommandType;
 const IntentTextBoundaryType = chrome.automation.IntentTextBoundaryType;
@@ -85,22 +86,37 @@ IntentHandler = class {
    */
   static onMoveSelection(intent, cur, prev) {
     switch (intent.textBoundary) {
-      case IntentTextBoundaryType.CHARACTER:
-        // Read character to the right of the cursor. It is assumed to be a new
-        // line if empty.
-        // TODO: detect when this is the end of the document; read "end of text"
-        // if so.
+      case IntentTextBoundaryType.CHARACTER: {
         const text = cur.text.substring(cur.startOffset, cur.startOffset + 1);
-        ChromeVox.tts.speak(text || '\n', QueueMode.CATEGORY_FLUSH);
         // Return false if |text| is empty. Do this to give the user more
         // information than just "new line". For example, if moving by character
         // moves us to the beginning/end of a separator, we want to include
         // additional context.
         if (!text) {
+          ChromeVox.tts.speak('\n', QueueMode.CATEGORY_FLUSH);
           return false;
         }
-        return true;
 
+        // Read character to the right of the cursor. It is assumed to be a new
+        // line if empty.
+        // TODO: detect when this is the end of the document; read "end of text"
+        // if so.
+        // Use the Output module for feedback so that we get contextual
+        // information e.g. if we've entered a suggestion, insertion, or
+        // deletion.
+        let prevRange = null;
+        if (prev) {
+          prevRange = prev.createCharRange();
+        }
+        const newRange = cur.createCharRange();
+        new Output()
+            .withContextFirst()
+            .withRichSpeechAndBraille(
+                newRange, prevRange, OutputEventType.NAVIGATE)
+            .go();
+
+        return true;
+      }
       case IntentTextBoundaryType.LINE_END:
       case IntentTextBoundaryType.LINE_START:
       case IntentTextBoundaryType.LINE_START_OR_END:
@@ -108,25 +124,20 @@ IntentHandler = class {
         return true;
 
       case IntentTextBoundaryType.WORD_END:
-      case IntentTextBoundaryType.WORD_START:
-        const pos = cur.startCursor;
-
-        // When movement goes to the end of a word, we actually want to describe
-        // the word itself; this is considered the previous word so impacts the
-        // movement type below. We can give further context e.g. by saying "end
-        // of word", if we chose to be more verbose.
+      case IntentTextBoundaryType.WORD_START: {
         const shouldMoveToPreviousWord =
             intent.textBoundary === IntentTextBoundaryType.WORD_END;
-        const start = pos.move(
-            Unit.WORD,
-            shouldMoveToPreviousWord ? Movement.DIRECTIONAL : Movement.BOUND,
-            Dir.BACKWARD);
-        const end = pos.move(Unit.WORD, Movement.BOUND, Dir.FORWARD);
+        let prevRange = null;
+        if (prev) {
+          prevRange = prev.createWordRange(shouldMoveToPreviousWord);
+        }
+        const newRange = cur.createWordRange(shouldMoveToPreviousWord);
         new Output()
-            .withSpeech(new Range(start, end), null, OutputEventType.NAVIGATE)
+            .withContextFirst()
+            .withSpeech(newRange, prevRange, OutputEventType.NAVIGATE)
             .go();
         return true;
-
+      }
         // TODO: implement support.
       case IntentTextBoundaryType.FORMAT:
       case IntentTextBoundaryType.OBJECT:

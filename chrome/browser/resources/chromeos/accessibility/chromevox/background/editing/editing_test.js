@@ -1650,6 +1650,106 @@ TEST_F('ChromeVoxEditingTest', 'NestedInsertionDeletion', function() {
   });
 });
 
+TEST_F('ChromeVoxEditingTest', 'MoveByCharSuggestions', function() {
+  const mockFeedback = this.createMockFeedback();
+  const site = `
+    <div contenteditable="true" role="textbox">
+      <p>Start</p>
+      <span>I </span>
+      <span role="suggestion" aria-description="Username">
+        <span role="insertion">was</span>
+        <span role="deletion">am</span></span><span> typing</span>
+      <p>End</p>
+    </div>
+  `;
+  this.runWithLoadedTree(site, function(root) {
+    const input = root.find({role: RoleType.TEXT_FIELD});
+    this.listenOnce(input, EventType.FOCUS, function() {
+      mockFeedback
+          .call(this.press(KeyCode.DOWN))
+          // Move forward through line.
+          .call(this.press(KeyCode.RIGHT))
+          .expectSpeech(' ')
+          .call(this.press(KeyCode.RIGHT))
+          .expectSpeech('Suggestion', 'Username', 'Insertion', 'w')
+          .call(this.press(KeyCode.RIGHT))
+          .expectSpeech('a')
+          .call(this.press(KeyCode.RIGHT))
+          .expectSpeech('s')
+          .call(this.press(KeyCode.RIGHT))
+          .expectSpeech('Exited Insertion.')
+          .call(this.press(KeyCode.RIGHT))
+          .expectSpeech('Deletion', 'a')
+          .call(this.press(KeyCode.RIGHT))
+          .expectSpeech('m')
+          .call(this.press(KeyCode.RIGHT))
+          .expectSpeech('Exited Deletion.', 'Exited Suggestion.')
+          // Move backward through the same line.
+          .call(this.press(KeyCode.LEFT))
+          .expectSpeech('Suggestion', 'Username', 'Deletion', 'm')
+          .call(this.press(KeyCode.LEFT))
+          .expectSpeech('a')
+          .call(this.press(KeyCode.LEFT))
+          .expectSpeech('Exited Deletion.')
+          .call(this.press(KeyCode.LEFT))
+          .expectSpeech('Insertion', 's')
+          .call(this.press(KeyCode.LEFT))
+          .expectSpeech('a')
+          .call(this.press(KeyCode.LEFT))
+          .expectSpeech('w')
+          .call(this.press(KeyCode.LEFT))
+          .expectSpeech('Exited Insertion.', 'Exited Suggestion.')
+          .call(this.press(KeyCode.DOWN))
+          .expectSpeech('End')
+          .replay();
+    });
+    input.focus();
+  });
+});
+
+TEST_F('ChromeVoxEditingTest', 'MoveByWordSuggestions', function() {
+  const mockFeedback = this.createMockFeedback();
+  const site = `
+    <div contenteditable="true" role="textbox">
+      <p>Start</p>
+      <span>I </span>
+      <span role="suggestion" aria-description="Username">
+        <span role="insertion">was</span>
+        <span role="deletion">am</span></span><span> typing</span>
+      <p>End</p>
+    </div>
+  `;
+  this.runWithLoadedTree(site, function(root) {
+    const input = root.find({role: RoleType.TEXT_FIELD});
+    this.listenOnce(input, EventType.FOCUS, function() {
+      mockFeedback
+          .call(this.press(KeyCode.DOWN))
+          // Move forward through line.
+          .call(this.press(KeyCode.RIGHT, {ctrl: true}))
+          .expectSpeech('I ')
+          .call(this.press(KeyCode.RIGHT, {ctrl: true}))
+          .expectSpeech(
+              'Suggestion', 'Username', 'Insertion', 'was', 'Exited Insertion.',
+              'Deletion', 'am')
+          .call(this.press(KeyCode.RIGHT, {ctrl: true}))
+          .expectSpeech(
+              'Exited Insertion.', 'Deletion', 'am', 'Exited Deletion.',
+              'Exited Suggestion.', ' typing')
+          // Move backward through line.
+          .call(this.press(KeyCode.LEFT, {ctrl: true}))
+          .expectSpeech('Suggestion', 'Username', 'Deletion', 'am')
+          .call(this.press(KeyCode.LEFT, {ctrl: true}))
+          .expectSpeech('Exited Deletion.', 'Insertion', 'was')
+          .call(this.press(KeyCode.LEFT, {ctrl: true}))
+          .expectSpeech('Exited Insertion.', 'Exited Suggestion.', 'I')
+          .call(this.press(KeyCode.DOWN))
+          .expectSpeech('End')
+          .replay();
+    });
+    input.focus();
+  });
+});
+
 TEST_F('ChromeVoxEditingTest', 'Separator', function() {
   // In the past, an ARIA leaf role would cause subtree content to be removed.
   // However, the new decision is to not remove any content the user might
