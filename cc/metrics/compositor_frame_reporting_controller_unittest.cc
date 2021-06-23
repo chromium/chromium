@@ -1709,5 +1709,51 @@ TEST_F(CompositorFrameReportingControllerTest,
   DCHECK_EQ(2u, dropped_counter_.total_compositor_dropped());
 }
 
+TEST_F(CompositorFrameReportingControllerTest,
+       NewMainThreadUpdateNotReportedAsDropped) {
+  auto thread_type_main = FrameSequenceMetrics::ThreadType::kMain;
+  reporting_controller_.SetThreadAffectsSmoothness(thread_type_main,
+                                                   /*affects_smoothness=*/true);
+  dropped_counter_.OnFcpReceived();
+
+  SimulateBeginMainFrame();
+  reporting_controller_.OnFinishImplFrame(current_id_);
+  reporting_controller_.DidSubmitCompositorFrame(1u, current_id_, {}, {},
+                                                 /*has_missing_content=*/false);
+  viz::FrameTimingDetails details = {};
+  details.presentation_feedback.timestamp = AdvanceNowByMs(10);
+  reporting_controller_.DidPresentCompositorFrame(1u, details);
+  // Starts a new frame and submit it prior to commit
+
+  reporting_controller_.WillCommit();
+  reporting_controller_.DidCommit();
+
+  const auto previous_id = current_id_;
+
+  SimulateBeginMainFrame();
+  reporting_controller_.OnFinishImplFrame(current_id_);
+
+  // Starts a new frame and submit it prior to its commit, but the older frame
+  // has new updates which would be activated and submitted now.
+  reporting_controller_.WillActivate();
+  reporting_controller_.DidActivate();
+
+  reporting_controller_.DidSubmitCompositorFrame(
+      1u, current_id_, previous_id, {}, /*has_missing_content=*/false);
+  details.presentation_feedback.timestamp = AdvanceNowByMs(10);
+  reporting_controller_.DidPresentCompositorFrame(1u, details);
+
+  reporting_controller_.WillCommit();
+  reporting_controller_.DidCommit();
+
+  SimulatePresentCompositorFrame();
+
+  // There are two frames with partial updates
+  EXPECT_EQ(2u, dropped_counter_.total_main_dropped());
+  // Which one is accompanied with new main thread update so only one affects
+  // smoothness
+  EXPECT_EQ(1u, dropped_counter_.total_smoothness_dropped());
+}
+
 }  // namespace
 }  // namespace cc

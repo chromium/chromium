@@ -1274,6 +1274,12 @@ bool CompositorFrameReporter::IsDroppedFrameAffectingSmoothness() const {
     return smooth_thread_ != SmoothThread::kSmoothNone;
   }
 
+  // If the frame includes new main-thread update, even if it's for an earlier
+  // begin-frame, then do not count it as a dropped frame affecting smoothness.
+  if (is_accompanied_by_main_thread_update_) {
+    return false;
+  }
+
   // If the frame was shown, but included only partial updates, then it hurt
   // smoothness only if the main-thread is affecting smoothness (e.g. running an
   // animation, or scroll etc.).

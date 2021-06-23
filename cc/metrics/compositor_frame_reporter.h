@@ -302,6 +302,12 @@ class CC_EXPORT CompositorFrameReporter {
     return owned_partial_update_dependents_.size();
   }
 
+  void set_is_accompanied_by_main_thread_update(
+      bool is_accompanied_by_main_thread_update) {
+    is_accompanied_by_main_thread_update_ =
+        is_accompanied_by_main_thread_update;
+  }
+
   const viz::BeginFrameId& frame_id() const { return args_.frame_id; }
 
   // Adopts |cloned_reporter|, i.e. keeps |cloned_reporter| alive until after
@@ -413,6 +419,9 @@ class CC_EXPORT CompositorFrameReporter {
 
   DroppedFrameCounter* dropped_frame_counter_ = nullptr;
   bool has_partial_update_ = false;
+
+  // If the submitted frame has update from main thread
+  bool is_accompanied_by_main_thread_update_ = false;
 
   const SmoothThread smooth_thread_;
   const int layer_tree_host_id_;

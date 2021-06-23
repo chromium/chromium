@@ -296,6 +296,8 @@ void CompositorFrameReportingController::DidSubmitCompositorFrame(
     impl_reporter->AddEventsMetrics(
         std::move(events_metrics.impl_event_metrics));
     impl_reporter->set_has_missing_content(has_missing_content);
+    impl_reporter->set_is_accompanied_by_main_thread_update(
+        is_activated_frame_new);
     submitted_compositor_frames_.emplace_back(frame_token,
                                               std::move(impl_reporter));
   }
