@@ -57,6 +57,10 @@
 #include "chrome/browser/themes/theme_service_factory.h"
 #endif
 
+#if defined(OS_WIN)
+#include <windows.h>
+#endif
+
 using blink::web_pref::WebPreferences;
 using content::WebContents;
 

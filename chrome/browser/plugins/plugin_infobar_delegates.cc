@@ -33,6 +33,8 @@
 #include "ui/base/l10n/l10n_util.h"
 
 #if defined(OS_WIN)
+#include <windows.h>
+
 #include <shellapi.h>
 #include "ui/base/win/shell.h"
 #endif
