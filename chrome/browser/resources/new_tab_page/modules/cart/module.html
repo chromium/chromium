@@ -320,7 +320,8 @@
     <template id="cartItemRepeat" is="dom-repeat" items="[[cartItems]]">
       <a class="cart-item" title="[[item.merchant]]"
           href="[[item.cartUrl.url]]" on-click="onCartItemClick_"
-          on-auxclick="onCartItemClick_">
+          on-auxclick="onCartItemClick_"
+          on-contextmenu="onCartItemContextMenuClick_">
         <template is="dom-if" if="[[item.discountText]]">
           <div class="discount-chip">[[item.discountText]]</div>
         </template>

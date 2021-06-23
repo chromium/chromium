@@ -390,6 +390,8 @@ class ChromeCartModuleElement extends mixinBehaviors
           cloneEvent);
       return;
     }
+    ChromeCartProxy.getInstance().handler.prepareForNavigation(
+        this.cartItems[index].cartUrl);
     this.dispatchEvent(new Event('usage', {bubbles: true, composed: true}));
     chrome.metricsPrivate.recordSmallCount('NewTabPage.Carts.ClickCart', index);
   }
@@ -415,6 +417,13 @@ class ChromeCartModuleElement extends mixinBehaviors
   /** @private */
   onConfirmDiscountConsentClick_() {
     $$(this, '#confirmDiscountConsentToast').hide();
+  }
+
+  /** @private */
+  onCartItemContextMenuClick_(e) {
+    const index = this.$.cartItemRepeat.indexForElement(e.target);
+    ChromeCartProxy.getInstance().handler.prepareForNavigation(
+        this.cartItems[index].cartUrl);
   }
 }
 

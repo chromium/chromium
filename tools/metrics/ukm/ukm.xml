@@ -14366,6 +14366,20 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Shopping.ChromeCart">
+  <owner>wychen@chromium.org</owner>
+  <owner>yuezhanggg@chromium.org</owner>
+  <summary>
+    Metrics related to Chrome cart module in Chrome NTP.
+  </summary>
+  <metric name="VisitCart" enum="Boolean">
+    <summary>
+      Always true. Recorded when users have visited cart page from Chrome cart
+      module.
+    </summary>
+  </metric>
+</event>
+
 <event name="SiteIsolation.XSD.Browser.Blocked">
   <obsolete>
     Removed in June 2019 / M77. Some old data has been saved in a
