@@ -12,15 +12,16 @@
 
 namespace enterprise_connectors {
 
+struct BoxApiCallResponse;
+
 // Helper for making Box API calls.
 //
 // This class is abstract. The methods OAuth2ApiCallFlow::ProcessApiCallXXX must
 // be implemented by subclasses.
 class BoxApiCallFlow : public OAuth2ApiCallFlow {
  public:
-  // Callback args are: whether request returned success, and
-  // net::HttpStatusCode.
-  using TaskCallback = base::OnceCallback<void(bool, int)>;
+  using Response = BoxApiCallResponse;
+  using TaskCallback = base::OnceCallback<void(Response)>;
   BoxApiCallFlow();
   ~BoxApiCallFlow() override;
 
@@ -30,6 +31,9 @@ class BoxApiCallFlow : public OAuth2ApiCallFlow {
   std::string CreateApiCallBodyContentType() override;
   net::PartialNetworkTrafficAnnotationTag GetNetworkTrafficAnnotationTag()
       override;
+  void ProcessApiCallFailure(int net_error,
+                             const network::mojom::URLResponseHead* head,
+                             std::unique_ptr<std::string> body) override;
 
   static std::string FormatSHA1Digest(const std::string& sha_digest);
   static GURL MakeUrlToShowFile(const std::string& file_id);
@@ -41,6 +45,12 @@ class BoxApiCallFlow : public OAuth2ApiCallFlow {
   static const size_t kWholeFileUploadMaxSize;
 
   using ParseResult = data_decoder::DataDecoder::ValueOrError;
+
+ protected:
+  virtual void ProcessFailure(Response response) = 0;
+
+  void OnFailureJsonParsed(int http_error, ParseResult result);
+  base::WeakPtrFactory<BoxApiCallFlow> weak_factory_{this};
 };
 
 // Helper for finding the downloads folder in Box.
@@ -48,7 +58,7 @@ class BoxFindUpstreamFolderApiCallFlow : public BoxApiCallFlow {
  public:
   // Additional callback arg is: folder_id for the downloads folder found in
   // Box.
-  using TaskCallback = base::OnceCallback<void(bool, int, const std::string&)>;
+  using TaskCallback = base::OnceCallback<void(Response, const std::string&)>;
   explicit BoxFindUpstreamFolderApiCallFlow(TaskCallback callback);
   ~BoxFindUpstreamFolderApiCallFlow() override;
 
@@ -57,13 +67,11 @@ class BoxFindUpstreamFolderApiCallFlow : public BoxApiCallFlow {
   GURL CreateApiCallUrl() override;
   void ProcessApiCallSuccess(const network::mojom::URLResponseHead* head,
                              std::unique_ptr<std::string> body) override;
-  void ProcessApiCallFailure(int net_error,
-                             const network::mojom::URLResponseHead* head,
-                             std::unique_ptr<std::string> body) override;
+  void ProcessFailure(Response response) override;
 
  private:
   // Callback for JsonParser that extracts folder id in ProcessApiCallSuccess().
-  void OnJsonParsed(ParseResult result);
+  void OnSuccessJsonParsed(ParseResult result);
 
   // Callback from the uploader to report success, http_code, folder_id.
   TaskCallback callback_;
@@ -75,7 +83,7 @@ class BoxCreateUpstreamFolderApiCallFlow : public BoxApiCallFlow {
  public:
   // Additional callback arg is: folder_id for the downloads folder created in
   // Box.
-  using TaskCallback = base::OnceCallback<void(bool, int, const std::string&)>;
+  using TaskCallback = base::OnceCallback<void(Response, const std::string&)>;
   explicit BoxCreateUpstreamFolderApiCallFlow(TaskCallback callback);
   ~BoxCreateUpstreamFolderApiCallFlow() override;
 
@@ -86,13 +94,11 @@ class BoxCreateUpstreamFolderApiCallFlow : public BoxApiCallFlow {
   bool IsExpectedSuccessCode(int code) const override;
   void ProcessApiCallSuccess(const network::mojom::URLResponseHead* head,
                              std::unique_ptr<std::string> body) override;
-  void ProcessApiCallFailure(int net_error,
-                             const network::mojom::URLResponseHead* head,
-                             std::unique_ptr<std::string> body) override;
+  void ProcessFailure(Response response) override;
 
  private:
   // Callback for JsonParser that extracts folder id in ProcessApiCallSuccess().
-  void OnJsonParsed(ParseResult result);
+  void OnSuccessJsonParsed(ParseResult result);
 
   // Callback from the uploader to report success, http_code, folder_id.
   TaskCallback callback_;
@@ -115,9 +121,7 @@ class BoxPreflightCheckApiCallFlow : public BoxApiCallFlow {
   bool IsExpectedSuccessCode(int code) const override;
   void ProcessApiCallSuccess(const network::mojom::URLResponseHead* head,
                              std::unique_ptr<std::string> body) override;
-  void ProcessApiCallFailure(int net_error,
-                             const network::mojom::URLResponseHead* head,
-                             std::unique_ptr<std::string> body) override;
+  void ProcessFailure(Response response) override;
 
  private:
   // Callback from the controller to report success, http_code, folder_id.
@@ -133,7 +137,7 @@ class BoxPreflightCheckApiCallFlow : public BoxApiCallFlow {
 class BoxWholeFileUploadApiCallFlow : public BoxApiCallFlow {
  public:
   // Additional args are: file id to show the uploaded item on Box.
-  using TaskCallback = base::OnceCallback<void(bool, int, const std::string&)>;
+  using TaskCallback = base::OnceCallback<void(Response, const std::string&)>;
   BoxWholeFileUploadApiCallFlow(TaskCallback callback,
                                 const std::string& folder_id,
                                 const base::FilePath& target_file_name,
@@ -153,9 +157,7 @@ class BoxWholeFileUploadApiCallFlow : public BoxApiCallFlow {
   bool IsExpectedSuccessCode(int code) const override;
   void ProcessApiCallSuccess(const network::mojom::URLResponseHead* head,
                              std::unique_ptr<std::string> body) override;
-  void ProcessApiCallFailure(int net_error,
-                             const network::mojom::URLResponseHead* head,
-                             std::unique_ptr<std::string> body) override;
+  void ProcessFailure(Response response) override;
 
   void SetFileReadForTesting(std::string content, std::string mime_type);
 
@@ -201,7 +203,7 @@ class BoxCreateUploadSessionApiCallFlow : public BoxApiCallFlow {
  public:
   // Additional callback args are: session endpoints provided in API request
   // response, and part_size for each chunk to be uploaded.
-  using TaskCallback = base::OnceCallback<void(bool, int, base::Value, size_t)>;
+  using TaskCallback = base::OnceCallback<void(Response, base::Value, size_t)>;
   BoxCreateUploadSessionApiCallFlow(TaskCallback callback,
                                     const std::string& folder_id,
                                     const size_t file_size,
@@ -215,12 +217,10 @@ class BoxCreateUploadSessionApiCallFlow : public BoxApiCallFlow {
   bool IsExpectedSuccessCode(int code) const override;
   void ProcessApiCallSuccess(const network::mojom::URLResponseHead* head,
                              std::unique_ptr<std::string> body) override;
-  void ProcessApiCallFailure(int net_error,
-                             const network::mojom::URLResponseHead* head,
-                             std::unique_ptr<std::string> body) override;
+  void ProcessFailure(Response response) override;
 
  private:
-  void OnJsonParsed(ParseResult result);
+  void OnSuccessJsonParsed(ParseResult result);
 
   TaskCallback callback_;
   const std::string folder_id_;
@@ -253,7 +253,7 @@ class BoxPartFileUploadApiCallFlow : public BoxChunkedUploadBaseApiCallFlow {
   // represents the final HTTP status code of the request. The Value holds a
   // JSON part object as returned by the Box Upload Part API, which is valid
   // only on success.
-  using TaskCallback = base::OnceCallback<void(bool, int, base::Value)>;
+  using TaskCallback = base::OnceCallback<void(Response, base::Value)>;
   BoxPartFileUploadApiCallFlow(TaskCallback callback,
                                const std::string& session_endpoint,
                                const std::string& file_part_content,
@@ -274,12 +274,10 @@ class BoxPartFileUploadApiCallFlow : public BoxChunkedUploadBaseApiCallFlow {
   bool IsExpectedSuccessCode(int code) const override;
   void ProcessApiCallSuccess(const network::mojom::URLResponseHead* head,
                              std::unique_ptr<std::string> body) override;
-  void ProcessApiCallFailure(int net_error,
-                             const network::mojom::URLResponseHead* head,
-                             std::unique_ptr<std::string> body) override;
+  void ProcessFailure(Response response) override;
 
  private:
-  void OnJsonParsed(ParseResult result);
+  void OnSuccessJsonParsed(ParseResult result);
   TaskCallback callback_;
   const std::string& part_content_;
   const std::string content_range_;
@@ -301,9 +299,7 @@ class BoxAbortUploadSessionApiCallFlow
   bool IsExpectedSuccessCode(int code) const override;
   void ProcessApiCallSuccess(const network::mojom::URLResponseHead* head,
                              std::unique_ptr<std::string> body) override;
-  void ProcessApiCallFailure(int net_error,
-                             const network::mojom::URLResponseHead* head,
-                             std::unique_ptr<std::string> body) override;
+  void ProcessFailure(Response response) override;
 
  private:
   TaskCallback callback_;
@@ -317,7 +313,7 @@ class BoxCommitUploadSessionApiCallFlow
   // Additional args are: Retry-After header duration, and file id to show the
   // uploaded item on Box.
   using TaskCallback =
-      base::OnceCallback<void(bool, int, base::TimeDelta, const std::string&)>;
+      base::OnceCallback<void(Response, base::TimeDelta, const std::string&)>;
   BoxCommitUploadSessionApiCallFlow(TaskCallback callback,
                                     const std::string& session_endpoint,
                                     const base::Value& parts,
@@ -331,9 +327,7 @@ class BoxCommitUploadSessionApiCallFlow
   bool IsExpectedSuccessCode(int code) const override;
   void ProcessApiCallSuccess(const network::mojom::URLResponseHead* head,
                              std::unique_ptr<std::string> body) override;
-  void ProcessApiCallFailure(int net_error,
-                             const network::mojom::URLResponseHead* head,
-                             std::unique_ptr<std::string> body) override;
+  void ProcessFailure(Response response) override;
 
  private:
   TaskCallback callback_;

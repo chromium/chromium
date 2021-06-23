@@ -53,13 +53,12 @@ void FileChunksHandler::StartReading(
   file_partially_read_cb_ = file_partially_read_cb;
   file_completely_read_cb_ = std::move(file_completely_read_cb);
   CheckFileError(base::BindOnce(&FileChunksHandler::ReadIfValid,
-                                weak_factory_.GetWeakPtr()),
-                 true);
+                                weak_factory_.GetWeakPtr()));
 }
 
-void FileChunksHandler::ReadIfValid(bool file_valid) {
-  if (!file_valid) {
-    return OnFileCompletelyRead(false);
+void FileChunksHandler::ReadIfValid(FileStatus file_status) {
+  if (file_status != FileStatus::FILE_OK) {
+    return OnFileCompletelyRead(file_status);
   }
   chunk_content_.resize(chunk_size_);
   base::SHA1Init(sha1_ctx_);
@@ -70,7 +69,7 @@ void FileChunksHandler::Read() {
   auto bytes_remaining = file_size_ - byte_to_;
   DCHECK_GE(bytes_remaining, 0U);
   if (bytes_remaining == 0U) {
-    return OnFileCompletelyRead(true);
+    return OnFileCompletelyRead(FileStatus::FILE_OK);
   } else if (bytes_remaining < chunk_content_.size()) {
     chunk_content_.resize(bytes_remaining);
   }
@@ -101,22 +100,25 @@ void FileChunksHandler::OnFileChunkRead(int bytes_read) {
     // ranges used to upload each part's content need to be non-overlapping.
     // Therefore, PartInfo::byte_to == byte_to_ = 1.
     size_t range_to = byte_to_ - 1;
-    file_partially_read_cb_.Run(PartInfo{chunk_content_, byte_from_, range_to});
+    file_partially_read_cb_.Run(
+        PartInfo{FileStatus::FILE_OK, chunk_content_, byte_from_, range_to});
 
   } else {
     DLOG(ERROR) << "Failed to read file chunk from byte " << byte_from_;
-    CheckFileError(base::BindOnce(&FileChunksHandler::OnFileCompletelyRead,
-                                  weak_factory_.GetWeakPtr()),
-                   /* step_success = */ false);
+    OnFileError(base::BindOnce(&FileChunksHandler::OnFileCompletelyRead,
+                               weak_factory_.GetWeakPtr()),
+                FileStatus::FILE_ERROR_IO);
   }
 }
 
-void FileChunksHandler::OnFileCompletelyRead(bool success) {
+void FileChunksHandler::OnFileCompletelyRead(FileStatus status) {
   sequenced_file_.Reset();
 
-  if (!success) {
+  if (status != FileStatus::FILE_OK) {
     LOG(ERROR) << "Terminating file read due to failure!";
-    file_partially_read_cb_.Run(PartInfo());
+    PartInfo info;
+    info.error = status;
+    file_partially_read_cb_.Run(std::move(info));
     return;
   }
 
@@ -137,16 +139,13 @@ void FileChunksHandler::ContinueToReadChunk(size_t n) {
   Read();
 }
 
-void FileChunksHandler::CheckFileError(FileCheckCallback cb,
-                                       bool step_success) {
+void FileChunksHandler::CheckFileError(FileCheckCallback cb) {
   sequenced_file_.AsyncCall(&base::File::IsValid)
       .Then(base::BindOnce(&FileChunksHandler::OnFileChecked,
-                           weak_factory_.GetWeakPtr(), std::move(cb),
-                           step_success));
+                           weak_factory_.GetWeakPtr(), std::move(cb)));
 }
 
 void FileChunksHandler::OnFileChecked(FileCheckCallback cb,
-                                      bool step_success,
                                       bool file_valid) {
   if (!file_valid) {
     LOG(ERROR) << "File is invalid!";
@@ -154,15 +153,14 @@ void FileChunksHandler::OnFileChecked(FileCheckCallback cb,
         .Then(base::BindOnce(&FileChunksHandler::OnFileError,
                              weak_factory_.GetWeakPtr(), std::move(cb)));
   } else {
-    std::move(cb).Run(step_success);
+    std::move(cb).Run(FileStatus::FILE_OK);
   }
 }
 
-void FileChunksHandler::OnFileError(FileCheckCallback cb,
-                                    base::File::Error error) {
-  LOG(ERROR) << "File Error: " << base::File::ErrorToString(error);
+void FileChunksHandler::OnFileError(FileCheckCallback cb, FileStatus status) {
+  LOG(ERROR) << "File Error: " << base::File::ErrorToString(status);
   sequenced_file_.Reset();
-  std::move(cb).Run(false);
+  std::move(cb).Run(status);
 }
 
 void FileChunksHandler::SkipToOnFileChunkReadForTesting(

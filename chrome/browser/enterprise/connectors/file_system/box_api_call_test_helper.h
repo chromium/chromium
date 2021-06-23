@@ -16,10 +16,15 @@ extern const char kFileSystemBoxCreateFolderUrl[];
 extern const char kFileSystemBoxPreflightCheckUrl[];
 extern const char kFileSystemBoxDirectUploadUrl[];
 
-// Expected responses for calls to Box endpoints.
-
+// Generic expected responses for calls to Box endpoints.
 // Empty response body.
 extern const char kEmptyResponseBody[];
+std::string CreateFailureResponse(int http_code, const char* box_error_code);
+// Request id extracted from the generic error response body created by above.
+extern const char kFileSystemBoxClientErrorResponseRequestId[];
+
+// For Box Pre-Upload Steps/////////////////////////////////////////////////////
+
 // Expected response from kFileSystemBoxFindFolderUrl.
 extern const char kFileSystemBoxFindFolderResponseBody[];
 // Expected folder id extracted from above.
@@ -48,6 +53,8 @@ extern const char kFileSystemBoxChunkedUploadSha[];
 extern const char kFileSystemBoxChunkedUploadCreateSessionResponseBody[];
 // Expected part_size extracted from above.
 extern const size_t kFileSystemBoxChunkedUploadCreateSessionResponsePartSize;
+
+std::string CreateChunkedUploadPartResponse(int offset, int size);
 
 void GenerateFileContent(size_t fill_part_size,
                          size_t total_file_size,

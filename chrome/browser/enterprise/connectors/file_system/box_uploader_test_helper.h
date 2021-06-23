@@ -45,24 +45,32 @@ class BoxUploaderTestBase : public testing::Test {
   void AuthenticationRetry();
   void OnProgressUpdate(
       const download::DownloadItemRenameProgressUpdate& update);
-  void OnUploaderFinished(bool success, const base::FilePath& final_name);
+  void OnUploaderFinished(download::DownloadInterruptReason reason,
+                          const base::FilePath& final_name);
+  void TearDown() override;
 
-  // Add a mock response to http requests made to the url. Only the last
-  // response added is used.
+  // The following methods add mock responses to the |test_url_loader_factory_|
+  // for http requests made to the specified url. Avoid mixing the use of
+  // AddFetchResult() vs AddSequentialFetchResult() on the same url.
+
+  // Add a repeating mock response. Only the last response added is used.
   void AddFetchResult(const std::string& url,
                       net::HttpStatusCode code,
                       std::string body = std::string());
-  // Add multiple responses for the same url to be consumed in a sequence
-  // (FIFO). Any response previously added via AddFetchResult() is overwritten.
+  // Add multiple responses for the same url to be consumed in a FIFO sequence.
   void AddSequentialFetchResult(const std::string& url,
                                 net::HttpStatusCode code,
                                 std::string body = std::string());
   void AddSequentialFetchResult(const std::string& url,
                                 network::mojom::URLResponseHeadPtr head,
                                 std::string body = std::string());
+  void ClearFetchResults(const std::string& url);
+  size_t GetPendingSequentialResponsesCount(const std::string& url) const;
 
+  // The following methods should be used to surround multi-threaded code block.
   // Use these wherever possible, instead of base::RunLoop().RunUntilIdle(),
   // which is flaky in multi-threaded environment.
+  void InitQuitClosure();
   void RunWithQuitClosure();
   void Quit();
 
@@ -76,6 +84,8 @@ class BoxUploaderTestBase : public testing::Test {
   int progress_update_cb_called_{0};
   bool download_thread_cb_called_{false};
   bool upload_success_{false};
+  download::DownloadInterruptReason reason_{
+      download::DOWNLOAD_INTERRUPT_REASON_NONE};
   base::FilePath validated_file_name_;
 
  private:
@@ -94,14 +104,20 @@ class BoxUploaderTestBase : public testing::Test {
   void SetInterceptorForURLLoader(network::TestURLLoaderFactory::Interceptor);
   void SetNextResponseForURLLoader(const network::ResourceRequest& request);
   struct HttpResponse {
-    HttpResponse(network::mojom::URLResponseHeadPtr head, std::string body);
+    HttpResponse(size_t idx,
+                 network::mojom::URLResponseHeadPtr head,
+                 std::string body);
     ~HttpResponse();
     HttpResponse(HttpResponse&&);
 
+    size_t idx_;
     network::mojom::URLResponseHeadPtr head_;
     std::string body_;
   };
-  std::multimap<GURL, HttpResponse> responses_;
+  size_t idx_sequential_add = 0;
+  size_t idx_sequential_fetch = 0;
+  std::multimap<GURL, HttpResponse> sequential_responses_;
+  std::set<GURL> repeating_responses_;
 };
 
 }  // namespace enterprise_connectors

@@ -29,6 +29,8 @@ class DownloadItemForTest : public content::FakeDownloadItem {
   void SetState(DownloadState state);
   void SetRerouteInfo(DownloadItemRerouteInfo info);
 
+  using content::FakeDownloadItem::ClearAllUserData;
+
  protected:
   base::ScopedTempDir tmp_dir_;
   base::FilePath path_;

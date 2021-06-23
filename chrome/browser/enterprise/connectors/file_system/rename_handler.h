@@ -49,8 +49,8 @@ class FileSystemRenameHandler : public download::DownloadItemRenameHandler {
   void OpenDownload() override;
   void ShowDownloadInContext() override;
 
-  // These methods are declared protected to override in tests so that calls to
-  // other components can be isolated.
+  // These methods are declared protected to be overridden in unit tests so that
+  // calls to other components can be isolated.
   virtual void TryUploaderTask(content::BrowserContext* context,
                                const std::string& access_token);
   virtual void PromptUserSignInForAuthorization(content::WebContents* contents);
@@ -76,7 +76,7 @@ class FileSystemRenameHandler : public download::DownloadItemRenameHandler {
       download::DownloadItem* download_item,
       FileSystemSettings settings);
 
-  void StartInternal();
+  void StartInternal(std::string access_token = std::string());
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory(
       content::BrowserContext* context);
 
@@ -91,16 +91,11 @@ class FileSystemRenameHandler : public download::DownloadItemRenameHandler {
   void OnSignInCancellation();
   // Callback for uploader_ upon API requests returning authentication error.
   void OnApiAuthenticationError();
-  // Notify upload success or failure back to the download thread.
-  void NotifyResultToDownloadThread(bool success, const base::FilePath& path);
 
   PrefService* GetPrefs();
 
   // Copied from policy settings. Constant for the life of the rename handler.
   const FileSystemSettings settings_;
-
-  // Invoked to tell the download system when the rename has completed.
-  DownloadCallback upload_complete_cb_;
 
   std::unique_ptr<AccessTokenFetcher> token_fetcher_;
   // Main uploader that manages the entire API call flow of file upload.

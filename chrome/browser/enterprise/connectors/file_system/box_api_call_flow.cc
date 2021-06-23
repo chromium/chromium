@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/enterprise/connectors/file_system/box_api_call_flow.h"
+#include "chrome/browser/enterprise/connectors/file_system/box_api_call_response.h"
 
 #include <string>
 
@@ -23,20 +24,25 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
-#define LOG_API_FAIL(severity, flow, net_error, headers, body) \
-  DLOG(severity) << "[BoxApiCallFlow] " << flow                \
-                 << " failed; net error = " << net_error       \
-                 << "; code = " << headers->response_code()    \
-                 << ";\nheader: " << headers->raw_headers()    \
+#define PRINT_ERROR(net_error, head)                                \
+  (net_error ? base::StringPrintf("net error = %d", net_error)      \
+             : base::StringPrintf("response_code = %d\nheader: %s", \
+                                  head->headers->response_code(),   \
+                                  head->headers->raw_headers().c_str()))
+
+#define LOG_API_FAIL(severity, flow, net_error, head, body)                 \
+  DCHECK(net_error || head);                                                \
+  const auto error_str = PRINT_ERROR(net_error, head);                      \
+  DLOG(severity) << "[BoxApiCallFlow] " << flow << " failed; " << error_str \
                  << ";\nbody: " << (body ? *body : "<null>");
 
-#define LOG_PARSE_FAIL(severity, flow, result)                             \
-  DLOG(severity) << "[BoxApiCallFlow] " << flow << " OnJsonParsed Error: " \
+#define LOG_PARSE_FAIL(severity, flow, result)                            \
+  DLOG(severity) << "[BoxApiCallFlow] " << flow << "\nJson Parse Error: " \
                  << (result.error ? result.error->data() : "<no error info>");
 
-#define LOG_PARSE_FAIL_IF(log_condition, severity, flow, result) \
-  if (log_condition) {                                           \
-    LOG_PARSE_FAIL(severity, flow, result);                      \
+#define LOG_PARSE_FAIL_IF(condition, severity, flow, result) \
+  if (condition) {                                           \
+    LOG_PARSE_FAIL(severity, flow, result);                  \
   }
 
 namespace {
@@ -160,6 +166,23 @@ const size_t BoxApiCallFlow::kChunkFileUploadMinSize =
 const size_t BoxApiCallFlow::kWholeFileUploadMaxSize =
     50 * 1024 * 1024;  // 50 MB
 
+BoxApiCallResponse MakeSuccess(int http_code) {
+  DCHECK_GT(http_code, 0);
+  return BoxApiCallResponse{true, http_code};
+}
+
+BoxApiCallResponse MakeNetworkFailure(int net_code) {
+  DCHECK_LT(net_code, 0);
+  return BoxApiCallResponse{false, net_code};
+}
+
+BoxApiCallResponse MakeApiFailure(int http_code,
+                                  std::string box_error_code,
+                                  std::string box_request_id) {
+  return BoxApiCallResponse{false, http_code, std::move(box_error_code),
+                            std::move(box_request_id)};
+}
+
 BoxApiCallFlow::BoxApiCallFlow() = default;
 BoxApiCallFlow::~BoxApiCallFlow() = default;
 
@@ -172,6 +195,47 @@ std::string BoxApiCallFlow::CreateApiCallBody() {
 }
 std::string BoxApiCallFlow::CreateApiCallBodyContentType() {
   return "application/json";
+}
+
+void BoxApiCallFlow::ProcessApiCallFailure(
+    int net_error,
+    const network::mojom::URLResponseHead* head,
+    std::unique_ptr<std::string> body) {
+  if (net_error) {
+    DCHECK(net_error < 0);
+    LOG_API_FAIL(ERROR, "network", net_error, head, body);
+    ProcessFailure(MakeNetworkFailure(net_error));
+  } else if (head && head->headers &&
+             head->headers->response_code() == net::HTTP_UNAUTHORIZED) {
+    ProcessFailure(Response{false, net::HTTP_UNAUTHORIZED});
+  } else {
+    DCHECK(head);
+    DCHECK(head->headers);
+    DCHECK(body);
+    DCHECK(body->size());
+    LOG_API_FAIL(ERROR,
+                 "API request " << GetRequestTypeForBody("dummy body") << " to "
+                                << CreateApiCallUrl(),
+                 net_error, head, body);
+    data_decoder::DataDecoder::ParseJsonIsolated(
+        *body, base::BindOnce(&BoxApiCallFlow::OnFailureJsonParsed,
+                              weak_factory_.GetWeakPtr(),
+                              head->headers->response_code()));
+  }
+}
+
+// API reference: https://developer.box.com/reference/resources/client-error/
+void BoxApiCallFlow::OnFailureJsonParsed(int http_code, ParseResult result) {
+  DCHECK(result.value);
+  base::Value *code = nullptr, *request_id = nullptr;
+  auto response = Response{false, http_code};
+  if (result.value && (code = result.value->FindPath("code")) &&
+      (request_id = result.value->FindPath("request_id"))) {
+    response =
+        MakeApiFailure(http_code, code->GetString(), request_id->GetString());
+  }
+  LOG_PARSE_FAIL_IF(!code || !request_id, ERROR, "OnFailureJsonParsed", result);
+  ProcessFailure(response);
 }
 
 // Box API reference:
@@ -242,29 +306,26 @@ void BoxFindUpstreamFolderApiCallFlow::ProcessApiCallSuccess(
   CHECK_EQ(response_code, net::HTTP_OK);
 
   data_decoder::DataDecoder::ParseJsonIsolated(
-      *body, base::BindOnce(&BoxFindUpstreamFolderApiCallFlow::OnJsonParsed,
-                            weak_factory_.GetWeakPtr()));
+      *body,
+      base::BindOnce(&BoxFindUpstreamFolderApiCallFlow::OnSuccessJsonParsed,
+                     weak_factory_.GetWeakPtr()));
 }
 
-void BoxFindUpstreamFolderApiCallFlow::ProcessApiCallFailure(
-    int net_error,
-    const network::mojom::URLResponseHead* head,
-    std::unique_ptr<std::string> body) {
-  LOG_API_FAIL(ERROR, "FindUpstreamFolder", net_error, head->headers, body);
-  auto response_code = head->headers->response_code();
-  std::move(callback_).Run(false, response_code, std::string());
+void BoxFindUpstreamFolderApiCallFlow::ProcessFailure(Response response) {
+  std::move(callback_).Run(response, std::string());
 }
 
-void BoxFindUpstreamFolderApiCallFlow::OnJsonParsed(ParseResult result) {
+void BoxFindUpstreamFolderApiCallFlow::OnSuccessJsonParsed(ParseResult result) {
   base::Value::ConstListView list;
-  bool extract_entries = ExtractEntriesList(result, &list);
-  if (extract_entries && !list.empty()) {
-    std::string folder_id = ExtractId(list.front());
-    std::move(callback_).Run(!folder_id.empty(), net::HTTP_OK, folder_id);
-  } else {
-    LOG_PARSE_FAIL_IF(!extract_entries, ERROR, "FindUpstreamFolder", result);
-    std::move(callback_).Run(extract_entries, net::HTTP_OK, std::string());
+  std::string folder_id;
+  bool extracted = ExtractEntriesList(result, &list);
+  LOG_PARSE_FAIL_IF(!extracted, ERROR, "FindUpstreamFolder", result);
+
+  if (extracted && !list.empty()) {
+    folder_id = ExtractId(list.front());
+    extracted = !folder_id.empty();
   }
+  std::move(callback_).Run(Response{extracted, net::HTTP_OK}, folder_id);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -303,26 +364,24 @@ void BoxCreateUpstreamFolderApiCallFlow::ProcessApiCallSuccess(
   CHECK_EQ(response_code, net::HTTP_CREATED);
 
   data_decoder::DataDecoder::ParseJsonIsolated(
-      *body, base::BindOnce(&BoxCreateUpstreamFolderApiCallFlow::OnJsonParsed,
-                            weak_factory_.GetWeakPtr()));
+      *body,
+      base::BindOnce(&BoxCreateUpstreamFolderApiCallFlow::OnSuccessJsonParsed,
+                     weak_factory_.GetWeakPtr()));
 }
 
-void BoxCreateUpstreamFolderApiCallFlow::ProcessApiCallFailure(
-    int net_error,
-    const network::mojom::URLResponseHead* head,
-    std::unique_ptr<std::string> body) {
-  LOG_API_FAIL(ERROR, "CreateUpstreamFolder", net_error, head->headers, body);
-  auto response_code = head->headers->response_code();
-  std::move(callback_).Run(false, response_code, std::string());
+void BoxCreateUpstreamFolderApiCallFlow::ProcessFailure(Response response) {
+  std::move(callback_).Run(response, std::string());
 }
 
-void BoxCreateUpstreamFolderApiCallFlow::OnJsonParsed(ParseResult result) {
+void BoxCreateUpstreamFolderApiCallFlow::OnSuccessJsonParsed(
+    ParseResult result) {
   std::string folder_id;
   if (result.value) {
     folder_id = ExtractId(*result.value);
   }
   LOG_PARSE_FAIL_IF(folder_id.empty(), ERROR, "CreateUpstreamFolder", result);
-  std::move(callback_).Run(!folder_id.empty(), net::HTTP_CREATED, folder_id);
+  std::move(callback_).Run(Response{!folder_id.empty(), net::HTTP_CREATED},
+                           folder_id);
   return;
 }
 
@@ -370,16 +429,11 @@ void BoxPreflightCheckApiCallFlow::ProcessApiCallSuccess(
     std::unique_ptr<std::string> body) {
   auto response_code = head->headers->response_code();
   CHECK_EQ(response_code, net::HTTP_OK);
-  std::move(callback_).Run(true, response_code);
+  std::move(callback_).Run(MakeSuccess(response_code));
 }
 
-void BoxPreflightCheckApiCallFlow::ProcessApiCallFailure(
-    int net_error,
-    const network::mojom::URLResponseHead* head,
-    std::unique_ptr<std::string> body) {
-  LOG_API_FAIL(ERROR, "PreflightCheck", net_error, head->headers, body);
-  auto response_code = head->headers->response_code();
-  std::move(callback_).Run(false, response_code);
+void BoxPreflightCheckApiCallFlow::ProcessFailure(Response response) {
+  std::move(callback_).Run(response);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -431,8 +485,8 @@ BoxWholeFileUploadApiCallFlow::ReadFile(
     const base::FilePath& target_file_name) {
   FileRead file_read;
   file_read.mime = GetMimeType(target_file_name);
-  if (file_read.mime.empty() ||  // Ensure that file extension was valid.
-      !base::ReadFileToStringWithMaxSize(path, &file_read.content,
+  DCHECK(file_read.mime.size());
+  if (!base::ReadFileToStringWithMaxSize(path, &file_read.content,
                                          kWholeFileUploadMaxSize)) {
     DLOG(ERROR) << "File " << path << " with target name " << target_file_name;
     return absl::nullopt;
@@ -448,7 +502,7 @@ void BoxWholeFileUploadApiCallFlow::OnFileRead(
   if (!file_read) {
     DLOG(ERROR) << "[BoxApiCallFlow] WholeFileUpload read file failed";
     // TODO(https://crbug.com/1165972): error handling
-    std::move(callback_).Run(false, 0, std::string());
+    ProcessFailure(Response{false, 0});
     return;
   }
   DCHECK_LE(file_read->content.size(), kWholeFileUploadMaxSize);
@@ -505,16 +559,11 @@ void BoxWholeFileUploadApiCallFlow::ProcessApiCallSuccess(
   DCHECK_EQ(head->headers->response_code(), net::HTTP_CREATED);
   ProcessUploadSuccessResponse(
       std::move(body),
-      base::BindOnce(std::move(callback_), true, net::HTTP_CREATED));
+      base::BindOnce(std::move(callback_), MakeSuccess(net::HTTP_CREATED)));
 }
 
-void BoxWholeFileUploadApiCallFlow::ProcessApiCallFailure(
-    int net_error,
-    const network::mojom::URLResponseHead* head,
-    std::unique_ptr<std::string> body) {
-  LOG_API_FAIL(ERROR, "WholeFileUpload", net_error, head->headers, body);
-  auto response_code = head->headers->response_code();
-  std::move(callback_).Run(false, response_code, std::string());
+void BoxWholeFileUploadApiCallFlow::ProcessFailure(Response response) {
+  std::move(callback_).Run(response, std::string());
 }
 
 void BoxWholeFileUploadApiCallFlow::SetFileReadForTesting(
@@ -573,41 +622,33 @@ void BoxCreateUploadSessionApiCallFlow::ProcessApiCallSuccess(
   CHECK_EQ(response_code, net::HTTP_CREATED);
 
   data_decoder::DataDecoder::ParseJsonIsolated(
-      *body, base::BindOnce(&BoxCreateUploadSessionApiCallFlow::OnJsonParsed,
-                            weak_factory_.GetWeakPtr()));
+      *body,
+      base::BindOnce(&BoxCreateUploadSessionApiCallFlow::OnSuccessJsonParsed,
+                     weak_factory_.GetWeakPtr()));
 }
 
-void BoxCreateUploadSessionApiCallFlow::ProcessApiCallFailure(
-    int net_error,
-    const network::mojom::URLResponseHead* head,
-    std::unique_ptr<std::string> body) {
-  LOG_API_FAIL(ERROR, "CreateUploadSession", net_error, head->headers, body);
-  auto response_code = head->headers->response_code();
-  std::move(callback_).Run(false, response_code, CreateEmptyDict(), 0);
+void BoxCreateUploadSessionApiCallFlow::ProcessFailure(Response response) {
+  std::move(callback_).Run(response, CreateEmptyDict(), 0);
 }
 
-void BoxCreateUploadSessionApiCallFlow::OnJsonParsed(ParseResult result) {
-  bool valid_response = result.value.has_value();
-  if (!valid_response) {
-    LOG_PARSE_FAIL(ERROR, "CreateUploadSession", result);
-    std::move(callback_).Run(false, net::HTTP_CREATED, CreateEmptyDict(), 0);
+void BoxCreateUploadSessionApiCallFlow::OnSuccessJsonParsed(
+    ParseResult result) {
+  LOG_PARSE_FAIL_IF(!result.value.has_value(), ERROR, "CreateUploadSession",
+                    result);
+
+  const auto http_code = net::HTTP_CREATED;
+  base::Value *endpoints = nullptr, *part_size = nullptr;
+  if (result.value.has_value() &&
+      (part_size = result.value->FindPath("part_size")) &&
+      (endpoints = result.value->FindPath("session_endpoints")) &&
+      endpoints->FindPath("upload_part") && endpoints->FindPath("commit") &&
+      endpoints->FindPath("abort")) {
+    std::move(callback_).Run(MakeSuccess(http_code), std::move(*endpoints),
+                             part_size->GetInt());
     return;
   }
-
-  auto* endpoints = result.value->FindPath("session_endpoints");
-  auto* part_size = result.value->FindPath("part_size");
-  valid_response =
-      endpoints && part_size && endpoints->FindPath("upload_part") &&
-      endpoints->FindPath("commit") && endpoints->FindPath("abort");
-  if (!valid_response) {
-    LOG(ERROR) << "[BoxApiCallFlow] CreateUploadSession succeeded but "
-                  "response returned is invalid: "
-               << *result.value;
-    std::move(callback_).Run(false, net::HTTP_CREATED, CreateEmptyDict(), 0);
-  } else {
-    std::move(callback_).Run(true, net::HTTP_CREATED, std::move(*endpoints),
-                             part_size->GetInt());
-  }
+  LOG_PARSE_FAIL_IF(!result.value, ERROR, "CreateUploadSession", result);
+  ProcessFailure(MakeApiFailure(http_code, "bad_response", "parse_fail"));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -673,7 +714,7 @@ std::string BoxPartFileUploadApiCallFlow::CreateApiCallBodyContentType() {
 
 std::string BoxPartFileUploadApiCallFlow::GetRequestTypeForBody(
     const std::string& body) {
-  CHECK(!body.empty());
+  CHECK(!body.empty()) << content_range_;
   return "PUT";
 }
 
@@ -686,32 +727,28 @@ void BoxPartFileUploadApiCallFlow::ProcessApiCallSuccess(
     std::unique_ptr<std::string> body) {
   DCHECK(body);
   data_decoder::DataDecoder::ParseJsonIsolated(
-      *body, base::BindOnce(&BoxPartFileUploadApiCallFlow::OnJsonParsed,
+      *body, base::BindOnce(&BoxPartFileUploadApiCallFlow::OnSuccessJsonParsed,
                             weak_factory_.GetWeakPtr()));
 }
 
-void BoxPartFileUploadApiCallFlow::ProcessApiCallFailure(
-    int net_error,
-    const network::mojom::URLResponseHead* head,
-    std::unique_ptr<std::string> body) {
-  LOG_API_FAIL(ERROR, "PartFileUpload", net_error, head->headers, body);
-  auto response_code = head->headers->response_code();
-  std::move(callback_).Run(false, response_code, base::Value());
+void BoxPartFileUploadApiCallFlow::ProcessFailure(Response response) {
+  std::move(callback_).Run(response, base::Value());
 }
 
-void BoxPartFileUploadApiCallFlow::OnJsonParsed(ParseResult result) {
+void BoxPartFileUploadApiCallFlow::OnSuccessJsonParsed(ParseResult result) {
+  const auto http_code = net::HTTP_OK;
   if (!result.value) {
     LOG_PARSE_FAIL(ERROR, "PartFileUpload", result);
-    std::move(callback_).Run(false, net::HTTP_OK, base::Value());
+    ProcessFailure(MakeApiFailure(http_code, "bad_response", "parse_fail"));
     return;
   }
 
   base::Value* part = result.value->FindPath("part");
   if (!part) {
     DLOG(ERROR) << "[BoxApiCallFlow] No info for uploaded part";
-    std::move(callback_).Run(false, net::HTTP_OK, base::Value());
+    ProcessFailure(MakeApiFailure(http_code, "bad_response", "parse_fail"));
   } else {
-    std::move(callback_).Run(true, net::HTTP_OK, std::move(*part));
+    std::move(callback_).Run(MakeSuccess(http_code), std::move(*part));
   }
 }
 
@@ -741,15 +778,12 @@ std::string BoxAbortUploadSessionApiCallFlow::GetRequestTypeForBody(
 void BoxAbortUploadSessionApiCallFlow::ProcessApiCallSuccess(
     const network::mojom::URLResponseHead* head,
     std::unique_ptr<std::string> body) {
-  std::move(callback_).Run(!body || body->empty(),  // Expecting an empty body.
-                           head->headers->response_code());
+  DCHECK(!body || body->empty()) << "Expecting an empty body.";
+  std::move(callback_).Run(MakeSuccess(net::HTTP_NO_CONTENT));
 }
 
-void BoxAbortUploadSessionApiCallFlow::ProcessApiCallFailure(
-    int net_error,
-    const network::mojom::URLResponseHead* head,
-    std::unique_ptr<std::string> body) {
-  std::move(callback_).Run(false, head->headers->response_code());
+void BoxAbortUploadSessionApiCallFlow::ProcessFailure(Response response) {
+  std::move(callback_).Run(response);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -799,8 +833,8 @@ void BoxCommitUploadSessionApiCallFlow::ProcessApiCallSuccess(
   if (response_code == net::HTTP_CREATED) {
     DCHECK(body);
     DCHECK(body->size());
-    auto created_cb = base::BindOnce(std::move(callback_), true, response_code,
-                                     base::TimeDelta());
+    auto created_cb = base::BindOnce(
+        std::move(callback_), MakeSuccess(response_code), base::TimeDelta());
     return ProcessUploadSuccessResponse(std::move(body), std::move(created_cb));
   }
 
@@ -815,17 +849,12 @@ void BoxCommitUploadSessionApiCallFlow::ProcessApiCallSuccess(
   }
 
   DCHECK(success) << head->headers->raw_headers();
-  std::move(callback_).Run(success, response_code, retry_after, std::string());
+  std::move(callback_).Run(Response{success, response_code}, retry_after,
+                           std::string());
 }
 
-void BoxCommitUploadSessionApiCallFlow::ProcessApiCallFailure(
-    int net_error,
-    const network::mojom::URLResponseHead* head,
-    std::unique_ptr<std::string> body) {
-  LOG_API_FAIL(ERROR, "CommitUploadSession", net_error, head->headers, body);
-  auto response_code = head->headers->response_code();
-  std::move(callback_).Run(false, response_code, base::TimeDelta(),
-                           std::string());
+void BoxCommitUploadSessionApiCallFlow::ProcessFailure(Response response) {
+  std::move(callback_).Run(response, base::TimeDelta(), std::string());
 }
 
 }  // namespace enterprise_connectors

@@ -23,11 +23,6 @@ using FileChunksHandler = BoxChunkedUploader::FileChunksHandler;
 
 class BoxUploadFileChunksHandlerTest : public testing::Test {
  public:
-  void Run() {
-    quit_closure_ = run_loop_.QuitClosure();
-    run_loop_.Run();
-  }
-
   void Quit() {
     ASSERT_TRUE(quit_closure_);
     std::move(quit_closure_).Run();
@@ -36,7 +31,6 @@ class BoxUploadFileChunksHandlerTest : public testing::Test {
   void WriteTestFileAndRead(const std::string& content) {
     ASSERT_TRUE(base::WriteFile(file_path_, content)) << file_path_;
     InitializeReaderAndStart(content.size());
-    Run();
   }
 
   static size_t CalculateExpectedChunkReadCount(size_t content_length) {
@@ -53,9 +47,19 @@ class BoxUploadFileChunksHandlerTest : public testing::Test {
     file_path_ = temp_dir_.GetPath().Append(file_name_);
   }
 
-  virtual void InitializeReaderAndStart(size_t file_size) {
+  void InitializeReaderAndStart(size_t file_size) {
+    // |quit_closure_| must be set up before multi-threaded code. Otherwise, if
+    // the code ran super quickly such that |quit_closure_| didn't get setup
+    // until after the code already finished and ran the callback where Quit()
+    // was called, |run_loop_|.Run() would just hang and time out while waiting.
+    quit_closure_ = run_loop_.QuitClosure();
     chunked_reader_ =
         std::make_unique<FileChunksHandler>(file_path_, file_size, kChunkSize);
+    StartReader();
+    run_loop_.Run();
+  }
+
+  virtual void StartReader() {
     chunked_reader_->StartReading(
         base::BindRepeating(&BoxUploadFileChunksHandlerTest::OnFileChunkRead,
                             base::Unretained(this)),
@@ -72,7 +76,9 @@ class BoxUploadFileChunksHandlerTest : public testing::Test {
 
   void OnFileChunkRead(BoxChunkedUploader::PartInfo part_info) {
     file_chunk_successfully_read_ = part_info.content.size();
+    file_read_status_ = part_info.error;
     if (!file_chunk_successfully_read_) {
+      LOG(INFO) << file_read_status_;
       return Quit();
     }
 
@@ -88,6 +94,7 @@ class BoxUploadFileChunksHandlerTest : public testing::Test {
   base::FilePath file_path_;
   std::string file_content_;
 
+  base::File::Error file_read_status_ = base::File::Error::FILE_ERROR_MAX;
   bool file_chunk_successfully_read_ = false;
   bool file_finished_reading_ = false;
   bool file_successfully_read_ = false;
@@ -108,6 +115,7 @@ TEST_F(BoxUploadFileChunksHandlerTest, Test1Chunk) {
   // Includes chunked_reader_->MakePartFileUploadApiCallFlow() and
   // OnPartUploaded() to arrive at OnFileCompletelyRead() and return.
 
+  ASSERT_EQ(file_read_status_, base::File::Error::FILE_OK);
   ASSERT_TRUE(file_chunk_successfully_read_);
   ASSERT_TRUE(file_finished_reading_);
   EXPECT_TRUE(file_successfully_read_);
@@ -120,6 +128,15 @@ TEST_F(BoxUploadFileChunksHandlerTest, Test1Chunk) {
   base::Base64Encode(base::SHA1HashString(expected_file_content),
                      &expected_sha);
   ASSERT_EQ(file_sha1_digest_, expected_sha);
+}
+
+TEST_F(BoxUploadFileChunksHandlerTest, NoFile) {
+  InitializeReaderAndStart(100);  // Without creating a test file to be opened.
+
+  ASSERT_EQ(file_read_status_, base::File::Error::FILE_ERROR_NOT_FOUND);
+  ASSERT_FALSE(file_finished_reading_);
+  ASSERT_FALSE(file_successfully_read_);
+  ASSERT_FALSE(file_chunk_successfully_read_);
 }
 
 class BoxUploadFileChunksHandler_MultipleChunksTest
@@ -144,6 +161,7 @@ TEST_P(BoxUploadFileChunksHandler_MultipleChunksTest,
   // Includes chunked_reader_->MakePartFileUploadApiCallFlow() and
   // OnPartUploaded() to arrive at OnFileCompletelyRead() and return.
 
+  ASSERT_EQ(file_read_status_, base::File::Error::FILE_OK);
   ASSERT_TRUE(file_chunk_successfully_read_);
   ASSERT_TRUE(file_finished_reading_);
   EXPECT_TRUE(file_successfully_read_);
@@ -165,11 +183,9 @@ INSTANTIATE_TEST_CASE_P(BoxUploadFileChunksHandlerTest,
 class BoxUploadFileChunksHandler_FailureTest
     : public BoxUploadFileChunksHandlerTest {
  public:
-  void InitializeReaderAndStart(size_t file_size) override {
-    chunked_reader_ =
-        std::make_unique<FileChunksHandler>(file_path_, file_size, kChunkSize);
+  void StartReader() override {
     chunked_reader_->SkipToOnFileChunkReadForTesting(
-        std::string(), -1,
+        std::string(), /* bytes_read = */ -1,
         base::BindRepeating(
             &BoxUploadFileChunksHandler_FailureTest::OnFileChunkRead,
             base::Unretained(this)),
@@ -182,17 +198,9 @@ class BoxUploadFileChunksHandler_FailureTest
 TEST_F(BoxUploadFileChunksHandler_FailureTest, NegativeBytesRead) {
   WriteTestFileAndRead("BoxUploadFileChunksHandler_FailureTest");
 
+  EXPECT_EQ(file_read_status_, base::File::Error::FILE_ERROR_IO);
   EXPECT_FALSE(file_finished_reading_);
   EXPECT_FALSE(file_successfully_read_);
-  ASSERT_FALSE(file_chunk_successfully_read_);
-}
-
-TEST_F(BoxUploadFileChunksHandler_FailureTest, NoFile) {
-  InitializeReaderAndStart(100);  // Without creating a test file to be opened.
-  Run();
-
-  ASSERT_FALSE(file_finished_reading_);
-  ASSERT_FALSE(file_successfully_read_);
   ASSERT_FALSE(file_chunk_successfully_read_);
 }
 

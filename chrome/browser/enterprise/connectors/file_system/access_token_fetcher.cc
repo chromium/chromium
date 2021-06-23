@@ -65,12 +65,22 @@ bool DecryptPref(PrefService* prefs,
                  std::string* value) {
   std::string b64_enc_token = prefs->GetString(path);
   std::string enc_token;
-  if (!base::Base64Decode(b64_enc_token, &enc_token) ||
+  if (!prefs || !base::Base64Decode(b64_enc_token, &enc_token) ||
       !OSCrypt::DecryptString(enc_token, value)) {
     return false;
   }
 
   return true;
+}
+
+bool GetToken(PrefService* prefs,
+              const std::string& service_provider,
+              std::string* token,
+              const char* token_pref_path_template) {
+  return !token || DecryptPref(prefs,
+                               base::StringPrintf(token_pref_path_template,
+                                                  service_provider.c_str()),
+                               token);
 }
 
 }  // namespace
@@ -143,7 +153,7 @@ bool SetFileSystemToken(PrefService* prefs,
                         const char token_pref_path_template[],
                         const std::string& token) {
   std::string enc_token;
-  if (!OSCrypt::EncryptString(token, &enc_token)) {
+  if (!prefs || !OSCrypt::EncryptString(token, &enc_token)) {
     return false;
   }
 
@@ -187,25 +197,10 @@ bool GetFileSystemOAuth2Tokens(PrefService* prefs,
                                const std::string& service_provider,
                                std::string* access_token,
                                std::string* refresh_token) {
-  if (access_token) {
-    if (!DecryptPref(prefs,
-                     base::StringPrintf(kAccessTokenPrefPathTemplate,
-                                        service_provider.c_str()),
-                     access_token)) {
-      return false;
-    }
-  }
-
-  if (refresh_token) {
-    if (!DecryptPref(prefs,
-                     base::StringPrintf(kRefreshTokenPrefPathTemplate,
-                                        service_provider.c_str()),
-                     refresh_token)) {
-      return false;
-    }
-  }
-
-  return true;
+  return GetToken(prefs, service_provider, access_token,
+                  kAccessTokenPrefPathTemplate) &&
+         GetToken(prefs, service_provider, refresh_token,
+                  kRefreshTokenPrefPathTemplate);
 }
 
 }  // namespace enterprise_connectors

@@ -7,18 +7,30 @@
 #include "chrome/browser/enterprise/connectors/file_system/box_uploader.h"
 
 #include "base/i18n/rtl.h"
-#include "base/json/json_writer.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "chrome/browser/enterprise/connectors/file_system/box_api_call_test_helper.h"
 #include "chrome/browser/enterprise/connectors/file_system/box_uploader_test_helper.h"
+#include "components/download/public/common/download_interrupt_reasons_utils.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+
+#define ASSERT_REASON_EQ(expected, actual)                          \
+  ASSERT_EQ(download::DOWNLOAD_INTERRUPT_REASON_##expected, actual) \
+      << "  download::DOWNLOAD_INTERRUPT_REASON_"                   \
+      << DownloadInterruptReasonToString(actual);
 
 using testing::Return;
 
+namespace {
+const base::FilePath::StringType kUploadFileName(
+    FILE_PATH_LITERAL("box_uploader_test.txt"));
+}  // namespace
+
 namespace enterprise_connectors {
+
+using Reason = BoxUploader::InterruptReason;
 
 class BoxUploaderCreateTest : public BoxUploaderTestBase {
  public:
@@ -29,6 +41,7 @@ class BoxUploaderCreateTest : public BoxUploaderTestBase {
     uploader_ = BoxUploader::Create(&test_item_);
     ASSERT_TRUE(uploader_);
     InitUploader(uploader_.get());
+    InitQuitClosure();
     uploader_->TryTask(url_factory_, "test_token");
     RunWithQuitClosure();
   }
@@ -151,18 +164,14 @@ class BoxUploaderTest : public BoxUploaderTestBase {
 
   bool upload_initiated_ = false;
   std::unique_ptr<BoxUploaderForTest> uploader_;
-
-  static const base::FilePath::StringType kUploadFileName;
 };
-
-const base::FilePath::StringType BoxUploaderTest::kUploadFileName(
-    FILE_PATH_LITERAL("box_uploader_test.txt"));
 
 TEST_F(BoxUploaderTest, HasExistingFolderOnBox) {
   AddFetchResult(kFileSystemBoxFindFolderUrl, net::HTTP_OK,
                  kFileSystemBoxFindFolderResponseBody);
   AddFetchResult(kFileSystemBoxPreflightCheckUrl, net::HTTP_OK);
 
+  InitQuitClosure();
   uploader_->TryTask(url_factory_, "test_token");
   RunWithQuitClosure();
 
@@ -181,6 +190,7 @@ TEST_F(BoxUploaderTest, NoExistingFolderOnBox_CreatFolder) {
                  kFileSystemBoxCreateFolderResponseBody);
   AddFetchResult(kFileSystemBoxPreflightCheckUrl, net::HTTP_OK);
 
+  InitQuitClosure();
   uploader_->TryTask(url_factory_, "test_token");
   RunWithQuitClosure();
 
@@ -197,6 +207,7 @@ TEST_F(BoxUploaderTest, AuthenticationRetry) {
   // Check that authentication was refreshed upon net::HTTP_UNAUTHORIZED.
   AddFetchResult(kFileSystemBoxFindFolderUrl, net::HTTP_UNAUTHORIZED);
 
+  InitQuitClosure();
   uploader_->TryTask(url_factory_, "test_token");
   RunWithQuitClosure();
 
@@ -212,6 +223,7 @@ TEST_F(BoxUploaderTest, AuthenticationRetry) {
                  kFileSystemBoxFindFolderResponseBody);
   AddFetchResult(kFileSystemBoxPreflightCheckUrl, net::HTTP_OK);
 
+  InitQuitClosure();
   uploader_->TryTask(url_factory_, "test_token");
   RunWithQuitClosure();
 
@@ -230,6 +242,7 @@ TEST_F(BoxUploaderTest, CreateFolder_UnexpectedFailure) {
                  kFileSystemBoxFindFolderResponseEmptyEntriesList);
   AddFetchResult(kFileSystemBoxCreateFolderUrl, net::HTTP_NOT_FOUND);
 
+  InitQuitClosure();
   uploader_->TryTask(url_factory_, "test_token");
   RunWithQuitClosure();
 
@@ -246,15 +259,18 @@ TEST_F(BoxUploaderTest, CreateFolder_TerminateTask) {
   AddFetchResult(kFileSystemBoxFindFolderUrl, net::HTTP_OK,
                  kFileSystemBoxFindFolderResponseEmptyEntriesList);
 
+  InitQuitClosure();
   uploader_->TryTask(url_factory_, "test_token");
-  uploader_
-      ->TerminateTask();  // Terminate without mock fetch result for create.
+  // Without mock fetch result for create folder, it's waiting. Test terminate.
+  const auto terminate_reason = Reason::DOWNLOAD_INTERRUPT_REASON_USER_CANCELED;
+  uploader_->TerminateTask(terminate_reason);
   RunWithQuitClosure();
 
   // Should just report failure via callback.
   ASSERT_EQ(authentication_retry_, 0);
   EXPECT_FALSE(upload_initiated_);
   EXPECT_TRUE(download_thread_cb_called_);
+  EXPECT_EQ(reason_, terminate_reason);
   EXPECT_EQ(uploader_->GetFolderIdForTesting(), "");
 }
 
@@ -277,6 +293,7 @@ TEST_F(BoxUploader_PreflightCheckTest, Success) {
   // Preflight check passes (dummy body since not reading from it):
   AddFetchResult(kFileSystemBoxPreflightCheckUrl, net::HTTP_OK);
 
+  InitQuitClosure();
   uploader_->TryTask(url_factory_, "test_token");
   RunWithQuitClosure();
 
@@ -301,6 +318,7 @@ TEST_F(BoxUploader_PreflightCheckTest, ConflictAndSuccessAfterkMaxUniqueTries) {
   base::i18n::SetICUDefaultLocale("en_ZA");
   base::test::ScopedRestoreDefaultTimezone sast_time("Africa/Johannesburg");
 
+  InitQuitClosure();
   uploader_->TryTask(url_factory_, "test_token");
   RunWithQuitClosure();
   ASSERT_EQ(authentication_retry_, 0);
@@ -335,6 +353,7 @@ TEST_F(BoxUploader_PreflightCheckTest, ConflictEvenWithTimestamp) {
   base::i18n::SetICUDefaultLocale("en_ZA");
   base::test::ScopedRestoreDefaultTimezone sast_time("Africa/Johannesburg");
 
+  InitQuitClosure();
   uploader_->TryTask(url_factory_, "test_token");
   RunWithQuitClosure();
   ASSERT_EQ(authentication_retry_, 0);
@@ -365,6 +384,7 @@ TEST_F(BoxUploader_PreflightCheckTest, ConflictThenSuccess) {
   // box_uploader_test (2).txt
   AddSequentialFetchResult(kFileSystemBoxPreflightCheckUrl, net::HTTP_OK);
 
+  InitQuitClosure();
   uploader_->TryTask(url_factory_, "test_token");
   RunWithQuitClosure();
 
@@ -382,6 +402,7 @@ TEST_F(BoxUploader_PreflightCheckTest, CachedFolder404_ButFound) {
   // again (dummy body since not reading from it):
   AddFetchResult(kFileSystemBoxPreflightCheckUrl, net::HTTP_NOT_FOUND);
 
+  InitQuitClosure();
   uploader_->TryTask(url_factory_, "test_token");
 
   // TODO(https://crbug.com/1199194): Re-enable this check without modifying
@@ -413,6 +434,7 @@ TEST_F(BoxUploader_PreflightCheckTest, CachedFolder404) {
   // again (dummy body since not reading from it):
   AddFetchResult(kFileSystemBoxPreflightCheckUrl, net::HTTP_NOT_FOUND);
 
+  InitQuitClosure();
   uploader_->TryTask(url_factory_, "test_token");
 
   // TODO(https://crbug.com/1199194): Re-enable this check without modifying
@@ -447,6 +469,7 @@ TEST_F(BoxUploader_PreflightCheckTest, AuthenticationRetry) {
   // net::HTTP_UNAUTHORIZED (dummy body since not reading from it):
   AddFetchResult(kFileSystemBoxPreflightCheckUrl, net::HTTP_UNAUTHORIZED);
 
+  InitQuitClosure();
   uploader_->TryTask(url_factory_, "test_token");
   RunWithQuitClosure();
 
@@ -462,6 +485,7 @@ TEST_F(BoxUploader_PreflightCheckTest, AuthenticationRetry) {
   // reading from it):
   AddFetchResult(kFileSystemBoxPreflightCheckUrl, net::HTTP_OK);
 
+  InitQuitClosure();
   uploader_->TryTask(url_factory_, "test_token");
   RunWithQuitClosure();
 
@@ -471,6 +495,86 @@ TEST_F(BoxUploader_PreflightCheckTest, AuthenticationRetry) {
   EXPECT_EQ(kUploadFileName, validated_file_name_.value());
   ASSERT_TRUE(upload_initiated_);
   EXPECT_FALSE(download_thread_cb_called_);  // InterceptedPreUpload() above.
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// BoxUploader: Net Error Test
+////////////////////////////////////////////////////////////////////////////////
+
+class MockApiCallFlowWithNetError : public MockApiCallFlow {
+ public:
+  using TaskCallback = base::OnceCallback<void(BoxApiCallResponse)>;
+  MockApiCallFlowWithNetError(TaskCallback cb, net::Error error)
+      : cb_(std::move(cb)), error_(error) {}
+
+  void Start(scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+             const std::string& access_token) override {
+    std::move(cb_).Run(BoxApiCallResponse{false, error_});
+  }
+
+ private:
+  TaskCallback cb_;
+  net::Error error_;
+};
+
+class BoxUploaderForNetErrorTest : public BoxUploader {
+ public:
+  explicit BoxUploaderForNetErrorTest(download::DownloadItem* download_item)
+      : BoxUploader(download_item) {}
+
+ protected:
+  std::unique_ptr<OAuth2ApiCallFlow> MakeFileUploadApiCall() override {
+    return std::make_unique<MockApiCallFlowWithNetError>(
+        base::BindOnce(&BoxUploaderForNetErrorTest::OnMockFlowResponse,
+                       base::Unretained(this)),
+        net::Error::ERR_TIMED_OUT);
+  }
+
+  void OnMockFlowResponse(BoxApiCallResponse response) {
+    ASSERT_EQ(response.success, EnsureSuccess(response));
+  }
+};
+
+class BoxUploaderNetErrorTest : public BoxUploaderTestBase {
+ public:
+  BoxUploaderNetErrorTest() : BoxUploaderTestBase(kUploadFileName) {}
+
+ protected:
+  void SetUp() override {
+    BoxUploaderTestBase::SetUp();
+
+    // To fly through first few steps to then trigger MakeFileUploadApiCall()
+    // where we make the MockApiCallFlowWithNetError.
+    AddFetchResult(kFileSystemBoxFindFolderUrl, net::HTTP_OK,
+                   kFileSystemBoxFindFolderResponseBody);
+    AddFetchResult(kFileSystemBoxPreflightCheckUrl, net::HTTP_OK);
+    // No CreateTemporaryFile() here to make sure file delete failure does not
+    // overwrite the pre-existing net error.
+    uploader_ = std::make_unique<BoxUploaderForNetErrorTest>(&test_item_);
+    InitUploader(uploader_.get());
+  }
+
+  void TearDown() override {
+    EXPECT_FALSE(upload_success_);
+    // If upload was not initiated due to some error, file should've been
+    // deleted as part of error handling.
+    EXPECT_FALSE(base::PathExists(GetFilePath()));
+    // Only 1 update in StartUpload() when PreflightCheck succeeds.
+    EXPECT_LE(progress_update_cb_called_, 1);
+  }
+  std::unique_ptr<BoxUploaderForNetErrorTest> uploader_;
+};
+
+TEST_F(BoxUploaderNetErrorTest, UploadTimedOut) {
+  InitQuitClosure();
+  uploader_->TryTask(url_factory_, "test_token");
+  RunWithQuitClosure();
+
+  ASSERT_EQ(authentication_retry_, 0);
+  EXPECT_TRUE(download_thread_cb_called_);  // Due to net::Error.
+  EXPECT_EQ(reason_, download::ConvertNetErrorToInterruptReason(
+                         net::Error::ERR_TIMED_OUT,
+                         download::DOWNLOAD_INTERRUPT_FROM_NETWORK));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -489,8 +593,10 @@ class BoxUploaderForFileDeleteTest : public BoxUploader {
   std::unique_ptr<OAuth2ApiCallFlow> MakeFileUploadApiCall() override {
     return std::make_unique<MockApiCallFlow>();
   }
+
   void StartCurrentApiCall() override {
-    OnApiCallFlowDone(true, kFileSystemBoxUploadResponseFileId);
+    OnApiCallFlowDone(Reason::DOWNLOAD_INTERRUPT_REASON_NONE,
+                      kFileSystemBoxUploadResponseFileId);
   }
 };
 
@@ -519,6 +625,7 @@ class BoxUploader_FileDeleteTest : public BoxUploaderTestBase {
 TEST_F(BoxUploader_FileDeleteTest, TryTask_DeleteOnApiSuccess) {
   CreateTemporaryFile();
 
+  InitQuitClosure();
   uploader_->TryTask(url_factory_, "test_token");
   RunWithQuitClosure();
 
@@ -530,7 +637,9 @@ TEST_F(BoxUploader_FileDeleteTest, NoFileToDelete) {
   // Make sure file doesn't exist.
   ASSERT_FALSE(base::PathExists(GetFilePath()));
 
-  uploader_->OnApiCallFlowDone(true, kFileSystemBoxUploadResponseFileId);
+  InitQuitClosure();
+  uploader_->OnApiCallFlowDone(Reason::DOWNLOAD_INTERRUPT_REASON_NONE,
+                               kFileSystemBoxUploadResponseFileId);
   RunWithQuitClosure();
 
   EXPECT_FALSE(base::PathExists(GetFilePath())) << "No file should be created.";
@@ -541,7 +650,9 @@ TEST_F(BoxUploader_FileDeleteTest, NoFileToDelete) {
 TEST_F(BoxUploader_FileDeleteTest, OnApiCallFlowFailure) {
   CreateTemporaryFile();
 
-  uploader_->OnApiCallFlowDone(false, std::string());
+  InitQuitClosure();
+  uploader_->OnApiCallFlowDone(Reason::DOWNLOAD_INTERRUPT_REASON_SERVER_FAILED,
+                               std::string());
   RunWithQuitClosure();
 
   EXPECT_FALSE(base::PathExists(GetFilePath()));  // Make sure file is deleted.
@@ -552,7 +663,8 @@ TEST_F(BoxUploader_FileDeleteTest, OnApiCallFlowFailure) {
 TEST_F(BoxUploader_FileDeleteTest, TerminateTask) {
   CreateTemporaryFile();
 
-  uploader_->TerminateTask();
+  InitQuitClosure();
+  uploader_->TerminateTask(Reason::DOWNLOAD_INTERRUPT_REASON_USER_CANCELED);
   RunWithQuitClosure();
 
   EXPECT_FALSE(base::PathExists(GetFilePath()));  // Make sure file is deleted.
@@ -572,6 +684,7 @@ TEST_F(BoxUploader_FileDeleteTest, LoadFromReroutedInfo_InProgress) {
   // Recreate uploader to load rerouted info.
   uploader_ = std::make_unique<BoxUploaderForFileDeleteTest>(&test_item_);
   InitUploader(uploader_.get());
+  InitQuitClosure();
   uploader_->TryTask(url_factory_, "test_token");
   RunWithQuitClosure();
 
@@ -628,7 +741,6 @@ class BoxDirectUploaderTest : public BoxUploaderTestBase {
     InitFolderIdInPrefs(kFileSystemBoxFolderIdInPref);
     AddFetchResult(kFileSystemBoxPreflightCheckUrl, net::HTTP_OK);
 
-    CreateTemporaryFile();
     InitUploader(uploader_.get());
     ASSERT_EQ(uploader_->GetFolderIdForTesting(), kFileSystemBoxFolderIdInPref);
   }
@@ -644,6 +756,8 @@ TEST_F(BoxDirectUploaderTest, SuccessfulUpload) {
   AddFetchResult(kFileSystemBoxDirectUploadUrl, net::HTTP_CREATED,
                  kFileSystemBoxUploadResponseBody);
 
+  CreateTemporaryFile();
+  InitQuitClosure();
   uploader_->TryTask(url_factory_, "test_token");
   RunWithQuitClosure();
 
@@ -657,11 +771,29 @@ TEST_F(BoxDirectUploaderTest, SuccessfulUpload) {
             kFileSystemBoxUploadResponseFolderUrl);
 }
 
+TEST_F(BoxDirectUploaderTest, FileReadFailure) {
+  // Do not CreateTemporaryFile() so that file read fails.
+  InitQuitClosure();
+  uploader_->TryTask(url_factory_, "test_token");
+  RunWithQuitClosure();
+
+  ASSERT_EQ(authentication_retry_, 0);
+  EXPECT_TRUE(download_thread_cb_called_);
+  EXPECT_TRUE(progress_update_cb_called_);
+  EXPECT_FALSE(upload_success_);
+  EXPECT_TRUE(uploader_->GetUploadedFileUrl().is_empty());
+  EXPECT_EQ(uploader_->GetDestinationFolderUrl(),
+            kFileSystemBoxUploadResponseFolderUrl);
+  ASSERT_REASON_EQ(FILE_FAILED, reason_);
+}
+
 TEST_F(BoxDirectUploaderTest, UnexpectedFailure) {
   // Check that the API calls flow is terminated upon any other failure code
   // other than net::HTTP_UNAUTHORIZED.
   AddFetchResult(kFileSystemBoxDirectUploadUrl, net::HTTP_NOT_FOUND);
 
+  CreateTemporaryFile();
+  InitQuitClosure();
   uploader_->TryTask(url_factory_, "test_token");
   RunWithQuitClosure();
 
@@ -706,44 +838,62 @@ class BoxChunkedUploaderTest : public BoxUploaderTestBase {
     CreateTemporaryFileWithContent(content);
   }
 
-  void AddUploadResultForPart(size_t idx,
-                              bool success,
-                              net::HttpStatusCode response_code,
-                              size_t chunk_size,
-                              size_t expected_chunks,
-                              size_t total_size) {
-    base::Value part(base::Value::Type::DICTIONARY);
-
-    if (success) {
-      const size_t curr_chunk_size =
-          (idx + 1 == expected_chunks) ? (total_size % chunk_size) : chunk_size;
-      part.SetStringKey("part_id", "BFDF5379");  // Placeholder.
-      part.SetIntKey("offset", chunk_size * idx);
-      part.SetIntKey("size", curr_chunk_size);
-      part.SetStringKey("sha1", "65991ed521fcfe4724b7d814ab");  // Placeholder.
-    }
-
-    base::Value part_body(base::Value::Type::DICTIONARY);
-    part_body.SetKey("part", std::move(part));
-
-    std::string body;
-    base::JSONWriter::Write(part_body, &body);
-
+  void AddUploadSuccessFetchResultsForPart(size_t idx,
+                                           net::HttpStatusCode response_code,
+                                           size_t chunk_size,
+                                           size_t expected_chunks,
+                                           size_t total_size) {
+    const size_t curr_chunk_size =
+        (idx + 1 == expected_chunks) ? (total_size % chunk_size) : chunk_size;
+    std::string body =
+        CreateChunkedUploadPartResponse(chunk_size * idx, curr_chunk_size);
     AddSequentialFetchResult(kFileSystemBoxChunkedUploadSessionUrl,
                              response_code, body);
   }
 
-  void AddUploadSuccessFetchResults() {
+  // Helper method to add upload fetch results sequentially. |last_nth| = 0
+  // means no failure; otherwise, a failure http code must be provided.
+  void AddUploadFetchResultsWithFailureAtLastNth(
+      size_t last_nth,
+      net::HttpStatusCode failure_http_code = net::HTTP_OK,
+      std::string error_msg = std::string()) {
     const size_t chunk_size =
         kFileSystemBoxChunkedUploadCreateSessionResponsePartSize;
     const size_t total_size = test_item_.GetTotalBytes();
     const size_t chunks_count =
         CalculateExpectedChunkReadCount(total_size, chunk_size);
+    ASSERT_GT(chunks_count, 1U);
     ASSERT_LE(total_size, chunk_size * chunks_count);
-    for (size_t pdx = 0; pdx < chunks_count; ++pdx) {
-      AddUploadResultForPart(pdx, true, net::HTTP_OK, chunk_size, chunks_count,
-                             total_size);
+
+    size_t last_chunk = chunks_count;
+    if (last_nth) {
+      ASSERT_NE(failure_http_code, net::HTTP_OK)
+          << "Must provide a failure http code";
+      last_chunk = last_chunk - last_nth;
+      ASSERT_GT(last_chunk, 0U);
+      LOG(INFO) << "First " << last_chunk << " parts will succeed; total "
+                << chunks_count << " parts; total file size " << total_size;
     }
+    ASSERT_LE(last_chunk, chunks_count);
+
+    for (size_t pdx = 0; pdx < last_chunk; ++pdx) {
+      AddUploadSuccessFetchResultsForPart(pdx, net::HTTP_OK, chunk_size,
+                                          chunks_count, total_size);
+    }
+    ASSERT_EQ(GetPendingSequentialResponsesCount(
+                  kFileSystemBoxChunkedUploadSessionUrl),
+              last_chunk);
+
+    if (last_nth) {
+      LOG(INFO) << "Failing part " << last_chunk << "th of " << chunks_count;
+      AddSequentialFetchResult(
+          kFileSystemBoxChunkedUploadSessionUrl, failure_http_code,
+          CreateFailureResponse(failure_http_code, error_msg.c_str()));
+    }
+  }
+
+  void AddUploadSuccessFetchResults() {
+    AddUploadFetchResultsWithFailureAtLastNth(0);
   }
 
   std::unique_ptr<BoxUploader> uploader_;
@@ -759,6 +909,7 @@ TEST_F(BoxChunkedUploaderTest, SuccessfulUpload) {
   AddFetchResult(kFileSystemBoxChunkedUploadCommitUrl, net::HTTP_CREATED,
                  kFileSystemBoxUploadResponseBody);
 
+  InitQuitClosure();
   uploader_->TryTask(url_factory_, "test_token");
   RunWithQuitClosure();
 
@@ -772,6 +923,7 @@ TEST_F(BoxChunkedUploaderTest, FailedToCreateSession) {
   AddFetchResult(kFileSystemBoxChunkedUploadCreateSessionUrl,
                  net::HTTP_CONFLICT);
 
+  InitQuitClosure();
   uploader_->TryTask(url_factory_, "test_token");
   RunWithQuitClosure();
 
@@ -784,6 +936,7 @@ TEST_F(BoxChunkedUploaderTest, HasFolderIdStoredInPrefs_ButFailedOnBox) {
   AddFetchResult(kFileSystemBoxChunkedUploadCreateSessionUrl,
                  net::HTTP_NOT_FOUND);
 
+  InitQuitClosure();
   uploader_->TryTask(url_factory_, "test_token");
   RunWithQuitClosure();
 
@@ -798,8 +951,10 @@ TEST_F(BoxChunkedUploaderTest, AuthenticationRetry_DuringCreateSession) {
   AddFetchResult(kFileSystemBoxChunkedUploadCreateSessionUrl,
                  net::HTTP_UNAUTHORIZED);
 
+  InitQuitClosure();
   uploader_->TryTask(url_factory_, "test_token");
   RunWithQuitClosure();
+
   ASSERT_EQ(authentication_retry_, 1);
   ASSERT_FALSE(upload_success_);
 
@@ -811,6 +966,8 @@ TEST_F(BoxChunkedUploaderTest, AuthenticationRetry_DuringCreateSession) {
   // Commit upload session:
   AddFetchResult(kFileSystemBoxChunkedUploadCommitUrl, net::HTTP_CREATED,
                  kFileSystemBoxUploadResponseBody);
+
+  InitQuitClosure();
   uploader_->TryTask(url_factory_, "test_token");
   RunWithQuitClosure();
 
@@ -823,18 +980,26 @@ TEST_F(BoxChunkedUploaderTest, AuthenticationRetry_DuringUploadPart) {
   AddFetchResult(kFileSystemBoxChunkedUploadCreateSessionUrl, net::HTTP_CREATED,
                  kFileSystemBoxChunkedUploadCreateSessionResponseBody);
   // Upload part failed (empty body since not reading from body):
-  AddFetchResult(kFileSystemBoxChunkedUploadSessionUrl, net::HTTP_UNAUTHORIZED);
+  AddSequentialFetchResult(kFileSystemBoxChunkedUploadSessionUrl,
+                           net::HTTP_UNAUTHORIZED);
 
+  InitQuitClosure();
   uploader_->TryTask(url_factory_, "test_token");
   RunWithQuitClosure();
+
   ASSERT_EQ(authentication_retry_, 1);
   ASSERT_FALSE(upload_success_);
+
+  // Clear mock responses above to ensure they are not called again:
+  ClearFetchResults(kFileSystemBoxChunkedUploadCreateSessionUrl);
 
   // Upload parts:
   AddUploadSuccessFetchResults();
   // Commit upload session:
   AddFetchResult(kFileSystemBoxChunkedUploadCommitUrl, net::HTTP_CREATED,
                  kFileSystemBoxUploadResponseBody);
+
+  InitQuitClosure();
   uploader_->TryTask(url_factory_, "test_token");
   RunWithQuitClosure();
 
@@ -851,14 +1016,22 @@ TEST_F(BoxChunkedUploaderTest, AuthenticationRetry_DuringCommitSession) {
   // Commit upload session failed (empty body since not reading from body):
   AddFetchResult(kFileSystemBoxChunkedUploadCommitUrl, net::HTTP_UNAUTHORIZED);
 
+  InitQuitClosure();
   uploader_->TryTask(url_factory_, "test_token");
   RunWithQuitClosure();
+
   ASSERT_EQ(authentication_retry_, 1);
   ASSERT_FALSE(upload_success_);
+
+  // Clear mock responses above to ensure they are not called again:
+  ClearFetchResults(kFileSystemBoxChunkedUploadCreateSessionUrl);
+  ClearFetchResults(kFileSystemBoxChunkedUploadCommitUrl);
 
   // Commit upload session:
   AddFetchResult(kFileSystemBoxChunkedUploadCommitUrl, net::HTTP_CREATED,
                  kFileSystemBoxUploadResponseBody);
+
+  InitQuitClosure();
   uploader_->TryTask(url_factory_, "test_token");
   RunWithQuitClosure();
 
@@ -870,36 +1043,39 @@ TEST_F(BoxChunkedUploaderTest, FailedToUploadPart) {
   // Create upload session:
   AddFetchResult(kFileSystemBoxChunkedUploadCreateSessionUrl, net::HTTP_CREATED,
                  kFileSystemBoxChunkedUploadCreateSessionResponseBody);
-  // Upload part failed (empty body since not reading from body):
-  AddSequentialFetchResult(kFileSystemBoxChunkedUploadSessionUrl,
-                           net::HTTP_PRECONDITION_FAILED);
+  // Upload part 1 succeeded, but upload part 2 failed:
+  AddUploadFetchResultsWithFailureAtLastNth(1, net::HTTP_PRECONDITION_FAILED);
   // Abort upload session (empty body since not reading from body):
   AddSequentialFetchResult(kFileSystemBoxChunkedUploadSessionUrl,
                            net::HTTP_NO_CONTENT);
 
+  InitQuitClosure();
   uploader_->TryTask(url_factory_, "test_token");
   RunWithQuitClosure();
 
   ASSERT_EQ(authentication_retry_, 0);
   ASSERT_FALSE(upload_success_);
+  ASSERT_REASON_EQ(SERVER_FAILED, reason_);
 }
 
-TEST_F(BoxChunkedUploaderTest, FailedToAbortSession) {
+TEST_F(BoxChunkedUploaderTest, FailedToUploadPartThenFailedToAbortSession) {
   // Create upload session:
   AddFetchResult(kFileSystemBoxChunkedUploadCreateSessionUrl, net::HTTP_CREATED,
                  kFileSystemBoxChunkedUploadCreateSessionResponseBody);
-  // Upload part failed (empty body since not reading from body):
-  AddSequentialFetchResult(kFileSystemBoxChunkedUploadSessionUrl,
-                           net::HTTP_PRECONDITION_FAILED);
-  // Abort upload session (empty body since not reading from body):
-  AddSequentialFetchResult(kFileSystemBoxChunkedUploadSessionUrl,
-                           net::HTTP_NOT_FOUND);
+  // Upload part 1 succeeded, but upload part 2 failed:
+  AddUploadFetchResultsWithFailureAtLastNth(1, net::HTTP_PRECONDITION_FAILED);
+  // Abort upload session failed:
+  AddSequentialFetchResult(
+      kFileSystemBoxChunkedUploadSessionUrl, net::HTTP_GONE,
+      CreateFailureResponse(net::HTTP_GONE, "session_expired"));
 
+  InitQuitClosure();
   uploader_->TryTask(url_factory_, "test_token");
   RunWithQuitClosure();
 
   ASSERT_EQ(authentication_retry_, 0);
   ASSERT_FALSE(upload_success_);
+  ASSERT_REASON_EQ(SERVER_FAILED, reason_);
 }
 
 TEST_F(BoxChunkedUploaderTest, FailedToCommitSession) {
@@ -908,14 +1084,21 @@ TEST_F(BoxChunkedUploaderTest, FailedToCommitSession) {
                  kFileSystemBoxChunkedUploadCreateSessionResponseBody);
   // Upload parts:
   AddUploadSuccessFetchResults();
-  // Commit upload session failed (empty body since not reading from body):
-  AddFetchResult(kFileSystemBoxChunkedUploadCommitUrl, net::HTTP_CONFLICT);
+  // Commit upload session failed:
+  AddSequentialFetchResult(
+      kFileSystemBoxChunkedUploadCommitUrl, net::HTTP_BAD_REQUEST,
+      CreateFailureResponse(net::HTTP_BAD_REQUEST, "bad_digest"));
+  // Abort upload session (empty body since not reading from body):
+  AddSequentialFetchResult(kFileSystemBoxChunkedUploadSessionUrl,
+                           net::HTTP_NO_CONTENT);
 
+  InitQuitClosure();
   uploader_->TryTask(url_factory_, "test_token");
   RunWithQuitClosure();
 
   ASSERT_EQ(authentication_retry_, 0);
   ASSERT_FALSE(upload_success_);
+  ASSERT_REASON_EQ(SERVER_FAILED, reason_);
 }
 
 TEST_F(BoxChunkedUploaderTest, CommitRetryAfter) {
@@ -934,6 +1117,7 @@ TEST_F(BoxChunkedUploaderTest, CommitRetryAfter) {
   AddSequentialFetchResult(kFileSystemBoxChunkedUploadCommitUrl,
                            net::HTTP_CREATED, kFileSystemBoxUploadResponseBody);
 
+  InitQuitClosure();
   uploader_->TryTask(url_factory_, "test_token");
   RunWithQuitClosure();
 
@@ -975,6 +1159,7 @@ TEST_F(BoxChunkedUploaderFileFailureTest, FailedToOpen) {
   AddSequentialFetchResult(kFileSystemBoxChunkedUploadSessionUrl,
                            net::HTTP_NO_CONTENT);
 
+  InitQuitClosure();
   uploader_->TryTask(url_factory_, "test_token");
   RunWithQuitClosure();
 

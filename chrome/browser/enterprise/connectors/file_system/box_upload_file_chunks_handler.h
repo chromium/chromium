@@ -51,17 +51,18 @@ class BoxChunkedUploader::FileChunksHandler {
       FileCompletelyReadCallback file_completely_read_cb);
 
  private:
-  void ReadIfValid(bool file_valid);
+  using FileStatus = base::File::Error;
+  void ReadIfValid(FileStatus file_status);
   void Read();
   void OnFileChunkRead(int bytes_read);
-  void OnFileCompletelyRead(bool success);
+  void OnFileCompletelyRead(FileStatus file_status);
 
   // Helper methods to check if file open operation succeeded, and log failures.
   // Arg: bool indicates whether the file read was successful.
-  using FileCheckCallback = base::OnceCallback<void(bool)>;
-  void CheckFileError(FileCheckCallback cb, bool step_success);
-  void OnFileChecked(FileCheckCallback cb, bool step_success, bool file_valid);
-  void OnFileError(FileCheckCallback cb, base::File::Error error);
+  using FileCheckCallback = base::OnceCallback<void(FileStatus)>;
+  void CheckFileError(FileCheckCallback cb);
+  void OnFileChecked(FileCheckCallback cb, bool file_valid);
+  void OnFileError(FileCheckCallback cb, FileStatus file_status);
 
   base::SequenceBound<base::File> sequenced_file_;
   size_t chunks_read_{0U};  // # of chunks read; checked with byte_from/to_.

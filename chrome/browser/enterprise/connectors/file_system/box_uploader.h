@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_FILE_SYSTEM_BOX_UPLOADER_H_
 
 #include "base/files/file_path.h"
+#include "chrome/browser/enterprise/connectors/file_system/box_api_call_response.h"
 #include "components/download/public/common/download_item_impl.h"
 #include "components/download/public/common/download_item_rename_progress_update.h"
 #include "components/prefs/pref_service.h"
@@ -31,13 +32,15 @@ class BoxUploader {
 
   virtual ~BoxUploader();
 
+  using InterruptReason = download::DownloadInterruptReason;
+  using ProgressUpdate = download::DownloadItemRenameProgressUpdate;
   // Callback to update the DownloadItem and send BoxInfo into databases.
   using ProgressUpdateCallback = base::RepeatingCallback<void(
       const download::DownloadItemRenameProgressUpdate&)>;
   // Callback when upload completes. Args indicate result to be updated to UX,
   // and the final file name validated on Box.
   using UploadCompleteCallback =
-      base::OnceCallback<void(bool, const base::FilePath&)>;
+      base::OnceCallback<void(InterruptReason, const base::FilePath&)>;
 
   // Initialize with callbacks from FileSystemRenameHandler, set
   // current_api_call_ to be the first step of the whole API call workflow. Must
@@ -55,7 +58,7 @@ class BoxUploader {
       const std::string& access_token);
 
   // Cancel the upload and delete the local temporary file.
-  void TerminateTask();
+  void TerminateTask(InterruptReason reason);
 
   virtual GURL GetUploadedFileUrl() const;
   virtual GURL GetDestinationFolderUrl() const;
@@ -63,7 +66,8 @@ class BoxUploader {
   // Helper methods for unit tests.
   std::string GetFolderIdForTesting() const;
   void NotifyOAuth2ErrorForTesting();
-  void SetUploadApiCallFlowDoneForTesting(bool success, std::string file_id);
+  void SetUploadApiCallFlowDoneForTesting(InterruptReason reason,
+                                          std::string file_id);
 
   // The largest number of retries attempted in OnPreflightCheckResponse.
   enum UploadAttemptCount {
@@ -80,10 +84,13 @@ class BoxUploader {
   explicit BoxUploader(download::DownloadItem* download_item);
 
   void TryCurrentApiCall();
-  bool EnsureSuccessResponse(bool success, int response_code);
-  void OnApiCallFlowDone(bool upload_success, std::string uploaded_file_id);
+  bool EnsureSuccess(BoxApiCallResponse response);
+  void OnFileError(base::File::Error error);
+  void OnApiCallFlowDone(InterruptReason upload_interrupt_reason,
+                         std::string uploaded_file_id);
   void SendProgressUpdate() const;
-  void NotifyResult(bool success);
+  // Notify upload success or failure + reason back to the download thread.
+  void NotifyResult(InterruptReason reason);
 
   // To be overridden to test API calls flow and file delete separately.
   virtual void StartCurrentApiCall();
@@ -93,8 +100,9 @@ class BoxUploader {
   // BoxChunkedUploader.
   virtual void StartUpload();
   // Can be overridden to handle failure differently from simply calling
-  // OnApiCallFlowDone(false).
-  virtual void OnApiCallFlowFailure();
+  // OnApiCallFlowDone(<failure reasons>).
+  virtual void OnApiCallFlowFailure(BoxApiCallResponse response);
+  virtual void OnApiCallFlowFailure(InterruptReason reason);
 
   const base::FilePath GetLocalFilePath() const;
   // Return the file name used for the upload, which, if there was naming
@@ -108,6 +116,14 @@ class BoxUploader {
   BoxInfo& reroute_info() { return *(reroute_info_.mutable_box()); }
   const BoxInfo& reroute_info() const { return reroute_info_.box(); }
 
+  // Iff InterruptReason returned is
+  // download::DOWNLOAD_INTERRUPT_REASON_SERVER_FAILED, the error messages in
+  // the proto should be used in place of localized download interrupt reason
+  // strings.
+  static InterruptReason ConvertToInterruptReasonOrErrorMessage(
+      BoxApiCallResponse response,
+      BoxInfo& reroute_info);
+
  private:
   // Box API call pre-upload steps:
   std::unique_ptr<OAuth2ApiCallFlow> MakeFindUpstreamFolderApiCall();
@@ -115,22 +131,21 @@ class BoxUploader {
   std::unique_ptr<OAuth2ApiCallFlow> MakePreflightCheckApiCall();
 
   // Callbacks from Box*ApiCallFlows:
-  void OnFindUpstreamFolderResponse(bool success,
-                                    int response_code,
+  void OnFindUpstreamFolderResponse(BoxApiCallResponse response,
                                     const std::string& folder_id);
-  void OnCreateUpstreamFolderResponse(bool success,
-                                      int response_code,
+  void OnCreateUpstreamFolderResponse(BoxApiCallResponse response,
                                       const std::string& folder_id);
-  void OnPreflightCheckResponse(bool success, int response_code);
+  void OnPreflightCheckResponse(BoxApiCallResponse response);
   void LogUniquifierCountToUma();
 
   // The followings are not necessarily specific to Box:
   // Post a task to ThreadPool to delete the local file, after the entire file
   // upload was done, with callback OnFileDeleted().
-  void PostDeleteFileTask(bool upload_success);
+  void PostDeleteFileTask(InterruptReason upload_reason);
   // Callback attached in PostDeleteFileTask(). Report success back to original
   // thread via upload_complete_cb_.
-  void OnFileDeleted(bool upload_success, bool delete_success);
+  void OnFileDeleted(InterruptReason upload_reason,
+                     base::File::Error delete_status);
 
   // File details.
   const base::FilePath local_file_path_;   // Path of the local temporary file.
@@ -159,8 +174,7 @@ class BoxUploader {
   // Folder id used to specify the destination folder for the Service Provider.
   std::string folder_id_;
   // PrefService used to store folder_id.
-  PrefService* prefs_ =
-      nullptr;  // Has to be initialized to nullptr for DCHECKs.
+  PrefService* prefs_ = nullptr;  // Must be initialized to nullptr for DCHECKs.
 
   base::WeakPtrFactory<BoxUploader> weak_factory_{this};
 };
@@ -178,8 +192,7 @@ class BoxDirectUploader : public BoxUploader {
   std::unique_ptr<OAuth2ApiCallFlow> MakeFileUploadApiCall() override;
 
   // Box API call step.
-  void OnWholeFileUploadResponse(bool success,
-                                 int response_code,
+  void OnWholeFileUploadResponse(BoxApiCallResponse response,
                                  const std::string& file_id);
 
   base::WeakPtrFactory<BoxDirectUploader> weak_factory_{this};
@@ -196,6 +209,7 @@ class BoxChunkedUploader : public BoxUploader {
   class FileChunksHandler;
 
   struct PartInfo {
+    base::File::Error error;
     std::string content;
     size_t byte_from;  // Inclusive of 1st byte of the file part.
     size_t byte_to;    // Inclusive of last byte in the file part.
@@ -204,31 +218,29 @@ class BoxChunkedUploader : public BoxUploader {
 
  private:
   // BoxUploader interface.
-  void OnApiCallFlowFailure() override;
+  void OnApiCallFlowFailure(InterruptReason reason) override;
   std::unique_ptr<OAuth2ApiCallFlow> MakeFileUploadApiCall() override;
 
   // Helper methods to transition between chunked upload steps.
   std::unique_ptr<OAuth2ApiCallFlow> MakeCreateUploadSessionApiCall();
   std::unique_ptr<OAuth2ApiCallFlow> MakePartFileUploadApiCall();
   std::unique_ptr<OAuth2ApiCallFlow> MakeCommitUploadSessionApiCall();
-  std::unique_ptr<OAuth2ApiCallFlow> MakeAbortUploadSessionApiCall();
+  std::unique_ptr<OAuth2ApiCallFlow> MakeAbortUploadSessionApiCall(
+      InterruptReason reason);
 
   // Callbacks for chunked file upload.
-  void OnCreateUploadSessionResponse(bool success,
-                                     int response_code,
+  void OnCreateUploadSessionResponse(BoxApiCallResponse response,
                                      base::Value session_endpoints,
                                      size_t part_size);
-  void OnPartFileUploadResponse(bool success,
-                                int response_code,
+  void OnPartFileUploadResponse(BoxApiCallResponse response,
                                 base::Value part_info);
-  void OnCommitUploadSsessionResponse(bool success,
-                                      int response_code,
-                                      base::TimeDelta retry_after,
-                                      const std::string& file_id);
-  void OnAbortUploadSsessionResponse(bool success, int response_code);
+  void OnCommitUploadSessionResponse(BoxApiCallResponse response,
+                                     base::TimeDelta retry_after,
+                                     const std::string& file_id);
+  void OnAbortUploadSessionResponse(InterruptReason reason,
+                                    BoxApiCallResponse response);
 
   // Callbacks for chunks_handler_.
-
   void OnFileChunkRead(PartInfo part_info);
   void OnFileCompletelyUploaded(const std::string& sha1_digest);
 
@@ -237,7 +249,7 @@ class BoxChunkedUploader : public BoxUploader {
   const size_t file_size_;
   base::Value session_endpoints_;
   PartInfo curr_part_;
-  base::Value uploaded_parts_;
+  base::ListValue uploaded_parts_;
   std::string sha1_digest_;
 
   base::WeakPtrFactory<BoxChunkedUploader> weak_factory_{this};

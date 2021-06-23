@@ -227,6 +227,11 @@ class RenameHandlerForTest : public FileSystemRenameHandler {
         AuthErr::InvalidGaiaCredentialsReason::CREDENTIALS_REJECTED_BY_SERVER);
     OnAccessTokenFetched(fail_reason, std::string(), std::string());
   }
+
+  void ReturnFetchNetworkError() {
+    const auto fail_reason = AuthErr::FromConnectionError(net::ERR_TIMED_OUT);
+    OnAccessTokenFetched(fail_reason, std::string(), std::string());
+  }
 };
 
 const base::FilePath kTargetFileName(FILE_PATH_LITERAL("rename_handler.txt"));
@@ -257,8 +262,9 @@ class MockUploader : public BoxUploader {
 
   void TryTaskSuccess() {
     // For invoking progress update in StartUpload().
+    expected_reason_ = InterruptReason::DOWNLOAD_INTERRUPT_REASON_NONE;
     EXPECT_CALL(*this, StartCurrentApiCall()).WillOnce(Invoke([this]() {
-      SetUploadApiCallFlowDoneForTesting(true, kUploadedFileId);
+      SetUploadApiCallFlowDoneForTesting(expected_reason_, kUploadedFileId);
     }));
 
     EXPECT_CALL(*this, GetUploadedFileUrl())
@@ -270,13 +276,18 @@ class MockUploader : public BoxUploader {
   void TryTaskFailure() {
     EXPECT_CALL(*this, StartCurrentApiCall()).Times(0);
     EXPECT_CALL(*this, GetUploadedFileUrl()).WillOnce(Return(GURL()));
-    SetUploadApiCallFlowDoneForTesting(false, {});
+    expected_reason_ = InterruptReason::DOWNLOAD_INTERRUPT_REASON_SERVER_FAILED;
+    SetUploadApiCallFlowDoneForTesting(expected_reason_, {});
   }
 
-  void ExpectNoTryTask() {
+  void ExpectNoTryTask(InterruptReason reason) {
+    expected_reason_ = reason;
     EXPECT_CALL(*this, GetUploadedFileUrl()).WillOnce(Return(GURL()));
     EXPECT_CALL(*this, TryTask(_, _)).Times(0);
   }
+
+  InterruptReason expected_reason_ =
+      InterruptReason::DOWNLOAD_INTERRUPT_REASON_NONE;
 };
 
 class RenameHandlerTestBase {
@@ -352,6 +363,7 @@ class RenameHandlerOAuth2Test : public testing::Test,
   }
 
   void TearDown() override {
+    ASSERT_EQ(download_cb_reason_, uploader()->expected_reason_);
     RenameHandlerTestBase::TearDown();
     OSCryptMocker::TearDown();
     testing::Test::TearDown();
@@ -423,6 +435,31 @@ class RenameHandlerOAuth2Test : public testing::Test,
   std::unique_ptr<base::RunLoop> run_loop_;
 };
 
+TEST_F(RenameHandlerOAuth2Test, NullPtrs) {
+  ::testing::InSequence seq;
+  constexpr char ATokenPlaceholder[] = "uselessAToken";
+  SetFileSystemOAuth2Tokens(prefs(), kBox, ATokenPlaceholder, RTokenForFetcher);
+  EXPECT_CALL(*handler(), PromptUserSignInForAuthorization(_)).Times(0);
+  EXPECT_CALL(*handler(), FetchAccessToken(_, _)).Times(0);
+  uploader()->ExpectNoTryTask(download::DOWNLOAD_INTERRUPT_REASON_CRASH);
+
+  // Clear the map keyed in |download_item| to test this, since they are not
+  // assumed to always be valid on the UI thread.
+  item_.ClearAllUserData();
+
+  RunHandler();
+
+  ASSERT_EQ(download_cb_count_, 1);
+  ASSERT_FALSE(uploaded_file_url_.is_valid());
+  ASSERT_TRUE(uploaded_file_name_.empty());
+
+  // Verify that the tokens stored are not updated.
+  std::string atoken, rtoken;
+  ASSERT_TRUE(GetFileSystemOAuth2Tokens(prefs(), kBox, &atoken, &rtoken));
+  ASSERT_EQ(atoken, ATokenPlaceholder);
+  ASSERT_EQ(rtoken, RTokenForFetcher);
+}
+
 // Test cases are written according to The OAuth2 "Dance" in rename_handler.cc;
 // all should be finished via 2a unless aborted via 1b.
 
@@ -445,7 +482,6 @@ TEST_F(RenameHandlerOAuth2Test, SignInSuccessThenUploaderSuccess) {
   RunHandler();
 
   ASSERT_EQ(download_cb_count_, 1);
-  ASSERT_EQ(download_cb_reason_, download::DOWNLOAD_INTERRUPT_REASON_NONE);
   ASSERT_EQ(uploaded_file_url_, kUploadedFileUrl);
   ASSERT_EQ(uploaded_file_name_, kTargetFileName);
   VerifyBothTokensSetBySignIn();
@@ -460,13 +496,12 @@ TEST_F(RenameHandlerOAuth2Test, SignInCancellationSoAbort) {
           Invoke(handler(), &RenameHandlerForTest::ReturnSignInCancellation));
   // These OAuth2 branches should not be called.
   EXPECT_CALL(*handler(), FetchAccessToken(_, _)).Times(0);
-  uploader()->ExpectNoTryTask();
+  uploader()->ExpectNoTryTask(
+      download::DOWNLOAD_INTERRUPT_REASON_USER_CANCELED);
 
   RunHandler();
 
   ASSERT_EQ(download_cb_count_, 1);
-  ASSERT_EQ(download_cb_reason_,
-            download::DOWNLOAD_INTERRUPT_REASON_FILE_FAILED);
   ASSERT_TRUE(uploaded_file_url_.is_empty());
   ASSERT_TRUE(uploaded_file_name_.empty()) << uploaded_file_name_;
   VerifyBothTokensClear();
@@ -478,34 +513,51 @@ TEST_F(RenameHandlerOAuth2Test, SignInFailureSoRetry) {
   ::testing::InSequence seq;
   // 1c->1a: PromptUserSignInForAuthorization() fails with other reasons than
   // Cancellation so should be called again.
-  int authen_callback = 0;
+  int authen_cb = 0;
   EXPECT_CALL(*handler(), PromptUserSignInForAuthorization(_))
-      .WillRepeatedly(
-          Invoke([this, &authen_callback](content::WebContents* contents) {
-            ++authen_callback;
-            if (authen_callback == 1) {
-              handler()->ReturnSignInFailure();
-            } else if (authen_callback == 2) {
-              VerifyBothTokensClear();
-              uploader()->TryTaskFailure();
-              // Terminate here since 1a->2 is already covered.
-            } else {
-              FAIL() << "Should've already successfully obtained tokens above";
-            }
-          }));
+      .WillRepeatedly(Invoke([this, &authen_cb](content::WebContents*) {
+        ++authen_cb;
+        if (authen_cb == 1) {
+          handler()->ReturnSignInFailure();
+        } else if (authen_cb == 2) {
+          VerifyBothTokensClear();
+          uploader()->TryTaskFailure();
+          // Terminate here since 1a->2 is already covered.
+        }
+        ASSERT_LE(authen_cb, 2) << "Should've terminated above";
+      }));
   // These OAuth2 branches should not be called.
   EXPECT_CALL(*handler(), FetchAccessToken(_, _)).Times(0);
   EXPECT_CALL(*uploader(), TryTask(_, _)).Times(0);
 
   RunHandler();
 
-  ASSERT_EQ(authen_callback, 2);
+  ASSERT_EQ(authen_cb, 2);
   ASSERT_EQ(download_cb_count_, 1);
-  ASSERT_EQ(download_cb_reason_,
-            download::DOWNLOAD_INTERRUPT_REASON_FILE_FAILED);
   ASSERT_TRUE(uploaded_file_url_.is_empty());  // Notified failure to terminate.
   ASSERT_TRUE(uploaded_file_name_.empty()) << uploaded_file_name_;
   VerifyBothTokensClear();
+}
+
+// Case 1c but failed to clear token: Terminate upload flow with internal error.
+TEST_F(RenameHandlerOAuth2Test, SignInFailureThenClearTokenFailure) {
+  ::testing::InSequence seq;
+  // 1c->1a: PromptUserSignInForAuthorization() fails with other reasons than
+  // Cancellation so should be called again.
+  EXPECT_CALL(*handler(), PromptUserSignInForAuthorization(_))
+      .WillOnce(Invoke([this](content::WebContents*) {
+        item_.ClearAllUserData();  // To make GetPrefs() return nullptr.
+        handler()->ReturnSignInFailure();
+      }));
+  // These OAuth2 branches should not be called.
+  EXPECT_CALL(*handler(), FetchAccessToken(_, _)).Times(0);
+  uploader()->ExpectNoTryTask(download::DOWNLOAD_INTERRUPT_REASON_CRASH);
+
+  RunHandler();
+
+  ASSERT_EQ(download_cb_count_, 1);
+  ASSERT_TRUE(uploaded_file_url_.is_empty());  // Notified failure to terminate.
+  ASSERT_TRUE(uploaded_file_name_.empty()) << uploaded_file_name_;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -516,8 +568,9 @@ TEST_F(RenameHandlerOAuth2Test, SignInFailureSoRetry) {
 // TryUploaderTask();
 TEST_F(RenameHandlerOAuth2Test, FetchAccessTokenSuccess) {
   ::testing::InSequence seq;
-  // 3a: Set a refresh token before starting, so should fetch access token.
+  // Set a refresh token before starting, so should fetch access token.
   SetFileSystemOAuth2Tokens(prefs(), kBox, std::string(), RTokenForFetcher);
+  // 3a.
   EXPECT_CALL(*handler(), FetchAccessToken(_, _))
       .WillOnce(Invoke(handler(), &RenameHandlerForTest::ReturnFetchSuccess));
   // ->2a.
@@ -529,7 +582,6 @@ TEST_F(RenameHandlerOAuth2Test, FetchAccessTokenSuccess) {
   RunHandler();
 
   ASSERT_EQ(download_cb_count_, 1);
-  ASSERT_EQ(download_cb_reason_, download::DOWNLOAD_INTERRUPT_REASON_NONE);
   ASSERT_EQ(uploaded_file_url_, kUploadedFileUrl);
   ASSERT_EQ(uploaded_file_name_, kTargetFileName);
   VerifyBothTokensSetByFetcher();
@@ -539,8 +591,9 @@ TEST_F(RenameHandlerOAuth2Test, FetchAccessTokenSuccess) {
 // tokens and PromptUserSignInForAuthorization().
 TEST_F(RenameHandlerOAuth2Test, FetchAccessTokenFailureSoPromptForSignIn) {
   ::testing::InSequence seq;
-  // 3a: Set a refresh token before starting, so should fetch access token.
+  // Set a refresh token before starting, so should fetch access token.
   SetFileSystemOAuth2Tokens(prefs(), kBox, std::string(), RTokenForFetcher);
+  // 3b.
   EXPECT_CALL(*handler(), FetchAccessToken(_, _))
       .WillOnce(Invoke(handler(), &RenameHandlerForTest::ReturnFetchFailure));
   // ->1: Prompt user to sign in, but terminate because Case 1 is already
@@ -553,10 +606,35 @@ TEST_F(RenameHandlerOAuth2Test, FetchAccessTokenFailureSoPromptForSignIn) {
   RunHandler();
 
   ASSERT_EQ(download_cb_count_, 1);
-  ASSERT_EQ(download_cb_reason_, download::DOWNLOAD_INTERRUPT_REASON_NONE);
   ASSERT_EQ(uploaded_file_url_, kUploadedFileUrl);
   ASSERT_EQ(uploaded_file_name_, kTargetFileName);
   VerifyBothTokensClear();
+}
+
+// Case 3c: Fetch access token failed with network error, so don't clear the
+// tokens, but do abort the upload with the network failure reason.
+TEST_F(RenameHandlerOAuth2Test, FetchAccessTokenNetworkFailureSoAbort) {
+  ::testing::InSequence seq;
+  // 3c: Set a refresh token before starting, so should fetch access token.
+  SetFileSystemOAuth2Tokens(prefs(), kBox, std::string(), RTokenForFetcher);
+  EXPECT_CALL(*handler(), FetchAccessToken(_, _))
+      .WillOnce(
+          Invoke(handler(), &RenameHandlerForTest::ReturnFetchNetworkError));
+
+  // These OAuth2 branches should not be called.
+  EXPECT_CALL(*handler(), PromptUserSignInForAuthorization(_)).Times(0);
+  uploader()->ExpectNoTryTask(
+      download::DOWNLOAD_INTERRUPT_REASON_NETWORK_TIMEOUT);
+
+  RunHandler();
+
+  ASSERT_EQ(download_cb_count_, 1);
+  ASSERT_FALSE(uploaded_file_url_.is_valid());
+  // Verify that the tokens stored are not updated.
+  std::string atoken, rtoken;
+  ASSERT_TRUE(GetFileSystemOAuth2Tokens(prefs(), kBox, &atoken, &rtoken));
+  ASSERT_TRUE(atoken.empty());
+  ASSERT_EQ(rtoken, RTokenForFetcher);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -579,8 +657,6 @@ TEST_F(RenameHandlerOAuth2Test, StartWithAccessTokenThenUploaderFailure) {
   RunHandler();
 
   ASSERT_EQ(download_cb_count_, 1);
-  ASSERT_EQ(download_cb_reason_,
-            download::DOWNLOAD_INTERRUPT_REASON_FILE_FAILED);
   ASSERT_TRUE(uploaded_file_url_.is_empty());
   ASSERT_TRUE(uploaded_file_name_.empty()) << uploaded_file_name_;
   // Verify that uploader failure did not affect stored credentials.
@@ -603,7 +679,6 @@ TEST_F(RenameHandlerOAuth2Test, StartWithAccessTokenThenUploaderSuccess) {
   RunHandler();
 
   ASSERT_EQ(download_cb_count_, 1);
-  ASSERT_EQ(download_cb_reason_, download::DOWNLOAD_INTERRUPT_REASON_NONE);
   ASSERT_EQ(uploaded_file_url_, kUploadedFileUrl);
   ASSERT_EQ(uploaded_file_name_, kTargetFileName);
   VerifyBothTokensSetByFetcher();
@@ -629,8 +704,6 @@ TEST_F(RenameHandlerOAuth2Test, StartWithAccessTokenButUploaderOAuth2Error) {
   RunHandler();
 
   ASSERT_EQ(download_cb_count_, 1);
-  ASSERT_EQ(download_cb_reason_,
-            download::DOWNLOAD_INTERRUPT_REASON_FILE_FAILED);
   ASSERT_TRUE(uploaded_file_url_.is_empty());
   ASSERT_TRUE(uploaded_file_name_.empty()) << uploaded_file_name_;
   // Verify that access token stored is cleared.
@@ -638,6 +711,30 @@ TEST_F(RenameHandlerOAuth2Test, StartWithAccessTokenButUploaderOAuth2Error) {
   ASSERT_TRUE(GetFileSystemOAuth2Tokens(prefs(), kBox, &atoken, &rtoken));
   ASSERT_TRUE(atoken.empty());
   ASSERT_EQ(rtoken, RTokenForFetcher);
+}
+
+// Case 2b but failed to clear token: Terminate upload flow with internal error.
+TEST_F(RenameHandlerOAuth2Test, UploaderOAuth2ErrorThenClearTokenFailure) {
+  ::testing::InSequence seq;
+  // 2: Set an access token before starting, so should TryUploaderTask().
+  SetFileSystemOAuth2Tokens(prefs(), kBox, ATokenByFetcher, RTokenForFetcher);
+  // 2b:
+  EXPECT_CALL(*uploader(), TryTask(_, _))
+      .WillOnce(Invoke([this](scoped_refptr<network::SharedURLLoaderFactory>,
+                              const std::string&) {
+        item_.ClearAllUserData();  // To make GetPrefs() return nullptr.
+        uploader()->ExpectNoTryTask(download::DOWNLOAD_INTERRUPT_REASON_CRASH);
+        uploader()->NotifyOAuth2ErrorForTesting();
+      }));
+  EXPECT_CALL(*handler(), FetchAccessToken(_, _)).Times(0);
+  // These OAuth2 branches should not be called.
+  EXPECT_CALL(*handler(), PromptUserSignInForAuthorization(_)).Times(0);
+
+  RunHandler();
+
+  ASSERT_EQ(download_cb_count_, 1);
+  ASSERT_TRUE(uploaded_file_url_.is_empty());  // Notified failure to terminate.
+  ASSERT_TRUE(uploaded_file_name_.empty()) << uploaded_file_name_;
 }
 
 class RenameHandlerOpenDownloadTest : public BrowserWithTestWindowTest,
