@@ -18,7 +18,7 @@ class MockFeatureStatusTracker : public FeatureStatusTracker {
       delete;
   MockFeatureStatusTracker& operator=(
       const MockFeatureStatusTracker&) = delete;
-  ~MockFeatureStatusTracker();
+  ~MockFeatureStatusTracker() override;
 
   MOCK_METHOD(void,
               AddObserver,
