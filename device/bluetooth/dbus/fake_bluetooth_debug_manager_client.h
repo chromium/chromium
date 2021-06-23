@@ -25,9 +25,7 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothDebugManagerClient
 
   // BluetoothDebugManagerClient overrides
   void Init(dbus::Bus* bus, const std::string& bluetooth_service_name) override;
-  void SetLogLevels(const uint8_t dispatcher_level,
-                    const uint8_t newblue_level,
-                    const uint8_t bluez_level,
+  void SetLogLevels(const uint8_t bluez_level,
                     const uint8_t kernel_level,
                     base::OnceClosure callback,
                     ErrorCallback error_callback) override;

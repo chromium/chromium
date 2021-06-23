@@ -19,12 +19,8 @@ namespace bluez {
 // TODO(apusaka): move these consts to system_api/service_constants.h
 namespace {
 const char kBluetoothDebugObjectPath[] = "/org/chromium/Bluetooth";
-const uint8_t kMinDispatcherLevel = 0;
-const uint8_t kMinNewblueLevel = 0;
 const uint8_t kMinBluezLevel = 0;
 const uint8_t kMinKernelLevel = 0;
-const uint8_t kMaxDispatcherLevel = 0xff;
-const uint8_t kMaxNewblueLevel = 0xff;
 const uint8_t kMaxBluezLevel = 2;
 const uint8_t kMaxKernelLevel = 1;
 }  // namespace
@@ -43,23 +39,10 @@ class BluetoothDebugManagerClientImpl : public BluetoothDebugManagerClient,
   ~BluetoothDebugManagerClientImpl() override = default;
 
   // BluetoothDebugManagerClient override.
-  void SetLogLevels(const uint8_t dispatcher_level,
-                    const uint8_t newblue_level,
-                    const uint8_t bluez_level,
+  void SetLogLevels(const uint8_t bluez_level,
                     const uint8_t kernel_level,
                     base::OnceClosure callback,
                     ErrorCallback error_callback) override {
-    if (kMinDispatcherLevel > dispatcher_level ||
-        kMaxDispatcherLevel < dispatcher_level) {
-      std::move(error_callback)
-          .Run(kInvalidArgumentError, "dispatcher_level is out of range.");
-      return;
-    }
-    if (kMinNewblueLevel > newblue_level || kMaxNewblueLevel < newblue_level) {
-      std::move(error_callback)
-          .Run(kInvalidArgumentError, "newblue_level is out of range.");
-      return;
-    }
     if (kMinBluezLevel > bluez_level || kMaxBluezLevel < bluez_level) {
       std::move(error_callback)
           .Run(kInvalidArgumentError, "bluez_level is out of range.");
@@ -75,8 +58,6 @@ class BluetoothDebugManagerClientImpl : public BluetoothDebugManagerClient,
                                  bluetooth_debug::kSetLevels);
 
     dbus::MessageWriter writer(&method_call);
-    writer.AppendByte(dispatcher_level);
-    writer.AppendByte(newblue_level);
     writer.AppendByte(bluez_level);
     writer.AppendByte(kernel_level);
 

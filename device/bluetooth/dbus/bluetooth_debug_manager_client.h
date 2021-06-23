@@ -32,9 +32,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDebugManagerClient
 
   // Invoke D-Bus API to set the levels of logging verbosity for each of
   // the bluetooth daemons and kernel.
-  virtual void SetLogLevels(const uint8_t dispatcher_level,
-                            const uint8_t newblue_level,
-                            const uint8_t bluez_level,
+  virtual void SetLogLevels(const uint8_t bluez_level,
                             const uint8_t kernel_level,
                             base::OnceClosure callback,
                             ErrorCallback error_callback) = 0;
