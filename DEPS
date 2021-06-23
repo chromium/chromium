@@ -97,6 +97,11 @@ vars = {
   # be overridden by gclient variables.
   'checkout_google_benchmark': False,
 
+  # By default, do not checkout JavaScript coverage node modules. These packages
+  # are used to post-process raw v8 coverage reports into IstanbulJS compliant
+  # output.
+  'checkout_js_coverage_modules': False,
+
   # Check out and download nacl by default, unless on an arm mac.
   # This can be disabled e.g. with custom_vars.
   'checkout_nacl': 'not (host_os == "mac" and host_cpu == "arm64")',
@@ -4073,6 +4078,21 @@ hooks = [
                 '--no_auth',
                 '--bucket', 'chromium-nodejs',
                 '-s', 'src/third_party/node/node_modules.tar.gz.sha1',
+    ],
+  },
+
+  # NPM dependencies for JavaScript code coverage.
+  {
+    'name': 'js_coverage_node_modules',
+    'condition': 'checkout_js_coverage_modules',
+    'pattern': '.',
+    'action': [ 'python3',
+                'src/third_party/depot_tools/download_from_google_storage.py',
+                '--no_resume',
+                '--extract',
+                '--no_auth',
+                '--bucket', 'chromium-nodejs/js_code_coverage',
+                '-s', 'src/third_party/js_code_coverage/node_modules.tar.gz.sha1',
     ],
   },
 

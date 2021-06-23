@@ -1,0 +1,10 @@
+{
+  "name": "javascript-coverage-node-modules",
+  "version": "1.0.0",
+  "author": "benreich@chromium.org",
+  "dependencies": {
+    "nyc": "15.1.0",
+    "source-map": "0.7.3",
+    "v8-to-istanbul": "7.1.2"
+  }
+}

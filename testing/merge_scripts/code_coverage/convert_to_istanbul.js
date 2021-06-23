@@ -8,7 +8,8 @@
  */
 
 // Relative path to the node modules.
-const NODE_MODULES = ['..', '..', '..', 'third_party', 'node', 'node_modules'];
+const NODE_MODULES = [
+  '..', '..', '..', 'third_party', 'js_code_coverage', 'node_modules'];
 
 const {createHash} = require('crypto');
 const {join, normalize} = require('path');
