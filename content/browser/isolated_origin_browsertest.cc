@@ -66,8 +66,11 @@ using IsolatedOriginSource = ChildProcessSecurityPolicy::IsolatedOriginSource;
 // origins and only provides common helper functions to the other test classes.
 class IsolatedOriginTestBase : public ContentBrowserTest {
  public:
-  IsolatedOriginTestBase() {}
-  ~IsolatedOriginTestBase() override {}
+  IsolatedOriginTestBase() = default;
+  ~IsolatedOriginTestBase() override = default;
+
+  IsolatedOriginTestBase(const IsolatedOriginTestBase&) = delete;
+  IsolatedOriginTestBase& operator=(const IsolatedOriginTestBase&) = delete;
 
   // Check if |origin| is an isolated origin.  This helper is used in tests
   // that care only about globally applicable isolated origins (not restricted
@@ -121,15 +124,15 @@ class IsolatedOriginTestBase : public ContentBrowserTest {
         false /* does_site_request_dedicated_process_for_coop */,
         false /* is_jit_disabled */));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(IsolatedOriginTestBase);
 };
 
 class IsolatedOriginTest : public IsolatedOriginTestBase {
  public:
-  IsolatedOriginTest() {}
-  ~IsolatedOriginTest() override {}
+  IsolatedOriginTest() = default;
+  ~IsolatedOriginTest() override = default;
+
+  IsolatedOriginTest(const IsolatedOriginTest&) = delete;
+  IsolatedOriginTest& operator=(const IsolatedOriginTest&) = delete;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
@@ -154,9 +157,6 @@ class IsolatedOriginTest : public IsolatedOriginTestBase {
                            "document.body.appendChild(link);"
                            "link.click();"));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(IsolatedOriginTest);
 };
 
 // Tests that verify the header can be used to opt-in to origin isolation.
@@ -165,6 +165,11 @@ class OriginIsolationOptInHeaderTest : public IsolatedOriginTestBase {
   OriginIsolationOptInHeaderTest()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
   ~OriginIsolationOptInHeaderTest() override = default;
+
+  OriginIsolationOptInHeaderTest(const OriginIsolationOptInHeaderTest&) =
+      delete;
+  OriginIsolationOptInHeaderTest& operator=(
+      const OriginIsolationOptInHeaderTest&) = delete;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     IsolatedOriginTestBase::SetUpCommandLine(command_line);
@@ -244,8 +249,6 @@ class OriginIsolationOptInHeaderTest : public IsolatedOriginTestBase {
 
   absl::optional<std::string> header_;
   std::queue<std::string> content_;
-
-  DISALLOW_COPY_AND_ASSIGN(OriginIsolationOptInHeaderTest);
 };
 
 // As in OriginIsolationOptInHeaderTest, but with same-process origin isolation.
@@ -255,14 +258,16 @@ class SameProcessOriginIsolationOptInHeaderTest
   SameProcessOriginIsolationOptInHeaderTest() = default;
   ~SameProcessOriginIsolationOptInHeaderTest() override = default;
 
+  SameProcessOriginIsolationOptInHeaderTest(
+      const SameProcessOriginIsolationOptInHeaderTest&) = delete;
+  SameProcessOriginIsolationOptInHeaderTest& operator=(
+      const SameProcessOriginIsolationOptInHeaderTest&) = delete;
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     OriginIsolationOptInHeaderTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(switches::kDisableSiteIsolation);
     command_line->RemoveSwitch(switches::kSitePerProcess);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SameProcessOriginIsolationOptInHeaderTest);
 };
 
 // Force WebSecurity off for tests.
@@ -288,6 +293,11 @@ class SameProcessNoWebSecurityOriginIsolationOptInHeaderTest
 class OriginIsolationOptInHttpServerHeaderTest : public IsolatedOriginTestBase {
  public:
   OriginIsolationOptInHttpServerHeaderTest() = default;
+
+  OriginIsolationOptInHttpServerHeaderTest(
+      const OriginIsolationOptInHttpServerHeaderTest&) = delete;
+  OriginIsolationOptInHttpServerHeaderTest& operator=(
+      const OriginIsolationOptInHttpServerHeaderTest&) = delete;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     IsolatedOriginTestBase::SetUpCommandLine(command_line);
@@ -322,7 +332,6 @@ class OriginIsolationOptInHttpServerHeaderTest : public IsolatedOriginTestBase {
   }
 
   base::test::ScopedFeatureList feature_list_;
-  DISALLOW_COPY_AND_ASSIGN(OriginIsolationOptInHttpServerHeaderTest);
 };
 
 // This class allows testing the interaction of OptIn isolation and command-line
@@ -333,6 +342,11 @@ class OriginIsolationOptInHeaderCommandLineTest
     : public OriginIsolationOptInHeaderTest {
  public:
   OriginIsolationOptInHeaderCommandLineTest() = default;
+
+  OriginIsolationOptInHeaderCommandLineTest(
+      const OriginIsolationOptInHeaderCommandLineTest&) = delete;
+  OriginIsolationOptInHeaderCommandLineTest& operator=(
+      const OriginIsolationOptInHeaderCommandLineTest&) = delete;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     OriginIsolationOptInHeaderTest::SetUpCommandLine(command_line);
@@ -345,9 +359,6 @@ class OriginIsolationOptInHeaderCommandLineTest
                               https_server()->GetURL("bar.com", "/").spec();
     command_line->AppendSwitchASCII(switches::kIsolateOrigins, origin_list);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(OriginIsolationOptInHeaderCommandLineTest);
 };
 
 // This test verifies that opt-in isolation takes precedence over command-line
@@ -1736,6 +1747,11 @@ class InjectIsolationRequestingNavigation
         tab2_(tab2),
         url_(url) {}
 
+  InjectIsolationRequestingNavigation(
+      const InjectIsolationRequestingNavigation&) = delete;
+  InjectIsolationRequestingNavigation& operator=(
+      const InjectIsolationRequestingNavigation&) = delete;
+
   bool was_called() { return was_called_; }
 
  private:
@@ -1760,8 +1776,6 @@ class InjectIsolationRequestingNavigation
   Shell* tab2_;
   const GURL& url_;
   bool was_called_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(InjectIsolationRequestingNavigation);
 };
 
 // TODO(crbug.com/1110767): flaky on Android builders since 2020-07-28.
@@ -1823,8 +1837,12 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
 
 class StrictOriginIsolationTest : public IsolatedOriginTestBase {
  public:
-  StrictOriginIsolationTest() {}
-  ~StrictOriginIsolationTest() override {}
+  StrictOriginIsolationTest() = default;
+  ~StrictOriginIsolationTest() override = default;
+
+  StrictOriginIsolationTest(const StrictOriginIsolationTest&) = delete;
+  StrictOriginIsolationTest& operator=(const StrictOriginIsolationTest&) =
+      delete;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     IsolatedOriginTestBase::SetUpCommandLine(command_line);
@@ -1849,8 +1867,6 @@ class StrictOriginIsolationTest : public IsolatedOriginTestBase {
 
  private:
   base::test::ScopedFeatureList feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(StrictOriginIsolationTest);
 };
 
 IN_PROC_BROWSER_TEST_F(StrictOriginIsolationTest, SubframesAreIsolated) {
@@ -2982,6 +2998,10 @@ class StoragePartitonInterceptor
     rph->AddObserver(this);
   }
 
+  StoragePartitonInterceptor(const StoragePartitonInterceptor&) = delete;
+  StoragePartitonInterceptor& operator=(const StoragePartitonInterceptor&) =
+      delete;
+
   // Ensure this object is cleaned up when the process goes away, since it
   // is not owned by anyone else.
   void RenderProcessExited(RenderProcessHost* host,
@@ -3012,8 +3032,6 @@ class StoragePartitonInterceptor
   blink::mojom::DomStorage* dom_storage_;
 
   url::Origin origin_to_inject_;
-
-  DISALLOW_COPY_AND_ASSIGN(StoragePartitonInterceptor);
 };
 
 void CreateTestDomStorageBackend(
@@ -3123,12 +3141,14 @@ class IsolatedOriginFieldTrialTest : public IsolatedOriginTestBase {
         {{features::kIsolateOriginsFieldTrialParamName,
           "https://field.trial.com/,https://bar.com/"}});
   }
-  ~IsolatedOriginFieldTrialTest() override {}
+  ~IsolatedOriginFieldTrialTest() override = default;
+
+  IsolatedOriginFieldTrialTest(const IsolatedOriginFieldTrialTest&) = delete;
+  IsolatedOriginFieldTrialTest& operator=(const IsolatedOriginFieldTrialTest&) =
+      delete;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(IsolatedOriginFieldTrialTest);
 };
 
 IN_PROC_BROWSER_TEST_F(IsolatedOriginFieldTrialTest, Test) {
@@ -3144,14 +3164,16 @@ class IsolatedOriginCommandLineAndFieldTrialTest
     : public IsolatedOriginFieldTrialTest {
  public:
   IsolatedOriginCommandLineAndFieldTrialTest() = default;
+  IsolatedOriginCommandLineAndFieldTrialTest(
+      const IsolatedOriginCommandLineAndFieldTrialTest&) = delete;
+  IsolatedOriginCommandLineAndFieldTrialTest& operator=(
+      const IsolatedOriginCommandLineAndFieldTrialTest&) = delete;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitchASCII(
         switches::kIsolateOrigins,
         "https://cmd.line.com/,https://cmdline.com/");
   }
-
-  DISALLOW_COPY_AND_ASSIGN(IsolatedOriginCommandLineAndFieldTrialTest);
 };
 
 // Verify that the lists of isolated origins specified via --isolate-origins
@@ -3176,8 +3198,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginCommandLineAndFieldTrialTest, Test) {
 // process, trigerring a crash due to exceeding kZygoteMaxMessageLength.
 class IsolatedOriginLongListTest : public IsolatedOriginTestBase {
  public:
-  IsolatedOriginLongListTest() {}
-  ~IsolatedOriginLongListTest() override {}
+  IsolatedOriginLongListTest() = default;
+  ~IsolatedOriginLongListTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
@@ -3453,16 +3475,17 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTest, NavigateToBlobURL) {
 // Ensure that --disable-site-isolation-trials disables origin isolation.
 class IsolatedOriginTrialOverrideTest : public IsolatedOriginFieldTrialTest {
  public:
-  IsolatedOriginTrialOverrideTest() {}
+  IsolatedOriginTrialOverrideTest() = default;
+  ~IsolatedOriginTrialOverrideTest() override = default;
 
-  ~IsolatedOriginTrialOverrideTest() override {}
+  IsolatedOriginTrialOverrideTest(const IsolatedOriginTrialOverrideTest&) =
+      delete;
+  IsolatedOriginTrialOverrideTest& operator=(
+      const IsolatedOriginTrialOverrideTest&) = delete;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(switches::kDisableSiteIsolation);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(IsolatedOriginTrialOverrideTest);
 };
 
 IN_PROC_BROWSER_TEST_F(IsolatedOriginTrialOverrideTest, Test) {
@@ -3476,9 +3499,13 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTrialOverrideTest, Test) {
 // --disable-site-isolation-for-policy do not override the flag.
 class IsolatedOriginPolicyOverrideTest : public IsolatedOriginFieldTrialTest {
  public:
-  IsolatedOriginPolicyOverrideTest() {}
+  IsolatedOriginPolicyOverrideTest() = default;
+  ~IsolatedOriginPolicyOverrideTest() override = default;
 
-  ~IsolatedOriginPolicyOverrideTest() override {}
+  IsolatedOriginPolicyOverrideTest(const IsolatedOriginPolicyOverrideTest&) =
+      delete;
+  IsolatedOriginPolicyOverrideTest& operator=(
+      const IsolatedOriginPolicyOverrideTest&) = delete;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(switches::kDisableSiteIsolation);
@@ -3486,9 +3513,6 @@ class IsolatedOriginPolicyOverrideTest : public IsolatedOriginFieldTrialTest {
     command_line->AppendSwitch(switches::kDisableSiteIsolationForPolicy);
 #endif
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(IsolatedOriginPolicyOverrideTest);
 };
 
 IN_PROC_BROWSER_TEST_F(IsolatedOriginPolicyOverrideTest, Test) {
@@ -3502,9 +3526,13 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginPolicyOverrideTest, Test) {
 // --disable-site-isolation-for-policy do not override the flag.
 class IsolatedOriginNoFlagOverrideTest : public IsolatedOriginTest {
  public:
-  IsolatedOriginNoFlagOverrideTest() {}
+  IsolatedOriginNoFlagOverrideTest() = default;
+  ~IsolatedOriginNoFlagOverrideTest() override = default;
 
-  ~IsolatedOriginNoFlagOverrideTest() override {}
+  IsolatedOriginNoFlagOverrideTest(const IsolatedOriginNoFlagOverrideTest&) =
+      delete;
+  IsolatedOriginNoFlagOverrideTest& operator=(
+      const IsolatedOriginNoFlagOverrideTest&) = delete;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     IsolatedOriginTest::SetUpCommandLine(command_line);
@@ -3513,9 +3541,6 @@ class IsolatedOriginNoFlagOverrideTest : public IsolatedOriginTest {
     command_line->AppendSwitch(switches::kDisableSiteIsolationForPolicy);
 #endif
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(IsolatedOriginNoFlagOverrideTest);
 };
 
 IN_PROC_BROWSER_TEST_F(IsolatedOriginNoFlagOverrideTest, Test) {
@@ -3595,7 +3620,11 @@ class DynamicIsolatedOriginTest : public IsolatedOriginTest {
  public:
   DynamicIsolatedOriginTest()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
-  ~DynamicIsolatedOriginTest() override {}
+  ~DynamicIsolatedOriginTest() override = default;
+
+  DynamicIsolatedOriginTest(const DynamicIsolatedOriginTest&) = delete;
+  DynamicIsolatedOriginTest& operator=(const DynamicIsolatedOriginTest&) =
+      delete;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     IsolatedOriginTest::SetUpCommandLine(command_line);
@@ -3621,7 +3650,6 @@ class DynamicIsolatedOriginTest : public IsolatedOriginTest {
 
  private:
   net::EmbeddedTestServer https_server_;
-  DISALLOW_COPY_AND_ASSIGN(DynamicIsolatedOriginTest);
 };
 
 // Check that dynamically added isolated origins take effect for future
@@ -4399,6 +4427,11 @@ class BroadcastChannelProviderInterceptor
     rph->AddObserver(this);
   }
 
+  BroadcastChannelProviderInterceptor(
+      const BroadcastChannelProviderInterceptor&) = delete;
+  BroadcastChannelProviderInterceptor& operator=(
+      const BroadcastChannelProviderInterceptor&) = delete;
+
   // Ensure this object is cleaned up when the process goes away, since it
   // is not owned by anyone else.
   void RenderProcessExited(RenderProcessHost* host,
@@ -4433,8 +4466,6 @@ class BroadcastChannelProviderInterceptor
   blink::mojom::BroadcastChannelProvider* original_broadcast_channel_provider_;
 
   url::Origin origin_to_inject_;
-
-  DISALLOW_COPY_AND_ASSIGN(BroadcastChannelProviderInterceptor);
 };
 
 void CreateTestBroadcastChannelProvider(
@@ -4475,7 +4506,12 @@ class IsolatedOriginTestWithStrictSiteInstances : public IsolatedOriginTest {
     scoped_feature_list_.InitAndEnableFeature(
         features::kProcessSharingWithStrictSiteInstances);
   }
-  ~IsolatedOriginTestWithStrictSiteInstances() override {}
+  ~IsolatedOriginTestWithStrictSiteInstances() override = default;
+
+  IsolatedOriginTestWithStrictSiteInstances(
+      const IsolatedOriginTestWithStrictSiteInstances&) = delete;
+  IsolatedOriginTestWithStrictSiteInstances& operator=(
+      const IsolatedOriginTestWithStrictSiteInstances&) = delete;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     IsolatedOriginTest::SetUpCommandLine(command_line);
@@ -4489,8 +4525,6 @@ class IsolatedOriginTestWithStrictSiteInstances : public IsolatedOriginTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(IsolatedOriginTestWithStrictSiteInstances);
 };
 
 IN_PROC_BROWSER_TEST_F(IsolatedOriginTestWithStrictSiteInstances,
@@ -4723,8 +4757,12 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTestWithStrictSiteInstances,
 
 class WildcardOriginIsolationTest : public IsolatedOriginTestBase {
  public:
-  WildcardOriginIsolationTest() {}
-  ~WildcardOriginIsolationTest() override {}
+  WildcardOriginIsolationTest() = default;
+  ~WildcardOriginIsolationTest() override = default;
+
+  WildcardOriginIsolationTest(const WildcardOriginIsolationTest&) = delete;
+  WildcardOriginIsolationTest& operator=(const WildcardOriginIsolationTest&) =
+      delete;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
@@ -4756,8 +4794,6 @@ class WildcardOriginIsolationTest : public IsolatedOriginTestBase {
     return url.scheme() + url::kStandardSchemeSeparator +
            kAllSubdomainWildcard + url.GetContent();
   }
-
-  DISALLOW_COPY_AND_ASSIGN(WildcardOriginIsolationTest);
 };
 
 IN_PROC_BROWSER_TEST_F(WildcardOriginIsolationTest, MainFrameNavigation) {
@@ -5504,7 +5540,7 @@ IN_PROC_BROWSER_TEST_F(COOPIsolationTest, UserActivationInAboutBlankSubframe) {
     EXPECT_TRUE(instance->RequiresDedicatedProcess());
   }
 }
-
+              
 // Helper class for testing site isolation triggered by different JIT policies
 // being applied.
 class JITIsolationTest : public IsolatedOriginTest,
