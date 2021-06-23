@@ -32,8 +32,6 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LoaderErrors;
 import org.chromium.base.library_loader.ProcessInitException;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeBaseAppCompatActivity;
 import org.chromium.chrome.browser.IntentHandler;
@@ -82,8 +80,6 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
     private long mOnCreateTimestampMs;
 
     private ActivityWindowAndroid mWindowAndroid;
-    private final ObservableSupplierImpl<ModalDialogManager> mModalDialogManagerSupplier =
-            new ObservableSupplierImpl<>();
     private Bundle mSavedInstanceState;
     private int mCurrentOrientation;
     private boolean mDestroyed;
@@ -130,11 +126,6 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
         if (mWindowAndroid != null) {
             mWindowAndroid.destroy();
             mWindowAndroid = null;
-        }
-
-        if (mModalDialogManagerSupplier.get() != null) {
-            mModalDialogManagerSupplier.get().destroy();
-            mModalDialogManagerSupplier.set(null);
         }
 
         super.onDestroy();
@@ -360,7 +351,6 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
 
         mWindowAndroid = createWindowAndroid();
         mIntentRequestTracker.restoreInstanceState(getSavedInstanceState());
-        mModalDialogManagerSupplier.set(createModalDialogManager());
 
         mStartupDelayed = shouldDelayBrowserStartup();
         ChromeBrowserInitializer.getInstance().handlePreNativeStartupAndLoadLibraries(this);
@@ -653,28 +643,13 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
     }
 
     /**
-     * @return The {@link ModalDialogManager} created for this class.
-     */
-    @Nullable
-    protected ModalDialogManager createModalDialogManager() {
-        return null;
-    }
-
-    /**
      * @return The {@link ModalDialogManager} that manages the display of modal dialogs (e.g.
      *         JavaScript dialogs).
      */
     @Override
     public ModalDialogManager getModalDialogManager() {
-        // TODO(jinsukkim): Remove this method in favor of getModalDialogManagerSupplier below.
-        return mModalDialogManagerSupplier.get();
-    }
-
-    /**
-     * @return The supplier of {@link ModalDialogManager} that manages the display of modal dialogs.
-     */
-    public ObservableSupplier<ModalDialogManager> getModalDialogManagerSupplier() {
-        return mModalDialogManagerSupplier;
+        // TODO(jinsukkim): Remove this method in favor of super.getModalDialogManagerSupplier().
+        return getModalDialogManagerSupplier().get();
     }
 
     /**
