@@ -58,12 +58,7 @@ class CC_EXPORT PropertyTree {
  public:
   PropertyTree();
   PropertyTree(const PropertyTree& other) = delete;
-
-  // These C++ special member functions cannot be implicit inline because
-  // they are exported by CC_EXPORT. They will be instantiated in every
-  // compilation units that included this header, and compilation can fail
-  // because T may be incomplete.
-  virtual ~PropertyTree();
+  ~PropertyTree();
   PropertyTree<T>& operator=(const PropertyTree<T>&);
 
   // Property tree node starts from index 0. See equivalent constants in
@@ -96,7 +91,7 @@ class CC_EXPORT PropertyTree {
   void clear();
   size_t size() const { return nodes_.size(); }
 
-  virtual void set_needs_update(bool needs_update) {
+  void set_needs_update(bool needs_update) {
     needs_update_ = needs_update;
   }
   bool needs_update() const { return needs_update_; }
@@ -130,7 +125,7 @@ class CC_EXPORT TransformTree final : public PropertyTree<TransformNode> {
   // compilation units that included this header, and compilation can fail
   // because TransformCachedNodeData may be incomplete.
   TransformTree(const TransformTree&) = delete;
-  ~TransformTree() final;
+  ~TransformTree();
   TransformTree& operator=(const TransformTree&);
 
 #if DCHECK_IS_ON()
@@ -156,7 +151,7 @@ class CC_EXPORT TransformTree final : public PropertyTree<TransformNode> {
   void UpdateNodeOrAncestorsWillChangeTransform(TransformNode* node,
                                                 TransformNode* parent_node);
 
-  void set_needs_update(bool needs_update) final;
+  void set_needs_update(bool needs_update);
 
   // We store the page scale factor on the transform tree so that it can be
   // easily be retrieved and updated in UpdatePageScale.
@@ -289,7 +284,7 @@ class CC_EXPORT ClipTree final : public PropertyTree<ClipNode> {
 class CC_EXPORT EffectTree final : public PropertyTree<EffectNode> {
  public:
   EffectTree();
-  ~EffectTree() final;
+  ~EffectTree();
 
   EffectTree& operator=(const EffectTree& from);
 
@@ -401,7 +396,7 @@ class ScrollCallbacks {
 class CC_EXPORT ScrollTree final : public PropertyTree<ScrollNode> {
  public:
   ScrollTree();
-  ~ScrollTree() final;
+  ~ScrollTree();
 
   ScrollTree& operator=(const ScrollTree& from);
 
