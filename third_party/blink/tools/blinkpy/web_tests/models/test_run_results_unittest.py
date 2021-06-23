@@ -210,9 +210,10 @@ def summarized_results(port,
 
 class RunResultsWithSinkTest(unittest.TestCase):
     def setUp(self):
-        expectations = test_expectations.TestExpectations(
+        self.expectations = test_expectations.TestExpectations(
             MockHost().port_factory.get(port_name='test'))
-        self.results = test_run_results.TestRunResults(expectations, 1, None)
+        self.results = test_run_results.TestRunResults(self.expectations, 1,
+                                                       None)
         self.test = get_result('failures/expected/text.html',
                                ResultType.Timeout,
                                run_time=1)
@@ -220,7 +221,8 @@ class RunResultsWithSinkTest(unittest.TestCase):
     def testAddWithSink(self):
         self.results.result_sink = mock.Mock()
         self.results.add(self.test, False, False)
-        self.results.result_sink.sink.assert_called_with(False, self.test)
+        self.results.result_sink.sink.assert_called_with(
+            False, self.test, self.expectations)
 
     def testAddWithoutSink(self):
         self.results.result_sink = None

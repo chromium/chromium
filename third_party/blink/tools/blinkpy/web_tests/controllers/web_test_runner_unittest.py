@@ -176,16 +176,17 @@ class WebTestRunnerTests(unittest.TestCase):
         runner = self._runner()
         runner._options.derived_batch_size = 1
         runner._options.must_use_derived_batch_size = True
+        expectations = TestExpectations(runner._port)
         with mock.patch.object(runner, "_test_result_sink") as rdb:
             runner.run_tests(
-                TestExpectations(runner._port),
+                expectations,
                 [],
                 tests_to_skip=['skips/image.html'],
                 num_workers=1,
                 retry_attempt=0,
             )
             rdb.sink.assert_called_with(
-                True, TestResult(test_name='skips/image.html'))
+                True, TestResult(test_name='skips/image.html'), expectations)
 
     def test_results_are_sinked(self):
         runner = self._runner()

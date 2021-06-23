@@ -90,7 +90,7 @@ class TestRunResults(object):
         self.tests_by_expectation[result_type_for_stats].add(
             test_result.test_name)
         if self.result_sink:
-            self.result_sink.sink(expected, test_result)
+            self.result_sink.sink(expected, test_result, self.expectations)
 
         self.results_by_name[test_result.test_name] = test_result
         if test_result.type != ResultType.Skip:

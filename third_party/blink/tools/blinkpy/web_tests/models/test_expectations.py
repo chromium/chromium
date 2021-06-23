@@ -280,6 +280,10 @@ class TestExpectations(object):
     def expectations_dict(self):
         return self._expectations_dict
 
+    @property
+    def system_condition_tags(self):
+        return self._system_condition_tags
+
     @memoized
     def _os_to_version(self):
         os_to_version = {}

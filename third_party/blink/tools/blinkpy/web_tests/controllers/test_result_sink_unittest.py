@@ -64,7 +64,7 @@ class TestCreateTestResultSink(TestResultSinkTestBase):
         response.status_code = 200
         with mock.patch.object(rs._session, 'post',
                                return_value=response) as m:
-            rs.sink(True, test_results.TestResult('test'))
+            rs.sink(True, test_results.TestResult('test'), None)
             self.assertTrue(m.called)
             self.assertEqual(
                 urlparse(m.call_args[0][0]).netloc, ctx['address'])
@@ -83,8 +83,8 @@ class TestResultSinkMessage(TestResultSinkTestBase):
         self.luci_context(result_sink=ctx)
         self.rs = CreateTestResultSink(self.port)
 
-    def sink(self, expected, test_result):
-        self.rs.sink(expected, test_result)
+    def sink(self, expected, test_result, expectations=None):
+        self.rs.sink(expected, test_result, expectations)
         self.assertTrue(self.mock_send.called)
         return self.mock_send.call_args[0][0]['testResults'][0]
 
@@ -98,6 +98,71 @@ class TestResultSinkMessage(TestResultSinkTestBase):
         self.assertEqual(sent_data['expected'], True)
         self.assertEqual(sent_data['status'], 'CRASH')
         self.assertEqual(sent_data['duration'], '123.456s')
+
+    def test_sink_with_expectations(self):
+        class FakeTestExpectation(object):
+            def __init__(self):
+                self.raw_results = ['Failure']
+
+        class FakeExpectations(object):
+            def __init__(self):
+                self.system_condition_tags = ['tag1', 'tag2']
+
+            def get_expectations(self, _):
+                return FakeTestExpectation()
+
+        # Values should be extracted from expectations.
+        tr = test_results.TestResult(test_name='test-name')
+        tr.type = ResultType.Crash
+        expectations = FakeExpectations()
+        expected_tags = [
+            {
+                'key': 'test_name',
+                'value': 'test-name'
+            },
+            {
+                'key': 'web_tests_device_failed',
+                'value': 'False'
+            },
+            {
+                'key': 'web_tests_result_type',
+                'value': 'CRASH'
+            },
+            {
+                'key': 'raw_typ_expectation',
+                'value': 'Failure'
+            },
+            {
+                'key': 'typ_tag',
+                'value': 'tag1'
+            },
+            {
+                'key': 'typ_tag',
+                'value': 'tag2'
+            },
+        ]
+        sent_data = self.sink(True, tr, expectations)
+        self.assertEqual(sent_data['tags'], expected_tags)
+
+    def test_sink_without_expectations(self):
+        tr = test_results.TestResult(test_name='test-name')
+        tr.type = ResultType.Crash
+        expected_tags = [
+            {
+                'key': 'test_name',
+                'value': 'test-name'
+            },
+            {
+                'key': 'web_tests_device_failed',
+                'value': 'False'
+            },
+            {
+                'key': 'web_tests_result_type',
+                'value': 'CRASH'
+            },
+        ]
+        sent_data = self.sink(True, tr)
+        self.assertEqual(sent_data['tags'], expected_tags)
 
     def test_test_metadata(self):
         tr = test_results.TestResult('')

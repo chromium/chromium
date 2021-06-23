@@ -105,22 +105,36 @@ class TestResultSink(object):
         assert status is not None, 'unsupported result.type %r' % result.type
         return status
 
-    def _tags(self, result):
+    def _tags(self, result, expectations):
         """Returns a list of tags that should be added into a given test result.
 
         Args:
             result: The TestResult object to generate Tags for.
+            expectations: A test_expectations.TestExpectations object to pull
+                expectation data from.
         Returns:
             A list of {'key': 'tag-name', 'value': 'tag-value'} dicts.
         """
         # the message structure of the dict can be found at
         # https://chromium.googlesource.com/infra/luci/luci-go/+/master/resultdb/proto/type/common.proto#56
         pair = lambda k, v: {'key': k, 'value': v}
-        return [
+
+        tags = [
             pair('test_name', result.test_name),
             pair('web_tests_device_failed', str(result.device_failed)),
             pair('web_tests_result_type', result.type),
         ]
+
+        if expectations:
+            expectation_tags = expectations.system_condition_tags
+            test_expectation = expectations.get_expectations(result.test_name)
+            raw_expected_results = test_expectation.raw_results
+            for expectation in raw_expected_results:
+                tags.append(pair('raw_typ_expectation', expectation))
+            for tag in expectation_tags:
+                tags.append(pair('typ_tag', tag))
+
+        return tags
 
     def _artifacts(self, result):
         """Returns a dict of artifacts with the absolute file paths.
@@ -170,13 +184,15 @@ class TestResultSink(object):
         # Sort summaries to display "command" at the top of the summary.
         return sorted(summaries), ret
 
-    def sink(self, expected, result):
+    def sink(self, expected, result, expectations):
         """Reports the test result to ResultSink.
 
         Args:
             expected: True if the test was expected to fail and actually failed.
                 False, otherwise.
             result: The TestResult object to report.
+            expectations: A test_expectations.TestExpectations object to pull
+                expectation data from.
         Exceptions:
             requests.exceptions.ConnectionError, if there was a network
               connection error.
@@ -204,7 +220,7 @@ class TestResultSink(object):
             # TODO(crbug/1093659): web_tests report TestResult with the start
             # time.
             # 'startTime': result.start_time
-            'tags': self._tags(result),
+            'tags': self._tags(result, expectations),
             'testId': result.test_name,
             'testMetadata': {
                 'name': result.test_name,
