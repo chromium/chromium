@@ -407,6 +407,8 @@ component("bluetooth") {
         "dbus/bluez_dbus_thread_manager.h",
         "dbus/dbus_bluez_manager_wrapper_linux.cc",
         "dbus/dbus_bluez_manager_wrapper_linux.h",
+        "floss/floss_features.cc",
+        "floss/floss_features.h",
       ]
       if (is_chromeos_ash) {
         configs += [ "//chromeos/dbus:use_real_dbus_clients_config" ]
