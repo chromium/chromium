@@ -12,6 +12,7 @@
 #include "extensions/renderer/native_extension_bindings_system.h"
 #include "extensions/renderer/native_extension_bindings_system_test_base.h"
 #include "extensions/renderer/script_context.h"
+#include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_tree_id.h"
 
 namespace extensions {
@@ -391,6 +392,17 @@ TEST_F(AutomationInternalCustomBindingsTest, GetBoundsAppIdConstruction) {
   // (100 + 50).
   EXPECT_EQ(gfx::Rect(150, 150, 100, 100),
             CallComputeGlobalNodeBounds(wrapper_1, wrapper1_button));
+}
+
+TEST_F(AutomationInternalCustomBindingsTest, ActionStringMapping) {
+  for (uint32_t action = static_cast<uint32_t>(ax::mojom::Action::kNone) + 1;
+       action <= static_cast<uint32_t>(ax::mojom::Action::kMaxValue);
+       ++action) {
+    const char* val = ui::ToString(static_cast<ax::mojom::Action>(action));
+    EXPECT_NE(api::automation::ACTION_TYPE_NONE,
+              api::automation::ParseActionType(val))
+        << "No automation mapping found for ax::mojom::Action::" << val;
+  }
 }
 
 }  // namespace extensions

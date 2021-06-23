@@ -1424,9 +1424,10 @@ void AutomationInternalCustomBindings::AddRoutes() {
         for (uint32_t action = static_cast<uint32_t>(ax::mojom::Action::kNone);
              action <= static_cast<uint32_t>(ax::mojom::Action::kMaxValue);
              ++action) {
-          if (node->data().HasAction(static_cast<ax::mojom::Action>(action)))
+          if (node->data().HasAction(static_cast<ax::mojom::Action>(action))) {
             standard_actions.push_back(
-                ToString(static_cast<api::automation::ActionType>(action)));
+                ui::ToString(static_cast<ax::mojom::Action>(action)));
+          }
         }
 
         // TODO(crbug/955633): Set doDefault, increment, and decrement directly
@@ -1439,9 +1440,8 @@ void AutomationInternalCustomBindings::AddRoutes() {
                 &default_action_verb) &&
             default_action_verb !=
                 static_cast<int>(ax::mojom::DefaultActionVerb::kNone)) {
-          standard_actions.push_back(
-              ToString(static_cast<api::automation::ActionType>(
-                  ax::mojom::Action::kDoDefault)));
+          standard_actions.push_back(ui::ToString(
+              static_cast<ax::mojom::Action>(ax::mojom::Action::kDoDefault)));
         }
 
         // Increment and decrement are available when the role is a slider or
@@ -1449,12 +1449,10 @@ void AutomationInternalCustomBindings::AddRoutes() {
         auto role = node->data().role;
         if (role == ax::mojom::Role::kSlider ||
             role == ax::mojom::Role::kSpinButton) {
-          standard_actions.push_back(
-              ToString(static_cast<api::automation::ActionType>(
-                  ax::mojom::Action::kIncrement)));
-          standard_actions.push_back(
-              ToString(static_cast<api::automation::ActionType>(
-                  ax::mojom::Action::kDecrement)));
+          standard_actions.push_back(ui::ToString(
+              static_cast<ax::mojom::Action>(ax::mojom::Action::kIncrement)));
+          standard_actions.push_back(ui::ToString(
+              static_cast<ax::mojom::Action>(ax::mojom::Action::kDecrement)));
         }
 
         auto actions_result = v8::Array::New(isolate, standard_actions.size());
