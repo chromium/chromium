@@ -19,6 +19,8 @@
 namespace {
 const char kTestShareURL[] = "https://www.google.com/";
 const char kTestVisibleURL[] = "https://google.com/";
+const char kSecondaryTestShareURL[] = "https://www.example.com/";
+const char kSecondaryTestVisibleURL[] = "https://example.com/";
 NSString* const kTestAdditionaText = @"Foo Bar";
 }  // namespace
 
@@ -43,8 +45,19 @@ class CopyActivityTest : public PlatformTest {
 
   // Creates a ShareToData instance with the given |additional_text|.
   ShareToData* CreateData(NSString* additional_text) {
-    return [[ShareToData alloc] initWithShareURL:GURL(kTestShareURL)
-                                      visibleURL:GURL(kTestVisibleURL)
+    return CreateData(kTestShareURL, kTestVisibleURL, additional_text);
+  }
+
+  ShareToData* CreateSecondaryData() {
+    return CreateData(kSecondaryTestShareURL, kSecondaryTestVisibleURL,
+                      /*additional_text=*/nil);
+  }
+
+  ShareToData* CreateData(std::string share_url,
+                          std::string visible_url,
+                          NSString* additional_text) {
+    return [[ShareToData alloc] initWithShareURL:GURL(share_url)
+                                      visibleURL:GURL(visible_url)
                                            title:@"Some Title"
                                   additionalText:additional_text
                                  isOriginalTitle:YES
@@ -58,12 +71,20 @@ class CopyActivityTest : public PlatformTest {
   NSString* GetURLString() { return base::SysUTF8ToNSString(kTestShareURL); }
 
   NSURL* GetExpectedURL() { return [NSURL URLWithString:GetURLString()]; }
+
+  NSString* GetSecondaryURLString() {
+    return base::SysUTF8ToNSString(kSecondaryTestShareURL);
+  }
+
+  NSURL* GetSecondaryExpectedURL() {
+    return [NSURL URLWithString:GetSecondaryURLString()];
+  }
 };
 
 // Tests that the activity can be performed.
 TEST_F(CopyActivityTest, ActivityEnabled) {
   ShareToData* data = CreateData(nil);
-  CopyActivity* activity = [[CopyActivity alloc] initWithData:data];
+  CopyActivity* activity = [[CopyActivity alloc] initWithDataItems:@[ data ]];
 
   EXPECT_TRUE([activity canPerformWithActivityItems:@[]]);
 }
@@ -71,7 +92,7 @@ TEST_F(CopyActivityTest, ActivityEnabled) {
 // Tests that executing the activity with just a URL copies it.
 TEST_F(CopyActivityTest, ExecuteActivityJustURL) {
   ShareToData* data = CreateData(nil);
-  CopyActivity* activity = [[CopyActivity alloc] initWithData:data];
+  CopyActivity* activity = [[CopyActivity alloc] initWithDataItems:@[ data ]];
 
   id activity_partial_mock = OCMPartialMock(activity);
   [[activity_partial_mock expect] activityDidFinish:YES];
@@ -83,10 +104,38 @@ TEST_F(CopyActivityTest, ExecuteActivityJustURL) {
   EXPECT_TRUE([expected_url isEqual:UIPasteboard.generalPasteboard.URL]);
 }
 
+// Tests that executing the activity with two URLs copies them.
+TEST_F(CopyActivityTest, ExecuteActivityMultipleURLs) {
+  ShareToData* data = CreateData(nil);
+
+  CopyActivity* activity =
+      [[CopyActivity alloc] initWithDataItems:@[ data, CreateSecondaryData() ]];
+
+  id activity_partial_mock = OCMPartialMock(activity);
+  [[activity_partial_mock expect] activityDidFinish:YES];
+
+  [activity performActivity];
+
+  [activity_partial_mock verify];
+
+  ASSERT_TRUE(UIPasteboard.generalPasteboard.hasURLs);
+  ASSERT_TRUE(UIPasteboard.generalPasteboard.hasStrings);
+  EXPECT_EQ(2, UIPasteboard.generalPasteboard.numberOfItems);
+
+  NSArray<NSURL*>* expected_urls =
+      @[ GetExpectedURL(), GetSecondaryExpectedURL() ];
+  EXPECT_TRUE([expected_urls isEqual:UIPasteboard.generalPasteboard.URLs]);
+
+  NSArray<NSString*>* expected_strings =
+      @[ GetURLString(), GetSecondaryURLString() ];
+  EXPECT_TRUE(
+      [expected_strings isEqual:UIPasteboard.generalPasteboard.strings]);
+}
+
 // Tests that executing the activity with a URL and additional text copies them.
 TEST_F(CopyActivityTest, ExecuteActivityURLAndAdditionalText) {
   ShareToData* data = CreateData(kTestAdditionaText);
-  CopyActivity* activity = [[CopyActivity alloc] initWithData:data];
+  CopyActivity* activity = [[CopyActivity alloc] initWithDataItems:@[ data ]];
 
   id activity_partial_mock = OCMPartialMock(activity);
   [[activity_partial_mock expect] activityDidFinish:YES];

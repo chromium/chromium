@@ -22,7 +22,7 @@ NSString* const kCopyActivityType = @"com.google.chrome.copyActivity";
 
 @interface CopyActivity ()
 
-@property(nonatomic, strong) ShareToData* data;
+@property(nonatomic, strong) NSArray<ShareToData*>* dataItems;
 
 @end
 
@@ -30,11 +30,12 @@ NSString* const kCopyActivityType = @"com.google.chrome.copyActivity";
 
 #pragma mark - Public
 
-- (instancetype)initWithData:(ShareToData*)data {
-  DCHECK(data);
+- (instancetype)initWithDataItems:(NSArray<ShareToData*>*)dataItems {
+  DCHECK(dataItems);
+  DCHECK(dataItems.count);
   self = [super init];
   if (self) {
-    _data = data;
+    _dataItems = dataItems;
   }
   return self;
 }
@@ -54,7 +55,7 @@ NSString* const kCopyActivityType = @"com.google.chrome.copyActivity";
 }
 
 - (BOOL)canPerformWithActivityItems:(NSArray*)activityItems {
-  return !!self.data;
+  return !!self.dataItems && self.dataItems.count;
 }
 
 - (void)prepareWithActivityItems:(NSArray*)activityItems {
@@ -65,10 +66,15 @@ NSString* const kCopyActivityType = @"com.google.chrome.copyActivity";
 }
 
 - (void)performActivity {
-  if (self.data.additionalText) {
-    StoreInPasteboard(self.data.additionalText, self.data.shareURL);
+  if (self.dataItems.count == 1 && self.dataItems.firstObject.additionalText) {
+    StoreInPasteboard(self.dataItems.firstObject.additionalText,
+                      self.dataItems.firstObject.shareURL);
   } else {
-    StoreURLInPasteboard(self.data.shareURL);
+    std::vector<const GURL> urls;
+    for (ShareToData* shareToData in self.dataItems) {
+      urls.push_back(shareToData.shareURL);
+    }
+    StoreURLsInPasteboard(urls);
   }
   [self activityDidFinish:YES];
 }

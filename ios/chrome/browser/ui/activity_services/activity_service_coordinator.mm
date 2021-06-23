@@ -82,13 +82,24 @@
 
   [self.mediator shareStartedWithScenario:self.params.scenario];
 
+  // Image item
   if (self.params.image) {
     [self shareImage];
-  } else if (!self.params.URL.is_empty()) {
-    [self shareURL];
-  } else {
-    [self shareCurrentPage];
+    return;
   }
+
+  if (self.params.URLs.count > 0) {
+    // If at least one valid URL is found, share the URLs in |_params|.
+    for (URLWithTitle* urlWithTitle in self.params.URLs) {
+      if (!urlWithTitle.URL.is_empty()) {
+        [self shareURLs];
+        return;
+      }
+    }
+  }
+
+  // Default to sharing the current page
+  [self shareCurrentPage];
 }
 
 - (void)stop {
@@ -166,8 +177,9 @@
     return;
 
   NSArray<ChromeActivityURLSource*>* items =
-      [self.mediator activityItemsForData:data];
-  NSArray* activities = [self.mediator applicationActivitiesForData:data];
+      [self.mediator activityItemsForDataItems:@[ data ]];
+  NSArray* activities =
+      [self.mediator applicationActivitiesForDataItems:@[ data ]];
 
   [self shareItems:items activities:activities];
 }
@@ -179,7 +191,7 @@
 - (void)shareImage {
   ShareImageData* data =
       [[ShareImageData alloc] initWithImage:self.params.image
-                                      title:self.params.title];
+                                      title:self.params.imageTitle];
 
   NSArray<ChromeActivityImageSource*>* items =
       [self.mediator activityItemsForImageData:data];
@@ -193,13 +205,19 @@
 // Configures activities and items for a URL and its title, and shows
 // an activity view. Also adds another activity item for additional text, if
 // there is any.
-- (void)shareURL {
-  ShareToData* data = activity_services::ShareToDataForURL(
-      self.params.URL, self.params.title, self.params.additionalText);
+- (void)shareURLs {
+  NSMutableArray* dataItems = [[NSMutableArray alloc] init];
+
+  for (URLWithTitle* urlWithTitle in self.params.URLs) {
+    ShareToData* data =
+        activity_services::ShareToDataForURLWithTitle(urlWithTitle);
+    [dataItems addObject:data];
+  }
 
   NSArray<id<ChromeActivityItemSource>>* items =
-      [self.mediator activityItemsForData:data];
-  NSArray* activities = [self.mediator applicationActivitiesForData:data];
+      [self.mediator activityItemsForDataItems:dataItems];
+  NSArray* activities =
+      [self.mediator applicationActivitiesForDataItems:dataItems];
 
   [self shareItems:items activities:activities];
 }

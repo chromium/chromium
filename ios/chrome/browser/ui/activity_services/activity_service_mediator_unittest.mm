@@ -88,8 +88,7 @@ class ActivityServiceMediatorTest : public PlatformTest {
 
 // Tests that only one ChromeActivityURLSource is initialized from a ShareToData
 // instance without additional text.
-TEST_F(ActivityServiceMediatorTest,
-       ActivityItemsForData_NoAdditionalText_Success) {
+TEST_F(ActivityServiceMediatorTest, ActivityItemsForMulitpleDataItems_Success) {
   ShareToData* data =
       [[ShareToData alloc] initWithShareURL:GURL("https://www.google.com/")
                                  visibleURL:GURL("https://google.com/")
@@ -103,7 +102,7 @@ TEST_F(ActivityServiceMediatorTest,
                          thumbnailGenerator:mocked_thumbnail_generator_];
 
   NSArray<id<ChromeActivityItemSource>>* activityItems =
-      [mediator_ activityItemsForData:data];
+      [mediator_ activityItemsForDataItems:@[ data ]];
 
   EXPECT_EQ(1U, [activityItems count]);
   EXPECT_TRUE([activityItems[0] isKindOfClass:[ChromeActivityURLSource class]]);
@@ -126,11 +125,47 @@ TEST_F(ActivityServiceMediatorTest,
                          thumbnailGenerator:mocked_thumbnail_generator_];
 
   NSArray<id<ChromeActivityItemSource>>* activityItems =
-      [mediator_ activityItemsForData:data];
+      [mediator_ activityItemsForDataItems:@[ data ]];
 
   EXPECT_EQ(2U, [activityItems count]);
   EXPECT_TRUE(
       [activityItems[0] isKindOfClass:[ChromeActivityTextSource class]]);
+  EXPECT_TRUE([activityItems[1] isKindOfClass:[ChromeActivityURLSource class]]);
+}
+
+// Tests that separate ChromeActivityURLSource instances are initialized for
+// each ShareToData instance.
+TEST_F(ActivityServiceMediatorTest,
+       ActivityItemsForData_NoAdditionalText_Success) {
+  ShareToData* data1 =
+      [[ShareToData alloc] initWithShareURL:GURL("https://www.google.com/")
+                                 visibleURL:GURL("https://google.com/")
+                                      title:@"Some Title"
+                             additionalText:nil
+                            isOriginalTitle:YES
+                            isPagePrintable:YES
+                           isPageSearchable:YES
+                           canSendTabToSelf:YES
+                                  userAgent:web::UserAgentType::MOBILE
+                         thumbnailGenerator:mocked_thumbnail_generator_];
+
+  ShareToData* data2 =
+      [[ShareToData alloc] initWithShareURL:GURL("https://www.example.com/")
+                                 visibleURL:GURL("https://example.com/")
+                                      title:@"Another Title"
+                             additionalText:nil
+                            isOriginalTitle:YES
+                            isPagePrintable:YES
+                           isPageSearchable:YES
+                           canSendTabToSelf:YES
+                                  userAgent:web::UserAgentType::MOBILE
+                         thumbnailGenerator:mocked_thumbnail_generator_];
+
+  NSArray<id<ChromeActivityItemSource>>* activityItems =
+      [mediator_ activityItemsForDataItems:@[ data1, data2 ]];
+
+  EXPECT_EQ(2U, [activityItems count]);
+  EXPECT_TRUE([activityItems[0] isKindOfClass:[ChromeActivityURLSource class]]);
   EXPECT_TRUE([activityItems[1] isKindOfClass:[ChromeActivityURLSource class]]);
 }
 
@@ -149,7 +184,7 @@ TEST_F(ActivityServiceMediatorTest, ActivitiesForData_NotHTTPOrHTTPS) {
                                   userAgent:web::UserAgentType::MOBILE
                          thumbnailGenerator:mocked_thumbnail_generator_];
 
-  NSArray* activities = [mediator_ applicationActivitiesForData:data];
+  NSArray* activities = [mediator_ applicationActivitiesForDataItems:@[ data ]];
 
   // Verify activities' types.
   VerifyTypes(activities, @[ [CopyActivity class], [PrintActivity class] ]);
@@ -169,7 +204,7 @@ TEST_F(ActivityServiceMediatorTest, ActivitiesForData_HTTP) {
                                   userAgent:web::UserAgentType::MOBILE
                          thumbnailGenerator:mocked_thumbnail_generator_];
 
-  NSArray* activities = [mediator_ applicationActivitiesForData:data];
+  NSArray* activities = [mediator_ applicationActivitiesForDataItems:@[ data ]];
 
   // Verify activities' types.
   VerifyTypes(activities, @[
@@ -194,7 +229,7 @@ TEST_F(ActivityServiceMediatorTest, ActivitiesForData_HTTPS) {
                                   userAgent:web::UserAgentType::MOBILE
                          thumbnailGenerator:mocked_thumbnail_generator_];
 
-  NSArray* activities = [mediator_ applicationActivitiesForData:data];
+  NSArray* activities = [mediator_ applicationActivitiesForDataItems:@[ data ]];
 
   // Verify activities' types.
   VerifyTypes(activities, @[
@@ -203,6 +238,37 @@ TEST_F(ActivityServiceMediatorTest, ActivitiesForData_HTTPS) {
     [GenerateQrCodeActivity class], [FindInPageActivity class],
     [RequestDesktopOrMobileSiteActivity class], [PrintActivity class]
   ]);
+}
+
+// Tests that only the CopyActivity is available for multiple data items.
+TEST_F(ActivityServiceMediatorTest, ActivitiesForMultipleDataItems) {
+  ShareToData* data1 =
+      [[ShareToData alloc] initWithShareURL:GURL("https://google.com")
+                                 visibleURL:GURL("https://google.com")
+                                      title:@"Title"
+                             additionalText:nil
+                            isOriginalTitle:YES
+                            isPagePrintable:YES
+                           isPageSearchable:YES
+                           canSendTabToSelf:YES
+                                  userAgent:web::UserAgentType::MOBILE
+                         thumbnailGenerator:mocked_thumbnail_generator_];
+  ShareToData* data2 =
+      [[ShareToData alloc] initWithShareURL:GURL("https://example.com")
+                                 visibleURL:GURL("https://example.com")
+                                      title:@"baz"
+                             additionalText:nil
+                            isOriginalTitle:YES
+                            isPagePrintable:YES
+                           isPageSearchable:YES
+                           canSendTabToSelf:YES
+                                  userAgent:web::UserAgentType::MOBILE
+                         thumbnailGenerator:mocked_thumbnail_generator_];
+
+  NSArray* activities =
+      [mediator_ applicationActivitiesForDataItems:@[ data1, data2 ]];
+
+  VerifyTypes(activities, @[ [CopyActivity class] ]);
 }
 
 // Tests that only one ChromeActivityImageSource is initialized from a
@@ -324,7 +390,7 @@ TEST_F(ActivityServiceMediatorTest, PrintPrefDisabled) {
                                   userAgent:web::UserAgentType::MOBILE
                          thumbnailGenerator:mocked_thumbnail_generator_];
 
-  NSArray* activities = [mediator_ applicationActivitiesForData:data];
+  NSArray* activities = [mediator_ applicationActivitiesForDataItems:@[ data ]];
 
   // Verify activities' types.
   VerifyTypes(activities, @[

@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/ui/activity_services/activity_scenario.h"
+#import "ios/chrome/browser/ui/activity_services/data/url_with_title.h"
 
 class GURL;
 
@@ -25,11 +26,16 @@ class GURL;
                         title:(NSString*)title
                      scenario:(ActivityScenario)scenario;
 
-// Initializes an instance configured to share an |URL|, along
-// with its |title|, for the metrics |scenario|.
+// Initializes an instance configured to share |URL|, along with its |title| for
+// the metrics |scenario|.
 - (instancetype)initWithURL:(const GURL&)URL
                       title:(NSString*)title
                    scenario:(ActivityScenario)scenario;
+
+// Initializes an instance configured to share one or more URLs represented by
+// |URLWithTitle|s, for the metrics |scenario|.
+- (instancetype)initWithURLs:(NSArray<URLWithTitle*>*)URLs
+                    scenario:(ActivityScenario)scenario;
 
 // Initializes an instance configured to share an |URL|, along
 // with its |title| and |additionalText|, for the metrics |scenario|.
@@ -43,12 +49,11 @@ class GURL;
 // Image to be shared.
 @property(nonatomic, readonly, strong) UIImage* image;
 
-// URL of a page to be shared.
-@property(nonatomic, readonly, assign) GURL URL;
+// Title of the content that will be shared. Must be set if |image| is set.
+@property(nonatomic, readonly, copy) NSString* imageTitle;
 
-// Title of the content that will be shared. Must be set if |image| or |URL| are
-// set.
-@property(nonatomic, readonly, copy) NSString* title;
+// URLs, and associated titles, of the page(s) to be shared.
+@property(nonatomic, readonly) NSArray<URLWithTitle*>* URLs;
 
 // Any additional text to be shared along with the page's details. May be nil.
 @property(nonatomic, readonly, copy) NSString* additionalText;

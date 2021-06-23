@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/tabs/tab_title_util.h"
 #include "ios/chrome/browser/ui/activity_services/data/chrome_activity_item_thumbnail_generator.h"
 #include "ios/chrome/browser/ui/activity_services/data/share_to_data.h"
+#import "ios/chrome/browser/ui/activity_services/data/url_with_title.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
@@ -97,6 +98,10 @@ ShareToData* ShareToDataForURL(const GURL& URL,
                               canSendTabToSelf:NO
                                      userAgent:web::UserAgentType::NONE
                             thumbnailGenerator:nil];
+}
+
+ShareToData* ShareToDataForURLWithTitle(URLWithTitle* URLWithTitle) {
+  return ShareToDataForURL(URLWithTitle.URL, URLWithTitle.title, nil);
 }
 
 }  // namespace activity_services

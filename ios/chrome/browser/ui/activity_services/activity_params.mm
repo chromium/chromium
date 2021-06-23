@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/activity_services/activity_params.h"
+#import "ios/chrome/browser/ui/activity_services/data/url_with_title.h"
 
 #include "url/gurl.h"
 
@@ -26,7 +27,7 @@
   DCHECK(title);
   if (self = [self initWithScenario:scenario]) {
     _image = image;
-    _title = title;
+    _imageTitle = title;
   }
   return self;
 }
@@ -34,11 +35,17 @@
 - (instancetype)initWithURL:(const GURL&)URL
                       title:(NSString*)title
                    scenario:(ActivityScenario)scenario {
-  DCHECK(URL.is_valid());
-  DCHECK(title);
+  self = [self initWithURLs:@[ [[URLWithTitle alloc] initWithURL:URL
+                                                           title:title] ]
+                   scenario:scenario];
+  return self;
+}
+
+- (instancetype)initWithURLs:(NSArray<URLWithTitle*>*)URLs
+                    scenario:(ActivityScenario)scenario {
+  DCHECK(URLs.count);
   if (self = [self initWithScenario:scenario]) {
-    _URL = URL;
-    _title = title;
+    _URLs = URLs;
   }
   return self;
 }
@@ -48,6 +55,7 @@
              additionalText:(NSString*)additionalText
                    scenario:(ActivityScenario)scenario {
   DCHECK(additionalText);
+
   if (self = [self initWithURL:URL title:title scenario:scenario]) {
     _additionalText = [additionalText copy];
   }

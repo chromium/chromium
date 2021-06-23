@@ -10,6 +10,7 @@
 class GURL;
 
 @class ShareToData;
+@class URLWithTitle;
 
 namespace web {
 class WebState;
@@ -30,6 +31,10 @@ ShareToData* ShareToDataForWebState(web::WebState* web_state,
 ShareToData* ShareToDataForURL(const GURL& URL,
                                NSString* title,
                                NSString* additionalText);
+
+// Returns a ShareToData object for a single |URLWithTitle|, which is not
+// associated to a WebState. Will also add |additionalText|, if present.
+ShareToData* ShareToDataForURLWithTitle(URLWithTitle* URLWithTitle);
 
 }  // namespace activity_services
 
