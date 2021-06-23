@@ -240,6 +240,11 @@ void PresentationRequestNotificationProducer::DeleteItemForPresentationRequest(
     const std::string& message) {
   if (!item_)
     return;
+  if (item_->context()) {
+    item_->context()->InvokeErrorCallback(blink::mojom::PresentationError(
+        blink::mojom::PresentationErrorType::PRESENTATION_REQUEST_CANCELLED,
+        message));
+  }
   const auto id{item_->id()};
   item_.reset();
   presentation_request_observer_.reset();
