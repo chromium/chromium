@@ -609,7 +609,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>sonnyrao@chromium.org</owner>
   <owner>chromeos-memory@google.com</owner>
   <summary>
-    Memory usage of all ARC processes in Chrome OS, reported every 10 minutes.
+    Memory usage of all ARC and ARCVM processes in Chrome OS, reported every 10
+    minutes.
   </summary>
 </histogram>
 
@@ -663,7 +664,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>sonnyrao@chromium.org</owner>
   <owner>chromeos-memory@google.com</owner>
   <summary>
-    Memory usage of VMs (crostini) in Chrome OS, reported every 10 minutes.
+    Memory usage of VMs (crostini and others, except for ARCVM) in Chrome OS,
+    reported every 10 minutes.
   </summary>
 </histogram>
 
