@@ -25,10 +25,11 @@ void ViewStructureBuilder_populateViewStructureNode(
     jboolean italic,
     jboolean underline,
     jboolean line_through,
-    const base::android::JavaRef<jstring>& class_name) {
+    const base::android::JavaRef<jstring>& class_name,
+    JniIntWrapper child_count) {
   Java_ViewStructureBuilder_populateViewStructureNode(
       env, obj, node, text, has_selection, sel_start, sel_end, color, bgcolor,
-      size, bold, italic, underline, line_through, class_name);
+      size, bold, italic, underline, line_through, class_name, child_count);
 }
 
 void ViewStructureBuilder_setViewStructureNodeBounds(

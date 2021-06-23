@@ -107,12 +107,13 @@ void CreateJavaAXSnapshot(JNIEnv* env,
   bool has_selection = node->selection.has_value();
   int sel_start = has_selection ? node->selection->start() : 0;
   int sel_end = has_selection ? node->selection->end() : 0;
+  int child_count = static_cast<int>(node->children_indices.size());
 
   ViewStructureBuilder_populateViewStructureNode(
       env, j_view_structure_builder, j_view_structure_node, j_text,
       has_selection, sel_start, sel_end, node->color, node->bgcolor,
       node->text_size, node->bold, node->italic, node->underline,
-      node->line_through, j_class);
+      node->line_through, j_class, child_count);
 
   // Bounding box.
   ViewStructureBuilder_setViewStructureNodeBounds(
@@ -136,9 +137,7 @@ void CreateJavaAXSnapshot(JNIEnv* env,
       env, j_view_structure_builder, j_view_structure_node, j_html_tag,
       j_css_display, j_attrs);
 
-  for (int child_index = 0;
-       child_index < static_cast<int>(node->children_indices.size());
-       child_index++) {
+  for (int child_index = 0; child_index < child_count; child_index++) {
     int child_id = node->children_indices[child_index];
     ScopedJavaLocalRef<jobject> j_child =
         ViewStructureBuilder_addViewStructureNodeChild(

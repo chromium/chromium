@@ -156,13 +156,22 @@ public class TestViewStructure extends ViewStructure implements TestViewStructur
     }
 
     @Override
-    public void setChildCount(int num) {}
+    public void setChildCount(int num) {
+        mChildren.ensureCapacity(num);
+        for (int i = mChildCount; i < num; i++) {
+            mChildCount++;
+            mChildren.add(null);
+        }
+    }
 
     @Override
     public int addChildCount(int num) {
         int index = mChildCount;
-        mChildCount += num;
-        mChildren.ensureCapacity(mChildCount);
+        mChildren.ensureCapacity(mChildCount + num);
+        for (int i = 0; i < num; i++) {
+            mChildCount++;
+            mChildren.add(null);
+        }
         return index;
     }
 
@@ -179,14 +188,9 @@ public class TestViewStructure extends ViewStructure implements TestViewStructur
     @Override
     public ViewStructure newChild(int index) {
         TestViewStructure viewStructure = new TestViewStructure();
-        if (index < mChildren.size()) {
-            mChildren.set(index, viewStructure);
-        } else if (index == mChildren.size()) {
-            mChildren.add(viewStructure);
-        } else {
-            // Failed intentionally, we shouldn't run into this case.
-            mChildren.add(index, viewStructure);
-        }
+        // Note: this will fail if index is out of bounds, to match
+        // the behavior of AssistViewStructure in practice.
+        mChildren.set(index, viewStructure);
         return viewStructure;
     }
 

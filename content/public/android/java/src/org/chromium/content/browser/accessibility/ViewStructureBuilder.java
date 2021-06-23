@@ -34,8 +34,10 @@ public class ViewStructureBuilder {
     @CalledByNative
     private void populateViewStructureNode(ViewStructure node, String text, boolean hasSelection,
             int selStart, int selEnd, int color, int bgcolor, float size, boolean bold,
-            boolean italic, boolean underline, boolean lineThrough, String className) {
+            boolean italic, boolean underline, boolean lineThrough, String className,
+            int childCount) {
         node.setClassName(className);
+        node.setChildCount(childCount);
 
         if (hasSelection) {
             node.setText(text, selStart, selEnd);
