@@ -28,19 +28,15 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_ADDRESS_SPACE_FEATURE_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_ADDRESS_SPACE_FEATURE_H_
+#ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_SECURITY_ADDRESS_SPACE_FEATURE_H_
+#define THIRD_PARTY_BLINK_PUBLIC_COMMON_SECURITY_ADDRESS_SPACE_FEATURE_H_
 
-#include "services/network/public/mojom/ip_address_space.mojom-blink.h"
+#include "services/network/public/mojom/ip_address_space.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
-#include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/public/common/common_export.h"
+#include "third_party/blink/public/mojom/web_feature/web_feature.mojom-shared.h"
 
 namespace blink {
-
-class LocalFrame;
-class ResourceError;
-class ResourceResponse;
 
 // Describes a type of fetch for the purposes of categorizing feature use.
 enum class FetchType {
@@ -58,33 +54,17 @@ enum class FetchType {
 // |fetch_type| describes the fetch itself.
 //
 // |client_is_secure_context| specifies whether the client execution context is
-// a secure context, as defined in
-// https://html.spec.whatwg.org/multipage/webappapis.html#secure-context.
+// a secure context, as defined in:
+// https://html.spec.whatwg.org/multipage/webappapis.html#secure-context
 //
-// Returns nullopt if the load is not a private network request, as defined in
-// https://wicg.github.io/cors-rfc1918/#private-network-request.
-absl::optional<mojom::blink::WebFeature> CORE_EXPORT AddressSpaceFeature(
-    FetchType fetch_type,
-    network::mojom::blink::IPAddressSpace client_address_space,
-    bool client_is_secure_context,
-    network::mojom::blink::IPAddressSpace response_address_space);
-
-// Increments the correct kAddressSpace* WebFeature UseCounter corresponding to
-// the given |client_frame| performing a fetch of type |fetch_type| and
-// receiving the given |response|.
-//
-// Does nothing if |client_frame| is nullptr.
-void RecordAddressSpaceFeature(FetchType fetch_type,
-                               LocalFrame* client_frame,
-                               const ResourceResponse& response);
-
-// Same as above, for cases where the fetch failed.
-// Does nothing if the fetch failed due to an error other than a failed Private
-// Network Access check.
-void RecordAddressSpaceFeature(FetchType fetch_type,
-                               LocalFrame* client_frame,
-                               const ResourceError& error);
+// Returns nullopt if the load is not a private network request, as defined in:
+// https://wicg.github.io/private-network-access/#private-network-request
+absl::optional<mojom::WebFeature> BLINK_COMMON_EXPORT
+AddressSpaceFeature(FetchType fetch_type,
+                    network::mojom::IPAddressSpace client_address_space,
+                    bool client_is_secure_context,
+                    network::mojom::IPAddressSpace response_address_space);
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_ADDRESS_SPACE_FEATURE_H_
+#endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_SECURITY_ADDRESS_SPACE_FEATURE_H_

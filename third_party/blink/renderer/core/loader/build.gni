@@ -3,8 +3,6 @@
 # found in the LICENSE file.
 
 blink_core_sources_loader = [
-  "address_space_feature.cc",
-  "address_space_feature.h",
   "alternate_signed_exchange_resource_info.cc",
   "alternate_signed_exchange_resource_info.h",
   "appcache/application_cache.cc",

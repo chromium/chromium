@@ -47,13 +47,13 @@ using testing::Pair;
 // automatic request to /favicon.ico. This is because the automatic request
 // messes with our tests, in which we want to trigger a single request from the
 // web page to a resource of our choice and observe the side-effect in metrics.
-constexpr char kNoFaviconPath[] = "/no-favicon.html";
+constexpr char kNoFaviconPath[] = "/private_network_access/no-favicon.html";
 
 // Same as kNoFaviconPath, except it carries a header that makes the browser
 // consider it came from the `public` address space, irrespective of the fact
 // that we loaded the web page from localhost.
 constexpr char kTreatAsPublicAddressPath[] =
-    "/no-favicon-treat-as-public-address.html";
+    "/private_network_access/no-favicon-treat-as-public-address.html";
 
 GURL SecureURL(const net::EmbeddedTestServer& server, const std::string& path) {
   // Test HTTPS servers cannot lie about their hostname, so they yield URLs
@@ -200,6 +200,34 @@ class PrivateNetworkAccessWithFeatureDisabledBrowserTest
             }) {}
 };
 
+class PrivateNetworkAccessWithFeatureEnabledBrowserTest
+    : public PrivateNetworkAccessBrowserTestBase {
+ public:
+  PrivateNetworkAccessWithFeatureEnabledBrowserTest()
+      : PrivateNetworkAccessBrowserTestBase(
+            {
+                features::kBlockInsecurePrivateNetworkRequests,
+                dom_distiller::kReaderMode,
+            },
+            {}) {}
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    PrivateNetworkAccessBrowserTestBase::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(switches::kEnableDomDistiller);
+  }
+
+ private:
+  void SetUpOnMainThread() override {
+    PrivateNetworkAccessBrowserTestBase::SetUpOnMainThread();
+    // The distiller needs to run in an isolated environment. For tests we
+    // can simply use the last value available.
+    if (!dom_distiller::DistillerJavaScriptWorldIdIsSet()) {
+      dom_distiller::SetDistillerJavaScriptWorldId(
+          content::ISOLATED_WORLD_ID_CONTENT_END);
+    }
+  }
+};
+
 // This test verifies that no feature is counted for the initial navigation from
 // a new tab to a page served by localhost.
 //
@@ -276,12 +304,78 @@ IN_PROC_BROWSER_TEST_F(
           WebFeature::kAddressSpacePublicNonSecureContextEmbeddedLocal, 1)));
 }
 
-// This test verifies that when page embeds an empty iframe pointing to
+// This test verifies that when the user navigates a `public` document to a
+// document served by a non-public IP, no address space feature is recorded.
+IN_PROC_BROWSER_TEST_F(
+    PrivateNetworkAccessWithFeatureEnabledBrowserTest,
+    DoesNotRecordAddressSpaceFeatureForBrowserInitiatedNavigation) {
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<net::EmbeddedTestServer> server = NewServer();
+
+  EXPECT_TRUE(
+      content::NavigateToURL(web_contents(), PublicNonSecureURL(*server)));
+
+  EXPECT_TRUE(
+      content::NavigateToURL(web_contents(), LocalNonSecureURL(*server)));
+
+  EXPECT_THAT(GetAddressSpaceFeatureBucketCounts(histogram_tester), IsEmpty());
+}
+
+// This test verifies that when a `public` document navigates itself to a
+// document served by a non-public IP, the correct address space feature is
+// recorded.
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureEnabledBrowserTest,
+                       RecordsAddressSpaceFeatureForNavigation) {
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<net::EmbeddedTestServer> server = NewServer();
+
+  EXPECT_TRUE(
+      content::NavigateToURL(web_contents(), PublicNonSecureURL(*server)));
+
+  EXPECT_TRUE(content::NavigateToURLFromRenderer(web_contents(),
+                                                 LocalNonSecureURL(*server)));
+
+  EXPECT_THAT(
+      GetAddressSpaceFeatureBucketCounts(histogram_tester),
+      ElementsAre(Pair(
+          WebFeature::kAddressSpacePublicNonSecureContextNavigatedToLocal, 1)));
+}
+
+// This test verifies that when a `public` document navigates itself to a
+// document served by a non-public IP, the correct address space feature is
+// recorded, even if the target document carries a CSP `treat-as-public-address`
+// directive.
+IN_PROC_BROWSER_TEST_F(
+    PrivateNetworkAccessWithFeatureEnabledBrowserTest,
+    RecordsAddressSpaceFeatureForNavigationToTreatAsPublicAddress) {
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<net::EmbeddedTestServer> server = NewServer();
+
+  EXPECT_TRUE(
+      content::NavigateToURL(web_contents(), PublicNonSecureURL(*server)));
+
+  EXPECT_THAT(GetAddressSpaceFeatureBucketCounts(histogram_tester), IsEmpty());
+
+  // Navigate to a different URL with the same CSP directive. If we just tried
+  // to navigate to `PublicNonSecureURL(*server)`, nothing would happen.
+  EXPECT_TRUE(content::NavigateToURLFromRenderer(
+      web_contents(),
+      NonSecureURL(
+          *server,
+          "/set-header?Content-Security-Policy: treat-as-public-address")));
+
+  EXPECT_THAT(
+      GetAddressSpaceFeatureBucketCounts(histogram_tester),
+      ElementsAre(Pair(
+          WebFeature::kAddressSpacePublicNonSecureContextNavigatedToLocal, 1)));
+}
+
+// This test verifies that when a page embeds an empty iframe pointing to
 // about:blank, no address space feature is recorded. It serves as a basis for
 // comparison with the following tests, which test behavior with iframes.
 IN_PROC_BROWSER_TEST_F(
-    PrivateNetworkAccessWithFeatureDisabledBrowserTest,
-    DoesNotRecordAddressSpaceFeatureForAboutBlankNavigation) {
+    PrivateNetworkAccessWithFeatureEnabledBrowserTest,
+    DoesNotRecordAddressSpaceFeatureForChildAboutBlankNavigation) {
   base::HistogramTester histogram_tester;
   std::unique_ptr<net::EmbeddedTestServer> server = NewServer();
 
@@ -303,7 +397,7 @@ IN_PROC_BROWSER_TEST_F(
 // This test verifies that when a non-secure context served from the public
 // address space loads a child frame from the local network, the correct
 // WebFeature is use-counted.
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureDisabledBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureEnabledBrowserTest,
                        RecordsAddressSpaceFeatureForChildNavigation) {
   base::HistogramTester histogram_tester;
   std::unique_ptr<net::EmbeddedTestServer> server = NewServer();
@@ -335,7 +429,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureDisabledBrowserTest,
 // address space loads a grand-child frame from the local network, the correct
 // WebFeature is use-counted. If inheritance did not work correctly, the
 // intermediate about:blank frame might confuse the address space logic.
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureDisabledBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureEnabledBrowserTest,
                        RecordsAddressSpaceFeatureForGrandchildNavigation) {
   base::HistogramTester histogram_tester;
   std::unique_ptr<net::EmbeddedTestServer> server = NewServer();
@@ -369,33 +463,88 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureDisabledBrowserTest,
           WebFeature::kAddressSpacePublicNonSecureContextNavigatedToLocal, 1)));
 }
 
-class PrivateNetworkAccessWithFeatureEnabledBrowserTest
-    : public PrivateNetworkAccessBrowserTestBase {
- public:
-  PrivateNetworkAccessWithFeatureEnabledBrowserTest()
-      : PrivateNetworkAccessBrowserTestBase(
-            {
-                features::kBlockInsecurePrivateNetworkRequests,
-                dom_distiller::kReaderMode,
-            },
-            {}) {}
+// This test verifies that the right address space feature is recorded when a
+// navigation results in a private network request. Specifically, in this test
+// the document being navigated is not the one initiating the navigation (the
+// latter being the "remote initiator" referenced by the test name).
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureEnabledBrowserTest,
+                       RecordsAddressSpaceFeatureForRemoteInitiatorNavigation) {
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<net::EmbeddedTestServer> server = NewServer();
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    PrivateNetworkAccessBrowserTestBase::SetUpCommandLine(command_line);
-    command_line->AppendSwitch(switches::kEnableDomDistiller);
-  }
+  EXPECT_TRUE(content::NavigateToURL(
+      web_contents(),
+      NonSecureURL(
+          *server,
+          "/private_network_access/remote-initiator-navigation.html")));
 
- private:
-  void SetUpOnMainThread() override {
-    PrivateNetworkAccessBrowserTestBase::SetUpOnMainThread();
-    // The distiller needs to run in an isolated environment. For tests we
-    // can simply use the last value available.
-    if (!dom_distiller::DistillerJavaScriptWorldIdIsSet()) {
-      dom_distiller::SetDistillerJavaScriptWorldId(
-          content::ISOLATED_WORLD_ID_CONTENT_END);
-    }
-  }
-};
+  EXPECT_EQ(true, content::EvalJs(web_contents(), content::JsReplace(R"(
+    runTest({
+      url: "/defaultresponse",
+    });
+  )")));
+
+  EXPECT_TRUE(NavigateAndFlushHistograms());
+
+  EXPECT_THAT(
+      GetAddressSpaceFeatureBucketCounts(histogram_tester),
+      ElementsAre(Pair(
+          WebFeature::kAddressSpacePublicNonSecureContextNavigatedToLocal, 1)));
+}
+
+// This test verifies that when the initiator of a navigation is no longer
+// around by the time the navigation finishes, then no address space feature is
+// recorded, and importantly: the browser does not crash.
+IN_PROC_BROWSER_TEST_F(
+    PrivateNetworkAccessWithFeatureEnabledBrowserTest,
+    DoesNotRecordAddressSpaceFeatureForClosedInitiatorNavigation) {
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<net::EmbeddedTestServer> server = NewServer();
+
+  EXPECT_TRUE(content::NavigateToURL(
+      web_contents(),
+      NonSecureURL(
+          *server,
+          "/private_network_access/remote-initiator-navigation.html")));
+
+  EXPECT_EQ(true, content::EvalJs(web_contents(), R"(
+    runTest({
+      url: new URL("/slow?3", window.location).href,
+      initiatorBehavior: "close",
+    });
+  )"));
+
+  EXPECT_TRUE(NavigateAndFlushHistograms());
+
+  EXPECT_THAT(GetAddressSpaceFeatureBucketCounts(histogram_tester), IsEmpty());
+}
+
+// This test verifies that when the initiator of a navigation has already
+// navigated itself by the time the navigation finishes, then no address space
+// feature is recorded.
+IN_PROC_BROWSER_TEST_F(
+    PrivateNetworkAccessWithFeatureEnabledBrowserTest,
+    DoesNotRecordAddressSpaceFeatureForMissingInitiatorNavigation) {
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<net::EmbeddedTestServer> server = NewServer();
+
+  EXPECT_TRUE(content::NavigateToURL(
+      web_contents(),
+      NonSecureURL(
+          *server,
+          "/private_network_access/remote-initiator-navigation.html")));
+
+  EXPECT_EQ(true, content::EvalJs(web_contents(), R"(
+    runTest({
+      url: new URL("/slow?3", window.location).href,
+      initiatorBehavior: "navigate",
+    });
+  )"));
+
+  EXPECT_TRUE(NavigateAndFlushHistograms());
+
+  EXPECT_THAT(GetAddressSpaceFeatureBucketCounts(histogram_tester), IsEmpty());
+}
 
 // This test verifies that private network requests that are blocked result in
 // a WebFeature being use-counted.

@@ -28,25 +28,15 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "third_party/blink/renderer/core/loader/address_space_feature.h"
+#include "third_party/blink/public/common/security/address_space_feature.h"
 
 #include <tuple>
-
-#include "services/network/public/cpp/cors/cors_error_status.h"
-#include "services/network/public/mojom/cors.mojom-forward.h"
-#include "third_party/blink/public/mojom/web_feature/web_feature.mojom-forward.h"
-#include "third_party/blink/renderer/core/frame/deprecation.h"
-#include "third_party/blink/renderer/core/frame/local_dom_window.h"
-#include "third_party/blink/renderer/core/frame/local_frame.h"
-#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
-#include "third_party/blink/renderer/platform/loader/fetch/resource_error.h"
-#include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 
 namespace blink {
 namespace {
 
-using AddressSpace = network::mojom::blink::IPAddressSpace;
-using Feature = mojom::blink::WebFeature;
+using AddressSpace = network::mojom::IPAddressSpace;
+using Feature = mojom::WebFeature;
 
 // A key in |kFeatureMap|.
 //
@@ -148,23 +138,6 @@ const FeatureEntry* FindFeatureEntry(const FeatureKey& key) {
   return nullptr;
 }
 
-// The list of features which should be reported as deprecated.
-constexpr Feature kDeprecatedFeatures[] = {
-    Feature::kAddressSpacePublicNonSecureContextEmbeddedPrivate,
-    Feature::kAddressSpacePublicNonSecureContextEmbeddedLocal,
-    Feature::kAddressSpacePrivateNonSecureContextEmbeddedLocal,
-};
-
-// Returns whether |feature| is deprecated.
-bool IsDeprecated(Feature feature) {
-  for (Feature entry : kDeprecatedFeatures) {
-    if (feature == entry) {
-      return true;
-    }
-  }
-  return false;
-}
-
 }  // namespace
 
 absl::optional<Feature> AddressSpaceFeature(
@@ -188,65 +161,6 @@ absl::optional<Feature> AddressSpaceFeature(
     case FetchType::kNavigation:
       return entry->navigation_feature;
   }
-}
-
-void RecordAddressSpaceFeature(FetchType fetch_type,
-                               LocalFrame* client_frame,
-                               const ResourceResponse& response) {
-  if (!client_frame) {
-    return;
-  }
-
-  LocalDOMWindow* window = client_frame->DomWindow();
-  absl::optional<WebFeature> feature =
-      AddressSpaceFeature(fetch_type, window->AddressSpace(),
-                          window->IsSecureContext(), response.AddressSpace());
-  if (!feature.has_value()) {
-    return;
-  }
-
-  // This WebFeature encompasses all private network requests.
-  UseCounter::Count(window,
-                    WebFeature::kMixedContentPrivateHostnameInPublicHostname);
-
-  if (IsDeprecated(*feature)) {
-    Deprecation::CountDeprecation(window, *feature);
-  } else {
-    UseCounter::Count(window, *feature);
-  }
-}
-
-void RecordAddressSpaceFeature(FetchType fetch_type,
-                               LocalFrame* client_frame,
-                               const ResourceError& error) {
-  if (!client_frame) {
-    return;
-  }
-
-  absl::optional<network::CorsErrorStatus> status = error.CorsErrorStatus();
-  if (!status.has_value() ||
-      status->cors_error !=
-          network::mojom::CorsError::kInsecurePrivateNetwork) {
-    // Not the right kind of error, ignore.
-    return;
-  }
-
-  LocalDOMWindow* window = client_frame->DomWindow();
-  absl::optional<WebFeature> feature = AddressSpaceFeature(
-      fetch_type, window->AddressSpace(), window->IsSecureContext(),
-      status->resource_address_space);
-  if (!feature.has_value()) {
-    return;
-  }
-
-  // This WebFeature encompasses all private network requests.
-  UseCounter::Count(window,
-                    WebFeature::kMixedContentPrivateHostnameInPublicHostname);
-
-  // Count the feature but do not log it as a deprecation, since its use is
-  // forbidden and has resulted in the fetch failing. In other words, the
-  // document only *attempted* to use a feature that is no longer available.
-  UseCounter::Count(window, *feature);
 }
 
 }  // namespace blink

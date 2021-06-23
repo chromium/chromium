@@ -1308,6 +1308,15 @@ class CONTENT_EXPORT NavigationRequest
   // NavigationRequest can be associated with.
   PrerenderHostRegistry& GetPrerenderHostRegistry();
 
+  // Returns the render frame host of the initiator document, iff there is such
+  // a document and its render frame host has not committed a different document
+  // since this navigation started. Otherwise returns nullptr.
+  RenderFrameHostImpl* GetInitiatorDocumentRenderFrameHost();
+
+  // Records the appropriate kAddressSpace* WebFeature for the response we just
+  // received on the initiator document, if possible.
+  void RecordAddressSpaceFeature();
+
   // Computes the PolicyContainerPolicies and the sandbox flags to use for
   // committing a regular document.
   // Called when the response to commit is known.

@@ -5,14 +5,19 @@
 #include "third_party/blink/renderer/core/loader/resource_load_observer_for_frame.h"
 
 #include "components/power_scheduler/power_mode_arbiter.h"
+#include "services/network/public/cpp/cors/cors_error_status.h"
+#include "services/network/public/mojom/cors.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/security/address_space_feature.h"
 #include "third_party/blink/renderer/core/core_probes_inl.h"
+#include "third_party/blink/renderer/core/frame/deprecation.h"
 #include "third_party/blink/renderer/core/frame/frame_console.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
-#include "third_party/blink/renderer/core/loader/address_space_feature.h"
 #include "third_party/blink/renderer/core/loader/alternate_signed_exchange_resource_info.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
@@ -28,6 +33,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_info.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_error.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher_properties.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
@@ -35,6 +41,91 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 
 namespace blink {
+namespace {
+
+// The list of features which should be reported as deprecated.
+constexpr WebFeature kDeprecatedAddressSpaceFeatures[] = {
+    WebFeature::kAddressSpacePublicNonSecureContextEmbeddedPrivate,
+    WebFeature::kAddressSpacePublicNonSecureContextEmbeddedLocal,
+    WebFeature::kAddressSpacePrivateNonSecureContextEmbeddedLocal,
+};
+
+// Returns whether |feature| is deprecated.
+bool IsDeprecatedAddressSpaceFeature(WebFeature feature) {
+  for (WebFeature entry : kDeprecatedAddressSpaceFeatures) {
+    if (feature == entry) {
+      return true;
+    }
+  }
+  return false;
+}
+
+// Increments the correct kAddressSpace* WebFeature UseCounter corresponding to
+// the given |client_frame| performing a subresource fetch |fetch_type| and
+// receiving the given |response|.
+//
+// Does nothing if |client_frame| is nullptr.
+void RecordAddressSpaceFeature(LocalFrame* client_frame,
+                               const ResourceResponse& response) {
+  if (!client_frame) {
+    return;
+  }
+
+  LocalDOMWindow* window = client_frame->DomWindow();
+  absl::optional<WebFeature> feature =
+      AddressSpaceFeature(FetchType::kSubresource, window->AddressSpace(),
+                          window->IsSecureContext(), response.AddressSpace());
+  if (!feature.has_value()) {
+    return;
+  }
+
+  // This WebFeature encompasses all private network requests.
+  UseCounter::Count(window,
+                    WebFeature::kMixedContentPrivateHostnameInPublicHostname);
+
+  if (IsDeprecatedAddressSpaceFeature(*feature)) {
+    Deprecation::CountDeprecation(window, *feature);
+  } else {
+    UseCounter::Count(window, *feature);
+  }
+}
+
+// Same as above, for cases where the fetch failed.
+// Does nothing if the fetch failed due to an error other than a failed Private
+// Network Access check.
+void RecordAddressSpaceFeature(LocalFrame* client_frame,
+                               const ResourceError& error) {
+  if (!client_frame) {
+    return;
+  }
+
+  absl::optional<network::CorsErrorStatus> status = error.CorsErrorStatus();
+  if (!status.has_value() ||
+      status->cors_error !=
+          network::mojom::CorsError::kInsecurePrivateNetwork) {
+    // Not the right kind of error, ignore.
+    return;
+  }
+
+  LocalDOMWindow* window = client_frame->DomWindow();
+  absl::optional<WebFeature> feature = AddressSpaceFeature(
+      FetchType::kSubresource, window->AddressSpace(),
+      window->IsSecureContext(), status->resource_address_space);
+  if (!feature.has_value()) {
+    return;
+  }
+
+  // This WebFeature encompasses all private network requests.
+  UseCounter::Count(window,
+                    WebFeature::kMixedContentPrivateHostnameInPublicHostname);
+
+  // Count the feature but do not log it as a deprecation, since its use is
+  // forbidden and has resulted in the fetch failing. In other words, the
+  // document only *attempted* to use a feature that is no longer available.
+  UseCounter::Count(window, *feature);
+}
+
+}  // namespace
 
 ResourceLoadObserverForFrame::ResourceLoadObserverForFrame(
     DocumentLoader& loader,
@@ -154,7 +245,7 @@ void ResourceLoadObserverForFrame::DidReceiveResponse(
       return;
   }
 
-  RecordAddressSpaceFeature(FetchType::kSubresource, frame, response);
+  RecordAddressSpaceFeature(frame, response);
 
   std::unique_ptr<AlternateSignedExchangeResourceInfo> alternate_resource_info;
 
@@ -268,7 +359,7 @@ void ResourceLoadObserverForFrame::DidFailLoading(
   probe::DidFailLoading(GetProbe(), identifier, document_loader_, error,
                         frame->GetDevToolsFrameToken());
 
-  RecordAddressSpaceFeature(FetchType::kSubresource, frame, error);
+  RecordAddressSpaceFeature(frame, error);
 
   // Notification to FrameConsole should come AFTER InspectorInstrumentation
   // call, DevTools front-end relies on this.

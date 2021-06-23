@@ -28,7 +28,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "third_party/blink/renderer/core/loader/address_space_feature.h"
+#include "third_party/blink/public/common/security/address_space_feature.h"
 
 #include <iosfwd>
 #include <string>
@@ -40,8 +40,8 @@
 namespace blink {
 namespace {
 
-using AddressSpace = network::mojom::blink::IPAddressSpace;
-using Feature = mojom::blink::WebFeature;
+using AddressSpace = network::mojom::IPAddressSpace;
+using Feature = mojom::WebFeature;
 
 constexpr FetchType kAllFetchTypes[]{
     FetchType::kSubresource,
@@ -242,10 +242,11 @@ bool HasMappedFeature(const Input& input) {
 }
 
 // This test verifies that AddressSpaceFeature stays in sync with the reference
-// implementation for CORS-RFC1918 address space checks in services/network. In
-// more practical terms, it verifies that AddressSpaceFeature returns a feature
-// (as opposed to nullopt) if and only if the resource address space is less
-// public than the client address space.
+// implementation for Private Network Access address space checks in
+// services/networ. In more practical terms, it verifies that
+// `AddressSpaceFeature()` returns a feature (as opposed to `nullopt`) if and
+// only if the resource address space is less public than the client address
+// space.
 TEST(AddressSpaceFeatureTest, ReturnsFeatureIffResourceLessPublic) {
   for (const Input& input : AllInputs()) {
     SCOPED_TRACE(input);
@@ -263,8 +264,8 @@ TEST(AddressSpaceFeatureTest, ReturnsFeatureIffResourceLessPublic) {
   }
 }
 
-// This test verifies that AddressSpaceFeatureForX() maps inputs to
-// features as declared in kFeatureMappings.
+// This test verifies that `AddressSpaceFeature()` maps inputs to features as
+// declared in `kFeatureMappings`.
 TEST(AddressSpaceFeatureTest, MapsAllFeaturesCorrectly) {
   for (const FeatureMapping& mapping : kFeatureMappings) {
     SCOPED_TRACE(mapping.input);
@@ -277,7 +278,7 @@ TEST(AddressSpaceFeatureTest, MapsAllFeaturesCorrectly) {
 }
 
 // This test verifies that all inputs that yield a Feature when run through
-// AddressSpaceFeatureForX() are included in kFeatureMappings.
+// `AddressSpaceFeature()` are included in `kFeatureMappings`.
 TEST(AddressSpaceFeatureTest, FeatureMappingsAreComplete) {
   for (const Input& input : AllInputs()) {
     SCOPED_TRACE(input);

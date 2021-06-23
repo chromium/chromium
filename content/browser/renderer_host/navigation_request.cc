@@ -129,6 +129,7 @@
 #include "third_party/blink/public/common/net/ip_address_space_util.h"
 #include "third_party/blink/public/common/permissions_policy/document_policy.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
+#include "third_party/blink/public/common/security/address_space_feature.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/appcache/appcache.mojom.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
@@ -747,8 +748,8 @@ network::mojom::IPAddressSpace IPAddressSpaceForSpecialScheme(const GURL& url) {
       return network::mojom::IPAddressSpace::kLocal;
   }
 
-  // Some of these schemes are only known from the chrome layer. Query the
-  // embedder for these.
+  // Some of these schemes are only known to the embedder. Query the embedder
+  // for these.
   ContentBrowserClient* client = GetContentClient()->browser();
   return client->DetermineAddressSpaceFromURL(url);
 }
@@ -760,15 +761,14 @@ network::mojom::IPAddressSpace CalculateIPAddressSpace(
   // headers received.
   network::mojom::IPAddressSpace computed_ip_address_space =
       blink::CalculateClientAddressSpace(url, response_head);
+  if (computed_ip_address_space != network::mojom::IPAddressSpace::kUnknown) {
+    return computed_ip_address_space;
+  }
 
   // Some navigation aren't loaded from the network. An IPAddressSpace can still
   // be attributed for some, whose scheme are known from the content/ layer. For
   // instance chrome: or devtools:
-  if (computed_ip_address_space == network::mojom::IPAddressSpace::kUnknown) {
-    computed_ip_address_space = IPAddressSpaceForSpecialScheme(url);
-  }
-
-  return computed_ip_address_space;
+  return IPAddressSpaceForSpecialScheme(url);
 }
 
 // Returns true if the parent's COEP policy should block a child embedded
@@ -2064,6 +2064,10 @@ void NavigationRequest::OnRequestRedirected(
   // navigation was redirected.
   commit_params_->page_state = blink::PageState();
 
+  // A request was made. Record it before we decide to block this response for
+  // a reason or another.
+  RecordAddressSpaceFeature();
+
 #if defined(OS_ANDROID)
   base::WeakPtr<NavigationRequest> this_ptr(weak_factory_.GetWeakPtr());
 
@@ -2600,6 +2604,10 @@ void NavigationRequest::OnResponseStarted(
   was_early_hints_preload_link_header_received_ =
       early_hints.was_preload_link_header_received;
   early_hints_manager_ = std::move(early_hints.manager);
+
+  // A request was made. Record it before we decide to block this response for
+  // a reason or another.
+  RecordAddressSpaceFeature();
 
   bool is_mhtml_archive = response_head_->mime_type == "multipart/related" ||
                           response_head_->mime_type == "message/rfc822";
@@ -4359,19 +4367,12 @@ net::Error NavigationRequest::CheckContentSecurityPolicy(
   // Note: the initiator RenderFrameHost could have been deleted by
   // now. Then this RenderFrameHostCSPContext will do nothing and we won't
   // report violations for this check.
-  RenderFrameHostImpl* initiator_rfh =
-      GetInitiatorFrameToken().has_value()
-          ? RenderFrameHostImpl::FromFrameToken(
-                GetInitiatorProcessID(), GetInitiatorFrameToken().value())
-          : nullptr;
-  if (initiator_rfh && initiator_rfh->commit_navigation_sent_counter() !=
-                           initiator_commit_navigation_sent_counter_) {
-    // If the initiator frame has navigated away in between, we use a no-op
-    // `initiator_csp_context`, so that we won't trigger
-    // securitypolicyviolation events in the wrong document.
-    initiator_rfh = nullptr;
-  }
-  RenderFrameHostCSPContext initiator_context(initiator_rfh);
+  //
+  // If the initiator frame has navigated away in between, we also use a no-op
+  // `initiator_csp_context`, in order not to trigger `securitypolicyviolation`
+  // events in the wrong document.
+  RenderFrameHostCSPContext initiator_context(
+      GetInitiatorDocumentRenderFrameHost());
 
   net::Error report_only_csp_status = CheckCSPDirectives(
       parent_context, parent_policies, initiator_context, initiator_policies,
@@ -6205,9 +6206,84 @@ NavigationRequest::TakeCookieObservers() {
   return cookie_observers_.TakeReceivers();
 }
 
+RenderFrameHostImpl* NavigationRequest::GetInitiatorDocumentRenderFrameHost() {
+  if (!initiator_frame_token_.has_value()) {
+    return nullptr;
+  }
+
+  RenderFrameHostImpl* initiator_render_frame_host =
+      RenderFrameHostImpl::FromFrameToken(initiator_process_id_,
+                                          *initiator_frame_token_);
+
+  if (!initiator_render_frame_host ||
+      initiator_render_frame_host->commit_navigation_sent_counter() !=
+          initiator_commit_navigation_sent_counter_) {
+    // Either the initiator RFH has been destroyed, or the initiator document
+    // within that RFH has navigated away since the navigation started. In any
+    // case the initiator document is no longer available.
+    return nullptr;
+  }
+
+  return initiator_render_frame_host;
+}
+
+void NavigationRequest::RecordAddressSpaceFeature() {
+  DCHECK(response_head_);
+  DCHECK(policy_container_navigation_bundle_);
+
+  RenderFrameHostImpl* initiator_render_frame_host =
+      GetInitiatorDocumentRenderFrameHost();
+  if (!initiator_render_frame_host) {
+    // The initiator document is no longer available, so we cannot log a feature
+    // use against it. This case may result in a slight undercounting, but is
+    // expected to be rare enough that it should not matter for compat risk
+    // evaluation.
+    return;
+  }
+
+  // If there is an initiator document, then `initiator_frame_token_` should
+  // have a value, and thus there should be initiator policies.
+  const PolicyContainerPolicies* initiator_policies =
+      policy_container_navigation_bundle_->InitiatorPolicies();
+  DCHECK(initiator_policies);
+  if (!initiator_policies) {
+    base::debug::DumpWithoutCrashing();  // Just in case.
+    return;
+  }
+
+  // We intentionally do *not* use `CalculateIPAddressSpace()` here, as it
+  // depends on `blink::CalculateClientAddressSpace()` and takes into account
+  // the CSP `treat-as-public-address` directive. If a `public` document
+  // initiates a navigation request to a `local` resource, we should block that
+  // request before any bytes are sent over the network as that request
+  // inherently carries a risk of CSRF. It does not matter whether the resource
+  // eventually responds with a CSP `treat-as-public-address` directive.
+  //
+  // In other words, here (as opposed to in `ComputePoliciesToCommit()`), we
+  // wish to mirror the calculation performed by the network process when
+  // applying Private Network Access checks.
+  network::mojom::IPAddressSpace response_address_space =
+      blink::CalculateResourceAddressSpace(common_params_->url,
+                                           response_head_->remote_endpoint);
+
+  absl::optional<blink::mojom::WebFeature> optional_feature =
+      blink::AddressSpaceFeature(
+          blink::FetchType::kNavigation, initiator_policies->ip_address_space,
+          initiator_policies->is_web_secure_context, response_address_space);
+  if (!optional_feature.has_value()) {
+    return;
+  }
+
+  ContentBrowserClient* client = GetContentClient()->browser();
+  client->LogWebFeatureForCurrentPage(initiator_render_frame_host,
+                                      *optional_feature);
+}
+
 void NavigationRequest::ComputePoliciesToCommit() {
+  network::mojom::IPAddressSpace response_address_space =
+      CalculateIPAddressSpace(common_params_->url, response_head_.get());
   policy_container_navigation_bundle_->SetIPAddressSpace(
-      CalculateIPAddressSpace(common_params_->url, response_head_.get()));
+      response_address_space);
 
   if (response_head_ && !devtools_instrumentation::ShouldBypassCSP(*this)) {
     policy_container_navigation_bundle_->AddContentSecurityPolicies(
