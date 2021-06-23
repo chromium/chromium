@@ -15,6 +15,7 @@
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "components/send_tab_to_self/metrics_util.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
@@ -77,6 +78,7 @@ void DesktopNotificationHandler::OnClose(Profile* profile,
     SendTabToSelfSyncServiceFactory::GetForProfile(profile)
         ->GetSendTabToSelfModel()
         ->DismissEntry(notification_id);
+    send_tab_to_self::RecordNotificationDismissed();
   }
   std::move(completed_closure).Run();
 }
@@ -97,10 +99,12 @@ void DesktopNotificationHandler::OnClick(
     Navigate(&params);
     NotificationDisplayServiceFactory::GetForProfile(profile)->Close(
         NotificationHandler::Type::SEND_TAB_TO_SELF, notification_id);
+
     // Marks the the entry as opened in SendTabToSelfModel
     SendTabToSelfSyncServiceFactory::GetForProfile(profile)
         ->GetSendTabToSelfModel()
         ->MarkEntryOpened(notification_id);
+    send_tab_to_self::RecordNotificationOpened();
   }
   std::move(completed_closure).Run();
 }

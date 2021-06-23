@@ -34,6 +34,10 @@ class SendTabToSelfToolbarButtonView
 
   void DismissEntry(std::string& guid);
 
+  void LogNotificationOpened();
+
+  void LogNotificationDismissed();
+
  private:
   void ButtonPressed();
 

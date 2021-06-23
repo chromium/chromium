@@ -71884,6 +71884,14 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   </int>
 </enum>
 
+<enum name="SendTabToSelfNotificationStatus">
+  <int value="0" label="Shown"/>
+  <int value="1" label="Dismissed"/>
+  <int value="2" label="Opened"/>
+  <int value="3" label="TimedOut"/>
+  <int value="4" label="Sent"/>
+</enum>
+
 <enum name="SendTabToSelfNotifyLocalDevice">
   <obsolete>
     Removed 05/2020.

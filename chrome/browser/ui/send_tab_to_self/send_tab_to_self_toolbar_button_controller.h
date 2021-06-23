@@ -38,6 +38,10 @@ class SendTabToSelfToolbarButtonController
 
   Profile* profile() const { return profile_; }
 
+  void LogNotificationOpened();
+
+  void LogNotificationDismissed();
+
  private:
   Profile* profile_;
 

@@ -20,6 +20,21 @@ enum class ShareEntryPoint {
 // Records whether the user clicked to send a tab to a device.
 void RecordDeviceClicked(ShareEntryPoint entry_point);
 
+// Records when a tab is sent to a device.
+void RecordNotificationSent();
+
+// Records when a recieved STTS notification is shown.
+void RecordNotificationShown();
+
+// Records when a recieved STTS notification is dismissed.
+void RecordNotificationDismissed();
+
+// Records when a recieved STTS notification is opened.
+void RecordNotificationOpened();
+
+// Records when a recieved STTS notification is shown and times out.
+void RecordNotificationTimedOut();
+
 }  // namespace send_tab_to_self
 
 #endif  // COMPONENTS_SEND_TAB_TO_SELF_METRICS_UTIL_H_

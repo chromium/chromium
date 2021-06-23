@@ -441,6 +441,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Sharing.SendTabToSelf.NotificationStatus"
+    enum="SendTabToSelfNotificationStatus" expires_after="M97">
+  <owner>kmilka@chromium.org</owner>
+  <owner>src/components/send_tab_to_self/OWNERS</owner>
+  <summary>
+    Status of STTS notifications. Recorded whenever a target device is chosen, a
+    recieved notification is shown, or an action is taken on the notification.
+  </summary>
+</histogram>
+
 <histogram name="Sharing.SharedClipboardDevicesToShow" units="devices"
     expires_after="M88">
   <owner>mvanouwerkerk@chromium.org</owner>

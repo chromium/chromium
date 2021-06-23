@@ -109,15 +109,20 @@ SendTabToSelfToolbarBubbleView::SendTabToSelfToolbarBubbleView(
 }
 
 void SendTabToSelfToolbarBubbleView::OpenInNewTab() {
+  opened_ = true;
   NavigateParams params(profile_, url_, ui::PAGE_TRANSITION_LINK);
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   params.window_action = NavigateParams::SHOW_WINDOW;
   std::move(navigate_callback_).Run(&params);
 
   GetWidget()->Close();
+  toolbar_button_->LogNotificationOpened();
 }
 
 void SendTabToSelfToolbarBubbleView::Hide() {
+  if (!opened_) {
+    toolbar_button_->LogNotificationDismissed();
+  }
   toolbar_button_->DismissEntry(guid_);
 }
 

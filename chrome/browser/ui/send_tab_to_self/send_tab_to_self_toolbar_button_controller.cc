@@ -5,8 +5,12 @@
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_toolbar_button_controller.h"
 
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_toolbar_button_controller_delegate.h"
+#include "components/send_tab_to_self/metrics_util.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
+#include "components/send_tab_to_self/send_tab_to_self_model.h"
+#include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 
 namespace send_tab_to_self {
 
@@ -26,7 +30,11 @@ void SendTabToSelfToolbarButtonController::DisplayNewEntries(
 
 void SendTabToSelfToolbarButtonController::DismissEntries(
     const std::vector<std::string>& guids) {
-  NOTIMPLEMENTED();
+  auto* model = SendTabToSelfSyncServiceFactory::GetForProfile(profile_)
+                    ->GetSendTabToSelfModel();
+  for (const std::string& guid : guids) {
+    model->DismissEntry(guid);
+  }
 }
 
 void SendTabToSelfToolbarButtonController::ShowToolbarButton(
@@ -34,12 +42,21 @@ void SendTabToSelfToolbarButtonController::ShowToolbarButton(
   if (!delegate_)
     return;
 
+  send_tab_to_self::RecordNotificationShown();
   delegate_->Show(entry);
 }
 
 void SendTabToSelfToolbarButtonController::SetDelegate(
     SendTabToSelfToolbarButtonControllerDelegate* delegate) {
   delegate_ = delegate;
+}
+
+void SendTabToSelfToolbarButtonController::LogNotificationOpened() {
+  send_tab_to_self::RecordNotificationOpened();
+}
+
+void SendTabToSelfToolbarButtonController::LogNotificationDismissed() {
+  send_tab_to_self::RecordNotificationDismissed();
 }
 
 SendTabToSelfToolbarButtonController::~SendTabToSelfToolbarButtonController() =

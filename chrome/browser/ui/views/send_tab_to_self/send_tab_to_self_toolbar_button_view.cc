@@ -64,4 +64,16 @@ void SendTabToSelfToolbarButtonView::DismissEntry(std::string& guid) {
   SetVisible(false);
 }
 
+void SendTabToSelfToolbarButtonView::LogNotificationOpened() {
+  send_tab_to_self::ReceivingUiHandlerRegistry::GetInstance()
+      ->GetToolbarButtonControllerForProfile(browser_->profile())
+      ->LogNotificationOpened();
+}
+
+void SendTabToSelfToolbarButtonView::LogNotificationDismissed() {
+  send_tab_to_self::ReceivingUiHandlerRegistry::GetInstance()
+      ->GetToolbarButtonControllerForProfile(browser_->profile())
+      ->LogNotificationDismissed();
+}
+
 }  // namespace send_tab_to_self

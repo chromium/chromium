@@ -46,6 +46,8 @@ class SendTabToSelfToolbarBubbleView : public views::BubbleDialogDelegateView {
 
   base::OnceCallback<void(NavigateParams*)> navigate_callback_;
 
+  bool opened_ = false;
+
   Profile* profile_;
 
   std::string title_;

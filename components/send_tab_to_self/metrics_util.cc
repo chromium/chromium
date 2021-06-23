@@ -21,6 +21,19 @@ enum class ClickResult {
   kMaxValue = kClickItem,
 };
 
+// Status of received STTS notifications.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// Keep in sync with SendTabToSelfNotificationStatus in enums.xml.
+enum class NotificationStatus {
+  kShown = 0,
+  kDismissed = 1,
+  kOpened = 2,
+  kTimedOut = 3,
+  kSent = 4,
+  kMaxValue = kSent,
+};
+
 std::string GetEntryPointHistogramString(ShareEntryPoint entry_point) {
   switch (entry_point) {
     case ShareEntryPoint::kShareSheet:
@@ -49,6 +62,32 @@ void RecordDeviceClicked(ShareEntryPoint entry_point) {
       base::StrCat({"SendTabToSelf.", GetEntryPointHistogramString(entry_point),
                     ".ClickResult"}),
       ClickResult::kClickItem);
+  RecordNotificationSent();
+}
+
+void RecordNotificationShown() {
+  base::UmaHistogramEnumeration("Sharing.SendTabToSelf.NotificationStatus",
+                                NotificationStatus::kShown);
+}
+
+void RecordNotificationDismissed() {
+  base::UmaHistogramEnumeration("Sharing.SendTabToSelf.NotificationStatus",
+                                NotificationStatus::kDismissed);
+}
+
+void RecordNotificationOpened() {
+  base::UmaHistogramEnumeration("Sharing.SendTabToSelf.NotificationStatus",
+                                NotificationStatus::kOpened);
+}
+
+void RecordNotificationTimedOut() {
+  base::UmaHistogramEnumeration("Sharing.SendTabToSelf.NotificationStatus",
+                                NotificationStatus::kTimedOut);
+}
+
+void RecordNotificationSent() {
+  base::UmaHistogramEnumeration("Sharing.SendTabToSelf.NotificationStatus",
+                                NotificationStatus::kSent);
 }
 
 }  // namespace send_tab_to_self

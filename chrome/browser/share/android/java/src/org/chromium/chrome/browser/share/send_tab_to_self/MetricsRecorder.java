@@ -16,8 +16,28 @@ class MetricsRecorder {
         MetricsRecorderJni.get().recordDeviceClickedInShareSheet();
     }
 
+    public static void recordNotificationShown() {
+        MetricsRecorderJni.get().recordNotificationShown();
+    }
+
+    public static void recordNotificationOpened() {
+        MetricsRecorderJni.get().recordNotificationOpened();
+    }
+
+    public static void recordNotificationDismissed() {
+        MetricsRecorderJni.get().recordNotificationDismissed();
+    }
+
+    public static void recordNotificationTimedOut() {
+        MetricsRecorderJni.get().recordNotificationTimedOut();
+    }
+
     @NativeMethods
     interface Natives {
         void recordDeviceClickedInShareSheet();
+        void recordNotificationShown();
+        void recordNotificationOpened();
+        void recordNotificationDismissed();
+        void recordNotificationTimedOut();
     }
 }
