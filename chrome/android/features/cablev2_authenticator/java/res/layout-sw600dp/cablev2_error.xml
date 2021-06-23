@@ -71,7 +71,7 @@
         a:layout_width="wrap_content"
         a:layout_height="wrap_content"
         a:gravity="bottom|center"
-        a:layout_marginBottom="35dp"
+        a:layout_marginBottom="20dp"
         a:text="@string/cablev2_error_close"/>
 
   </LinearLayout>
