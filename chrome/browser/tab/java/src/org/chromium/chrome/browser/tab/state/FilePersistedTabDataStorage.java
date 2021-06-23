@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 import java.util.LinkedList;
 import java.util.Locale;
 
@@ -74,15 +75,15 @@ public class FilePersistedTabDataStorage implements PersistedTabDataStorage {
 
     @MainThread
     @Override
-    public void save(int tabId, String dataId, Supplier<byte[]> dataSupplier) {
+    public void save(int tabId, String dataId, Supplier<ByteBuffer> dataSupplier) {
         save(tabId, dataId, dataSupplier, NO_OP_CALLBACK);
     }
 
     // Callback used for test synchronization between save, restore and delete operations
     @MainThread
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    protected void save(
-            int tabId, String dataId, Supplier<byte[]> dataSupplier, Callback<Integer> callback) {
+    protected void save(int tabId, String dataId, Supplier<ByteBuffer> dataSupplier,
+            Callback<Integer> callback) {
         // TODO(crbug.com/1059637) we should introduce a retry mechanisms
         addSaveRequest(new FileSaveRequest(tabId, dataId, dataSupplier, callback));
         processNextItemOnQueue();
@@ -205,7 +206,7 @@ public class FilePersistedTabDataStorage implements PersistedTabDataStorage {
      * Request to save {@link PersistedTabData}
      */
     protected class FileSaveRequest extends StorageRequest<Void> {
-        protected Supplier<byte[]> mDataSupplier;
+        protected Supplier<ByteBuffer> mDataSupplier;
         protected Callback<Integer> mCallback;
 
         /**
@@ -213,7 +214,7 @@ public class FilePersistedTabDataStorage implements PersistedTabDataStorage {
          * @param dataId identifier for the {@link PersistedTabData}
          * @param dataSupplier {@link Supplier} containing data to be saved
          */
-        FileSaveRequest(int tabId, String dataId, Supplier<byte[]> dataSupplier,
+        FileSaveRequest(int tabId, String dataId, Supplier<ByteBuffer> dataSupplier,
                 Callback<Integer> callback) {
             super(tabId, dataId);
             mDataSupplier = dataSupplier;
@@ -222,7 +223,7 @@ public class FilePersistedTabDataStorage implements PersistedTabDataStorage {
 
         @Override
         public Void executeSyncTask() {
-            byte[] data = mDataSupplier.get();
+            ByteBuffer data = mDataSupplier.get();
             if (data == null) {
                 mDataSupplier = null;
                 return null;
@@ -232,7 +233,8 @@ public class FilePersistedTabDataStorage implements PersistedTabDataStorage {
             try {
                 long startTime = SystemClock.elapsedRealtime();
                 outputStream = new FileOutputStream(mFile);
-                outputStream.write(data);
+                FileChannel fileChannel = outputStream.getChannel();
+                fileChannel.write(data);
                 success = true;
                 RecordHistogram.recordTimesHistogram(
                         String.format(Locale.US, "Tabs.PersistedTabData.Storage.SaveTime.%s",

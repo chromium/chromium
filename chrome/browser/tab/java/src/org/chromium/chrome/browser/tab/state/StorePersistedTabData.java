@@ -234,13 +234,13 @@ public class StorePersistedTabData extends PersistedTabData {
     }
 
     @Override
-    Supplier<byte[]> getSerializeSupplier() {
+    Supplier<ByteBuffer> getSerializeSupplier() {
         StorePersistedTabDataProto.Builder builder =
                 StorePersistedTabDataProto.newBuilder()
                         .setOpeningTime(mStoreHours.mOpeningTime)
                         .setClosingTime(mStoreHours.mClosingTime);
         return () -> {
-            return builder.build().toByteArray();
+            return builder.build().toByteString().asReadOnlyByteBuffer();
         };
     }
 

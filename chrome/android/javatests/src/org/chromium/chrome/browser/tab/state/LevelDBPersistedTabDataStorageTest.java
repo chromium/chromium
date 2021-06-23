@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.tab.state;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -145,11 +144,10 @@ public class LevelDBPersistedTabDataStorageTest {
         LoadCallbackHelper ch = new LoadCallbackHelper();
         int chCount = ch.getCallCount();
         ThreadUtils.runOnUiThreadBlocking(() -> {
-            mPersistedTabDataStorage.restore(
-                    tabId, dataId, (res) -> { ch.notifyCalled(TabTestUtils.toByteArray(res)); });
+            mPersistedTabDataStorage.restore(tabId, dataId, (res) -> { ch.notifyCalled(res); });
         });
         ch.waitForCallback(chCount);
-        Assert.assertArrayEquals(expected, ch.getRes());
+        TabTestUtils.verifyByteBuffer(expected, ch.getRes());
     }
 
     private void delete(int tabId, String dataId) throws TimeoutException {

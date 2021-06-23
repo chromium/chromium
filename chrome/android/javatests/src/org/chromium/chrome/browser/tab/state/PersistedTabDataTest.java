@@ -22,6 +22,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 
+import java.nio.ByteBuffer;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -109,7 +110,7 @@ public class PersistedTabDataTest {
         }
 
         @Override
-        public Supplier<byte[]> getSerializeSupplier() {
+        public Supplier<ByteBuffer> getSerializeSupplier() {
             // Verify anything before the supplier is called on the UI thread
             ThreadUtils.assertOnUiThread();
             return () -> {
@@ -128,7 +129,7 @@ public class PersistedTabDataTest {
             super(tab, 0 /** unused in OutOfMemoryMockPersistedTabData */);
         }
         @Override
-        public Supplier<byte[]> getSerializeSupplier() {
+        public Supplier<ByteBuffer> getSerializeSupplier() {
             return () -> {
                 throw new OutOfMemoryError("Out of memory error");
             };

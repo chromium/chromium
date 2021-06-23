@@ -52,7 +52,6 @@ import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabStateFileManager;
-import org.chromium.chrome.browser.tab.TabTestUtils;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tab.state.LoadCallbackHelper;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
@@ -429,8 +428,8 @@ public class TabPersistentStoreTest {
         LoadCallbackHelper callbackHelper = new LoadCallbackHelper();
         int chCount = callbackHelper.getCallCount();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            CriticalPersistedTabData.restore(tabId, isIncognito,
-                    (res) -> { callbackHelper.notifyCalled(TabTestUtils.toByteArray(res)); });
+            CriticalPersistedTabData.restore(
+                    tabId, isIncognito, (res) -> { callbackHelper.notifyCalled(res); });
         });
         callbackHelper.waitForCallback(chCount);
         if (isNull) {
