@@ -252,18 +252,6 @@ size_t ProfileInfoCache::GetNumberOfProfiles(bool include_guest_profile) const {
       });
 }
 
-size_t ProfileInfoCache::GetIndexOfProfileWithPath(
-    const base::FilePath& profile_path) const {
-  if (profile_path.DirName() != user_data_dir_)
-    return std::string::npos;
-  std::string search_key = CacheKeyFromProfilePath(profile_path);
-  for (size_t i = 0; i < keys_.size(); ++i) {
-    if (keys_[i] == search_key)
-      return i;
-  }
-  return std::string::npos;
-}
-
 base::FilePath ProfileInfoCache::GetPathOfProfileAtIndex(size_t index) const {
   return user_data_dir_.AppendASCII(keys_[index]);
 }
@@ -301,14 +289,6 @@ const base::DictionaryValue* ProfileInfoCache::GetInfoForProfileAtIndex(
   const base::DictionaryValue* info = nullptr;
   cache->GetDictionaryWithoutPathExpansion(keys_[index], &info);
   return info;
-}
-
-void ProfileInfoCache::SetInfoForProfileAtIndex(
-    size_t index,
-    std::unique_ptr<base::DictionaryValue> info) {
-  DictionaryPrefUpdate update(prefs_, prefs::kProfileInfoCache);
-  base::DictionaryValue* cache = update.Get();
-  cache->SetKey(keys_[index], base::Value::FromUniquePtrValue(std::move(info)));
 }
 
 std::string ProfileInfoCache::CacheKeyFromProfilePath(

@@ -769,10 +769,6 @@ void ProfileAttributesEntry::ClearAccountCategories() {
   ClearValue(kAccountCategories);
 }
 
-size_t ProfileAttributesEntry::profile_index() const {
-  return profile_info_cache_->GetIndexOfProfileWithPath(profile_path_);
-}
-
 const gfx::Image* ProfileAttributesEntry::GetHighResAvatar() const {
   const size_t avatar_index = GetAvatarIconIndex();
 

@@ -220,11 +220,10 @@ TEST_F(ProfileInfoCacheTest, AddProfiles) {
   for (uint32_t i = 0; i < 4; ++i) {
     base::FilePath profile_path =
           GetProfilePath(base::StringPrintf("path_%ud", i));
-    int index = GetCache()->GetIndexOfProfileWithPath(profile_path);
     ProfileAttributesEntry* entry =
         GetCache()->GetProfileAttributesWithPath(profile_path);
     std::u16string profile_name =
-        ASCIIToUTF16(base::StringPrintf("name_%ud", index));
+        ASCIIToUTF16(base::StringPrintf("name_%ud", i));
     std::u16string gaia_name = ASCIIToUTF16(base::StringPrintf("gaia_%ud", i));
     std::u16string expected_profile_name =
         GetConcatenation(gaia_name, profile_name);

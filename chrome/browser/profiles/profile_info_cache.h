@@ -54,12 +54,6 @@ class ProfileInfoCache : public ProfileInfoInterface,
 
   // ProfileInfoInterface:
   size_t GetNumberOfProfiles(bool include_guest_profile = false) const override;
-  // Don't cache this value and reuse, because resorting the menu could cause
-  // the item being referred to to change out from under you.
-  // Deprecated. Prefer using the ProfileAttributesStorage interface instead of
-  // directly referring to this implementation.
-  size_t GetIndexOfProfileWithPath(
-      const base::FilePath& profile_path) const override;
   // Will be removed SOON with ProfileInfoCache tests. Do not use!
   base::FilePath GetPathOfProfileAtIndex(size_t index) const override;
 
@@ -96,27 +90,10 @@ class ProfileInfoCache : public ProfileInfoInterface,
   FRIEND_TEST_ALL_PREFIXES(ProfileInfoCacheTest, EmptyGAIAInfo);
 
   const base::DictionaryValue* GetInfoForProfileAtIndex(size_t index) const;
-  // Saves the profile info to a cache.
-  void SetInfoForProfileAtIndex(size_t index,
-                                std::unique_ptr<base::DictionaryValue> info);
   std::string CacheKeyFromProfilePath(const base::FilePath& profile_path) const;
-  std::vector<std::string>::iterator FindPositionForProfile(
-      const std::string& search_key,
-      const std::u16string& search_name);
-
-  // Updates the position of the profile at the given index so that the list
-  // of profiles is still sorted.
-  void UpdateSortForProfileIndex(size_t index);
 
   // Download and high-res avatars used by the profiles.
   void DownloadAvatars();
-
-  std::string GetLastDownloadedGAIAPictureUrlWithSizeOfProfileAtIndex(
-      size_t index) const;
-
-  void SetLastDownloadedGAIAPictureUrlWithSizeOfProfileAtIndex(
-      size_t index,
-      const std::string& image_url_with_size);
 
 #if !defined(OS_ANDROID)
   void LoadGAIAPictureIfNeeded();
