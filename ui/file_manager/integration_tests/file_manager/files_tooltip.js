@@ -244,7 +244,8 @@ testcase.filesTooltipHidesOnWindowResize = async () => {
   chrome.test.assertEq(expectedLabelText, label.text);
 
   // Resize the window.
-  await remoteCall.callRemoteTestUtil('resizeWindow', appId, [1200, 1200]);
+  chrome.test.assertTrue(
+      await remoteCall.callRemoteTestUtil('resizeWindow', appId, [1200, 1200]));
 
   // Check: the tooltip should hide.
   await remoteCall.waitForElement(appId, tooltipQueryHidden);

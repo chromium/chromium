@@ -298,11 +298,10 @@ export class Banners extends EventTarget {
     this.photosWelcomeCounter_ = value;
     const values = {};
     values[PHOTOS_WELCOME_COUNTER_KEY] = value;
-    chrome.storage.local.set(values);
+    xfm.storage.local.set(values);
   }
 
   /**
-   * chrome.storage.onChanged event handler.
    * xfm.storage.onChanged event handler.
    * @param {Object<Object>} changes Changes values.
    * @param {string} areaName "local" or "sync".

@@ -254,8 +254,7 @@ testcase.myFilesFolderRename = async () => {
   await remoteCall.waitForElement(appId, textInput);
 
   // Type new name.
-  await remoteCall.callRemoteTestUtil(
-      'inputText', appId, [textInput, 'new name']);
+  await remoteCall.inputText(appId, textInput, 'new name');
 
   // Send Enter key to the text input.
   const key3 = [textInput, 'Enter', false, false, false];

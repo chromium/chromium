@@ -328,6 +328,18 @@ export class RemoteCall {
   }
 
   /**
+   * Sets the given input text on the element identified by the query.
+   * @param {string} appId App window ID.
+   * @param {string|!Array<string>} selector The query selector to locate
+   *     the element
+   * @param {string} text The text to be set on the element.
+   */
+  async inputText(appId, selector, text) {
+    chrome.test.assertTrue(
+        await this.callRemoteTestUtil('inputText', appId, [selector, text]));
+  }
+
+  /**
    * Gets file entries just under the volume.
    *
    * @param {VolumeManagerCommon.VolumeType} volumeType Volume type.

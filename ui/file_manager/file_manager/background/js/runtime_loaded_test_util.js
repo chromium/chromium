@@ -197,16 +197,6 @@ test.util.sync.maximizeWindow = contentWindow => {
 };
 
 /**
- * Restores the window state (maximized/minimized/etc...).
- * @param {Window} contentWindow Window to be tested.
- * @return {boolean} True for success.
- */
-test.util.sync.restoreWindow = contentWindow => {
-  window.appWindows[contentWindow.appID].restore();
-  return true;
-};
-
-/**
  * Returns whether the window is miximized or not.
  * @param {Window} contentWindow Window to be tested.
  * @return {boolean} True if the window is maximized now.
@@ -394,6 +384,7 @@ test.util.sync.deepGetActiveElement = (contentWindow, opt_styleNames) => {
  *     |query[1]| specifies elements inside the shadow DOM of the first element,
  *     and so on.
  * @param {string} text Text to be assigned.
+ * @return {boolean} Whether or not the text was assigned.
  */
 test.util.sync.inputText = (contentWindow, query, text) => {
   if (typeof query === 'string') {
@@ -404,12 +395,13 @@ test.util.sync.inputText = (contentWindow, query, text) => {
       test.util.sync.deepQuerySelectorAll_(contentWindow.document, query);
   if (elems.length === 0) {
     console.error(`Input element not found: [${query.join(',')}]`);
-    return;
+    return false;
   }
 
   const input = elems[0];
   input.value = text;
   input.dispatchEvent(new Event('change'));
+  return true;
 };
 
 /**
@@ -417,10 +409,11 @@ test.util.sync.inputText = (contentWindow, query, text) => {
  * @param {Window} contentWindow Window to be tested.
  * @param {string} query Query for the test element.
  * @param {number} position scrollLeft position to set.
+ * @return {boolean} True if operation was successful.
  */
 test.util.sync.setScrollLeft = (contentWindow, query, position) => {
-  const scrollablElement = contentWindow.document.querySelector(query);
-  scrollablElement.scrollLeft = position;
+  contentWindow.document.querySelector(query).scrollLeft = position;
+  return true;
 };
 
 /**
@@ -428,10 +421,11 @@ test.util.sync.setScrollLeft = (contentWindow, query, position) => {
  * @param {Window} contentWindow Window to be tested.
  * @param {string} query Query for the test element.
  * @param {number} position scrollTop position to set.
+ * @return {boolean} True if operation was successful.
  */
 test.util.sync.setScrollTop = (contentWindow, query, position) => {
-  const scrollablElement = contentWindow.document.querySelector(query);
-  scrollablElement.scrollTop = position;
+  contentWindow.document.querySelector(query).scrollTop = position;
+  return true;
 };
 
 /**
@@ -445,6 +439,10 @@ test.util.sync.setElementStyles = (contentWindow, query, properties) => {
   for (const [key, value] of Object.entries(properties)) {
     element.style[key] = value;
   }
+  if (element === null) {
+    console.error(`Failed to locate element using query "${query}"`);
+  }
+  return element != null;
 };
 
 /**
@@ -1105,7 +1103,12 @@ test.util.executeTestMessage = (request, sendResponse) => {
     test.util.async[request.func].apply(null, args);
     return true;
   } else if (test.util.sync[request.func]) {
-    sendResponse(test.util.sync[request.func].apply(null, args));
+    try {
+      sendResponse(test.util.sync[request.func].apply(null, args));
+    } catch (e) {
+      console.error(`Failure executing ${request.func}: ${e}`);
+      sendResponse(false);
+    }
     return false;
   } else {
     console.error('Invalid function name: ' + request.func);
@@ -1225,7 +1228,12 @@ test.util.sync.recordEnumMetric = (name, value, validValues) => {
  * appId/windowId won't be usable after the reload.
  */
 test.util.sync.reload = () => {
-  chrome.runtime.reload();
+  if (chrome && chrome.runtime && chrome.runtime.reload) {
+    chrome.runtime.reload();
+    return true;
+  }
+  console.error('Unable to run chrome.runtime.reload');
+  return false;
 };
 
 /**
@@ -1235,6 +1243,7 @@ test.util.sync.reload = () => {
  */
 test.util.sync.progressCenterNeverNotifyCompleted = () => {
   window.background.progressCenter.neverNotifyCompleted();
+  return true;
 };
 
 /**

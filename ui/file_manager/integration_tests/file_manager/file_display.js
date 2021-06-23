@@ -402,8 +402,7 @@ async function searchDownloads(searchTerm, expectedResults) {
       'fakeEvent', appId, ['#search-box cr-input', 'focus']));
 
   // Input a text.
-  await remoteCall.callRemoteTestUtil(
-      'inputText', appId, ['#search-box cr-input', searchTerm]);
+  await remoteCall.inputText(appId, '#search-box cr-input', searchTerm);
 
   // Notify the element of the input.
   chrome.test.assertTrue(!!await remoteCall.callRemoteTestUtil(
@@ -442,8 +441,7 @@ testcase.fileSearchNotFound = async () => {
       'fakeEvent', appId, ['#search-box cr-input', 'focus']));
 
   // Input a text.
-  await remoteCall.callRemoteTestUtil(
-      'inputText', appId, ['#search-box cr-input', searchTerm]);
+  await remoteCall.inputText(appId, '#search-box cr-input', searchTerm);
 
   // Notify the element of the input.
   await remoteCall.callRemoteTestUtil(

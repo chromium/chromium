@@ -182,7 +182,7 @@ async function renameFile(appId, oldName, newName) {
   await remoteCall.waitForElement(appId, textInput);
 
   // Type new file name.
-  await remoteCall.callRemoteTestUtil('inputText', appId, [textInput, newName]);
+  await remoteCall.inputText(appId, textInput, newName);
 
   // Send Enter key to the text input.
   const key2 = [textInput, 'Enter', false, false, false];
@@ -229,8 +229,7 @@ async function testRenameFolder(path, treeItem) {
   await remoteCall.waitForElement(appId, textInput);
 
   // Type the new folder name.
-  await remoteCall.callRemoteTestUtil(
-      'inputText', appId, [textInput, 'bbq photos']);
+  await remoteCall.inputText(appId, textInput, 'bbq photos');
 
   // Send Enter to the list to attempt to enter the directory.
   key = ['#list-container', 'Enter', false, false, false];

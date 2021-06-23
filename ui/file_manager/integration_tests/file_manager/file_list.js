@@ -408,8 +408,7 @@ testcase.fileListRenameSelectedItem = async () => {
   await remoteCall.waitForElement(appId, textInput);
 
   // Type new file name.
-  await remoteCall.callRemoteTestUtil(
-      'inputText', appId, [textInput, 'New File Name.txt']);
+  await remoteCall.inputText(appId, textInput, 'New File Name.txt');
 
   // Send Enter key to the text input.
   const key2 = [textInput, 'Enter', false, false, false];

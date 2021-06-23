@@ -33,8 +33,7 @@ testcase.searchDownloadsWithResults = async () => {
       'fakeEvent', appId, ['#search-box [type="search"]', 'focus']));
 
   // Input a text.
-  await remoteCall.callRemoteTestUtil(
-      'inputText', appId, ['#search-box [type="search"]', 'hello']);
+  await remoteCall.inputText(appId, '#search-box [type="search"]', 'hello');
 
   // Notify the element of the input.
   chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
@@ -65,8 +64,8 @@ testcase.searchDownloadsWithNoResults = async () => {
       'fakeEvent', appId, ['#search-box [type="search"]', 'focus']));
 
   // Input a text.
-  await remoteCall.callRemoteTestUtil(
-      'inputText', appId, ['#search-box [type="search"]', 'INVALID TERM']);
+  await remoteCall.inputText(
+      appId, '#search-box [type="search"]', 'INVALID TERM');
 
   // Notify the element of the input.
   chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(

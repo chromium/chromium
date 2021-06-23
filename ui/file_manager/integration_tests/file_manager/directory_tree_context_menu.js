@@ -111,8 +111,7 @@ async function renamePhotosDirectoryTo(appId, newName, useKeyboardShortcut) {
         appId, '/Downloads/photos', 'rename');
   }
   await remoteCall.waitForElement(appId, '.tree-row input');
-  await remoteCall.callRemoteTestUtil(
-      'inputText', appId, ['.tree-row input', newName]);
+  await remoteCall.inputText(appId, '.tree-row input', newName);
   await remoteCall.callRemoteTestUtil(
       'fakeKeyDown', appId, ['.tree-row input', 'Enter', false, false, false]);
 }
@@ -171,8 +170,7 @@ async function createDirectoryFromDirectoryTree(
         appId, '/Downloads/photos', 'new-folder');
   }
   await remoteCall.waitForElement(appId, '.tree-row input');
-  await remoteCall.callRemoteTestUtil(
-      'inputText', appId, ['.tree-row input', 'test']);
+  await remoteCall.inputText(appId, '.tree-row input', 'test');
   await remoteCall.callRemoteTestUtil(
       'fakeKeyDown', appId, ['.tree-row input', 'Enter', false, false, false]);
 
@@ -464,8 +462,7 @@ testcase.dirRenameUpdateChildrenBreadcrumbs = async () => {
   // Rename parent folder.
   await clickDirectoryTreeContextMenuItem(appId, '/Downloads/photos', 'rename');
   await remoteCall.waitForElement(appId, '.tree-row input');
-  await remoteCall.callRemoteTestUtil(
-      'inputText', appId, ['.tree-row input', 'photos-new']);
+  await remoteCall.inputText(appId, '.tree-row input', 'photos-new');
   const enterKey = ['.tree-row input', 'Enter', false, false, false];
   chrome.test.assertTrue(
       await remoteCall.callRemoteTestUtil('fakeKeyDown', appId, enterKey),
@@ -568,8 +565,7 @@ testcase.dirRenameRemovableWithKeyboard = async () => {
   await remoteCall.waitForElement(appId, textInput);
 
   // Enter the new name for the USB volume.
-  await remoteCall.callRemoteTestUtil(
-      'inputText', appId, [textInput, 'usb-was-renamed']);
+  await remoteCall.inputText(appId, textInput, 'usb-was-renamed');
 
   // Press Enter key to end text input.
   const enterKey = [textInput, 'Enter', false, false, false];
@@ -631,8 +627,7 @@ testcase.dirRenameRemovableWithContentMenu = async () => {
   await remoteCall.waitForElement(appId, textInput);
 
   // Enter the new name for the USB volume.
-  await remoteCall.callRemoteTestUtil(
-      'inputText', appId, [textInput, 'usb-was-renamed']);
+  await remoteCall.inputText(appId, textInput, 'usb-was-renamed');
 
   // Press Enter key to end text input.
   const enterKey = [textInput, 'Enter', false, false, false];
@@ -672,8 +667,7 @@ testcase.dirContextMenuForRenameInput = async () => {
   await remoteCall.waitForElement(appId, textInput);
 
   // Type new file name.
-  await remoteCall.callRemoteTestUtil(
-      'inputText', appId, [textInput, 'NEW NAME']);
+  await remoteCall.inputText(appId, textInput, 'NEW NAME');
 
   // Right click to show the context menu.
   await remoteCall.waitAndRightClick(appId, textInput);
@@ -746,7 +740,7 @@ testcase.dirCreateMultipleFolders = async () => {
     // Rename folder.
     const textInput = '#directory-tree .tree-item[renaming] input';
     await remoteCall.waitForElement(appId, textInput);
-    await remoteCall.callRemoteTestUtil('inputText', appId, [textInput, name]);
+    await remoteCall.inputText(appId, textInput, name);
     await remoteCall.callRemoteTestUtil(
         'fakeKeyDown', appId, [textInput, 'Enter', false, false, false]);
 

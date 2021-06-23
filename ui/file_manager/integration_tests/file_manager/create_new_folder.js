@@ -96,8 +96,7 @@ async function createNewFolder(appId, initialEntrySet, selector) {
   chrome.test.assertTrue('renaming' in elements[0].attributes);
 
   // Type the test folder name.
-  await remoteCall.callRemoteTestUtil(
-      'inputText', appId, [textInput, 'Test Folder Name']);
+  await remoteCall.inputText(appId, textInput, 'Test Folder Name');
 
   // Press the Enter key.
   key = [textInput, 'Enter', false, false, false];

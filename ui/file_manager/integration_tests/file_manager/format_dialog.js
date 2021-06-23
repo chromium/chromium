@@ -197,13 +197,11 @@ testcase.formatDialogCancel = async () => {
 async function checkError(appId, label, format, errorMessage) {
   // Enter in a label.
   const driveNameQuery = ['files-format-dialog', 'cr-input#label'];
-  await remoteCall.callRemoteTestUtil(
-      'inputText', appId, [driveNameQuery, label]);
+  await remoteCall.inputText(appId, driveNameQuery, label);
 
   // Select a format.
   const driveFormatQuery = ['files-format-dialog', '#disk-format select'];
-  await remoteCall.callRemoteTestUtil(
-      'inputText', appId, [driveFormatQuery, format]);
+  await remoteCall.inputText(appId, driveFormatQuery, format);
 
   // Check error message is not there.
   let driveNameElement = await remoteCall.waitForElement(
@@ -233,13 +231,11 @@ async function checkError(appId, label, format, errorMessage) {
 async function checkSuccess(appId, label, format) {
   // Enter in a label.
   const driveNameQuery = ['files-format-dialog', 'cr-input#label'];
-  await remoteCall.callRemoteTestUtil(
-      'inputText', appId, [driveNameQuery, label]);
+  await remoteCall.inputText(appId, driveNameQuery, label);
 
   // Select a format.
   const driveFormatQuery = ['files-format-dialog', '#disk-format select'];
-  await remoteCall.callRemoteTestUtil(
-      'inputText', appId, [driveFormatQuery, format]);
+  await remoteCall.inputText(appId, driveFormatQuery, format);
 
   // Check error message is not there.
   const driveNameElement = await remoteCall.waitForElement(

@@ -412,14 +412,15 @@ test.util.sync.getExecutedTasks = contentWindow => {
 test.util.sync.replyExecutedTask = (contentWindow, taskId, responseArgs) => {
   if (!test.util.executedTasks_) {
     console.error('Please call overrideTasks() first.');
-    return null;
+    return false;
   }
   const found = test.util.executedTasks_.find(task => task.taskId === taskId);
   if (!found) {
     console.error(`No task with id ${taskId}`);
-    return null;
+    return false;
   }
   found.callback(...responseArgs);
+  return true;
 };
 
 /**
@@ -470,6 +471,7 @@ test.util.async.getPreferences = callback => {
 test.util.sync.overrideFormat = contentWindow => {
   contentWindow.chrome.fileManagerPrivate.formatVolume =
       (volumeId, filesystem, volumeLabel) => {};
+  return true;
 };
 
 /**
@@ -806,7 +808,8 @@ test.util.sync.removeAllBackgroundFakes = () => {
  *  value'].
  */
 test.util.sync.foregroundFake = (contentWindow, fakeData) => {
-  for (const [path, mockValue] of Object.entries(fakeData)) {
+  const entries = Object.entries(fakeData);
+  for (const [path, mockValue] of entries) {
     const fakeId = mockValue[0];
     const fakeArgs = mockValue[1] || [];
     const fake =
@@ -814,6 +817,7 @@ test.util.sync.foregroundFake = (contentWindow, fakeData) => {
     fake.prepare();
     fake.replace(test.util.FakeType.FOREGROUND_FAKE, contentWindow);
   }
+  return entries.length;
 };
 
 /**
@@ -869,6 +873,7 @@ test.util.sync.sendProgressItem =
       item.itemCount = count;
 
       background.progressCenter.updateItem(item);
+      return true;
     };
 
 // Register the test utils, however the SWA uses a different util.

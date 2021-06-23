@@ -51,8 +51,7 @@ async function startDriveSearchWithAutoComplete() {
       'fakeEvent', appId, ['#search-box cr-input', 'focus']));
 
   // Input a text.
-  await remoteCall.callRemoteTestUtil(
-      'inputText', appId, ['#search-box cr-input', 'hello']);
+  await remoteCall.inputText(appId, '#search-box cr-input', 'hello');
 
   // Notify the element of the input.
   chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
