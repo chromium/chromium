@@ -2116,11 +2116,12 @@ bool AreEqual<double>(double a, double b) {
 // Follow the definitions from https://drafts.csswg.org/css-grid-2/#extra-space;
 // notice that this method replaces the notion of "tracks" with "sets".
 template <bool is_equal_distribution>
-void DistributeExtraSpaceToSets(LayoutUnit extra_space,
-                                const double flex_factor_sum,
-                                GridItemContributionType contribution_type,
-                                GridSetVector* sets_to_grow,
-                                GridSetVector* sets_to_grow_beyond_limit) {
+void DistributeExtraSpaceToSets(
+    LayoutUnit extra_space,
+    const base::ClampedNumeric<double> flex_factor_sum,
+    GridItemContributionType contribution_type,
+    GridSetVector* sets_to_grow,
+    GridSetVector* sets_to_grow_beyond_limit) {
   DCHECK(extra_space && sets_to_grow);
 
   if (extra_space == kIndefiniteSize) {
@@ -2194,12 +2195,13 @@ void DistributeExtraSpaceToSets(LayoutUnit extra_space,
               CompareSetsByGrowthPotential);
   }
 
-  using ShareRatioType = typename std::conditional<is_equal_distribution,
-                                                   wtf_size_t, double>::type;
+  using ShareRatioType =
+      typename std::conditional<is_equal_distribution, wtf_size_t,
+                                base::ClampedNumeric<double>>::type;
   DCHECK(is_equal_distribution ||
          !AreEqual<ShareRatioType>(flex_factor_sum, 0));
   ShareRatioType share_ratio_sum =
-      is_equal_distribution ? growable_track_count : flex_factor_sum;
+      is_equal_distribution ? growable_track_count : flex_factor_sum.RawValue();
 
   auto ExtraSpaceShare = [&](const NGGridSet& set,
                              LayoutUnit growth_potential) -> LayoutUnit {
@@ -2391,7 +2393,7 @@ void NGGridLayoutAlgorithm::IncreaseTrackSizesToAccommodateGridItems(
     LayoutUnit spanned_tracks_size =
         GridGap(track_direction) * (grid_item->SpanSize(track_direction) - 1);
 
-    double flex_factor_sum = 0;
+    base::ClampedNumeric<double> flex_factor_sum = 0;
     for (auto set_iterator =
              GetSetIteratorForItem(*grid_item, *track_collection);
          !set_iterator.IsAtEnd(); set_iterator.MoveToNextSet()) {
@@ -2727,7 +2729,7 @@ void NGGridLayoutAlgorithm::ExpandFlexibleTracks(
                         SetIterator set_iterator,
                         LayoutUnit leftover_space) -> double {
     flexible_sets.Shrink(0);
-    double flex_factor_sum = 0;
+    base::ClampedNumeric<double> flex_factor_sum = 0;
     wtf_size_t total_track_count = 0;
 
     while (!set_iterator.IsAtEnd()) {
@@ -2786,7 +2788,7 @@ void NGGridLayoutAlgorithm::ExpandFlexibleTracks(
 
     GridSetVector::iterator current_set = flexible_sets.begin();
     while (leftover_space > 0 && current_set != flexible_sets.end()) {
-      flex_factor_sum = std::max(flex_factor_sum, 1.0);
+      flex_factor_sum = base::ClampMax(flex_factor_sum, 1.0);
 
       GridSetVector::iterator next_set = current_set;
       while (next_set != flexible_sets.end() &&
@@ -2814,7 +2816,7 @@ void NGGridLayoutAlgorithm::ExpandFlexibleTracks(
     return 0;
   };
 
-  double fr_size = 0;
+  base::ClampedNumeric<double> fr_size = 0;
   if (free_space != kIndefiniteSize) {
     // Otherwise, if the free space is a definite length, the used flex fraction
     // is the result of finding the size of an fr using all of the grid tracks
@@ -2831,7 +2833,7 @@ void NGGridLayoutAlgorithm::ExpandFlexibleTracks(
     //   crosses and a space to fill of the item’s max-content contribution.
     for (auto& grid_item : grid_items->item_data) {
       if (grid_item.IsSpanningFlexibleTrack(track_direction)) {
-        double grid_item_fr_size = FindFrSize(
+        base::ClampedNumeric<double> grid_item_fr_size = FindFrSize(
             GetSetIteratorForItem(grid_item, *track_collection),
             ContributionSizeForGridItem(
                 grid_geometry, grid_item, track_direction,
@@ -2858,7 +2860,8 @@ void NGGridLayoutAlgorithm::ExpandFlexibleTracks(
       flexible_sets.push_back(&set);
 
       DCHECK_GT(set.TrackCount(), 0u);
-      double flex_factor = std::max<double>(set.FlexFactor(), set.TrackCount());
+      base::ClampedNumeric<double> flex_factor =
+          std::max<double>(set.FlexFactor(), set.TrackCount());
       fr_size = std::max(set.BaseSize().RawValue() / flex_factor, fr_size);
     }
   }

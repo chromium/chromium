@@ -199,6 +199,8 @@ _CONFIG = [
 
             # //base/numerics/clamped_math.h.
             'base::ClampAdd',
+            'base::ClampedNumeric',
+            'base::ClampMax',
             'base::ClampSub',
             'base::MakeClampedNum',
 
