@@ -70,6 +70,9 @@ std::vector<uint8_t> GetSecurePaymentConfirmationChallenge(
     const url::Origin& merchant_origin,
     const mojom::PaymentCurrencyAmountPtr& amount,
     std::string* challenge) {
+  DCHECK(
+      !base::FeatureList::IsEnabled(features::kSecurePaymentConfirmationAPIV2));
+
   base::Value total(base::Value::Type::DICTIONARY);
   total.SetKey("currency", base::Value(amount->currency));
   total.SetKey("value", base::Value(amount->value));
@@ -81,17 +84,9 @@ std::vector<uint8_t> GetSecurePaymentConfirmationChallenge(
 
   base::Value transaction_data(base::Value::Type::DICTIONARY);
 
-  // `challenge` is a renaming of `networkData` used if the
-  // SecurePaymentConfirmationAPIV2 flag is enabled.
-  if (base::FeatureList::IsEnabled(features::kSecurePaymentConfirmationAPIV2)) {
-    transaction_data.SetKey(
-        "challenge",
-        base::Value(EncodeSecurePaymentConfirmationString(network_data)));
-  } else {
-    transaction_data.SetKey(
-        "networkData",
-        base::Value(EncodeSecurePaymentConfirmationString(network_data)));
-  }
+  transaction_data.SetKey(
+      "networkData",
+      base::Value(EncodeSecurePaymentConfirmationString(network_data)));
   transaction_data.SetKey("merchantData", std::move(merchant_data));
 
   bool success = base::JSONWriter::Write(transaction_data, challenge);
@@ -176,10 +171,17 @@ void SecurePaymentConfirmationApp::InvokePaymentApp(
 
   options->allow_credentials = std::move(credentials);
 
-  // Create a new challenge that is a hash of the transaction data.
-  options->challenge = GetSecurePaymentConfirmationChallenge(
-      request_->challenge, merchant_origin_,
-      spec_->GetTotal(/*selected_app=*/this)->amount, &challenge_);
+  if (base::FeatureList::IsEnabled(features::kSecurePaymentConfirmationAPIV2)) {
+    options->challenge = request_->challenge;
+    options->payment = blink::mojom::PaymentOptions::New(
+        spec_->GetTotal(/*selected_app=*/this)->amount.Clone(),
+        request_->instrument.Clone());
+  } else {
+    // Create a new challenge that is a hash of the transaction data.
+    options->challenge = GetSecurePaymentConfirmationChallenge(
+        request_->challenge, merchant_origin_,
+        spec_->GetTotal(/*selected_app=*/this)->amount, &challenge_);
+  }
 
   // We are nullifying the security check by design, and the origin that created
   // the credential isn't saved anywhere.
@@ -346,7 +348,10 @@ void SecurePaymentConfirmationApp::OnGetAssertion(
 
   base::DictionaryValue json;
   json.SetKey("info", std::move(info_json));
-  json.SetString("challenge", challenge_);
+  if (!base::FeatureList::IsEnabled(
+          features::kSecurePaymentConfirmationAPIV2)) {
+    json.SetString("challenge", challenge_);
+  }
   json.SetString("signature",
                  EncodeSecurePaymentConfirmationString(response->signature));
   if (response->user_handle.has_value()) {

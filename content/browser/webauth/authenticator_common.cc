@@ -87,8 +87,9 @@ enum class RequestExtension {
 namespace client_data {
 const char kCreateType[] = "webauthn.create";
 const char kGetType[] = "webauthn.get";
-const char kU2fSignType[] = "navigator.id.getAssertion";
+const char kPaymentGetType[] = "payment.get";
 const char kU2fRegisterType[] = "navigator.id.finishEnrollment";
+const char kU2fSignType[] = "navigator.id.getAssertion";
 }  // namespace client_data
 
 namespace {
@@ -696,7 +697,10 @@ std::string SerializeWebAuthnCollectedClientDataToJson(
     const std::string& origin,
     base::span<const uint8_t> challenge,
     bool is_cross_origin,
-    bool use_legacy_u2f_type_key /* = false */) {
+    bool use_legacy_u2f_type_key /* = false */,
+    blink::mojom::PaymentOptionsPtr payment_options /* = nullptr */,
+    const std::string& payment_rp /* = "" */,
+    const std::string& payment_top_origin /* = "" */) {
   std::string ret;
   ret.reserve(128);
 
@@ -717,6 +721,34 @@ std::string SerializeWebAuthnCollectedClientDataToJson(
     ret.append(R"(,"crossOrigin":true)");
   } else {
     ret.append(R"(,"crossOrigin":false)");
+  }
+
+  if (payment_options) {
+    ret.append(R"(,"payment":{)");
+
+    ret.append(R"("rp":)");
+    ret.append(ToJSONString(payment_rp));
+
+    ret.append(R"(,"topOrigin":)");
+    ret.append(ToJSONString(payment_top_origin));
+
+    ret.append(R"(,"total":{)");
+
+    ret.append(R"("value":)");
+    ret.append(ToJSONString(payment_options->total->value));
+
+    ret.append(R"(,"currency":)");
+    ret.append(ToJSONString(payment_options->total->currency));
+
+    ret.append(R"(},"instrument":{)");
+
+    ret.append(R"("icon":)");
+    ret.append(ToJSONString(payment_options->instrument->icon.spec()));
+
+    ret.append(R"(,"name":)");
+    ret.append(ToJSONString(payment_options->instrument->display_name));
+
+    ret.append("}}");
   }
 
   if (base::RandDouble() < 0.2) {
@@ -1203,17 +1235,33 @@ void AuthenticatorCommon::GetAssertion(
       WebAuthRequestSecurityChecker::OriginIsCryptoTokenExtension(
           caller_origin_);
 
-  // Cryptotoken provides the sender origin for U2F sign requests in the
-  // |relying_party_id| attribute.
-  client_data_json_ =
-      origin_is_crypto_token_extension
-          ? SerializeWebAuthnCollectedClientDataToJson(
-                client_data::kU2fSignType, options->relying_party_id,
-                options->challenge, /*is_cross_origin=*/false,
-                /*use_legacy_u2f_type_key=*/true)
-          : SerializeWebAuthnCollectedClientDataToJson(
-                client_data::kGetType, caller_origin_.Serialize(),
-                options->challenge, is_cross_origin);
+  if (origin_is_crypto_token_extension) {
+    // Cryptotoken provides the sender origin for U2F sign requests in the
+    // |relying_party_id| attribute.
+    client_data_json_ = SerializeWebAuthnCollectedClientDataToJson(
+        client_data::kU2fSignType, options->relying_party_id,
+        options->challenge, /*is_cross_origin=*/false,
+        /*use_legacy_u2f_type_key=*/true);
+  } else if (options->payment &&
+             base::FeatureList::IsEnabled(
+                 features::kSecurePaymentConfirmationAPIV2)) {
+    auto* web_contents = WebContents::FromRenderFrameHost(GetRenderFrameHost());
+    if (!web_contents) {
+      CompleteGetAssertionRequest(
+          blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR);
+      return;
+    }
+    url::Origin top_origin =
+        url::Origin::Create(web_contents->GetLastCommittedURL());
+    client_data_json_ = SerializeWebAuthnCollectedClientDataToJson(
+        client_data::kPaymentGetType, caller_origin_.Serialize(),
+        options->challenge, is_cross_origin, /*use_legacy_u2f_type_key=*/false,
+        std::move(options->payment), relying_party_id_, top_origin.Serialize());
+  } else {
+    client_data_json_ = SerializeWebAuthnCollectedClientDataToJson(
+        client_data::kGetType, caller_origin_.Serialize(), options->challenge,
+        is_cross_origin);
+  }
 
   device::fido_filter::MaybeInitialize();
   if (device::fido_filter::Evaluate(

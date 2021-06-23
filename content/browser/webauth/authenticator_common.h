@@ -80,7 +80,10 @@ CONTENT_EXPORT std::string SerializeWebAuthnCollectedClientDataToJson(
     const std::string& origin,
     base::span<const uint8_t> challenge,
     bool is_cross_origin,
-    bool use_legacy_u2f_type_key = false);
+    bool use_legacy_u2f_type_key = false,
+    blink::mojom::PaymentOptionsPtr payment_options = nullptr,
+    const std::string& payment_rp = "",
+    const std::string& payment_top_origin = "");
 
 // Common code for any WebAuthn Authenticator interfaces.
 class CONTENT_EXPORT AuthenticatorCommon {

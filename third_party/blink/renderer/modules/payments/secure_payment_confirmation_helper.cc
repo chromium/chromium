@@ -9,6 +9,7 @@
 #include "base/logging.h"
 #include "third_party/blink/public/mojom/payments/payment_request.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_payment_credential_instrument.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_secure_payment_confirmation_request.h"
 #include "third_party/blink/renderer/modules/payments/secure_payment_confirmation_type_converter.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -41,16 +42,8 @@ SecurePaymentConfirmationHelper::ParseSecurePaymentConfirmationData(
     return nullptr;
   }
 
-  // `challenge` is a renaming of `networkData` required when the
-  // SecurePaymentConfirmationAPIV2 flag is enabled.
-  if (RuntimeEnabledFeatures::SecurePaymentConfirmationAPIV2Enabled() &&
-      !request->hasChallenge()) {
-    exception_state.ThrowTypeError(
-        "The \"secure-payment-confirmation\" method requires a non-empty "
-        "\"challenge\" field.");
-    return nullptr;
-  } else if (!RuntimeEnabledFeatures::SecurePaymentConfirmationAPIV2Enabled() &&
-             !request->hasNetworkData()) {
+  if (!RuntimeEnabledFeatures::SecurePaymentConfirmationAPIV2Enabled() &&
+      !request->hasNetworkData()) {
     exception_state.ThrowTypeError(
         "The \"secure-payment-confirmation\" method requires a non-empty "
         "\"networkData\" field.");
@@ -62,6 +55,27 @@ SecurePaymentConfirmationHelper::ParseSecurePaymentConfirmationData(
         "The \"secure-payment-confirmation\" method requires at most 1 hour "
         "\"timeout\" field.");
     return nullptr;
+  }
+
+  if (RuntimeEnabledFeatures::SecurePaymentConfirmationAPIV2Enabled()) {
+    if (request->instrument()->displayName().IsEmpty()) {
+      exception_state.ThrowTypeError(
+          "The \"secure-payment-confirmation\" method requires a non-empty "
+          "\"instrument.displayName\" field.");
+      return nullptr;
+    }
+    if (request->instrument()->icon().IsEmpty()) {
+      exception_state.ThrowTypeError(
+          "The \"secure-payment-confirmation\" method requires a non-empty "
+          "\"instrument.icon\" field.");
+      return nullptr;
+    }
+    if (!KURL(request->instrument()->icon()).IsValid()) {
+      exception_state.ThrowTypeError(
+          "The \"secure-payment-confirmation\" method requires a valid URL in "
+          "the \"instrument.icon\" field.");
+      return nullptr;
+    }
   }
 
   return mojo::ConvertTo<

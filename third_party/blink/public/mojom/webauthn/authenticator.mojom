@@ -4,7 +4,9 @@
 
 module blink.mojom;
 
+import "components/payments/mojom/payment_request_data.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import "third_party/blink/public/mojom/payments/payment_credential.mojom";
 import "url/mojom/url.mojom";
 
 // This file describes the communication between the WebAuthentication renderer
@@ -288,6 +290,13 @@ struct PRFValues {
   array<uint8, 32>? second;
 };
 
+// Payment parameters passed into calls to GetAssertion for Secure Payment
+// Confirmation.
+struct PaymentOptions {
+  payments.mojom.PaymentCurrencyAmount total;
+  payments.mojom.PaymentCredentialInstrument instrument;
+};
+
 // Parameters passed into calls to GetAssertion.
 struct PublicKeyCredentialRequestOptions {
   // If true, indicates that this request should prioritize showing a UI only if
@@ -352,6 +361,9 @@ struct PublicKeyCredentialRequestOptions {
   // If true, attempt to read a credblob.
   // https://fidoalliance.org/specs/fido-v2.1-rd-20201208/fido-client-to-authenticator-protocol-v2.1-rd-20201208.html#sctn-credBlob-extension
   bool get_cred_blob;
+
+  // If present, put the payment information into clientDataJSON.
+  PaymentOptions? payment;
 };
 
 // See https://w3c.github.io/webauthn/#enumdef-attestationconveyancepreference

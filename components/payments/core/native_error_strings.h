@@ -254,6 +254,22 @@ extern const char kCredentialIdsRequired[];
 // is too long.
 extern const char kTimeoutTooLong[];
 
+// Used when the challenge field was not specified for the
+// "secure-payment-confirmation" method.
+extern const char kChallengeRequired[];
+
+// Used when the instrument field was not specified for the
+// "secure-payment-confirmation" method.
+extern const char kInstrumentRequired[];
+
+// Used when the instrument.displayName field was not specified for the
+// "secure-payment-confirmation" method.
+extern const char kInstrumentDisplayNameRequired[];
+
+// Used when the instrument.icon field was not specified or was not a valid URL
+// in the "secure-payment-confirmation" method.
+extern const char kValidInstrumentIconRequired[];
+
 }  // namespace errors
 }  // namespace payments
 

@@ -63,6 +63,31 @@ bool IsValid(const mojom::SecurePaymentConfirmationRequestPtr& request,
     return false;
   }
 
+  if (request->challenge.empty()) {
+    *error_message = errors::kChallengeRequired;
+    return false;
+  }
+
+  if (!request->instrument) {
+    *error_message = errors::kInstrumentRequired;
+    return false;
+  }
+
+  if (!base::FeatureList::IsEnabled(
+          features::kSecurePaymentConfirmationAPIV2)) {
+    return true;
+  }
+
+  if (request->instrument->display_name.empty()) {
+    *error_message = errors::kInstrumentDisplayNameRequired;
+    return false;
+  }
+
+  if (!request->instrument->icon.is_valid()) {
+    *error_message = errors::kValidInstrumentIconRequired;
+    return false;
+  }
+
   return true;
 }
 
