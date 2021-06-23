@@ -222,9 +222,8 @@ CSSScrollTimeline::CSSScrollTimeline(Document* document, Options&& options)
                      options.source_,
                      options.direction_,
                      std::move(options.offsets_),
-                     *options.time_range_),
+                     options.time_range_),
       rule_(options.rule_) {
-  DCHECK(options.IsValid());
   DCHECK(rule_);
 }
 

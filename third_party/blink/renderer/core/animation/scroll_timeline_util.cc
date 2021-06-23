@@ -25,9 +25,6 @@ scoped_refptr<CompositorScrollTimeline> ToCompositorScrollTimeline(
   absl::optional<CompositorElementId> element_id =
       GetCompositorScrollElementId(scroll_source);
 
-  auto* time_range = scroll_timeline->timeRange();
-  DCHECK(time_range);
-
   LayoutBox* box =
       scroll_timeline->IsActive() ? scroll_source->GetLayoutBox() : nullptr;
 
@@ -36,7 +33,7 @@ scoped_refptr<CompositorScrollTimeline> ToCompositorScrollTimeline(
 
   return CompositorScrollTimeline::Create(
       element_id, orientation, scroll_timeline->GetResolvedScrollOffsets(),
-      time_range->GetAsDouble());
+      scroll_timeline->GetTimeRange());
 }
 
 absl::optional<CompositorElementId> GetCompositorScrollElementId(

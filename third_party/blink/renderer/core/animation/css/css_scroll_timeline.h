@@ -25,9 +25,6 @@ class CORE_EXPORT CSSScrollTimeline : public ScrollTimeline {
    public:
     Options(Document&, StyleRuleScrollTimeline&);
 
-    // TODO(crbug.com/1097041): Support 'auto' value.
-    bool IsValid() const { return time_range_.has_value(); }
-
    private:
     friend class CSSScrollTimeline;
 

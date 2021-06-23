@@ -81,7 +81,26 @@ void AnimationEffect::UpdateSpecifiedTiming(const Timing& timing) {
     if (!timing_.HasTimingOverride(Timing::kOverrideTimingFunction))
       timing_.timing_function = timing.timing_function;
   }
+
+  // Changing timings can impact the intrinsic iteration duration.
+  if (GetAnimation() && GetAnimation()->timeline()) {
+    timing_.intrinsic_iteration_duration =
+        GetAnimation()->timeline()->CalculateIntrinsicIterationDuration(
+            timing_);
+  }
   InvalidateAndNotifyOwner();
+}
+
+void AnimationEffect::SetTimingTimelineDuration(
+    absl::optional<AnimationTimeDelta> timeline_duration) {
+  timing_.timeline_duration = timeline_duration;
+  if (timeline_duration) {
+    timing_.intrinsic_iteration_duration =
+        GetAnimation()->timeline()->CalculateIntrinsicIterationDuration(
+            timing_);
+  } else {
+    timing_.intrinsic_iteration_duration = AnimationTimeDelta();
+  }
 }
 
 void AnimationEffect::SetIgnoreCssTimingProperties() {
@@ -101,10 +120,60 @@ ComputedEffectTiming* AnimationEffect::getComputedTiming() const {
 
 void AnimationEffect::updateTiming(OptionalEffectTiming* optional_timing,
                                    ExceptionState& exception_state) {
+  if (GetAnimation() && GetAnimation()->timeline() &&
+      GetAnimation()->timeline()->IsProgressBasedTimeline()) {
+    if (optional_timing->hasDuration()) {
+      if (optional_timing->duration()->IsUnrestrictedDouble()) {
+        double duration =
+            optional_timing->duration()->GetAsUnrestrictedDouble();
+        if (duration == std::numeric_limits<double>::infinity()) {
+          exception_state.ThrowTypeError(
+              "Effect duration cannot be Infinity when used with Scroll "
+              "Timelines");
+          return;
+        }
+      } else if (optional_timing->duration()->GetAsString() == "auto") {
+        // TODO(crbug.com/1216527)
+        // Eventually we hope to be able to be more flexible with
+        // iteration_duration "auto" and its interaction with start_delay and
+        // end_delay. For now we will throw an exception if either delay is set.
+        // Once delays are changed to CSSNumberish, we will need to adjust logic
+        // here to allow for percentage values but not time values.
+
+        // If either delay or end_delay are non-zero, we can't handle "auto"
+        if (!SpecifiedTiming().start_delay.is_zero() ||
+            !SpecifiedTiming().end_delay.is_zero()) {
+          exception_state.ThrowDOMException(
+              DOMExceptionCode::kNotSupportedError,
+              "Effect duration \"auto\" with delays is not yet implemented "
+              "when used with Scroll Timelines");
+          return;
+        }
+      }
+    }
+
+    if (optional_timing->hasIterations() &&
+        optional_timing->iterations() ==
+            std::numeric_limits<double>::infinity()) {
+      // iteration count of infinity makes no sense for scroll timelines
+      exception_state.ThrowTypeError(
+          "Effect iterations cannot be Infinity when used with Scroll "
+          "Timelines");
+      return;
+    }
+  }
+
   // TODO(crbug.com/827178): Determine whether we should pass a Document in here
   // (and which) to resolve the CSS secure/insecure context against.
   if (!TimingInput::Update(timing_, optional_timing, nullptr, exception_state))
     return;
+
+  // Changing timings can impact the intrinsic iteration duration.
+  if (GetAnimation() && GetAnimation()->timeline()) {
+    timing_.intrinsic_iteration_duration =
+        GetAnimation()->timeline()->CalculateIntrinsicIterationDuration(
+            timing_);
+  }
   InvalidateAndNotifyOwner();
 }
 
@@ -144,6 +213,18 @@ void AnimationEffect::UpdateInheritedTime(
 
   absl::optional<Timing::Phase> timeline_phase =
       TimelinePhaseToTimingPhase(inherited_timeline_phase);
+
+  // TODO (crbug.com/1222387): Once normalized timing values have been added,
+  // we will no longer need to convert inherited_time to be effect time relative
+  // since all effect times will be timeline relative based on the normalized
+  // timing values.
+  if (inherited_time && GetAnimation() && GetAnimation()->timeline() &&
+      GetAnimation()->timeline()->IsProgressBasedTimeline()) {
+    // map inherited time [0,timeline_duration] to effect end time [0,end_time]
+    inherited_time = (inherited_time.value() /
+                      GetAnimation()->timeline()->GetDuration().value()) *
+                     SpecifiedTiming().EndTimeInternal();
+  }
 
   bool needs_update = needs_update_ || last_update_time_ != inherited_time ||
                       (owner_ && owner_->EffectSuppressed()) ||

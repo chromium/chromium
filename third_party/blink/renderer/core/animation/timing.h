@@ -34,6 +34,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/animation/animation_time_delta.h"
+#include "third_party/blink/renderer/core/css/cssom/css_numeric_value.h"
 #include "third_party/blink/renderer/core/style/data_equivalency.h"
 #include "third_party/blink/renderer/platform/animation/compositor_keyframe_model.h"
 #include "third_party/blink/renderer/platform/animation/timing_function.h"
@@ -133,6 +134,9 @@ struct CORE_EXPORT Timing {
   }
   bool HasTimingOverrides() { return timing_overrides != kOverrideNode; }
 
+  V8CSSNumberish* ToComputedValue(absl::optional<AnimationTimeDelta>) const;
+
+  // TODO(crbug.com/1216527): Support CSSNumberish delays
   AnimationTimeDelta start_delay;
   AnimationTimeDelta end_delay;
   FillMode fill_mode = FillMode::AUTO;
@@ -140,6 +144,10 @@ struct CORE_EXPORT Timing {
   double iteration_count = 1;
   // If empty, indicates the 'auto' value.
   absl::optional<AnimationTimeDelta> iteration_duration = absl::nullopt;
+
+  // A valid timeline_duration indicates use of a progress based timeline.
+  absl::optional<AnimationTimeDelta> timeline_duration;
+  AnimationTimeDelta intrinsic_iteration_duration;
 
   PlaybackDirection direction = PlaybackDirection::NORMAL;
   scoped_refptr<TimingFunction> timing_function =

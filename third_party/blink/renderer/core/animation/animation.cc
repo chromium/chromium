@@ -199,18 +199,40 @@ Animation* Animation::Create(AnimationEffect* effect,
   }
   DCHECK(IsA<DocumentTimeline>(timeline) || timeline->IsScrollTimeline());
 
-  // TODO(crbug.com/1097041): Support 'auto' value.
-  if (timeline->IsScrollTimeline()) {
-    auto* time_range = To<ScrollTimeline>(timeline)->timeRange();
-    // TODO(crbug.com/1140602): Support progress based animations
-    // We are currently abusing the intended use of the "auto" keyword. We are
-    // using it here as a signal to use progress based timeline instead of
-    // having a range based current time. We are doing this maintain backwards
-    // compatibility with existing tests.
-    if (time_range->IsScrollTimelineAutoKeyword()) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kNotSupportedError,
-          "progress based animations are not supported");
+  if (timeline->IsProgressBasedTimeline()) {
+    if (effect->timing_.iteration_duration) {
+      if (effect->timing_.iteration_duration->is_inf()) {
+        exception_state.ThrowTypeError(
+            "Effect duration cannot be Infinity when used with Scroll "
+            "Timelines");
+        return nullptr;
+      }
+    } else {
+      // TODO(crbug.com/1216527)
+      // Eventually we hope to be able to be more flexible with
+      // iteration_duration "auto" and its interaction with start_delay and
+      // end_delay. For now we will throw an exception if either delay is set.
+      // Once the spec (https://github.com/w3c/csswg-drafts/pull/6337) has been
+      // ratified, we will be able to better handle mixed scenarios like "auto"
+      // and time based delays.
+
+      // If either delay or end_delay are non-zero, we can't yet handle "auto"
+      if (!effect->timing_.start_delay.is_zero() ||
+          !effect->timing_.end_delay.is_zero()) {
+        exception_state.ThrowDOMException(
+            DOMExceptionCode::kNotSupportedError,
+            "Effect duration \"auto\" with delays is not yet implemented when "
+            "used with Scroll Timelines");
+        return nullptr;
+      }
+    }
+
+    if (effect->timing_.iteration_count ==
+        std::numeric_limits<double>::infinity()) {
+      // iteration count of infinity makes no sense for scroll timelines
+      exception_state.ThrowTypeError(
+          "Effect iterations cannot be Infinity when used with Scroll "
+          "Timelines");
       return nullptr;
     }
   }
@@ -273,14 +295,19 @@ Animation::Animation(ExecutionContext* execution_context,
     }
     content_->Attach(this);
   }
-  document_ = timeline_ ? timeline_->GetDocument()
-                        : To<LocalDOMWindow>(execution_context)->document();
-  DCHECK(document_);
 
-  if (timeline_)
+  if (timeline_) {
+    document_ = timeline_->GetDocument();
+    DCHECK(document_);
     timeline_->AnimationAttached(this);
-  else
+
+    if (content_)
+      content_->SetTimingTimelineDuration(timeline_->GetDuration());
+  } else {
+    document_ = To<LocalDOMWindow>(execution_context)->document();
+    DCHECK(document_);
     document_->Timeline().AnimationAttached(this);
+  }
 
   probe::DidCreateAnimation(document_, sequence_number_);
 }
@@ -301,6 +328,11 @@ void Animation::Dispose() {
 }
 
 AnimationTimeDelta Animation::EffectEnd() const {
+  if (timeline_ && timeline_->IsProgressBasedTimeline()) {
+    // For progress based timelines, timeline times are mapped to be relative to
+    // Effect times, which means effect end maps to timeline duration.
+    return timeline_->GetDuration().value();
+  }
   return content_ ? content_->SpecifiedTiming().EndTimeInternal()
                   : AnimationTimeDelta();
 }
@@ -340,7 +372,22 @@ void Animation::setCurrentTime(const V8CSSNumberish* current_time,
     // Throw exception for CSSNumberish that is a CSSNumericValue
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
-        "Invalid startTime. CSSNumericValue not yet supported.");
+        "Invalid currentTime. CSSNumericValue not yet supported.");
+    return;
+  }
+
+  // TODO (crbug.com/1218963):
+  // Once current_time can be set as a CSSNumberish, we need to support
+  // setting it for progress based timelines. This will involve conversions
+  // between the type of input and the type of timeline being used.
+  // (i.e. input is a time relative to effect, but using progress based timeline
+  // would result in converting the input time to be timeline relative since
+  // that would be the expected type of data being used internally)
+  if (timeline_ && timeline_->IsProgressBasedTimeline()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        "Setting currentTime is not yet supported for progress based "
+        "animations");
     return;
   }
 
@@ -421,13 +468,20 @@ V8CSSNumberish* Animation::startTime() const {
   return nullptr;
 }
 
+V8CSSNumberish* Animation::ConvertTimeToCSSNumberish(
+    AnimationTimeDelta time) const {
+  if (timeline_ && timeline_->IsProgressBasedTimeline()) {
+    return To<ScrollTimeline>(*timeline_).ConvertTimeToProgress(time);
+  }
+  return MakeGarbageCollected<V8CSSNumberish>(time.InMillisecondsF());
+}
+
 // https://drafts.csswg.org/web-animations/#the-current-time-of-an-animation
 V8CSSNumberish* Animation::currentTime() const {
   // 1. If the animation’s hold time is resolved,
   //    The current time is the animation’s hold time.
   if (hold_time_.has_value()) {
-    return MakeGarbageCollected<V8CSSNumberish>(
-        hold_time_.value().InMillisecondsF());
+    return ConvertTimeToCSSNumberish(hold_time_.value());
   }
 
   // 2.  If any of the following are true:
@@ -449,8 +503,7 @@ V8CSSNumberish* Animation::currentTime() const {
   AnimationTimeDelta calculated_current_time =
       (timeline_time.value() - start_time_.value()) * playback_rate_;
 
-  return MakeGarbageCollected<V8CSSNumberish>(
-      calculated_current_time.InMillisecondsF());
+  return ConvertTimeToCSSNumberish(calculated_current_time);
 }
 
 bool Animation::ValidateHoldTimeAndPhase() const {
@@ -828,6 +881,10 @@ void Animation::setTimeline(AnimationTimeline* timeline) {
     document_->Timeline().AnimationAttached(this);
   SetOutdated();
 
+  // Update content timing to be based on new timeline type
+  if (content_ && timeline_)
+    content_->SetTimingTimelineDuration(timeline_->GetDuration());
+
   reset_current_time_on_resume_ = false;
 
   if (timeline) {
@@ -928,6 +985,20 @@ void Animation::setStartTime(const V8CSSNumberish* start_time,
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
         "Invalid startTime. CSSNumericValue not yet supported.");
+    return;
+  }
+
+  // TODO (crbug.com/1218963):
+  // Once startTime can be set as a CSSNumberish, we need to support
+  // setting it for progress based timelines. This will involve conversions
+  // between the type of input and the type of timeline being used.
+  // (i.e. input is a time relative to effect, but using progress based timeline
+  // would result in converting the input time to be timeline relative since
+  // that would be the expected type of data being used internally)
+  if (timeline_ && timeline_->IsProgressBasedTimeline()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        "Setting startTime is not yet supported for progress based animations");
     return;
   }
 

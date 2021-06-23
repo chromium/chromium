@@ -83,6 +83,8 @@ class CORE_EXPORT AnimationEffect : public ScriptWrappable {
   virtual bool IsKeyframeEffect() const { return false; }
   virtual bool IsInertEffect() const { return false; }
 
+  void SetTimingTimelineDuration(absl::optional<AnimationTimeDelta>);
+
   Timing::Phase GetPhase() const { return EnsureCalculated().phase; }
   bool IsCurrent() const { return EnsureCalculated().is_current; }
   bool IsInEffect() const { return EnsureCalculated().is_in_effect; }

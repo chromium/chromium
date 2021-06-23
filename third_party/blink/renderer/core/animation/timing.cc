@@ -7,7 +7,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_computed_effect_timing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_effect_timing.h"
 #include "third_party/blink/renderer/core/animation/timing_calculations.h"
-#include "third_party/blink/renderer/core/css/cssom/css_numeric_value.h"
+#include "third_party/blink/renderer/core/css/cssom/css_unit_values.h"
 
 namespace blink {
 
@@ -67,7 +67,8 @@ Timing::FillMode Timing::ResolvedFillMode(bool is_keyframe_effect) const {
 }
 
 AnimationTimeDelta Timing::IterationDuration() const {
-  AnimationTimeDelta result = iteration_duration.value_or(AnimationTimeDelta());
+  AnimationTimeDelta result =
+      iteration_duration.value_or(intrinsic_iteration_duration);
   DCHECK_GE(result, AnimationTimeDelta());
   return result;
 }
@@ -108,23 +109,40 @@ EffectTiming* Timing::ConvertToEffectTiming() const {
   return effect_timing;
 }
 
+// Converts values to CSSNumberish based on corresponding timeline type
+V8CSSNumberish* Timing::ToComputedValue(
+    absl::optional<AnimationTimeDelta> time) const {
+  if (time) {
+    // A valid timeline_duration indicates use of progress based timeline. We
+    // need to convert values to percentages using EndTimeInternal as 100%
+    if (timeline_duration) {
+      // EndTimeInternal() can be zero when using negative start delay that
+      // effectively negates the active duration of the effect. In such cases,
+      // we just return a progress of 0.
+      if (!EndTimeInternal().is_zero()) {
+        return MakeGarbageCollected<V8CSSNumberish>(
+            CSSUnitValues::percent((time.value() / EndTimeInternal()) * 100));
+      } else {
+        return MakeGarbageCollected<V8CSSNumberish>(CSSUnitValues::percent(0));
+      }
+    } else {
+      // For time based timeline, simply return the value in milliseconds.
+      return MakeGarbageCollected<V8CSSNumberish>(
+          time.value().InMillisecondsF());
+    }
+  }
+  return nullptr;
+}
+
 ComputedEffectTiming* Timing::getComputedTiming(
     const CalculatedTiming& calculated_timing,
     bool is_keyframe_effect) const {
   ComputedEffectTiming* computed_timing = ComputedEffectTiming::Create();
 
   // ComputedEffectTiming members.
-  computed_timing->setEndTime(MakeGarbageCollected<V8CSSNumberish>(
-      EndTimeInternal().InMillisecondsF()));
-  computed_timing->setActiveDuration(
-      MakeGarbageCollected<V8CSSNumberish>(ActiveDuration().InMillisecondsF()));
-
-  if (calculated_timing.local_time) {
-    computed_timing->setLocalTime(MakeGarbageCollected<V8CSSNumberish>(
-        calculated_timing.local_time->InMillisecondsF()));
-  } else {
-    computed_timing->setLocalTime(nullptr);
-  }
+  computed_timing->setEndTime(ToComputedValue(EndTimeInternal()));
+  computed_timing->setActiveDuration(ToComputedValue(ActiveDuration()));
+  computed_timing->setLocalTime(ToComputedValue(calculated_timing.local_time));
 
   if (calculated_timing.is_in_effect) {
     DCHECK(calculated_timing.current_iteration);
@@ -141,6 +159,9 @@ ComputedEffectTiming* Timing::getComputedTiming(
   // except that the fill and duration must be resolved.
   //
   // https://drafts.csswg.org/web-animations-1/#dom-animationeffect-getcomputedtiming
+
+  // TODO(crbug.com/1216527): Animation effect timing members start_delay and
+  // end_delay should be CSSNumberish
   computed_timing->setDelay(start_delay.InMillisecondsF());
   computed_timing->setEndDelay(end_delay.InMillisecondsF());
   computed_timing->setFill(
@@ -148,9 +169,20 @@ ComputedEffectTiming* Timing::getComputedTiming(
   computed_timing->setIterationStart(iteration_start);
   computed_timing->setIterations(iteration_count);
 
-  computed_timing->setDuration(
-      MakeGarbageCollected<V8UnionStringOrUnrestrictedDouble>(
-          IterationDuration().InMillisecondsF()));
+  // TODO(crbug.com/1219008): Animation effect computed iteration_duration
+  // should return CSSNumberish, which will simplify this logic.
+  V8CSSNumberish* computed_duration = ToComputedValue(IterationDuration());
+  if (computed_duration->IsCSSNumericValue()) {
+    computed_timing->setDuration(
+        MakeGarbageCollected<V8UnionStringOrUnrestrictedDouble>(
+            computed_duration->GetAsCSSNumericValue()
+                ->to(CSSPrimitiveValue::UnitType::kPercentage)
+                ->value()));
+  } else {
+    computed_timing->setDuration(
+        MakeGarbageCollected<V8UnionStringOrUnrestrictedDouble>(
+            computed_duration->GetAsDouble()));
+  }
 
   computed_timing->setDirection(Timing::PlaybackDirectionString(direction));
   computed_timing->setEasing(timing_function->ToString());

@@ -146,6 +146,8 @@ class CORE_EXPORT Animation : public EventTargetWithInlineData,
 
   void cancel();
 
+  V8CSSNumberish* ConvertTimeToCSSNumberish(AnimationTimeDelta) const;
+
   V8CSSNumberish* currentTime() const;
   absl::optional<AnimationTimeDelta> CurrentTimeInternal() const;
   void setCurrentTime(const V8CSSNumberish* current_time,
@@ -205,6 +207,7 @@ class CORE_EXPORT Animation : public EventTargetWithInlineData,
   double playbackRate() const;
   void setPlaybackRate(double, ExceptionState& = ASSERT_NO_EXCEPTION);
   AnimationTimeline* timeline() { return timeline_; }
+  AnimationTimeline* timeline() const { return timeline_; }
   virtual void setTimeline(AnimationTimeline* timeline);
   Document* GetDocument() const;
 

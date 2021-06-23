@@ -1955,9 +1955,6 @@ void StyleEngine::UpdateTimelines() {
     const AtomicString& name = it.key;
 
     CSSScrollTimeline::Options options(GetDocument(), *it.value);
-    // TODO(crbug.com/1097041): Support 'auto'.
-    if (!options.IsValid())
-      continue;
 
     // Check if we can re-use existing timeline.
     CSSScrollTimeline* existing_timeline = FindScrollTimeline(name);
