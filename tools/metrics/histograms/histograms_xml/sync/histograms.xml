@@ -497,7 +497,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true" name="Sync.E2ELatency" units="ms" expires_after="M94">
   <owner>mastiz@chromium.org</owner>
-  <owner>melandory@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
   <component>Services&gt;Sync</component>
   <summary>
     Recorded for a subset of users (Finch-controlled) per sync reflection, that
@@ -539,7 +539,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     expires_after="never">
 <!-- expires-never: For monitoring FCM based invalidations. -->
 
-  <owner>melandory@chromium.org</owner>
+  <owner>mmoskvitin@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <component>Services&gt;Sync</component>
   <summary>
@@ -896,7 +896,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Sync.NonReflectionUpdateFreshnessPossiblySkewed2" units="ms"
     expires_after="2021-12-19">
   <owner>mastiz@chromium.org</owner>
-  <owner>melandory@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
   <component>Services&gt;Sync</component>
   <summary>
     Freshness of the sync data per received sync entity update, excluding
@@ -1163,7 +1163,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Sync.RedundantInvalidationPerModelType2" enum="SyncModelTypes"
     expires_after="2021-12-16">
-  <owner>melandory@chromium.org</owner>
+  <owner>mmoskvitin@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <component>Services&gt;Sync</component>
   <summary>
