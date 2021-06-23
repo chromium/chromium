@@ -87,6 +87,7 @@ enum class RequestExtension {
 namespace client_data {
 const char kCreateType[] = "webauthn.create";
 const char kGetType[] = "webauthn.get";
+const char kPaymentCreateType[] = "payment.create";
 const char kPaymentGetType[] = "payment.get";
 const char kU2fRegisterType[] = "navigator.id.finishEnrollment";
 const char kU2fSignType[] = "navigator.id.getAssertion";
@@ -1102,17 +1103,25 @@ void AuthenticatorCommon::MakeCredential(
       WebAuthRequestSecurityChecker::OriginIsCryptoTokenExtension(
           caller_origin_);
 
-  // Cryptotoken provides the sender origin for register requests in the
-  // |relying_party| |name| attribute. (The |id| attribute contains the AppID.)
-  client_data_json_ =
-      origin_is_crypto_token_extension
-          ? SerializeWebAuthnCollectedClientDataToJson(
-                client_data::kU2fRegisterType, *options->relying_party.name,
-                options->challenge, /*is_cross_origin=*/false,
-                /*use_legacy_u2f_type_key=*/true)
-          : SerializeWebAuthnCollectedClientDataToJson(
-                client_data::kCreateType, caller_origin_.Serialize(),
-                options->challenge, is_cross_origin);
+  if (origin_is_crypto_token_extension) {
+    // Cryptotoken provides the sender origin for register requests in the
+    // |relying_party| |name| attribute. (The |id| attribute contains the
+    // AppID.)
+    client_data_json_ = SerializeWebAuthnCollectedClientDataToJson(
+        client_data::kU2fRegisterType, *options->relying_party.name,
+        options->challenge, /*is_cross_origin=*/false,
+        /*use_legacy_u2f_type_key=*/true);
+  } else if (options->is_payment_credential_creation &&
+             base::FeatureList::IsEnabled(
+                 features::kSecurePaymentConfirmationAPIV2)) {
+    client_data_json_ = SerializeWebAuthnCollectedClientDataToJson(
+        client_data::kPaymentCreateType, caller_origin_.Serialize(),
+        options->challenge, is_cross_origin);
+  } else {
+    client_data_json_ = SerializeWebAuthnCollectedClientDataToJson(
+        client_data::kCreateType, caller_origin_.Serialize(),
+        options->challenge, is_cross_origin);
+  }
 
   // Cryptotoken requests, making payment credentials, and Touch-to-Autofill
   // should be proxied without UI.
