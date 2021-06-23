@@ -31,7 +31,6 @@
 #include "gpu/ipc/service/shared_image_stub.h"
 #include "ipc/ipc_sender.h"
 #include "ipc/ipc_sync_channel.h"
-#include "ipc/message_router.h"
 #include "mojo/public/cpp/bindings/generic_pending_associated_receiver.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
@@ -146,9 +145,7 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener,
 
   // Called to add a listener for a particular message routing ID.
   // Returns true if succeeded.
-  bool AddRoute(int32_t route_id,
-                SequenceId sequence_id,
-                IPC::Listener* listener);
+  bool AddRoute(int32_t route_id, SequenceId sequence_id);
 
   // Called to remove a listener for a particular message routing ID.
   void RemoveRoute(int32_t route_id);
@@ -265,9 +262,6 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener,
   // Sync point manager. Outlives the channel and is guaranteed to outlive the
   // message loop.
   SyncPointManager* const sync_point_manager_;
-
-  // Used to implement message routing functionality to CommandBuffer objects
-  IPC::MessageRouter router_;
 
   // The id of the client who is on the other side of the channel.
   const int32_t client_id_;

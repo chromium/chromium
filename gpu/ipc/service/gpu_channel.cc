@@ -686,18 +686,15 @@ void GpuChannel::MarkAllContextsLost() {
     kv.second->MarkContextLost();
 }
 
-bool GpuChannel::AddRoute(int32_t route_id,
-                          SequenceId sequence_id,
-                          IPC::Listener* listener) {
+bool GpuChannel::AddRoute(int32_t route_id, SequenceId sequence_id) {
   if (scheduler_)
     filter_->AddRoute(route_id, sequence_id);
-  return router_.AddRoute(route_id, listener);
+  return true;
 }
 
 void GpuChannel::RemoveRoute(int32_t route_id) {
   if (scheduler_)
     filter_->RemoveRoute(route_id);
-  router_.RemoveRoute(route_id);
 }
 
 void GpuChannel::ExecuteDeferredRequest(
@@ -934,7 +931,7 @@ void GpuChannel::CreateCommandBuffer(
     return;
   }
 
-  if (!AddRoute(route_id, sequence_id, stub.get())) {
+  if (!AddRoute(route_id, sequence_id)) {
     LOG(ERROR) << "ContextResult::kFatalFailure: failed to add route";
     return;
   }

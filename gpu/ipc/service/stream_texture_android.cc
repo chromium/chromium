@@ -97,21 +97,17 @@ StreamTexture::StreamTexture(
                                context_state)),
       has_pending_frame_(false),
       channel_(channel),
+      route_id_(route_id),
       context_state_(std::move(context_state)),
       sequence_(channel_->scheduler()->CreateSequence(SchedulingPriority::kLow,
                                                       channel_->task_runner())),
-      sync_point_client_state_(
-          channel_->sync_point_manager()->CreateSyncPointClientState(
-              CommandBufferNamespace::GPU_IO,
-              CommandBufferIdFromChannelAndRoute(channel_->client_id(),
-                                                 route_id),
-              sequence_)),
       receiver_(
           this,
           std::move(receiver),
           base::MakeRefCounted<SchedulerTaskRunner>(*channel_->scheduler(),
                                                     sequence_)) {
   context_state_->AddContextLostObserver(this);
+  channel_->AddRoute(route_id, sequence_);
 
   texture_owner_->SetFrameAvailableCallback(base::BindRepeating(
       &StreamTexture::RunCallback, base::ThreadTaskRunnerHandle::Get(),
@@ -128,10 +124,9 @@ StreamTexture::~StreamTexture() {
 void StreamTexture::ReleaseChannel() {
   DCHECK(channel_);
   receiver_.ResetFromAnotherSequenceUnsafe();
+  channel_->RemoveRoute(route_id_);
   channel_->scheduler()->DestroySequence(sequence_);
   sequence_ = SequenceId();
-  sync_point_client_state_->Destroy();
-  sync_point_client_state_ = nullptr;
   channel_ = nullptr;
 }
 

@@ -129,9 +129,9 @@ class StreamTexture : public StreamTextureSharedImageInterface,
   bool has_pending_frame_;
 
   GpuChannel* channel_;
+  const int32_t route_id_;
   scoped_refptr<SharedContextState> context_state_;
   SequenceId sequence_;
-  scoped_refptr<gpu::SyncPointClientState> sync_point_client_state_;
 
   mojo::AssociatedReceiver<mojom::StreamTexture> receiver_;
   mojo::AssociatedRemote<mojom::StreamTextureClient> client_;
