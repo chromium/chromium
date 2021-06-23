@@ -66,7 +66,6 @@ no_check_targets = [
   "//extensions/browser:*",  # 20 errors
   "//extensions:*",  # 75 errors
   "//headless:*",  # 167 errors
-  "//native_client/src/trusted/service_runtime:*",  # 2 errors
   "//ppapi/native_client/src/untrusted/pnacl_irt_shim:*",  # 197 errors
   "//ppapi/proxy:*",  # 31 errors
   "//ppapi/thunk:*",  # 1071 errors
