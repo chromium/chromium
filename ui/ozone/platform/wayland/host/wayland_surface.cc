@@ -72,16 +72,6 @@ bool WaylandSurface::Initialize() {
     LOG(WARNING) << "Server doesn't support wp_viewporter.";
   }
 
-  // The server needs to support the linux_explicit_synchronization protocol.
-  if (!connection_->linux_explicit_synchronization_v1()) {
-    LOG(WARNING)
-        << "Server doesn't support zwp_linux_explicit_synchronization_v1.";
-    return true;
-  }
-  surface_sync_.reset(zwp_linux_explicit_synchronization_v1_get_synchronization(
-      connection_->linux_explicit_synchronization_v1(), surface_.get()));
-  DCHECK(surface_sync());
-
   return true;
 }
 
@@ -91,8 +81,11 @@ void WaylandSurface::UnsetRootWindow() {
 }
 
 void WaylandSurface::SetAcquireFence(const gfx::GpuFenceHandle& acquire_fence) {
+  // WaylandBufferManagerGPU knows if the synchronization is not available and
+  // must disallow clients to use explicit synchronization.
+  DCHECK(connection_->linux_explicit_synchronization_v1());
   zwp_linux_surface_synchronization_v1_set_acquire_fence(
-      surface_sync(), acquire_fence.owned_fd.get());
+      GetSurfaceSync(), acquire_fence.owned_fd.get());
 }
 
 void WaylandSurface::AttachBuffer(wl_buffer* buffer) {
@@ -184,9 +177,10 @@ void WaylandSurface::UpdateBufferDamageRegion(
 }
 
 void WaylandSurface::Commit() {
-  if (surface_sync_ && buffer_attached_since_last_commit_) {
+  auto* surface_sync = GetSurfaceSync();
+  if (surface_sync && buffer_attached_since_last_commit_) {
     auto* linux_buffer_release =
-        zwp_linux_surface_synchronization_v1_get_release(surface_sync_.get());
+        zwp_linux_surface_synchronization_v1_get_release(surface_sync);
 
     static struct zwp_linux_buffer_release_v1_listener release_listener = {
         &WaylandSurface::FencedRelease,
@@ -276,6 +270,22 @@ wl::Object<wl_region> WaylandSurface::CreateAndAddRegion(
                   region_dip.width(), region_dip.height());
   }
   return region;
+}
+
+zwp_linux_surface_synchronization_v1* WaylandSurface::GetSurfaceSync() {
+  // The server needs to support the linux_explicit_synchronization protocol.
+  if (!connection_->linux_explicit_synchronization_v1()) {
+    LOG(WARNING)
+        << "Server doesn't support zwp_linux_explicit_synchronization_v1.";
+    return nullptr;
+  }
+
+  if (!surface_sync_) {
+    surface_sync_.reset(
+        zwp_linux_explicit_synchronization_v1_get_synchronization(
+            connection_->linux_explicit_synchronization_v1(), surface_.get()));
+  }
+  return surface_sync_.get();
 }
 
 void WaylandSurface::SetViewportSource(const gfx::RectF& src_rect) {

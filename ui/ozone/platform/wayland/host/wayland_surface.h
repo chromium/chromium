@@ -40,9 +40,6 @@ class WaylandSurface {
   WaylandWindow* root_window() const { return root_window_; }
   wl_surface* surface() const { return surface_.get(); }
   wp_viewport* viewport() const { return viewport_.get(); }
-  zwp_linux_surface_synchronization_v1* surface_sync() const {
-    return surface_sync_.get();
-  }
 
   const std::vector<WaylandOutput*>& entered_outputs() const {
     return entered_outputs_;
@@ -145,6 +142,10 @@ class WaylandSurface {
   };
 
   wl::Object<wl_region> CreateAndAddRegion(const gfx::Rect& region_px);
+
+  // Creates (if not created) the synchronization surface and returns a pointer
+  // to it.
+  zwp_linux_surface_synchronization_v1* GetSurfaceSync();
 
   WaylandConnection* const connection_;
   WaylandWindow* root_window_ = nullptr;
