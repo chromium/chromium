@@ -2183,8 +2183,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   size_t max_loaded_frame_count_ = 0;
 
   // This boolean value is used to keep track of whether we finished the first
-  // successful navigation in this WebContents.
-  bool first_navigation_completed_ = false;
+  // successful navigation in this WebContents's primary main frame.
+  bool first_primary_navigation_completed_ = false;
 
   // Monitors system screen info changes to notify the renderer.
   std::unique_ptr<ScreenChangeMonitor> screen_change_monitor_;

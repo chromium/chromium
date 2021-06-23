@@ -971,7 +971,7 @@ WebContentsImpl::~WebContentsImpl() {
   // We usually record `max_loaded_frame_count_` in `DidFinishNavigation()`
   // for pages the user navigated away from other than the last one. We record
   // it for the last page here.
-  if (first_navigation_completed_)
+  if (first_primary_navigation_completed_)
     RecordMaxFrameCountUMA(max_loaded_frame_count_);
 
   FullscreenContentsSet(GetBrowserContext())->erase(this);
@@ -5490,14 +5490,17 @@ void WebContentsImpl::DidFinishNavigation(NavigationHandle* navigation_handle) {
     should_focus_location_bar_by_default_ = false;
   }
 
-  if (navigation_handle->IsInMainFrame() && first_navigation_completed_)
+  if (navigation_handle->IsInPrimaryMainFrame() &&
+      first_primary_navigation_completed_) {
     RecordMaxFrameCountUMA(max_loaded_frame_count_);
+  }
 
   // If navigation has successfully finished in the main frame, set
-  // |first_navigation_completed_| to true so that we will record
+  // |first_primary_navigation_completed_| to true so that we will record
   // |max_loaded_frame_count_| above when future main frame navigations finish.
-  if (navigation_handle->IsInMainFrame() && !navigation_handle->IsErrorPage()) {
-    first_navigation_completed_ = true;
+  if (navigation_handle->IsInPrimaryMainFrame() &&
+      !navigation_handle->IsErrorPage()) {
+    first_primary_navigation_completed_ = true;
 
     // Navigation has completed in main frame. Reset |max_loaded_frame_count_|.
     // |max_loaded_frame_count_| is not necessarily 1 if the navigation was
