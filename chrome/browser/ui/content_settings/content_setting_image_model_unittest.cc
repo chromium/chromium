@@ -17,8 +17,10 @@
 #include "chrome/browser/permissions/quiet_notification_permission_ui_state.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -114,6 +116,25 @@ class ContentSettingImageModelTest : public BrowserWithTestWindowTest {
     base::RunLoop().RunUntilIdle();
   }
 
+  void UpdateModelAndVerifyStates(ContentSettingImageModel* model,
+                                  bool is_visible,
+                                  bool tooltip_empty) {
+    model->Update(web_contents());
+    EXPECT_EQ(model->is_visible(), is_visible);
+    EXPECT_EQ(model->get_tooltip().empty(), tooltip_empty);
+    EXPECT_EQ(!model->GetIcon(gfx::kPlaceholderColor).IsEmpty(), is_visible);
+  }
+
+  void UpdateModelAndVerifyStates(ContentSettingImageModel* model,
+                                  bool is_visible,
+                                  bool tooltip_empty,
+                                  int tooltip_id,
+                                  int explanatory_string_id) {
+    UpdateModelAndVerifyStates(model, is_visible, tooltip_empty);
+    EXPECT_EQ(model->get_tooltip(), l10n_util::GetStringUTF16(tooltip_id));
+    EXPECT_EQ(model->explanatory_string_id(), explanatory_string_id);
+  }
+
  protected:
   permissions::MockPermissionRequest request_;
   permissions::PermissionRequestManager* manager_ = nullptr;
@@ -122,10 +143,6 @@ class ContentSettingImageModelTest : public BrowserWithTestWindowTest {
  private:
   DISALLOW_COPY_AND_ASSIGN(ContentSettingImageModelTest);
 };
-
-bool HasIcon(const ContentSettingImageModel& model) {
-  return !model.GetIcon(gfx::kPlaceholderColor).IsEmpty();
-}
 
 TEST_F(ContentSettingImageModelTest, Update) {
   PageSpecificContentSettings::CreateForWebContents(
@@ -141,11 +158,9 @@ TEST_F(ContentSettingImageModelTest, Update) {
   EXPECT_TRUE(content_setting_image_model->get_tooltip().empty());
 
   content_settings->OnContentBlocked(ContentSettingsType::IMAGES);
-  content_setting_image_model->Update(web_contents());
-
-  EXPECT_TRUE(content_setting_image_model->is_visible());
-  EXPECT_TRUE(HasIcon(*content_setting_image_model));
-  EXPECT_FALSE(content_setting_image_model->get_tooltip().empty());
+  UpdateModelAndVerifyStates(content_setting_image_model.get(),
+                             /* is_visible = */ true,
+                             /* tooltip_empty = */ false);
 }
 
 TEST_F(ContentSettingImageModelTest, RPHUpdate) {
@@ -190,10 +205,9 @@ TEST_F(ContentSettingImageModelTest, CookieAccessed) {
                            origin,
                            {*cookie},
                            false});
-  content_setting_image_model->Update(web_contents());
-  EXPECT_TRUE(content_setting_image_model->is_visible());
-  EXPECT_TRUE(HasIcon(*content_setting_image_model));
-  EXPECT_FALSE(content_setting_image_model->get_tooltip().empty());
+  UpdateModelAndVerifyStates(content_setting_image_model.get(),
+                             /* is_visible = */ true,
+                             /* tooltip_empty = */ false);
 }
 
 TEST_F(ContentSettingImageModelTest, SensorAccessed) {
@@ -221,9 +235,9 @@ TEST_F(ContentSettingImageModelTest, SensorAccessed) {
       ->SetDefaultContentSetting(ContentSettingsType::SENSORS,
                                  CONTENT_SETTING_ALLOW);
   content_settings->OnContentAllowed(ContentSettingsType::SENSORS);
-  content_setting_image_model->Update(web_contents());
-  EXPECT_FALSE(content_setting_image_model->is_visible());
-  EXPECT_TRUE(content_setting_image_model->get_tooltip().empty());
+  UpdateModelAndVerifyStates(content_setting_image_model.get(),
+                             /* is_visible = */ false,
+                             /* tooltip_empty = */ true);
 
   NavigateAndCommit(controller_, GURL("http://www.google.com"));
   content_settings =
@@ -235,12 +249,9 @@ TEST_F(ContentSettingImageModelTest, SensorAccessed) {
       ->SetDefaultContentSetting(ContentSettingsType::SENSORS,
                                  CONTENT_SETTING_ALLOW);
   content_settings->OnContentBlocked(ContentSettingsType::SENSORS);
-  content_setting_image_model->Update(web_contents());
-  EXPECT_TRUE(content_setting_image_model->is_visible());
-  EXPECT_TRUE(HasIcon(*content_setting_image_model));
-  EXPECT_FALSE(content_setting_image_model->get_tooltip().empty());
-  EXPECT_EQ(content_setting_image_model->get_tooltip(),
-            l10n_util::GetStringUTF16(IDS_SENSORS_BLOCKED_TOOLTIP));
+  UpdateModelAndVerifyStates(
+      content_setting_image_model.get(), /* is_visible = */ true,
+      /* tooltip_empty = */ false, IDS_SENSORS_BLOCKED_TOOLTIP, 0);
 
   NavigateAndCommit(controller_, GURL("http://www.google.com"));
   content_settings =
@@ -252,12 +263,9 @@ TEST_F(ContentSettingImageModelTest, SensorAccessed) {
       ->SetDefaultContentSetting(ContentSettingsType::SENSORS,
                                  CONTENT_SETTING_BLOCK);
   content_settings->OnContentAllowed(ContentSettingsType::SENSORS);
-  content_setting_image_model->Update(web_contents());
-  EXPECT_TRUE(content_setting_image_model->is_visible());
-  EXPECT_TRUE(HasIcon(*content_setting_image_model));
-  EXPECT_FALSE(content_setting_image_model->get_tooltip().empty());
-  EXPECT_EQ(content_setting_image_model->get_tooltip(),
-            l10n_util::GetStringUTF16(IDS_SENSORS_ALLOWED_TOOLTIP));
+  UpdateModelAndVerifyStates(
+      content_setting_image_model.get(), /* is_visible = */ true,
+      /* tooltip_empty = */ false, IDS_SENSORS_ALLOWED_TOOLTIP, 0);
 
   NavigateAndCommit(controller_, GURL("http://www.google.com"));
   content_settings =
@@ -269,12 +277,9 @@ TEST_F(ContentSettingImageModelTest, SensorAccessed) {
       ->SetDefaultContentSetting(ContentSettingsType::SENSORS,
                                  CONTENT_SETTING_BLOCK);
   content_settings->OnContentBlocked(ContentSettingsType::SENSORS);
-  content_setting_image_model->Update(web_contents());
-  EXPECT_TRUE(content_setting_image_model->is_visible());
-  EXPECT_TRUE(HasIcon(*content_setting_image_model));
-  EXPECT_FALSE(content_setting_image_model->get_tooltip().empty());
-  EXPECT_EQ(content_setting_image_model->get_tooltip(),
-            l10n_util::GetStringUTF16(IDS_SENSORS_BLOCKED_TOOLTIP));
+  UpdateModelAndVerifyStates(
+      content_setting_image_model.get(), /* is_visible = */ true,
+      /* tooltip_empty = */ false, IDS_SENSORS_BLOCKED_TOOLTIP, 0);
 }
 
 #if defined(OS_MAC)
@@ -314,41 +319,28 @@ TEST_F(ContentSettingImageModelTest, GeolocationAccessPermissionsChanged) {
   settings_map->SetDefaultContentSetting(ContentSettingsType::GEOLOCATION,
                                          CONTENT_SETTING_ALLOW);
   content_settings->OnContentAllowed(ContentSettingsType::GEOLOCATION);
-  content_setting_image_model->Update(web_contents());
-  EXPECT_TRUE(content_setting_image_model->is_visible());
-  EXPECT_FALSE(content_setting_image_model->get_tooltip().empty());
-  EXPECT_EQ(content_setting_image_model->get_tooltip(),
-            l10n_util::GetStringUTF16(IDS_ALLOWED_GEOLOCATION_MESSAGE));
-  EXPECT_EQ(content_setting_image_model->explanatory_string_id(), 0);
+  UpdateModelAndVerifyStates(
+      content_setting_image_model.get(), /* is_visible = */ true,
+      /* tooltip_empty = */ false, IDS_ALLOWED_GEOLOCATION_MESSAGE, 0);
 
   settings_map->SetDefaultContentSetting(ContentSettingsType::GEOLOCATION,
                                          CONTENT_SETTING_BLOCK);
   content_settings->OnContentBlocked(ContentSettingsType::GEOLOCATION);
-  content_setting_image_model->Update(web_contents());
-  EXPECT_TRUE(content_setting_image_model->is_visible());
-  EXPECT_TRUE(HasIcon(*content_setting_image_model));
-  EXPECT_FALSE(content_setting_image_model->get_tooltip().empty());
-  EXPECT_EQ(content_setting_image_model->get_tooltip(),
-            l10n_util::GetStringUTF16(IDS_BLOCKED_GEOLOCATION_MESSAGE));
-  EXPECT_EQ(content_setting_image_model->explanatory_string_id(), 0);
+  UpdateModelAndVerifyStates(
+      content_setting_image_model.get(), /* is_visible = */ true,
+      /* tooltip_empty = */ false, IDS_BLOCKED_GEOLOCATION_MESSAGE, 0);
 
   geolocation_manager->SetSystemPermission(
       device::LocationSystemPermissionStatus::kDenied);
-  content_setting_image_model->Update(web_contents());
-  EXPECT_TRUE(content_setting_image_model->is_visible());
-  EXPECT_FALSE(content_setting_image_model->get_tooltip().empty());
-  EXPECT_EQ(content_setting_image_model->get_tooltip(),
-            l10n_util::GetStringUTF16(IDS_BLOCKED_GEOLOCATION_MESSAGE));
-  EXPECT_EQ(content_setting_image_model->explanatory_string_id(), 0);
+  UpdateModelAndVerifyStates(
+      content_setting_image_model.get(), /* is_visible = */ true,
+      /* tooltip_empty = */ false, IDS_BLOCKED_GEOLOCATION_MESSAGE, 0);
 
   content_settings->OnContentAllowed(ContentSettingsType::GEOLOCATION);
-  content_setting_image_model->Update(web_contents());
-  EXPECT_TRUE(content_setting_image_model->is_visible());
-  EXPECT_FALSE(content_setting_image_model->get_tooltip().empty());
-  EXPECT_EQ(content_setting_image_model->get_tooltip(),
-            l10n_util::GetStringUTF16(IDS_BLOCKED_GEOLOCATION_MESSAGE));
-  EXPECT_EQ(content_setting_image_model->explanatory_string_id(),
-            IDS_GEOLOCATION_TURNED_OFF);
+  UpdateModelAndVerifyStates(
+      content_setting_image_model.get(), /* is_visible = */ true,
+      /* tooltip_empty = */ false, IDS_BLOCKED_GEOLOCATION_MESSAGE,
+      IDS_GEOLOCATION_TURNED_OFF);
 }
 
 TEST_F(ContentSettingImageModelTest, GeolocationAccessPermissionsUndetermined) {
@@ -385,25 +377,87 @@ TEST_F(ContentSettingImageModelTest, GeolocationAccessPermissionsUndetermined) {
   settings_map->SetDefaultContentSetting(ContentSettingsType::GEOLOCATION,
                                          CONTENT_SETTING_ALLOW);
   content_settings->OnContentAllowed(ContentSettingsType::GEOLOCATION);
-  content_setting_image_model->Update(web_contents());
-  EXPECT_TRUE(content_setting_image_model->is_visible());
-  EXPECT_FALSE(content_setting_image_model->get_tooltip().empty());
-  EXPECT_EQ(content_setting_image_model->get_tooltip(),
-            l10n_util::GetStringUTF16(IDS_BLOCKED_GEOLOCATION_MESSAGE));
-  EXPECT_EQ(content_setting_image_model->explanatory_string_id(), 0);
+  UpdateModelAndVerifyStates(
+      content_setting_image_model.get(), /* is_visible = */ true,
+      /* tooltip_empty = */ false, IDS_BLOCKED_GEOLOCATION_MESSAGE, 0);
 
   // When site permission is blocked it should not make any difference what the
   // OS level permission is.
   settings_map->SetDefaultContentSetting(ContentSettingsType::GEOLOCATION,
                                          CONTENT_SETTING_BLOCK);
   content_settings->OnContentBlocked(ContentSettingsType::GEOLOCATION);
-  content_setting_image_model->Update(web_contents());
-  EXPECT_TRUE(content_setting_image_model->is_visible());
-  EXPECT_TRUE(HasIcon(*content_setting_image_model));
-  EXPECT_FALSE(content_setting_image_model->get_tooltip().empty());
-  EXPECT_EQ(content_setting_image_model->get_tooltip(),
-            l10n_util::GetStringUTF16(IDS_BLOCKED_GEOLOCATION_MESSAGE));
-  EXPECT_EQ(content_setting_image_model->explanatory_string_id(), 0);
+  UpdateModelAndVerifyStates(
+      content_setting_image_model.get(), /* is_visible = */ true,
+      /* tooltip_empty = */ false, IDS_BLOCKED_GEOLOCATION_MESSAGE, 0);
+}
+
+TEST_F(ContentSettingImageModelTest, GeolocationAccessDeniedExperiment) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({features::kMacCoreLocationImplementation,
+                                 features::kLocationPermissionsExperiment},
+                                {});
+  auto test_geolocation_manager =
+      std::make_unique<device::FakeGeolocationManager>();
+  device::FakeGeolocationManager* geolocation_manager =
+      test_geolocation_manager.get();
+  TestingBrowserProcess::GetGlobal()
+      ->GetTestPlatformPart()
+      ->SetGeolocationManager(std::move(test_geolocation_manager));
+
+  PageSpecificContentSettings::CreateForWebContents(
+      web_contents(),
+      std::make_unique<chrome::PageSpecificContentSettingsDelegate>(
+          web_contents()));
+  GURL requesting_origin = GURL("https://www.example.com");
+  NavigateAndCommit(controller_, requesting_origin);
+  PageSpecificContentSettings* content_settings =
+      PageSpecificContentSettings::GetForFrame(web_contents()->GetMainFrame());
+
+  auto content_setting_image_model =
+      ContentSettingImageModel::CreateForContentType(
+          ContentSettingImageModel::ImageType::GEOLOCATION);
+  EXPECT_FALSE(content_setting_image_model->is_visible());
+  EXPECT_TRUE(content_setting_image_model->get_tooltip().empty());
+
+  geolocation_manager->SetSystemPermission(
+      device::LocationSystemPermissionStatus::kDenied);
+  content_settings->OnContentAllowed(ContentSettingsType::GEOLOCATION);
+
+  auto* local_state = g_browser_process->local_state();
+
+  // Verify the button is shown without a label the first three time permission
+  // is denied by system preferences while allowed for chrome preferences/
+  for (int i = 0; i < 3; i++) {
+    EXPECT_EQ(local_state->GetInteger(
+                  prefs::kMacRestoreLocationPermissionsExperimentCount),
+              i);
+    UpdateModelAndVerifyStates(
+        content_setting_image_model.get(), /* is_visible = */ true,
+        /* tooltip_empty = */ false, IDS_BLOCKED_GEOLOCATION_MESSAGE, 0);
+  }
+  // Verify the button is shown with a label the fourth to eighth time
+  // permission is denied by system preferences while allowed for chrome
+  // preferences/
+  for (int i = 3; i < 8; i++) {
+    EXPECT_EQ(local_state->GetInteger(
+                  prefs::kMacRestoreLocationPermissionsExperimentCount),
+              i);
+    UpdateModelAndVerifyStates(
+        content_setting_image_model.get(), /* is_visible = */ true,
+        /* tooltip_empty = */ false, IDS_BLOCKED_GEOLOCATION_MESSAGE,
+        IDS_GEOLOCATION_TURNED_OFF);
+  }
+  // Verify we return to normal behavior after the eighth time permission is
+  // denied by system preferences while allowed for chrome preferences/
+  for (int i = 8; i < 10; i++) {
+    EXPECT_EQ(local_state->GetInteger(
+                  prefs::kMacRestoreLocationPermissionsExperimentCount),
+              8);
+    UpdateModelAndVerifyStates(
+        content_setting_image_model.get(), /* is_visible = */ true,
+        /* tooltip_empty = */ false, IDS_BLOCKED_GEOLOCATION_MESSAGE,
+        IDS_GEOLOCATION_TURNED_OFF);
+  }
 }
 #endif
 
@@ -436,19 +490,17 @@ TEST_F(ContentSettingImageModelTest, SensorAccessPermissionsChanged) {
     settings_map->SetDefaultContentSetting(ContentSettingsType::SENSORS,
                                            CONTENT_SETTING_ALLOW);
     content_settings->OnContentAllowed(ContentSettingsType::SENSORS);
-    content_setting_image_model->Update(web_contents());
-    EXPECT_FALSE(content_setting_image_model->is_visible());
-    EXPECT_TRUE(content_setting_image_model->get_tooltip().empty());
+
+    UpdateModelAndVerifyStates(content_setting_image_model.get(),
+                               /* is_visible = */ false,
+                               /* tooltip_empty = */ true);
 
     settings_map->SetDefaultContentSetting(ContentSettingsType::SENSORS,
                                            CONTENT_SETTING_BLOCK);
     content_settings->OnContentBlocked(ContentSettingsType::SENSORS);
-    content_setting_image_model->Update(web_contents());
-    EXPECT_TRUE(content_setting_image_model->is_visible());
-    EXPECT_TRUE(HasIcon(*content_setting_image_model));
-    EXPECT_FALSE(content_setting_image_model->get_tooltip().empty());
-    EXPECT_EQ(content_setting_image_model->get_tooltip(),
-              l10n_util::GetStringUTF16(IDS_SENSORS_BLOCKED_TOOLTIP));
+    UpdateModelAndVerifyStates(
+        content_setting_image_model.get(), /* is_visible = */ true,
+        /* tooltip_empty = */ false, IDS_SENSORS_BLOCKED_TOOLTIP, 0);
 
     settings_map->SetDefaultContentSetting(ContentSettingsType::SENSORS,
                                            CONTENT_SETTING_ALLOW);
@@ -468,12 +520,9 @@ TEST_F(ContentSettingImageModelTest, SensorAccessPermissionsChanged) {
     settings_map->SetDefaultContentSetting(ContentSettingsType::SENSORS,
                                            CONTENT_SETTING_BLOCK);
     content_settings->OnContentBlocked(ContentSettingsType::SENSORS);
-    content_setting_image_model->Update(web_contents());
-    EXPECT_TRUE(content_setting_image_model->is_visible());
-    EXPECT_TRUE(HasIcon(*content_setting_image_model));
-    EXPECT_FALSE(content_setting_image_model->get_tooltip().empty());
-    EXPECT_EQ(content_setting_image_model->get_tooltip(),
-              l10n_util::GetStringUTF16(IDS_SENSORS_BLOCKED_TOOLTIP));
+    UpdateModelAndVerifyStates(
+        content_setting_image_model.get(), /* is_visible = */ true,
+        /* tooltip_empty = */ false, IDS_SENSORS_BLOCKED_TOOLTIP, 0);
     settings_map->SetDefaultContentSetting(ContentSettingsType::SENSORS,
                                            CONTENT_SETTING_ALLOW);
 
@@ -486,12 +535,9 @@ TEST_F(ContentSettingImageModelTest, SensorAccessPermissionsChanged) {
     settings_map->SetDefaultContentSetting(ContentSettingsType::SENSORS,
                                            CONTENT_SETTING_BLOCK);
     content_settings->OnContentBlocked(ContentSettingsType::SENSORS);
-    content_setting_image_model->Update(web_contents());
-    EXPECT_TRUE(content_setting_image_model->is_visible());
-    EXPECT_TRUE(HasIcon(*content_setting_image_model));
-    EXPECT_FALSE(content_setting_image_model->get_tooltip().empty());
-    EXPECT_EQ(content_setting_image_model->get_tooltip(),
-              l10n_util::GetStringUTF16(IDS_SENSORS_BLOCKED_TOOLTIP));
+    UpdateModelAndVerifyStates(
+        content_setting_image_model.get(), /* is_visible = */ true,
+        /* tooltip_empty = */ false, IDS_SENSORS_BLOCKED_TOOLTIP, 0);
   }
 
   NavigateAndCommit(controller_, GURL("https://www.example.com"));
@@ -506,13 +552,10 @@ TEST_F(ContentSettingImageModelTest, SensorAccessPermissionsChanged) {
         web_contents()->GetURL(), web_contents()->GetURL(),
         ContentSettingsType::SENSORS, CONTENT_SETTING_ALLOW);
     content_settings->OnContentAllowed(ContentSettingsType::SENSORS);
-    content_setting_image_model->Update(web_contents());
 
-    EXPECT_TRUE(content_setting_image_model->is_visible());
-    EXPECT_TRUE(HasIcon(*content_setting_image_model));
-    EXPECT_FALSE(content_setting_image_model->get_tooltip().empty());
-    EXPECT_EQ(content_setting_image_model->get_tooltip(),
-              l10n_util::GetStringUTF16(IDS_SENSORS_ALLOWED_TOOLTIP));
+    UpdateModelAndVerifyStates(
+        content_setting_image_model.get(), /* is_visible = */ true,
+        /* tooltip_empty = */ false, IDS_SENSORS_ALLOWED_TOOLTIP, 0);
   }
 
   NavigateAndCommit(controller_, GURL("https://www.example.com"));
@@ -529,13 +572,10 @@ TEST_F(ContentSettingImageModelTest, SensorAccessPermissionsChanged) {
         web_contents()->GetURL(), web_contents()->GetURL(),
         ContentSettingsType::SENSORS, CONTENT_SETTING_BLOCK);
     content_settings->OnContentBlocked(ContentSettingsType::SENSORS);
-    content_setting_image_model->Update(web_contents());
 
-    EXPECT_TRUE(content_setting_image_model->is_visible());
-    EXPECT_TRUE(HasIcon(*content_setting_image_model));
-    EXPECT_FALSE(content_setting_image_model->get_tooltip().empty());
-    EXPECT_EQ(content_setting_image_model->get_tooltip(),
-              l10n_util::GetStringUTF16(IDS_SENSORS_BLOCKED_TOOLTIP));
+    UpdateModelAndVerifyStates(
+        content_setting_image_model.get(), /* is_visible = */ true,
+        /* tooltip_empty = */ false, IDS_SENSORS_BLOCKED_TOOLTIP, 0);
   }
 }
 
@@ -564,11 +604,9 @@ TEST_F(ContentSettingImageModelTest, SubresourceFilter) {
   EXPECT_TRUE(content_setting_image_model->get_tooltip().empty());
 
   content_settings->OnContentBlocked(ContentSettingsType::ADS);
-  content_setting_image_model->Update(web_contents());
-
-  EXPECT_TRUE(content_setting_image_model->is_visible());
-  EXPECT_TRUE(HasIcon(*content_setting_image_model));
-  EXPECT_FALSE(content_setting_image_model->get_tooltip().empty());
+  UpdateModelAndVerifyStates(content_setting_image_model.get(),
+                             /* is_visible = */ true,
+                             /* tooltip_empty = */ false);
 }
 
 TEST_F(ContentSettingImageModelTest, NotificationsIconVisibility) {

@@ -159,9 +159,14 @@ extern const base::Feature kWebUIFeedback;
 
 // Cocoa to views migration.
 #if defined(OS_MAC)
+extern const base::Feature kLocationPermissionsExperiment;
+
 extern const base::Feature kViewsFirstRunDialog;
 extern const base::Feature kViewsTaskManager;
 extern const base::Feature kViewsJSAppModalDialog;
+
+int GetLocationPermissionsExperimentBubblePromptLimit();
+int GetLocationPermissionsExperimentLabelPromptLimit();
 #endif
 
 }  // namespace features

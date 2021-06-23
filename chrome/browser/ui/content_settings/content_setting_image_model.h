@@ -114,6 +114,8 @@ class ContentSettingImageModel {
   bool ShouldShowPromo(content::WebContents* contents);
   virtual void SetPromoWasShown(content::WebContents* contents);
 
+  bool IsMacRestoreLocationPermissionExperimentActive();
+
  protected:
   explicit ContentSettingImageModel(
       ImageType type,

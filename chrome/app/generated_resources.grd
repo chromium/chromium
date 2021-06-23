@@ -9483,6 +9483,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
         <message name="IDS_GEOLOCATION_TURNED_OFF_IN_MACOS" desc="Title for the geolocation bubble that is used when a site requests geolocation, but geolocation is blocked on an OS level in macOS.">
           Location is turned off in Mac System Preferences
         </message>
+        <message name="IDS_GEOLOCATION_TURNED_OFF_IN_MACOS_SETTINGS" desc="Title for the geolocation bubble that is used when a site requests geolocation, but geolocation is blocked on an OS level in macOS.">
+          Turn on "Google Chrome" in Location Services on your Mac
+        </message>
         <message name="IDS_GEOLOCATION_TURNED_OFF" desc="Description text in the omnibox icon showing when location permission is blocked on an OS level in macOS.">
           Location turned off
         </message>

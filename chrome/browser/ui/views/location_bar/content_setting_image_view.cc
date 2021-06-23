@@ -132,8 +132,21 @@ void ContentSettingImageView::Update() {
   // the user.  If this becomes a problem, we could design some sort of queueing
   // mechanism to show one after the other, but it doesn't seem important now.
   int string_id = content_setting_image_model_->explanatory_string_id();
-  if (string_id)
-    AnimateIn(string_id);
+  if (string_id) {
+    // If this is part of the mac location permissions experiment, show a
+    // persistent label.
+    if (content_setting_image_model_
+            ->IsMacRestoreLocationPermissionExperimentActive()) {
+      SetLabel(l10n_util::GetStringUTF16(string_id));
+      // Reset the slide animation so that the label is persistent and won't
+      // animate out.
+      ResetSlideAnimation(true);
+    } else {
+      // Reset the slide animation so that the label's show/hide animation runs.
+      ResetSlideAnimation(false);
+      AnimateIn(string_id);
+    }
+  }
 
   content_setting_image_model_->SetAnimationHasRun(web_contents);
 }

@@ -222,6 +222,18 @@ const base::Feature kWebUIFeedback{"WebUIFeedback",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
 
 #if defined(OS_MAC)
+// Enabled an experiment which increases the prominence to grant MacOS system
+// location permission to Chrome when location permissions have already been
+// approved. https://crbug.com/1211052
+const base::Feature kLocationPermissionsExperiment{
+    "LocationPermissionsExperiment", base::FEATURE_DISABLED_BY_DEFAULT};
+constexpr base::FeatureParam<int>
+    kLocationPermissionsExperimentBubblePromptLimit{
+        &kLocationPermissionsExperiment, "bubble_prompt_count", 3};
+constexpr base::FeatureParam<int>
+    kLocationPermissionsExperimentLabelPromptLimit{
+        &kLocationPermissionsExperiment, "label_prompt_count", 5};
+
 const base::Feature kViewsFirstRunDialog{"ViewsFirstRunDialog",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -230,6 +242,13 @@ const base::Feature kViewsTaskManager{"ViewsTaskManager",
 
 const base::Feature kViewsJSAppModalDialog{"ViewsJSAppModalDialog",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
+
+int GetLocationPermissionsExperimentBubblePromptLimit() {
+  return kLocationPermissionsExperimentBubblePromptLimit.Get();
+}
+int GetLocationPermissionsExperimentLabelPromptLimit() {
+  return kLocationPermissionsExperimentLabelPromptLimit.Get();
+}
 #endif
 
 }  // namespace features

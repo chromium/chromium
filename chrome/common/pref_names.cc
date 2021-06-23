@@ -2535,6 +2535,13 @@ const char kRelaunchWindow[] = "browser.relaunch_window";
 const char kRelaunchHeadsUpPeriod[] = "browser.relaunch_heads_up_period";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if defined(OS_MAC)
+// Counts how many times prominent call-to-actions have occurred as part of the
+// Mac restore permissions experiment. https://crbug.com/1211052
+const char kMacRestoreLocationPermissionsExperimentCount[] =
+    "mac_restore_location_permissions_experiment_count";
+#endif  // defined(OS_MAC)
+
 // *************** SERVICE PREFS ***************
 // These are attached to the service process.
 
