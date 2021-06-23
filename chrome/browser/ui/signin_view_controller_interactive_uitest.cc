@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/signin_view_controller.h"
 #include "chrome/browser/ui/signin_view_controller_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/webui/signin/enterprise_profile_welcome_ui.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/webui/signin/login_ui_test_utils.h"
@@ -32,6 +33,7 @@
 #include "google_apis/gaia/core_account_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
 namespace {
@@ -199,5 +201,38 @@ IN_PROC_BROWSER_TEST_F(SignInViewControllerBrowserTest,
                                               /*command=*/false));
   // Default action simply closes the dialog.
   dialog_observer.WaitForDialogClosed();
+  EXPECT_FALSE(browser()->signin_view_controller()->ShowsModalDialog());
+}
+
+// Tests that the confirm button is focused by default in the enterprise
+// interception dialog.
+IN_PROC_BROWSER_TEST_F(SignInViewControllerBrowserTest,
+                       EnterpriseConfirmationDefaultFocus) {
+  signin::MakePrimaryAccountAvailable(GetIdentityManager(), "alice@gmail.com",
+                                      signin::ConsentLevel::kSync);
+  content::TestNavigationObserver content_observer(
+      GURL("chrome://enterprise-profile-welcome/"));
+  content_observer.StartWatchingNewWebContents();
+  bool result;
+  browser()->signin_view_controller()->ShowModalEnterpriseConfirmationDialog(
+      "domain.com", SK_ColorWHITE,
+      base::BindOnce(
+          [](Browser* browser, bool* result, bool create) {
+            browser->signin_view_controller()->CloseModalSignin();
+            *result = create;
+          },
+          browser(), &result));
+  EXPECT_TRUE(browser()->signin_view_controller()->ShowsModalDialog());
+  content_observer.Wait();
+
+  SigninDialogClosedObserver dialog_observer(
+      browser()->signin_view_controller()->GetModalDialogDelegateForTesting());
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_RETURN,
+                                              /*control=*/false,
+                                              /*shift=*/false, /*alt=*/false,
+                                              /*command=*/false));
+
+  dialog_observer.WaitForDialogClosed();
+  EXPECT_TRUE(result);
   EXPECT_FALSE(browser()->signin_view_controller()->ShowsModalDialog());
 }

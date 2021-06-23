@@ -5,8 +5,11 @@
 #ifndef CHROME_BROWSER_UI_SIGNIN_VIEW_CONTROLLER_DELEGATE_H_
 #define CHROME_BROWSER_UI_SIGNIN_VIEW_CONTROLLER_DELEGATE_H_
 
+#include "base/callback.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "build/build_config.h"
+#include "third_party/skia/include/core/SkColor.h"
 
 class Browser;
 struct CoreAccountId;
@@ -57,6 +60,18 @@ class SigninViewControllerDelegate {
       Browser* browser,
       const CoreAccountId& account_id,
       signin_metrics::ReauthAccessPoint access_point);
+
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Returns a platform-specific SigninViewContolllerDelegate instance that
+  // displays the enterprise confirmation modal dialog. The returned object
+  // should delete itself when the window it's managing is closed.
+  static SigninViewControllerDelegate* CreateEnterpriseConfirmationDelegate(
+      Browser* browser,
+      const std::string& email,
+      SkColor profile_color,
+      base::OnceCallback<void(bool)> callback);
+#endif
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);

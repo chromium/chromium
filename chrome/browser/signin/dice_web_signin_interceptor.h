@@ -181,9 +181,10 @@ class DiceWebSigninInterceptor : public KeyedService,
     // a managed profile will be created or that their account needs a new
     // profile to be created.
     virtual void ShowEnterpriseProfileInterceptionDialog(
+        Browser* browser,
         const std::string& email,
-        base::OnceCallback<void(bool)> callback,
-        Browser* browser) = 0;
+        SkColor profile_color,
+        base::OnceCallback<void(bool)> callback) = 0;
 
     // Shows the profile customization bubble.
     virtual void ShowProfileCustomizationBubble(Browser* browser) = 0;

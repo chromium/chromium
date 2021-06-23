@@ -83,6 +83,34 @@ SigninViewControllerDelegateViews::CreateReauthConfirmationWebView(
                              kReauthDialogHeight, kReauthDialogWidth);
 }
 
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS_LACROS)
+// static
+std::unique_ptr<views::WebView>
+SigninViewControllerDelegateViews::CreateEnterpriseConfirmationWebView(
+    Browser* browser,
+    const std::string& domain_name,
+    SkColor profile_color,
+    base::OnceCallback<void(bool)> callback) {
+  std::unique_ptr<views::WebView> web_view = CreateDialogWebView(
+      browser, GURL(chrome::kChromeUIEnterpriseProfileWelcomeURL),
+      kSyncConfirmationDialogHeight, kSyncConfirmationDialogWidth);
+
+  EnterpriseProfileWelcomeUI* web_dialog_ui =
+      web_view->GetWebContents()
+          ->GetWebUI()
+          ->GetController()
+          ->GetAs<EnterpriseProfileWelcomeUI>();
+  DCHECK(web_dialog_ui);
+  web_dialog_ui->Initialize(
+      browser,
+      EnterpriseProfileWelcomeUI::ScreenType::kEnterpriseAccountCreation,
+      domain_name, profile_color, std::move(callback));
+
+  return web_view;
+}
+#endif
+
 views::View* SigninViewControllerDelegateViews::GetContentsView() {
   return content_view_;
 }
@@ -305,3 +333,19 @@ SigninViewControllerDelegate::CreateReauthConfirmationDelegate(
           browser, access_point),
       browser, ui::MODAL_TYPE_CHILD, false, true);
 }
+
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS_LACROS)
+// static
+SigninViewControllerDelegate*
+SigninViewControllerDelegate::CreateEnterpriseConfirmationDelegate(
+    Browser* browser,
+    const std::string& domain_name,
+    SkColor profile_color,
+    base::OnceCallback<void(bool)> callback) {
+  return new SigninViewControllerDelegateViews(
+      SigninViewControllerDelegateViews::CreateEnterpriseConfirmationWebView(
+          browser, domain_name, profile_color, std::move(callback)),
+      browser, ui::MODAL_TYPE_WINDOW, true, false);
+}
+#endif

@@ -5,15 +5,20 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_SIGNIN_VIEW_CONTROLLER_DELEGATE_VIEWS_H_
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_SIGNIN_VIEW_CONTROLLER_DELEGATE_VIEWS_H_
 
+#include "base/callback.h"
 #include "base/macros.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h"
 #include "chrome/browser/ui/profile_chooser_constants.h"
 #include "chrome/browser/ui/signin_view_controller_delegate.h"
+#include "chrome/browser/ui/webui/signin/enterprise_profile_welcome_ui.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/window/dialog_delegate.h"
 
+class Browser;
 class GURL;
 
 namespace content {
@@ -55,6 +60,15 @@ class SigninViewControllerDelegateViews
   static std::unique_ptr<views::WebView> CreateReauthConfirmationWebView(
       Browser* browser,
       signin_metrics::ReauthAccessPoint);
+
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS_LACROS)
+  static std::unique_ptr<views::WebView> CreateEnterpriseConfirmationWebView(
+      Browser* browser,
+      const std::string& domain_name,
+      SkColor profile_color,
+      base::OnceCallback<void(bool)> callback);
+#endif
 
   // views::DialogDelegateView:
   views::View* GetContentsView() override;

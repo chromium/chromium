@@ -19149,6 +19149,9 @@ Called by update_debug_scenarios.py.-->
   <int value="106"
       label="Confirmation Box for getCurrentBrowsingContextMedia API"/>
   <int value="107" label="Profile picker force signin"/>
+  <int value="108" label="Extension install friction"/>
+  <int value="109" label="File handling permission request"/>
+  <int value="110" label="Enterprise confirmation"/>
 </enum>
 
 <enum name="DialogOriginRelationship">

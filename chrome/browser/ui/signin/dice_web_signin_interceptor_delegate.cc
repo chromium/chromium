@@ -7,8 +7,13 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/feature_list.h"
+#include "build/build_config.h"
+#include "chrome/browser/signin/signin_features.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/webui/signin/dice_turn_sync_on_helper.h"
+#include "google_apis/gaia/gaia_auth_util.h"
 
 DiceWebSigninInterceptorDelegate::DiceWebSigninInterceptorDelegate() = default;
 
@@ -34,11 +39,16 @@ void DiceWebSigninInterceptorDelegate::ShowProfileCustomizationBubble(
 }
 
 void DiceWebSigninInterceptorDelegate::ShowEnterpriseProfileInterceptionDialog(
+    Browser* browser,
     const std::string& email,
-    base::OnceCallback<void(bool)> callback,
-    Browser* browser) {
-  // TODO (crbug/1163117): Replace this temporary solution with the spaces
-  // enterprise welcome screen inside a dialog.
+    SkColor profile_color,
+    base::OnceCallback<void(bool)> callback) {
+  if (base::FeatureList::IsEnabled(kAccountPoliciesLoadedWithoutSync)) {
+    browser->signin_view_controller()->ShowModalEnterpriseConfirmationDialog(
+        gaia::ExtractDomainName(email), profile_color, std::move(callback));
+    return;
+  }
+
   DiceTurnSyncOnHelper::Delegate::ShowEnterpriseAccountConfirmationForBrowser(
       email, true,
       base::BindOnce(

@@ -48,9 +48,10 @@ class MockDiceWebSigninInterceptorDelegate
               (override));
   MOCK_METHOD(void,
               ShowEnterpriseProfileInterceptionDialog,
-              (const std::string& email,
-               base::OnceCallback<void(bool)> callback,
-               Browser* browser),
+              (Browser * browser,
+               const std::string& email,
+               SkColor profile_color,
+               base::OnceCallback<void(bool)> callback),
               (override));
   void ShowProfileCustomizationBubble(Browser* browser) override {}
 };
@@ -430,11 +431,14 @@ TEST_F(DiceWebSigninInterceptorReauthTest,
   identity_test_env()->UpdateAccountInfoForAccount(account_info);
   profile()->GetPrefs()->SetString(prefs::kManagedAccountsSigninRestriction,
                                    "primary_account");
-  EXPECT_CALL(*mock_delegate(), ShowEnterpriseProfileInterceptionDialog(
-                                    testing::_, testing::_, testing::_))
-      .WillOnce(testing::Invoke(
-          [](const std::string& email, base::OnceCallback<void(bool)> callback,
-             Browser* browser) { std::move(callback).Run(true); }));
+  EXPECT_CALL(*mock_delegate(),
+              ShowEnterpriseProfileInterceptionDialog(testing::_, testing::_,
+                                                      testing::_, testing::_))
+      .WillOnce(testing::Invoke([](Browser* browser, const std::string& email,
+                                   SkColor profile_color,
+                                   base::OnceCallback<void(bool)> callback) {
+        std::move(callback).Run(true);
+      }));
   TestAsynchronousInterception(
       account_info, /*is_new_account=*/false, /*is_sync_signin=*/false,
       SigninInterceptionHeuristicOutcome::kInterceptEnterpriseForced);
@@ -450,11 +454,14 @@ TEST_F(DiceWebSigninInterceptorTest, EnforceManagedAccountAsPrimaryManaged) {
   profile()->GetPrefs()->SetString(prefs::kManagedAccountsSigninRestriction,
                                    "primary_account_strict");
 
-  EXPECT_CALL(*mock_delegate(), ShowEnterpriseProfileInterceptionDialog(
-                                    testing::_, testing::_, testing::_))
-      .WillOnce(testing::Invoke(
-          [](const std::string& email, base::OnceCallback<void(bool)> callback,
-             Browser* browser) { std::move(callback).Run(true); }));
+  EXPECT_CALL(*mock_delegate(),
+              ShowEnterpriseProfileInterceptionDialog(testing::_, testing::_,
+                                                      testing::_, testing::_))
+      .WillOnce(testing::Invoke([](Browser* browser, const std::string& email,
+                                   SkColor profile_color,
+                                   base::OnceCallback<void(bool)> callback) {
+        std::move(callback).Run(true);
+      }));
   TestAsynchronousInterception(
       account_info, /*is_new_account=*/true, /*is_sync_signin=*/false,
       SigninInterceptionHeuristicOutcome::kInterceptEnterpriseForced);

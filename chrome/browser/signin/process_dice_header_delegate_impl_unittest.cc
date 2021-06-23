@@ -52,9 +52,10 @@ class TestDiceWebSigninInterceptorDelegate
   }
 
   void ShowEnterpriseProfileInterceptionDialog(
+      Browser* browser,
       const std::string& email,
-      base::OnceCallback<void(bool)> callback,
-      Browser* browser) override {
+      SkColor profile_color,
+      base::OnceCallback<void(bool)> callback) override {
     std::move(callback).Run(false);
   }
 

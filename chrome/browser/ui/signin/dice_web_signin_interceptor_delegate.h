@@ -30,9 +30,10 @@ class DiceWebSigninInterceptorDelegate
   void ShowProfileCustomizationBubble(Browser* browser) override;
 
   void ShowEnterpriseProfileInterceptionDialog(
+      Browser* browser,
       const std::string& email,
-      base::OnceCallback<void(bool)> callback,
-      Browser* browser) override;
+      SkColor profile_color,
+      base::OnceCallback<void(bool)> callback) override;
 
  private:
   // Implemented in dice_web_signin_interception_bubble_view.cc

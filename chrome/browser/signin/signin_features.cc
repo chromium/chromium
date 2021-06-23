@@ -14,5 +14,8 @@ const base::Feature kDiceWebSigninInterceptionFeature{
 const base::Feature kProcessGaiaRemoveLocalAccountHeader{
     "ProcessGaiaRemoveLocalAccountHeader", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Allows policies to be loaded on a managed account without activating sync.
+// Uses enterprise confirmation dialog for managed accounts signin outside of
+// the profile picker.
 extern const base::Feature kAccountPoliciesLoadedWithoutSync{
-    "kAccountPoliciesLoadedWithoutSync", base::FEATURE_DISABLED_BY_DEFAULT};
+    "AccountPoliciesLoadedWithoutSync", base::FEATURE_DISABLED_BY_DEFAULT};

@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/profile_chooser_constants.h"
 #include "chrome/browser/ui/signin_view_controller_delegate.h"
 #include "components/signin/public/base/signin_buildflags.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -124,6 +125,15 @@ class SigninViewController : public SigninViewControllerDelegate::Observer {
   // of the |browser_|'s window.
   void ShowModalSyncConfirmationDialog();
 
+  // Shows the modal enterprise confirmation dialog as a browser-modal dialog on
+  // top of the `browser_`'s window. `domain_name` is the domain of the
+  // enterprise account being shown. `callback` is called with the user's action
+  // on the dialog.
+  void ShowModalEnterpriseConfirmationDialog(
+      const std::string& domain_name,
+      SkColor profile_color,
+      base::OnceCallback<void(bool)> callback);
+
   // Shows the modal sign-in error dialog as a browser-modal dialog on top of
   // the |browser_|'s window.
   void ShowModalSigninErrorDialog();
@@ -144,6 +154,8 @@ class SigninViewController : public SigninViewControllerDelegate::Observer {
  private:
   FRIEND_TEST_ALL_PREFIXES(SignInViewControllerBrowserTest,
                            ErrorDialogDefaultFocus);
+  FRIEND_TEST_ALL_PREFIXES(SignInViewControllerBrowserTest,
+                           EnterpriseConfirmationDefaultFocus);
   friend class login_ui_test_utils::SigninViewControllerTestUtil;
   friend class SigninReauthViewControllerBrowserTest;
 

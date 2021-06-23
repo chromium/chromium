@@ -505,11 +505,10 @@ void DiceWebSigninInterceptor::OnExtendedAccountInfoUpdated(
       Browser* browser = chrome::FindBrowserWithProfile(profile_);
       DCHECK(browser);
       delegate_->ShowEnterpriseProfileInterceptionDialog(
-          info.email,
+          browser, info.email, profile_color,
           base::BindOnce(
               &DiceWebSigninInterceptor::OnEnterpriseProfileCreationResult,
-              base::Unretained(this), info, profile_color),
-          browser);
+              base::Unretained(this), info, profile_color));
     }
     return;
   }

@@ -6,21 +6,31 @@
 
 #include "base/bind.h"
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_window.h"
+#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/signin/profile_colors_util.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/webui/signin/enterprise_profile_welcome_ui.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/webui/signin/signin_email_confirmation_dialog.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
+#include "chrome/common/search/selected_colors_info.h"
 #include "chrome/common/url_constants.h"
+#include "google_apis/gaia/gaia_auth_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/skia/include/core/SkColor.h"
 
 namespace {
 
@@ -65,6 +75,28 @@ void OnProfileCheckComplete(const std::string& email,
                             DiceTurnSyncOnHelper::SigninChoiceCallback callback,
                             Browser* browser,
                             bool prompt_for_new_profile) {
+  if (base::FeatureList::IsEnabled(kAccountPoliciesLoadedWithoutSync)) {
+    ProfileAttributesEntry* entry =
+        g_browser_process->profile_manager()
+            ->GetProfileAttributesStorage()
+            .GetProfileAttributesWithPath(browser->profile()->GetPath());
+    browser->signin_view_controller()->ShowModalEnterpriseConfirmationDialog(
+        gaia::ExtractDomainName(email), GenerateNewProfileColor(entry).color,
+        base::BindOnce(
+            [](DiceTurnSyncOnHelper::SigninChoiceCallback callback,
+               Browser* browser, bool prompt_for_new_profile,
+               bool create_profile) {
+              std::move(callback).Run(
+                  create_profile
+                      ? prompt_for_new_profile
+                            ? DiceTurnSyncOnHelper::SIGNIN_CHOICE_NEW_PROFILE
+                            : DiceTurnSyncOnHelper::SIGNIN_CHOICE_CONTINUE
+                      : DiceTurnSyncOnHelper::SIGNIN_CHOICE_CANCEL);
+            },
+            std::move(callback), browser, prompt_for_new_profile));
+    return;
+  }
+
   DiceTurnSyncOnHelper::Delegate::ShowEnterpriseAccountConfirmationForBrowser(
       email, /*prompt_for_new_profile=*/prompt_for_new_profile,
       std::move(callback), browser);

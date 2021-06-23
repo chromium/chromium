@@ -10,16 +10,18 @@
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
+#include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/resource_path.h"
 #include "ui/resources/grit/webui_generated_resources.h"
 
 EnterpriseProfileWelcomeUI::EnterpriseProfileWelcomeUI(content::WebUI* web_ui)
-    : ui::WebDialogUI(web_ui) {
+    : SigninWebDialogUI(web_ui) {
   content::WebUIDataSource* source = content::WebUIDataSource::Create(
       chrome::kChromeUIEnterpriseProfileWelcomeHost);
   webui::SetJSModuleDefaults(source);
@@ -57,15 +59,18 @@ void EnterpriseProfileWelcomeUI::Initialize(
       browser, type, domain_name, profile_color, std::move(proceed_callback));
   handler_ = handler.get();
 
-  base::DictionaryValue update_data;
-  update_data.SetBoolKey(
-      "isModalDialog",
-      type ==
-          EnterpriseProfileWelcomeUI::ScreenType::kEnterpriseAccountCreation);
-  content::WebUIDataSource::Update(
-      Profile::FromWebUI(web_ui()),
-      chrome::kChromeUIEnterpriseProfileWelcomeHost,
-      update_data.CreateDeepCopy());
+  if (type ==
+      EnterpriseProfileWelcomeUI::ScreenType::kEnterpriseAccountCreation) {
+    base::DictionaryValue update_data;
+    update_data.SetBoolKey("isModalDialog", true);
+    update_data.SetString("enterpriseProfileWelcomeTitle",
+                          l10n_util::GetStringUTF16(
+                              IDS_ENTERPRISE_WELCOME_PROFILE_REQUIRED_TITLE));
+    content::WebUIDataSource::Update(
+        Profile::FromWebUI(web_ui()),
+        chrome::kChromeUIEnterpriseProfileWelcomeHost,
+        update_data.CreateDeepCopy());
+  }
 
   web_ui()->AddMessageHandler(std::move(handler));
 }
@@ -74,5 +79,8 @@ EnterpriseProfileWelcomeHandler*
 EnterpriseProfileWelcomeUI::GetHandlerForTesting() {
   return handler_;
 }
+
+void EnterpriseProfileWelcomeUI::InitializeMessageHandlerWithBrowser(
+    Browser* browser) {}
 
 WEB_UI_CONTROLLER_TYPE_IMPL(EnterpriseProfileWelcomeUI)

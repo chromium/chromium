@@ -565,6 +565,12 @@
     <message name="IDS_ENTERPRISE_PROFILE_WELCOME_MANAGED_DESCRIPTION_WITHOUT_SYNC" desc="Disclaimer when creating a profile with a managed account (when sync is disabled by the administrator).">
       You’re adding a managed profile to this browser. Your administrator has control over the profile and can access its data.
     </message>
+    <message name="IDS_ENTERPRISE_WELCOME_PROFILE_REQUIRED_TITLE" desc="Title of the enteprise profile welcome screen when a profile is required. It is shown after a user signs into a managed account outside of the profile creation flow.">
+      Your organization requires a profile
+    </message>
+    <message name="IDS_ENTERPRISE_PROFILE_WELCOME_CREATE_PROFILE_BUTTON" desc="Label of the proceed button on the enterprise profile welcome screen when a user signed in an enterprise account outside of the profile creation flow. The label informs the user that a profile will be created.">
+      Create
+    </message>
 
     <!-- Profile Picker -->
     <message name="IDS_PROFILE_PICKER_ADD_SPACE_BUTTON" desc="Text for the add space button on the profile picker main view">

@@ -211,7 +211,8 @@
   </template>
 </div>
 <div id="buttonsContainer" class="action-container">
-  <cr-button id="proceedButton" class="action-button" on-click="onProceed_">
+  <cr-button id="proceedButton" class="action-button" on-click="onProceed_"
+      autofocus$="[[isModalDialog_]]">
     [[proceedLabel_]]
   </cr-button>
   <cr-button id="cancelButton" on-click="onCancel_">

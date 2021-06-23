@@ -196,7 +196,9 @@ base::Value EnterpriseProfileWelcomeHandler::GetProfileInfoValue() {
       enterprise_title = GetManagedAccountTitle(entry, domain_name_);
       enterprise_info = l10n_util::GetStringUTF8(
           IDS_ENTERPRISE_PROFILE_WELCOME_MANAGED_DESCRIPTION_WITH_SYNC);
-      dict.SetStringKey("proceedLabel", "Next");
+      dict.SetStringKey(
+          "proceedLabel",
+          l10n_util::GetStringUTF8(IDS_PROFILE_PICKER_IPH_NEXT_BUTTON_LABEL));
       break;
     case EnterpriseProfileWelcomeUI::ScreenType::kEntepriseAccountSyncDisabled:
       dict.SetBoolKey("showEnterpriseBadge", true);
@@ -217,7 +219,10 @@ base::Value EnterpriseProfileWelcomeHandler::GetProfileInfoValue() {
       enterprise_title = GetManagedAccountTitle(entry, domain_name_);
       enterprise_info = l10n_util::GetStringUTF8(
           IDS_ENTERPRISE_PROFILE_WELCOME_MANAGED_DESCRIPTION_WITH_SYNC);
-      dict.SetStringKey("proceedLabel", "Create");
+      dict.SetStringKey(
+          "proceedLabel",
+          l10n_util::GetStringUTF8(
+              IDS_ENTERPRISE_PROFILE_WELCOME_CREATE_PROFILE_BUTTON));
   }
 
   dict.SetStringKey("enterpriseTitle", enterprise_title);
