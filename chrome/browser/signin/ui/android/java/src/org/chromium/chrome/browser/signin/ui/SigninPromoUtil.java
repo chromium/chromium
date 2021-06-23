@@ -81,6 +81,9 @@ public final class SigninPromoUtil {
                 && !canDefaultAccountOfferExtendedSyncPromos) {
             return false;
         }
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.FORCE_DISABLE_EXTENDED_SYNC_PROMOS)) {
+            return false;
+        }
 
         final List<String> currentAccountNames = AccountUtils.toAccountNames(accounts);
         final Set<String> previousAccountNames = prefManager.getSigninPromoLastAccountNames();

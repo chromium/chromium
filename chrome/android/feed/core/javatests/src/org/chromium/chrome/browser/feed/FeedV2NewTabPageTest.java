@@ -86,6 +86,7 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependenciesRule;
@@ -362,6 +363,23 @@ public class FeedV2NewTabPageTest {
         mIsCachePopulatedInAccountManagerFacade = true;
         when(mFakeAccountManagerFacade.canOfferExtendedSyncPromos(any()))
                 .thenReturn(Optional.of(false));
+
+        openNewTabPage();
+        onView(withId(R.id.feed_stream_recycler_view))
+                .perform(RecyclerViewActions.scrollToPosition(SIGNIN_PROMO_POSITION));
+
+        // Check that the sign-in promo is not displayed.
+        onView(withId(R.id.signin_promo_view_container)).check(doesNotExist());
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"FeedNewTabPage"})
+    @EnableFeatures(ChromeFeatureList.FORCE_DISABLE_EXTENDED_SYNC_PROMOS)
+    @DisableFeatures(ChromeFeatureList.MINOR_MODE_SUPPORT)
+    public void testSignInPromoWhenExtendedSyncPromosAreDisabledByForce() {
+        mAccountManagerTestRule.addAccount("test@gmail.com");
+        mIsCachePopulatedInAccountManagerFacade = true;
 
         openNewTabPage();
         onView(withId(R.id.feed_stream_recycler_view))

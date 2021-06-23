@@ -55,6 +55,7 @@ import java.util.Set;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Features.EnableFeatures({ChromeFeatureList.MINOR_MODE_SUPPORT})
+@Features.DisableFeatures({ChromeFeatureList.FORCE_DISABLE_EXTENDED_SYNC_PROMOS})
 public class SigninPromoUtilLaunchSigninPromoTest {
     private static final int CURRENT_MAJOR_VERSION = 42;
     @Rule
@@ -232,6 +233,18 @@ public class SigninPromoUtilLaunchSigninPromoTest {
         })
                 .when(mFakeAccountManagerFacade)
                 .canOfferExtendedSyncPromos(any());
+
+        Assert.assertFalse(SigninPromoUtil.launchSigninPromoIfNeeded(
+                mContext, mLauncherMock, CURRENT_MAJOR_VERSION));
+
+        verify(mLauncherMock, never()).launchActivityIfAllowed(any(), anyInt());
+    }
+
+    @Test
+    @Features.EnableFeatures({ChromeFeatureList.FORCE_DISABLE_EXTENDED_SYNC_PROMOS})
+    @Features.DisableFeatures({ChromeFeatureList.MINOR_MODE_SUPPORT})
+    public void promoHiddenWhenExtendedSyncPromosDisabledByForce() {
+        mPrefManager.setSigninPromoLastShownVersion(38);
 
         Assert.assertFalse(SigninPromoUtil.launchSigninPromoIfNeeded(
                 mContext, mLauncherMock, CURRENT_MAJOR_VERSION));

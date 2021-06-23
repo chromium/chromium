@@ -310,6 +310,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &switches::kDeprecateMenagerieAPI,
     &switches::kWipeDataOnChildAccountSignin,
     &switches::kDecoupleSyncFromAndroidMasterSync,
+    &switches::kForceDisableExtendedSyncPromos,
     &switches::kMinorModeSupport,
     &switches::kSyncTrustedVaultPassphraseRecovery,
     &switches::kSyncUseSessionsUnregisterDelay,

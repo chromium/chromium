@@ -114,9 +114,13 @@ public class SigninPromoController {
         final @Nullable Account visibleAccount = getVisibleAccount();
         final AccountManagerFacade accountManagerFacade =
                 AccountManagerFacadeProvider.getInstance();
-        return visibleAccount != null
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.MINOR_MODE_SUPPORT)
+        boolean canNotOfferPromoForMinorAccount =
+                ChromeFeatureList.isEnabled(ChromeFeatureList.MINOR_MODE_SUPPORT)
                 && !accountManagerFacade.canOfferExtendedSyncPromos(visibleAccount).or(true);
+        boolean isPromoDisabledByForce =
+                ChromeFeatureList.isEnabled(ChromeFeatureList.FORCE_DISABLE_EXTENDED_SYNC_PROMOS);
+        return visibleAccount != null
+                && (canNotOfferPromoForMinorAccount || isPromoDisabledByForce);
     }
 
     // Find the visible account for sync promos
