@@ -1,4 +1,4 @@
-// META: title=Scheduler: Aborting Completed Tasks
+// META: title=Scheduler: Aborting Completed Tasks is a No-op
 // META: global=window,worker
 'use strict';
 
@@ -16,4 +16,4 @@ promise_test(async t => {
   // not lead to any unhandled rejections.
   controller1.abort();
   controller2.abort();
-}, 'Aborting completed tasks should be a no-op');
+}, 'Aborting completed tasks should be a no-op.');

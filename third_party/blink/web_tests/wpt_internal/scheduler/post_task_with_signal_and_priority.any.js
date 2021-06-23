@@ -1,15 +1,14 @@
-// META: title=Scheduling API: Global Task Queues
+// META: title=Scheduler: Signal and Priority Combination
 // META: global=window,worker
 'use strict';
 
-async_test(t => {
-  var result = "fail";
-  let tc = new TaskController("background");
-  scheduler.postTask(() => { result = "pass"; }, { priority : "user-blocking", signal: tc.signal });
+promise_test(async t => {
+  const task1Result = scheduler.postTask(() => 'task1', {priority: 'user-visible'});
 
-  // Since the above task should be run at user-blocking priority, it should execute
-  // before this user-visible priority task.
-  scheduler.postTask(t.step_func_done(() => {
-    assert_equals(result, "pass");
-  }));
+  const controller = new TaskController('background');
+  const signal = controller.signal
+  const task2Result = scheduler.postTask(() => 'task2', {priority: 'user-blocking', signal});
+
+  const result = await Promise.race([task1Result, task2Result]);
+  assert_equals('task2', result);
 }, 'Test when scheduler.postTask() is passed both a signal and a priority');

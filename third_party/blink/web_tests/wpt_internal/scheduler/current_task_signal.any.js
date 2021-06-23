@@ -1,20 +1,17 @@
-// META: title=Scheduling API: Signal inheritance
+// META: title=Scheduler: Signal inheritance
 // META: global=window,worker
 'use strict';
 
-async_test(t => {
-  var result = "fail";
-  let tc = new TaskController("user-blocking");
-  scheduler.postTask(() => {
-    scheduler.postTask(() => {
-      assert_equals(scheduler.currentTaskSignal.priority, "user-blocking");
-      result = "pass";
-    }, { signal: scheduler.currentTaskSignal });
-  }, { signal: tc.signal });
+promise_test(async t => {
+  const controller = new TaskController('user-blocking');
+  let innerTask;
 
-  // Since the above tasks should be run at high priority, it should execute
-  // before this default priority task.
-  scheduler.postTask(t.step_func_done(() => {
-    assert_equals(result, "pass");
-  }));
+  await scheduler.postTask(() => {
+    assert_equals(scheduler.currentTaskSignal.priority, 'user-blocking');
+    innerTask = scheduler.postTask(() => {
+      assert_equals(scheduler.currentTaskSignal.priority, 'user-blocking');
+    }, {signal: scheduler.currentTaskSignal});
+  }, {signal: controller.signal});
+
+  return innerTask;
 }, 'Test that currentTaskSignal uses the incumbent priority');

@@ -1,24 +1,22 @@
-// META: title=Scheduling API: Setting TaskController.priority
+// META: title=Scheduler: TaskController.setPriority and Task Order
 // META: global=window,worker
 'use strict';
 
-async_test(t => {
-  let result = '';
-  let task_controllers = [];
+promise_test(async t => {
+  const tasks = [];
+  const runOrder = [];
+  const taskControllers = [];
 
   for (let i = 0; i < 5; i++) {
-    let tc = new TaskController('background');
-    scheduler.postTask(() => {
-      result += i.toString();
-    }, { signal: tc.signal });
-    task_controllers.push(tc);
+    taskControllers.push(new TaskController('background'));
+    const signal = taskControllers[i].signal;
+    tasks.push(scheduler.postTask(() => { runOrder.push(i); }, {signal}));
   }
 
-  task_controllers[2].setPriority('user-blocking');
-  assert_equals(task_controllers[2].signal.priority, 'user-blocking');
+  taskControllers[2].setPriority('user-blocking');
+  assert_equals(taskControllers[2].signal.priority, 'user-blocking');
 
-  scheduler.postTask(t.step_func_done(() => {
-    assert_equals('20134', result);
-  }), { priority: 'background' });
+  await Promise.all(tasks);
 
-}, 'Test modifying TaskController priority');
+  assert_equals(runOrder.toString(), '2,0,1,3,4');
+}, 'Test TaskController.setPriority() affects task order.');

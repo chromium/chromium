@@ -1,9 +1,9 @@
-// META: title=Scheduling API: Signal inheritance
+// META: title=Scheduler: Signal inheritance
 // META: global=window,worker
 'use strict';
 
-async_test(t => {
-  scheduler.postTask(t.step_func_done(() => {
+promise_test(t => {
+  return scheduler.postTask(() => {
     assert_equals('user-blocking', scheduler.currentTaskSignal.priority);
-  }), { priority: "user-blocking" });
+  }, {priority: 'user-blocking'});
 }, 'Test that currentTaskSignal propagates priority even if an explicit signal was not given');

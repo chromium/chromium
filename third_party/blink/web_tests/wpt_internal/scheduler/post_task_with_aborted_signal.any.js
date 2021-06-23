@@ -1,4 +1,4 @@
-// META: title=Scheduling API: postTask
+// META: title=Scheduler: postTask with an Aborted Signal
 // META: global=window,worker
 'use strict';
 

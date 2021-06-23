@@ -1,16 +1,9 @@
-// META: title=Scheduling API: Task.result When a Task Throws an Error
+// META: title=Scheduler: postTask Error Propagation
 // META: global=window,worker
 'use strict';
 
-async_test(t => {
-  (function() {
-    let task_promise = scheduler.postTask(() => { throw Error('Failed'); });
-    task_promise.then(t.step_func((res) => {
-      assert_true(false, 'task promise should not be fulfilled when the task throws an error.');
-    }))
-    .catch(t.step_func_done((e) => {
-      assert_equals(e.name, 'Error');
-      assert_equals(e.message, 'Failed');
-    }));
-  })();
-}, 'Test task promise is rejected properly when the task throws an error');
+promise_test(t => {
+  const testError = new Error('Failed');
+  const task = scheduler.postTask(() => { throw testError; });
+  return promise_rejects_exactly(t, testError, task, 'postTask should propagate the error');
+}, 'Test postTask rejects the associated promise with the callback error');

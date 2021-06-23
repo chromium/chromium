@@ -1,24 +1,24 @@
-// META: title=Scheduling API: TaskController.setPriority()
+// META: title=Scheduler: TaskController.setPriority()
 // META: global=window,worker
 'use strict';
 
-async_test(t => {
-  let result = '';
-  let tc = new TaskController("user-visible");
+promise_test(async t => {
+  const controller = new TaskController();
+  const signal = controller.signal;
 
-  for (let i = 0; i < 5; i++) {
-    let task = scheduler.postTask(() => {
-      result += i.toString();
-    }, { signal: tc.signal });
-  }
+  const tasks = [];
+  const runOrder = [];
+  const callback = id => { runOrder.push(id); };
 
-  scheduler.postTask(() => { result += "5"; }, { priority : "user-blocking" });
-  scheduler.postTask(() => { result += "6"; }, { priority : "user-visible" });
+  for (let i = 0; i < 5; i++)
+    tasks.push(scheduler.postTask(() => callback(i), {signal}));
+  tasks.push(scheduler.postTask(() => callback(5), {priority: 'user-blocking'}));
+  tasks.push(scheduler.postTask(() => callback(6), {priority: 'user-visible' }));
 
-  tc.setPriority("background");
+  controller.setPriority('background');
+  assert_equals(signal.priority, 'background');
 
-  scheduler.postTask(t.step_func_done(() => {
-    assert_equals(result, '5601234');
-  }), { priority: "background" });
+  await Promise.all(tasks);
 
+  assert_equals(runOrder.toString(), '5,6,0,1,2,3,4');
 }, 'Test that TaskController.setPriority() changes the priority of all associated tasks');

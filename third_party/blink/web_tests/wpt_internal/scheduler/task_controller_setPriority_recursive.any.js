@@ -1,12 +1,12 @@
-// META: title=Scheduling API: Recursive TaskController.setPriority()
+// META: title=Scheduler: Recursive TaskController.setPriority()
 // META: global=window,worker
 'use strict';
 
 async_test(t => {
-  let tc = new TaskController("user-visible");
-  tc.signal.onprioritychange = t.step_func_done(() => {
-    assert_equals(tc.signal.priority, "background");
-    assert_throws_dom("NotAllowedError", () => { tc.setPriority("user-blocking"); });
+  const controller = new TaskController();
+  controller.signal.onprioritychange = t.step_func_done(() => {
+    assert_equals(controller.signal.priority, 'background');
+    assert_throws_dom('NotAllowedError', () => { controller.setPriority('user-blocking'); });
   });
-  tc.setPriority("background");
+  controller.setPriority('background');
 }, 'Test that TaskController.setPriority() throws an error if called recursively');

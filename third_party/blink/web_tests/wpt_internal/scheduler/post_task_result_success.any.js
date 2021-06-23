@@ -1,11 +1,8 @@
-// META: title=Scheduling API: Task.result Accessed Before Task Runs
+// META: title=Scheduler: postTask Promise Value
 // META: global=window,worker
 'use strict';
 
-async_test(t => {
-  (function() {
-    scheduler.postTask(() => 1234).then(t.step_func_done((res) => {
-      assert_equals(res, 1234);
-    }));
-  })();
-}, 'Test task result is resolved properly when accessed before the task runs');
+promise_test(async t => {
+  const result = await scheduler.postTask(() => 1234);
+  assert_equals(result, 1234);
+}, 'Test the task promise is resolved with the callback return value');

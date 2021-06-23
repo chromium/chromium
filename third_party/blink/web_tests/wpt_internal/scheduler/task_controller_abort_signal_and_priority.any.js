@@ -1,21 +1,16 @@
-// META: title=Scheduling API: TaskController.abort()
+// META: title=Scheduler: TaskController.abort() with Signal and Priority
 // META: global=window,worker
 'use strict';
 
-async_test(t => {
-  let result = 0;
-  let tc = new TaskController();
+promise_test(async t => {
+  const controller = new TaskController();
+  const signal = controller.signal;
 
-  scheduler.postTask(() => {}, { signal: tc.signal }).then(
-      () => { assert_unreached('This task should have been aborted'); },
-      () => { result++; });
-  scheduler.postTask(() => {}, { priority: "background", signal: tc.signal }).then(
-      () => { assert_unreached('This task should have been aborted'); },
-      () => { result++; });
-  tc.abort();
+  const task1 = scheduler.postTask(() => {}, {signal});
+  const task2 = scheduler.postTask(() => {}, {priority: 'background', signal});
 
-  scheduler.postTask(t.step_func_done(() => {
-    assert_equals(result, 2);
-  }), { priority: "background" });
+  controller.abort();
 
-}, 'Test that when scheduler.postTask() is given both a signal and priority. the signal abort is honored');
+  await promise_rejects_dom(t, 'AbortError',  task1);
+  return promise_rejects_dom(t, 'AbortError',  task2);
+}, 'Test that when scheduler.postTask() is given both a signal and priority, the signal abort is honored');
