@@ -14,6 +14,9 @@ user.
 import sys
 
 
+USE_PYTHON3 = True
+
+
 def _RunUmaHistogramChecks(input_api, output_api):
     original_sys_path = sys.path
     try:
