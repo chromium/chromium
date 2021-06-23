@@ -98,6 +98,8 @@ class ShimlessRmaService : public mojom::ShimlessRmaService {
   template <class Callback>
   void OnGetStateResponse(Callback callback,
                           absl::optional<rmad::GetStateReply> response);
+  void OnAbortRmaResponse(AbortRmaCallback callback,
+                          absl::optional<rmad::AbortRmaReply> response);
 
   rmad::RmadState state_proto_;
 

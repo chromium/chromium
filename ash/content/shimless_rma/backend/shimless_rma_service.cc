@@ -45,6 +45,9 @@ void ShimlessRmaService::GetPrevState(GetPrevStateCallback callback) {
 }
 
 void ShimlessRmaService::AbortRma(AbortRmaCallback callback) {
+  chromeos::RmadClient::Get()->AbortRma(
+      base::BindOnce(&ShimlessRmaService::OnAbortRmaResponse,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void ShimlessRmaService::GetCurrentChromeVersion(
@@ -205,6 +208,17 @@ void ShimlessRmaService::OnGetStateResponse(
     return;
   }
   std::move(callback).Run(state, mojom::RmadErrorCode::kOk);
+}
+
+void ShimlessRmaService::OnAbortRmaResponse(
+    AbortRmaCallback callback,
+    absl::optional<rmad::AbortRmaReply> response) {
+  if (!response) {
+    LOG(ERROR) << "Failed to call rmad::AbortRma";
+    std::move(callback).Run(mojom::RmadErrorCode::kRequestInvalid);
+    return;
+  }
+  std::move(callback).Run(ErrorTraits::ToMojom(response->error()));
 }
 
 }  // namespace shimless_rma

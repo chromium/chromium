@@ -273,5 +273,33 @@ TEST_F(ShimlessRmaServiceTest, GetPrevStateWithNoPrevStateFails) {
   run_loop.Run();
 }
 
+TEST_F(ShimlessRmaServiceTest, CanCancelRma) {
+  std::vector<rmad::GetStateReply> fake_states = {
+      CreateStateReply(rmad::RmadState::kWelcome, rmad::RMAD_ERROR_OK)};
+  fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
+  fake_rmad_client_()->SetAbortable(true);
+  base::RunLoop run_loop;
+  shimless_rma_provider_->AbortRma(
+      base::BindLambdaForTesting([&](mojom::RmadErrorCode error) {
+        EXPECT_EQ(error, mojom::RmadErrorCode::kOk);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+TEST_F(ShimlessRmaServiceTest, CannotCancelRma) {
+  std::vector<rmad::GetStateReply> fake_states = {
+      CreateStateReply(rmad::RmadState::kWelcome, rmad::RMAD_ERROR_OK)};
+  fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
+  fake_rmad_client_()->SetAbortable(false);
+  base::RunLoop run_loop;
+  shimless_rma_provider_->AbortRma(
+      base::BindLambdaForTesting([&](mojom::RmadErrorCode error) {
+        EXPECT_EQ(error, mojom::RmadErrorCode::kCannotCancelRma);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
 }  // namespace shimless_rma
 }  // namespace ash
