@@ -4103,9 +4103,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      FEATURE_VALUE_TYPE(
          chromeos::features::kDriveFsBidirectionalNativeMessaging)},
-    {"files-app-copy-image", flag_descriptions::kFilesAppCopyImageName,
-     flag_descriptions::kFilesAppCopyImageDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(chromeos::features::kEnableFilesAppCopyImage)},
     {"files-filters-in-recents", flag_descriptions::kFiltersInRecentsName,
      flag_descriptions::kFiltersInRecentsDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kFiltersInRecents)},

@@ -2935,11 +2935,6 @@
     "expiry_milestone": 95
   },
   {
-    "name": "files-app-copy-image",
-    "owners": ["nohe", "lucmult", "weifangsun"],
-    "expiry_milestone": 95
-  },
-  {
     "name": "files-filters-in-recents",
     "owners": [ "simmonsjosh@google.com", "benhartney@google.com" ],
     "expiry_milestone": 98

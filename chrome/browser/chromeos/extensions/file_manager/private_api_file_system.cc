@@ -9,14 +9,11 @@
 
 #include <algorithm>
 #include <cctype>
-#include <memory>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
-#include "base/memory/ref_counted_memory.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/strcat.h"
@@ -34,7 +31,6 @@
 #include "chrome/browser/chromeos/extensions/file_manager/event_router.h"
 #include "chrome/browser/chromeos/extensions/file_manager/event_router_factory.h"
 #include "chrome/browser/chromeos/extensions/file_manager/file_stream_md5_digester.h"
-#include "chrome/browser/chromeos/extensions/file_manager/file_stream_string_converter.h"
 #include "chrome/browser/chromeos/extensions/file_manager/private_api_util.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/browser/chromeos/file_manager/volume_manager.h"
@@ -42,7 +38,6 @@
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/ash/clipboard_util.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "chrome/common/extensions/api/file_manager_private_internal.h"
 #include "chromeos/disks/disk.h"
@@ -267,14 +262,6 @@ void ComputeChecksumRespondOnUIThread(
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(hash)));
-}
-
-void CopyImageRespondOnUIThread(
-    base::OnceCallback<void(scoped_refptr<base::RefCountedString>)> callback,
-    scoped_refptr<base::RefCountedString> bytes) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), std::move(bytes)));
 }
 
 // Calls a response callback on the UI thread.
@@ -970,79 +957,6 @@ void FileManagerPrivateInternalStartCopyFunction::RunAfterStartCopy(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   Respond(OneArgument(base::Value(operation_id)));
-}
-
-FileManagerPrivateInternalCopyImageToClipboardFunction::
-    FileManagerPrivateInternalCopyImageToClipboardFunction()
-    : converter_(std::make_unique<storage::FileStreamStringConverter>()) {}
-
-FileManagerPrivateInternalCopyImageToClipboardFunction::
-    ~FileManagerPrivateInternalCopyImageToClipboardFunction() = default;
-
-ExtensionFunction::ResponseAction
-FileManagerPrivateInternalCopyImageToClipboardFunction::Run() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  using extensions::api::file_manager_private_internal::CopyImageToClipboard::
-      Params;
-  const std::unique_ptr<Params> params(Params::Create(*args_));
-  EXTENSION_FUNCTION_VALIDATE(params);
-
-  if (params->url.empty()) {
-    return RespondNow(Error("Image file URL must be provided."));
-  }
-
-  scoped_refptr<storage::FileSystemContext> file_system_context =
-      file_manager::util::GetFileSystemContextForRenderFrameHost(
-          Profile::FromBrowserContext(browser_context()), render_frame_host());
-
-  FileSystemURL file_system_url(
-      file_system_context->CrackURL(GURL(params->url)));
-  if (!file_system_url.is_valid()) {
-    return RespondNow(Error("Image file URL was invalid"));
-  }
-
-  clipboard_sequence_ =
-      ui::ClipboardNonBacked::GetForCurrentThread()->GetSequenceNumber(
-          ui::ClipboardBuffer::kCopyPaste);
-  std::unique_ptr<storage::FileStreamReader> reader =
-      file_system_context->CreateFileStreamReader(
-          file_system_url, 0, storage::kMaximumLength, base::Time());
-
-  storage::FileStreamStringConverter::ResultCallback result_callback =
-      base::BindOnce(
-          &CopyImageRespondOnUIThread,
-          base::BindOnce(
-              &FileManagerPrivateInternalCopyImageToClipboardFunction::
-                  MoveBytesToClipboard,
-              this));
-
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &storage::FileStreamStringConverter::ConvertFileStreamToString,
-          base::Unretained(converter_.get()), std::move(reader),
-          std::move(result_callback)));
-
-  return RespondLater();
-}
-
-void FileManagerPrivateInternalCopyImageToClipboardFunction::
-    MoveBytesToClipboard(scoped_refptr<base::RefCountedString> bytes) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  clipboard_util::DecodeImageFileAndCopyToClipboard(
-      clipboard_sequence_, /*maintain_clipboard=*/true,
-      /*png_data=*/std::move(bytes),
-      base::BindOnce(
-          &FileManagerPrivateInternalCopyImageToClipboardFunction::RespondWith,
-          this));
-}
-
-void FileManagerPrivateInternalCopyImageToClipboardFunction::RespondWith(
-    bool is_on_clipboard) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  Respond(OneArgument(base::Value(is_on_clipboard)));
 }
 
 ExtensionFunction::ResponseAction FileManagerPrivateCancelCopyFunction::Run() {

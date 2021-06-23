@@ -18,7 +18,6 @@
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/chromeos/extensions/file_manager/file_stream_string_converter.h"
 #include "chrome/browser/chromeos/extensions/file_manager/files_extension_function.h"
 #include "chrome/browser/chromeos/extensions/file_manager/private_api_base.h"
 #include "components/drive/file_errors.h"
@@ -257,33 +256,6 @@ class FileManagerPrivateRenameVolumeFunction : public LoggedExtensionFunction {
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;
-};
-
-// Implements the chrome.fileManagerPrivateInternal.copyImageToClipboard method.
-class FileManagerPrivateInternalCopyImageToClipboardFunction
-    : public LoggedExtensionFunction {
- public:
-  FileManagerPrivateInternalCopyImageToClipboardFunction();
-
-  DECLARE_EXTENSION_FUNCTION("fileManagerPrivateInternal.copyImageToClipboard",
-                             FILEMANAGERPRIVATEINTERNAL_COPYIMAGETOCLIPBOARD)
-
- protected:
-  ~FileManagerPrivateInternalCopyImageToClipboardFunction() override;
-
-  // ExtensionFunction overrides.
-  ResponseAction Run() override;
-
- private:
-  // `is_on_clipboard` specifies whether or not the image was copied to the
-  // clipboard.
-  void RespondWith(bool is_on_clipboard);
-  void MoveBytesToClipboard(scoped_refptr<base::RefCountedString> bytes);
-
-  std::unique_ptr<storage::FileStreamStringConverter> converter_;
-  // Stores the clipboard copy sequence number to validate the clipboard did not
-  // change during an async operation.
-  uint64_t clipboard_sequence_ = 0;
 };
 
 // Implements the chrome.fileManagerPrivate.startCopy method.

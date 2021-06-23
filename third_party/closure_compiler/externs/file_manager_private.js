@@ -830,14 +830,6 @@ chrome.fileManagerPrivate.startCopy = function(entry, parentEntry, newName,
     callback) {};
 
 /**
- * Copies an image to the system clipboard. |entry| Entry of the image to copy
- * to the system clipboard.
- * @param {!Entry} entry
- * @param {function((boolean|undefined))} callback
- */
-chrome.fileManagerPrivate.copyImageToClipboard = function(entry, callback) {};
-
-/**
  * Cancels the running copy task. |copyId| ID of the copy task to be cancelled.
  * |callback| Completion callback of the cancel.
  * @param {number} copyId

@@ -384,11 +384,6 @@ const base::Feature kEnableBackgroundBlur{"EnableBackgroundBlur",
 const base::Feature kEnableDnsProxy{"EnableDnsProxy",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables copying an image to the system clipboard to support pasting onto
-// different surfaces
-const base::Feature kEnableFilesAppCopyImage{"EnableFilesAppCopyImage",
-                                             base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables setting the device hostname.
 const base::Feature kEnableHostnameSetting{"EnableHostnameSetting",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
