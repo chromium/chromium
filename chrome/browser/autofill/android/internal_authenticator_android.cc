@@ -13,7 +13,6 @@
 #include "base/android/jni_string.h"
 #include "base/timer/timer.h"
 #include "chrome/android/chrome_jni_headers/InternalAuthenticator_jni.h"
-#include "components/payments/content/android/byte_buffer_helper.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
@@ -122,10 +121,11 @@ void InternalAuthenticatorAndroid::InvokeMakeCredentialResponse(
 
   // |byte_buffer| may be null if authentication failed.
   if (byte_buffer) {
+    jbyte* buf_in =
+        static_cast<jbyte*>(env->GetDirectBufferAddress(byte_buffer.obj()));
+    jlong buf_size = env->GetDirectBufferCapacity(byte_buffer.obj());
     blink::mojom::MakeCredentialAuthenticatorResponse::Deserialize(
-        std::move(payments::android::JavaByteBufferToNativeByteVector(
-            env, byte_buffer)),
-        &response);
+        buf_in, buf_size, &response);
   }
 
   std::move(make_credential_response_callback_)
@@ -141,10 +141,11 @@ void InternalAuthenticatorAndroid::InvokeGetAssertionResponse(
 
   // |byte_buffer| may be null if authentication failed.
   if (byte_buffer) {
+    jbyte* buf_in =
+        static_cast<jbyte*>(env->GetDirectBufferAddress(byte_buffer.obj()));
+    jlong buf_size = env->GetDirectBufferCapacity(byte_buffer.obj());
     blink::mojom::GetAssertionAuthenticatorResponse::Deserialize(
-        std::move(payments::android::JavaByteBufferToNativeByteVector(
-            env, byte_buffer)),
-        &response);
+        buf_in, buf_size, &response);
   }
 
   std::move(get_assertion_response_callback_)
