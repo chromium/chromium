@@ -37,6 +37,7 @@ ScanningAppBrowserTest.prototype = {
   featureList: {
     enabled: [
       'chromeos::features::kScanAppMediaLink',
+      'chromeos::features::kScanAppMultiPageScan',
       'chromeos::features::kScanAppSearchablePdf',
       'chromeos::features::kScanAppStickySettings',
     ]

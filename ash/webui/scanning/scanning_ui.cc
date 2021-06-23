@@ -69,6 +69,7 @@ void AddScanningAppStrings(content::WebUIDataSource* html_source) {
       {"learnMoreButtonLabel", IDS_SCANNING_APP_LEARN_MORE_BUTTON_LABEL},
       {"letterOptionText", IDS_SCANNING_APP_LETTER_OPTION_TEXT},
       {"moreSettings", IDS_SCANNING_APP_MORE_SETTINGS},
+      {"multiPageCheckboxText", IDS_SCANNING_APP_MULTI_PAGE_CHECKBOX_TEXT},
       {"myFilesSelectOption", IDS_SCANNING_APP_MY_FILES_SELECT_OPTION},
       {"noScannersText", IDS_SCANNING_APP_NO_SCANNERS_TEXT},
       {"noScannersSubtext", IDS_SCANNING_APP_NO_SCANNERS_SUBTEXT},
@@ -129,6 +130,9 @@ void AddFeatureFlags(content::WebUIDataSource* html_source) {
   html_source->AddBoolean(
       "scanAppMediaLinkEnabled",
       base::FeatureList::IsEnabled(chromeos::features::kScanAppMediaLink));
+  html_source->AddBoolean(
+      "scanAppMultiPageScanEnabled",
+      base::FeatureList::IsEnabled(chromeos::features::kScanAppMultiPageScan));
   html_source->AddBoolean(
       "scanAppSearchablePdfEnabled",
       base::FeatureList::IsEnabled(chromeos::features::kScanAppSearchablePdf));

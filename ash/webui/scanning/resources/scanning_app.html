@@ -105,16 +105,7 @@
   }
 
   #container {
-    flex: 1;
     overflow: overlay;
-  }
-
-  :host([opened_]) #container {
-    max-height: 445px;
-  }
-
-  :host(:not([opened_])) #container {
-    max-height: 277px;
   }
 
   .scan-button-container {
@@ -205,6 +196,9 @@
             <file-type-select id="fileTypeSelect"
                 disabled="[[settingsDisabled_]]"
                 selected-file-type="{{selectedFileType}}"></file-type-select>
+            <multi-page-checkbox id="multiPageCheckbox" hidden="[[!showMultiPageCheckbox_]]"
+                multi-page-scan-checked="{{multiPageScanChecked}}">
+            </multi-page-checkbox>
             <div id="more-settings-line-separator"></div>
             <cr-button id="moreSettingsButton" on-click="toggleClicked_"
                 aria-expanded="[[opened_]]">

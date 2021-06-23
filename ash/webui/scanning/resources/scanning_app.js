@@ -16,6 +16,7 @@ import './file_path.mojom-lite.js';
 import './color_mode_select.js';
 import './file_type_select.js';
 import './loading_page.js';
+import './multi_page_checkbox.js';
 import './page_size_select.js';
 import './resolution_select.js';
 import './scan_done_section.js';
@@ -306,6 +307,25 @@ Polymer({
     numCompletedScansInSession_: {
       type: Number,
       value: 0,
+    },
+
+    /** @private {boolean} */
+    scanAppMultiPageScanEnabled_: {
+      type: Boolean,
+      value: function() {
+        return loadTimeData.getBoolean('scanAppMultiPageScanEnabled');
+      }
+    },
+
+    /** {boolean} */
+    multiPageScanChecked: Boolean,
+
+    /** @private {boolean} */
+    showMultiPageCheckbox_: {
+      type: Boolean,
+      computed: 'computeShowMultiPageCheckbox_(appState_, selectedSource, ' +
+          'selectedFileType, scanAppMultiPageScanEnabled_)',
+      reflectToAttribute: true,
     },
   },
 
@@ -965,6 +985,34 @@ Polymer({
    */
   areSavedScanSettingsAvailable_() {
     return this.savedScanSettings_.scanners.length !== 0;
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  computeShowMultiPageCheckbox_() {
+    return this.scanAppMultiPageScanEnabled_ &&
+        this.appState_ === AppState.READY && this.isPDFSelected_() &&
+        this.isFlatbedSelected_();
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  isPDFSelected_() {
+    return fileTypeFromString(this.selectedFileType) ===
+        ash.scanning.mojom.FileType.kPdf;
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  isFlatbedSelected_() {
+    return this.sourceTypeMap_.get(this.selectedSource) ===
+        ash.scanning.mojom.SourceType.kFlatbed;
   },
 
   /**

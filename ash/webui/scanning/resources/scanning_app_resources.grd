@@ -40,6 +40,8 @@
       <include name="IDR_SCANNING_APP_SCAN_PREVIEW_JS" file="${root_gen_dir}/ash/webui/scanning/resources/scan_preview.js" resource_path="scan_preview.js" use_base_dir="false" type="BINDATA"/>
       <include name="IDR_SCANNING_APP_LOADING_PAGE_HTML" file="loading_page.html" type="BINDATA"/>
       <include name="IDR_SCANNING_APP_LOADING_PAGE_JS" file="${root_gen_dir}/ash/webui/scanning/resources/loading_page.js" resource_path="loading_page.js" use_base_dir="false" type="BINDATA"/>
+      <include name="IDR_SCANNING_APP_MULTI_PAGE_CHECKBOX_HTML" file="multi_page_checkbox.html" type="BINDATA"/>
+      <include name="IDR_SCANNING_APP_MULTI_PAGE_CHECKBOX_JS" file="${root_gen_dir}/ash/webui/scanning/resources/multi_page_checkbox.js" resource_path="multi_page_checkbox.js" use_base_dir="false" type="BINDATA"/>
       <include name="IDR_SCANNING_APP_ICON_16" file="scanning_app_icon_16.png" type="BINDATA" />
       <include name="IDR_SCANNING_APP_ICON_32" file="scanning_app_icon_32.png" type="BINDATA" />
       <include name="IDR_SCANNING_APP_ICON_48" file="scanning_app_icon_48.png" type="BINDATA" />

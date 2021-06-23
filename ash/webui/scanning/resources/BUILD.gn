@@ -14,6 +14,7 @@ js_type_check("closure_compile_module") {
     ":file_type_select",
     ":loading_page",
     ":mojo_interface_provider",
+    ":multi_page_checkbox",
     ":page_size_select",
     ":resolution_select",
     ":scan_done_section",
@@ -109,12 +110,21 @@ js_library("scanner_select") {
   ]
 }
 
+js_library("multi_page_checkbox") {
+  deps = [
+    "//ash/webui/scanning/mojom:mojom_js_library_for_compile",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:i18n_behavior.m",
+  ]
+}
+
 js_library("scanning_app") {
   deps = [
     ":color_mode_select",
     ":file_type_select",
     ":loading_page",
     ":mojo_interface_provider",
+    ":multi_page_checkbox",
     ":page_size_select",
     ":resolution_select",
     ":scan_preview",
@@ -166,6 +176,7 @@ html_to_js("web_components") {
     "color_mode_select.js",
     "file_type_select.js",
     "loading_page.js",
+    "multi_page_checkbox.js",
     "page_size_select.js",
     "resolution_select.js",
     "scan_preview.js",
