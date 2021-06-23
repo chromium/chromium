@@ -19,6 +19,7 @@
 #include "components/feed/core/common/pref_names.h"
 #include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/proto/v2/ui.pb.h"
+#include "components/feed/core/proto/v2/wire/reliability_logging_enums.pb.h"
 #include "components/feed/core/proto/v2/wire/there_and_back_again_data.pb.h"
 #include "components/feed/core/shared_prefs/pref_names.h"
 #include "components/feed/core/v2/config.h"
@@ -34,6 +35,7 @@
 #include "components/feed/core/v2/public/feed_api.h"
 #include "components/feed/core/v2/public/feed_stream_surface.h"
 #include "components/feed/core/v2/public/refresh_task_scheduler.h"
+#include "components/feed/core/v2/public/reliability_logging_bridge.h"
 #include "components/feed/core/v2/public/stream_type.h"
 #include "components/feed/core/v2/public/types.h"
 #include "components/feed/core/v2/public/unread_content_observer.h"
@@ -174,17 +176,20 @@ StreamModel* FeedStream::GetModel(const StreamType& stream_type) {
   return stream ? stream->model.get() : nullptr;
 }
 
-void FeedStream::TriggerStreamLoad(const StreamType& stream_type) {
+absl::optional<feedwire::DiscoverLaunchResult> FeedStream::TriggerStreamLoad(
+    const StreamType& stream_type) {
   Stream& stream = GetStream(stream_type);
   if (stream.model || stream.model_loading_in_progress)
-    return;
+    return absl::nullopt;
 
   // If we should not load the stream, abort and send a zero-state update.
-  LoadStreamStatus do_not_attempt_reason = ShouldAttemptLoad(stream_type);
-  if (do_not_attempt_reason != LoadStreamStatus::kNoStatus) {
-    InitialStreamLoadComplete(
-        LoadStreamTask::Result(stream_type, do_not_attempt_reason));
-    return;
+  LaunchResult do_not_attempt_reason = ShouldAttemptLoad(stream_type);
+  if (do_not_attempt_reason.load_stream_status != LoadStreamStatus::kNoStatus) {
+    LoadStreamTask::Result result(stream_type,
+                                  do_not_attempt_reason.load_stream_status);
+    result.launch_result = do_not_attempt_reason.launch_result;
+    InitialStreamLoadComplete(std::move(result));
+    return do_not_attempt_reason.launch_result;
   }
 
   stream.model_loading_in_progress = true;
@@ -196,6 +201,7 @@ void FeedStream::TriggerStreamLoad(const StreamType& stream_type) {
       options, this,
       base::BindOnce(&FeedStream::InitialStreamLoadComplete,
                      base::Unretained(this))));
+  return absl::nullopt;
 }
 
 void FeedStream::InitializeComplete(WaitForStoreInitializeTask::Result result) {
@@ -230,6 +236,12 @@ void FeedStream::InitialStreamLoadComplete(LoadStreamTask::Result result) {
   if (result.update_request) {
     auto model = std::make_unique<StreamModel>();
     model->Update(std::move(result.update_request));
+
+    if (!model->HasVisibleContent()) {
+      stream.surface_updater->launch_reliability_logger().LogLaunchFinished(
+          feedwire::DiscoverLaunchResult::NO_CARDS_RESPONSE_ERROR_ZERO_CARDS);
+    }
+
     LoadModel(result.stream_type, std::move(model));
   }
 
@@ -243,8 +255,8 @@ void FeedStream::InitialStreamLoadComplete(LoadStreamTask::Result result) {
 
   UpdateIsActivityLoggingEnabled(result.stream_type);
   stream.model_loading_in_progress = false;
-  stream.surface_updater->LoadStreamComplete(stream.model != nullptr,
-                                             result.final_status);
+  stream.surface_updater->LoadStreamComplete(
+      stream.model != nullptr, result.final_status, result.launch_result);
 
   LoadTaskComplete(result);
 
@@ -339,13 +351,14 @@ void FeedStream::AttachSurface(FeedStreamSurface* surface) {
   Stream& stream = GetStream(surface->GetStreamType());
   // Skip normal processing when overriding stream data from the internals page.
   if (forced_stream_update_for_debugging_.updated_slices_size() > 0) {
-    stream.surface_updater->SurfaceAdded(surface);
+    stream.surface_updater->SurfaceAdded(
+        surface, /*loading_not_allowed_reason=*/absl::nullopt);
     surface->StreamUpdate(forced_stream_update_for_debugging_);
     return;
   }
 
-  TriggerStreamLoad(surface->GetStreamType());
-  stream.surface_updater->SurfaceAdded(surface);
+  stream.surface_updater->SurfaceAdded(
+      surface, TriggerStreamLoad(surface->GetStreamType()));
 
   // Cancel any scheduled model unload task.
   ++stream.unload_on_detach_sequence_number;
@@ -444,8 +457,8 @@ void FeedStream::LoadMore(const FeedStreamSurface& surface,
   // We want to abort early to avoid showing a loading spinner if it's not
   // necessary.
   if (ShouldMakeFeedQueryRequest(surface.GetStreamType(), /*is_load_more=*/true,
-                                 /*consume_quota=*/false) !=
-      LoadStreamStatus::kNoStatus) {
+                                 /*consume_quota=*/false)
+          .load_stream_status != LoadStreamStatus::kNoStatus) {
     return std::move(callback).Run(false);
   }
 
@@ -584,6 +597,9 @@ void FeedStream::ForceRefreshForDebugging() {
 void FeedStream::ForceRefreshForDebuggingTask() {
   UnloadModel(kForYouStream);
   store_->ClearStreamData(kForYouStream, base::DoNothing());
+  GetStream(kForYouStream)
+      .surface_updater->launch_reliability_logger()
+      .LogFeedLaunchOtherStart();
   TriggerStreamLoad(kForYouStream);
 
   if (base::FeatureList::IsEnabled(kWebFeed)) {
@@ -676,34 +692,44 @@ void FeedStream::OnStoreChange(StreamModel::StoreUpdate update) {
   }
 }
 
-LoadStreamStatus FeedStream::ShouldAttemptLoad(const StreamType& stream_type,
-                                               bool model_loading) {
+LaunchResult FeedStream::ShouldAttemptLoad(const StreamType& stream_type,
+                                           bool model_loading) {
   // Don't try to load the model if it's already loaded, or in the process of
   // being loaded. Because |ShouldAttemptLoad()| is used both before and during
   // the load process, we need to ignore this check when |model_loading| is
   // true.
   Stream& stream = GetStream(stream_type);
-  if (stream.model || (!model_loading && stream.model_loading_in_progress))
-    return LoadStreamStatus::kModelAlreadyLoaded;
+  if (stream.model || (!model_loading && stream.model_loading_in_progress)) {
+    // TODO(iwells): add a DiscoverLaunchFinished value for this case
+    return {LoadStreamStatus::kModelAlreadyLoaded, absl::nullopt};
+  }
 
-  if (!IsArticlesListVisible())
-    return LoadStreamStatus::kLoadNotAllowedArticlesListHidden;
+  if (!IsArticlesListVisible()) {
+    return {LoadStreamStatus::kLoadNotAllowedArticlesListHidden,
+            feedwire::DiscoverLaunchResult::FEED_HIDDEN};
+  }
 
-  if (!IsFeedEnabledByEnterprisePolicy())
-    return LoadStreamStatus::kLoadNotAllowedDisabledByEnterprisePolicy;
+  if (!IsFeedEnabledByEnterprisePolicy()) {
+    return {LoadStreamStatus::kLoadNotAllowedDisabledByEnterprisePolicy,
+            feedwire::DiscoverLaunchResult::
+                INELIGIBLE_DISCOVER_DISABLED_BY_ENTERPRISE_POLICY};
+  }
 
-  if (!delegate_->IsEulaAccepted())
-    return LoadStreamStatus::kLoadNotAllowedEulaNotAccepted;
+  if (!delegate_->IsEulaAccepted()) {
+    return {LoadStreamStatus::kLoadNotAllowedEulaNotAccepted,
+            feedwire::DiscoverLaunchResult::INELIGIBLE_EULA_NOT_ACCEPTED};
+  }
 
   // Skip this check if metadata_ is not initialized. ShouldAttemptLoad() will
   // be called again from within the LoadStreamTask, and then the metadata
   // will be initialized.
   if (metadata_populated_ &&
       delegate_->GetSyncSignedInGaia() != metadata_.gaia()) {
-    return LoadStreamStatus::kDataInStoreIsForAnotherUser;
+    // TODO(iwells): add a DiscoverLaunchFinished value for this case
+    return {LoadStreamStatus::kDataInStoreIsForAnotherUser, absl::nullopt};
   }
 
-  return LoadStreamStatus::kNoStatus;
+  return {LoadStreamStatus::kNoStatus, absl::nullopt};
 }
 
 bool FeedStream::MissedLastRefresh(const StreamType& stream_type) {
@@ -719,7 +745,7 @@ bool FeedStream::MissedLastRefresh(const StreamType& stream_type) {
   return scheduled_time < base::Time::Now();
 }
 
-LoadStreamStatus FeedStream::ShouldMakeFeedQueryRequest(
+LaunchResult FeedStream::ShouldMakeFeedQueryRequest(
     const StreamType& stream_type,
     bool is_load_more,
     bool consume_quota) {
@@ -727,29 +753,32 @@ LoadStreamStatus FeedStream::ShouldMakeFeedQueryRequest(
   if (!is_load_more) {
     // Time has passed since calling |ShouldAttemptLoad()|, call it again to
     // confirm we should still attempt loading.
-    const LoadStreamStatus should_not_attempt_reason =
+    const LaunchResult should_not_attempt_reason =
         ShouldAttemptLoad(stream_type, /*model_loading=*/true);
-    if (should_not_attempt_reason != LoadStreamStatus::kNoStatus) {
+    if (should_not_attempt_reason.load_stream_status !=
+        LoadStreamStatus::kNoStatus) {
       return should_not_attempt_reason;
     }
   } else {
     // LoadMore requires a next page token.
     if (!stream.model || stream.model->GetNextPageToken().empty()) {
-      return LoadStreamStatus::kCannotLoadMoreNoNextPageToken;
+      return {LoadStreamStatus::kCannotLoadMoreNoNextPageToken, absl::nullopt};
     }
   }
 
   if (delegate_->IsOffline()) {
-    return LoadStreamStatus::kCannotLoadFromNetworkOffline;
+    return {LoadStreamStatus::kCannotLoadFromNetworkOffline,
+            feedwire::DiscoverLaunchResult::NO_CARDS_REQUEST_ERROR_NO_INTERNET};
   }
 
   if (consume_quota && !request_throttler_.RequestQuota(
                            !is_load_more ? NetworkRequestType::kFeedQuery
                                          : NetworkRequestType::kNextPage)) {
-    return LoadStreamStatus::kCannotLoadFromNetworkThrottled;
+    return {LoadStreamStatus::kCannotLoadFromNetworkThrottled,
+            feedwire::DiscoverLaunchResult::NO_CARDS_REQUEST_ERROR_OTHER};
   }
 
-  return LoadStreamStatus::kNoStatus;
+  return {LoadStreamStatus::kNoStatus, absl::nullopt};
 }
 
 bool FeedStream::ShouldForceSignedOutFeedQueryRequest(
@@ -800,6 +829,8 @@ RequestMetadata FeedStream::GetRequestMetadata(const StreamType& stream_type,
 void FeedStream::OnEulaAccepted() {
   for (auto& item : streams_) {
     if (item.second.surface_updater->HasSurfaceAttached()) {
+      item.second.surface_updater->launch_reliability_logger()
+          .LogFeedLaunchOtherStart();
       TriggerStreamLoad(item.second.type);
     }
   }
@@ -843,7 +874,8 @@ void FeedStream::OnSignedOut() {
 
 void FeedStream::ExecuteRefreshTask(RefreshTaskId task_id) {
   StreamType stream_type = StreamType::ForTaskId(task_id);
-  LoadStreamStatus do_not_attempt_reason = ShouldAttemptLoad(stream_type);
+  LoadStreamStatus do_not_attempt_reason =
+      ShouldAttemptLoad(stream_type).load_stream_status;
 
   // If `do_not_attempt_reason` indicates the stream shouldn't be loaded, it's
   // unlikely that criteria will change, so we skip rescheduling.
@@ -937,6 +969,8 @@ void FeedStream::FinishClearAll() {
 
   for (auto& item : streams_) {
     if (item.second.surface_updater->HasSurfaceAttached()) {
+      item.second.surface_updater->launch_reliability_logger()
+          .LogFeedLaunchOtherStart();
       TriggerStreamLoad(item.second.type);
     }
   }
@@ -1019,6 +1053,11 @@ void FeedStream::UnloadModels() {
   for (auto& item : streams_) {
     UnloadModel(item.second.type);
   }
+}
+
+LaunchReliabilityLogger& FeedStream::GetLaunchReliabilityLogger(
+    const StreamType& stream_type) {
+  return GetStream(stream_type).surface_updater->launch_reliability_logger();
 }
 
 void FeedStream::ReportOpenAction(const GURL& url,

@@ -767,7 +767,8 @@ TEST_F(FeedApiTest, AllowSignedInRequestAfterHistoryIsDeletedAfterDelay) {
 TEST_F(FeedApiTest, ShouldMakeFeedQueryRequestConsumesQuota) {
   LoadStreamStatus status = LoadStreamStatus::kNoStatus;
   for (; status == LoadStreamStatus::kNoStatus;
-       status = stream_->ShouldMakeFeedQueryRequest(kForYouStream)) {
+       status = stream_->ShouldMakeFeedQueryRequest(kForYouStream)
+                    .load_stream_status) {
   }
 
   ASSERT_EQ(LoadStreamStatus::kCannotLoadFromNetworkThrottled, status);
@@ -2164,35 +2165,6 @@ TEST_F(FeedApiTest, StreamDataOverwritesOldStream) {
   EXPECT_EQ("new-shared-data",
             stored_data->shared_states[0].shared_state_data());
   EXPECT_EQ("new-frame-data", stored_data->content[0].frame());
-}
-
-TEST_F(FeedApiTest, ReliabilityLoggingId_GetAndReset) {
-  // If nothing changes between two calls to GetReliabilityLoggingId(), it
-  // should return the same ID.
-  uint64_t first_id =
-      FeedService::GetReliabilityLoggingId(/*metrics_id=*/"", &profile_prefs_);
-  EXPECT_EQ(first_id, FeedService::GetReliabilityLoggingId(/*metrics_id=*/"",
-                                                           &profile_prefs_));
-
-  profile_prefs_.ClearPref(prefs::kReliabilityLoggingIdSalt);
-  EXPECT_NE(first_id, FeedService::GetReliabilityLoggingId(/*metrics_id=*/"",
-                                                           &profile_prefs_));
-}
-
-TEST_F(FeedApiTest, ReliabilityLoggingId_ChangeOnMetricsIdChange) {
-  const char kSomeMetricsId[] = "metrics-id-1";
-  uint64_t first_id =
-      FeedService::GetReliabilityLoggingId(kSomeMetricsId, &profile_prefs_);
-  EXPECT_NE(first_id, FeedService::GetReliabilityLoggingId("metrics-id-2",
-                                                           &profile_prefs_));
-
-  // If we use the original metrics ID, we should get the original ID unless
-  // the salt is cleared.
-  EXPECT_EQ(first_id, FeedService::GetReliabilityLoggingId(kSomeMetricsId,
-                                                           &profile_prefs_));
-  profile_prefs_.ClearPref(prefs::kReliabilityLoggingIdSalt);
-  EXPECT_NE(first_id, FeedService::GetReliabilityLoggingId(kSomeMetricsId,
-                                                           &profile_prefs_));
 }
 
 TEST_F(FeedApiTest, HasUnreadContentIsFalseAfterSliceView) {

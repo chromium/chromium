@@ -15,6 +15,7 @@
 #include "components/feed/core/proto/v2/wire/client_info.pb.h"
 #include "components/feed/core/proto/v2/wire/feed_query.pb.h"
 #include "components/feed/core/proto/v2/wire/feed_request.pb.h"
+#include "components/feed/core/proto/v2/wire/reliability_logging_enums.pb.h"
 #include "components/feed/core/proto/v2/wire/request.pb.h"
 #include "components/feed/core/v2/config.h"
 #include "components/feed/core/v2/feed_network.h"
@@ -25,6 +26,7 @@
 #include "components/feed/core/v2/protocol_translator.h"
 #include "components/feed/core/v2/stream_model.h"
 #include "components/feed/core/v2/tasks/upload_actions_task.h"
+#include "components/feed/core/v2/types.h"
 #include "components/feed/feed_feature_list.h"
 
 namespace feed {
@@ -71,7 +73,8 @@ LoadStreamTask::~LoadStreamTask() = default;
 
 void LoadStreamTask::Run() {
   if (stream_.ClearAllInProgress()) {
-    Done(LoadStreamStatus::kAbortWithPendingClearAll);
+    // TODO(iwells): add a DiscoverLaunchResult for this case?
+    Done({LoadStreamStatus::kAbortWithPendingClearAll, absl::nullopt});
     return;
   }
   latencies_->StepComplete(LoadLatencyTimes::kTaskExecution);
@@ -81,16 +84,18 @@ void LoadStreamTask::Run() {
   // task is added to the task queue. Maybe we can simplify this.
 
   // First, ensure we still should load the model.
-  LoadStreamStatus should_not_attempt_reason =
+  LaunchResult should_not_attempt_reason =
       stream_.ShouldAttemptLoad(options_.stream_type,
                                 /*model_loading=*/true);
-  if (should_not_attempt_reason != LoadStreamStatus::kNoStatus) {
+  if (should_not_attempt_reason.load_stream_status !=
+      LoadStreamStatus::kNoStatus) {
     return Done(should_not_attempt_reason);
   }
 
   if (options_.abort_if_unread_content &&
       stream_.HasUnreadContent(options_.stream_type)) {
-    Done(LoadStreamStatus::kAlreadyHaveUnreadContent);
+    // TODO(iwells): add a DiscoverLaunchResult for this case
+    Done({LoadStreamStatus::kAlreadyHaveUnreadContent, absl::nullopt});
     return;
   }
 
@@ -119,8 +124,7 @@ void LoadStreamTask::LoadFromStoreComplete(
   if (!options_.refresh_even_when_not_stale &&
       result.status == LoadStreamStatus::kLoadedFromStore) {
     update_request_ = std::move(result.update_request);
-    Done(LoadStreamStatus::kLoadedFromStore);
-    return;
+    return Done({LoadStreamStatus::kLoadedFromStore, absl::nullopt});
   }
 
   const bool store_is_stale =
@@ -134,12 +138,10 @@ void LoadStreamTask::LoadFromStoreComplete(
     stale_store_state_ = std::move(result.update_request);
   }
 
-  LoadStreamStatus final_status =
+  LaunchResult should_make_request =
       stream_.ShouldMakeFeedQueryRequest(options_.stream_type);
-  if (final_status != LoadStreamStatus::kNoStatus) {
-    Done(final_status);
-    return;
-  }
+  if (should_make_request.load_stream_status != LoadStreamStatus::kNoStatus)
+    return Done(should_make_request);
 
   // If making a request, first try to upload pending actions.
   upload_actions_task_ = std::make_unique<UploadActionsTask>(
@@ -221,22 +223,32 @@ void LoadStreamTask::ProcessNetworkResponse(
 
   network_response_info_ = response_info;
 
-  if (response_info.status_code != 200)
-    return Done(LoadStreamStatus::kNetworkFetchFailed);
+  if (response_info.status_code != 200) {
+    return Done(
+        {LoadStreamStatus::kNetworkFetchFailed,
+         feedwire::DiscoverLaunchResult::NO_CARDS_RESPONSE_ERROR_NON_200});
+  }
 
   if (!response_body) {
-    if (response_info.response_body_bytes > 0)
-      return Done(LoadStreamStatus::kCannotParseNetworkResponseBody);
-    else
-      return Done(LoadStreamStatus::kNoResponseBody);
+    if (response_info.response_body_bytes > 0) {
+      return Done(
+          {LoadStreamStatus::kCannotParseNetworkResponseBody,
+           feedwire::DiscoverLaunchResult::NO_CARDS_REQUEST_ERROR_OTHER});
+    } else {
+      return Done(
+          {LoadStreamStatus::kNoResponseBody,
+           feedwire::DiscoverLaunchResult::NO_CARDS_REQUEST_ERROR_OTHER});
+    }
   }
 
   RefreshResponseData response_data =
       stream_.GetWireResponseTranslator().TranslateWireResponse(
           *response_body, StreamModelUpdateRequest::Source::kNetworkUpdate,
           response_info.was_signed_in, base::Time::Now());
-  if (!response_data.model_update_request)
-    return Done(LoadStreamStatus::kProtoTranslationFailed);
+  if (!response_data.model_update_request) {
+    return Done({LoadStreamStatus::kProtoTranslationFailed,
+                 feedwire::DiscoverLaunchResult::NO_CARDS_REQUEST_ERROR_OTHER});
+  }
 
   loaded_new_content_from_network_ = true;
   content_ids_ =
@@ -267,23 +279,24 @@ void LoadStreamTask::ProcessNetworkResponse(
   }
 
   request_schedule_ = std::move(response_data.request_schedule);
-
-  Done(LoadStreamStatus::kLoadedFromNetwork);
+  Done({LoadStreamStatus::kLoadedFromNetwork, absl::nullopt});
 }
 
-void LoadStreamTask::Done(LoadStreamStatus status) {
+void LoadStreamTask::Done(LaunchResult launch_result) {
   // If the network load fails, but there is stale content in the store, use
   // that stale content.
   if (stale_store_state_ && !update_request_) {
     update_request_ = std::move(stale_store_state_);
-    status = LoadStreamStatus::kLoadedStaleDataFromStoreDueToNetworkFailure;
+    launch_result.load_stream_status =
+        LoadStreamStatus::kLoadedStaleDataFromStoreDueToNetworkFailure;
+    launch_result.launch_result = absl::nullopt;
   }
   Result result;
   result.stream_type = options_.stream_type;
   result.load_from_store_status = load_from_store_status_;
   result.stored_content_age = stored_content_age_;
   result.content_ids = content_ids_;
-  result.final_status = status;
+  result.final_status = launch_result.load_stream_status;
   result.load_type = options_.load_type;
   result.update_request = std::move(update_request_);
   result.request_schedule = std::move(request_schedule_);
@@ -293,6 +306,7 @@ void LoadStreamTask::Done(LoadStreamStatus status) {
   result.fetched_content_has_notice_card = fetched_content_has_notice_card_;
   result.upload_actions_result = std::move(upload_actions_result_);
   result.experiments = experiments_;
+  result.launch_result = launch_result.launch_result;
   std::move(done_callback_).Run(std::move(result));
   TaskComplete();
 }

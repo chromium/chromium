@@ -15,6 +15,7 @@
 #include "base/test/task_environment.h"
 #include "components/feed/core/common/pref_names.h"
 #include "components/feed/core/proto/v2/keyvalue_store.pb.h"
+#include "components/feed/core/proto/v2/wire/reliability_logging_enums.pb.h"
 #include "components/feed/core/proto/v2/wire/there_and_back_again_data.pb.h"
 #include "components/feed/core/proto/v2/wire/web_feeds.pb.h"
 #include "components/feed/core/shared_prefs/pref_names.h"
@@ -26,7 +27,7 @@
 #include "components/feed/core/v2/metrics_reporter.h"
 #include "components/feed/core/v2/prefs.h"
 #include "components/feed/core/v2/public/feed_stream_surface.h"
-#include "components/feed/core/v2/public/reliability_logger.h"
+#include "components/feed/core/v2/public/reliability_logging_bridge.h"
 #include "components/feed/core/v2/public/types.h"
 #include "components/feed/core/v2/stream_model.h"
 #include "components/feed/core/v2/test/proto_printer.h"
@@ -34,6 +35,7 @@
 #include "components/feed/core/v2/test/test_util.h"
 #include "components/feed/core/v2/wire_response_translator.h"
 #include "components/prefs/testing_pref_service.h"
+#include "net/http/http_status_code.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -67,6 +69,43 @@ std::string SerializedOfflineBadgeContent();
 
 feedwire::ThereAndBackAgainData MakeThereAndBackAgainData(int64_t id);
 
+class TestReliabilityLoggingBridge : public ReliabilityLoggingBridge {
+ public:
+  TestReliabilityLoggingBridge();
+  ~TestReliabilityLoggingBridge() override;
+
+  std::string GetEventsString() const;
+
+  // ReliabilityLoggingBridge implementation.
+  void SendPendingLaunchEvents(StreamType stream_type,
+                               SurfaceId stream_id) override;
+  void CancelPendingLaunchEvents() override;
+
+  void LogFeedLaunchOtherStart(base::TimeTicks timestamp) override;
+  void LogCacheReadStart(base::TimeTicks timestamp) override;
+  void LogCacheReadEnd(base::TimeTicks timestamp,
+                       feedwire::DiscoverCardReadCacheResult result) override;
+  int LogFeedRequestStart(base::TimeTicks timestamp) override;
+  int LogActionsUploadRequestStart(base::TimeTicks timestamp) override;
+  void LogRequestSent(int request_id, base::TimeTicks timestamp) override;
+  void LogResponseReceived(int request_id,
+                           base::TimeTicks server_receive_timestamp,
+                           base::TimeTicks server_send_timestamp,
+                           base::TimeTicks client_receive_timestamp) override;
+  void LogRequestFinished(int request_id,
+                          base::TimeTicks timestamp,
+                          int combined_network_status_code) override;
+  void LogAtfRenderStart(base::TimeTicks timestamp) override;
+  void LogAtfRenderEnd(
+      base::TimeTicks timestamp,
+      feedwire::DiscoverAboveTheFoldRenderResult result) override;
+  void LogLaunchFinished(base::TimeTicks timestamp,
+                         feedwire::DiscoverLaunchResult result) override;
+
+ private:
+  std::vector<std::string> events_;
+};
+
 class TestSurfaceBase : public FeedStreamSurface {
  public:
   // Provide some helper functionality to attach/detach the surface.
@@ -85,7 +124,7 @@ class TestSurfaceBase : public FeedStreamSurface {
   void ReplaceDataStoreEntry(base::StringPiece key,
                              base::StringPiece data) override;
   void RemoveDataStoreEntry(base::StringPiece key) override;
-  ReliabilityLogger* GetReliabilityLogger() override;
+  ReliabilityLoggingBridge& GetReliabilityLoggingBridge() override;
 
   // Test functions.
 
@@ -104,6 +143,8 @@ class TestSurfaceBase : public FeedStreamSurface {
   absl::optional<feedui::StreamUpdate> initial_state;
   // The last stream update received.
   absl::optional<feedui::StreamUpdate> update;
+
+  TestReliabilityLoggingBridge reliability_logging_bridge;
 
  private:
   std::string CurrentState();
@@ -262,6 +303,7 @@ class TestFeedNetwork : public FeedNetwork {
   std::string last_gaia;
   std::string consistency_token;
   bool forced_signed_out_request = false;
+  net::HttpStatusCode http_status_code = net::HttpStatusCode::HTTP_OK;
 
  private:
   void Reply(base::OnceClosure reply_closure);

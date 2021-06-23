@@ -3,10 +3,11 @@
 // found in the LICENSE file.
 
 #include "components/feed/core/v2/api_test/feed_api_test.h"
+#include "components/feed/core/proto/v2/wire/reliability_logging_enums.pb.h"
 #include "components/feed/core/proto/v2/wire/web_feeds.pb.h"
 #include "components/feed/core/v2/enums.h"
 #include "components/feed/core/v2/feed_network.h"
-#include "components/feed/core/v2/public/reliability_logger.h"
+#include "components/feed/core/v2/public/reliability_logging_bridge.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 
 #include "base/callback.h"
@@ -182,9 +183,8 @@ void TestSurfaceBase::ReplaceDataStoreEntry(base::StringPiece key,
 void TestSurfaceBase::RemoveDataStoreEntry(base::StringPiece key) {
   data_store_entries_.erase(std::string(key));
 }
-ReliabilityLogger* TestSurfaceBase::GetReliabilityLogger() {
-  // TODO(iwells): Make a fake ReliabilityLogger when needed.
-  return nullptr;
+ReliabilityLoggingBridge& TestSurfaceBase::GetReliabilityLoggingBridge() {
+  return reliability_logging_bridge;
 }
 
 void TestSurfaceBase::Clear() {
@@ -253,6 +253,100 @@ TestForYouSurface::TestForYouSurface(FeedStream* stream)
 TestWebFeedSurface::TestWebFeedSurface(FeedStream* stream)
     : TestSurfaceBase(kWebFeedStream, stream) {}
 
+TestReliabilityLoggingBridge::TestReliabilityLoggingBridge() = default;
+TestReliabilityLoggingBridge::~TestReliabilityLoggingBridge() = default;
+
+std::string TestReliabilityLoggingBridge::GetEventsString() const {
+  std::ostringstream oss;
+  for (const auto& event : events_)
+    oss << event << '\n';
+  return oss.str();
+}
+
+void TestReliabilityLoggingBridge::SendPendingLaunchEvents(
+    StreamType stream_type,
+    SurfaceId stream_id) {
+  events_.push_back(base::StrCat(
+      {"SendPendingLaunchEvents stream_type=", stream_type.ToString()}));
+}
+
+void TestReliabilityLoggingBridge::CancelPendingLaunchEvents() {
+  events_.push_back("CancelPendingLaunchEvents");
+}
+
+void TestReliabilityLoggingBridge::LogFeedLaunchOtherStart(
+    base::TimeTicks timestamp) {
+  events_.push_back("LogFeedLaunchOtherStart");
+}
+
+void TestReliabilityLoggingBridge::LogCacheReadStart(
+    base::TimeTicks timestamp) {
+  events_.push_back("LogCacheReadStart");
+}
+
+void TestReliabilityLoggingBridge::LogCacheReadEnd(
+    base::TimeTicks timestamp,
+    feedwire::DiscoverCardReadCacheResult result) {
+  events_.push_back(
+      base::StrCat({"LogCacheReadEnd result=",
+                    feedwire::DiscoverCardReadCacheResult_Name(result)}));
+}
+
+int TestReliabilityLoggingBridge::LogFeedRequestStart(
+    base::TimeTicks timestamp) {
+  events_.push_back("LogFeedRequestStart");
+  return 0;
+}
+
+int TestReliabilityLoggingBridge::LogActionsUploadRequestStart(
+    base::TimeTicks timestamp) {
+  events_.push_back("LogActionsUploadRequestStart");
+  return 0;
+}
+
+void TestReliabilityLoggingBridge::LogRequestSent(int request_id,
+                                                  base::TimeTicks timestamp) {
+  events_.push_back("LogRequestSent");
+}
+
+void TestReliabilityLoggingBridge::LogResponseReceived(
+    int request_id,
+    base::TimeTicks server_receive_timestamp,
+    base::TimeTicks server_send_timestamp,
+    base::TimeTicks client_receive_timestamp) {
+  events_.push_back("LogResponseReceived");
+}
+
+void TestReliabilityLoggingBridge::LogRequestFinished(
+    int request_id,
+    base::TimeTicks timestamp,
+    int combined_network_status_code) {
+  events_.push_back(
+      base::StrCat({"LogRequestFinished result=",
+                    base::NumberToString(combined_network_status_code)}));
+}
+
+void TestReliabilityLoggingBridge::LogAtfRenderStart(
+    base::TimeTicks timestamp) {
+  events_.push_back("LogAtfRenderStart");
+}
+
+void TestReliabilityLoggingBridge::LogAtfRenderEnd(
+    base::TimeTicks timestamp,
+    feedwire::DiscoverAboveTheFoldRenderResult result) {
+  events_.push_back(
+      base::StrCat({"LogAtfRenderEnd result=",
+                    feedwire::DiscoverAboveTheFoldRenderResult_Name(result)}));
+}
+
+void TestReliabilityLoggingBridge::LogLaunchFinished(
+    base::TimeTicks timestamp,
+    feedwire::DiscoverLaunchResult result) {
+  events_.push_back(
+      base::StrCat({"LogLaunchFinished result=",
+                    feedwire::DiscoverLaunchResult_Name(result)}));
+}
+
 TestImageFetcher::TestImageFetcher(
     scoped_refptr<::network::SharedURLLoaderFactory> url_loader_factory)
     : ImageFetcher(url_loader_factory) {}
@@ -281,7 +375,7 @@ void TestFeedNetwork::SendQueryRequest(
   // time we want to inject a translated response for ease of test-writing.
   query_request_sent = request;
   QueryRequestResult result;
-  result.response_info.status_code = 200;
+  result.response_info.status_code = http_status_code;
   result.response_info.response_body_bytes = 100;
   result.response_info.fetch_duration = base::TimeDelta::FromMilliseconds(42);
   result.response_info.was_signed_in = true;

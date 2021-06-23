@@ -257,6 +257,10 @@ void StreamModel::UpdateFlattenedTree() {
     observer.OnUiUpdate(update);
 }
 
+bool StreamModel::HasVisibleContent() {
+  return !content_list_.empty();
+}
+
 stream_model::FeatureTree* StreamModel::GetFinalFeatureTree() {
   return feature_tree_after_changes_ ? feature_tree_after_changes_.get()
                                      : &base_feature_tree_;

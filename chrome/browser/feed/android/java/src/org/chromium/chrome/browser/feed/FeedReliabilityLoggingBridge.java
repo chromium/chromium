@@ -50,6 +50,11 @@ public class FeedReliabilityLoggingBridge {
     }
 
     @CalledByNative
+    public void logOtherLaunchStart(long timestamp) {
+        mLogger.logFeedLaunchOtherStart(timestamp);
+    }
+
+    @CalledByNative
     public void logCacheReadStart(long timestamp) {
         mLogger.logCacheReadStart(timestamp);
     }

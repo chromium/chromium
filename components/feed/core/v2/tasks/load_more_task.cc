@@ -52,7 +52,8 @@ void LoadMoreTask::Run() {
     return Done(LoadStreamStatus::kLoadMoreModelIsNotLoaded);
 
   LoadStreamStatus final_status =
-      stream_.ShouldMakeFeedQueryRequest(stream_type_, /*is_load_more=*/true);
+      stream_.ShouldMakeFeedQueryRequest(stream_type_, /*is_load_more=*/true)
+          .load_stream_status;
   if (final_status != LoadStreamStatus::kNoStatus)
     return Done(final_status);
 

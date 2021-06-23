@@ -10,12 +10,12 @@
 
 #include "base/time/time.h"
 #include "components/feed/core/proto/v2/wire/reliability_logging_enums.pb.h"
-#include "components/feed/core/v2/public/reliability_logger.h"
+#include "components/feed/core/v2/public/reliability_logging_bridge.h"
 
 namespace feed {
 namespace android {
 
-class FeedReliabilityLoggingBridge : public ::feed::ReliabilityLogger {
+class FeedReliabilityLoggingBridge : public ::feed::ReliabilityLoggingBridge {
  public:
   explicit FeedReliabilityLoggingBridge(
       const base::android::JavaRef<jobject>& j_this);
@@ -31,6 +31,8 @@ class FeedReliabilityLoggingBridge : public ::feed::ReliabilityLogger {
   void SendPendingLaunchEvents(StreamType stream_type,
                                SurfaceId stream_id) override;
   void CancelPendingLaunchEvents() override;
+
+  void LogFeedLaunchOtherStart(base::TimeTicks timestamp) override;
   void LogCacheReadStart(base::TimeTicks timestamp) override;
   void LogCacheReadEnd(base::TimeTicks timestamp,
                        feedwire::DiscoverCardReadCacheResult result) override;

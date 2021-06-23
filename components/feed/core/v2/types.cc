@@ -207,4 +207,11 @@ bool ContentIdSet::operator==(const ContentIdSet& rhs) const {
   return content_ids_ == rhs.content_ids_;
 }
 
+LaunchResult::LaunchResult(
+    LoadStreamStatus load_stream_status,
+    absl::optional<feedwire::DiscoverLaunchResult> launch_result)
+    : load_stream_status(load_stream_status), launch_result(launch_result) {}
+LaunchResult::LaunchResult(const LaunchResult& other) = default;
+LaunchResult::~LaunchResult() = default;
+
 }  // namespace feed

@@ -44,11 +44,11 @@ static jlong JNI_FeedStream_Init(JNIEnv* env,
 
 FeedStream::FeedStream(const JavaRef<jobject>& j_this,
                        jboolean is_for_you_stream,
-                       FeedReliabilityLoggingBridge* reliability_logger)
+                       FeedReliabilityLoggingBridge* reliability_logging_bridge)
     : ::feed::FeedStreamSurface(is_for_you_stream ? kForYouStream
                                                   : kWebFeedStream),
       feed_stream_api_(nullptr),
-      reliability_logging_bridge_(reliability_logger) {
+      reliability_logging_bridge_(reliability_logging_bridge) {
   java_ref_.Reset(j_this);
 
   FeedService* service = FeedServiceFactory::GetForBrowserContext(
@@ -63,8 +63,8 @@ FeedStream::~FeedStream() {
     feed_stream_api_->DetachSurface(this);
 }
 
-ReliabilityLogger* FeedStream::GetReliabilityLogger() {
-  return reliability_logging_bridge_;
+ReliabilityLoggingBridge& FeedStream::GetReliabilityLoggingBridge() {
+  return *reliability_logging_bridge_;
 }
 
 void FeedStream::StreamUpdate(const feedui::StreamUpdate& stream_update) {

@@ -9,6 +9,8 @@
 
 #include "base/check.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/time/time.h"
+#include "components/feed/core/proto/v2/wire/reliability_logging_enums.pb.h"
 #include "components/feed/core/proto/v2/xsurface.pb.h"
 #include "components/feed/core/v2/enums.h"
 #include "components/feed/core/v2/feed_stream.h"
@@ -180,7 +182,8 @@ bool SurfaceUpdater::DrawState::operator==(const DrawState& rhs) const {
 }
 
 SurfaceUpdater::SurfaceUpdater(MetricsReporter* metrics_reporter)
-    : metrics_reporter_(metrics_reporter) {}
+    : metrics_reporter_(metrics_reporter),
+      launch_reliability_logger_(&surfaces_) {}
 SurfaceUpdater::~SurfaceUpdater() = default;
 
 void SurfaceUpdater::SetModel(StreamModel* model) {
@@ -214,7 +217,18 @@ void SurfaceUpdater::OnUiUpdate(const StreamModel::UiUpdate& update) {
   SendStreamUpdate(updated_shared_state_ids);
 }
 
-void SurfaceUpdater::SurfaceAdded(FeedStreamSurface* surface) {
+void SurfaceUpdater::SurfaceAdded(
+    FeedStreamSurface* surface,
+    absl::optional<feedwire::DiscoverLaunchResult> loading_not_allowed_reason) {
+  ReliabilityLoggingBridge& logger = surface->GetReliabilityLoggingBridge();
+  logger.SendPendingLaunchEvents(surface->GetStreamType(),
+                                 surface->GetSurfaceId());
+  logger.LogFeedLaunchOtherStart(base::TimeTicks::Now());
+  if (loading_not_allowed_reason.has_value()) {
+    logger.LogLaunchFinished(base::TimeTicks::Now(),
+                             loading_not_allowed_reason.value());
+  }
+
   SendUpdateToSurface(surface, GetUpdateForNewSurface(GetState(), model_));
 
   for (const auto& datastore_entry : xsurface_datastore_entries_) {
@@ -232,14 +246,22 @@ void SurfaceUpdater::SurfaceRemoved(FeedStreamSurface* surface) {
 void SurfaceUpdater::LoadStreamStarted() {
   load_stream_failed_ = false;
   loading_initial_ = true;
+
   SendStreamUpdateIfNeeded();
 }
 
-void SurfaceUpdater::LoadStreamComplete(bool success,
-                                        LoadStreamStatus load_stream_status) {
+void SurfaceUpdater::LoadStreamComplete(
+    bool success,
+    LoadStreamStatus load_stream_status,
+    absl::optional<feedwire::DiscoverLaunchResult> launch_result) {
   loading_initial_ = false;
   load_stream_status_ = load_stream_status;
   load_stream_failed_ = !success;
+
+  if (launch_result.has_value()) {
+    launch_reliability_logger_.LogLaunchFinished(launch_result.value());
+  }
+
   SendStreamUpdateIfNeeded();
 }
 

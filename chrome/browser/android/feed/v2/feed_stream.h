@@ -25,7 +25,7 @@ class FeedStream : public ::feed::FeedStreamSurface {
  public:
   explicit FeedStream(const base::android::JavaRef<jobject>& j_this,
                       jboolean is_for_you_stream,
-                      FeedReliabilityLoggingBridge* reliability_logger);
+                      FeedReliabilityLoggingBridge* reliability_logging_bridge);
   FeedStream(const FeedStream&) = delete;
   FeedStream& operator=(const FeedStream&) = delete;
 
@@ -37,7 +37,7 @@ class FeedStream : public ::feed::FeedStreamSurface {
                              base::StringPiece data) override;
   void RemoveDataStoreEntry(base::StringPiece key) override;
 
-  ReliabilityLogger* GetReliabilityLogger() override;
+  ReliabilityLoggingBridge& GetReliabilityLoggingBridge() override;
 
   void OnStreamUpdated(const feedui::StreamUpdate& stream_update);
 

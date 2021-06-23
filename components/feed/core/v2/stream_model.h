@@ -142,6 +142,9 @@ class StreamModel {
   // Outputs a string representing the model state for debugging or testing.
   std::string DumpStateForTesting();
 
+  // Returns true if one or more "cards" can be rendered from the content.
+  bool HasVisibleContent();
+
  private:
   struct SharedState {
     // Whether the data has been changed since the last call to |OnUiUpdate()|.

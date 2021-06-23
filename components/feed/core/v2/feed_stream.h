@@ -16,8 +16,10 @@
 #include "base/task_runner_util.h"
 #include "base/version.h"
 #include "components/feed/core/proto/v2/ui.pb.h"
+#include "components/feed/core/proto/v2/wire/reliability_logging_enums.pb.h"
 #include "components/feed/core/proto/v2/wire/response.pb.h"
 #include "components/feed/core/v2/enums.h"
+#include "components/feed/core/v2/launch_reliability_logger.h"
 #include "components/feed/core/v2/notice_card_tracker.h"
 #include "components/feed/core/v2/persistent_key_value_store_impl.h"
 #include "components/feed/core/v2/protocol_translator.h"
@@ -34,6 +36,7 @@
 #include "components/feed/core/v2/wire_response_translator.h"
 #include "components/offline_pages/task/task_queue.h"
 #include "components/prefs/pref_member.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 
@@ -206,8 +209,8 @@ class FeedStream : public FeedApi,
 
   // Determines if we should attempt loading the stream or refreshing at all.
   // Returns |LoadStreamStatus::kNoStatus| if loading may be attempted.
-  LoadStreamStatus ShouldAttemptLoad(const StreamType& stream_type,
-                                     bool model_loading = false);
+  LaunchResult ShouldAttemptLoad(const StreamType& stream_type,
+                                 bool model_loading = false);
 
   // Whether the last scheduled refresh was missed.
   bool MissedLastRefresh(const StreamType& stream_type);
@@ -217,9 +220,9 @@ class FeedStream : public FeedApi,
   // Otherwise returns the reason. If |consume_quota| is false, no quota is
   // consumed. This can be used to predict the likely result on a subsequent
   // call.
-  LoadStreamStatus ShouldMakeFeedQueryRequest(const StreamType& stream_type,
-                                              bool is_load_more = false,
-                                              bool consume_quota = true);
+  LaunchResult ShouldMakeFeedQueryRequest(const StreamType& stream_type,
+                                          bool is_load_more = false,
+                                          bool consume_quota = true);
 
   // Returns true if a FeedQuery request made right now should be made without
   // user credentials.
@@ -233,8 +236,10 @@ class FeedStream : public FeedApi,
   void UnloadModels();
 
   // Triggers a stream load. The load will be aborted if |ShouldAttemptLoad()|
-  // is not true.
-  void TriggerStreamLoad(const StreamType& stream_type);
+  // is not true. Returns nullopt if loading is to proceed, or a
+  // DiscoverLaunchResult if loading will not be attempted.
+  absl::optional<feedwire::DiscoverLaunchResult> TriggerStreamLoad(
+      const StreamType& stream_type);
 
   // Only to be called by ClearAllTask. This clears other stream data stored in
   // memory.
@@ -255,6 +260,9 @@ class FeedStream : public FeedApi,
   const WireResponseTranslator& GetWireResponseTranslator() const {
     return *wire_response_translator_;
   }
+
+  LaunchReliabilityLogger& GetLaunchReliabilityLogger(
+      const StreamType& stream_type);
 
   // Testing functionality.
   offline_pages::TaskQueue& GetTaskQueueForTesting();

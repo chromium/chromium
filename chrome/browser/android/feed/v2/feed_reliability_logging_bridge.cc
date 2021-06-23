@@ -107,6 +107,13 @@ void FeedReliabilityLoggingBridge::CancelPendingLaunchEvents() {
       base::android::AttachCurrentThread(), java_ref_);
 }
 
+void FeedReliabilityLoggingBridge::LogFeedLaunchOtherStart(
+    base::TimeTicks timestamp) {
+  Java_FeedReliabilityLoggingBridge_logOtherLaunchStart(
+      base::android::AttachCurrentThread(), java_ref_,
+      ConvertTimestamp(timestamp));
+}
+
 void FeedReliabilityLoggingBridge::LogCacheReadStart(
     base::TimeTicks timestamp) {
   Java_FeedReliabilityLoggingBridge_logCacheReadStart(

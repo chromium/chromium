@@ -17,7 +17,7 @@ source_set("feed_core_v2") {
     "public/persistent_key_value_store.h",
     "public/refresh_task_scheduler.h",
     "public/refresh_task_scheduler.h",
-    "public/reliability_logger.h",
+    "public/reliability_logging_bridge.h",
     "public/stream_type.h",
     "public/types.h",
     "public/unread_content_observer.h",
@@ -45,6 +45,8 @@ source_set("feed_core_v2") {
     "feedstore_util.h",
     "image_fetcher.cc",
     "image_fetcher.h",
+    "launch_reliability_logger.cc",
+    "launch_reliability_logger.h",
     "metrics_reporter.cc",
     "metrics_reporter.h",
     "notice_card_tracker.cc",
@@ -178,6 +180,7 @@ source_set("core_unit_tests") {
   sources = [
     "algorithm_unittest.cc",
     "api_test/feed_api_notice_card_unittest.cc",
+    "api_test/feed_api_reliability_logging_unittest.cc",
     "api_test/feed_api_stream_unittest.cc",
     "api_test/feed_api_subscriptions_unittest.cc",
     "api_test/feed_api_test.cc",
@@ -243,7 +246,10 @@ source_set("feed_core_stubs") {
     "public/test/stub_web_feed_subscriptions.cc",
     "public/test/stub_web_feed_subscriptions.h",
   ]
-  deps = [ ":feed_core_v2" ]
+  deps = [
+    ":feed_core_v2",
+    "//testing/gmock",
+  ]
 }
 
 bundle_data("unit_tests_bundle_data") {

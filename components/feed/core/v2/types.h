@@ -12,6 +12,8 @@
 #include "base/time/time.h"
 #include "base/util/type_safety/id_type.h"
 #include "base/values.h"
+#include "components/feed/core/proto/v2/wire/reliability_logging_enums.pb.h"
+#include "components/feed/core/v2/enums.h"
 #include "components/feed/core/v2/public/types.h"
 
 namespace feed {
@@ -118,6 +120,16 @@ class ContentIdSet {
   // Note, we only store the `id` field of ContentId, with the assumption that
   // `id` is unique enough given these are only `feedstore::Content` ids.
   base::flat_set<int64_t> content_ids_;
+};
+
+struct LaunchResult {
+  LoadStreamStatus load_stream_status;
+  absl::optional<feedwire::DiscoverLaunchResult> launch_result;
+
+  LaunchResult(LoadStreamStatus load_stream_status,
+               absl::optional<feedwire::DiscoverLaunchResult> launch_result);
+  LaunchResult(const LaunchResult& other);
+  ~LaunchResult();
 };
 
 }  // namespace feed
