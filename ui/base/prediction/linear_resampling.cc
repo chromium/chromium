@@ -89,11 +89,16 @@ std::unique_ptr<InputPredictor::InputData> LinearResampling::GeneratePrediction(
       latency_calculator_.GetResampleLatency(frame_interval);
   base::TimeTicks sample_time = frame_time + resample_latency;
 
-  base::TimeDelta max_prediction =
-      std::min(kResampleMaxPrediction, events_dt_ / 2.0);
+  // Clamping shouldn't affect prediction experiment, as we're predicting
+  // further in the future.
+  if (!base::FeatureList::IsEnabled(
+          ::features::kResamplingScrollEventsExperimentalPrediction)) {
+    base::TimeDelta max_prediction =
+        std::min(kResampleMaxPrediction, events_dt_ / 2.0);
 
-  sample_time =
-      std::min(sample_time, events_queue_[0].time_stamp + max_prediction);
+    sample_time =
+        std::min(sample_time, events_queue_[0].time_stamp + max_prediction);
+  }
 
   return std::make_unique<InputData>(
       lerp(events_queue_[0], events_queue_[1], sample_time), sample_time);
