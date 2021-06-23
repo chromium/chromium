@@ -45,10 +45,14 @@ class TestAudioStartObserver : public content::WebContentsObserver {
   void OnAudioStateChanged(bool audible) override {
     if (quit_closure_)
       std::move(quit_closure_).Run();
+    audio_state_changed_ = true;
   }
+
+  bool audio_state_changed() { return audio_state_changed_; }
 
  private:
   base::OnceClosure quit_closure_;
+  bool audio_state_changed_ = false;
 };
 
 // A helper class that intercepts AddExpectedOriginAndFlags().
@@ -303,4 +307,73 @@ IN_PROC_BROWSER_TEST_F(SoundContentSettingObserverBrowserTest,
 
   // Makes sure that the page is activated from the prerendering.
   EXPECT_TRUE(host_observer.was_activated());
+}
+
+// Tests that the page in the prerendering doesn't change the audio state. After
+// the page is activated, it can play a sound and change the audio state.
+IN_PROC_BROWSER_TEST_F(SoundContentSettingObserverBrowserTest,
+                       AudioStateIsNotChangedInPrerendering) {
+  // Sets up the embedded test server to serve the test javascript file.
+  embedded_test_server()->ServeFilesFromSourceDirectory(kMediaTestDataPath);
+  net::test_server::EmbeddedTestServerHandle test_server_handle;
+  ASSERT_TRUE(test_server_handle =
+                  embedded_test_server()->StartAndReturnHandle());
+
+  // Allows to play a sound by default.
+  HostContentSettingsMap* content_settings =
+      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+  content_settings->SetDefaultContentSetting(ContentSettingsType::SOUND,
+                                             CONTENT_SETTING_BLOCK);
+
+  // Loads a simple page as a primary page.
+  GURL url = embedded_test_server()->GetURL("/simple.html");
+  ui_test_utils::NavigateToURL(browser(), url);
+
+  content::test::PrerenderHostRegistryObserver registry_observer(
+      *web_contents());
+  // Loads a page in the prerender.
+  auto prerender_url =
+      embedded_test_server()->GetURL("/webaudio_oscillator.html");
+  prerender_helper()->AddPrerenderAsync(prerender_url);
+  registry_observer.WaitForTrigger(prerender_url);
+  auto host_id = prerender_helper()->GetHostForUrl(prerender_url);
+  EXPECT_NE(content::RenderFrameHost::kNoFrameTreeNodeId, host_id);
+
+  content::test::PrerenderHostObserver host_observer(*web_contents(), host_id);
+  content::RenderFrameHost* render_frame_host =
+      prerender_helper()->GetPrerenderedMainFrameHost(host_id);
+  EXPECT_TRUE(content::WaitForRenderFrameReady(render_frame_host));
+  // Tries to start the audio on the prerendered page.
+  {
+    base::RunLoop run_loop;
+    TestAudioStartObserver audio_start_observer(web_contents(),
+                                                run_loop.QuitClosure());
+    content::ExecuteScriptAsync(render_frame_host, "StartOscillator();");
+    // The prerendering page should not start the audio.
+    EXPECT_FALSE(audio_start_observer.audio_state_changed());
+  }
+  // The prerendering should not affect the current status.
+  SoundContentSettingObserver* observer =
+      SoundContentSettingObserver::FromWebContents(web_contents());
+  EXPECT_FALSE(observer->HasLoggedSiteMutedUkmForTesting());
+
+  // Activates the page from the prerendering.
+  prerender_helper()->NavigatePrimaryPage(prerender_url);
+  // Makes sure that the page is activated from the prerendering.
+  EXPECT_TRUE(host_observer.was_activated());
+  EXPECT_TRUE(content::WaitForRenderFrameReady(web_contents()->GetMainFrame()));
+  // Tries to start the audio on the primary page.
+  {
+    base::RunLoop run_loop;
+    TestAudioStartObserver audio_start_observer(web_contents(),
+                                                run_loop.QuitClosure());
+    EXPECT_EQ("OK", content::EvalJs(web_contents(), "StartOscillator();",
+                                    content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
+    run_loop.Run();
+    // The page should try to start the audio.
+    EXPECT_TRUE(audio_start_observer.audio_state_changed());
+  }
+  // The page starts logging for the muted site since the setting is
+  // CONTENT_SETTING_BLOCK.
+  EXPECT_TRUE(observer->HasLoggedSiteMutedUkmForTesting());
 }
