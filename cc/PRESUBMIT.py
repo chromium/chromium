@@ -9,8 +9,8 @@ for more details about the presubmit API built into depot_tools.
 """
 
 import re
-import string
 
+USE_PYTHON3 = True
 CC_SOURCE_FILES=(r'^cc[\\/].*\.(cc|h)$',)
 
 def CheckChangeLintsClean(input_api, output_api):
@@ -105,9 +105,9 @@ def CheckPassByValue(input_api,
 
   for f in input_api.AffectedSourceFiles(source_file_filter):
     contents = input_api.ReadFile(f, 'rb')
+    sep = '|'
     match = re.search(
-      r'\bconst +' + '(?P<type>(%s))&' %
-        string.join(pass_by_value_types, '|'),
+      r'\bconst +' + '(?P<type>(%s))&' % sep.join(pass_by_value_types),
       contents)
     if match:
       local_errors.append(output_api.PresubmitError(
@@ -297,7 +297,8 @@ def CheckForDisallowMacros(input_api, output_api, allowlist=CC_SOURCE_FILES,
 
   if disallow_macro_files:
     return [output_api.PresubmitError(
-      'The following files use DISALLOW* macros. In cc, please use deleted constructors/operators instead.',
+      'The following files use DISALLOW* macros. In cc, please use deleted '
+      'constructors/operators instead.',
       items=disallow_macro_files)]
   return []
 
