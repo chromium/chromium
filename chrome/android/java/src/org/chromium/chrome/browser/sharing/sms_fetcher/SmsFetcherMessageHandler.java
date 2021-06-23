@@ -16,6 +16,7 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.NotificationConstants;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.sharing.SharingNotificationUtil;
@@ -65,8 +66,57 @@ public class SmsFetcherMessageHandler {
     }
 
     /**
-     * Ask users to interact with the notification to allow Chrome to submit the code to the remote
-     * device.
+     * Returns the notification title string.
+     *
+     * @param oneTimeCode The one time code from SMS
+     * @param topOrigin The top frame origin from the SMS
+     * @param embeddedOrigin The embedded frame origin from the SMS. Null if the SMS does not
+     *         contain an iframe origin.
+     * @param clientName The client name where the remote request comes from
+     */
+    private static String getNotificationTitle(
+            String oneTimeCode, String topOrigin, String embeddedOrigin, String clientName) {
+        Resources resources = ContextUtils.getApplicationContext().getResources();
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_OTP_CROSS_DEVICE_SIMPLE_STRING)) {
+            if (embeddedOrigin == null) {
+                return resources.getString(R.string.sms_fetcher_notification_title_simple_string,
+                        oneTimeCode, topOrigin);
+            }
+            return resources.getString(
+                    R.string.sms_fetcher_notification_title_for_embedded_frame_simple_string,
+                    oneTimeCode, embeddedOrigin);
+        }
+        return resources.getString(
+                R.string.sms_fetcher_notification_title, oneTimeCode, clientName);
+    }
+
+    /**
+     * Returns the notification text string.
+     *
+     * @param oneTimeCode The one time code from SMS
+     * @param topOrigin The top frame origin from the SMS
+     * @param embeddedOrigin The embedded frame origin from the SMS. Null if the SMS does not
+     *         contain an iframe origin.
+     * @param clientName The client name where the remote request comes from
+     */
+    private static String getNotificationText(
+            String oneTimeCode, String topOrigin, String embeddedOrigin, String clientName) {
+        Resources resources = ContextUtils.getApplicationContext().getResources();
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_OTP_CROSS_DEVICE_SIMPLE_STRING)) {
+            if (embeddedOrigin == null) return clientName;
+            return resources.getString(
+                    R.string.sms_fetcher_notification_text_for_embedded_frame_simple_string,
+                    topOrigin, clientName);
+        }
+        return embeddedOrigin == null
+                ? resources.getString(R.string.sms_fetcher_notification_text, topOrigin)
+                : resources.getString(R.string.sms_fetcher_notification_text_for_embedded_frame,
+                        topOrigin, embeddedOrigin);
+    }
+
+    /**
+     * Ask users to interact with the notification to allow Chrome to submit the code to the
+     * remote device.
      *
      * @param oneTimeCode The one time code from SMS
      * @param topOrigin The top frame origin from the SMS
@@ -93,18 +143,15 @@ public class SmsFetcherMessageHandler {
                         .setAction(NOTIFICATION_ACTION_CANCEL),
                 PendingIntent.FLAG_UPDATE_CURRENT);
         Resources resources = context.getResources();
-        String notificationTitle = resources.getString(
-                R.string.sms_fetcher_notification_title, oneTimeCode, clientName);
-        String notificationText = embeddedOrigin != null
-                ? resources.getString(R.string.sms_fetcher_notification_text_for_embedded_frame,
-                        topOrigin, embeddedOrigin)
-                : resources.getString(R.string.sms_fetcher_notification_text, topOrigin);
         SharingNotificationUtil.showNotification(
                 NotificationUmaTracker.SystemNotificationType.SMS_FETCHER,
                 NotificationConstants.GROUP_SMS_FETCHER,
-                NotificationConstants.NOTIFICATION_ID_SMS_FETCHER_INCOMING, /*contentIntent=*/null,
-                /*deleteIntent=*/cancelIntent, confirmIntent, cancelIntent, notificationTitle,
-                notificationText, R.drawable.ic_devices_48dp, R.drawable.infobar_chrome,
+                NotificationConstants.NOTIFICATION_ID_SMS_FETCHER_INCOMING,
+                /*contentIntent=*/null,
+                /*deleteIntent=*/cancelIntent, confirmIntent, cancelIntent,
+                getNotificationTitle(oneTimeCode, topOrigin, embeddedOrigin, clientName),
+                getNotificationText(oneTimeCode, topOrigin, embeddedOrigin, clientName),
+                R.drawable.ic_devices_48dp, R.drawable.infobar_chrome,
                 R.color.infobar_icon_drawable_color,
                 /*startsActivity=*/false);
     }

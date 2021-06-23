@@ -262,6 +262,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kVoiceSearchAudioCapturePolicy,
     &kVoiceButtonInTopToolbar,
     &kVrBrowsingFeedback,
+    &kWebOtpCrossDeviceSimpleString,
     &kPrefetchNotificationSchedulingIntegration,
     &content_creation::kWebNotesStylizeEnabled,
     &features::kDnsOverHttps,
@@ -741,6 +742,11 @@ const base::Feature kVoiceButtonInTopToolbar{"VoiceButtonInTopToolbar",
 
 const base::Feature kVrBrowsingFeedback{"VrBrowsingFeedback",
                                         base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Shows only the remote device name on the Android notification instead of
+// a descriptive text.
+const base::Feature kWebOtpCrossDeviceSimpleString{
+    "WebOtpCrossDeviceSimpleString", base::FEATURE_DISABLED_BY_DEFAULT};
 
 static jboolean JNI_ChromeFeatureList_IsEnabled(
     JNIEnv* env,
