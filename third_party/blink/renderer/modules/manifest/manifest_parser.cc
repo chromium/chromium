@@ -334,16 +334,29 @@ String ManifestParser::ParseDescription(const JSONObject* object) {
 
 String ManifestParser::ParseId(const JSONObject* object,
                                const KURL& start_url) {
-  if (!start_url.IsValid() ||
-      !base::FeatureList::IsEnabled(blink::features::kWebAppEnableManifestId)) {
+  if (!base::FeatureList::IsEnabled(blink::features::kWebAppEnableManifestId)) {
+    ManifestUmaUtil::ParseIdResult(
+        ManifestUmaUtil::ParseIdResultType::kFeatureDisabled);
     return String();
   }
-  absl::optional<String> id = ParseString(object, "id", NoTrim);
 
-  // Default to start_url with origin stripped.
-  return id.has_value()
-             ? *id
-             : start_url.GetString().Substring(start_url.PathStart() + 1);
+  absl::optional<String> id = ParseString(object, "id", NoTrim);
+  if (id.has_value()) {
+    ManifestUmaUtil::ParseIdResult(
+        ManifestUmaUtil::ParseIdResultType::kSucceed);
+    return *id;
+  } else {
+    // If id is not specified, sets to start_url with origin stripped.
+    if (start_url.IsValid()) {
+      ManifestUmaUtil::ParseIdResult(
+          ManifestUmaUtil::ParseIdResultType::kDefaultToStartUrl);
+      return start_url.GetString().Substring(start_url.PathStart() + 1);
+    } else {
+      ManifestUmaUtil::ParseIdResult(
+          ManifestUmaUtil::ParseIdResultType::kInvalidStartUrl);
+      return String();
+    }
+  }
 }
 
 KURL ManifestParser::ParseStartURL(const JSONObject* object) {

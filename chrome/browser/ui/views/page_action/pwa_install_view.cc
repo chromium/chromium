@@ -153,16 +153,14 @@ void PwaInstallView::OnIphClosed() {
   auto* manager = webapps::AppBannerManager::FromWebContents(web_contents);
   if (!manager)
     return;
-  auto start_url = manager->GetManifestStartUrl();
-  if (start_url.is_empty())
-    return;
   PrefService* prefs =
       Profile::FromBrowserContext(web_contents->GetBrowserContext())
           ->GetPrefs();
   base::UmaHistogramEnumeration("WebApp.InstallIphPromo.Result",
                                 web_app::InstallIphResult::kIgnored);
   web_app::RecordInstallIphIgnored(
-      prefs, web_app::GenerateAppIdFromURL(start_url), base::Time::Now());
+      prefs, web_app::GenerateAppIdFromManifest(manager->manifest()),
+      base::Time::Now());
 }
 
 void PwaInstallView::OnExecuting(PageActionIconView::ExecuteSource source) {
@@ -218,11 +216,8 @@ std::u16string PwaInstallView::GetTextForTooltipAndAccessibleName() const {
 
 bool PwaInstallView::ShouldShowIph(content::WebContents* web_contents,
                                    webapps::AppBannerManager* manager) {
-  auto start_url = manager->GetManifestStartUrl();
-  if (start_url.is_empty())
-    return false;
-
-  web_app::AppId app_id = web_app::GenerateAppIdFromURL(start_url);
+  web_app::AppId app_id =
+      web_app::GenerateAppIdFromManifest(manager->manifest());
 
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());

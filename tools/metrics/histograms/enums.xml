@@ -51092,6 +51092,13 @@ from previous Chrome versions.
   <int value="13" label="Bad App Status"/>
 </enum>
 
+<enum name="ManifestParseIdResultType">
+  <int value="0" label="Success"/>
+  <int value="1" label="Not specified, used default value"/>
+  <int value="2" label="Invalid start_url"/>
+  <int value="3" label="Feature is disabled"/>
+</enum>
+
 <enum name="MappedAndResidentPagesDumpState">
   <int value="0" label="kAccessPagemapDenied"/>
   <int value="1" label="kFailure"/>

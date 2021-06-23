@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/manifest/manifest_uma_util.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 
 namespace blink {
@@ -12,6 +13,7 @@ namespace {
 
 static const char kUMANameParseSuccess[] = "Manifest.ParseSuccess";
 static const char kUMANameFetchResult[] = "Manifest.FetchResult";
+static const char kUMAIdParseResult[] = "Manifest.ParseIdResult";
 
 // Enum for UMA purposes, make sure you update histograms.xml if you add new
 // result types. Never delete or reorder an entry; only add new entries
@@ -64,6 +66,10 @@ void ManifestUmaUtil::ParseSucceeded(
 
 void ManifestUmaUtil::ParseFailed() {
   UMA_HISTOGRAM_BOOLEAN(kUMANameParseSuccess, false);
+}
+
+void ManifestUmaUtil::ParseIdResult(ParseIdResultType result) {
+  base::UmaHistogramEnumeration(kUMAIdParseResult, result);
 }
 
 void ManifestUmaUtil::FetchSucceeded() {

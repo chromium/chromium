@@ -9732,6 +9732,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Manifest.ParseIdResult" enum="ManifestParseIdResultType"
+    expires_after="M99">
+  <owner>phillis@chromium.org</owner>
+  <owner>desktop-pwas-team@chromium.org</owner>
+  <summary>Tracks the result of parsing id field in the Manifest.</summary>
+</histogram>
+
 <histogram name="Manifest.ParseSuccess" enum="Boolean"
     expires_after="2020-06-07">
   <owner>mgiuca@chromium.org</owner>

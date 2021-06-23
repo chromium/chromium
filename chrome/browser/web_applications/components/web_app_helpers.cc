@@ -7,6 +7,7 @@
 #include "base/base64.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "components/crx_file/id_util.h"
@@ -72,6 +73,14 @@ AppId GenerateAppId(const absl::optional<std::string>& manifest_id,
                     const GURL& start_url) {
   return crx_file::id_util::GenerateId(
       crypto::SHA256HashString(GenerateAppIdUnhashed(manifest_id, start_url)));
+}
+
+AppId GenerateAppIdFromManifest(const blink::Manifest& manifest) {
+  return GenerateAppId(
+      manifest.id.has_value()
+          ? absl::optional<std::string>(base::UTF16ToUTF8(manifest.id.value()))
+          : absl::nullopt,
+      manifest.start_url);
 }
 
 // Generate the public key for the fake extension that we synthesize to contain

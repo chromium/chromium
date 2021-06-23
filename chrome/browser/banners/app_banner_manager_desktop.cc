@@ -158,7 +158,7 @@ web_app::AppRegistrar& AppBannerManagerDesktop::registrar() {
 
 bool AppBannerManagerDesktop::ShouldAllowWebAppReplacementInstall() {
   // Only allow replacement install if this specific app is already installed.
-  web_app::AppId app_id = web_app::GenerateAppIdFromURL(manifest_.start_url);
+  web_app::AppId app_id = web_app::GenerateAppIdFromManifest(manifest_);
   if (!registrar().IsLocallyInstalled(app_id))
     return false;
 

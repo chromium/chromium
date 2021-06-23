@@ -41,13 +41,18 @@ AppId GetAppIdFromApplicationName(const std::string& app_name);
 // bookmark URL.
 //
 // App ID and App Key match Extension ID and Extension Key for migration.
+
+// Deprecated. Please use GenerateAppId instead.
 AppId GenerateAppIdFromURL(const GURL& url);
+
+// Generate App id using manfiest_id, if null, use start_url instead.
+AppId GenerateAppId(const absl::optional<std::string>& manifest_id,
+                    const GURL& start_url);
 std::string GenerateAppIdUnhashed(
     const absl::optional<std::string>& manifest_id,
     const GURL& start_url);
-AppId GenerateAppId(const absl::optional<std::string>& manifest_id,
-                    const GURL& start_url);
 
+AppId GenerateAppIdFromManifest(const blink::Manifest& manifest);
 std::string GenerateAppKeyFromURL(const GURL& url);
 
 // Returns whether the given |app_url| is a valid web app url.

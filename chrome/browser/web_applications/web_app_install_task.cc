@@ -451,7 +451,7 @@ void WebAppInstallTask::OnWebAppInstallabilityChecked(
 
   if (is_installable) {
     DCHECK(manifest);
-    CallInstallCallback(GenerateAppIdFromURL(manifest->start_url),
+    CallInstallCallback(GenerateAppIdFromManifest(manifest.value()),
                         InstallResultCode::kSuccessNewInstall);
   } else {
     CallInstallCallback(AppId(), InstallResultCode::kNotInstallable);
