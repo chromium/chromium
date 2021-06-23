@@ -35,11 +35,6 @@ const char kTestUrl[] = "http://www.test.com/";
 class HttpsImageCompressionInfoBarDeciderPrefTest
     : public ChromeRenderViewHostTestHarness {
  protected:
-  void SetUp() override {
-    ChromeRenderViewHostTestHarness::SetUp();
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kSubresourceRedirect);
-  }
 
   HttpsImageCompressionInfoBarDecider* GetDeciderWithDRPEnabled(bool enabled) {
     data_reduction_proxy::DataReductionProxySettings::
@@ -76,7 +71,8 @@ class HttpsImageCompressionInfoBarDeciderPrefTest
 
  private:
   std::unique_ptr<HttpsImageCompressionInfoBarDecider> decider_;
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      blink::features::kSubresourceRedirect};
 };
 
 TEST_F(HttpsImageCompressionInfoBarDeciderPrefTest, TestDRPDisabled) {
