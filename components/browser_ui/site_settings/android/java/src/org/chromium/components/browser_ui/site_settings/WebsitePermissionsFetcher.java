@@ -62,6 +62,7 @@ public class WebsitePermissionsFetcher {
             case ContentSettingsType.BLUETOOTH_SCANNING:
             case ContentSettingsType.COOKIES:
             case ContentSettingsType.JAVASCRIPT:
+            case ContentSettingsType.JAVASCRIPT_JIT:
             case ContentSettingsType.POPUPS:
             case ContentSettingsType.SOUND:
                 return WebsitePermissionsType.CONTENT_SETTING_EXCEPTION;
