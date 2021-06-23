@@ -67,9 +67,7 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     private final AtomicReference<List<Account>> mAllAccounts = new AtomicReference<>();
     private final AtomicReference<List<PatternMatcher>> mAccountRestrictionPatterns =
             new AtomicReference<>();
-    private final AtomicReference<List<Account>> mFilteredAccounts = new AtomicReference<>();
 
-    private int mUpdateTasksCounter;
     private final Queue<Callback<List<Account>>> mCallbacksWaitingForAccountsFetch =
             new ArrayDeque<>();
     // The map stores the boolean for whether an account can offer extended chrome sync promos
@@ -84,7 +82,7 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     public AccountManagerFacadeImpl(AccountManagerDelegate delegate) {
         ThreadUtils.assertOnUiThread();
         mDelegate = delegate;
-        mDelegate.attachAccountsChangeObserver(this::updateAccounts);
+        mDelegate.attachAccountsChangeObserver(this::onAccountsUpdated);
         mAccountRestrictionPatternReceiver =
                 new AccountRestrictionPatternReceiver(this::onAccountRestrictionPatternsUpdated);
 
@@ -129,8 +127,8 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     @Override
     public void tryGetGoogleAccounts(Callback<List<Account>> callback) {
         ThreadUtils.assertOnUiThread();
-        if (mFilteredAccounts.get() != null) {
-            ThreadUtils.postOnUiThread(callback.bind(mFilteredAccounts.get()));
+        if (mAccountsPromise.isFulfilled()) {
+            ThreadUtils.postOnUiThread(callback.bind(mAccountsPromise.getResult()));
         } else {
             mCallbacksWaitingForAccountsFetch.add(callback);
         }
@@ -261,13 +259,32 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
         });
     }
 
-    private void updateAccounts() {
+    private void onAccountsUpdated() {
         ThreadUtils.assertOnUiThread();
         new UpdateAccountsTask().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
     }
 
-    private List<Account> getAllAccounts() {
-        return Collections.unmodifiableList(Arrays.asList(mDelegate.getAccounts()));
+    private void onAccountRestrictionPatternsUpdated(List<PatternMatcher> patternMatchers) {
+        mAccountRestrictionPatterns.set(patternMatchers);
+        updateAccounts();
+    }
+
+    @MainThread
+    private void updateAccounts() {
+        final List<Account> newAccounts = getFilteredAccounts();
+        updateCanOfferExtendedSyncPromos(newAccounts);
+        if (mAccountsPromise.isFulfilled()) {
+            mAccountsPromise = Promise.fulfilled(newAccounts);
+        } else {
+            mAccountsPromise.fulfill(newAccounts);
+        }
+        while (!mCallbacksWaitingForAccountsFetch.isEmpty()) {
+            final Callback<List<Account>> callback = mCallbacksWaitingForAccountsFetch.remove();
+            callback.onResult(newAccounts);
+        }
+        for (AccountsChangeObserver observer : mObservers) {
+            observer.onAccountsChanged();
+        }
     }
 
     private List<Account> getFilteredAccounts() {
@@ -286,79 +303,26 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
         return Collections.unmodifiableList(filteredAccounts);
     }
 
-    private void onAccountRestrictionPatternsUpdated(List<PatternMatcher> patternMatchers) {
-        mAccountRestrictionPatterns.set(patternMatchers);
-        mFilteredAccounts.set(getFilteredAccounts());
-        updateAccountsPromise(mFilteredAccounts.get());
-        fireOnAccountsChangedNotification();
-    }
-
-    private void setAllAccounts(List<Account> allAccounts) {
-        mAllAccounts.set(allAccounts);
-        mFilteredAccounts.set(getFilteredAccounts());
-        fireOnAccountsChangedNotification();
-    }
-
-    private void fireOnAccountsChangedNotification() {
-        for (AccountsChangeObserver observer : mObservers) {
-            observer.onAccountsChanged();
-        }
-    }
-
-    private void incrementUpdateCounter() {
-        assert mUpdateTasksCounter >= 0;
-        ++mUpdateTasksCounter;
-    }
-
-    private void decrementUpdateCounter() {
-        assert mUpdateTasksCounter > 0;
-        if (--mUpdateTasksCounter > 0) return;
-
-        while (!mCallbacksWaitingForAccountsFetch.isEmpty()) {
-            final Callback<List<Account>> callback = mCallbacksWaitingForAccountsFetch.remove();
-            callback.onResult(mFilteredAccounts.get());
-        }
-        updateCanOfferExtendedSyncPromos(mFilteredAccounts.get());
-    }
-
-    @MainThread
-    private void updateAccountsPromise(List<Account> accounts) {
-        if (mAccountsPromise.isFulfilled()) {
-            mAccountsPromise = Promise.fulfilled(accounts);
-        } else {
-            mAccountsPromise.fulfill(accounts);
-        }
+    private List<Account> getAllAccounts() {
+        return Collections.unmodifiableList(Arrays.asList(mDelegate.getAccounts()));
     }
 
     private class InitializeTask extends AsyncTask<Void> {
-        @Override
-        protected void onPreExecute() {
-            incrementUpdateCounter();
-        }
-
         @Override
         protected Void doInBackground() {
             mAccountRestrictionPatterns.set(
                     mAccountRestrictionPatternReceiver.getRestrictionPatterns());
             mAllAccounts.set(getAllAccounts());
-            mFilteredAccounts.set(getFilteredAccounts());
             return null;
         }
 
         @Override
         protected void onPostExecute(Void v) {
-            updateAccountsPromise(mFilteredAccounts.get());
-            fireOnAccountsChangedNotification();
-            decrementUpdateCounter();
+            updateAccounts();
         }
     }
 
     private class UpdateAccountsTask extends AsyncTask<List<Account>> {
-        @Override
-        protected void onPreExecute() {
-            incrementUpdateCounter();
-        }
-
         @Override
         protected List<Account> doInBackground() {
             return getAllAccounts();
@@ -366,9 +330,8 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
 
         @Override
         protected void onPostExecute(List<Account> allAccounts) {
-            setAllAccounts(allAccounts);
-            updateAccountsPromise(mFilteredAccounts.get());
-            decrementUpdateCounter();
+            mAllAccounts.set(allAccounts);
+            updateAccounts();
         }
     }
 }
