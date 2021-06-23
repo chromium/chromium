@@ -128,7 +128,7 @@ public class HistoryItemView extends SelectableItemView<HistoryItem> implements 
         if (getItem() == null || mIsItemRemoved) return;
 
         mIsItemRemoved = true;
-        getItem().remove();
+        getItem().onItemRemoved();
     }
 
     /**
@@ -153,7 +153,7 @@ public class HistoryItemView extends SelectableItemView<HistoryItem> implements 
     @Override
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     public void onClick() {
-        if (getItem() != null) getItem().open();
+        if (getItem() != null) getItem().onItemClicked();
     }
 
     @Override

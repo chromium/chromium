@@ -96,24 +96,19 @@ public class HistoryItem extends TimedItem {
         mManager = manager;
     }
 
-    /**
-     * Navigates a tab to this item's URL.
-     */
-    public void open() {
+    /** Notifies when a history item was clicked. */
+    public void onItemClicked() {
         if (mManager != null) {
-            mManager.recordUserActionWithOptionalSearch("OpenItem");
-            mManager.recordOpenedItemMetrics(this);
-            mManager.openUrl(mUrl, null, false);
+            mManager.onItemClicked(this);
         }
     }
 
     /**
      * Removes this item.
      */
-    public void remove() {
+    public void onItemRemoved() {
         if (mManager != null) {
-            mManager.recordUserActionWithOptionalSearch("RemoveItem");
-            mManager.removeItem(this);
+            mManager.onItemRemoved(this);
         }
     }
 

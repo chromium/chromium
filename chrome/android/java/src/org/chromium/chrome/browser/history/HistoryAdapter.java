@@ -27,11 +27,9 @@ import org.chromium.chrome.browser.ui.favicon.FaviconHelper.DefaultFaviconHelper
 import org.chromium.components.browser_ui.widget.DateDividedAdapter;
 import org.chromium.components.browser_ui.widget.MoreProgressButton;
 import org.chromium.components.browser_ui.widget.MoreProgressButton.State;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
-import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -359,9 +357,8 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
      * @return The {@SpannableString} with the privacy disclaimer string resource and url.
      */
     private SpannableString getPrivacyDisclaimerText(Resources resources) {
-        NoUnderlineClickableSpan link = new NoUnderlineClickableSpan(resources, (view) -> {
-            mHistoryManager.openUrl(new GURL(UrlConstants.MY_ACTIVITY_URL_IN_HISTORY), null, true);
-        });
+        NoUnderlineClickableSpan link = new NoUnderlineClickableSpan(
+                resources, (view) -> mHistoryManager.onPrivacyDisclaimerLinkClicked());
         return SpanApplier.applySpans(
                 resources.getString(R.string.android_history_other_forms_of_history),
                 new SpanApplier.SpanInfo("<link>", "</link>", link));

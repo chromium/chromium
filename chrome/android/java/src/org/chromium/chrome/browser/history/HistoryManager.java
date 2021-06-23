@@ -61,6 +61,7 @@ import org.chromium.components.browser_ui.widget.selectable_list.SelectableListL
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar.SearchDelegate;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate.SelectionObserver;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.profile_metrics.BrowserProfileType;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -363,10 +364,11 @@ public class HistoryManager implements OnMenuItemClickListener, SignInStateObser
     }
 
     /**
-     * Removes the HistoryItem from the history backend and the HistoryAdapter.
-     * @param item The HistoryItem to remove.
+     * Called after a user removes this HistoryItem.
+     * @param item The item that has been removed.
      */
-    public void removeItem(HistoryItem item) {
+    public void onItemRemoved(HistoryItem item) {
+        recordUserActionWithOptionalSearch("RemoveItem");
         if (mSelectionDelegate.isItemSelected(item)) {
             mSelectionDelegate.toggleSelectionForItem(item);
         }
@@ -388,7 +390,7 @@ public class HistoryManager implements OnMenuItemClickListener, SignInStateObser
      * @param createNewTab Whether a new tab should be created. If false, the item will clobber the
      *                     the current tab.
      */
-    public void openUrl(GURL url, Boolean isIncognito, boolean createNewTab) {
+    private void openUrl(GURL url, Boolean isIncognito, boolean createNewTab) {
         if (isDisplayedInSeparateActivity()) {
             IntentHandler.startActivityForTrustedIntent(
                     getOpenUrlIntent(url, isIncognito, createNewTab));
@@ -536,7 +538,7 @@ public class HistoryManager implements OnMenuItemClickListener, SignInStateObser
      * Records metrics about the age of an opened history |item|.
      * @param item The item that has been opened.
      */
-    void recordOpenedItemMetrics(HistoryItem item) {
+    private void recordOpenedItemMetrics(HistoryItem item) {
         int ageInDays = 1
                 + (int) ((System.currentTimeMillis() - item.getTimestamp())
                         / 1000 /* s/ms */ / 60 /* m/s */ / 60 /* h/m */ / 24 /* d/h */);
@@ -578,6 +580,11 @@ public class HistoryManager implements OnMenuItemClickListener, SignInStateObser
     /** Called to notify when the privacy disclaimer visibility has changed. */
     void onPrivacyDisclaimerHasChanged() {
         mToolbar.updateInfoMenuItem(shouldShowInfoButton(), shouldShowInfoHeaderIfAvailable());
+    }
+
+    /** Called after a user clicks the privacy disclaimer link. */
+    void onPrivacyDisclaimerLinkClicked() {
+        openUrl(new GURL(UrlConstants.MY_ACTIVITY_URL_IN_HISTORY), null, true);
     }
 
     /**
@@ -655,6 +662,16 @@ public class HistoryManager implements OnMenuItemClickListener, SignInStateObser
     /** @return The Context for the associated history view. */
     Context getContext() {
         return mActivity;
+    }
+
+    /**
+     * Called after a user clicks this HistoryItem.
+     * @param item The item that has been clicked.
+     */
+    public void onItemClicked(HistoryItem item) {
+        recordUserActionWithOptionalSearch("OpenItem");
+        recordOpenedItemMetrics(item);
+        openUrl(item.getUrl(), null, false);
     }
 
     @VisibleForTesting
