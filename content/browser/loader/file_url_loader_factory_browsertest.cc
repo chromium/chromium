@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/checked_ptr.h"
+
 // This must be before Windows headers
 #include "base/callback_helpers.h"
 #include "build/build_config.h"
@@ -93,7 +95,7 @@ class TestFileAccessContentBrowserClient : public TestContentBrowserClient {
   void ClearAccessAllowedArgs() { access_allowed_args_.clear(); }
 
  private:
-  ContentBrowserClient* old_content_browser_client_;
+  CheckedPtr<ContentBrowserClient> old_content_browser_client_;
 
   base::FilePath blocked_path_;
 

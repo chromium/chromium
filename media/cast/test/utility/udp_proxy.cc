@@ -15,6 +15,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/rand_util.h"
 #include "base/synchronization/waitable_event.h"
@@ -546,8 +547,8 @@ class PacketSender : public PacketPipe {
   void AppendToPipe(std::unique_ptr<PacketPipe> pipe) final { NOTREACHED(); }
 
  private:
-  UDPProxyImpl* udp_proxy_;
-  const net::IPEndPoint* destination_;  // not owned
+  CheckedPtr<UDPProxyImpl> udp_proxy_;
+  CheckedPtr<const net::IPEndPoint> destination_;  // not owned
 };
 
 namespace {

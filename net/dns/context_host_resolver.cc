@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/memory/checked_ptr.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_piece.h"
 #include "base/time/tick_clock.h"
@@ -75,7 +76,7 @@ class ContextHostResolver::WrappedRequest {
 
   // Resolver is expected to call Cancel() on destruction, clearing the pointer
   // before it becomes invalid.
-  ContextHostResolver* resolver_;
+  CheckedPtr<ContextHostResolver> resolver_;
   bool shutting_down_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);

@@ -9,6 +9,7 @@
 
 #include "base/containers/span.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/stl_util.h"
 #include "build/build_config.h"
 #include "net/base/address_list.h"
@@ -57,7 +58,7 @@ class SOCKSClientSocketTest : public PlatformTest, public WithTaskEnvironment {
   AddressList address_list_;
   // Filled in by BuildMockSocket() and owned by its return value
   // (which |user_sock| is set to).
-  StreamSocket* tcp_sock_;
+  CheckedPtr<StreamSocket> tcp_sock_;
   TestCompletionCallback callback_;
   std::unique_ptr<MockHostResolver> host_resolver_;
   std::unique_ptr<SocketDataProvider> data_;

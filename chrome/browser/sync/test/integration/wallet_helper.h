@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/sync/test/integration/multi_client_status_change_checker.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
@@ -216,7 +217,7 @@ class FullUpdateTypeProgressMarkerChecker : public StatusChangeChecker,
 
  private:
   const base::Time min_required_progress_marker_timestamp_;
-  const syncer::SyncService* const service_;
+  const CheckedPtr<const syncer::SyncService> service_;
   const syncer::ModelType model_type_;
 
   ScopedObserver<syncer::SyncService, syncer::SyncServiceObserver>

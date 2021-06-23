@@ -1048,9 +1048,8 @@ TEST_F(FieldTrialTest, CreateSimulatedFieldTrial) {
 
   for (size_t i = 0; i < base::size(test_cases); ++i) {
     TestFieldTrialObserver observer(TestFieldTrialObserver::ASYNCHRONOUS);
-    scoped_refptr<FieldTrial> trial(
-       FieldTrial::CreateSimulatedFieldTrial(kTrialName, 100, kDefaultGroupName,
-                                             test_cases[i].entropy_value));
+    scoped_refptr<FieldTrial> trial(FieldTrial::CreateSimulatedFieldTrial(
+        kTrialName, 100, kDefaultGroupName, test_cases[i].entropy_value));
     trial->AppendGroup("A", 80);
     trial->AppendGroup("B", 10);
     EXPECT_EQ(test_cases[i].expected_group, trial->group_name());

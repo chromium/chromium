@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
@@ -1474,7 +1475,7 @@ class DeleteSockCallback : public TestCompletionCallbackBase {
     SetResult(result);
   }
 
-  std::unique_ptr<SpdyProxyClientSocket>* sock_;
+  CheckedPtr<std::unique_ptr<SpdyProxyClientSocket>> sock_;
 
   DISALLOW_COPY_AND_ASSIGN(DeleteSockCallback);
 };

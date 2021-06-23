@@ -9,6 +9,7 @@
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
@@ -599,7 +600,7 @@ class RebindTestImpl : public mojom::RebindTestInterface {
   }
 
  private:
-  base::WaitableEvent* event_;
+  CheckedPtr<base::WaitableEvent> event_;
 };
 
 TEST_P(ReceiverTest, RebindWithScheduledSyncMessage) {
@@ -689,7 +690,7 @@ class TestGenericBinderImpl : public mojom::TestGenericBinder {
   Receiver<mojom::TestGenericBinder> receiver_;
   bool connected_ = true;
   base::Optional<base::RunLoop> wait_loop_;
-  GenericPendingReceiver* next_receiver_storage_ = nullptr;
+  CheckedPtr<GenericPendingReceiver> next_receiver_storage_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(TestGenericBinderImpl);
 };

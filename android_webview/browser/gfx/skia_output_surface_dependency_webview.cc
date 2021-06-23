@@ -59,7 +59,7 @@ SkiaOutputSurfaceDependencyWebView::GetGpuDriverBugWorkarounds() {
 
 scoped_refptr<gpu::SharedContextState>
 SkiaOutputSurfaceDependencyWebView::GetSharedContextState() {
-  return shared_context_state_;
+  return shared_context_state_.get();
 }
 
 gpu::raster::GrShaderCache*
@@ -116,7 +116,7 @@ scoped_refptr<gl::GLSurface>
 SkiaOutputSurfaceDependencyWebView::CreateGLSurface(
     base::WeakPtr<gpu::ImageTransportSurfaceDelegate> stub,
     gl::GLSurfaceFormat format) {
-  return gl_surface_;
+  return gl_surface_.get();
 }
 
 base::ScopedClosureRunner SkiaOutputSurfaceDependencyWebView::CacheGLSurface(

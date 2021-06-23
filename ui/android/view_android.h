@@ -12,6 +12,7 @@
 #include "base/android/jni_weak_ref.h"
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
@@ -222,7 +223,7 @@ class UI_ANDROID_EXPORT ViewAndroid {
  protected:
   void RemoveAllChildren(bool attached_to_window);
 
-  ViewAndroid* parent_;
+  CheckedPtr<ViewAndroid> parent_;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ViewAndroidBoundsTest, MatchesViewInFront);
@@ -295,7 +296,7 @@ class UI_ANDROID_EXPORT ViewAndroid {
   scoped_refptr<cc::Layer> layer_;
   JavaObjectWeakGlobalRef delegate_;
 
-  EventHandlerAndroid* event_handler_ = nullptr;  // Not owned
+  CheckedPtr<EventHandlerAndroid> event_handler_ = nullptr;  // Not owned
 
   // Basic view layout information. Used to do hit testing deciding whether
   // the passed events should be processed by the view. Unit in DIP.

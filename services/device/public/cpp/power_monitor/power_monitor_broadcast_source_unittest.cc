@@ -5,6 +5,7 @@
 #include "services/device/public/cpp/power_monitor/power_monitor_broadcast_source.h"
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/power_monitor_test_base.h"
 #include "base/test/task_environment.h"
@@ -38,7 +39,7 @@ class PowerMonitorBroadcastSourceTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
 
  private:
-  PowerMonitorBroadcastSource* power_monitor_source_ptr_;
+  CheckedPtr<PowerMonitorBroadcastSource> power_monitor_source_ptr_;
 
   DISALLOW_COPY_AND_ASSIGN(PowerMonitorBroadcastSourceTest);
 };

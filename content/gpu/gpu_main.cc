@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/memory/checked_ptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
@@ -179,7 +180,7 @@ class ContentSandboxHelper : public gpu::GpuSandboxHelper {
   }
 
 #if defined(OS_WIN)
-  const sandbox::SandboxInterfaceInfo* sandbox_info_ = nullptr;
+  CheckedPtr<const sandbox::SandboxInterfaceInfo> sandbox_info_ = nullptr;
 #endif
 
   DISALLOW_COPY_AND_ASSIGN(ContentSandboxHelper);

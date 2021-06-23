@@ -285,10 +285,9 @@ public class ActivityTabProviderTest {
             TestThreadUtils.runOnUiThreadBlocking(
                     () -> mActivity.getLayoutManager().showOverview(true));
         } else {
-            TestThreadUtils.runOnUiThreadBlocking(
-                    () -> {
-                        mActivity.getLayoutManager().hideOverviewWithNextTab(true, mLastValidTabId);
-                    });
+            TestThreadUtils.runOnUiThreadBlocking(() -> {
+                mActivity.getLayoutManager().hideOverviewWithNextTab(true, mLastValidTabId);
+            });
         }
         sceneChangeHelper.waitForCallback(sceneChangeCount);
 

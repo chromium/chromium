@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -114,7 +115,7 @@ class BluetoothApiTest : public extensions::ExtensionApiTest {
   }
 
  protected:
-  testing::StrictMock<MockBluetoothAdapter>* mock_adapter_;
+  CheckedPtr<testing::StrictMock<MockBluetoothAdapter>> mock_adapter_;
   std::unique_ptr<testing::NiceMock<MockBluetoothDevice>> device1_;
   std::unique_ptr<testing::NiceMock<MockBluetoothDevice>> device2_;
   std::unique_ptr<testing::NiceMock<MockBluetoothDevice>> device3_;

@@ -5,6 +5,7 @@
 #include "chrome/browser/media/router/discovery/dial/dial_app_discovery_service.h"
 
 #include "base/bind.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/media/router/discovery/dial/dial_url_fetcher.h"
@@ -111,7 +112,7 @@ class DialAppDiscoveryServiceTest : public ::testing::Test {
   }
 
  protected:
-  TestSafeDialAppInfoParser* test_parser_;
+  CheckedPtr<TestSafeDialAppInfoParser> test_parser_;
   DialAppDiscoveryService dial_app_discovery_service_;
 };
 

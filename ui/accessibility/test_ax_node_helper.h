@@ -5,6 +5,7 @@
 #ifndef UI_ACCESSIBILITY_TEST_AX_NODE_HELPER_H_
 #define UI_ACCESSIBILITY_TEST_AX_NODE_HELPER_H_
 
+#include "base/memory/checked_ptr.h"
 #include "ui/accessibility/ax_clipping_behavior.h"
 #include "ui/accessibility/ax_coordinate_system.h"
 #include "ui/accessibility/ax_node.h"
@@ -46,8 +47,8 @@ class TestAXNodeHelper {
   // Determine the offscreen status of a particular element given its bounds.
   AXOffscreenResult DetermineOffscreenResult(gfx::RectF bounds) const;
 
-  AXTree* tree_;
-  AXNode* node_;
+  CheckedPtr<AXTree> tree_;
+  CheckedPtr<AXNode> node_;
 };
 
 }  // namespace ui

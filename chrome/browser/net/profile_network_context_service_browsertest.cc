@@ -13,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -115,7 +116,7 @@ class ProfileNetworkContextServiceBrowsertest : public InProcessBrowserTest {
   }
 
  private:
-  network::mojom::URLLoaderFactory* loader_factory_ = nullptr;
+  CheckedPtr<network::mojom::URLLoaderFactory> loader_factory_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(ProfileNetworkContextServiceBrowsertest,

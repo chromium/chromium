@@ -6,6 +6,7 @@
 #define MEDIA_BASE_TIME_DELTA_INTERPOLATOR_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "media/base/media_export.h"
 
@@ -63,7 +64,7 @@ class MEDIA_EXPORT TimeDeltaInterpolator {
   base::TimeDelta GetInterpolatedTime();
 
  private:
-  const base::TickClock* const tick_clock_;
+  const CheckedPtr<const base::TickClock> tick_clock_;
 
   bool interpolating_;
 

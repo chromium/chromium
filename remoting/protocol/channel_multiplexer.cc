@@ -14,6 +14,7 @@
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -84,12 +85,12 @@ class ChannelMultiplexer::MuxChannel {
   int DoRead(const scoped_refptr<net::IOBuffer>& buffer, int buffer_len);
 
  private:
-  ChannelMultiplexer* multiplexer_;
+  CheckedPtr<ChannelMultiplexer> multiplexer_;
   std::string name_;
   int send_id_;
   bool id_sent_;
   int receive_id_;
-  MuxSocket* socket_;
+  CheckedPtr<MuxSocket> socket_;
   std::list<std::unique_ptr<PendingPacket>> pending_packets_;
 
   DISALLOW_COPY_AND_ASSIGN(MuxChannel);

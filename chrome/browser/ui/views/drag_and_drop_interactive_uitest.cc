@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/pattern.h"
@@ -199,7 +200,7 @@ class DragAndDropSimulator {
                                                   ui::DragDropTypes::DRAG_COPY |
                                                   ui::DragDropTypes::DRAG_LINK;
 
-  content::WebContents* web_contents_;
+  CheckedPtr<content::WebContents> web_contents_;
   std::unique_ptr<ui::DropTargetEvent> active_drag_event_;
   std::unique_ptr<ui::OSExchangeData> os_exchange_data_;
 
@@ -332,9 +333,9 @@ class DragStartWaiter : public aura::client::DragDropClient {
   }
 
  private:
-  content::WebContents* web_contents_;
+  CheckedPtr<content::WebContents> web_contents_;
   scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
-  aura::client::DragDropClient* old_client_;
+  CheckedPtr<aura::client::DragDropClient> old_client_;
   base::OnceClosure callback_to_run_inside_drag_and_drop_message_loop_;
   bool suppress_passing_of_start_drag_further_;
 

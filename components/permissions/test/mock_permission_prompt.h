@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PERMISSIONS_TEST_MOCK_PERMISSION_PROMPT_H_
 #define COMPONENTS_PERMISSIONS_TEST_MOCK_PERMISSION_PROMPT_H_
 
+#include "base/memory/checked_ptr.h"
 #include "components/permissions/permission_prompt.h"
 
 namespace permissions {
@@ -31,8 +32,8 @@ class MockPermissionPrompt : public PermissionPrompt {
   MockPermissionPrompt(MockPermissionPromptFactory* factory,
                        Delegate* delegate);
 
-  MockPermissionPromptFactory* factory_;
-  Delegate* delegate_;
+  CheckedPtr<MockPermissionPromptFactory> factory_;
+  CheckedPtr<Delegate> delegate_;
 };
 
 }  // namespace permissions

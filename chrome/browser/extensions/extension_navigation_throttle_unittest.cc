@@ -5,6 +5,7 @@
 #include "extensions/browser/extension_navigation_throttle.h"
 
 #include <memory>
+#include "base/memory/checked_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/crx_file/id_util.h"
@@ -186,7 +187,7 @@ class ExtensionNavigationThrottleUnitTest
 
   scoped_refptr<const Extension> extension_;
   MockBrowserClient client_;
-  content::ContentBrowserClient* original_client_;
+  CheckedPtr<content::ContentBrowserClient> original_client_;
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionNavigationThrottleUnitTest);
 };

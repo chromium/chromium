@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/checked_ptr.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 
@@ -57,7 +58,7 @@ class DeviceCountMetrics {
  private:
   base::Time device_count_metrics_record_time_;
 
-  base::Clock* clock_;
+  CheckedPtr<base::Clock> clock_;
 };
 
 // Metrics for DIAL device counts.

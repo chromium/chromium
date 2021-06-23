@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_APPEARANCE_HANDLER_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
@@ -44,7 +45,7 @@ class AppearanceHandler : public SettingsPageUIHandler {
   void HandleUseSystemTheme(const base::ListValue* args);
 #endif
 
-  Profile* profile_;  // Weak pointer.
+  CheckedPtr<Profile> profile_;  // Weak pointer.
 
   base::WeakPtrFactory<AppearanceHandler> weak_ptr_factory_{this};
 

@@ -12,6 +12,7 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -388,7 +389,8 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
   scoped_refptr<StrictMock<MockSafeBrowsingUIManager> > ui_manager_;
   scoped_refptr<StrictMock<MockSafeBrowsingDatabaseManager> > database_manager_;
   FakePhishingDetector fake_phishing_detector_;
-  StrictMock<MockSafeBrowsingTokenFetcher>* raw_token_fetcher_ = nullptr;
+  CheckedPtr<StrictMock<MockSafeBrowsingTokenFetcher>> raw_token_fetcher_ =
+      nullptr;
   base::SimpleTestTickClock clock_;
   const bool is_incognito_;
   signin::IdentityTestEnvironment identity_test_env_;

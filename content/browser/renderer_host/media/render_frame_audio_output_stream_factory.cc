@@ -15,6 +15,7 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/location.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/strings/stringprintf.h"
@@ -121,7 +122,7 @@ class RenderFrameAudioOutputStreamFactory::Core final
     void Done() { owner_->DeleteProvider(this); }
 
    private:
-    RenderFrameAudioOutputStreamFactory::Core* const owner_;
+    const CheckedPtr<RenderFrameAudioOutputStreamFactory::Core> owner_;
     const std::string device_id_;
 
     mojo::Receiver<media::mojom::AudioOutputStreamProvider> receiver_;

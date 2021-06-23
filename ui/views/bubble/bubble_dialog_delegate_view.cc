@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -176,8 +177,8 @@ class BubbleDialogDelegate::AnchorViewObserver : public ViewObserver {
   // view bounds when the anchor is visible.
 
  private:
-  BubbleDialogDelegate* const parent_;
-  View* const anchor_view_;
+  const CheckedPtr<BubbleDialogDelegate> parent_;
+  const CheckedPtr<View> anchor_view_;
 };
 
 // This class is responsible for observing events on a BubbleDialogDelegate's
@@ -236,7 +237,7 @@ class BubbleDialogDelegate::AnchorWidgetObserver : public WidgetObserver,
 #endif
 
  private:
-  BubbleDialogDelegate* owner_;
+  CheckedPtr<BubbleDialogDelegate> owner_;
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observation_{this};
 #if !defined(OS_APPLE)
@@ -296,7 +297,7 @@ class BubbleDialogDelegate::BubbleWidgetObserver : public WidgetObserver {
   }
 
  private:
-  BubbleDialogDelegate* owner_;
+  CheckedPtr<BubbleDialogDelegate> owner_;
   base::ScopedObservation<views::Widget, views::WidgetObserver> observation_{
       this};
 };

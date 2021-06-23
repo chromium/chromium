@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_CHROME_EXTENSION_FRAME_HOST_H_
 #define CHROME_BROWSER_EXTENSIONS_CHROME_EXTENSION_FRAME_HOST_H_
 
+#include "base/memory/checked_ptr.h"
 #include "extensions/browser/extension_frame_host.h"
 #include "extensions/common/mojom/frame.mojom.h"
 #include "extensions/common/mojom/injection_type.mojom-shared.h"
@@ -35,7 +36,7 @@ class ChromeExtensionFrameHost : public ExtensionFrameHost {
   // lifetime is tied to the WebContents owns this instance.
   // The parent class ExtensionFrameHost uses WebContentsFrameReceiverSet with
   // |web_contents_| for mojom::LocalFrameHost.
-  content::WebContents* web_contents_;
+  CheckedPtr<content::WebContents> web_contents_;
 };
 
 }  // namespace extensions

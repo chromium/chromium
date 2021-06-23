@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "net/ssl/client_cert_identity.h"
 #include "ui/views/controls/table/table_view_observer.h"
 #include "ui/views/metadata/metadata_header_macros.h"
@@ -102,10 +103,10 @@ class CertificateSelector : public views::DialogDelegateView,
   bool show_provider_column_ = false;
   std::unique_ptr<CertificateTableModel> model_;
 
-  content::WebContents* const web_contents_;
+  const CheckedPtr<content::WebContents> web_contents_;
 
-  views::TableView* table_ = nullptr;
-  views::LabelButton* view_cert_button_ = nullptr;
+  CheckedPtr<views::TableView> table_ = nullptr;
+  CheckedPtr<views::LabelButton> view_cert_button_ = nullptr;
 };
 
 }  // namespace chrome

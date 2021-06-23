@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "content/public/browser/native_web_keyboard_event.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -45,7 +46,7 @@ class LoggingDelegate : public KeyPressHandlerManager::Delegate {
   }
 
  private:
-  std::string* const target_;
+  const CheckedPtr<std::string> target_;
 };
 
 }  // namespace

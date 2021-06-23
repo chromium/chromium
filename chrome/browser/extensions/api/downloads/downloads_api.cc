@@ -1976,7 +1976,8 @@ void ExtensionDownloadsEventRouter::DispatchEvent(
   // by introducing "include incognito" option to Event constructor.
   // https://crbug.com/726022.
   Profile* restrict_to_browser_context =
-      (include_incognito && !profile_->IsOffTheRecord()) ? nullptr : profile_;
+      (include_incognito && !profile_->IsOffTheRecord()) ? nullptr
+                                                         : profile_.get();
   auto event =
       std::make_unique<Event>(histogram_value, event_name, std::move(args),
                               restrict_to_browser_context);

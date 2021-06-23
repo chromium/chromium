@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_timeouts.h"
 #include "base/values.h"
@@ -61,7 +62,7 @@ class NotificationUIManagerTest : public BrowserWithTestWindowTest {
   }
 
  private:
-  MessageCenter* message_center_;
+  CheckedPtr<MessageCenter> message_center_;
 };
 
 TEST_F(NotificationUIManagerTest, SetupNotificationManager) {

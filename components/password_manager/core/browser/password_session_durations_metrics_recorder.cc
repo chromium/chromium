@@ -40,7 +40,7 @@ PasswordSessionDurationsMetricsRecorder::
   DCHECK(pref_service_);
   // |sync_service| can be null if sync is disabled by a command line flag.
   if (sync_service_)
-    sync_observation_.Observe(sync_service_);
+    sync_observation_.Observe(sync_service_.get());
 }
 
 PasswordSessionDurationsMetricsRecorder::

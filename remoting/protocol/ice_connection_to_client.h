@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
@@ -81,7 +82,7 @@ class IceConnectionToClient : public ConnectionToClient,
   base::ThreadChecker thread_checker_;
 
   // Event handler for handling events sent from this object.
-  ConnectionToClient::EventHandler* event_handler_;
+  CheckedPtr<ConnectionToClient::EventHandler> event_handler_;
 
   std::unique_ptr<Session> session_;
 

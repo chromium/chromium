@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/values.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/test/fake_server/sessions_hierarchy.h"
@@ -51,7 +52,7 @@ class FakeServerVerifier {
       const SessionsHierarchy& expected_sessions);
 
  private:
-  FakeServer* const fake_server_;
+  const CheckedPtr<FakeServer> fake_server_;
 
   DISALLOW_COPY_AND_ASSIGN(FakeServerVerifier);
 };

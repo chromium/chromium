@@ -11,6 +11,7 @@
 #include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/files/file_util.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -312,9 +313,9 @@ class PrefetchDispatcherTest : public PrefetchRequestTestBase {
         shared_url_loader_factory(), taco_->pref_service());
     store_util_.BuildStore();
     taco_->SetPrefetchStore(store_util_.ReleaseStore());
-    taco_->SetPrefetchDispatcher(base::WrapUnique(dispatcher_));
+    taco_->SetPrefetchDispatcher(base::WrapUnique(dispatcher_.get()));
     taco_->SetPrefetchNetworkRequestFactory(
-        base::WrapUnique(network_request_factory_));
+        base::WrapUnique(network_request_factory_.get()));
     auto image_fetcher = std::make_unique<image_fetcher::MockImageFetcher>();
     thumbnail_image_fetcher_ = image_fetcher.get();
     taco_->SetThumbnailImageFetcher(std::move(image_fetcher));
@@ -416,12 +417,12 @@ class PrefetchDispatcherTest : public PrefetchRequestTestBase {
 
  protected:
   // Owned by |taco_|.
-  MockOfflinePageModel* offline_model_;
+  CheckedPtr<MockOfflinePageModel> offline_model_;
 
   std::vector<PrefetchURL> test_urls_;
 
   // Owned by |taco_|, may be null.
-  image_fetcher::MockImageFetcher* thumbnail_image_fetcher_;
+  CheckedPtr<image_fetcher::MockImageFetcher> thumbnail_image_fetcher_;
 
   PrefetchStoreTestUtil store_util_;
   MockPrefetchItemGenerator item_generator_;
@@ -434,9 +435,9 @@ class PrefetchDispatcherTest : public PrefetchRequestTestBase {
   base::test::ScopedFeatureList feature_list_;
 
   // Owned by |taco_|.
-  PrefetchDispatcherImpl* dispatcher_;
+  CheckedPtr<PrefetchDispatcherImpl> dispatcher_;
   // Owned by |taco_|.
-  FakePrefetchNetworkRequestFactory* network_request_factory_;
+  CheckedPtr<FakePrefetchNetworkRequestFactory> network_request_factory_;
 
   bool reschedule_called_ = false;
   PrefetchBackgroundTaskRescheduleType reschedule_type_ =

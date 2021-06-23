@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/metrics/desktop_session_duration/desktop_session_duration_tracker.h"
 #include "ui/base/pointer/touch_ui_controller.h"
@@ -40,7 +41,7 @@ class TouchModeStatsTracker
   void OnSessionEnded(base::TimeDelta session_length,
                       base::TimeTicks session_end) override;
 
-  ui::TouchUiController* const touch_ui_controller_;
+  const CheckedPtr<ui::TouchUiController> touch_ui_controller_;
 
   base::CallbackListSubscription mode_change_subscription_;
 

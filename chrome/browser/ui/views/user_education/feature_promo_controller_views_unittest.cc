@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
@@ -82,8 +83,8 @@ class FeaturePromoControllerViewsTest : public TestWithBrowserView {
     return params;
   }
 
-  FeaturePromoControllerViews* controller_;
-  NiceMock<feature_engagement::test::MockTracker>* mock_tracker_;
+  CheckedPtr<FeaturePromoControllerViews> controller_;
+  CheckedPtr<NiceMock<feature_engagement::test::MockTracker>> mock_tracker_;
 
  private:
   static std::unique_ptr<KeyedService> MakeTestTracker(

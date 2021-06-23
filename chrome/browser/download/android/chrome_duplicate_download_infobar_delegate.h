@@ -8,6 +8,7 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/download/android/duplicate_download_infobar_delegate.h"
 #include "chrome/browser/download/download_target_determiner_delegate.h"
 #include "components/download/public/common/download_item.h"
@@ -49,7 +50,7 @@ class ChromeDuplicateDownloadInfoBarDelegate
 
   // The download item that is requesting the infobar. Could get deleted while
   // the infobar is showing.
-  download::DownloadItem* download_item_;
+  CheckedPtr<download::DownloadItem> download_item_;
 
   // The target file path to be downloaded. This is used to show users the
   // file name that will be used.

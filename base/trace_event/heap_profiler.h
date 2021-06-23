@@ -6,6 +6,7 @@
 #define BASE_TRACE_EVENT_HEAP_PROFILER_H
 
 #include "base/compiler_specific.h"
+#include "base/memory/checked_ptr.h"
 #include "base/trace_event/heap_profiler_allocation_context_tracker.h"
 
 // This header file defines the set of macros that are used to track memory
@@ -98,7 +99,7 @@ class HeapProfilerScopedStackFrame {
   }
 
  private:
-  const void* const program_counter_;
+  const CheckedPtr<const void> program_counter_;
 };
 
 inline const char* HeapProfilerCurrentTaskContext() {

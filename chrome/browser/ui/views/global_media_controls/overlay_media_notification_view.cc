@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/global_media_controls/overlay_media_notification_view.h"
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/global_media_controls/overlay_media_notifications_manager.h"
 #include "chrome/browser/ui/views/global_media_controls/media_notification_container_impl_view.h"
 #include "ui/base/hit_test.h"
@@ -72,7 +73,7 @@ class OverlayMediaNotificationWidgetDelegate : public views::WidgetDelegate {
 
  private:
   // Owns OverlayMediaNotificationWidgetDelegate.
-  OverlayMediaNotificationView* widget_;
+  CheckedPtr<OverlayMediaNotificationView> widget_;
 };
 
 }  // anonymous namespace

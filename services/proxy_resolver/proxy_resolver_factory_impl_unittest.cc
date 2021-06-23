@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -61,7 +62,7 @@ enum Event {
 class TestProxyResolverFactory : public ProxyResolverV8TracingFactory {
  public:
   struct PendingRequest {
-    std::unique_ptr<ProxyResolverV8Tracing>* resolver;
+    CheckedPtr<std::unique_ptr<ProxyResolverV8Tracing>> resolver;
     net::CompletionOnceCallback callback;
   };
 
@@ -95,7 +96,7 @@ class TestProxyResolverFactory : public ProxyResolverV8TracingFactory {
   PendingRequest* pending_request() { return pending_request_.get(); }
 
  private:
-  net::EventWaiter<Event>* waiter_;
+  CheckedPtr<net::EventWaiter<Event>> waiter_;
   size_t requests_handled_ = 0;
   std::unique_ptr<PendingRequest> pending_request_;
 };
@@ -161,7 +162,7 @@ class ProxyResolverFactoryImplTest
 
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<TestProxyResolverFactoryImpl> mock_factory_impl_;
-  TestProxyResolverFactory* mock_factory_;
+  CheckedPtr<TestProxyResolverFactory> mock_factory_;
   mojo::Remote<mojom::ProxyResolverFactory> factory_;
 
   int instances_destroyed_ = 0;

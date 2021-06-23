@@ -13,6 +13,7 @@
 #include "base/callback_forward.h"
 #include "base/callback_list.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "chromeos/settings/cros_settings_names.h"
@@ -142,7 +143,8 @@ class CrosSettings {
   std::vector<std::unique_ptr<CrosSettingsProvider>> providers_;
 
   // Owner unique pointer in |providers_|.
-  SupervisedUserCrosSettingsProvider* supervised_user_cros_settings_provider_;
+  CheckedPtr<SupervisedUserCrosSettingsProvider>
+      supervised_user_cros_settings_provider_;
 
   // A map from settings names to a list of observers. Observers get fired in
   // the order they are added.

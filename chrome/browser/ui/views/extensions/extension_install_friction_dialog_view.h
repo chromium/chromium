@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 
@@ -53,8 +54,8 @@ class ExtensionInstallFrictionDialogView
   std::unique_ptr<views::StyledLabel> CreateWarningLabel();
   void OnLearnMoreLinkClicked();
 
-  Profile* profile_ = nullptr;
-  content::WebContents* parent_web_contents_ = nullptr;
+  CheckedPtr<Profile> profile_ = nullptr;
+  CheckedPtr<content::WebContents> parent_web_contents_ = nullptr;
   std::unique_ptr<WebContentsDestructionObserver>
       web_contents_destruction_observer_;
   base::OnceCallback<void(bool)> callback_;
