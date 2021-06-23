@@ -3503,6 +3503,8 @@ static_library("browser") {
       "cart/cart_service_factory.h",
       "cart/commerce_hint_service.cc",
       "cart/commerce_hint_service.h",
+      "cart/discount_url_loader.cc",
+      "cart/discount_url_loader.h",
       "cart/fetch_discount_worker.cc",
       "cart/fetch_discount_worker.h",
       "certificate_viewer.h",

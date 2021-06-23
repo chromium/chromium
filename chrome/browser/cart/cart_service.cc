@@ -371,8 +371,18 @@ void CartService::OnDiscountURLFetched(
   }
 }
 
-void CartService::PrepareForNavigation(const GURL& cart_url) {
+void CartService::PrepareForNavigation(const GURL& cart_url,
+                                       bool is_navigating) {
   metrics_tracker_->PrepareToRecordUKM(cart_url);
+  if (is_navigating || !IsPartnerMerchant(cart_url) ||
+      !IsCartDiscountEnabled()) {
+    return;
+  }
+  if (!discount_url_loader_) {
+    discount_url_loader_ = std::make_unique<DiscountURLLoader>(
+        chrome::FindTabbedBrowser(profile_, false), profile_);
+  }
+  discount_url_loader_->PrepareURLForDiscountLoad(cart_url);
 }
 
 void CartService::LoadCartsWithFakeData(CartDB::LoadCallback callback) {
@@ -402,6 +412,9 @@ void CartService::Shutdown() {
   cart_db_->LoadAllCarts(base::BindOnce(&CartService::DeleteRemovedCartsContent,
                                         weak_ptr_factory_.GetWeakPtr()));
   metrics_tracker_->ShutDown();
+  if (discount_url_loader_) {
+    discount_url_loader_->ShutDown();
+  }
 }
 
 void CartService::OnURLsDeleted(history::HistoryService* history_service,

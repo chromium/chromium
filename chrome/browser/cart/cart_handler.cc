@@ -116,6 +116,7 @@ void CartHandler::SetDiscountEnabled(bool enabled) {
   cart_service_->SetCartDiscountEnabled(enabled);
 }
 
-void CartHandler::PrepareForNavigation(const GURL& cart_url) {
-  cart_service_->PrepareForNavigation(cart_url);
+void CartHandler::PrepareForNavigation(const GURL& cart_url,
+                                       bool is_navigating) {
+  cart_service_->PrepareForNavigation(cart_url, is_navigating);
 }

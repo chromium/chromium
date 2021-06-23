@@ -877,9 +877,12 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
       cartItems[1].querySelector('.thumbnail-container').click();
 
       // Assert.
-      Array(4).forEach(
-          index => assertEquals(
-              1, metrics.count('NewTabPage.Carts.ClickCart', index)));
+      assertEquals(4, testProxy.handler.getCallCount('prepareForNavigation'));
+      for (let index = 0; index < 4; index++) {
+        assertEquals(1, metrics.count('NewTabPage.Carts.ClickCart', index));
+        assertEquals(
+            true, testProxy.handler.getArgs('prepareForNavigation')[index][1]);
+      }
       assertEquals(0, testProxy.handler.getCallCount('getDiscountURL'));
     });
 
