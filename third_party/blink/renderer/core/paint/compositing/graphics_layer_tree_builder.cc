@@ -122,24 +122,24 @@ void GraphicsLayerTreeBuilder::RebuildRecursive(
       RebuildRecursive(*child_layer, *layer_vector_for_children,
                        *pending_reparents_for_children);
     }
-  }
 
-  if (auto* embedded =
-          DynamicTo<LayoutEmbeddedContent>(layer.GetLayoutObject())) {
-    DCHECK(this_layer_children.IsEmpty());
-    PaintLayerCompositor* inner_compositor =
-        PaintLayerCompositor::FrameContentsCompositor(*embedded);
-    if (inner_compositor) {
-      // Disabler required because inner frame might be throttled.
-      DisableCompositingQueryAsserts disabler;
-      if (GraphicsLayer* inner_root_graphics_layer =
-              inner_compositor->RootGraphicsLayer()) {
-        // TODO(szager); Remove this after diagnosing crash
-        CHECK_EQ(inner_compositor->InCompositingMode(),
-                 (bool)inner_root_graphics_layer);
-        layer_vector_for_children->push_back(inner_root_graphics_layer);
+    if (auto* embedded =
+            DynamicTo<LayoutEmbeddedContent>(layer.GetLayoutObject())) {
+      DCHECK(this_layer_children.IsEmpty());
+      PaintLayerCompositor* inner_compositor =
+          PaintLayerCompositor::FrameContentsCompositor(*embedded);
+      if (inner_compositor) {
+        // Disabler required because inner frame might be throttled.
+        DisableCompositingQueryAsserts disabler;
+        if (GraphicsLayer* inner_root_graphics_layer =
+                inner_compositor->RootGraphicsLayer()) {
+          // TODO(szager); Remove this after diagnosing crash
+          CHECK_EQ(inner_compositor->InCompositingMode(),
+                   (bool)inner_root_graphics_layer);
+          layer_vector_for_children->push_back(inner_root_graphics_layer);
+        }
+        inner_compositor->ClearRootLayerAttachmentDirty();
       }
-      inner_compositor->ClearRootLayerAttachmentDirty();
     }
   }
 
