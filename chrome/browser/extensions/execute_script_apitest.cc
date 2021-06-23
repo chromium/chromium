@@ -109,7 +109,7 @@ IN_PROC_BROWSER_TEST_P(ExecuteScriptApiTest, ExecuteScriptCallback) {
 }
 
 IN_PROC_BROWSER_TEST_P(ExecuteScriptApiTest, ExecuteScriptRemoveCSS) {
-  ASSERT_TRUE(RunExtensionTest("executescript/remove_css")) << message_;
+  ASSERT_TRUE(RunTest("executescript/remove_css")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_P(ExecuteScriptApiTest, UserGesture) {
