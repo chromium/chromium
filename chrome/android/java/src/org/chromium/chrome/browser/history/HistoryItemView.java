@@ -37,7 +37,6 @@ public class HistoryItemView extends SelectableItemView<HistoryItem> implements 
     private ImageButton mRemoveButton;
     private VectorDrawableCompat mBlockedVisitDrawable;
 
-    private HistoryManager mHistoryManager;
     private final RoundedIconGenerator mIconGenerator;
     private DefaultFaviconHelper mFaviconHelper;
 
@@ -107,22 +106,11 @@ public class HistoryItemView extends SelectableItemView<HistoryItem> implements 
         } else {
             setStartIconDrawable(mFaviconHelper.getDefaultFaviconDrawable(
                     getContext().getResources(), item.getUrl(), true));
-            if (mHistoryManager != null) requestIcon();
+            requestIcon();
 
             mTitleView.setTextColor(
                     ApiCompatibilityUtils.getColor(getResources(), R.color.default_text_color));
         }
-    }
-
-    /**
-     * @param manager The HistoryManager associated with this item.
-     */
-    public void setHistoryManager(HistoryManager manager) {
-        getItem().setHistoryManager(manager);
-        if (mHistoryManager == manager) return;
-
-        mHistoryManager = manager;
-        if (!getItem().wasBlockedVisit()) requestIcon();
     }
 
     /**
@@ -177,10 +165,9 @@ public class HistoryItemView extends SelectableItemView<HistoryItem> implements 
     }
 
     private void requestIcon() {
-        if (mHistoryManager == null || mHistoryManager.getLargeIconBridge() == null) return;
-
-        mHistoryManager.getLargeIconBridge().getLargeIconForUrl(
-                getItem().getUrl(), mMinIconSize, this);
+        if (!getItem().wasBlockedVisit()) {
+            getItem().getLargeIconForUrl(mMinIconSize, this);
+        }
     }
 
     private void updateRemoveButtonVisibility() {

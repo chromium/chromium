@@ -216,7 +216,6 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     protected void bindViewHolderForTimedItem(ViewHolder current, TimedItem timedItem) {
         final HistoryItem item = (HistoryItem) timedItem;
         mHistoryManager.bindViewHolderForHistoryItem(current, item);
-        ((HistoryItemView) current.itemView).setHistoryManager(mHistoryManager);
     }
 
     @Override

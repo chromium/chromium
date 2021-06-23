@@ -636,6 +636,7 @@ public class HistoryManager implements OnMenuItemClickListener, SignInStateObser
 
     /** Binds the ViewHolder with the given HistoryItem. */
     void bindViewHolderForHistoryItem(ViewHolder holder, HistoryItem item) {
+        item.setHistoryManager(this);
         SelectableItemViewHolder<HistoryItem> selectableHolder =
                 (SelectableItemViewHolder<HistoryItem>) holder;
         selectableHolder.displayItem(item);
