@@ -23,7 +23,6 @@
 #include "base/thread_annotations.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
-#include "build/build_config.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/bitstream_buffer.h"
 #include "media/base/video_bitrate_allocation.h"
@@ -1140,9 +1139,11 @@ void RTCVideoEncoder::Impl::EncodeOneFrame() {
   // conditions are met.
   bool requires_copy =
       buffer->type() != webrtc::VideoFrameBuffer::Type::kNative;
+  bool optimized_scaling = false;
   if (!requires_copy) {
-    const WebRtcVideoFrameAdapter* frame_adapter =
-        static_cast<WebRtcVideoFrameAdapter*>(buffer.get());
+    const WebRtcVideoFrameAdapterInterface* frame_adapter =
+        static_cast<WebRtcVideoFrameAdapterInterface*>(buffer.get());
+    optimized_scaling = frame_adapter->SupportsOptimizedScaling();
     frame = frame_adapter->getMediaVideoFrame();
     const media::VideoFrame::StorageType storage = frame->storage_type();
     const bool is_shmem_frame = storage == media::VideoFrame::STORAGE_SHMEM;
@@ -1156,16 +1157,6 @@ void RTCVideoEncoder::Impl::EncodeOneFrame() {
     const base::TimeDelta timestamp =
         frame ? frame->timestamp()
               : base::TimeDelta::FromMilliseconds(next_frame->ntp_time_ms());
-    // TODO(https://crbug.com/1194500): Android (e.g. android-pie-arm64-rel)
-    // does not support the optimzed path, perhaps due to not supporting
-    // STORAGE_GPU_MEMORY_BUFFER or NV12? When this is fixed, remove the special
-    // casing on platform and the legacy code path.
-    bool optimized_scaling =
-#if !defined(OS_ANDROID)
-        buffer->type() == webrtc::VideoFrameBuffer::Type::kNative;
-#else
-        false;
-#endif
     if (optimized_scaling) {
       DCHECK_EQ(buffer->type(), webrtc::VideoFrameBuffer::Type::kNative);
       auto scaled_buffer = buffer->Scale(input_visible_size_.width(),
@@ -1192,8 +1183,9 @@ void RTCVideoEncoder::Impl::EncodeOneFrame() {
         return;
       }
     } else {
-      // TODO(https://crbug.com/1194500): Remove this code path in favor of the
-      // above code path. This will allow us to remove |input_buffers_|.
+      // TODO(https://crbug.com/1194500): When LegacyWebRtcVideoFrameAdapter is
+      // removed, remove this code path in favor of the above code path. This
+      // will allow us to remove |input_buffers_|.
       std::pair<base::UnsafeSharedMemoryRegion,
                 base::WritableSharedMemoryMapping>* input_buffer =
           input_buffers_[index].get();
@@ -1293,7 +1285,7 @@ void RTCVideoEncoder::Impl::EncodeOneFrameWithNativeInput() {
     frame->set_timestamp(
         base::TimeDelta::FromMilliseconds(next_frame->ntp_time_ms()));
   } else {
-    frame = static_cast<WebRtcVideoFrameAdapter*>(
+    frame = static_cast<WebRtcVideoFrameAdapterInterface*>(
                 next_frame->video_frame_buffer().get())
                 ->getMediaVideoFrame();
   }

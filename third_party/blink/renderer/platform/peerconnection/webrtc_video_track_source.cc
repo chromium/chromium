@@ -9,7 +9,6 @@
 #include "base/logging.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/renderer/platform/webrtc/convert_to_webrtc_video_frame_buffer.h"
 #include "third_party/webrtc/rtc_base/ref_counted_object.h"
 
 namespace {
@@ -92,12 +91,17 @@ WebRtcVideoTrackSource::WebRtcVideoTrackSource(
     media::VideoCaptureFeedbackCB callback,
     media::GpuVideoAcceleratorFactories* gpu_factories)
     : AdaptedVideoTrackSource(/*required_alignment=*/1),
-      adapter_resources_(
-          new WebRtcVideoFrameAdapter::SharedResources(gpu_factories)),
       is_screencast_(is_screencast),
       needs_denoising_(needs_denoising),
       callback_(callback) {
   DETACH_FROM_THREAD(thread_checker_);
+  if (base::FeatureList::IsEnabled(kWebRtcUseModernFrameAdapter)) {
+    adapter_resources_ =
+        new WebRtcVideoFrameAdapter::SharedResources(gpu_factories);
+  } else {
+    legacy_adapter_resources_ =
+        new LegacyWebRtcVideoFrameAdapter::SharedResources(gpu_factories);
+  }
 }
 
 WebRtcVideoTrackSource::~WebRtcVideoTrackSource() = default;
@@ -137,7 +141,11 @@ void WebRtcVideoTrackSource::SendFeedback() {
   media::VideoCaptureFeedback feedback;
   feedback.max_pixels = video_adapter()->GetTargetPixels();
   feedback.max_framerate_fps = video_adapter()->GetMaxFramerate();
-  feedback.Combine(adapter_resources_->GetFeedback());
+  if (base::FeatureList::IsEnabled(kWebRtcUseModernFrameAdapter)) {
+    feedback.Combine(adapter_resources_->GetFeedback());
+  } else {
+    feedback.Combine(legacy_adapter_resources_->GetFeedback());
+  }
   callback_.Run(feedback);
 }
 
@@ -146,7 +154,7 @@ void WebRtcVideoTrackSource::OnFrameCaptured(
     std::vector<scoped_refptr<media::VideoFrame>> scaled_frames) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   TRACE_EVENT0("media", "WebRtcVideoSource::OnFrameCaptured");
-  if (!CanConvertToWebRtcVideoFrameBuffer(frame.get())) {
+  if (!LegacyWebRtcVideoFrameAdapter::IsFrameAdaptable(frame.get())) {
     // Since connecting sources and sinks do not check the format, we need to
     // just ignore formats that we can not handle.
     LOG(ERROR) << "We cannot send frame with storage type: "
@@ -318,9 +326,14 @@ void WebRtcVideoTrackSource::DeliverFrame(
     update_rect = nullptr;
   }
 
-  rtc::scoped_refptr<webrtc::VideoFrameBuffer> frame_adapter(
-      new rtc::RefCountedObject<WebRtcVideoFrameAdapter>(
-          frame, std::move(scaled_frames), adapter_resources_));
+  rtc::scoped_refptr<webrtc::VideoFrameBuffer> frame_adapter;
+  if (base::FeatureList::IsEnabled(kWebRtcUseModernFrameAdapter)) {
+    frame_adapter = new rtc::RefCountedObject<WebRtcVideoFrameAdapter>(
+        frame, std::move(scaled_frames), adapter_resources_);
+  } else {
+    frame_adapter = new rtc::RefCountedObject<LegacyWebRtcVideoFrameAdapter>(
+        frame, legacy_adapter_resources_);
+  }
 
   webrtc::VideoFrame::Builder frame_builder =
       webrtc::VideoFrame::Builder()
