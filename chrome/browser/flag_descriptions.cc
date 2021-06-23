@@ -4077,6 +4077,12 @@ const char kCdmFactoryDaemonName[] = "CDM Factory Daemon";
 const char kCdmFactoryDaemonDescription[] =
     "Use the CDM daemon instead of the library CDM";
 
+const char kCellularAllowPerNetworkRoamingName[] =
+    "Allow per-networking roaming";
+const char kCellularAllowPerNetworkRoamingDescription[] =
+    "Allows per-network cellular roaming configuration when cellular roaming "
+    "is not disabled for the device through enterprise policy.";
+
 const char kCellularForbidAttachApnName[] = "Forbid Use Attach APN";
 const char kCellularForbidAttachApnDescription[] =
     "If enabled, the value of |kCellularUseAttachApn| should have no effect "

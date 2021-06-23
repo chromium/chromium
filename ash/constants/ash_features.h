@@ -91,6 +91,8 @@ extern const base::Feature kCameraPrivacySwitchNotifications;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kCaptureMode;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kCdmFactoryDaemon;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kCellularAllowPerNetworkRoaming;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kCellularForbidAttachApn;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kCellularUseAttachApn;

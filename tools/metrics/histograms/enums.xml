@@ -45600,6 +45600,7 @@ from previous Chrome versions.
   <int value="-1763899404" label="LayoutNGTable:enabled"/>
   <int value="-1760624380"
       label="ImprovedCookieControlsForThirdPartyCookieBlocking:enabled"/>
+  <int value="-1760146324" label="CellularAllowPerNetworkRoaming:disabled"/>
   <int value="-1758468685" label="DownloadHomeV2:disabled"/>
   <int value="-1755301960" label="ClearOldBrowsingData:enabled"/>
   <int value="-1754262889" label="RemoteCopyPersistentNotification:enabled"/>
@@ -48131,6 +48132,7 @@ from previous Chrome versions.
   <int value="373275338" label="AndroidPartnerCustomizationPhenotype:disabled"/>
   <int value="373531060" label="MacCoreLocationBackend:enabled"/>
   <int value="373578344" label="SafeBrowsingSecuritySectionUIAndroid:enabled"/>
+  <int value="375032683" label="CellularAllowPerNetworkRoaming:enabled"/>
   <int value="375485858" label="EnableZeroStateMixedTypesRanker:disabled"/>
   <int value="375785554" label="UserActivationV2:disabled"/>
   <int value="375934458" label="PortalsCrossOrigin:enabled"/>
