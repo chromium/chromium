@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/chromeos/platform_keys/platform_keys.h"
+#include "chrome/browser/platform_keys/platform_keys.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

@@ -12,7 +12,7 @@
 #include "base/test/gmock_move_support.h"
 #include "chrome/browser/chromeos/platform_keys/key_permissions/mock_key_permissions_service.h"
 #include "chrome/browser/chromeos/platform_keys/mock_platform_keys_service.h"
-#include "chrome/browser/chromeos/platform_keys/platform_keys.h"
+#include "chrome/browser/platform_keys/platform_keys.h"
 #include "chromeos/crosapi/cpp/keystore_service_util.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "content/public/test/browser_task_environment.h"

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_PLATFORM_KEYS_EXTENSION_PLATFORM_KEYS_SERVICE_FACTORY_H_
-#define CHROME_BROWSER_CHROMEOS_PLATFORM_KEYS_EXTENSION_PLATFORM_KEYS_SERVICE_FACTORY_H_
+#ifndef CHROME_BROWSER_PLATFORM_KEYS_EXTENSION_PLATFORM_KEYS_SERVICE_FACTORY_H_
+#define CHROME_BROWSER_PLATFORM_KEYS_EXTENSION_PLATFORM_KEYS_SERVICE_FACTORY_H_
 
 #include "base/macros.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
@@ -31,6 +31,9 @@ class ExtensionPlatformKeysServiceFactory
       ExtensionPlatformKeysServiceFactory>;
 
   ExtensionPlatformKeysServiceFactory();
+  ExtensionPlatformKeysServiceFactory(
+      const ExtensionPlatformKeysServiceFactory&) = delete;
+  auto operator=(const ExtensionPlatformKeysServiceFactory&) = delete;
   ~ExtensionPlatformKeysServiceFactory() override;
 
   // BrowserContextKeyedServiceFactory:
@@ -38,10 +41,8 @@ class ExtensionPlatformKeysServiceFactory
       content::BrowserContext* context) const override;
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionPlatformKeysServiceFactory);
 };
 
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_PLATFORM_KEYS_EXTENSION_PLATFORM_KEYS_SERVICE_FACTORY_H_
+#endif  // CHROME_BROWSER_PLATFORM_KEYS_EXTENSION_PLATFORM_KEYS_SERVICE_FACTORY_H_

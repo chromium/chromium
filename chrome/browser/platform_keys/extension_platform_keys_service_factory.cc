@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/platform_keys/extension_platform_keys_service_factory.h"
+#include "chrome/browser/platform_keys/extension_platform_keys_service_factory.h"
 
 #include <memory>
 #include <utility>
@@ -14,7 +14,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/chromeos/platform_keys/extension_platform_keys_service.h"
+#include "chrome/browser/platform_keys/extension_platform_keys_service.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/ui/platform_keys_certificate_selector_chromeos.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -35,6 +35,8 @@ class DefaultSelectDelegate
     : public chromeos::ExtensionPlatformKeysService::SelectDelegate {
  public:
   DefaultSelectDelegate() {}
+  DefaultSelectDelegate(const DefaultSelectDelegate&) = delete;
+  auto operator=(const DefaultSelectDelegate&) = delete;
   ~DefaultSelectDelegate() override {}
 
   void Select(const std::string& extension_id,
@@ -66,8 +68,6 @@ class DefaultSelectDelegate
 
  private:
   base::WeakPtrFactory<DefaultSelectDelegate> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DefaultSelectDelegate);
 };
 
 }  // namespace

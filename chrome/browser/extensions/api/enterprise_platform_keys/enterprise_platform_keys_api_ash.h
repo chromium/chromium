@@ -10,8 +10,8 @@
 #include <vector>
 
 #include "base/memory/ref_counted.h"
-#include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "chrome/browser/extensions/api/enterprise_platform_keys_private/enterprise_platform_keys_private_api.h"
+#include "chrome/browser/platform_keys/platform_keys.h"
 #include "chromeos/crosapi/mojom/keystore_error.mojom.h"
 #include "extensions/browser/extension_function.h"
 

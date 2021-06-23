@@ -20,7 +20,7 @@
 #include "chrome/browser/ash/arc/enterprise/cert_store/cert_store_service.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/platform_keys/key_permissions/extension_key_permissions_service.h"
+#include "chrome/browser/platform_keys/extension_key_permissions_service.h"
 #include "chrome/browser/policy/developer_tools_policy_handler.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"

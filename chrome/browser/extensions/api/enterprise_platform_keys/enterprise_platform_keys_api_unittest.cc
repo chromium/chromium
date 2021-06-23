@@ -12,6 +12,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/attestation/mock_tpm_challenge_key.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/extensions/api/enterprise_platform_keys_private/enterprise_platform_keys_private_api.h"
 #include "chrome/browser/extensions/extension_function_test_utils.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/pref_names.h"

@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "chrome/browser/chromeos/platform_keys/platform_keys.h"
+#include "chrome/browser/platform_keys/platform_keys.h"
 #include "chromeos/crosapi/mojom/keystore_error.mojom.h"
 #include "extensions/browser/extension_function.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

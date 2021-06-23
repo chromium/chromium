@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_PLATFORM_KEYS_EXTENSION_PLATFORM_KEYS_SERVICE_H_
-#define CHROME_BROWSER_CHROMEOS_PLATFORM_KEYS_EXTENSION_PLATFORM_KEYS_SERVICE_H_
+#ifndef CHROME_BROWSER_PLATFORM_KEYS_EXTENSION_PLATFORM_KEYS_SERVICE_H_
+#define CHROME_BROWSER_PLATFORM_KEYS_EXTENSION_PLATFORM_KEYS_SERVICE_H_
 
 #include <memory>
 #include <string>
@@ -42,6 +42,8 @@ class ExtensionPlatformKeysService : public KeyedService {
         const scoped_refptr<net::X509Certificate>& selection)>;
 
     SelectDelegate();
+    SelectDelegate(const SelectDelegate&) = delete;
+    auto operator=(const SelectDelegate&) = delete;
     virtual ~SelectDelegate();
 
     // Called on an interactive SelectClientCertificates call with the list of
@@ -58,14 +60,14 @@ class ExtensionPlatformKeysService : public KeyedService {
                         CertificateSelectedCallback callback,
                         content::WebContents* web_contents,
                         content::BrowserContext* context) = 0;
-
-   private:
-    DISALLOW_ASSIGN(SelectDelegate);
   };
 
   // |browser_context| must not be null and must outlive this object.
   explicit ExtensionPlatformKeysService(
       content::BrowserContext* browser_context);
+
+  ExtensionPlatformKeysService(const ExtensionPlatformKeysService&) = delete;
+  auto operator=(const ExtensionPlatformKeysService&) = delete;
 
   ~ExtensionPlatformKeysService() override;
 
@@ -213,10 +215,8 @@ class ExtensionPlatformKeysService : public KeyedService {
   std::unique_ptr<SelectDelegate> select_delegate_;
   base::queue<std::unique_ptr<Task>> tasks_;
   base::WeakPtrFactory<ExtensionPlatformKeysService> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionPlatformKeysService);
 };
 
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_PLATFORM_KEYS_EXTENSION_PLATFORM_KEYS_SERVICE_H_
+#endif  // CHROME_BROWSER_PLATFORM_KEYS_EXTENSION_PLATFORM_KEYS_SERVICE_H_

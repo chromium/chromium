@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/platform_keys/extension_platform_keys_service.h"
+#include "chrome/browser/platform_keys/extension_platform_keys_service.h"
 
 #include <stddef.h>
 
@@ -16,12 +16,12 @@
 #include "base/memory/ptr_util.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/platform_keys/key_permissions/extension_key_permissions_service.h"
-#include "chrome/browser/chromeos/platform_keys/key_permissions/extension_key_permissions_service_factory.h"
+
 #include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_service.h"
 #include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_service_factory.h"
-#include "chrome/browser/chromeos/platform_keys/platform_keys.h"
+#include "chrome/browser/platform_keys/extension_key_permissions_service.h"
+#include "chrome/browser/platform_keys/extension_key_permissions_service_factory.h"
+#include "chrome/browser/platform_keys/platform_keys.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/crosapi/cpp/keystore_service_util.h"
 #include "chromeos/crosapi/mojom/keystore_error.mojom-shared.h"
@@ -47,6 +47,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/crosapi/keystore_service_ash.h"
 #include "chrome/browser/ash/crosapi/keystore_service_factory_ash.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #endif  // #if BUILDFLAG(IS_CHROMEOS_ASH)
 
 using content::BrowserThread;
@@ -71,18 +72,9 @@ namespace chromeos {
 
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-
-// TODO(miersh): minimize the use of these functions.
-std::vector<uint8_t> StrToBlob(const std::string& str) {
-  return std::vector<uint8_t>(str.begin(), str.end());
-}
-std::string BlobToStr(const std::vector<uint8_t>& blob) {
-  return std::string(blob.begin(), blob.end());
-}
-
 // Verify the allowlisted kKeyPermissionsInLoginScreen feature behaviors.
 bool IsExtensionAllowlisted(const extensions::Extension* extension) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Can be nullptr if the extension is uninstalled before the SignTask is
   // completed.
   if (!extension)
@@ -94,8 +86,18 @@ bool IsExtensionAllowlisted(const extensions::Extension* extension) {
 
   return key_permissions_in_login_screen->IsAvailableToExtension(extension)
       .is_available();
-}
+#else
+  return false;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
+
+// TODO(miersh): minimize the use of these functions.
+std::vector<uint8_t> StrToBlob(const std::string& str) {
+  return std::vector<uint8_t>(str.begin(), str.end());
+}
+std::string BlobToStr(const std::vector<uint8_t>& blob) {
+  return std::string(blob.begin(), blob.end());
+}
 
 KeystoreType KeystoreTypeFromTokenId(platform_keys::TokenId token_id) {
   switch (token_id) {
@@ -166,12 +168,10 @@ void BindKeystoreService(
 class ExtensionPlatformKeysService::Task {
  public:
   Task() {}
+  auto operator=(const Task&) = delete;
   virtual ~Task() {}
   virtual void Start() = 0;
   virtual bool IsDone() = 0;
-
- private:
-  DISALLOW_ASSIGN(Task);
 };
 
 class ExtensionPlatformKeysService::GenerateKeyTask : public Task {
@@ -191,6 +191,9 @@ class ExtensionPlatformKeysService::GenerateKeyTask : public Task {
         extension_id_(extension_id),
         callback_(std::move(callback)),
         service_(service) {}
+
+  GenerateKeyTask(const GenerateKeyTask&) = delete;
+  auto operator=(const GenerateKeyTask&) = delete;
 
   ~GenerateKeyTask() override = default;
 
@@ -316,8 +319,6 @@ class ExtensionPlatformKeysService::GenerateKeyTask : public Task {
   Step next_step_ = Step::GENERATE_KEY;
 
   base::WeakPtrFactory<GenerateKeyTask> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GenerateKeyTask);
 };
 
 class ExtensionPlatformKeysService::GenerateRSAKeyTask
@@ -407,6 +408,9 @@ class ExtensionPlatformKeysService::SignTask : public Task {
     signing_scheme_ = GetKeystoreSigningScheme(key_type, hash_algorithm);
     DCHECK(signing_scheme_ != KeystoreSigningScheme::kUnknown);
   }
+
+  SignTask(const SignTask&) = delete;
+  auto operator=(const SignTask&) = delete;
 
   ~SignTask() override {}
 
@@ -555,8 +559,6 @@ class ExtensionPlatformKeysService::SignTask : public Task {
       extension_key_permissions_service_;
   ExtensionPlatformKeysService* const service_;
   base::WeakPtrFactory<SignTask> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SignTask);
 };
 
 class ExtensionPlatformKeysService::SelectTask : public Task {
@@ -593,6 +595,10 @@ class ExtensionPlatformKeysService::SelectTask : public Task {
         callback_(std::move(callback)),
         web_contents_(web_contents),
         service_(service) {}
+
+  SelectTask(const SelectTask&) = delete;
+  auto operator=(const SelectTask) = delete;
+
   ~SelectTask() override {}
 
   void Start() override {
@@ -860,8 +866,6 @@ class ExtensionPlatformKeysService::SelectTask : public Task {
       extension_key_permissions_service_;
   ExtensionPlatformKeysService* const service_;
   base::WeakPtrFactory<SelectTask> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SelectTask);
 };
 
 ExtensionPlatformKeysService::SelectDelegate::SelectDelegate() {}
@@ -905,8 +909,13 @@ void ExtensionPlatformKeysService::GenerateECKey(
 }
 
 bool ExtensionPlatformKeysService::IsUsingSigninProfile() {
+// TODO(crbug.com/1146430) Revisit this place when Lacros-Chrome starts being
+// used on the login screen.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   return ProfileHelper::IsSigninProfile(
       Profile::FromBrowserContext(browser_context_));
+#endif
+  return false;
 }
 
 void ExtensionPlatformKeysService::SignDigest(

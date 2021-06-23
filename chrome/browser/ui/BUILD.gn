@@ -2167,7 +2167,6 @@ static_library("ui") {
       "browser_commands_chromeos.h",
       "extensions/extension_installed_notification.cc",
       "extensions/extension_installed_notification.h",
-      "platform_keys_certificate_selector_chromeos.h",
       "settings_window_manager_chromeos.cc",
       "settings_window_manager_chromeos.h",
       "settings_window_manager_observer_chromeos.h",
@@ -2213,8 +2212,6 @@ static_library("ui") {
       "views/frame/immersive_mode_controller_chromeos.cc",
       "views/frame/immersive_mode_controller_chromeos.h",
       "views/frame/native_browser_frame_factory_chromeos.cc",
-      "views/platform_keys_certificate_selector_chromeos.cc",
-      "views/platform_keys_certificate_selector_chromeos.h",
       "views/plugin_vm/plugin_vm_installer_view.cc",
       "views/plugin_vm/plugin_vm_installer_view.h",
       "views/profiles/profile_indicator_icon.cc",
@@ -2898,6 +2895,7 @@ static_library("ui") {
 
   if (is_chromeos_ash || is_chromeos_lacros) {
     sources += [
+      "platform_keys_certificate_selector_chromeos.h",
       "views/frame/browser_frame_header_chromeos.cc",
       "views/frame/browser_frame_header_chromeos.h",
       "views/frame/browser_non_client_frame_view_chromeos.cc",
@@ -2905,6 +2903,8 @@ static_library("ui") {
       "views/frame/browser_non_client_frame_view_factory_chromeos.cc",
       "views/frame/top_controls_slide_controller_chromeos.cc",
       "views/frame/top_controls_slide_controller_chromeos.h",
+      "views/platform_keys_certificate_selector_chromeos.cc",
+      "views/platform_keys_certificate_selector_chromeos.h",
     ]
     deps += [
       "//chromeos/strings",

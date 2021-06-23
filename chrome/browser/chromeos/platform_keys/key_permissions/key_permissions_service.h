@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "chrome/browser/chromeos/platform_keys/platform_keys.h"
+#include "chrome/browser/platform_keys/platform_keys.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

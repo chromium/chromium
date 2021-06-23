@@ -14,7 +14,7 @@
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
-#include "chrome/browser/chromeos/platform_keys/platform_keys.h"
+#include "chrome/browser/platform_keys/platform_keys.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
