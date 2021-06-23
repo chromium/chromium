@@ -2807,6 +2807,23 @@ void RasterDecoderImpl::DoReadbackYUVImagePixelsINTERNAL(
     return;
   }
 
+  if (y_stride < dst_width) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glReadbackImagePixels",
+                       "|y_stride| must be >= the width of the y plane.");
+    return;
+  }
+
+  if (u_stride < ((dst_width + 1) / 2)) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glReadbackImagePixels",
+                       "|u_stride| must be >= the width of the u plane.");
+    return;
+  }
+  if (v_stride < ((dst_width + 1) / 2)) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glReadbackImagePixels",
+                       "|v_stride| must be >= the width of the u plane.");
+    return;
+  }
+
   Mailbox source_mailbox = Mailbox::FromVolatile(
       *reinterpret_cast<const volatile Mailbox*>(mailbox));
   DLOG_IF(ERROR, !source_mailbox.Verify())
