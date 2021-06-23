@@ -116,6 +116,8 @@ class PLATFORM_EXPORT FontFallbackList : public RefCounted<FontFallbackList> {
   scoped_refptr<FontData> GetFontData(const FontDescription&);
 
   const SimpleFontData* DeterminePrimarySimpleFontData(const FontDescription&);
+  const SimpleFontData* DeterminePrimarySimpleFontDataCore(
+      const FontDescription&);
 
   FallbackListCompositeKey CompositeKey(const FontDescription&) const;
 

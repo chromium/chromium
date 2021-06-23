@@ -28,6 +28,7 @@
 
 #include "third_party/blink/renderer/platform/fonts/font_fallback_list.h"
 
+#include "base/timer/elapsed_timer.h"
 #include "third_party/blink/renderer/platform/font_family_names.h"
 #include "third_party/blink/renderer/platform/fonts/alternate_font_family.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
@@ -35,6 +36,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/font_fallback_map.h"
 #include "third_party/blink/renderer/platform/fonts/font_family.h"
+#include "third_party/blink/renderer/platform/fonts/font_performance.h"
 #include "third_party/blink/renderer/platform/fonts/segmented_font_data.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 
@@ -92,6 +94,15 @@ bool FontFallbackList::ShouldSkipDrawing() const {
 }
 
 const SimpleFontData* FontFallbackList::DeterminePrimarySimpleFontData(
+    const FontDescription& font_description) {
+  base::ElapsedTimer timer;
+  const SimpleFontData* result =
+      DeterminePrimarySimpleFontDataCore(font_description);
+  FontPerformance::AddPrimaryFontTime(timer.Elapsed());
+  return result;
+}
+
+const SimpleFontData* FontFallbackList::DeterminePrimarySimpleFontDataCore(
     const FontDescription& font_description) {
   bool should_load_custom_font = true;
 

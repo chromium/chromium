@@ -311,6 +311,7 @@
 #include "third_party/blink/renderer/platform/bindings/v8_dom_wrapper.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/fonts/font_matching_metrics.h"
+#include "third_party/blink/renderer/platform/fonts/font_performance.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
@@ -2035,6 +2036,7 @@ void Document::UpdateStyleAndLayoutTreeForThisDocument() {
 
   SCOPED_UMA_AND_UKM_TIMER(View()->EnsureUkmAggregator(),
                            LocalFrameUkmAggregator::kStyle);
+  FontPerformance::StyleScope font_performance_scope;
 
   // RecalcSlotAssignments should be done before checking
   // NeedsLayoutTreeUpdateForThisDocument().

@@ -145,6 +145,7 @@
 #include "third_party/blink/renderer/core/svg/svg_svg_element.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
+#include "third_party/blink/renderer/platform/fonts/font_performance.h"
 #include "third_party/blink/renderer/platform/geometry/double_rect.h"
 #include "third_party/blink/renderer/platform/geometry/float_quad.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
@@ -4736,7 +4737,14 @@ LocalFrameUkmAggregator& LocalFrameView::EnsureUkmAggregator() {
 void LocalFrameView::OnFirstContentfulPaint() {
   GetPage()->GetChromeClient().StopDeferringCommits(
       *frame_, cc::PaintHoldingCommitTrigger::kFirstContentfulPaint);
-  EnsureUkmAggregator().DidReachFirstContentfulPaint(frame_->IsMainFrame());
+  const bool is_main_frame = frame_->IsMainFrame();
+  if (is_main_frame) {
+    UMA_HISTOGRAM_TIMES("Renderer.Font.PrimaryFont.FCP",
+                        FontPerformance::PrimaryFontTime());
+    UMA_HISTOGRAM_TIMES("Renderer.Font.PrimaryFont.FCP.Style",
+                        FontPerformance::PrimaryFontTimeInStyle());
+  }
+  EnsureUkmAggregator().DidReachFirstContentfulPaint(is_main_frame);
 }
 
 void LocalFrameView::RegisterForLifecycleNotifications(

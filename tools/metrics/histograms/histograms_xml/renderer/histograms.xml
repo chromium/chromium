@@ -191,6 +191,27 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
+<histogram name="Renderer.Font.PrimaryFont.FCP" units="ms"
+    expires_after="2021-10-31">
+  <owner>yosin@chromium.org</owner>
+  <owner>kojii@chromium.org</owner>
+  <owner>layout-dev@chromium.org</owner>
+  <summary>
+    The time computing primary font consumed in the main thread before FCP.
+  </summary>
+</histogram>
+
+<histogram name="Renderer.Font.PrimaryFont.FCP.Style" units="ms"
+    expires_after="2021-10-31">
+  <owner>yosin@chromium.org</owner>
+  <owner>kojii@chromium.org</owner>
+  <owner>layout-dev@chromium.org</owner>
+  <summary>
+    The time computing primary font consumed in the main thread in the style
+    recalc before FCP.
+  </summary>
+</histogram>
+
 <histogram name="Renderer.Hung.Duration" units="ms" expires_after="M85">
   <obsolete>
     Expired in M85, removed in M88.

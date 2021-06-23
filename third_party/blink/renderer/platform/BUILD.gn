@@ -619,6 +619,8 @@ component("platform") {
     "fonts/font_optical_sizing.h",
     "fonts/font_orientation.cc",
     "fonts/font_orientation.h",
+    "fonts/font_performance.cc",
+    "fonts/font_performance.h",
     "fonts/font_platform_data.cc",
     "fonts/font_platform_data.h",
     "fonts/font_selection_algorithm.cc",
