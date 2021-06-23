@@ -70,9 +70,9 @@ async function loadVideoBlob(blob) {
 
     try {
       // The |requestVideoFrameCallback| may not be triggered when playing
-      // malformed video. Set 300ms timeout here to prevent UI be blocked
+      // malformed video. Set 1 second timeout here to prevent UI be blocked
       // forever.
-      await gotFrame.timedWait(300);
+      await gotFrame.timedWait(1000);
     } catch (e) {
       throw new PlayMalformedError(e.message);
     } finally {
