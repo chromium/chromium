@@ -8,6 +8,8 @@
 #include <set>
 
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
+#import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/browser_observer.h"
 #import "ios/chrome/browser/overlays/overlay_request_queue_impl.h"
 #import "ios/chrome/browser/overlays/public/overlay_dismissal_callback.h"
@@ -199,7 +201,11 @@ class OverlayPresenterImpl : public BrowserObserver,
   base::ObserverList<OverlayPresenterObserver,
                      /* check_empty= */ true>
       observers_;
-  base::WeakPtrFactory<OverlayPresenterImpl> weak_factory_;
+  // Scoped observation.
+  base::ScopedObservation<Browser, BrowserObserver> browser_observation_{this};
+
+  base::WeakPtrFactory<OverlayPresenterImpl> weak_factory_{this};
+  // Add new members before weak_factory_.
 };
 
 #endif  // IOS_CHROME_BROWSER_OVERLAYS_OVERLAY_PRESENTER_IMPL_H_
