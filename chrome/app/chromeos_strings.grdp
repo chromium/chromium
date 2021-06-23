@@ -3742,6 +3742,14 @@
     OK
   </message>
 
+  <!-- Lacros data migration screen. -->
+  <message name="IDS_LACROS_DATA_MIGRATION_SCREEN_TITLE" desc="Title of the data migration screen.">
+    Updating Chrome browser
+  </message>
+  <message name="IDS_LACROS_DATA_MIGRATION_SCREEN_SUBTITLE" desc="Subtitle of the data migration screen.">
+    You will be able to use your Chromebook shortly.
+  </message>
+
   <!-- Print Job Notification -->
   <message name="IDS_PRINT_JOB_NOTIFICATION_DISPLAY_SOURCE" desc="The context title of printing notification.">
     Print

@@ -11,3 +11,4 @@
 // <include src="../screens/login/update_required_card.js">
 // <include src="../screens/login/public_session_terms_of_service.js">
 // <include src="../screens/login/offline_login.js">
+// <include src="../screens/login/lacros_data_migration.js">

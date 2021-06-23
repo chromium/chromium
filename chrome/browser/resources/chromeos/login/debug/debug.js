@@ -810,6 +810,10 @@ cr.define('cr.ui.login.debug', function() {
       ],
     },
     {
+      id: 'lacros-data-migration',
+      kind: ScreenKind.OTHER,
+    },
+    {
       id: 'terms-of-service',
       kind: ScreenKind.NORMAL,
       handledSteps: 'loading,loaded,error',
