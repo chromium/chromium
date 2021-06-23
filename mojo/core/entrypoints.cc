@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include "base/no_destructor.h"
 #include "mojo/core/core.h"
 #include "mojo/public/c/system/buffer.h"
 #include "mojo/public/c/system/data_pipe.h"
@@ -416,7 +417,8 @@ Core* Core::Get() {
 }
 
 void InitializeCore() {
-  g_core = new Core;
+  static base::NoDestructor<Core> core_instance;
+  g_core = core_instance.get();
 }
 
 const MojoSystemThunks& GetSystemThunks() {
