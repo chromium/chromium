@@ -1643,9 +1643,17 @@ void ChromeNavigationBrowserTest::ExpectHideSadTabWhenNavigationCompletes(
   EXPECT_FALSE(sad_tab_helper->sad_tab());
 }
 
+#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+// https://crbug.com/1223052
+#define MAYBE_ClearSadTabWhenNavigationCompletes_CrossSite \
+  DISABLED_ClearSadTabWhenNavigationCompletes_CrossSite
+#else
+#define MAYBE_ClearSadTabWhenNavigationCompletes_CrossSite \
+  ClearSadTabWhenNavigationCompletes_CrossSite
+#endif
 // Ensure that completing a navigation from a sad tab will clear the sad tab.
 IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
-                       ClearSadTabWhenNavigationCompletes_CrossSite) {
+                       MAYBE_ClearSadTabWhenNavigationCompletes_CrossSite) {
   ExpectHideSadTabWhenNavigationCompletes(/*cross_site=*/true);
 }
 
