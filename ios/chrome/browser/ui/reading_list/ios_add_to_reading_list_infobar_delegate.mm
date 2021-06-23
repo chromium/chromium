@@ -27,9 +27,12 @@ IOSAddToReadingListInfobarDelegate::~IOSAddToReadingListInfobarDelegate() {}
 IOSAddToReadingListInfobarDelegate::IOSAddToReadingListInfobarDelegate(
     const GURL& URL,
     const std::u16string& title,
-    int time_to_read,
+    int estimated_read_time,
     ReadingListModel* model)
-    : url_(URL), title_(title), time_to_read_(time_to_read), model_(model) {}
+    : url_(URL),
+      title_(title),
+      estimated_read_time_(estimated_read_time),
+      model_(model) {}
 
 infobars::InfoBarDelegate::InfoBarIdentifier
 IOSAddToReadingListInfobarDelegate::GetIdentifier() const {
@@ -43,6 +46,7 @@ std::u16string IOSAddToReadingListInfobarDelegate::GetMessageText() const {
 
 bool IOSAddToReadingListInfobarDelegate::Accept() {
   model_->AddEntry(url_, base::UTF16ToUTF8(title_),
-                   reading_list::ADDED_VIA_CURRENT_APP);
+                   reading_list::ADDED_VIA_CURRENT_APP,
+                   base::TimeDelta::FromMinutes(estimated_read_time_));
   return true;
 }

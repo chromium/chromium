@@ -45,6 +45,7 @@ message ReadingListLocal {
   optional int64 distillation_time_us = 14;
   optional int64 distillation_size = 15;
   optional ReadingListContentSuggestionsExtra content_suggestions_extra = 16;
+  optional int32 estimated_read_time_seconds = 17;
 }
 
 // Additional data used by the ContentSuggestions.

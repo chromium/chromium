@@ -14,7 +14,7 @@ class IOSAddToReadingListInfobarDelegate : public ConfirmInfoBarDelegate {
  public:
   IOSAddToReadingListInfobarDelegate(const GURL& URL,
                                      const std::u16string& title,
-                                     int time_to_read,
+                                     int estimated_read_time_,
                                      ReadingListModel* model);
   ~IOSAddToReadingListInfobarDelegate() override;
 
@@ -31,7 +31,7 @@ class IOSAddToReadingListInfobarDelegate : public ConfirmInfoBarDelegate {
 
   const GURL& URL() const { return url_; }
 
-  int time_to_read() { return time_to_read_; }
+  int estimated_read_time() { return estimated_read_time_; }
 
   // InfoBarDelegate implementation.
   InfoBarIdentifier GetIdentifier() const override;
@@ -46,7 +46,7 @@ class IOSAddToReadingListInfobarDelegate : public ConfirmInfoBarDelegate {
   // The title of the page to be saved to Reading List.
   const std::u16string& title_;
   // The estimated time to read of the page.
-  int time_to_read_;
+  int estimated_read_time_;
   // Reference to save |url_| to Reading List.
   ReadingListModel* model_;
 };

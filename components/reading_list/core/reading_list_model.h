@@ -97,9 +97,14 @@ class ReadingListModel {
 
   // Adds |url| at the top of the unread entries, and removes entries with the
   // same |url| from everywhere else if they exist. The entry title will be a
-  // trimmed copy of |title|.
-  // The addition may be asynchronous, and the data will be available only once
-  // the observers are notified.
+  // trimmed copy of |title|. |time_to_read_minutes| is the estimated time to
+  // read the page. The addition may be asynchronous, and the data will be
+  // available only once the observers are notified.
+  virtual const ReadingListEntry& AddEntry(
+      const GURL& url,
+      const std::string& title,
+      reading_list::EntrySource source,
+      base::TimeDelta estimated_read_time) = 0;
   virtual const ReadingListEntry& AddEntry(
       const GURL& url,
       const std::string& title,

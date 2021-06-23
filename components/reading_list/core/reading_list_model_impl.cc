@@ -332,7 +332,8 @@ bool ReadingListModelImpl::IsUrlSupported(const GURL& url) {
 const ReadingListEntry& ReadingListModelImpl::AddEntry(
     const GURL& url,
     const std::string& title,
-    reading_list::EntrySource source) {
+    reading_list::EntrySource source,
+    base::TimeDelta estimated_read_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(loaded());
   DCHECK(IsUrlSupported(url));
@@ -346,6 +347,9 @@ const ReadingListEntry& ReadingListModelImpl::AddEntry(
   std::string trimmed_title = base::CollapseWhitespaceASCII(title, false);
 
   ReadingListEntry entry(url, trimmed_title, clock_->Now());
+  if (!estimated_read_time.is_zero()) {
+    entry.SetEstimatedReadTime(estimated_read_time);
+  }
   for (auto& observer : observers_)
     observer.ReadingListWillAddEntry(this, entry);
   UpdateEntryStateCountersOnEntryInsertion(entry);
@@ -362,6 +366,13 @@ const ReadingListEntry& ReadingListModelImpl::AddEntry(
   }
 
   return entries_->at(url);
+}
+
+const ReadingListEntry& ReadingListModelImpl::AddEntry(
+    const GURL& url,
+    const std::string& title,
+    reading_list::EntrySource source) {
+  return AddEntry(url, title, source, base::TimeDelta());
 }
 
 void ReadingListModelImpl::SetReadStatus(const GURL& url, bool read) {

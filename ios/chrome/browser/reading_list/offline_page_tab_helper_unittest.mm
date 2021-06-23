@@ -101,6 +101,15 @@ class FakeReadingListModel : public ReadingListModel {
     return *entry_;
   }
 
+  const ReadingListEntry& AddEntry(
+      const GURL& url,
+      const std::string& title,
+      reading_list::EntrySource source,
+      base::TimeDelta estimated_read_time) override {
+    NOTREACHED();
+    return *entry_;
+  }
+
   void RemoveEntryByURL(const GURL& url) override { NOTREACHED(); }
 
   void SetReadStatus(const GURL& url, bool read) override {

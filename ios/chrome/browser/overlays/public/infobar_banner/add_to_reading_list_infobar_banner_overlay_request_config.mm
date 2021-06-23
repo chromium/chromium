@@ -34,7 +34,7 @@ ReadingListBannerRequestConfig::ReadingListBannerRequestConfig(InfoBar* infobar)
   DCHECK(infobar_);
   IOSAddToReadingListInfobarDelegate* delegate =
       static_cast<IOSAddToReadingListInfobarDelegate*>(infobar_->delegate());
-  int time_to_read = delegate->time_to_read();
+  int time_to_read = delegate->estimated_read_time();
 
   NSString* time_to_read_string =
       [NSString stringWithFormat:@"%i", time_to_read];

@@ -67,6 +67,11 @@ class ReadingListModelImpl : public ReadingListModel,
 
   bool IsUrlSupported(const GURL& url) override;
 
+  const ReadingListEntry& AddEntry(
+      const GURL& url,
+      const std::string& title,
+      reading_list::EntrySource source,
+      base::TimeDelta estimated_read_time) override;
   const ReadingListEntry& AddEntry(const GURL& url,
                                    const std::string& title,
                                    reading_list::EntrySource source) override;
