@@ -10,6 +10,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/speech/network_speech_recognizer.h"
 #include "chrome/browser/speech/on_device_speech_recognizer.h"
@@ -60,10 +61,10 @@ std::string GetUserLanguage(Profile* profile) {
   if (!languages.empty())
     user_language = languages[0];
 
-  // If we don't find a language, fall back to using the locale.
+  // If we don't find an IME language, fall back to using the application
+  // locale.
   if (user_language.empty())
-    user_language =
-        profile->GetPrefs()->GetString(language::prefs::kApplicationLocale);
+    user_language = g_browser_process->GetApplicationLocale();
 
   return user_language.empty() ? kDefaultProfileLanguage : user_language;
 }
