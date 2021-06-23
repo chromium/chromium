@@ -161,13 +161,13 @@ final class ProfileOAuth2TokenServiceDelegate {
     @CalledByNative
     void seedAndReloadAccountsWithPrimaryAccount(@Nullable String primaryAccountId) {
         ThreadUtils.assertOnUiThread();
-        mAccountManagerFacade.tryGetGoogleAccounts(accounts -> {
-            mAccountTrackerService.seedAccountsIfNeeded(() -> {
-                ProfileOAuth2TokenServiceDelegateJni.get()
-                        .reloadAllAccountsWithPrimaryAccountAfterSeeding(
-                                mNativeProfileOAuth2TokenServiceDelegate, primaryAccountId,
-                                AccountUtils.toAccountNames(accounts).toArray(new String[0]));
-            });
+        mAccountTrackerService.seedAccountsIfNeeded(() -> {
+            final List<Account> accounts = AccountUtils.getAccountsIfFulfilledOrEmpty(
+                    AccountManagerFacadeProvider.getInstance().getAccounts());
+            ProfileOAuth2TokenServiceDelegateJni.get()
+                    .reloadAllAccountsWithPrimaryAccountAfterSeeding(
+                            mNativeProfileOAuth2TokenServiceDelegate, primaryAccountId,
+                            AccountUtils.toAccountNames(accounts).toArray(new String[0]));
         });
     }
 
