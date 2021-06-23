@@ -3869,6 +3869,7 @@ if (is_android) {
       "android/java/src/org/chromium/base/jank_tracker/JankReportingScheduler.java",
       "android/java/src/org/chromium/base/jank_tracker/JankScenario.java",
       "android/java/src/org/chromium/base/jank_tracker/JankTracker.java",
+      "android/java/src/org/chromium/base/jank_tracker/JankTrackerImpl.java",
       "android/java/src/org/chromium/base/library_loader/LegacyLinker.java",
       "android/java/src/org/chromium/base/library_loader/LibraryLoader.java",
       "android/java/src/org/chromium/base/library_loader/LibraryPrefetcher.java",

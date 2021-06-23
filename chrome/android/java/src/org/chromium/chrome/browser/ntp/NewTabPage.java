@@ -26,6 +26,8 @@ import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.TraceEvent;
+import org.chromium.base.jank_tracker.JankScenario;
+import org.chromium.base.jank_tracker.JankTracker;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
@@ -105,6 +107,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
 
     private final String mTitle;
+    private final JankTracker mJankTracker;
     private Resources mResources;
     private final int mBackgroundColor;
     protected final NewTabPageManagerImpl mNewTabPageManager;
@@ -296,7 +299,8 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
      * @param url The URL that launched this new tab page.
      * @param bottomSheetController The controller for bottom sheets, used by the feed.
      * @param shareDelegateSupplier Supplies the Delegate used to open SharingHub.
-     * @param windowAndroid
+     * @param windowAndroid The containing window of this page.
+     * @param jankTracker {@link JankTracker} object to measure jankiness while NTP is visible.
      */
     public NewTabPage(Activity activity, BrowserControlsStateProvider browserControlsStateProvider,
             Supplier<Tab> activityTabProvider, SnackbarManager snackbarManager,
@@ -304,7 +308,8 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
             boolean isTablet, NewTabPageUma uma, boolean isInNightMode,
             NativePageHost nativePageHost, Tab tab, String url,
             BottomSheetController bottomSheetController,
-            Supplier<ShareDelegate> shareDelegateSupplier, WindowAndroid windowAndroid) {
+            Supplier<ShareDelegate> shareDelegateSupplier, WindowAndroid windowAndroid,
+            JankTracker jankTracker) {
         mConstructedTimeNs = System.nanoTime();
         TraceEvent.begin(TAG);
 
@@ -312,6 +317,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
         mActivityLifecycleDispatcher = lifecycleDispatcher;
         mTab = tab;
         mNewTabPageUma = uma;
+        mJankTracker = jankTracker;
         mMostVisitedTileClickObservers = new ObserverList<>();
         Profile profile = Profile.fromWebContents(mTab.getWebContents());
 
@@ -341,6 +347,19 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
             @Override
             public void onHidden(Tab tab, @TabHidingType int type) {
                 if (mIsLoaded) recordNTPHidden();
+            }
+
+            @Override
+            public void onInteractabilityChanged(Tab tab, boolean isInteractable) {
+                // We start/stop tracking based on InteractabilityChanged in addition to
+                // Shown/Hidden because those events don't trigger for switching to tab switcher, we
+                // don't rely solely on this event because it doeesn't trigger when the user
+                // navigates to a website.
+                if (isInteractable) {
+                    mJankTracker.startTrackingScenario(JankScenario.NEW_TAB_PAGE);
+                } else {
+                    mJankTracker.finishTrackingScenario(JankScenario.NEW_TAB_PAGE);
+                }
             }
 
             @Override
@@ -689,11 +708,13 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
     private void recordNTPShown() {
         mLastShownTimeNs = System.nanoTime();
         RecordUserAction.record("MobileNTPShown");
+        mJankTracker.startTrackingScenario(JankScenario.NEW_TAB_PAGE);
         SuggestionsMetrics.recordSurfaceVisible();
     }
 
     /** Records UMA for the NTP being hidden and the time spent on it. */
     private void recordNTPHidden() {
+        mJankTracker.finishTrackingScenario(JankScenario.NEW_TAB_PAGE);
         RecordHistogram.recordMediumTimesHistogram("NewTabPage.TimeSpent",
                 (System.nanoTime() - mLastShownTimeNs) / TimeUtils.NANOSECONDS_PER_MILLISECOND);
         SuggestionsMetrics.recordSurfaceHidden();

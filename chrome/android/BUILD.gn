@@ -870,6 +870,7 @@ junit_binary("chrome_junit_tests") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//base/test:test_support_java",
     "//build/config/android/test/classpath_order:junit_tests",
     "//cc:cc_java",
     "//chrome/android:update_proto_java",

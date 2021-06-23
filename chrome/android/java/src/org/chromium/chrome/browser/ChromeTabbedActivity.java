@@ -45,7 +45,7 @@ import org.chromium.base.MemoryPressureListener;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.annotations.UsedByReflection;
-import org.chromium.base.jank_tracker.JankTracker;
+import org.chromium.base.jank_tracker.JankTrackerImpl;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
@@ -307,7 +307,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     /*
      *  Listens to FrameMetrics and records jank metrics.
      */
-    private JankTracker mJankTracker;
+    private JankTrackerImpl mJankTracker;
 
     // Supplier for a dependency to inform about the type of intent used to launch Chrome.
     private OneshotSupplierImpl<ToolbarIntentMetadata> mIntentMetadataOneshotSupplier =
@@ -1536,6 +1536,11 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     @Override
     public void performPreInflationStartup() {
+        // Create JankTracker before invoking super, because the parent class will invoke
+        // createRootUiCoordinator(...), which in our case requires the JankTracker to already have
+        // been created.
+        mJankTracker = new JankTrackerImpl(this);
+
         super.performPreInflationStartup();
 
         // Decide whether to record startup UMA histograms. This is done  early in the main
@@ -1548,8 +1553,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         if (!LibraryLoader.getInstance().isInitialized()) {
             setTrackColdStartupMetrics(true);
         }
-
-        mJankTracker = new JankTracker(this);
 
         supportRequestWindowFeature(Window.FEATURE_ACTION_MODE_OVERLAY);
 
@@ -1777,7 +1780,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     this::getCompositorViewHolder, getModalDialogManagerSupplier(),
                     this::getSnackbarManager, getBrowserControlsManager(), getActivityTabProvider(),
                     getLifecycleDispatcher(), getWindowAndroid(), this::getLastUserInteractionTime,
-                    this::hadWarmStart);
+                    this::hadWarmStart, mJankTracker);
         }
         return mTabDelegateFactory;
     }
