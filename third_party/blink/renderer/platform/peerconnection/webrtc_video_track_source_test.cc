@@ -13,6 +13,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/peerconnection/webrtc_video_track_source.h"
 #include "third_party/blink/renderer/platform/testing/video_frame_utils.h"
+#include "third_party/blink/renderer/platform/webrtc/convert_to_webrtc_video_frame_buffer.h"
 #include "third_party/webrtc/api/video/video_frame.h"
 #include "third_party/webrtc/rtc_base/ref_counted_object.h"
 
@@ -146,7 +147,7 @@ std::vector<WebRtcVideoTrackSourceTest::ParamType> TestParams() {
   std::vector<WebRtcVideoTrackSourceTest::ParamType> test_params;
   // All formats for owned memory.
   for (media::VideoPixelFormat format :
-       LegacyWebRtcVideoFrameAdapter::AdaptableMappablePixelFormats()) {
+       GetPixelFormatsMappableToWebRtcVideoFrameBuffer()) {
     test_params.emplace_back(
         media::VideoFrame::StorageType::STORAGE_OWNED_MEMORY, format);
   }

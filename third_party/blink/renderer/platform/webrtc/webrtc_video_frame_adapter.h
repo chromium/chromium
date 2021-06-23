@@ -25,29 +25,6 @@
 
 namespace blink {
 
-// Controls whether to use the WebRtcVideoFrameAdapter or the
-// LegacyWebRtcVideoFrameAdapter as the adapter of media::VideoFrames.
-PLATFORM_EXPORT extern const base::Feature kWebRtcUseModernFrameAdapter;
-
-// TODO(https://crbug.com/1191986): When kWebRtcUseModernFrameAdapter is shipped
-// to 100%, delete the legacy adapter and this interface.
-class PLATFORM_EXPORT WebRtcVideoFrameAdapterInterface
-    : public webrtc::VideoFrameBuffer {
- public:
-  WebRtcVideoFrameAdapterInterface() = default;
-  ~WebRtcVideoFrameAdapterInterface() override = default;
-
-  virtual bool SupportsOptimizedScaling() const = 0;
-  virtual scoped_refptr<media::VideoFrame> getMediaVideoFrame() const = 0;
-};
-
-// Constructs a WebRtcVideoFrameAdapter or LegacyWebRtcVideoFrameAdapter with
-// null passed in as the shared resources. In order to pass in the type-specific
-// shared resources you need to manually check if kWebRtcUseModernFrameAdapter
-// is enabled and invoke the type-specific constructor.
-PLATFORM_EXPORT rtc::scoped_refptr<WebRtcVideoFrameAdapterInterface>
-CreateWebRtcVideoFrameAdapter(scoped_refptr<media::VideoFrame> frame);
-
 // The WebRtcVideoFrameAdapter implements webrtc::VideoFrameBuffer and is backed
 // by one or more media::VideoFrames.
 // * Upon CropAndScale(), the crop and scale values are soft-applied.
@@ -68,7 +45,7 @@ CreateWebRtcVideoFrameAdapter(scoped_refptr<media::VideoFrame> frame);
 // or to the frame feeddback so that we may optionally use this information to
 // optimize future captured frames for these sizes.
 class PLATFORM_EXPORT WebRtcVideoFrameAdapter
-    : public WebRtcVideoFrameAdapterInterface {
+    : public webrtc::VideoFrameBuffer {
  public:
   class PLATFORM_EXPORT SharedResources
       : public base::RefCountedThreadSafe<SharedResources> {
@@ -207,10 +184,7 @@ class PLATFORM_EXPORT WebRtcVideoFrameAdapter
       std::vector<scoped_refptr<media::VideoFrame>> scaled_frames,
       scoped_refptr<SharedResources> shared_resources);
 
-  bool SupportsOptimizedScaling() const override { return true; }
-  scoped_refptr<media::VideoFrame> getMediaVideoFrame() const override {
-    return frame_;
-  }
+  scoped_refptr<media::VideoFrame> getMediaVideoFrame() const { return frame_; }
 
   // Regardless of the pixel format used internally, kNative is returned
   // indicating that GetMappedFrameBuffer() or ToI420() is required to obtain

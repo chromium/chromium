@@ -17,22 +17,11 @@
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/webrtc/convert_to_webrtc_video_frame_buffer.h"
-#include "third_party/blink/renderer/platform/webrtc/legacy_webrtc_video_frame_adapter.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/webrtc/rtc_base/ref_counted_object.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace blink {
-
-const base::Feature kWebRtcUseModernFrameAdapter{
-    "WebRtcUseModernFrameAdapter", base::FEATURE_DISABLED_BY_DEFAULT};
-
-rtc::scoped_refptr<WebRtcVideoFrameAdapterInterface>
-CreateWebRtcVideoFrameAdapter(scoped_refptr<media::VideoFrame> frame) {
-  if (base::FeatureList::IsEnabled(kWebRtcUseModernFrameAdapter))
-    return new rtc::RefCountedObject<WebRtcVideoFrameAdapter>(frame);
-  return new rtc::RefCountedObject<LegacyWebRtcVideoFrameAdapter>(frame);
-}
 
 namespace {
 
