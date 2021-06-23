@@ -10,6 +10,7 @@
 #include "ash/app_list/model/app_list_model.h"
 #include "ash/app_list/model/search/search_model.h"
 #include "ash/app_list/model/search/search_result.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_menu_constants.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -51,12 +52,16 @@ constexpr char kAppListZeroStateSearchResultUserActionHistogram[] =
 constexpr char kAppListZeroStateSearchResultRemovalHistogram[] =
     "Apps.AppList.ZeroStateSearchResultRemovalDecision";
 
-// The base UMA histogram that logs app launches within the AppList and shelf.
+// The base UMA histogram that logs app launches within the HomeLauncher (tablet
+// mode AppList), and the fullscreen AppList (when AppListBubble is disabled in
+// clamshell mode) and the Shelf.
 constexpr char kAppListAppLaunched[] = "Apps.AppListAppLaunchedV2";
 
-// The UMA histograms that log app launches within the AppList and shelf. The
-// app launches are divided by histogram for each of the the different AppList
-// states.
+// The UMA histograms that log app launches within the AppList, AppListBubble
+// and Shelf. The app launches are divided by histogram for each of the the
+// different AppList states.
+constexpr char kAppListAppLaunchedBubbleAllApps[] =
+    "Apps.AppListAppLaunchedV2.BubbleAllApps";
 constexpr char kAppListAppLaunchedClosed[] = "Apps.AppListAppLaunchedV2.Closed";
 constexpr char kAppListAppLaunchedPeeking[] =
     "Apps.AppListAppLaunchedV2.Peeking";
@@ -189,21 +194,39 @@ void RecordAppListUserJourneyTime(AppListShowSource source,
 void RecordAppListAppLaunched(AppListLaunchedFrom launched_from,
                               AppListViewState app_list_state,
                               bool is_tablet_mode,
-                              bool home_launcher_shown) {
+                              bool app_list_shown) {
   UMA_HISTOGRAM_ENUMERATION(kAppListAppLaunched, launched_from);
+
+  if (features::IsAppListBubbleEnabled() && !is_tablet_mode) {
+    if (!app_list_shown) {
+      UMA_HISTOGRAM_ENUMERATION(kAppListAppLaunchedClosed, launched_from);
+    } else {
+      // TODO(newcomer): Handle the case where search is open.
+      UMA_HISTOGRAM_ENUMERATION(kAppListAppLaunchedBubbleAllApps,
+                                launched_from);
+    }
+    return;
+  }
+
   switch (app_list_state) {
     case AppListViewState::kClosed:
+      DCHECK(!features::IsAppListBubbleEnabled());
+      // Only exists in clamshell mode with AppListBubble disabled.
       UMA_HISTOGRAM_ENUMERATION(kAppListAppLaunchedClosed, launched_from);
       break;
     case AppListViewState::kPeeking:
+      DCHECK(!features::IsAppListBubbleEnabled());
+      // Only exists in clamshell mode with AppListBubble disabled.
       UMA_HISTOGRAM_ENUMERATION(kAppListAppLaunchedPeeking, launched_from);
       break;
     case AppListViewState::kHalf:
+      DCHECK(!features::IsAppListBubbleEnabled());
+      // Only exists in clamshell mode with AppListBubble disabled.
       UMA_HISTOGRAM_ENUMERATION(kAppListAppLaunchedHalf, launched_from);
       break;
     case AppListViewState::kFullscreenAllApps:
       if (is_tablet_mode) {
-        if (home_launcher_shown) {
+        if (app_list_shown) {
           UMA_HISTOGRAM_ENUMERATION(kAppListAppLaunchedHomecherAllApps,
                                     launched_from);
         } else {
@@ -217,7 +240,7 @@ void RecordAppListAppLaunched(AppListLaunchedFrom launched_from,
       break;
     case AppListViewState::kFullscreenSearch:
       if (is_tablet_mode) {
-        if (home_launcher_shown) {
+        if (app_list_shown) {
           UMA_HISTOGRAM_ENUMERATION(kAppListAppLaunchedHomecherSearch,
                                     launched_from);
         } else {

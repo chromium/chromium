@@ -965,6 +965,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram_suffixes>
 
 <histogram_suffixes name="AppListState" separator=".">
+  <suffix name="BubbleAllApps" label=""/>
   <suffix name="Closed" label=""/>
   <suffix name="FullscreenAllApps" label=""/>
   <suffix name="FullscreenSearch" label=""/>

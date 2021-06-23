@@ -74,7 +74,7 @@ void AppListPresenterEventFilter::OnKeyEvent(ui::KeyEvent* event) {
     return;
 
   // If the home launcher is not shown in tablet mode, ignore events.
-  if (Shell::Get()->IsInTabletMode() && !controller_->IsVisible(absl::nullopt))
+  if (Shell::Get()->IsInTabletMode() && !controller_->IsVisible())
     return;
 
   // Don't absorb the first event for the search box while it is open.

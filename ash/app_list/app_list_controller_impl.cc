@@ -591,6 +591,10 @@ bool AppListControllerImpl::IsVisible(
                            display_id.value() == last_visible_display_id_);
 }
 
+bool AppListControllerImpl::IsVisible() {
+  return IsVisible(absl::nullopt);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // AppListModelObserver:
 
@@ -1142,7 +1146,7 @@ void AppListControllerImpl::OnUiVisibilityChanged(
     absl::optional<AssistantExitPoint> exit_point) {
   switch (new_visibility) {
     case AssistantVisibility::kVisible:
-      if (!IsVisible(absl::nullopt)) {
+      if (!IsVisible()) {
         Show(GetDisplayIdToShowAppListOn(), kAssistantEntryPoint,
              base::TimeTicks());
       }
@@ -1658,7 +1662,7 @@ void AppListControllerImpl::GetAppLaunchedMetricParams(
     AppLaunchedMetricParams* metric_params) {
   metric_params->app_list_view_state = GetAppListViewState();
   metric_params->is_tablet_mode = IsTabletMode();
-  metric_params->home_launcher_shown = last_visible_;
+  metric_params->app_list_shown = last_visible_;
 }
 
 gfx::Rect AppListControllerImpl::SnapBoundsToDisplayEdge(
@@ -1718,10 +1722,12 @@ void AppListControllerImpl::OnVisibilityChanged(bool visible,
 
     if (tracked_app_window_)
       real_visibility = false;
-  }
 
-  aura::Window* app_list_window = GetWindow();
-  real_visibility &= app_list_window && app_list_window->TargetVisibility();
+    // When transitioning to/from overview, ensure the AppList window is not in
+    // the process of being hidden.
+    aura::Window* app_list_window = GetWindow();
+    real_visibility &= app_list_window && app_list_window->TargetVisibility();
+  }
 
   OnVisibilityWillChange(real_visibility, display_id);
 
@@ -1734,13 +1740,15 @@ void AppListControllerImpl::OnVisibilityChanged(bool visible,
   last_visible_display_id_ = display_id;
 
   AppListView* const app_list_view = fullscreen_presenter_->GetView();
-  app_list_view->UpdatePageResetTimer(real_visibility);
+  if (app_list_view) {
+    app_list_view->UpdatePageResetTimer(real_visibility);
 
-  if (!real_visibility) {
-    app_list_view->search_box_view()->ClearSearchAndDeactivateSearchBox();
-    // Reset the app list contents state, so the app list is in initial state
-    // when the app list visibility changes again.
-    app_list_view->app_list_main_view()->contents_view()->ResetForShow();
+    if (!real_visibility) {
+      app_list_view->search_box_view()->ClearSearchAndDeactivateSearchBox();
+      // Reset the app list contents state, so the app list is in initial state
+      // when the app list visibility changes again.
+      app_list_view->app_list_main_view()->contents_view()->ResetForShow();
+    }
   }
 
   // Notify chrome of visibility changes.
@@ -2080,7 +2088,7 @@ void AppListControllerImpl::Shutdown() {
 }
 
 bool AppListControllerImpl::IsHomeScreenVisible() {
-  return IsTabletMode() && IsVisible(absl::nullopt);
+  return IsTabletMode() && IsVisible();
 }
 
 gfx::Rect AppListControllerImpl::GetInitialAppListItemScreenBoundsForWindow(

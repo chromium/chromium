@@ -148,6 +148,9 @@ class ASH_PUBLIC_EXPORT AppListController {
   // display.
   virtual bool IsVisible(const absl::optional<int64_t>& display_id) = 0;
 
+  // Returns whether the AppList is visible on any display.
+  virtual bool IsVisible() = 0;
+
  protected:
   AppListController();
   virtual ~AppListController();

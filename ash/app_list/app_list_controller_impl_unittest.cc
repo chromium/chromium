@@ -1249,6 +1249,7 @@ TEST_F(AppListControllerImplAppListBubbleTest, ShowAppListOpensBubble) {
   controller->ShowAppList();
 
   EXPECT_TRUE(controller->bubble_presenter_for_test()->IsShowing());
+  EXPECT_TRUE(controller->IsVisible());
 }
 
 TEST_F(AppListControllerImplAppListBubbleTest, ToggleAppListOpensBubble) {
@@ -1258,6 +1259,7 @@ TEST_F(AppListControllerImplAppListBubbleTest, ToggleAppListOpensBubble) {
                             /*event_time_stamp=*/{});
 
   EXPECT_TRUE(controller->bubble_presenter_for_test()->IsShowing());
+  EXPECT_TRUE(controller->IsVisible());
 }
 
 TEST_F(AppListControllerImplAppListBubbleTest, DismissAppListClosesBubble) {
@@ -1267,6 +1269,7 @@ TEST_F(AppListControllerImplAppListBubbleTest, DismissAppListClosesBubble) {
   controller->DismissAppList();
 
   EXPECT_FALSE(controller->bubble_presenter_for_test()->IsShowing());
+  EXPECT_FALSE(controller->IsVisible());
 }
 
 TEST_F(AppListControllerImplAppListBubbleTest,
@@ -1277,6 +1280,7 @@ TEST_F(AppListControllerImplAppListBubbleTest,
   controller->ShowAppList();
 
   EXPECT_FALSE(controller->bubble_presenter_for_test()->IsShowing());
+  EXPECT_TRUE(controller->IsVisible());
 }
 
 TEST_F(AppListControllerImplAppListBubbleTest,
@@ -1289,6 +1293,7 @@ TEST_F(AppListControllerImplAppListBubbleTest,
                             /*event_time_stamp=*/{});
 
   EXPECT_FALSE(controller->bubble_presenter_for_test()->IsShowing());
+  EXPECT_TRUE(controller->IsVisible());
 }
 
 TEST_F(AppListControllerImplAppListBubbleTest, EnteringTabletModeClosesBubble) {

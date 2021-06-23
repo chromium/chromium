@@ -134,6 +134,7 @@ class ASH_EXPORT AppListControllerImpl
   void ShowAppList() override;
   aura::Window* GetWindow() override;
   bool IsVisible(const absl::optional<int64_t>& display_id) override;
+  bool IsVisible() override;
 
   // AppListModelObserver:
   void OnAppListItemAdded(AppListItem* item) override;
@@ -475,8 +476,8 @@ class ASH_EXPORT AppListControllerImpl
   AppListColorProviderImpl color_provider_;
 
   // Manages the fullscreen/peeking launcher and the tablet mode home launcher.
-  // |presenter_| should be put below |client_| and |model_| to prevent a crash
-  // in destruction.
+  // |fullscreen_presenter_| should be put below |client_| and |model_| to
+  // prevent a crash in destruction.
   std::unique_ptr<AppListPresenterImpl> fullscreen_presenter_;
 
   // Manages the clamshell launcher bubble. Null when the feature AppListBubble

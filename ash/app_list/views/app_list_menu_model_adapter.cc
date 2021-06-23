@@ -175,7 +175,7 @@ void AppListMenuModelAdapter::MaybeRecordAppLaunched(int command_id) {
 
   RecordAppListAppLaunched(
       metric_params_.launched_from, metric_params_.app_list_view_state,
-      metric_params_.is_tablet_mode, metric_params_.home_launcher_shown);
+      metric_params_.is_tablet_mode, metric_params_.app_list_shown);
 }
 
 }  // namespace ash

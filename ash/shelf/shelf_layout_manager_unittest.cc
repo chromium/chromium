@@ -14,6 +14,7 @@
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/views/app_list_view.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/focus_cycler.h"
 #include "ash/keyboard/keyboard_controller_impl.h"
@@ -75,8 +76,10 @@
 #include "base/test/icu_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "components/prefs/pref_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/window_parenting_client.h"
 #include "ui/aura/window.h"
@@ -2839,6 +2842,34 @@ TEST_F(ShelfLayoutManagerTest, RtlPlacement) {
 
   // Reset the lauguage setting.
   base::i18n::SetICUDefaultLocale(locale);
+}
+
+class AppListBubbleShelfLayoutManagerTest : public ShelfLayoutManagerTest {
+ public:
+  AppListBubbleShelfLayoutManagerTest() {
+    scoped_features_.InitAndEnableFeature(features::kAppListBubble);
+  }
+  ~AppListBubbleShelfLayoutManagerTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_features_;
+};
+
+// Tests that the shelf background does not change when the AppListBubble is
+// shown.
+TEST_F(AppListBubbleShelfLayoutManagerTest, NoBackgroundChange) {
+  const auto shelf_background_type = GetShelfWidget()->GetBackgroundType();
+  AppListControllerImpl* app_list_controller =
+      Shell::Get()->app_list_controller();
+  // Show the AppListBubble, test that the shelf background has not changed.
+  PressHomeButton();
+  ASSERT_TRUE(app_list_controller->IsVisible());
+  EXPECT_EQ(shelf_background_type, GetShelfWidget()->GetBackgroundType());
+
+  // Hide the bubble, test that the shelf background has still not changed.
+  PressHomeButton();
+  ASSERT_FALSE(app_list_controller->IsVisible());
+  EXPECT_EQ(shelf_background_type, GetShelfWidget()->GetBackgroundType());
 }
 
 class ShelfLayoutManagerWindowDraggingTest : public ShelfLayoutManagerTestBase {

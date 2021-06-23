@@ -3740,7 +3740,7 @@ class AppListPresenterHomeLauncherTest
 
   bool IsAppListVisible() {
     auto* app_list_controller = Shell::Get()->app_list_controller();
-    return app_list_controller->IsVisible(absl::nullopt) &&
+    return app_list_controller->IsVisible() &&
            app_list_controller->GetTargetVisibility(absl::nullopt);
   }
 
@@ -4160,7 +4160,7 @@ TEST_P(AppListPresenterHomeLauncherTest,
   // Launcher is fullscreen.
   EXPECT_EQ(app_list->GetAppListViewState(),
             AppListViewState::kFullscreenAllApps);
-  EXPECT_TRUE(app_list->IsVisible(absl::nullopt));
+  EXPECT_TRUE(app_list->IsVisible());
 }
 
 TEST_P(AppListPresenterHomeLauncherTest,
@@ -4178,7 +4178,7 @@ TEST_P(AppListPresenterHomeLauncherTest,
 
   // Launcher is closed.
   EXPECT_EQ(app_list->GetAppListViewState(), AppListViewState::kClosed);
-  EXPECT_FALSE(app_list->IsVisible(absl::nullopt));
+  EXPECT_FALSE(app_list->IsVisible());
 }
 
 // Tests that mouse-scroll up at fullscreen will dismiss app list.

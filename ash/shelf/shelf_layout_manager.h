@@ -608,6 +608,9 @@ class ASH_EXPORT ShelfLayoutManager
   // Whether background blur is enabled.
   const bool is_background_blur_enabled_;
 
+  // Whether the AppListBubble is enabled.
+  const bool is_app_list_bubble_enabled_;
+
   // Pretarget handler responsible for hiding the hotseat.
   std::unique_ptr<ui::EventHandler> hotseat_event_handler_;
 

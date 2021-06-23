@@ -191,7 +191,7 @@ struct AppLaunchedMetricParams {
   AppListLaunchType search_launch_type = AppListLaunchType::kSearchResult;
   AppListViewState app_list_view_state = AppListViewState::kClosed;
   bool is_tablet_mode = false;
-  bool home_launcher_shown = false;
+  bool app_list_shown = false;
 };
 
 void AppListRecordPageSwitcherSourceByEventType(ui::EventType type,
@@ -221,7 +221,7 @@ ASH_EXPORT void RecordSearchLaunchIndexAndQueryLength(
 ASH_EXPORT void RecordAppListAppLaunched(AppListLaunchedFrom launched_from,
                                          AppListViewState app_list_state,
                                          bool is_tablet_mode,
-                                         bool home_launcher_shown);
+                                         bool app_list_shown);
 
 ASH_EXPORT bool IsCommandIdAnAppLaunch(int command_id);
 

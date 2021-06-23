@@ -47,7 +47,9 @@ void AppListBubblePresenter::Show(int64_t display_id) {
   bubble_widget_ =
       views::BubbleDialogDelegateView::CreateBubble(std::move(bubble_view));
   bubble_widget_->AddObserver(this);
+  controller_->OnVisibilityWillChange(/*visible=*/true, display_id);
   bubble_widget_->Show();
+  controller_->OnVisibilityChanged(/*visible=*/true, display_id);
   bubble_view_->FocusSearchBox();  // Must happen after widget creation.
 
   // Set up event filter to close the bubble for clicks outside the bubble that
@@ -56,7 +58,7 @@ void AppListBubblePresenter::Show(int64_t display_id) {
   HomeButton* home_button = shelf->navigation_widget()->GetHomeButton();
   bubble_event_filter_ = std::make_unique<AppListBubbleEventFilter>(
       bubble_widget_, home_button,
-      base::BindRepeating(&AppListBubblePresenter::Dismiss,
+      base::BindRepeating(&AppListBubblePresenter::OnPressOutsideBubble,
                           base::Unretained(this)));
 }
 
@@ -74,7 +76,10 @@ void AppListBubblePresenter::Dismiss() {
   DVLOG(1) << __PRETTY_FUNCTION__;
   if (!bubble_widget_)
     return;
+  const int64_t display_id = GetDisplayId();
+  controller_->OnVisibilityWillChange(/*visible=*/false, display_id);
   bubble_widget_->CloseNow();
+  controller_->OnVisibilityChanged(/*visible=*/false, display_id);
 }
 
 bool AppListBubblePresenter::IsShowing() const {
@@ -87,6 +92,21 @@ void AppListBubblePresenter::OnWidgetDestroying(views::Widget* widget) {
   bubble_widget_->RemoveObserver(this);
   bubble_widget_ = nullptr;
   bubble_view_ = nullptr;
+}
+
+void AppListBubblePresenter::OnPressOutsideBubble() {
+  // Presses outside the bubble could be activating a shelf item. Record the
+  // AppListBubble state prior to dismissal.
+  controller_->RecordAppListState();
+  Dismiss();
+}
+
+int64_t AppListBubblePresenter::GetDisplayId() const {
+  if (!bubble_widget_)
+    return display::kInvalidDisplayId;
+  return display::Screen::GetScreen()
+      ->GetDisplayNearestView(bubble_widget_->GetNativeView())
+      .id();
 }
 
 }  // namespace ash

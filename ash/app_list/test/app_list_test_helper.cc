@@ -68,7 +68,7 @@ void AppListTestHelper::ToggleAndRunLoop(uint64_t display_id,
 }
 
 void AppListTestHelper::CheckVisibility(bool visible) {
-  EXPECT_EQ(visible, app_list_controller_->IsVisible(absl::nullopt));
+  EXPECT_EQ(visible, app_list_controller_->IsVisible());
   EXPECT_EQ(visible, app_list_controller_->GetTargetVisibility(absl::nullopt));
 }
 
