@@ -59,7 +59,7 @@ class TestInputDataProvider : public InputDataProvider {
  public:
   TestInputDataProvider(std::unique_ptr<ui::DeviceManager> device_manager)
       : InputDataProvider(std::move(device_manager)) {}
-  TestInputDataProvider(const TestInputDataProvider&) = delete;
+  explicit TestInputDataProvider(const TestInputDataProvider&) = delete;
   TestInputDataProvider& operator=(const TestInputDataProvider&) = delete;
 
  protected:
