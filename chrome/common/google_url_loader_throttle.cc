@@ -170,6 +170,7 @@ void GoogleURLLoaderThrottle::WillProcessResponse(
     CHECK(response_head->parsed_headers);
     if (response_head->parsed_headers->xfo !=
         network::mojom::XFrameOptionsValue::kDeny) {
+      response_head->headers->SetHeader("X-Frame-Options", "SAMEORIGIN");
       response_head->parsed_headers->xfo =
           network::mojom::XFrameOptionsValue::kSameOrigin;
     }
