@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 
@@ -39,6 +40,9 @@ public class TabListFaviconProvider {
     private static Drawable sRoundedChromeDrawable;
     private static Drawable sRoundedChromeDrawableForStrip;
     private static Drawable sRoundedComposedDefaultDrawable;
+    // Keep dark tint separated if not all providers are forcing dark tint. See crbug.com/1222326.
+    private static Drawable sRoundedGlobeDrawableDarkTint;
+    private static Drawable sRoundedChromeDrawableDarkTint;
     private final int mStripFaviconSize;
     private final int mDefaultFaviconSize;
     private final int mFaviconSize;
@@ -50,8 +54,6 @@ public class TabListFaviconProvider {
     private final int mDefaultIconColor;
     @ColorInt
     private final int mIncognitoIconColor;
-    @ColorInt
-    private final int mDarkIconColor;
     private boolean mIsInitialized;
 
     private Profile mProfile;
@@ -61,6 +63,7 @@ public class TabListFaviconProvider {
      * Construct the provider that provides favicons for tab list.
      * @param context    The context to use for accessing {@link android.content.res.Resources}
      * @param isTabStrip Indicator for whether this class provides favicons for tab strip or not.
+     * @param forceDarkTint Indicator that the favicon will be forced into dark tint or not.
      *
      */
     public TabListFaviconProvider(Context context, boolean isTabStrip, boolean forceDarkTint) {
@@ -75,13 +78,22 @@ public class TabListFaviconProvider {
         mIsTabStrip = isTabStrip;
         mForceDarkTint = forceDarkTint;
 
+        final @ColorInt int darkIconColor =
+                mContext.getResources().getColor(R.color.default_icon_color_dark);
+        final PorterDuffColorFilter darkTintFilter =
+                new PorterDuffColorFilter(darkIconColor, PorterDuff.Mode.SRC_IN);
+
         if (sRoundedGlobeDrawable == null) {
             // TODO(crbug.com/1066709): From Android Developer Documentation, we should avoid
-            //  resizing vector drawable.
+            // resizing vector drawable.
             Drawable globeDrawable =
-                    AppCompatResources.getDrawable(context, R.drawable.ic_globe_24dp);
+                    AppCompatResources.getDrawable(context, R.drawable.ic_globe_24dp).mutate();
             sRoundedGlobeDrawable = processBitmap(
                     getResizedBitmapFromDrawable(globeDrawable, mDefaultFaviconSize), false);
+
+            sRoundedGlobeDrawableDarkTint = processBitmap(
+                    getResizedBitmapFromDrawable(globeDrawable, mDefaultFaviconSize), false);
+            sRoundedGlobeDrawableDarkTint.setColorFilter(darkTintFilter);
         }
         if (sRoundedGlobeDrawableForStrip == null) {
             Drawable globeDrawable =
@@ -93,6 +105,9 @@ public class TabListFaviconProvider {
             Bitmap chromeBitmap =
                     BitmapFactory.decodeResource(mContext.getResources(), R.drawable.chromelogo16);
             sRoundedChromeDrawable = processBitmap(chromeBitmap, false);
+
+            sRoundedChromeDrawableDarkTint = processBitmap(chromeBitmap, false);
+            sRoundedChromeDrawableDarkTint.setColorFilter(darkTintFilter);
         }
         if (sRoundedChromeDrawableForStrip == null) {
             Drawable chromeDrawable =
@@ -101,12 +116,16 @@ public class TabListFaviconProvider {
                     getResizedBitmapFromDrawable(chromeDrawable, mStripFaviconSize), true);
         }
         if (sRoundedComposedDefaultDrawable == null) {
+            // sRoundedComposedDefaultDrawable is only used as the top favicon for tab groups, where
+            // a white drawable background is added behind the favicon, so this drawable will always
+            // be in dark tint.
             sRoundedComposedDefaultDrawable =
                     AppCompatResources.getDrawable(context, R.drawable.ic_group_icon_16dp);
+            sRoundedComposedDefaultDrawable.setColorFilter(darkTintFilter);
         }
+
         mDefaultIconColor = mContext.getResources().getColor(R.color.default_icon_color);
         mIncognitoIconColor = mContext.getResources().getColor(R.color.default_icon_color_light);
-        mDarkIconColor = mContext.getResources().getColor(R.color.default_icon_color_dark);
     }
 
     public void initWithNative(Profile profile) {
@@ -186,29 +205,25 @@ public class TabListFaviconProvider {
     /**
      * Asynchronously get the composed, up to 4, favicon Drawable.
      * @param urls List of urls, up to 4, whose favicon are requested to be composed.
-     * @param isIncognito Whether the processed composed favicon is used for incognito or not.
      * @param faviconCallback The callback that requests for the composed favicon.
      */
-    public void getComposedFaviconImageAsync(
-            List<GURL> urls, boolean isIncognito, Callback<Drawable> faviconCallback) {
+    public void getComposedFaviconImageAsync(List<GURL> urls, Callback<Drawable> faviconCallback) {
         assert urls != null && urls.size() > 1 && urls.size() <= 4;
 
         mFaviconHelper.getComposedFaviconImage(mProfile, urls, mFaviconSize, (image, iconUrl) -> {
             if (image == null) {
-                faviconCallback.onResult(getDefaultComposedImage(isIncognito));
+                faviconCallback.onResult(sRoundedComposedDefaultDrawable);
             } else {
                 faviconCallback.onResult(processBitmap(image, mIsTabStrip));
             }
         });
     }
 
-    private Drawable getDefaultComposedImage(boolean isIncognito) {
-        return getTintedDrawable(sRoundedComposedDefaultDrawable, isIncognito);
-    }
-
     private Drawable getRoundedChromeDrawable(boolean isIncognito) {
         if (mIsTabStrip) {
             return sRoundedChromeDrawableForStrip;
+        } else if (mForceDarkTint) {
+            return sRoundedChromeDrawableDarkTint;
         }
         return getTintedDrawable(sRoundedChromeDrawable, isIncognito);
     }
@@ -216,22 +231,19 @@ public class TabListFaviconProvider {
     private Drawable getRoundedGlobeDrawable(boolean isIncognito) {
         if (mIsTabStrip) {
             return sRoundedGlobeDrawableForStrip;
+        } else if (mForceDarkTint) {
+            return sRoundedGlobeDrawableDarkTint;
         }
         return getTintedDrawable(sRoundedGlobeDrawable, isIncognito);
     }
 
     private Drawable getTintedDrawable(Drawable drawable, boolean isIncognito) {
         @ColorInt
-        int color = mDefaultIconColor;
-        if (mForceDarkTint) {
-            color = mDarkIconColor;
-        } else if (isIncognito) {
-            color = mIncognitoIconColor;
-        }
+        int color = isIncognito ? mIncognitoIconColor : mDefaultIconColor;
         // Since static variable is still loaded when activity is destroyed due to configuration
         // changes, e.g. light/dark theme changes, setColorFilter is needed when we retrieve the
         // drawable. setColorFilter would be a no-op if color and the mode are the same.
-        drawable.setColorFilter(color, PorterDuff.Mode.SRC_IN);
+        drawable.setColorFilter(new PorterDuffColorFilter(color, PorterDuff.Mode.SRC_IN));
         return drawable;
     }
 }

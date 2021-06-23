@@ -73,7 +73,9 @@ import androidx.test.filters.MediumTest;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -82,6 +84,8 @@ import org.junit.runner.RunWith;
 import org.chromium.base.Callback;
 import org.chromium.base.GarbageCollectionTestUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.test.params.ParameterAnnotations;
+import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -122,7 +126,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarController;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.tab_ui.R;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
@@ -139,6 +143,7 @@ import org.chromium.content_public.browser.test.util.WebContentsUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
+import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.UiRestriction;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.ui.widget.ChipView;
@@ -159,7 +164,8 @@ import java.util.concurrent.atomic.AtomicReference;
 // clang-format off
 /** Tests for the {@link StartSurfaceLayout} */
 @SuppressWarnings("ConstantConditions")
-@RunWith(ChromeJUnit4ClassRunner.class)
+@RunWith(ParameterizedRunner.class)
+@ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
         "force-fieldtrials=Study/Group"})
 @EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID + "<Study"})
@@ -194,6 +200,22 @@ public class StartSurfaceLayoutTest {
     private Callback<Bitmap> mBitmapListener =
             (bitmap) -> mAllBitmaps.add(new WeakReference<>(bitmap));
     private TabSwitcher.TabListDelegate mTabListDelegate;
+
+    @BeforeClass
+    public static void setUpBeforeActivityLaunched() {
+        ChromeNightModeTestUtils.setUpNightModeBeforeChromeActivityLaunched();
+    }
+
+    @ParameterAnnotations.UseMethodParameterBefore(NightModeTestUtils.NightModeParams.class)
+    public void setupNightMode(boolean isNightMode) {
+        ChromeNightModeTestUtils.setUpNightModeForChromeActivity(isNightMode);
+        mRenderTestRule.setNightModeEnabled(isNightMode);
+    }
+
+    @AfterClass
+    public static void tearDownAfterClass() {
+        ChromeNightModeTestUtils.tearDownNightModeAfterChromeActivityDestroyed();
+    }
 
     @Before
     public void setUp() {
@@ -235,8 +257,9 @@ public class StartSurfaceLayoutTest {
     @Feature({"RenderTest"})
     // clang-format off
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
+    @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     @CommandLineFlags.Add({BASE_PARAMS})
-    public void testRenderGrid_3WebTabs() throws IOException {
+    public void testRenderGrid_3WebTabs(boolean isNightMode) throws IOException {
         // clang-format on
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         prepareTabs(3, 0, "about:blank");
@@ -255,8 +278,9 @@ public class StartSurfaceLayoutTest {
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS})
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
+    @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     @DisableIf.Build(sdk_is_greater_than = O_MR1, message = "crbug.com/1077552")
-    public void testRenderGrid_10WebTabs() throws IOException {
+    public void testRenderGrid_10WebTabs(boolean isNightMode) throws IOException {
         // clang-format on
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         prepareTabs(10, 0, "about:blank");
@@ -275,9 +299,10 @@ public class StartSurfaceLayoutTest {
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS})
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
+    @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     @DisabledTest(message = "https://crbug.com/1139807")
     @DisableIf.Build(sdk_is_greater_than = O_MR1, message = "crbug.com/1077552")
-    public void testRenderGrid_10WebTabs_InitialScroll() throws IOException {
+    public void testRenderGrid_10WebTabs_InitialScroll(boolean isNightMode) throws IOException {
         // clang-format on
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         prepareTabs(10, 0, "about:blank");
@@ -315,8 +340,9 @@ public class StartSurfaceLayoutTest {
     @Feature({"RenderTest"})
     // clang-format off
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
+    @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     @CommandLineFlags.Add({BASE_PARAMS})
-    public void testRenderGrid_Incognito() throws IOException {
+    public void testRenderGrid_Incognito(boolean isNightMode) throws IOException {
         // clang-format on
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         // Prepare some incognito tabs and enter tab switcher.
@@ -331,6 +357,8 @@ public class StartSurfaceLayoutTest {
         mRenderTestRule.render(cta.findViewById(R.id.tab_list_view), "3_incognito_web_tabs");
     }
 
+    // TODO(https://crbug.com/1222917): This test case is not working in dark mode. Use method
+    // parameter after it is fixed.
     @Test
     @MediumTest
     @Feature({"RenderTest"})
@@ -1387,9 +1415,10 @@ public class StartSurfaceLayoutTest {
     // clang-format off
     @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID,
             ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
+    @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     @CommandLineFlags.Add({BASE_PARAMS + "/thumbnail_aspect_ratio/1.0"})
     @DisabledTest(message = "https://crbug.com/1205952")
-    public void testRenderGrid_withAspectRatioOfOne() throws IOException {
+    public void testRenderGrid_withAspectRatioOfOne(boolean isNightMode) throws IOException {
         // clang-format on
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         prepareTabs(3, 0, "about:blank");
