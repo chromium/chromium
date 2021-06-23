@@ -4751,6 +4751,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Media.VTVDA.InitializationFailureReason"
     enum="VTVDAInitializationFailureType" expires_after="2021-08-01">
+  <obsolete>
+    No longer recorded.
+  </obsolete>
   <owner>sandersd@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
