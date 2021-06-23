@@ -273,7 +273,7 @@
           'D': {count: 1, self: 5, maxRet: 5, type: 'object', name: 'D'},
           'E': {count: 1, self: 6, maxRet: 6, type: 'object', name: 'E'}
         };
-        var aggregates = snapshot.aggregates(false);
+        var aggregates = snapshot.getAggregatesByClassName(false);
         for (var name in aggregates) {
           var aggregate = aggregates[name];
           var expectedAggregate = expectedAggregates[name];
@@ -289,7 +289,7 @@
           'D': [28],  // 50
           'E': [35]   // 57
         };
-        var indexes = snapshot.aggregates(true);
+        var indexes = snapshot.getAggregatesByClassName(true);
         for (var name in aggregates) {
           var aggregate = aggregates[name];
           var expectedIndex = expectedIndexes[name];

@@ -12,7 +12,7 @@
 
   UI.panels.timeline._captureLayersAndPicturesSetting.set(true);
   await PerformanceTestRunner.invokeAsyncWithTimeline('doActions');
-  const frames = PerformanceTestRunner.timelineFrameModel().frames();
+  const frames = PerformanceTestRunner.timelineFrameModel().getFrames();
   const lastFrame = frames[frames.length - 1];
   if (lastFrame) {
     TestRunner.addResult('layerTree: ' + typeof lastFrame.layerTree);
