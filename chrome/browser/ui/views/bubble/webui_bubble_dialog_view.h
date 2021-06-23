@@ -55,6 +55,8 @@ class WebUIBubbleDialogView : public views::WidgetObserver,
   }
   void ResetWebUIContentsForTesting();
 
+  virtual void Redraw() {}
+
  private:
   // A handler to handle unhandled keyboard messages coming back from the
   // renderer process.

@@ -17,7 +17,11 @@ async function getMedia(constraints) {
   }
 }
 
-// Since the selfie cam is circular, we want equal width and height.
-document.addEventListener('DOMContentLoaded', function() {
+function onWindowResize() {
+  // Since the selfie cam is circular, we want equal width and height.
   getMedia({video: {width: window.innerWidth, height: window.innerHeight}});
-}, false);
+}
+
+document.addEventListener('DOMContentLoaded', onWindowResize, false);
+
+window.onresize = onWindowResize;

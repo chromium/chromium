@@ -5545,4 +5545,12 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
     Selfie Camera
   </message>
 
+  <message name="IDS_SELFIE_CAMERA_BUBBLE_EXPANDED" desc="Tooltip for the selfie camera resize button in expanded state">
+    2x
+  </message>
+
+  <message name="IDS_SELFIE_CAMERA_BUBBLE_COLLAPSED" desc="Tooltip for the selfie camera resize button in collapsed state">
+    1x
+  </message>
+
 </grit-part>

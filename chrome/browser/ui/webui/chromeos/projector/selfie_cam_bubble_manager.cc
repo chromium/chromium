@@ -5,46 +5,81 @@
 #include "chrome/browser/ui/webui/chromeos/projector/selfie_cam_bubble_manager.h"
 
 #include <memory>
+#include <vector>
 
 #include "ash/public/cpp/window_properties.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/webui/chromeos/projector/projector_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/aura/window.h"
 #include "ui/base/hit_test.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
+#include "ui/views/controls/button/md_text_button.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/native/native_view_host.h"
 #include "ui/views/controls/webview/webview.h"
+#include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/flex_layout_types.h"
 
 namespace chromeos {
 
 namespace {
 
-constexpr int kCornerRadiusDip = 80;
+constexpr int kCornerRadiusDipSmall = 80;
+constexpr int kCornerRadiusDipLarge = 160;
 
-constexpr gfx::Size kPreferredSize(2 * kCornerRadiusDip, 2 * kCornerRadiusDip);
+// This is the minimum size such that the text on the expand/collapse button
+// still appears.
+constexpr int kExpandCollapseButtonRadius = 23;
+constexpr gfx::Size kExpandCollapseButtonPreferredSize(
+    2 * kExpandCollapseButtonRadius,
+    2 * kExpandCollapseButtonRadius);
+constexpr int kButtonCircleHighlightPaddingDip = 2;
+constexpr SkColor kExpandCollapseButtonBackground =
+    SkColorSetARGB(0xFF, 0x8A, 0xB4, 0xF8);
 
 // Margin of the bubble with respect to the context window.
 constexpr int kMinAnchorMarginDip = 40;
 
+std::unique_ptr<views::MdTextButton> BuildButton(
+    views::Button::PressedCallback callback,
+    const int tooltip_text_id,
+    bool is_visible) {
+  std::u16string text = l10n_util::GetStringUTF16(tooltip_text_id);
+  auto button =
+      std::make_unique<views::MdTextButton>(std::move(callback), text);
+  button->SetTooltipText(text);
+  button->SetBgColorOverride(kExpandCollapseButtonBackground);
+  button->SetEnabledTextColors(SK_ColorBLACK);
+  button->SetCornerRadius(kExpandCollapseButtonRadius);
+  button->SetPreferredSize(kExpandCollapseButtonPreferredSize);
+  button->SetVisible(is_visible);
+  views::InstallCircleHighlightPathGenerator(
+      button.get(), gfx::Insets(kButtonCircleHighlightPaddingDip));
+  return button;
+}
+
 // Makes the selfie cam draggable.
 class SelfieCamBubbleFrameView : public views::BubbleFrameView {
  public:
-  SelfieCamBubbleFrameView()
-      : views::BubbleFrameView(gfx::Insets(), gfx::Insets()) {
+  explicit SelfieCamBubbleFrameView(std::vector<views::View*> buttons)
+      : views::BubbleFrameView(gfx::Insets(), gfx::Insets()),
+        buttons_(std::move(buttons)) {
     auto border = std::make_unique<views::BubbleBorder>(
         views::BubbleBorder::FLOAT, views::BubbleBorder::DIALOG_SHADOW,
         gfx::kPlaceholderColor);
     // Needed to make the selfie cam round.
-    border->SetCornerRadius(kCornerRadiusDip);
+    border->SetCornerRadius(kCornerRadiusDipLarge);
     views::BubbleFrameView::SetBubbleBorder(std::move(border));
   }
 
@@ -58,6 +93,13 @@ class SelfieCamBubbleFrameView : public views::BubbleFrameView {
     if (!bounds().Contains(point))
       return HTNOWHERE;
 
+    gfx::Point point_in_screen =
+        GetBoundsInScreen().origin() + gfx::Vector2d(point.x(), point.y());
+    for (views::View* button : buttons_) {
+      if (button->GetBoundsInScreen().Contains(point_in_screen))
+        return HTCLIENT;
+    }
+
     // Ensure it's within the BubbleFrameView. This takes into account the
     // rounded corners and drop shadow of the BubbleBorder.
     int hit = views::BubbleFrameView::NonClientHitTest(point);
@@ -69,6 +111,9 @@ class SelfieCamBubbleFrameView : public views::BubbleFrameView {
     // entire widget draggable.
     return (hit == HTCLIENT || hit == HTNOWHERE) ? HTCAPTION : hit;
   }
+
+ private:
+  std::vector<views::View*> buttons_;
 };
 
 // Dialog that displays the selfie cam for including the user's face in
@@ -112,10 +157,36 @@ class SelfieCamBubbleDialogView : public WebUIBubbleDialogView {
     params->visible_on_all_workspaces = true;
   }
 
+  void Init() override {
+    auto content_container = std::make_unique<views::View>();
+    content_container->SetLayoutManager(std::make_unique<views::FlexLayout>())
+        ->SetOrientation(views::LayoutOrientation::kVertical)
+        .SetMainAxisAlignment(views::LayoutAlignment::kEnd)
+        .SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
+
+    views::Button::PressedCallback expand_or_collapse_callback =
+        base::BindRepeating(
+            &SelfieCamBubbleDialogView::ExpandOrCollapseButtonPressed,
+            base::Unretained(this));
+    auto expand_button = BuildButton(expand_or_collapse_callback,
+                                     IDS_SELFIE_CAMERA_BUBBLE_EXPANDED,
+                                     /*is_visible=*/is_expanded_);
+
+    auto collapse_button = BuildButton(std::move(expand_or_collapse_callback),
+                                       IDS_SELFIE_CAMERA_BUBBLE_COLLAPSED,
+                                       /*is_visible=*/!is_expanded_);
+
+    expand_button_ = content_container->AddChildView(std::move(expand_button));
+    collapse_button_ =
+        content_container->AddChildView(std::move(collapse_button));
+    AddChildView(std::move(content_container));
+  }
+
   // WidgetDelegate:
   std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
       views::Widget* widget) override {
-    return std::make_unique<SelfieCamBubbleFrameView>();
+    std::vector<views::View*> buttons = {expand_button_, collapse_button_};
+    return std::make_unique<SelfieCamBubbleFrameView>(std::move(buttons));
   }
 
   // Disallows closing the selfie cam through pressing the escape key because
@@ -127,11 +198,47 @@ class SelfieCamBubbleDialogView : public WebUIBubbleDialogView {
   }
 
   // views::View:
-  gfx::Size CalculatePreferredSize() const override { return kPreferredSize; }
+  gfx::Size CalculatePreferredSize() const override {
+    return gfx::Size(2 * current_radius_, 2 * current_radius_);
+  }
+
+  void Redraw() override {
+    gfx::Size preferred_size = CalculatePreferredSize();
+    // This view should be a circle with equal width and height.
+    DCHECK_EQ(preferred_size.width(), preferred_size.height());
+    int diameter = preferred_size.height();
+
+    web_view()->holder()->SetHitTestTopInset(diameter);
+
+    // Needed to set the window.innerWidth and window.innerHeight to the
+    // preferred size in JavaScript so we can determine the correct camera
+    // resolution.
+    web_view()->EnableSizingFromWebContents(
+        /*min_size=*/preferred_size,
+        /*max_size=*/preferred_size);
+  }
 
  private:
+  void ExpandOrCollapseButtonPressed() {
+    is_expanded_ = !is_expanded_;
+    expand_button_->SetVisible(is_expanded_);
+    collapse_button_->SetVisible(!is_expanded_);
+
+    current_radius_ =
+        is_expanded_ ? kCornerRadiusDipLarge : kCornerRadiusDipSmall;
+
+    Redraw();
+  }
+
   std::unique_ptr<BubbleContentsWrapper> contents_wrapper_;
   const gfx::Rect context_bounds_in_screen_;
+
+  views::MdTextButton* expand_button_ = nullptr;
+  views::MdTextButton* collapse_button_ = nullptr;
+  // Whether the selfie cam is in large or small mode.
+  bool is_expanded_ = true;
+
+  int current_radius_ = kCornerRadiusDipLarge;
 };
 
 // Renders the WebUI contents and asks for camera permission so that
@@ -187,21 +294,15 @@ void SelfieCamBubbleManager::Show(Profile* profile,
   bubble_view_ = bubble_view->GetWeakPtr();
   auto* bubble_widget =
       views::BubbleDialogDelegateView::CreateBubble(std::move(bubble_view));
-  // Needed to set the window.innerWidth and window.innerHeight to the preferred
-  // size in JavaScript so we can determine the correct camera resolution.
-  bubble_view_->web_view()->EnableSizingFromWebContents(
-      /*min_size=*/kPreferredSize, /*max_size=*/kPreferredSize);
   // Needed to make the selfie cam round.
   bubble_view_->web_view()->holder()->SetCornerRadii(
-      gfx::RoundedCornersF(kCornerRadiusDip));
-  // Needed to make the selfie cam draggable everywhere within its bounds.
-  bubble_view_->web_view()->holder()->SetHitTestTopInset(
-      bubble_view_->height());
+      gfx::RoundedCornersF(kCornerRadiusDipLarge));
   // Use Picture-in-Picture (PIP) window management logic for selfie cam so that
   // a) it avoids collision with system UI such as virtual keyboards, quick
   // settings etc.
   // b) it is draggable in tablet mode as well.
   bubble_widget->GetNativeWindow()->SetProperty(ash::kWindowPipTypeKey, true);
+  bubble_view_->Redraw();
   bubble_widget->Show();
 }
 
