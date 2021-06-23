@@ -2437,9 +2437,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Media.InputErrorMac" units="OSStatus"
-    expires_after="2021-07-01">
-  <owner>tommi@chromium.org</owner>
+<histogram name="Media.InputErrorMac" units="OSStatus" expires_after="never">
+<!-- expires-never: essential indicator for audio input stability in Chrome -->
+
+  <owner>henrika@chromium.org</owner>
   <owner>webrtc-audio@google.com</owner>
   <summary>
     Error codes that we encounter while setting up an AUAudioInputStream on Mac.
