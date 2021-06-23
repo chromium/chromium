@@ -4,13 +4,23 @@
 
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service.h"
 
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/pref_names.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/signin/public/base/signin_pref_names.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/unified_consent/pref_names.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_renderer_host.h"
+#include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 class TrustSafetySentimentServiceTest : public testing::Test {
  public:
@@ -191,5 +201,154 @@ TEST_F(TrustSafetySentimentServiceTest, TriggersClearOnLaunch) {
                            testing::_, testing::_, testing::_));
   service()->TriggerOccurred(
       TrustSafetySentimentService::FeatureArea::kTrustedSurface, {});
+  service()->OpenedNewTabPage();
+}
+
+TEST_F(TrustSafetySentimentServiceTest, SettingsWatcher) {
+  FeatureParams params;
+  params.privacy_settings_probability = "1.0";
+  params.privacy_settings_time = "10s";
+  params.min_time_to_prompt = "0s";
+  params.ntp_visits_min_range = "0";
+  params.ntp_visits_max_range = "0";
+  SetupFeatureParameters(params);
+
+  // Create and navigate a test web contents to settings.
+  content::RenderViewHostTestEnabler rvh_test_enabler;
+  auto web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  content::WebContentsTester::For(web_contents.get())
+      ->SetLastCommittedURL(GURL(chrome::kChromeUISettingsURL));
+
+  // Interacting with setting shouldn't causes a survey to be immediately
+  // displayed, but should require the user to stay on settings for some time.
+  EXPECT_CALL(*mock_hats_service(),
+              LaunchSurvey(testing::_, testing::_, testing::_, testing::_))
+      .Times(0);
+  service()->InteractedWithPrivacySettings(web_contents.get());
+  service()->OpenedNewTabPage();
+  testing::Mock::VerifyAndClearExpectations(mock_hats_service());
+
+  // Once the user has spent the appropriate amount of time on settings, they
+  // should be eligible for a survey.
+  EXPECT_CALL(*mock_hats_service(),
+              LaunchSurvey(kHatsSurveyTriggerTrustSafetyPrivacySettings,
+                           testing::_, testing::_, testing::_));
+  task_environment()->AdvanceClock(base::TimeDelta::FromSeconds(20));
+  task_environment()->RunUntilIdle();
+  service()->OpenedNewTabPage();
+  testing::Mock::VerifyAndClearExpectations(mock_hats_service());
+
+  // Leaving settings before the required time should disqualify the user from
+  // receiving a survey.
+  EXPECT_CALL(*mock_hats_service(),
+              LaunchSurvey(testing::_, testing::_, testing::_, testing::_))
+      .Times(0);
+  service()->InteractedWithPrivacySettings(web_contents.get());
+  task_environment()->AdvanceClock(base::TimeDelta::FromSeconds(5));
+  task_environment()->RunUntilIdle();
+  service()->OpenedNewTabPage();
+
+  content::WebContentsTester::For(web_contents.get())
+      ->SetLastCommittedURL(GURL("http://unrelated.com"));
+  task_environment()->AdvanceClock(base::TimeDelta::FromSeconds(15));
+  task_environment()->RunUntilIdle();
+  service()->OpenedNewTabPage();
+}
+
+TEST_F(TrustSafetySentimentServiceTest, RanSafetyCheck) {
+  // Running the safety check is considered a trigger, and should make a user
+  // eligible to receive a survey.
+  FeatureParams params;
+  params.privacy_settings_probability = "1.0";
+  params.min_time_to_prompt = "0s";
+  params.ntp_visits_min_range = "0";
+  params.ntp_visits_max_range = "0";
+  SetupFeatureParameters(params);
+
+  EXPECT_CALL(*mock_hats_service(),
+              LaunchSurvey(kHatsSurveyTriggerTrustSafetyPrivacySettings,
+                           testing::_, testing::_, testing::_));
+  service()->RanSafetyCheck();
+  service()->OpenedNewTabPage();
+}
+
+TEST_F(TrustSafetySentimentServiceTest, PrivacySettingsProductSpecificData) {
+  // Check the product specific data accompanying surveys for the Privacy
+  // Settings feature area correctly records whether the user has a non default
+  // privacy setting.
+  FeatureParams params;
+  params.privacy_settings_probability = "1.0";
+  params.min_time_to_prompt = "0s";
+  params.ntp_visits_min_range = "0";
+  params.ntp_visits_max_range = "0";
+  SetupFeatureParameters(params);
+
+  std::map<std::string, bool> expected_psd = {{"Non default setting", false},
+                                              {"Ran safety check", false}};
+
+  // By default, a user should have no non-default settings.
+  EXPECT_CALL(*mock_hats_service(),
+              LaunchSurvey(kHatsSurveyTriggerTrustSafetyPrivacySettings,
+                           testing::_, testing::_, expected_psd));
+  service()->SettingsWatcherComplete(/*stayed_on_settings=*/true);
+  service()->OpenedNewTabPage();
+  testing::Mock::VerifyAndClearExpectations(mock_hats_service());
+
+  expected_psd["Ran safety check"] = true;
+  EXPECT_CALL(*mock_hats_service(),
+              LaunchSurvey(kHatsSurveyTriggerTrustSafetyPrivacySettings,
+                           testing::_, testing::_, expected_psd));
+  service()->RanSafetyCheck();
+  service()->OpenedNewTabPage();
+  testing::Mock::VerifyAndClearExpectations(mock_hats_service());
+
+  // Check that default content settings are considered.
+  expected_psd["Non default setting"] = true;
+  auto* content_settings =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+  content_settings->SetDefaultContentSetting(
+      ContentSettingsType::SOUND, ContentSetting::CONTENT_SETTING_BLOCK);
+  EXPECT_CALL(*mock_hats_service(),
+              LaunchSurvey(kHatsSurveyTriggerTrustSafetyPrivacySettings,
+                           testing::_, testing::_, expected_psd));
+  service()->RanSafetyCheck();
+  service()->OpenedNewTabPage();
+  testing::Mock::VerifyAndClearExpectations(mock_hats_service());
+  content_settings->SetDefaultContentSetting(
+      ContentSettingsType::SOUND, ContentSetting::CONTENT_SETTING_DEFAULT);
+
+  // Check that preferences are considered.
+  expected_psd["Ran safety check"] = false;
+  profile()->GetTestingPrefService()->SetUserPref(
+      prefs::kEnableDoNotTrack, std::make_unique<base::Value>(true));
+  EXPECT_CALL(*mock_hats_service(),
+              LaunchSurvey(kHatsSurveyTriggerTrustSafetyPrivacySettings,
+                           testing::_, testing::_, expected_psd));
+  service()->SettingsWatcherComplete(/*stayed_on_settings=*/true);
+  service()->OpenedNewTabPage();
+  testing::Mock::VerifyAndClearExpectations(mock_hats_service());
+  profile()->GetPrefs()->ClearPref(prefs::kEnableDoNotTrack);
+
+  // Check that sync state defaults are handled correctly.
+  profile()->GetTestingPrefService()->SetUserPref(
+      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled,
+      std::make_unique<base::Value>(true));
+  EXPECT_CALL(*mock_hats_service(),
+              LaunchSurvey(kHatsSurveyTriggerTrustSafetyPrivacySettings,
+                           testing::_, testing::_, expected_psd));
+  service()->SettingsWatcherComplete(/*stayed_on_settings=*/true);
+  service()->OpenedNewTabPage();
+  testing::Mock::VerifyAndClearExpectations(mock_hats_service());
+
+  // UKM is only non default while no sync consent is present.
+  expected_psd["Non default setting"] = false;
+  EXPECT_CALL(*mock_hats_service(),
+              LaunchSurvey(kHatsSurveyTriggerTrustSafetyPrivacySettings,
+                           testing::_, testing::_, expected_psd));
+  profile()->GetTestingPrefService()->SetUserPref(
+      prefs::kGoogleServicesConsentedToSync,
+      std::make_unique<base::Value>(true));
+  service()->SettingsWatcherComplete(/*stayed_on_settings=*/true);
   service()->OpenedNewTabPage();
 }

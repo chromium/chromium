@@ -23,6 +23,17 @@ class TrustSafetySentimentService : public KeyedService {
   // survey.
   void OpenedNewTabPage();
 
+  // Called to indicate to the service that the user has interacted with the
+  // privacy settings on chrome://settings in |web_contents|. Interaction in
+  // this context could be using a link row on the privacy settings card.
+  // Calling this allows the service to monitor |web_contents| to determine
+  // if the user stays on settings for the required time.
+  void InteractedWithPrivacySettings(content::WebContents* web_contents);
+
+  // Called to indicate to the service that the user has run safety check. This
+  // is immediately considered as a trigger action.
+  void RanSafetyCheck();
+
   // The feature areas that the service delivers HaTS surveys for. Each feature
   // area is associated with a different Listnr survey, and has a different set
   // of Product Specific Data (PSD).
@@ -40,6 +51,10 @@ class TrustSafetySentimentService : public KeyedService {
   FRIEND_TEST_ALL_PREFIXES(TrustSafetySentimentServiceTest, TriggerProbability);
   FRIEND_TEST_ALL_PREFIXES(TrustSafetySentimentServiceTest,
                            TriggersClearOnLaunch);
+  FRIEND_TEST_ALL_PREFIXES(TrustSafetySentimentServiceTest, SettingsWatcher);
+  FRIEND_TEST_ALL_PREFIXES(TrustSafetySentimentServiceTest, RanSafetyCheck);
+  FRIEND_TEST_ALL_PREFIXES(TrustSafetySentimentServiceTest,
+                           PrivacySettingsProductSpecificData);
 
   // Struct representing a trigger (user action relevant to T&S) that previously
   // occurred, and is awaiting the appropriate eligibility steps before causing
@@ -56,6 +71,29 @@ class TrustSafetySentimentService : public KeyedService {
     base::Time occurred_time;
   };
 
+  // Class which observes the provided |web_contents| for |required_open_time|
+  // and then checks if |web_contents| is currently visible, and has settings
+  // open.
+  class SettingsWatcher : content::WebContentsObserver {
+   public:
+    SettingsWatcher(content::WebContents* web_contents,
+                    base::TimeDelta required_open_time,
+                    base::OnceCallback<void(bool)> complete_callback);
+    ~SettingsWatcher() override;
+
+    // WebContentsObserver:
+    void WebContentsDestroyed() override;
+
+   private:
+    void TimerComplete();
+
+    content::WebContents* web_contents_;
+    base::OnceCallback<void(bool)> complete_callback_;
+    base::WeakPtrFactory<SettingsWatcher> weak_ptr_factory_{this};
+  };
+
+  void SettingsWatcherComplete(bool stayed_on_settings);
+
   // Record that a trigger occurred, placing it in the set of pending triggers.
   // Private as the service itself determines when a trigger has occurred, and
   // is responsible for generating the appropriate |product_specific_data|.
@@ -65,6 +103,7 @@ class TrustSafetySentimentService : public KeyedService {
 
   Profile* const profile_;
   std::map<FeatureArea, PendingTrigger> pending_triggers_;
+  std::unique_ptr<SettingsWatcher> settings_watcher_;
   base::WeakPtrFactory<TrustSafetySentimentService> weak_ptr_factory_{this};
 };
 

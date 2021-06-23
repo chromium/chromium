@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
 
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/common/chrome_features.h"
@@ -14,6 +15,7 @@ TrustSafetySentimentServiceFactory::TrustSafetySentimentServiceFactory()
           "TrustSafetySentimentService",
           BrowserContextDependencyManager::GetInstance()) {
   DependsOn(HatsServiceFactory::GetInstance());
+  DependsOn(HostContentSettingsMapFactory::GetInstance());
 }
 
 TrustSafetySentimentServiceFactory*

@@ -994,6 +994,12 @@ const base::FeatureParam<std::string>
 extern const base::FeatureParam<std::string>
     kTrustSafetySentimentSurveyTransactionsTriggerId{
         &kTrustSafetySentimentSurvey, "transactions-trigger-id", ""};
+// The time the user must remain on settings after interacting with a privacy
+// setting to be considered.
+const base::FeatureParam<base::TimeDelta>
+    kTrustSafetySentimentSurveyPrivacySettingsTime{
+        &kTrustSafetySentimentSurvey, "privacy-settings-time",
+        base::TimeDelta::FromSeconds(20)};
 
 #endif
 
