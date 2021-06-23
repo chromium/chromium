@@ -287,14 +287,10 @@ class AndroidAppCommunicationChromeOS : public AndroidAppCommunication {
     // Create and register a token with ArcOverlayManager for the
     // browser window. Doing so is required to allow the Android Play Billing
     // interface to be overlaid on top of the browser window.
-    // TODO(crbug.com/1209716): Reuse the request_token for coordinating the
-    // overlay.
-    std::string billing_token =
-        payment_request_origin.spec() + "#" + payment_request_id;
     ash::ArcOverlayManager* const overlay_manager =
         ash::ArcOverlayManager::instance();
     base::ScopedClosureRunner overlay_state =
-        overlay_manager->RegisterHostWindow(std::move(billing_token),
+        overlay_manager->RegisterHostWindow(request_token.ToString(),
                                             web_contents->GetNativeView());
 
     absl::optional<std::string> error_message;
