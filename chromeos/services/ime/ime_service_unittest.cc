@@ -278,12 +278,12 @@ TEST_F(ImeServiceTest, RuleBasedDoesNotHandleCtrlShortCut) {
   remote_manager_.FlushForTesting();
   EXPECT_TRUE(success);
 
-  mojom::KeypressResponseForRulebased response;
   input_method->ProcessKeypressForRulebased(
       mojom::PhysicalKeyEvent::New(mojom::KeyEventType::kKeyDown, "ControlLeft",
                                    "Control", mojom::ModifierState::New()),
-      base::BindOnce(&TestProcessKeypressForRulebasedCallback, &response));
+      base::DoNothing());
 
+  mojom::KeypressResponseForRulebased response;
   auto modifier_state_with_control = mojom::ModifierState::New();
   modifier_state_with_control->control = true;
   input_method->ProcessKeypressForRulebased(
@@ -308,12 +308,12 @@ TEST_F(ImeServiceTest, RuleBasedDoesNotHandleAltShortCut) {
   remote_manager_.FlushForTesting();
   EXPECT_TRUE(success);
 
-  mojom::KeypressResponseForRulebased response;
   input_method->ProcessKeypressForRulebased(
       mojom::PhysicalKeyEvent::New(mojom::KeyEventType::kKeyDown, "AltLeft",
                                    "Alt", mojom::ModifierState::New()),
-      base::BindOnce(&TestProcessKeypressForRulebasedCallback, &response));
+      base::DoNothing());
 
+  mojom::KeypressResponseForRulebased response;
   auto new_modifier_state = mojom::ModifierState::New();
   new_modifier_state->alt = true;
   input_method->ProcessKeypressForRulebased(
@@ -338,12 +338,12 @@ TEST_F(ImeServiceTest, RuleBasedHandlesAltRight) {
   remote_manager_.FlushForTesting();
   EXPECT_TRUE(success);
 
-  mojom::KeypressResponseForRulebased response;
   input_method->ProcessKeypressForRulebased(
       mojom::PhysicalKeyEvent::New(mojom::KeyEventType::kKeyDown, "AltRight",
                                    "Alt", mojom::ModifierState::New()),
-      base::BindOnce(&TestProcessKeypressForRulebasedCallback, &response));
+      base::DoNothing());
 
+  mojom::KeypressResponseForRulebased response;
   auto modifier_state_with_alt = mojom::ModifierState::New();
   modifier_state_with_alt->alt = true;
   input_method->ProcessKeypressForRulebased(
@@ -475,7 +475,7 @@ TEST_F(ImeServiceTest, RuleBasedDevaPhone) {
   input_method->ProcessKeypressForRulebased(
       mojom::PhysicalKeyEvent::New(mojom::KeyEventType::kKeyDown, "KeyN", "n",
                                    mojom::ModifierState::New()),
-      base::BindOnce(&TestProcessKeypressForRulebasedCallback, &response));
+      base::DoNothing());
   input_method->ProcessKeypressForRulebased(
       mojom::PhysicalKeyEvent::New(mojom::KeyEventType::kKeyDown, "KeyC", "c",
                                    mojom::ModifierState::New()),
@@ -578,12 +578,12 @@ TEST_F(ImeServiceTest, KhmerKeyboardAltGr) {
 
   // Test AltRight+KeyA.
   // We do not support AltGr for rule-based. We treat AltRight as AltGr.
-  mojom::KeypressResponseForRulebased response;
   input_method->ProcessKeypressForRulebased(
       mojom::PhysicalKeyEvent::New(mojom::KeyEventType::kKeyDown, "AltRight",
                                    "Alt", mojom::ModifierState::New()),
-      base::BindOnce(&TestProcessKeypressForRulebasedCallback, &response));
+      base::DoNothing());
 
+  mojom::KeypressResponseForRulebased response;
   auto modifier_state_with_alt = mojom::ModifierState::New();
   modifier_state_with_alt->alt = true;
   input_method->ProcessKeypressForRulebased(
