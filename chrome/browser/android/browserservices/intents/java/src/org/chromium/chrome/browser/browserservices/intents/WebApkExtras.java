@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.browserservices.intents;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.components.webapps.WebApkDistributor;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

@@ -29,8 +29,8 @@ import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics.LaunchCause;
-import org.chromium.chrome.browser.browserservices.intents.WebApkDistributor;
 import org.chromium.components.webapps.ShortcutSource;
+import org.chromium.components.webapps.WebApkDistributor;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 
 /**

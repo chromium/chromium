@@ -5,7 +5,7 @@
 package org.chromium.chrome.browser.webapps;
 
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.chrome.browser.browserservices.intents.WebApkDistributor;
+import org.chromium.components.webapps.WebApkDistributor;
 
 /**
  * A class to record User Keyed Metrics relevant to WebAPKs. This

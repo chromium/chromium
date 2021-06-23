@@ -14,7 +14,6 @@ import androidx.annotation.IntDef;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
-import org.chromium.chrome.browser.browserservices.intents.WebApkDistributor;
 import org.chromium.chrome.browser.browserservices.intents.WebappIntentUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
@@ -22,6 +21,7 @@ import org.chromium.chrome.browser.webapps.WebApkUkmRecorder;
 import org.chromium.chrome.browser.webapps.WebappDataStorage;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.components.browser_ui.util.ConversionUtils;
+import org.chromium.components.webapps.WebApkDistributor;
 
 import java.io.File;
 import java.lang.annotation.Retention;

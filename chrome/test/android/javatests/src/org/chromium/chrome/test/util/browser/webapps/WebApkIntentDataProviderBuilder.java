@@ -8,11 +8,11 @@ import android.content.Intent;
 import android.graphics.Color;
 
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
-import org.chromium.chrome.browser.browserservices.intents.WebApkDistributor;
 import org.chromium.chrome.browser.browserservices.intents.WebDisplayMode;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.webapps.WebApkIntentDataProviderFactory;
 import org.chromium.components.webapps.ShortcutSource;
+import org.chromium.components.webapps.WebApkDistributor;
 import org.chromium.device.mojom.ScreenOrientationLockType;
 
 import java.util.ArrayList;

@@ -8,7 +8,7 @@
 namespace webapps {
 
 // A Java counterpart will be generated for this enum.
-// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.webapps
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.webapps
 //
 // Indicates the reason that a WebAPK update is requested.
 enum class WebApkUpdateReason {
@@ -31,8 +31,7 @@ enum class WebApkUpdateReason {
 };
 
 // A Java counterpart will be generated for this enum.
-// GENERATED_JAVA_ENUM_PACKAGE: (
-//   org.chromium.chrome.browser.browserservices.intents)
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.webapps
 //
 // This enum is used to back UMA/UKM histograms, and should therefore be treated
 // as append-only.
