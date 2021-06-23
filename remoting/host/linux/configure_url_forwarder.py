@@ -163,7 +163,11 @@ def setup_url_forwarder() -> None:
               XFCE4_WEB_BROWSER_DESKTOP_ENTRY, 'but XFCE is not found',
               file=sys.stderr)
         break
-      settings[setting_key] = settings[desktop_envs_and_setting_keys['XFCE']]
+      xfce_setting_key = desktop_envs_and_setting_keys['XFCE']
+      if xfce_setting_key not in settings:
+        print('Cannot find', xfce_setting_key, 'in host settings.')
+        break
+      settings[setting_key] = settings[xfce_setting_key]
 
   save_host_settings_file(settings)
 
