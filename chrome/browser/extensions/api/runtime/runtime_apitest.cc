@@ -64,8 +64,8 @@ IN_PROC_BROWSER_TEST_P(RuntimeApiTest, ChromeRuntimePrivileged) {
 // Tests the unprivileged components of chrome.runtime.
 IN_PROC_BROWSER_TEST_P(RuntimeApiTest, ChromeRuntimeUnprivileged) {
   ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(
-      LoadExtension(test_data_dir_.AppendASCII("runtime/content_script")));
+  ASSERT_TRUE(LoadExtensionWithParamOptions(
+      test_data_dir_.AppendASCII("runtime/content_script")));
 
   // The content script runs on this page.
   extensions::ResultCatcher catcher;

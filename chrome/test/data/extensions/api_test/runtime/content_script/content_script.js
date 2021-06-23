@@ -4,7 +4,6 @@
 
 var assertFalse = chrome.test.assertFalse;
 var assertTrue = chrome.test.assertTrue;
-var succeed = chrome.test.succeed;
 
 function isAvailable(api) {
   if (!(api in chrome.runtime))
@@ -30,4 +29,4 @@ assertFalse(isAvailable('getBackgroundPage'), 'getBackgroundPage available');
 assertFalse(isAvailable('onInstalled'), 'onInstalled available');
 assertFalse(isAvailable('onSuspend'), 'onSuspend available');
 
-succeed();
+chrome.test.notifyPass();
