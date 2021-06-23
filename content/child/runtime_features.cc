@@ -316,7 +316,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
      features::kWebOTPAssertionFeaturePolicy, kSetOnlyIfOverridden},
     {wf::EnableWebUsb, features::kWebUsb},
     {wf::EnableWebXR, features::kWebXr},
-    {wf::EnableWebXRAnchors, features::kWebXrIncubations},
     {wf::EnableWebXRARModule, features::kWebXrArModule},
     {wf::EnableWebXRCameraAccess, features::kWebXrIncubations},
     {wf::EnableWebXRDepth, features::kWebXrIncubations},
