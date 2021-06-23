@@ -1161,6 +1161,9 @@ Google Chrome is unable to recover your settings.
         <message name="IDS_OS_INSTALL_SCREEN_IN_PROGRESS_TITLE" desc="Title of the in-progress page of the OS install screen">
           Chrome OS installation in progress
         </message>
+        <message name="IDS_OS_INSTALL_SCREEN_IN_PROGRESS_SUBTITLE" desc="Subtitle of the in-progress page of the OS install screen">
+          Installation is in progress. Don't turn off the device. Install should take no longer than twenty minutes. The machine will automatically shut down after installing.
+        </message>
       </if>
 
       <!-- Welcome page (chrome://welcome) strings -->
