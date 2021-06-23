@@ -63,7 +63,8 @@ using AuthSessionBrowserTest = InProcessBrowserTest;
 }
 
 - (NSString*)callbackURLScheme {
-  return @"makeitso";
+  // Use occasional capital letters to test the canonicalization of schemes.
+  return @"mAkEiTsO";
 }
 
 - (NSUUID*)UUID {
@@ -125,6 +126,9 @@ IN_PROC_BROWSER_TEST_F(AuthSessionBrowserTest, OSCancellation) {
 
     EXPECT_EQ(nil, session_request.get().callbackURL);
     EXPECT_EQ(nil, session_request.get().cancellationError);
+  } else {
+    GTEST_SKIP() << "ASWebAuthenticationSessionRequest is only available on "
+                    "macOS 10.15 and higher.";
   }
 }
 
@@ -169,6 +173,9 @@ IN_PROC_BROWSER_TEST_F(AuthSessionBrowserTest, UserCancellation) {
               session_request.get().cancellationError.domain);
     EXPECT_EQ(ASWebAuthenticationSessionErrorCodeCanceledLogin,
               session_request.get().cancellationError.code);
+  } else {
+    GTEST_SKIP() << "ASWebAuthenticationSessionRequest is only available on "
+                    "macOS 10.15 and higher.";
   }
 }
 
@@ -215,6 +222,9 @@ IN_PROC_BROWSER_TEST_F(AuthSessionBrowserTest, UserSuccessDirect) {
     EXPECT_EQ(nil, session_request.get().cancellationError);
     EXPECT_NSEQ(net::NSURLWithGURL(success_url),
                 session_request.get().callbackURL);
+  } else {
+    GTEST_SKIP() << "ASWebAuthenticationSessionRequest is only available on "
+                    "macOS 10.15 and higher.";
   }
 }
 
@@ -280,6 +290,9 @@ IN_PROC_BROWSER_TEST_F(AuthSessionBrowserTest, UserSuccessEventualRedirect) {
     EXPECT_EQ(nil, session_request.get().cancellationError);
     EXPECT_NSEQ(net::NSURLWithGURL(success_url),
                 session_request.get().callbackURL);
+  } else {
+    GTEST_SKIP() << "ASWebAuthenticationSessionRequest is only available on "
+                    "macOS 10.15 and higher.";
   }
 }
 
@@ -327,5 +340,8 @@ IN_PROC_BROWSER_TEST_F(AuthSessionBrowserTest, UserSuccessInitialRedirect) {
     EXPECT_EQ(nil, session_request.get().cancellationError);
     EXPECT_NSEQ(net::NSURLWithGURL(success_url),
                 session_request.get().callbackURL);
+  } else {
+    GTEST_SKIP() << "ASWebAuthenticationSessionRequest is only available on "
+                    "macOS 10.15 and higher.";
   }
 }

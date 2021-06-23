@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/no_destructor.h"
-#include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -23,6 +22,7 @@
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/mac/url_conversions.h"
+#include "url/url_canon.h"
 
 namespace {
 
@@ -92,9 +92,30 @@ AuthSessionRequest::~AuthSessionRequest() {
 void AuthSessionRequest::StartNewAuthSession(
     ASWebAuthenticationSessionRequest* request,
     Profile* profile) {
+  NSString* error_string = nil;
+
+  // Canonicalize the scheme so that it will compare correctly to the GURLs that
+  // are visited later. Bail if it is invalid.
+  NSString* raw_scheme = request.callbackURLScheme;
+  absl::optional<std::string> canonical_scheme =
+      CanonicalizeScheme(base::SysNSStringToUTF8(raw_scheme));
+  if (!canonical_scheme) {
+    error_string =
+        [NSString stringWithFormat:@"Scheme '%@' is not valid as per RFC 3986.",
+                                   raw_scheme];
+  }
+
   // Create a Browser with an empty tab.
-  Browser* browser = CreateBrowser(request, profile);
-  if (!browser) {
+  Browser* browser = nil;
+  if (!error_string) {
+    browser = CreateBrowser(request, profile);
+    if (!browser) {
+      error_string = @"Failed to create a WebContents to present the "
+                     @"authorization session.";
+    }
+  }
+
+  if (error_string) {
     // It's not clear what error to return here. -cancelWithError:'s
     // documentation says that it has to be an NSError with the domain as
     // specified below and a "suitable" ASWebAuthenticationSessionErrorCode, but
@@ -105,11 +126,7 @@ void AuthSessionRequest::StartNewAuthSession(
         errorWithDomain:ASWebAuthenticationSessionErrorDomain
                    code:
                        ASWebAuthenticationSessionErrorCodePresentationContextInvalid
-               userInfo:@{
-                 NSDebugDescriptionErrorKey :
-                     @"Failed to create a WebContents to present the "
-                     @"authorization session."
-               }];
+               userInfo:@{NSDebugDescriptionErrorKey : error_string}];
     [request cancelWithError:error];
     return;
   }
@@ -118,7 +135,8 @@ void AuthSessionRequest::StartNewAuthSession(
   // navigation requests.
   content::WebContents* contents =
       browser->tab_strip_model()->GetActiveWebContents();
-  AuthSessionRequest::CreateForWebContents(contents, browser, request);
+  AuthSessionRequest::CreateForWebContents(contents, browser, request,
+                                           canonical_scheme.value());
 
   // Only then actually load the requested page, to make sure that if the very
   // first navigation is the one that authorizes the login, it's caught.
@@ -140,18 +158,24 @@ void AuthSessionRequest::CancelAuthSession(
   iter->second->CancelAuthSession();
 }
 
+// static
+absl::optional<std::string> AuthSessionRequest::CanonicalizeScheme(
+    std::string scheme) {
+  url::RawCanonOutputT<char> canon_output;
+  url::Component component;
+  bool result = url::CanonicalizeScheme(
+      scheme.data(), url::Component(0, static_cast<int>(scheme.size())),
+      &canon_output, &component);
+  if (!result)
+    return absl::nullopt;
+
+  return std::string(canon_output.data() + component.begin, component.len);
+}
+
 std::unique_ptr<content::NavigationThrottle> AuthSessionRequest::CreateThrottle(
     content::NavigationHandle* handle) {
   if (!handle->IsInMainFrame())
     return nil;
-
-  std::string scheme =
-      base::SysNSStringToUTF8(request_.get().callbackURLScheme);
-
-  // URL schemes should be lower case (see RFC 1738 §2.1). This is enforced by
-  // GURL. However, clients to macOS might not pass in an all-lower-case scheme,
-  // so lower-case it.
-  scheme = base::ToLowerASCII(scheme);
 
   // base::Unretained is safe because throttles are owned by the
   // NavigationRequest, which won't outlive the WebContents, whose lifetime this
@@ -159,17 +183,19 @@ std::unique_ptr<content::NavigationThrottle> AuthSessionRequest::CreateThrottle(
   auto scheme_found = base::BindOnce(&AuthSessionRequest::SchemeWasNavigatedTo,
                                      base::Unretained(this));
 
-  return std::make_unique<AuthNavigationThrottle>(handle, scheme,
+  return std::make_unique<AuthNavigationThrottle>(handle, scheme_,
                                                   std::move(scheme_found));
 }
 
 AuthSessionRequest::AuthSessionRequest(
     content::WebContents* web_contents,
     Browser* browser,
-    ASWebAuthenticationSessionRequest* request)
+    ASWebAuthenticationSessionRequest* request,
+    std::string scheme)
     : content::WebContentsObserver(web_contents),
       browser_(browser),
-      request_(request, base::scoped_policy::RETAIN) {
+      request_(request, base::scoped_policy::RETAIN),
+      scheme_(scheme) {
   std::string uuid = base::SysNSStringToUTF8(request.UUID.UUIDString);
   GetMap()[uuid] = this;
 }

@@ -7,10 +7,12 @@
 
 #include <map>
 #include <memory>
+#include <string>
 
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if defined(__OBJC__)
 
@@ -33,6 +35,9 @@ class API_AVAILABLE(macos(10.15)) AuthSessionRequest
                                   Profile* profile);
   static void CancelAuthSession(ASWebAuthenticationSessionRequest* request);
 
+  // Canonicalizes a scheme string. Returns nullopt if it is invalid.
+  static absl::optional<std::string> CanonicalizeScheme(std::string scheme);
+
   // Create a throttle for the ongoing authentication session.
   std::unique_ptr<content::NavigationThrottle> CreateThrottle(
       content::NavigationHandle* handle);
@@ -45,7 +50,8 @@ class API_AVAILABLE(macos(10.15)) AuthSessionRequest
   // `ASWebAuthenticationSessionRequest` being serviced.
   AuthSessionRequest(content::WebContents* web_contents,
                      Browser* browser,
-                     ASWebAuthenticationSessionRequest* request);
+                     ASWebAuthenticationSessionRequest* request,
+                     std::string scheme);
 
   // Create a Browser and a WebContents to run the request.
   static Browser* CreateBrowser(ASWebAuthenticationSessionRequest* request,
@@ -81,6 +87,9 @@ class API_AVAILABLE(macos(10.15)) AuthSessionRequest
 
   // The request being serviced.
   base::scoped_nsobject<ASWebAuthenticationSessionRequest> request_;
+
+  // The scheme being watched for, canonicalized.
+  std::string scheme_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
