@@ -623,8 +623,14 @@ IN_PROC_BROWSER_TEST_F(MediaEngagementBrowserTest,
   ExpectScores(1, 0);
 }
 
+#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+// https://crbug.com/1222896
+#define MAYBE_SessionNewTabNavigateSameURL DISABLED_SessionNewTabNavigateSameURL
+#else
+#define MAYBE_SessionNewTabNavigateSameURL SessionNewTabNavigateSameURL
+#endif
 IN_PROC_BROWSER_TEST_F(MediaEngagementBrowserTest,
-                       SessionNewTabNavigateSameURL) {
+                       MAYBE_SessionNewTabNavigateSameURL) {
   const GURL& url = http_server().GetURL("/engagement_test.html");
 
   LoadTestPageAndWaitForPlayAndAudible(url, false);
@@ -639,7 +645,13 @@ IN_PROC_BROWSER_TEST_F(MediaEngagementBrowserTest,
   ExpectScores(2, 2);
 }
 
-IN_PROC_BROWSER_TEST_F(MediaEngagementBrowserTest, SessionNewTabSameURL) {
+#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+// https://crbug.com/1222896
+#define MAYBE_SessionNewTabSameURL DISABLED_SessionNewTabSameURL
+#else
+#define MAYBE_SessionNewTabSameURL SessionNewTabSameURL
+#endif
+IN_PROC_BROWSER_TEST_F(MediaEngagementBrowserTest, MAYBE_SessionNewTabSameURL) {
   const GURL& url = http_server().GetURL("/engagement_test.html");
 
   LoadTestPageAndWaitForPlayAndAudible(url, false);
@@ -717,8 +729,16 @@ IN_PROC_BROWSER_TEST_F(MediaEngagementPreloadBrowserTest,
   EXPECT_TRUE(MediaEngagementPreloadedList::GetInstance()->loaded());
 }
 
+#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+// https://crbug.com/1222896
+#define MAYBE_SessionNewTabNavigateSameURLWithOpener_Typed \
+  DISABLED_SessionNewTabNavigateSameURLWithOpener_Typed
+#else
+#define MAYBE_SessionNewTabNavigateSameURLWithOpener_Typed \
+  SessionNewTabNavigateSameURLWithOpener_Typed
+#endif
 IN_PROC_BROWSER_TEST_F(MediaEngagementBrowserTest,
-                       SessionNewTabNavigateSameURLWithOpener_Typed) {
+                       MAYBE_SessionNewTabNavigateSameURLWithOpener_Typed) {
   const GURL& url = http_server().GetURL("/engagement_test.html");
 
   LoadTestPageAndWaitForPlayAndAudible(url, false);
