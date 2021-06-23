@@ -102,7 +102,7 @@ source_set("crc32c_arm64") {
   sources = [
     "src/src/crc32c_arm64.cc",
     "src/src/crc32c_arm64.h",
-    "src/src/crc32c_arm64_linux_check.h",
+    "src/src/crc32c_arm64_check.h",
   ]
 
   configs += [ ":crc32c_config" ]
