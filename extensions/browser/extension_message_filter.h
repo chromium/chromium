@@ -11,7 +11,6 @@
 #include "base/callback_list.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner_helpers.h"
 #include "content/public/browser/browser_message_filter.h"
@@ -127,7 +126,7 @@ class ExtensionMessageFilter : public content::BrowserMessageFilter {
   base::CallbackListSubscription shutdown_notifier_subscription_;
 
   // Only access from the UI thread.
-  CheckedPtr<content::BrowserContext> browser_context_;
+  content::BrowserContext* browser_context_;
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionMessageFilter);
 };

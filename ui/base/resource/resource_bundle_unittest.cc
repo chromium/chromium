@@ -14,7 +14,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -128,7 +127,7 @@ class ResourceBundleTest : public testing::Test {
 
  protected:
   base::ScopedTempDir temp_dir_;
-  CheckedPtr<ResourceBundle> resource_bundle_;
+  ResourceBundle* resource_bundle_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(ResourceBundleTest);

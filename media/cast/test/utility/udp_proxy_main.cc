@@ -13,7 +13,6 @@
 #include "base/command_line.h"
 #include "base/containers/circular_deque.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/task/single_thread_task_executor.h"
@@ -90,7 +89,7 @@ class ByteCounterPipe : public media::cast::test::PacketPipe {
     pipe_->Send(std::move(packet));
   }
  private:
-  CheckedPtr<ByteCounter> counter_;
+  ByteCounter* counter_;
 };
 
 void SetupByteCounters(std::unique_ptr<media::cast::test::PacketPipe>* pipe,

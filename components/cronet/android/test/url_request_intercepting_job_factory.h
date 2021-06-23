@@ -10,7 +10,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "net/url_request/url_request_job_factory.h"
 
 class GURL;
@@ -44,8 +43,8 @@ class URLRequestInterceptingJobFactory : public net::URLRequestJobFactory {
   bool IsSafeRedirectTarget(const GURL& location) const override;
 
  private:
-  const CheckedPtr<net::URLRequestJobFactory> job_factory_;
-  const CheckedPtr<net::URLRequestInterceptor> interceptor_;
+  net::URLRequestJobFactory* const job_factory_;
+  net::URLRequestInterceptor* const interceptor_;
 
   DISALLOW_COPY_AND_ASSIGN(URLRequestInterceptingJobFactory);
 };

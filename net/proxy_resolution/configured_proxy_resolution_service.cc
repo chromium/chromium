@@ -14,7 +14,6 @@
 #include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/single_thread_task_runner.h"
@@ -597,9 +596,9 @@ class ConfiguredProxyResolutionService::InitProxyResolver {
   PacFileDataWithSource script_data_;
   TimeDelta wait_delay_;
   std::unique_ptr<PacFileDecider> decider_;
-  CheckedPtr<ProxyResolverFactory> proxy_resolver_factory_;
+  ProxyResolverFactory* proxy_resolver_factory_;
   std::unique_ptr<ProxyResolverFactory::Request> create_resolver_request_;
-  CheckedPtr<std::unique_ptr<ProxyResolver>> proxy_resolver_;
+  std::unique_ptr<ProxyResolver>* proxy_resolver_;
   CompletionOnceCallback callback_;
   State next_state_;
   bool quick_check_enabled_;

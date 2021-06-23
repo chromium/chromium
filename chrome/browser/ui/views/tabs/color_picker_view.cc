@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/containers/span.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -195,7 +194,7 @@ class ColorPickerElementView : public views::Button {
 
   const base::RepeatingCallback<void(ColorPickerElementView*)>
       selected_callback_;
-  CheckedPtr<const views::BubbleDialogDelegateView> bubble_view_;
+  const views::BubbleDialogDelegateView* bubble_view_;
   const tab_groups::TabGroupColorId color_id_;
   const std::u16string color_name_;
   bool selected_ = false;

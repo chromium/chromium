@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
@@ -164,7 +163,7 @@ class GetCurrentBrowsingContextMediaDialogTest
   MockWebContentsDelegate web_delegate_;
   std::unique_ptr<web_modal::TestWebContentsModalDialogHost> dialog_host_;
   web_modal::TestWebContentsModalDialogManagerDelegate manager_delegate_;
-  CheckedPtr<Widget> parent_widget_;
+  Widget* parent_widget_;
   base::RunLoop run_loop_;
 };
 

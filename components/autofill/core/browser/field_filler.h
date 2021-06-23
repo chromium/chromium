@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -57,7 +56,7 @@ class FieldFiller {
  private:
   const std::string app_locale_;
   // Weak, should outlive this object. May be null.
-  CheckedPtr<AddressNormalizer> address_normalizer_;
+  AddressNormalizer* address_normalizer_;
 };
 
 }  // namespace autofill

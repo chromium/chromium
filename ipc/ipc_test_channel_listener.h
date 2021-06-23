@@ -7,7 +7,6 @@
 
 #include <stddef.h>
 
-#include "base/memory/checked_ptr.h"
 #include "ipc/ipc_listener.h"
 
 namespace IPC {
@@ -38,7 +37,7 @@ class TestChannelListener : public Listener {
   void SendNextMessage();
 
  private:
-  CheckedPtr<Sender> sender_;
+  Sender* sender_;
   int messages_left_;
 };
 

@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "components/autofill/core/browser/autofill_manager.h"
@@ -76,7 +75,7 @@ class TestAutofillManager : public AutofillManager {
   using AutofillManager::pending_form_data;
 
  private:
-  CheckedPtr<TestPersonalDataManager> personal_data_;  // Weak reference.
+  TestPersonalDataManager* personal_data_;  // Weak reference.
   bool autofill_profile_enabled_ = true;
   bool autofill_credit_card_enabled_ = true;
   bool call_parent_upload_form_data_ = false;

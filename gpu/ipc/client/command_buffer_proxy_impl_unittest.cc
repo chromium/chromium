@@ -4,7 +4,6 @@
 
 #include "gpu/ipc/client/command_buffer_proxy_impl.h"
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -39,7 +38,7 @@ class TestGpuChannelHost : public GpuChannelHost {
  protected:
   ~TestGpuChannelHost() override {}
 
-  CheckedPtr<IPC::TestSink> sink_;
+  IPC::TestSink* sink_;
 };
 
 class MockGpuControlClient : public GpuControlClient {

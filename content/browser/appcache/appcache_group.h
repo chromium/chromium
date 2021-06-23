@@ -15,7 +15,6 @@
 #include "base/cancelable_callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -182,13 +181,13 @@ class CONTENT_EXPORT AppCacheGroup
   std::vector<AppCache*> old_caches_;
 
   // Newest cache in this group to be complete, aka relevant cache.
-  CheckedPtr<AppCache> newest_complete_cache_;
+  AppCache* newest_complete_cache_;
 
   // Current update job for this group, if any.
-  CheckedPtr<AppCacheUpdateJob> update_job_;
+  AppCacheUpdateJob* update_job_;
 
   // Central storage object.
-  CheckedPtr<AppCacheStorage> storage_;
+  AppCacheStorage* storage_;
 
   // List of objects observing this group.
   base::ObserverList<UpdateObserver>::Unchecked observers_;

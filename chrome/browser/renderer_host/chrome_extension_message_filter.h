@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/scoped_observer.h"
 #include "base/sequenced_task_runner_helpers.h"
 #include "chrome/browser/profiles/profile.h"
@@ -80,11 +79,11 @@ class ChromeExtensionMessageFilter : public content::BrowserMessageFilter,
   // accessed on the UI thread! Furthermore since this class is refcounted it
   // may outlive |profile_|, so make sure to NULL check if in doubt; async
   // calls and the like.
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 
   // The ActivityLog associated with the given profile. Also only safe to
   // access on the UI thread, and may be null.
-  CheckedPtr<extensions::ActivityLog> activity_log_;
+  extensions::ActivityLog* activity_log_;
 
   ScopedObserver<Profile, ProfileObserver> observed_profiles_{this};
 

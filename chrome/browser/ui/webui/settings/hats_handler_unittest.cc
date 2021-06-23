@@ -7,7 +7,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
@@ -52,7 +51,7 @@ class HatsHandlerTest : public ChromeRenderViewHostTestHarness {
 
   content::TestWebUI* web_ui() { return web_ui_.get(); }
   HatsHandler* handler() { return handler_.get(); }
-  CheckedPtr<MockHatsService> mock_hats_service_;
+  MockHatsService* mock_hats_service_;
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -70,10 +69,9 @@ TEST_F(HatsHandlerTest, HandleTryShowHatsSurvey) {
   std::map<std::string, bool> expected_product_specific_data = {
       {"3P cookies blocked", true}, {"Privacy Sandbox enabled", false}};
 
-  EXPECT_CALL(*mock_hats_service_,
-              LaunchDelayedSurveyForWebContents(
-                  kHatsSurveyTriggerSettingsPrivacy, web_contents(), 20000,
-                  expected_product_specific_data));
+  EXPECT_CALL(*mock_hats_service_, LaunchDelayedSurveyForWebContents(
+                                       kHatsSurveyTriggerSettingsPrivacy,
+                                       web_contents(), 20000, expected_product_specific_data));
   base::ListValue args;
   handler()->HandleTryShowHatsSurvey(&args);
   task_environment()->RunUntilIdle();
@@ -107,10 +105,9 @@ TEST_F(HatsHandlerTest, HandleTryShowPrivacySandboxHatsSurvey) {
       static_cast<int>(content_settings::CookieControlsMode::kBlockThirdParty));
   std::map<std::string, bool> expected_product_specific_data = {
       {"3P cookies blocked", true}, {"Privacy Sandbox enabled", false}};
-  EXPECT_CALL(*mock_hats_service_,
-              LaunchDelayedSurveyForWebContents(
-                  kHatsSurveyTriggerPrivacySandbox, web_contents(), 20000,
-                  expected_product_specific_data));
+  EXPECT_CALL(*mock_hats_service_, LaunchDelayedSurveyForWebContents(
+                                       kHatsSurveyTriggerPrivacySandbox,
+                                       web_contents(), 20000, expected_product_specific_data));
   base::ListValue args;
   handler()->HandleTryShowPrivacySandboxHatsSurvey(&args);
   task_environment()->RunUntilIdle();

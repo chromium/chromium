@@ -8,7 +8,6 @@
 #include <stddef.h>
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/scoped_observer.h"
 #include "base/time/time.h"
@@ -52,11 +51,11 @@ class ProfileActivityMetricsRecorder
   void OnUserAction(const std::string& action, base::TimeTicks action_time);
 
   // The profile of the last active window.
-  CheckedPtr<Profile> last_active_profile_ = nullptr;
+  Profile* last_active_profile_ = nullptr;
 
   // Profile of the currently running session, if there is any. Reset after
   // inactivity.
-  CheckedPtr<Profile> running_session_profile_ = nullptr;
+  Profile* running_session_profile_ = nullptr;
   base::TimeTicks running_session_start_;
   base::TimeTicks last_session_end_;
 

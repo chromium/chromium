@@ -7,7 +7,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/toolbar/chrome_location_bar_model_delegate.h"
 
 class Browser;
@@ -23,7 +22,7 @@ class BrowserLocationBarModelDelegate : public ChromeLocationBarModelDelegate {
   content::WebContents* GetActiveWebContents() const override;
 
  private:
-  const CheckedPtr<Browser> browser_;
+  Browser* const browser_;
 
   DISALLOW_COPY_AND_ASSIGN(BrowserLocationBarModelDelegate);
 };

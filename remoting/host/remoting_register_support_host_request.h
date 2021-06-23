@@ -7,7 +7,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "remoting/host/register_support_host_request.h"
 #include "remoting/signaling/signal_strategy.h"
@@ -84,7 +83,7 @@ class RemotingRegisterSupportHostRequest final
                    base::TimeDelta lifetime,
                    protocol::ErrorCode error_code);
 
-  CheckedPtr<SignalStrategy> signal_strategy_ = nullptr;
+  SignalStrategy* signal_strategy_ = nullptr;
   scoped_refptr<RsaKeyPair> key_pair_;
   RegisterCallback callback_;
   std::unique_ptr<OAuthTokenGetter> token_getter_;

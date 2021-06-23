@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "ui/compositor/test/multi_layer_animator_test_controller.h"
 #include "ui/compositor/test/multi_layer_animator_test_controller_delegate.h"
 #include "ui/views/animation/ink_drop_impl.h"
@@ -104,7 +103,7 @@ class InkDropImplTestApi
 
  private:
   // The InkDrop to provide internal access to.
-  CheckedPtr<InkDropImpl> ink_drop_;
+  InkDropImpl* ink_drop_;
 
   DISALLOW_COPY_AND_ASSIGN(InkDropImplTestApi);
 };

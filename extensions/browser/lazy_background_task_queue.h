@@ -14,7 +14,6 @@
 #include "base/callback_forward.h"
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/notification_observer.h"
@@ -110,7 +109,7 @@ class LazyBackgroundTaskQueue : public KeyedService,
       content::BrowserContext* browser_context,
       const Extension* extension);
 
-  CheckedPtr<content::BrowserContext> browser_context_;
+  content::BrowserContext* browser_context_;
   content::NotificationRegistrar registrar_;
   PendingTasksMap pending_tasks_;
 

@@ -6,7 +6,6 @@
 #define MEDIA_CAST_TEST_SKEWED_TICK_CLOCK_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 
@@ -31,7 +30,7 @@ class SkewedTickClock : public base::TickClock {
 
  private:
   base::TimeTicks SkewTicks(base::TimeTicks now) const;
-  CheckedPtr<const base::TickClock> clock_;  // Not owned.
+  const base::TickClock* clock_;  // Not owned.
   double skew_;
   base::TimeTicks last_skew_set_time_;
   base::TimeTicks skew_clock_at_last_set_;

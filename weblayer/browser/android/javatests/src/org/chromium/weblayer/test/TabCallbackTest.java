@@ -156,10 +156,11 @@ public class TabCallbackTest {
     @MinWebLayerVersion(88)
     @Test
     @SmallTest
-    @DisableIf.Build(supported_abis_includes = "x86", sdk_is_greater_than = Build.VERSION_CODES.P,
-            message = "https://crbug.com/1201813")
-    public void
-    testDownloadFromContextMenu() throws TimeoutException {
+    @DisableIf.
+    Build(supported_abis_includes = "x86",
+          sdk_is_greater_than = Build.VERSION_CODES.P,
+          message = "https://crbug.com/1201813")
+    public void testDownloadFromContextMenu() throws TimeoutException {
         ContextMenuParams params = runContextMenuTest("download.html");
         ;
         Assert.assertFalse(params.isImage);
@@ -175,10 +176,11 @@ public class TabCallbackTest {
     @MinWebLayerVersion(88)
     @Test
     @SmallTest
-    @DisableIf.Build(supported_abis_includes = "x86", sdk_is_greater_than = Build.VERSION_CODES.P,
-            message = "https://crbug.com/1201813")
-    public void
-    testDownloadFromContextMenuImg() throws TimeoutException {
+    @DisableIf.
+    Build(supported_abis_includes = "x86",
+          sdk_is_greater_than = Build.VERSION_CODES.P,
+          message = "https://crbug.com/1201813")
+    public void testDownloadFromContextMenuImg() throws TimeoutException {
         ContextMenuParams params = runContextMenuTest("img.html");
         ;
         Assert.assertTrue(params.isImage);

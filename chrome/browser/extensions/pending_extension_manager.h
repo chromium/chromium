@@ -11,7 +11,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/extensions/pending_extension_info.h"
 #include "extensions/common/extension_id.h"
@@ -202,7 +201,7 @@ class PendingExtensionManager {
   void AddForTesting(const PendingExtensionInfo& pending_extension_info);
 
   // The BrowserContext with which the manager is associated.
-  CheckedPtr<content::BrowserContext> context_;
+  content::BrowserContext* context_;
 
   PendingExtensionList pending_extension_list_;
 

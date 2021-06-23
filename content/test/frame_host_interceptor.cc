@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/memory/checked_ptr.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/common/frame.mojom-test-utils.h"
 #include "content/common/frame.mojom.h"
@@ -60,10 +59,10 @@ class FrameHostInterceptor::FrameAgent
   }
 
  private:
-  CheckedPtr<FrameHostInterceptor> interceptor_;
+  FrameHostInterceptor* interceptor_;
 
-  CheckedPtr<RenderFrameHostImpl> rfhi_;
-  CheckedPtr<mojom::FrameHost> impl_;
+  RenderFrameHostImpl* rfhi_;
+  mojom::FrameHost* impl_;
 
   DISALLOW_COPY_AND_ASSIGN(FrameAgent);
 };

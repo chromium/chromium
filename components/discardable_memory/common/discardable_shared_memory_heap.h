@@ -15,7 +15,6 @@
 #include "base/callback.h"
 #include "base/containers/linked_list.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "components/discardable_memory/common/discardable_memory_export.h"
 
@@ -45,7 +44,7 @@ class DISCARDABLE_MEMORY_EXPORT DiscardableSharedMemoryHeap {
          size_t start,
          size_t length);
 
-    CheckedPtr<base::DiscardableSharedMemory> shared_memory_;
+    base::DiscardableSharedMemory* shared_memory_;
     size_t start_;
     size_t length_;
     bool is_locked_;
@@ -131,7 +130,7 @@ class DISCARDABLE_MEMORY_EXPORT DiscardableSharedMemoryHeap {
     void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd) const;
 
    private:
-    const CheckedPtr<DiscardableSharedMemoryHeap> heap_;
+    DiscardableSharedMemoryHeap* const heap_;
     std::unique_ptr<base::DiscardableSharedMemory> shared_memory_;
     const size_t size_;
     const int32_t id_;

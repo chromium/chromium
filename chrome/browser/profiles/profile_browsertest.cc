@@ -17,7 +17,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_reader.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/path_service.h"
@@ -245,7 +244,7 @@ class BrowserCloseObserver : public BrowserListObserver {
   }
 
  private:
-  CheckedPtr<Browser> browser_;
+  Browser* browser_;
   base::RunLoop run_loop_;
 
   DISALLOW_COPY_AND_ASSIGN(BrowserCloseObserver);

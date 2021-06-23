@@ -6,7 +6,6 @@
 #define GPU_SKIA_BINDINGS_GRCONTEXT_FOR_GLES2_INTERFACE_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/gpu/GrContextOptions.h"
 
@@ -43,7 +42,7 @@ class GrContextForGLES2Interface : public GrContextOptions::ShaderErrorHandler {
 
  private:
   sk_sp<class GrDirectContext> gr_context_;
-  CheckedPtr<gpu::ContextSupport> context_support_;
+  gpu::ContextSupport* context_support_;
 
   DISALLOW_COPY_AND_ASSIGN(GrContextForGLES2Interface);
 };

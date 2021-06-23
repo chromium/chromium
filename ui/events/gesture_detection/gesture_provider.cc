@@ -10,7 +10,6 @@
 
 #include "base/auto_reset.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/gesture_detection/gesture_configuration.h"
@@ -743,7 +742,7 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
   }
 
   const GestureProvider::Config config_;
-  const CheckedPtr<GestureProviderClient> client_;
+  GestureProviderClient* const client_;
 
   GestureDetector gesture_detector_;
   ScaleGestureDetector scale_gesture_detector_;

@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/test/null_task_runner.h"
 #include "cc/animation/animation.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -36,7 +35,7 @@ class TestLayerAnimationObserver : public ImplicitAnimationObserver {
   }
 
  private:
-  CheckedPtr<Layer> layer_;
+  Layer* layer_;
 
   DISALLOW_COPY_AND_ASSIGN(TestLayerAnimationObserver);
 };
@@ -232,7 +231,7 @@ class TestLayerDelegate : public LayerDelegate {
   }
 
  private:
-  CheckedPtr<ui::LayerOwner> owner_;
+  ui::LayerOwner* owner_;
 };
 
 }  // namespace

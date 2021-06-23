@@ -8,7 +8,6 @@
 #include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "content/public/browser/devtools_manager_delegate.h"
 
 namespace content {
@@ -35,7 +34,7 @@ class ShellDevToolsManagerDelegate : public DevToolsManagerDelegate {
       content::DevToolsAgentHostClientChannel* channel) override;
 
  private:
-  CheckedPtr<BrowserContext> browser_context_;
+  BrowserContext* browser_context_;
   base::flat_set<content::DevToolsAgentHostClient*> clients_;
   DISALLOW_COPY_AND_ASSIGN(ShellDevToolsManagerDelegate);
 };

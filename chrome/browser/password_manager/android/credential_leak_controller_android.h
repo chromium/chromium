@@ -7,7 +7,6 @@
 
 #include <memory>
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "ui/gfx/range/range.h"
 #include "url/gurl.h"
@@ -76,7 +75,7 @@ class CredentialLeakControllerAndroid {
 
   const std::u16string username_;
 
-  CheckedPtr<ui::WindowAndroid> window_android_;
+  ui::WindowAndroid* window_android_;
 
   std::unique_ptr<CredentialLeakDialogViewAndroid> dialog_view_;
 

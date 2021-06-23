@@ -6,7 +6,6 @@
 #define WEBLAYER_TEST_LOAD_COMPLETION_OBSERVER_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "weblayer/public/navigation_observer.h"
 
@@ -30,7 +29,7 @@ class LoadCompletionObserver : public NavigationObserver {
   // NavigationObserver implementation:
   void LoadStateChanged(bool is_loading, bool to_different_document) override;
 
-  CheckedPtr<Tab> tab_;
+  Tab* tab_;
   base::RunLoop run_loop_;
 
   DISALLOW_COPY_AND_ASSIGN(LoadCompletionObserver);

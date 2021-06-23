@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 
 #include "base/json/json_reader.h"
@@ -236,8 +235,8 @@ class DefaultAppsMigrationBrowserTest : public DefaultAppsBrowserTest {
   ExtensionRegistry* registry() { return ExtensionRegistry::Get(profile()); }
 
  protected:
-  CheckedPtr<web_app::TestShortcutManager> shortcut_manager_;
-  CheckedPtr<web_app::TestOsIntegrationManager> os_integration_manager_;
+  web_app::TestShortcutManager* shortcut_manager_;
+  web_app::TestOsIntegrationManager* os_integration_manager_;
 
  private:
   std::unique_ptr<KeyedService> CreateTestWebAppProvider(Profile* profile) {

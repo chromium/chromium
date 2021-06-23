@@ -12,7 +12,6 @@
 
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
@@ -134,7 +133,7 @@ class CallbackTest {
   }
 
  private:
-  CheckedPtr<MessageLoopHelper> helper_;
+  MessageLoopHelper* helper_;
   int reuse_;
   int last_result_;
   disk_cache::EntryResult last_entry_result_;

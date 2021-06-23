@@ -16,7 +16,6 @@
 #include "base/bind.h"
 #include "base/callback_forward.h"
 #include "base/compiler_specific.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/metrics/statistics_recorder.h"
@@ -184,7 +183,7 @@ class MockPrefHashStore : public PrefHashStore {
     bool StampSuperMac() override;
 
    private:
-    CheckedPtr<MockPrefHashStore> outer_;
+    MockPrefHashStore* outer_;
 
     DISALLOW_COPY_AND_ASSIGN(MockPrefHashStoreTransaction);
   };
@@ -424,7 +423,7 @@ class MockHashStoreContents : public HashStoreContents {
   // which can be executed during shutdown. To be able to capture the behavior
   // of the copy, we make it forward calls to the mock it was created from.
   // Once set, |origin_mock_| must outlive this instance.
-  CheckedPtr<MockHashStoreContents> origin_mock_;
+  MockHashStoreContents* origin_mock_;
 
   DISALLOW_COPY_AND_ASSIGN(MockHashStoreContents);
 };
@@ -610,10 +609,9 @@ class PrefHashFilterTest : public testing::TestWithParam<EnforcementLevel>,
         std::move(pref_store_contents_));
   }
 
-  CheckedPtr<MockPrefHashStore> mock_pref_hash_store_;
-  CheckedPtr<MockPrefHashStore> mock_external_validation_pref_hash_store_;
-  CheckedPtr<MockHashStoreContents>
-      mock_external_validation_hash_store_contents_;
+  MockPrefHashStore* mock_pref_hash_store_;
+  MockPrefHashStore* mock_external_validation_pref_hash_store_;
+  MockHashStoreContents* mock_external_validation_hash_store_contents_;
   std::unique_ptr<base::DictionaryValue> pref_store_contents_;
   scoped_refptr<MockValidationDelegateRecord> mock_validation_delegate_record_;
   std::unique_ptr<PrefHashFilter> pref_hash_filter_;

@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/callback_forward.h"
-#include "base/memory/checked_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -127,7 +126,7 @@ class BackgroundSyncLauncherTest : public testing::Test {
 
   BrowserTaskEnvironment task_environment_;
   TestBrowserClient browser_client_;
-  CheckedPtr<ContentBrowserClient> original_client_;
+  ContentBrowserClient* original_client_;
   TestBrowserContext test_browser_context_;
   int num_invocations_fire_background_sync_events_ = 0;
 };

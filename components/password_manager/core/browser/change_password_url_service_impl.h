@@ -12,7 +12,6 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/password_manager/core/browser/change_password_url_service.h"
@@ -84,7 +83,7 @@ class ChangePasswordUrlServiceImpl
   // SharedURLLoaderFactory for the gstatic request, argument in the
   // constructor.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  CheckedPtr<PrefService> pref_service_;
+  PrefService* pref_service_;
   // Timer to track the response time of the gstatic request.
   base::ElapsedTimer fetch_timer_;
 };

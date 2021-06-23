@@ -16,7 +16,6 @@
 #include "base/containers/queue.h"
 #include "base/i18n/streaming_utf8_validator.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
 #include "base/time/time.h"
@@ -330,7 +329,7 @@ class NET_EXPORT WebSocketChannel {
   const std::unique_ptr<WebSocketEventInterface> event_interface_;
 
   // The URLRequestContext to pass to the WebSocketStream creator.
-  const CheckedPtr<URLRequestContext> url_request_context_;
+  URLRequestContext* const url_request_context_;
 
   // The WebSocketStream on which to send and receive data.
   std::unique_ptr<WebSocketStream> stream_;

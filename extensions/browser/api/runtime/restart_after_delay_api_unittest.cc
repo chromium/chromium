@@ -5,7 +5,6 @@
 #include <utility>
 
 #include "base/callback_helpers.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -74,7 +73,7 @@ class DelayedRestartExtensionsBrowserClient
       content::BrowserContext* context) const override {
     const_cast<DelayedRestartExtensionsBrowserClient*>(this)->api_delegate_ =
         new DelayedRestartTestApiDelegate();
-    return base::WrapUnique(api_delegate_.get());
+    return base::WrapUnique(api_delegate_);
   }
 
   sync_preferences::TestingPrefServiceSyncable* testing_pref_service() {
@@ -87,8 +86,7 @@ class DelayedRestartExtensionsBrowserClient
   }
 
  private:
-  CheckedPtr<DelayedRestartTestApiDelegate> api_delegate_ =
-      nullptr;  // Not owned.
+  DelayedRestartTestApiDelegate* api_delegate_ = nullptr;  // Not owned.
 
   sync_preferences::TestingPrefServiceSyncable testing_pref_service_;
 

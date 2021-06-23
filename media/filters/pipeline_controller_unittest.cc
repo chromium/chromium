@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
@@ -159,7 +158,7 @@ class PipelineControllerTest : public ::testing::Test, public Pipeline::Client {
   base::test::SingleThreadTaskEnvironment task_environment_;
 
   NiceMock<MockDemuxer> demuxer_;
-  CheckedPtr<StrictMock<MockPipeline>> pipeline_;
+  StrictMock<MockPipeline>* pipeline_;
   PipelineController pipeline_controller_;
 
   bool was_seeked_ = false;

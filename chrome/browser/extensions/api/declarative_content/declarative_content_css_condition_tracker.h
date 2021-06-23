@@ -14,7 +14,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/extensions/api/declarative_content/content_predicate_evaluator.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
@@ -50,7 +49,7 @@ class DeclarativeContentCssPredicate : public ContentPredicate {
                                  const std::vector<std::string>& css_selectors);
 
   // Weak.
-  const CheckedPtr<ContentPredicateEvaluator> evaluator_;
+  ContentPredicateEvaluator* const evaluator_;
   std::vector<std::string> css_selectors_;
 
   DISALLOW_COPY_AND_ASSIGN(DeclarativeContentCssPredicate);
@@ -141,7 +140,7 @@ class DeclarativeContentCssConditionTracker
   void DeletePerWebContentsTracker(content::WebContents* contents);
 
   // Weak.
-  CheckedPtr<Delegate> delegate_;
+  Delegate* delegate_;
 
   // Maps the CSS selectors to watch to the number of predicates specifying
   // them.

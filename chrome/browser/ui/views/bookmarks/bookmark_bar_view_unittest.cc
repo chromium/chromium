@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -206,7 +205,7 @@ class BookmarkBarViewInWidgetTest : public BookmarkBarViewBaseTest {
 
  private:
   std::unique_ptr<views::Widget> widget_;
-  CheckedPtr<BookmarkBarView> bookmark_bar_view_ = nullptr;
+  BookmarkBarView* bookmark_bar_view_ = nullptr;
 };
 
 // Verify that in instant extended mode the visibility of the apps shortcut

@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
@@ -101,7 +100,7 @@ class EventPageRequestManagerTest : public ::testing::Test {
                                         expected_count);
   }
 
-  CheckedPtr<TestProcessManager> process_manager_ = nullptr;
+  TestProcessManager* process_manager_ = nullptr;
   std::unique_ptr<EventPageRequestManager> request_manager_;
 
  private:

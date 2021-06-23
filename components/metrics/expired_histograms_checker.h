@@ -9,7 +9,6 @@
 #include <set>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/record_histogram_checker.h"
 #include "base/strings/string_piece.h"
 
@@ -37,7 +36,7 @@ class ExpiredHistogramsChecker final : public base::RecordHistogramChecker {
   void InitAllowlist(const std::string& allowlist_str);
 
   // Array of expired histogram hashes.
-  const CheckedPtr<const uint64_t> expired_histogram_hashes_;
+  const uint64_t* const expired_histogram_hashes_;
 
   // Size of the |expired_histogram_hashes_|.
   const size_t size_;

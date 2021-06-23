@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/browsing_data/browsing_data_media_license_helper.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "net/cookies/canonical_cookie.h"
@@ -61,7 +60,7 @@ class SiteDataCountingHelper {
 
   void Done(const std::vector<GURL>& origins);
 
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
   base::Time begin_;
   base::Time end_;
   base::OnceCallback<void(int)> completion_callback_;

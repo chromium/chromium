@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/viz/common/quads/selection.h"
 #include "content/common/content_export.h"
 #include "ui/touch_selection/touch_selection_controller.h"
@@ -66,8 +65,8 @@ class CONTENT_EXPORT TouchSelectionControllerClientChildFrame
   gfx::Point ConvertFromRoot(const gfx::PointF& point) const;
 
   // Not owned, non-null for the lifetime of this object.
-  CheckedPtr<RenderWidgetHostViewChildFrame> rwhv_;
-  CheckedPtr<TouchSelectionControllerClientManager> manager_;
+  RenderWidgetHostViewChildFrame* rwhv_;
+  TouchSelectionControllerClientManager* manager_;
 
   // The last selection bounds reported by the view, in view coordinates.
   gfx::SelectionBound selection_start_;

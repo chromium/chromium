@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "content/public/browser/android/synchronous_compositor.h"
 #include "content/public/browser/android/synchronous_compositor_client.h"
@@ -61,7 +60,7 @@ class CONTENT_EXPORT TestSynchronousCompositor : public SynchronousCompositor {
   void SwapReturnedResources(FrameAckArray* array);
 
  private:
-  CheckedPtr<SynchronousCompositorClient> client_;
+  SynchronousCompositorClient* client_;
   viz::FrameSinkId frame_sink_id_;
   std::unique_ptr<Frame> hardware_frame_;
   FrameAckArray frame_ack_array_;

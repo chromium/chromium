@@ -5,7 +5,6 @@
 #include "components/blocked_content/android/popup_blocked_infobar_delegate.h"
 
 #include "base/callback_helpers.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -81,7 +80,7 @@ class PopupBlockedInfoBarDelegateTest
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  CheckedPtr<PopupBlockerTabHelper> helper_ = nullptr;
+  PopupBlockerTabHelper* helper_ = nullptr;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   scoped_refptr<HostContentSettingsMap> settings_map_;
   std::unique_ptr<TestInfoBarManager> infobar_manager_;

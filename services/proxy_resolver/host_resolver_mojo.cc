@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/address_family.h"
@@ -142,7 +141,7 @@ class HostResolverMojo::RequestImpl : public ProxyHostResolver::Request,
   net::CompletionOnceCallback callback_;
 
   base::WeakPtr<net::HostCache> host_cache_;
-  const CheckedPtr<Impl> impl_;
+  Impl* const impl_;
   std::vector<net::IPAddress> results_;
 
   THREAD_CHECKER(thread_checker_);

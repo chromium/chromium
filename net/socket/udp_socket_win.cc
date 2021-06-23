@@ -12,7 +12,6 @@
 #include "base/check_op.h"
 #include "base/lazy_instance.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
@@ -79,7 +78,7 @@ class UDPSocketWin::Core : public base::RefCounted<Core> {
     void OnObjectSignaled(HANDLE object) override;
 
    private:
-    const CheckedPtr<Core> core_;
+    Core* const core_;
   };
 
   class WriteDelegate : public base::win::ObjectWatcher::Delegate {
@@ -91,13 +90,13 @@ class UDPSocketWin::Core : public base::RefCounted<Core> {
     void OnObjectSignaled(HANDLE object) override;
 
    private:
-    const CheckedPtr<Core> core_;
+    Core* const core_;
   };
 
   ~Core();
 
   // The socket that created this object.
-  CheckedPtr<UDPSocketWin> socket_;
+  UDPSocketWin* socket_;
 
   // |reader_| handles the signals from |read_watcher_|.
   ReadDelegate reader_;

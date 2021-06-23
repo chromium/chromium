@@ -14,7 +14,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/queue.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/test/task_environment.h"
@@ -314,7 +313,7 @@ class Request {
   const net::TestCompletionCallback& callback() const { return callback_; }
 
  private:
-  CheckedPtr<net::ProxyResolver> resolver_;
+  net::ProxyResolver* resolver_;
   const GURL url_;
   const net::NetworkIsolationKey network_isolation_key_;
   net::ProxyInfo results_;
@@ -376,7 +375,7 @@ class MockMojoProxyResolverFactory
 
   void WakeWaiter();
 
-  CheckedPtr<MockMojoProxyResolver> resolver_;
+  MockMojoProxyResolver* resolver_;
   base::queue<CreateProxyResolverAction> create_resolver_actions_;
 
   base::OnceClosure quit_closure_;

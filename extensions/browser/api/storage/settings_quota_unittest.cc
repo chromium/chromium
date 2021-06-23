@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/json/json_writer.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/values.h"
@@ -58,7 +57,7 @@ class ExtensionSettingsQuotaTest : public testing::Test {
     SettingsStorageQuotaEnforcer::Limits limits =
         { quota_bytes, quota_bytes_per_item, max_items };
     storage_ = std::make_unique<SettingsStorageQuotaEnforcer>(
-        limits, base::WrapUnique(delegate_.get()));
+        limits, base::WrapUnique(delegate_));
   }
 
   // Returns whether the settings in |storage_| and |delegate_| are the same as
@@ -77,7 +76,7 @@ class ExtensionSettingsQuotaTest : public testing::Test {
   std::unique_ptr<SettingsStorageQuotaEnforcer> storage_;
 
   // In-memory storage area being delegated to.  Always owned by |storage_|.
-  CheckedPtr<TestingValueStore> delegate_;
+  TestingValueStore* delegate_;
 };
 
 TEST_F(ExtensionSettingsQuotaTest, ZeroQuotaBytes) {

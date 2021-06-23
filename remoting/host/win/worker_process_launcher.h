@@ -12,7 +12,6 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/timer/timer.h"
@@ -123,7 +122,7 @@ class WorkerProcessLauncher : public base::win::ObjectWatcher::Delegate {
   void StopWorker();
 
   // Handles IPC messages sent by the worker process.
-  CheckedPtr<WorkerProcessIpcDelegate> ipc_handler_;
+  WorkerProcessIpcDelegate* ipc_handler_;
 
   // Implements specifics of launching a worker process.
   std::unique_ptr<WorkerProcessLauncher::Delegate> launcher_delegate_;

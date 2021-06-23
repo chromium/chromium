@@ -12,7 +12,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
@@ -157,7 +156,7 @@ class LoopbackStream final : public media::mojom::AudioInputStream,
     // becomes stopped.
     void GenerateMoreAudio();
 
-    CheckedPtr<const base::TickClock> clock_;
+    const base::TickClock* clock_;
 
     // Task runner that calls GenerateMoreAudio() to drive all the audio data
     // flows.

@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_AUTOCOMPLETE_SHORTCUTS_EXTENSIONS_MANAGER_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/scoped_observer.h"
 #include "base/supports_user_data.h"
 #include "extensions/browser/extension_registry.h"
@@ -33,7 +32,7 @@ class ShortcutsExtensionsManager
   ScopedObserver<extensions::ExtensionRegistry,
                  extensions::ExtensionRegistryObserver>
       registry_observer_{this};
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 
   DISALLOW_COPY_AND_ASSIGN(ShortcutsExtensionsManager);
 };

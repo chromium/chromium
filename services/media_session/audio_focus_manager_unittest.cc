@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/power_monitor_test_base.h"
 #include "base/test/task_environment.h"
@@ -286,7 +285,7 @@ class AudioFocusManagerTest
   mojo::Remote<mojom::AudioFocusManagerDebug> audio_focus_debug_remote_;
   mojo::Remote<mojom::MediaControllerManager> controller_manager_remote_;
 
-  CheckedPtr<base::PowerMonitorTestSource> power_source_;
+  base::PowerMonitorTestSource* power_source_;
 
   DISALLOW_COPY_AND_ASSIGN(AudioFocusManagerTest);
 };

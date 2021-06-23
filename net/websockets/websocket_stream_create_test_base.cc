@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "net/websockets/websocket_stream_create_test_base.h"
-#include "base/memory/checked_ptr.h"
 
 #include <utility>
 
@@ -86,7 +85,7 @@ class WebSocketStreamCreateTestBase::TestConnectDelegate
   }
 
  private:
-  CheckedPtr<WebSocketStreamCreateTestBase> owner_;
+  WebSocketStreamCreateTestBase* owner_;
   base::OnceClosure done_callback_;
   DISALLOW_COPY_AND_ASSIGN(TestConnectDelegate);
 };

@@ -10,7 +10,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "ui/base/ui_base_types.h"
@@ -50,7 +49,7 @@ class WEB_DIALOGS_EXPORT WebDialogUIBase {
   // JS message handler.
   void OnDialogClosed(const base::ListValue* args);
 
-  CheckedPtr<content::WebUI> web_ui_;
+  content::WebUI* web_ui_;
 
   DISALLOW_COPY_AND_ASSIGN(WebDialogUIBase);
 };

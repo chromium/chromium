@@ -10,7 +10,6 @@
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/message_loop/message_pump.h"
 #include "base/message_loop/message_pump_android.h"
@@ -29,7 +28,7 @@ struct RunState {
         should_quit(false) {
   }
 
-  CheckedPtr<base::MessagePump::Delegate> delegate;
+  base::MessagePump::Delegate* delegate;
 
   // Used to count how many Run() invocations are on the stack.
   int run_depth;

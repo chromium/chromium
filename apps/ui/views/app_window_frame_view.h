@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -86,15 +85,15 @@ class AppWindowFrameView : public views::NonClientFrameView {
   // Return the current frame color based on the active state of the window.
   SkColor CurrentFrameColor();
 
-  CheckedPtr<views::Widget> widget_;
-  CheckedPtr<extensions::NativeAppWindow> window_;
+  views::Widget* widget_;
+  extensions::NativeAppWindow* window_;
   bool draw_frame_;
   SkColor active_frame_color_;
   SkColor inactive_frame_color_;
-  CheckedPtr<views::ImageButton> close_button_ = nullptr;
-  CheckedPtr<views::ImageButton> maximize_button_ = nullptr;
-  CheckedPtr<views::ImageButton> restore_button_ = nullptr;
-  CheckedPtr<views::ImageButton> minimize_button_ = nullptr;
+  views::ImageButton* close_button_ = nullptr;
+  views::ImageButton* maximize_button_ = nullptr;
+  views::ImageButton* restore_button_ = nullptr;
+  views::ImageButton* minimize_button_ = nullptr;
 
   // Allow resize for clicks this many pixels inside the bounds.
   int resize_inside_bounds_size_ = 5;

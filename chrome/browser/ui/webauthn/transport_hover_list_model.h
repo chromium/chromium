@@ -10,7 +10,6 @@
 
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/webauthn/hover_list_model.h"
 #include "chrome/browser/webauthn/authenticator_transport.h"
 
@@ -52,7 +51,7 @@ class TransportHoverListModel : public HoverListModel {
   // API should be shown.
   const bool show_win_native_api_item_ = false;
 
-  const CheckedPtr<Delegate> delegate_;  // Weak, may be nullptr.
+  Delegate* const delegate_;  // Weak, may be nullptr.
 
   DISALLOW_COPY_AND_ASSIGN(TransportHoverListModel);
 };

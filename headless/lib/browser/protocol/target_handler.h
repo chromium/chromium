@@ -5,7 +5,6 @@
 #ifndef HEADLESS_LIB_BROWSER_PROTOCOL_TARGET_HANDLER_H_
 #define HEADLESS_LIB_BROWSER_PROTOCOL_TARGET_HANDLER_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "headless/lib/browser/protocol/domain_handler.h"
 #include "headless/lib/browser/protocol/dp_target.h"
@@ -36,7 +35,7 @@ class TargetHandler : public DomainHandler, public Target::Backend {
                        bool* out_success) override;
 
  private:
-  CheckedPtr<HeadlessBrowserImpl> browser_;
+  HeadlessBrowserImpl* browser_;
   DISALLOW_COPY_AND_ASSIGN(TargetHandler);
 };
 

@@ -9,7 +9,6 @@
 
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "content/browser/download/save_types.h"
 #include "content/public/common/referrer.h"
 #include "url/gurl.h"
@@ -103,7 +102,7 @@ class SaveItem {
   SaveFileCreateInfo::SaveFileSource save_source_;
 
   // Our owning object.
-  CheckedPtr<SavePackage> package_;
+  SavePackage* package_;
 
   DISALLOW_COPY_AND_ASSIGN(SaveItem);
 };

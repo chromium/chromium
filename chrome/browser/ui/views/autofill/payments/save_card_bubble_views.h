@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/payments/save_card_bubble_controller.h"
 #include "chrome/browser/ui/sync/bubble_sync_promo_delegate.h"
@@ -75,9 +74,9 @@ class SaveCardBubbleViews : public AutofillBubbleBase,
  private:
   friend class SaveCardBubbleViewsFullFormBrowserTest;
 
-  CheckedPtr<views::View> footnote_view_ = nullptr;
+  views::View* footnote_view_ = nullptr;
 
-  CheckedPtr<SaveCardBubbleController> controller_;  // Weak reference.
+  SaveCardBubbleController* controller_;  // Weak reference.
 
   PaymentsBubbleClosedReason closed_reason_ =
       PaymentsBubbleClosedReason::kUnknown;

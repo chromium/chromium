@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "device/gamepad/gamepad_consumer.h"
@@ -114,8 +113,8 @@ class GamepadServiceTest : public testing::Test {
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
-  CheckedPtr<MockGamepadDataFetcher> fetcher_;
-  CheckedPtr<GamepadService> service_;
+  MockGamepadDataFetcher* fetcher_;
+  GamepadService* service_;
   std::vector<std::unique_ptr<ConnectionListener>> consumers_;
   Gamepads test_data_;
 

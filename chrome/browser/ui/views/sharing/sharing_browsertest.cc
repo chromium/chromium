@@ -91,7 +91,7 @@ void SharingBrowserTest::Init(
       sharing_service_->GetMessageSenderForTesting()->GetFCMSenderForTesting();
   fake_web_push_sender_ = new FakeWebPushSender();
   sharing_fcm_sender->SetWebPushSenderForTesting(
-      base::WrapUnique(fake_web_push_sender_.get()));
+      base::WrapUnique(fake_web_push_sender_));
   sharing_fcm_sender->SetSharingMessageBridgeForTesting(
       &fake_sharing_message_bridge_);
 

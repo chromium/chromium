@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 
 namespace base {
@@ -52,7 +51,7 @@ class FeatureSwitch {
     ScopedOverride(FeatureSwitch* feature, bool override_value);
     ~ScopedOverride();
    private:
-    CheckedPtr<FeatureSwitch> feature_;
+    FeatureSwitch* feature_;
     FeatureSwitch::OverrideValue previous_value_;
     DISALLOW_COPY_AND_ASSIGN(ScopedOverride);
   };
@@ -77,7 +76,7 @@ class FeatureSwitch {
   std::string GetLegacyDisableFlag() const;
   bool ComputeValue() const;
 
-  CheckedPtr<const base::CommandLine> command_line_;
+  const base::CommandLine* command_line_;
   const char* switch_name_;
   bool default_value_;
   OverrideValue override_value_;

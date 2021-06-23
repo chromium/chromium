@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -60,7 +59,7 @@ class DownloadsHandler : public SettingsPageUIHandler,
   void HandleGetDownloadLocationText(const base::ListValue* args);
 #endif
 
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 
   PrefChangeRegistrar pref_registrar_;
 

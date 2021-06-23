@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/media/router/event_page_request_manager.h"
@@ -85,7 +84,7 @@ class ExtensionMediaRouteProviderProxyTest : public testing::Test {
   std::unique_ptr<ExtensionMediaRouteProviderProxy> provider_proxy_;
   mojo::Remote<mojom::MediaRouteProvider> provider_proxy_remote_;
   StrictMock<MockMediaRouteProvider> mock_provider_;
-  CheckedPtr<MockEventPageRequestManager> request_manager_ = nullptr;
+  MockEventPageRequestManager* request_manager_ = nullptr;
   std::unique_ptr<mojo::Receiver<mojom::MediaRouteProvider>> receiver_;
 
  private:

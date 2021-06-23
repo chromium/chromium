@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_number_conversions.h"
@@ -134,7 +133,7 @@ class BluetoothAdapterWinTest : public testing::Test {
   scoped_refptr<base::TestSimpleTaskRunner> ui_task_runner_;
   scoped_refptr<base::TestSimpleTaskRunner> bluetooth_task_runner_;
   scoped_refptr<BluetoothAdapter> adapter_;
-  CheckedPtr<BluetoothAdapterWin> adapter_win_;
+  BluetoothAdapterWin* adapter_win_;
   TestBluetoothAdapterObserver observer_;
   bool init_callback_called_;
   int num_start_discovery_callbacks_;

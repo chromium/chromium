@@ -10,7 +10,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "chrome/common/extensions/api/history.h"
@@ -51,7 +50,7 @@ class HistoryEventRouter : public history::HistoryServiceObserver {
                      const std::string& event_name,
                      std::unique_ptr<base::ListValue> event_args);
 
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
   base::ScopedObservation<history::HistoryService,
                           history::HistoryServiceObserver>
       history_service_observation_{this};
@@ -76,7 +75,7 @@ class HistoryAPI : public BrowserContextKeyedAPI, public EventRouter::Observer {
  private:
   friend class BrowserContextKeyedAPIFactory<HistoryAPI>;
 
-  CheckedPtr<content::BrowserContext> browser_context_;
+  content::BrowserContext* browser_context_;
 
   // BrowserContextKeyedAPI implementation.
   static const char* service_name() {

@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/containers/id_map.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/predictors/proxy_lookup_client_impl.h"
@@ -93,7 +92,7 @@ struct PreresolveJob {
   // outlive PreresolveInfo. It's only accessed on PreconnectManager class
   // context and PreresolveInfo lifetime is tied to PreconnectManager.
   // May be equal to nullptr in case of detached job.
-  CheckedPtr<PreresolveInfo> info;
+  PreresolveInfo* info;
   std::unique_ptr<ResolveHostClientImpl> resolve_host_client;
   std::unique_ptr<ProxyLookupClientImpl> proxy_lookup_client;
 
