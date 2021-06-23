@@ -517,7 +517,7 @@ bool CommerceHintAgent::ShouldSkip(base::StringPiece product_name) {
   return PartialMatch(product_name.substr(0, kLengthLimit), GetSkipPattern());
 }
 
-std::string CommerceHintAgent::ExtractButtonText(
+const std::vector<std::string> CommerceHintAgent::ExtractButtonTexts(
     const blink::WebFormElement& form) {
   static base::NoDestructor<WebString> kButton("button");
 
@@ -532,7 +532,7 @@ std::string CommerceHintAgent::ExtractButtonText(
                              base::TrimPositions::TRIM_ALL),
         true)));
   }
-  return base::JoinString(button_texts, " ");
+  return button_texts;
 }
 
 void CommerceHintAgent::ExtractProducts() {
@@ -685,9 +685,12 @@ void CommerceHintAgent::WillSubmitForm(const blink::WebFormElement& form) {
   if (!url.SchemeIsHTTPOrHTTPS())
     return;
 
-  if (IsPurchase(ExtractButtonText(form))) {
-    RecordCommerceEvent(CommerceEvent::kPurchaseByForm);
-    OnPurchase(render_frame());
+  for (const std::string& button_text : ExtractButtonTexts(form)) {
+    if (IsPurchase(button_text)) {
+      RecordCommerceEvent(CommerceEvent::kPurchaseByForm);
+      OnPurchase(render_frame());
+      return;
+    }
   }
 }
 
