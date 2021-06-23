@@ -8,6 +8,7 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/i18n/icu_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/services/ime/constants.h"
 #include "chromeos/services/ime/decoder/proto_conversion.h"
@@ -70,6 +71,15 @@ std::vector<uint8_t> WrapAndSerializeMessage(PublicMessage message) {
   std::vector<uint8_t> output(wrapper.ByteSizeLong());
   wrapper.SerializeToArray(output.data(), output.size());
   return output;
+}
+
+std::u16string ConvertToUtf16AndNormalize(const std::string& str) {
+  // TODO(https://crbug.com/1185629): Add a new helper in
+  // base/i18n/icu_string_conversions.h that does the conversion directly
+  // without a redundant UTF16->UTF8 conversion.
+  std::string normalized_str;
+  base::ConvertToUtf8AndNormalize(str, base::kCodepageUTF8, &normalized_str);
+  return base::UTF8ToUTF16(normalized_str);
 }
 
 }  // namespace
@@ -211,7 +221,8 @@ void SystemEngine::OnReply(const std::vector<uint8_t>& message,
       break;
     }
     case ime::PublicMessage::kSetComposition: {
-      host->SetComposition(base::UTF8ToUTF16(reply.set_composition().text()));
+      host->SetComposition(
+          ConvertToUtf16AndNormalize(reply.set_composition().text()));
       break;
     }
     case ime::PublicMessage::kSetCompositionRange: {
@@ -232,7 +243,7 @@ void SystemEngine::OnReply(const std::vector<uint8_t>& message,
     }
     case ime::PublicMessage::kCommitText: {
       host->CommitText(
-          base::UTF8ToUTF16(reply.commit_text().text()),
+          ConvertToUtf16AndNormalize(reply.commit_text().text()),
           reply.commit_text().cursor_behavior() ==
                   ime::CommitTextCursorBehavior::
                       COMMIT_TEXT_CURSOR_BEHAVIOR_MOVE_CURSOR_BEFORE_TEXT

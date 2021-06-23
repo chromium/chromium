@@ -76,16 +76,6 @@ std::string NormalizeRuleBasedEngineId(const std::string engine_id) {
   return engine_id;
 }
 
-std::u16string NormalizeUtf16(const std::u16string& str) {
-  // TODO(https://crbug.com/1185629): Add a new helper in
-  // base/i18n/icu_string_conversions.h that does the conversion directly
-  // without a redundant UTF16->UTF8 conversion.
-  std::string normalized_str;
-  base::ConvertToUtf8AndNormalize(base::UTF16ToUTF8(str), base::kCodepageUTF8,
-                                  &normalized_str);
-  return base::UTF8ToUTF16(normalized_str);
-}
-
 ime::mojom::ModifierStatePtr ModifierStateFromEvent(const ui::KeyEvent& event) {
   auto modifier_state = ime::mojom::ModifierState::New();
   modifier_state->alt = event.flags() & ui::EF_ALT_DOWN;
@@ -567,7 +557,7 @@ void NativeInputMethodEngine::ImeObserver::CommitText(
     const std::u16string& text,
     ime::mojom::CommitTextCursorBehavior cursor_behavior) {
   GetInputContext()->CommitText(
-      NormalizeUtf16(text),
+      text,
       cursor_behavior ==
               ime::mojom::CommitTextCursorBehavior::kMoveCursorBeforeText
           ? ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorBeforeText
@@ -578,7 +568,7 @@ void NativeInputMethodEngine::ImeObserver::CommitText(
 void NativeInputMethodEngine::ImeObserver::SetComposition(
     const std::u16string& text) {
   ui::CompositionText composition;
-  composition.text = NormalizeUtf16(text);
+  composition.text = text;
   // TODO(b/151884011): Turn on underlining for composition-based languages.
   composition.ime_text_spans = {ui::ImeTextSpan(
       ui::ImeTextSpan::Type::kComposition, 0, composition.text.length(),
@@ -664,13 +654,12 @@ void NativeInputMethodEngine::ImeObserver::OnRuleBasedKeyEventResponse(
     switch (op->method) {
       case ime::mojom::OperationMethodForRulebased::COMMIT_TEXT:
         GetInputContext()->CommitText(
-            NormalizeUtf16(op->arguments),
-            ui::TextInputClient::InsertTextCursorBehavior::
-                kMoveCursorAfterText);
+            op->arguments, ui::TextInputClient::InsertTextCursorBehavior::
+                               kMoveCursorAfterText);
         break;
       case ime::mojom::OperationMethodForRulebased::SET_COMPOSITION:
         ui::CompositionText composition;
-        composition.text = NormalizeUtf16(op->arguments);
+        composition.text = op->arguments;
         GetInputContext()->UpdateCompositionText(
             composition, composition.text.length(), /*visible=*/true);
         break;

@@ -4,6 +4,7 @@
 
 #include "chromeos/services/ime/rule_based_engine.h"
 
+#include "base/i18n/icu_string_conversions.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -13,6 +14,15 @@ namespace chromeos {
 namespace ime {
 
 namespace {
+
+std::u16string ConvertToUtf16AndNormalize(const std::string& str) {
+  // TODO(https://crbug.com/1185629): Add a new helper in
+  // base/i18n/icu_string_conversions.h that does the conversion directly
+  // without a redundant UTF16->UTF8 conversion.
+  std::string normalized_str;
+  base::ConvertToUtf8AndNormalize(str, base::kCodepageUTF8, &normalized_str);
+  return base::UTF8ToUTF16(normalized_str);
+}
 
 std::string GetIdFromImeSpec(const std::string& ime_spec) {
   static const std::string kPrefix("m17n:");
@@ -42,7 +52,7 @@ mojom::KeypressResponseForRulebasedPtr GenerateKeypressResponseForRulebased(
   if (!process_key_result.commit_text.empty()) {
     keypress_response->operations.push_back(mojom::OperationForRulebased::New(
         mojom::OperationMethodForRulebased::COMMIT_TEXT,
-        base::UTF8ToUTF16(process_key_result.commit_text)));
+        ConvertToUtf16AndNormalize(process_key_result.commit_text)));
   }
   // Need to add the setComposition operation to the result when the key is
   // handled and commit_text and composition_text are both empty.
@@ -53,7 +63,7 @@ mojom::KeypressResponseForRulebasedPtr GenerateKeypressResponseForRulebased(
        process_key_result.commit_text.empty())) {
     keypress_response->operations.push_back(mojom::OperationForRulebased::New(
         mojom::OperationMethodForRulebased::SET_COMPOSITION,
-        base::UTF8ToUTF16(process_key_result.composition_text)));
+        ConvertToUtf16AndNormalize(process_key_result.composition_text)));
   }
   return keypress_response;
 }
