@@ -185,6 +185,29 @@ export class DeviceOperator {
   }
 
   /**
+   * Gets vid:pid identifier of USB camera.
+   * @param {string} deviceId
+   * @return {!Promise<?string>} Identifier formatted as "vid:pid" or null for
+   *     non-USB camera.
+   */
+  async getVidPid(deviceId) {
+    const getTag = async (tag) => {
+      const data = await this.getStaticMetadata(deviceId, tag);
+      if (data.length === 0) {
+        return null;
+      }
+      // Check and pop the \u0000 c style string terminal symbol.
+      if (data[data.length - 1] === 0) {
+        data.pop();
+      }
+      return String.fromCharCode(...data);
+    };
+    const vid = await getTag(0x80010000);
+    const pid = await getTag(0x80010001);
+    return vid && pid && `${vid}:${pid}`;
+  }
+
+  /**
    * Gets supported photo resolutions for specific camera.
    * @param {string} deviceId The renderer-facing device id of the target camera
    *     which could be retrieved from MediaDeviceInfo.deviceId.
