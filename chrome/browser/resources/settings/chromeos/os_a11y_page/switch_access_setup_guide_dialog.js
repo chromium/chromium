@@ -321,10 +321,16 @@ Polymer({
     const selected = this['$']['switch-count-group'].selected;
     if (selected === 'one-switch') {
       this.switchCount_ = 1;
+      this['$']['choose-switch-count-illustration'].className =
+          'illustration one-switch';
     } else if (selected === 'two-switches') {
       this.switchCount_ = 2;
+      this['$']['choose-switch-count-illustration'].className =
+          'illustration two-switches';
     } else if (selected === 'three-switches') {
       this.switchCount_ = 3;
+      this['$']['choose-switch-count-illustration'].className =
+          'illustration three-switches';
     }
   },
 

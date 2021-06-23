@@ -55,9 +55,19 @@
             url(chrome://os-settings/images/computer_and_bluetooth_switch.svg);
       }
 
-      #choose-switch-count .illustration {
+      #choose-switch-count .illustration.one-switch {
+        background-image:
+          url(chrome://os-settings/images/switch_access_setup_guide_choose_one_switch.svg);
+      }
+
+      #choose-switch-count .illustration.two-switches {
         background-image:
           url(chrome://os-settings/images/switch_access_setup_guide_choose_two_switches.svg);
+      }
+
+      #choose-switch-count .illustration.three-switches {
+        background-image:
+          url(chrome://os-settings/images/switch_access_setup_guide_choose_three_switches.svg);
       }
 
       #auto-scan-enabled .illustration {
@@ -139,7 +149,9 @@
               </cr-radio-button>
             </cr-radio-button-group>
           </div>
-          <div class="illustration"></div>
+          <div class="illustration one-switch"
+               id="choose-switch-count-illustration">
+          </div>
         </div>
         <div id="auto-scan-speed" hidden>
           <p>$i18n{switchAccessSetupAutoScanSpeedDescription}</p>

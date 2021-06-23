@@ -213,4 +213,32 @@ suite('SwitchAccessSetupGuideDialogTest', function() {
         'settings.a11y.switch_access.auto_scan.speed_ms', setPrefData[1].key);
     assertEquals(900, setPrefData[1].value);
   });
+
+  test('Illustration changes with switch count', function() {
+    const switchCountIllustration =
+        dialog['$']['choose-switch-count-illustration'];
+    assertTrue(!!switchCountIllustration);
+    assertEquals('illustration one-switch', switchCountIllustration.className);
+
+    const switchCountGroup = dialog['$']['switch-count-group'];
+    assertTrue(!!switchCountGroup);
+
+    const twoSwitches = switchCountGroup.querySelector('[name="two-switches"]');
+    assertTrue(!!twoSwitches);
+    switchCountGroup.select_(twoSwitches);
+    assertEquals(
+        'illustration two-switches', switchCountIllustration.className);
+
+    const threeSwitches =
+        switchCountGroup.querySelector('[name="three-switches"]');
+    assertTrue(!!threeSwitches);
+    switchCountGroup.select_(threeSwitches);
+    assertEquals(
+        'illustration three-switches', switchCountIllustration.className);
+
+    const oneSwitch = switchCountGroup.querySelector('[name="one-switch"]');
+    assertTrue(!!oneSwitch);
+    switchCountGroup.select_(oneSwitch);
+    assertEquals('illustration one-switch', switchCountIllustration.className);
+  });
 });
