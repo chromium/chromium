@@ -63,7 +63,8 @@ FileSystemSigninDialogDelegate::FileSystemSigninDialogDelegate(
   SetTitle(IDS_PROFILES_GAIA_SIGNIN_TITLE);
   SetButtons(ui::DIALOG_BUTTON_NONE);
   set_use_custom_frame(false);
-  SetCloseCallback(
+
+  SetCancelCallback(
       base::BindOnce(&FileSystemSigninDialogDelegate::OnCancellation,
                      weak_factory_.GetWeakPtr()));
 
@@ -90,7 +91,11 @@ FileSystemSigninDialogDelegate::FileSystemSigninDialogDelegate(
   web_view_->LoadInitialURL(url);
 }
 
-FileSystemSigninDialogDelegate::~FileSystemSigninDialogDelegate() = default;
+FileSystemSigninDialogDelegate::~FileSystemSigninDialogDelegate() {
+  if (callback_) {
+    OnCancellation();
+  }
+}
 
 // static
 void FileSystemSigninDialogDelegate::ShowDialog(
