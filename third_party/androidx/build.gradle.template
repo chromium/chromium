@@ -82,8 +82,8 @@ dependencies {
     compile "androidx.legacy:legacy-support-v4:1.0.0"
 
     // testCompile targets have test_only = true.
-    androidTestCompile "androidx.test:core:1.2.0"
-    androidTestCompile "androidx.test:monitor:1.2.0"
+    androidTestCompile "androidx.test:core:1.4.0-rc01"
+    androidTestCompile "androidx.test:monitor:1.4.0-rc01"
     androidTestCompile "androidx.test:rules:1.2.0"
     androidTestCompile "androidx.test:runner:1.2.0"
     androidTestCompile "androidx.test.espresso:espresso-contrib:3.2.0"
