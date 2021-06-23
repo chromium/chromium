@@ -116,7 +116,7 @@ class HistoryClustersAppElement extends PolymerElement {
   /**
    * @private
    */
-  onCancelButtonTap_() {
+  onCancelButtonClick_() {
     this.visitsToBeRemoved_ = [];
     this.$.confirmationDialog.get().close();
   }
@@ -131,7 +131,7 @@ class HistoryClustersAppElement extends PolymerElement {
   /**
    * @private
    */
-  onRemoveButtonTap_() {
+  onRemoveButtonClick_() {
     this.pageHandler_.removeVisits(this.visitsToBeRemoved_)
         .then(({accepted}) => {
           if (!accepted) {

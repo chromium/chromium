@@ -58,7 +58,7 @@
   }
 </style>
 <div id="header">
-  <a id="start-justtified" href="[[visit.normalizedUrl.url]]" on-click="onTap_">
+  <a id="start-justtified" href="[[visit.normalizedUrl.url]]">
     <page-favicon url="[[visit.normalizedUrl]]"></page-favicon>
     <span id="title">[[visit.pageTitle]]</span>
     <span id="separator">–</span>
@@ -67,7 +67,7 @@
   <div id="end-justified">
     <div id="timestamp">[[getTimeOfVisit_(visit)]]</div>
     <cr-icon-button id="actionMenuButton" class="icon-more-vert"
-        on-click="onActionMenuButtonTap_">
+        on-click="onActionMenuButtonClick_">
     </cr-icon-button>
   </div>
 </div>
@@ -76,7 +76,7 @@
   <template>
     <cr-action-menu role-description="$i18n{actionMenuDescription}">
       <button id="removeButton" class="dropdown-item"
-          on-click="onRemoveButtonTap_">
+          on-click="onRemoveButtonClick_">
         [[removeButtonTitle_]]
       </button>
     </cr-action-menu>

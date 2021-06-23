@@ -228,6 +228,9 @@ void HistoryClustersHandler::OnHistoryQueryResults(
   // Keep track of visits in this cluster.
   std::vector<history_clusters::mojom::URLVisitPtr> visits;
 
+  // Keep track of the randomly generated scores between 0 and 1.
+  std::vector<double> scores;
+
   for (const auto& result : results) {
     // Last visit time of the Cluster is the visit time of most recently visited
     // URL in the Cluster. Collect all the visits in that day into the Cluster.
@@ -320,11 +323,19 @@ void HistoryClustersHandler::OnHistoryQueryResults(
       (*duplicate_visit_it)->first_visit_time = result.visit_time();
     } else {
       visits.push_back(std::move(visit));
+      scores.push_back(rand() / static_cast<double>(RAND_MAX));
     }
   }
 
+  // Sort the randomly generated scores.
+  std::sort(scores.begin(), scores.end());
+
   // Add the visits and the related searches to the cluster.
   for (auto& visit : visits) {
+    // Visits get a score between 0 and 1 in descending order.
+    visit->score = scores.back();
+    scores.pop_back();
+
     if (cluster_mojom->visits.empty()) {
       // The first visit will be featured prominently and have related searches.
       cluster_mojom->visits.push_back(std::move(visit));
@@ -343,7 +354,11 @@ void HistoryClustersHandler::OnHistoryQueryResults(
             std::move(search_query_mojom));
       }
     } else {
-      // The rest of the visits will related visits of the first one.
+      // The rest of the visits will related visits of the first one. Only the
+      // first three related visits are visible by default.
+      if (cluster_mojom->visits[0]->related_visits.size() >= 3) {
+        visit->below_the_fold = true;
+      }
       cluster_mojom->visits[0]->related_visits.push_back(std::move(visit));
     }
   }

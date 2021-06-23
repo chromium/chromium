@@ -1,42 +1,14 @@
-<style>
+<style include="cr-hidden-style cr-icons">
   :host {
     --indentation: 52px;
+    --pill-height: 34px;
     --search-query-margin: 10px;
     display: block;
     padding: 10px 0;
-    position: relative;
   }
 
-  #vertical-line {
-    --vertical-line-width: 2px;
-    border-inline-start: var(--vertical-line-width) solid var(--image-background-color);
-    height: 100%;
-    left: calc((var(--visit-row-favicon-size) - var(--vertical-line-width)) / 2);
-    position: absolute;
-  }
-
-  :host-context([dir='rtl']) #vertical-line {
-    left: unset;
-    right: calc((var(--visit-row-favicon-size) - var(--vertical-line-width)) / 2);
-  }
-
-  :host(:last-of-type) #vertical-line {
-    display: none;
-  }
-
-  cr-expand-button {
-    --cr-active-background-color: transparent;
-    --cr-hover-background-color: transparent;
-    --cr-section-vertical-padding: 0;
-  }
-
-  #related-visits,
-  #related-searches {
+  #related-content {
     margin-inline-start: var(--indentation);
-  }
-
-  #related-visits {
-    margin-bottom: var(--search-query-margin);
   }
 
   #related-visits visit-row {
@@ -47,7 +19,7 @@
     align-items: center;
     display: flex;
     flex-direction: row;
-    margin-top: calc(-1 * var(--search-query-margin));
+    margin-top: calc(var(--history-cluster-padding) - var(--search-query-margin));
   }
 
   #related-searches-label {
@@ -68,29 +40,89 @@
   search-query:not(:last-of-type) {
     margin-inline-end: var(--search-query-margin);
   }
+
+  #visibility-toggle {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    margin-top: var(--history-cluster-padding);
+    position: relative;
+  }
+
+  #horizontal-line {
+    background-color: var(--border-color);
+    height: 1px;
+    margin-top: calc((var(--pill-height) - 1px) / 2);
+    position: absolute;
+    width: 100%;
+  }
+
+  #toggle-button,
+  #toggle-button-white-background {
+    align-items: center;
+    background-color: white;
+    border: 1px solid var(--border-color);
+    border-radius: calc(var(--pill-height) / 2);
+    box-sizing: border-box;
+    cursor: pointer;
+    display: flex;
+    font-size: 0.875rem;  /* 14px */
+    height: var(--pill-height);
+    justify-content: center;
+    line-height: 22px;
+    overflow: hidden;
+    position: relative;
+    width: 228px;
+  }
+
+  #toggle-button {
+    margin-top: calc(-1 * var(--pill-height));
+  }
+
+  #toggle-button:hover {
+    background-color: var(--cr-hover-background-color);
+  }
+
+  #toggle-button:active {
+    background-color: var(--cr-active-background-color);
+  }
+
+  #toggle-icon {
+    --cr-icon-button-margin-start: 0;
+    transition: transform 300ms;
+  }
+
+  :host([expanded_]) #toggle-icon {
+    transform: rotate(180deg);
+  }
 </style>
-<div id="vertical-line"></div>
-<template is="dom-if" if="[[visit.relatedVisits.length]]">
-  <cr-expand-button expanded="{{expanded_}}">
-    <visit-row is-top-visit visit="[[visit]]" on-visit-tap="onVisitTap_">
-    </visit-row>
-  </cr-expand-button>
-  <iron-collapse opened="[[expanded_]]">
-    <div id="related-visits">
-      <template is="dom-repeat" items="[[visit.relatedVisits]]">
+<visit-row is-top-visit visit="[[visit]]"></visit-row>
+<div id="related-content">
+  <div id="related-visits">
+    <template is="dom-repeat" items="[[visibleRelatedVisits_]]">
+      <visit-row visit="[[item]]"></visit-row>
+    </template>
+    <iron-collapse opened="[[expanded_]]">
+      <template is="dom-repeat" items="[[hiddenRelatedVisits_]]">
         <visit-row visit="[[item]]"></visit-row>
       </template>
+    </iron-collapse>
+  </div>
+  <div id="related-searches" hidden="[[!visit.relatedSearches.length]]">
+    <div id="related-searches-label">$i18n{relatedSearchesLabel}</div>
+    <div id="search-queries">
+      <template is="dom-repeat" items="[[visit.relatedSearches]]">
+        <search-query search-query="[[item]]"></search-query>
+      </template>
     </div>
-    <div id="related-searches" hidden="[[!visit.relatedSearches.length]]">
-      <div id="related-searches-label">$i18n{relatedSearchesLabel}</div>
-      <div id="search-queries">
-        <template is="dom-repeat" items="[[visit.relatedSearches]]">
-          <search-query search-query="[[item]]"></search-query>
-        </template>
-      </div>
+  </div>
+  <div id="visibility-toggle" hidden="[[!hiddenRelatedVisits_.length]]">
+    <div id="horizontal-line"></div>
+    <div id="toggle-button-white-background"></div>
+    <div id="toggle-button" tabindex="0" on-click="onToggleButtonClick_"
+        on-keydown="onToggleButtonKeyDown_">
+      <span>[[toggleButtonLabel_]]</span>
+      <span id="toggle-icon" class="cr-icon icon-expand-more"></span>
     </div>
-  </iron-collapse>
-</template>
-<template is="dom-if" if="[[!visit.relatedVisits.length]]">
-  <visit-row is-top-visit visit="[[visit]]"></visit-row>
-</template>
+  </div>
+</div>

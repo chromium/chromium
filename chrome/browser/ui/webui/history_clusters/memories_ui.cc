@@ -38,11 +38,13 @@ content::WebUIDataSource* CreateAndSetupWebUIDataSource(Profile* profile) {
 
   // TODO(crbug.com/1173908): Replace these with localized strings.
   source->AddString("clearLabel", u"Clear search");
-  source->AddString("searchPrompt", u"Search clusters");
-  source->AddString("titleDescription", u"Based on previous web activity");
-  source->AddString("visitsSectionHeader", u"From Chrome History");
   source->AddString("relatedSearchesLabel", u"Related:");
   source->AddString("removeAllFromHistory", u"Remove all from history");
+  source->AddString("searchPrompt", u"Search clusters");
+  source->AddString("titleDescription", u"Based on previous web activity");
+  source->AddString("toggleButtonLabelLess", u"Show less");
+  source->AddString("toggleButtonLabelMore", u"Show more");
+  source->AddString("visitsSectionHeader", u"From Chrome History");
 
   webui::SetupWebUIDataSource(
       source,

@@ -76,7 +76,7 @@ class VisitRowElement extends PolymerElement {
    * @param {!MouseEvent} event
    * @private
    */
-  onActionMenuButtonTap_(event) {
+  onActionMenuButtonClick_(event) {
     // Only handle main (usually the left) and auxiliary (usually the wheel or
     // the middle) button presses.
     if (event.button > 1) {
@@ -93,25 +93,7 @@ class VisitRowElement extends PolymerElement {
    * @param {!MouseEvent} event
    * @private
    */
-  onTap_(event) {
-    // Only handle main (usually the left) and auxiliary (usually the wheel or
-    // the middle) button presses.
-    if (event.button > 1) {
-      return;
-    }
-
-    this.dispatchEvent(new CustomEvent('visit-tap', {
-      bubbles: true,
-      composed: true,
-      detail: {event},
-    }));
-  }
-
-  /**
-   * @param {!MouseEvent} event
-   * @private
-   */
-  onRemoveButtonTap_(event) {
+  onRemoveButtonClick_(event) {
     // Only handle main (usually the left) and auxiliary (usually the wheel or
     // the middle) button presses.
     if (event.button > 1) {
