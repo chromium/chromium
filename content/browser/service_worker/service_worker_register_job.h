@@ -17,6 +17,7 @@
 #include "content/browser/service_worker/service_worker_update_checker.h"
 #include "content/public/browser/global_routing_id.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_event_status.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 #include "third_party/blink/public/mojom/worker/worker_main_script_load_params.mojom.h"
@@ -52,6 +53,7 @@ class ServiceWorkerRegisterJob : public ServiceWorkerRegisterJobBase {
       ServiceWorkerContextCore* context,
       const GURL& script_url,
       const blink::mojom::ServiceWorkerRegistrationOptions& options,
+      const blink::StorageKey& key,
       blink::mojom::FetchClientSettingsObjectPtr
           outside_fetch_client_settings_object,
       const GlobalRenderFrameHostId& requesting_frame_id);
@@ -186,6 +188,7 @@ class ServiceWorkerRegisterJob : public ServiceWorkerRegisterJobBase {
   RegistrationJobType job_type_;
   const GURL scope_;
   GURL script_url_;
+  const blink::StorageKey key_;
   // "A job has a worker type ("classic" or "module")."
   // https://w3c.github.io/ServiceWorker/#dfn-job-worker-type
   blink::mojom::ScriptType worker_script_type_ =

@@ -36,7 +36,6 @@
 #include "net/base/net_errors.h"
 #include "third_party/blink/public/common/service_worker/service_worker_scope_match.h"
 #include "third_party/blink/public/common/service_worker/service_worker_type_converters.h"
-#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom.h"
 
@@ -48,6 +47,7 @@ ServiceWorkerRegisterJob::ServiceWorkerRegisterJob(
     ServiceWorkerContextCore* context,
     const GURL& script_url,
     const blink::mojom::ServiceWorkerRegistrationOptions& options,
+    const blink::StorageKey& key,
     blink::mojom::FetchClientSettingsObjectPtr
         outside_fetch_client_settings_object,
     const GlobalRenderFrameHostId& requesting_frame_id)
@@ -55,6 +55,7 @@ ServiceWorkerRegisterJob::ServiceWorkerRegisterJob(
       job_type_(REGISTRATION_JOB),
       scope_(options.scope),
       script_url_(script_url),
+      key_(key),
       worker_script_type_(options.type),
       update_via_cache_(options.update_via_cache),
       outside_fetch_client_settings_object_(
@@ -80,6 +81,7 @@ ServiceWorkerRegisterJob::ServiceWorkerRegisterJob(
     : context_(context),
       job_type_(UPDATE_JOB),
       scope_(registration->scope()),
+      key_(registration->key()),
       update_via_cache_(registration->update_via_cache()),
       outside_fetch_client_settings_object_(
           std::move(outside_fetch_client_settings_object)),
@@ -149,17 +151,15 @@ void ServiceWorkerRegisterJob::StartImpl() {
   }
 
   scoped_refptr<ServiceWorkerRegistration> registration =
-      context_->registry()->GetUninstallingRegistration(
-          scope_, blink::StorageKey(url::Origin::Create(scope_)));
+      context_->registry()->GetUninstallingRegistration(scope_, key_);
   if (registration.get())
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(next_step),
                        blink::ServiceWorkerStatusCode::kOk, registration));
   else
-    context_->registry()->FindRegistrationForScope(
-        scope_, blink::StorageKey(url::Origin::Create(scope_)),
-        std::move(next_step));
+    context_->registry()->FindRegistrationForScope(scope_, key_,
+                                                   std::move(next_step));
 }
 
 void ServiceWorkerRegisterJob::Abort() {
@@ -177,7 +177,7 @@ bool ServiceWorkerRegisterJob::Equals(ServiceWorkerRegisterJobBase* job) const {
   if (job_type_ == UPDATE_JOB)
     return register_job->scope_ == scope_;
   DCHECK_EQ(REGISTRATION_JOB, job_type_);
-  return register_job->scope_ == scope_ &&
+  return register_job->scope_ == scope_ && register_job->key_ == key_ &&
          register_job->update_via_cache_ == update_via_cache_ &&
          register_job->script_url_ == script_url_ &&
          register_job->worker_script_type_ == worker_script_type_;

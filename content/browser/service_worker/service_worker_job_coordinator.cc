@@ -11,6 +11,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "content/browser/service_worker/service_worker_register_job_base.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/loader/fetch_client_settings_object.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom.h"
@@ -80,6 +81,7 @@ void ServiceWorkerJobCoordinator::Register(
     ServiceWorkerRegisterJob::RegistrationCallback callback) {
   auto job = std::make_unique<ServiceWorkerRegisterJob>(
       context_, script_url, options,
+      blink::StorageKey(url::Origin::Create(options.scope)),
       std::move(outside_fetch_client_settings_object), requesting_frame_id);
   ServiceWorkerRegisterJob* queued_job = static_cast<ServiceWorkerRegisterJob*>(
       job_queues_[options.scope].Push(std::move(job)));
