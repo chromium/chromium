@@ -61,6 +61,7 @@ void TestCallback() {}
 struct UDT {
   UDT() = default;
   UDT(const UDT&) = default;
+  UDT& operator=(const UDT&) = default;
 };
 bool AbslParseFlag(absl::string_view, UDT*, std::string*) { return true; }
 std::string AbslUnparseFlag(const UDT&) { return ""; }

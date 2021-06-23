@@ -83,6 +83,7 @@ for std in ${STD}; do
             --copt=\"${exceptions_mode}\" \
             --copt=-Werror \
             --define=\"absl=1\" \
+            --distdir=\"/bazel-distdir\" \
             --keep_going \
             --show_timestamps \
             --test_env=\"GTEST_INSTALL_FAILURE_SIGNAL_HANDLER=1\" \

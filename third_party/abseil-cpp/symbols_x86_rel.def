@@ -353,6 +353,7 @@ EXPORTS
     ?Find@ByChar@absl@@QBE?AVstring_view@2@V32@I@Z
     ?Find@ByLength@absl@@QBE?AVstring_view@2@V32@I@Z
     ?Find@ByString@absl@@QBE?AVstring_view@2@V32@I@Z
+    ?FindFlatStartPiece@InlineRep@Cord@absl@@QBE?AVstring_view@3@XZ
     ?FindPath@GraphCycles@synchronization_internal@absl@@QBEHUGraphId@23@0HQAU423@@Z
     ?FindSlow@CordRepRing@cord_internal@absl@@ABE?AUPosition@123@II@Z
     ?FindTailSlow@CordRepRing@cord_internal@absl@@ABE?AUPosition@123@II@Z

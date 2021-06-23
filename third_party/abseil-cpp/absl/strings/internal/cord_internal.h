@@ -154,9 +154,9 @@ class CordRepRing;
 // Various representations that we allow
 enum CordRepKind {
   CONCAT = 0,
-  EXTERNAL = 1,
-  SUBSTRING = 2,
-  RING = 3,
+  SUBSTRING = 1,
+  RING = 2,
+  EXTERNAL = 3,
 
   // We have different tags for different sized flat arrays,
   // starting with FLAT, and limited to MAX_FLAT_TAG. The 224 value is based on
@@ -167,6 +167,16 @@ enum CordRepKind {
   FLAT = 4,
   MAX_FLAT_TAG = 224
 };
+
+// There are various locations where we want to check if some rep is a 'plain'
+// data edge, i.e. an external or flat rep. By having FLAT == EXTERNAL + 1, we
+// can perform this check in a single branch as 'tag >= EXTERNAL'
+// Likewise, we have some locations where we check for 'ring or external/flat',
+// so likewise align RING to EXTERNAL.
+// Note that we can leave this optimization to the compiler. The compiler will
+// DTRT when it sees a condition like `tag == EXTERNAL || tag >= FLAT`.
+static_assert(EXTERNAL == RING + 1, "RING and EXTERNAL values not consecutive");
+static_assert(FLAT == EXTERNAL + 1, "EXTERNAL and FLAT values not consecutive");
 
 struct CordRep {
   CordRep() = default;

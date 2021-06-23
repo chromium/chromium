@@ -81,6 +81,7 @@ for std in ${STD}; do
           --copt="-fsanitize=thread" \
           --copt="-fno-sanitize-blacklist" \
           --copt=-Werror \
+          --distdir="/bazel-distdir" \
           --keep_going \
           --linkopt="-fsanitize=thread" \
           --show_timestamps \

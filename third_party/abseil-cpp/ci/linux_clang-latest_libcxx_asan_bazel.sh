@@ -83,6 +83,7 @@ for std in ${STD}; do
           --copt="-fsanitize=undefined" \
           --copt="-fno-sanitize-blacklist" \
           --copt=-Werror \
+          --distdir="/bazel-distdir" \
           --keep_going \
           --linkopt="-fsanitize=address" \
           --linkopt="-fsanitize-link-c++-runtime" \

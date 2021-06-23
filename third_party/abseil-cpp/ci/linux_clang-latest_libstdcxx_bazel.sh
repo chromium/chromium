@@ -25,7 +25,7 @@ if [[ -z ${ABSEIL_ROOT:-} ]]; then
 fi
 
 if [[ -z ${STD:-} ]]; then
-  STD="c++11 c++14 c++17 c++20"
+  STD="c++11 c++14 c++17"
 fi
 
 if [[ -z ${COMPILATION_MODE:-} ]]; then
@@ -78,6 +78,7 @@ for std in ${STD}; do
           --copt="${exceptions_mode}" \
           --copt=-Werror \
           --define="absl=1" \
+          --distdir="/bazel-distdir" \
           --keep_going \
           --linkopt="--gcc-toolchain=/usr/local" \
           --show_timestamps \

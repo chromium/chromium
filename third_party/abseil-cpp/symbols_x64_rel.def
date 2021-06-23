@@ -357,6 +357,7 @@ EXPORTS
     ?Find@ByChar@absl@@QEBA?AVstring_view@2@V32@_K@Z
     ?Find@ByLength@absl@@QEBA?AVstring_view@2@V32@_K@Z
     ?Find@ByString@absl@@QEBA?AVstring_view@2@V32@_K@Z
+    ?FindFlatStartPiece@InlineRep@Cord@absl@@QEBA?AVstring_view@3@XZ
     ?FindPath@GraphCycles@synchronization_internal@absl@@QEBAHUGraphId@23@0HQEAU423@@Z
     ?FindSlow@CordRepRing@cord_internal@absl@@AEBA?AUPosition@123@I_K@Z
     ?FindTailSlow@CordRepRing@cord_internal@absl@@AEBA?AUPosition@123@I_K@Z

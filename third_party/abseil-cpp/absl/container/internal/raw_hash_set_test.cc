@@ -226,7 +226,7 @@ TEST(Batch, DropDeletes) {
   }
   ConvertDeletedToEmptyAndFullToDeleted(ctrl.data(), kCapacity);
   ASSERT_EQ(ctrl[kCapacity], kSentinel);
-  for (size_t i = 0; i < kCapacity + 1 + kGroupWidth; ++i) {
+  for (size_t i = 0; i < kCapacity + kGroupWidth; ++i) {
     ctrl_t expected = pattern[i % (kCapacity + 1) % pattern.size()];
     if (i == kCapacity) expected = kSentinel;
     if (expected == kDeleted) expected = kEmpty;
@@ -294,6 +294,7 @@ struct ValuePolicy {
 };
 
 using IntPolicy = ValuePolicy<int64_t>;
+using Uint8Policy = ValuePolicy<uint8_t>;
 
 class StringPolicy {
   template <class F, class K, class V,
@@ -371,6 +372,13 @@ struct IntTable
     : raw_hash_set<IntPolicy, container_internal::hash_default_hash<int64_t>,
                    std::equal_to<int64_t>, std::allocator<int64_t>> {
   using Base = typename IntTable::raw_hash_set;
+  using Base::Base;
+};
+
+struct Uint8Table
+    : raw_hash_set<Uint8Policy, container_internal::hash_default_hash<uint8_t>,
+                   std::equal_to<uint8_t>, std::allocator<uint8_t>> {
+  using Base = typename Uint8Table::raw_hash_set;
   using Base::Base;
 };
 
@@ -2008,6 +2016,36 @@ TEST(Sanitizer, PoisoningOnErase) {
   EXPECT_TRUE(__asan_address_is_poisoned(&v));
 }
 #endif  // ABSL_HAVE_ADDRESS_SANITIZER
+
+TEST(Table, AlignOne) {
+  // We previously had a bug in which we were copying a control byte over the
+  // first slot when alignof(value_type) is 1. We test repeated
+  // insertions/erases and verify that the behavior is correct.
+  Uint8Table t;
+  std::unordered_set<uint8_t> verifier;  // NOLINT
+
+  // Do repeated insertions/erases from the table.
+  for (int64_t i = 0; i < 100000; ++i) {
+    SCOPED_TRACE(i);
+    const uint8_t u = (i * -i) & 0xFF;
+    auto it = t.find(u);
+    auto verifier_it = verifier.find(u);
+    if (it == t.end()) {
+      ASSERT_EQ(verifier_it, verifier.end());
+      t.insert(u);
+      verifier.insert(u);
+    } else {
+      ASSERT_NE(verifier_it, verifier.end());
+      t.erase(it);
+      verifier.erase(verifier_it);
+    }
+  }
+
+  EXPECT_EQ(t.size(), verifier.size());
+  for (uint8_t u : t) {
+    EXPECT_EQ(verifier.count(u), 1);
+  }
+}
 
 }  // namespace
 }  // namespace container_internal

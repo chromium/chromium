@@ -308,7 +308,7 @@ std::string Status::ToStringSlow(StatusToStringMode mode) const {
 }
 
 std::ostream& operator<<(std::ostream& os, const Status& x) {
-  os << x.ToString();
+  os << x.ToString(StatusToStringMode::kWithEverything);
   return os;
 }
 

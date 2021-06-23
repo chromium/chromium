@@ -47,11 +47,11 @@ void ConvertDeletedToEmptyAndFullToDeleted(
     ctrl_t* ctrl, size_t capacity) {
   assert(ctrl[capacity] == kSentinel);
   assert(IsValidCapacity(capacity));
-  for (ctrl_t* pos = ctrl; pos != ctrl + capacity + 1; pos += Group::kWidth) {
+  for (ctrl_t* pos = ctrl; pos < ctrl + capacity; pos += Group::kWidth) {
     Group{pos}.ConvertSpecialToEmptyAndFullToDeleted(pos);
   }
   // Copy the cloned ctrl bytes.
-  std::memcpy(ctrl + capacity + 1, ctrl, Group::kWidth);
+  std::memcpy(ctrl + capacity + 1, ctrl, NumClonedBytes());
   ctrl[capacity] = kSentinel;
 }
 

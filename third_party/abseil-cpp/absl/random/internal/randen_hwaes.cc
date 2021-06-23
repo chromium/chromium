@@ -270,7 +270,7 @@ namespace {
 class Vector128 {
  public:
   // Convert from/to intrinsics.
-  inline explicit Vector128(const __m128i& Vector128) : data_(Vector128) {}
+  inline explicit Vector128(const __m128i& v) : data_(v) {}
 
   inline __m128i data() const { return data_; }
 

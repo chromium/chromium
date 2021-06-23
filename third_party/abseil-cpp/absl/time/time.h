@@ -547,10 +547,20 @@ inline std::ostream& operator<<(std::ostream& os, Duration d) {
 // `ZeroDuration()`. Parses "inf" and "-inf" as +/- `InfiniteDuration()`.
 bool ParseDuration(absl::string_view dur_string, Duration* d);
 
-// Support for flag values of type Duration. Duration flags must be specified
-// in a format that is valid input for absl::ParseDuration().
+// AbslParseFlag()
+//
+// Parses a command-line flag string representation `text` into a a Duration
+// value. Duration flags must be specified in a format that is valid input for
+// `absl::ParseDuration()`.
 bool AbslParseFlag(absl::string_view text, Duration* dst, std::string* error);
+
+
+// AbslUnparseFlag()
+//
+// Unparses a Duration value into a command-line string representation using
+// the format specified by `absl::ParseDuration()`.
 std::string AbslUnparseFlag(Duration d);
+
 ABSL_DEPRECATED("Use AbslParseFlag() instead.")
 bool ParseFlag(const std::string& text, Duration* dst, std::string* error);
 ABSL_DEPRECATED("Use AbslUnparseFlag() instead.")
@@ -813,8 +823,12 @@ Time FromChrono(const std::chrono::system_clock::time_point& tp);
 //   // tp == std::chrono::system_clock::from_time_t(123);
 std::chrono::system_clock::time_point ToChronoTime(Time);
 
-// Support for flag values of type Time. Time flags must be specified in a
-// format that matches absl::RFC3339_full. For example:
+// AbslParseFlag()
+//
+// Parses the command-line flag string representation `text` into a Time value.
+// Time flags must be specified in a format that matches absl::RFC3339_full.
+//
+// For example:
 //
 //   --start_time=2016-01-02T03:04:05.678+08:00
 //
@@ -824,7 +838,13 @@ std::chrono::system_clock::time_point ToChronoTime(Time);
 // seconds/milliseconds/etc from the Unix epoch, use an absl::Duration flag
 // and add that duration to absl::UnixEpoch() to get an absl::Time.
 bool AbslParseFlag(absl::string_view text, Time* t, std::string* error);
+
+// AbslUnparseFlag()
+//
+// Unparses a Time value into a command-line string representation using
+// the format specified by `absl::ParseTime()`.
 std::string AbslUnparseFlag(Time t);
+
 ABSL_DEPRECATED("Use AbslParseFlag() instead.")
 bool ParseFlag(const std::string& text, Time* t, std::string* error);
 ABSL_DEPRECATED("Use AbslUnparseFlag() instead.")

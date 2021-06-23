@@ -2115,6 +2115,7 @@ EXPORTS
     ?Now@UnscaledCycleClockWrapperForGetCurrentTime@time_internal@absl@@SA_JXZ
     ?Now@absl@@YA?AVTime@1@XZ
     ?NumCPUs@base_internal@absl@@YAHXZ
+    ?NumClonedBytes@container_internal@absl@@YAIXZ
     ?ODRCheck@CordzHandle@cord_internal@absl@@ABEXXZ
     ?ODRCheck@CordzInfo@cord_internal@absl@@ABEXXZ
     ?OccursBefore@ViableSubstitution@strings_internal@absl@@QBE_NABU123@@Z
