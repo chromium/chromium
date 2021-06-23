@@ -2406,12 +2406,17 @@ void StyleEngine::UpdateColorSchemeBackground(bool color_scheme_changed) {
       else if (SupportsDarkColorScheme())
         root_color_scheme = mojom::blink::ColorScheme::kDark;
     }
+    auto* settings = GetDocument().GetSettings();
+    bool force_dark_enabled = settings && settings->GetForceDarkModeEnabled();
     color_scheme_background_ =
-        root_color_scheme == mojom::blink::ColorScheme::kLight
+        root_color_scheme == mojom::blink::ColorScheme::kLight &&
+                !force_dark_enabled
             ? Color::kWhite
             : Color(0x12, 0x12, 0x12);
     if (GetDocument().IsInMainFrame()) {
-      if (root_color_scheme == mojom::blink::ColorScheme::kDark) {
+      if (root_color_scheme == mojom::blink::ColorScheme::kDark ||
+          (root_color_scheme == mojom::blink::ColorScheme::kLight &&
+           force_dark_enabled)) {
         use_color_adjust_background =
             LocalFrameView::UseColorAdjustBackground::kIfBaseNotTransparent;
       }
