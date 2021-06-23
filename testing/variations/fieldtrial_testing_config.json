@@ -3066,8 +3066,9 @@
             ],
             "experiments": [
                 {
-                    "name": "SchedulePeriodicPurge_V2",
+                    "name": "Enabled_V4",
                     "enable_features": [
+                        "ReleaseDiscardableFreeListPages",
                         "SchedulePeriodicPurge"
                     ]
                 }
