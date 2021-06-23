@@ -184,7 +184,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="1559528461873125649">Nema takvog fajla ili direktorijuma</translation>
 <translation id="1559572115229829303">&lt;p&gt;Nije moguće uspostaviti privatnu vezu s domenom <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> jer datum i vrijeme (<ph name="DATE_AND_TIME" />) na vašem uređaju nisu tačni.&lt;/p&gt;
 
-      &lt;p&gt;Podesite datum i vrijeme iz odjeljka &lt;strong&gt;Općenito&lt;/strong&gt; u aplikaciji &lt;strong&gt;Postavke&lt;/strong&gt;.&lt;/p&gt;</translation>
+      &lt;p&gt;Podesite datum i vrijeme iz odjeljka &lt;strong&gt;Opće&lt;/strong&gt; u aplikaciji &lt;strong&gt;Postavke&lt;/strong&gt;.&lt;/p&gt;</translation>
 <translation id="1567040042588613346">Ovo pravilo radi kako je predviđeno, ali je ista vrijednost postavljena negdje drugo i ovo pravilo ju je zaobišlo.</translation>
 <translation id="1569487616857761740">Unesite datum isteka</translation>
 <translation id="1581080074034554886">CVC</translation>

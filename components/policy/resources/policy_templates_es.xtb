@@ -4769,9 +4769,9 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 
       En <ph name="MS_WIN_NAME" />, esta función solo está disponible en instancias que estén vinculadas a un dominio de <ph name="MS_AD_NAME" /> que se ejecuten en Windows 10 Pro o que se hayan registrado en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. En <ph name="MAC_OS_NAME" />, esta función solo está disponible en instancias que se gestionen mediante MDM o que estén vinculadas a un dominio a través de MCX.</translation>
 <translation id="7138678301420049075">Otro</translation>
-<translation id="7143539889272595839">Si se habilita esta política, se enviarán a Google informes anónimos de uso y de datos sobre bloqueos de Chrome (de forma predeterminada). Los usuarios podrán cambiar este ajuste en la configuración de Chrome.
+<translation id="7143539889272595839">Si se habilita esta política, se enviarán a Google informes anónimos de uso y de datos sobre fallos de Chrome (de forma predeterminada). Los usuarios podrán cambiar este ajuste en la configuración de Chrome.
 
-      Si se inhabilita esta política, el envío a Google de informes anónimos de uso y de datos sobre bloqueos de Chrome estará inhabilitado. Los usuarios no podrán cambiar este ajuste.
+      Si se inhabilita esta política, el envío a Google de informes anónimos de uso y de datos sobre fallos de Chrome estará inhabilitado. Los usuarios no podrán cambiar este ajuste.
 
       Si no se establece a esta política, los usuarios podrán elegir el comportamiento del envío de informes anónimos durante la instalación de Chrome o cuando se ejecute por primera vez. Además, podrán cambiar este ajuste en la configuración de Chrome en cualquier momento.
 
