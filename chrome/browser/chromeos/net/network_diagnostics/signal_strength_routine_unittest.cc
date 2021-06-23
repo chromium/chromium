@@ -109,5 +109,19 @@ TEST_F(SignalStrengthRoutineTest, TestNoWiFiConnection) {
   base::RunLoop().RunUntilIdle();
 }
 
+TEST_F(SignalStrengthRoutineTest, TestEthernet) {
+  network_state_helper().device_test()->AddDevice(
+      "/device/stub_eth_device", shill::kTypeEthernet, "stub_eth_device");
+  network_state_helper().ConfigureService(
+      R"({"GUID": "eth_guid", "Type": "ethernet", "State": "online"})");
+  base::RunLoop().RunUntilIdle();
+
+  std::vector<mojom::SignalStrengthProblem> expected_problems = {};
+  signal_strength_routine()->RunRoutine(
+      base::BindOnce(&SignalStrengthRoutineTest::CompareVerdict, weak_ptr(),
+                     mojom::RoutineVerdict::kNotRun, expected_problems));
+  base::RunLoop().RunUntilIdle();
+}
+
 }  // namespace network_diagnostics
 }  // namespace chromeos

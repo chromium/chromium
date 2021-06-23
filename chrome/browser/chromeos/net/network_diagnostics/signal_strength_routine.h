@@ -44,7 +44,7 @@ class SignalStrengthRoutine : public NetworkDiagnosticsRoutine {
   mojo::Remote<chromeos::network_config::mojom::CrosNetworkConfig>
       remote_cros_network_config_;
   // Represents the strength of an unknown signal.
-  static constexpr int kUnknownSignalStrength = -1;
+  static constexpr int kUnknownSignalStrength = 0;
   int signal_strength_ = kUnknownSignalStrength;
   std::vector<mojom::SignalStrengthProblem> problems_;
   SignalStrengthRoutineCallback routine_completed_callback_;
