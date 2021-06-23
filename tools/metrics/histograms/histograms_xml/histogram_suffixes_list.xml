@@ -7848,6 +7848,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       label="Showing thumbnails for video tutorials IPH."/>
   <suffix name="VideoTutorialsList"
       label="Showing thumbnails for video tutorials list view."/>
+  <suffix name="WebNotes"
+      label="Images fetched and used to render Web Notes templates."/>
   <affected-histogram name="ImageFetcher.Events"/>
   <affected-histogram name="ImageFetcher.ImageLoadFromCacheTime"/>
   <affected-histogram name="ImageFetcher.ImageLoadFromCacheTimeJava"/>

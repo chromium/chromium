@@ -10,7 +10,9 @@ import android.os.Looper;
 import org.chromium.chrome.browser.content_creation.notes.fonts.GoogleFontService;
 import org.chromium.chrome.browser.content_creation.notes.fonts.TypefaceRequest;
 import org.chromium.chrome.browser.content_creation.notes.fonts.TypefaceResponse;
+import org.chromium.chrome.browser.content_creation.notes.images.ImageService;
 import org.chromium.components.content_creation.notes.NoteService;
+import org.chromium.components.content_creation.notes.models.Background;
 import org.chromium.components.content_creation.notes.models.NoteTemplate;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -29,18 +31,36 @@ public class NoteCreationMediator {
     private final ModelList mListModel;
     private final NoteService mNoteService;
     private final GoogleFontService mFontService;
+    private final ImageService mImageService;
 
     /**
      * Constructor which will also kick-off the asynchronous retrieval of Note
      * templates.
      */
-    public NoteCreationMediator(
-            ModelList listModel, GoogleFontService fontService, NoteService noteService) {
+    public NoteCreationMediator(ModelList listModel, GoogleFontService fontService,
+            NoteService noteService, ImageService imageService) {
         mListModel = listModel;
         mNoteService = noteService;
         mFontService = fontService;
+        mImageService = imageService;
 
-        mNoteService.getTemplates(this::resolveTypefaces);
+        mNoteService.getTemplates(this::loadResources);
+    }
+
+    // Ensures that resources are loaded (async) before sending the templates to
+    // the UI. These resources include background images and font typefaces.
+    private void loadResources(List<NoteTemplate> templates) {
+        assert templates != null;
+
+        List<Background> backgrounds = new ArrayList<>();
+        for (NoteTemplate template : templates) {
+            backgrounds.add(template.mainBackground);
+            if (template.contentBackground != null) {
+                backgrounds.add(template.contentBackground);
+            }
+        }
+
+        mImageService.resolveBackgrounds(backgrounds, () -> { resolveTypefaces(templates); });
     }
 
     private void resolveTypefaces(List<NoteTemplate> templates) {

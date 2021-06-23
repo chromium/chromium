@@ -26,6 +26,9 @@ ScopedJavaLocalRef<jobject> CreateJavaBackground(JNIEnv* env,
 
     return Java_NoteTemplateConversionBridge_createLinearGradientBackground(
         env, int_array, static_cast<uint16_t>(background.direction()));
+  } else if (background.is_image()) {
+    return Java_NoteTemplateConversionBridge_createImageBackground(
+        env, ConvertUTF8ToJavaString(env, background.image_url()));
   }
   return Java_NoteTemplateConversionBridge_createBackground(env,
                                                             background.color());

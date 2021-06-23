@@ -23,15 +23,15 @@ public final class LinearGradientBackground implements Background {
     }
 
     @Override
-    public void apply(View view) {
+    public void apply(View view, float cornerRadius) {
         if (view == null) {
             return;
         }
 
-        GradientDrawable drawable = (GradientDrawable) view.getBackground();
-        drawable.mutate();
-        drawable.setColor(null);
-        drawable.setColors(this.colors);
-        drawable.setOrientation(LinearGradientDirection.toOrientation(this.direction));
+        GradientDrawable drawable = new GradientDrawable(
+                LinearGradientDirection.toOrientation(this.direction), this.colors);
+        drawable.setCornerRadius(cornerRadius);
+
+        view.setBackground(drawable);
     }
 }

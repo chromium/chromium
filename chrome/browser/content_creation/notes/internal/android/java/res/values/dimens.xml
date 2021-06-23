@@ -9,4 +9,6 @@
 
     <dimen name="max_text_size">26sp</dimen>
     <dimen name="min_text_size">14sp</dimen>
+
+    <dimen name="note_corner_radius">12dp</dimen>
 </resources>

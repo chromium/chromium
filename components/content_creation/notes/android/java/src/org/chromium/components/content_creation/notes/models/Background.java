@@ -10,6 +10,6 @@ import android.view.View;
  * Model class for a template's background.
  */
 public interface Background {
-    // Draws the background onto |view|'s background.
-    void apply(View view);
+    // Draws the background onto |view|'s background with |cornerRadius|.
+    void apply(View view, float cornerRadius);
 }

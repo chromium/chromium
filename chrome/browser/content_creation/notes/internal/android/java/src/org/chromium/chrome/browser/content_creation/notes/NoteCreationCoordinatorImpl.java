@@ -14,8 +14,13 @@ import androidx.fragment.app.FragmentActivity;
 
 import org.chromium.chrome.browser.content_creation.internal.R;
 import org.chromium.chrome.browser.content_creation.notes.fonts.GoogleFontService;
+import org.chromium.chrome.browser.content_creation.notes.images.ImageService;
 import org.chromium.chrome.browser.content_creation.notes.top_bar.TopBarCoordinator;
 import org.chromium.chrome.browser.content_creation.notes.top_bar.TopBarDelegate;
+import org.chromium.chrome.browser.image_fetcher.ImageFetcher;
+import org.chromium.chrome.browser.image_fetcher.ImageFetcherConfig;
+import org.chromium.chrome.browser.image_fetcher.ImageFetcherFactory;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
 import org.chromium.chrome.browser.tab.Tab;
@@ -57,8 +62,11 @@ public class NoteCreationCoordinatorImpl implements NoteCreationCoordinator, Top
 
         mListModel = new ModelList();
 
-        mMediator =
-                new NoteCreationMediator(mListModel, new GoogleFontService(mActivity), noteService);
+        Profile profile = Profile.fromWebContents(tab.getWebContents());
+        ImageFetcher imageFetcher =
+                ImageFetcherFactory.createImageFetcher(ImageFetcherConfig.DISK_CACHE_ONLY, profile);
+        mMediator = new NoteCreationMediator(mListModel, new GoogleFontService(mActivity),
+                noteService, new ImageService(imageFetcher));
 
         String urlDomain =
                 UrlFormatter.formatUrlForDisplayOmitSchemeOmitTrivialSubdomains(mShareUrl);

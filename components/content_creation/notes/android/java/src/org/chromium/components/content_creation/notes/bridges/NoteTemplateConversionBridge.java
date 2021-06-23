@@ -12,6 +12,7 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.components.content_creation.notes.models.Background;
 import org.chromium.components.content_creation.notes.models.FooterStyle;
 import org.chromium.components.content_creation.notes.models.HighlightStyle;
+import org.chromium.components.content_creation.notes.models.ImageBackground;
 import org.chromium.components.content_creation.notes.models.LinearGradientBackground;
 import org.chromium.components.content_creation.notes.models.LinearGradientDirection;
 import org.chromium.components.content_creation.notes.models.NoteTemplate;
@@ -46,6 +47,11 @@ public class NoteTemplateConversionBridge {
     private static Background createLinearGradientBackground(
             @ColorInt int[] colors, int direction) {
         return new LinearGradientBackground(colors, LinearGradientDirection.fromInteger(direction));
+    }
+
+    @CalledByNative
+    private static Background createImageBackground(String imageUrl) {
+        return new ImageBackground(imageUrl);
     }
 
     @CalledByNative

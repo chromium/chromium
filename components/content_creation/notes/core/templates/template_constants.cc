@@ -69,13 +69,13 @@ NoteTemplate GetClassicTemplate() {
       /*footer_style=*/CreateDarkBackgroundFooterStyle());
 }
 
-// TODO(crbug.com/1194168): Add background image support.
 NoteTemplate GetFriendlyTemplate() {
   return NoteTemplate(
       /*id=*/NoteTemplateIds::kFriendly,
       l10n_util::GetStringUTF8(
           IDS_CONTENT_CREATION_NOTE_TEMPLATE_NAME_FRIENDLY),
-      Background(/*color=*/0XFFF3E8FD),
+      Background(/*image_url=*/"https://www.gstatic.com/chrome/content/"
+                               "templates/FriendlyBackground@2x.png"),
       TextStyle(kRockSaltFontName,
                 /*font_color=*/kGrey900Color, k400Weight,
                 /*all_caps=*/false, TextAlignment::kStart),

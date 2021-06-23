@@ -12,27 +12,39 @@ Background::Background(ARGBColor color)
     : color_(color),
       colors_(),
       direction_(LinearGradientDirection::kInvalid),
-      is_linear_gradient_(false) {}
+      image_url_(""),
+      is_linear_gradient_(false),
+      is_image_(false) {}
 
 Background::Background(const std::vector<ARGBColor>& colors,
                        LinearGradientDirection direction)
     : color_(0U),
       colors_(colors),
       direction_(direction),
-      is_linear_gradient_(true) {
+      image_url_(""),
+      is_linear_gradient_(true),
+      is_image_(false) {
   // Can't have a linear gradient with only one (or no) color.
   DCHECK(colors_.size() > 1);
 }
 
+Background::Background(const std::string& image_url)
+    : color_(0U),
+      colors_(),
+      direction_(LinearGradientDirection::kInvalid),
+      image_url_(image_url),
+      is_linear_gradient_(false),
+      is_image_(true) {
+  DCHECK(image_url.size() > 0);
+}
+
 Background::Background(const Background& other) {
-  if (other.is_linear_gradient()) {
-    is_linear_gradient_ = true;
-    colors_ = other.colors();
-    direction_ = other.direction();
-  } else {
-    is_linear_gradient_ = false;
-    color_ = other.color();
-  }
+  color_ = other.color();
+  colors_ = other.colors();
+  direction_ = other.direction();
+  image_url_ = other.image_url();
+  is_linear_gradient_ = other.is_linear_gradient();
+  is_image_ = other.is_image();
 }
 
 Background::~Background() = default;

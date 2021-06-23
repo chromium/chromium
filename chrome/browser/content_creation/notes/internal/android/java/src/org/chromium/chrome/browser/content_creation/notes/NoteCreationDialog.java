@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.content_creation.notes;
 
 import android.app.Dialog;
 import android.graphics.Typeface;
-import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -127,7 +126,7 @@ public class NoteCreationDialog extends DialogFragment {
         NoteTemplate template = model.get(NoteProperties.TEMPLATE);
 
         View background = parent.findViewById(R.id.background);
-        template.mainBackground.apply(background);
+        template.mainBackground.apply(background, getNoteCornerRadius());
         background.setClipToOutline(true);
         background.setContentDescription(
                 getActivity().getString(R.string.content_creation_note_template_selected,
@@ -139,12 +138,10 @@ public class NoteCreationDialog extends DialogFragment {
         noteText.setIsEllipsizedListener(this::maybeShowToast);
 
         if (template.contentBackground != null) {
-            template.contentBackground.apply(noteText);
+            template.contentBackground.apply(noteText, getNoteCornerRadius());
         } else {
-            GradientDrawable drawable = (GradientDrawable) noteText.getBackground();
-            drawable.mutate();
-            drawable.setColor(null);
-            drawable.setColors(null);
+            // Clear the content background.
+            noteText.setBackground(null);
         }
 
         TextView footerLink = (TextView) parent.findViewById(R.id.footer_link);
@@ -181,5 +178,9 @@ public class NoteCreationDialog extends DialogFragment {
                 getActivity().getString(R.string.content_creation_note_shortened_message);
         mToast = Toast.makeText(getActivity(), toastMessage, Toast.LENGTH_LONG);
         mToast.show();
+    }
+
+    private float getNoteCornerRadius() {
+        return getActivity().getResources().getDimensionPixelSize(R.dimen.note_corner_radius);
     }
 }

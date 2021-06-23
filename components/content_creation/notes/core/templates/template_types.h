@@ -48,6 +48,9 @@ class Background {
   explicit Background(const std::vector<ARGBColor>& colors,
                       LinearGradientDirection direction);
 
+  // Creates an image background based on a remotely hosted image's URL.
+  explicit Background(const std::string& image_url);
+
   Background(const Background& other);
 
   ~Background();
@@ -57,7 +60,10 @@ class Background {
   const std::vector<ARGBColor>& colors() const { return colors_; }
   LinearGradientDirection direction() const { return direction_; }
 
+  const std::string& image_url() const { return image_url_; }
+
   bool is_linear_gradient() const { return is_linear_gradient_; }
+  bool is_image() const { return is_image_; }
 
  private:
   ARGBColor color_;
@@ -65,7 +71,10 @@ class Background {
   std::vector<ARGBColor> colors_;
   LinearGradientDirection direction_;
 
+  std::string image_url_;
+
   bool is_linear_gradient_;
+  bool is_image_;
 };
 
 // Represents the different supported text alignment. Keep this enum in sync with its Java
