@@ -24,7 +24,6 @@
 #include "chrome/browser/component_updater/floc_component_installer.h"
 #include "chrome/browser/component_updater/hyphenation_component_installer.h"
 #include "chrome/browser/component_updater/mei_preload_component_installer.h"
-#include "chrome/browser/component_updater/pepper_flash_component_installer.h"
 #include "chrome/browser/component_updater/pki_metadata_component_installer.h"
 #include "chrome/browser/component_updater/ssl_error_assistant_component_installer.h"
 #include "chrome/browser/component_updater/sth_set_component_remover.h"
@@ -41,6 +40,7 @@
 #include "components/component_updater/installer_policies/safety_tips_component_installer.h"
 #include "components/nacl/common/buildflags.h"
 #include "device/vr/buildflags/buildflags.h"
+#include "ppapi/buildflags/buildflags.h"
 #include "third_party/widevine/cdm/buildflags.h"
 
 #if defined(OS_WIN)
@@ -71,6 +71,10 @@
 #include "chrome/browser/component_updater/pnacl_component_installer.h"
 #endif  // BUILDFLAG(ENABLE_NACL)
 
+#if BUILDFLAG(ENABLE_PLUGINS)
+#include "chrome/browser/component_updater/pepper_flash_component_installer.h"
+#endif
+
 #if BUILDFLAG(ENABLE_VR)
 #include "chrome/browser/component_updater/vr_assets_component_installer.h"
 #endif
@@ -97,8 +101,10 @@ void RegisterComponentsForUpdate(bool is_off_the_record_profile,
   RegisterRecoveryComponent(cus, g_browser_process->local_state());
 #endif  // defined(OS_WIN)
 
+#if BUILDFLAG(ENABLE_PLUGINS)
   // TODO(crbug.com/1069814): Remove after 2021-10-01.
   CleanUpPepperFlashComponent(profile_path);
+#endif
 
 #if BUILDFLAG(ENABLE_WIDEVINE_CDM_COMPONENT)
   RegisterWidevineCdmComponent(cus);

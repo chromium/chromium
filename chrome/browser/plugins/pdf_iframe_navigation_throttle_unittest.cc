@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/plugins/chrome_plugin_service_filter.h"
 #include "chrome/common/chrome_content_client.h"
 #include "chrome/common/pdf_util.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"

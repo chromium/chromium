@@ -26,7 +26,6 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_ui_data.h"
-#include "content/public/browser/plugin_service.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -49,6 +48,10 @@
 #include "services/network/url_request_context_owner.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/loader/mixed_content.mojom.h"
+
+#if BUILDFLAG(ENABLE_PLUGINS)
+#include "content/public/browser/plugin_service.h"
+#endif
 
 namespace content {
 

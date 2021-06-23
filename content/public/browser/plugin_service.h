@@ -11,6 +11,11 @@
 #include "base/callback.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
+#include "ppapi/buildflags/buildflags.h"
+
+#if !BUILDFLAG(ENABLE_PLUGINS)
+#error "Plugins should be enabled"
+#endif
 
 class GURL;
 

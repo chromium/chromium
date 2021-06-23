@@ -12,7 +12,12 @@
 
 #include "base/macros.h"
 #include "base/version.h"
+#include "ppapi/buildflags/buildflags.h"
 #include "url/gurl.h"
+
+#if !BUILDFLAG(ENABLE_PLUGINS)
+#error "Plugins should be enabled"
+#endif
 
 namespace content {
 struct WebPluginInfo;

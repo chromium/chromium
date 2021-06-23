@@ -9,6 +9,12 @@ namespace base {
 class FilePath;
 }
 
+#include "ppapi/buildflags/buildflags.h"
+
+#if !BUILDFLAG(ENABLE_PLUGINS)
+#error "Plugins should be enabled"
+#endif
+
 namespace component_updater {
 
 // Deletes any Flash component implementations that still reside on disk.

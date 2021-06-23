@@ -17,6 +17,11 @@
 #include "content/public/browser/web_contents_receiver_set.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "ppapi/buildflags/buildflags.h"
+
+#if !BUILDFLAG(ENABLE_PLUGINS)
+#error "Plugins should be enabled"
+#endif
 
 namespace infobars {
 class ContentInfoBarManager;

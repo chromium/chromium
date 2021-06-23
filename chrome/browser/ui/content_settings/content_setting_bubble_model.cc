@@ -31,8 +31,6 @@
 #include "chrome/browser/media/webrtc/system_media_capture_permissions_mac.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
 #include "chrome/browser/permissions/quiet_notification_permission_ui_config.h"
-#include "chrome/browser/plugins/chrome_plugin_service_filter.h"
-#include "chrome/browser/plugins/plugin_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/collected_cookies_infobar_delegate.h"
 #include "chrome/browser/ui/content_settings/content_setting_bubble_model_delegate.h"

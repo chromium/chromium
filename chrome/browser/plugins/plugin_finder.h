@@ -14,6 +14,11 @@
 #include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
+#include "ppapi/buildflags/buildflags.h"
+
+#if !BUILDFLAG(ENABLE_PLUGINS)
+#error "Plugins should be enabled"
+#endif
 
 namespace base {
 class DictionaryValue;

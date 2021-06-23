@@ -290,8 +290,6 @@ static_library("test_support") {
     "fake_network.h",
     "fake_network_url_loader_factory.cc",
     "fake_network_url_loader_factory.h",
-    "fake_plugin_service.cc",
-    "fake_plugin_service.h",
     "fake_renderer_compositor_frame_sink.cc",
     "fake_renderer_compositor_frame_sink.h",
     "frame_host_interceptor.cc",
