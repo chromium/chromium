@@ -1,0 +1,65 @@
+{
+  // All permissions policy (https://github.com/w3c/webappsec-permissions-policy)
+  // features are defined here.
+  // For more details on adding a new permissions policy, see:
+  // https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/common/permissions_policy/README.md
+  // TODO(yashard): Add all permissions policy features here.
+
+  parameters: {
+    // "depends_on" specifies relationship to runtime features defined
+    // in "runtime_enabled_features.json5":
+    // depends_on: ["feature1", "feature2", ...]
+    // * If the depends_on features are *only* runtime features, the feature is
+    //   available if any of the runtime features are enabled.
+    // * If the depends_on list includes origin trial features, the feature is
+    //   available if any of the origin trial features are enabled.
+    depends_on: {
+      default: [],
+      valid_type: "list",
+    },
+    // permissions_policy_name: "FEATURE_NAME" is used to specify the policy name
+    // which gets parsed from the header or the allow attribute.
+    permissions_policy_name: {
+    },
+
+    // feature_default: Default allowlist state for feature. This corresponds
+    // to enum class |PermissionsPolicyFeatureDefault| in
+    // public/common/permissions_policy/permissions_policy_features.h
+    feature_default: {
+      default: "EnableForSelf",
+      valid_values: ["EnableForAll", "EnableForSelf"]
+    },
+
+    // "default_value_behind_flag" specifies default_value override values
+    // based on different runtime flags set.
+    //
+    // When multiple flags are set, default_value correspond to the first
+    // flag in the list will be used, e.g.
+    //   default_value_behind_flag: [
+    //    ["A", "EnableForSelf"],
+    //    ["B", "EnableForAll"],
+    //   ]
+    // "EnableForSelf" will be used as default value when both flag A and B are set.
+    //
+    // Note: the runtime flags here refer to features defined in
+    // "third_party/blink/public/common/features.h", instead of those defined in
+    // "runtime_enabled_features.json5" because the latter is only available
+    // on renderer side, while default_value is needed from browser side as
+    // well.
+    default_value_behind_flag: {
+      default: [],
+      valid_type: "list",
+    }
+  },
+
+  data: [
+    {
+      name: "Accelerometer",
+      permissions_policy_name: "accelerometer",
+      feature_default: "EnableForAll",
+      default_value_behind_flag: [
+        ["TestFlag", "EnableForSelf"],
+      ]
+    }
+  ],
+}

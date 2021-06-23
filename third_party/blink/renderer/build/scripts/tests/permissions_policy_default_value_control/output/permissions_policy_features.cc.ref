@@ -1,0 +1,29 @@
+// Copyright (c) 2014 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+
+#include "third_party/blink/public/common/permissions_policy/permissions_policy_features.h"
+
+#include "base/no_destructor.h"
+#include "base/feature_list.h"
+#include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
+
+namespace blink {
+
+const PermissionsPolicyFeatureList& GetPermissionsPolicyFeatureList() {
+  static const base::NoDestructor<PermissionsPolicyFeatureList> feature_list([] {
+    PermissionsPolicyFeatureList map({        {
+          mojom::PermissionsPolicyFeature::kAccelerometer,
+          PermissionsPolicyFeatureDefault::EnableForAll
+        },    });        if (base::FeatureList::IsEnabled(features::kTestFlag)) {
+          map.find(mojom::PermissionsPolicyFeature::kAccelerometer)->second =
+            PermissionsPolicyFeatureDefault::EnableForSelf;
+        }
+    return map;
+  }());
+  return *feature_list;
+}
+
+} // namespace blink

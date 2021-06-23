@@ -28,6 +28,27 @@
     feature_default: {
       default: "EnableForSelf",
       valid_values: ["EnableForAll", "EnableForSelf"]
+    },
+
+    // "default_value_behind_flag" specifies default_value override values
+    // based on different runtime flags set.
+    //
+    // When multiple flags are set, default_value correspond to the first
+    // flag in the list will be used, e.g.
+    //   default_value_behind_flag: [
+    //    ["A", "EnableForSelf"],
+    //    ["B", "EnableForAll"],
+    //   ]
+    // "EnableForSelf" will be used as default value when both flag A and B are set.
+    //
+    // Note: the runtime flags here refer to features defined in
+    // "third_party/blink/public/common/features.h", instead of those defined in
+    // "runtime_enabled_features.json5" because the latter is only available
+    // on renderer side, while default_value is needed from browser side as
+    // well.
+    default_value_behind_flag: {
+      default: [],
+      valid_type: "list",
     }
   },
 
