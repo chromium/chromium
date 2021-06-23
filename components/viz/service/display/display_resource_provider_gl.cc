@@ -14,6 +14,7 @@
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "ui/gfx/gpu_fence.h"
+#include "ui/gl/gl_fence.h"
 
 using gpu::gles2::GLES2Interface;
 
@@ -168,9 +169,13 @@ void DisplayResourceProviderGL::UnlockForRead(ResourceId id,
       DCHECK(gl);
       if (!resource->release_fence.is_null()) {
         auto fence = gfx::GpuFence(resource->release_fence.Clone());
-        auto id = gl->CreateClientGpuFenceCHROMIUM(fence.AsClientGpuFence());
-        gl->WaitGpuFenceCHROMIUM(id);
-        gl->DestroyGpuFenceCHROMIUM(id);
+        if (gl::GLFence::IsGpuFenceSupported()) {
+          auto id = gl->CreateClientGpuFenceCHROMIUM(fence.AsClientGpuFence());
+          gl->WaitGpuFenceCHROMIUM(id);
+          gl->DestroyGpuFenceCHROMIUM(id);
+        } else {
+          fence.Wait();
+        }
       }
       gl->EndSharedImageAccessDirectCHROMIUM(resource->gl_id);
     }

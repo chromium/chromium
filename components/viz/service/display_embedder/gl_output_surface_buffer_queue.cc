@@ -23,6 +23,7 @@
 #include "gpu/command_buffer/common/sync_token.h"
 #include "ui/gl/buffer_format_utils.h"
 #include "ui/gl/gl_enums.h"
+#include "ui/gl/gl_fence.h"
 
 namespace viz {
 
@@ -106,9 +107,13 @@ void GLOutputSurfaceBufferQueue::BindFramebuffer() {
   gl->WaitSyncTokenCHROMIUM(creation_sync_token.GetConstData());
   if (!release_fence.is_null()) {
     auto fence = gfx::GpuFence(std::move(release_fence));
-    auto id = gl->CreateClientGpuFenceCHROMIUM(fence.AsClientGpuFence());
-    gl->WaitGpuFenceCHROMIUM(id);
-    gl->DestroyGpuFenceCHROMIUM(id);
+    if (gl::GLFence::IsGpuFenceSupported()) {
+      auto id = gl->CreateClientGpuFenceCHROMIUM(fence.AsClientGpuFence());
+      gl->WaitGpuFenceCHROMIUM(id);
+      gl->DestroyGpuFenceCHROMIUM(id);
+    } else {
+      fence.Wait();
+    }
   }
   unsigned& buffer_texture = buffer_queue_textures_[current_buffer];
   if (!buffer_texture) {
