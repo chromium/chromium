@@ -220,9 +220,11 @@ void ServiceWorkerContainerHost::Register(
     requesting_frame_id =
         requesting_frame_tree_node->current_frame_host()->GetGlobalId();
 
-  // TODO(crbug.com/1199077): Update this when ServiceWorkerContainerHost
-  // implements StorageKey.
-  blink::StorageKey key(url::Origin::Create(options->scope));
+  // Registrations could come from different origins when "disable-web-security"
+  // is active, we need to make sure we get the correct key.
+  const blink::StorageKey& key =
+      GetCorrectStorageKeyForWebSecurityState(options->scope);
+
   context_->RegisterServiceWorker(
       script_url, key, *options,
       std::move(outside_fetch_client_settings_object),
@@ -259,8 +261,14 @@ void ServiceWorkerContainerHost::GetRegistration(
   TRACE_EVENT_ASYNC_BEGIN1("ServiceWorker",
                            "ServiceWorkerContainerHost::GetRegistration",
                            trace_id, "Client URL", client_url.spec());
+
+  // The client_url may be cross-origin if "disable-web-security" is active,
+  // make sure we get the correct key.
+  const blink::StorageKey& key =
+      GetCorrectStorageKeyForWebSecurityState(client_url);
+
   context_->registry()->FindRegistrationForClientUrl(
-      client_url, blink::StorageKey(url::Origin::Create(client_url)),
+      client_url, key,
       base::BindOnce(&ServiceWorkerContainerHost::GetRegistrationComplete,
                      weak_factory_.GetWeakPtr(), std::move(callback),
                      trace_id));
@@ -292,10 +300,9 @@ void ServiceWorkerContainerHost::GetRegistrations(
                            "ServiceWorkerContainerHost::GetRegistrations",
                            trace_id);
   context_->registry()->GetRegistrationsForStorageKey(
-      blink::StorageKey(url::Origin::Create(url_)),
-      base::BindOnce(&ServiceWorkerContainerHost::GetRegistrationsComplete,
-                     weak_factory_.GetWeakPtr(), std::move(callback),
-                     trace_id));
+      key_, base::BindOnce(
+                &ServiceWorkerContainerHost::GetRegistrationsComplete,
+                weak_factory_.GetWeakPtr(), std::move(callback), trace_id));
 }
 
 void ServiceWorkerContainerHost::GetRegistrationForReady(
@@ -866,6 +873,9 @@ void ServiceWorkerContainerHost::UpdateUrls(
   url_ = url;
   site_for_cookies_ = site_for_cookies;
   top_frame_origin_ = top_frame_origin;
+  key_ = IsContainerForClient()
+             ? blink::StorageKey(url::Origin::Create(GetOrigin()))
+             : blink::StorageKey(url::Origin::Create(url));
 
   // The remaining parts of this function don't make sense for service worker
   // execution contexts. Return early.
@@ -1612,6 +1622,19 @@ bool ServiceWorkerContainerHost::CanServeContainerHostMethods(
   }
 
   return true;
+}
+
+blink::StorageKey
+ServiceWorkerContainerHost::GetCorrectStorageKeyForWebSecurityState(
+    const GURL& url) const {
+  if (ServiceWorkerUtils::IsWebSecurityDisabled()) {
+    url::Origin other_origin = url::Origin::Create(url);
+
+    if (key_.origin() != other_origin)
+      return blink::StorageKey(other_origin);
+  }
+
+  return key_;
 }
 
 const GURL ServiceWorkerContainerHost::GetOrigin() const {

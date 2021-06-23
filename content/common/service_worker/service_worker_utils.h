@@ -68,6 +68,8 @@ class ServiceWorkerUtils {
   CONTENT_EXPORT static const char* FetchResponseSourceToSuffix(
       network::mojom::FetchResponseSource source);
 
+  CONTENT_EXPORT static bool IsWebSecurityDisabled();
+
  private:
   static bool IsPathRestrictionSatisfiedInternal(
       const GURL& scope,

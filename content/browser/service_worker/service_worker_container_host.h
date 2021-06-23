@@ -26,6 +26,7 @@
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_client.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_container.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_container_type.mojom.h"
@@ -369,6 +370,14 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
     return top_frame_origin_;
   }
 
+  // The StorageKey for this context. Any service worker registrations/versions
+  // that are persisted from this context (e.x., via `register()`) are
+  // associated with this particular StorageKey. Note: This doesn't hold true
+  // when "disable-web-security" is active, see
+  // `GetCorrectStorageKeyForWebSecurityState()` and its usages for more
+  // details.
+  const blink::StorageKey& key() const { return key_; }
+
   // Calls ContentBrowserClient::AllowServiceWorker(). Returns true if content
   // settings allows service workers to run at |scope|. If this container is for
   // a window client, the check involves the topmost frame url as well as
@@ -565,6 +574,16 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
                                     const char* error_prefix,
                                     Args... args);
 
+  // This function returns the correct StorageKey depending on the state of the
+  // "disable-web-security" flag.
+  //
+  // If web security is disabled then it's possible for the `url` to be
+  // cross-origin from `this`'s origin. In that case we need to make a new key
+  // with the `url`'s origin, otherwise we might access the wrong storage
+  // partition.
+  blink::StorageKey GetCorrectStorageKeyForWebSecurityState(
+      const GURL& url) const;
+
   base::WeakPtr<ServiceWorkerContextCore> context_;
 
   // The time when the container host is created.
@@ -574,6 +593,7 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
   GURL url_;
   net::SiteForCookies site_for_cookies_;
   absl::optional<url::Origin> top_frame_origin_;
+  blink::StorageKey key_;
 
   // Contains all ServiceWorkerRegistrationObjectHost instances corresponding to
   // the service worker registration JavaScript objects for the hosted execution

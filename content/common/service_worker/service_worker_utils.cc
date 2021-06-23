@@ -169,8 +169,7 @@ bool ServiceWorkerUtils::AllOriginsMatchAndCanAccessServiceWorkers(
 
   // (B) Check if all origins are equal. Cross-origin access is permitted when
   // --disable-web-security is set.
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDisableWebSecurity)) {
+  if (IsWebSecurityDisabled()) {
     return true;
   }
   const GURL& first = urls.front();
@@ -226,6 +225,12 @@ const char* ServiceWorkerUtils::FetchResponseSourceToSuffix(
   }
   NOTREACHED();
   return ".Unknown";
+}
+
+// static
+bool ServiceWorkerUtils::IsWebSecurityDisabled() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kDisableWebSecurity);
 }
 
 }  // namespace content
