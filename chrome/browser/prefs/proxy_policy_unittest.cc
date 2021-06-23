@@ -127,7 +127,7 @@ class ProxyPolicyTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   base::CommandLine command_line_;
-  MockConfigurationPolicyProvider provider_;
+  testing::NiceMock<MockConfigurationPolicyProvider> provider_;
   std::unique_ptr<PolicyServiceImpl> policy_service_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
