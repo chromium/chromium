@@ -302,7 +302,8 @@ TEST_F(SyncFileSystemServiceTest, InitializeForAppWithNetworkFailure) {
       SYNC_STATUS_NETWORK_ERROR);
 }
 
-TEST_F(SyncFileSystemServiceTest, InitializeForAppWithError) {
+// Disabled due to flakiness: crbug.com/1222929
+TEST_F(SyncFileSystemServiceTest, DISABLED_InitializeForAppWithError) {
   std::vector<SyncServiceState> expected_states;
   expected_states.push_back(SYNC_SERVICE_DISABLED);
 
