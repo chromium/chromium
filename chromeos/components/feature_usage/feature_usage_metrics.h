@@ -68,10 +68,10 @@ class FeatureUsageMetrics {
   // be called with `false`.
   void RecordUsage(bool success);
 
-  // Use `StartUsage` and `StopUsage` to record feature usage time.
-  // See ./README.md#Recording-usage-time for more details.
-  void StartUsage();
-  void StopUsage();
+  // Use `StartSuccessfulUsage` and `StopSuccessfulUsage` to record feature
+  // usage time. See ./README.md#Recording-usage-time for more details.
+  void StartSuccessfulUsage();
+  void StopSuccessfulUsage();
 
  private:
   void SetupTimer(base::TimeDelta delta);

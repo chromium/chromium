@@ -90,33 +90,33 @@ Your feature might not have failed attempts. In that case always call with
 
 #### Recording usage time
 If your feature has a notion of time usage use
-`feature_usage_metrics_->StartUsage();` and
-`feature_usage_metrics_->StopUsage();` to record feature usage time.
+`feature_usage_metrics_->StartSuccessfulUsage();` and
+`feature_usage_metrics_->StopSuccessfulUsage();` to record feature usage time.
 
-* There should be no consecutive `StartUsage` calls without `StopUsage` call
+* There should be no consecutive `StartSuccessfulUsage` calls without `StopSuccessfulUsage` call
 in-between.
-* After `StartUsage` is called the usage time is reported periodically together
+* After `StartSuccessfulUsage` is called the usage time is reported periodically together
 with `IsEligible` and `IsEnabled`.
-* If `StartUsage` is not followed by `StopUsage` the remaining usage time is
+* If `StartSuccessfulUsage` is not followed by `StopSuccessfulUsage` the remaining usage time is
 recorded at the object shutdown.
-* `StartUsage` must be preceded by exactly one `RecordUsage(true)`. There should
-be no `RecordUsage` calls in-between `StartUsage` and `StopUsage` calls.
+* `StartSuccessfulUsage` must be preceded by exactly one `RecordUsage(true)`. There should
+be no `RecordUsage` calls in-between `StartSuccessfulUsage` and `StopSuccessfulUsage` calls.
 
 Example:
 ```c++
-// feature_usage_metrics_->StartUsage(); should be preceded by RecordUsage(true)
+// feature_usage_metrics_->StartSuccessfulUsage(); should be preceded by RecordUsage(true)
 feature_usage_metrics_->RecordUsage(false);
-// feature_usage_metrics_->StartUsage(); should be preceded by RecordUsage(true)
+// feature_usage_metrics_->StartSuccessfulUsage(); should be preceded by RecordUsage(true)
 feature_usage_metrics_->RecordUsage(true);
-feature_usage_metrics_->StartUsage();
-feature_usage_metrics_->StopUsage();
-// feature_usage_metrics_->StartUsage(); should be preceded by RecordUsage(true)
+feature_usage_metrics_->StartSuccessfulUsage();
+feature_usage_metrics_->StopSuccessfulUsage();
+// feature_usage_metrics_->StartSuccessfulUsage(); should be preceded by RecordUsage(true)
 feature_usage_metrics_->RecordUsage(true);
 feature_usage_metrics_->RecordUsage(true);
-// feature_usage_metrics_->StartUsage(); should be preceded by exactly one RecordUsage(true)
+// feature_usage_metrics_->StartSuccessfulUsage(); should be preceded by exactly one RecordUsage(true)
 ....
-feature_usage_metrics_->StartUsage();
-feature_usage_metrics_->reset(); // Usage time is recorded similar to StopUsage
+feature_usage_metrics_->StartSuccessfulUsage();
+feature_usage_metrics_->reset(); // Usage time is recorded similar to StopSuccessfulUsage
 ```
 
 ### Testing

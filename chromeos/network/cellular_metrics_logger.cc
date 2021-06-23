@@ -298,8 +298,8 @@ class ESimFeatureUsageMetrics
     feature_usage_metrics_->RecordUsage(success);
   }
 
-  void StartUsage() { feature_usage_metrics_->StartUsage(); }
-  void StopUsage() { feature_usage_metrics_->StopUsage(); }
+  void StartUsage() { feature_usage_metrics_->StartSuccessfulUsage(); }
+  void StopUsage() { feature_usage_metrics_->StopSuccessfulUsage(); }
 
  private:
   CellularESimProfileHandler* cellular_esim_profile_handler_;

@@ -67,9 +67,9 @@ TEST_F(FeatureUsageMetricsTest, RecordUsageWithFailure) {
 TEST_F(FeatureUsageMetricsTest, RecordUsetime) {
   const base::TimeDelta use_time = base::TimeDelta::FromSeconds(10);
   feature_usage_metrics_->RecordUsage(/*success=*/true);
-  feature_usage_metrics_->StartUsage();
+  feature_usage_metrics_->StartSuccessfulUsage();
   env_.FastForwardBy(use_time);
-  feature_usage_metrics_->StopUsage();
+  feature_usage_metrics_->StopSuccessfulUsage();
   histogram_tester_->ExpectUniqueTimeSample(kTestUsetimeMetric, use_time, 1);
 }
 
@@ -81,9 +81,9 @@ TEST_F(FeatureUsageMetricsTest, RecordLongUsetime) {
       extra_small_use_time;
 
   feature_usage_metrics_->RecordUsage(/*success=*/true);
-  feature_usage_metrics_->StartUsage();
+  feature_usage_metrics_->StartSuccessfulUsage();
   env_.FastForwardBy(use_time);
-  feature_usage_metrics_->StopUsage();
+  feature_usage_metrics_->StopSuccessfulUsage();
   histogram_tester_->ExpectTimeBucketCount(
       kTestUsetimeMetric, FeatureUsageMetrics::kRepeatedInterval,
       repeated_periods);

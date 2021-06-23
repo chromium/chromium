@@ -63,7 +63,7 @@ void FeatureUsageMetrics::SetupTimer(base::TimeDelta delta) {
 
 FeatureUsageMetrics::~FeatureUsageMetrics() {
   if (!start_usage_.is_null())
-    StopUsage();
+    StopSuccessfulUsage();
 }
 
 void FeatureUsageMetrics::RecordUsage(bool success) {
@@ -84,7 +84,7 @@ void FeatureUsageMetrics::RecordUsetime(base::TimeDelta usetime) const {
                                  usetime);
 }
 
-void FeatureUsageMetrics::StartUsage() {
+void FeatureUsageMetrics::StartSuccessfulUsage() {
   DCHECK(start_usage_.is_null());
 #if DCHECK_IS_ON()
   DCHECK(last_record_usage_outcome_.value_or(false))
@@ -94,11 +94,12 @@ void FeatureUsageMetrics::StartUsage() {
   start_usage_ = tick_clock_->NowTicks();
 }
 
-void FeatureUsageMetrics::StopUsage() {
+void FeatureUsageMetrics::StopSuccessfulUsage() {
   DCHECK(!start_usage_.is_null());
 #if DCHECK_IS_ON()
   DCHECK(!last_record_usage_outcome_.has_value())
-      << "There must be no RecordUsage calls between Start and StopUsage";
+      << "There must be no RecordUsage calls between Start and "
+         "StopSuccessfulUsage";
 #endif
   const base::TimeDelta use_time = tick_clock_->NowTicks() - start_usage_;
   RecordUsetime(use_time);
