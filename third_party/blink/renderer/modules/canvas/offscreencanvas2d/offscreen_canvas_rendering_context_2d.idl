@@ -20,6 +20,7 @@
     [RuntimeEnabled=Canvas2dLayers] void endLayer(); // pop state stack if top state was pushed by beginLayer, restore state and draw the bitmap
     // Clear the canvas and reset the path
     [RuntimeEnabled=NewCanvas2DAPI] void reset();
+    [RuntimeEnabled=NewCanvas2DAPI] boolean isContextLost();
 
     // transformations (default transform is the identity matrix)
     void scale(unrestricted double x, unrestricted double y);

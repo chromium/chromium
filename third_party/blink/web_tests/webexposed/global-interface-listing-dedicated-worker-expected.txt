@@ -1074,6 +1074,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method getImageData
 [Worker]     method getLineDash
 [Worker]     method getTransform
+[Worker]     method isContextLost
 [Worker]     method isPointInPath
 [Worker]     method isPointInStroke
 [Worker]     method lineTo
