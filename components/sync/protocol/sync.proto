@@ -219,11 +219,11 @@ message SyncEntity {
   // will fail to deserialize if this field is missing.
   optional int64 version = 4;
 
-  // Last modification time (in java time milliseconds)
+  // Last modification time, in milliseconds since Unix epoch.
   // Present in both GetUpdatesResponse and CommitMessage.
   optional int64 mtime = 5;
 
-  // Creation time.
+  // Creation time, in milliseconds since Unix epoch.
   // Present in both GetUpdatesResponse and CommitMessage.
   optional int64 ctime = 6;
 
@@ -677,8 +677,7 @@ message GetUpdatesMessage {
   // not return more.
   optional int32 batch_size = 5;
 
-  // Per-datatype progress marker.  If present, the server will ignore
-  // the values of requested_types and from_timestamp, using this instead.
+  // Per-datatype progress marker.
   //
   // With the exception of certain configuration or initial sync requests, the
   // client should include one instance of this field for each enabled data
@@ -846,27 +845,6 @@ message ClientToServerMessage {
   optional ClearServerDataMessage clear_server_data = 15;
 }
 
-// This request allows the client to convert a specific crash identifier
-// into more general information (e.g. hash of the crashing call stack)
-// suitable for upload in an (authenticated) DebugInfo event.
-message GetCrashInfoRequest {
-  // Id of the uploaded crash.
-  optional string crash_id = 1;
-
-  // Time that the crash occurred.
-  optional int64 crash_time_millis = 2;
-}
-
-// Proto to be written in its entirety to the debug info log.
-message GetCrashInfoResponse {
-  // Hash of the crashing call stack.
-  optional string stack_id = 1;
-
-  // Time of the crash, potentially rounded to remove
-  // significant bits.
-  optional int64 crash_time_millis = 2;
-}
-
 message CommitResponse {
   enum ResponseType {
     SUCCESS = 1;
@@ -902,8 +880,8 @@ message CommitResponse {
 
     optional string error_message = 9;
 
-    // Last modification time (in java time milliseconds).  Allows the server
-    // to override the client-supplied mtime during a commit operation.
+    // Last modification time (in milliseconds since Unix epoch).  Allows the
+    // server to override the client-supplied mtime during a commit operation.
     // TODO(crbug.com/1182252): Delete this field too.
     optional int64 mtime = 10 [deprecated = true];
 
