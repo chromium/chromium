@@ -56,9 +56,10 @@ std::tuple<int, double> OscillatorHandler::ProcessKRateVector(
 
   const float32x4_t v_incr = vdupq_n_f32(4 * incr);
 
+  float virtual_read_index_flt = virtual_read_index;
   float32x4_t v_virt_index = {
-      virtual_read_index + 0 * incr, virtual_read_index + 1 * incr,
-      virtual_read_index + 2 * incr, virtual_read_index + 3 * incr};
+      virtual_read_index_flt + 0 * incr, virtual_read_index_flt + 1 * incr,
+      virtual_read_index_flt + 2 * incr, virtual_read_index_flt + 3 * incr};
 
   // Temporary arrsys to hold the read indices so we can access them
   // individually to get the samples needed for interpolation.

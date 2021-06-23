@@ -185,8 +185,8 @@ bool GPUSwapChain::CopyToResourceProvider(
       .aspect = WGPUTextureAspect_All,
   };
   WGPUExtent3D copy_size = {
-      .width = swap_buffers_->Size().width(),
-      .height = swap_buffers_->Size().height(),
+      .width = static_cast<uint32_t>(swap_buffers_->Size().width()),
+      .height = static_cast<uint32_t>(swap_buffers_->Size().height()),
       .depthOrArrayLayers = 1,
   };
   GetProcs().commandEncoderCopyTextureToTexture(command_encoder, &source,

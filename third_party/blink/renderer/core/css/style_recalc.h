@@ -79,16 +79,17 @@ class CORE_EXPORT StyleRecalcChange {
     return {kRecalcDescendants, flags_};
   }
   StyleRecalcChange ForceReattachLayoutTree() const {
-    return {propagate_, flags_ | kReattach};
+    return {propagate_, static_cast<Flags>(flags_ | kReattach)};
   }
   StyleRecalcChange ForceRecalcContainer() const {
-    return {propagate_, flags_ | kRecalcContainer};
+    return {propagate_, static_cast<Flags>(flags_ | kRecalcContainer)};
   }
   StyleRecalcChange ForceRecalcDescendantContainers() const {
-    return {propagate_, flags_ | kRecalcDescendantContainers};
+    return {propagate_,
+            static_cast<Flags>(flags_ | kRecalcDescendantContainers)};
   }
   StyleRecalcChange SuppressRecalc() const {
-    return {propagate_, flags_ | kSuppressRecalc};
+    return {propagate_, static_cast<Flags>(flags_ | kSuppressRecalc)};
   }
 
   bool ReattachLayoutTree() const { return flags_ & kReattach; }

@@ -33,10 +33,18 @@ namespace blink {
 
 // |UChar*| should be a string in logical order instead of visual order, since
 // |FindWordBoundary()| uses ICU, which works on logical order strings
-PLATFORM_EXPORT int FindWordStartBoundary(const UChar*, int len, int position);
-PLATFORM_EXPORT int FindWordEndBoundary(const UChar*, int len, int position);
-PLATFORM_EXPORT int FindNextWordBackward(const UChar*, int len, int position);
-PLATFORM_EXPORT int FindNextWordForward(const UChar*, int len, int position);
+PLATFORM_EXPORT int FindWordStartBoundary(const UChar*,
+                                          unsigned len,
+                                          int position);
+PLATFORM_EXPORT int FindWordEndBoundary(const UChar*,
+                                        unsigned len,
+                                        int position);
+PLATFORM_EXPORT int FindNextWordBackward(const UChar*,
+                                         unsigned len,
+                                         int position);
+PLATFORM_EXPORT int FindNextWordForward(const UChar*,
+                                        unsigned len,
+                                        int position);
 
 }  // namespace blink
 

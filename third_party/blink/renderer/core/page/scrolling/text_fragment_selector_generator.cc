@@ -552,8 +552,8 @@ void TextFragmentSelectorGenerator::ExtendRangeSelector() {
       selection_text.Ensure16Bit();
       int selection_length = selection_text.length();
       int mid_point =
-          FindNextWordForward(selection_text.Characters16(), selection_length,
-                              selection_length / 2);
+          FindNextWordForward(selection_text.Characters16(),
+                              selection_text.length(), selection_length / 2);
       max_available_range_start_ = selection_text.Left(mid_point);
 
       // If from middle till end of selection there is no word break, then we

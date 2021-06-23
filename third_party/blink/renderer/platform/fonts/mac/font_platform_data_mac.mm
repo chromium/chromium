@@ -243,7 +243,7 @@ std::unique_ptr<FontPlatformData> FontPlatformDataFromNSFont(
   }
 
   SkFontArguments::VariationPosition variation_design_position{
-      coordinates_to_set.data(), coordinates_to_set.size()};
+      coordinates_to_set.data(), static_cast<int>(coordinates_to_set.size())};
 
   sk_sp<SkTypeface> cloned_typeface(typeface->makeClone(
       SkFontArguments().setVariationDesignPosition(variation_design_position)));
