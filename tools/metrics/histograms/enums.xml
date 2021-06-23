@@ -81758,6 +81758,14 @@ Full version information for the fingerprint enum values:
   <int value="2" label="All variations are restricted"/>
 </enum>
 
+<enum name="VariationsSafeModeCachedFlagsBehavior">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Not engaged - below threshold"/>
+  <int value="2" label="Engaged - using safe values"/>
+  <int value="3" label="Engaged - ignoring outdated safe values"/>
+  <int value="4" label="Engaged - without safe values"/>
+</enum>
+
 <enum name="VariationsSeedDateChange">
   <int value="0" label="No previous date"/>
   <int value="1" label="New date older than old date"/>

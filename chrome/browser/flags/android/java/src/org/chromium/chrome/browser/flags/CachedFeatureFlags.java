@@ -125,6 +125,7 @@ public class CachedFeatureFlags {
 
     private static ValuesReturned sValuesReturned = new ValuesReturned();
     private static ValuesOverridden sValuesOverridden = new ValuesOverridden();
+    private static CachedFlagsSafeMode sSafeMode = new CachedFlagsSafeMode();
 
     private static String sReachedCodeProfilerTrialGroup;
 
@@ -152,6 +153,8 @@ public class CachedFeatureFlags {
             throw new IllegalArgumentException(
                     "Feature " + featureName + " has no default in CachedFeatureFlags.");
         }
+
+        sSafeMode.onFlagChecked();
 
         String preferenceName = getPrefForFeatureFlag(featureName);
 
@@ -316,7 +319,20 @@ public class CachedFeatureFlags {
         return sReachedCodeProfilerTrialGroup;
     }
 
+    /**
+     * Call when all flags have been cached.
+     */
+    public static void onEndCheckpoint() {
+        sSafeMode.onEndCheckpoint(sValuesReturned);
+    }
+
+    public static @CachedFlagsSafeMode.Behavior int getSafeModeBehaviorForTesting() {
+        return sSafeMode.getBehaviorForTesting();
+    }
+
     static boolean getConsistentBooleanValue(String preferenceName, boolean defaultValue) {
+        sSafeMode.onFlagChecked();
+
         if (sValuesOverridden.isEnabled()) {
             return sValuesOverridden.getBool(preferenceName, defaultValue);
         }
@@ -330,6 +346,8 @@ public class CachedFeatureFlags {
     }
 
     static String getConsistentStringValue(String preferenceName, String defaultValue) {
+        sSafeMode.onFlagChecked();
+
         if (sValuesOverridden.isEnabled()) {
             return sValuesOverridden.getString(preferenceName, defaultValue);
         }
@@ -343,6 +361,8 @@ public class CachedFeatureFlags {
     }
 
     static int getConsistentIntValue(String preferenceName, int defaultValue) {
+        sSafeMode.onFlagChecked();
+
         if (sValuesOverridden.isEnabled()) {
             return sValuesOverridden.getInt(preferenceName, defaultValue);
         }
@@ -356,6 +376,8 @@ public class CachedFeatureFlags {
     }
 
     static double getConsistentDoubleValue(String preferenceName, double defaultValue) {
+        sSafeMode.onFlagChecked();
+
         if (sValuesOverridden.isEnabled()) {
             return sValuesOverridden.getDouble(preferenceName, defaultValue);
         }
@@ -381,6 +403,7 @@ public class CachedFeatureFlags {
     public static void resetFlagsForTesting() {
         sValuesReturned.clear();
         sValuesOverridden.clear();
+        sSafeMode.clearForTesting();
     }
 
     @VisibleForTesting
@@ -393,6 +416,10 @@ public class CachedFeatureFlags {
         Map<String, Boolean> swapped = sDefaults;
         sDefaults = testDefaults;
         return swapped;
+    }
+
+    public static void onStartCheckpoint() {
+        sSafeMode.onStartCheckpoint();
     }
 
     @NativeMethods

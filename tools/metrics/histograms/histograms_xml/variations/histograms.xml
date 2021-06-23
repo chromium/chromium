@@ -348,6 +348,41 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Variations.SafeModeCachedFlags.Streak.Crashes" units="crashes"
+    expires_after="2022-06-21">
+  <owner>hnakashima@chromium.org</owner>
+  <owner>src/chrome/browser/flags/OWNERS</owner>
+  <summary>
+    The number of consecutive crashes observed by Android's CachedFeatureFlags
+    without a single intervening successful flag cache from native. Recorded the
+    first time a cached flag is checked.
+
+    Android only.
+  </summary>
+</histogram>
+
+<histogram name="Variations.SafeModeCachedFlags.{Event}"
+    enum="VariationsSafeModeCachedFlagsBehavior" expires_after="2022-06-21">
+  <owner>hnakashima@chromium.org</owner>
+  <owner>src/chrome/browser/flags/OWNERS</owner>
+  <summary>
+    What behavior of Safe Mode for CachedFlags (including not engaging it) was
+    performed.
+
+    &quot;Engaged&quot; is recorded at the point where whether to engage safe
+    mode is decided. &quot;Cached&quot; is recorded at the point where flags
+    were cached from native to Shared Preferences. The ratio &quot;Cached&quot;
+    / &quot;Engaged&quot; is the success rate for a given mode, and (100% - this
+    ratio) is the crash rate.
+
+    Android only.
+  </summary>
+  <token key="Event">
+    <variant name="Cached"/>
+    <variant name="Engaged"/>
+  </token>
+</histogram>
+
 <histogram name="Variations.SeedDateChange" enum="VariationsSeedDateChange"
     expires_after="2021-10-25">
   <owner>jwd@chromium.org</owner>

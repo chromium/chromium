@@ -165,6 +165,8 @@ public class ProcessInitializationHandler {
      * Performs the shared class initialization.
      */
     protected void handlePreNativeInitialization() {
+        CachedFeatureFlags.onStartCheckpoint();
+
         BrowserTaskExecutor.register();
         BrowserTaskExecutor.setShouldPrioritizeBootstrapTasks(
                 CachedFeatureFlags.isEnabled(ChromeFeatureList.PRIORITIZE_BOOTSTRAP_TASKS));
