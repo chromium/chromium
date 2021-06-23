@@ -124,7 +124,6 @@
     <dimen name="fre_tos_checkbox_padding">12dp</dimen>
     <dimen name="fre_tos_bottom_margin">16dp</dimen>
     <dimen name="fre_loading_spinner_size">48dp</dimen>
-    <dimen name="fre_button_padding">12dp</dimen>
     <dimen name="fre_bottom_loading_spinner_size">24dp</dimen>
     <dimen name="fre_policy_privacy_disclaimer_icon_size">18dp</dimen>
     <dimen name="fre_policy_privacy_disclaimer_icon_padding">8dp</dimen>

@@ -78,6 +78,8 @@ import java.io.IOException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class SyncConsentFragmentTest {
+    private static final int RENDER_REVISION = 1;
+    private static final String RENDER_DESCRIPTION = "Change button style";
     /**
      * This class is used to test {@link SyncConsentFirstRunFragment}.
      */
@@ -114,7 +116,10 @@ public class SyncConsentFragmentTest {
 
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
-            ChromeRenderTestRule.Builder.withPublicCorpus().build();
+            ChromeRenderTestRule.Builder.withPublicCorpus()
+                    .setRevision(RENDER_REVISION)
+                    .setDescription(RENDER_DESCRIPTION)
+                    .build();
 
     @Mock
     private FirstRunPageDelegate mFirstRunPageDelegateMock;

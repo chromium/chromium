@@ -120,8 +120,6 @@
             style="@style/TextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingStart="@dimen/fre_button_padding"
-            android:paddingEnd="@dimen/fre_button_padding"
             tools:text="@string/no_thanks"/>
         <View
             android:layout_width="0dp"
@@ -133,8 +131,6 @@
             style="@style/FilledButton.Flat"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingStart="@dimen/fre_button_padding"
-            android:paddingEnd="@dimen/fre_button_padding"
             tools:text="@string/signin_accept_button"/>
         <org.chromium.ui.widget.ButtonCompat
             android:id="@+id/more_button"

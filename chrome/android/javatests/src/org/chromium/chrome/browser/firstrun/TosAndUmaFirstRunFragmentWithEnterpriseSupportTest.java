@@ -96,12 +96,18 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
         int SLOWER = 2;
     }
 
-    @Rule
-    public DisableAnimationsTestRule mDisableAnimationsTestRule = new DisableAnimationsTestRule();
+    private static final int RENDER_TEST_REVISION = 2;
+    private static final String RENDER_TEST_REVISION_DESCRIPTION =
+            "Change the button padding and font family.";
 
     @Rule
+    public DisableAnimationsTestRule mDisableAnimationsTestRule = new DisableAnimationsTestRule();
+    @Rule
     public ChromeRenderTestRule mRenderTestRule =
-            ChromeRenderTestRule.Builder.withPublicCorpus().setRevision(1).build();
+            ChromeRenderTestRule.Builder.withPublicCorpus()
+                    .setRevision(RENDER_TEST_REVISION)
+                    .setDescription(RENDER_TEST_REVISION_DESCRIPTION)
+                    .build();
 
     @Mock
     public FirstRunAppRestrictionInfo mMockAppRestrictionInfo;

@@ -135,10 +135,6 @@ public class LightweightFirstRunActivity
 
         mLightweightFreButtons = findViewById(R.id.lightweight_fre_buttons);
         mOkButton = (Button) findViewById(R.id.button_primary);
-        int okButtonHorizontalPadding =
-                getResources().getDimensionPixelSize(R.dimen.fre_button_padding);
-        mOkButton.setPaddingRelative(okButtonHorizontalPadding, mOkButton.getPaddingTop(),
-                okButtonHorizontalPadding, mOkButton.getPaddingBottom());
         mOkButton.setOnClickListener(view -> acceptTermsOfService());
 
         ((Button) findViewById(R.id.button_secondary))

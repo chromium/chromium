@@ -121,8 +121,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:paddingStart="@dimen/fre_button_padding"
-            android:paddingEnd="@dimen/fre_button_padding"
             android:text="@string/fre_accept_continue"
             android:animateLayoutChanges="true"
             style="@style/FreAcceptTosButton" />

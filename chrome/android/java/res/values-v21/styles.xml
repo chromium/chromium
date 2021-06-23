@@ -52,4 +52,9 @@
         <item name="android:background">@drawable/hairline_border_card_background</item>
         <item name="android:foreground">@drawable/button_borderless_compat</item>
     </style>
+
+    <!-- Match the fontFamily in ui/android/java/res/values-v21/styles.xml -->
+    <style name="TextAppearance.FreFirstFrameButton" parent="TextAppearance.Button.Text.Filled">
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
   </resources>
