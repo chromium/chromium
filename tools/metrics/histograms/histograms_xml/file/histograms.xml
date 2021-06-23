@@ -369,7 +369,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="FileBrowser.MediaImport.Cancelled" enum="BooleanCanceled"
-    expires_after="M93">
+    expires_after="M98">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -379,7 +379,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="FileBrowser.MediaImport.Duplicates" units="count"
-    expires_after="M93">
+    expires_after="M98">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
