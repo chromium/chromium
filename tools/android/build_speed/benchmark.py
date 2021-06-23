@@ -97,8 +97,8 @@ class Benchmark:
 _BENCHMARKS = [
     Benchmark('chrome_java_nosig', {
         'kind': 'incremental',
-        'from_string': '(sInstance == null)',
-        'to_string': '(sInstance == null || true)',
+        'from_string': 'sInstance = instance;',
+        'to_string': 'sInstance = instance;String test = "Test";',
         # pylint: disable=line-too-long
         'change_file': 'chrome/android/java/src/org/chromium/chrome/browser/AppHooks.java',
     }),
