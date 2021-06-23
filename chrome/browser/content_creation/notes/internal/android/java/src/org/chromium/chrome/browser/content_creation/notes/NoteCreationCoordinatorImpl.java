@@ -60,6 +60,8 @@ public class NoteCreationCoordinatorImpl implements NoteCreationCoordinator, Top
         mChromeOptionShareCallback = chromeOptionShareCallback;
         mShareUrl = shareUrl;
 
+        selectedText = addQuotes(selectedText);
+
         mListModel = new ModelList();
 
         Profile profile = Profile.fromWebContents(tab.getWebContents());
@@ -158,5 +160,15 @@ public class NoteCreationCoordinatorImpl implements NoteCreationCoordinator, Top
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
                 ? mActivity.getResources().getConfiguration().getLocales().get(0)
                 : mActivity.getResources().getConfiguration().locale;
+    }
+
+    private String addQuotes(String text) {
+        // Split localized strings as prefix and suffix instead of full format
+        // in case they are needed as split later.
+        return new StringBuilder()
+                .append(mActivity.getString(R.string.quotation_mark_prefix))
+                .append(text)
+                .append(mActivity.getString(R.string.quotation_mark_suffix))
+                .toString();
     }
 }
