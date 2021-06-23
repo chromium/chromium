@@ -35,7 +35,6 @@ source_set("safe_browsing_url_checker_unittest") {
     "//base/test:test_support",
     "//components/safe_browsing/core:csd_proto",
     "//components/safe_browsing/core/browser:token_fetcher",
-    "//components/safe_browsing/core/common:test_support",
     "//components/safe_browsing/core/db:test_database_manager",
     "//components/safe_browsing/core/db:util",
     "//components/safe_browsing/core/realtime:url_lookup_service",
@@ -70,7 +69,6 @@ source_set("token_fetcher_unit_tests") {
   deps = [
     ":token_fetcher",
     "//base/test:test_support",
-    "//components/safe_browsing/core/common:test_support",
     "//testing/gtest",
   ]
 }

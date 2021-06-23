@@ -48,7 +48,6 @@ source_set("unit_tests") {
   deps = [
     ":safe_browsing_policy_handler",
     ":safe_browsing_prefs",
-    ":test_support",
     "//base:base",
     "//base/test:test_support",
     "//components/policy/core/browser:browser",
@@ -111,19 +110,4 @@ mojom("interfaces") {
   sources = [ "safe_browsing_url_checker.mojom" ]
 
   public_deps = [ "//url/mojom:url_mojom_gurl" ]
-}
-
-source_set("test_support") {
-  testonly = true
-  sources = [ "test_task_environment.h" ]
-  deps = [ "//base/test:test_support" ]
-
-  if (is_ios) {
-    sources += [ "//components/safe_browsing/ios/test_task_environment_ios.cc" ]
-    deps += [ "//ios/web/public/test" ]
-  } else {
-    sources +=
-        [ "//components/safe_browsing/content/common/test_task_environment.cc" ]
-    deps += [ "//content/test:test_support" ]
-  }
 }
