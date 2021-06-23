@@ -141,6 +141,8 @@ void PredictionMetricsHandler::ComputeMetrics() {
       predicted_events_queue_.front().frame_time, &frame_interpolated_);
 
   next_real_ = events_queue_[low_idx_interpolated + 1].pos;
+  next_real_point_after_frame_ =
+      events_queue_[low_idx_frame_interpolated + 1].pos;
 
   int first_needed_event =
       std::min(low_idx_interpolated, low_idx_frame_interpolated);
@@ -162,6 +164,18 @@ void PredictionMetricsHandler::ComputeMetrics() {
   base::UmaHistogramCounts1000(
       base::StrCat({histogram_name_, ".PredictionScore"}), std::abs(score));
 
+  double frame_score = ComputeFrameOverUnderPredictionMetric();
+  if (frame_score >= 0) {
+    base::UmaHistogramCounts1000(
+        base::StrCat({histogram_name_, ".FrameOverPrediction"}), frame_score);
+  } else {
+    base::UmaHistogramCounts1000(
+        base::StrCat({histogram_name_, ".FrameUnderPrediction"}), -frame_score);
+  }
+  base::UmaHistogramCounts1000(
+      base::StrCat({histogram_name_, ".FramePredictionScore"}),
+      std::abs(frame_score));
+
   // Need |last_predicted_| to compute WrongDirection and Jitter metrics.
   if (!last_predicted_.has_value())
     return;
@@ -175,10 +189,21 @@ void PredictionMetricsHandler::ComputeMetrics() {
                                ComputeVisualJitterMetric());
 }
 
-double PredictionMetricsHandler::ComputeOverUnderPredictionMetric() {
+double PredictionMetricsHandler::ComputeOverUnderPredictionMetric() const {
   gfx::Vector2dF real_direction = next_real_ - interpolated_;
   gfx::Vector2dF relative_direction =
       predicted_events_queue_.front().pos - interpolated_;
+  if (gfx::DotProduct(real_direction, relative_direction) >= 0)
+    return relative_direction.Length();
+  else
+    return -relative_direction.Length();
+}
+
+double PredictionMetricsHandler::ComputeFrameOverUnderPredictionMetric() const {
+  gfx::Vector2dF real_direction =
+      next_real_point_after_frame_ - frame_interpolated_;
+  gfx::Vector2dF relative_direction =
+      predicted_events_queue_.front().pos - frame_interpolated_;
   if (gfx::DotProduct(real_direction, relative_direction) >= 0)
     return relative_direction.Length();
   else

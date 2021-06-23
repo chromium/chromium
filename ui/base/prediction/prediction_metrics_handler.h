@@ -65,7 +65,12 @@ class COMPONENT_EXPORT(UI_BASE_PREDICTION) PredictionMetricsHandler {
   // The score is the amount of pixels the predicted point is ahead of
   // the real point. If the score is positive, the prediction is OverPredicting,
   // otherwise UnderPredicting.
-  double ComputeOverUnderPredictionMetric();
+  double ComputeOverUnderPredictionMetric() const;
+
+  // The score is the amount of pixels the predicted point is ahead/behind of
+  // the real input curve. The curve point being an interpolation of the real
+  // input points at the `frame_time` from the current predicted point.
+  double ComputeFrameOverUnderPredictionMetric() const;
 
   // Compute the PredictionJitterMetric score.
   // The score is the euclidean distance between 2 successive variation of
@@ -103,6 +108,9 @@ class COMPONENT_EXPORT(UI_BASE_PREDICTION) PredictionMetricsHandler {
   absl::optional<gfx::PointF> last_predicted_ = absl::nullopt;
   // The first real event position which time is later than the predicted time.
   gfx::PointF next_real_;
+
+  // The first real event position which time is later than the frame time.
+  gfx::PointF next_real_point_after_frame_;
 
   // Beginning of the full histogram name. It will have the various metrics'
   // names (.OverPrediction, .UnderPrediction, .WrongDirection,
