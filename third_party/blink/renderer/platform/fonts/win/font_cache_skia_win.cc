@@ -57,6 +57,9 @@
 #include "third_party/skia/include/core/SkStream.h"
 #include "third_party/skia/include/ports/SkTypeface_win.h"
 
+// For GetACP()
+#include <windows.h>
+
 namespace blink {
 
 HashMap<String, sk_sp<SkTypeface>, CaseFoldingHash>*
@@ -106,7 +109,7 @@ int32_t EnsureMinimumFontHeightIfNeeded(int32_t font_height) {
   // Adjustment for codepage 936 to make the fonts more legible in Simplified
   // Chinese.  Please refer to LayoutThemeFontProviderWin.cpp for more
   // information.
-  return (font_height < 12.0f) && (GetACP() == 936) ? 12.0f : font_height;
+  return ((font_height < 12.0f) && (GetACP() == 936)) ? 12.0f : font_height;
 }
 
 // Test-only code for matching sideloaded fonts by postscript name. This
