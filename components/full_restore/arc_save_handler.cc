@@ -37,12 +37,13 @@ void ArcSaveHandler::SaveAppLaunchInfo(AppLaunchInfoPtr app_launch_info) {
 
   // If the ghost window has been created for `session_id`, and the launch info
   // hasn't been added yet, add `app_launch_info` to the restore data.
-  if (base::Contains(ghost_window_session_id_to_app_id_, session_id) &&
-      !FullRestoreSaveHandler::GetInstance()->HasAppRestoreData(
-          profile_path_, app_launch_info->app_id, session_id)) {
-    app_launch_info->window_id = session_id;
-    FullRestoreSaveHandler::GetInstance()->AddAppLaunchInfo(
-        profile_path_, std::move(app_launch_info));
+  if (base::Contains(ghost_window_session_id_to_app_id_, session_id)) {
+    if (!FullRestoreSaveHandler::GetInstance()->HasAppRestoreData(
+            profile_path_, app_launch_info->app_id, session_id)) {
+      app_launch_info->window_id = session_id;
+      FullRestoreSaveHandler::GetInstance()->AddAppLaunchInfo(
+          profile_path_, std::move(app_launch_info));
+    }
     return;
   }
 

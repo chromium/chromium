@@ -1257,6 +1257,9 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerArcAppBrowserTest,
   VerifyWindowProperty(window, kTaskId2, kTaskId1, /*hidden=*/false);
   VerifyWindowInfo(window, kActivationIndex);
 
+  // Verify the ghost window session id has been removed from the restore data.
+  EXPECT_FALSE(::full_restore::GetArcAppLaunchInfo(app_id, session_id2));
+
   // Destroy the task and close the window.
   app_host()->OnTaskDestroyed(kTaskId2);
   widget->CloseNow();
@@ -1358,6 +1361,9 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerArcAppBrowserTest, SaveArcGhostWindow) {
 
   VerifyWindowProperty(window, kTaskId2, session_id2, /*hidden=*/false);
   VerifyWindowInfo(window, kActivationIndex);
+
+  // Verify the ghost window session id has been removed from the restore data.
+  EXPECT_FALSE(::full_restore::GetArcAppLaunchInfo(app_id, session_id3));
 
   // Destroy the task and close the window.
   app_host()->OnTaskDestroyed(kTaskId2);
