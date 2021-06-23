@@ -11,6 +11,9 @@ import unittest
 
 import merge_js_lib as merger
 
+_MODULES_PATH = os.path.join(
+    '..', '..', '..', 'third_party', 'node', 'node_modules', 'v8-to-istanbul')
+_COVERAGE_MODULES_EXIST = os.path.exists(_MODULES_PATH)
 
 class ConvertToIstanbulTest(unittest.TestCase):
   _TEST_SOURCE_A = """function add(a, b) {
@@ -297,6 +300,7 @@ subtract(5, 2);
   def write_coverages(self, *file_path_contents):
     self._write_files(self.coverage_dir, *file_path_contents)
 
+  @unittest.skipUnless(_COVERAGE_MODULES_EXIST, 'requires JS coverage modules')
   def test_happy_path(self):
     self.write_sources(('file.js', self._TEST_SOURCE_A))
     self.write_coverages(('test_coverage.cov.json', self._TEST_COVERAGE_A))
@@ -308,6 +312,7 @@ subtract(5, 2);
         os.path.join(self.task_output_dir, 'istanbul'))
     self.assertEqual(len(istanbul_files), 1)
 
+  @unittest.skipUnless(_COVERAGE_MODULES_EXIST, 'requires JS coverage modules')
   def test_no_coverages_in_file(self):
     coverage_file = """{
   "result": []
@@ -324,6 +329,7 @@ subtract(5, 2);
         os.path.join(self.task_output_dir, 'istanbul'))
     self.assertEqual(len(istanbul_files), 0)
 
+  @unittest.skipUnless(_COVERAGE_MODULES_EXIST, 'requires JS coverage modules')
   def test_invalid_coverage_file(self):
     self.write_sources(('file.js', self._TEST_SOURCE_A))
     self.write_coverages(
@@ -332,6 +338,7 @@ subtract(5, 2);
     self.assertRaises(merger.convert_raw_coverage_to_istanbul(
         [self.coverage_dir], self.source_dir, self.task_output_dir))
 
+  @unittest.skipUnless(_COVERAGE_MODULES_EXIST, 'requires JS coverage modules')
   def test_multiple_coverages_single_file(self):
     self.write_sources(('test.js', self._TEST_SOURCE_B))
     self.write_sources(('test1.js', self._TEST_SOURCE_C))
@@ -344,7 +351,7 @@ subtract(5, 2);
         os.path.join(self.task_output_dir, 'istanbul'))
     self.assertEqual(len(istanbul_files), 2)
 
-
+  @unittest.skipUnless(_COVERAGE_MODULES_EXIST, 'requires JS coverage modules')
   def test_multiple_coverages_no_leading_double_slash(self):
     self.write_sources(('test.js', self._TEST_SOURCE_B))
     self.write_sources(('test1.js', self._TEST_SOURCE_C))
@@ -359,6 +366,7 @@ subtract(5, 2);
     self.assertEqual(len(istanbul_files), 1)
 
 
+  @unittest.skipUnless(_COVERAGE_MODULES_EXIST, 'requires JS coverage modules')
   def test_multiple_duplicate_coverages_flattened(self):
     self.write_sources(('test.js', self._TEST_SOURCE_B))
     self.write_sources(('test1.js', self._TEST_SOURCE_C))
