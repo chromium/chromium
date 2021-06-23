@@ -34,18 +34,6 @@ class DeviceNamePolicyHandler : public chromeos::NetworkStateHandlerObserver {
   const std::string& GetDeviceHostname() const;
 
  private:
-  friend class DeviceNamePolicyHandlerTest;
-
-  // Uses template to build a hostname. Returns valid hostname (after parameter
-  // substitution) or empty string, if substitution result is not a valid
-  // hostname.
-  static std::string FormatHostname(const std::string& name_template,
-                                    const std::string& asset_id,
-                                    const std::string& serial,
-                                    const std::string& mac,
-                                    const std::string& machine_name,
-                                    const std::string& location);
-
   void OnDeviceHostnamePropertyChanged();
 
   void OnDeviceHostnamePropertyChangedAndMachineStatisticsLoaded();

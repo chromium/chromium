@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/policy/handlers/device_name_policy_handler.h"
+#include "chrome/browser/chromeos/policy/handlers/device_name_policy_handler_name_generator.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace policy {
 
-class DeviceNamePolicyHandlerTest : public testing::Test {
+class DeviceNamePolicyHandlerNameGeneratorTest : public testing::Test {
  public:
-  DeviceNamePolicyHandlerTest() {}
+  DeviceNamePolicyHandlerNameGeneratorTest() {}
 
   void formatAndAssert(const std::string& expected,
                        const std::string& name_template,
@@ -19,46 +19,46 @@ class DeviceNamePolicyHandlerTest : public testing::Test {
                        const std::string& mac,
                        const std::string& machine_name,
                        const std::string& location) {
-    auto result = DeviceNamePolicyHandler::FormatHostname(
-        name_template, asset_id, serial, mac, machine_name, location);
+    auto result = FormatHostname(name_template, asset_id, serial, mac,
+                                 machine_name, location);
     ASSERT_EQ(expected, result);
   }
 };
 
-TEST_F(DeviceNamePolicyHandlerTest, Basic) {
+TEST_F(DeviceNamePolicyHandlerNameGeneratorTest, Basic) {
   formatAndAssert("name", "name", "asset123", "SER1AL123", "0000deadbeef",
                   "chrome_machine", "loc123");
 }
 
-TEST_F(DeviceNamePolicyHandlerTest, SubstituteValidAssetId) {
+TEST_F(DeviceNamePolicyHandlerNameGeneratorTest, SubstituteValidAssetId) {
   formatAndAssert("chromebook-asset123", "chromebook-${ASSET_ID}", "asset123",
                   "SER1AL123", "0000deadbeef", "chrome_machine", "loc123");
 }
 
-TEST_F(DeviceNamePolicyHandlerTest, SubstituteValidSerial) {
+TEST_F(DeviceNamePolicyHandlerNameGeneratorTest, SubstituteValidSerial) {
   formatAndAssert("chromebook-SER1AL123", "chromebook-${SERIAL_NUM}",
                   "asset123", "SER1AL123", "0000deadbeef", "chrome_machine",
                   "loc123");
 }
 
-TEST_F(DeviceNamePolicyHandlerTest, SubstituteValidMAC) {
+TEST_F(DeviceNamePolicyHandlerNameGeneratorTest, SubstituteValidMAC) {
   formatAndAssert("chromebook-0000deadbeef", "chromebook-${MAC_ADDR}",
                   "asset123", "SER1AL123", "0000deadbeef", "chrome_machine",
                   "loc123");
 }
 
-TEST_F(DeviceNamePolicyHandlerTest, SubstituteMachineName) {
+TEST_F(DeviceNamePolicyHandlerNameGeneratorTest, SubstituteMachineName) {
   formatAndAssert("chromebook-chrome_machine", "chromebook-${MACHINE_NAME}",
                   "asset123", "SER1AL123", "0000deadbeef", "chrome_machine",
                   "loc123");
 }
 
-TEST_F(DeviceNamePolicyHandlerTest, SubstituteLocation) {
+TEST_F(DeviceNamePolicyHandlerNameGeneratorTest, SubstituteLocation) {
   formatAndAssert("chromebook-loc123", "chromebook-${LOCATION}", "asset123",
                   "SER1AL123", "0000deadbeef", "chrome_machine", "loc123");
 }
 
-TEST_F(DeviceNamePolicyHandlerTest, MixedSubstitution) {
+TEST_F(DeviceNamePolicyHandlerNameGeneratorTest, MixedSubstitution) {
   formatAndAssert(
       "chromebook-deadbeef-SER1AL123-asset123-chrome_machine-loc123",
       "chromebook-${MAC_ADDR}-${SERIAL_NUM}-${ASSET_ID}-${MACHINE_NAME}-"
@@ -66,28 +66,28 @@ TEST_F(DeviceNamePolicyHandlerTest, MixedSubstitution) {
       "asset123", "SER1AL123", "deadbeef", "chrome_machine", "loc123");
 }
 
-TEST_F(DeviceNamePolicyHandlerTest, SubstituteInvalidSerial) {
+TEST_F(DeviceNamePolicyHandlerNameGeneratorTest, SubstituteInvalidSerial) {
   formatAndAssert("", "chromebook-${SERIAL_NUM}", "asset123", "Serial number",
                   "0000deadbeef", "chrome_machine", "loc123");
 }
 
-TEST_F(DeviceNamePolicyHandlerTest, IncorrectTemplateVariable) {
+TEST_F(DeviceNamePolicyHandlerNameGeneratorTest, IncorrectTemplateVariable) {
   formatAndAssert("", "chromebook-${SERIAL_NUMBER}", "asset123", "SERIAL123",
                   "0000deadbeef", "chrome_machine", "loc123");
 }
 
-TEST_F(DeviceNamePolicyHandlerTest, InvalidFirstCharacter) {
+TEST_F(DeviceNamePolicyHandlerNameGeneratorTest, InvalidFirstCharacter) {
   formatAndAssert("", "-somename", "asset123", "Serial number", "0000deadbeef",
                   "chrome_machine", "loc123");
 }
 
-TEST_F(DeviceNamePolicyHandlerTest, HostnameTooLong) {
+TEST_F(DeviceNamePolicyHandlerNameGeneratorTest, HostnameTooLong) {
   formatAndAssert("", "${ASSET_ID}${ASSET_ID}${ASSET_ID}",
                   "1234567890123456789012345678901", "serial", "0000deadbeef",
                   "chrome_machine", "loc123");
 }
 
-TEST_F(DeviceNamePolicyHandlerTest, HostnameExactly63Chars) {
+TEST_F(DeviceNamePolicyHandlerNameGeneratorTest, HostnameExactly63Chars) {
   formatAndAssert(
       "1234567890123456789012345678901-1234567890123456789012345678901",
       "${ASSET_ID}-${ASSET_ID}", "1234567890123456789012345678901", "serial",

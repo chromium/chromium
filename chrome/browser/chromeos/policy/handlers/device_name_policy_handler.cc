@@ -5,10 +5,10 @@
 #include "chrome/browser/chromeos/policy/handlers/device_name_policy_handler.h"
 
 #include "base/bind.h"
-#include "base/strings/string_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/chromeos/policy/handlers/device_name_policy_handler_name_generator.h"
 #include "chromeos/network/device_state.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_state.h"
@@ -16,35 +16,6 @@
 #include "chromeos/settings/cros_settings_names.h"
 #include "chromeos/settings/cros_settings_provider.h"
 #include "chromeos/system/statistics_provider.h"
-
-namespace {
-
-constexpr char kAssetIDPlaceholder[] = "${ASSET_ID}";
-constexpr char kMachineNamePlaceholder[] = "${MACHINE_NAME}";
-constexpr char kSerialNumPlaceholder[] = "${SERIAL_NUM}";
-constexpr char kMACAddressPlaceholder[] = "${MAC_ADDR}";
-constexpr char kLocationPlaceholder[] = "${LOCATION}";
-
-// As per RFC 1035, hostname should be 63 characters or less.
-const int kMaxHostnameLength = 63;
-
-bool inline IsValidHostnameCharacter(char c) {
-  return base::IsAsciiAlpha(c) || base::IsAsciiDigit(c) || c == '_' || c == '-';
-}
-
-bool IsValidHostname(const std::string& hostname) {
-  if ((hostname.size() > kMaxHostnameLength) || (hostname.size() == 0))
-    return false;
-  if (hostname[0] == '-')
-    return false;  // '-' is not valid for the first char
-  for (const char& c : hostname) {
-    if (!IsValidHostnameCharacter(c))
-      return false;
-  }
-  return true;
-}
-
-}  // namespace
 
 namespace policy {
 
@@ -74,28 +45,6 @@ void DeviceNamePolicyHandler::Shutdown() {
 
 const std::string& DeviceNamePolicyHandler::GetDeviceHostname() const {
   return hostname_;
-}
-
-// static
-std::string DeviceNamePolicyHandler::FormatHostname(
-    const std::string& name_template,
-    const std::string& asset_id,
-    const std::string& serial,
-    const std::string& mac,
-    const std::string& machine_name,
-    const std::string& location) {
-  std::string result = name_template;
-  base::ReplaceSubstringsAfterOffset(&result, 0, kAssetIDPlaceholder, asset_id);
-  base::ReplaceSubstringsAfterOffset(&result, 0, kSerialNumPlaceholder, serial);
-  base::ReplaceSubstringsAfterOffset(&result, 0, kMACAddressPlaceholder, mac);
-  base::ReplaceSubstringsAfterOffset(&result, 0, kMachineNamePlaceholder,
-                                     machine_name);
-  base::ReplaceSubstringsAfterOffset(&result, 0, kLocationPlaceholder,
-                                     location);
-
-  if (!IsValidHostname(result))
-    return std::string();
-  return result;
 }
 
 void DeviceNamePolicyHandler::DefaultNetworkChanged(
@@ -158,8 +107,8 @@ void DeviceNamePolicyHandler::
     }
   }
 
-  hostname_ = FormatHostname(hostname_template, asset_id, serial, mac,
-                             machine_name, location);
+  hostname_ = policy::FormatHostname(hostname_template, asset_id, serial, mac,
+                                     machine_name, location);
   handler->SetHostname(hostname_);
 }
 
