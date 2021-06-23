@@ -634,9 +634,10 @@ TEST_F('CrSettingsAdvancedPageV3Test', 'MAYBE_Load', function() {
  ['ZoomLevels', 'zoom_levels_tests.js'],
 ].forEach(test => registerTest(...test));
 
-// Timeout on MacOS dbg bots, https://crbug.com/1133412
-// Fails on Mac/Arm, https://crbug.com/1222886
-GEN('#if !defined(OS_MAC) || (defined(NDEBUG) && !defined(ARCH_CPU_ARM64))');
+// Timeout on Linux and MacOS dbg bots: https://crbug.com/1133412
+// Fails on Mac/Arm: https://crbug.com/1222886
+GEN('#if (!defined(OS_LINUX) && !defined(OS_MAC)) || ' +
+    '(defined(NDEBUG) && !defined(ARCH_CPU_ARM64))');
 [['SecurityPage', 'security_page_test.js'],
 ].forEach(test => registerTest(...test));
 GEN('#endif');
