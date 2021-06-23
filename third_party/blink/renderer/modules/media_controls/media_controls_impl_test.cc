@@ -963,6 +963,7 @@ TEST_F(MediaControlsImplTest,
     EXPECT_FALSE(HasAvailabilityCallbacks(remote_playback));
   }
 
+  page_holder->GetDocument().View()->UpdateAllLifecyclePhasesForTest();
   test::RunPendingTasks();
 
   ThreadState::Current()->CollectAllGarbageForTesting();

@@ -725,12 +725,9 @@ TEST_F(IntersectionObserverTest, InaccessibleTargetBeforeDelivery) {
   observer_delegate = nullptr;
   Compositor().BeginFrame();
   ThreadState::Current()->CollectAllGarbageForTesting();
+  EXPECT_TRUE(target_weak);
   EXPECT_TRUE(observer_weak);
   EXPECT_TRUE(observer_delegate_weak);
-
-  // TODO(crbug.com/1222738): this currently fails. This should really be true,
-  // since we should have a pending task to call the callback with the target.
-  // EXPECT_TRUE(target_weak);
 
   // Once we run the callback, the observer has no more pending tasks, and so
   // it should be garbage-collected along with the target.

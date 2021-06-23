@@ -207,14 +207,13 @@ unsigned IntersectionObservation::GetIntersectionGeometryFlags(
 
 void IntersectionObservation::ProcessIntersectionGeometry(
     const IntersectionGeometry& geometry) {
-  // TODO(tkent): We can't use CHECK_LT due to a compile error.
-  CHECK(geometry.ThresholdIndex() < kMaxThresholdIndex - 1);
+  CHECK_LT(geometry.ThresholdIndex(), kMaxThresholdIndex - 1);
 
   if (last_threshold_index_ != geometry.ThresholdIndex() ||
       last_is_visible_ != geometry.IsVisible()) {
     entries_.push_back(MakeGarbageCollected<IntersectionObserverEntry>(
         geometry, last_run_time_, Target()));
-    Observer()->SetNeedsDelivery();
+    Observer()->ReportUpdates(*this);
     SetLastThresholdIndex(geometry.ThresholdIndex());
     SetWasVisible(geometry.IsVisible());
   }

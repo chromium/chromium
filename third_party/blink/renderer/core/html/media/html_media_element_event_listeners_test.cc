@@ -219,6 +219,7 @@ TEST_F(HTMLMediaElementEventListenersTest, RemovingFromDocumentCollectsAll) {
     EXPECT_TRUE(persistent_video->HasEventListeners());
   }
 
+  UpdateAllLifecyclePhasesForTest();
   test::RunPendingTasks();
 
   ThreadState::Current()->CollectAllGarbageForTesting();

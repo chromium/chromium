@@ -281,7 +281,6 @@ IntersectionObserver::IntersectionObserver(
       track_visibility_(track_visibility),
       track_fraction_of_root_(semantics == kFractionOfRoot),
       always_report_root_bounds_(always_report_root_bounds),
-      needs_delivery_(0),
       can_use_cached_rects_(0),
       use_overflow_clip_edge_(use_overflow_clip_edge) {
   switch (margin.size()) {
@@ -386,6 +385,7 @@ void IntersectionObserver::unobserve(Element* target,
 
   observation->Disconnect();
   observations_.erase(observation);
+  active_observations_.erase(observation);
   if (root() && root()->isConnected() && observations_.IsEmpty()) {
     root()
         ->GetDocument()
@@ -398,6 +398,7 @@ void IntersectionObserver::disconnect(ExceptionState& exception_state) {
   for (auto& observation : observations_)
     observation->Disconnect();
   observations_.clear();
+  active_observations_.clear();
   if (root() && root()->isConnected()) {
     root()
         ->GetDocument()
@@ -408,10 +409,10 @@ void IntersectionObserver::disconnect(ExceptionState& exception_state) {
 
 HeapVector<Member<IntersectionObserverEntry>> IntersectionObserver::takeRecords(
     ExceptionState& exception_state) {
-  needs_delivery_ = 0;
   HeapVector<Member<IntersectionObserverEntry>> entries;
   for (auto& observation : observations_)
     observation->TakeRecords(entries);
+  active_observations_.clear();
   return entries;
 }
 
@@ -489,14 +490,17 @@ LocalFrameUkmAggregator::MetricId IntersectionObserver::GetUkmMetricId() const {
   return delegate_->GetUkmMetricId();
 }
 
-void IntersectionObserver::SetNeedsDelivery() {
-  if (needs_delivery_)
-    return;
-  needs_delivery_ = 1;
-  To<LocalDOMWindow>(GetExecutionContext())
-      ->document()
-      ->EnsureIntersectionObserverController()
-      .ScheduleIntersectionObserverForDelivery(*this);
+void IntersectionObserver::ReportUpdates(IntersectionObservation& observation) {
+  DCHECK_EQ(observation.Observer(), this);
+  bool needs_scheduling = active_observations_.IsEmpty();
+  active_observations_.insert(&observation);
+
+  if (needs_scheduling) {
+    To<LocalDOMWindow>(GetExecutionContext())
+        ->document()
+        ->EnsureIntersectionObserverController()
+        .ScheduleIntersectionObserverForDelivery(*this);
+  }
 }
 
 IntersectionObserver::DeliveryBehavior
@@ -505,18 +509,18 @@ IntersectionObserver::GetDeliveryBehavior() const {
 }
 
 void IntersectionObserver::Deliver() {
-  if (!needs_delivery_)
+  if (!NeedsDelivery())
     return;
-  needs_delivery_ = 0;
   HeapVector<Member<IntersectionObserverEntry>> entries;
   for (auto& observation : observations_)
     observation->TakeRecords(entries);
+  active_observations_.clear();
   if (entries.size())
     delegate_->Deliver(entries, *this);
 }
 
 bool IntersectionObserver::HasPendingActivity() const {
-  return !observations_.IsEmpty() && needs_delivery_;
+  return NeedsDelivery();
 }
 
 void IntersectionObserver::Trace(Visitor* visitor) const {
@@ -524,6 +528,7 @@ void IntersectionObserver::Trace(Visitor* visitor) const {
       IntersectionObserver, &IntersectionObserver::ProcessCustomWeakness>(this);
   visitor->Trace(delegate_);
   visitor->Trace(observations_);
+  visitor->Trace(active_observations_);
   ScriptWrappable::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
 }

@@ -169,7 +169,7 @@ class CORE_EXPORT IntersectionObserver final
 
   LocalFrameUkmAggregator::MetricId GetUkmMetricId() const;
 
-  void SetNeedsDelivery();
+  void ReportUpdates(IntersectionObservation&);
   DeliveryBehavior GetDeliveryBehavior() const;
   void Deliver();
 
@@ -191,6 +191,7 @@ class CORE_EXPORT IntersectionObserver final
   static void SetThrottleDelayEnabledForTesting(bool);
 
  private:
+  bool NeedsDelivery() const { return !active_observations_.IsEmpty(); }
   void ProcessCustomWeakness(const LivenessBroker&);
 
   const Member<IntersectionObserverDelegate> delegate_;
@@ -199,6 +200,8 @@ class CORE_EXPORT IntersectionObserver final
   UntracedMember<Node> root_;
 
   HeapLinkedHashSet<WeakMember<IntersectionObservation>> observations_;
+  // Observations that have updates waiting to be delivered
+  HeapHashSet<Member<IntersectionObservation>> active_observations_;
   Vector<float> thresholds_;
   DOMHighResTimeStamp delay_;
   Vector<Length> margin_;
@@ -207,7 +210,6 @@ class CORE_EXPORT IntersectionObserver final
   unsigned track_visibility_ : 1;
   unsigned track_fraction_of_root_ : 1;
   unsigned always_report_root_bounds_ : 1;
-  unsigned needs_delivery_ : 1;
   unsigned can_use_cached_rects_ : 1;
   unsigned use_overflow_clip_edge_ : 1;
 };
