@@ -34,12 +34,11 @@
 
   #show-clear {
     height: var(--emoji-group-heading-size);
+    left: calc((var(--emoji-picker-width)
+            - 2 * var(--emoji-picker-side-padding)) / 9 * 8
+            + var(--emoji-picker-side-padding));
     margin: 0;
-    margin-inline-end: calc(
-      (var(--emoji-group-button-size) -
-       var(--emoji-group-clear-recents-icon-size))* .5);
-    --cr-icon-button-icon-size: var(--emoji-group-clear-recents-icon-size);
-    --cr-icon-button-size: var(--emoji-size);
+    width: var(--emoji-group-button-size);
   }
 
   #clear-recents {
