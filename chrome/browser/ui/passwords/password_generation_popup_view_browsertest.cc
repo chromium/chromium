@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/passwords/password_generation_popup_controller_impl.h"
@@ -140,8 +141,16 @@ class PasswordGenerationPopupViewPrerenderingTest
 
 // Tests that the prerendering doesn't delete
 // PasswordGenerationPopupControllerImpl.
+// Flaky on Linux/Win.  http://crbug.com/1222978
+#if defined(OS_WIN) || defined(OS_LINUX)
+#define MAYBE_PasswordGenerationPopupControllerInPrerendering \
+  DISABLED_PasswordGenerationPopupControllerInPrerendering
+#else
+#define MAYBE_PasswordGenerationPopupControllerInPrerendering \
+  PasswordGenerationPopupControllerInPrerendering
+#endif
 IN_PROC_BROWSER_TEST_F(PasswordGenerationPopupViewPrerenderingTest,
-                       PasswordGenerationPopupControllerInPrerendering) {
+                       MAYBE_PasswordGenerationPopupControllerInPrerendering) {
   GURL url =
       embedded_test_server()->GetURL("/password/nonplaceholder_username.html");
   ui_test_utils::NavigateToURL(browser(), url);
