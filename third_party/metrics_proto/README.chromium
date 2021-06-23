@@ -1,15 +1,15 @@
 Name: Metrics Protos
 Short Name: metrics_proto
 URL: This is the canonical public repository
-Version: 373621737
-Date: 2021/05/13 UTC
+Version: 381096221
+Date: 2021/06/23 UTC
 License: BSD
 Security Critical: Yes
 
 Description:
 This package contains the protos that are used to upload metrics data to Google.
-Updates to this code should be made by changing the internal copies and then
-running the export script. No manual editting should be done.
+Updates to this code should be made by changing the internal copies, and then
+running the export script.
 
 blaze run //analysis/uma/proto_export:proto_export -- \
   --from_piper \
