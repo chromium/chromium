@@ -50,10 +50,6 @@ void DecoderBufferTranscryptor::EnqueueBuffer(
 void DecoderBufferTranscryptor::Reset(DecodeStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (current_transcrypt_task_) {
-    if (transcrypt_pending_) {
-      cdm_context_ref_->GetCdmContext()->GetDecryptor()->CancelDecrypt(
-          Decryptor::kVideo);
-    }
     std::move(current_transcrypt_task_->decode_done_cb).Run(status);
     current_transcrypt_task_ = absl::nullopt;
   }
@@ -132,11 +128,6 @@ void DecoderBufferTranscryptor::OnBufferTranscrypted(
   }
 
   DCHECK_EQ(status, Decryptor::kSuccess);
-
-  // The only time we get back kSuccess for the |status| with a null buffer is
-  // when we call CancelDecrypt, and if we do that, then we should have also set
-  // |current_transcrypt_task_| to null as well so we should never reach here
-  // with a null buffer.
   DCHECK(transcrypted_buffer);
 
   const bool eos_buffer = transcrypted_buffer->end_of_stream();

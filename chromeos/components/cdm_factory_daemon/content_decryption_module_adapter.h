@@ -178,13 +178,6 @@ class COMPONENT_EXPORT(CDM_FACTORY_DAEMON) ContentDecryptionModuleAdapter
   media::SessionKeysChangeCB session_keys_change_cb_;
   media::SessionExpirationUpdateCB session_expiration_update_cb_;
 
-  // This is used for tracking individual decrypt calls for each stream type so
-  // in the event one is cancelled, and a new one is submitted, we don't end up
-  // invoking the callback from the new one with the data from the cancelled
-  // call.
-  bool pending_audio_decrypt_ = false;
-  bool pending_video_decrypt_ = false;
-
   scoped_refptr<base::SequencedTaskRunner> mojo_task_runner_;
 
   // Track what sessions are open so that if we lose our mojo connection we can

@@ -91,6 +91,10 @@ class DecoderBufferTranscryptor {
   // If true, then a request to the decryptor is in progress which means we
   // should not make another transcryption request until the pending one
   // completes (through a call to OnBufferTranscrypted()).
+  // NOTE: The Decryptor implementation in use does support multiple
+  // simultaneous calls to Decrypt, however we still throttle ourselves so we
+  // don't end up with a backlog of Decrypt requests that need to be processed
+  // before moving on after a Reset.
   bool transcrypt_pending_ = false;
 
   // We need to use a CdmContextRef so that we destruct

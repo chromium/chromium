@@ -584,22 +584,4 @@ TEST_F(ContentDecryptionModuleAdapterTest, Decrypt_Success) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(ContentDecryptionModuleAdapterTest, Decrypt_CancelDecrypt) {
-  EXPECT_CALL(*mock_daemon_cdm_, Decrypt(_, _, _, _))
-      .WillOnce([](const std::vector<uint8_t>& data,
-                   std::unique_ptr<media::DecryptConfig> decrypt_config,
-                   bool is_video, MockDaemonCdm::DecryptCallback callback) {
-        std::move(callback).Run(media::Decryptor::kSuccess, data, nullptr);
-      });
-  scoped_refptr<media::DecoderBuffer> buffer =
-      CreateDecoderBuffer(kFakeEncryptedData);
-  buffer->set_decrypt_config(media::DecryptConfig::CreateCbcsConfig(
-      kFakeKeyId, kFakeIv, {}, media::EncryptionPattern(6, 9)));
-  base::MockCallback<media::Decryptor::DecryptCB> callback;
-  EXPECT_CALL(callback, Run(media::Decryptor::kSuccess, IsNull())).Times(1);
-  cdm_adapter_->Decrypt(media::Decryptor::kAudio, buffer, callback.Get());
-  cdm_adapter_->CancelDecrypt(media::Decryptor::kAudio);
-  base::RunLoop().RunUntilIdle();
-}
-
 }  // namespace chromeos

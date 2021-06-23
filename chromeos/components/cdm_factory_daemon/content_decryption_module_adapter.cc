@@ -309,11 +309,9 @@ void ContentDecryptionModuleAdapter::Decrypt(
   if (!encrypted->decrypt_config()) {
     // We still want to send this to the decryptor even if it is not encrypted
     // because we need that for tracking video on AMD of the clear headers. This
-    // will// not be inefficient in other cases because we won't be invoked for
+    // will not be inefficient in other cases because we won't be invoked for
     // clear content otherwise.
     DCHECK_EQ(stream_type, Decryptor::kVideo);
-    DCHECK(!pending_video_decrypt_);
-    pending_video_decrypt_ = true;
     cros_cdm_remote_->Decrypt(
         std::vector<uint8_t>(encrypted->data(),
                              encrypted->data() + encrypted->data_size()),
@@ -335,14 +333,6 @@ void ContentDecryptionModuleAdapter::Decrypt(
     return;
   }
 
-  if (stream_type == Decryptor::kVideo) {
-    DCHECK(!pending_video_decrypt_);
-    pending_video_decrypt_ = true;
-  } else {
-    DCHECK(!pending_audio_decrypt_);
-    pending_audio_decrypt_ = true;
-  }
-
   // TODO(jkardatzke): Evaluate the performance cost here of copying the data
   // and see if want to use something like MojoDecoderBufferWriter instead.
   cros_cdm_remote_->Decrypt(
@@ -355,19 +345,9 @@ void ContentDecryptionModuleAdapter::Decrypt(
 }
 
 void ContentDecryptionModuleAdapter::CancelDecrypt(StreamType stream_type) {
-  // This can get called from decoder threads or mojo threads, so we may need
-  // to repost the task.
-  if (!mojo_task_runner_->RunsTasksInCurrentSequence()) {
-    mojo_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&ContentDecryptionModuleAdapter::CancelDecrypt,
-                       weak_factory_.GetWeakPtr(), stream_type));
-    return;
-  }
-  if (stream_type == kVideo)
-    pending_video_decrypt_ = false;
-  else
-    pending_audio_decrypt_ = false;
+  // This method is racey since decryption is on another thread, so don't do
+  // anything special for cancellation since the caller needs to handle the case
+  // where the normal callback occurs even after calling CancelDecrypt anyways.
 }
 
 void ContentDecryptionModuleAdapter::InitializeAudioDecoder(
@@ -490,23 +470,6 @@ void ContentDecryptionModuleAdapter::OnDecrypt(
     media::Decryptor::Status status,
     const std::vector<uint8_t>& decrypted_data,
     std::unique_ptr<media::DecryptConfig> decrypt_config_out) {
-  // If the bool that tracks whether a pending call is active or not is now
-  // false, then that means the call was cancelled.
-  bool cancelled;
-  if (stream_type == kVideo) {
-    cancelled = !pending_video_decrypt_;
-    pending_video_decrypt_ = false;
-  } else {
-    cancelled = !pending_audio_decrypt_;
-    pending_audio_decrypt_ = false;
-  }
-
-  if (cancelled) {
-    DVLOG(1) << __func__ << " decrypt operation was cancelled";
-    std::move(decrypt_cb).Run(media::Decryptor::kSuccess, nullptr);
-    return;
-  }
-
   if (status != media::Decryptor::kSuccess) {
     if (status == media::Decryptor::kNoKey) {
       DVLOG(1) << "Decryption failed due to no key";
