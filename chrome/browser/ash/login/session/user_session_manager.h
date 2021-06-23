@@ -483,7 +483,7 @@ class UserSessionManager
   void NotifyPendingUserSessionsRestoreFinished();
 
   // Callback invoked when Easy unlock key operations are finished.
-  void OnEasyUnlockKeyOpsFinished(const std::string& user_id, bool success);
+  void OnEasyUnlockKeyOpsFinished(const AccountId& account_id, bool success);
 
   // Callback invoked when child policy is ready and the session for child user
   // can be started.

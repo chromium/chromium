@@ -2073,13 +2073,14 @@ void UserSessionManager::UpdateEasyUnlockKeys(const UserContext& user_context) {
   key_manager->RefreshKeys(
       user_context, *device_list,
       base::BindOnce(&UserSessionManager::OnEasyUnlockKeyOpsFinished,
-                     AsWeakPtr(), user_context.GetAccountId().GetUserEmail()));
+                     AsWeakPtr(), user_context.GetAccountId()));
 }
 
-void UserSessionManager::OnEasyUnlockKeyOpsFinished(const std::string& user_id,
+void UserSessionManager::OnEasyUnlockKeyOpsFinished(const AccountId& account_id,
                                                     bool success) {
-  const user_manager::User* user = user_manager::UserManager::Get()->FindUser(
-      AccountId::FromUserEmail(user_id));
+  const user_manager::User* user =
+      user_manager::UserManager::Get()->FindUser(account_id);
+  CHECK(user);
   EasyUnlockService* easy_unlock_service = EasyUnlockService::GetForUser(*user);
   if (easy_unlock_service)
     easy_unlock_service->CheckCryptohomeKeysAndMaybeHardlock();
