@@ -205,12 +205,9 @@ LacrosChromeServiceImpl::LacrosChromeServiceImpl(
       base::BindOnce(&LacrosChromeServiceImplNeverBlockingState::BindCrosapi,
                      weak_sequenced_state_));
 
+  // Note: sorted by the Bind method names in the lexicographical order.
   ConstructRemote<crosapi::mojom::AppPublisher, &Crosapi::BindAppPublisher,
                   Crosapi::MethodMinVersions::kBindAppPublisherMinVersion>();
-  ConstructRemote<
-      chromeos::machine_learning::mojom::MachineLearningService,
-      &crosapi::mojom::Crosapi::BindMachineLearningService,
-      Crosapi::MethodMinVersions::kBindMachineLearningServiceMinVersion>();
   ConstructRemote<
       crosapi::mojom::AutomationFactory, &Crosapi::BindAutomationFactory,
       Crosapi::MethodMinVersions::kBindAutomationFactoryMinVersion>();
@@ -230,6 +227,10 @@ LacrosChromeServiceImpl::LacrosChromeServiceImpl(
   ConstructRemote<
       crosapi::mojom::DownloadController, &Crosapi::BindDownloadController,
       Crosapi::MethodMinVersions::kBindDownloadControllerMinVersion>();
+  ConstructRemote<
+      crosapi::mojom::DriveIntegrationService,
+      &crosapi::mojom::Crosapi::BindDriveIntegrationService,
+      Crosapi::MethodMinVersions::kBindDriveIntegrationServiceMinVersion>();
   ConstructRemote<crosapi::mojom::Feedback,
                   &crosapi::mojom::Crosapi::BindFeedback,
                   Crosapi::MethodMinVersions::kBindFeedbackMinVersion>();
@@ -252,6 +253,10 @@ LacrosChromeServiceImpl::LacrosChromeServiceImpl(
   ConstructRemote<crosapi::mojom::LocalPrinter,
                   &crosapi::mojom::Crosapi::BindLocalPrinter,
                   Crosapi::MethodMinVersions::kBindLocalPrinterMinVersion>();
+  ConstructRemote<
+      chromeos::machine_learning::mojom::MachineLearningService,
+      &crosapi::mojom::Crosapi::BindMachineLearningService,
+      Crosapi::MethodMinVersions::kBindMachineLearningServiceMinVersion>();
   ConstructRemote<crosapi::mojom::MessageCenter,
                   &crosapi::mojom::Crosapi::BindMessageCenter,
                   Crosapi::MethodMinVersions::kBindMessageCenterMinVersion>();
@@ -284,10 +289,6 @@ LacrosChromeServiceImpl::LacrosChromeServiceImpl(
       crosapi::mojom::WebPageInfoFactory,
       &crosapi::mojom::Crosapi::BindWebPageInfoFactory,
       Crosapi::MethodMinVersions::kBindWebPageInfoFactoryMinVersion>();
-  ConstructRemote<
-      crosapi::mojom::DriveIntegrationService,
-      &crosapi::mojom::Crosapi::BindDriveIntegrationService,
-      Crosapi::MethodMinVersions::kBindDriveIntegrationServiceMinVersion>();
 
 #if !BUILDFLAG(IS_CHROMEOS_DEVICE)
   // The test controller is not available on production devices as tests only
