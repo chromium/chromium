@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/no_destructor.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 
 namespace ash {
 namespace metrics_util {
@@ -35,8 +36,22 @@ void CollectDataAndForwardReport(
 // Calculates smoothness from |throughput| and sends to |callback|.
 void ForwardSmoothness(SmoothnessCallback callback,
                        const cc::FrameSequenceMetrics::CustomReportData& data) {
-  if (data.frames_expected)
-    callback.Run(CalculateSmoothness(data));
+  bool animation_in_test =
+      ui::ScopedAnimationDurationScaleMode::duration_multiplier() !=
+      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION;
+  // Do not report if tracker is started and stopped closely in time.
+  // There are 2 cases:
+  // *   frame_expected == 0
+  //        when there is no BeginFrame between start and stop.
+  // *   frame_expected == 1 && frames_produced == 0
+  //        when there is one BeginFrame but no frame generated between
+  //        start and stop; should not included this case in tests.
+  if (!data.frames_expected ||
+      (!animation_in_test && data.frames_expected == 1 &&
+       data.frames_produced == 0)) {
+    return;
+  }
+  callback.Run(CalculateSmoothness(data));
 }
 
 }  // namespace
