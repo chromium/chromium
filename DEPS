@@ -1560,7 +1560,7 @@ deps = {
 
   # Display server protocol for Linux.
   'src/third_party/wayland/src': {
-      'url': Var('chromium_git') + '/external/anongit.freedesktop.org/git/wayland/wayland.git' + '@' + 'eb1339edd398b9f5328816931e585db4229aa132',
+      'url': Var('chromium_git') + '/external/anongit.freedesktop.org/git/wayland/wayland.git' + '@' + 'e558eb5a986c75e664330895b9c6e02acf1741ed',
       'condition': 'checkout_linux',
   },
 
