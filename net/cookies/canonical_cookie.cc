@@ -281,13 +281,13 @@ CanonicalCookie& CanonicalCookie::operator=(const CanonicalCookie& other) =
 
 CanonicalCookie& CanonicalCookie::operator=(CanonicalCookie&& other) = default;
 
-CanonicalCookie::CanonicalCookie(const std::string& name,
-                                 const std::string& value,
-                                 const std::string& domain,
-                                 const std::string& path,
-                                 const base::Time& creation,
-                                 const base::Time& expiration,
-                                 const base::Time& last_access,
+CanonicalCookie::CanonicalCookie(std::string name,
+                                 std::string value,
+                                 std::string domain,
+                                 std::string path,
+                                 base::Time creation,
+                                 base::Time expiration,
+                                 base::Time last_access,
                                  bool secure,
                                  bool httponly,
                                  CookieSameSite same_site,
@@ -295,10 +295,10 @@ CanonicalCookie::CanonicalCookie(const std::string& name,
                                  bool same_party,
                                  CookieSourceScheme source_scheme,
                                  int source_port)
-    : name_(name),
-      value_(value),
-      domain_(domain),
-      path_(path),
+    : name_(std::move(name)),
+      value_(std::move(value)),
+      domain_(std::move(domain)),
+      path_(std::move(path)),
       creation_date_(creation),
       expiry_date_(expiration),
       last_access_date_(last_access),
@@ -599,13 +599,13 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::CreateSanitizedCookie(
 
 // static
 std::unique_ptr<CanonicalCookie> CanonicalCookie::FromStorage(
-    const std::string& name,
-    const std::string& value,
-    const std::string& domain,
-    const std::string& path,
-    const base::Time& creation,
-    const base::Time& expiration,
-    const base::Time& last_access,
+    std::string name,
+    std::string value,
+    std::string domain,
+    std::string path,
+    base::Time creation,
+    base::Time expiration,
+    base::Time last_access,
     bool secure,
     bool httponly,
     CookieSameSite same_site,
@@ -614,8 +614,9 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::FromStorage(
     CookieSourceScheme source_scheme,
     int source_port) {
   std::unique_ptr<CanonicalCookie> cc = base::WrapUnique(new CanonicalCookie(
-      name, value, domain, path, creation, expiration, last_access, secure,
-      httponly, same_site, priority, same_party, source_scheme, source_port));
+      std::move(name), std::move(value), std::move(domain), std::move(path),
+      creation, expiration, last_access, secure, httponly, same_site, priority,
+      same_party, source_scheme, source_port));
   if (!cc->IsCanonical())
     return nullptr;
   return cc;
