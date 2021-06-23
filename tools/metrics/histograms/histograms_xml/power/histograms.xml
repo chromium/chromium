@@ -991,6 +991,26 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
   </summary>
 </histogram>
 
+<histogram name="Power.MainScreenBrightness" units="%"
+    expires_after="2021-11-30">
+  <owner>sebmarchand@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    The level of the screen backlight in percent if it's not available. Only
+    recorded on Mac devices with an Intel processor. Recorded every 2 minutes
+  </summary>
+</histogram>
+
+<histogram name="Power.MainScreenBrightnessAvailable" units="Boolean"
+    expires_after="2021-11-30">
+  <owner>sebmarchand@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Indicates if the screen backlight level value is available. Recorded every
+    time an attempt to record |Power.MainScreenBrightness| is made.
+  </summary>
+</histogram>
+
 <histogram name="Power.MetricsDailyEventInterval" enum="DailyEventIntervalType"
     expires_after="M100">
   <owner>puthik@chromium.org</owner>

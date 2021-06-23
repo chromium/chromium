@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/metrics/power/battery_level_provider.h"
+#include "chrome/browser/metrics/power/power_details_provider.h"
 #include "chrome/browser/metrics/usage_scenario/usage_scenario_data_store.h"
 #include "chrome/browser/performance_monitor/process_monitor.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -49,6 +50,11 @@ class PowerMetricsReporter
   static int64_t GetBucketForSampleForTesting(base::TimeDelta value);
   static std::vector<const char*> GetSuffixesForTesting(
       const UsageScenarioDataStore::IntervalData& interval_data);
+
+  void set_power_details_provider_for_testing(
+      std::unique_ptr<PowerDetailsProvider> provider) {
+    power_details_provider_ = std::move(provider);
+  }
 
  protected:
   // Any change to this enum should be reflected in the corresponding enums.xml
@@ -121,6 +127,8 @@ class PowerMetricsReporter
   base::WeakPtr<UsageScenarioDataStore> data_store_;
 
   std::unique_ptr<BatteryLevelProvider> battery_level_provider_;
+
+  std::unique_ptr<PowerDetailsProvider> power_details_provider_;
 
   // Time that should elapse between calls to OnAggregatedMetricsSampled.
   base::TimeDelta desired_reporting_interval_;

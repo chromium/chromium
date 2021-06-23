@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
+#include "chrome/browser/metrics/power/power_details_provider.h"
 #include "chrome/browser/metrics/usage_scenario/usage_scenario_data_store.h"
 #include "chrome/browser/performance_monitor/process_monitor.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -26,6 +27,10 @@ constexpr const char* kBatteryDischargeRateHistogramName =
 constexpr const char* kBatteryDischargeModeHistogramName =
     "Power.BatteryDischargeMode";
 constexpr const char* kZeroWindowSuffix = ".ZeroWindow";
+constexpr const char* kMainScreenBrightnessHistogramName =
+    "Power.MainScreenBrightness";
+constexpr const char* kMainScreenBrightnessAvailableHistogramName =
+    "Power.MainScreenBrightnessAvailable";
 
 constexpr base::TimeDelta kExpectedMetricsCollectionInterval =
     base::TimeDelta::FromSeconds(120);
@@ -653,4 +658,66 @@ TEST_F(PowerMetricsReporterUnitTest, DurationsLongerThanIntervalAreCapped) {
       // fall in the same overflow bucket.
       PowerMetricsReporter::GetBucketForSampleForTesting(
           kExpectedMetricsCollectionInterval * 2));
+}
+
+namespace {
+
+class TestPowerDetailsProvider : public PowerDetailsProvider {
+ public:
+  TestPowerDetailsProvider() = default;
+  TestPowerDetailsProvider(const TestPowerDetailsProvider& rhs) = delete;
+  TestPowerDetailsProvider& operator=(const TestPowerDetailsProvider& rhs) =
+      delete;
+  ~TestPowerDetailsProvider() override = default;
+
+  double GetMainScreenBrightnessLevel() override {
+    return brightness_to_return_;
+  }
+
+  void set_brightness_to_return(double brightness_to_return) {
+    brightness_to_return_ = brightness_to_return;
+  }
+
+ private:
+  double brightness_to_return_ = PowerDetailsProvider::kInvalidScreenBrightness;
+};
+
+}  // namespace
+
+TEST_F(PowerMetricsReporterUnitTest, MainScreenBrightnessHistogram) {
+  std::unique_ptr<PowerDetailsProvider> detail_provider =
+      std::make_unique<TestPowerDetailsProvider>();
+  TestPowerDetailsProvider* detail_provider_raw =
+      static_cast<TestPowerDetailsProvider*>(detail_provider.get());
+  power_metrics_reporter_->set_power_details_provider_for_testing(
+      std::move(detail_provider));
+
+  UsageScenarioDataStore::IntervalData fake_interval_data = {};
+
+  task_environment_.FastForwardBy(kExpectedMetricsCollectionInterval);
+  battery_states_.push(BatteryLevelProvider::BatteryState{
+      1, 1, 0.50, true, base::TimeTicks::Now()});
+  data_store_.SetIntervalDataToReturn(fake_interval_data);
+
+  performance_monitor::ProcessMonitor::Metrics fake_metrics = {};
+  fake_metrics.cpu_usage = 0.5;
+  WaitForNextSample(fake_metrics);
+
+  histogram_tester_.ExpectTotalCount(kMainScreenBrightnessHistogramName, 0);
+  histogram_tester_.ExpectBucketCount(
+      kMainScreenBrightnessAvailableHistogramName, false, 1);
+
+  double kBrightnessValue = 0.5;
+  detail_provider_raw->set_brightness_to_return(kBrightnessValue);
+
+  task_environment_.FastForwardBy(kExpectedMetricsCollectionInterval);
+  battery_states_.push(BatteryLevelProvider::BatteryState{
+      1, 1, 0.50, true, base::TimeTicks::Now()});
+  data_store_.SetIntervalDataToReturn(fake_interval_data);
+  WaitForNextSample(fake_metrics);
+
+  histogram_tester_.ExpectBucketCount(kMainScreenBrightnessHistogramName,
+                                      kBrightnessValue * 100, 1);
+  histogram_tester_.ExpectBucketCount(
+      kMainScreenBrightnessAvailableHistogramName, true, 1);
 }

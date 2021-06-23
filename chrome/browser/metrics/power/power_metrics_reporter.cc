@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
+#include "chrome/browser/metrics/power/power_details_provider.h"
 #include "chrome/browser/performance_monitor/process_metrics_recorder_util.h"
 #include "chrome/browser/performance_monitor/process_monitor.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
@@ -26,6 +27,10 @@ constexpr const char* kBatteryDischargeModeHistogramName =
 constexpr const char* kZeroWindowSuffix = ".ZeroWindow";
 constexpr const char* kBatterySamplingDelayHistogramName =
     "Power.BatterySamplingDelay";
+constexpr const char* kMainScreenBrightnessHistogramName =
+    "Power.MainScreenBrightness";
+constexpr const char* kMainScreenBrightnessAvailableHistogramName =
+    "Power.MainScreenBrightnessAvailable";
 
 // Calculates the UKM bucket |value| falls in and returns it. This uses an
 // exponential bucketing approach with an exponent base of 1.3, resulting in
@@ -56,6 +61,10 @@ PowerMetricsReporter::PowerMetricsReporter(
   battery_level_provider_->GetBatteryState(
       base::BindOnce(&PowerMetricsReporter::OnFirstBatteryStateSampled,
                      weak_factory_.GetWeakPtr()));
+
+#if defined(OS_MAC)
+  power_details_provider_ = PowerDetailsProvider::Create();
+#endif
 }
 
 PowerMetricsReporter::~PowerMetricsReporter() {
@@ -204,6 +213,22 @@ void PowerMetricsReporter::ReportUKMsAndHistograms(
   ReportBatteryHistograms(interval_data, sampling_interval, interval_duration,
                           discharge_mode, discharge_rate_during_interval,
                           suffixes);
+
+  bool brightness_read_successfully = false;
+  if (power_details_provider_.get()) {
+    auto brightness = power_details_provider_->GetMainScreenBrightnessLevel();
+    if (brightness != PowerDetailsProvider::kInvalidScreenBrightness) {
+      // Report the percentage as an integer as UMA doesn't allow reporting
+      // reals.
+      int brightness_int = brightness * 100;
+      DCHECK_GE(100, brightness_int);
+      brightness_read_successfully = true;
+      base::UmaHistogramPercentage(kMainScreenBrightnessHistogramName,
+                                   brightness_int);
+    }
+  }
+  base::UmaHistogramBoolean(kMainScreenBrightnessAvailableHistogramName,
+                            brightness_read_successfully);
 }
 
 // static
