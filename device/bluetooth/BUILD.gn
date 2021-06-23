@@ -306,6 +306,7 @@ component("bluetooth") {
   if (is_chromeos || is_linux) {
     if (use_dbus) {
       sources += [
+        "bluetooth_adapter_chromeos.cc",
         "bluez/bluetooth_adapter_bluez.cc",
         "bluez/bluetooth_adapter_bluez.h",
         "bluez/bluetooth_adapter_profile_bluez.cc",
@@ -407,6 +408,8 @@ component("bluetooth") {
         "dbus/bluez_dbus_thread_manager.h",
         "dbus/dbus_bluez_manager_wrapper_linux.cc",
         "dbus/dbus_bluez_manager_wrapper_linux.h",
+        "floss/bluetooth_adapter_floss.cc",
+        "floss/bluetooth_adapter_floss.h",
         "floss/floss_features.cc",
         "floss/floss_features.h",
       ]

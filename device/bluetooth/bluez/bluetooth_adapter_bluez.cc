@@ -124,15 +124,6 @@ device::BluetoothDevice::ManufacturerDataMap ConvertManufacturerDataMap(
 
 }  // namespace
 
-namespace device {
-
-// static
-scoped_refptr<BluetoothAdapter> BluetoothAdapter::CreateAdapter() {
-  return bluez::BluetoothAdapterBlueZ::CreateAdapter();
-}
-
-}  // namespace device
-
 namespace bluez {
 
 namespace {
