@@ -256,7 +256,8 @@ void LockScreenReauthHandler::OnCookieWaitTimeout() {
 
 void LockScreenReauthHandler::OnJsReadyForTesting() {
     js_ready_ = true;
-    std::move(initialization_callback_for_testing_).Run();
+    if (initialization_callback_for_testing_)
+      std::move(initialization_callback_for_testing_).Run();
 }
 
 void LockScreenReauthHandler::CheckCredentials(
