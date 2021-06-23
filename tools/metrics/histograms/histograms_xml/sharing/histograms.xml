@@ -562,6 +562,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Sharing.SmsFetcherClientNameIsEmpty" enum="BooleanEmpty"
+    expires_after="M96">
+  <owner>yigu@chromium.org</owner>
+  <owner>web-identity@google.com</owner>
+  <summary>
+    Records whether the remote client name is empty. This could happen on early
+    version of Chrome. This is logged once per notification when asking for user
+    permission to submit the one-time-passwords on the remote device.
+  </summary>
+</histogram>
+
 <histogram name="Sharing.SmsFetcherTapWithChromeDestroyed" enum="Boolean"
     expires_after="M96">
   <owner>yigu@chromium.org</owner>

@@ -9,7 +9,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.text.TextUtils;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
@@ -94,11 +93,8 @@ public class SmsFetcherMessageHandler {
                         .setAction(NOTIFICATION_ACTION_CANCEL),
                 PendingIntent.FLAG_UPDATE_CURRENT);
         Resources resources = context.getResources();
-        String notificationTitle = TextUtils.isEmpty(clientName)
-                ? resources.getString(
-                        R.string.sms_fetcher_notification_title_unknown_device, oneTimeCode)
-                : resources.getString(
-                        R.string.sms_fetcher_notification_title, oneTimeCode, clientName);
+        String notificationTitle = resources.getString(
+                R.string.sms_fetcher_notification_title, oneTimeCode, clientName);
         String notificationText = embeddedOrigin != null
                 ? resources.getString(R.string.sms_fetcher_notification_text_for_embedded_frame,
                         topOrigin, embeddedOrigin)

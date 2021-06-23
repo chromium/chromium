@@ -8,6 +8,7 @@
 
 #include "base/android/jni_string.h"
 #include "base/check.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -66,6 +67,13 @@ void SmsFetchRequestHandler::OnMessage(
       device_source_->GetDeviceByGuid(message.sender_guid());
   const std::string& client_name =
       device ? device->client_name() : message.sender_device_name();
+
+  // Empty client_name means that the message is from an unsupported version of
+  // Chrome.
+  base::UmaHistogramBoolean("Sharing.SmsFetcherClientNameIsEmpty",
+                            client_name.empty());
+  if (client_name.empty())
+    return;
 
   const google::protobuf::RepeatedPtrField<std::string>& origin_strings =
       message.sms_fetch_request().origins();
