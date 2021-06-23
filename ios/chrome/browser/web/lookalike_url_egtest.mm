@@ -344,7 +344,8 @@ const char kLookalikeInNewTabContent[] = "New tab";
   // preserved. For this test, the policy decider doesn't get installed for
   // the first page load, so goForward first and install the policy decider
   // after a load.
-  [ChromeEarlGrey goForward];
+  [[EarlGrey selectElementWithMatcher:ForwardButton()]
+      performAction:grey_tap()];
   [ChromeEarlGrey triggerRestoreViaTabGridRemoveAllUndo];
   [LookalikeUrlAppInterface setUpLookalikeUrlDeciderForWebState];
   [ChromeEarlGrey goBack];
