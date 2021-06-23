@@ -408,11 +408,19 @@ void AXEventGenerator::OnStringAttributeChanged(AXTree* tree,
       AddEvent(node, Event::LIVE_STATUS_CHANGED);
 
       // Fire a LIVE_REGION_CREATED if the previous value was off, and the new
-      // value is not-off.
+      // value is not-off. According to the ARIA spec, "When the property is not
+      // set on an object that needs to send updates, the politeness level is
+      // the value of the nearest ancestor that sets the aria-live attribute."
+      // Example: A new chat message is added to the room with aria-live="off",
+      // then the author removes aria-live.
       if (!IsAlert(node->data().role)) {
-        bool old_state = !old_value.empty() && old_value != "off";
-        bool new_state = !new_value.empty() && new_value != "off";
-        if (!old_state && new_state)
+        bool was_off = !old_value.empty()
+                           ? old_value == "off"
+                           : !node->data().IsContainedInActiveLiveRegion();
+        bool is_off = !new_value.empty()
+                          ? new_value == "off"
+                          : !node->data().IsContainedInActiveLiveRegion();
+        if (was_off && !is_off)
           AddEvent(node, Event::LIVE_REGION_CREATED);
       }
       break;

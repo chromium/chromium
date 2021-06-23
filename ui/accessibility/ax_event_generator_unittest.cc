@@ -955,6 +955,43 @@ TEST(AXEventGeneratorTest, BusyLiveRegionChanged) {
                   HasEventAtNode(AXEventGenerator::Event::NAME_CHANGED, 3)));
 }
 
+TEST(AXEventGeneratorTest, RemoveAriaLiveOffFromChild) {
+  AXTreeUpdate initial_state;
+  initial_state.root_id = 1;
+  initial_state.nodes.resize(2);
+  initial_state.nodes[0].id = 1;
+  initial_state.nodes[1].id = 2;
+  initial_state.nodes[0].child_ids = {2};
+  initial_state.nodes[0].role = ax::mojom::Role::kGenericContainer;
+  initial_state.nodes[0].AddStringAttribute(ax::mojom::StringAttribute::kName,
+                                            "History");
+  initial_state.nodes[0].AddStringAttribute(
+      ax::mojom::StringAttribute::kLiveStatus, "polite");
+  initial_state.nodes[0].AddStringAttribute(
+      ax::mojom::StringAttribute::kContainerLiveStatus, "polite");
+  initial_state.nodes[1].role = ax::mojom::Role::kGenericContainer;
+  initial_state.nodes[1].AddStringAttribute(ax::mojom::StringAttribute::kName,
+                                            "New message");
+  initial_state.nodes[1].AddStringAttribute(
+      ax::mojom::StringAttribute::kLiveStatus, "off");
+  initial_state.nodes[1].AddStringAttribute(
+      ax::mojom::StringAttribute::kContainerLiveStatus, "polite");
+  AXTree tree(initial_state);
+
+  AXEventGenerator event_generator(&tree);
+  ASSERT_THAT(event_generator, IsEmpty());
+
+  AXTreeUpdate update = initial_state;
+  update.nodes[1].RemoveStringAttribute(
+      ax::mojom::StringAttribute::kLiveStatus);
+  ASSERT_TRUE(tree.Unserialize(update));
+  EXPECT_THAT(
+      event_generator,
+      UnorderedElementsAre(
+          HasEventAtNode(AXEventGenerator::Event::LIVE_STATUS_CHANGED, 2),
+          HasEventAtNode(AXEventGenerator::Event::LIVE_REGION_CREATED, 2)));
+}
+
 TEST(AXEventGeneratorTest, AddChild) {
   AXTreeUpdate initial_state;
   initial_state.root_id = 1;
