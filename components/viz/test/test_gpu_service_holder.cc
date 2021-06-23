@@ -154,7 +154,7 @@ TestGpuServiceHolder::TestGpuServiceHolder(
   }
 #endif
 
-  CHECK(gpu_thread_.StartWithOptions(gpu_thread_options));
+  CHECK(gpu_thread_.StartWithOptions(std::move(gpu_thread_options)));
   CHECK(io_thread_.Start());
 
   base::WaitableEvent completion;

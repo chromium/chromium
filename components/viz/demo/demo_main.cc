@@ -246,7 +246,7 @@ int main(int argc, char** argv) {
 
     base::Thread::Options options;
     options.message_pump_type = base::MessagePumpType::UI;
-    CHECK(rendering_thread.StartWithOptions(options));
+    CHECK(rendering_thread.StartWithOptions(std::move(options)));
     base::WaitableEvent done(base::WaitableEvent::ResetPolicy::AUTOMATIC,
                              base::WaitableEvent::InitialState::NOT_SIGNALED);
     rendering_thread.task_runner()->PostTask(

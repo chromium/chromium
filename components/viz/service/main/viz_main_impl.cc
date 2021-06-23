@@ -39,7 +39,7 @@ std::unique_ptr<base::Thread> CreateAndStartIOThread() {
   if (base::FeatureList::IsEnabled(features::kGpuUseDisplayThreadPriority))
     thread_options.priority = base::ThreadPriority::DISPLAY;
   auto io_thread = std::make_unique<base::Thread>("GpuIOThread");
-  CHECK(io_thread->StartWithOptions(thread_options));
+  CHECK(io_thread->StartWithOptions(std::move(thread_options)));
   return io_thread;
 }
 

@@ -99,7 +99,7 @@ std::unique_ptr<VizCompositorThreadType> CreateAndStartCompositorThread() {
   thread_options.priority = thread_priority;
 #endif  // !defined(OS_APPLE)
 
-  CHECK(thread->StartWithOptions(thread_options));
+  CHECK(thread->StartWithOptions(std::move(thread_options)));
 
   // Setup tracing sampler profiler as early as possible.
   thread->task_runner()->PostTask(
