@@ -5,13 +5,12 @@
 #include "chrome/browser/ui/views/toolbar/chrome_labs_button.h"
 #include "base/timer/elapsed_timer.h"
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/about_flags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs_bubble_view.h"
+#include "chrome/browser/ui/views/toolbar/chrome_labs_utils.h"
 #include "chrome/browser/ui/webui/flags/flags_ui.h"
-#include "chrome/common/channel_info.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -108,17 +107,11 @@ bool ChromeLabsButton::ShouldShowButton(const ChromeLabsBubbleViewModel* model,
   }
 #endif
   const std::vector<LabInfo>& all_labs = model->GetLabInfo();
-  for (const auto& lab : all_labs) {
-    const flags_ui::FeatureEntry* entry =
-        about_flags::GetCurrentFlagsState()->FindFeatureEntryByName(
-            lab.internal_name);
-    if ((entry && (entry->supported_platforms &
-                   flags_ui::FlagsState::GetCurrentPlatform()) != 0) &&
-        chrome::GetChannel() <= lab.allowed_channel) {
-      return true;
-    }
-  }
-  return false;
+
+  return std::any_of(all_labs.begin(), all_labs.end(),
+                     [&profile](const LabInfo& lab) {
+                       return IsChromeLabsFeatureValid(lab, profile);
+                     });
 }
 
 BEGIN_METADATA(ChromeLabsButton, ToolbarButton)

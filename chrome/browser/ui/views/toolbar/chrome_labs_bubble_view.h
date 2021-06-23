@@ -56,10 +56,6 @@ class ChromeLabsBubbleView : public views::BubbleDialogDelegateView {
 
   int GetIndexOfEnabledLabState(const flags_ui::FeatureEntry* entry);
 
-  bool IsFeatureSupportedOnChannel(const LabInfo& lab);
-
-  bool IsFeatureSupportedOnPlatform(const flags_ui::FeatureEntry* entry);
-
   void ShowRelaunchPrompt();
 
   std::unique_ptr<flags_ui::FlagsStorage> flags_storage_;

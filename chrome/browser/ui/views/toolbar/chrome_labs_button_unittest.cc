@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/toolbar/chrome_labs_bubble_view.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs_bubble_view_model.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/unexpire_flags.h"
 #include "components/flags_ui/feature_entry_macros.h"
 #include "ui/events/event_utils.h"
 #include "ui/views/test/button_test_api.h"
@@ -41,6 +42,10 @@ const base::Feature kTestFeature1{"FeatureName1",
 const char kSecondTestFeatureId[] = "feature-2";
 const base::Feature kTestFeature2{"FeatureName2",
                                   base::FEATURE_DISABLED_BY_DEFAULT};
+const char kExpiredFlagTestFeatureId[] = "expired-feature";
+const base::Feature kTestFeatureExpired{"Expired",
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace
 
 class ChromeLabsButtonTest : public TestWithBrowserView {
@@ -148,7 +153,7 @@ class ChromeLabsButtonTestSafeMode : public ChromeLabsButtonTest {
   }
 };
 
-TEST_F(ChromeLabsButtonTestSafeMode, ShouldButtonShowTest) {
+TEST_F(ChromeLabsButtonTestSafeMode, ButtonShouldNotShowTest) {
   EXPECT_EQ(browser_view()->toolbar()->chrome_labs_button(), nullptr);
 }
 
@@ -167,7 +172,7 @@ class ChromeLabsButtonTestSecondaryUser : public ChromeLabsButtonTest {
   }
 };
 
-TEST_F(ChromeLabsButtonTestSecondaryUser, ShouldButtonShowTest) {
+TEST_F(ChromeLabsButtonTestSecondaryUser, ButtonShouldNotShowTest) {
   EXPECT_EQ(browser_view()->toolbar()->chrome_labs_button(), nullptr);
 }
 
@@ -197,6 +202,40 @@ class ChromeLabsButtonNoExperimentsAvailableTest : public TestWithBrowserView {
   ScopedChromeLabsModelDataForTesting scoped_chrome_labs_model_data_;
 };
 
-TEST_F(ChromeLabsButtonNoExperimentsAvailableTest, ShouldButtonShowTest) {
+TEST_F(ChromeLabsButtonNoExperimentsAvailableTest, ButtonShouldNotShowTest) {
+  EXPECT_EQ(browser_view()->toolbar()->chrome_labs_button(), nullptr);
+}
+
+class ChromeLabsButtonOnlyExpiredFeaturesAvailableTest
+    : public TestWithBrowserView {
+ public:
+  ChromeLabsButtonOnlyExpiredFeaturesAvailableTest()
+      : scoped_feature_entries_({{kExpiredFlagTestFeatureId, "", "",
+                                  flags_ui::FlagsState::GetCurrentPlatform(),
+                                  FEATURE_VALUE_TYPE(kTestFeatureExpired)}}) {
+    flags::testing::SetFlagExpiration(kExpiredFlagTestFeatureId, 0);
+  }
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(features::kChromeLabs);
+
+    std::vector<LabInfo> test_feature_info = {{kExpiredFlagTestFeatureId, u"",
+                                               u"", "",
+                                               version_info::Channel::STABLE}};
+    scoped_chrome_labs_model_data_.SetModelDataForTesting(test_feature_info);
+
+    TestWithBrowserView::SetUp();
+    profile()->GetPrefs()->SetBoolean(chrome_labs_prefs::kBrowserLabsEnabled,
+                                      true);
+  }
+
+ private:
+  about_flags::testing::ScopedFeatureEntries scoped_feature_entries_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+
+  ScopedChromeLabsModelDataForTesting scoped_chrome_labs_model_data_;
+};
+
+TEST_F(ChromeLabsButtonOnlyExpiredFeaturesAvailableTest,
+       ButtonShouldNotShowTest) {
   EXPECT_EQ(browser_view()->toolbar()->chrome_labs_button(), nullptr);
 }

@@ -14,12 +14,11 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs_button.h"
+#include "chrome/browser/ui/views/toolbar/chrome_labs_utils.h"
 #include "chrome/browser/ui/webui/flags/flags_ui.h"
-#include "chrome/common/channel_info.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/google_chrome_strings.h"
 #include "components/flags_ui/pref_service_flags_storage.h"
-#include "components/version_info/channel.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -238,10 +237,7 @@ ChromeLabsBubbleView::ChromeLabsBubbleView(
   for (const auto& lab : all_labs) {
     const flags_ui::FeatureEntry* entry =
         flags_state_->FindFeatureEntryByName(lab.internal_name);
-    if (IsFeatureSupportedOnChannel(lab) &&
-        IsFeatureSupportedOnPlatform(entry) &&
-        !about_flags::ShouldSkipConditionalFeatureEntry(flags_storage_.get(),
-                                                        *entry)) {
+    if (IsChromeLabsFeatureValid(lab, browser->profile())) {
       bool valid_entry_type =
           entry->type == flags_ui::FeatureEntry::FEATURE_VALUE ||
           entry->type == flags_ui::FeatureEntry::FEATURE_WITH_PARAMS_VALUE;
@@ -303,16 +299,6 @@ int ChromeLabsBubbleView::GetIndexOfEnabledLabState(
       return i;
   }
   return 0;
-}
-
-bool ChromeLabsBubbleView::IsFeatureSupportedOnChannel(const LabInfo& lab) {
-  return chrome::GetChannel() <= lab.allowed_channel;
-}
-
-bool ChromeLabsBubbleView::IsFeatureSupportedOnPlatform(
-    const flags_ui::FeatureEntry* entry) {
-  return (entry && (entry->supported_platforms &
-                    flags_ui::FlagsState::GetCurrentPlatform()) != 0);
 }
 
 void ChromeLabsBubbleView::RestartToApplyFlags() {
