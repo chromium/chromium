@@ -68,7 +68,6 @@ no_check_targets = [
   "//headless:*",  # 167 errors
   "//native_client/src/trusted/service_runtime:*",  # 2 errors
   "//ppapi/cpp/private:*",  # 1 error
-  "//ppapi/host:*",  # 1 error
   "//ppapi/native_client/src/untrusted/pnacl_irt_shim:*",  # 197 errors
   "//ppapi/proxy:*",  # 31 errors
   "//ppapi/thunk:*",  # 1071 errors

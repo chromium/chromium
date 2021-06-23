@@ -32,6 +32,7 @@ component("host") {
   deps = [
     "//base",
     "//media:shared_memory_support",
+    "//net",
     "//ppapi/c",
     "//ppapi/proxy:ipc",
     "//ppapi/shared_impl",
