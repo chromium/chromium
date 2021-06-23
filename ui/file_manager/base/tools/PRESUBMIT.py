@@ -7,6 +7,7 @@ See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details about the presubmit API built into depot_tools.
 """
 
+USE_PYTHON3 = True
 
 def RunTests(input_api, output_api):
     presubmit_path = input_api.PresubmitLocalPath()
