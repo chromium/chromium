@@ -530,7 +530,9 @@ TEST_F(PartitionAllocThreadCacheTest, PeriodicPurge) {
   // in the multiple threads test.
 }
 
-TEST_F(PartitionAllocThreadCacheTest, PeriodicPurgeSumsOverAllThreads) {
+// Disabled due to flakiness: crbug.com/1220371
+TEST_F(PartitionAllocThreadCacheTest,
+       DISABLED_PeriodicPurgeSumsOverAllThreads) {
   auto& registry = ThreadCacheRegistry::Instance();
   registry.StartPeriodicPurge();
   EXPECT_EQ(1u, task_env_.GetPendingMainThreadTaskCount());
