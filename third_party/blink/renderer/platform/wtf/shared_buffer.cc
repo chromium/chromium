@@ -46,13 +46,13 @@ static inline size_t OffsetInSegment(size_t position) {
 }
 
 struct SharedBuffer::SegmentDeleter {
-  void operator()(char* p) const { WTF::Partitions::FastFree(p); }
+  void operator()(char* p) const { WTF::Partitions::BufferFree(p); }
 };
 
 SharedBuffer::Segment SharedBuffer::CreateSegment() {
   return std::unique_ptr<char[], SegmentDeleter>(
-      static_cast<char*>(WTF::Partitions::FastMalloc(SharedBuffer::kSegmentSize,
-                                                     "WTF::SharedBuffer")));
+      static_cast<char*>(WTF::Partitions::BufferMalloc(
+          SharedBuffer::kSegmentSize, "WTF::SharedBuffer")));
 }
 
 SharedBuffer::Iterator& SharedBuffer::Iterator::operator++() {
