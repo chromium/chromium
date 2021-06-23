@@ -110,7 +110,8 @@ SafeBrowsingUrlCheckerImpl::SafeBrowsingUrlCheckerImpl(
     bool can_rt_check_subresource_url,
     bool can_check_db,
     scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
-    base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_on_ui)
+    base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_on_ui,
+    WebUIDelegate* webui_delegate)
     : headers_(headers),
       load_flags_(load_flags),
       request_destination_(request_destination),
@@ -122,7 +123,8 @@ SafeBrowsingUrlCheckerImpl::SafeBrowsingUrlCheckerImpl(
       can_rt_check_subresource_url_(can_rt_check_subresource_url),
       can_check_db_(can_check_db),
       ui_task_runner_(ui_task_runner),
-      url_lookup_service_on_ui_(url_lookup_service_on_ui) {
+      url_lookup_service_on_ui_(url_lookup_service_on_ui),
+      webui_delegate_(webui_delegate) {
   DCHECK(!web_contents_getter_.is_null());
   DCHECK(!can_rt_check_subresource_url_ || real_time_lookup_enabled_);
   DCHECK(real_time_lookup_enabled_ || can_check_db_);
@@ -676,6 +678,41 @@ void SafeBrowsingUrlCheckerImpl::OnRTLookupResponse(
   } else {
     OnUrlResult(url, sb_threat_type, ThreatMetadata(),
                 /*is_from_real_time_check=*/true);
+  }
+}
+
+void SafeBrowsingUrlCheckerImpl::LogRTLookupRequest(
+    const RTLookupRequest& request,
+    const std::string& oauth_token) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  if (!webui_delegate_)
+    return;
+
+  // The following is to log this RTLookupRequest on any open
+  // chrome://safe-browsing pages.
+  ui_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&WebUIDelegate::AddToRTLookupPings,
+                     base::Unretained(webui_delegate_), request, oauth_token),
+      base::BindOnce(&SafeBrowsingUrlCheckerImpl::SetWebUIToken,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void SafeBrowsingUrlCheckerImpl::LogRTLookupResponse(
+    const RTLookupResponse& response) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  if (!webui_delegate_)
+    return;
+
+  if (url_web_ui_token_ != -1) {
+    // The following is to log this RTLookupResponse on any open
+    // chrome://safe-browsing pages.
+    ui_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&WebUIDelegate::AddToRTLookupResponses,
+                                  base::Unretained(webui_delegate_),
+                                  url_web_ui_token_, response));
   }
 }
 

@@ -4,6 +4,7 @@
 
 #include "components/safe_browsing/content/browser/web_api_handshake_checker.h"
 
+#include "components/safe_browsing/content/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
 #include "components/safe_browsing/core/browser/url_checker_delegate.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -55,7 +56,7 @@ class WebApiHandshakeChecker::CheckerOnIO
         /*real_time_lookup_enabled=*/false,
         /*can_rt_check_subresource_url=*/false,
         /*can_check_db=*/true, content::GetUIThreadTaskRunner({}),
-        /*url_lookup_service=*/nullptr);
+        /*url_lookup_service=*/nullptr, WebUIInfoSingleton::GetInstance());
     url_checker_->CheckUrl(
         url, "GET",
         base::BindOnce(&WebApiHandshakeChecker::CheckerOnIO::OnCheckUrlResult,

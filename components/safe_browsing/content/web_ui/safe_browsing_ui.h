@@ -9,6 +9,7 @@
 #include "base/macros.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/browser/safe_browsing_service_interface.h"
+#include "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
 #include "components/safe_browsing/core/proto/csd.pb.h"
 #include "components/safe_browsing/core/proto/realtimeapi.pb.h"
 #include "components/safe_browsing/core/proto/webui.pb.h"
@@ -269,7 +270,7 @@ class SafeBrowsingUI : public content::WebUIController {
   DISALLOW_COPY_AND_ASSIGN(SafeBrowsingUI);
 };
 
-class WebUIInfoSingleton {
+class WebUIInfoSingleton : public SafeBrowsingUrlCheckerImpl::WebUIDelegate {
  public:
   static WebUIInfoSingleton* GetInstance();
 
@@ -344,14 +345,11 @@ class WebUIInfoSingleton {
   // Clear the list of sent PhishGuard pings and responses.
   void ClearPGPings();
 
-  // Add the new ping to |rt_lookup_pings_|. Returns a token that can be used in
-  // |AddToRTLookupResponses| to correlate a ping and response.
+  // SafeBrowsingUrlCheckerImpl::WebUIDelegate:
   int AddToRTLookupPings(const RTLookupRequest request,
-                         const std::string oauth_token);
-
-  // Add the new response to |rt_lookup_responses_| and send it to all the open
-  // chrome://safe-browsing tabs.
-  void AddToRTLookupResponses(int token, const RTLookupResponse response);
+                         const std::string oauth_token) override;
+  void AddToRTLookupResponses(int token,
+                              const RTLookupResponse response) override;
 
   // Clear the list of sent RT Lookup pings and responses.
   void ClearRTLookupPings();
@@ -512,7 +510,7 @@ class WebUIInfoSingleton {
 
  private:
   WebUIInfoSingleton();
-  ~WebUIInfoSingleton();
+  ~WebUIInfoSingleton() override;
 
   void MaybeClearData();
 
