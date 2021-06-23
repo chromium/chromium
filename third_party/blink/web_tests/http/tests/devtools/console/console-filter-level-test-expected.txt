@@ -33,7 +33,7 @@ Level menu: Default levels
 >console-filter-level-test.js:22 def warn
 (anonymous) @ console-filter-level-test.js:22
 >'Should be always visible'
->"Should be always visible"
+>'Should be always visible'
 
 Running: allLevels
 Level menu: All levels
@@ -51,7 +51,7 @@ Level menu: All levels
 >console-filter-level-test.js:22 def warn
 (anonymous) @ console-filter-level-test.js:22
 >'Should be always visible'
->"Should be always visible"
+>'Should be always visible'
 
 Running: defaultLevels
 Level menu: Default levels
@@ -68,13 +68,13 @@ Level menu: Default levels
 >console-filter-level-test.js:22 def warn
 (anonymous) @ console-filter-level-test.js:22
 >'Should be always visible'
->"Should be always visible"
+>'Should be always visible'
 
 Running: verbose
 Level menu: Verbose only
 >console-filter-level-test.js:15 sample debug
 >'Should be always visible'
->"Should be always visible"
+>'Should be always visible'
 
 Running: info
 Level menu: Info only
@@ -83,7 +83,7 @@ Level menu: Info only
 >console-filter-level-test.js:18 abc info
 >console-filter-level-test.js:19 def info
 >'Should be always visible'
->"Should be always visible"
+>'Should be always visible'
 
 Running: warningsAndErrors
 Level menu: Custom levels
@@ -96,22 +96,22 @@ Level menu: Custom levels
 >console-filter-level-test.js:22 def warn
 (anonymous) @ console-filter-level-test.js:22
 >'Should be always visible'
->"Should be always visible"
+>'Should be always visible'
 
 Running: abcMessagePlain
 Level menu: Verbose only
 >'Should be always visible'
->"Should be always visible"
+>'Should be always visible'
 
 Running: abcMessageRegex
 Level menu: Verbose only
 >'Should be always visible'
->"Should be always visible"
+>'Should be always visible'
 
 Running: abcMessageRegexWarning
 Level menu: Warnings only
 >console-filter-level-test.js:21 abc warn
 (anonymous) @ console-filter-level-test.js:21
 >'Should be always visible'
->"Should be always visible"
+>'Should be always visible'
 

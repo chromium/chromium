@@ -6,7 +6,7 @@ Names [temp3..temp7] are reserved
 temp1
 42
 temp2
-"foo string"
+'foo string'
 temp8
 NaN
 temp9
@@ -18,7 +18,7 @@ temp11
 temp12
 (6) [1, 2, NaN, -0, null, undefined]
 temp13
-{foo: "bar"}
+{foo: 'bar'}
 temp14
 Arguments(4) [1, 2, 3, 4, callee: ƒ, Symbol(Symbol.iterator): ƒ]
 temp15

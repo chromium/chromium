@@ -16,7 +16,7 @@ VM:1 Uncaught SyntaxError: Unexpected token ')'
 { let a = 4; }; { let b = 5; };
 undefined
 { a: 4 } + { a: 5 }
-"[object Object][object Object]"
+'[object Object][object Object]'
 { a: 4 }, { a: 5 }
 {a: 5}
 var foo = 4;

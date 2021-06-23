@@ -1,7 +1,7 @@
 Tests that console logging dumps proper messages.
 
-console-format.js:34 (10) ["test", "test2", empty × 2, "test4", empty × 5, foo: {…}]
-console-format.js:35 (10) ["test", "test2", empty × 2, "test4", empty × 5, foo: {…}]
+console-format.js:34 (10) ['test', 'test2', empty × 2, 'test4', empty × 5, foo: {…}]
+console-format.js:35 (10) ['test', 'test2', empty × 2, 'test4', empty × 5, foo: {…}]
 console-format.js:36 Array(10)
 console-format.js:37 Test for zero "0" in formatter
 console-format.js:38 % self-escape1 dummy
@@ -19,13 +19,13 @@ console-format.js:22 [/foo\\bar\sbaz/i]
 globals[1]
 /foo\\bar\sbaz/i
 console-format.js:21 test
-console-format.js:22 ["test"]
+console-format.js:22 ['test']
 globals[2]
-"test"
+'test'
 console-format.js:21 test named "test"
-console-format.js:22 ["test named \"test\""]
+console-format.js:22 ['test named "test"']
 globals[3]
-"test named \"test\""
+'test named "test"'
 console-format.js:21 Error
 console-format.js:22 [Error
 ]
@@ -66,9 +66,9 @@ console-format.js:22 [0.12]
 globals[10]
 0.12
 console-format.js:21 http://webkit.org/
-console-format.js:22 ["http://webkit.org/"]
+console-format.js:22 ['http://webkit.org/']
 globals[11]
-"http://webkit.org/"
+'http://webkit.org/'
 console-format.js:21 null
 console-format.js:22 [null]
 globals[12]
@@ -108,10 +108,10 @@ console-format.js:21 -Infinity
 console-format.js:22 [-Infinity]
 globals[20]
 -Infinity
-console-format.js:21 (10) ["test", "test2", empty × 2, "test4", empty × 5, foo: {…}]
+console-format.js:21 (10) ['test', 'test2', empty × 2, 'test4', empty × 5, foo: {…}]
 console-format.js:22 [Array(10)]
 globals[21]
-(10) ["test", "test2", empty × 2, "test4", empty × 5, foo: {…}]
+(10) ['test', 'test2', empty × 2, 'test4', empty × 5, foo: {…}]
 console-format.js:21 {}
 console-format.js:22 [{…}]
 globals[22]
@@ -120,10 +120,10 @@ console-format.js:21 [ƒ]
 console-format.js:22 [Array(1)]
 globals[23]
 [ƒ]
-console-format.js:21 {bar: "bar"}
+console-format.js:21 {bar: 'bar'}
 console-format.js:22 [{…}]
 globals[24]
-{bar: "bar"}
+{bar: 'bar'}
 console-format.js:21 
     <svg id="svg-node"></svg>
 console-format.js:22 [svg#svg-node]
@@ -159,10 +159,10 @@ console-format.js:21 Number {42}
 console-format.js:22 [Number]
 globals[32]
 Number {42}
-console-format.js:21 String {"abc"}
+console-format.js:21 String {'abc'}
 console-format.js:22 [String]
 globals[33]
-String {"abc"}
+String {'abc'}
 console-format.js:21 Uint16Array(3) [1, 2, 3]
 console-format.js:22 [Uint16Array(3)]
 globals[34]
@@ -195,27 +195,27 @@ console-format.js:21 (200) [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
 console-format.js:22 [Array(200)]
 globals[41]
 (200) [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, …]
-console-format.js:21 ["test"]
+console-format.js:21 ['test']
 console-format.js:22 [Array(1)]
 globals[42]
-["test"]
-console-format.js:21 Number {42, 1: "foo", a: "bar"}
+['test']
+console-format.js:21 Number {42, 1: 'foo', a: 'bar'}
 console-format.js:22 [Number]
 globals[43]
-Number {42, 1: "foo", a: "bar"}
-console-format.js:21 String {"abc", 3: "foo", 01: "foo", a: "bar"}
+Number {42, 1: 'foo', a: 'bar'}
+console-format.js:21 String {'abc', 3: 'foo', 01: 'foo', a: 'bar'}
 console-format.js:22 [String]
 globals[44]
-String {"abc", 3: "foo", 01: "foo", a: "bar"}
+String {'abc', 3: 'foo', 01: 'foo', a: 'bar'}
 Expanded all messages
-console-format.js:34 (10) ["test", "test2", empty × 2, "test4", empty × 5, foo: {…}]
+console-format.js:34 (10) ['test', 'test2', empty × 2, 'test4', empty × 5, foo: {…}]
     0: "test"
     1: "test2"
     4: "test4"
     foo: {}
     length: 10
     [[Prototype]]: Array(0)
-console-format.js:35 (10) ["test", "test2", empty × 2, "test4", empty × 5, foo: {…}]
+console-format.js:35 (10) ['test', 'test2', empty × 2, 'test4', empty × 5, foo: {…}]
     0: "test"
     1: "test2"
     4: "test4"
@@ -251,19 +251,19 @@ console-format.js:22 [/foo\\bar\sbaz/i]
 globals[1]
 /foo\\bar\sbaz/i
 console-format.js:21 test
-console-format.js:22 ["test"]
+console-format.js:22 ['test']
     0: "test"
     length: 1
     [[Prototype]]: Array(0)
 globals[2]
-"test"
+'test'
 console-format.js:21 test named "test"
-console-format.js:22 ["test named \"test\""]
+console-format.js:22 ['test named "test"']
     0: "test named \"test\""
     length: 1
     [[Prototype]]: Array(0)
 globals[3]
-"test named \"test\""
+'test named "test"'
 console-format.js:21 Error
 console-format.js:22 [Error
 ]
@@ -326,12 +326,12 @@ console-format.js:22 [0.12]
 globals[10]
 0.12
 console-format.js:21 http://webkit.org/
-console-format.js:22 ["http://webkit.org/"]
+console-format.js:22 ['http://webkit.org/']
     0: "http://webkit.org/"
     length: 1
     [[Prototype]]: Array(0)
 globals[11]
-"http://webkit.org/"
+'http://webkit.org/'
 console-format.js:21 null
 console-format.js:22 [null]
     0: null
@@ -404,7 +404,7 @@ console-format.js:22 [-Infinity]
     [[Prototype]]: Array(0)
 globals[20]
 -Infinity
-console-format.js:21 (10) ["test", "test2", empty × 2, "test4", empty × 5, foo: {…}]
+console-format.js:21 (10) ['test', 'test2', empty × 2, 'test4', empty × 5, foo: {…}]
     0: "test"
     1: "test2"
     4: "test4"
@@ -412,11 +412,11 @@ console-format.js:21 (10) ["test", "test2", empty × 2, "test4", empty × 5, fo
     length: 10
     [[Prototype]]: Array(0)
 console-format.js:22 [Array(10)]
-    0: (10) ["test", "test2", empty × 2, "test4", empty × 5, foo: {…}]
+    0: (10) ['test', 'test2', empty × 2, 'test4', empty × 5, foo: {…}]
     length: 1
     [[Prototype]]: Array(0)
 globals[21]
-(10) ["test", "test2", empty × 2, "test4", empty × 5, foo: {…}]
+(10) ['test', 'test2', empty × 2, 'test4', empty × 5, foo: {…}]
     0: "test"
     1: "test2"
     4: "test4"
@@ -445,15 +445,15 @@ globals[23]
     0: ƒ ()
     length: 1
     [[Prototype]]: Array(0)
-console-format.js:21 {bar: "bar"}
+console-format.js:21 {bar: 'bar'}
     bar: "bar"
     [[Prototype]]: Object
 console-format.js:22 [{…}]
-    0: {bar: "bar"}
+    0: {bar: 'bar'}
     length: 1
     [[Prototype]]: Array(0)
 globals[24]
-{bar: "bar"}
+{bar: 'bar'}
     bar: "bar"
     [[Prototype]]: Object
 console-format.js:21 
@@ -567,7 +567,7 @@ globals[32]
 Number {42}
     [[Prototype]]: Number
     [[PrimitiveValue]]: 42
-console-format.js:21 String {"abc"}
+console-format.js:21 String {'abc'}
     0: "a"
     1: "b"
     2: "c"
@@ -575,11 +575,11 @@ console-format.js:21 String {"abc"}
     [[Prototype]]: String
     [[PrimitiveValue]]: "abc"
 console-format.js:22 [String]
-    0: String {"abc"}
+    0: String {'abc'}
     length: 1
     [[Prototype]]: Array(0)
 globals[33]
-String {"abc"}
+String {'abc'}
     0: "a"
     1: "b"
     2: "c"
@@ -680,35 +680,35 @@ globals[41]
     [0 … 99]
     [100 … 199]
     length: 200
-console-format.js:21 ["test"]
+console-format.js:21 ['test']
     0: "test"
     length: 1
     [[Prototype]]: Array(0)
 console-format.js:22 [Array(1)]
-    0: ["test"]
+    0: ['test']
     length: 1
     [[Prototype]]: Array(0)
 globals[42]
-["test"]
+['test']
     0: "test"
     length: 1
     [[Prototype]]: Array(0)
-console-format.js:21 Number {42, 1: "foo", a: "bar"}
+console-format.js:21 Number {42, 1: 'foo', a: 'bar'}
     1: "foo"
     a: "bar"
     [[Prototype]]: Number
     [[PrimitiveValue]]: 42
 console-format.js:22 [Number]
-    0: Number {42, 1: "foo", a: "bar"}
+    0: Number {42, 1: 'foo', a: 'bar'}
     length: 1
     [[Prototype]]: Array(0)
 globals[43]
-Number {42, 1: "foo", a: "bar"}
+Number {42, 1: 'foo', a: 'bar'}
     1: "foo"
     a: "bar"
     [[Prototype]]: Number
     [[PrimitiveValue]]: 42
-console-format.js:21 String {"abc", 3: "foo", 01: "foo", a: "bar"}
+console-format.js:21 String {'abc', 3: 'foo', 01: 'foo', a: 'bar'}
     0: "a"
     01: "foo"
     1: "b"
@@ -719,11 +719,11 @@ console-format.js:21 String {"abc", 3: "foo", 01: "foo", a: "bar"}
     [[Prototype]]: String
     [[PrimitiveValue]]: "abc"
 console-format.js:22 [String]
-    0: String {"abc", 3: "foo", 01: "foo", a: "bar"}
+    0: String {'abc', 3: 'foo', 01: 'foo', a: 'bar'}
     length: 1
     [[Prototype]]: Array(0)
 globals[44]
-String {"abc", 3: "foo", 01: "foo", a: "bar"}
+String {'abc', 3: 'foo', 01: 'foo', a: 'bar'}
     0: "a"
     01: "foo"
     1: "b"

@@ -13,11 +13,11 @@ testOverriddenConstructorName()
 testThrowConstructorName()
 {}
 testOverriddenIsFinite()
-Arguments(2) ["arg1", "arg2", callee: ƒ, Symbol(Symbol.iterator): ƒ]
+Arguments(2) ['arg1', 'arg2', callee: ƒ, Symbol(Symbol.iterator): ƒ]
 testOverriddenError()
-{result: "PASS"}
+{result: 'PASS'}
 restoreError()
-{result: "PASS"}
+{result: 'PASS'}
 testOverriddenToString(function func() {}, true)
 ƒ func() {}
 testOverriddenToString(function func() {}, false)

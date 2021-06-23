@@ -6,9 +6,9 @@ Call stack:
     1) testFunction (debugger-eval-on-call-frame-inside-iframe.js:35)
 
 === Evaluating on iframe ===
-dir() = "overridden dir() in iframe"
+dir() = 'overridden dir() in iframe'
 dirxml() = undefined
-table = "local in iframe"
+table = 'local in iframe'
 clear = 
 x: = VM:1 Uncaught SyntaxError: Unexpected end of input
     at Object.pauseInsideIframe (<anonymous>:6:5)
@@ -21,9 +21,9 @@ scheduleTestFunction @ VM:3
 
 === Evaluating on top frame ===
 dir() = undefined
-dirxml() = "overridden dirxml() in top frame"
+dirxml() = 'overridden dirxml() in top frame'
 table = 
-clear = "local in top frame"
+clear = 'local in top frame'
 x: = VM:1 Uncaught SyntaxError: Unexpected end of input
     at Object.pauseInsideIframe (<anonymous>:6:5)
     at testFunction (debugger-eval-on-cal…inside-iframe.js:35)

@@ -1,7 +1,7 @@
 Tests that simple evaluations may be performed in the console on global object.
 
 foo
-"fooValue"
+'fooValue'
 bar
-{a: "b"}
+{a: 'b'}
 

@@ -24,7 +24,7 @@ Running: testRemoveSinglePin
 Name: document.activeElement
 Value: div#div2
 Name: "Second pin"
-Value: "Second pin"
+Value: 'Second pin'
 
 Removing second pin
 

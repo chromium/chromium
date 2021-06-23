@@ -48,7 +48,7 @@ console-format-classes.js:30 {a: 1}
               object-value-number
             object-state-note info-note
               children
-console-format-classes.js:30 {str: "", nan: NaN, posInf: Infinity, negInf: -Infinity, negZero: -0} 
+console-format-classes.js:30 {str: '', nan: NaN, posInf: Infinity, negInf: -Infinity, negZero: -0} 
   console-message
     source-code
       console-message-anchor

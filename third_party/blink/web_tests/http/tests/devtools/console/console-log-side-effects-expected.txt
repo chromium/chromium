@@ -11,9 +11,9 @@ console-log-side-effects.js:31 -0
 console-log-side-effects.js:32 Number {42}
 console-log-side-effects.js:33 Number {-4.242e-11}
 console-log-side-effects.js:34 Boolean {true}
-console-log-side-effects.js:35 String {"foo"}
+console-log-side-effects.js:35 String {'foo'}
 console-log-side-effects.js:36 {}
-console-log-side-effects.js:37 Window {window: Window, self: Window, document: document, name: "", location: Location, …}
+console-log-side-effects.js:37 Window {window: Window, self: Window, document: document, name: '', location: Location, …}
 console-log-side-effects.js:43 
 console-log-side-effects.js:47 {foo: 1, bar: 2}
 console-log-side-effects.js:48 (3) [1, 2, 3]

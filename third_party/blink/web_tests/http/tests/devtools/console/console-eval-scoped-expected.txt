@@ -10,7 +10,7 @@ VM:1 eval in function: Function parameter
 
 Running: testConsoleEvalPrimitiveValue
 foo
-"bar"
+'bar'
 
 Running: testConsoleEvalObject
 {

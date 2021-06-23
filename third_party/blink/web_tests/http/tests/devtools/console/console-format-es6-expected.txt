@@ -56,10 +56,10 @@ console-format-es6.js:15 Set(1) {WeakSet}
 console-format-es6.js:16 [Set(1)]
 globals[13]
 Set(1) {WeakSet}
-console-format-es6.js:15 Map(6) {" from str " => " to str ", undefined => undefined, null => null, 42 => 42, {…} => {…}, …}
+console-format-es6.js:15 Map(6) {' from str ' => ' to str ', undefined => undefined, null => null, 42 => 42, {…} => {…}, …}
 console-format-es6.js:16 [Map(6)]
 globals[14]
-Map(6) {" from str " => " to str ", undefined => undefined, null => null, 42 => 42, {…} => {…}, …}
+Map(6) {' from str ' => ' to str ', undefined => undefined, null => null, 42 => 42, {…} => {…}, …}
 console-format-es6.js:15 genFunction {<suspended>}
 console-format-es6.js:16 [genFunction]
 globals[15]
@@ -239,7 +239,7 @@ Set(1) {WeakSet}
     [[Entries]]
         0: WeakSet
     [[Prototype]]: Set
-console-format-es6.js:15 Map(6) {" from str " => " to str ", undefined => undefined, null => null, 42 => 42, {…} => {…}, …}
+console-format-es6.js:15 Map(6) {' from str ' => ' to str ', undefined => undefined, null => null, 42 => 42, {…} => {…}, …}
     [[Entries]]
         0: {" from str " => " to str "}
         1: {undefined => undefined}
@@ -249,11 +249,11 @@ console-format-es6.js:15 Map(6) {" from str " => " to str ", undefined => undef
         5: {Array(1) => Array(1)}
     [[Prototype]]: Map
 console-format-es6.js:16 [Map(6)]
-    0: Map(6) {" from str " => " to str ", undefined => undefined, null => null, 42 => 42, {…} => {…}, …}
+    0: Map(6) {' from str ' => ' to str ', undefined => undefined, null => null, 42 => 42, {…} => {…}, …}
     length: 1
     [[Prototype]]: Array(0)
 globals[14]
-Map(6) {" from str " => " to str ", undefined => undefined, null => null, 42 => 42, {…} => {…}, …}
+Map(6) {' from str ' => ' to str ', undefined => undefined, null => null, 42 => 42, {…} => {…}, …}
     [[Entries]]
         0: {" from str " => " to str "}
         1: {undefined => undefined}

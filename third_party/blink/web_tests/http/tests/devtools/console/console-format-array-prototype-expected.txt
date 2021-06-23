@@ -28,8 +28,8 @@ a8
 (10) [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 console-format-array-prototype.js:14 (10) [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 a9
-(11) [empty, 1, 2, 3, 4, empty, 6, 7, 8, 9, empty, foo: "bar"]
-console-format-array-prototype.js:14 (11) [empty, 1, 2, 3, 4, empty, 6, 7, 8, 9, empty, foo: "bar"]
+(11) [empty, 1, 2, 3, 4, empty, 6, 7, 8, 9, empty, foo: 'bar']
+console-format-array-prototype.js:14 (11) [empty, 1, 2, 3, 4, empty, 6, 7, 8, 9, empty, foo: 'bar']
 a10
 Array {}
 console-format-array-prototype.js:14 Array {}
