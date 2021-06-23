@@ -1224,7 +1224,7 @@
   },
 
   "ProxySettings": {
-    "os": ["linux", "win", "android", "chromeos"],
+    "os": ["linux", "win", "android", "chromeos", "mac"],
     "policy_pref_mapping_tests": [
       {
         "policies": {
@@ -3157,7 +3157,7 @@
   },
 
   "ForceBrowserSignin": {
-    "os": ["win", "android"],
+    "os": ["win", "android", "mac"],
     "policy_pref_mapping_tests": [
       {
         "policies": {
