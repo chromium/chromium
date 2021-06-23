@@ -1982,13 +1982,18 @@ void TabStripModel::SelectRelativeTab(bool next, UserGestureDetails detail) {
 
 void TabStripModel::MoveTabRelative(bool forward) {
   const int offset = forward ? 1 : -1;
-
-  // TODO: this needs to be updated for multi-selection.
   const int current_index = active_index();
   absl::optional<tab_groups::TabGroupId> current_group =
       GetTabGroupForTab(current_index);
 
-  int target_index = std::max(std::min(current_index + offset, count() - 1), 0);
+  const int first_non_pinned_tab_index = IndexOfFirstNonPinnedTab();
+  int first_valid_index =
+      IsTabPinned(current_index) ? 0 : first_non_pinned_tab_index;
+  int last_valid_index =
+      IsTabPinned(current_index) ? first_non_pinned_tab_index - 1 : count() - 1;
+  int target_index = std::max(
+      std::min(current_index + offset, last_valid_index), first_valid_index);
+
   absl::optional<tab_groups::TabGroupId> target_group =
       GetTabGroupForTab(target_index);
 
@@ -2013,6 +2018,7 @@ void TabStripModel::MoveTabRelative(bool forward) {
       }
     }
   }
+  // TODO: this needs to be updated for multi-selection.
   MoveWebContentsAt(current_index, target_index, true);
 }
 

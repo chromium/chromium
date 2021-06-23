@@ -2568,6 +2568,22 @@ TEST_F(TabStripModelTest, MoveTabNext_Group) {
   strip.CloseAllTabs();
 }
 
+TEST_F(TabStripModelTest, MoveTabNext_PinnedDoesNotGroup) {
+  TestTabStripModelDelegate delegate;
+  TabStripModel strip(&delegate, profile());
+  ASSERT_NO_FATAL_FAILURE(PrepareTabstripForSelectionTest(&strip, 4, 1, "0"));
+  EXPECT_EQ("0p 1 2 3", GetTabStripStateString(strip));
+
+  strip.AddToNewGroup({1, 2});
+  EXPECT_EQ(strip.GetTabGroupForTab(0), absl::nullopt);
+
+  strip.MoveTabNext();
+  EXPECT_EQ("0p 1 2 3", GetTabStripStateString(strip));
+  EXPECT_EQ(strip.GetTabGroupForTab(0), absl::nullopt);
+
+  strip.CloseAllTabs();
+}
+
 TEST_F(TabStripModelTest, MoveTabPrevious) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
