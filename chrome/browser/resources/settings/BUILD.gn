@@ -371,43 +371,43 @@ grit("resources") {
 
 group("closure_compile") {
   deps = [
-    ":closure_compile_local_module",
-    "a11y_page:closure_compile_module",
-    "about_page:closure_compile_module",
-    "appearance_page:closure_compile_module",
-    "autofill_page:closure_compile_module",
-    "basic_page:closure_compile_module",
-    "clear_browsing_data_dialog:closure_compile_module",
-    "controls:closure_compile_module",
-    "downloads_page:closure_compile_module",
-    "languages_page:closure_compile_module",
-    "on_startup_page:closure_compile_module",
-    "people_page:closure_compile_module",
-    "prefs:closure_compile_module",
-    "privacy_page:closure_compile_module",
+    ":closure_compile_local",
+    "a11y_page:closure_compile",
+    "about_page:closure_compile",
+    "appearance_page:closure_compile",
+    "autofill_page:closure_compile",
+    "basic_page:closure_compile",
+    "clear_browsing_data_dialog:closure_compile",
+    "controls:closure_compile",
+    "downloads_page:closure_compile",
+    "languages_page:closure_compile",
+    "on_startup_page:closure_compile",
+    "people_page:closure_compile",
+    "prefs:closure_compile",
+    "privacy_page:closure_compile",
     "privacy_sandbox:closure_compile",
-    "reset_page:closure_compile_module",
-    "safety_check_page:closure_compile_module",
-    "search_engines_page:closure_compile_module",
-    "search_page:closure_compile_module",
-    "settings_main:closure_compile_module",
-    "settings_menu:closure_compile_module",
-    "settings_page:closure_compile_module",
-    "settings_ui:closure_compile_module",
-    "site_settings:closure_compile_module",
-    "site_settings_page:closure_compile_module",
+    "reset_page:closure_compile",
+    "safety_check_page:closure_compile",
+    "search_engines_page:closure_compile",
+    "search_page:closure_compile",
+    "settings_main:closure_compile",
+    "settings_menu:closure_compile",
+    "settings_page:closure_compile",
+    "settings_ui:closure_compile",
+    "site_settings:closure_compile",
+    "site_settings_page:closure_compile",
   ]
   if (!is_chromeos_ash && !is_chromeos_lacros) {
     deps += [
-      "default_browser_page:closure_compile_module",
-      "system_page:closure_compile_module",
+      "default_browser_page:closure_compile",
+      "system_page:closure_compile",
     ]
   }
 
   if (is_win) {
     deps += [
-      "chrome_cleanup_page:closure_compile_module",
-      "incompatible_applications_page:closure_compile_module",
+      "chrome_cleanup_page:closure_compile",
+      "incompatible_applications_page:closure_compile",
     ]
   }
 
@@ -416,7 +416,7 @@ group("closure_compile") {
   }
 }
 
-js_type_check("closure_compile_local_module") {
+js_type_check("closure_compile_local") {
   is_polymer3 = true
   closure_flags = settings_closure_flags
   deps = [
