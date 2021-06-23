@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/extensions/printing/printing_api.h"
+#include "chrome/browser/extensions/api/printing/printing_api.h"
 
 #include <utility>
 
 #include "base/bind.h"
 #include "base/values.h"
-#include "chrome/browser/chromeos/extensions/printing/printing_api_handler.h"
+#include "chrome/browser/extensions/api/printing/printing_api_handler.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "extensions/browser/quota_service.h"
 

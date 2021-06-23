@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/extensions/printing/printing_api_handler.h"
+#include "chrome/browser/extensions/api/printing/printing_api_handler.h"
 
 #include <memory>
 #include <string>
@@ -12,12 +12,12 @@
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
 #include "base/values.h"
-#include "chrome/browser/chromeos/extensions/printing/fake_print_job_controller.h"
 #include "chrome/browser/chromeos/printing/cups_print_job.h"
 #include "chrome/browser/chromeos/printing/test_cups_print_job_manager.h"
 #include "chrome/browser/chromeos/printing/test_cups_printers_manager.h"
 #include "chrome/browser/chromeos/printing/test_cups_wrapper.h"
 #include "chrome/browser/chromeos/printing/test_printer_configurer.h"
+#include "chrome/browser/extensions/api/printing/fake_print_job_controller.h"
 #include "chrome/browser/printing/print_preview_sticky_settings.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_constants.h"

@@ -264,6 +264,7 @@
 #include "ash/public/cpp/ash_prefs.h"
 #include "chrome/browser/apps/app_service/app_platform_metrics_service.h"
 #include "chrome/browser/apps/app_service/webapk/webapk_prefs.h"
+#include "chrome/browser/ash/account_manager/account_manager_edu_coexistence_controller.h"
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_cryptohome_remover.h"
@@ -272,28 +273,19 @@
 #include "chrome/browser/ash/arc/policy/arc_policy_bridge.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/bluetooth/debug_logs_manager.h"
+#include "chrome/browser/ash/borealis/borealis_prefs.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_common.h"
 #include "chrome/browser/ash/child_accounts/family_user_chrome_activity_metrics.h"
 #include "chrome/browser/ash/child_accounts/family_user_metrics_service.h"
 #include "chrome/browser/ash/child_accounts/family_user_session_metrics.h"
 #include "chrome/browser/ash/child_accounts/parent_access_code/parent_access_service.h"
 #include "chrome/browser/ash/child_accounts/screen_time_controller.h"
+#include "chrome/browser/ash/child_accounts/secondary_account_consent_logger.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_activity_registry.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_controller.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/customization/customization_document.h"
-#include "chrome/browser/ash/scanning/chrome_scanning_app_delegate.h"
-#include "chrome/browser/chromeos/cryptauth/client_app_metadata_provider_service.h"
-#include "chrome/browser/chromeos/cryptauth/cryptauth_device_id_provider_impl.h"
-#include "chrome/browser/chromeos/extensions/echo_private_api.h"
-#include "chrome/browser/chromeos/extensions/login_screen/login/login_api.h"
-#if defined(USE_CUPS)
-#include "chrome/browser/chromeos/extensions/printing/printing_api_handler.h"
-#endif
-#include "chrome/browser/ash/account_manager/account_manager_edu_coexistence_controller.h"
-#include "chrome/browser/ash/borealis/borealis_prefs.h"
-#include "chrome/browser/ash/child_accounts/secondary_account_consent_logger.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/file_system_provider/registry.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/ash/lock_screen_apps/state_controller.h"
@@ -319,9 +311,14 @@
 #include "chrome/browser/ash/power/auto_screen_brightness/metrics_reporter.h"
 #include "chrome/browser/ash/power/power_metrics_reporter.h"
 #include "chrome/browser/ash/release_notes/release_notes_storage.h"
+#include "chrome/browser/ash/scanning/chrome_scanning_app_delegate.h"
 #include "chrome/browser/ash/settings/device_settings_cache.h"
 #include "chrome/browser/ash/system/automatic_reboot_manager.h"
 #include "chrome/browser/ash/system/input_device_settings.h"
+#include "chrome/browser/chromeos/cryptauth/client_app_metadata_provider_service.h"
+#include "chrome/browser/chromeos/cryptauth/cryptauth_device_id_provider_impl.h"
+#include "chrome/browser/chromeos/extensions/echo_private_api.h"
+#include "chrome/browser/chromeos/extensions/login_screen/login/login_api.h"
 #include "chrome/browser/chromeos/first_run/first_run.h"
 #include "chrome/browser/chromeos/full_restore/full_restore_prefs.h"
 #include "chrome/browser/chromeos/net/network_throttling_observer.h"
@@ -372,7 +369,12 @@
 #include "components/onc/onc_pref_names.h"
 #include "components/quirks/quirks_manager.h"
 #include "extensions/browser/api/lock_screen_data/lock_screen_item_storage.h"
+
+#if defined(USE_CUPS)
+#include "chrome/browser/extensions/api/printing/printing_api_handler.h"
 #endif
+
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_MAC)
 #include "chrome/browser/ui/cocoa/apps/quit_with_apps_controller_mac.h"

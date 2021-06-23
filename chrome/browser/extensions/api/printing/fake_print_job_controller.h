@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_PRINTING_FAKE_PRINT_JOB_CONTROLLER_H_
-#define CHROME_BROWSER_CHROMEOS_EXTENSIONS_PRINTING_FAKE_PRINT_JOB_CONTROLLER_H_
+#ifndef CHROME_BROWSER_EXTENSIONS_API_PRINTING_FAKE_PRINT_JOB_CONTROLLER_H_
+#define CHROME_BROWSER_EXTENSIONS_API_PRINTING_FAKE_PRINT_JOB_CONTROLLER_H_
 
 #include "base/containers/flat_map.h"
-#include "chrome/browser/chromeos/extensions/printing/print_job_controller.h"
+#include "chrome/browser/extensions/api/printing/print_job_controller.h"
 
 namespace chromeos {
 class CupsPrintersManager;
@@ -53,4 +53,4 @@ class FakePrintJobController : public PrintJobController {
 
 }  // namespace extensions
 
-#endif  // CHROME_BROWSER_CHROMEOS_EXTENSIONS_PRINTING_FAKE_PRINT_JOB_CONTROLLER_H_
+#endif  // CHROME_BROWSER_EXTENSIONS_API_PRINTING_FAKE_PRINT_JOB_CONTROLLER_H_

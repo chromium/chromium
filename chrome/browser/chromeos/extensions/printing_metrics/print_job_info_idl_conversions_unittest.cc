@@ -4,7 +4,7 @@
 
 #include "chrome/browser/chromeos/extensions/printing_metrics/print_job_info_idl_conversions.h"
 
-#include "chrome/browser/chromeos/extensions/printing/printing_api.h"
+#include "chrome/browser/extensions/api/printing/printing_api.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace proto = chromeos::printing::proto;

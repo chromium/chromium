@@ -6,7 +6,7 @@
 
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
-#include "chrome/browser/chromeos/extensions/printing/printing_api.h"
+#include "chrome/browser/extensions/api/printing/printing_api.h"
 #include "chrome/common/extensions/api/printing.h"
 
 namespace proto = chromeos::printing::proto;

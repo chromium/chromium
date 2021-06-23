@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_PRINTING_PRINTING_API_HANDLER_H_
-#define CHROME_BROWSER_CHROMEOS_EXTENSIONS_PRINTING_PRINTING_API_HANDLER_H_
+#ifndef CHROME_BROWSER_EXTENSIONS_API_PRINTING_PRINTING_API_HANDLER_H_
+#define CHROME_BROWSER_EXTENSIONS_API_PRINTING_PRINTING_API_HANDLER_H_
 
 #include <memory>
 #include <string>
@@ -12,12 +12,12 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/chromeos/extensions/printing/print_job_controller.h"
-#include "chrome/browser/chromeos/extensions/printing/print_job_submitter.h"
-#include "chrome/browser/chromeos/extensions/printing/printer_capabilities_provider.h"
 #include "chrome/browser/chromeos/printing/cups_print_job_manager.h"
 #include "chrome/browser/chromeos/printing/cups_print_job_manager_factory.h"
 #include "chrome/browser/chromeos/printing/cups_printers_manager_factory.h"
+#include "chrome/browser/extensions/api/printing/print_job_controller.h"
+#include "chrome/browser/extensions/api/printing/print_job_submitter.h"
+#include "chrome/browser/extensions/api/printing/printer_capabilities_provider.h"
 #include "chrome/common/extensions/api/printing.h"
 #include "chrome/services/printing/public/mojom/pdf_flattener.mojom.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
@@ -200,4 +200,4 @@ BrowserContextKeyedAPIFactory<PrintingAPIHandler>::BuildServiceInstanceFor(
 
 }  // namespace extensions
 
-#endif  // CHROME_BROWSER_CHROMEOS_EXTENSIONS_PRINTING_PRINTING_API_HANDLER_H_
+#endif  // CHROME_BROWSER_EXTENSIONS_API_PRINTING_PRINTING_API_HANDLER_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/extensions/printing/printing_api_utils.h"
+#include "chrome/browser/extensions/api/printing/printing_api_utils.h"
 
 #include <algorithm>
 #include <memory>

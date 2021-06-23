@@ -3,15 +3,15 @@
 // found in the LICENSE file.
 
 #include "base/bind.h"
-#include "chrome/browser/chromeos/extensions/printing/fake_print_job_controller.h"
-#include "chrome/browser/chromeos/extensions/printing/printing_api.h"
-#include "chrome/browser/chromeos/extensions/printing/printing_api_handler.h"
 #include "chrome/browser/chromeos/printing/cups_print_job_manager_factory.h"
 #include "chrome/browser/chromeos/printing/cups_printers_manager_factory.h"
 #include "chrome/browser/chromeos/printing/printer_configurer.h"
 #include "chrome/browser/chromeos/printing/test_cups_print_job_manager.h"
 #include "chrome/browser/chromeos/printing/test_cups_printers_manager.h"
 #include "chrome/browser/chromeos/printing/test_printer_configurer.h"
+#include "chrome/browser/extensions/api/printing/fake_print_job_controller.h"
+#include "chrome/browser/extensions/api/printing/printing_api.h"
+#include "chrome/browser/extensions/api/printing/printing_api_handler.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"

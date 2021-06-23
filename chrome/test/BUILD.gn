@@ -3461,11 +3461,11 @@ if (!is_android) {
       }
       if (use_cups) {
         sources += [
-          "../browser/chromeos/extensions/printing/fake_print_job_controller.cc",
-          "../browser/chromeos/extensions/printing/fake_print_job_controller.h",
-          "../browser/chromeos/extensions/printing/printing_apitest.cc",
           "../browser/chromeos/extensions/printing_metrics/print_job_finished_event_dispatcher_apitest.cc",
           "../browser/chromeos/extensions/printing_metrics/printing_metrics_apitest.cc",
+          "../browser/extensions/api/printing/fake_print_job_controller.cc",
+          "../browser/extensions/api/printing/fake_print_job_controller.h",
+          "../browser/extensions/api/printing/printing_apitest.cc",
         ]
         deps += [ "//printing:test_support" ]
       }

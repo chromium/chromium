@@ -959,7 +959,25 @@ static_library("extensions") {
   ]
 
   if (is_chromeos_ash) {
+    sources += [
+      "api/printing/print_job_controller.cc",
+      "api/printing/print_job_controller.h",
+      "api/printing/printer_capabilities_provider.cc",
+      "api/printing/printer_capabilities_provider.h",
+    ]
     deps += [ "//chromeos/resources:media_app_bundle_resources_grit" ]
+    if (use_cups) {
+      sources += [
+        "api/printing/print_job_submitter.cc",
+        "api/printing/print_job_submitter.h",
+        "api/printing/printing_api.cc",
+        "api/printing/printing_api.h",
+        "api/printing/printing_api_handler.cc",
+        "api/printing/printing_api_handler.h",
+        "api/printing/printing_api_utils.cc",
+        "api/printing/printing_api_utils.h",
+      ]
+    }
   }
 
   if (enable_autofill_assistant_api) {
@@ -972,7 +990,7 @@ static_library("extensions") {
     deps += [ "//components/autofill_assistant/browser" ]
   }
 
-  if (is_chromeos_lacros || is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "api/enterprise_device_attributes/enterprise_device_attributes_api.h",
       "api/enterprise_platform_keys/enterprise_platform_keys_api.cc",

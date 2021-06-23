@@ -48,8 +48,8 @@
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 
 #if defined(USE_CUPS)
-#include "chrome/browser/chromeos/extensions/printing/printing_api_handler.h"
 #include "chrome/browser/chromeos/printing/cups_proxy_service_manager_factory.h"
+#include "chrome/browser/extensions/api/printing/printing_api_handler.h"
 #endif
 
 namespace chromeos {

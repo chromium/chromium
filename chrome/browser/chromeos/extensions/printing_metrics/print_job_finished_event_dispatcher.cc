@@ -5,8 +5,8 @@
 #include "chrome/browser/chromeos/extensions/printing_metrics/print_job_finished_event_dispatcher.h"
 
 #include "base/no_destructor.h"
-#include "chrome/browser/chromeos/extensions/printing/printing_api.h"
 #include "chrome/browser/chromeos/extensions/printing_metrics/print_job_info_idl_conversions.h"
+#include "chrome/browser/extensions/api/printing/printing_api.h"
 #include "chrome/common/extensions/api/printing_metrics.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/event_router.h"

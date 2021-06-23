@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/extensions/printing/print_job_submitter.h"
+#include "chrome/browser/extensions/api/printing/print_job_submitter.h"
 
 #include <cstring>
 #include <utility>
@@ -12,10 +12,10 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/values.h"
-#include "chrome/browser/chromeos/extensions/printing/print_job_controller.h"
-#include "chrome/browser/chromeos/extensions/printing/printer_capabilities_provider.h"
-#include "chrome/browser/chromeos/extensions/printing/printing_api_utils.h"
 #include "chrome/browser/chromeos/printing/cups_printers_manager.h"
+#include "chrome/browser/extensions/api/printing/print_job_controller.h"
+#include "chrome/browser/extensions/api/printing/printer_capabilities_provider.h"
+#include "chrome/browser/extensions/api/printing/printing_api_utils.h"
 #include "chrome/browser/printing/printing_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_dialogs.h"
