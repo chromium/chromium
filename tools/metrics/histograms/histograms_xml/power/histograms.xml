@@ -58,25 +58,28 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
 </histogram>
 
 <histogram name="Power.BacklightLevelOnAC" units="%" expires_after="2021-10-31">
-  <owner>tbroch@chromium.org</owner>
+  <owner>puthik@chromium.org</owner>
+  <owner>chromeos-platform-power@google.com</owner>
   <summary>
     The level of the backlight as a percentage when the user is on AC. Sampled
-    every 30 seconds.
+    every 30 seconds. Chrome OS only.
   </summary>
 </histogram>
 
 <histogram name="Power.BacklightLevelOnBattery" units="%"
     expires_after="2021-11-07">
-  <owner>tbroch@chromium.org</owner>
+  <owner>puthik@chromium.org</owner>
+  <owner>chromeos-platform-power@google.com</owner>
   <summary>
     The level of the backlight as a percentage when the user is on battery.
-    Sampled every 30 seconds.
+    Sampled every 30 seconds. Chrome OS only.
   </summary>
 </histogram>
 
 <histogram name="Power.BatteryChargeHealth" units="%"
     expires_after="2021-12-12">
-  <owner>tbroch@chromium.org</owner>
+  <owner>puthik@chromium.org</owner>
+  <owner>chromeos-platform-power@google.com</owner>
   <summary>
     Chrome OS battery charge health percentage. Sampled once when device starts
     charging.
@@ -98,7 +101,8 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
 
 <histogram name="Power.BatteryDischargeRate" units="mW"
     expires_after="2021-12-12">
-  <owner>tbroch@chromium.org</owner>
+  <owner>puthik@chromium.org</owner>
+  <owner>chromeos-platform-power@google.com</owner>
   <summary>
     Chrome OS battery discharge rate in mW sampled every 30 seconds while the
     device runs on battery.
@@ -123,7 +127,8 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
 
 <histogram name="Power.BatteryDischargeRateWhileSuspended" units="mW"
     expires_after="2021-12-12">
-  <owner>tbroch@chromium.org</owner>
+  <owner>puthik@chromium.org</owner>
+  <owner>chromeos-platform-power@google.com</owner>
   <summary>
     Chrome OS battery discharge rate in mW while the system was suspended,
     sampled at resume. Only reported if the system was on battery power both
@@ -138,7 +143,7 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
   <owner>tbroch@chromium.org</owner>
   <summary>
     Counts the number of times we have read the battery status from sysfs and if
-    it gave us sensible values.
+    it gave us sensible values. Chrome OS only.
   </summary>
 </histogram>
 
@@ -168,7 +173,8 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
 
 <histogram name="Power.BatteryRemainingAtEndOfSessionOnBattery" units="%"
     expires_after="2021-10-25">
-  <owner>tbroch@chromium.org</owner>
+  <owner>puthik@chromium.org</owner>
+  <owner>chromeos-platform-power@google.com</owner>
   <summary>
     Chrome OS remaining battery charge as percent of the maximum battery charge,
     sampled at the end of a user session when the device is on battery.
@@ -177,7 +183,8 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
 
 <histogram name="Power.BatteryRemainingAtStartOfSessionOnAC" units="%"
     expires_after="2021-10-25">
-  <owner>tbroch@chromium.org</owner>
+  <owner>puthik@chromium.org</owner>
+  <owner>chromeos-platform-power@google.com</owner>
   <summary>
     Chrome OS remaining battery charge as percent of the maximum battery charge,
     sampled at the start of a user session when the device is on AC.
@@ -195,7 +202,8 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
 
 <histogram name="Power.BatteryRemainingWhenChargeStarts" units="%"
     expires_after="2021-12-12">
-  <owner>tbroch@chromium.org</owner>
+  <owner>puthik@chromium.org</owner>
+  <owner>chromeos-platform-power@google.com</owner>
   <summary>
     Chrome OS remaining battery charge as percent of the maximum battery charge,
     sampled when charging starts.
@@ -237,7 +245,8 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
 <histogram name="Power.ConnectedChargingPorts"
     enum="PowerConnectedChargingPorts" expires_after="2021-10-25">
   <owner>bleung@chromium.org</owner>
-  <owner>tbroch@chromium.org</owner>
+  <owner>puthik@chromium.org</owner>
+  <owner>chromeos-platform-power@google.com</owner>
   <summary>
     Connected charging ports on Chrome OS. A sample is reported every time that
     the power manager polls sysfs (typically every 30 seconds). Ordinals are
@@ -448,7 +457,8 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
 
 <histogram name="Power.ExternalBrightnessReadResult"
     enum="ExternalDisplayReceiveResult" expires_after="M100">
-  <owner>tbroch@chromium.org</owner>
+  <owner>puthik@chromium.org</owner>
+  <owner>chromeos-platform-power@google.com</owner>
   <summary>
     The result of attempting to read an external display's brightness on Chrome
     OS. A read attempt is made after successfully requesting the brightness (see
@@ -458,7 +468,8 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
 
 <histogram name="Power.ExternalBrightnessRequestResult"
     enum="ExternalDisplaySendResult" expires_after="M100">
-  <owner>tbroch@chromium.org</owner>
+  <owner>puthik@chromium.org</owner>
+  <owner>chromeos-platform-power@google.com</owner>
   <summary>
     The result of requesting an external display's brightness on Chrome OS. A
     request is sent when the user presses a brightness key and the current
@@ -469,7 +480,8 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
 
 <histogram name="Power.ExternalBrightnessWriteResult"
     enum="ExternalDisplaySendResult" expires_after="M100">
-  <owner>tbroch@chromium.org</owner>
+  <owner>puthik@chromium.org</owner>
+  <owner>chromeos-platform-power@google.com</owner>
   <summary>
     The result of attempting to change an external display's brightness on
     Chrome OS. A request is sent when the user presses a brightness key and the
@@ -479,7 +491,8 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
 
 <histogram name="Power.ExternalDisplayOpenResult"
     enum="ExternalDisplayOpenResult" expires_after="2021-08-01">
-  <owner>tbroch@chromium.org</owner>
+  <owner>puthik@chromium.org</owner>
+  <owner>chromeos-platform-power@google.com</owner>
   <summary>
     The result of attempting to open an I2C device to control an external
     display's brightness on Chrome OS. An attempt is made when a display is
@@ -489,7 +502,8 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
 
 <histogram name="Power.FirmwareResumeTimeOnAC" units="ms"
     expires_after="2021-10-31">
-  <owner>tbroch@chromium.org</owner>
+  <owner>puthik@chromium.org</owner>
+  <owner>chromeos-platform-power@google.com</owner>
   <summary>
     The time that the firmware took to resume the Chrome OS device from
     suspend-to-RAM state when running on AC at pre-suspend time.
@@ -498,7 +512,8 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
 
 <histogram name="Power.FirmwareResumeTimeOnBattery" units="ms"
     expires_after="2021-08-29">
-  <owner>tbroch@chromium.org</owner>
+  <owner>puthik@chromium.org</owner>
+  <owner>chromeos-platform-power@google.com</owner>
   <summary>
     The time that the firmware took to resume the Chrome OS device from
     suspend-to-RAM state when running on battery at pre-suspend time.
@@ -830,7 +845,8 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
 
 <histogram name="Power.KernelResumeTimeOnAC" units="ms"
     expires_after="2021-10-17">
-  <owner>tbroch@chromium.org</owner>
+  <owner>puthik@chromium.org</owner>
+  <owner>chromeos-platform-power@google.com</owner>
   <summary>
     The time that the kernel took to resume the Chrome OS device from
     suspend-to-RAM state when running on AC at pre-suspend time.
@@ -857,7 +873,8 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
 
 <histogram name="Power.KernelSuspendTimeOnBattery" units="ms"
     expires_after="2021-10-25">
-  <owner>tbroch@chromium.org</owner>
+  <owner>puthik@chromium.org</owner>
+  <owner>chromeos-platform-power@google.com</owner>
   <summary>
     The time that the kernel took to suspend-to-RAM the Chrome OS device when
     running on battery.
@@ -875,7 +892,8 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
 
 <histogram name="Power.LengthOfSession" units="seconds"
     expires_after="2021-10-17">
-  <owner>tbroch@chromium.org</owner>
+  <owner>puthik@chromium.org</owner>
+  <owner>chromeos-platform-power@google.com</owner>
   <summary>
     The length of time, in seconds, that a user spent in a single session.
     Values for this metric are clamped to 12 hours, so the last bucket should be
@@ -885,7 +903,8 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
 
 <histogram name="Power.LidClosedSuspendCountDaily" units="count"
     expires_after="2021-10-10">
-  <owner>tbroch@chromium.org</owner>
+  <owner>puthik@chromium.org</owner>
+  <owner>chromeos-platform-power@google.com</owner>
   <summary>
     Number of times that that the system has suspended in response to its lid
     being closed, reported daily. The count is accumulated through the day,
@@ -974,7 +993,8 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
 
 <histogram name="Power.MetricsDailyEventInterval" enum="DailyEventIntervalType"
     expires_after="M100">
-  <owner>tbroch@chromium.org</owner>
+  <owner>puthik@chromium.org</owner>
+  <owner>chromeos-platform-power@google.com</owner>
   <summary>
     Reasons why power-management-related daily metrics were reported. Chrome OS
     only.
@@ -995,7 +1015,8 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
 
 <histogram name="Power.NumberOfSessionsPerCharge" units="units"
     expires_after="2021-10-04">
-  <owner>tbroch@chromium.org</owner>
+  <owner>puthik@chromium.org</owner>
+  <owner>chromeos-platform-power@google.com</owner>
   <summary>
     The number of user sessions that occured since the last time that the device
     was charged. Values for this metric are clamped at 10k, so the last bucket
@@ -1005,7 +1026,8 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
 
 <histogram name="Power.PowerButtonAcknowledgmentDelay" units="ms"
     expires_after="M100">
-  <owner>tbroch@chromium.org</owner>
+  <owner>puthik@chromium.org</owner>
+  <owner>chromeos-platform-power@google.com</owner>
   <summary>
     The amount of time between the user pressing the power button and Chrome
     acknowledging the button-down event on Chrome OS. Values for this metric are
@@ -1014,7 +1036,8 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
 </histogram>
 
 <histogram name="Power.PowerButtonDownTime" units="ms" expires_after="M100">
-  <owner>tbroch@chromium.org</owner>
+  <owner>puthik@chromium.org</owner>
+  <owner>chromeos-platform-power@google.com</owner>
   <summary>
     The amount of time between the user pressing the power button and releasing
     it on Chrome OS.
@@ -1093,7 +1116,8 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
 <histogram name="Power.PowerSupplyMaxPower" units="W"
     expires_after="2021-10-31">
   <owner>bleung@chromium.org</owner>
-  <owner>tbroch@chromium.org</owner>
+  <owner>puthik@chromium.org</owner>
+  <owner>chromeos-platform-power@google.com</owner>
   <summary>
     The maximum power supported by the connected power supply on Chrome OS. A
     sample is reported every time that the power manager polls sysfs (typically
@@ -1103,7 +1127,8 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
 
 <histogram name="Power.PowerSupplyMaxVoltage" units="V" expires_after="M100">
   <owner>bleung@chromium.org</owner>
-  <owner>tbroch@chromium.org</owner>
+  <owner>puthik@chromium.org</owner>
+  <owner>chromeos-platform-power@google.com</owner>
   <summary>
     The maximum voltage supported by the connected power supply on Chrome OS. A
     sample is reported every time that the power manager polls sysfs (typically
@@ -1114,7 +1139,8 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
 <histogram name="Power.PowerSupplyType" enum="PowerSupplyType"
     expires_after="2021-10-31">
   <owner>bleung@chromium.org</owner>
-  <owner>tbroch@chromium.org</owner>
+  <owner>puthik@chromium.org</owner>
+  <owner>chromeos-platform-power@google.com</owner>
   <summary>
     The type of the connected power supply on Chrome OS. A sample is reported
     every time that the power manager polls sysfs (typically every 30 seconds)
@@ -1140,7 +1166,8 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
 
 <histogram name="Power.SuspendAttempt" enum="SuspendAttempt"
     expires_after="2021-12-12">
-  <owner>tbroch@chromium.org</owner>
+  <owner>puthik@chromium.org</owner>
+  <owner>chromeos-platform-power@google.com</owner>
   <summary>
     The number of suspend attempts on Chrome OS. Samples are reported before
     each attempt, so this histogram may include cases where the system crashed
@@ -1150,7 +1177,8 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
 
 <histogram name="Power.SuspendAttemptsBeforeCancel" units="units"
     expires_after="2021-12-12">
-  <owner>tbroch@chromium.org</owner>
+  <owner>puthik@chromium.org</owner>
+  <owner>chromeos-platform-power@google.com</owner>
   <summary>
     The number of suspend attempts performed for a single suspend request (e.g.
     triggered by the lid being closed) that was eventually canceled on Chrome
@@ -1161,7 +1189,8 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
 
 <histogram name="Power.SuspendAttemptsBeforeSuccess" units="units"
     expires_after="2021-12-12">
-  <owner>tbroch@chromium.org</owner>
+  <owner>puthik@chromium.org</owner>
+  <owner>chromeos-platform-power@google.com</owner>
   <summary>
     The number of suspend attempts performed for a single suspend request (e.g.
     triggered by the lid being closed) that eventually succeeded on Chrome OS.
@@ -1171,7 +1200,8 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
 
 <histogram name="Power.SuspendResult" enum="SuspendResult"
     expires_after="2021-12-12">
-  <owner>tbroch@chromium.org</owner>
+  <owner>puthik@chromium.org</owner>
+  <owner>chromeos-platform-power@google.com</owner>
   <summary>
     The results of suspend attempts on Chrome OS. Samples are reported after
     each attempt.
