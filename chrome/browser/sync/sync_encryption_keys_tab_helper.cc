@@ -34,8 +34,8 @@ const url::Origin& GetAllowedOrigin() {
 }
 
 bool ShouldExposeMojoApi(content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInMainFrame() ||
-      !navigation_handle->HasCommitted() || navigation_handle->IsErrorPage()) {
+  DCHECK(navigation_handle->IsInMainFrame());
+  if (!navigation_handle->HasCommitted() || navigation_handle->IsErrorPage()) {
     return false;
   }
   // Restrict to allowed origin only.
@@ -63,9 +63,7 @@ class SyncEncryptionKeysTabHelper::EncryptionKeyApi
       const std::vector<std::vector<uint8_t>>& encryption_keys,
       int last_key_version,
       SetEncryptionKeysCallback callback) override {
-    // This could instead be a CHECK because it's guaranteed by the logic in
-    // DidFinishNavigation(), but let's avoid browser crashes at all cost and
-    // simply ignore the call.
+    // Extra safeguard, e.g. to guard against subframes.
     if (receivers_.GetCurrentTargetFrame()->GetLastCommittedOrigin() !=
         GetAllowedOrigin()) {
       return;
@@ -86,9 +84,7 @@ class SyncEncryptionKeysTabHelper::EncryptionKeyApi
       return;
     }
 
-    // This could instead be a CHECK because it's guaranteed by the logic in
-    // DidFinishNavigation(), but let's avoid browser crashes at all cost and
-    // simply ignore the call.
+    // Extra safeguard, e.g. to guard against subframes.
     if (receivers_.GetCurrentTargetFrame()->GetLastCommittedOrigin() !=
         GetAllowedOrigin()) {
       return;
@@ -144,7 +140,8 @@ SyncEncryptionKeysTabHelper::~SyncEncryptionKeysTabHelper() = default;
 
 void SyncEncryptionKeysTabHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (navigation_handle->IsSameDocument()) {
+  if (!navigation_handle->IsInMainFrame() ||
+      navigation_handle->IsSameDocument()) {
     return;
   }
 

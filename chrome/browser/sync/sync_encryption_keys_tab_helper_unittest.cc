@@ -10,6 +10,8 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_receiver_set.h"
+#include "content/public/test/navigation_simulator.h"
+#include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/base/net_errors.h"
@@ -64,6 +66,22 @@ TEST_F(SyncEncryptionKeysTabHelperTest, ShouldNotExposeMojoApiIfNavigatedAway) {
   ASSERT_THAT(frame_receiver_set(), NotNull());
   web_contents_tester()->NavigateAndCommit(GURL("http://page.com"));
   EXPECT_THAT(frame_receiver_set(), IsNull());
+}
+
+TEST_F(SyncEncryptionKeysTabHelperTest,
+       ShouldExposeMojoApiEvenIfSubframeNavigatedAway) {
+  web_contents_tester()->NavigateAndCommit(GaiaUrls::GetInstance()->gaia_url());
+  content::RenderFrameHost* subframe =
+      content::RenderFrameHostTester::For(main_rfh())->AppendChild("subframe");
+  ASSERT_THAT(frame_receiver_set(), NotNull());
+
+  content::NavigationSimulator::CreateRendererInitiated(GURL("http://page.com"),
+                                                        subframe)
+      ->Commit();
+  // For the receiver set to be fully updated, a mainframe navigation is needed.
+  // Otherwise the test passes regardless of whether the logic is buggy.
+  web_contents_tester()->NavigateAndCommit(GaiaUrls::GetInstance()->gaia_url());
+  EXPECT_THAT(frame_receiver_set(), NotNull());
 }
 
 TEST_F(SyncEncryptionKeysTabHelperTest,
