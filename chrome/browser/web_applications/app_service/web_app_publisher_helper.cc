@@ -734,6 +734,7 @@ void WebAppPublisherHelper::OnWebAppDisabledStateChanged(const AppId& app_id,
   if (!web_app || !Accepts(app_id)) {
     return;
   }
+
   // Sometimes OnWebAppDisabledStateChanged is called but
   // WebApp::chromos_data().is_disabled isn't updated yet, that's why here we
   // depend only on |is_disabled|.
@@ -741,6 +742,7 @@ void WebAppPublisherHelper::OnWebAppDisabledStateChanged(const AppId& app_id,
       is_disabled ? apps::mojom::Readiness::kDisabledByPolicy
                   : apps::mojom::Readiness::kReady;
   apps::mojom::AppPtr app = ConvertWebApp(web_app, readiness);
+  DCHECK_EQ(is_disabled, web_app->chromeos_data()->is_disabled);
   app->icon_key = MakeIconKey(web_app, is_disabled);
 
   // If the disable mode is hidden, update the visibility of the new disabled
