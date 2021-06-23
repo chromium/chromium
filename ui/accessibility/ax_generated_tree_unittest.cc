@@ -300,7 +300,14 @@ TEST(AXGeneratedTreeTest, MAYBE_SerializeGeneratedTrees) {
   }
 }
 
-TEST(AXGeneratedTreeTest, GeneratedTreesWithIgnoredNodes) {
+// Flaky on Linux Tests (dbg): crbug.com/1223165
+#if defined(OS_LINUX)
+#define MAYBE_GeneratedTreesWithIgnoredNodes \
+  DISABLED_GeneratedTreesWithIgnoredNodes
+#else
+#define MAYBE_GeneratedTreesWithIgnoredNodes GeneratedTreesWithIgnoredNodes
+#endif
+TEST(AXGeneratedTreeTest, MAYBE_GeneratedTreesWithIgnoredNodes) {
   int max_tree_size = 5;
 
   TreeGenerator generator(max_tree_size, false);
