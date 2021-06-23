@@ -260,6 +260,9 @@ struct GPU_EXPORT GpuPreferences {
   DawnBackendValidationLevel enable_dawn_backend_validation =
       DawnBackendValidationLevel::kDisabled;
 
+  // Force the use of the WebGPU/Compat (GLES) backend for all WebGPU content.
+  bool force_webgpu_compat = false;
+
   // The Dawn features(toggles) enabled on the creation of Dawn devices.
   std::vector<std::string> enabled_dawn_features_list;
 

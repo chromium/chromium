@@ -21,6 +21,7 @@ GPU_EXPORT extern const char kDisableGpuProcessForDX12InfoCollection[];
 GPU_EXPORT extern const char kEnableUnsafeWebGPU[];
 GPU_EXPORT extern const char kEnableUnsafeWebGPUService[];
 GPU_EXPORT extern const char kEnableDawnBackendValidation[];
+GPU_EXPORT extern const char kForceWebGPUCompat[];
 GPU_EXPORT extern const char kEnableDawnFeatures[];
 GPU_EXPORT extern const char kDisableDawnFeatures[];
 GPU_EXPORT extern const char kUseHighGPUThreadPriorityForPerfTests[];
