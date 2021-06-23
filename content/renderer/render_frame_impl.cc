@@ -372,16 +372,6 @@ ui::PageTransition GetTransitionType(blink::WebDocumentLoader* document_loader,
                            is_main_frame, document_loader->GetNavigationType());
 }
 
-void GetRedirectChain(WebDocumentLoader* document_loader,
-                      std::vector<GURL>* result) {
-  WebVector<WebURL> urls;
-  document_loader->RedirectChain(urls);
-  result->reserve(urls.size());
-  for (size_t i = 0; i < urls.size(); ++i) {
-    result->push_back(urls[i]);
-  }
-}
-
 // Gets URL that should override the default getter for this data source
 // (if any), storing it in |output|. Returns true if there is an override URL.
 bool MaybeGetOverriddenURL(WebDocumentLoader* document_loader, GURL* output) {
@@ -4496,8 +4486,7 @@ RenderFrameImpl::MakeDidCommitProvisionalLoadParams(
     ui::PageTransition transition,
     const blink::ParsedPermissionsPolicy& permissions_policy_header,
     const blink::DocumentPolicyFeatureState& document_policy_header,
-    const absl::optional<base::UnguessableToken>& embedding_token,
-    bool is_same_document_navigation) {
+    const absl::optional<base::UnguessableToken>& embedding_token) {
   WebDocumentLoader* document_loader = frame_->GetDocumentLoader();
   const WebURLResponse& response = document_loader->GetResponse();
 
@@ -4582,23 +4571,15 @@ RenderFrameImpl::MakeDidCommitProvisionalLoadParams(
   params->document_sequence_number = item.DocumentSequenceNumber();
   params->app_history_key = item.GetAppHistoryKey().Utf8();
 
-  // If the page contained a client redirect (meta refresh, document.loc...),
-  // set the referrer appropriately, except for same-document navigations where
-  // the referrer that was initially used to load the document should be used,
-  // same as all other same-document navigations.
-  if (document_loader->IsClientRedirect() && !is_same_document_navigation) {
-    // TODO(https://crbug.com/1131832): Remove referrer from
-    // DidCommitProvisionalLoadParams, which also removes the need to save the
-    // redirect chain in the renderer.
-    std::vector<GURL> redirects;
-    GetRedirectChain(document_loader, &redirects);
-    params->referrer = blink::mojom::Referrer::New(
-        redirects[0], document_loader->GetReferrerPolicy());
-  } else {
-    params->referrer = blink::mojom::Referrer::New(
-        blink::WebStringToGURL(document_loader->Referrer()),
-        document_loader->GetReferrerPolicy());
-  }
+  // Note that the value of `referrer` will be overwritten in the browser with a
+  // browser-calculated value, except for renderer-initated same-document
+  // navigations and the synchronous about:blank commit (because the browser
+  // doesn't know anything about those navigations).
+  // TODO(https://crbug.com/1131832): Remove `referrer` from
+  // DidCommitProvisionalLoadParams.
+  params->referrer = blink::mojom::Referrer::New(
+      blink::WebStringToGURL(document_loader->Referrer()),
+      document_loader->GetReferrerPolicy());
 
   if (!frame_->Parent()) {
     // Top-level navigation.
@@ -4792,7 +4773,7 @@ void RenderFrameImpl::DidCommitNavigationInternal(
   // load committing.
   auto params = MakeDidCommitProvisionalLoadParams(
       commit_type, transition, permissions_policy_header,
-      document_policy_header, embedding_token, !!same_document_params);
+      document_policy_header, embedding_token);
 
   if (same_document_params) {
     GetFrameHost()->DidCommitSameDocumentNavigation(

@@ -364,8 +364,6 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   HashSet<KURL> GetEarlyHintsPreloadedResources();
 
  protected:
-  Vector<KURL> redirect_chain_;
-
   // Based on its MIME type, if the main document's response corresponds to an
   // MHTML archive, then every resources will be loaded from this archive.
   //

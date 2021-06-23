@@ -1805,6 +1805,14 @@ void NavigationRequest::StartNavigation() {
   if (common_params_->transition & ui::PAGE_TRANSITION_CLIENT_REDIRECT) {
     // If the page contained a client redirect (meta refresh,
     // document.location), set the referrer appropriately.
+    // Note that this value will stay the same, even after cross-origin
+    // redirects. This means the referrer URL and policy in
+    // `sanitized_referrer_` might not be the same as the actual referrer sent
+    // for the final navigation request (which will be updated/re-sanitized on
+    // each redirect).
+    // TODO(https://crbug.com/1218786): Remove this special case, and also
+    // `sanitized_referrer_` entirely, in favor of CommonNavigationParams'
+    // `referrer`, which will be properly sanitized after each redirect.
     sanitized_referrer_ = blink::mojom::Referrer::New(
         redirect_chain_[0], Referrer::SanitizeForRequest(
                                 common_params_->url, *common_params_->referrer)

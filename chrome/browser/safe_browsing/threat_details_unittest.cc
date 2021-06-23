@@ -431,9 +431,8 @@ TEST_F(ThreatDetailsTest, ThreatSubResource) {
   expected.set_type(ClientSafeBrowsingReportRequest::URL_MALWARE);
   expected.set_url(kThreatURL);
   expected.set_page_url(kLandingURL);
-  // Note that the referrer policy is not actually enacted here, since that's
-  // done in Blink.
-  expected.set_referrer_url(kReferrerURL);
+  // The referrer is stripped to its origin because it's a cross-origin URL.
+  expected.set_referrer_url(GURL(kReferrerURL).GetOrigin().spec());
   expected.set_did_proceed(true);
   expected.set_repeat_visit(true);
 
@@ -446,7 +445,7 @@ TEST_F(ThreatDetailsTest, ThreatSubResource) {
   pb_resource->set_url(kThreatURL);
   pb_resource = expected.add_resources();
   pb_resource->set_id(2);
-  pb_resource->set_url(kReferrerURL);
+  pb_resource->set_url(GURL(kReferrerURL).GetOrigin().spec());
 
   VerifyResults(actual, expected);
 }
@@ -489,9 +488,8 @@ TEST_F(ThreatDetailsTest, SuspiciousSiteWithReferrerChain) {
       ClientSafeBrowsingReportRequest::PVER4_NATIVE);
   expected.set_url(kThreatURL);
   expected.set_page_url(kLandingURL);
-  // Note that the referrer policy is not actually enacted here, since that's
-  // done in Blink.
-  expected.set_referrer_url(kReferrerURL);
+  // The referrer is stripped to its origin because it's a cross-origin URL.
+  expected.set_referrer_url(GURL(kReferrerURL).GetOrigin().spec());
   expected.set_did_proceed(true);
   expected.set_repeat_visit(true);
 
@@ -504,7 +502,7 @@ TEST_F(ThreatDetailsTest, SuspiciousSiteWithReferrerChain) {
   pb_resource->set_url(kThreatURL);
   pb_resource = expected.add_resources();
   pb_resource->set_id(2);
-  pb_resource->set_url(kReferrerURL);
+  pb_resource->set_url(GURL(kReferrerURL).GetOrigin().spec());
 
   // Make sure the referrer chain returned by the provider is copied into the
   // resulting proto.
@@ -1510,9 +1508,8 @@ TEST_F(ThreatDetailsTest, ThreatWithPendingLoad) {
       ClientSafeBrowsingReportRequest::PVER4_NATIVE);
   expected.set_url(kThreatURL);
   expected.set_page_url(kLandingURL);
-  // Note that the referrer policy is not actually enacted here, since that's
-  // done in Blink.
-  expected.set_referrer_url(kReferrerURL);
+  // The referrer is stripped to its origin because it's a cross-origin URL.
+  expected.set_referrer_url(GURL(kReferrerURL).GetOrigin().spec());
   expected.set_did_proceed(true);
   expected.set_repeat_visit(true);
 
@@ -1525,7 +1522,7 @@ TEST_F(ThreatDetailsTest, ThreatWithPendingLoad) {
   pb_resource->set_url(kThreatURL);
   pb_resource = expected.add_resources();
   pb_resource->set_id(2);
-  pb_resource->set_url(kReferrerURL);
+  pb_resource->set_url(GURL(kReferrerURL).GetOrigin().spec());
 
   VerifyResults(actual, expected);
 }

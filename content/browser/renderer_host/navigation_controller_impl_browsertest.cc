@@ -7146,7 +7146,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 // the right subframe (AUTO_SUBFRAME navigation).
 IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
                        FrameNavigationEntry_AutoSubFrameRedirectChain) {
-  NavigationControllerImpl& controller = contents()->GetController();
+  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
+      shell()->web_contents()->GetController());
 
   GURL main_url(embedded_test_server()->GetURL(
       "/navigation_controller/page_with_iframe_redirect.html"));
@@ -7628,7 +7629,6 @@ IN_PROC_BROWSER_TEST_P(
 
   GURL url_2(embedded_test_server()->GetURL("b.com", "/title2.html"));
   {
-    RenderFrameHost* initial_rfh = contents()->GetMainFrame();
     // Do a renderer-initiated cross-site navigation that's considered a
     // client-side redirect.
     EXPECT_TRUE(NavigateToURLFromRenderer(shell(), url_2));
@@ -7652,23 +7652,15 @@ IN_PROC_BROWSER_TEST_P(
     // which is the URL that initiated the client redirect.
     EXPECT_EQ(entry->GetOriginalRequestURL(), start_url);
 
-    // The referrer is |start_url| since the navigation is considered a
-    // client-side redirect so it uses the previous document's URL, except when
-    // the RenderFrameHost changes (e.g. when site isolation is enabled), in
-    // which case the renderer has no idea what the last document's URL is and
-    // ends up with an empty GURL.
-    // TODO(https://crbug.com/1171210): Fix this.
-    if (initial_rfh != contents()->GetMainFrame()) {
-      ExpectReferrerWithDefaultPolicy(entry, GURL());
-    } else {
-      // TODO(https://crbug.com/1218786): This uses the full URL instead of only
-      // the origin even though it went cross-origin, because of the special
-      // handling of client-side redirects in the referrer calculation for the
-      // FrameNavigationEntry. This might not be the same as the referrer value
-      // used by the navigation request (which is correctly sanitized to only
-      // contain the origin). Maybe fix this?
-      ExpectReferrerWithDefaultPolicy(entry, start_url);
-    }
+    // The referrer is |start_url| since the cross-site navigation is
+    // renderer-initiated (and considered a client-side redirect)
+    // TODO(https://crbug.com/1218786): This uses the full URL instead of only
+    // the origin even though it went cross-origin, because of the special
+    // handling of client-side redirects in the referrer calculation for the
+    // FrameNavigationEntry. This might not be the same as the referrer value
+    // used by the navigation request (which is correctly sanitized to only
+    // contain the origin). Maybe fix this?
+    ExpectReferrerWithDefaultPolicy(entry, start_url);
   }
 
   GURL url_3(embedded_test_server()->GetURL("c.com", "/title3.html"));
@@ -7743,7 +7735,6 @@ IN_PROC_BROWSER_TEST_P(
   GURL start_url(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), start_url));
   EXPECT_EQ(1, controller.GetEntryCount());
-  RenderFrameHost* initial_rfh = contents()->GetMainFrame();
 
   // Navigate the main frame to a redirecting URL (server-side) by setting
   // location.href, which should count as a client side redirect.
@@ -7766,22 +7757,14 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(entry->GetOriginalRequestURL(), start_url);
 
   // The referrer is |start_url| since the navigation is considered a
-  // client-side redirect so it uses the previous document's URL, except when
-  // the RenderFrameHost changes (e.g. when site isolation is enabled), in which
-  // case the renderer has no idea what the last document's URL is and ends up
-  // with an empty GURL.
-  // TODO(https://crbug.com/1171210): Fix this.
-  if (initial_rfh != contents()->GetMainFrame()) {
-    ExpectReferrerWithDefaultPolicy(entry, GURL());
-  } else {
-    // TODO(https://crbug.com/1218786): This uses the full URL instead of only
-    // the origin even though it went cross-origin, because of the special
-    // handling of client-side redirects in the referrer calculation for the
-    // FrameNavigationEntry. This might not be the same as the referrer value
-    // used by the navigation request (which is correctly sanitized to only
-    // contain the origin). Maybe fix this?
-    ExpectReferrerWithDefaultPolicy(entry, start_url);
-  }
+  // client-side redirect so it uses the previous document's URL.
+  // TODO(https://crbug.com/1218786): This uses the full URL instead of only
+  // the origin even though it went cross-origin, because of the special
+  // handling of client-side redirects in the referrer calculation for the
+  // FrameNavigationEntry. This might not be the same as the referrer value
+  // used by the navigation request (which is correctly sanitized to only
+  // contain the origin). Maybe fix this?
+  ExpectReferrerWithDefaultPolicy(entry, start_url);
 }
 
 // Verifies that the FrameNavigationEntry's redirect chain and referrer is
@@ -7795,7 +7778,6 @@ IN_PROC_BROWSER_TEST_P(
   GURL start_url(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), start_url));
   EXPECT_EQ(1, controller.GetEntryCount());
-  RenderFrameHost* initial_rfh = contents()->GetMainFrame();
 
   // Navigate the main frame to a redirecting URL (server-side) by setting
   // location.href, which should count as a client side redirect.
@@ -7822,22 +7804,14 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(entry->GetOriginalRequestURL(), start_url);
 
   // The referrer is |start_url| since the navigation is considered a
-  // client-side redirect so it uses the previous document's URL, except when
-  // the RenderFrameHost changes (e.g. when site isolation is enabled), in which
-  // case the renderer has no idea what the last document's URL is and ends up
-  // with an empty GURL.
-  // TODO(https://crbug.com/1171210): Fix this.
-  if (initial_rfh != contents()->GetMainFrame()) {
-    ExpectReferrerWithDefaultPolicy(entry, GURL());
-  } else {
-    // TODO(https://crbug.com/1218786): This uses the full URL instead of only
-    // the origin even though it went cross-origin, because of the special
-    // handling of client-side redirects in the referrer calculation for the
-    // FrameNavigationEntry. This might not be the same as the referrer value
-    // used by the navigation request (which is correctly sanitized to only
-    // contain the origin). Maybe fix this?
-    ExpectReferrerWithDefaultPolicy(entry, start_url);
-  }
+  // client-side redirect so it uses the previous document's URL.
+  // TODO(https://crbug.com/1218786): This uses the full URL instead of only
+  // the origin even though it went cross-origin, because of the special
+  // handling of client-side redirects in the referrer calculation for the
+  // FrameNavigationEntry. This might not be the same as the referrer value
+  // used by the navigation request (which is correctly sanitized to only
+  // contain the origin). Maybe fix this?
+  ExpectReferrerWithDefaultPolicy(entry, start_url);
 }
 
 // Verifies that the FrameNavigationEntry's redirect chain and referrer is
@@ -7893,7 +7867,8 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(
     NavigationControllerBrowserTest,
     FrameNavigationEntry_MainFrameRedirectChain_CrossOriginThenSameOriginRedirect_LinkClick) {
-  NavigationControllerImpl& controller = contents()->GetController();
+  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
+      shell()->web_contents()->GetController());
 
   GURL start_url(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), start_url));
@@ -7907,7 +7882,8 @@ IN_PROC_BROWSER_TEST_P(
   GURL redirecting_url(embedded_test_server()->GetURL(
       "b.com", "/server-redirect?" + final_url.spec()));
 
-  TestNavigationManager navigation_manager(contents(), redirecting_url);
+  TestNavigationManager navigation_manager(shell()->web_contents(),
+                                           redirecting_url);
   EXPECT_TRUE(
       ExecJs(contents(), JsReplace("let a = document.createElement('a');"
                                    "a.href = $1;"
@@ -7919,7 +7895,7 @@ IN_PROC_BROWSER_TEST_P(
   // The last committed NavigationEntry's redirect chain will contain the
   // server-side redirecting URL and the final URL.
   EXPECT_EQ(2, controller.GetEntryCount());
-  NavigationEntry* entry = controller.GetLastCommittedEntry();
+  content::NavigationEntry* entry = controller.GetLastCommittedEntry();
   EXPECT_EQ(entry->GetRedirectChain().size(), 2u);
   EXPECT_EQ(entry->GetRedirectChain()[0], redirecting_url);
   EXPECT_EQ(entry->GetRedirectChain()[1], final_url);
@@ -7929,10 +7905,8 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(entry->GetOriginalRequestURL(), redirecting_url);
 
   // The referrer is |start_url| since it's the URL that started the navigation.
-  // Since the navigation went through a cross-origin redirect (even though it
-  // ended up on a same-origin URL after redirects) and the default
-  // referrer policy strips referrers to their origins on cross-origin
-  // requests, only the origin is saved.
+  // Since the navigation went through a cross-origin URL (even though it ended
+  // up on a same-origin URL after redirects), only the origin is saved.
   ExpectReferrerWithDefaultPolicy(entry, start_url.GetOrigin());
 }
 
@@ -8183,15 +8157,8 @@ IN_PROC_BROWSER_TEST_P(
     EXPECT_EQ(frame_entry->redirect_chain()[0], iframe_url);
     EXPECT_EQ(frame_entry->redirect_chain()[1], iframe_url);
 
-    // The referrer is |iframe_url| since this is a renderer-initiated reload,
-    // except when the RenderFrameHost changes, in which case the renderer has
-    // no idea what the last document's URL is and ends up with about:blank.
-    // TODO(https://crbug.com/1171210): Fix this.
-    if (ShouldCreateNewHostForSameSiteSubframe()) {
-      ExpectReferrerWithDefaultPolicy(frame_entry.get(), GURL("about:blank"));
-    } else {
-      ExpectReferrerWithDefaultPolicy(frame_entry.get(), iframe_url);
-    }
+    // The referrer is |iframe_url| since this is a renderer-initiated reload.
+    ExpectReferrerWithDefaultPolicy(frame_entry.get(), iframe_url);
   }
 
   {
@@ -8216,11 +8183,7 @@ IN_PROC_BROWSER_TEST_P(
 
     // The referrer is the same as the previous navigation since this is a
     // browser-initiated reload and we reuse the entry's referrer.
-    if (ShouldCreateNewHostForSameSiteSubframe()) {
-      ExpectReferrerWithDefaultPolicy(frame_entry.get(), GURL());
-    } else {
-      ExpectReferrerWithDefaultPolicy(frame_entry.get(), iframe_url);
-    }
+    ExpectReferrerWithDefaultPolicy(frame_entry.get(), iframe_url);
   }
 }
 

@@ -47,8 +47,6 @@ class WebDocumentSubresourceFilter;
 class WebServiceWorkerNetworkProvider;
 class WebURL;
 class WebURLResponse;
-template <typename T>
-class WebVector;
 
 namespace mojom {
 enum class FetchCacheMode : int32_t;
@@ -92,14 +90,6 @@ class BLINK_EXPORT WebDocumentLoader {
   // there may be an associated unreachableURL.
   virtual bool HasUnreachableURL() const = 0;
   virtual WebURL UnreachableURL() const = 0;
-
-  // Returns all redirects that occurred (both client and server) before
-  // at last committing the current page.  This will contain one entry
-  // for each intermediate URL, and one entry for the last URL (so if
-  // there are no redirects, it will contain exactly the current URL, and
-  // if there is one redirect, it will contain the source and destination
-  // URL).
-  virtual void RedirectChain(WebVector<WebURL>&) const = 0;
 
   // Returns whether the navigation associated with this datasource is a
   // client redirect.

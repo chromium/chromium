@@ -4340,47 +4340,6 @@ TEST_F(WebFrameTest, ReloadWhileProvisional) {
             KURL(document_loader->GetUrl()));
 }
 
-TEST_F(WebFrameTest, RedirectChainContainsInitialUrl) {
-  const std::string first_url = "data:text/html,foo";
-
-  frame_test_helpers::WebViewHelper web_view_helper;
-  web_view_helper.InitializeAndLoad(first_url);
-
-  WebDocumentLoader* document_loader =
-      web_view_helper.LocalMainFrame()->GetDocumentLoader();
-  ASSERT_TRUE(document_loader);
-
-  WebVector<WebURL> redirects;
-  document_loader->RedirectChain(redirects);
-  ASSERT_EQ(1U, redirects.size());
-  EXPECT_EQ(ToKURL(first_url), KURL(redirects[0]));
-}
-
-TEST_F(WebFrameTest, IframeRedirect) {
-  RegisterMockedHttpURLLoad("iframe_redirect.html");
-  RegisterMockedHttpURLLoad("visible_iframe.html");
-
-  frame_test_helpers::WebViewHelper web_view_helper;
-  web_view_helper.InitializeAndLoad(base_url_ + "iframe_redirect.html");
-  // Pump pending requests one more time. The test page loads script that
-  // navigates.
-  frame_test_helpers::PumpPendingRequestsForFrameToLoad(
-      web_view_helper.LocalMainFrame());
-
-  WebFrame* iframe = web_view_helper.LocalMainFrame()->FindFrameByName(
-      WebString::FromUTF8("ifr"));
-  ASSERT_TRUE(iframe && iframe->IsWebLocalFrame());
-  WebDocumentLoader* iframe_document_loader =
-      iframe->ToWebLocalFrame()->GetDocumentLoader();
-  ASSERT_TRUE(iframe_document_loader);
-  WebVector<WebURL> redirects;
-  iframe_document_loader->RedirectChain(redirects);
-  ASSERT_EQ(2U, redirects.size());
-  EXPECT_EQ(ToKURL("about:blank"), KURL(redirects[0]));
-  EXPECT_EQ(ToKURL("http://internal.test/visible_iframe.html"),
-            KURL(redirects[1]));
-}
-
 TEST_F(WebFrameTest, ClearFocusedNodeTest) {
   RegisterMockedHttpURLLoad("iframe_clear_focused_node_test.html");
   RegisterMockedHttpURLLoad("autofocus_input_field_iframe.html");

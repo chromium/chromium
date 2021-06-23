@@ -230,7 +230,6 @@ struct SameSizeAsDocumentLoader
     : public GarbageCollected<SameSizeAsDocumentLoader>,
       public UseCounter,
       public WebNavigationBodyLoader::Client {
-  Vector<KURL> redirect_chain;
   Member<MHTMLArchive> archive;
   std::unique_ptr<WebNavigationParams> params;
   std::unique_ptr<PolicyContainer> policy_container;
@@ -464,19 +463,8 @@ DocumentLoader::DocumentLoader(
     }
   }
 
-  // The document URL needs to be added to the head of the list as that is
-  // where the redirects originated. Note that this is currently broken if we
-  // don't reuse the RenderFrame (e.g. cross-site navigations) - this will
-  // result in an empty URL or about:blank in that case.
-  // TODO(https://crbug.com/1171210): Fix this.
-  if (is_client_redirect_)
-    redirect_chain_.push_back(frame_->GetDocument()->Url());
-
   if (was_blocked_by_document_policy_)
     ReplaceWithEmptyDocument();
-
-  if (commit_reason_ != CommitReason::kInitialization)
-    redirect_chain_.push_back(url_);
 
   for (const auto& resource : params_->early_hints_preloaded_resources)
     early_hints_preloaded_resources_.insert(resource);
@@ -501,8 +489,8 @@ DocumentLoader::CreateWebNavigationParamsToCloneDocument() {
   // |replaces_current_history_item_| will be false.
   // |permissions_policy_| and |document_policy_| are set in CommitNavigation(),
   // with the sandbox flags set in CalculateSandboxFlags().
-  // |is_client_redirect_| and |redirect_chain_| are not copied since future
-  // same-document navigations will clear the redirect chain anyways.
+  // |is_client_redirect_| is not copied since future same-document navigations
+  // will reset the state anyways.
   // |archive_| and other states might need to be copied, but we need to add
   // fields to WebNavigationParams and create WebMHTMLArchive, etc.
   // TODO(https://crbug.com/1151954): Copy |archive_| and other attributes.
@@ -754,10 +742,6 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
     http_method_ = http_names::kGET;
     http_body_ = nullptr;
   }
-  redirect_chain_.clear();
-  if (is_client_redirect_)
-    redirect_chain_.push_back(old_url);
-  redirect_chain_.push_back(new_url);
 
   last_navigation_had_trusted_initiator_ =
       initiator_origin ? initiator_origin->IsSameOriginWith(
@@ -1113,7 +1097,6 @@ void DocumentLoader::HandleRedirect(
   navigation_timing_info_->AddRedirect(redirect_response, url_after_redirect);
 
   DCHECK(!GetTiming().FetchStart().is_null());
-  redirect_chain_.push_back(url_after_redirect);
   GetTiming().AddRedirect(url_before_redirect, url_after_redirect);
 }
 
