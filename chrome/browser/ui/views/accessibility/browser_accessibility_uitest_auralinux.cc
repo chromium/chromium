@@ -6,6 +6,7 @@
 #include <stddef.h>
 
 #include "base/macros.h"
+#include "build/build_config.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -188,8 +189,15 @@ IN_PROC_BROWSER_TEST_F(AuraLinuxAccessibilityInProcessBrowserTest,
 
 // Tests that the embedded relationship is set on the main web contents when
 // the DevTools is opened.
+// This fails on Linux : http://crbug.com/1223047
+#if defined(OS_LINUX)
+#define MAYBE_EmbeddedRelationshipWithDevTools \
+  DISABLED_EmbeddedRelationshipWithDevTools
+#else
+#define MAYBE_EmbeddedRelationshipWithDevTools EmbeddedRelationshipWithDevTools
+#endif
 IN_PROC_BROWSER_TEST_F(AuraLinuxAccessibilityInProcessBrowserTest,
-                       EmbeddedRelationshipWithDevTools) {
+                       MAYBE_EmbeddedRelationshipWithDevTools) {
   // Force the creation of the document's native object which sets up the
   // relationship.
   content::WebContents* active_web_contents =
