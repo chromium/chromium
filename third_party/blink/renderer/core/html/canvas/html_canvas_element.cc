@@ -878,10 +878,6 @@ scoped_refptr<StaticBitmapImage> HTMLCanvasElement::Snapshot(
   if (size_.IsEmpty())
     return nullptr;
 
-  // TODO(crbug/1220065): Implement WebGPU snapshot.
-  if (IsWebGPU())
-    return nullptr;
-
   scoped_refptr<StaticBitmapImage> image_bitmap;
   if (OffscreenCanvasFrame()) {  // Offscreen Canvas
     DCHECK(OffscreenCanvasFrame()->OriginClean());
@@ -908,10 +904,9 @@ scoped_refptr<StaticBitmapImage> HTMLCanvasElement::Snapshot(
         image_bitmap = StaticBitmapImage::Create(std::move(pixel_data), info);
       }
     }
-  } else if (canvas2d_bridge_) {
-    DCHECK(IsRenderingContext2D());
-    image_bitmap = canvas2d_bridge_->NewImageSnapshot();
-  } else if (context_) {  // Bitmap renderer canvas
+  } else if (context_) {
+    DCHECK(IsRenderingContext2D() || IsImageBitmapRenderingContext() ||
+           IsWebGPU());
     image_bitmap = context_->GetImage();
   }
 

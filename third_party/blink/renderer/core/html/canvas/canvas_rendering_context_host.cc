@@ -87,6 +87,11 @@ bool CanvasRenderingContextHost::IsRenderingContext2D() const {
   return RenderingContext() && RenderingContext()->IsRenderingContext2D();
 }
 
+bool CanvasRenderingContextHost::IsImageBitmapRenderingContext() const {
+  return RenderingContext() &&
+         RenderingContext()->IsImageBitmapRenderingContext();
+}
+
 CanvasResourceProvider*
 CanvasRenderingContextHost::GetOrCreateCanvasResourceProvider(
     RasterModeHint hint) {

@@ -104,6 +104,7 @@ class CORE_EXPORT CanvasRenderingContextHost : public CanvasResourceHost,
   bool IsWebGL() const;
   bool IsWebGPU() const;
   bool IsRenderingContext2D() const;
+  bool IsImageBitmapRenderingContext() const;
   CanvasColorParams ColorParams() const;
 
   // blink::CanvasImageSource
