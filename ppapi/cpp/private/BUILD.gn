@@ -7,4 +7,6 @@ source_set("internal_module") {
     "internal_module.cc",
     "internal_module.h",
   ]
+
+  deps = [ "//ppapi/cpp:objects" ]
 }
