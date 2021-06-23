@@ -90,8 +90,14 @@ String NGBlockBreakToken::ToString() const {
   string_builder.Append(NGBreakToken::ToString());
   string_builder.Append(" consumed:");
   string_builder.Append(consumed_block_size_.ToString());
-  string_builder.Append(consumed_block_size_legacy_adjustment_.ToString());
   string_builder.Append("px");
+
+  if (consumed_block_size_legacy_adjustment_) {
+    string_builder.Append(" legacy adjustment:");
+    string_builder.Append(consumed_block_size_legacy_adjustment_.ToString());
+    string_builder.Append("px");
+  }
+
   return string_builder.ToString();
 }
 
