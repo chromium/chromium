@@ -253,18 +253,6 @@ AccessibilityEventRecorderUia::Thread::EventHandler::HandleFocusChangedEvent(
 
   base::win::ScopedSafearray id;
   sender->GetRuntimeId(id.Receive());
-
-  if (auto lock_scope = id.CreateLockScope<VT_I4>()) {
-    // Debounce focus events received from the same |sender|.
-    if (std::equal(lock_scope->begin(), lock_scope->end(),
-                   last_focused_runtime_id_.begin(),
-                   last_focused_runtime_id_.end())) {
-      return S_OK;
-    }
-
-    last_focused_runtime_id_ = {lock_scope->begin(), lock_scope->end()};
-  }
-
   base::win::ScopedVariant id_variant(id.Release());
 
   Microsoft::WRL::ComPtr<IUIAutomationElement> element_found;
@@ -278,6 +266,26 @@ AccessibilityEventRecorderUia::Thread::EventHandler::HandleFocusChangedEvent(
   if (!element_found) {
     VLOG(1) << "Ignoring UIA focus event outside our frame";
     return S_OK;
+  }
+
+  // Transfer ownership of the RuntimeId SAFEARRAY back into |id| then debounce
+  // focus events that are consecutively received for the same |sender|. This
+  // needs to happen after determining the |sender| is within the |root_| frame,
+  // otherwise a RuntimeId outside the frame may be cached. For example, when
+  // receiving a global focus event not related to the |root_| frame.
+  {
+    VARIANT tmp = id_variant.Release();
+    id.Reset(V_ARRAY(&tmp));
+  }
+  if (auto lock_scope = id.CreateLockScope<VT_I4>()) {
+    // Debounce focus events received from the same |sender|.
+    if (std::equal(lock_scope->begin(), lock_scope->end(),
+                   last_focused_runtime_id_.begin(),
+                   last_focused_runtime_id_.end())) {
+      return S_OK;
+    }
+
+    last_focused_runtime_id_ = {lock_scope->begin(), lock_scope->end()};
   }
 
   std::string log = base::StringPrintf("AutomationFocusChanged %s",
