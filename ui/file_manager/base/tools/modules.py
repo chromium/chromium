@@ -376,7 +376,7 @@ def update_buid_gn_unittest_dependencies(build_gn_path, js_file_path,
     print 'Updating BUILD.gn dependencies for ' + file_name
 
     main_build_path = 'ui/file_manager/BUILD.gn'
-    file_manager_jstest_path = ('chrome/browser/chromeos/file_manager/'
+    file_manager_jstest_path = ('chrome/browser/ash/file_manager/'
                                 'file_manager_jstest.cc')
 
     # Get file contents.
