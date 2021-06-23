@@ -516,7 +516,7 @@ void IntersectionObserver::Deliver() {
 }
 
 bool IntersectionObserver::HasPendingActivity() const {
-  return !observations_.IsEmpty();
+  return !observations_.IsEmpty() && needs_delivery_;
 }
 
 void IntersectionObserver::Trace(Visitor* visitor) const {

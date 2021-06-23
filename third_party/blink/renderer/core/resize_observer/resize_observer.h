@@ -76,9 +76,7 @@ class CORE_EXPORT ResizeObserver final
   const Member<V8ResizeObserverCallback> callback_;
   const Member<Delegate> delegate_;
 
-  // List of Elements we are observing. These Elements make the ResizeObserver
-  // and most-importantly |callback_| alive. If |observations_| is empty, no one
-  // is performing wrapper-tracing and |callback_| might already be gone.
+  // List of Elements we are observing
   ObservationList observations_;
   // List of elements that have changes
   HeapVector<Member<ResizeObservation>> active_observations_;

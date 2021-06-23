@@ -196,7 +196,7 @@ void ResizeObserver::ClearObservations() {
 }
 
 bool ResizeObserver::HasPendingActivity() const {
-  return !observations_.IsEmpty();
+  return !active_observations_.IsEmpty();
 }
 
 void ResizeObserver::Trace(Visitor* visitor) const {
