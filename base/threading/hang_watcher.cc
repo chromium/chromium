@@ -1000,9 +1000,19 @@ uint64_t HangWatchDeadline::SwitchBitsForTesting() {
 }
 
 HangWatchState::HangWatchState(HangWatcher::ThreadType thread_type)
-    : thread_id_(PlatformThread::CurrentId()), thread_type_(thread_type) {
+    : thread_type_(thread_type) {
   // There should not exist a state object for this thread already.
   DCHECK(!GetHangWatchStateForCurrentThread()->Get());
+
+// TODO(crbug.com/1223033): Remove this once macOS uses system-wide ids.
+// On macOS the thread ids used by CrashPad are not the same as the ones
+// provided by PlatformThread. Make sure to use the same for correct
+// attribution.
+#ifdef OS_MAC
+  pthread_threadid_np(pthread_self(), &thread_id_);
+#else
+  thread_id_ = PlatformThread::CurrentId();
+#endif
 
   // Bind the new instance to this thread.
   GetHangWatchStateForCurrentThread()->Set(this);
@@ -1110,7 +1120,7 @@ HangWatchState::GetHangWatchStateForCurrentThread() {
   return hang_watch_state.get();
 }
 
-PlatformThreadId HangWatchState::GetThreadID() const {
+uint64_t HangWatchState::GetThreadID() const {
   return thread_id_;
 }
 
