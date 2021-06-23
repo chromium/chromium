@@ -2462,6 +2462,12 @@
                     "disable_features": [
                         "D3D11VideoDecoder"
                     ]
+                },
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "D3D11VideoDecoder"
+                    ]
                 }
             ]
         }
