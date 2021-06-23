@@ -69,6 +69,7 @@ android_resources("web_feed_java_resources") {
     "java/res/layout/follow_management_activity.xml",
     "java/res/layout/follow_management_empty_state.xml",
     "java/res/layout/follow_management_item.xml",
+    "java/res/layout/follow_management_loading_state.xml",
     "java/res/layout/radio_button_group_video_previews_preference.xml",
     "java/res/layout/web_feed_dialog.xml",
     "java/res/layout/web_feed_main_menu_item.xml",

@@ -16,6 +16,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 public class FollowManagementItemProperties {
     public static final int DEFAULT_ITEM_TYPE = 0;
     public static final int EMPTY_ITEM_TYPE = 1;
+    public static final int LOADING_ITEM_TYPE = 2;
 
     public static final WritableObjectPropertyKey<String> TITLE_KEY =
             new WritableObjectPropertyKey<>();

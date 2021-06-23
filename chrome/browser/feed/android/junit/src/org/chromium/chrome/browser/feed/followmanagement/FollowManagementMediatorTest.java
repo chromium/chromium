@@ -92,6 +92,15 @@ public class FollowManagementMediatorTest {
     }
 
     @Test
+    public void testLoadingState() {
+        // Loading state is set upon construction.
+        ModelList modelList = mFollowManagementMediator.getModelListForTest();
+        assertEquals(1, modelList.size());
+        ListItem item = modelList.get(0);
+        assertEquals(FollowManagementItemProperties.LOADING_ITEM_TYPE, item.type);
+    }
+
+    @Test
     public void testEmptyWebFeedList() {
         mFollowManagementMediator.fillRecyclerView(new ArrayList<WebFeedMetadata>());
 

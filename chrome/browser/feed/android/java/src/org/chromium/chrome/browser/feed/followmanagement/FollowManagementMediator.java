@@ -157,6 +157,12 @@ class FollowManagementMediator {
         mAdapter = adapter;
         mLargeIconBridge = largeIconBridge;
 
+        // Inflate and show the loading state view inside the recycler view.
+        PropertyModel pageModel = new PropertyModel();
+        SimpleRecyclerViewAdapter.ListItem listItem = new SimpleRecyclerViewAdapter.ListItem(
+                FollowManagementItemProperties.LOADING_ITEM_TYPE, pageModel);
+        mModelList.add(listItem);
+
         // Control flow is to refresh the feeds, then get the feed list, then display it.
         // TODO(https://.crbug.com/1197286) Add a spinner while waiting for results.
         WebFeedBridge.refreshFollowedWebFeeds(this::getFollowedWebFeeds);
@@ -172,6 +178,9 @@ class FollowManagementMediator {
     void fillRecyclerView(List<WebFeedMetadata> followedWebFeeds) {
         String updatesUnavailable =
                 mContext.getResources().getString(R.string.follow_manage_updates_unavailable);
+
+        // Remove the loading UI from the recycler view before showing the results.
+        mModelList.clear();
 
         // Add the list items (if any) to the recycler view.
         for (WebFeedMetadata page : followedWebFeeds) {
@@ -213,7 +222,7 @@ class FollowManagementMediator {
         }
     }
 
-    // Generate a list item for the recycler vivew for a followed page.
+    // Generate a list item for the recycler view for a followed page.
     private PropertyModel generateListItem(String title, String url, String status,
             boolean subscribed, OnClickListener clickListener) {
         return new PropertyModel.Builder(FollowManagementItemProperties.ALL_KEYS)

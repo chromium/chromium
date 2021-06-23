@@ -41,6 +41,9 @@ public class FollowManagementCoordinator {
         adapter.registerType(FollowManagementItemProperties.EMPTY_ITEM_TYPE,
                 new LayoutViewBuilder<LinearLayout>(R.layout.follow_management_empty_state),
                 (unusedModel, unusedView, unusedKey) -> {});
+        adapter.registerType(FollowManagementItemProperties.LOADING_ITEM_TYPE,
+                new LayoutViewBuilder<LinearLayout>(R.layout.follow_management_loading_state),
+                (unusedModel, unusedView, unusedKey) -> {});
 
         // Inflate the XML for the activity.
         mView = LayoutInflater.from(activity).inflate(R.layout.follow_management_activity, null);
