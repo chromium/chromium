@@ -555,7 +555,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Session.WebStates.WriteToFileTime" units="ms"
-    expires_after="2021-06-10">
+    expires_after="2021-12-10">
   <owner>justincohen@chromium.org</owner>
   <owner>rohitrao@chromium.org</owner>
   <summary>
