@@ -14,7 +14,9 @@
 // This test case verifies that chrome triggers LoadShillProfile for the
 // unmanaged user case and the managed user with/without network policy cases.
 
+#include "ash/public/cpp/login_screen_test_api.h"
 #include "base/bind.h"
+#include "base/bind_internal.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
@@ -29,6 +31,7 @@
 #include "chromeos/login/auth/user_context.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/proto/chrome_settings.pb.h"
+#include "components/user_manager/user_names.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -208,6 +211,40 @@ IN_PROC_BROWSER_TEST_F(ShillProfileLoadingTest,
   // policy.
   EXPECT_EQ(FakeSessionManagerClient::Get()->login_password(),
             LoginManagerTest::kPassword);
+}
+
+class ShillProfileLoadingGuestLoginTest : public ShillProfileLoadingTest {
+ protected:
+  ShillProfileLoadingGuestLoginTest() {
+    login_manager_.set_session_restore_enabled();
+  }
+
+  ~ShillProfileLoadingGuestLoginTest() override = default;
+
+  // ShillProfileLoadingTest:
+  void SetUpInProcessBrowserTestFixture() override {
+    ShillProfileLoadingTest::SetUpInProcessBrowserTestFixture();
+    FakeSessionManagerClient::Get()->set_supports_browser_restart(true);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(ShillProfileLoadingGuestLoginTest, GuestLogin) {
+  base::RunLoop restart_job_waiter;
+  FakeSessionManagerClient::Get()->set_restart_job_callback(
+      restart_job_waiter.QuitClosure());
+
+  LoadShillProfileWaiter load_shill_profile_waiter(
+      FakeSessionManagerClient::Get());
+  ASSERT_TRUE(ash::LoginScreenTestApi::ClickGuestButton());
+
+  restart_job_waiter.Run();
+
+  // Before restarting, chrome is supposed to have triggered loading the shill
+  // profile for the guest.
+  EXPECT_THAT(
+      load_shill_profile_waiter.invocations(),
+      ElementsAre(EqualsProto(cryptohome::CreateAccountIdentifierFromAccountId(
+          user_manager::GuestAccountId()))));
 }
 
 }  // namespace chromeos
