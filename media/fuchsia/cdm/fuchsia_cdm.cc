@@ -309,7 +309,7 @@ FuchsiaCdm::FuchsiaCdm(fuchsia::media::drm::ContentDecryptionModulePtr cdm,
 
 FuchsiaCdm::~FuchsiaCdm() = default;
 
-std::unique_ptr<FuchsiaStreamDecryptor> FuchsiaCdm::CreateStreamDecryptor(
+std::unique_ptr<SysmemBufferStream> FuchsiaCdm::CreateStreamDecryptor(
     bool secure_mode) {
   fuchsia::media::drm::DecryptorParams params;
   params.set_require_secure_mode(secure_mode);

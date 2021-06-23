@@ -12,8 +12,13 @@
 #include "base/logging.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/threading/thread_task_runner_handle.h"
+#include "media/base/cdm_context.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/renderer_client.h"
+#include "media/fuchsia/cdm/fuchsia_cdm_context.h"
+#include "media/fuchsia/common/passthrough_sysmem_buffer_stream.h"
+#include "media/fuchsia/common/sysmem_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -381,9 +386,93 @@ class TestRendererClient : public RendererClient {
   absl::optional<AudioDecoderConfig> last_config_change_;
 };
 
+// SysmemBufferStream that asynchronously decouples buffer production from
+// buffer consumption. Used to simulate stream decryptor.
+class AsyncSysmemBufferStream : public SysmemBufferStream {
+ public:
+  AsyncSysmemBufferStream();
+  ~AsyncSysmemBufferStream() override;
+
+  AsyncSysmemBufferStream(const AsyncSysmemBufferStream&) = delete;
+  AsyncSysmemBufferStream& operator=(const AsyncSysmemBufferStream&) = delete;
+
+  // SysmemBufferStream implementation:
+  void Initialize(Sink* sink,
+                  size_t min_buffer_size,
+                  size_t min_buffer_count) override;
+  void EnqueueBuffer(scoped_refptr<DecoderBuffer> buffer) override;
+  void Reset() override;
+
+ private:
+  void DoEnqueueBuffer(scoped_refptr<DecoderBuffer> buffer);
+
+  SysmemAllocatorClient sysmem_allocator_;
+  PassthroughSysmemBufferStream passthrough_stream_;
+
+  bool is_at_end_of_stream_ = false;
+
+  base::WeakPtrFactory<AsyncSysmemBufferStream> weak_factory_{this};
+};
+
+AsyncSysmemBufferStream::AsyncSysmemBufferStream()
+    : sysmem_allocator_("AsyncSysmemBufferStream"),
+      passthrough_stream_(&sysmem_allocator_) {}
+
+AsyncSysmemBufferStream::~AsyncSysmemBufferStream() = default;
+
+void AsyncSysmemBufferStream::Initialize(Sink* sink,
+                                         size_t min_buffer_size,
+                                         size_t min_buffer_count) {
+  passthrough_stream_.Initialize(sink, min_buffer_size, min_buffer_count);
+}
+
+void AsyncSysmemBufferStream::EnqueueBuffer(
+    scoped_refptr<DecoderBuffer> buffer) {
+  if (buffer->end_of_stream()) {
+    EXPECT_FALSE(is_at_end_of_stream_);
+    is_at_end_of_stream_ = true;
+  }
+
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(&AsyncSysmemBufferStream::DoEnqueueBuffer,
+                                weak_factory_.GetWeakPtr(), std::move(buffer)));
+}
+
+void AsyncSysmemBufferStream::Reset() {
+  passthrough_stream_.Reset();
+
+  // Drop pending DoEnqueueBuffer tasks.
+  weak_factory_.InvalidateWeakPtrs();
+
+  is_at_end_of_stream_ = false;
+}
+
+void AsyncSysmemBufferStream::DoEnqueueBuffer(
+    scoped_refptr<DecoderBuffer> buffer) {
+  passthrough_stream_.EnqueueBuffer(std::move(buffer));
+}
+
+class TestFuchsiaCdmContext : public CdmContext, public FuchsiaCdmContext {
+ public:
+  // CdmContext overrides.
+  FuchsiaCdmContext* GetFuchsiaCdmContext() override { return this; }
+
+  // FuchsiaCdmContext implementation.
+  std::unique_ptr<SysmemBufferStream> CreateStreamDecryptor(
+      bool secure_mode) override {
+    return std::make_unique<AsyncSysmemBufferStream>();
+  }
+};
+
 }  // namespace
 
-class FuchsiaAudioRendererTest : public testing::Test {
+struct RendererTestConfig {
+  bool simulate_fuchsia_cdm;
+};
+
+class FuchsiaAudioRendererTest
+    : public testing::Test,
+      public testing::WithParamInterface<RendererTestConfig> {
  public:
   FuchsiaAudioRendererTest() = default;
   ~FuchsiaAudioRendererTest() override = default;
@@ -410,6 +499,7 @@ class FuchsiaAudioRendererTest : public testing::Test {
       base::test::SingleThreadTaskEnvironment::MainThreadType::IO,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
+  std::unique_ptr<CdmContext> cdm_context_;
   std::unique_ptr<TestAudioConsumer> audio_consumer_;
   std::unique_ptr<TestStreamSink> stream_sink_;
   std::unique_ptr<TestDemuxerStream> demuxer_stream_;
@@ -433,6 +523,12 @@ void FuchsiaAudioRendererTest::CreateTestDemuxerStream() {
   AudioDecoderConfig config(kCodecPCM, kSampleFormatF32, CHANNEL_LAYOUT_MONO,
                             kDefaultSampleRate, {},
                             EncryptionScheme::kUnencrypted);
+
+  if (GetParam().simulate_fuchsia_cdm) {
+    config.SetIsEncrypted(true);
+    cdm_context_ = std::make_unique<TestFuchsiaCdmContext>();
+  }
+
   demuxer_stream_ = std::make_unique<TestDemuxerStream>(config);
 }
 
@@ -443,7 +539,7 @@ void FuchsiaAudioRendererTest::InitializeRenderer() {
   base::RunLoop run_loop;
   PipelineStatus pipeline_status;
   audio_renderer_->Initialize(
-      demuxer_stream_.get(), /*cdm_context=*/nullptr, &client_,
+      demuxer_stream_.get(), cdm_context_.get(), &client_,
       base::BindLambdaForTesting(
           [&run_loop, &pipeline_status](PipelineStatus s) {
             pipeline_status = s;
@@ -577,11 +673,19 @@ void FuchsiaAudioRendererTest::StartPlaybackAndVerifyClock(
                          true);
 }
 
-TEST_F(FuchsiaAudioRendererTest, Initialize) {
+// Run all FuchsiaAudioRendererTests with CDM enabled and disabled.
+INSTANTIATE_TEST_SUITE_P(Unencrypted,
+                         FuchsiaAudioRendererTest,
+                         testing::Values(RendererTestConfig{false}));
+INSTANTIATE_TEST_SUITE_P(Encrypted,
+                         FuchsiaAudioRendererTest,
+                         testing::Values(RendererTestConfig{true}));
+
+TEST_P(FuchsiaAudioRendererTest, Initialize) {
   ASSERT_NO_FATAL_FAILURE(CreateAndInitializeRenderer());
 }
 
-TEST_F(FuchsiaAudioRendererTest, InitializeAndBuffer) {
+TEST_P(FuchsiaAudioRendererTest, InitializeAndBuffer) {
   ASSERT_NO_FATAL_FAILURE(CreateAndInitializeRenderer());
   ASSERT_NO_FATAL_FAILURE(FillBuffer());
 
@@ -592,7 +696,7 @@ TEST_F(FuchsiaAudioRendererTest, InitializeAndBuffer) {
   EXPECT_EQ(stream_sink_->received_packets()->size(), 1U);
 }
 
-TEST_F(FuchsiaAudioRendererTest, StartPlaybackBeforeStreamSinkConnected) {
+TEST_P(FuchsiaAudioRendererTest, StartPlaybackBeforeStreamSinkConnected) {
   ASSERT_NO_FATAL_FAILURE(CreateAndInitializeRenderer());
 
   // Start playing immediately after initialization. The renderer should wait
@@ -606,21 +710,21 @@ TEST_F(FuchsiaAudioRendererTest, StartPlaybackBeforeStreamSinkConnected) {
   EXPECT_EQ(stream_sink_->received_packets()->size(), 1U);
 }
 
-TEST_F(FuchsiaAudioRendererTest, StartTicking) {
+TEST_P(FuchsiaAudioRendererTest, StartTicking) {
   ASSERT_NO_FATAL_FAILURE(CreateAndInitializeRenderer());
   ASSERT_NO_FATAL_FAILURE(StartPlaybackAndVerifyClock(
       /*start_pos=*/base::TimeDelta::FromMilliseconds(123),
       /*playback_rate=*/1.0));
 }
 
-TEST_F(FuchsiaAudioRendererTest, StartTickingRate1_5) {
+TEST_P(FuchsiaAudioRendererTest, StartTickingRate1_5) {
   ASSERT_NO_FATAL_FAILURE(CreateAndInitializeRenderer());
   ASSERT_NO_FATAL_FAILURE(StartPlaybackAndVerifyClock(
       /*start_pos=*/base::TimeDelta::FromMilliseconds(123),
       /*playback_rate=*/1.5));
 }
 
-TEST_F(FuchsiaAudioRendererTest, StartTickingRate0_5) {
+TEST_P(FuchsiaAudioRendererTest, StartTickingRate0_5) {
   ASSERT_NO_FATAL_FAILURE(CreateAndInitializeRenderer());
   ASSERT_NO_FATAL_FAILURE(StartPlaybackAndVerifyClock(
       /*start_pos=*/base::TimeDelta::FromMilliseconds(123),
@@ -629,7 +733,7 @@ TEST_F(FuchsiaAudioRendererTest, StartTickingRate0_5) {
 
 // Verify that the renderer doesn't send packets more than kMaxLeadTime ahead of
 // time.
-TEST_F(FuchsiaAudioRendererTest, MaxLeadTime) {
+TEST_P(FuchsiaAudioRendererTest, MaxLeadTime) {
   ASSERT_NO_FATAL_FAILURE(CreateAndInitializeRenderer());
   ASSERT_NO_FATAL_FAILURE(FillBuffer());
 
@@ -644,7 +748,7 @@ TEST_F(FuchsiaAudioRendererTest, MaxLeadTime) {
   EXPECT_EQ(expected_packets, stream_sink_->received_packets()->size());
 }
 
-TEST_F(FuchsiaAudioRendererTest, Seek) {
+TEST_P(FuchsiaAudioRendererTest, Seek) {
   ASSERT_NO_FATAL_FAILURE(CreateAndInitializeRenderer());
 
   constexpr base::TimeDelta kStartPos = base::TimeDelta();
@@ -677,7 +781,7 @@ TEST_F(FuchsiaAudioRendererTest, Seek) {
             kSeekPos.ToZxDuration());
 }
 
-TEST_F(FuchsiaAudioRendererTest, ChangeConfig) {
+TEST_P(FuchsiaAudioRendererTest, ChangeConfig) {
   ASSERT_NO_FATAL_FAILURE(CreateAndInitializeRenderer());
   ASSERT_NO_FATAL_FAILURE(StartPlayback());
 
@@ -724,7 +828,7 @@ TEST_F(FuchsiaAudioRendererTest, ChangeConfig) {
             kConfigChangePos.ToZxDuration());
 }
 
-TEST_F(FuchsiaAudioRendererTest, UpdateTimeline) {
+TEST_P(FuchsiaAudioRendererTest, UpdateTimeline) {
   ASSERT_NO_FATAL_FAILURE(CreateAndInitializeRenderer());
   ASSERT_NO_FATAL_FAILURE(StartPlayback());
 
@@ -745,7 +849,7 @@ TEST_F(FuchsiaAudioRendererTest, UpdateTimeline) {
             kTimelineChangePos + kMediaDelta + kTimeStep);
 }
 
-TEST_F(FuchsiaAudioRendererTest, PauseAndResume) {
+TEST_P(FuchsiaAudioRendererTest, PauseAndResume) {
   ASSERT_NO_FATAL_FAILURE(CreateAndInitializeRenderer());
   ASSERT_NO_FATAL_FAILURE(StartPlayback());
 
@@ -795,12 +899,16 @@ TEST_F(FuchsiaAudioRendererTest, PauseAndResume) {
 }
 
 // Verify that end-of-stream is handled correctly when the renderer is buffered.
-TEST_F(FuchsiaAudioRendererTest, EndOfStreamBuffered) {
+TEST_P(FuchsiaAudioRendererTest, EndOfStreamBuffered) {
   ASSERT_NO_FATAL_FAILURE(CreateAndInitializeRenderer());
   ASSERT_NO_FATAL_FAILURE(StartPlayback());
 
   const auto kStreamLength = base::TimeDelta::FromSeconds(1);
   FillDemuxerStream(kStreamLength);
+  demuxer_stream_->QueueReadResult(
+      TestDemuxerStream::ReadResult(DecoderBuffer::CreateEOSBuffer()));
+
+  // Queue second EOS buffer. The renderer should not read it.
   demuxer_stream_->QueueReadResult(
       TestDemuxerStream::ReadResult(DecoderBuffer::CreateEOSBuffer()));
 
@@ -817,7 +925,7 @@ TEST_F(FuchsiaAudioRendererTest, EndOfStreamBuffered) {
 
 // Verifies that buffering state is updated after reaching EOS. See
 // https://crbug.com/1162503 .
-TEST_F(FuchsiaAudioRendererTest, EndOfStreamWhenBuffering) {
+TEST_P(FuchsiaAudioRendererTest, EndOfStreamWhenBuffering) {
   ASSERT_NO_FATAL_FAILURE(CreateAndInitializeRenderer());
   stream_sink_ = audio_consumer_->WaitStreamSinkConnected();
 
@@ -837,7 +945,7 @@ TEST_F(FuchsiaAudioRendererTest, EndOfStreamWhenBuffering) {
   EXPECT_TRUE(stream_sink_->received_end_of_stream());
 }
 
-TEST_F(FuchsiaAudioRendererTest, EndOfStreamStart) {
+TEST_P(FuchsiaAudioRendererTest, EndOfStreamStart) {
   ASSERT_NO_FATAL_FAILURE(CreateAndInitializeRenderer());
   stream_sink_ = audio_consumer_->WaitStreamSinkConnected();
 
@@ -855,7 +963,7 @@ TEST_F(FuchsiaAudioRendererTest, EndOfStreamStart) {
   EXPECT_TRUE(stream_sink_->received_end_of_stream());
 }
 
-TEST_F(FuchsiaAudioRendererTest, SetVolume) {
+TEST_P(FuchsiaAudioRendererTest, SetVolume) {
   ASSERT_NO_FATAL_FAILURE(CreateAndInitializeRenderer());
 
   audio_renderer_->SetVolume(0.5);
@@ -863,7 +971,7 @@ TEST_F(FuchsiaAudioRendererTest, SetVolume) {
   EXPECT_EQ(audio_consumer_->volume(), 0.5);
 }
 
-TEST_F(FuchsiaAudioRendererTest, SetVolumeBeforeInitialize) {
+TEST_P(FuchsiaAudioRendererTest, SetVolumeBeforeInitialize) {
   ASSERT_NO_FATAL_FAILURE(CreateUninitializedRenderer());
 
   // SetVolume() may be called before AudioRenderer is initialized. It should
@@ -877,7 +985,7 @@ TEST_F(FuchsiaAudioRendererTest, SetVolumeBeforeInitialize) {
 // Verify that the case when StartTicking() is called shortly after
 // StartPlaying() is handled correctly. AudioConsumer::Start() should be sent
 // only after CreateStreamSink(). See crbug.com/1219147 .
-TEST_F(FuchsiaAudioRendererTest, PlaybackBeforeSinkCreation) {
+TEST_P(FuchsiaAudioRendererTest, PlaybackBeforeSinkCreation) {
   CreateTestDemuxerStream();
   const auto kStreamLength = base::TimeDelta::FromMilliseconds(100);
   FillDemuxerStream(kStreamLength);

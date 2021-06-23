@@ -71,7 +71,7 @@ class FuchsiaCdm : public ContentDecryptionModule,
   FuchsiaCdmContext* GetFuchsiaCdmContext() override;
 
   // FuchsiaCdmContext implementation:
-  std::unique_ptr<FuchsiaStreamDecryptor> CreateStreamDecryptor(
+  std::unique_ptr<SysmemBufferStream> CreateStreamDecryptor(
       bool secure_mode) override;
 
  private:
