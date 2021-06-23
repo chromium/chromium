@@ -1919,7 +1919,7 @@
     ],
 
     'clang_tot_official_pgo': [
-      'clang_tot', 'official', 'no_symbols', 'pgo_phase_1',
+      'clang_tot', 'official_optimize', 'no_symbols', 'pgo_phase_1',
     ],
 
     'clang_tot_minimal_symbols_static_release': [
