@@ -7,6 +7,7 @@ import("//chrome/test/base/js2gtest.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
+import("//ui/webui/resources/tools/js_modulizer.gni")
 
 assert(is_chromeos, "Eche App is Chrome OS only")
 
@@ -106,8 +107,11 @@ js_type_check("closure_compile") {
 }
 
 js_library("app") {
-  deps =
-      [ "//chromeos/components/eche_app_ui/mojom:mojom_js_library_for_compile" ]
+  deps = [
+    "//chromeos/components/eche_app_ui/mojom:mojom_js_library_for_compile",
+    "//ui/webui/resources/js:cr.m",
+  ]
+  externs_list = [ "$externs_path/metrics_private.js" ]
   sources = [
     "resources/browser_proxy.js",
     "resources/mock/js/app_bundle.js",

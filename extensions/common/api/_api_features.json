@@ -321,7 +321,8 @@
       "chrome://welcome/*",
       "chrome://profile-picker/*",
       "chrome://file-manager/*",
-      "chrome://help-app/*"
+      "chrome://help-app/*",
+      "chrome://eche-app/*"
     ]
   }, {
     "channel": "stable",
