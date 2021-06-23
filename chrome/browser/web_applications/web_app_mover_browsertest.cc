@@ -125,7 +125,8 @@ IN_PROC_BROWSER_TEST_F(WebAppMoverPrefixBrowsertest, PRE_TestMigration) {
   InstallApp(GetMigratingFromAppB());
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppMoverPrefixBrowsertest, TestMigration) {
+// Disabled due to flakiness: crbug.com/1222934
+IN_PROC_BROWSER_TEST_F(WebAppMoverPrefixBrowsertest, DISABLED_TestMigration) {
   // Wait for clean up to complete (this will timeout if we don't run clean up).
   if (!clean_up_completed_) {
     base::RunLoop run_loop;
