@@ -464,7 +464,13 @@ TEST_F(ClientDiscardableSharedMemoryManagerTest,
   EXPECT_FALSE(client->IsPurgeScheduled());
 }
 
-TEST_F(ClientDiscardableSharedMemoryManagerTest, MarkDirtyFreelistPages) {
+#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+// https://crbug.com/1222628
+#define MAYBE_MarkDirtyFreelistPages DISABLED_MarkDirtyFreelistPages
+#else
+#define MAYBE_MarkDirtyFreelistPages MarkDirtyFreelistPages
+#endif
+TEST_F(ClientDiscardableSharedMemoryManagerTest, MAYBE_MarkDirtyFreelistPages) {
   auto client =
       base::MakeRefCounted<TestClientDiscardableSharedMemoryManager>();
 
@@ -506,16 +512,8 @@ TEST_F(ClientDiscardableSharedMemoryManagerTest, MarkDirtyFreelistPages) {
   ASSERT_EQ(0u, client->GetDirtyFreedMemoryPageCount());
 }
 
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
-// https://crbug.com/1222628
-#define MAYBE_MarkDirtyFreelistPagesReleaseFreeListPages \
-  DISABLED_MarkDirtyFreelistPagesReleaseFreeListPages
-#else
-#define MAYBE_MarkDirtyFreelistPagesReleaseFreeListPages \
-  MarkDirtyFreelistPagesReleaseFreeListPages
-#endif
 TEST_F(ClientDiscardableSharedMemoryManagerTest,
-       MAYBE_MarkDirtyFreelistPagesReleaseFreeListPages) {
+       MarkDirtyFreelistPagesReleaseFreeListPages) {
   base::test::ScopedFeatureList fl;
   fl.InitAndEnableFeature(discardable_memory::kReleaseDiscardableFreeListPages);
   auto client =
