@@ -7,6 +7,8 @@ See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details about the presubmit API built into gcl.
 """
 
+USE_PYTHON3 = True
+
 
 def _RunUmaHistogramChecks(input_api, output_api):  # pylint: disable=C0103
     import sys
