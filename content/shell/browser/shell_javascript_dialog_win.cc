@@ -12,6 +12,8 @@
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_javascript_dialog_manager.h"
 
+#include <windows.h>
+
 namespace content {
 
 class ShellJavaScriptDialog;

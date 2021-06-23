@@ -4,11 +4,6 @@
 
 #include "content/web_test/browser/web_test_download_manager_delegate.h"
 
-#if defined(OS_WIN)
-#include <commdlg.h>
-#include <windows.h>
-#endif
-
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
@@ -22,6 +17,9 @@
 #if defined(OS_WIN)
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
+
+#include <commdlg.h>
+#include <windows.h>
 #endif
 
 namespace content {

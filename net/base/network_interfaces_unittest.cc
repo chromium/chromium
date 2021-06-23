@@ -16,6 +16,8 @@
 #if defined(OS_POSIX) && !defined(OS_ANDROID)
 #include <net/if.h>
 #elif defined(OS_WIN)
+#include <windows.h>
+
 #include <iphlpapi.h>
 #include <objbase.h>
 #include "base/strings/string_util.h"
