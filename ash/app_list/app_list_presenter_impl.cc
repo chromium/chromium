@@ -207,6 +207,12 @@ void AppListPresenterImpl::Show(AppListViewState preferred_state,
         std::make_unique<AppListView::ScopedAccessibilityAnnouncementLock>(
             view_);
   }
+
+  // Save data about how and when we opened the app list for metrics when we
+  // close it.
+  last_open_source_ = show_source;
+  last_open_time_ = base::Time::Now();
+
   view_->Show(preferred_state, IsSideShelf(shelf));
 
   SnapAppListBoundsToDisplayEdge();
@@ -261,6 +267,12 @@ void AppListPresenterImpl::Dismiss(base::TimeTicks event_time_stamp) {
   controller_->ViewClosing();
 
   OnVisibilityWillChange(GetTargetVisibility(), GetDisplayId());
+  if (!Shell::Get()->IsInTabletMode() && last_open_source_.has_value() &&
+      last_open_time_.has_value())
+    RecordAppListUserJourneyTime(last_open_source_.value(),
+                                 base::Time::Now() - last_open_time_.value());
+  last_open_source_.reset();
+  last_open_time_.reset();
   view_->SetState(AppListViewState::kClosed);
   base::RecordAction(base::UserMetricsAction("Launcher_Dismiss"));
 }

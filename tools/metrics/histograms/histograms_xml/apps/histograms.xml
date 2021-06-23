@@ -42,7 +42,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <variant name="Preload" summary="Preinstalled by default"/>
   <variant name="Sync" summary="Installed by sync"/>
   <variant name="System" summary="Installed with the system"/>
-  <variant name="Unknown" summary="Installed with unknownn source"/>
+  <variant name="Unknown" summary="Installed with unknown source"/>
   <variant name="User" summary="Installed by user"/>
 </variants>
 
@@ -1136,6 +1136,25 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     The UMA histogram that logs the length of user typed queries app list
     launcher issues to the search providers.
   </summary>
+</histogram>
+
+<histogram name="Apps.AppListOpenTime.{OpenMethod}" units="ms"
+    expires_after="2022-05-26">
+  <owner>angusmclean@chromium.org</owner>
+  <owner>src/ash/app_list/OWNERS</owner>
+  <summary>
+    The time a user spends with the AppList open after opening it using the
+    {OpenMethod} method.
+  </summary>
+  <token key="OpenMethod">
+    <variant name="HomeButton"
+        summary="User activated the home button on the shelf"/>
+    <variant name="Others"
+        summary="Opened by a source we don't intend to track."/>
+    <variant name="Scroll" summary="User scrolled on the shelf"/>
+    <variant name="SearchKey" summary="User pressed search key"/>
+    <variant name="Swipe" summary="User swiped on the shelf"/>
+  </token>
 </histogram>
 
 <histogram name="Apps.AppListPageOpened" enum="AppListPage"

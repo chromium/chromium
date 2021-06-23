@@ -5,6 +5,7 @@
 #include "ash/app_list/app_list_metrics.h"
 
 #include <algorithm>
+#include <string>
 
 #include "ash/app_list/model/app_list_model.h"
 #include "ash/app_list/model/search/search_model.h"
@@ -70,6 +71,10 @@ constexpr char kAppListAppLaunchedHomecherAllApps[] =
     "Apps.AppListAppLaunchedV2.HomecherAllApps";
 constexpr char kAppListAppLaunchedHomecherSearch[] =
     "Apps.AppListAppLaunchedV2.HomecherSearch";
+
+// The prefix for all the variants that track how long the app list is kept
+// open by open method. Suffix is decided in `GetAppListOpenMethod`
+constexpr char kAppListOpenTimePrefix[] = "Apps.AppListOpenTime.";
 
 // The different sources from which a search result is displayed. These values
 // are written to logs.  New enum values can be added, but existing enums must
@@ -152,6 +157,33 @@ void RecordZeroStateSearchResultRemovalHistogram(
     ZeroStateSearchResutRemovalConfirmation removal_decision) {
   UMA_HISTOGRAM_ENUMERATION(kAppListZeroStateSearchResultRemovalHistogram,
                             removal_decision);
+}
+
+std::string GetAppListOpenMethod(AppListShowSource source) {
+  // This switch determines which metric we submit for the Apps.AppListOpenTime
+  // metric. Adding a string requires you update the apps histogram.xml as well.
+  switch (source) {
+    case kSearchKey:
+    case kSearchKeyFullscreen:
+      return "SearchKey";
+    case kShelfButton:
+    case kShelfButtonFullscreen:
+      return "HomeButton";
+    case kSwipeFromShelf:
+      return "Swipe";
+    case kScrollFromShelf:
+      return "Scroll";
+    case kTabletMode:
+    case kAssistantEntryPoint:
+      return "Others";
+  }
+  NOTREACHED();
+}
+
+void RecordAppListUserJourneyTime(AppListShowSource source,
+                                  base::TimeDelta time) {
+  base::UmaHistogramMediumTimes(
+      kAppListOpenTimePrefix + GetAppListOpenMethod(source), time);
 }
 
 void RecordAppListAppLaunched(AppListLaunchedFrom launched_from,

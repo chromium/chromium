@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
+#include "base/time/time.h"
 #include "ui/events/event.h"
 
 namespace ash {
@@ -204,6 +205,9 @@ void RecordZeroStateSearchResultUserActionHistogram(
 
 void RecordZeroStateSearchResultRemovalHistogram(
     ZeroStateSearchResutRemovalConfirmation removal_decision);
+
+void RecordAppListUserJourneyTime(AppListShowSource source,
+                                  base::TimeDelta time);
 
 ASH_EXPORT void RecordSearchResultOpenSource(const SearchResult* result,
                                              const AppListModel* model,
