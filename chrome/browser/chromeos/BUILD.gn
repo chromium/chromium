@@ -3155,6 +3155,8 @@ source_set("chromeos") {
     "extensions/file_manager/private_api_util.h",
     "extensions/file_manager/select_file_dialog_extension_user_data.cc",
     "extensions/file_manager/select_file_dialog_extension_user_data.h",
+    "extensions/file_manager/system_notification_manager.cc",
+    "extensions/file_manager/system_notification_manager.h",
     "extensions/file_system_provider/file_system_provider_api.cc",
     "extensions/file_system_provider/file_system_provider_api.h",
     "extensions/file_system_provider/provider_function.cc",

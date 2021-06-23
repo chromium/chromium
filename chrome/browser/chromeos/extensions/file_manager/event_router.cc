@@ -442,7 +442,8 @@ EventRouter::EventRouter(Profile* profile)
           std::make_unique<DriveFsEventRouterImpl>(profile, &file_watchers_)),
       dispatch_directory_change_event_impl_(
           base::BindRepeating(&EventRouter::DispatchDirectoryChangeEventImpl,
-                              base::Unretained(this))) {
+                              base::Unretained(this))),
+      notification_manager_(std::make_unique<SystemNotificationManager>()) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   ObserveEvents();
 }

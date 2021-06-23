@@ -22,6 +22,7 @@
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/chromeos/extensions/file_manager/device_event_router.h"
 #include "chrome/browser/chromeos/extensions/file_manager/drivefs_event_router.h"
+#include "chrome/browser/chromeos/extensions/file_manager/system_notification_manager.h"
 #include "chrome/browser/chromeos/file_manager/volume_manager.h"
 #include "chrome/browser/chromeos/file_manager/volume_manager_observer.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
@@ -260,6 +261,8 @@ class EventRouter
 
   DispatchDirectoryChangeEventImplCallback
       dispatch_directory_change_event_impl_;
+
+  std::unique_ptr<SystemNotificationManager> notification_manager_;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate the weak pointers before any other members are destroyed.
