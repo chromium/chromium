@@ -100,6 +100,32 @@ std::string GetListenerId(const EventListenerInfo& details) {
                                        : details.listener_url.host();
 }
 
+bt_private::ConnectResultType DeviceConnectErrorToConnectResult(
+    device::BluetoothDevice::ConnectErrorCode error_code) {
+  switch (error_code) {
+    case device::BluetoothDevice::ERROR_AUTH_CANCELED:
+      return bt_private::CONNECT_RESULT_TYPE_AUTHCANCELED;
+    case device::BluetoothDevice::ERROR_AUTH_FAILED:
+      return bt_private::CONNECT_RESULT_TYPE_AUTHFAILED;
+    case device::BluetoothDevice::ERROR_AUTH_REJECTED:
+      return bt_private::CONNECT_RESULT_TYPE_AUTHREJECTED;
+    case device::BluetoothDevice::ERROR_AUTH_TIMEOUT:
+      return bt_private::CONNECT_RESULT_TYPE_AUTHTIMEOUT;
+    case device::BluetoothDevice::ERROR_FAILED:
+      return bt_private::CONNECT_RESULT_TYPE_FAILED;
+    case device::BluetoothDevice::ERROR_INPROGRESS:
+      return bt_private::CONNECT_RESULT_TYPE_INPROGRESS;
+    case device::BluetoothDevice::ERROR_UNKNOWN:
+      return bt_private::CONNECT_RESULT_TYPE_UNKNOWNERROR;
+    case device::BluetoothDevice::ERROR_UNSUPPORTED_DEVICE:
+      return bt_private::CONNECT_RESULT_TYPE_UNSUPPORTEDDEVICE;
+    case device::BluetoothDevice::NUM_CONNECT_ERROR_CODES:
+      NOTREACHED();
+      break;
+  }
+  return bt_private::CONNECT_RESULT_TYPE_NONE;
+}
+
 }  // namespace
 
 // static
@@ -567,49 +593,19 @@ void BluetoothPrivateConnectFunction::DoWork(
           ->GetPairingDelegate(GetExtensionId());
   device->Connect(
       pairing_delegate,
-      base::BindOnce(&BluetoothPrivateConnectFunction::OnSuccessCallback, this),
-      base::BindOnce(&BluetoothPrivateConnectFunction::OnErrorCallback, this));
+      base::BindOnce(&BluetoothPrivateConnectFunction::OnConnect, this));
 }
 
-void BluetoothPrivateConnectFunction::OnSuccessCallback() {
+void BluetoothPrivateConnectFunction::OnConnect(
+    absl::optional<device::BluetoothDevice::ConnectErrorCode> error_code) {
+  if (error_code.has_value()) {
+    // Set the result type and respond with true (success).
+    Respond(ArgumentList(bt_private::Connect::Results::Create(
+        DeviceConnectErrorToConnectResult(error_code.value()))));
+    return;
+  }
   Respond(ArgumentList(bt_private::Connect::Results::Create(
       bt_private::CONNECT_RESULT_TYPE_SUCCESS)));
-}
-
-void BluetoothPrivateConnectFunction::OnErrorCallback(
-    device::BluetoothDevice::ConnectErrorCode error) {
-  bt_private::ConnectResultType result = bt_private::CONNECT_RESULT_TYPE_NONE;
-  switch (error) {
-    case device::BluetoothDevice::ERROR_AUTH_CANCELED:
-      result = bt_private::CONNECT_RESULT_TYPE_AUTHCANCELED;
-      break;
-    case device::BluetoothDevice::ERROR_AUTH_FAILED:
-      result = bt_private::CONNECT_RESULT_TYPE_AUTHFAILED;
-      break;
-    case device::BluetoothDevice::ERROR_AUTH_REJECTED:
-      result = bt_private::CONNECT_RESULT_TYPE_AUTHREJECTED;
-      break;
-    case device::BluetoothDevice::ERROR_AUTH_TIMEOUT:
-      result = bt_private::CONNECT_RESULT_TYPE_AUTHTIMEOUT;
-      break;
-    case device::BluetoothDevice::ERROR_FAILED:
-      result = bt_private::CONNECT_RESULT_TYPE_FAILED;
-      break;
-    case device::BluetoothDevice::ERROR_INPROGRESS:
-      result = bt_private::CONNECT_RESULT_TYPE_INPROGRESS;
-      break;
-    case device::BluetoothDevice::ERROR_UNKNOWN:
-      result = bt_private::CONNECT_RESULT_TYPE_UNKNOWNERROR;
-      break;
-    case device::BluetoothDevice::ERROR_UNSUPPORTED_DEVICE:
-      result = bt_private::CONNECT_RESULT_TYPE_UNSUPPORTEDDEVICE;
-      break;
-    case device::BluetoothDevice::NUM_CONNECT_ERROR_CODES:
-      NOTREACHED();
-      break;
-  }
-  // Set the result type and respond with true (success).
-  Respond(ArgumentList(bt_private::Connect::Results::Create(result)));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -642,19 +638,17 @@ void BluetoothPrivatePairFunction::DoWork(
     return;
   }
 
-  device->Pair(
-      pairing_delegate,
-      base::BindOnce(&BluetoothPrivatePairFunction::OnSuccessCallback, this),
-      base::BindOnce(&BluetoothPrivatePairFunction::OnErrorCallback, this));
+  device->Pair(pairing_delegate,
+               base::BindOnce(&BluetoothPrivatePairFunction::OnPair, this));
 }
 
-void BluetoothPrivatePairFunction::OnSuccessCallback() {
+void BluetoothPrivatePairFunction::OnPair(
+    absl::optional<device::BluetoothDevice::ConnectErrorCode> error_code) {
+  if (error_code.has_value()) {
+    Respond(Error(kPairingFailed));
+    return;
+  }
   Respond(NoArguments());
-}
-
-void BluetoothPrivatePairFunction::OnErrorCallback(
-    device::BluetoothDevice::ConnectErrorCode error) {
-  Respond(Error(kPairingFailed));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

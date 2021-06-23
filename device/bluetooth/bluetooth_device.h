@@ -385,10 +385,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDevice {
   // is called, in the success case the callback is simply not called.
   using ErrorCallback = base::OnceClosure;
 
-  // The ConnectErrorCallback is used for methods that can fail with an error,
-  // passed back as an error code argument to this callback.
-  // In the success case this callback is not called.
-  using ConnectErrorCallback = base::OnceCallback<void(enum ConnectErrorCode)>;
+  // Reports the status of a device connection attempt. |error_code| will
+  // contain a value upon failure, otherwise the attempt was successful.
+  using ConnectCallback =
+      base::OnceCallback<void(absl::optional<ConnectErrorCode> error_code)>;
 
   using ConnectionInfoCallback =
       base::OnceCallback<void(const ConnectionInfo&)>;
@@ -435,14 +435,12 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDevice {
   // calls. To explicitly force a low-security connection without bonding,
   // pass NULL, though this is ignored if the device is already paired.
   //
-  // If the request fails, |error_callback| will be called; otherwise,
-  // |callback| is called when the request is complete.
+  // |callback| will be called with the status of the connection attempt.
   // After calling Connect, CancelPairing should be called to cancel the pairing
   // process and release the pairing delegate if user cancels the pairing and
   // closes the pairing UI.
   virtual void Connect(PairingDelegate* pairing_delegate,
-                       base::OnceClosure callback,
-                       ConnectErrorCallback error_callback) = 0;
+                       ConnectCallback callback) = 0;
 
   // Pairs the device. This method triggers pairing unconditially, i.e. it
   // ignores the |IsPaired()| value.
@@ -451,8 +449,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDevice {
   // implemented on ChromeOS, Linux and Windows 10. On Windows, only pairing
   // with a pin code is currently supported.
   virtual void Pair(PairingDelegate* pairing_delegate,
-                    base::OnceClosure callback,
-                    ConnectErrorCallback error_callback);
+                    ConnectCallback callback);
 
   // Sends the PIN code |pincode| to the remote device during pairing.
   //
@@ -525,9 +522,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDevice {
       ConnectToServiceCallback callback,
       ConnectToServiceErrorCallback error_callback) = 0;
 
-  // Opens a new GATT connection to this device. On success, a new
-  // BluetoothGattConnection will be handed to the caller via |callback|. On
-  // error, |error_callback| will be called. The connection will be kept alive,
+  // Opens a new GATT connection to this device. On success, |callback| will
+  // be called with a valid BluetoothGattConnection and |error_code| will have
+  // no value. On error, |callback| will be called with a null connection and
+  // a valid |error_code|. The connection will be kept alive,
   // as long as there is at least one active GATT connection. In the case that
   // the underlying connection gets terminated, either due to a call to
   // BluetoothDevice::Disconnect or other unexpected circumstances, the
@@ -543,10 +541,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDevice {
   // |BluetoothAdapter::Observer::GattServicesDiscovered| is still the correct
   // event to watch for.
   using GattConnectionCallback =
-      base::OnceCallback<void(std::unique_ptr<BluetoothGattConnection>)>;
+      base::OnceCallback<void(std::unique_ptr<BluetoothGattConnection>,
+                              absl::optional<ConnectErrorCode> error_code)>;
   virtual void CreateGattConnection(
       GattConnectionCallback callback,
-      ConnectErrorCallback error_callback,
       absl::optional<BluetoothUUID> service_uuid = absl::nullopt);
 
   // Set the gatt services discovery complete flag for this device.
@@ -692,9 +690,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDevice {
   explicit BluetoothDevice(BluetoothAdapter* adapter);
 
   // Implements platform specific operations to initiate a GATT connection.
-  // Subclasses must also call DidConnectGatt, DidFailToConnectGatt, or
-  // DidDisconnectGatt immediately or asynchronously as the connection state
-  // changes.
+  // Subclasses must also call DidConnectGatt or DidDisconnectGatt immediately
+  // or asynchronously as the connection state changes.
   virtual void CreateGattConnectionImpl(
       absl::optional<BluetoothUUID> service_uuid) = 0;
 
@@ -719,10 +716,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDevice {
   // to ensure a change in platform state is correctly tracked.
   //
   // Under normal behavior it is expected that after CreateGattConnectionImpl
-  // an platform will call DidConnectGatt or DidFailToConnectGatt, but not
-  // DidDisconnectGatt.
-  void DidConnectGatt();
-  void DidFailToConnectGatt(ConnectErrorCode);
+  // a platform will call DidConnectGatt but not DidDisconnectGatt.
+  void DidConnectGatt(absl::optional<ConnectErrorCode> error_code);
   void DidDisconnectGatt();
 
   // Tracks BluetoothGattConnection instances that act as a reference count
@@ -747,9 +742,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDevice {
   // contains a value if |supports_service_specific_discovery_| is true.
   absl::optional<BluetoothUUID> target_service_;
 
-  // Callbacks for pending success and error result of CreateGattConnection.
-  std::vector<GattConnectionCallback> create_gatt_connection_success_callbacks_;
-  std::vector<ConnectErrorCallback> create_gatt_connection_error_callbacks_;
+  // Callbacks for result of CreateGattConnection.
+  std::vector<GattConnectionCallback> create_gatt_connection_callbacks_;
 
   // BluetoothGattConnection objects keeping the GATT connection alive.
   std::set<BluetoothGattConnection*> gatt_connections_;

@@ -162,15 +162,14 @@ class FakeBluetoothDevice
                                                        /*connected=*/true) {}
 
   void CreateGattConnection(
-      base::OnceCallback<void(std::unique_ptr<device::BluetoothGattConnection>)>
-          callback,
-      base::OnceCallback<void(enum ConnectErrorCode)> error_callback,
+      device::BluetoothDevice::GattConnectionCallback callback,
       absl::optional<device::BluetoothUUID> service_uuid =
           absl::nullopt) override {
     SetConnected(true);
     gatt_services_discovery_complete_ = true;
     std::move(callback).Run(
-        std::make_unique<FakeBluetoothGattConnection>(adapter_, GetAddress()));
+        std::make_unique<FakeBluetoothGattConnection>(adapter_, GetAddress()),
+        /*error_code=*/absl::nullopt);
   }
 
   bool IsGattServicesDiscoveryComplete() const override {

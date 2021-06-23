@@ -607,8 +607,11 @@ class BluetoothTestBase : public testing::Test {
                                    scoped_refptr<BluetoothAdvertisement>);
   void DiscoverySessionCallback(Call expected,
                                 std::unique_ptr<BluetoothDiscoverySession>);
-  void GattConnectionCallback(Call expected,
-                              std::unique_ptr<BluetoothGattConnection>);
+  void GattConnectionCallback(
+      Call expected,
+      Result expected_result,
+      std::unique_ptr<BluetoothGattConnection>,
+      absl::optional<BluetoothDevice::ConnectErrorCode>);
   void NotifyCallback(Call expected,
                       std::unique_ptr<BluetoothGattNotifySession>);
   void NotifyCheckForPrecedingCalls(
@@ -624,8 +627,9 @@ class BluetoothTestBase : public testing::Test {
   void ErrorCallback(Call expected);
   void AdvertisementErrorCallback(Call expected,
                                   BluetoothAdvertisement::ErrorCode error_code);
-  void ConnectErrorCallback(Call expected,
-                            enum BluetoothDevice::ConnectErrorCode);
+  void OnConnectCallback(Call expected,
+                         Result expected_result,
+                         absl::optional<BluetoothDevice::ConnectErrorCode>);
   void GattErrorCallback(Call expected, BluetoothGattService::GattErrorCode);
   void ReentrantStartNotifySessionSuccessCallback(
       Call expected,
@@ -644,7 +648,8 @@ class BluetoothTestBase : public testing::Test {
   BluetoothAdapter::DiscoverySessionCallback GetDiscoverySessionCallback(
       Call expected);
   BluetoothDevice::GattConnectionCallback GetGattConnectionCallback(
-      Call expected);
+      Call expected,
+      Result expected_result);
   BluetoothRemoteGattCharacteristic::NotifySessionCallback GetNotifyCallback(
       Call expected);
   BluetoothRemoteGattCharacteristic::NotifySessionCallback
@@ -658,7 +663,8 @@ class BluetoothTestBase : public testing::Test {
   BluetoothAdapter::ErrorCallback GetErrorCallback(Call expected);
   BluetoothAdapter::AdvertisementErrorCallback GetAdvertisementErrorCallback(
       Call expected);
-  BluetoothDevice::ConnectErrorCallback GetConnectErrorCallback(Call expected);
+  BluetoothDevice::ConnectCallback GetConnectCallback(Call expected,
+                                                      Result expected_result);
   base::OnceCallback<void(BluetoothGattService::GattErrorCode)>
   GetGattErrorCallback(Call expected);
   BluetoothRemoteGattCharacteristic::NotifySessionCallback

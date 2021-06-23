@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
 #include "device/bluetooth/bluetooth_device.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom.h"
 
 namespace content {
@@ -60,33 +61,21 @@ class CONTENT_EXPORT WebBluetoothPairingManager
           read_callback);
 
  private:
-  void OnReadCharacteristicValuePairSuccess(
-      std::string characteristic_instance_id,
-      blink::WebBluetoothDeviceId device_id,
-      blink::mojom::WebBluetoothService::RemoteCharacteristicReadValueCallback
-          read_callback);
-
-  void OnReadCharacteristicValuePairFailure(
+  void OnReadCharacteristicValuePair(
       std::string characteristic_instance_id,
       blink::WebBluetoothDeviceId device_id,
       int num_pair_attempts,
       blink::mojom::WebBluetoothService::RemoteCharacteristicReadValueCallback
           read_callback,
-      device::BluetoothDevice::ConnectErrorCode error_code);
+      absl::optional<device::BluetoothDevice::ConnectErrorCode> error_code);
 
-  void OnReadDescriptorValuePairSuccess(
-      std::string descriptor_instance_id,
-      blink::WebBluetoothDeviceId device_id,
-      blink::mojom::WebBluetoothService::RemoteDescriptorReadValueCallback
-          read_callback);
-
-  void OnReadDescriptorValuePairFailure(
+  void OnReadDescriptorValuePair(
       std::string descriptor_instance_id,
       blink::WebBluetoothDeviceId device_id,
       int num_pair_attempts,
       blink::mojom::WebBluetoothService::RemoteDescriptorReadValueCallback
           read_callback,
-      device::BluetoothDevice::ConnectErrorCode error_code);
+      absl::optional<device::BluetoothDevice::ConnectErrorCode> error_code);
 
   // device::BluetoothPairingDelegate implementation:
   void RequestPinCode(device::BluetoothDevice* device) override;

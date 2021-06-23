@@ -159,8 +159,7 @@ void BluetoothLowEnergyDeviceMac::SetConnectionLatency(
 }
 
 void BluetoothLowEnergyDeviceMac::Connect(PairingDelegate* pairing_delegate,
-                                          base::OnceClosure callback,
-                                          ConnectErrorCallback error_callback) {
+                                          ConnectCallback callback) {
   NOTIMPLEMENTED();
 }
 
@@ -429,7 +428,7 @@ void BluetoothLowEnergyDeviceMac::DidConnectPeripheral() {
   DVLOG(1) << *this << ": GATT connected.";
   if (!connected_) {
     connected_ = true;
-    DidConnectGatt();
+    DidConnectGatt(/*error_code=*/absl::nullopt);
     DiscoverPrimaryServices();
   } else {
     // -[<CBCentralManagerDelegate> centralManager:didConnectPeripheral:] can be
@@ -536,14 +535,14 @@ void BluetoothLowEnergyDeviceMac::DidDisconnectPeripheral(NSError* error) {
   //   1. When the connection to the device breaks (either because
   //      we closed it or the device closed it).
   //   2. When we cancel a pending connection request.
-  if (create_gatt_connection_error_callbacks_.empty()) {
+  if (create_gatt_connection_callbacks_.empty()) {
     // If there are no pending callbacks then the connection broke (#1).
     DidDisconnectGatt();
     return;
   }
   // Else we canceled the connection request (#2).
   // TODO(http://crbug.com/585897): Need to pass the error.
-  DidFailToConnectGatt(BluetoothDevice::ConnectErrorCode::ERROR_FAILED);
+  DidConnectGatt(BluetoothDevice::ConnectErrorCode::ERROR_FAILED);
 }
 
 std::ostream& operator<<(std::ostream& out,

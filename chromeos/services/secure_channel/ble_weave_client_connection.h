@@ -341,11 +341,10 @@ class BluetoothLowEnergyWeaveClientConnection
   void SetConnectionLatency();
   void CreateGattConnection();
   void OnGattConnectionCreated(
-      std::unique_ptr<device::BluetoothGattConnection> gatt_connection);
+      std::unique_ptr<device::BluetoothGattConnection> gatt_connection,
+      absl::optional<device::BluetoothDevice::ConnectErrorCode> error_code);
   void OnSetConnectionLatencySuccess();
   void OnSetConnectionLatencyErrorOrTimeout();
-  void OnCreateGattConnectionError(
-      device::BluetoothDevice::ConnectErrorCode error_code);
   void OnCharacteristicsFound(const RemoteAttribute& service,
                               const RemoteAttribute& tx_characteristic,
                               const RemoteAttribute& rx_characteristic);

@@ -143,8 +143,7 @@ void BluetoothDeviceAndroid::SetConnectionLatency(
 }
 
 void BluetoothDeviceAndroid::Connect(PairingDelegate* pairing_delegate,
-                                     base::OnceClosure callback,
-                                     ConnectErrorCallback error_callback) {
+                                     ConnectCallback callback) {
   NOTIMPLEMENTED();
 }
 
@@ -200,13 +199,13 @@ void BluetoothDeviceAndroid::OnConnectionStateChange(
     bool connected) {
   gatt_connected_ = connected;
   if (gatt_connected_) {
-    DidConnectGatt();
-  } else if (!create_gatt_connection_error_callbacks_.empty()) {
+    DidConnectGatt(/*error_code=*/absl::nullopt);
+  } else if (!create_gatt_connection_callbacks_.empty()) {
     // We assume that if there are any pending connection callbacks there
     // was a failed connection attempt.
     // TODO(ortuno): Return an error code based on |status|
     // http://crbug.com/578191
-    DidFailToConnectGatt(ERROR_FAILED);
+    DidConnectGatt(ERROR_FAILED);
   } else {
     // Otherwise an existing connection was terminated.
     gatt_services_.clear();

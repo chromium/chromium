@@ -39,8 +39,8 @@ class BluetoothRemoteGattDescriptorTest :
     InitWithFakeAdapter();
     StartLowEnergyDiscoverySession();
     device_ = SimulateLowEnergyDevice(3);
-    device_->CreateGattConnection(GetGattConnectionCallback(Call::EXPECTED),
-                                  GetConnectErrorCallback(Call::NOT_EXPECTED));
+    device_->CreateGattConnection(
+        GetGattConnectionCallback(Call::EXPECTED, Result::SUCCESS));
     SimulateGattConnection(device_);
     base::RunLoop().RunUntilIdle();
     SimulateGattServicesDiscovered(
@@ -94,10 +94,10 @@ TEST_F(BluetoothRemoteGattDescriptorTest, MAYBE_GetIdentifier) {
   // 2 devices to verify that descriptors on them have distinct IDs.
   BluetoothDevice* device1 = SimulateLowEnergyDevice(3);
   BluetoothDevice* device2 = SimulateLowEnergyDevice(4);
-  device1->CreateGattConnection(GetGattConnectionCallback(Call::EXPECTED),
-                                GetConnectErrorCallback(Call::NOT_EXPECTED));
-  device2->CreateGattConnection(GetGattConnectionCallback(Call::EXPECTED),
-                                GetConnectErrorCallback(Call::NOT_EXPECTED));
+  device1->CreateGattConnection(
+      GetGattConnectionCallback(Call::EXPECTED, Result::SUCCESS));
+  device2->CreateGattConnection(
+      GetGattConnectionCallback(Call::EXPECTED, Result::SUCCESS));
   SimulateGattConnection(device1);
   SimulateGattConnection(device2);
   base::RunLoop().RunUntilIdle();
@@ -185,8 +185,8 @@ TEST_F(BluetoothRemoteGattDescriptorTest, MAYBE_GetUUID) {
   InitWithFakeAdapter();
   StartLowEnergyDiscoverySession();
   BluetoothDevice* device = SimulateLowEnergyDevice(3);
-  device->CreateGattConnection(GetGattConnectionCallback(Call::EXPECTED),
-                               GetConnectErrorCallback(Call::NOT_EXPECTED));
+  device->CreateGattConnection(
+      GetGattConnectionCallback(Call::EXPECTED, Result::SUCCESS));
   SimulateGattConnection(device);
   SimulateGattServicesDiscovered(
       device, std::vector<std::string>({kTestUUIDGenericAccess}));

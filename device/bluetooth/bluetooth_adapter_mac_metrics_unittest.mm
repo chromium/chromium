@@ -23,8 +23,8 @@ class BluetoothAdapterMacMetricsTest : public BluetoothTest {
   void FakeServiceBoilerPlate() {
     ASSERT_NO_FATAL_FAILURE(FakeDeviceBoilerPlate());
 
-    device_->CreateGattConnection(GetGattConnectionCallback(Call::EXPECTED),
-                                  GetConnectErrorCallback(Call::NOT_EXPECTED));
+    device_->CreateGattConnection(
+        GetGattConnectionCallback(Call::EXPECTED, Result::SUCCESS));
     SimulateGattConnection(device_);
     base::RunLoop().RunUntilIdle();
     SimulateGattServicesDiscovered(
@@ -171,4 +171,4 @@ TEST_F(BluetoothAdapterMacMetricsTest, DidWriteValueForDescriptorError) {
       "Bluetooth.MacOS.Errors.DidWriteValueForDescriptor", 1);
 }
 
-}
+}  // namespace device

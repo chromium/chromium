@@ -629,7 +629,7 @@ void DeviceEmulatorMessageHandler::ConnectToBluetoothDevice(
         device->IsConnected());
   } else {
     // Attempt to connect to the device.
-    device->Connect(nullptr, base::DoNothing(), base::DoNothing());
+    device->Connect(nullptr, base::DoNothing());
   }
 }
 

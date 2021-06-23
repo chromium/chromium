@@ -923,18 +923,10 @@ void WebBluetoothServiceImpl::RemoteServerConnect(
   mojo::AssociatedRemote<blink::mojom::WebBluetoothServerClient>
       web_bluetooth_server_client(std::move(client));
 
-  // TODO(crbug.com/730593): Remove SplitOnceCallback() by updating
-  // the callee interface. The |callback| will only be called once, but it is
-  // passed to both the success and error callbacks.
-  auto split_callback = base::SplitOnceCallback(std::move(callback));
-  query_result.device->CreateGattConnection(
-      base::BindOnce(&WebBluetoothServiceImpl::OnCreateGATTConnectionSuccess,
-                     weak_ptr_factory_.GetWeakPtr(), device_id, start_time,
-                     std::move(web_bluetooth_server_client),
-                     std::move(split_callback.first)),
-      base::BindOnce(&WebBluetoothServiceImpl::OnCreateGATTConnectionFailed,
-                     weak_ptr_factory_.GetWeakPtr(), start_time,
-                     std::move(split_callback.second)));
+  query_result.device->CreateGattConnection(base::BindOnce(
+      &WebBluetoothServiceImpl::OnCreateGATTConnection,
+      weak_ptr_factory_.GetWeakPtr(), device_id, start_time,
+      std::move(web_bluetooth_server_client), std::move(callback)));
 }
 
 void WebBluetoothServiceImpl::RemoteServerDisconnect(
@@ -1889,13 +1881,19 @@ void WebBluetoothServiceImpl::OnGetDevice(
                           std::move(web_bluetooth_device));
 }
 
-void WebBluetoothServiceImpl::OnCreateGATTConnectionSuccess(
+void WebBluetoothServiceImpl::OnCreateGATTConnection(
     const blink::WebBluetoothDeviceId& device_id,
     base::TimeTicks start_time,
     mojo::AssociatedRemote<blink::mojom::WebBluetoothServerClient> client,
     RemoteServerConnectCallback callback,
-    std::unique_ptr<BluetoothGattConnection> connection) {
+    std::unique_ptr<BluetoothGattConnection> connection,
+    absl::optional<device::BluetoothDevice::ConnectErrorCode> error_code) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (error_code.has_value()) {
+    RecordConnectGATTTimeFailed(base::TimeTicks::Now() - start_time);
+    std::move(callback).Run(TranslateConnectErrorAndRecord(error_code.value()));
+    return;
+  }
   RecordConnectGATTTimeSuccess(base::TimeTicks::Now() - start_time);
   RecordConnectGATTOutcome(UMAConnectGATTOutcome::SUCCESS);
 
@@ -1908,15 +1906,6 @@ void WebBluetoothServiceImpl::OnCreateGATTConnectionSuccess(
   std::move(callback).Run(blink::mojom::WebBluetoothResult::SUCCESS);
   connected_devices_->Insert(device_id, std::move(connection),
                              std::move(client));
-}
-
-void WebBluetoothServiceImpl::OnCreateGATTConnectionFailed(
-    base::TimeTicks start_time,
-    RemoteServerConnectCallback callback,
-    BluetoothDevice::ConnectErrorCode error_code) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  RecordConnectGATTTimeFailed(base::TimeTicks::Now() - start_time);
-  std::move(callback).Run(TranslateConnectErrorAndRecord(error_code));
 }
 
 void WebBluetoothServiceImpl::OnCharacteristicReadValue(
@@ -2369,25 +2358,21 @@ blink::WebBluetoothDeviceId WebBluetoothServiceImpl::GetDescriptorDeviceId(
 void WebBluetoothServiceImpl::PairDevice(
     const blink::WebBluetoothDeviceId& device_id,
     BluetoothDevice::PairingDelegate* pairing_delegate,
-    base::OnceClosure callback,
-    BluetoothDevice::ConnectErrorCallback error_callback) {
+    BluetoothDevice::ConnectCallback callback) {
   if (!device_id.IsValid()) {
-    std::move(error_callback)
-        .Run(BluetoothDevice::ConnectErrorCode::ERROR_UNKNOWN);
+    std::move(callback).Run(BluetoothDevice::ConnectErrorCode::ERROR_UNKNOWN);
     return;
   }
 
   BluetoothDevice* device = GetCachedDevice(device_id);
   if (!device) {
-    std::move(error_callback)
-        .Run(BluetoothDevice::ConnectErrorCode::ERROR_UNKNOWN);
+    std::move(callback).Run(BluetoothDevice::ConnectErrorCode::ERROR_UNKNOWN);
     return;
   }
 
   DCHECK(!device->IsPaired());
 
-  device->Pair(pairing_delegate, std::move(callback),
-               std::move(error_callback));
+  device->Pair(pairing_delegate, std::move(callback));
 }
 
 void WebBluetoothServiceImpl::CancelPairing(

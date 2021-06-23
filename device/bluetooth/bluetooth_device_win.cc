@@ -161,8 +161,7 @@ void BluetoothDeviceWin::SetConnectionLatency(
 }
 
 void BluetoothDeviceWin::Connect(PairingDelegate* pairing_delegate,
-                                 base::OnceClosure callback,
-                                 ConnectErrorCallback error_callback) {
+                                 ConnectCallback callback) {
   NOTIMPLEMENTED();
 }
 

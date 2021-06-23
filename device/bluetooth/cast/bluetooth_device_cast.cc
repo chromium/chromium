@@ -174,19 +174,17 @@ void BluetoothDeviceCast::SetConnectionLatency(
 }
 
 void BluetoothDeviceCast::Connect(PairingDelegate* pairing_delegate,
-                                  base::OnceClosure callback,
-                                  ConnectErrorCallback error_callback) {
+                                  ConnectCallback callback) {
   // This method is used only for Bluetooth classic.
   NOTIMPLEMENTED() << __func__ << " Only BLE functionality is supported.";
-  std::move(error_callback).Run(BluetoothDevice::ERROR_UNSUPPORTED_DEVICE);
+  std::move(callback).Run(BluetoothDevice::ERROR_UNSUPPORTED_DEVICE);
 }
 
 void BluetoothDeviceCast::Pair(PairingDelegate* pairing_delegate,
-                               base::OnceClosure callback,
-                               ConnectErrorCallback error_callback) {
+                               ConnectCallback callback) {
   // TODO(slan): Implement this or delegate to lower level.
   NOTIMPLEMENTED();
-  std::move(error_callback).Run(BluetoothDevice::ERROR_UNSUPPORTED_DEVICE);
+  std::move(callback).Run(BluetoothDevice::ERROR_UNSUPPORTED_DEVICE);
 }
 
 void BluetoothDeviceCast::SetPinCode(const std::string& pincode) {
@@ -295,7 +293,7 @@ bool BluetoothDeviceCast::SetConnected(bool connected) {
   // Update state in the base class. This will cause pending callbacks to be
   // fired.
   if (!was_connected && connected) {
-    DidConnectGatt();
+    DidConnectGatt(/*error_code=*/absl::nullopt);
     remote_device_->GetServices(base::BindOnce(
         &BluetoothDeviceCast::OnGetServices, weak_factory_.GetWeakPtr()));
   } else if (was_connected && !connected) {
@@ -367,7 +365,7 @@ void BluetoothDeviceCast::OnConnect(
   DVLOG(2) << __func__ << " success:" << success;
   pending_connect_ = false;
   if (!success) {
-    DidFailToConnectGatt(ERROR_FAILED);
+    DidConnectGatt(ERROR_FAILED);
   }
 }
 

@@ -146,10 +146,11 @@ class FidoBleConnectionTest : public ::testing::Test {
 
   void SetupConnectingFidoDevice(const std::string& device_address) {
     ON_CALL(*fido_device_, CreateGattConnection_)
-        .WillByDefault(Invoke([this, &device_address](auto& callback, auto&&) {
+        .WillByDefault(Invoke([this, &device_address](auto& callback) {
           connection_ =
               new NiceMockBluetoothGattConnection(adapter_, device_address);
-          std::move(callback).Run(std::move(base::WrapUnique(connection_)));
+          std::move(callback).Run(std::move(base::WrapUnique(connection_)),
+                                  /*error_code=*/absl::nullopt);
         }));
 
     ON_CALL(*fido_device_, IsGattServicesDiscoveryComplete)
@@ -192,9 +193,10 @@ class FidoBleConnectionTest : public ::testing::Test {
 
   void SimulateGattConnectionError() {
     EXPECT_CALL(*fido_device_, CreateGattConnection_)
-        .WillOnce(Invoke([](auto&&, auto&& error_callback) {
+        .WillOnce(Invoke([](auto&& callback) {
           base::ThreadTaskRunnerHandle::Get()->PostTask(
-              FROM_HERE, base::BindOnce(std::move(error_callback),
+              FROM_HERE, base::BindOnce(std::move(callback),
+                                        /*connection=*/nullptr,
                                         BluetoothDevice::ERROR_FAILED));
         }));
   }

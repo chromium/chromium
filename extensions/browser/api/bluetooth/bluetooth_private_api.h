@@ -11,6 +11,7 @@
 #include "extensions/browser/api/bluetooth/bluetooth_extension_function.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/event_router.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 class BluetoothAdapter;
@@ -216,8 +217,8 @@ class BluetoothPrivateConnectFunction : public BluetoothExtensionFunction {
  private:
   ~BluetoothPrivateConnectFunction() override;
 
-  void OnSuccessCallback();
-  void OnErrorCallback(device::BluetoothDevice::ConnectErrorCode error);
+  void OnConnect(
+      absl::optional<device::BluetoothDevice::ConnectErrorCode> error);
 
   std::unique_ptr<bluetooth_private::Connect::Params> params_;
 
@@ -236,8 +237,8 @@ class BluetoothPrivatePairFunction : public BluetoothExtensionFunction {
  private:
   ~BluetoothPrivatePairFunction() override;
 
-  void OnSuccessCallback();
-  void OnErrorCallback(device::BluetoothDevice::ConnectErrorCode error);
+  void OnPair(
+      absl::optional<device::BluetoothDevice::ConnectErrorCode> error_code);
 
   std::unique_ptr<bluetooth_private::Pair::Params> params_;
 

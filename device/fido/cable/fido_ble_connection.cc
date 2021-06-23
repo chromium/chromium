@@ -185,11 +185,8 @@ void FidoBleConnection::Connect(ConnectionCallback callback) {
 
   pending_connection_callback_ = std::move(callback);
   FIDO_LOG(DEBUG) << "Creating a GATT connection...";
-  // TODO(crbug.com/1007780): This function should take OnceCallbacks.
   device->CreateGattConnection(
       base::BindOnce(&FidoBleConnection::OnCreateGattConnection,
-                     weak_factory_.GetWeakPtr()),
-      base::BindOnce(&FidoBleConnection::OnCreateGattConnectionError,
                      weak_factory_.GetWeakPtr()),
       BluetoothUUID(kGoogleCableUUID128));
 }
@@ -269,9 +266,18 @@ void FidoBleConnection::WriteControlPoint(const std::vector<uint8_t>& data,
 }
 
 void FidoBleConnection::OnCreateGattConnection(
-    std::unique_ptr<BluetoothGattConnection> connection) {
+    std::unique_ptr<BluetoothGattConnection> connection,
+    absl::optional<BluetoothDevice::ConnectErrorCode> error_code) {
   FIDO_LOG(DEBUG) << "GATT connection created";
   DCHECK(pending_connection_callback_);
+  if (error_code.has_value()) {
+    FIDO_LOG(ERROR) << "CreateGattConnection() failed: "
+                    << ToString(error_code.value());
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(pending_connection_callback_), false));
+    return;
+  }
   connection_ = std::move(connection);
 
   BluetoothDevice* device = adapter_->GetDevice(address_);
@@ -290,15 +296,6 @@ void FidoBleConnection::OnCreateGattConnection(
   }
 
   ConnectToFidoService();
-}
-
-void FidoBleConnection::OnCreateGattConnectionError(
-    BluetoothDevice::ConnectErrorCode error_code) {
-  DCHECK(pending_connection_callback_);
-  FIDO_LOG(ERROR) << "CreateGattConnection() failed: " << ToString(error_code);
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(pending_connection_callback_), false));
 }
 
 void FidoBleConnection::ConnectToFidoService() {

@@ -85,12 +85,9 @@ void Adapter::ConnectToDevice(const std::string& address,
     return;
   }
 
-  auto split_callback = base::SplitOnceCallback(std::move(callback));
-  device->CreateGattConnection(
-      base::BindOnce(&Adapter::OnGattConnected, weak_ptr_factory_.GetWeakPtr(),
-                     std::move(split_callback.first)),
-      base::BindOnce(&Adapter::OnConnectError, weak_ptr_factory_.GetWeakPtr(),
-                     std::move(split_callback.second)));
+  device->CreateGattConnection(base::BindOnce(&Adapter::OnGattConnect,
+                                              weak_ptr_factory_.GetWeakPtr(),
+                                              std::move(callback)));
 }
 
 void Adapter::GetDevices(GetDevicesCallback callback) {
@@ -395,20 +392,20 @@ void Adapter::ProcessPendingInsecureServiceConnectionRequest(
   }
 }
 
-void Adapter::OnGattConnected(
+void Adapter::OnGattConnect(
     ConnectToDeviceCallback callback,
-    std::unique_ptr<device::BluetoothGattConnection> connection) {
+    std::unique_ptr<device::BluetoothGattConnection> connection,
+    absl::optional<device::BluetoothDevice::ConnectErrorCode> error_code) {
+  if (error_code.has_value()) {
+    std::move(callback).Run(
+        mojo::ConvertTo<mojom::ConnectResult>(error_code.value()),
+        /*device=*/mojo::NullRemote());
+    return;
+  }
   mojo::PendingRemote<mojom::Device> device;
   Device::Create(adapter_, std::move(connection),
                  device.InitWithNewPipeAndPassReceiver());
   std::move(callback).Run(mojom::ConnectResult::SUCCESS, std::move(device));
-}
-
-void Adapter::OnConnectError(
-    ConnectToDeviceCallback callback,
-    device::BluetoothDevice::ConnectErrorCode error_code) {
-  std::move(callback).Run(mojo::ConvertTo<mojom::ConnectResult>(error_code),
-                          /*device=*/mojo::NullRemote());
 }
 
 void Adapter::OnRegisterAdvertisement(

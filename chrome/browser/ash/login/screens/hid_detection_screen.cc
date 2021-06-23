@@ -337,29 +337,15 @@ void HIDDetectionScreen::ConnectBTDevice(device::BluetoothDevice* device) {
     mouse_is_pairing_ = true;
     keyboard_is_pairing_ = true;
   }
-  device->Connect(this,
-                  base::BindOnce(&HIDDetectionScreen::BTConnected,
-                                 weak_ptr_factory_.GetWeakPtr(), device_type),
-                  base::BindOnce(&HIDDetectionScreen::BTConnectError,
-                                 weak_ptr_factory_.GetWeakPtr(),
-                                 device->GetAddress(), device_type));
+  device->Connect(this, base::BindOnce(&HIDDetectionScreen::OnConnect,
+                                       weak_ptr_factory_.GetWeakPtr(),
+                                       device->GetAddress(), device_type));
 }
 
-void HIDDetectionScreen::BTConnected(device::BluetoothDeviceType device_type) {
-  if (DeviceIsPointing(device_type))
-    mouse_is_pairing_ = false;
-  if (DeviceIsKeyboard(device_type)) {
-    keyboard_is_pairing_ = false;
-    SendKeyboardDeviceNotification();
-  }
-}
-
-void HIDDetectionScreen::BTConnectError(
+void HIDDetectionScreen::OnConnect(
     const std::string& address,
     device::BluetoothDeviceType device_type,
-    device::BluetoothDevice::ConnectErrorCode error_code) {
-  LOG(WARNING) << "BTConnectError while connecting " << address
-               << " error code = " << error_code;
+    absl::optional<device::BluetoothDevice::ConnectErrorCode> error_code) {
   if (DeviceIsPointing(device_type))
     mouse_is_pairing_ = false;
   if (DeviceIsKeyboard(device_type)) {
@@ -367,8 +353,12 @@ void HIDDetectionScreen::BTConnectError(
     SendKeyboardDeviceNotification();
   }
 
-  if (pointing_device_id_.empty() || keyboard_device_id_.empty())
-    UpdateDevices();
+  if (error_code) {
+    LOG(WARNING) << "BTConnectError while connecting " << address
+                 << " error code = " << error_code.value();
+    if (pointing_device_id_.empty() || keyboard_device_id_.empty())
+      UpdateDevices();
+  }
 }
 
 void HIDDetectionScreen::SendPointingDeviceNotification() {

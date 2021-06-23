@@ -38,6 +38,7 @@
 #include "device/bluetooth/bluetooth_remote_gatt_service.h"
 #include "device/bluetooth/bluez/bluetooth_adapter_bluez.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class BrowserContext;
@@ -394,11 +395,10 @@ class ArcBluetoothBridge
 
   void OnGattConnectStateChanged(mojom::BluetoothAddressPtr addr,
                                  bool connected) const;
-  void OnGattConnected(
+  void OnGattConnect(
       mojom::BluetoothAddressPtr addr,
-      std::unique_ptr<device::BluetoothGattConnection> connection);
-  void OnGattConnectError(mojom::BluetoothAddressPtr addr,
-                          device::BluetoothDevice::ConnectErrorCode error_code);
+      std::unique_ptr<device::BluetoothGattConnection> connection,
+      absl::optional<device::BluetoothDevice::ConnectErrorCode> error_code);
   void OnGattDisconnected(mojom::BluetoothAddressPtr addr);
 
   void OnGattNotifyStartDone(

@@ -30,6 +30,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/api/bluetooth_low_energy.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -124,14 +125,13 @@ class BluetoothLowEnergyEventRouter
   // Creates a GATT connection to the device with address |device_address| for
   // extension |extension|. The connection is kept alive until the extension is
   // unloaded, the device is removed, or is disconnect by the host subsystem.
-  // |error_callback| is called with an error status in case of failure. If
+  // |callback| is called with the status of the connect operation. If
   // |persistent| is true, then the allocated connection resource is persistent
   // across unloads.
   void Connect(bool persistent,
                const Extension* extension,
                const std::string& device_address,
-               base::OnceClosure callback,
-               ErrorCallback error_callback);
+               ErrorCallback callback);
 
   // Disconnects the currently open GATT connection of extension |extension| to
   // device with address |device_address|. |error_callback| is called with an
@@ -447,8 +447,9 @@ class BluetoothLowEnergyEventRouter
       bool persistent,
       const std::string& extension_id,
       const std::string& device_address,
-      base::OnceClosure callback,
-      std::unique_ptr<device::BluetoothGattConnection> connection);
+      ErrorCallback callback,
+      std::unique_ptr<device::BluetoothGattConnection> connection,
+      absl::optional<device::BluetoothDevice::ConnectErrorCode> error_code);
 
   // Called by BluetoothGattService in response to Register().
   void OnRegisterGattServiceSuccess(const std::string& service_id,
@@ -465,12 +466,6 @@ class BluetoothLowEnergyEventRouter
   // case of an error during the write operations.
   void OnError(ErrorCallback error_callback,
                device::BluetoothGattService::GattErrorCode error_code);
-
-  // Called by BluetoothDevice in response to a call to CreateGattConnection.
-  void OnConnectError(const std::string& extension_id,
-                      const std::string& device_address,
-                      ErrorCallback error_callback,
-                      device::BluetoothDevice::ConnectErrorCode error_code);
 
   // Called by BluetoothRemoteGattCharacteristic in response to a call to
   // StartNotifySession.

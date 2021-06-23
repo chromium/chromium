@@ -61,11 +61,9 @@ class BluetoothPairingManagerTest : public testing::Test,
     return invalid_device_id;
   }
 
-  void PairDevice(
-      const WebBluetoothDeviceId& device_id,
-      device::BluetoothDevice::PairingDelegate* pairing_delegate,
-      base::OnceClosure callback,
-      BluetoothDevice::ConnectErrorCallback error_callback) override {
+  void PairDevice(const WebBluetoothDeviceId& device_id,
+                  device::BluetoothDevice::PairingDelegate* pairing_delegate,
+                  BluetoothDevice::ConnectCallback callback) override {
     ASSERT_TRUE(device_id.IsValid());
     EXPECT_EQ(device_id, valid_device_id);
     num_pair_attempts_++;
@@ -74,40 +72,36 @@ class BluetoothPairingManagerTest : public testing::Test,
       case AuthBehavior::kSucceedFirst:
         EXPECT_EQ(1, num_pair_attempts_);
         device_paired_ = true;
-        std::move(callback).Run();
+        std::move(callback).Run(/*error_code=*/absl::nullopt);
         break;
       case AuthBehavior::kSucceedSecond:
         switch (num_pair_attempts_) {
           case 1:
-            std::move(error_callback).Run(BluetoothDevice::ERROR_AUTH_REJECTED);
+            std::move(callback).Run(BluetoothDevice::ERROR_AUTH_REJECTED);
             break;
           case 2:
             device_paired_ = true;
-            std::move(callback).Run();
+            std::move(callback).Run(/*error_code=*/absl::nullopt);
             break;
           default:
             NOTREACHED();
-            std::move(error_callback).Run(BluetoothDevice::ERROR_UNKNOWN);
+            std::move(callback).Run(BluetoothDevice::ERROR_UNKNOWN);
         }
         break;
       case AuthBehavior::kFailAll:
-        std::move(error_callback).Run(BluetoothDevice::ERROR_AUTH_REJECTED);
+        std::move(callback).Run(BluetoothDevice::ERROR_AUTH_REJECTED);
         break;
       case AuthBehavior::kSuspend:
         EXPECT_TRUE(pair_callback_.is_null());
-        EXPECT_TRUE(pair_error_callback_.is_null());
         pair_callback_ = std::move(callback);
-        pair_error_callback_ = std::move(error_callback);
         break;
       case AuthBehavior::kFirstSuspend:
         if (num_pair_attempts_ == 1) {
           EXPECT_TRUE(pair_callback_.is_null());
-          EXPECT_TRUE(pair_error_callback_.is_null());
           pair_callback_ = std::move(callback);
-          pair_error_callback_ = std::move(error_callback);
         } else {
           device_paired_ = true;
-          std::move(callback).Run();
+          std::move(callback).Run(/*error_code=*/absl::nullopt);
         }
         break;
       case AuthBehavior::kUnspecified:
@@ -119,16 +113,13 @@ class BluetoothPairingManagerTest : public testing::Test,
   void CancelPairing(const WebBluetoothDeviceId& device_id) override {
     ASSERT_TRUE(device_id.IsValid());
     EXPECT_EQ(device_id, valid_device_id);
-    pair_callback_.Reset();
-    EXPECT_FALSE(pair_error_callback_.is_null());
-    std::move(pair_error_callback_).Run(BluetoothDevice::ERROR_AUTH_CANCELED);
+    std::move(pair_callback_).Run(BluetoothDevice::ERROR_AUTH_CANCELED);
   }
 
   void ResumeSuspendedPairingWithSuccess() {
     device_paired_ = true;
-    pair_error_callback_.Reset();
     EXPECT_FALSE(pair_callback_.is_null());
-    std::move(pair_callback_).Run();
+    std::move(pair_callback_).Run(/*error+_code=*/absl::nullopt);
   }
 
   void RemoteCharacteristicReadValue(
@@ -198,8 +189,7 @@ class BluetoothPairingManagerTest : public testing::Test,
  private:
   int num_pair_attempts_ = 0;
   bool device_paired_ = false;
-  base::OnceClosure pair_callback_;
-  BluetoothDevice::ConnectErrorCallback pair_error_callback_;
+  BluetoothDevice::ConnectCallback pair_callback_;
   AuthBehavior auth_behavior_ = AuthBehavior::kUnspecified;
   const std::string characteristic_instance_id_ = "valid-id-for-tesing";
   const std::string invalid_characteristic_instance_id_ = "invalid-id";

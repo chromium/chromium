@@ -61,7 +61,7 @@ void FakePeripheral::SetManufacturerData(
 
 void FakePeripheral::SetNextGATTConnectionResponse(uint16_t code) {
   DCHECK(!next_connection_response_);
-  DCHECK(create_gatt_connection_error_callbacks_.empty());
+  DCHECK(create_gatt_connection_callbacks_.empty());
   next_connection_response_ = code;
 }
 
@@ -240,8 +240,7 @@ void FakePeripheral::SetConnectionLatency(ConnectionLatency connection_latency,
 }
 
 void FakePeripheral::Connect(PairingDelegate* pairing_delegate,
-                             base::OnceClosure callback,
-                             ConnectErrorCallback error_callback) {
+                             ConnectCallback callback) {
   NOTREACHED();
 }
 
@@ -291,15 +290,13 @@ void FakePeripheral::ConnectToServiceInsecurely(
 
 void FakePeripheral::CreateGattConnection(
     GattConnectionCallback callback,
-    ConnectErrorCallback error_callback,
     absl::optional<device::BluetoothUUID> service_uuid) {
-  create_gatt_connection_success_callbacks_.push_back(std::move(callback));
-  create_gatt_connection_error_callbacks_.push_back(std::move(error_callback));
+  create_gatt_connection_callbacks_.push_back(std::move(callback));
 
   // TODO(crbug.com/728870): Stop overriding CreateGattConnection once
   // IsGattConnected() is fixed. See issue for more details.
   if (gatt_connected_)
-    return DidConnectGatt();
+    return DidConnectGatt(/*error_code=*/absl::nullopt);
 
   CreateGattConnectionImpl(std::move(service_uuid));
 }
@@ -344,11 +341,11 @@ void FakePeripheral::DispatchConnectionResponse() {
 
   if (code == mojom::kHCISuccess) {
     gatt_connected_ = true;
-    DidConnectGatt();
+    DidConnectGatt(/*error_code=*/absl::nullopt);
   } else if (code == mojom::kHCIConnectionTimeout) {
-    DidFailToConnectGatt(ERROR_FAILED);
+    DidConnectGatt(ERROR_FAILED);
   } else {
-    DidFailToConnectGatt(ERROR_UNKNOWN);
+    DidConnectGatt(ERROR_UNKNOWN);
   }
 }
 

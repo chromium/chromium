@@ -290,16 +290,13 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
                    const std::string& device_id);
 
   // Callbacks for BluetoothDevice::CreateGattConnection.
-  void OnCreateGATTConnectionSuccess(
+  void OnCreateGATTConnection(
       const blink::WebBluetoothDeviceId& device_id,
       base::TimeTicks start_time,
       mojo::AssociatedRemote<blink::mojom::WebBluetoothServerClient> client,
       RemoteServerConnectCallback callback,
-      std::unique_ptr<device::BluetoothGattConnection> connection);
-  void OnCreateGATTConnectionFailed(
-      base::TimeTicks start_time,
-      RemoteServerConnectCallback callback,
-      device::BluetoothDevice::ConnectErrorCode error_code);
+      std::unique_ptr<device::BluetoothGattConnection> connection,
+      absl::optional<device::BluetoothDevice::ConnectErrorCode> error_code);
 
   // Callbacks for BluetoothRemoteGattCharacteristic::ReadRemoteCharacteristic.
   void OnCharacteristicReadValue(
@@ -409,11 +406,9 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
       const std::string& characteristic_instance_id) override;
   blink::WebBluetoothDeviceId GetDescriptorDeviceId(
       const std::string& descriptor_instance_id) override;
-  void PairDevice(
-      const blink::WebBluetoothDeviceId& device_id,
-      device::BluetoothDevice::PairingDelegate* pairing_delegate,
-      base::OnceClosure callback,
-      device::BluetoothDevice::ConnectErrorCallback error_callback) override;
+  void PairDevice(const blink::WebBluetoothDeviceId& device_id,
+                  device::BluetoothDevice::PairingDelegate* pairing_delegate,
+                  device::BluetoothDevice::ConnectCallback callback) override;
   void CancelPairing(const blink::WebBluetoothDeviceId& device_id) override;
 
   // Used to open a BluetoothChooser and start a device discovery session.

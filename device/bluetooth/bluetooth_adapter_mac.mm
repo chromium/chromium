@@ -862,7 +862,7 @@ void BluetoothAdapterMac::DidFailToConnectPeripheral(CBPeripheral* peripheral,
   DVLOG(1) << *device_mac << ": Failed to connect to peripheral with error "
            << BluetoothAdapterMac::String(error)
            << ", error code: " << error_code;
-  device_mac->DidFailToConnectGatt(error_code);
+  device_mac->DidConnectGatt(error_code);
 }
 
 void BluetoothAdapterMac::DidDisconnectPeripheral(CBPeripheral* peripheral,

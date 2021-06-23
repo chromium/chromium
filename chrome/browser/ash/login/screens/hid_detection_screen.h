@@ -29,6 +29,7 @@
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/input_service.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -197,16 +198,11 @@ class HIDDetectionScreen : public BaseScreen,
   // Tries to connect given BT device.
   void ConnectBTDevice(device::BluetoothDevice* device);
 
-  // Called by device::BluetoothDevice on a successful pairing and connection
-  // to a device.
-  void BTConnected(device::BluetoothDeviceType device_type);
-
-  // Called by device::BluetoothDevice in response to a failure to
-  // connect to the device with bluetooth address `address` due to an error
-  // encoded in `error_code`.
-  void BTConnectError(const std::string& address,
-                      device::BluetoothDeviceType device_type,
-                      device::BluetoothDevice::ConnectErrorCode error_code);
+  // Response callback for device::BluetoothDevice::Connect().
+  void OnConnect(
+      const std::string& address,
+      device::BluetoothDeviceType device_type,
+      absl::optional<device::BluetoothDevice::ConnectErrorCode> error_code);
 
   // Sends a notification to the Web UI of the status of available Bluetooth/USB
   // pointing device.

@@ -237,6 +237,12 @@ ACTION_TEMPLATE(InvokeCallbackWithScopedPtrArg,
   std::move(std::get<k>(args)).Run(std::unique_ptr<T>(p0));
 }
 
+ACTION_TEMPLATE(InvokeCallbackWithScopedPtrArg,
+                HAS_2_TEMPLATE_PARAMS(int, k, typename, T),
+                AND_2_VALUE_PARAMS(p0, p1)) {
+  std::move(std::get<k>(args)).Run(std::unique_ptr<T>(p0), p1);
+}
+
 BluetoothGattConnection* CreateGattConnection(
     scoped_refptr<device::BluetoothAdapter> adapter,
     const std::string& device_address,
@@ -1153,27 +1159,36 @@ IN_PROC_BROWSER_TEST_F(BluetoothLowEnergyApiTest, GattConnection) {
   static_assert(
       BluetoothDevice::NUM_CONNECT_ERROR_CODES == 8,
       "Update required if the number of BluetoothDevice enums changes.");
-  EXPECT_CALL(*device0_, CreateGattConnection_(_, _))
+  EXPECT_CALL(*device0_, CreateGattConnection_(_))
       .Times(9)
-      .WillOnce(InvokeCallbackArgument<1>(BluetoothDevice::ERROR_FAILED))
-      .WillOnce(InvokeCallbackArgument<1>(BluetoothDevice::ERROR_INPROGRESS))
-      .WillOnce(InvokeCallbackArgument<1>(BluetoothDevice::ERROR_AUTH_FAILED))
-      .WillOnce(InvokeCallbackArgument<1>(BluetoothDevice::ERROR_AUTH_REJECTED))
-      .WillOnce(InvokeCallbackArgument<1>(BluetoothDevice::ERROR_AUTH_CANCELED))
-      .WillOnce(InvokeCallbackArgument<1>(BluetoothDevice::ERROR_AUTH_TIMEOUT))
-      .WillOnce(
-          InvokeCallbackArgument<1>(BluetoothDevice::ERROR_UNSUPPORTED_DEVICE))
+      .WillOnce(InvokeCallbackArgument<0>(/*connection=*/nullptr,
+                                          BluetoothDevice::ERROR_FAILED))
+      .WillOnce(InvokeCallbackArgument<0>(/*connection=*/nullptr,
+                                          BluetoothDevice::ERROR_INPROGRESS))
+      .WillOnce(InvokeCallbackArgument<0>(/*connection=*/nullptr,
+                                          BluetoothDevice::ERROR_AUTH_FAILED))
+      .WillOnce(InvokeCallbackArgument<0>(/*connection=*/nullptr,
+                                          BluetoothDevice::ERROR_AUTH_REJECTED))
+      .WillOnce(InvokeCallbackArgument<0>(/*connection=*/nullptr,
+                                          BluetoothDevice::ERROR_AUTH_CANCELED))
+      .WillOnce(InvokeCallbackArgument<0>(/*connection=*/nullptr,
+                                          BluetoothDevice::ERROR_AUTH_TIMEOUT))
+      .WillOnce(InvokeCallbackArgument<0>(
+          /*connection=*/nullptr, BluetoothDevice::ERROR_UNSUPPORTED_DEVICE))
       .WillOnce(InvokeCallbackWithScopedPtrArg<0, BluetoothGattConnection>(
           CreateGattConnection(mock_adapter_, kTestLeDeviceAddress0,
-                               true /* expect_disconnect */)))
+                               true /* expect_disconnect */),
+          /*error_code=*/absl::nullopt))
       .WillOnce(InvokeCallbackWithScopedPtrArg<0, BluetoothGattConnection>(
           CreateGattConnection(mock_adapter_, kTestLeDeviceAddress0,
-                               false /* expect_disconnect */)));
-  EXPECT_CALL(*device1_, CreateGattConnection_(_, _))
+                               false /* expect_disconnect */),
+          /*error_code=*/absl::nullopt));
+  EXPECT_CALL(*device1_, CreateGattConnection_(_))
       .Times(1)
       .WillOnce(InvokeCallbackWithScopedPtrArg<0, BluetoothGattConnection>(
           CreateGattConnection(mock_adapter_, kTestLeDeviceAddress1,
-                               true /* expect_disconnect */)));
+                               true /* expect_disconnect */),
+          /*error_code=*/absl::nullopt));
 
   ASSERT_TRUE(LoadExtension(
       test_data_dir_.AppendASCII("bluetooth_low_energy/gatt_connection")));
@@ -1195,13 +1210,14 @@ IN_PROC_BROWSER_TEST_F(BluetoothLowEnergyApiTest, ReconnectAfterDisconnected) {
       .WillOnce(Return(true))
       .WillOnce(Return(false));
 
-  EXPECT_CALL(*device0_, CreateGattConnection_(_, _))
+  EXPECT_CALL(*device0_, CreateGattConnection_(_))
       .Times(2)
       .WillOnce(InvokeCallbackWithScopedPtrArg<0, BluetoothGattConnection>(
-          first_conn))
+          first_conn, /*error_code=*/absl::nullopt))
       .WillOnce(InvokeCallbackWithScopedPtrArg<0, BluetoothGattConnection>(
           CreateGattConnection(mock_adapter_, kTestLeDeviceAddress0,
-                               false /* expect_disconnect */)));
+                               false /* expect_disconnect */),
+          /*error_code=*/absl::nullopt));
 
   ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII(
       "bluetooth_low_energy/reconnect_after_disconnected")));
@@ -1223,7 +1239,7 @@ IN_PROC_BROWSER_TEST_F(BluetoothLowEnergyApiTest, ConnectInProgress) {
   std::unique_ptr<BluetoothGattConnection> conn_ptr(conn);
   EXPECT_CALL(*conn, Disconnect()).Times(1);
 
-  EXPECT_CALL(*device0_, CreateGattConnection_(_, _))
+  EXPECT_CALL(*device0_, CreateGattConnection_(_))
       .Times(1)
       .WillOnce(MoveArg<0>(&connect_callback));
 
@@ -1237,7 +1253,8 @@ IN_PROC_BROWSER_TEST_F(BluetoothLowEnergyApiTest, ConnectInProgress) {
       << listener.message();
   listener.Reset();
 
-  std::move(connect_callback).Run(std::move(conn_ptr));
+  std::move(connect_callback)
+      .Run(std::move(conn_ptr), /*error_code=*/absl::nullopt);
   EXPECT_TRUE(listener.WaitUntilSatisfied());
   ASSERT_EQ("After 2nd call to disconnect.", listener.message())
       << listener.message();

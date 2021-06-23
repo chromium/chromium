@@ -102,8 +102,7 @@ class FakePeripheral : public device::BluetoothDevice {
                             base::OnceClosure callback,
                             ErrorCallback error_callback) override;
   void Connect(PairingDelegate* pairing_delegate,
-               base::OnceClosure callback,
-               ConnectErrorCallback error_callback) override;
+               ConnectCallback callback) override;
   void SetPinCode(const std::string& pincode) override;
   void SetPasskey(uint32_t passkey) override;
   void ConfirmPairing() override;
@@ -122,7 +121,6 @@ class FakePeripheral : public device::BluetoothDevice {
       ConnectToServiceErrorCallback error_callback) override;
   void CreateGattConnection(
       GattConnectionCallback callback,
-      ConnectErrorCallback error_callback,
       absl::optional<device::BluetoothUUID> service_uuid) override;
   bool IsGattServicesDiscoveryComplete() const override;
 #if BUILDFLAG(IS_CHROMEOS_ASH)

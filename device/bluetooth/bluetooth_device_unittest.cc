@@ -149,8 +149,8 @@ TEST_P(BluetoothTestWinrtOnly, DevicePairRequestPinCodeCorrect) {
 
   SimulatePairingPinCode(device, "123456");
   TestPairingDelegate pairing_delegate;
-  device->Pair(&pairing_delegate, GetCallback(Call::EXPECTED),
-               GetConnectErrorCallback(Call::NOT_EXPECTED));
+  device->Pair(&pairing_delegate,
+               GetConnectCallback(Call::EXPECTED, Result::SUCCESS));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(1, pairing_delegate.call_count_);
@@ -180,8 +180,8 @@ TEST_P(BluetoothTestWinrtOnly, DevicePairRequestPinCodeWrong) {
 
   SimulatePairingPinCode(device, "123456");
   TestPairingDelegate pairing_delegate;
-  device->Pair(&pairing_delegate, GetCallback(Call::NOT_EXPECTED),
-               GetConnectErrorCallback(Call::EXPECTED));
+  device->Pair(&pairing_delegate,
+               GetConnectCallback(Call::EXPECTED, Result::FAILURE));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(1, pairing_delegate.call_count_);
@@ -212,8 +212,8 @@ TEST_P(BluetoothTestWinrtOnly, DevicePairRequestPinCodeRejectPairing) {
 
   SimulatePairingPinCode(device, "123456");
   TestPairingDelegate pairing_delegate;
-  device->Pair(&pairing_delegate, GetCallback(Call::NOT_EXPECTED),
-               GetConnectErrorCallback(Call::EXPECTED));
+  device->Pair(&pairing_delegate,
+               GetConnectCallback(Call::EXPECTED, Result::FAILURE));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(1, pairing_delegate.call_count_);
@@ -244,8 +244,8 @@ TEST_P(BluetoothTestWinrtOnly, DevicePairRequestPinCodeCancelPairing) {
 
   SimulatePairingPinCode(device, "123456");
   TestPairingDelegate pairing_delegate;
-  device->Pair(&pairing_delegate, GetCallback(Call::NOT_EXPECTED),
-               GetConnectErrorCallback(Call::EXPECTED));
+  device->Pair(&pairing_delegate,
+               GetConnectCallback(Call::EXPECTED, Result::FAILURE));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(1, pairing_delegate.call_count_);
@@ -2200,8 +2200,8 @@ TEST_P(BluetoothTestWinrtOnly, FalseStatusChangedTest) {
   StartLowEnergyDiscoverySession();
   BluetoothDevice* device = SimulateLowEnergyDevice(3);
   EXPECT_FALSE(device->IsConnected());
-  device->CreateGattConnection(GetGattConnectionCallback(Call::NOT_EXPECTED),
-                               GetConnectErrorCallback(Call::NOT_EXPECTED));
+  device->CreateGattConnection(
+      GetGattConnectionCallback(Call::NOT_EXPECTED, Result::FAILURE));
   SimulateStatusChangeToDisconnect(device);
 
   base::RunLoop().RunUntilIdle();

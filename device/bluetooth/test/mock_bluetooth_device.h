@@ -71,23 +71,19 @@ class MockBluetoothDevice : public BluetoothDevice {
                     base::OnceClosure& callback,
                     ErrorCallback& error_callback));
   void Connect(BluetoothDevice::PairingDelegate* pairing_delegate,
-               base::OnceClosure callback,
-               BluetoothDevice::ConnectErrorCallback error_callback) override {
-    Connect_(pairing_delegate, callback, error_callback);
+               ConnectCallback callback) override {
+    Connect_(pairing_delegate, callback);
   }
-  MOCK_METHOD3(Connect_,
+  MOCK_METHOD2(Connect_,
                void(BluetoothDevice::PairingDelegate* pairing_delegate,
-                    base::OnceClosure& callback,
-                    BluetoothDevice::ConnectErrorCallback& error_callback));
+                    ConnectCallback& callback));
   void Pair(BluetoothDevice::PairingDelegate* pairing_delegate,
-            base::OnceClosure callback,
-            BluetoothDevice::ConnectErrorCallback error_callback) override {
-    Pair_(pairing_delegate, callback, error_callback);
+            ConnectCallback callback) override {
+    Pair_(pairing_delegate, callback);
   }
-  MOCK_METHOD3(Pair_,
+  MOCK_METHOD2(Pair_,
                void(BluetoothDevice::PairingDelegate* pairing_delegate,
-                    base::OnceClosure& callback,
-                    BluetoothDevice::ConnectErrorCallback& error_callback));
+                    ConnectCallback& callback));
   MOCK_METHOD1(SetPinCode, void(const std::string&));
   MOCK_METHOD1(SetPasskey, void(uint32_t));
   MOCK_METHOD0(ConfirmPairing, void());
@@ -109,13 +105,10 @@ class MockBluetoothDevice : public BluetoothDevice {
                     ConnectToServiceErrorCallback error_callback));
   void CreateGattConnection(
       GattConnectionCallback callback,
-      ConnectErrorCallback error_callback,
       absl::optional<BluetoothUUID> service_uuid) override {
-    CreateGattConnection_(callback, error_callback);
+    CreateGattConnection_(callback);
   }
-  MOCK_METHOD2(CreateGattConnection_,
-               void(GattConnectionCallback& callback,
-                    ConnectErrorCallback& error_callback));
+  MOCK_METHOD1(CreateGattConnection_, void(GattConnectionCallback& callback));
 
   MOCK_METHOD1(SetGattServicesDiscoveryComplete, void(bool));
   MOCK_CONST_METHOD0(IsGattServicesDiscoveryComplete, bool());

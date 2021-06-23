@@ -22,6 +22,7 @@
 #include "extensions/common/switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
+using ::base::test::RunOnceCallback;
 using ::base::test::RunOnceClosure;
 using ::device::BluetoothDiscoveryFilter;
 using ::device::BluetoothUUID;
@@ -290,7 +291,8 @@ IN_PROC_BROWSER_TEST_F(BluetoothPrivateApiTest, Connect) {
       .Times(2)
       .WillOnce(Return(false))
       .WillOnce(Return(true));
-  EXPECT_CALL(*mock_device_, Connect_(_, _, _)).WillOnce(RunOnceClosure<1>());
+  EXPECT_CALL(*mock_device_, Connect_(_, _))
+      .WillOnce(RunOnceCallback<1>(/*error_code=*/absl::nullopt));
   ASSERT_TRUE(RunExtensionTest("bluetooth_private/connect", {},
                                {.load_as_component = true}))
       << message_;
@@ -302,12 +304,12 @@ IN_PROC_BROWSER_TEST_F(BluetoothPrivateApiTest, Pair) {
                   _, device::BluetoothAdapter::PAIRING_DELEGATE_PRIORITY_HIGH));
   EXPECT_CALL(*mock_device_, ExpectingConfirmation())
       .WillRepeatedly(Return(true));
-  EXPECT_CALL(*mock_device_, Pair_(_, _, _))
+  EXPECT_CALL(*mock_device_, Pair_(_, _))
       .WillOnce(DoAll(
           WithoutArgs(Invoke(
               this,
               &BluetoothPrivateApiTest::DispatchConfirmPasskeyPairingEvent)),
-          RunOnceClosure<1>()));
+          RunOnceCallback<1>(/*error_code=*/absl::nullopt)));
   ASSERT_TRUE(RunExtensionTest("bluetooth_private/pair", {},
                                {.load_as_component = true}))
       << message_;

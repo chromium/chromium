@@ -275,7 +275,13 @@ class BluetoothGattBlueZTest : public testing::Test {
     }
   }
 
-  void GattConnectionCallback(std::unique_ptr<BluetoothGattConnection> conn) {
+  void GattConnectionCallback(
+      std::unique_ptr<BluetoothGattConnection> conn,
+      absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+    if (error.has_value()) {
+      ++error_callback_count_;
+      return;
+    }
     ++success_callback_count_;
     gatt_conn_ = std::move(conn);
   }
@@ -296,10 +302,6 @@ class BluetoothGattBlueZTest : public testing::Test {
 
   void DBusErrorCallback(const std::string& error_name,
                          const std::string& error_message) {
-    ++error_callback_count_;
-  }
-
-  void ConnectErrorCallback(BluetoothDevice::ConnectErrorCode error) {
     ++error_callback_count_;
   }
 
@@ -447,8 +449,6 @@ TEST_F(BluetoothGattBlueZTest, GattConnection) {
 
   device->CreateGattConnection(
       base::BindOnce(&BluetoothGattBlueZTest::GattConnectionCallback,
-                     base::Unretained(this)),
-      base::BindOnce(&BluetoothGattBlueZTest::ConnectErrorCallback,
                      base::Unretained(this)));
 
   EXPECT_EQ(1, success_callback_count_);
@@ -467,8 +467,6 @@ TEST_F(BluetoothGattBlueZTest, GattConnection) {
 
   device->CreateGattConnection(
       base::BindOnce(&BluetoothGattBlueZTest::GattConnectionCallback,
-                     base::Unretained(this)),
-      base::BindOnce(&BluetoothGattBlueZTest::ConnectErrorCallback,
                      base::Unretained(this)));
 
   EXPECT_EQ(2, success_callback_count_);
@@ -492,8 +490,6 @@ TEST_F(BluetoothGattBlueZTest, GattConnection) {
 
   device->CreateGattConnection(
       base::BindOnce(&BluetoothGattBlueZTest::GattConnectionCallback,
-                     base::Unretained(this)),
-      base::BindOnce(&BluetoothGattBlueZTest::ConnectErrorCallback,
                      base::Unretained(this)));
 
   EXPECT_EQ(4, success_callback_count_);
@@ -679,8 +675,6 @@ TEST_F(BluetoothGattBlueZTest, ServicesDiscoveredAfterAdapterIsCreated) {
   // Verify that the device can be connected to again:
   device->CreateGattConnection(
       base::BindOnce(&BluetoothGattBlueZTest::GattConnectionCallback,
-                     base::Unretained(this)),
-      base::BindOnce(&BluetoothGattBlueZTest::ConnectErrorCallback,
                      base::Unretained(this)));
   properties->connected.ReplaceValue(true);
   EXPECT_TRUE(device->IsConnected());

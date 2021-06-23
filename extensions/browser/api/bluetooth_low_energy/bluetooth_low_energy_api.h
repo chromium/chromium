@@ -158,10 +158,7 @@ class BluetoothLowEnergyConnectFunction
   std::unique_ptr<bluetooth_low_energy::Connect::Params> params_;
 
  private:
-  // Success and error callbacks, called by
-  // BluetoothLowEnergyEventRouter::Connect.
-  void SuccessCallback();
-  void ErrorCallback(BluetoothLowEnergyEventRouter::Status status);
+  void ConnectCallback(BluetoothLowEnergyEventRouter::Status status);
 };
 
 class BluetoothLowEnergyDisconnectFunction

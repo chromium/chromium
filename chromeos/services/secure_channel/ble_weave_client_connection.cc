@@ -227,13 +227,9 @@ void BluetoothLowEnergyWeaveClientConnection::CreateGattConnection() {
 
   PA_LOG(INFO) << "Creating GATT connection with " << GetDeviceInfoLogString()
                << ".";
-  bluetooth_device->CreateGattConnection(
-      base::BindOnce(
-          &BluetoothLowEnergyWeaveClientConnection::OnGattConnectionCreated,
-          weak_ptr_factory_.GetWeakPtr()),
-      base::BindOnce(
-          &BluetoothLowEnergyWeaveClientConnection::OnCreateGattConnectionError,
-          weak_ptr_factory_.GetWeakPtr()));
+  bluetooth_device->CreateGattConnection(base::BindOnce(
+      &BluetoothLowEnergyWeaveClientConnection::OnGattConnectionCreated,
+      weak_ptr_factory_.GetWeakPtr()));
 }
 
 void BluetoothLowEnergyWeaveClientConnection::Disconnect() {
@@ -511,21 +507,22 @@ void BluetoothLowEnergyWeaveClientConnection::
   CreateGattConnection();
 }
 
-void BluetoothLowEnergyWeaveClientConnection::OnCreateGattConnectionError(
-    device::BluetoothDevice::ConnectErrorCode error_code) {
-  DCHECK(sub_status_ == SubStatus::WAITING_GATT_CONNECTION);
-  RecordGattConnectionResult(
-      BluetoothDeviceConnectErrorCodeToGattConnectionResult(error_code));
-  PA_LOG(WARNING) << "Error creating GATT connection to "
-                  << GetDeviceInfoLogString() << ". Error code: " << error_code;
-  DestroyConnection(
-      BleWeaveConnectionResult::
-          BLE_WEAVE_CONNECTION_RESULT_ERROR_CREATING_GATT_CONNECTION);
-}
-
 void BluetoothLowEnergyWeaveClientConnection::OnGattConnectionCreated(
-    std::unique_ptr<device::BluetoothGattConnection> gatt_connection) {
+    std::unique_ptr<device::BluetoothGattConnection> gatt_connection,
+    absl::optional<device::BluetoothDevice::ConnectErrorCode> error_code) {
   DCHECK(sub_status() == SubStatus::WAITING_GATT_CONNECTION);
+  if (error_code.has_value()) {
+    RecordGattConnectionResult(
+        BluetoothDeviceConnectErrorCodeToGattConnectionResult(
+            error_code.value()));
+    PA_LOG(WARNING) << "Error creating GATT connection to "
+                    << GetDeviceInfoLogString()
+                    << ". Error code: " << error_code.value();
+    DestroyConnection(
+        BleWeaveConnectionResult::
+            BLE_WEAVE_CONNECTION_RESULT_ERROR_CREATING_GATT_CONNECTION);
+    return;
+  }
   RecordGattConnectionResult(
       GattConnectionResult::GATT_CONNECTION_RESULT_SUCCESS);
 

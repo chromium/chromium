@@ -44,10 +44,10 @@ using ABI::Windows::Devices::Enumeration::IDevicePairingResult;
 using ABI::Windows::Foundation::IAsyncOperation;
 using Microsoft::WRL::ComPtr;
 
-void PostTask(BluetoothPairingWinrt::ErrorCallback error_callback,
-              BluetoothDevice::ConnectErrorCode error_code) {
+void PostTask(BluetoothPairingWinrt::ConnectCallback callback,
+              absl::optional<BluetoothDevice::ConnectErrorCode> error_code) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(error_callback), error_code));
+      FROM_HERE, base::BindOnce(std::move(callback), error_code));
 }
 
 }  // namespace
@@ -56,13 +56,11 @@ BluetoothPairingWinrt::BluetoothPairingWinrt(
     BluetoothDeviceWinrt* device,
     BluetoothDevice::PairingDelegate* pairing_delegate,
     ComPtr<IDeviceInformationCustomPairing> custom_pairing,
-    Callback callback,
-    ErrorCallback error_callback)
+    ConnectCallback callback)
     : device_(device),
       pairing_delegate_(pairing_delegate),
       custom_pairing_(std::move(custom_pairing)),
-      callback_(std::move(callback)),
-      error_callback_(std::move(error_callback)) {
+      callback_(std::move(callback)) {
   DCHECK(device_);
   DCHECK(pairing_delegate_);
   DCHECK(custom_pairing_);
@@ -88,7 +86,7 @@ void BluetoothPairingWinrt::StartPairing() {
                           weak_ptr_factory_.GetWeakPtr()));
 
   if (!pairing_requested_token_) {
-    PostTask(std::move(error_callback_),
+    PostTask(std::move(callback_),
              BluetoothDevice::ConnectErrorCode::ERROR_FAILED);
     return;
   }
@@ -99,7 +97,7 @@ void BluetoothPairingWinrt::StartPairing() {
   if (FAILED(hr)) {
     DVLOG(2) << "DeviceInformationCustomPairing::PairAsync() failed: "
              << logging::SystemErrorCodeToString(hr);
-    PostTask(std::move(error_callback_),
+    PostTask(std::move(callback_),
              BluetoothDevice::ConnectErrorCode::ERROR_FAILED);
     return;
   }
@@ -111,7 +109,7 @@ void BluetoothPairingWinrt::StartPairing() {
   if (FAILED(hr)) {
     DVLOG(2) << "PostAsyncResults failed: "
              << logging::SystemErrorCodeToString(hr);
-    PostTask(std::move(error_callback_),
+    PostTask(std::move(callback_),
              BluetoothDevice::ConnectErrorCode::ERROR_FAILED);
     return;
   }
@@ -131,8 +129,7 @@ void BluetoothPairingWinrt::SetPinCode(base::StringPiece pin_code) {
   if (FAILED(hr)) {
     DVLOG(2) << "Accepting Pairing Request With Pin failed: "
              << logging::SystemErrorCodeToString(hr);
-    std::move(error_callback_)
-        .Run(BluetoothDevice::ConnectErrorCode::ERROR_FAILED);
+    std::move(callback_).Run(BluetoothDevice::ConnectErrorCode::ERROR_FAILED);
     return;
   }
 
@@ -141,8 +138,7 @@ void BluetoothPairingWinrt::SetPinCode(base::StringPiece pin_code) {
   if (FAILED(hr)) {
     DVLOG(2) << "Completing Deferred Pairing Request failed: "
              << logging::SystemErrorCodeToString(hr);
-    std::move(error_callback_)
-        .Run(BluetoothDevice::ConnectErrorCode::ERROR_FAILED);
+    std::move(callback_).Run(BluetoothDevice::ConnectErrorCode::ERROR_FAILED);
   }
 }
 
@@ -153,13 +149,12 @@ void BluetoothPairingWinrt::RejectPairing() {
   if (FAILED(hr)) {
     DVLOG(2) << "Completing Deferred Pairing Request failed: "
              << logging::SystemErrorCodeToString(hr);
-    std::move(error_callback_)
-        .Run(BluetoothDevice::ConnectErrorCode::ERROR_FAILED);
+    std::move(callback_).Run(BluetoothDevice::ConnectErrorCode::ERROR_FAILED);
     return;
   }
 
-  std::move(error_callback_)
-      .Run(BluetoothDevice::ConnectErrorCode::ERROR_AUTH_REJECTED);
+  std::move(callback_).Run(
+      BluetoothDevice::ConnectErrorCode::ERROR_AUTH_REJECTED);
 }
 
 void BluetoothPairingWinrt::CancelPairing() {
@@ -169,13 +164,12 @@ void BluetoothPairingWinrt::CancelPairing() {
   if (FAILED(hr)) {
     DVLOG(2) << "Completing Deferred Pairing Request failed: "
              << logging::SystemErrorCodeToString(hr);
-    std::move(error_callback_)
-        .Run(BluetoothDevice::ConnectErrorCode::ERROR_FAILED);
+    std::move(callback_).Run(BluetoothDevice::ConnectErrorCode::ERROR_FAILED);
     return;
   }
 
-  std::move(error_callback_)
-      .Run(BluetoothDevice::ConnectErrorCode::ERROR_AUTH_CANCELED);
+  std::move(callback_).Run(
+      BluetoothDevice::ConnectErrorCode::ERROR_AUTH_CANCELED);
 }
 
 void BluetoothPairingWinrt::OnPairingRequested(
@@ -188,16 +182,14 @@ void BluetoothPairingWinrt::OnPairingRequested(
   if (FAILED(hr)) {
     DVLOG(2) << "Getting Pairing Kind failed: "
              << logging::SystemErrorCodeToString(hr);
-    std::move(error_callback_)
-        .Run(BluetoothDevice::ConnectErrorCode::ERROR_FAILED);
+    std::move(callback_).Run(BluetoothDevice::ConnectErrorCode::ERROR_FAILED);
     return;
   }
 
   DVLOG(2) << "DevicePairingKind: " << static_cast<int>(pairing_kind);
   if (pairing_kind != DevicePairingKinds_ProvidePin) {
     DVLOG(2) << "Unexpected DevicePairingKind.";
-    std::move(error_callback_)
-        .Run(BluetoothDevice::ConnectErrorCode::ERROR_FAILED);
+    std::move(callback_).Run(BluetoothDevice::ConnectErrorCode::ERROR_FAILED);
     return;
   }
 
@@ -205,8 +197,7 @@ void BluetoothPairingWinrt::OnPairingRequested(
   if (FAILED(hr)) {
     DVLOG(2) << "Getting Pairing Deferral failed: "
              << logging::SystemErrorCodeToString(hr);
-    std::move(error_callback_)
-        .Run(BluetoothDevice::ConnectErrorCode::ERROR_FAILED);
+    std::move(callback_).Run(BluetoothDevice::ConnectErrorCode::ERROR_FAILED);
     return;
   }
 
@@ -222,8 +213,7 @@ void BluetoothPairingWinrt::OnPair(
   if (FAILED(hr)) {
     DVLOG(2) << "Getting Pairing Result Status failed: "
              << logging::SystemErrorCodeToString(hr);
-    std::move(error_callback_)
-        .Run(BluetoothDevice::ConnectErrorCode::ERROR_FAILED);
+    std::move(callback_).Run(BluetoothDevice::ConnectErrorCode::ERROR_FAILED);
     return;
   }
 
@@ -231,36 +221,34 @@ void BluetoothPairingWinrt::OnPair(
   switch (status) {
     case DevicePairingResultStatus_AlreadyPaired:
     case DevicePairingResultStatus_Paired:
-      std::move(callback_).Run();
+      std::move(callback_).Run(/*error_code=*/absl::nullopt);
       return;
     case DevicePairingResultStatus_PairingCanceled:
-      std::move(error_callback_)
-          .Run(BluetoothDevice::ConnectErrorCode::ERROR_AUTH_CANCELED);
+      std::move(callback_).Run(
+          BluetoothDevice::ConnectErrorCode::ERROR_AUTH_CANCELED);
       return;
     case DevicePairingResultStatus_AuthenticationFailure:
-      std::move(error_callback_)
-          .Run(BluetoothDevice::ConnectErrorCode::ERROR_AUTH_FAILED);
+      std::move(callback_).Run(
+          BluetoothDevice::ConnectErrorCode::ERROR_AUTH_FAILED);
       return;
     case DevicePairingResultStatus_ConnectionRejected:
     case DevicePairingResultStatus_RejectedByHandler:
-      std::move(error_callback_)
-          .Run(BluetoothDevice::ConnectErrorCode::ERROR_AUTH_REJECTED);
+      std::move(callback_).Run(
+          BluetoothDevice::ConnectErrorCode::ERROR_AUTH_REJECTED);
       return;
     case DevicePairingResultStatus_AuthenticationTimeout:
-      std::move(error_callback_)
-          .Run(BluetoothDevice::ConnectErrorCode::ERROR_AUTH_TIMEOUT);
+      std::move(callback_).Run(
+          BluetoothDevice::ConnectErrorCode::ERROR_AUTH_TIMEOUT);
       return;
     case DevicePairingResultStatus_Failed:
-      std::move(error_callback_)
-          .Run(BluetoothDevice::ConnectErrorCode::ERROR_FAILED);
+      std::move(callback_).Run(BluetoothDevice::ConnectErrorCode::ERROR_FAILED);
       return;
     case DevicePairingResultStatus_OperationAlreadyInProgress:
-      std::move(error_callback_)
-          .Run(BluetoothDevice::ConnectErrorCode::ERROR_INPROGRESS);
+      std::move(callback_).Run(
+          BluetoothDevice::ConnectErrorCode::ERROR_INPROGRESS);
       return;
     default:
-      std::move(error_callback_)
-          .Run(BluetoothDevice::ConnectErrorCode::ERROR_FAILED);
+      std::move(callback_).Run(BluetoothDevice::ConnectErrorCode::ERROR_FAILED);
       return;
   }
 }

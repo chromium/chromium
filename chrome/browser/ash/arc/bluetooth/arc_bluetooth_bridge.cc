@@ -1461,9 +1461,15 @@ void ArcBluetoothBridge::OnGattConnectStateChanged(
   btle_instance->OnLEConnectionStateChange(std::move(addr), connected);
 }
 
-void ArcBluetoothBridge::OnGattConnected(
+void ArcBluetoothBridge::OnGattConnect(
     mojom::BluetoothAddressPtr addr,
-    std::unique_ptr<BluetoothGattConnection> connection) {
+    std::unique_ptr<BluetoothGattConnection> connection,
+    absl::optional<BluetoothDevice::ConnectErrorCode> error_code) {
+  if (error_code.has_value()) {
+    LOG(WARNING) << "GattConnectError: error_code = " << error_code.value();
+    OnGattDisconnected(std::move(addr));
+    return;
+  }
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   const std::string addr_str = addr->To<std::string>();
   GattConnection& conn = gatt_connections_[addr_str];
@@ -1471,13 +1477,6 @@ void ArcBluetoothBridge::OnGattConnected(
   conn.connection = std::move(connection);
   devices_paired_by_arc_.erase(addr_str);
   OnGattConnectStateChanged(std::move(addr), true);
-}
-
-void ArcBluetoothBridge::OnGattConnectError(
-    mojom::BluetoothAddressPtr addr,
-    BluetoothDevice::ConnectErrorCode error_code) {
-  LOG(WARNING) << "GattConnectError: error_code = " << error_code;
-  OnGattDisconnected(std::move(addr));
 }
 
 void ArcBluetoothBridge::OnGattDisconnected(mojom::BluetoothAddressPtr addr) {
@@ -1502,8 +1501,9 @@ void ArcBluetoothBridge::ConnectLEDevice(
 
   if (!device) {
     LOG(ERROR) << "Unknown device " << addr;
-    OnGattConnectError(std::move(remote_addr),
-                       BluetoothDevice::ConnectErrorCode::ERROR_FAILED);
+    OnGattConnect(std::move(remote_addr),
+                  /*connection=*/nullptr,
+                  BluetoothDevice::ConnectErrorCode::ERROR_FAILED);
     return;
   }
 
@@ -1513,8 +1513,9 @@ void ArcBluetoothBridge::ConnectLEDevice(
       bluetooth_instance->OnLEConnectionStateChange(std::move(remote_addr),
                                                     true);
     } else {
-      OnGattConnectError(std::move(remote_addr),
-                         BluetoothDevice::ConnectErrorCode::ERROR_INPROGRESS);
+      OnGattConnect(std::move(remote_addr),
+                    /*connection=*/nullptr,
+                    BluetoothDevice::ConnectErrorCode::ERROR_INPROGRESS);
     }
     return;
   }
@@ -1528,12 +1529,9 @@ void ArcBluetoothBridge::ConnectLEDevice(
   gatt_connections_.emplace(
       addr, GattConnection(GattConnection::ConnectionState::CONNECTING, nullptr,
                            need_hard_disconnect));
-  mojom::BluetoothAddressPtr remote_addr_clone = remote_addr.Clone();
   device->CreateGattConnection(
-      base::BindOnce(&ArcBluetoothBridge::OnGattConnected,
-                     weak_factory_.GetWeakPtr(), std::move(remote_addr)),
-      base::BindOnce(&ArcBluetoothBridge::OnGattConnectError,
-                     weak_factory_.GetWeakPtr(), std::move(remote_addr_clone)));
+      base::BindOnce(&ArcBluetoothBridge::OnGattConnect,
+                     weak_factory_.GetWeakPtr(), std::move(remote_addr)));
 }
 
 void ArcBluetoothBridge::DisconnectLEDevice(

@@ -211,6 +211,37 @@ extensions::BluetoothLowEnergyEventRouter::Status GattErrorToRouterError(
   return error_status;
 }
 
+extensions::BluetoothLowEnergyEventRouter::Status
+DeviceConnectErrorCodeToStatus(BluetoothDevice::ConnectErrorCode error_code) {
+  switch (error_code) {
+    case BluetoothDevice::ERROR_AUTH_CANCELED:
+      return extensions::BluetoothLowEnergyEventRouter::kStatusErrorCanceled;
+    case BluetoothDevice::ERROR_AUTH_FAILED:
+      return extensions::BluetoothLowEnergyEventRouter::
+          kStatusErrorAuthenticationFailed;
+    case BluetoothDevice::ERROR_AUTH_REJECTED:
+      return extensions::BluetoothLowEnergyEventRouter::
+          kStatusErrorAuthenticationFailed;
+    case BluetoothDevice::ERROR_AUTH_TIMEOUT:
+      return extensions::BluetoothLowEnergyEventRouter::kStatusErrorTimeout;
+    case BluetoothDevice::ERROR_FAILED:
+      return extensions::BluetoothLowEnergyEventRouter::kStatusErrorFailed;
+    case BluetoothDevice::ERROR_INPROGRESS:
+      return extensions::BluetoothLowEnergyEventRouter::kStatusErrorInProgress;
+    case BluetoothDevice::ERROR_UNKNOWN:
+      return extensions::BluetoothLowEnergyEventRouter::kStatusErrorFailed;
+    case BluetoothDevice::ERROR_UNSUPPORTED_DEVICE:
+      return extensions::BluetoothLowEnergyEventRouter::
+          kStatusErrorUnsupportedDevice;
+    case BluetoothDevice::NUM_CONNECT_ERROR_CODES:
+      NOTREACHED();
+      return extensions::BluetoothLowEnergyEventRouter::
+          kStatusErrorInvalidArguments;
+  }
+  NOTREACHED();
+  return extensions::BluetoothLowEnergyEventRouter::kStatusErrorFailed;
+}
+
 }  // namespace
 
 namespace extensions {
@@ -298,12 +329,11 @@ bool BluetoothLowEnergyEventRouter::HasAdapter() const {
 void BluetoothLowEnergyEventRouter::Connect(bool persistent,
                                             const Extension* extension,
                                             const std::string& device_address,
-                                            base::OnceClosure callback,
-                                            ErrorCallback error_callback) {
+                                            ErrorCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!adapter_.get()) {
     VLOG(1) << "BluetoothAdapter not ready.";
-    std::move(error_callback).Run(kStatusErrorFailed);
+    std::move(callback).Run(kStatusErrorFailed);
     return;
   }
 
@@ -311,7 +341,7 @@ void BluetoothLowEnergyEventRouter::Connect(bool persistent,
   const std::string connect_id = extension_id + device_address;
 
   if (connecting_devices_.count(connect_id) != 0) {
-    std::move(error_callback).Run(kStatusErrorInProgress);
+    std::move(callback).Run(kStatusErrorInProgress);
     return;
   }
 
@@ -320,7 +350,7 @@ void BluetoothLowEnergyEventRouter::Connect(bool persistent,
   if (conn) {
     if (conn->GetConnection()->IsConnected()) {
       VLOG(1) << "Application already connected to device: " << device_address;
-      std::move(error_callback).Run(kStatusErrorAlreadyConnected);
+      std::move(callback).Run(kStatusErrorAlreadyConnected);
       return;
     }
 
@@ -331,7 +361,7 @@ void BluetoothLowEnergyEventRouter::Connect(bool persistent,
   BluetoothDevice* device = adapter_->GetDevice(device_address);
   if (!device) {
     VLOG(1) << "Bluetooth device not found: " << device_address;
-    std::move(error_callback).Run(kStatusErrorNotFound);
+    std::move(callback).Run(kStatusErrorNotFound);
     return;
   }
 
@@ -339,10 +369,7 @@ void BluetoothLowEnergyEventRouter::Connect(bool persistent,
   device->CreateGattConnection(
       base::BindOnce(&BluetoothLowEnergyEventRouter::OnCreateGattConnection,
                      weak_ptr_factory_.GetWeakPtr(), persistent, extension_id,
-                     device_address, std::move(callback)),
-      base::BindOnce(&BluetoothLowEnergyEventRouter::OnConnectError,
-                     weak_ptr_factory_.GetWeakPtr(), extension_id,
-                     device_address, std::move(error_callback)));
+                     device_address, std::move(callback)));
 }
 
 void BluetoothLowEnergyEventRouter::Disconnect(
@@ -1656,8 +1683,19 @@ void BluetoothLowEnergyEventRouter::OnCreateGattConnection(
     bool persistent,
     const std::string& extension_id,
     const std::string& device_address,
-    base::OnceClosure callback,
-    std::unique_ptr<BluetoothGattConnection> connection) {
+    ErrorCallback callback,
+    std::unique_ptr<BluetoothGattConnection> connection,
+    absl::optional<BluetoothDevice::ConnectErrorCode> error_code) {
+  if (error_code.has_value()) {
+    VLOG(2) << "Failed to create GATT connection: " << error_code.value();
+
+    const std::string connect_id = extension_id + device_address;
+    DCHECK_NE(0U, connecting_devices_.count(connect_id));
+
+    connecting_devices_.erase(connect_id);
+    std::move(callback).Run(DeviceConnectErrorCodeToStatus(error_code.value()));
+    return;
+  }
   VLOG(2) << "GATT connection created.";
   DCHECK(connection.get());
   DCHECK(!FindConnection(extension_id, device_address));
@@ -1673,7 +1711,7 @@ void BluetoothLowEnergyEventRouter::OnCreateGattConnection(
   manager->Add(conn);
 
   connecting_devices_.erase(connect_id);
-  std::move(callback).Run();
+  std::move(callback).Run(kStatusSuccess);
 }
 
 void BluetoothLowEnergyEventRouter::OnError(
@@ -1682,52 +1720,6 @@ void BluetoothLowEnergyEventRouter::OnError(
   VLOG(2) << "Remote characteristic/descriptor operation failed.";
 
   std::move(error_callback).Run(GattErrorToRouterError(error_code));
-}
-
-void BluetoothLowEnergyEventRouter::OnConnectError(
-    const std::string& extension_id,
-    const std::string& device_address,
-    ErrorCallback error_callback,
-    BluetoothDevice::ConnectErrorCode error_code) {
-  VLOG(2) << "Failed to create GATT connection: " << error_code;
-
-  const std::string connect_id = extension_id + device_address;
-  DCHECK_NE(0U, connecting_devices_.count(connect_id));
-
-  connecting_devices_.erase(connect_id);
-  Status error_status = kStatusErrorFailed;
-  switch (error_code) {
-    case BluetoothDevice::ERROR_AUTH_CANCELED:
-      error_status = kStatusErrorCanceled;
-      break;
-    case BluetoothDevice::ERROR_AUTH_FAILED:
-      error_status = kStatusErrorAuthenticationFailed;
-      break;
-    case BluetoothDevice::ERROR_AUTH_REJECTED:
-      error_status = kStatusErrorAuthenticationFailed;
-      break;
-    case BluetoothDevice::ERROR_AUTH_TIMEOUT:
-      error_status = kStatusErrorTimeout;
-      break;
-    case BluetoothDevice::ERROR_FAILED:
-      error_status = kStatusErrorFailed;
-      break;
-    case BluetoothDevice::ERROR_INPROGRESS:
-      error_status = kStatusErrorInProgress;
-      break;
-    case BluetoothDevice::ERROR_UNKNOWN:
-      error_status = kStatusErrorFailed;
-      break;
-    case BluetoothDevice::ERROR_UNSUPPORTED_DEVICE:
-      error_status = kStatusErrorUnsupportedDevice;
-      break;
-    case BluetoothDevice::NUM_CONNECT_ERROR_CODES:
-      NOTREACHED();
-      error_status = kStatusErrorInvalidArguments;
-      break;
-  }
-
-  std::move(error_callback).Run(error_status);
 }
 
 void BluetoothLowEnergyEventRouter::OnStartNotifySession(

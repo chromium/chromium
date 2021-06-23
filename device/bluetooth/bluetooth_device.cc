@@ -356,16 +356,14 @@ absl::optional<int8_t> BluetoothDevice::GetInquiryTxPower() const {
 
 void BluetoothDevice::CreateGattConnection(
     GattConnectionCallback callback,
-    ConnectErrorCallback error_callback,
     absl::optional<BluetoothUUID> service_uuid) {
   if (!supports_service_specific_discovery_)
     service_uuid.reset();
 
   const bool connection_already_pending =
-      !create_gatt_connection_success_callbacks_.empty();
+      !create_gatt_connection_callbacks_.empty();
 
-  create_gatt_connection_success_callbacks_.push_back(std::move(callback));
-  create_gatt_connection_error_callbacks_.push_back(std::move(error_callback));
+  create_gatt_connection_callbacks_.push_back(std::move(callback));
 
   // If a service-specific discovery was originally requested, but this request
   // is for a different or non-specific discovery, then the previous discovery
@@ -378,7 +376,7 @@ void BluetoothDevice::CreateGattConnection(
 
   if (IsGattConnected()) {
     DCHECK(!connection_already_pending);
-    return DidConnectGatt();
+    return DidConnectGatt(/*error_code=*/absl::nullopt);
   }
 
   if (connection_already_pending) {
@@ -500,32 +498,33 @@ BluetoothDevice::CreateBluetoothGattConnectionObject() {
   return std::make_unique<BluetoothGattConnection>(adapter_, GetAddress());
 }
 
-void BluetoothDevice::DidConnectGatt() {
-  for (auto& callback : create_gatt_connection_success_callbacks_)
-    std::move(callback).Run(CreateBluetoothGattConnectionObject());
+void BluetoothDevice::DidConnectGatt(absl::optional<ConnectErrorCode> error) {
+  if (error.has_value()) {
+    // Connection request should only be made if there are no active
+    // connections.
+    DCHECK(gatt_connections_.empty());
 
-  create_gatt_connection_success_callbacks_.clear();
-  create_gatt_connection_error_callbacks_.clear();
+    target_service_.reset();
+
+    for (auto& callback : create_gatt_connection_callbacks_)
+      std::move(callback).Run(/*connection=*/nullptr, error.value());
+    create_gatt_connection_callbacks_.clear();
+    return;
+  }
+
+  for (auto& callback : create_gatt_connection_callbacks_) {
+    std::move(callback).Run(CreateBluetoothGattConnectionObject(),
+                            /*error_code=*/absl::nullopt);
+  }
+
+  create_gatt_connection_callbacks_.clear();
   GetAdapter()->NotifyDeviceChanged(this);
-}
-
-void BluetoothDevice::DidFailToConnectGatt(ConnectErrorCode error) {
-  // Connection request should only be made if there are no active
-  // connections.
-  DCHECK(gatt_connections_.empty());
-
-  target_service_.reset();
-
-  for (auto& error_callback : create_gatt_connection_error_callbacks_)
-    std::move(error_callback).Run(error);
-  create_gatt_connection_success_callbacks_.clear();
-  create_gatt_connection_error_callbacks_.clear();
 }
 
 void BluetoothDevice::DidDisconnectGatt() {
   // Pending calls to connect GATT are not expected, if they were then
-  // DidFailToConnectGatt should have been called.
-  DCHECK(create_gatt_connection_error_callbacks_.empty());
+  // DidConnectGatt should have been called.
+  DCHECK(create_gatt_connection_callbacks_.empty());
 
   target_service_.reset();
 
@@ -557,8 +556,7 @@ void BluetoothDevice::SetAsExpiredForTesting() {
 }
 
 void BluetoothDevice::Pair(PairingDelegate* pairing_delegate,
-                           base::OnceClosure callback,
-                           ConnectErrorCallback error_callback) {
+                           ConnectCallback callback) {
   NOTREACHED();
 }
 

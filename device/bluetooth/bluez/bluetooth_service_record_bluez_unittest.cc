@@ -185,8 +185,7 @@ TEST_F(BluetoothServiceRecordBlueZTest, GetServiceRecords) {
       static_cast<BluetoothDeviceBlueZ*>(adapter_->GetDevice(
           bluez::FakeBluetoothDeviceClient::kPairedDeviceAddress));
   GetServiceRecords(device, false);
-  device->Connect(nullptr, GetCallback(Call::EXPECTED),
-                  GetConnectErrorCallback(Call::NOT_EXPECTED));
+  device->Connect(nullptr, GetConnectCallback(Call::EXPECTED, Result::SUCCESS));
   GetServiceRecords(device, true);
   VerifyRecords();
 }

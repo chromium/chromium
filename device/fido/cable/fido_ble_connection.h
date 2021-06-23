@@ -89,9 +89,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoBleConnection
   const BluetoothRemoteGattService* GetFidoService();
 
   void OnCreateGattConnection(
-      std::unique_ptr<BluetoothGattConnection> connection);
-  void OnCreateGattConnectionError(
-      BluetoothDevice::ConnectErrorCode error_code);
+      std::unique_ptr<BluetoothGattConnection> connection,
+      absl::optional<BluetoothDevice::ConnectErrorCode> error_code);
 
   void ConnectToFidoService();
   void OnReadServiceRevisions(std::vector<ServiceRevision> service_revisions);

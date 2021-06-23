@@ -23,9 +23,9 @@ class BluetoothDeviceWinrt;
 // Currently only pairing with a pin code is supported.
 class BluetoothPairingWinrt {
  public:
-  using Callback = base::OnceClosure;
-  using ErrorCallback =
-      base::OnceCallback<void(BluetoothDevice::ConnectErrorCode)>;
+  // On error |error_code| will have a value, otherwise successful.
+  using ConnectCallback = base::OnceCallback<void(
+      absl::optional<BluetoothDevice::ConnectErrorCode> error_code)>;
 
   BluetoothPairingWinrt(
       BluetoothDeviceWinrt* device,
@@ -33,8 +33,7 @@ class BluetoothPairingWinrt {
       Microsoft::WRL::ComPtr<
           ABI::Windows::Devices::Enumeration::IDeviceInformationCustomPairing>
           custom_pairing,
-      Callback callback,
-      ErrorCallback error_callback);
+      ConnectCallback callback);
 
   ~BluetoothPairingWinrt();
 
@@ -80,8 +79,7 @@ class BluetoothPairingWinrt {
   Microsoft::WRL::ComPtr<
       ABI::Windows::Devices::Enumeration::IDeviceInformationCustomPairing>
       custom_pairing_;
-  Callback callback_;
-  ErrorCallback error_callback_;
+  ConnectCallback callback_;
 
   absl::optional<EventRegistrationToken> pairing_requested_token_;
 

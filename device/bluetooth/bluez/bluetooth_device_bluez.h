@@ -82,8 +82,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceBlueZ
                             base::OnceClosure callback,
                             ErrorCallback error_callback) override;
   void Connect(device::BluetoothDevice::PairingDelegate* pairing_delegate,
-               base::OnceClosure callback,
-               ConnectErrorCallback error_callback) override;
+               ConnectCallback callback) override;
   void SetPinCode(const std::string& pincode) override;
   void SetPasskey(uint32_t passkey) override;
   void ConfirmPairing() override;
@@ -105,8 +104,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceBlueZ
   void SetGattServicesDiscoveryComplete(bool complete) override;
   bool IsGattServicesDiscoveryComplete() const override;
   void Pair(device::BluetoothDevice::PairingDelegate* pairing_delegate,
-            base::OnceClosure callback,
-            ConnectErrorCallback error_callback) override;
+            ConnectCallback callback) override;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void ExecuteWrite(base::OnceClosure callback,
                     ExecuteWriteErrorCallback error_callback) override;
@@ -239,10 +237,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceBlueZ
 
   // Internal method to initiate a connection to this device, and methods called
   // by dbus:: on completion of the D-Bus method call.
-  void ConnectInternal(base::OnceClosure callback,
-                       ConnectErrorCallback error_callback);
-  void OnConnect(base::OnceClosure callback);
-  void OnConnectError(ConnectErrorCallback error_callback,
+  void ConnectInternal(ConnectCallback callback);
+  void OnConnect(ConnectCallback callback);
+  void OnConnectError(ConnectCallback callback,
                       const std::string& error_name,
                       const std::string& error_message);
 
@@ -255,16 +252,15 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceBlueZ
 
   // Called by dbus:: on completion of the D-Bus method call to pair the device,
   // made inside |Connect()|.
-  void OnPairDuringConnect(base::OnceClosure callback,
-                           ConnectErrorCallback error_callback);
-  void OnPairDuringConnectError(ConnectErrorCallback error_callback,
+  void OnPairDuringConnect(ConnectCallback callback);
+  void OnPairDuringConnectError(ConnectCallback callback,
                                 const std::string& error_name,
                                 const std::string& error_message);
 
   // Called by dbus: on completion of the D-Bus method call to pair the device,
   // made inside |Pair()|.
-  void OnPair(base::OnceClosure callback);
-  void OnPairError(ConnectErrorCallback error_callback,
+  void OnPair(ConnectCallback callback);
+  void OnPairError(ConnectCallback callback,
                    const std::string& error_name,
                    const std::string& error_message);
 

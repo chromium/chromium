@@ -61,25 +61,21 @@ void BluetoothSetDiscoveringError() {
   LOG(ERROR) << "BluetoothSetDiscovering failed.";
 }
 
-void OnBluetoothDeviceConnect(bool was_device_already_paired) {
+void OnBluetoothDeviceConnect(
+    bool was_device_already_paired,
+    absl::optional<device::BluetoothDevice::ConnectErrorCode> error_code) {
   if (was_device_already_paired) {
     device::RecordUserInitiatedReconnectionAttemptResult(
-        absl::nullopt /* failure_reason */,
+        error_code
+            ? absl::make_optional(GetConnectionFailureReason(*error_code))
+            : absl::nullopt,
         device::BluetoothUiSurface::kSystemTray);
   }
-}
-
-void OnBluetoothDeviceConnectError(
-    bool was_device_already_paired,
-    device::BluetoothDevice::ConnectErrorCode error_code) {
-  LOG(ERROR) << "Failed to connect to device, error code [" << error_code
-             << "]. The attempted device was previously ["
-             << (was_device_already_paired ? "paired" : "not paired") << "].";
-
-  if (was_device_already_paired) {
-    device::RecordUserInitiatedReconnectionAttemptResult(
-        GetConnectionFailureReason(error_code),
-        device::BluetoothUiSurface::kSystemTray);
+  if (error_code) {
+    LOG(ERROR) << "Failed to connect to device, error code ["
+               << error_code.value()
+               << "]. The attempted device was previously ["
+               << (was_device_already_paired ? "paired" : "not paired") << "].";
   }
 }
 
@@ -251,19 +247,17 @@ void TrayBluetoothHelperLegacy::ConnectToBluetoothDevice(
       return;
     }
 
-    device->Connect(nullptr /* pairing_delegate */,
+    device->Connect(/*pairing_delegate=*/nullptr,
                     base::BindOnce(&OnBluetoothDeviceConnect,
-                                   true /* was_device_already_paired */),
-                    base::BindOnce(&OnBluetoothDeviceConnectError,
-                                   true /* was_device_already_paired */));
+                                   /*was_device_already_paired=*/true));
     return;
   }
 
   // Simply connect without pairing for devices which do not support pairing.
   if (!device->IsPairable()) {
-    device->Connect(nullptr /* pairing_delegate */, base::DoNothing(),
-                    base::BindOnce(&OnBluetoothDeviceConnectError,
-                                   false /* was_device_already_paired */));
+    device->Connect(/*pairing_delegate=*/nullptr,
+                    base::BindOnce(&OnBluetoothDeviceConnect,
+                                   /*was_device_already_paired=*/false));
     return;
   }
 
