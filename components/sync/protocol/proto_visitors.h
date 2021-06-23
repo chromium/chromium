@@ -1205,6 +1205,7 @@ VISIT_PROTO_FIELDS(const sync_pb::WorkspaceDeskSpecifics::App& proto) {
   VISIT_ENUM(window_state);
   VISIT(z_index);
   VISIT(app);
+  VISIT(window_id);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::WorkspaceDeskSpecifics::AppOneOf& proto) {
