@@ -107,7 +107,7 @@ class ASH_EXPORT FullscreenMagnifierController
 
   void SetScrollDirection(ScrollDirection direction);
 
-  // Returns the view port(i.e. the current visible window)'s Rect in root
+  // Returns the viewport (i.e. the current visible window)'s Rect in root
   // window coordinates.
   gfx::Rect GetViewportRect() const;
 
@@ -242,9 +242,9 @@ class ASH_EXPORT FullscreenMagnifierController
   // if the controller needs to cancel existing touches.
   bool ProcessGestures();
 
-  // Moves the view port when |point| is located within
+  // Moves the viewport when |point| is located within
   // |x_panning_margin| and |y_panning_margin| to the edge of the visible
-  // window region. The view port will be moved so that the |point| will be
+  // window region. The viewport will be moved so that the |point| will be
   // moved to the point where it has |x_target_margin| and |y_target_margin|
   // to the edge of the visible region. If |reduce_bottom_margin| is true,
   // then a reduced value will be used as the |y_panning_margin| and
@@ -256,7 +256,7 @@ class ASH_EXPORT FullscreenMagnifierController
                                       int y_target_margin,
                                       bool reduce_bottom_margin);
 
-  // Moves the view port to center |point| in magnifier screen.
+  // Moves the viewport to center |point| in magnifier screen.
   void MoveMagnifierWindowCenterPoint(const gfx::Point& point);
 
   // Moves the viewport so that |rect| is fully visible. If |rect| is larger

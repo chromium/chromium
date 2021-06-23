@@ -342,7 +342,7 @@ void FullscreenMagnifierController::OnCaretBoundsChanged(
   const gfx::Rect caret_bounds = client->GetCaretBounds();
   // Note: OnCaretBoundsChanged could be fired OnTextInputTypeChanged during
   // which the caret position is not set a meaning position, and we do not
-  // need to adjust the view port position based on the bogus caret position.
+  // need to adjust the viewport position based on the bogus caret position.
   // This is only a transition period, the caret position will be fixed upon
   // focusing right after.
   if (caret_bounds.width() == 0 && caret_bounds.height() == 0)
