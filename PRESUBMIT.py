@@ -4236,8 +4236,7 @@ def CheckBuildConfigMacrosWithoutInclude(input_api, output_api):
       continue
     found_line_number = None
     found_macro = None
-    all_lines = input_api.ReadFile(f, 'r').splitlines()
-    for line_num, line in enumerate(all_lines):
+    for line_num, line in f.ChangedContents():
       match = macro_re.search(line)
       if match:
         found_line_number = line_num
@@ -4246,12 +4245,12 @@ def CheckBuildConfigMacrosWithoutInclude(input_api, output_api):
     if not found_line_number:
       continue
 
-    found_include_line = -1
-    for line_num, line in enumerate(all_lines):
+    found_include = False
+    for line in f.NewContents():
       if include_re.search(line):
-        found_include_line = line_num
+        found_include = True
         break
-    if found_include_line >= 0 and found_include_line < found_line_number:
+    if found_include:
       continue
 
     if not f.LocalPath().endswith('.h'):
@@ -4262,7 +4261,7 @@ def CheckBuildConfigMacrosWithoutInclude(input_api, output_api):
           continue
       except IOError:
         pass
-    errors.append('%s:%d %s macro is used without first including build/'
+    errors.append('%s:%d %s macro is used without including build/'
                   'build_config.h.'
                   % (f.LocalPath(), found_line_number, found_macro))
   if errors:
