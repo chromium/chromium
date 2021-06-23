@@ -10,6 +10,8 @@
 
 namespace ash {
 
+enum class AppListViewState;
+
 class ASH_PUBLIC_EXPORT AppListControllerObserver
     : public base::CheckedObserver {
  public:
@@ -18,6 +20,9 @@ class ASH_PUBLIC_EXPORT AppListControllerObserver
 
   // Called when the AppList visibility changes.
   virtual void OnAppListVisibilityChanged(bool shown, int64_t display_id) {}
+
+  // Called when the AppList view state changes.
+  virtual void OnViewStateChanged(AppListViewState state) {}
 };
 
 }  // namespace ash

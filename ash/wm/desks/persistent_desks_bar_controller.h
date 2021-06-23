@@ -6,6 +6,7 @@
 #define ASH_WM_DESKS_PERSISTENT_DESKS_BAR_CONTROLLER_H_
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/app_list/app_list_controller_observer.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
@@ -21,6 +22,7 @@ class Window;
 namespace ash {
 
 class PersistentDesksBarView;
+enum class AppListViewState;
 
 // Controller for the persistent desks bar. One per display, because each
 // display has its own persistent desks bar widget and view hierarchy, different
@@ -30,7 +32,8 @@ class ASH_EXPORT PersistentDesksBarController
       public OverviewObserver,
       public DesksController::Observer,
       public TabletModeObserver,
-      public ShellObserver {
+      public ShellObserver,
+      public AppListControllerObserver {
  public:
   PersistentDesksBarController();
   PersistentDesksBarController(const PersistentDesksBarController&) = delete;
@@ -71,6 +74,9 @@ class ASH_EXPORT PersistentDesksBarController
   // ShellObserver:
   void OnShelfAlignmentChanged(aura::Window* root_window,
                                ShelfAlignment old_alignment) override;
+
+  // AppListControllerObserver:
+  void OnViewStateChanged(AppListViewState state) override;
 
   // Toggles the value of `is_enabled_` and destroys the bar if it is togggled
   // to false.

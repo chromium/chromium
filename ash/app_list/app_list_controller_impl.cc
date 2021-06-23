@@ -1624,6 +1624,9 @@ void AppListControllerImpl::OnViewStateChanged(AppListViewState state) {
   auto* notifier = GetNotifier();
   if (notifier)
     notifier->NotifyUIStateChanged(state);
+
+  for (auto& observer : observers_)
+    observer.OnViewStateChanged(state);
 }
 
 int AppListControllerImpl::AdjustAppListViewScrollOffset(int offset,

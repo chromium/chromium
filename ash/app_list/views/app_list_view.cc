@@ -1760,9 +1760,9 @@ void AppListView::SetState(AppListViewState new_state) {
   MaybeIncreasePrivacyInfoRowShownCounts(new_state_override);
   RecordStateTransitionForUma(new_state_override);
   model_->SetStateFullscreen(new_state_override);
+  app_list_state_ = new_state_override;
   if (delegate_)
     delegate_->OnViewStateChanged(new_state_override);
-  app_list_state_ = new_state_override;
 
   if (is_in_drag_ && app_list_state_ != AppListViewState::kClosed)
     app_list_main_view_->contents_view()->UpdateYPositionAndOpacity();

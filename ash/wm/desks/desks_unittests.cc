@@ -6,12 +6,15 @@
 
 #include "ash/accessibility/sticky_keys/sticky_keys_controller.h"
 #include "ash/app_list/app_list_controller_impl.h"
+#include "ash/app_list/app_list_presenter_impl.h"
+#include "ash/app_list/views/app_list_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/keyboard/ui/test/keyboard_test_util.h"
 #include "ash/multi_user/multi_user_window_manager_impl.h"
+#include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/ash_prefs.h"
 #include "ash/public/cpp/event_rewriter_controller.h"
@@ -5962,6 +5965,65 @@ TEST_F(PersistentDesksBarTest, BentoBarWithShelfAlignment) {
   // The bar should be re-created when the shelf is bottom aligned.
   shelf->SetAlignment(ShelfAlignment::kBottom);
   EXPECT_TRUE(shelf->alignment() == ShelfAlignment::kBottom);
+  EXPECT_TRUE(GetBarWidget());
+  EXPECT_TRUE(IsWidgetVisible());
+}
+
+// Tests that the bar will only be created when the app list is not in
+// fullscreen mode.
+TEST_F(PersistentDesksBarTest, AppListFullscreen) {
+  Shell* shell = Shell::Get();
+  ASSERT_FALSE(shell->tablet_mode_controller()->InTabletMode());
+  const DesksController* desks_controller = DesksController::Get();
+  ASSERT_EQ(1u, desks_controller->desks().size());
+  const PersistentDesksBarController* bar_controller =
+      shell->persistent_desks_bar_controller();
+  ASSERT_TRUE(bar_controller);
+  AppListControllerImpl* app_list_controller = shell->app_list_controller();
+  ASSERT_TRUE(app_list_controller);
+  AppListView* app_list_view = app_list_controller->presenter()->GetView();
+  ASSERT_FALSE(app_list_view);
+
+  // The bar should not be created if there is only one desk.
+  EXPECT_FALSE(GetBarWidget());
+
+  // The bar should be created when the app list view remains null.
+  NewDesk();
+  EXPECT_EQ(2u, desks_controller->desks().size());
+  EXPECT_TRUE(GetBarWidget());
+  EXPECT_TRUE(IsWidgetVisible());
+
+  // The bar should be created when the app list view is created and
+  // showing in kPeeking mode.
+  app_list_controller->ShowAppList();
+  app_list_view = app_list_controller->presenter()->GetView();
+  ASSERT_TRUE(app_list_view);
+  EXPECT_TRUE(app_list_view->app_list_state() == AppListViewState::kPeeking);
+  EXPECT_TRUE(GetBarWidget());
+  EXPECT_TRUE(IsWidgetVisible());
+
+  // The bar should be created when the app list is in kHalf mode.
+  app_list_view->SetState(AppListViewState::kHalf);
+  EXPECT_TRUE(app_list_view->app_list_state() == AppListViewState::kHalf);
+  EXPECT_TRUE(GetBarWidget());
+  EXPECT_TRUE(IsWidgetVisible());
+
+  // The bar should be destroyed when the app list is in kFullscreenSearch mode.
+  app_list_view->SetState(AppListViewState::kFullscreenSearch);
+  EXPECT_TRUE(app_list_view->app_list_state() ==
+              AppListViewState::kFullscreenSearch);
+  EXPECT_FALSE(GetBarWidget());
+
+  // The bar should be destroyed when the app list is in kFullscreenAllApps
+  // mode.
+  app_list_view->SetState(AppListViewState::kFullscreenAllApps);
+  EXPECT_TRUE(app_list_view->app_list_state() ==
+              AppListViewState::kFullscreenAllApps);
+  EXPECT_FALSE(GetBarWidget());
+
+  // The bar should be created when the app list is in kClosed mode.
+  app_list_view->SetState(AppListViewState::kClosed);
+  EXPECT_TRUE(app_list_view->app_list_state() == AppListViewState::kClosed);
   EXPECT_TRUE(GetBarWidget());
   EXPECT_TRUE(IsWidgetVisible());
 }

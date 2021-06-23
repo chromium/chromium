@@ -4,6 +4,8 @@
 
 #include "ash/wm/desks/persistent_desks_bar_controller.h"
 
+#include "ash/app_list/app_list_controller_impl.h"
+#include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
@@ -58,10 +60,12 @@ PersistentDesksBarController::PersistentDesksBarController() {
   shell->desks_controller()->AddObserver(this);
   shell->tablet_mode_controller()->AddObserver(this);
   shell->AddShellObserver(this);
+  shell->app_list_controller()->AddObserver(this);
 }
 
 PersistentDesksBarController::~PersistentDesksBarController() {
   auto* shell = Shell::Get();
+  shell->app_list_controller()->RemoveObserver(this);
   shell->RemoveShellObserver(this);
   shell->tablet_mode_controller()->RemoveObserver(this);
   shell->desks_controller()->RemoveObserver(this);
@@ -141,6 +145,15 @@ void PersistentDesksBarController::OnShelfAlignmentChanged(
     DestroyBarWidget();
 }
 
+void PersistentDesksBarController::OnViewStateChanged(AppListViewState state) {
+  if (state == AppListViewState::kFullscreenAllApps ||
+      state == AppListViewState::kFullscreenSearch) {
+    DestroyBarWidget();
+  } else {
+    MaybeInitBarWidget();
+  }
+}
+
 void PersistentDesksBarController::ToggleEnabledState() {
   is_enabled_ = !is_enabled_;
   if (!is_enabled_)
@@ -148,11 +161,33 @@ void PersistentDesksBarController::ToggleEnabledState() {
 }
 
 bool PersistentDesksBarController::ShouldPersistentDesksBarBeCreated() const {
-  return is_enabled_ && !TabletMode::Get()->InTabletMode() &&
-         !Shell::Get()->overview_controller()->InOverviewSession() &&
-         DesksController::Get()->desks().size() > 1 &&
-         Shelf::ForWindow(Shell::GetPrimaryRootWindow())
-             ->IsHorizontalAlignment();
+  if (!is_enabled_)
+    return false;
+
+  // Do not create the bar in tablet mode, overview mode or if there is
+  // only one desk.
+  if (TabletMode::Get()->InTabletMode() ||
+      Shell::Get()->overview_controller()->InOverviewSession() ||
+      DesksController::Get()->desks().size() == 1) {
+    return false;
+  }
+
+  // Do not create the bar if the shelf is not horizontal-aligned.
+  if (!Shelf::ForWindow(Shell::GetPrimaryRootWindow())->IsHorizontalAlignment())
+    return false;
+
+  // Do not create the bar if the app list is fullscreened.
+  AppListControllerImpl* app_list_controller =
+      Shell::Get()->app_list_controller();
+  if (app_list_controller) {
+    const AppListViewState state = app_list_controller->GetAppListViewState();
+    if (state == AppListViewState::kFullscreenAllApps ||
+        state == AppListViewState::kFullscreenSearch) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 void PersistentDesksBarController::MaybeInitBarWidget() {

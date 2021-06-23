@@ -661,6 +661,11 @@ Shell::~Shell() {
   shelf_controller_->Shutdown();
   shelf_config_->Shutdown();
 
+  // Destroy PersistentDesksBarController before `overview_controller_`,
+  // `tablet_mode_controller_`, `desks_controller_` and
+  // `app_list_controller_` that it observes.
+  persistent_desks_bar_controller_.reset();
+
   // Destroy |app_list_controller_| earlier than |tablet_mode_controller_| since
   // the former may use the latter before destruction.
   app_list_controller_.reset();
@@ -724,10 +729,6 @@ Shell::~Shell() {
 
   shadow_controller_.reset();
   resize_shadow_controller_.reset();
-
-  // Destroy PersistentDesksBarController before `overview_controller_`,
-  // `tablet_mode_controller_` and `desks_controller_` that it observes.
-  persistent_desks_bar_controller_.reset();
 
   // Has to happen before ~MruWindowTracker.
   window_cycle_controller_.reset();
@@ -1043,11 +1044,6 @@ void Shell::Init(
   // controller.
   desks_controller_ = std::make_unique<DesksController>();
 
-  if (features::IsBentoBarEnabled()) {
-    persistent_desks_bar_controller_ =
-        std::make_unique<PersistentDesksBarController>();
-  }
-
   Shell::SetRootWindowForNewWindows(GetPrimaryRootWindow());
 
   resolution_notification_controller_ =
@@ -1168,6 +1164,14 @@ void Shell::Init(
   // |assistant_controller_| are put before |app_list_controller_| as they are
   // used in its constructor.
   app_list_controller_ = std::make_unique<AppListControllerImpl>();
+
+  // Create PersistentDesksBarController after `overview_controller_`,
+  // `tablet_mode_controller_`, `desks_controller_` and
+  // `app_list_controller_` that it observes.
+  if (features::IsBentoBarEnabled()) {
+    persistent_desks_bar_controller_ =
+        std::make_unique<PersistentDesksBarController>();
+  }
 
   autoclick_controller_ = std::make_unique<AutoclickController>();
 
