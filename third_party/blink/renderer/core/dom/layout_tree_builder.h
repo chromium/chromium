@@ -81,11 +81,22 @@ class LayoutTreeBuilder {
     // next layout object. Otherwise we would need to add code to various
     // AddChild() implementations to walk up the tree to find the correct
     // layout tree parent/siblings.
-    if (next && next->IsText() && next->Parent()->IsAnonymous() &&
-        next->Parent()->IsInline()) {
-      return next->Parent();
-    }
-    return next;
+    if (!next || !next->IsText())
+      return next;
+    auto* const parent = next->Parent();
+    if (!IsAnonymousInline(parent))
+      return next;
+    if (!LIKELY(parent->IsLayoutNGTextCombine()))
+      return parent;
+    auto* const text_combine_parent = parent->Parent();
+    if (IsAnonymousInline(text_combine_parent))
+      return text_combine_parent;
+    return parent;
+  }
+
+  static bool IsAnonymousInline(const LayoutObject* layout_object) {
+    return layout_object && layout_object->IsAnonymous() &&
+           layout_object->IsInline();
   }
 
   NodeType* node_;

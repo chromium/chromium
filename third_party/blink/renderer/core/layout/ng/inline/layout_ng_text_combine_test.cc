@@ -7,6 +7,7 @@
 #include <sstream>
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/core/css/css_style_declaration.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_item.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
@@ -665,6 +666,51 @@ TEST_F(LayoutNGTextCombineTest, Outline) {
           // "X"
           PhysicalRect(PhysicalOffset(25, 100), PhysicalSize(100, 100)),
           PhysicalRect(PhysicalOffset(25, 100), PhysicalSize(100, 100))));
+}
+
+// http://crbug.com/1222160
+TEST_F(LayoutNGTextCombineTest, RebuildLayoutTreeForDetails) {
+  InsertStyleElement(
+      "details { text-combine-upright: all; writing-mode: vertical-rl;  }");
+  SetBodyInnerHTML("<details id=root open>ab<summary>XY</summary>cd</details>");
+  auto& root = *GetElementById("root");
+  const auto& root_layout_object =
+      *To<LayoutNGBlockFlow>(root.GetLayoutObject());
+
+  EXPECT_EQ(R"DUMP(
+LayoutNGBlockFlow DETAILS id="root"
+  +--LayoutNGListItem SUMMARY
+  |  +--LayoutNGInsideListMarker ::marker
+  |  |  +--LayoutNGTextCombine (anonymous)
+  |  |  |  +--LayoutText (anonymous) "\u25BE "
+  |  +--LayoutNGTextCombine (anonymous)
+  |  |  +--LayoutText #text "XY"
+  +--LayoutNGBlockFlow (anonymous)
+  |  +--LayoutNGTextCombine (anonymous)
+  |  |  +--LayoutText #text "ab"
+  |  |  +--LayoutText #text "cd"
+)DUMP",
+            ToSimpleLayoutTree(root_layout_object));
+
+  // Rebuild layout tree of <details>
+  root.style()->setProperty(GetDocument().GetExecutionContext(), "color", "red",
+                            "important", ASSERT_NO_EXCEPTION);
+  RunDocumentLifecycle();
+
+  EXPECT_EQ(R"DUMP(
+LayoutNGBlockFlow DETAILS id="root" style="color: red !important;"
+  +--LayoutNGListItem SUMMARY
+  |  +--LayoutNGInsideListMarker ::marker
+  |  |  +--LayoutNGTextCombine (anonymous)
+  |  |  |  +--LayoutText (anonymous) "\u25BE "
+  |  +--LayoutNGTextCombine (anonymous)
+  |  |  +--LayoutText #text "XY"
+  +--LayoutNGBlockFlow (anonymous)
+  |  +--LayoutNGTextCombine (anonymous)
+  |  |  +--LayoutText #text "ab"
+  |  |  +--LayoutText #text "cd"
+)DUMP",
+            ToSimpleLayoutTree(root_layout_object));
 }
 
 TEST_F(LayoutNGTextCombineTest, RemoveChildCombine) {
