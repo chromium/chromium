@@ -2361,11 +2361,11 @@ static_library("browser") {
     deps += [
       "//ash/components/audio",
       "//ash/constants",
-      "//ash/content/scanning",
-      "//ash/content/scanning/mojom",
-      "//ash/content/shimless_rma",
-      "//ash/content/shimless_rma/mojom",
-      "//ash/content/shortcut_customization_ui",
+      "//ash/webui/scanning",
+      "//ash/webui/scanning/mojom",
+      "//ash/webui/shimless_rma",
+      "//ash/webui/shimless_rma/mojom",
+      "//ash/webui/shortcut_customization_ui",
       "//chrome/app/theme:chrome_unscaled_resources_grit",
       "//chrome/browser/ash/system_extensions",
       "//chrome/browser/nearby_sharing/common",
@@ -2420,8 +2420,8 @@ static_library("browser") {
     ]
     if (!is_official_build) {
       deps += [
-        "//ash/content/file_manager:file_manager_ui",
-        "//ash/content/file_manager/mojom",
+        "//ash/webui/file_manager:file_manager_ui",
+        "//ash/webui/file_manager/mojom",
         "//chromeos/components/demo_mode_app_ui",
         "//chromeos/components/telemetry_extension_ui",
         "//chromeos/components/telemetry_extension_ui/mojom",

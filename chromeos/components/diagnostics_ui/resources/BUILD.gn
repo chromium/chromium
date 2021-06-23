@@ -95,7 +95,7 @@ js_library("diagnostics_app") {
   deps = [
     ":network_list",
     ":system_page",
-    "//ash/content/common/resources:navigation_view_panel",
+    "//ash/webui/common/resources:navigation_view_panel",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:i18n_behavior.m",
     "//ui/webui/resources/js:load_time_data.m",
@@ -134,29 +134,29 @@ js_library("fake_data") {
 
 js_library("fake_input_data_provider") {
   deps = [
-    "//ash/content/common/resources:fake_method_resolver",
+    "//ash/webui/common/resources:fake_method_resolver",
     "//ui/webui/resources/js:cr.m",
   ]
 }
 
 js_library("fake_network_health_provider") {
   deps = [
-    "//ash/content/common/resources:fake_observables",
+    "//ash/webui/common/resources:fake_observables",
     "//ui/webui/resources/js:cr.m",
   ]
 }
 
 js_library("fake_system_data_provider") {
   deps = [
-    "//ash/content/common/resources:fake_method_resolver",
-    "//ash/content/common/resources:fake_observables",
+    "//ash/webui/common/resources:fake_method_resolver",
+    "//ash/webui/common/resources:fake_observables",
     "//ui/webui/resources/js:cr.m",
   ]
 }
 
 js_library("fake_system_routine_controller") {
   deps = [
-    "//ash/content/common/resources:fake_method_resolver",
+    "//ash/webui/common/resources:fake_method_resolver",
     "//ui/webui/resources/js:cr.m",
   ]
 }

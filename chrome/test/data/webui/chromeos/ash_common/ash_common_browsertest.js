@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview Test fixture for utility components in //ash/content/common.
+ * @fileoverview Test fixture for utility components in //ash/webui/common.
  *
  * To run all tests in a single instance (default, faster):
  * `browser_tests --gtest_filter=AshCommon*``

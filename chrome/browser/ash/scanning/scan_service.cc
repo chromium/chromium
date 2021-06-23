@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
-#include "ash/content/scanning/scanning_uma.h"
+#include "ash/webui/scanning/scanning_uma.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"

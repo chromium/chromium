@@ -1,7 +1,0 @@
-include_rules = [
-  "+chromeos/dbus/rmad",
-  "+chromeos/grit/chromeos_shimless_rma_resources.h",
-  "+ui/resources",
-  "+ui/web_dialogs",
-  "+ui/chromeos/strings",
-]

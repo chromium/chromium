@@ -423,7 +423,7 @@ include_rules = [
   "-ash",
   "+ash/components",
   "+ash/constants",
-  "+ash/content",
+  "+ash/webui",
   "+ash/public",
   "+ash/keyboard/ui/grit",
   "+ash/keyboard/ui/resources",

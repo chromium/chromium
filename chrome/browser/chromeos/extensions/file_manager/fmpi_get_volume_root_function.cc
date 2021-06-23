@@ -4,7 +4,7 @@
 
 #include "chrome/browser/chromeos/extensions/file_manager/fmpi_get_volume_root_function.h"
 
-#include "ash/content/file_manager/url_constants.h"
+#include "ash/webui/file_manager/url_constants.h"
 #include "base/files/file.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"

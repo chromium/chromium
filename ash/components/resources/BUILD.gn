@@ -10,11 +10,11 @@ assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
 grit("os_feedback_resources") {
   # These arguments are needed since the grd is generated at build time.
   enable_input_discovery_for_gn_analyze = false
-  os_feedback_gen_dir = "$root_gen_dir/ash/content/os_feedback_ui/resources"
+  os_feedback_gen_dir = "$root_gen_dir/ash/webui/os_feedback_ui/resources"
   source = "$os_feedback_gen_dir/ash_os_feedback_resources.grd"
   deps = [
-    "//ash/content/os_feedback_ui/resources:build_grd",
-    "//ash/content/os_feedback_ui/resources:web_components",
+    "//ash/webui/os_feedback_ui/resources:build_grd",
+    "//ash/webui/os_feedback_ui/resources:web_components",
   ]
 
   outputs = [
@@ -27,11 +27,11 @@ grit("os_feedback_resources") {
 }
 
 grit("scanning_app_resources") {
-  source = "../../content/scanning/resources/scanning_app_resources.grd"
+  source = "//ash/webui/scanning/resources/scanning_app_resources.grd"
 
   deps = [
-    "../../content/scanning/mojom:mojom_js",
-    "../../content/scanning/resources:web_components",
+    "//ash/webui/scanning/mojom:mojom_js",
+    "//ash/webui/scanning/resources:web_components",
   ]
 
   outputs = [
@@ -47,10 +47,10 @@ grit("scanning_app_resources") {
 grit("shortcut_customization_app_resources") {
   enable_input_discovery_for_gn_analyze = false
   shortcut_customization_app_gen_dir =
-      "$root_gen_dir/ash/content/shortcut_customization_ui/resources"
+      "$root_gen_dir/ash/webui/shortcut_customization_ui/resources"
   source = "$shortcut_customization_app_gen_dir/ash_shortcut_customization_app_resources.grd"
 
-  deps = [ "../../content/shortcut_customization_ui/resources:build_grd" ]
+  deps = [ "//ash/webui/shortcut_customization_ui/resources:build_grd" ]
 
   outputs = [
     "grit/ash_shortcut_customization_app_resources.h",
@@ -66,10 +66,10 @@ grit("shortcut_customization_app_resources") {
 grit("shimless_rma_resources") {
   enable_input_discovery_for_gn_analyze = false
   shimless_rma_resource_gen_dir =
-      "$root_gen_dir/ash/content/shimless_rma/resources"
+      "$root_gen_dir/ash/webui/shimless_rma/resources"
   source = "$shimless_rma_resource_gen_dir/ash_shimless_rma_resources.grd"
 
-  deps = [ "../../content/shimless_rma/resources:build_grd" ]
+  deps = [ "//ash/webui/shimless_rma/resources:build_grd" ]
 
   outputs = [
     "grit/ash_shimless_rma_resources.h",

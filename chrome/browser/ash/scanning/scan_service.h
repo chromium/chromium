@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "ash/content/scanning/mojom/scanning.mojom.h"
+#include "ash/webui/scanning/mojom/scanning.mojom.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"

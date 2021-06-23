@@ -7,8 +7,8 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
-#include "ash/content/os_feedback_ui/url_constants.h"
 #include "ash/grit/ash_os_feedback_resources.h"
+#include "ash/webui/os_feedback_ui/url_constants.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/grit/generated_resources.h"

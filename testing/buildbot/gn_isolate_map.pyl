@@ -206,8 +206,8 @@
     "label": "//extensions/shell:app_shell_unittests",
     "type": "windowed_test_launcher",
   },
-  "ash_content_unittests": {
-    "label": "//ash/content:ash_content_unittests",
+  "ash_webui_unittests": {
+    "label": "//ash/webui:ash_webui_unittests",
     "type": "console_test_launcher",
   },
   "ash_unittests": {

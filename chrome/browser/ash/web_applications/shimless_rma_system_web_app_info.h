@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_WEB_APPLICATIONS_SHIMLESS_RMA_SYSTEM_WEB_APP_INFO_H_
 #define CHROME_BROWSER_ASH_WEB_APPLICATIONS_SHIMLESS_RMA_SYSTEM_WEB_APP_INFO_H_
 
-#include "ash/content/shimless_rma/url_constants.h"
+#include "ash/webui/shimless_rma/url_constants.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_delegate.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
 #include "ui/gfx/geometry/size.h"

@@ -115,10 +115,10 @@ source_set("web_applications") {
   if (is_chromeos_ash) {
     deps += [
       "//ash/constants",
-      "//ash/content/os_feedback_ui",
-      "//ash/content/shimless_rma",
-      "//ash/content/shortcut_customization_ui",
       "//ash/public/cpp",
+      "//ash/webui/os_feedback_ui",
+      "//ash/webui/shimless_rma",
+      "//ash/webui/shortcut_customization_ui",
       "//chromeos/components/camera_app_ui",
       "//chromeos/components/connectivity_diagnostics",
       "//chromeos/components/eche_app_ui",
@@ -132,7 +132,7 @@ source_set("web_applications") {
 
     if (!is_official_build) {
       deps += [
-        "//ash/content/file_manager:file_manager_ui",
+        "//ash/webui/file_manager:file_manager_ui",
         "//chromeos/components/sample_system_web_app_ui",
       ]
     }

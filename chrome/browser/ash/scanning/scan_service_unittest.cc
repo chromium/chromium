@@ -11,8 +11,8 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
-#include "ash/content/scanning/mojom/scanning.mojom-test-utils.h"
-#include "ash/content/scanning/mojom/scanning.mojom.h"
+#include "ash/webui/scanning/mojom/scanning.mojom-test-utils.h"
+#include "ash/webui/scanning/mojom/scanning.mojom.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"

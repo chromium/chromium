@@ -6,9 +6,9 @@
 
 #include <memory>
 
-#include "ash/content/shortcut_customization_ui/url_constants.h"
 #include "ash/grit/ash_shortcut_customization_app_resources.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/webui/shortcut_customization_ui/url_constants.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"

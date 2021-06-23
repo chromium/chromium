@@ -388,7 +388,7 @@
   "chromeos/components/diagnostics_ui/resources/diagnostics_app_resources.grd": {
     "includes": [2517],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/ash/content/file_manager/resources/file_manager_swa_resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/file_manager/resources/file_manager_swa_resources.grd": {
     "META": {"sizes": {"includes": [100]}},
     "includes": [2519],
   },
@@ -447,7 +447,7 @@
     "META": {"sizes": {"includes": [50],}},
     "includes": [2645],
   },
-  "ash/content/scanning/resources/scanning_app_resources.grd": {
+  "ash/webui/scanning/resources/scanning_app_resources.grd": {
     "includes": [2650],
     "structures": [2655],
   },
@@ -638,18 +638,18 @@
   "ash/ash_strings.grd": {
     "messages": [3060],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/ash/content/os_feedback_ui/resources/ash_os_feedback_resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/os_feedback_ui/resources/ash_os_feedback_resources.grd": {
     "META": {"sizes": {"includes": [50],}},
     "includes": [3064],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/ash/content/shortcut_customization_ui/resources/ash_shortcut_customization_app_resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/shortcut_customization_ui/resources/ash_shortcut_customization_app_resources.grd": {
     "META": {"sizes": {"includes": [200],}},
     "includes": [3070],
   },
   "ash/shortcut_viewer/shortcut_viewer_strings.grd": {
     "messages": [3080],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/ash/content/shimless_rma/resources/ash_shimless_rma_resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/shimless_rma/resources/ash_shimless_rma_resources.grd": {
     "META": {"sizes": {"includes": [50],}},
     "includes": [3090],
   },

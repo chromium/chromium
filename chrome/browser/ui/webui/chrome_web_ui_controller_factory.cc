@@ -152,14 +152,14 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
-#include "ash/content/os_feedback_ui/os_feedback_ui.h"
-#include "ash/content/os_feedback_ui/url_constants.h"
-#include "ash/content/scanning/scanning_ui.h"
-#include "ash/content/scanning/url_constants.h"
-#include "ash/content/shimless_rma/shimless_rma.h"
-#include "ash/content/shimless_rma/url_constants.h"
-#include "ash/content/shortcut_customization_ui/shortcut_customization_app_ui.h"
-#include "ash/content/shortcut_customization_ui/url_constants.h"
+#include "ash/webui/os_feedback_ui/os_feedback_ui.h"
+#include "ash/webui/os_feedback_ui/url_constants.h"
+#include "ash/webui/scanning/scanning_ui.h"
+#include "ash/webui/scanning/url_constants.h"
+#include "ash/webui/shimless_rma/shimless_rma.h"
+#include "ash/webui/shimless_rma/url_constants.h"
+#include "ash/webui/shortcut_customization_ui/shortcut_customization_app_ui.h"
+#include "ash/webui/shortcut_customization_ui/url_constants.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/ash/arc/arc_util.h"
@@ -249,8 +249,8 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OFFICIAL_BUILD)
-#include "ash/content/file_manager/file_manager_ui.h"
-#include "ash/content/file_manager/url_constants.h"
+#include "ash/webui/file_manager/file_manager_ui.h"
+#include "ash/webui/file_manager/url_constants.h"
 #include "chrome/browser/ash/web_applications/chrome_file_manager_ui_delegate.h"
 #include "chrome/browser/ui/webui/chromeos/emulator/device_emulator_ui.h"
 #include "chromeos/components/demo_mode_app_ui/demo_mode_app_ui.h"

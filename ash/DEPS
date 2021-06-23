@@ -46,7 +46,7 @@ include_rules = [
   "+ui",
   "-ash/host",
 
-  # Ash sits above content. Exceptions live in //ash/content.
+  # Ash sits above content. Exceptions live in //ash/webui.
   "-content",
 
   # Only allow Chrome OS services and D-Bus clients accessible to the mustash

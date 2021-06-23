@@ -645,7 +645,7 @@ js_library("test_util_base") {
 }
 
 js_library("test_util") {
-  visibility += [ "//ash/content/file_manager/resources:test_util_swa" ]
+  visibility += [ "//ash/webui/file_manager/resources:test_util_swa" ]
 
   deps = [
     ":background",

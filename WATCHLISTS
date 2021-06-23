@@ -1006,7 +1006,7 @@
                   'chrome/test/data/extensions/api_test/file_system_provider|' \
                   'components/drive|' \
                   'google_apis/drive|' \
-                  'ash/content/file_manager|' \
+                  'ash/webui/file_manager|' \
                   'ui/file_manager'
     },
     'freetype_update': {
@@ -1639,7 +1639,7 @@
                   '|components/metrics/public/mojom/call_stack*',
     },
     'scanning': {
-      'filepath': 'ash/content/scanning/'\
+      'filepath': 'ash/webui/scanning/'\
                   '|chrome/browser/ash/scanning/',
     },
     'security': {

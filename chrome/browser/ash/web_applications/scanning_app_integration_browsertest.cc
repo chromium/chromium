@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/content/scanning/url_constants.h"
+#include "ash/webui/scanning/url_constants.h"
 #include "base/values.h"
 #include "chrome/browser/ash/web_applications/system_web_app_integration_test.h"
 #include "chrome/browser/chromeos/policy/handlers/system_features_disable_list_policy_handler.h"

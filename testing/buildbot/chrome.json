@@ -2900,8 +2900,8 @@
           ],
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "ash_content_unittests",
-        "test_id_prefix": "ninja://ash/content:ash_content_unittests/"
+        "test": "ash_unittests",
+        "test_id_prefix": "ninja://ash:ash_unittests/"
       },
       {
         "merge": {
@@ -2919,8 +2919,8 @@
           ],
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "ash_unittests",
-        "test_id_prefix": "ninja://ash:ash_unittests/"
+        "test": "ash_webui_unittests",
+        "test_id_prefix": "ninja://ash/webui:ash_webui_unittests/"
       },
       {
         "merge": {
@@ -4766,8 +4766,8 @@
           ],
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "ash_content_unittests",
-        "test_id_prefix": "ninja://ash/content:ash_content_unittests/"
+        "test": "ash_unittests",
+        "test_id_prefix": "ninja://ash:ash_unittests/"
       },
       {
         "merge": {
@@ -4785,8 +4785,8 @@
           ],
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "ash_unittests",
-        "test_id_prefix": "ninja://ash:ash_unittests/"
+        "test": "ash_webui_unittests",
+        "test_id_prefix": "ninja://ash/webui:ash_webui_unittests/"
       },
       {
         "merge": {

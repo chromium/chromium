@@ -464,8 +464,8 @@ group("gn_all") {
   if (is_chromeos_ash) {
     deps += [
       "//ash:ash_unittests",
-      "//ash/content:ash_content_unittests",
       "//ash/keyboard/ui:keyboard_unittests",
+      "//ash/webui:ash_webui_unittests",
       "//chrome/browser/metrics/perf:profile_provider_unittest",
       "//chrome/test:usage_time_limit_unittests",
       "//chromeos/components:chromeos_components_unittests",
@@ -1467,7 +1467,7 @@ if (enable_js_type_check) {
     ]
     if (is_chromeos_ash) {
       data_deps += [
-        "ash/content:closure_compile",
+        "ash/webui:closure_compile",
         "chromeos/components:closure_compile",
         "ui/file_manager:closure_compile",
       ]

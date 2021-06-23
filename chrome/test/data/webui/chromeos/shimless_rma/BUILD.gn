@@ -7,7 +7,7 @@ import("//third_party/closure_compiler/compile_js.gni")
 js_type_check("closure_compile") {
   is_polymer3 = true
   closure_flags = default_closure_args + [
-                    "browser_resolver_prefix_replacements=\"chrome://shimless-rma/=../../ash/content/shimless_rma/resources/\"",
+                    "browser_resolver_prefix_replacements=\"chrome://shimless-rma/=../../ash/webui/shimless_rma/resources/\"",
                     "js_module_root=../../chrome/test/data/webui/",
                     "js_module_root=./gen/chrome/test/data/webui/",
                   ]
@@ -28,8 +28,8 @@ js_type_check("closure_compile") {
 js_library("fake_shimless_rma_service_test") {
   deps = [
     "../..:chai_assert",
-    "//ash/content/shimless_rma/resources:fake_shimless_rma_service",
-    "//ash/content/shimless_rma/resources:shimless_rma_types",
+    "//ash/webui/shimless_rma/resources:fake_shimless_rma_service",
+    "//ash/webui/shimless_rma/resources:shimless_rma_types",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
@@ -37,11 +37,11 @@ js_library("fake_shimless_rma_service_test") {
 js_library("shimless_rma_app_test") {
   deps = [
     "../..:chai_assert",
-    "//ash/content/shimless_rma/resources:fake_data",
-    "//ash/content/shimless_rma/resources:fake_shimless_rma_service",
-    "//ash/content/shimless_rma/resources:mojo_interface_provider",
-    "//ash/content/shimless_rma/resources:shimless_rma",
-    "//ash/content/shimless_rma/resources:shimless_rma_types",
+    "//ash/webui/shimless_rma/resources:fake_data",
+    "//ash/webui/shimless_rma/resources:fake_shimless_rma_service",
+    "//ash/webui/shimless_rma/resources:mojo_interface_provider",
+    "//ash/webui/shimless_rma/resources:shimless_rma",
+    "//ash/webui/shimless_rma/resources:shimless_rma_types",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
@@ -49,9 +49,9 @@ js_library("shimless_rma_app_test") {
 js_library("onboarding_choose_destination_page_test") {
   deps = [
     "../..:chai_assert",
-    "//ash/content/shimless_rma/resources:fake_shimless_rma_service",
-    "//ash/content/shimless_rma/resources:mojo_interface_provider",
-    "//ash/content/shimless_rma/resources:onboarding_choose_destination_page",
+    "//ash/webui/shimless_rma/resources:fake_shimless_rma_service",
+    "//ash/webui/shimless_rma/resources:mojo_interface_provider",
+    "//ash/webui/shimless_rma/resources:onboarding_choose_destination_page",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:promise_resolver.m",
   ]
@@ -61,7 +61,7 @@ js_library("onboarding_choose_destination_page_test") {
 js_library("onboarding_choose_wp_disable_method_page_test") {
   deps = [
     "../..:chai_assert",
-    "//ash/content/shimless_rma/resources:onboarding_choose_wp_disable_method_page",
+    "//ash/webui/shimless_rma/resources:onboarding_choose_wp_disable_method_page",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
@@ -69,10 +69,10 @@ js_library("onboarding_choose_wp_disable_method_page_test") {
 js_library("onboarding_enter_rsu_wp_disable_code_page_test") {
   deps = [
     "../..:chai_assert",
-    "//ash/content/shimless_rma/resources:fake_shimless_rma_service",
-    "//ash/content/shimless_rma/resources:mojo_interface_provider",
-    "//ash/content/shimless_rma/resources:onboarding_enter_rsu_wp_disable_code_page",
-    "//ash/content/shimless_rma/resources:shimless_rma_types",
+    "//ash/webui/shimless_rma/resources:fake_shimless_rma_service",
+    "//ash/webui/shimless_rma/resources:mojo_interface_provider",
+    "//ash/webui/shimless_rma/resources:onboarding_enter_rsu_wp_disable_code_page",
+    "//ash/webui/shimless_rma/resources:shimless_rma_types",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
@@ -80,9 +80,9 @@ js_library("onboarding_enter_rsu_wp_disable_code_page_test") {
 js_library("onboarding_select_components_page_test") {
   deps = [
     "../..:chai_assert",
-    "//ash/content/shimless_rma/resources:fake_shimless_rma_service",
-    "//ash/content/shimless_rma/resources:mojo_interface_provider",
-    "//ash/content/shimless_rma/resources:onboarding_select_components_page",
+    "//ash/webui/shimless_rma/resources:fake_shimless_rma_service",
+    "//ash/webui/shimless_rma/resources:mojo_interface_provider",
+    "//ash/webui/shimless_rma/resources:onboarding_select_components_page",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:promise_resolver.m",
   ]
@@ -92,7 +92,7 @@ js_library("onboarding_select_components_page_test") {
 js_library("onboarding_update_page_test") {
   deps = [
     "../..:chai_assert",
-    "//ash/content/shimless_rma/resources:onboarding_update_page",
+    "//ash/webui/shimless_rma/resources:onboarding_update_page",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
@@ -101,8 +101,8 @@ js_library("onboarding_network_page_test") {
   deps = [
     "..:fake_network_config_mojom.m",
     "../..:chai_assert",
-    "//ash/content/shimless_rma/resources:mojo_interface_provider",
-    "//ash/content/shimless_rma/resources:onboarding_network_page",
+    "//ash/webui/shimless_rma/resources:mojo_interface_provider",
+    "//ash/webui/shimless_rma/resources:onboarding_network_page",
     "//ui/webui/resources/cr_components/chromeos/network:network_config.m",
     "//ui/webui/resources/cr_components/chromeos/network:network_list.m",
     "//ui/webui/resources/cr_components/chromeos/network:onc_mojo.m",
@@ -115,7 +115,7 @@ js_library("onboarding_network_page_test") {
 js_library("onboarding_wait_for_manual_wp_disable_page_test") {
   deps = [
     "../..:chai_assert",
-    "//ash/content/shimless_rma/resources:onboarding_wait_for_manual_wp_disable_page",
+    "//ash/webui/shimless_rma/resources:onboarding_wait_for_manual_wp_disable_page",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
@@ -123,7 +123,7 @@ js_library("onboarding_wait_for_manual_wp_disable_page_test") {
 js_library("reimaging_firmware_update_page_test") {
   deps = [
     "../..:chai_assert",
-    "//ash/content/shimless_rma/resources:onboarding_update_page",
+    "//ash/webui/shimless_rma/resources:onboarding_update_page",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }

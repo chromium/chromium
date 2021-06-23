@@ -9,7 +9,7 @@
 #include <memory>
 #include <utility>
 
-#include "ash/content/file_manager/url_constants.h"
+#include "ash/webui/file_manager/url_constants.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/cxx17_backports.h"

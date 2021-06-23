@@ -13,7 +13,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #if !defined(OFFICIAL_BUILD)
-#include "ash/content/file_manager/url_constants.h"
+#include "ash/webui/file_manager/url_constants.h"
 #endif
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "base/bind.h"

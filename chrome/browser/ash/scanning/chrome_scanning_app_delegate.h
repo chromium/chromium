@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "ash/content/scanning/scanning_app_delegate.h"
+#include "ash/webui/scanning/scanning_app_delegate.h"
 #include "base/files/file_path.h"
 
 class PrefService;

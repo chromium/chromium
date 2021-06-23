@@ -7,8 +7,8 @@
 #include <string>
 
 #include "ash/constants/ash_features.h"
-#include "ash/content/file_manager/resources/grit/file_manager_swa_resources.h"
-#include "ash/content/file_manager/url_constants.h"
+#include "ash/webui/file_manager/resources/grit/file_manager_swa_resources.h"
+#include "ash/webui/file_manager/url_constants.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"

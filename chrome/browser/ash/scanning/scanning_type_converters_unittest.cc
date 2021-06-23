@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/scanning/scanning_type_converters.h"
 
-#include "ash/content/scanning/mojom/scanning.mojom.h"
+#include "ash/webui/scanning/mojom/scanning.mojom.h"
 #include "chromeos/dbus/lorgnette/lorgnette_service.pb.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"

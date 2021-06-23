@@ -7,7 +7,7 @@ import("//third_party/closure_compiler/compile_js.gni")
 js_type_check("closure_compile") {
   is_polymer3 = true
   closure_flags = default_closure_args + [
-                    "browser_resolver_prefix_replacements=\"chrome://shortcut-customization/=../../ash/content/shortcut_customization_ui/resources/\"",
+                    "browser_resolver_prefix_replacements=\"chrome://shortcut-customization/=../../ash/webui/shortcut_customization_ui/resources/\"",
                     "js_module_root=../../chrome/test/data/webui/",
                     "js_module_root=./gen/chrome/test/data/webui/",
                   ]
@@ -23,7 +23,7 @@ js_library("shortcut_customization_unified_test") {
 js_library("shortcut_customization_test") {
   deps = [
     "../..:chai_assert",
-    "//ash/content/shortcut_customization_ui/resources:shortcut_customization_app",
+    "//ash/webui/shortcut_customization_ui/resources:shortcut_customization_app",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
