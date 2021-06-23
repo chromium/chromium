@@ -5,7 +5,6 @@
 #include "components/zoom/zoom_controller.h"
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/process/kill.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -348,7 +347,7 @@ class ZoomControllerForPrerenderingTest : public ZoomControllerBrowserTest,
   bool is_on_zoom_changed_called_ = false;
 
   content::test::PrerenderTestHelper prerender_helper_;
-  CheckedPtr<ZoomController> zoom_controller_;
+  ZoomController* zoom_controller_;
 };
 
 IN_PROC_BROWSER_TEST_F(ZoomControllerForPrerenderingTest,

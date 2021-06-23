@@ -7,7 +7,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 #include "services/device/public/mojom/screen_orientation.mojom.h"
@@ -58,7 +57,7 @@ class FakeScreenOrientationImpl : public device::mojom::ScreenOrientation {
   bool IsOrientationAllowedByCurrentLock(display::mojom::ScreenOrientation);
   display::mojom::ScreenOrientation SuitableOrientationForCurrentLock();
 
-  CheckedPtr<blink::WebView> web_view_ = nullptr;
+  blink::WebView* web_view_ = nullptr;
   device::mojom::ScreenOrientationLockType current_lock_ =
       device::mojom::ScreenOrientationLockType::DEFAULT;
   display::mojom::ScreenOrientation device_orientation_ =

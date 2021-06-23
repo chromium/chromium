@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
-#include "base/memory/checked_ptr.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "media/base/cdm_factory.h"
@@ -56,7 +55,7 @@ class CdmServiceBrokerTest : public testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
-  CheckedPtr<MockCdmServiceClient> mock_cdm_service_client_ = nullptr;
+  MockCdmServiceClient* mock_cdm_service_client_ = nullptr;
   mojo::Remote<mojom::CdmServiceBroker> remote_;
   std::unique_ptr<CdmServiceBroker> broker_;
 };

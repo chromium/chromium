@@ -13,7 +13,6 @@
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/clock.h"
@@ -45,7 +44,7 @@ struct ModelExecutionManagerImpl::ExecutionState {
   ExecutionState& operator=(const ExecutionState&) = delete;
 
   OptimizationTarget segment_id;
-  CheckedPtr<SegmentationModelHandler> model_handler = nullptr;
+  SegmentationModelHandler* model_handler = nullptr;
   ModelExecutionCallback callback;
   base::TimeDelta bucket_duration;
   std::deque<proto::Feature> features;

@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "ui/compositor/test/multi_layer_animator_test_controller.h"
 #include "ui/compositor/test/multi_layer_animator_test_controller_delegate.h"
 
@@ -46,7 +45,7 @@ class InkDropRippleTestApi
 
  private:
   // The InkDropedRipple to provide internal access to.
-  CheckedPtr<InkDropRipple> ink_drop_ripple_;
+  InkDropRipple* ink_drop_ripple_;
 
   DISALLOW_COPY_AND_ASSIGN(InkDropRippleTestApi);
 };

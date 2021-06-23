@@ -9,7 +9,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "ppapi/c/pp_instance.h"
 #include "ppapi/host/instance_message_filter.h"
 
@@ -43,7 +42,7 @@ class PepperSharedMemoryMessageFilter
       int* host_shm_handle_id,
       ppapi::proxy::SerializedHandle* plugin_shm_handle);
 
-  CheckedPtr<content::RendererPpapiHost> host_;
+  content::RendererPpapiHost* host_;
 
   DISALLOW_COPY_AND_ASSIGN(PepperSharedMemoryMessageFilter);
 };

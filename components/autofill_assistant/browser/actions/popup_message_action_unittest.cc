@@ -7,7 +7,6 @@
 #include <string>
 #include <utility>
 
-#include "base/memory/checked_ptr.h"
 #include "base/test/mock_callback.h"
 #include "components/autofill_assistant/browser/actions/mock_action_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -27,7 +26,7 @@ class PopupMessageActionTest : public testing::Test {
   MockActionDelegate mock_action_delegate_;
   base::MockCallback<Action::ProcessActionCallback> callback_;
   ActionProto proto_;
-  CheckedPtr<PopupMessageProto> prompt_proto_;
+  PopupMessageProto* prompt_proto_;
 };
 
 TEST_F(PopupMessageActionTest, NoMessage) {

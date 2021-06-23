@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBAUTHN_OTHER_MECHANISMS_MENU_MODEL_H_
 #define CHROME_BROWSER_UI_WEBAUTHN_OTHER_MECHANISMS_MENU_MODEL_H_
 
-#include "base/memory/checked_ptr.h"
 #include "ui/base/models/simple_menu_model.h"
 
 class AuthenticatorRequestDialogModel;
@@ -28,7 +27,7 @@ class OtherMechanismsMenuModel : public ui::SimpleMenuModel,
   bool IsCommandIdEnabled(int command_id) const override;
   void ExecuteCommand(int command_id, int event_flags) override;
 
-  const CheckedPtr<AuthenticatorRequestDialogModel> dialog_model_;
+  AuthenticatorRequestDialogModel* const dialog_model_;
 
   DISALLOW_COPY_AND_ASSIGN(OtherMechanismsMenuModel);
 };

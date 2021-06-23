@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -78,7 +77,7 @@ class WebAppFileHandlingTestBase : public WebAppControllerBrowserTest {
 
  private:
   AppId app_id_;
-  CheckedPtr<content::WebContents> web_contents_ = nullptr;
+  content::WebContents* web_contents_ = nullptr;
 };
 
 }  // namespace web_app

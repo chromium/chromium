@@ -21,7 +21,6 @@
 
 #include "base/environment.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/rand_util.h"
 #include "base/test/task_environment.h"
@@ -454,8 +453,8 @@ class Requester : public DiscreteTimeSimulation::Actor {
   TimeTicks time_of_last_success_;
   bool last_attempt_was_failure_;
   TimeDelta last_downtime_duration_;
-  const CheckedPtr<Server> server_;
-  const CheckedPtr<RequesterResults> results_;  // May be nullptr.
+  Server* const server_;
+  RequesterResults* const results_;  // May be nullptr.
 
   DISALLOW_COPY_AND_ASSIGN(Requester);
 };

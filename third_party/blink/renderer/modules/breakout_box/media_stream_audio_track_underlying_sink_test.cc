@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/breakout_box/media_stream_audio_track_underlying_sink.h"
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/gmock_callback_support.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -41,7 +40,7 @@ class MediaStreamAudioTrackUnderlyingSinkTest : public testing::Test {
         "dummy_source_id", MediaStreamSource::kTypeAudio, "dummy_source_name",
         /*remote=*/false);
     media_stream_source_->SetPlatformSource(
-        base::WrapUnique(pushable_audio_source_.get()));
+        base::WrapUnique(pushable_audio_source_));
   }
 
   ~MediaStreamAudioTrackUnderlyingSinkTest() override {
@@ -83,7 +82,7 @@ class MediaStreamAudioTrackUnderlyingSinkTest : public testing::Test {
   Persistent<MediaStreamSource> media_stream_source_;
   Persistent<MediaStreamComponent> media_stream_component_;
 
-  CheckedPtr<PushableMediaStreamAudioSource> pushable_audio_source_;
+  PushableMediaStreamAudioSource* pushable_audio_source_;
 };
 
 TEST_F(MediaStreamAudioTrackUnderlyingSinkTest,

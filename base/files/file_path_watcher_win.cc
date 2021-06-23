@@ -11,7 +11,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -62,7 +61,7 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate,
   FilePath target_;
 
   // Set to true in the destructor.
-  CheckedPtr<bool> was_deleted_ptr_ = nullptr;
+  bool* was_deleted_ptr_ = nullptr;
 
   // Handle for FindFirstChangeNotification.
   HANDLE handle_ = INVALID_HANDLE_VALUE;

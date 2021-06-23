@@ -18,7 +18,6 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -2182,7 +2181,7 @@ class TestRunner::MainWindowTracker : public blink::WebViewObserver {
   }
 
  private:
-  const CheckedPtr<TestRunner> test_runner_;
+  TestRunner* const test_runner_;
 };
 
 TestRunner::WorkQueue::WorkQueue(TestRunner* controller)

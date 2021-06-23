@@ -13,7 +13,6 @@
 #include "base/atomicops.h"
 #include "base/dcheck_is_on.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/single_sample_metrics.h"
 #include "base/profiler/sample_metadata.h"
@@ -615,7 +614,7 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     ~RendererPauseHandleImpl() override;
 
    private:
-    CheckedPtr<MainThreadSchedulerImpl> scheduler_;  // NOT OWNED
+    MainThreadSchedulerImpl* scheduler_;  // NOT OWNED
   };
 
   // IdleHelper::Delegate implementation:

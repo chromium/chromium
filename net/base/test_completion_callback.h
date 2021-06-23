@@ -12,7 +12,6 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/memory/checked_ptr.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_errors.h"
 
@@ -164,7 +163,7 @@ class ReleaseBufferCompletionCallback: public TestCompletionCallback {
  private:
   void SetResult(int result) override;
 
-  CheckedPtr<IOBuffer> buffer_;
+  IOBuffer* buffer_;
 };
 
 }  // namespace net

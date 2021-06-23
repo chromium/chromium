@@ -6,7 +6,6 @@
 
 #include <memory>
 #include <queue>
-#include "base/memory/checked_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -691,7 +690,7 @@ class TaskObserver : public base::TaskObserver {
 
  private:
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  CheckedPtr<Vector<scoped_refptr<base::SingleThreadTaskRunner>>> run_order_;
+  Vector<scoped_refptr<base::SingleThreadTaskRunner>>* run_order_;
 };
 
 }  // namespace

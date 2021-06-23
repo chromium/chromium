@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_PREFETCH_PREFETCH_PROXY_PREFETCH_PROXY_PROXY_CONFIGURATOR_H_
 #define CHROME_BROWSER_PREFETCH_PREFETCH_PROXY_PREFETCH_PROXY_PROXY_CONFIGURATOR_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
@@ -68,7 +67,7 @@ class PrefetchProxyProxyConfigurator
   const net::ProxyServer prefetch_proxy_server_;
 
   // The time clock used to calculate |prefetch_proxy_not_available_until_|.
-  CheckedPtr<const base::Clock> clock_;
+  const base::Clock* clock_;
 
   // If set, the prefetch proxy should not be used until this time.
   absl::optional<base::Time> prefetch_proxy_not_available_until_;

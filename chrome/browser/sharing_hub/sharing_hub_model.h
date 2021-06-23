@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/share/core/share_targets_observer.h"
 
 class GURL;
@@ -80,7 +79,7 @@ class SharingHubModel : public sharing::ShareTargetsObserver {
   // A list of third party action URLs mapped to action id.
   std::map<int, GURL> third_party_action_urls_;
 
-  CheckedPtr<content::BrowserContext> context_;
+  content::BrowserContext* context_;
 
   std::unique_ptr<sharing::mojom::ShareTargets> third_party_targets_;
 

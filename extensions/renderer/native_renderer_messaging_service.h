@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/renderer/gin_port.h"
 #include "extensions/renderer/one_time_message_handler.h"
@@ -188,7 +187,7 @@ class NativeRendererMessagingService : public GinPort::Delegate {
                                const PortId& port_id);
 
   // The associated bindings system; guaranteed to outlive this object.
-  const CheckedPtr<NativeExtensionBindingsSystem> bindings_system_;
+  NativeExtensionBindingsSystem* const bindings_system_;
 
   OneTimeMessageHandler one_time_message_handler_;
 

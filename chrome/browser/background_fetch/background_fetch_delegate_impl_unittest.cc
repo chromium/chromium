@@ -4,7 +4,6 @@
 
 #include "chrome/browser/background_fetch/background_fetch_delegate_impl.h"
 
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -46,7 +45,7 @@ class BackgroundFetchDelegateImplTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> recorder_;
-  CheckedPtr<BackgroundFetchDelegateImpl> delegate_;
+  BackgroundFetchDelegateImpl* delegate_;
   TestingProfile profile_;
   const GURL kOriginUrl{"https://example.com/"};
 };

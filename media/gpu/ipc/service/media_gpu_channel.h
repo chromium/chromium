@@ -5,7 +5,6 @@
 #ifndef MEDIA_GPU_IPC_SERVICE_MEDIA_GPU_CHANNEL_H_
 #define MEDIA_GPU_IPC_SERVICE_MEDIA_GPU_CHANNEL_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/unguessable_token.h"
 #include "media/base/android_overlay_mojo_factory.h"
 #include "media/mojo/mojom/gpu_accelerated_video_decoder.mojom.h"
@@ -31,7 +30,7 @@ class MediaGpuChannel {
       gpu::CommandBufferStub* stub,
       mojo::GenericPendingAssociatedReceiver receiver);
 
-  const CheckedPtr<gpu::GpuChannel> channel_;
+  gpu::GpuChannel* const channel_;
   AndroidOverlayMojoFactoryCB overlay_factory_cb_;
   mojo::UniqueAssociatedReceiverSet<mojom::GpuAcceleratedVideoDecoderProvider>
       accelerated_video_decoder_providers_;

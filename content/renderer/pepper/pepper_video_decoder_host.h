@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "content/common/content_export.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "media/video/video_decode_accelerator.h"
@@ -125,7 +124,7 @@ class CONTENT_EXPORT PepperVideoDecoderHost
   PendingDecodeList::iterator GetPendingDecodeById(int32_t decode_id);
 
   // Non-owning pointer.
-  CheckedPtr<RendererPpapiHost> renderer_ppapi_host_;
+  RendererPpapiHost* renderer_ppapi_host_;
 
   media::VideoCodecProfile profile_;
 

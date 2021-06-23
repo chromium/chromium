@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SIGNIN_HEADER_MODIFICATION_DELEGATE_IMPL_H_
 #define CHROME_BROWSER_SIGNIN_HEADER_MODIFICATION_DELEGATE_IMPL_H_
 
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/browser/signin/header_modification_delegate.h"
@@ -50,7 +49,7 @@ class HeaderModificationDelegateImpl : public HeaderModificationDelegate {
 #endif
 
  private:
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
 
 #if defined(OS_ANDROID)

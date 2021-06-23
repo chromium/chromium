@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/common/extensions/extension_test_util.h"
@@ -42,7 +41,7 @@ class ExtensionWebRequestHelpersTestWithThreadsTest
  protected:
   void SetUp() override;
 
-  CheckedPtr<extensions::PermissionHelper> permission_helper_ = nullptr;
+  extensions::PermissionHelper* permission_helper_ = nullptr;
   // This extension has Web Request permissions, but no host permission.
   scoped_refptr<Extension> permissionless_extension_;
   // This extension has Web Request permissions, and *.com a host permission.

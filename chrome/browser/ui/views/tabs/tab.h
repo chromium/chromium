@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_view.h"
@@ -225,7 +224,7 @@ class Tab : public gfx::AnimationDelegate,
   void CloseButtonPressed(const ui::Event& event);
 
   // The controller, never nullptr.
-  const CheckedPtr<TabController> controller_;
+  TabController* const controller_;
 
   TabRendererData data_;
 
@@ -234,11 +233,11 @@ class Tab : public gfx::AnimationDelegate,
   // True if the tab is being animated closed.
   bool closing_ = false;
 
-  CheckedPtr<TabIcon> icon_ = nullptr;
-  CheckedPtr<AlertIndicator> alert_indicator_ = nullptr;
-  CheckedPtr<TabCloseButton> close_button_ = nullptr;
+  TabIcon* icon_ = nullptr;
+  AlertIndicator* alert_indicator_ = nullptr;
+  TabCloseButton* close_button_ = nullptr;
 
-  CheckedPtr<views::Label> title_;
+  views::Label* title_;
   // The title's bounds are animated when switching between showing and hiding
   // the tab's favicon/throbber.
   gfx::Rect start_title_bounds_;

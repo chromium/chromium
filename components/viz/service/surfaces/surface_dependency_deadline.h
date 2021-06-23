@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_VIZ_SERVICE_SURFACES_SURFACE_DEPENDENCY_DEADLINE_H_
 #define COMPONENTS_VIZ_SERVICE_SURFACES_SURFACE_DEPENDENCY_DEADLINE_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -49,7 +48,7 @@ class VIZ_SERVICE_EXPORT SurfaceDependencyDeadline {
   }
 
  private:
-  CheckedPtr<const base::TickClock> tick_clock_;
+  const base::TickClock* tick_clock_;
   base::TimeTicks start_time_;
   absl::optional<base::TimeTicks> deadline_;
 

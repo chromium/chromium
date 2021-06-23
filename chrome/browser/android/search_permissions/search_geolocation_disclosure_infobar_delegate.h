@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -75,7 +74,7 @@ class SearchGeolocationDisclosureInfoBarDelegate
   GURL search_url_;
 
   // The pref service to record prefs in.
-  CheckedPtr<PrefService> pref_service_;
+  PrefService* pref_service_;
 
   // The result of showing the disclosure.
   DisclosureResult result_;

@@ -6,7 +6,6 @@
 
 #include "base/location.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
@@ -118,7 +117,7 @@ class VideoTrackRecorderTest
     const String track_id("dummy");
     source_ = MakeGarbageCollected<MediaStreamSource>(
         track_id, MediaStreamSource::kTypeVideo, track_id, false /*remote*/);
-    source_->SetPlatformSource(base::WrapUnique(mock_source_.get()));
+    source_->SetPlatformSource(base::WrapUnique(mock_source_));
     EXPECT_CALL(*mock_source_, OnRequestRefreshFrame())
         .Times(testing::AnyNumber());
     EXPECT_CALL(*mock_source_, OnCapturingLinkSecured(_))
@@ -128,7 +127,7 @@ class VideoTrackRecorderTest
     track_ = new MediaStreamVideoTrack(
         mock_source_, WebPlatformMediaStreamSource::ConstraintsOnceCallback(),
         true /* enabled */);
-    component_->SetPlatformTrack(base::WrapUnique(track_.get()));
+    component_->SetPlatformTrack(base::WrapUnique(track_));
 
     // Paranoia checks.
     EXPECT_EQ(component_->Source()->GetPlatformSource(),
@@ -196,9 +195,9 @@ class VideoTrackRecorderTest
 
   // All members are non-const due to the series of initialize() calls needed.
   // |mock_source_| is owned by |source_|, |track_| by |component_|.
-  CheckedPtr<MockMediaStreamVideoSource> mock_source_;
+  MockMediaStreamVideoSource* mock_source_;
   Persistent<MediaStreamSource> source_;
-  CheckedPtr<MediaStreamVideoTrack> track_;
+  MediaStreamVideoTrack* track_;
   Persistent<MediaStreamComponent> component_;
 
   std::unique_ptr<VideoTrackRecorderImpl> video_track_recorder_;
@@ -544,13 +543,13 @@ class VideoTrackRecorderPassthroughTest
     const String track_id("dummy");
     source_ = MakeGarbageCollected<MediaStreamSource>(
         track_id, MediaStreamSource::kTypeVideo, track_id, false /*remote*/);
-    source_->SetPlatformSource(base::WrapUnique(mock_source_.get()));
+    source_->SetPlatformSource(base::WrapUnique(mock_source_));
     component_ = MakeGarbageCollected<MediaStreamComponent>(source_);
 
     track_ = new MediaStreamVideoTrack(
         mock_source_, WebPlatformMediaStreamSource::ConstraintsOnceCallback(),
         true /* enabled */);
-    component_->SetPlatformTrack(base::WrapUnique(track_.get()));
+    component_->SetPlatformTrack(base::WrapUnique(track_));
 
     // Paranoia checks.
     EXPECT_EQ(component_->Source()->GetPlatformSource(),
@@ -587,9 +586,9 @@ class VideoTrackRecorderPassthroughTest
 
   // All members are non-const due to the series of initialize() calls needed.
   // |mock_source_| is owned by |source_|, |track_| by |component_|.
-  CheckedPtr<MockMediaStreamVideoSource> mock_source_;
+  MockMediaStreamVideoSource* mock_source_;
   Persistent<MediaStreamSource> source_;
-  CheckedPtr<MediaStreamVideoTrack> track_;
+  MediaStreamVideoTrack* track_;
   Persistent<MediaStreamComponent> component_;
 
   std::unique_ptr<VideoTrackRecorderPassthrough> video_track_recorder_;

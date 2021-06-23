@@ -7,7 +7,6 @@
 #include <map>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
@@ -214,16 +213,14 @@ class ProfileProtoDBTest : public testing::Test {
       test_content_db_storage_;
 
  protected:
-  CheckedPtr<
-      leveldb_proto::test::FakeDB<profile_proto_db::ProfileProtoDBTestProto>>
+  leveldb_proto::test::FakeDB<profile_proto_db::ProfileProtoDBTestProto>*
       test_content_db_;
 
  private:
   base::test::TaskEnvironment task_environment_;
 
   // For persisted_state_db::PersistedStateContentProto database
-  CheckedPtr<leveldb_proto::test::FakeDB<
-      persisted_state_db::PersistedStateContentProto>>
+  leveldb_proto::test::FakeDB<persisted_state_db::PersistedStateContentProto>*
       content_db_;
   std::unique_ptr<
       ProfileProtoDB<persisted_state_db::PersistedStateContentProto>>

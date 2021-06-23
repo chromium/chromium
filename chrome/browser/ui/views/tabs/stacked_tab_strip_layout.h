@@ -7,7 +7,6 @@
 
 #include <algorithm>
 
-#include "base/memory/checked_ptr.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/view_model.h"
 
@@ -220,7 +219,7 @@ class StackedTabStripLayout {
   // Where bounds are placed. This is owned by TabStrip.
   // (Note: This is a ViewModelBase, not a ViewModelT<Tab>, because the tests do
   // not populate the model with Tab views.)
-  CheckedPtr<views::ViewModelBase> view_model_;
+  views::ViewModelBase* view_model_;
 
   // X coordinate of the first tab.
   int first_tab_x_ = 0;

@@ -8,7 +8,6 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
@@ -87,11 +86,11 @@ class WebLocalFrameAdapter
   }
 
   uintptr_t GetId() const override {
-    return reinterpret_cast<uintptr_t>(frame_.get());
+    return reinterpret_cast<uintptr_t>(frame_);
   }
 
  private:
-  const CheckedPtr<const blink::WebLocalFrame> frame_;
+  const blink::WebLocalFrame* const frame_;
 };
 
 GURL GetEffectiveDocumentURL(
@@ -484,7 +483,7 @@ std::string ScriptContext::GetDebugString() const {
       "  context_type:           %s\n"
       "  effective extension id: %s\n"
       "  effective context type: %s",
-      extension_.get() ? extension_->id().c_str() : "(none)", web_frame_.get(),
+      extension_.get() ? extension_->id().c_str() : "(none)", web_frame_,
       url_.spec().c_str(), GetContextTypeDescription().c_str(),
       effective_extension_.get() ? effective_extension_->id().c_str()
                                  : "(none)",

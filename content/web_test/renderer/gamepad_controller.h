@@ -11,7 +11,6 @@
 
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
 #include "device/gamepad/public/cpp/gamepads.h"
@@ -54,7 +53,7 @@ class GamepadController : public base::SupportsWeakPtr<GamepadController> {
         mojo::PendingRemote<device::mojom::GamepadObserver> observer) override;
 
    private:
-    CheckedPtr<GamepadController> controller_;
+    GamepadController* controller_;
     mojo::Receiver<device::mojom::GamepadMonitor> receiver_{this};
     mojo::Remote<device::mojom::GamepadObserver> observer_remote_;
     std::bitset<device::Gamepads::kItemsLengthCap> missed_dispatches_;

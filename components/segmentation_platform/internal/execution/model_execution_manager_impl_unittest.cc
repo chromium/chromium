@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/callback_forward.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/gtest_util.h"
 #include "base/test/simple_test_clock.h"
@@ -135,7 +134,7 @@ class ModelExecutionManagerTest : public testing::Test {
   base::SimpleTestClock clock_;
   std::unique_ptr<test::TestSegmentInfoDatabase> segment_database_;
   std::unique_ptr<MockSignalDatabase> signal_database_;
-  CheckedPtr<MockFeatureAggregator> feature_aggregator_;
+  MockFeatureAggregator* feature_aggregator_;
 
   std::unique_ptr<ModelExecutionManagerImpl> model_execution_manager_;
 };

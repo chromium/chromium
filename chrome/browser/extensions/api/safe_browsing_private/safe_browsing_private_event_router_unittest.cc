@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/json/json_reader.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -251,8 +250,8 @@ class SafeBrowsingPrivateEventRouterTestBase : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<policy::MockCloudPolicyClient> client_;
   TestingProfileManager profile_manager_;
-  CheckedPtr<TestingProfile> profile_ = nullptr;
-  CheckedPtr<extensions::TestEventRouter> event_router_ = nullptr;
+  TestingProfile* profile_ = nullptr;
+  extensions::TestEventRouter* event_router_ = nullptr;
 
  private:
 #if !BUILDFLAG(IS_CHROMEOS_ASH)

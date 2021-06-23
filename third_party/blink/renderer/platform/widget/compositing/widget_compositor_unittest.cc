@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/platform/widget/compositing/widget_compositor.h"
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/test/task_environment.h"
 #include "cc/test/layer_tree_test.h"
 #include "cc/trees/layer_tree_host.h"
@@ -66,7 +65,7 @@ class FakeWidgetCompositor : public WidgetCompositor {
 
   cc::LayerTreeHost* LayerTreeHost() const override { return layer_tree_host_; }
 
-  CheckedPtr<cc::LayerTreeHost> layer_tree_host_;
+  cc::LayerTreeHost* layer_tree_host_;
 };
 
 class WidgetCompositorTest : public cc::LayerTreeTest {

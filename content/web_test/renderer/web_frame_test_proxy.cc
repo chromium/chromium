@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "content/web_test/renderer/web_frame_test_proxy.h"
-#include "base/memory/checked_ptr.h"
 
 #include "base/strings/stringprintf.h"
 #include "components/plugins/renderer/plugin_placeholder.h"
@@ -221,7 +220,7 @@ class TestRenderFrameObserver : public RenderFrameObserver {
     render_frame()->GetWebFrame()->PrintEnd();
   }
 
-  const CheckedPtr<TestRunner> test_runner_;
+  TestRunner* const test_runner_;
   DISALLOW_COPY_AND_ASSIGN(TestRenderFrameObserver);
 };
 

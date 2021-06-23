@@ -14,7 +14,6 @@
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string_piece.h"
 #include "url/url_canon.h"
 
@@ -46,7 +45,7 @@ class COMPONENT_EXPORT(URL) StdStringCanonOutput : public CanonOutput {
   void Resize(int sz) override;
 
  protected:
-  CheckedPtr<std::string> str_;
+  std::string* str_;
   DISALLOW_COPY_AND_ASSIGN(StdStringCanonOutput);
 };
 

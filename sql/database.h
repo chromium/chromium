@@ -20,7 +20,6 @@
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -603,8 +602,8 @@ class COMPONENT_EXPORT(SQL) Database {
 
     ~StatementRef();
 
-    CheckedPtr<Database> database_;
-    CheckedPtr<sqlite3_stmt> stmt_;
+    Database* database_;
+    sqlite3_stmt* stmt_;
     bool was_valid_;
 
     DISALLOW_COPY_AND_ASSIGN(StatementRef);

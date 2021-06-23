@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "gin/object_template_builder.h"
 #include "gin/wrappable.h"
 #include "third_party/blink/public/web/web_ax_object.h"
@@ -235,7 +234,7 @@ class WebAXObjectProxy : public gin::Wrappable<WebAXObjectProxy> {
   std::string Placeholder();
 
   blink::WebAXObject accessibility_object_;
-  CheckedPtr<Factory> factory_;
+  Factory* factory_;
 
   v8::Persistent<v8::Function> notification_callback_;
 

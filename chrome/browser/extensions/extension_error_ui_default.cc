@@ -5,7 +5,6 @@
 #include "chrome/browser/extensions/extension_error_ui_default.h"
 
 #include "base/check.h"
-#include "base/memory/checked_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -130,7 +129,7 @@ class ExtensionGlobalError : public GlobalErrorWithStandardBubble {
     delegate_->OnAlertDetails();
   }
 
-  CheckedPtr<ExtensionErrorUI::Delegate> delegate_;
+  ExtensionErrorUI::Delegate* delegate_;
 
   ExtensionGlobalError(const ExtensionGlobalError&) = delete;
   ExtensionGlobalError& operator=(const ExtensionGlobalError&) = delete;

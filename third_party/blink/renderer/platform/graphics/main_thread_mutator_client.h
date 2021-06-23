@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_MAIN_THREAD_MUTATOR_CLIENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_MAIN_THREAD_MUTATOR_CLIENT_H_
 
-#include "base/memory/checked_ptr.h"
 #include "third_party/blink/renderer/platform/graphics/animation_worklet_mutators_state.h"
 #include "third_party/blink/renderer/platform/graphics/mutator_client.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -28,7 +27,7 @@ class PLATFORM_EXPORT MainThreadMutatorClient : public MutatorClient {
 
  private:
   std::unique_ptr<AnimationWorkletMutatorDispatcherImpl> mutator_;
-  CheckedPtr<MutatorClient> delegate_;
+  MutatorClient* delegate_;
 };
 
 }  // namespace blink

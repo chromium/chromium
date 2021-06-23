@@ -8,7 +8,6 @@
 #include <sstream>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/network_hints/renderer/dns_prefetch_queue.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -35,7 +34,7 @@ class DnsQueueSequentialTester {
   bool Pop(void);  // Validate string value of next read.
 
  private:
-  CheckedPtr<DnsQueue> buffer_;
+  DnsQueue* buffer_;
   int32_t read_counter_;   // expected value of next read string.
   int32_t write_counter_;  // Numerical value to write next string.
   DISALLOW_COPY_AND_ASSIGN(DnsQueueSequentialTester);

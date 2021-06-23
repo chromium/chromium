@@ -10,7 +10,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "ipc/ipc_message.h"
@@ -96,7 +95,7 @@ class PepperPlatformAudioInput
 
   // The client to notify when the stream is created. THIS MUST ONLY BE
   // ACCESSED ON THE MAIN THREAD.
-  CheckedPtr<PepperAudioInputHost> client_ = nullptr;
+  PepperAudioInputHost* client_ = nullptr;
 
   // Used to send/receive IPC. THIS MUST ONLY BE ACCESSED ON THE
   // I/O THREAD.

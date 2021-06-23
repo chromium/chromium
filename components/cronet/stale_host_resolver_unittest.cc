@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/cxx17_backports.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/test/simple_test_tick_clock.h"
@@ -358,7 +357,7 @@ class StaleHostResolverTest : public testing::Test {
 
   scoped_refptr<MockHostResolverProc> mock_proc_;
 
-  CheckedPtr<net::HostResolver> resolver_;
+  net::HostResolver* resolver_;
   StaleHostResolver::StaleOptions options_;
   std::unique_ptr<StaleHostResolver> stale_resolver_;
 

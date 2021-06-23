@@ -5,7 +5,6 @@
 #ifndef WEBLAYER_BROWSER_SIGNIN_URL_LOADER_THROTTLE_H_
 #define WEBLAYER_BROWSER_SIGNIN_URL_LOADER_THROTTLE_H_
 
-#include "base/memory/checked_ptr.h"
 #include "components/signin/core/browser/signin_header_helper.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
@@ -49,7 +48,7 @@ class SigninURLLoaderThrottle : public blink::URLLoaderThrottle {
                       net::HttpRequestHeaders* modified_headers);
   void ProcessResponse(const net::HttpResponseHeaders* headers);
 
-  CheckedPtr<content::BrowserContext> browser_context_;
+  content::BrowserContext* browser_context_;
   content::WebContents::Getter web_contents_getter_;
   net::HttpRequestHeaders request_headers_;
   GURL request_url_;

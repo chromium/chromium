@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_PDF_RENDERER_PDF_AX_ACTION_TARGET_H_
 #define COMPONENTS_PDF_RENDERER_PDF_AX_ACTION_TARGET_H_
 
-#include "base/memory/checked_ptr.h"
 #include "ui/accessibility/ax_action_target.h"
 
 namespace ui {
@@ -55,7 +54,7 @@ class PdfAXActionTarget : public ui::AXActionTarget {
   bool ScrollToGlobalPoint(const gfx::Point& point) const;
 
   const ui::AXNode& target_plugin_node_;
-  CheckedPtr<PdfAccessibilityTree> pdf_accessibility_tree_source_;
+  PdfAccessibilityTree* pdf_accessibility_tree_source_;
 };
 
 }  // namespace pdf

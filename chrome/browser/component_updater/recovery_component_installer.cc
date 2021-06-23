@@ -20,7 +20,6 @@
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
 #include "base/process/kill.h"
@@ -290,7 +289,7 @@ class RecoveryComponentInstaller : public update_client::CrxInstaller {
                          const base::FilePath& installer_folder) const;
 
   base::Version current_version_;
-  CheckedPtr<PrefService> prefs_;
+  PrefService* prefs_;
 };
 
 void SimulateElevatedRecoveryHelper(PrefService* prefs) {

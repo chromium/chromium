@@ -4,7 +4,6 @@
 
 #include "components/permissions/contexts/camera_pan_tilt_zoom_permission_context.h"
 
-#include "base/memory/checked_ptr.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -54,7 +53,7 @@ class ContentSettingsChangeWaiter : public content_settings::Observer {
  private:
   void Proceed() { run_loop_.Quit(); }
 
-  CheckedPtr<content::BrowserContext> browser_context_;
+  content::BrowserContext* browser_context_;
   ContentSettingsType content_type_;
   base::RunLoop run_loop_;
 };

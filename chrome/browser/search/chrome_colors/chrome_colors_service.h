@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_SEARCH_CHROME_COLORS_CHROME_COLORS_SERVICE_H_
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/web_contents.h"
@@ -71,10 +70,10 @@ class ChromeColorsService : public KeyedService {
   // KeyedService implementation:
   void Shutdown() override;
 
-  const CheckedPtr<ThemeService> theme_service_;
+  ThemeService* const theme_service_;
 
   // The first tab that used Apply* and hasn't Confirm/Revert the changes.
-  CheckedPtr<content::WebContents> dialog_tab_ = nullptr;
+  content::WebContents* dialog_tab_ = nullptr;
 
   // Used for reverting back to the previously installed theme.
   std::unique_ptr<ThemeService::ThemeReinstaller> prev_theme_reinstaller_;

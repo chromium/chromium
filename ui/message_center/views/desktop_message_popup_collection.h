@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "ui/display/display_observer.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/message_center/views/message_popup_collection.h"
@@ -68,7 +67,7 @@ class MESSAGE_CENTER_EXPORT DesktopMessagePopupCollection
 
   int32_t alignment_;
   int64_t primary_display_id_;
-  CheckedPtr<display::Screen> screen_;
+  display::Screen* screen_;
   gfx::Rect work_area_;
 
   DISALLOW_COPY_AND_ASSIGN(DesktopMessagePopupCollection);

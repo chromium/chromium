@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/containers/circular_deque.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
@@ -66,7 +65,7 @@ class VideoFramePool::PoolImpl
   base::circular_deque<FrameEntry> frames_ GUARDED_BY(lock_);
 
   // |tick_clock_| is always a DefaultTickClock outside of testing.
-  CheckedPtr<const base::TickClock> tick_clock_;
+  const base::TickClock* tick_clock_;
 };
 
 VideoFramePool::PoolImpl::PoolImpl()

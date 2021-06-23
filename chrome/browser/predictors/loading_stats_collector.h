@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -69,7 +68,7 @@ class LoadingStatsCollector {
   void CleanupAbandonedStats();
 
  private:
-  CheckedPtr<ResourcePrefetchPredictor> predictor_;
+  ResourcePrefetchPredictor* predictor_;
   base::TimeDelta max_stats_age_;
   std::map<GURL, std::unique_ptr<PreconnectStats>> preconnect_stats_;
 

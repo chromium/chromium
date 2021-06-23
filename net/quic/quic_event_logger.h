@@ -5,7 +5,6 @@
 #ifndef NET_QUIC_QUIC_EVENT_LOGGER_H_
 #define NET_QUIC_QUIC_EVENT_LOGGER_H_
 
-#include "base/memory/checked_ptr.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_export.h"
 #include "net/cert/cert_verify_result.h"
@@ -113,7 +112,7 @@ class NET_EXPORT_PRIVATE QuicEventLogger
   void OnCertificateVerified(const CertVerifyResult& result);
 
  private:
-  CheckedPtr<quic::QuicSession> session_;  // Unowned.
+  quic::QuicSession* session_;  // Unowned.
   NetLogWithSource net_log_;
 
   // The quic::kCADR value provided by the server in ServerHello.

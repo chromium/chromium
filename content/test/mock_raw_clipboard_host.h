@@ -5,7 +5,6 @@
 #ifndef CONTENT_TEST_MOCK_RAW_CLIPBOARD_HOST_H_
 #define CONTENT_TEST_MOCK_RAW_CLIPBOARD_HOST_H_
 
-#include "base/memory/checked_ptr.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "third_party/blink/public/mojom/clipboard/raw_clipboard.mojom.h"
@@ -41,7 +40,7 @@ class MockRawClipboardHost : public blink::mojom::RawClipboardHost {
   mojo::ReceiverSet<blink::mojom::RawClipboardHost> receivers_;
   // The associated sanitized clipboard, for emulating platform-specific
   // clipboard type conversions. Owned by WebTestContentBrowserClient.
-  const CheckedPtr<MockClipboardHost> mock_clipboard_host_;
+  MockClipboardHost* const mock_clipboard_host_;
   std::map<std::u16string, std::vector<uint8_t>> raw_data_map_;
   // Tracks whether a commit has happened since the last write. After a
   // sequence of writes are committed, future writes should clear the clipboard

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/checked_ptr.h"
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/task_queue_throttler.h"
 
 #include <stddef.h>
@@ -58,7 +57,7 @@ class BudgetPoolTest : public testing::Test {
   base::SimpleTestTickClock clock_;
   scoped_refptr<base::NullTaskRunner> null_task_runner_;
   std::unique_ptr<MainThreadSchedulerImpl> scheduler_;
-  CheckedPtr<TaskQueueThrottler> task_queue_throttler_;  // NOT OWNED
+  TaskQueueThrottler* task_queue_throttler_;  // NOT OWNED
   base::TimeTicks start_time_;
 };
 

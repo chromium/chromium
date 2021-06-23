@@ -6,7 +6,6 @@
 #define COMPONENTS_DOWNLOAD_NETWORK_NETWORK_STATUS_LISTENER_IMPL_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/download/network/network_status_listener.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 
@@ -31,7 +30,7 @@ class NetworkStatusListenerImpl
   // network::NetworkConnectionTracker::NetworkConnectionObserver.
   void OnConnectionChanged(network::mojom::ConnectionType type) override;
 
-  CheckedPtr<network::NetworkConnectionTracker> network_connection_tracker_;
+  network::NetworkConnectionTracker* network_connection_tracker_;
 
   DISALLOW_COPY_AND_ASSIGN(NetworkStatusListenerImpl);
 };

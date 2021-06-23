@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/checked_ptr.h"
 #include "third_party/blink/renderer/platform/audio/push_pull_fifo.h"
 
 #include <memory>
@@ -83,7 +82,7 @@ class FIFOClient {
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
       platform_;
 
-  CheckedPtr<PushPullFIFO> fifo_;
+  PushPullFIFO* fifo_;
   scoped_refptr<AudioBus> bus_;
   std::unique_ptr<Thread> client_thread_;
   std::unique_ptr<base::WaitableEvent> done_event_;

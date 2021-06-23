@@ -12,7 +12,6 @@
 #include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/test/gmock_callback_support.h"
@@ -341,7 +340,7 @@ class MojoVideoDecoderIntegrationTest : public ::testing::Test {
 
   // MediaLog that the service has provided to |decoder_|. This should be
   // proxied to |client_media_log_|.
-  CheckedPtr<MediaLog> decoder_media_log_ = nullptr;
+  MediaLog* decoder_media_log_ = nullptr;
 
  private:
   // Passes |decoder_| to the service.

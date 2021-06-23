@@ -10,7 +10,6 @@
 #include <set>
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/web/web_ax_object.h"
@@ -35,7 +34,7 @@ class ScopedFreezeBlinkAXTreeSource {
   ~ScopedFreezeBlinkAXTreeSource();
 
  private:
-  CheckedPtr<BlinkAXTreeSource> tree_source_;
+  BlinkAXTreeSource* tree_source_;
 
   DISALLOW_COPY_AND_ASSIGN(ScopedFreezeBlinkAXTreeSource);
 };
@@ -170,7 +169,7 @@ class CONTENT_EXPORT BlinkAXTreeSource
 
   void AddImageAnnotations(blink::WebAXObject& src, ui::AXNodeData* dst) const;
 
-  CheckedPtr<RenderFrameImpl> render_frame_;
+  RenderFrameImpl* render_frame_;
 
   ui::AXMode accessibility_mode_;
 
@@ -191,7 +190,7 @@ class CONTENT_EXPORT BlinkAXTreeSource
   gfx::Size max_image_data_size_;
 
   // The class instance that retrieves and manages automatic labels for images.
-  CheckedPtr<AXImageAnnotator> image_annotator_ = nullptr;
+  AXImageAnnotator* image_annotator_ = nullptr;
 
   // Whether we should highlight annotation results visually on the page
   // for debugging.

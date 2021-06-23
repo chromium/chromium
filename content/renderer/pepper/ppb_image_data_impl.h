@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "content/common/content_export.h"
@@ -211,7 +210,7 @@ class ImageDataAutoMapper {
   bool is_valid() const { return is_valid_; }
 
  private:
-  CheckedPtr<PPB_ImageData_Impl> image_data_;
+  PPB_ImageData_Impl* image_data_;
   bool is_valid_;
   bool needs_unmap_;
 

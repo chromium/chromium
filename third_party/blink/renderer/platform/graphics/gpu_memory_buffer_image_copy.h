@@ -2,7 +2,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GPU_MEMORY_BUFFER_IMAGE_COPY_H_
 
 #include <memory>
-#include "base/memory/checked_ptr.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -30,7 +29,7 @@ class PLATFORM_EXPORT GpuMemoryBufferImageCopy {
 
   int last_width_ = 0;
   int last_height_ = 0;
-  CheckedPtr<gpu::gles2::GLES2Interface> gl_;
+  gpu::gles2::GLES2Interface* gl_;
   std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer_;
 
   // TODO(billorr): Add error handling for context loss or GL errors before we

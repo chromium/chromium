@@ -17,7 +17,6 @@
 #include "base/i18n/rtl.h"
 #include "base/location.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
@@ -303,7 +302,7 @@ class PrinterProviderAPIImpl : public PrinterProviderAPI,
                            Event* event,
                            const base::DictionaryValue* listener_filter);
 
-  CheckedPtr<content::BrowserContext> browser_context_;
+  content::BrowserContext* browser_context_;
 
   PendingGetPrintersRequests pending_get_printers_requests_;
 

@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/breakout_box/video_track_signal_underlying_sink.h"
 
-#include "base/memory/checked_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
@@ -33,7 +32,7 @@ class VideoTrackSignalUnderlyingSinkTest : public testing::Test {
         "dummy_source_id", MediaStreamSource::kTypeVideo, "dummy_source_name",
         /*remote=*/false);
     media_stream_source_->SetPlatformSource(
-        base::WrapUnique(mock_video_source_.get()));
+        base::WrapUnique(mock_video_source_));
     web_track_ = MediaStreamVideoTrack::CreateVideoTrack(
         mock_video_source_, MediaStreamVideoSource::ConstraintsOnceCallback(),
         true);
@@ -88,7 +87,7 @@ class VideoTrackSignalUnderlyingSinkTest : public testing::Test {
  protected:
   Persistent<MediaStreamSource> media_stream_source_;
   WebMediaStreamTrack web_track_;
-  CheckedPtr<MockMediaStreamVideoSource> mock_video_source_;
+  MockMediaStreamVideoSource* mock_video_source_;
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform_;
 };
 

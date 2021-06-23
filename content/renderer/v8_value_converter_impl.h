@@ -9,7 +9,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "content/common/content_export.h"
 #include "content/public/renderer/v8_value_converter.h"
 
@@ -93,7 +92,7 @@ class CONTENT_EXPORT V8ValueConverterImpl : public V8ValueConverter {
   bool avoid_identity_hash_for_testing_;
 
   // Strategy object that changes the converter's behavior.
-  CheckedPtr<Strategy> strategy_;
+  Strategy* strategy_;
 
   DISALLOW_COPY_AND_ASSIGN(V8ValueConverterImpl);
 };

@@ -15,7 +15,6 @@
 #include "base/callback_helpers.h"
 #include "base/containers/queue.h"
 #include "base/location.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_samples.h"
@@ -4388,7 +4387,7 @@ class CookieMonsterLegacyCookieAccessTest : public CookieMonsterTest {
   // use.
   std::unique_ptr<base::test::ScopedFeatureList> feature_list_;
   std::unique_ptr<CookieMonster> cm_;
-  CheckedPtr<TestCookieAccessDelegate> access_delegate_;
+  TestCookieAccessDelegate* access_delegate_;
 };
 
 TEST_F(CookieMonsterLegacyCookieAccessTest, SetLegacyNoSameSiteCookie) {
@@ -4890,7 +4889,7 @@ class FirstPartySetEnabledCookieMonsterTest : public CookieMonsterTest {
   // use.
   base::test::ScopedFeatureList feature_list_;
   CookieMonster cm_;
-  CheckedPtr<TestCookieAccessDelegate> access_delegate_;
+  TestCookieAccessDelegate* access_delegate_;
 };
 
 TEST_F(FirstPartySetEnabledCookieMonsterTest, RecordsPeriodicFPSSizes) {

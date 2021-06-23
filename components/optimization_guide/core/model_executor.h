@@ -9,7 +9,6 @@
 #include "base/callback_forward.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
@@ -425,7 +424,7 @@ class ModelHandler : public OptimizationTargetModelObserver {
   }
 
   // Not owned. Guaranteed to outlive |this|.
-  CheckedPtr<OptimizationGuideModelProvider> model_provider_
+  OptimizationGuideModelProvider* model_provider_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   const proto::OptimizationTarget optimization_target_;

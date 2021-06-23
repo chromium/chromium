@@ -17,7 +17,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_writer.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process.h"
@@ -428,7 +427,7 @@ class ScopedSimulateModifierKeyPress {
                            ui::KeyboardCode key_code);
 
  private:
-  const CheckedPtr<WebContents> web_contents_;
+  WebContents* const web_contents_;
   int modifiers_;
   const bool control_;
   const bool shift_;
@@ -1246,7 +1245,7 @@ class WebContentsAddedObserver {
   // Callback to WebContentCreated(). Cached so that we can unregister it.
   base::RepeatingCallback<void(WebContents*)> web_contents_created_callback_;
 
-  CheckedPtr<WebContents> web_contents_;
+  WebContents* web_contents_;
   base::OnceClosure quit_closure_;
 
   DISALLOW_COPY_AND_ASSIGN(WebContentsAddedObserver);
@@ -1334,8 +1333,7 @@ class RenderFrameSubmissionObserver
   // OnRenderFrameMetadataChangedAfterActivation.
   bool break_on_any_frame_ = false;
 
-  CheckedPtr<RenderFrameMetadataProviderImpl> render_frame_metadata_provider_ =
-      nullptr;
+  RenderFrameMetadataProviderImpl* render_frame_metadata_provider_ = nullptr;
   base::OnceClosure quit_closure_;
   // If non-null, run when metadata changes.
   base::OnceClosure metadata_change_closure_;
@@ -1364,7 +1362,7 @@ class MainThreadFrameObserver {
  private:
   void Quit(bool);
 
-  CheckedPtr<RenderWidgetHost> render_widget_host_;
+  RenderWidgetHost* render_widget_host_;
   base::OnceClosure quit_closure_;
   int routing_id_;
 
@@ -1398,7 +1396,7 @@ class InputMsgWatcher : public RenderWidgetHost::InputEventObserver {
                        blink::mojom::InputEventResultState state,
                        const blink::WebInputEvent&) override;
 
-  CheckedPtr<RenderWidgetHost> render_widget_host_;
+  RenderWidgetHost* render_widget_host_;
   blink::WebInputEvent::Type wait_for_type_;
   blink::mojom::InputEventResultState ack_result_;
   blink::mojom::InputEventResultSource ack_source_;
@@ -1434,7 +1432,7 @@ class InputEventAckWaiter : public RenderWidgetHost::InputEventObserver {
                        const blink::WebInputEvent& event) override;
 
  private:
-  CheckedPtr<RenderWidgetHost> render_widget_host_;
+  RenderWidgetHost* render_widget_host_;
   InputEventAckPredicate predicate_;
   bool event_received_;
   base::OnceClosure quit_closure_;
@@ -1656,7 +1654,7 @@ class NavigationHandleCommitObserver : public content::WebContentsObserver {
 class WebContentsConsoleObserver : public WebContentsObserver {
  public:
   struct Message {
-    CheckedPtr<RenderFrameHost> source_frame;
+    RenderFrameHost* source_frame;
     blink::mojom::ConsoleMessageLevel log_level;
     std::u16string message;
     int32_t line_no;
@@ -1769,8 +1767,8 @@ class ContextMenuInterceptor
   blink::UntrustworthyContextMenuParams get_params() { return last_params_; }
 
  private:
-  CheckedPtr<content::RenderFrameHost> render_frame_host_;
-  CheckedPtr<blink::mojom::LocalFrameHost> impl_;
+  content::RenderFrameHost* render_frame_host_;
+  blink::mojom::LocalFrameHost* impl_;
   std::unique_ptr<base::RunLoop> run_loop_;
   base::OnceClosure quit_closure_;
   blink::UntrustworthyContextMenuParams last_params_;
@@ -1795,8 +1793,8 @@ class UpdateUserActivationStateInterceptor
       blink::mojom::UserActivationNotificationType notification_type) override;
 
  private:
-  CheckedPtr<content::RenderFrameHost> render_frame_host_;
-  CheckedPtr<blink::mojom::LocalFrameHost> impl_;
+  content::RenderFrameHost* render_frame_host_;
+  blink::mojom::LocalFrameHost* impl_;
   base::OnceClosure quit_handler_;
   bool update_user_activation_state_ = false;
 };
@@ -1904,7 +1902,7 @@ class RenderWidgetHostMouseEventMonitor {
     return false;
   }
   RenderWidgetHost::MouseEventCallback mouse_callback_;
-  CheckedPtr<RenderWidgetHost> host_;
+  RenderWidgetHost* host_;
   bool event_received_;
   blink::WebMouseEvent event_;
 
@@ -1931,7 +1929,7 @@ class DidStartNavigationObserver : public WebContentsObserver {
  private:
   bool observed_ = false;
   base::RunLoop run_loop_;
-  CheckedPtr<NavigationHandle> navigation_handle_ = nullptr;
+  NavigationHandle* navigation_handle_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(DidStartNavigationObserver);
 };

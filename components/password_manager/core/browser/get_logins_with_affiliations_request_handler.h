@@ -8,7 +8,6 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_GET_LOGINS_WITH_AFFILIATIONS_REQUEST_HANDLER_H_
 
 #include "base/barrier_closure.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 
@@ -51,7 +50,7 @@ class GetLoginsWithAffiliationsRequestHandler
 
   base::WeakPtr<PasswordStoreConsumer> consumer_;
 
-  CheckedPtr<PasswordStore> store_;
+  PasswordStore* store_;
 
   // Closure which is released after being called 2 times.
   base::RepeatingClosure forms_received_;

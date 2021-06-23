@@ -4,7 +4,6 @@
 
 #include <stddef.h>
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -54,7 +53,7 @@ class CollectedCookiesViewsTest : public InProcessBrowserTest {
   }
 
  private:
-  CheckedPtr<CollectedCookiesViews> cookies_dialog_ = nullptr;
+  CollectedCookiesViews* cookies_dialog_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(CollectedCookiesViewsTest);
 };

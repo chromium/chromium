@@ -11,7 +11,6 @@
 #include "base/bind_post_task.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event.h"
@@ -196,10 +195,10 @@ class GpuVideoDecodeAccelerator::MessageFilter
 
     owner_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&GpuVideoDecodeAccelerator::OnDestroy,
-                                  base::Unretained(owner_.get())));
+                                  base::Unretained(owner_)));
   }
 
-  CheckedPtr<GpuVideoDecodeAccelerator> owner_;
+  GpuVideoDecodeAccelerator* owner_;
   const scoped_refptr<base::SequencedTaskRunner> owner_task_runner_;
   const bool decode_on_io_;
   mojo::AssociatedReceiver<mojom::GpuAcceleratedVideoDecoder> receiver_{this};
@@ -213,9 +212,8 @@ void GpuVideoDecodeAccelerator::MessageFilter::Decode(BitstreamBuffer buffer) {
     owner_->OnDecode(std::move(buffer));
   } else {
     owner_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&GpuVideoDecodeAccelerator::OnDecode,
-                       base::Unretained(owner_.get()), std::move(buffer)));
+        FROM_HERE, base::BindOnce(&GpuVideoDecodeAccelerator::OnDecode,
+                                  base::Unretained(owner_), std::move(buffer)));
   }
 }
 
@@ -226,7 +224,7 @@ void GpuVideoDecodeAccelerator::MessageFilter::AssignPictureBuffers(
   owner_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&GpuVideoDecodeAccelerator::OnAssignPictureBuffers,
-                     base::Unretained(owner_.get()), std::move(assignments)));
+                     base::Unretained(owner_), std::move(assignments)));
 }
 
 void GpuVideoDecodeAccelerator::MessageFilter::ReusePictureBuffer(
@@ -236,25 +234,23 @@ void GpuVideoDecodeAccelerator::MessageFilter::ReusePictureBuffer(
   owner_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&GpuVideoDecodeAccelerator::OnReusePictureBuffer,
-                     base::Unretained(owner_.get()), picture_buffer_id));
+                     base::Unretained(owner_), picture_buffer_id));
 }
 
 void GpuVideoDecodeAccelerator::MessageFilter::Flush(FlushCallback callback) {
   if (!owner_)
     return;
   owner_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&GpuVideoDecodeAccelerator::OnFlush,
-                     base::Unretained(owner_.get()), std::move(callback)));
+      FROM_HERE, base::BindOnce(&GpuVideoDecodeAccelerator::OnFlush,
+                                base::Unretained(owner_), std::move(callback)));
 }
 
 void GpuVideoDecodeAccelerator::MessageFilter::Reset(ResetCallback callback) {
   if (!owner_)
     return;
   owner_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&GpuVideoDecodeAccelerator::OnReset,
-                     base::Unretained(owner_.get()), std::move(callback)));
+      FROM_HERE, base::BindOnce(&GpuVideoDecodeAccelerator::OnReset,
+                                base::Unretained(owner_), std::move(callback)));
 }
 
 void GpuVideoDecodeAccelerator::MessageFilter::SetOverlayInfo(
@@ -263,7 +259,7 @@ void GpuVideoDecodeAccelerator::MessageFilter::SetOverlayInfo(
     return;
   owner_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&GpuVideoDecodeAccelerator::OnSetOverlayInfo,
-                                base::Unretained(owner_.get()), overlay_info));
+                                base::Unretained(owner_), overlay_info));
 }
 
 GpuVideoDecodeAccelerator::GpuVideoDecodeAccelerator(

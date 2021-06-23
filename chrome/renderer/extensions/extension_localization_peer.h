@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
@@ -131,7 +130,7 @@ class ExtensionLocalizationPeer : public blink::WebRequestPeer {
 
   // Sends ExtensionHostMsg_GetMessageBundle message to the browser to fetch
   // message catalog.
-  CheckedPtr<IPC::Sender> message_sender_;
+  IPC::Sender* message_sender_;
 
   // Buffer for incoming data. We wait until OnCompletedRequest before using it.
   std::string data_;

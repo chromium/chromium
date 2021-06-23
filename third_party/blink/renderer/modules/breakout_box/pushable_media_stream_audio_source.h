@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_BREAKOUT_BOX_PUSHABLE_MEDIA_STREAM_AUDIO_SOURCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_BREAKOUT_BOX_PUSHABLE_MEDIA_STREAM_AUDIO_SOURCE_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "media/base/audio_buffer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -46,7 +45,7 @@ class MODULES_EXPORT PushableMediaStreamAudioSource
 
    private:
     WTF::Mutex mutex_;
-    CheckedPtr<PushableMediaStreamAudioSource> source_ GUARDED_BY(mutex_);
+    PushableMediaStreamAudioSource* source_ GUARDED_BY(mutex_);
   };
 
   // Actually push data to the audio tracks. Only called on

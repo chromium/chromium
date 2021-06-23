@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/breakout_box/pushable_media_stream_audio_source.h"
 
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "media/base/bind_to_current_loop.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -113,7 +112,7 @@ class FakeMediaStreamAudioSink : public WebMediaStreamAudioSink {
   int expected_channels_ = 0;
   int expected_frames_ = 0;
   int expected_sample_rate_ = 0;
-  CheckedPtr<media::AudioBus> expected_data_ = nullptr;
+  media::AudioBus* expected_data_ = nullptr;
   base::TimeTicks expected_time_;
 
   bool did_receive_format_change_ = false;
@@ -139,8 +138,7 @@ class PushableMediaStreamAudioSourceTest : public testing::Test {
     stream_source_ = MakeGarbageCollected<MediaStreamSource>(
         "dummy_source_id", MediaStreamSource::kTypeAudio, "dummy_source_name",
         false /* remote */);
-    stream_source_->SetPlatformSource(
-        base::WrapUnique(pushable_audio_source_.get()));
+    stream_source_->SetPlatformSource(base::WrapUnique(pushable_audio_source_));
     stream_component_ = MakeGarbageCollected<MediaStreamComponent>(
         stream_source_->Id(), stream_source_);
   }
@@ -204,7 +202,7 @@ class PushableMediaStreamAudioSourceTest : public testing::Test {
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner_;
 
-  CheckedPtr<PushableMediaStreamAudioSource> pushable_audio_source_;
+  PushableMediaStreamAudioSource* pushable_audio_source_;
 };
 
 TEST_F(PushableMediaStreamAudioSourceTest, ConnectAndStop) {

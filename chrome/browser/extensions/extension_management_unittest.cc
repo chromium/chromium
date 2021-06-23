@@ -10,7 +10,6 @@
 
 #include "base/containers/contains.h"
 #include "base/json/json_reader.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
@@ -301,7 +300,7 @@ class ExtensionManagementServiceTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
-  CheckedPtr<sync_preferences::TestingPrefServiceSyncable> pref_service_;
+  sync_preferences::TestingPrefServiceSyncable* pref_service_;
   std::unique_ptr<ExtensionManagement> extension_management_;
 };
 
@@ -829,7 +828,7 @@ TEST_F(ExtensionManagementServiceTest, kMinimumVersionRequired) {
   EXPECT_TRUE(CheckMinimumVersion(kTargetExtension, "9999.0"));
 
   {
-    PrefUpdater pref(pref_service_.get());
+    PrefUpdater pref(pref_service_);
     pref.SetMinimumVersionRequired(kTargetExtension, "3.0");
   }
 
@@ -853,7 +852,7 @@ TEST_F(ExtensionManagementServiceTest, NewInstallSources) {
 
   // Set the new dictionary preference.
   {
-    PrefUpdater updater(pref_service_.get());
+    PrefUpdater updater(pref_service_);
     updater.ClearInstallSources();
   }
   // Verifies that the new one overrides the legacy ones.
@@ -863,7 +862,7 @@ TEST_F(ExtensionManagementServiceTest, NewInstallSources) {
 
   // Updates the new dictionary preference.
   {
-    PrefUpdater updater(pref_service_.get());
+    PrefUpdater updater(pref_service_);
     updater.AddInstallSource("https://corp.mycompany.com/*");
   }
   EXPECT_TRUE(ReadGlobalSettings()->has_restricted_install_sources);
@@ -884,7 +883,7 @@ TEST_F(ExtensionManagementServiceTest, NewAllowedTypes) {
 
   // Set the new dictionary preference.
   {
-    PrefUpdater updater(pref_service_.get());
+    PrefUpdater updater(pref_service_);
     updater.ClearAllowedTypes();
   }
   // Verifies that the new one overrides the legacy ones.
@@ -893,7 +892,7 @@ TEST_F(ExtensionManagementServiceTest, NewAllowedTypes) {
 
   // Updates the new dictionary preference.
   {
-    PrefUpdater updater(pref_service_.get());
+    PrefUpdater updater(pref_service_);
     updater.AddAllowedType("theme");
   }
   EXPECT_TRUE(ReadGlobalSettings()->has_restricted_allowed_types);
@@ -906,7 +905,7 @@ TEST_F(ExtensionManagementServiceTest, NewAllowedTypes) {
 TEST_F(ExtensionManagementServiceTest, NewInstallBlocklist) {
   // Set the new dictionary preference.
   {
-    PrefUpdater updater(pref_service_.get());
+    PrefUpdater updater(pref_service_);
     updater.SetBlocklistedByDefault(false);  // Allowed by default.
     updater.SetIndividualExtensionInstallationAllowed(kTargetExtension, false);
     updater.ClearPerExtensionSettings(kTargetExtension2);
@@ -942,7 +941,7 @@ TEST_F(ExtensionManagementServiceTest, NewInstallBlocklist) {
 TEST_F(ExtensionManagementServiceTest, NewAllowlist) {
   // Set the new dictionary preference.
   {
-    PrefUpdater updater(pref_service_.get());
+    PrefUpdater updater(pref_service_);
     updater.SetBlocklistedByDefault(true);  // Disallowed by default.
     updater.SetIndividualExtensionInstallationAllowed(kTargetExtension, true);
     updater.ClearPerExtensionSettings(kTargetExtension2);
@@ -983,7 +982,7 @@ TEST_F(ExtensionManagementServiceTest, NewInstallForcelist) {
 
   // Set the new dictionary preference.
   {
-    PrefUpdater updater(pref_service_.get());
+    PrefUpdater updater(pref_service_);
     updater.SetIndividualExtensionAutoInstalled(
         kTargetExtension, kExampleUpdateUrl, true);
   }
@@ -1018,7 +1017,7 @@ TEST_F(ExtensionManagementServiceTest, IsInstallationExplicitlyAllowed) {
       extension_management_->IsInstallationExplicitlyAllowed(not_specified));
 
   // Set BlocklistedByDefault() to false.
-  PrefUpdater pref(pref_service_.get());
+  PrefUpdater pref(pref_service_);
   pref.SetBlocklistedByDefault(false);
 
   // The result should remain the same.
@@ -1054,7 +1053,7 @@ TEST_F(ExtensionManagementServiceTest, IsInstallationExplicitlyBlocked) {
   EXPECT_FALSE(
       extension_management_->IsInstallationExplicitlyBlocked(not_specified));
 
-  PrefUpdater pref(pref_service_.get());
+  PrefUpdater pref(pref_service_);
   pref.SetBlocklistedByDefault(false);
 
   EXPECT_FALSE(extension_management_->IsInstallationExplicitlyBlocked(allowed));

@@ -7,7 +7,6 @@
 #define UI_MESSAGE_CENTER_VIEWS_NOTIFICATION_CONTROL_BUTTONS_VIEW_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/message_center/message_center_export.h"
@@ -67,11 +66,11 @@ class MESSAGE_CENTER_EXPORT NotificationControlButtonsView
   // |background_color_| ensuring readability.
   SkColor DetermineButtonIconColor() const;
 
-  CheckedPtr<MessageView> message_view_;
+  MessageView* message_view_;
 
-  CheckedPtr<PaddedButton> close_button_ = nullptr;
-  CheckedPtr<PaddedButton> settings_button_ = nullptr;
-  CheckedPtr<PaddedButton> snooze_button_ = nullptr;
+  PaddedButton* close_button_ = nullptr;
+  PaddedButton* settings_button_ = nullptr;
+  PaddedButton* snooze_button_ = nullptr;
 
   // The color used for the close, settings, and snooze icons.
   SkColor icon_color_;

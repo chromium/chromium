@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/containers/circular_deque.h"
-#include "base/memory/checked_ptr.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/sys_byteorder.h"
@@ -52,7 +51,7 @@ class ScopedFakeClock : public rtc::ClockInterface {
   void SetTimeNanos(uint64_t time_nanos) { time_nanos_ = time_nanos; }
 
  private:
-  CheckedPtr<ClockInterface> prev_clock_;
+  ClockInterface* prev_clock_;
   uint64_t time_nanos_ = 0;
 };
 
@@ -190,15 +189,15 @@ class FakeDatagramServerSocket : public net::DatagramServerSocket {
 
  private:
   net::IPEndPoint address_;
-  CheckedPtr<base::circular_deque<UDPPacket>> sent_packets_;
+  base::circular_deque<UDPPacket>* sent_packets_;
   base::circular_deque<UDPPacket> incoming_packets_;
   net::NetLogWithSource net_log_;
 
   scoped_refptr<net::IOBuffer> recv_buffer_;
-  CheckedPtr<net::IPEndPoint> recv_address_;
+  net::IPEndPoint* recv_address_;
   int recv_size_;
   net::CompletionOnceCallback recv_callback_;
-  CheckedPtr<std::vector<uint16_t>> used_ports_;
+  std::vector<uint16_t>* used_ports_;
 };
 
 std::unique_ptr<net::DatagramServerSocket> CreateFakeDatagramServerSocket(
@@ -252,7 +251,7 @@ class P2PSocketUdpTest : public testing::Test {
   P2PMessageThrottler throttler_;
   ScopedFakeClock fake_clock_;
   base::circular_deque<FakeDatagramServerSocket::UDPPacket> sent_packets_;
-  CheckedPtr<FakeDatagramServerSocket> socket_;  // Owned by |socket_impl_|.
+  FakeDatagramServerSocket* socket_;  // Owned by |socket_impl_|.
   FakeP2PSocketDelegate socket_delegate_;
   std::unique_ptr<P2PSocketUdp> socket_impl_;
   std::unique_ptr<FakeSocketClient> fake_client_;

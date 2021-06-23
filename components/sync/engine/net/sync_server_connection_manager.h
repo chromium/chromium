@@ -11,7 +11,6 @@
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/sync/engine/net/server_connection_manager.h"
 #include "url/gurl.h"
 
@@ -45,7 +44,7 @@ class SyncServerConnectionManager : public ServerConnectionManager {
 
   // Cancelation signal is signalled when engine shuts down. Current blocking
   // operation should be aborted.
-  const CheckedPtr<CancelationSignal> cancelation_signal_;
+  CancelationSignal* const cancelation_signal_;
 
   DISALLOW_COPY_AND_ASSIGN(SyncServerConnectionManager);
 };

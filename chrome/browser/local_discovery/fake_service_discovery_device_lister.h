@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/task_runner.h"
 #include "chrome/browser/local_discovery/service_discovery_client.h"
 #include "chrome/browser/local_discovery/service_discovery_device_lister.h"
@@ -38,7 +37,7 @@ class DeferringDelegate : public ServiceDiscoveryDeviceLister::Delegate {
 
  private:
   std::vector<base::OnceCallback<void()>> deferred_callbacks_;
-  CheckedPtr<ServiceDiscoveryDeviceLister::Delegate> actual_ = nullptr;
+  ServiceDiscoveryDeviceLister::Delegate* actual_ = nullptr;
 };
 
 // A fake ServiceDiscoveryDeviceLister. This provides an implementation of
@@ -87,7 +86,7 @@ class FakeServiceDiscoveryDeviceLister final
   void SendUpdate(const ServiceDescription& description);
 
   // Used to post tasks for the delegate callbacks.
-  CheckedPtr<base::TaskRunner> task_runner_;
+  base::TaskRunner* task_runner_;
 
   // Services which have previously posted an update and therefore are no
   // longer 'new' for the purposes of the OnDeviceChanged callback.

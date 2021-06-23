@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/location.h"
-#include "base/memory/checked_ptr.h"
 #include "base/notreached.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -66,7 +65,7 @@ class ExampleEmployer::ExampleWorker
   ~ExampleWorker() = default;
 
   // Only used on the origin thread (where DoSomething was called).
-  CheckedPtr<ExampleEmployer> employer_;
+  ExampleEmployer* employer_;
   CompletionOnceCallback callback_;
   // Used to post ourselves onto the origin thread.
   const scoped_refptr<base::SingleThreadTaskRunner> origin_task_runner_ =

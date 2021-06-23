@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_EXAMPLES_LAYOUT_EXAMPLE_BASE_H_
 #define UI_VIEWS_EXAMPLES_LAYOUT_EXAMPLE_BASE_H_
 
-#include "base/memory/checked_ptr.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/button/checkbox.h"
@@ -64,9 +63,9 @@ class VIEWS_EXAMPLES_EXPORT LayoutExampleBase : public ExampleBase,
 
     Textfield* CreateTextfield();
 
-    CheckedPtr<LayoutExampleBase> example_;
+    LayoutExampleBase* example_;
     bool selected_ = false;
-    CheckedPtr<Textfield> flex_;
+    Textfield* flex_;
     InsetTextfields margin_;
     gfx::Size preferred_size_;
   };
@@ -124,11 +123,11 @@ class VIEWS_EXAMPLES_EXPORT LayoutExampleBase : public ExampleBase,
  private:
   void AddButtonPressed();
 
-  CheckedPtr<View> layout_panel_ = nullptr;
-  CheckedPtr<View> control_panel_ = nullptr;
-  CheckedPtr<LabelButton> add_button_ = nullptr;
-  CheckedPtr<Textfield> preferred_width_view_ = nullptr;
-  CheckedPtr<Textfield> preferred_height_view_ = nullptr;
+  View* layout_panel_ = nullptr;
+  View* control_panel_ = nullptr;
+  LabelButton* add_button_ = nullptr;
+  Textfield* preferred_width_view_ = nullptr;
+  Textfield* preferred_height_view_ = nullptr;
 };
 
 }  // namespace examples

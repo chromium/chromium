@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_SHARING_HUB_SHARING_HUB_SUB_MENU_MODEL_H_
 #define CHROME_BROWSER_UI_SHARING_HUB_SHARING_HUB_SUB_MENU_MODEL_H_
 
-#include "base/memory/checked_ptr.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/models/simple_menu_model.h"
 
@@ -30,7 +29,7 @@ class SharingHubSubMenuModel : public ui::SimpleMenuModel,
   void Build(content::WebContents* web_contents);
   bool IsThirdPartyAction(int id);
 
-  CheckedPtr<Browser> browser_;
+  Browser* browser_;
   std::vector<int> third_party_action_ids_;
 
   DISALLOW_COPY_AND_ASSIGN(SharingHubSubMenuModel);

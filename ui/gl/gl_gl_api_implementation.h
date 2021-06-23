@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/memory/checked_ptr.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_export.h"
 #include "ui/gl/gl_workarounds.h"
@@ -41,7 +40,7 @@ class GL_EXPORT GLApiBase : public GLApi {
   ~GLApiBase() override;
   void InitializeBase(DriverGL* driver);
 
-  CheckedPtr<DriverGL> driver_;
+  DriverGL* driver_;
 };
 
 // Implemenents the GL API by calling directly into the driver.
@@ -170,7 +169,7 @@ class TraceGLApi : public GLApi {
   #include "gl_bindings_api_autogen_gl.h"
 
  private:
-  CheckedPtr<GLApi> gl_api_;
+  GLApi* gl_api_;
 };
 
 // Logs debug information for every GL call.
@@ -185,7 +184,7 @@ class LogGLApi : public GLApi {
   #include "gl_bindings_api_autogen_gl.h"
 
  private:
-  CheckedPtr<GLApi> gl_api_;
+  GLApi* gl_api_;
 };
 
 // Catches incorrect usage when GL calls are made without a current context.

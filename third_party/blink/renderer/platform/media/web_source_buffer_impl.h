@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/platform/web_source_buffer.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -62,9 +61,9 @@ class PLATFORM_EXPORT WebSourceBufferImpl : public blink::WebSourceBuffer {
   void NotifyParseWarning(const SourceBufferParseWarning warning);
 
   std::string id_;
-  CheckedPtr<ChunkDemuxer> demuxer_;  // Owned by WebMediaPlayerImpl.
+  ChunkDemuxer* demuxer_;  // Owned by WebMediaPlayerImpl.
 
-  CheckedPtr<blink::WebSourceBufferClient> client_;
+  blink::WebSourceBufferClient* client_;
 
   // Controls the offset applied to timestamps when processing appended media
   // segments. It is initially 0, which indicates that no offset is being

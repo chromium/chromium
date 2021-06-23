@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_ADAPTERS_TEST_MOCK_ICE_TRANSPORT_ADAPTER_CROSS_THREAD_FACTORY_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_ADAPTERS_TEST_MOCK_ICE_TRANSPORT_ADAPTER_CROSS_THREAD_FACTORY_H_
 
-#include "base/memory/checked_ptr.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/renderer/modules/peerconnection/adapters/ice_transport_adapter_cross_thread_factory.h"
 
@@ -37,7 +36,7 @@ class MockIceTransportAdapterCrossThreadFactory
 
  private:
   std::unique_ptr<MockIceTransportAdapter> mock_adapter_;
-  CheckedPtr<IceTransportAdapter::Delegate*> delegate_out_;
+  IceTransportAdapter::Delegate** delegate_out_;
 };
 
 }  // namespace blink

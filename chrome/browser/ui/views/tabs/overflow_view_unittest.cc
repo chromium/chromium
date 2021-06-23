@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
@@ -101,9 +100,9 @@ class OverflowViewTest : public testing::Test {
   static constexpr gfx::Size kPreferredSize2{55, 50};
   static constexpr gfx::Size kMinimumSize2{25, 30};
   std::unique_ptr<views::View> parent_view_;
-  CheckedPtr<OverflowView> overflow_view_ = nullptr;
-  CheckedPtr<views::StaticSizedView> primary_view_ = nullptr;
-  CheckedPtr<views::StaticSizedView> indicator_view_ = nullptr;
+  OverflowView* overflow_view_ = nullptr;
+  views::StaticSizedView* primary_view_ = nullptr;
+  views::StaticSizedView* indicator_view_ = nullptr;
 };
 
 constexpr gfx::Size OverflowViewTest::kDefaultParentSize;

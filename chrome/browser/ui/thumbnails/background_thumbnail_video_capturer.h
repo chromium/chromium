@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/thumbnails/background_thumbnail_capturer.h"
@@ -49,7 +48,7 @@ class BackgroundThumbnailVideoCapturer
   void OnStopped() override;
   void OnLog(const std::string& /*message*/) override;
 
-  const CheckedPtr<content::WebContents> contents_;
+  content::WebContents* const contents_;
   GotFrameCallback got_frame_callback_;
 
   ThumbnailCaptureInfo capture_info_;

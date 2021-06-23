@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-blink.h"
@@ -418,7 +417,7 @@ class MODULES_EXPORT ManifestParser {
   const String data_;
   KURL manifest_url_;
   KURL document_url_;
-  CheckedPtr<const FeatureContext> feature_context_;
+  const FeatureContext* feature_context_;
 
   bool failed_;
   mojom::blink::ManifestPtr manifest_;

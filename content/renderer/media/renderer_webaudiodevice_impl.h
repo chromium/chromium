@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
 #include "content/common/content_export.h"
@@ -99,7 +98,7 @@ class CONTENT_EXPORT RendererWebAudioDeviceImpl
   const blink::WebAudioLatencyHint latency_hint_;
 
   // Weak reference to the callback into WebKit code.
-  const CheckedPtr<blink::WebAudioDevice::RenderCallback> client_callback_;
+  blink::WebAudioDevice::RenderCallback* const client_callback_;
 
   // Used to wrap AudioBus to be passed into |client_callback_|.
   blink::WebVector<float*> web_audio_dest_data_;

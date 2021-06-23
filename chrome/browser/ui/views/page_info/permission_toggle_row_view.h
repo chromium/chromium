@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PERMISSION_TOGGLE_ROW_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PERMISSION_TOGGLE_ROW_VIEW_H_
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/views/page_info/permission_selector_row_observer.h"
 #include "components/page_info/page_info_ui.h"
 #include "ui/views/view.h"
@@ -35,7 +34,7 @@ class PermissionToggleRowView : public views::View {
 
   PageInfo::PermissionInfo permission_;
 
-  CheckedPtr<PageInfoRowView> row_view_ = nullptr;
+  PageInfoRowView* row_view_ = nullptr;
 
   base::ObserverList<PermissionSelectorRowObserver, false>::Unchecked
       observer_list_;

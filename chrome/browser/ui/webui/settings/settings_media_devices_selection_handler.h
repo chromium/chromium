@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_SETTINGS_MEDIA_DEVICES_SELECTION_HANDLER_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
@@ -54,7 +53,7 @@ class MediaDevicesSelectionHandler
   std::string GetDeviceDisplayName(
       const blink::MediaStreamDevice& device) const;
 
-  CheckedPtr<Profile> profile_;  // Weak pointer.
+  Profile* profile_;  // Weak pointer.
 
   base::ScopedObservation<MediaCaptureDevicesDispatcher,
                           MediaCaptureDevicesDispatcher::Observer>

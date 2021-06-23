@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIARECORDER_VEA_ENCODER_H_
 
 #include "base/containers/queue.h"
-#include "base/memory/checked_ptr.h"
 #include "media/video/video_encode_accelerator.h"
 #include "third_party/blink/renderer/modules/mediarecorder/video_track_recorder.h"
 
@@ -88,7 +87,7 @@ class VEAEncoder final : public VideoTrackRecorder::Encoder,
 
   void DestroyOnEncodingTaskRunner(base::WaitableEvent* async_waiter = nullptr);
 
-  const CheckedPtr<media::GpuVideoAcceleratorFactories> gpu_factories_;
+  media::GpuVideoAcceleratorFactories* const gpu_factories_;
 
   const media::VideoCodecProfile codec_;
 

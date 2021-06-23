@@ -6,7 +6,6 @@
 #define EXTENSIONS_RENDERER_EXTENSION_INJECTION_HOST_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "extensions/common/extension.h"
 #include "extensions/renderer/injection_host.h"
@@ -36,7 +35,7 @@ class ExtensionInjectionHost : public InjectionHost {
       int tab_id,
       bool is_declarative) const override;
 
-  CheckedPtr<const Extension> extension_;
+  const Extension* extension_;
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionInjectionHost);
 };

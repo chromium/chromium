@@ -172,15 +172,14 @@ void WebAppFileHandlingTestBase::VerifyPwaDidReceiveFileLaunchParams(
     bool expect_got_launch_params,
     const base::FilePath& expected_file_path) {
   bool got_launch_params =
-      content::EvalJs(web_contents_.get(), "!!window.launchParams")
-          .ExtractBool();
+      content::EvalJs(web_contents_, "!!window.launchParams").ExtractBool();
   ASSERT_EQ(expect_got_launch_params, got_launch_params);
   if (got_launch_params) {
-    EXPECT_EQ(1, content::EvalJs(web_contents_.get(),
-                                 "window.launchParams.files.length"));
-    EXPECT_EQ(expected_file_path.BaseName().AsUTF8Unsafe(),
-              content::EvalJs(web_contents_.get(),
-                              "window.launchParams.files[0].name"));
+    EXPECT_EQ(
+        1, content::EvalJs(web_contents_, "window.launchParams.files.length"));
+    EXPECT_EQ(
+        expected_file_path.BaseName().AsUTF8Unsafe(),
+        content::EvalJs(web_contents_, "window.launchParams.files[0].name"));
   }
 }
 

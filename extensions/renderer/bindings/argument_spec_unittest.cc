@@ -6,7 +6,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "extensions/renderer/bindings/api_binding_test_util.h"
@@ -61,7 +60,7 @@ class ArgumentSpecUnitTest : public gin::V8Test {
     base::StringPiece expected_json;
     base::StringPiece expected_error;
     base::StringPiece expected_thrown_message;
-    CheckedPtr<const base::Value> expected_value = nullptr;
+    const base::Value* expected_value = nullptr;
     bool should_convert_to_base = true;
     bool should_convert_to_v8 = false;
     V8Validator validate_v8;

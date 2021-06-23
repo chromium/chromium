@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/values.h"
@@ -46,7 +45,7 @@ class PrefDelegateImpl
   }
 
  private:
-  CheckedPtr<PrefService> pref_service_;
+  PrefService* pref_service_;
 
   // |path_| is the location of the network quality estimator prefs.
   const std::string path_;
