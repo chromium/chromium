@@ -4,9 +4,9 @@
 
 #include "components/safe_browsing/core/realtime/policy_engine.h"
 
+#include "base/test/task_environment.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/common/safebrowsing_constants.h"
-#include "components/safe_browsing/core/common/test_task_environment.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/unified_consent/pref_names.h"
 #include "components/unified_consent/unified_consent_service.h"
@@ -26,7 +26,7 @@ bool AreTokenFetchesEnabledInClient(bool expected_ep_enabled_value,
 
 class RealTimePolicyEngineTest : public PlatformTest {
  public:
-  RealTimePolicyEngineTest() : task_environment_(CreateTestTaskEnvironment()) {}
+  RealTimePolicyEngineTest() = default;
 
   void SetUp() override {
     RegisterProfilePrefs(pref_service_.registry());
@@ -62,7 +62,7 @@ class RealTimePolicyEngineTest : public PlatformTest {
     return RealTimePolicyEngine::IsInExcludedCountry(country_code);
   }
 
-  std::unique_ptr<base::test::TaskEnvironment> task_environment_;
+  base::test::TaskEnvironment task_environment_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
 };
 

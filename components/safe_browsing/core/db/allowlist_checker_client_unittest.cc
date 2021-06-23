@@ -10,7 +10,6 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "components/safe_browsing/core/common/test_task_environment.h"
 #include "components/safe_browsing/core/db/test_database_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -54,8 +53,6 @@ class AllowlistCheckerClientTest : public testing::Test {
   AllowlistCheckerClientTest() : target_url_("https://example.test") {}
 
   void SetUp() override {
-    task_environment_ = CreateTestTaskEnvironment(
-        base::test::TaskEnvironment::TimeSource::MOCK_TIME);
     database_manager_ = new MockSafeBrowsingDatabaseManager;
   }
 
@@ -64,11 +61,12 @@ class AllowlistCheckerClientTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
 
     // Verify no callback is remaining.
-    EXPECT_TRUE(task_environment_->MainThreadIsIdle());
+    EXPECT_TRUE(task_environment_.MainThreadIsIdle());
   }
 
  protected:
-  std::unique_ptr<base::test::TaskEnvironment> task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   GURL target_url_;
   scoped_refptr<MockSafeBrowsingDatabaseManager> database_manager_;
@@ -116,11 +114,11 @@ TEST_F(AllowlistCheckerClientTest, TestCsdListAsyncTimeout) {
   MockBoolCallback callback;
   AllowlistCheckerClient::StartCheckCsdAllowlist(database_manager_, target_url_,
                                                  callback.Get());
-  task_environment_->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
   // No callback yet.
 
   EXPECT_CALL(callback, Run(true /* did_match_allowlist */));
-  task_environment_->FastForwardBy(base::TimeDelta::FromSeconds(5));
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(5));
 }
 
 TEST_F(AllowlistCheckerClientTest, TestHighConfidenceListMatch) {
@@ -171,11 +169,11 @@ TEST_F(AllowlistCheckerClientTest, TestHighConfidenceListAsyncTimeout) {
   MockBoolCallback callback;
   AllowlistCheckerClient::StartCheckHighConfidenceAllowlist(
       database_manager_, target_url_, callback.Get());
-  task_environment_->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
   // No callback yet.
 
   EXPECT_CALL(callback, Run(false /* did_match_allowlist */));
-  task_environment_->FastForwardBy(base::TimeDelta::FromSeconds(5));
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(5));
 }
 
 }  // namespace safe_browsing

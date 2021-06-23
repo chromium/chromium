@@ -12,9 +12,9 @@
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "components/safe_browsing/core/common/test_task_environment.h"
 #include "components/safe_browsing/core/db/safebrowsing.pb.h"
 #include "components/safe_browsing/core/db/util.h"
 #include "components/safe_browsing/core/db/v4_test_util.h"
@@ -67,7 +67,6 @@ class V4GetHashProtocolManagerTest : public PlatformTest {
  public:
   void SetUp() override {
     PlatformTest::SetUp();
-    task_environment_ = CreateTestTaskEnvironment();
     callback_called_ = false;
     test_shared_loader_factory_ =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
@@ -188,7 +187,7 @@ class V4GetHashProtocolManagerTest : public PlatformTest {
   base::SimpleTestClock clock_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
-  std::unique_ptr<base::test::TaskEnvironment> task_environment_;
+  base::test::TaskEnvironment task_environment_;
 };
 
 TEST_F(V4GetHashProtocolManagerTest, TestGetHashErrorHandlingNetwork) {

@@ -17,11 +17,11 @@
 #include "base/sequenced_task_runner.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "components/safe_browsing/core/common/test_task_environment.h"
 #include "components/safe_browsing/core/db/v4_database.h"
 #include "components/safe_browsing/core/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/db/v4_test_util.h"
@@ -339,8 +339,6 @@ class V4LocalDatabaseManagerTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
 
-    task_environment_ = CreateTestTaskEnvironment();
-
     test_shared_loader_factory_ =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_);
@@ -469,7 +467,7 @@ class V4LocalDatabaseManagerTest : public PlatformTest {
   ExtendedReportingLevel extended_reporting_level_;
   ExtendedReportingLevelCallback erl_callback_;
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
-  std::unique_ptr<base::test::TaskEnvironment> task_environment_;
+  base::test::TaskEnvironment task_environment_;
   scoped_refptr<V4LocalDatabaseManager> v4_local_database_manager_;
 };
 
