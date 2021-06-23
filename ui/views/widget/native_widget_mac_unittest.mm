@@ -198,6 +198,10 @@ class NativeWidgetMacTest : public WidgetTest {
     return widget;
   }
 
+  FocusManager* GetFocusManager(NativeWidgetMac* native_widget) const {
+    return native_widget->focus_manager_;
+  }
+
  private:
   DISALLOW_COPY_AND_ASSIGN(NativeWidgetMacTest);
 };
@@ -2352,6 +2356,23 @@ TEST_F(NativeWidgetMacTest, InitCallback) {
   widget_a->CloseNow();
   widget_b->CloseNow();
   widget_c->CloseNow();
+}
+
+TEST_F(NativeWidgetMacTest, FocusManagerChangeOnReparentNativeView) {
+  WidgetAutoclosePtr toplevel(CreateTopLevelPlatformWidget());
+  Widget* child = CreateChildPlatformWidget(toplevel->GetNativeView());
+  WidgetAutoclosePtr target_toplevel(CreateTopLevelPlatformWidget());
+  EXPECT_EQ(child->GetFocusManager(), toplevel->GetFocusManager());
+  EXPECT_NE(child->GetFocusManager(), target_toplevel->GetFocusManager());
+  NativeWidgetMac* child_native_widget =
+      static_cast<NativeWidgetMac*>(child->native_widget());
+  EXPECT_EQ(GetFocusManager(child_native_widget), child->GetFocusManager());
+
+  Widget::ReparentNativeView(child->GetNativeView(),
+                             target_toplevel->GetNativeView());
+  EXPECT_EQ(child->GetFocusManager(), target_toplevel->GetFocusManager());
+  EXPECT_NE(child->GetFocusManager(), toplevel->GetFocusManager());
+  EXPECT_EQ(GetFocusManager(child_native_widget), child->GetFocusManager());
 }
 
 }  // namespace test

@@ -900,9 +900,10 @@ void NativeWidgetMac::OnDidChangeFocus(View* focused_before,
 
   ui::TextInputClient* new_text_input_client =
       input_method->GetTextInputClient();
-  // Sanity check: When focus moves away from the widget (i.e. |focused_now|
-  // is nil), then the textInputClient will be cleared.
-  DCHECK(!!focused_now || !new_text_input_client);
+  // Sanity check: For a top level widget, when focus moves away from the widget
+  // (i.e. |focused_now| is nil), then the textInputClient will be cleared.
+  DCHECK(!!focused_now || !new_text_input_client ||
+         !GetWidget()->is_top_level());
   if (ns_window_host_) {
     ns_window_host_->text_input_host()->SetTextInputClient(
         new_text_input_client);

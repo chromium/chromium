@@ -33,6 +33,7 @@ class NativeWidgetNSWindowBridge;
 namespace views {
 namespace test {
 class MockNativeWidgetMac;
+class NativeWidgetMacTest;
 }  // namespace test
 
 class NativeWidgetMacNSWindowHost;
@@ -257,6 +258,7 @@ class VIEWS_EXPORT NativeWidgetMac : public internal::NativeWidgetPrivate,
 
  private:
   friend class test::MockNativeWidgetMac;
+  friend class views::test::NativeWidgetMacTest;
   class ZoomFocusMonitor;
 
   internal::NativeWidgetDelegate* delegate_;
