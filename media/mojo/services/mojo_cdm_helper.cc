@@ -25,11 +25,13 @@ void MojoCdmHelper::SetFileReadCB(FileReadCB file_read_cb) {
 }
 
 cdm::FileIO* MojoCdmHelper::CreateCdmFileIO(cdm::FileIOClient* client) {
-  ConnectToCdmStorage();
+  mojo::Remote<mojom::CdmStorage> cdm_storage;
+  frame_interfaces_->CreateCdmStorage(cdm_storage.BindNewPipeAndPassReceiver());
+  // No reset_on_disconnect() since when document is destroyed the CDM should be
+  // destroyed as well.
 
-  // Pass a reference to CdmStorage so that MojoCdmFileIO can open a file.
   auto mojo_cdm_file_io =
-      std::make_unique<MojoCdmFileIO>(this, client, cdm_storage_remote_.get());
+      std::make_unique<MojoCdmFileIO>(this, client, std::move(cdm_storage));
 
   cdm::FileIO* cdm_file_io = mojo_cdm_file_io.get();
   DVLOG(3) << __func__ << ": cdm_file_io = " << cdm_file_io;
@@ -110,10 +112,33 @@ void MojoCdmHelper::ReportFileReadSize(int file_size_bytes) {
     file_read_cb_.Run(file_size_bytes);
 }
 
-void MojoCdmHelper::ConnectToCdmStorage() {
-  if (!cdm_storage_remote_) {
-    frame_interfaces_->CreateCdmStorage(
-        cdm_storage_remote_.BindNewPipeAndPassReceiver());
+void MojoCdmHelper::ConnectToOutputProtection() {
+  if (!output_protection_) {
+    DVLOG(2) << "Connect to mojom::OutputProtection";
+    frame_interfaces_->BindEmbedderReceiver(
+        output_protection_.BindNewPipeAndPassReceiver());
+    // Reset on disconnect is needed since MediaInterfaceProxy doesn't reset
+    // it's states (e.g. mojom::InterfaceFactory remotes) during document
+    // navigation, while the mojom::OutputProtection implementation is tied
+    // to the document's lifetime.
+    // TODO(crbug.com/1223163): Fix MediaInterfaceProxy lifetime to avoid
+    // similar issues in the future.
+    output_protection_.reset_on_disconnect();
+  }
+}
+
+void MojoCdmHelper::ConnectToCdmDocumentService() {
+  if (!cdm_document_service_) {
+    DVLOG(2) << "Connect to mojom::CdmDocumentService";
+    frame_interfaces_->BindEmbedderReceiver(
+        cdm_document_service_.BindNewPipeAndPassReceiver());
+    // Reset on disconnect is needed since MediaInterfaceProxy doesn't reset
+    // it's states (e.g. mojom::InterfaceFactory remotes) during document
+    // navigation, while the mojom::CdmDocumentService implementation is tied
+    // to the document's lifetime.
+    // TODO(crbug.com/1223163): Fix MediaInterfaceProxy lifetime to avoid
+    // similar issues in the future.
+    cdm_document_service_.reset_on_disconnect();
   }
 }
 
@@ -121,20 +146,6 @@ CdmAllocator* MojoCdmHelper::GetAllocator() {
   if (!allocator_)
     allocator_ = std::make_unique<MojoCdmAllocator>();
   return allocator_.get();
-}
-
-void MojoCdmHelper::ConnectToOutputProtection() {
-  if (!output_protection_) {
-    frame_interfaces_->BindEmbedderReceiver(mojo::GenericPendingReceiver(
-        output_protection_.BindNewPipeAndPassReceiver()));
-  }
-}
-
-void MojoCdmHelper::ConnectToCdmDocumentService() {
-  if (!cdm_document_service_) {
-    frame_interfaces_->BindEmbedderReceiver(mojo::GenericPendingReceiver(
-        cdm_document_service_.BindNewPipeAndPassReceiver()));
-  }
 }
 
 }  // namespace media

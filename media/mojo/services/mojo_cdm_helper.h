@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "media/cdm/cdm_auxiliary_helper.h"
@@ -31,6 +30,8 @@ class MEDIA_MOJO_EXPORT MojoCdmHelper final : public CdmAuxiliaryHelper,
                                               public MojoCdmFileIO::Delegate {
  public:
   explicit MojoCdmHelper(mojom::FrameInterfaceFactory* frame_interfaces);
+  MojoCdmHelper(const MojoCdmHelper&) = delete;
+  MojoCdmHelper operator=(const MojoCdmHelper&) = delete;
   ~MojoCdmHelper() final;
 
   // CdmAuxiliaryHelper implementation.
@@ -56,22 +57,21 @@ class MEDIA_MOJO_EXPORT MojoCdmHelper final : public CdmAuxiliaryHelper,
 
  private:
   // All services are created lazily.
-  void ConnectToCdmStorage();
-  CdmAllocator* GetAllocator();
   void ConnectToOutputProtection();
   void ConnectToCdmDocumentService();
+
+  CdmAllocator* GetAllocator();
 
   // Provides interfaces when needed.
   mojom::FrameInterfaceFactory* frame_interfaces_;
 
-  // Connections to the additional services. For the mojom classes, if a
-  // connection error occurs, we will not be able to reconnect to the
-  // service as the document has been destroyed (see FrameServiceBase) or
-  // the browser crashed, so there's no point in trying to reconnect.
-  mojo::Remote<mojom::CdmStorage> cdm_storage_remote_;
-  std::unique_ptr<CdmAllocator> allocator_;
+  // Connections to the additional services. Will try to reconnect if
+  // disconnected, to handle cases like page refresh, where the document is
+  // destroyed but RenderFrameHostImpl is not.
   mojo::Remote<mojom::OutputProtection> output_protection_;
   mojo::Remote<mojom::CdmDocumentService> cdm_document_service_;
+
+  std::unique_ptr<CdmAllocator> allocator_;
 
   FileReadCB file_read_cb_;
 
@@ -80,7 +80,6 @@ class MEDIA_MOJO_EXPORT MojoCdmHelper final : public CdmAuxiliaryHelper,
   std::vector<std::unique_ptr<MojoCdmFileIO>> cdm_file_io_set_;
 
   base::WeakPtrFactory<MojoCdmHelper> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(MojoCdmHelper);
 };
 
 }  // namespace media
