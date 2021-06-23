@@ -8,6 +8,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/csp/csp_directive_list.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/cross_origin_attribute.h"
 #include "third_party/blink/renderer/platform/network/network_state_notifier.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
@@ -27,16 +28,6 @@ void RecordSubresourceRedirectIneligibility(
 bool IsSchemeHttpOrHttps(const KURL& url) {
   return url.Protocol() == url::kHttpsScheme ||
          url.Protocol() == url::kHttpScheme;
-}
-
-// Returns the origin to use for subresource redirect from fieldtrial or the
-// default.
-scoped_refptr<SecurityOrigin> GetLitePageSubresourceRedirectOrigin() {
-  auto lite_page_subresource_origin = base::GetFieldTrialParamValueByFeature(
-      blink::features::kSubresourceRedirect, "lite_page_subresource_origin");
-  if (lite_page_subresource_origin.empty())
-    return SecurityOrigin::CreateFromString("https://litepages.googlezip.net/");
-  return SecurityOrigin::CreateFromString(lite_page_subresource_origin.c_str());
 }
 
 // Returns whether CSP restricted subresource redirect images should be allowed
@@ -110,11 +101,17 @@ bool ShouldEnableSubresourceRedirect(HTMLImageElement* image_element,
 
   // Check the actual subresource redirect URL constructed from the subresource
   // redirect origin is restricted by CSP.
-  auto subresource_redirect_origin = GetLitePageSubresourceRedirectOrigin();
+  auto litepage_subresource_redirect_origin = SecurityOrigin::CreateFromString(
+      image_element->GetDocument()
+          .GetSettings()
+          ->GetLitePageSubresourceRedirectOrigin());
   KURL subresource_redirect_url = url;
-  subresource_redirect_url.SetProtocol(subresource_redirect_origin->Protocol());
-  subresource_redirect_url.SetHost(subresource_redirect_origin->Host());
-  subresource_redirect_url.SetPort(subresource_redirect_origin->Port());
+  subresource_redirect_url.SetProtocol(
+      litepage_subresource_redirect_origin->Protocol());
+  subresource_redirect_url.SetHost(
+      litepage_subresource_redirect_origin->Host());
+  subresource_redirect_url.SetPort(
+      litepage_subresource_redirect_origin->Port());
   auto* content_security_policy =
       image_element->GetExecutionContext()->GetContentSecurityPolicy();
   if (content_security_policy &&
@@ -141,7 +138,8 @@ bool ShouldEnableSubresourceRedirect(HTMLImageElement* image_element,
   return true;
 }
 
-bool ShouldDisableCSPCheckForSubresourceRedirectOrigin(
+bool ShouldDisableCSPCheckForLitePageSubresourceRedirectOrigin(
+    scoped_refptr<SecurityOrigin> litepage_subresource_redirect_origin,
     mojom::blink::RequestContextType request_context,
     ResourceRequest::RedirectStatus redirect_status,
     const KURL& url) {
@@ -156,10 +154,10 @@ bool ShouldDisableCSPCheckForSubresourceRedirectOrigin(
   if (!ShouldAllowCspRestrictedImages())
     return false;
 
-  auto subresource_redirect_origin = GetLitePageSubresourceRedirectOrigin();
-  DCHECK(!subresource_redirect_origin->IsOpaque());
+  if (litepage_subresource_redirect_origin->IsOpaque())
+    return false;
 
-  return subresource_redirect_origin->IsSameOriginWith(
+  return litepage_subresource_redirect_origin->IsSameOriginWith(
       SecurityOrigin::Create(url).get());
 }
 

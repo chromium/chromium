@@ -411,8 +411,9 @@ BaseFetchContext::CheckCSPForRequestInternal(
     return absl::nullopt;
   }
 
-  if (ShouldDisableCSPCheckForSubresourceRedirectOrigin(request_context,
-                                                        redirect_status, url)) {
+  if (ShouldDisableCSPCheckForLitePageSubresourceRedirectOrigin(
+          GetResourceFetcherProperties().GetLitePageSubresourceRedirectOrigin(),
+          request_context, redirect_status, url)) {
     return absl::nullopt;
   }
 

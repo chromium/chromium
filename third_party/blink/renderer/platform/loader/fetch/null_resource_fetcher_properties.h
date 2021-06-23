@@ -48,6 +48,10 @@ class PLATFORM_EXPORT NullResourceFetcherProperties final
   }
   const KURL& WebBundlePhysicalUrl() const override;
   int GetOutstandingThrottledLimit() const override { return 0; }
+  scoped_refptr<SecurityOrigin> GetLitePageSubresourceRedirectOrigin()
+      const override {
+    return nullptr;
+  }
 
  private:
   const Member<const FetchClientSettingsObject> fetch_client_settings_object_;

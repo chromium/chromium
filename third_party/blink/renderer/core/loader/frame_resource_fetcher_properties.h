@@ -44,6 +44,8 @@ class CORE_EXPORT FrameResourceFetcherProperties final
   scheduler::FrameStatus GetFrameStatus() const override;
   const KURL& WebBundlePhysicalUrl() const override;
   int GetOutstandingThrottledLimit() const override;
+  scoped_refptr<SecurityOrigin> GetLitePageSubresourceRedirectOrigin()
+      const override;
 
  private:
   const Member<DocumentLoader> document_loader_;

@@ -8,6 +8,7 @@ import "third_party/blink/public/mojom/css/preferred_color_scheme.mojom";
 import "third_party/blink/public/mojom/css/preferred_contrast.mojom";
 import "third_party/blink/public/mojom/v8_cache_options.mojom";
 import "url/mojom/url.mojom";
+import "url/mojom/origin.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 
 enum PointerType {
@@ -435,4 +436,8 @@ struct WebPreferences {
 
   // Controls whether WebXR's immersive-ar is allowed.
   bool webxr_immersive_ar_allowed;
+
+  // Origin the subresources such as images should be redirected to when the
+  // kSubresourceRedirect feature is enabled.
+  url.mojom.Origin litepage_subresource_redirect_origin;
 };

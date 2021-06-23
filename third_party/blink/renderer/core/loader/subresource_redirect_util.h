@@ -43,7 +43,8 @@ bool ShouldEnableSubresourceRedirect(HTMLImageElement* image_element,
 
 // Returns whether CSP check should be disabled for this resource request for
 // |url| with the given |request_context| and |redirect_status|.
-bool ShouldDisableCSPCheckForSubresourceRedirectOrigin(
+bool ShouldDisableCSPCheckForLitePageSubresourceRedirectOrigin(
+    scoped_refptr<SecurityOrigin> litepage_subresource_redirect_origin,
     mojom::blink::RequestContextType request_context,
     ResourceRequest::RedirectStatus redirect_status,
     const KURL& url);

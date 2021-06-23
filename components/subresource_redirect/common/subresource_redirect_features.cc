@@ -7,6 +7,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/system/sys_info.h"
 #include "third_party/blink/public/common/features.h"
+#include "url/gurl.h"
 
 namespace subresource_redirect {
 
@@ -19,6 +20,9 @@ namespace {
 // populating the password entered sites. So, the subresource redirect feature
 // should not compress the devices below this threshold.
 constexpr int kDefaultLowMemoryThresholdMb = 1900;
+
+// The default origin for the LitePages.
+constexpr char kDefaultLitePageOrigin[] = "https://litepages.googlezip.net/";
 
 bool IsSubresourceRedirectEnabled() {
   return base::FeatureList::IsEnabled(blink::features::kSubresourceRedirect);
@@ -75,6 +79,14 @@ bool ShouldCompressRedirectSubresource() {
 bool ShouldEnableRobotsRulesFetching() {
   return ShouldEnableLoginRobotsCheckedImageCompression() ||
          ShouldRecordLoginRobotsCheckedSrcVideoMetrics();
+}
+
+url::Origin GetSubresourceRedirectOrigin() {
+  auto lite_page_subresource_origin = base::GetFieldTrialParamValueByFeature(
+      blink::features::kSubresourceRedirect, "lite_page_subresource_origin");
+  if (lite_page_subresource_origin.empty())
+    return url::Origin::Create(GURL(kDefaultLitePageOrigin));
+  return url::Origin::Create(GURL(lite_page_subresource_origin));
 }
 
 }  // namespace subresource_redirect

@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_status.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
 namespace blink {
 
@@ -94,6 +95,11 @@ class PLATFORM_EXPORT ResourceFetcherProperties
   virtual const KURL& WebBundlePhysicalUrl() const = 0;
 
   virtual int GetOutstandingThrottledLimit() const = 0;
+
+  // Returns the LitePage origin the subresources such as images should be
+  // redirected to when the kSubresourceRedirect feature is enabled.
+  virtual scoped_refptr<SecurityOrigin> GetLitePageSubresourceRedirectOrigin()
+      const = 0;
 };
 
 // A delegating ResourceFetcherProperties subclass which can be retained
@@ -165,6 +171,12 @@ class PLATFORM_EXPORT DetachableResourceFetcherProperties final
                        : outstanding_throttled_limit_;
   }
 
+  scoped_refptr<SecurityOrigin> GetLitePageSubresourceRedirectOrigin()
+      const override {
+    return properties_ ? properties_->GetLitePageSubresourceRedirectOrigin()
+                       : litepage_subresource_redirect_origin_;
+  }
+
  private:
   // |properties_| is null if and only if detached.
   Member<const ResourceFetcherProperties> properties_;
@@ -178,6 +190,7 @@ class PLATFORM_EXPORT DetachableResourceFetcherProperties final
   bool is_subframe_deprioritization_enabled_ = false;
   KURL web_bundle_physical_url_;
   int outstanding_throttled_limit_ = 0;
+  scoped_refptr<SecurityOrigin> litepage_subresource_redirect_origin_;
 };
 
 }  // namespace blink

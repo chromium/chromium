@@ -305,6 +305,12 @@ class SubresourceRedirectCSPSimTest : public ::testing::WithParamInterface<
     GetNetworkStateNotifier().SetSaveDataEnabled(true);
   }
 
+  void SetUp() override {
+    SimTest::SetUp();
+    WebView().GetPage()->GetSettings().SetLitePageSubresourceRedirectOrigin(
+        "https://litepages.googlezip.net");
+  }
+
   bool allow_csp_restricted_images() const { return GetParam(); }
 
   void LoadMainResource(const String& html_body) {

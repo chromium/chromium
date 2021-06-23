@@ -17,6 +17,7 @@
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-forward.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-shared.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace blink {
 
@@ -352,6 +353,10 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   // By default, WebXR's immersive-ar session creation is allowed, but this can
   // change depending on the enterprise policy if the platform supports it.
   bool webxr_immersive_ar_allowed = true;
+
+  // LitePage origin the subresources such as images should be redirected to
+  // when the kSubresourceRedirect feature is enabled.
+  url::Origin litepage_subresource_redirect_origin;
 
   // We try to keep the default values the same as the default values in
   // chrome, except for the cases where it would require lots of extra work for

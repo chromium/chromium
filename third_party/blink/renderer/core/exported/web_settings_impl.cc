@@ -809,4 +809,9 @@ void WebSettingsImpl::SetWebXRImmersiveArAllowed(
   settings_->SetWebXRImmersiveArAllowed(webxr_immersive_ar_allowed);
 }
 
+void WebSettingsImpl::SetLitePageSubresourceRedirectOrigin(
+    const WebString& origin) {
+  settings_->SetLitePageSubresourceRedirectOrigin(origin);
+}
+
 }  // namespace blink

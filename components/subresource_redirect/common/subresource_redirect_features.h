@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_SUBRESOURCE_REDIRECT_COMMON_SUBRESOURCE_REDIRECT_FEATURES_H_
 #define COMPONENTS_SUBRESOURCE_REDIRECT_COMMON_SUBRESOURCE_REDIRECT_FEATURES_H_
 
+#include "url/origin.h"
+
 namespace subresource_redirect {
 
 // Returns if the public image hints based subresource compression is enabled.
@@ -28,6 +30,10 @@ bool ShouldCompressRedirectSubresource();
 // when certain features are active, such as robots and login checked image
 // and src-video compression.
 bool ShouldEnableRobotsRulesFetching();
+
+// Returns the origin to use for subresource redirect from fieldtrial or the
+// default.
+url::Origin GetSubresourceRedirectOrigin();
 
 }  // namespace subresource_redirect
 

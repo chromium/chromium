@@ -10,10 +10,6 @@
 
 namespace subresource_redirect {
 
-// Returns the origin to use for subresource redirect from fieldtrial or the
-// default.
-url::Origin GetSubresourceRedirectOrigin();
-
 // Returns the timeout for the compressed subresource redirect, after which the
 // subresource should be fetched directly from the origin.
 base::TimeDelta GetCompressionRedirectTimeout();

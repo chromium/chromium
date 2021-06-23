@@ -148,4 +148,10 @@ int FrameResourceFetcherProperties::GetOutstandingThrottledLimit() const {
   return IsMainFrame() ? main_frame_limit : sub_frame_limit;
 }
 
+scoped_refptr<SecurityOrigin>
+FrameResourceFetcherProperties::GetLitePageSubresourceRedirectOrigin() const {
+  return SecurityOrigin::CreateFromString(
+      document_->GetSettings()->GetLitePageSubresourceRedirectOrigin());
+}
+
 }  // namespace blink

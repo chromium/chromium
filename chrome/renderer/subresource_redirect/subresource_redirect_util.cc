@@ -8,6 +8,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "chrome/renderer/subresource_redirect/subresource_redirect_params.h"
 #include "components/base32/base32.h"
+#include "components/subresource_redirect/common/subresource_redirect_features.h"
 #include "crypto/sha2.h"
 #include "net/base/escape.h"
 #include "url/gurl.h"

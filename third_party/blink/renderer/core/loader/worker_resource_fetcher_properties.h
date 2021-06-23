@@ -52,6 +52,10 @@ class WorkerResourceFetcherProperties final : public ResourceFetcherProperties {
   }
   const KURL& WebBundlePhysicalUrl() const override;
   int GetOutstandingThrottledLimit() const override;
+  scoped_refptr<SecurityOrigin> GetLitePageSubresourceRedirectOrigin()
+      const override {
+    return nullptr;
+  }
 
  private:
   const Member<WorkerOrWorkletGlobalScope> global_scope_;
