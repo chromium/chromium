@@ -49,10 +49,21 @@ class SecurePaymentConfirmationAppFactory
       mojom::SecurePaymentConfirmationRequestPtr request,
       bool is_available);
 
-  void OnAppIconDecoded(
+  void OnAppIcon(
       std::unique_ptr<SecurePaymentConfirmationInstrument> instrument,
       std::unique_ptr<Request> request,
-      const SkBitmap& decoded_image);
+      const SkBitmap& icon);
+
+  // Called after downloading the icon whose URL was passed into PaymentRequest
+  // API. Used when SecurePaymentConfirmationAPIV2 feature is enabled.
+  void DidDownloadIcon(
+      std::unique_ptr<SecurePaymentConfirmationInstrument> instrument,
+      std::unique_ptr<Request> request,
+      int request_id,
+      int unused_http_status_code,
+      const GURL& unused_image_url,
+      const std::vector<SkBitmap>& bitmaps,
+      const std::vector<gfx::Size>& unused_sizes);
 
   std::unique_ptr<autofill::InternalAuthenticator> authenticator_;
 

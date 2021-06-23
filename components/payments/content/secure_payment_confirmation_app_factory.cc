@@ -29,6 +29,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_features.h"
 #include "services/data_decoder/public/cpp/decode_image.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/payments/payment_request.mojom.h"
 #include "url/origin.h"
 
@@ -215,6 +216,7 @@ struct SecurePaymentConfirmationAppFactory::Request
   scoped_refptr<payments::PaymentManifestWebDataService> web_data_service;
   mojom::SecurePaymentConfirmationRequestPtr mojo_request;
   std::unique_ptr<autofill::InternalAuthenticator> authenticator;
+  absl::optional<int> pending_icon_download_request_id;
 };
 
 void SecurePaymentConfirmationAppFactory::OnWebDataServiceRequestDone(
@@ -240,55 +242,106 @@ void SecurePaymentConfirmationAppFactory::OnWebDataServiceRequestDone(
           std::vector<std::unique_ptr<SecurePaymentConfirmationInstrument>>>*>(
                         result.get())
                         ->GetValue();
-  if (instruments.empty()) {
-    request->delegate->OnDoneCreatingPaymentApps();
-    return;
-  }
+  std::unique_ptr<SecurePaymentConfirmationInstrument> instrument;
 
   // For the pilot phase, arbitrarily use the first matching instrument.
   // TODO(https://crbug.com/1110320): Handle multiple instruments.
-  std::unique_ptr<SecurePaymentConfirmationInstrument> instrument =
-      std::move(instruments.front());
+  if (!instruments.empty())
+    instrument = std::move(instruments.front());
 
-  auto* instrument_ptr = instrument.get();
-  // Decode the icon in a sandboxed process off the main thread.
-  data_decoder::DecodeImageIsolated(
-      instrument_ptr->icon, data_decoder::mojom::ImageCodec::kDefault,
-      /*shrink_to_fit=*/false, data_decoder::kDefaultMaxSizeInBytes,
-      /*desired_image_frame_size=*/gfx::Size(),
-      base::BindOnce(&SecurePaymentConfirmationAppFactory::OnAppIconDecoded,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(instrument),
-                     std::move(request)));
+  if (base::FeatureList::IsEnabled(features::kSecurePaymentConfirmationAPIV2)) {
+    // Download the (possibly) updated icon for the payment instrument. The
+    // download URL was passed into the PaymentRequest API.
+    //
+    // Perform this download regardless of whether there is an instrument on
+    // file, so the server that hosts the image cannot detect presence of the
+    // instrument on file.
+    auto* request_ptr = request.get();
+    request_ptr->pending_icon_download_request_id =
+        request_ptr->web_contents()->DownloadImageInFrame(
+            request_ptr->delegate->GetInitiatorRenderFrameHostId(),
+            request_ptr->mojo_request->instrument->icon,  // source URL
+            false,                                        // is_favicon
+            0,                                            // no preferred size
+            0,                                            // no max size
+            false,  // normal cache policy (a.k.a. do not bypass cache)
+            base::BindOnce(
+                &SecurePaymentConfirmationAppFactory::DidDownloadIcon,
+                weak_ptr_factory_.GetWeakPtr(), std::move(instrument),
+                std::move(request)));
+  } else {
+    if (!instrument) {
+      request->delegate->OnDoneCreatingPaymentApps();
+      return;
+    }
+
+    // Decode the icon in a sandboxed process off the main thread. This icon was
+    // stored in sqlite during enrollment.
+    auto* instrument_ptr = instrument.get();
+    data_decoder::DecodeImageIsolated(
+        instrument_ptr->icon, data_decoder::mojom::ImageCodec::kDefault,
+        /*shrink_to_fit=*/false, data_decoder::kDefaultMaxSizeInBytes,
+        /*desired_image_frame_size=*/gfx::Size(),
+        base::BindOnce(&SecurePaymentConfirmationAppFactory::OnAppIcon,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(instrument),
+                       std::move(request)));
+  }
 }
 
-void SecurePaymentConfirmationAppFactory::OnAppIconDecoded(
+void SecurePaymentConfirmationAppFactory::OnAppIcon(
     std::unique_ptr<SecurePaymentConfirmationInstrument> instrument,
     std::unique_ptr<Request> request,
-    const SkBitmap& decoded_icon) {
+    const SkBitmap& icon) {
   DCHECK(request);
   if (!request->delegate || !request->web_contents())
     return;
 
   if (!request->delegate->GetSpec() || !request->authenticator ||
       request->authenticator->GetRenderFrameHost() !=
-          request->web_contents()->GetMainFrame()) {
+          request->web_contents()->GetMainFrame() ||
+      !instrument) {
     request->delegate->OnDoneCreatingPaymentApps();
     return;
   }
 
-  DCHECK(!decoded_icon.drawsNothing());
-  auto icon = std::make_unique<SkBitmap>(decoded_icon);
+  if (icon.drawsNothing()) {
+    request->delegate->OnPaymentAppCreationError(errors::kInvalidIcon);
+    request->delegate->OnDoneCreatingPaymentApps();
+    return;
+  }
+
+  std::u16string label =
+      base::FeatureList::IsEnabled(features::kSecurePaymentConfirmationAPIV2)
+          ? base::UTF8ToUTF16(request->mojo_request->instrument->display_name)
+          : instrument->label;
 
   request->delegate->OnPaymentAppCreated(
       std::make_unique<SecurePaymentConfirmationApp>(
           request->web_contents(), instrument->relying_party_id,
-          std::move(icon), instrument->label,
+          std::make_unique<SkBitmap>(icon), label,
           std::move(instrument->credential_id),
           url::Origin::Create(request->delegate->GetTopOrigin()),
           request->delegate->GetSpec()->AsWeakPtr(),
           std::move(request->mojo_request), std::move(request->authenticator)));
 
   request->delegate->OnDoneCreatingPaymentApps();
+}
+
+void SecurePaymentConfirmationAppFactory::DidDownloadIcon(
+    std::unique_ptr<SecurePaymentConfirmationInstrument> instrument,
+    std::unique_ptr<Request> request,
+    int request_id,
+    int unused_http_status_code,
+    const GURL& unused_image_url,
+    const std::vector<SkBitmap>& bitmaps,
+    const std::vector<gfx::Size>& unused_sizes) {
+  DCHECK(request);
+  bool has_icon =
+      request->pending_icon_download_request_id.has_value() &&
+      request->pending_icon_download_request_id.value() == request_id &&
+      !bitmaps.empty();
+  OnAppIcon(std::move(instrument), std::move(request),
+            has_icon ? bitmaps.front() : SkBitmap());
 }
 
 }  // namespace payments

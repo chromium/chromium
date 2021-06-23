@@ -58,6 +58,9 @@ class PaymentAppFactory {
     // RenderFrameHost is being unloaded, for example.
     virtual content::RenderFrameHost* GetInitiatorRenderFrameHost() const = 0;
 
+    virtual content::GlobalRenderFrameHostId GetInitiatorRenderFrameHostId()
+        const = 0;
+
     virtual const std::vector<mojom::PaymentMethodDataPtr>& GetMethodData()
         const = 0;
     virtual std::unique_ptr<autofill::InternalAuthenticator>

@@ -270,6 +270,10 @@ extern const char kInstrumentDisplayNameRequired[];
 // in the "secure-payment-confirmation" method.
 extern const char kValidInstrumentIconRequired[];
 
+// Used when the icon that was either downloaded or read from user profile is
+// not valid.
+extern const char kInvalidIcon[];
+
 }  // namespace errors
 }  // namespace payments
 

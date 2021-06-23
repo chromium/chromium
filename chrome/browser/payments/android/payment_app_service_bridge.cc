@@ -254,6 +254,11 @@ content::RenderFrameHost* PaymentAppServiceBridge::GetInitiatorRenderFrameHost()
   return content::RenderFrameHost::FromID(frame_routing_id_);
 }
 
+content::GlobalRenderFrameHostId
+PaymentAppServiceBridge::GetInitiatorRenderFrameHostId() const {
+  return frame_routing_id_;
+}
+
 const std::vector<PaymentMethodDataPtr>&
 PaymentAppServiceBridge::GetMethodData() const {
   DCHECK(spec_);

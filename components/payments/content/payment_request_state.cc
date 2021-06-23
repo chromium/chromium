@@ -135,6 +135,11 @@ content::RenderFrameHost* PaymentRequestState::GetInitiatorRenderFrameHost()
   return content::RenderFrameHost::FromID(frame_routing_id_);
 }
 
+content::GlobalRenderFrameHostId
+PaymentRequestState::GetInitiatorRenderFrameHostId() const {
+  return frame_routing_id_;
+}
+
 const std::vector<mojom::PaymentMethodDataPtr>&
 PaymentRequestState::GetMethodData() const {
   DCHECK(GetSpec());

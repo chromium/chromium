@@ -120,6 +120,8 @@ class PaymentRequestState : public PaymentAppFactory::Delegate,
   const GURL& GetFrameOrigin() override;
   const url::Origin& GetFrameSecurityOrigin() override;
   content::RenderFrameHost* GetInitiatorRenderFrameHost() const override;
+  content::GlobalRenderFrameHostId GetInitiatorRenderFrameHostId()
+      const override;
   const std::vector<mojom::PaymentMethodDataPtr>& GetMethodData()
       const override;
   std::unique_ptr<autofill::InternalAuthenticator> CreateInternalAuthenticator()
