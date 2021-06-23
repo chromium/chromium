@@ -32,6 +32,22 @@ void RecordAuthenticationDialogResult(
       result);
 }
 
+class BorderedRowView : public views::View {
+ public:
+  METADATA_HEADER(BorderedRowView);
+
+  void OnThemeChanged() override {
+    View::OnThemeChanged();
+    SetBorder(views::CreateSolidSidedBorder(
+        0, 0, 1, 0,
+        GetNativeTheme()->GetSystemColor(
+            ui::NativeTheme::kColorId_SeparatorColor)));
+  }
+};
+
+BEGIN_METADATA(BorderedRowView, views::View)
+END_METADATA
+
 }  // namespace
 
 // static
@@ -205,7 +221,6 @@ void SecurePaymentConfirmationDialogView::InitChildViews() {
       views::BoxLayout::Orientation::kVertical, gfx::Insets(), 0));
 
   AddChildView(CreateSecurePaymentConfirmationHeaderView(
-      GetNativeTheme()->ShouldUseDarkColors(),
       static_cast<int>(DialogViewID::PROGRESS_BAR),
       static_cast<int>(DialogViewID::HEADER_ICON)));
 
@@ -295,12 +310,7 @@ std::unique_ptr<views::View> SecurePaymentConfirmationDialogView::CreateRowView(
     DialogViewID value_id,
     const SkBitmap* icon,
     DialogViewID icon_id) {
-  std::unique_ptr<views::View> row = std::make_unique<views::View>();
-
-  row->SetBorder(views::CreateSolidSidedBorder(
-      0, 0, 1, 0,
-      GetNativeTheme()->GetSystemColor(
-          ui::NativeTheme::kColorId_SeparatorColor)));
+  auto row = std::make_unique<BorderedRowView>();
 
   views::GridLayout* layout =
       row->SetLayoutManager(std::make_unique<views::GridLayout>());

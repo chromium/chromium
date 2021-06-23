@@ -19,6 +19,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/ime/text_input_type.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/combobox_model.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/native_theme/native_theme.h"
@@ -36,32 +37,46 @@
 namespace payments {
 namespace {
 
-std::unique_ptr<views::View> CreateErrorLabelView(
-    const std::u16string& error,
-    autofill::ServerFieldType type) {
-  std::unique_ptr<views::View> view = std::make_unique<views::View>();
+class ErrorLabelView : public views::View {
+ public:
+  METADATA_HEADER(ErrorLabelView);
 
-  std::unique_ptr<views::BoxLayout> layout = std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical);
-  layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kStart);
-  layout->set_cross_axis_alignment(
-      views::BoxLayout::CrossAxisAlignment::kStretch);
-  // This is the space between the input field and the error label.
-  constexpr int kErrorLabelTopPadding = 6;
-  layout->set_inside_border_insets(gfx::Insets(kErrorLabelTopPadding, 0, 0, 0));
-  view->SetLayoutManager(std::move(layout));
+  ErrorLabelView(const std::u16string& error, autofill::ServerFieldType type)
+      : error_label_(AddChildView(
+            std::make_unique<views::Label>(error,
+                                           CONTEXT_DIALOG_BODY_TEXT_SMALL))) {
+    std::unique_ptr<views::BoxLayout> layout =
+        std::make_unique<views::BoxLayout>(
+            views::BoxLayout::Orientation::kVertical);
+    layout->set_main_axis_alignment(
+        views::BoxLayout::MainAxisAlignment::kStart);
+    layout->set_cross_axis_alignment(
+        views::BoxLayout::CrossAxisAlignment::kStretch);
+    // This is the space between the input field and the error label.
+    constexpr int kErrorLabelTopPadding = 6;
+    layout->set_inside_border_insets(
+        gfx::Insets(kErrorLabelTopPadding, 0, 0, 0));
+    SetLayoutManager(std::move(layout));
 
-  std::unique_ptr<views::Label> error_label =
-      std::make_unique<views::Label>(error, CONTEXT_DIALOG_BODY_TEXT_SMALL);
-  error_label->SetID(static_cast<int>(DialogViewID::ERROR_LABEL_OFFSET) + type);
-  error_label->SetEnabledColor(error_label->GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_AlertSeverityHigh));
-  error_label->SetMultiLine(true);
-  error_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+    error_label_->SetID(static_cast<int>(DialogViewID::ERROR_LABEL_OFFSET) +
+                        type);
+    error_label_->SetMultiLine(true);
+    error_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  }
 
-  view->AddChildView(std::move(error_label));
-  return view;
-}
+  // views::View:
+  void OnThemeChanged() override {
+    View::OnThemeChanged();
+    error_label_->SetEnabledColor(GetNativeTheme()->GetSystemColor(
+        ui::NativeTheme::kColorId_AlertSeverityHigh));
+  }
+
+ private:
+  views::Label* const error_label_;
+};
+
+BEGIN_METADATA(ErrorLabelView, views::View)
+END_METADATA
 
 }  // namespace
 
@@ -486,7 +501,7 @@ void EditorViewController::AddOrUpdateErrorMessageForField(
     if (label_view_it->second->children().empty()) {
       // If there was no error label view, add it.
       label_view_it->second->AddChildView(
-          CreateErrorLabelView(error_message, type).release());
+          std::make_unique<ErrorLabelView>(error_message, type).release());
     } else {
       // The error view is the only child, and has a Label as only child itself.
       static_cast<views::Label*>(

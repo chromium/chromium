@@ -178,7 +178,6 @@ void PaymentCredentialEnrollmentDialogView::InitChildViews() {
       views::BoxLayout::Orientation::kVertical, gfx::Insets(), 0));
 
   AddChildView(CreateSecurePaymentConfirmationHeaderView(
-      GetNativeTheme()->ShouldUseDarkColors(),
       static_cast<int>(DialogViewID::PROGRESS_BAR),
       static_cast<int>(DialogViewID::HEADER_ICON)));
 

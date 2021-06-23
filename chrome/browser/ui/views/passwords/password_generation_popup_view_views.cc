@@ -205,6 +205,9 @@ void PasswordGenerationPopupViewViews::PasswordSelectionUpdated() {
   if (controller_->password_selected())
     NotifyAXSelection(this);
 
+  if (!GetWidget())
+    return;
+
   password_view_->UpdateBackground(controller_->password_selected()
                                        ? GetSelectedBackgroundColor()
                                        : GetBackgroundColor());

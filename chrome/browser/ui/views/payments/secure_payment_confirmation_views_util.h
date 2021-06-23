@@ -48,12 +48,6 @@ constexpr int kInstrumentIconHeight = 20;
 // Height of each payment information row.
 constexpr int kPaymentInfoRowHeight = 48;
 
-int GetSecurePaymentConfirmationHeaderWidth();
-
-// Creates the view for the SPC fingerprint header icon.
-std::unique_ptr<views::View> CreateSecurePaymentConfirmationIconView(
-    bool dark_mode);
-
 // Creates the view for the SPC progress bar.
 std::unique_ptr<views::ProgressBar>
 CreateSecurePaymentConfirmationProgressBarView();
@@ -66,7 +60,6 @@ CreateSecurePaymentConfirmationProgressBarView();
 // |                   icon                   |
 // +------------------------------------------+
 std::unique_ptr<views::View> CreateSecurePaymentConfirmationHeaderView(
-    bool dark_mode,
     int progress_bar_id,
     int header_icon_id);
 

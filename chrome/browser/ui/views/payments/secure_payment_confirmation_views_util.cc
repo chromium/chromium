@@ -8,8 +8,11 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/native_theme/native_theme.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -30,26 +33,36 @@ const gfx::VectorIcon& GetPlatformVectorIcon(bool dark_mode) {
 #endif
 }
 
-}  // namespace
-
 int GetSecurePaymentConfirmationHeaderWidth() {
   return ChromeLayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH);
 }
 
-std::unique_ptr<views::View> CreateSecurePaymentConfirmationIconView(
-    bool dark_mode) {
-  const int header_width = GetSecurePaymentConfirmationHeaderWidth();
-  const gfx::Size header_size(header_width, kHeaderIconHeight);
+class SecurePaymentConfirmationIconView : public NonAccessibleImageView {
+ public:
+  METADATA_HEADER(SecurePaymentConfirmationIconView);
 
-  auto image_view = std::make_unique<NonAccessibleImageView>();
-  image_view->SetImage(gfx::CreateVectorIcon(GetPlatformVectorIcon(dark_mode)));
-  image_view->SetSize(header_size);
-  image_view->SetPreferredSize(header_size);
-  image_view->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
+  SecurePaymentConfirmationIconView() {
+    const gfx::Size header_size(GetSecurePaymentConfirmationHeaderWidth(),
+                                kHeaderIconHeight);
+    SetSize(header_size);
+    SetPreferredSize(header_size);
+    SetVerticalAlignment(views::ImageView::Alignment::kLeading);
+  }
+  ~SecurePaymentConfirmationIconView() override = default;
 
-  return image_view;
-}
+  // NonAccessibleImageView:
+  void OnThemeChanged() override {
+    NonAccessibleImageView::OnThemeChanged();
+    SetImage(gfx::CreateVectorIcon(
+        GetPlatformVectorIcon(GetNativeTheme()->ShouldUseDarkColors())));
+  }
+};
+
+BEGIN_METADATA(SecurePaymentConfirmationIconView, NonAccessibleImageView)
+END_METADATA
+
+}  // namespace
 
 std::unique_ptr<views::ProgressBar>
 CreateSecurePaymentConfirmationProgressBarView() {
@@ -65,7 +78,6 @@ CreateSecurePaymentConfirmationProgressBarView() {
 }
 
 std::unique_ptr<views::View> CreateSecurePaymentConfirmationHeaderView(
-    bool dark_mode,
     int progress_bar_id,
     int header_icon_id) {
   auto header = std::make_unique<views::View>();
@@ -87,7 +99,7 @@ std::unique_ptr<views::View> CreateSecurePaymentConfirmationHeaderView(
 
   // Header icon
   layout->StartRow(views::GridLayout::kFixedSize, 0, kHeaderIconHeight);
-  auto image_view = CreateSecurePaymentConfirmationIconView(dark_mode);
+  auto image_view = std::make_unique<SecurePaymentConfirmationIconView>();
   image_view->SetID(header_icon_id);
   layout->AddView(std::move(image_view));
 

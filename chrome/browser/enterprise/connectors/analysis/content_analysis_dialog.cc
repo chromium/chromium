@@ -109,7 +109,11 @@ class DeepScanningTopImageView : public DeepScanningBaseView,
 
   using DeepScanningBaseView::DeepScanningBaseView;
 
-  void Update() { SetImage(dialog()->GetTopImage()); }
+  void Update() {
+    if (!GetWidget())
+      return;
+    SetImage(dialog()->GetTopImage());
+  }
 
  protected:
   void OnThemeChanged() override {
@@ -129,6 +133,8 @@ class DeepScanningSideIconImageView : public DeepScanningBaseView,
   using DeepScanningBaseView::DeepScanningBaseView;
 
   void Update() {
+    if (!GetWidget())
+      return;
     SetImage(gfx::CreateVectorIcon(vector_icons::kBusinessIcon, kSideImageSize,
                                    dialog()->GetSideImageLogoColor()));
     if (dialog()->is_result()) {
@@ -179,6 +185,8 @@ class DeepScanningMessageView : public DeepScanningBaseView,
   using DeepScanningBaseView::DeepScanningBaseView;
 
   void Update() {
+    if (!GetWidget())
+      return;
     if (dialog()->is_failure() || dialog()->is_warning())
       SetEnabledColor(dialog()->GetSideImageBackgroundColor());
   }
