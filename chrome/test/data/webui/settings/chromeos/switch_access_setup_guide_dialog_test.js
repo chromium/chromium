@@ -46,7 +46,7 @@ suite('SwitchAccessSetupGuideDialogTest', function() {
     assertFalse(dialog.$.switchAccessSetupGuideDialog.open);
   });
 
-  test('Navigation between dialog pages', function() {
+  test('Navigation between dialog pages (1 switch)', function() {
     assertTrue(dialog.$.switchAccessSetupGuideDialog.open);
     assertEquals(/*Intro=*/0, dialog.currentPageId_);
 
@@ -61,6 +61,7 @@ suite('SwitchAccessSetupGuideDialogTest', function() {
     nextButton.click();
 
     assertEquals(/*Choose switch count=*/3, dialog.currentPageId_);
+    assertEquals(1, dialog.switchCount_);
     nextButton.click();
 
     assertEquals(/*Auto-scan speed=*/4, dialog.currentPageId_);
@@ -93,6 +94,96 @@ suite('SwitchAccessSetupGuideDialogTest', function() {
     const startOverButton = dialog['$']['start-over'];
     assertTrue(!!startOverButton);
     startOverButton.click();
+
+    assertEquals(/*Intro=*/0, dialog.currentPageId_);
+  });
+
+  test('Navigation between dialog pages (2 switches)', function () {
+    assertTrue(dialog.$.switchAccessSetupGuideDialog.open);
+    assertEquals(/*Intro=*/0, dialog.currentPageId_);
+    dialog.switchCount_ = 2;
+
+    const nextButton = dialog.$.next;
+    assertTrue(!!nextButton);
+    nextButton.click();
+
+    assertEquals(/*Assign select=*/1, dialog.currentPageId_);
+    nextButton.click();
+
+    assertEquals(/*Auto-scan enabled=*/2, dialog.currentPageId_);
+    nextButton.click();
+
+    assertEquals(/*Choose switch count=*/3, dialog.currentPageId_);
+    nextButton.click();
+
+    assertEquals(/*Assign next=*/5, dialog.currentPageId_);
+    nextButton.click();
+
+    assertEquals(/*Closing=*/8, dialog.currentPageId_);
+
+    const previousButton = dialog.$.previous;
+    assertTrue(!!previousButton);
+    previousButton.click();
+
+    assertEquals(/*Assign next=*/5, dialog.currentPageId_);
+    previousButton.click();
+
+    assertEquals(/*Choose switch count=*/3, dialog.currentPageId_);
+    previousButton.click();
+
+    assertEquals(/*Auto-scan enabled=*/2, dialog.currentPageId_);
+    previousButton.click();
+
+    assertEquals(/*Assign select=*/1, dialog.currentPageId_);
+    previousButton.click();
+
+    assertEquals(/*Intro=*/0, dialog.currentPageId_);
+  });
+
+  test('Navigation between dialog pages (3 switches)', function () {
+    assertTrue(dialog.$.switchAccessSetupGuideDialog.open);
+    assertEquals(/*Intro=*/0, dialog.currentPageId_);
+    dialog.switchCount_ = 3;
+
+    const nextButton = dialog.$.next;
+    assertTrue(!!nextButton);
+    nextButton.click();
+
+    assertEquals(/*Assign select=*/1, dialog.currentPageId_);
+    nextButton.click();
+
+    assertEquals(/*Auto-scan enabled=*/2, dialog.currentPageId_);
+    nextButton.click();
+
+    assertEquals(/*Choose switch count=*/3, dialog.currentPageId_);
+    nextButton.click();
+
+    assertEquals(/*Assign next=*/5, dialog.currentPageId_);
+    nextButton.click();
+
+    assertEquals(/*Assign previous=*/6, dialog.currentPageId_);
+    nextButton.click();
+
+    assertEquals(/*Closing=*/8, dialog.currentPageId_);
+
+    const previousButton = dialog.$.previous;
+    assertTrue(!!previousButton);
+    previousButton.click();
+
+    assertEquals(/*Assign previous=*/6, dialog.currentPageId_);
+    previousButton.click();
+
+    assertEquals(/*Assign next=*/5, dialog.currentPageId_);
+    previousButton.click();
+
+    assertEquals(/*Choose switch count=*/3, dialog.currentPageId_);
+    previousButton.click();
+
+    assertEquals(/*Auto-scan enabled=*/2, dialog.currentPageId_);
+    previousButton.click();
+
+    assertEquals(/*Assign select=*/1, dialog.currentPageId_);
+    previousButton.click();
 
     assertEquals(/*Intro=*/0, dialog.currentPageId_);
   });

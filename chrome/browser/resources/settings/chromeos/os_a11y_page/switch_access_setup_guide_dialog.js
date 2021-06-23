@@ -64,6 +64,7 @@ SASetupPageList[SASetupPageId.INTRO] = {
   ]
 };
 
+// Placeholder.
 SASetupPageList[SASetupPageId.ASSIGN_SELECT] = {
   titleId: 'switchAccessSetupIntroTitle',
   visibleElements: [
@@ -93,6 +94,24 @@ SASetupPageList[SASetupPageId.AUTO_SCAN_SPEED] = {
   visibleElements: [
     SASetupElement.NEXT_BUTTON, SASetupElement.PREVIOUS_BUTTON,
     SASetupElement.AUTO_SCAN_SPEED_CONTENT
+  ]
+};
+
+// Placeholder.
+SASetupPageList[SASetupPageId.ASSIGN_NEXT] = {
+  titleId: 'switchAccessSetupIntroTitle',
+  visibleElements: [
+    SASetupElement.NEXT_BUTTON, SASetupElement.PREVIOUS_BUTTON,
+    SASetupElement.ASSIGN_SELECT_CONTENT
+  ]
+};
+
+// Placeholder.
+SASetupPageList[SASetupPageId.ASSIGN_PREVIOUS] = {
+  titleId: 'switchAccessSetupIntroTitle',
+  visibleElements: [
+    SASetupElement.NEXT_BUTTON, SASetupElement.PREVIOUS_BUTTON,
+    SASetupElement.ASSIGN_SELECT_CONTENT
   ]
 };
 
@@ -220,7 +239,18 @@ Polymer({
       case SASetupPageId.AUTO_SCAN_ENABLED:
         return SASetupPageId.CHOOSE_SWITCH_COUNT;
       case SASetupPageId.CHOOSE_SWITCH_COUNT:
-        return SASetupPageId.AUTO_SCAN_SPEED;
+        if (this.switchCount_ === 3 || this.switchCount_ === 2) {
+          return SASetupPageId.ASSIGN_NEXT;
+        } else {
+          return SASetupPageId.AUTO_SCAN_SPEED;
+        }
+      case SASetupPageId.ASSIGN_NEXT:
+        if (this.switchCount_ === 3) {
+          return SASetupPageId.ASSIGN_PREVIOUS;
+        } else {
+          return SASetupPageId.CLOSING;
+        }
+      case SASetupPageId.ASSIGN_PREVIOUS:
       case SASetupPageId.AUTO_SCAN_SPEED:
       default:
         return SASetupPageId.CLOSING;
@@ -235,7 +265,16 @@ Polymer({
   getPreviousPageId_() {
     switch (this.currentPageId_) {
       case SASetupPageId.CLOSING:
-        return SASetupPageId.AUTO_SCAN_SPEED;
+        if (this.switchCount_ === 3) {
+          return SASetupPageId.ASSIGN_PREVIOUS;
+        } else if (this.switchCount_ === 2) {
+          return SASetupPageId.ASSIGN_NEXT;
+        } else {
+          return SASetupPageId.AUTO_SCAN_SPEED;
+        }
+      case SASetupPageId.ASSIGN_PREVIOUS:
+        return SASetupPageId.ASSIGN_NEXT;
+      case SASetupPageId.ASSIGN_NEXT:
       case SASetupPageId.AUTO_SCAN_SPEED:
         return SASetupPageId.CHOOSE_SWITCH_COUNT;
       case SASetupPageId.CHOOSE_SWITCH_COUNT:
@@ -268,6 +307,18 @@ Polymer({
           this.getPref('settings.a11y.switch_access.auto_scan.enabled').value);
       chrome.settingsPrivate.setPref(
           'settings.a11y.switch_access.auto_scan.enabled', true);
+    }
+
+    if (this.currentPageId_ === SASetupPageId.CLOSING) {
+      if (this.switchCount_ >= 2) {
+        chrome.settingsPrivate.setPref(
+            'settings.a11y.switch_access.auto_scan.enabled', false);
+        this['$']['closing-instructions'].textContent =
+            this.i18n('switchAccessSetupClosingManualScanInstructions');
+      } else {
+        this['$']['closing-instructions'].textContent =
+            this.i18n('switchAccessSetupClosingAutoScanInstructions');
+      }
     }
   },
 
@@ -348,6 +399,7 @@ Polymer({
   /**
    * @param {!Array<number>} ticksInMs
    * @return {!Array<!cr_slider.SliderTick>}
+   * @private
    */
   ticksWithLabelsInSec_(ticksInMs) {
     // Dividing by 1000 to convert milliseconds to seconds for the label.

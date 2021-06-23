@@ -1271,6 +1271,9 @@ Press an assigned switch to remove assignment.
   <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_CLOSING_AUTO_SCAN_INSTRUCTIONS" desc="Instructions for how to close the Switch Access setup guide using Switch Access with auto-scan enabled. Switch Access is an alternative input method designed for users with limited mobility where the user has as little as one switch (for example, a button) to control the computer. Auto-scan is a feature of Switch Access where focus moves from one element to the next at a set interval automatically, so the user only has to select the element when it is highlighted.">
     Press your switch when the focus is on the Done button to close the guide.
   </message>
+  <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_CLOSING_MANUAL_SCAN_INSTRUCTIONS" desc="Instructions for how to close the Switch Access setup guide using Switch Access with at least one switch assigned to navigation. Switch Access is an alternative input method designed for users with limited mobility where the user has as little as one switch (for example, a button) to control the computer. Auto-scan is a feature of Switch Access where focus moves from one element to the next at a set interval automatically, so the user only has to select the element when it is highlighted.">
+    Now that you have more switches to navigate, auto-scan has been turned off. Navigate to the Done button and press the Select switch to close the guide.
+  </message>
   <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_CLOSING_INFO" desc="Final advice on changing the settings for Switch Access after the Switch Access setup guide has been closed. Switch Access is an alternative input method designed for users with limited mobility where the user has as little as one switch (for example, a button) to control the computer.">
     You can always change additional settings or open the setup guide again from Switch Access settings.
   </message>
