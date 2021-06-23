@@ -1806,9 +1806,10 @@ Frame* DocumentLoader::CalculateOwnerFrame() {
   if (url_.IsAboutSrcdocURL())
     return frame_->Tree().Parent();
 
-  // Consider the parent or the opener for 1) about:blank" and 2) the initial
-  // empty document.
-  DCHECK(url_.IsAboutBlankURL() || url_.IsEmpty()) << "url_ = " << url_;
+  // Consider the parent or the opener for 1) about:blank" (including
+  // "about:mumble" - see https://crbug.com/1220186) and 2) the initial empty
+  // document (with an empty `url_`)..
+  DCHECK(url_.ProtocolIsAbout() || url_.IsEmpty()) << "url_ = " << url_;
   Frame* owner_frame = frame_->Tree().Parent();
   if (!owner_frame)
     owner_frame = frame_->Loader().Opener();
@@ -1822,7 +1823,7 @@ Frame* DocumentLoader::CalculateOwnerFrame() {
   // https://html.spec.whatwg.org/multipage/browsers.html#determining-the-origin
   //
   // This requires a few extra checks below.
-  DCHECK(url_.IsAboutBlankURL());
+  DCHECK(url_.ProtocolIsAbout()) << "url_ = " << url_;
 
   // Browser-initiated navigations to about:blank should always commit with an
   // opaque origin (i.e. they should not inherit the origin and other properties
