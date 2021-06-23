@@ -44,7 +44,7 @@
 //
 // These APIs are not thread safe. When a method is called (except the
 // constructor), all further method calls must be on the same sequence until
-// Stop().
+// Stop(). Once stopped, it may be destroyed or restarted on another sequence.
 //
 // By default, the scheduled tasks will be run on the same sequence that the
 // Timer was *started on*. To mock time in unit tests, some old tests used
@@ -66,7 +66,7 @@
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/macros.h"
-#include "base/sequence_checker_impl.h"
+#include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
 #include "base/time/time.h"
 
@@ -144,10 +144,10 @@ class BASE_EXPORT TimerBase {
   // task runner for the current sequence will be used.
   scoped_refptr<SequencedTaskRunner> task_runner_;
 
-  // Timer isn't thread-safe and must only be used on its origin sequence
-  // (sequence on which it was started). Once fully Stop()'ed it may be
-  // destroyed or restarted on another sequence.
-  SequenceChecker origin_sequence_checker_;
+  // Timer isn't thread-safe and while it is running, it must only be used on
+  // the same sequence until fully Stop()'ed. Once stopped, it may be destroyed
+  // or restarted on another sequence.
+  SEQUENCE_CHECKER(sequence_checker_);
 
   // Schedules |OnScheduledTaskInvoked()| to run on the current sequence with
   // the given |delay|. |scheduled_run_time_| and |desired_run_time_| are reset
@@ -180,16 +180,17 @@ class BASE_EXPORT TimerBase {
 
   // Detects when the scheduled task is deleted before being executed. Null when
   // there is no scheduled task.
-  TaskDestructionDetector* task_destruction_detector_;
+  TaskDestructionDetector* task_destruction_detector_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Location in user code.
-  Location posted_from_;
+  Location posted_from_ GUARDED_BY_CONTEXT(sequence_checker_);
   // Delay requested by user.
-  TimeDelta delay_;
+  TimeDelta delay_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The time at which the scheduled task is expected to fire. This time can be
   // null if the task must be run immediately.
-  TimeTicks scheduled_run_time_;
+  TimeTicks scheduled_run_time_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The desired run time of |user_task_|. The user may update this at any time,
   // even if their previous request has not run yet. If |desired_run_time_| is
@@ -198,15 +199,16 @@ class BASE_EXPORT TimerBase {
   // not to flood the delayed queues with orphaned tasks when the user code
   // excessively Stops and Starts the timer. This time can be a "zero" TimeTicks
   // if the task must be run immediately.
-  TimeTicks desired_run_time_;
+  TimeTicks desired_run_time_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The tick clock used to calculate the run time for scheduled tasks.
-  const TickClock* const tick_clock_;
+  const TickClock* const tick_clock_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // If true, |user_task_| is scheduled to run sometime in the future.
-  bool is_running_;
+  bool is_running_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  WeakPtrFactory<TimerBase> weak_ptr_factory_{this};
+  WeakPtrFactory<TimerBase> weak_ptr_factory_
+      GUARDED_BY_CONTEXT(sequence_checker_){this};
 
   DISALLOW_COPY_AND_ASSIGN(TimerBase);
 };

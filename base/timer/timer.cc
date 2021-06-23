@@ -77,7 +77,7 @@ TimerBase::TimerBase(const TickClock* tick_clock)
   // the one from which the timer APIs are called. The first call to the
   // checker's CalledOnValidSequence() method will re-bind the checker, and
   // later calls will verify that the same task runner is used.
-  origin_sequence_checker_.DetachFromSequence();
+  DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
 TimerBase::TimerBase(const Location& posted_from, TimeDelta delay)
@@ -92,33 +92,33 @@ TimerBase::TimerBase(const Location& posted_from,
       tick_clock_(tick_clock),
       is_running_(false) {
   // See comment in other constructor.
-  origin_sequence_checker_.DetachFromSequence();
+  DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
 TimerBase::~TimerBase() {
-  DCHECK(origin_sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   AbandonScheduledTask();
 }
 
 bool TimerBase::IsRunning() const {
-  DCHECK(origin_sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return is_running_;
 }
 
 TimeDelta TimerBase::GetCurrentDelay() const {
-  DCHECK(origin_sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return delay_;
 }
 
 void TimerBase::SetTaskRunner(scoped_refptr<SequencedTaskRunner> task_runner) {
-  DCHECK(origin_sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(task_runner->RunsTasksInCurrentSequence());
   DCHECK(!IsRunning());
   task_runner_.swap(task_runner);
 }
 
 void TimerBase::StartInternal(const Location& posted_from, TimeDelta delay) {
-  DCHECK(origin_sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   posted_from_ = posted_from;
   delay_ = delay;
@@ -127,19 +127,19 @@ void TimerBase::StartInternal(const Location& posted_from, TimeDelta delay) {
 }
 
 void TimerBase::Stop() {
-  DCHECK(origin_sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   is_running_ = false;
 
   // It's safe to destroy or restart Timer on another sequence after Stop().
-  origin_sequence_checker_.DetachFromSequence();
+  DETACH_FROM_SEQUENCE(sequence_checker_);
 
   OnStop();
   // No more member accesses here: |this| could be deleted after Stop() call.
 }
 
 void TimerBase::Reset() {
-  DCHECK(origin_sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // If there's no pending task, start one up and return.
   if (!task_destruction_detector_) {
@@ -166,7 +166,7 @@ void TimerBase::Reset() {
 }
 
 void TimerBase::ScheduleNewTask(TimeDelta delay) {
-  DCHECK(origin_sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!task_destruction_detector_);
   is_running_ = true;
   auto task_destruction_detector =
@@ -194,12 +194,12 @@ scoped_refptr<SequencedTaskRunner> TimerBase::GetTaskRunner() {
 }
 
 TimeTicks TimerBase::Now() const {
-  DCHECK(origin_sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return tick_clock_ ? tick_clock_->NowTicks() : TimeTicks::Now();
 }
 
 void TimerBase::AbandonScheduledTask() {
-  DCHECK(origin_sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (task_destruction_detector_) {
     task_destruction_detector_->Disable();
     task_destruction_detector_ = nullptr;
@@ -209,7 +209,7 @@ void TimerBase::AbandonScheduledTask() {
 
 void TimerBase::OnScheduledTaskInvoked(
     std::unique_ptr<TaskDestructionDetector> task_destruction_detector) {
-  DCHECK(origin_sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // The scheduled task is currently running so its destruction detector is no
   // longer needed.
@@ -259,7 +259,7 @@ void OneShotTimer::Start(const Location& posted_from,
 }
 
 void OneShotTimer::FireNow() {
-  DCHECK(origin_sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!task_runner_) << "FireNow() is incompatible with SetTaskRunner()";
   DCHECK(IsRunning());
 
