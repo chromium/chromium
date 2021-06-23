@@ -9,6 +9,7 @@ import "components/payments/mojom/payment_request_data.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "third_party/blink/public/mojom/payments/payment_credential.mojom";
 import "url/mojom/url.mojom";
+import "third_party/blink/public/mojom/webauthn/authenticator.mojom";
 
 struct PaymentResponse {
   string method_name;
@@ -26,6 +27,16 @@ struct PaymentResponse {
   PaymentAddress? shipping_address;
   string? shipping_option;
   PayerDetail payer;
+
+  SecurePaymentConfirmationResponse? secure_payment_confirmation;
+};
+
+// A response for the "secure-payment-confirmation" payment method. A subset of
+// blink.mojom.GetAssertionAuthenticatorResponse.
+struct SecurePaymentConfirmationResponse {
+  blink.mojom.CommonCredentialInfo credential_info;
+  array<uint8> signature;
+  array<uint8>? user_handle;
 };
 
 struct PayerDetail {

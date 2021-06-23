@@ -4,7 +4,30 @@
 
 #include "third_party/blink/renderer/modules/credentialmanager/authenticator_assertion_response.h"
 
+#include <utility>
+
 namespace blink {
+namespace {
+
+DOMArrayBuffer* VectorToDOMArrayBuffer(const Vector<uint8_t> buffer) {
+  return DOMArrayBuffer::Create(static_cast<const void*>(buffer.data()),
+                                buffer.size());
+}
+
+}  // namespace
+
+AuthenticatorAssertionResponse::AuthenticatorAssertionResponse(
+    const Vector<uint8_t> client_data_json,
+    const Vector<uint8_t> authenticator_data,
+    const Vector<uint8_t> signature,
+    const absl::optional<Vector<uint8_t>> optional_user_handle)
+    : AuthenticatorAssertionResponse(
+          VectorToDOMArrayBuffer(client_data_json),
+          VectorToDOMArrayBuffer(authenticator_data),
+          VectorToDOMArrayBuffer(signature),
+          optional_user_handle && optional_user_handle->size() > 0
+              ? VectorToDOMArrayBuffer(std::move(*optional_user_handle))
+              : nullptr) {}
 
 AuthenticatorAssertionResponse::AuthenticatorAssertionResponse(
     DOMArrayBuffer* client_data_json,

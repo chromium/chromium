@@ -104,6 +104,11 @@ bool PaymentApp::IsPreferred() const {
   return false;
 }
 
+mojom::PaymentResponsePtr PaymentApp::SetAppSpecificResponseFields(
+    mojom::PaymentResponsePtr response) const {
+  return response;
+}
+
 // static
 void PaymentApp::SortApps(std::vector<std::unique_ptr<PaymentApp>>* apps) {
   DCHECK(apps);

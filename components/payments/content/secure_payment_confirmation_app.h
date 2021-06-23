@@ -93,6 +93,8 @@ class SecurePaymentConfirmationApp : public PaymentApp,
       mojom::PaymentRequestDetailsUpdatePtr details_update) override;
   void OnPaymentDetailsNotUpdated() override;
   void AbortPaymentApp(base::OnceCallback<void(bool)> abort_callback) override;
+  mojom::PaymentResponsePtr SetAppSpecificResponseFields(
+      mojom::PaymentResponsePtr response) const override;
 
   // WebContentsObserver implementation.
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
@@ -117,6 +119,7 @@ class SecurePaymentConfirmationApp : public PaymentApp,
   const mojom::SecurePaymentConfirmationRequestPtr request_;
   std::unique_ptr<autofill::InternalAuthenticator> authenticator_;
   std::string challenge_;
+  blink::mojom::GetAssertionAuthenticatorResponsePtr response_;
 
   base::WeakPtrFactory<SecurePaymentConfirmationApp> weak_ptr_factory_{this};
 };

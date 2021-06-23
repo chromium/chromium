@@ -98,6 +98,18 @@ async function createCredentialAndReturnItsIdentifier(icon) { // eslint-disable-
 }
 
 /**
+ * Creates a secure payment confirmation credential and returns its
+ * clientDataJSON.type field.
+ * @param {string} icon - The URL of the icon for the credential.
+ * @return {string} - The clientDataJson.type field of the new credential.
+ */
+async function createCredentialAndReturnClientDataType(icon) { // eslint-disable-line no-unused-vars, max-len
+  const credential = await createAndReturnPaymentCredential(icon);
+  return JSON.parse(String.fromCharCode(...new Uint8Array(
+      credential.response.clientDataJSON))).type;
+}
+
+/**
  * Creates and returns a secure payment confirmation credential.
  * @param {string} icon - The URL of the icon for the credential.
  * @return {PaymentCredential} - The new credential.

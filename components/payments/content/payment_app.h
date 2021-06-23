@@ -189,6 +189,12 @@ class PaymentApp {
   // example, when the Play Billing payment app is available in a TWA.
   virtual bool IsPreferred() const;
 
+  // Updates the response IPC structure with the fields that are unique to this
+  // type of payment app. Used when JSON serialization of payment method
+  // specific data is not being used.
+  virtual mojom::PaymentResponsePtr SetAppSpecificResponseFields(
+      mojom::PaymentResponsePtr response) const;
+
  protected:
   PaymentApp(int icon_resource_id, Type type);
 
