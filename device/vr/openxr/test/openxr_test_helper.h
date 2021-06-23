@@ -16,6 +16,7 @@
 
 #include "base/stl_util.h"
 #include "base/synchronization/lock.h"
+#include "device/vr/openxr/openxr_defs.h"
 #include "device/vr/test/test_hook.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
@@ -24,18 +25,6 @@
 namespace gfx {
 class Transform;
 }  // namespace gfx
-
-namespace interaction_profile {
-constexpr char kMicrosoftMotionControllerInteractionProfile[] =
-    "/interaction_profiles/microsoft/motion_controller";
-
-constexpr char kKHRSimpleControllerInteractionProfile[] =
-    "/interaction_profiles/khr/simple_controller";
-
-constexpr char kOculusTouchControllerInteractionProfile[] =
-    "/interaction_profiles/oculus/touch_controller";
-
-}  // namespace interaction_profile
 
 class OpenXrTestHelper : public device::ServiceTestHook {
  public:
@@ -136,7 +125,11 @@ class OpenXrTestHelper : public device::ServiceTestHook {
   // Properties of the mock OpenXR runtime that do not change are created
   static constexpr const char* const kExtensions[] = {
       XR_KHR_D3D11_ENABLE_EXTENSION_NAME,
-      XR_EXT_WIN32_APPCONTAINER_COMPATIBLE_EXTENSION_NAME};
+      XR_EXT_WIN32_APPCONTAINER_COMPATIBLE_EXTENSION_NAME,
+      device::kExtSamsungOdysseyControllerExtensionName,
+      device::kExtHPMixedRealityControllerExtensionName,
+      device::kMSFTHandInteractionExtensionName,
+  };
   static constexpr uint32_t kDimension = 128;
   static constexpr uint32_t kSwapCount = 1;
   static constexpr uint32_t kMinSwapchainBuffering = 3;

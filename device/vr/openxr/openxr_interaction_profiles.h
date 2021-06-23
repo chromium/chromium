@@ -33,6 +33,23 @@ enum class OpenXrInteractionProfileType {
   kCount = 8,
 };
 
+const char kMicrosoftMotionInteractionProfilePath[] =
+    "/interaction_profiles/microsoft/motion_controller";
+const char kKHRSimpleInteractionProfilePath[] =
+    "/interaction_profiles/khr/simple_controller";
+const char kOculusTouchInteractionProfilePath[] =
+    "/interaction_profiles/oculus/touch_controller";
+const char kValveIndexInteractionProfilePath[] =
+    "/interaction_profiles/valve/index_controller";
+const char kHTCViveInteractionProfilePath[] =
+    "/interaction_profiles/htc/vive_controller";
+const char kSamsungOdysseyInteractionProfilePath[] =
+    "/interaction_profiles/samsung/odyssey_controller";
+const char kHPReverbG2InteractionProfilePath[] =
+    "/interaction_profiles/hp/mixed_reality_controller";
+const char kHandSelectGraspInteractionProfilePath[] =
+    "/interaction_profiles/microsoft/hand_interaction";
+
 enum class OpenXrButtonType {
   kTrigger = 0,
   kSqueeze = 1,
@@ -456,7 +473,7 @@ constexpr OpenXrAxisPathMap kHPReverbG2ControllerAxisPathMaps[] = {
 constexpr OpenXrControllerInteractionProfile
     kMicrosoftMotionInteractionProfile = {
         OpenXrInteractionProfileType::kMicrosoftMotion,
-        "/interaction_profiles/microsoft/motion_controller",
+        kMicrosoftMotionInteractionProfilePath,
         nullptr,
         GamepadMapping::kXrStandard,
         kMicrosoftMotionInputProfiles,
@@ -470,7 +487,7 @@ constexpr OpenXrControllerInteractionProfile
 
 constexpr OpenXrControllerInteractionProfile kKHRSimpleInteractionProfile = {
     OpenXrInteractionProfileType::kKHRSimple,
-    "/interaction_profiles/khr/simple_controller",
+    kKHRSimpleInteractionProfilePath,
     nullptr,
     GamepadMapping::kNone,
     kGenericButtonInputProfiles,
@@ -484,7 +501,7 @@ constexpr OpenXrControllerInteractionProfile kKHRSimpleInteractionProfile = {
 
 constexpr OpenXrControllerInteractionProfile kOculusTouchInteractionProfile = {
     OpenXrInteractionProfileType::kOculusTouch,
-    "/interaction_profiles/oculus/touch_controller",
+    kOculusTouchInteractionProfilePath,
     nullptr,
     GamepadMapping::kXrStandard,
     kOculusTouchInputProfiles,
@@ -498,7 +515,7 @@ constexpr OpenXrControllerInteractionProfile kOculusTouchInteractionProfile = {
 
 constexpr OpenXrControllerInteractionProfile kValveIndexInteractionProfile = {
     OpenXrInteractionProfileType::kValveIndex,
-    "/interaction_profiles/valve/index_controller",
+    kValveIndexInteractionProfilePath,
     nullptr,
     GamepadMapping::kXrStandard,
     kValveIndexInputProfiles,
@@ -512,7 +529,7 @@ constexpr OpenXrControllerInteractionProfile kValveIndexInteractionProfile = {
 
 constexpr OpenXrControllerInteractionProfile kHTCViveInteractionProfile = {
     OpenXrInteractionProfileType::kHTCVive,
-    "/interaction_profiles/htc/vive_controller",
+    kHTCViveInteractionProfilePath,
     nullptr,
     GamepadMapping::kXrStandard,
     kHTCViveInputProfiles,
@@ -526,7 +543,7 @@ constexpr OpenXrControllerInteractionProfile kHTCViveInteractionProfile = {
 
 constexpr OpenXrControllerInteractionProfile kSamsungOdysseyInteractionProfile =
     {OpenXrInteractionProfileType::kSamsungOdyssey,
-     "/interaction_profiles/samsung/odyssey_controller",
+     kSamsungOdysseyInteractionProfilePath,
      kExtSamsungOdysseyControllerExtensionName,
      GamepadMapping::kXrStandard,
      kSamsungOdysseyInputProfiles,
@@ -540,7 +557,7 @@ constexpr OpenXrControllerInteractionProfile kSamsungOdysseyInteractionProfile =
 
 constexpr OpenXrControllerInteractionProfile kHPReverbG2InteractionProfile = {
     OpenXrInteractionProfileType::kHPReverbG2,
-    "/interaction_profiles/hp/mixed_reality_controller",
+    kHPReverbG2InteractionProfilePath,
     kExtHPMixedRealityControllerExtensionName,
     GamepadMapping::kXrStandard,
     kHPReverbG2InputProfiles,
@@ -555,7 +572,7 @@ constexpr OpenXrControllerInteractionProfile kHPReverbG2InteractionProfile = {
 constexpr OpenXrControllerInteractionProfile
     kHandInteractionMSFTInteractionProfile = {
         OpenXrInteractionProfileType::kHandSelectGrasp,
-        "/interaction_profiles/microsoft/hand_interaction",
+        kHandSelectGraspInteractionProfilePath,
         kMSFTHandInteractionExtensionName,
         GamepadMapping::kXrStandard,
         kGenericHandSelectGraspInputProfile,

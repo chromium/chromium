@@ -90,12 +90,18 @@ enum EventType {
 };
 
 // InteractionProfileType is used to indicate which interaction profile runtime
-// would like to change to
+// would like to change to.
 enum InteractionProfileType {
   // Windows Mixed Reality Motion Controller
-  kWMRMotion,
+  kWMRMotion = 0,
   // Khronos Simple Controller
   kKHRSimple,
+  kOculusTouch,
+  kValveIndex,
+  kHTCVive,
+  kSamsungOdyssey,
+  kHPReverbG2,
+  kHandSelectGrasp,
   kInvalid,
 };
 

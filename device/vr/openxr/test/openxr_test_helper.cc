@@ -7,6 +7,7 @@
 #include <cmath>
 #include <limits>
 
+#include "device/vr/openxr/openxr_interaction_profiles.h"
 #include "device/vr/openxr/openxr_util.h"
 #include "third_party/openxr/src/include/openxr/openxr_platform.h"
 #include "third_party/openxr/src/src/common/hex_and_handles.h"
@@ -43,8 +44,7 @@ OpenXrTestHelper::OpenXrTestHelper()
       acquired_swapchain_texture_(0),
       next_space_(0),
       next_predicted_display_time_(0),
-      interaction_profile_(
-          interaction_profile::kMicrosoftMotionControllerInteractionProfile) {}
+      interaction_profile_(device::kMicrosoftMotionInteractionProfilePath) {}
 
 OpenXrTestHelper::~OpenXrTestHelper() = default;
 
@@ -491,8 +491,12 @@ XrResult OpenXrTestHelper::UpdateAction(XrAction action) {
 
   switch (cur_action_properties.type) {
     case XR_ACTION_TYPE_FLOAT_INPUT: {
-      if (!PathContainsString(path_string, "/trigger")) {
-        NOTREACHED() << "Only trigger button has float action";
+      if (!(PathContainsString(path_string, "/trigger") ||
+            PathContainsString(path_string, "/squeeze") ||
+            PathContainsString(path_string, "/force") ||
+            PathContainsString(path_string, "/value"))) {
+        NOTREACHED() << "Found path with unsupported float action: "
+                     << path_string;
       }
       float_action_states_[action].isActive = data.is_valid;
       break;
@@ -512,8 +516,18 @@ XrResult OpenXrTestHelper::UpdateAction(XrAction action) {
       } else if (PathContainsString(path_string, "/select/")) {
         // for WMR simple controller select is mapped to test type trigger
         button_id = device::kAxisTrigger;
+      } else if (PathContainsString(path_string, "/thumbrest/")) {
+        button_id = device::kThumbRest;
+      } else if (PathContainsString(path_string, "/a/")) {
+        button_id = device::kA;
+      } else if (PathContainsString(path_string, "/b/")) {
+        button_id = device::kB;
+      } else if (PathContainsString(path_string, "/x/")) {
+        button_id = device::kX;
+      } else if (PathContainsString(path_string, "/y/")) {
+        button_id = device::kY;
       } else {
-        NOTREACHED() << "Curently test does not support this button";
+        NOTREACHED() << "Unrecognized boolean button: " << path_string;
       }
       uint64_t button_mask = XrButtonMaskFromId(button_id);
 
@@ -691,12 +705,28 @@ void OpenXrTestHelper::UpdateInteractionProfile(
     device_test::mojom::InteractionProfileType type) {
   switch (type) {
     case device_test::mojom::InteractionProfileType::kWMRMotion:
-      interaction_profile_ =
-          interaction_profile::kMicrosoftMotionControllerInteractionProfile;
+      interaction_profile_ = device::kMicrosoftMotionInteractionProfilePath;
       break;
     case device_test::mojom::InteractionProfileType::kKHRSimple:
-      interaction_profile_ =
-          interaction_profile::kKHRSimpleControllerInteractionProfile;
+      interaction_profile_ = device::kKHRSimpleInteractionProfilePath;
+      break;
+    case device_test::mojom::InteractionProfileType::kOculusTouch:
+      interaction_profile_ = device::kOculusTouchInteractionProfilePath;
+      break;
+    case device_test::mojom::InteractionProfileType::kValveIndex:
+      interaction_profile_ = device::kValveIndexInteractionProfilePath;
+      break;
+    case device_test::mojom::InteractionProfileType::kHTCVive:
+      interaction_profile_ = device::kHTCViveInteractionProfilePath;
+      break;
+    case device_test::mojom::InteractionProfileType::kSamsungOdyssey:
+      interaction_profile_ = device::kSamsungOdysseyInteractionProfilePath;
+      break;
+    case device_test::mojom::InteractionProfileType::kHPReverbG2:
+      interaction_profile_ = device::kHPReverbG2InteractionProfilePath;
+      break;
+    case device_test::mojom::InteractionProfileType::kHandSelectGrasp:
+      interaction_profile_ = device::kHandSelectGraspInteractionProfilePath;
       break;
     case device_test::mojom::InteractionProfileType::kInvalid:
       NOTREACHED() << "Invalid EventData interaction_profile type";

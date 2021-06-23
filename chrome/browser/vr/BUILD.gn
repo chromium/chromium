@@ -656,6 +656,7 @@ if (!is_android) {
         ":vr_common",
         "//components/content_settings/core/browser",
         "//device/vr:directx_helpers",
+        "//device/vr:openxr_data",
       ]
 
       if (enable_openxr) {

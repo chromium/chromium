@@ -101,6 +101,21 @@ if (enable_vr) {
     ]
   }
 
+  if (enable_openxr) {
+    source_set("openxr_data") {
+      sources = [
+        "openxr/openxr_defs.h",
+        "openxr/openxr_interaction_profiles.h",
+      ]
+
+      deps = [
+        "//base",
+        "//device/gamepad/public/cpp:shared_with_blink",
+        "//third_party/openxr:openxr_headers",
+      ]
+    }
+  }
+
   # TODO(alcooper): Ultimately, this component should be either deleted entirely
   # or used as a helper component aggregating all XR Runtimes that are in use.
   # Each XR Device should be split into its own component.
@@ -180,14 +195,12 @@ if (enable_vr) {
         "openxr/openxr_api_wrapper.h",
         "openxr/openxr_controller.cc",
         "openxr/openxr_controller.h",
-        "openxr/openxr_defs.h",
         "openxr/openxr_device.cc",
         "openxr/openxr_device.h",
         "openxr/openxr_extension_helper.cc",
         "openxr/openxr_extension_helper.h",
         "openxr/openxr_input_helper.cc",
         "openxr/openxr_input_helper.h",
-        "openxr/openxr_interaction_profiles.h",
         "openxr/openxr_path_helper.cc",
         "openxr/openxr_path_helper.h",
         "openxr/openxr_render_loop.cc",
@@ -202,6 +215,7 @@ if (enable_vr) {
       ]
 
       deps += [
+        ":openxr_data",
         "//components/version_info",
         "//third_party/openxr",
       ]
@@ -282,7 +296,6 @@ if (enable_openxr) {
     include_dirs = [ "//third_party/openxr/src/include" ]
 
     sources = [
-      "openxr/openxr_defs.h",
       "openxr/openxr_extension_helper.cc",
       "openxr/openxr_extension_helper.h",
       "openxr/openxr_util.cc",
@@ -306,6 +319,8 @@ if (enable_openxr) {
       "//device/vr/public/mojom:test_mojom",
       "//third_party/openxr:openxr_headers",
     ]
+
+    public_deps = [ ":openxr_data" ]
 
     data_deps = [ "//device/vr:json_mock" ]
   }
