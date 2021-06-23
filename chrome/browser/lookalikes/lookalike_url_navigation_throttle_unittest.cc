@@ -78,7 +78,7 @@ TEST_F(LookalikeThrottleTest, SpoofsBlocked) {
         << test_case.hostname;
 
     GURL url(std::string("http://") + test_case.hostname);
-    content::MockNavigationHandle handle(url, main_rfh());
+    ::testing::NiceMock<content::MockNavigationHandle> handle(url, main_rfh());
     handle.set_redirect_chain({url});
     handle.set_page_transition(ui::PAGE_TRANSITION_TYPED);
 
