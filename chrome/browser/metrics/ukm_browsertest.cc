@@ -527,9 +527,16 @@ INSTANTIATE_TEST_SUITE_P(AllGuestTypes,
                          /*is_ephemeral=*/testing::Bool());
 #endif  // !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
 
-// Make sure that UKM is disabled while an non-sync profile's window is open.
 #if !defined(OS_ANDROID)
-IN_PROC_BROWSER_TEST_F(UkmBrowserTest, OpenNonSyncCheck) {
+
+#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+// https://crbug.com/1223061
+#define MAYBE_OpenNonSyncCheck DISABLED_OpenNonSyncCheck
+#else
+#define MAYBE_OpenNonSyncCheck OpenNonSyncCheck
+#endif
+// Make sure that UKM is disabled while an non-sync profile's window is open.
+IN_PROC_BROWSER_TEST_F(UkmBrowserTest, MAYBE_OpenNonSyncCheck) {
   ukm::UkmTestHelper ukm_test_helper(GetUkmService());
   MetricsConsentOverride metrics_consent(true);
 
@@ -1016,8 +1023,15 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, SingleSyncSignoutCheck) {
 // ChromeOS doesn't have the concept of sign-out so this test doesn't make sense
 // there. Android doesn't have multiple profiles.
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_ANDROID)
+
+#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+// https://crbug.com/1223061
+#define MAYBE_MultiSyncSignoutCheck DISABLED_MultiSyncSignoutCheck
+#else
+#define MAYBE_MultiSyncSignoutCheck MultiSyncSignoutCheck
+#endif
 // Make sure that UKM is disabled when any profile signs out of Sync.
-IN_PROC_BROWSER_TEST_F(UkmBrowserTest, MultiSyncSignoutCheck) {
+IN_PROC_BROWSER_TEST_F(UkmBrowserTest, MAYBE_MultiSyncSignoutCheck) {
   ukm::UkmTestHelper ukm_test_helper(GetUkmService());
   MetricsConsentOverride metrics_consent(true);
 
