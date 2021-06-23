@@ -281,13 +281,17 @@
         </template>
         <!-- Data roaming (Cellular only). -->
         <template is="dom-if" if="[[isCellular_(managedProperties_)]]">
-          <settings-toggle-button id="allowDataRoaming" class="hr"
-              pref="{{prefs.cros.signed.data_roaming_enabled}}"
-              label="$i18n{networkAllowDataRoaming}"
-              sub-label="[[getRoamingDetails_(managedProperties_)]]"
-              deep-link-focus-id$="[[Setting.kCellularRoaming]]"
-              disabled="[[disabled_]]">
-          </settings-toggle-button>
+          <!-- TODO(crbug/1220691): Remove when allowPerNetworkRoaming flag
+              launches -->
+          <template is="dom-if" if="[[!allowPerNetworkRoaming_]]">
+            <settings-toggle-button id="allowDataRoaming" class="hr"
+                pref="{{prefs.cros.signed.data_roaming_enabled}}"
+                label="$i18n{networkAllowDataRoaming}"
+                sub-label="[[getRoamingDetails_(managedProperties_)]]"
+                deep-link-focus-id$="[[Setting.kCellularRoaming]]"
+                disabled="[[disabled_]]">
+            </settings-toggle-button>
+          </template>
         </template>
         <!-- SIM Info (Cellular only). -->
         <!-- TODO(crbug/1093185): Remove when updatedCellularActivationUi

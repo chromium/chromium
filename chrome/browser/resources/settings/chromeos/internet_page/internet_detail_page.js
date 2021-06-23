@@ -238,6 +238,14 @@ Polymer({
       }
     },
 
+    /** @private */
+    allowPerNetworkRoaming_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('allowPerNetworkRoaming');
+      }
+    },
+
     /**
      * When true, all inputs that allow state to be changed (e.g., toggles,
      * inputs) are disabled.

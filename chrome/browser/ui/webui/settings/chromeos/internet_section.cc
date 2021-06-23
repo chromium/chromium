@@ -829,6 +829,9 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
     cellular_setup::AddLocalizedStrings(html_source);
   }
 
+  html_source->AddBoolean("allowPerNetworkRoaming",
+                          base::FeatureList::IsEnabled(
+                              ash::features::kCellularAllowPerNetworkRoaming));
   html_source->AddBoolean("showTechnologyBadge",
                           !ash::features::IsSeparateNetworkIconsEnabled());
   html_source->AddBoolean(
