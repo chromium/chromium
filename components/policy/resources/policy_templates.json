@@ -6754,7 +6754,7 @@
     },
     {
       'name': 'AutoSelectCertificateForUrls',
-      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
+      'owners': ['file://components/policy/resources/OWNERS', 'pmarko@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
