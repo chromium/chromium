@@ -46,15 +46,16 @@ class NearbyShareSessionImpl : public mojom::NearbyShareSessionHost,
   void OnNearbyShareClosed();
 
   // aura::EnvObserver:
-  void OnWindowInitialized(aura::Window* window) override;
+  void OnWindowInitialized(aura::Window* const window) override;
 
   // aura::WindowObserver:
-  void OnWindowVisibilityChanged(aura::Window* window, bool visible) override;
+  void OnWindowVisibilityChanged(aura::Window* const window,
+                                 bool visible) override;
 
  private:
-  // Calls |SharesheetService.ShowNearbyShareBubble()| to start the Chrome
-  // Nearby Share user flow.
-  void ShowNearbyBubble(aura::Window* arc_window);
+  // Called once an ARC window is found for the given |task_id_|. This will
+  // either prepare files or directly show the Nearby Share bubble.
+  void OnArcWindowFound(aura::Window* const arc_window);
 
   // Converts |share_info_| to |apps::mojom::IntentPtr| type.
   apps::mojom::IntentPtr ConvertShareIntentInfoToIntent() const;
@@ -62,10 +63,15 @@ class NearbyShareSessionImpl : public mojom::NearbyShareSessionHost,
   void OnNearbyShareBubbleShown(sharesheet::SharesheetResult result);
 
   // Called when top level directory for Nearby Share cache files is created.
-  void OnPreparedDirectory(aura::Window* arc_window, base::File::Error result);
+  void OnPreparedDirectory(aura::Window* const arc_window,
+                           base::File::Error result);
 
   // Called once streaming shared files to local path from ARC VFS is completed.
-  void OnFileStreamCompleted(aura::Window* arc_window, bool result);
+  void OnFileStreamCompleted(aura::Window* const arc_window, bool result);
+
+  // Calls |SharesheetService.ShowNearbyShareBubble()| to start the Chrome
+  // Nearby Share user flow.
+  void ShowNearbyShareBubble(aura::Window* const arc_window);
 
   // Called back once the session duration exceeds the maximum duration.
   void OnTimerFired();

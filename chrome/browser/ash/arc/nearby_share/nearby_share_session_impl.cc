@@ -20,7 +20,6 @@
 #include "chrome/browser/webshare/prepare_directory_task.h"
 #include "components/arc/arc_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace arc {
@@ -56,10 +55,12 @@ NearbyShareSessionImpl::NearbyShareSessionImpl(
       share_info_(std::move(share_info)),
       profile_(profile),
       session_finished_callback_(std::move(session_finished_callback)) {
-  aura::Window* arc_window = GetArcWindow(task_id_);
+  aura::Window* const arc_window = GetArcWindow(task_id_);
   if (arc_window) {
-    VLOG(1) << "ARC window found. Creating NearbySession";
-    ShowNearbyBubble(std::move(arc_window));
+    VLOG(1) << "ARC window found";
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(&NearbyShareSessionImpl::OnArcWindowFound,
+                                  weak_ptr_factory_.GetWeakPtr(), arc_window));
   } else {
     VLOG(1) << "No ARC window found for task ID " << task_id_;
     env_observation_.Observe(aura::Env::GetInstance());
@@ -80,7 +81,10 @@ void NearbyShareSessionImpl::OnNearbyShareClosed() {
 }
 
 // Overridden from aura::EnvObserver:
-void NearbyShareSessionImpl::OnWindowInitialized(aura::Window* window) {
+void NearbyShareSessionImpl::OnWindowInitialized(aura::Window* const window) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(window);
+
   if (ash::IsArcWindow(window) && (arc::GetWindowTaskId(window) == task_id_)) {
     env_observation_.Reset();
     arc_window_observation_.Observe(window);
@@ -88,36 +92,44 @@ void NearbyShareSessionImpl::OnWindowInitialized(aura::Window* window) {
 }
 
 // Overridden from aura::WindowObserver
-void NearbyShareSessionImpl::OnWindowVisibilityChanged(aura::Window* window,
-                                                       bool visible) {
+void NearbyShareSessionImpl::OnWindowVisibilityChanged(
+    aura::Window* const window,
+    bool visible) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
   if (visible && (arc::GetWindowTaskId(window) == task_id_)) {
     VLOG(1) << "ARC Window is visible";
     window_initialization_timer_.Stop();
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&NearbyShareSessionImpl::ShowNearbyBubble,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(window)));
+        FROM_HERE, base::BindOnce(&NearbyShareSessionImpl::OnArcWindowFound,
+                                  weak_ptr_factory_.GetWeakPtr(), window));
   }
 }
 
-void NearbyShareSessionImpl::ShowNearbyBubble(aura::Window* arc_window) {
-  VLOG(1) << "Getting Sharesheet service";
+void NearbyShareSessionImpl::OnArcWindowFound(aura::Window* const arc_window) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(arc_window);
   DCHECK(profile_);
 
-  base::FilePath arc_nearby_share_directory =
-      file_manager::util::GetMyFilesFolderForProfile(profile_).Append(
-          kArcNearbyShareDirname);
+  if (share_info_->files.has_value()) {
+    // File sharing.
+    base::FilePath arc_nearby_share_directory =
+        file_manager::util::GetMyFilesFolderForProfile(profile_).Append(
+            kArcNearbyShareDirname);
 
-  file_handler_ = base::MakeRefCounted<ShareInfoFileHandler>(
-      profile_, share_info_.get(), arc_nearby_share_directory);
+    file_handler_ = base::MakeRefCounted<ShareInfoFileHandler>(
+        profile_, share_info_.get(), arc_nearby_share_directory);
 
-  VLOG(1) << "Starting PrepareDirectoryTask";
-  prepare_directory_task_ = std::make_unique<webshare::PrepareDirectoryTask>(
-      arc_nearby_share_directory, file_handler_->GetTotalSizeOfFiles());
-  prepare_directory_task_->StartWithCallback(
-      base::BindOnce(&NearbyShareSessionImpl::OnPreparedDirectory,
-                     weak_ptr_factory_.GetWeakPtr(), arc_window));
+    VLOG(1) << "Starting PrepareDirectoryTask";
+    prepare_directory_task_ = std::make_unique<webshare::PrepareDirectoryTask>(
+        arc_nearby_share_directory, file_handler_->GetTotalSizeOfFiles());
+    prepare_directory_task_->StartWithCallback(
+        base::BindOnce(&NearbyShareSessionImpl::OnPreparedDirectory,
+                       weak_ptr_factory_.GetWeakPtr(), arc_window));
+  } else {
+    // Sharing text.
+    ShowNearbyShareBubble(arc_window);
+  }
 }
 
 apps::mojom::IntentPtr NearbyShareSessionImpl::ConvertShareIntentInfoToIntent()
@@ -161,7 +173,7 @@ apps::mojom::IntentPtr NearbyShareSessionImpl::ConvertShareIntentInfoToIntent()
   return nullptr;
 }
 
-void NearbyShareSessionImpl::OnPreparedDirectory(aura::Window* arc_window,
+void NearbyShareSessionImpl::OnPreparedDirectory(aura::Window* const arc_window,
                                                  base::File::Error result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(arc_window);
@@ -180,6 +192,8 @@ void NearbyShareSessionImpl::OnPreparedDirectory(aura::Window* arc_window,
 
 void NearbyShareSessionImpl::OnNearbyShareBubbleShown(
     sharesheet::SharesheetResult result) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
   if (VLOG_IS_ON(1)) {
     switch (result) {
       case sharesheet::SharesheetResult::kSuccess:
@@ -200,8 +214,9 @@ void NearbyShareSessionImpl::OnNearbyShareBubbleShown(
   }
 }
 
-void NearbyShareSessionImpl::OnFileStreamCompleted(aura::Window* arc_window,
-                                                   bool result) {
+void NearbyShareSessionImpl::OnFileStreamCompleted(
+    aura::Window* const arc_window,
+    bool result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(arc_window);
 
@@ -210,7 +225,15 @@ void NearbyShareSessionImpl::OnFileStreamCompleted(aura::Window* arc_window,
     std::move(session_finished_callback_).Run(task_id_);
     return;
   }
+  ShowNearbyShareBubble(arc_window);
+}
 
+void NearbyShareSessionImpl::ShowNearbyShareBubble(
+    aura::Window* const arc_window) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(arc_window);
+
+  VLOG(1) << "Getting Sharesheet service";
   sharesheet::SharesheetService* sharesheet_service =
       sharesheet::SharesheetServiceFactory::GetForProfile(profile_);
   if (!sharesheet_service) {
@@ -219,9 +242,16 @@ void NearbyShareSessionImpl::OnFileStreamCompleted(aura::Window* arc_window,
     return;
   }
 
+  apps::mojom::IntentPtr intent = ConvertShareIntentInfoToIntent();
+  if (!intent) {
+    LOG(ERROR) << "No share info found.";
+    std::move(session_finished_callback_).Run(task_id_);
+    return;
+  }
+
   VLOG(1) << "Calling ShowNearbyShareBubble";
   sharesheet_service->ShowNearbyShareBubble(
-      arc_window, ConvertShareIntentInfoToIntent(),
+      arc_window, std::move(intent),
       sharesheet::SharesheetMetrics::LaunchSource::kArcNearbyShare,
       base::BindOnce(&NearbyShareSessionImpl::OnNearbyShareBubbleShown,
                      weak_ptr_factory_.GetWeakPtr()),
@@ -230,6 +260,7 @@ void NearbyShareSessionImpl::OnFileStreamCompleted(aura::Window* arc_window,
 }
 
 void NearbyShareSessionImpl::OnTimerFired() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // TODO(phshah): Handle error case and add UMA metric.
   LOG(ERROR) << "ARC window didn't get initialized within "
              << kWindowInitializationTimeout.InSeconds() << " second";
