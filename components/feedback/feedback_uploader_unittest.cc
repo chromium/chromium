@@ -16,6 +16,7 @@
 #include "base/task/task_traits.h"
 #include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "build/build_config.h"
 #include "components/feedback/feedback_report.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -190,7 +191,13 @@ TEST_F(FeedbackUploaderTest, QueueMultipleWithFailures) {
   EXPECT_EQ(uploader()->dispatched_reports().at(kReportFive), 1u);
 }
 
-TEST_F(FeedbackUploaderTest, SimulateOfflineReports) {
+#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+// https://crbug.com/1222877
+#define MAYBE_SimulateOfflineReports DISABLED_SimulateOfflineReports
+#else
+#define MAYBE_SimulateOfflineReports SimulateOfflineReports
+#endif
+TEST_F(FeedbackUploaderTest, MAYBE_SimulateOfflineReports) {
   // Simulate offline reports by failing to upload three reports.
   uploader()->set_simulate_failure(true);
   QueueReport(kReportOne);
