@@ -112,7 +112,7 @@ class GLOzoneEGLScenic : public GLOzoneEGL {
   scoped_refptr<gl::GLSurface> CreateOffscreenGLSurface(
       const gfx::Size& size) override {
     return gl::InitializeGLSurface(
-        base::MakeRefCounted<gl::PbufferGLSurfaceEGL>(size));
+        base::MakeRefCounted<gl::SurfacelessEGL>(size));
   }
 
   gl::EGLDisplayPlatform GetNativeDisplay() override {
