@@ -27,6 +27,9 @@ const base::FeatureParam<base::TimeDelta>
 const base::Feature kUploadBrowserDeviceIdentifier{
     "UploadBrowserDeviceIdentifier", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kCRDForManagedUserSessions{
+    "CRDForManagedUserSessions", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 
 }  // namespace policy

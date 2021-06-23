@@ -34,6 +34,9 @@ POLICY_EXPORT extern const base::FeatureParam<base::TimeDelta>
 // Update browser device identifier during enrollment and fetching policies.
 POLICY_EXPORT extern const base::Feature kUploadBrowserDeviceIdentifier;
 
+// Enable Chrome Remote Desktop for Managed Guest Sessions and affiliated users.
+POLICY_EXPORT extern const base::Feature kCRDForManagedUserSessions;
+
 }  // namespace features
 }  // namespace policy
 
