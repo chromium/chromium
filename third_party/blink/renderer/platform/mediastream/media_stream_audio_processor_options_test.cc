@@ -47,7 +47,8 @@ constexpr WebRtcAnalogAgcClippingControlParams kClippingControlParams{
     .crest_factor_margin = 5.55f,
     .clipped_level_step = 666,
     .clipped_ratio_threshold = 0.777f,
-    .clipped_wait_frames = 300};
+    .clipped_wait_frames = 300,
+    .use_predicted_step = true};
 }  // namespace
 
 TEST(ConfigAutomaticGainControlTest, DoNotChangeApmConfig) {
@@ -187,6 +188,8 @@ TEST(ConfigAutomaticGainControlTest, EnableClippingControl) {
                   kClippingControlParams.clipping_threshold);
   EXPECT_FLOAT_EQ(clipping_predictor.crest_factor_margin,
                   kClippingControlParams.crest_factor_margin);
+  EXPECT_EQ(clipping_predictor.use_predicted_step,
+            kClippingControlParams.use_predicted_step);
 }
 
 TEST(PopulateApmConfigTest, DefaultWithoutConfigJson) {

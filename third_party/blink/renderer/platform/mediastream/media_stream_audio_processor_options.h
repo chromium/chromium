@@ -143,6 +143,7 @@ struct PLATFORM_EXPORT WebRtcAnalogAgcClippingControlParams {
   int clipped_level_step;
   float clipped_ratio_threshold;
   int clipped_wait_frames;
+  bool use_predicted_step;
 };
 
 // Changes the automatic gain control configuration in `apm_config` if

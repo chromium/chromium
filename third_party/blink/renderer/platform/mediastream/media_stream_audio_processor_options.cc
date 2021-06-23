@@ -290,6 +290,8 @@ void ConfigAutomaticGainControl(
           clipping_control_params->clipping_threshold;
       clipping_predictor->crest_factor_margin =
           clipping_control_params->crest_factor_margin;
+      clipping_predictor->use_predicted_step =
+          clipping_control_params->use_predicted_step;
     }
   } else if (use_fixed_digital_agc2) {
     // Experimental AGC is disabled, thus hybrid AGC is disabled. Config AGC2

@@ -132,7 +132,10 @@ GetWebRtcAnalogAgcClippingControlParams() {
               "clipped_ratio_threshold", 0.1)),
       .clipped_wait_frames = base::GetFieldTrialParamByFeatureAsInt(
           ::features::kWebRtcAnalogAgcClippingControl, "clipped_wait_frames",
-          300)};
+          300),
+      .use_predicted_step = base::GetFieldTrialParamByFeatureAsBool(
+          ::features::kWebRtcAnalogAgcClippingControl, "use_predicted_step",
+          true)};
 }
 
 constexpr int kBuffersPerSecond = 100;  // 10 ms per buffer.

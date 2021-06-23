@@ -718,6 +718,7 @@ TEST_F(MediaStreamAudioProcessorTest,
   EXPECT_EQ(analog_agc.clipping_predictor.reference_window_delay, 5);
   EXPECT_FLOAT_EQ(analog_agc.clipping_predictor.clipping_threshold, -1.0f);
   EXPECT_FLOAT_EQ(analog_agc.clipping_predictor.crest_factor_margin, 3.0f);
+  EXPECT_TRUE(analog_agc.clipping_predictor.use_predicted_step);
   EXPECT_EQ(analog_agc.clipped_level_step, 15);
   EXPECT_FLOAT_EQ(analog_agc.clipped_ratio_threshold, 0.1f);
   EXPECT_EQ(analog_agc.clipped_wait_frames, 300);
@@ -735,7 +736,8 @@ TEST_F(MediaStreamAudioProcessorTest, TestAgcEnableClippingControl) {
        {"crest_factor_margin", ".555"},
        {"clipped_level_step", "255"},
        {"clipped_ratio_threshold", "0.77"},
-       {"clipped_wait_frames", "888"}});
+       {"clipped_wait_frames", "888"},
+       {"use_predicted_step", "false"}});
 
   blink::AudioProcessingProperties properties;
   properties.goog_auto_gain_control = true;
@@ -763,6 +765,7 @@ TEST_F(MediaStreamAudioProcessorTest, TestAgcEnableClippingControl) {
   EXPECT_EQ(analog_agc.clipping_predictor.reference_window_delay, 333);
   EXPECT_FLOAT_EQ(analog_agc.clipping_predictor.clipping_threshold, 4.44f);
   EXPECT_FLOAT_EQ(analog_agc.clipping_predictor.crest_factor_margin, 0.555f);
+  EXPECT_FALSE(analog_agc.clipping_predictor.use_predicted_step);
   EXPECT_EQ(analog_agc.clipped_level_step, 255);
   EXPECT_FLOAT_EQ(analog_agc.clipped_ratio_threshold, 0.77f);
   EXPECT_EQ(analog_agc.clipped_wait_frames, 888);
