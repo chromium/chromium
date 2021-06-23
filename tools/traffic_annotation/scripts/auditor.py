@@ -1,30 +1,66 @@
-#!/usr/bin/env vpython
+#!/usr/bin/env vpython3
 # Copyright 2020 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-import os
-import sys
+
+import argparse
 import copy
 import logging
-import argparse
+import os
+import sys
 import traceback
-from aenum import Enum, auto
+
+from enum import Enum, auto
+from functools import reduce
 from google.protobuf import text_format
+from typing import NewType, TYPE_CHECKING, List, Dict
 
 import extractor
 
+if TYPE_CHECKING:
+  # For the `mypy` type checker, a hardcoded import that is never used when
+  # actually running. The real import is in AuditorUI.import_proto()
+  #
+  # TODO(nicolaso): Add instructions for running mypy.
+  import traffic_annotation_pb2
+  from traffic_annotation_pb2 import NetworkTrafficAnnotation as \
+      traffic_annotation
+
+UniqueId = NewType('UniqueId', str)
+HashCode = NewType('HashCode', int)
 
 # Absolute path to chrome/src.
 SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
 SRC_DIR = os.path.abspath(os.path.join(SCRIPT_DIR, "../../.."))
 
+# Reserved annotation unique IDs that should only be used in untracked files
+# (e.g., test files or files that aren't compiled on this platform).
+RESERVED_IDS = ["test", "test_partial", "missing"]
+
+# Host platforms that support running auditor.py.
+SUPPORTED_PLATFORMS = ["linux", "windows"]
+
 logging.basicConfig(
-  level=logging.INFO,
-  format="%(filename)s:%(funcName)s:%(levelname)s: %(message)s")
+    level=logging.INFO,
+    format="%(filename)s:%(lineno)d:%(funcName)s:%(levelname)s: %(message)s")
 logger = logging.getLogger(__name__)
 
 
-def iterative_hash(s):
+def twos_complement_8bit(b: int) -> int:
+  """Interprets b like a signed 8-bit integer, possibly changing its sign.
+
+  For instance, twos_complement_8bit(204) returns -52."""
+  if b >= 256:
+    raise ValueError("b must fit inside 8 bits")
+  if b & (1 << 7):
+    # Negative number, calculate its value using two's-complement.
+    return b - (1 << 8)
+  else:
+    # Positive number, do not touch.
+    return b
+
+
+def iterative_hash(s: str) -> HashCode:
   """Compute the has code of the given string as in:
   net/traffic_annotation/network_traffic_annotation.h
 
@@ -34,76 +70,77 @@ def iterative_hash(s):
   Returns: int
     A hash code.
   """
-  return reduce(lambda acc, c: (acc*31 + ord(c)) % 138003713, s, 0)
+  return HashCode(
+      reduce(lambda acc, b: (acc * 31 + twos_complement_8bit(b)) % 138003713,
+             s.encode("utf-8"), 0))
 
 
 class AuditorError(Exception):
   class Type(Enum):
-    ERROR_FATAL = auto()                # A fatal error that should stop the
-                                        # process.
-    ERROR_SYNTAX = auto()               # Annotation syntax is not right.
-    ERROR_INCOMPLETE_ANNOTATION = auto()   # Annotation has some missing fields.
-    ERROR_MUTABLE_TAG = auto()          # Can't create a
-                                        # |MutableNetworkTrafficAnnotationTag|
-                                        # from anywhere (except whitelisted
-                                        # files).
-    ERROR_NO_ANNOTATION = auto()        # A function is called with
-                                        # NO_ANNOTATION tag. Deprecated as is
-                                        # now undefined on supported platforms.
-    ERROR_MISSING_ANNOTATION = auto()   # A function that requires annotation is
-                                        # is not annotated.
+    # Annotation syntax is not right.
+    SYNTAX = auto()
+    # Annotation has some missing fields.
+    INCOMPLETE_ANNOTATION = auto()
+    # Can't create a |MutableNetworkTrafficAnnotationTag| from anywhere (except
+    # whitelisted files).
+    MUTABLE_TAG = auto()
+    # A function is called with NO_ANNOTATION tag. Deprecated as is now
+    # undefined on supported platforms.
+    NO_ANNOTATION = auto()
+    # A function that requires annotation is is not annotated.
+    MISSING_ANNOTATION = auto()
+    # A function uses the "test" or "test_partial" annotation outside of a test
+    # file.
+    TEST_ANNOTATION = auto()
 
-  def __init__(self, result_type, message="", file_path="", line=0):
+  def __init__(self, result_type, message="", file_path="", line=0) -> None:
     self.type = result_type
     self.message = message
     self.file_path = file_path
     self.line = line
     self._details = []
 
-    assert message or result_type in [AuditorError.Type.ERROR_NO_ANNOTATION]
+    assert message or result_type in [AuditorError.Type.NO_ANNOTATION]
 
     if message:
       self._details.append(message)
 
-  def __str__(self):
+  def __str__(self) -> str:
     #TODO(https://crbug.com/1119417): Add all the possible errors and their
     # explanations here.
-    if self.type == AuditorError.Type.ERROR_SYNTAX:
+    if self.type == AuditorError.Type.SYNTAX:
       assert self._details
-      return "ERROR_SYNTAX: Annotation at '{}:{}' has the following syntax" \
+      return "SYNTAX: Annotation at '{}:{}' has the following syntax" \
         " error: {}".format(
         self.file_path, self.line, str(self._details[0]).replace("\n", " "))
 
-    if self.type == AuditorError.Type.ERROR_INCOMPLETE_ANNOTATION:
+    if self.type == AuditorError.Type.INCOMPLETE_ANNOTATION:
       assert self._details
-      return "ERROR_INCOMPLETE_ANNOTATION: Annotation at '{}:{}' has the" \
+      return "INCOMPLETE_ANNOTATION: Annotation at '{}:{}' has the" \
         " following missing fields: {}".format(
           self.file_path, self.line, self._details[0])
 
-    if self.type == AuditorError.Type.ERROR_FATAL:
-      assert self._details
-      return "ERROR_FATAL: Annotation at '{}:{}' has a fatal error: {}".format(
-        self.file_path, self.line, self._details[0])
+    return self.type.name
 
 
 class AnnotationInstance(object):
   class Type(Enum):
-    ANNOTATION_COMPLETE = "Definition"
-    ANNOTATION_PARTIAL = "Partial"
-    ANNOTATION_COMPLETING = "Completing"
-    ANNOTATION_BRANCHED_COMPLETING = "BranchedCompleting"
+    COMPLETE = "Definition"
+    PARTIAL = "Partial"
+    COMPLETING = "Completing"
+    BRANCHED_COMPLETING = "BranchedCompleting"
 
   def __init__(self):
     self.proto = traffic_annotation_pb2.NetworkTrafficAnnotation()
-    self.type = AnnotationInstance.Type.ANNOTATION_COMPLETING
-    self.unique_id_hash_code = -1
-    self.second_id = -1
-    self.second_id_hash_code = -1
+    self.type = AnnotationInstance.Type.COMPLETING
+    self.unique_id_hash_code: HashCode = -1
+    self.second_id: UniqueId = -1
+    self.second_id_hash_code: HashCode = -1
 
-    self.archived_content_hash_code = -1
+    self.archived_content_hash_code: HashCode = -1
     self.is_loaded_from_archive = False
 
-  def get_content_hash_code(self):
+  def get_content_hash_code(self) -> HashCode:
     #TODO(https://crbug.com/1119417): Address ASCII issue, where it reports an
     # incorrect content hash code when the proto's contents contain a non-ascii
     # character.
@@ -114,9 +151,9 @@ class AnnotationInstance(object):
     source_free_proto.ClearField("source")
     source_free_proto = text_format.MessageToString(
       source_free_proto, as_utf8=True)
-    return TrafficAnnotationAuditor.compute_hash_value(source_free_proto)
+    return Auditor.compute_hash_value(source_free_proto)
 
-  def deserialize(self, serialized_annotation):
+  def deserialize(self, serialized_annotation: extractor.Annotation):
     """Deserializes an instance from extractor.Annotation.
 
     Args:
@@ -130,23 +167,20 @@ class AnnotationInstance(object):
     self.type = AnnotationInstance.Type(serialized_annotation.type_name)
 
     unique_id = serialized_annotation.unique_id
-    self.unique_id_hash_code = TrafficAnnotationAuditor.compute_hash_value(
-      unique_id)
+    self.unique_id_hash_code = Auditor.compute_hash_value(unique_id)
     self.second_id = serialized_annotation.extra_id
-    self.second_id_hash_code = TrafficAnnotationAuditor.compute_hash_value(
-      self.second_id)
+    self.second_id_hash_code = Auditor.compute_hash_value(self.second_id)
 
     try:
       text_format.Parse(serialized_annotation.text, self.proto)
     except Exception as e:
-      raise AuditorError(
-        AuditorError.Type.ERROR_SYNTAX, e, file_path, line_number)
+      raise AuditorError(AuditorError.Type.SYNTAX, e, file_path, line_number)
 
     self.proto.source.file = file_path
     self.proto.source.line = line_number
     self.proto.unique_id = unique_id
 
-  def check_complete(self):
+  def check_complete(self) -> None:
     """Checks if an annotation has all required fields."""
     unspecifieds = []
     # Check semantic fields.
@@ -181,25 +215,24 @@ class AnnotationInstance(object):
 
     if unspecifieds:
       error_text = ", ".join(unspecifieds)
-      raise AuditorError(
-        AuditorError.Type.ERROR_INCOMPLETE_ANNOTATION,
-        error_text, self.proto.source.file, self.proto.source.line)
+      raise AuditorError(AuditorError.Type.INCOMPLETE_ANNOTATION, error_text,
+                         self.proto.source.file, self.proto.source.line)
 
 
-class TrafficAnnotationAuditor(object):
+class Auditor:
   #TODO(https://crbug.com/1119417): Filter when given a safelist path.
 
   def __init__(self):
-    self.extracted_annotations = []
-    self.errors = []
+    self.extracted_annotations: List[AnnotationInstance] = []
+    self.errors: List[AuditorError] = []
 
   @staticmethod
-  def compute_hash_value(text):
+  def compute_hash_value(text: str) -> HashCode:
     """Computes the hash value of given text."""
-    return iterative_hash(text) if text else -1
+    return iterative_hash(text) if text else HashCode(-1)
 
   @staticmethod
-  def run_extractor(filter_files):
+  def run_extractor(filter_files: List[str]) -> List[extractor.Annotation]:
     """
     Args:
       filter_files: List[str]
@@ -223,7 +256,7 @@ class TrafficAnnotationAuditor(object):
 
     return all_annotations
 
-  def parse_extractor_output(self, all_annotations):
+  def parse_extractor_output(self, all_annotations: List[extractor.Annotation]):
     """
     Args:
       all_annations: List[extractor.Annotation]
@@ -237,10 +270,10 @@ class TrafficAnnotationAuditor(object):
       except AuditorError as e:
         self.errors.append(e)
 
-  def check_annotations_contents(self):
+  def check_annotations_contents(self) -> None:
     assert self.extracted_annotations
     for annotation in self.extracted_annotations:
-      if annotation.type == AnnotationInstance.Type.ANNOTATION_COMPLETE:
+      if annotation.type == AnnotationInstance.Type.COMPLETE:
         # Check for completeness.
         try:
           annotation.check_complete()
@@ -250,11 +283,11 @@ class TrafficAnnotationAuditor(object):
         #TODO(https://crbug.com/1119417): Perform the other checks, e.g.
         # consistency.
 
-  def run_all_checks(self):
+  def run_all_checks(self) -> None:
     self.check_annotations_contents()
 
 
-class TrafficAnnotationAuditorUI(object):
+class AuditorUI:
   def __init__(self, build_path, path_filters=[], no_filtering=True):
     self.build_path = build_path
     self.path_filters = path_filters
@@ -263,9 +296,9 @@ class TrafficAnnotationAuditorUI(object):
     self.test_only = True
 
     self.import_compiled_proto()
-    self.auditor = TrafficAnnotationAuditor()
+    self.auditor = Auditor()
 
-  def import_compiled_proto(self):
+  def import_compiled_proto(self) -> None:
     """Global import from function. |self.build_path| is needed to perform
     this import, hence why it's not a top-level import.
 
@@ -290,12 +323,12 @@ class TrafficAnnotationAuditorUI(object):
           self.build_path))
       raise
 
-  def main(self):
+  def main(self) -> int:
     if self.no_filtering and self.path_filters:
       logger.warning("The path_filters input is being ignored.")
       self.path_filters = []
 
-    all_annotations = TrafficAnnotationAuditor.run_extractor(self.path_filters)
+    all_annotations = Auditor.run_extractor(self.path_filters)
     self.auditor.parse_extractor_output(all_annotations)
 
     # Perform checks on successfully extracted annotations, otherwise skip to
@@ -352,8 +385,7 @@ if __name__ == "__main__":
   build_path = args.build_path
 
   print("Starting traffic annotation auditor. This may take a few minutes.")
-  auditor_ui = TrafficAnnotationAuditorUI(
-    build_path, args.path_filters, args.no_filtering)
+  auditor_ui = AuditorUI(build_path, args.path_filters, args.no_filtering)
 
   try:
     sys.exit(auditor_ui.main())

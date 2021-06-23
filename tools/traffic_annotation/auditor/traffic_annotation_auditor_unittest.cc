@@ -25,9 +25,11 @@
 
 namespace {
 
-#define TEST_HASH_CODE(X)                                  \
-  EXPECT_EQ(TrafficAnnotationAuditor::ComputeHashValue(X), \
-            net::DefineNetworkTrafficAnnotation(X, "").unique_id_hash_code)
+#define TEST_HASH_CODE(X)                                                    \
+  EXPECT_EQ(TrafficAnnotationAuditor::ComputeHashValue(X),                   \
+            net::DefineNetworkTrafficAnnotation(X, "").unique_id_hash_code); \
+  LOG(INFO) << "ComputeHashValue('" X "') = "                                \
+            << net::DefineNetworkTrafficAnnotation(X, "").unique_id_hash_code
 
 const char* kIrrelevantFiles[] = {
     "tools/traffic_annotation/auditor/tests/git_list.txt",
@@ -173,6 +175,7 @@ TEST_F(TrafficAnnotationAuditorTest, HashFunctionCheck) {
   TEST_HASH_CODE("ID123");
   TEST_HASH_CODE(
       "a_unique_looooooooooooooooooooooooooooooooooooooooooooooooooooooong_id");
+  TEST_HASH_CODE(u8"bébé");
 }
 
 // Tests if TrafficAnnotationFileFilter::GetFilesFromGit function returns

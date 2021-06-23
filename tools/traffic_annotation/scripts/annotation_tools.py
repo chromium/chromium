@@ -19,7 +19,8 @@ sys.path.insert(0, tool_dir)
 # made to run in addition to the preexisting C++ auditor executable.
 PYTHON_AUDITOR = False
 
-from clang import compile_db
+from clang import compile_db  # type: ignore
+
 
 class NetworkTrafficAnnotationTools():
   def __init__(self, build_path=None):
