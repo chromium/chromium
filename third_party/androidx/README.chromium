@@ -26,3 +26,12 @@ Mapping snapshot version to git revision:
 Viewing Source Code:
 Git viewer: https://android.googlesource.com/platform/frameworks/support/
 Code Search: https://cs.android.com/androidx/platform/frameworks/support
+
+How to add a new androidx library:
+* Add the gradle entry for the desired target to build.gradle.template
+* Do a trial run (downloads files locally):
+    mv libs libs.bak && ./fetch_all_androidx.py
+* Upload & submit your change to build.gradle.template
+* Wait for android-androidx-packager to upload a new CIPD instance (linked above)
+* Wait for androidx-chromium to roll the new package (linked above)
+
