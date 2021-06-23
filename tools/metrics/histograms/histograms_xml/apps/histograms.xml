@@ -664,9 +664,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppList.UserEvent.Error" enum="AppListSearchResult"
-    expires_after="2021-10-04">
+    expires_after="2022-08-15">
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
+  <owner>wrong@chromium.org</owner>
   <summary>
     Records error when processing user events into Apps.AppList.UserEvent.*
     metrics. These are expected to be rare and bucket proportion is not
@@ -675,11 +676,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppList.UserEvent.LaunchIndex" units="index"
-    expires_after="2021-08-01">
+    expires_after="2022-08-15">
 <!-- Name completed by histogram_suffixes name="LauncherUISurface" -->
 
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
+  <owner>wrong@chromium.org</owner>
   <summary>
     Emitted on a usage of the launcher, and records overall impressions,
     launches, and abandons for a launcher UI view. The bucket proportion is not
@@ -690,11 +692,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppList.UserEvent.Overall" enum="AppListUserEvent"
-    expires_after="2021-12-05">
+    expires_after="2022-08-15">
 <!-- Name completed by histogram_suffixes name="LauncherUISurface" -->
 
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
+  <owner>wrong@chromium.org</owner>
   <summary>
     Emitted on a usage of the launcher, and records overall impressions,
     launches, and abandons for a launcher UI view. The bucket proportion is not
@@ -705,7 +708,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppList.UserEvent.Query" enum="Boolean"
-    expires_after="2021-08-01">
+    expires_after="2022-08-15">
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
@@ -718,11 +721,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppList.UserEvent.TypeAbandon" enum="AppListSearchResult"
-    expires_after="2021-12-05">
+    expires_after="2022-08-15">
 <!-- Name completed by histogram_suffixes name="LauncherUISurface" -->
 
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
+  <owner>wrong@chromium.org</owner>
   <summary>
     Emitted after an impression, if the user then closes the launcher or moves
     to a different view without launching any search result. This is emitted
@@ -735,11 +739,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppList.UserEvent.TypeImpression"
-    enum="AppListSearchResult" expires_after="2021-12-05">
+    enum="AppListSearchResult" expires_after="2022-08-15">
 <!-- Name completed by histogram_suffixes name="LauncherUISurface" -->
 
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
+  <owner>wrong@chromium.org</owner>
   <summary>
     When a set of results is displayed for 2 seconds and the user has probably
     seen it, or the user interacted with the results and has definitely seen it,
@@ -758,11 +763,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppList.UserEvent.TypeLaunch" enum="AppListSearchResult"
-    expires_after="2021-12-05">
+    expires_after="2022-08-15">
 <!-- Name completed by histogram_suffixes name="LauncherUISurface" -->
 
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
+  <owner>wrong@chromium.org</owner>
   <summary>
     Emitted after an impression, if the user launches a result. Records the type
     of the launched result. See Apps.AppList.UserEvent.TypeImpression for more
