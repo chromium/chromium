@@ -1333,15 +1333,6 @@ bool DictionaryValue::GetList(StringPiece path, ListValue** out_value) {
                                  const_cast<const ListValue**>(out_value));
 }
 
-bool DictionaryValue::GetDoubleWithoutPathExpansion(StringPiece key,
-                                                    double* out_value) const {
-  const Value* value = FindKey(key);
-  if (!value)
-    return false;
-
-  return value->GetAsDouble(out_value);
-}
-
 bool DictionaryValue::GetStringWithoutPathExpansion(
     StringPiece key,
     std::string* out_value) const {

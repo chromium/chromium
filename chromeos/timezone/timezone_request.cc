@@ -228,17 +228,21 @@ bool ParseServerResponse(const GURL& server_url,
 
   const bool status_ok = (timezone->status == TimeZoneResponseData::OK);
 
-  if (!response_object->GetDoubleWithoutPathExpansion(kDstOffsetString,
-                                                      &timezone->dstOffset) &&
-      status_ok) {
+  absl::optional<double> dst_offset =
+      response_object->FindDoubleKey(kDstOffsetString);
+  if (dst_offset.has_value()) {
+    timezone->dstOffset = dst_offset.value();
+  } else if (status_ok) {
     PrintTimeZoneError(server_url, "Missing dstOffset attribute.", timezone);
     RecordUmaEvent(TIMEZONE_REQUEST_EVENT_RESPONSE_MALFORMED);
     return false;
   }
 
-  if (!response_object->GetDoubleWithoutPathExpansion(kRawOffsetString,
-                                                      &timezone->rawOffset) &&
-      status_ok) {
+  absl::optional<double> raw_offset =
+      response_object->FindDoubleKey(kRawOffsetString);
+  if (raw_offset.has_value()) {
+    timezone->rawOffset = raw_offset.value();
+  } else if (status_ok) {
     PrintTimeZoneError(server_url, "Missing rawOffset attribute.", timezone);
     RecordUmaEvent(TIMEZONE_REQUEST_EVENT_RESPONSE_MALFORMED);
     return false;

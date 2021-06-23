@@ -238,25 +238,33 @@ bool ParseServerResponse(const GURL& server_url,
   }
 
   if (location_object) {
-    if (!location_object->GetDoubleWithoutPathExpansion(
-            kLatString, &(position->latitude))) {
+    absl::optional<double> latitude =
+        location_object->FindDoubleKey(kLatString);
+    if (!latitude) {
       PrintGeolocationError(server_url, "Missing 'lat' attribute.", position);
       RecordUmaEvent(SIMPLE_GEOLOCATION_REQUEST_EVENT_RESPONSE_MALFORMED);
       return false;
     }
-    if (!location_object->GetDoubleWithoutPathExpansion(
-            kLngString, &(position->longitude))) {
+    position->latitude = latitude.value();
+
+    absl::optional<double> longitude =
+        location_object->FindDoubleKey(kLngString);
+    if (!longitude) {
       PrintGeolocationError(server_url, "Missing 'lon' attribute.", position);
       RecordUmaEvent(SIMPLE_GEOLOCATION_REQUEST_EVENT_RESPONSE_MALFORMED);
       return false;
     }
-    if (!response_object->GetDoubleWithoutPathExpansion(
-            kAccuracyString, &(position->accuracy))) {
+    position->longitude = longitude.value();
+
+    absl::optional<double> accuracy =
+        response_object->FindDoubleKey(kAccuracyString);
+    if (!accuracy) {
       PrintGeolocationError(
           server_url, "Missing 'accuracy' attribute.", position);
       RecordUmaEvent(SIMPLE_GEOLOCATION_REQUEST_EVENT_RESPONSE_MALFORMED);
       return false;
     }
+    position->accuracy = accuracy.value();
   }
 
   if (error_object) {

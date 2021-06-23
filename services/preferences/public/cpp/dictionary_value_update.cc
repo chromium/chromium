@@ -211,7 +211,12 @@ bool DictionaryValueUpdate::GetIntegerWithoutPathExpansion(
 bool DictionaryValueUpdate::GetDoubleWithoutPathExpansion(
     base::StringPiece key,
     double* out_value) const {
-  return value_->GetDoubleWithoutPathExpansion(key, out_value);
+  absl::optional<double> value = value_->FindDoubleKey(key);
+  if (!value)
+    return false;
+
+  *out_value = value.value();
+  return true;
 }
 
 bool DictionaryValueUpdate::GetStringWithoutPathExpansion(

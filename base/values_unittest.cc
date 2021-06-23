@@ -2369,41 +2369,6 @@ TEST(ValuesTest, GetWithNullOutValue) {
   EXPECT_TRUE(main_dict.GetList("list", nullptr));
   EXPECT_FALSE(main_dict.GetList("DNE", nullptr));
 
-  EXPECT_TRUE(main_dict.FindKey("bool"));
-  EXPECT_TRUE(main_dict.FindKey("int"));
-  EXPECT_TRUE(main_dict.FindKey("double"));
-  EXPECT_TRUE(main_dict.FindKey("string"));
-  EXPECT_TRUE(main_dict.FindKey("binary"));
-  EXPECT_TRUE(main_dict.FindKey("dict"));
-  EXPECT_TRUE(main_dict.FindKey("list"));
-  EXPECT_FALSE(main_dict.FindKey("DNE"));
-
-  EXPECT_NE(absl::nullopt, main_dict.FindBoolKey("bool"));
-  EXPECT_EQ(absl::nullopt, main_dict.FindBoolKey("int"));
-  EXPECT_EQ(absl::nullopt, main_dict.FindBoolKey("double"));
-  EXPECT_EQ(absl::nullopt, main_dict.FindBoolKey("string"));
-  EXPECT_EQ(absl::nullopt, main_dict.FindBoolKey("binary"));
-  EXPECT_EQ(absl::nullopt, main_dict.FindBoolKey("list"));
-  EXPECT_EQ(absl::nullopt, main_dict.FindBoolKey("DNE"));
-
-  EXPECT_EQ(absl::nullopt, main_dict.FindIntKey("bool"));
-  EXPECT_NE(absl::nullopt, main_dict.FindIntKey("int"));
-  EXPECT_EQ(absl::nullopt, main_dict.FindIntKey("double"));
-  EXPECT_EQ(absl::nullopt, main_dict.FindIntKey("string"));
-  EXPECT_EQ(absl::nullopt, main_dict.FindIntKey("binary"));
-  EXPECT_EQ(absl::nullopt, main_dict.FindIntKey("dict"));
-  EXPECT_EQ(absl::nullopt, main_dict.FindIntKey("list"));
-  EXPECT_EQ(absl::nullopt, main_dict.FindIntKey("DNE"));
-
-  EXPECT_FALSE(main_dict.GetDoubleWithoutPathExpansion("bool", nullptr));
-  EXPECT_TRUE(main_dict.GetDoubleWithoutPathExpansion("int", nullptr));
-  EXPECT_TRUE(main_dict.GetDoubleWithoutPathExpansion("double", nullptr));
-  EXPECT_FALSE(main_dict.GetDoubleWithoutPathExpansion("string", nullptr));
-  EXPECT_FALSE(main_dict.GetDoubleWithoutPathExpansion("binary", nullptr));
-  EXPECT_FALSE(main_dict.GetDoubleWithoutPathExpansion("dict", nullptr));
-  EXPECT_FALSE(main_dict.GetDoubleWithoutPathExpansion("list", nullptr));
-  EXPECT_FALSE(main_dict.GetDoubleWithoutPathExpansion("DNE", nullptr));
-
   EXPECT_FALSE(main_dict.GetStringWithoutPathExpansion(
       "bool", static_cast<std::string*>(nullptr)));
   EXPECT_FALSE(main_dict.GetStringWithoutPathExpansion(

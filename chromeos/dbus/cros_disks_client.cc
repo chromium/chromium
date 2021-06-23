@@ -752,16 +752,16 @@ void DiskInfo::InitializeFromResponse(dbus::Response* response) {
   // The top 11 bits of uint64_t are dropped by the use of double. But, this
   // works
   // unless the size exceeds 8 PB.
-  double device_size_double = 0;
-  if (properties->GetDoubleWithoutPathExpansion(cros_disks::kDeviceSize,
-                                                &device_size_double))
-    total_size_in_bytes_ = device_size_double;
+  absl::optional<double> device_size_double =
+      properties->FindDoubleKey(cros_disks::kDeviceSize);
+  if (device_size_double.has_value())
+    total_size_in_bytes_ = device_size_double.value();
 
   // dbus::PopDataAsValue() pops uint32_t as double.
-  double media_type_double = 0;
-  if (properties->GetDoubleWithoutPathExpansion(cros_disks::kDeviceMediaType,
-                                                &media_type_double))
-    device_type_ = DeviceMediaTypeToDeviceType(media_type_double);
+  absl::optional<double> media_type_double =
+      properties->FindDoubleKey(cros_disks::kDeviceMediaType);
+  if (media_type_double.has_value())
+    device_type_ = DeviceMediaTypeToDeviceType(media_type_double.value());
 
   base::ListValue* mount_paths = NULL;
   if (properties->GetListWithoutPathExpansion(cros_disks::kDeviceMountPaths,
