@@ -455,7 +455,6 @@ constexpr double kSafeBrowsingRowMinDelay = 1.75;
 - (void)booleanDidChange:(id<ObservableBoolean>)observableBoolean {
   // TODO(crbug.com/1078782): Handle safe browsing state changes to reward user
   // for fixing state.
-  return;
 }
 
 #pragma mark - Private methods
@@ -757,7 +756,6 @@ constexpr double kSafeBrowsingRowMinDelay = 1.75;
             [weakSelf checkAndReconfigureSafeBrowsingState];
         });
   }
-  return;
 }
 
 // Checks if any of the safety checks are still running, resets |checkStartItem|
@@ -787,7 +785,6 @@ constexpr double kSafeBrowsingRowMinDelay = 1.75;
 
   // Since no checks are running, attempt to show the timestamp.
   [self showTimestampIfNeeded];
-  return;
 }
 
 // Computes if any of the safety checks are still running.
@@ -824,7 +821,6 @@ constexpr double kSafeBrowsingRowMinDelay = 1.75;
     base::UmaHistogramEnumeration(kSafetyCheckMetricsUpdates,
                                   safety_check::UpdateStatus::kFailed);
   }
-  return;
 }
 
 // If the update check would have completed too quickly, making the UI appear
@@ -907,7 +903,6 @@ constexpr double kSafeBrowsingRowMinDelay = 1.75;
     // infobar was just shown to not overshow the infobar to the user.
     [defaults setObject:[NSDate date] forKey:kLastInfobarDisplayTimeKey];
   }
-  return;
 }
 
 // Performs the update check and triggers the display update to

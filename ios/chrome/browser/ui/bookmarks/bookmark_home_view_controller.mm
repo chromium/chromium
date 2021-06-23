@@ -890,7 +890,6 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   }
 
   NOTREACHED();
-  return;
 }
 
 - (void)handleMoveNode:(const bookmarks::BookmarkNode*)node

@@ -277,7 +277,6 @@ PopupMenuCommandType CommandTypeFromPopupType(PopupMenuType type) {
 
   [self.presenter prepareForPresentation];
   [self.presenter presentAnimated:YES];
-  return;
 }
 
 @end

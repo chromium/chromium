@@ -248,7 +248,6 @@ GURL URLEscapedForHistory(const GURL& url) {
                     stateObject:stateObject
                  hasUserGesture:self.userInteractionState->IsUserInteracting(
                                     self.webView)];
-  return;
 }
 
 // Adds a new NavigationItem with the given URL and state object to the

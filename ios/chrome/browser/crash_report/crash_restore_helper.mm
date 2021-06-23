@@ -503,7 +503,6 @@ int SessionCrashedInfoBarDelegate::GetIconId() const {
                      error:&error];
     }
   }
-  return;
 }
 
 @end

@@ -4910,7 +4910,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   };
   [self.contentArea addSubview:animatedView];
   [animatedView animateFrom:origin withCompletion:completionBlock];
-  return;
 }
 
 #pragma mark - InfobarPositioner
