@@ -6,6 +6,7 @@ import("//build/buildflag_header.gni")
 import("//build/config/android/config.gni")
 import("//build/config/arm.gni")
 import("//build/config/sanitizers/sanitizers.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/libaom/libaom_srcs.gni")
 import("//third_party/libaom/options.gni")
 import("//third_party/nasm/nasm_assemble.gni")
@@ -226,6 +227,19 @@ if (enable_libaom) {
     sources += aom_util_sources
     sources += aom_av1_encoder_sources
     sources += aom_dsp_encoder_sources
+    if (use_libfuzzer) {
+      # Note this is inherited from OSS-Fuzz where the fuzzers were being run
+      # with a 2 GB total allocation limit.
+      if (is_msan) {
+        defines = [ "AOM_MAX_ALLOCABLE_MEMORY=536870912" ]
+      } else {
+        defines = [ "AOM_MAX_ALLOCABLE_MEMORY=1073741824" ]
+      }
+
+      # Also enable DO_RANGE_CHECK_CLAMP to suppress the noise of integer
+      # overflows in the transform functions.
+      defines += [ "DO_RANGE_CHECK_CLAMP=1" ]
+    }
     deps = []
     if (current_cpu == "x86" || (current_cpu == "x64" && !is_msan)) {
       deps += [
@@ -248,5 +262,12 @@ if (enable_libaom) {
     }
     public_configs = [ ":libaom_external_config" ]
     public_deps = [ ":libaom_buildflags" ]
+  }
+
+  fuzzer_test("libaom_av1_dec_fuzzer") {
+    sources = [ "source/libaom/examples/av1_dec_fuzzer.cc" ]
+    seed_corpus = "fuzz/av1_dec_fuzzer_corpus"
+    deps = [ ":libaom" ]
+    additional_configs = [ ":libaom_config" ]
   }
 }
