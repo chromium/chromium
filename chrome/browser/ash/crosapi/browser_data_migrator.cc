@@ -71,20 +71,19 @@ BrowserDataMigrator::TargetInfo::TargetInfo(const TargetInfo&) = default;
 BrowserDataMigrator::TargetInfo::~TargetInfo() = default;
 
 // static
-void BrowserDataMigrator::MaybeMigrate(const AccountId& account_id,
-                                       const std::string& user_id_hash,
-                                       bool async,
-                                       base::OnceClosure callback) {
-  // Get the current user.
-  const user_manager::User* user =
-      user_manager::UserManager::Get()->FindUser(account_id);
-  if (!user || !IsMigrationRequiredOnUI(user)) {
-    // If lacros isn't enabled, skip migration and move on to the next step.
-    RecordStatus(FinalStatus::kSkipped);
-    std::move(callback).Run();
-    return;
-  }
+// Returns true if "lacros user data dir doesn't exist".
+bool BrowserDataMigrator::IsMigrationRequired(base::FilePath user_data_dir,
+                                              const std::string& user_id_hash) {
+  // Use `GetUserProfileDir()` to manually get base name for profile dir so that
+  // this method can be called even before user profile is created.
+  base::FilePath profile_data_dir =
+      user_data_dir.Append(ProfileHelper::GetUserProfileDir(user_id_hash));
 
+  return !base::DirectoryExists(profile_data_dir.Append(kLacrosDir));
+}
+
+void BrowserDataMigrator::Migrate(const std::string& user_id_hash,
+                                  base::OnceClosure callback) {
   base::FilePath user_data_dir;
   if (!base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir)) {
     LOG(ERROR) << "Could not get the original UDD path. Aborting migration.";
@@ -92,48 +91,18 @@ void BrowserDataMigrator::MaybeMigrate(const AccountId& account_id,
     std::move(callback).Run();
     return;
   }
-
-  // Use `GetUserProfileDir()` to manually get base name for profile dir since
-  // `MaybeMigrate()` is called before profile creation.
   base::FilePath profile_data_dir =
       user_data_dir.Append(ProfileHelper::GetUserProfileDir(user_id_hash));
-
   std::unique_ptr<BrowserDataMigrator> browser_data_migrator =
       std::make_unique<BrowserDataMigrator>(profile_data_dir);
-
-  // Check if user data directory needs to be wiped for a backward incompatible
-  // update.
-  base::Version data_version = crosapi::browser_util::GetDataVer(
-      g_browser_process->local_state(), user_id_hash);
-  base::Version current_version = version_info::GetVersion();
-  base::Version required_version = base::Version(
-      base::StringPiece(crosapi::browser_util::kRequiredDataVersion));
-  bool is_data_wipe_required = crosapi::browser_util::IsDataWipeRequired(
-      data_version, current_version, required_version);
-
-  if (async) {
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE,
-        {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
-         base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
-        base::BindOnce(&BrowserDataMigrator::MigrateInternal,
-                       std::move(browser_data_migrator), is_data_wipe_required),
-        base::BindOnce(&BrowserDataMigrator::MigrateInternalFinishedUIThread,
-                       std::move(callback), user_id_hash));
-  } else {
-    // Temporarily allowing blocking since we have to ensure that the migration
-    // happens before profile is created.
-    base::ScopedAllowBlocking allow_blocking;
-    MigrationResult result =
-        browser_data_migrator->MigrateInternal(is_data_wipe_required);
-    MigrateInternalFinishedUIThread(std::move(callback), user_id_hash, result);
-  }
-}
-
-// static
-bool BrowserDataMigrator::IsMigrationRequiredOnUI(
-    const user_manager::User* user) {
-  return crosapi::browser_util::IsLacrosEnabledWithUser(user);
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+       base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
+      base::BindOnce(&BrowserDataMigrator::MigrateInternal,
+                     std::move(browser_data_migrator)),
+      base::BindOnce(&BrowserDataMigrator::MigrateInternalFinishedUIThread,
+                     std::move(callback), user_id_hash));
 }
 
 BrowserDataMigrator::BrowserDataMigrator(const base::FilePath& from)
@@ -167,21 +136,15 @@ void BrowserDataMigrator::RecordStatus(const FinalStatus& final_status,
 // only web browser, update the underlying logic of migration from copy to move.
 // Note that during testing phase we are copying files and leaving files in
 // original location intact. We will allow these two states to diverge.
-BrowserDataMigrator::MigrationResult BrowserDataMigrator::MigrateInternal(
-    bool is_data_wipe_required) {
-  if (is_data_wipe_required) {
+BrowserDataMigrator::MigrationResult BrowserDataMigrator::MigrateInternal() {
+  ResultValue data_wipe_result = ResultValue::kSkipped;
+
+  if (base::DirectoryExists(to_dir_)) {
     if (!base::DeletePathRecursively(to_dir_)) {
       RecordStatus(FinalStatus::kDataWipeFailed);
       return {ResultValue::kFailed, ResultValue::kFailed};
     }
-  }
-
-  ResultValue data_wipe_result =
-      is_data_wipe_required ? ResultValue::kSucceeded : ResultValue::kSkipped;
-
-  if (!IsMigrationRequiredOnWorker()) {
-    RecordStatus(FinalStatus::kSkipped);
-    return {data_wipe_result, ResultValue::kSkipped};
+    data_wipe_result = ResultValue::kSucceeded;
   }
 
   // Check if tmp directory already exists and delete if it does.
@@ -250,12 +213,6 @@ void BrowserDataMigrator::MigrateInternalFinishedUIThread(
     // ready for use at this point in the startup cycle.
   }
   std::move(callback).Run();
-}
-
-bool BrowserDataMigrator::IsMigrationRequiredOnWorker() const {
-  // Migration is required if the user data directory for lacros hasn't been
-  // created yet i.e. lacros has not been launched yet.
-  return base::DirectoryExists(from_dir_) && !base::DirectoryExists(to_dir_);
 }
 
 BrowserDataMigrator::TargetInfo BrowserDataMigrator::GetTargetInfo() const {

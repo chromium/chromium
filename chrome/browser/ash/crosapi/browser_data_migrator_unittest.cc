@@ -71,75 +71,25 @@ class BrowserDataMigratorTest : public ::testing::Test {
 
   void TearDown() override { EXPECT_TRUE(user_data_dir_.Delete()); }
 
- protected:
   base::ScopedTempDir user_data_dir_;
   base::FilePath from_dir_;
 };
 
-TEST_F(BrowserDataMigratorTest, IsMigrationRequiredOnUI) {
-  FakeChromeUserManager fake_user_manager;
+TEST_F(BrowserDataMigratorTest, IsMigrationRequired) {
+  const std::string user_id_hash = "user";
+  const base::FilePath user_data_dir_path = user_data_dir_.GetPath();
 
-  {
-    // If lacros is disabled, `IsMigrationRequiredOnUI()` should return false
-    // even for regular users.
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndDisableFeature(chromeos::features::kLacrosSupport);
+  // Lacros UDD does not exist.
+  EXPECT_TRUE(BrowserDataMigrator::IsMigrationRequired(user_data_dir_path,
+                                                       user_id_hash));
 
-    const User* regular_user =
-        fake_user_manager.AddUser(AccountId::FromUserEmail("user1@test.com"));
+  // Create lacros user data dir.
+  ASSERT_TRUE(base::CreateDirectory(
+      user_data_dir_path.Append("user").Append(kLacrosDir)));
 
-    EXPECT_FALSE(BrowserDataMigrator::IsMigrationRequiredOnUI(regular_user));
-  }
-
-  {
-    // Lacros migration should happen only for regular users since only regular
-    // user is guaranteed to have profile data directory at `u-<hash>`.
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(chromeos::features::kLacrosSupport);
-
-    const User* regular_user =
-        fake_user_manager.AddUser(AccountId::FromUserEmail("user1@test.com"));
-    const User* guest_user = fake_user_manager.AddGuestUser();
-    const User* kiosk_user = fake_user_manager.AddKioskAppUser(
-        AccountId::FromUserEmail("user2@test.com"));
-    const User* arc_kiosk_user = fake_user_manager.AddArcKioskAppUser(
-        AccountId::FromUserEmail("user3@test.com"));
-    const User* web_kiosk_user = fake_user_manager.AddWebKioskAppUser(
-        AccountId::FromUserEmail("user4@test.com"));
-    const User* public_account_user = fake_user_manager.AddPublicAccountUser(
-        AccountId::FromUserEmail("user5@test.com"));
-    const User* active_directory_user =
-        fake_user_manager.AddActiveDirectoryUser(
-            AccountId::AdFromObjGuid("f04557de-5da2-40ce-ae9d-b8874d8da96e"));
-
-    EXPECT_TRUE(BrowserDataMigrator::IsMigrationRequiredOnUI(regular_user));
-    EXPECT_FALSE(BrowserDataMigrator::IsMigrationRequiredOnUI(guest_user));
-    EXPECT_FALSE(BrowserDataMigrator::IsMigrationRequiredOnUI(kiosk_user));
-    EXPECT_FALSE(BrowserDataMigrator::IsMigrationRequiredOnUI(arc_kiosk_user));
-    EXPECT_FALSE(BrowserDataMigrator::IsMigrationRequiredOnUI(web_kiosk_user));
-    EXPECT_FALSE(
-        BrowserDataMigrator::IsMigrationRequiredOnUI(public_account_user));
-    EXPECT_FALSE(
-        BrowserDataMigrator::IsMigrationRequiredOnUI(active_directory_user));
-  }
-}
-
-TEST_F(BrowserDataMigratorTest, IsMigrationRequiredOnWorker) {
-  BrowserDataMigrator browser_data_migrator(from_dir_);
-
-  // If `BrowserDataMigrator::to_dir_` does not exist, run migration.
-  EXPECT_TRUE(browser_data_migrator.IsMigrationRequiredOnWorker());
-
-  // Create `BrowserDataMigrator::to_dir_`.
-  ASSERT_TRUE(base::CreateDirectory(from_dir_.Append(kLacrosDir)));
-
-  // If `BrowserDataMigrator::to_dir_` already exists, do not run migration.
-  EXPECT_FALSE(browser_data_migrator.IsMigrationRequiredOnWorker());
-
-  ASSERT_TRUE(base::DeletePathRecursively(from_dir_));
-
-  // If `BrowserDataMigrator::from_dir_` does not exist, do not run migration.
-  EXPECT_FALSE(browser_data_migrator.IsMigrationRequiredOnWorker());
+  // Lacros UDD exists.
+  EXPECT_FALSE(BrowserDataMigrator::IsMigrationRequired(user_data_dir_path,
+                                                        user_id_hash));
 }
 
 TEST_F(BrowserDataMigratorTest, GetTargetInfo) {
@@ -231,7 +181,7 @@ TEST_F(BrowserDataMigratorTest, Migrate) {
   {
     BrowserDataMigrator browser_data_migrator(from_dir_);
 
-    browser_data_migrator.MigrateInternal(false /* is_data_wipe_required */);
+    browser_data_migrator.MigrateInternal();
 
     // Expected dir structure after migration.
     // ./                         /* user_data_dir_ */
