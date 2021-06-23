@@ -656,10 +656,10 @@ void TpmChallengeKeySubtleImpl::RegisterKeyCallback(
 }
 
 void TpmChallengeKeySubtleImpl::MarkCorporateKeyCallback(
-    platform_keys::Status status) {
+    chromeos::platform_keys::Status status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (status != platform_keys::Status::kSuccess) {
+  if (status != chromeos::platform_keys::Status::kSuccess) {
     std::move(callback_).Run(
         Result::MakeError(ResultCode::kMarkCorporateKeyFailedError));
     return;

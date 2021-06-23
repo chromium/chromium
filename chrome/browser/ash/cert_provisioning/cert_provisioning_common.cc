@@ -200,12 +200,12 @@ attestation::AttestationKeyType GetVaKeyType(CertScope scope) {
   }
 }
 
-platform_keys::TokenId GetPlatformKeysTokenId(CertScope scope) {
+chromeos::platform_keys::TokenId GetPlatformKeysTokenId(CertScope scope) {
   switch (scope) {
     case CertScope::kUser:
-      return platform_keys::TokenId::kUser;
+      return chromeos::platform_keys::TokenId::kUser;
     case CertScope::kDevice:
-      return platform_keys::TokenId::kSystem;
+      return chromeos::platform_keys::TokenId::kSystem;
   }
 }
 

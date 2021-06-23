@@ -242,12 +242,12 @@ void CertProvisioningSchedulerImpl::DeleteCertsWithoutPolicy() {
 }
 
 void CertProvisioningSchedulerImpl::OnDeleteCertsWithoutPolicyDone(
-    platform_keys::Status status) {
+    chromeos::platform_keys::Status status) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (status != platform_keys::Status::kSuccess) {
+  if (status != chromeos::platform_keys::Status::kSuccess) {
     LOG(ERROR) << "Failed to delete certificates without policies: "
-               << platform_keys::StatusToString(status);
+               << chromeos::platform_keys::StatusToString(status);
   }
 
   DeserializeWorkers();
@@ -403,12 +403,12 @@ void CertProvisioningSchedulerImpl::UpdateCertListWithExistingCerts(
     std::vector<CertProfile> profiles,
     base::flat_map<CertProfileId, scoped_refptr<net::X509Certificate>>
         existing_certs_with_ids,
-    platform_keys::Status status) {
+    chromeos::platform_keys::Status status) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (status != platform_keys::Status::kSuccess) {
+  if (status != chromeos::platform_keys::Status::kSuccess) {
     LOG(ERROR) << "Failed to get existing cert ids: "
-               << platform_keys::StatusToString(status);
+               << chromeos::platform_keys::StatusToString(status);
     return;
   }
 

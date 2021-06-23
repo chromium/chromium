@@ -135,7 +135,7 @@ class CertProvisioningWorkerImpl : public CertProvisioningWorker {
 
   void GenerateRegularKey();
   void OnGenerateRegularKeyDone(const std::string& public_key_spki_der,
-                                platform_keys::Status status);
+                                chromeos::platform_keys::Status status);
 
   void GenerateKeyForVa();
   void OnGenerateKeyForVaDone(base::TimeTicks start_time,
@@ -161,12 +161,12 @@ class CertProvisioningWorkerImpl : public CertProvisioningWorker {
   void OnRegisterKeyDone(const attestation::TpmChallengeKeyResult& result);
 
   void MarkKey();
-  void OnMarkKeyDone(platform_keys::Status status);
+  void OnMarkKeyDone(chromeos::platform_keys::Status status);
 
   void SignCsr();
   void OnSignCsrDone(base::TimeTicks start_time,
                      const std::string& signature,
-                     platform_keys::Status status);
+                     chromeos::platform_keys::Status status);
 
   void FinishCsr();
   void OnFinishCsrDone(policy::DeviceManagementStatus status,
@@ -181,7 +181,7 @@ class CertProvisioningWorkerImpl : public CertProvisioningWorker {
       const std::string& pem_encoded_certificate);
 
   void ImportCert(const std::string& pem_encoded_certificate);
-  void OnImportCertDone(platform_keys::Status status);
+  void OnImportCertDone(chromeos::platform_keys::Status status);
 
   void ScheduleNextStep(base::TimeDelta delay);
   void CancelScheduledTasks();
@@ -212,7 +212,7 @@ class CertProvisioningWorkerImpl : public CertProvisioningWorker {
 
   void CleanUpAndRunCallback();
   void OnDeleteVaKeyDone(bool delete_result);
-  void OnRemoveKeyDone(platform_keys::Status status);
+  void OnRemoveKeyDone(chromeos::platform_keys::Status status);
   void OnCleanUpDone();
 
   // Returns true if there are no errors and the flow can be continued.
@@ -256,7 +256,7 @@ class CertProvisioningWorkerImpl : public CertProvisioningWorker {
   std::string csr_;
   std::string va_challenge_;
   std::string va_challenge_response_;
-  absl::optional<platform_keys::HashAlgorithm> hashing_algorithm_;
+  absl::optional<chromeos::platform_keys::HashAlgorithm> hashing_algorithm_;
   std::string signature_;
 
   // IMPORTANT:

@@ -133,10 +133,10 @@ int GetStateOrderedIndex(CertProvisioningWorkerState state) {
   return res;
 }
 
-void OnAllowKeyForUsageDone(platform_keys::Status status) {
-  if (status != platform_keys::Status::kSuccess) {
+void OnAllowKeyForUsageDone(chromeos::platform_keys::Status status) {
+  if (status != chromeos::platform_keys::Status::kSuccess) {
     LOG(ERROR) << "Cannot mark key corporate: "
-               << platform_keys::StatusToString(status);
+               << chromeos::platform_keys::StatusToString(status);
   }
 }
 // Marks the key |public_key_spki_der| as corporate. |profile| can be nullptr if
@@ -393,11 +393,11 @@ void CertProvisioningWorkerImpl::GenerateRegularKey() {
 
 void CertProvisioningWorkerImpl::OnGenerateRegularKeyDone(
     const std::string& public_key_spki_der,
-    platform_keys::Status status) {
-  if (status != platform_keys::Status::kSuccess ||
+    chromeos::platform_keys::Status status) {
+  if (status != chromeos::platform_keys::Status::kSuccess ||
       public_key_spki_der.empty()) {
     LOG(ERROR) << "Failed to prepare a non-VA key: "
-               << platform_keys::StatusToString(status);
+               << chromeos::platform_keys::StatusToString(status);
     UpdateState(CertProvisioningWorkerState::kFailed);
     return;
   }
@@ -570,18 +570,19 @@ void CertProvisioningWorkerImpl::MarkKey() {
 
   platform_keys_service_->SetAttributeForKey(
       GetPlatformKeysTokenId(cert_scope_), public_key_,
-      platform_keys::KeyAttributeType::kCertificateProvisioningId,
+      chromeos::platform_keys::KeyAttributeType::kCertificateProvisioningId,
       cert_profile_.profile_id,
       base::BindOnce(&CertProvisioningWorkerImpl::OnMarkKeyDone,
                      weak_factory_.GetWeakPtr()));
 }
 
-void CertProvisioningWorkerImpl::OnMarkKeyDone(platform_keys::Status status) {
+void CertProvisioningWorkerImpl::OnMarkKeyDone(
+    chromeos::platform_keys::Status status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (status != platform_keys::Status::kSuccess) {
+  if (status != chromeos::platform_keys::Status::kSuccess) {
     LOG(ERROR) << "Failed to mark a key: "
-               << platform_keys::StatusToString(status);
+               << chromeos::platform_keys::StatusToString(status);
     UpdateState(CertProvisioningWorkerState::kFailed);
     return;
   }
@@ -615,16 +616,17 @@ void CertProvisioningWorkerImpl::SignCsr() {
                           weak_factory_.GetWeakPtr(), base::TimeTicks::Now()));
 }
 
-void CertProvisioningWorkerImpl::OnSignCsrDone(base::TimeTicks start_time,
-                                               const std::string& signature,
-                                               platform_keys::Status status) {
+void CertProvisioningWorkerImpl::OnSignCsrDone(
+    base::TimeTicks start_time,
+    const std::string& signature,
+    chromeos::platform_keys::Status status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   RecordCsrSignTime(cert_scope_, base::TimeTicks::Now() - start_time);
 
-  if (status != platform_keys::Status::kSuccess) {
+  if (status != chromeos::platform_keys::Status::kSuccess) {
     LOG(ERROR) << "Failed to sign CSR: "
-               << platform_keys::StatusToString(status);
+               << chromeos::platform_keys::StatusToString(status);
     UpdateState(CertProvisioningWorkerState::kFailed);
     return;
   }
@@ -698,7 +700,7 @@ void CertProvisioningWorkerImpl::ImportCert(
   }
 
   std::string public_key_from_cert =
-      platform_keys::GetSubjectPublicKeyInfo(cert);
+      chromeos::platform_keys::GetSubjectPublicKeyInfo(cert);
   if (public_key_from_cert != public_key_) {
     LOG(ERROR) << "Downloaded certificate does not match the expected key pair";
     UpdateState(CertProvisioningWorkerState::kFailed);
@@ -712,12 +714,12 @@ void CertProvisioningWorkerImpl::ImportCert(
 }
 
 void CertProvisioningWorkerImpl::OnImportCertDone(
-    platform_keys::Status status) {
+    chromeos::platform_keys::Status status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (status != platform_keys::Status::kSuccess) {
+  if (status != chromeos::platform_keys::Status::kSuccess) {
     LOG(ERROR) << "Failed to import certificate: "
-               << platform_keys::StatusToString(status);
+               << chromeos::platform_keys::StatusToString(status);
     UpdateState(CertProvisioningWorkerState::kFailed);
     return;
   }
@@ -876,12 +878,13 @@ void CertProvisioningWorkerImpl::OnDeleteVaKeyDone(bool delete_result) {
   OnCleanUpDone();
 }
 
-void CertProvisioningWorkerImpl::OnRemoveKeyDone(platform_keys::Status status) {
+void CertProvisioningWorkerImpl::OnRemoveKeyDone(
+    chromeos::platform_keys::Status status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (status != platform_keys::Status::kSuccess) {
+  if (status != chromeos::platform_keys::Status::kSuccess) {
     LOG(ERROR) << "Failed to delete a key: "
-               << platform_keys::StatusToString(status);
+               << chromeos::platform_keys::StatusToString(status);
   }
 
   OnCleanUpDone();

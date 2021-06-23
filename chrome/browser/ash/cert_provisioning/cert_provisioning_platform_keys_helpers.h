@@ -24,9 +24,9 @@ namespace cert_provisioning {
 using CertIteratorForEachCallback =
     base::RepeatingCallback<void(scoped_refptr<net::X509Certificate> cert,
                                  const CertProfileId& cert_profile_id,
-                                 platform_keys::Status status)>;
+                                 chromeos::platform_keys::Status status)>;
 using CertIteratorOnFinishedCallback =
-    base::OnceCallback<void(platform_keys::Status status)>;
+    base::OnceCallback<void(chromeos::platform_keys::Status status)>;
 
 // Iterates over all existing certificates of a given |cert_scope| and combines
 // them with their certificate provisioning ids when possible. Runs |callback|
@@ -50,11 +50,11 @@ class CertIterator {
  private:
   void OnGetCertificatesDone(
       std::unique_ptr<net::CertificateList> existing_certs,
-      platform_keys::Status status);
+      chromeos::platform_keys::Status status);
   void OnGetAttributeForKeyDone(scoped_refptr<net::X509Certificate> cert,
                                 const absl::optional<std::string>& attr_value,
-                                platform_keys::Status status);
-  void StopIteration(platform_keys::Status status);
+                                chromeos::platform_keys::Status status);
+  void StopIteration(chromeos::platform_keys::Status status);
 
   const CertScope cert_scope_ = CertScope::kDevice;
   platform_keys::PlatformKeysService* const platform_keys_service_ = nullptr;
@@ -72,7 +72,7 @@ class CertIterator {
 using LatestCertsWithIdsGetterCallback = base::OnceCallback<void(
     base::flat_map<CertProfileId, scoped_refptr<net::X509Certificate>>
         certs_with_ids,
-    platform_keys::Status status)>;
+    chromeos::platform_keys::Status status)>;
 
 // Collects map of certificates with their certificate provisioning ids and
 // returns it via |callback|. If there are several certificates for the same id,
@@ -96,8 +96,8 @@ class LatestCertsWithIdsGetter {
  private:
   void ProcessOneCert(scoped_refptr<net::X509Certificate> new_cert,
                       const CertProfileId& cert_profile_id,
-                      platform_keys::Status status);
-  void OnIterationFinished(platform_keys::Status status);
+                      chromeos::platform_keys::Status status);
+  void OnIterationFinished(chromeos::platform_keys::Status status);
 
   CertIterator iterator_;
 
@@ -113,7 +113,7 @@ class LatestCertsWithIdsGetter {
 // ========= CertDeleter =======================================================
 
 using CertDeleterCallback =
-    base::OnceCallback<void(platform_keys::Status status)>;
+    base::OnceCallback<void(chromeos::platform_keys::Status status)>;
 
 // Finds and deletes certificates that 1) have ids that are not in
 // |cert_profile_ids_to_keep| set or 2) have another certificate for the same
@@ -136,14 +136,14 @@ class CertDeleter {
  private:
   void ProcessOneCert(scoped_refptr<net::X509Certificate> cert,
                       const CertProfileId& cert_profile_id,
-                      platform_keys::Status status);
+                      chromeos::platform_keys::Status status);
   void RememberOrDelete(scoped_refptr<net::X509Certificate> new_cert,
                         const CertProfileId& cert_profile_id);
   void DeleteCert(scoped_refptr<net::X509Certificate> cert);
-  void OnDeleteCertDone(platform_keys::Status status);
-  void OnIterationFinished(platform_keys::Status status);
+  void OnDeleteCertDone(chromeos::platform_keys::Status status);
+  void OnIterationFinished(chromeos::platform_keys::Status status);
   void CheckStateAndMaybeFinish();
-  void ReturnStatus(platform_keys::Status status);
+  void ReturnStatus(chromeos::platform_keys::Status status);
 
   const CertScope cert_scope_ = CertScope::kDevice;
   platform_keys::PlatformKeysService* const platform_keys_service_ = nullptr;

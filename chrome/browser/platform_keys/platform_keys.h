@@ -200,17 +200,4 @@ struct ClientCertificateRequest {
 }  // namespace platform_keys
 }  // namespace chromeos
 
-// TODO(https://crbug.com/1164001): remove when
-// //chrome/browser/chromeos/platform_keys moved to ash
-namespace ash {
-namespace platform_keys {
-using ::chromeos::platform_keys::GetSubjectPublicKeyInfo;
-using ::chromeos::platform_keys::HashAlgorithm;
-using ::chromeos::platform_keys::KeyAttributeType;
-using ::chromeos::platform_keys::Status;
-using ::chromeos::platform_keys::StatusToString;
-using ::chromeos::platform_keys::TokenId;
-}  // namespace platform_keys
-}  // namespace ash
-
 #endif  // CHROME_BROWSER_PLATFORM_KEYS_PLATFORM_KEYS_H_

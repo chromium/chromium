@@ -40,7 +40,7 @@ struct CertificateHelperForTesting {
   scoped_refptr<net::X509Certificate> AddCert(
       CertScope cert_scope,
       const absl::optional<CertProfileId>& cert_profile_id,
-      platform_keys::Status status,
+      chromeos::platform_keys::Status status,
       base::Time not_valid_before,
       base::Time not_valid_after);
 
@@ -55,13 +55,13 @@ struct CertificateHelperForTesting {
   scoped_refptr<net::X509Certificate> AddCert(
       CertScope cert_scope,
       const absl::optional<CertProfileId>& cert_profile_id,
-      platform_keys::Status status);
+      chromeos::platform_keys::Status status);
 
   void ClearCerts();
   const net::CertificateList& GetCerts() const;
 
  private:
-  void GetCertificates(platform_keys::TokenId token_id,
+  void GetCertificates(chromeos::platform_keys::TokenId token_id,
                        platform_keys::GetCertificatesCallback callback);
 
   platform_keys::MockPlatformKeysService* platform_keys_service_ = nullptr;

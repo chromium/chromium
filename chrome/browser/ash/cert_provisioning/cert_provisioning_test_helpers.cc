@@ -56,17 +56,18 @@ CertificateHelperForTesting::CertificateHelperForTesting(
 CertificateHelperForTesting::~CertificateHelperForTesting() = default;
 
 void CertificateHelperForTesting::GetCertificates(
-    platform_keys::TokenId token_id,
+    chromeos::platform_keys::TokenId token_id,
     platform_keys::GetCertificatesCallback callback) {
   auto result = std::make_unique<net::CertificateList>();
   *result = cert_list_;
-  std::move(callback).Run(std::move(result), platform_keys::Status::kSuccess);
+  std::move(callback).Run(std::move(result),
+                          chromeos::platform_keys::Status::kSuccess);
 }
 
 scoped_refptr<net::X509Certificate> CertificateHelperForTesting::AddCert(
     CertScope cert_scope,
     const absl::optional<CertProfileId>& cert_profile_id,
-    platform_keys::Status status,
+    chromeos::platform_keys::Status status,
     base::Time not_valid_before,
     base::Time not_valid_after) {
   net::CertBuilder cert_builder(template_cert_->cert_buffer(),
@@ -78,8 +79,9 @@ scoped_refptr<net::X509Certificate> CertificateHelperForTesting::AddCert(
       *platform_keys_service_,
       GetAttributeForKey(
           GetPlatformKeysTokenId(cert_scope),
-          platform_keys::GetSubjectPublicKeyInfo(cert),
-          platform_keys::KeyAttributeType::kCertificateProvisioningId, _))
+          chromeos::platform_keys::GetSubjectPublicKeyInfo(cert),
+          chromeos::platform_keys::KeyAttributeType::kCertificateProvisioningId,
+          _))
       .WillRepeatedly(RunOnceCallback<3>(cert_profile_id, status));
 
   cert_list_.push_back(cert);
@@ -93,14 +95,15 @@ scoped_refptr<net::X509Certificate> CertificateHelperForTesting::AddCert(
       base::Time::Now() - base::TimeDelta::FromDays(1);
   base::Time not_valid_after =
       base::Time::Now() + base::TimeDelta::FromDays(365);
-  return AddCert(cert_scope, cert_profile_id, platform_keys::Status::kSuccess,
-                 not_valid_before, not_valid_after);
+  return AddCert(cert_scope, cert_profile_id,
+                 chromeos::platform_keys::Status::kSuccess, not_valid_before,
+                 not_valid_after);
 }
 
 scoped_refptr<net::X509Certificate> CertificateHelperForTesting::AddCert(
     CertScope cert_scope,
     const absl::optional<CertProfileId>& cert_profile_id,
-    platform_keys::Status status) {
+    chromeos::platform_keys::Status status) {
   base::Time not_valid_before =
       base::Time::Now() - base::TimeDelta::FromDays(1);
   base::Time not_valid_after =

@@ -131,7 +131,7 @@ const char* GetPrefNameForSerialization(CertScope scope);
 std::string GetKeyName(CertProfileId profile_id);
 // Returns the key type for VA API calls for |scope|.
 attestation::AttestationKeyType GetVaKeyType(CertScope scope);
-platform_keys::TokenId GetPlatformKeysTokenId(CertScope scope);
+chromeos::platform_keys::TokenId GetPlatformKeysTokenId(CertScope scope);
 
 // This functions should be used to delete keys that were created by
 // TpmChallengeKey* and were not registered yet. (To delete registered keys

@@ -907,7 +907,7 @@ TEST_F(CertProvisioningSchedulerTest, CertRenewal) {
   const Time t1 = Time::Now() - TimeDelta::FromDays(1);
   const Time t2 = Time::Now() + TimeDelta::FromDays(7);
   certificate_helper_->AddCert(kCertScope, kCertProfileId,
-                               platform_keys::Status::kSuccess,
+                               chromeos::platform_keys::Status::kSuccess,
                                /*nat_valid_before=*/t1, /*not_valid_after=*/t2);
 
   // Add 1 certificate profile to the policy (the values are the same as

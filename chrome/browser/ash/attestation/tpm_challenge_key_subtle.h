@@ -194,7 +194,7 @@ class TpmChallengeKeySubtleImpl final : public TpmChallengeKeySubtle {
 
   void RegisterKeyCallback(
       const ::attestation::RegisterKeyWithChapsTokenReply& reply);
-  void MarkCorporateKeyCallback(platform_keys::Status status);
+  void MarkCorporateKeyCallback(chromeos::platform_keys::Status status);
 
   // Returns a trusted value from CrosSettings indicating if the device
   // attestation is enabled.
