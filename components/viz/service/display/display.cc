@@ -956,7 +956,6 @@ bool Display::DrawAndSwap(base::TimeTicks expected_display_time) {
 
 void Display::DidReceiveSwapBuffersAck(const gfx::SwapTimings& timings,
                                        gfx::GpuFenceHandle release_fence) {
-  DCHECK(release_fence.is_null());
   // Adding to |pending_presentation_group_timings_| must
   // have been done in DrawAndSwap(), and should not be popped until
   // DidReceiveSwapBuffersAck.

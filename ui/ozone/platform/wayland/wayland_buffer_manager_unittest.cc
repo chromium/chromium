@@ -1717,8 +1717,7 @@ TEST_P(WaylandBufferManagerTest, RootSurfaceIsCommittedLast) {
   Sync();
 }
 
-// TODO(crbug.com/1218233): Re-enable this when we turn on release fences.
-TEST_P(WaylandBufferManagerTest, DISABLED_FencedRelease) {
+TEST_P(WaylandBufferManagerTest, FencedRelease) {
   constexpr uint32_t kBufferId1 = 1;
   constexpr uint32_t kBufferId2 = 2;
   constexpr uint32_t kBufferId3 = 3;

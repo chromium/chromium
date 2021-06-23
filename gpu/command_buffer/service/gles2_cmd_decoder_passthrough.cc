@@ -2998,10 +2998,6 @@ void GLES2DecoderPassthroughImpl::CheckSwapBuffersAsyncResult(
     uint64_t swap_id,
     gfx::SwapCompletionResult result) {
   TRACE_EVENT_ASYNC_END0("gpu", "AsyncSwapBuffers", swap_id);
-  // Handling of the out-fence should have already happened before reaching
-  // this function, so we don't expect to get a valid fence here.
-  DCHECK(result.release_fence.is_null());
-
   CheckSwapBuffersResult(result.swap_result, function_name);
 }
 
