@@ -25,20 +25,21 @@ class ChromeHidDelegate
   ~ChromeHidDelegate() override;
 
   std::unique_ptr<content::HidChooser> RunChooser(
-      content::RenderFrameHost* frame,
+      content::RenderFrameHost* render_frame_host,
       std::vector<blink::mojom::HidDeviceFilterPtr> filters,
       content::HidChooser::Callback callback) override;
-  bool CanRequestDevicePermission(content::WebContents* web_contents) override;
-  bool HasDevicePermission(content::WebContents* web_contents,
+  bool CanRequestDevicePermission(
+      content::RenderFrameHost* render_frame_host) override;
+  bool HasDevicePermission(content::RenderFrameHost* render_frame_host,
                            const device::mojom::HidDeviceInfo& device) override;
   device::mojom::HidManager* GetHidManager(
-      content::WebContents* web_contents) override;
-  void AddObserver(content::RenderFrameHost* frame,
+      content::RenderFrameHost* render_frame_host) override;
+  void AddObserver(content::RenderFrameHost* render_frame_host,
                    content::HidDelegate::Observer* observer) override;
-  void RemoveObserver(content::RenderFrameHost* frame,
+  void RemoveObserver(content::RenderFrameHost* render_frame_host,
                       content::HidDelegate::Observer* observer) override;
   const device::mojom::HidDeviceInfo* GetDeviceInfo(
-      content::WebContents* web_contents,
+      content::RenderFrameHost* render_frame_host,
       const std::string& guid) override;
 
   // permissions::ObjectPermissionContextBase::PermissionObserver:

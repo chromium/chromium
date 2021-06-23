@@ -48,15 +48,15 @@ class MockHidDelegate : public HidDelegate {
   MOCK_METHOD0(RunChooserInternal,
                std::vector<device::mojom::HidDeviceInfoPtr>());
   MOCK_METHOD1(CanRequestDevicePermission,
-               bool(content::WebContents* web_contents));
+               bool(RenderFrameHost* render_frame_host));
   MOCK_METHOD2(HasDevicePermission,
-               bool(content::WebContents* web_contents,
+               bool(RenderFrameHost* render_frame_host,
                     const device::mojom::HidDeviceInfo& device));
   MOCK_METHOD1(GetHidManager,
-               device::mojom::HidManager*(content::WebContents* web_contents));
+               device::mojom::HidManager*(RenderFrameHost* render_frame_host));
   MOCK_METHOD2(
       GetDeviceInfo,
-      const device::mojom::HidDeviceInfo*(content::WebContents* web_contents,
+      const device::mojom::HidDeviceInfo*(RenderFrameHost* render_frame_host,
                                           const std::string& guid));
 
  private:

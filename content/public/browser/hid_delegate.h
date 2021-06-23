@@ -21,7 +21,6 @@ class Origin;
 namespace content {
 
 class RenderFrameHost;
-class WebContents;
 
 class CONTENT_EXPORT HidDelegate {
  public:
@@ -43,38 +42,41 @@ class CONTENT_EXPORT HidDelegate {
   // run when the prompt is closed. Deleting the returned object will cancel the
   // prompt.
   virtual std::unique_ptr<HidChooser> RunChooser(
-      RenderFrameHost* frame,
+      RenderFrameHost* render_frame_host,
       std::vector<blink::mojom::HidDeviceFilterPtr> filters,
       HidChooser::Callback callback) = 0;
 
-  // Returns whether the main frame owned by |web_contents| has permission to
+  // Returns whether the main frame of |render_frame_host| has permission to
   // request access to a device.
-  virtual bool CanRequestDevicePermission(WebContents* web_contents) = 0;
+  virtual bool CanRequestDevicePermission(
+      RenderFrameHost* render_frame_host) = 0;
 
-  // Returns whether the main frame owned by |web_contents| has permission to
+  // Returns whether the main frame of |render_frame_host| has permission to
   // access |device|.
   virtual bool HasDevicePermission(
-      WebContents* web_contents,
+      RenderFrameHost* render_frame_host,
       const device::mojom::HidDeviceInfo& device) = 0;
 
   // Returns an open connection to the HidManager interface owned by the
-  // embedder and being used to serve requests from |web_contents|.
+  // embedder and being used to serve requests from |render_frame_host|.
   //
   // Content and the embedder must use the same connection so that the embedder
   // can process connect/disconnect events for permissions management purposes
   // before they are delivered to content. Otherwise race conditions are
   // possible.
   virtual device::mojom::HidManager* GetHidManager(
-      WebContents* web_contents) = 0;
+      RenderFrameHost* render_frame_host) = 0;
 
   // Functions to manage the set of Observer instances registered to this
   // object.
-  virtual void AddObserver(RenderFrameHost* frame, Observer* observer) = 0;
-  virtual void RemoveObserver(RenderFrameHost* frame, Observer* observer) = 0;
+  virtual void AddObserver(RenderFrameHost* render_frame_host,
+                           Observer* observer) = 0;
+  virtual void RemoveObserver(RenderFrameHost* render_frame_host,
+                              Observer* observer) = 0;
 
   // Gets the device info for a particular device, identified by its guid.
   virtual const device::mojom::HidDeviceInfo* GetDeviceInfo(
-      content::WebContents* web_contents,
+      RenderFrameHost* render_frame_host,
       const std::string& guid) = 0;
 };
 

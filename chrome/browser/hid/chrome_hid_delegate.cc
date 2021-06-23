@@ -31,51 +31,48 @@ ChromeHidDelegate::ChromeHidDelegate() = default;
 ChromeHidDelegate::~ChromeHidDelegate() = default;
 
 std::unique_ptr<content::HidChooser> ChromeHidDelegate::RunChooser(
-    content::RenderFrameHost* frame,
+    content::RenderFrameHost* render_frame_host,
     std::vector<blink::mojom::HidDeviceFilterPtr> filters,
     content::HidChooser::Callback callback) {
-  auto* chooser_context = GetChooserContext(frame);
+  auto* chooser_context = GetChooserContext(render_frame_host);
   if (!device_observation_.IsObserving())
     device_observation_.Observe(chooser_context);
   if (!permission_observation_.IsObserving())
     permission_observation_.Observe(chooser_context);
 
   return std::make_unique<HidChooser>(chrome::ShowDeviceChooserDialog(
-      frame, std::make_unique<HidChooserController>(frame, std::move(filters),
-                                                    std::move(callback))));
+      render_frame_host,
+      std::make_unique<HidChooserController>(
+          render_frame_host, std::move(filters), std::move(callback))));
 }
 
 bool ChromeHidDelegate::CanRequestDevicePermission(
-    content::WebContents* web_contents) {
-  auto* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  auto* chooser_context = HidChooserContextFactory::GetForProfile(profile);
-  const auto& origin = web_contents->GetMainFrame()->GetLastCommittedOrigin();
+    content::RenderFrameHost* render_frame_host) {
+  auto* chooser_context = GetChooserContext(render_frame_host);
+  const auto& origin =
+      render_frame_host->GetMainFrame()->GetLastCommittedOrigin();
   return chooser_context->CanRequestObjectPermission(origin);
 }
 
 bool ChromeHidDelegate::HasDevicePermission(
-    content::WebContents* web_contents,
+    content::RenderFrameHost* render_frame_host,
     const device::mojom::HidDeviceInfo& device) {
-  auto* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  auto* chooser_context = HidChooserContextFactory::GetForProfile(profile);
-  const auto& origin = web_contents->GetMainFrame()->GetLastCommittedOrigin();
+  auto* chooser_context = GetChooserContext(render_frame_host);
+  const auto& origin =
+      render_frame_host->GetMainFrame()->GetLastCommittedOrigin();
   return chooser_context->HasDevicePermission(origin, device);
 }
 
 device::mojom::HidManager* ChromeHidDelegate::GetHidManager(
-    content::WebContents* web_contents) {
-  auto* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  auto* chooser_context = HidChooserContextFactory::GetForProfile(profile);
+    content::RenderFrameHost* render_frame_host) {
+  auto* chooser_context = GetChooserContext(render_frame_host);
   return chooser_context->GetHidManager();
 }
 
-void ChromeHidDelegate::AddObserver(content::RenderFrameHost* frame,
+void ChromeHidDelegate::AddObserver(content::RenderFrameHost* render_frame_host,
                                     Observer* observer) {
   observer_list_.AddObserver(observer);
-  auto* chooser_context = GetChooserContext(frame);
+  auto* chooser_context = GetChooserContext(render_frame_host);
   if (!device_observation_.IsObserving())
     device_observation_.Observe(chooser_context);
   if (!permission_observation_.IsObserving())
@@ -83,17 +80,15 @@ void ChromeHidDelegate::AddObserver(content::RenderFrameHost* frame,
 }
 
 void ChromeHidDelegate::RemoveObserver(
-    content::RenderFrameHost* frame,
+    content::RenderFrameHost* render_frame_host,
     content::HidDelegate::Observer* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
 const device::mojom::HidDeviceInfo* ChromeHidDelegate::GetDeviceInfo(
-    content::WebContents* web_contents,
+    content::RenderFrameHost* render_frame_host,
     const std::string& guid) {
-  auto* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  auto* chooser_context = HidChooserContextFactory::GetForProfile(profile);
+  auto* chooser_context = GetChooserContext(render_frame_host);
   return chooser_context->GetDeviceInfo(guid);
 }
 

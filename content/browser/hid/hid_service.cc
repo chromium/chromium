@@ -123,7 +123,7 @@ void HidService::GetDevices(GetDevicesCallback callback) {
   GetContentClient()
       ->browser()
       ->GetHidDelegate()
-      ->GetHidManager(WebContents::FromRenderFrameHost(render_frame_host()))
+      ->GetHidManager(render_frame_host())
       ->GetDevices(base::BindOnce(&HidService::FinishGetDevices,
                                   weak_factory_.GetWeakPtr(),
                                   std::move(callback)));
@@ -133,8 +133,7 @@ void HidService::RequestDevice(
     std::vector<blink::mojom::HidDeviceFilterPtr> filters,
     RequestDeviceCallback callback) {
   HidDelegate* delegate = GetContentClient()->browser()->GetHidDelegate();
-  if (!delegate->CanRequestDevicePermission(
-          WebContents::FromRenderFrameHost(render_frame_host()))) {
+  if (!delegate->CanRequestDevicePermission(render_frame_host())) {
     std::move(callback).Run(std::vector<device::mojom::HidDeviceInfoPtr>());
     return;
   }
@@ -163,7 +162,7 @@ void HidService::Connect(
   GetContentClient()
       ->browser()
       ->GetHidDelegate()
-      ->GetHidManager(WebContents::FromRenderFrameHost(render_frame_host()))
+      ->GetHidManager(render_frame_host())
       ->Connect(
           device_guid, std::move(client), std::move(watcher),
           /*allow_protected_reports=*/false,
@@ -192,7 +191,7 @@ void HidService::DecrementActiveFrameCount() {
 void HidService::OnDeviceAdded(
     const device::mojom::HidDeviceInfo& device_info) {
   if (!GetContentClient()->browser()->GetHidDelegate()->HasDevicePermission(
-          WebContents::FromRenderFrameHost(render_frame_host()), device_info)) {
+          render_frame_host(), device_info)) {
     return;
   }
 
@@ -208,7 +207,7 @@ void HidService::OnDeviceAdded(
 void HidService::OnDeviceRemoved(
     const device::mojom::HidDeviceInfo& device_info) {
   if (!GetContentClient()->browser()->GetHidDelegate()->HasDevicePermission(
-          WebContents::FromRenderFrameHost(render_frame_host()), device_info)) {
+          render_frame_host(), device_info)) {
     return;
   }
 
@@ -225,7 +224,7 @@ void HidService::OnDeviceChanged(
     const device::mojom::HidDeviceInfo& device_info) {
   const bool has_device_permission =
       GetContentClient()->browser()->GetHidDelegate()->HasDevicePermission(
-          WebContents::FromRenderFrameHost(render_frame_host()), device_info);
+          render_frame_host(), device_info);
 
   device::mojom::HidDeviceInfoPtr filtered_device_info;
   if (has_device_permission) {
@@ -266,17 +265,16 @@ void HidService::OnPermissionRevoked(const url::Origin& origin) {
   }
 
   HidDelegate* delegate = GetContentClient()->browser()->GetHidDelegate();
-  WebContents* web_contents =
-      WebContents::FromRenderFrameHost(render_frame_host());
+  auto* rfh = render_frame_host();
 
   size_t watchers_removed =
       base::EraseIf(watcher_ids_, [&](const auto& watcher_entry) {
         const auto* device_info =
-            delegate->GetDeviceInfo(web_contents, watcher_entry.first);
+            delegate->GetDeviceInfo(rfh, watcher_entry.first);
         if (!device_info)
           return true;
 
-        if (delegate->HasDevicePermission(web_contents, *device_info)) {
+        if (delegate->HasDevicePermission(rfh, *device_info)) {
           return false;
         }
 
@@ -299,8 +297,7 @@ void HidService::FinishGetDevices(
     if (device->collections.empty())
       continue;
 
-    if (delegate->HasDevicePermission(
-            WebContents::FromRenderFrameHost(render_frame_host()), *device))
+    if (delegate->HasDevicePermission(render_frame_host(), *device))
       result.push_back(std::move(device));
   }
 
