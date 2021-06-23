@@ -8,6 +8,7 @@
 GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 
 GEN('#include "build/branding_buildflags.h"');
+GEN('#include "build/build_config.h"');
 GEN('#include "build/chromeos_buildflags.h"');
 GEN('#include "chrome/browser/ui/ui_features.h"');
 GEN('#include "chrome/common/chrome_features.h"');
@@ -633,12 +634,12 @@ TEST_F('CrSettingsAdvancedPageV3Test', 'MAYBE_Load', function() {
  ['ZoomLevels', 'zoom_levels_tests.js'],
 ].forEach(test => registerTest(...test));
 
-// Timeout on MacOS dbg bots
-// https://crbug.com/1133412
-GEN('#if !defined(OS_MAC) || defined(NDEBUG)');
+// Timeout on MacOS dbg bots, https://crbug.com/1133412
+// Fails on Mac/Arm, https://crbug.com/1222886
+GEN('#if !defined(OS_MAC) || (defined(NDEBUG) && !defined(ARCH_CPU_ARM64))');
 [['SecurityPage', 'security_page_test.js'],
 ].forEach(test => registerTest(...test));
-GEN('#endif  // !defined(OS_MAC) || defined(NDEBUG)');
+GEN('#endif');
 
 GEN('#if BUILDFLAG(IS_CHROMEOS_ASH)');
 [['PasswordsSectionCros', 'passwords_section_test_cros.js'],
