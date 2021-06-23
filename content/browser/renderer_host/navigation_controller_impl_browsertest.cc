@@ -11659,8 +11659,16 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 // make a spoof possible. Ideally they would create an error page, but some
 // extensions rely on them being silently blocked. See https://crbug.com/935175
 // and https://cbug.com/941653.
+// This test is flaky on Linux : http://crbug.com/1223051
+#if defined(OS_LINUX)
+#define MAYBE_JavascriptRedirectSilentlyCanceled \
+  DISABLED_JavascriptRedirectSilentlyCanceled
+#else
+#define MAYBE_JavascriptRedirectSilentlyCanceled \
+  JavascriptRedirectSilentlyCanceled
+#endif
 IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
-                       JavascriptRedirectSilentlyCanceled) {
+                       MAYBE_JavascriptRedirectSilentlyCanceled) {
   NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
       shell()->web_contents()->GetController());
 
