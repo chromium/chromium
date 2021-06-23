@@ -2369,6 +2369,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Ash.StatusAreaShowBubble.PresentationTime" units="ms"
+    expires_after="2022-06-15">
+  <owner>leandre@chromium.org</owner>
+  <owner>amehfooz@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <summary>
+    Presentation time while opening QuickSettings and Notification Center
+    through Status Area button. Emitted when QuickSettings and Notification
+    Center are opened and shown.
+  </summary>
+</histogram>
+
 <histogram name="Ash.SwipeDownDrag.Tab.PresentationTime.MaxLatency.TabletMode"
     units="ms" expires_after="2021-12-19">
   <owner>xdai@chromium.org</owner>

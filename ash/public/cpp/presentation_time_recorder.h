@@ -64,13 +64,13 @@ class ASH_PUBLIC_EXPORT PresentationTimeRecorder {
 };
 
 // Creates a PresentationTimeRecorder that records timing histograms of
-// presentation time and max latency. The time range is 1 to 200 ms, with 50
-// buckets.
+// presentation time and (if given) max latency. The time range is 1 to 200 ms,
+// with 50 buckets.
 ASH_PUBLIC_EXPORT std::unique_ptr<PresentationTimeRecorder>
 CreatePresentationTimeHistogramRecorder(
     ui::Compositor* compositor,
     const char* presentation_time_histogram_name,
-    const char* max_latency_histogram_name);
+    const char* max_latency_histogram_name = "");
 
 }  // namespace ash
 

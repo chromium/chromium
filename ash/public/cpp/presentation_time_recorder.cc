@@ -233,9 +233,9 @@ class ASH_PUBLIC_EXPORT PresentationTimeHistogramRecorder
     : public PresentationTimeRecorder::PresentationTimeRecorderInternal {
  public:
   // |presentation_time_histogram_name| records latency reported on
-  // |ReportTime()| and |max_latency_histogram_name| records the maximum latency
-  // reported during the lifetime of this object.  Histogram names must be the
-  // name of the UMA histogram defined in histograms.xml.
+  // |ReportTime()|. If |max_latency_histogram_name| is not empty, it records
+  // the maximum latency reported during the lifetime of this object.  Histogram
+  // names must be the name of the UMA histogram defined in histograms.xml.
   PresentationTimeHistogramRecorder(
       ui::Compositor* compositor,
       const char* presentation_time_histogram_name,
@@ -246,7 +246,7 @@ class ASH_PUBLIC_EXPORT PresentationTimeHistogramRecorder
         max_latency_histogram_name_(max_latency_histogram_name) {}
 
   ~PresentationTimeHistogramRecorder() override {
-    if (success_count() > 0) {
+    if (success_count() > 0 && !max_latency_histogram_name_.empty()) {
       CreateTimesHistogram(max_latency_histogram_name_.c_str())
           ->AddTimeMillisecondsGranularity(
               base::TimeDelta::FromMilliseconds(max_latency_ms()));
