@@ -116,7 +116,7 @@ TEST_F(SaveUpdateAddressProfileBubbleControllerImplTest,
       /*address_profile_save_prompt_callback=*/base::DoNothing());
 
   // Bubble is visible and active
-  EXPECT_TRUE(controller()->GetSaveBubbleView());
+  EXPECT_TRUE(controller()->GetBubbleView());
   EXPECT_TRUE(controller()->IsBubbleActive());
 }
 
@@ -130,7 +130,7 @@ TEST_F(SaveUpdateAddressProfileBubbleControllerImplTest,
       AutofillClient::SaveAddressProfilePromptOptions{.show_prompt = false},
       /*address_profile_save_prompt_callback=*/base::DoNothing());
   // Bubble is invisible but active
-  EXPECT_FALSE(controller()->GetSaveBubbleView());
+  EXPECT_FALSE(controller()->GetBubbleView());
   EXPECT_TRUE(controller()->IsBubbleActive());
 }
 
