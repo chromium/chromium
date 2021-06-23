@@ -41,9 +41,7 @@ class PLATFORM_EXPORT GeneratedImage : public Image {
   IntSize SizeWithConfig(SizeConfig) const override {
     return RoundedIntSize(size_);
   }
-  FloatSize SizeAsFloat(RespectImageOrientationEnum) const override {
-    return size_;
-  }
+  FloatSize SizeWithConfigAsFloat(SizeConfig) const override { return size_; }
 
   // Assume that generated content has no decoded data we need to worry about
   void DestroyDecodedData() override {}

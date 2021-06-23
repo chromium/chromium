@@ -457,14 +457,7 @@ absl::optional<FloatRect> OptimizeToSingleTileDraw(
   //
   // image-resolution information is baked into the given parameters, but we
   // need oriented size.
-  FloatSize intrinsic_tile_size(image->Size(respect_orientation));
-  // TODO(crbug.com/1042783): This is not checking for real empty image (for
-  // which we have checked and skipped the whole FillLayer), but for that a
-  // subpixel image size is rounded to empty, to avoid infinite tile scale that
-  // would be calculated in the |else| part. We should probably support subpixel
-  // size here.
-  if (intrinsic_tile_size.IsEmpty())
-    intrinsic_tile_size = FloatSize(geometry.TileSize());
+  const FloatSize intrinsic_tile_size = image->SizeAsFloat(respect_orientation);
 
   // Subset computation needs the same location as was used above, but needs the
   // unsnapped destination size to correctly calculate sprite subsets in the
@@ -534,17 +527,8 @@ void DrawTiledBackground(GraphicsContext& context,
   // need oriented size. That requires explicitly applying orientation here.
   Image::SizeConfig size_config;
   size_config.apply_orientation = respect_orientation;
-  FloatSize intrinsic_tile_size(image->SizeWithConfig(size_config));
-
-  if (!image->HasIntrinsicSize() ||
-      // TODO(crbug.com/1042783): This is not checking for real empty image
-      // (for which we have checked and skipped the whole FillLayer), but for
-      // that a subpixel image size is rounded to empty, to avoid infinite tile
-      // scale that would be calculated in the |else| part.
-      // We should probably support subpixel size here.
-      intrinsic_tile_size.IsEmpty()) {
-    intrinsic_tile_size = FloatSize(geometry.TileSize());
-  }
+  const FloatSize intrinsic_tile_size =
+      image->SizeWithConfigAsFloat(size_config);
 
   // At this point we have decided to tile the image to fill the dest rect.
   // Note that this tile rect uses the image's pre-scaled size.

@@ -117,6 +117,9 @@ class PLATFORM_EXPORT Image : public ThreadSafeRefCounted<Image> {
 
   // Size of the Image optionally modified per the provided SizeConfig.
   virtual IntSize SizeWithConfig(SizeConfig) const = 0;
+  virtual FloatSize SizeWithConfigAsFloat(SizeConfig config) const {
+    return FloatSize(SizeWithConfig(config));
+  }
 
   // Size of the Image.
   IntSize Size() const { return SizeWithConfig({}); }
@@ -149,9 +152,11 @@ class PLATFORM_EXPORT Image : public ThreadSafeRefCounted<Image> {
   // Same as Size(RespectImageOrientationEnum) above, but returns a floating
   // point representation of the size. For subclasses of Image that can have a
   // fractional size this will return the unrounded size.
-  virtual FloatSize SizeAsFloat(
-      RespectImageOrientationEnum respect_orientation) const {
-    return FloatSize(Size(respect_orientation));
+  FloatSize SizeAsFloat(RespectImageOrientationEnum respect_orientation) const {
+    SizeConfig config;
+    config.apply_density = true;
+    config.apply_orientation = respect_orientation == kRespectImageOrientation;
+    return SizeWithConfigAsFloat(config);
   }
 
   IntRect Rect() const { return IntRect(IntPoint(), Size()); }

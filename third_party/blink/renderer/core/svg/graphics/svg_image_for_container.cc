@@ -21,13 +21,11 @@
 
 namespace blink {
 
-IntSize SVGImageForContainer::SizeWithConfig(SizeConfig) const {
-  // The image orientation is irrelevant because there is not concept of
-  // orientation for SVG images.
-  return RoundedIntSize(SizeAsFloat(kRespectImageOrientation));
+IntSize SVGImageForContainer::SizeWithConfig(SizeConfig config) const {
+  return RoundedIntSize(SizeWithConfigAsFloat(config));
 }
 
-FloatSize SVGImageForContainer::SizeAsFloat(RespectImageOrientationEnum) const {
+FloatSize SVGImageForContainer::SizeWithConfigAsFloat(SizeConfig) const {
   return container_size_.ScaledBy(zoom_);
 }
 
