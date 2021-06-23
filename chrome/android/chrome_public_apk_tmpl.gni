@@ -166,9 +166,6 @@ template("chrome_public_common_apk_or_module_tmpl") {
     resource_exclusion_regex += "|${_material_package}/xml.*badge_"
     _material_package = "*com_google_android_material*"
 
-    # Remove unneeded entries from material design values.xml files.
-    resource_values_filter_rules = [ "${_material_package}:[Tt]oolbarLayout" ]
-
     if (!_is_monochrome) {
       product_config_java_packages = [ "org.chromium.chrome.browser" ]
     }
