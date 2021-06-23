@@ -5,7 +5,6 @@
 import './page_favicon.js';
 import './shared_vars.js';
 import './top_visit.js';
-import 'chrome://resources/cr_elements/shared_style_css.m.js';
 
 import {PageCallbackRouter} from '/chrome/browser/ui/webui/history_clusters/history_clusters.mojom-webui.js';
 import {Cluster, URLVisit} from '/components/history_clusters/core/history_clusters.mojom-webui.js';

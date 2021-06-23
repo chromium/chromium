@@ -1,28 +1,12 @@
-<style include="cr-shared-style">
+<style>
   :host {
-    background-color: #fff;
-    border: 1px solid var(--border-color);
-    border-radius: var(--pill-border-radius);
+    background-color: var(--white-fill-color);
     box-sizing: border-box;
     display: block;
-    padding: var(--history-cluster-padding);
-    width: var(--history-cluster-width);
-  }
-
-  .section:not(:last-of-type) {
-    margin-bottom: 16px;
-  }
-
-  .section .header {
-    font-size: 0.875rem;  /* 14px */
-    line-height: 20px;
+    padding: var(--cluster-padding);
+    width: var(--cluster-width);
   }
 </style>
-<div class="section" hidden="[[!cluster.visits.length]]">
-  <div class="header">$i18n{visitsSectionHeader}</div>
-  <div id="top-visits">
-    <template is="dom-repeat" items="[[cluster.visits]]">
-      <top-visit visit="[[item]]"></top-visit>
-    </template>
-  </div>
-</div>
+<template is="dom-repeat" items="[[cluster.visits]]">
+  <top-visit visit="[[item]]"></top-visit>
+</template>

@@ -50,7 +50,7 @@ class PageFavicon extends PolymerElement {
   /** @private */
   computeStyle_() {
     return `background-image:${
-        getFaviconForPageURL(this.url.url, false, '', 24)}`;
+        getFaviconForPageURL(this.url.url, false, '', 16)}`;
   }
 }
 

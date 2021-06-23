@@ -1,12 +1,12 @@
-<style include="cr-shared-style">
+<style include="shared-style">
   :host {
     color: var(--cr-primary-text-color);
     display: block;
-    font-size: 0.8125rem;  /* 13px */
+    font-size: 0.875rem;  /* 14px */
   }
 
   cr-toolbar {
-    --cr-toolbar-field-width: var(--history-cluster-width);
+    --cr-toolbar-field-width: var(--cluster-width);
   }
 
   #container {
@@ -15,36 +15,15 @@
     overflow-y: scroll;
   }
 
+  #clusters,
   #header {
-    align-items: center;
-    display: flex;
-    margin: var(--history-cluster-padding) auto 0;
-    width: var(--history-cluster-width);
+    margin: var(--cluster-padding) auto;
+    width: var(--cluster-width);
   }
 
   #title {
-    display: flex;
-    flex-direction: column;
-  }
-
-  #title #description {
-    color: var(--cr-secondary-text-color);
-    font-size: 0.75rem;  /* 12px */
-    line-height: 20px;
-  }
-
-  #title #text {
-    font-size: 2.25rem;  /* 36px */
-    line-height: 42px;
-  }
-
-  #clusters {
-    margin: var(--history-cluster-padding) auto;
-    width: var(--history-cluster-width);
-  }
-
-  history-cluster + history-cluster {
-    margin-top: var(--history-cluster-padding);
+    font-size: 1.75rem;  /* 28px */
+    padding: 0 var(--cluster-padding);
   }
 </style>
 <clusters-router query="{{query_}}"></clusters-router>
@@ -53,10 +32,7 @@
 </cr-toolbar>
 <div id="container">
   <div id="header" hidden="[[!result_.title]]">
-    <div id="title">
-      <span id="description">$i18n{titleDescription}</span>
-      <span id="text">[[result_.title]]</span>
-    </div>
+    <div id="title">[[title_]]</div>
   </div>
   <div id="clusters" on-remove-visits="onRemoveVisits_"
       on-remove-empty-cluster-element="onRemoveEmptyClusterElement_">

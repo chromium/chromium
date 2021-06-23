@@ -30,6 +30,7 @@ js_library("app") {
     "//ui/webui/resources/cr_elements/cr_toolbar:cr_toolbar",
     "//ui/webui/resources/cr_elements/cr_toolbar:cr_toolbar_search_field",
     "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:load_time_data.m",
     "//url/mojom:url_mojom_origin_webui_js",
   ]
 }
@@ -112,6 +113,7 @@ html_to_js("web_components_local") {
     "page_favicon.js",
     "router.js",
     "search_query.js",
+    "shared_style.js",
     "shared_vars.js",
     "top_visit.js",
     "visit_row.js",
@@ -150,6 +152,7 @@ preprocess_if_expr("preprocess_gen") {
     "page_favicon.js",
     "router.js",
     "search_query.js",
+    "shared_style.js",
     "shared_vars.js",
     "top_visit.js",
     "visit_row.js",

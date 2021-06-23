@@ -1,25 +1,19 @@
-<style include="cr-hidden-style cr-icons">
+<style include="shared-style cr-icons">
   :host {
     --indentation: 52px;
-    --pill-height: 34px;
     --search-query-margin: 10px;
     display: block;
-    padding: 10px 0;
   }
 
   #related-content {
     margin-inline-start: var(--indentation);
   }
 
-  #related-visits visit-row {
-    padding: 4px 0;
-  }
-
   #related-searches {
     align-items: center;
     display: flex;
     flex-direction: row;
-    margin-top: calc(var(--history-cluster-padding) - var(--search-query-margin));
+    margin-top: calc(var(--cluster-padding) - var(--search-query-margin));
   }
 
   #related-searches-label {
@@ -31,6 +25,7 @@
   #search-queries {
     display: flex;
     flex-wrap: wrap;
+    min-width: 0;
   }
 
   search-query {
@@ -45,7 +40,7 @@
     align-items: center;
     display: flex;
     flex-direction: column;
-    margin-top: var(--history-cluster-padding);
+    margin-top: var(--cluster-padding);
     position: relative;
   }
 
@@ -60,19 +55,15 @@
   #toggle-button,
   #toggle-button-white-background {
     align-items: center;
-    background-color: white;
+    background-color: var(--white-fill-color);
     border: 1px solid var(--border-color);
-    border-radius: calc(var(--pill-height) / 2);
     box-sizing: border-box;
     cursor: pointer;
     display: flex;
-    font-size: 0.875rem;  /* 14px */
-    height: var(--pill-height);
     justify-content: center;
-    line-height: 22px;
+    min-width: calc(var(--cluster-width) / 4);
     overflow: hidden;
     position: relative;
-    width: 228px;
   }
 
   #toggle-button {
@@ -112,15 +103,16 @@
     <div id="related-searches-label">$i18n{relatedSearchesLabel}</div>
     <div id="search-queries">
       <template is="dom-repeat" items="[[visit.relatedSearches]]">
-        <search-query search-query="[[item]]"></search-query>
+        <search-query class="pill" search-query="[[item]]">
+        </search-query>
       </template>
     </div>
   </div>
   <div id="visibility-toggle" hidden="[[!hiddenRelatedVisits_.length]]">
     <div id="horizontal-line"></div>
-    <div id="toggle-button-white-background"></div>
-    <div id="toggle-button" tabindex="0" on-click="onToggleButtonClick_"
-        on-keydown="onToggleButtonKeyDown_">
+    <div id="toggle-button-white-background" class="pill"></div>
+    <div id="toggle-button" class="pill pill-padding-icon-end" tabindex="0"
+        on-click="onToggleButtonClick_" on-keydown="onToggleButtonKeyDown_">
       <span>[[toggleButtonLabel_]]</span>
       <span id="toggle-icon" class="cr-icon icon-expand-more"></span>
     </div>

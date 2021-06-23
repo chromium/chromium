@@ -4,11 +4,10 @@
 
 import './cluster.js';
 import './router.js';
-import './shared_vars.js';
+import './shared_style.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
-import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import 'chrome://resources/polymer/v3_0/iron-scroll-threshold/iron-scroll-threshold.js';
 
@@ -17,6 +16,7 @@ import {URLVisit} from '/components/history_clusters/core/history_clusters.mojom
 import {CrToolbarElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
 import {CrToolbarSearchFieldElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxy} from './browser_proxy.js';
@@ -62,6 +62,15 @@ class HistoryClustersAppElement extends PolymerElement {
        * @private {QueryResult}
        */
       result_: Object,
+
+      /**
+       * The title to show when the query is non-empty.
+       * @private {string}
+       */
+      title_: {
+        type: String,
+        computed: `computeTitle_(result_)`,
+      },
 
       /**
        * The list of visits to be removed. A non-empty array indicates a pending
@@ -202,6 +211,13 @@ class HistoryClustersAppElement extends PolymerElement {
   //============================================================================
   // Helper methods
   //============================================================================
+
+  /** @private */
+  computeTitle_() {
+    return this.result_ ?
+        loadTimeData.getStringF('headerTitle', this.result_.title || '') :
+        '';
+  }
 
   /**
    * @return {!CrToolbarSearchFieldElement}

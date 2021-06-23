@@ -1,14 +1,28 @@
 <custom-style>
 <style>
+  /* Colors: */
   html {
     --border-color: var(--google-grey-refresh-300);
-    --image-background-color: var(--google-grey-refresh-100);
-    --image-border-radius: 8px;
-    --history-cluster-padding: 24px;
-    --history-cluster-width: 742px;
-    --pill-border-radius: 16px;
-    --visit-row-favicon-size: var(--visit-row-height);
-    --visit-row-height: 36px;
+    --grey-fill-color: var(--google-grey-refresh-100);
+    --icon-color: var(--google-grey-600);
+    --white-fill-color: var(--md-background-color);
+  }
+
+@media (prefers-color-scheme: dark) {
+  html {
+    --border-color: var(--google-grey-refresh-700);
+    --grey-fill-color: var(--google-grey-refresh-700);
+    --icon-color: white;
+  }
+}
+
+  /* Sizes: */
+  html {
+    --cluster-padding: 24px;
+    --cluster-width: 742px;
+    --pill-height: 34px;
+    --pill-padding-icon: 12px;
+    --pill-padding-text: 16px;
   }
 </style>
 </custom-style>
