@@ -60,11 +60,6 @@ class BrowserStatusMonitor : public BrowserListObserver,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
 
-  // Called from our own |LocalWebContentsObserver| when web contents did go
-  // away without any other notification. This might happen in case of
-  // application uninstalls, page crashes, ...).
-  void WebContentsDestroyed(content::WebContents* web_contents);
-
  private:
   // Add a windowed browser-based app to the shelf.
   void AddAppBrowserToShelf(Browser* browser);

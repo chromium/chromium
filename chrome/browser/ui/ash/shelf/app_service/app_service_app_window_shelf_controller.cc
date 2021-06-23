@@ -90,18 +90,6 @@ AppServiceAppWindowShelfController::AppServiceAppWindowShelfController(
   for (auto* browser : *BrowserList::GetInstance()) {
     if (browser && browser->window() && browser->window()->GetNativeWindow()) {
       observed_windows_.AddObservation(browser->window()->GetNativeWindow());
-
-      // Observe the browser tabs
-      TabStripModel* tab_strip = browser->tab_strip_model();
-      for (int i = 0; i < tab_strip->count(); ++i) {
-        auto* tab = tab_strip->GetWebContentsAt(i);
-        if (!tab)
-          continue;
-        aura::Window* window = tab->GetNativeView();
-        if (window) {
-          observed_windows_.AddObservation(window);
-        }
-      }
     }
   }
 }
@@ -458,18 +446,6 @@ AppWindowBase* AppServiceAppWindowShelfController::GetAppWindow(
   if (!base::Contains(aura_window_to_app_window_, window))
     return nullptr;
   return aura_window_to_app_window_[window].get();
-}
-
-void AppServiceAppWindowShelfController::ObserveWindow(aura::Window* window) {
-  if (!window || observed_windows_.IsObservingSource(window))
-    return;
-  observed_windows_.AddObservation(window);
-}
-
-bool AppServiceAppWindowShelfController::IsObservingWindow(
-    aura::Window* window) {
-  DCHECK(window);
-  return observed_windows_.IsObservingSource(window);
 }
 
 std::vector<aura::Window*> AppServiceAppWindowShelfController::GetArcWindows() {

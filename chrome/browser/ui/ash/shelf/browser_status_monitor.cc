@@ -8,6 +8,7 @@
 
 #include "ash/public/cpp/shelf_types.h"
 #include "base/containers/contains.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/macros.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/ash/shelf/app_service/app_service_app_window_shelf_controller.h"
@@ -65,10 +66,10 @@ class BrowserStatusMonitor::LocalWebContentsObserver
   }
 
   void WebContentsDestroyed() override {
-    // We can only come here when there was a non standard termination like
-    // an app got un-installed while running, etc.
-    monitor_->WebContentsDestroyed(web_contents());
-    // |this| is gone now.
+    // TODO(crbug.com/1219835): Remove the method when confident this is
+    // unreachable. This should be unreachable because the observer is removed
+    // when the tab is removed.
+    base::debug::DumpWithoutCrashing();
   }
 
  private:
@@ -281,12 +282,6 @@ void BrowserStatusMonitor::OnTabStripModelChanged(
 
   if (selection.active_tab_changed())
     OnActiveTabChanged(selection.old_contents, selection.new_contents);
-}
-
-void BrowserStatusMonitor::WebContentsDestroyed(
-    content::WebContents* contents) {
-  UpdateAppItemState(contents, true /*remove*/);
-  RemoveWebContentsObserver(contents);
 }
 
 void BrowserStatusMonitor::AddAppBrowserToShelf(Browser* browser) {

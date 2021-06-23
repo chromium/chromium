@@ -134,10 +134,6 @@ void AppServiceInstanceRegistryHelper::OnTabInserted(
   apps::InstanceState state = static_cast<apps::InstanceState>(
       apps::InstanceState::kStarted | apps::InstanceState::kRunning);
 
-  // Observe the tab, because when the system is shutdown or some other cases,
-  // the window could be destroyed without calling OnTabClosing. So observe the
-  // tab to get the notify when the window is destroyed.
-  controller_->ObserveWindow(window);
   OnInstances(app_id, window, std::string(), state);
 }
 
@@ -159,17 +155,9 @@ void AppServiceInstanceRegistryHelper::OnBrowserRemoved() {
   auto windows = GetWindows(extension_misc::kChromeAppId);
   for (auto* window : windows) {
     if (!chrome::FindBrowserWithWindow(window)) {
-      // Remove windows from |browser_window_to_tab_window_| and
-      // |tab_window_to_browser_window_|, because OnTabClosing could be not
-      // called for tabs in the browser, when the browser is removed.
-      if (base::Contains(browser_window_to_tab_window_, window)) {
-        for (auto* w : browser_window_to_tab_window_[window]) {
-          tab_window_to_browser_window_.erase(w);
-          OnInstances(GetAppId(w), w, std::string(),
-                      apps::InstanceState::kDestroyed);
-        }
-        browser_window_to_tab_window_.erase(window);
-      }
+      // The tabs in the browser should be closed, and tab windows have been
+      // removed from |browser_window_to_tab_window_|.
+      DCHECK(!base::Contains(browser_window_to_tab_window_, window));
 
       // The browser is removed if the window can't be found, so update the
       // Chrome window instance as destroyed.
@@ -185,14 +173,6 @@ void AppServiceInstanceRegistryHelper::OnInstances(const std::string& app_id,
                                                    apps::InstanceState state) {
   if (app_id.empty() || !window)
     return;
-
-  // If the window is not observed, this means the window is being destroyed. In
-  // this case, don't add the instance because we might keep the record for the
-  // destroyed window, which could cause crash.
-  if (state != apps::InstanceState::kDestroyed &&
-      !controller_->IsObservingWindow(window)) {
-    state = apps::InstanceState::kDestroyed;
-  }
 
   std::unique_ptr<apps::Instance> instance = std::make_unique<apps::Instance>(
       app_id, std::make_unique<apps::Instance::InstanceKey>(window));
