@@ -11,10 +11,7 @@
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/wm_helper.h"
 #include "components/full_restore/app_restore_data.h"
-
-namespace {
-const int kArcWindowCaptionBarHeight = 25;
-}
+#include "ui/views/window/caption_button_layout_constants.h"
 
 namespace chromeos {
 namespace full_restore {
@@ -59,7 +56,11 @@ void ArcWindowHandler::LaunchArcGhostWindow(
            chromeos::WindowStateType::kDefault ||
        restore_data->window_state_type.value() ==
            chromeos::WindowStateType::kNormal)) {
-    adjust_bounds.Inset(0, kArcWindowCaptionBarHeight, 0, 0);
+    adjust_bounds.Inset(0,
+                        views::GetCaptionButtonLayoutSize(
+                            views::CaptionButtonLayoutSize::kNonBrowserCaption)
+                            .height(),
+                        0, 0);
   }
 
   session_id_to_shell_surface_.emplace(
