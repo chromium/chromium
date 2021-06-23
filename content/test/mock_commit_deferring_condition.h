@@ -68,7 +68,8 @@ class MockCommitDeferringCondition : public CommitDeferringCondition {
 };
 
 // This class will montior navigations in the given WebContents and register
-// the given CommitDeferringCondition into any starting navigation.
+// the given CommitDeferringCondition into any starting navigation. The mock
+// condition will be installed to run before real conditions.
 class MockCommitDeferringConditionInstaller : public WebContentsObserver {
  public:
   MockCommitDeferringConditionInstaller(
