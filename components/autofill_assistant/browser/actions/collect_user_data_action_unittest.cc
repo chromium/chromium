@@ -960,8 +960,7 @@ TEST_F(CollectUserDataActionTest, UserDataComplete_Contact) {
                                                         options));
 }
 
-// Failing https://crbug.com/1222635.
-TEST_F(CollectUserDataActionTest, DISABLED_UserDataComplete_Payment) {
+TEST_F(CollectUserDataActionTest, UserDataComplete_Payment) {
   UserData user_data;
   CollectUserDataOptions options;
 

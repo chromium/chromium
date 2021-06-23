@@ -12,7 +12,6 @@
 #include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/browser/geo/country_names.h"
 #include "components/autofill/core/browser/geo/state_names.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill_assistant/browser/generic_ui.pb.h"
@@ -178,8 +177,7 @@ CreateAutofillMappings<autofill::AutofillProfile>(
   auto mappings = CreateFormGroupMappings(profile, locale);
 
   std::string country_code =
-      autofill::CountryNames::GetInstance()->GetCountryCode(profile.GetInfo(
-          autofill::AutofillType(autofill::ADDRESS_HOME_COUNTRY), locale));
+      base::UTF16ToUTF8(profile.GetRawInfo(autofill::ADDRESS_HOME_COUNTRY));
   if (!country_code.empty()) {
     mappings[base::NumberToString(static_cast<int>(
         AutofillFormatProto::ADDRESS_HOME_COUNTRY_CODE))] = country_code;
