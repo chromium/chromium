@@ -221,9 +221,8 @@ void DesktopWindowTreeHostPlatform::Init(const Widget::InitParams& params) {
 
   // Disable compositing on tooltips as a workaround for
   // https://crbug.com/442111.
-  CreateCompositor(viz::FrameSinkId(),
-                   params.force_software_compositing ||
-                       params.type == Widget::InitParams::TYPE_TOOLTIP);
+  CreateCompositor(params.force_software_compositing ||
+                   params.type == Widget::InitParams::TYPE_TOOLTIP);
 
   WindowTreeHost::OnAcceleratedWidgetAvailable();
   InitHost();

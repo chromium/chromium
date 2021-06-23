@@ -56,8 +56,7 @@ AshWindowTreeHostPlatform::AshWindowTreeHostPlatform(
 AshWindowTreeHostPlatform::AshWindowTreeHostPlatform()
     : aura::WindowTreeHostPlatform(std::make_unique<aura::Window>(nullptr)),
       transformer_helper_(this) {
-  CreateCompositor(viz::FrameSinkId(),
-                   /* force_software_compositor */ false,
+  CreateCompositor(/* force_software_compositor */ false,
                    /* use_external_begin_frame_control */ false);
   CommonInit();
 }

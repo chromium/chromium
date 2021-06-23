@@ -57,7 +57,7 @@ WindowTreeHostPlatform::WindowTreeHostPlatform(
     std::unique_ptr<Window> window)
     : WindowTreeHost(std::move(window)) {
   bounds_in_pixels_ = properties.bounds;
-  CreateCompositor(viz::FrameSinkId(), false, false,
+  CreateCompositor(false, false,
                    properties.enable_compositing_based_throttling);
   CreateAndSetPlatformWindow(std::move(properties));
 }

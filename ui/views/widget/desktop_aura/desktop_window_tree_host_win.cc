@@ -155,7 +155,7 @@ void DesktopWindowTreeHostWin::Init(const Widget::InitParams& params) {
   gfx::Rect pixel_bounds =
       display::win::ScreenWin::DIPToScreenRect(nullptr, params.bounds);
   message_handler_->Init(parent_hwnd, pixel_bounds);
-  CreateCompositor(viz::FrameSinkId(), params.force_software_compositing);
+  CreateCompositor(params.force_software_compositing);
   OnAcceleratedWidgetAvailable();
   InitHost();
   window()->Show();

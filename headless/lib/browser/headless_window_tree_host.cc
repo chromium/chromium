@@ -18,7 +18,7 @@ namespace headless {
 
 HeadlessWindowTreeHost::HeadlessWindowTreeHost(
     bool use_external_begin_frame_control) {
-  CreateCompositor(viz::FrameSinkId(), false, use_external_begin_frame_control);
+  CreateCompositor(false, use_external_begin_frame_control);
   OnAcceleratedWidgetAvailable();
 
   focus_client_ = std::make_unique<HeadlessFocusClient>();

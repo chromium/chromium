@@ -10,6 +10,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/chromeos_buildflags.h"
 #include "components/viz/common/features.h"
+#include "components/viz/common/surfaces/frame_sink_id.h"
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/client/cursor_client.h"
 #include "ui/aura/env.h"
@@ -395,7 +396,6 @@ void WindowTreeHost::DestroyDispatcher() {
 }
 
 void WindowTreeHost::CreateCompositor(
-    const viz::FrameSinkId& frame_sink_id,
     bool force_software_compositor,
     bool use_external_begin_frame_control,
     bool enable_compositing_based_throttling) {
@@ -403,11 +403,10 @@ void WindowTreeHost::CreateCompositor(
   ui::ContextFactory* context_factory = env->context_factory();
   DCHECK(context_factory);
   compositor_ = std::make_unique<ui::Compositor>(
-      (frame_sink_id.is_valid()) ? frame_sink_id
-                                 : context_factory->AllocateFrameSinkId(),
-      context_factory, base::ThreadTaskRunnerHandle::Get(),
-      ui::IsPixelCanvasRecordingEnabled(), use_external_begin_frame_control,
-      force_software_compositor, enable_compositing_based_throttling);
+      context_factory->AllocateFrameSinkId(), context_factory,
+      base::ThreadTaskRunnerHandle::Get(), ui::IsPixelCanvasRecordingEnabled(),
+      use_external_begin_frame_control, force_software_compositor,
+      enable_compositing_based_throttling);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   compositor_->AddObserver(this);
 #endif

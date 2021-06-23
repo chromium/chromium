@@ -16,7 +16,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
-#include "components/viz/common/surfaces/frame_sink_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/aura_export.h"
 #include "ui/aura/scoped_enable_unadjusted_mouse_events.h"
@@ -44,6 +43,10 @@ class EventSink;
 class InputMethod;
 class ViewProp;
 struct PlatformWindowInitProperties;
+}
+
+namespace viz {
+class FrameSinkId;
 }
 
 namespace aura {
@@ -265,9 +268,7 @@ class AURA_EXPORT WindowTreeHost : public ui::internal::InputMethodDelegate,
   void DestroyCompositor();
   void DestroyDispatcher();
 
-  // If frame_sink_id is not passed in, one will be grabbed from ContextFactory.
   void CreateCompositor(
-      const viz::FrameSinkId& frame_sink_id = viz::FrameSinkId(),
       bool force_software_compositor = false,
       bool use_external_begin_frame_control = false,
       bool enable_compositing_based_throttling = false);
