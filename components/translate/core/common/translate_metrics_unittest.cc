@@ -231,4 +231,13 @@ TEST(TranslateMetricsTest, ReportSimilarLanguageMatch) {
   EXPECT_EQ(1, recorder.GetCount(kFalse));
 }
 
+TEST(TranslateMetricsTest, ReportTranslatedLanguageDetectionContentLength) {
+  MetricsRecorder recorder(
+      translate::metrics_internal::kTranslatedLanguageDetectionContentLength);
+  recorder.CheckTotalCount(0);
+  translate::ReportTranslatedLanguageDetectionContentLength(12345);
+  recorder.CheckValueInLogs(12345);
+  recorder.CheckTotalCount(1);
+}
+
 }  // namespace translate

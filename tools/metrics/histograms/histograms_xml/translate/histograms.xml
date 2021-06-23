@@ -1055,6 +1055,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Translate.Translation.LanguageDetection.ContentLength"
+    units="characters" expires_after="2021-12-12">
+  <owner>megjablon@chromium.org</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    The number of characters of page content extracted at language detection
+    time, recorded when a translation successfully finishes. This can be used as
+    a rough estimate for the amount of content translated.
+  </summary>
+</histogram>
+
 <histogram name="Translate.Translation.SourceLanguage" enum="CLD3LanguageCode"
     expires_after="M98">
   <owner>curranmax@google.com</owner>

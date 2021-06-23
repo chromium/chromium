@@ -25,6 +25,7 @@ extern const char kTranslatePageScheme[];
 extern const char kTranslateSimilarLanguageMatch[];
 extern const char kTranslateLanguageDetectionConflict[];
 extern const char kTranslateLanguageDeterminedDuration[];
+extern const char kTranslatedLanguageDetectionContentLength[];
 
 }  // namespace metrics_internal
 
@@ -76,6 +77,9 @@ void ReportSimilarLanguageMatch(bool match);
 // Called when the page language is determined.
 void ReportLanguageDeterminedDuration(base::TimeTicks begin,
                                       base::TimeTicks end);
+
+// Called after when a translation starts.
+void ReportTranslatedLanguageDetectionContentLength(size_t content_length);
 
 }  // namespace translate
 

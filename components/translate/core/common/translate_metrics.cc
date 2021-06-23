@@ -29,6 +29,8 @@ const char kTranslatePageScheme[] = "Translate.PageScheme";
 const char kTranslateSimilarLanguageMatch[] = "Translate.SimilarLanguageMatch";
 const char kTranslateLanguageDeterminedDuration[] =
     "Translate.LanguageDeterminedDuration";
+const char kTranslatedLanguageDetectionContentLength[] =
+    "Translate.Translation.LanguageDetection.ContentLength";
 
 }  // namespace metrics_internal
 
@@ -80,6 +82,12 @@ void ReportLanguageDeterminedDuration(base::TimeTicks begin,
                                       base::TimeTicks end) {
   UMA_HISTOGRAM_LONG_TIMES(
       metrics_internal::kTranslateLanguageDeterminedDuration, end - begin);
+}
+
+void ReportTranslatedLanguageDetectionContentLength(size_t content_length) {
+  base::UmaHistogramCounts100000(
+      metrics_internal::kTranslatedLanguageDetectionContentLength,
+      content_length);
 }
 
 }  // namespace translate
