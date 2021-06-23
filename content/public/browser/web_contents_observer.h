@@ -170,11 +170,11 @@ class CONTENT_EXPORT WebContentsObserver {
   // just swapped out.
   virtual void RenderViewDeleted(RenderViewHost* render_view_host) {}
 
-  // This method is invoked when the process for the current main
-  // RenderFrameHost exits (usually by crashing, though possibly by other
-  // means). The WebContents continues to use the RenderFrameHost, e.g. when the
-  // user reloads the current page. When the RenderFrameHost itself is deleted,
-  // the RenderFrameDeleted method will be invoked.
+  // This method is invoked when the process for the current RenderFrameHost
+  // of the primary main frame exits (usually by crashing, though possibly by
+  // other means). The WebContents continues to use the RenderFrameHost, e.g.
+  // when the user reloads the current page. When the RenderFrameHost itself is
+  // deleted, the RenderFrameDeleted method will be invoked.
   //
   // Note that this is triggered upstream through
   // RenderProcessHostObserver::RenderProcessExited(); for code that doesn't

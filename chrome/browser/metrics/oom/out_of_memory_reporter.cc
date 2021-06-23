@@ -86,6 +86,8 @@ void OutOfMemoryReporter::RenderProcessGone(base::TerminationStatus status) {
   if (web_contents()->GetVisibility() != content::Visibility::VISIBLE)
     return;
 
+  // RenderProcessGone is only called for when the current RenderFrameHost of
+  // the primary main frame exits, so it is ok to call GetMainFrame here.
   crashed_render_process_id_ =
       web_contents()->GetMainFrame()->GetProcess()->GetID();
 
