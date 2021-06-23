@@ -63,6 +63,7 @@ sync_protocol_bases = [
   "user_event_specifics",
   "vault",
   "web_app_specifics",
+  "webauthn_credential_specifics",
   "wifi_configuration_specifics",
   "workspace_desk_specifics",
 ]
