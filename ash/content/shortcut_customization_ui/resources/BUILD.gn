@@ -16,6 +16,7 @@ polymer_element_files = [
   "android_shortcuts_page.js",
   "browser_shortcuts_page.js",
   "chromeos_shortcuts_page.js",
+  "input_key.js",
   "shortcut_customization_app.js",
   "shortcut_input.js",
 ]
@@ -42,6 +43,12 @@ js_library("shortcut_customization_app") {
   deps = [
     ":shortcut_input",
     "//ash/content/common/resources:navigation_view_panel",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("input_key") {
+  deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
