@@ -10,6 +10,9 @@ for more details about the presubmit API built into gcl.
 import os
 
 
+USE_PYTHON3 = True
+
+
 def _dynamic_import(module_dir, module_name):
     import sys
 
