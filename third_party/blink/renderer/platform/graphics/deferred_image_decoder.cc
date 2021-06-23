@@ -252,6 +252,15 @@ scoped_refptr<SharedBuffer> DeferredImageDecoder::Data() {
   return parkable_image_ ? parkable_image_->Data() : nullptr;
 }
 
+bool DeferredImageDecoder::HasData() const {
+  return parkable_image_ != nullptr;
+}
+
+size_t DeferredImageDecoder::DataSize() const {
+  DCHECK(parkable_image_);
+  return parkable_image_->size();
+}
+
 void DeferredImageDecoder::SetData(scoped_refptr<SharedBuffer> data,
                                    bool all_data_received) {
   SetDataInternal(std::move(data), all_data_received, true);

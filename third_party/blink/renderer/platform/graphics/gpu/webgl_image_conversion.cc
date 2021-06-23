@@ -3747,7 +3747,7 @@ void WebGLImageConversion::ImageExtractor::ExtractImage(
                                !skia_image->colorSpace()->isSRGB();
   if ((!skia_image || ignore_color_space || need_unpremultiplied ||
        need_color_conversion) &&
-      image_->Data()) {
+      image_->HasData()) {
     // Attempt to get raw unpremultiplied image data.
     const bool data_complete = true;
     std::unique_ptr<ImageDecoder> decoder(ImageDecoder::Create(
