@@ -125,6 +125,9 @@ void ScrollableAppsGridView::CalculateIdealBounds() {
 void ScrollableAppsGridView::OnAppListItemViewActivated(
     AppListItemView* pressed_item_view,
     const ui::Event& event) {
+  if (IsDragging())
+    return;
+
   if (IsFolderItem(pressed_item_view->item())) {
     // TODO(https://crbug.com/1214064): Implement showing folder contents.
     return;

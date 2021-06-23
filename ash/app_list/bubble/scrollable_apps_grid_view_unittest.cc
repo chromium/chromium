@@ -12,6 +12,7 @@
 #include "ash/app_list/bubble/app_list_bubble_apps_page.h"
 #include "ash/app_list/bubble/app_list_bubble_view.h"
 #include "ash/app_list/model/app_list_item.h"
+#include "ash/app_list/model/app_list_item_list.h"
 #include "ash/app_list/model/app_list_model.h"
 #include "ash/app_list/test_app_list_client.h"
 #include "ash/constants/ash_features.h"
@@ -72,6 +73,35 @@ TEST_F(ScrollableAppsGridViewTest, ClickOnApp) {
   // The item was activated.
   EXPECT_EQ(1, app_list_client_.activate_item_count());
   EXPECT_EQ("id", app_list_client_.activate_item_last_id());
+}
+
+TEST_F(ScrollableAppsGridViewTest, DragApp) {
+  AddAppListItem("id1");
+  AddAppListItem("id2");
+  ShowAppList();
+
+  // Start dragging the first item.
+  ScrollableAppsGridView* view = GetScrollableAppsGridView();
+  AppListItemView* item = view->GetItemViewAt(0);
+  auto* generator = GetEventGenerator();
+  generator->MoveMouseTo(item->GetBoundsInScreen().CenterPoint());
+  generator->PressLeftButton();
+  item->FireMouseDragTimerForTest();
+
+  // Drag to the right of the second item.
+  gfx::Size tile_size = view->GetTileViewSize();
+  generator->MoveMouseBy(tile_size.width() * 2, 0);
+  generator->ReleaseLeftButton();
+
+  // The item was not activated.
+  EXPECT_EQ(0, app_list_client_.activate_item_count());
+
+  // Items were reordered.
+  AppListItemList* item_list =
+      Shell::Get()->app_list_controller()->GetModel()->top_level_item_list();
+  ASSERT_EQ(2u, item_list->item_count());
+  EXPECT_EQ("id2", item_list->item_at(0)->id());
+  EXPECT_EQ("id1", item_list->item_at(1)->id());
 }
 
 }  // namespace ash
