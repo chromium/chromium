@@ -316,9 +316,7 @@ class PasswordStore : protected PasswordStoreSync,
   void ScheduleEnterprisePasswordURLUpdate();
 
  protected:
-  using LoginsResult = std::vector<std::unique_ptr<PasswordForm>>;
   using LoginsTask = base::OnceCallback<LoginsResult()>;
-  using LoginsReply = base::OnceCallback<void(LoginsResult)>;
   using LoginsResultProcessor =
       base::OnceCallback<void(LoginsReply, LoginsResult)>;
 

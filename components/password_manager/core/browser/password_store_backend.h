@@ -16,6 +16,9 @@ namespace password_manager {
 
 struct PasswordForm;
 
+using LoginsResult = std::vector<std::unique_ptr<PasswordForm>>;
+using LoginsReply = base::OnceCallback<void(LoginsResult)>;
+
 // The backend is used by the `PasswordStore` to interact with the storage in a
 // platform-dependent way (e.g. on Desktop, it calls a local database while on
 // Android, it sends requests to a service).
@@ -23,8 +26,6 @@ struct PasswordForm;
 // IO operation from possibly blocking the main thread.
 class PasswordStoreBackend {
  public:
-  using LoginsResult = std::vector<std::unique_ptr<PasswordForm>>;
-  using LoginsReply = base::OnceCallback<void(LoginsResult)>;
   using OptionalLoginsReply =
       base::OnceCallback<void(absl::optional<LoginsResult>)>;
   using OptionalStoreChangeListReply =
