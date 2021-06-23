@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "components/feed/core/proto/v2/wire/reliability_logging_enums.pb.h"
 #include "components/feed/core/v2/enums.h"
 #include "components/feed/core/v2/feed_store.h"
 #include "components/feed/core/v2/types.h"
@@ -40,6 +41,10 @@ class LoadStreamFromStoreTask : public offline_pages::Task {
     // May be zero if content is not loaded.
     base::TimeDelta content_age;
     ContentIdSet content_ids;
+
+    // Loading result to be logged by
+    // LaunchReliabilityLogger::LogCacheReadEnd().
+    feedwire::DiscoverCardReadCacheResult reliability_result;
   };
 
   // Determines what kind of data is loaded. See `Result` for what is loaded.
@@ -68,7 +73,8 @@ class LoadStreamFromStoreTask : public offline_pages::Task {
   void LoadStreamDone(FeedStore::LoadStreamResult);
   void LoadContentDone(std::vector<feedstore::Content> content,
                        std::vector<feedstore::StreamSharedState> shared_states);
-  void Complete(LoadStreamStatus status);
+  void Complete(LoadStreamStatus status,
+                feedwire::DiscoverCardReadCacheResult reliability_result);
 
   base::WeakPtr<LoadStreamFromStoreTask> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();

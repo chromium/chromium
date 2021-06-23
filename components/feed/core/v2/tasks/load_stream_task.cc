@@ -64,7 +64,9 @@ LoadStreamTask::LoadStreamTask(const Options& options,
                                base::OnceCallback<void(Result)> done_callback)
     : options_(options),
       stream_(*stream),
-      done_callback_(std::move(done_callback)) {
+      done_callback_(std::move(done_callback)),
+      launch_reliability_logger_(
+          stream_.GetLaunchReliabilityLogger(options.stream_type)) {
   DCHECK(options.stream_type.IsValid()) << "A stream type must be chosen";
   latencies_ = std::make_unique<LoadLatencyTimes>();
 }
@@ -99,6 +101,8 @@ void LoadStreamTask::Run() {
     return;
   }
 
+  launch_reliability_logger_.LogCacheReadStart();
+
   // Use |kLoadNoContent| to short-circuit loading from store if we don't
   // need the full stream state.
   auto load_from_store_type =
@@ -118,6 +122,7 @@ void LoadStreamTask::LoadFromStoreComplete(
   latencies_->StepComplete(LoadLatencyTimes::kLoadFromStore);
   stored_content_age_ = result.content_age;
   content_ids_ = result.content_ids;
+  launch_reliability_logger_.LogCacheReadEnd(result.reliability_result);
 
   // Phase 2. Process the result of `LoadStreamFromStoreTask`.
 

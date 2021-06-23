@@ -20,6 +20,9 @@ class LaunchReliabilityLogger {
   void LogFeedLaunchOtherStart();
   void LogLaunchFinished(feedwire::DiscoverLaunchResult result);
 
+  void LogCacheReadStart();
+  void LogCacheReadEnd(feedwire::DiscoverCardReadCacheResult result);
+
  private:
   base::ObserverList<FeedStreamSurface>* surfaces_;
 };

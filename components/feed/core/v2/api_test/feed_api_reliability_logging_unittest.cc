@@ -7,6 +7,7 @@
 #include "components/feed/core/proto/v2/wire/reliability_logging_enums.pb.h"
 #include "components/feed/core/shared_prefs/pref_names.h"
 #include "components/feed/core/v2/api_test/feed_api_test.h"
+#include "components/feed/core/v2/config.h"
 #include "components/feed/core/v2/enums.h"
 #include "components/feed/core/v2/feed_network.h"
 #include "components/feed/core/v2/public/feed_service.h"
@@ -68,12 +69,16 @@ TEST_F(FeedApiReliabilityLoggingTest, MultipleSurfaces_SimultaneousLoad) {
 
   EXPECT_EQ(
       "SendPendingLaunchEvents stream_type=ForYou\n"
-      "LogFeedLaunchOtherStart\n",
+      "LogFeedLaunchOtherStart\n"
+      "LogCacheReadStart\n"
+      "LogCacheReadEnd result=EMPTY_SESSION\n",
       surface2.reliability_logging_bridge.GetEventsString());
   // `surface2` should only have logged from SurfaceUpdater::AttachSurface().
   EXPECT_EQ(
       "SendPendingLaunchEvents stream_type=ForYou\n"
-      "LogFeedLaunchOtherStart\n",
+      "LogFeedLaunchOtherStart\n"
+      "LogCacheReadStart\n"
+      "LogCacheReadEnd result=EMPTY_SESSION\n",
       surface.reliability_logging_bridge.GetEventsString());
 }
 
@@ -84,15 +89,20 @@ TEST_F(FeedApiReliabilityLoggingTest,
   WaitForIdleTaskQueue();
 
   TestForYouSurface surface2(stream_.get());
+  WaitForIdleTaskQueue();
+
   EXPECT_EQ(
       "SendPendingLaunchEvents stream_type=ForYou\n"
-      "LogFeedLaunchOtherStart\n",
-      surface2.reliability_logging_bridge.GetEventsString());
+      "LogFeedLaunchOtherStart\n"
+      "LogCacheReadStart\n"
+      "LogCacheReadEnd result=EMPTY_SESSION\n",
+      surface.reliability_logging_bridge.GetEventsString());
+
   // `surface2` should only have logged from SurfaceUpdater::AttachSurface().
   EXPECT_EQ(
       "SendPendingLaunchEvents stream_type=ForYou\n"
       "LogFeedLaunchOtherStart\n",
-      surface.reliability_logging_bridge.GetEventsString());
+      surface2.reliability_logging_bridge.GetEventsString());
 }
 
 TEST_F(FeedApiReliabilityLoggingTest, LoadStreamComplete_Success) {
@@ -102,7 +112,9 @@ TEST_F(FeedApiReliabilityLoggingTest, LoadStreamComplete_Success) {
 
   EXPECT_EQ(
       "SendPendingLaunchEvents stream_type=ForYou\n"
-      "LogFeedLaunchOtherStart\n",
+      "LogFeedLaunchOtherStart\n"
+      "LogCacheReadStart\n"
+      "LogCacheReadEnd result=EMPTY_SESSION\n",
       surface.reliability_logging_bridge.GetEventsString());
 }
 
@@ -114,6 +126,8 @@ TEST_F(FeedApiReliabilityLoggingTest, LoadStreamComplete_ZeroCards) {
   EXPECT_EQ(
       "SendPendingLaunchEvents stream_type=ForYou\n"
       "LogFeedLaunchOtherStart\n"
+      "LogCacheReadStart\n"
+      "LogCacheReadEnd result=EMPTY_SESSION\n"
       "LogLaunchFinished result=NO_CARDS_RESPONSE_ERROR_ZERO_CARDS\n",
       surface.reliability_logging_bridge.GetEventsString());
 }
@@ -126,6 +140,8 @@ TEST_F(FeedApiReliabilityLoggingTest, LoadStreamComplete_NetworkOffline) {
   EXPECT_EQ(
       "SendPendingLaunchEvents stream_type=ForYou\n"
       "LogFeedLaunchOtherStart\n"
+      "LogCacheReadStart\n"
+      "LogCacheReadEnd result=EMPTY_SESSION\n"
       "LogLaunchFinished result=NO_CARDS_REQUEST_ERROR_NO_INTERNET\n",
       surface.reliability_logging_bridge.GetEventsString());
 }
@@ -138,7 +154,78 @@ TEST_F(FeedApiReliabilityLoggingTest, LoadStreamComplete_Non200) {
   EXPECT_EQ(
       "SendPendingLaunchEvents stream_type=ForYou\n"
       "LogFeedLaunchOtherStart\n"
+      "LogCacheReadStart\n"
+      "LogCacheReadEnd result=EMPTY_SESSION\n"
       "LogLaunchFinished result=NO_CARDS_RESPONSE_ERROR_NON_200\n",
+      surface.reliability_logging_bridge.GetEventsString());
+}
+
+TEST_F(FeedApiReliabilityLoggingTest, CacheRead_Stale) {
+  store_->OverwriteStream(
+      kForYouStream,
+      MakeTypicalInitialModelState(
+          /*first_cluster_id=*/0,
+          kTestTimeEpoch -
+              GetFeedConfig().GetStalenessThreshold(kForYouStream) -
+              base::TimeDelta::FromMinutes(1)),
+      base::DoNothing());
+
+  // Store is stale, so we should fallback to a network request.
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+
+  TestForYouSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+
+  EXPECT_EQ(
+      "SendPendingLaunchEvents stream_type=ForYou\n"
+      "LogFeedLaunchOtherStart\n"
+      "LogCacheReadStart\n"
+      "LogCacheReadEnd result=STALE\n",
+      surface.reliability_logging_bridge.GetEventsString());
+}
+
+TEST_F(FeedApiReliabilityLoggingTest, CacheRead_StaleWithNetworkError) {
+  network_.http_status_code = net::HttpStatusCode::HTTP_FORBIDDEN;
+  store_->OverwriteStream(
+      kForYouStream,
+      MakeTypicalInitialModelState(
+          /*first_cluster_id=*/0,
+          kTestTimeEpoch -
+              GetFeedConfig().GetStalenessThreshold(kForYouStream) -
+              base::TimeDelta::FromMinutes(1)),
+      base::DoNothing());
+
+  // Store is stale, so we should fallback to a network request.
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+
+  TestForYouSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+
+  EXPECT_EQ(
+      "SendPendingLaunchEvents stream_type=ForYou\n"
+      "LogFeedLaunchOtherStart\n"
+      "LogCacheReadStart\n"
+      "LogCacheReadEnd result=STALE\n",
+      surface.reliability_logging_bridge.GetEventsString());
+}
+
+TEST_F(FeedApiReliabilityLoggingTest, CacheRead_Okay) {
+  store_->OverwriteStream(kForYouStream,
+                          MakeTypicalInitialModelState(
+                              /*first_cluster_id=*/0),
+                          base::DoNothing());
+
+  // Store is stale, so we should fallback to a network request.
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+
+  TestForYouSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+
+  EXPECT_EQ(
+      "SendPendingLaunchEvents stream_type=ForYou\n"
+      "LogFeedLaunchOtherStart\n"
+      "LogCacheReadStart\n"
+      "LogCacheReadEnd result=CACHE_READ_OK\n",
       surface.reliability_logging_bridge.GetEventsString());
 }
 
