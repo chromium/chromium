@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
+#include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
@@ -15,6 +16,15 @@
 namespace ash {
 
 namespace {
+
+using chromeos::assistant::prefs::kAssistantContextEnabled;
+using chromeos::assistant::prefs::kAssistantEnabled;
+using chromeos::quick_answers::prefs::ConsentStatus;
+using chromeos::quick_answers::prefs::kQuickAnswersConsentStatus;
+using chromeos::quick_answers::prefs::kQuickAnswersDefinitionEnabled;
+using chromeos::quick_answers::prefs::kQuickAnswersEnabled;
+using chromeos::quick_answers::prefs::kQuickAnswersTranslationEnabled;
+using chromeos::quick_answers::prefs::kQuickAnswersUnitConverstionEnabled;
 
 QuickAnswersState* g_quick_answers_state = nullptr;
 
@@ -27,6 +37,27 @@ bool IsQuickAnswersAllowedForLocale(const std::string& locale,
                                          "en_AU",     "en_IN", "en_NZ"};
   return base::Contains(kAllowedLocales, locale) ||
          base::Contains(kAllowedLocales, runtime_locale);
+}
+
+void MigrateQuickAnswersConsentStatus(PrefService* prefs) {
+  // If the consented status has not been set, migrate the current context
+  // enabled value.
+  if (prefs->FindPreference(kQuickAnswersConsentStatus)->IsDefaultValue()) {
+    if (!prefs->FindPreference(kAssistantContextEnabled)->IsDefaultValue()) {
+      // Set the consent status based on current feature eligibility.
+      bool consented =
+          ash::AssistantState::Get()->allowed_state() ==
+              chromeos::assistant::AssistantAllowedState::ALLOWED &&
+          prefs->GetBoolean(kAssistantEnabled) &&
+          prefs->GetBoolean(kAssistantContextEnabled);
+      prefs->SetInteger(
+          kQuickAnswersConsentStatus,
+          consented ? ConsentStatus::kAccepted : ConsentStatus::kRejected);
+    } else {
+      // Set the consent status to unknown for new users.
+      prefs->SetInteger(kQuickAnswersConsentStatus, ConsentStatus::kUnknown);
+    }
+  }
 }
 
 }  // namespace
@@ -72,23 +103,23 @@ void QuickAnswersState::RegisterPrefChanges(PrefService* pref_service) {
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
   pref_change_registrar_->Init(pref_service);
   pref_change_registrar_->Add(
-      chromeos::quick_answers::prefs::kQuickAnswersEnabled,
+      kQuickAnswersEnabled,
       base::BindRepeating(&QuickAnswersState::UpdateSettingsEnabled,
                           base::Unretained(this)));
   pref_change_registrar_->Add(
-      chromeos::quick_answers::prefs::kQuickAnswersConsentStatus,
+      kQuickAnswersConsentStatus,
       base::BindRepeating(&QuickAnswersState::UpdateConsentStatus,
                           base::Unretained(this)));
   pref_change_registrar_->Add(
-      chromeos::quick_answers::prefs::kQuickAnswersDefinitionEnabled,
+      kQuickAnswersDefinitionEnabled,
       base::BindRepeating(&QuickAnswersState::UpdateDefinitionEnabled,
                           base::Unretained(this)));
   pref_change_registrar_->Add(
-      chromeos::quick_answers::prefs::kQuickAnswersTranslationEnabled,
+      kQuickAnswersTranslationEnabled,
       base::BindRepeating(&QuickAnswersState::UpdateTranslationEnabled,
                           base::Unretained(this)));
   pref_change_registrar_->Add(
-      chromeos::quick_answers::prefs::kQuickAnswersUnitConverstionEnabled,
+      kQuickAnswersUnitConverstionEnabled,
       base::BindRepeating(&QuickAnswersState::UpdateUnitConverstionEnabled,
                           base::Unretained(this)));
 
@@ -99,6 +130,8 @@ void QuickAnswersState::RegisterPrefChanges(PrefService* pref_service) {
   UpdateUnitConverstionEnabled();
 
   prefs_initialized_ = true;
+
+  MigrateQuickAnswersConsentStatus(pref_service);
 }
 
 void QuickAnswersState::OnAssistantFeatureAllowedChanged(
@@ -125,12 +158,20 @@ void QuickAnswersState::InitializeObserver(
 }
 
 void QuickAnswersState::UpdateSettingsEnabled() {
-  auto settings_enabled = pref_change_registrar_->prefs()->GetBoolean(
-      chromeos::quick_answers::prefs::kQuickAnswersEnabled);
+  auto settings_enabled =
+      pref_change_registrar_->prefs()->GetBoolean(kQuickAnswersEnabled);
   if (settings_enabled_ == settings_enabled) {
     return;
   }
   settings_enabled_ = settings_enabled;
+
+  // If the user turn on the Quick Answers in settings, set the consented status
+  // to true.
+  if (settings_enabled_) {
+    pref_change_registrar_->prefs()->SetInteger(kQuickAnswersConsentStatus,
+                                                ConsentStatus::kAccepted);
+  }
+
   for (auto& observer : observers_)
     observer.OnSettingsEnabled(settings_enabled_);
 
@@ -138,16 +179,23 @@ void QuickAnswersState::UpdateSettingsEnabled() {
 }
 
 void QuickAnswersState::UpdateConsentStatus() {
-  auto consent_status =
-      static_cast<chromeos::quick_answers::prefs::ConsentStatus>(
-          pref_change_registrar_->prefs()->GetInteger(
-              chromeos::quick_answers::prefs::kQuickAnswersConsentStatus));
+  auto consent_status = static_cast<ConsentStatus>(
+      pref_change_registrar_->prefs()->GetInteger(kQuickAnswersConsentStatus));
+  if (consent_status_ == consent_status) {
+    return;
+  }
   consent_status_ = consent_status;
+
+  // If the user allow Quick Answers consent, turn on the Quick Answers settings
+  // pref.
+  if (consent_status_) {
+    pref_change_registrar_->prefs()->SetBoolean(kQuickAnswersEnabled, true);
+  }
 }
 
 void QuickAnswersState::UpdateDefinitionEnabled() {
   auto definition_enabled = pref_change_registrar_->prefs()->GetBoolean(
-      chromeos::quick_answers::prefs::kQuickAnswersDefinitionEnabled);
+      kQuickAnswersDefinitionEnabled);
   if (definition_enabled_ == definition_enabled) {
     return;
   }
@@ -156,7 +204,7 @@ void QuickAnswersState::UpdateDefinitionEnabled() {
 
 void QuickAnswersState::UpdateTranslationEnabled() {
   auto translation_enabled = pref_change_registrar_->prefs()->GetBoolean(
-      chromeos::quick_answers::prefs::kQuickAnswersTranslationEnabled);
+      kQuickAnswersTranslationEnabled);
   if (translation_enabled_ == translation_enabled) {
     return;
   }
@@ -165,7 +213,7 @@ void QuickAnswersState::UpdateTranslationEnabled() {
 
 void QuickAnswersState::UpdateUnitConverstionEnabled() {
   auto unit_conversion_enabled = pref_change_registrar_->prefs()->GetBoolean(
-      chromeos::quick_answers::prefs::kQuickAnswersUnitConverstionEnabled);
+      kQuickAnswersUnitConverstionEnabled);
   if (unit_conversion_enabled_ == unit_conversion_enabled) {
     return;
   }
