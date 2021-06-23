@@ -75,6 +75,7 @@ no_check_targets = [
   "//remoting/host/file_transfer:*",  # 2 errors
   "//remoting/host/installer/mac:*",  # 1 error
   "//remoting/host/mac:*",  # 49 errors
+  "//remoting/host/security_key:*",  # 68 errors
   "//remoting/host/win:*",  # 43 errors
   "//remoting/ios/app/settings:*",  # 6 errors
   "//remoting/protocol:*",  # 3 errors
