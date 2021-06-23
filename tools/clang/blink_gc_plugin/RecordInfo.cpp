@@ -686,32 +686,33 @@ Edge* RecordInfo::CreateEdge(const Type* type) {
     return 0;
   }
 
-  // Find top-level namespace.
-  NamespaceDecl* ns = dyn_cast<NamespaceDecl>(info->record()->getDeclContext());
-  if (ns) {
-    while (NamespaceDecl* outer_ns =
-               dyn_cast<NamespaceDecl>(ns->getDeclContext())) {
-      ns = outer_ns;
-    }
-  }
-  auto ns_name = ns ? ns->getName() : "";
-
-  if (Config::IsMember(info->name(), ns_name, info, &args)) {
-    if (Edge* ptr = CreateEdge(args[0])) {
+  if (Config::IsMember(info->name()) && info->GetTemplateArgs(1, &args)) {
+    if (Edge* ptr = CreateEdge(args[0]))
       return new Member(ptr);
-    }
     return 0;
   }
 
-  if (Config::IsWeakMember(info->name(), ns_name, info, &args)) {
+  if (Config::IsWeakMember(info->name()) && info->GetTemplateArgs(1, &args)) {
     if (Edge* ptr = CreateEdge(args[0]))
       return new WeakMember(ptr);
     return 0;
   }
 
-  bool is_persistent = Config::IsPersistent(info->name(), ns_name, info, &args);
-  if (is_persistent ||
-      Config::IsCrossThreadPersistent(info->name(), ns_name, info, &args)) {
+  bool is_persistent = Config::IsPersistent(info->name());
+  if (is_persistent || Config::IsCrossThreadPersistent(info->name())) {
+    // Persistent might refer to v8::Persistent, so check the name space.
+    // TODO: Consider using a more canonical identification than names.
+    NamespaceDecl* ns =
+        dyn_cast<NamespaceDecl>(info->record()->getDeclContext());
+    // Find outer-most namespace.
+    while (NamespaceDecl* outer_ns =
+               dyn_cast<NamespaceDecl>(ns->getDeclContext())) {
+      ns = outer_ns;
+    }
+    if (!ns || (ns->getName() != "blink") && (ns->getName() != "cppgc"))
+      return 0;
+    if (!info->GetTemplateArgs(1, &args))
+      return 0;
     if (Edge* ptr = CreateEdge(args[0])) {
       if (is_persistent)
         return new Persistent(ptr);
@@ -738,7 +739,8 @@ Edge* RecordInfo::CreateEdge(const Type* type) {
     return edge;
   }
 
-  if (Config::IsTraceWrapperV8Reference(info->name(), ns_name, info, &args)) {
+  if (Config::IsTraceWrapperV8Reference(info->name()) &&
+      info->GetTemplateArgs(1, &args)) {
     if (Edge* ptr = CreateEdge(args[0]))
       return new TraceWrapperV8Reference(ptr);
     return 0;

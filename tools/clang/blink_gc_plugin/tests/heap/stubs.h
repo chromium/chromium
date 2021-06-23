@@ -196,44 +196,6 @@ class Visitor {
 
 namespace internal {
 class GarbageCollectedBase {};
-
-class StrongMemberTag;
-class WeakMemberTag;
-
-class MemberBase {};
-
-template <typename T, typename Tag>
-class BasicMember : public MemberBase {
- public:
-  operator T*() const { return 0; }
-  T* operator->() const { return 0; }
-  bool operator!() const { return false; }
-};
-
-class StrongPersistentPolicy;
-class WeakPersistentPolicy;
-
-class PersistentBase {};
-
-template <typename T, typename Tag>
-class BasicPersistent : public PersistentBase {
- public:
-  operator T*() const { return 0; }
-  T* operator->() const { return 0; }
-  bool operator!() const { return false; }
-};
-
-class StrongCrossThreadPersistentPolicy;
-class WeakCrossThreadPersistentPolicy;
-
-template <typename T, typename Tag>
-class BasicCrossThreadPersistent : public PersistentBase {
- public:
-  operator T*() const { return 0; }
-  T* operator->() const { return 0; }
-  bool operator!() const { return false; }
-};
-
 }  // namespace internal
 
 template <typename T>
@@ -247,25 +209,54 @@ class GarbageCollectedMixin : public internal::GarbageCollectedBase {
 };
 
 template <typename T>
-using Member = internal::BasicMember<T, internal::StrongMemberTag>;
-template <typename T>
-using WeakMember = internal::BasicMember<T, internal::WeakMemberTag>;
+class Member {
+ public:
+  operator T*() const { return 0; }
+  T* operator->() const { return 0; }
+  bool operator!() const { return false; }
+};
 
 template <typename T>
-using Persistent =
-    internal::BasicPersistent<T, internal::StrongPersistentPolicy>;
+class WeakMember {
+ public:
+  operator T*() const { return 0; }
+  T* operator->() const { return 0; }
+  bool operator!() const { return false; }
+};
+
 template <typename T>
-using WeakPersistent =
-    internal::BasicPersistent<T, internal::WeakPersistentPolicy>;
+class Persistent {
+ public:
+  operator T*() const { return 0; }
+  T* operator->() const { return 0; }
+  bool operator!() const { return false; }
+};
+
+template <typename T>
+class WeakPersistent {
+ public:
+  operator T*() const { return 0; }
+  T* operator->() const { return 0; }
+  bool operator!() const { return false; }
+};
 
 namespace subtle {
 
 template <typename T>
-using CrossThreadPersistent = internal::
-    BasicCrossThreadPersistent<T, internal::StrongCrossThreadPersistentPolicy>;
+class CrossThreadPersistent {
+ public:
+  operator T*() const { return 0; }
+  T* operator->() const { return 0; }
+  bool operator!() const { return false; }
+};
+
 template <typename T>
-using CrossThreadWeakPersistent = internal::
-    BasicCrossThreadPersistent<T, internal::WeakCrossThreadPersistentPolicy>;
+class CrossThreadWeakPersistent {
+ public:
+  operator T*() const { return 0; }
+  T* operator->() const { return 0; }
+  bool operator!() const { return false; }
+};
 
 }  // namespace subtle
 
