@@ -103,13 +103,8 @@ void LayoutSVGInlineText::StyleDidChange(StyleDifference diff,
 void LayoutSVGInlineText::InvalidateSubtreeLayoutForFontUpdates() {
   NOT_DESTROYED();
   if (!IsFontFallbackValid()) {
-    if (LayoutSVGBlock* text_or_ng_text =
-            LayoutSVGText::LocateLayoutSVGTextAncestor(this)) {
-      if (auto* text_layout_object = DynamicTo<LayoutSVGText>(text_or_ng_text))
-        text_layout_object->SetNeedsTextMetricsUpdate();
-      else
-        To<LayoutNGSVGText>(text_or_ng_text)->SetNeedsTextMetricsUpdate();
-    }
+    LayoutSVGText::NotifySubtreeStructureChanged(
+        this, layout_invalidation_reason::kFontsChanged);
   }
   LayoutText::InvalidateSubtreeLayoutForFontUpdates();
 }
