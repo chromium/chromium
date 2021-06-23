@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "ash/app_list/app_list_metrics.h"
 #include "ash/app_list/views/apps_grid_view.h"
 #include "ash/ash_export.h"
 #include "ash/public/cpp/pagination/pagination_model_observer.h"
@@ -76,6 +77,7 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
   void MaybeEndCardifiedView() override;
   void MaybeStartPageFlip() override;
   void MaybeStopPageFlip() override;
+  void RecordAppMovingTypeMetrics(AppListAppMovingType type) override;
 
   // AppListItemView::GridDelegate:
   void OnAppListItemViewActivated(AppListItemView* pressed_item_view,

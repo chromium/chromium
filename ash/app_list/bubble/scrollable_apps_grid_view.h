@@ -5,6 +5,7 @@
 #ifndef ASH_APP_LIST_BUBBLE_SCROLLABLE_APPS_GRID_VIEW_H_
 #define ASH_APP_LIST_BUBBLE_SCROLLABLE_APPS_GRID_VIEW_H_
 
+#include "ash/app_list/app_list_metrics.h"
 #include "ash/app_list/views/apps_grid_view.h"
 #include "ash/ash_export.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -35,6 +36,7 @@ class ASH_EXPORT ScrollableAppsGridView : public AppsGridView {
   int GetPaddingBetweenPages() const override;
   bool IsScrollAxisVertical() const override;
   void CalculateIdealBounds() override;
+  void RecordAppMovingTypeMetrics(AppListAppMovingType type) override;
 
   // AppListItemView::GridDelegate:
   void OnAppListItemViewActivated(AppListItemView* pressed_item_view,

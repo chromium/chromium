@@ -14,6 +14,7 @@
 #include "ash/app_list/model/app_list_model.h"
 #include "ash/app_list/views/app_list_item_view.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
+#include "base/metrics/histogram_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/animation/bounds_animator.h"
 #include "ui/views/view_model_utils.h"
@@ -120,6 +121,12 @@ void ScrollableAppsGridView::CalculateIdealBounds() {
     ++model_index;
     ++grid_index;
   }
+}
+
+void ScrollableAppsGridView::RecordAppMovingTypeMetrics(
+    AppListAppMovingType type) {
+  UMA_HISTOGRAM_ENUMERATION("Apps.AppListBubbleAppMovingType", type,
+                            kMaxAppListAppMovingType);
 }
 
 void ScrollableAppsGridView::OnAppListItemViewActivated(

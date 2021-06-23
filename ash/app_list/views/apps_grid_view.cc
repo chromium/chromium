@@ -2745,11 +2745,6 @@ void AppsGridView::RecordPageMetrics() {
   UMA_HISTOGRAM_COUNTS_100("Apps.NumberOfPagesNotFull", page_count);
 }
 
-void AppsGridView::RecordAppMovingTypeMetrics(AppListAppMovingType type) {
-  UMA_HISTOGRAM_ENUMERATION("Apps.AppListAppMovingType", type,
-                            kMaxAppListAppMovingType);
-}
-
 int AppsGridView::GetItemsNumOfPage(int page) const {
   if (page < 0 || page >= pagination_model_.total_pages())
     return 0;

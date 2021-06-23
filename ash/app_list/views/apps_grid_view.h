@@ -334,6 +334,10 @@ class ASH_EXPORT AppsGridView : public views::View,
   // horizontally.
   virtual bool IsScrollAxisVertical() const = 0;
 
+  // Records the different ways to move an app in app list's apps grid for UMA
+  // histograms.
+  virtual void RecordAppMovingTypeMetrics(AppListAppMovingType type) = 0;
+
   // Starts the "cardified" state if the subclass supports it.
   virtual void MaybeStartCardifiedView() {}
 
@@ -699,10 +703,6 @@ class ASH_EXPORT AppsGridView : public views::View,
   // Records the total number of pages, and the number of pages with empty slots
   // for UMA histograms.
   void RecordPageMetrics();
-
-  // Records the different ways to move an app in app list's apps grid for UMA
-  // histograms.
-  void RecordAppMovingTypeMetrics(AppListAppMovingType type);
 
   // Starts the animation to transition the |drag_item| from |source_bounds| to
   // the target bounds in the |folder_item_view|. Note that this animation

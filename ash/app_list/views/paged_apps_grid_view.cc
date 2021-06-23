@@ -541,6 +541,11 @@ void PagedAppsGridView::MaybeStopPageFlip() {
   StopPageFlipTimer();
 }
 
+void PagedAppsGridView::RecordAppMovingTypeMetrics(AppListAppMovingType type) {
+  UMA_HISTOGRAM_ENUMERATION("Apps.AppListAppMovingType", type,
+                            kMaxAppListAppMovingType);
+}
+
 void PagedAppsGridView::OnAppListItemViewActivated(
     AppListItemView* pressed_item_view,
     const ui::Event& event) {
