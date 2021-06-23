@@ -384,7 +384,7 @@ void GetCTPolicyConfigForCTLogInfo(
     if (log->operated_by_google || log->disqualified_at) {
       std::string log_id = crypto::SHA256HashString(log->public_key);
       if (log->operated_by_google)
-        operated_by_google_logs->push_back(std::move(log_id));
+        operated_by_google_logs->push_back(log_id);
       if (log->disqualified_at) {
         disqualified_logs->emplace_back(std::move(log_id),
                                         log->disqualified_at.value());
