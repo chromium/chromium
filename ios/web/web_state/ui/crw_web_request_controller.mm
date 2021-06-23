@@ -624,25 +624,6 @@ enum class BackForwardNavigationType {
   NSData* POSTData = currentItem->GetPostData();
   NSMutableURLRequest* request = [self requestForCurrentNavigationItem];
 
-  BOOL sameDocumentNavigation = currentItem->IsCreatedFromPushState() ||
-                                currentItem->IsCreatedFromHashChange();
-
-  if (holder->back_forward_list_item()) {
-    // Check if holder's WKBackForwardListItem still correctly represents
-    // navigation item. With LegacyNavigationManager, replaceState operation
-    // creates a new navigation item, leaving the old item committed. That
-    // old committed item will be associated with WKBackForwardListItem whose
-    // state was replaced. So old item won't have correct WKBackForwardListItem.
-    if (net::GURLWithNSURL(holder->back_forward_list_item().URL) !=
-        currentItem->GetURL()) {
-      // The state was replaced for this item. The item should not be a part of
-      // committed items, but it's too late to remove the item. Cleaup
-      // WKBackForwardListItem and mark item with "state replaced" flag.
-      currentItem->SetHasStateBeenReplaced(true);
-      holder->set_back_forward_list_item(nil);
-    }
-  }
-
   // If the request has POST data and is not a repost form, configure the POST
   // request.
   if (POSTData.length && !repostedForm) {
@@ -651,19 +632,7 @@ enum class BackForwardNavigationType {
     [request setAllHTTPHeaderFields:self.currentHTTPHeaders];
   }
 
-  // When navigating via WKBackForwardListItem to pages created or updated by
-  // calls to pushState() and replaceState(), sometimes web_bundle.js is not
-  // injected correctly.  This means that calling window.history navigation
-  // functions will invoke WKWebView's non-overridden implementations, causing a
-  // mismatch between the WKBackForwardList and NavigationManager.
-  // TODO(crbug.com/659816): Figure out how to prevent web_bundle.js injection
-  // flake.
-  if (currentItem->HasStateBeenReplaced() ||
-      currentItem->IsCreatedFromPushState()) {
-    [self defaultNavigationInternal:request
-             sameDocumentNavigation:sameDocumentNavigation];
-    return;
-  }
+  BOOL sameDocumentNavigation = currentItem->IsCreatedFromHashChange();
 
   // If there is no corresponding WKBackForwardListItem, or the item is not
   // in the current WKWebView's back-forward list, navigating using WKWebView

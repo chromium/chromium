@@ -2117,7 +2117,6 @@ TEST_F(NavigationManagerTest, UpdateCurrentItemForReplaceState) {
   auto* pending_item =
       static_cast<NavigationItemImpl*>(navigation_manager()->GetPendingItem());
   EXPECT_EQ(replace_page_url, pending_item->GetURL());
-  EXPECT_FALSE(pending_item->IsCreatedFromPushState());
   EXPECT_NSEQ(state_object, pending_item->GetSerializedStateObject());
   EXPECT_EQ(GURL("http://referrer.com"), pending_item->GetReferrer().url);
 
@@ -2134,7 +2133,6 @@ TEST_F(NavigationManagerTest, UpdateCurrentItemForReplaceState) {
   auto* last_committed_item = static_cast<NavigationItemImpl*>(
       navigation_manager()->GetLastCommittedItem());
   EXPECT_EQ(replace_page_url2, last_committed_item->GetURL());
-  EXPECT_FALSE(last_committed_item->IsCreatedFromPushState());
   EXPECT_NSEQ(nil, last_committed_item->GetSerializedStateObject());
   EXPECT_EQ(GURL("http://referrer.com"),
             last_committed_item->GetReferrer().url);

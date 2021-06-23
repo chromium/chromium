@@ -563,7 +563,6 @@ void NavigationManagerImpl::UpdateCurrentItemForReplaceState(
   NavigationItemImpl* current_item = GetCurrentItemImpl();
   current_item->SetURL(url);
   current_item->SetSerializedStateObject(state_object);
-  current_item->SetHasStateBeenReplaced(true);
   current_item->SetPostData(nil);
 }
 

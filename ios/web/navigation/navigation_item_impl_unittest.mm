@@ -58,8 +58,6 @@ TEST_F(NavigationItemTest, Description) {
   EXPECT_TRUE([description containsString:@"title:Title"]);
   EXPECT_TRUE([description containsString:@"transition:2"]);
   EXPECT_TRUE([description containsString:@"userAgent:NONE"]);
-  EXPECT_TRUE([description containsString:@"is_create_from_push_state: false"]);
-  EXPECT_TRUE([description containsString:@"has_state_been_replaced: false"]);
   EXPECT_TRUE(
       [description containsString:@"is_created_from_hash_change: false"]);
   EXPECT_TRUE([description containsString:@"navigation_initiation_type: 0"]);

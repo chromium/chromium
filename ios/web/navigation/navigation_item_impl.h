@@ -72,18 +72,6 @@ class NavigationItemImpl : public web::NavigationItem {
   void SetSerializedStateObject(NSString* serialized_state_object);
   NSString* GetSerializedStateObject() const;
 
-  // Whether or not this item was created by calling history.pushState().
-  void SetIsCreatedFromPushState(bool push_state);
-  bool IsCreatedFromPushState() const;
-
-  // Whether the state for this navigation has been changed by
-  // history.replaceState().
-  // TODO(crbug.com/659816): This state is only tracked because of flaky early
-  // page script injection.  Once the root cause of this flake is found, this
-  // can be removed.
-  void SetHasStateBeenReplaced(bool replace_state);
-  bool HasStateBeenReplaced() const;
-
   // Whether this navigation is the result of a hash change.
   void SetIsCreatedFromHashChange(bool hash_change);
   bool IsCreatedFromHashChange() const;
@@ -159,8 +147,6 @@ class NavigationItemImpl : public web::NavigationItem {
   NSMutableDictionary* http_request_headers_;
 
   NSString* serialized_state_object_;
-  bool is_created_from_push_state_;
-  bool has_state_been_replaced_;
   bool is_created_from_hash_change_;
   bool should_skip_repost_form_confirmation_;
   bool should_skip_serialization_;
