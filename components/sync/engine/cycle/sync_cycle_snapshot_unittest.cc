@@ -14,10 +14,9 @@ namespace syncer {
 namespace {
 
 using base::ExpectDictBooleanValue;
-using base::ExpectDictDictionaryValue;
 using base::ExpectDictIntegerValue;
-using base::ExpectDictListValue;
 using base::ExpectDictStringValue;
+using base::ExpectDictValue;
 
 class SyncCycleSnapshotTest : public testing::Test {};
 
@@ -77,8 +76,8 @@ TEST_F(SyncCycleSnapshotTest, SyncCycleSnapshotToValue) {
                          "numLocalOverwrites");
   ExpectDictIntegerValue(model_neutral.num_server_overwrites, *value,
                          "numServerOverwrites");
-  ExpectDictDictionaryValue(*expected_download_progress_markers_value, *value,
-                            "downloadProgressMarkers");
+  ExpectDictValue(*expected_download_progress_markers_value, *value,
+                  "downloadProgressMarkers");
   ExpectDictBooleanValue(kIsSilenced, *value, "isSilenced");
   ExpectDictIntegerValue(kNumEncryptionConflicts, *value,
                          "numEncryptionConflicts");

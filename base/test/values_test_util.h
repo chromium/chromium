@@ -19,24 +19,20 @@ namespace base {
 // the given dictionary equals the given expected value.
 
 void ExpectDictBooleanValue(bool expected_value,
-                            const DictionaryValue& value,
+                            const Value& value,
                             const std::string& key);
-
-void ExpectDictDictionaryValue(const DictionaryValue& expected_value,
-                               const DictionaryValue& value,
-                               const std::string& key);
 
 void ExpectDictIntegerValue(int expected_value,
-                            const DictionaryValue& value,
+                            const Value& value,
                             const std::string& key);
 
-void ExpectDictListValue(const ListValue& expected_value,
-                         const DictionaryValue& value,
-                         const std::string& key);
-
 void ExpectDictStringValue(const std::string& expected_value,
-                           const DictionaryValue& value,
+                           const Value& value,
                            const std::string& key);
+
+void ExpectDictValue(const Value& expected_value,
+                     const Value& value,
+                     const std::string& key);
 
 void ExpectStringValue(const std::string& expected_str, const Value& actual);
 

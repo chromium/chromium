@@ -10,49 +10,39 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
+#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
 
 void ExpectDictBooleanValue(bool expected_value,
-                            const DictionaryValue& value,
+                            const Value& value,
                             const std::string& key) {
-  bool boolean_value = false;
-  EXPECT_TRUE(value.GetBoolean(key, &boolean_value)) << key;
-  EXPECT_EQ(expected_value, boolean_value) << key;
-}
-
-void ExpectDictDictionaryValue(const DictionaryValue& expected_value,
-                               const DictionaryValue& value,
-                               const std::string& key) {
-  const DictionaryValue* dict_value = nullptr;
-  EXPECT_TRUE(value.GetDictionary(key, &dict_value)) << key;
-  EXPECT_EQ(expected_value, *dict_value) << key;
+  EXPECT_EQ(value.FindBoolPath(key), absl::optional<bool>(expected_value))
+      << key;
 }
 
 void ExpectDictIntegerValue(int expected_value,
-                            const DictionaryValue& value,
+                            const Value& value,
                             const std::string& key) {
-  int integer_value = 0;
-  EXPECT_TRUE(value.GetInteger(key, &integer_value)) << key;
-  EXPECT_EQ(expected_value, integer_value) << key;
-}
-
-void ExpectDictListValue(const ListValue& expected_value,
-                         const DictionaryValue& value,
-                         const std::string& key) {
-  const ListValue* list_value = nullptr;
-  EXPECT_TRUE(value.GetList(key, &list_value)) << key;
-  EXPECT_EQ(expected_value, *list_value) << key;
+  EXPECT_EQ(value.FindIntPath(key), absl::optional<int>(expected_value)) << key;
 }
 
 void ExpectDictStringValue(const std::string& expected_value,
-                           const DictionaryValue& value,
+                           const Value& value,
                            const std::string& key) {
-  std::string string_value;
-  EXPECT_TRUE(value.GetString(key, &string_value)) << key;
-  EXPECT_EQ(expected_value, string_value) << key;
+  EXPECT_EQ(OptionalFromPtr(value.FindStringPath(key)),
+            absl::optional<std::string>(expected_value))
+      << key;
+}
+
+void ExpectDictValue(const Value& expected_value,
+                     const Value& value,
+                     const std::string& key) {
+  const Value* found_value = value.FindPath(key);
+  EXPECT_TRUE(found_value) << key;
+  EXPECT_EQ(*found_value, expected_value) << key;
 }
 
 void ExpectStringValue(const std::string& expected_str, const Value& actual) {
