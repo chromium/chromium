@@ -195,13 +195,15 @@ async def bidi_session(capabilities, configuration, request):
     await reset_current_session_if_necessary(caps, True)
 
     if _current_session is None:
-        _current_session = webdriver.BidiSession(
+        _current_session = webdriver.Session(
             configuration["host"],
             configuration["port"],
-            capabilities=caps)
-    try:
-        await _current_session.start()
+            capabilities=caps,
+            enable_bidi=True)
 
+    try:
+        _current_session.start()
+        await _current_session.bidi_session.start()
     except webdriver.error.SessionNotCreatedException:
         if not _current_session.session_id:
             raise
@@ -210,8 +212,9 @@ async def bidi_session(capabilities, configuration, request):
     _current_session.window.size = defaults.WINDOW_SIZE
     _current_session.window.position = defaults.WINDOW_POSITION
 
-    yield _current_session
+    yield _current_session.bidi_session
 
+    await _current_session.bidi_session.end()
     cleanup_session(_current_session)
 
 
