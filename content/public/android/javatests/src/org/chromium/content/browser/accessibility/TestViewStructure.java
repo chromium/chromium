@@ -208,6 +208,7 @@ public class TestViewStructure extends ViewStructure implements TestViewStructur
 
     @Override
     public void asyncCommit() {
+        assert !mDone;
         mDone = true;
     }
 

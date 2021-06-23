@@ -146,8 +146,10 @@ void CreateJavaAXSnapshot(JNIEnv* env,
                          j_view_structure_builder, false);
   }
 
-  ViewStructureBuilder_commitViewStructureNode(env, j_view_structure_builder,
-                                               j_view_structure_node);
+  if (!is_root) {
+    ViewStructureBuilder_commitViewStructureNode(env, j_view_structure_builder,
+                                                 j_view_structure_node);
+  }
 }
 
 }  // namespace
