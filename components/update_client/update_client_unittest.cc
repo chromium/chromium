@@ -1198,10 +1198,16 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoCrxComponentDataAtAll) {
   update_client->RemoveObserver(&observer);
 }
 
+#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+// https://crbug.com/1223019
+#define MAYBE_TwoCrxUpdateDownloadTimeout DISABLED_TwoCrxUpdateDownloadTimeout
+#else
+#define MAYBE_TwoCrxUpdateDownloadTimeout TwoCrxUpdateDownloadTimeout
+#endif
 // Tests the scenario where there is a download timeout for the first
 // CRX. The update for the first CRX fails. The update client waits before
 // attempting the update for the second CRX. This update succeeds.
-TEST_F(UpdateClientTest, TwoCrxUpdateDownloadTimeout) {
+TEST_F(UpdateClientTest, MAYBE_TwoCrxUpdateDownloadTimeout) {
   class DataCallbackMock {
    public:
     static std::vector<absl::optional<CrxComponent>> Callback(
