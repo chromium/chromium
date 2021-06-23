@@ -545,8 +545,6 @@ void DownloadHistory::OnDownloadUpdated(content::DownloadManager* manager,
       ShouldUpdateHistory(data->info(), current_info);
   bool should_update =
       (should_update_result != ShouldUpdateHistoryResult::NO_UPDATE);
-  UMA_HISTOGRAM_ENUMERATION("Download.HistoryPropagatedUpdate",
-                            should_update, 2);
   if (should_update) {
     history_->UpdateDownload(
         current_info,
