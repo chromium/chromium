@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/passwords/move_to_account_store_bubble_view.h"
+
 #include <algorithm>
 
 #include "base/bind.h"
@@ -20,6 +21,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/image/canvas_image_source.h"

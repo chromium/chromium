@@ -49,6 +49,7 @@
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
+#include "ui/gfx/canvas.h"
 #include "ui/gfx/color_analysis.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/interpolated_transform.h"

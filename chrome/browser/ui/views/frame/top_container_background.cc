@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/grit/theme_resources.h"
 #include "ui/base/theme_provider.h"
+#include "ui/gfx/canvas.h"
 
 TopContainerBackground::TopContainerBackground(BrowserView* browser_view)
     : browser_view_(browser_view) {}

@@ -38,6 +38,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/canvas.h"
 #include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/vector_icon_types.h"
