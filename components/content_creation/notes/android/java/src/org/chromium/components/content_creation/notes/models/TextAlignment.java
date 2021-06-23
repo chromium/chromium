@@ -32,11 +32,11 @@ public enum TextAlignment {
             // Invalid will default to start.
             case INVALID:
             case START:
-                return Gravity.START;
+                return Gravity.START | Gravity.CENTER_VERTICAL;
             case CENTER:
                 return Gravity.CENTER;
             case END:
-                return Gravity.END;
+                return Gravity.END | Gravity.CENTER_VERTICAL;
         }
 
         return Gravity.START;

@@ -177,7 +177,7 @@ NoteTemplate GetDreamyTemplate() {
       TextStyle(kMansalvaFontName,
                 /*font_color=*/kWhiteColor, k400Weight,
                 /*all_caps=*/false, TextAlignment::kStart),
-      /*footer_style=*/CreateLightBackgroundFooterStyle());
+      /*footer_style=*/CreateDarkBackgroundFooterStyle());
 }
 
 }  // namespace content_creation
