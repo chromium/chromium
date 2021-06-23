@@ -401,7 +401,10 @@ void SubmenuView::ShowAt(const MenuHost::InitParams& init_params) {
     host_->InitMenuHost(new_init_params);
   }
 
-  // Only fire kMenuStart for the top level menu, not for each submenu.
+  // Only fire kMenuStart when a top level menu is being shown to notify that
+  // menu interaction is about to begin. Note that the ScrollViewContainer
+  // is not exposed as a kMenu, but as a kMenuBar for most platforms and a
+  // kNone on the Mac. See MenuScrollViewContainer::GetAccessibleNodeData.
   if (!GetMenuItem()->GetParentMenuItem()) {
     GetScrollViewContainer()->NotifyAccessibilityEvent(
         ax::mojom::Event::kMenuStart, true);
@@ -426,7 +429,7 @@ void SubmenuView::Hide() {
   if (host_) {
     /// -- Fire accessibility events ----
     // Both of these must be fired before HideMenuHost().
-    // Only fire kMenuStart for as top levels menu closes, not for each submenu.
+    // Only fire kMenuEnd when a top level menu closes, not for each submenu.
     // This is sent before kMenuPopupEnd to allow ViewAXPlatformNodeDelegate to
     // remove its focus override before AXPlatformNodeAuraLinux needs to access
     // the previously-focused node while handling kMenuPopupEnd.

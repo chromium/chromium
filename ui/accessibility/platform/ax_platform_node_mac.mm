@@ -282,10 +282,15 @@ EventMap BuildEventMap() {
        NSAccessibilityFocusedUIElementChangedNotification},
       {ax::mojom::Event::kFocusContext,
        NSAccessibilityFocusedUIElementChangedNotification},
-      {ax::mojom::Event::kMenuStart, (NSString*)kAXMenuOpenedNotification},
-      {ax::mojom::Event::kMenuEnd, (NSString*)kAXMenuClosedNotification},
+
+      // Do not map kMenuStart/End to the Mac's opened/closed notifications.
+      // kMenuStart/End are fired at the start/end of menu interaction on the
+      // container of the menu; not the menu itself. All newly-opened/closed
+      // menus should fire kMenuPopupStart/End. See SubmenuView::ShowAt and
+      // SubmenuView::Hide.
       {ax::mojom::Event::kMenuPopupStart, (NSString*)kAXMenuOpenedNotification},
       {ax::mojom::Event::kMenuPopupEnd, (NSString*)kAXMenuClosedNotification},
+
       {ax::mojom::Event::kTextChanged, NSAccessibilityTitleChangedNotification},
       {ax::mojom::Event::kValueChanged,
        NSAccessibilityValueChangedNotification},
