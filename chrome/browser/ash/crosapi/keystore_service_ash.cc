@@ -50,8 +50,7 @@ scoped_refptr<net::X509Certificate> ParseCertificate(
   // crbug.com/770323 and crbug.com/788655.
   net::X509Certificate::UnsafeCreateOptions options;
   options.printable_string_is_utf8 = true;
-  return net::X509Certificate::CreateFromBytesUnsafeOptions(
-      reinterpret_cast<const char*>(input.data()), input.size(), options);
+  return net::X509Certificate::CreateFromBytesUnsafeOptions(input, options);
 }
 
 ExtensionPlatformKeysService* GetExtensionPlatformKeys() {

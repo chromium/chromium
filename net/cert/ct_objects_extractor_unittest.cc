@@ -28,8 +28,8 @@ class CTObjectsExtractorTest : public ::testing::Test {
     ASSERT_EQ(2u, precert_chain_.size());
 
     std::string der_test_cert(ct::GetDerEncodedX509Cert());
-    test_cert_ = X509Certificate::CreateFromBytes(der_test_cert.data(),
-                                                  der_test_cert.length());
+    test_cert_ = X509Certificate::CreateFromBytes(
+        base::as_bytes(base::make_span(der_test_cert)));
     ASSERT_TRUE(test_cert_);
 
     log_ = CTLogVerifier::Create(ct::GetTestPublicKey(), "testlog");
@@ -142,13 +142,12 @@ TEST_F(CTObjectsExtractorTest, ComplementarySCTVerifies) {
 TEST_F(CTObjectsExtractorTest, ExtractSCTListFromOCSPResponse) {
   std::string der_subject_cert(ct::GetDerEncodedFakeOCSPResponseCert());
   scoped_refptr<X509Certificate> subject_cert =
-      X509Certificate::CreateFromBytes(der_subject_cert.data(),
-                                       der_subject_cert.length());
+      X509Certificate::CreateFromBytes(
+          base::as_bytes(base::make_span(der_subject_cert)));
   ASSERT_TRUE(subject_cert);
   std::string der_issuer_cert(ct::GetDerEncodedFakeOCSPResponseIssuerCert());
-  scoped_refptr<X509Certificate> issuer_cert =
-      X509Certificate::CreateFromBytes(der_issuer_cert.data(),
-                                       der_issuer_cert.length());
+  scoped_refptr<X509Certificate> issuer_cert = X509Certificate::CreateFromBytes(
+      base::as_bytes(base::make_span(der_issuer_cert)));
   ASSERT_TRUE(issuer_cert);
 
   std::string fake_sct_list = ct::GetFakeOCSPExtensionValue();
@@ -165,9 +164,8 @@ TEST_F(CTObjectsExtractorTest, ExtractSCTListFromOCSPResponse) {
 // Test that the extractor honours serial number.
 TEST_F(CTObjectsExtractorTest, ExtractSCTListFromOCSPResponseMatchesSerial) {
   std::string der_issuer_cert(ct::GetDerEncodedFakeOCSPResponseIssuerCert());
-  scoped_refptr<X509Certificate> issuer_cert =
-      X509Certificate::CreateFromBytes(der_issuer_cert.data(),
-                                       der_issuer_cert.length());
+  scoped_refptr<X509Certificate> issuer_cert = X509Certificate::CreateFromBytes(
+      base::as_bytes(base::make_span(der_issuer_cert)));
   ASSERT_TRUE(issuer_cert);
 
   std::string ocsp_response = ct::GetDerEncodedFakeOCSPResponse();
@@ -182,8 +180,8 @@ TEST_F(CTObjectsExtractorTest, ExtractSCTListFromOCSPResponseMatchesSerial) {
 TEST_F(CTObjectsExtractorTest, ExtractSCTListFromOCSPResponseMatchesIssuer) {
   std::string der_subject_cert(ct::GetDerEncodedFakeOCSPResponseCert());
   scoped_refptr<X509Certificate> subject_cert =
-      X509Certificate::CreateFromBytes(der_subject_cert.data(),
-                                       der_subject_cert.length());
+      X509Certificate::CreateFromBytes(
+          base::as_bytes(base::make_span(der_subject_cert)));
   ASSERT_TRUE(subject_cert);
 
   std::string ocsp_response = ct::GetDerEncodedFakeOCSPResponse();

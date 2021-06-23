@@ -170,9 +170,7 @@ EnterprisePlatformKeysImportCertificateFunction::Run() {
   net::X509Certificate::UnsafeCreateOptions options;
   options.printable_string_is_utf8 = true;
   scoped_refptr<net::X509Certificate> cert_x509 =
-      net::X509Certificate::CreateFromBytesUnsafeOptions(
-          reinterpret_cast<const char*>(cert_der.data()), cert_der.size(),
-          options);
+      net::X509Certificate::CreateFromBytesUnsafeOptions(cert_der, options);
   if (!cert_x509.get())
     return RespondNow(Error(kEnterprisePlatformErrorInvalidX509Cert));
 
@@ -217,9 +215,7 @@ EnterprisePlatformKeysRemoveCertificateFunction::Run() {
   net::X509Certificate::UnsafeCreateOptions options;
   options.printable_string_is_utf8 = true;
   scoped_refptr<net::X509Certificate> cert_x509 =
-      net::X509Certificate::CreateFromBytesUnsafeOptions(
-          reinterpret_cast<const char*>(cert_der.data()), cert_der.size(),
-          options);
+      net::X509Certificate::CreateFromBytesUnsafeOptions(cert_der, options);
   if (!cert_x509.get())
     return RespondNow(Error(kEnterprisePlatformErrorInvalidX509Cert));
 

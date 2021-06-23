@@ -143,8 +143,8 @@ bool VerifyUsingCertVerifyProc(
   net::CertificateList x509_additional_trust_anchors;
   for (const auto& cert : root_der_certs) {
     scoped_refptr<net::X509Certificate> x509_root =
-        net::X509Certificate::CreateFromBytes(cert.der_cert.data(),
-                                              cert.der_cert.size());
+        net::X509Certificate::CreateFromBytes(
+            base::as_bytes(base::make_span(cert.der_cert)));
 
     if (!x509_root)
       PrintCertError("ERROR: X509Certificate::CreateFromBytes failed:", cert);

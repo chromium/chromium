@@ -844,8 +844,7 @@ TEST_F(PageInfoTest, InsecureContent) {
 
 TEST_F(PageInfoTest, HTTPSEVCert) {
   scoped_refptr<net::X509Certificate> ev_cert =
-      net::X509Certificate::CreateFromBytes(
-          reinterpret_cast<const char*>(google_der), sizeof(google_der));
+      net::X509Certificate::CreateFromBytes(google_der);
   ASSERT_TRUE(ev_cert);
 
   security_level_ = security_state::NONE;

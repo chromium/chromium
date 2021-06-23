@@ -51,8 +51,8 @@ class ChromeCTPolicyEnforcerTest : public ::testing::Test {
     policy_enforcer_ = std::move(enforcer);
 
     std::string der_test_cert(net::ct::GetDerEncodedX509Cert());
-    chain_ = X509Certificate::CreateFromBytes(der_test_cert.data(),
-                                              der_test_cert.size());
+    chain_ = X509Certificate::CreateFromBytes(
+        base::as_bytes(base::make_span(der_test_cert)));
     ASSERT_TRUE(chain_.get());
     google_log_id_ = std::string(kGoogleAviatorLogID, crypto::kSHA256Length);
     non_google_log_id_.assign(crypto::kSHA256Length, 1);
@@ -445,8 +445,8 @@ TEST_F(ChromeCTPolicyEnforcerTest,
     ASSERT_TRUE(net::x509_util::CreateSelfSignedCert(
         private_key->key(), net::x509_util::DIGEST_SHA256, "CN=test",
         i * 10 + required_scts, start, end, {}, &cert_data));
-    scoped_refptr<X509Certificate> cert(
-        X509Certificate::CreateFromBytes(cert_data.data(), cert_data.size()));
+    scoped_refptr<X509Certificate> cert(X509Certificate::CreateFromBytes(
+        base::as_bytes(base::make_span(cert_data))));
     ASSERT_TRUE(cert);
 
     for (size_t i = 0; i < required_scts - 1; ++i) {

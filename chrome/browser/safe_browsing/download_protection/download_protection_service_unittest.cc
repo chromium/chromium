@@ -484,7 +484,7 @@ class DownloadProtectionServiceTestBase
     }
     net::CertificateList certs =
         net::X509Certificate::CreateCertificateListFromBytes(
-            cert_data.data(), cert_data.size(),
+            base::as_bytes(base::make_span(cert_data)),
             net::X509Certificate::FORMAT_PEM_CERT_SEQUENCE);
     return certs.empty() ? nullptr : certs[0];
   }

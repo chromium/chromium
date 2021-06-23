@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/cancelable_callback.h"
+#include "base/containers/span.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
@@ -70,8 +71,7 @@ bool IsCertificateChainAllowlisted(
   }
   scoped_refptr<net::X509Certificate> cert =
       net::X509Certificate::CreateFromBytes(
-          chain.element(0).certificate().data(),
-          chain.element(0).certificate().size());
+          base::as_bytes(base::make_span(chain.element(0).certificate())));
   if (!cert.get()) {
     return false;
   }
@@ -79,8 +79,7 @@ bool IsCertificateChainAllowlisted(
   for (int i = 1; i < chain.element_size(); ++i) {
     scoped_refptr<net::X509Certificate> issuer =
         net::X509Certificate::CreateFromBytes(
-            chain.element(i).certificate().data(),
-            chain.element(i).certificate().size());
+            base::as_bytes(base::make_span(chain.element(i).certificate())));
     if (!issuer.get()) {
       return false;
     }

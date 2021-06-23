@@ -94,7 +94,8 @@ class SSLErrorAssistantTest : public content::RenderViewHostTestHarness {
                                        const std::string& match_result) {
     net::CertificateList certs =
         net::X509Certificate::CreateCertificateListFromBytes(
-            cert.data(), cert.size(), net::X509Certificate::FORMAT_AUTO);
+            base::as_bytes(base::make_span(cert)),
+            net::X509Certificate::FORMAT_AUTO);
     ASSERT_FALSE(certs.empty());
     EXPECT_EQ(match_result,
               error_assistant()->MatchKnownMITMSoftware(certs[0]));

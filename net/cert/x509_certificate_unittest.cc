@@ -111,8 +111,7 @@ void CheckGoogleCert(const scoped_refptr<X509Certificate>& google_cert,
 
 TEST(X509CertificateTest, GoogleCertParsing) {
   scoped_refptr<X509Certificate> google_cert(
-      X509Certificate::CreateFromBytes(
-          reinterpret_cast<const char*>(google_der), sizeof(google_der)));
+      X509Certificate::CreateFromBytes(google_der));
 
   CheckGoogleCert(google_cert, google_fingerprint,
                   1238192407,   // Mar 27 22:20:07 2009 GMT
@@ -120,8 +119,8 @@ TEST(X509CertificateTest, GoogleCertParsing) {
 }
 
 TEST(X509CertificateTest, WebkitCertParsing) {
-  scoped_refptr<X509Certificate> webkit_cert(X509Certificate::CreateFromBytes(
-      reinterpret_cast<const char*>(webkit_der), sizeof(webkit_der)));
+  scoped_refptr<X509Certificate> webkit_cert(
+      X509Certificate::CreateFromBytes(webkit_der));
 
   ASSERT_NE(static_cast<X509Certificate*>(nullptr), webkit_cert.get());
 
@@ -171,8 +170,8 @@ TEST(X509CertificateTest, WebkitCertParsing) {
 }
 
 TEST(X509CertificateTest, ThawteCertParsing) {
-  scoped_refptr<X509Certificate> thawte_cert(X509Certificate::CreateFromBytes(
-      reinterpret_cast<const char*>(thawte_der), sizeof(thawte_der)));
+  scoped_refptr<X509Certificate> thawte_cert(
+      X509Certificate::CreateFromBytes(thawte_der));
 
   ASSERT_NE(static_cast<X509Certificate*>(nullptr), thawte_cert.get());
 
@@ -358,8 +357,7 @@ TEST(X509CertificateTest, TeletexStringIsNotARealT61String) {
 
 TEST(X509CertificateTest, SerialNumbers) {
   scoped_refptr<X509Certificate> google_cert(
-      X509Certificate::CreateFromBytes(
-          reinterpret_cast<const char*>(google_der), sizeof(google_der)));
+      X509Certificate::CreateFromBytes(google_der));
   ASSERT_TRUE(google_cert);
 
   static const uint8_t google_serial[16] = {
@@ -440,8 +438,8 @@ TEST(X509CertificateTest, SerialNumber37BytesLong) {
 }
 
 TEST(X509CertificateTest, SHA256FingerprintsCorrectly) {
-  scoped_refptr<X509Certificate> google_cert(X509Certificate::CreateFromBytes(
-      reinterpret_cast<const char*>(google_der), sizeof(google_der)));
+  scoped_refptr<X509Certificate> google_cert(
+      X509Certificate::CreateFromBytes(google_der));
   ASSERT_TRUE(google_cert);
 
   const SHA256HashValue google_sha256_fingerprint = {
@@ -673,16 +671,14 @@ TEST(X509CertificateTest, Cache) {
   bssl::UniquePtr<CRYPTO_BUFFER> thawte_cert_handle;
 
   // Add a single certificate to the certificate cache.
-  google_cert_handle = X509Certificate::CreateCertBufferFromBytes(
-      reinterpret_cast<const char*>(google_der), sizeof(google_der));
+  google_cert_handle = X509Certificate::CreateCertBufferFromBytes(google_der);
   ASSERT_TRUE(google_cert_handle);
   scoped_refptr<X509Certificate> cert1(
       X509Certificate::CreateFromBuffer(std::move(google_cert_handle), {}));
   ASSERT_TRUE(cert1);
 
   // Add the same certificate, but as a new handle.
-  google_cert_handle = X509Certificate::CreateCertBufferFromBytes(
-      reinterpret_cast<const char*>(google_der), sizeof(google_der));
+  google_cert_handle = X509Certificate::CreateCertBufferFromBytes(google_der);
   ASSERT_TRUE(google_cert_handle);
   scoped_refptr<X509Certificate> cert2(
       X509Certificate::CreateFromBuffer(std::move(google_cert_handle), {}));
@@ -698,10 +694,8 @@ TEST(X509CertificateTest, Cache) {
   // Add the same certificate, but this time with an intermediate. This
   // should result in the intermediate being cached. Note that this is not
   // a legitimate chain, but is suitable for testing.
-  google_cert_handle = X509Certificate::CreateCertBufferFromBytes(
-      reinterpret_cast<const char*>(google_der), sizeof(google_der));
-  thawte_cert_handle = X509Certificate::CreateCertBufferFromBytes(
-      reinterpret_cast<const char*>(thawte_der), sizeof(thawte_der));
+  google_cert_handle = X509Certificate::CreateCertBufferFromBytes(google_der);
+  thawte_cert_handle = X509Certificate::CreateCertBufferFromBytes(thawte_der);
   ASSERT_TRUE(google_cert_handle);
   ASSERT_TRUE(thawte_cert_handle);
   std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> intermediates;
@@ -720,12 +714,10 @@ TEST(X509CertificateTest, Cache) {
 
 TEST(X509CertificateTest, Pickle) {
   bssl::UniquePtr<CRYPTO_BUFFER> google_cert_handle =
-      X509Certificate::CreateCertBufferFromBytes(
-          reinterpret_cast<const char*>(google_der), sizeof(google_der));
+      X509Certificate::CreateCertBufferFromBytes(google_der);
   ASSERT_TRUE(google_cert_handle);
   bssl::UniquePtr<CRYPTO_BUFFER> thawte_cert_handle =
-      X509Certificate::CreateCertBufferFromBytes(
-          reinterpret_cast<const char*>(thawte_der), sizeof(thawte_der));
+      X509Certificate::CreateCertBufferFromBytes(thawte_der);
   ASSERT_TRUE(thawte_cert_handle);
 
   std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> intermediates;
@@ -754,19 +746,16 @@ TEST(X509CertificateTest, Pickle) {
 
 TEST(X509CertificateTest, IntermediateCertificates) {
   scoped_refptr<X509Certificate> webkit_cert(
-      X509Certificate::CreateFromBytes(
-          reinterpret_cast<const char*>(webkit_der), sizeof(webkit_der)));
+      X509Certificate::CreateFromBytes(webkit_der));
   ASSERT_TRUE(webkit_cert);
 
   scoped_refptr<X509Certificate> thawte_cert(
-      X509Certificate::CreateFromBytes(
-          reinterpret_cast<const char*>(thawte_der), sizeof(thawte_der)));
+      X509Certificate::CreateFromBytes(thawte_der));
   ASSERT_TRUE(thawte_cert);
 
   bssl::UniquePtr<CRYPTO_BUFFER> google_handle;
   // Create object with no intermediates:
-  google_handle = X509Certificate::CreateCertBufferFromBytes(
-      reinterpret_cast<const char*>(google_der), sizeof(google_der));
+  google_handle = X509Certificate::CreateCertBufferFromBytes(google_der);
   scoped_refptr<X509Certificate> cert1;
   cert1 =
       X509Certificate::CreateFromBuffer(bssl::UpRef(google_handle.get()), {});

@@ -174,8 +174,7 @@ TEST_F(VirtualCtap2DeviceTest, AttestationCertificateIsValid) {
 
   base::span<const uint8_t> cert_bytes = *attestation.GetLeafCertificate();
   scoped_refptr<net::X509Certificate> cert =
-      net::X509Certificate::CreateFromBytes(
-          reinterpret_cast<const char*>(cert_bytes.data()), cert_bytes.size());
+      net::X509Certificate::CreateFromBytes(cert_bytes);
   ASSERT_TRUE(cert);
 
   const auto& subject = cert->subject();

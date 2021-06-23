@@ -10,6 +10,7 @@
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
@@ -378,8 +379,8 @@ PlatformVerificationFlow::ExpiryStatus PlatformVerificationFlow::CheckExpiry(
   while (pem_tokenizer.GetNext()) {
     ++num_certificates;
     scoped_refptr<net::X509Certificate> x509 =
-        net::X509Certificate::CreateFromBytes(pem_tokenizer.data().data(),
-                                              pem_tokenizer.data().length());
+        net::X509Certificate::CreateFromBytes(
+            base::as_bytes(base::make_span(pem_tokenizer.data())));
     if (!x509.get() || x509->valid_expiry().is_null()) {
       // This logic intentionally fails open. In theory this should not happen
       // but in practice parsing X.509 can be brittle and there are a lot of

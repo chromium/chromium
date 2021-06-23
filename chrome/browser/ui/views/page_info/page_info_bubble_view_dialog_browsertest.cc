@@ -140,8 +140,7 @@ class PageInfoBubbleViewDialogBrowserTest : public DialogBrowserTest {
       identity.identity_status = PageInfo::SITE_IDENTITY_STATUS_EV_CERT;
       identity.connection_status = PageInfo::SITE_CONNECTION_STATUS_ENCRYPTED;
       scoped_refptr<net::X509Certificate> ev_cert =
-          net::X509Certificate::CreateFromBytes(
-              reinterpret_cast<const char*>(thawte_der), sizeof(thawte_der));
+          net::X509Certificate::CreateFromBytes(thawte_der);
       ASSERT_TRUE(ev_cert);
       identity.certificate = ev_cert;
     } else if (name == kMalware) {

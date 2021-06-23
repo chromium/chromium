@@ -819,8 +819,7 @@ TEST_F(SpdySessionPoolTest, IPPoolingDisabled) {
 // pooling.
 TEST_F(SpdySessionPoolTest, IPPoolingClientCert) {
   SSLSocketDataProvider ssl(ASYNC, OK);
-  ssl.ssl_info.cert = X509Certificate::CreateFromBytes(
-      reinterpret_cast<const char*>(webkit_der), sizeof(webkit_der));
+  ssl.ssl_info.cert = X509Certificate::CreateFromBytes(webkit_der);
   ASSERT_TRUE(ssl.ssl_info.cert);
   ssl.ssl_info.client_cert_sent = true;
   ssl.next_proto = kProtoHTTP2;

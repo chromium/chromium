@@ -37,7 +37,7 @@ enum class ChromeOSSamlProvider {
 void RecordSAMLProvider(const std::string& x509certificate) {
   net::CertificateList third_party_cert_list =
       net::X509Certificate::CreateCertificateListFromBytes(
-          x509certificate.data(), x509certificate.size(),
+          base::as_bytes(base::make_span(x509certificate)),
           net::X509Certificate::FORMAT_PEM_CERT_SEQUENCE);
 
   std::string provider;

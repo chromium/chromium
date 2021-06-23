@@ -692,9 +692,7 @@ class ExtensionPlatformKeysService::SelectTask : public Task {
 
     for (const std::vector<uint8_t>& binary_cert : result->get_certificates()) {
       scoped_refptr<net::X509Certificate> certificate =
-          net::X509Certificate::CreateFromBytes(
-              reinterpret_cast<const char*>(binary_cert.data()),
-              binary_cert.size());
+          net::X509Certificate::CreateFromBytes(binary_cert);
 
       // Filter the retrieved certificates returning only those whose type
       // is equal to one of the entries in the type field of the certificate

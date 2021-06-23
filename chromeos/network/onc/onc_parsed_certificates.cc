@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
@@ -257,8 +258,8 @@ bool OncParsedCertificates::ParseServerOrCaCertificate(
   }
 
   scoped_refptr<net::X509Certificate> certificate =
-      net::X509Certificate::CreateFromBytes(certificate_der_data.data(),
-                                            certificate_der_data.length());
+      net::X509Certificate::CreateFromBytes(
+          base::as_bytes(base::make_span(certificate_der_data)));
   if (!certificate) {
     LOG(ERROR) << "Unable to create certificate from PEM encoding.";
     return false;

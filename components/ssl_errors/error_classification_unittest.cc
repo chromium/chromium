@@ -154,9 +154,8 @@ TEST_F(SSLErrorClassificationTest, TestNameMismatch) {
   // Ensure that a certificate with no SubjectAltName does not fall back to
   // the Subject CN when evaluating hostnames.
   {
-    scoped_refptr<net::X509Certificate> google_cert(
-        net::X509Certificate::CreateFromBytes(
-            reinterpret_cast<const char*>(google_der), sizeof(google_der)));
+    scoped_refptr<net::X509Certificate> google_cert =
+        net::X509Certificate::CreateFromBytes(google_der);
     ASSERT_TRUE(google_cert);
 
     GURL origin("https://google.com");
@@ -172,9 +171,8 @@ TEST_F(SSLErrorClassificationTest, TestNameMismatch) {
   }
 
   {
-    scoped_refptr<net::X509Certificate> webkit_cert(
-        net::X509Certificate::CreateFromBytes(
-            reinterpret_cast<const char*>(webkit_der), sizeof(webkit_der)));
+    scoped_refptr<net::X509Certificate> webkit_cert =
+        net::X509Certificate::CreateFromBytes(webkit_der);
     ASSERT_TRUE(webkit_cert);
     std::vector<std::string> dns_names_webkit;
     webkit_cert->GetSubjectAltName(&dns_names_webkit, nullptr);

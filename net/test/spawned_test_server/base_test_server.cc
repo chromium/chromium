@@ -336,7 +336,7 @@ scoped_refptr<X509Certificate> BaseTestServer::GetCertificate() const {
 
   CertificateList certs_in_file =
       X509Certificate::CreateCertificateListFromBytes(
-          cert_data.data(), cert_data.size(),
+          base::as_bytes(base::make_span(cert_data)),
           X509Certificate::FORMAT_PEM_CERT_SEQUENCE);
   if (certs_in_file.empty())
     return nullptr;

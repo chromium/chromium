@@ -120,9 +120,8 @@ void ClientCertStoreNSS::FilterCertsOnWorkerThread(
     intermediates.reserve(nss_intermediates.size());
     for (const ScopedCERTCertificate& nss_intermediate : nss_intermediates) {
       bssl::UniquePtr<CRYPTO_BUFFER> intermediate_cert_handle(
-          X509Certificate::CreateCertBufferFromBytes(
-              reinterpret_cast<const char*>(nss_intermediate->derCert.data),
-              nss_intermediate->derCert.len));
+          X509Certificate::CreateCertBufferFromBytes(base::make_span(
+              nss_intermediate->derCert.data, nss_intermediate->derCert.len)));
       if (!intermediate_cert_handle)
         break;
       intermediates.push_back(std::move(intermediate_cert_handle));

@@ -339,8 +339,8 @@ class CertificateProviderApiMockedExtensionTest
   // chrome/test/data/extensions/api_test/certificate_provider
   scoped_refptr<net::X509Certificate> GetCertificate() const {
     std::string raw_certificate = GetCertificateData();
-    return net::X509Certificate::CreateFromBytes(raw_certificate.data(),
-                                                 raw_certificate.size());
+    return net::X509Certificate::CreateFromBytes(
+        base::as_bytes(base::make_span(raw_certificate)));
   }
 
   // Tests the api by navigating to a webpage that requests to perform a

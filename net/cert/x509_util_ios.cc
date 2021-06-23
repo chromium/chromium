@@ -39,9 +39,8 @@ scoped_refptr<X509Certificate> CreateX509CertificateFromSecCertificate(
   if (!der_data)
     return nullptr;
   bssl::UniquePtr<CRYPTO_BUFFER> cert_handle(
-      X509Certificate::CreateCertBufferFromBytes(
-          reinterpret_cast<const char*>(CFDataGetBytePtr(der_data)),
-          CFDataGetLength(der_data)));
+      X509Certificate::CreateCertBufferFromBytes(base::make_span(
+          CFDataGetBytePtr(der_data), CFDataGetLength(der_data))));
   if (!cert_handle)
     return nullptr;
   std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> intermediates;
@@ -52,9 +51,8 @@ scoped_refptr<X509Certificate> CreateX509CertificateFromSecCertificate(
     if (!der_data)
       return nullptr;
     bssl::UniquePtr<CRYPTO_BUFFER> intermediate_cert_handle(
-        X509Certificate::CreateCertBufferFromBytes(
-            reinterpret_cast<const char*>(CFDataGetBytePtr(der_data)),
-            CFDataGetLength(der_data)));
+        X509Certificate::CreateCertBufferFromBytes(base::make_span(
+            CFDataGetBytePtr(der_data), CFDataGetLength(der_data))));
     if (!intermediate_cert_handle)
       return nullptr;
     intermediates.push_back(std::move(intermediate_cert_handle));

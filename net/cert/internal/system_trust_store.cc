@@ -219,7 +219,8 @@ class FuchsiaSystemCerts {
     }
 
     CertificateList certs = X509Certificate::CreateCertificateListFromBytes(
-        certs_file.data(), certs_file.length(), X509Certificate::FORMAT_AUTO);
+        base::as_bytes(base::make_span(certs_file)),
+        X509Certificate::FORMAT_AUTO);
 
     for (const auto& cert : certs) {
       CertErrors errors;

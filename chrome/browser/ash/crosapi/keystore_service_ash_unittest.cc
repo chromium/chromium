@@ -311,9 +311,7 @@ TEST_F(KeystoreServiceAshTest, SelectClientCertificatesSuccess) {
   const std::vector<uint8_t>& received_binary_cert =
       observer.result->get_certificates()[0];
   scoped_refptr<net::X509Certificate> received_cert =
-      net::X509Certificate::CreateFromBytes(
-          reinterpret_cast<const char*>(received_binary_cert.data()),
-          received_binary_cert.size());
+      net::X509Certificate::CreateFromBytes(received_binary_cert);
   EXPECT_TRUE(
       orig_cert_list->front()->EqualsIncludingChain(received_cert.get()));
 }

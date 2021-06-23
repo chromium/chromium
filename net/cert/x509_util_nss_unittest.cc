@@ -45,13 +45,11 @@ TEST(X509UtilNSSTest, IsSameCertificate) {
   ASSERT_TRUE(webkit_nss_cert);
 
   scoped_refptr<X509Certificate> google_x509_cert(
-      X509Certificate::CreateFromBytes(
-          reinterpret_cast<const char*>(google_der), base::size(google_der)));
+      X509Certificate::CreateFromBytes(google_der));
   ASSERT_TRUE(google_x509_cert);
 
   scoped_refptr<X509Certificate> webkit_x509_cert(
-      X509Certificate::CreateFromBytes(
-          reinterpret_cast<const char*>(webkit_der), base::size(webkit_der)));
+      X509Certificate::CreateFromBytes(webkit_der));
   ASSERT_TRUE(webkit_x509_cert);
 
   EXPECT_TRUE(x509_util::IsSameCertificate(google_nss_cert.get(),

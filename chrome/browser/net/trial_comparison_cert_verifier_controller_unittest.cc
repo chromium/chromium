@@ -56,7 +56,7 @@ namespace {
 MATCHER_P(CertChainMatches, expected_cert, "") {
   net::CertificateList actual_certs =
       net::X509Certificate::CreateCertificateListFromBytes(
-          arg.data(), arg.size(),
+          base::as_bytes(base::make_span(arg)),
           net::X509Certificate::FORMAT_PEM_CERT_SEQUENCE);
   if (actual_certs.empty()) {
     *result_listener << "failed to parse arg";

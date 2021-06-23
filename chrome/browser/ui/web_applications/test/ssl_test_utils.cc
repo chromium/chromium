@@ -34,8 +34,8 @@ scoped_refptr<net::X509Certificate> CreateFakeCert() {
           &cert_der)) {
     return nullptr;
   }
-  return net::X509Certificate::CreateFromBytes(cert_der.data(),
-                                               cert_der.size());
+  return net::X509Certificate::CreateFromBytes(
+      base::as_bytes(base::make_span(cert_der)));
 }
 
 }  // namespace

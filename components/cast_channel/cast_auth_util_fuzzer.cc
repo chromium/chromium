@@ -150,8 +150,7 @@ DEFINE_PROTO_FUZZER(CastAuthUtilInputs& input_union) {
   // current time.  The actual cert doesn't matter for testing purposes
   // because validation failures are ignored.
   scoped_refptr<net::X509Certificate> peer_cert =
-      net::X509Certificate::CreateFromBytes(
-          reinterpret_cast<const char*>(kCertData), base::size(kCertData));
+      net::X509Certificate::CreateFromBytes(kCertData);
   UpdateTime(input.start_case(), &peer_cert->valid_start(), -1);
   UpdateTime(input.expiry_case(), &peer_cert->valid_expiry(), +1);
 

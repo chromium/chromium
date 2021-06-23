@@ -69,7 +69,8 @@ bool PPB_X509Util_Shared::GetCertificateFields(
     size_t length,
     ppapi::PPB_X509Certificate_Fields* fields) {
   scoped_refptr<net::X509Certificate> cert =
-      net::X509Certificate::CreateFromBytes(der, length);
+      net::X509Certificate::CreateFromBytes(
+          base::as_bytes(base::make_span(der, length)));
   if (!cert)
     return false;
   return GetCertificateFields(*cert, fields);

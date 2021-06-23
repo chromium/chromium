@@ -33,7 +33,7 @@ CertificateList LoadCertificates(const base::FilePath& filename) {
   }
 
   return X509Certificate::CreateCertificateListFromBytes(
-      raw_cert.data(), raw_cert.length(), X509Certificate::FORMAT_AUTO);
+      base::as_bytes(base::make_span(raw_cert)), X509Certificate::FORMAT_AUTO);
 }
 
 }  // namespace

@@ -104,7 +104,8 @@ CreateMockRequestWithInvalidCertificate() {
                   "CERTIFICATE", &der);
   if (!r)
     return r;
-  *result = X509Certificate::CreateFromBytes(der.data(), der.length());
+  *result =
+      X509Certificate::CreateFromBytes(base::as_bytes(base::make_span(der)));
   if (!result) {
     return ::testing::AssertionFailure()
            << "X509Certificate::CreateFromBytes() failed";

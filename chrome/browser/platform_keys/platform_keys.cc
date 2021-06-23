@@ -240,8 +240,7 @@ GetPublicKeyAndAlgorithmOutput GetPublicKeyAndAlgorithm(
   options.printable_string_is_utf8 = true;
   scoped_refptr<net::X509Certificate> cert_x509 =
       net::X509Certificate::CreateFromBytesUnsafeOptions(
-          reinterpret_cast<const char*>(possibly_invalid_cert_der.data()),
-          possibly_invalid_cert_der.size(), options);
+          possibly_invalid_cert_der, options);
   if (!cert_x509) {
     output.status = Status::kErrorCertificateInvalid;
     return output;

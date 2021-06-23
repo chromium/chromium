@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/containers/span.h"
 #include "base/location.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/attestation/attestation_ca_client.h"
@@ -187,8 +188,8 @@ void MachineCertificateUploaderImpl::CheckCertificateExpiry(
   while (pem_tokenizer.GetNext()) {
     ++num_certificates;
     scoped_refptr<net::X509Certificate> x509 =
-        net::X509Certificate::CreateFromBytes(pem_tokenizer.data().data(),
-                                              pem_tokenizer.data().length());
+        net::X509Certificate::CreateFromBytes(
+            base::as_bytes(base::make_span(pem_tokenizer.data())));
     if (!x509.get() || x509->valid_expiry().is_null()) {
       // This logic intentionally fails open. In theory this should not happen
       // but in practice parsing X.509 can be brittle and there are a lot of

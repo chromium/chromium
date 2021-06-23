@@ -509,8 +509,7 @@ void MapPathBuilderErrorsToCertStatus(const CertPathErrors& errors,
 bssl::UniquePtr<CRYPTO_BUFFER> CreateCertBuffers(
     const scoped_refptr<ParsedCertificate>& certificate) {
   return X509Certificate::CreateCertBufferFromBytes(
-      reinterpret_cast<const char*>(certificate->der_cert().UnsafeData()),
-      certificate->der_cert().Length());
+      certificate->der_cert().AsSpan());
 }
 
 // Creates a X509Certificate (chain) to return as the verified result.

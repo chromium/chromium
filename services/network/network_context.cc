@@ -1168,8 +1168,8 @@ void NetworkContext::SetExpectCTTestReport(
   bool decoded = base::Base64Decode(kTestReportCert, &decoded_dummy_cert);
   DCHECK(decoded);
   scoped_refptr<net::X509Certificate> dummy_cert =
-      net::X509Certificate::CreateFromBytes(decoded_dummy_cert.data(),
-                                            decoded_dummy_cert.size());
+      net::X509Certificate::CreateFromBytes(
+          base::as_bytes(base::make_span(decoded_dummy_cert)));
 
   LazyCreateExpectCTReporter(url_request_context());
 

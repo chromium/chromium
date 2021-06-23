@@ -198,9 +198,8 @@ PlatformKeysInternalSelectClientCertificatesFunction::Run() {
       net::X509Certificate::UnsafeCreateOptions options;
       options.printable_string_is_utf8 = true;
       scoped_refptr<net::X509Certificate> client_cert_x509 =
-          net::X509Certificate::CreateFromBytesUnsafeOptions(
-              reinterpret_cast<const char*>(client_cert_der.data()),
-              client_cert_der.size(), options);
+          net::X509Certificate::CreateFromBytesUnsafeOptions(client_cert_der,
+                                                             options);
       if (!client_cert_x509)
         return RespondNow(Error(platform_keys::kErrorInvalidX509Cert));
       client_certs->push_back(client_cert_x509);

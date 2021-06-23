@@ -203,7 +203,7 @@ class ProofVerifierChromiumTest : public ::testing::Test {
   void GetSCTTestCertificates(std::vector<std::string>* certs) {
     std::string der_test_cert(ct::GetDerEncodedX509Cert());
     scoped_refptr<X509Certificate> test_cert = X509Certificate::CreateFromBytes(
-        der_test_cert.data(), der_test_cert.length());
+        base::as_bytes(base::make_span(der_test_cert)));
     ASSERT_TRUE(test_cert.get());
 
     certs->clear();
@@ -313,7 +313,7 @@ TEST_F(ProofVerifierChromiumTest, ValidSCTList) {
 
   std::string der_test_cert(ct::GetDerEncodedX509Cert());
   scoped_refptr<X509Certificate> test_cert = X509Certificate::CreateFromBytes(
-      der_test_cert.data(), der_test_cert.length());
+      base::as_bytes(base::make_span(der_test_cert)));
   ASSERT_TRUE(test_cert);
   CertVerifyResult dummy_result;
   dummy_result.verified_cert = test_cert;
@@ -356,7 +356,7 @@ TEST_F(ProofVerifierChromiumTest, InvalidSCTList) {
 
   std::string der_test_cert(ct::GetDerEncodedX509Cert());
   scoped_refptr<X509Certificate> test_cert = X509Certificate::CreateFromBytes(
-      der_test_cert.data(), der_test_cert.length());
+      base::as_bytes(base::make_span(der_test_cert)));
   ASSERT_TRUE(test_cert);
   CertVerifyResult dummy_result;
   dummy_result.verified_cert = test_cert;

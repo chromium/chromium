@@ -32,7 +32,8 @@ std::unique_ptr<net::FakeClientCertIdentity> CreateFakeCert(
       &rsa_private_key, &cert_der);
 
   scoped_refptr<net::X509Certificate> cert =
-      net::X509Certificate::CreateFromBytes(cert_der.data(), cert_der.size());
+      net::X509Certificate::CreateFromBytes(
+          base::as_bytes(base::make_span(cert_der)));
   if (!cert)
     return nullptr;
 
