@@ -304,12 +304,32 @@ void PasswordReuseDetector::RemovePassword(const PasswordForm& form) {
   if (form.password_value.size() < kMinPasswordLengthToCheck)
     return;
 
-  const auto result =
-      passwords_with_matching_reused_credentials_.find(form.password_value);
-  if (!(result == passwords_with_matching_reused_credentials_.end()) ||
-      !result->second.empty()) {
-    passwords_with_matching_reused_credentials_.erase(form.password_value);
-    saved_passwords_--;
+  MatchingReusedCredential credential_criteria = {
+      form.signon_realm, form.username_value, form.in_store};
+  auto password_value_iter =
+      passwords_with_matching_reused_credentials_.begin();
+  while (password_value_iter !=
+         passwords_with_matching_reused_credentials_.end()) {
+    std::set<MatchingReusedCredential>& stored_credentials_for_password_value =
+        password_value_iter->second;
+    // Remove only the password for the specific domain and username.
+    // Don't remove all passwords from
+    // |passwords_with_matching_reused_credentials_| with a given
+    // |form.password_value|.
+    const auto credential_to_remove =
+        stored_credentials_for_password_value.find(credential_criteria);
+    if (credential_to_remove != stored_credentials_for_password_value.end()) {
+      stored_credentials_for_password_value.erase(credential_to_remove);
+      // If all credential values of the password key are deleted, remove the
+      // password key from the map.
+      if (stored_credentials_for_password_value.empty()) {
+        password_value_iter = passwords_with_matching_reused_credentials_.erase(
+            password_value_iter);
+        saved_passwords_--;
+      }
+    } else {
+      password_value_iter++;
+    }
   }
 }
 

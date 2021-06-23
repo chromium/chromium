@@ -272,6 +272,70 @@ TEST(PasswordReuseDetectorTest, AddAndRemoveSameLogin) {
                             &mockConsumer);
 }
 
+TEST(PasswordReuseDetectorTest, AddAndRemoveSameLoginWithMultipleForms) {
+  PasswordReuseDetector reuse_detector;
+  // These credentials mimic a user using "secretword" on "https://example1.com"
+  // and "https://example2.com" and then changing the password on
+  // "https://example1.com" to "secretword1".
+  std::vector<std::unique_ptr<PasswordForm>> login_credentials = GetForms({
+      {"https://example1.com", "example1Username", "secretword"},
+      {"https://example1.com", "example1Username", "secretword1"},
+      {"https://example2.com", "example2Username", "secretword"},
+  });
+  // Add the test domain passwords into the saved passwords map.
+  PasswordStoreChangeList add_changes =
+      GetChangeList(PasswordStoreChange::ADD, login_credentials);
+  reuse_detector.OnLoginsChanged(add_changes);
+
+  std::vector<MatchingReusedCredential> expected_matching_reused_credentials = {
+      {"https://example1.com", u"example1Username"},
+      {"https://example2.com", u"example2Username"}};
+  MockPasswordReuseDetectorConsumer mockConsumer;
+  int valid_passwords = login_credentials.size();
+  EXPECT_CALL(
+      mockConsumer,
+      OnReuseCheckDone(
+          /*is_reuse_found=*/true, strlen("secretword"),
+          Matches(NO_GAIA_OR_ENTERPRISE_REUSE),
+          UnorderedElementsAreArray(expected_matching_reused_credentials),
+          valid_passwords));
+
+  // "secretword" is a substring of "123secretword" so it should trigger
+  // a reuse and get the matching credentials.
+  reuse_detector.CheckReuse(u"123secretword", "https://evil.com",
+                            &mockConsumer);
+  testing::Mock::VerifyAndClearExpectations(&mockConsumer);
+  // Remove two matching credentials to "secretword" from the saved passwords
+  // map.
+  PasswordStoreChangeList remove_changes = GetChangeList(
+      PasswordStoreChange::REMOVE,
+      GetForms({{"https://example1.com", "example1Username", "secretword"}}));
+  reuse_detector.OnLoginsChanged(remove_changes);
+  expected_matching_reused_credentials = {
+      {"https://example2.com", u"example2Username"}};
+  EXPECT_CALL(
+      mockConsumer,
+      OnReuseCheckDone(
+          /*is_reuse_found=*/true, strlen("secretword"),
+          Matches(NO_GAIA_OR_ENTERPRISE_REUSE),
+          testing::ElementsAreArray(expected_matching_reused_credentials), _));
+  // Only two stored credentials were removed so reuse should still be found.
+  reuse_detector.CheckReuse(u"123secretword", "https://evil.com",
+                            &mockConsumer);
+  testing::Mock::VerifyAndClearExpectations(&mockConsumer);
+
+  // Remove the last matching credential to "secretword" from the saved
+  // passwords map.
+  remove_changes = GetChangeList(
+      PasswordStoreChange::REMOVE,
+      GetForms({{"https://example2.com", "example2Username", "secretword"}}));
+  reuse_detector.OnLoginsChanged(remove_changes);
+  EXPECT_CALL(mockConsumer, OnReuseCheckDone(
+                                /*is_reuse_found=*/false, _, _, _, _));
+  reuse_detector.CheckReuse(u"123secretword", "https://evil.com",
+                            &mockConsumer);
+}
+
 TEST(PasswordReuseDetectorTest, MatchMultiplePasswords) {
   // These all have different length passwods so we can check the
   // returned length.
