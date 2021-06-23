@@ -6,8 +6,6 @@ import("//build/config/chrome_build.gni")
 
 source_set("colors") {
   sources = [
-    "UIColor+cr_dynamic_colors.h",
-    "UIColor+cr_dynamic_colors.mm",
     "UIColor+cr_semantic_colors.h",
     "UIColor+cr_semantic_colors.mm",
     "dynamic_color_util.h",
