@@ -956,6 +956,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Accessibility.Mac.ReduceMotion" enum="BooleanEnabled"
     expires_after="M85">
+  <obsolete>
+    No longer gathered after 2021-06.
+  </obsolete>
   <owner>dmazzoni@chromium.org</owner>
   <owner>smcgruer@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -969,6 +972,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Accessibility.Mac.ReduceTransparency" enum="BooleanEnabled"
     expires_after="2021-08-01">
+  <obsolete>
+    No longer gathered after 2021-06.
+  </obsolete>
   <owner>ellyjones@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>

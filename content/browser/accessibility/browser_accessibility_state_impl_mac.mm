@@ -59,7 +59,6 @@ class BrowserAccessibilityStateImplMac : public BrowserAccessibilityStateImpl {
 
  protected:
   void InitBackgroundTasks() override;
-  void UpdateHistogramsOnUIThread() override;
   void UpdateHistogramsOnOtherThread() override;
   void UpdateUniqueUserHistograms() override;
 };
@@ -69,25 +68,6 @@ void BrowserAccessibilityStateImplMac::InitBackgroundTasks() {
 
   GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&SetupAccessibilityDisplayOptionsNotifier));
-}
-
-void BrowserAccessibilityStateImplMac::UpdateHistogramsOnUIThread() {
-  BrowserAccessibilityStateImpl::UpdateHistogramsOnUIThread();
-
-  NSWorkspace* workspace = [NSWorkspace sharedWorkspace];
-
-  SEL sel = @selector(accessibilityDisplayShouldReduceTransparency);
-  if ([workspace respondsToSelector:sel]) {
-    UMA_HISTOGRAM_BOOLEAN(
-        "Accessibility.Mac.ReduceTransparency",
-        workspace.accessibilityDisplayShouldReduceTransparency);
-  }
-
-  sel = @selector(accessibilityDisplayShouldReduceMotion);
-  if ([workspace respondsToSelector:sel]) {
-    UMA_HISTOGRAM_BOOLEAN("Accessibility.Mac.ReduceMotion",
-                          workspace.accessibilityDisplayShouldReduceMotion);
-  }
 }
 
 void BrowserAccessibilityStateImplMac::UpdateHistogramsOnOtherThread() {
