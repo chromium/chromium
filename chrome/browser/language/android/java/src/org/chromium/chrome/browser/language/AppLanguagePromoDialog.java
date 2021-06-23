@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.language.settings.LanguageItem;
 import org.chromium.chrome.browser.language.settings.LanguagesManager;
 import org.chromium.chrome.browser.translate.TranslateBridge;
+import org.chromium.components.language.AndroidLanguageMetricsBridge;
 import org.chromium.components.language.GeoLanguageProviderBridge;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -187,6 +188,10 @@ public class AppLanguagePromoDialog {
 
         public LanguageItem getSelectedLanguage() {
             return mCurrentLanguage;
+        }
+
+        public boolean isTopLanguageSelected() {
+            return mTopLanguages.contains(mCurrentLanguage);
         }
 
         private LanguageItem getLanguageItemAt(int position) {
@@ -354,22 +359,29 @@ public class AppLanguagePromoDialog {
         View customView = LayoutInflater.from(mActivity).inflate(
                 R.layout.app_language_confirm_content, null, false);
 
-        String languageCode = mAdapter.getSelectedLanguage().getCode();
-        String languageName = mAdapter.getSelectedLanguage().getDisplayName();
+        LanguageItem selectedLanguage = mAdapter.getSelectedLanguage();
         CharSequence messageText = mActivity.getResources().getString(
-                R.string.languages_srp_loading_text, languageName);
+                R.string.languages_srp_loading_text, selectedLanguage.getDisplayName());
         TextView messageView = customView.findViewById(R.id.message);
         messageView.setText(messageText);
 
         mConfirmModal.set(ModalDialogProperties.CUSTOM_VIEW, customView);
         mModalDialogManager.showDialog(mConfirmModal, ModalDialogManager.ModalDialogType.APP);
 
-        AppLocaleUtils.setAppLanguagePref(mAdapter.getSelectedLanguage().getCode(), (success) -> {
+        if (!AppLocaleUtils.isAppLanguagePref(selectedLanguage.getCode())) {
+            // Only record isTopLanguage if the app language has changed.
+            recordIsTopLanguage(mAdapter.isTopLanguageSelected());
+        }
+        AndroidLanguageMetricsBridge.reportAppLanguagePromptLanguage(
+                selectedLanguage.isSystemDefault() ? "" : selectedLanguage.getCode());
+
+        // Create call back for after language split install completes.
+        AppLocaleUtils.setAppLanguagePref(selectedLanguage.getCode(), (success) -> {
             if (success) {
                 mRestartAction.restart();
             } else {
                 CharSequence failedText = mActivity.getResources().getString(
-                        R.string.languages_split_failed, languageName);
+                        R.string.languages_split_failed, selectedLanguage.getDisplayName());
                 messageView.setText(failedText);
                 mConfirmModal.set(ModalDialogProperties.POSITIVE_BUTTON_TEXT,
                         mActivity.getText(R.string.ok).toString());
@@ -415,5 +427,10 @@ public class AppLanguagePromoDialog {
     private static void recordActionType(@ActionType int actionType) {
         RecordHistogram.recordEnumeratedHistogram(
                 "LanguageSettings.AppLanguagePrompt.Action", actionType, ActionType.NUM_ENTRIES);
+    }
+
+    private static void recordIsTopLanguage(boolean isTopLanguage) {
+        RecordHistogram.recordBooleanHistogram(
+                "LanguageSettings.AppLanguagePrompt.IsTopLanguageSelected", isTopLanguage);
     }
 }

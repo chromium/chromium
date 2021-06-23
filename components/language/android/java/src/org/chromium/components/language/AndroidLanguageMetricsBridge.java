@@ -15,6 +15,8 @@ public class AndroidLanguageMetricsBridge {
     @VisibleForTesting
     public static final String OVERRIDE_LANGUAGE_HISTOGRAM =
             "LanguageUsage.UI.Android.OverrideLanguage";
+    public static final String APP_LANGUAGE_PROMPT_HISTOGRAM =
+            "LanguageSettings.AppLanguagePrompt.Language";
 
     /**
      * Called when a user adds or removes a language from the list of languages they
@@ -34,6 +36,15 @@ public class AndroidLanguageMetricsBridge {
     public static void reportAppOverrideLanguage(String language) {
         AndroidLanguageMetricsBridgeJni.get().reportHashMetricName(
                 OVERRIDE_LANGUAGE_HISTOGRAM, language);
+    }
+
+    /**
+     * Report the language selected from the app language prompt.
+     * @param language ISO-639 code of the selected app override language.
+     */
+    public static void reportAppLanguagePromptLanguage(String language) {
+        AndroidLanguageMetricsBridgeJni.get().reportHashMetricName(
+                APP_LANGUAGE_PROMPT_HISTOGRAM, language);
     }
 
     @NativeMethods
