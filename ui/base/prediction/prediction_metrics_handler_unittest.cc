@@ -202,6 +202,10 @@ TEST_F(PredictionMetricsHandlerTest, PredictionMetricTest) {
               ElementsAre(Bucket(0, 2), Bucket(1, 1)));
 
   EXPECT_THAT(histogram_tester().GetAllSamples(
+                  "Event.InputEventPrediction.Scroll.PredictionScore"),
+              ElementsAre(Bucket(0, 3), Bucket(1, 2)));
+
+  EXPECT_THAT(histogram_tester().GetAllSamples(
                   "Event.InputEventPrediction.Scroll.WrongDirection"),
               ElementsAre(Bucket(0, 3), Bucket(1, 1)));
 

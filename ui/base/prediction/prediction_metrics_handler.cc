@@ -159,6 +159,8 @@ void PredictionMetricsHandler::ComputeMetrics() {
     base::UmaHistogramCounts1000(
         base::StrCat({histogram_name_, ".UnderPrediction"}), -score);
   }
+  base::UmaHistogramCounts1000(
+      base::StrCat({histogram_name_, ".PredictionScore"}), std::abs(score));
 
   // Need |last_predicted_| to compute WrongDirection and Jitter metrics.
   if (!last_predicted_.has_value())

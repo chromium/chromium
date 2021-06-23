@@ -214,19 +214,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Event.InputEventPrediction.Scroll.OverPrediction"
-    units="pixels" expires_after="M97">
-  <owner>eirage@chromium.org</owner>
-  <owner>axantoine@google.com</owner>
-  <summary>
-    Overshoot distance in pixels between a predicted scroll position and the
-    corresponding interpolated real scroll position that occurred at the
-    prediction time.
-
-    Team: input-dev@chromium.org.
-  </summary>
-</histogram>
-
 <histogram name="Event.InputEventPrediction.Scroll.PredictionJitter"
     units="pixels" expires_after="M97">
   <owner>eirage@chromium.org</owner>
@@ -236,19 +223,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     scroll deltas which are the difference between a predicted scroll position
     and its corresponding interpolated real position that occurred at prediction
     time.
-
-    Team: input-dev@chromium.org.
-  </summary>
-</histogram>
-
-<histogram name="Event.InputEventPrediction.Scroll.UnderPrediction"
-    units="pixels" expires_after="M97">
-  <owner>eirage@chromium.org</owner>
-  <owner>axantoine@google.com</owner>
-  <summary>
-    Undershoot distance in pixels between a predicted scroll position and the
-    corresponding interpolated real scroll position that occurred at the
-    prediction time.
 
     Team: input-dev@chromium.org.
   </summary>
@@ -278,6 +252,24 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
     Team: input-dev@chromium.org.
   </summary>
+</histogram>
+
+<histogram name="Event.InputEventPrediction.Scroll.{ScoreType}" units="pixels"
+    expires_after="M97">
+  <owner>flackr@chromium.org</owner>
+  <owner>joalmei@microsoft.com</owner>
+  <summary>
+    Overshoot distance in pixels between a predicted scroll position and the
+    corresponding interpolated real scroll position that occurred at the frame
+    time.
+
+    Team: input-dev@chromium.org.
+  </summary>
+  <token key="ScoreType">
+    <variant name="OverPrediction" summary="Positive score values"/>
+    <variant name="PredictionScore" summary="Score abolute value"/>
+    <variant name="UnderPrediction" summary="Negative score values"/>
+  </token>
 </histogram>
 
 <histogram name="Event.Latency.EndToEnd.KeyPress" units="microseconds"
