@@ -13,7 +13,7 @@ const base::Feature kNearbySharing{"NearbySharing",
 
 // Enables support for Nearby Share on child accounts.
 const base::Feature kNearbySharingChildAccounts{
-    "NearbySharingChildAccounts", base::FEATURE_DISABLED_BY_DEFAULT};
+    "NearbySharingChildAccounts", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables use of device contacts in Nearby Share. The Nearby server returns
 // both Google contacts and device contacts in ListContactPeople RPC responses.

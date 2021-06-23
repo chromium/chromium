@@ -5271,21 +5271,6 @@
             ]
         }
     ],
-    "NearbySharingChildAccounts": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "NearbySharingChildAccounts"
-                    ]
-                }
-            ]
-        }
-    ],
     "NetworkServiceSandbox": [
         {
             "platforms": [
