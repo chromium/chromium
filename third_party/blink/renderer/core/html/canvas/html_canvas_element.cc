@@ -136,8 +136,10 @@ HTMLCanvasElement::HTMLCanvasElement(Document& document)
   UseCounter::Count(document, WebFeature::kHTMLCanvasElement);
   GetDocument().IncrementNumberOfCanvases();
   auto* execution_context = GetExecutionContext();
-  CanvasResourceTracker::For(execution_context->GetIsolate())
-      ->Add(this, execution_context);
+  if (execution_context) {
+    CanvasResourceTracker::For(execution_context->GetIsolate())
+        ->Add(this, execution_context);
+  }
 }
 
 HTMLCanvasElement::~HTMLCanvasElement() {
