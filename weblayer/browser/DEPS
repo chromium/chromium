@@ -48,6 +48,7 @@ include_rules = [
   "+components/network_session_configurator",
   "+components/network_time",
   "+components/page_load_metrics/browser",
+  "+components/payments/content",
   "+components/password_manager/content/browser",
   "+components/performance_manager/embedder",
   "+components/permissions",

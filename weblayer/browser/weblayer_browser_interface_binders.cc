@@ -9,11 +9,13 @@
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_processor_impl.h"
 #include "components/no_state_prefetch/common/prerender_canceler.mojom.h"
+#include "components/payments/content/payment_credential_factory.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_controller.h"
+#include "third_party/blink/public/mojom/payments/payment_credential.mojom.h"
 #include "third_party/blink/public/mojom/payments/payment_request.mojom.h"
 #include "third_party/blink/public/mojom/prerender/prerender.mojom.h"
 #include "weblayer/browser/no_state_prefetch/no_state_prefetch_processor_impl_delegate_impl.h"
@@ -134,6 +136,8 @@ void PopulateWebLayerFrameBinders(
       &ForwardToJavaWebContents<blink::mojom::ShareService>));
   map->Add<payments::mojom::PaymentRequest>(base::BindRepeating(
       &ForwardToJavaFrame<payments::mojom::PaymentRequest>));
+  map->Add<payments::mojom::PaymentCredential>(
+      base::BindRepeating(&payments::CreatePaymentCredential));
 #endif
 }
 

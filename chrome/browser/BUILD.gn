@@ -1038,8 +1038,6 @@ static_library("browser") {
     "password_manager/password_store_factory.h",
     "password_manager/password_store_utils.cc",
     "password_manager/password_store_utils.h",
-    "payments/payment_credential_factory.cc",
-    "payments/payment_credential_factory.h",
     "performance_hints/performance_hints_features.cc",
     "performance_hints/performance_hints_features.h",
     "performance_hints/performance_hints_observer.cc",

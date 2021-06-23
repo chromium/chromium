@@ -443,6 +443,7 @@ source_set("weblayer_lib_base") {
     "//components/page_load_metrics/browser/observers/ad_metrics",
     "//components/page_load_metrics/renderer",
     "//components/password_manager/content/browser",
+    "//components/payments/content:content",
     "//components/payments/core",
     "//components/performance_manager",
     "//components/permissions",

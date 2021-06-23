@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PAYMENTS_PAYMENT_CREDENTIAL_FACTORY_H_
-#define CHROME_BROWSER_PAYMENTS_PAYMENT_CREDENTIAL_FACTORY_H_
+#ifndef COMPONENTS_PAYMENTS_CONTENT_PAYMENT_CREDENTIAL_FACTORY_H_
+#define COMPONENTS_PAYMENTS_CONTENT_PAYMENT_CREDENTIAL_FACTORY_H_
 
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/payments/payment_credential.mojom-forward.h"
@@ -21,4 +21,4 @@ void CreatePaymentCredential(
 
 }  // namespace payments
 
-#endif  // CHROME_BROWSER_PAYMENTS_PAYMENT_CREDENTIAL_FACTORY_H_
+#endif  // COMPONENTS_PAYMENTS_CONTENT_PAYMENT_CREDENTIAL_FACTORY_H_

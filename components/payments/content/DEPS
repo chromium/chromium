@@ -13,6 +13,7 @@ include_rules = [
   "+components/ukm/content",
   "+components/url_formatter",
   "+components/webdata/common",
+  "+components/webdata_services",
   "+content/public",
   "+crypto",
   "+device/fido",

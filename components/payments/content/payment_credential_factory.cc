@@ -2,15 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/payments/payment_credential_factory.h"
+#include "components/payments/content/payment_credential_factory.h"
 
-#include "chrome/browser/payments/chrome_payment_request_delegate.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_data_service_factory.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/payments/content/payment_credential.h"
 #include "components/payments/content/payment_credential_manager.h"
 #include "components/payments/content/payment_manifest_web_data_service.h"
+#include "components/webdata_services/web_data_service_wrapper_factory.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
@@ -38,9 +36,10 @@ void CreatePaymentCredential(
   PaymentCredentialManager::GetOrCreateForWebContents(web_contents)
       ->CreatePaymentCredential(
           initiator_frame_routing_id,
-          WebDataServiceFactory::GetPaymentManifestWebDataForProfile(
-              Profile::FromBrowserContext(web_contents->GetBrowserContext()),
-              ServiceAccessType::EXPLICIT_ACCESS),
+          webdata_services::WebDataServiceWrapperFactory::
+              GetPaymentManifestWebDataServiceForBrowserContext(
+                  web_contents->GetBrowserContext(),
+                  ServiceAccessType::EXPLICIT_ACCESS),
           std::move(receiver));
 }
 
