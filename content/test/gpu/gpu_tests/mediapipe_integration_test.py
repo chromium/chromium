@@ -51,8 +51,11 @@ class MediaPipeIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     action_runner.Navigate(self.UrlOfStaticFilePath(url))
     action_runner.WaitForJavaScriptCondition('window.runTest !== undefined')
     action_runner.EvaluateJavaScript('window.runTest()')
+    # 120s timeout: some of these tests time out on bots pretty regularly, even
+    # though they are fast enough locally. Set a large timeout value to deflake
+    # the bots. See crbug.com/1219013 for details.
     action_runner.WaitForJavaScriptCondition('window.isTestComplete()',
-                                             timeout=60)
+                                             timeout=120)
     errors = action_runner.EvaluateJavaScript('window.getErrors()')
 
     if errors:
