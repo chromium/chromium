@@ -222,6 +222,7 @@ class ProfileAttributesEntry {
   static const char kUseGAIAPictureKey[];
 
  private:
+  friend class ProfileAttributesStorage;
   friend class ProfileInfoCache;
   friend class ProfileThemeUpdateServiceBrowserTest;
   FRIEND_TEST_ALL_PREFIXES(ProfileAttributesStorageTest,

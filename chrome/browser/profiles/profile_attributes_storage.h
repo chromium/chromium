@@ -61,14 +61,15 @@ class ProfileAttributesStorage
   // Returns a vector containing one attributes entry per known profile. They
   // are not sorted in any particular order.
   std::vector<ProfileAttributesEntry*> GetAllProfilesAttributes(
-      bool include_guest_profile = false);
+      bool include_guest_profile = false) const;
 
   // Returns all non-Guest profile attributes sorted by name.
-  std::vector<ProfileAttributesEntry*> GetAllProfilesAttributesSortedByName();
+  std::vector<ProfileAttributesEntry*> GetAllProfilesAttributesSortedByName()
+      const;
 
   // Returns all non-Guest profile attributes sorted by local profile name.
   std::vector<ProfileAttributesEntry*>
-  GetAllProfilesAttributesSortedByLocalProfilName();
+  GetAllProfilesAttributesSortedByLocalProfilName() const;
 
   // Returns a ProfileAttributesEntry with the data for the profile at |path|
   // if the operation is successful. Returns |nullptr| otherwise.
@@ -153,6 +154,16 @@ class ProfileAttributesStorage
   // Notifies observers. The following methods are accessed by
   // ProfileAttributesEntry.
   void NotifyOnProfileAvatarChanged(const base::FilePath& profile_path) const;
+  void NotifyIsSigninRequiredChanged(const base::FilePath& profile_path) const;
+  void NotifyProfileAuthInfoChanged(const base::FilePath& profile_path) const;
+  void NotifyIfProfileNamesHaveChanged() const;
+  void NotifyProfileSupervisedUserIdChanged(
+      const base::FilePath& profile_path) const;
+  void NotifyProfileIsOmittedChanged(const base::FilePath& profile_path) const;
+  void NotifyProfileThemeColorsChanged(
+      const base::FilePath& profile_path) const;
+  void NotifyProfileHostedDomainChanged(
+      const base::FilePath& profile_path) const;
 
   // Disables the periodic reporting of profile metrics, as this is causing
   // tests to time out.
@@ -211,7 +222,7 @@ class ProfileAttributesStorage
 
  private:
   std::vector<ProfileAttributesEntry*> GetAllProfilesAttributesSorted(
-      bool use_local_profile_name);
+      bool use_local_profile_name) const;
 
   // Called when the picture given by |key| has been loaded from disk and
   // decoded into |image|.

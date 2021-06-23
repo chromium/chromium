@@ -57,9 +57,6 @@ class ProfileInfoCache : public ProfileInfoInterface,
   // Will be removed SOON with ProfileInfoCache tests. Do not use!
   base::FilePath GetPathOfProfileAtIndex(size_t index) const override;
 
-  // Notify IsSignedInRequired to all observer
-  void NotifyIsSigninRequiredChanged(const base::FilePath& profile_path);
-
   const base::FilePath& GetUserDataDir() const;
 
   // Register cache related preferences in Local State.
@@ -73,13 +70,6 @@ class ProfileInfoCache : public ProfileInfoInterface,
   ProfileAttributesEntry* GetProfileAttributesWithPath(
       const base::FilePath& path) override;
   void DisableProfileMetricsForTesting() override;
-
-  void NotifyProfileAuthInfoChanged(const base::FilePath& profile_path);
-  void NotifyIfProfileNamesHaveChanged();
-  void NotifyProfileSupervisedUserIdChanged(const base::FilePath& profile_path);
-  void NotifyProfileIsOmittedChanged(const base::FilePath& profile_path);
-  void NotifyProfileThemeColorsChanged(const base::FilePath& profile_path);
-  void NotifyProfileHostedDomainChanged(const base::FilePath& profile_path);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ProfileAttributesStorageTest,

@@ -253,7 +253,8 @@ ProfileAttributesStorage::~ProfileAttributesStorage() {
 }
 
 std::vector<ProfileAttributesEntry*>
-ProfileAttributesStorage::GetAllProfilesAttributes(bool include_guest_profile) {
+ProfileAttributesStorage::GetAllProfilesAttributes(
+    bool include_guest_profile) const {
   std::vector<ProfileAttributesEntry*> ret;
   for (const auto& path_and_entry : profile_attributes_entries_) {
     ProfileAttributesEntry* entry = path_and_entry.second.get();
@@ -266,7 +267,7 @@ ProfileAttributesStorage::GetAllProfilesAttributes(bool include_guest_profile) {
 
 std::vector<ProfileAttributesEntry*>
 ProfileAttributesStorage::GetAllProfilesAttributesSorted(
-    bool use_local_profile_name) {
+    bool use_local_profile_name) const {
   std::vector<ProfileAttributesEntry*> ret =
       GetAllProfilesAttributes(/*include_guest_profile=*/false);
   // Do not allocate the collator and sort if it is not necessary.
@@ -287,12 +288,13 @@ ProfileAttributesStorage::GetAllProfilesAttributesSorted(
 }
 
 std::vector<ProfileAttributesEntry*>
-ProfileAttributesStorage::GetAllProfilesAttributesSortedByName() {
+ProfileAttributesStorage::GetAllProfilesAttributesSortedByName() const {
   return GetAllProfilesAttributesSorted(false);
 }
 
 std::vector<ProfileAttributesEntry*>
-ProfileAttributesStorage::GetAllProfilesAttributesSortedByLocalProfilName() {
+ProfileAttributesStorage::GetAllProfilesAttributesSortedByLocalProfilName()
+    const {
   return GetAllProfilesAttributesSorted(true);
 }
 
@@ -499,6 +501,53 @@ void ProfileAttributesStorage::NotifyOnProfileAvatarChanged(
     const base::FilePath& profile_path) const {
   for (auto& observer : observer_list_)
     observer.OnProfileAvatarChanged(profile_path);
+}
+
+void ProfileAttributesStorage::NotifyIsSigninRequiredChanged(
+    const base::FilePath& profile_path) const {
+  for (auto& observer : observer_list_)
+    observer.OnProfileSigninRequiredChanged(profile_path);
+}
+
+void ProfileAttributesStorage::NotifyProfileAuthInfoChanged(
+    const base::FilePath& profile_path) const {
+  for (auto& observer : observer_list_)
+    observer.OnProfileAuthInfoChanged(profile_path);
+}
+
+void ProfileAttributesStorage::NotifyIfProfileNamesHaveChanged() const {
+  std::vector<ProfileAttributesEntry*> entries = GetAllProfilesAttributes();
+  for (ProfileAttributesEntry* entry : entries) {
+    std::u16string old_display_name = entry->GetLastNameToDisplay();
+    if (entry->HasProfileNameChanged()) {
+      for (auto& observer : observer_list_)
+        observer.OnProfileNameChanged(entry->GetPath(), old_display_name);
+    }
+  }
+}
+
+void ProfileAttributesStorage::NotifyProfileSupervisedUserIdChanged(
+    const base::FilePath& profile_path) const {
+  for (auto& observer : observer_list_)
+    observer.OnProfileSupervisedUserIdChanged(profile_path);
+}
+
+void ProfileAttributesStorage::NotifyProfileIsOmittedChanged(
+    const base::FilePath& profile_path) const {
+  for (auto& observer : observer_list_)
+    observer.OnProfileIsOmittedChanged(profile_path);
+}
+
+void ProfileAttributesStorage::NotifyProfileThemeColorsChanged(
+    const base::FilePath& profile_path) const {
+  for (auto& observer : observer_list_)
+    observer.OnProfileThemeColorsChanged(profile_path);
+}
+
+void ProfileAttributesStorage::NotifyProfileHostedDomainChanged(
+    const base::FilePath& profile_path) const {
+  for (auto& observer : observer_list_)
+    observer.OnProfileHostedDomainChanged(profile_path);
 }
 
 void ProfileAttributesStorage::NotifyOnProfileHighResAvatarLoaded(

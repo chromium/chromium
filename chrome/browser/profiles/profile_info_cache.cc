@@ -177,41 +177,6 @@ void ProfileInfoCache::DisableProfileMetricsForTesting() {
 #endif
 }
 
-void ProfileInfoCache::NotifyIfProfileNamesHaveChanged() {
-  std::vector<ProfileAttributesEntry*> entries = GetAllProfilesAttributes();
-  for (ProfileAttributesEntry* entry : entries) {
-    std::u16string old_display_name = entry->GetLastNameToDisplay();
-    if (entry->HasProfileNameChanged()) {
-      for (auto& observer : observer_list_)
-        observer.OnProfileNameChanged(entry->GetPath(), old_display_name);
-    }
-  }
-}
-
-void ProfileInfoCache::NotifyProfileSupervisedUserIdChanged(
-    const base::FilePath& profile_path) {
-  for (auto& observer : observer_list_)
-    observer.OnProfileSupervisedUserIdChanged(profile_path);
-}
-
-void ProfileInfoCache::NotifyProfileIsOmittedChanged(
-    const base::FilePath& profile_path) {
-  for (auto& observer : observer_list_)
-    observer.OnProfileIsOmittedChanged(profile_path);
-}
-
-void ProfileInfoCache::NotifyProfileThemeColorsChanged(
-    const base::FilePath& profile_path) {
-  for (auto& observer : observer_list_)
-    observer.OnProfileThemeColorsChanged(profile_path);
-}
-
-void ProfileInfoCache::NotifyProfileHostedDomainChanged(
-    const base::FilePath& profile_path) {
-  for (auto& observer : observer_list_)
-    observer.OnProfileHostedDomainChanged(profile_path);
-}
-
 void ProfileInfoCache::DeleteProfileFromCache(
     const base::FilePath& profile_path) {
   ProfileAttributesEntry* entry = GetProfileAttributesWithPath(profile_path);
@@ -254,18 +219,6 @@ size_t ProfileInfoCache::GetNumberOfProfiles(bool include_guest_profile) const {
 
 base::FilePath ProfileInfoCache::GetPathOfProfileAtIndex(size_t index) const {
   return user_data_dir_.AppendASCII(keys_[index]);
-}
-
-void ProfileInfoCache::NotifyProfileAuthInfoChanged(
-    const base::FilePath& profile_path) {
-  for (auto& observer : observer_list_)
-    observer.OnProfileAuthInfoChanged(profile_path);
-}
-
-void ProfileInfoCache::NotifyIsSigninRequiredChanged(
-    const base::FilePath& profile_path) {
-  for (auto& observer : observer_list_)
-    observer.OnProfileSigninRequiredChanged(profile_path);
 }
 
 const base::FilePath& ProfileInfoCache::GetUserDataDir() const {
