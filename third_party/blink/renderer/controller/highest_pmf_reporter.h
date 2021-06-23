@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CONTROLLER_HIGHEST_PMF_REPORTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CONTROLLER_HIGHEST_PMF_REPORTER_H_
 
+#include "base/memory/checked_ptr.h"
 #include "third_party/blink/renderer/controller/controller_export.h"
 #include "third_party/blink/renderer/controller/memory_usage_monitor.h"
 #include "third_party/blink/renderer/platform/timer.h"
@@ -46,7 +47,7 @@ class CONTROLLER_EXPORT HighestPmfReporter
   virtual void ReportMetrics();
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  const base::TickClock* clock_;
+  CheckedPtr<const base::TickClock> clock_;
 
   bool first_navigation_detected_ = false;
   double current_highest_pmf_ = 0.0;

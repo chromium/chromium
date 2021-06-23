@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -485,7 +486,7 @@ class FakeServiceWorkerContainerHost
 
  private:
   int get_controller_service_worker_count_ = 0;
-  FakeControllerServiceWorker* fake_controller_;
+  CheckedPtr<FakeControllerServiceWorker> fake_controller_;
   mojo::ReceiverSet<blink::mojom::ServiceWorkerContainerHost> receivers_;
   DISALLOW_COPY_AND_ASSIGN(FakeServiceWorkerContainerHost);
 };

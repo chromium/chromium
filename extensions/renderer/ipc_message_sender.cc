@@ -7,6 +7,7 @@
 #include <map>
 
 #include "base/guid.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "content/public/renderer/render_frame.h"
@@ -439,7 +440,7 @@ class WorkerThreadIPCMessageSender : public IPCMessageSender {
                                   service_worker_version_id_, GetExtensionId());
   }
 
-  WorkerThreadDispatcher* const dispatcher_;
+  const CheckedPtr<WorkerThreadDispatcher> dispatcher_;
   const int64_t service_worker_version_id_;
   absl::optional<ExtensionId> extension_id_;
 

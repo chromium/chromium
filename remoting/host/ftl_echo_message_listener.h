@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "remoting/signaling/signal_strategy.h"
 
 namespace remoting {
@@ -35,7 +36,7 @@ class FtlEchoMessageListener : public SignalStrategy::Listener {
 
  private:
   std::string host_owner_;
-  SignalStrategy* signal_strategy_;
+  CheckedPtr<SignalStrategy> signal_strategy_;
   DISALLOW_COPY_AND_ASSIGN(FtlEchoMessageListener);
 };
 

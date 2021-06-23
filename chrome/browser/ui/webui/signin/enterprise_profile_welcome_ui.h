@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_SIGNIN_ENTERPRISE_PROFILE_WELCOME_UI_H_
 
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 
@@ -45,7 +46,7 @@ class EnterpriseProfileWelcomeUI : public ui::WebDialogUI {
 
  private:
   // Stored for tests.
-  EnterpriseProfileWelcomeHandler* handler_ = nullptr;
+  CheckedPtr<EnterpriseProfileWelcomeHandler> handler_ = nullptr;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

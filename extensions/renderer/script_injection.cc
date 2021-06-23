@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/lazy_instance.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/values.h"
@@ -135,7 +136,7 @@ class ScriptInjection::FrameWatcher : public content::RenderFrameObserver {
   void WillDetach() override { injection_->invalidate_render_frame(); }
   void OnDestruct() override { injection_->invalidate_render_frame(); }
 
-  ScriptInjection* injection_;
+  CheckedPtr<ScriptInjection> injection_;
 
   DISALLOW_COPY_AND_ASSIGN(FrameWatcher);
 };

@@ -7,6 +7,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "remoting/protocol/input_stub.h"
 
 namespace remoting {
@@ -41,7 +42,7 @@ class InputFilter : public InputStub {
   void InjectTouchEvent(const TouchEvent& event) override;
 
  private:
-  InputStub* input_stub_;
+  CheckedPtr<InputStub> input_stub_;
   bool enabled_;
 
   DISALLOW_COPY_AND_ASSIGN(InputFilter);

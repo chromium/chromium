@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/memory/checked_ptr.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -52,7 +53,8 @@ class PLATFORM_EXPORT WebMemoryAllocatorDump final {
   blink::WebMemoryAllocatorDumpGuid Guid() const;
 
  private:
-  base::trace_event::MemoryAllocatorDump* memory_allocator_dump_;  // Not owned.
+  CheckedPtr<base::trace_event::MemoryAllocatorDump>
+      memory_allocator_dump_;  // Not owned.
   blink::WebMemoryAllocatorDumpGuid guid_;
 };
 

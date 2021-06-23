@@ -9,6 +9,7 @@
 #include <string.h>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "net/base/net_export.h"
 
 namespace disk_cache {
@@ -126,7 +127,7 @@ class NET_EXPORT_PRIVATE Bitmap {
   // stored in the same word, and len < kIntBits.
   void SetWordBits(int start, int len, bool value);
 
-  uint32_t* map_;         // The bitmap.
+  CheckedPtr<uint32_t> map_;  // The bitmap.
   int num_bits_;          // The upper bound of the bitmap.
   int array_size_;        // The physical size (in uint32s) of the bitmap.
   bool alloc_;            // Whether or not we allocated the memory.

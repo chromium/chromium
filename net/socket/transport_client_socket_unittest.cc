@@ -6,6 +6,7 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "net/base/address_list.h"
@@ -92,7 +93,7 @@ class TransportClientSocketTest
   base::RunLoop connect_loop_;
   uint16_t listen_port_;
   RecordingTestNetLog net_log_;
-  ClientSocketFactory* const socket_factory_;
+  const CheckedPtr<ClientSocketFactory> socket_factory_;
   std::unique_ptr<StreamSocket> sock_;
   std::unique_ptr<StreamSocket> connected_sock_;
 

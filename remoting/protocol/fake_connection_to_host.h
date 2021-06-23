@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "remoting/protocol/connection_to_host.h"
 #include "remoting/protocol/protocol_mock_objects.h"
@@ -50,7 +51,7 @@ class FakeConnectionToHost : public protocol::ConnectionToHost {
 
   State state_ = INITIALIZING;
 
-  HostEventCallback* event_callback_;
+  CheckedPtr<HostEventCallback> event_callback_;
 
   testing::NiceMock<protocol::MockClipboardStub> mock_clipboard_stub_;
   testing::NiceMock<protocol::MockHostStub> mock_host_stub_;

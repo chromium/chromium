@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "content/public/common/page_type.h"
 #include "ui/gfx/native_widget_types.h"
@@ -134,7 +135,7 @@ class AppModalDialogWaiter {
  private:
   void EarlyCallback();
   bool was_dialog_request_callback_called_ = false;
-  Shell* shell_;
+  CheckedPtr<Shell> shell_;
 };
 
 // Extends the ToRenderFrameHost mechanism to content::Shells.
@@ -160,7 +161,7 @@ class ShellAddedObserver {
  private:
   void ShellCreated(Shell* shell);
 
-  Shell* shell_ = nullptr;
+  CheckedPtr<Shell> shell_ = nullptr;
   std::unique_ptr<base::RunLoop> runner_;
 
   DISALLOW_COPY_AND_ASSIGN(ShellAddedObserver);

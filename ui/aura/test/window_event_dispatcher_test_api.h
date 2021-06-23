@@ -6,6 +6,7 @@
 #define UI_AURA_TEST_WINDOW_EVENT_DISPATCHER_TEST_API_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 
 namespace aura {
 
@@ -24,7 +25,7 @@ class WindowEventDispatcherTestApi {
   void WaitUntilPointerMovesDispatched();
 
  private:
-  WindowEventDispatcher* dispatcher_;
+  CheckedPtr<WindowEventDispatcher> dispatcher_;
 
   DISALLOW_COPY_AND_ASSIGN(WindowEventDispatcherTestApi);
 };

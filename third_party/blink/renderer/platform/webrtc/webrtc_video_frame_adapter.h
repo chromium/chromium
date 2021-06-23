@@ -9,6 +9,7 @@
 
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
@@ -108,7 +109,7 @@ class PLATFORM_EXPORT WebRtcVideoFrameAdapter
     scoped_refptr<viz::RasterContextProvider> raster_context_provider_
         GUARDED_BY(context_provider_lock_);
 
-    media::GpuVideoAcceleratorFactories* gpu_factories_;
+    CheckedPtr<media::GpuVideoAcceleratorFactories> gpu_factories_;
 
     base::Lock feedback_lock_;
 

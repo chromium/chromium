@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "components/infobars/core/infobar.h"
 #include "components/translate/core/browser/translate_client.h"
@@ -58,8 +59,8 @@ class MockTranslateClient : public TranslateClient {
   MOCK_CONST_METHOD0(IsAutofillAssistantRunning, bool());
 
  private:
-  TranslateDriver* driver_;
-  PrefService* prefs_;
+  CheckedPtr<TranslateDriver> driver_;
+  CheckedPtr<PrefService> prefs_;
 };
 
 }  // namespace testing

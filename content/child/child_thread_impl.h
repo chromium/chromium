@@ -12,6 +12,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
@@ -179,7 +180,7 @@ class CONTENT_EXPORT ChildThreadImpl : public IPC::Listener,
     bool RouteMessage(const IPC::Message& msg) override;
 
    private:
-    IPC::Sender* const sender_;
+    const CheckedPtr<IPC::Sender> sender_;
   };
 
   void Init(const Options& options);
@@ -252,7 +253,7 @@ struct ChildThreadImpl::Options {
   bool connect_to_browser = false;
   scoped_refptr<base::SingleThreadTaskRunner> browser_process_io_runner;
   std::vector<IPC::MessageFilter*> startup_filters;
-  mojo::OutgoingInvitation* mojo_invitation = nullptr;
+  CheckedPtr<mojo::OutgoingInvitation> mojo_invitation = nullptr;
   scoped_refptr<base::SingleThreadTaskRunner> ipc_task_runner;
 
   // Indicates that this child process exposes one or more Mojo interfaces to

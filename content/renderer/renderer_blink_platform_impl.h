@@ -14,6 +14,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/id_map.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -285,7 +286,7 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
   bool is_locked_to_site_;
 
   // NOT OWNED
-  blink::scheduler::WebThreadScheduler* main_thread_scheduler_;
+  CheckedPtr<blink::scheduler::WebThreadScheduler> main_thread_scheduler_;
 
   TopLevelBlameContext top_level_blame_context_;
 

@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/browser_switcher/browser_switcher_prefs.h"
 #include "chrome/browser/browser_switcher/browser_switcher_service.h"
 #include "chrome/browser/browser_switcher/browser_switcher_service_factory.h"
@@ -80,7 +81,7 @@ class BrowserSwitcherNavigationThrottleTest
   MockBrowserSwitcherSitelist* sitelist() { return sitelist_; }
 
  private:
-  MockBrowserSwitcherSitelist* sitelist_;
+  CheckedPtr<MockBrowserSwitcherSitelist> sitelist_;
 };
 
 Decision STAY = {kStay, kDefault, ""};

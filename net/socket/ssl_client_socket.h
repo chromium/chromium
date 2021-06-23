@@ -12,6 +12,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "net/base/net_export.h"
 #include "net/cert/cert_database.h"
@@ -178,12 +179,12 @@ class NET_EXPORT SSLClientContext : public SSLConfigService::Observer,
 
   SSLContextConfig config_;
 
-  SSLConfigService* ssl_config_service_;
-  CertVerifier* cert_verifier_;
-  TransportSecurityState* transport_security_state_;
-  CTPolicyEnforcer* ct_policy_enforcer_;
-  SSLClientSessionCache* ssl_client_session_cache_;
-  SCTAuditingDelegate* sct_auditing_delegate_;
+  CheckedPtr<SSLConfigService> ssl_config_service_;
+  CheckedPtr<CertVerifier> cert_verifier_;
+  CheckedPtr<TransportSecurityState> transport_security_state_;
+  CheckedPtr<CTPolicyEnforcer> ct_policy_enforcer_;
+  CheckedPtr<SSLClientSessionCache> ssl_client_session_cache_;
+  CheckedPtr<SCTAuditingDelegate> sct_auditing_delegate_;
 
   SSLClientAuthCache ssl_client_auth_cache_;
 

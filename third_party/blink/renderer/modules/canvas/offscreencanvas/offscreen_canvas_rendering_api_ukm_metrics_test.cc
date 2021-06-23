@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/checked_ptr.h"
 #include "third_party/blink/renderer/core/offscreencanvas/offscreen_canvas.h"
 
 #include "components/ukm/test_ukm_recorder.h"
@@ -65,7 +66,7 @@ class OffscreenCanvasRenderingAPIUkmMetricsTest : public PageTestBase {
   }
 
   Persistent<OffscreenCanvas> offscreen_canvas_element_;
-  ukm::TestUkmRecorder* test_ukm_recorder_ = nullptr;
+  CheckedPtr<ukm::TestUkmRecorder> test_ukm_recorder_ = nullptr;
 };
 
 OffscreenCanvasRenderingAPIUkmMetricsTest::

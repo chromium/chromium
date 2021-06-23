@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_ablation_study.h"
 #include "components/autofill/core/browser/autofill_field.h"
@@ -139,10 +140,11 @@ class FormEventLoggerBase {
   FormFieldData last_polled_field_;
 
   // Weak reference.
-  AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger_;
+  CheckedPtr<AutofillMetrics::FormInteractionsUkmLogger>
+      form_interactions_ukm_logger_;
 
   // Weak reference.
-  LogManager* const log_manager_;
+  const CheckedPtr<LogManager> log_manager_;
 
   AutofillSyncSigninState sync_state_ = AutofillSyncSigninState::kNumSyncStates;
 };

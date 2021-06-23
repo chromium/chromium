@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_HATS_TRUST_SAFETY_SENTIMENT_SERVICE_H_
 #define CHROME_BROWSER_UI_HATS_TRUST_SAFETY_SENTIMENT_SERVICE_H_
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -63,7 +64,7 @@ class TrustSafetySentimentService : public KeyedService {
       FeatureArea feature_area,
       const std::map<std::string, bool>& product_specific_data);
 
-  Profile* const profile_;
+  const CheckedPtr<Profile> profile_;
   std::map<FeatureArea, PendingTrigger> pending_triggers_;
   base::WeakPtrFactory<TrustSafetySentimentService> weak_ptr_factory_{this};
 };

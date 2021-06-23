@@ -17,6 +17,7 @@
 #include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
@@ -718,9 +719,9 @@ class AppCacheRequestHandlerTest : public ::testing::Test {
   base::stack<base::OnceClosure> task_stack_;
   std::unique_ptr<MockAppCacheService> mock_service_;
   std::unique_ptr<MockAppCachePolicy> mock_policy_;
-  AppCacheHost* host_;
+  CheckedPtr<AppCacheHost> host_;
   mojo::Remote<blink::mojom::AppCacheHost> host_remote_;
-  AppCacheRequest* request_;
+  CheckedPtr<AppCacheRequest> request_;
   std::unique_ptr<AppCacheRequestHandler> handler_;
   base::WeakPtr<AppCacheURLLoader> appcache_url_loader_;
 };

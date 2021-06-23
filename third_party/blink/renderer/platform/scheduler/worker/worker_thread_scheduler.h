@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_WORKER_WORKER_THREAD_SCHEDULER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_WORKER_WORKER_THREAD_SCHEDULER_H_
 
+#include "base/memory/checked_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "components/scheduling_metrics/task_duration_metric_reporter.h"
 #include "third_party/blink/renderer/platform/scheduler/common/idle_helper.h"
@@ -148,8 +149,8 @@ class PLATFORM_EXPORT WorkerThreadScheduler : public NonMainThreadSchedulerImpl,
 
   std::unique_ptr<TaskQueueThrottler> task_queue_throttler_;
   // Owned by |task_queue_throttler_|.
-  WakeUpBudgetPool* wake_up_budget_pool_ = nullptr;
-  CPUTimeBudgetPool* cpu_time_budget_pool_ = nullptr;
+  CheckedPtr<WakeUpBudgetPool> wake_up_budget_pool_ = nullptr;
+  CheckedPtr<CPUTimeBudgetPool> cpu_time_budget_pool_ = nullptr;
 
   // The status of the parent frame when the worker was created.
   const FrameStatus initial_frame_status_;

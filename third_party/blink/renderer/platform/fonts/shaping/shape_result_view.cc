@@ -264,9 +264,10 @@ scoped_refptr<ShapeResultView> ShapeResultView::Create(const Segment* segments,
       sizeof(ShapeResultView) + sizeof(RunInfoPart) * num_parts;
   void* buffer = ::WTF::Partitions::FastMalloc(
       byte_size, ::WTF::GetStringWithTypeName<ShapeResultView>());
-  ShapeResultView* out = segments[0].result
-                             ? new (buffer) ShapeResultView(segments[0].result)
-                             : new (buffer) ShapeResultView(segments[0].view);
+  ShapeResultView* out =
+      segments[0].result ? new (buffer)
+                               ShapeResultView(segments[0].result.get())
+                         : new (buffer) ShapeResultView(segments[0].view.get());
   out->AddSegments(segments, segment_count);
   return base::AdoptRef(out);
 }
@@ -337,12 +338,12 @@ void ShapeResultView::AddSegments(const Segment* segments,
     const Segment& segment = segments[IsRtl() ? last_segment_index - i : i];
     if (segment.result) {
       DCHECK_EQ(segment.result->Direction(), Direction());
-      CreateViewsForResult(segment.result, segment.start_index,
+      CreateViewsForResult(segment.result.get(), segment.start_index,
                            segment.end_index);
       has_vertical_offsets_ |= segment.result->has_vertical_offsets_;
     } else if (segment.view) {
       DCHECK_EQ(segment.view->Direction(), Direction());
-      CreateViewsForResult(segment.view, segment.start_index,
+      CreateViewsForResult(segment.view.get(), segment.start_index,
                            segment.end_index);
       has_vertical_offsets_ |= segment.view->has_vertical_offsets_;
     } else {

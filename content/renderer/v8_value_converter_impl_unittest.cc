@@ -12,6 +12,7 @@
 
 #include "base/containers/span.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
@@ -34,7 +35,7 @@ class ScopedAvoidIdentityHashForTesting {
   ~ScopedAvoidIdentityHashForTesting();
 
  private:
-  content::V8ValueConverterImpl* converter_;
+  CheckedPtr<content::V8ValueConverterImpl> converter_;
 
   DISALLOW_COPY_AND_ASSIGN(ScopedAvoidIdentityHashForTesting);
 };

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_ROW_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_ROW_VIEW_H_
 
+#include "base/memory/checked_ptr.h"
 #include "ui/base/models/image_model.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
@@ -42,13 +43,13 @@ class PageInfoRowView : public views::View {
   gfx::Size CalculatePreferredSize() const override;
 
  private:
-  views::ImageView* icon_ = nullptr;
-  views::Label* title_ = nullptr;
-  views::View* labels_wrapper_ = nullptr;
+  CheckedPtr<views::ImageView> icon_ = nullptr;
+  CheckedPtr<views::Label> title_ = nullptr;
+  CheckedPtr<views::View> labels_wrapper_ = nullptr;
 
   // The sum of width of all control views in the right side of the row.
   int controls_width_ = 0;
-  views::FlexLayout* layout_manager_;
+  CheckedPtr<views::FlexLayout> layout_manager_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_ROW_VIEW_H_

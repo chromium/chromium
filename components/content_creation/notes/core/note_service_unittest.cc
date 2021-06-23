@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -43,8 +44,8 @@ class NoteServiceTest : public testing::Test {
 
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<NoteService> note_service_;
-  test::MockTemplateStore* mock_template_store_;
-  test::MockNotesRepository* mock_notes_repository_;
+  CheckedPtr<test::MockTemplateStore> mock_template_store_;
+  CheckedPtr<test::MockNotesRepository> mock_notes_repository_;
 };
 
 TEST_F(NoteServiceTest, GetTemplatesSuccess_Empty) {

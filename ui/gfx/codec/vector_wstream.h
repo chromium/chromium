@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/memory/checked_ptr.h"
 #include "third_party/skia/include/core/SkStream.h"
 
 namespace gfx {
@@ -28,7 +29,7 @@ class VectorWStream : public SkWStream {
 
  private:
   // Does not have ownership.
-  std::vector<unsigned char>* dst_;
+  CheckedPtr<std::vector<unsigned char>> dst_;
 };
 
 }  // namespace gfx

@@ -13,6 +13,7 @@
 
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/nonscannable_memory.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_math.h"
@@ -115,7 +116,7 @@ struct ComplexMessage : public Channel::Message {
 
 #if defined(OS_WIN)
   // On Windows, handles are serialised into the extra header section.
-  HandleEntry* handles_ = nullptr;
+  CheckedPtr<HandleEntry> handles_ = nullptr;
 #elif defined(OS_MAC)
   // On OSX, handles are serialised into the extra header section.
   MachPortsExtraHeader* mach_ports_header_ = nullptr;

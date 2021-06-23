@@ -7,6 +7,8 @@
 
 #include <cstdint>
 
+#include "base/memory/checked_ptr.h"
+
 namespace cast_api_bindings {
 
 struct Message;
@@ -50,7 +52,7 @@ class MessageConnector {
   virtual ~MessageConnector();
 
   uint32_t channel_id_;
-  MessageConnector* peer_ = nullptr;
+  CheckedPtr<MessageConnector> peer_ = nullptr;
   bool started_ = false;
 };
 

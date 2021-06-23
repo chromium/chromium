@@ -17,6 +17,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
@@ -609,7 +610,7 @@ class RTCPeerConnectionHandlerTest : public SimTest {
   std::unique_ptr<RTCPeerConnectionHandlerUnderTest> pc_handler_;
 
   // Weak reference to the mocked native peer connection implementation.
-  blink::MockPeerConnectionImpl* mock_peer_connection_;
+  CheckedPtr<blink::MockPeerConnectionImpl> mock_peer_connection_;
 
   std::vector<std::unique_ptr<blink::RTCRtpSenderImpl>> senders_;
   std::map<webrtc::MediaStreamTrackInterface*,

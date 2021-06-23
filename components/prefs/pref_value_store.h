@@ -14,6 +14,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/values.h"
 #include "components/prefs/pref_store.h"
@@ -210,7 +211,7 @@ class COMPONENTS_PREFS_EXPORT PrefValueStore {
     void OnInitializationCompleted(bool succeeded) override;
 
     // PrefValueStore this keeper is part of.
-    PrefValueStore* pref_value_store_;
+    CheckedPtr<PrefValueStore> pref_value_store_;
 
     // The PrefStore managed by this keeper.
     scoped_refptr<PrefStore> pref_store_;
@@ -291,7 +292,7 @@ class COMPONENTS_PREFS_EXPORT PrefValueStore {
 
   // Used for generating notifications. This is a weak reference,
   // since the notifier is owned by the corresponding PrefService.
-  PrefNotifier* pref_notifier_;
+  CheckedPtr<PrefNotifier> pref_notifier_;
 
   // A mapping of preference names to their registered types.
   PrefTypeMap pref_types_;

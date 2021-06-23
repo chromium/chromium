@@ -58,7 +58,7 @@ void GetGuestViewDefaultContentSettingRules(
 
 RendererUpdater::RendererUpdater(Profile* profile) : profile_(profile) {
   identity_manager_ = IdentityManagerFactory::GetForProfile(profile);
-  identity_manager_observation_.Observe(identity_manager_);
+  identity_manager_observation_.Observe(identity_manager_.get());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   oauth2_login_manager_ =
       chromeos::OAuth2LoginManagerFactory::GetForProfile(profile_);

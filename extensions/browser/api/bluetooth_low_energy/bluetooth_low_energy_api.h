@@ -10,6 +10,7 @@
 #include <unordered_set>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "content/public/browser/browser_context.h"
 #include "device/bluetooth/bluetooth_advertisement.h"
@@ -112,7 +113,7 @@ class BluetoothLowEnergyExtensionFunction : public ExtensionFunction {
   // in the case of invalid params.
   virtual bool ParseParams() = 0;
 
-  BluetoothLowEnergyEventRouter* event_router_;
+  CheckedPtr<BluetoothLowEnergyEventRouter> event_router_;
 
  private:
   // Internal method to do common setup before actual DoWork is called.
@@ -497,7 +498,8 @@ class BluetoothLowEnergyAdvertisementFunction
  private:
   void Initialize();
 
-  ApiResourceManager<BluetoothApiAdvertisement>* advertisements_manager_;
+  CheckedPtr<ApiResourceManager<BluetoothApiAdvertisement>>
+      advertisements_manager_;
 
   DISALLOW_COPY_AND_ASSIGN(BluetoothLowEnergyAdvertisementFunction);
 };

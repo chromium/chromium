@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/memory/checked_ptr.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -70,7 +71,8 @@ class PresentationRequestNotificationProducer::
     notification_producer_->DeleteItemForPresentationRequest("Dialog closed.");
   }
 
-  PresentationRequestNotificationProducer* const notification_producer_;
+  const CheckedPtr<PresentationRequestNotificationProducer>
+      notification_producer_;
 };
 
 PresentationRequestNotificationProducer::

@@ -5,6 +5,7 @@
 #ifndef MEDIA_CDM_LIBRARY_CDM_CDM_HOST_PROXY_IMPL_H_
 #define MEDIA_CDM_LIBRARY_CDM_CDM_HOST_PROXY_IMPL_H_
 
+#include "base/memory/checked_ptr.h"
 #include "media/cdm/library_cdm/cdm_host_proxy.h"
 
 #include "base/macros.h"
@@ -114,7 +115,7 @@ class CdmHostProxyImpl : public CdmHostProxy {
   }
 
  private:
-  HostInterface* const host_ = nullptr;
+  const CheckedPtr<HostInterface> host_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(CdmHostProxyImpl);
 };

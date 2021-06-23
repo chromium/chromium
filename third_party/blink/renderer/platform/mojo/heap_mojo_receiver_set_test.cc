@@ -7,6 +7,7 @@
 #include <utility>
 
 #include <string>
+#include "base/memory/checked_ptr.h"
 #include "base/test/null_task_runner.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -53,7 +54,7 @@ class GCOwner final : public GarbageCollected<GCOwner<Mode, ContextType>>,
  private:
   HeapMojoReceiverSet<sample::blink::Service, GCOwner, Mode, ContextType>
       receiver_set_;
-  HeapMojoReceiverSetGCBaseTest<Mode, ContextType>* test_;
+  CheckedPtr<HeapMojoReceiverSetGCBaseTest<Mode, ContextType>> test_;
 };
 
 template <HeapMojoWrapperMode Mode, typename ContextType>

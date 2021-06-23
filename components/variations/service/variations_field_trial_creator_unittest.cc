@@ -15,6 +15,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_entropy_provider.h"
 #include "base/test/scoped_field_trial_list_resetter.h"
@@ -263,7 +264,7 @@ class TestVariationsSeedStore : public VariationsSeedStore {
   // Whether to simulate having a corrupted safe seed.
   bool has_corrupted_safe_seed_ = false;
 
-  PrefService* local_state_;
+  CheckedPtr<PrefService> local_state_;
 
   DISALLOW_COPY_AND_ASSIGN(TestVariationsSeedStore);
 };
@@ -306,7 +307,7 @@ class TestVariationsFieldTrialCreator : public VariationsFieldTrialCreator {
 
   metrics::TestEnabledStateProvider enabled_state_provider_;
   TestVariationsSeedStore seed_store_;
-  SafeSeedManager* const safe_seed_manager_;
+  const CheckedPtr<SafeSeedManager> safe_seed_manager_;
   std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager_;
 
   DISALLOW_COPY_AND_ASSIGN(TestVariationsFieldTrialCreator);

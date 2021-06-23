@@ -10,6 +10,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/guid.h"
+#include "base/memory/checked_ptr.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/autofill/android/personal_data_manager_android.h"
@@ -71,14 +72,14 @@ class SaveAddressProfilePromptControllerTest : public testing::Test {
   std::string GetLocale() { return "en-US"; }
 
   base::test::ScopedFeatureList feature_list_;
-  MockSaveAddressProfilePromptView* prompt_view_;
+  CheckedPtr<MockSaveAddressProfilePromptView> prompt_view_;
   AutofillProfile profile_;
   AutofillProfile original_profile_;
   base::MockCallback<AutofillClient::AddressProfileSavePromptCallback>
       decision_callback_;
   base::MockCallback<base::OnceCallback<void()>> dismissal_callback_;
   std::unique_ptr<SaveAddressProfilePromptController> controller_;
-  JNIEnv* env_ = base::android::AttachCurrentThread();
+  CheckedPtr<JNIEnv> env_ = base::android::AttachCurrentThread();
   base::android::JavaParamRef<jobject> mock_caller_{nullptr};
 };
 

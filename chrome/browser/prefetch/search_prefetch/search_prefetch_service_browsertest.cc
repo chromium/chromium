@@ -4,6 +4,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -613,7 +614,7 @@ class SearchPrefetchBaseBrowserTest : public InProcessBrowserTest {
            std::pair<std::string /* content */, std::string /* content_type */>>
       static_files_;
 
-  DevToolsWindow* window_ = nullptr;
+  CheckedPtr<DevToolsWindow> window_ = nullptr;
 };
 
 class SearchPrefetchServiceDisabledBrowserTest
@@ -930,7 +931,7 @@ class HeaderObserverThrottle : public blink::URLLoaderThrottle {
   }
 
  private:
-  HeaderObserverContentBrowserClient* client_;
+  CheckedPtr<HeaderObserverContentBrowserClient> client_;
 };
 
 std::vector<std::unique_ptr<blink::URLLoaderThrottle>>

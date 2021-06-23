@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_WEB_INBAND_TEXT_TRACK_IMPL_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_WEB_INBAND_TEXT_TRACK_IMPL_H_
 
+#include "base/memory/checked_ptr.h"
 #include "third_party/blink/public/platform/web_inband_text_track.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -32,7 +33,7 @@ class PLATFORM_EXPORT WebInbandTextTrackImpl
   blink::WebString Id() const override;
 
  private:
-  blink::WebInbandTextTrackClient* client_;
+  CheckedPtr<blink::WebInbandTextTrackClient> client_;
   Kind kind_;
   blink::WebString label_;
   blink::WebString language_;

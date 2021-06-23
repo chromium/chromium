@@ -13,7 +13,7 @@ RenderWidgetHostVisibilityObserver::RenderWidgetHostVisibilityObserver(
       was_observed_(false),
       did_fail_(false),
       render_widget_(rwhi) {
-  observation_.Observe(render_widget_);
+  observation_.Observe(render_widget_.get());
 }
 
 RenderWidgetHostVisibilityObserver::~RenderWidgetHostVisibilityObserver() =
