@@ -4,6 +4,8 @@
 
 module chromeos.ime.mojom;
 
+import "mojo/public/mojom/base/string16.mojom";
+
 // Method of an operation to apply to a text field.
 enum OperationMethodForRulebased {
   COMMIT_TEXT = 0,
@@ -16,7 +18,7 @@ struct OperationForRulebased {
   OperationMethodForRulebased method;
 
   // Additional arguments of the method to apply to the text field.
-  string arguments;
+  mojo_base.mojom.String16 arguments;
 };
 
 // KeypressResponse represents the Rulebased engine response to a keypress.

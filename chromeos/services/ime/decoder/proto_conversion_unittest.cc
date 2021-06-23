@@ -150,7 +150,7 @@ TEST(ProtoConversionTest, ProtoToAutocorrectSpan) {
   mojom::AutocorrectSpanPtr result = ProtoToAutocorrectSpan(autocorrect_span);
 
   EXPECT_EQ(result,
-            mojom::AutocorrectSpan::New(gfx::Range(1, 2), "hello", "world"));
+            mojom::AutocorrectSpan::New(gfx::Range(1, 2), u"hello", u"world"));
 }
 
 TEST(ProtoConversionTest, ProtoToSuggestionsRequest) {

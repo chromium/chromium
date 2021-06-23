@@ -57,19 +57,19 @@ void TestProcessKeypressForRulebasedCallback(
     res_out->operations.push_back(std::move(response->operations[i]));
   }
 }
+
 class ImeServiceTest : public testing::Test, public mojom::InputMethodHost {
  public:
   ImeServiceTest() : service_(remote_service_.BindNewPipeAndPassReceiver()) {}
   ~ImeServiceTest() override = default;
 
-  void CommitText(const std::string& text,
+  void CommitText(const std::u16string& text,
                   mojom::CommitTextCursorBehavior cursor_behavior) override {}
-  void SetComposition(const std::string& text) override {}
-  void SetCompositionRange(uint32_t start_byte_index,
-                           uint32_t end_byte_index) override {}
+  void SetComposition(const std::u16string& text) override {}
+  void SetCompositionRange(uint32_t start_index, uint32_t end_index) override {}
   void FinishComposition() override {}
-  void DeleteSurroundingText(uint32_t num_bytes_before_cursor,
-                             uint32_t num_bytes_after_cursor) override {}
+  void DeleteSurroundingText(uint32_t num_before_cursor,
+                             uint32_t num_after_cursor) override {}
   void HandleAutocorrect(mojom::AutocorrectSpanPtr autocorrect_span) override {}
   void RequestSuggestions(mojom::SuggestionsRequestPtr request,
                           RequestSuggestionsCallback callback) override {}
@@ -382,7 +382,7 @@ TEST_F(ImeServiceTest, RuleBasedArabic) {
   EXPECT_EQ(response.result, true);
   std::vector<mojom::OperationForRulebasedPtr> expected_operations;
   expected_operations.push_back({mojom::OperationForRulebased::New(
-      mojom::OperationMethodForRulebased::COMMIT_TEXT, "\u0650")});
+      mojom::OperationMethodForRulebased::COMMIT_TEXT, u"\u0650")});
   EXPECT_EQ(response.operations.size(), expected_operations.size());
   EXPECT_EQ(response.operations, expected_operations);
 
@@ -395,7 +395,7 @@ TEST_F(ImeServiceTest, RuleBasedArabic) {
   EXPECT_EQ(response.result, true);
   expected_operations = std::vector<mojom::OperationForRulebasedPtr>(0);
   expected_operations.push_back({mojom::OperationForRulebased::New(
-      mojom::OperationMethodForRulebased::COMMIT_TEXT, "\u0644\u0627")});
+      mojom::OperationMethodForRulebased::COMMIT_TEXT, u"\u0644\u0627")});
   EXPECT_EQ(response.operations.size(), expected_operations.size());
   EXPECT_EQ(response.operations, expected_operations);
 
@@ -453,7 +453,7 @@ TEST_F(ImeServiceTest, RuleBasedDevaPhone) {
   EXPECT_EQ(response.result, true);
   expected_operations = std::vector<mojom::OperationForRulebasedPtr>(0);
   expected_operations.push_back({mojom::OperationForRulebased::New(
-      mojom::OperationMethodForRulebased::SET_COMPOSITION, "\u0928")});
+      mojom::OperationMethodForRulebased::SET_COMPOSITION, u"\u0928")});
   EXPECT_EQ(response.operations.size(), expected_operations.size());
   EXPECT_EQ(response.operations, expected_operations);
 
@@ -467,7 +467,7 @@ TEST_F(ImeServiceTest, RuleBasedDevaPhone) {
   EXPECT_EQ(response.result, true);
   expected_operations = std::vector<mojom::OperationForRulebasedPtr>(0);
   expected_operations.push_back({mojom::OperationForRulebased::New(
-      mojom::OperationMethodForRulebased::SET_COMPOSITION, "")});
+      mojom::OperationMethodForRulebased::SET_COMPOSITION, u"")});
   EXPECT_EQ(response.operations.size(), expected_operations.size());
   EXPECT_EQ(response.operations, expected_operations);
 
@@ -486,7 +486,7 @@ TEST_F(ImeServiceTest, RuleBasedDevaPhone) {
   expected_operations = std::vector<mojom::OperationForRulebasedPtr>(0);
   expected_operations.push_back({mojom::OperationForRulebased::New(
       mojom::OperationMethodForRulebased::SET_COMPOSITION,
-      "\u091e\u094d\u091a")});
+      u"\u091e\u094d\u091a")});
   EXPECT_EQ(response.operations.size(), expected_operations.size());
   EXPECT_EQ(response.operations, expected_operations);
 
@@ -500,7 +500,8 @@ TEST_F(ImeServiceTest, RuleBasedDevaPhone) {
   EXPECT_EQ(response.result, true);
   expected_operations = std::vector<mojom::OperationForRulebasedPtr>(0);
   expected_operations.push_back({mojom::OperationForRulebased::New(
-      mojom::OperationMethodForRulebased::COMMIT_TEXT, "\u091e\u094d\u091a ")});
+      mojom::OperationMethodForRulebased::COMMIT_TEXT,
+      u"\u091e\u094d\u091a ")});
   EXPECT_EQ(response.operations.size(), expected_operations.size());
   EXPECT_EQ(response.operations, expected_operations);
 }
@@ -534,7 +535,7 @@ TEST_F(ImeServiceTest, RuleBasedDoesNotEscapeCharacters) {
   ASSERT_EQ(1U, response.operations.size());
   EXPECT_EQ(mojom::OperationMethodForRulebased::COMMIT_TEXT,
             response.operations[0]->method);
-  EXPECT_EQ("\"", response.operations[0]->arguments);
+  EXPECT_EQ(u"\"", response.operations[0]->arguments);
 
   // Backslash.
   input_method->ProcessKeypressForRulebased(
@@ -547,7 +548,7 @@ TEST_F(ImeServiceTest, RuleBasedDoesNotEscapeCharacters) {
   ASSERT_EQ(1U, response.operations.size());
   EXPECT_EQ(mojom::OperationMethodForRulebased::COMMIT_TEXT,
             response.operations[0]->method);
-  EXPECT_EQ("\\", response.operations[0]->arguments);
+  EXPECT_EQ(u"\\", response.operations[0]->arguments);
 
   // Shift+Comma ('<')
   input_method->ProcessKeypressForRulebased(
@@ -560,7 +561,7 @@ TEST_F(ImeServiceTest, RuleBasedDoesNotEscapeCharacters) {
   ASSERT_EQ(1U, response.operations.size());
   EXPECT_EQ(mojom::OperationMethodForRulebased::COMMIT_TEXT,
             response.operations[0]->method);
-  EXPECT_EQ("<", response.operations[0]->arguments);
+  EXPECT_EQ(u"<", response.operations[0]->arguments);
 }
 
 // Tests that AltGr works with rule-based. See crbug.com/1035145.
@@ -596,7 +597,7 @@ TEST_F(ImeServiceTest, KhmerKeyboardAltGr) {
   ASSERT_EQ(1U, response.operations.size());
   EXPECT_EQ(mojom::OperationMethodForRulebased::COMMIT_TEXT,
             response.operations[0]->method);
-  EXPECT_EQ("+", response.operations[0]->arguments);
+  EXPECT_EQ(u"+", response.operations[0]->arguments);
 }
 
 }  // namespace ime

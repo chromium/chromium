@@ -74,19 +74,18 @@ ImeDecoder::EntryPoints CreateDecoderEntryPoints() {
 struct MockInputMethodHost : public ime::mojom::InputMethodHost {
   MOCK_METHOD(void,
               CommitText,
-              (const std::string& text,
+              (const std::u16string& text,
                mojom::CommitTextCursorBehavior cursor_behavior),
               (override));
-  MOCK_METHOD(void, SetComposition, (const std::string& text), (override));
+  MOCK_METHOD(void, SetComposition, (const std::u16string& text), (override));
   MOCK_METHOD(void,
               SetCompositionRange,
-              (uint32_t start_byte_index, uint32_t end_byte_index),
+              (uint32_t start_index, uint32_t end_index),
               (override));
   MOCK_METHOD(void, FinishComposition, (), (override));
   MOCK_METHOD(void,
               DeleteSurroundingText,
-              (uint32_t num_bytes_before_cursor,
-               uint32_t num_bytes_after_cursor),
+              (uint32_t num_before_cursor, uint32_t num_after_cursor),
               (override));
   MOCK_METHOD(void,
               HandleAutocorrect,
@@ -281,7 +280,7 @@ TEST_F(SystemEngineTest, CommitTextSendsMessageToReceiver) {
 
   EXPECT_CALL(
       mock_host_,
-      CommitText("hello",
+      CommitText(std::u16string(u"hello"),
                  mojom::CommitTextCursorBehavior::kMoveCursorBeforeText));
 
   const std::string serialized = proto.SerializeAsString();
@@ -300,7 +299,7 @@ TEST_F(SystemEngineTest, SetCompositionSendsMessageToReceiver) {
   ime::Wrapper proto;
   proto.mutable_public_message()->mutable_set_composition()->set_text("hello");
 
-  EXPECT_CALL(mock_host_, SetComposition("hello"));
+  EXPECT_CALL(mock_host_, SetComposition(std::u16string(u"hello")));
 
   const std::string serialized = proto.SerializeAsString();
   decoder_entry_points_.delegate()->Process(

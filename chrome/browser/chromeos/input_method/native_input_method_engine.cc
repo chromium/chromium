@@ -76,12 +76,13 @@ std::string NormalizeRuleBasedEngineId(const std::string engine_id) {
   return engine_id;
 }
 
-std::u16string ConvertToUtf16AndNormalize(const std::string& str) {
+std::u16string NormalizeUtf16(const std::u16string& str) {
   // TODO(https://crbug.com/1185629): Add a new helper in
   // base/i18n/icu_string_conversions.h that does the conversion directly
   // without a redundant UTF16->UTF8 conversion.
   std::string normalized_str;
-  base::ConvertToUtf8AndNormalize(str, base::kCodepageUTF8, &normalized_str);
+  base::ConvertToUtf8AndNormalize(base::UTF16ToUTF8(str), base::kCodepageUTF8,
+                                  &normalized_str);
   return base::UTF8ToUTF16(normalized_str);
 }
 
@@ -563,10 +564,10 @@ void NativeInputMethodEngine::ImeObserver::OnInputMethodOptionsChanged(
 }
 
 void NativeInputMethodEngine::ImeObserver::CommitText(
-    const std::string& text,
+    const std::u16string& text,
     ime::mojom::CommitTextCursorBehavior cursor_behavior) {
   GetInputContext()->CommitText(
-      ConvertToUtf16AndNormalize(text),
+      NormalizeUtf16(text),
       cursor_behavior ==
               ime::mojom::CommitTextCursorBehavior::kMoveCursorBeforeText
           ? ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorBeforeText
@@ -575,9 +576,9 @@ void NativeInputMethodEngine::ImeObserver::CommitText(
 }
 
 void NativeInputMethodEngine::ImeObserver::SetComposition(
-    const std::string& text) {
+    const std::u16string& text) {
   ui::CompositionText composition;
-  composition.text = ConvertToUtf16AndNormalize(text);
+  composition.text = NormalizeUtf16(text);
   // TODO(b/151884011): Turn on underlining for composition-based languages.
   composition.ime_text_spans = {ui::ImeTextSpan(
       ui::ImeTextSpan::Type::kComposition, 0, composition.text.length(),
@@ -589,9 +590,9 @@ void NativeInputMethodEngine::ImeObserver::SetComposition(
 }
 
 void NativeInputMethodEngine::ImeObserver::SetCompositionRange(
-    uint32_t start_byte_index,
-    uint32_t end_byte_index) {
-  const auto ordered_range = std::minmax(start_byte_index, end_byte_index);
+    uint32_t start_index,
+    uint32_t end_index) {
+  const auto ordered_range = std::minmax(start_index, end_index);
   // TODO(b/151884011): Turn on underlining for composition-based languages.
   GetInputContext()->SetComposingRange(
       ordered_range.first, ordered_range.second,
@@ -608,19 +609,18 @@ void NativeInputMethodEngine::ImeObserver::FinishComposition() {
 }
 
 void NativeInputMethodEngine::ImeObserver::DeleteSurroundingText(
-    uint32_t num_bytes_before_cursor,
-    uint32_t num_bytes_after_cursor) {
+    uint32_t num_before_cursor,
+    uint32_t num_after_cursor) {
   GetInputContext()->DeleteSurroundingText(
-      /*offset=*/-static_cast<int>(num_bytes_before_cursor),
-      /*length=*/num_bytes_before_cursor + num_bytes_after_cursor);
+      /*offset=*/-static_cast<int>(num_before_cursor),
+      /*length=*/num_before_cursor + num_after_cursor);
 }
 
 void NativeInputMethodEngine::ImeObserver::HandleAutocorrect(
     ime::mojom::AutocorrectSpanPtr autocorrect_span) {
-  autocorrect_manager_->HandleAutocorrect(
-      autocorrect_span->autocorrect_range,
-      base::UTF8ToUTF16(autocorrect_span->original_text),
-      base::UTF8ToUTF16(autocorrect_span->current_text));
+  autocorrect_manager_->HandleAutocorrect(autocorrect_span->autocorrect_range,
+                                          autocorrect_span->original_text,
+                                          autocorrect_span->current_text);
 }
 
 void NativeInputMethodEngine::ImeObserver::RequestSuggestions(
@@ -664,13 +664,13 @@ void NativeInputMethodEngine::ImeObserver::OnRuleBasedKeyEventResponse(
     switch (op->method) {
       case ime::mojom::OperationMethodForRulebased::COMMIT_TEXT:
         GetInputContext()->CommitText(
-            ConvertToUtf16AndNormalize(op->arguments),
+            NormalizeUtf16(op->arguments),
             ui::TextInputClient::InsertTextCursorBehavior::
                 kMoveCursorAfterText);
         break;
       case ime::mojom::OperationMethodForRulebased::SET_COMPOSITION:
         ui::CompositionText composition;
-        composition.text = ConvertToUtf16AndNormalize(op->arguments);
+        composition.text = NormalizeUtf16(op->arguments);
         GetInputContext()->UpdateCompositionText(
             composition, composition.text.length(), /*visible=*/true);
         break;

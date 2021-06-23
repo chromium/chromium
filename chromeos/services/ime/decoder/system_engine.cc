@@ -8,6 +8,7 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chromeos/services/ime/constants.h"
 #include "chromeos/services/ime/decoder/proto_conversion.h"
 #include "chromeos/services/ime/public/cpp/buildflags.h"
@@ -210,7 +211,7 @@ void SystemEngine::OnReply(const std::vector<uint8_t>& message,
       break;
     }
     case ime::PublicMessage::kSetComposition: {
-      host->SetComposition(reply.set_composition().text());
+      host->SetComposition(base::UTF8ToUTF16(reply.set_composition().text()));
       break;
     }
     case ime::PublicMessage::kSetCompositionRange: {
@@ -231,7 +232,7 @@ void SystemEngine::OnReply(const std::vector<uint8_t>& message,
     }
     case ime::PublicMessage::kCommitText: {
       host->CommitText(
-          reply.commit_text().text(),
+          base::UTF8ToUTF16(reply.commit_text().text()),
           reply.commit_text().cursor_behavior() ==
                   ime::CommitTextCursorBehavior::
                       COMMIT_TEXT_CURSOR_BEHAVIOR_MOVE_CURSOR_BEFORE_TEXT

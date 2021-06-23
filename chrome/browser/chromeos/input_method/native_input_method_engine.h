@@ -131,13 +131,13 @@ class NativeInputMethodEngine
 
     // ime::mojom::InputMethodHost:
     void CommitText(
-        const std::string& text,
+        const std::u16string& text,
         ime::mojom::CommitTextCursorBehavior cursor_behavior) override;
-    void SetComposition(const std::string& text) override;
-    void SetCompositionRange(uint32_t start_byte_index,
-                             uint32_t end_byte_index) override;
+    void SetComposition(const std::u16string& text) override;
+    void SetCompositionRange(uint32_t start_index, uint32_t end_index) override;
     void FinishComposition() override;
-    void DeleteSurroundingText(uint32_t before, uint32_t after) override;
+    void DeleteSurroundingText(uint32_t num_before_cursor,
+                               uint32_t num_after_cursor) override;
     void HandleAutocorrect(
         ime::mojom::AutocorrectSpanPtr autocorrect_span) override;
     void RequestSuggestions(ime::mojom::SuggestionsRequestPtr request,

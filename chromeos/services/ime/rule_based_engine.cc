@@ -42,7 +42,7 @@ mojom::KeypressResponseForRulebasedPtr GenerateKeypressResponseForRulebased(
   if (!process_key_result.commit_text.empty()) {
     keypress_response->operations.push_back(mojom::OperationForRulebased::New(
         mojom::OperationMethodForRulebased::COMMIT_TEXT,
-        process_key_result.commit_text));
+        base::UTF8ToUTF16(process_key_result.commit_text)));
   }
   // Need to add the setComposition operation to the result when the key is
   // handled and commit_text and composition_text are both empty.
@@ -53,7 +53,7 @@ mojom::KeypressResponseForRulebasedPtr GenerateKeypressResponseForRulebased(
        process_key_result.commit_text.empty())) {
     keypress_response->operations.push_back(mojom::OperationForRulebased::New(
         mojom::OperationMethodForRulebased::SET_COMPOSITION,
-        process_key_result.composition_text));
+        base::UTF8ToUTF16(process_key_result.composition_text)));
   }
   return keypress_response;
 }

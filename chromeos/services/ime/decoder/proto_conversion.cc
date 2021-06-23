@@ -4,6 +4,7 @@
 
 #include "chromeos/services/ime/decoder/proto_conversion.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "chromeos/services/ime/public/cpp/suggestions.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -226,8 +227,10 @@ mojom::AutocorrectSpanPtr ProtoToAutocorrectSpan(
   mojo_autocorrect_span->autocorrect_range =
       gfx::Range(autocorrect_span.autocorrect_range().start(),
                  autocorrect_span.autocorrect_range().end());
-  mojo_autocorrect_span->original_text = autocorrect_span.original_text();
-  mojo_autocorrect_span->current_text = autocorrect_span.current_text();
+  mojo_autocorrect_span->original_text =
+      base::UTF8ToUTF16(autocorrect_span.original_text());
+  mojo_autocorrect_span->current_text =
+      base::UTF8ToUTF16(autocorrect_span.current_text());
   return mojo_autocorrect_span;
 }
 
