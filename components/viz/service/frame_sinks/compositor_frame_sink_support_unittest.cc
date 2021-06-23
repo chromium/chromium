@@ -1042,11 +1042,19 @@ TEST_F(CompositorFrameSinkSupportTest, PassesOnBeginFrameAcks) {
   support_->SetNeedsBeginFrame(false);
 }
 
+#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+// https://crbug.com/1223023
+#define MAYBE_NeedsBeginFrameResetAfterPresentationFeedback \
+  DISABLED_NeedsBeginFrameResetAfterPresentationFeedback
+#else
+#define MAYBE_NeedsBeginFrameResetAfterPresentationFeedback \
+  NeedsBeginFrameResetAfterPresentationFeedback
+#endif
 // Validates that if a client asked to stop receiving begin-frames, then it
 // stops receiving begin-frames after receiving the presentation-feedback from
 // the last submitted frame.
 TEST_F(CompositorFrameSinkSupportTest,
-       NeedsBeginFrameResetAfterPresentationFeedback) {
+       MAYBE_NeedsBeginFrameResetAfterPresentationFeedback) {
   // Request BeginFrames.
   support_->SetNeedsBeginFrame(true);
 
