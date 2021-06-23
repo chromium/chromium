@@ -286,7 +286,7 @@ class BASE_EXPORT Histogram : public HistogramBase {
 
   // Writes the type, min, max, and bucket count information of the histogram in
   // |params|.
-  void GetParameters(DictionaryValue* params) const override;
+  Value GetParameters() const override;
 
   // Samples that have not yet been logged with SnapshotDelta().
   std::unique_ptr<SampleVectorBase> unlogged_samples_;

@@ -69,6 +69,19 @@ HistogramBase* DeserializeHistogramInfo(PickleIterator* iter) {
   }
 }
 
+HistogramBase::CountAndBucketData::CountAndBucketData(Count count,
+                                                      int64_t sum,
+                                                      Value buckets)
+    : count(count), sum(sum), buckets(std::move(buckets)) {}
+
+HistogramBase::CountAndBucketData::~CountAndBucketData() = default;
+
+HistogramBase::CountAndBucketData::CountAndBucketData(
+    CountAndBucketData&& other) = default;
+
+HistogramBase::CountAndBucketData& HistogramBase::CountAndBucketData::operator=(
+    CountAndBucketData&& other) = default;
+
 const HistogramBase::Sample HistogramBase::kSampleType_MAX = INT_MAX;
 
 HistogramBase::HistogramBase(const char* name)
@@ -144,22 +157,18 @@ void HistogramBase::ValidateHistogramContents() const {}
 
 void HistogramBase::WriteJSON(std::string* output,
                               JSONVerbosityLevel verbosity_level) const {
-  Count count = 0;
-  int64_t sum = 0;
-  std::unique_ptr<ListValue> buckets(new ListValue());
-  GetCountAndBucketData(&count, &sum, buckets.get());
-  std::unique_ptr<DictionaryValue> parameters(new DictionaryValue());
-  GetParameters(parameters.get());
+  CountAndBucketData count_and_bucket_data = GetCountAndBucketData();
+  Value parameters = GetParameters();
 
   JSONStringValueSerializer serializer(output);
-  DictionaryValue root;
+  Value root(Value::Type::DICTIONARY);
   root.SetStringKey("name", histogram_name());
-  root.SetIntKey("count", count);
-  root.SetDoubleKey("sum", static_cast<double>(sum));
+  root.SetIntKey("count", count_and_bucket_data.count);
+  root.SetDoubleKey("sum", static_cast<double>(count_and_bucket_data.sum));
   root.SetIntKey("flags", flags());
-  root.Set("params", std::move(parameters));
+  root.SetKey("params", std::move(parameters));
   if (verbosity_level != JSON_VERBOSITY_LEVEL_OMIT_BUCKETS)
-    root.Set("buckets", std::move(buckets));
+    root.SetKey("buckets", std::move(count_and_bucket_data.buckets));
   root.SetIntKey("pid", GetUniqueIdForProcess().GetUnsafeValue());
   serializer.Serialize(root);
 }
@@ -179,28 +188,28 @@ void HistogramBase::FindAndRunCallbacks(HistogramBase::Sample sample) const {
       base::PassKey<HistogramBase>(), histogram_name(), name_hash(), sample);
 }
 
-void HistogramBase::GetCountAndBucketData(Count* count,
-                                          int64_t* sum,
-                                          ListValue* buckets) const {
+HistogramBase::CountAndBucketData HistogramBase::GetCountAndBucketData() const {
   std::unique_ptr<HistogramSamples> snapshot = SnapshotSamples();
-  *count = snapshot->TotalCount();
-  *sum = snapshot->sum();
+  Count count = snapshot->TotalCount();
+  int64_t sum = snapshot->sum();
   std::unique_ptr<SampleCountIterator> it = snapshot->Iterator();
-  uint32_t index = 0;
+
+  Value::ListStorage buckets;
   while (!it->Done()) {
-    std::unique_ptr<DictionaryValue> bucket_value(new DictionaryValue());
     Sample bucket_min;
     int64_t bucket_max;
     Count bucket_count;
     it->Get(&bucket_min, &bucket_max, &bucket_count);
 
-    bucket_value->SetIntKey("low", bucket_min);
-    bucket_value->SetIntKey("high", bucket_max);
-    bucket_value->SetIntKey("count", bucket_count);
-    buckets->Set(index, std::move(bucket_value));
+    Value bucket_value(Value::Type::DICTIONARY);
+    bucket_value.SetIntKey("low", bucket_min);
+    bucket_value.SetIntKey("high", bucket_max);
+    bucket_value.SetIntKey("count", bucket_count);
+    buckets.push_back(std::move(bucket_value));
     it->Next();
-    ++index;
   }
+
+  return CountAndBucketData(count, sum, Value(std::move(buckets)));
 }
 
 void HistogramBase::WriteAsciiBucketGraph(double x_count,

@@ -214,10 +214,12 @@ HistogramBase* SparseHistogram::DeserializeInfoImpl(PickleIterator* iter) {
   return SparseHistogram::FactoryGet(histogram_name, flags);
 }
 
-void SparseHistogram::GetParameters(DictionaryValue* params) const {
+Value SparseHistogram::GetParameters() const {
   // Unlike Histogram::GetParameters, only set the type here, and no other
   // params. The other params do not make sense for sparse histograms.
-  params->SetString("type", HistogramTypeToString(GetHistogramType()));
+  Value params(Value::Type::DICTIONARY);
+  params.SetStringKey("type", HistogramTypeToString(GetHistogramType()));
+  return params;
 }
 
 }  // namespace base

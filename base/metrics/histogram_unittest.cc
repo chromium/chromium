@@ -55,6 +55,8 @@ class TestRecordHistogramChecker : public RecordHistogramChecker {
 // heap.
 class HistogramTest : public testing::TestWithParam<bool> {
  protected:
+  using CountAndBucketData = base::Histogram::CountAndBucketData;
+
   const int32_t kAllocatorMemorySize = 8 << 20;  // 8 MiB
 
   HistogramTest() : use_persistent_histogram_allocator_(GetParam()) {}
@@ -101,13 +103,10 @@ class HistogramTest : public testing::TestWithParam<bool> {
     return h->SnapshotAllSamples();
   }
 
-  void GetCountAndBucketData(Histogram* histogram,
-                             base::Histogram::Count* count,
-                             int64_t* sum,
-                             base::ListValue* buckets) {
+  CountAndBucketData GetCountAndBucketData(Histogram* histogram) {
     // A simple wrapper around |GetCountAndBucketData| to make it visible for
     // testing.
-    histogram->GetCountAndBucketData(count, sum, buckets);
+    return histogram->GetCountAndBucketData();
   }
 
   const bool use_persistent_histogram_allocator_;
@@ -925,34 +924,28 @@ TEST_P(HistogramTest, CheckGetCountAndBucketData) {
   histogram->AddCount(/*sample=*/20, /*value=*/15);
   histogram->AddCount(/*sample=*/30, /*value=*/14);
 
-  base::Histogram::Count total_count;
-  int64_t sum;
-  base::ListValue buckets;
-  GetCountAndBucketData(histogram, &total_count, &sum, &buckets);
-  EXPECT_EQ(58, total_count);
-  EXPECT_EQ(1440, sum);
-  EXPECT_EQ(2u, buckets.GetSize());
+  const CountAndBucketData count_and_data_bucket =
+      GetCountAndBucketData(histogram);
+  EXPECT_EQ(58, count_and_data_bucket.count);
+  EXPECT_EQ(1440, count_and_data_bucket.sum);
 
-  int low, high, count;
+  const base::Value::ConstListView buckets_list =
+      count_and_data_bucket.buckets.GetList();
+  ASSERT_EQ(2u, buckets_list.size());
+
   // Check the first bucket.
-  base::DictionaryValue* bucket1;
-  EXPECT_TRUE(buckets.GetDictionary(0, &bucket1));
-  EXPECT_TRUE(bucket1->GetInteger("low", &low));
-  EXPECT_TRUE(bucket1->GetInteger("high", &high));
-  EXPECT_TRUE(bucket1->GetInteger("count", &count));
-  EXPECT_EQ(20, low);
-  EXPECT_EQ(21, high);
-  EXPECT_EQ(30, count);
+  const base::Value& bucket1 = buckets_list[0];
+  ASSERT_TRUE(bucket1.is_dict());
+  EXPECT_EQ(bucket1.FindIntKey("low"), absl::optional<int>(20));
+  EXPECT_EQ(bucket1.FindIntKey("high"), absl::optional<int>(21));
+  EXPECT_EQ(bucket1.FindIntKey("count"), absl::optional<int>(30));
 
   // Check the second bucket.
-  base::DictionaryValue* bucket2;
-  EXPECT_TRUE(buckets.GetDictionary(1, &bucket2));
-  EXPECT_TRUE(bucket2->GetInteger("low", &low));
-  EXPECT_TRUE(bucket2->GetInteger("high", &high));
-  EXPECT_TRUE(bucket2->GetInteger("count", &count));
-  EXPECT_EQ(30, low);
-  EXPECT_EQ(31, high);
-  EXPECT_EQ(28, count);
+  const base::Value& bucket2 = buckets_list[1];
+  ASSERT_TRUE(bucket2.is_dict());
+  EXPECT_EQ(bucket2.FindIntKey("low"), absl::optional<int>(30));
+  EXPECT_EQ(bucket2.FindIntKey("high"), absl::optional<int>(31));
+  EXPECT_EQ(bucket2.FindIntKey("count"), absl::optional<int>(28));
 }
 
 TEST_P(HistogramTest, WriteAscii) {

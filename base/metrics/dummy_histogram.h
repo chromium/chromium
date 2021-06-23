@@ -43,7 +43,7 @@ class BASE_EXPORT DummyHistogram : public HistogramBase {
  protected:
   // HistogramBase:
   void SerializeInfoImpl(Pickle* pickle) const override {}
-  void GetParameters(DictionaryValue* params) const override {}
+  Value GetParameters() const override;
 
  private:
   friend class NoDestructor<DummyHistogram>;

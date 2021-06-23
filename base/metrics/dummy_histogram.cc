@@ -102,4 +102,8 @@ base::Value DummyHistogram::ToGraphDict() const {
   return base::Value();
 }
 
+Value DummyHistogram::GetParameters() const {
+  return Value();
+}
+
 }  // namespace base
