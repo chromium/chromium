@@ -8122,7 +8122,7 @@
                 {
                     "name": "EnabledDefault",
                     "enable_features": [
-                        "ToolbarUserHardwareBitmapDraw"
+                        "ToolbarUseHardwareBitmapDraw"
                     ]
                 }
             ]
