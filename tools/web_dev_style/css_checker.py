@@ -109,9 +109,9 @@ class CSSChecker(object):
       # TODO(dbeam): make this smart enough to detect issues in mixins.
       strip_rule = lambda t: _remove_disable(t).strip()
       for rule in re.finditer(r'{(.*?)}', contents, re.DOTALL):
-        semis = map(strip_rule, rule.group(1).split(';'))[:-1]
-        rules = filter(lambda r: ': ' in r, semis)
-        props = map(lambda r: r[0:r.find(':')], rules)
+        semis = [strip_rule(r) for r in rule.group(1).split(';')][:-1]
+        rules = [r for r in semis if ': ' in r]
+        props = [r[0:r.find(':')] for r in rules]
         if props != sorted(props):
           errors.append('    %s;\n' % (';\n    '.join(rules)))
       return errors

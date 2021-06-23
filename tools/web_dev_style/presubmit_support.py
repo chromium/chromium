@@ -3,10 +3,10 @@
 # found in the LICENSE file.
 
 
-import css_checker
-import html_checker
-import js_checker
-import resource_checker
+from . import css_checker
+from . import html_checker
+from . import js_checker
+from . import resource_checker
 
 
 def IsResource(f):

@@ -1,9 +1,9 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2017 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import js_checker
+from . import js_checker
 import json
 import os
 import sys
@@ -25,7 +25,7 @@ class JsCheckerEsLintTest(unittest.TestCase):
     tmp_args = {'suffix': '.' + file_type, 'dir': _HERE_PATH, 'delete': False}
     with tempfile.NamedTemporaryFile(**tmp_args) as f:
       self._tmp_file = f.name
-      f.write(file_contents)
+      f.write(file_contents.encode('utf-8'))
 
     input_api = MockInputApi()
     input_api.files = [MockFile(os.path.abspath(self._tmp_file), '')]
@@ -37,7 +37,8 @@ class JsCheckerEsLintTest(unittest.TestCase):
       return checker.RunEsLintChecks(input_api.AffectedFiles(), format='json')
     except RuntimeError as err:
       # Extract ESLint's JSON error output from the error message.
-      json_error = err.message[err.message.index('['):]
+      message = str(err)
+      json_error = message[message.index('['):]
       return json.loads(json_error)[0].get('messages')
 
   def _assertError(self, results, rule_id, line):

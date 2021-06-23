@@ -6,7 +6,7 @@
 Presubmit for Chromium HTML/CSS/JS resources. See chrome/browser/PRESUBMIT.py.
 """
 
-import regex_check
+from . import regex_check
 
 
 class ResourceChecker(object):
