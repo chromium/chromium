@@ -23,6 +23,14 @@
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/account_manager/account_manager_util.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/lacros/account_manager_util.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 namespace extensions {
 
 namespace {
@@ -163,7 +171,11 @@ void GaiaRemoteConsentFlow::OnEndBatchOfRefreshTokenStateChanges() {
 // cookies order in the middle of the flow. This may lead to a bug like
 // https://crbug.com/1112343.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  DCHECK(ash::IsAccountManagerAvailable(profile_));
   SetAccountsInCookie();
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (IsAccountManagerAvailable(profile_))
+    SetAccountsInCookie();
 #endif
 }
 
