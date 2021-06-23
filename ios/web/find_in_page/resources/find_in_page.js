@@ -324,6 +324,13 @@ const MAX_VISIBLE_ELEMENTS = 100;
 let searchInProgress_ = false;
 
 /**
+
+ * Whether or not search state variables are in a clean empty state.
+ * @type {boolean}
+ */
+ let searchStateIsClean_ = true;
+
+/**
  * Node names that are not going to be processed.
  * @type {Object}
  */
@@ -414,7 +421,7 @@ __gCrWeb.findInPage.findString = function(string, timeout) {
     __gCrWeb.findInPage.hasInitialized = true;
   }
 
-  if (__gCrWeb.findInPage.matches && __gCrWeb.findInPage.matches.length) {
+  if (!searchStateIsClean_) {
     // Clean up a previous run.
     cleanUp_();
   }
@@ -462,6 +469,8 @@ __gCrWeb.findInPage.pumpSearch = function(timeout) {
   if (searchInProgress_ == false) {
     return 0;
   }
+
+  searchStateIsClean_ = false;
 
   let timer = new Timer(timeout);
 
@@ -607,6 +616,8 @@ function cleanUp_() {
 
   replacements_ = [];
   replacementsIndex_ = 0;
+
+  searchStateIsClean_ = true;
 };
 
 /**
