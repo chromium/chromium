@@ -1085,7 +1085,7 @@ void PasswordAutofillAgent::SendPasswordForms(bool only_visible) {
 
   if (add_unowned_inputs) {
     std::unique_ptr<FormData> form_data(GetFormDataFromUnownedInputElements());
-    if (form_data) {
+    if (form_data && FormHasPasswordField(*form_data)) {
       if (logger) {
         logger->LogFormData(Logger::STRING_FORM_IS_PASSWORD, *form_data);
       }

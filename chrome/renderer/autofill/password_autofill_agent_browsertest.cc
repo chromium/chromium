@@ -1291,6 +1291,27 @@ TEST_F(PasswordAutofillAgentTest, SendPasswordFormsTest_Redirection) {
   EXPECT_TRUE(fake_driver_.called_password_forms_rendered());
 }
 
+// Tests that fields that are not under a <form> tag are only sent to
+// PasswordManager if they contain a password field.
+TEST_F(PasswordAutofillAgentTest, SendPasswordFormsTest_UnownedtextInputs) {
+  fake_driver_.reset_password_forms_calls();
+  const char kFormlessFieldsNonPasswordHTML[] =
+      "  <INPUT type='text' name='email'>"
+      "  <INPUT type='submit' value='Login'/>";
+  LoadHTML(kFormlessFieldsNonPasswordHTML);
+  base::RunLoop().RunUntilIdle();
+  ASSERT_FALSE(fake_driver_.called_password_forms_parsed());
+
+  fake_driver_.reset_password_forms_calls();
+  const char kFormlessFieldsPasswordHTML[] =
+      "  <INPUT type='text' name='email'>"
+      "  <INPUT type='password' name='pw'>"
+      "  <INPUT type='submit' value='Login'/>";
+  LoadHTML(kFormlessFieldsPasswordHTML);
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(fake_driver_.called_password_forms_parsed());
+}
+
 // Tests that a password will only be filled as a suggested and will not be
 // accessible by the DOM until a user gesture has occurred.
 TEST_F(PasswordAutofillAgentTest, GestureRequiredTest) {
