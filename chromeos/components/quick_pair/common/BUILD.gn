@@ -4,12 +4,16 @@
 
 assert(is_chromeos, "Quick Pair protocols (e.g. Fast Pair) are CrOS only")
 
-source_set("common") {
+static_library("common") {
   sources = [
+    "device.cc",
+    "device.h",
     "log_buffer.cc",
     "log_buffer.h",
     "logging.cc",
     "logging.h",
+    "protocol.cc",
+    "protocol.h",
     "quick_pair_features.cc",
     "quick_pair_features.h",
   ]
