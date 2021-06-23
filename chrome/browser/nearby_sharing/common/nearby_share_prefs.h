@@ -20,6 +20,7 @@ extern const char kNearbySharingEnabledPrefName[];
 extern const char kNearbySharingOnboardingCompletePrefName[];
 extern const char kNearbySharingFullNamePrefName[];
 extern const char kNearbySharingIconUrlPrefName[];
+extern const char kNearbySharingIconTokenPrefName[];
 extern const char kNearbySharingOnboardingDismissedTimePrefName[];
 extern const char kNearbySharingPrivateCertificateListPrefName[];
 extern const char kNearbySharingPublicCertificateExpirationDictPrefName[];

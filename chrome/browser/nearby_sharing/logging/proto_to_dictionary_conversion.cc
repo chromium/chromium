@@ -191,6 +191,7 @@ base::Value UpdateDeviceResponseToReadableDictionary(
   dict.SetKey("device", DeviceToReadableDictionary(response.device()));
   dict.SetStringKey("person_name", response.person_name());
   dict.SetStringKey("image_url", response.image_url());
+  dict.SetStringKey("image_token", response.image_token());
   return dict;
 }
 

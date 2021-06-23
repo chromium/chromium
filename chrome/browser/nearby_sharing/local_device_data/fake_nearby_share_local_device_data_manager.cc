@@ -96,7 +96,7 @@ FakeNearbyShareLocalDeviceDataManager::SetDeviceName(const std::string& name) {
     NotifyLocalDeviceDataChanged(
         /*did_device_name_change=*/true,
         /*did_full_name_change=*/false,
-        /*did_icon_url_change=*/false);
+        /*did_icon_change=*/false);
   }
 
   return nearby_share::mojom::DeviceNameValidationResult::kValid;
@@ -127,7 +127,7 @@ void FakeNearbyShareLocalDeviceDataManager::SetFullName(
   NotifyLocalDeviceDataChanged(
       /*did_device_name_change=*/false,
       /*did_full_name_change=*/true,
-      /*did_icon_url_change=*/false);
+      /*did_icon_change=*/false);
 }
 
 void FakeNearbyShareLocalDeviceDataManager::SetIconUrl(
@@ -139,7 +139,7 @@ void FakeNearbyShareLocalDeviceDataManager::SetIconUrl(
   NotifyLocalDeviceDataChanged(
       /*did_device_name_change=*/false,
       /*did_full_name_change=*/false,
-      /*did_icon_url_change=*/true);
+      /*did_icon_change=*/true);
 }
 
 void FakeNearbyShareLocalDeviceDataManager::OnStart() {}

@@ -661,12 +661,11 @@ TEST_F(NearbyShareCertificateManagerImplTest,
   size_t num_expected_calls = 0;
   for (bool did_device_name_change : {true, false}) {
     for (bool did_full_name_change : {true, false}) {
-      for (bool did_icon_url_change : {true, false}) {
+      for (bool did_icon_change : {true, false}) {
         local_device_data_manager_->NotifyLocalDeviceDataChanged(
-            did_device_name_change, did_full_name_change, did_icon_url_change);
+            did_device_name_change, did_full_name_change, did_icon_change);
 
-        if (did_device_name_change || did_full_name_change ||
-            did_icon_url_change) {
+        if (did_device_name_change || did_full_name_change || did_icon_change) {
           ++num_expected_calls;
           EXPECT_TRUE(cert_store_->GetPrivateCertificates()->empty());
         }

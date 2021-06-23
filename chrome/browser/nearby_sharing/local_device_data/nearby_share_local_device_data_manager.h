@@ -20,7 +20,7 @@
 extern const size_t kNearbyShareDeviceNameMaxLength;
 
 // Manages local device data related to the UpdateDevice RPC such as the device
-// ID, name, and icon url; provides the user's full name and icon URL returned
+// ID, name, and icon URL; provides the user's full name and icon URL returned
 // from the Nearby server; and handles uploading contacts and certificates to
 // the Nearby server. The uploading of contacts and certificates might seem out
 // of place, but this class is the entry point for  all UpdateDevice RPC calls.
@@ -30,7 +30,7 @@ class NearbyShareLocalDeviceDataManager {
    public:
     virtual void OnLocalDeviceDataChanged(bool did_device_name_change,
                                           bool did_full_name_change,
-                                          bool did_icon_url_change) = 0;
+                                          bool did_icon_change) = 0;
   };
 
   using UploadCompleteCallback = base::OnceCallback<void(bool success)>;
@@ -104,7 +104,7 @@ class NearbyShareLocalDeviceDataManager {
 
   void NotifyLocalDeviceDataChanged(bool did_device_name_change,
                                     bool did_full_name_change,
-                                    bool did_icon_url_change);
+                                    bool did_icon_change);
 
  private:
   bool is_running_ = false;

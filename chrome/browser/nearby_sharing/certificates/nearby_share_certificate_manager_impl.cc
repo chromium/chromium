@@ -391,8 +391,8 @@ void NearbyShareCertificateManagerImpl::OnContactsUploaded(
 void NearbyShareCertificateManagerImpl::OnLocalDeviceDataChanged(
     bool did_device_name_change,
     bool did_full_name_change,
-    bool did_icon_url_change) {
-  if (!did_device_name_change && !did_full_name_change && !did_icon_url_change)
+    bool did_icon_change) {
+  if (!did_device_name_change && !did_full_name_change && !did_icon_change)
     return;
 
   // Recreate all private certificates to ensure up-to-date metadata.

@@ -183,7 +183,7 @@ void NearbyShareSettings::Bind(
 
 void NearbyShareSettings::OnLocalDeviceDataChanged(bool did_device_name_change,
                                                    bool did_full_name_change,
-                                                   bool did_icon_url_change) {
+                                                   bool did_icon_change) {
   if (!did_device_name_change)
     return;
 

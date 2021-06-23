@@ -30,6 +30,7 @@ const char kNearbySharingOnboardingCompletePrefName[] =
     "nearby_sharing.onboarding_complete";
 const char kNearbySharingFullNamePrefName[] = "nearby_sharing.full_name";
 const char kNearbySharingIconUrlPrefName[] = "nearby_sharing.icon_url";
+const char kNearbySharingIconTokenPrefName[] = "nearby_sharing.icon_token";
 const char kNearbySharingOnboardingDismissedTimePrefName[] =
     "nearby_sharing.onboarding_dismissed_time";
 const char kNearbySharingPublicCertificateExpirationDictPrefName[] =
@@ -78,6 +79,8 @@ void RegisterNearbySharingPrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(prefs::kNearbySharingFullNamePrefName,
                                /*default_value=*/std::string());
   registry->RegisterStringPref(prefs::kNearbySharingIconUrlPrefName,
+                               /*default_value=*/std::string());
+  registry->RegisterStringPref(prefs::kNearbySharingIconTokenPrefName,
                                /*default_value=*/std::string());
   registry->RegisterTimePref(
       prefs::kNearbySharingOnboardingDismissedTimePrefName,

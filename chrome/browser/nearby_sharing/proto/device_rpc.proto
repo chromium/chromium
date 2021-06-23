@@ -39,4 +39,8 @@ message UpdateDeviceResponse {
   // Optional. The URL of an image displayed to the user when selecting a
   // share target.
   string image_url = 3;
+
+  // Optional. A hash like value to determine if the profile image has changed
+  // or not. Note, the image_url can change for the same image.
+  string image_token = 4;
 }

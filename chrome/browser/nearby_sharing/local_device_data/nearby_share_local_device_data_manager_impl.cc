@@ -150,6 +150,16 @@ absl::optional<std::string> NearbyShareLocalDeviceDataManagerImpl::GetIconUrl()
   return pref_service_->GetString(prefs::kNearbySharingIconUrlPrefName);
 }
 
+absl::optional<std::string>
+NearbyShareLocalDeviceDataManagerImpl::GetIconToken() const {
+  if (pref_service_->FindPreference(prefs::kNearbySharingIconTokenPrefName)
+          ->IsDefaultValue()) {
+    return absl::nullopt;
+  }
+
+  return pref_service_->GetString(prefs::kNearbySharingIconTokenPrefName);
+}
+
 nearby_share::mojom::DeviceNameValidationResult
 NearbyShareLocalDeviceDataManagerImpl::ValidateDeviceName(
     const std::string& name) {
@@ -178,7 +188,7 @@ NearbyShareLocalDeviceDataManagerImpl::SetDeviceName(const std::string& name) {
 
   NotifyLocalDeviceDataChanged(/*did_device_name_change=*/true,
                                /*did_full_name_change=*/false,
-                               /*did_icon_url_change=*/false);
+                               /*did_icon_change=*/false);
 
   return nearby_share::mojom::DeviceNameValidationResult::kValid;
 }
@@ -260,10 +270,9 @@ void NearbyShareLocalDeviceDataManagerImpl::OnDownloadDeviceDataFinished(
 void NearbyShareLocalDeviceDataManagerImpl::OnUploadContactsFinished(
     UploadCompleteCallback callback,
     const absl::optional<nearbyshare::proto::UpdateDeviceResponse>& response) {
-  // TODO(http://crbug.com/1211189): Only process the UpdateDevice response for
+  // NOTE(http://crbug.com/1211189): Only process the UpdateDevice response for
   // DownloadDeviceData() calls. We want avoid infinite loops if the full name
-  // or icon URL unexpectedly change. When the bug is resolved, handle the
-  // response sent from uploading contacts or certificates as well.
+  // or icon URL unexpectedly change.
 
   std::move(callback).Run(/*success=*/response.has_value());
 }
@@ -271,10 +280,9 @@ void NearbyShareLocalDeviceDataManagerImpl::OnUploadContactsFinished(
 void NearbyShareLocalDeviceDataManagerImpl::OnUploadCertificatesFinished(
     UploadCompleteCallback callback,
     const absl::optional<nearbyshare::proto::UpdateDeviceResponse>& response) {
-  // TODO(http://crbug.com/1211189): Only process the UpdateDevice response for
+  // NOTE(http://crbug.com/1211189): Only process the UpdateDevice response for
   // DownloadDeviceData() calls. We want avoid infinite loops if the full name
-  // or icon URL unexpectedly change. When the bug is resolved, handle the
-  // response sent from uploading contacts or certificates as well.
+  // or icon URL unexpectedly change.
 
   std::move(callback).Run(/*success=*/response.has_value());
 }
@@ -285,19 +293,36 @@ void NearbyShareLocalDeviceDataManagerImpl::HandleUpdateDeviceResponse(
     return;
 
   bool did_full_name_change = response->person_name() != GetFullName();
-  bool did_icon_url_change = response->image_url() != GetIconUrl();
-  if (!did_full_name_change && !did_icon_url_change)
-    return;
-
   if (did_full_name_change) {
     pref_service_->SetString(prefs::kNearbySharingFullNamePrefName,
                              response->person_name());
   }
+
+  // NOTE(http://crbug.com/1211189): An icon URL can change without the
+  // underlying image changing. For example, icon URLs for some child accounts
+  // can rotate on every UpdateDevice RPC call; a timestamp is included in the
+  // URL. The icon token is used to detect changes in the underlying image. If a
+  // new URL is sent and the token doesn't change, the old URL may still be
+  // valid for a couple weeks, for example. So, private certificates do not
+  // necessarily need to update the icon URL whenever it changes. Also, we don't
+  // expect the token to change without the URL changing; regardless, we don't
+  // consider the icon changed unless the URL changes. That way, private
+  // certificates will not be unnecessarily regenerated.
+  bool did_icon_url_change = response->image_url() != GetIconUrl();
+  bool did_icon_token_change = response->image_token() != GetIconToken();
+  bool did_icon_change = did_icon_url_change && did_icon_token_change;
   if (did_icon_url_change) {
     pref_service_->SetString(prefs::kNearbySharingIconUrlPrefName,
                              response->image_url());
   }
+  if (did_icon_token_change) {
+    pref_service_->SetString(prefs::kNearbySharingIconTokenPrefName,
+                             response->image_token());
+  }
+
+  if (!did_full_name_change && !did_icon_change)
+    return;
 
   NotifyLocalDeviceDataChanged(/*did_device_name_change=*/false,
-                               did_full_name_change, did_icon_url_change);
+                               did_full_name_change, did_icon_change);
 }

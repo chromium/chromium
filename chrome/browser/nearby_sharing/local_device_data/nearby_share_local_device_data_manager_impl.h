@@ -75,6 +75,8 @@ class NearbyShareLocalDeviceDataManagerImpl
   void OnStart() override;
   void OnStop() override;
 
+  absl::optional<std::string> GetIconToken() const;
+
   // Creates a default device name of the form "<given name>'s <device type>."
   // For example, "Josh's Chromebook." If a given name cannot be found, returns
   // just the device type. If the resulting name is too long the user's name
