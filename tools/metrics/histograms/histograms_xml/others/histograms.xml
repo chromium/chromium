@@ -3552,6 +3552,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Conversions.RegisterConversionAllowed" enum="BooleanAllowed"
+    expires_after="M95">
+  <owner>apaseltiner@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures how often conversions are dropped by the Attribution Reporting API
+    being disabled. Recorded when a conversion is processed by the browser
+    process. Records not allowed if within an OTR profile, or if the privacy
+    sandbox is not allowed for the conversion and reporting origin.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.RegisteredConversionsPerPage" units="conversions"
     expires_after="2021-11-07">
   <owner>johnidel@chromium.org</owner>
@@ -3574,6 +3587,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Records the number of impressions attempted on a given top level page load.
     Recorded when the page navigates away or is otherwise closed. Only recorded
     for non-off-the-record profiles (OTR profiles have the feature disabled).
+  </summary>
+</histogram>
+
+<histogram name="Conversions.RegisterImpressionAllowed" enum="BooleanAllowed"
+    expires_after="M95">
+  <owner>apaseltiner@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures how often impressions are dropped by the Attribution Reporting API
+    being disabled. Recorded when an impression is processed by the browser
+    process. Records not allowed if within an OTR profile, or if the privacy
+    sandbox is not allowed for the impression and reporting origin.
   </summary>
 </histogram>
 

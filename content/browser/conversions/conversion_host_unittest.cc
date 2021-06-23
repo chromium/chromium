@@ -689,6 +689,67 @@ TEST_F(ConversionHostTest, ValidImpression_NoBadMessage) {
   EXPECT_EQ(10, test_manager_.last_attribution_source_priority());
 }
 
+TEST_F(ConversionHostTest, RegisterImpression_RecordsAllowedMetric) {
+  // Create a page with a secure origin.
+  contents()->NavigateAndCommit(GURL("https://www.example.com"));
+  conversion_host()->SetCurrentTargetFrameForTesting(main_rfh());
+
+  ConversionDisallowingContentBrowserClient disallowed_browser_client;
+  ConfigurableConversionTestBrowserClient allowed_browser_client;
+
+  const struct {
+    TestContentBrowserClient* browser_client;
+    bool want_allowed;
+  } kTestCases[] = {
+      {&allowed_browser_client, true},
+      {&disallowed_browser_client, false},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    ContentBrowserClient* old_browser_client =
+        SetBrowserClientForTesting(test_case.browser_client);
+
+    base::HistogramTester histograms;
+    conversion_host()->RegisterImpression(CreateValidImpression());
+    histograms.ExpectUniqueSample("Conversions.RegisterImpressionAllowed",
+                                  test_case.want_allowed, 1);
+
+    SetBrowserClientForTesting(old_browser_client);
+  }
+}
+
+TEST_F(ConversionHostTest, RegisterConversion_RecordsAllowedMetric) {
+  // Create a page with a secure origin.
+  contents()->NavigateAndCommit(GURL("https://www.example.com"));
+  conversion_host()->SetCurrentTargetFrameForTesting(main_rfh());
+
+  ConversionDisallowingContentBrowserClient disallowed_browser_client;
+  ConfigurableConversionTestBrowserClient allowed_browser_client;
+
+  const struct {
+    TestContentBrowserClient* browser_client;
+    bool want_allowed;
+  } kTestCases[] = {
+      {&allowed_browser_client, true},
+      {&disallowed_browser_client, false},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    ContentBrowserClient* old_browser_client =
+        SetBrowserClientForTesting(test_case.browser_client);
+
+    base::HistogramTester histograms;
+    blink::mojom::ConversionPtr conversion = blink::mojom::Conversion::New();
+    conversion->reporting_origin =
+        url::Origin::Create(GURL("https://secure.com"));
+    conversion_host()->RegisterConversion(std::move(conversion));
+    histograms.ExpectUniqueSample("Conversions.RegisterConversionAllowed",
+                                  test_case.want_allowed, 1);
+
+    SetBrowserClientForTesting(old_browser_client);
+  }
+}
+
 class ConversionHostNoInitTest : public ::testing::Test {};
 
 TEST(ConversionHostNoInitTest, AppImpression_Valid) {

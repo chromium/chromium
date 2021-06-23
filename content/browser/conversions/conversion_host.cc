@@ -8,6 +8,7 @@
 #include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "content/browser/conversions/conversion_manager.h"
@@ -58,6 +59,14 @@ class ScopedMapDeleter {
   Map* map_;
   typename Map::iterator it_;
 };
+
+void RecordRegisterConversionAllowed(bool allowed) {
+  base::UmaHistogramBoolean("Conversions.RegisterConversionAllowed", allowed);
+}
+
+void RecordRegisterImpressionAllowed(bool allowed) {
+  base::UmaHistogramBoolean("Conversions.RegisterImpressionAllowed", allowed);
+}
 
 }  // namespace
 
@@ -145,6 +154,8 @@ void ConversionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
       conversion_manager_provider_->GetManager(web_contents());
   if (!conversion_manager) {
     DCHECK(navigation_impression_origins_.empty());
+    if (navigation_handle->GetImpression())
+      RecordRegisterImpressionAllowed(false);
     return;
   }
 
@@ -194,13 +205,14 @@ void ConversionHost::VerifyAndStoreImpression(
                                             ? impression_origin
                                             : *impression.reporting_origin;
 
-  if (!GetContentClient()->browser()->IsConversionMeasurementOperationAllowed(
+  const bool allowed =
+      GetContentClient()->browser()->IsConversionMeasurementOperationAllowed(
           web_contents()->GetBrowserContext(),
           ContentBrowserClient::ConversionMeasurementOperation::kImpression,
-          &impression_origin, /*conversion_origin=*/nullptr,
-          &reporting_origin)) {
+          &impression_origin, /*conversion_origin=*/nullptr, &reporting_origin);
+  RecordRegisterImpressionAllowed(allowed);
+  if (!allowed)
     return;
-  }
 
   // Conversion measurement is only allowed in secure contexts.
   if (!network::IsOriginPotentiallyTrustworthy(impression_origin) ||
@@ -233,8 +245,10 @@ void ConversionHost::RegisterConversion(
   // registrations.
   ConversionManager* conversion_manager =
       conversion_manager_provider_->GetManager(web_contents());
-  if (!conversion_manager)
+  if (!conversion_manager) {
+    RecordRegisterConversionAllowed(false);
     return;
+  }
 
   const url::Origin& conversion_origin =
       render_frame_host->GetLastCommittedOrigin();
@@ -252,13 +266,15 @@ void ConversionHost::RegisterConversion(
     return;
   }
 
-  if (!GetContentClient()->browser()->IsConversionMeasurementOperationAllowed(
+  const bool allowed =
+      GetContentClient()->browser()->IsConversionMeasurementOperationAllowed(
           web_contents()->GetBrowserContext(),
           ContentBrowserClient::ConversionMeasurementOperation::kConversion,
           /*impression_origin=*/nullptr, &main_frame_origin,
-          &conversion->reporting_origin)) {
+          &conversion->reporting_origin);
+  RecordRegisterConversionAllowed(allowed);
+  if (!allowed)
     return;
-  }
 
   net::SchemefulSite conversion_destination(main_frame_origin);
 

@@ -80,6 +80,10 @@ class CONTENT_EXPORT ConversionHost
       ConversionHostTest,
       ImpressionInSubframe_ImpressionOriginMatchesTopPageOrigin);
   FRIEND_TEST_ALL_PREFIXES(ConversionHostTest, ValidImpression_NoBadMessage);
+  FRIEND_TEST_ALL_PREFIXES(ConversionHostTest,
+                           RegisterImpression_RecordsAllowedMetric);
+  FRIEND_TEST_ALL_PREFIXES(ConversionHostTest,
+                           RegisterConversion_RecordsAllowedMetric);
 
   friend class WebContentsUserData<ConversionHost>;
 
