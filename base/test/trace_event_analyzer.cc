@@ -38,12 +38,7 @@ namespace trace_analyzer {
 
 // TraceEvent
 
-TraceEvent::TraceEvent()
-    : thread(0, 0),
-      timestamp(0),
-      duration(0),
-      phase(TRACE_EVENT_PHASE_BEGIN),
-      other_event(nullptr) {}
+TraceEvent::TraceEvent() : thread(0, 0) {}
 
 TraceEvent::TraceEvent(TraceEvent&& other) = default;
 
@@ -52,22 +47,18 @@ TraceEvent::~TraceEvent() = default;
 TraceEvent& TraceEvent::operator=(TraceEvent&& rhs) = default;
 
 bool TraceEvent::SetFromJSON(const base::Value* event_value) {
-  if (event_value->type() != base::Value::Type::DICTIONARY) {
+  if (!event_value->is_dict()) {
     LOG(ERROR) << "Value must be Type::DICTIONARY";
     return false;
   }
-  const base::DictionaryValue* dictionary =
-      static_cast<const base::DictionaryValue*>(event_value);
 
-  std::string phase_str;
-  const base::DictionaryValue* args = nullptr;
-
-  if (!dictionary->GetString("ph", &phase_str)) {
+  const std::string* maybe_phase = event_value->FindStringKey("ph");
+  if (!maybe_phase) {
     LOG(ERROR) << "ph is missing from TraceEvent JSON";
     return false;
   }
 
-  phase = *phase_str.data();
+  phase = *maybe_phase->data();
 
   bool may_have_duration = (phase == TRACE_EVENT_PHASE_COMPLETE);
   bool require_origin = (phase != TRACE_EVENT_PHASE_METADATA);
@@ -82,75 +73,132 @@ bool TraceEvent::SetFromJSON(const base::Value* event_value) {
                      phase == TRACE_EVENT_PHASE_SNAPSHOT_OBJECT ||
                      phase == TRACE_EVENT_PHASE_ASYNC_END);
 
-  if (require_origin && !dictionary->GetInteger("pid", &thread.process_id)) {
-    LOG(ERROR) << "pid is missing from TraceEvent JSON";
-    return false;
-  }
-  if (require_origin && !dictionary->GetInteger("tid", &thread.thread_id)) {
-    LOG(ERROR) << "tid is missing from TraceEvent JSON";
-    return false;
-  }
-  if (require_origin && !dictionary->GetDouble("ts", &timestamp)) {
-    LOG(ERROR) << "ts is missing from TraceEvent JSON";
-    return false;
+  if (require_origin) {
+    absl::optional<int> maybe_process_id = event_value->FindIntKey("pid");
+    if (!maybe_process_id) {
+      LOG(ERROR) << "pid is missing from TraceEvent JSON";
+      return false;
+    }
+    thread.process_id = *maybe_process_id;
+
+    absl::optional<int> maybe_thread_id = event_value->FindIntKey("tid");
+    if (!maybe_thread_id) {
+      LOG(ERROR) << "tid is missing from TraceEvent JSON";
+      return false;
+    }
+    thread.thread_id = *maybe_thread_id;
+
+    absl::optional<double> maybe_timestamp = event_value->FindDoubleKey("ts");
+    if (!maybe_timestamp) {
+      LOG(ERROR) << "ts is missing from TraceEvent JSON";
+      return false;
+    }
+    timestamp = *maybe_timestamp;
   }
   if (may_have_duration) {
-    dictionary->GetDouble("dur", &duration);
+    absl::optional<double> maybe_duration = event_value->FindDoubleKey("dur");
+    if (maybe_duration)
+      duration = *maybe_duration;
   }
-  if (!dictionary->GetString("cat", &category)) {
+  const std::string* maybe_category = event_value->FindStringKey("cat");
+  if (!maybe_category) {
     LOG(ERROR) << "cat is missing from TraceEvent JSON";
     return false;
   }
-  if (!dictionary->GetString("name", &name)) {
+  category = *maybe_category;
+  const std::string* maybe_name = event_value->FindStringKey("name");
+  if (!maybe_name) {
     LOG(ERROR) << "name is missing from TraceEvent JSON";
     return false;
   }
-  if (!dictionary->GetDictionary("args", &args)) {
-    std::string stripped_args;
+  name = *maybe_name;
+  const base::Value* maybe_args = event_value->FindDictKey("args");
+  if (!maybe_args) {
     // If argument filter is enabled, the arguments field contains a string
     // value.
-    if (!dictionary->GetString("args", &stripped_args) ||
-        stripped_args != "__stripped__") {
+    const std::string* maybe_stripped_args = event_value->FindStringKey("args");
+    if (!maybe_stripped_args || *maybe_stripped_args != "__stripped__") {
       LOG(ERROR) << "args is missing from TraceEvent JSON";
       return false;
     }
   }
-  if (require_id && !dictionary->GetString("id", &id) &&
-      !dictionary->FindKey("id2")) {
-    LOG(ERROR)
-        << "id/id2 is missing from ASYNC_BEGIN/ASYNC_END TraceEvent JSON";
-    return false;
+  const base::Value* maybe_id2 = nullptr;
+  if (require_id) {
+    const std::string* maybe_id = event_value->FindStringKey("id");
+    maybe_id2 = event_value->FindDictKey("id2");
+    if (!maybe_id && !maybe_id2) {
+      LOG(ERROR)
+          << "id/id2 is missing from ASYNC_BEGIN/ASYNC_END TraceEvent JSON";
+      return false;
+    }
+    if (maybe_id)
+      id = *maybe_id;
   }
 
-  dictionary->GetDouble("tdur", &thread_duration);
-  dictionary->GetDouble("tts", &thread_timestamp);
-  dictionary->GetString("scope", &scope);
-  dictionary->GetString("bind_id", &bind_id);
-  dictionary->GetBoolean("flow_out", &flow_out);
-  dictionary->GetBoolean("flow_in", &flow_in);
+  absl::optional<double> maybe_thread_duration =
+      event_value->FindDoubleKey("tdur");
+  if (maybe_thread_duration) {
+    thread_duration = *maybe_thread_duration;
+  }
+  absl::optional<double> maybe_thread_timestamp =
+      event_value->FindDoubleKey("tts");
+  if (maybe_thread_timestamp) {
+    thread_timestamp = *maybe_thread_timestamp;
+  }
+  const std::string* maybe_scope = event_value->FindStringKey("scope");
+  if (maybe_scope) {
+    scope = *maybe_scope;
+  }
+  const std::string* maybe_bind_id = event_value->FindStringKey("bind_id");
+  if (maybe_bind_id) {
+    bind_id = *maybe_bind_id;
+  }
+  absl::optional<bool> maybe_flow_out = event_value->FindBoolKey("flow_out");
+  if (maybe_flow_out) {
+    flow_out = *maybe_flow_out;
+  }
+  absl::optional<bool> maybe_flow_in = event_value->FindBoolKey("flow_in");
+  if (maybe_flow_in) {
+    flow_in = *maybe_flow_in;
+  }
 
-  const base::DictionaryValue* id2;
-  if (dictionary->GetDictionary("id2", &id2)) {
-    id2->GetString("global", &global_id2);
-    id2->GetString("local", &local_id2);
+  if (maybe_id2) {
+    const std::string* maybe_global_id2 = maybe_id2->FindStringKey("global");
+    if (maybe_global_id2) {
+      global_id2 = *maybe_global_id2;
+    }
+    const std::string* maybe_local_id2 = maybe_id2->FindStringKey("local");
+    if (maybe_local_id2) {
+      local_id2 = *maybe_local_id2;
+    }
   }
 
   // For each argument, copy the type and create a trace_analyzer::TraceValue.
-  if (args) {
-    for (base::DictionaryValue::Iterator it(*args); !it.IsAtEnd();
-         it.Advance()) {
-      if (it.value().is_string()) {
-        arg_strings[it.key()] = it.value().GetString();
-      } else if (it.value().is_int()) {
-        arg_numbers[it.key()] = static_cast<double>(it.value().GetInt());
-      } else if (it.value().is_bool()) {
-        arg_numbers[it.key()] =
-            static_cast<double>(it.value().GetBool() ? 1 : 0);
-      } else if (it.value().is_double()) {
-        arg_numbers[it.key()] = it.value().GetDouble();
+  if (maybe_args) {
+    for (const auto& pair : maybe_args->DictItems()) {
+      switch (pair.second.type()) {
+        case base::Value::Type::STRING:
+          arg_strings[pair.first] = pair.second.GetString();
+          break;
+
+        case base::Value::Type::INTEGER:
+          arg_numbers[pair.first] = static_cast<double>(pair.second.GetInt());
+          break;
+
+        case base::Value::Type::BOOLEAN:
+          arg_numbers[pair.first] = pair.second.GetBool() ? 1.0 : 0.0;
+          break;
+
+        case base::Value::Type::DOUBLE:
+          arg_numbers[pair.first] = pair.second.GetDouble();
+          break;
+
+        default:
+          break;
       }
+
       // Record all arguments as values.
-      arg_values[it.key()] = base::Value::ToUniquePtrValue(it.value().Clone());
+      arg_values[pair.first] = pair.second.Clone();
     }
   }
 
@@ -182,10 +230,10 @@ bool TraceEvent::GetArgAsNumber(const std::string& name,
 }
 
 bool TraceEvent::GetArgAsValue(const std::string& name,
-                               std::unique_ptr<base::Value>* arg) const {
+                               base::Value* arg) const {
   const auto it = arg_values.find(name);
   if (it != arg_values.end()) {
-    *arg = base::Value::ToUniquePtrValue(it->second->Clone());
+    *arg = it->second.Clone();
     return true;
   }
   return false;
@@ -231,9 +279,8 @@ bool TraceEvent::GetKnownArgAsBool(const std::string& name) const {
   return (arg_double != 0.0);
 }
 
-std::unique_ptr<base::Value> TraceEvent::GetKnownArgAsValue(
-    const std::string& name) const {
-  std::unique_ptr<base::Value> arg_value;
+base::Value TraceEvent::GetKnownArgAsValue(const std::string& name) const {
+  base::Value arg_value;
   bool result = GetArgAsValue(name, &arg_value);
   DCHECK(result);
   return arg_value;
@@ -763,10 +810,11 @@ TraceAnalyzer::TraceAnalyzer()
 TraceAnalyzer::~TraceAnalyzer() = default;
 
 // static
-TraceAnalyzer* TraceAnalyzer::Create(const std::string& json_events) {
+std::unique_ptr<TraceAnalyzer> TraceAnalyzer::Create(
+    const std::string& json_events) {
   std::unique_ptr<TraceAnalyzer> analyzer(new TraceAnalyzer());
   if (analyzer->SetEvents(json_events))
-    return analyzer.release();
+    return analyzer;
   return nullptr;
 }
 
@@ -936,7 +984,7 @@ std::unique_ptr<TraceAnalyzer> Stop() {
   run_loop.Run();
   buffer.Finish();
 
-  return base::WrapUnique(TraceAnalyzer::Create(trace_output.json_output));
+  return TraceAnalyzer::Create(trace_output.json_output);
 }
 
 // TraceEventVector utility functions.

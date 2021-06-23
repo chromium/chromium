@@ -101,7 +101,7 @@ void MetricIntegrationTest::StopTracing(std::string& trace_output) {
 std::unique_ptr<TraceAnalyzer> MetricIntegrationTest::StopTracingAndAnalyze() {
   std::string trace_str;
   StopTracing(trace_str);
-  return std::unique_ptr<TraceAnalyzer>(TraceAnalyzer::Create(trace_str));
+  return TraceAnalyzer::Create(trace_str);
 }
 
 WebContents* MetricIntegrationTest::web_contents() const {

@@ -385,10 +385,10 @@ TEST_P(ImagePaintTimingDetectorTest, LargestImagePaint_TraceEvent_Candidate) {
   EXPECT_TRUE(events[0]->HasArg("frame"));
 
   EXPECT_TRUE(events[0]->HasArg("data"));
-  std::unique_ptr<base::Value> arg;
+  base::Value arg;
   EXPECT_TRUE(events[0]->GetArgAsValue("data", &arg));
   base::DictionaryValue* arg_dict;
-  EXPECT_TRUE(arg->GetAsDictionary(&arg_dict));
+  EXPECT_TRUE(arg.GetAsDictionary(&arg_dict));
   DOMNodeId node_id;
   EXPECT_TRUE(arg_dict->GetInteger("DOMNodeId", &node_id));
   EXPECT_GT(node_id, 0);
@@ -455,10 +455,10 @@ TEST_P(ImagePaintTimingDetectorTest,
   EXPECT_TRUE(events[0]->HasArg("frame"));
 
   EXPECT_TRUE(events[0]->HasArg("data"));
-  std::unique_ptr<base::Value> arg;
+  base::Value arg;
   EXPECT_TRUE(events[0]->GetArgAsValue("data", &arg));
   base::DictionaryValue* arg_dict;
-  EXPECT_TRUE(arg->GetAsDictionary(&arg_dict));
+  EXPECT_TRUE(arg.GetAsDictionary(&arg_dict));
   DOMNodeId node_id;
   EXPECT_TRUE(arg_dict->GetInteger("DOMNodeId", &node_id));
   EXPECT_GT(node_id, 0);
@@ -521,10 +521,10 @@ TEST_P(ImagePaintTimingDetectorTest, LargestImagePaint_TraceEvent_NoCandidate) {
     EXPECT_EQ("loading", events[0]->category);
     EXPECT_TRUE(events[0]->HasArg("frame"));
     EXPECT_TRUE(events[0]->HasArg("data"));
-    std::unique_ptr<base::Value> arg;
+    base::Value arg;
     EXPECT_TRUE(events[0]->GetArgAsValue("data", &arg));
     base::DictionaryValue* arg_dict;
-    EXPECT_TRUE(arg->GetAsDictionary(&arg_dict));
+    EXPECT_TRUE(arg.GetAsDictionary(&arg_dict));
     DOMNodeId candidate_index;
     EXPECT_TRUE(arg_dict->GetInteger("candidateIndex", &candidate_index));
     EXPECT_EQ(candidate_index, 1);
@@ -539,10 +539,10 @@ TEST_P(ImagePaintTimingDetectorTest, LargestImagePaint_TraceEvent_NoCandidate) {
   // Use block to reuse the temp variable names.
   {
     EXPECT_TRUE(events[1]->HasArg("data"));
-    std::unique_ptr<base::Value> arg;
+    base::Value arg;
     EXPECT_TRUE(events[1]->GetArgAsValue("data", &arg));
     base::DictionaryValue* arg_dict;
-    EXPECT_TRUE(arg->GetAsDictionary(&arg_dict));
+    EXPECT_TRUE(arg.GetAsDictionary(&arg_dict));
     DOMNodeId candidate_index;
     EXPECT_TRUE(arg_dict->GetInteger("candidateIndex", &candidate_index));
     EXPECT_EQ(candidate_index, 3);

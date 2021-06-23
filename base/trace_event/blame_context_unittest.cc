@@ -166,7 +166,7 @@ TEST_F(BlameContextTest, TakeSnapshot) {
       "}";
 
   std::string snapshot_json;
-  JSONWriter::Write(*events[2]->GetKnownArgAsValue("snapshot"), &snapshot_json);
+  JSONWriter::Write(events[2]->GetKnownArgAsValue("snapshot"), &snapshot_json);
   EXPECT_EQ(kExpectedSnapshotJson, snapshot_json);
 }
 

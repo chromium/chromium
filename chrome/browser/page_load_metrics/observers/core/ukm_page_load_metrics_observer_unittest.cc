@@ -680,10 +680,10 @@ TEST_F(UkmPageLoadMetricsObserverTest, LargestContentfulPaint_Trace) {
   EXPECT_EQ(1u, events.size());
   EXPECT_EQ("loading", events[0]->category);
   EXPECT_TRUE(events[0]->HasArg("data"));
-  std::unique_ptr<base::Value> arg;
+  base::Value arg;
   EXPECT_TRUE(events[0]->GetArgAsValue("data", &arg));
   base::DictionaryValue* arg_dict;
-  EXPECT_TRUE(arg->GetAsDictionary(&arg_dict));
+  EXPECT_TRUE(arg.GetAsDictionary(&arg_dict));
   int time;
   EXPECT_TRUE(arg_dict->GetInteger("durationInMilliseconds", &time));
   EXPECT_EQ(600, time);

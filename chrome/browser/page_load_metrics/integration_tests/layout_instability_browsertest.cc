@@ -73,17 +73,17 @@ double LayoutInstabilityTest::CheckTraceData(Value& expectations,
       continue;
     }
 
-    std::unique_ptr<Value> data;
+    Value data;
     events[i++]->GetArgAsValue("data", &data);
 
     if (score) {
-      EXPECT_EQ(*score, *data->FindDoubleKey("score"));
+      EXPECT_EQ(*score, *data.FindDoubleKey("score"));
       final_score = *score;
     }
     const Value* sources = expectation.FindListKey("sources");
     if (sources) {
       CheckSources(sources->GetList(),
-                   data->FindListKey("impacted_nodes")->GetList());
+                   data.FindListKey("impacted_nodes")->GetList());
     }
   }
 
