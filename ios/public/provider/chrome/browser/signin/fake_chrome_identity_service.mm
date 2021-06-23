@@ -199,11 +199,6 @@ NSArray* FakeChromeIdentityService::GetAllIdentities(
   return identities_;
 }
 
-NSArray* FakeChromeIdentityService::GetAllIdentitiesSortedForDisplay(
-    PrefService* prefService) {
-  return identities_;
-}
-
 void FakeChromeIdentityService::ForgetIdentity(
     ChromeIdentity* identity,
     ForgetIdentityCallback callback) {

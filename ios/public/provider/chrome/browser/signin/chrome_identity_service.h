@@ -172,12 +172,6 @@ class ChromeIdentityService {
   // enterprise policies.
   virtual NSArray* GetAllIdentities(PrefService* pref_service);
 
-  // Returns all ChromeIdentity objects sorted by the ordering used in the
-  // account manager, which is typically based on the keychain ordering of
-  // accounts. It uses PrefService to filter ChromeIdentities according to
-  // enterprise policies.
-  virtual NSArray* GetAllIdentitiesSortedForDisplay(PrefService* pref_service);
-
   // Forgets the given identity on the device. This method logs the user out.
   // It is asynchronous because it needs to contact the server to revoke the
   // authentication token.
