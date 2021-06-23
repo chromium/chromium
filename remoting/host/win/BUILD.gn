@@ -17,7 +17,6 @@ group("all") {
     ":remoting_desktop",
     ":remoting_me2me_host",
     ":remoting_native_messaging_host",
-    "//remoting/host/security_key:remote_security_key",
   ]
 }
 
@@ -149,7 +148,6 @@ source_set("win") {
     "//crypto",
     "//ipc",
     "//remoting/base",
-    "//remoting/host/security_key",
     "//remoting/host/win:messages",
     "//remoting/host/win:remoting_lib_idl",
     "//remoting/protocol",
@@ -187,7 +185,6 @@ source_set("unit_tests") {
     "//remoting/host:test_support",
     "//remoting/host/it2me:common",
     "//remoting/host/native_messaging",
-    "//remoting/host/security_key:unit_tests",
     "//remoting/host/setup:common",
     "//remoting/proto",
     "//remoting/resources",
@@ -439,7 +436,6 @@ shared_library("remoting_core") {
     "//remoting/host:remoting_me2me_host_static",
     "//remoting/host/it2me:common",
     "//remoting/host/native_messaging",
-    "//remoting/host/security_key:main",
     "//remoting/host/setup",
     "//remoting/protocol",
     "//sandbox/win:sandbox",  # Should always use Windows version

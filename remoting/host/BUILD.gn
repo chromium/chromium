@@ -381,7 +381,6 @@ static_library("common") {
     "//remoting/host/file_transfer:common",
     "//remoting/host/input_monitor",
     "//remoting/host/mojom",
-    "//remoting/host/security_key",
     "//remoting/proto/ftl/v1:ftl_messages",
     "//remoting/proto/remoting/v1:remote_support_host_messages",
     "//remoting/protocol",

@@ -37,7 +37,10 @@ source_set("security_key") {
     "//ipc",
     "//mojo/public/cpp/platform",
     "//mojo/public/cpp/system",
+    "//net",
+    "//remoting/host:common",
     "//remoting/proto",
+    "//remoting/protocol",
     "//third_party/webrtc_overrides:webrtc_component",
   ]
 
@@ -62,8 +65,12 @@ source_set("main") {
     "remote_security_key_main.h",
   ]
   deps = [
+    ":security_key",
     "//base:debugging_buildflags",
     "//mojo/core/embedder",
+    "//remoting/host:base",
+    "//remoting/host:common",
+    "//remoting/host:logging",
   ]
 }
 
@@ -75,6 +82,8 @@ if (is_win) {
         host_predefines + [ "REMOTING_HOST_BINARY=BINARY_REMOTE_SECURITY_KEY" ]
 
     deps = [
+      ":main",
+      ":security_key",
       "//build/win:default_exe_manifest",
       "//remoting/host/win:remoting_core",
       "//remoting/host/win:remoting_windows_resources",
@@ -101,8 +110,16 @@ source_set("unit_tests") {
 
   public_deps = [ ":test_support" ]
   deps = [
+    ":security_key",
     "//mojo/core/test:test_support",
+    "//net",
+    "//net:test_support",
+    "//net/traffic_annotation:test_support",
     "//remoting:test_support",
+    "//remoting/host:common",
+    "//remoting/host:test_support",
+    "//remoting/host/setup:common",
+    "//remoting/protocol",
   ]
 
   if (is_posix) {
@@ -129,7 +146,9 @@ static_library("test_support") {
   ]
 
   deps = [
+    ":security_key",
     "//ipc",
+    "//remoting/host:common",
     "//remoting/proto",
     "//testing/gtest",
   ]
