@@ -303,8 +303,8 @@ void NearbyShareContactManagerImpl::OnContactsDownloadSuccess(
     uint32_t num_unreachable_contacts_filtered_out) {
   contact_downloader_.reset();
 
-  NS_LOG(VERBOSE) << __func__ << ": Nearby Share download of "
-                  << contacts.size() << " contacts succeeded.";
+  NS_LOG(INFO) << __func__ << ": Nearby Share download of " << contacts.size()
+               << " contacts succeeded.";
 
   // Remove contacts from the allowlist that are not in the contact list.
   SetAllowlist(
@@ -378,9 +378,9 @@ void NearbyShareContactManagerImpl::OnContactsUploadFinished(
     bool did_contacts_change_since_last_upload,
     const std::string& contact_upload_hash,
     bool success) {
-  NS_LOG(VERBOSE) << __func__ << ": Upload of contacts to Nearby Share server "
-                  << (success ? "succeeded." : "failed.")
-                  << " Contact upload hash: " << contact_upload_hash;
+  NS_LOG(INFO) << __func__ << ": Upload of contacts to Nearby Share server "
+               << (success ? "succeeded." : "failed.")
+               << " Contact upload hash: " << contact_upload_hash;
   if (success) {
     // Only resolve the periodic upload request on success; let the
     // download-and-upload scheduler handle any failure retries. The periodic

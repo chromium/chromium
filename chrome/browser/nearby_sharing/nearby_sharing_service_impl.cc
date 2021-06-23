@@ -1156,13 +1156,13 @@ void NearbySharingServiceImpl::OnEnabledChanged(bool enabled) {
       feature_usage_metrics_.GetNearbyShareEnabledState());
   base::UmaHistogramBoolean("Nearby.Share.EnabledStateChanged", enabled);
   if (enabled) {
-    NS_LOG(VERBOSE) << __func__ << ": Nearby sharing enabled!";
+    NS_LOG(INFO) << __func__ << ": Nearby sharing enabled!";
     local_device_data_manager_->Start();
     contact_manager_->Start();
     certificate_manager_->Start();
     BindToNearbyProcess();
   } else {
-    NS_LOG(VERBOSE) << __func__ << ": Nearby sharing disabled!";
+    NS_LOG(INFO) << __func__ << ": Nearby sharing disabled!";
     StopAdvertising();
     StopScanning();
     nearby_connections_manager_->Shutdown();
@@ -1176,27 +1176,27 @@ void NearbySharingServiceImpl::OnEnabledChanged(bool enabled) {
 
 void NearbySharingServiceImpl::OnDeviceNameChanged(
     const std::string& device_name) {
-  NS_LOG(VERBOSE) << __func__ << ": Nearby sharing device name changed";
+  NS_LOG(INFO) << __func__ << ": Nearby sharing device name changed";
   // TODO(vecore): handle device name change
 }
 
 void NearbySharingServiceImpl::OnDataUsageChanged(DataUsage data_usage) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  NS_LOG(VERBOSE) << __func__ << ": Nearby sharing data usage changed to "
-                  << data_usage;
+  NS_LOG(INFO) << __func__ << ": Nearby sharing data usage changed to "
+               << data_usage;
   StopAdvertisingAndInvalidateSurfaceState();
 }
 
 void NearbySharingServiceImpl::OnVisibilityChanged(Visibility new_visibility) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  NS_LOG(VERBOSE) << __func__ << ": Nearby sharing visibility changed to "
-                  << new_visibility;
+  NS_LOG(INFO) << __func__ << ": Nearby sharing visibility changed to "
+               << new_visibility;
   StopAdvertisingAndInvalidateSurfaceState();
 }
 
 void NearbySharingServiceImpl::OnAllowedContactsChanged(
     const std::vector<std::string>& allowed_contacts) {
-  NS_LOG(VERBOSE) << __func__ << ": Nearby sharing visible contacts changed";
+  NS_LOG(INFO) << __func__ << ": Nearby sharing visible contacts changed";
   // TODO(vecore): handle visible contacts change
 }
 
@@ -1204,11 +1204,11 @@ void NearbySharingServiceImpl::OnPublicCertificatesDownloaded() {
   if (!is_scanning_ || discovered_advertisements_to_retry_map_.empty())
     return;
 
-  NS_LOG(VERBOSE) << __func__
-                  << ": Public certificates downloaded while scanning. "
-                  << "Retrying decryption with "
-                  << discovered_advertisements_to_retry_map_.size()
-                  << " previously discovered advertisements.";
+  NS_LOG(INFO) << __func__
+               << ": Public certificates downloaded while scanning. "
+               << "Retrying decryption with "
+               << discovered_advertisements_to_retry_map_.size()
+               << " previously discovered advertisements.";
   const auto map_copy = discovered_advertisements_to_retry_map_;
   discovered_advertisements_to_retry_map_.clear();
   for (const auto& id_info_pair : map_copy)
@@ -1539,19 +1539,18 @@ void NearbySharingServiceImpl::OnOutgoingDecryptedCertificate(
       endpoint_id, std::move(advertisement), std::move(certificate),
       /*is_incoming=*/false);
   if (!share_target) {
-    NS_LOG(VERBOSE) << __func__
-                    << ": Failed to convert advertisement to share target from "
-                    << "discovered advertisement. Ignoring endpoint until next "
-                    << "certificate download.";
+    NS_LOG(INFO)
+        << __func__ << ": Failed to convert discovered advertisement to share "
+        << "target. Ignoring endpoint until next certificate download.";
     discovered_advertisements_to_retry_map_[endpoint_id] = endpoint_info;
     FinishEndpointDiscoveryEvent();
     return;
   }
 
   // Update the endpoint id for the share target.
-  NS_LOG(VERBOSE) << __func__
-                  << ": An endpoint has been discovered, with an advertisement "
-                     "containing a valid share target.";
+  NS_LOG(INFO) << __func__
+               << ": An endpoint has been discovered, with an advertisement "
+                  "containing a valid share target.";
 
   // Notifies the user that we discovered a device.
   for (ShareTargetDiscoveredCallback& discovery_callback :
