@@ -71,6 +71,7 @@ history_clusters::mojom::URLVisitPtr VisitToMojom(
   visit_mojom->last_visit_time = visit.visit_row.visit_time;
   visit_mojom->first_visit_time = visit.visit_row.visit_time;
   visit_mojom->page_title = base::UTF16ToUTF8(visit.url_row.title());
+  visit_mojom->score = 1;  // Non-zero score until the model produces real ones.
   return visit_mojom;
 }
 
