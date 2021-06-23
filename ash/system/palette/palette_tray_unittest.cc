@@ -8,7 +8,6 @@
 #include <string>
 
 #include "ash/assistant/assistant_controller_impl.h"
-#include "ash/assistant/test/test_assistant_client.h"
 #include "ash/assistant/test/test_assistant_service.h"
 #include "ash/assistant/util/assistant_util.h"
 #include "ash/constants/ash_features.h"
@@ -34,6 +33,7 @@
 #include "base/run_loop.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
+#include "chromeos/services/assistant/test_support/scoped_assistant_client.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/session_manager_types.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -377,7 +377,7 @@ class PaletteTrayTestWithAssistant : public PaletteTrayTest {
 
  private:
   base::SimpleTestTickClock simulated_clock_;
-  TestAssistantClient assistant_client_;
+  chromeos::assistant::ScopedAssistantClient assistant_client_;
 
   DISALLOW_COPY_AND_ASSIGN(PaletteTrayTestWithAssistant);
 };

@@ -7,6 +7,19 @@
 namespace chromeos {
 namespace assistant {
 
+namespace {
+
+constexpr base::TimeDelta kMockCallbackDelayTime =
+    base::TimeDelta::FromMilliseconds(250);
+
+std::unique_ptr<ui::AssistantTree> CreateTestAssistantTree() {
+  auto tree = std::make_unique<ui::AssistantTree>();
+  tree->nodes.emplace_back(std::make_unique<ui::AssistantNode>());
+  return tree;
+}
+
+}  // namespace
+
 ScopedAssistantClient::ScopedAssistantClient() = default;
 
 ScopedAssistantClient::~ScopedAssistantClient() = default;
@@ -27,6 +40,20 @@ void ScopedAssistantClient::RequestMediaControllerManager(
     media_controller_manager_receiver_->reset();
     media_controller_manager_receiver_->Bind(std::move(receiver));
   }
+}
+
+void ScopedAssistantClient::RequestAssistantStructure(
+    RequestAssistantStructureCallback callback) {
+  // Pretend to fetch structure asynchronously.
+  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](RequestAssistantStructureCallback callback) {
+            std::move(callback).Run(ax::mojom::AssistantExtra::New(),
+                                    CreateTestAssistantTree());
+          },
+          std::move(callback)),
+      kMockCallbackDelayTime);
 }
 
 }  // namespace assistant

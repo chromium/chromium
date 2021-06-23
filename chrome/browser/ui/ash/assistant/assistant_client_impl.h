@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "ash/public/cpp/assistant/assistant_client.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "base/macros.h"
 #include "base/scoped_observation.h"
@@ -30,8 +29,7 @@ class ConversationStartersClientImpl;
 class Profile;
 
 // Class to handle all Assistant in-browser-process functionalities.
-class AssistantClientImpl : public ash::AssistantClient,
-                            public chromeos::assistant::AssistantClient,
+class AssistantClientImpl : public chromeos::assistant::AssistantClient,
                             public content::NotificationObserver,
                             public signin::IdentityManager::Observer,
                             public session_manager::SessionManagerObserver,
@@ -43,17 +41,15 @@ class AssistantClientImpl : public ash::AssistantClient,
   void MaybeInit(Profile* profile);
   void MaybeStartAssistantOptInFlow();
 
-  // ash::AssistantClient overrides:
-  void RequestAssistantStructure(
-      ash::AssistantClient::RequestAssistantStructureCallback callback)
-      override;
-
   // content::NotificationObserver overrides:
   void Observe(int type,
                const content::NotificationSource& source,
                const content::NotificationDetails& details) override;
 
   // chromeos::assistant::AssisantClient overrides:
+  void RequestAssistantStructure(
+      chromeos::assistant::AssistantClient::RequestAssistantStructureCallback
+          callback) override;
   void OnAssistantStatusChanged(
       chromeos::assistant::AssistantStatus new_status) override;
   void RequestAssistantVolumeControl(

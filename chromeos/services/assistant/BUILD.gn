@@ -131,8 +131,6 @@ source_set("tests") {
     "test_support/fake_service_context.h",
     "test_support/fully_initialized_assistant_state.cc",
     "test_support/fully_initialized_assistant_state.h",
-    "test_support/scoped_assistant_client.cc",
-    "test_support/scoped_assistant_client.h",
     "test_support/scoped_device_actions.cc",
     "test_support/scoped_device_actions.h",
   ]
@@ -155,10 +153,13 @@ static_library("test_support") {
     "test_support/mock_assistant.h",
     "test_support/mock_assistant_interaction_subscriber.cc",
     "test_support/mock_assistant_interaction_subscriber.h",
+    "test_support/scoped_assistant_client.cc",
+    "test_support/scoped_assistant_client.h",
   ]
   deps = [
     ":lib",
     "//base",
+    "//chromeos/assistant:buildflags",
     "//chromeos/services/assistant/public/cpp",
     "//chromeos/services/assistant/public/mojom",
     "//chromeos/services/assistant/public/proto",

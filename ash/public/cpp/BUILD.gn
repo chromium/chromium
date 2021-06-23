@@ -67,8 +67,6 @@ component("cpp") {
     "ash_typography.cc",
     "ash_typography.h",
     "ash_view_ids.h",
-    "assistant/assistant_client.cc",
-    "assistant/assistant_client.h",
     "assistant/assistant_interface_binder.cc",
     "assistant/assistant_interface_binder.h",
     "assistant/assistant_setup.cc",

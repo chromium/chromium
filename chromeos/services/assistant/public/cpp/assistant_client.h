@@ -18,6 +18,7 @@
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
 #include "services/media_session/public/mojom/media_controller.mojom.h"
+#include "ui/accessibility/mojom/ax_assistant_structure.mojom.h"
 
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 #include "chromeos/services/libassistant/public/mojom/service.mojom-forward.h"
@@ -36,6 +37,13 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) AssistantClient {
   virtual ~AssistantClient();
 
   static AssistantClient* Get();
+
+  using RequestAssistantStructureCallback =
+      base::OnceCallback<void(ax::mojom::AssistantExtraPtr,
+                              std::unique_ptr<ui::AssistantTree>)>;
+  // Requests Assistant structure for the active browser or ARC++ app window.
+  virtual void RequestAssistantStructure(
+      RequestAssistantStructureCallback callback) = 0;
 
   // Notifies assistant client that assistant running status has changed.
   virtual void OnAssistantStatusChanged(AssistantStatus new_status) = 0;

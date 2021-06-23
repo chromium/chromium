@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "ash/assistant/assistant_controller_impl.h"
-#include "ash/public/cpp/assistant/assistant_client.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/public/cpp/assistant/controller/assistant_screen_context_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
@@ -21,6 +20,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
+#include "chromeos/services/assistant/public/cpp/assistant_client.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -283,7 +283,7 @@ void AssistantScreenContextControllerImpl::UpdateAssistantStructure(
 void AssistantScreenContextControllerImpl::RequestAssistantStructure() {
   DCHECK(AssistantState::Get()->IsScreenContextAllowed());
 
-  auto* assistant_client = AssistantClient::Get();
+  auto* assistant_client = chromeos::assistant::AssistantClient::Get();
   DCHECK(assistant_client);
 
   // Request and cache Assistant structure for the active window.

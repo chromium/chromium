@@ -31,6 +31,8 @@ class ScopedAssistantClient : AssistantClient {
       mojo::Receiver<media_session::mojom::MediaControllerManager>* receiver);
 
   // AssistantClient implementation:
+  void RequestAssistantStructure(
+      RequestAssistantStructureCallback callback) override;
   void OnAssistantStatusChanged(AssistantStatus status) override {}
   void RequestAssistantVolumeControl(
       mojo::PendingReceiver<ash::mojom::AssistantVolumeControl> receiver)

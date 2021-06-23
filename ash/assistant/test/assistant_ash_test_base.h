@@ -19,6 +19,12 @@ namespace aura {
 class Window;
 }  // namespace aura
 
+namespace chromeos {
+namespace assistant {
+class ScopedAssistantClient;
+}  // namespace assistant
+}  // namespace chromeos
+
 namespace views {
 class Textfield;
 class View;
@@ -31,7 +37,6 @@ class AppListView;
 class AssistantOnboardingSuggestionView;
 class AssistantTestApi;
 class SuggestionChipView;
-class TestAssistantClient;
 class TestAssistantService;
 class TestAssistantSetup;
 class TestAssistantWebViewFactory;
@@ -212,7 +217,7 @@ class AssistantAshTestBase : public AshTestBase {
   std::vector<std::unique_ptr<aura::Window>> windows_;
   std::vector<std::unique_ptr<views::Widget>> widgets_;
 
-  std::unique_ptr<TestAssistantClient> assistant_client_;
+  std::unique_ptr<chromeos::assistant::ScopedAssistantClient> assistant_client_;
 
   DISALLOW_COPY_AND_ASSIGN(AssistantAshTestBase);
 };
