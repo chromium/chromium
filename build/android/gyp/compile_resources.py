@@ -271,15 +271,12 @@ def _RenameLocaleResourceDirs(resource_dirs, path_info):
 
     * BCP 47 langauge tags will be renamed to an equivalent ISO 639-1
       locale qualifier if possible (e.g. 'values-b+en+US/ -> values-en-rUS').
-      Though this is not necessary at the moment, because no third-party
-      package that Chromium links against uses these for the current list of
-      supported locales, this may change when the list is extended in the
-      future).
 
   Args:
     resource_dirs: list of top-level resource directories.
   """
   for resource_dir in resource_dirs:
+    ignore_dirs = {}
     for path in _IterFiles(resource_dir):
       locale = resource_utils.FindLocaleInStringResourceFilePath(path)
       if not locale:
@@ -293,10 +290,24 @@ def _RenameLocaleResourceDirs(resource_dirs, path_info):
         if path == path2:
           raise Exception('Could not substitute locale %s for %s in %s' %
                           (locale, locale2, path))
-        if os.path.exists(path2):
-          # This happens sometimes, e.g. some libraries provide both
-          # values-nb/ and values-no/ with the same content.
+
+        # Ignore rather than rename when the destination resources config
+        # already exists.
+        # e.g. some libraries provide both values-nb/ and values-no/.
+        # e.g. material design provides:
+        # * res/values-rUS/values-rUS.xml
+        # * res/values-b+es+419/values-b+es+419.xml
+        config_dir = os.path.dirname(path2)
+        already_has_renamed_config = ignore_dirs.get(config_dir)
+        if already_has_renamed_config is None:
+          # Cache the result of the first time the directory is encountered
+          # since subsequent encounters will find the directory already exists
+          # (due to the rename).
+          already_has_renamed_config = os.path.exists(config_dir)
+          ignore_dirs[config_dir] = already_has_renamed_config
+        if already_has_renamed_config:
           continue
+
         build_utils.MakeDirectory(os.path.dirname(path2))
         shutil.move(path, path2)
         path_info.RegisterRename(
