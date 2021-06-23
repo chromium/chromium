@@ -89,7 +89,6 @@ OverlayProcessorInterface::CreateOverlayProcessor(
   // overlay for WebView is enabled, this check still works.
   if (surface_handle == gpu::kNullSurfaceHandle)
     return std::make_unique<OverlayProcessorStub>();
-
 #if defined(OS_APPLE)
   DCHECK(capabilities.supports_surfaceless);
 
@@ -127,6 +126,7 @@ OverlayProcessorInterface::CreateOverlayProcessor(
 
   gpu::SharedImageInterface* sii = nullptr;
   if (features::ShouldUseRealBuffersForPageFlipTest() &&
+      ui::OzonePlatform::GetInstance()->GetOverlayManager() &&
       ui::OzonePlatform::GetInstance()
           ->GetOverlayManager()
           ->allow_sync_and_real_buffer_page_flip_testing()) {

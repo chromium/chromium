@@ -93,13 +93,7 @@ const base::Feature kUsePreferredIntervalForVideo{
 // Whether we should use the real buffers corresponding to overlay candidates in
 // order to do a pageflip test rather than allocating test buffers.
 const base::Feature kUseRealBuffersForPageFlipTest{
-  "UseRealBuffersForPageFlipTest",
-#if BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
-      base::FEATURE_ENABLED_BY_DEFAULT
-#else
-      base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-};
+    "UseRealBuffersForPageFlipTest", base::FEATURE_ENABLED_BY_DEFAULT};
 
 #if defined(OS_FUCHSIA)
 // Enables SkiaOutputDeviceBufferQueue instead of Vulkan swapchain on Fuchsia.

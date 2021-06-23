@@ -6,10 +6,6 @@
 
 #include "build/chromeos_buildflags.h"
 
-#if !defined(OS_IOS)
-#include "media/media_buildflags.h"  // nogncheck
-#endif
-
 #if defined(OS_WIN)
 #include "base/win/windows_version.h"
 #endif
@@ -233,18 +229,7 @@ const base::Feature kHandwritingGesture = {"HandwritingGesture",
 #endif
 
 const base::Feature kSynchronousPageFlipTesting{
-  "SynchronousPageFlipTesting",
-#if defined(OS_IOS)
-      base::FEATURE_DISABLED_BY_DEFAULT
-#else
-// We can't combine these directives because BUILDFLAG won't be defined on iOS.
-#if BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
-      base::FEATURE_ENABLED_BY_DEFAULT
-#else
-      base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-#endif
-};
+    "SynchronousPageFlipTesting", base::FEATURE_ENABLED_BY_DEFAULT};
 
 bool IsSynchronousPageFlipTestingEnabled() {
   return base::FeatureList::IsEnabled(kSynchronousPageFlipTesting);

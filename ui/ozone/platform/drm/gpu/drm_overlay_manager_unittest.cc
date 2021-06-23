@@ -18,7 +18,7 @@ constexpr gfx::AcceleratedWidget kSecondaryWidget = 2;
 
 class TestDrmOverlayManager : public DrmOverlayManager {
  public:
-  TestDrmOverlayManager() = default;
+  TestDrmOverlayManager() : DrmOverlayManager(false) {}
   ~TestDrmOverlayManager() override = default;
 
   using DrmOverlayManager::UpdateCacheForOverlayCandidates;

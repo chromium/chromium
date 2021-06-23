@@ -556,16 +556,19 @@ void GpuServiceImpl::InitializeWithHost(
     // access to SharedImageManager on the viz thread to obtain the buffer
     // corresponding to a mailbox.
     const bool display_context_on_another_thread = features::IsDrDcEnabled();
-    bool thread_safe_manager =
-        features::ShouldUseRealBuffersForPageFlipTest() ||
-        display_context_on_another_thread;
+    bool thread_safe_manager = display_context_on_another_thread;
+#if defined(USE_OZONE)
+    thread_safe_manager |= features::ShouldUseRealBuffersForPageFlipTest();
+#endif
     owned_shared_image_manager_ = std::make_unique<gpu::SharedImageManager>(
         thread_safe_manager, display_context_on_another_thread);
     shared_image_manager = owned_shared_image_manager_.get();
+#if defined(USE_OZONE)
   } else {
     // With this feature enabled, we don't expect to receive an external
     // SharedImageManager.
     DCHECK(!features::ShouldUseRealBuffersForPageFlipTest());
+#endif
   }
 
   shutdown_event_ = shutdown_event;

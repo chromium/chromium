@@ -639,9 +639,6 @@ component("features") {
     "//base",
     "//build:chromeos_buildflags",
   ]
-  if (!is_ios) {
-    deps += [ "//media:media_buildflags" ]
-  }
 }
 
 # TODO(crbug.com/1091985): Support CrOS.
