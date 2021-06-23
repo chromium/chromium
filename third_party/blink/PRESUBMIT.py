@@ -12,6 +12,8 @@ import inspect
 import os
 import re
 
+USE_PYTHON3 = True
+
 try:
     # pylint: disable=C0103
     audit_non_blink_usage = imp.load_source(
