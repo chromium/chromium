@@ -1303,8 +1303,9 @@ void Layer::SetScrollOffset(const gfx::ScrollOffset& offset) {
   if (!scrolled_on_impl_side)
     cc_layer_->SetScrollOffset(offset);
 
-  DCHECK_EQ(offset.x(), CurrentScrollOffset().x());
-  DCHECK_EQ(offset.y(), CurrentScrollOffset().y());
+  // TODO(crbug.com/1219662): If this layer was also resized since the last
+  // commit synchronizing |cc_layer_| with the cc::LayerImpl backing
+  // |compositor|, the scroll might not be completed.
 }
 
 void Layer::RequestCopyOfOutput(
