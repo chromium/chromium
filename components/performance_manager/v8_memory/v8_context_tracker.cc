@@ -507,14 +507,26 @@ void V8ContextTracker::OnRemoteIframeAttachedImpl(
     raw_ec_data = ec_data.get();
   }
 
-  if (raw_ec_data->remote_frame_data() ||
-      raw_ec_data->iframe_attribution_data) {
+  if (raw_ec_data->remote_frame_data()) {
     std::move(bad_message_callback).Run("unexpected OnRemoteIframeAttached");
     return;
   }
 
-  // Attach the iframe data to the ExecutionContextData.
-  raw_ec_data->iframe_attribution_data = std::move(iframe_attribution_data);
+  // This used to assert that `raw_ec_data` had no `iframe_attribution_data`
+  // already attached. In general, the renderer should not send multiple updates
+  // for a given RenderFrameHost parent <-> RenderFrameProxyHost child pairing.
+  // However, when //content needs to undo a `CommitNavigation()` sent to a
+  // speculative RenderFrameHost, the renderer ends up swapping in a
+  // RenderFrameProxy with the same RemoteFrameToken back in. Allow it as an
+  // unfortunate exception--but ignore the update to retain the previous
+  // behavior. See https://crbug.com/1221955 for more background.
+  if (!raw_ec_data->iframe_attribution_data) {
+    // Attach the iframe data to the ExecutionContextData.
+    // If there was already iframe data, keep the original data, to be
+    // consistent with the behaviour of all other paths that ignore changes to
+    // the `src` and `id` attributes.
+    raw_ec_data->iframe_attribution_data = std::move(iframe_attribution_data);
+  }
 
   // Create the RemoteFrameData reference to this context.
   auto* parent_process_data =
