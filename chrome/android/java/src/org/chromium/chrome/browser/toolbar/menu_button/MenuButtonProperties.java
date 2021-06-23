@@ -8,6 +8,7 @@ import android.content.res.ColorStateList;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuButtonHelper;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
@@ -45,13 +46,15 @@ class MenuButtonProperties {
     public static final WritableBooleanPropertyKey IS_HIGHLIGHTING =
             new WritableBooleanPropertyKey();
     public static final WritableBooleanPropertyKey IS_VISIBLE = new WritableBooleanPropertyKey();
+    public static final WritableObjectPropertyKey<Supplier<MenuButtonState>> STATE_SUPPLIER =
+            new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<ShowBadgeProperty> SHOW_UPDATE_BADGE =
             new WritableObjectPropertyKey(true);
     public static final WritableObjectPropertyKey<ThemeProperty> THEME =
             new WritableObjectPropertyKey<>(true);
     public static final WritableFloatPropertyKey TRANSLATION_X = new WritableFloatPropertyKey();
 
-    public static final PropertyKey[] ALL_KEYS =
-            new PropertyKey[] {ALPHA, APP_MENU_BUTTON_HELPER, CONTENT_DESCRIPTION, IS_CLICKABLE,
-                    IS_HIGHLIGHTING, IS_VISIBLE, SHOW_UPDATE_BADGE, THEME, TRANSLATION_X};
+    public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {ALPHA, APP_MENU_BUTTON_HELPER,
+            CONTENT_DESCRIPTION, IS_CLICKABLE, IS_HIGHLIGHTING, IS_VISIBLE, STATE_SUPPLIER,
+            SHOW_UPDATE_BADGE, THEME, TRANSLATION_X};
 }

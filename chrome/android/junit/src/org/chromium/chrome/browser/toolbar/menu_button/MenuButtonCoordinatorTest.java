@@ -21,7 +21,6 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
-import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuButtonHelper;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
@@ -56,8 +55,6 @@ public class MenuButtonCoordinatorTest {
     @Mock
     private AppMenuPropertiesDelegate mAppMenuPropertiesDelegate;
     @Mock
-    private UpdateMenuItemHelper mUpdateMenuItemHelper;
-    @Mock
     private Runnable mRequestRenderRunnable;
     @Mock
     ThemeColorProvider mThemeColorProvider;
@@ -68,7 +65,7 @@ public class MenuButtonCoordinatorTest {
     @Mock
     private KeyboardVisibilityDelegate mKeyboardDelegate;
 
-    private UpdateMenuItemHelper.MenuUiState mMenuUiState;
+    private MenuUiState mMenuUiState;
     private OneshotSupplierImpl<AppMenuCoordinator> mAppMenuSupplier;
     private MenuButtonCoordinator mMenuButtonCoordinator;
 
@@ -80,10 +77,8 @@ public class MenuButtonCoordinatorTest {
         doReturn(mAppMenuPropertiesDelegate)
                 .when(mAppMenuCoordinator)
                 .getAppMenuPropertiesDelegate();
-        UpdateMenuItemHelper.setInstanceForTesting(mUpdateMenuItemHelper);
         mAppMenuSupplier = new OneshotSupplierImpl<>();
-        mMenuUiState = new UpdateMenuItemHelper.MenuUiState();
-        doReturn(mMenuUiState).when(mUpdateMenuItemHelper).getUiState();
+        mMenuUiState = new MenuUiState();
         doReturn(mMenuButton)
                 .when(mActivity)
                 .findViewById(org.chromium.chrome.R.id.menu_button_wrapper);
@@ -95,10 +90,12 @@ public class MenuButtonCoordinatorTest {
         doReturn(new WeakReference<>(mActivity)).when(mWindowAndroid).getActivity();
         doReturn(mKeyboardDelegate).when(mWindowAndroid).getKeyboardDelegate();
 
+        // clang-format off
         mMenuButtonCoordinator = new MenuButtonCoordinator(mAppMenuSupplier,
                 mControlsVisibilityDelegate, mWindowAndroid, mFocusFunction, mRequestRenderRunnable,
-                true,
-                () -> false, mThemeColorProvider, org.chromium.chrome.R.id.menu_button_wrapper);
+                true, () -> false, mThemeColorProvider, () -> null, () -> {},
+                org.chromium.chrome.R.id.menu_button_wrapper);
+        // clang-format on
     }
 
     @Test

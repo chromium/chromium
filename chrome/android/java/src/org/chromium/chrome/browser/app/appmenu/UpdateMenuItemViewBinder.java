@@ -22,6 +22,7 @@ import androidx.core.graphics.drawable.DrawableCompat;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
+import org.chromium.chrome.browser.toolbar.menu_button.MenuItemState;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuClickHandler;
 import org.chromium.chrome.browser.ui.appmenu.CustomViewBinder;
 
@@ -58,8 +59,7 @@ class UpdateMenuItemViewBinder implements CustomViewBinder {
             holder = (UpdateMenuItemViewHolder) convertView.getTag();
         }
 
-        UpdateMenuItemHelper.MenuItemState itemState =
-                UpdateMenuItemHelper.getInstance().getUiState().itemState;
+        MenuItemState itemState = UpdateMenuItemHelper.getInstance().getUiState().itemState;
 
         if (itemState == null) return convertView;
 

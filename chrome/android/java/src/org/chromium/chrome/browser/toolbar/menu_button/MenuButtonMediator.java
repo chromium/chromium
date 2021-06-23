@@ -22,8 +22,6 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
-import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
-import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper.MenuButtonState;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator.SetFocusFunction;
@@ -58,34 +56,35 @@ class MenuButtonMediator implements AppMenuObserver {
     private final Activity mActivity;
     private final KeyboardVisibilityDelegate mKeyboardDelegate;
     private boolean mShouldShowAppUpdateBadge;
-    private Runnable mUpdateStateChangedListener;
-    private Supplier<Boolean> mIsActivityFinishingSupplier;
+    private final Supplier<Boolean> mIsActivityFinishingSupplier;
     private int mFullscreenMenuToken = TokenHolder.INVALID_TOKEN;
     private int mFullscreenHighlightToken = TokenHolder.INVALID_TOKEN;
-    private Supplier<Boolean> mIsInOverviewModeSupplier;
+    private final Supplier<Boolean> mIsInOverviewModeSupplier;
     private boolean mSuppressAppMenuUpdateBadge;
     private Resources mResources;
-    private OneshotSupplier<AppMenuCoordinator> mAppMenuCoordinatorSupplier;
+    private final OneshotSupplier<AppMenuCoordinator> mAppMenuCoordinatorSupplier;
+    private final Supplier<MenuButtonState> mMenuButtonStateSupplier;
+    private final Runnable mOnMenuButtonClicked;
 
     private final int mUrlFocusTranslationX;
 
     /**
-     *  @param appMenuCoordinatorSupplier Supplier for the AppMenuCoordinator, which owns all other
-     *         app menu MVC components.
-     * @param controlsVisibilityDelegate Delegate for forcing persistent display of browser
-     *         controls.
-     * @param setUrlBarFocusFunction Function that allows setting focus on the url bar.
-     * @param requestRenderRunnable Runnable that requests a re-rendering of the compositor view
-     *         containing the app menu button.
-     * @param shouldShowAppUpdateBadge Whether the app menu update badge should be shown if there is
-     *         a pending update.
-     * @param isInOverviewModeSupplier Supplier of overview mode state.
-     * @param themeColorProvider Provider of theme color changes.
-     * @param windowAndroid The WindowAndroid instance.
+     * @param propertyModel Model to write property changes to.
      * @param shouldShowAppUpdateBadge Whether the "update available" badge should ever be shown.
      * @param isActivityFinishingSupplier Supplier for knowing if the embedding activity is in the
      *         process of finishing or has already been destroyed.
-     * @param propertyModel Model to write property changes to.
+     * @param requestRenderRunnable Runnable that requests a re-rendering of the compositor view
+     *         containing the app menu button.
+     * @param themeColorProvider Provider of theme color changes.
+     * @param isInOverviewModeSupplier Supplier of overview mode state.
+     * @param controlsVisibilityDelegate Delegate for forcing persistent display of browser
+     *         controls.
+     * @param setUrlBarFocusFunction Function that allows setting focus on the url bar.
+     * @param appMenuCoordinatorSupplier Supplier for the AppMenuCoordinator, which owns all other
+     *         app menu MVC components.
+     * @param windowAndroid The WindowAndroid instance.
+     * @param menuButtonStateSupplier Suplier of {@link MenuButtonState}.
+     * @param onMenuButtonClicked Runnable to execute when menu button is clicked.
      */
     MenuButtonMediator(PropertyModel propertyModel, boolean shouldShowAppUpdateBadge,
             Supplier<Boolean> isActivityFinishingSupplier, Runnable requestRenderRunnable,
@@ -93,7 +92,8 @@ class MenuButtonMediator implements AppMenuObserver {
             BrowserStateBrowserControlsVisibilityDelegate controlsVisibilityDelegate,
             SetFocusFunction setUrlBarFocusFunction,
             OneshotSupplier<AppMenuCoordinator> appMenuCoordinatorSupplier,
-            WindowAndroid windowAndroid) {
+            WindowAndroid windowAndroid, Supplier<MenuButtonState> menuButtonStateSupplier,
+            Runnable onMenuButtonClicked) {
         mPropertyModel = propertyModel;
         mShouldShowAppUpdateBadge = shouldShowAppUpdateBadge;
         mIsActivityFinishingSupplier = isActivityFinishingSupplier;
@@ -110,6 +110,8 @@ class MenuButtonMediator implements AppMenuObserver {
         mResources = mActivity.getResources();
         mAppMenuButtonHelperSupplier = new ObservableSupplierImpl<>();
         mKeyboardDelegate = windowAndroid.getKeyboardDelegate();
+        mMenuButtonStateSupplier = menuButtonStateSupplier;
+        mOnMenuButtonClicked = onMenuButtonClicked;
 
         mUrlFocusTranslationX =
                 mResources.getDimensionPixelSize(R.dimen.toolbar_url_focus_translation_x);
@@ -142,9 +144,7 @@ class MenuButtonMediator implements AppMenuObserver {
             mControlsVisibilityDelegate.releasePersistentShowingToken(mFullscreenMenuToken);
         }
 
-        if (isVisible) {
-            UpdateMenuItemHelper.getInstance().onMenuButtonClicked();
-        }
+        if (isVisible) mOnMenuButtonClicked.run();
     }
 
     @Override
@@ -162,13 +162,6 @@ class MenuButtonMediator implements AppMenuObserver {
 
     void setClickable(boolean isClickable) {
         mPropertyModel.set(MenuButtonProperties.IS_CLICKABLE, isClickable);
-    }
-
-    void onNativeInitialized() {
-        if (mShouldShowAppUpdateBadge) {
-            mUpdateStateChangedListener = this::updateStateChanged;
-            UpdateMenuItemHelper.getInstance().registerObserver(mUpdateStateChangedListener);
-        }
     }
 
     void setMenuButtonHighlight(boolean isHighlighting) {
@@ -205,11 +198,6 @@ class MenuButtonMediator implements AppMenuObserver {
             mAppMenuHandler.removeObserver(this);
             mAppMenuButtonHelper = null;
         }
-
-        if (mUpdateStateChangedListener != null) {
-            UpdateMenuItemHelper.getInstance().unregisterObserver(mUpdateStateChangedListener);
-            mUpdateStateChangedListener = null;
-        }
     }
 
     void updateStateChanged() {
@@ -229,7 +217,7 @@ class MenuButtonMediator implements AppMenuObserver {
         if (mSuppressAppMenuUpdateBadge) {
             return;
         }
-        MenuButtonState buttonState = UpdateMenuItemHelper.getInstance().getUiState().buttonState;
+        MenuButtonState buttonState = mMenuButtonStateSupplier.get();
         assert buttonState != null : "No button state when trying to show the badge.";
         updateContentDescription(true, buttonState.menuContentDescription);
         mPropertyModel.set(
@@ -293,7 +281,7 @@ class MenuButtonMediator implements AppMenuObserver {
     }
 
     private boolean isUpdateAvailable() {
-        return UpdateMenuItemHelper.getInstance().getUiState().buttonState != null;
+        return mMenuButtonStateSupplier.get() != null;
     }
 
     public Animator getUrlFocusingAnimator(boolean isFocusingUrl, boolean isRtl) {

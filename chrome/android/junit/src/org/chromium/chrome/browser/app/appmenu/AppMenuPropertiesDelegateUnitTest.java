@@ -52,6 +52,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
+import org.chromium.chrome.browser.toolbar.menu_button.MenuUiState;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.prefs.PrefService;
@@ -124,7 +125,7 @@ public class AppMenuPropertiesDelegateUnitTest {
 
     private AppMenuPropertiesDelegateImpl mAppMenuPropertiesDelegate;
 
-    private UpdateMenuItemHelper.MenuUiState mMenuUiState;
+    private MenuUiState mMenuUiState;
 
     @Before
     public void setUp() {
@@ -144,7 +145,7 @@ public class AppMenuPropertiesDelegateUnitTest {
         when(mIncognitoTabModel.isIncognito()).thenReturn(true);
 
         UpdateMenuItemHelper.setInstanceForTesting(mUpdateMenuItemHelper);
-        mMenuUiState = new UpdateMenuItemHelper.MenuUiState();
+        mMenuUiState = new MenuUiState();
         doReturn(mMenuUiState).when(mUpdateMenuItemHelper).getUiState();
 
         mJniMocker.mock(ContentFeatureListImplJni.TEST_HOOKS, mContentFeatureListJniMock);

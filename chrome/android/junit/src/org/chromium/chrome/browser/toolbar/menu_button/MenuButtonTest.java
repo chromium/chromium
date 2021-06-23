@@ -8,7 +8,6 @@ import static junit.framework.Assert.assertEquals;
 
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.doReturn;
 import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
@@ -36,7 +35,6 @@ import org.robolectric.shadows.ShadowDrawable;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
 
 /**
  * Unit tests for MenuButton.
@@ -45,13 +43,11 @@ import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
 @Config(manifest = Config.NONE)
 public class MenuButtonTest {
     @Mock
-    private UpdateMenuItemHelper mUpdateMenuItemHelper;
-    @Mock
     private ColorStateList mColorStateList;
 
     private Activity mActivity;
     private MenuButton mMenuButton;
-    private UpdateMenuItemHelper.MenuUiState mMenuUiState;
+    private MenuUiState mMenuUiState;
 
     @Before
     public void setUp() {
@@ -62,15 +58,13 @@ public class MenuButtonTest {
                                             R.layout.menu_button, new LinearLayout(mActivity)))
                               .getChildAt(0);
 
-        mMenuUiState = new UpdateMenuItemHelper.MenuUiState();
-        mMenuUiState.buttonState = new UpdateMenuItemHelper.MenuButtonState();
+        mMenuUiState = new MenuUiState();
+        mMenuUiState.buttonState = new MenuButtonState();
         mMenuUiState.buttonState.menuContentDescription =
                 R.string.accessibility_toolbar_btn_menu_update;
         mMenuUiState.buttonState.darkBadgeIcon = R.drawable.badge_update_dark;
         mMenuUiState.buttonState.lightBadgeIcon = R.drawable.badge_update_light;
-
-        UpdateMenuItemHelper.setInstanceForTesting(mUpdateMenuItemHelper);
-        doReturn(mMenuUiState).when(mUpdateMenuItemHelper).getUiState();
+        mMenuButton.setStateSupplier(() -> mMenuUiState.buttonState);
     }
 
     @Test

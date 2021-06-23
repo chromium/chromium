@@ -72,6 +72,7 @@ import org.chromium.chrome.browser.ntp.IncognitoNewTabPage;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.ntp.NewTabPageUma;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
+import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
 import org.chromium.chrome.browser.omnibox.BackKeyBehaviorDelegate;
 import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
@@ -108,6 +109,7 @@ import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
 import org.chromium.chrome.browser.toolbar.bottom.ScrollingBottomViewResourceFrameLayout;
 import org.chromium.chrome.browser.toolbar.load_progress.LoadProgressCoordinator;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
+import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonState;
 import org.chromium.chrome.browser.toolbar.top.ActionModeController;
 import org.chromium.chrome.browser.toolbar.top.ActionModeController.ActionBarDelegate;
 import org.chromium.chrome.browser.toolbar.top.HomeButtonCoordinator;
@@ -252,6 +254,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
 
     private boolean mInitializedWithNative;
     private Runnable mOnInitializedRunnable;
+    private Runnable mMenuStateObserver;
 
     private boolean mShouldUpdateToolbarPrimaryColor = true;
     private int mCurrentThemeColor;
@@ -488,18 +491,24 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         boolean isCustomTab = toolbarLayout instanceof CustomTabToolbar;
         ThemeColorProvider menuButtonThemeColorProvider =
                 isCustomTab ? mCustomTabThemeColorProvider : browsingModeThemeColorProvider;
+
+        Supplier<MenuButtonState> menuButtonStateSupplier =
+                () -> UpdateMenuItemHelper.getInstance().getUiState().buttonState;
+        Runnable onMenuButtonClicked =
+                () -> UpdateMenuItemHelper.getInstance().onMenuButtonClicked();
+        // clang-format off
         mMenuButtonCoordinator = new MenuButtonCoordinator(appMenuCoordinatorSupplier,
                 mControlsVisibilityDelegate, mWindowAndroid,
-                (focus, type)
-                        -> setUrlBarFocus(focus, type),
-                requestFocusRunnable, shouldShowUpdateBadge, isInOverviewModeSupplier,
-                menuButtonThemeColorProvider, R.id.menu_button_wrapper);
+                (focus, type) -> setUrlBarFocus(focus, type), requestFocusRunnable,
+                shouldShowUpdateBadge, isInOverviewModeSupplier, menuButtonThemeColorProvider,
+                menuButtonStateSupplier, onMenuButtonClicked, R.id.menu_button_wrapper);
+        if (shouldShowUpdateBadge) mMenuStateObserver = mMenuButtonCoordinator.getStateObserver();
         MenuButtonCoordinator startSurfaceMenuButtonCoordinator = new MenuButtonCoordinator(
                 appMenuCoordinatorSupplier, mControlsVisibilityDelegate, mWindowAndroid,
-                (focus, type)
-                        -> setUrlBarFocus(focus, type),
-                requestFocusRunnable, shouldShowUpdateBadge, isInOverviewModeSupplier,
-                overviewModeThemeColorProvider, R.id.none);
+                (focus, type) -> setUrlBarFocus(focus, type), requestFocusRunnable,
+                shouldShowUpdateBadge, isInOverviewModeSupplier, overviewModeThemeColorProvider,
+                menuButtonStateSupplier, onMenuButtonClicked, R.id.none);
+        // clang-format on
 
         boolean isGridTabSwitcherEnabled = TabUiFeatureUtilities.isGridTabSwitcherEnabled();
         boolean isTabToGtsAnimationEnabled = TabUiFeatureUtilities.isTabToGtsAnimationEnabled();
@@ -1201,9 +1210,9 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             mLayoutManager.getOverlayPanelManager().addObserver(mOverlayPanelManagerObserver);
         }
 
-        // TODO(https://crbug.com/1086676, pnoland): Remove this by having MBC listen for native
-        // init directly.
-        mMenuButtonCoordinator.onNativeInitialized();
+        if (mMenuStateObserver != null) {
+            UpdateMenuItemHelper.getInstance().registerObserver(mMenuStateObserver);
+        }
 
         TemplateUrlServiceFactory.get().runWhenLoaded(this::registerTemplateUrlObserver);
         mInitializedWithNative = true;
@@ -1383,6 +1392,10 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         }
 
         if (mMenuButtonCoordinator != null) {
+            if (mMenuStateObserver != null) {
+                UpdateMenuItemHelper.getInstance().unregisterObserver(mMenuStateObserver);
+                mMenuStateObserver = null;
+            }
             mMenuButtonCoordinator.destroy();
             mMenuButtonCoordinator = null;
         }

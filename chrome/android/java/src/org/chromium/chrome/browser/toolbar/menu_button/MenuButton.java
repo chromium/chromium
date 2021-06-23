@@ -26,9 +26,8 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
-import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper.MenuButtonState;
 import org.chromium.chrome.browser.theme.ThemeColorProvider.TintObserver;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuButtonHelper;
@@ -59,6 +58,8 @@ public class MenuButton extends FrameLayout implements TintObserver {
     /** A provider that notifies components when the theme color changes.*/
     private BitmapDrawable mMenuImageButtonAnimationDrawable;
     private BitmapDrawable mUpdateBadgeAnimationDrawable;
+
+    private Supplier<MenuButtonState> mStateSupplier;
 
     public MenuButton(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -126,7 +127,7 @@ public class MenuButton extends FrameLayout implements TintObserver {
 
         // As an optimization, don't re-calculate drawable state for the update badge unless we
         // intend to actually show it.
-        MenuButtonState buttonState = UpdateMenuItemHelper.getInstance().getUiState().buttonState;
+        MenuButtonState buttonState = mStateSupplier.get();
         if (buttonState == null || mUpdateBadgeView == null) return;
         @DrawableRes
         int drawable = mUseLightDrawables ? buttonState.lightBadgeIcon : buttonState.darkBadgeIcon;
@@ -141,6 +142,14 @@ public class MenuButton extends FrameLayout implements TintObserver {
                 mUpdateBadgeView.getWidth() - mUpdateBadgeView.getPaddingRight(),
                 mUpdateBadgeView.getHeight() - mUpdateBadgeView.getPaddingBottom());
         mUpdateBadgeAnimationDrawable.setGravity(Gravity.CENTER);
+    }
+
+    /**
+     * Set the supplier of menu button state.
+     * @param supplier Supplier of menu button state.
+     */
+    void setStateSupplier(Supplier<MenuButtonState> supplier) {
+        mStateSupplier = supplier;
     }
 
     /**

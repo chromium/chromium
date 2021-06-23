@@ -13,6 +13,10 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor.ViewBinder;
 
 class MenuButtonViewBinder implements ViewBinder<PropertyModel, MenuButton, PropertyKey> {
+    // Whether MenuButtonState supplier was set already. The supplier needs to be set before
+    // some other properties.
+    private boolean mStateSupplierSet;
+
     @Override
     public void bind(PropertyModel model, MenuButton view, PropertyKey propertyKey) {
         if (propertyKey == MenuButtonProperties.ALPHA) {
@@ -28,7 +32,12 @@ class MenuButtonViewBinder implements ViewBinder<PropertyModel, MenuButton, Prop
         } else if (propertyKey == MenuButtonProperties.IS_VISIBLE) {
             view.setVisibility(
                     model.get(MenuButtonProperties.IS_VISIBLE) ? View.VISIBLE : View.GONE);
+        } else if (propertyKey == MenuButtonProperties.STATE_SUPPLIER) {
+            if (mStateSupplierSet) return;
+            view.setStateSupplier(model.get(MenuButtonProperties.STATE_SUPPLIER));
+            mStateSupplierSet = true;
         } else if (propertyKey == MenuButtonProperties.SHOW_UPDATE_BADGE) {
+            bind(model, view, MenuButtonProperties.STATE_SUPPLIER);
             ShowBadgeProperty showBadgeProperty = model.get(MenuButtonProperties.SHOW_UPDATE_BADGE);
             if (showBadgeProperty.mShowUpdateBadge) {
                 view.showAppMenuUpdateBadge(showBadgeProperty.mShouldAnimate);
@@ -36,6 +45,7 @@ class MenuButtonViewBinder implements ViewBinder<PropertyModel, MenuButton, Prop
                 view.removeAppMenuUpdateBadge(showBadgeProperty.mShouldAnimate);
             }
         } else if (propertyKey == MenuButtonProperties.THEME) {
+            bind(model, view, MenuButtonProperties.STATE_SUPPLIER);
             ThemeProperty themeProperty = model.get(MenuButtonProperties.THEME);
             view.onTintChanged(themeProperty.mColorStateList, themeProperty.mUseLightColors);
         } else if (propertyKey == MenuButtonProperties.TRANSLATION_X) {

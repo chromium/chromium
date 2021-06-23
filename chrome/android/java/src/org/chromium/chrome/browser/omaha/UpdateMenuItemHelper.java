@@ -9,11 +9,8 @@ import android.content.ActivityNotFoundException;
 import android.content.res.Resources;
 import android.text.TextUtils;
 
-import androidx.annotation.ColorRes;
-import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.BuildInfo;
@@ -30,6 +27,9 @@ import org.chromium.chrome.browser.omaha.UpdateStatusProvider.UpdateState;
 import org.chromium.chrome.browser.omaha.UpdateStatusProvider.UpdateStatus;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonState;
+import org.chromium.chrome.browser.toolbar.menu_button.MenuItemState;
+import org.chromium.chrome.browser.toolbar.menu_button.MenuUiState;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
@@ -60,66 +60,6 @@ public class UpdateMenuItemHelper {
     private static final int UPDATED = 0;
     private static final int NOT_UPDATED = 1;
     private static final int UPDATED_BOUNDARY = 2;
-
-    /** The UI state required to properly display an update-related main menu item. */
-    public static class MenuItemState {
-        /** The title resource of the menu.  Always set if this object is not {@code null}. */
-        public @StringRes int title;
-
-        /** The color resource of the title.  Always set if this object is not {@code null}. */
-        public @ColorRes int titleColorId;
-
-        /** The summary string for the menu.  Maybe {@code null} if no summary should be shown. */
-        public @Nullable String summary;
-
-        /** An icon resource for the menu item.  May be {@code 0} if no icon is specified. */
-        public @DrawableRes int icon;
-
-        /** The color resource of the icon tint.  May be {@code 0} if no tint is specified. */
-        public @ColorRes int iconTintId;
-
-        /** Whether or not the menu item should be enabled (and clickable). */
-        public boolean enabled;
-    }
-
-    /** The UI state required to properly display a 'update decorated' main menu button. */
-    public static class MenuButtonState {
-        /**
-         * The new content description of the menu button.  Always set if this object is not
-         * {@code null}.
-         */
-        public @StringRes int menuContentDescription;
-
-        /**
-         * An icon resource for the dark badge for the menu button.  Always set (not {@code 0}) if
-         * this object is not {@code null}.
-         */
-        public @DrawableRes int darkBadgeIcon;
-
-        /**
-         * An icon resource for the light badge for the menu button.  Always set (not {@code 0}) if
-         * this object is not {@code null}.
-         */
-        public @DrawableRes int lightBadgeIcon;
-    }
-
-    /**
-     * The UI state required to properly decorate the main menu.  This may include the button
-     * decorations as well as the actual update item to show in the menu.
-     */
-    public static class MenuUiState {
-        /**
-         * The optional UI state for building the menu item.  If {@code null} no item should be
-         * shown.
-         */
-        public @Nullable MenuItemState itemState;
-
-        /**
-         * The optional UI state for decorating the menu button itself.  If {@code null} no
-         * decoration should be applied to the menu button.
-         */
-        public @Nullable MenuButtonState buttonState;
-    }
 
     private static UpdateMenuItemHelper sInstance;
 
