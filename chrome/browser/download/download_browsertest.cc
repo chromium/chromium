@@ -3312,56 +3312,64 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, MAYBE_DownloadErrorsFile) {
        {"a_zip_file.zip", "a_zip_file.zip", DOWNLOAD_NAVIGATE,
         download::DOWNLOAD_INTERRUPT_REASON_FILE_NO_SPACE, true, false},
        {
-           content::TestFileErrorInjector::FILE_OPERATION_INITIALIZE, 0,
+           content::TestFileErrorInjector::FILE_OPERATION_INITIALIZE,
+           0,
            download::DOWNLOAD_INTERRUPT_REASON_FILE_NO_SPACE,
        }},
       {// Direct download with injected "Disk full" error in Initialize().
        {"a_zip_file.zip", "a_zip_file.zip", DOWNLOAD_DIRECT,
         download::DOWNLOAD_INTERRUPT_REASON_FILE_NO_SPACE, true, false},
        {
-           content::TestFileErrorInjector::FILE_OPERATION_INITIALIZE, 0,
+           content::TestFileErrorInjector::FILE_OPERATION_INITIALIZE,
+           0,
            download::DOWNLOAD_INTERRUPT_REASON_FILE_NO_SPACE,
        }},
       {// Navigated download with injected "Disk full" error in Write().
        {"a_zip_file.zip", "a_zip_file.zip", DOWNLOAD_NAVIGATE,
         download::DOWNLOAD_INTERRUPT_REASON_FILE_NO_SPACE, true, false},
        {
-           content::TestFileErrorInjector::FILE_OPERATION_WRITE, 0,
+           content::TestFileErrorInjector::FILE_OPERATION_WRITE,
+           0,
            download::DOWNLOAD_INTERRUPT_REASON_FILE_NO_SPACE,
        }},
       {// Direct download with injected "Disk full" error in Write().
        {"a_zip_file.zip", "a_zip_file.zip", DOWNLOAD_DIRECT,
         download::DOWNLOAD_INTERRUPT_REASON_FILE_NO_SPACE, true, false},
        {
-           content::TestFileErrorInjector::FILE_OPERATION_WRITE, 0,
+           content::TestFileErrorInjector::FILE_OPERATION_WRITE,
+           0,
            download::DOWNLOAD_INTERRUPT_REASON_FILE_NO_SPACE,
        }},
       {// Navigated download with injected "Failed" error in Initialize().
        {"a_zip_file.zip", "a_zip_file.zip", DOWNLOAD_NAVIGATE,
         download::DOWNLOAD_INTERRUPT_REASON_FILE_FAILED, true, false},
        {
-           content::TestFileErrorInjector::FILE_OPERATION_INITIALIZE, 0,
+           content::TestFileErrorInjector::FILE_OPERATION_INITIALIZE,
+           0,
            download::DOWNLOAD_INTERRUPT_REASON_FILE_FAILED,
        }},
       {// Direct download with injected "Failed" error in Initialize().
        {"a_zip_file.zip", "a_zip_file.zip", DOWNLOAD_DIRECT,
         download::DOWNLOAD_INTERRUPT_REASON_FILE_FAILED, true, false},
        {
-           content::TestFileErrorInjector::FILE_OPERATION_INITIALIZE, 0,
+           content::TestFileErrorInjector::FILE_OPERATION_INITIALIZE,
+           0,
            download::DOWNLOAD_INTERRUPT_REASON_FILE_FAILED,
        }},
       {// Navigated download with injected "Failed" error in Write().
        {"a_zip_file.zip", "a_zip_file.zip", DOWNLOAD_NAVIGATE,
         download::DOWNLOAD_INTERRUPT_REASON_FILE_FAILED, true, false},
        {
-           content::TestFileErrorInjector::FILE_OPERATION_WRITE, 0,
+           content::TestFileErrorInjector::FILE_OPERATION_WRITE,
+           0,
            download::DOWNLOAD_INTERRUPT_REASON_FILE_FAILED,
        }},
       {// Direct download with injected "Failed" error in Write().
        {"a_zip_file.zip", "a_zip_file.zip", DOWNLOAD_DIRECT,
         download::DOWNLOAD_INTERRUPT_REASON_FILE_FAILED, true, false},
        {
-           content::TestFileErrorInjector::FILE_OPERATION_WRITE, 0,
+           content::TestFileErrorInjector::FILE_OPERATION_WRITE,
+           0,
            download::DOWNLOAD_INTERRUPT_REASON_FILE_FAILED,
        }},
       {// Navigated download with injected "Name too long" error in
@@ -3369,35 +3377,40 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, MAYBE_DownloadErrorsFile) {
        {"a_zip_file.zip", "a_zip_file.zip", DOWNLOAD_NAVIGATE,
         download::DOWNLOAD_INTERRUPT_REASON_FILE_NAME_TOO_LONG, true, false},
        {
-           content::TestFileErrorInjector::FILE_OPERATION_INITIALIZE, 0,
+           content::TestFileErrorInjector::FILE_OPERATION_INITIALIZE,
+           0,
            download::DOWNLOAD_INTERRUPT_REASON_FILE_NAME_TOO_LONG,
        }},
       {// Direct download with injected "Name too long" error in Initialize().
        {"a_zip_file.zip", "a_zip_file.zip", DOWNLOAD_DIRECT,
         download::DOWNLOAD_INTERRUPT_REASON_FILE_NAME_TOO_LONG, true, false},
        {
-           content::TestFileErrorInjector::FILE_OPERATION_INITIALIZE, 0,
+           content::TestFileErrorInjector::FILE_OPERATION_INITIALIZE,
+           0,
            download::DOWNLOAD_INTERRUPT_REASON_FILE_NAME_TOO_LONG,
        }},
       {// Navigated download with injected "Name too long" error in Write().
        {"a_zip_file.zip", "a_zip_file.zip", DOWNLOAD_NAVIGATE,
         download::DOWNLOAD_INTERRUPT_REASON_FILE_FAILED, true, false},
        {
-           content::TestFileErrorInjector::FILE_OPERATION_WRITE, 0,
+           content::TestFileErrorInjector::FILE_OPERATION_WRITE,
+           0,
            download::DOWNLOAD_INTERRUPT_REASON_FILE_FAILED,
        }},
       {// Direct download with injected "Name too long" error in Write().
        {"a_zip_file.zip", "a_zip_file.zip", DOWNLOAD_DIRECT,
         download::DOWNLOAD_INTERRUPT_REASON_FILE_FAILED, true, false},
        {
-           content::TestFileErrorInjector::FILE_OPERATION_WRITE, 0,
+           content::TestFileErrorInjector::FILE_OPERATION_WRITE,
+           0,
            download::DOWNLOAD_INTERRUPT_REASON_FILE_FAILED,
        }},
       {// Direct download with injected "Disk full" error in 2nd Write().
-       {"06bESSE21Evolution.ppt", "06bESSE21Evolution.ppt", DOWNLOAD_DIRECT,
+       {"large_image.png", "large_image.png", DOWNLOAD_DIRECT,
         download::DOWNLOAD_INTERRUPT_REASON_FILE_NO_SPACE, true, false},
        {
-           content::TestFileErrorInjector::FILE_OPERATION_WRITE, 1,
+           content::TestFileErrorInjector::FILE_OPERATION_WRITE,
+           1,
            download::DOWNLOAD_INTERRUPT_REASON_FILE_NO_SPACE,
        }}};
 
