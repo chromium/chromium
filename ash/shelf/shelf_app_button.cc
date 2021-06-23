@@ -764,7 +764,23 @@ void ShelfAppButton::OnGestureEvent(ui::GestureEvent* event) {
            views::InkDropState::ACTIVATED)) {
         views::InkDrop::Get(this)->GetInkDrop()->AnimateToState(
             views::InkDropState::DEACTIVATED);
+      } else if (event->type() == ui::ET_GESTURE_END) {
+        // When the gesture ends, we may need to deactivate the button's
+        // inkdrop. For example, when a mouse event interputs the gesture press
+        // on a shelf app button, the button's inkdrop could be in the pending
+        // state while the button's context menu is hidden. In this case, we
+        // have to hide the inkdrop explicitly.
+
+        // Note that the ET_GESTURE_END event may be received during the
+        // building of the context menu by triggering the synthesized gesture
+        // end event. Therefore we have to wait until the context menu is
+        // completely built.
+        base::SequencedTaskRunnerHandle::Get()->PostTask(
+            FROM_HERE,
+            base::BindOnce(&ShelfAppButton::MaybeHideInkDropWhenGestureEnds,
+                           weak_factory_.GetWeakPtr()));
       }
+
       ClearDragStateOnGestureEnd();
       break;
     case ui::ET_GESTURE_SCROLL_BEGIN:
@@ -941,6 +957,19 @@ void ShelfAppButton::SetNotificationBadgeColor(SkColor color) {
   if (notification_indicator_)
     notification_indicator_->SetColor(
         /*dot_color=*/color, /*border_color=*/SkColorSetA(SK_ColorBLACK, 0x4D));
+}
+
+void ShelfAppButton::MaybeHideInkDropWhenGestureEnds() {
+  if (shelf_view_->IsShowingMenuForView(this) ||
+      views::InkDrop::Get(this)->GetInkDrop()->GetTargetInkDropState() ==
+          views::InkDropState::HIDDEN) {
+    // Return early if the shelf app button's context menu is showing or
+    // the button's inkdrop has been hidden.
+    return;
+  }
+
+  views::InkDrop::Get(this)->GetInkDrop()->AnimateToState(
+      views::InkDropState::HIDDEN);
 }
 
 }  // namespace ash

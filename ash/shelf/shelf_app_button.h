@@ -171,6 +171,9 @@ class ASH_EXPORT ShelfAppButton : public ShelfButton,
   // Marks whether the ink drop animation has started or not.
   void SetInkDropAnimationStarted(bool started);
 
+  // Maybe hides the ink drop at the end of gesture handling.
+  void MaybeHideInkDropWhenGestureEnds();
+
   // The icon part of a button can be animated independently of the rest.
   views::ImageView* icon_view_;
 

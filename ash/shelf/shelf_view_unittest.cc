@@ -3121,4 +3121,28 @@ TEST_F(ShelfViewGestureTapTest, MouseClickInterruptionAfterGestureLongPress) {
   EXPECT_EQ(views::InkDropState::HIDDEN, GetInkDropStateOfAppIcon1());
 }
 
+// Verifies the shelf app button's inkdrop behavior when the mouse click
+// occurs before gesture long press.
+TEST_F(ShelfViewGestureTapTest, MouseClickInterruptionBeforeGestureLongPress) {
+  const gfx::Point app_icon1_center_point =
+      app_icon1_->GetBoundsInScreen().CenterPoint();
+  GetEventGenerator()->PressTouch(app_icon1_center_point);
+
+  // Fast forward to generate the ET_GESTURE_SHOW_PRESS event.
+  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(200));
+
+  // Mouse click at `app_icon2_` while gesture pressing `app_icon1_`. Note that
+  // we do not need to release the touch on `app_icon1_` because the gesture
+  // is interrupted by the mouse click.
+  GetEventGenerator()->MoveMouseTo(
+      app_icon2_->GetBoundsInScreen().CenterPoint());
+  GetEventGenerator()->ClickLeftButton();
+
+  // Fast forward until the callback is executed.
+  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(200));
+
+  EXPECT_FALSE(shelf_view_->IsShowingMenu());
+  EXPECT_EQ(views::InkDropState::HIDDEN, GetInkDropStateOfAppIcon1());
+}
+
 }  // namespace ash
