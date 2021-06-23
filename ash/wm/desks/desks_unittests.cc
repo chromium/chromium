@@ -4,6 +4,7 @@
 
 #include <vector>
 
+#include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/accessibility/sticky_keys/sticky_keys_controller.h"
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/app_list_presenter_impl.h"
@@ -5928,22 +5929,11 @@ TEST_F(PersistentDesksBarTest, ShowOrHideBarThroughContextMenu) {
 // Tests that the bar will only be created and shown when the shelf is
 // bottom-aligned.
 TEST_F(PersistentDesksBarTest, BentoBarWithShelfAlignment) {
-  Shell* shell = Shell::Get();
-  ASSERT_FALSE(shell->tablet_mode_controller()->InTabletMode());
   Shelf* shelf = Shelf::ForWindow(Shell::GetPrimaryRootWindow());
-  ASSERT_TRUE(shelf);
-  const DesksController* desks_controller = DesksController::Get();
-  ASSERT_EQ(1u, desks_controller->desks().size());
-  const PersistentDesksBarController* bar_controller =
-      shell->persistent_desks_bar_controller();
-  ASSERT_TRUE(bar_controller);
-
-  // The bar should not be created if there is only one desk.
-  EXPECT_FALSE(GetBarWidget());
 
   // Create a new desk should cause the bar to be created and shown.
   NewDesk();
-  EXPECT_EQ(2u, desks_controller->desks().size());
+  EXPECT_EQ(2u, DesksController::Get()->desks().size());
   EXPECT_TRUE(GetBarWidget());
   EXPECT_TRUE(IsWidgetVisible());
 
@@ -5972,24 +5962,13 @@ TEST_F(PersistentDesksBarTest, BentoBarWithShelfAlignment) {
 // Tests that the bar will only be created when the app list is not in
 // fullscreen mode.
 TEST_F(PersistentDesksBarTest, AppListFullscreen) {
-  Shell* shell = Shell::Get();
-  ASSERT_FALSE(shell->tablet_mode_controller()->InTabletMode());
-  const DesksController* desks_controller = DesksController::Get();
-  ASSERT_EQ(1u, desks_controller->desks().size());
-  const PersistentDesksBarController* bar_controller =
-      shell->persistent_desks_bar_controller();
-  ASSERT_TRUE(bar_controller);
-  AppListControllerImpl* app_list_controller = shell->app_list_controller();
-  ASSERT_TRUE(app_list_controller);
+  AppListControllerImpl* app_list_controller =
+      Shell::Get()->app_list_controller();
   AppListView* app_list_view = app_list_controller->presenter()->GetView();
-  ASSERT_FALSE(app_list_view);
-
-  // The bar should not be created if there is only one desk.
-  EXPECT_FALSE(GetBarWidget());
 
   // The bar should be created when the app list view remains null.
   NewDesk();
-  EXPECT_EQ(2u, desks_controller->desks().size());
+  EXPECT_EQ(2u, DesksController::Get()->desks().size());
   EXPECT_TRUE(GetBarWidget());
   EXPECT_TRUE(IsWidgetVisible());
 
@@ -6024,6 +6003,52 @@ TEST_F(PersistentDesksBarTest, AppListFullscreen) {
   // The bar should be created when the app list is in kClosed mode.
   app_list_view->SetState(AppListViewState::kClosed);
   EXPECT_TRUE(app_list_view->app_list_state() == AppListViewState::kClosed);
+  EXPECT_TRUE(GetBarWidget());
+  EXPECT_TRUE(IsWidgetVisible());
+}
+
+// Tests that the bar will not be created if Docked Magnifier is on.
+TEST_F(PersistentDesksBarTest, NoPersistentDesksBarWithDockedMagnifierOn) {
+  AccessibilityControllerImpl* accessibility_controller =
+      Shell::Get()->accessibility_controller();
+
+  // Create a new desk should cause the bar to be created and shown.
+  NewDesk();
+  EXPECT_EQ(2u, DesksController::Get()->desks().size());
+  EXPECT_TRUE(GetBarWidget());
+  EXPECT_TRUE(IsWidgetVisible());
+
+  // The bar should be destroyed when the Docked Magnifier is on.
+  accessibility_controller->docked_magnifier().SetEnabled(true);
+  EXPECT_TRUE(accessibility_controller->docked_magnifier().enabled());
+  EXPECT_FALSE(GetBarWidget());
+
+  // The bar should be created when the Docked Magnifier is off.
+  accessibility_controller->docked_magnifier().SetEnabled(false);
+  EXPECT_FALSE(accessibility_controller->docked_magnifier().enabled());
+  EXPECT_TRUE(GetBarWidget());
+  EXPECT_TRUE(IsWidgetVisible());
+}
+
+// Tests that the bar will not be created if ChromeVox is on.
+TEST_F(PersistentDesksBarTest, NoPersistentDesksBarWithChromeVoxOn) {
+  AccessibilityControllerImpl* accessibility_controller =
+      Shell::Get()->accessibility_controller();
+
+  // Create a new desk should cause the bar to be created and shown.
+  NewDesk();
+  EXPECT_EQ(2u, DesksController::Get()->desks().size());
+  EXPECT_TRUE(GetBarWidget());
+  EXPECT_TRUE(IsWidgetVisible());
+
+  // The bar should be destroyed when Chromevox is on.
+  accessibility_controller->spoken_feedback().SetEnabled(true);
+  EXPECT_TRUE(accessibility_controller->spoken_feedback().enabled());
+  EXPECT_FALSE(GetBarWidget());
+
+  // The bar should be created when Chromevox is off.
+  accessibility_controller->spoken_feedback().SetEnabled(false);
+  EXPECT_FALSE(accessibility_controller->spoken_feedback().enabled());
   EXPECT_TRUE(GetBarWidget());
   EXPECT_TRUE(IsWidgetVisible());
 }

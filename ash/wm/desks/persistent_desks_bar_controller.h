@@ -5,6 +5,7 @@
 #ifndef ASH_WM_DESKS_PERSISTENT_DESKS_BAR_CONTROLLER_H_
 #define ASH_WM_DESKS_PERSISTENT_DESKS_BAR_CONTROLLER_H_
 
+#include "ash/accessibility/accessibility_observer.h"
 #include "ash/ash_export.h"
 #include "ash/public/cpp/app_list/app_list_controller_observer.h"
 #include "ash/public/cpp/session/session_observer.h"
@@ -33,7 +34,8 @@ class ASH_EXPORT PersistentDesksBarController
       public DesksController::Observer,
       public TabletModeObserver,
       public ShellObserver,
-      public AppListControllerObserver {
+      public AppListControllerObserver,
+      public AccessibilityObserver {
  public:
   PersistentDesksBarController();
   PersistentDesksBarController(const PersistentDesksBarController&) = delete;
@@ -77,6 +79,9 @@ class ASH_EXPORT PersistentDesksBarController
 
   // AppListControllerObserver:
   void OnViewStateChanged(AppListViewState state) override;
+
+  // AccessibilityObserver:
+  void OnAccessibilityStatusChanged() override;
 
   // Toggles the value of `is_enabled_` and destroys the bar if it is togggled
   // to false.

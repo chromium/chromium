@@ -4,6 +4,7 @@
 
 #include "ash/wm/desks/persistent_desks_bar_controller.h"
 
+#include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -61,10 +62,12 @@ PersistentDesksBarController::PersistentDesksBarController() {
   shell->tablet_mode_controller()->AddObserver(this);
   shell->AddShellObserver(this);
   shell->app_list_controller()->AddObserver(this);
+  shell->accessibility_controller()->AddObserver(this);
 }
 
 PersistentDesksBarController::~PersistentDesksBarController() {
   auto* shell = Shell::Get();
+  shell->accessibility_controller()->RemoveObserver(this);
   shell->app_list_controller()->RemoveObserver(this);
   shell->RemoveShellObserver(this);
   shell->tablet_mode_controller()->RemoveObserver(this);
@@ -154,6 +157,17 @@ void PersistentDesksBarController::OnViewStateChanged(AppListViewState state) {
   }
 }
 
+void PersistentDesksBarController::OnAccessibilityStatusChanged() {
+  AccessibilityControllerImpl* accessibility_controller =
+      Shell::Get()->accessibility_controller();
+  if (accessibility_controller->spoken_feedback().enabled() ||
+      accessibility_controller->docked_magnifier().enabled()) {
+    DestroyBarWidget();
+  } else {
+    MaybeInitBarWidget();
+  }
+}
+
 void PersistentDesksBarController::ToggleEnabledState() {
   is_enabled_ = !is_enabled_;
   if (!is_enabled_)
@@ -164,10 +178,12 @@ bool PersistentDesksBarController::ShouldPersistentDesksBarBeCreated() const {
   if (!is_enabled_)
     return false;
 
+  Shell* shell = Shell::Get();
+
   // Do not create the bar in tablet mode, overview mode or if there is
   // only one desk.
   if (TabletMode::Get()->InTabletMode() ||
-      Shell::Get()->overview_controller()->InOverviewSession() ||
+      shell->overview_controller()->InOverviewSession() ||
       DesksController::Get()->desks().size() == 1) {
     return false;
   }
@@ -177,14 +193,21 @@ bool PersistentDesksBarController::ShouldPersistentDesksBarBeCreated() const {
     return false;
 
   // Do not create the bar if the app list is fullscreened.
-  AppListControllerImpl* app_list_controller =
-      Shell::Get()->app_list_controller();
+  AppListControllerImpl* app_list_controller = shell->app_list_controller();
   if (app_list_controller) {
     const AppListViewState state = app_list_controller->GetAppListViewState();
     if (state == AppListViewState::kFullscreenAllApps ||
         state == AppListViewState::kFullscreenSearch) {
       return false;
     }
+  }
+
+  // Do not create the bar if ChromeVox or Docked Magnifier is on.
+  AccessibilityControllerImpl* accessibility_controller =
+      shell->accessibility_controller();
+  if (accessibility_controller->spoken_feedback().enabled() ||
+      accessibility_controller->docked_magnifier().enabled()) {
+    return false;
   }
 
   return true;
