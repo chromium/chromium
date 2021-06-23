@@ -317,7 +317,7 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker,
   // May be null on certain platforms that don't support chrome://safe-browsing
   // and in unit tests. If non-null, guaranteed to outlive this object by
   // contract.
-  WebUIDelegate* webui_delegate_;
+  WebUIDelegate* webui_delegate_ = nullptr;
 
   base::WeakPtrFactory<SafeBrowsingUrlCheckerImpl> weak_factory_{this};
 
