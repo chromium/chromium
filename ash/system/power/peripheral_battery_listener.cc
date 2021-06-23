@@ -60,11 +60,10 @@ constexpr char kStylusGarageKey[] = "garaged-stylus-charger";
 constexpr char16_t kStylusGarageName[] = u"Stylus Charger";
 
 // Serial numbers for styluses which may report inconsistent battery levels.
-const RE2 kBlockedStylusDevicesPattern(
-    "(?i)^DG-019[0-9A-F]{5}(11|4[F0])FE368C$");
+const RE2 kBlockedStylusDevicesPattern("(?i)^019[0-9A-F]{5}(11|4[F0])FE368C$");
 // Serial numbers for styluses which may report inconsistent battery levels,
 // but might not actually exist in wild.
-const RE2 kUnusualStylusDevicesPattern("(?i)^DG-019[0-9A-F]{7}FE368C$");
+const RE2 kUnusualStylusDevicesPattern("(?i)^019[0-9A-F]{7}FE368C$");
 
 // Checks if the device is an external stylus.
 bool IsStylusDevice(const std::string& path,
@@ -86,7 +85,15 @@ bool IsStylusDevice(const std::string& path,
 }
 
 // Checks for devices which are ineligible for battery reports.
-bool IsEligibleForBatteryReport(const std::string& serial_number) {
+bool IsEligibleForBatteryReport(
+    PeripheralBatteryListener::BatteryInfo::PeripheralType type,
+    const std::string& serial_number) {
+  if (type != PeripheralBatteryListener::BatteryInfo::PeripheralType::
+                  kStylusViaScreen &&
+      type != PeripheralBatteryListener::BatteryInfo::PeripheralType::
+                  kStylusViaCharger)
+    return true;
+
   if (serial_number.empty())
     return true;
 
@@ -299,7 +306,8 @@ void PeripheralBatteryListener::PeripheralBatteryStatusReceived(
 
   // TODO(kenalba): if ineligible should we keep opt_level as previously set,
   // or clamp it to a fixed value?
-  bool battery_report_eligible = IsEligibleForBatteryReport(serial_number);
+  bool battery_report_eligible =
+      IsEligibleForBatteryReport(type, serial_number);
 
   PeripheralBatteryListener::BatteryInfo battery{
       map_key,
