@@ -339,7 +339,8 @@ void BleConnectionManagerImpl::OnReceivedAdvertisement(
     multidevice::RemoteDeviceRef remote_device,
     device::BluetoothDevice* bluetooth_device,
     ConnectionMedium connection_medium,
-    ConnectionRole connection_role) {
+    ConnectionRole connection_role,
+    const std::vector<uint8_t>& eid) {
   // Only process advertisements received as part of the BLE connection flow.
   if (connection_medium != ConnectionMedium::kBluetoothLowEnergy)
     return;

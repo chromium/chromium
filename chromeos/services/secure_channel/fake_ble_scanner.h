@@ -67,7 +67,8 @@ class FakeBleScannerObserver : public BleScanner::Observer {
   void OnReceivedAdvertisement(multidevice::RemoteDeviceRef remote_device,
                                device::BluetoothDevice* bluetooth_device,
                                ConnectionMedium connection_medium,
-                               ConnectionRole connection_role) override;
+                               ConnectionRole connection_role,
+                               const std::vector<uint8_t>& eid) override;
 
   std::vector<Result> handled_scan_results_;
 

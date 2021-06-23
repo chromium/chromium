@@ -41,6 +41,7 @@ class NearbyConnectionBrokerImpl
    public:
     static std::unique_ptr<NearbyConnectionBroker> Create(
         const std::vector<uint8_t>& bluetooth_public_address,
+        const std::vector<uint8_t>& eid,
         NearbyEndpointFinder* endpoint_finder,
         mojo::PendingReceiver<mojom::NearbyMessageSender>
             message_sender_receiver,
@@ -92,6 +93,7 @@ class NearbyConnectionBrokerImpl
 
   NearbyConnectionBrokerImpl(
       const std::vector<uint8_t>& bluetooth_public_address,
+      const std::vector<uint8_t>& eid,
       NearbyEndpointFinder* endpoint_finder,
       mojo::PendingReceiver<mojom::NearbyMessageSender> message_sender_receiver,
       mojo::PendingRemote<mojom::NearbyMessageReceiver> message_receiver_remote,

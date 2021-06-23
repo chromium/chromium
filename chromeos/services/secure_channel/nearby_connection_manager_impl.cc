@@ -86,15 +86,16 @@ void NearbyConnectionManagerImpl::OnReceivedAdvertisement(
     multidevice::RemoteDeviceRef remote_device,
     device::BluetoothDevice* bluetooth_device,
     ConnectionMedium connection_medium,
-    ConnectionRole connection_role) {
+    ConnectionRole connection_role,
+    const std::vector<uint8_t>& eid) {
   // Only process advertisements received as part of the Nearby Connections
   // flow.
   if (connection_medium != ConnectionMedium::kNearbyConnections)
     return;
 
   // Create a connection to the device.
-  std::unique_ptr<Connection> connection =
-      NearbyConnection::Factory::Create(remote_device, GetNearbyConnector());
+  std::unique_ptr<Connection> connection = NearbyConnection::Factory::Create(
+      remote_device, eid, GetNearbyConnector());
 
   SetAuthenticatingChannel(
       remote_device.GetDeviceId(),

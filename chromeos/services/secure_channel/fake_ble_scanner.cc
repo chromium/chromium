@@ -47,7 +47,8 @@ void FakeBleScannerObserver::OnReceivedAdvertisement(
     multidevice::RemoteDeviceRef remote_device,
     device::BluetoothDevice* bluetooth_device,
     ConnectionMedium connection_medium,
-    ConnectionRole connection_role) {
+    ConnectionRole connection_role,
+    const std::vector<uint8_t>& eid) {
   handled_scan_results_.emplace_back(remote_device, bluetooth_device,
                                      connection_medium, connection_role);
 }

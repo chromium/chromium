@@ -37,7 +37,8 @@ class BleScanner {
         multidevice::RemoteDeviceRef remote_device,
         device::BluetoothDevice* bluetooth_device,
         ConnectionMedium connection_medium,
-        ConnectionRole connection_role) = 0;
+        ConnectionRole connection_role,
+        const std::vector<uint8_t>& eid) = 0;
   };
 
   virtual ~BleScanner();
@@ -72,7 +73,8 @@ class BleScanner {
       const multidevice::RemoteDeviceRef& remote_device,
       device::BluetoothDevice* bluetooth_device,
       ConnectionMedium connection_medium,
-      ConnectionRole connection_role);
+      ConnectionRole connection_role,
+      const std::vector<uint8_t>& eid);
 
  private:
   base::ObserverList<Observer> observer_list_;

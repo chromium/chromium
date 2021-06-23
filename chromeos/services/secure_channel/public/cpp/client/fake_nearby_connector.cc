@@ -81,6 +81,7 @@ FakeNearbyConnector::ConnectQueuedCallback() {
 
 void FakeNearbyConnector::Connect(
     const std::vector<uint8_t>& bluetooth_public_address,
+    const std::vector<uint8_t>& eid,
     mojo::PendingRemote<mojom::NearbyMessageReceiver> message_receiver,
     ConnectCallback callback) {
   queued_connect_args_.emplace(std::make_unique<ConnectArgs>(

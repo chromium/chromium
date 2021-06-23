@@ -87,6 +87,7 @@ class FakeNearbyConnector : public NearbyConnector {
   /// mojom::NearbyConnector:
   void Connect(
       const std::vector<uint8_t>& bluetooth_public_address,
+      const std::vector<uint8_t>& service_data,
       mojo::PendingRemote<mojom::NearbyMessageReceiver> message_receiver,
       ConnectCallback callback) override;
 

@@ -26,6 +26,10 @@ namespace {
 
 int g_next_message_receiver_id = 0;
 
+const std::vector<uint8_t> GetEid() {
+  return std::vector<uint8_t>{0, 1};
+}
+
 std::vector<uint8_t> GetBluetoothAddress(uint8_t repeated_address_value) {
   return std::vector<uint8_t>(6u, repeated_address_value);
 }
@@ -137,7 +141,7 @@ class NearbyConnectorImplTest : public testing::Test {
   void Connect(FakeMessageReceiver* fake_message_receiver,
                const std::vector<uint8_t>& address) {
     connector_->Connect(
-        address, fake_message_receiver->GeneratePendingRemote(),
+        address, GetEid(), fake_message_receiver->GeneratePendingRemote(),
         base::BindOnce(&NearbyConnectorImplTest::OnConnectResult,
                        base::Unretained(this), fake_message_receiver->id()));
   }

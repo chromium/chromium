@@ -13,12 +13,14 @@ NearbyEndpointFinder::~NearbyEndpointFinder() = default;
 
 void NearbyEndpointFinder::FindEndpoint(
     const std::vector<uint8_t>& remote_device_bluetooth_address,
+    const std::vector<uint8_t>& eid,
     EndpointCallback success_callback,
     base::OnceClosure failure_callback) {
   // Only intended to be called once.
   DCHECK(remote_device_bluetooth_address_.empty());
 
   remote_device_bluetooth_address_ = remote_device_bluetooth_address;
+  eid_ = eid;
   success_callback_ = std::move(success_callback);
   failure_callback_ = std::move(failure_callback);
 

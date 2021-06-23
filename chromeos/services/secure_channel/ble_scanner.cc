@@ -63,10 +63,11 @@ void BleScanner::NotifyReceivedAdvertisementFromDevice(
     const multidevice::RemoteDeviceRef& remote_device,
     device::BluetoothDevice* bluetooth_device,
     ConnectionMedium connection_medium,
-    ConnectionRole connection_role) {
+    ConnectionRole connection_role,
+    const std::vector<uint8_t>& eid) {
   for (auto& observer : observer_list_) {
     observer.OnReceivedAdvertisement(remote_device, bluetooth_device,
-                                     connection_medium, connection_role);
+                                     connection_medium, connection_role, eid);
   }
 }
 

@@ -28,6 +28,10 @@ using location::nearby::connections::mojom::Status;
 using testing::_;
 using testing::Invoke;
 
+const std::vector<uint8_t> GetEid() {
+  return std::vector<uint8_t>{0, 1};
+}
+
 const std::vector<uint8_t>& GetBluetoothAddress() {
   static const std::vector<uint8_t> address{0, 1, 2, 3, 4, 5};
   return address;
@@ -59,7 +63,7 @@ class NearbyEndpointFinderImplTest : public testing::Test {
             }));
 
     finder_->FindEndpoint(
-        GetBluetoothAddress(),
+        GetBluetoothAddress(), GetEid(),
         base::BindOnce(&NearbyEndpointFinderImplTest::OnEndpointFound,
                        base::Unretained(this)),
         base::BindOnce(

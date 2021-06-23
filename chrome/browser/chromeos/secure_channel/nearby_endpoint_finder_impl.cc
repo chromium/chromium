@@ -49,8 +49,20 @@ std::string GenerateEndpointId() {
   return base::Base64Encode(raw_endpoint_info).substr(0, kEndpointIdLength);
 }
 
-std::vector<uint8_t> GenerateEndpointInfo() {
-  return GenerateRandomByteArray(kEndpointInfoLength);
+std::vector<uint8_t> GenerateEndpointInfo(const std::vector<uint8_t>& eid) {
+  if (eid.size() < 2) {
+    return GenerateRandomByteArray(kEndpointInfoLength);
+  }
+
+  std::vector<uint8_t> endpoint_info = {
+      // version number
+      1,
+      // 2 bytes indicating the EID
+      eid[0],
+      eid[1],
+  };
+
+  return endpoint_info;
 }
 
 }  // namespace
@@ -77,8 +89,7 @@ NearbyEndpointFinderImpl::NearbyEndpointFinderImpl(
         location::nearby::connections::mojom::NearbyConnections>&
         nearby_connections)
     : nearby_connections_(nearby_connections),
-      endpoint_id_(GenerateEndpointId()),
-      endpoint_info_(GenerateEndpointInfo()) {}
+      endpoint_id_(GenerateEndpointId()) {}
 
 NearbyEndpointFinderImpl::~NearbyEndpointFinderImpl() {
   if (is_discovery_active_) {
@@ -89,6 +100,7 @@ NearbyEndpointFinderImpl::~NearbyEndpointFinderImpl() {
 
 void NearbyEndpointFinderImpl::PerformFindEndpoint() {
   is_discovery_active_ = true;
+  endpoint_info_ = GenerateEndpointInfo(eid());
   nearby_connections_->StartDiscovery(
       mojom::kServiceId,
       DiscoveryOptions::New(Strategy::kP2pPointToPoint,

@@ -44,6 +44,11 @@ using testing::Invoke;
 const char kEndpointId[] = "endpointId";
 const int64_t kInvalidPayloadTypeId = 1234;
 
+const std::vector<uint8_t>& GetEid() {
+  static const std::vector<uint8_t> eid{0, 1};
+  return eid;
+}
+
 const std::vector<uint8_t>& GetBluetoothAddress() {
   static const std::vector<uint8_t> address{0, 1, 2, 3, 4, 5};
   return address;
@@ -68,7 +73,7 @@ class NearbyConnectionBrokerImplTest : public testing::Test,
     mock_timer_ = mock_timer.get();
 
     broker_ = NearbyConnectionBrokerImpl::Factory::Create(
-        GetBluetoothAddress(), &fake_endpoint_finder_,
+        GetBluetoothAddress(), GetEid(), &fake_endpoint_finder_,
         message_sender_.BindNewPipeAndPassReceiver(),
         message_receiver_.BindNewPipeAndPassRemote(),
         mock_nearby_connections_.shared_remote(),

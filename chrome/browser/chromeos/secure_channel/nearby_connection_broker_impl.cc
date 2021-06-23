@@ -69,6 +69,7 @@ void RecordWebRtcUpgradeDuration(base::TimeDelta duration) {
 std::unique_ptr<NearbyConnectionBroker>
 NearbyConnectionBrokerImpl::Factory::Create(
     const std::vector<uint8_t>& bluetooth_public_address,
+    const std::vector<uint8_t>& eid,
     NearbyEndpointFinder* endpoint_finder,
     mojo::PendingReceiver<mojom::NearbyMessageSender> message_sender_receiver,
     mojo::PendingRemote<mojom::NearbyMessageReceiver> message_receiver_remote,
@@ -85,7 +86,7 @@ NearbyConnectionBrokerImpl::Factory::Create(
   }
 
   return base::WrapUnique(new NearbyConnectionBrokerImpl(
-      bluetooth_public_address, endpoint_finder,
+      bluetooth_public_address, eid, endpoint_finder,
       std::move(message_sender_receiver), std::move(message_receiver_remote),
       nearby_connections, std::move(on_connected_callback),
       std::move(on_disconnected_callback), std::move(timer)));
@@ -99,6 +100,7 @@ void NearbyConnectionBrokerImpl::Factory::SetFactoryForTesting(
 
 NearbyConnectionBrokerImpl::NearbyConnectionBrokerImpl(
     const std::vector<uint8_t>& bluetooth_public_address,
+    const std::vector<uint8_t>& eid,
     NearbyEndpointFinder* endpoint_finder,
     mojo::PendingReceiver<mojom::NearbyMessageSender> message_sender_receiver,
     mojo::PendingRemote<mojom::NearbyMessageReceiver> message_receiver_remote,
@@ -116,7 +118,7 @@ NearbyConnectionBrokerImpl::NearbyConnectionBrokerImpl(
       timer_(std::move(timer)) {
   TransitionToStatus(ConnectionStatus::kDiscoveringEndpoint);
   endpoint_finder_->FindEndpoint(
-      bluetooth_public_address,
+      bluetooth_public_address, eid,
       base::BindOnce(&NearbyConnectionBrokerImpl::OnEndpointDiscovered,
                      base::Unretained(this)),
       base::BindOnce(&NearbyConnectionBrokerImpl::OnDiscoveryFailure,

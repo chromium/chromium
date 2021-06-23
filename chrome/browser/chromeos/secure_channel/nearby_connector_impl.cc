@@ -21,9 +21,11 @@ using NearbyProcessShutdownReason =
 
 NearbyConnectorImpl::ConnectionRequestMetadata::ConnectionRequestMetadata(
     const std::vector<uint8_t>& bluetooth_public_address,
+    const std::vector<uint8_t>& eid,
     mojo::PendingRemote<mojom::NearbyMessageReceiver> message_receiver,
     ConnectCallback callback)
     : bluetooth_public_address(bluetooth_public_address),
+      eid(eid),
       message_receiver(std::move(message_receiver)),
       callback(std::move(callback)) {}
 
@@ -49,10 +51,11 @@ NearbyConnectorImpl::~NearbyConnectorImpl() = default;
 
 void NearbyConnectorImpl::Connect(
     const std::vector<uint8_t>& bluetooth_public_address,
+    const std::vector<uint8_t>& eid,
     mojo::PendingRemote<mojom::NearbyMessageReceiver> message_receiver,
     ConnectCallback callback) {
   queued_connection_requests_.emplace(
-      std::make_unique<ConnectionRequestMetadata>(bluetooth_public_address,
+      std::make_unique<ConnectionRequestMetadata>(bluetooth_public_address, eid,
                                                   std::move(message_receiver),
                                                   std::move(callback)));
   ProcessQueuedConnectionRequests();
@@ -120,7 +123,7 @@ void NearbyConnectorImpl::ProcessQueuedConnectionRequests() {
 
   id_to_brokers_map_[new_broker_id] =
       NearbyConnectionBrokerImpl::Factory::Create(
-          metadata->bluetooth_public_address,
+          metadata->bluetooth_public_address, metadata->eid,
           active_connection_attempt_->endpoint_finder.get(),
           std::move(message_sender_pending_receiver),
           std::move(metadata->message_receiver),

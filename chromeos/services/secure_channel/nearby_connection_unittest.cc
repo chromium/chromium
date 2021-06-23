@@ -24,6 +24,10 @@ const std::vector<uint8_t>& GetTestBluetoothAddressAsVector() {
   return address;
 }
 
+const std::vector<uint8_t> GetEid() {
+  return std::vector<uint8_t>{0, 1};
+}
+
 multidevice::RemoteDeviceRef CreateTestDevice() {
   multidevice::RemoteDeviceRef device =
       multidevice::CreateRemoteDeviceRefForTest();
@@ -77,7 +81,7 @@ class SecureChannelNearbyConnectionTest : public testing::Test {
   ~SecureChannelNearbyConnectionTest() override = default;
 
   void SetUp() override {
-    connection_ = NearbyConnection::Factory::Create(test_device_,
+    connection_ = NearbyConnection::Factory::Create(test_device_, GetEid(),
                                                     &fake_nearby_connector_);
     connection_->AddObserver(&fake_observer_);
 

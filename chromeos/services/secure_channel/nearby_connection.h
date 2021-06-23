@@ -33,6 +33,7 @@ class NearbyConnection : public Connection,
    public:
     static std::unique_ptr<Connection> Create(
         multidevice::RemoteDeviceRef remote_device,
+        const std::vector<uint8_t>& eid,
         mojom::NearbyConnector* nearby_connector);
     static void SetFactoryForTesting(Factory* factory);
     virtual ~Factory() = default;
@@ -40,6 +41,7 @@ class NearbyConnection : public Connection,
    protected:
     virtual std::unique_ptr<Connection> CreateInstance(
         multidevice::RemoteDeviceRef remote_device,
+        const std::vector<uint8_t>& eid,
         mojom::NearbyConnector* nearby_connector) = 0;
 
    private:
@@ -50,6 +52,7 @@ class NearbyConnection : public Connection,
 
  private:
   NearbyConnection(multidevice::RemoteDeviceRef remote_device,
+                   const std::vector<uint8_t>& eid,
                    mojom::NearbyConnector* nearby_connector);
 
   // Connection:
@@ -73,6 +76,8 @@ class NearbyConnection : public Connection,
   mojom::NearbyConnector* nearby_connector_;
   mojo::Receiver<mojom::NearbyMessageReceiver> message_receiver_{this};
   mojo::Remote<mojom::NearbyMessageSender> message_sender_;
+
+  std::vector<uint8_t> eid_;
 
   base::queue<std::unique_ptr<WireMessage>> queued_messages_to_send_;
 

@@ -26,12 +26,14 @@ NearbyConnection::Factory* NearbyConnection::Factory::factory_instance_ =
 // static
 std::unique_ptr<Connection> NearbyConnection::Factory::Create(
     multidevice::RemoteDeviceRef remote_device,
+    const std::vector<uint8_t>& eid,
     mojom::NearbyConnector* nearby_connector) {
   if (factory_instance_)
-    return factory_instance_->CreateInstance(remote_device, nearby_connector);
+    return factory_instance_->CreateInstance(remote_device, eid,
+                                             nearby_connector);
 
   return base::WrapUnique(
-      new NearbyConnection(remote_device, nearby_connector));
+      new NearbyConnection(remote_device, eid, nearby_connector));
 }
 
 // static
@@ -40,8 +42,11 @@ void NearbyConnection::Factory::SetFactoryForTesting(Factory* factory) {
 }
 
 NearbyConnection::NearbyConnection(multidevice::RemoteDeviceRef remote_device,
+                                   const std::vector<uint8_t>& eid,
                                    mojom::NearbyConnector* nearby_connector)
-    : Connection(remote_device), nearby_connector_(nearby_connector) {
+    : Connection(remote_device),
+      nearby_connector_(nearby_connector),
+      eid_(eid) {
   DCHECK(nearby_connector_);
 }
 
@@ -51,7 +56,7 @@ NearbyConnection::~NearbyConnection() {
 
 void NearbyConnection::Connect() {
   SetStatus(Status::IN_PROGRESS);
-  nearby_connector_->Connect(GetRemoteDeviceBluetoothAddressAsVector(),
+  nearby_connector_->Connect(GetRemoteDeviceBluetoothAddressAsVector(), eid_,
                              message_receiver_.BindNewPipeAndPassRemote(),
                              base::BindOnce(&NearbyConnection::OnConnectResult,
                                             weak_ptr_factory_.GetWeakPtr()));

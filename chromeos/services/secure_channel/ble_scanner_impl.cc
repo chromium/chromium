@@ -289,9 +289,13 @@ void BleScannerImpl::HandlePotentialScanResult(
                << ", Background advertisement: "
                << (potential_result.second ? "true" : "false");
 
+  std::vector<uint8_t> eid(service_data.begin(),
+                           service_data.begin() + kMinNumBytesInServiceData);
+
   for (const std::pair<ConnectionMedium, ConnectionRole>& result : results) {
-    NotifyReceivedAdvertisementFromDevice(
-        potential_result.first, bluetooth_device, result.first, result.second);
+    NotifyReceivedAdvertisementFromDevice(potential_result.first,
+                                          bluetooth_device, result.first,
+                                          result.second, eid);
   }
 }
 

@@ -41,6 +41,7 @@ class FakeNearbyConnectionFactory : public NearbyConnection::Factory {
   // cryptauth::NearbyConnection::Factory:
   std::unique_ptr<Connection> CreateInstance(
       multidevice::RemoteDeviceRef remote_device,
+      const std::vector<uint8_t>& eid,
       mojom::NearbyConnector* nearby_connector) override {
     auto instance = std::make_unique<FakeConnection>(remote_device);
     last_created_instance_ = instance.get();
@@ -198,7 +199,8 @@ class SecureChannelNearbyConnectionManagerImplTest : public testing::Test {
       multidevice::RemoteDeviceRef remote_device) {
     fake_ble_scanner_->NotifyReceivedAdvertisementFromDevice(
         remote_device, /*bluetooth_device=*/nullptr,
-        ConnectionMedium::kNearbyConnections, ConnectionRole::kInitiatorRole);
+        ConnectionMedium::kNearbyConnections, ConnectionRole::kInitiatorRole,
+        {0, 0} /* eid */);
 
     // As a result of the connection, all ongoing connection attmepts should
     // have been canceled, since a connection is in progress.
