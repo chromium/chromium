@@ -8,8 +8,14 @@ rootWebArea
 ++++++++++++inlineTextBox name='Test 1: Flash the screen'
 ++++++++++listBox
 ++++++++++++listBoxOption name='1' selected=false
+++++++++++++++staticText name='1'
+++++++++++++++++inlineTextBox name='1'
 ++++++++++++listBoxOption name='2' selected=true
+++++++++++++++staticText name='2'
+++++++++++++++++inlineTextBox name='2'
 ++++++++++++listBoxOption name='3' selected=false
+++++++++++++++staticText name='3'
+++++++++++++++++inlineTextBox name='3'
 ++++++++++staticText name='times.'
 ++++++++++++inlineTextBox name='times.'
 ++++++genericContainer ignored
@@ -21,8 +27,14 @@ rootWebArea
 ++++++++++++textField
 ++++++++++++listBox
 ++++++++++++++listBoxOption name='1' selected=false
+++++++++++++++++staticText name='1'
+++++++++++++++++++inlineTextBox name='1'
 ++++++++++++++listBoxOption name='2' selected=true
+++++++++++++++++staticText name='2'
+++++++++++++++++++inlineTextBox name='2'
 ++++++++++++++listBoxOption name='3' selected=false
+++++++++++++++++staticText name='3'
+++++++++++++++++++inlineTextBox name='3'
 ++++++++++staticText name='times.'
 ++++++++++++inlineTextBox name='times.'
 ++++++genericContainer ignored
@@ -32,8 +44,14 @@ rootWebArea
 ++++++++++++inlineTextBox name='Test 3: Flash the screen'
 ++++++++++listBox
 ++++++++++++listBoxOption name='1' selected=false
+++++++++++++++staticText name='1'
+++++++++++++++++inlineTextBox name='1'
 ++++++++++++listBoxOption name='two' selected=true
+++++++++++++++staticText name='2'
+++++++++++++++++inlineTextBox name='2'
 ++++++++++++listBoxOption name='3' selected=false
+++++++++++++++staticText name='3'
+++++++++++++++++inlineTextBox name='3'
 ++++++++++staticText name='times.'
 ++++++++++++inlineTextBox name='times.'
 ++++++genericContainer ignored
@@ -45,8 +63,14 @@ rootWebArea
 ++++++++++++textField
 ++++++++++++listBox
 ++++++++++++++listBoxOption name='1' selected=false
+++++++++++++++++staticText name='1'
+++++++++++++++++++inlineTextBox name='1'
 ++++++++++++++listBoxOption name='two' selected=true
+++++++++++++++++staticText name='2'
+++++++++++++++++++inlineTextBox name='2'
 ++++++++++++++listBoxOption name='3' selected=false
+++++++++++++++++staticText name='3'
+++++++++++++++++++inlineTextBox name='3'
 ++++++++++staticText name='times.'
 ++++++++++++inlineTextBox name='times.'
 ++++++genericContainer ignored
@@ -57,7 +81,13 @@ rootWebArea
 ++++++++++comboBoxMenuButton value='two'
 ++++++++++++listBox
 ++++++++++++++listBoxOption name='1' selected=false
+++++++++++++++++staticText name='1'
+++++++++++++++++++inlineTextBox name='1'
 ++++++++++++++listBoxOption name='two' selected=true
+++++++++++++++++staticText name='2'
+++++++++++++++++++inlineTextBox name='2'
 ++++++++++++++listBoxOption name='3' selected=false
+++++++++++++++++staticText name='3'
+++++++++++++++++++inlineTextBox name='3'
 ++++++++++staticText name='times.'
 ++++++++++++inlineTextBox name='times.'

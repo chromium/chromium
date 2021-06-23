@@ -9,10 +9,18 @@ rootWebArea
 ++++++++++inlineTextBox name='This is an ARIA article 2.'
 ++++++listBox setSize=2
 ++++++++listBoxOption name='Item 1' setSize=2 posInSet=1 selected=false
+++++++++++staticText name='Item 1'
+++++++++++++inlineTextBox name='Item 1'
 ++++++++listBoxOption name='Item 2' setSize=2 posInSet=2 selected=false
+++++++++++staticText name='Item 2'
+++++++++++++inlineTextBox name='Item 2'
 ++++++listBox setSize=2
 ++++++++listBoxOption name='Item 1' setSize=2 posInSet=1 selected=false
+++++++++++staticText name='Item 1'
+++++++++++++inlineTextBox name='Item 1'
 ++++++++listBoxOption name='Item 2' setSize=2 posInSet=2 selected=false
+++++++++++staticText name='Item 2'
+++++++++++++inlineTextBox name='Item 2'
 ++++++form
 ++++++++radioButton setSize=4 posInSet=3 checkedState=false
 ++++++++staticText name='1'

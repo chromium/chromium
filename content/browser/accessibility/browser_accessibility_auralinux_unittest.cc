@@ -188,6 +188,10 @@ TEST_F(BrowserAccessibilityAuraLinuxTest, TestComplexHypertext) {
   radio_button.id = 15;
   radio_button_text.id = 17;
   radio_button.role = ax::mojom::Role::kRadioButton;
+  radio_button.SetName(radio_button_text_name);
+  radio_button.SetNameFrom(ax::mojom::NameFrom::kContents);
+  // Even though text is being appended as a child the radio button will be
+  // be treated as a leaf because of AXNode::IsLeaf().
   radio_button_text.role = ax::mojom::Role::kStaticText;
   radio_button_text.SetName(radio_button_text_name);
   radio_button.child_ids.push_back(radio_button_text.id);

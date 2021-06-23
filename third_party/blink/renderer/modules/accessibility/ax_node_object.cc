@@ -4052,42 +4052,10 @@ bool AXNodeObject::CanHaveChildren() const {
   if (blink::EnclosingTextControl(GetNode()))
     return true;
 
-  switch (AriaRoleAttribute()) {
-    case ax::mojom::blink::Role::kCheckBox:
-    case ax::mojom::blink::Role::kListBoxOption:
-    case ax::mojom::blink::Role::kMath:  // role="math" is flat, unlike <math>
-    case ax::mojom::blink::Role::kMenuListOption:
-    case ax::mojom::blink::Role::kMenuItem:
-    case ax::mojom::blink::Role::kMenuItemCheckBox:
-    case ax::mojom::blink::Role::kMenuItemRadio:
-    case ax::mojom::blink::Role::kPopUpButton:
-    case ax::mojom::blink::Role::kProgressIndicator:
-    case ax::mojom::blink::Role::kRadioButton:
-    case ax::mojom::blink::Role::kScrollBar:
-    case ax::mojom::blink::Role::kSlider:
-    case ax::mojom::blink::Role::kSplitter:
-    case ax::mojom::blink::Role::kSwitch:
-    case ax::mojom::blink::Role::kTab:
-    case ax::mojom::blink::Role::kToggleButton: {
-      // These roles have ChildrenPresentational: true in the ARIA spec.
-      // We used to remove/prune all descendants of them, but that removed
-      // useful content if the author didn't follow the spec perfectly, for
-      // example if they wanted a complex radio button with a textfield child.
-      // We are now only pruning these if there is a single text child,
-      // otherwise the subtree is exposed. The ChildrenPresentational rule
-      // is thus useful for authoring/verification tools but does not break
-      // complex widget implementations.
-      // Similarly, when content is inside a contenteditable, it does not make
-      // sense to hide it, since the user can interact with it.
-      // TODO(accessibility) Does it make sense to hide any of this content even
-      // in non-editable content?
-      Element* element = GetElement();
-      return element &&
-             (HasEditableStyle(*element) || !element->HasOneTextChild());
-    }
-    default:
-      break;
-  }
+  // ARIA roles with childrenPresentational:true in the ARIA spec expose
+  // their contents to the browser side, allowing platforms to decide whether
+  // to make them a leaf, ensuring that focusable content cannot be hidden,
+  // and improving stability in Blink.
   return true;
 }
 

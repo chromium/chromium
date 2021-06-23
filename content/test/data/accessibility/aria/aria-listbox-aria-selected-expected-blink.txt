@@ -3,7 +3,17 @@ rootWebArea
 ++++genericContainer ignored
 ++++++listBox multiselectable activedescendantId=listBoxOption
 ++++++++listBoxOption name='Item 1' selected=false
+++++++++++staticText name='Item 1'
+++++++++++++inlineTextBox name='Item 1'
 ++++++++listBoxOption name='Item 2' selected=false
+++++++++++staticText name='Item 2'
+++++++++++++inlineTextBox name='Item 2'
 ++++++++listBoxOption name='Item 3' selected=false
+++++++++++staticText name='Item 3'
+++++++++++++inlineTextBox name='Item 3'
 ++++++++listBoxOption name='Item 4' selected=true
+++++++++++staticText name='Item 4'
+++++++++++++inlineTextBox name='Item 4'
 ++++++++listBoxOption name='Item 5' selected=true
+++++++++++staticText name='Item 5'
+++++++++++++inlineTextBox name='Item 5'

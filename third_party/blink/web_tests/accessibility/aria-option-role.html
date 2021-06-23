@@ -27,12 +27,11 @@ test((t) => {
     assert_equals(secondChild.role, "AXRole: AXListBoxOption");
     assert_equals(secondChild.name, "label 2");
 
-    assert_equals(firstChild.childrenCount, 0);
-    assert_equals(secondChild.childrenCount, 0);
+   assert_equals(firstChild.childrenCount, 1);
+    assert_equals(secondChild.childrenCount, 1);
 
     assert_equals(firstChild.isFocusable, true);
-}, "This tests that the aria 'option' role works as expected. That is, it becomes a static text element with no children.");
-
+}, "This tests that the aria 'option' role works as expected.");
 </script>
 
 </body>

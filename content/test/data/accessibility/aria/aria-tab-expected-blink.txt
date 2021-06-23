@@ -3,4 +3,8 @@ rootWebArea
 ++++genericContainer ignored
 ++++++tabList horizontal hierarchicalLevel=1 setSize=2
 ++++++++tab name='Tab 1' setSize=2 posInSet=1 selected=false
+++++++++++staticText name='Tab 1'
+++++++++++++inlineTextBox name='Tab 1'
 ++++++++tab name='Tab 2' setSize=2 posInSet=2 selected=false
+++++++++++staticText name='Tab 2'
+++++++++++++inlineTextBox name='Tab 2'

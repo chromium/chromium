@@ -7604,7 +7604,7 @@ TEST_F(AXPositionTest, CreateParentAndLeafPositionWithEmptyNodes) {
   //
   // Simulate a tree with two lines of text and some empty nodes between them:
   // ++kRootWebArea "HelloWorld"
-  // ++++kCheckbox "Hello"
+  // ++++kLink "Hello"
   // ++++++kStaticText "Hello"
   // ++++++++kInlineTextBox "Hello"
   // ++++kStaticText ""
@@ -7613,7 +7613,7 @@ TEST_F(AXPositionTest, CreateParentAndLeafPositionWithEmptyNodes) {
   // ++++kStaticText "World"
   // ++++++kInlineTextBox "World"
   AXNodeData root;
-  AXNodeData check_box;
+  AXNodeData link;
   AXNodeData static_text_1;
   AXNodeData inline_box_1;
   AXNodeData static_text_empty;
@@ -7623,7 +7623,7 @@ TEST_F(AXPositionTest, CreateParentAndLeafPositionWithEmptyNodes) {
   AXNodeData inline_box_2;
 
   root.id = 1;
-  check_box.id = 2;
+  link.id = 2;
   static_text_1.id = 3;
   inline_box_1.id = 4;
   static_text_empty.id = 5;
@@ -7634,13 +7634,12 @@ TEST_F(AXPositionTest, CreateParentAndLeafPositionWithEmptyNodes) {
 
   root.role = ax::mojom::Role::kRootWebArea;
   root.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
-  root.child_ids = {check_box.id, static_text_empty.id, button_empty.id,
+  root.child_ids = {link.id, static_text_empty.id, button_empty.id,
                     static_text_2.id};
 
-  check_box.role = ax::mojom::Role::kCheckBox;
-  check_box.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
-                             true);
-  check_box.child_ids = {static_text_1.id};
+  link.role = ax::mojom::Role::kLink;
+  link.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
+  link.child_ids = {static_text_1.id};
 
   static_text_1.role = ax::mojom::Role::kStaticText;
   static_text_1.SetName("Hello");
@@ -7669,7 +7668,7 @@ TEST_F(AXPositionTest, CreateParentAndLeafPositionWithEmptyNodes) {
   inline_box_2.role = ax::mojom::Role::kInlineTextBox;
   inline_box_2.SetName("World");
 
-  SetTree(CreateAXTree({root, check_box, static_text_1, inline_box_1,
+  SetTree(CreateAXTree({root, link, static_text_1, inline_box_1,
                         static_text_empty, inline_box_empty, button_empty,
                         static_text_2, inline_box_2}));
 
@@ -7748,7 +7747,7 @@ TEST_F(AXPositionTest, CreateParentAndLeafPositionWithEmptyNodes) {
       before_inline_box_1->CreateParentPosition()->CreateParentPosition();
   ASSERT_NE(nullptr, parent_position);
   EXPECT_TRUE(parent_position->IsTextPosition());
-  EXPECT_EQ(check_box.id, parent_position->anchor_id());
+  EXPECT_EQ(link.id, parent_position->anchor_id());
   EXPECT_EQ(0, parent_position->text_offset());
   EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, parent_position->affinity());
 
@@ -7768,7 +7767,7 @@ TEST_F(AXPositionTest, CreateParentAndLeafPositionWithEmptyNodes) {
       after_inline_box_1->CreateParentPosition()->CreateParentPosition();
   ASSERT_NE(nullptr, parent_position);
   EXPECT_TRUE(parent_position->IsTextPosition());
-  EXPECT_EQ(check_box.id, parent_position->anchor_id());
+  EXPECT_EQ(link.id, parent_position->anchor_id());
   EXPECT_EQ(5, parent_position->text_offset());
   EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, parent_position->affinity());
 

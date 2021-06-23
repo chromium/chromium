@@ -24,8 +24,23 @@ On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE
 AXRole: AXGenericContainer
     AXRole: AXRadioGroup
         AXRole: AXRadioButton "Explicit Item 1"
+            AXRole: AXNone "• "
+                AXRole: AXStaticText "• "
+                    AXRole: AXInlineTextBox "• "
+            AXRole: AXStaticText "Explicit Item 1"
+                AXRole: AXInlineTextBox "Explicit Item 1"
         AXRole: AXRadioButton "Explicit Item 2"
+            AXRole: AXNone "• "
+                AXRole: AXStaticText "• "
+                    AXRole: AXInlineTextBox "• "
+            AXRole: AXStaticText "Explicit Item 2"
+                AXRole: AXInlineTextBox "Explicit Item 2"
         AXRole: AXRadioButton "Explicit Item 3"
+            AXRole: AXNone "• "
+                AXRole: AXStaticText "• "
+                    AXRole: AXInlineTextBox "• "
+            AXRole: AXStaticText "Explicit Item 3"
+                AXRole: AXInlineTextBox "Explicit Item 3"
     AXRole: AXList
         AXRole: AXListItem
             AXRole: AXListMarker "1. "

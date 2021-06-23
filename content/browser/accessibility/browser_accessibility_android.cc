@@ -571,6 +571,10 @@ bool BrowserAccessibilityAndroid::IsLeafConsideringChildren() const {
   return true;
 }
 
+// Note: this is used to compute an object's name on Android, and is exposed as
+// the name field in Android dump tree tests.
+// TODO(accessibility) Should it be called GetName() so that engineers not
+// familiar with Android can find it more easily?
 std::u16string BrowserAccessibilityAndroid::GetInnerText() const {
   if (ui::IsIframe(GetRole()))
     return std::u16string();
@@ -600,6 +604,11 @@ std::u16string BrowserAccessibilityAndroid::GetInnerText() const {
   // For almost all focusable nodes we try to get text from contents, but for
   // the root node that's redundant and often way too verbose.
   if (ui::IsPlatformDocument(GetRole()))
+    return text;
+
+  // A role="separator" is a leaf, and cannot get name from contents, even if
+  // author appends text children.
+  if (GetRole() == ax::mojom::Role::kSplitter)
     return text;
 
   // Append image description strings to the text, if not running as WebView.

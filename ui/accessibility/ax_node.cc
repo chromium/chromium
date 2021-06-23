@@ -1562,7 +1562,8 @@ bool AXNode::IsLeaf() const {
     return false;
 
   // An unignored node is a leaf if all of its descendants are ignored.
-  if (!GetUnignoredChildCountCrossingTreeBoundary())
+  int child_count = GetUnignoredChildCountCrossingTreeBoundary();
+  if (!child_count)
     return true;
 
 #if defined(OS_WIN)
@@ -1616,6 +1617,41 @@ bool AXNode::IsLeaf() const {
     case ax::mojom::Role::kSplitter:
     case ax::mojom::Role::kProgressIndicator:
       return true;
+    case ax::mojom::Role::kCheckBox:
+    case ax::mojom::Role::kListBoxOption:
+    case ax::mojom::Role::kMath:  // role="math" is flat, unlike <math>.
+    case ax::mojom::Role::kMenuListOption:
+    case ax::mojom::Role::kMenuItem:
+    case ax::mojom::Role::kMenuItemCheckBox:
+    case ax::mojom::Role::kMenuItemRadio:
+    case ax::mojom::Role::kPopUpButton:
+    case ax::mojom::Role::kToggleButton:
+    case ax::mojom::Role::kRadioButton:
+    case ax::mojom::Role::kSwitch:
+    case ax::mojom::Role::kTab: {
+      // For historical reasons, truncate the children of these roles when they
+      // have a single text child and are not editable.
+      // TODO(accessibility) Consider removing this in the future, and exposing
+      // all descendants, as it seems ATs do a good job of avoiding redundant
+      // speech even if they have a text child. Removing this rule would allow
+      // AT users to select any text visible in the page, and ensure that all
+      // text is available to ATs that use the position of objects on the
+      // screen. This has been manually tested in JAWS, NVDA, VoiceOver, Orca
+      // and ChromeVox.
+      // Note that the ARIA spec says, "User agents SHOULD NOT expose
+      // descendants of this element through the platform accessibility API. If
+      // user agents do not hide the descendant nodes, some information may be
+      // read twice." However, this is not a MUST, and in non-simple cases
+      // Chrome and Firefox already expose descendants, without causing issues.
+      // Allow up to 2 text nodes so that list items with bullets are leaves.
+      if (child_count > 2 || HasState(ax::mojom::State::kEditable))
+        return false;
+      AXNode* child1 = GetFirstUnignoredChildCrossingTreeBoundary();
+      if (!child1 || child1->GetRole() != ax::mojom::Role::kStaticText)
+        return false;
+      AXNode* child2 = child1->GetNextSibling();
+      return !child2 || child2->GetRole() == ax::mojom::Role::kStaticText;
+    }
     default:
       return false;
   }

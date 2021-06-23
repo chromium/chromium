@@ -43,13 +43,22 @@ promise_test(async function(test) {
     var child_element = document.getElementById("option1");
     var requestedChildNode = await window.getComputedAccessibleNode(child_element);
 
-    var computedChild = requestedParentNode.firstChild
+    var computedChild = requestedParentNode.firstChild;
     assert_false(computedChild === null);
     assert_equals(computedChild.name, "Option 1");
-    assert_true(computedChild === requestedChildNode);
+    assert_equals(computedChild, requestedChildNode);
+
+    // Check that the option's first child is a text node of same name.
+    assert_false(computedChild.firstChild === null);
+    assert_equals(computedChild.firstChild.name, "Option 1");
+
+    // Check that a call to non-existent child is an inline textbox of same name.
+    assert_false(computedChild.firstChild.firstChild === null);
+    assert_equals(computedChild.firstChild.firstChild.name, "Option 1");
 
     // Check that a call to non-existent child is null.
-    assert_equals(computedChild.firstChild, null);
+    assert_equals(computedChild.firstChild.firstChild.firstChild, null);
+
 }, "ComputedAccessibleNode.firstChild.");
 
 promise_test(async function(test) {
@@ -59,12 +68,20 @@ promise_test(async function(test) {
     var requestedChildNode = await window.getComputedAccessibleNode(child_element);
 
     var computedChild = requestedParentNode.lastChild;
-    assert_true(computedChild === requestedChildNode);
+    assert_equals(computedChild, requestedChildNode);
     assert_false(computedChild === null);
     assert_equals(computedChild.name, "Option 3");
 
+    // Check that the option's first child is a text node of same name.
+    assert_false(computedChild.firstChild === null);
+    assert_equals(computedChild.firstChild.name, "Option 3");
+
+    // Check that a call to non-existent child is an inline textbox of same name.
+    assert_false(computedChild.firstChild.firstChild === null);
+    assert_equals(computedChild.firstChild.firstChild.name, "Option 3");
+
     // Check that a call to non-existent child is null.
-    assert_equals(computedChild.lastChild, null);
+    assert_equals(computedChild.firstChild.firstChild.firstChild, null);
 }, "ComputedAccessibleNode.lastChild.");
 
 promise_test(async function(test) {
