@@ -1026,7 +1026,7 @@ TrackedLayoutBoxListHashSet* LayoutBlock::PositionedObjectsInternal() const {
 
 void LayoutBlock::InsertPositionedObject(LayoutBox* o) {
   NOT_DESTROYED();
-  DCHECK(!IsAnonymousBlock());
+  DCHECK(!IsAnonymousBlock() || IsAnonymousNGMulticolInlineWrapper());
   DCHECK_EQ(o->ContainingBlock(), this);
 
   o->ClearOverrideContainingBlockContentSize();

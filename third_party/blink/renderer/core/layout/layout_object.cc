@@ -1574,7 +1574,12 @@ LayoutBlock* LayoutObject::FindNonAnonymousContainingBlock(
   if (container && !container->IsLayoutBlock())
     container = container->ContainingBlock(skip_info);
 
-  while (container && container->IsAnonymousBlock())
+  // Allow an NG anonymous wrapper of an inline to be the containing block if it
+  // is the direct child of a multicol. This avoids the multicol from
+  // incorrectly becoming the containing block in the case of an inline
+  // container.
+  while (container && container->IsAnonymousBlock() &&
+         !container->IsAnonymousNGMulticolInlineWrapper())
     container = container->ContainingBlock(skip_info);
 
   return DynamicTo<LayoutBlock>(container);

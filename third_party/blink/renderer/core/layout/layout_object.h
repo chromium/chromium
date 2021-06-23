@@ -3657,6 +3657,15 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
     bitfields_.SetBackgroundIsKnownToBeObscured(b);
   }
 
+  bool IsAnonymousNGMulticolInlineWrapper() const {
+    NOT_DESTROYED();
+    return bitfields_.IsAnonymousNGMulticolInlineWrapper();
+  }
+  void SetIsAnonymousNGMulticolInlineWrapper() {
+    NOT_DESTROYED();
+    bitfields_.SetIsAnonymousNGMulticolInlineWrapper(true);
+  }
+
   // Returns ContainerForAbsolutePosition() if it's a LayoutBlock, or the
   // containing LayoutBlock of it.
   LayoutBlock* ContainingBlockForAbsolutePosition(
@@ -3884,6 +3893,7 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
           should_assume_paint_offset_translation_for_layout_shift_tracking_(
               false),
           might_traverse_physical_fragments_(false),
+          is_anonymous_ng_multicol_inline_wrapper_(false),
           positioned_state_(kIsStaticallyPositioned),
           selection_state_(static_cast<unsigned>(SelectionState::kNone)),
           subtree_paint_property_update_reasons_(
@@ -4217,6 +4227,11 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
     // this object. False if we definitely need to walk the LayoutObject tree.
     ADD_BOOLEAN_BITFIELD(might_traverse_physical_fragments_,
                          MightTraversePhysicalFragments);
+
+    // True if this is an anonymous inline wrapper created for NG, and the
+    // wrapper is a direct child of a multicol.
+    ADD_BOOLEAN_BITFIELD(is_anonymous_ng_multicol_inline_wrapper_,
+                         IsAnonymousNGMulticolInlineWrapper);
 
    private:
     // This is the cached 'position' value of this object
