@@ -30,15 +30,8 @@
 
 namespace {
 
-void ClearAllButFrameAncestors(network::mojom::URLResponseHead* response_head) {
-  response_head->headers->RemoveHeader("Content-Security-Policy");
-  response_head->headers->RemoveHeader("Content-Security-Policy-Report-Only");
-
-  if (!response_head->parsed_headers)
-    return;
-
-  std::vector<network::mojom::ContentSecurityPolicyPtr>& csp =
-      response_head->parsed_headers->content_security_policy;
+void ClearAllButFrameAncestors(
+    std::vector<network::mojom::ContentSecurityPolicyPtr>& csp) {
   std::vector<network::mojom::ContentSecurityPolicyPtr> cleared;
 
   for (auto& policy : csp) {
@@ -60,14 +53,6 @@ void ClearAllButFrameAncestors(network::mojom::URLResponseHead* response_head) {
     if (raw_frame_ancestors == policy->raw_directives.end()) {
       DCHECK(false);
     } else {
-      cleared_policy->header->header_value =
-          "frame-ancestors " + raw_frame_ancestors->second;
-      response_head->headers->AddHeader(
-          cleared_policy->header->type ==
-                  network::mojom::ContentSecurityPolicyType::kEnforce
-              ? "Content-Security-Policy"
-              : "Content-Security-Policy-Report-Only",
-          cleared_policy->header->header_value);
       cleared_policy
           ->raw_directives[network::mojom::CSPDirectiveName::FrameAncestors] =
           std::move(raw_frame_ancestors->second);
@@ -118,9 +103,14 @@ void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
   // Ignore CSP served on a PDF response. https://crbug.com/271452
   if (extension_id == extension_misc::kPdfExtensionId &&
       response_head->headers) {
-    // We still want to honor the frame-ancestors directive in the
-    // AncestorThrottle.
-    ClearAllButFrameAncestors(response_head);
+    response_head->headers->RemoveHeader("Content-Security-Policy");
+
+    if (response_head->parsed_headers) {
+      // We still want to honor the frame-ancestors directive in the
+      // AncestorThrottle.
+      ClearAllButFrameAncestors(
+          response_head->parsed_headers->content_security_policy);
+    }
   }
 
   MimeTypesHandler::ReportUsedHandler(extension_id);
