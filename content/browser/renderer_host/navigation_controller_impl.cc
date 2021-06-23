@@ -928,25 +928,15 @@ bool NavigationControllerImpl::CanGoToOffsetWithSkipping(int offset) {
 void NavigationControllerImpl::GoBack() {
   int target_index = GetIndexForOffset(-1);
 
-  // Log metrics for the number of entries that are eligible for skipping on
-  // back button and move the target index past the skippable entries.
-  int count_entries_skipped = 0;
+  // Move the target index past the skippable entries.
   bool all_skippable_entries = true;
-  for (int index = target_index; index >= 0; index--) {
-    if (GetEntryAtIndex(index)->should_skip_on_back_forward_ui()) {
-      count_entries_skipped++;
-    } else {
-      target_index = index;
+  while (target_index >= 0) {
+    if (!GetEntryAtIndex(target_index)->should_skip_on_back_forward_ui()) {
       all_skippable_entries = false;
       break;
     }
+    target_index--;
   }
-
-  UMA_HISTOGRAM_ENUMERATION("Navigation.BackForward.BackTargetSkipped",
-                            count_entries_skipped,
-                            blink::kMaxSessionHistoryEntries);
-  UMA_HISTOGRAM_BOOLEAN("Navigation.BackForward.AllBackTargetsSkippable",
-                        all_skippable_entries);
 
   // Do nothing if all entries are skippable. Normally this path would not
   // happen as consumers would have already checked it in CanGoBack but a lot of
@@ -960,25 +950,14 @@ void NavigationControllerImpl::GoBack() {
 void NavigationControllerImpl::GoForward() {
   int target_index = GetIndexForOffset(1);
 
-  // Log metrics for the number of entries that are eligible for skipping on
-  // forward button and move the target index past the skippable entries, if
-  // history intervention is enabled.
   // Note that at least one entry (the last one) will be non-skippable since
   // entries are marked skippable only when they add another entry because of
   // redirect or pushState.
-  int count_entries_skipped = 0;
-  for (size_t index = target_index; index < entries_.size(); index++) {
-    if (GetEntryAtIndex(index)->should_skip_on_back_forward_ui()) {
-      count_entries_skipped++;
-    } else {
-      target_index = index;
+  while (target_index < static_cast<int>(entries_.size())) {
+    if (!GetEntryAtIndex(target_index)->should_skip_on_back_forward_ui())
       break;
-    }
+    target_index++;
   }
-  UMA_HISTOGRAM_ENUMERATION("Navigation.BackForward.ForwardTargetSkipped",
-                            count_entries_skipped,
-                            blink::kMaxSessionHistoryEntries);
-
   GoToIndex(target_index);
 }
 
@@ -3874,23 +3853,12 @@ void NavigationControllerImpl::SetShouldSkipOnBackForwardUIIfNeeded(
   // frame itself.
   if (replace_entry || previous_document_was_activated ||
       !is_renderer_initiated) {
-    if (last_committed_entry_index_ != -1) {
-      // This histogram always counts when navigating away from an entry,
-      // irrespective of whether the skippable flag was changed or not, and
-      // whether this entry is being reused or not.
-      UMA_HISTOGRAM_BOOLEAN(
-          "Navigation.BackForward.SetShouldSkipOnBackForwardUI",
-          GetEntryAtIndex(last_committed_entry_index_)
-              ->should_skip_on_back_forward_ui());
-    }
     return;
   }
   if (last_committed_entry_index_ == -1)
     return;
 
   SetSkippableForSameDocumentEntries(last_committed_entry_index_, true);
-  UMA_HISTOGRAM_BOOLEAN("Navigation.BackForward.SetShouldSkipOnBackForwardUI",
-                        true);
 
   // Log UKM with the URL we are navigating away from.
   ukm::builders::HistoryManipulationIntervention(

@@ -526,6 +526,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Navigation.BackForward.AllBackTargetsSkippable" enum="Boolean"
     expires_after="2019-12-31">
+  <obsolete>
+    No longer logged as of 2021-06.
+  </obsolete>
   <owner>shivanisha@chromium.org</owner>
   <owner>csharrison@chromium.org</owner>
   <summary>
@@ -540,6 +543,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Navigation.BackForward.BackTargetSkipped" units="units"
     expires_after="M85">
+  <obsolete>
+    No longer gathered as of 2021-06.
+  </obsolete>
   <owner>shivanisha@chromium.org</owner>
   <owner>csharrison@chromium.org</owner>
   <summary>
@@ -559,6 +565,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Navigation.BackForward.ForwardTargetSkipped" units="units"
     expires_after="M85">
+  <obsolete>
+    No longer gathered as of 2021-06.
+  </obsolete>
   <owner>shivanisha@chromium.org</owner>
   <owner>csharrison@chromium.org</owner>
   <summary>
@@ -583,6 +592,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Navigation.BackForward.SetShouldSkipOnBackForwardUI"
     enum="Boolean" expires_after="M85">
+  <obsolete>
+    No longer gathered as of 2021-06.
+  </obsolete>
   <owner>shivanisha@chromium.org</owner>
   <owner>csharrison@chromium.org</owner>
   <summary>

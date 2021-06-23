@@ -14434,8 +14434,6 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 // activation.
 IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
                        NoUserActivationSetSkipOnBackForward) {
-  base::HistogramTester histograms;
-
   GURL non_skippable_url(
       embedded_test_server()->GetURL("/frame_tree/top.html"));
   EXPECT_TRUE(NavigateToURL(shell(), non_skippable_url));
@@ -14466,8 +14464,6 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
   EXPECT_TRUE(controller.GetEntryAtIndex(1)->should_skip_on_back_forward_ui());
   EXPECT_FALSE(
       controller.GetLastCommittedEntry()->should_skip_on_back_forward_ui());
-  histograms.ExpectBucketCount(
-      "Navigation.BackForward.SetShouldSkipOnBackForwardUI", true, 1);
 
   EXPECT_TRUE(controller.CanGoBack());
   // Attempt to go back or forward to the skippable entry should log the
@@ -14475,10 +14471,6 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
   TestNavigationObserver back_load_observer(shell()->web_contents());
   controller.GoBack();
   back_load_observer.Wait();
-  histograms.ExpectBucketCount("Navigation.BackForward.BackTargetSkipped", 1,
-                               1);
-  histograms.ExpectBucketCount("Navigation.BackForward.AllBackTargetsSkippable",
-                               false, 1);
   EXPECT_EQ(non_skippable_url, controller.GetLastCommittedEntry()->GetURL());
   EXPECT_EQ(0, controller.GetLastCommittedEntryIndex());
 }
@@ -14489,8 +14481,6 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
 // user activation.
 IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
                        NoUserActivationSetSkipOnBackForwardCrossSite) {
-  base::HistogramTester histograms;
-
   GURL non_skippable_url(
       embedded_test_server()->GetURL("/frame_tree/top.html"));
   EXPECT_TRUE(NavigateToURL(shell(), non_skippable_url));
@@ -14522,8 +14512,6 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
   EXPECT_TRUE(controller.GetEntryAtIndex(1)->should_skip_on_back_forward_ui());
   EXPECT_FALSE(
       controller.GetLastCommittedEntry()->should_skip_on_back_forward_ui());
-  histograms.ExpectBucketCount(
-      "Navigation.BackForward.SetShouldSkipOnBackForwardUI", true, 1);
 
   EXPECT_TRUE(controller.CanGoBack());
   // Attempt to go back or forward to the skippable entry should log the
@@ -14531,10 +14519,6 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
   TestNavigationObserver back_load_observer(shell()->web_contents());
   controller.GoBack();
   back_load_observer.Wait();
-  histograms.ExpectBucketCount("Navigation.BackForward.BackTargetSkipped", 1,
-                               1);
-  histograms.ExpectBucketCount("Navigation.BackForward.AllBackTargetsSkippable",
-                               false, 1);
   EXPECT_EQ(non_skippable_url, controller.GetLastCommittedEntry()->GetURL());
   EXPECT_EQ(0, controller.GetLastCommittedEntryIndex());
 }
@@ -14544,10 +14528,6 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
 // Also tests this for an entry added using history.pushState.
 IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
                        NoUserActivationSetSkippableMultipleGoBack) {
-  base::HistogramTester histograms;
-  const std::string histogram_name =
-      "Navigation.BackForward.SetShouldSkipOnBackForwardUI";
-
   GURL skippable_url(embedded_test_server()->GetURL("/frame_tree/top.html"));
   EXPECT_TRUE(NavigateToURL(shell(), skippable_url));
 
@@ -14582,29 +14562,17 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
   EXPECT_TRUE(controller.GetEntryAtIndex(1)->should_skip_on_back_forward_ui());
   EXPECT_FALSE(
       controller.GetLastCommittedEntry()->should_skip_on_back_forward_ui());
-  histograms.ExpectBucketCount(histogram_name, true, 2);
 
   // CanGoBack should return false since all previous entries are skippable.
   EXPECT_FALSE(controller.CanGoBack());
 
-  // Attempt to go back to the entries marked to be skipped should log a
-  // histogram.
   controller.GoBack();  // Will not go back
   EXPECT_EQ(controller.GetLastCommittedEntryIndex(), 2);
-
-  histograms.ExpectBucketCount("Navigation.BackForward.BackTargetSkipped", 2,
-                               1);
-  histograms.ExpectBucketCount("Navigation.BackForward.AllBackTargetsSkippable",
-                               true, 1);
 }
 
 // Same as above but tests the metrics on going forward.
 IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
                        NoUserActivationSetSkippableMultipleGoForward) {
-  base::HistogramTester histograms;
-  const std::string histogram_name =
-      "Navigation.BackForward.SetShouldSkipOnBackForwardUI";
-
   GURL skippable_url(embedded_test_server()->GetURL("/frame_tree/top.html"));
   EXPECT_TRUE(NavigateToURL(shell(), skippable_url));
 
@@ -14639,28 +14607,12 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
   EXPECT_TRUE(controller.GetEntryAtIndex(1)->should_skip_on_back_forward_ui());
   EXPECT_FALSE(
       controller.GetLastCommittedEntry()->should_skip_on_back_forward_ui());
-  histograms.ExpectBucketCount(histogram_name, true, 2);
-
-  // Go to the 1st entry.
-  TestNavigationObserver load_observer(shell()->web_contents());
-  controller.GoToIndex(0);
-  load_observer.Wait();
-
-  // Attempt to go forward to the entries marked to be skipped should log a
-  // histogram.
-  EXPECT_TRUE(controller.CanGoForward());
-  TestNavigationObserver back_load_observer(shell()->web_contents());
-  controller.GoForward();
-  back_load_observer.Wait();
-  histograms.ExpectBucketCount("Navigation.BackForward.ForwardTargetSkipped", 1,
-                               1);
 }
 
 // Tests that if an entry is marked as skippable, it will not be reset if there
 // is a navigation to this entry again (crbug.com/112129).
 IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
                        DoNotResetSkipOnBackForward) {
-  base::HistogramTester histograms;
   GURL main_url(embedded_test_server()->GetURL("/frame_tree/top.html"));
 
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
@@ -14687,8 +14639,6 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
   EXPECT_TRUE(controller.GetEntryAtIndex(0)->should_skip_on_back_forward_ui());
   EXPECT_FALSE(
       controller.GetLastCommittedEntry()->should_skip_on_back_forward_ui());
-  histograms.ExpectBucketCount(
-      "Navigation.BackForward.SetShouldSkipOnBackForwardUI", true, 1);
 
   // Go back to the last entry.
   TestNavigationObserver back_nav_load_observer(shell()->web_contents());
@@ -14702,8 +14652,6 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
   // histogram with skippable as true.
   GURL url1(embedded_test_server()->GetURL("/title2.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url1));
-  histograms.ExpectBucketCount(
-      "Navigation.BackForward.SetShouldSkipOnBackForwardUI", true, 2);
 }
 
 // Tests that if an entry is marked as skippable, it will not be reset if there
@@ -14711,7 +14659,6 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
 // forward.
 IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
                        DoNotResetSkipOnHistoryBackAPI) {
-  base::HistogramTester histograms;
   GURL main_url(embedded_test_server()->GetURL("/frame_tree/top.html"));
 
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
@@ -14738,8 +14685,6 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
   EXPECT_TRUE(controller.GetEntryAtIndex(0)->should_skip_on_back_forward_ui());
   EXPECT_FALSE(
       controller.GetLastCommittedEntry()->should_skip_on_back_forward_ui());
-  histograms.ExpectBucketCount(
-      "Navigation.BackForward.SetShouldSkipOnBackForwardUI", true, 1);
 
   // Go back to the last entry using history.back.
   EXPECT_TRUE(
@@ -14992,10 +14937,6 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
 // activation.
 IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
                        UserActivationDoNotSkipOnBackForward) {
-  base::HistogramTester histograms;
-  const std::string histogram_name =
-      "Navigation.BackForward.SetShouldSkipOnBackForwardUI";
-
   GURL non_skippable_url(
       embedded_test_server()->GetURL("/frame_tree/top.html"));
   EXPECT_TRUE(NavigateToURL(shell(), non_skippable_url));
@@ -15023,7 +14964,6 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
   EXPECT_FALSE(controller.GetEntryAtIndex(0)->should_skip_on_back_forward_ui());
   EXPECT_FALSE(
       controller.GetLastCommittedEntry()->should_skip_on_back_forward_ui());
-  histograms.ExpectBucketCount(histogram_name, false, 1);
 
   // Nothing should get skipped when back button is clicked.
   TestNavigationObserver back_nav_load_observer(shell()->web_contents());
@@ -15031,8 +14971,6 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
   back_nav_load_observer.Wait();
   EXPECT_EQ(non_skippable_url, controller.GetLastCommittedEntry()->GetURL());
   EXPECT_EQ(0, controller.GetLastCommittedEntryIndex());
-  histograms.ExpectBucketCount("Navigation.BackForward.BackTargetSkipped", 0,
-                               1);
 }
 
 // Tests that the navigation entry should not be marked as skippable on
@@ -15040,10 +14978,6 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
 // navigation.
 IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
                        BrowserInitiatedNavigationDoNotSkipOnBackForward) {
-  base::HistogramTester histograms;
-  const std::string histogram_name =
-      "Navigation.BackForward.SetShouldSkipOnBackForwardUI";
-
   GURL non_skippable_url(
       embedded_test_server()->GetURL("/frame_tree/top.html"));
   EXPECT_TRUE(NavigateToURL(shell(), non_skippable_url));
@@ -15070,7 +15004,6 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
   EXPECT_FALSE(controller.GetEntryAtIndex(0)->should_skip_on_back_forward_ui());
   EXPECT_FALSE(
       controller.GetLastCommittedEntry()->should_skip_on_back_forward_ui());
-  histograms.ExpectBucketCount(histogram_name, false, 1);
 
   // Nothing should get skipped when back button is clicked.
   TestNavigationObserver back_nav_load_observer(shell()->web_contents());
@@ -15084,8 +15017,6 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
 // button does not get skipped for history.back API calls.
 IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
                        SetSkipOnBackDoNotSkipForHistoryBackAPI) {
-  base::HistogramTester histograms;
-
   GURL non_skippable_url(
       embedded_test_server()->GetURL("/frame_tree/top.html"));
   EXPECT_TRUE(NavigateToURL(shell(), non_skippable_url));
@@ -15116,8 +15047,6 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
   EXPECT_TRUE(controller.GetEntryAtIndex(1)->should_skip_on_back_forward_ui());
   EXPECT_FALSE(
       controller.GetLastCommittedEntry()->should_skip_on_back_forward_ui());
-  histograms.ExpectBucketCount(
-      "Navigation.BackForward.SetShouldSkipOnBackForwardUI", true, 1);
 
   // Attempt to go back to the skippable entry using the History API should
   // not skip the corresponding entry.
@@ -15125,7 +15054,6 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
   EXPECT_TRUE(ExecJs(root, "window.history.back()"));
   frame_observer.Wait();
 
-  histograms.ExpectTotalCount("Navigation.BackForward.BackTargetSkipped", 0);
   EXPECT_EQ(skippable_url, controller.GetLastCommittedEntry()->GetURL());
   EXPECT_EQ(1, controller.GetLastCommittedEntryIndex());
 }
@@ -15192,7 +15120,6 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
 // redirected_url2]
 IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
                        SetSkipOnBackForwardDoNotSkipForGoToOffset) {
-  base::HistogramTester histograms;
   GURL non_skippable_url(
       embedded_test_server()->GetURL("/frame_tree/top.html"));
   EXPECT_TRUE(NavigateToURL(shell(), non_skippable_url));
@@ -15235,8 +15162,6 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
   EXPECT_FALSE(controller.GetEntryAtIndex(2)->should_skip_on_back_forward_ui());
   EXPECT_TRUE(controller.GetEntryAtIndex(3)->should_skip_on_back_forward_ui());
   EXPECT_FALSE(controller.GetEntryAtIndex(4)->should_skip_on_back_forward_ui());
-  histograms.ExpectBucketCount(
-      "Navigation.BackForward.SetShouldSkipOnBackForwardUI", true, 2);
 
   EXPECT_TRUE(controller.CanGoToOffset(-3));
 
@@ -15280,7 +15205,6 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
 IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
                        SetSkipOnBackForwardDoSkipForGoToOffsetWithSkipping) {
 #if defined(OS_ANDROID)
-  base::HistogramTester histograms;
   GURL non_skippable_url(
       embedded_test_server()->GetURL("/frame_tree/top.html"));
   EXPECT_TRUE(NavigateToURL(shell(), non_skippable_url));
@@ -15323,8 +15247,6 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
   EXPECT_FALSE(controller.GetEntryAtIndex(2)->should_skip_on_back_forward_ui());
   EXPECT_TRUE(controller.GetEntryAtIndex(3)->should_skip_on_back_forward_ui());
   EXPECT_FALSE(controller.GetEntryAtIndex(4)->should_skip_on_back_forward_ui());
-  histograms.ExpectBucketCount(
-      "Navigation.BackForward.SetShouldSkipOnBackForwardUI", true, 2);
 
   EXPECT_FALSE(controller.CanGoToOffsetWithSkipping(-3));
   EXPECT_TRUE(controller.CanGoToOffsetWithSkipping(-2));
@@ -15367,8 +15289,6 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
 // button does not get skipped for history.forward API calls.
 IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
                        SetSkipOnBackDoNotSkipForHistoryForwardAPI) {
-  base::HistogramTester histograms;
-
   GURL non_skippable_url(
       embedded_test_server()->GetURL("/frame_tree/top.html"));
   EXPECT_TRUE(NavigateToURL(shell(), non_skippable_url));
@@ -15399,8 +15319,6 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
   EXPECT_TRUE(controller.GetEntryAtIndex(1)->should_skip_on_back_forward_ui());
   EXPECT_FALSE(
       controller.GetLastCommittedEntry()->should_skip_on_back_forward_ui());
-  histograms.ExpectBucketCount(
-      "Navigation.BackForward.SetShouldSkipOnBackForwardUI", true, 1);
 
   TestNavigationObserver nav_observer1(shell()->web_contents());
   controller.GoToIndex(0);
@@ -15413,7 +15331,6 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
   EXPECT_TRUE(ExecJs(root, "window.history.forward()"));
   nav_observer2.Wait();
 
-  histograms.ExpectTotalCount("Navigation.BackForward.ForwardTargetSkipped", 0);
   EXPECT_EQ(skippable_url, controller.GetLastCommittedEntry()->GetURL());
   EXPECT_EQ(1, controller.GetLastCommittedEntryIndex());
 }
@@ -15422,8 +15339,6 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
 // that is pruned if max entry count is reached.
 IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
                        PruneOldestSkippableEntry) {
-  base::HistogramTester histograms;
-
   // Set the max entry count as 3.
   NavigationControllerImpl::set_max_entry_count_for_testing(3);
 
@@ -15461,8 +15376,6 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
   EXPECT_TRUE(controller.GetEntryAtIndex(1)->should_skip_on_back_forward_ui());
   EXPECT_FALSE(
       controller.GetLastCommittedEntry()->should_skip_on_back_forward_ui());
-  histograms.ExpectBucketCount(
-      "Navigation.BackForward.SetShouldSkipOnBackForwardUI", true, 1);
 
   // A new navigation should lead to |skippable_url| to be pruned.
   GURL new_navigation_url(embedded_test_server()->GetURL("/title3.html"));
@@ -15478,8 +15391,6 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
 // entry is the oldest skippable navigation entry.
 IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
                        PruneOldestWhenLastCommittedIsSkippable) {
-  base::HistogramTester histograms;
-
   // Set the max entry count as 2.
   NavigationControllerImpl::set_max_entry_count_for_testing(2);
 
@@ -15518,8 +15429,6 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
   EXPECT_TRUE(controller.GetEntryAtIndex(0)->should_skip_on_back_forward_ui());
   EXPECT_FALSE(
       controller.GetLastCommittedEntry()->should_skip_on_back_forward_ui());
-  histograms.ExpectBucketCount(
-      "Navigation.BackForward.SetShouldSkipOnBackForwardUI", true, 1);
 }
 
 // Tests that the navigation entry is marked as skippable on back/forward
@@ -15527,8 +15436,6 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
 // activation.
 IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
                        NoUserActivationSetSkipOnBackForwardSubframe) {
-  base::HistogramTester histograms;
-
   GURL non_skippable_url(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), non_skippable_url));
 
@@ -15557,8 +15464,6 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
   EXPECT_FALSE(controller.GetEntryAtIndex(0)->should_skip_on_back_forward_ui());
   EXPECT_TRUE(controller.GetEntryAtIndex(1)->should_skip_on_back_forward_ui());
   EXPECT_FALSE(controller.GetEntryAtIndex(2)->should_skip_on_back_forward_ui());
-  histograms.ExpectBucketCount(
-      "Navigation.BackForward.SetShouldSkipOnBackForwardUI", true, 1);
 
   EXPECT_TRUE(controller.CanGoBack());
 
@@ -15567,8 +15472,6 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
   TestNavigationObserver back_load_observer(shell()->web_contents());
   controller.GoBack();
   back_load_observer.Wait();
-  histograms.ExpectBucketCount("Navigation.BackForward.BackTargetSkipped", 1,
-                               1);
   EXPECT_EQ(non_skippable_url, controller.GetLastCommittedEntry()->GetURL());
   EXPECT_EQ(0, controller.GetLastCommittedEntryIndex());
 
@@ -15595,8 +15498,6 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
 IN_PROC_BROWSER_TEST_P(
     NavigationControllerHistoryInterventionBrowserTest,
     UserActivationMainFrameDoNotSetSkipOnBackForwardSubframe) {
-  base::HistogramTester histograms;
-
   GURL non_skippable_url(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), non_skippable_url));
 
@@ -15634,8 +15535,6 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_FALSE(controller.GetEntryAtIndex(0)->should_skip_on_back_forward_ui());
   EXPECT_FALSE(controller.GetEntryAtIndex(1)->should_skip_on_back_forward_ui());
   EXPECT_FALSE(controller.GetEntryAtIndex(2)->should_skip_on_back_forward_ui());
-  histograms.ExpectBucketCount(
-      "Navigation.BackForward.SetShouldSkipOnBackForwardUI", true, 0);
 }
 
 // Tests that all same document entries are marked as skippable together.
