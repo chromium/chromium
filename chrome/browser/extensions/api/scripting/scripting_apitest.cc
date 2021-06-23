@@ -99,4 +99,8 @@ IN_PROC_BROWSER_TEST_F(ScriptingAPITest, CSSRemoval) {
   ASSERT_TRUE(RunExtensionTest("scripting/remove_css")) << message_;
 }
 
+IN_PROC_BROWSER_TEST_F(ScriptingAPITest, DynamicContentScripts) {
+  ASSERT_TRUE(RunExtensionTest("scripting/dynamic_scripts")) << message_;
+}
+
 }  // namespace extensions

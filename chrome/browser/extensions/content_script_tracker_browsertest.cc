@@ -743,4 +743,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptTrackerBrowserTest,
       *first_tab->GetMainFrame()->GetProcess(), extension->id()));
 }
 
+// TODO(crbug.com/1215386): Add a test for tracking content scripts added
+// through the scripting API.
+
 }  // namespace extensions

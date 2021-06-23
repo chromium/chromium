@@ -32,6 +32,10 @@ class UserScript {
   // The file extension for standalone user scripts.
   static const char kFileExtension[];
 
+  // The prefix for all generated user script IDs (i.e. the ID is not provided
+  // by the extension).
+  static const char kGeneratedIDPrefix;
+
   static std::string GenerateUserScriptID();
 
   // Check if a URL should be treated as a user script and converted to an
@@ -39,8 +43,8 @@ class UserScript {
   static bool IsURLUserScript(const GURL& url, const std::string& mime_type);
 
   // Get the valid user script schemes for the current process. If
-  // canExecuteScriptEverywhere is true, this will return ALL_SCHEMES.
-  static int ValidUserScriptSchemes(bool canExecuteScriptEverywhere = false);
+  // `can_execute_script_everywhere` is true, this will return ALL_SCHEMES.
+  static int ValidUserScriptSchemes(bool can_execute_script_everywhere = false);
 
   // Holds script file info.
   class File {
@@ -219,6 +223,9 @@ class UserScript {
   // because presumably we were the one that pickled it, and we did it
   // correctly.
   void Unpickle(const base::Pickle& pickle, base::PickleIterator* iter);
+
+  // Returns if this script's ID is generated.
+  bool IsIDGenerated() const;
 
  private:
   // base::Pickle helper functions used to pickle the individual types of

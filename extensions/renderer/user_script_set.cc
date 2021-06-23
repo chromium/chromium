@@ -212,8 +212,14 @@ std::unique_ptr<ScriptInjection> UserScriptSet::GetInjectionForScript(
   if (!script->MatchesDocument(effective_document_url, is_subframe))
     return injection;
 
-  std::unique_ptr<ScriptInjector> injector(
-      new UserScriptInjector(script, this, is_declarative));
+  // Extension dynamic scripts are treated as declarative scripts and should use
+  // host permissions instead of scriptable hosts to determine if they should be
+  // injected into a frame.
+  bool is_extension_dynamic_script =
+      (host_id_.type == mojom::HostID::HostType::kExtensions) &&
+      !script->IsIDGenerated();
+  std::unique_ptr<ScriptInjector> injector(new UserScriptInjector(
+      script, this, is_declarative || is_extension_dynamic_script));
 
   if (injector->CanExecuteOnFrame(injection_host.get(), web_frame, tab_id) ==
       PermissionsData::PageAccess::kDenied) {

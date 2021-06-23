@@ -391,6 +391,8 @@ if (enable_extensions) {
       "user_script.h",
       "utils/base_string.cc",
       "utils/base_string.h",
+      "utils/content_script_utils.cc",
+      "utils/content_script_utils.h",
       "value_builder.cc",
       "value_builder.h",
       "value_counter.cc",

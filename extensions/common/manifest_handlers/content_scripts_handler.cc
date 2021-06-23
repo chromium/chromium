@@ -29,6 +29,7 @@
 #include "extensions/common/script_constants.h"
 #include "extensions/common/url_pattern.h"
 #include "extensions/common/url_pattern_set.h"
+#include "extensions/common/utils/content_script_utils.h"
 #include "extensions/strings/grit/extensions_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
@@ -52,6 +53,20 @@ mojom::RunLocation ConvertRunLocation(content_scripts_api::RunAt run_at) {
     case content_scripts_api::RUN_AT_NONE:
       NOTREACHED();
       return mojom::RunLocation::kDocumentIdle;
+  }
+}
+
+void ParseGlobs(const std::vector<std::string>* include_globs,
+                const std::vector<std::string>* exclude_globs,
+                UserScript* result) {
+  // include/exclude globs (mostly for Greasemonkey compatibility).
+  if (include_globs) {
+    for (const std::string& glob : *include_globs)
+      result->add_glob(glob);
+  }
+  if (exclude_globs) {
+    for (const std::string& glob : *exclude_globs)
+      result->add_exclude_glob(glob);
   }
 }
 
@@ -97,131 +112,29 @@ std::unique_ptr<UserScript> CreateUserScript(
             : MatchOriginAsFallbackBehavior::kNever);
   }
 
-  // matches
-  if (content_script.matches.empty()) {
-    *error = ErrorUtils::FormatErrorMessageUTF16(
-        errors::kInvalidMatchCount, base::NumberToString(definition_index));
+  bool wants_file_access = false;
+  if (!script_parsing::ParseMatchPatterns(
+          content_script.matches, content_script.exclude_matches.get(),
+          definition_index, extension->creation_flags(),
+          can_execute_script_everywhere, valid_schemes,
+          all_urls_includes_chrome_urls, result.get(), error,
+          &wants_file_access)) {
     return nullptr;
   }
 
-  for (size_t i = 0; i < content_script.matches.size(); ++i) {
-    URLPattern pattern(valid_schemes);
+  if (wants_file_access)
+    extension->set_wants_file_access(true);
 
-    const std::string& match_str = content_script.matches[i];
-    URLPattern::ParseResult parse_result = pattern.Parse(match_str);
-    if (parse_result != URLPattern::ParseResult::kSuccess) {
-      *error = ErrorUtils::FormatErrorMessageUTF16(
-          errors::kInvalidMatch, base::NumberToString(definition_index),
-          base::NumberToString(i),
-          URLPattern::GetParseResultString(parse_result));
-      return nullptr;
-    }
+  ParseGlobs(content_script.include_globs.get(),
+             content_script.exclude_globs.get(), result.get());
 
-    // TODO(aboxhall): check for webstore
-    if (!all_urls_includes_chrome_urls &&
-        pattern.scheme() != content::kChromeUIScheme) {
-      // Exclude SCHEME_CHROMEUI unless it's been explicitly requested or
-      // been granted by extension ID.
-      // If the --extensions-on-chrome-urls flag has not been passed, requesting
-      // a chrome:// url will cause a parse failure above, so there's no need to
-      // check the flag here.
-      pattern.SetValidSchemes(pattern.valid_schemes() &
-                              ~URLPattern::SCHEME_CHROMEUI);
-    }
-
-    if (pattern.MatchesScheme(url::kFileScheme) &&
-        !can_execute_script_everywhere) {
-      extension->set_wants_file_access(true);
-      if (!(extension->creation_flags() & Extension::ALLOW_FILE_ACCESS)) {
-        pattern.SetValidSchemes(pattern.valid_schemes() &
-                                ~URLPattern::SCHEME_FILE);
-      }
-    }
-
-    result->add_url_pattern(pattern);
-  }
-
-  // exclude_matches
-  if (content_script.exclude_matches) {
-    for (size_t i = 0; i < content_script.exclude_matches->size(); ++i) {
-      const std::string& match_str = content_script.exclude_matches->at(i);
-      URLPattern pattern(valid_schemes);
-
-      URLPattern::ParseResult parse_result = pattern.Parse(match_str);
-      if (parse_result != URLPattern::ParseResult::kSuccess) {
-        *error = ErrorUtils::FormatErrorMessageUTF16(
-            errors::kInvalidExcludeMatch,
-            base::NumberToString(definition_index), base::NumberToString(i),
-            URLPattern::GetParseResultString(parse_result));
-        return nullptr;
-      }
-
-      result->add_exclude_url_pattern(pattern);
-    }
-  }
-
-  // include/exclude globs (mostly for Greasemonkey compatibility).
-  if (content_script.include_globs) {
-    for (const std::string& glob : *content_script.include_globs)
-      result->add_glob(glob);
-  }
-  if (content_script.exclude_globs) {
-    for (const std::string& glob : *content_script.exclude_globs)
-      result->add_exclude_glob(glob);
-  }
-
-  // js
-  if (content_script.js) {
-    result->js_scripts().reserve(content_script.js->size());
-    for (const std::string& relative : *content_script.js) {
-      GURL url = extension->GetResourceURL(relative);
-      ExtensionResource resource = extension->GetResource(relative);
-      result->js_scripts().push_back(std::make_unique<UserScript::File>(
-          resource.extension_root(), resource.relative_path(), url));
-    }
-  }
-
-  // css
-  if (content_script.css) {
-    result->css_scripts().reserve(content_script.css->size());
-    for (const std::string& relative : *content_script.css) {
-      GURL url = extension->GetResourceURL(relative);
-      ExtensionResource resource = extension->GetResource(relative);
-      result->css_scripts().push_back(std::make_unique<UserScript::File>(
-          resource.extension_root(), resource.relative_path(), url));
-    }
-  }
-
-  // The manifest needs to have at least one js or css user script definition.
-  if (result->js_scripts().empty() && result->css_scripts().empty()) {
-    *error = ErrorUtils::FormatErrorMessageUTF16(
-        errors::kMissingFile, base::NumberToString(definition_index));
+  if (!script_parsing::ParseFileSources(
+          extension, content_script.js.get(), content_script.css.get(),
+          definition_index, result.get(), error)) {
     return nullptr;
   }
 
   return result;
-}
-
-// Returns false and sets the error if script file can't be loaded,
-// or if it's not UTF-8 encoded.
-static bool IsScriptValid(const base::FilePath& path,
-                          const base::FilePath& relative_path,
-                          int message_id,
-                          std::string* error) {
-  std::string content;
-  if (!base::PathExists(path) || !base::ReadFileToString(path, &content)) {
-    *error =
-        l10n_util::GetStringFUTF8(message_id, relative_path.LossyDisplayName());
-    return false;
-  }
-
-  if (!base::IsStringUTF8(content)) {
-    *error = l10n_util::GetStringFUTF8(IDS_EXTENSION_BAD_FILE_ENCODING,
-                                       relative_path.LossyDisplayName());
-    return false;
-  }
-
-  return true;
 }
 
 struct EmptyUserScriptList {
@@ -325,39 +238,9 @@ bool ContentScriptsHandler::Validate(
     std::vector<InstallWarning>* warnings) const {
   // Validate that claimed script resources actually exist,
   // and are UTF-8 encoded.
-  ExtensionResource::SymlinkPolicy symlink_policy;
-  if ((extension->creation_flags() & Extension::FOLLOW_SYMLINKS_ANYWHERE) !=
-      0) {
-    symlink_policy = ExtensionResource::FOLLOW_SYMLINKS_ANYWHERE;
-  } else {
-    symlink_policy = ExtensionResource::SYMLINKS_MUST_RESOLVE_WITHIN_ROOT;
-  }
-
-  const UserScriptList& content_scripts =
-      ContentScriptsInfo::GetContentScripts(extension);
-  for (const std::unique_ptr<UserScript>& script : content_scripts) {
-    for (const std::unique_ptr<UserScript::File>& js_script :
-         script->js_scripts()) {
-      const base::FilePath& path = ExtensionResource::GetFilePath(
-          js_script->extension_root(), js_script->relative_path(),
-          symlink_policy);
-      if (!IsScriptValid(path, js_script->relative_path(),
-                         IDS_EXTENSION_LOAD_JAVASCRIPT_FAILED, error))
-        return false;
-    }
-
-    for (const std::unique_ptr<UserScript::File>& css_script :
-         script->css_scripts()) {
-      const base::FilePath& path = ExtensionResource::GetFilePath(
-          css_script->extension_root(), css_script->relative_path(),
-          symlink_policy);
-      if (!IsScriptValid(path, css_script->relative_path(),
-                         IDS_EXTENSION_LOAD_CSS_FAILED, error))
-        return false;
-    }
-  }
-
-  return true;
+  return script_parsing::ValidateFileSources(
+      ContentScriptsInfo::GetContentScripts(extension),
+      script_parsing::GetSymlinkPolicy(extension), error);
 }
 
 }  // namespace extensions

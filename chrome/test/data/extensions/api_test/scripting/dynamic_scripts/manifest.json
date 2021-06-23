@@ -1,0 +1,11 @@
+{
+  "manifest_version": 3,
+  "name": "Dynamic content script test extension",
+  "version": "0.1",
+  "description": "Tests a variety of dynamic content scripts API calls",
+  "background": {
+    "service_worker": "worker.js"
+  },
+  "permissions": ["scripting"],
+  "host_permissions": ["*://*/*"]
+}

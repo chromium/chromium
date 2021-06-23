@@ -88,9 +88,48 @@ namespace scripting {
     long frameId;
   };
 
+  // Describes a content script to be injected into a web page registered
+  // through this API.
+  [nodoc]
+  dictionary RegisteredContentScript {
+    // The id of the content script, specified in the API call. Must not start
+    // with a '_' as it's reserved as a prefix for generated script IDs.
+    DOMString id;
+    // Specifies which pages this content script will be injected into. See
+    // <a href="match_patterns">Match Patterns</a> for more details on the
+    // syntax of these strings.
+    DOMString[] matches;
+    // Excludes pages that this content script would otherwise be injected into.
+    // See <a href="match_patterns">Match Patterns</a> for more details on the
+    // syntax of these strings.
+    DOMString[]? excludeMatches;
+    // The list of CSS files to be injected into matching pages. These are
+    // injected in the order they appear in this array, before any DOM is
+    // constructed or displayed for the page.
+    DOMString[]? css;
+    // The list of JavaScript files to be injected into matching pages. These
+    // are injected in the order they appear in this array.
+    DOMString[]? js;
+    // If specified true, it will inject into all frames, even if the frame is
+    // not the top-most frame in the tab. Each frame is checked independently
+    // for URL requirements; it will not inject into child frames if the URL
+    // requirements are not met. Defaults to false, meaning that only the top
+    // frame is matched.
+    boolean? allFrames;
+    // TODO(devlin): Add documentation once the implementation is complete. See
+    // crbug.com/55084.
+    [nodoc]
+    boolean? matchOriginAsFallback;
+    // Specifies when JavaScript files are injected into the web page. The
+    // preferred and default value is <code>document_idle</code>.
+    extensionTypes.RunAt? runAt;
+  };
+
   callback ScriptInjectionCallback = void(InjectionResult[] results);
 
   callback CSSInjectionCallback = void();
+
+  callback RegisterContentScriptsCallback = void();
 
   interface Functions {
     // Injects a script into a target context. The script will be run at
@@ -121,5 +160,15 @@ namespace scripting {
     [supportsPromises] static void removeCSS(
         CSSInjection injection,
         optional CSSInjectionCallback callback);
+
+    // Registers one or more content scripts for this extension.
+    // |scripts|: Contains a list of scripts to be registered. If there are
+    // errors during script parsing/file validation, or if the IDs specified
+    // already exist, then no scripts are registered.
+    // |callback|: A callback to be invoked once scripts have been registered or
+    // if an error has occurred.
+    [nodoc, supportsPromises] static void registerContentScripts(
+        RegisteredContentScript[] scripts,
+        optional RegisterContentScriptsCallback callback);
   };
 };

@@ -10,6 +10,7 @@
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/ranges/algorithm.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_handle.h"
@@ -17,7 +18,9 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_system.h"
 #include "extensions/browser/url_loader_factory_manager.h"
+#include "extensions/browser/user_script_manager.h"
 #include "extensions/common/content_script_injection_url_getter.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handlers/content_scripts_handler.h"
@@ -213,12 +216,33 @@ void HandleProgrammaticContentScriptInjection(
 bool DoContentScriptsMatch(const Extension& extension,
                            content::RenderFrameHost* frame,
                            const GURL& url) {
-  const UserScriptList& list =
+  const UserScriptList& manifest_scripts =
       ContentScriptsInfo::GetContentScripts(&extension);
-  return std::any_of(list.begin(), list.end(),
-                     [frame, &url](const std::unique_ptr<UserScript>& script) {
-                       return DoesContentScriptMatch(*script, frame, url);
-                     });
+
+  auto does_script_match = [frame,
+                            &url](const std::unique_ptr<UserScript>& script) {
+    return DoesContentScriptMatch(*script, frame, url);
+  };
+
+  if (base::ranges::any_of(manifest_scripts.begin(), manifest_scripts.end(),
+                           does_script_match)) {
+    return true;
+  }
+
+  // `manager` can be null for some unit tests which do not initialize the
+  // ExtensionSystem.
+  UserScriptManager* manager =
+      ExtensionSystem::Get(frame->GetProcess()->GetBrowserContext())
+          ->user_script_manager();
+  if (manager) {
+    const UserScriptList& dynamic_scripts =
+        manager->GetUserScriptLoaderForExtension(extension.id())
+            ->GetLoadedDynamicScripts();
+    return base::ranges::any_of(dynamic_scripts.begin(), dynamic_scripts.end(),
+                                does_script_match);
+  }
+
+  return false;
 }
 
 std::vector<const Extension*> GetExtensionsInjectingContentScripts(

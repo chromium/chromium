@@ -125,7 +125,7 @@ ExtensionUserScriptLoader* UserScriptManager::CreateExtensionUserScriptLoader(
           .emplace(extension->id(),
                    std::make_unique<ExtensionUserScriptLoader>(
                        browser_context_, *extension,
-                       true /* listen_for_extension_system_loaded */))
+                       /*listen_for_extension_system_loaded=*/true))
           .first->second.get();
 
   return loader;

@@ -739,6 +739,10 @@
     "dependencies": ["permission:scripting"],
     "contexts": ["blessed_extension"]
   },
+  "scripting.registerContentScripts": {
+    "channel": "trunk",
+    "min_manifest_version": 3
+  },
   "search": {
     "dependencies": ["permission:search"],
     "contexts": ["blessed_extension"]

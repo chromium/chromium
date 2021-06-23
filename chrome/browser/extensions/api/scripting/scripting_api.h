@@ -6,10 +6,13 @@
 #define CHROME_BROWSER_EXTENSIONS_API_SCRIPTING_SCRIPTING_API_H_
 
 #include <string>
+#include <utility>
 
 #include "chrome/common/extensions/api/scripting.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/script_executor.h"
+#include "extensions/common/user_script.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -91,6 +94,33 @@ class ScriptingRemoveCSSFunction : public ExtensionFunction {
 
   // Called when the CSS removal is complete.
   void OnCSSRemoved(std::vector<ScriptExecutor::FrameResult> results);
+};
+
+using ValidateContentScriptsResult =
+    std::pair<std::unique_ptr<UserScriptList>, absl::optional<std::string>>;
+
+class ScriptingRegisterContentScriptsFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("scripting.registerContentScripts",
+                             SCRIPTING_REGISTERCONTENTSCRIPTS)
+
+  ScriptingRegisterContentScriptsFunction();
+  ScriptingRegisterContentScriptsFunction(
+      const ScriptingRegisterContentScriptsFunction&) = delete;
+  ScriptingRegisterContentScriptsFunction& operator=(
+      const ScriptingRegisterContentScriptsFunction&) = delete;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+
+ private:
+  ~ScriptingRegisterContentScriptsFunction() override;
+
+  // Called when script files have been checked.
+  void OnContentScriptFilesValidated(ValidateContentScriptsResult result);
+
+  // Called when content scripts have been registered.
+  void OnContentScriptsRegistered(const absl::optional<std::string>& error);
 };
 
 }  // namespace extensions

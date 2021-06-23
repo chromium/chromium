@@ -5,18 +5,26 @@
 #include "chrome/browser/extensions/api/scripting/scripting_api.h"
 
 #include <algorithm>
-#include <utility>
 
 #include "base/check.h"
 #include "base/json/json_writer.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/common/extensions/api/scripting.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
+#include "extensions/browser/api/extension_types_utils.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
+#include "extensions/browser/extension_file_task_runner.h"
+#include "extensions/browser/extension_system.h"
+#include "extensions/browser/extension_user_script_loader.h"
 #include "extensions/browser/load_and_localize_file.h"
 #include "extensions/browser/script_executor.h"
+#include "extensions/browser/user_script_manager.h"
+#include "extensions/common/api/extension_types.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_constants.h"
@@ -25,6 +33,7 @@
 #include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permissions_data.h"
+#include "extensions/common/utils/content_script_utils.h"
 
 namespace extensions {
 
@@ -39,6 +48,16 @@ constexpr char kExactlyOneOfCssAndFilesError[] =
 // *actually* inject before page load, but it will at least inject "soon".
 constexpr mojom::RunLocation kCSSRunLocation =
     mojom::RunLocation::kDocumentStart;
+
+// TODO(crbug.com/1168627): The can_execute_script_everywhere flag is currently
+// only used by the legacy version Chromevox extension. We can assume it will
+// always be false here, but it may be added back if needed.
+constexpr bool kScriptsCanExecuteEverywhere = false;
+
+// The all_urls_includes_chrome_urls flag is only true for the legacy ChromeVox
+// extension, which does not call this API. Therefore we can assume it to be
+// always false.
+constexpr bool kAllUrlsIncludesChromeUrls = false;
 
 // Converts the given `style_origin` to a CSSOrigin.
 mojom::CSSOrigin ConvertStyleOriginToCSSOrigin(
@@ -216,6 +235,57 @@ bool CheckAndLoadFiles(const std::vector<std::string>& files,
   LoadAndLocalizeResource(extension, resource, requires_localization,
                           std::move(callback));
   return true;
+}
+
+std::unique_ptr<UserScript> ParseUserScript(
+    const Extension& extension,
+    const api::scripting::RegisteredContentScript& content_script,
+    int definition_index,
+    int valid_schemes,
+    std::u16string* error) {
+  auto result = std::make_unique<UserScript>();
+  result->set_id(content_script.id);
+  result->set_host_id(
+      mojom::HostID(mojom::HostID::HostType::kExtensions, extension.id()));
+
+  if (content_script.run_at != api::extension_types::RUN_AT_NONE)
+    result->set_run_location(ConvertRunLocation(content_script.run_at));
+
+  if (content_script.all_frames)
+    result->set_match_all_frames(*content_script.all_frames);
+
+  if (!script_parsing::ParseMatchPatterns(
+          content_script.matches, content_script.exclude_matches.get(),
+          definition_index, extension.creation_flags(),
+          kScriptsCanExecuteEverywhere, valid_schemes,
+          kAllUrlsIncludesChromeUrls, result.get(), error,
+          /*wants_file_access=*/nullptr)) {
+    return nullptr;
+  }
+
+  if (!script_parsing::ParseFileSources(
+          &extension, content_script.js.get(), content_script.css.get(),
+          definition_index, result.get(), error)) {
+    return nullptr;
+  }
+
+  return result;
+}
+
+ValidateContentScriptsResult ValidateParsedScriptsOnFileThread(
+    ExtensionResource::SymlinkPolicy symlink_policy,
+    std::unique_ptr<UserScriptList> scripts) {
+  DCHECK(GetExtensionFileTaskRunner()->RunsTasksInCurrentSequence());
+
+  // Validate that claimed script resources actually exist, and are UTF-8
+  // encoded.
+  std::string error;
+  bool are_script_files_valid =
+      script_parsing::ValidateFileSources(*scripts, symlink_policy, &error);
+
+  return std::make_pair(std::move(scripts), are_script_files_valid
+                                                ? absl::nullopt
+                                                : absl::make_optional(error));
 }
 
 }  // namespace
@@ -548,6 +618,115 @@ void ScriptingRemoveCSSFunction::OnCSSRemoved(
   }
 
   Respond(NoArguments());
+}
+
+ScriptingRegisterContentScriptsFunction::
+    ScriptingRegisterContentScriptsFunction() = default;
+ScriptingRegisterContentScriptsFunction::
+    ~ScriptingRegisterContentScriptsFunction() = default;
+
+ExtensionFunction::ResponseAction
+ScriptingRegisterContentScriptsFunction::Run() {
+  std::unique_ptr<api::scripting::RegisterContentScripts::Params> params(
+      api::scripting::RegisterContentScripts::Params::Create(*args_));
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  std::vector<api::scripting::RegisteredContentScript>& scripts =
+      params->scripts;
+
+  ExtensionUserScriptLoader* loader =
+      ExtensionSystem::Get(browser_context())
+          ->user_script_manager()
+          ->GetUserScriptLoaderForExtension(extension()->id());
+  std::set<std::string> existing_script_ids = loader->GetDynamicScriptIDs();
+  std::set<std::string> new_script_ids;
+  for (const auto& script : scripts) {
+    if (script.id.empty())
+      return RespondNow(Error("Content script's ID must not be empty"));
+
+    if (script.id[0] == UserScript::kGeneratedIDPrefix) {
+      return RespondNow(Error(base::StringPrintf(
+          "Content script's ID '%s' must not start with '%c'",
+          script.id.c_str(), UserScript::kGeneratedIDPrefix)));
+    }
+
+    if (base::Contains(existing_script_ids, script.id) ||
+        base::Contains(new_script_ids, script.id)) {
+      return RespondNow(Error(
+          base::StringPrintf("Duplicate script ID '%s'", script.id.c_str())));
+    }
+
+    new_script_ids.insert(script.id);
+  }
+
+  std::u16string parse_error;
+  auto parsed_scripts = std::make_unique<UserScriptList>();
+  const int valid_schemes =
+      UserScript::ValidUserScriptSchemes(kScriptsCanExecuteEverywhere);
+
+  for (size_t i = 0; i < scripts.size(); ++i) {
+    // Parse/Create user script.
+    std::unique_ptr<UserScript> user_script = ParseUserScript(
+        *extension(), scripts[i], i, valid_schemes, &parse_error);
+    if (!user_script)
+      return RespondNow(Error(base::UTF16ToASCII(parse_error)));
+
+    parsed_scripts->push_back(std::move(user_script));
+  }
+
+  // Add new script IDs now in case another call with the same script IDs is
+  // made immediately following this one.
+  loader->AddPendingDynamicScriptIDs(std::move(new_script_ids));
+
+  base::PostTaskAndReplyWithResult(
+      GetExtensionFileTaskRunner().get(), FROM_HERE,
+      base::BindOnce(&ValidateParsedScriptsOnFileThread,
+                     script_parsing::GetSymlinkPolicy(extension()),
+                     std::move(parsed_scripts)),
+      base::BindOnce(&ScriptingRegisterContentScriptsFunction::
+                         OnContentScriptFilesValidated,
+                     this));
+
+  // Balanced in `OnContentScriptFilesValidated()` or
+  // `OnContentScriptsRegistered()`.
+  AddRef();
+  return RespondLater();
+}
+
+void ScriptingRegisterContentScriptsFunction::OnContentScriptFilesValidated(
+    ValidateContentScriptsResult result) {
+  auto error = result.second;
+  auto scripts = std::move(result.first);
+  ExtensionUserScriptLoader* loader =
+      ExtensionSystem::Get(browser_context())
+          ->user_script_manager()
+          ->GetUserScriptLoaderForExtension(extension()->id());
+
+  if (error.has_value()) {
+    std::set<std::string> ids_to_remove;
+    for (const auto& script : *scripts)
+      ids_to_remove.insert(script->id());
+
+    loader->RemovePendingDynamicScriptIDs(std::move(ids_to_remove));
+    Respond(Error(*error));
+    Release();  // Matches the `AddRef()` in `Run()`.
+    return;
+  }
+
+  loader->AddDynamicScripts(
+      std::move(scripts),
+      base::BindOnce(
+          &ScriptingRegisterContentScriptsFunction::OnContentScriptsRegistered,
+          this));
+}
+
+void ScriptingRegisterContentScriptsFunction::OnContentScriptsRegistered(
+    const absl::optional<std::string>& error) {
+  if (error.has_value())
+    Respond(Error(*error));
+  else
+    Respond(NoArguments());
+  Release();  // Matches the `AddRef()` in `Run()`.
 }
 
 }  // namespace extensions
