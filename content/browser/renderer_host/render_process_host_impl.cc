@@ -2417,9 +2417,11 @@ void RenderProcessHostImpl::WriteIntoTrace(
   proto->set_process_lock(ChildProcessSecurityPolicyImpl::GetInstance()
                               ->GetProcessLock(id)
                               .ToString());
-  browser_context_->WriteIntoTrace(
-      proto.WriteNestedMessage<perfetto::protos::pbzero::RenderProcessHost::
-                                   FieldMetadata_BrowserContext>());
+  if (browser_context_) {
+    browser_context_->WriteIntoTrace(
+        proto.WriteNestedMessage<perfetto::protos::pbzero::RenderProcessHost::
+                                     FieldMetadata_BrowserContext>());
+  }
 
   // TODO(ssid): Consider moving this to ChildProcessLauncher proto field.
   if (child_process_launcher_)
@@ -3957,6 +3959,7 @@ void RenderProcessHostImpl::Cleanup() {
   // Remove ourself from the list of renderer processes so that we can't be
   // reused in between now and when the Delete task runs.
   UnregisterHost(GetID());
+  browser_context_ = nullptr;
 }
 
 void RenderProcessHostImpl::PopulateTerminationInfoRendererFields(

@@ -1025,7 +1025,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // The globally-unique identifier for this RenderProcessHost.
   const int id_;
 
-  BrowserContext* const browser_context_;
+  BrowserContext* browser_context_ = nullptr;
 
   // Owned by |browser_context_|.
   StoragePartitionImpl* const storage_partition_impl_;
