@@ -42,8 +42,11 @@
 #include "content/public/browser/desktop_streams_registry.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
-#include "extensions/common/constants.h"
 #include "ui/base/l10n/l10n_util.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "extensions/common/constants.h"
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 namespace media_router {
 namespace {
@@ -1038,7 +1041,9 @@ void MediaRouterMojoImpl::RecordPresentationRequestUrlBySink(
   // URLs that can be rendered in offscreen tabs (for cloud or Chromecast
   // sinks), or on a wired display.
   bool is_normal_url = source.url().SchemeIs(url::kHttpsScheme) ||
+#if BUILDFLAG(ENABLE_EXTENSIONS)
                        source.url().SchemeIs(extensions::kExtensionScheme) ||
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
                        source.url().SchemeIs(url::kFileScheme);
   switch (provider_id) {
     case MediaRouteProviderId::WIRED_DISPLAY:

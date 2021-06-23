@@ -19,7 +19,6 @@
 #include "components/media_router/common/mojom/media_router.mojom.h"
 #include "components/media_router/common/mojom/media_status.mojom.h"
 #include "content/public/test/browser_task_environment.h"
-#include "extensions/common/extension.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"

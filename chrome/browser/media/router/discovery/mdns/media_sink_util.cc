@@ -51,9 +51,6 @@ CreateCastMediaSinkResult CreateCastMediaSink(const DnsSdService& service,
     service_data[key] = val;
   }
 
-  // When use this "sink" within browser, please note it will have a different
-  // ID when it is sent to the extension, because it derives a different sink ID
-  // using the given sink ID.
   std::string unique_id = service_data["id"];
   if (unique_id.empty())
     return CreateCastMediaSinkResult::kMissingID;

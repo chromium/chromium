@@ -12,7 +12,7 @@ namespace media_router {
 // Each MediaRouteProvider is associated with a unique ID. This enum must be
 // kept in sync with mojom::MediaRouteProvider::Id, except for |UNKNOWN|, which
 // is not present in the Mojo enum.
-// TODO(crbug.com/1221714): Delete this enum and use the Mojo enum instead.
+// FIXME: Can we just use the mojo enum instead?
 enum MediaRouteProviderId {
   WIRED_DISPLAY,
   CAST,

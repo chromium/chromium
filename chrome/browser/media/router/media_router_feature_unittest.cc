@@ -7,19 +7,15 @@
 #include <memory>
 
 #include "base/test/scoped_feature_list.h"
-#include "build/build_config.h"
-#include "components/prefs/pref_registry_simple.h"
-#include "components/prefs/testing_pref_service.h"
-#include "extensions/buildflags/buildflags.h"
-#include "testing/gtest/include/gtest/gtest.h"
-
-#if defined(OS_ANDROID) || BUILDFLAG(ENABLE_EXTENSIONS)
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
-#endif  // defined(OS_ANDROID) || BUILDFLAG(ENABLE_EXTENSIONS)
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace media_router {
 
@@ -54,7 +50,6 @@ TEST(MediaRouterFeatureTest, GetReceiverIdHashToken) {
   EXPECT_EQ(token, GetReceiverIdHashToken(pref_service.get()));
 }
 
-#if defined(OS_ANDROID) || BUILDFLAG(ENABLE_EXTENSIONS)
 class MediaRouterEnabledTest : public ::testing::Test {
  public:
   MediaRouterEnabledTest() = default;
@@ -91,6 +86,5 @@ TEST_F(MediaRouterEnabledTest, TestDisabledByPolicy) {
   // Runtime changes are not supported.
   EXPECT_FALSE(MediaRouterEnabled(&disabled_profile));
 }
-#endif  // defined(OS_ANDROID) || BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace media_router

@@ -32,7 +32,6 @@ static_library("media_router_feature") {
     "//content/public/browser",
     "//content/public/common",
     "//crypto",
-    "//extensions/buildflags:buildflags",
     "//media",
     "//ui/base:buildflags",
   ]
@@ -73,7 +72,7 @@ static_library("router") {
     "presentation/chrome_local_presentation_manager_factory.h",
   ]
 
-  if (enable_extensions) {
+  if (!is_android) {
     deps += [
       "discovery",
       "//build:chromeos_buildflags",
@@ -85,17 +84,13 @@ static_library("router") {
 
       # We can't depend on //chrome/browser/ui due to introducing a cyclic
       # dependency, so we have to depend on this directly to fix include
-      # resolution for browser.h, which is used in multiple extension-only
-      # files.
+      # resolution for browser.h, which is used in media_router_mojo_impl.cc.
       # TODO(crbug.com/1030821): Resolve circular dependencies
       "//components/paint_preview/buildflags",
       "//components/signin/public/base:signin_buildflags",
       "//components/translate/content/common",
       "//components/ukm/content:content",
       "//components/version_info:version_info",
-      "//extensions/browser",
-      "//extensions/buildflags",
-      "//extensions/common",
       "//mojo/public/cpp/bindings",
       "//services/metrics/public/cpp:ukm_builders",
       "//third_party/openscreen/src/cast/common/channel/proto:channel_proto",
@@ -186,6 +181,13 @@ static_library("router") {
       ]
     }
   }
+
+  if (enable_extensions) {
+    deps += [
+      "//extensions/buildflags:buildflags",
+      "//extensions/common",
+    ]
+  }
 }
 
 if (!is_android) {
@@ -197,8 +199,6 @@ if (!is_android) {
       "//components/media_router/browser:test_support",
       "//components/media_router/common/mojom:media_router",
       "//components/media_router/common/mojom:media_router_test_interfaces",
-      "//extensions/browser",
-      "//extensions/common",
       "//testing/gmock",
     ]
     public_deps = [ ":router" ]

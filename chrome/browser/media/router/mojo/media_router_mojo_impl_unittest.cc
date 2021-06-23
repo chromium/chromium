@@ -37,10 +37,6 @@
 #include "components/media_router/common/media_source.h"
 #include "components/version_info/version_info.h"
 #include "content/public/test/browser_task_environment.h"
-#include "extensions/browser/extension_registry.h"
-#include "extensions/browser/process_manager.h"
-#include "extensions/browser/process_manager_factory.h"
-#include "extensions/common/extension.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -857,7 +853,7 @@ TEST_F(MediaRouterMojoImplTest, RegisterAndUnregisterMediaRoutesObserver) {
 }
 
 // Tests that multiple MediaRoutesObservers having the same query do not cause
-// extra extension wake-ups because the OnRoutesUpdated() results are cached.
+// extra calls to providers because the OnRoutesUpdated() results are cached.
 TEST_F(MediaRouterMojoImplTest, RegisterMediaRoutesObserver_DedupingWithCache) {
   const MediaSource media_source = MediaSource(kSource);
   const std::vector<MediaRoute> kExpectedRoutes{
@@ -866,9 +862,8 @@ TEST_F(MediaRouterMojoImplTest, RegisterMediaRoutesObserver_DedupingWithCache) {
 
   Sequence sequence;
 
-  // Creating the first observer will wake-up the provider and ask it to start
-  // observing routes having source |kSource|. The provider will respond with
-  // the existing route.
+  // Creating the first observer will ask the provider to start observing routes
+  // having source |kSource|. The provider will respond with the existing route.
   EXPECT_CALL(mock_cast_provider_, StartObservingMediaRoutes(media_source.id()))
       .Times(1);
   auto observer1 =
@@ -881,8 +876,8 @@ TEST_F(MediaRouterMojoImplTest, RegisterMediaRoutesObserver_DedupingWithCache) {
                kExpectedJoinableRouteIds);
   base::RunLoop().RunUntilIdle();
 
-  // Creating two more observers will not wake up the provider. Instead, the
-  // cached route list will be returned.
+  // Creating two more observers will not make calls to the provider. Instead,
+  // the cached route list will be returned.
   auto observer2 =
       std::make_unique<MockMediaRoutesObserver>(router(), media_source.id());
   auto observer3 =
@@ -900,8 +895,8 @@ TEST_F(MediaRouterMojoImplTest, RegisterMediaRoutesObserver_DedupingWithCache) {
   observer2.reset();
   base::RunLoop().RunUntilIdle();
 
-  // Kill the final observer, and expect the provider to be woken-up and called
-  // with the "stop observing" notification.
+  // Kill the final observer, and expect the provider to be told to stop
+  // observing.
   EXPECT_CALL(mock_cast_provider_, StopObservingMediaRoutes(media_source.id()))
       .Times(1);
   observer3.reset();

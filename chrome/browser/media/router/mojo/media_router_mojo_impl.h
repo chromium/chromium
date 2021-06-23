@@ -160,8 +160,6 @@ class MediaRouterMojoImpl : public MediaRouterBase, public mojom::MediaRouter {
                            TestRecordPresentationRequestUrlBySink);
   FRIEND_TEST_ALL_PREFIXES(MediaRouterDesktopTest,
                            SyncStateToMediaRouteProvider);
-  FRIEND_TEST_ALL_PREFIXES(ExtensionMediaRouteProviderProxyTest,
-                           StartAndStopObservingMediaSinks);
 
   // Represents a query to the MediaRouteProviders for media sinks and caches
   // media sinks returned by MRPs. Holds observers for the query.
